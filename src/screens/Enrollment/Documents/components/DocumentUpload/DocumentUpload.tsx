@@ -37,7 +37,7 @@ export const DocumentUpload: DocumentUploadTemplateType = ({ title, subtitle, do
       />
   ))
   }
-  console.log(file,'ss')
+
   return (
     <Box sx={classes.container}>
       <Subtitle fontWeight='700'>{title}</Subtitle>

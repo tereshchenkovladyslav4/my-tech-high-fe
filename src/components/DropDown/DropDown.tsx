@@ -1,10 +1,33 @@
 import { SelectChangeEvent, FormControl, Select, MenuItem, TextField, InputLabel, FormHelperText } from '@mui/material'
-import { Box } from '@mui/system'
+import { Box, styled } from '@mui/system'
 import { map } from 'lodash'
 import React, { useState } from 'react'
 import { DropDownTemplateType } from './types'
 import { useStyles } from './styles'
 import { SYSTEM_05 } from '../../utils/constants'
+import { ca } from 'date-fns/locale'
+
+const CssTextField = styled(TextField, {
+  shouldForwardProp: (props) => props !== "focusColor"
+})((p) => ({
+  // focused color for input with variant='standard'
+  "& .MuiInput-underline:after": {
+    borderBottomColor: '#ccc',
+    borderWidth: '1px'
+  },
+  // focused color for input with variant='filled'
+  "& .MuiFilledInput-underline:after": {
+    borderBottomColor: '#ccc',
+    borderWidth: '1px'
+  },
+  // focused color for input with variant='outlined'
+  "& .MuiOutlinedInput-root": {
+    "&.Mui-focused fieldset": {
+      borderColor: '#ccc',
+      borderWidth: '1px'
+    }
+  }
+}));
 
 const Placeholder = ({ children }) => {
   return <div>{children}</div>
@@ -63,7 +86,7 @@ export const DropDown: DropDownTemplateType = ({
         </FormControl>
       ) : (
         <Box>
-          <TextField
+          <CssTextField
             name={name}
             size={size || 'medium'}
             focused
@@ -79,7 +102,7 @@ export const DropDown: DropDownTemplateType = ({
             helperText={error?.errorMsg}
           >
             {renderDropDownItem()}
-          </TextField>
+          </CssTextField>
         </Box>
       )}
     </Box>

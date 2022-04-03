@@ -18,13 +18,27 @@ export const SortableTable: SortableTableTemplateType = ({ headCells, rows, onCh
   }, [clearAll])
 
   function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
-    if (b[orderBy] < a[orderBy]) {
-      return -1
+    if (orderBy === 'grade') {
+      const agrade = (a[orderBy] as any) || ''
+      const bgrade = (b[orderBy] as any) || ''
+      if (Number(bgrade.replace(/\D/g, '')) < Number(agrade.replace(/\D/g, ''))) {
+        return -1
+      }
+      if (Number(bgrade.replace(/\D/g, '')) > Number(agrade.replace(/\D/g, ''))) {
+        return 1
+      }
+      return 0
+    } else if (orderBy === 'emailed') {
+      return a[orderBy] === b[orderBy] ? 0 : a[orderBy] ? -1 : 1
+    } else {
+      if (b[orderBy] < a[orderBy]) {
+        return -1
+      }
+      if (b[orderBy] > a[orderBy]) {
+        return 1
+      }
+      return 0
     }
-    if (b[orderBy] > a[orderBy]) {
-      return 1
-    }
-    return 0
   }
 
   type Order = 'asc' | 'desc'
@@ -90,6 +104,19 @@ export const SortableTable: SortableTableTemplateType = ({ headCells, rows, onCh
 
   const isSelected = (name: string) => selected.indexOf(name) !== -1
 
+  const getColor = (key, value) => {
+    switch (key) {
+      case 'studentStatus':
+        if (value === 'New') {
+          return '#00C12B'
+        } else {
+          return '#4145FF'
+        }
+
+      case 'emailed':
+        return '#4145FF'
+    }
+  }
   return (
     <Box sx={{ width: '100%' }}>
       <TableContainer>
@@ -117,9 +144,12 @@ export const SortableTable: SortableTableTemplateType = ({ headCells, rows, onCh
                   key={row.id}
                   selected={isItemSelected}
                 >
-                  <TableCell padding='checkbox' onClick={(event) => {
-                    handleClick(event, row.id)
-                  }}>
+                  <TableCell
+                    padding='checkbox'
+                    onClick={(event) => {
+                      handleClick(event, row.id)
+                    }}
+                  >
                     <Checkbox
                       color='primary'
                       checked={isItemSelected}
@@ -153,9 +183,10 @@ export const SortableTable: SortableTableTemplateType = ({ headCells, rows, onCh
                           sx={{
                             paddingY: 1,
                             paddingLeft: 0,
-                            textAlign: idx !== 0 && "left",
-                            fontWeight: "700",
-                            cursor: "pointer",
+                            textAlign: idx !== 0 && 'left',
+                            fontWeight: '700',
+                            cursor: 'pointer',
+                            color: getColor(key, row[key]),
                           }}
                           // onClick={(e) => {
                           //   e.stopPropagation();

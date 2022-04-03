@@ -38,7 +38,8 @@ export const EmailModal: EmailModalTemplateType = ({ handleSubmit, handleModem, 
 
   const [subject, setSubject] = useState('')
   const [alert, setAlert] = useState(false)
-
+  const editorRef = useRef(null)
+  const [currentBlocks, setCurrentBlocks] = useState(0)
   const onSubmit = () => {
     const email: string = draftToHtml(convertToRaw(editorState.getCurrentContent()))
     if (email.search(/\[BLANK\]/g) >= 0) {
@@ -85,6 +86,14 @@ export const EmailModal: EmailModalTemplateType = ({ handleSubmit, handleModem, 
     const block = convertFromHTML(email || '')
     setEditorState(EditorState.createWithContent(email ? block : ContentState.createFromText(defaultEmail)))
   }
+  const handleEditorChange = (state) => {
+    try {
+      if (currentBlocks !== 0 && currentBlocks !== state.blocks.length) {
+        editorRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' })
+      }
+      setCurrentBlocks(state.blocks.length)
+    } catch {}
+  }
 
   useEffect(() => {
     if (template) {
@@ -121,6 +130,8 @@ export const EmailModal: EmailModalTemplateType = ({ handleSubmit, handleModem, 
           />
           <Box sx={classes.editor}>
             <Wysiwyg.Editor
+              onContentStateChange={handleEditorChange}
+              editorRef={(ref) => (editorRef.current = ref)}
               editorState={editorState}
               onEditorStateChange={setEditorState}
               toolbar={{

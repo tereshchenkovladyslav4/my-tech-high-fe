@@ -5,6 +5,7 @@ export const useStyles = {
   textfield: {
     [`& .${outlinedInputClasses.root} .${outlinedInputClasses.notchedOutline}`]: {
       borderColor: SYSTEM_07,
+      borderWidth: '1px',
     },
     marginY: 2,
     width: '100%',
@@ -12,6 +13,7 @@ export const useStyles = {
   textFieldError:{
     [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
       borderColor: '#BD0043',
+      borderWidth: '1px',
     },
     marginY: 2,
     width: '100%',

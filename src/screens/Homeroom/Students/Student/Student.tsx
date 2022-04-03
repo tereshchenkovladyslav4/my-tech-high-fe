@@ -1,5 +1,5 @@
 import { Box } from '@mui/system'
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Paragraph } from '../../../../components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
 import { MTHORANGE, HOMEROOM, ENROLLMENT } from '../../../../utils/constants'
@@ -12,8 +12,10 @@ import { Metadata } from '../../../../components/Metadata/Metadata'
 import { Title } from '../../../../components/Typography/Title/Title'
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import ScheduleIcon from '@mui/icons-material/Schedule';
+import { UserContext } from '../../../../providers/UserContext/UserProvider'
 
 export const Student: StudentTemplateType = ({student}) => {
+	const { me, setMe } = useContext(UserContext)
 
 	const enrollmentLink = `${HOMEROOM+ENROLLMENT}/${student.student_id}`
 	const homeroomLink = `${HOMEROOM}/${student.student_id}`
@@ -41,7 +43,7 @@ export const Student: StudentTemplateType = ({student}) => {
 		} else if(
       currApplication &&
       currApplication?.status === 'Accepted' &&
-      (currPacket && currPacket?.status === 'Submitted' || currPacket?.status === 'Missing Info')
+      (currPacket && currPacket?.status === 'Submitted' || currPacket?.status === 'Missing Info' || currPacket?.status === 'Accepted')
     ){
 			return homeroomLink
 		}
@@ -151,10 +153,6 @@ export const Student: StudentTemplateType = ({student}) => {
 			setShowToolTip(false)
     }
   }
-	
-	//const link = showToolTip 
-	//? homeroomLink
-	//: `${HOMEROOM}/${student.student_id}`
 
 	const gradeText = student.grade_levels.at(-1).grade_level !== 'Kin'
 		? `${toOrdinalSuffix((student.grade_levels.at(-1).grade_level as number))} Grade`
@@ -185,7 +183,13 @@ export const Student: StudentTemplateType = ({student}) => {
 							cursor:'pointer'
 						}} 
 						alt='Remy Sharp' variant='rounded' 
-						onClick={() => history.push(link)}
+						onClick={() => {
+							setMe({
+								...me,
+								currentTab: 0
+							})
+							history.push(link)
+						}}
 					/>
 				}
 				rounded

@@ -7,12 +7,12 @@ import FormatItalicIcon from '@mui/icons-material/FormatItalic'
 import FormatUnderlinedIcon from '@mui/icons-material/FormatUnderlined'
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted'
 import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered'
-import { Editor, EditorState, RichUtils } from 'draft-js'
 import { useFormikContext } from 'formik'
 import { ImmunizationsData } from '../../Immunizations'
 import { convertFromHTML } from 'draft-convert'
 import { useStyles as useImStyles } from './style'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
+import { EditorState, RichUtils, Editor, convertToRaw } from 'draft-js'
 
 export interface EmailModalProps {
   title: string
@@ -187,12 +187,20 @@ const EmailResponse: React.FC = () => {
   const { values, setFieldValue, touched, errors } = useFormikContext<ImmunizationsData>()
 
   const [isEmailOpen, setIsEmailOpen] = useState<boolean>(false)
-
+  
   const emailState = values.email_update_template === '-1' ? 'None' : values.email_update_template ? 'Edit' : 'Select'
 
   const handleEmail = (email: string) => {
     setIsEmailOpen(false)
-    setFieldValue('email_update_template', email)
+    const contentBlock = convertToRaw(EditorState.createWithContent(convertFromHTML(email || '')).getCurrentContent())
+    const contentString = contentBlock.blocks[0].text.replace(/[^a-zA-Z0-9]/g, '')
+    if(contentString.length === 0) {
+      setFieldValue('email_update_template', '-1')
+    }
+    else {
+      setFieldValue('email_update_template', email)
+    }
+    
   }
   function onChange(val: string) {
     if (val === 'None') {

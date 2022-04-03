@@ -5,7 +5,7 @@ import { AppBar } from '../components/AppBar/AppBar'
 import { Flexbox } from '../components/Flexbox/Flexbox'
 import { AdminSideMenu } from '../components/SideMenu/AdminSideMenu'
 import { SideMenu } from '../components/SideMenu/SideMenu'
-import { UserContext } from '../providers/UserContext/UserProvider'
+import { TabContext, UserContext } from '../providers/UserContext/UserProvider'
 import { AdminRoutes } from '../router/AdminRoutes'
 import { Routes } from '../router/Routes'
 import { UnauthenticatedRoutes } from '../router/UnauthenticatedRoutes'
@@ -14,12 +14,17 @@ import { getMeQuery } from './services'
 
 export const Root = () => {
   const { me, setMe } = useContext(UserContext)
+  const { setTab, setVisitedTabs } = useContext(TabContext)
   const { loading, error, data } = useQuery(getMeQuery)
   const [isSuper, setIsSuper] = useState(null);
 
   useEffect(() => {
     if (!loading && me === null && data !== undefined) {
+      setTab({
+        currentTab: 0
+      });
       setMe(data.me);
+      setVisitedTabs([])
       setIsSuper(Number(data.me?.level) === 1)
     }
   }, [loading])

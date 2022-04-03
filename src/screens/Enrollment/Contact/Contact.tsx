@@ -12,14 +12,17 @@ import { ContactTemplateType } from './types'
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { ERROR_RED } from '../../../utils/constants'
-import { UserContext, UserInfo } from '../../../providers/UserContext/UserProvider'
+import { TabContext, UserContext, UserInfo } from '../../../providers/UserContext/UserProvider'
 import { isNumber, isPhoneNumber } from '../../../utils/stringHelpers'
 import { usStates } from '../../../utils/states'
 import { DropDown } from '../../../components/DropDown/DropDown'
 import moment from 'moment'
+import { map } from 'lodash'
 
 export const Contact: ContactTemplateType = ({id}) => {
   const { me, setMe } = useContext(UserContext)
+  const { tab, setTab, visitedTabs, setVisitedTabs } = useContext(TabContext)
+  console.log('tab ===', tab)
   const { profile } = me as UserInfo
   const [gender, setGender] = useState(profile.gender)
 
@@ -27,7 +30,7 @@ export const Contact: ContactTemplateType = ({id}) => {
 
   const [submitContactMutation, {data}] = useMutation(enrollmentContactMutation)
 
-  const { currentTab, setCurrentTab, setPacketId, student, disabled } = useContext(EnrollmentContext)
+  const {  setPacketId, student, disabled } = useContext(EnrollmentContext)
   const setState = (id: any) => formik.values.state = id
 
   const genderSelected = (value: string) => gender === value
@@ -43,6 +46,13 @@ export const Contact: ContactTemplateType = ({id}) => {
   useEffect(() => {
     formik.values.gender = gender
   },[gender])
+
+
+  if(student.packets?.at(-1).status === 'Missing Info'){
+    setTab({
+      currentTab: 3
+    })
+  }
 
   const validationSchema = yup.object({
     parentFirstName: yup
@@ -226,42 +236,52 @@ export const Contact: ContactTemplateType = ({id}) => {
       }
     }).then((data) => {
       setPacketId(data.data.saveEnrollmentPacketContact.packet.packet_id)
-      //setMe((prev) => {
-      //  return {
-      //    ...prev,
-      //    students: map(prev?.students, (student) => {
-      //      const returnValue = {...student}
-      //      if(student.student_id === data.data.saveEnrollmentPacketContact.student.student_id ){
-      //        student = data.data.saveEnrollmentPacketContact.student
-
-      //      }
-      //      return returnValue
-      //    }),
-      //  }
-      //})
+      setVisitedTabs([...visitedTabs, tab.currentTab])
+      setMe((prev) => {
+       return {
+         ...prev,
+         profile: {
+          ...prev.profile,
+          first_name: formik.values.parentFirstName,
+          last_name: formik.values.parentLastName,
+          middle_name: formik.values.parentMiddleName,
+          gender: formik.values.gender,
+          email:  formik.values.parentEmail,
+          date_of_birth: formik.values.dateOfBirth,
+          phone_number: formik.values.parentCell,
+          preferred_first_name: formik.values.parentPrefferredName,
+        },
+         students: map(prev?.students, (student) => {
+           const returnValue = {...student}
+           if(student.student_id === data.data.saveEnrollmentPacketContact.student.student_id ){
+            return data.data.saveEnrollmentPacketContact.student
+           }
+           return returnValue
+         }),
+       }
+      })
     })
   }
 
   const goNext = async () => {
     await submitContact()
     .then(() => {
-      setCurrentTab((curr) => curr + 1)
+      console.log(tab.currentTab)
+      setTab({
+        currentTab: tab.currentTab + 1
+      })
       window.scrollTo(0, 0)
     })
   }
 
   const nextTab = (e) => {
     e.preventDefault()
-    setCurrentTab((curr) => curr + 1)
+    console.log(tab.currentTab)
+    setTab({
+      currentTab: tab.currentTab + 1
+    })
     window.scrollTo(0, 0)
   }
-
-  //const onPhoneBlur = () => {
-  //  if(isPhoneNumber.test(formik.values.parentCell)){
-  //    formik.errors.parentCell = 'Phone number is required'
-  //    formik.touched.parentCell = true
-  //  }
-  //}
   
   return (
     <form onSubmit={(e) => !disabled ? formik.handleSubmit(e) : nextTab(e)}>
@@ -738,7 +758,7 @@ export const Contact: ContactTemplateType = ({id}) => {
           type='submit'
         >
           <Paragraph fontWeight='700' size='medium'>
-            { disabled ? 'Next' : 'Save &amp; Continue'}
+            { disabled ? 'Next' : 'Save & Continue'}
           </Paragraph>
         </Button>
       </Box>

@@ -13,6 +13,7 @@ import {
   deletePacketMutation,
   moveNextYearPacketMutation,
   moveThisYearPacketMutation,
+  packetCountQuery,
 } from '../services'
 import { map } from 'lodash'
 import moment from 'moment'
@@ -23,8 +24,11 @@ import EnrollmentPacketModal from '../EnrollmentPacketModal'
 import { WarningModal } from '../../../../components/WarningModal/Warning'
 import { Packet } from '../../../HomeroomStudentProfile/Student/types'
 import { getEmailTemplateQuery } from '../../../../graphql/queries/email-template'
+import { EnrollmentPacketFilters } from '../EnrollmentPacketFilters/EnrollmentPacketFilters'
 
-export const EnrollmentPacketTable = ({ filters }) => {
+export const EnrollmentPacketTable = () => {
+  const [filters, setFilters] = useState(['Submitted', 'Resubmitted'])
+
   const [emailTemplate, setEmailTemplate] = useState()
   const [searchField, setSearchField] = useState('')
   const [tableData, setTableData] = useState<Array<any>>([])
@@ -42,17 +46,21 @@ export const EnrollmentPacketTable = ({ filters }) => {
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [openEmailModal, setOpenEmailModal] = useState<boolean>(false)
   const [openWarningModal, setOpenWarningModal] = useState<boolean>(false)
-
+  const [packetCount, setpacketCount] = useState({})
   const createData = (packet: Packet) => {
     return {
       id: packet.packet_id,
-      submitted: moment(packet.deadline).format('l'),
+      submitted: moment(packet.deadline).format('MM/DD/YY'),
       status: packet.status + (packet.is_age_issue ? ' (Age Issue)' : ''),
       deadline: moment(packet.deadline).format('l'),
       student: `${packet.student.person.first_name} ${packet.student.person.last_name}`,
-      grade: packet.student.grade_level ? `${toOrdinalSuffix(packet.student.grade_level)} Grade` : ' ',
+      grade:
+        packet.student.grade_levels.length && packet.student.grade_levels[0].grade_level
+          ? `${toOrdinalSuffix(Number(packet.student.grade_levels[0].grade_level))} Grade`
+          : ' ',
       parent: `${packet.student.parent.person.first_name} ${packet.student.parent.person.last_name}`,
       studentStatus: 'New',
+      emailed: '',
       delete: (
         <DeleteForever
           className='delete-row'
@@ -88,6 +96,9 @@ export const EnrollmentPacketTable = ({ filters }) => {
     fetchPolicy: 'network-only',
   })
 
+  const { loading: countLoading, data: countGroup } = useQuery(packetCountQuery, {
+    fetchPolicy: 'network-only',
+  })
   const handlePageChange = (page) => {
     setSkip(() => {
       return paginatinLimit ? paginatinLimit * (page - 1) : 25
@@ -127,6 +138,11 @@ export const EnrollmentPacketTable = ({ filters }) => {
     }
   }, [loading, data])
 
+  useEffect(() => {
+    if (countGroup) {
+      setpacketCount(countGroup.packetCount.results)
+    }
+  }, [countGroup])
   const headCells: HeadCell[] = [
     // {
     //   id: 'id',
@@ -159,7 +175,7 @@ export const EnrollmentPacketTable = ({ filters }) => {
       label: 'Student',
     },
     {
-      id: 'gradeLevel',
+      id: 'grade',
       numeric: false,
       disablePadding: true,
       label: 'Grade',
@@ -171,17 +187,17 @@ export const EnrollmentPacketTable = ({ filters }) => {
       label: 'Parent',
     },
     {
-      id: 'studentType',
+      id: 'studentStatus',
       numeric: false,
       disablePadding: true,
       label: 'Student',
     },
-    // {
-    //   id: 'packetEmailedDate',
-    //   numeric: false,
-    //   disablePadding: true,
-    //   label: 'Emailed',
-    // },
+    {
+      id: 'emailed',
+      numeric: false,
+      disablePadding: true,
+      label: 'Emailed',
+    },
   ]
 
   const handleOpenEmailModal = () => {
@@ -310,6 +326,8 @@ export const EnrollmentPacketTable = ({ filters }) => {
           </Subtitle>
           <Box marginLeft={4}>
             <OutlinedInput
+              onFocus={(e) => (e.target.placeholder = '')}
+              onBlur={(e) => (e.target.placeholder = 'Search...')}
               size='small'
               fullWidth
               value={searchField}
@@ -371,7 +389,7 @@ export const EnrollmentPacketTable = ({ filters }) => {
             }}
             onClick={handleMoveToThisYear}
           >
-            Move Packets to This Year
+            Move Packets to 21-22 Year
           </Button>
           <Button
             sx={{
@@ -390,7 +408,7 @@ export const EnrollmentPacketTable = ({ filters }) => {
             }}
             onClick={handleMoveToNextYear}
           >
-            Move Packetss to Next Year
+            Move Packetss to 22-23 Year
           </Button>
         </Box>
       </Box>
@@ -449,6 +467,9 @@ export const EnrollmentPacketTable = ({ filters }) => {
           numPages={Math.ceil(totalPackets / paginatinLimit)}
           currentPage={currentPage}
         />
+      </Box>
+      <Box>
+        <EnrollmentPacketFilters filters={filters} setFilters={setFilters} packetCount={packetCount} />
       </Box>
       <SortableTable
         rows={tableData}

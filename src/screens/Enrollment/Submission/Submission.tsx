@@ -14,6 +14,7 @@ import { submitEnrollmentMutation } from './service'
 import { EnrollmentContext } from '../../../providers/EnrollmentPacketPrivder/EnrollmentPacketProvider'
 import { Prompt, useHistory } from 'react-router-dom'
 import { SuccessModal } from '../../../components/SuccessModal/SuccessModal'
+import { map } from 'lodash'
 
 export const Submission: FunctionComponent = () => {
 
@@ -36,7 +37,7 @@ export const Submission: FunctionComponent = () => {
     const res: Response = await fetch(dataUrl);
     const blob: Blob = await res.blob();
     return new File([blob], fileName, { type: 'image/png' });
-}
+  }
 
   const history = useHistory()
   
@@ -78,24 +79,13 @@ export const Submission: FunctionComponent = () => {
 
   const dropDownOptions: DropDownItem[] = [
     {
-      label: 'Yes',
+      label: 'Approve',
       value: 1,
     },
     {
-      label: 'No',
+      label: 'Deny',
       value: 2,
     },
-  ]
-
-  const ferpaPermissions: DropDownItem[] = [
-    {
-      label: 'I give my permission for the school to share immunization with USIIS.',
-      value: 1,
-    },
-    {
-      label: 'I do not give my permission for the school to share immunization with USIIS.',
-      value: 2
-    }
   ]
   
   const resetSignature = () => {
@@ -156,28 +146,48 @@ export const Submission: FunctionComponent = () => {
           }
         }
       })
+      .then((data) => {
+        //setMe((prev) => {
+        //  return {
+        //    ...prev,
+        //    students: map(prev?.students, (student) => {
+        //      const returnValue = {...student}
+        //      if(student.student_id === data.data.saveEnrollmentPacketSubmission.student.student_id ){
+        //      return data.data.saveEnrollmentPacketSubmission.student
+        //      }
+        //      return returnValue
+        //    }),
+        //  }
+        //})
+      })
     }
   },fileId)
 
-  //useEffect(() => {
-  //  data && history.push(HOMEROOM)
-  //},[data])
+  useEffect(() => {
+    if(data !== undefined){
+      data && setShowSuccess(true)
+    }
+  },[data])
 
   const nextTab = (e) => {
     e.preventDefault()
-    history.push(`${HOMEROOM}/${student.student_id}`)
+    history.push(`${HOMEROOM}`)
     window.scrollTo(0, 0)
 }
 
+  const idk = () => {
+    nextTab()
+  }
+
   return (
     <form onSubmit={(e) => !disabled ? formik.handleSubmit(e) : nextTab(e)}>
-    <Prompt
-      when={ showSuccess }
-      message={JSON.stringify({
-        header: "Unsaved Work",
-        content: "Changes you made will not be saved",
-      })}
-    />
+    {showSuccess 
+      && <SuccessModal 
+        title='' 
+        subtitle='Your Enrollment Packet has been submitted successfully and is now pending approval.”' 
+        handleSubmit={() => history.push(`${HOMEROOM}`)} 
+      />
+    }
     <Grid container rowSpacing={3} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
       <Grid item xs={12}>
         <Box width='50%'>
@@ -282,7 +292,7 @@ export const Submission: FunctionComponent = () => {
       <Grid item xs={12} marginTop={4}  justifyContent='center' display={'flex'}>
         <Box width={'60%'}>
         <Paragraph size='medium' textAlign='center'>
-          I approve for my student to be enrolled in any one of the following schools (Gateway Preparatory Academy, Digital Education Center - Tooele County School District, Advanced Learning Center - Nebo School District, and Southwest Education Academy - Iron County School District)
+          I certify that I am the legal guardian or custodial parent of this student. I certify that I have read and understood the information on this registration site and that the information entered is true and accurate.
         </Paragraph>
       </Box>
       </Grid>
@@ -322,7 +332,7 @@ export const Submission: FunctionComponent = () => {
           type='submit'
         >
           <Paragraph fontWeight='700' size='medium'>
-          { disabled ? 'Go Home' : 'Save &amp; Continue'}
+          { disabled ? 'Go Home' : 'Save & Continue'}
           </Paragraph>
         </Button>
       </Box>

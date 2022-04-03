@@ -9,22 +9,22 @@ import { Student } from './Student/Student'
 
 export const Students = () => {
 
-  const { me } = useContext(UserContext)
+  const { me, setMe } = useContext(UserContext)
   const { students } = me as UserInfo
 
   const [showInactiveButton] = useState(filter(students, (student) => student.status.at(-1)?.status === 2).length > 0)
   const [showInactiveStudents, setShowInactiveStudents] = useState(false)
 
-  map(students, (student) => console.log())
+  const inactiveStudents = filter(students, (student) => student.status.at(-1)?.status === 2)
 
   const renderStudents = () =>
     map(students!, (student) => {
       if(student.status.at(-1)?.status !== 2)
-      return <Student student={student}/>
+      return <Student student={student} />
     })
 
   const renderInactiveStudents = () =>
-    map(showInactiveButton, (student) => {
+    map(inactiveStudents, (student) => {
       return <Student student={student}/>
     })
 

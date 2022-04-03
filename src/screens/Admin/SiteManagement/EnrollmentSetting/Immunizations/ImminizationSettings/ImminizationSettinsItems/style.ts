@@ -18,6 +18,7 @@ export const useStyles = makeStyles(() => ({
   },
   selectPaper: {
     color: '#4145FF',
+    textAlign: 'start',
   },
   icon: {
     color: 'black',

@@ -38,8 +38,8 @@ export const Routes: FunctionComponent = () => {
           }else{
             return (currStudent.applications.length > 0 && currStudent.applications.at(-1).status === 'Accepted')
               ? (packetAccepted || packetSubmitted)
-                ? <Enrollment id={match?.params.id} disabled={true}/>
-                : <Enrollment id={match?.params.id} disabled={false}/>
+                ? <Enrollment id={match?.params.id}/>
+                : <Enrollment id={match?.params.id}/>
               : <Homeroom />
           }
         }}
@@ -49,17 +49,11 @@ export const Routes: FunctionComponent = () => {
         path={`${HOMEROOM}/:id`}
         children={({ match }) => {
           const currStudent = find(students, { student_id: match?.params.id })
-          const applicationAccepted = currStudent.applications.length > 0 && currStudent.applications.at(-1).status === 'Accepted'
-          const packetAccepted = currStudent.packets?.length > 0 && currStudent.packets?.at(-1).status === 'Accepted'
-          const packetSubmitted = currStudent.packets?.length > 0 && currStudent.packets?.at(-1).status === 'Submitted'
-          const packetMissingInfo = currStudent.packets?.length > 0 && currStudent.packets?.at(-1).status === 'Missing Info'
-
+          
           if(currStudent === undefined){
             return <Homeroom />
           }else{
-            return (applicationAccepted && (packetAccepted || packetSubmitted || packetMissingInfo))
-            ? <HomeroomStudentProfile />
-            : <Enrollment id={match?.params.id} />
+            return <HomeroomStudentProfile />
           }
         }}
       />

@@ -5,13 +5,17 @@ import { useStyles } from './styles'
 import CloseIcon from '@mui/icons-material/Close';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragraph';
-import { SYSTEM_06 } from '../../../../../utils/constants';
+import { RED, SYSTEM_06 } from '../../../../../utils/constants';
 import { DocumentListItem } from '../DocumentList/DocumentListItem';
-import { filter, map, remove } from 'lodash';
-
+import { filter, includes, isEqual, map, pull, remove } from 'lodash';
 
 interface HTMLInputEvent extends Event {
 	target: HTMLInputElement & EventTarget & File;
+}
+
+type ValidateFileResponse = {
+	status: boolean,
+	message?: string,
 }
 
 export const DocumentUploadModal: DocumentUploadModalTemplateType = ({
@@ -19,22 +23,26 @@ export const DocumentUploadModal: DocumentUploadModalTemplateType = ({
 	handleFile,
 	limit
 }) => {
+
 	const classes = useStyles
 	
 	const [selectedFiles, setSelectedFiles] = useState([])
 	const [validFiles, setValidFiles] = useState<File[]>([])
 	const [errorMessage, setErrorMessage] = useState('')
 
+	const [deletedFiles, setDeletedFiles] = useState([])
+
 	useEffect(() => {
-			let filteredArr = selectedFiles.reduce((acc, current) => {
-					const x = acc.find(item => item.name === current.name);
-					if (!x) {
-						return acc.concat([current]);
-					} else {
-						return acc;
-					}
-			}, []);
-			setValidFiles([...filteredArr]);
+		let filteredArr = selectedFiles.reduce((acc, current) => {
+			const x = acc.find(item => item.name === current.name);
+				if (!x) {
+					return acc.concat([current]);
+				} else {
+					return acc;
+				}
+		}, []);
+		const filterDeletedFiles = filter(filteredArr, (file) => !deletedFiles.includes(file))
+			setValidFiles([...filterDeletedFiles]);
 	}, [selectedFiles]);
 
 	const preventDefault = (e: HTMLInputEvent) => {
@@ -56,7 +64,7 @@ export const DocumentUploadModal: DocumentUploadModalTemplateType = ({
 	const fileDrop = (e: HTMLInputEvent) => {
 			preventDefault(e);
 			const files = e.dataTransfer.files;
-			console.log(files)
+			addDeletedFiles(files)
 			if (limit && files.length > limit) {
 				setErrorMessage(`File submission limited to ${limit} files`);
 			}else {
@@ -65,31 +73,55 @@ export const DocumentUploadModal: DocumentUploadModalTemplateType = ({
 	}
 
 	const filesSelected = (e: any) => {
-		handleFiles(e.target.files)
+		const files = e.target.files as File[]
+
+		// need to find a way to figure out if element exist and if it does
+		addDeletedFiles(files)
+		handleFiles(files as unknown as FileList[])
+	}
+
+	const addDeletedFiles = (files) => {
+		map(files, (file) => {
+			if(includes(JSON.stringify(deletedFiles), JSON.stringify(file))){
+				setDeletedFiles((prev) => {
+					const newFiles = [...prev]
+					pull(newFiles, deletedFiles[0])
+					return newFiles
+				})
+			}
+		})
 	}
 
 	const handleFiles = (files: FileList[]) => {
 			for(let i = 0; i < files.length; i++) {
-					if (validateFile(files[i])) {
+					const file = validateFile(files[i])
+					if (file.status === true) {
 							setSelectedFiles(prevArray => [...prevArray, files[i]]);
 					} else {
 							files[i]['invalid'] = true;
-							setErrorMessage('File is to large');
+							setErrorMessage(file.message);
 					}
 			}
 	}
 
-	const validateFile = (file: File) => {
-		console.log((file))
+	const validateFile = (file: File): ValidateFileResponse => {
 		// Get the size of the file by files.item(i).size.
-			const validTypes = ['application/pdf', "image/png", "image/jpeg"]
+			const validTypes = ['application/pdf', "image/png", "image/jpeg", "image/gif", "image/bmp"]
 			if(Math.round((file.size/1024)) > 25000){
-				return false
+				return {
+					status: false,
+					message: 'This file exceeds maximum allowed size of 25 MB'
+				}
 			}
 			if (validTypes.indexOf(file.type) === -1) {
-					return false;
+				return {
+					status: false,
+					message: 'Please only submit pdf, jpeg, or png'
+				}
 			}
-			return true;
+			return {
+				status: true,
+			}
 	}
 
 	const submitAndClose = () =>  {
@@ -97,15 +129,17 @@ export const DocumentUploadModal: DocumentUploadModalTemplateType = ({
 		handleModem()
 	}
 
-	const deleteFile = (file: File) => {
+	const deleteFile = (file: File,) => {
 		setValidFiles(filter(validFiles, (validFile) => validFile !== file))
+		setDeletedFiles((prev) => ([...prev, file]))
 	}
-
 
 	const renderFiles = () => map(validFiles, (file) =>	<Box>
 		<DocumentListItem file={file as File} closeAction={deleteFile}/>
 	</Box>
 	)
+
+
 	return (
 		<Modal
 			open={true}
@@ -131,13 +165,13 @@ export const DocumentUploadModal: DocumentUploadModalTemplateType = ({
 					}
 				</Box>
 				<Box
-						display='flex' 
-						flexDirection='column' 
-						alignItems={'center'}
-						onDragOver={dragOver}
-						onDragEnter={dragEnter}
-						onDragLeave={dragLeave}
-						onDrop={fileDrop}
+					display='flex' 
+					flexDirection='column' 
+					alignItems={'center'}
+					onDragOver={dragOver}
+					onDragEnter={dragEnter}
+					onDragLeave={dragLeave}
+					onDrop={fileDrop}
 				>
 					<UploadFileIcon/>
 					<Paragraph 
@@ -155,15 +189,19 @@ export const DocumentUploadModal: DocumentUploadModalTemplateType = ({
 						<label>
 							<input 
 								type="file"
+								onSubmit={() => window.alert('h')}
 								style={classes.input}
 								onChange={filesSelected}
 								multiple
-								accept='application/pdf, image/png, image/jpeg'
+								accept='application/pdf, image/png, image/jpeg, image/gif, image/bmp'
+								onClick={(event)=> {
+									event.currentTarget.value = ''
+								}}
 							/>
 							Browse Files
 						</label>
 					</Button>
-					<Paragraph>{ validFiles.length === 0 &&  errorMessage }</Paragraph>
+					<Paragraph size='medium' fontWeight='700' color={RED}>{ validFiles.length === 0 &&  errorMessage }</Paragraph>
 				</Box>
 				<Box justifyContent={'space-between'} display='flex' flexDirection={'row'}>
 					<Button 

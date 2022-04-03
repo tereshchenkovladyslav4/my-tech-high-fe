@@ -15,7 +15,7 @@ const validationSchema = Yup.object().shape({
     return this.parent.consecutive_vaccine === 0 || value > 0
   }),
   max_spacing_interval: Yup.number().test('max_spacing_interval', 'Must be more than 0', function (value) {
-    return this.parent.consecutive_vaccine === 0 || value > 0
+    return this.parent.consecutive_vaccine === 0 || value >= 0
   }),
   // min_school_year_required: Yup.string()
   //   .notOneOf(['N/A'], 'This field is required!')
@@ -25,7 +25,7 @@ const validationSchema = Yup.object().shape({
   //   .required('This field is required!'),
   consecutive_vaccine: Yup.number().notOneOf([-1], 'This field is required!').required('This field is required!'),
   exempt_update: Yup.number().oneOf([1, 0], 'This field is required!').required('This field is required!'),
-  level_exempt_update: Yup.string().test('level_exempt_update', 'This field is required', function (value) {
+  level_exempt_update: Yup.string().nullable().test('level_exempt_update', 'This field is required', function (value) {
     let level: any = ''
     try {
       level = JSON.parse(value || '[]')

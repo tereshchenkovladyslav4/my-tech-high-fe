@@ -6,7 +6,8 @@ import { map } from 'lodash';
 import React, { FunctionComponent, useContext, useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import Slider from 'react-slick';
-import { UserContext } from '../../providers/UserContext/UserProvider';
+import { useRecoilState } from 'recoil';
+import { UserContext, userRegionState } from '../../providers/UserContext/UserProvider';
 import { MTHBLUE } from '../../utils/constants';
 import { Metadata } from '../Metadata/Metadata';
 import { Paragraph } from '../Typography/Paragraph/Paragraph';
@@ -32,7 +33,7 @@ export const AdminAppBar: FunctionComponent = () => {
   const location = useLocation();
   const sliderRef = useRef();
   const [seachField, setSearchField] = useState('');
-  const [selected, setSelected] = useState(me && me?.userRegion[0]);
+  const [selected, setSelected] = useRecoilState(userRegionState)
 
   const isActive = (id) => location.pathname.includes(`homeroom/${id}`)
   function SampleNextArrow(props) {
@@ -53,7 +54,8 @@ export const AdminAppBar: FunctionComponent = () => {
       >
         <ChevronRightIcon
           style={{ ...style, display: 'block', color: 'black', background: '#FAFAFA', cursor: 'pointer' }}
-          onClick={() => sliderRef.current.slickNext()}
+          // @ts-ignore
+          onClick={() => sliderRef.current?.slickNext()}
         />
       </div>
     )
@@ -65,6 +67,7 @@ export const AdminAppBar: FunctionComponent = () => {
       <ChevronLeftIcon
         className={className}
         style={{ ...style, display: 'block', color: 'black', background: '#FAFAFA' }}
+        // @ts-ignore
         onClick={() => sliderRef.current.slickPrev()}
       />
     )
@@ -80,8 +83,8 @@ export const AdminAppBar: FunctionComponent = () => {
   }
 
   useEffect(() => {
-    if (me) {
-      localStorage.setItem("selectedRegion", JSON.stringify(me?.userRegion[0]));
+    if (!selected) {
+      handleRegionChange(me?.userRegion[0])
     }
   }, [me])
 
@@ -117,7 +120,7 @@ export const AdminAppBar: FunctionComponent = () => {
                   variant='rounded'
                   style={{ marginRight: 24, }}
                 />
-                <Box sx={{ position: "absolute", bottom: -16, left: 0, width: "65%", height: 2, borderBottom: region.region_id === selected.region_id ? "2px solid #4145FF" : 0 }} />
+                <Box sx={{ position: "absolute", bottom: -16, left: 0, width: "65%", height: 2, borderBottom: region.region_id === selected?.region_id ? "2px solid #4145FF" : 0 }} />
               </Box>
             }
           />

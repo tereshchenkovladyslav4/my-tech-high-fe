@@ -5,7 +5,15 @@ import { Paragraph } from '../../../../components/Typography/Paragraph/Paragraph
 import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
 import { BUTTON_LINEAR_GRADIENT } from '../../../../utils/constants'
 
-export const ParentProfile = ({ userInfo, setUserInfo, phoneInfo, setPhoneInfo, notes, setNotes }) => {
+export const ParentProfile = ({
+  userInfo,
+  setUserInfo,
+  phoneInfo,
+  setPhoneInfo,
+  notes,
+  setNotes,
+  applicationState,
+}) => {
   const [preferedFirstName, setPreferredFirstName] = useState('')
   const [preferedLastName, setPreferredLastName] = useState('')
 
@@ -31,7 +39,7 @@ export const ParentProfile = ({ userInfo, setUserInfo, phoneInfo, setPhoneInfo, 
       setLegalLastName(userInfo.last_name || '')
       setLegalMiddleName(userInfo.middle_name || '')
       setCity(userInfo.address.city || '')
-      setState(userInfo.address.state || '')
+      setState(userInfo.address.state || applicationState)
       setStreet1(userInfo.address.street || '')
       setStreet2(userInfo.address.street2 || '')
       setZip(userInfo.address.zip || '')

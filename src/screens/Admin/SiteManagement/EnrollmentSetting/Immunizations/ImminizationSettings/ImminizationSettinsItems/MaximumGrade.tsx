@@ -8,9 +8,10 @@ import { useFormikContext } from 'formik'
 const MaximumGrade: React.FC = () => {
   const styles = useStyles()
   const { values: formikValues, handleChange, errors, touched } = useFormikContext<ImmunizationsData>()
-  const values: Array<string> = ['OR-K', 'K', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']
+  // const values: Array<string> = ['OR-K', 'K', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']
+  const values: Array<string> = ['K', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']
   const parseValue = (value: string) => {
-    if (value === 'OR-K') return 'OR - Kindergarten (5)'
+    // if (value === 'OR-K') return 'OR - Kindergarten (5)'
     if (value === 'K') return 'Kindergarten (5)'
     const numberValue = parseInt(value)
     if (numberValue === 1) return '1st grade (6)'

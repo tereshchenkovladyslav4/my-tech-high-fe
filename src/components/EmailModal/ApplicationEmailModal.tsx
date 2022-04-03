@@ -22,11 +22,20 @@ export const ApplicationEmailModal: EmailModalTemplateType = ({
   const classes = useStyles
   const [editorState, setEditorState] = useState(EditorState.createEmpty())
   const [subject, setSubject] = useState('')
-
+  const editorRef = useRef(null)
+  const [currentBlocks, setCurrentBlocks] = useState(0)
   const onSubmit = () => {
     if (handleSubmit && subject) {
       handleSubmit(subject, draftToHtml(convertToRaw(editorState.getCurrentContent())))
     }
+  }
+  const handleEditorChange = (state) => {
+    try {
+      if (currentBlocks !== 0 && currentBlocks !== state.blocks.length) {
+        editorRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' })
+      }
+      setCurrentBlocks(state.blocks.length)
+    } catch {}
   }
 
   useEffect(() => {
@@ -63,6 +72,8 @@ export const ApplicationEmailModal: EmailModalTemplateType = ({
         />
         <Box sx={classes.editor}>
           <Wysiwyg.Editor
+            onContentStateChange={handleEditorChange}
+            editorRef={(ref) => (editorRef.current = ref)}
             editorState={editorState}
             onEditorStateChange={setEditorState}
             toolbar={{

@@ -23,7 +23,7 @@ export const UserProfile = ({ handleClose, data }) => {
   const [studentStatus, setStudentStatus] = useState({})
   const [selectedParent, setSelectedParent] = useState()
   const [selectedStudent, setSelectedStudent] = useState(data.student_id)
-
+  const [applicationState, setApplicationState] = useState('')
   const {
     loading: userLoading,
     error: userError,
@@ -120,6 +120,9 @@ export const UserProfile = ({ handleClose, data }) => {
       setPhoneInfo(currentUserData.parentDetail.phone)
       setNotes(currentUserData.parentDetail.notes)
       setObservers(currentUserData.parentDetail.observers)
+      if (currentUserData.parentDetail.person.user.userRegions.length) {
+        setApplicationState(currentUserData.parentDetail.person.user.userRegions[0].regionDetail.name)
+      }
     }
   }, [currentUserData])
   return (
@@ -177,6 +180,7 @@ export const UserProfile = ({ handleClose, data }) => {
           setPhoneInfo={setPhoneInfo}
           notes={notes}
           setNotes={setNotes}
+          applicationState={applicationState}
         />
       )}
       {data.student_id && (
@@ -185,6 +189,7 @@ export const UserProfile = ({ handleClose, data }) => {
           setStudentPerson={setStudentPerson}
           setStudentStatus={setStudentStatus}
           studentStatus={studentStatus}
+          applicationState={applicationState}
         />
       )}
 

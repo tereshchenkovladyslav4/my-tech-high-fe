@@ -304,7 +304,7 @@ export const Filters = ({ filter, setFilter }) => {
             </Paragraph>
             <FormControlLabel
               sx={{ height: 30 }}
-              control={<Checkbox value='0' checked={status.includes('0')} onChange={handleChangeStatus} />}
+              control={<Checkbox value='1' checked={status.includes('1')} onChange={handleChangeStatus} />}
               label={
                 <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
                   Sibling
@@ -313,7 +313,7 @@ export const Filters = ({ filter, setFilter }) => {
             />
             <FormControlLabel
               sx={{ height: 30 }}
-              control={<Checkbox value='1' checked={status.includes('1')} onChange={handleChangeStatus} />}
+              control={<Checkbox value='0' checked={status.includes('0')} onChange={handleChangeStatus} />}
               label={
                 <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
                   New

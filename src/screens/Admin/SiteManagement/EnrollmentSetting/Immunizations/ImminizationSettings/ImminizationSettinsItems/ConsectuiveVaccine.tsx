@@ -24,7 +24,6 @@ const ConsecutiveVaccine: React.FC = () => {
   }
   const localValues: Array<string> = ['Yes', 'No']
   const data = useContext<ImmunizationsData[]>(DataContext)
-
   return (
     <Box
       sx={{
@@ -78,6 +77,9 @@ const ConsecutiveVaccine: React.FC = () => {
             <MenuItem value={-1}>-- Select Immunization --</MenuItem>
             {data
               .filter((v) => v.is_enabled && values.id! !== v.id)
+              .sort((a, b) => {
+                return a.order - b.order
+              })
               .map((item, index) => (
                 <MenuItem key={index} value={Number(item.id)}>
                   {item.title}

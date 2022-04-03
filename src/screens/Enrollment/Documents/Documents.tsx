@@ -15,14 +15,23 @@ import { GQLFile } from '../../HomeroomStudentProfile/Student/types'
 import { getPacketFiles } from '../../Admin/EnrollmentPackets/services'
 import { S3FileType } from './components/DocumentUploadModal/types'
 import { LoadingScreen } from '../../LoadingScreen/LoadingScreen'
+import { TabContext, UserContext } from '../../../providers/UserContext/UserProvider'
+import { SuccessModal } from '../../../components/SuccessModal/SuccessModal'
 export const Documents: FunctionComponent = () => {
 
-  const { setCurrentTab, packetId, student, disabled } = useContext(EnrollmentContext)
+  const { packetId, student, disabled } = useContext(EnrollmentContext)
+
+  const { me, setMe } = useContext(UserContext)
+  const { tab, setTab, visitedTabs, setVisitedTabs } = useContext(TabContext)
+
   const classes = useStyles
   const [birthCert, setBirthCert] = useState<File | GQLFile>()
   const [immunRec, setImmunRec] = useState<File>()
   const [residencyRecord, setResidencyRecord] = useState<File>()
+  
   const missingInfo = student.packets?.at(-1).status === 'Missing Info'
+
+  const missingFiles = student.packets?.at(-1).missing_files
 
   const bcFile = filter(student.packets.at(-1).files,(file) => file.kind == 'bc').at(-1)
   const imFile = filter(student.packets.at(-1).files,(file) => file.kind == 'im').at(-1)
@@ -33,6 +42,8 @@ export const Documents: FunctionComponent = () => {
   const [dataLoading, setDataLoading] = useState(true)
 
   const [files, setFiles] = useState<S3FileType[]>()
+
+  const [showSuccess, setShowSuccess] = useState(false)
 
   const { loading, error, data: fileData, } = useQuery(getPacketFiles, {
     variables: {
@@ -129,16 +140,21 @@ export const Documents: FunctionComponent = () => {
   useEffect(() => {
     if(data){
       if(!missingInfo){
-        setCurrentTab((curr) => curr + 1)
+        setVisitedTabs([...visitedTabs, tab.currentTab])
+        setTab({
+          currentTab: 4,
+        })
         window.scrollTo(0, 0)
       }else{
-        history.push(HOMEROOM)
+        setShowSuccess(true)
     }
   }},[data])
 
   const nextTab = (e) => {
     e.preventDefault()
-    setCurrentTab((curr) => curr + 1)
+    setTab({
+      currentTab: 4,
+    })
     window.scrollTo(0, 0)
   }
 
@@ -156,8 +172,19 @@ export const Documents: FunctionComponent = () => {
     isLoading()
   }, [files])
 
+  const onSubmit = () => {
+    history.push(`${HOMEROOM}`)
+    location.reload()
+  }
   return (
     !dataLoading ? <form>
+    {showSuccess 
+      && <SuccessModal 
+        title='' 
+        subtitle='Your Enrollment Packet has been submitted successfully and is now pending approval.”' 
+        handleSubmit={onSubmit} 
+      />
+    }
     <Grid container rowSpacing={3} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
       <Grid item xs={12}>
         <Box width='50%'>
@@ -175,7 +202,7 @@ export const Documents: FunctionComponent = () => {
           document='bc'
           handleUpload={submitRecord}
           file={files && filter(files,(file) => file.file_id === bcFile.file_id )}
-          disabled={disabled}
+          disabled={disabled && !missingFiles.includes('bc')}
         />
       </Grid>
       <Grid item xs={12}>
@@ -185,7 +212,7 @@ export const Documents: FunctionComponent = () => {
           document='im'
           handleUpload={submitRecord}
           file={files && filter(files,(file) => file.file_id === imFile.file_id )}
-          disabled={disabled}
+          disabled={disabled && !missingFiles.includes('im')}
         />
       </Grid>
       <Grid item xs={12}>
@@ -197,16 +224,24 @@ export const Documents: FunctionComponent = () => {
           document='ur'
           handleUpload={submitRecord}
           file={files && filter(files,(file) => file.file_id === urFile.file_id )}
-          disabled={disabled}
+          disabled={disabled && !missingFiles.includes('ur')}
         />
       </Grid>
       <Box sx={classes.buttonContainer}>
           <Button
             sx={classes.button}
-            onClick={(e) => !disabled ? onNext() : nextTab(e) }
+            onClick={(e) => disabled 
+              ? nextTab(e)
+              : onNext() 
+            }
           >
             <Paragraph fontWeight='700' size='medium'>
-            { disabled ? 'Next' : 'Save &amp; Continue'}
+            { disabled 
+              ? 'Next' 
+              : student.packets?.at(-1).status === 'Missing Info'
+                ? 'Submit'
+                : 'Save & Continue'
+            }
             </Paragraph>
           </Button>
       </Box>

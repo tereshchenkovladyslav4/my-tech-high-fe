@@ -11,7 +11,8 @@ export type EnrollmentPacketContextType = {
   setPacketId: React.Dispatch<React.SetStateAction<number>>,
   student:  StudentType,
   disabled?: boolean,
-  visitedTabs?: Number[]
+  visitedTabs?: Number[],
+  setVisitedTabs: React.Dispatch<React.SetStateAction<number[]>>,
 }
 
 const enrollmentContext: EnrollmentPacketContextType = {
@@ -23,7 +24,8 @@ const enrollmentContext: EnrollmentPacketContextType = {
   setPacketId: (_) => {},
   student: undefined,
   disabled: false,
-  visitedTabs: []
+  visitedTabs: [],
+  setVisitedTabs: (_) => {},
 }
 
 export const EnrollmentContext = createContext(enrollmentContext)

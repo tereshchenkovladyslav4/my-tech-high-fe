@@ -55,7 +55,7 @@ export const AddStudent: AddStudentTemplate = ({ idx, onFieldChange, handleRemov
     validationSchema,
     onSubmit: () => {
       
-    },
+    }
   });
 
   useEffect(() => {
@@ -84,7 +84,18 @@ export const AddStudent: AddStudentTemplate = ({ idx, onFieldChange, handleRemov
     }
   })
 
-  document.addEventListener('checkStudents', () => formik.handleSubmit())
+  
+  document.addEventListener('checkStudents', () => {
+    formik.handleSubmit()
+    let response: CustomEvent
+    if(JSON.stringify(formik.errors) === JSON.stringify({})){
+      response = new CustomEvent('studentResponse',  { detail: {error: true} })
+    }else{
+      response = new CustomEvent('studentResponse',  { detail: {error: false} })
+    }
+    document.dispatchEvent(response)
+  })
+  
   document.addEventListener('yearChanged', (e) => setYear(e.detail.yearLabel))
   
   return (

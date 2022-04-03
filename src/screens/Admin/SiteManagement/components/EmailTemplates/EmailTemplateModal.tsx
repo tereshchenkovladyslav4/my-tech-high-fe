@@ -45,7 +45,7 @@ const useStyles = makeStyles({
     '& div.DraftEditor-editorContainer': {
       minHeight: '200px',
       maxHeight: '250px',
-      padding: 1,
+      padding: '0 10px',
       '& .public-DraftEditor-content': {
         minHeight: '200px',
       },
@@ -157,6 +157,8 @@ export const EmailTemplateModal = ({
   const [emailFrom, setEmailFrom] = useState('')
   const [emailBcc, setEmailBcc] = useState('')
   const [deadline, setDeadline] = useState('')
+  const editorRef = useRef(null)
+  const [currentBlocks, setCurrentBlocks] = useState(0)
   const [reminders, setReminders] = useState([
     {
       reminderDay: '',
@@ -172,6 +174,15 @@ export const EmailTemplateModal = ({
     },
     fetchPolicy: 'network-only',
   })
+
+  const handleEditorChange = (state) => {
+    try {
+      if (currentBlocks !== 0 && currentBlocks !== state.blocks.length) {
+        editorRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' })
+      }
+      setCurrentBlocks(state.blocks.length)
+    } catch {}
+  }
 
   const handleAddReminder = () => {
     setReminders([
@@ -251,6 +262,7 @@ export const EmailTemplateModal = ({
       }
     }
   }, [data])
+
   return (
     <Modal
       open={true}
@@ -289,6 +301,8 @@ export const EmailTemplateModal = ({
         />
         <Box className={classes.editor}>
           <Wysiwyg.Editor
+            onContentStateChange={handleEditorChange}
+            editorRef={(ref) => (editorRef.current = ref)}
             editorState={editorState}
             onEditorStateChange={setEditorState}
             toolbar={{
@@ -396,6 +410,8 @@ export const EmailTemplateModal = ({
                       />
                       <Box className={classes.editor}>
                         <Wysiwyg.Editor
+                          onContentStateChange={handleEditorChange}
+                          editorRef={(ref) => (editorRef.current = ref)}
                           editorState={reminder.editorState}
                           onEditorStateChange={(editorState) => handleChangeReminder(editorState, i, 'editorState')}
                           toolbar={{

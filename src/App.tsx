@@ -4,11 +4,12 @@ import { theme } from './utils/theme'
 import { CssBaseline } from '@mui/material'
 import { BrowserRouter as Router } from 'react-router-dom'
 import WebFont from 'webfontloader'
-import { UserContext, UserInfo } from './providers/UserContext/UserProvider'
+import { TabContext, TabInfo, UserContext, UserInfo } from './providers/UserContext/UserProvider'
 import { Root } from './root/Root'
 import { ApolloProvider } from './providers/ApolloProvider/ApolloProvider'
 import { AuthProvider } from './providers/AuthProvider/AuthProvider'
 import { ProfileProvider } from './providers/ProfileProvider/ProfileProvider'
+import { RecoilRoot } from 'recoil'
 import { UserLeaveConfirmation } from './components/UserLeaveConfirmation/UserLeaveConfirmation'
 
 declare global {
@@ -22,6 +23,8 @@ declare global {
 
 export const App: FunctionComponent = () => {
   const [me, setMe] = useState<UserInfo | null>(null)
+  const [tab, setTab] = useState<TabInfo | null>(null)
+  const [visitedTabs, setVisitedTabs] = useState<number[]| null>([])
   const [confirmOpen, setConfirmOpen] = useState(true);
   const userContext = React.useMemo(
     () => ({
@@ -30,6 +33,17 @@ export const App: FunctionComponent = () => {
     }),
     [me],
   )
+
+  const tabContext = React.useMemo(
+    () => ({
+      tab,
+      setTab,
+      visitedTabs,
+      setVisitedTabs,
+    }),
+    [tab, visitedTabs],
+  )
+
 
   useEffect(() => {
     WebFont.load({
@@ -54,10 +68,14 @@ export const App: FunctionComponent = () => {
         <AuthProvider>
           <ApolloProvider>
             <UserContext.Provider value={userContext}>
-              <ProfileProvider>
-                <CssBaseline />
-                <Root />
-              </ProfileProvider>
+              <TabContext.Provider value={tabContext}>
+                <ProfileProvider>
+                  <CssBaseline />
+                  <RecoilRoot>
+                    <Root />
+                  </RecoilRoot>
+                </ProfileProvider>
+              </TabContext.Provider>
             </UserContext.Provider>
           </ApolloProvider>
         </AuthProvider>

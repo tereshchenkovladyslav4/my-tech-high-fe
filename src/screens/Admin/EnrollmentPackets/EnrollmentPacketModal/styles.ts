@@ -87,7 +87,7 @@ export const useStyles = {
 			minHeight: '200px',
 			maxHeight: '250px',
 			overflow: 'scroll',
-			padding: 1,
+			padding: '0 10px',
 		},
 	},
 

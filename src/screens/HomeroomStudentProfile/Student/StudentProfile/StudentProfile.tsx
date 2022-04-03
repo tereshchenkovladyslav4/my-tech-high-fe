@@ -30,7 +30,7 @@ export const StudentProfile = () => {
   const history = useHistory()
 
   const { person } = student
-  const {status} = student.packets.at(-1)
+  const {status} = student?.packets.at(-1)
   const [email, setEmail] = useState(person.email)
   const [password, setPassword] = useState(undefined)
 
@@ -75,7 +75,7 @@ export const StudentProfile = () => {
 
 
   const classes = useStyles
-
+  const grade = student.grade_levels.at(-1).grade_level
   const warnUser = 
       formik.values.firstName !== person.preferred_first_name
       || person.preferred_last_name !== formik.values.lastName
@@ -102,8 +102,8 @@ export const StudentProfile = () => {
               <Box display='flex' flexDirection='column'>
                 <Box display='flex' flexDirection='row'>
                   <Avatar variant='square' style={classes.avatar} />
-                  <Box display='flex' flexDirection='column' justifyContent='end' marginLeft={4} color={GRAY}>
-                    <Title>{toOrdinalSuffix(student.grade_levels.at(-1).grade_level)} Grade</Title>
+                  <Box display='flex' flexDirection='column' justifyContent='center' marginLeft={4} color={GRAY}>
+                    <Title>{grade === 'Kin' ? 'Kindergarten' : `${toOrdinalSuffix(student.grade_levels.at(-1).grade_level as number)} Grade`}</Title>
                     {/*{ status !== 'Missing Info' && status !== 'Submitted' && <Title>GPA</Title>}*/}
                   </Box>
                 </Box>
@@ -259,7 +259,7 @@ export const StudentProfile = () => {
             </Grid>
             <Grid item xs={3}/>
             <Grid item xs={3}>
-              <Box display='flex' flexDirection='column' width='100%' alignItems={'flex-end'}>
+              <Box display='flex' flexDirection='column' width='100%' alignItems={'center'}>
                 <Paragraph size='medium' fontWeight='500'>
                   &nbsp;
                 </Paragraph>

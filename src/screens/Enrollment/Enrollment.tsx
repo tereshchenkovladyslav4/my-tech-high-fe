@@ -16,48 +16,48 @@ import { HOMEROOM } from '../../utils/constants'
 import { EnrollmentContext } from '../../providers/EnrollmentPacketPrivder/EnrollmentPacketProvider'
 import { EnrollmentTemplateType } from './types'
 import { find, includes } from 'lodash'
-import { UserContext, UserInfo } from '../../providers/UserContext/UserProvider'
+import { TabContext, TabInfo, UserContext, UserInfo } from '../../providers/UserContext/UserProvider'
 
 export const Enrollment: EnrollmentTemplateType = ({id, disabled}: {id: number, disabled: boolean}) => {
   const { me, setMe } = useContext(UserContext)
-  const { students } = me as UserInfo
-
-  const [currentTab, setCurrentTab] = useState(0)
+  const { students } = me
+  const { tab, setTab, visitedTabs, setVisitedTabs } = useContext(TabContext)
+  const { currentTab } = tab 
   const [packetId, setPacketId] = useState<number>()
   const [student] = useState(find(students, {student_id:id}))
-  const [visitedTabs, setVisitedTabs] = useState([])
   const classes = useStyles
 
   const enrollmentPacketContext = useMemo(
     () => ({
-      currentTab,
-      setCurrentTab,
       packetId,
       setPacketId,
       student,
       disabled,
-      setMe
+      setMe,
+      setTab,
+      setVisitedTabs,
+      visitedTabs
     }),
-    [packetId, student, disabled]
+    [packetId, disabled]
   )
-
-  useEffect(() => {
-    setVisitedTabs([...visitedTabs, currentTab])
-  },[currentTab])
-
-  useEffect(() =>{
-    setMe(me)
-  },[visitedTabs])
-
+  
   useEffect(() => {
     if(student.packets.at(-1)){
       setPacketId(student.packets.at(-1).packet_id)
     }
     if(student.packets?.at(-1).status === 'Missing Info'){
-      setCurrentTab(3)
+      //setTab({
+      //  currentTab: 3
+      //})
     }
-  })
+  },[tab])
 
+
+  //if(student.packets?.at(-1).status === 'Missing Info'){
+  //  setTab({
+  //    currentTab: 3
+  //  })
+  //}
   const breadCrumbData: Step[] = [
     {
       label: 'Contact',
@@ -84,7 +84,9 @@ export const Enrollment: EnrollmentTemplateType = ({id, disabled}: {id: number, 
 
   const handleBreadCrumbClicked = (idx) => {
     if(includes(visitedTabs, idx) || disabled){
-      setCurrentTab(idx)
+      setTab({
+        currentTab: idx
+      })
     }
   }
   return (

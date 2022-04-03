@@ -44,6 +44,7 @@ export const getParentDetail = gql`
         teacher_notes
         diploma_seeking
         school_of_enrollment
+        testing_preference
         status {
           student_id
           school_year_id
@@ -90,6 +91,13 @@ export const getParentDetail = gql`
         preferred_last_name
         gender
         date_of_birth
+        user {
+          userRegions {
+            regionDetail {
+              name
+            }
+          }
+        }
         address {
           address_id
           street
@@ -120,6 +128,7 @@ export const getStudentDetail = gql`
       diploma_seeking
       reenrolled
       teacher_notes
+      testing_preference
       grade_levels {
         grade_level
       }

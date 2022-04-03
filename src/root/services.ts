@@ -70,6 +70,7 @@ export const getMeQuery = gql`
             mth_file_id
             packet_id
           }
+          missing_files
           packet_id
           birth_place
           birth_country
@@ -130,6 +131,16 @@ export const getMeQuery = gql`
           }
         }
         grade_levels {
+          grade_level
+        }
+        current_school_year_status {
+          application_id
+          application_school_year_id
+          application_status
+          packet_id
+          packet_status
+          school_year_id
+          student_id
           grade_level
         }
       }

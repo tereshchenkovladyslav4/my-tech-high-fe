@@ -20,7 +20,7 @@ const MinimumGrade: React.FC = () => {
         height: '35px',
         borderRadius: '10px',
         textAlign: 'center',
-        width: 'auto',
+        width: '93%',
       }}
     >
       <Typography component='span' sx={{ marginRight: '110px', textAlign: 'left' }}>
@@ -45,8 +45,11 @@ const MinimumGrade: React.FC = () => {
             onChange={handleChange}
             id='standard-basic'
             variant='standard'
-            InputProps={{ disableUnderline: true }}
-            sx={{ width: '500px' }}
+            InputProps={{ 
+              disableUnderline: true
+            }}
+            // sx={{ width: '60vw' }}
+            fullWidth = {true}
           />
         )}
       </FormControl>

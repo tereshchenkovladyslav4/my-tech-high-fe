@@ -13,19 +13,21 @@ import * as yup from 'yup';
 import { countries } from '../../../utils/countries'
 import { languages } from '../../../utils/languages'
 import { ERROR_RED, monthlyIncome } from '../../../utils/constants'
-import { UserContext } from '../../../providers/UserContext/UserProvider'
+import { TabContext, UserContext } from '../../../providers/UserContext/UserProvider'
 import moment from 'moment'
-import { filter, indexOf, intersection } from 'lodash'
+import { filter, indexOf, intersection, map } from 'lodash'
 
 
 export const Personal: FunctionComponent = () => {
 
-  const { me } = useContext(UserContext)
-  const { setCurrentTab, packetId, student, disabled  } = useContext(EnrollmentContext)
+  const { me, setMe } = useContext(UserContext)
+  const { tab, setTab, visitedTabs, setVisitedTabs } = useContext(TabContext)
+
+  const { packetId, student, disabled  } = useContext(EnrollmentContext)
   
   const classes = useStyles
 
-  const [race, setRace] = useState(student.packets.at(-1)?.race.split(','))
+  const [race, setRace] = useState(student.packets.at(-1)?.race?.split(',') ?? [])
   const [gender, setGender] = useState(student.person.gender)
   const [livingSituation, setLivingSituation] = useState(student.packets.at(-1)?.living_location)
   const [livingWith, setLivingWith] = useState(student.packets.at(-1)?.lives_with)
@@ -64,11 +66,11 @@ export const Personal: FunctionComponent = () => {
   const undeclared = 'Undeclared'
 
   const races = [asian, native, black, hawaiian, white, undeclared]
-  const [otherRace, setOtherRace] = useState<string | undefined>(filter(race, (curr) => !races.includes(curr)).at(0))
+  const [otherRace, setOtherRace] = useState<string | undefined>(filter(race, (curr) => !races?.includes(curr)).at(0))
 
   const otherRaceSelected = () => {
     const races = [asian, native, black, hawaiian, white, undeclared]
-    const otherRaces = filter(race, (curr) => !races.includes(curr))
+    const otherRaces = filter(race, (curr) => !races?.includes(curr))
     return otherRaces.length > 0
   }
 
@@ -176,10 +178,10 @@ export const Personal: FunctionComponent = () => {
   });
 
   const submitPersonal = async () => {
-    if(race.includes(other)){
+    if(race?.includes(other)){
       const idx = indexOf(race, other)
       race[idx] = formik.values.otherRace
-      formik.values.race = race.join(',')
+      formik.values.race = race?.join(',')
     }
     submitPersonalMutation({
       variables: {
@@ -207,6 +209,20 @@ export const Personal: FunctionComponent = () => {
         }
       }
     })
+    .then((data) => {
+      setMe((prev) => {
+        return {
+          ...prev,
+          students: map(prev?.students, (student) => {
+           const returnValue = {...student}
+           if(student.student_id === data.data.saveEnrollmentPacketPersonal.student.student_id ){
+            return data.data.saveEnrollmentPacketPersonal.student
+           }
+           return returnValue
+         }),
+       }
+      })
+    })
   }
 
   const raceSelected = (value: string) => {
@@ -222,7 +238,7 @@ export const Personal: FunctionComponent = () => {
         setOtherRace(other)
         setRace([...race, raceValue])
       }
-    }else if(race.includes(raceValue)){
+    }else if(race?.includes(raceValue)){
       setRace(filter(race, (curr) => curr !== raceValue))
     }else{
       setRace([...race, raceValue])
@@ -264,7 +280,7 @@ export const Personal: FunctionComponent = () => {
   },[gender])
 
   useEffect(() => {
-    formik.values.race = race.join(',')
+    formik.values.race = race?.join(',')
   },[race])
 
   useEffect(() => {
@@ -323,10 +339,11 @@ export const Personal: FunctionComponent = () => {
   const goNext = () => {
     submitPersonal()
     .then(() => {
-      setCurrentTab((curr) => curr + 1)
+      setVisitedTabs([...visitedTabs, tab.currentTab])
+      setTab({
+        currentTab: 2,
+      })
       window.scrollTo(0, 0)
-    })
-    .catch(() => {
     })
   }
   
@@ -936,7 +953,7 @@ export const Personal: FunctionComponent = () => {
           type='submit'
         >
           <Paragraph fontWeight='700' size='medium'>
-            { disabled ? 'Next' : 'Save &amp; Continue'}
+            { disabled ? 'Next' : 'Save & Continue'}
           </Paragraph>
         </Button>
       </Box>

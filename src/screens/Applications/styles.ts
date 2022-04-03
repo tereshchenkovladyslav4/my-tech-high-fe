@@ -23,4 +23,15 @@ export const useStyles = {
     height: '37.14px',
     marginTop: 50,
   },
+  textFieldError:{
+    [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
+      borderColor: '#BD0043',
+    },
+    marginY: 2,
+    width: '100%',
+  },
+  containerHeight: {
+    height: 'calc(100vh - 135px)'
+  }
+
 }

@@ -12,8 +12,12 @@ import { ERROR_RED, GRADES, SYSTEM_07, schoolDistricts } from '../../../utils/co
 import { DropDown } from '../../../components/DropDown/DropDown'
 import { map } from 'lodash'
 import { DocumentUploadModal } from '../Documents/components/DocumentUploadModal/DocumentUploadModal'
+import { TabContext, UserContext } from '../../../providers/UserContext/UserProvider'
 
 export const Education: FunctionComponent = () => {
+
+  const { tab, setTab, visitedTabs, setVisitedTabs } = useContext(TabContext)
+  const { me, setMe } = useContext(UserContext)
 
   const  [open, setOpen] = useState(false)
   const [disabled, setDisabled] = useState('')
@@ -204,8 +208,9 @@ export const Education: FunctionComponent = () => {
 
   const formik = useFormik({
     initialValues: {
-      enrollmentGradeLevel: undefined,
+      enrollmentGradeLevel: student.current_school_year_status?.grade_level,
       schoolDistrict: student.packets.at(-1)?.school_district,
+      school_year_id: student.current_school_year_status?.school_year_id,
       schoolName: undefined,
       schoolAddress: undefined,
       disabled: undefined,
@@ -223,7 +228,6 @@ export const Education: FunctionComponent = () => {
     console.log(uploadFile)
   },[uploadFile])
   const submitEducation = async () => {
-
     if((disabled === iep && iepActive && uploadFile === undefined) || disabled === plan && uploadFile === undefined){
       throw 'Please Upload a plan'
     }
@@ -243,6 +247,20 @@ export const Education: FunctionComponent = () => {
           understands_special_ed: null
         }
       }
+    })
+    .then((data) => {
+      setMe((prev) => {
+        return {
+          ...prev,
+          students: map(prev?.students, (student) => {
+            const returnValue = {...student}
+            if(student.student_id === data.data.saveEnrollmentPacketEducation.student.student_id ){
+            return data.data.saveEnrollmentPacketEducation.student
+            }
+            return returnValue
+          }),
+        }
+      })
     })
   }
 
@@ -288,9 +306,12 @@ export const Education: FunctionComponent = () => {
   },[iepActive])
 
   const goNext = async() => {
-      await submitEducation()
-      .then(() => {
-        setCurrentTab((curr) => curr + 1)
+    await submitEducation()
+    .then(() => {
+      setVisitedTabs([...visitedTabs, tab.currentTab])
+      setTab({
+        currentTab: 3,
+      })
         window.scrollTo(0, 0)
       })
       .catch(e => window.alert(e))
@@ -325,6 +346,7 @@ export const Education: FunctionComponent = () => {
           <DropDown
             disabled={disabledField}
             name='enrollmentGradeLevel'
+            defaultValue={formik.values.enrollmentGradeLevel}
             dropDownItems={parseGrades}
             setParentValue={setGrade}
             size='small'
@@ -526,7 +548,7 @@ export const Education: FunctionComponent = () => {
             type='submit'
           >
             <Paragraph fontWeight='700' size='medium'>
-              { disabledField ? 'Next' : 'Save &amp; Continue'}
+              { disabledField ? 'Next' : 'Save & Continue'}
             </Paragraph>
           </Button>
         </Box>

@@ -46,7 +46,7 @@ const ordinal = (n) => {
   var v = n % 100
   return n + (s[(v - 20) % 10] || s[v] || s[0])
 }
-export const StudentProfile = ({ studentId, setStudentPerson, setStudentStatus, studentStatus }) => {
+export const StudentProfile = ({ studentId, setStudentPerson, setStudentStatus, studentStatus, applicationState }) => {
   const classes = selectStyles()
   const {
     loading: userLoading,
@@ -120,14 +120,13 @@ export const StudentProfile = ({ studentId, setStudentPerson, setStudentStatus, 
       setLegalMiddleName(currentUserData.student.person.middle_name)
       setGender(currentUserData.student.person.gender)
       setCity(currentUserData.student.person.address.city)
-      setState(currentUserData.student.person.address.state)
+      setState(currentUserData.student.person.address.state || applicationState)
       setStreet1(currentUserData.student.person.address.street)
       setStreet2(currentUserData.student.person.address.street2)
       setZip(currentUserData.student.person.address.zip)
       setPhone(currentUserData.student.person.phone.number)
       setUserInfo(currentUserData.student.person)
       setPackets(currentUserData.student.packets)
-      console.log(currentUserData.student.person.gender)
       if (currentUserData.student.grade_levels && currentUserData.student.grade_levels[0]) {
         setGradeLevel(currentUserData.student.grade_levels[0].grade_level)
       }
@@ -138,11 +137,15 @@ export const StudentProfile = ({ studentId, setStudentPerson, setStudentStatus, 
         student_id: +studentId,
         special_ed: currentUserData.student.special_ed,
         diploma_seeking: currentUserData.student.diploma_seeking,
+        testing_preference: currentUserData.student.testing_preference,
         status: currentUserData.student.status.length && currentUserData.student.status[0].status,
         // grade_level: currentUserData.student.status.length && currentUserData.student.status[0].grade_level,
         school_year_id:
           currentUserData.student.applications.length && currentUserData.student.applications[0].school_year_id,
       })
+      if (currentUserData.student.testing_preference) {
+        setHispanicOrLatino(currentUserData.student.testing_preference)
+      }
     }
   }, [currentUserData])
 
@@ -344,11 +347,11 @@ export const StudentProfile = ({ studentId, setStudentPerson, setStudentStatus, 
             size='small'
             variant='outlined'
             fullWidth
-            value={preferedFirstName}
-            onChange={(e) => {
-              setPreferredFirstName(e.target.value)
-              setUserInfo({ ...userInfo, ...{ preferred_first_name: e.target.value } })
-            }}
+            value={preferedFirstName || legalFirstName}
+            // onChange={(e) => {
+            //   setPreferredFirstName(e.target.value)
+            //   setUserInfo({ ...userInfo, ...{ preferred_first_name: e.target.value } })
+            // }}
           />
         </Grid>
         <Grid item xs={3}>
@@ -359,11 +362,11 @@ export const StudentProfile = ({ studentId, setStudentPerson, setStudentStatus, 
             size='small'
             variant='outlined'
             fullWidth
-            value={preferedLastName}
-            onChange={(e) => {
-              setPreferredLastName(e.target.value)
-              setUserInfo({ ...userInfo, ...{ preferred_last_name: e.target.value } })
-            }}
+            value={preferedLastName || legalLastName}
+            // onChange={(e) => {
+            //   setPreferredLastName(e.target.value)
+            //   setUserInfo({ ...userInfo, ...{ preferred_last_name: e.target.value } })
+            // }}
           />
         </Grid>
         <Grid item xs={2}>
@@ -386,15 +389,28 @@ export const StudentProfile = ({ studentId, setStudentPerson, setStudentStatus, 
           <Paragraph size='medium' textAlign='left'>
             Testing Preference
           </Paragraph>
-          <DropDown
-            size='small'
-            sx={{ width: '50%' }}
-            dropDownItems={hispanicOrLatinoItems}
-            defaultValue={hispanicOrLatino}
-            setParentValue={(e) => {
-              setHispanicOrLatino(e)
+          <Select
+            value={hispanicOrLatino}
+            onChange={(e) => {
+              setHispanicOrLatino(e.target.value)
+              setStudentStatus({ ...studentStatus, ...{ testing_preference: e.target.value } })
             }}
-          />
+            displayEmpty
+            sx={{
+              width: '30%',
+              borderRadius: 2,
+            }}
+            size={'small'}
+          >
+            <MenuItem value='' disabled>
+              Select
+            </MenuItem>
+            {hispanicOrLatinoItems.map((item) => (
+              <MenuItem key={item.value} value={item.value}>
+                {item.label}
+              </MenuItem>
+            ))}
+          </Select>
         </Grid>
         <Grid item xs={3}>
           <Paragraph size='medium' textAlign='left'>

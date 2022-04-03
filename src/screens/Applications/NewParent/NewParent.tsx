@@ -6,7 +6,7 @@ import { DropDownItem } from '../../../components/DropDown/types'
 import { Paragraph } from '../../../components/Typography/Paragraph/Paragraph'
 import { Title } from '../../../components/Typography/Title/Title'
 import { AddStudent } from '../components/AddStudent/AddStudent'
-import { checkEmailQuery, newParentApplicationMutation } from './service'
+import { checkEmailQuery, newParentApplicationMutation, getSchoolYearQuery } from './service'
 import { useStyles } from './styles'
 import BGSVG from '../../../assets/ApplicationBG.svg'
 import { DASHBOARD, MTHBLUE, SYSTEM_05 } from '../../../utils/constants'
@@ -18,6 +18,7 @@ import { getAllRegion } from '../../../graphql/queries/region'
 import { LoadingScreen } from '../../LoadingScreen/LoadingScreen'
 import { find, map } from 'lodash'
 import { isPhoneNumber } from '../../../utils/stringHelpers'
+import moment from 'moment'
 
 export type StudentInput = {
   first_name: string
@@ -47,6 +48,8 @@ export const NewParent = () => {
   const [yearLabel, setYearLabel] = useState(programYearItems[0].label.split('-')[0])
   const submitPressed = new CustomEvent('checkStudents')
   const programYearChanged = new CustomEvent('yearChanged', { detail: { yearLabel } })
+  const [schoolYears, setSchollYears] = useState<Array<DropDownItem>>([])
+  const { loading: schoolLoading, data: schoolYearData } = useQuery(getSchoolYearQuery)
 
   const [showEmailError, setShowEmailError] = useState(false)
 
@@ -88,7 +91,7 @@ export const NewParent = () => {
 
   const setProgramYear = (id: any) => {
     formik.values.programYear = id
-    const currProgramYear = find(programYearItems, { value: id })
+    const currProgramYear = find(schoolYears, { value: id })
     setYearLabel(currProgramYear.label.split('-')[0])
   }
 
@@ -117,6 +120,18 @@ export const NewParent = () => {
       )
   }, [regionData])
 
+  useEffect(() => {
+    if (!schoolLoading && schoolYearData.schoolYears) {
+      setSchollYears(
+        schoolYearData.schoolYears.map((item) => {
+          return {
+            label: moment(item.date_begin).format('YYYY') + '-' + moment(item.date_end).format('YYYY'),
+            value: item.school_year_id,
+          }
+        }),
+      )
+    }
+  }, [schoolYearData])
   const submitApplication = async () => {
     submitApplicationAction({
       variables: {
@@ -140,20 +155,19 @@ export const NewParent = () => {
 
   const validationSchema = yup.object().shape({
     state: yup.string().required('State is required'),
-    programYear: yup.string().required('Program Year is required'),
+    programYear: yup.string().required('Grade Level is required'),
     firstName: yup.string().required('First Name is required'),
     lastName: yup.string().required('Last Name is required'),
     phoneNumber: yup
-    .string()
-    .matches(isPhoneNumber, 'Phone number is invalid')
-    .test('max_spacing_interval', 'Phone number is invalid', function (value) {
-      if(value !== undefined){
-        return this.parent.phoneNumber.replace('-', '').length === 10
-      }
-    })
-    .required('Phone number is required'),
-    email: yup.string()
-    .email('Enter a valid email').required('Email is required'),
+      .string()
+      .matches(isPhoneNumber, 'Phone number is invalid')
+      .test('max_spacing_interval', 'Phone number is invalid', function (value) {
+        if (value !== undefined) {
+          return this.parent.phoneNumber.replace('-', '').length >= 10
+        }
+      })
+      .required('Phone number is required'),
+    email: yup.string().email('Enter a valid email').required('Email is required'),
     emailConfirm: yup
       .string()
       .required('Email is required')
@@ -212,39 +226,39 @@ export const NewParent = () => {
     document.dispatchEvent(programYearChanged)
   }, [yearLabel])
 
-
-  const [ checkEmail, { loading: emailLoading, data: emailData, error: emailError} ] = useLazyQuery(checkEmailQuery, { fetchPolicy: 'network-only' })
+  const [checkEmail, { loading: emailLoading, data: emailData, error: emailError }] = useLazyQuery(checkEmailQuery, {
+    fetchPolicy: 'network-only',
+  })
 
   const checkEmailExist = () => {
     checkEmail({
       variables: {
-        email: formik.values.email
-      }
+        email: formik.values.email,
+      },
     })
   }
 
   useEffect(() => {
-    if(!loading && emailData !== undefined){
-      if(emailData.emailTaken === true){
+    if (!loading && emailData !== undefined) {
+      if (emailData.emailTaken === true) {
         formik.setErrors({
           email: (
             <Paragraph>
-            This email is already being used.
-            <Link
-              to={DASHBOARD}
-              style={{ fontSize: '11.2px', fontWeight: 700, color: MTHBLUE, textDecoration: 'none' }}
+              This email is already being used.
+              <Link
+                to={DASHBOARD}
+                style={{ fontSize: '11.2px', fontWeight: 700, color: MTHBLUE, textDecoration: 'none' }}
               >
-              Please login{'\u00A0'}
-            </Link>
-            to complete an applicadion
-          </Paragraph>
-        ),
-      })
-      setShowEmailError(true)
-    }
-    else{
-      setShowEmailError(false)
-    }
+                Please login{'\u00A0'}
+              </Link>
+              to complete an applicadion
+            </Paragraph>
+          ),
+        })
+        setShowEmailError(true)
+      } else {
+        setShowEmailError(false)
+      }
     }
   }, [emailLoading, emailData])
   return !loading ? (
@@ -297,7 +311,7 @@ export const NewParent = () => {
                     <DropDown
                       name='programYear'
                       labelTop
-                      dropDownItems={programYearItems}
+                      dropDownItems={schoolYears}
                       placeholder='Program Year'
                       setParentValue={setProgramYear}
                       alternate={true}
@@ -424,8 +438,7 @@ export const NewParent = () => {
                     focused
                     variant='outlined'
                     sx={
-                      showEmailError ||
-                      !!(formik.touched.email && Boolean(formik.errors.email))
+                      showEmailError || !!(formik.touched.email && Boolean(formik.errors.email))
                         ? classes.textFieldError
                         : classes.textField
                     }
@@ -438,7 +451,9 @@ export const NewParent = () => {
                     value={formik.values.email}
                     onChange={formik.handleChange}
                     error={Boolean(formik.errors.email)}
-                    helperText={ (showEmailError && formik.errors.email) || (formik.touched.email && formik.errors.email)}
+                    helperText={
+                      (showEmailError && formik.errors.email) || (formik.touched.email && formik.errors.email)
+                    }
                     onBlur={checkEmailExist}
                   />
                 </Grid>
@@ -493,6 +508,7 @@ export const NewParent = () => {
                 </Typography>
                 <Grid item xs={12}>
                   <TextField
+                    name='refferedBy'
                     size='small'
                     label='If new to My Tech High, please tell us who referred you so we can thank them!'
                     focused

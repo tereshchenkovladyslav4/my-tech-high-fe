@@ -40,11 +40,11 @@ export const getEnrollmentPacketsQuery = gql`
         secondary_contact_first
         secondary_contact_last
         is_age_issue
-        missing_files
         student {
           student_id
           grade_level
           grade_levels {
+            grade_level
             school_year {
               date_begin
               date_end
@@ -287,6 +287,14 @@ export const updateSettingsMutation = gql`
   mutation updateSettings($input: UpdateSettingsInput!) {
     updateSettings(input: $input) {
       enable_immunizations
+    }
+  }
+`
+
+export const packetCountQuery = gql`
+  query packetCount {
+    packetCount {
+      results
     }
   }
 `

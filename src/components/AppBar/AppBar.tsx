@@ -32,7 +32,6 @@ export const AppBar: FunctionComponent = () => {
       href={APPLICATIONS}
       variant='contained'
       sx={{
-        marginTop: 1,
         background: '#FAFAFA',
         color: 'black',
         width: '200px',
@@ -45,7 +44,7 @@ export const AppBar: FunctionComponent = () => {
       }}
       startIcon={<AddIcon />}
     >
-      <Subtitle>Add Student</Subtitle>
+      <Subtitle sx={{whiteSpace: 'nowrap'}}>Add Student</Subtitle>
     </Button>
   )
 
@@ -96,16 +95,37 @@ export const AppBar: FunctionComponent = () => {
   }
 
   const gradeText = (student: StudentType) => (
-    student.grade_levels.at(-1).grade_level !== 'Kin'
-      ? `${toOrdinalSuffix((student.grade_levels.at(-1).grade_level as number))} Grade`
+    student.grade_levels.at(-1)?.grade_level !== 'Kin'
+      ? `${toOrdinalSuffix((student.grade_levels.at(-1)?.grade_level as number))} Grade`
       : 'Kindergarten'
   )
 
   const renderStudentHeader = () =>
-    map(students, (student) => (
-      <Box sx={{ textDecoration: 'none', marginTop: 1 }}>
-        <NavLink to={`${HOMEROOM}/${student.student_id}`} style={{ textDecoration: 'none' }}>
-          <Metadata
+    map(students, (student) => {
+      const link = student?.applications?.at(-1)?.status === 'Submitted' || student?.status?.at(-1)?.status === 2 || student?.packets?.at(-1)?.status === 'Started'
+        ? undefined
+        :`${HOMEROOM}/${student.student_id}`
+      return (
+        <Box sx={{ textDecoration: 'none', marginTop: 1 }}>
+          {
+            link ?
+            <NavLink to={link} style={{ textDecoration: 'none' }}>
+            <Metadata
+              divider={true}
+              title={
+                <Subtitle color={isActive(student.student_id) ? MTHBLUE : '#A1A1A1'}>
+                  {student.person.first_name}
+                </Subtitle>
+              }
+              subtitle={
+                <Paragraph color='#cccccc' size={'large'}>
+                  {gradeText(student)}
+                </Paragraph>
+              }
+              image={<Avatar alt={student.person.first_name} src=' ' variant='rounded' style={{ marginRight: 24 }} />}
+              />
+          </NavLink>
+          : <Metadata
             divider={true}
             title={
               <Subtitle color={isActive(student.student_id) ? MTHBLUE : '#A1A1A1'}>
@@ -119,9 +139,10 @@ export const AppBar: FunctionComponent = () => {
             }
             image={<Avatar alt={student.person.first_name} src=' ' variant='rounded' style={{ marginRight: 24 }} />}
           />
-        </NavLink>
-      </Box>
-    ))
+          }
+        </Box>
+      )
+    })
 
   return (
     <MUIAppBar position='static' sx={classes.appBar} elevation={0}>

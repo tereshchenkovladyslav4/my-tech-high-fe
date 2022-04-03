@@ -64,7 +64,7 @@ export const Pagination: PaginationTemplateType = ({
           setParentValue={setLimit}
           alternate={true}
           size="small"
-          defaultValue={dropdownOptions[0].value}
+          defaultValue={defaultValue || dropdownOptions[0].value}
         />
       </Box>
       <MUIPagination

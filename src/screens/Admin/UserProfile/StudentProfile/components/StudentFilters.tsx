@@ -85,7 +85,7 @@ const useStyles = {
     display: 'flex',
     alignItems: 'center',
     height: '39px',
-    background:'#FAFAFA',
+    background: '#FAFAFA',
     '&:nth-child(even)': {
       background: '#fff',
       borderRadius: '8px',
@@ -155,7 +155,7 @@ export const StudentFilters = ({ currentUserData, setStudentStatuData, studentSt
   const [applications, setApplications] = useState<any[]>([])
   const [studentStatus, setStudentStatus] = useState<any>()
   const [specialEd, setSpecialEd] = useState<any>()
-  const [diplomaSeeking, setDiplomaSeeking] = useState<any>()
+  const [diplomaSeeking, setDiplomaSeeking] = useState<any>('')
   const specialEds: DropDownItem[] = [
     {
       label: 'No',
@@ -197,16 +197,17 @@ export const StudentFilters = ({ currentUserData, setStudentStatuData, studentSt
       label: 'Withdrawn',
       value: 2,
     },
-    {
-      label: 'Blank',
-      value: 3,
-    },
   ]
   useEffect(() => {
     if (currentUserData && currentUserData.student) {
       setApplications(currentUserData.student.applications)
     }
   }, [currentUserData])
+  useEffect(() => {
+    if (studentStatusData.diploma_seeking !== null && studentStatusData.diploma_seeking !== undefined) {
+      setDiplomaSeeking(studentStatusData.diploma_seeking)
+    }
+  }, [studentStatusData])
   return (
     <Box
       sx={{
@@ -220,7 +221,7 @@ export const StudentFilters = ({ currentUserData, setStudentStatuData, studentSt
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <Subtitle fontWeight='700' sx={{ marginRight: '30px', marginBottom: '5px' }}>
               {applications.length &&
-                `${moment(applications[0].school_year.date_begin).format('YYYY')}-${moment(
+                `${moment(applications[0].school_year.date_begin).format('YYYY')} - ${moment(
                   applications[0].school_year.date_end,
                 ).format('YY')}`}{' '}
               Status
@@ -239,21 +240,13 @@ export const StudentFilters = ({ currentUserData, setStudentStatuData, studentSt
                 setStudentStatuData({ ...studentStatusData, ...{ status: e.target.value } })
               }}
             >
+              <MenuItem value=''>Select</MenuItem>
               {status.map((item) => (
                 <MenuItem key={item.value} value={item.value}>
                   {item.label}
                 </MenuItem>
               ))}
             </Select>
-            {/* <DropDown
-              size='small'
-              dropDownItems={status}
-              setParentValue={(e) => {
-                setStudentStatus(e)
-                setStudentStatuData({ ...studentStatusData, ...{ status: e } })
-              }}
-              defaultValue={+studentStatusData.status}
-            /> */}
           </Box>
           <Box onClick={() => setShowDetails(!showDetails)}>
             <Paragraph sx={{ textDecoration: 'underline', color: MTHBLUE }}>
@@ -286,15 +279,6 @@ export const StudentFilters = ({ currentUserData, setStudentStatuData, studentSt
                 </MenuItem>
               ))}
             </Select>
-            {/* <DropDown
-              size='small'
-              dropDownItems={specialEds}
-              setParentValue={(e) => {
-                setSpecialEd(e)
-                setStudentStatuData({ ...studentStatusData, ...{ special_ed: e } })
-              }}
-              defaultValue={+studentStatusData.special_ed}
-            /> */}
           </Box>
         </Grid>
         <Grid xs={4}>
@@ -302,16 +286,8 @@ export const StudentFilters = ({ currentUserData, setStudentStatuData, studentSt
             <Subtitle textAlign='left' fontWeight='700' sx={{ marginRight: '30px', marginBottom: '5px' }}>
               Diploma Seeking
             </Subtitle>
-            {/* <DropDown
-              size='small'
-              dropDownItems={seeking}
-              setParentValue={(e) => {
-                setDiplomaSeeking(e)
-                setStudentStatuData({ ...studentStatusData, ...{ diploma_seeking: e } })
-              }}
-              defaultValue={+studentStatusData.diploma_seeking}
-            /> */}
             <Select
+              displayEmpty
               className={selectClasses.backgroundSelect}
               IconComponent={KeyboardArrowDown}
               inputProps={{
@@ -319,13 +295,15 @@ export const StudentFilters = ({ currentUserData, setStudentStatuData, studentSt
                   icon: selectClasses.selectIcon,
                 },
               }}
-              value={+studentStatusData.diploma_seeking}
+              value={diplomaSeeking}
               onChange={(e) => {
                 setDiplomaSeeking(e.target.value)
                 setStudentStatuData({ ...studentStatusData, ...{ diploma_seeking: e.target.value } })
               }}
             >
-              <MenuItem value=''>Select</MenuItem>
+              <MenuItem value='' disabled>
+                Select
+              </MenuItem>
               {seeking.map((item) => (
                 <MenuItem key={item.value} value={item.value}>
                   {item.label}

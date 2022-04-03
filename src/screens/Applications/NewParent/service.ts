@@ -15,3 +15,13 @@ export const checkEmailQuery = gql`
     emailTaken(email: $email)
   }
 `
+
+export const getSchoolYearQuery = gql`
+  query SchoolYears {
+    schoolYears {
+      school_year_id
+      date_begin
+      date_end
+    }
+  }
+`

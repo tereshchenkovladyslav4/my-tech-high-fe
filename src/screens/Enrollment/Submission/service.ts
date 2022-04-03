@@ -6,9 +6,12 @@ mutation SaveEnrollmentPacketSubmission($enrollmentPacketDocumentInput: Enrollme
     packet {
       packet_id
     }
-    student {
+    student{
       student_id
       hidden
+      status{
+        status
+      }
       packets{
         files{
           file_id
@@ -16,6 +19,7 @@ mutation SaveEnrollmentPacketSubmission($enrollmentPacketDocumentInput: Enrollme
           mth_file_id
           packet_id
         }
+        missing_files
         packet_id
         birth_place
         birth_country

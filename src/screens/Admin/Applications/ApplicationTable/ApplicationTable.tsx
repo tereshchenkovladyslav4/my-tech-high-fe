@@ -45,7 +45,7 @@ export const ApplicationTable = ({ filter }) => {
   const [shouldClear, setShouldClear] = useState(false)
   const [open, setOpen] = useState(false)
   const [openAlert, setOpenAlert] = useState(false)
-  const [paginatinLimit, setPaginatinLimit] = useState(25)
+  const [paginatinLimit, setPaginatinLimit] = useState(Number(localStorage.getItem('pageLimit')) || 25)
   const [skip, setSkip] = useState<number>(0)
   const [totalApplications, setTotalApplications] = useState<number>()
   const [tableData, setTableData] = useState<Array<any>>([])
@@ -62,7 +62,7 @@ export const ApplicationTable = ({ filter }) => {
   const createData = (application: any) => {
     return {
       id: application.application_id,
-      submitted: application.date_submitted ? moment(application.date_submitted).format('l') : null,
+      submitted: application.date_submitted ? moment(application.date_submitted).format('MM/DD/YY') : null,
       year: `${moment(application.school_year.date_begin).format('YYYY')}-${moment(
         application.school_year.date_end,
       ).format('YY')}`,
@@ -77,11 +77,12 @@ export const ApplicationTable = ({ filter }) => {
       // status: application.status,
       relation: application.relation_status ? status[application.relation_status] : 'New',
       verified: application?.student?.parent?.person?.email_verifier?.verified ? 'Yes' : 'No',
-      emailed: application.application_emails.length > 0 && (
-        <Box sx={{ cursor: 'pointer' }} onClick={() => handleOpenEmailHistory(application)}>
-          {moment(application.application_emails[0].created_at).format('MM/DD/yy')}
-        </Box>
-      ),
+      emailed:
+        application.application_emails.length > 0 ? (
+          <Box sx={{ cursor: 'pointer' }} onClick={() => handleOpenEmailHistory(application)}>
+            {moment(application.application_emails[0].created_at).format('MM/DD/YY')}
+          </Box>
+        ) : null,
       actions: (
         <Box display={'flex'} flexDirection={'row'} alignItems={'center'}>
           <Box display={'flex'} flexDirection={'column'} marginRight={4} sx={{ width: 15 }}>
@@ -189,6 +190,9 @@ export const ApplicationTable = ({ filter }) => {
 
       setTableData(() => {
         return map(results, (application) => {
+          if (editData && editData.application_id === application.application_id) {
+            setEditData(application)
+          }
           return createData(application)
         })
       })
@@ -264,13 +268,13 @@ export const ApplicationTable = ({ filter }) => {
       label: 'Relation',
     },
     {
-      id: 'Verified',
+      id: 'verified',
       numeric: false,
       disablePadding: true,
       label: 'Verified',
     },
     {
-      id: 'verified',
+      id: 'emailed',
       numeric: false,
       disablePadding: true,
       label: 'Emailed',
@@ -474,6 +478,8 @@ export const ApplicationTable = ({ filter }) => {
           </Subtitle>
           <Box marginLeft={4}>
             <OutlinedInput
+              onFocus={(e) => (e.target.placeholder = '')}
+              onBlur={(e) => (e.target.placeholder = 'Search...')}
               size='small'
               fullWidth
               value={seachField}

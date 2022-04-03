@@ -145,13 +145,13 @@ export const ApplicationModal: ApplicationModalType = ({
                 <Box sx={{ display: 'flex', alignItems: 'center', pl: 2 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center' }}>
                     <Subtitle sx={{ pr: 3 }} fontWeight='700'>
-                      Mid-year Application{' '}
+                      Mid-year Application
                     </Subtitle>
                     <Select
                       size='small'
                       name='midyear_application'
                       onChange={handleChange}
-                      value={values.midyear_application}
+                      value={values.midyear_application || 'false'}
                       className={selectClasses.select}
                       // inputProps={{
                       //   classes: {
@@ -165,7 +165,7 @@ export const ApplicationModal: ApplicationModalType = ({
                   </Box>
                   <Box sx={{ display: 'flex', alignItems: 'center', px: 5 }}>
                     <Subtitle sx={{ pr: 3 }} fontWeight='700'>
-                      School Year{' '}
+                      School Year
                     </Subtitle>
                     <Select
                       className={selectClasses.select}

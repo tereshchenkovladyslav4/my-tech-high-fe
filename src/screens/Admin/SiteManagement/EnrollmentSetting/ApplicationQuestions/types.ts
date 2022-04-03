@@ -1,4 +1,5 @@
 import { GRADES } from '../../../../../utils/constants'
+import { STATES_WITH_ID } from '../../../../../utils/states'
 
 export const QuestionTypes = [
   {
@@ -37,6 +38,14 @@ export type ApplicationQuestion = {
 }
 
 export const initQuestions: ApplicationQuestion[] = [
+  {
+    id: 1,
+    order: 1,
+    type: 1,
+    question: 'State',
+    required: true,
+    options: STATES_WITH_ID,
+  },
   {
     id: 2,
     order: 2,

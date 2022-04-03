@@ -7,7 +7,7 @@ import { ImmunizationsData } from '../../Immunizations'
 
 const MinimumSpacing: React.FC = () => {
   const styles = useStyles()
-  const localValues: Array<string> = ['NONE', 'DAYS', 'WEEKS', 'MONTHS']
+  const localValues: Array<string> = ['DAYS', 'WEEKS', 'MONTHS']
 
   const { values, setFieldValue, handleChange, touched, errors } = useFormikContext<ImmunizationsData>()
 
@@ -44,7 +44,7 @@ const MinimumSpacing: React.FC = () => {
             pattern: '[1-9]*'
           }}
           type='number'
-          disabled={values.min_spacing_date < 1}
+          // disabled={values.min_spacing_date < 1}
         />
       </FormControl>
       <FormControl variant='outlined' classes={{ root: styles.formRoot }}>

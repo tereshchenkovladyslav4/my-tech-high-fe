@@ -10,13 +10,12 @@ import { arrayMove, SortableContainer, SortableElement } from 'react-sortable-ho
 import AddQuestionModal from './AddQuestion/index'
 import { useMutation, useQuery } from '@apollo/client'
 import { getQuestionsGql, saveQuestionsGql } from './services'
-import { DropDown } from '../../../../../components/DropDown/DropDown'
-import { STATES_WITH_ID } from '../../../../../utils/states'
 import AddStudentButton from './AddStudentButton'
 import CustomModal from './CustomModals'
 import { useHistory } from 'react-router-dom'
 import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded'
-import { SYSTEM_07 } from '../../../../../utils/constants'
+import { useRecoilValue } from 'recoil'
+import { userRegionState } from '../../../../../providers/UserContext/UserProvider'
 
 const SortableItem = SortableElement(ApplicationQuestionItem)
 
@@ -31,13 +30,14 @@ const SortableListContainer = SortableContainer(({ items }: { items: Application
 export default function ApplicationQuestions() {
   const [questions, setQuestions] = useState<ApplicationQuestion[]>([])
   const [openAddQuestion, setOpenAddQuestion] = useState(false)
-  const [regionId, setRegionId] = useState(STATES_WITH_ID[0].value)
   const [unSaveChangeModal, setUnSaveChangeModal] = useState(false)
   const [cancelModal, setCancelModal] = useState(false)
   const [sucessAlert, setSucessAlert] = useState(false)
+  const region = useRecoilValue(userRegionState)
   const [saveQuestionsMutation] = useMutation(saveQuestionsGql)
+
   const { data, refetch } = useQuery(getQuestionsGql, {
-    variables: { input: { region_id: regionId } },
+    variables: { input: { region_id: +region?.regionDetail?.id } },
     fetchPolicy: 'network-only',
   })
   const history = useHistory()
@@ -80,7 +80,7 @@ export default function ApplicationQuestions() {
                 required: v.required,
                 options: v.options?.length ? JSON.stringify(v.options) : undefined,
                 order: v.order,
-                region_id: regionId,
+                region_id: +region?.regionDetail?.id,
               })),
             },
           })
@@ -164,25 +164,6 @@ export default function ApplicationQuestions() {
                 <Typography sx={{ color: '#1A1A1A', fontWeight: 500, fontSize: '24.1679px' }}>Apply</Typography>
 
                 <Box width='600px'>
-                  <DropDown
-                    sx={{
-                      marginTop: '10px',
-                      minWidth: '100%',
-                      borderWidth: '1px solid ' + SYSTEM_07,
-                      [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
-                        {
-                          borderColor: SYSTEM_07,
-                        },
-                    }}
-                    labelTop
-                    dropDownItems={STATES_WITH_ID}
-                    placeholder='State'
-                    setParentValue={(v) => setRegionId(+v)}
-                    defaultValue={regionId}
-                    alternate={true}
-                    size='small'
-                  />
-
                   {initQuestions.map((it, index) => (
                     <ApplicationQuestionItem key={index} item={it} mainQuestion={true} />
                   ))}

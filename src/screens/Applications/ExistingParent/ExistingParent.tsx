@@ -9,6 +9,9 @@ import { DropDownItem } from '../../../components/DropDown/types'
 import { useMutation } from '@apollo/client'
 import { AddApplicationMutation } from './service'
 import { UserContext } from '../../../providers/UserContext/UserProvider'
+import { useFormik } from 'formik'
+import * as yup from 'yup'
+import { find } from 'lodash'
 
 export const ExistingParent = () => {
   const onStudentFieldChanged = (idx, fieldName, value) => {
@@ -29,6 +32,7 @@ export const ExistingParent = () => {
     })
   }
   const { me, setMe } = useContext(UserContext)
+  const submitPressed = new CustomEvent('checkStudents')
   const programYearItems: DropDownItem[] = [
     {
       label: '2021-2022',
@@ -44,9 +48,23 @@ export const ExistingParent = () => {
     },
   ]
 
+  const validationSchema = yup.object().shape({
+    programYear: yup.string().required('Grade Level is required'),
+  })
+
+  const formik = useFormik({
+    initialValues: {
+      programYear: undefined,
+    },
+    validationSchema,
+    validateOnBlur: true,
+    onSubmit: () => {
+      submitApplication()
+    },
+  })
+
   const AddNewStudent = (idx: number) => <AddStudent idx={idx} onFieldChange={onStudentFieldChanged} />
   const [studentData, setStudentData] = useState<Array<StudentInput>>([])
-  const [programYear, setProgramYear] = useState('')
   const [students, setStudents] = useState([AddNewStudent(0)])
   const classes = useStyles
 
@@ -63,7 +81,7 @@ export const ExistingParent = () => {
       variables: {
         createApplicationInput: {
           state: 'UT',
-          program_year: parseInt(programYear),
+          program_year: parseInt(formik.values.programYear),
           students: studentData,
         },
       },
@@ -76,8 +94,28 @@ export const ExistingParent = () => {
       })
     })
   }
+  const setProgramYear = (id: any) => {
+    formik.values.programYear = id
+    const currProgramYear = find(programYearItems, { value: id })
+  }
+
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    document.dispatchEvent(submitPressed)
+  }
+
+  document.addEventListener('studentResponse', (e) => {
+    formik.setFieldTouched('programYear', true, true)
+    setTimeout(() => {
+      if(!e.detail.error){
+        formik.handleSubmit()
+      }
+    },500)
+  })
 
   return (
+    <form onSubmit={handleSubmit}>
     <Card sx={{ paddingTop: 4 }}>
       <Box
         paddingX={36}
@@ -91,19 +129,29 @@ export const ExistingParent = () => {
           display: 'flex',
           flexDirection: 'column',
         }}
-      >
+        style={classes.containerHeight}
+        >
         <Grid container>
           <Grid item xs={12} display='flex' justifyContent={'center'}>
             <Box width={'406.73px'}>
-            <DropDown
-              labelTop
-              dropDownItems={programYearItems}
-              placeholder='Program Year'
-              setParentValue={setProgramYear}
-              alternate={true}
-              sx={classes.textField}
-              size='small'
-              />
+              <DropDown
+                name='programYear'
+                labelTop
+                dropDownItems={programYearItems}
+                placeholder='Program Year'
+                setParentValue={setProgramYear}
+                alternate={true}
+                sx={
+                  !!(formik.touched.programYear && Boolean(formik.errors.programYear))
+                  ? classes.textFieldError
+                  : classes.textField
+                }
+                size='small'
+                error={{
+                  error: (Boolean(formik.errors.programYear)),
+                  errorMsg: (formik.errors.programYear) as string
+                }}
+                />
             </Box>
           </Grid>
 
@@ -118,17 +166,18 @@ export const ExistingParent = () => {
               variant='contained'
               style={classes.addStudentButton}
               onClick={appendAddStudentList}
-            >
+              >
               Add Student
             </Button>
           </Grid>
           <Grid item xs={12}>
-            <Button variant='contained' style={classes.submitButton} onClick={() => submitApplication()}>
+            <Button variant='contained' style={classes.submitButton} type='submit'>
               Submit to Utah School
             </Button>
           </Grid>
         </Grid>
       </Box>
     </Card>
+    </form>
   )
 }
