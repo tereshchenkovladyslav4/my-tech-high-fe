@@ -1,26 +1,26 @@
 export type RoleType = {
-    id: number;
-    name: string;
-    level: number
+  id: number
+  name: string
+  level: number
 }
 
 export type RegionType = {
-    region_id: number
-    regionDetail: RegionDetail
+  region_id: number
+  regionDetail: RegionDetail
 }
 
 export type AccessType = {
-    access_id: number
-    accessDetail: AccessDetail
+  access_id: number
+  accessDetail: AccessDetail
 }
 
 export type RegionDetail = {
-    id: number;
-    name: string;
+  id: number
+  name: string
+  program: string
 }
 
-
 export type AccessDetail = {
-    id: number;
-    name: string;
+  id: number
+  name: string
 }

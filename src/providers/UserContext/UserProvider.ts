@@ -16,7 +16,7 @@ export type UserInfo = {
   userRegion?: RegionType
   userAccess?: AccessType
   students?: StudentType[]
-  profile?: Person,
+  profile?: Person
 }
 
 export type UserContextType = {
@@ -26,7 +26,7 @@ export type UserContextType = {
 
 const userContext: UserContextType = {
   me: null,
-  setMe: (_) => { },
+  setMe: (_) => {},
 }
 
 export type TabInfo = {
@@ -34,16 +34,16 @@ export type TabInfo = {
 }
 export type TabContextType = {
   tab: TabInfo | null
-  setTab: React.Dispatch<React.SetStateAction<TabInfo | null>>,
+  setTab: React.Dispatch<React.SetStateAction<TabInfo | null>>
   visitedTabs: number[]
   setVisitedTabs: React.Dispatch<React.SetStateAction<number[] | null>>
 }
 
 const tabContext: TabContextType = {
   tab: null,
-  setTab: (_) => { },
+  setTab: (_) => {},
   visitedTabs: [],
-  setVisitedTabs: (_) => { },
+  setVisitedTabs: (_) => {},
 }
 
 export const UserContext = createContext(userContext)

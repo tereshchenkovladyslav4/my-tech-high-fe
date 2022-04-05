@@ -92,7 +92,7 @@ export const EmailModal: EmailModalTemplateType = ({ handleSubmit, handleModem, 
         editorRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' })
       }
       setCurrentBlocks(state.blocks.length)
-    } catch {}
+    } catch { }
   }
 
   useEffect(() => {
@@ -109,6 +109,7 @@ export const EmailModal: EmailModalTemplateType = ({ handleSubmit, handleModem, 
       }
     }
   }, [template])
+
   return (
     <Modal
       open={true}
@@ -120,6 +121,15 @@ export const EmailModal: EmailModalTemplateType = ({ handleSubmit, handleModem, 
         <Title fontWeight='700'>{title}</Title>
         <Box sx={{ padding: '40px', paddingBottom: alert ? '20px' : undefined }}>
           {localOptions && <StandardResponses options={localOptions} setTemplate={setTemplate} />}
+          {template?.from && <OutlinedInput
+            value={template.from}
+            size='small'
+            fullWidth
+            placeholder='From email'
+            sx={classes.subject}
+            disabled
+          />}
+
           <OutlinedInput
             value={subject}
             size='small'
@@ -128,6 +138,8 @@ export const EmailModal: EmailModalTemplateType = ({ handleSubmit, handleModem, 
             sx={classes.subject}
             onChange={(e) => setSubject(e.target.value)}
           />
+
+
           <Box sx={classes.editor}>
             <Wysiwyg.Editor
               onContentStateChange={handleEditorChange}

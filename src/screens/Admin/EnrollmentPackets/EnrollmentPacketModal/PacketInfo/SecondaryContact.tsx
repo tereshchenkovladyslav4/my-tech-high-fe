@@ -2,14 +2,14 @@
 import React from 'react'
 import { Grid, TextField } from '@mui/material'
 import { Box } from '@mui/system'
-import { useFormikContext } from 'formik'
 import { DropDown } from '../../../../../components/DropDown/DropDown'
 import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
-import { EnrollmentPacketFormType } from '../types'
 import { countries, hispanicOptions, SYSTEM_01 } from '../../../../../utils/constants'
+import { Controller, useFormContext } from 'react-hook-form'
 
 export default function SecondaryContact() {
-    const { values, setFieldValue, handleChange } = useFormikContext<EnrollmentPacketFormType>()
+    const { control } = useFormContext()
+
     return (
         <Box sx={{ paddingTop: '15px' }}>
             <Subtitle color={SYSTEM_01} size='small' fontWeight='700'>
@@ -21,14 +21,17 @@ export default function SecondaryContact() {
                         <Subtitle size='small' fontWeight='500'>
                             First Name
                         </Subtitle>
-                        <TextField
-                            placeholder='First Name'
-                            size='small'
-                            variant='outlined'
-                            fullWidth
-                            name='secondary_contact_first'
-                            value={values.secondary_contact_first}
-                            onChange={handleChange}
+                        <Controller
+                            name="secondary_contact_first"
+                            control={control}
+                            render={({ field }) =>
+                                <TextField
+                                    {...field}
+                                    placeholder='First Name'
+                                    size='small'
+                                    variant='outlined'
+                                    fullWidth
+                                />}
                         />
                     </Box>
                 </Grid>
@@ -37,14 +40,17 @@ export default function SecondaryContact() {
                         <Subtitle size='small' fontWeight='500'>
                             Last Name
                         </Subtitle>
-                        <TextField
-                            placeholder='Last Name'
-                            size='small'
-                            variant='outlined'
-                            fullWidth
-                            name='secondary_contact_last'
-                            value={values.secondary_contact_last}
-                            onChange={handleChange}
+                        <Controller
+                            name="secondary_contact_last"
+                            control={control}
+                            render={({ field }) =>
+                                <TextField
+                                    {...field}
+                                    placeholder='Last Name'
+                                    size='small'
+                                    variant='outlined'
+                                    fullWidth
+                                />}
                         />
                     </Box>
                 </Grid>
@@ -53,14 +59,17 @@ export default function SecondaryContact() {
                         <Subtitle size='small' fontWeight='500'>
                             Secondary Phone
                         </Subtitle>
-                        <TextField
-                            placeholder='Secondary Phone'
-                            size='small'
-                            variant='outlined'
-                            fullWidth
-                            name='secondary_phone'
-                            value={values.secondary_phone}
-                            onChange={handleChange}
+                        <Controller
+                            name="secondary_phone"
+                            control={control}
+                            render={({ field }) =>
+                                <TextField
+                                    {...field}
+                                    placeholder='Secondary Phone'
+                                    size='small'
+                                    variant='outlined'
+                                    fullWidth
+                                />}
                         />
                     </Box>
                 </Grid>
@@ -69,15 +78,17 @@ export default function SecondaryContact() {
                         <Subtitle size='small' fontWeight='500'>
                             Secondary Email
                         </Subtitle>
-                        <TextField
-                            placeholder='Secondary Email'
-                            size='small'
-                            variant='outlined'
-                            fullWidth
-                            name='secondary_email'
-
-                            value={values.secondary_email}
-                            onChange={handleChange}
+                        <Controller
+                            name="secondary_email"
+                            control={control}
+                            render={({ field }) =>
+                                <TextField
+                                    {...field}
+                                    placeholder='Secondary Email'
+                                    size='small'
+                                    variant='outlined'
+                                    fullWidth
+                                />}
                         />
                     </Box>
                 </Grid>
@@ -86,15 +97,18 @@ export default function SecondaryContact() {
                         <Subtitle size='small' fontWeight='500'>
                             Date of Birth
                         </Subtitle>
-                        <TextField
-                            type='date'
-                            placeholder='Date of Birth'
-                            size='small'
-                            variant='outlined'
-                            fullWidth
-                            name='date_of_birth'
-                            value={values.date_of_birth}
-                            onChange={handleChange}
+                        <Controller
+                            name="date_of_birth"
+                            control={control}
+                            render={({ field }) =>
+                                <TextField
+                                    {...field}
+                                    type='date'
+                                    placeholder='Date of Birth'
+                                    size='small'
+                                    variant='outlined'
+                                    fullWidth
+                                />}
                         />
                     </Box>
 
@@ -104,14 +118,17 @@ export default function SecondaryContact() {
                         <Subtitle size='small' fontWeight='500'>
                             Birthplace
                         </Subtitle>
-                        <TextField
-                            placeholder='Birthplace'
-                            size='small'
-                            variant='outlined'
-                            fullWidth
-                            name='birth_place'
-                            value={values.birth_place}
-                            onChange={handleChange}
+                        <Controller
+                            name="birth_place"
+                            control={control}
+                            render={({ field }) =>
+                                <TextField
+                                    {...field}
+                                    placeholder='Birthplace'
+                                    size='small'
+                                    variant='outlined'
+                                    fullWidth
+                                />}
                         />
                     </Box>
                 </Grid>
@@ -121,12 +138,17 @@ export default function SecondaryContact() {
                         <Subtitle size='small' fontWeight='500'>
                             Country
                         </Subtitle>
-                        <DropDown
-                            dropDownItems={countries}
-                            placeholder='Entry'
-                            defaultValue={values.birth_country}
-                            size='small'
-                            setParentValue={(v) => setFieldValue('birth_country', v)}
+                        <Controller
+                            name="birth_country"
+                            control={control}
+                            render={({ field }) =>
+                                <DropDown
+                                    dropDownItems={countries}
+                                    placeholder='Entry'
+                                    defaultValue={field.value}
+                                    size='small'
+                                    setParentValue={(v) => field.onChange(v as string)}
+                                />}
                         />
                     </Box>
                 </Grid>
@@ -135,12 +157,17 @@ export default function SecondaryContact() {
                         <Subtitle size='small' fontWeight='500'>
                             Hispanic / Latino
                         </Subtitle>
-                        <DropDown
-                            dropDownItems={hispanicOptions}
-                            defaultValue={values.hispanic}
-                            placeholder='Entry'
-                            size='small'
-                            setParentValue={(v) => setFieldValue('hispanic', v)}
+                        <Controller
+                            name="hispanic"
+                            control={control}
+                            render={({ field }) =>
+                                <DropDown
+                                    dropDownItems={hispanicOptions}
+                                    defaultValue={field.value}
+                                    placeholder='Entry'
+                                    size='small'
+                                    setParentValue={(v) => field.onChange(v as number)}
+                                />}
                         />
                     </Box>
                 </Grid>

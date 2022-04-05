@@ -40,9 +40,10 @@ export const getEnrollmentPacketsQuery = gql`
         secondary_contact_first
         secondary_contact_last
         is_age_issue
+        missing_files
+        special_ed
         student {
           student_id
-          grade_level
           grade_levels {
             grade_level
             school_year {
@@ -53,7 +54,6 @@ export const getEnrollmentPacketsQuery = gql`
           current_school_year_status {
             school_year_id
           }
-          special_ed
           parent {
             parent_id
             person {

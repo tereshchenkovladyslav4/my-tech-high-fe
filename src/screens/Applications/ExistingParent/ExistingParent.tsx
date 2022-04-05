@@ -116,7 +116,7 @@ export const ExistingParent = () => {
 
   return (
     <form onSubmit={handleSubmit}>
-    <Card sx={{ paddingTop: 4 }}>
+    <Card sx={{ paddingTop: 8, margin: 4 }} >
       <Box
         paddingX={36}
         paddingTop={18}

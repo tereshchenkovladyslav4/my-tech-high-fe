@@ -100,7 +100,7 @@ export const AddStudent: AddStudentTemplate = ({ idx, onFieldChange, handleRemov
   
   return (
     <form>
-    <Box display={'flex'} flexDirection='column'>
+    <Box  display={'flex'} flexDirection='column'>
       <Box width={idx === 0 ? '100%' : '103.9%'} display='flex' flexDirection='row' alignItems={'center'}>
         <TextField
           size='small'

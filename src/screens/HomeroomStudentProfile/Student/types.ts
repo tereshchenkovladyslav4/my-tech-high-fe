@@ -67,7 +67,7 @@ export type Packet = {
   worked_in_agriculture: number
   secondary_contact_last: string
   is_age_issue?: boolean
-  missing_files?: String[]
+  missing_files?: string[]
 }
 
 export type Application = {
@@ -104,6 +104,7 @@ export type StudentType = {
     grade_level: number
   }
   status: Status[]
+
 }
 
 export type Status = {
@@ -130,6 +131,9 @@ export type Parent = {
   person: Person
 
   students?: StudentType[]
+  phone?: {
+    number: string
+  }
 }
 export type Person = {
   email: string

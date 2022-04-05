@@ -1,6 +1,6 @@
 import { Button, Grid } from '@mui/material'
-import { useFormikContext } from 'formik'
 import React from 'react'
+import { useFormContext } from 'react-hook-form'
 import {
     BLACK_GRADIENT,
     BUTTON_LINEAR_GRADIENT,
@@ -8,18 +8,21 @@ import {
     RED_GRADIENT,
     YELLOW_GRADIENT,
 } from '../../../../utils/constants'
-import { isValidDate, isValidVaccInput } from './helpers'
+import { checkImmmValueWithSpacing, isValidDate, isValidVaccInput } from './helpers'
 import { EnrollmentPacketFormType, SaveButtonsType } from './types'
 
-export default function PacketSaveButtons() {
-    const { values: vals, setFieldValue, submitForm } = useFormikContext<EnrollmentPacketFormType>()
-    const onlySaveButton = !['Submitted', 'Resubmitted'].includes(vals.status)
+export default function PacketSaveButtons({ submitForm }: { submitForm: () => void }) {
+    const { watch, getValues, setValue } = useFormContext<EnrollmentPacketFormType>()
+
+    const status = watch('status')
+    const onlySaveButton = !['Submitted', 'Resubmitted'].includes(status)
 
     function onClick(action: SaveButtonsType) {
+        const vals = getValues()
         if (action === 'Missing Info') {
-            setFieldValue('showMissingInfoModal', true)
+            setValue('showMissingInfoModal', true)
         } else if (action === 'Age Issue') {
-            setFieldValue('showAgeIssueModal', true)
+            setValue('showAgeIssueModal', true)
         } else {
             let isValid = true
             for (const e of vals.immunizations) {
@@ -32,26 +35,26 @@ export default function PacketSaveButtons() {
                     isValid = false
                     break
                 }
+                if (checkImmmValueWithSpacing(e, vals.immunizations)) {
+                    isValid = false
+                    break
+                }
             }
             if (['Accepted', 'Conditional'].includes(action)) {
-                setFieldValue('preSaveStatus', action)
+                setValue('preSaveStatus', action)
                 if (isValid) {
                     submitForm()
-                    action === 'Accepted' && setFieldValue('saveAlert', 'The packet has been accepted')
-                    setFieldValue('status', action)
+                    setValue('status', action)
                 }
-                else setFieldValue('showSaveWarnModal', true)
+                else setValue('showSaveWarnModal', true)
 
             }
             else {
                 if (isValid) submitForm()
-                else setFieldValue('showSaveWarnModal', true)
+                else setValue('showSaveWarnModal', true)
             }
-
         }
     }
-
-
 
     return (
         <>

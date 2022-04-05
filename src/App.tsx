@@ -24,8 +24,8 @@ declare global {
 export const App: FunctionComponent = () => {
   const [me, setMe] = useState<UserInfo | null>(null)
   const [tab, setTab] = useState<TabInfo | null>(null)
-  const [visitedTabs, setVisitedTabs] = useState<number[]| null>([])
-  const [confirmOpen, setConfirmOpen] = useState(true);
+  const [visitedTabs, setVisitedTabs] = useState<number[] | null>([])
+  const [confirmOpen, setConfirmOpen] = useState(true)
   const userContext = React.useMemo(
     () => ({
       me,
@@ -44,7 +44,6 @@ export const App: FunctionComponent = () => {
     [tab, visitedTabs],
   )
 
-
   useEffect(() => {
     WebFont.load({
       custom: {
@@ -55,14 +54,10 @@ export const App: FunctionComponent = () => {
   }, [])
 
   return (
-    <Router  getUserConfirmation={(message, callback) => {
-      return UserLeaveConfirmation(
-        message,
-        callback,
-        confirmOpen,
-        setConfirmOpen
-      )
-    }}
+    <Router
+      getUserConfirmation={(message, callback) => {
+        return UserLeaveConfirmation(message, callback, confirmOpen, setConfirmOpen)
+      }}
     >
       <ThemeProvider theme={theme}>
         <AuthProvider>

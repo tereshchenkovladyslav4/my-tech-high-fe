@@ -1,17 +1,15 @@
 
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { Grid } from '@mui/material'
 import { Box } from '@mui/system'
 import { DropDown } from '../../../../../components/DropDown/DropDown'
 import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
 import { directoryPermissionptions, militaryOptions, otherPermissionptions, picturePermissionptions, workInAgricultureOptions } from '../../../../../utils/constants'
-import { useFormikContext } from 'formik'
-import { EnrollmentPacketFormType } from '../types'
+import { Controller, useFormContext } from 'react-hook-form'
 
 
 export default function OtherInfo() {
-    const { values, setFieldValue } = useFormikContext<EnrollmentPacketFormType>()
-
+    const { control } = useFormContext()
     return (
         <Box sx={{ paddingTop: '15px' }}>
             <Subtitle size='small' fontWeight='700'>
@@ -19,74 +17,99 @@ export default function OtherInfo() {
             </Subtitle>
             <Grid container columnSpacing={2} sx={{ paddingTop: '20px' }}>
 
-                <Grid item sm={6} xs={12}>
-                    <Box display='flex' flexDirection='column'>
+                <Grid item xl={6} xs={12}>
+                    <Box display='flex' flexDirection='column' maxWidth='25rem'>
                         <Subtitle size='small' fontWeight='500'>
                             Has the parent or spouse worked in Agriculture?
                         </Subtitle>
-                        <DropDown
-                            dropDownItems={workInAgricultureOptions}
-                            placeholder='Entry'
-                            defaultValue={values.worked_in_agriculture}
-                            size='small'
-                            setParentValue={(v) => setFieldValue('worked_in_agriculture', v)}
+                        <Controller
+                            name="worked_in_agriculture"
+                            control={control}
+                            render={({ field }) =>
+                                <DropDown
+                                    dropDownItems={workInAgricultureOptions}
+                                    placeholder='Entry'
+                                    defaultValue={field.value}
+                                    size='small'
+                                    setParentValue={(v) => field.onChange(v as number)}
+                                />}
                         />
                     </Box>
                 </Grid>
-                <Grid item sm={6} xs={12}>
-                    <Box display='flex' flexDirection='column'>
+                <Grid item xl={6} xs={12}>
+                    <Box display='flex' flexDirection='column' maxWidth='25rem'>
                         <Subtitle size='small' fontWeight='500'>
                             Is a parent or legal guardian on active duty in the military
                         </Subtitle>
-                        <DropDown
-                            dropDownItems={militaryOptions}
-                            placeholder='Entry'
-                            defaultValue={values.military}
-                            size='small'
-                            setParentValue={(v) => setFieldValue('military', v)}
+                        <Controller
+                            name="military"
+                            control={control}
+                            render={({ field }) =>
+                                <DropDown
+                                    dropDownItems={militaryOptions}
+                                    placeholder='Entry'
+                                    defaultValue={field.value}
+                                    size='small'
+                                    setParentValue={(v) => field.onChange(v as number)}
+                                />}
                         />
                     </Box>
                 </Grid>
-                <Grid item sm={6} xs={12}>
-                    <Box sx={{ marginTop: '10px' }} display='flex' flexDirection='column'>
+                <Grid item xl={6} xs={12}>
+                    <Box sx={{ marginTop: '10px' }} display='flex' flexDirection='column' maxWidth='25rem'>
                         <Subtitle size='small' fontWeight='500'>
                             FERPA Agreement Options
                         </Subtitle>
-                        <DropDown
-                            dropDownItems={otherPermissionptions}
-                            placeholder='Entry'
-                            defaultValue={values.ferpa_agreement}
-                            size='small'
-                            setParentValue={(v) => setFieldValue('ferpa_agreement', v)}
+                        <Controller
+                            name="ferpa_agreement"
+                            control={control}
+                            render={({ field }) =>
+                                <DropDown
+                                    dropDownItems={otherPermissionptions}
+                                    placeholder='Entry'
+                                    defaultValue={field.value}
+                                    size='small'
+                                    setParentValue={(v) => field.onChange(v as number)}
+                                />
+                            }
                         />
                     </Box>
                 </Grid>
-                <Grid item sm={6} xs={12}>
-                    <Box sx={{ marginTop: '10px' }} display='flex' flexDirection='column'>
+                <Grid item xl={6} xs={12}>
+                    <Box sx={{ marginTop: '10px' }} display='flex' flexDirection='column' maxWidth='25rem'>
                         <Subtitle size='small' fontWeight='500'>
                             Student Photo Permissions
                         </Subtitle>
-                        <DropDown
-                            dropDownItems={picturePermissionptions}
-                            placeholder='Entry'
-                            defaultValue={values.photo_permission}
-                            size='small'
-                            setParentValue={(v) => setFieldValue('photo_permission', v)}
-
+                        <Controller
+                            name="photo_permission"
+                            control={control}
+                            render={({ field }) =>
+                                <DropDown
+                                    dropDownItems={picturePermissionptions}
+                                    placeholder='Entry'
+                                    defaultValue={field.value}
+                                    size='small'
+                                    setParentValue={(v) => field.onChange(v as number)}
+                                />}
                         />
                     </Box>
                 </Grid>
-                <Grid item sm={6} xs={12}>
-                    <Box sx={{ marginTop: '10px' }} display='flex' flexDirection='column'>
+                <Grid item xl={6} xs={12}>
+                    <Box sx={{ marginTop: '10px' }} display='flex' flexDirection='column' maxWidth='25rem'>
                         <Subtitle size='small' fontWeight='500'>
-                            School Student Directory Premissions
+                            School Student Directory Permissions
                         </Subtitle>
-                        <DropDown
-                            dropDownItems={directoryPermissionptions}
-                            placeholder='Entry'
-                            defaultValue={values.dir_permission}
-                            size='small'
-                            setParentValue={(v) => setFieldValue('dir_permission', v)}
+                        <Controller
+                            name="dir_permission"
+                            control={control}
+                            render={({ field }) =>
+                                <DropDown
+                                    dropDownItems={directoryPermissionptions}
+                                    placeholder='Entry'
+                                    defaultValue={field.value}
+                                    size='small'
+                                    setParentValue={(v) => field.onChange(v as number)}
+                                />}
                         />
                     </Box>
                 </Grid>

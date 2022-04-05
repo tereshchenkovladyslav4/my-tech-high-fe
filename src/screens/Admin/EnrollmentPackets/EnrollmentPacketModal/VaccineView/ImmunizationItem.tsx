@@ -1,32 +1,46 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { SYSTEM_01 } from '../../../../../utils/constants'
-import { Checkbox, Box, Typography, Tooltip } from '@mui/material'
+import { Checkbox, Box, Typography, Tooltip, InputAdornment } from '@mui/material'
 import CustomDateInput from './CustomDateInput'
 import { StudentImmunization } from './types'
-import { useFormikContext } from 'formik'
 import { EnrollmentPacketFormType } from '../types'
 import { checkImmmValueWithSpacing, isValidDate, isValidVaccInput } from '../helpers'
 import { ErrorOutlineOutlined } from '@mui/icons-material'
+import { useFormContext } from 'react-hook-form'
 
 
 export function ImmunizationItem({ item }: {
     item: StudentImmunization
 }) {
-    const { values, setFieldValue } = useFormikContext<EnrollmentPacketFormType>()
-    const showError = values.showValidationErrors
-    const siblings = values.immunizations.filter((i) => item.immunization.consecutives?.includes(+i.immunization_id))
-    let exempt = item.value === 'Exempt' && siblings.every((v) => v.value === 'Exempt')
+    const { watch, setValue } = useFormContext<EnrollmentPacketFormType>()
 
 
-    const validValue = !item.immunization.is_deleted && isValidVaccInput(
-        item.value,
-        item.immunization?.immunity_allowed === 1
+    const [immunizations, showError] = watch(['immunizations', 'showValidationErrors'])
+
+    const siblings = useMemo(() =>
+        immunizations.filter((i) => item.immunization.consecutives?.includes(+i.immunization_id)),
+        [immunizations]
     )
-    const validDateSpace = checkImmmValueWithSpacing(item, values.immunizations)
+
+    let exempt = useMemo(() =>
+        item.value === 'Exempt' && siblings?.every((v) => v.value === 'Exempt'),
+        [item.value, siblings]
+    )
+    const validValue = useMemo(() =>
+        !item.immunization.is_deleted && isValidVaccInput(
+            item.value,
+            item.immunization?.immunity_allowed === 1
+        ),
+        [item.immunization?.immunity_allowed, item.value]
+    )
+    const validDateSpace = useMemo(() =>
+        checkImmmValueWithSpacing(item, immunizations),
+        [item, immunizations]
+    )
 
     function onExemptCheck(exempt: boolean) {
-        setFieldValue('immunizations',
-            values.immunizations.map((im) => {
+        setValue('immunizations',
+            immunizations.map((im) => {
                 if (im.immunization_id === item.immunization_id ||
                     item.immunization?.consecutives?.includes(+im.immunization_id)
                 ) {
@@ -44,8 +58,8 @@ export function ImmunizationItem({ item }: {
     function changeImmunValue(value: string) {
         const isTopVac = item.immunization?.consecutive_vaccine === 0
         if (value === 'Exempt' && isTopVac) onExemptCheck(true)
-        setFieldValue('immunizations',
-            values.immunizations.map((im) => {
+        setValue('immunizations',
+            immunizations.map((im) => {
                 if (im.immunization_id === item.immunization_id) {
                     return {
                         ...im,
@@ -64,8 +78,8 @@ export function ImmunizationItem({ item }: {
                     display: 'flex',
                     flexDirection: 'row',
                     alignItems: 'center',
-                    background: validValue ? 'unset' : 'rgba(255, 214, 38, 0.3)',
-                    border: showError && !validValue ? '2px solid red' : 'unset',
+                    background: validValue ? 'unset' : item.immunization.is_deleted ? '#f0f0f0' : 'rgba(255, 214, 38, 0.3)',
+                    border: showError && !validValue && !item.immunization.is_deleted ? '2px solid red' : 'unset',
                     opacity: item.immunization.is_deleted ? .4 : 1,
                 }}
             >
@@ -75,7 +89,6 @@ export function ImmunizationItem({ item }: {
                         checked={exempt}
                         sx={{
                             paddingY: '10px',
-
                         }}
                         disabled={isValidDate(item.value) || item.immunization.is_deleted}
                         onChange={(e) => onExemptCheck(e.target.checked)}
@@ -95,9 +108,9 @@ export function ImmunizationItem({ item }: {
                 >
                     <Tooltip title={item.immunization.tooltip}>
                         <Typography
-                            sx={{ width: '60px', display: 'inline-block' }}
+                            sx={{ width: '70px', display: 'inline-block' }}
                             component='span'
-                            fontSize='12px'
+                            fontSize='14px'
                             color={SYSTEM_01}
                             fontWeight='700'
                         >
@@ -111,13 +124,20 @@ export function ImmunizationItem({ item }: {
                         showError={(!isValidDate && showError) || !validDateSpace}
                         allowIM={item.immunization.immunity_allowed === 1}
                         disabled={item.immunization.is_deleted}
+                        endAdornment={
+                            !validDateSpace &&
+                            <InputAdornment position="end" >
+                                <Tooltip
+                                    title="Does not fall within vaccine timeframe, school may request a new vaccine record."
+                                    sx={{ width: '20px' }}
+                                >
+                                    <ErrorOutlineOutlined color='error' />
+                                </Tooltip>
+                            </InputAdornment>
+                        }
                     />
                 </Box>
-                {!validDateSpace &&
-                    <Tooltip title="Does not fall within vaccine timeframe, school may request a new vaccine recordd">
-                        <ErrorOutlineOutlined color='error' />
-                    </Tooltip>
-                }
+
             </Box >
         </>
     )

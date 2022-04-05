@@ -264,11 +264,11 @@ export const otherPermissionptions = [
   { value: null, label: '' },
 
   {
-    label: 'I give my permission for the school to share immunization information with USIIS.',
+    label: 'NO',
     value: '0',
   },
   {
-    label: 'I do not give my permission for the school to share immunization information with USIIS',
+    label: 'YES',
     value: '1',
   },
 ]
@@ -277,11 +277,11 @@ export const picturePermissionptions = [
   { value: null, label: '' },
 
   {
-    label: 'I give permission for the school take and post pictures of my student.',
+    label: 'No',
     value: '0',
   },
   {
-    label: 'I do not give permission for the school to take and post pictures of my student.',
+    label: 'YES',
     value: '1',
   },
 ]
@@ -290,11 +290,11 @@ export const directoryPermissionptions = [
   { value: null, label: '' },
 
   {
-    label: 'I give permission for the school to post my contact information in a student directory.',
+    label: 'No',
     value: '0',
   },
   {
-    label: 'I do not give permission for the school to post my contact information in a student directory.',
+    label: 'YES',
     value: '1',
   },
 ]

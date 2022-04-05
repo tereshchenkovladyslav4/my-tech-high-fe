@@ -31,7 +31,7 @@ export const useStyles = {
     width: '100%',
   },
   containerHeight: {
-    height: 'calc(100vh - 135px)'
+    height: 'calc(120vh)'
   }
 
 }

@@ -1,38 +1,36 @@
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import SearchIcon from '@mui/icons-material/Search';
-import { AppBar as MUIAppBar, Avatar, Box, Grid, InputAdornment, OutlinedInput } from '@mui/material';
-import { map } from 'lodash';
-import React, { FunctionComponent, useContext, useEffect, useRef, useState } from 'react';
-import { useLocation } from 'react-router-dom';
-import Slider from 'react-slick';
-import { useRecoilState } from 'recoil';
-import { UserContext, userRegionState } from '../../providers/UserContext/UserProvider';
-import { MTHBLUE } from '../../utils/constants';
-import { Metadata } from '../Metadata/Metadata';
-import { Paragraph } from '../Typography/Paragraph/Paragraph';
-import { Subtitle } from '../Typography/Subtitle/Subtitle';
-import { useStyles } from './styles';
-
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
+import ChevronRightIcon from '@mui/icons-material/ChevronRight'
+import SearchIcon from '@mui/icons-material/Search'
+import { AppBar as MUIAppBar, Avatar, Box, Grid, InputAdornment, OutlinedInput } from '@mui/material'
+import { map } from 'lodash'
+import React, { FunctionComponent, useContext, useEffect, useRef, useState } from 'react'
+import { useLocation } from 'react-router-dom'
+import Slider from 'react-slick'
+import { useRecoilState } from 'recoil'
+import { UserContext, userRegionState } from '../../providers/UserContext/UserProvider'
+import { MTHBLUE } from '../../utils/constants'
+import { Metadata } from '../Metadata/Metadata'
+import { Paragraph } from '../Typography/Paragraph/Paragraph'
+import { Subtitle } from '../Typography/Subtitle/Subtitle'
+import { useStyles } from './styles'
 
 interface Region {
-  region_id: number;
+  region_id: number
   regionDetail: RegionDetail
 }
 
 interface RegionDetail {
-  id: number;
-  name: string;
+  id: number
+  name: string
+  program: string
 }
-
-
 
 export const AdminAppBar: FunctionComponent = () => {
   const classes = useStyles
-  const { me } = useContext(UserContext)
-  const location = useLocation();
-  const sliderRef = useRef();
-  const [seachField, setSearchField] = useState('');
+  const { me, setMe } = useContext(UserContext)
+  const location = useLocation()
+  const sliderRef = useRef()
+  const [seachField, setSearchField] = useState('')
   const [selected, setSelected] = useRecoilState(userRegionState)
 
   const isActive = (id) => location.pathname.includes(`homeroom/${id}`)
@@ -83,23 +81,22 @@ export const AdminAppBar: FunctionComponent = () => {
   }
 
   useEffect(() => {
-    if (!selected) {
-      handleRegionChange(me?.userRegion[0])
-    }
-  }, [me])
+    handleRegionChange(me?.userRegion[0])
+  }, [])
 
-
-  const handleRegionChange = region => {
-    setSelected(region);
-    localStorage.setItem("selectedRegion", JSON.stringify(region));
+  const handleRegionChange = (region) => {
+    setSelected(region)
+    localStorage.setItem('selectedRegion', JSON.stringify(region))
   }
-
-
 
   const renderRegionHeader = () =>
     map(me?.userRegion, (region: Region) => {
       return (
-        <Box sx={{ textDecoration: 'none', cursor: "pointer" }} key={region?.regionDetail.id} onClick={() => handleRegionChange(region)}>
+        <Box
+          sx={{ textDecoration: 'none', cursor: 'pointer' }}
+          key={region?.regionDetail.id}
+          onClick={() => handleRegionChange(region)}
+        >
           <Metadata
             divider={true}
             title={
@@ -109,18 +106,22 @@ export const AdminAppBar: FunctionComponent = () => {
             }
             subtitle={
               <Paragraph color='#cccccc' size={'large'}>
-                {region?.regionDetail.name}
+                {region?.regionDetail.program}
               </Paragraph>
             }
             image={
-              <Box sx={{ position: "relative" }}>
-                <Avatar
-                  alt={region?.regionDetail.name}
-                  src=' '
-                  variant='rounded'
-                  style={{ marginRight: 24, }}
+              <Box sx={{ position: 'relative' }}>
+                <Avatar alt={region?.regionDetail.name} src=' ' variant='rounded' style={{ marginRight: 24 }} />
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    bottom: -16,
+                    left: 0,
+                    width: '65%',
+                    height: 2,
+                    borderBottom: region.region_id === selected?.region_id ? '2px solid #4145FF' : 0,
+                  }}
                 />
-                <Box sx={{ position: "absolute", bottom: -16, left: 0, width: "65%", height: 2, borderBottom: region.region_id === selected?.region_id ? "2px solid #4145FF" : 0 }} />
               </Box>
             }
           />
@@ -131,7 +132,7 @@ export const AdminAppBar: FunctionComponent = () => {
   return (
     <MUIAppBar position='static' sx={classes.appBar} elevation={0}>
       <div style={classes.toolbar}>
-        <Grid container justifyContent="space-between" alignItems="center">
+        <Grid container justifyContent='space-between' alignItems='center'>
           <Grid item xs={3}>
             <OutlinedInput
               size='small'
@@ -141,7 +142,9 @@ export const AdminAppBar: FunctionComponent = () => {
               placeholder='Search Person, Email, or Phone Number'
               onChange={(e) => setSearchField(e.target.value)}
               startAdornment={
-                <InputAdornment position="start"><SearchIcon fontSize="small" style={{ color: 'black' }} /></InputAdornment>
+                <InputAdornment position='start'>
+                  <SearchIcon fontSize='small' style={{ color: 'black' }} />
+                </InputAdornment>
               }
             />
           </Grid>

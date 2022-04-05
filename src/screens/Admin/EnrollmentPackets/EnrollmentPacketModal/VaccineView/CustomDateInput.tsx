@@ -1,7 +1,6 @@
 import { TextField } from '@mui/material'
-import React, { useEffect, useState } from 'react'
+import React, { ReactNode, useEffect, useState } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
-import moment from 'moment'
 import { isValidVaccInput } from '../helpers'
 
 
@@ -17,13 +16,15 @@ export default function CustomDateInput({
     onChange,
     disabled = false,
     showError = false,
-    allowIM = false
+    allowIM = false,
+    endAdornment
 }: {
     initVal: string
     onChange: (val: string) => void
     disabled?: boolean
     showError?: boolean
     allowIM?: boolean
+    endAdornment?: ReactNode
 }
 ) {
     const styles = useStyles()
@@ -141,14 +142,14 @@ export default function CustomDateInput({
             inputProps={{
                 classes: { root: styles.textInput },
                 style: {
-                    padding: '4px 10px',
+                    padding: '4px 0px 4px 10px',
                     height: '25px',
                     fontSize: '12px',
                     fontWeight: '700',
                 }
             }}
             sx={{
-                width: '120px',
+                width: '130px',
             }}
             error={showError}
             size='small'
@@ -156,6 +157,9 @@ export default function CustomDateInput({
             value={val}
             onChange={(e) => handleDateChange(e.target.value)}
             required
+            InputProps={{
+                endAdornment: endAdornment,
+            }}
         />
     )
 }

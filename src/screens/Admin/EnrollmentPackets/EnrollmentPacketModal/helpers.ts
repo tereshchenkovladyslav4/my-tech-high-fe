@@ -29,10 +29,11 @@ function getDuration(interval: number, date: number) {
 }
 
 export function checkImmmValueWithSpacing(item: StudentImmunization, all: StudentImmunization[]) {
+  if (!item?.value) return true
+  if (!item.immunization?.consecutive_vaccine) return true
   const itemDate = moment(item.value, 'MM/DD/YYYY')
   if (!itemDate.isValid()) return true
   // If it top Vaccine then no need to check for spacing
-  if (item.immunization?.consecutive_vaccine === 0) return true
 
   // Check the consecutive date value
   const conDate = moment(

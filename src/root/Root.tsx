@@ -16,14 +16,14 @@ export const Root = () => {
   const { me, setMe } = useContext(UserContext)
   const { setTab, setVisitedTabs } = useContext(TabContext)
   const { loading, error, data } = useQuery(getMeQuery)
-  const [isSuper, setIsSuper] = useState(null);
+  const [isSuper, setIsSuper] = useState(null)
 
   useEffect(() => {
     if (!loading && me === null && data !== undefined) {
       setTab({
-        currentTab: 0
-      });
-      setMe(data.me);
+        currentTab: 0,
+      })
+      setMe(data.me)
       setVisitedTabs([])
       setIsSuper(Number(data.me?.level) === 1)
     }
@@ -32,25 +32,27 @@ export const Root = () => {
   return loading ? (
     <LoadingScreen />
   ) : me !== null ? (
-    !isSuper
-      ? <Flexbox flexDirection='row'>
+    !isSuper ? (
+      <Flexbox flexDirection='row'>
         <SideMenu />
         <Flexbox flexDirection='column'>
-          <div style={{marginLeft: '260px'}}>
+          <div style={{ marginLeft: '260px' }}>
             {me?.level === 2 ? <AdminAppBar /> : <AppBar />}
             <Routes />
           </div>
         </Flexbox>
       </Flexbox>
-      : <Flexbox flexDirection='row'>
+    ) : (
+      <Flexbox flexDirection='row'>
         <AdminSideMenu />
         <Flexbox flexDirection='column'>
-          <div style={{marginLeft: '260px'}}>
+          <div style={{ marginLeft: '260px' }}>
             <AdminAppBar />
             <AdminRoutes />
           </div>
         </Flexbox>
       </Flexbox>
+    )
   ) : (
     <UnauthenticatedRoutes />
   )

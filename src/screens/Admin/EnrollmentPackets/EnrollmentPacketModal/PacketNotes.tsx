@@ -1,13 +1,12 @@
 import React from 'react'
 import { Grid, TextField } from '@mui/material'
-import { useFormikContext } from 'formik'
+import { useFormContext, Controller } from 'react-hook-form'
 import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
 import { SYSTEM_01 } from '../../../../utils/constants'
-import { EnrollmentPacketFormType } from './types'
 
 
-export default function EnrollmentPacketNotes({ textRef }) {
-  const { values: { notes }, handleChange } = useFormikContext<EnrollmentPacketFormType>()
+export default function EnrollmentPacketNotes() {
+  const { control } = useFormContext()
 
   return (
     <Grid container sx={{ paddingTop: '20px' }}>
@@ -17,17 +16,18 @@ export default function EnrollmentPacketNotes({ textRef }) {
         </Subtitle>
       </Grid>
       <Grid item md={12} sm={12} xs={12}>
-        <TextField
-          inputRef={textRef}
-          size='small'
-          variant='outlined'
-          fullWidth
-          value={notes}
+        <Controller
           name="notes"
-          onChange={handleChange}
-          multiline
-          rows={8}
-          sx={{ padding: '10px 0px 20px 0px', width: '70%' }}
+          control={control}
+          render={({ field }) => <TextField
+            {...field}
+            size='small'
+            variant='outlined'
+            fullWidth
+            multiline
+            rows={8}
+            sx={{ padding: '10px 0px 20px 0px', width: '70%' }}
+          />}
         />
       </Grid>
     </Grid>

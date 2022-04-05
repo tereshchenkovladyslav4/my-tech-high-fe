@@ -2,14 +2,12 @@
 import React from 'react'
 import { Grid, TextField } from '@mui/material'
 import { Box } from '@mui/system'
-import { useFormikContext } from 'formik'
 import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
-import { EnrollmentPacketFormType } from '../types'
+import { Controller, useFormContext } from 'react-hook-form'
 
 
 export default function VoluntaryIncomeInfo() {
-    const { values, handleChange } = useFormikContext<EnrollmentPacketFormType>()
-
+    const { control } = useFormContext()
     return (
         <Box sx={{ paddingTop: '15px' }}>
             <Subtitle size='small' fontWeight='700'>
@@ -21,15 +19,17 @@ export default function VoluntaryIncomeInfo() {
                         <Subtitle size='small' fontWeight='500'>
                             Household Size
                         </Subtitle>
-                        <TextField
-                            placeholder='Household Size'
-                            size='small'
-                            variant='outlined'
-                            fullWidth
-                            name='household_size'
-                            value={values.household_size || ''}
-                            onChange={handleChange}
-
+                        <Controller
+                            name="household_size"
+                            control={control}
+                            render={({ field }) =>
+                                <TextField
+                                    {...field}
+                                    placeholder='Household Size'
+                                    size='small'
+                                    variant='outlined'
+                                    fullWidth
+                                />}
                         />
                     </Box>
                 </Grid>
@@ -38,14 +38,17 @@ export default function VoluntaryIncomeInfo() {
                         <Subtitle size='small' fontWeight='500'>
                             Household Gross Monthly Income
                         </Subtitle>
-                        <TextField
-                            placeholder='Household Gross Monthly Income'
-                            size='small'
-                            variant='outlined'
-                            fullWidth
-                            name='household_income'
-                            value={values.household_income || ''}
-                            onChange={handleChange}
+                        <Controller
+                            name="household_income"
+                            control={control}
+                            render={({ field }) =>
+                                <TextField
+                                    {...field}
+                                    placeholder='Household Gross Monthly Income'
+                                    size='small'
+                                    variant='outlined'
+                                    fullWidth
+                                />}
                         />
                     </Box>
                 </Grid>

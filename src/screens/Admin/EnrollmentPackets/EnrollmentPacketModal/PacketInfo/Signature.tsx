@@ -3,15 +3,17 @@ import React, { useEffect, useState } from 'react'
 import { Grid } from '@mui/material'
 import { Box } from '@mui/system'
 import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
-import { useFormikContext } from 'formik'
 import { EnrollmentPacketFormType } from '../types'
 import { useQuery } from '@apollo/client'
 import { getSignatureFile } from '../../services'
 import { SYSTEM_01 } from '../../../../../utils/constants'
+import { useFormContext } from 'react-hook-form'
 
 
 export default function SignatureComp() {
-    const { values: { signature_file_id } } = useFormikContext<EnrollmentPacketFormType>()
+    const { watch } = useFormContext<EnrollmentPacketFormType>()
+    const signature_file_id = watch('signature_file_id')
+
     const [signedUrl, setSignedUrl] = useState('')
     const { loading, data } = useQuery(getSignatureFile, {
         variables: {

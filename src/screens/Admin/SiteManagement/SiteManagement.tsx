@@ -16,7 +16,7 @@ import YearstImg from '../../../assets/schedules.png'
 import SchoolPartnerImage from '../../../assets/schoolAssignments.png'
 import { ItemCard } from '../../../components/ItemCard/ItemCard'
 import EnrollmentSetting from './EnrollmentSetting/EnrollmentSetting'
-import ProgramSetting from './ProgramSetting/ProgramSetting'
+import { ProgramSetting } from './ProgramSetting'
 import QuickLink from './QuickLink/QuickLink'
 import Withdrawal from './Withdrawal/Withdrawal'
 import Years from './Years/Years'
@@ -80,7 +80,7 @@ const SiteManagement: React.FC = () => {
       id: 7,
       title: 'Program Settings',
       subtitle: '',
-      isLink: false,
+      isLink: true,
       img: ProgramSettingImage,
       to: `program-setting`,
     },
@@ -230,7 +230,7 @@ const SiteManagement: React.FC = () => {
 
   return (
     <Box sx={{ px: 1, my: 4 }}>
-      {(currentView !== 'root' && currentView !== 'email-template') && <BackHeader />}
+      {currentView !== 'root' && currentView !== 'email-template' && <BackHeader />}
       {isExact &&
         (currentView === 'root' ? (
           renderCardsHandler(items)
@@ -240,7 +240,7 @@ const SiteManagement: React.FC = () => {
           <Withdrawal />
         ) : currentView === 'years' ? (
           <Years />
-        ) : currentView === 'program-setting' ? (
+        ) : currentView === 'program-settifng' ? (
           <ProgramSetting />
         ) : currentView === 'add-new-link' ? (
           <QuickLink />
@@ -251,6 +251,9 @@ const SiteManagement: React.FC = () => {
       <Switch>
         <Route path={`/site-management/enrollment`}>
           <EnrollmentSetting />
+        </Route>
+        <Route exact path={`/site-management/program-setting`}>
+          <ProgramSetting />
         </Route>
       </Switch>
     </Box>

@@ -38,7 +38,7 @@ const ImminizationItemInformation: React.FC<{ itemData: ImmunizationsData, setti
           minWidth='95px'
           component='span'
         >
-          {itemData.min_grade_level && itemData.max_grade_level ? `${itemData.min_grade_level || 'N/A'}-${itemData.max_grade_level || 'N/A'}` : 'N/A'}
+          {itemData.min_grade_level && itemData.max_grade_level && itemData.is_enabled ? `${itemData.min_grade_level || 'N/A'}-${itemData.max_grade_level || 'N/A'}` : 'N/A'}
         </Typography>
         <Divider sx={{ borderColor: 'black' }} orientation='vertical' flexItem />
         <Typography display='inline-block' minWidth='110px' component='span'>

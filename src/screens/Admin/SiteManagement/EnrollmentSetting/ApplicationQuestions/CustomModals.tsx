@@ -1,6 +1,6 @@
 import React from 'react'
 import { Box, Button, Modal, Typography } from '@mui/material'
-import InfoIcon from '@mui/icons-material/Info'
+import InfoIcon from '@mui/icons-material/InfoOutlined'
 
 export default function CustomModal({
   title,
@@ -28,7 +28,7 @@ export default function CustomModal({
           width: '441px',
           height: 'auto',
           bgcolor: '#EEF4F8',
-          borderRadius: 8,
+          borderRadius: 2,
           display: 'flex',
           justifyContent: 'center',
           p: 4,
@@ -38,7 +38,7 @@ export default function CustomModal({
           <Typography variant='h5'>{title}</Typography>
           <InfoIcon sx={{ fontSize: 50, margin: '20px 0px' }} />
           <Typography>{description}</Typography>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: '30px' }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: '30px', gap: '20px' }}>
             <Button
               sx={{ width: '160px', height: '36px', background: '#E7E7E7', borderRadius: '50px' }}
               onClick={onClose}

@@ -12,7 +12,7 @@ export const getMeQuery = gql`
         preferred_last_name
         preferred_first_name
         date_of_birth
-        gender 
+        gender
         address {
           address_id
           city
@@ -38,7 +38,7 @@ export const getMeQuery = gql`
       cookie
       avatar_url
       level
-      role{
+      role {
         id
         name
         level
@@ -48,23 +48,24 @@ export const getMeQuery = gql`
         regionDetail {
           id
           name
+          program
         }
       }
-      userAccess{
+      userAccess {
         access_id
         accessDetail {
           id
           name
         }
       }
-      students{
+      students {
         student_id
         hidden
-        status{
+        status {
           status
         }
-        packets{
-          files{
+        packets {
+          files {
             file_id
             kind
             mth_file_id
@@ -102,7 +103,7 @@ export const getMeQuery = gql`
           secondary_phone
           status
         }
-        applications{
+        applications {
           status
         }
         person {
@@ -122,7 +123,7 @@ export const getMeQuery = gql`
             name
             ext
           }
-          address{
+          address {
             city
             street
             street2

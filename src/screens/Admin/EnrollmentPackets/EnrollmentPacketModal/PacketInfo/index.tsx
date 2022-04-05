@@ -13,7 +13,7 @@ import SignatureComp from './Signature'
 
 export default function EnrollmentPacketInfo() {
     return (
-        <Grid container columnSpacing={5}>
+        <Grid container columnSpacing={5} maxWidth='100%'>
             <Grid item xs={12}>
                 <Title color={SYSTEM_01} size='small' fontWeight='700'>
                     Packet Info

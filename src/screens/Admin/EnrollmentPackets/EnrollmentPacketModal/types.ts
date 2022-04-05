@@ -4,7 +4,6 @@ import { StudentImmunization } from './VaccineView/types'
 export type SaveButtonsType = 'Save' | 'Accepted' | 'Missing Info' | 'Age Issue' | 'Conditional'
 
 export interface EnrollmentPacketFormType {
-  student: StudentType
   immunizations: StudentImmunization[]
   notes: string
   status: string
@@ -46,5 +45,5 @@ export interface EnrollmentPacketFormType {
   photo_permission: number
   dir_permission: number
   signature_file_id: number
-  missing_files: string
+  missing_files: string[]
 }

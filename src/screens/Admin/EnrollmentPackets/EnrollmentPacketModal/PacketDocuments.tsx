@@ -6,9 +6,9 @@ import { SYSTEM_06, SYSTEM_01, PRIMARY_MEDIUM_MOUSEOVER } from '../../../../util
 import { useMutation, useQuery } from '@apollo/client'
 import { deletePacketDocumentFileMutation, getPacketFiles } from '../services'
 import { useStyles } from './styles'
-import { WarningModal } from '../../../../components/WarningModal/Warning'
 // @ts-ignore
 import DeleteIcon from '../../../../assets/icons/icon-delete-small.svg'
+import CustomModal from '../../SiteManagement/EnrollmentSetting/ApplicationQuestions/CustomModals'
 
 export const EnrollmentPacketDocument = ({ packetData }) => {
   const classes = useStyles
@@ -79,7 +79,7 @@ export const EnrollmentPacketDocument = ({ packetData }) => {
   return (
     <Grid container sx={{ paddingTop: '20px' }}>
       <Grid item md={12} sm={12} xs={12}>
-        <Subtitle color={SYSTEM_01} size='medium' fontWeight='700'>
+        <Subtitle sx={{ fontSize: '12px' }} color={SYSTEM_01} fontWeight='700'>
           Documents
         </Subtitle>
       </Grid>
@@ -88,7 +88,7 @@ export const EnrollmentPacketDocument = ({ packetData }) => {
         <Grid
           sx={{
             '&.MuiGrid-root': {
-              maxWidth: '33%',
+              maxWidth: '8rem',
             },
           }}
           item
@@ -96,13 +96,13 @@ export const EnrollmentPacketDocument = ({ packetData }) => {
           sm={6}
           xs={12}
         >
-          <Paragraph color={SYSTEM_06} size='medium' fontWeight='400'>
+          <Paragraph color={SYSTEM_06} sx={{ fontSize: '12px' }} fontWeight='400'>
             Birth Certificate
           </Paragraph>
-          <Paragraph color={SYSTEM_06} size='medium' fontWeight='400'>
+          <Paragraph color={SYSTEM_06} sx={{ fontSize: '12px' }} fontWeight='400'>
             Immunization
           </Paragraph>
-          <Paragraph color={SYSTEM_06} size='medium' fontWeight='400'>
+          <Paragraph color={SYSTEM_06} sx={{ fontSize: '12px' }} fontWeight='400'>
             Proof of Residency
           </Paragraph>
         </Grid>
@@ -112,14 +112,13 @@ export const EnrollmentPacketDocument = ({ packetData }) => {
               {files?.find((e) => e.kind === 'bc') ? (
                 <Paragraph
                   color={PRIMARY_MEDIUM_MOUSEOVER}
-                  size='medium'
                   fontWeight='400'
-                  sx={{ display: 'flex', alignItems: 'center' }}
+                  sx={{ fontSize: '12px', display: 'flex', alignItems: 'center' }}
                 >
                   <a
                     href={files?.find((e) => e.kind === 'bc').url}
                     target='_blank'
-                    style={{ cursor: 'pointer' }}
+                    style={{ cursor: 'pointer', textDecoration: 'unset' }}
                     rel='noreferrer'
                   >
                     {files?.find((e) => e.kind === 'bc').name}
@@ -131,21 +130,20 @@ export const EnrollmentPacketDocument = ({ packetData }) => {
                   />
                 </Paragraph>
               ) : (
-                <Paragraph color={SYSTEM_06} size='medium' fontWeight='400'>
+                <Paragraph color={SYSTEM_06} sx={{ fontSize: '12px' }} fontWeight='400'>
                   Not found
                 </Paragraph>
               )}
               {files?.find((e) => e.kind === 'im') ? (
                 <Paragraph
                   color={PRIMARY_MEDIUM_MOUSEOVER}
-                  size='medium'
                   fontWeight='400'
-                  sx={{ display: 'flex', alignItems: 'center' }}
+                  sx={{ fontSize: '12px', display: 'flex', alignItems: 'center' }}
                 >
                   <a
                     href={files?.find((e) => e.kind === 'im').url}
                     target='_blank'
-                    style={{ cursor: 'pointer' }}
+                    style={{ cursor: 'pointer', textDecorationLine: 'unset' }}
                     rel='noreferrer'
                   >
                     {files?.find((e) => e.kind === 'im').name}
@@ -157,21 +155,20 @@ export const EnrollmentPacketDocument = ({ packetData }) => {
                   />
                 </Paragraph>
               ) : (
-                <Paragraph color={SYSTEM_06} size='medium' fontWeight='400'>
+                <Paragraph color={SYSTEM_06} sx={{ fontSize: '12px' }} fontWeight='400'>
                   Not found
                 </Paragraph>
               )}
               {files?.find((e) => e.kind === 'ur') ? (
                 <Paragraph
                   color={PRIMARY_MEDIUM_MOUSEOVER}
-                  size='medium'
                   fontWeight='400'
-                  sx={{ display: 'flex', alignItems: 'center' }}
+                  sx={{ fontSize: '12px', display: 'flex', alignItems: 'center' }}
                 >
                   <a
                     href={files?.find((e) => e.kind === 'ur').url}
                     target='_blank'
-                    style={{ cursor: 'pointer' }}
+                    style={{ cursor: 'pointer', textDecoration: 'unset' }}
                     rel='noreferrer'
                   >
                     {files?.find((e) => e.kind === 'ur').name}
@@ -183,20 +180,20 @@ export const EnrollmentPacketDocument = ({ packetData }) => {
                   />
                 </Paragraph>
               ) : (
-                <Paragraph color={SYSTEM_06} size='medium' fontWeight='400'>
+                <Paragraph color={SYSTEM_06} sx={{ fontSize: '12px' }} fontWeight='400'>
                   Not found
                 </Paragraph>
               )}
             </div>
           ) : (
             <div>
-              <Paragraph color={SYSTEM_06} size='medium' fontWeight='400'>
+              <Paragraph color={SYSTEM_06} sx={{ fontSize: '12px' }} fontWeight='400'>
                 Not found
               </Paragraph>
-              <Paragraph color={SYSTEM_06} size='medium' fontWeight='400'>
+              <Paragraph color={SYSTEM_06} sx={{ fontSize: '12px' }} fontWeight='400'>
                 Not found
               </Paragraph>
-              <Paragraph color={SYSTEM_06} size='medium' fontWeight='400'>
+              <Paragraph color={SYSTEM_06} sx={{ fontSize: '12px' }} fontWeight='400'>
                 Not found
               </Paragraph>
             </div>
@@ -205,12 +202,13 @@ export const EnrollmentPacketDocument = ({ packetData }) => {
       </Grid>
 
       {openConfirmModal && (
-        <WarningModal
-          handleModem={() => setOpenConfirmModal(!openConfirmModal)}
-          title='Delete Document File'
-          subtitle='Are you sure you want to delete?'
-          btntitle='Confirm'
-          handleSubmit={onDeleteConfirm}
+        <CustomModal
+          title='Delete File'
+          description='Are you sure you want to delete this file?'
+          confirmStr='Delete'
+          cancelStr='Cancel'
+          onConfirm={onDeleteConfirm}
+          onClose={() => setOpenConfirmModal(false)}
         />
       )}
     </Grid>

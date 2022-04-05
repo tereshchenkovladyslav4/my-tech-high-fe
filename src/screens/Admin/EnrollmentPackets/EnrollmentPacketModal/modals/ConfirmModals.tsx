@@ -1,6 +1,5 @@
 import { useMutation, useQuery } from '@apollo/client'
-import { useFormikContext } from 'formik'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { EmailModal } from '../../../../../components/EmailModal/EmailModal'
 import { StandardResponseOption } from '../../../../../components/EmailModal/StandardReponses/types'
 import { AGE_ISSUE_OPTIONS, MISSING_INFO_OPTIONS } from '../../../../../utils/constants'
@@ -9,15 +8,34 @@ import EnrollmentWarnSaveModal from './ConfirmSaveModal'
 import { EnrollmentPacketFormType } from '../types'
 import { Alert } from '@mui/material'
 import { getEmailTemplateQuery } from '../../../../../graphql/queries/email-template'
-export default function PacketConfirmModals({ refetch }) {
+import { useFormContext } from 'react-hook-form'
+import { studentContext } from '../providers'
+
+export default function PacketConfirmModals({ refetch, submitForm }) {
+  const student = useContext(studentContext)
+  const { watch, setValue } = useFormContext<EnrollmentPacketFormType>()
   const [emailTemplate, setEmailTemplate] = useState(null)
-  const { values, setFieldValue, submitForm } = useFormikContext<EnrollmentPacketFormType>()
   const [sendPacketEmail] = useMutation(sendEmailMutation)
-  const {
-    loading: templateLoading,
-    data: emailTemplateData,
-    refetch: refetchEmailTemplate,
-  } = useQuery(getEmailTemplateQuery, {
+
+  const [
+    notes,
+    showMissingInfoModal,
+    showAgeIssueModal,
+    showSaveWarnModal,
+    missingInfoAlert,
+    saveAlert,
+    preSaveStatus
+  ] = watch([
+    'notes',
+    'showMissingInfoModal',
+    'showAgeIssueModal',
+    'showSaveWarnModal',
+    'missingInfoAlert',
+    'saveAlert',
+    'preSaveStatus'
+  ])
+
+  const { data: emailTemplateData } = useQuery(getEmailTemplateQuery, {
     variables: {
       template: 'Missing Information',
     },
@@ -27,16 +45,14 @@ export default function PacketConfirmModals({ refetch }) {
   useEffect(() => {
     if (emailTemplateData !== undefined) {
       const { emailTemplateName } = emailTemplateData
-      if (emailTemplateName) {
-        setEmailTemplate(emailTemplateName)
-      }
+      if (emailTemplateName) setEmailTemplate(emailTemplateName)
     }
   }, [emailTemplateData])
 
   function onSubmit(status?: string) {
-    setFieldValue('status', status || values.preSaveStatus)
+    setValue('status', status || preSaveStatus)
     submitForm()
-    values.preSaveStatus === 'Accepted' && setFieldValue('saveAlert', 'The packet has been accepted')
+
   }
 
   const handleEmailSend = (subject: string, body: string, options: StandardResponseOption) => {
@@ -45,7 +61,7 @@ export default function PacketConfirmModals({ refetch }) {
         variables: {
           emailInput: {
             content: body,
-            email: values?.student.parent.person.email,
+            email: student?.parent.person.email,
             subject: subject,
             recipients: null,
             from: emailTemplate && emailTemplate?.from ? emailTemplate?.from : null,
@@ -55,17 +71,19 @@ export default function PacketConfirmModals({ refetch }) {
       })
       refetch()
 
-      setFieldValue('notes', constructPacketNotes(values.notes || '', options, options.type, body))
+      setValue('notes', constructPacketNotes(notes || '', options, options.type, body))
 
       if (options.type === 'AGE_ISSUE') {
-        setFieldValue('showAgeIssueModal', false)
+        setValue('showAgeIssueModal', false)
         onSubmit()
-        setFieldValue('age_issue', true)
+        setValue('age_issue', true)
       } else if (options.type === 'MISSING_INFO') {
-        setFieldValue('showMissingInfoModal', false)
-        setFieldValue('preSaveStatus', 'Missing Info')
+        setValue('showMissingInfoModal', false)
+        setValue('missingInfoAlert', true)
+        setTimeout(() => setValue('missingInfoAlert', false), 5000)
+        setValue('preSaveStatus', 'Missing Info')
 
-        setFieldValue('missing_files', JSON.stringify(options.values.filter((v) => v.checked).map((v) => v.abbr)))
+        setValue('missing_files', options.values.filter((v) => v.checked).map((v) => v.abbr))
         onSubmit('Missing Info')
       }
     } catch (e) {
@@ -102,7 +120,10 @@ export default function PacketConfirmModals({ refetch }) {
       const skipStart = 'but age-wise they could be in '.length
       const skipEnd = body[endIdx - 1] === '.' ? 1 : 0
 
-      const newBlank = body.substring(startIdx + skipStart, endIdx - skipEnd)
+      const newBlank = body
+        .substring(startIdx + skipStart, endIdx - skipEnd)
+        .replace('.</p>', '')
+        .replace('</p>', '')
 
       return text.replace('[BLANK]', newBlank)
     }
@@ -122,45 +143,47 @@ export default function PacketConfirmModals({ refetch }) {
     newNotesLines.splice(newNotesLines.indexOf('<SEP>'), 1)
     newNotes += newNotesLines.join('\n')
 
-    if (oldNotes.length) return setStudentInfo(newNotes, values.student) + '\n\n' + oldNotes
-    return setStudentInfo(newNotes, values.student) + '\n'
+    if (oldNotes.length) return setStudentInfo(newNotes, student) + '\n\n' + oldNotes
+    return setStudentInfo(newNotes, student) + '\n'
   }
 
-  if (values.showMissingInfoModal)
+  if (showMissingInfoModal)
     return (
       <EmailModal
-        handleModem={() => setFieldValue('showMissingInfoModal', false)}
-        title={`Missing Information on ${values.student.person.first_name}’s Enrollment Packet`}
+        handleModem={() => setValue('showMissingInfoModal', false)}
+        title={`Missing Information on ${student.person.first_name}’s Enrollment Packet`}
         options={MISSING_INFO_OPTIONS}
         handleSubmit={handleEmailSend}
         template={emailTemplate}
       />
     )
-  if (values.showAgeIssueModal)
+  if (showAgeIssueModal)
     return (
       <EmailModal
-        handleModem={() => setFieldValue('showAgeIssueModal', false)}
-        title={`Age Issue on ${values.student.person.first_name}’s Enrollment Packet`}
+        handleModem={() => setValue('showAgeIssueModal', false)}
+        title={`Age Issue on ${student.person.first_name}’s Enrollment Packet`}
         options={AGE_ISSUE_OPTIONS}
         handleSubmit={handleEmailSend}
+        template={emailTemplate}
       />
     )
 
-  if (values.showSaveWarnModal)
+  if (showSaveWarnModal)
     return (
       <EnrollmentWarnSaveModal
         onClose={() => {
-          setFieldValue('showValidationErrors', true)
-          setFieldValue('showSaveWarnModal', false)
+          setValue('showValidationErrors', true)
+          setValue('showSaveWarnModal', false)
         }}
         onSave={() => {
           onSubmit()
-          setFieldValue('showSaveWarnModal', false)
+          setValue('showSaveWarnModal', false)
+          setValue('showValidationErrors', false)
         }}
       />
     )
 
-  if (values.missingInfoAlert) {
+  if (missingInfoAlert) {
     return (
       <Alert
         sx={{
@@ -169,7 +192,7 @@ export default function PacketConfirmModals({ refetch }) {
           marginBottom: '15px',
         }}
         onClose={() => {
-          setFieldValue('missingInfoAlert', false)
+          setValue('missingInfoAlert', false)
         }}
         severity='error'
       >
@@ -177,7 +200,7 @@ export default function PacketConfirmModals({ refetch }) {
       </Alert>
     )
   }
-  if (values.saveAlert.length) {
+  if (saveAlert.length) {
     return (
       <Alert
         sx={{
@@ -186,11 +209,11 @@ export default function PacketConfirmModals({ refetch }) {
           marginBottom: '15px',
         }}
         onClose={() => {
-          setFieldValue('saveAlert', '')
+          setValue('saveAlert', '')
         }}
         severity='success'
       >
-        {values.saveAlert}
+        {saveAlert}
       </Alert>
     )
   }

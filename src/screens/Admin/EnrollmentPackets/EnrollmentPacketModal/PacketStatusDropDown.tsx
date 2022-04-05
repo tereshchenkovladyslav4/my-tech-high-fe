@@ -5,10 +5,10 @@ import Menu, { MenuProps } from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import { BUTTON_LINEAR_GRADIENT } from '../../../../utils/constants'
-import { useFormikContext } from 'formik'
 import { EnrollmentPacketFormType } from './types'
 import { useQuery } from '@apollo/client'
 import { getEnrollmentPacketStatusesQuery } from '../services'
+import { useFormContext } from 'react-hook-form'
 
 const StyledMenu = styled((props: MenuProps) => (
   <Menu
@@ -37,9 +37,11 @@ const StyledMenu = styled((props: MenuProps) => (
 }))
 
 export default function EnrollmentPacketDropDownButton() {
-  const { values: { status, packetStatuses }, setFieldValue } = useFormikContext<EnrollmentPacketFormType>()
+  const { watch, setValue } = useFormContext<EnrollmentPacketFormType>()
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
+
+  const [status, packetStatuses] = watch(['status', 'packetStatuses'])
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget)
@@ -49,13 +51,13 @@ export default function EnrollmentPacketDropDownButton() {
 
   React.useEffect(() => {
     if (data?.packetStatuses?.results) {
-      setFieldValue('packetStatuses', data.packetStatuses.results)
+      setValue('packetStatuses', data.packetStatuses.results)
     }
   }, [data])
 
   const handlePacketStatus = (name: any) => {
-    setFieldValue('status', name)
-    setFieldValue('preSaveStatus', name)
+    setValue('status', name)
+    setValue('preSaveStatus', name)
     setAnchorEl(null)
   }
 
