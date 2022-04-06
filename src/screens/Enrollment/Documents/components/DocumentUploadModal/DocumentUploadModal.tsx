@@ -73,9 +73,8 @@ export const DocumentUploadModal: DocumentUploadModalTemplateType = ({
 	}
 
 	const filesSelected = (e: any) => {
+		setErrorMessage('')
 		const files = e.target.files as File[]
-
-		// need to find a way to figure out if element exist and if it does
 		addDeletedFiles(files)
 		handleFiles(files as unknown as FileList[])
 	}
@@ -201,7 +200,7 @@ export const DocumentUploadModal: DocumentUploadModalTemplateType = ({
 							Browse Files
 						</label>
 					</Button>
-					<Paragraph size='medium' fontWeight='700' color={RED}>{ validFiles.length === 0 &&  errorMessage }</Paragraph>
+					<Paragraph size='medium' fontWeight='700' color={RED}>{ errorMessage }</Paragraph>
 				</Box>
 				<Box justifyContent={'space-between'} display='flex' flexDirection={'row'}>
 					<Button 

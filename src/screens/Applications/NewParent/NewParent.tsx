@@ -265,7 +265,7 @@ export const NewParent = () => {
     <form onSubmit={handleSubmit}>
       <Container sx={{ bgcolor: '#EEF4F8' }}>
         {!showConfirmationText ? (
-          <Box paddingX={36} paddingY={12}>
+          <Box paddingY={12}>
             <Box
               sx={{
                 backgroundImage: `url(${BGSVG})`,
@@ -273,284 +273,286 @@ export const NewParent = () => {
                 backgroundPosition: 'top',
               }}
             >
-              <Grid container rowSpacing={2} paddingTop={10}>
-                <Grid item xs={12}>
-                  <Title color={MTHBLUE} textAlign='center'>
-                    InfoCenter
-                  </Title>
-                </Grid>
-                <Grid item xs={12}>
-                  <Title fontWeight='500' textAlign='center'>
-                    Apply
-                  </Title>
-                </Grid>
-                <Grid item xs={12}>
-                  <Box marginTop={2}>
-                    <DropDown
-                      name='state'
-                      labelTop
-                      dropDownItems={availableRegions}
-                      placeholder='State'
-                      setParentValue={setState}
-                      alternate={true}
-                      sx={
-                        !!(formik.touched.state && Boolean(formik.errors.state))
-                          ? classes.textFieldError
-                          : classes.textField
-                      }
-                      size='small'
-                      error={{
-                        error: !!(formik.touched.state && Boolean(formik.errors.state)),
-                        errorMsg: (formik.touched.state && formik.errors.state) as string,
+            <Box paddingX={36}>
+                <Grid container rowSpacing={2} paddingTop={10}>
+                  <Grid item xs={12}>
+                    <Title color={MTHBLUE} textAlign='center'>
+                      InfoCenter
+                    </Title>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Title fontWeight='500' textAlign='center'>
+                      Apply
+                    </Title>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Box marginTop={2}>
+                      <DropDown
+                        name='state'
+                        labelTop
+                        dropDownItems={availableRegions}
+                        placeholder='State'
+                        setParentValue={setState}
+                        alternate={true}
+                        sx={
+                          !!(formik.touched.state && Boolean(formik.errors.state))
+                            ? classes.textFieldError
+                            : classes.textField
+                        }
+                        size='small'
+                        error={{
+                          error: !!(formik.touched.state && Boolean(formik.errors.state)),
+                          errorMsg: (formik.touched.state && formik.errors.state) as string,
+                        }}
+                      />
+                    </Box>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Box marginTop={2}>
+                      <DropDown
+                        name='programYear'
+                        labelTop
+                        dropDownItems={schoolYears}
+                        placeholder='Program Year'
+                        setParentValue={setProgramYear}
+                        alternate={true}
+                        sx={
+                          !!(formik.touched.programYear && Boolean(formik.errors.programYear))
+                            ? classes.textFieldError
+                            : classes.textField
+                        }
+                        size='small'
+                        error={{
+                          error: !!(formik.touched.programYear && Boolean(formik.errors.programYear)),
+                          errorMsg: (formik.touched.programYear && formik.errors.programYear) as string,
+                        }}
+                      />
+                    </Box>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Paragraph
+                      textAlign='center'
+                      sx={{
+                        fontSize: '11.2px',
                       }}
-                    />
-                  </Box>
-                </Grid>
-                <Grid item xs={12}>
-                  <Box marginTop={2}>
-                    <DropDown
-                      name='programYear'
-                      labelTop
-                      dropDownItems={schoolYears}
-                      placeholder='Program Year'
-                      setParentValue={setProgramYear}
-                      alternate={true}
-                      sx={
-                        !!(formik.touched.programYear && Boolean(formik.errors.programYear))
-                          ? classes.textFieldError
-                          : classes.textField
-                      }
-                      size='small'
-                      error={{
-                        error: !!(formik.touched.programYear && Boolean(formik.errors.programYear)),
-                        errorMsg: (formik.touched.programYear && formik.errors.programYear) as string,
-                      }}
-                    />
-                  </Box>
-                </Grid>
-                <Grid item xs={12}>
+                    >
+                      Our tuition-free, personalized distance education program is available to home-based Utah residents
+                      between the ages of 5-18.
+                    </Paragraph>
+                  </Grid>
                   <Paragraph
-                    textAlign='center'
                     sx={{
                       fontSize: '11.2px',
+                      width: '125%',
+                      textAlign: 'center',
                     }}
                   >
-                    Our tuition-free, personalized distance education program is available to home-based Utah residents
-                    between the ages of 5-18.
+                    If you already have an InfoCenter account,
+                    <span style={{ fontSize: '11.2px', fontWeight: 700 }}>
+                      {'\u00A0'}please{'\u00A0'}
+                    </span>
+                    <Link
+                      to={DASHBOARD}
+                      style={{ fontSize: '11.2px', fontWeight: 700, color: MTHBLUE, textDecoration: 'none' }}
+                    >
+                      login{'\u00A0'}
+                    </Link>
+                    before submitting an application. Thank you!.
                   </Paragraph>
+                  <Grid item xs={12}>
+                    <TextField
+                      name='firstName'
+                      size='small'
+                      label='Parent First Name'
+                      focused
+                      variant='outlined'
+                      sx={
+                        !!(formik.touched.firstName && Boolean(formik.errors.firstName))
+                          ? classes.textFieldError
+                          : classes.textField
+                      }
+                      inputProps={{
+                        style: { color: 'black' },
+                      }}
+                      InputLabelProps={{
+                        style: { color: SYSTEM_05 },
+                      }}
+                      value={formik.values.firstName}
+                      onChange={formik.handleChange}
+                      error={formik.touched.firstName && Boolean(formik.errors.firstName)}
+                      helperText={formik.touched.firstName && formik.errors.firstName}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <TextField
+                      name='lastName'
+                      size='small'
+                      label='Parent Last Name'
+                      focused
+                      variant='outlined'
+                      sx={
+                        !!(formik.touched.lastName && Boolean(formik.errors.lastName))
+                          ? classes.textFieldError
+                          : classes.textField
+                      }
+                      inputProps={{
+                        style: { color: 'black' },
+                      }}
+                      InputLabelProps={{
+                        style: { color: SYSTEM_05 },
+                      }}
+                      value={formik.values.lastName}
+                      onChange={formik.handleChange}
+                      error={formik.touched.lastName && Boolean(formik.errors.lastName)}
+                      helperText={formik.touched.lastName && formik.errors.lastName}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <TextField
+                      name='phoneNumber'
+                      size='small'
+                      label='Parent Phone'
+                      focused
+                      variant='outlined'
+                      sx={
+                        !!(formik.touched.phoneNumber && Boolean(formik.errors.phoneNumber))
+                          ? classes.textFieldError
+                          : classes.textField
+                      }
+                      inputProps={{
+                        style: { color: 'black' },
+                      }}
+                      InputLabelProps={{
+                        style: { color: SYSTEM_05 },
+                      }}
+                      value={formik.values.phoneNumber}
+                      onChange={formik.handleChange}
+                      error={formik.touched.phoneNumber && Boolean(formik.errors.phoneNumber)}
+                      helperText={formik.touched.phoneNumber && formik.errors.phoneNumber}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <TextField
+                      name='email'
+                      size='small'
+                      label='Parent Email'
+                      focused
+                      variant='outlined'
+                      sx={
+                        showEmailError || !!(formik.touched.email && Boolean(formik.errors.email))
+                          ? classes.textFieldError
+                          : classes.textField
+                      }
+                      inputProps={{
+                        style: { color: 'black' },
+                      }}
+                      InputLabelProps={{
+                        style: { color: SYSTEM_05 },
+                      }}
+                      value={formik.values.email}
+                      onChange={formik.handleChange}
+                      error={Boolean(formik.errors.email)}
+                      helperText={
+                        (showEmailError && formik.errors.email) || (formik.touched.email && formik.errors.email)
+                      }
+                      onBlur={checkEmailExist}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <TextField
+                      name='emailConfirm'
+                      size='small'
+                      label='Parent Email Again'
+                      focused
+                      variant='outlined'
+                      sx={
+                        !!(formik.touched.emailConfirm && Boolean(formik.errors.emailConfirm))
+                          ? classes.textFieldError
+                          : classes.textField
+                      }
+                      inputProps={{
+                        style: { color: 'black' },
+                      }}
+                      InputLabelProps={{
+                        style: { color: SYSTEM_05 },
+                      }}
+                      value={formik.values.emailConfirm}
+                      onChange={formik.handleChange}
+                      error={formik.touched.emailConfirm && Boolean(formik.errors.emailConfirm)}
+                      helperText={formik.touched.emailConfirm && formik.errors.emailConfirm}
+                    />
+                  </Grid>
                 </Grid>
-                <Paragraph
-                  sx={{
-                    fontSize: '11.2px',
-                    width: '125%',
-                    textAlign: 'center',
-                  }}
-                >
-                  If you already have an InfoCenter account,
-                  <span style={{ fontSize: '11.2px', fontWeight: 700 }}>
-                    {'\u00A0'}please{'\u00A0'}
-                  </span>
-                  <Link
-                    to={DASHBOARD}
-                    style={{ fontSize: '11.2px', fontWeight: 700, color: MTHBLUE, textDecoration: 'none' }}
-                  >
-                    login{'\u00A0'}
-                  </Link>
-                  before submitting an application. Thank you!.
-                </Paragraph>
-                <Grid item xs={12}>
-                  <TextField
-                    name='firstName'
-                    size='small'
-                    label='Parent First Name'
-                    focused
-                    variant='outlined'
-                    sx={
-                      !!(formik.touched.firstName && Boolean(formik.errors.firstName))
-                        ? classes.textFieldError
-                        : classes.textField
-                    }
-                    inputProps={{
-                      style: { color: 'black' },
-                    }}
-                    InputLabelProps={{
-                      style: { color: SYSTEM_05 },
-                    }}
-                    value={formik.values.firstName}
-                    onChange={formik.handleChange}
-                    error={formik.touched.firstName && Boolean(formik.errors.firstName)}
-                    helperText={formik.touched.firstName && formik.errors.firstName}
-                  />
+                <Box marginTop={2}>{students}</Box>
+                <Grid container>
+                  <Grid item xs={12}>
+                    <Button
+                      color='secondary'
+                      variant='contained'
+                      style={{
+                        borderRadius: 8,
+                        border: '1px solid black',
+                        fontSize: 12,
+                        width: '100%',
+                        height: 48,
+                        backgroundColor: '#EEF4F8',
+                      }}
+                      onClick={appendAddStudentList}
+                    >
+                      Add Student
+                    </Button>
+                  </Grid>
+                  <Typography sx={{ fontSize: '7.66px', width: '125%', marginY: 4 }}>
+                    Student(s) agrees to adhere to all program policies and requirements, including participation in state
+                    testing. Review details at{'\u00A0'}
+                    <span style={{ color: MTHBLUE, fontSize: '11.2px' }}>mytechhigh.com/utah</span>
+                  </Typography>
+                  <Grid item xs={12}>
+                    <TextField
+                      name='refferedBy'
+                      size='small'
+                      label='If new to My Tech High, please tell us who referred you so we can thank them!'
+                      focused
+                      variant='outlined'
+                      sx={
+                        !!(formik.touched.refferedBy && Boolean(formik.errors.refferedBy))
+                          ? classes.textFieldError
+                          : classes.textField
+                      }
+                      inputProps={{
+                        style: { color: 'black' },
+                      }}
+                      InputLabelProps={{
+                        style: { color: SYSTEM_05 },
+                      }}
+                      value={formik.values.refferedBy}
+                      onChange={formik.handleChange}
+                      error={formik.touched.refferedBy && Boolean(formik.errors.refferedBy)}
+                      helperText={formik.touched.refferedBy && formik.errors.refferedBy}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Button
+                      variant='contained'
+                      type='submit'
+                      style={{
+                        borderRadius: 8,
+                        fontSize: 12,
+                        background: 'linear-gradient(90deg, #3E2783 0%, rgba(62, 39, 131, 0) 100%) #4145FF',
+                        width: '100%',
+                        height: 48,
+                        marginTop: 50,
+                      }}
+                    >
+                      Submit to Utah School
+                    </Button>
+                  </Grid>
                 </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    name='lastName'
-                    size='small'
-                    label='Parent Last Name'
-                    focused
-                    variant='outlined'
-                    sx={
-                      !!(formik.touched.lastName && Boolean(formik.errors.lastName))
-                        ? classes.textFieldError
-                        : classes.textField
-                    }
-                    inputProps={{
-                      style: { color: 'black' },
-                    }}
-                    InputLabelProps={{
-                      style: { color: SYSTEM_05 },
-                    }}
-                    value={formik.values.lastName}
-                    onChange={formik.handleChange}
-                    error={formik.touched.lastName && Boolean(formik.errors.lastName)}
-                    helperText={formik.touched.lastName && formik.errors.lastName}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    name='phoneNumber'
-                    size='small'
-                    label='Parent Phone'
-                    focused
-                    variant='outlined'
-                    sx={
-                      !!(formik.touched.phoneNumber && Boolean(formik.errors.phoneNumber))
-                        ? classes.textFieldError
-                        : classes.textField
-                    }
-                    inputProps={{
-                      style: { color: 'black' },
-                    }}
-                    InputLabelProps={{
-                      style: { color: SYSTEM_05 },
-                    }}
-                    value={formik.values.phoneNumber}
-                    onChange={formik.handleChange}
-                    error={formik.touched.phoneNumber && Boolean(formik.errors.phoneNumber)}
-                    helperText={formik.touched.phoneNumber && formik.errors.phoneNumber}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    name='email'
-                    size='small'
-                    label='Parent Email'
-                    focused
-                    variant='outlined'
-                    sx={
-                      showEmailError || !!(formik.touched.email && Boolean(formik.errors.email))
-                        ? classes.textFieldError
-                        : classes.textField
-                    }
-                    inputProps={{
-                      style: { color: 'black' },
-                    }}
-                    InputLabelProps={{
-                      style: { color: SYSTEM_05 },
-                    }}
-                    value={formik.values.email}
-                    onChange={formik.handleChange}
-                    error={Boolean(formik.errors.email)}
-                    helperText={
-                      (showEmailError && formik.errors.email) || (formik.touched.email && formik.errors.email)
-                    }
-                    onBlur={checkEmailExist}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    name='emailConfirm'
-                    size='small'
-                    label='Parent Email Again'
-                    focused
-                    variant='outlined'
-                    sx={
-                      !!(formik.touched.emailConfirm && Boolean(formik.errors.emailConfirm))
-                        ? classes.textFieldError
-                        : classes.textField
-                    }
-                    inputProps={{
-                      style: { color: 'black' },
-                    }}
-                    InputLabelProps={{
-                      style: { color: SYSTEM_05 },
-                    }}
-                    value={formik.values.emailConfirm}
-                    onChange={formik.handleChange}
-                    error={formik.touched.emailConfirm && Boolean(formik.errors.emailConfirm)}
-                    helperText={formik.touched.emailConfirm && formik.errors.emailConfirm}
-                  />
-                </Grid>
-              </Grid>
-              <Box marginTop={2}>{students}</Box>
-              <Grid container>
-                <Grid item xs={12}>
-                  <Button
-                    color='secondary'
-                    variant='contained'
-                    style={{
-                      borderRadius: 8,
-                      border: '1px solid black',
-                      fontSize: 12,
-                      width: '100%',
-                      height: 48,
-                      backgroundColor: '#EEF4F8',
-                    }}
-                    onClick={appendAddStudentList}
-                  >
-                    Add Student
-                  </Button>
-                </Grid>
-                <Typography sx={{ fontSize: '7.66px', width: '125%', marginY: 4 }}>
-                  Student(s) agrees to adhere to all program policies and requirements, including participation in state
-                  testing. Review details at{'\u00A0'}
-                  <span style={{ color: MTHBLUE, fontSize: '11.2px' }}>mytechhigh.com/utah</span>
-                </Typography>
-                <Grid item xs={12}>
-                  <TextField
-                    name='refferedBy'
-                    size='small'
-                    label='If new to My Tech High, please tell us who referred you so we can thank them!'
-                    focused
-                    variant='outlined'
-                    sx={
-                      !!(formik.touched.refferedBy && Boolean(formik.errors.refferedBy))
-                        ? classes.textFieldError
-                        : classes.textField
-                    }
-                    inputProps={{
-                      style: { color: 'black' },
-                    }}
-                    InputLabelProps={{
-                      style: { color: SYSTEM_05 },
-                    }}
-                    value={formik.values.refferedBy}
-                    onChange={formik.handleChange}
-                    error={formik.touched.refferedBy && Boolean(formik.errors.refferedBy)}
-                    helperText={formik.touched.refferedBy && formik.errors.refferedBy}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <Button
-                    variant='contained'
-                    type='submit'
-                    style={{
-                      borderRadius: 8,
-                      fontSize: 12,
-                      background: 'linear-gradient(90deg, #3E2783 0%, rgba(62, 39, 131, 0) 100%) #4145FF',
-                      width: '100%',
-                      height: 48,
-                      marginTop: 50,
-                    }}
-                  >
-                    Submit to Utah School
-                  </Button>
-                </Grid>
-              </Grid>
+              </Box>
             </Box>
           </Box>
         ) : (
-          <Box paddingX={36} paddingY={12} height={'100vh'}>
+          <Box paddingY={12}>
             <Box
               sx={{
                 backgroundImage: `url(${BGSVG})`,
@@ -560,18 +562,20 @@ export const NewParent = () => {
                 flexDirection: 'column',
               }}
             >
-              <Box marginTop={12}>
-                <Title color={MTHBLUE} textAlign='center'>
-                  InfoCenter
+            <Box paddingX={36} height={'175vh'}>
+                <Box marginTop={12}>
+                  <Title color={MTHBLUE} textAlign='center'>
+                    InfoCenter
+                  </Title>
+                </Box>
+                <Title fontWeight='500' textAlign='center'>
+                  Apply
                 </Title>
-              </Box>
-              <Title fontWeight='500' textAlign='center'>
-                Apply
-              </Title>
-              <Box marginTop={'25%'}>
-                <Title size='medium' fontWeight='500' textAlign='center'>
-                  Please check your email for a verification link to complete your account.
-                </Title>
+                <Box marginTop={'25%'}>
+                  <Title size='medium' fontWeight='500' textAlign='center'>
+                    Please check your email for a verification link to complete your account.
+                  </Title>
+                </Box>
               </Box>
             </Box>
           </Box>

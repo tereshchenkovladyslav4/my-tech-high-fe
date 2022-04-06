@@ -181,7 +181,7 @@ export const Documents: FunctionComponent = () => {
     {showSuccess 
       && <SuccessModal 
         title='' 
-        subtitle='Your Enrollment Packet has been submitted successfully and is now pending approval.”' 
+        subtitle='Your Enrollment Packet has been submitted successfully and is now pending approval.' 
         handleSubmit={onSubmit} 
       />
     }

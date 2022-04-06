@@ -31,7 +31,22 @@ export const useStyles = {
     width: '100%',
   },
   containerHeight: {
+    height: 'calc(100vh - 135px)'
+  },
+  textfield: {
+    [`& .${outlinedInputClasses.root} .${outlinedInputClasses.notchedOutline}`]: {
+      borderColor: SYSTEM_07,
+      borderWidth: '1px',
+    },
+    marginY: 2,
+    width: '100%',
+  },
+  dropdown:{
+    [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
+      borderColor: SYSTEM_07,
+    },
+    marginY: 2,
+    width: '100%',
     height: 'calc(120vh)'
   }
-
 }

@@ -49,6 +49,7 @@ export const getMeQuery = gql`
           id
           name
           program
+          state_logo
         }
       }
       userAccess {

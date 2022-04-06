@@ -63,8 +63,7 @@ export const CompleteAccount = () => {
 
   return (
     !showSuccess
-    ?<Box paddingX={36} paddingY={6} height={'100vh'} sx={{ bgcolor: '#EEF4F8' }}>
-      <Box>
+    ?<Box paddingY={6} sx={{ bgcolor: '#EEF4F8' }} >
         <Box
           sx={{
             backgroundImage: `url(${BGSVG})`,
@@ -74,78 +73,81 @@ export const CompleteAccount = () => {
             flexDirection: 'column',
             alignItems: 'center',
           }}
-        >
-          <Box marginTop={12}>
-            <Title color={MTHBLUE} textAlign='center'>
-              InfoCenter
+        > 
+        <Box>
+        <Box paddingX={36} height={'175vh'} >
+            <Box marginTop={12}>
+              <Title color={MTHBLUE} textAlign='center'>
+                InfoCenter
+              </Title>
+            </Box>
+            <Title fontWeight='500' textAlign='center'>
+              Thanks for verifying your email.
             </Title>
-          </Box>
-          <Title fontWeight='500' textAlign='center'>
-            Thanks for verifying your email.
-          </Title>
-          <Title fontWeight='500' textAlign='center' sx={{ marginTop: 2, marginBottom: 8 }}>
-            Please create a password to complete your account
-          </Title>
-          <form 
-            onSubmit={formik.handleSubmit} 
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-            }}
-          >
-          <TextField
-            name='email'
-            sx={classes.textField}
-            label='Account Email'
-            focused
-            variant='outlined'
-            inputProps={{
-              style: { color: 'black' },
-            }}
-            value={formik.values.email}
-            onChange={formik.handleChange}
-            error={formik.touched.email && Boolean(formik.errors.email)}
-            helperText={formik.touched.email && formik.errors.email}
-          />
-          <TextField
-            name='password'
-            type='password'
-            sx={classes.textField}
-            label='Password'
-            focused
-            variant='outlined'
-            inputProps={{
-              style: { color: 'black' },
-            }}
-            value={formik.values.password}
-            onChange={formik.handleChange}
-            error={formik.touched.password && Boolean(formik.errors.password)}
-            helperText={formik.touched.password && formik.errors.password}
-          />
-          <TextField
-            name='confirmPassword'
-            type='password'
-            sx={classes.textField}
-            label='Re-type Password'
-            focused
-            variant='outlined'
-            inputProps={{
-              style: { color: 'black' },
-            }}
-            value={formik.values.confirmPassword}
-            onChange={formik.handleChange}
-            error={formik.touched.confirmPassword && Boolean(formik.errors.confirmPassword)}
-            helperText={formik.touched.confirmPassword && formik.errors.confirmPassword}
-          />
-          <Button variant='contained' style={classes.button} type='submit'>
-            <Paragraph fontWeight='700' sx={{ fontSize: '11.2px' }}>
-              Create Account
-            </Paragraph>
-          </Button>
-        </form>
-          <Box position='absolute' bottom={20}>
-            <NewApplicationFooter />
+            <Title fontWeight='500' textAlign='center' sx={{ marginTop: 2, marginBottom: 8 }}>
+              Please create a password to complete your account
+            </Title>
+            <form 
+              onSubmit={formik.handleSubmit} 
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+              }}
+            >
+            <TextField
+              name='email'
+              sx={classes.textField}
+              label='Account Email'
+              focused
+              variant='outlined'
+              inputProps={{
+                style: { color: 'black' },
+              }}
+              value={formik.values.email}
+              onChange={formik.handleChange}
+              error={formik.touched.email && Boolean(formik.errors.email)}
+              helperText={formik.touched.email && formik.errors.email}
+            />
+            <TextField
+              name='password'
+              type='password'
+              sx={classes.textField}
+              label='Password'
+              focused
+              variant='outlined'
+              inputProps={{
+                style: { color: 'black' },
+              }}
+              value={formik.values.password}
+              onChange={formik.handleChange}
+              error={formik.touched.password && Boolean(formik.errors.password)}
+              helperText={formik.touched.password && formik.errors.password}
+            />
+            <TextField
+              name='confirmPassword'
+              type='password'
+              sx={classes.textField}
+              label='Re-type Password'
+              focused
+              variant='outlined'
+              inputProps={{
+                style: { color: 'black' },
+              }}
+              value={formik.values.confirmPassword}
+              onChange={formik.handleChange}
+              error={formik.touched.confirmPassword && Boolean(formik.errors.confirmPassword)}
+              helperText={formik.touched.confirmPassword && formik.errors.confirmPassword}
+            />
+            <Button variant='contained' style={classes.button} type='submit'>
+              <Paragraph fontWeight='700' sx={{ fontSize: '11.2px' }}>
+                Create Account
+              </Paragraph>
+            </Button>
+          </form>
+            <Box position='absolute' bottom={20}>
+              <NewApplicationFooter />
+            </Box>
           </Box>
         </Box>
       </Box>

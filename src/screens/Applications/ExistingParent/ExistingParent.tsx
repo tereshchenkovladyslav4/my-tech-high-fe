@@ -11,9 +11,36 @@ import { AddApplicationMutation } from './service'
 import { UserContext } from '../../../providers/UserContext/UserProvider'
 import { useFormik } from 'formik'
 import * as yup from 'yup'
-import { find } from 'lodash'
+import { find, map } from 'lodash'
+import { GRADES, SYSTEM_05 } from '../../../utils/constants'
+import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined'
+// 
 
 export const ExistingParent = () => {
+
+  const [formValues, setFormValues] = useState([{ firstName: "", lastName : ""}])
+
+  const studentHandleChange = (i, e) => {
+    const newFormValues = [...formValues];
+    newFormValues[i][e.target.name] = e.target.value;
+    setFormValues(newFormValues);
+  }
+
+  const studentAddFormFields = () => {
+      setFormValues([...formValues, { firstName: "", lastName: "" }])
+    }
+
+  const studentRemoveFormFields = (i) => {
+      let newFormValues = [...formValues];
+      newFormValues.splice(i, 1);
+      setFormValues(newFormValues)
+  }
+
+  const studentHandleSubmit = (event) => {
+      event.preventDefault();
+      alert(JSON.stringify(formValues));
+  }
+
   const onStudentFieldChanged = (idx, fieldName, value) => {
     setStudentData((prev) => {
       if (prev[idx] === undefined) {
@@ -68,11 +95,7 @@ export const ExistingParent = () => {
   const [students, setStudents] = useState([AddNewStudent(0)])
   const classes = useStyles
 
-  const appendAddStudentList = () =>
-    setStudents(() => {
-      const element = students.length
-      return [...students, AddNewStudent(element)]
-    })
+
 
   const [submitApplicationAction, { data }] = useMutation(AddApplicationMutation)
 
@@ -94,6 +117,7 @@ export const ExistingParent = () => {
       })
     })
   }
+
   const setProgramYear = (id: any) => {
     formik.values.programYear = id
     const currProgramYear = find(programYearItems, { value: id })
@@ -113,6 +137,40 @@ export const ExistingParent = () => {
       }
     },500)
   })
+
+  const parseGrades = map(GRADES, (grade) => {
+    return {
+      label: grade,
+      value: grade.toString()
+    }
+  })
+
+  const appendAddStudentList = () =>
+    setStudents(() => {
+      //const element = students.length
+      //return [...students, AddNewStudent(element)]
+    })
+
+  const addStudent2 = () => {
+    //setCount((prevState) => prevState + 1);
+    //setTimers((prevState) => {
+    //  const newTimers = Array.from(prevState);  // CREATING A NEW ARRAY OBJECT
+    //  timers.push(count);
+    //  return newTimers;  
+    //});
+  };
+
+  const removeStudent2 = () => {
+    //setTimers((prevState) => {
+    //  const newTimers = Array.from(prevState);  // CREATING A NEW ARRAY OBJECT
+    //  newTimers.pop();
+    //  return newTimers;  
+    //});
+  };
+
+  const setFormikGradeLevel = (id) => {
+    console.log(id)
+  } 
 
   return (
     <form onSubmit={handleSubmit}>
@@ -157,7 +215,82 @@ export const ExistingParent = () => {
 
           <Grid item xs={12} display='flex' justifyContent={'center'}>
             <Box width={'451.53px'}>
-              {students}
+              {/*{students}*/}
+              {formValues.map((element, index) => (
+              <Box display={'flex'} flexDirection='column' key={index}>
+                <Box 
+                  width={index === 0 ? '100%' : '103.9%'} 
+                  display='flex' 
+                  flexDirection='row' 
+                  alignItems={'center'}
+                >
+                  <TextField 
+                    type="text" 
+                    value={element.firstName || ""} 
+                    onChange={e =>studentHandleChange(index, e)} 
+                    size='small'
+                    name='firstName'
+                    label='Student First Name'
+                    focused
+                    variant='outlined'
+                    sx={
+                      classes.textFieldError
+                    }
+                    inputProps={{
+                      style: { color: 'black' },
+                    }}
+                    InputLabelProps={{
+                      style: { color: SYSTEM_05 },
+                    }}
+                  />
+                  {
+                    index ? 
+                    <DeleteForeverOutlinedIcon 
+                      sx={{left: 12, position: 'relative', color: 'darkgray'}}
+                      onClick={() => studentRemoveFormFields(index)}
+                    />
+                    : null
+                  }
+                </Box>
+                  <TextField 
+                    type="text"
+                    value={element.lastName || ""} 
+                    onChange={e =>studentHandleChange(index, e)} 
+                    size='small'
+                    name='lastName'
+                    label='Student Last Name'
+                    focused
+                    variant='outlined'
+                    sx={
+                      classes.textFieldError
+                    }
+                    inputProps={{
+                      style: { color: 'black' },
+                    }}
+                    InputLabelProps={{
+                      style: { color: SYSTEM_05 },
+                    }}
+                  />
+                  <DropDown
+                    name='gradeLevel'
+                    labelTop
+                    placeholder={`Student Grade Level (age) as of September 1, ${2022}`}
+                    dropDownItems={parseGrades}
+                    setParentValue={setFormikGradeLevel}
+                    alternate={true}
+                    sx={ classes.dropdown }
+                    //  !!(formik.touched.gradeLevel && Boolean(formik.errors.gradeLevel))
+                    //    ? classes.textFieldError
+                    //    : classes.dropdown
+                    //}
+                    size='small'
+                    //error={{
+                    //  error: !!(formik.touched.gradeLevel && Boolean(formik.errors.gradeLevel)),
+                    //  errorMsg: (formik.touched.gradeLevel && formik.errors.gradeLevel) as string,
+                    //}}
+                  />
+            </Box>
+          ))}
             </Box>
           </Grid>
           <Grid item xs={12}>
@@ -165,7 +298,7 @@ export const ExistingParent = () => {
               color='secondary'
               variant='contained'
               style={classes.addStudentButton}
-              onClick={appendAddStudentList}
+              onClick={studentAddFormFields}
               >
               Add Student
             </Button>

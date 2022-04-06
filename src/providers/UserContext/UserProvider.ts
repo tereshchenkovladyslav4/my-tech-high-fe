@@ -13,7 +13,7 @@ export type UserInfo = {
   avatar_url?: string | undefined | null
   level?: number | undefined | null
   role?: RoleType
-  userRegion?: RegionType
+  userRegion?: RegionType[]
   userAccess?: AccessType
   students?: StudentType[]
   profile?: Person

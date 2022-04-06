@@ -22,9 +22,9 @@ export const CompleteAccountSuccess = () => {
   const classes = useStyles
 
   return (
-		<Container>
-        <Box paddingX={36} paddingY={12} height={'100vh'}>
-          <Box
+		<Container sx={{ bgcolor: '#EEF4F8' }} >
+      <Box paddingY={12} >
+        <Box
             sx={{
               backgroundImage: `url(${BGSVG})`,
               backgroundRepeat: 'no-repeat',
@@ -33,6 +33,7 @@ export const CompleteAccountSuccess = () => {
               flexDirection: 'column',
             }}
           >
+          <Box paddingX={36} height={'175vh'}>  
             <Box marginTop={12}>
               <Title color={MTHBLUE} textAlign='center'>
                 InfoCenter
@@ -55,6 +56,7 @@ export const CompleteAccountSuccess = () => {
             </Box>
           </Box>
         </Box>
+      </Box>
       <Box paddingBottom={4}>
         <NewApplicationFooter />
       </Box>

@@ -1,18 +1,21 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useContext } from 'react'
 import { Box, Button, Stack, Typography, IconButton, Dialog, DialogTitle, DialogActions } from '@mui/material'
 import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
 import { MTHBLUE } from '../../../../utils/constants'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { useStyles } from '../styles'
-import { userRegionState } from '../../../../providers/UserContext/UserProvider'
+import { UserContext, userRegionState } from '../../../../providers/UserContext/UserProvider'
 import { useRecoilState } from 'recoil'
 import { StateSelect } from './StateSelect'
 import { ProgramSelect } from './ProgramSelect'
+import { StateLogo } from './StateLogo'
 import { gql, useMutation } from '@apollo/client'
 import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded'
 import { ErrorOutline } from '@mui/icons-material'
 
 import { useHistory } from 'react-router-dom'
+import { StateLogoFileType } from './StateLogo/StateLogoTypes'
+import axios from 'axios'
 
 export const updateStateNameMutation = gql`
   mutation UpdateRegion($updateRegionInput: UpdateRegionInput!) {
@@ -20,6 +23,7 @@ export const updateStateNameMutation = gql`
       id
       name
       program
+      state_logo
     }
   }
 `
@@ -27,11 +31,14 @@ export const updateStateNameMutation = gql`
 const ProgramSetting: React.FC = () => {
   const classes = useStyles
   const history = useHistory()
+  const { me, setMe } = useContext(UserContext)
   const [selectedRegion, setSelectedRegion] = useRecoilState(userRegionState)
   const [stateName, setStateName] = useState<string>(selectedRegion?.regionDetail?.name)
   const [program, setProgram] = useState<string>(selectedRegion?.regionDetail?.program)
+  const [stateLogo, setStateLogo] = useState<string>(selectedRegion?.regionDetail?.stateLogo)
   const [open, setOpen] = React.useState<boolean>(false)
   const [isChanged, setIsChanged] = useState<boolean>(false)
+  const [stateLogoFile, setStateLogoFile] = useState<StateLogoFileType>()
 
   const [submitSave, { data, loading, error }] = useMutation(updateStateNameMutation)
 
@@ -44,21 +51,77 @@ const ProgramSetting: React.FC = () => {
   useEffect(() => {
     setStateName(selectedRegion?.regionDetail?.name)
     setProgram(selectedRegion?.regionDetail?.program)
+    setStateLogo(selectedRegion?.regionDetail?.state_logo)
+    setStateLogoFile(null)
     setIsChanged(false)
   }, [selectedRegion])
 
+  const uploadImage = async (file) => {
+    const bodyFormData = new FormData()
+    if (file) {
+      bodyFormData.append('file', file)
+      bodyFormData.append('region', 'UT')
+      bodyFormData.append('year', '2022')
+
+      // try {
+      //   const response = await axios({
+      //     method: 'post',
+      //     url: import.meta.env.SNOWPACK_PUBLIC_S3_URL,
+      //     data: bodyFormData,
+      //     headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${localStorage.getItem('JWT')}` },
+      //   })
+      // } catch (error) {
+      //   console.log(error)
+      // }
+
+      const response = await fetch(import.meta.env.SNOWPACK_PUBLIC_S3_URL, {
+        method: 'POST',
+        body: bodyFormData,
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('JWT')}`,
+        },
+      })
+      const {
+        data: { s3 },
+      } = await response.json()
+      return s3.Location
+    }
+  }
+
   const handleClickSave = async () => {
-    await submitSave({
+    let imageLocation: string
+    if (stateLogoFile) {
+      imageLocation = await uploadImage(stateLogoFile.file)
+    }
+    const submitedResponse = await submitSave({
       variables: {
         updateRegionInput: {
           id: selectedRegion?.region_id,
           name: stateName,
           program: program,
+          state_logo: imageLocation ? imageLocation : stateLogo,
         },
       },
     })
+    const forSaveUpdatedRegion = {
+      region_id: selectedRegion?.region_id,
+      regionDetail: submitedResponse.data.updateRegion,
+    }
+    localStorage.setItem('selectedRegion', JSON.stringify(forSaveUpdatedRegion))
+    setSelectedRegion(forSaveUpdatedRegion)
     setIsChanged(false)
-    window.location.reload()
+
+    setMe((prevMe) => {
+      const updatedRegions = prevMe?.userRegion.map((prevRegion) => {
+        return prevRegion.region_id == selectedRegion?.region_id ? forSaveUpdatedRegion : prevRegion
+      })
+      console.log('updatedRegions ', updatedRegions)
+      return {
+        ...prevMe,
+        userRegion: updatedRegions,
+      }
+    })
+    // window.location.reload()
   }
 
   const handleBackClick = () => {
@@ -119,7 +182,16 @@ const ProgramSetting: React.FC = () => {
         isChanged={isChanged}
         setIsChanged={setIsChanged}
       />
+      <StateLogo
+        stateLogo={stateLogo}
+        setStateLogo={setStateLogo}
+        isChanged={isChanged}
+        setIsChanged={setIsChanged}
+        stateLogoFile={stateLogoFile}
+        setStateLogoFile={setStateLogoFile}
+      />
       <ProgramSelect program={program} setProgram={setProgram} isChanged={isChanged} setIsChanged={setIsChanged} />
+
       <Dialog
         open={open}
         onClose={handleClose}

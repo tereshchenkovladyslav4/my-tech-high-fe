@@ -13,17 +13,7 @@ import { Metadata } from '../Metadata/Metadata'
 import { Paragraph } from '../Typography/Paragraph/Paragraph'
 import { Subtitle } from '../Typography/Subtitle/Subtitle'
 import { useStyles } from './styles'
-
-interface Region {
-  region_id: number
-  regionDetail: RegionDetail
-}
-
-interface RegionDetail {
-  id: number
-  name: string
-  program: string
-}
+import { RegionType } from '../../providers/UserContext/types'
 
 export const AdminAppBar: FunctionComponent = () => {
   const classes = useStyles
@@ -81,7 +71,9 @@ export const AdminAppBar: FunctionComponent = () => {
   }
 
   useEffect(() => {
-    handleRegionChange(me?.userRegion[0])
+    if (!selected) {
+      handleRegionChange(me?.userRegion[0])
+    }
   }, [])
 
   const handleRegionChange = (region) => {
@@ -90,7 +82,7 @@ export const AdminAppBar: FunctionComponent = () => {
   }
 
   const renderRegionHeader = () =>
-    map(me?.userRegion, (region: Region) => {
+    map(me?.userRegion, (region: RegionType) => {
       return (
         <Box
           sx={{ textDecoration: 'none', cursor: 'pointer' }}
@@ -111,7 +103,12 @@ export const AdminAppBar: FunctionComponent = () => {
             }
             image={
               <Box sx={{ position: 'relative' }}>
-                <Avatar alt={region?.regionDetail.name} src=' ' variant='rounded' style={{ marginRight: 24 }} />
+                <Avatar
+                  alt={region?.regionDetail.name}
+                  src={region?.regionDetail?.state_logo}
+                  variant='rounded'
+                  style={{ marginRight: 24 }}
+                />
                 <Box
                   sx={{
                     position: 'absolute',

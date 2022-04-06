@@ -4,7 +4,7 @@ import { DropDown } from '../../../components/DropDown/DropDown'
 import { DropDownItem } from '../../../components/DropDown/types'
 import { Paragraph } from '../../../components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '../../../components/Typography/Subtitle/Subtitle'
-import { DASHBOARD, HOMEROOM } from '../../../utils/constants'
+import { HOMEROOM, RED } from '../../../utils/constants'
 import { useStyles } from '../styles'
 import SignatureCanvas from 'react-signature-canvas'
 import { useFormik } from 'formik';
@@ -12,9 +12,8 @@ import * as yup from 'yup';
 import { useMutation } from '@apollo/client'
 import { submitEnrollmentMutation } from './service'
 import { EnrollmentContext } from '../../../providers/EnrollmentPacketPrivder/EnrollmentPacketProvider'
-import { Prompt, useHistory } from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
 import { SuccessModal } from '../../../components/SuccessModal/SuccessModal'
-import { map } from 'lodash'
 
 export const Submission: FunctionComponent = () => {
 
@@ -29,6 +28,7 @@ export const Submission: FunctionComponent = () => {
   const [signature, setSignature] = useState<File>()
   const [fileId, setFileId] = useState()
   const signatureRef = useRef()
+  const[signatureInvalid, setSignatureInvalid] = useState(false)
 
   const [showSuccess, setShowSuccess] = useState(false)
   const [submitEnrollment, {data}] = useMutation(submitEnrollmentMutation)
@@ -44,21 +44,27 @@ export const Submission: FunctionComponent = () => {
   const validationSchema = yup.object({
     printName: yup
       .string()
+      .nullable()
       .required('Printed name is required'),
     ferpa: yup
       .string()
+      .nullable()
       .required('Ferpa response is required'),
     studentPhoto: yup
       .string()
+      .nullable()
       .required('Student Photo response is required'),
     schoolDistrict: yup
       .string()
+      .nullable()
       .required('School District permission is required'),
     understand: yup
       .bool()
+      .nullable()
       .oneOf([true], 'Field must be checked'),
     approve: yup
       .bool()
+      .nullable()
       .oneOf([true], 'Field must be checked'),
   })
 
@@ -68,14 +74,23 @@ export const Submission: FunctionComponent = () => {
       ferpa: student.packets.at(-1)?.ferpa_agreement,
       studentPhoto: student.packets.at(-1)?.photo_permission,
       schoolDistrict: student.packets.at(-1)?.photo_permission,
-      understand: understand,
-      approve: undefined,
+      understand,
+      approve,
     },
     validationSchema: validationSchema,
     onSubmit: () => {
-      getSignature()
+      if(!signatureRef.current.isEmpty()){
+        getSignature()
+      }
     },
   });
+
+  const handleSubmit = (e) => {
+    if(signatureRef.current.isEmpty()){
+      setSignatureInvalid(true)
+    }
+    formik.handleSubmit(e)
+  }
 
   const dropDownOptions: DropDownItem[] = [
     {
@@ -146,20 +161,6 @@ export const Submission: FunctionComponent = () => {
           }
         }
       })
-      .then((data) => {
-        //setMe((prev) => {
-        //  return {
-        //    ...prev,
-        //    students: map(prev?.students, (student) => {
-        //      const returnValue = {...student}
-        //      if(student.student_id === data.data.saveEnrollmentPacketSubmission.student.student_id ){
-        //      return data.data.saveEnrollmentPacketSubmission.student
-        //      }
-        //      return returnValue
-        //    }),
-        //  }
-        //})
-      })
     }
   },fileId)
 
@@ -175,17 +176,18 @@ export const Submission: FunctionComponent = () => {
     window.scrollTo(0, 0)
 }
 
-  const idk = () => {
-    nextTab()
-  }
+
 
   return (
-    <form onSubmit={(e) => !disabled ? formik.handleSubmit(e) : nextTab(e)}>
+    <form onSubmit={(e) => !disabled ? handleSubmit(e) : nextTab(e)}>
     {showSuccess 
       && <SuccessModal 
         title='' 
-        subtitle='Your Enrollment Packet has been submitted successfully and is now pending approval.”' 
-        handleSubmit={() => history.push(`${HOMEROOM}`)} 
+        subtitle='Your Enrollment Packet has been submitted successfully and is now pending approval.' 
+        handleSubmit={() => {
+          history.push(`${HOMEROOM}`)
+          location.reload()
+        }}
       />
     }
     <Grid container rowSpacing={3} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
@@ -207,8 +209,10 @@ export const Submission: FunctionComponent = () => {
           component="fieldset"
           variant="standard"
           error={formik.touched.understand && Boolean(formik.errors.understand)}
+          
         >
-        <FormGroup>
+        <FormGroup
+        >
           <FormControlLabel
             control={<Checkbox
               disabled={disabled}
@@ -221,6 +225,7 @@ export const Submission: FunctionComponent = () => {
               </Paragraph>
             }
           />
+          <FormHelperText>{formik.touched.understand && formik.errors.understand}</FormHelperText>
         </FormGroup>
         </FormControl>
       </Grid>
@@ -244,6 +249,7 @@ export const Submission: FunctionComponent = () => {
               </Paragraph>
             }
           />
+          <FormHelperText>{formik.touched.approve && formik.errors.approve}</FormHelperText>
         </FormGroup>
         </FormControl>
       </Grid>
@@ -323,6 +329,15 @@ export const Submission: FunctionComponent = () => {
           />
         </Box>
       </Grid>
+      {signatureInvalid 
+        &&  <Grid 
+          item 
+          xs={12} 
+          sx={{display:'flex', justifyContent: 'center',}}
+        >
+          <FormHelperText style={{textAlign:'center',color: RED}}>Signature required</FormHelperText>
+        </Grid>
+      }
       <Grid item xs={12} sx={{display:'flex', justifyContent: 'center',}}>
         <Paragraph size='medium' sx={{textDecoration: 'underline', cursor: 'pointer'}} onClick={() => resetSignature()}>Reset</Paragraph>
       </Grid>
@@ -332,7 +347,7 @@ export const Submission: FunctionComponent = () => {
           type='submit'
         >
           <Paragraph fontWeight='700' size='medium'>
-          { disabled ? 'Go Home' : 'Save & Continue'}
+          { disabled ? 'Go Home' : 'Done'}
           </Paragraph>
         </Button>
       </Box>

@@ -18,6 +18,7 @@ export type RegionDetail = {
   id: number
   name: string
   program: string
+  state_logo: string
 }
 
 export type AccessDetail = {
