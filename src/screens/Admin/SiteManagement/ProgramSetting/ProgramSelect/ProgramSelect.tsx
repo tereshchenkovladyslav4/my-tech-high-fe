@@ -35,7 +35,7 @@ export default function ProgramSelect({ program, setProgram, setIsChanged }: Pro
           <Select
             labelId='demo-simple-select-standard-label'
             id='demo-simple-select-standard'
-            value={program}
+            value={program ? program : ''}
             onChange={handleChange}
             label='Program'
           >

@@ -17,6 +17,7 @@ export type UserInfo = {
   userAccess?: AccessType
   students?: StudentType[]
   profile?: Person
+  selectedRegionId?: number
 }
 
 export type UserContextType = {

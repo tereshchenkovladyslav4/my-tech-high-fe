@@ -4,8 +4,7 @@ import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
 import { MTHBLUE } from '../../../../utils/constants'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { useStyles } from '../styles'
-import { UserContext, userRegionState } from '../../../../providers/UserContext/UserProvider'
-import { useRecoilState } from 'recoil'
+import { UserContext } from '../../../../providers/UserContext/UserProvider'
 import { StateSelect } from './StateSelect'
 import { ProgramSelect } from './ProgramSelect'
 import { StateLogo } from './StateLogo'
@@ -15,7 +14,6 @@ import { ErrorOutline } from '@mui/icons-material'
 
 import { useHistory } from 'react-router-dom'
 import { StateLogoFileType } from './StateLogo/StateLogoTypes'
-import axios from 'axios'
 
 export const updateStateNameMutation = gql`
   mutation UpdateRegion($updateRegionInput: UpdateRegionInput!) {
@@ -32,10 +30,9 @@ const ProgramSetting: React.FC = () => {
   const classes = useStyles
   const history = useHistory()
   const { me, setMe } = useContext(UserContext)
-  const [selectedRegion, setSelectedRegion] = useRecoilState(userRegionState)
-  const [stateName, setStateName] = useState<string>(selectedRegion?.regionDetail?.name)
-  const [program, setProgram] = useState<string>(selectedRegion?.regionDetail?.program)
-  const [stateLogo, setStateLogo] = useState<string>(selectedRegion?.regionDetail?.stateLogo)
+  const [stateName, setStateName] = useState<string>()
+  const [program, setProgram] = useState<string>()
+  const [stateLogo, setStateLogo] = useState<string>()
   const [open, setOpen] = React.useState<boolean>(false)
   const [isChanged, setIsChanged] = useState<boolean>(false)
   const [stateLogoFile, setStateLogoFile] = useState<StateLogoFileType>()
@@ -48,13 +45,17 @@ const ProgramSetting: React.FC = () => {
   const handleClose = () => {
     setOpen(false)
   }
+  const getRegionById = (id: number) => {
+    return me.userRegion.find((region) => region.region_id === id)
+  }
   useEffect(() => {
+    const selectedRegion = getRegionById(me.selectedRegionId)
     setStateName(selectedRegion?.regionDetail?.name)
     setProgram(selectedRegion?.regionDetail?.program)
     setStateLogo(selectedRegion?.regionDetail?.state_logo)
     setStateLogoFile(null)
     setIsChanged(false)
-  }, [selectedRegion])
+  }, [me.selectedRegionId])
 
   const uploadImage = async (file) => {
     const bodyFormData = new FormData()
@@ -96,7 +97,7 @@ const ProgramSetting: React.FC = () => {
     const submitedResponse = await submitSave({
       variables: {
         updateRegionInput: {
-          id: selectedRegion?.region_id,
+          id: me.selectedRegionId,
           name: stateName,
           program: program,
           state_logo: imageLocation ? imageLocation : stateLogo,
@@ -104,16 +105,16 @@ const ProgramSetting: React.FC = () => {
       },
     })
     const forSaveUpdatedRegion = {
-      region_id: selectedRegion?.region_id,
+      region_id: me.selectedRegionId,
       regionDetail: submitedResponse.data.updateRegion,
     }
-    localStorage.setItem('selectedRegion', JSON.stringify(forSaveUpdatedRegion))
-    setSelectedRegion(forSaveUpdatedRegion)
+    // localStorage.setItem('selectedRegion', JSON.stringify(forSaveUpdatedRegion))
+    // setSelectedRegion(forSaveUpdatedRegion)
     setIsChanged(false)
 
     setMe((prevMe) => {
       const updatedRegions = prevMe?.userRegion.map((prevRegion) => {
-        return prevRegion.region_id == selectedRegion?.region_id ? forSaveUpdatedRegion : prevRegion
+        return prevRegion.region_id == me.selectedRegionId ? forSaveUpdatedRegion : prevRegion
       })
       console.log('updatedRegions ', updatedRegions)
       return {
