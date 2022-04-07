@@ -71,7 +71,7 @@ export const AdminAppBar: FunctionComponent = () => {
   }
 
   useEffect(() => {
-    if (!selected) {
+    if (me?.selectedRegionId == null) {
       handleRegionChange(me?.userRegion[0])
     }
   }, [])
@@ -79,6 +79,12 @@ export const AdminAppBar: FunctionComponent = () => {
   const handleRegionChange = (region) => {
     setSelected(region)
     localStorage.setItem('selectedRegion', JSON.stringify(region))
+    setMe((prev) => {
+      return {
+        ...prev,
+        selectedRegionId: region.region_id,
+      }
+    })
   }
 
   const renderRegionHeader = () =>
