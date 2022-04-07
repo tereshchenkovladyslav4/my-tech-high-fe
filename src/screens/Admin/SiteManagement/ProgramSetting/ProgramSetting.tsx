@@ -8,6 +8,8 @@ import { UserContext, userRegionState } from '../../../../providers/UserContext/
 import { useRecoilState } from 'recoil'
 import { StateSelect } from './StateSelect'
 import { ProgramSelect } from './ProgramSelect'
+import { BirthDateCutOffSelect } from './BirthDateCutOffSelect'
+import { SpecialEdSelect } from './SpecialEdSelect'
 import { StateLogo } from './StateLogo'
 import { gql, useMutation } from '@apollo/client'
 import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded'
@@ -24,6 +26,8 @@ export const updateStateNameMutation = gql`
       name
       program
       state_logo
+      special_ed
+      birth_date
     }
   }
 `
@@ -35,7 +39,10 @@ const ProgramSetting: React.FC = () => {
   const [selectedRegion, setSelectedRegion] = useRecoilState(userRegionState)
   const [stateName, setStateName] = useState<string>(selectedRegion?.regionDetail?.name)
   const [program, setProgram] = useState<string>(selectedRegion?.regionDetail?.program)
-  const [stateLogo, setStateLogo] = useState<string>(selectedRegion?.regionDetail?.stateLogo)
+  const [specialEd, setSpecialEd] = useState<boolean>(selectedRegion?.regionDetail?.special_ed)
+  const [birthDate, setBirthDate] = useState<string>(selectedRegion?.regionDetail?.birth_date)
+  const [birthDateInvalid, setBirthDateInvalid] = useState<boolean>(false)
+  const [stateLogo, setStateLogo] = useState<string>(selectedRegion?.regionDetail?.state_logo)
   const [open, setOpen] = React.useState<boolean>(false)
   const [isChanged, setIsChanged] = useState<boolean>(false)
   const [stateLogoFile, setStateLogoFile] = useState<StateLogoFileType>()
@@ -51,6 +58,8 @@ const ProgramSetting: React.FC = () => {
   useEffect(() => {
     setStateName(selectedRegion?.regionDetail?.name)
     setProgram(selectedRegion?.regionDetail?.program)
+    setSpecialEd(selectedRegion?.regionDetail?.special_ed)
+    setBirthDate(selectedRegion?.regionDetail?.birth_date)
     setStateLogo(selectedRegion?.regionDetail?.state_logo)
     setStateLogoFile(null)
     setIsChanged(false)
@@ -93,6 +102,12 @@ const ProgramSetting: React.FC = () => {
     if (stateLogoFile) {
       imageLocation = await uploadImage(stateLogoFile.file)
     }
+    let birthDates = birthDate.split('/')
+    console.log(birthDates, parseInt(birthDates[0]), "brithDates")
+    if (parseInt(birthDates[0]) < 0 || parseInt(birthDates[0]) > 12 ) {
+      setBirthDateInvalid(true)
+      return
+    }
     const submitedResponse = await submitSave({
       variables: {
         updateRegionInput: {
@@ -100,6 +115,8 @@ const ProgramSetting: React.FC = () => {
           name: stateName,
           program: program,
           state_logo: imageLocation ? imageLocation : stateLogo,
+          special_ed: specialEd,
+          birth_date: birthDate,
         },
       },
     })
@@ -191,6 +208,19 @@ const ProgramSetting: React.FC = () => {
         setStateLogoFile={setStateLogoFile}
       />
       <ProgramSelect program={program} setProgram={setProgram} isChanged={isChanged} setIsChanged={setIsChanged} />
+      <BirthDateCutOffSelect
+        birthDate={birthDate}
+        invalid={birthDateInvalid}
+        setBirthDate={setBirthDate}
+        isChanged={isChanged}
+        setIsChanged={setIsChanged}
+      />
+      <SpecialEdSelect 
+        specialEd={specialEd} 
+        setSpecialEd={setSpecialEd} 
+        isChanged={isChanged} 
+        setIsChanged={setIsChanged} 
+      />
 
       <Dialog
         open={open}
