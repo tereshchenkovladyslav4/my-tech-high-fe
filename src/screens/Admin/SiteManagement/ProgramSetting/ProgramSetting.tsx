@@ -122,8 +122,8 @@ const ProgramSetting: React.FC = () => {
     if (stateLogoFile) {
       imageLocation = await uploadImage(stateLogoFile.file)
     }
-    let tempArr = birthDate.split('/')
-    if (tempArr[0].indexOf('m') >= 0 || tempArr[1].indexOf('d') >= 0 || tempArr[2].indexOf('y') >= 0) {
+    let tempArr = birthDate?.split('/')
+    if (tempArr && (tempArr[0].indexOf('m') >= 0 || tempArr[1].indexOf('d') >= 0 || tempArr[2].indexOf('y') >= 0)) {
       setBirthDateInvalid(true)
       return
     }
