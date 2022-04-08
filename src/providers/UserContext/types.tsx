@@ -19,6 +19,8 @@ export type RegionDetail = {
   name: string
   program: string
   state_logo: string
+  special_ed: boolean
+  birth_date: string
 }
 
 export type AccessDetail = {

@@ -1,3 +1,4 @@
+import { useQuery } from '@apollo/client'
 import React, { useState, useEffect, useRef, useContext } from 'react'
 import { Box, Button, Stack, Typography, IconButton, Dialog, DialogTitle, DialogActions } from '@mui/material'
 import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
@@ -7,11 +8,13 @@ import { useStyles } from '../styles'
 import { UserContext } from '../../../../providers/UserContext/UserProvider'
 import { StateSelect } from './StateSelect'
 import { ProgramSelect } from './ProgramSelect'
+import { BirthDateCutOffSelect } from './BirthDateCutOffSelect'
+import { SpecialEdSelect } from './SpecialEdSelect'
 import { StateLogo } from './StateLogo'
+import { GradesSelect } from './GradesSelect'
 import { gql, useMutation } from '@apollo/client'
 import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded'
 import { ErrorOutline } from '@mui/icons-material'
-
 import { useHistory } from 'react-router-dom'
 import { StateLogoFileType } from './StateLogo/StateLogoTypes'
 
@@ -22,6 +25,18 @@ export const updateStateNameMutation = gql`
       name
       program
       state_logo
+      special_ed
+      birth_date
+    }
+  }
+`
+
+export const getRegionInfoById = gql`
+  query Region($regionId: ID!) {
+    region(id: $regionId) {
+      birth_date
+      special_ed
+      grades
     }
   }
 `
@@ -32,12 +47,21 @@ const ProgramSetting: React.FC = () => {
   const { me, setMe } = useContext(UserContext)
   const [stateName, setStateName] = useState<string>()
   const [program, setProgram] = useState<string>()
+  const [specialEd, setSpecialEd] = useState<boolean>()
+  const [birthDate, setBirthDate] = useState<string>()
+  const [birthDateInvalid, setBirthDateInvalid] = useState<boolean>(false)
   const [stateLogo, setStateLogo] = useState<string>()
+  const [grades, setGrades] = useState<string>()
   const [open, setOpen] = React.useState<boolean>(false)
   const [isChanged, setIsChanged] = useState<boolean>(false)
   const [stateLogoFile, setStateLogoFile] = useState<StateLogoFileType>()
-
   const [submitSave, { data, loading, error }] = useMutation(updateStateNameMutation)
+  const regionInfoResponse = useQuery(getRegionInfoById, {
+    variables: {
+      regionId: me?.selectedRegionId
+    },
+    fetchPolicy: 'network-only',
+  })
 
   const handleClickOpen = () => {
     setOpen(true)
@@ -55,7 +79,10 @@ const ProgramSetting: React.FC = () => {
     setStateLogo(selectedRegion?.regionDetail?.state_logo)
     setStateLogoFile(null)
     setIsChanged(false)
-  }, [me.selectedRegionId])
+    setSpecialEd(regionInfoResponse.data?.region?.special_ed)
+    setBirthDate(regionInfoResponse.data?.region?.birth_date)
+    setGrades(regionInfoResponse.data?.region?.grades)
+  }, [me.selectedRegionId, regionInfoResponse.data?.region])
 
   const uploadImage = async (file) => {
     const bodyFormData = new FormData()
@@ -94,6 +121,11 @@ const ProgramSetting: React.FC = () => {
     if (stateLogoFile) {
       imageLocation = await uploadImage(stateLogoFile.file)
     }
+    let tempArr = birthDate?.split('/')
+    if (tempArr && (tempArr[0].indexOf('m') >= 0 || tempArr[1].indexOf('d') >= 0 || tempArr[2].indexOf('y') >= 0)) {
+      setBirthDateInvalid(true)
+      return
+    }
     const submitedResponse = await submitSave({
       variables: {
         updateRegionInput: {
@@ -101,6 +133,9 @@ const ProgramSetting: React.FC = () => {
           name: stateName,
           program: program,
           state_logo: imageLocation ? imageLocation : stateLogo,
+          special_ed: specialEd,
+          birth_date: birthDate,
+          grades: grades,
         },
       },
     })
@@ -108,15 +143,15 @@ const ProgramSetting: React.FC = () => {
       region_id: me.selectedRegionId,
       regionDetail: submitedResponse.data.updateRegion,
     }
-    // localStorage.setItem('selectedRegion', JSON.stringify(forSaveUpdatedRegion))
-    // setSelectedRegion(forSaveUpdatedRegion)
+    //localStorage.setItem('selectedRegion', JSON.stringify(forSaveUpdatedRegion))
+    //setSelectedRegion(forSaveUpdatedRegion)
     setIsChanged(false)
 
     setMe((prevMe) => {
       const updatedRegions = prevMe?.userRegion.map((prevRegion) => {
         return prevRegion.region_id == me.selectedRegionId ? forSaveUpdatedRegion : prevRegion
       })
-      console.log('updatedRegions ', updatedRegions)
+      
       return {
         ...prevMe,
         userRegion: updatedRegions,
@@ -192,6 +227,20 @@ const ProgramSetting: React.FC = () => {
         setStateLogoFile={setStateLogoFile}
       />
       <ProgramSelect program={program} setProgram={setProgram} isChanged={isChanged} setIsChanged={setIsChanged} />
+      <GradesSelect grades={grades} setGrades={setGrades} isChanged={isChanged} setIsChanged={setIsChanged} />
+      <BirthDateCutOffSelect
+        birthDate={birthDate}
+        invalid={birthDateInvalid}
+        setBirthDate={setBirthDate}
+        isChanged={isChanged}
+        setIsChanged={setIsChanged}
+      />
+      <SpecialEdSelect 
+        specialEd={specialEd} 
+        setSpecialEd={setSpecialEd} 
+        isChanged={isChanged} 
+        setIsChanged={setIsChanged} 
+      />
 
       <Dialog
         open={open}
