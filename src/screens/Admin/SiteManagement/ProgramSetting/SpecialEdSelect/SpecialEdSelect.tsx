@@ -35,13 +35,10 @@ export default function SpecialEdSelect({ specialEd, setSpecialEd, setIsChanged 
           <Select
             labelId='demo-simple-select-standard-label'
             id='demo-simple-select-standard'
-            value={specialEd}
+            value={specialEd ? true : false}
             onChange={handleChange}
             label='SpecialEd'
           >
-            <MenuItem value=''>
-              <em>None</em>
-            </MenuItem>
             <MenuItem value={true}>Enabled</MenuItem>
             <MenuItem value={false}>Disabled</MenuItem>
           </Select>
