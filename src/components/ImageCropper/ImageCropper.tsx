@@ -1,84 +1,122 @@
-import React, { useState } from 'react'
-import ReactCrop from 'react-image-crop'
-import 'react-image-crop/dist/ReactCrop.css'
-import demoImage from "./default.png";
-export type ImageCropperProps = {
-    imageToCrop: any
-    onImageCropped: (value: any) => void
+import React, { useState, useEffect } from 'react'
+import Cropper from 'react-cropper'
+import { Box, Button, FormGroup, Typography, Stack, Dialog, DialogTitle, DialogActions } from '@mui/material'
+import 'cropperjs/dist/cropper.css'
+import './ImageCropper.css'
+
+export type StateLogoFileType = {
+    name: string
+    image: string
+    file: File | undefined
 }
 
-export default function ImageCropper ({ imageToCrop, onImageCropped }: ImageCropperProps) {
-    const [cropConfig, setCropConfig] = useState(
-        {
-            unit: '%',
-            width: 30,
-            aspect: 9 / 9
-        }
-    )
-    const [imageRef, setImageRef] = useState()
-    const cropImage = async (crop) => {
-        if (imageRef && crop.width && crop.height) {
-            const croppedImage = await getCroppedImage(
-                imageRef,
-                crop,
-                'croppedImage.jpeg'
-            )
-            onImageCropped(croppedImage)
-        }
-    }
+export type ImageCropperProps = {
+    imageToCrop: any
+    classes: any
+    setStateLogoFile: (value: StateLogoFileType) => void
+    setIsChanged: (value: boolean) => void
+}
 
-    const blobToFile = (theBlob: Blob, fileName:string): File => {
+export default function ImageCropper ({ imageToCrop, classes, setStateLogoFile, setIsChanged }: ImageCropperProps) {
+    const [cropper, setCropper] = useState<any>()
+    const [open, setOpen] = useState<boolean>(false)
+
+    useEffect(() => {
+        setOpen(true)
+      }, [imageToCrop])
+
+    const blobToFile = (theBlob: Blob, fileName:string = 'CroppedImage'): File => {
         const myFile = new File([theBlob], 'image.jpeg', {
             type: theBlob.type
         })
         return myFile
     }
 
-    const getCroppedImage = (sourceImage, cropConfig, fileName) => {
-        const canvas = document.createElement('canvas')
-        const scaleX = sourceImage.naturalWidth / sourceImage.width
-        const scaleY = sourceImage.naturalHeight / sourceImage.height
-        canvas.width = cropConfig.width
-        canvas.height = cropConfig.height
-        const ctx = canvas.getContext('2d')
-
-        ctx.drawImage(
-            sourceImage,
-            cropConfig.x * scaleX,
-            cropConfig.y * scaleY,
-            cropConfig.width * scaleX,
-            cropConfig.height * scaleY,
-            0,
-            0,
-            cropConfig.width,
-            cropConfig.height
-        );
-
-        return new Promise((resolve, reject) => {
-            canvas.toBlob((blob) => {
-              // returning an error
-              if (!blob) {
-                reject(new Error("Canvas is empty"));
-                return;
-              }
-              const file = blobToFile(blob, fileName)
-              resolve(file);
-            }, "image/jpeg");
-        });
+    const handleClose = () => {
+        setOpen(false)
+    }
+    
+    const handleSave = () => {
+        setOpen(false)
+        if (typeof cropper !== 'undefined') {
+            cropper.getCroppedCanvas().toBlob(blob => {
+                const croppedImageFile = blobToFile(blob)
+                setStateLogoFile({
+                    name: croppedImageFile.name,
+                    image: URL.createObjectURL(croppedImageFile),
+                    file: croppedImageFile,
+                  })
+                  setIsChanged(true)
+            }, 'image/png')
+        }
     }
 
     return (
         <>
             {imageToCrop && (
-                <ReactCrop
-                    src={imageToCrop}
-                    crop={cropConfig}
-                    ruleOfThirds
-                    onImageLoaded={(imageRef) => setImageRef(imageRef)}
-                    onComplete={(cropConfig) => cropImage(cropConfig)}
-                    onChange={(cropConfig) => setCropConfig(cropConfig)}
-                    crossorigin="anonymous" // to avoid CORS-related problems
-                />
+                <Dialog
+                    open={open}
+                    onClose={handleClose}
+                    fullWidth={true}
+                    maxWidth={'xl'}
+                    sx={{
+                    marginX: 'auto',
+                    paddingY: '10px',
+                    borderRadius: 10,
+                    textAlign: 'center',
+                    alignItems: 'center',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    }}
+                >
+                    <DialogTitle
+                        sx={{
+                            fontWeight: 'bold',
+                            marginTop: '10px',
+                            textAlign: 'left'
+                        }}
+                    >
+                        {'Image Cropper'}
+                    </DialogTitle>
+                    <Box sx={{ maxWidth: '50vw', minWidth: '400px', overflow: 'hidden' }}>
+                        <Stack>
+                            <Box>
+                                <Cropper
+                                    style={{ height: 'auto',  width: '100%'}}
+                                    zoomTo={0.5}
+                                    initialAspectRatio={1}
+                                    aspectRatio={1}
+                                    //preview='.img-preview'
+                                    src={imageToCrop}
+                                    viewMode={3}
+                                    minCropBoxHeight={10}
+                                    minCropBoxWidth={10}
+                                    background={false}
+                                    responsive={true}
+                                    autoCropArea={1}
+                                    checkOrientation={false}
+                                    onInitialized={(instance) => {
+                                        setCropper(instance)
+                                    }}
+                                    guides={true}
+                                />
+                            </Box>
+                        </Stack>
+                    </Box>
+                    <DialogActions
+                        sx={{
+                            justifyContent: 'center',
+                            marginBottom: 2,
+                        }}
+                    >
+                        <Button variant='contained' sx={classes.cancelButton} onClick={handleClose} >
+                            Cancel
+                        </Button>
+                        <Button variant='contained' sx={classes.submitButton} onClick={handleSave} >
+                            Save
+                        </Button>
+                    </DialogActions>
+                </Dialog>
             )}
         </>
     )
