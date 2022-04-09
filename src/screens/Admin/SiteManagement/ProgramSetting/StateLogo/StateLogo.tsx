@@ -21,32 +21,18 @@ export default function StateLogo({
     setOpen(true)
   }
 
-  const handleClose = () => {
-    setOpen(false)
-  }
-
-  const handleSave = () => {
-    setOpen(false)
-    setStateLogoFile({
-      name: croppedImage.name,
-      image: URL.createObjectURL(croppedImage),
-      file: croppedImage,
-    })
-    setIsChanged(true)
-  }
-
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setOpen(false)
     if (e.target.files && e.target.files.length > 0) {
       const reader = new FileReader();
-
       reader.addEventListener("load", () => {
         const image = reader.result
-
         setImageToCrop(image)
         handleClickOpen()
-      });
+        e.target.value = ''
+      })
 
-      reader.readAsDataURL(e.target.files[0]);
+      reader.readAsDataURL(e.target.files[0])
     }
   }
 
@@ -82,45 +68,9 @@ export default function StateLogo({
             </Box>
           )}
         </label>
-        <Dialog
-          open={open}
-          onClose={handleClose}
-          sx={{
-            marginX: 'auto',
-            paddingY: '10px',
-            borderRadius: 10,
-            textAlign: 'center',
-            alignItems: 'center',
-            display: 'flex',
-            flexDirection: 'column',
-          }}
-        >
-          <DialogTitle
-            sx={{
-              fontWeight: 'bold',
-              marginTop: '10px',
-              textAlign: 'left'
-            }}
-          >
-            {'Image Cropper'}
-          </DialogTitle>
-          <Box sx={{ width: '500px', height: 'auto' }}>
-            <ImageCropper imageToCrop={imageToCrop} onImageCropped={(croppedImage) => setCroppedImage(croppedImage)}/>
-          </Box>
-          <DialogActions
-            sx={{
-              justifyContent: 'center',
-              marginBottom: 2,
-            }}
-          >
-            <Button variant='contained' sx={classes.cancelButton} onClick={handleClose} >
-              Cancel
-            </Button>
-            <Button variant='contained' sx={classes.submitButton} onClick={handleSave} >
-              Save
-            </Button>
-          </DialogActions>
-        </Dialog>
+        {open && (
+          <ImageCropper imageToCrop={imageToCrop} classes={classes} setStateLogoFile={setStateLogoFile} setIsChanged={setIsChanged}/>
+        )}
       </Box>
     </Stack>
   )
