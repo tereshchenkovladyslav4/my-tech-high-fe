@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react'
 import Cropper from 'react-cropper'
 import { Box, Button, FormGroup, Typography, Stack, Dialog, DialogTitle, DialogActions } from '@mui/material'
 import 'cropperjs/dist/cropper.css'
-import './ImageCropper.css'
 
 export type StateLogoFileType = {
     name: string
