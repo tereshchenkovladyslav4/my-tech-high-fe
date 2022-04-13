@@ -95,7 +95,7 @@ export const AppBar: FunctionComponent = () => {
   }
 
   const gradeText = (student: StudentType) => (
-    student.grade_levels.at(-1)?.grade_level !== 'Kin'
+    student.grade_levels.at(-1)?.grade_level !== 'K'
       ? `${toOrdinalSuffix((student.grade_levels.at(-1)?.grade_level as number))} Grade`
       : 'Kindergarten'
   )

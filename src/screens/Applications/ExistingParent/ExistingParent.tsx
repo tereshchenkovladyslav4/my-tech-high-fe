@@ -1,4 +1,4 @@
-import { Box, Button, Card, Container, Grid, TextField } from '@mui/material'
+import { Box, Button, Card, Container, Grid, TextField  } from '@mui/material'
 import React, { useContext, useEffect, useState } from 'react'
 import { AddStudent } from '../components/AddStudent/AddStudent'
 import { useStyles } from '../styles'
@@ -9,57 +9,18 @@ import { DropDownItem } from '../../../components/DropDown/types'
 import { useMutation } from '@apollo/client'
 import { AddApplicationMutation } from './service'
 import { UserContext } from '../../../providers/UserContext/UserProvider'
-import { useFormik } from 'formik'
+import { useFormik, Formik, FieldArray, Form, Field } from 'formik'
 import * as yup from 'yup'
-import { find, map } from 'lodash'
-import { GRADES, SYSTEM_05 } from '../../../utils/constants'
+import { find, map, toNumber } from 'lodash'
+import { GRADES, RED, SYSTEM_05 } from '../../../utils/constants'
 import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined'
-// 
+import { array, boolean, number, object, string, ValidationError } from 'yup';
+import { Paragraph } from '../../../components/Typography/Paragraph/Paragraph'
 
 export const ExistingParent = () => {
+  const emptyStudent = { first_name: '', last_name: '' ,grade_level: undefined}
 
-  const [formValues, setFormValues] = useState([{ firstName: "", lastName : ""}])
-
-  const studentHandleChange = (i, e) => {
-    const newFormValues = [...formValues];
-    newFormValues[i][e.target.name] = e.target.value;
-    setFormValues(newFormValues);
-  }
-
-  const studentAddFormFields = () => {
-      setFormValues([...formValues, { firstName: "", lastName: "" }])
-    }
-
-  const studentRemoveFormFields = (i) => {
-      let newFormValues = [...formValues];
-      newFormValues.splice(i, 1);
-      setFormValues(newFormValues)
-  }
-
-  const studentHandleSubmit = (event) => {
-      event.preventDefault();
-      alert(JSON.stringify(formValues));
-  }
-
-  const onStudentFieldChanged = (idx, fieldName, value) => {
-    setStudentData((prev) => {
-      if (prev[idx] === undefined) {
-        return [
-          ...prev,
-          {
-            [fieldName]: value,
-          },
-        ]
-      } else {
-        const data = [...prev]
-        const element = data[idx]
-        element[fieldName] = value
-        setStudentData(data)
-      }
-    })
-  }
   const { me, setMe } = useContext(UserContext)
-  const submitPressed = new CustomEvent('checkStudents')
   const programYearItems: DropDownItem[] = [
     {
       label: '2021-2022',
@@ -75,37 +36,17 @@ export const ExistingParent = () => {
     },
   ]
 
-  const validationSchema = yup.object().shape({
-    programYear: yup.string().required('Grade Level is required'),
-  })
-
-  const formik = useFormik({
-    initialValues: {
-      programYear: undefined,
-    },
-    validationSchema,
-    validateOnBlur: true,
-    onSubmit: () => {
-      submitApplication()
-    },
-  })
-
-  const AddNewStudent = (idx: number) => <AddStudent idx={idx} onFieldChange={onStudentFieldChanged} />
-  const [studentData, setStudentData] = useState<Array<StudentInput>>([])
-  const [students, setStudents] = useState([AddNewStudent(0)])
   const classes = useStyles
-
-
 
   const [submitApplicationAction, { data }] = useMutation(AddApplicationMutation)
 
-  const submitApplication = async () => {
+  const submitApplication = async (data) => {
     submitApplicationAction({
       variables: {
         createApplicationInput: {
           state: 'UT',
-          program_year: parseInt(formik.values.programYear),
-          students: studentData,
+          program_year: data.programYear,
+          students: data.students,
         },
       },
     }).then((res) => {
@@ -118,26 +59,6 @@ export const ExistingParent = () => {
     })
   }
 
-  const setProgramYear = (id: any) => {
-    formik.values.programYear = id
-    const currProgramYear = find(programYearItems, { value: id })
-  }
-
-
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    document.dispatchEvent(submitPressed)
-  }
-
-  document.addEventListener('studentResponse', (e) => {
-    formik.setFieldTouched('programYear', true, true)
-    setTimeout(() => {
-      if(!e.detail.error){
-        formik.handleSubmit()
-      }
-    },500)
-  })
-
   const parseGrades = map(GRADES, (grade) => {
     return {
       label: grade,
@@ -145,172 +66,240 @@ export const ExistingParent = () => {
     }
   })
 
-  const appendAddStudentList = () =>
-    setStudents(() => {
-      //const element = students.length
-      //return [...students, AddNewStudent(element)]
-    })
-
-  const addStudent2 = () => {
-    //setCount((prevState) => prevState + 1);
-    //setTimers((prevState) => {
-    //  const newTimers = Array.from(prevState);  // CREATING A NEW ARRAY OBJECT
-    //  timers.push(count);
-    //  return newTimers;  
-    //});
-  };
-
-  const removeStudent2 = () => {
-    //setTimers((prevState) => {
-    //  const newTimers = Array.from(prevState);  // CREATING A NEW ARRAY OBJECT
-    //  newTimers.pop();
-    //  return newTimers;  
-    //});
-  };
-
-  const setFormikGradeLevel = (id) => {
-    console.log(id)
-  } 
-
   return (
-    <form onSubmit={handleSubmit}>
     <Card sx={{ paddingTop: 8, margin: 4 }} >
-      <Box
-        paddingX={36}
-        paddingTop={18}
-        paddingBottom={10}
-        sx={{
-          backgroundImage: `url(${BGSVG})`,
-          backgroundRepeat: 'no-repeat',
-          backgroundPosition: 'top',
-          alignItems: 'center',
-          display: 'flex',
-          flexDirection: 'column',
+      <Formik
+        initialValues={{
+          programYear: undefined,
+          students: [emptyStudent],
         }}
-        style={classes.containerHeight}
-        >
-        <Grid container>
-          <Grid item xs={12} display='flex' justifyContent={'center'}>
-            <Box width={'406.73px'}>
-              <DropDown
-                name='programYear'
-                labelTop
-                dropDownItems={programYearItems}
-                placeholder='Program Year'
-                setParentValue={setProgramYear}
-                alternate={true}
-                sx={
-                  !!(formik.touched.programYear && Boolean(formik.errors.programYear))
-                  ? classes.textFieldError
-                  : classes.textField
-                }
-                size='small'
-                error={{
-                  error: (Boolean(formik.errors.programYear)),
-                  errorMsg: (formik.errors.programYear) as string
-                }}
-                />
-            </Box>
-          </Grid>
-
-          <Grid item xs={12} display='flex' justifyContent={'center'}>
-            <Box width={'451.53px'}>
-              {/*{students}*/}
-              {formValues.map((element, index) => (
-              <Box display={'flex'} flexDirection='column' key={index}>
-                <Box 
-                  width={index === 0 ? '100%' : '103.9%'} 
-                  display='flex' 
-                  flexDirection='row' 
-                  alignItems={'center'}
-                >
-                  <TextField 
-                    type="text" 
-                    value={element.firstName || ""} 
-                    onChange={e =>studentHandleChange(index, e)} 
-                    size='small'
-                    name='firstName'
-                    label='Student First Name'
+        validationSchema={object({
+          programYear: string()
+            .required('Program year is required'),
+          students: array(
+            object({
+              first_name: string()
+                .required('First name name needed'),
+              last_name: string()
+                .required('Last name needed'),
+              grade_level: string()
+                .required('Grade Level is required'),
+            })
+          )
+        })}
+        onSubmit={async (values) => {
+          await submitApplication(values)
+        }}
+      > 
+        {({ values, errors, isSubmitting, isValid, }) => (
+          <Form>
+            <Box
+              paddingX={36}
+              paddingTop={18}
+              paddingBottom={10}
+              sx={{
+                backgroundImage: `url(${BGSVG})`,
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: 'top',
+                alignItems: 'center',
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+              style={classes.containerHeight}
+            >
+            <Grid container>
+              <Grid item xs={12} display='flex' justifyContent={'center'}>
+                <Box width={'406.73px'}>                                
+                  <Field 
+                    name='programYear'
+                    fullWidth
                     focused
-                    variant='outlined'
-                    sx={
-                      classes.textFieldError
-                    }
-                    inputProps={{
-                      style: { color: 'black' },
-                    }}
-                    InputLabelProps={{
-                      style: { color: SYSTEM_05 },
-                    }}
-                  />
-                  {
-                    index ? 
-                    <DeleteForeverOutlinedIcon 
-                      sx={{left: 12, position: 'relative', color: 'darkgray'}}
-                      onClick={() => studentRemoveFormFields(index)}
+                  >
+                  {({ field, form, meta }) => (
+                    <Box width={'100%'} display='block'>
+                    <DropDown
+                      name='programYear'
+                      labelTop
+                      placeholder='Program Year'
+                      dropDownItems={programYearItems}
+                      setParentValue={(id) => {
+                        form.setFieldValue(field.name, toNumber(id))
+                      }}
+                      alternate={true}
+                      size='small'
+                      sx={
+                        !!(meta.touched && meta.error)
+                          ? classes.textFieldError
+                          : classes.dropdown
+                      }
+                      error={{
+                        error: !!(meta.touched && meta.error),
+                        errorMsg: (meta.touched &&  meta.error) as string,
+                      }}
                     />
-                    : null
-                  }
+                    </Box>
+                  )}
+                </Field>
                 </Box>
-                  <TextField 
-                    type="text"
-                    value={element.lastName || ""} 
-                    onChange={e =>studentHandleChange(index, e)} 
-                    size='small'
-                    name='lastName'
-                    label='Student Last Name'
-                    focused
-                    variant='outlined'
-                    sx={
-                      classes.textFieldError
-                    }
-                    inputProps={{
-                      style: { color: 'black' },
-                    }}
-                    InputLabelProps={{
-                      style: { color: SYSTEM_05 },
-                    }}
-                  />
-                  <DropDown
-                    name='gradeLevel'
-                    labelTop
-                    placeholder={`Student Grade Level (age) as of September 1, ${2022}`}
-                    dropDownItems={parseGrades}
-                    setParentValue={setFormikGradeLevel}
-                    alternate={true}
-                    sx={ classes.dropdown }
-                    //  !!(formik.touched.gradeLevel && Boolean(formik.errors.gradeLevel))
-                    //    ? classes.textFieldError
-                    //    : classes.dropdown
-                    //}
-                    size='small'
-                    //error={{
-                    //  error: !!(formik.touched.gradeLevel && Boolean(formik.errors.gradeLevel)),
-                    //  errorMsg: (formik.touched.gradeLevel && formik.errors.gradeLevel) as string,
-                    //}}
-                  />
-            </Box>
-          ))}
-            </Box>
-          </Grid>
-          <Grid item xs={12}>
-            <Button
-              color='secondary'
-              variant='contained'
-              style={classes.addStudentButton}
-              onClick={studentAddFormFields}
-              >
-              Add Student
-            </Button>
-          </Grid>
-          <Grid item xs={12}>
-            <Button variant='contained' style={classes.submitButton} type='submit'>
-              Submit to Utah School
-            </Button>
-          </Grid>
-        </Grid>
-      </Box>
-    </Card>
-    </form>
+              </Grid>
+              <Grid item xs={12} display='flex' justifyContent={'center'}>
+                <Box width={'451.53px'}>
+                  <FieldArray name="students">
+                    {({ push, remove }) => (
+                      <>
+                        {values.students.map((_, index) => (
+                            <Grid item container spacing={2} xs={12} sm="auto">
+                              <Grid item xs={12}>
+                                <Box 
+                                  width={index === 0 ? '100%' : '103.9%'} 
+                                  display='flex' 
+                                  flexDirection='row' 
+                                  alignItems={'center'}
+                                >
+                                  <Field 
+                                    name={`students[${index}].first_name`}
+                                    fullWidth
+                                    focused
+                                  >
+                                    {({ field, form, meta }) => (
+                                      <Box width={'100%'}>
+                                        <TextField 
+                                          type="text"
+                                          size='small'
+                                          label='Student First Name'
+                                          focused
+                                          variant='outlined'
+                                          sx={
+                                            !!(meta.touched && meta.error)
+                                              ? classes.textFieldError
+                                              : classes.textfield
+                                          }
+                                          inputProps={{
+                                            style: { color: 'black' },
+                                          }}
+                                          InputLabelProps={{
+                                            style: { color: SYSTEM_05 },
+                                          }}
+                                          {...field}
+                                          error={meta.touched && meta.error}
+                                          helperText={meta.touched && meta.error}
+                                        />
+                                      </Box>
+                                    )}
+                                  </Field>
+                                  {
+                                    index !== 0
+                                    ? <DeleteForeverOutlinedIcon 
+                                        sx={{left: 12, position: 'relative', color: 'darkgray'}}
+                                        onClick={() => remove(index)}
+                                      />
+                                    : null
+                                  }
+                                </Box>
+                              </Grid>
+                              <Grid item xs={12}>
+                                <Field 
+                                  name={`students[${index}].last_name`}
+                                  fullWidth
+                                  focused
+                                >
+                                  {({ field, form, meta }) => (
+                                    <Box width={'100%'}>
+                                      <TextField
+                                        type="text"
+                                        size='small'
+                                        label='Student Last Name'
+                                        focused
+                                        variant='outlined'
+                                        sx={
+                                          !!(meta.touched && meta.error)
+                                            ? classes.textFieldError
+                                            : classes.textfield
+                                        }
+                                        inputProps={{
+                                          style: { color: 'black' },
+                                        }}
+                                        InputLabelProps={{
+                                          style: { color: SYSTEM_05 },
+                                        }}
+                                        {...field}
+                                        error={meta.touched && meta.error}
+                                        helperText={meta.touched &&  meta.error}
+                                      />
+                                    </Box>
+                                  )}
+                                </Field>
+                              </Grid>
+                              <Grid item xs={12}>
+                                <Field 
+                                  name={`students[${index}].grade_level`}
+                                  fullWidth
+                                  focused
+                                >
+                                  {({ field, form, meta }) => (
+                                    <Box width={'100%'}>
+                                    <DropDown
+                                      name={`students[${index}].grade_level`}
+                                      labelTop
+                                      placeholder={`Student Grade Level (age) as of September 1, ${2022}`}
+                                      dropDownItems={parseGrades}
+                                      setParentValue={(id) => {
+                                        form.setFieldValue(field.name, id)
+                                      }}
+                                      alternate={true}
+                                      size='small'
+                                      sx={
+                                        !!(meta.touched && meta.error)
+                                          ? classes.textFieldError
+                                          : classes.dropdown
+                                      }
+                                      error={{
+                                        error: !!(meta.touched && meta.error),
+                                        errorMsg: (meta.touched && meta.error) as string,
+                                      }}
+                                    />
+                                    </Box>
+                                  )}
+                                </Field>
+                              </Grid>
+                            </Grid>
+                        ))}
+                        <Grid item>
+                          {typeof errors.students === 'string' ? (
+                            <Paragraph color={RED}>
+                              {errors.students}
+                            </Paragraph>
+                          ) : null}
+                        </Grid>
+                        <Grid item>
+                          <Button
+                            color='secondary'
+                            variant='contained'
+                            style={classes.addStudentButton}
+                            onClick={() => push(emptyStudent)}
+                          >
+                            Add Student
+                          </Button>
+                        </Grid>
+                      </>
+                    )}
+                  </FieldArray>
+                </Box>
+              </Grid>
+              <Grid item xs={12}>
+                <Button 
+                  variant='contained' 
+                  style={classes.submitButton} 
+                  type='submit'
+                >
+                  Submit to Utah School
+                </Button>
+              </Grid>
+            </Grid>
+          </Box>
+        </Form>
+      )}
+    </Formik>
+  </Card>
   )
 }

@@ -37,7 +37,7 @@ export function checkImmmValueWithSpacing(item: StudentImmunization, all: Studen
 
   // Check the consecutive date value
   const conDate = moment(
-    all.find((v) => v.immunization_id === item.immunization.consecutive_vaccine + '').value,
+    all.find((v) => v.immunization_id === item.immunization.consecutive_vaccine + '')?.value || '',
     'MM/DD/YYYY',
   )
   if (!conDate.isValid()) return true

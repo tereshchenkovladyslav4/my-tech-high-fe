@@ -1,0 +1,1 @@
+export default "/src/assets/icons/user-added.png";

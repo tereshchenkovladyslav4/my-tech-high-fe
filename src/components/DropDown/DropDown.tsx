@@ -45,14 +45,14 @@ export const DropDown: DropDownTemplateType = ({
   sx,
   error,
   name,
-  dropdownColor
+  dropdownColor,
+  idx
 }) => {
   const [value, setValue] = useState(defaultValue)
   const handleChange = (val: string) => {
     setValue(val)
-    setParentValue(val)
+    setParentValue(val, idx)
   }
-
   const renderDropDownItem = () =>
     map(dropDownItems, (dropDownItem, index) => (
       <MenuItem key={index} value={dropDownItem.value}>

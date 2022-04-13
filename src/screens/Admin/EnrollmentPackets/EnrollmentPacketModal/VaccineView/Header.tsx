@@ -8,9 +8,8 @@ import { Controller, useFormContext } from 'react-hook-form'
 
 export default function VaccinesInfoHeader() {
     const { watch, setValue, control } = useFormContext<EnrollmentPacketFormType>()
-    const [immunizations, showValidationErrors] = watch(['immunizations', 'showValidationErrors'])
+    const [immunizations, enableExemptionDate] = watch(['immunizations', 'enableExemptionDate'])
     const [fullExempt, setFullExempt] = useState(false)
-    const [enableExamptiondate, setEnableExamptiondate] = useState(false)
 
     useEffect(() => {
         let _enableExamptiondate = false
@@ -22,7 +21,7 @@ export default function VaccinesInfoHeader() {
                 _fullExempt = false
             }
         }
-        setEnableExamptiondate(_enableExamptiondate)
+        setValue('enableExemptionDate', _enableExamptiondate)
         setFullExempt(_fullExempt)
     }, [immunizations])
 
@@ -68,8 +67,8 @@ export default function VaccinesInfoHeader() {
                             <CustomDateInput
                                 initVal={field.value}
                                 onChange={(v) => field.onChange(v)}
-                                disabled={!enableExamptiondate}
-                                showError={!isValidDate(field.value) && showValidationErrors}
+                                disabled={!enableExemptionDate}
+                                showError={enableExemptionDate && !isValidDate(field.value)}
                             />}
                     />
                 </Box>
@@ -86,7 +85,7 @@ export default function VaccinesInfoHeader() {
                             <Checkbox color='primary'
                                 checked={field.value}
                                 onChange={() => field.onChange(!field.value)}
-                                disabled={!enableExamptiondate}
+                                disabled={!enableExemptionDate}
                             />}
                     />
                 </Box>

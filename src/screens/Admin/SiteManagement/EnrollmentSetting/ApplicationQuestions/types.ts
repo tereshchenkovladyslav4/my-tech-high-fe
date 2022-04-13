@@ -85,7 +85,7 @@ export const initQuestions: ApplicationQuestion[] = [
     id: 5,
     order: 5,
     type: 2,
-    question: 'Parent Phone Number',
+    question: 'Parent Phone',
     required: true,
   },
   {

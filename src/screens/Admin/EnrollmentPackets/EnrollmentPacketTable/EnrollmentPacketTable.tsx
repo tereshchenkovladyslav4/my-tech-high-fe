@@ -56,7 +56,7 @@ export const EnrollmentPacketTable = () => {
       student: `${packet.student.person.first_name} ${packet.student.person.last_name}`,
       grade:
         packet.student.grade_levels.length && packet.student.grade_levels[0].grade_level
-          ? `${toOrdinalSuffix(Number(packet.student.grade_levels[0].grade_level))} Grade`
+          ? (packet.student.grade_levels[0].grade_level == 'K' ? 'K' : `${toOrdinalSuffix(Number(packet.student.grade_levels[0].grade_level))} Grade`)
           : ' ',
       parent: `${packet.student.parent.person.first_name} ${packet.student.parent.person.last_name}`,
       studentStatus: 'New',

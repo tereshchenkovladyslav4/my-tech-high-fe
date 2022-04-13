@@ -12,8 +12,8 @@ import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline'
 export const UserLeaveConfirmation = (
   message,
   callback,
-  confirmOpen,
-  setConfirmOpen
+  // confirmOpen,
+  // setConfirmOpen
 ) => {
   const container = document.createElement("div");
   const classes = useStyles
@@ -23,13 +23,13 @@ export const UserLeaveConfirmation = (
   const handleConfirm = (callbackState) => {
     ReactDOM.unmountComponentAtNode(container);
     callback(callbackState);
-    setConfirmOpen(false);
+    // setConfirmOpen(false);
   };
 
   const handleCancel = (callbackState) => {
     ReactDOM.unmountComponentAtNode(container);
     callback();
-    setConfirmOpen(false);
+    // setConfirmOpen(false);
   };
 
   document.body.appendChild(container);

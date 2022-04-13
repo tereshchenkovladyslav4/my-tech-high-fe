@@ -30,10 +30,8 @@ export const useStyles = {
     marginY: 2,
     width: '100%',
   },
-  containerHeight: {
-    height: 'calc(100vh - 135px)'
-  },
   textfield: {
+    color: 'green',
     [`& .${outlinedInputClasses.root} .${outlinedInputClasses.notchedOutline}`]: {
       borderColor: SYSTEM_07,
       borderWidth: '1px',
@@ -47,6 +45,5 @@ export const useStyles = {
     },
     marginY: 2,
     width: '100%',
-    height: 'calc(120vh)'
   }
 }

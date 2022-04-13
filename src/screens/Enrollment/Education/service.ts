@@ -82,6 +82,10 @@ mutation SaveEnrollmentPacketEducation($enrollmentPacketEducationInput: Enrollme
       grade_levels {
         grade_level
       }
+      current_school_year_status {
+        school_year_id
+        grade_level
+      }
     }
   }
 }

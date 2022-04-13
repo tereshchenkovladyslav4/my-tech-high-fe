@@ -1,0 +1,26 @@
+import {makeStyles} from "../../../../../../../../_snowpack/pkg/@material-ui/core/styles.js";
+export const useStyles = makeStyles(() => ({
+  formRoot: {
+    marginLeft: "25px",
+    "& .MuiOutlinedInput-notchedOutline": {
+      border: 0
+    },
+    "& .Mui-focused .MuiOutlinedInput-notchedOutline": {
+      border: 0
+    }
+  },
+  selectRoot: {
+    "& .MuiInputBase-input": {
+      padding: 0
+    },
+    color: "#4145FF"
+  },
+  selectPaper: {
+    color: "#4145FF",
+    textAlign: "start"
+  },
+  icon: {
+    color: "black",
+    fontSize: "13px"
+  }
+}));

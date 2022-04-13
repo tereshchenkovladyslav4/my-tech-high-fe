@@ -4,7 +4,6 @@ import React, { useState } from 'react'
 import { DropDown } from '../../../../../../components/DropDown/DropDown'
 import { Subtitle } from '../../../../../../components/Typography/Subtitle/Subtitle'
 import { SYSTEM_07 } from '../../../../../../utils/constants'
-import { useStyles } from '../styles'
 import { ApplicationQuestion, OptionsType, QuestionTypes } from '../types'
 import QuestionOptions from './Options'
 
@@ -95,9 +94,9 @@ export default function AddQuestionModal({
             sx={{
               minWidth: '300px',
               [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
-                {
-                  borderColor: SYSTEM_07,
-                },
+              {
+                borderColor: SYSTEM_07,
+              },
             }}
             label='Question'
             variant='outlined'
@@ -109,9 +108,9 @@ export default function AddQuestionModal({
             sx={{
               minWidth: '200px',
               [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
-                {
-                  borderColor: SYSTEM_07,
-                },
+              {
+                borderColor: SYSTEM_07,
+              },
             }}
             labelTop
             dropDownItems={QuestionTypes}

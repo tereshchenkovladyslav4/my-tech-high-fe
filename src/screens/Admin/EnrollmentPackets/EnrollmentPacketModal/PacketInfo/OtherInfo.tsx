@@ -18,9 +18,9 @@ export default function OtherInfo() {
             <Grid container columnSpacing={2} sx={{ paddingTop: '20px' }}>
 
                 <Grid item xl={6} xs={12}>
-                    <Box display='flex' flexDirection='column' maxWidth='25rem'>
+                    <Box display='flex' flexDirection='column' maxWidth='30rem'>
                         <Subtitle size='small' fontWeight='500'>
-                            Has the parent or spouse worked in Agriculture?
+                            Has the parent or spouse worked in Agriculture?&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                         </Subtitle>
                         <Controller
                             name="worked_in_agriculture"
@@ -37,8 +37,8 @@ export default function OtherInfo() {
                     </Box>
                 </Grid>
                 <Grid item xl={6} xs={12}>
-                    <Box display='flex' flexDirection='column' maxWidth='25rem'>
-                        <Subtitle size='small' fontWeight='500'>
+                    <Box display='flex' flexDirection='column' maxWidth='30rem'>
+                        <Subtitle size='small' fontWeight='500' >
                             Is a parent or legal guardian on active duty in the military
                         </Subtitle>
                         <Controller
@@ -56,7 +56,7 @@ export default function OtherInfo() {
                     </Box>
                 </Grid>
                 <Grid item xl={6} xs={12}>
-                    <Box sx={{ marginTop: '10px' }} display='flex' flexDirection='column' maxWidth='25rem'>
+                    <Box sx={{ marginTop: '10px' }} display='flex' flexDirection='column' maxWidth='30rem'>
                         <Subtitle size='small' fontWeight='500'>
                             FERPA Agreement Options
                         </Subtitle>
@@ -76,7 +76,7 @@ export default function OtherInfo() {
                     </Box>
                 </Grid>
                 <Grid item xl={6} xs={12}>
-                    <Box sx={{ marginTop: '10px' }} display='flex' flexDirection='column' maxWidth='25rem'>
+                    <Box sx={{ marginTop: '10px' }} display='flex' flexDirection='column' maxWidth='30rem'>
                         <Subtitle size='small' fontWeight='500'>
                             Student Photo Permissions
                         </Subtitle>
@@ -95,7 +95,7 @@ export default function OtherInfo() {
                     </Box>
                 </Grid>
                 <Grid item xl={6} xs={12}>
-                    <Box sx={{ marginTop: '10px' }} display='flex' flexDirection='column' maxWidth='25rem'>
+                    <Box sx={{ marginTop: '10px' }} display='flex' flexDirection='column' maxWidth='30rem'>
                         <Subtitle size='small' fontWeight='500'>
                             School Student Directory Permissions
                         </Subtitle>

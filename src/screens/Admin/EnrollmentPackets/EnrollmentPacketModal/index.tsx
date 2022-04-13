@@ -19,7 +19,6 @@ import {
 } from '../services'
 import { useMutation, useQuery } from '@apollo/client'
 import { FormProvider, useForm } from 'react-hook-form'
-import { DevTool } from "@hookform/devtools";
 import moment from 'moment'
 import PacketSaveButtons from './PacketSaveButtons'
 import PacketConfirmModals from './modals/ConfirmModals'
@@ -64,6 +63,7 @@ export default function EnrollmentPacketModal({
       saveAlert: '',
       medicalExempt: packet.medical_exemption === 1,
       exemptionDate: packet.exemption_form_date ? moment(packet.exemption_form_date).format('MM/DD/yyyy') : '',
+      enableExemptionDate: false,
       secondary_contact_first: packet.secondary_contact_first || '',
       secondary_contact_last: packet.secondary_contact_last || '',
       secondary_phone: packet.secondary_phone || '',
@@ -209,7 +209,6 @@ export default function EnrollmentPacketModal({
           </studentContext.Provider>
         </Modal>
       </form>
-      <DevTool control={methods.control} />
     </FormProvider>
   )
 }

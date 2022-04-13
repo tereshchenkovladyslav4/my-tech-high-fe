@@ -184,6 +184,7 @@ export const Submission: FunctionComponent = () => {
       && <SuccessModal 
         title='' 
         subtitle='Your Enrollment Packet has been submitted successfully and is now pending approval.' 
+        btntitle='Done'
         handleSubmit={() => {
           history.push(`${HOMEROOM}`)
           location.reload()

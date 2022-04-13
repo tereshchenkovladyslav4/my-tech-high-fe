@@ -18,9 +18,9 @@ export function parseGradeLevel(value?: string | number) {
   if (value === 'OR-K') return 'OR - Kindergarten (5)'
   if (value === 'K') return 'Kindergarten (5)'
   const numberValue = parseInt(value + '')
-  if (numberValue === 1) return '1st grade (6)'
-  if (numberValue === 2) return '2nd grade (7)'
-  if (numberValue === 3) return '3rd grade (8)'
+  if (numberValue === 1) return '1st Grade (6)'
+  if (numberValue === 2) return '2nd Grade (7)'
+  if (numberValue === 3) return '3rd Grade (8)'
 
-  return `${value}th grade (${value !== '12' ? numberValue + 5 : `${numberValue + 5}/${numberValue + 6}`})`
+  return `${value}th Grade (${value !== '12' ? numberValue + 5 : `${numberValue + 5}/${numberValue + 6}`})`
 }

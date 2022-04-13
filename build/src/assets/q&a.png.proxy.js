@@ -1,0 +1,1 @@
+export default "/src/assets/q&a.png";

@@ -121,11 +121,11 @@ export function ImmunizationItem({ item }: {
                     <CustomDateInput
                         initVal={item.value || ""}
                         onChange={changeImmunValue}
-                        showError={(!isValidDate && showError) || !validDateSpace}
+                        showError={showError && (!isValidDate || !validDateSpace)}
                         allowIM={item.immunization.immunity_allowed === 1}
                         disabled={item.immunization.is_deleted}
                         endAdornment={
-                            !validDateSpace &&
+                            showError && !validDateSpace &&
                             <InputAdornment position="end" >
                                 <Tooltip
                                     title="Does not fall within vaccine timeframe, school may request a new vaccine record."

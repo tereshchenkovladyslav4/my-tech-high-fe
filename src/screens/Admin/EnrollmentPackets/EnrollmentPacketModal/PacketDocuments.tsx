@@ -79,16 +79,16 @@ export const EnrollmentPacketDocument = ({ packetData }) => {
   return (
     <Grid container sx={{ paddingTop: '20px' }}>
       <Grid item md={12} sm={12} xs={12}>
-        <Subtitle sx={{ fontSize: '12px' }} color={SYSTEM_01} fontWeight='700'>
+        <Subtitle sx={{ fontSize: '18px' }} color={SYSTEM_01} fontWeight='700'>
           Documents
         </Subtitle>
       </Grid>
 
-      <Grid container>
+      <Grid container >
         <Grid
           sx={{
             '&.MuiGrid-root': {
-              maxWidth: '8rem',
+              maxWidth: '12rem',
             },
           }}
           item
@@ -96,13 +96,13 @@ export const EnrollmentPacketDocument = ({ packetData }) => {
           sm={6}
           xs={12}
         >
-          <Paragraph color={SYSTEM_06} sx={{ fontSize: '12px' }} fontWeight='400'>
+          <Paragraph color={SYSTEM_06} sx={{ fontSize: '14px' }} fontWeight='400'>
             Birth Certificate
           </Paragraph>
-          <Paragraph color={SYSTEM_06} sx={{ fontSize: '12px' }} fontWeight='400'>
+          <Paragraph color={SYSTEM_06} sx={{ fontSize: '14px' }} fontWeight='400'>
             Immunization
           </Paragraph>
-          <Paragraph color={SYSTEM_06} sx={{ fontSize: '12px' }} fontWeight='400'>
+          <Paragraph color={SYSTEM_06} sx={{ fontSize: '14px' }} fontWeight='400'>
             Proof of Residency
           </Paragraph>
         </Grid>
@@ -113,7 +113,7 @@ export const EnrollmentPacketDocument = ({ packetData }) => {
                 <Paragraph
                   color={PRIMARY_MEDIUM_MOUSEOVER}
                   fontWeight='400'
-                  sx={{ fontSize: '12px', display: 'flex', alignItems: 'center' }}
+                  sx={{ fontSize: '14px', display: 'flex', alignItems: 'center' }}
                 >
                   <a
                     href={files?.find((e) => e.kind === 'bc').url}
@@ -130,7 +130,7 @@ export const EnrollmentPacketDocument = ({ packetData }) => {
                   />
                 </Paragraph>
               ) : (
-                <Paragraph color={SYSTEM_06} sx={{ fontSize: '12px' }} fontWeight='400'>
+                <Paragraph color={SYSTEM_06} sx={{ fontSize: '14px' }} fontWeight='400'>
                   Not found
                 </Paragraph>
               )}
@@ -138,7 +138,7 @@ export const EnrollmentPacketDocument = ({ packetData }) => {
                 <Paragraph
                   color={PRIMARY_MEDIUM_MOUSEOVER}
                   fontWeight='400'
-                  sx={{ fontSize: '12px', display: 'flex', alignItems: 'center' }}
+                  sx={{ fontSize: '14px', display: 'flex', alignItems: 'center' }}
                 >
                   <a
                     href={files?.find((e) => e.kind === 'im').url}
@@ -155,7 +155,7 @@ export const EnrollmentPacketDocument = ({ packetData }) => {
                   />
                 </Paragraph>
               ) : (
-                <Paragraph color={SYSTEM_06} sx={{ fontSize: '12px' }} fontWeight='400'>
+                <Paragraph color={SYSTEM_06} sx={{ fontSize: '14px' }} fontWeight='400'>
                   Not found
                 </Paragraph>
               )}
@@ -163,7 +163,7 @@ export const EnrollmentPacketDocument = ({ packetData }) => {
                 <Paragraph
                   color={PRIMARY_MEDIUM_MOUSEOVER}
                   fontWeight='400'
-                  sx={{ fontSize: '12px', display: 'flex', alignItems: 'center' }}
+                  sx={{ fontSize: '14px', display: 'flex', alignItems: 'center' }}
                 >
                   <a
                     href={files?.find((e) => e.kind === 'ur').url}
@@ -180,20 +180,20 @@ export const EnrollmentPacketDocument = ({ packetData }) => {
                   />
                 </Paragraph>
               ) : (
-                <Paragraph color={SYSTEM_06} sx={{ fontSize: '12px' }} fontWeight='400'>
+                <Paragraph color={SYSTEM_06} sx={{ fontSize: '14px' }} fontWeight='400'>
                   Not found
                 </Paragraph>
               )}
             </div>
           ) : (
             <div>
-              <Paragraph color={SYSTEM_06} sx={{ fontSize: '12px' }} fontWeight='400'>
+              <Paragraph color={SYSTEM_06} sx={{ fontSize: '14px' }} fontWeight='400'>
                 Not found
               </Paragraph>
-              <Paragraph color={SYSTEM_06} sx={{ fontSize: '12px' }} fontWeight='400'>
+              <Paragraph color={SYSTEM_06} sx={{ fontSize: '14px' }} fontWeight='400'>
                 Not found
               </Paragraph>
-              <Paragraph color={SYSTEM_06} sx={{ fontSize: '12px' }} fontWeight='400'>
+              <Paragraph color={SYSTEM_06} sx={{ fontSize: '14px' }} fontWeight='400'>
                 Not found
               </Paragraph>
             </div>

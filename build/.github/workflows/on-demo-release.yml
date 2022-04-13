@@ -1,0 +1,50 @@
+name: Deploy to Demo
+
+on:
+  push:
+    tags:
+      - demo
+
+jobs:
+  build-and-deploy:
+    name: 'Deploy React App to Demo'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@master
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '17'
+          cache: 'npm'
+
+      - name: Install
+        run: npm install --legacy-peer-deps
+
+      - name: Build
+        run: npm run build-stag
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-2
+
+      - name: Deploy
+        run: |
+          aws s3 sync ${SOURCE_DIR:-.} s3://${AWS_S3_BUCKET} \
+            --no-progress \
+            --follow-symlinks \
+            --delete
+        env:
+          AWS_S3_BUCKET: ${{ secrets.DEMO_S3_BUCKET }}
+          SOURCE_DIR: 'build'
+
+      - name: Invalidate Cache
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id ${DISTRIBUTION} \
+            --paths "/*"
+        env:
+          DISTRIBUTION: ${{ secrets.DEMO_CLOUDFRONT_DISTRIBUTION }}

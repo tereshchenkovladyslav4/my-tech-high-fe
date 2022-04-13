@@ -12,13 +12,21 @@ import { checkImmmValueWithSpacing, isValidDate, isValidVaccInput } from './help
 import { EnrollmentPacketFormType, SaveButtonsType } from './types'
 
 export default function PacketSaveButtons({ submitForm }: { submitForm: () => void }) {
-    const { watch, getValues, setValue } = useFormContext<EnrollmentPacketFormType>()
+    const { watch, getValues, setValue, setError } = useFormContext<EnrollmentPacketFormType>()
 
-    const status = watch('status')
+    const [status, exemptionDate, enableExemptionDate] = watch(['status', 'exemptionDate', 'enableExemptionDate'])
     const onlySaveButton = !['Submitted', 'Resubmitted'].includes(status)
+
+    const isValidExemptDate = !enableExemptionDate || isValidDate(exemptionDate)
 
     function onClick(action: SaveButtonsType) {
         const vals = getValues()
+
+        if (enableExemptionDate && !isValidDate(vals.exemptionDate)) {
+            setError('exemptionDate', { type: 'required', message: 'Please enter a valid date' })
+            return
+        }
+
         if (action === 'Missing Info') {
             setValue('showMissingInfoModal', true)
         } else if (action === 'Age Issue') {
@@ -35,7 +43,7 @@ export default function PacketSaveButtons({ submitForm }: { submitForm: () => vo
                     isValid = false
                     break
                 }
-                if (checkImmmValueWithSpacing(e, vals.immunizations)) {
+                if (!checkImmmValueWithSpacing(e, vals.immunizations)) {
                     isValid = false
                     break
                 }
@@ -79,13 +87,14 @@ export default function PacketSaveButtons({ submitForm }: { submitForm: () => vo
                                 width: '92px',
                             }}
                             onClick={() => onClick('Save')}
+                            disabled={!isValidExemptDate}
                         >
                             Save
                         </Button>
                     </Grid>
                     <Grid item md={2} sm={2} xs={12}>
                         <Button
-                            disabled={onlySaveButton}
+                            disabled={onlySaveButton || !isValidExemptDate}
                             sx={{
                                 borderRadius: 2,
                                 textTransform: 'none',
@@ -103,7 +112,7 @@ export default function PacketSaveButtons({ submitForm }: { submitForm: () => vo
 
                     <Grid item md={2} sm={2} xs={12}>
                         <Button
-                            disabled={onlySaveButton}
+                            disabled={onlySaveButton || !isValidExemptDate}
                             sx={{
                                 borderRadius: 2,
                                 textTransform: 'none',
@@ -120,7 +129,7 @@ export default function PacketSaveButtons({ submitForm }: { submitForm: () => vo
                     </Grid>
                     <Grid item md={2} sm={2} xs={12}>
                         <Button
-                            disabled={onlySaveButton}
+                            disabled={onlySaveButton || !isValidExemptDate}
                             sx={{
                                 borderRadius: 2,
                                 textTransform: 'none',
@@ -136,7 +145,7 @@ export default function PacketSaveButtons({ submitForm }: { submitForm: () => vo
                     </Grid>
                     <Grid item md={2} sm={2} xs={12}>
                         <Button
-                            disabled={onlySaveButton}
+                            disabled={onlySaveButton || !isValidExemptDate}
                             sx={{
                                 borderRadius: 2,
                                 textTransform: 'none',

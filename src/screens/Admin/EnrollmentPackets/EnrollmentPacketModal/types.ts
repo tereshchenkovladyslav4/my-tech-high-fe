@@ -17,6 +17,7 @@ export interface EnrollmentPacketFormType {
   showValidationErrors: boolean
   age_issue: boolean
   exemptionDate: string
+  enableExemptionDate: boolean
   medicalExempt: boolean
   secondary_contact_first: string
   secondary_contact_last: string

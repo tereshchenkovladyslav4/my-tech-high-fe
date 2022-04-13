@@ -22,10 +22,10 @@ export default function SignatureComp() {
         fetchPolicy: 'network-only',
     })
     useEffect(() => {
-        if (data?.signatureFile) {
+        if (data?.signatureFile?.signedUrl) {
             setSignedUrl(data.signatureFile.signedUrl)
         }
-    }, [loading, data])
+    }, [data?.signatureFile?.signedUrl])
 
     return (
         <Grid container sx={{ display: 'flex', justifyContent: 'center', marginTop: '150px' }}>

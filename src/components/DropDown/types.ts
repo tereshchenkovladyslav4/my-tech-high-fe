@@ -3,7 +3,7 @@ import { SxProps } from '@mui/system'
 import { FunctionComponent, ReactNode } from 'react'
 
 export type DropDownItem = {
-  label: string
+  label: string | number
   value: string | number
 }
 
@@ -15,7 +15,7 @@ type FormikCustomError = {
 type DropDownProps = {
   dropDownItems: DropDownItem[]
   placeholder?: string
-  setParentValue: (value: React.SetStateAction<{}>) => void
+  setParentValue: (value: any, val: any) => void
   labelTop?: boolean
   sx?: SxProps<Theme> | undefined
   alternate?: boolean
@@ -25,6 +25,7 @@ type DropDownProps = {
   name?: string
   disabled?: boolean
   dropdownColor?: string
+  idx?: number
 }
 
 export type DropDownTemplateType = FunctionComponent<DropDownProps>

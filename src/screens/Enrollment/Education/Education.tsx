@@ -214,7 +214,7 @@ export const Education: FunctionComponent = () => {
       schoolName: undefined,
       schoolAddress: undefined,
       disabled: undefined,
-      lastSchoolAttended: undefined,
+      lastSchoolAttended: student.packets.at(-1)?.last_school_type,
       acknowledge: undefined
     },
     validationSchema: validationSchema,
@@ -235,12 +235,12 @@ export const Education: FunctionComponent = () => {
       variables: {
         enrollmentPacketEducationInput: {
           packet_id: parseFloat(packetId as unknown as string),
-          school_year_id: 10,
+          school_year_id: formik.values.school_year_id,
           grade_level: formik.values.enrollmentGradeLevel,
           school_district: formik.values.schoolDistrict,
           last_school: formik.values.schoolName,
           last_school_address: formik.values.schoolAddress,
-          last_school_type: null,
+          last_school_type: formik.values.lastSchoolAttended,
           permission_to_request_records: null,
           special_ed: null,
           special_ed_desc: null,
@@ -319,7 +319,7 @@ export const Education: FunctionComponent = () => {
   const parseGrades = map(GRADES, (grade) => {
     return {
       label: grade,
-      value: grade.toString()
+      value: ( grade == 'Kindergarten' ? 'K' : grade ).toString()
     }
   })
 

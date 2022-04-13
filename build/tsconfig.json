@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "jsx": "react",
+    "isolatedModules": true,
+    "lib": ["dom", "esnext"],
+    // "moduleResolution": "node",
+    // "noEmit": true,
+    // "module": "es2020",
+    // "skipLibCheck": true,
+    // "resolveJsonModule": true,
+    // "strict": true,
+    // "experimentalDecorators": true,
+    // "emitDecoratorMetadata": true,
+    // "noImplicitAny": true,
+		// "strictNullChecks": true,
+		// "strictFunctionTypes": true,
+    // "noImplicitThis": true,
+    // "noUnusedLocals": true,
+    // "noUnusedParameters": true,
+    // "noImplicitReturns": true,
+    // "noFallthroughCasesInSwitch": true,
+    // "esModuleInterop": true,
+    // "jsxImportSource": "@emotion/react"
+  },
+  "exclude": [
+    "node_modules"
+  ],
+  "include": [
+    "./**/*"
+  ]
+}

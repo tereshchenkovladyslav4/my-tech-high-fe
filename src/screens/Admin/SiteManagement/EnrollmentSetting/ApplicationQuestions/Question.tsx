@@ -9,8 +9,6 @@ import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined
 import EditIcon from '@mui/icons-material/Edit'
 import { SortableHandle } from 'react-sortable-hoc'
 import AddQuestionModal from './AddQuestion'
-import { useMutation } from '@apollo/client'
-import { deleteQuestionGql } from './services'
 import CustomModal from './CustomModals'
 import { SYSTEM_05, SYSTEM_07 } from '../../../../../utils/constants'
 
@@ -31,7 +29,6 @@ export default function ApplicationQuestionItem({
   const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false)
   const [showEditDialog, setShowEditDialog] = useState(false)
 
-  const [deleteQuestion] = useMutation(deleteQuestionGql)
   return (
     <>
       <Box display='flex' mt='20px' alignItems='center' justifyContent='center'>
@@ -61,7 +58,6 @@ export default function ApplicationQuestionItem({
           onConfirm={() => {
             setShowDeleteDialog(false)
             setValues(values.filter((i) => i.id !== item.id))
-            deleteQuestion({ variables: { id: item.id } })
           }}
         />
       )}
@@ -69,12 +65,12 @@ export default function ApplicationQuestionItem({
   )
 }
 function Item({ question: q }: { question: ApplicationQuestion }) {
-  const { values, errors, touched, setValues } = useFormikContext<ApplicationQuestion[]>()
+  const { values, errors, touched } = useFormikContext<ApplicationQuestion[]>()
 
   const index = values.find((i) => i.id === q.id)?.id
 
   function onChange(value: string) {
-    setValues(values.map((v) => (v.id === q.id ? { ...v, response: value } : v)))
+    // setValues(values.map((v) => (v.id === q.id ? { ...v, response: value } : v)))
   }
   if (q.type === 1) {
     return (

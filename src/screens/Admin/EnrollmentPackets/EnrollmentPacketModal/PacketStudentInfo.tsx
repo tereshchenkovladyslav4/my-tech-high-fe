@@ -38,7 +38,7 @@ export function EnrollmentJobsInfo({ packet }: { packet: Packet }) {
   }
 
   return (
-    <Grid container>
+    <Grid container columnSpacing={4}>
       <Grid
         sx={{
           '&.MuiGrid-root': {

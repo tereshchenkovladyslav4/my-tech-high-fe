@@ -9,7 +9,6 @@ export const getQuestionsGql = gql`
       question
       options
       required
-      region_id
     }
   }
 `

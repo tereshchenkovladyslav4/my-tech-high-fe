@@ -101,7 +101,7 @@ export type StudentType = {
   grade_level?: number
   current_school_year_status: {
     school_year_id: number,
-    grade_level: number
+    grade_level: string 
   }
   status: Status[]
 
