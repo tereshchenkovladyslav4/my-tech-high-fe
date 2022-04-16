@@ -21,7 +21,7 @@ export const Education: FunctionComponent = () => {
 
   const  [open, setOpen] = useState(false)
   const [disabled, setDisabled] = useState('')
-  const [lastSchoolAttended, setLastSchoolAttended] = useState('')
+  const [lastSchoolAttended, setLastSchoolAttended] = useState(null)
   const [acknowledge, setAcknowledge] = useState(false)
   const [iep504, setIEP504] = useState(true)
   const [iep504Final, setIEP504Final] = useState(true)
@@ -47,7 +47,9 @@ export const Education: FunctionComponent = () => {
   const iep = 'Yes - an IEP'
   const plan = 'Yes - a 504 Plan (Not an IEP)'
   const none = 'None - Student has always been home schooled'
+  const noneVal = 'none'
   const studentMsg = 'Student was previously enrolled in the following school'
+  const studentMsgVal = 'enrolled'
   const iep504Text = 'I understand that an IEP/504 is an important legal document that defines a student\'s educational plan and that it must be reviewed regularly by the school\'s Special Education IEP/504 Team.'
   const iep504FinalText = 'I also understand that all final curriculum and scheduling choices for students with an IEP/504 must be made in consultation with the parent and the school\'s Special Education Team.'
 
@@ -206,16 +208,20 @@ export const Education: FunctionComponent = () => {
       })
   });
 
+  const getLastSchoolValue = () => {
+    return ( student.packets.at(-1)?.last_school_type == 0 ) ? noneVal : studentMsgVal
+  }
+
   const formik = useFormik({
     initialValues: {
       enrollmentGradeLevel: student.current_school_year_status?.grade_level,
       schoolDistrict: student.packets.at(-1)?.school_district,
       school_year_id: student.current_school_year_status?.school_year_id,
-      schoolName: undefined,
-      schoolAddress: undefined,
+      schoolName: student.packets.at(-1)?.last_school,
+      schoolAddress: student.packets.at(-1)?.last_school_address,
       disabled: undefined,
-      lastSchoolAttended: student.packets.at(-1)?.last_school_type,
-      acknowledge: undefined
+      lastSchoolAttended: getLastSchoolValue(),
+      acknowledge: Boolean( student.packets.at(-1)?.permission_to_request_records )
     },
     validationSchema: validationSchema,
     onSubmit: () => {
@@ -240,8 +246,8 @@ export const Education: FunctionComponent = () => {
           school_district: formik.values.schoolDistrict,
           last_school: formik.values.schoolName,
           last_school_address: formik.values.schoolAddress,
-          last_school_type: formik.values.lastSchoolAttended,
-          permission_to_request_records: null,
+          last_school_type: formik.values.lastSchoolAttended === noneVal ? 0 : 1,
+          permission_to_request_records: formik.values.acknowledge ? 1 : 0,
           special_ed: null,
           special_ed_desc: null,
           understands_special_ed: null
@@ -284,6 +290,11 @@ export const Education: FunctionComponent = () => {
   }
 
   useEffect(() => {
+    setLastSchoolAttended(getLastSchoolValue())
+    setAcknowledge( Boolean( student.packets.at(-1)?.permission_to_request_records ) )
+  }, [])
+
+  useEffect(() => {
     formik.values.disabled = disabled
   },[disabled])
 
@@ -293,7 +304,7 @@ export const Education: FunctionComponent = () => {
 
   useEffect(() => {
     formik.values.lastSchoolAttended = lastSchoolAttended
-    if(lastSchoolAttended === none){
+    if(lastSchoolAttended === noneVal){
       formik.values.schoolName = undefined
       formik.values.schoolAddress = undefined
     }
@@ -464,8 +475,8 @@ export const Education: FunctionComponent = () => {
                   control={
                     <Checkbox
                       disabled={disabledField}
-                      checked={lastSchoolSelected(none)}
-                      onClick={() => selectLastSchoolOption(none)}
+                      checked={lastSchoolSelected(noneVal)}
+                      onClick={() => selectLastSchoolOption(noneVal)}
                     />
                   }
                   label={none} 
@@ -474,8 +485,8 @@ export const Education: FunctionComponent = () => {
                   control={
                     <Checkbox
                       disabled={disabledField}
-                      checked={lastSchoolSelected(studentMsg)}
-                      onClick={() => selectLastSchoolOption(studentMsg)}
+                      checked={lastSchoolSelected(studentMsgVal)}
+                      onClick={() => selectLastSchoolOption(studentMsgVal)}
                     />
                   }
                   label={studentMsg} 
@@ -489,13 +500,12 @@ export const Education: FunctionComponent = () => {
             size='small' 
             variant='outlined' 
             fullWidth
-            disabled={disabledField}
             name='schoolName'
             value={formik.values.schoolName}
             onChange={formik.handleChange}
             error={formik.touched.lastSchoolAttended && lastSchoolAttended !== none && formik.touched.schoolName && Boolean(formik.errors.schoolName)}
             helperText={formik.touched.lastSchoolAttended && lastSchoolAttended !== none && formik.touched.schoolName && formik.errors.schoolName}
-            disabled={lastSchoolAttended !== studentMsg}
+            disabled={disabledField || (lastSchoolAttended !== studentMsgVal)}
           />
         </Grid>
         <Grid item xs={6}>
@@ -504,13 +514,12 @@ export const Education: FunctionComponent = () => {
             size='small' 
             variant='outlined' 
             fullWidth
-            disabled={disabledField}
             name='schoolAddress'
             value={formik.values.schoolAddress}
             onChange={formik.handleChange}
             error={formik.touched.schoolAddress && Boolean(formik.errors.schoolAddress)}
             helperText={formik.touched.schoolAddress && formik.errors.schoolAddress}
-            disabled={lastSchoolAttended !== studentMsg}
+            disabled={disabledField || (lastSchoolAttended !== studentMsgVal)}
           />
         </Grid>
         <Grid item xs={12}>

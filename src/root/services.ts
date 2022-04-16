@@ -117,6 +117,7 @@ export const getMeQuery = gql`
           preferred_first_name
           preferred_last_name
           date_of_birth
+          photo
           phone {
             phone_id
             person_id
