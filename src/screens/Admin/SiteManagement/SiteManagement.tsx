@@ -19,7 +19,7 @@ import EnrollmentSetting from './EnrollmentSetting/EnrollmentSetting'
 import { ProgramSetting } from './ProgramSetting'
 import QuickLink from './QuickLink/QuickLink'
 import Withdrawal from './Withdrawal/Withdrawal'
-import Years from './Years/Years'
+import { Years } from './Years'
 import { EmailTemplatePage } from './components/EmailTemplates/EmailTemplatePage'
 const SiteManagement: React.FC = () => {
   const { path, isExact } = useRouteMatch('/site-management')
@@ -27,13 +27,14 @@ const SiteManagement: React.FC = () => {
   const [prevView, setPrevView] = useState([])
   const [selected, setSelected] = useState(null)
   const [prevSelected, setPrevSelected] = useState([])
+  const currentYear = new Date().getFullYear()
   const items = [
     {
       id: 1,
       title: 'Years',
-      subtitle: '2021-22',
+      subtitle: currentYear + '-' + (currentYear - 1999) ,
       img: YearstImg,
-      isLink: false,
+      isLink: true,
       to: `years`,
     },
     {
@@ -254,6 +255,9 @@ const SiteManagement: React.FC = () => {
         </Route>
         <Route exact path={`/site-management/program-setting`}>
           <ProgramSetting />
+        </Route>
+        <Route exact path={`/site-management/years`}>
+          <Years />
         </Route>
       </Switch>
     </Box>

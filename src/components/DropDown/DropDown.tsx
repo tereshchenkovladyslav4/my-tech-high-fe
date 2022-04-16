@@ -1,11 +1,10 @@
-import { SelectChangeEvent, FormControl, Select, MenuItem, TextField, InputLabel, FormHelperText } from '@mui/material'
+import { FormControl, Select, MenuItem, TextField, FormHelperText } from '@mui/material'
 import { Box, styled } from '@mui/system'
 import { map } from 'lodash'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { DropDownTemplateType } from './types'
 import { useStyles } from './styles'
 import { SYSTEM_05 } from '../../utils/constants'
-import { ca } from 'date-fns/locale'
 
 const CssTextField = styled(TextField, {
   shouldForwardProp: (props) => props !== "focusColor"
@@ -61,6 +60,10 @@ export const DropDown: DropDownTemplateType = ({
     ))
 
   const classes = useStyles
+
+  useEffect(() => {
+    setValue(defaultValue)
+  }, [defaultValue])
 
   return (
     <Box sx={{ minWidth: 120, ...sx }}>

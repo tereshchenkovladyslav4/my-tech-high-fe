@@ -6,7 +6,8 @@ export const useStyles = {
         background: "#fff",
         minHeight: "100%",
         width: "95%",
-        margin: "auto"
+        margin: "auto",
+        pb: 4
     },
     input: {
         border: "1px solid #1a1a1a46",

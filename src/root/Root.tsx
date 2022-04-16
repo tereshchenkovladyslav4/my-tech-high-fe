@@ -15,9 +15,9 @@ import { getMeQuery } from './services'
 export const Root = () => {
   const { me, setMe } = useContext(UserContext)
   const { setTab, setVisitedTabs } = useContext(TabContext)
-  const { loading, error, data } = useQuery(getMeQuery)
+  const { loading, error, data } = useQuery(getMeQuery, { skip: me ? true : false})
   const [isSuper, setIsSuper] = useState(null)
-
+  
   useEffect(() => {
     if (!loading && me === null && data !== undefined) {
       setTab({
@@ -29,7 +29,7 @@ export const Root = () => {
     }
   }, [loading])
 
-  return loading ? (
+  return loading && !me ?  (
     <LoadingScreen />
   ) : me !== null ? (
     !isSuper ? (

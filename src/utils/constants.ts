@@ -87,7 +87,7 @@ export const PROVIDERS = ['Alex Math', 'BYU', 'IXL', 'MTH ']
 
 export const SPED = ['No', 'IEP', '504', 'Exit']
 
-export const GRADES = ['Kindergarten', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']
+export const GRADES = ['Kindergarten', 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 
 export const MISSING_INFO_OPTIONS: StandardResponseOption = {
   type: 'MISSING_INFO',

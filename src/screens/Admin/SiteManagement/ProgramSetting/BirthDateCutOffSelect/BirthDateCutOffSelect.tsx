@@ -1,8 +1,11 @@
-import React, { useState, useEffect } from 'react'
-import ReactInputDateMask from 'react-input-date-mask';
+import React from 'react'
+import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker'
 import { Box, TextField, Typography, Stack } from '@mui/material'
 import { makeStyles } from '@material-ui/core'
 import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
+import moment from 'moment'
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 const useStyles = makeStyles({
   DateMask: {
     font: 'inherit',
@@ -33,8 +36,8 @@ type BirthDateCutOffSelectProps = {
 }
 
 export default function BirthDateCutOffSelect({ birthDate, invalid, setBirthDate, setIsChanged }: BirthDateCutOffSelectProps) {
-  const handleChange = (value: React.ChangeEvent<ReactInputDateMask>) => {
-    setBirthDate(value)
+  const handleChange = (value : Date | null) => {
+    setBirthDate(moment(value).format('MM/DD/YYYY'))
     setIsChanged(true)
   }
   const classes = useStyles()
@@ -52,14 +55,17 @@ export default function BirthDateCutOffSelect({ birthDate, invalid, setBirthDate
         noValidate
         autoComplete='off'
       >
-        <ReactInputDateMask 
-          className={`${classes.DateMask} ${invalid ? classes.DateMaskInvalid : ''}`}
-          mask='mm/dd/yyyy' 
-          showMaskOnFocus={true}
-          value={birthDate} 
-          onChange={handleChange} 
-          showMaskOnHover={true} 
-        />
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <Stack spacing={3}>
+            <MobileDatePicker
+              label='Birth Date Cut-off'
+              inputFormat='MM/dd/yyyy'
+              value={birthDate}
+              onChange={handleChange}
+              renderInput={(params) => <TextField {...params}/>}
+            />
+          </Stack>
+        </LocalizationProvider>
       </Box>
     </Stack>
   )
