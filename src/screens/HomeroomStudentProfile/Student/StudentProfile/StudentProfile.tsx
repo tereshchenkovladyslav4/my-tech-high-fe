@@ -13,7 +13,12 @@ import { ENROLLMENT, GRAY, HOMEROOM, LIGHTGRAY, MTHBLUE, RED, SYSTEM_02 } from '
 import { toOrdinalSuffix } from '../../../../utils/stringHelpers'
 import { StudentComponentType, StudentType } from '../types'
 import { useStyles } from './styles'
-import { useFormik } from 'formik'
+import * as yup from 'yup';
+import { useFormik } from 'formik';
+import { useMutation } from '@apollo/client'
+import { updateProfile, removeProfilePhoto } from './service'
+import { DocumentUploadModal } from '../../../Enrollment/Documents/components/DocumentUploadModal/DocumentUploadModal'
+import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt';
 
 
 export const StudentProfile = () => {
@@ -33,6 +38,13 @@ export const StudentProfile = () => {
   const {status} = student?.packets.at(-1)
   const [email, setEmail] = useState(person.email)
   const [password, setPassword] = useState(undefined)
+
+  const [submitUpdate, { data }] = useMutation(updateProfile)
+  const [submitRemoveProfilePhoto, {data:userData}] = useMutation(removeProfilePhoto);
+  const [imageModalOpen, setImageModalOpen] = useState(false)
+  const [warningModalOpen, setWarningModalOpen] = useState(false)
+  const [avatar, setAvatar] = useState(null);
+  const [file, setFile] = useState<undefined | File>()
 
   const enrollmentLink = `${HOMEROOM+ENROLLMENT}/${student.student_id}`
   
@@ -58,6 +70,20 @@ export const StudentProfile = () => {
   ]
   const setState = (id: any) => (formik.values.testingPref = id)
 
+  const validationSchema = yup.object({
+    firstName: yup
+      .string()
+      .nullable(),
+      lastName: yup
+      .string()
+      .nullable(),
+    email: yup
+      .string()
+      .email('Please enter a valid email')
+      .nullable()
+      .required('Email is required')
+  })
+
   const formik = useFormik({
     initialValues: {
       firstName: person.preferred_first_name,
@@ -66,13 +92,121 @@ export const StudentProfile = () => {
       testingPref: undefined,
       password: undefined,
     },
-    //validationSchema,
-    validateOnBlur: true,
-    onSubmit: () => {
-      //submitApplication()
+    validationSchema: validationSchema,
+    onSubmit: async() => {
+      await onSave()
     },
   })
 
+  const onSave = async () => {
+    let variables = {
+      student_id: parseFloat(studentId as unknown as string),
+      preferred_first_name: formik.values.firstName,
+      preferred_last_name: formik.values.lastName,
+      email: formik.values.email,
+      photo: avatar
+    }
+    if( file ){
+      const uploadData = await uploadPhoto(file).then( async(res) => {
+          return res.json()
+            .then( ({data}) => {
+            console.log("Upload: ", data)
+            return data
+            })
+      })
+
+      if( uploadData && uploadData.key ){
+        variables.photo = uploadData.key
+      }
+    }
+
+    submitUpdate({
+      variables: {
+        updateStudentProfileInput: variables,
+      },
+    }).then((res)  => {
+      // set catch and then here, return snackbox for both success and fail
+    })
+  }
+
+  const uploadPhoto = async (file) => {
+    var bodyFormData = new FormData();
+      bodyFormData.append('file',file[0])
+      bodyFormData.append('region', 'UT')
+      bodyFormData.append('year', '2022')
+
+      return await fetch( import.meta.env.SNOWPACK_PUBLIC_S3_URL,{
+          method: 'POST',
+          body: bodyFormData,
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('JWT')}`
+          },
+        })
+  }
+
+  const onRemoveProfilePhoto = () => {
+    setWarningModalOpen(!warningModalOpen)
+    submitRemoveProfilePhoto(
+      {
+        variables: {
+          updateStudentProfileInput: {student_id:parseFloat(studentId as unknown as string)},
+        },
+      }
+    ).then((res) => {
+      setFile(undefined)
+      setAvatar(null)
+    })
+  }
+
+  const convertToBlob = (file) => {
+    const fileUrl = URL.createObjectURL(file[0])
+    return fileUrl
+  }
+
+  const getProfilePhoto = () => {
+      if( !avatar )
+      return;
+
+      const s3URL = 'https://infocenter-v2-dev.s3.us-west-2.amazonaws.com/';
+      return s3URL + person.photo;
+  }
+
+  const openImageModal = () =>  setImageModalOpen(true)
+
+  const handleFile = (fileName: File) => setFile(fileName)
+
+  const Image = () => (
+    <Box 
+      display='flex' 
+      flexDirection='column' 
+      justifyContent={'center'}
+      sx={{height: 167, width: 167}}
+    >
+    {
+      ( file || avatar )
+        ? <>
+        <Avatar 
+          src={file ? convertToBlob(file) : getProfilePhoto()} 
+          variant='rounded' 
+          sx={{height: '100%', width: '100%'}}  
+        />
+        <Box onClick={() => setWarningModalOpen(true)} sx={{cursor:'pointer'}}>
+          <Paragraph size='medium' fontWeight='500' textAlign='center'>Remove Profile Picture</Paragraph>
+        </Box>
+        </>
+        : <Box 
+          display='flex' 
+          flexDirection='column' 
+          justifyContent={'center'} 
+          sx={{backgroundColor: '#FAFAFA', alignItems:'center', cursor:'pointer', height: '100%', width: '100%'}}
+          onClick={() => openImageModal()}
+        >
+          <SystemUpdateAltIcon/>
+          <Paragraph size='medium' fontWeight='500'>Upload Photo</Paragraph>
+        </Box>
+    }
+  </Box>
+  )
 
   const classes = useStyles
   const grade = student.grade_levels.at(-1).grade_level
@@ -83,9 +217,15 @@ export const StudentProfile = () => {
         && ( email !== person.email || password !== undefined)
       )
 
+  useEffect(() => {
+    if(person && person.photo)
+      setAvatar(person.photo)
+    
+      console.log(file), [file]
+  }, [person] )
 
   return (
-    <form>
+    <form onSubmit={formik.handleSubmit} >
       <Card style={{ borderRadius: 12 }}>
         <Prompt
           when={ warnUser }
@@ -101,7 +241,7 @@ export const StudentProfile = () => {
             <Grid item xs={6}>
               <Box display='flex' flexDirection='column'>
                 <Box display='flex' flexDirection='row'>
-                  <Avatar variant='square' style={classes.avatar} />
+                {Image()}
                   <Box display='flex' flexDirection='column' justifyContent='center' marginLeft={4} color={GRAY}>
                     <Title>{grade === 'Kin' ? 'Kindergarten' : `${toOrdinalSuffix(student.grade_levels.at(-1).grade_level as number)} Grade`}</Title>
                     {/*{ status !== 'Missing Info' && status !== 'Submitted' && <Title>GPA</Title>}*/}
@@ -263,11 +403,27 @@ export const StudentProfile = () => {
                 <Paragraph size='medium' fontWeight='500'>
                   &nbsp;
                 </Paragraph>
-                <Button variant='contained' sx={classes.enroollmentButton}>Save Changes</Button>
+                <Button variant='contained' sx={classes.saveButton} type='submit'>Save Changes</Button>
               </Box> 
             </Grid>
           </Grid>
         </Grid>
+        { 
+          imageModalOpen 
+            && <DocumentUploadModal
+              handleModem={() => setImageModalOpen(!imageModalOpen)}
+              handleFile={handleFile}
+            /> 
+        }
+        {
+          warningModalOpen 
+            && <WarningModal
+              handleSubmit={() => onRemoveProfilePhoto()}
+              handleModem={() => setWarningModalOpen(!warningModalOpen)}
+              title='Delete Image'
+              subtitle='Are you sure you  want to delete  this image'
+            /> 
+        }
       </Card>
     </form>
   )

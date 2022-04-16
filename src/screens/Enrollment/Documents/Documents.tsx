@@ -183,6 +183,7 @@ export const Documents: FunctionComponent = () => {
         title='' 
         subtitle='Your Enrollment Packet has been submitted successfully and is now pending approval.' 
         handleSubmit={onSubmit} 
+        btntitle="Done"
       />
     }
     <Grid container rowSpacing={3} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>

@@ -123,20 +123,21 @@ export const NewParent = () => {
       applicationError?.graphQLErrors?.length > 0 ||
       applicationError?.clientErrors.length > 0
     ) {
-      formik.setErrors({
-        email: (
-          <Paragraph>
-            This email is already being used.
-            <Link
-              to={DASHBOARD}
-              style={{ fontSize: '11.2px', fontWeight: 700, color: MTHBLUE, textDecoration: 'none' }}
-            >
-              Please login{'\u00A0'}
-            </Link>
-            to complete an application
-          </Paragraph>
-        ),
-      })
+      //console.log("ApplicationError: ", applicationError)
+      // formik.setErrors({
+      //   email: (
+      //     <Paragraph>
+      //       This email is already being used.
+      //       <Link
+      //         to={DASHBOARD}
+      //         style={{ fontSize: '11.2px', fontWeight: 700, color: MTHBLUE, textDecoration: 'none' }}
+      //       >
+      //         Please login{'\u00A0'}
+      //       </Link>
+      //       to complete an application
+      //     </Paragraph>
+      //   ),
+      // })
     }
   }, [applicationLoading])
 
@@ -146,18 +147,19 @@ export const NewParent = () => {
   })
 
   useEffect(() => {
+    console.log("emailData: ", emailData)
     if (!loading && emailData !== undefined) {
       if (emailData.emailTaken === true) {
         const response = new CustomEvent('emailTaken',  { detail: {error: true} })
         document.dispatchEvent(response)
 
+        console.log("response: ", emailData)
         setShowEmailError(true)
       } else {
         setShowEmailError(false)
       }
     }
   }, [emailLoading, emailData])
-  
   
   
   return !loading ? (
@@ -211,7 +213,7 @@ export const NewParent = () => {
           }}
         > 
           {({ values, errors, isSubmitting, isValid, }) => {
-            console.log(errors)
+            //console.log("Errors: ",errors)
             return (
             <Form>
               <Box
@@ -452,21 +454,23 @@ export const NewParent = () => {
                     >
                     {({ field, form, meta }) => {
                       document.addEventListener('emailTaken', (e) => {
-                        form.setErrors({
-                          email: (
-                            <Paragraph>
-                              This email is already being used.
-                              <Link
-                                to={DASHBOARD}
-                                style={{ fontSize: '11.2px', fontWeight: 700, color: MTHBLUE, textDecoration: 'none' }}
-                              >
-                                Please login{'\u00A0'}
-                              </Link>
-                              to complete an application
-                            </Paragraph>
-                          ),
-                        })
-                        console.log(form.errors)
+                        if( showEmailError ) {
+                          form.setErrors({
+                            email: (
+                              <Paragraph>
+                                This email is already being used.
+                                <Link
+                                  to={DASHBOARD}
+                                  style={{ fontSize: '11.2px', fontWeight: 700, color: MTHBLUE, textDecoration: 'none' }}
+                                >
+                                  Please login{'\u00A0'}
+                                </Link>
+                                to complete an application
+                              </Paragraph>
+                            ),
+                          })
+                        }
+                        //console.log("EmailTaken: ", form.errors)
                       })
                       return (
                         <Box width={'100%'}>
@@ -492,13 +496,27 @@ export const NewParent = () => {
                             helperText={meta.touched && meta.error}
                             onBlur={() => {
                               // TODO fix validation here
-                              //checkEmail({
-                              //  variables: {
-                              //    email: field.value
-                              //  },
-                              //})
+                              checkEmail({
+                               variables: {
+                                 email: field.value
+                               },
+                              })
                             }}
                           />
+                          { showEmailError && 
+                          (
+                            <Paragraph>
+                              This email is already being used.
+                              <Link
+                                to={DASHBOARD}
+                                style={{ fontSize: '11.2px', fontWeight: 700, color: MTHBLUE, textDecoration: 'none' }}
+                              >
+                                Please login{'\u00A0'}
+                              </Link>
+                              to complete an application
+                            </Paragraph>
+                          )
+                          }
                         </Box>
                       )
                     }}
@@ -690,6 +708,7 @@ export const NewParent = () => {
                     variant='contained'
                     type='submit'
                     style={classes.submitButton}
+                    disabled={ Boolean(Object.keys(errors).length) || showEmailError}
                   >
                     Submit to Utah School
                   </Button>
