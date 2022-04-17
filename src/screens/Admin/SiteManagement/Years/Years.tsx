@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react'
-import { gql, useMutation } from '@apollo/client'
+import { gql, useMutation, useQuery } from '@apollo/client'
 import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded'
 import { Box, Button, Stack, Typography, IconButton } from '@mui/material'
 import { UserContext } from '../../../../providers/UserContext/UserProvider'
@@ -29,32 +29,54 @@ const useBeforeUnload = ({ when, message }) => {
   }, [when, message])
 }
 
+export const createSchoolYearMutation = gql`
+  mutation CreateSchoolYear($createSchoolYearInput: CreateSchoolYearInput!) {
+    createSchoolYear(createSchoolYearInput: $createSchoolYearInput) {
+      school_year_id
+    }
+  }
+`
+
 export const updateSchoolYearMutation = gql`
   mutation UpdateSchoolYear($updateSchoolYearInput: UpdateSchoolYearInput!) {
-    UpdateSchoolYear(updateSchoolYearInput: $updateSchoolYearInput) {
+    updateSchoolYear(updateSchoolYearInput: $updateSchoolYearInput) {
       school_year_id
-      school_year_open
-      school_year_close
-      application_open
-      application_close
-      mid_year_open
-      mid_year_close
-      mid_year_status
     }
   }
 `
 
 export const getSchoolYearsByRegionId = gql`
-  query SchoolYearsByRegionId($regionId: ID!) {
-    schoolYearsByRegionId(regionId: $regionId) {
-      school_year_id
-      date_begin
-      date_end
-      application_open
-      application_close
+  query Region($regionId: ID!) {
+    region(id: $regionId) {
+      SchoolYears {
+        school_year_id
+        date_begin
+        date_end
+        date_reg_close
+        date_reg_open
+        midyear_application
+        midyear_application_open
+        midyear_application_close
+      }
     }
   }
 `
+
+// export const getSchoolYearDetailById = gql`
+//   query GetSchoolYear($schoolYearId: ID!) {
+//     getSchoolYear(school_year_id: $schoolYearId) {
+//       school_year_id
+//       date_begin
+//       date_end
+//       date_reg_close
+//       date_reg_open
+//       midyear_application
+//       midyear_application_open
+//       midyear_application_close
+//     }
+//   }
+// `
+
 type SchoolYears = {
   schoolYearId: number
   schoolYearOpen: string
@@ -81,17 +103,19 @@ const Years: React.FC = () => {
   const [midYearStatus, setMidYearStatus] = useState<boolean>(false)
   const [midYearOpen, setMidYearOpen] = useState<string>('')
   const [midYearClose, setMidYearClose] = useState<string>('')
-  const [schoolYears, setSchoolYears] = useState<SchoolYears[]>(localStorage.getItem('schoolYearsByRegionId') ? JSON.parse(localStorage.getItem('schoolYearsByRegionId')) : [])
+  const [schoolYears, setSchoolYears] = useState<SchoolYears[]>([])
   const [years, setYears] = useState<DropDownItem[]>([])
   const [addSchoolYears, setAddSchoolYears] = useState<DropDownItem[]>([])
   const [submitSave, { data, loading, error }] = useMutation(updateSchoolYearMutation)
+  const [submitCreate, {}] = useMutation(createSchoolYearMutation)
 
-  // const { loading: schoolLoading, data: schoolYearData } = useQuery(getSchoolYearsByRegionId, {
-  //   variables: {
-  //     regionId: me?.selectedRegionId
-  //   },
-  //   fetchPolicy: 'network-only',
-  // })
+  const schoolYearData = useQuery(getSchoolYearsByRegionId, {
+    variables: {
+      regionId: me?.selectedRegionId
+    },
+    fetchPolicy: 'network-only',
+  })
+
   useBeforeUnload({
     when: isChanged ? true : false,
     message: JSON.stringify({
@@ -105,49 +129,49 @@ const Years: React.FC = () => {
   }
 
   const handleClickSave = async () => {
-    // const submitedResponse = await submitSave({
-    //   variables: {
-    //     updateSchoolYearInput: {
-    //       school_year_id: selectedYearId,
-    //       school_year_open: schoolYearOpen,
-    //       school_year_close: schoolYearClose,
-    //       application_open: applicationsOpen,
-    //       application_close: applicationsClose,
-    //       mid_year_open: midYearOpen,
-    //       mid_year_close: midYearClose,
-    //       mid_year_status: midYearStatus
-    //     },
-    //   },
-    // })
+    
+
+    
     let schoolYearsArr = schoolYears
     if (selectedYearId && selectedYearId != 'add') {
-      schoolYearsArr.forEach(schoolYear => {
-        if (schoolYear.schoolYearId == selectedYearId) {
-          schoolYear.schoolYearOpen = schoolYearOpen
-          schoolYear.schoolYearClose = schoolYearClose
-          schoolYear.applicationsOpen = applicationsOpen
-          schoolYear.applicationsClose = applicationsClose
-          schoolYear.midYearOpen = midYearOpen
-          schoolYear.midYearClose = midYearClose
-          schoolYear.midYearStatus = midYearStatus
-        }
+      const submitedResponse = await submitSave({
+        variables: {
+          updateSchoolYearInput: {
+            school_year_id: parseInt(selectedYearId),
+            date_begin: moment(schoolYearOpen),
+            date_end: moment(schoolYearClose),
+            date_reg_close: moment(applicationsClose),
+            date_reg_open: moment(applicationsOpen),
+            // midyear_application: midYearStatus,
+            // midyear_application_open: moment(midYearOpen),
+            // midyear_application_close: moment(midYearClose)
+          }
+        },
       })
+      setSelectedYearId(submitedResponse?.data?.updateSchoolYear.school_year_id)
     } else {
-      schoolYearsArr.push({
-        schoolYearId: selectedYearId && selectedYearId != 'add' ? selectedYearId : (schoolYears.length + 1) + '',
-        schoolYearOpen: schoolYearOpen,
-        schoolYearClose: schoolYearClose,
-        applicationsOpen: applicationsOpen,
-        applicationsClose: applicationsClose,
-        midYearOpen: midYearOpen,
-        midYearClose: midYearClose,
-        midYearStatus: midYearStatus
+      const submittedCreateResponse = await submitCreate({
+        variables: {
+          createSchoolYearInput: {
+            RegionId: parseInt(me.selectedRegionId),
+            date_begin: moment(schoolYearOpen),
+            date_end: moment(schoolYearClose),
+            date_reg_close: moment(applicationsClose),
+            date_reg_open: moment(applicationsOpen),
+            // midyear_application: midYearStatus,
+            // midyear_application_open: moment(midYearOpen),
+            // midyear_application_close: moment(midYearClose)
+          }
+        },
       })
+      setSelectedYearId(submittedCreateResponse?.data?.createSchoolYear.school_year_id)
     }
-    
-    setSchoolYears(schoolYearsArr)
-    setDropYears(schoolYearsArr)
-    localStorage.setItem('schoolYearsByRegionId', JSON.stringify(schoolYearsArr));
+    setMe((prev) => {
+      return {
+        ...prev,
+        selectedRegionId: me.selectedRegionId,
+      }
+    })
     setIsChanged(false)
   }
 
@@ -235,26 +259,61 @@ const Years: React.FC = () => {
     }
   }
 
+  const setAllDefault = () => {
+    setSelectedYearId('')
+    setSchoolYearOpen('')
+    setSchoolYearClose('')
+    setApplicationsOpen('')
+    setApplicationsClose('')
+    setMidYearOpen('')
+    setMidYearClose('')
+    setMidYearStatus(false)
+  }
+
   useEffect(() => {
     setDropYears(schoolYears)
   }, [schoolYears])
 
-  // useEffect(() => {
-  //   if (!schoolLoading && schoolYearData.schoolYearsByRegionId) {
-  //     let schoolYearsArr = [];
-  //     schoolYearData.schoolYearsByRegionId.forEach(schoolYear => {
-  //       schoolYearsArr.push({
-  //         value: schoolYear.school_year_id,
-  //         label: moment(schoolYear.date_begin).format('YYYY') + '-' + moment(schoolYear.date_end).format('YYYY')
-  //       })
-  //     })
-  //     schoolYearsArr.push({
-  //       value: 'add',
-  //       label: '+ Add School Year'
-  //     })
-  //     setSchoolYears(schoolYearsArr)
-  //   }
-  // }, [schoolYearData])
+  useEffect(() => {
+    if (schoolYearData?.data?.region?.SchoolYears) {
+      let schoolYearsArr: SchoolYears[] = [];
+      let cnt = 0
+      schoolYearData?.data?.region?.SchoolYears.forEach(schoolYear => {
+        if (schoolYear.school_year_id == selectedYearId) {
+          setSchoolYearOpen(schoolYear.date_begin)
+          setSchoolYearClose(schoolYear.date_end)
+          setApplicationsOpen(schoolYear.date_reg_open)
+          setApplicationsClose(schoolYear.date_reg_close)
+          setMidYearOpen(schoolYear.midyear_application_open)
+          setMidYearClose(schoolYear.midyear_application_close)
+          setMidYearStatus(schoolYear.midyear_application)
+          cnt ++
+        }
+        schoolYearsArr.push({
+          schoolYearId: schoolYear.school_year_id,
+          schoolYearOpen: schoolYear.date_begin,
+          schoolYearClose: schoolYear.date_end,
+          applicationsOpen: schoolYear.date_reg_open,
+          applicationsClose: schoolYear.date_reg_close,
+          midYearOpen: schoolYear.midyear_application_open,
+          midYearClose: schoolYear.midyear_application_close,
+          midYearStatus: schoolYear.midyear_application
+        })
+      })
+      if(cnt == 0) {
+        setAllDefault()
+      }
+
+      setSchoolYears(schoolYearsArr.sort((a, b) => {
+        if (new Date(a.schoolYearOpen) > new Date(b.schoolYearOpen))
+          return 1
+        else if (new Date(a.schoolYearOpen) == new Date(b.schoolYearOpen))
+          return 0
+        else
+          return -1
+      }))
+    }
+  }, [me.selectedRegionId, schoolYearData?.data?.region?.SchoolYears])
   return (
     <Box sx={classes.base}>
       <Prompt
