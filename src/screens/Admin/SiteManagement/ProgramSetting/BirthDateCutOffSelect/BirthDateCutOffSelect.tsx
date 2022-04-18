@@ -30,12 +30,11 @@ const useStyles = makeStyles({
 
 type BirthDateCutOffSelectProps = {
   birthDate: string
-  invalid: boolean
   setbirthDate: (value: string) => void
   setIsChanged: (value: boolean) => void
 }
 
-export default function BirthDateCutOffSelect({ birthDate, invalid, setBirthDate, setIsChanged }: BirthDateCutOffSelectProps) {
+export default function BirthDateCutOffSelect({ birthDate, setBirthDate, setIsChanged }: BirthDateCutOffSelectProps) {
   const handleChange = (value : Date | null) => {
     setBirthDate(moment(value).format('MM/DD/YYYY'))
     setIsChanged(true)
