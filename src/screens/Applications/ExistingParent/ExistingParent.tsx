@@ -11,6 +11,7 @@ import { Formik, FieldArray, Form, Field } from 'formik'
 import * as yup from 'yup'
 import { map, toNumber } from 'lodash'
 import { GRADES, RED, SYSTEM_05 } from '../../../utils/constants'
+import { toOrdinalSuffix } from '../../../utils/stringHelpers'
 import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined'
 import { array, object, string } from 'yup'
 import { Paragraph } from '../../../components/Typography/Paragraph/Paragraph'
@@ -31,6 +32,10 @@ export const getActiveSchoolYearsByRegionId = gql`
       date_end
       date_reg_close
       date_reg_open
+      grades
+      birth_date_cut
+      special_ed
+      school_year_id
     }
   }
 `
@@ -40,6 +45,10 @@ export const ExistingParent = () => {
   const { me, setMe } = useContext(UserContext)
   const [schoolYears, setSchoolYears] = useState<Array<DropDownItem>>([])
   const [regionId, setRegionId] = useState<string>('')
+  const [grades, setGrades] = useState([])
+  const [schoolYearsData, setSchoolYearsData] = useState([])
+  const [gradesDropDownItems, setGradesDropDownItems] = useState<Array<DropDownItem>>([])
+  const [birthDateCut, setBirthDateCut] = useState<string>('')
   const { loading: regionLoading, data: regionData } = useQuery(getRegionByUserId, {
     variables: {
       userId: me?.user_id
@@ -78,12 +87,35 @@ export const ExistingParent = () => {
     })
   }
 
-  const parseGrades = map(GRADES, (grade) => {
-    return {
-      label: grade,
-      value: grade.toString()
-    }
-  })
+  const setGradesAndBirthDateCut = (id) => {
+    schoolYearsData.forEach(element => {
+      if (id == element.school_year_id) {
+        setGrades(element.grades?.split(','))
+        setBirthDateCut(element.birth_date_cut)
+      }
+    })
+  }
+
+  const parseGrades = () => {
+    let dropDownItems = []
+    GRADES.forEach(grade => {
+      if (grades.includes(grade.toString())) {
+        if (typeof grade !== 'string') {
+          dropDownItems.push({
+            label: toOrdinalSuffix(grade) + ' Grade',
+            value: grade.toString()
+          }) 
+        }
+        if (typeof grade == 'string') {
+          dropDownItems.push({
+            label: grade,
+            value: grade
+          })
+        }
+      }
+    })
+    setGradesDropDownItems(dropDownItems)
+  }
 
   useEffect(() => {
     if (!regionLoading && regionData) {
@@ -101,8 +133,13 @@ export const ExistingParent = () => {
           }
         }),
       )
+      setSchoolYearsData(schoolYearData?.getActiveSchoolYears)
     }
   }, [regionId, schoolYearData])
+
+  useEffect(() => {
+    parseGrades()
+  }, [grades])
 
   return (
     <Card sx={{ paddingTop: 8, margin: 4 }} >
@@ -162,6 +199,7 @@ export const ExistingParent = () => {
                       dropDownItems={schoolYears}
                       setParentValue={(id) => {
                         form.setFieldValue(field.name, toNumber(id))
+                        setGradesAndBirthDateCut(id)
                       }}
                       alternate={true}
                       size='small'
@@ -279,8 +317,8 @@ export const ExistingParent = () => {
                                     <DropDown
                                       name={`students[${index}].grade_level`}
                                       labelTop
-                                      placeholder={`Student Grade Level (age) as of September 1, ${2022}`}
-                                      dropDownItems={parseGrades}
+                                      placeholder={`Student Grade Level (${moment().diff(birthDateCut, 'years')}) as of ${moment(birthDateCut).format('MMM Do YYYY')}`}
+                                      dropDownItems={gradesDropDownItems}
                                       setParentValue={(id) => {
                                         form.setFieldValue(field.name, id)
                                       }}

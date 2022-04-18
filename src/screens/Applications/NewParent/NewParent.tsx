@@ -17,7 +17,7 @@ import { Link } from 'react-router-dom'
 import { getAllRegion } from '../../../graphql/queries/region'
 import { LoadingScreen } from '../../LoadingScreen/LoadingScreen'
 import { find, map, pullAt, toNumber } from 'lodash'
-import { isPhoneNumber } from '../../../utils/stringHelpers'
+import { isPhoneNumber, toOrdinalSuffix } from '../../../utils/stringHelpers'
 import moment from 'moment'
 import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined'
 import { array, boolean, number, object, string, ValidationError } from 'yup'
@@ -62,6 +62,10 @@ export const NewParent = () => {
   })
 
   const [showEmailError, setShowEmailError] = useState(false)
+  const [schoolYearsData, setSchoolYearsData] = useState([])
+  const [grades, setGrades] = useState([])
+  const [gradesDropDownItems, setGradesDropDownItems] = useState<Array<DropDownItem>>([])
+  const [birthDateCut, setBirthDateCut] = useState<string>('')
   
   const classes = useStyles
 
@@ -92,6 +96,7 @@ export const NewParent = () => {
           }
         }),
       )
+      setSchoolYearsData(schoolYearData.getActiveSchoolYears)
     }
   }, [regionId, schoolYearData])
 
@@ -116,12 +121,35 @@ export const NewParent = () => {
     })
   }
 
-  const parseGrades = map(GRADES, (grade) => {
-    return {
-      label: grade,
-      value: grade.toString()
-    }
-  })
+  const parseGrades = () => {
+    let dropDownItems = []
+    GRADES.forEach(grade => {
+      if (grades.includes(grade.toString())) {
+        if (typeof grade !== 'string') {
+          dropDownItems.push({
+            label: toOrdinalSuffix(grade) + ' Grade',
+            value: grade.toString()
+          }) 
+        }
+        if (typeof grade == 'string') {
+          dropDownItems.push({
+            label: grade,
+            value: grade
+          })
+        }
+      }
+    })
+    setGradesDropDownItems(dropDownItems)
+  }
+
+  const setGradesAndBirthDateCut = (id) => {
+    schoolYearsData.forEach(element => {
+      if (id == element.school_year_id) {
+        setGrades(element.grades?.split(','))
+        setBirthDateCut(element.birth_date_cut)
+      }
+    })
+  }
 
   useEffect(() => {
     if (
@@ -147,19 +175,20 @@ export const NewParent = () => {
     }
   }, [applicationLoading])
 
+  useEffect(() => {
+    parseGrades()
+  }, [grades])
+
 
   const [checkEmail, { loading: emailLoading, data: emailData, error: emailError }] = useLazyQuery(checkEmailQuery, {
     fetchPolicy: 'network-only',
   })
 
   useEffect(() => {
-    console.log("emailData: ", emailData)
     if (!loading && emailData !== undefined) {
       if (emailData.emailTaken === true) {
         const response = new CustomEvent('emailTaken',  { detail: {error: true} })
         document.dispatchEvent(response)
-
-        console.log("response: ", emailData)
         setShowEmailError(true)
       } else {
         setShowEmailError(false)
@@ -295,6 +324,7 @@ export const NewParent = () => {
                         dropDownItems={schoolYears}
                         setParentValue={(id) => {
                           form.setFieldValue(field.name, toNumber(id))
+                          setGradesAndBirthDateCut(id)
                         }}
                         alternate={true}
                         size='small'
@@ -664,8 +694,8 @@ export const NewParent = () => {
                                       <DropDown
                                         name={`students[${index}].grade_level`}
                                         labelTop
-                                        placeholder={`Student Grade Level (age) as of September 1, ${2022}`}
-                                        dropDownItems={parseGrades}
+                                        placeholder={`Student Grade Level (${moment().diff(birthDateCut, 'years')}) as of ${moment(birthDateCut).format('MMM Do YYYY')}`}
+                                        dropDownItems={gradesDropDownItems}
                                         setParentValue={(id) => {
                                           form.setFieldValue(field.name, id)
                                         }}

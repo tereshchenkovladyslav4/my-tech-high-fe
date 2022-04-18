@@ -141,6 +141,15 @@ const ProgramSetting: React.FC = () => {
     let dropYears = []
     if (schoolYearsArr && schoolYearsArr.length > 0) {
       schoolYearsArr.forEach(schoolYear => {
+        if (
+          parseInt(moment(schoolYear.schoolYearOpen).format('YYYY')) == parseInt(moment().format('YYYY')) && 
+          parseInt(moment(schoolYear.schoolYearClose).format('YYYY')) == (parseInt(moment().format('YYYY')) + 1) && selectedYearId == ''
+        ) {
+          setSelectedYearId(schoolYear.schoolYearId)
+          setSpecialEd(schoolYear.specialEd)
+          setBirthDate(schoolYear.birthDateCut)
+          setGrades(schoolYear.grades)
+        }
         dropYears.push({
           value: schoolYear.schoolYearId + '',
           label: moment(schoolYear.schoolYearOpen).format('YYYY') + '-' + moment(schoolYear.schoolYearClose).format('YYYY')
@@ -217,10 +226,16 @@ const ProgramSetting: React.FC = () => {
     setProgram(selectedRegion?.regionDetail?.program)
     setStateLogo(selectedRegion?.regionDetail?.state_logo)
     setStateLogoFile(null)
-
     if (schoolYearData && schoolYearData?.data?.region?.SchoolYears) {
       let schoolYearsArr: SchoolYears[] = [];
+      let cnt = 0
       schoolYearData?.data?.region?.SchoolYears.forEach(schoolYear => {
+        if (selectedYearId == schoolYear.school_year_id) {
+          setSpecialEd(schoolYear.special_ed)
+          setBirthDate(schoolYear.birth_date_cut)
+          setGrades(schoolYear.grades)
+          cnt++
+        }
         schoolYearsArr.push({
           schoolYearId: schoolYear.school_year_id,
           schoolYearOpen: schoolYear.date_begin,
@@ -230,7 +245,12 @@ const ProgramSetting: React.FC = () => {
           specialEd: schoolYear.special_ed
         })
       })
-
+      if (cnt == 0) {
+        setSelectedYearId('')
+        setSpecialEd(false)
+        setBirthDate(null)
+        setGrades(null)
+      }
       setSchoolYears(schoolYearsArr.sort((a, b) => {
         if (new Date(a.schoolYearOpen) > new Date(b.schoolYearOpen))
           return 1

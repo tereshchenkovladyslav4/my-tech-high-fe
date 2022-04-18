@@ -191,6 +191,19 @@ const Years: React.FC = () => {
     const newSchoolYears: DropDownItem[] = [{ value: 'none', label: 'None' }]
     if (schoolYearsArr && schoolYearsArr.length > 0) {
       schoolYearsArr.forEach(schoolYear => {
+        if (
+          selectedYearId == '' && parseInt(moment(schoolYear.schoolYearOpen).format('YYYY')) == parseInt(moment().format('YYYY')) &&
+          parseInt(moment(schoolYear.schoolYearClose).format('YYYY')) == (parseInt(moment().format('YYYY')) + 1)
+        ) {
+          setSelectedYearId(schoolYear.schoolYearId)
+          setSchoolYearOpen(schoolYear.schoolYearOpen)
+          setSchoolYearClose(schoolYear.schoolYearClose)
+          setApplicationsOpen(schoolYear.applicationsOpen)
+          setApplicationsClose(schoolYear.applicationsClose)
+          setMidYearOpen(schoolYear.midYearOpen)
+          setMidYearClose(schoolYear.midYearClose)
+          setMidYearStatus(schoolYear.midYearStatus)
+        }
         dropYears.push({
           value: schoolYear.schoolYearId + '',
           label: moment(schoolYear.schoolYearOpen).format('YYYY') + '-' + moment(schoolYear.schoolYearClose).format('YYYY')
