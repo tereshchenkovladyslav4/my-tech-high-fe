@@ -82,7 +82,6 @@ const ProgramSetting: React.FC = () => {
   const [program, setProgram] = useState<string>()
   const [specialEd, setSpecialEd] = useState<boolean>()
   const [birthDate, setBirthDate] = useState<string>('')
-  const [birthDateInvalid, setBirthDateInvalid] = useState<boolean>(false)
   const [stateLogo, setStateLogo] = useState<string>()
   const [grades, setGrades] = useState<string>()
   const [isChanged, setIsChanged] = useState<boolean>(false)
@@ -96,6 +95,7 @@ const ProgramSetting: React.FC = () => {
     variables: {
       regionId: me?.selectedRegionId
     },
+    skip: me?.selectedRegionId ? false : true,
     fetchPolicy: 'network-only',
   })
 
@@ -163,11 +163,6 @@ const ProgramSetting: React.FC = () => {
     let imageLocation: string
     if (stateLogoFile) {
       imageLocation = await uploadImage(stateLogoFile.file)
-    }
-    let tempArr = birthDate?.split('/')
-    if (tempArr && (tempArr[0].indexOf('m') >= 0 || tempArr[1].indexOf('d') >= 0 || tempArr[2].indexOf('y') >= 0)) {
-      setBirthDateInvalid(true)
-      return
     }
     const submitedResponse = await submitSave({
       variables: {
@@ -339,7 +334,6 @@ const ProgramSetting: React.FC = () => {
       <GradesSelect grades={grades} setGrades={setGrades} isChanged={isChanged} setIsChanged={setIsChanged} />
       <BirthDateCutOffSelect
         birthDate={birthDate}
-        invalid={birthDateInvalid}
         setBirthDate={setBirthDate}
         isChanged={isChanged}
         setIsChanged={setIsChanged}

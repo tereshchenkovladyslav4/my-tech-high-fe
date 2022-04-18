@@ -98,6 +98,7 @@ const Years: React.FC = () => {
     variables: {
       regionId: me?.selectedRegionId
     },
+    skip: me?.selectedRegionId ? false : true,
     fetchPolicy: 'network-only',
   })
 
