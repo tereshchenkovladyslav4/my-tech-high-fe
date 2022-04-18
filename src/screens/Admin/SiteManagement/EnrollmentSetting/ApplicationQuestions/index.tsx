@@ -10,8 +10,7 @@ import { arrayMove, SortableContainer, SortableElement } from 'react-sortable-ho
 import AddQuestionModal from './AddQuestion/index'
 import { useMutation, useQuery } from '@apollo/client'
 import { getQuestionsGql, saveQuestionsGql, deleteQuestionGql } from './services'
-import AddStudentButton from './AddStudentButton'
-import CustomModal from './CustomModals'
+import CustomModal from '../components/CustomModal/CustomModals'
 import { useHistory } from 'react-router-dom'
 import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded'
 import { useRecoilValue } from 'recoil'
@@ -207,7 +206,12 @@ export default function ApplicationQuestions() {
                   Add Question
                 </Button>
               </Box>
-              <AddStudentButton />
+
+
+              <Box sx={{ marginBottom: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <Button sx={{ ...useStyles.addStudentButton }}>Add Student</Button>
+                <Button sx={{ ...useStyles.submitButton, color: 'white' }}>Submit to Utah Program</Button>
+              </Box>
 
               {unSaveChangeModal && (
                 <CustomModal

@@ -93,7 +93,7 @@ const ProgramSetting: React.FC = () => {
   const [submitSchoolYearSave, {}] = useMutation(updateSchoolYearMutation)
   const schoolYearData = useQuery(getSchoolYearsByRegionId, {
     variables: {
-      regionId: me?.selectedRegionId
+      regionId: me?.selectedRegionId,
     },
     skip: me?.selectedRegionId ? false : true,
     fetchPolicy: 'network-only',
@@ -106,7 +106,7 @@ const ProgramSetting: React.FC = () => {
   const handleSelectYear = (val) => {
     setSelectedYearId(val)
     if (schoolYears && schoolYears.length > 0) {
-      schoolYears.forEach(schoolYear => {
+      schoolYears.forEach((schoolYear) => {
         if (val == schoolYear.schoolYearId) {
           setSpecialEd(schoolYear.specialEd)
           setBirthDate(schoolYear.birthDateCut)
@@ -140,10 +140,11 @@ const ProgramSetting: React.FC = () => {
   const setDropYears = (schoolYearsArr) => {
     let dropYears = []
     if (schoolYearsArr && schoolYearsArr.length > 0) {
-      schoolYearsArr.forEach(schoolYear => {
+      schoolYearsArr.forEach((schoolYear) => {
         if (
-          parseInt(moment(schoolYear.schoolYearOpen).format('YYYY')) == parseInt(moment().format('YYYY')) && 
-          parseInt(moment(schoolYear.schoolYearClose).format('YYYY')) == (parseInt(moment().format('YYYY')) + 1) && selectedYearId == ''
+          parseInt(moment(schoolYear.schoolYearOpen).format('YYYY')) >= parseInt(moment().format('YYYY')) &&
+          parseInt(moment(schoolYear.schoolYearClose).format('YYYY')) <= parseInt(moment().format('YYYY')) + 1 &&
+          selectedYearId == ''
         ) {
           setSelectedYearId(schoolYear.schoolYearId)
           setSpecialEd(schoolYear.specialEd)
@@ -152,10 +153,11 @@ const ProgramSetting: React.FC = () => {
         }
         dropYears.push({
           value: schoolYear.schoolYearId + '',
-          label: moment(schoolYear.schoolYearOpen).format('YYYY') + '-' + moment(schoolYear.schoolYearClose).format('YYYY')
+          label:
+            moment(schoolYear.schoolYearOpen).format('YYYY') + '-' + moment(schoolYear.schoolYearClose).format('YYYY'),
         })
       })
-    } 
+    }
     setYears(dropYears)
   }
 
@@ -175,16 +177,19 @@ const ProgramSetting: React.FC = () => {
       },
     })
 
-    const submitSchoolYearResponse = await submitSchoolYearSave({
-      variables: {
-        updateSchoolYearInput: {
-          school_year_id: parseInt(selectedYearId),
-          grades: grades,
-          birth_date_cut: birthDate,
-          special_ed: specialEd
-        }
-      },
-    })
+    if (selectedYearId) {
+      const submitSchoolYearResponse = await submitSchoolYearSave({
+        variables: {
+          updateSchoolYearInput: {
+            school_year_id: parseInt(selectedYearId),
+            grades: grades,
+            birth_date_cut: birthDate,
+            special_ed: specialEd,
+          },
+        },
+      })
+    }
+
     const forSaveUpdatedRegion = {
       region_id: me.selectedRegionId,
       regionDetail: submitedResponse.data.updateRegion,
@@ -195,7 +200,7 @@ const ProgramSetting: React.FC = () => {
       const updatedRegions = prevMe?.userRegion.map((prevRegion) => {
         return prevRegion.region_id == me.selectedRegionId ? forSaveUpdatedRegion : prevRegion
       })
-      
+
       return {
         ...prevMe,
         userRegion: updatedRegions,
@@ -206,8 +211,8 @@ const ProgramSetting: React.FC = () => {
   useBeforeUnload({
     when: isChanged ? true : false,
     message: JSON.stringify({
-      header: "Unsaved Work",
-      content: "Changes you made will not be saved"
+      header: 'Unsaved Work',
+      content: 'Changes you made will not be saved',
     }),
   })
 
@@ -222,9 +227,9 @@ const ProgramSetting: React.FC = () => {
     setStateLogo(selectedRegion?.regionDetail?.state_logo)
     setStateLogoFile(null)
     if (schoolYearData && schoolYearData?.data?.region?.SchoolYears) {
-      let schoolYearsArr: SchoolYears[] = [];
+      let schoolYearsArr: SchoolYears[] = []
       let cnt = 0
-      schoolYearData?.data?.region?.SchoolYears.forEach(schoolYear => {
+      schoolYearData?.data?.region?.SchoolYears.forEach((schoolYear) => {
         if (selectedYearId == schoolYear.school_year_id) {
           setSpecialEd(schoolYear.special_ed)
           setBirthDate(schoolYear.birth_date_cut)
@@ -237,7 +242,7 @@ const ProgramSetting: React.FC = () => {
           schoolYearClose: schoolYear.date_end,
           grades: schoolYear.grades,
           birthDateCut: schoolYear.birth_date_cut,
-          specialEd: schoolYear.special_ed
+          specialEd: schoolYear.special_ed,
         })
       })
       if (cnt == 0) {
@@ -246,16 +251,14 @@ const ProgramSetting: React.FC = () => {
         setBirthDate(null)
         setGrades(null)
       }
-      setSchoolYears(schoolYearsArr.sort((a, b) => {
-        if (new Date(a.schoolYearOpen) > new Date(b.schoolYearOpen))
-          return 1
-        else if (new Date(a.schoolYearOpen) == new Date(b.schoolYearOpen))
-          return 0
-        else
-          return -1
-      }))
+      setSchoolYears(
+        schoolYearsArr.sort((a, b) => {
+          if (new Date(a.schoolYearOpen) > new Date(b.schoolYearOpen)) return 1
+          else if (new Date(a.schoolYearOpen) == new Date(b.schoolYearOpen)) return 0
+          else return -1
+        }),
+      )
     }
-
   }, [me.selectedRegionId, schoolYearData?.data?.region?.SchoolYears])
 
   useEffect(() => {
@@ -267,8 +270,8 @@ const ProgramSetting: React.FC = () => {
       <Prompt
         when={isChanged ? true : false}
         message={JSON.stringify({
-          header: "Unsaved Work",
-          content: "Changes you made will not be saved"
+          header: 'Unsaved Work',
+          content: 'Changes you made will not be saved',
         })}
       />
       <Box
@@ -314,7 +317,8 @@ const ProgramSetting: React.FC = () => {
           sx={{ width: '200px' }}
           setParentValue={(val, index) => {
             handleSelectYear(val)
-        }}/>
+          }}
+        />
       </Stack>
       <StateSelect
         stateName={stateName}
@@ -338,11 +342,11 @@ const ProgramSetting: React.FC = () => {
         isChanged={isChanged}
         setIsChanged={setIsChanged}
       />
-      <SpecialEdSelect 
-        specialEd={specialEd} 
-        setSpecialEd={setSpecialEd} 
-        isChanged={isChanged} 
-        setIsChanged={setIsChanged} 
+      <SpecialEdSelect
+        specialEd={specialEd}
+        setSpecialEd={setSpecialEd}
+        isChanged={isChanged}
+        setIsChanged={setIsChanged}
       />
     </Box>
   )

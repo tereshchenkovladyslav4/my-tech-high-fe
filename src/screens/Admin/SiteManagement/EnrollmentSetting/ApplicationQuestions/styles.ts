@@ -8,12 +8,12 @@ export const useStyles = {
     },
   },
   addStudentButton: {
+    marginTop: 2,
     borderRadius: 2,
     border: '1px solid black',
     fontSize: 15,
     width: '451.53px',
     height: '37.14px',
-    marginTop: 10,
   },
   submitButton: {
     borderRadius: 2,

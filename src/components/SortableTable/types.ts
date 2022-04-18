@@ -9,8 +9,9 @@ type SortableTableProps = {
 	headCells: HeadCell[],
 	onCheck: any,
 	clearAll: boolean,
-	updateStatus?: (id: number, status: string) => void
-	onRowClick?: any
+	updateStatus?: (id: number, status: string) => void,
+	onRowClick?: any,
+	onSortChange?: (property:  keyof any, order: string) => void,
 }
 
 export type SortableTableTemplateType = FunctionComponent<SortableTableProps>

@@ -8,7 +8,7 @@ import { deletePacketDocumentFileMutation, getPacketFiles } from '../services'
 import { useStyles } from './styles'
 // @ts-ignore
 import DeleteIcon from '../../../../assets/icons/icon-delete-small.svg'
-import CustomModal from '../../SiteManagement/EnrollmentSetting/ApplicationQuestions/CustomModals'
+import CustomModal from '../../SiteManagement/EnrollmentSetting/components/CustomModal/CustomModals'
 
 export const EnrollmentPacketDocument = ({ packetData }) => {
   const classes = useStyles

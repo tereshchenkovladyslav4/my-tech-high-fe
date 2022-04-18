@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { SortableTableHeader } from './SortableTableHeader/SortableTableHeader'
 import { Order, SortableTableTemplateType } from './types'
 
-export const SortableTable: SortableTableTemplateType = ({ headCells, rows, onCheck, clearAll, onRowClick }) => {
+export const SortableTable: SortableTableTemplateType = ({ headCells, rows, onCheck, clearAll, onRowClick, onSortChange }) => {
   const [order, setOrder] = useState<Order>('asc')
   const [orderBy, setOrderBy] = useState<keyof any>('name')
   const [selected, setSelected] = useState<readonly string[]>([])
@@ -70,6 +70,7 @@ export const SortableTable: SortableTableTemplateType = ({ headCells, rows, onCh
     const isAsc = orderBy === property && order === 'asc'
     setOrder(isAsc ? 'desc' : 'asc')
     setOrderBy(property)
+    onSortChange(property, isAsc ? 'desc' : 'asc')
   }
 
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -131,7 +132,7 @@ export const SortableTable: SortableTableTemplateType = ({ headCells, rows, onCh
             headCells={headCells}
           />
           <TableBody>
-            {stableSort(rows, getComparator(order, orderBy)).map((row) => {
+            {rows.map((row) => {
               const isItemSelected = isSelected(row.id.toString())
               const labelId = `enhanced-table-checkbox-${row.id}`
 

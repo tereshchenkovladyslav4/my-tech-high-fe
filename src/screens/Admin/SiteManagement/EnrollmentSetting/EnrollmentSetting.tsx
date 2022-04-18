@@ -8,6 +8,7 @@ import ApplicationQuestionImage from '../../../../assets/schedules.png';
 import EnrollmentQuestionImage from '../../../../assets/q&a.png';
 import ImmunizationsImage from '../../../../assets/immunizations.png';
 import ApplicationQuestions from './ApplicationQuestions';
+import EnrollmentQuestions from './EnrollmentQuestions';
 import { Box, Button, IconButton, TextField, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material'
 import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded'
 
@@ -88,6 +89,9 @@ const EnrollmentSetting: React.FC = () => {
         </Route>
         <Route path={`${path}/application-question`}>
           <ApplicationQuestions />
+        </Route>
+        <Route path={`${path}/enrollment-question`}>
+          <EnrollmentQuestions />
         </Route>
       </Switch>
     </>

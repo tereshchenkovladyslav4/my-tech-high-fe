@@ -96,7 +96,7 @@ const Years: React.FC = () => {
 
   const schoolYearData = useQuery(getSchoolYearsByRegionId, {
     variables: {
-      regionId: me?.selectedRegionId
+      regionId: me?.selectedRegionId,
     },
     skip: me?.selectedRegionId ? false : true,
     fetchPolicy: 'network-only',
@@ -105,8 +105,8 @@ const Years: React.FC = () => {
   useBeforeUnload({
     when: isChanged ? true : false,
     message: JSON.stringify({
-      header: "Unsaved Work",
-      content: "Changes you made will not be saved"
+      header: 'Unsaved Work',
+      content: 'Changes you made will not be saved',
     }),
   })
 
@@ -126,8 +126,8 @@ const Years: React.FC = () => {
             date_reg_open: moment(applicationsOpen),
             midyear_application: midYearStatus ? 1 : 0,
             midyear_application_open: moment(midYearOpen),
-            midyear_application_close: moment(midYearClose)
-          }
+            midyear_application_close: moment(midYearClose),
+          },
         },
       })
       setSelectedYearId(submitedResponse?.data?.updateSchoolYear.school_year_id)
@@ -142,8 +142,8 @@ const Years: React.FC = () => {
             date_reg_open: moment(applicationsOpen),
             midyear_application: midYearStatus ? 1 : 0,
             midyear_application_open: moment(midYearOpen),
-            midyear_application_close: moment(midYearClose)
-          }
+            midyear_application_close: moment(midYearClose),
+          },
         },
       })
       setSelectedYearId(submittedCreateResponse?.data?.createSchoolYear.school_year_id)
@@ -172,7 +172,7 @@ const Years: React.FC = () => {
       setMidYearClose('')
       setMidYearStatus('')
     } else if (val) {
-      schoolYears.forEach(schoolYear => {
+      schoolYears.forEach((schoolYear) => {
         if (schoolYear.schoolYearId == parseInt(val)) {
           setSchoolYearOpen('')
           setSchoolYearClose('')
@@ -191,10 +191,11 @@ const Years: React.FC = () => {
     const dropYears: DropDownItem[] = []
     const newSchoolYears: DropDownItem[] = [{ value: 'none', label: 'None' }]
     if (schoolYearsArr && schoolYearsArr.length > 0) {
-      schoolYearsArr.forEach(schoolYear => {
+      schoolYearsArr.forEach((schoolYear) => {
         if (
-          selectedYearId == '' && parseInt(moment(schoolYear.schoolYearOpen).format('YYYY')) == parseInt(moment().format('YYYY')) &&
-          parseInt(moment(schoolYear.schoolYearClose).format('YYYY')) == (parseInt(moment().format('YYYY')) + 1)
+          selectedYearId == '' &&
+          parseInt(moment(schoolYear.schoolYearOpen).format('YYYY')) >= parseInt(moment().format('YYYY')) &&
+          parseInt(moment(schoolYear.schoolYearClose).format('YYYY')) <= parseInt(moment().format('YYYY')) + 1
         ) {
           setSelectedYearId(schoolYear.schoolYearId)
           setSchoolYearOpen(schoolYear.schoolYearOpen)
@@ -207,21 +208,23 @@ const Years: React.FC = () => {
         }
         dropYears.push({
           value: schoolYear.schoolYearId + '',
-          label: moment(schoolYear.schoolYearOpen).format('YYYY') + '-' + moment(schoolYear.schoolYearClose).format('YYYY')
+          label:
+            moment(schoolYear.schoolYearOpen).format('YYYY') + '-' + moment(schoolYear.schoolYearClose).format('YYYY'),
         })
         newSchoolYears.push({
           value: schoolYear.schoolYearId + '',
-          label: moment(schoolYear.schoolYearOpen).format('YYYY') + '-' + moment(schoolYear.schoolYearClose).format('YYYY')
+          label:
+            moment(schoolYear.schoolYearOpen).format('YYYY') + '-' + moment(schoolYear.schoolYearClose).format('YYYY'),
         })
       })
       dropYears.push({
         value: 'add',
-        label: '+ Add School Year'
+        label: '+ Add School Year',
       })
     } else {
       dropYears.push({
         value: 'add',
-        label: '+ Add School Year'
+        label: '+ Add School Year',
       })
     }
     setYears(dropYears)
@@ -236,7 +239,7 @@ const Years: React.FC = () => {
       return
     }
     if (schoolYears && schoolYears.length > 0) {
-      schoolYears.forEach(schoolYear => {
+      schoolYears.forEach((schoolYear) => {
         if (schoolYear.schoolYearId == parseInt(val)) {
           setSchoolYearOpen(schoolYear.schoolYearOpen)
           setSchoolYearClose(schoolYear.schoolYearClose)
@@ -267,9 +270,9 @@ const Years: React.FC = () => {
 
   useEffect(() => {
     if (schoolYearData?.data?.region?.SchoolYears) {
-      let schoolYearsArr: SchoolYears[] = [];
+      let schoolYearsArr: SchoolYears[] = []
       let cnt = 0
-      schoolYearData?.data?.region?.SchoolYears.forEach(schoolYear => {
+      schoolYearData?.data?.region?.SchoolYears.forEach((schoolYear) => {
         if (schoolYear.school_year_id == selectedYearId) {
           setSchoolYearOpen(schoolYear.date_begin)
           setSchoolYearClose(schoolYear.date_end)
@@ -278,7 +281,7 @@ const Years: React.FC = () => {
           setMidYearOpen(schoolYear.midyear_application_open)
           setMidYearClose(schoolYear.midyear_application_close)
           setMidYearStatus(schoolYear.midyear_application)
-          cnt ++
+          cnt++
         }
         schoolYearsArr.push({
           schoolYearId: schoolYear.school_year_id,
@@ -288,21 +291,20 @@ const Years: React.FC = () => {
           applicationsClose: schoolYear.date_reg_close,
           midYearOpen: schoolYear.midyear_application_open,
           midYearClose: schoolYear.midyear_application_close,
-          midYearStatus: schoolYear.midyear_application
+          midYearStatus: schoolYear.midyear_application,
         })
       })
-      if(cnt == 0) {
+      if (cnt == 0) {
         setAllDefault()
       }
 
-      setSchoolYears(schoolYearsArr.sort((a, b) => {
-        if (new Date(a.schoolYearOpen) > new Date(b.schoolYearOpen))
-          return 1
-        else if (new Date(a.schoolYearOpen) == new Date(b.schoolYearOpen))
-          return 0
-        else
-          return -1
-      }))
+      setSchoolYears(
+        schoolYearsArr.sort((a, b) => {
+          if (new Date(a.schoolYearOpen) > new Date(b.schoolYearOpen)) return 1
+          else if (new Date(a.schoolYearOpen) == new Date(b.schoolYearOpen)) return 0
+          else return -1
+        }),
+      )
     }
   }, [me.selectedRegionId, schoolYearData?.data?.region?.SchoolYears])
   return (
@@ -310,8 +312,8 @@ const Years: React.FC = () => {
       <Prompt
         when={isChanged ? true : false}
         message={JSON.stringify({
-          header: "Unsaved Work",
-          content: "Changes you made will not be saved"
+          header: 'Unsaved Work',
+          content: 'Changes you made will not be saved',
         })}
       />
       <Box
@@ -320,16 +322,16 @@ const Years: React.FC = () => {
           flexDirection: 'row',
           justifyContent: 'space-between',
           padding: '16px',
-          paddingLeft: 0
+          paddingLeft: 0,
         }}
       >
-        <Box sx={{ paddingLeft: 0}}>
+        <Box sx={{ paddingLeft: 0 }}>
           <IconButton
             onClick={handleBackClick}
             sx={{
               position: 'relative',
               bottom: '2px',
-              paddingLeft: 0
+              paddingLeft: 0,
             }}
           >
             <ArrowBackIosRoundedIcon sx={{ fontSize: '15px', stroke: 'black', strokeWidth: 2 }} />
@@ -345,14 +347,15 @@ const Years: React.FC = () => {
         </Box>
       </Box>
       <Stack direction='row' spacing={1} alignItems='center'>
-        <DropDown 
+        <DropDown
           dropDownItems={years}
           placeholder={'Select Year'}
           defaultValue={selectedYearId}
           sx={{ width: '200px' }}
           setParentValue={(val, index) => {
             handleSelectYear(val)
-        }}/>
+          }}
+        />
       </Stack>
       <Box sx={{ mt: 1 }}>
         <SchoolYearSelect
@@ -389,4 +392,4 @@ const Years: React.FC = () => {
   )
 }
 
-export { Years as default };
+export { Years as default }

@@ -49,7 +49,7 @@ export default function QuestionOptions({
               }
             }}
           />
-          {opt.label.trim() || i === 0 ? (
+          {options.length > 1 ? (
             <IconButton
               sx={{
                 color: '#fff',

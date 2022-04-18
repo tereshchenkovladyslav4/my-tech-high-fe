@@ -237,16 +237,16 @@ export const StudentProfile = ({ studentId, setStudentPerson, setStudentStatus, 
               <Select
                 IconComponent={KeyboardArrowDown}
                 className={classes.select}
-                value={gradeLevel.includes('K') ? 'K' : gradeLevel}
-                sx={{ fontWeight: 700 }}
+                value={gradeLevel.includes('K') ? 'Kindergarten' : gradeLevel}
+                sx={{ color: "#cccccc", fontWeight: '700' }}
               >
-                <MenuItem value='K'>K</MenuItem>
+                <MenuItem value='Kindergarten'>Kindergarten</MenuItem>
                 {[...Array(12).keys()].map((item) => (
                   <MenuItem value={item + 1}>{ordinal(item + 1)} Grade</MenuItem>
                 ))}
               </Select>
               {/* <Subtitle textAlign='left'>Unassigned</Subtitle> */}
-              <Select IconComponent={KeyboardArrowDown} className={classes.select} value={'Unassigned'}>
+              <Select IconComponent={KeyboardArrowDown} className={classes.select} sx={{ color: "#cccccc", fontWeight: '700' }} value={'Unassigned'}>
                 <MenuItem value='Unassigned'>Unassigned</MenuItem>
               </Select>
             </Box>
@@ -294,17 +294,11 @@ export const StudentProfile = ({ studentId, setStudentPerson, setStudentStatus, 
         </Grid>
         <Grid item container xs={4}>
           <Grid item xs={12} sx={{ alignItems: 'center', display: 'flex' }}>
-            <Subtitle fontWeight='700' color={MTHBLUE}>
-              92%
-            </Subtitle>
             <Subtitle textAlign='left' fontWeight='700' color={'#CCCCCC'} sx={{ marginLeft: 3 }}>
               1st Semester # of Zeros
             </Subtitle>
           </Grid>
           <Grid item xs={12} sx={{ alignItems: 'center', display: 'flex' }}>
-            <Subtitle fontWeight='700' color={RED}>
-              65%
-            </Subtitle>
             <Subtitle textAlign='left' fontWeight='700' color={'#CCCCCC'} sx={{ marginLeft: 3 }}>
               2nd Semester # of Zeros
             </Subtitle>

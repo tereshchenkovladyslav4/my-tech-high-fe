@@ -9,7 +9,7 @@ import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined
 import EditIcon from '@mui/icons-material/Edit'
 import { SortableHandle } from 'react-sortable-hoc'
 import AddQuestionModal from './AddQuestion'
-import CustomModal from './CustomModals'
+import CustomModal from '../components/CustomModal/CustomModals'
 import { SYSTEM_05, SYSTEM_07 } from '../../../../../utils/constants'
 
 const DragHandle = SortableHandle(() => (

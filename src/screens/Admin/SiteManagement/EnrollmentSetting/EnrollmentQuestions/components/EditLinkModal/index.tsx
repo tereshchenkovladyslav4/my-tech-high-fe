@@ -1,0 +1,128 @@
+import {Modal, Box, TextField, Button, outlinedInputClasses, FormControl, RadioGroup, Radio, FormControlLabel} from '@mui/material'
+import React, {useState} from 'react'
+import { Title } from '../../../../../../../components/Typography/Title/Title'
+import { SYSTEM_07, SYSTEM_05 } from '../../../../../../../utils/constants'
+import { Subtitle } from '../../../../../../../components/Typography/Subtitle/Subtitle'
+export default function EditLinkModal({
+    onClose,
+    setOption,
+    editItem,
+  }: {
+    onClose: () => void
+    setOption: () => void
+    editItem?: any
+  }) {
+    const [value, setValue] = useState(editItem?.type || 'web')
+    const [text, setText] = useState(editItem?.text || '')
+    const [link, setLink] = useState(editItem?.link || '')
+
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      setValue((event.target as HTMLInputElement).value)
+    }
+
+    const handleSend = () => {
+        setOption({text, type: value, link})
+        onClose()
+    }
+
+    return (
+        <Modal open={true} aria-labelledby='child-modal-title' aria-describedby='child-modal-description'>
+            <Box
+                sx={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    width: '800px',
+                    bgcolor: '#fff',
+                    borderRadius: 8,
+                    px: 8,
+                    py: 4,
+                }}
+            >
+                <Box>
+                    <Title>Edit Link</Title>
+                    <Subtitle fontWeight='500' sx={{mt: 4}}>Text to Display</Subtitle>
+                    <TextField
+                        size='small'
+                        sx={{
+                        maxWidth: '100%',
+                        mt: 2,
+                        [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
+                            borderColor: SYSTEM_07,
+                        },
+                        }}
+                        InputLabelProps={{
+                        style: { color: SYSTEM_05 },
+                        }}
+                        // label={q.question}
+                        variant='outlined'
+                        fullWidth
+                        value={text}
+                        onChange={(v) => setText(v.currentTarget.value)}
+                        focused
+                    />
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 4 }}>
+                        <Box sx={{width: '30%'}}>
+                            <Subtitle fontWeight='500'>Link to:</Subtitle>
+                            <FormControl sx={{mt: 2}}>
+                                <RadioGroup
+                                    aria-labelledby="demo-radio-buttons-group-label"
+                                    defaultValue="female"
+                                    name="radio-buttons-group"
+                                    value={value}
+                                    onChange={handleChange}
+                                >
+                                    <FormControlLabel value="web" control={<Radio />} label="Web Address" />
+                                    <FormControlLabel value="email" control={<Radio />} label="Email Address" />
+                                </RadioGroup>
+                            </FormControl>
+                        </Box>
+                        <Box sx={{width: '70%'}}>
+                            <Subtitle fontWeight='500'>To what email address should this link?</Subtitle>
+                            <TextField
+                                size='small'
+                                sx={{
+                                maxWidth: '100%',
+                                mt: 2,
+                                [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
+                                    borderColor: SYSTEM_07,
+                                },
+                                }}
+                                InputLabelProps={{
+                                style: { color: SYSTEM_05 },
+                                }}
+                                placeholder="enter email"
+                                variant='outlined'
+                                fullWidth
+                                value={link}
+                                onChange={(v) => setLink(v.currentTarget.value)}
+                                focused
+                            />
+                        </Box>
+                    </Box>
+                    <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '50px' }}>
+                        <Button
+                            sx={{ width: '160px', height: '46px', background: '#E7E7E7', borderRadius: '50px', mr: 2 }}
+                            onClick={onClose}
+                            >
+                            Cancel
+                        </Button>
+                        <Button
+                            sx={{
+                                width: '160px',
+                                height: '46px',
+                                background: '#111',
+                                borderRadius: '50px',
+                                color: 'white',
+                            }}
+                            onClick={() => handleSend()}
+                        >
+                            Send
+                        </Button>
+                    </Box>
+                    </Box>
+            </Box>
+        </Modal>
+    )
+  }

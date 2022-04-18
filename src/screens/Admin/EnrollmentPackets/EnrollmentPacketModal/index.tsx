@@ -102,6 +102,7 @@ export default function EnrollmentPacketModal({
       methods.setValue('saveAlert', 'The packet has been accepted')
       setTimeout(() => methods.setValue('saveAlert', ''), 5000)
     } else if (!['Age Issue', 'Missing Info'].includes(status)) {
+
       methods.setValue('saveAlert', 'Packet Saved')
       setTimeout(() => methods.setValue('saveAlert', ''), 5000)
     }
@@ -153,7 +154,7 @@ export default function EnrollmentPacketModal({
           ferpa_agreement: Number(vals.ferpa_agreement),
           dir_permission: Number(vals.dir_permission),
           photo_permission: Number(vals.photo_permission),
-          missing_files: JSON.stringify(vals.missing_files),
+          missing_files: status === 'Missing Info' ? JSON.stringify(vals.missing_files) : '',
         },
       },
     })

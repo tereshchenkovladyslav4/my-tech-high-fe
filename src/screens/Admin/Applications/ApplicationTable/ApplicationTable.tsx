@@ -46,6 +46,7 @@ export const ApplicationTable = ({ filter }) => {
   const [open, setOpen] = useState(false)
   const [openAlert, setOpenAlert] = useState(false)
   const [paginatinLimit, setPaginatinLimit] = useState(Number(localStorage.getItem('pageLimit')) || 25)
+  const [sort, setSort] = useState('status|ASC')
   const [skip, setSkip] = useState<number>(0)
   const [totalApplications, setTotalApplications] = useState<number>()
   const [tableData, setTableData] = useState<Array<any>>([])
@@ -138,7 +139,7 @@ export const ApplicationTable = ({ filter }) => {
     variables: {
       filter: filter,
       skip: skip,
-      sort: 'status|ASC',
+      sort: sort,
       take: paginatinLimit,
       search: seachField,
     },
@@ -450,6 +451,12 @@ export const ApplicationTable = ({ filter }) => {
     handlePageChange(1)
     setPaginatinLimit(value)
   }
+
+  const sortChangeAction = (property, order) => {
+    setSort(`${property}|${order}`)
+    refetch()
+  }
+
   return (
     <Card sx={{ paddingTop: '24px', marginBottom: '24px', paddingBottom: '12px' }}>
       {/*  Headers */}
@@ -484,7 +491,10 @@ export const ApplicationTable = ({ filter }) => {
               fullWidth
               value={seachField}
               placeholder='Search...'
-              onChange={(e) => setSearchField(e.target.value)}
+              onChange={(e) => {
+                handlePageChange(1),
+                setSearchField(e.target.value)
+              }}
               startAdornment={
                 <InputAdornment position='start'>
                   <SearchIcon style={{ color: 'black' }} />
@@ -650,7 +660,7 @@ export const ApplicationTable = ({ filter }) => {
           currentPage={currentPage}
         />
       </Box>
-      <SortableTable rows={tableData} headCells={tableHeaders} onCheck={setApplicationIds} clearAll={shouldClear} />
+      <SortableTable rows={tableData} headCells={tableHeaders} onCheck={setApplicationIds} clearAll={shouldClear} onSortChange={sortChangeAction}/>
       {open && (
         <EmailModal
           handleModem={() => setOpen(!open)}

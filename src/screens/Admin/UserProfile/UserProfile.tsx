@@ -47,6 +47,7 @@ export const UserProfile = ({ handleClose, data }) => {
       person.person_id = Number(person.person_id)
       const phone: any = Object.assign({}, phoneInfo)
       phone.phone_id = Number(phone.phone_id)
+      delete person.user;
       const address = Object.assign({}, userInfo.address)
       address.address_id = address.address_id ? Number(address.address_id) : undefined
       await updatePersonAddress({
@@ -93,24 +94,25 @@ export const UserProfile = ({ handleClose, data }) => {
     refetch()
   }
   const handleChangeParent = (parent) => {
-    if (data.parent_id) {
+      setSelectedStudent('')
       if (parent.observer_id) {
         setSelectedParent(parent.observer_id)
         setUserInfo(parent.person)
         setPhoneInfo(parent.person.phone)
         setNotes(parent.notes || '')
+        setStudents(currentUserData.parentDetail.students.filter(x => x.student_id == parent.student_id))
       } else {
         setSelectedParent(currentUserData.parentDetail.parent_id)
         setUserInfo(currentUserData.parentDetail.person)
         setPhoneInfo(currentUserData.parentDetail.phone)
         setNotes(currentUserData.parentDetail.notes)
+        setStudents(currentUserData.parentDetail.students)
       }
-    }
   }
   const handleChangeStudent = (student) => {
-    if (data.student_id) {
+    // if (data.student_id) {
       setSelectedStudent(student.student_id)
-    }
+    // }
   }
   useEffect(() => {
     if (currentUserData) {
@@ -122,6 +124,8 @@ export const UserProfile = ({ handleClose, data }) => {
       setObservers(currentUserData.parentDetail.observers)
       if (currentUserData.parentDetail.person.user.userRegions.length) {
         setApplicationState(currentUserData.parentDetail.person.user.userRegions[0].regionDetail.name)
+      } else if(currentUserData.parentDetail.person?.address?.state) {
+        setApplicationState(currentUserData.parentDetail.person.address.state)
       }
     }
   }, [currentUserData])
@@ -172,7 +176,7 @@ export const UserProfile = ({ handleClose, data }) => {
         </Box>
       </Box>
       <Students students={students} selectedStudent={selectedStudent} handleChangeStudent={handleChangeStudent} />
-      {data.parent_id && (
+      {selectedParent && !selectedStudent &&(
         <ParentProfile
           userInfo={userInfo}
           setUserInfo={setUserInfo}
@@ -183,7 +187,7 @@ export const UserProfile = ({ handleClose, data }) => {
           applicationState={applicationState}
         />
       )}
-      {data.student_id && (
+      {selectedStudent && (
         <StudentProfile
           studentId={selectedStudent}
           setStudentPerson={setStudentPerson}

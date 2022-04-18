@@ -21,7 +21,6 @@ export const useStyles = {
   },
   select: {
     maxWidth: '150px',
-    color: '#F2F2F2',
     '&:before': {
       borderColor: '#fff',
     },

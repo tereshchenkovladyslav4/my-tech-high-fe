@@ -25,6 +25,7 @@ type DropDownProps = {
   name?: string
   disabled?: boolean
   dropdownColor?: string
+  isAddable?: boolean
   idx?: number
 }
 

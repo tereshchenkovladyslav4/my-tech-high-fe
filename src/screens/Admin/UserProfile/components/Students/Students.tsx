@@ -54,7 +54,7 @@ export const Students = ({ students, selectedStudent, handleChangeStudent }) => 
   const settings = {
     infinite: false,
     speed: 500,
-    slidesToShow: 5,
+    slidesToShow: 7,
     slidesToScroll: 1,
     nextArrow: <SampleNextArrow />,
     prevArrow: <SamplePrevArrow />,
@@ -100,7 +100,7 @@ export const Students = ({ students, selectedStudent, handleChangeStudent }) => 
             {students
               .filter(
                 (item) =>
-                  showAll || item.status.length === 0 || (item.status.length && Number(item.status[0].status) < 2),
+                  item.status.length === 0 || (item.status.length && Number(item.status[0].status) < 2),
               )
               .map((item) => (
                 <Box sx={{ cursor: 'pointer' }} onClick={() => handleChangeStudent(item)}>
@@ -112,10 +112,33 @@ export const Students = ({ students, selectedStudent, handleChangeStudent }) => 
                     }
                     subtitle={
                       <Paragraph color='#cccccc' size={'large'}>
-                        {item.status.length && item.status[0].status > 1
-                          ? status[item.status[0].status]
+                        {(item.grade_levels.length && item.grade_levels[0].grade_level && item.grade_levels[0].grade_level.includes('K'))
+                          ? 'Kindergarten'
                           : ordinal(item.grade_level || (item.grade_levels.length && item.grade_levels[0].grade_level)) +
                             ' Grade'}
+                      </Paragraph>
+                    }
+                    image={<Avatar alt='Remy Sharp' variant='rounded' style={{ marginRight: 8 }} />}
+                  />
+                </Box>
+              ))}
+
+            {students
+              .filter(
+                (item) =>
+                  (showAll && (item.status.length && Number(item.status[0].status) > 1)),
+              )
+              .map((item) => (
+                <Box sx={{ cursor: 'pointer' }} onClick={() => handleChangeStudent(item)}>
+                  <Metadata
+                    title={
+                      <Subtitle fontWeight='700' color={selectedStudent === item.student_id ? '#4145FF' : '#cccccc'}>
+                        {item.person.first_name}
+                      </Subtitle>
+                    }
+                    subtitle={
+                      <Paragraph color='#cccccc' size={'large'}>
+                        {status[item.status[0].status]}
                       </Paragraph>
                     }
                     image={<Avatar alt='Remy Sharp' variant='rounded' style={{ marginRight: 8 }} />}

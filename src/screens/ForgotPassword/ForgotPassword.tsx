@@ -61,81 +61,66 @@ export const ForgotPassword = () => {
   }
 
   return (
-    <Box paddingX={36} paddingY={6} height={'100vh'} sx={{ bgcolor: '#EEF4F8' }}>
-      <Box
-        sx={{
-          height: '100%',
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        paddingTop: 12,
+        background: BUTTON_LINEAR_GRADIENT,
+        width: '100%',
+        height: '100vh'
+      }}
+    >
+      <Box>
+        <Typography fontSize={58} fontWeight={400} color='white'>
+          Reset Your Password
+        </Typography>
+      </Box>
+      <Box>
+        <Typography fontSize={17} marginTop={3} color='white'>
+          Please enter your email address below and press "Reset Password".
+        </Typography>
+        <Typography fontSize={17} marginTop={1} color='white'>
+          You'll receive instructions on how to set a new password.
+        </Typography>
+      </Box>
+      <form
+        onSubmit={formik.handleSubmit}
+        style={{
           display: 'flex',
           flexDirection: 'column',
-          justifyContent: 'center',
           alignItems: 'center',
+          marginTop: 24,
         }}
       >
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            paddingTop: 12,
-            paddingBottom: 12,
-            background: BUTTON_LINEAR_GRADIENT,
-            width: '100%',
+        <TextField
+          color='secondary'
+          name='email'
+          sx={classes.textField}
+          label='Email'
+          focused
+          variant='outlined'
+          inputProps={{
+            style: { color: 'white' },
           }}
-        >
-          <Box>
-            <Typography fontSize={58} fontWeight={400} color='white'>
-              Reset Your Password
-            </Typography>
-          </Box>
-          <Box>
-            <Typography fontSize={17} marginTop={3} color='white'>
-              Please enter your email address below and press "Reset Password".
-            </Typography>
-            <Typography fontSize={17} marginTop={1} color='white'>
-              You'll receive instructions on how to set a new password.
-            </Typography>
-          </Box>
-          <form
-            onSubmit={formik.handleSubmit}
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              marginTop: 24,
-            }}
-          >
-            <TextField
-              color='secondary'
-              name='email'
-              sx={classes.textField}
-              label='Email'
-              focused
-              variant='outlined'
-              inputProps={{
-                style: { color: 'white' },
-              }}
-              value={formik.values.email}
-              onChange={(e) => {
-                formik.handleChange(e)
-                setAlert(null)
-              }}
-              error={formik.touched.email && Boolean(formik.errors.email)}
-              helperText={formik.touched.email && formik.errors.email}
-            />
-            {alert && alert.message && (
-              <Typography fontSize={14} marginTop={3} color={alert.type === 'error' ? '#BD0043' : 'white'}>
-                {alert.message}
-              </Typography>
-            )}
-            <Button variant='contained' sx={classes.button} type='submit'>
-              Reset Password
-            </Button>
-          </form>
-          <Box position='absolute' bottom={20}>
-            <NewApplicationFooter />
-          </Box>
-        </Box>
-      </Box>
+          value={formik.values.email}
+          onChange={(e) => {
+            formik.handleChange(e)
+            setAlert(null)
+          }}
+          error={formik.touched.email && Boolean(formik.errors.email)}
+          helperText={formik.touched.email && formik.errors.email}
+        />
+        {alert && alert.message && (
+          <Typography fontSize={14} marginTop={3} color={alert.type === 'error' ? '#BD0043' : 'white'}>
+            {alert.message}
+          </Typography>
+        )}
+        <Button variant='contained' sx={classes.button} type='submit'>
+          Reset Password
+        </Button>
+      </form>
     </Box>
   )
 }

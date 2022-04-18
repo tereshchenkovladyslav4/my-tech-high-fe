@@ -1,4 +1,14 @@
-import { FormControl, Select, MenuItem, TextField, FormHelperText } from '@mui/material'
+import {
+  SelectChangeEvent,
+  FormControl,
+  Select,
+  MenuItem,
+  TextField,
+  InputLabel,
+  FormHelperText,
+  Divider,
+} from '@mui/material'
+
 import { Box, styled } from '@mui/system'
 import { map } from 'lodash'
 import React, { useEffect, useState } from 'react'
@@ -7,26 +17,26 @@ import { useStyles } from './styles'
 import { SYSTEM_05 } from '../../utils/constants'
 
 const CssTextField = styled(TextField, {
-  shouldForwardProp: (props) => props !== "focusColor"
+  shouldForwardProp: (props) => props !== 'focusColor',
 })((p) => ({
   // focused color for input with variant='standard'
-  "& .MuiInput-underline:after": {
+  '& .MuiInput-underline:after': {
     borderBottomColor: '#ccc',
-    borderWidth: '1px'
+    borderWidth: '1px',
   },
   // focused color for input with variant='filled'
-  "& .MuiFilledInput-underline:after": {
+  '& .MuiFilledInput-underline:after': {
     borderBottomColor: '#ccc',
-    borderWidth: '1px'
+    borderWidth: '1px',
   },
   // focused color for input with variant='outlined'
-  "& .MuiOutlinedInput-root": {
-    "&.Mui-focused fieldset": {
+  '& .MuiOutlinedInput-root': {
+    '&.Mui-focused fieldset': {
       borderColor: '#ccc',
-      borderWidth: '1px'
-    }
-  }
-}));
+      borderWidth: '1px',
+    },
+  },
+}))
 
 const Placeholder = ({ children }) => {
   return <div>{children}</div>
@@ -45,19 +55,25 @@ export const DropDown: DropDownTemplateType = ({
   error,
   name,
   dropdownColor,
-  idx
+  isAddable,
+  idx,
 }) => {
   const [value, setValue] = useState(defaultValue)
   const handleChange = (val: string) => {
     setValue(val)
     setParentValue(val, idx)
   }
-  const renderDropDownItem = () =>
-    map(dropDownItems, (dropDownItem, index) => (
-      <MenuItem key={index} value={dropDownItem.value}>
-        {dropDownItem.label}
-      </MenuItem>
-    ))
+
+  let renderDropDownItem = map(dropDownItems, (dropDownItem, index) => (
+    <MenuItem key={index} value={dropDownItem.value}>
+      {dropDownItem.label}
+    </MenuItem>
+  ))
+
+  if (isAddable) {
+    renderDropDownItem.push(<Divider />)
+    renderDropDownItem.push(<MenuItem value={0}>Add...</MenuItem>)
+  }
 
   const classes = useStyles
 
@@ -76,14 +92,18 @@ export const DropDown: DropDownTemplateType = ({
             onChange={(e) => handleChange(e.target?.value)}
             displayEmpty
             renderValue={`${value}` ? undefined : () => <Placeholder>{placeholder}</Placeholder>}
-            sx={{ ...sx, borderRadius: 2,  '& .MuiSelect-outlined': {
-              background: dropdownColor 
-            }}}
+            sx={{
+              ...sx,
+              borderRadius: 2,
+              '& .MuiSelect-outlined': {
+                background: dropdownColor,
+              },
+            }}
             size={size || 'medium'}
             error={error?.error}
             disabled={disabled || false}
           >
-            {renderDropDownItem()}
+            {renderDropDownItem}
           </Select>
           <FormHelperText sx={{ color: '#BD0043' }}>{error?.errorMsg}</FormHelperText>
         </FormControl>
@@ -104,7 +124,7 @@ export const DropDown: DropDownTemplateType = ({
             error={error?.error}
             helperText={error?.errorMsg}
           >
-            {renderDropDownItem()}
+            {renderDropDownItem}
           </CssTextField>
         </Box>
       )}

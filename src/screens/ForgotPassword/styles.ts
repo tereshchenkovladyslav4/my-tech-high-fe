@@ -10,6 +10,7 @@ export const useStyles = {
   button: {
     marginTop: 3,
     height: '53px',
+    backgroundColor: '#1A1A1A',
     borderRadius: '33.33440017700195px',
     '&:hover': {
       background: '#F5F5F5',

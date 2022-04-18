@@ -35,6 +35,7 @@ export const EnrollmentPacketTable = () => {
 
   const [paginatinLimit, setPaginatinLimit] = useState(25)
   const [skip, setSkip] = useState<number>()
+  const [sort, setSort] = useState('status|ASC')
 
   const [totalPackets, setTotalPackets] = useState<number>()
   const [packetIds, setPacketIds] = useState<Array<string>>([])
@@ -77,7 +78,7 @@ export const EnrollmentPacketTable = () => {
   const { loading, error, data, refetch } = useQuery(getEnrollmentPacketsQuery, {
     variables: {
       skip: skip,
-      sort: 'status|ASC',
+      sort: sort,
       take: paginatinLimit,
       search: searchField,
       filters: filters,
@@ -298,6 +299,11 @@ export const EnrollmentPacketTable = () => {
     refetch()
   }
 
+  const sortChangeAction = (property, order) => {
+    setSort(`${property}|${order}`)
+    refetch()
+  }
+
   return (
     <Card sx={{ paddingTop: '24px', marginBottom: '24px', paddingBottom: '12px' }}>
       {/*  Headers */}
@@ -477,6 +483,7 @@ export const EnrollmentPacketTable = () => {
         onCheck={setPacketIds}
         clearAll={false}
         onRowClick={handlePacketSelect}
+        onSortChange={sortChangeAction}
       />
       {isShowModal && (
         <EnrollmentPacketModal
