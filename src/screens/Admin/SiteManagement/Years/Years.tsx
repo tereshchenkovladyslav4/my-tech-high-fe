@@ -62,21 +62,6 @@ export const getSchoolYearsByRegionId = gql`
   }
 `
 
-// export const getSchoolYearDetailById = gql`
-//   query GetSchoolYear($schoolYearId: ID!) {
-//     getSchoolYear(school_year_id: $schoolYearId) {
-//       school_year_id
-//       date_begin
-//       date_end
-//       date_reg_close
-//       date_reg_open
-//       midyear_application
-//       midyear_application_open
-//       midyear_application_close
-//     }
-//   }
-// `
-
 type SchoolYears = {
   schoolYearId: number
   schoolYearOpen: string
@@ -129,10 +114,6 @@ const Years: React.FC = () => {
   }
 
   const handleClickSave = async () => {
-    
-
-    
-    let schoolYearsArr = schoolYears
     if (selectedYearId && selectedYearId != 'add') {
       const submitedResponse = await submitSave({
         variables: {
@@ -142,9 +123,9 @@ const Years: React.FC = () => {
             date_end: moment(schoolYearClose),
             date_reg_close: moment(applicationsClose),
             date_reg_open: moment(applicationsOpen),
-            // midyear_application: midYearStatus,
-            // midyear_application_open: moment(midYearOpen),
-            // midyear_application_close: moment(midYearClose)
+            midyear_application: midYearStatus ? 1 : 0,
+            midyear_application_open: moment(midYearOpen),
+            midyear_application_close: moment(midYearClose)
           }
         },
       })
@@ -158,9 +139,9 @@ const Years: React.FC = () => {
             date_end: moment(schoolYearClose),
             date_reg_close: moment(applicationsClose),
             date_reg_open: moment(applicationsOpen),
-            // midyear_application: midYearStatus,
-            // midyear_application_open: moment(midYearOpen),
-            // midyear_application_close: moment(midYearClose)
+            midyear_application: midYearStatus ? 1 : 0,
+            midyear_application_open: moment(midYearOpen),
+            midyear_application_close: moment(midYearClose)
           }
         },
       })
@@ -203,10 +184,6 @@ const Years: React.FC = () => {
       })
     }
     setAddSchoolYearDialogOpen(false)
-  }
-
-  const getRegionById = (id: number) => {
-    return me.userRegion.find((region) => region.region_id === id)
   }
 
   const setDropYears = (schoolYearsArr: any[]) => {

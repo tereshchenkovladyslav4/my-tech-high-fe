@@ -1,40 +1,59 @@
-import { Box, Button, Card, Container, Grid, TextField  } from '@mui/material'
+import { Box, Button, Card, Grid, TextField } from '@mui/material'
 import React, { useContext, useEffect, useState } from 'react'
-import { AddStudent } from '../components/AddStudent/AddStudent'
 import { useStyles } from '../styles'
 import BGSVG from '../../../assets/ApplicationBG.svg'
-import { StudentInput } from '../NewParent/NewParent'
 import { DropDown } from '../../../components/DropDown/DropDown'
 import { DropDownItem } from '../../../components/DropDown/types'
-import { useMutation } from '@apollo/client'
+import { gql, useMutation, useQuery } from '@apollo/client'
 import { AddApplicationMutation } from './service'
 import { UserContext } from '../../../providers/UserContext/UserProvider'
-import { useFormik, Formik, FieldArray, Form, Field } from 'formik'
+import { Formik, FieldArray, Form, Field } from 'formik'
 import * as yup from 'yup'
-import { find, map, toNumber } from 'lodash'
+import { map, toNumber } from 'lodash'
 import { GRADES, RED, SYSTEM_05 } from '../../../utils/constants'
 import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined'
-import { array, boolean, number, object, string, ValidationError } from 'yup';
+import { array, object, string } from 'yup'
 import { Paragraph } from '../../../components/Typography/Paragraph/Paragraph'
+import moment from 'moment'
+
+export const getRegionByUserId = gql`
+  query UserRegionByUserId($userId: ID!) {
+    userRegionByUserId(user_id: $userId) {
+      region_id
+    }
+  }
+`
+
+export const getActiveSchoolYearsByRegionId = gql`
+  query GetActiveSchoolYears($regionId: ID!) {
+    getActiveSchoolYears(region_id: $regionId) {
+      date_begin
+      date_end
+      date_reg_close
+      date_reg_open
+    }
+  }
+`
 
 export const ExistingParent = () => {
-  const emptyStudent = { first_name: '', last_name: '' ,grade_level: undefined}
-
+  const emptyStudent = { first_name: '', last_name: '', grade_level: undefined}
   const { me, setMe } = useContext(UserContext)
-  const programYearItems: DropDownItem[] = [
-    {
-      label: '2021-2022',
-      value: '1',
+  const [schoolYears, setSchoolYears] = useState<Array<DropDownItem>>([])
+  const [regionId, setRegionId] = useState<string>('')
+  const { loading: regionLoading, data: regionData } = useQuery(getRegionByUserId, {
+    variables: {
+      userId: me?.user_id
     },
-    {
-      label: '2023-2024',
-      value: '2',
+    skip: regionId == '' ? false : true,
+    fetchPolicy: 'network-only',
+  })
+
+  const { loading: schoolLoading, data: schoolYearData } = useQuery(getActiveSchoolYearsByRegionId, {
+    variables: {
+      regionId: regionId
     },
-    {
-      label: '2024-2025',
-      value: '3',
-    },
-  ]
+    fetchPolicy: 'network-only',
+  })
 
   const classes = useStyles
 
@@ -65,6 +84,25 @@ export const ExistingParent = () => {
       value: grade.toString()
     }
   })
+
+  useEffect(() => {
+    if (!regionLoading && regionData) {
+      setRegionId(regionData?.userRegionByUserId[0].region_id)
+    }
+  }, [me?.user_id, regionData])
+
+  useEffect(() => {
+    if (!schoolLoading && schoolYearData?.getActiveSchoolYears) {
+      setSchoolYears(
+        schoolYearData?.getActiveSchoolYears.map((item) => {
+          return {
+            label: moment(item.date_begin).format('YYYY') + '-' + moment(item.date_end).format('YYYY'),
+            value: item.school_year_id,
+          }
+        }),
+      )
+    }
+  }, [regionId, schoolYearData])
 
   return (
     <Card sx={{ paddingTop: 8, margin: 4 }} >
@@ -121,7 +159,7 @@ export const ExistingParent = () => {
                       name='programYear'
                       labelTop
                       placeholder='Program Year'
-                      dropDownItems={programYearItems}
+                      dropDownItems={schoolYears}
                       setParentValue={(id) => {
                         form.setFieldValue(field.name, toNumber(id))
                       }}

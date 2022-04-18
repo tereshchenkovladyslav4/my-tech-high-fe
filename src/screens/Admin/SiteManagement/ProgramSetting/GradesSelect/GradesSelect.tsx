@@ -32,6 +32,8 @@ export default function GradesSelect({ grades, setGrades, setIsChanged }: Grades
   useEffect(() => {
     if (grades != undefined && grades != '') {
       setGradesArr(grades.split(','))
+    } else {
+      setGradesArr([])
     }
   }, [grades])
   const handleClickOpen = () => {

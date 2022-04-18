@@ -38,21 +38,41 @@ export const updateStateNameMutation = gql`
       name
       program
       state_logo
-      special_ed
-      birth_date
     }
   }
 `
 
-export const getRegionInfoById = gql`
-  query Region($regionId: ID!) {
-    region(id: $regionId) {
-      birth_date
-      special_ed
-      grades
+export const updateSchoolYearMutation = gql`
+  mutation UpdateSchoolYear($updateSchoolYearInput: UpdateSchoolYearInput!) {
+    updateSchoolYear(updateSchoolYearInput: $updateSchoolYearInput) {
+      school_year_id
     }
   }
 `
+
+export const getSchoolYearsByRegionId = gql`
+  query Region($regionId: ID!) {
+    region(id: $regionId) {
+      SchoolYears {
+        school_year_id
+        date_begin
+        date_end
+        grades
+        birth_date_cut
+        special_ed
+      }
+    }
+  }
+`
+
+type SchoolYears = {
+  schoolYearId: number
+  schoolYearOpen: string
+  schoolYearClose: string
+  grades: string
+  birthDateCut: string
+  specialEd: boolean
+}
 
 const ProgramSetting: React.FC = () => {
   const classes = useStyles
@@ -61,17 +81,18 @@ const ProgramSetting: React.FC = () => {
   const [stateName, setStateName] = useState<string>()
   const [program, setProgram] = useState<string>()
   const [specialEd, setSpecialEd] = useState<boolean>()
-  const [birthDate, setBirthDate] = useState<string>()
+  const [birthDate, setBirthDate] = useState<string>('')
   const [birthDateInvalid, setBirthDateInvalid] = useState<boolean>(false)
   const [stateLogo, setStateLogo] = useState<string>()
   const [grades, setGrades] = useState<string>()
   const [isChanged, setIsChanged] = useState<boolean>(false)
-  const [schoolYears, setSchoolYears] = useState<SchoolYears[]>(localStorage.getItem('schoolYearsByRegionId') ? JSON.parse(localStorage.getItem('schoolYearsByRegionId')) : [])
+  const [schoolYears, setSchoolYears] = useState<SchoolYears[]>([])
   const [years, setYears] = useState()
   const [selectedYearId, setSelectedYearId] = useState<string>('')
   const [stateLogoFile, setStateLogoFile] = useState<StateLogoFileType>()
   const [submitSave, { data, loading, error }] = useMutation(updateStateNameMutation)
-  const regionInfoResponse = useQuery(getRegionInfoById, {
+  const [submitSchoolYearSave, {}] = useMutation(updateSchoolYearMutation)
+  const schoolYearData = useQuery(getSchoolYearsByRegionId, {
     variables: {
       regionId: me?.selectedRegionId
     },
@@ -82,7 +103,18 @@ const ProgramSetting: React.FC = () => {
     return me.userRegion.find((region) => region.region_id === id)
   }
 
-  const handleSelectYear = (val) => {}
+  const handleSelectYear = (val) => {
+    setSelectedYearId(val)
+    if (schoolYears && schoolYears.length > 0) {
+      schoolYears.forEach(schoolYear => {
+        if (val == schoolYear.schoolYearId) {
+          setSpecialEd(schoolYear.specialEd)
+          setBirthDate(schoolYear.birthDateCut)
+          setGrades(schoolYear.grades)
+        }
+      })
+    }
+  }
 
   const uploadImage = async (file) => {
     const bodyFormData = new FormData()
@@ -90,17 +122,6 @@ const ProgramSetting: React.FC = () => {
       bodyFormData.append('file', file)
       bodyFormData.append('region', 'UT')
       bodyFormData.append('year', '2022')
-
-      // try {
-      //   const response = await axios({
-      //     method: 'post',
-      //     url: import.meta.env.SNOWPACK_PUBLIC_S3_URL,
-      //     data: bodyFormData,
-      //     headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${localStorage.getItem('JWT')}` },
-      //   })
-      // } catch (error) {
-      //   console.log(error)
-      // }
 
       const response = await fetch(import.meta.env.SNOWPACK_PUBLIC_S3_URL, {
         method: 'POST',
@@ -146,18 +167,24 @@ const ProgramSetting: React.FC = () => {
           name: stateName,
           program: program,
           state_logo: imageLocation ? imageLocation : stateLogo,
-          special_ed: specialEd,
-          birth_date: birthDate,
-          grades: grades,
         },
+      },
+    })
+
+    const submitSchoolYearResponse = await submitSchoolYearSave({
+      variables: {
+        updateSchoolYearInput: {
+          school_year_id: parseInt(selectedYearId),
+          grades: grades,
+          birth_date_cut: birthDate,
+          special_ed: specialEd
+        }
       },
     })
     const forSaveUpdatedRegion = {
       region_id: me.selectedRegionId,
       regionDetail: submitedResponse.data.updateRegion,
     }
-    //localStorage.setItem('selectedRegion', JSON.stringify(forSaveUpdatedRegion))
-    //setSelectedRegion(forSaveUpdatedRegion)
     setIsChanged(false)
 
     setMe((prevMe) => {
@@ -170,7 +197,6 @@ const ProgramSetting: React.FC = () => {
         userRegion: updatedRegions,
       }
     })
-    // window.location.reload()
   }
 
   useBeforeUnload({
@@ -191,10 +217,31 @@ const ProgramSetting: React.FC = () => {
     setProgram(selectedRegion?.regionDetail?.program)
     setStateLogo(selectedRegion?.regionDetail?.state_logo)
     setStateLogoFile(null)
-    setSpecialEd(regionInfoResponse.data?.region?.special_ed)
-    setBirthDate(regionInfoResponse.data?.region?.birth_date)
-    setGrades(regionInfoResponse.data?.region?.grades)
-  }, [me.selectedRegionId])
+
+    if (schoolYearData && schoolYearData?.data?.region?.SchoolYears) {
+      let schoolYearsArr: SchoolYears[] = [];
+      schoolYearData?.data?.region?.SchoolYears.forEach(schoolYear => {
+        schoolYearsArr.push({
+          schoolYearId: schoolYear.school_year_id,
+          schoolYearOpen: schoolYear.date_begin,
+          schoolYearClose: schoolYear.date_end,
+          grades: schoolYear.grades,
+          birthDateCut: schoolYear.birth_date_cut,
+          specialEd: schoolYear.special_ed
+        })
+      })
+
+      setSchoolYears(schoolYearsArr.sort((a, b) => {
+        if (new Date(a.schoolYearOpen) > new Date(b.schoolYearOpen))
+          return 1
+        else if (new Date(a.schoolYearOpen) == new Date(b.schoolYearOpen))
+          return 0
+        else
+          return -1
+      }))
+    }
+
+  }, [me.selectedRegionId, schoolYearData?.data?.region?.SchoolYears])
 
   useEffect(() => {
     setDropYears(schoolYears)
