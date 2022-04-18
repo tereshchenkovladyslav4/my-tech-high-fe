@@ -1,22 +1,35 @@
-import { useQuery } from '@apollo/client'
-import React, { useState, useEffect, useRef, useContext } from 'react'
-import { Box, Button, Stack, Typography, IconButton, Dialog, DialogTitle, DialogActions } from '@mui/material'
-import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
-import { MTHBLUE } from '../../../../utils/constants'
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
-import { useStyles } from '../styles'
+import React, { useState, useEffect, useContext } from 'react'
+import { Box, Button, Stack, Typography, IconButton } from '@mui/material'
 import { UserContext } from '../../../../providers/UserContext/UserProvider'
+import { useStyles } from '../styles'
 import { StateSelect } from './StateSelect'
 import { ProgramSelect } from './ProgramSelect'
 import { BirthDateCutOffSelect } from './BirthDateCutOffSelect'
 import { SpecialEdSelect } from './SpecialEdSelect'
 import { StateLogo } from './StateLogo'
 import { GradesSelect } from './GradesSelect'
-import { gql, useMutation } from '@apollo/client'
+import { gql, useMutation, useQuery } from '@apollo/client'
 import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded'
-import { ErrorOutline } from '@mui/icons-material'
-import { useHistory } from 'react-router-dom'
+import { Prompt, useHistory } from 'react-router-dom'
 import { StateLogoFileType } from './StateLogo/StateLogoTypes'
+import { DropDown } from '../../../../components/DropDown/DropDown'
+import moment from 'moment'
+
+const useBeforeUnload = ({ when, message }) => {
+  useEffect(() => {
+    const handleBeforeUnload = (event) => {
+      event.preventDefault()
+      event.returnValue = message
+      return message
+    }
+
+    if (when) {
+      window.addEventListener('beforeunload', handleBeforeUnload)
+    }
+
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload)
+  }, [when, message])
+}
 
 export const updateStateNameMutation = gql`
   mutation UpdateRegion($updateRegionInput: UpdateRegionInput!) {
@@ -25,21 +38,41 @@ export const updateStateNameMutation = gql`
       name
       program
       state_logo
-      special_ed
-      birth_date
     }
   }
 `
 
-export const getRegionInfoById = gql`
-  query Region($regionId: ID!) {
-    region(id: $regionId) {
-      birth_date
-      special_ed
-      grades
+export const updateSchoolYearMutation = gql`
+  mutation UpdateSchoolYear($updateSchoolYearInput: UpdateSchoolYearInput!) {
+    updateSchoolYear(updateSchoolYearInput: $updateSchoolYearInput) {
+      school_year_id
     }
   }
 `
+
+export const getSchoolYearsByRegionId = gql`
+  query Region($regionId: ID!) {
+    region(id: $regionId) {
+      SchoolYears {
+        school_year_id
+        date_begin
+        date_end
+        grades
+        birth_date_cut
+        special_ed
+      }
+    }
+  }
+`
+
+type SchoolYears = {
+  schoolYearId: number
+  schoolYearOpen: string
+  schoolYearClose: string
+  grades: string
+  birthDateCut: string
+  specialEd: boolean
+}
 
 const ProgramSetting: React.FC = () => {
   const classes = useStyles
@@ -48,41 +81,40 @@ const ProgramSetting: React.FC = () => {
   const [stateName, setStateName] = useState<string>()
   const [program, setProgram] = useState<string>()
   const [specialEd, setSpecialEd] = useState<boolean>()
-  const [birthDate, setBirthDate] = useState<string>()
+  const [birthDate, setBirthDate] = useState<string>('')
   const [birthDateInvalid, setBirthDateInvalid] = useState<boolean>(false)
   const [stateLogo, setStateLogo] = useState<string>()
   const [grades, setGrades] = useState<string>()
-  const [open, setOpen] = React.useState<boolean>(false)
   const [isChanged, setIsChanged] = useState<boolean>(false)
+  const [schoolYears, setSchoolYears] = useState<SchoolYears[]>([])
+  const [years, setYears] = useState()
+  const [selectedYearId, setSelectedYearId] = useState<string>('')
   const [stateLogoFile, setStateLogoFile] = useState<StateLogoFileType>()
   const [submitSave, { data, loading, error }] = useMutation(updateStateNameMutation)
-  const regionInfoResponse = useQuery(getRegionInfoById, {
+  const [submitSchoolYearSave, {}] = useMutation(updateSchoolYearMutation)
+  const schoolYearData = useQuery(getSchoolYearsByRegionId, {
     variables: {
       regionId: me?.selectedRegionId
     },
     fetchPolicy: 'network-only',
   })
 
-  const handleClickOpen = () => {
-    setOpen(true)
-  }
-  const handleClose = () => {
-    setOpen(false)
-  }
   const getRegionById = (id: number) => {
     return me.userRegion.find((region) => region.region_id === id)
   }
-  useEffect(() => {
-    const selectedRegion = getRegionById(me.selectedRegionId)
-    setStateName(selectedRegion?.regionDetail?.name)
-    setProgram(selectedRegion?.regionDetail?.program)
-    setStateLogo(selectedRegion?.regionDetail?.state_logo)
-    setStateLogoFile(null)
-    setIsChanged(false)
-    setSpecialEd(regionInfoResponse.data?.region?.special_ed)
-    setBirthDate(regionInfoResponse.data?.region?.birth_date)
-    setGrades(regionInfoResponse.data?.region?.grades)
-  }, [me.selectedRegionId, regionInfoResponse.data?.region])
+
+  const handleSelectYear = (val) => {
+    setSelectedYearId(val)
+    if (schoolYears && schoolYears.length > 0) {
+      schoolYears.forEach(schoolYear => {
+        if (val == schoolYear.schoolYearId) {
+          setSpecialEd(schoolYear.specialEd)
+          setBirthDate(schoolYear.birthDateCut)
+          setGrades(schoolYear.grades)
+        }
+      })
+    }
+  }
 
   const uploadImage = async (file) => {
     const bodyFormData = new FormData()
@@ -90,17 +122,6 @@ const ProgramSetting: React.FC = () => {
       bodyFormData.append('file', file)
       bodyFormData.append('region', 'UT')
       bodyFormData.append('year', '2022')
-
-      // try {
-      //   const response = await axios({
-      //     method: 'post',
-      //     url: import.meta.env.SNOWPACK_PUBLIC_S3_URL,
-      //     data: bodyFormData,
-      //     headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${localStorage.getItem('JWT')}` },
-      //   })
-      // } catch (error) {
-      //   console.log(error)
-      // }
 
       const response = await fetch(import.meta.env.SNOWPACK_PUBLIC_S3_URL, {
         method: 'POST',
@@ -114,6 +135,28 @@ const ProgramSetting: React.FC = () => {
       } = await response.json()
       return s3.Location
     }
+  }
+
+  const setDropYears = (schoolYearsArr) => {
+    let dropYears = []
+    if (schoolYearsArr && schoolYearsArr.length > 0) {
+      schoolYearsArr.forEach(schoolYear => {
+        if (
+          parseInt(moment(schoolYear.schoolYearOpen).format('YYYY')) == parseInt(moment().format('YYYY')) && 
+          parseInt(moment(schoolYear.schoolYearClose).format('YYYY')) == (parseInt(moment().format('YYYY')) + 1) && selectedYearId == ''
+        ) {
+          setSelectedYearId(schoolYear.schoolYearId)
+          setSpecialEd(schoolYear.specialEd)
+          setBirthDate(schoolYear.birthDateCut)
+          setGrades(schoolYear.grades)
+        }
+        dropYears.push({
+          value: schoolYear.schoolYearId + '',
+          label: moment(schoolYear.schoolYearOpen).format('YYYY') + '-' + moment(schoolYear.schoolYearClose).format('YYYY')
+        })
+      })
+    } 
+    setYears(dropYears)
   }
 
   const handleClickSave = async () => {
@@ -133,18 +176,24 @@ const ProgramSetting: React.FC = () => {
           name: stateName,
           program: program,
           state_logo: imageLocation ? imageLocation : stateLogo,
-          special_ed: specialEd,
-          birth_date: birthDate,
-          grades: grades,
         },
+      },
+    })
+
+    const submitSchoolYearResponse = await submitSchoolYearSave({
+      variables: {
+        updateSchoolYearInput: {
+          school_year_id: parseInt(selectedYearId),
+          grades: grades,
+          birth_date_cut: birthDate,
+          special_ed: specialEd
+        }
       },
     })
     const forSaveUpdatedRegion = {
       region_id: me.selectedRegionId,
       regionDetail: submitedResponse.data.updateRegion,
     }
-    //localStorage.setItem('selectedRegion', JSON.stringify(forSaveUpdatedRegion))
-    //setSelectedRegion(forSaveUpdatedRegion)
     setIsChanged(false)
 
     setMe((prevMe) => {
@@ -157,19 +206,76 @@ const ProgramSetting: React.FC = () => {
         userRegion: updatedRegions,
       }
     })
-    // window.location.reload()
   }
 
+  useBeforeUnload({
+    when: isChanged ? true : false,
+    message: JSON.stringify({
+      header: "Unsaved Work",
+      content: "Changes you made will not be saved"
+    }),
+  })
+
   const handleBackClick = () => {
-    if (isChanged) {
-      setOpen(true)
-    } else {
-      history.push('/site-management/')
-    }
+    history.push('/site-management/')
   }
+
+  useEffect(() => {
+    const selectedRegion = getRegionById(me.selectedRegionId)
+    setStateName(selectedRegion?.regionDetail?.name)
+    setProgram(selectedRegion?.regionDetail?.program)
+    setStateLogo(selectedRegion?.regionDetail?.state_logo)
+    setStateLogoFile(null)
+    if (schoolYearData && schoolYearData?.data?.region?.SchoolYears) {
+      let schoolYearsArr: SchoolYears[] = [];
+      let cnt = 0
+      schoolYearData?.data?.region?.SchoolYears.forEach(schoolYear => {
+        if (selectedYearId == schoolYear.school_year_id) {
+          setSpecialEd(schoolYear.special_ed)
+          setBirthDate(schoolYear.birth_date_cut)
+          setGrades(schoolYear.grades)
+          cnt++
+        }
+        schoolYearsArr.push({
+          schoolYearId: schoolYear.school_year_id,
+          schoolYearOpen: schoolYear.date_begin,
+          schoolYearClose: schoolYear.date_end,
+          grades: schoolYear.grades,
+          birthDateCut: schoolYear.birth_date_cut,
+          specialEd: schoolYear.special_ed
+        })
+      })
+      if (cnt == 0) {
+        setSelectedYearId('')
+        setSpecialEd(false)
+        setBirthDate(null)
+        setGrades(null)
+      }
+      setSchoolYears(schoolYearsArr.sort((a, b) => {
+        if (new Date(a.schoolYearOpen) > new Date(b.schoolYearOpen))
+          return 1
+        else if (new Date(a.schoolYearOpen) == new Date(b.schoolYearOpen))
+          return 0
+        else
+          return -1
+      }))
+    }
+
+  }, [me.selectedRegionId, schoolYearData?.data?.region?.SchoolYears])
+
+  useEffect(() => {
+    setDropYears(schoolYears)
+  }, [schoolYears])
 
   return (
     <Box sx={classes.base}>
+      <Prompt
+        when={isChanged ? true : false}
+        message={JSON.stringify({
+          header: "Unsaved Work",
+          content: "Changes you made will not be saved"
+        })}
+      />
       <Box
         sx={{
           display: 'flex',
@@ -205,12 +311,15 @@ const ProgramSetting: React.FC = () => {
           </Button>
         </Box>
       </Box>
-
       <Stack direction='row' spacing={1} alignItems='center'>
-        <Subtitle size={12} fontWeight='600' color={MTHBLUE}>
-          2020 - 2021
-        </Subtitle>
-        <ExpandMoreIcon fontSize='small' />
+        <DropDown
+          dropDownItems={years}
+          placeholder={'Select Year'}
+          defaultValue={selectedYearId}
+          sx={{ width: '200px' }}
+          setParentValue={(val, index) => {
+            handleSelectYear(val)
+        }}/>
       </Stack>
       <StateSelect
         stateName={stateName}
@@ -241,78 +350,6 @@ const ProgramSetting: React.FC = () => {
         isChanged={isChanged} 
         setIsChanged={setIsChanged} 
       />
-
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        sx={{
-          marginX: 'auto',
-          paddingY: '10px',
-          borderRadius: 10,
-          textAlign: 'center',
-          alignItems: 'center',
-          display: 'flex',
-          flexDirection: 'column',
-        }}
-      >
-        <DialogTitle
-          sx={{
-            fontWeight: 'bold',
-            marginTop: '10px',
-          }}
-        >
-          {'Unsaved Changes'}
-        </DialogTitle>
-        <ErrorOutline
-          sx={{
-            fontSize: 50,
-            marginBottom: 5,
-            marginX: 'auto',
-          }}
-        />
-        <Typography
-          fontWeight='bold'
-          sx={{
-            marginBottom: 5,
-            paddingX: 10,
-          }}
-        >
-          {`Are you sure you want to leave without saving changes?`}
-        </Typography>
-        <DialogActions
-          sx={{
-            justifyContent: 'space-evenly',
-            marginBottom: 2,
-          }}
-        >
-          <Button
-            sx={{
-              borderRadius: 5,
-              bgcolor: '#E7E7E7',
-              paddingX: 5,
-              '&:hover': { color: 'black' },
-            }}
-            onClick={handleClose}
-          >
-            Cancel
-          </Button>
-          <Button
-            variant='contained'
-            sx={{
-              borderRadius: 5,
-              paddingX: 5,
-              '&:hover': { color: 'black' },
-            }}
-            onClick={async () => {
-              handleClose()
-              history.push('/site-management')
-            }}
-            autoFocus
-          >
-            Yes
-          </Button>
-        </DialogActions>
-      </Dialog>
     </Box>
   )
 }

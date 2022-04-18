@@ -25,3 +25,18 @@ export const getSchoolYearQuery = gql`
     }
   }
 `
+
+export const getActiveSchoolYearsByRegionId = gql`
+  query GetActiveSchoolYears($regionId: ID!) {
+    getActiveSchoolYears(region_id: $regionId) {
+      date_begin
+      date_end
+      date_reg_close
+      date_reg_open
+      grades
+      special_ed
+      birth_date_cut
+      school_year_id
+    }
+  }
+`

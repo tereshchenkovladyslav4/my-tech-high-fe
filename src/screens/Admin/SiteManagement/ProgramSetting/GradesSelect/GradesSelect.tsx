@@ -13,7 +13,7 @@ import {
 } from '@mui/material'
 import { map } from 'lodash'
 import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragraph'
-import { GRADES } from '../../../../../utils/constants'
+import { GRADES, MTHBLUE } from '../../../../../utils/constants'
 import { toOrdinalSuffix } from '../../../../../utils/stringHelpers'
 import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
 import { useStyles } from '../../styles'
@@ -32,6 +32,8 @@ export default function GradesSelect({ grades, setGrades, setIsChanged }: Grades
   useEffect(() => {
     if (grades != undefined && grades != '') {
       setGradesArr(grades.split(','))
+    } else {
+      setGradesArr([])
     }
   }, [grades])
   const handleClickOpen = () => {
@@ -105,7 +107,7 @@ export default function GradesSelect({ grades, setGrades, setIsChanged }: Grades
       <Typography>|</Typography>
       <Box>
         <Stack direction='row' sx={{ ml: 1.5, cursor: 'pointer' }} alignItems='center' onClick={handleClickOpen}>
-          <Subtitle size={12} fontWeight='500'>
+          <Subtitle size={12} color={MTHBLUE} fontWeight='500'>
             {grades ? grades : 'Select'}
           </Subtitle>
         </Stack>

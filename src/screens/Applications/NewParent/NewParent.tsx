@@ -6,7 +6,7 @@ import { DropDownItem } from '../../../components/DropDown/types'
 import { Paragraph } from '../../../components/Typography/Paragraph/Paragraph'
 import { Title } from '../../../components/Typography/Title/Title'
 import { AddStudent } from '../components/AddStudent/AddStudent'
-import { checkEmailQuery, newParentApplicationMutation, getSchoolYearQuery } from './service'
+import { checkEmailQuery, newParentApplicationMutation, getActiveSchoolYearsByRegionId } from './service'
 import { useStyles } from './styles'
 import BGSVG from '../../../assets/ApplicationBG.svg'
 import { DASHBOARD, GRADES, MTHBLUE, RED, SYSTEM_05 } from '../../../utils/constants'
@@ -17,10 +17,10 @@ import { Link } from 'react-router-dom'
 import { getAllRegion } from '../../../graphql/queries/region'
 import { LoadingScreen } from '../../LoadingScreen/LoadingScreen'
 import { find, map, pullAt, toNumber } from 'lodash'
-import { isPhoneNumber } from '../../../utils/stringHelpers'
+import { isPhoneNumber, toOrdinalSuffix } from '../../../utils/stringHelpers'
 import moment from 'moment'
 import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined'
-import { array, boolean, number, object, string, ValidationError } from 'yup';
+import { array, boolean, number, object, string, ValidationError } from 'yup'
 
 export type StudentInput = {
   first_name: string
@@ -52,10 +52,20 @@ export const NewParent = () => {
   const [availableRegions, setAvailableRegions] = useState([])
   const [yearLabel, setYearLabel] = useState(programYearItems[0].label.split('-')[0])
   const programYearChanged = new CustomEvent('yearChanged', { detail: { yearLabel } })
+  const [regionId, setRegionId] = useState('')
   const [schoolYears, setSchoolYears] = useState<Array<DropDownItem>>([])
-  const { loading: schoolLoading, data: schoolYearData } = useQuery(getSchoolYearQuery)
+  const { loading: schoolLoading, data: schoolYearData } = useQuery(getActiveSchoolYearsByRegionId, {
+    variables: {
+      regionId: regionId
+    },
+    fetchPolicy: 'network-only',
+  })
 
   const [showEmailError, setShowEmailError] = useState(false)
+  const [schoolYearsData, setSchoolYearsData] = useState([])
+  const [grades, setGrades] = useState([])
+  const [gradesDropDownItems, setGradesDropDownItems] = useState<Array<DropDownItem>>([])
+  const [birthDateCut, setBirthDateCut] = useState<string>('')
   
   const classes = useStyles
 
@@ -77,17 +87,18 @@ export const NewParent = () => {
   }, [regionData])
 
   useEffect(() => {
-    if (!schoolLoading && schoolYearData.schoolYears) {
+    if (!schoolLoading && schoolYearData.getActiveSchoolYears) {
       setSchoolYears(
-        schoolYearData.schoolYears.map((item) => {
+        schoolYearData.getActiveSchoolYears.map((item) => {
           return {
             label: moment(item.date_begin).format('YYYY') + '-' + moment(item.date_end).format('YYYY'),
             value: item.school_year_id,
           }
         }),
       )
+      setSchoolYearsData(schoolYearData.getActiveSchoolYears)
     }
-  }, [schoolYearData])
+  }, [regionId, schoolYearData])
 
   const submitApplication = async (values) => {
     submitApplicationAction({
@@ -110,12 +121,35 @@ export const NewParent = () => {
     })
   }
 
-  const parseGrades = map(GRADES, (grade) => {
-    return {
-      label: grade,
-      value: grade.toString()
-    }
-  })
+  const parseGrades = () => {
+    let dropDownItems = []
+    GRADES.forEach(grade => {
+      if (grades.includes(grade.toString())) {
+        if (typeof grade !== 'string') {
+          dropDownItems.push({
+            label: toOrdinalSuffix(grade) + ' Grade',
+            value: grade.toString()
+          }) 
+        }
+        if (typeof grade == 'string') {
+          dropDownItems.push({
+            label: grade,
+            value: grade
+          })
+        }
+      }
+    })
+    setGradesDropDownItems(dropDownItems)
+  }
+
+  const setGradesAndBirthDateCut = (id) => {
+    schoolYearsData.forEach(element => {
+      if (id == element.school_year_id) {
+        setGrades(element.grades?.split(','))
+        setBirthDateCut(element.birth_date_cut)
+      }
+    })
+  }
 
   useEffect(() => {
     if (
@@ -141,19 +175,20 @@ export const NewParent = () => {
     }
   }, [applicationLoading])
 
+  useEffect(() => {
+    parseGrades()
+  }, [grades])
+
 
   const [checkEmail, { loading: emailLoading, data: emailData, error: emailError }] = useLazyQuery(checkEmailQuery, {
     fetchPolicy: 'network-only',
   })
 
   useEffect(() => {
-    console.log("emailData: ", emailData)
     if (!loading && emailData !== undefined) {
       if (emailData.emailTaken === true) {
         const response = new CustomEvent('emailTaken',  { detail: {error: true} })
         document.dispatchEvent(response)
-
-        console.log("response: ", emailData)
         setShowEmailError(true)
       } else {
         setShowEmailError(false)
@@ -255,6 +290,7 @@ export const NewParent = () => {
                             placeholder='State'
                             setParentValue={(id) => {
                               form.setFieldValue(field.name, id)
+                              setRegionId(id)
                             }}
                             alternate={true}
                             sx={
@@ -288,6 +324,7 @@ export const NewParent = () => {
                         dropDownItems={schoolYears}
                         setParentValue={(id) => {
                           form.setFieldValue(field.name, toNumber(id))
+                          setGradesAndBirthDateCut(id)
                         }}
                         alternate={true}
                         size='small'
@@ -657,8 +694,8 @@ export const NewParent = () => {
                                       <DropDown
                                         name={`students[${index}].grade_level`}
                                         labelTop
-                                        placeholder={`Student Grade Level (age) as of September 1, ${2022}`}
-                                        dropDownItems={parseGrades}
+                                        placeholder={`Student Grade Level (${moment().diff(birthDateCut, 'years')}) as of ${moment(birthDateCut).format('MMM Do YYYY')}`}
+                                        dropDownItems={gradesDropDownItems}
                                         setParentValue={(id) => {
                                           form.setFieldValue(field.name, id)
                                         }}

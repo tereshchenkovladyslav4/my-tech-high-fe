@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Box, Button, FormGroup, Typography, Stack, Dialog, DialogTitle, DialogActions } from '@mui/material'
 import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
-import { ImageCropper } from '../../../../../components/ImageCropper'
+import { ImageCropper } from '../ImageCropper'
 import SystemUpdateAltOutlinedIcon from '@mui/icons-material/SystemUpdateAltOutlined'
 import { StateLogoProps } from './StateLogoTypes'
 import { useStyles } from '../../styles'
