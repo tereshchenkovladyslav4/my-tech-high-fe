@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { SortableTableHeader } from './SortableTableHeader/SortableTableHeader'
 import { Order, SortableTableTemplateType } from './types'
 
-export const SortableTable: SortableTableTemplateType = ({ headCells, rows, onCheck, clearAll, onRowClick, onSortChange }) => {
+export const SortableTable: SortableTableTemplateType = ({ headCells, rows, onCheck, clearAll, onRowClick, onSortChange, onParentClick}) => {
   const [order, setOrder] = useState<Order>('asc')
   const [orderBy, setOrderBy] = useState<keyof any>('name')
   const [selected, setSelected] = useState<readonly string[]>([])
@@ -173,6 +173,23 @@ export const SortableTable: SortableTableTemplateType = ({ headCells, rows, onCh
                         onClick={(e) => {
                           e.stopPropagation()
                           onRowClick && onRowClick(row.id)
+                        }}
+                      >
+                        {row[key] || ''}
+                      </TableCell>
+                    ) : key === 'parent' ? (
+                      <TableCell
+                        key={idx}
+                        sx={{
+                          paddichngY: 1,
+                          paddingLeft: 0,
+                          textAlign: idx !== 0 && 'left',
+                          fontWeight: '700',
+                          cursor: 'pointer',
+                        }}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          onParentClick && onParentClick(row.id)
                         }}
                       >
                         {row[key] || ''}

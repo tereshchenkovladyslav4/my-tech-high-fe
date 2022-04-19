@@ -70,6 +70,8 @@ export const StudentProfile = () => {
   ]
   const setState = (id: any) => (formik.values.testingPref = id)
 
+  const uploadLimit = 1
+
   const validationSchema = yup.object({
     firstName: yup
       .string()
@@ -190,8 +192,8 @@ export const StudentProfile = () => {
           variant='rounded' 
           sx={{height: '100%', width: '100%'}}  
         />
-        <Box onClick={() => setWarningModalOpen(true)} sx={{cursor:'pointer'}}>
-          <Paragraph size='medium' fontWeight='500' textAlign='center'>Remove Profile Picture</Paragraph>
+        <Box component='a' onClick={() => setWarningModalOpen(true)} sx={{cursor:'pointer',p: 1}}>
+          <Paragraph size='medium' color='#7B61FF' fontWeight='500' textAlign='center'>Remove Profile Picture</Paragraph>
         </Box>
         </>
         : <Box 
@@ -413,6 +415,7 @@ export const StudentProfile = () => {
             && <DocumentUploadModal
               handleModem={() => setImageModalOpen(!imageModalOpen)}
               handleFile={handleFile}
+              limit={uploadLimit}
             /> 
         }
         {

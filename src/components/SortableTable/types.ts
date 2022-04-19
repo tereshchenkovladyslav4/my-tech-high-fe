@@ -11,6 +11,7 @@ type SortableTableProps = {
 	clearAll: boolean,
 	updateStatus?: (id: number, status: string) => void,
 	onRowClick?: any,
+	onParentClick?:  (id: number) => void,
 	onSortChange?: (property:  keyof any, order: string) => void,
 }
 

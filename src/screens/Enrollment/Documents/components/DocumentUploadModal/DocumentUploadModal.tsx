@@ -164,7 +164,7 @@ export const DocumentUploadModal: DocumentUploadModalTemplateType = ({
 					}
 				</Box>
 				<Box
-					display='flex' 
+					display={(validFiles.length >= limit) ? `none`: `flex`}
 					flexDirection='column' 
 					alignItems={'center'}
 					onDragOver={dragOver}

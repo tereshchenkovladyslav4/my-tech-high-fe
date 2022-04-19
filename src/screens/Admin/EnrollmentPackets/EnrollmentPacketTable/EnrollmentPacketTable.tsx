@@ -1,5 +1,5 @@
 import { Box, Button, Card, InputAdornment, OutlinedInput } from '@mui/material'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
 import { GREEN_GRADIENT, RED_GRADIENT, YELLOW_GRADIENT } from '../../../../utils/constants'
 import SearchIcon from '@mui/icons-material/Search'
@@ -25,6 +25,7 @@ import { WarningModal } from '../../../../components/WarningModal/Warning'
 import { Packet } from '../../../HomeroomStudentProfile/Student/types'
 import { getEmailTemplateQuery } from '../../../../graphql/queries/email-template'
 import { EnrollmentPacketFilters } from '../EnrollmentPacketFilters/EnrollmentPacketFilters'
+import { ProfileContext } from '../../../../providers/ProfileProvider/ProfileContext'
 
 export const EnrollmentPacketTable = () => {
   const [filters, setFilters] = useState(['Submitted', 'Resubmitted'])
@@ -48,12 +49,20 @@ export const EnrollmentPacketTable = () => {
   const [openEmailModal, setOpenEmailModal] = useState<boolean>(false)
   const [openWarningModal, setOpenWarningModal] = useState<boolean>(false)
   const [packetCount, setpacketCount] = useState({})
+  const { showModal, hideModal, store, setStore } = useContext(ProfileContext)
+
+  const handleOpenProfile = (rowId: number) => {
+    const row = enrollmentPackets?.find((el) => el.packet_id === rowId)
+    showModal(row.student.parent)
+    setStore(true)
+  }
+  
   const createData = (packet: Packet) => {
     return {
       id: packet.packet_id,
       submitted: moment(packet.deadline).format('MM/DD/YY'),
       status: packet.status + (packet.is_age_issue ? ' (Age Issue)' : ''),
-      deadline: moment(packet.deadline).format('l'),
+      deadline: moment(packet.deadline).format('MM/DD/YY'),
       student: `${packet.student.person.first_name} ${packet.student.person.last_name}`,
       grade:
         packet.student.grade_levels.length && packet.student.grade_levels[0].grade_level
@@ -483,6 +492,7 @@ export const EnrollmentPacketTable = () => {
         onCheck={setPacketIds}
         clearAll={false}
         onRowClick={handlePacketSelect}
+        onParentClick={handleOpenProfile}
         onSortChange={sortChangeAction}
       />
       {isShowModal && (
