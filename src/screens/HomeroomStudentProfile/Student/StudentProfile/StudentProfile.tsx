@@ -28,7 +28,6 @@ export const StudentProfile = () => {
 
   const { me } = useContext(UserContext)
   const { students } = me as UserInfo
-  const location = useLocation()
   const studentId = location.pathname.split('/').at(-1)
   const currStudent = find(students, { student_id: studentId })
   const [student, setStudent] = useState<StudentType>(currStudent)
@@ -48,9 +47,9 @@ export const StudentProfile = () => {
 
   const enrollmentLink = `${HOMEROOM+ENROLLMENT}/${student.student_id}`
   
-  useEffect(() => {
-    setStudent(currStudent)
-  }, [location])
+  //useEffect(() => {
+  //  setStudent(currStudent)
+  //}, [location])
 
 
   const [testingPreferences, setTestingPreferences] = useState('')
@@ -112,7 +111,6 @@ export const StudentProfile = () => {
       const uploadData = await uploadPhoto(file).then( async(res) => {
           return res.json()
             .then( ({data}) => {
-            console.log("Upload: ", data)
             return data
             })
       })
@@ -128,6 +126,7 @@ export const StudentProfile = () => {
       },
     }).then((res)  => {
       // set catch and then here, return snackbox for both success and fail
+      location.reload()
     })
   }
 
@@ -222,8 +221,6 @@ export const StudentProfile = () => {
   useEffect(() => {
     if(person && person.photo)
       setAvatar(person.photo)
-    
-      console.log(file), [file]
   }, [person] )
 
   return (

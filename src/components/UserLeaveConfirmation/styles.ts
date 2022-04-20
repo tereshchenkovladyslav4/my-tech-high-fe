@@ -40,6 +40,7 @@ export const useStyles = {
 		height: '100%'
 	},
 	submitButton: {
+		textTransform: 'none',
 		borderRadius: 10,
 		width: '160px',
 		marginLeft: 1,
@@ -51,6 +52,7 @@ export const useStyles = {
 		
 	},
 	cancelButton: {
+		textTransform: 'none',
 		borderRadius: 10,
 		width: '160px',
 		marginTop: 4,
