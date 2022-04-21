@@ -34,7 +34,6 @@ export function EnrollmentJobsInfo({ packet }: { packet: Packet }) {
       default:
         return ''
     }
-
   }
 
   return (
@@ -42,7 +41,6 @@ export function EnrollmentJobsInfo({ packet }: { packet: Packet }) {
       <Grid
         sx={{
           '&.MuiGrid-root': {
-            maxWidth: '12rem',
             paddingRight: '3px',
           },
         }}
@@ -52,17 +50,16 @@ export function EnrollmentJobsInfo({ packet }: { packet: Packet }) {
         xs={12}
       >
         <Title
-          color={MTHBLUE} size='small' fontWeight='700'
+          color={MTHBLUE}
+          size='small'
+          fontWeight='700'
           sx={{
             cursor: 'pointer',
           }}
         >
-          <span
-            onClick={() => showModal(student)}
-          >
+          <span onClick={() => showModal(student)}>
             {student.person.first_name} {student.person.last_name}
           </span>
-
         </Title>
         <Paragraph sx={{ marginY: '4px', fontSize: '14px' }} color={SYSTEM_06} fontWeight='400'>
           <b>
@@ -77,11 +74,8 @@ export function EnrollmentJobsInfo({ packet }: { packet: Packet }) {
         <Paragraph sx={{ fontSize: '14px' }} color={SYSTEM_06} fontWeight='400'>
           DOB:{' '}
           <b>
-            {student.person.date_of_birth
-              ? moment(student.person.date_of_birth).format('MMMM D, YYYY')
-              : 'Not found'}
+            {student.person.date_of_birth ? moment(student.person.date_of_birth).format('MMMM D, YYYY') : 'Not found'}
             {age ? ` (${age})` : ''}
-
           </b>
         </Paragraph>
         <Paragraph sx={{ marginY: '4px', fontSize: '14px' }} color={SYSTEM_06} fontWeight='400'>
@@ -91,25 +85,30 @@ export function EnrollmentJobsInfo({ packet }: { packet: Packet }) {
           SPED: {studentSPED()}
         </Paragraph>
       </Grid>
-      <Grid item md={6} sm={6} xs={12}
+      <Grid
+        item
+        md={6}
+        sm={6}
+        xs={12}
         sx={{
           '&.MuiGrid-root': {
             maxWidth: '12rem',
           },
         }}
       >
-        <Title color={MTHBLUE} size='small' fontWeight='700'
+        <Title
+          color={MTHBLUE}
+          size='small'
+          fontWeight='700'
           sx={{
             cursor: 'pointer',
           }}
         >
-          <span
-            onClick={() => showModal(student.parent)}
-          >
+          <span onClick={() => showModal(student.parent)}>
             {student.parent.person.first_name} {student.parent.person.last_name}
           </span>
         </Title>
-        <Paragraph color='#7B61FF' sx={{ fontSize: '14px', marginY: '4px' }} fontWeight='400'>
+        <Paragraph color='#7B61FF' sx={{ fontSize: '14px', marginY: '4px', overflow: 'hidden' }} fontWeight='400'>
           {student.parent.person.email ? `${student.parent.person.email}` : 'Not found'}
         </Paragraph>
         <Paragraph color={SYSTEM_06} sx={{ fontSize: '14px', marginY: '4px' }} fontWeight='400'>
@@ -120,11 +119,12 @@ export function EnrollmentJobsInfo({ packet }: { packet: Packet }) {
         </Paragraph>
         <Paragraph color={SYSTEM_06} sx={{ fontSize: '14px', marginY: '4px' }} fontWeight='400'>
           {!student.parent.person.address.city &&
-            !student.parent.person.address.state &&
-            !student.parent.person.address.zip
+          !student.parent.person.address.state &&
+          !student.parent.person.address.zip
             ? 'Not found'
             : `${student.parent.person.address.city + ',' || ''} ${student.parent.person.address.state || ''}
-            ${student.parent.person.address.zip || ''}`}.
+            ${student.parent.person.address.zip || ''}`}
+          .
         </Paragraph>
       </Grid>
     </Grid>

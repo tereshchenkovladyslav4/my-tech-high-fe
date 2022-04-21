@@ -70,7 +70,7 @@ export default function PacketSaveButtons({ submitForm }: { submitForm: () => vo
                 sx={{
                     '&.MuiGrid-root': {
                         width: '100%',
-                        minWidth: '600px',
+                        // minWidth: '600px',
                     },
                 }}
                 container

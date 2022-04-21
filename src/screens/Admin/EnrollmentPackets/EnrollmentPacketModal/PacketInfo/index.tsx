@@ -28,7 +28,7 @@ export default function EnrollmentPacketInfo() {
             </Grid>
             <Grid item md={6} xs={12}>
                 <RaceInfo />
-                <GenderInfo />
+                {/* <GenderInfo /> */}
             </Grid>
             <Grid item md={6} xs={12}>
                 <OtherInfo />

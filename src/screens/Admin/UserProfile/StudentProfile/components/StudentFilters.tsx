@@ -186,6 +186,10 @@ export const StudentFilters = ({ currentUserData, setStudentStatuData, studentSt
   ]
   const status: DropDownItem[] = [
     {
+      label: 'Empty',
+      value: 3,
+    },
+    {
       label: 'Pending',
       value: 0,
     },
@@ -240,7 +244,6 @@ export const StudentFilters = ({ currentUserData, setStudentStatuData, studentSt
                 setStudentStatuData({ ...studentStatusData, ...{ status: e.target.value } })
               }}
             >
-              <MenuItem value=''>Select</MenuItem>
               {status.map((item) => (
                 <MenuItem key={item.value} value={item.value}>
                   {item.label}

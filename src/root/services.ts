@@ -28,6 +28,7 @@ export const getMeQuery = gql`
           number
           name
           ext
+          recieve_text
         }
       }
       email

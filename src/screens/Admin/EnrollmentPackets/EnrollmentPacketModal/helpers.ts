@@ -23,7 +23,7 @@ export function getValidGrade(v: string) {
   return g
 }
 
-function getDuration(interval: number, date: number) {
+export function getDuration(interval: number, date: number) {
   if (!+interval || !+date) return null
   return moment.duration(interval, date === 1 ? 'days' : date === 2 ? 'weeks' : 'months')
 }
@@ -50,6 +50,5 @@ export function checkImmmValueWithSpacing(item: StudentImmunization, all: Studen
 
   const dur = moment.duration(itemDate.diff(conDate))
   // console.log('dur', dur.asDays());
-
   return dur.asDays() >= minDur.asDays() && dur.asDays() <= maxDur.asDays()
 }

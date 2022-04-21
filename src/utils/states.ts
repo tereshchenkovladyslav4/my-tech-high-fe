@@ -7,6 +7,16 @@ export const STATES_WITH_ID = [
   { label: 'Utah', value: 6 },
 ]
 
+export const STATES_WITH_ABBREVIATION = {
+  'Arizona': 'AZ',
+  'Colorado' : 'CO',
+  'Idaho' : 'ID' ,
+  'Tennessee' : 'TN',
+  'Indiana' : 'IN',
+  'Wyoming' : 'WY',
+  'Utah' : 'UT'
+}
+
 export const usStates = [
   {
     label: 'AL',

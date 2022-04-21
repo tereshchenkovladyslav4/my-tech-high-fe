@@ -9,7 +9,7 @@ export const useStyles = {
     marginY: 2,
     width: '100%',
   },
-  textFieldError:{
+  textFieldError: {
     [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
       borderColor: '#BD0043',
     },
@@ -22,10 +22,11 @@ export const useStyles = {
       borderColor: SYSTEM_07,
       borderWidth: '1px',
     },
-    marginY: 2,
+    marginTop: 2,
+    marginBottom: 1,
     width: '100%',
   },
-  dropdown:{
+  dropdown: {
     [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
       borderColor: SYSTEM_07,
     },
@@ -36,15 +37,16 @@ export const useStyles = {
     borderRadius: 8,
     border: '1px solid black',
     fontSize: 12,
-    width:'451.53px',
+    width: '451.53px',
     height: '37.14px',
-    marginTop: 12,
+    marginTop: 30,
+    backgroundColor: '#EEF4F8',
   },
   submitButton: {
     borderRadius: 8,
     fontSize: 12,
     background: 'linear-gradient(90deg, #3E2783 0%, rgba(62, 39, 131, 0) 100%) #4145FF',
-    width:'451.53px',
+    width: '451.53px',
     height: '37.14px',
     marginTop: 50,
   },

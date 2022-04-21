@@ -245,7 +245,7 @@ export const Personal: FunctionComponent = () => {
     }
   }
 
-  const genderSelected = (value: string) => gender === value
+  const genderSelected = (value: string) => gender.toLowerCase() === value.toLowerCase()
 
   const selectGender = (genderValue: string) => {
     setGender((prev) => (
@@ -548,8 +548,8 @@ export const Personal: FunctionComponent = () => {
                     control={
                       <Checkbox
                         disabled={disabled}
-                        checked={genderSelected('male')}
-                        onClick={() => selectGender('male')}
+                        checked={genderSelected('Male')}
+                        onClick={() => selectGender('Male')}
                       />
                     }
                     label='Male'
@@ -560,8 +560,8 @@ export const Personal: FunctionComponent = () => {
                     control={
                       <Checkbox
                         disabled={disabled}
-                        checked={genderSelected('non-binary')}
-                        onClick={() => selectGender('non-binary')}
+                        checked={genderSelected('Non Binary')}
+                        onClick={() => selectGender('Non Binary')}
                       />
                     }
                     label='Non Binary'
@@ -584,8 +584,8 @@ export const Personal: FunctionComponent = () => {
                     control={
                       <Checkbox
                         disabled={disabled}
-                        checked={genderSelected('undecided')}
-                        onClick={() => selectGender('undecided')}
+                        checked={genderSelected('Undecided')}
+                        onClick={() => selectGender('Undecided')}
                       />
                     }
                     label='Undecided'

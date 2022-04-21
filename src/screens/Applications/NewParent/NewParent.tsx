@@ -490,7 +490,6 @@ export const NewParent = () => {
                       focused
                     >
                     {({ field, form, meta }) => {
-                      document.addEventListener('emailTaken', (e) => {
                         if( showEmailError ) {
                           form.setErrors({
                             email: (
@@ -507,8 +506,6 @@ export const NewParent = () => {
                             ),
                           })
                         }
-                        //console.log("EmailTaken: ", form.errors)
-                      })
                       return (
                         <Box width={'100%'}>
                           <TextField
@@ -529,9 +526,9 @@ export const NewParent = () => {
                                 : classes.textfield
                             }
                             {...field}
-                            error={meta.touched && meta.error}
+                            error={meta.error || showEmailError}
                             helperText={meta.touched && meta.error}
-                            onBlur={() => {
+                            onKeyUp={() => {
                               // TODO fix validation here
                               checkEmail({
                                variables: {
@@ -539,21 +536,7 @@ export const NewParent = () => {
                                },
                               })
                             }}
-                          />
-                          { showEmailError && 
-                          (
-                            <Paragraph>
-                              This email is already being used.
-                              <Link
-                                to={DASHBOARD}
-                                style={{ fontSize: '11.2px', fontWeight: 700, color: MTHBLUE, textDecoration: 'none' }}
-                              >
-                                Please login{'\u00A0'}
-                              </Link>
-                              to complete an application
-                            </Paragraph>
-                          )
-                          }
+                          />                          
                         </Box>
                       )
                     }}

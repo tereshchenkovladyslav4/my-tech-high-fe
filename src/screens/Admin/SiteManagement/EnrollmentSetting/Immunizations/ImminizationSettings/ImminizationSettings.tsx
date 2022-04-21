@@ -7,6 +7,7 @@ import ImminizationSettinsItems from './ImminizationSettinsItems'
 import * as Yup from 'yup'
 import { saveImmunizationSettings } from '../services'
 import { useMutation } from '@apollo/client'
+import { getDuration } from '../../../../EnrollmentPackets/EnrollmentPacketModal/helpers'
 
 const validationSchema = Yup.object().shape({
   min_grade_level: Yup.string().required('This field is required!').notOneOf(['N/A'], 'This field is required!'),
@@ -14,8 +15,8 @@ const validationSchema = Yup.object().shape({
   min_spacing_interval: Yup.number().test('min_spacing_interval', 'Must be more than 0', function (value) {
     return this.parent.consecutive_vaccine === 0 || value > 0
   }),
-  max_spacing_interval: Yup.number().test('max_spacing_interval', 'Must be more than 0', function (value) {
-    return this.parent.consecutive_vaccine === 0 || value >= 0
+  max_spacing_interval: Yup.number().test('max_spacing_interval', 'Must be more than Minimam Spacing', function (value) {
+    return this.parent.consecutive_vaccine === 0 || (value === 0 || getDuration(value, this.parent.max_spacing_date).asDays() >= getDuration(this.parent.min_spacing_interval, this.parent.min_spacing_date + 1).asDays()) 
   }),
   // min_school_year_required: Yup.string()
   //   .notOneOf(['N/A'], 'This field is required!')
@@ -47,7 +48,7 @@ const NewImminization: React.FC<{ refetch: () => void; order: number }> = ({ ref
     // min_school_year_required: undefined,
     // max_school_year_required: undefined,
     consecutive_vaccine: undefined,
-    min_spacing_date: 0,
+    min_spacing_date: 1,
     min_spacing_interval: 0,
     max_spacing_date: 0,
     max_spacing_interval: 0,
@@ -65,7 +66,7 @@ const NewImminization: React.FC<{ refetch: () => void; order: number }> = ({ ref
   }
   const onSave = async (values: ImmunizationsData) => {
     await saveImmunizationSettingsMutation({
-      variables: { input: { ...values, min_school_year_required: 0, max_school_year_required: 0, order: order } },
+      variables: { input: { ...values, min_school_year_required: 0, max_school_year_required: 0, order: order, min_spacing_date: values.min_spacing_date + 1 } },
     })
     refetch()
     history.push('/site-management/enrollment/immunizations')
@@ -88,10 +89,10 @@ const NewImminization: React.FC<{ refetch: () => void; order: number }> = ({ ref
 }
 
 const ImminizationItem: React.FC<{ data: ImmunizationsData; refetch: () => void }> = ({ data, refetch }) => {
-  const [itemData, setItemData] = useState<ImmunizationsData>(data)
+  const [itemData, setItemData] = useState<ImmunizationsData>({...data, min_spacing_date: data.min_spacing_date - 1})
   const [saveImmunizationSettingsMutation] = useMutation(saveImmunizationSettings)
   useEffect(() => {
-    setItemData(data)
+    setItemData({...data, min_spacing_date: data.min_spacing_date - 1})
   }, [data])
   const history = useHistory()
 
@@ -101,7 +102,7 @@ const ImminizationItem: React.FC<{ data: ImmunizationsData; refetch: () => void 
 
   const onSave = async (values: ImmunizationsData) => {
     if (!values.email_update_template) values.email_update_template = null
-    await saveImmunizationSettingsMutation({ variables: { input: { ...values, id: Number(values.id) } } })
+    await saveImmunizationSettingsMutation({ variables: { input: { ...values, id: Number(values.id), min_spacing_date: values.min_spacing_date + 1 } } })
     refetch()
     history.push('/site-management/enrollment/immunizations')
   }

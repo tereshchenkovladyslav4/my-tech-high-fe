@@ -187,7 +187,6 @@ export const savePacketMutation = gql`
               date_of_birth
               email
               first_name
-              gender
               last_name
               phone {
                 number

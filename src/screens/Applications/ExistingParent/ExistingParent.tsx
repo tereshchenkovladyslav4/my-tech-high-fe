@@ -1,7 +1,7 @@
 import { Box, Button, Card, Grid, TextField } from '@mui/material'
 import React, { useContext, useEffect, useState } from 'react'
 import { useStyles } from '../styles'
-import BGSVG from '../../../assets/ApplicationBG.svg'
+import BGSVG from '../../../assets/AdminApplicationBG.svg'
 import { DropDown } from '../../../components/DropDown/DropDown'
 import { DropDownItem } from '../../../components/DropDown/types'
 import { gql, useMutation, useQuery } from '@apollo/client'
@@ -41,7 +41,7 @@ export const getActiveSchoolYearsByRegionId = gql`
 `
 
 export const ExistingParent = () => {
-  const emptyStudent = { first_name: '', last_name: '', grade_level: undefined}
+  const emptyStudent = { first_name: '', last_name: '', grade_level: undefined }
   const { me, setMe } = useContext(UserContext)
   const [schoolYears, setSchoolYears] = useState<Array<DropDownItem>>([])
   const [regionId, setRegionId] = useState<string>('')
@@ -51,7 +51,7 @@ export const ExistingParent = () => {
   const [birthDateCut, setBirthDateCut] = useState<string>('')
   const { loading: regionLoading, data: regionData } = useQuery(getRegionByUserId, {
     variables: {
-      userId: me?.user_id
+      userId: me?.user_id,
     },
     skip: regionId == '' ? false : true,
     fetchPolicy: 'network-only',
@@ -59,8 +59,9 @@ export const ExistingParent = () => {
 
   const { loading: schoolLoading, data: schoolYearData } = useQuery(getActiveSchoolYearsByRegionId, {
     variables: {
-      regionId: regionId
+      regionId: regionId,
     },
+    skip: regionId ? false : true,
     fetchPolicy: 'network-only',
   })
 
@@ -88,7 +89,7 @@ export const ExistingParent = () => {
   }
 
   const setGradesAndBirthDateCut = (id) => {
-    schoolYearsData.forEach(element => {
+    schoolYearsData.forEach((element) => {
       if (id == element.school_year_id) {
         setGrades(element.grades?.split(','))
         setBirthDateCut(element.birth_date_cut)
@@ -98,18 +99,18 @@ export const ExistingParent = () => {
 
   const parseGrades = () => {
     let dropDownItems = []
-    GRADES.forEach(grade => {
+    GRADES.forEach((grade) => {
       if (grades.includes(grade.toString())) {
         if (typeof grade !== 'string') {
           dropDownItems.push({
             label: toOrdinalSuffix(grade) + ' Grade',
-            value: grade.toString()
-          }) 
+            value: grade.toString(),
+          })
         }
         if (typeof grade == 'string') {
           dropDownItems.push({
             label: grade,
-            value: grade
+            value: grade,
           })
         }
       }
@@ -119,7 +120,7 @@ export const ExistingParent = () => {
 
   useEffect(() => {
     if (!regionLoading && regionData) {
-      setRegionId(regionData?.userRegionByUserId[0].region_id)
+      setRegionId(regionData?.userRegionByUserId[0]?.region_id)
     }
   }, [me?.user_id, regionData])
 
@@ -142,31 +143,27 @@ export const ExistingParent = () => {
   }, [grades])
 
   return (
-    <Card sx={{ paddingTop: 8, margin: 4 }} >
+    <Card sx={{ paddingTop: 8, margin: 4 }}>
       <Formik
         initialValues={{
           programYear: undefined,
           students: [emptyStudent],
         }}
         validationSchema={object({
-          programYear: string()
-            .required('Program year is required'),
+          programYear: string().required('Program year is required'),
           students: array(
             object({
-              first_name: string()
-                .required('First name name needed'),
-              last_name: string()
-                .required('Last name needed'),
-              grade_level: string()
-                .required('Grade Level is required'),
-            })
-          )
+              first_name: string().required('First name name needed'),
+              last_name: string().required('Last name needed'),
+              grade_level: string().required('Grade Level is required'),
+            }),
+          ),
         })}
         onSubmit={async (values) => {
           await submitApplication(values)
         }}
-      > 
-        {({ values, errors, isSubmitting, isValid, }) => (
+      >
+        {({ values, errors, isSubmitting, isValid }) => (
           <Form>
             <Box
               paddingX={36}
@@ -180,75 +177,60 @@ export const ExistingParent = () => {
                 display: 'flex',
                 flexDirection: 'column',
               }}
-              style={classes.containerHeight}
             >
-            <Grid container>
-              <Grid item xs={12} display='flex' justifyContent={'center'}>
-                <Box width={'406.73px'}>                                
-                  <Field 
-                    name='programYear'
-                    fullWidth
-                    focused
-                  >
-                  {({ field, form, meta }) => (
-                    <Box width={'100%'} display='block'>
-                    <DropDown
-                      name='programYear'
-                      labelTop
-                      placeholder='Program Year'
-                      dropDownItems={schoolYears}
-                      setParentValue={(id) => {
-                        form.setFieldValue(field.name, toNumber(id))
-                        setGradesAndBirthDateCut(id)
-                      }}
-                      alternate={true}
-                      size='small'
-                      sx={
-                        !!(meta.touched && meta.error)
-                          ? classes.textFieldError
-                          : classes.dropdown
-                      }
-                      error={{
-                        error: !!(meta.touched && meta.error),
-                        errorMsg: (meta.touched &&  meta.error) as string,
-                      }}
-                    />
-                    </Box>
-                  )}
-                </Field>
-                </Box>
-              </Grid>
-              <Grid item xs={12} display='flex' justifyContent={'center'}>
-                <Box width={'451.53px'}>
-                  <FieldArray name="students">
-                    {({ push, remove }) => (
-                      <>
-                        {values.students.map((_, index) => (
-                            <Grid item container spacing={2} xs={12} sm="auto">
+              <Grid container>
+                <Grid item xs={12} display='flex' justifyContent={'center'}>
+                  <Box width={'406.73px'}>
+                    <Field name='programYear' fullWidth focused>
+                      {({ field, form, meta }) => (
+                        <Box width={'100%'} display='block'>
+                          <DropDown
+                            name='programYear'
+                            labelTop
+                            placeholder='Program Year'
+                            dropDownItems={schoolYears}
+                            setParentValue={(id) => {
+                              form.setFieldValue(field.name, toNumber(id))
+                              setGradesAndBirthDateCut(id)
+                            }}
+                            alternate={true}
+                            size='small'
+                            sx={!!(meta.touched && meta.error) ? classes.textFieldError : classes.dropdown}
+                            error={{
+                              error: !!(meta.touched && meta.error),
+                              errorMsg: (meta.touched && meta.error) as string,
+                            }}
+                          />
+                        </Box>
+                      )}
+                    </Field>
+                  </Box>
+                </Grid>
+                <Grid item xs={12} display='flex' justifyContent={'center'}>
+                  <Box width={'451.53px'}>
+                    <FieldArray name='students'>
+                      {({ push, remove }) => (
+                        <>
+                          {values.students.map((_, index) => (
+                            <Grid item container spacing={2} xs={12} sm='auto'>
                               <Grid item xs={12}>
-                                <Box 
-                                  width={index === 0 ? '100%' : '103.9%'} 
-                                  display='flex' 
-                                  flexDirection='row' 
+                                <Box
+                                  width={index === 0 ? '100%' : '103.9%'}
+                                  display='flex'
+                                  flexDirection='row'
                                   alignItems={'center'}
                                 >
-                                  <Field 
-                                    name={`students[${index}].first_name`}
-                                    fullWidth
-                                    focused
-                                  >
+                                  <Field name={`students[${index}].first_name`} fullWidth focused>
                                     {({ field, form, meta }) => (
                                       <Box width={'100%'}>
-                                        <TextField 
-                                          type="text"
+                                        <TextField
+                                          type='text'
                                           size='small'
                                           label='Student First Name'
                                           focused
                                           variant='outlined'
                                           sx={
-                                            !!(meta.touched && meta.error)
-                                              ? classes.textFieldError
-                                              : classes.textfield
+                                            !!(meta.touched && meta.error) ? classes.textFieldError : classes.textfield
                                           }
                                           inputProps={{
                                             style: { color: 'black' },
@@ -263,35 +245,25 @@ export const ExistingParent = () => {
                                       </Box>
                                     )}
                                   </Field>
-                                  {
-                                    index !== 0
-                                    ? <DeleteForeverOutlinedIcon 
-                                        sx={{left: 12, position: 'relative', color: 'darkgray'}}
-                                        onClick={() => remove(index)}
-                                      />
-                                    : null
-                                  }
+                                  {index !== 0 ? (
+                                    <DeleteForeverOutlinedIcon
+                                      sx={{ left: 12, position: 'relative', color: 'darkgray' }}
+                                      onClick={() => remove(index)}
+                                    />
+                                  ) : null}
                                 </Box>
                               </Grid>
                               <Grid item xs={12}>
-                                <Field 
-                                  name={`students[${index}].last_name`}
-                                  fullWidth
-                                  focused
-                                >
+                                <Field name={`students[${index}].last_name`} fullWidth focused>
                                   {({ field, form, meta }) => (
                                     <Box width={'100%'}>
                                       <TextField
-                                        type="text"
+                                        type='text'
                                         size='small'
                                         label='Student Last Name'
                                         focused
                                         variant='outlined'
-                                        sx={
-                                          !!(meta.touched && meta.error)
-                                            ? classes.textFieldError
-                                            : classes.textfield
-                                        }
+                                        sx={!!(meta.touched && meta.error) ? classes.textFieldError : classes.textfield}
                                         inputProps={{
                                           style: { color: 'black' },
                                         }}
@@ -300,82 +272,71 @@ export const ExistingParent = () => {
                                         }}
                                         {...field}
                                         error={meta.touched && meta.error}
-                                        helperText={meta.touched &&  meta.error}
+                                        helperText={meta.touched && meta.error}
                                       />
                                     </Box>
                                   )}
                                 </Field>
                               </Grid>
                               <Grid item xs={12}>
-                                <Field 
-                                  name={`students[${index}].grade_level`}
-                                  fullWidth
-                                  focused
-                                >
+                                <Field name={`students[${index}].grade_level`} fullWidth focused>
                                   {({ field, form, meta }) => (
                                     <Box width={'100%'}>
-                                    <DropDown
-                                      name={`students[${index}].grade_level`}
-                                      labelTop
-                                      placeholder={`Student Grade Level (${moment().diff(birthDateCut, 'years')}) as of ${moment(birthDateCut).format('MMM Do YYYY')}`}
-                                      dropDownItems={gradesDropDownItems}
-                                      setParentValue={(id) => {
-                                        form.setFieldValue(field.name, id)
-                                      }}
-                                      alternate={true}
-                                      size='small'
-                                      sx={
-                                        !!(meta.touched && meta.error)
-                                          ? classes.textFieldError
-                                          : classes.dropdown
-                                      }
-                                      error={{
-                                        error: !!(meta.touched && meta.error),
-                                        errorMsg: (meta.touched && meta.error) as string,
-                                      }}
-                                    />
+                                      <DropDown
+                                        name={`students[${index}].grade_level`}
+                                        labelTop
+                                        placeholder={`Student Grade Level (${moment().diff(
+                                          birthDateCut,
+                                          'years',
+                                        )}) as of ${moment(birthDateCut).format('MMM Do YYYY')}`}
+                                        dropDownItems={gradesDropDownItems}
+                                        setParentValue={(id) => {
+                                          form.setFieldValue(field.name, id)
+                                        }}
+                                        alternate={true}
+                                        size='small'
+                                        sx={!!(meta.touched && meta.error) ? classes.textFieldError : classes.dropdown}
+                                        error={{
+                                          error: !!(meta.touched && meta.error),
+                                          errorMsg: (meta.touched && meta.error) as string,
+                                        }}
+                                      />
                                     </Box>
                                   )}
                                 </Field>
                               </Grid>
                             </Grid>
-                        ))}
-                        <Grid item>
-                          {typeof errors.students === 'string' ? (
-                            <Paragraph color={RED}>
-                              {errors.students}
-                            </Paragraph>
-                          ) : null}
-                        </Grid>
-                        <Grid item>
-                          <Button
-                            color='secondary'
-                            variant='contained'
-                            style={classes.addStudentButton}
-                            onClick={() => push(emptyStudent)}
-                          >
-                            Add Student
-                          </Button>
-                        </Grid>
-                      </>
-                    )}
-                  </FieldArray>
-                </Box>
+                          ))}
+                          <Grid item>
+                            {typeof errors.students === 'string' ? (
+                              <Paragraph color={RED}>{errors.students}</Paragraph>
+                            ) : null}
+                          </Grid>
+                          <Grid item>
+                            <Button
+                              color='secondary'
+                              variant='contained'
+                              style={classes.addStudentButton}
+                              onClick={() => push(emptyStudent)}
+                            >
+                              Add Student
+                            </Button>
+                          </Grid>
+                        </>
+                      )}
+                    </FieldArray>
+                  </Box>
+                </Grid>
+                <Grid item xs={12}>
+                  <Button variant='contained' style={classes.submitButton} type='submit'>
+                    Submit to Utah School
+                  </Button>
+                </Grid>
               </Grid>
-              <Grid item xs={12}>
-                <Button 
-                  variant='contained' 
-                  style={classes.submitButton} 
-                  type='submit'
-                >
-                  Submit to Utah School
-                </Button>
-              </Grid>
-            </Grid>
-          </Box>
-        </Form>
-      )}
-    </Formik>
-  </Card>
+            </Box>
+          </Form>
+        )}
+      </Formik>
+    </Card>
   )
 }

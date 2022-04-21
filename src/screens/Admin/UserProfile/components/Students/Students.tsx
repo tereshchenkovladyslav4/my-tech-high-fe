@@ -13,9 +13,10 @@ const ordinal = (n) => {
   return n + (s[(v - 20) % 10] || s[v] || s[0])
 }
 export const Students = ({ students, selectedStudent, handleChangeStudent }) => {
+  console.log('students', students)
   const sliderRef = useRef(null)
   const [showAll, setShowAll] = useState(false)
-  const status = ['Pending', 'Active', 'Withdrawn', 'Blank']
+  const status = ['Pending', 'Active', 'Withdrawn', 'Empty']
   function SampleNextArrow(props) {
     const { className, style, onClick } = props
     return (
@@ -54,7 +55,7 @@ export const Students = ({ students, selectedStudent, handleChangeStudent }) => 
   const settings = {
     infinite: false,
     speed: 500,
-    slidesToShow: 7,
+    slidesToShow: 8,
     slidesToScroll: 1,
     nextArrow: <SampleNextArrow />,
     prevArrow: <SamplePrevArrow />,
@@ -95,7 +96,7 @@ export const Students = ({ students, selectedStudent, handleChangeStudent }) => 
           marginTop: '24px',
         }}
       >
-        <Grid item xs={10} style={{ paddingLeft: '20px' }}>
+        <Grid item xs={10}>
           <Slider {...settings} ref={sliderRef}>
             {students
               .filter(

@@ -38,7 +38,10 @@ export const Profile = () => {
   //const [state, setState] = useState(profile.address.state)
   //const [zipcode, setZipcode] = useState(profile.address.zip)
   //const [address2, setAddress2] = useState(profile.address.street2)
+  const [recieveText, setRecieveText] = useState(false)
   const [file, setFile] = useState<undefined | File>()
+
+  const uploadLimit = 1
 
   const onSave = () => {
     submitUpdate({
@@ -49,7 +52,7 @@ export const Profile = () => {
           city: formik.values.city,
           email: formik.values.email,
           first_name: formik.values.legalFName,
-          is_can_receive_text_msg: formik.values.recieveText ? 'Y' : 'N',
+          recieve_text: recieveText ? 1 : 0,
           last_name: formik.values.legalLName,
           middle_name: formik.values.legalMName,
           phone_number: formik.values.phoneNumber,
@@ -136,12 +139,11 @@ export const Profile = () => {
       phoneNumber: profile.phone.number,
       email: profile.email,
       city: profile.address.city,
-      recieveText: undefined,
+      recieveText: Boolean(profile.phone.recieve_text),
       address1: profile.address.street,
       address2: profile.address.street2,
       state: profile.address.state,
       zipcode: profile.address.zip,
-
     },
     validationSchema: validationSchema,
     onSubmit: async() => {
@@ -195,6 +197,10 @@ export const Profile = () => {
     console.log(file), [file]
   }, [me] )
 
+  useEffect(() => {
+    setRecieveText( Boolean( profile.phone.recieve_text ))
+  }, [])
+
   const Image = () => (
     <Box 
       display='flex' 
@@ -210,8 +216,8 @@ export const Profile = () => {
           variant='rounded' 
           sx={{height: '100%', width: '100%'}}  
         />
-        <Box onClick={() => setWarningModalOpen(true)} sx={{cursor:'pointer'}}>
-          <Paragraph size='medium' fontWeight='500' textAlign='center'>Remove Profile Picture</Paragraph>
+        <Box component='a' onClick={() => setWarningModalOpen(true)} sx={{cursor:'pointer',p: 1}}>
+          <Paragraph size='medium' color='#7B61FF' fontWeight='500' textAlign='center'>Remove Profile Picture</Paragraph>
         </Box>
         </>
         : <Box 
@@ -333,8 +339,8 @@ export const Profile = () => {
             />
             <FormControlLabel
               control={<Checkbox 
-                value={formik.values.recieveText} 
-                onClick={formik.handleChange }
+                checked={recieveText}
+                onClick={() => setRecieveText(!recieveText)}
                 name='recieveText'
               />}
               label={<Paragraph size='medium'>I can receive text messages via this number</Paragraph>}
@@ -432,6 +438,7 @@ export const Profile = () => {
           && <DocumentUploadModal
             handleModem={() => setImageModalOpen(!imageModalOpen)}
             handleFile={handleFile}
+            limit={uploadLimit}
           /> 
       }
       {

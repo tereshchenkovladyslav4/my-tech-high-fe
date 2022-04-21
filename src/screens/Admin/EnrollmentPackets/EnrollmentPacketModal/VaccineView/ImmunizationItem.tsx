@@ -34,7 +34,8 @@ export function ImmunizationItem({ item }: {
         [item.immunization?.immunity_allowed, item.value]
     )
     const validDateSpace = useMemo(() =>
-        checkImmmValueWithSpacing(item, immunizations),
+    {
+        return checkImmmValueWithSpacing(item, immunizations)},
         [item, immunizations]
     )
 
@@ -125,7 +126,7 @@ export function ImmunizationItem({ item }: {
                         allowIM={item.immunization.immunity_allowed === 1}
                         disabled={item.immunization.is_deleted}
                         endAdornment={
-                            showError && !validDateSpace &&
+                            (showError || !validDateSpace) &&
                             <InputAdornment position="end" >
                                 <Tooltip
                                     title="Does not fall within vaccine timeframe, school may request a new vaccine record."

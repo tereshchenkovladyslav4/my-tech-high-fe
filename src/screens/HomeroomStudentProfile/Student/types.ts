@@ -146,6 +146,10 @@ export type Person = {
   preferred_last_name: string
   address: Address
   date_of_birth: string
+  phone?: {
+    number: string
+    recieve_text: number
+  }
 }
 export type StudentProps = {
   student: StudentType

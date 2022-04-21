@@ -14,6 +14,8 @@ import moment from 'moment'
 import { WarningModal } from '../../../../components/WarningModal/Warning'
 import { KeyboardArrowDown } from '@mui/icons-material'
 import { makeStyles } from '@material-ui/styles'
+import { STATES_WITH_ABBREVIATION } from '../../../../utils/states'
+
 
 const selectStyles = makeStyles({
   select: {
@@ -112,6 +114,9 @@ export const StudentProfile = ({ studentId, setStudentPerson, setStudentStatus, 
   }, [userInfo])
   useEffect(() => {
     if (currentUserData) {
+
+      const stateSelected = currentUserData.student.person.address.state ||  applicationState
+
       setEmail(currentUserData.student.person.email)
       setPreferredFirstName(currentUserData.student.person.preferred_first_name)
       setPreferredLastName(currentUserData.student.person.preferred_last_name)
@@ -120,7 +125,7 @@ export const StudentProfile = ({ studentId, setStudentPerson, setStudentStatus, 
       setLegalMiddleName(currentUserData.student.person.middle_name)
       setGender(currentUserData.student.person.gender)
       setCity(currentUserData.student.person.address.city)
-      setState(currentUserData.student.person.address.state || applicationState)
+      setState(STATES_WITH_ABBREVIATION[stateSelected] || stateSelected)
       setStreet1(currentUserData.student.person.address.street)
       setStreet2(currentUserData.student.person.address.street2)
       setZip(currentUserData.student.person.address.zip)

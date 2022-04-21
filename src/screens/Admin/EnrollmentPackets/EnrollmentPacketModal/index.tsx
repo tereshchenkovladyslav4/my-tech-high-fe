@@ -137,7 +137,6 @@ export default function EnrollmentPacketModal({
           birth_place: vals.birth_place,
           hispanic: Number(vals.hispanic),
           race: vals.race,
-          gender: vals.gender,
           language: vals.language,
           language_home: vals.language_home,
           language_home_child: vals.language_home_child,
@@ -196,7 +195,7 @@ export default function EnrollmentPacketModal({
                     <EnrollmentPacketNotes />
                     <PacketSaveButtons submitForm={methods.handleSubmit(onSubmit)} />
                   </Grid>
-                  <Grid item md={6} sm={6} xs={12}>
+                  <Grid item md={4} sm={4} xs={6}>
                     {enableImmunization && <EnrollmentPacketVaccineView />}
                   </Grid>
                 </Grid>

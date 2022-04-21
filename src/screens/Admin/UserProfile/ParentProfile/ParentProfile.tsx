@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { Paragraph } from '../../../../components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
 import { BUTTON_LINEAR_GRADIENT } from '../../../../utils/constants'
+import { STATES_WITH_ABBREVIATION } from '../../../../utils/states'
 
 export const ParentProfile = ({
   userInfo,
@@ -32,6 +33,7 @@ export const ParentProfile = ({
 
   useEffect(() => {
     if (userInfo) {
+      const stateSelected = userInfo.address.state || applicationState
       setEmail(userInfo.email)
       setPreferredFirstName(userInfo.preferred_first_name || '')
       setPreferredLastName(userInfo.preferred_last_name || '')
@@ -39,7 +41,7 @@ export const ParentProfile = ({
       setLegalLastName(userInfo.last_name || '')
       setLegalMiddleName(userInfo.middle_name || '')
       setCity(userInfo.address.city || '')
-      setState(userInfo.address.state || applicationState)
+      setState(STATES_WITH_ABBREVIATION[stateSelected])
       setStreet1(userInfo.address.street || '')
       setStreet2(userInfo.address.street2 || '')
       setZip(userInfo.address.zip || '')
