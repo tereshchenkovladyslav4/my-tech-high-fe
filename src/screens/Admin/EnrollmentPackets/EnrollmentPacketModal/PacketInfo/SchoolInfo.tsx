@@ -25,7 +25,7 @@ export default function SchoolInfo() {
                     render={({ field }) =>
                         <Checkbox
                             sx={{ paddingLeft: 0 }}
-                            checked={field.value === 1 ? true : false}
+                            checked={field.value === 1 ? false : true}
                             onChange={(e) => {
                                 field.onChange(e.target.checked ? 1 : 0)
                                 setIsDisableSchoolPart(e.target.checked)

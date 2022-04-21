@@ -30,7 +30,7 @@ export default function SignatureComp() {
     return (
         <Grid container sx={{ display: 'flex', justifyContent: 'center', marginTop: '150px' }}>
             <Grid item md={9} sm={9} xs={9} sx={{ textAlign: 'center' }}>
-                {signedUrl && <img src={signedUrl} alt='signature' style={{ width: '100%' }} />}
+                {signedUrl && <img src={signedUrl} alt='signature' style={{ width: '70%' }} />}
             </Grid>
             <Grid item md={9} sm={9} xs={9}>
                 <hr style={{ borderTop: `solid 1px ${SYSTEM_01}`, borderBottom: '0' }} />

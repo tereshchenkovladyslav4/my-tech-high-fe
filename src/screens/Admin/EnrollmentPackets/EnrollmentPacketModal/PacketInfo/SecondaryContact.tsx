@@ -4,7 +4,8 @@ import { Grid, TextField } from '@mui/material'
 import { Box } from '@mui/system'
 import { DropDown } from '../../../../../components/DropDown/DropDown'
 import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
-import { countries, hispanicOptions, SYSTEM_01 } from '../../../../../utils/constants'
+import { hispanicOptions, SYSTEM_01 } from '../../../../../utils/constants'
+import { countries } from '../../../../../utils/countries'
 import { Controller, useFormContext } from 'react-hook-form'
 
 export default function SecondaryContact() {
@@ -143,12 +144,12 @@ export default function SecondaryContact() {
                             control={control}
                             render={({ field }) =>
                                 <DropDown
-                                    dropDownItems={countries}
-                                    placeholder='Entry'
-                                    defaultValue={field.value}
-                                    size='small'
-                                    setParentValue={(v) => field.onChange(v as string)}
-                                />}
+                                dropDownItems={countries}
+                                placeholder='Entry'
+                                defaultValue={field.value}
+                                size='small'
+                                setParentValue={(v) => field.onChange(v as string)}
+                            />}
                         />
                     </Box>
                 </Grid>
