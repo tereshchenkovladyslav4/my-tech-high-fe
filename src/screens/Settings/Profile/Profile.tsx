@@ -43,7 +43,7 @@ export const Profile = () => {
 
   const uploadLimit = 1
 
-  const onSave = () => {
+  const onSave = async () => {
     submitUpdate({
       variables: {
         updateProfileInput: {
@@ -62,12 +62,18 @@ export const Profile = () => {
           zipcode: formik.values.zipcode
         },
       },
-    }).then((res)  => {
+    }).then( async (res)  => {
       // set catch and then here, return snackbox for both success and fail
+
+      // fire upload fetch
+      const upload = await uploadPhoto(file)
+      if(upload){
+        location.reload()
+      } 
+        
     })
 
-    // fire upload fetch
-    uploadPhoto(file)
+    
   }
 
   const onRemoveProfilePhoto = () => {
@@ -164,13 +170,17 @@ export const Profile = () => {
       return s3URL + me.avatar_url;
   }
 
-  const uploadPhoto = (file) => {
-    var bodyFormData = new FormData();
-      if(file){
-        bodyFormData.append('file',file[0])
-        bodyFormData.append('region', 'UT')
-        bodyFormData.append('year', '2022')
-        fetch( import.meta.env.SNOWPACK_PUBLIC_S3_UPLOAD,{
+  const uploadPhoto = async (file) => {
+
+    if(!file)
+      return
+
+    var bodyFormData = new FormData()
+      bodyFormData.append('file',file[0])
+      bodyFormData.append('region', 'UT')
+      bodyFormData.append('year', '2022')
+
+    return fetch( import.meta.env.SNOWPACK_PUBLIC_S3_UPLOAD,{
           method: 'POST',
           body: bodyFormData,
           headers: {
@@ -178,12 +188,11 @@ export const Profile = () => {
           },
         })
         .then( async(res) => {
-          res.json()
+          return res.json()
             .then( ({data}) => {
-             console.log("Upload: ", data)
+              return data;
             })
           })
-      }
   }
 
   const openImageModal = () =>  setImageModalOpen(true)

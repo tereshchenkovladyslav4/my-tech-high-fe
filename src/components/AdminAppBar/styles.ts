@@ -1,3 +1,4 @@
+import { outlinedInputClasses } from '@mui/material'
 export const useStyles = {
   appBar: {
     backgroundColor: 'white',
@@ -6,7 +7,7 @@ export const useStyles = {
   },
   toolbar: {
     width: '88%',
-    marginTop: 10
+    marginTop: 10,
   },
 
   divider: {
@@ -18,5 +19,15 @@ export const useStyles = {
   icon: {
     color: 'black',
     marginRight: 24,
+  },
+  searchList: {
+    width: '100%',
+    position: 'absolute',
+    color: 'black',
+    maxWidth: 360,
+    backgroundColor: '#FFFFFF',
+    borderRadius: '4px',
+    boxShadow: 24,
+    zIndex: 100,
   },
 }
