@@ -13,10 +13,9 @@ const ordinal = (n) => {
   return n + (s[(v - 20) % 10] || s[v] || s[0])
 }
 export const Students = ({ students, selectedStudent, handleChangeStudent }) => {
-  console.log('students', students)
   const sliderRef = useRef(null)
   const [showAll, setShowAll] = useState(false)
-  const status = ['Pending', 'Active', 'Withdrawn', 'Empty']
+  const status = ['Pending', 'Active', 'Withdrawn', '']
   function SampleNextArrow(props) {
     const { className, style, onClick } = props
     return (
@@ -101,7 +100,8 @@ export const Students = ({ students, selectedStudent, handleChangeStudent }) => 
             {students
               .filter(
                 (item) =>
-                  item.status.length === 0 || (item.status.length && Number(item.status[0].status) < 2),
+                  item.status.length === 0 || (item.status.length && Number(item.status[0].status) < 2) || 
+                  (item.status.length && Number(item.status[0].status) == 2 && item.grade_levels.length && item.grade_levels[0].grade_level.includes('K') ||  item.grade_levels.length && item.grade_levels[0].grade_level < 12 ),
               )
               .map((item) => (
                 <Box sx={{ cursor: 'pointer' }} onClick={() => handleChangeStudent(item)}>
@@ -123,11 +123,35 @@ export const Students = ({ students, selectedStudent, handleChangeStudent }) => 
                   />
                 </Box>
               ))}
+              {students
+              .filter(
+                (item) =>
+                (item.status.length && Number(item.status[0].status) > 1) && 
+                  (item.status.length && Number(item.status[0].status) == 2 && item.grade_levels.length && item.grade_levels[0].grade_level.includes('K') ||  item.grade_levels.length && item.grade_levels[0].grade_level <= 12 ),
+              )
+              .map((item) => (
+                <Box sx={{ cursor: 'pointer' }} onClick={() => handleChangeStudent(item)}>
+                  <Metadata
+                    title={
+                      <Subtitle fontWeight='700' color={selectedStudent === item.student_id ? '#4145FF' : '#cccccc'}>
+                        {item.person.first_name}
+                      </Subtitle>
+                    }
+                    subtitle={
+                      <Paragraph color='#cccccc' size={'large'}>
+                        {status[item.status[0].status]}
+                      </Paragraph>
+                    }
+                    image={<Avatar alt='Remy Sharp' variant='rounded' style={{ marginRight: 8 }} />}
+                  />
+                </Box>
+              ))}
 
             {students
               .filter(
                 (item) =>
-                  (showAll && (item.status.length && Number(item.status[0].status) > 1)),
+                  (showAll && (item.status.length && Number(item.status[0].status) > 1) && 
+                  !(item.status.length && Number(item.status[0].status) == 2 && item.grade_levels.length && item.grade_levels[0].grade_level.includes('K') ||  item.grade_levels.length && item.grade_levels[0].grade_level <= 12 )) ,
               )
               .map((item) => (
                 <Box sx={{ cursor: 'pointer' }} onClick={() => handleChangeStudent(item)}>

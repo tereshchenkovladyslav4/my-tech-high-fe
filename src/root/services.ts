@@ -61,6 +61,7 @@ export const getMeQuery = gql`
         }
       }
       students {
+        testing_preference
         student_id
         hidden
         status {

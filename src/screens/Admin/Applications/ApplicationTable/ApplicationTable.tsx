@@ -435,8 +435,9 @@ export const ApplicationTable = ({ filter }) => {
         updateApplicationInput: {
           application_id: Number(application_id),
           midyear_application: status,
-          relation_status: '1',
+          relation_status: 1,
           school_year_id: 1,
+          status: 'status'
         },
       },
     })

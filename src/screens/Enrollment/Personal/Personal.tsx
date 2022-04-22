@@ -339,10 +339,11 @@ export const Personal: FunctionComponent = () => {
   const goNext = () => {
     submitPersonal()
       .then(() => {
-        setVisitedTabs([...visitedTabs, tab.currentTab])
+        setVisitedTabs([0, 1, 2])
         setTab({
           currentTab: 2,
         })
+
         window.scrollTo(0, 0)
       })
   }

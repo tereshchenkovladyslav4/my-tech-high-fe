@@ -177,12 +177,15 @@ export const Education: FunctionComponent = () => {
   const validationSchema = yup.object({
     enrollmentGradeLevel: yup
       .string()
+      .nullable()
       .required('Enrollment Grade is required'),
     schoolDistrict: yup
       .string()
+      .nullable()
       .required('School District is required'),
     disabled: yup
       .string()
+      .nullable()
       .required('Required field'),
     lastSchoolAttended: yup
       .string()
@@ -319,7 +322,7 @@ export const Education: FunctionComponent = () => {
   const goNext = async() => {
     await submitEducation()
     .then(() => {
-      setVisitedTabs([...visitedTabs, tab.currentTab])
+      setVisitedTabs([0, 1, 2, 3])
       setTab({
         currentTab: 3,
       })

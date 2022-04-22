@@ -53,18 +53,19 @@ export const StudentProfile = () => {
 
 
   const [testingPreferences, setTestingPreferences] = useState('')
+
   const testingPreferencesItems: DropDownItem[] = [
     {
       label: 'Select',
-      value: undefined,
+      value: null,
     },
     {
       label: 'Opt In',
-      value: 1,
+      value: 'Opt In',
     },
     {
       label: 'Opt Out',
-      value: 0,
+      value: 'Opt Out',
     },
   ]
   const setState = (id: any) => (formik.values.testingPref = id)
@@ -105,7 +106,9 @@ export const StudentProfile = () => {
       preferred_first_name: formik.values.firstName,
       preferred_last_name: formik.values.lastName,
       email: formik.values.email,
-      photo: avatar
+      photo: avatar,
+      testing_preference: formik.values.testingPref,
+      password: formik.values.password,
     }
     if( file ){
       const uploadData = await uploadPhoto(file).then( async(res) => {
@@ -311,7 +314,7 @@ export const StudentProfile = () => {
                 </Paragraph>
                 <DropDown
                   dropDownItems={testingPreferencesItems}
-                  defaultValue={undefined}
+                  defaultValue={student.testing_preference}
                   setParentValue={setState}
                   dropdownColor={`rgba(236, 89, 37, 0.1)`}
                 />

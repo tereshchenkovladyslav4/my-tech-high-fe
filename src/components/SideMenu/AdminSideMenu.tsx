@@ -160,7 +160,7 @@ export const AdminSideMenu: FunctionComponent = () => {
             <ListItemButton>
               <LogoutIcon style={classes.logos} sx={{ color: '#CCC' }} />
               <Paragraph size='medium' color='#CCCCCC'>
-                Logout
+                Sign Out
               </Paragraph>
             </ListItemButton>
           </ListItem>

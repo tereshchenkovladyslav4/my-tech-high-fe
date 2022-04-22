@@ -140,7 +140,7 @@ export const Documents: FunctionComponent = () => {
   useEffect(() => {
     if(data){
       if(!missingInfo){
-        setVisitedTabs([...visitedTabs, tab.currentTab])
+        setVisitedTabs([0, 1, 2, 3, 4])        
         setTab({
           currentTab: 4,
         })

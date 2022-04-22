@@ -104,7 +104,7 @@ export type StudentType = {
     grade_level: string 
   }
   status: Status[]
-
+  testing_preference: string,
 }
 
 export type Status = {

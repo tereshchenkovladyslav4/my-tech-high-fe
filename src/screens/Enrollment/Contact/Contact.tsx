@@ -236,7 +236,6 @@ export const Contact: ContactTemplateType = ({ id }) => {
       }
     }).then((data) => {
       setPacketId(data.data.saveEnrollmentPacketContact.packet.packet_id)
-      setVisitedTabs([...visitedTabs, tab.currentTab])
       setMe((prev) => {
         return {
           ...prev,
@@ -270,6 +269,7 @@ export const Contact: ContactTemplateType = ({ id }) => {
         setTab({
           currentTab: tab.currentTab + 1
         })
+        setVisitedTabs([0, 1])
         window.scrollTo(0, 0)
       })
   }
