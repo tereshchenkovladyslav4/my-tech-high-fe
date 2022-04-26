@@ -146,6 +146,7 @@ export type Person = {
   preferred_last_name: string
   address: Address
   date_of_birth: string
+  photo: string
   phone?: {
     number: string
     recieve_text: number

@@ -63,12 +63,12 @@ export const EnrollmentPacketTable = () => {
       submitted: moment(packet.deadline).format('MM/DD/YY'),
       status: packet.status + (packet.is_age_issue ? ' (Age Issue)' : ''),
       deadline: moment(packet.deadline).format('MM/DD/YY'),
-      student: `${packet.student.person.first_name} ${packet.student.person.last_name}`,
+      student: `${packet.student.person?.first_name} ${packet.student.person?.last_name}`,
       grade:
         packet.student.grade_levels.length && packet.student.grade_levels[0].grade_level
           ? (packet.student.grade_levels[0].grade_level == 'K' ? 'K' : `${toOrdinalSuffix(Number(packet.student.grade_levels[0].grade_level))} Grade`)
           : ' ',
-      parent: `${packet.student.parent.person.first_name} ${packet.student.parent.person.last_name}`,
+      parent: `${packet.student.parent.person?.first_name} ${packet.student.parent.person?.last_name}`,
       studentStatus: 'New',
       emailed: '',
       delete: (

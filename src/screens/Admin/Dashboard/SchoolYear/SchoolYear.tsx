@@ -1,15 +1,23 @@
-import { Card, Grid, IconButton } from '@mui/material'
+import { Card, Grid, IconButton, Select, MenuItem, FormControl } from '@mui/material'
 import { Box } from '@mui/system'
 import React, { useContext, useEffect, useState } from 'react'
 import { UserContext } from '../../../../providers/UserContext/UserProvider'
 import { Paragraph } from '../../../../components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle';
-import { DropDown } from '../../../../components/DropDown/DropDown'
 import { DropDownItem } from '../../../../components/DropDown/types'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import { gql, useQuery } from '@apollo/client'
 import moment from 'moment'
+import { makeStyles } from '@material-ui/styles'
+const selectStyles = makeStyles({
+  select: {
+    "& .MuiSvgIcon-root": {
+      color: "blue",
+    }
+  }
+})
+
 
 export const getSchoolYearsByRegionId = gql`
   query Region($regionId: ID!) {
@@ -111,12 +119,31 @@ const data = [{
       }]
 
 const status = ['Pending', 'Active', 'Total', 'Withdrawn', 'Graduated']
+
+
+const useStyles = makeStyles({
+  select: {
+    "&:after": {
+      borderBottomColor: "darkred",
+    },
+    "& .MuiSvgIcon-root": {
+      color: "darkred",
+    },
+  },
+});
 export const SchoolYear = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const { me, setMe } = useContext(UserContext);
   const [schoolYears, setSchoolYears] = useState<Array<DropDownItem>>([]);
   const [selectedYear, setSelectedYear] = useState<number>();
   const [schoolYearDataCount, setSchoolYearDataCount] = useState(data);
+
+  const styles = theme => ({
+
+  });
+
+  const selectClasses = selectStyles()
+
 
   const schoolYearData = useQuery(getSchoolYearsByRegionId, {
     variables: {
@@ -147,6 +174,7 @@ export const SchoolYear = () => {
           }
         }),
       )
+      setSelectedYear(schoolYearData?.data?.region?.SchoolYears[0]?.school_year_id)
     }
   }, [me.selectedRegionId, schoolYearData?.data?.region?.SchoolYears])
 
@@ -176,68 +204,78 @@ export const SchoolYear = () => {
             </Box>
           </Box>
           <Box display='flex' flexDirection='row' alignItems="center" >
-          <DropDown
-            placeholder='select a year'
-            dropDownItems={schoolYears}
-            setParentValue={(val, index) => {
-              setSelectedYear(val)
-            }}
-            defaultValue={schoolYears[0]?.value}
-            size='small'
-            sx={{ width: '100px' }}
-          />
+            {!schoolYearData.loading && selectedYear &&
+          <FormControl variant='standard' sx={{ m: 1 }}>
+            <Select
+              size='small'
+              value={selectedYear}
+              IconComponent={ExpandMoreIcon}
+              disableUnderline
+              onChange={(e) => {
+                setSelectedYear(e.target.value)
+              }}
+              label='year'
+              className={selectClasses.select}
+              sx={{ color: 'blue', border: 'none'}}
+            >
+              {schoolYears.map((sy) => (
+                <MenuItem key={sy.value} value={sy.value}>{sy.label}</MenuItem>
+              ))}
+            </Select>
+            </FormControl>
+            }
           </Box>
         </Box>
         {isExpanded &&
-          <Box sx={{ padding: 4, paddingTop: 2 }}>
-            <Grid container>
-              <Grid item xs={3} />
-              <Grid item xs={3}>
+          <Box>
+            <Grid container paddingX={4} paddingY={2}>
+              <Grid item xs={2}>
+              </Grid>
+              {status.map((val) => (
+                <Grid item xs={2}>
                 <Box marginBottom={3}>
-                  <Paragraph size='medium' fontWeight='600'>
+                  <Paragraph size='large' sx={{ fontSize: 'lg' }} fontWeight='700'>
+                    {val}
+                  </Paragraph>
+                </Box>
+              </Grid>
+              ))}
+              <Grid item xs={2} sx={{ backgroundColor: '#FAFAFA' }}>
+                <Box padding={2}>
+                  <Paragraph size='large' sx={{ fontSize: 'lg' }} fontWeight='700'>
                     Students
                   </Paragraph>
                 </Box>
               </Grid>
-              <Grid item xs={3}>
-                <Box>
-                  <Paragraph size='medium' fontWeight='600'>
-                    Sped
-                  </Paragraph>
-                </Box>
-              </Grid>
-              <Grid item xs={3}>
-                <Box>
-                  <Paragraph size='medium' fontWeight='600'>
+              {schoolYearDataCount[0].students.map((student) => (
+                <Grid item xs={2} padding={2} sx={{ backgroundColor: '#FAFAFA' }}>
+                  <Paragraph size='medium'>{student.count}</Paragraph>
+                </Grid>
+              ))}
+              <Grid item xs={2}>
+                <Box padding={2}>
+                  <Paragraph size='large' sx={{ fontSize: 'lg' }} fontWeight='700'>
                     Parents
                   </Paragraph>
                 </Box>
               </Grid>
-              {status.map((el, idx) => {
-                const backgroundColor = idx === 0 || idx % 2 == 0 ? '#FAFAFA' : 'white'
-                return (
-                  <Grid item container xs={12} sx={{ backgroundColor }} paddingX={4} paddingY={2}>
-                    <Grid item xs={3} textAlign= 'left'>
-                      <Paragraph size='medium' fontWeight='700'>
-                        {el}
-                      </Paragraph>
-                    </Grid>
-                    <Grid item xs={3}>
-                      <Paragraph size='medium'>{schoolYearDataCount[0].students[idx].count}</Paragraph>
-                    </Grid>
-                    <Grid item xs={3}>
-                      <Box marginLeft={2}>
-                        <Paragraph size='medium'>{schoolYearDataCount[0].special_ed[idx].count}</Paragraph>
-                      </Box>
-                    </Grid>
-                    <Grid item xs={3}>
-                      <Box marginLeft={4}>
-                        <Paragraph size='medium'>{schoolYearDataCount[0].parents[idx].count}</Paragraph>
-                      </Box>
-                    </Grid>
-                  </Grid>
-                )
-              })}
+              {schoolYearDataCount[0].parents.map((parent) => (
+                <Grid item xs={2} padding={2}>
+                  <Paragraph size='medium'>{parent.count}</Paragraph>
+                </Grid>
+              ))}
+              <Grid item xs={2} sx={{ backgroundColor: '#FAFAFA' }}>
+                <Box padding={2}> 
+                  <Paragraph size='large' sx={{ fontSize: 'lg' }} fontWeight='700'>
+                    Sped
+                  </Paragraph>
+                </Box>
+              </Grid>
+              {schoolYearDataCount[0].special_ed.map((sped) => (
+                <Grid item xs={2} padding={2} sx={{ backgroundColor: '#FAFAFA' }}>
+                  <Paragraph size='medium'>{sped.count}</Paragraph>
+                </Grid>
+              ))}
             </Grid>
           </Box>
         }

@@ -7,6 +7,7 @@ import { toOrdinalSuffix } from '../../../../utils/stringHelpers'
 import { StudentTemplateType } from './type'
 import { useHistory } from 'react-router-dom'
 import { CircleData } from '../../../Dashboard/HomeroomGrade/components/StudentGrade/types'
+import { Person } from '../../../HomeroomStudentProfile/Student/types'
 import { Avatar } from '@mui/material'
 import { Metadata } from '../../../../components/Metadata/Metadata'
 import { Title } from '../../../../components/Typography/Title/Title'
@@ -19,6 +20,14 @@ export const Student: StudentTemplateType = ({student}) => {
 
 	const enrollmentLink = `${HOMEROOM+ENROLLMENT}/${student.student_id}`
 	const homeroomLink = `${HOMEROOM}/${student.student_id}`
+
+	const getProfilePhoto = (person: Person) => {
+		if( !person.photo )
+		  return '';
+	
+		const s3URL = 'https://infocenter-v2-dev.s3.us-west-2.amazonaws.com/'
+		return s3URL + person.photo
+	  }
 
 	const history = useHistory()
   const [circleData, setCircleData] = useState<CircleData>()
@@ -183,6 +192,7 @@ export const Student: StudentTemplateType = ({student}) => {
 							cursor:'pointer'
 						}} 
 						alt='Remy Sharp' variant='rounded' 
+						src={getProfilePhoto(student.person)}
 						onClick={() => {
 							setMe({
 								...me,

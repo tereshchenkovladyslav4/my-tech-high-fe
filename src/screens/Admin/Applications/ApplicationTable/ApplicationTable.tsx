@@ -67,14 +67,14 @@ export const ApplicationTable = ({ filter }) => {
       year: `${moment(application.school_year.date_begin).format('YYYY')}-${moment(
         application.school_year.date_end,
       ).format('YY')}`,
-      student: `${application.student.person.last_name}, ${application.student.person.first_name}`,
+      student: `${application.student.person?.last_name}, ${application.student.person?.first_name}`,
       grade:
         application.student.grade_levels.length &&
         (application.student.grade_levels[0].grade_level.includes('Kin')
           ? 'K'
           : application.student.grade_levels[0].grade_level),
       sped: application.student.special_ed ? 'Yes' : 'No',
-      parent: `${application.student.parent.person.last_name}, ${application.student.parent.person.first_name}`,
+      parent: `${application.student.parent.person?.last_name}, ${application.student.parent.person?.first_name}`,
       // status: application.status,
       relation: application.relation_status ? status[application.relation_status] : 'New',
       verified: application?.student?.parent?.person?.email_verifier?.verified ? 'Yes' : 'No',

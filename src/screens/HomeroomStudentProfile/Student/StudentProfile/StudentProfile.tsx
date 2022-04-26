@@ -159,6 +159,7 @@ export const StudentProfile = () => {
     ).then((res) => {
       setFile(undefined)
       setAvatar(null)
+      location.reload()
     })
   }
 

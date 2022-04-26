@@ -7,7 +7,7 @@ import React, { FunctionComponent, useContext, useRef, useState } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 import Slider from 'react-slick'
 import { UserContext } from '../../providers/UserContext/UserProvider'
-import { StudentType } from '../../screens/HomeroomStudentProfile/Student/types'
+import { StudentType, Person } from '../../screens/HomeroomStudentProfile/Student/types'
 import { APPLICATIONS, HOMEROOM, MTHBLUE } from '../../utils/constants'
 import { toOrdinalSuffix } from '../../utils/stringHelpers'
 import { Metadata } from '../Metadata/Metadata'
@@ -100,6 +100,14 @@ export const AppBar: FunctionComponent = () => {
       : 'Kindergarten'
   )
 
+  const getProfilePhoto = (person: Person) => {
+    if( !person.photo )
+      return 'image';
+
+    const s3URL = 'https://infocenter-v2-dev.s3.us-west-2.amazonaws.com/'
+    return s3URL + person.photo
+  }
+
   const renderStudentHeader = () =>
     map(students, (student) => {
       const link = student?.applications?.at(-1)?.status === 'Submitted' || student?.status?.at(-1)?.status === 2 || student?.packets?.at(-1)?.status === 'Started'
@@ -122,7 +130,7 @@ export const AppBar: FunctionComponent = () => {
                   {gradeText(student)}
                 </Paragraph>
               }
-              image={<Avatar alt={student.person.first_name} src=' ' variant='rounded' style={{ marginRight: 24 }} />}
+              image={<Avatar alt={student.person.first_name} src={getProfilePhoto(student.person)} variant='rounded' style={{ marginRight: 24 }} />}
               />
           </NavLink>
           : <Metadata
@@ -137,7 +145,7 @@ export const AppBar: FunctionComponent = () => {
                 {gradeText(student)}
               </Paragraph>
             }
-            image={<Avatar alt={student.person.first_name} src=' ' variant='rounded' style={{ marginRight: 24 }} />}
+            image={<Avatar alt={student.person.first_name} src={getProfilePhoto(student.person)} variant='rounded' style={{ marginRight: 24 }} />}
           />
           }
         </Box>

@@ -7,12 +7,21 @@ import { CircleData, StudentGradeTemplateType } from './types'
 import { useStyles } from './styles'
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline'
 import ScheduleIcon from '@mui/icons-material/Schedule';
+import { Person } from '../../../../HomeroomStudentProfile/Student/types'
 
 export const StudentGrade: StudentGradeTemplateType = ({ student }) => {
   const red = '#D23C33'
   const blue = '#2B9EB7'
   const classes = useStyles
   const [circleData, setCircleData] = useState<CircleData>()
+
+  const getProfilePhoto = (person: Person) => {
+		if( !person.photo )
+		  return 'image';
+	
+		const s3URL = 'https://infocenter-v2-dev.s3.us-west-2.amazonaws.com/'
+		return s3URL + person.photo
+	  }
 
   const progress = () => {
     const { applications, packets } = student
@@ -109,7 +118,7 @@ export const StudentGrade: StudentGradeTemplateType = ({ student }) => {
             sx={{ color: circleData?.color }}
           />
           <Box sx={classes.avatarContainer} position='absolute'>
-            <Avatar alt={student.person.first_name} src={'image'} sx={classes.avatar} />
+            <Avatar alt={student.person.first_name} src={getProfilePhoto(student.person)} sx={classes.avatar} />
           </Box>
         </Box>
       }
