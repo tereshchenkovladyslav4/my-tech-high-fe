@@ -4,10 +4,8 @@ import { useFormContext, Controller } from 'react-hook-form'
 import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
 import { SYSTEM_01 } from '../../../../utils/constants'
 
-
 export default function EnrollmentPacketNotes() {
   const { control } = useFormContext()
-
   return (
     <Grid container sx={{ paddingTop: '20px' }}>
       <Grid item md={12} sm={12} xs={12}>
@@ -17,17 +15,21 @@ export default function EnrollmentPacketNotes() {
       </Grid>
       <Grid item md={12} sm={12} xs={12}>
         <Controller
-          name="notes"
+          name='notes'
           control={control}
-          render={({ field }) => <TextField
-            {...field}
-            size='small'
-            variant='outlined'
-            fullWidth
-            multiline
-            rows={8}
-            sx={{ padding: '10px 0px 20px 0px', width: '70%' }}
-          />}
+          render={({ field }) => {
+            return (
+              <TextField
+                {...field}
+                size='small'
+                variant='outlined'
+                fullWidth
+                multiline
+                rows={8}
+                sx={{ padding: '10px 0px 20px 0px', width: '70%' }}
+              />
+            )
+          }}
         />
       </Grid>
     </Grid>

@@ -188,7 +188,7 @@ export const DocumentUploadModal: DocumentUploadModalTemplateType = ({
 						<label>
 							<input 
 								type="file"
-								onSubmit={() => window.alert('h')}
+								onSubmit={() => {}}
 								style={classes.input}
 								onChange={filesSelected}
 								multiple

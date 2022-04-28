@@ -20,6 +20,9 @@ export const useStyles = {
       maxHeight: '250px',
       overflow: 'scroll',
       padding: 1,
+      '.public-DraftStyleDefault-block': {
+        margin: 0,
+      },
     },
   },
   toolBar: {

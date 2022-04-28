@@ -78,6 +78,8 @@ const useStyles = makeStyles({
     },
   },
   categoryPagination: {
+    position: 'absolute',
+    right: 0,
     display: 'flex',
     alignItems: 'center',
   },

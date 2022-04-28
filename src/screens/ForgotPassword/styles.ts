@@ -6,10 +6,14 @@ export const useStyles = {
     marginY: 2,
     width: '451.53px',
     marginBottom: 4,
+    '& .MuiFormHelperText-root Mui-error': {
+      color: 'white'
+    }
   },
   button: {
     marginTop: 3,
     height: '53px',
+    width: '100%',
     backgroundColor: '#1A1A1A',
     borderRadius: '33.33440017700195px',
     '&:hover': {

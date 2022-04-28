@@ -100,7 +100,7 @@ export const StudentGrade: StudentGradeTemplateType = ({ student }) => {
       subtitle={
         <Box>
           <Paragraph fontWeight={'700'} color='black' size='medium'>
-            {student.person.first_name}
+            {student.person.preferred_first_name ?? student.person.first_name}
           </Paragraph>
           <Tooltip title={circleData?.message}>
             <IconButton>

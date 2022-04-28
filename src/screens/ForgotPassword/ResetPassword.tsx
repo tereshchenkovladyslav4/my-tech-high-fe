@@ -11,6 +11,17 @@ import { CompleteAccountSuccess } from '../CompleteAccountSuccess/CompleteAccoun
 import { Typography } from '@mui/material'
 import { AuthContext } from '../../providers/AuthProvider/AuthContext'
 import { useHistory } from 'react-router-dom'
+import { makeStyles } from '@material-ui/styles'
+const useHelperTextStyles = makeStyles(() => ({
+	root: {
+		color: "white",
+	},
+  error: {
+    "&.MuiFormHelperText-root.Mui-error": {
+      color: 'white'
+    }
+  }
+}));
 
 export const ResetPassword = () => {
   const token = window.location.href.split('=')[1]
@@ -30,6 +41,7 @@ export const ResetPassword = () => {
       .required('Please enter your password again')
       .oneOf([yup.ref('password')], 'Passwords do not match'),
   })
+  const helperTextStyles = useHelperTextStyles();
 
   const formik = useFormik({
     initialValues: {
@@ -111,6 +123,12 @@ export const ResetPassword = () => {
           }}
           value={formik.values.email}
           error={formik.touched.email && Boolean(formik.errors.email)}
+          FormHelperTextProps={{
+						classes:{
+							root:helperTextStyles.root,
+              error: helperTextStyles.error,
+						}
+				  }}
           helperText={formik.touched.email && formik.errors.email}
         />
         <TextField
@@ -129,6 +147,12 @@ export const ResetPassword = () => {
             formik.handleChange(e)
             setAlert(null)
           }}
+          FormHelperTextProps={{
+						classes:{
+							root:helperTextStyles.root,
+              error: helperTextStyles.error,
+						}
+				  }}
           error={formik.touched.password && Boolean(formik.errors.password)}
           helperText={formik.touched.password && formik.errors.password}
         />
@@ -143,6 +167,12 @@ export const ResetPassword = () => {
           inputProps={{
             style: { color: 'white' },
           }}
+          FormHelperTextProps={{
+						classes:{
+							root:helperTextStyles.root,
+              error: helperTextStyles.error
+						}
+				  }}
           value={formik.values.confirmPassword}
           onChange={(e) => {
             formik.handleChange(e)

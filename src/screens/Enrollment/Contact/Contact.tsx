@@ -7,7 +7,6 @@ import { enrollmentContactMutation } from './service'
 import { useMutation, useQuery } from '@apollo/client'
 import { useStyles } from '../styles'
 import { EnrollmentContext } from '../../../providers/EnrollmentPacketPrivder/EnrollmentPacketProvider'
-import { id } from 'date-fns/locale'
 import { ContactTemplateType } from './types'
 import { useFormik } from 'formik';
 import * as yup from 'yup';
@@ -428,8 +427,8 @@ export const Contact: ContactTemplateType = ({ id }) => {
                     control={
                       <Checkbox
                         disabled={disabled}
-                        checked={genderSelected('male')}
-                        onClick={() => selectGender('male')}
+                        checked={genderSelected('Male')}
+                        onClick={() => selectGender('Male')}
                       />
                     }
                     label='Male'
@@ -464,8 +463,8 @@ export const Contact: ContactTemplateType = ({ id }) => {
                     control={
                       <Checkbox
                         disabled={disabled}
-                        checked={genderSelected('undecided')}
-                        onClick={() => selectGender('undecided')}
+                        checked={genderSelected('Undecided')}
+                        onClick={() => selectGender('Undecided')}
                       />
                     }
                     label='Undecided'

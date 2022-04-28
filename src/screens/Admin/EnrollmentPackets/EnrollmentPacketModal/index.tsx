@@ -25,7 +25,6 @@ import PacketConfirmModals from './modals/ConfirmModals'
 import { Packet } from '../../../HomeroomStudentProfile/Student/types'
 import { studentContext } from './providers'
 
-
 export default function EnrollmentPacketModal({
   handleModem,
   packet,
@@ -92,7 +91,7 @@ export default function EnrollmentPacketModal({
       dir_permission: packet.dir_permission,
       signature_file_id: packet.signature_file_id || 0,
       missing_files: packet.missing_files || [],
-    }
+    },
   })
 
   async function onSubmit(vals: EnrollmentPacketFormType) {
@@ -102,7 +101,6 @@ export default function EnrollmentPacketModal({
       methods.setValue('saveAlert', 'The packet has been accepted')
       setTimeout(() => methods.setValue('saveAlert', ''), 5000)
     } else if (!['Age Issue', 'Missing Info'].includes(status)) {
-
       methods.setValue('saveAlert', 'Packet Saved')
       setTimeout(() => methods.setValue('saveAlert', ''), 5000)
     }
@@ -168,11 +166,10 @@ export default function EnrollmentPacketModal({
       },
     })
     refetch()
-
   }
 
   return (
-    <FormProvider {...methods} >
+    <FormProvider {...methods}>
       <form onSubmit={methods.handleSubmit(onSubmit)}>
         <Modal
           open={true}
@@ -181,7 +178,6 @@ export default function EnrollmentPacketModal({
           aria-describedby='modal-modal-description'
         >
           <studentContext.Provider value={packet.student}>
-
             <Box sx={classes.modalCard}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                 <EnrollmentPacketDropDownButton />

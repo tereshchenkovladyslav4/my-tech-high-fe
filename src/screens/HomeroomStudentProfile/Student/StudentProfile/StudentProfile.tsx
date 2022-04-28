@@ -52,7 +52,7 @@ export const StudentProfile = () => {
   //}, [location])
 
 
-  const [testingPreferences, setTestingPreferences] = useState('')
+  const [testingPreferences, setTestingPreferences] = useState(student.testing_preference)
 
   const testingPreferencesItems: DropDownItem[] = [
     {
@@ -91,7 +91,7 @@ export const StudentProfile = () => {
       firstName: person.preferred_first_name,
       lastName: person.preferred_last_name,
       email: person.email,
-      testingPref: undefined,
+      testingPref: student.testing_preference,
       password: undefined,
     },
     validationSchema: validationSchema,

@@ -328,7 +328,7 @@ export const Education: FunctionComponent = () => {
       })
         window.scrollTo(0, 0)
       })
-      .catch(e => window.alert(e))
+      .catch()
   }
   const parseGrades = map(GRADES, (grade) => {
     return {

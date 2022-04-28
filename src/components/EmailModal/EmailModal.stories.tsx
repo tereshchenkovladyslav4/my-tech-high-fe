@@ -10,7 +10,6 @@ export default {
 
 export const Default: ComponentStory<typeof EmailModal> = () => {
   const [openModal, setOpenModal] = useState(false)
-  const t = () => window.alert('hi')
   return (
     <Card>
       <Button onClick={() => setOpenModal(true)}>Hello</Button>

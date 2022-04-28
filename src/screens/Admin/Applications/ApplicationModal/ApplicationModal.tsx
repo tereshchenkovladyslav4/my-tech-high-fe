@@ -47,7 +47,6 @@ export const ApplicationModal: ApplicationModalType = ({
   const classes = useStyles
   const selectClasses = selectStyles()
   const { showModal, hideModal, store, setStore } = useContext(ProfileContext)
-  console.log(store)
   const handleOpenProfile = (data) => {
     showModal(data)
     setStore(true)

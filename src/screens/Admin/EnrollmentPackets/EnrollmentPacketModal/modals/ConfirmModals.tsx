@@ -16,6 +16,7 @@ export default function PacketConfirmModals({ refetch, submitForm }) {
   const { watch, setValue } = useFormContext<EnrollmentPacketFormType>()
   const [emailTemplate, setEmailTemplate] = useState(null)
   const [sendPacketEmail] = useMutation(sendEmailMutation)
+  const [emailFrom, setEmailFrom] = useState('')
 
   const [
     notes,
@@ -24,7 +25,7 @@ export default function PacketConfirmModals({ refetch, submitForm }) {
     showSaveWarnModal,
     missingInfoAlert,
     saveAlert,
-    preSaveStatus
+    preSaveStatus,
   ] = watch([
     'notes',
     'showMissingInfoModal',
@@ -32,27 +33,12 @@ export default function PacketConfirmModals({ refetch, submitForm }) {
     'showSaveWarnModal',
     'missingInfoAlert',
     'saveAlert',
-    'preSaveStatus'
+    'preSaveStatus',
   ])
-
-  const { data: emailTemplateData } = useQuery(getEmailTemplateQuery, {
-    variables: {
-      template: 'Missing Information',
-    },
-    fetchPolicy: 'network-only',
-  })
-
-  useEffect(() => {
-    if (emailTemplateData !== undefined) {
-      const { emailTemplateName } = emailTemplateData
-      if (emailTemplateName) setEmailTemplate(emailTemplateName)
-    }
-  }, [emailTemplateData])
 
   function onSubmit(status?: string) {
     setValue('status', status || preSaveStatus)
     submitForm()
-
   }
 
   const handleEmailSend = (subject: string, body: string, options: StandardResponseOption) => {
@@ -64,15 +50,18 @@ export default function PacketConfirmModals({ refetch, submitForm }) {
             email: student?.parent.person.email,
             subject: subject,
             recipients: null,
-            from: emailTemplate && emailTemplate?.from ? emailTemplate?.from : null,
+            from:
+              emailFrom !== emailTemplate?.from
+                ? emailFrom
+                : emailTemplate && emailTemplate?.from
+                ? emailTemplate?.from
+                : null,
             bcc: emailTemplate && emailTemplate?.bcc ? emailTemplate?.bcc : null,
           },
         },
       })
       refetch()
-
       setValue('notes', constructPacketNotes(notes || '', options, options.type, body))
-
       if (options.type === 'AGE_ISSUE') {
         setValue('showAgeIssueModal', false)
         onSubmit()
@@ -82,8 +71,10 @@ export default function PacketConfirmModals({ refetch, submitForm }) {
         setValue('missingInfoAlert', true)
         setTimeout(() => setValue('missingInfoAlert', false), 5000)
         setValue('preSaveStatus', 'Missing Info')
-
-        setValue('missing_files', options.values.filter((v) => v.checked).map((v) => v.abbr))
+        setValue(
+          'missing_files',
+          options.values.filter((v) => v.checked).map((v) => v.abbr),
+        )
         onSubmit('Missing Info')
       }
     } catch (e) {
@@ -101,7 +92,7 @@ export default function PacketConfirmModals({ refetch, submitForm }) {
     let newNotes = `${date} - ${type === 'AGE_ISSUE' ? 'Age Issue' : 'Missing Info'}\n`
     const newNotesLines: Array<string> = ['<SEP>']
 
-    const setStudentInfo = (email: string, student) => {
+    const setEmailBodyInfo = (email: string, student) => {
       const yearbegin = new Date(student.grade_levels[0].school_year.date_begin).getFullYear().toString()
       const yearend = new Date(student.grade_levels[0].school_year.date_end).getFullYear().toString()
 
@@ -132,7 +123,6 @@ export default function PacketConfirmModals({ refetch, submitForm }) {
       .slice()
       .reverse()
       .forEach((option) => {
-        if (!option.checked) return
         const indexOfSeparator = newNotesLines.indexOf('<SEP>')
         newNotesLines.splice(0, 0, `- ${option.title}`)
         if (option.extraText) {
@@ -143,8 +133,8 @@ export default function PacketConfirmModals({ refetch, submitForm }) {
     newNotesLines.splice(newNotesLines.indexOf('<SEP>'), 1)
     newNotes += newNotesLines.join('\n')
 
-    if (oldNotes.length) return setStudentInfo(newNotes, student) + '\n\n' + oldNotes
-    return setStudentInfo(newNotes, student) + '\n'
+    if (oldNotes.length) return setEmailBodyInfo(newNotes, student) + '\n\n' + oldNotes
+    return setEmailBodyInfo(newNotes, student) + '\n'
   }
 
   if (showMissingInfoModal)
@@ -154,19 +144,26 @@ export default function PacketConfirmModals({ refetch, submitForm }) {
         title={`Missing Information on ${student.person.first_name}’s Enrollment Packet`}
         options={MISSING_INFO_OPTIONS}
         handleSubmit={handleEmailSend}
-        template={emailTemplate}
+        setEmailTemplate={setEmailTemplate}
+        type='missingInfo'
+        setEmailFrom={setEmailFrom}
+        emailFrom={emailFrom}
       />
     )
-  if (showAgeIssueModal)
+  if (showAgeIssueModal) {
     return (
       <EmailModal
         handleModem={() => setValue('showAgeIssueModal', false)}
         title={`Age Issue on ${student.person.first_name}’s Enrollment Packet`}
-        options={AGE_ISSUE_OPTIONS}
+        options={emailTemplate && emailTemplate.standard_responses && JSON.parse(emailTemplate?.standard_responses)}
         handleSubmit={handleEmailSend}
-        template={emailTemplate}
+        setEmailTemplate={setEmailTemplate}
+        type='ageIssue'
+        setEmailFrom={setEmailFrom}
+        emailFrom={emailFrom}
       />
     )
+  }
 
   if (showSaveWarnModal)
     return (

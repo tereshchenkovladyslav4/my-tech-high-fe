@@ -8,9 +8,10 @@ import { Paragraph } from '../../Typography/Paragraph/Paragraph'
 import { Subtitle } from '../../Typography/Subtitle/Subtitle'
 import { StandardResponseTemplateType } from './types'
 
-export const StandardResponses: StandardResponseTemplateType = ({ options, setTemplate }) => {
-  let SelectionComponent = Checkbox
-  if (options.type === 'AGE_ISSUE') SelectionComponent = Radio
+export const StandardResponses = ({ options, type, setBody, setStandardResponse }) => {
+  const [previousValue, setPreviousValue] = React.useState('')
+
+  const SelectionComponent = type === 'missingInfo' ? Checkbox : Radio
 
   return (
     <Box
@@ -26,20 +27,13 @@ export const StandardResponses: StandardResponseTemplateType = ({ options, setTe
           </Subtitle>
         </FormLabel>
         <RadioGroup aria-label='gender' name='radio-buttons-group'>
-          {map(options.values, (option) => (
+          {map(type === 'missingInfo' ? options.values : options, (option) => (
             <FormControlLabel
               value={option.title}
               control={
                 <SelectionComponent
                   onChange={(e) => {
-                    if (options.type === 'AGE_ISSUE') {
-                      const currentSelected = e.target.value
-                      options.values.forEach((option) => {
-                        if (option.title !== currentSelected) option.checked = false
-                      })
-                    }
-                    option.checked = !option.checked
-                    setTemplate()
+                    setStandardResponse(option)
                   }}
                 />
               }

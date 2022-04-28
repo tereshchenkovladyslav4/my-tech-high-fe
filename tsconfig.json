@@ -3,7 +3,8 @@
     "allowSyntheticDefaultImports": true,
     "jsx": "react",
     "isolatedModules": true,
-    "lib": ["dom", "esnext"],
+    "downlevelIteration": true,
+    "lib": ["dom", "esnext"]
     // "moduleResolution": "node",
     // "noEmit": true,
     // "module": "es2020",
@@ -13,8 +14,8 @@
     // "experimentalDecorators": true,
     // "emitDecoratorMetadata": true,
     // "noImplicitAny": true,
-		// "strictNullChecks": true,
-		// "strictFunctionTypes": true,
+    // "strictNullChecks": true,
+    // "strictFunctionTypes": true,
     // "noImplicitThis": true,
     // "noUnusedLocals": true,
     // "noUnusedParameters": true,
@@ -23,10 +24,6 @@
     // "esModuleInterop": true,
     // "jsxImportSource": "@emotion/react"
   },
-  "exclude": [
-    "node_modules"
-  ],
-  "include": [
-    "./**/*"
-  ]
+  "exclude": ["node_modules"],
+  "include": ["./**/*"]
 }

@@ -160,7 +160,7 @@ export const SchoolYear = () => {
         school_year_id: Number(selectedYear)
       }
     },
-    skip: me?.selectedRegionId ? false : true,
+    skip: selectedYear ? false : true,
     fetchPolicy: 'network-only',
   })
 

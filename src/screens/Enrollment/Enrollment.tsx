@@ -33,12 +33,13 @@ export const Enrollment: EnrollmentTemplateType = ({id, disabled}: {id: number, 
       setPacketId,
       student,
       disabled,
+      me,
       setMe,
       setTab,
       setVisitedTabs,
       visitedTabs
     }),
-    [packetId, disabled]
+    [packetId, disabled, student, me]
   )
   
   useEffect(() => {

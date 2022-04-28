@@ -64,18 +64,13 @@ export const EmailTemplateModal = ({
       editorState: EditorState.createEmpty(),
     },
   ])
-  const [addResponse, setAddResponse] = useState([
-    {
-      preSchool: '',
-      elemSchool: '',
-    },
-  ])
+  const [addResponse, setAddResponse] = useState('')
 
   const [response, setResponses] = useState([
     {
-      previousSchool: '',
-      elementarySchool: '',
-      editorState: EditorState.createEmpty(),
+      title: '',
+      checked: false,
+      extraText: '',
     },
   ])
 
@@ -117,9 +112,9 @@ export const EmailTemplateModal = ({
       ...response,
       ...[
         {
-          previousSchool: '',
-          elementarySchool: '',
-          editorState: EditorState.createEmpty(),
+          title: '',
+          checked: false,
+          extraText: '',
         },
       ],
     ])
@@ -135,17 +130,25 @@ export const EmailTemplateModal = ({
   }
 
   const handleChangeResponse = (value, i, field) => {
-    const temp = response.slice()
-    temp[i][field] = value
-    // if (field === 'editorState') {
-    //   temp[i]['reminderBody'] = draftToHtml(convertToRaw(value.getCurrentContent()))
-    // }
+    const standard_response = response.slice()
 
-    console.log(temp)
-    setResponses(temp)
+    standard_response[i][field] = value
+
+    setAddResponse(JSON.stringify(standard_response))
   }
   const handleSave = () => {
-    if (type === 'deadline') {
+    if (type === 'standard_response') {
+      onSave({
+        id: Number(emailTemplateId),
+        subject,
+        title: emailTitle,
+        from: emailFrom,
+        bcc: emailBcc,
+        template_name: templateName,
+        body: draftToHtml(convertToRaw(editorState.getCurrentContent())),
+        standard_responses: addResponse,
+      })
+    } else if (type === 'deadline') {
       onSave({
         id: Number(emailTemplateId),
         subject,
@@ -182,13 +185,18 @@ export const EmailTemplateModal = ({
   useEffect(() => {
     if (data !== undefined) {
       const { emailTemplateName } = data
+
       if (emailTemplateName) {
-        const { id, title, subject, from, bcc, body } = emailTemplateName
+        const { id, title, subject, from, bcc, body, standard_responses } = emailTemplateName
         setEmailTemplateId(id)
         setEmailTitle(title)
         setSubject(subject)
         setEmailBcc(bcc)
         setEmailFrom(from)
+        setResponses(
+          standard_responses && JSON.parse(standard_responses).length > 0 ? JSON.parse(standard_responses) : [],
+        )
+        setAddResponse(standard_responses)
         if (body) {
           const contentBlock = htmlToDraft(body)
           if (contentBlock) {
@@ -290,31 +298,32 @@ export const EmailTemplateModal = ({
 
             {type === 'standard_response' && (
               <Grid container rowSpacing={2}>
-                {response.map((reminder, i) => (
-                  <Box key={i} sx={{ width: '100%' }}>
-                    <Grid item xs={12} sx={{ marginTop: '50px', width: 170 }}>
-                      <TextField
-                        size='small'
-                        placeholder='Edit Title'
-                        variant='outlined'
-                        // onChange={(e) => handleChangeResponse(e.target.value, i, 'responseTitle')}
-                        fullWidth
-                        // value={response[i].previousSchool}
-                      />
-                    </Grid>
+                {response.length > 0 &&
+                  response.map((reminder, i) => (
+                    <Box key={i} sx={{ width: '100%' }}>
+                      <Grid item xs={12} sx={{ marginTop: '50px', width: 170 }}>
+                        <TextField
+                          size='small'
+                          placeholder='Edit Title'
+                          variant='outlined'
+                          onChange={(e) => handleChangeResponse(e.target.value, i, 'title')}
+                          fullWidth
+                          value={response[i].title}
+                        />
+                      </Grid>
 
-                    <Grid item xs={12} sx={{ marginTop: '25px' }}>
-                      <TextField
-                        size='small'
-                        variant='outlined'
-                        fullWidth
-                        // value={response[i].elementarySchool}
-                        // onChange={(e) => handleChangeResponse(e.target.value, i, 'responseTitle')}
-                        rows={4}
-                      />
-                    </Grid>
-                  </Box>
-                ))}
+                      <Grid item xs={12} sx={{ marginTop: '25px' }}>
+                        <TextField
+                          size='small'
+                          variant='outlined'
+                          fullWidth
+                          value={response[i].extraText}
+                          onChange={(e) => handleChangeResponse(e.target.value, i, 'extraText')}
+                          rows={4}
+                        />
+                      </Grid>
+                    </Box>
+                  ))}
                 <Box sx={{ width: '100%', textAlign: 'right', marginTop: 4 }}>
                   <Grid item xs={12}>
                     <Button className={classes.add} onClick={handleResponse}>

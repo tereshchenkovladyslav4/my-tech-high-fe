@@ -165,7 +165,7 @@ export const Personal: FunctionComponent = () => {
       workedInAgriculture: student.packets.at(-1)?.worked_in_agriculture,
       activeMilitary: student.packets.at(-1)?.military,
       race: student.packets.at(-1)?.race,
-      gender: student.packets.at(-1).gender,
+      gender: student.person.gender,
       livingSituation: student.packets.at(-1)?.living_location,
       livingWith: student.packets.at(-1)?.lives_with,
       workMove: student.packets.at(-1)?.work_move,
@@ -210,6 +210,7 @@ export const Personal: FunctionComponent = () => {
       }
     })
       .then((data) => {
+        console.log(data)
         setMe((prev) => {
           return {
             ...prev,

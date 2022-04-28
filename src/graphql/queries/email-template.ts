@@ -10,6 +10,7 @@ export const getEmailTemplateQuery = gql`
       body
       from
       bcc
+      standard_responses
     }
   }
 `

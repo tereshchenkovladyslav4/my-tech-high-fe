@@ -2,7 +2,7 @@ import AddIcon from '@mui/icons-material/Add'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import { AppBar as MUIAppBar, Avatar, Box, Button, Divider, Grid } from '@mui/material'
-import { map } from 'lodash'
+import { filter, map } from 'lodash'
 import React, { FunctionComponent, useContext, useRef, useState } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 import Slider from 'react-slick'
@@ -22,6 +22,11 @@ export const AppBar: FunctionComponent = () => {
   const { me } = useContext(UserContext)
 
   const { students } = me
+
+  const activeStudents = useState(filter(students, (student) => {
+    return student.status.at(-1)?.status !== 2
+  }))
+
   const location = useLocation()
 
   const isActive = (id) => location.pathname.includes(`/${id}`)
@@ -113,7 +118,7 @@ export const AppBar: FunctionComponent = () => {
       const link = student?.applications?.at(-1)?.status === 'Submitted' || student?.status?.at(-1)?.status === 2 || student?.packets?.at(-1)?.status === 'Started'
         ? undefined
         :`${HOMEROOM}/${student.student_id}`
-      return (
+      return student.status.at(-1)?.status !== 2 &&  (
         <Box sx={{ textDecoration: 'none', marginTop: 1 }}>
           {
             link ?
@@ -122,7 +127,7 @@ export const AppBar: FunctionComponent = () => {
               divider={true}
               title={
                 <Subtitle color={isActive(student.student_id) ? MTHBLUE : '#A1A1A1'}>
-                  {student.person.first_name}
+                  { student.person.preferred_first_name ?? student.person.first_name }
                 </Subtitle>
               }
               subtitle={
@@ -130,7 +135,7 @@ export const AppBar: FunctionComponent = () => {
                   {gradeText(student)}
                 </Paragraph>
               }
-              image={<Avatar alt={student.person.first_name} src={getProfilePhoto(student.person)} variant='rounded' style={{ marginRight: 24 }} />}
+              image={<Avatar alt={student.person.preferred_first_name} src={getProfilePhoto(student.person)} variant='rounded' style={{ marginRight: 24 }} />}
               />
           </NavLink>
           : <Metadata
@@ -157,13 +162,13 @@ export const AppBar: FunctionComponent = () => {
       <div style={classes.toolbar}>
         <Grid container justifyContent="flex-end" alignItems="center">
           <Grid item xs={12} display='flex' justifyContent={'center'}>
-            <Box width={students.length > 3 ? '50vw' : '100%'} >
+            <Box width={activeStudents.length > 3 ? '50vw' : '100%'} >
             {
-              students && students.length > 3
+              activeStudents && activeStudents.length > 3
                 ? <Slider {...settings} ref={sliderRef}>
                   {renderStudentHeader()}
                 </Slider>
-                : students && (students.length > 0 && students.length <= 3)
+                : activeStudents && (activeStudents.length > 0 && activeStudents.length <= 3)
                 && 
                 <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: "flex-end", }}>
                   {renderStudentHeader()}
