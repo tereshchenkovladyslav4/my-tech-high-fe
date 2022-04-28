@@ -7,6 +7,7 @@ import { SortableTableTemplateType } from "./types";
 
 import { UpdateUserModal } from '../../screens/Admin/Users/UpdateUserModal/UpdateUserModal';
 import { UserContext } from "../../providers/UserContext/UserProvider";
+import { Fullscreen } from "@mui/icons-material";
 
 
 
@@ -144,7 +145,7 @@ export const SortableUserTable: SortableTableTemplateType = ({
 
       <TableContainer>
         <Table
-          sx={{ minWidth: 750 }}
+          sx={{ width:'87%', minWidth: 750, marginX: '95px' }}
           aria-labelledby="tableTitle"
           size="medium"
         >
@@ -188,7 +189,7 @@ export const SortableUserTable: SortableTableTemplateType = ({
                           type === "core_user" && idx === 6 ?
                             val ?
                               <Checkbox
-                                sx={{ zIndex: 9999 }}
+                                sx={{ zIndex: 9999, paddingLeft: 0 }}
                                 checked={val}
                                 size="small"
                               />
@@ -201,7 +202,7 @@ export const SortableUserTable: SortableTableTemplateType = ({
                                 setCurrentUserID(row.user_id);
                               }
                             }}>
-                              {type === "core_user" && idx === 3 ?
+                              {type === "core_user" && idx === 3 || idx === 0 ?
                                 <Typography sx={{ fontSize: 12, fontWeight: 700, color: "#4145FF", textDecoration: "underline" }}>{val}</Typography>
                                 :
                                 <Typography sx={{ fontSize: 12, fontWeight: 700, }}>{val}</Typography>

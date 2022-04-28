@@ -59,8 +59,8 @@ export const UserFilters = ({ onPress, filters }) => {
 			sx={{
 				display: 'flex',
 				flexDirection: 'row',
-				justifyContent: 'space-evenly',
-				paddingX: 4,
+				justifyContent: 'space-between',
+				paddingX: 15,
 				marginY: 3,
 			}}
 		>

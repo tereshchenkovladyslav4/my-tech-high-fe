@@ -15,6 +15,9 @@ query Parent_todos {
           first_name
           last_name
           person_id
+          photo
+          preferred_first_name
+          preferred_last_name
         }
       }
     }
@@ -30,6 +33,9 @@ query Parent_todos {
           first_name
           last_name
           person_id
+          photo
+          preferred_first_name
+          preferred_last_name
         }
       }
     }
@@ -45,6 +51,9 @@ query Parent_todos {
           first_name
           last_name
           person_id
+          photo
+          preferred_first_name
+          preferred_last_name
         }
       }
     }
@@ -60,6 +69,9 @@ query Parent_todos {
           first_name
           last_name
           person_id
+          photo
+          preferred_first_name
+          preferred_last_name
         }
       }
     }
@@ -75,6 +87,9 @@ query Parent_todos {
           first_name
           last_name
           person_id
+          photo
+          preferred_first_name
+          preferred_last_name
         }
       }
     }
@@ -90,6 +105,9 @@ query Parent_todos {
           first_name
           last_name
           person_id
+          photo
+          preferred_first_name
+          preferred_last_name
         }
       }
     }
@@ -105,6 +123,9 @@ query Parent_todos {
           first_name
           last_name
           person_id
+          photo
+          preferred_first_name
+          preferred_last_name
         }
       }
     }
@@ -120,6 +141,9 @@ query Parent_todos {
           first_name
           last_name
           person_id
+          photo
+          preferred_first_name
+          preferred_last_name
         }
       }
     }
@@ -135,6 +159,9 @@ query Parent_todos {
           first_name
           last_name
           person_id
+          photo
+          preferred_first_name
+          preferred_last_name
         }
       }
     }
@@ -150,6 +177,9 @@ query Parent_todos {
           first_name
           last_name
           person_id
+          photo
+          preferred_first_name
+          preferred_last_name
         }
       }
     }
@@ -165,6 +195,9 @@ query Parent_todos {
           first_name
           last_name
           person_id
+          photo
+          preferred_first_name
+          preferred_last_name
         }
       }
     }

@@ -9,6 +9,7 @@ import { HOMEROOM, ENROLLMENT, PRIMARY_MEDIUM_MOUSEOVER } from '../../../../../u
 import { imageA } from '../../../Dashboard'
 import { useHistory } from 'react-router-dom'
 import { map } from 'lodash'
+import { Person } from '../../../../HomeroomStudentProfile/Student/types'
 
 export const ToDoListItem: TodoListTemplateType = ({
 	todoItem, 
@@ -18,18 +19,26 @@ export const ToDoListItem: TodoListTemplateType = ({
 	const history = useHistory()
 	const {students} = todoItem
 
+	const getProfilePhoto = (person: Person) => {
+		if( !person.photo )
+		  return 'image';
+	
+		const s3URL = 'https://infocenter-v2-dev.s3.us-west-2.amazonaws.com/'
+		return s3URL + person.photo
+	  }
+
 	const renderStudentAvatars = ()  => {
 	return (
 		<AvatarGroup>
 			{
 				map(todoItem.students, (student) => (
-					<Avatar alt={`${student.person.first_name} ${student.person.last_name}`} src=' '/>
+					<Avatar alt={`${student.person.first_name} ${student.person.last_name}`} src={getProfilePhoto(student.person)}/>
 				))
 			}
 		</AvatarGroup>
 	)
 }
-	const link = students.length > 1 ? HOMEROOM : `${HOMEROOM+ENROLLMENT}/1`
+	const link = students.length > 1 ? HOMEROOM : `${HOMEROOM+ENROLLMENT}/${students.at(-1)?.student_id}`
 
 	return (
 		<TableRow

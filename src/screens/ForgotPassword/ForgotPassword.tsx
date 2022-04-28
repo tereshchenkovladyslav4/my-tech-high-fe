@@ -3,11 +3,22 @@ import React, { useState } from 'react'
 import { BUTTON_LINEAR_GRADIENT } from '../../utils/constants'
 import { Button, TextField, Typography } from '@mui/material'
 import { useStyles } from './styles'
-import { NewApplicationFooter } from '../../components/NewApplicationFooter/NewApplicationFooter'
 import { useMutation } from '@apollo/client'
 import { forgotPasswordMutation } from './service'
 import { useFormik } from 'formik'
 import * as yup from 'yup'
+import { makeStyles } from '@material-ui/styles'
+
+const useHelperTextStyles = makeStyles(() => ({
+	root: {
+		color: "white",
+	},
+  error: {
+    "&.MuiFormHelperText-root.Mui-error": {
+      color: 'white'
+    }
+  }
+}));
 
 export const ForgotPassword = () => {
   const token = window.location.href.split('=')[1]
@@ -19,6 +30,7 @@ export const ForgotPassword = () => {
   const validationSchema = yup.object({
     email: yup.string().email('Enter a valid email').required('Email is required'),
   })
+  const helperTextStyles = useHelperTextStyles();
 
   const formik = useFormik({
     initialValues: {
@@ -111,6 +123,12 @@ export const ForgotPassword = () => {
           }}
           error={formik.touched.email && Boolean(formik.errors.email)}
           helperText={formik.touched.email && formik.errors.email}
+          FormHelperTextProps={{
+						classes:{
+							root:helperTextStyles.root,
+              error: helperTextStyles.error,
+						}
+				  }}
         />
         {alert && alert.message && (
           <Typography fontSize={14} marginTop={3} color={alert.type === 'error' ? '#BD0043' : 'white'}>

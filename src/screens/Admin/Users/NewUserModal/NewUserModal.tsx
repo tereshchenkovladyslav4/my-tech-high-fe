@@ -10,7 +10,7 @@ import { createUserMutation } from '../../../../graphql/mutation/user';
 import { getAllAccess } from '../../../../graphql/queries/access';
 import { getAllRegion } from '../../../../graphql/queries/region';
 import { getAllRoles } from '../../../../graphql/queries/role';
-import { getUsersByRegions } from '../../../../graphql/queries/user';
+import { getUsersByRegions, getParentDetailByEmail } from '../../../../graphql/queries/user';
 import { UserContext } from '../../../../providers/UserContext/UserProvider';
 import { BUTTON_LINEAR_GRADIENT, PROVIDERS, SOE, SOE_OPTIONS, SPED } from '../../../../utils/constants';
 import { useStyles } from './styles';
@@ -18,6 +18,7 @@ import { NewModalTemplateType } from './types';
 import { WarningModal } from '../../../../components/WarningModal/Warning';
 import { ApolloError, Region } from '../interfaces';
 import { AddedModal } from './AddedModal/AddedModal';
+import { StudentsModal } from '../../UserProfile/components/NewUserModal/StudentsModal'
 
 
 interface CheckBoxTemplate {
@@ -51,9 +52,12 @@ export const NewUserModal: NewModalTemplateType = ({
 	const [counter, setCounter] = useState(0);
 	const [soe, setSoe] = useState('');
 	const [selectedState, setSelectedState] = useState<Number | null>(null);
+	const [showStudentModal, setShowStudentModal] = useState(false)
+	const [students, setStudents] = useState([])
 	const [regions, setRegions] = useState([]);
 	const [accesses, setAccesses] = useState([]);
 	const [role, setRole] = useState(0);
+	const [payloadData, setPayloadData] = useState()
 
 
 	const [rolesOption, setRolesOption] = useState([]);
@@ -65,6 +69,28 @@ export const NewUserModal: NewModalTemplateType = ({
 	const { loading: load3, data: data3 } = useQuery(getAllAccess);
 
 	const [createUser, { data: responseData, loading: uploading, error: uploadingError }] = useMutation(createUserMutation);
+
+	const {
+		loading: userLoading,
+		error: userError,
+		data: parentData,
+	  } = useQuery(getParentDetailByEmail, {
+		variables: {
+		  email: parentEmail,
+		},
+		skip: !parentEmail ? true: false,
+		fetchPolicy: 'cache-and-network',
+	  })
+	  useEffect(() => {
+		if(!userLoading && parentData !== undefined) {
+			setStudents(parentData.parentDetailByEmail.students);
+		}
+	  }, [parentData])
+
+	  const handleCloseStudentModal = (status) => {
+		setShowStudentModal(false)
+		if (status) handleModem()
+	  }
 
 	useEffect(() => {
 		if (!uploading && responseData !== undefined) {
@@ -85,6 +111,7 @@ export const NewUserModal: NewModalTemplateType = ({
 
 	useEffect(() => {
 		if (!load1 && data1 !== undefined) {
+			const sortedRegion = ['Colorado', 'Utah', 'Idaho', 'Tennessee', 'Indiana', 'Wyoming', 'Arizona'];
 			const updatedRegions = map(data1?.regions, region => {
 				return {
 					value: region.id,
@@ -92,7 +119,10 @@ export const NewUserModal: NewModalTemplateType = ({
 					selected: false
 				}
 			});
-			setRegionOption(updatedRegions)
+			const sortedData = updatedRegions.sort((a, b) => {
+				return sortedRegion.indexOf(a.label) - sortedRegion.indexOf(b.label);
+			  });
+			setRegionOption(sortedData)
 		} else {
 			console.log(JSON.stringify(error1, null, 2));
 		}
@@ -271,6 +301,46 @@ export const NewUserModal: NewModalTemplateType = ({
 			});
 			return;
 		}
+		if(role) {
+			const roleData = rolesOption.find(r => Number(r.value) === role);
+			console.log('rolesOption', rolesOption, role)
+			console.log('roldata', roleData)
+			if(roleData.label.toLowerCase() === 'admin' && (!accesses || accesses.length === 0)) {
+				setApolloError({
+					title: 'Need to select Access for Admin.',
+					severity: 'Warning',
+					flag: true
+				});
+				return;
+			} else if(roleData.label.toLowerCase() === 'parent' && !selectedState) {
+				setApolloError({
+					title: 'Need to select State.',
+					severity: 'Warning',
+					flag: true
+				});
+				return;
+			} else if(roleData.label.toLowerCase() === 'observer') {
+				if(!parentEmail) {
+					setApolloError({
+						title: 'Need to add Parent Email.',
+						severity: 'Warning',
+						flag: true
+					});
+					return;
+				} else {
+					setPayloadData({
+						email: email,
+						first_name: firstName,
+						last_name: lastName,
+						parent_id: parentData?.parentDetailByEmail?.parent_id,
+						regions: selectedState ? [Number(selectedState)] : regions,
+					  })
+					setShowStudentModal(true)
+					return;
+				}
+			}
+		}
+
 		const payload = {
 			creator_id: Number(me.user_id),
 			email: email,
@@ -300,13 +370,14 @@ export const NewUserModal: NewModalTemplateType = ({
 			case 'Super Admin':
 				form = (
 					<Grid item>
-						<Subtitle fontWeight='700'>Regions</Subtitle>
+						<Subtitle fontWeight='700' size='large'>Regions</Subtitle>
 						<FormGroup>
 							{map(regionOption, (region, index) => (
 								<FormControlLabel
 									key={index}
 									control={
 										<Checkbox
+											sx={{ paddingY: 0 }}
 											checked={region.selected}
 											onChange={() => handleRegionChange(region.value, index, region.selected)}
 										/>}
@@ -316,6 +387,7 @@ export const NewUserModal: NewModalTemplateType = ({
 							<FormControlLabel
 								control={
 									<Checkbox
+										sx={{ paddingY: 0}}
 										checked={regionAll}
 										onChange={(e) => {
 											setRegionAll(e.target.checked);
@@ -335,13 +407,14 @@ export const NewUserModal: NewModalTemplateType = ({
 				form = (
 					<Grid item container xs={12}>
 						<Grid item xs={6}>
-							<Subtitle fontWeight='700'>Regions</Subtitle>
+							<Subtitle fontWeight='700' size='large'>Regions</Subtitle>
 							<FormGroup>
 								{map(regionOption, (region, index) => (
 									<FormControlLabel
 										key={index}
 										control={
 											<Checkbox
+												sx={{ paddingY: 0 }}
 												checked={region.selected}
 												onChange={() => handleRegionChange(region.value, index, region.selected)}
 											/>
@@ -352,6 +425,7 @@ export const NewUserModal: NewModalTemplateType = ({
 								<FormControlLabel
 									control={
 										<Checkbox
+											sx={{ paddingY: 0 }}
 											checked={regionAll}
 											onChange={(e) => {
 												setRegionAll(e.target.checked)
@@ -364,13 +438,14 @@ export const NewUserModal: NewModalTemplateType = ({
 							</FormGroup>
 						</Grid>
 						<Grid item xs={6}>
-							<Subtitle fontWeight='700'>Access</Subtitle>
-							<FormGroup>
+							<Subtitle fontWeight='700' size='large'>Access</Subtitle>
+							<FormGroup sx={{ width: 'max-content' }}>
 								{map(accessOption, (access, index) => (
 									<FormControlLabel
 										key={index}
 										control={
 											<Checkbox
+												sx={{ paddingY: 0 }}
 												checked={access.selected}
 												onChange={() => handleAccessChange(access.value, index, access.selected)}
 											/>
@@ -381,6 +456,7 @@ export const NewUserModal: NewModalTemplateType = ({
 								<FormControlLabel
 									control={
 										<Checkbox
+											sx={{ paddingY: 0 }}
 											checked={accessAll}
 											onChange={(e) => {
 												setAccessAll(e.target.checked);
@@ -426,7 +502,7 @@ export const NewUserModal: NewModalTemplateType = ({
 							/>
 							{selectedState ?
 								<Box sx={{ mt: 2 }}>
-									<Subtitle>Parent Email</Subtitle>
+									<Subtitle fontWeight='700' size='large'>Parent Account Email</Subtitle>
 									<TextField
 										size='small'
 										variant='outlined'
@@ -438,36 +514,6 @@ export const NewUserModal: NewModalTemplateType = ({
 								:
 								<Fragment />
 							}
-						</Grid>
-						<Grid item xs={2} />
-						<Grid item xs={4}>
-							<Subtitle fontWeight='700'>Access</Subtitle>
-							<FormGroup>
-								{map(accessOption, (access, index) => (
-									<FormControlLabel
-										key={index}
-										control={
-											<Checkbox
-												checked={access.selected}
-												onChange={() => handleAccessChange(access.value, index, access.selected)}
-											/>
-										}
-										label={access.label}
-									/>
-								))}
-								<FormControlLabel
-									control={
-										<Checkbox
-											checked={accessAll}
-											onChange={(e) => {
-												setAccessAll(e.target.checked);
-												toggleCheckBoxes('access', e.target.checked ? true : false);
-											}}
-										/>
-									}
-									label="All"
-								/>
-							</FormGroup>
 						</Grid>
 					</Grid>
 				)
@@ -497,7 +543,7 @@ export const NewUserModal: NewModalTemplateType = ({
 								<Fragment />
 							}
 						</Grid>
-						<Grid item xs={4} sx={{ ml: 4 }}>
+						<Grid item xs={4} sx={{ ml: 4, marginTop: -8 }} >
 							{conditionalTAForm()}
 						</Grid>
 					</Grid>
@@ -515,7 +561,7 @@ export const NewUserModal: NewModalTemplateType = ({
 								setParentValue={(value) => setSelectedState(Number(value))}
 								sx={{ width: '100%' }}
 							/>
-							{selectedState ?
+							{selectedState &&
 								<Box sx={{ mt: 2 }}>
 									<DropDown
 										size='small'
@@ -525,8 +571,6 @@ export const NewUserModal: NewModalTemplateType = ({
 										sx={{ width: '100%' }}
 									/>
 								</Box>
-								:
-								<Fragment />
 							}
 						</Grid>
 					</Grid>
@@ -549,9 +593,9 @@ export const NewUserModal: NewModalTemplateType = ({
 							flexDirection: 'column'
 						}}
 					>
-						<Subtitle fontWeight='700'>School of Enrollment</Subtitle>
+						<Subtitle fontWeight='700' size='large' sx= {{ width: 'max-content' }}>School of Enrollment</Subtitle>
 						{map((SOE_OPTIONS), (option) => (
-							<FormControlLabel control={<Checkbox />} label={option} />
+							<FormControlLabel control={<Checkbox sx={{ paddingY: 0 }} />} label={option} />
 						))}
 					</Box>
 				)
@@ -564,9 +608,9 @@ export const NewUserModal: NewModalTemplateType = ({
 							flexDirection: 'column'
 						}}
 					>
-						<Subtitle fontWeight='700'>Providers</Subtitle>
+						<Subtitle fontWeight='700' size='large'>Providers</Subtitle>
 						{map((PROVIDERS), (provider) => (
-							<FormControlLabel control={<Checkbox />} label={provider} />
+							<FormControlLabel control={<Checkbox sx={{ paddingY: 0 }} />} label={provider} />
 						))}
 					</Box>
 				)
@@ -579,9 +623,9 @@ export const NewUserModal: NewModalTemplateType = ({
 							flexDirection: 'column'
 						}}
 					>
-						<Subtitle fontWeight='700'>SPED</Subtitle>
+						<Subtitle fontWeight='700' size='large'>SPED</Subtitle>
 						{map((SPED), (sped) => (
-							<FormControlLabel control={<Checkbox />} label={sped} />
+							<FormControlLabel control={<Checkbox sx={{ paddingY: 0 }} />} label={sped} />
 						))}
 					</Box>
 				)
@@ -605,14 +649,15 @@ export const NewUserModal: NewModalTemplateType = ({
 						handleModem={(type) => {
 							if (type === "finish") {
 								setUserAddedModal(false);
-								handleModem()
+								handleModem();
 							} else if (type === "add") {
 								setFirstName("");
 								setLastName("");
+								setEmail("");
 								setUserLevel("");
-								setRole(-1)
-								setParentEmail("")
-								setSoe("")
+								setRole(0);
+								setParentEmail("");
+								setSoe("");
 								setUserAddedModal(false);
 							}
 						}}
@@ -628,6 +673,9 @@ export const NewUserModal: NewModalTemplateType = ({
 						handleSubmit={() => setApolloError({ title: '', severity: '', flag: false })}
 					/>
 				}
+					{showStudentModal && (
+						<StudentsModal visible={true} handleModem={handleCloseStudentModal} students={students} data={payloadData} />
+					)}
 				<Box sx={classes.header}>
 					<Subtitle>This user will receive an email giving them a link to create a password.</Subtitle>
 					<IconButton onClick={handleModem} >
@@ -672,6 +720,7 @@ export const NewUserModal: NewModalTemplateType = ({
 							<DropDown
 								dropDownItems={rolesOption}
 								placeholder='User Type'
+								defaultValue={role}
 								setParentValue={(value) => {
 									setRole(Number(value));
 									handleRoleChange(value)

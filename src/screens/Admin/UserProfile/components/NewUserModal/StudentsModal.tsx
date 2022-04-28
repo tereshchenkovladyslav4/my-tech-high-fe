@@ -41,6 +41,7 @@ export const StudentsModal: NewModalTemplateType = ({ handleModem, students = []
           first_name: data.first_name,
           last_name: data.last_name,
           email: data.email,
+          regions: data.regions,
         },
       },
     })

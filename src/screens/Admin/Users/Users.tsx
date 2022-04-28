@@ -60,11 +60,11 @@ export const Users = () => {
 		setSelectedRegion(JSON.parse(region))
 	}
 
-	const { loading, error, data } = useQuery(getUsersByRegions, {
+	const { loading, error, data, refetch } = useQuery(getUsersByRegions, {
 		variables: {
-			regions: [selectedRegion?.region_id],
+			regions: [me?.selectedRegionId],
 		},
-		skip: selectedRegion === undefined,
+		skip: me?.selectedRegionId === undefined,
 		fetchPolicy: 'cache-and-network'
 	});
 	const [changeUserStatus, { data: responseData, loading: uploading, error: uploadingError }] = useMutation(changeUserStatusMutation);
@@ -104,14 +104,15 @@ export const Users = () => {
 			const updatedRecord: any = [];
 			console.log(data?.usersByRegions)
 			map(data?.usersByRegions, user => {
+				const level = user?.role?.name.toLowerCase() === 'admin' ? 'Administrator': user?.role?.name
 				updatedRecord.push({
 					user_id: user.user_id,
 					name: `${user.first_name} ${user?.last_name}` || '',
 					email: user.email,
-					level: user?.role?.name || "null",
+					level: level || "null",
 					last_login: user?.last_login ? moment(user?.last_login).format("L") : "Never",
 					status: user?.status,
-					can_emulate: user?.can_emulate ? true : false
+					can_emulate: (user?.role?.name.toLowerCase() === 'admin' || user?.role?.name.toLowerCase() === 'super admin') ? true : false
 				});
 			});
 			setUsers(updatedRecord);
@@ -132,7 +133,10 @@ export const Users = () => {
 		requestRoleFilter(null, -1);
 	}, [counter]);
 
-	const handleModal = () => setNewUserModal(!newUserModal);
+	const handleModal = () => {
+		refetch();
+		setNewUserModal(!newUserModal);
+	}
 
 	const headCells: HeadCell[] = [
 		{
@@ -180,18 +184,34 @@ export const Users = () => {
 	];
 
 	const requestSearchHandler = (input: string) => {
+		let updatedRows = [];
+		let fieldData = [];
+		let otherData = [];
+
+		map(selectedFilter, filter => {
+
+			if (filter.type === "field") {
+				const filteredRecord = users.filter((user: any) => {
+					return Number(user?.status) === 0
+				});
+				fieldData = [...fieldData, ...filteredRecord];
+			} else {
+				const filteredRecord = users.filter((user: any) => {
+					return user?.level === filter.name
+				});
+				otherData = [...otherData, ...filteredRecord];
+			}
+		});
+		updatedRows = [...fieldData, ...otherData];
+
 		const searchRegex = new RegExp(escapeRegExp(input), 'i');
-		const filteredRows = users.filter((row) => {
+		const filteredRows = updatedRows.filter((row) => {
 			return Object.keys(row).some((field) => {
 				return searchRegex.test(row[field].toString());
 			});
 		});
 		setRows(filteredRows);
 	}
-
-	useEffect(() => {
-		requestSearchHandler(seachField)
-	}, [seachField]);
 
 	const requestRoleFilter = (role: any, active: number) => {
 		const updatedFilters = selectedFilter;
@@ -203,8 +223,9 @@ export const Users = () => {
 			if (existed !== -1) {
 				updatedFilters.splice(existed, 1);
 			} else {
+				const name = role.name.toLowerCase() === 'admin' ? 'Administrator' : role.name 
 				updatedFilters.push({
-					name: role.name,
+					name: name,
 					id: active,
 					type: role.type
 				});
@@ -237,6 +258,9 @@ export const Users = () => {
 		}
 	}
 
+	useEffect(() => {
+		requestSearchHandler(seachField);
+	}, [seachField]);
 
 	return (
 		<Card sx={{ paddingTop: '24px', margin: 2 }}>
@@ -267,13 +291,14 @@ export const Users = () => {
 					}}
 				>
 					<Subtitle size='medium' fontWeight='700'>Users</Subtitle>
-					<Subtitle size='medium' fontWeight='700' sx={{ marginLeft: 2 }}>{loading ? "..." : users?.length}</Subtitle>
+					{/* <Subtitle size='medium' fontWeight='700' sx={{ marginLeft: 2 }}>{loading ? "..." : users?.length}</Subtitle> */}
 				</Box>
-				<Box style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly', width: '100%' }}>
+				<Box style={{ display: 'flex', flexDirection: 'row', alignItems: 'left', justifyContent: 'flex-start', width: '100%', marginLeft: '20px' }}>
 					<Box>
 						<OutlinedInput
 							size='small'
 							fullWidth
+							sx={{ width: '250px' }}
 							value={seachField}
 							placeholder='Search...'
 							onChange={(e) => setSearchField(e.target.value)}
@@ -298,16 +323,20 @@ export const Users = () => {
 							background: BUTTON_LINEAR_GRADIENT,
 							textTransform: 'none',
 							color: 'white',
-							width: '150px'
+							width: '150px',
+							marginLeft: '20px',
+							borderRadius: 2,
 						}}
 					>
 						New User
 					</Button>
-					<Pagination
-						handlePageChange={() => null}
-						numPages={5}
-						currentPage={1}
-					/>
+					<Box style={{ display: 'flex', flexDirection: 'row', alignItems: 'right', justifyContent: 'flex-end', width: '100%' }}>
+						<Pagination
+							handlePageChange={() => null}
+							numPages={5}
+							currentPage={1}
+						/>
+					</Box>
 				</Box>
 			</Box>
 			<UserFilters

@@ -1,4 +1,4 @@
-import { MTHBLUE } from "../../utils/constants";
+import { MTHBLUE, BLACK } from "../../utils/constants";
 
 export const useStyles = {
   root: {
@@ -9,5 +9,8 @@ export const useStyles = {
       color: MTHBLUE,
       fontWeight: 700
     },
+    '& .MuiPaginationItem-previousNext': {
+      color: BLACK
+    }
   },
 }

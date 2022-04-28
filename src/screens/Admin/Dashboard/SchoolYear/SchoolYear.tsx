@@ -120,17 +120,6 @@ const data = [{
 
 const status = ['Pending', 'Active', 'Total', 'Withdrawn', 'Graduated']
 
-
-const useStyles = makeStyles({
-  select: {
-    "&:after": {
-      borderBottomColor: "darkred",
-    },
-    "& .MuiSvgIcon-root": {
-      color: "darkred",
-    },
-  },
-});
 export const SchoolYear = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const { me, setMe } = useContext(UserContext);
@@ -138,13 +127,7 @@ export const SchoolYear = () => {
   const [selectedYear, setSelectedYear] = useState<number>();
   const [schoolYearDataCount, setSchoolYearDataCount] = useState(data);
 
-  const styles = theme => ({
-
-  });
-
   const selectClasses = selectStyles()
-
-
   const schoolYearData = useQuery(getSchoolYearsByRegionId, {
     variables: {
       regionId: me?.selectedRegionId,
