@@ -35,8 +35,6 @@ export const StudentProfile = () => {
 
   const { person } = student
   const {status} = student?.packets.at(-1)
-  const [email, setEmail] = useState(person.email)
-  const [password, setPassword] = useState(undefined)
 
   const [submitUpdate, { data }] = useMutation(updateProfile)
   const [submitRemoveProfilePhoto, {data:userData}] = useMutation(removeProfilePhoto);
@@ -219,7 +217,7 @@ export const StudentProfile = () => {
       formik.values.firstName !== person.preferred_first_name
       || person.preferred_last_name !== formik.values.lastName
       || (status !== 'Missing Info' 
-        && ( email !== person.email || password !== undefined)
+        && ( formik.values.email !== person.email || formik.values.password !== undefined)
       )
 
   useEffect(() => {

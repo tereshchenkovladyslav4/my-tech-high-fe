@@ -1,5 +1,5 @@
-import { Box, Button, Card, Grid, TextField } from '@mui/material'
-import React, { useContext } from 'react'
+import { Alert, AlertColor, Box, Button, Card, Grid, TextField } from '@mui/material'
+import React, { useContext, useState } from 'react'
 import { Paragraph } from '../../../../components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
 import { UserContext, UserInfo } from '../../../../providers/UserContext/UserProvider'
@@ -7,24 +7,50 @@ import { SYSTEM_08 } from '../../../../utils/constants'
 import { useStyles } from '../styles'
 import { updatePassword } from '../service'
 import { useMutation } from '@apollo/client'
+import { WarningModal } from '../../../../components/WarningModal/Warning'
 import * as yup from 'yup'
 import { useFormik } from 'formik'
+
+type openAlertSaveType = {
+  message: string,
+  status: AlertColor,
+  open: boolean,
+}
 
 const Account = () => {
   const classes = useStyles
   const { me } = useContext(UserContext)
-  const { profile } = me as UserInfo
-  const [updatePasswordMutation] = useMutation(updatePassword)
+  const [openSaveAlert, setOpenSaveAlert] = useState<openAlertSaveType>({
+    message: '',
+    status: 'success',
+    open: false,
+  })
+
+  const [updatePasswordMutation, { error, data }] = useMutation(updatePassword)
 
   const onSave = async () => {
-    // await updatePasswordMutation({
-    //   variables: {
-    //     updateAccountInput: {
-    //       password: formik.values.newPassword,
-    //       confirm_password: formik.values.confirmNewPassword,
-    //     },
-    //   },
-    // })
+    updatePasswordMutation({
+      variables: {
+        updateAccountInput: {
+          password: formik.values.newPassword,
+          confirm_password: formik.values.confirmNewPassword,
+          current_password: formik.values.currentPassword,
+        },
+      },
+    })
+      .then((res) => {
+        setOpenSaveAlert({ message: 'New Password Saved', status: 'success', open: true })
+      })
+      .catch((error) => {
+        setOpenSaveAlert({ message: error?.message, status: 'error', open: true })
+
+        setTimeout(() => {
+          setOpenSaveAlert({ message: '', status: 'success', open: false })
+        }, 2000)
+
+        console.log(error?.message)
+      })
+    console.log(error)
   }
 
   const validationSchema = yup.object({
@@ -36,7 +62,7 @@ const Account = () => {
     confirmNewPassword: yup
       .string()
       .required('Re-Enter new password is required')
-      .oneOf([yup.ref('password')], 'Passwords do not match'),
+      .oneOf([yup.ref('newPassword')], 'Password does not match'),
   })
 
   const formik = useFormik({
@@ -69,17 +95,17 @@ const Account = () => {
               </Button>
             </Box>
           </Grid>
-          <Grid item container xs={12} paddingX={30}>
+          <Grid item container xs={12} sm={12} paddingX={30}>
             <Grid item xs={12}>
               <Box display='flex' flexDirection='column' width={'100%'}>
                 <Paragraph size='medium' fontWeight='500' textAlign='left'>
                   Username
                 </Paragraph>
-                <TextField disabled variant='filled' value={profile?.email} />
+                <TextField disabled variant='filled' value={me?.email} />
               </Box>
             </Grid>
-            <Grid item md={12} sm={12} xs={12} sx={{ padding: '20px 0px' }}>
-              <hr style={{ borderTop: `solid 1px ${SYSTEM_08}`, width: '100%', borderBottom: '0' }} />
+            <Grid item xs={12}>
+              <hr style={{ borderTop: `solid 1px ${SYSTEM_08}`, width: '100%', borderBottom: '0', margin: '22px 0 16px 0' }} />
             </Grid>
             <Grid item xs={12}>
               <Paragraph size='large' fontWeight='700' textAlign='left'>
@@ -92,7 +118,7 @@ const Account = () => {
                   Current Password
                 </Paragraph>
                 <TextField
-                  name='password'
+                  name='currentPassword'
                   type='password'
                   value={formik.values.currentPassword}
                   onChange={formik.handleChange}
@@ -107,7 +133,7 @@ const Account = () => {
                   New Password
                 </Paragraph>
                 <TextField
-                  name='password'
+                  name='newPassword'
                   type='password'
                   value={formik.values.newPassword}
                   onChange={formik.handleChange}
@@ -122,7 +148,7 @@ const Account = () => {
                   Re-Enter New Password
                 </Paragraph>
                 <TextField
-                  name='confirmPassword'
+                  name='confirmNewPassword'
                   type='password'
                   value={formik.values.confirmNewPassword}
                   onChange={formik.handleChange}
@@ -132,6 +158,20 @@ const Account = () => {
               </Box>
             </Grid>
           </Grid>
+        </Grid>
+        <Grid>
+          {openSaveAlert.open && (<Alert
+            sx={{
+              position: 'relative',
+              bottom: '-83px',
+            }}
+            onClose={() => {
+              setOpenSaveAlert({ open: false, status: 'success', message: '' })
+            }}
+            severity={openSaveAlert.status}
+          >
+            {openSaveAlert.message}
+          </Alert>)}
         </Grid>
       </Card>
     </form>

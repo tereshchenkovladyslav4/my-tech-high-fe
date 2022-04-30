@@ -39,17 +39,17 @@ export default function VaccinesInfoHeader() {
 
   return (
     <>
-      <Grid container>
-        <div style={{ marginRight: 5}}>
-          <Grid item md={4} sm={12} xs={12}>
+      <Grid container sx={{ gap: '25px' }}>
+        <div style={{ marginRight: 5 }}>
+          <Grid item>
             <Typography fontSize='14px' color={SYSTEM_01} fontWeight='700'>
               Exempt
             </Typography>
             <Checkbox color='primary' checked={fullExempt} onChange={toggleExempt} />
           </Grid>
         </div>
-        <div style={{ marginRight: 5}}>
-          <Grid item md={4} sm={12} xs={12}>
+        <div style={{ marginRight: 5 }}>
+          <Grid item>
             <Typography sx={{ marginBottom: '5px' }} component='div' fontSize='14px' color={SYSTEM_01} fontWeight='700'>
               Exemption Date
             </Typography>
@@ -67,8 +67,8 @@ export default function VaccinesInfoHeader() {
             />
           </Grid>
         </div>
-        <div style={{ marginRight: 5}}>
-          <Grid item md={4} sm={12} xs={12}>
+        <div style={{ marginRight: 5 }}>
+          <Grid item>
             <Typography component='div' fontSize='14px' color={SYSTEM_01} fontWeight='700'>
               Medical Exemption
             </Typography>

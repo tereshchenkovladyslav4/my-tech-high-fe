@@ -14,7 +14,7 @@ export const updatePassword = gql`
 		updateAccount(updateAccountInput: $updateAccountInput) {
 			user_id
 			email
-			updatedAt
+			
 		}
 }
 `

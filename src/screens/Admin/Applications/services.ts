@@ -17,6 +17,8 @@ export const getApplicationsQuery = gql`
         application_emails {
           subject
           created_at
+          body
+          from_email
         }
         school_year {
           date_begin

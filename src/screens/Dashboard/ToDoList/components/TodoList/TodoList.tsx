@@ -45,7 +45,7 @@ export const TodoList: FunctionComponent = () => {
   }, [loading])
 
   const renderTodoListItem = () =>
-    map(todoList, (el, idx) => idx === 0 && <ToDoListItem key={idx} todoItem={el} idx={idx} />)
+    map(todoList, (el, idx) => el && el.students.length !== 0 && <ToDoListItem key={idx} todoItem={el} idx={idx} />)
 
   return (
     <TableContainer>

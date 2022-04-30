@@ -25,17 +25,17 @@ const useStyles = makeStyles({
   DateMaskInvalid: {
     border: '1px solid red',
     borderRadius: '5px',
-  }
+  },
 })
 
 type BirthDateCutOffSelectProps = {
   birthDate: string
-  setbirthDate: (value: string) => void
+  setBirthDate: (value: string) => void
   setIsChanged: (value: boolean) => void
 }
 
 export default function BirthDateCutOffSelect({ birthDate, setBirthDate, setIsChanged }: BirthDateCutOffSelectProps) {
-  const handleChange = (value : Date | null) => {
+  const handleChange = (value: Date | null) => {
     setBirthDate(moment(value).format('MM/DD/YYYY'))
     setIsChanged(true)
   }
@@ -61,7 +61,7 @@ export default function BirthDateCutOffSelect({ birthDate, setBirthDate, setIsCh
               inputFormat='MM/dd/yyyy'
               value={birthDate}
               onChange={handleChange}
-              renderInput={(params) => <TextField {...params}/>}
+              renderInput={(params) => <TextField {...params} />}
             />
           </Stack>
         </LocalizationProvider>

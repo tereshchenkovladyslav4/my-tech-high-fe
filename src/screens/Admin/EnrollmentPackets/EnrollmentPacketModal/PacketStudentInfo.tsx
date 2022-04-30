@@ -45,9 +45,10 @@ export function EnrollmentJobsInfo({ packet }: { packet: Packet }) {
           },
         }}
         item
-        md={6}
-        sm={6}
+        md={4}
+        sm={12}
         xs={12}
+        xl={6}
       >
         <Title
           color={MTHBLUE}
@@ -108,7 +109,7 @@ export function EnrollmentJobsInfo({ packet }: { packet: Packet }) {
             {student.parent.person.first_name} {student.parent.person.last_name}
           </span>
         </Title>
-        <Paragraph color='#7B61FF' sx={{ fontSize: '14px', marginY: '4px', overflow: 'hidden' }} fontWeight='400'>
+        <Paragraph color='#7B61FF' sx={{ fontSize: '14px', marginY: '4px', marginRight: '10px' }} fontWeight='400'>
           {student.parent.person.email ? `${student.parent.person.email}` : 'Not found'}
         </Paragraph>
         <Paragraph color={SYSTEM_06} sx={{ fontSize: '14px', marginY: '4px' }} fontWeight='400'>

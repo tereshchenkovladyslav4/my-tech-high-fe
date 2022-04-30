@@ -191,7 +191,7 @@ export default function EnrollmentPacketModal({
                     <EnrollmentPacketNotes />
                     <PacketSaveButtons submitForm={methods.handleSubmit(onSubmit)} />
                   </Grid>
-                  <Grid item md={4} sm={4} xs={6}>
+                  <Grid item md={5} sm={5} xs={5}>
                     {enableImmunization && <EnrollmentPacketVaccineView />}
                   </Grid>
                 </Grid>

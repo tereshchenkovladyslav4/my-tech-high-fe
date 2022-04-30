@@ -18,7 +18,12 @@ export default function CustomModal({
   cancelStr?: string
 }) {
   return (
-    <Modal open={true} aria-labelledby='child-modal-title' aria-describedby='child-modal-description'>
+    <Modal
+      open={true}
+      aria-labelledby='child-modal-title'
+      disableAutoFocus={true}
+      aria-describedby='child-modal-description'
+    >
       <Box
         sx={{
           position: 'absolute',

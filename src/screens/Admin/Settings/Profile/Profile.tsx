@@ -25,20 +25,22 @@ const Profile = () => {
   const [file, setFile] = useState<undefined | File>()
 
   const onSave = () => {
-    // submitUpdate({
-    //   variables: {
-    //     updateProfileInput: {
-    //       email: formik.values.email,
-    //       phone_number: formik.values.phoneNumber,
-    //       preferred_first_name: formik.values.preferredFName,
-    //       preferred_last_name: formik.values.preferredLName,
-    //     },
-    //   },
-    // }).then((res) => {
-    //   // set catch and then here, return snackbox for both success and fail
-    // })
-    // // fire upload fetch
-    // uploadPhoto(file)
+    submitUpdate({
+      variables: {
+        updateProfileInput: {
+          email: formik.values.email,
+          phone_number: formik.values.phoneNumber,
+          preferred_first_name: formik.values.preferredFName,
+          preferred_last_name: formik.values.preferredLName,
+          first_name: me?.profile?.first_name,
+          last_name: me?.profile?.last_name,
+        },
+      },
+    }).then((res) => {
+      // set catch and then here, return snackbox for both success and fail
+    })
+    // fire upload fetch
+    uploadPhoto(file)
   }
 
   const onRemoveProfilePhoto = () => {
@@ -58,10 +60,12 @@ const Profile = () => {
 
   const formik = useFormik({
     initialValues: {
-      preferredFName: '',
-      preferredLName: '',
-      phoneNumber: '',
-      email: '',
+      preferredFName: me?.profile?.preferred_first_name,
+      preferredLName: me?.profile?.preferred_last_name,
+      phoneNumber: me?.profile?.phone.number,
+      email: me?.profile?.email,
+      first_name: me?.profile?.first_name,
+      last_name: me?.profile?.last_name,
     },
     validationSchema: validationSchema,
     onSubmit: async () => {
@@ -82,7 +86,7 @@ const Profile = () => {
   }
 
   const uploadPhoto = (file) => {
-    var bodyFormData = new FormData()
+    const bodyFormData = new FormData()
     if (file) {
       bodyFormData.append('file', file[0])
       bodyFormData.append('region', 'UT')

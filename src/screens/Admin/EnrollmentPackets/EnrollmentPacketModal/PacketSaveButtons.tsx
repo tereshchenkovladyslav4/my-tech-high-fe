@@ -73,7 +73,7 @@ export default function PacketSaveButtons({ submitForm }: { submitForm: () => vo
         container
       >
         <Grid container>
-          <Grid item md={2} sm={2} xs={12}>
+          <Grid item>
             <Button
               sx={{
                 borderRadius: 2,
@@ -82,6 +82,7 @@ export default function PacketSaveButtons({ submitForm }: { submitForm: () => vo
                 background: BUTTON_LINEAR_GRADIENT,
                 color: 'white',
                 width: '92px',
+                marginRight: '5px',
               }}
               onClick={() => onClick('Save')}
               disabled={!isValidExemptDate}
@@ -89,7 +90,7 @@ export default function PacketSaveButtons({ submitForm }: { submitForm: () => vo
               Save
             </Button>
           </Grid>
-          <Grid item md={2} sm={2} xs={12}>
+          <Grid item>
             <Button
               disabled={onlySaveButton || !isValidExemptDate}
               sx={{
@@ -99,6 +100,7 @@ export default function PacketSaveButtons({ submitForm }: { submitForm: () => vo
                 background: GREEN_GRADIENT,
                 color: 'white',
                 width: '92px',
+                marginRight: '5px',
               }}
               onClick={() => onClick('Accepted')}
             >
@@ -106,7 +108,7 @@ export default function PacketSaveButtons({ submitForm }: { submitForm: () => vo
             </Button>
           </Grid>
 
-          <Grid item md={2} sm={2} xs={12}>
+          <Grid item>
             <Button
               disabled={onlySaveButton || !isValidExemptDate}
               sx={{
@@ -116,13 +118,14 @@ export default function PacketSaveButtons({ submitForm }: { submitForm: () => vo
                 background: RED_GRADIENT,
                 color: 'white',
                 width: '92px',
+                marginRight: '5px',
               }}
               onClick={() => onClick('Missing Info')}
             >
               Missing Info
             </Button>
           </Grid>
-          <Grid item md={2} sm={2} xs={12}>
+          <Grid item>
             <Button
               disabled={onlySaveButton || !isValidExemptDate}
               sx={{
@@ -132,13 +135,14 @@ export default function PacketSaveButtons({ submitForm }: { submitForm: () => vo
                 background: YELLOW_GRADIENT,
                 color: 'white',
                 width: '92px',
+                marginRight: '5px',
               }}
               onClick={() => onClick('Age Issue')}
             >
               Age Issue
             </Button>
           </Grid>
-          <Grid item md={2} sm={2} xs={12}>
+          <Grid item>
             <Button
               disabled={onlySaveButton || !isValidExemptDate}
               sx={{
@@ -148,6 +152,7 @@ export default function PacketSaveButtons({ submitForm }: { submitForm: () => vo
                 background: BLACK_GRADIENT,
                 color: 'white',
                 width: '92px',
+                marginRight: '5px',
               }}
               onClick={() => onClick('Conditional')}
             >

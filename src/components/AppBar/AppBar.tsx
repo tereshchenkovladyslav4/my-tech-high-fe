@@ -23,7 +23,7 @@ export const AppBar: FunctionComponent = () => {
 
   const { students } = me
 
-  const activeStudents = useState(filter(students, (student) => {
+  const [activeStudents] = useState(filter(students, (student) => {
     return student.status.at(-1)?.status !== 2
   }))
 
@@ -100,7 +100,7 @@ export const AppBar: FunctionComponent = () => {
   }
 
   const gradeText = (student: StudentType) => (
-    student.grade_levels.at(-1)?.grade_level !== 'K'
+    student.grade_levels.at(-1)?.grade_level !== 'Kin'
       ? `${toOrdinalSuffix((student.grade_levels.at(-1)?.grade_level as number))} Grade`
       : 'Kindergarten'
   )
@@ -114,11 +114,14 @@ export const AppBar: FunctionComponent = () => {
   }
 
   const renderStudentHeader = () =>
-    map(students, (student) => {
-      const link = student?.applications?.at(-1)?.status === 'Submitted' || student?.status?.at(-1)?.status === 2 || student?.packets?.at(-1)?.status === 'Started'
-        ? undefined
+    map(activeStudents, (student) => {
+      const link = student?.applications?.at(-1)?.status === 'Submitted' 
+        || student?.status?.at(-1)?.status === 2 
+        || student?.packets?.at(-1)?.status === 'Started' 
+        || student?.packets?.at(-1)?.status === 'Not Started'
+        ? HOMEROOM
         :`${HOMEROOM}/${student.student_id}`
-      return student.status.at(-1)?.status !== 2 &&  (
+      return  (
         <Box sx={{ textDecoration: 'none', marginTop: 1 }}>
           {
             link ?

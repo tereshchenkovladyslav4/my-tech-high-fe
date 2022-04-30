@@ -8,11 +8,16 @@ import { BirthDateCutOffSelect } from './BirthDateCutOffSelect'
 import { SpecialEdSelect } from './SpecialEdSelect'
 import { StateLogo } from './StateLogo'
 import { GradesSelect } from './GradesSelect'
+import { CountySelect } from './CountySelect'
+import { SchoolDistrictSelect } from './SchoolDistrictSelect'
 import { gql, useMutation, useQuery } from '@apollo/client'
 import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded'
 import { Prompt, useHistory } from 'react-router-dom'
 import { StateLogoFileType } from './StateLogo/StateLogoTypes'
 import { DropDown } from '../../../../components/DropDown/DropDown'
+import { DropDownItem } from '../../../../components/DropDown/types'
+import { CountyFileType } from './CountySelect/CountySelectTypes'
+import { SchoolDistrictFileType } from './SchoolDistrictSelect/SchoolDistrictSelectTypes'
 import moment from 'moment'
 
 const useBeforeUnload = ({ when, message }) => {
@@ -61,7 +66,23 @@ export const getSchoolYearsByRegionId = gql`
         birth_date_cut
         special_ed
       }
+      county_file_name
+      county_file_path
+      school_district_file_name
+      school_district_file_path
     }
+  }
+`
+
+export const removeCountyInfoByRegionId = gql`
+  mutation RemoveCountyInfoByRegionId($regionId: ID!) {
+    removeCountyInfoByRegionId(region_id: $regionId)
+  }
+`
+
+export const removeSchoolDistrictInfoByRegionId = gql`
+  mutation RemoveSchoolDistrictInfoByRegionId($regionId: ID!) {
+    removeSchoolDistrictInfoByRegionId(region_id: $regionId)
   }
 `
 
@@ -83,14 +104,28 @@ const ProgramSetting: React.FC = () => {
   const [specialEd, setSpecialEd] = useState<boolean>()
   const [birthDate, setBirthDate] = useState<string>('')
   const [stateLogo, setStateLogo] = useState<string>()
+  const [countyArray, setCountyArray] = useState<Array<any>>([])
+  const [schoolDistrictArray, setSchoolDistrictArray] = useState<Array<any>>([])
   const [grades, setGrades] = useState<string>()
+  const [county, setCounty] = useState<CountyFileType>({
+    name: '',
+    path: '',
+    file: null,
+  })
+  const [schoolDistrict, setSchoolDistrict] = useState<SchoolDistrictFileType>({
+    name: '',
+    path: '',
+    file: null,
+  })
   const [isChanged, setIsChanged] = useState<boolean>(false)
   const [schoolYears, setSchoolYears] = useState<SchoolYears[]>([])
-  const [years, setYears] = useState()
+  const [years, setYears] = useState<DropDownItem[]>([])
   const [selectedYearId, setSelectedYearId] = useState<string>('')
   const [stateLogoFile, setStateLogoFile] = useState<StateLogoFileType>()
   const [submitSave, { data, loading, error }] = useMutation(updateStateNameMutation)
   const [submitSchoolYearSave, {}] = useMutation(updateSchoolYearMutation)
+  const [countyInfoDelete, {}] = useMutation(removeCountyInfoByRegionId)
+  const [schoolDistrictInfoDelete, {}] = useMutation(removeSchoolDistrictInfoByRegionId)
   const schoolYearData = useQuery(getSchoolYearsByRegionId, {
     variables: {
       regionId: me?.selectedRegionId,
@@ -120,7 +155,7 @@ const ProgramSetting: React.FC = () => {
     const bodyFormData = new FormData()
     if (file) {
       bodyFormData.append('file', file)
-      bodyFormData.append('region', 'UT')
+      bodyFormData.append('region', stateName)
       bodyFormData.append('year', '2022')
 
       const response = await fetch(import.meta.env.SNOWPACK_PUBLIC_S3_URL, {
@@ -137,8 +172,29 @@ const ProgramSetting: React.FC = () => {
     }
   }
 
+  const uploadFile = async (file, type) => {
+    const bodyFormData = new FormData()
+    if (file) {
+      bodyFormData.append('file', file)
+      bodyFormData.append('region', stateName)
+      bodyFormData.append('directory', type)
+
+      const response = await fetch(import.meta.env.SNOWPACK_PUBLIC_S3_URL, {
+        method: 'POST',
+        body: bodyFormData,
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('JWT')}`,
+        },
+      })
+      const {
+        data: { s3 },
+      } = await response.json()
+      return s3.Location
+    }
+  }
+
   const setDropYears = (schoolYearsArr) => {
-    let dropYears = []
+    let dropYears: DropDownItem[] = []
     if (schoolYearsArr && schoolYearsArr.length > 0) {
       schoolYearsArr.forEach((schoolYear) => {
         if (
@@ -161,11 +217,52 @@ const ProgramSetting: React.FC = () => {
     setYears(dropYears)
   }
 
+  const handleCountyInfoDelete = async () => {
+    const deleteResponse = await countyInfoDelete({
+      variables: {
+        regionId: me?.selectedRegionId,
+      },
+    })
+    setCounty({
+      name: '',
+      path: '',
+      file: null,
+    })
+  }
+
+  const handleSchoolDistrictInfoDelete = async () => {
+    const deleteResponse = await schoolDistrictInfoDelete({
+      variables: {
+        regionId: me?.selectedRegionId,
+      },
+    })
+    setSchoolDistrict({
+      name: '',
+      path: '',
+      file: null,
+    })
+  }
+
   const handleClickSave = async () => {
     let imageLocation: string
     if (stateLogoFile) {
       imageLocation = await uploadImage(stateLogoFile.file)
     }
+
+    let countyFileLocation: string
+    if (county?.file && countyArray.length > 0) {
+      countyFileLocation = await uploadFile(county.file, 'county')
+    } else if (county?.file && countyArray.length == 0) {
+      console.log('CountyFile Parsing Error')
+    }
+
+    let schoolDistrictFileLocation: string
+    if (schoolDistrict?.file && schoolDistrictArray.length > 0) {
+      schoolDistrictFileLocation = await uploadFile(schoolDistrict.file, 'schoolDistrict')
+    } else if (schoolDistrict?.file && schoolDistrictArray.length == 0) {
+      console.log('SchoolDistrictFile Parsing Error')
+    }
+
     const submitedResponse = await submitSave({
       variables: {
         updateRegionInput: {
@@ -173,11 +270,31 @@ const ProgramSetting: React.FC = () => {
           name: stateName,
           program: program,
           state_logo: imageLocation ? imageLocation : stateLogo,
+          county_file_name: county.name,
+          county_file_path: countyFileLocation ? countyFileLocation : county.path,
+          county_array: JSON.stringify(countyArray),
+          school_district_file_name: schoolDistrict.name,
+          school_district_file_path: schoolDistrictFileLocation ? schoolDistrictFileLocation : schoolDistrict.path,
+          school_district_array: JSON.stringify(schoolDistrictArray),
         },
       },
     })
 
-    if (selectedYearId) {
+    setCounty((prev) => {
+      return {
+        ...prev,
+        path: countyFileLocation ? countyFileLocation : county.path,
+      }
+    })
+
+    setSchoolDistrict((prev) => {
+      return {
+        ...prev,
+        path: schoolDistrictFileLocation ? schoolDistrictFileLocation : schoolDistrict.path,
+      }
+    })
+
+    if (selectedYearId && (grades || birthDate || specialEd)) {
       const submitSchoolYearResponse = await submitSchoolYearSave({
         variables: {
           updateSchoolYearInput: {
@@ -226,7 +343,19 @@ const ProgramSetting: React.FC = () => {
     setProgram(selectedRegion?.regionDetail?.program)
     setStateLogo(selectedRegion?.regionDetail?.state_logo)
     setStateLogoFile(null)
-    if (schoolYearData && schoolYearData?.data?.region?.SchoolYears) {
+    if (schoolYearData && schoolYearData?.data?.region) {
+      let countyInfo: CountyFileType = {
+        name: schoolYearData?.data?.region.county_file_name,
+        path: schoolYearData?.data?.region.county_file_path,
+        file: null,
+      }
+      let schoolDistrictInfo: SchoolDistrictFileType = {
+        name: schoolYearData?.data?.region.school_district_file_name,
+        path: schoolYearData?.data?.region.school_district_file_path,
+        file: null,
+      }
+      setCounty(countyInfo)
+      setSchoolDistrict(schoolDistrictInfo)
       let schoolYearsArr: SchoolYears[] = []
       let cnt = 0
       schoolYearData?.data?.region?.SchoolYears.forEach((schoolYear) => {
@@ -259,7 +388,7 @@ const ProgramSetting: React.FC = () => {
         }),
       )
     }
-  }, [me.selectedRegionId, schoolYearData?.data?.region?.SchoolYears])
+  }, [me.selectedRegionId, schoolYearData?.data?.region])
 
   useEffect(() => {
     setDropYears(schoolYears)
@@ -320,34 +449,32 @@ const ProgramSetting: React.FC = () => {
           }}
         />
       </Stack>
-      <StateSelect
-        stateName={stateName}
-        setStateName={setStateName}
-        isChanged={isChanged}
-        setIsChanged={setIsChanged}
-      />
+      <StateSelect stateName={stateName} setStateName={setStateName} setIsChanged={setIsChanged} />
       <StateLogo
         stateLogo={stateLogo}
         setStateLogo={setStateLogo}
-        isChanged={isChanged}
         setIsChanged={setIsChanged}
         stateLogoFile={stateLogoFile}
         setStateLogoFile={setStateLogoFile}
       />
-      <ProgramSelect program={program} setProgram={setProgram} isChanged={isChanged} setIsChanged={setIsChanged} />
-      <GradesSelect grades={grades} setGrades={setGrades} isChanged={isChanged} setIsChanged={setIsChanged} />
-      <BirthDateCutOffSelect
-        birthDate={birthDate}
-        setBirthDate={setBirthDate}
-        isChanged={isChanged}
+      <ProgramSelect program={program} setProgram={setProgram} setIsChanged={setIsChanged} />
+      <CountySelect
+        county={county}
+        setCounty={setCounty}
+        setCountyArray={setCountyArray}
+        handleCountyInfoDelete={handleCountyInfoDelete}
         setIsChanged={setIsChanged}
       />
-      <SpecialEdSelect
-        specialEd={specialEd}
-        setSpecialEd={setSpecialEd}
-        isChanged={isChanged}
+      <SchoolDistrictSelect
+        schoolDistrict={schoolDistrict}
+        setSchoolDistrict={setSchoolDistrict}
+        setSchoolDistrictArray={setSchoolDistrictArray}
+        handleSchoolDistrictInfoDelete={handleSchoolDistrictInfoDelete}
         setIsChanged={setIsChanged}
       />
+      <GradesSelect grades={grades} setGrades={setGrades} setIsChanged={setIsChanged} />
+      <BirthDateCutOffSelect birthDate={birthDate} setBirthDate={setBirthDate} setIsChanged={setIsChanged} />
+      <SpecialEdSelect specialEd={specialEd} setSpecialEd={setSpecialEd} setIsChanged={setIsChanged} />
     </Box>
   )
 }

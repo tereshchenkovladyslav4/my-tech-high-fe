@@ -28,7 +28,7 @@ export const Personal: FunctionComponent = () => {
   const classes = useStyles
 
   const [race, setRace] = useState(student.packets.at(-1)?.race?.split(',') ?? [])
-  const [gender, setGender] = useState(student.person.gender)
+  const [gender, setGender] = useState(student.person.gender || '')
   const [livingSituation, setLivingSituation] = useState(student.packets.at(-1)?.living_location)
   const [livingWith, setLivingWith] = useState(student.packets.at(-1)?.lives_with)
   const [workMove, setWorkMove] = useState(student.packets.at(-1)?.work_move)

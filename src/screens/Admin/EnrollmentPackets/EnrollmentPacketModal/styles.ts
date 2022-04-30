@@ -37,6 +37,7 @@ export const useStyles = {
 		justifyContent: 'center',
 		height: 'calc(100% - 60px)',
 		overflow: 'auto',
+		overflowX: 'hidden',
 		'&::-webkit-scrollbar': {
 			width: '5px',
 		},
