@@ -1,8 +1,15 @@
 import { gql } from '@apollo/client'
 
 export const getApplicationsQuery = gql`
-  query Applications($skip: Int, $take: Int, $filter: ApplicationFilters, $sort: String, $search: String) {
-    applications(skip: $skip, take: $take, filter: $filter, sort: $sort, search: $search) {
+  query Applications(
+    $skip: Int
+    $take: Int
+    $filter: ApplicationFilters
+    $regionId: Int
+    $sort: String
+    $search: String
+  ) {
+    applications(skip: $skip, take: $take, filter: $filter, region_id: $regionId, sort: $sort, search: $search) {
       total
       results {
         relation_status

@@ -1,8 +1,8 @@
 import { gql } from '@apollo/client'
 
 export const getEnrollmentPacketsQuery = gql`
-  query EnrollmentPackets($skip: Int, $take: Int, $search: String,  $sort: String, $filters: [String!]) {
-    packets(skip: $skip, take: $take, search: $search, sort: $sort, filters: $filters) {
+  query EnrollmentPackets($skip: Int, $take: Int, $search: String, $regionId: Int, $sort: String, $filters: [String!]) {
+    packets(skip: $skip, take: $take, search: $search, region_id: $regionId, sort: $sort, filters: $filters) {
       total
       results {
         packet_id
@@ -33,6 +33,7 @@ export const getEnrollmentPacketsQuery = gql`
         school_district
         last_school_address
         last_school
+        reupload_files
         last_school_type
         worked_in_agriculture
         military

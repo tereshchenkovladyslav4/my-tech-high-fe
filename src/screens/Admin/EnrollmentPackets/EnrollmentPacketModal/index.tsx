@@ -200,7 +200,7 @@ export default function EnrollmentPacketModal({
                 </Grid>
                 <EnrollmentPacketInfo />
               </Box>
-              <PacketConfirmModals refetch={refetch} submitForm={methods.handleSubmit(onSubmit)} />
+              <PacketConfirmModals packet={packet} refetch={refetch} submitForm={methods.handleSubmit(onSubmit)} />
             </Box>
           </studentContext.Provider>
         </Modal>

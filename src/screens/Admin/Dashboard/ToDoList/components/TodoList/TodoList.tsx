@@ -75,17 +75,31 @@ export const TodoList: FunctionComponent = () => {
         },
         {
           id: 4,
-          title: 'Reimbursements and Direct Orders',
-          link: 'reimbursements-and-direct-orders',
+          title: 'Withdrawals',
+          link: 'withdrawals',
+          date: new Date(),
+          severity: 50,
+        },
+        {
+          id: 5,
+          title: 'Direct Orders',
+          link: 'direct-orders',
+          date: new Date(),
+          severity: 50,
+        },
+        {
+          id: 6,
+          title: 'Reimbursements',
+          link: 'reimbursements',
           date: new Date(),
           severity: 300,
         },
         {
-          id: 5,
-          title: 'Withdrawals',
-          link: 'withdrawals',
+          id: 7,
+          title: 'Email Errors',
+          link: 'email-errors',
           date: new Date(),
-          severity: 10,
+          severity: 5,
         },
       ])
     }

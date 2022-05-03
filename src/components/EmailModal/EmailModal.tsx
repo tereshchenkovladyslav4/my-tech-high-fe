@@ -5,7 +5,7 @@ import React, { useContext, useRef, useState, useMemo, useEffect } from 'react'
 import { EmailModalTemplateType } from './types'
 import { useStyles } from './styles'
 import { useMutation, useQuery } from '@apollo/client'
-import { ContentState, EditorState, convertToRaw } from 'draft-js'
+import { ContentState, EditorState, convertToRaw, ContentBlock } from 'draft-js'
 import { StandardResponses } from './StandardReponses/StandardResponses'
 import { Title } from '../Typography/Title/Title'
 import { studentContext } from '../../screens/Admin/EnrollmentPackets/EnrollmentPacketModal/providers'
@@ -195,10 +195,11 @@ export const EmailModal = ({ handleSubmit, handleModem, title, options, setEmail
   const student: any = useContext(studentContext)
   const [standard_response, setStandardResponse] = useState({ title: '', extraText: '', checked: false })
   const [template, setTemplate] = useState(null)
+  
   const setEmailBodyInfo = (email: string) => {
     const yearbegin = new Date(student.grade_levels[0].school_year.date_begin).getFullYear().toString()
     const yearend = new Date(student.grade_levels[0].school_year.date_end).getFullYear().toString()
-    return email
+    return email.toString()
       .replace(/\[STUDENT_ID\]/g, student.student_id + '')
       .replace(/\[STUDENT\]/g, student.person.first_name)
       .replace(/\[PARENT\]/g, student.parent.person.first_name)
@@ -237,6 +238,7 @@ export const EmailModal = ({ handleSubmit, handleModem, title, options, setEmail
   const classes = useStyles
 
   useEffect(() => {
+    console.log('here----------------------------------');
     if (template) {
       const { id, title, subject, from, bcc, body } = template
       setSubject(subject)

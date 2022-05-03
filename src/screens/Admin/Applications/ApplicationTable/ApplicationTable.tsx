@@ -11,7 +11,8 @@ import {
   TextField,
   Typography,
 } from '@mui/material'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
+import { UserContext } from '../../../../providers/UserContext/UserProvider'
 import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
 import { BUTTON_LINEAR_GRADIENT, GREEN_GRADIENT, RED_GRADIENT, YELLOW_GRADIENT } from '../../../../utils/constants'
 import SearchIcon from '@mui/icons-material/Search'
@@ -39,6 +40,7 @@ import { WarningModal } from '../../../../components/WarningModal/Warning'
 import { ApplicationModal } from '../ApplicationModal/ApplicationModal'
 import { ApplicationEmailModal } from '../ApplicationModal/ApplicationEmailModal'
 export const ApplicationTable = ({ filter }) => {
+  const { me, setMe } = useContext(UserContext)
   const [emailTemplate, setEmailTemplate] = useState()
   const [pageLoading, setPageLoading] = useState(false)
   const [seachField, setSearchField] = useState('')
@@ -142,7 +144,9 @@ export const ApplicationTable = ({ filter }) => {
       sort: sort,
       take: paginatinLimit,
       search: seachField,
+      regionId: me?.selectedRegionId,
     },
+    skip: me?.selectedRegionId ? false : true,
     fetchPolicy: 'network-only',
   })
   const {
@@ -437,7 +441,7 @@ export const ApplicationTable = ({ filter }) => {
           midyear_application: status,
           relation_status: 1,
           school_year_id: 1,
-          status: 'status'
+          status: 'status',
         },
       },
     })
@@ -493,8 +497,7 @@ export const ApplicationTable = ({ filter }) => {
               value={seachField}
               placeholder='Search...'
               onChange={(e) => {
-                handlePageChange(1),
-                setSearchField(e.target.value)
+                handlePageChange(1), setSearchField(e.target.value)
               }}
               startAdornment={
                 <InputAdornment position='start'>
@@ -661,7 +664,13 @@ export const ApplicationTable = ({ filter }) => {
           currentPage={currentPage}
         />
       </Box>
-      <SortableTable rows={tableData} headCells={tableHeaders} onCheck={setApplicationIds} clearAll={shouldClear} onSortChange={sortChangeAction}/>
+      <SortableTable
+        rows={tableData}
+        headCells={tableHeaders}
+        onCheck={setApplicationIds}
+        clearAll={shouldClear}
+        onSortChange={sortChangeAction}
+      />
       {open && (
         <EmailModal
           handleModem={() => setOpen(!open)}

@@ -11,7 +11,7 @@ import { getEmailTemplateQuery } from '../../../../../graphql/queries/email-temp
 import { useFormContext } from 'react-hook-form'
 import { studentContext } from '../providers'
 
-export default function PacketConfirmModals({ refetch, submitForm }) {
+export default function PacketConfirmModals({ packet, refetch, submitForm }) {
   const student = useContext(studentContext)
   const { watch, setValue } = useFormContext<EnrollmentPacketFormType>()
   const [emailTemplate, setEmailTemplate] = useState(null)
@@ -41,12 +41,27 @@ export default function PacketConfirmModals({ refetch, submitForm }) {
     submitForm()
   }
 
+  const setEmailBodyInfo = (email: string, student) => {
+    const yearbegin = new Date(student.grade_levels[0].school_year.date_begin).getFullYear().toString()
+    const yearend = new Date(student.grade_levels[0].school_year.date_end).getFullYear().toString()
+
+    return email.toString()
+      .replace(/\[STUDENT_ID\]/g, student.student_id + '')
+      .replace(/\[FILES\]/g, packet.missing_files)
+      .replace(/\[LINK\]/g, `[HOST]/homeroom/enrollment/${student.student_id}`) //adding host detail from backend
+      .replace(/\[STUDENT\]/g, student.person.first_name)
+      .replace(/\[PARENT\]/g, student.parent.person.first_name)
+      .replace(/<STUDENT GRADE>/g, student.grade_level)
+      .replace(/\[YEAR\]/g, `${yearbegin}-${yearend.substring(2, 4)}`)
+  }
+
   const handleEmailSend = (subject: string, body: string, options: StandardResponseOption) => {
     try {
+      const bodyData = setEmailBodyInfo(body, student)
       sendPacketEmail({
         variables: {
           emailInput: {
-            content: body,
+            content: bodyData,
             email: student?.parent.person.email,
             subject: subject,
             recipients: null,
@@ -96,7 +111,7 @@ export default function PacketConfirmModals({ refetch, submitForm }) {
       const yearbegin = new Date(student.grade_levels[0].school_year.date_begin).getFullYear().toString()
       const yearend = new Date(student.grade_levels[0].school_year.date_end).getFullYear().toString()
 
-      return email
+      return email.toString()
         .replace(/<STUDENT NAME>/g, student.person.first_name)
         .replace(/<PARENT>/g, student.parent.person.first_name)
         .replace(/<STUDENT GRADE>/g, student.grade_level)

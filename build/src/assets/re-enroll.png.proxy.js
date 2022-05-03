@@ -1,1 +1,0 @@
-export default "/src/assets/re-enroll.png";

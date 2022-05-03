@@ -3,7 +3,7 @@ export const useStyles = {
     backgroundColor: 'white',
     height: 85,
     paddingX: 3,
-    alignItems: 'flex-end'
+    alignItems: 'flex-end',
   },
   toolbar: {
     width: '100%',

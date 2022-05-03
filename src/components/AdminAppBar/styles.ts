@@ -6,7 +6,8 @@ export const useStyles = {
     paddingX: 5,
   },
   toolbar: {
-    width: '88%',
+    width: 'calc(100% - 260px)',
+    maxWidth: 'calc(100% - 260px)',
     marginTop: 10,
   },
 

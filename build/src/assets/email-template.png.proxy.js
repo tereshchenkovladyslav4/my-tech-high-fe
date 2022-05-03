@@ -1,1 +1,0 @@
-export default "/src/assets/email-template.png";

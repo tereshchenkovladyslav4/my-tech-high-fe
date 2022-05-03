@@ -1,5 +1,6 @@
 import { Box, Button, Card, InputAdornment, OutlinedInput } from '@mui/material'
-import React, { useEffect, useState, useContext } from 'react'
+import React, { useEffect, useState, useContext, useContext } from 'react'
+import { UserContext } from '../../../../providers/UserContext/UserProvider'
 import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
 import { GREEN_GRADIENT, RED_GRADIENT, YELLOW_GRADIENT } from '../../../../utils/constants'
 import SearchIcon from '@mui/icons-material/Search'
@@ -28,6 +29,7 @@ import { EnrollmentPacketFilters } from '../EnrollmentPacketFilters/EnrollmentPa
 import { ProfileContext } from '../../../../providers/ProfileProvider/ProfileContext'
 
 export const EnrollmentPacketTable = () => {
+  const { me, setMe } = useContext(UserContext)
   const [filters, setFilters] = useState(['Submitted', 'Resubmitted'])
 
   const [emailTemplate, setEmailTemplate] = useState()
@@ -56,7 +58,7 @@ export const EnrollmentPacketTable = () => {
     showModal(row.student.parent)
     setStore(true)
   }
-  
+
   const createData = (packet: Packet) => {
     return {
       id: packet.packet_id,
@@ -66,7 +68,9 @@ export const EnrollmentPacketTable = () => {
       student: `${packet.student.person?.first_name} ${packet.student.person?.last_name}`,
       grade:
         packet.student.grade_levels.length && packet.student.grade_levels[0].grade_level
-          ? (packet.student.grade_levels[0].grade_level == 'K' ? 'K' : `${toOrdinalSuffix(Number(packet.student.grade_levels[0].grade_level))} Grade`)
+          ? packet.student.grade_levels[0].grade_level == 'K'
+            ? 'K'
+            : `${toOrdinalSuffix(Number(packet.student.grade_levels[0].grade_level))} Grade`
           : ' ',
       parent: `${packet.student.parent.person?.first_name} ${packet.student.parent.person?.last_name}`,
       studentStatus: 'New',
@@ -91,7 +95,9 @@ export const EnrollmentPacketTable = () => {
       take: paginatinLimit,
       search: searchField,
       filters: filters,
+      regionId: me?.selectedRegionId,
     },
+    skip: me?.selectedRegionId ? false : true,
     fetchPolicy: 'network-only',
   })
 

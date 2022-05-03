@@ -16,7 +16,7 @@ import { ContentState, EditorState, RichUtils, convertFromHTML, convertToRaw } f
 import CloseIcon from '@mui/icons-material/Close'
 import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
 import { Add } from '@mui/icons-material'
-import { getEmailTemplateQuery } from '../../services'
+import { getEmailTemplateQuery, getEmailRemindersQuery } from '../../services'
 import { useQuery, useMutation } from '@apollo/client'
 import Wysiwyg from 'react-draft-wysiwyg'
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
@@ -57,6 +57,7 @@ export const EmailTemplateModal = ({
   const [currentBlocks, setCurrentBlocks] = useState(0)
   const [reminders, setReminders] = useState([
     {
+      reminderId: -1,
       reminderDay: '',
       reminderTitle: 'Reminder 1',
       reminderSubject: '',
@@ -81,6 +82,46 @@ export const EmailTemplateModal = ({
     fetchPolicy: 'network-only',
   })
 
+  const { loading: reminderLoading, error: reminderError, data: reminderData, refetch: refetchReminder } = useQuery(getEmailRemindersQuery, {
+    variables: {
+      templateId: Number(data?.emailTemplateName?.id),
+    },
+    skip: !data?.emailTemplateName?.id,
+    fetchPolicy: 'network-only',
+  })
+
+
+  useEffect(() => {
+    console.log('reminderData', reminderData)
+    if (reminderData !== undefined) {
+      const reminders = []
+      reminderData?.remindersByTemplateId.forEach(remin => {
+        console.log('remin', remin) 
+          const { reminder_id, title, subject, body, deadline } = remin
+          let editorState
+          if (body) {
+            const contentBlock = htmlToDraft(body)
+            if (contentBlock) {
+              const contentState = ContentState.createFromBlockArray(contentBlock.contentBlocks)
+              // const content = ContentState.createFromBlockArray(convertFromHTML(body))
+              editorState = EditorState.createWithContent(contentState)
+            }
+          } else {
+            editorState = EditorState.createEmpty()
+          }
+          reminders.push({
+            reminderId: reminder_id,
+            reminderDay: deadline,
+            reminderTitle: title,
+            reminderSubject: subject,
+            reminderBody: body,
+            editorState: editorState,
+          })
+        })
+        setReminders(reminders);
+    }
+  }, [reminderData])
+console.log('reminders', reminders)
   const handleEditorChange = (state) => {
     try {
       if (currentBlocks !== 0 && currentBlocks !== state.blocks.length) {
@@ -96,6 +137,7 @@ export const EmailTemplateModal = ({
       ...reminders,
       ...[
         {
+          reminderId: -1,
           reminderDay: '',
           reminderTitle: 'Reminder ' + (reminders.length + 1),
           reminderSubject: '',
@@ -137,6 +179,32 @@ export const EmailTemplateModal = ({
     setAddResponse(JSON.stringify(standard_response))
   }
   const handleSave = () => {
+    const reminderData = []
+    if(reminders.length  > 0) {
+      reminders.forEach(remind => {
+        if(remind.reminderDay !== '') {
+          let newReminder
+          if(remind?.reminderId === -1) {
+            newReminder = {
+              title: remind.reminderTitle,
+              subject: remind.reminderSubject,
+              body: remind.reminderBody,
+              deadline: remind.reminderDay
+            }
+          } else {
+            newReminder = {
+              id: Number(remind?.reminderId),
+              title: remind.reminderTitle,
+              subject: remind.reminderSubject,
+              body: remind.reminderBody,
+              deadline: remind.reminderDay
+            }
+          }
+          reminderData.push(newReminder);
+        }
+      })
+    }
+    console.log('type', type)
     if (type === 'standard_response') {
       onSave({
         id: Number(emailTemplateId),
@@ -156,7 +224,7 @@ export const EmailTemplateModal = ({
         from: emailFrom,
         bcc: emailBcc,
         // deadline,
-        // reminders,
+        reminders: reminderData,
         template_name: templateName,
         body: draftToHtml(convertToRaw(editorState.getCurrentContent())),
       })
