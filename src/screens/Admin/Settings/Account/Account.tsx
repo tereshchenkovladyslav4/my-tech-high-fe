@@ -10,6 +10,7 @@ import { useMutation } from '@apollo/client'
 import { WarningModal } from '../../../../components/WarningModal/Warning'
 import * as yup from 'yup'
 import { useFormik } from 'formik'
+import { Prompt } from 'react-router-dom'
 
 type openAlertSaveType = {
   message: string,
@@ -17,8 +18,9 @@ type openAlertSaveType = {
   open: boolean,
 }
 
-const Account = () => {
+export const Account = ({handleIsFormChange}) => {
   const classes = useStyles
+
   const { me } = useContext(UserContext)
   const [openSaveAlert, setOpenSaveAlert] = useState<openAlertSaveType>({
     message: '',
@@ -33,13 +35,18 @@ const Account = () => {
       variables: {
         updateAccountInput: {
           password: formik.values.newPassword,
-          confirm_password: formik.values.confirmNewPassword,
-          current_password: formik.values.currentPassword,
+          oldpassword: formik.values.currentPassword,
         },
       },
     })
       .then((res) => {
         setOpenSaveAlert({ message: 'New Password Saved', status: 'success', open: true })
+
+        setTimeout(() => {
+          setOpenSaveAlert({ message: '', status: 'success', open: false })
+        }, 2000)
+
+        handleIsFormChange(false);
       })
       .catch((error) => {
         setOpenSaveAlert({ message: error?.message, status: 'error', open: true })
@@ -48,16 +55,15 @@ const Account = () => {
           setOpenSaveAlert({ message: '', status: 'success', open: false })
         }, 2000)
 
-        console.log(error?.message)
+        handleIsFormChange(false);
       })
-    console.log(error)
   }
 
   const validationSchema = yup.object({
     currentPassword: yup.string().required('Current Password is required'),
     newPassword: yup
       .string()
-      .min(8, ' New Password should be of minimum 8 characters length')
+      .min(8, 'New Password should be of minimum 8 characters length')
       .required('New Password is required'),
     confirmNewPassword: yup
       .string()
@@ -75,6 +81,9 @@ const Account = () => {
     onSubmit: async () => {
       await onSave()
     },
+    onChange: async () => {
+      handleIsFormChange(true);
+    }
   })
 
   return (
@@ -121,7 +130,10 @@ const Account = () => {
                   name='currentPassword'
                   type='password'
                   value={formik.values.currentPassword}
-                  onChange={formik.handleChange}
+                  onChange={(e) => {
+                    handleIsFormChange(true);
+                    formik.handleChange(e);
+                  }}
                   error={formik.touched.currentPassword && Boolean(formik.errors.currentPassword)}
                   helperText={formik.touched.currentPassword && formik.errors.currentPassword}
                 />
@@ -136,7 +148,10 @@ const Account = () => {
                   name='newPassword'
                   type='password'
                   value={formik.values.newPassword}
-                  onChange={formik.handleChange}
+                  onChange={(e) => {
+                    handleIsFormChange(true);
+                    formik.handleChange(e);
+                  }}
                   error={formik.touched.newPassword && Boolean(formik.errors.newPassword)}
                   helperText={formik.touched.newPassword && formik.errors.newPassword}
                 />
@@ -151,7 +166,10 @@ const Account = () => {
                   name='confirmNewPassword'
                   type='password'
                   value={formik.values.confirmNewPassword}
-                  onChange={formik.handleChange}
+                  onChange={(e) => {
+                    handleIsFormChange(true);
+                    formik.handleChange(e);
+                  }}
                   error={formik.touched.confirmNewPassword && Boolean(formik.errors.confirmNewPassword)}
                   helperText={formik.touched.confirmNewPassword && formik.errors.confirmNewPassword}
                 />
@@ -177,4 +195,3 @@ const Account = () => {
     </form>
   )
 }
-export { Account as default }

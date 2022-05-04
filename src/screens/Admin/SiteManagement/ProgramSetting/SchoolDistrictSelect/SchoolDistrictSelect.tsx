@@ -87,7 +87,7 @@ export default function SchoolDistrictSelect({
         {!schoolDistrict?.name ? (
           <Stack direction='row' sx={{ ml: 1.5, cursor: 'pointer' }} alignItems='center' onClick={handleClickOpen}>
             <Subtitle size={12} color={MTHBLUE} fontWeight='500'>
-              import
+              Import
             </Subtitle>
           </Stack>
         ) : (

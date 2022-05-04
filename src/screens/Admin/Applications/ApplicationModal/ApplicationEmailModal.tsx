@@ -152,7 +152,7 @@ export const ApplicationEmailModal: ApplicationEmailModalType = ({ handleModem, 
                   <Typography sx={{ marginLeft: '10px' }}>{emailViewData?.from_email}</Typography>
                 </Box>
                 <Box sx={classes.subject}>
-                  <Subtitle fontWeight='700' sx={classes.emailLabel}>
+                  <Subtitle fontWeight='700' sx={{ width: '100%' }}>
                     {emailViewData?.subject}
                   </Subtitle>
                 </Box>

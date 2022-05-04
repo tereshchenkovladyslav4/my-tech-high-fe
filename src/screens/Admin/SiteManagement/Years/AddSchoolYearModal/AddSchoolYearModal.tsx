@@ -4,19 +4,23 @@ import { DropDown } from '../../../../../components/DropDown/DropDown'
 import { useStyles } from '../../styles'
 import { DropDownItem } from '../../../../../components/DropDown/types'
 
-
 type AddSchoolYearModalProps = {
   addSchoolYears: DropDownItem[]
   addSchoolYearDialogOpen: boolean
-  handleParentClose: () => {}
-  handleParentSave: (value: string) => {}
+  handleParentClose: () => void
+  handleParentSave: (value: string) => void
 }
 
-export default function AddSchoolYearModal({ addSchoolYears, addSchoolYearDialogOpen, handleParentClose, handleParentSave}: AddSchoolYearModalProps) {
+export default function AddSchoolYearModal({
+  addSchoolYears,
+  addSchoolYearDialogOpen,
+  handleParentClose,
+  handleParentSave,
+}: AddSchoolYearModalProps) {
   const classes = useStyles
   const [open, setOpen] = useState<boolean>(false)
   const [selectedSchoolYearId, setSelectedSchoolYearId] = useState<string>('none')
-  
+
   const handleClose = () => {
     setOpen(false)
     handleParentClose()
@@ -36,7 +40,7 @@ export default function AddSchoolYearModal({ addSchoolYears, addSchoolYearDialog
       setOpen(true)
     }
   }, [addSchoolYearDialogOpen])
-  
+
   return (
     <Dialog
       open={open}
@@ -55,7 +59,7 @@ export default function AddSchoolYearModal({ addSchoolYears, addSchoolYearDialog
         sx={{
           fontWeight: 'bold',
           marginTop: '10px',
-          textAlign: 'center'
+          textAlign: 'center',
         }}
       >
         {'New School Year'}
@@ -68,7 +72,8 @@ export default function AddSchoolYearModal({ addSchoolYears, addSchoolYearDialog
           placeholder={'Clone from'}
           setParentValue={(val, index) => {
             setSelectedSchoolYearId(val)
-        }}/>
+          }}
+        />
       </Box>
       <DialogActions
         sx={{
@@ -76,10 +81,10 @@ export default function AddSchoolYearModal({ addSchoolYears, addSchoolYearDialog
           marginBottom: 2,
         }}
       >
-        <Button variant='contained' sx={classes.cancelButton} onClick={handleClose} >
+        <Button variant='contained' sx={classes.cancelButton} onClick={handleClose}>
           Cancel
         </Button>
-        <Button variant='contained' sx={classes.submitButton} onClick={handleSave} >
+        <Button variant='contained' sx={classes.submitButton} onClick={handleSave}>
           Save
         </Button>
       </DialogActions>

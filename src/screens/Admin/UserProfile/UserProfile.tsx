@@ -22,7 +22,7 @@ export const UserProfile = ({ handleClose, data }) => {
   const [openObserverModal, setOpenObserverModal] = useState(false)
   const [studentStatus, setStudentStatus] = useState({})
   const [selectedParent, setSelectedParent] = useState()
-  const [selectedStudent, setSelectedStudent] = useState(data.student_id)
+  const [selectedStudent, setSelectedStudent] = useState(parseInt(data.student_id))
   const [applicationState, setApplicationState] = useState('')
   const {
     loading: userLoading,
@@ -94,7 +94,7 @@ export const UserProfile = ({ handleClose, data }) => {
     refetch()
   }
   const handleChangeParent = (parent) => {
-      setSelectedStudent('')
+      setSelectedStudent(0)
       if (parent.observer_id) {
         setSelectedParent(parent.observer_id)
         setUserInfo(parent.person)
@@ -111,7 +111,7 @@ export const UserProfile = ({ handleClose, data }) => {
   }
   const handleChangeStudent = (student) => {
     // if (data.student_id) {
-      setSelectedStudent(student.student_id)
+      setSelectedStudent(parseInt(student.student_id))
     // }
   }
   useEffect(() => {

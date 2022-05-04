@@ -256,9 +256,7 @@ export const EmailModal = ({ handleSubmit, handleModem, title, options, setEmail
 
   useEffect(() => {
     const HtmlInput = setEmailBodyInfo(body)
-    console.log(HtmlInput)
     let contentBlock
-    // const word = student.parent.person.first_name
     const word = "</span>"
     const index = HtmlInput.indexOf(word)
     let endIndex = 0
@@ -301,6 +299,7 @@ export const EmailModal = ({ handleSubmit, handleModem, title, options, setEmail
     }
     handleModem(false)
   }
+
 
   return (
     <Modal

@@ -105,7 +105,7 @@ export const ApplicationEmailModal: EmailModalTemplateType = ({
             Cancel
           </Button>
           <Button variant='contained' disableElevation sx={classes.submitButton} onClick={onSubmit}>
-            Submit
+            Send
           </Button>
         </Box>
       </Box>

@@ -113,6 +113,9 @@ export const EnrollmentPacketTable = () => {
   })
 
   const { loading: countLoading, data: countGroup } = useQuery(packetCountQuery, {
+    variables: {
+      regionId: me?.selectedRegionId,
+    },
     fetchPolicy: 'network-only',
   })
   const handlePageChange = (page) => {
@@ -156,7 +159,7 @@ export const EnrollmentPacketTable = () => {
 
   useEffect(() => {
     if (countGroup) {
-      setpacketCount(countGroup.packetCount.results)
+      setpacketCount(countGroup.packetCountByRegionId.results)
     }
   }, [countGroup])
   const headCells: HeadCell[] = [

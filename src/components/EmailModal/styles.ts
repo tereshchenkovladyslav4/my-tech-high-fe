@@ -10,6 +10,8 @@ export const useStyles = {
     boxShadow: 24,
     p: 4,
     borderRadius: 2,
+    overflowY: 'auto',
+    height: '97vh'
   },
   editor: {
     border: '1px solid #d1d1d1',

@@ -1,13 +1,12 @@
-import ReactDOM from "react-dom";
-import React from "react";
+import ReactDOM from 'react-dom'
+import React from 'react'
 import CloseIcon from '@mui/icons-material/Close'
-import { Box, Button, Modal } from "@mui/material";
-import { SYSTEM_01 } from "../../utils/constants";
-import { Paragraph } from "../Typography/Paragraph/Paragraph";
-import { Subtitle } from "../Typography/Subtitle/Subtitle";
+import { Box, Button, Modal } from '@mui/material'
+import { SYSTEM_01 } from '../../utils/constants'
+import { Paragraph } from '../Typography/Paragraph/Paragraph'
+import { Subtitle } from '../Typography/Subtitle/Subtitle'
 import { useStyles } from './styles'
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline'
-
 
 export const UserLeaveConfirmation = (
   message,
@@ -15,29 +14,27 @@ export const UserLeaveConfirmation = (
   // confirmOpen,
   // setConfirmOpen
 ) => {
-  const container = document.createElement("div");
+  const container = document.createElement('div')
   const classes = useStyles
 
-  container.setAttribute("custom-confirm-view", "");
+  container.setAttribute('custom-confirm-view', '')
 
   const handleConfirm = (callbackState) => {
-    ReactDOM.unmountComponentAtNode(container);
-    callback(callbackState);
+    ReactDOM.unmountComponentAtNode(container)
+    callback(callbackState)
     // setConfirmOpen(false);
-  };
+  }
 
   const handleCancel = (callbackState) => {
-    ReactDOM.unmountComponentAtNode(container);
-    callback();
+    ReactDOM.unmountComponentAtNode(container)
+    callback()
     // setConfirmOpen(false);
-  };
+  }
 
-  document.body.appendChild(container);
-  const { header, content } = JSON.parse(message);
+  document.body.appendChild(container)
+  const { header, content } = JSON.parse(message)
   ReactDOM.render(
-    <Modal
-      open={true}
-    >
+    <Modal open={true}>
       <Box sx={classes.modalCard}>
         <Box sx={classes.header as object}>
           <Subtitle fontWeight='700'>{header}</Subtitle>
@@ -52,13 +49,13 @@ export const UserLeaveConfirmation = (
               Cancel
             </Button>
             <Button variant='contained' disableElevation sx={classes.submitButton} onClick={handleConfirm}>
-              Confirm
+              Yes
             </Button>
           </Box>
         </Box>
       </Box>
     </Modal>,
 
-    container
-  );
-};
+    container,
+  )
+}

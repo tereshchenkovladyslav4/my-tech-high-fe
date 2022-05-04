@@ -105,8 +105,8 @@ const Years: React.FC = () => {
   useBeforeUnload({
     when: isChanged ? true : false,
     message: JSON.stringify({
-      header: 'Unsaved Work',
-      content: 'Changes you made will not be saved',
+      header: 'Unsaved Changes',
+      content: 'Are you sure you want to leave without saving changes?',
     }),
   })
 
@@ -135,7 +135,7 @@ const Years: React.FC = () => {
       const submittedCreateResponse = await submitCreate({
         variables: {
           createSchoolYearInput: {
-            RegionId: parseInt(me.selectedRegionId),
+            RegionId: me.selectedRegionId,
             date_begin: moment(schoolYearOpen),
             date_end: moment(schoolYearClose),
             date_reg_close: moment(applicationsClose),
@@ -170,7 +170,7 @@ const Years: React.FC = () => {
       setApplicationsClose('')
       setMidYearOpen('')
       setMidYearClose('')
-      setMidYearStatus('')
+      setMidYearStatus(false)
     } else if (val) {
       schoolYears.forEach((schoolYear) => {
         if (schoolYear.schoolYearId == parseInt(val)) {
@@ -312,8 +312,8 @@ const Years: React.FC = () => {
       <Prompt
         when={isChanged ? true : false}
         message={JSON.stringify({
-          header: 'Unsaved Work',
-          content: 'Changes you made will not be saved',
+          header: 'Unsaved Changes',
+          content: 'Are you sure you want to leave without saving changes?',
         })}
       />
       <Box

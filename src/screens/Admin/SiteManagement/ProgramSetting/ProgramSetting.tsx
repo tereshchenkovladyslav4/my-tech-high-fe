@@ -80,6 +80,16 @@ export const removeCountyInfoByRegionId = gql`
   }
 `
 
+export const removeFileByFileId = gql`
+  mutation DeletePacketDocumentFile($fileId: String!) {
+    deletePacketDocumentFile(fileId: $fileId) {
+      error
+      message
+      results
+    }
+  }
+`
+
 export const removeSchoolDistrictInfoByRegionId = gql`
   mutation RemoveSchoolDistrictInfoByRegionId($regionId: ID!) {
     removeSchoolDistrictInfoByRegionId(region_id: $regionId)
@@ -125,6 +135,7 @@ const ProgramSetting: React.FC = () => {
   const [submitSave, { data, loading, error }] = useMutation(updateStateNameMutation)
   const [submitSchoolYearSave, {}] = useMutation(updateSchoolYearMutation)
   const [countyInfoDelete, {}] = useMutation(removeCountyInfoByRegionId)
+  const [fileDelete, {}] = useMutation(removeFileByFileId)
   const [schoolDistrictInfoDelete, {}] = useMutation(removeSchoolDistrictInfoByRegionId)
   const schoolYearData = useQuery(getSchoolYearsByRegionId, {
     variables: {
@@ -228,6 +239,14 @@ const ProgramSetting: React.FC = () => {
       path: '',
       file: null,
     })
+
+    if (deleteResponse?.data?.removeCountyInfoByRegionId) {
+      await fileDelete({
+        variables: {
+          fileId: deleteResponse?.data?.removeCountyInfoByRegionId
+        }
+      })
+    }
   }
 
   const handleSchoolDistrictInfoDelete = async () => {
@@ -241,6 +260,14 @@ const ProgramSetting: React.FC = () => {
       path: '',
       file: null,
     })
+    
+    if (deleteResponse?.data?.removeSchoolDistrictInfoByRegionId) {
+      await fileDelete({
+        variables: {
+          fileId: deleteResponse?.data?.removeSchoolDistrictInfoByRegionId
+        }
+      })
+    }
   }
 
   const handleClickSave = async () => {
@@ -328,8 +355,8 @@ const ProgramSetting: React.FC = () => {
   useBeforeUnload({
     when: isChanged ? true : false,
     message: JSON.stringify({
-      header: 'Unsaved Work',
-      content: 'Changes you made will not be saved',
+      header: 'Unsaved Changes',
+      content: 'Are you sure you want to leave without saving changes?',
     }),
   })
 

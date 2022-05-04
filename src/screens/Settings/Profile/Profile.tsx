@@ -1,5 +1,5 @@
 import { useMutation } from '@apollo/client'
-import { Avatar, Box, Button, Card, Checkbox, FormControlLabel, Grid, OutlinedInput, TextField } from '@mui/material'
+import { Alert, AlertColor, Avatar, Box, Button, Card, Checkbox, FormControlLabel, Grid, OutlinedInput, TextField } from '@mui/material'
 import React, { useContext, useEffect, useState } from 'react'
 import { Paragraph } from '../../../components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '../../../components/Typography/Subtitle/Subtitle'
@@ -12,8 +12,13 @@ import { WarningModal } from '../../../components/WarningModal/Warning'
 import * as yup from 'yup';
 import { useFormik } from 'formik';
 
-export const Profile = () => {
+type openAlertSaveType = {
+  message: string,
+  status: AlertColor,
+  open: boolean,
+}
 
+export const Profile = ({handleIsFormChange}) => {
   const classes = useStyles
   const { me } = useContext(UserContext)
   const { profile } = me as UserInfo
@@ -25,23 +30,18 @@ export const Profile = () => {
   const [warningModalOpen, setWarningModalOpen] = useState(false)
   const hasImage = !!me.avatar_url
   const [avatar, setAvatar] = useState(null);
-  //const [prefFirstName, setPrefFirstName] = useState(profile.preferred_first_name)
-  //const [prefLastName, setPrefLastName] = useState(profile.preferred_last_name)
-  //const [firstName, setFirstName] = useState(profile.first_name)
-  //const [middleName, setMiddleName] = useState(profile.middle_name)
-  //const [lastName, setLastName] = useState(profile.last_name)
-  //const [phone, setPhone] = useState(profile.phone.number)
-  //const [email, setEmail] = useState(profile.email)
-  //const [city, setCity] = useState(profile.address.city)
-  //const [recieveText, setRecieveText] = useState(false)
-  //const [address, setAddress] = useState(profile.address.street)
-  //const [state, setState] = useState(profile.address.state)
-  //const [zipcode, setZipcode] = useState(profile.address.zip)
-  //const [address2, setAddress2] = useState(profile.address.street2)
   const [recieveText, setRecieveText] = useState(false)
   const [file, setFile] = useState<undefined | File>()
+  const [warningModalOpen3, setWarningModalOpen3] = useState({
+    message: '',
+    open: false,
+  });
 
-  const uploadLimit = 1
+  const [openSaveAlert, setOpenSaveAlert] = useState<openAlertSaveType>({
+    message: '',
+    status: 'success',
+    open: false,
+  })
 
   const onSave = async () => {
     submitUpdate({
@@ -63,17 +63,60 @@ export const Profile = () => {
         },
       },
     }).then( async (res)  => {
-      // set catch and then here, return snackbox for both success and fail
-
       // fire upload fetch
-      const upload = await uploadPhoto(file)
-      if(upload){
-        location.reload()
-      } 
-        
-    })
+      if(file) {
+        const upload = await uploadPhoto(file)
+        if(upload) {
+          setOpenSaveAlert({ message: 'Profile updated Successfully.', status: 'success', open: true })
 
-    
+          setTimeout(() => {
+            setOpenSaveAlert({ message: '', status: 'success', open: false })
+
+            if(formik.values.email != profile.email)
+              location.replace('/');
+          }, 2000)
+        }
+        else {
+          setOpenSaveAlert({ message: 'Unknown error occured while uploading profile photo.', status: 'error', open: true })
+
+          setTimeout(() => {
+            setOpenSaveAlert({ message: '', status: 'success', open: false })
+
+            if(formik.values.email != profile.email)
+              location.replace('/');
+          }, 2000)
+        }
+        handleIsFormChange(false);
+      }
+      else {
+        setOpenSaveAlert({ message: 'Profile updated Successfully.', status: 'success', open: true })
+
+        setTimeout(() => {
+          setOpenSaveAlert({ message: '', status: 'success', open: false })
+
+          if(formik.values.email != profile.email)
+            location.replace('/');
+        }, 2000)
+
+        handleIsFormChange(false);
+
+        if(formik.values.email != profile.email)
+          location.href.replace('/');
+      }
+    }).catch(err => {
+      setOpenSaveAlert({ message: err?.message, status: 'error', open: true })
+
+      setTimeout(() => {
+        setOpenSaveAlert({ message: '', status: 'success', open: false })
+      }, 2000)
+
+      handleIsFormChange(false);
+    })
+  }
+
+  const onSubmitFailed = () => {
+    setWarningModalOpen3({open: false, message: ''});
+    formik.values.email = profile.email;
   }
 
   const onRemoveProfilePhoto = () => {
@@ -84,6 +127,7 @@ export const Profile = () => {
     })
   }
 
+  const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
   const validationSchema = yup.object({
     preferredFName: yup
       .string()
@@ -104,6 +148,7 @@ export const Profile = () => {
       .nullable(),
     phoneNumber: yup
       .string()
+      .matches(phoneRegExp, 'Phone number is not valid')
       .required('Phone number is required')
       .nullable(),
     email: yup
@@ -171,7 +216,6 @@ export const Profile = () => {
   }
 
   const uploadPhoto = async (file) => {
-
     if(!file)
       return
 
@@ -202,12 +246,10 @@ export const Profile = () => {
   useEffect(() => {
     if(me && me.avatar_url)
       setAvatar(me.avatar_url)
-
-    console.log(file), [file]
   }, [me] )
 
   useEffect(() => {
-    setRecieveText( Boolean( profile.phone.recieve_text ))
+    setRecieveText(Boolean( profile.phone.recieve_text ))
   }, [])
 
   const Image = () => (
@@ -272,7 +314,10 @@ export const Profile = () => {
             <TextField
               name='preferredFName'
               value={formik.values.preferredFName}
-              onChange={formik.handleChange}
+              onChange={(e) => {
+                handleIsFormChange(true);
+                formik.handleChange(e);
+              }}
               error={formik.touched.preferredFName && Boolean(formik.errors.preferredFName)}
               helperText={formik.touched.preferredFName && formik.errors.preferredFName}
             />
@@ -286,7 +331,10 @@ export const Profile = () => {
             <TextField
               name='preferredLName'
               value={formik.values.preferredLName}
-              onChange={formik.handleChange}
+              onChange={(e) => {
+                handleIsFormChange(true);
+                formik.handleChange(e);
+              }}
               error={formik.touched.preferredLName && Boolean(formik.errors.preferredLName)}
               helperText={formik.touched.preferredLName && formik.errors.preferredLName}
             />
@@ -300,7 +348,10 @@ export const Profile = () => {
             <TextField
               name='legalFName'
               value={formik.values.legalFName}
-              onChange={formik.handleChange}
+              onChange={(e) => {
+                handleIsFormChange(true);
+                formik.handleChange(e);
+              }}
               error={formik.touched.legalFName && Boolean(formik.errors.legalFName)}
               helperText={formik.touched.legalFName && formik.errors.legalFName}
             />
@@ -314,7 +365,10 @@ export const Profile = () => {
             <TextField
               name='legalMName'
               value={formik.values.legalMName}
-              onChange={formik.handleChange}
+              onChange={(e) => {
+                handleIsFormChange(true);
+                formik.handleChange(e);
+              }}
               error={formik.touched.legalMName && Boolean(formik.errors.legalMName)}
               helperText={formik.touched.legalMName && formik.errors.legalMName}
             />
@@ -328,7 +382,10 @@ export const Profile = () => {
             <TextField
               name='legalLName'
               value={formik.values.legalLName}
-              onChange={formik.handleChange}
+              onChange={(e) => {
+                handleIsFormChange(true);
+                formik.handleChange(e);
+              }}
               error={formik.touched.legalLName && Boolean(formik.errors.legalLName)}
               helperText={formik.touched.legalLName && formik.errors.legalLName}
             />
@@ -342,7 +399,10 @@ export const Profile = () => {
             <TextField
               name='phoneNumber'
               value={formik.values.phoneNumber}
-              onChange={formik.handleChange}
+              onChange={(e) => {
+                handleIsFormChange(true);
+                formik.handleChange(e);
+              }}
               error={formik.touched.phoneNumber && Boolean(formik.errors.phoneNumber)}
               helperText={formik.touched.phoneNumber && formik.errors.phoneNumber}
             />
@@ -364,7 +424,10 @@ export const Profile = () => {
             <TextField
               name='email'
               value={formik.values.email}
-              onChange={formik.handleChange}
+              onChange={(e) => {
+                handleIsFormChange(true);
+                formik.handleChange(e);
+              }}
               error={formik.touched.email && Boolean(formik.errors.email)}
               helperText={formik.touched.email && formik.errors.email}
             />
@@ -378,7 +441,10 @@ export const Profile = () => {
             <TextField
               name='city'
               value={formik.values.city}
-              onChange={formik.handleChange}
+              onChange={(e) => {
+                handleIsFormChange(true);
+                formik.handleChange(e);
+              }}
               error={formik.touched.city && Boolean(formik.errors.city)}
               helperText={formik.touched.city && formik.errors.city}
             />
@@ -393,7 +459,10 @@ export const Profile = () => {
             <TextField
               name='address1'
               value={formik.values.address1}
-              onChange={formik.handleChange}
+              onChange={(e) => {
+                handleIsFormChange(true);
+                formik.handleChange(e);
+              }}
               error={formik.touched.address1 && Boolean(formik.errors.address1)}
               helperText={formik.touched.address1 && formik.errors.address1}
             />
@@ -407,7 +476,10 @@ export const Profile = () => {
             <TextField
               name='state'
               value={formik.values.state}
-              onChange={formik.handleChange}
+              onChange={(e) => {
+                handleIsFormChange(true);
+                formik.handleChange(e);
+              }}
               error={formik.touched.state && Boolean(formik.errors.state)}
               helperText={formik.touched.state && formik.errors.state}
             />
@@ -421,7 +493,10 @@ export const Profile = () => {
             <TextField
               name='zipcode'
               value={formik.values.zipcode}
-              onChange={formik.handleChange}
+              onChange={(e) => {
+                handleIsFormChange(true);
+                formik.handleChange(e);
+              }}
               error={formik.touched.zipcode && Boolean(formik.errors.zipcode)}
               helperText={formik.touched.zipcode && formik.errors.zipcode}
             />
@@ -435,19 +510,36 @@ export const Profile = () => {
             <TextField
               name='address2'
               value={formik.values.address2}
-              onChange={formik.handleChange}
+              onChange={(e) => {
+                handleIsFormChange(true);
+                formik.handleChange(e);
+              }}
               error={formik.touched.address2 && Boolean(formik.errors.address2)}
               helperText={formik.touched.address2 && formik.errors.address2}
             />
           </Box>
         </Grid>
       </Grid>
+      <Grid>
+        {openSaveAlert.open && (<Alert
+          sx={{
+            position: 'relative',
+            bottom: '-83px'
+          }}
+          onClose={() => {
+            setOpenSaveAlert({ open: false, status: 'success', message: '' })
+          }}
+          severity={openSaveAlert.status}
+        >
+          {openSaveAlert.message}
+        </Alert>)}
+      </Grid>
       { 
         imageModalOpen 
           && <DocumentUploadModal
             handleModem={() => setImageModalOpen(!imageModalOpen)}
             handleFile={handleFile}
-            limit={uploadLimit}
+            limit={1}
           /> 
       }
       {

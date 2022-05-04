@@ -84,7 +84,7 @@ export default function CountySelect({
         {!county?.name ? (
           <Stack direction='row' sx={{ ml: 1.5, cursor: 'pointer' }} alignItems='center' onClick={handleClickOpen}>
             <Subtitle size={12} color={MTHBLUE} fontWeight='500'>
-              import
+              Import
             </Subtitle>
           </Stack>
         ) : (
@@ -129,7 +129,7 @@ export default function CountySelect({
       {replaceModalOpen && (
         <CustomModal
           title='Replace Counties File'
-          description='Are you sure you want to replace the Counties file??'
+          description='Are you sure you want to replace the Counties file?'
           confirmStr='Confirm'
           cancelStr='Cancel'
           onConfirm={() => handleReplaceConfirm()}

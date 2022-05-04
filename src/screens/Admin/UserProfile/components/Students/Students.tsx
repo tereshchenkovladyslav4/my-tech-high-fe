@@ -107,7 +107,7 @@ export const Students = ({ students, selectedStudent, handleChangeStudent }) => 
                 <Box sx={{ cursor: 'pointer' }} onClick={() => handleChangeStudent(item)}>
                   <Metadata
                     title={
-                      <Subtitle fontWeight='700' color={selectedStudent === item.student_id ? '#4145FF' : '#cccccc'}>
+                      <Subtitle fontWeight='700' color={selectedStudent === parseInt(item.student_id) ? '#4145FF' : '#cccccc'}>
                         {item.person.first_name}
                       </Subtitle>
                     }
@@ -133,7 +133,7 @@ export const Students = ({ students, selectedStudent, handleChangeStudent }) => 
                 <Box sx={{ cursor: 'pointer' }} onClick={() => handleChangeStudent(item)}>
                   <Metadata
                     title={
-                      <Subtitle fontWeight='700' color={selectedStudent === item.student_id ? '#4145FF' : '#cccccc'}>
+                      <Subtitle fontWeight='700' color={selectedStudent === parseInt(item.student_id) ? '#4145FF' : '#cccccc'}>
                         {item.person.first_name}
                       </Subtitle>
                     }
@@ -157,7 +157,7 @@ export const Students = ({ students, selectedStudent, handleChangeStudent }) => 
                 <Box sx={{ cursor: 'pointer' }} onClick={() => handleChangeStudent(item)}>
                   <Metadata
                     title={
-                      <Subtitle fontWeight='700' color={selectedStudent === item.student_id ? '#4145FF' : '#cccccc'}>
+                      <Subtitle fontWeight='700' color={selectedStudent === parseInt(item.student_id) ? '#4145FF' : '#cccccc'}>
                         {item.person.first_name}
                       </Subtitle>
                     }

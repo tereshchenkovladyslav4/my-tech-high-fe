@@ -109,7 +109,7 @@ export const useStyles = {
   },
   subject: {
     marginTop: '30px',
-    height: '50px',
+    minHeight: '50px',
     border: '1px solid #CCCCCC',
     boxSizing: 'border-box',
     borderRadius: '5px',
@@ -119,7 +119,7 @@ export const useStyles = {
     border: '1px solid #CCCCCC',
     boxSizing: 'border-box',
     borderRadius: '5px',
-    height: '360px',
+    minHeight: '360px',
     padding: '30px',
     marginBottom: '50px',
   },

@@ -13,16 +13,14 @@ import { ENROLLMENT, GRAY, HOMEROOM, LIGHTGRAY, MTHBLUE, RED, SYSTEM_02 } from '
 import { toOrdinalSuffix } from '../../../../utils/stringHelpers'
 import { StudentComponentType, StudentType } from '../types'
 import { useStyles } from './styles'
-import * as yup from 'yup';
-import { useFormik } from 'formik';
+import * as yup from 'yup'
+import { useFormik } from 'formik'
 import { useMutation } from '@apollo/client'
 import { updateProfile, removeProfilePhoto } from './service'
 import { DocumentUploadModal } from '../../../Enrollment/Documents/components/DocumentUploadModal/DocumentUploadModal'
-import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt';
-
+import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt'
 
 export const StudentProfile = () => {
-
   // hook up formik
   // if formik values !== me && navigating -> show warning
 
@@ -34,21 +32,21 @@ export const StudentProfile = () => {
   const history = useHistory()
 
   const { person } = student
-  const {status} = student?.packets.at(-1)
+  const { status } = student?.packets.at(-1)
 
+  const [warn, setWarn] = useState(false)
   const [submitUpdate, { data }] = useMutation(updateProfile)
-  const [submitRemoveProfilePhoto, {data:userData}] = useMutation(removeProfilePhoto);
+  const [submitRemoveProfilePhoto, { data: userData }] = useMutation(removeProfilePhoto)
   const [imageModalOpen, setImageModalOpen] = useState(false)
   const [warningModalOpen, setWarningModalOpen] = useState(false)
-  const [avatar, setAvatar] = useState(null);
+  const [avatar, setAvatar] = useState(null)
   const [file, setFile] = useState<undefined | File>()
 
-  const enrollmentLink = `${HOMEROOM+ENROLLMENT}/${student.student_id}`
-  
+  const enrollmentLink = `${HOMEROOM + ENROLLMENT}/${student.student_id}`
+
   //useEffect(() => {
   //  setStudent(currStudent)
   //}, [location])
-
 
   const [testingPreferences, setTestingPreferences] = useState(student.testing_preference)
 
@@ -66,22 +64,17 @@ export const StudentProfile = () => {
       value: 'Opt Out',
     },
   ]
-  const setState = (id: any) => (formik.values.testingPref = id)
+  const setState = (id: any) => {
+    formik.values.testingPref = id
+    setWarn(true)
+  }
 
   const uploadLimit = 1
 
   const validationSchema = yup.object({
-    firstName: yup
-      .string()
-      .nullable(),
-      lastName: yup
-      .string()
-      .nullable(),
-    email: yup
-      .string()
-      .email('Please enter a valid email')
-      .nullable()
-      .required('Email is required')
+    firstName: yup.string().nullable(),
+    lastName: yup.string().nullable(),
+    email: yup.string().email('Please enter a valid email').nullable().required('Email is required'),
   })
 
   const formik = useFormik({
@@ -93,12 +86,13 @@ export const StudentProfile = () => {
       password: undefined,
     },
     validationSchema: validationSchema,
-    onSubmit: async() => {
+    onSubmit: async () => {
       await onSave()
     },
   })
 
   const onSave = async () => {
+    setWarn(false)
     let variables = {
       student_id: parseFloat(studentId as unknown as string),
       preferred_first_name: formik.values.firstName,
@@ -108,15 +102,14 @@ export const StudentProfile = () => {
       testing_preference: formik.values.testingPref,
       password: formik.values.password,
     }
-    if( file ){
-      const uploadData = await uploadPhoto(file).then( async(res) => {
-          return res.json()
-            .then( ({data}) => {
-            return data
-            })
+    if (file) {
+      const uploadData = await uploadPhoto(file).then(async (res) => {
+        return res.json().then(({ data }) => {
+          return data
+        })
       })
 
-      if( uploadData && uploadData.key ){
+      if (uploadData && uploadData.key) {
         variables.photo = uploadData.key
       }
     }
@@ -125,36 +118,34 @@ export const StudentProfile = () => {
       variables: {
         updateStudentProfileInput: variables,
       },
-    }).then((res)  => {
+    }).then((res) => {
       // set catch and then here, return snackbox for both success and fail
       location.reload()
     })
   }
 
   const uploadPhoto = async (file) => {
-    var bodyFormData = new FormData();
-      bodyFormData.append('file',file[0])
-      bodyFormData.append('region', 'UT')
-      bodyFormData.append('year', '2022')
+    var bodyFormData = new FormData()
+    bodyFormData.append('file', file[0])
+    bodyFormData.append('region', 'UT')
+    bodyFormData.append('year', '2022')
 
-      return await fetch( import.meta.env.SNOWPACK_PUBLIC_S3_URL,{
-          method: 'POST',
-          body: bodyFormData,
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('JWT')}`
-          },
-        })
+    return await fetch(import.meta.env.SNOWPACK_PUBLIC_S3_URL, {
+      method: 'POST',
+      body: bodyFormData,
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('JWT')}`,
+      },
+    })
   }
 
   const onRemoveProfilePhoto = () => {
     setWarningModalOpen(!warningModalOpen)
-    submitRemoveProfilePhoto(
-      {
-        variables: {
-          updateStudentProfileInput: {student_id:parseFloat(studentId as unknown as string)},
-        },
-      }
-    ).then((res) => {
+    submitRemoveProfilePhoto({
+      variables: {
+        updateStudentProfileInput: { student_id: parseFloat(studentId as unknown as string) },
+      },
+    }).then((res) => {
       setFile(undefined)
       setAvatar(null)
       location.reload()
@@ -167,108 +158,113 @@ export const StudentProfile = () => {
   }
 
   const getProfilePhoto = () => {
-      if( !avatar )
-      return;
+    if (!avatar) return
 
-      const s3URL = 'https://infocenter-v2-dev.s3.us-west-2.amazonaws.com/';
-      return s3URL + person.photo;
+    const s3URL = 'https://infocenter-v2-dev.s3.us-west-2.amazonaws.com/'
+    return s3URL + person.photo
   }
 
-  const openImageModal = () =>  setImageModalOpen(true)
+  const openImageModal = () => setImageModalOpen(true)
 
   const handleFile = (fileName: File) => setFile(fileName)
 
   const Image = () => (
-    <Box 
-      display='flex' 
-      flexDirection='column' 
-      justifyContent={'center'}
-      sx={{height: 167, width: 167}}
-    >
-    {
-      ( file || avatar )
-        ? <>
-        <Avatar 
-          src={file ? convertToBlob(file) : getProfilePhoto()} 
-          variant='rounded' 
-          sx={{height: '100%', width: '100%'}}  
-        />
-        <Box component='a' onClick={() => setWarningModalOpen(true)} sx={{cursor:'pointer',p: 1}}>
-          <Paragraph size='medium' color='#7B61FF' fontWeight='500' textAlign='center'>Remove Profile Picture</Paragraph>
-        </Box>
+    <Box display='flex' flexDirection='column' justifyContent={'center'} sx={{ height: 167, width: 167 }}>
+      {file || avatar ? (
+        <>
+          <Avatar
+            src={file ? convertToBlob(file) : getProfilePhoto()}
+            variant='rounded'
+            sx={{ height: '100%', width: '100%' }}
+          />
+          <Box component='a' onClick={() => setWarningModalOpen(true)} sx={{ cursor: 'pointer', p: 1 }}>
+            <Paragraph size='medium' color='#7B61FF' fontWeight='500' textAlign='center'>
+              Remove Profile Picture
+            </Paragraph>
+          </Box>
         </>
-        : <Box 
-          display='flex' 
-          flexDirection='column' 
-          justifyContent={'center'} 
-          sx={{backgroundColor: '#FAFAFA', alignItems:'center', cursor:'pointer', height: '100%', width: '100%'}}
+      ) : (
+        <Box
+          display='flex'
+          flexDirection='column'
+          justifyContent={'center'}
+          sx={{ backgroundColor: '#FAFAFA', alignItems: 'center', cursor: 'pointer', height: '100%', width: '100%' }}
           onClick={() => openImageModal()}
         >
-          <SystemUpdateAltIcon/>
-          <Paragraph size='medium' fontWeight='500'>Upload Photo</Paragraph>
+          <SystemUpdateAltIcon />
+          <Paragraph size='medium' fontWeight='500'>
+            Upload Photo
+          </Paragraph>
         </Box>
-    }
-  </Box>
+      )}
+    </Box>
   )
 
   const classes = useStyles
   const grade = student.grade_levels.at(-1).grade_level
-  const warnUser = 
-      formik.values.firstName !== person.preferred_first_name
-      || person.preferred_last_name !== formik.values.lastName
-      || (status !== 'Missing Info' 
-        && ( formik.values.email !== person.email || formik.values.password !== undefined)
-      )
+  const warnUser =
+    warn
+    || formik.values.firstName !== person.preferred_first_name 
+    || person.preferred_last_name !== formik.values.lastName 
+    || (status !== 'Missing Info' && (formik.values.email !== person.email || formik.values.password !== undefined))
+  
 
+        console.log(student.testing_preference)
   useEffect(() => {
-    if(person && person.photo)
-      setAvatar(person.photo)
-  }, [person] )
+    if (person && person.photo) setAvatar(person.photo)
+  }, [person])
 
   return (
-    <form onSubmit={formik.handleSubmit} >
+    <form onSubmit={formik.handleSubmit}>
       <Card style={{ borderRadius: 12 }}>
         <Prompt
-          when={ warnUser }
+          when={warnUser}
           message={JSON.stringify({
-            header: "Unsaved Work",
-            content: "Changes you made will not be saved",
+            header: 'Unsaved Changes',
+            content: 'Are you sure you want to leave without saving changes?',
           })}
         />
         {/*<WarningModal title='Unsaved Work' subtitle='Changes you made will not be saved' />*/}
         <Grid sx={classes.gridContainer}>
-        <Title>Student</Title>
+          <Title>Student</Title>
           <Grid item container xs={12} rowSpacing={4} paddingX={8} columnSpacing={4} marginTop={1}>
             <Grid item xs={6}>
               <Box display='flex' flexDirection='column'>
                 <Box display='flex' flexDirection='row'>
-                {Image()}
+                  {Image()}
                   <Box display='flex' flexDirection='column' justifyContent='center' marginLeft={4} color={GRAY}>
-                    <Title>{grade === 'Kin' ? 'Kindergarten' : `${toOrdinalSuffix(student.grade_levels.at(-1).grade_level as number)} Grade`}</Title>
+                    <Title>
+                      {grade === 'Kin'
+                        ? 'Kindergarten'
+                        : `${toOrdinalSuffix(student.grade_levels.at(-1).grade_level as number)} Grade`}
+                    </Title>
                     {/*{ status !== 'Missing Info' && status !== 'Submitted' && <Title>GPA</Title>}*/}
                   </Box>
                 </Box>
               </Box>
             </Grid>
             <Grid item xs={6}>
-              {
-                status !== 'Missing Info' && status !== 'Submitted' && 
+              {status !== 'Missing Info' && status !== 'Submitted' && (
                 <Box display='flex' flexDirection='column' justifyContent='end' alignItems='end' height='100%'>
                   <Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between'>
-                    <Subtitle size='large' fontWeight='700' color={GRAY}>1st Semester</Subtitle>
+                    <Subtitle size='large' fontWeight='700' color={GRAY}>
+                      1st Semester
+                    </Subtitle>
                   </Box>
                   <Box display='flex' flexDirection='row' alignItems='center'>
-                    <Subtitle size='large' fontWeight='700' color={GRAY}>2nd Semester</Subtitle>
+                    <Subtitle size='large' fontWeight='700' color={GRAY}>
+                      2nd Semester
+                    </Subtitle>
                   </Box>
                 </Box>
-              }
+              )}
             </Grid>
             <Grid item xs={3}>
               <Box display='flex' flexDirection='column'>
                 <Paragraph size='medium' fontWeight='500'>
                   Preferred First Name
                 </Paragraph>
-                <OutlinedInput 
+                <OutlinedInput
                   name='firstName'
                   value={formik.values.firstName}
                   onChange={formik.handleChange}
@@ -281,7 +277,7 @@ export const StudentProfile = () => {
                 <Paragraph size='medium' fontWeight='500'>
                   Preferred Last Name
                 </Paragraph>
-                <OutlinedInput 
+                <OutlinedInput
                   name='lastName'
                   value={formik.values.lastName}
                   onChange={formik.handleChange}
@@ -289,10 +285,9 @@ export const StudentProfile = () => {
                 />
               </Box>
             </Grid>
-            <Grid item xs={3}/>
+            <Grid item xs={3} />
             <Grid item xs={3}>
-              {
-                status !== 'Missing Info' && status !== 'Submitted' && 
+              {status !== 'Missing Info' && status !== 'Submitted' && (
                 <Box>
                   <Box display='flex' flexDirection='column' alignItems='center'>
                     <Paragraph size='medium' fontWeight='500'>
@@ -303,129 +298,124 @@ export const StudentProfile = () => {
                     </Button>
                   </Box>
                 </Box>
-              }
+              )}
             </Grid>
             <Grid item xs={3}>
-              {status !== 'Missing Info' && 
-              <Box display='flex' flexDirection='column'>
-                <Paragraph size='medium' fontWeight='500'>
-                  Testing Preference
-                </Paragraph>
-                <DropDown
-                  dropDownItems={testingPreferencesItems}
-                  defaultValue={student.testing_preference}
-                  setParentValue={setState}
-                  dropdownColor={`rgba(236, 89, 37, 0.1)`}
-                />
-              </Box>
-              }
+              {status !== 'Missing Info' && (
+                <Box display='flex' flexDirection='column'>
+                  <Paragraph size='medium' fontWeight='500'>
+                    Testing Preference
+                  </Paragraph>
+                  <DropDown
+                    dropDownItems={testingPreferencesItems}
+                    defaultValue={student.testing_preference}
+                    setParentValue={setState}
+                    dropdownColor={`rgba(236, 89, 37, 0.1)`}
+                  />
+                </Box>
+              )}
             </Grid>
             <Grid item xs={3}>
               <Box display='flex' flexDirection='column' alignItems='center'>
                 <Paragraph size='medium' fontWeight='500'>
                   Enrollment Packet
                 </Paragraph>
-                {
-                  status === 'Missing Info'
-                  ? <Button 
-                    sx={classes.resubmitButton} 
-                    variant='contained' 
-                    onClick={() => history.push(enrollmentLink)}
-                  >
+                {status === 'Missing Info' ? (
+                  <Button sx={classes.resubmitButton} variant='contained' onClick={() => history.push(enrollmentLink)}>
                     Resubmit
                   </Button>
-                : status === 'Submitted'
-                  ?<Button 
-                    sx={classes.enrollmentButton} 
-                    variant='contained' 
+                ) : status === 'Submitted' ? (
+                  <Button
+                    sx={classes.enrollmentButton}
+                    variant='contained'
                     onClick={() => history.push(enrollmentLink)}
                   >
                     Submitted
                   </Button>
-                  : <Button 
-                    sx={classes.enrollmentButton} 
-                    variant='contained' 
+                ) : (
+                  <Button
+                    sx={classes.enrollmentButton}
+                    variant='contained'
                     onClick={() => history.push(enrollmentLink)}
                   >
                     View
                   </Button>
-                }
+                )}
               </Box>
             </Grid>
-            <Grid item xs={3}/>
+            <Grid item xs={3} />
             <Grid item xs={3}>
-              {
-                status !== 'Missing Info' && status !== 'Submitted' && 
-                  <Box display='flex' flexDirection='column' alignItems='center'>
-                    <Paragraph size='medium' fontWeight='500'>
-                      Unofficial Transcript
-                    </Paragraph>
-                    <Button variant='contained' sx={classes.button} disableElevation>
-                      Download
-                    </Button>
-                  </Box>
-              }
+              {status !== 'Missing Info' && status !== 'Submitted' && (
+                <Box display='flex' flexDirection='column' alignItems='center'>
+                  <Paragraph size='medium' fontWeight='500'>
+                    Unofficial Transcript
+                  </Paragraph>
+                  <Button variant='contained' sx={classes.button} disableElevation>
+                    Download
+                  </Button>
+                </Box>
+              )}
             </Grid>
             <Grid item xs={6}>
-              { status !== 'Missing Info' && 
-              <Box display='flex' flexDirection='column'>
-                <Paragraph size='medium' fontWeight='500'>
-                  Student Email
-                </Paragraph>
-                <OutlinedInput 
-                  name='email'
-                  value={formik.values.email}
-                  onChange={formik.handleChange}
-                  sx={classes.textField}
-                />
-              </Box>
-              }
+              {status !== 'Missing Info' && (
+                <Box display='flex' flexDirection='column'>
+                  <Paragraph size='medium' fontWeight='500'>
+                    Student Email
+                  </Paragraph>
+                  <OutlinedInput
+                    name='email'
+                    value={formik.values.email}
+                    onChange={formik.handleChange}
+                    sx={classes.textField}
+                  />
+                </Box>
+              )}
             </Grid>
-            <Grid item xs={6}/>
+            <Grid item xs={6} />
             <Grid item xs={6}>
-              {status !== 'Missing Info' && 
-              <Box display='flex' flexDirection='column' width='100%'>
-                <Paragraph size='medium' fontWeight='500'>
-                  Password
-                </Paragraph>
-                <OutlinedInput
-                  name='password'
-                  type='password'
-                  value={formik.values.password}
-                  onChange={formik.handleChange}
-                  sx={classes.textField}
-                />
-              </Box>
-              }
+              {status !== 'Missing Info' && (
+                <Box display='flex' flexDirection='column' width='100%'>
+                  <Paragraph size='medium' fontWeight='500'>
+                    Password
+                  </Paragraph>
+                  <OutlinedInput
+                    name='password'
+                    type='password'
+                    value={formik.values.password}
+                    onChange={formik.handleChange}
+                    sx={classes.textField}
+                  />
+                </Box>
+              )}
             </Grid>
-            <Grid item xs={3}/>
+            <Grid item xs={3} />
             <Grid item xs={3}>
               <Box display='flex' flexDirection='column' width='100%' alignItems={'center'}>
                 <Paragraph size='medium' fontWeight='500'>
                   &nbsp;
                 </Paragraph>
-                <Button variant='contained' sx={classes.saveButton} type='submit'>Save Changes</Button>
-              </Box> 
+                <Button variant='contained' sx={classes.saveButton} type='submit'>
+                  Save Changes
+                </Button>
+              </Box>
             </Grid>
           </Grid>
         </Grid>
-        { 
-          imageModalOpen 
-            && <DocumentUploadModal
-              handleModem={() => setImageModalOpen(!imageModalOpen)}
-              handleFile={handleFile}
-              limit={uploadLimit}
-            /> 
-        }
-        {
-          warningModalOpen 
-            && <WarningModal
-              handleSubmit={() => onRemoveProfilePhoto()}
-              handleModem={() => setWarningModalOpen(!warningModalOpen)}
-              title='Delete Image'
-              subtitle='Are you sure you  want to delete  this image'
-            /> 
-        }
+        {imageModalOpen && (
+          <DocumentUploadModal
+            handleModem={() => setImageModalOpen(!imageModalOpen)}
+            handleFile={handleFile}
+            limit={uploadLimit}
+          />
+        )}
+        {warningModalOpen && (
+          <WarningModal
+            handleSubmit={() => onRemoveProfilePhoto()}
+            handleModem={() => setWarningModalOpen(!warningModalOpen)}
+            title='Delete Image'
+            subtitle='Are you sure you  want to delete  this image'
+          />
+        )}
       </Card>
     </form>
   )

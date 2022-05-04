@@ -59,7 +59,7 @@ export const ApplicationTable = ({ filter }) => {
   const [schoolYears, setSchoolYears] = useState([])
   const [editData, setEditData] = useState<any>()
   const [openEmailModal, setOpenEmailModal] = useState<boolean>(false)
-  const [emailHostory, setEmailHistory] = useState([])
+  const [emailHistory, setEmailHistory] = useState([])
   const specialEds = ['None', 'IEP', '504', 'Exit']
   const status = ['New', 'Sibling', 'Returning', 'Hidden']
   const createData = (application: any) => {
@@ -701,7 +701,7 @@ export const ApplicationTable = ({ filter }) => {
         <ApplicationEmailModal
           handleModem={() => setOpenEmailModal(!openEditModal)}
           handleSubmit={() => setOpenEmailModal(false)}
-          data={emailHostory}
+          data={emailHistory}
         />
       )}
     </Card>
