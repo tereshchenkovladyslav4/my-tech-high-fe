@@ -36,16 +36,16 @@ const AdminSetting: React.FC = () => {
     <Box display='flex' flexDirection='column' height={'100%'}>
       {showConfirmModalOpen && (
         <CustomConfirmModal
-          header="Unsaved Work" 
-          content="Changes you made will not be saved"
+          header="Unsaved Changes" 
+          content="Are you sure you want to leave without saving changes?"
           handleConfirmModalChange={onChangeConfirmModal}
         />
       )}
       <Prompt
         when={isFormChange ? true : false}
         message={JSON.stringify({
-          header: "Unsaved Work",
-          content: "Changes you made will not be saved",
+          header: "Unsaved Changes",
+          content: "Are you sure you want to leave without saving changes?",
         })}
       />
       <Tabs

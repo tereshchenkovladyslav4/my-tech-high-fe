@@ -1,7 +1,7 @@
 import React, { Fragment, useCallback, useContext, useEffect, useState } from 'react';
 import { useMutation, useQuery } from '@apollo/client';
 import CloseIcon from '@mui/icons-material/Close';
-import { Button, Checkbox, FormControlLabel, FormGroup, Grid, Modal, TextField, IconButton } from '@mui/material';
+import { Button, Checkbox, FormControlLabel, FormGroup, Grid, Modal, TextField, IconButton, Divider } from '@mui/material';
 import { Box } from '@mui/system';
 import { map } from 'lodash';
 import { DropDown } from '../../../../components/DropDown/DropDown';
@@ -129,6 +129,7 @@ export const NewUserModal: NewModalTemplateType = ({
 	}, [load1]);
 
 	useEffect(() => {
+		const sortedRole = ['Super Admin', 'Admin', 'Teacher', 'Teacher Assistant', 'School Partner', 'Parent', 'Observer', 'Student']
 		if (!load2 && data2 !== undefined) {
 			const updatedRoles = data2?.roles?.map(role => {
 				return {
@@ -136,7 +137,10 @@ export const NewUserModal: NewModalTemplateType = ({
 					value: role?.id
 				}
 			})
-			setRolesOption(updatedRoles)
+			const sortedData = updatedRoles.sort((a, b) => {
+				return sortedRole.indexOf(a.label) - sortedRole.indexOf(b.label);
+			  });
+			setRolesOption(sortedData)
 		}
 	}, [load2]);
 
@@ -678,12 +682,13 @@ export const NewUserModal: NewModalTemplateType = ({
 					)}
 				<Box sx={classes.header}>
 					<Subtitle>This user will receive an email giving them a link to create a password.</Subtitle>
-					<IconButton onClick={handleModem} >
+					<IconButton sx={{ padding: 0, top: '-5px' }} onClick={handleModem} >
 						<CloseIcon
 							style={classes.close}
 						/>
 					</IconButton>
 				</Box>
+				<Divider />
 				<Grid container rowSpacing={2}>
 					<Grid item xs={12}>
 						<Subtitle fontWeight='700' size='large'>Email</Subtitle>
@@ -719,7 +724,7 @@ export const NewUserModal: NewModalTemplateType = ({
 						<Grid item xs={12} sx={{ mb: 3 }}>
 							<DropDown
 								dropDownItems={rolesOption}
-								placeholder='User Type'
+								placeholder='User Level'
 								defaultValue={role}
 								setParentValue={(value) => {
 									setRole(Number(value));

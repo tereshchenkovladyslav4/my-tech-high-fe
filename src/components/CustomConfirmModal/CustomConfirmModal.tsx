@@ -43,7 +43,7 @@ export default function CustomConfirmModal (
               Cancel
             </Button>
             <Button variant='contained' disableElevation sx={classes.submitButton} onClick={handleConfirm}>
-              Confirm
+              Yes
             </Button>
           </Box>
         </Box>

@@ -21,8 +21,9 @@ export const UserProfile = ({ handleClose, data }) => {
   const [studentPerson, setStudentPerson] = useState<any>()
   const [openObserverModal, setOpenObserverModal] = useState(false)
   const [studentStatus, setStudentStatus] = useState({})
-  const [selectedParent, setSelectedParent] = useState()
+  const [selectedParent, setSelectedParent] = useState(0)
   const [selectedStudent, setSelectedStudent] = useState(parseInt(data.student_id))
+
   const [applicationState, setApplicationState] = useState('')
   const {
     loading: userLoading,
@@ -40,7 +41,7 @@ export const UserProfile = ({ handleClose, data }) => {
 
   const [updatePersonAddress, { data: updatedData }] = useMutation(updatePersonAddressMutation)
   const handleSavePerson = async () => {
-    if (data.parent_id) {
+    if (selectedParent) {
       const person: any = Object.assign({}, userInfo)
       delete person.address
       delete person.phone
@@ -96,13 +97,13 @@ export const UserProfile = ({ handleClose, data }) => {
   const handleChangeParent = (parent) => {
       setSelectedStudent(0)
       if (parent.observer_id) {
-        setSelectedParent(parent.observer_id)
+        setSelectedParent(parseInt(parent.observer_id))
         setUserInfo(parent.person)
         setPhoneInfo(parent.person.phone)
         setNotes(parent.notes || '')
         setStudents(currentUserData.parentDetail.students.filter(x => x.student_id == parent.student_id))
       } else {
-        setSelectedParent(currentUserData.parentDetail.parent_id)
+        setSelectedParent(parseInt(currentUserData.parentDetail.parent_id))
         setUserInfo(currentUserData.parentDetail.person)
         setPhoneInfo(currentUserData.parentDetail.phone)
         setNotes(currentUserData.parentDetail.notes)
@@ -111,12 +112,13 @@ export const UserProfile = ({ handleClose, data }) => {
   }
   const handleChangeStudent = (student) => {
     // if (data.student_id) {
+      setSelectedParent(0)
       setSelectedStudent(parseInt(student.student_id))
     // }
   }
   useEffect(() => {
     if (currentUserData) {
-      setSelectedParent(currentUserData.parentDetail.parent_id)
+      setSelectedParent(parseInt(currentUserData.parentDetail.parent_id))
       setUserInfo(currentUserData.parentDetail.person)
       setStudents(currentUserData.parentDetail.students)
       setPhoneInfo(currentUserData.parentDetail.phone)

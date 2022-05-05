@@ -100,8 +100,7 @@ export const Students = ({ students, selectedStudent, handleChangeStudent }) => 
             {students
               .filter(
                 (item) =>
-                  item.status.length === 0 || (item.status.length && Number(item.status[0].status) < 2) || 
-                  (item.status.length && Number(item.status[0].status) == 2 && item.grade_levels.length && item.grade_levels[0].grade_level.includes('K') ||  item.grade_levels.length && item.grade_levels[0].grade_level < 12 ),
+                  item.status.length === 0 || (item.status.length && Number(item.status[0].status) < 2)
               )
               .map((item) => (
                 <Box sx={{ cursor: 'pointer' }} onClick={() => handleChangeStudent(item)}>
@@ -150,8 +149,8 @@ export const Students = ({ students, selectedStudent, handleChangeStudent }) => 
             {students
               .filter(
                 (item) =>
-                  (showAll && (item.status.length && Number(item.status[0].status) > 1) && 
-                  !(item.status.length && Number(item.status[0].status) == 2 && item.grade_levels.length && item.grade_levels[0].grade_level.includes('K') ||  item.grade_levels.length && item.grade_levels[0].grade_level <= 12 )) ,
+                  (showAll && (item.status.length && Number(item.status[0].status) > 1) &&
+                  (item.status.length && Number(item.status[0].status) == 2 && !(item.grade_levels.length && item.grade_levels[0].grade_level.includes('K') ||  item.grade_levels.length && item.grade_levels[0].grade_level <= 12 ))) ,
               )
               .map((item) => (
                 <Box sx={{ cursor: 'pointer' }} onClick={() => handleChangeStudent(item)}>

@@ -1,3 +1,4 @@
+import { padding } from "@mui/system";
 import { BLACK } from "../../../../utils/constants";
 
 
@@ -16,7 +17,9 @@ export const useStyles = {
 	header: {
 		display: 'flex',
 		flexDirection: 'row',
-		justifyContent: 'space-between'
+		justifyContent: 'space-between',
+		padding: 0,
+		marginBottom: 1,
 	},
 	close: {
 		background: 'black',

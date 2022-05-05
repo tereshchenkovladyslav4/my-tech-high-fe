@@ -91,7 +91,7 @@ export const DropDown: DropDownTemplateType = ({
             value={value}
             onChange={(e) => handleChange(e.target?.value)}
             displayEmpty
-            renderValue={`${value}` ? undefined : () => <Placeholder>{placeholder}</Placeholder>}
+            renderValue={value ? undefined : () => <span style={{ color: 'gray' }}>{placeholder}</span>}
             sx={{
               ...sx,
               borderRadius: 2,

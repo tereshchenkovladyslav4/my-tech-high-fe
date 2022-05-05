@@ -324,6 +324,8 @@ export const Users = () => {
 							textTransform: 'none',
 							color: 'white',
 							width: '150px',
+							height: '39px',
+							marginTop: '1px',
 							marginLeft: '20px',
 							borderRadius: 2,
 						}}
@@ -333,7 +335,7 @@ export const Users = () => {
 					<Box style={{ display: 'flex', flexDirection: 'row', alignItems: 'right', justifyContent: 'flex-end', width: '100%' }}>
 						<Pagination
 							handlePageChange={() => null}
-							numPages={5}
+							numPages={Number(users?.length/25)}
 							currentPage={1}
 						/>
 					</Box>
