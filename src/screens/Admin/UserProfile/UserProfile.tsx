@@ -118,7 +118,6 @@ export const UserProfile = ({ handleClose, data }) => {
   }
   useEffect(() => {
     if (currentUserData) {
-      setSelectedParent(parseInt(currentUserData.parentDetail.parent_id))
       setUserInfo(currentUserData.parentDetail.person)
       setStudents(currentUserData.parentDetail.students)
       setPhoneInfo(currentUserData.parentDetail.phone)
@@ -128,6 +127,9 @@ export const UserProfile = ({ handleClose, data }) => {
         setApplicationState(currentUserData.parentDetail.person.user.userRegions[0].regionDetail.name)
       } else if(currentUserData.parentDetail.person?.address?.state) {
         setApplicationState(currentUserData.parentDetail.person.address.state)
+      }
+      if(!selectedStudent) {
+        setSelectedParent(parseInt(currentUserData.parentDetail.parent_id))
       }
     }
   }, [currentUserData])
@@ -178,7 +180,7 @@ export const UserProfile = ({ handleClose, data }) => {
         </Box>
       </Box>
       <Students students={students} selectedStudent={selectedStudent} handleChangeStudent={handleChangeStudent} />
-      {selectedParent && !selectedStudent &&(
+      {selectedParent && !selectedStudent ?(
         <ParentProfile
           userInfo={userInfo}
           setUserInfo={setUserInfo}
@@ -188,8 +190,7 @@ export const UserProfile = ({ handleClose, data }) => {
           setNotes={setNotes}
           applicationState={applicationState}
         />
-      )}
-      {selectedStudent && (
+      ) : selectedStudent ? (
         <StudentProfile
           studentId={selectedStudent}
           setStudentPerson={setStudentPerson}
@@ -197,9 +198,7 @@ export const UserProfile = ({ handleClose, data }) => {
           studentStatus={studentStatus}
           applicationState={applicationState}
         />
-      )}
-
-      {openObserverModal && (
+      ) :openObserverModal && (
         <NewUserModal
           handleModem={handleCloseObserverModal}
           visible={openObserverModal}

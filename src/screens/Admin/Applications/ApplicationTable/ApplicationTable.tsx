@@ -301,6 +301,7 @@ export const ApplicationTable = ({ filter }) => {
         },
       },
     })
+    setApplicationIds([]);
     refetch()
   }
 
@@ -316,6 +317,7 @@ export const ApplicationTable = ({ filter }) => {
         },
       },
     })
+    setApplicationIds([]);
     refetch()
   }
 

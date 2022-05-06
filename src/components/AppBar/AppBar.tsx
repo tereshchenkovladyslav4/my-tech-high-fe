@@ -24,7 +24,7 @@ export const AppBar: FunctionComponent = () => {
   const { students } = me
 
   const [activeStudents] = useState(filter(students, (student) => {
-    return student.status.at(-1)?.status !== 2
+    return student?.status?.at(-1)?.status !== 2
   }))
 
   const location = useLocation()

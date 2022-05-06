@@ -24,7 +24,6 @@ export const Profile = ({handleIsFormChange}) => {
   const classes = useStyles
   const { me } = useContext(UserContext)
   const { profile } = me as UserInfo
-  
   const [submitUpdate, { data }] = useMutation(updateProfile)
   const [submitRemoveProfilePhoto, { data: userData }] = useMutation(removeProfilePhoto)
 
@@ -48,8 +47,8 @@ export const Profile = ({handleIsFormChange}) => {
           phone_number: formik.values.phoneNumber,
           preferred_first_name: formik.values.preferredFName,
           preferred_last_name: formik.values.preferredLName,
-          first_name: profile?.first_name,
-          last_name: profile?.last_name,
+          first_name: me?.first_name,
+          last_name: me?.last_name,
         },
       },
     }).then( async (res)  => {
@@ -62,7 +61,7 @@ export const Profile = ({handleIsFormChange}) => {
           setTimeout(() => {
             setOpenSaveAlert({ message: '', status: 'success', open: false })
 
-            if(formik.values.email != profile.email)
+            if(formik.values.email != me.email)
               location.replace('/');
           }, 2000)
         }
@@ -72,7 +71,7 @@ export const Profile = ({handleIsFormChange}) => {
           setTimeout(() => {
             setOpenSaveAlert({ message: '', status: 'success', open: false })
 
-            if(formik.values.email != profile.email)
+            if(formik.values.email != me.email)
               location.replace('/');
           }, 2000)
         }
@@ -85,7 +84,7 @@ export const Profile = ({handleIsFormChange}) => {
         setTimeout(() => {
           setOpenSaveAlert({ message: '', status: 'success', open: false })
 
-          if(formik.values.email != profile.email)
+          if(formik.values.email != me.email)
             location.replace('/');
         }, 2000)
 
@@ -103,7 +102,7 @@ export const Profile = ({handleIsFormChange}) => {
   }
 
   const onSubmitFailed = () => {
-    formik.values.email = profile.email;
+    formik.values.email = me.email;
   }
 
   const onRemoveProfilePhoto = () => {
@@ -136,12 +135,12 @@ export const Profile = ({handleIsFormChange}) => {
 
   const formik = useFormik({
     initialValues: {
-      preferredFName: profile?.preferred_first_name,
-      preferredLName: profile?.preferred_last_name,
-      phoneNumber: profile?.phone.number,
-      email: profile?.email,
-      first_name: profile?.first_name,
-      last_name: profile?.last_name,
+      preferredFName: profile?.preferred_first_name || '',
+      preferredLName: profile?.preferred_last_name || '',
+      phoneNumber: profile?.phone.number || '',
+      email: profile?.email || '',
+      first_name: profile?.first_name || '',
+      last_name: profile?.last_name || '',
     },
     validationSchema: validationSchema,
     onSubmit: async () => {

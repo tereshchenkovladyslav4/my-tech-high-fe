@@ -2,12 +2,12 @@ import React, { useEffect, useState } from 'react'
 import { Box, Grid, Card, OutlinedInput, InputAdornment, Typography } from '@mui/material'
 import SearchIcon from '@mui/icons-material/Search'
 import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
-import { emailTemplates } from '../../../../../utils/constants'
+import { getEmailTemplatesByRegionQuery } from '../../services'
 import { makeStyles } from '@material-ui/core'
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew'
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
 import { EmailTemplateModal } from './EmailTemplateModal'
-import { useMutation } from '@apollo/client'
+import { useMutation, useQuery } from '@apollo/client'
 import { createEmailTemplateMutation, updateEmailTemplateMutation } from '../../services'
 import ArrowBackIosOutlinedIcon from '@mui/icons-material/ArrowBackIosOutlined'
 
@@ -118,6 +118,17 @@ export const EmailTemplatePage = ({ onBackPress }) => {
   const [createEmailTemplate, { data: createdData }] = useMutation(createEmailTemplateMutation)
   const [updateEmailTemplate, { data: updatedData }] = useMutation(updateEmailTemplateMutation)
 
+  const [emailTemplates, setEmailTemplates] = useState({})
+
+  const region = JSON.parse(localStorage.getItem('selectedRegion'));
+
+  const { called, loading, error, data: emailTemplatesData, refetch } = useQuery(getEmailTemplatesByRegionQuery, {
+    variables: {
+      regionId: region.region_id
+    },
+    fetchPolicy: 'network-only',
+  })
+
   const handleSave = async (data) => {
     if (data.id) {
       await updateEmailTemplate({
@@ -140,6 +151,38 @@ export const EmailTemplatePage = ({ onBackPress }) => {
     }
     setOpenEdit(false)
   }
+
+  useEffect(() => {
+    if(emailTemplatesData != undefined) {
+      let templates = {};
+      emailTemplatesData.emailTemplatesByRegion.forEach(emailTemplate => {
+        let category = null, category_name = emailTemplate.category.category_name;
+        
+        if(!Object.keys(templates).find(x => x == category_name))
+        templates[category_name] = [];
+
+        category = templates[category_name];
+        category.push({
+          id: Number(emailTemplate.id),
+          template_name: emailTemplate.template_name,
+          title: emailTemplate.title,
+          subject: emailTemplate.subject,
+          body: emailTemplate.body,
+          from: emailTemplate.from,
+          bcc: emailTemplate.bcc,
+          standard_responses: emailTemplate.standard_responses
+                    && JSON.parse(emailTemplate.standard_responses).length > 0
+                          ? JSON.parse(emailTemplate.standard_responses) : [],
+          category_id: emailTemplate.category_id,
+          category: emailTemplate.category,
+          template: emailTemplate.template,
+          inserts: emailTemplate.inserts.split(","),
+          region_id: emailTemplate.region_id,
+        })
+      });
+      setEmailTemplates(templates);
+    }
+  }, [emailTemplatesData]);
 
   return (
     <Box sx={{ marginX: 4 }}>
@@ -210,11 +253,8 @@ export const EmailTemplatePage = ({ onBackPress }) => {
       {openEdit && (
         <EmailTemplateModal
           handleModem={handleCloseEditModal}
-          type={currentTemplate.template}
-          category={currentCategory}
           onSave={handleSave}
-          templateName={currentTemplate.title}
-          availableInserts={currentTemplate.inserts}
+          template={currentTemplate}
         />
       )}
     </Box>
@@ -235,6 +275,7 @@ const TemplatesCategories = ({ category, templates, handleOpenEdit }) => {
       setPage(page + 1)
     }
   }
+  
   return (
     <Box className={classes.category}>
       <Typography className={classes.categoryTitle}>{category}</Typography>

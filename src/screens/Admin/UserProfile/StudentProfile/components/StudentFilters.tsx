@@ -187,7 +187,7 @@ export const StudentFilters = ({ currentUserData, setStudentStatuData, studentSt
   const status: DropDownItem[] = [
     {
       label: ' ',
-      value: 3,
+      value: 4,
     },
     {
       label: 'Pending',

@@ -316,6 +316,13 @@ export const NewUserModal: NewModalTemplateType = ({
 					flag: true
 				});
 				return;
+			} else if(roleData.label.toLowerCase() === 'admin' && !selectedState) {
+				setApolloError({
+					title: 'Need to select State.',
+					severity: 'Warning',
+					flag: true
+				});
+				return;
 			} else if(roleData.label.toLowerCase() === 'parent' && !selectedState) {
 				setApolloError({
 					title: 'Need to select State.',

@@ -16,7 +16,7 @@ import { ContentState, EditorState, RichUtils, convertFromHTML, convertToRaw } f
 import CloseIcon from '@mui/icons-material/Close'
 import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
 import { Add } from '@mui/icons-material'
-import { getEmailTemplateQuery, getEmailRemindersQuery } from '../../services'
+import { getEmailTemplateByIdQuery, getEmailRemindersQuery } from '../../services'
 import { useQuery, useMutation } from '@apollo/client'
 import Wysiwyg from 'react-draft-wysiwyg'
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
@@ -37,22 +37,20 @@ const insertDescriptions = {
 }
 export const EmailTemplateModal = ({
   handleModem,
-  type = 'standard',
-  category,
+  template,
   onSave,
-  templateName,
-  availableInserts,
 }) => {
   const classes = useStyles()
   const [titleReadOnly, setTitleReadOnly] = useState(true)
-  const [emailTemplateId, setEmailTemplateId] = useState(null)
   const [editorState, setEditorState] = useState(EditorState.createEmpty())
   const [subject, setSubject] = useState('')
-  const [emailTitle, setEmailTitle] = useState(templateName)
+  const [emailTitle, setEmailTitle] = useState(template.title)
   const [notes, setNotes] = useState('')
   const [emailFrom, setEmailFrom] = useState('')
   const [emailBcc, setEmailBcc] = useState('')
   const [deadline, setDeadline] = useState('')
+  const [type, setType] = useState('standard')
+  const [availableInserts, setAvailableInserts] = useState([])
   const editorRef = useRef(null)
   const [currentBlocks, setCurrentBlocks] = useState(0)
   const [reminders, setReminders] = useState([
@@ -66,7 +64,6 @@ export const EmailTemplateModal = ({
     },
   ])
   const [addResponse, setAddResponse] = useState('')
-
   const [response, setResponses] = useState([
     {
       title: '',
@@ -75,53 +72,51 @@ export const EmailTemplateModal = ({
     },
   ])
 
-  const { called, loading, error, data, refetch } = useQuery(getEmailTemplateQuery, {
+  const { called, loading, error, data, refetch } = useQuery(getEmailTemplateByIdQuery, {
     variables: {
-      template: templateName,
+      templateId: template.id,
     },
     fetchPolicy: 'network-only',
   })
 
   const { loading: reminderLoading, error: reminderError, data: reminderData, refetch: refetchReminder } = useQuery(getEmailRemindersQuery, {
     variables: {
-      templateId: Number(data?.emailTemplateName?.id),
+      templateId: Number(template.id),
     },
-    skip: !data?.emailTemplateName?.id,
+    skip: template.id,
     fetchPolicy: 'network-only',
   })
 
-
   useEffect(() => {
-    console.log('reminderData', reminderData)
     if (reminderData !== undefined) {
+      console.log('reminderData', reminderData)
       const reminders = []
       reminderData?.remindersByTemplateId.forEach(remin => {
-        console.log('remin', remin) 
-          const { reminder_id, title, subject, body, deadline } = remin
-          let editorState
-          if (body) {
-            const contentBlock = htmlToDraft(body)
-            if (contentBlock) {
-              const contentState = ContentState.createFromBlockArray(contentBlock.contentBlocks)
-              // const content = ContentState.createFromBlockArray(convertFromHTML(body))
-              editorState = EditorState.createWithContent(contentState)
-            }
-          } else {
-            editorState = EditorState.createEmpty()
+        const { reminder_id, title, subject, body, deadline } = remin
+        let editorState
+        if (body) {
+          const contentBlock = htmlToDraft(body)
+          if (contentBlock) {
+            const contentState = ContentState.createFromBlockArray(contentBlock.contentBlocks)
+            // const content = ContentState.createFromBlockArray(convertFromHTML(body))
+            editorState = EditorState.createWithContent(contentState)
           }
-          reminders.push({
-            reminderId: reminder_id,
-            reminderDay: deadline,
-            reminderTitle: title,
-            reminderSubject: subject,
-            reminderBody: body,
-            editorState: editorState,
-          })
+        } else {
+          editorState = EditorState.createEmpty()
+        }
+        reminders.push({
+          reminderId: reminder_id,
+          reminderDay: deadline,
+          reminderTitle: title,
+          reminderSubject: subject,
+          reminderBody: body,
+          editorState: editorState,
         })
-        setReminders(reminders);
+      })
+      setReminders(reminders);
     }
   }, [reminderData])
-console.log('reminders', reminders)
+
   const handleEditorChange = (state) => {
     try {
       if (currentBlocks !== 0 && currentBlocks !== state.blocks.length) {
@@ -204,74 +199,83 @@ console.log('reminders', reminders)
         }
       })
     }
-    console.log('type', type)
-    if (type === 'standard_response') {
+    
+    switch (template.template) {
+    case 'standard_response':
       onSave({
-        id: Number(emailTemplateId),
+        id: template.id,
         subject,
         title: emailTitle,
         from: emailFrom,
         bcc: emailBcc,
-        template_name: templateName,
+        template_name: emailTitle,
         body: draftToHtml(convertToRaw(editorState.getCurrentContent())),
         standard_responses: addResponse,
+        template: template.template,
+        inserts: template.inserts.join(','),
+        region_id: template.region_id
       })
-    } else if (type === 'deadline') {
+      break;
+    case 'deadline':
       onSave({
-        id: Number(emailTemplateId),
+        id: template.id,
         subject,
         title: emailTitle,
         from: emailFrom,
         bcc: emailBcc,
         // deadline,
         reminders: reminderData,
-        template_name: templateName,
+        template_name: emailTitle,
+        template: template.template,
         body: draftToHtml(convertToRaw(editorState.getCurrentContent())),
       })
-    } else if (type === 'email') {
+      break;
+    case 'email':
       onSave({
-        id: Number(emailTemplateId),
+        id: template.id,
         subject,
         title: emailTitle,
         from: emailFrom,
         bcc: emailBcc,
-        template_name: templateName,
+        template_name: emailTitle,
+        template: template.template,
         body: draftToHtml(convertToRaw(editorState.getCurrentContent())),
       })
-    } else {
+      break;
+    default:
       onSave({
-        id: Number(emailTemplateId),
+        id: template.id,
         subject,
         title: emailTitle,
         from: emailFrom,
         bcc: emailBcc,
-        template_name: templateName,
+        template_name: emailTitle,
+        template: template.template,
         body: draftToHtml(convertToRaw(editorState.getCurrentContent())),
       })
+      break;
     }
   }
-  useEffect(() => {
-    if (data !== undefined) {
-      const { emailTemplateName } = data
 
-      if (emailTemplateName) {
-        const { id, title, subject, from, bcc, body, standard_responses } = emailTemplateName
-        setEmailTemplateId(id)
-        setEmailTitle(title)
-        setSubject(subject)
-        setEmailBcc(bcc)
-        setEmailFrom(from)
-        setResponses(
-          standard_responses && JSON.parse(standard_responses).length > 0 ? JSON.parse(standard_responses) : [],
-        )
-        setAddResponse(standard_responses)
-        if (body) {
-          const contentBlock = htmlToDraft(body)
-          if (contentBlock) {
-            const contentState = ContentState.createFromBlockArray(contentBlock.contentBlocks)
-            // const content = ContentState.createFromBlockArray(convertFromHTML(body))
-            setEditorState(EditorState.createWithContent(contentState))
-          }
+  useEffect(() => {
+    if(data != undefined) {
+      const {emailTemplate} = data;
+      setEmailTitle(emailTemplate.title)
+      setSubject(emailTemplate.subject)
+      setEmailBcc(emailTemplate.bcc)
+      setEmailFrom(emailTemplate.from)
+      setResponses(emailTemplate.standard_responses
+        && JSON.parse(emailTemplate.standard_responses).length > 0
+              ? JSON.parse(emailTemplate.standard_responses) : [],)
+      setAddResponse(emailTemplate.standard_responses)
+      setAvailableInserts(emailTemplate.inserts.split(","))
+      setType(emailTemplate.template)
+      if (emailTemplate.body) {
+        const contentBlock = htmlToDraft(emailTemplate.body)
+        if (contentBlock) {
+          const contentState = ContentState.createFromBlockArray(contentBlock.contentBlocks)
+          // const content = ContentState.createFromBlockArray(convertFromHTML(body))
+          setEditorState(EditorState.createWithContent(contentState))
         }
       }
     }

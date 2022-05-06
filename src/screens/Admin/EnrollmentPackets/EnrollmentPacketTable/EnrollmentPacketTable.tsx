@@ -119,6 +119,7 @@ export const EnrollmentPacketTable = () => {
     fetchPolicy: 'network-only',
   })
   const handlePageChange = (page) => {
+    setCurrentPage(page)
     setSkip(() => {
       return paginatinLimit ? paginatinLimit * (page - 1) : 25
     })

@@ -72,7 +72,7 @@ export const Profile = ({handleIsFormChange}) => {
           setTimeout(() => {
             setOpenSaveAlert({ message: '', status: 'success', open: false })
 
-            if(formik.values.email != profile.email)
+            if(formik.values.email != me.email)
               location.replace('/');
           }, 2000)
         }
@@ -82,7 +82,7 @@ export const Profile = ({handleIsFormChange}) => {
           setTimeout(() => {
             setOpenSaveAlert({ message: '', status: 'success', open: false })
 
-            if(formik.values.email != profile.email)
+            if(formik.values.email != me.email)
               location.replace('/');
           }, 2000)
         }
@@ -94,13 +94,13 @@ export const Profile = ({handleIsFormChange}) => {
         setTimeout(() => {
           setOpenSaveAlert({ message: '', status: 'success', open: false })
 
-          if(formik.values.email != profile.email)
+          if(formik.values.email != me.email)
             location.replace('/');
         }, 2000)
 
         handleIsFormChange(false);
 
-        if(formik.values.email != profile.email)
+        if(formik.values.email != me.email)
           location.href.replace('/');
       }
     }).catch(err => {
@@ -116,7 +116,7 @@ export const Profile = ({handleIsFormChange}) => {
 
   const onSubmitFailed = () => {
     setWarningModalOpen3({open: false, message: ''});
-    formik.values.email = profile.email;
+    formik.values.email = me.email;
   }
 
   const onRemoveProfilePhoto = () => {
@@ -182,19 +182,19 @@ export const Profile = ({handleIsFormChange}) => {
 
   const formik = useFormik({
     initialValues: {
-      preferredFName: profile.preferred_first_name,
-      preferredLName: profile.preferred_last_name,
-      legalFName: profile.first_name,
-      legalMName: profile.middle_name,
-      legalLName: profile.last_name,
-      phoneNumber: profile.phone.number,
-      email: profile.email,
-      city: profile.address.city,
-      recieveText: Boolean(profile.phone.recieve_text),
-      address1: profile.address.street,
-      address2: profile.address.street2,
-      state: profile.address.state,
-      zipcode: profile.address.zip,
+      preferredFName: profile?.preferred_first_name || '',
+      preferredLName: profile?.preferred_last_name || '',
+      legalFName: profile?.first_name || '',
+      legalMName: profile?.middle_name || '',
+      legalLName: profile?.last_name || '',
+      phoneNumber: profile?.phone.number || '',
+      email: me.email,
+      city: profile?.address.city || '',
+      recieveText: Boolean(profile?.phone?.recieve_text || ''),
+      address1: profile?.address?.street || '',
+      address2: profile?.address?.street2 || '',
+      state: profile?.address?.state || '',
+      zipcode: profile?.address?.zip || '',
     },
     validationSchema: validationSchema,
     onSubmit: async() => {
@@ -249,7 +249,7 @@ export const Profile = ({handleIsFormChange}) => {
   }, [me] )
 
   useEffect(() => {
-    setRecieveText(Boolean( profile.phone.recieve_text ))
+    setRecieveText(Boolean( profile?.phone?.recieve_text ))
   }, [])
 
   const Image = () => (

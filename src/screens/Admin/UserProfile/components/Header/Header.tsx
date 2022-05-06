@@ -31,7 +31,7 @@ export const Header = ({
         <Metadata
           title={
             userData && (
-              <Subtitle fontWeight='700' color={isParent && selectedParent === parentId ? '#4145FF' : '#cccccc'}>
+              <Subtitle fontWeight='700' color={selectedParent === parseInt(parentId) ? '#4145FF' : '#cccccc'}>
                 {userData.first_name} {userData.last_name}
               </Subtitle>
             )
@@ -54,7 +54,7 @@ export const Header = ({
         >
           <Metadata
             title={
-              <Subtitle fontWeight='700' color={selectedParent === item.observer_id ? '#4145FF' : '#cccccc'}>
+              <Subtitle fontWeight='700' color={selectedParent === parseInt(item.observer_id) ? '#4145FF' : '#cccccc'}>
                 {item.person.first_name} {item.person.last_name}
               </Subtitle>
             }

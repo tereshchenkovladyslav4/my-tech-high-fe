@@ -7,6 +7,8 @@ import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle
 import Slider from 'react-slick'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
+import moment from 'moment'
+
 const ordinal = (n) => {
   var s = ['th', 'st', 'nd', 'rd']
   var v = n % 100
@@ -15,7 +17,7 @@ const ordinal = (n) => {
 export const Students = ({ students, selectedStudent, handleChangeStudent }) => {
   const sliderRef = useRef(null)
   const [showAll, setShowAll] = useState(false)
-  const status = ['Pending', 'Active', 'Withdrawn', '']
+  const status = ['Pending', 'Active', 'Withdrawn', 'Graduated', '']
   function SampleNextArrow(props) {
     const { className, style, onClick } = props
     return (
@@ -125,8 +127,8 @@ export const Students = ({ students, selectedStudent, handleChangeStudent }) => 
               {students
               .filter(
                 (item) =>
-                (item.status.length && Number(item.status[0].status) > 1) && 
-                  (item.status.length && Number(item.status[0].status) == 2 && item.grade_levels.length && item.grade_levels[0].grade_level.includes('K') ||  item.grade_levels.length && item.grade_levels[0].grade_level <= 12 ),
+                item.status.length > 0 && 
+                  ((Number(item.status[0].status) === 2) && (!item.person.date_of_birth || item.person.date_of_birth && moment(item.person.date_of_birth) > moment().subtract('years', 19))),
               )
               .map((item) => (
                 <Box sx={{ cursor: 'pointer' }} onClick={() => handleChangeStudent(item)}>
@@ -149,8 +151,9 @@ export const Students = ({ students, selectedStudent, handleChangeStudent }) => 
             {students
               .filter(
                 (item) =>
-                  (showAll && (item.status.length && Number(item.status[0].status) > 1) &&
-                  (item.status.length && Number(item.status[0].status) == 2 && !(item.grade_levels.length && item.grade_levels[0].grade_level.includes('K') ||  item.grade_levels.length && item.grade_levels[0].grade_level <= 12 ))) ,
+                  showAll && ((item.status.length && Number(item.status[0].status) > 1) &&
+                  (item.status.length && Number(item.status[0].status) === 3 ) ||
+                  (item.status.length && Number(item.status[0].status) === 2  && (item.person.date_of_birth && moment(item.person.date_of_birth) < moment().subtract('years', 19)))) ,
               )
               .map((item) => (
                 <Box sx={{ cursor: 'pointer' }} onClick={() => handleChangeStudent(item)}>
