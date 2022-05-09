@@ -132,67 +132,6 @@ export const Profile = ({ handleIsFormChange }) => {
 
           if (formik.values.email != me.email) location.replace('/')
         }
-        handleIsFormChange(false);
-      }
-      else {
-        onSubmitSuccess();
-      }
-    }).catch(err => {
-      onSubmitFailed(err);
-    })
-  }
-
-  const onSubmitSuccess = () => {
-    setOpenSaveAlert({ message: 'Profile Updated Successfully', status: 'success', open: true })
-
-    setMe((prev) => {
-      return {
-        ...prev,
-        email: formik.values.email,
-        profile: {
-          ...prev.profile,
-          first_name: formik.values.legalFName,
-          last_name: formik.values.legalLName,
-          middle_name: formik.values.legalMName,
-          email: formik.values.email,
-          preferred_first_name: formik.values.preferredFName,
-          preferred_last_name: formik.values.preferredLName,
-          phone: {
-            ...prev.profile.phone,
-            number: formik.values.phoneNumber
-          },
-          address: {
-            ...prev.profile.address,
-            city: formik.values.city,
-            state: formik.values.state,
-            street: formik.values.address1,
-            street2: formik.values.address2,
-            zip: formik.values.zipcode
-          }
-        }
-      }
-    })
-
-    setTimeout(() => {
-      setOpenSaveAlert({ message: '', status: 'success', open: false })
-
-      if(formik.values.email != me.email)
-        location.replace('/');
-    }, 2000)
-
-    handleIsFormChange(false);
-  }
-
-  const onSubmitFailed = (err) => {
-    formik.values.email = me.email;
-
-    setOpenSaveAlert({ message: err?.message, status: 'error', open: true })
-
-    setTimeout(() => {
-      setOpenSaveAlert({ message: '', status: 'success', open: false })
-    }, 2000)
-
-    handleIsFormChange(false);
 
         setMe((prevMe) => {
           return {
@@ -229,6 +168,11 @@ export const Profile = ({ handleIsFormChange }) => {
 
         handleIsFormChange(false)
       })
+  }
+
+  const onSubmitFailed = () => {
+    setWarningModalOpen3({ open: false, message: '' })
+    formik.values.email = me.email
   }
 
   const onRemoveProfilePhoto = () => {
