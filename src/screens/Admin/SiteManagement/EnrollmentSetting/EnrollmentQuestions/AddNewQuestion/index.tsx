@@ -16,15 +16,18 @@ import draftToHtml from 'draftjs-to-html'
 import { convertFromHTML } from 'draft-convert'
 import { TabContext } from '../TabContextProvider'
 import EditLinkModal from '../components/EditLinkModal'
+import { validationTypes } from '../../constant/defaultQuestions'
 
-export default function AddQuestionModal({
+export default function AddNewQuestionModal({
   onClose,
   editItem,
   group,
+  newQuestion,
 }: {
   onClose: () => void
   editItem?: EnrollmentQuestion
   group?: string
+  newQuestion?: boolean
 }) {
   const tabName = useContext(TabContext)
   const [editorState, setEditorState] = useState(EditorState.createWithContent(convertFromHTML(editItem?.question || '')))
@@ -41,6 +44,11 @@ export default function AddQuestionModal({
 
   const { values, setValues } = useFormikContext<EnrollmentQuestionTab[]>()
 
+  const [validation, setValidation] = useState(editItem?.validation ? true : false || false)  
+  const [addStudent, setAddStudent] = useState(editItem?.student_question || false)  
+  const [validationType, setValidationType] = useState(editItem?.validation || 1)
+  const [isDefaultQuestion, setIsDefaultQuestion] = useState(editItem?.default_question || false)
+
   const [question, setQuestion] = useState(editItem?.question || '')
   const [type, setType] = useState(editItem?.type || 1)
   const [required, setRequired] = useState(editItem?.required || false)  
@@ -50,25 +58,22 @@ export default function AddQuestionModal({
     { label: '', value: (editItem?.options?.length || 1) + 1 , action: 1},
   ])
   const [error, setError] = useState('')
-
   const currentTabData = values.filter((v) => v.tab_name === tabName)[0]
-
   const dropdownOptions: DropDownItem[] = currentTabData.groups.map((v) => {
     return {
       label: v.group_name,
       value: v.group_name,
     }
   })
-
   const [groupName, setGroupName] = useState('')
   const [addGroup, setAddGroup] = useState(false)
-  const [groupType, setGroupType] = useState(editItem ? group : (dropdownOptions[0]?.value || -1))
+  const [groupType, setGroupType] = useState(!newQuestion ? group : (dropdownOptions[0]?.value || -1))
 
   const [openLinkModal, setOpenLinkModal] = useState(false)
   const [agreement, setAgreement] = useState({
     text: editItem?.question || '', 
-    type: editItem?.options[0]?.label || 'web', 
-    link: editItem?.options[0]?.value || ''
+    type: editItem?.options?.length > 0 && editItem?.options[0]?.label || 'web', 
+    link: editItem?.options?.length > 0 && editItem?.options[0]?.value || ''
   })
 
   const [actionType, setActionType] = useState(1)
@@ -154,7 +159,7 @@ export default function AddQuestionModal({
         return
       }
     } 
-    else if (question.trim() === '' && type !== 6) {
+    else if (question.trim() === '' && type !== 7) {
       setError('Question is required')
       return
     }
@@ -174,34 +179,41 @@ export default function AddQuestionModal({
       tempQuestionOrder = currentGroup.questions.length + 1
     }
 
+    const timestamp = + new Date()
     const additionalQuestionData = {
       type: additionalQuestionType,
       question: additionalQuestion,
       options: additionalOptions.filter((v) => v.label.trim()),  
-      required: additionalQuestionRequired    
+      required: additionalQuestionRequired,
+      slug: `meta_${timestamp}_additional`
     }
 
     const additionalQuestion2Data = {
       type: additionalQuestionType2,
       question: additionalQuestion2,
       options: additionalOptions2.filter((v) => v.label.trim()),    
-      required: additionalQuestion2Required    
+      required: additionalQuestion2Required  ,
+      slug: `meta_${timestamp}_additional2`
     }
 
     const questionItem = {
       id: editItem?.id,
       group_id: editItem?.group_id,
       type,
-      question: type ===6 ? draftToHtml(convertToRaw(editorState.getCurrentContent())) : type === 4 ? agreement.text : question,
+      question: type === 7 ? draftToHtml(convertToRaw(editorState.getCurrentContent())) : type === 4 ? agreement.text : question,
       order: editItem?.order || tempQuestionOrder,
       options: type === 4 ? [{label: agreement.type, value: agreement.link}] : options.filter((v) => v.label.trim()),
       required,
       removable,
       additional: additionalQuestionData,
-      additional2: additionalQuestion2Data
+      additional2: additionalQuestion2Data,      
+      default_question: isDefaultQuestion,
+      validation: validation ? validationType : 0,
+      student_question: addStudent,
+      slug: editItem?.slug || `meta_${timestamp}`
     }
 
-    if(editItem) { //edit a question 
+    if(!newQuestion) { //edit a question 
       if(group === groupType) {  // no change group type
         const updatedGroups = currentTabData.groups.map((v) => {
           if(v.group_name === groupType) {
@@ -330,7 +342,7 @@ export default function AddQuestionModal({
             />
             <DropDown
               sx={{
-                pointerEvents: editItem ? 'none' : 'unset',
+                pointerEvents: !newQuestion ? 'none' : 'unset',
                 minWidth: '200px',
                 [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
                   {
@@ -363,7 +375,7 @@ export default function AddQuestionModal({
             <TextField
               size='small'
               sx={{
-                visibility: (type === 6 || type === 4) ? 'hidden' : 'visible',
+                visibility: (type === 7 || type === 4) ? 'hidden' : 'visible',
                 minWidth: '300px',
                 [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
                   {
@@ -375,9 +387,11 @@ export default function AddQuestionModal({
               value={question}
               onChange={(v) => setQuestion(v.currentTarget.value)}
               focused
+              disabled={isDefaultQuestion}
             />
             <DropDown
               sx={{
+                pointerEvents: isDefaultQuestion ? 'none' : 'unset',
                 minWidth: '200px',
                 [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
                   {
@@ -394,9 +408,9 @@ export default function AddQuestionModal({
             />
           </Box>
           <Box mt='30px' width='100%' display='flex' flexDirection='column'>
-            {type === 2 ? 
+            {type === 2 || type === 6 ? 
             (<Box height='50px' />) :
-            type === 6 ? 
+            type === 7 ? 
             (
               <Box sx={{
                 border: '1px solid #d1d1d1',
@@ -481,34 +495,63 @@ export default function AddQuestionModal({
               width: '100%',
               height: '40px',
               mt: '40px',
-              mb: '20px',
               display: 'flex',
-              // alignItems: 'center',
-              flexDirection: 'column',
-              alignItems: 'end',
+              alignItems: 'center',
+              justifyContent: 'space-between',
             }}
           >
-            <Box>
-              <Box
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                }}
-              >
-                  <Checkbox checked={required} onClick={() => setRequired(!required)} />
-                  <Subtitle size='small'>Required</Subtitle>
-              </Box>
-              <Box
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                }}
-              >
-                <Checkbox checked={removable} onClick={() => setRemovable(!removable)} />
-                <Subtitle size='small'>Removable</Subtitle>
-              </Box>
+            <Box sx={{display: 'flex', alignItems: 'center', visibility: type === 2 ? 'visible' : 'hidden'}}>
+              <Checkbox checked={validation} onClick={() => setValidation(!validation)} disabled={isDefaultQuestion}/>
+              <Subtitle size='small'>Validation</Subtitle>
+            </Box>
+            <Box sx={{display: 'flex', alignItems: 'center',}}>
+              <Checkbox checked={addStudent} onClick={() => setAddStudent(!addStudent)} />
+              <Subtitle size='small'>Add Student Question</Subtitle>
+            </Box>
+            <Box sx={{display: 'flex', alignItems: 'center', 
+              width: '124px',}}>
+              <Checkbox checked={required} onClick={() => setRequired(!required)} />
+              <Subtitle size='small'>Required</Subtitle>
             </Box>
           </Box>
+          <Box sx={{
+            width: '100%',
+            height: '40px',
+            mt: '10px',
+            alignItems: 'center',
+            display: 'flex',
+            justifyContent: 'space-between',
+          }}
+        >
+          <DropDown
+            sx={{
+              visibility: validation ? 'visible' : 'hidden',
+              pointerEvents: isDefaultQuestion ? 'none' : 'unset',
+              width: '200px',
+              [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
+              {
+                borderColor: SYSTEM_07,
+              },
+            }}
+            labelTop
+            dropDownItems={validationTypes}
+            placeholder='Type'
+            defaultValue={validationType}
+            // @ts-ignore
+            setParentValue={(v) => setValidationType(+v)}
+            size='small'
+          />
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              width: '124px',
+            }}
+          >
+            <Checkbox checked={removable} onClick={() => setRemovable(!removable)} />
+            <Subtitle size='small'>Removable</Subtitle>
+          </Box>
+        </Box>
           {actionType === 2 && (
             <Box>
               <Subtitle size='large'>Additional Questions</Subtitle>
@@ -637,6 +680,7 @@ export default function AddQuestionModal({
                   // alignItems: 'center',
                   flexDirection: 'column',
                   alignItems: 'end',
+                  justifyContent: 'space-between',
                 }}
               >
                 <Box

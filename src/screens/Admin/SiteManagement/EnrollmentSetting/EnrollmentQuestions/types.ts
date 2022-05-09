@@ -21,6 +21,10 @@ export const QuestionTypes = [
     },
     {
         value: 6,
+        label: 'Calendar',
+    },
+    {
+        value: 7,
         label: 'Information',
     },
   ]
@@ -52,7 +56,7 @@ export type AdditionalQuestionType = {
 export type EnrollmentQuestion = {
     id?: number
     group_id?: number
-    type: 1 | 2 | 3 | 4 | 5 | 6 | 7
+    type: number
     question: string
     options?: OptionsType[]
     required: boolean
@@ -60,6 +64,10 @@ export type EnrollmentQuestion = {
     order: number
     additional?: AdditionalQuestionType    
     additional2?: AdditionalQuestionType
+    validation?: string
+    student_question: boolean
+    default_question: boolean
+    slug: string
 }
 
 export type EnrollmentQuestionGroup = {

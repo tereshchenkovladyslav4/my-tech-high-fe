@@ -9,7 +9,7 @@ import DehazeIcon from '@mui/icons-material/Dehaze'
 import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined'
 import EditIcon from '@mui/icons-material/Edit'
 import { SortableHandle } from 'react-sortable-hoc'
-import AddQuestionModal from './AddQuestion'
+import AddNewQuestionModal from './AddNewQuestion'
 import { ContentState, EditorState, convertToRaw } from 'draft-js'
 import { convertFromHTML } from 'draft-convert'
 import htmlToDraft from 'html-to-draftjs'
@@ -81,7 +81,7 @@ export default function EnrollmentQuestionItem({
             </Grid>
         )
     }
-    else if(item.type === 6) {
+    else if(item.type === 7) {
         questionEle = (
             <Grid item xs={6}>
                 <Box display='flex' alignItems='center'>
@@ -146,7 +146,7 @@ export default function EnrollmentQuestionItem({
                 </Box>
             </Grid>
         )}
-        {showEditDialog && <AddQuestionModal onClose={() => setShowEditDialog(false)} editItem={item} group={group}/>}
+        {showEditDialog && <AddNewQuestionModal onClose={() => setShowEditDialog(false)} editItem={item} group={group} newQuestion={false}/>}
         {showDeleteDialog && (
             <CustomModal
                 title='Delete Question'
@@ -289,6 +289,26 @@ function Item({ question: q, setAdditionalQuestion }: { question: EnrollmentQues
         </FormControl>
     )
   }
+  else if (q.type === 6) {
+    return (
+      <TextField
+        size='small'
+        sx={{
+          minWidth: '100%',
 
+          [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
+            borderColor: SYSTEM_07,
+          },
+        }}
+        InputLabelProps={{
+          style: { color: SYSTEM_05 },
+        }}
+        variant='outlined'
+        onChange={(v) => {}}
+        focused
+        type="date"
+      />
+    )
+  }
   return null
 }

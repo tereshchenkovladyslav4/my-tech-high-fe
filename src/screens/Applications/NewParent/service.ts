@@ -40,3 +40,19 @@ export const getActiveSchoolYearsByRegionId = gql`
     }
   }
 `
+
+export const getQuestionsGql = gql`
+  query getApplicationQuestions($input: ApplicatinQuestionsInput) {
+    getApplicationQuestions(input: $input) {
+      id
+      type
+      order
+      question
+      options
+      required
+      default_question
+      validation
+      slug
+    }
+  }
+`

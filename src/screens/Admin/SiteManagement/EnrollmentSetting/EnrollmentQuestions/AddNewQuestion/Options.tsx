@@ -45,10 +45,10 @@ export default function QuestionOptions({
             justifyContent: 'space-around',
             borderBottom: `2px solid ${SYSTEM_07}`, 
             opacity: opt.label.trim() || i === 0 ? 1 : 0.3,
-          }}
+          }}          
+          key={opt.value}
         >
           <Box
-            key={opt.value}
             sx={{
               display: 'flex',
               py: '10px',              

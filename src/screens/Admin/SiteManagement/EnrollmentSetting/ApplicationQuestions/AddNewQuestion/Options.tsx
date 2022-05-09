@@ -11,7 +11,7 @@ export default function QuestionOptions({
 }: {
   options: OptionsType[]
   setOptions: (options: OptionsType[]) => void
-  type: 1 | 2 | 3 | 4 | 5
+  type: 1 | 2 | 3 | 4 | 5 | 6
 }) {
   return (
     <Box display='flex' flexDirection='column' width='80%'>

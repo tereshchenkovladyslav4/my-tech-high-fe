@@ -38,7 +38,27 @@ mutation CreateNewStudentApplication($createApplicationInput: CreateStudentAppli
       grade_levels {
         grade_level
       }
+      status {
+        student_id
+        school_year_id
+        status
+      }
     }
   }
 }
+`
+export const getQuestionsGql = gql`
+  query getExistApplicationQuestions($input: ApplicatinQuestionsInput) {
+    getExistApplicationQuestions(input: $input) {
+      id
+      type
+      order
+      question
+      options
+      required
+      validation
+      default_question
+      slug
+    }
+  }
 `

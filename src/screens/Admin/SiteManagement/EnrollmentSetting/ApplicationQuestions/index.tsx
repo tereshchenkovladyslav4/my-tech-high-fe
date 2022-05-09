@@ -7,7 +7,7 @@ import { ApplicationQuestion, initQuestions } from './types'
 import ApplicationQuestionItem from './Question'
 import { Form, Formik } from 'formik'
 import { arrayMove, SortableContainer, SortableElement } from 'react-sortable-hoc'
-import AddQuestionModal from './AddQuestion/index'
+import AddNewQuestionModal from './AddNewQuestion/index'
 import { useMutation, useQuery } from '@apollo/client'
 import { getQuestionsGql, saveQuestionsGql, deleteQuestionGql } from './services'
 import CustomModal from '../components/CustomModal/CustomModals'
@@ -16,6 +16,10 @@ import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded'
 import { useRecoilValue } from 'recoil'
 import { userRegionState } from '../../../../../providers/UserContext/UserProvider'
 import _ from 'lodash'
+import AddQuestionModal from '../components/AddQuestionModal/AddQuestionModal'
+import DefaultQuestionModal from '../components/DefaultQuestionModal/DefaultQuestionModal'
+import { defaultQuestions } from '../constant/defaultQuestions'
+import { QuestionTypes } from '../EnrollmentQuestions/types'
 
 const SortableItem = SortableElement(ApplicationQuestionItem)
 
@@ -29,7 +33,7 @@ const SortableListContainer = SortableContainer(({ items }: { items: Application
 
 export default function ApplicationQuestions() {
   const [questions, setQuestions] = useState<ApplicationQuestion[]>([])
-  const [openAddQuestion, setOpenAddQuestion] = useState(false)
+  const [openSelectQuestionType, setOpenSelectQuestionType] = useState(false)
   const [unSaveChangeModal, setUnSaveChangeModal] = useState(false)
   const [cancelModal, setCancelModal] = useState(false)
   const [sucessAlert, setSucessAlert] = useState(false)
@@ -37,6 +41,8 @@ export default function ApplicationQuestions() {
   const region = useRecoilValue(userRegionState)
   const [saveQuestionsMutation] = useMutation(saveQuestionsGql)
   const [deleteQuestion] = useMutation(deleteQuestionGql)
+  const [openAddQuestion, setOpenAddQuestion] = useState('')
+  const [editItem, setEditItem] = useState(null)
 
   const { data, refetch } = useQuery(getQuestionsGql, {
     variables: { input: { region_id: +region?.regionDetail?.id } },
@@ -50,9 +56,8 @@ export default function ApplicationQuestions() {
           .map((v) => ({ ...v, options: v.options ? JSON.parse(v.options || '[]') : [] }))
           .sort((a, b) => a.order - b.order),
       )
+      setUnsavedChanges(false)
     }
-
-
   }, [data])
 
   useEffect(() => {
@@ -76,6 +81,19 @@ export default function ApplicationQuestions() {
     }
   }, [history, unsavedChanges])
 
+  const onSelectDefaultQuestions = (selected) => {
+    const selectedQuestion = defaultQuestions.filter((d) => d.label == selected)[0]
+    const editItemTemp = {
+      type: QuestionTypes.find((q) => q.label === selectedQuestion.type).value,
+      question: selectedQuestion.label,
+      validation: selectedQuestion.validation,
+      default_question: true,
+      slug: selectedQuestion.slug
+    }
+    setEditItem(editItemTemp)
+    setOpenAddQuestion('new')
+  }
+
   return (
     <Grid
       sx={{
@@ -96,6 +114,7 @@ export default function ApplicationQuestions() {
               deleteQuestion({ variables: { id: q.id } })
             }
           })
+          console.log('submit questions', vals)
           await saveQuestionsMutation({
             variables: {
               input: vals.map((v) => ({
@@ -105,7 +124,11 @@ export default function ApplicationQuestions() {
                 required: v.required,
                 options: v.options?.length ? JSON.stringify(v.options) : undefined,
                 order: v.order,
+                validation: v.validation,
+                student_question: v.student_question,
+                default_question: v.default_question,
                 region_id: +region?.regionDetail?.id,
+                slug: v.slug || '',
               })),
             },
           })
@@ -194,15 +217,17 @@ export default function ApplicationQuestions() {
                     onSortEnd={({ oldIndex, newIndex }) => {
                       const newData = arrayMove(values, oldIndex, newIndex).map((v, i) => ({
                         ...v,
-                        order: i,
+                        order: i + 1,
                       }))
                       setValues(newData)
                     }}
                   />
                 </Box>
-                {openAddQuestion && <AddQuestionModal onClose={() => setOpenAddQuestion(false)} />}
+                {openAddQuestion === 'new' && <AddNewQuestionModal onClose={() => setOpenAddQuestion('')} editItem={editItem} newQuestion={true}/>}
+                {openAddQuestion === 'default' && <DefaultQuestionModal onClose={() => setOpenAddQuestion('')} onCreate={(e) => {onSelectDefaultQuestions(e)}}/>}
+                {openSelectQuestionType && <AddQuestionModal onClose={() => setOpenSelectQuestionType(false)} onCreate={(e) => {setOpenAddQuestion(e); setEditItem(null); setOpenSelectQuestionType(false)}}/>}
 
-                <Button sx={{ ...useStyles.submitButton, color: 'white' }} onClick={() => setOpenAddQuestion(true)}>
+                <Button sx={{ ...useStyles.submitButton, color: 'white' }} onClick={() => setOpenSelectQuestionType(true)}>
                   Add Question
                 </Button>
               </Box>

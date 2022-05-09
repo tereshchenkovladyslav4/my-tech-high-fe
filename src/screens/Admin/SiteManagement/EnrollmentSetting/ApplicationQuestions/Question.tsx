@@ -8,9 +8,10 @@ import DehazeIcon from '@mui/icons-material/Dehaze'
 import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined'
 import EditIcon from '@mui/icons-material/Edit'
 import { SortableHandle } from 'react-sortable-hoc'
-import AddQuestionModal from './AddQuestion'
+import AddNewQuestionModal from './AddNewQuestion'
 import CustomModal from '../components/CustomModal/CustomModals'
 import { SYSTEM_05, SYSTEM_07 } from '../../../../../utils/constants'
+import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragraph'
 
 const DragHandle = SortableHandle(() => (
   <IconButton>
@@ -32,11 +33,11 @@ export default function ApplicationQuestionItem({
   return (
     <>
       <Box display='flex' mt='20px' alignItems='center' justifyContent='center'>
-        <Box flex='1' paddingTop='10px'>
+        <Box flex='1' paddingTop='10px' maxWidth={'80%'} overflow={'hidden'}>
           <Item question={item} />
         </Box>
         {!mainQuestion && (
-          <Box display='inline-flex' height='40px'>
+          <Box display='inline-flex' paddingTop='10px' height='40px' alignItems='center' justifyContent='center'>
             <IconButton onClick={() => setShowEditDialog(true)}>
               <EditIcon />
             </IconButton>
@@ -48,7 +49,7 @@ export default function ApplicationQuestionItem({
           </Box>
         )}
       </Box>
-      {showEditDialog && <AddQuestionModal onClose={() => setShowEditDialog(false)} editItem={item} />}
+      {showEditDialog && <AddNewQuestionModal onClose={() => setShowEditDialog(false)} editItem={item} />}
       {showDeleteDialog && (
         <CustomModal
           title='Delete Question'
@@ -57,7 +58,7 @@ export default function ApplicationQuestionItem({
           onClose={() => setShowDeleteDialog(false)}
           onConfirm={() => {
             setShowDeleteDialog(false)
-            setValues(values.filter((i) => i.id !== item.id))
+            setValues(values.filter((i) => i.question !== item.question))
           }}
         />
       )}
@@ -78,6 +79,7 @@ function Item({ question: q }: { question: ApplicationQuestion }) {
         sx={{
           marginTop: '10px',
           minWidth: '100%',
+          maxWidth: '100%',
           borderColor: errors[index] ? 'red' : '',
           [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
             borderColor: SYSTEM_07,
@@ -100,9 +102,9 @@ function Item({ question: q }: { question: ApplicationQuestion }) {
       <TextField
         size='small'
         sx={{
-          marginTop: '20px',
+          marginTop: '10px',
           minWidth: '100%',
-
+          maxWidth: '100%',
           [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
             borderColor: SYSTEM_07,
           },
@@ -128,7 +130,9 @@ function Item({ question: q }: { question: ApplicationQuestion }) {
             paddingLeft: '20px',
             paddingBottom: '10px',
             width: '100%',
+            maxWidth: '100%',
             textAlign: 'start',
+            wordWrap: 'break-word',
             borderBottom: '1px solid ' + SYSTEM_07,
           }}
         >
@@ -146,7 +150,7 @@ function Item({ question: q }: { question: ApplicationQuestion }) {
             }}
           >
             <Checkbox checked={o.value === +q.response} onClick={() => onChange(o.value + '')} />
-            <Subtitle size='small'>{o.label}</Subtitle>
+            <Subtitle size='small' sx={{wordWrap: 'break-word',maxWidth: '90%',textAlign: 'start',}}>{o.label}</Subtitle>
           </Box>
         ))}
       </Box>
@@ -158,7 +162,7 @@ function Item({ question: q }: { question: ApplicationQuestion }) {
           checked={q.response === 'true'}
           onChange={(e) => onChange(e.currentTarget.checked ? 'true' : 'false')}
         />
-        <Subtitle size='small' color={SYSTEM_05}>
+        <Subtitle size='small' color={SYSTEM_05} sx={{wordWrap: 'break-word',maxWidth: '90%',textAlign: 'start',}}>
           {q.question}
         </Subtitle>
       </Box>
@@ -173,6 +177,7 @@ function Item({ question: q }: { question: ApplicationQuestion }) {
             width: '100%',
             textAlign: 'start',
             borderBottom: '1px solid ' + SYSTEM_07,
+            wordWrap: 'break-word',
           }}
           color={SYSTEM_05}
         >
@@ -191,10 +196,43 @@ function Item({ question: q }: { question: ApplicationQuestion }) {
             }}
           >
             <Radio checked={false} />
-            <Subtitle size='small'>{o.label}</Subtitle>
+            <Subtitle size='small' sx={{wordWrap: 'break-word',maxWidth: '90%',textAlign: 'start'}}>{o.label}</Subtitle>
           </Box>
         ))}
       </Box>
+    )
+  }
+  else if (q.type === 6) {
+    return (
+      <TextField
+        size='small'
+        sx={{
+          marginTop: '10px',
+          minWidth: '100%',
+
+          [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
+            borderColor: SYSTEM_07,
+          },
+        }}
+        InputLabelProps={{
+          style: { color: SYSTEM_05 },
+        }}
+        label={q.question}
+        variant='outlined'
+        value={q.response}
+        onChange={(v) => onChange(v.currentTarget.value)}
+        focused
+        type="date"
+        error={!!touched[index] && !!errors[index]}
+        helperText={errors[index]}
+      />
+    )
+  }
+  else if (q.type === 7) {
+    return (
+      <Paragraph size='large'>
+          <p dangerouslySetInnerHTML={{ __html: q.question }}></p>
+      </Paragraph>
     )
   }
 

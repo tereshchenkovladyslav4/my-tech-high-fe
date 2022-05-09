@@ -50,6 +50,7 @@ export const enrollmentContactMutation = gql`
           secondary_email
           secondary_phone
           status
+          meta
         }
         applications{
           status

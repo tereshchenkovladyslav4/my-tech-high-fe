@@ -31,7 +31,7 @@ export const DocumentUpload = ({ item } : {item : EnrollmentQuestion}) => {
   const { values, setValues } = useFormikContext<EnrollmentQuestionTab[]>()
   const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false)
   const [showEditDialog, setShowEditDialog] = useState(false)
-  const handleFile = (fileName: File[]) => {setFiles(fileName)}
+  const handleFile = (fileName: File[]) => {setFiles(fileName.map((f, index) => {return {...f, name: `F.Last${item.options[0].label}(${index + 1})`}}))}
 	const deleteFile = (currFile: File) => {
 		setFiles(filter(files, (validFile) => validFile !== currFile))
 	}
@@ -44,7 +44,7 @@ export const DocumentUpload = ({ item } : {item : EnrollmentQuestion}) => {
       />
     ))
   }
-  if(item.type !== 7) {
+  if(item.type !== 8) {
     return (
       <Grid container rowSpacing={2} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
         <EnrollmentQuestionItem item={item} group={'root'} />

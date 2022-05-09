@@ -23,6 +23,10 @@ export const getQuestionsGql = gql`
           required
           removable
           type
+          slug
+          default_question
+          student_question
+          validation
         }
       }
     }

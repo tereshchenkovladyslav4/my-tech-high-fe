@@ -264,7 +264,6 @@ export const Contact: ContactTemplateType = ({ id }) => {
   const goNext = async () => {
     await submitContact()
       .then(() => {
-        console.log(tab.currentTab)
         setTab({
           currentTab: tab.currentTab + 1
         })

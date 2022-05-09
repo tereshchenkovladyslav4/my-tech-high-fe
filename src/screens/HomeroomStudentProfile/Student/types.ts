@@ -68,6 +68,7 @@ export type Packet = {
   secondary_contact_last: string
   is_age_issue?: boolean
   missing_files?: string[]
+  meta?:string
 }
 
 export type Application = {

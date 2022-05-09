@@ -38,13 +38,6 @@ export const Documents: FunctionComponent = () => {
     <form>
     <Grid container rowSpacing={3} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
       <Grid item xs={12}>
-        {/* <Box width='50%'>
-          <Subtitle fontWeight='700'>Required Documents to scan (or photograph) and upload</Subtitle>
-          <Paragraph size='medium'>
-            All documents are kept private and secure. Please upload files specific to this student (ie don&apos;t include
-            another student&apos;s documents).
-          </Paragraph>
-        </Box> */}
         <SortableListContainer
           items={uploadData}
           useDragHandle={true}

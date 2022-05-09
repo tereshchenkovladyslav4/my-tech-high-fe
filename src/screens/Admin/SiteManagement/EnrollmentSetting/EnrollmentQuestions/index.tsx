@@ -7,13 +7,10 @@ import { Step } from './components/Breadcrumbs/types'
 import { useStyles } from './styles'
 import { NavLink, useHistory } from 'react-router-dom'
 import { Form, Formik, useFormikContext } from 'formik'
-// import { HOMEROOM } from '../../utils/constants'
-// import { EnrollmentContext } from '../../providers/EnrollmentPacketPrivder/EnrollmentPacketProvider'
-// import { EnrollmentTemplateType } from './types'
 import { find, includes } from 'lodash'
 import { EnrollmentQuestionTab, initEnrollmentQuestions } from './types'
 import CustomModal from '../components/CustomModal/CustomModals'
-import AddQuestionModal from './AddQuestion/index'
+import AddNewQuestionModal from './AddNewQuestion/index'
 import AddUploadModal from './AddUpload/index'
 import Contact from './Contact/Contact'
 import Education from './Education/Education'
@@ -26,6 +23,10 @@ import { userRegionState } from '../../../../../providers/UserContext/UserProvid
 import { getQuestionsGql, saveQuestionsGql, deleteQuestionsGql, deleteQuestionGroupGql } from './services'
 import { useMutation, useQuery } from '@apollo/client'
 import _ from 'lodash'
+import { QuestionTypes } from '../EnrollmentQuestions/types'
+import { defaultQuestions } from '../constant/defaultQuestions'
+import DefaultQuestionModal from '../components/DefaultQuestionModal/DefaultQuestionModal'
+import AddQuestionModal from '../components/AddQuestionModal/AddQuestionModal'
 
 export default function EnrollmentQuestions() {
   const [questionsData, setQuestionsData] = useState<EnrollmentQuestionTab[]>(initEnrollmentQuestions)
@@ -33,7 +34,7 @@ export default function EnrollmentQuestions() {
   const [sucessAlert, setSucessAlert] = useState(false)
   const [cancelModal, setCancelModal] = useState(false)
   const [unSaveChangeModal, setUnSaveChangeModal] = useState(false)
-  const [openAddQuestion, setOpenAddQuestion] = useState(false)
+  const [openAddQuestion, setOpenAddQuestion] = useState('')
   const [openAddUpload, setOpenAddUpload] = useState(false)
   const [visitedTabs, setVisitedTabs] = useState([])
   const [unsavedChanges, setUnsavedChanges] = useState(false)
@@ -47,6 +48,9 @@ export default function EnrollmentQuestions() {
     variables: { input: { region_id: +region?.regionDetail?.id } },
     fetchPolicy: 'network-only',
   })
+
+  const [editItem, setEditItem] = useState(null)
+  const [openSelectQuestionType, setOpenSelectQuestionType] = useState(false)
 
   useEffect(() => {
     if (data?.getEnrollmentQuestions.length > 0) {
@@ -71,6 +75,7 @@ export default function EnrollmentQuestions() {
         return t
       })
       setQuestionsData(jsonTabData)
+      setUnsavedChanges(false)
     }
     else {
       setQuestionsData(initEnrollmentQuestions)
@@ -130,6 +135,19 @@ export default function EnrollmentQuestions() {
     if(includes(visitedTabs, idx) || disabled){
       setCurrentTab(idx)
     }
+  }
+
+  const onSelectDefaultQuestions = (selected) => {
+    const selectedQuestion = defaultQuestions.filter((d) => d.label == selected)[0]
+    const editItemTemp = {
+      type: QuestionTypes.find((q) => q.label === selectedQuestion.type).value,
+      question: selectedQuestion.label,
+      validation: selectedQuestion.validation,
+      default_question: true,
+      slug: selectedQuestion.slug
+    }
+    setEditItem(editItemTemp)
+    setOpenAddQuestion('new')
   }
 
   return (
@@ -264,7 +282,10 @@ export default function EnrollmentQuestions() {
                       <Submission />
                     )}
                   </Box>
-                  {openAddQuestion && <AddQuestionModal onClose={() => setOpenAddQuestion(false)}/>}
+                  {openAddQuestion === 'new' && <AddNewQuestionModal onClose={() => setOpenAddQuestion('')} editItem={editItem} newQuestion={true}/>}
+                  {openAddQuestion === 'default' && <DefaultQuestionModal onClose={() => setOpenAddQuestion('')} onCreate={(e) => {onSelectDefaultQuestions(e)}}/>}
+                  {openSelectQuestionType && <AddQuestionModal onClose={() => setOpenSelectQuestionType(false)} onCreate={(e) => {setOpenAddQuestion(e); setEditItem(null); setOpenSelectQuestionType(false)}}/>}
+
                   {openAddUpload && <AddUploadModal onClose={() => setOpenAddUpload(false)}/>}
                   {currentTab === 3 && (
                     <Box sx={classes.buttonGroup}>
@@ -274,7 +295,7 @@ export default function EnrollmentQuestions() {
                     </Box>
                   )}
                   <Box sx={classes.buttonGroup}>
-                    <Button sx={{ ...classes.submitButton, color: 'white', marginTop: currentTab === 3 ? 3 : 10}} onClick={() => setOpenAddQuestion(true)}>
+                    <Button sx={{ ...classes.submitButton, color: 'white', marginTop: currentTab === 3 ? 3 : 10}} onClick={() => setOpenSelectQuestionType(true)}>
                       Add Question
                     </Button>
                     <Button sx={{ ...classes.submitButton, color: 'white', width: '150px', marginTop: currentTab === 3 ? 3 : 10 }} onClick={() => setCurrentTab(currentTab + 1)}>

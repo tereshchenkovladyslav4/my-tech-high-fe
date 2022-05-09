@@ -37,25 +37,32 @@ export default function AddQuestionModal({
     let newQuestions : EnrollmentQuestion[]
     if(editItem) {
         const newQuestion : EnrollmentQuestion = {
-            type: 7,
+            type: 8,
             question: uploadTitle,
             order: editItem.order,
             options: [{label: fileName, value: description}],
             required,
             removable,
+            validation: 0,
+            default_question: false,
+            student_question: false,
+            slug: editItem?.slug || `meta_${+ new Date()}`
         }
         newQuestions = currentTabData.groups[0]?.questions.map((q) => q.question === editItem.question ? newQuestion : q)
 
     }
     else {
         const newQuestion : EnrollmentQuestion = {
-            type: 7,
+            type: 8,
             question: uploadTitle,
             order: currentTabData.groups[0]?.questions?.length + 1 || 1,
             options: [{label: fileName, value: description}],
             required,
             removable,
-
+            validation: 0,
+            student_question: false,
+            default_question: false,
+            slug: editItem?.slug || `meta_${+ new Date()}`
         }
         newQuestions = currentTabData.groups[0]?.questions ? [...currentTabData.groups[0]?.questions, newQuestion] : [newQuestion]
     }

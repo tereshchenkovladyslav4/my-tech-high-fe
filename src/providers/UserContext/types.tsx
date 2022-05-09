@@ -21,6 +21,16 @@ export type RegionDetail = {
   state_logo: string
   special_ed: boolean
   birth_date: string
+  SchoolDistricts: SchoolDistrict[]
+}
+
+export type SchoolDistrict = {
+  id: number
+  school_district_name: string
+  school_district_code: number
+  Region_id: number
+  created_at?: Date
+  updated_at?: Date
 }
 
 export type AccessDetail = {

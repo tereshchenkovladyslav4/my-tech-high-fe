@@ -6,7 +6,7 @@ import { DropDownItem } from '../../../components/DropDown/types'
 import { Paragraph } from '../../../components/Typography/Paragraph/Paragraph'
 import { Title } from '../../../components/Typography/Title/Title'
 import { AddStudent } from '../components/AddStudent/AddStudent'
-import { checkEmailQuery, newParentApplicationMutation, getActiveSchoolYearsByRegionId } from './service'
+import { checkEmailQuery, newParentApplicationMutation, getActiveSchoolYearsByRegionId, getQuestionsGql } from './service'
 import { useStyles } from './styles'
 import BGSVG from '../../../assets/ApplicationBG.svg'
 import { DASHBOARD, GRADES, MTHBLUE, RED, SYSTEM_05 } from '../../../utils/constants'
@@ -17,10 +17,13 @@ import { Link } from 'react-router-dom'
 import { getAllRegion } from '../../../graphql/queries/region'
 import { LoadingScreen } from '../../LoadingScreen/LoadingScreen'
 import { find, map, pullAt, toNumber } from 'lodash'
-import { isPhoneNumber, toOrdinalSuffix } from '../../../utils/stringHelpers'
+import { isPhoneNumber, toOrdinalSuffix, isNumber } from '../../../utils/stringHelpers'
 import moment from 'moment'
 import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined'
 import { array, boolean, number, object, string, ValidationError } from 'yup'
+import { ApplicationQuestion } from '../components/AdditionalQuestionItem/types'
+import { AdditionalQuestionItem } from '../components/AdditionalQuestionItem/AdditionalQuestionItem'
+import { omit } from 'lodash';
 
 export type StudentInput = {
   first_name: string
@@ -30,7 +33,12 @@ export type StudentInput = {
 }
 
 export const NewParent = () => {
-  const emptyStudent = { first_name: '', last_name: '', grade_level: undefined }
+  const [emptyStudent, setEmptyStudent] = useState({ first_name: '', last_name: '' , grade_level: undefined})
+  const initSchema = {
+    state: string().required('State is required'),
+    programYear: string().required('Grade Level is required')
+  }
+  const [validationSchema, setValidationSchema] = useState()
 
   const programYearItems: DropDownItem[] = [
     {
@@ -61,7 +69,7 @@ export const NewParent = () => {
     fetchPolicy: 'network-only',
   })
 
-  const [showEmailError, setShowEmailError] = useState(false)
+  const [showEmailError, setShowEmailError] = useState(true)
   const [schoolYearsData, setSchoolYearsData] = useState([])
   const [grades, setGrades] = useState([])
   const [gradesDropDownItems, setGradesDropDownItems] = useState<Array<DropDownItem>>([])
@@ -70,6 +78,94 @@ export const NewParent = () => {
   const classes = useStyles
 
   const [showConfirmationText, setShowConfirmationText] = useState(false)
+
+  const { loading: questionLoading, data: questionData } = useQuery(getQuestionsGql, {
+    variables: { input: { region_id: Number(regionId) } },
+    fetchPolicy: 'network-only',
+  })
+  
+  const [questions, setQuestions] = useState<ApplicationQuestion[]>([])
+  useEffect(() => {
+    if (!questionLoading && questionData?.getApplicationQuestions) {
+      setQuestions(
+        questionData.getApplicationQuestions
+          .map((v) => ({ ...v, options: v.options ? JSON.parse(v.options || '[]') : [] }))
+          .sort((a, b) => a.order - b.order),
+      )
+    }
+  }, [questionData, regionId, questionLoading])
+
+  useEffect(() => {
+    if(questions.length > 0) {
+      let empty = {...emptyStudent}
+      let valid_student = {}
+      let valid_parent = {}
+      let valid_meta = {}
+      questions.map((q) => {
+        if(q.slug?.includes('student_')) {
+          empty[`${q.slug?.replace('student_', '')}`] = ''
+          if(q.required) {
+            if(q.slug?.toLocaleLowerCase().includes('emailconfrim')) {
+              valid_student[`${q.slug?.replace('student_', '')}`] = yup
+                  .string()
+                  .required('Email is required')
+                  .oneOf([yup.ref('email')], 'Emails do not match')
+            }
+            else {
+              valid_student[`${q.slug?.replace('student_', '')}`] = yup.string().required(`${q.question} is required`)
+            }
+          }
+        }
+        else if(q.slug?.includes('parent_')) {
+          if(q.required) {
+            if(q.slug?.toLocaleLowerCase().includes('emailconfirm')) {
+              valid_parent[`${q.slug?.replace('parent_', '')}`] = yup
+                  .string()
+                  .required('Email is required')
+                  .oneOf([yup.ref('email')], 'Emails do not match')
+            }
+            else if(q.validation === 1) {
+              valid_parent[`${q.slug?.replace('parent_', '')}`] = yup.string().email('Enter a valid email').required('Email is required')
+            }
+            else if(q.validation === 2) {
+              valid_parent[`${q.slug?.replace('parent_', '')}`] = yup.string()
+              // .matches(isPhoneNumber, 'Phone number is invalid')
+              // .test('max_spacing_interval', 'Phone number is invalid', function (value) {
+              //   if (value !== undefined) {
+              //     return this.parent.phone_number.replaceAll('-', '').length >= 13
+              //   }
+              // })
+              // .required('Phone number is required')
+              .required(`${q.question} is required`)
+              .test(`${q.question}-selected`, `${q.question} is invalid`, (value) => {
+                return isNumber.test(value)
+              })
+            }
+            else {
+              valid_parent[`${q.slug?.replace('parent_', '')}`] = yup.string().required(`${q.question} is required`)
+            }
+          }
+        }
+        else if(q.slug?.includes('meta_') && q.required) {
+          if(q.validation === 1) {
+            valid_meta[`${q.slug}`] = yup.string().email('Enter a valid email').required('Email is required')
+          }
+          else if(q.validation === 2) {
+            valid_meta[`${q.slug}`] = yup.string()
+            .required(`${q.question} is required`)
+            .test(`${q.question}-selected`, `${q.question} is invalid`, (value) => {
+              return isNumber.test(value)
+            })
+          }
+          else {
+            valid_meta[`${q.slug}`] = yup.string().required(`${q.question} is required`)
+          }
+        }
+      })
+      setEmptyStudent(empty)
+      setValidationSchema({...initSchema, parent: yup.object(valid_parent), students: yup.array(yup.object(valid_student)), meta: yup.object(valid_meta)})
+    }
+  }, [questions])
 
   const [submitApplicationAction, { data, loading: applicationLoading, error: applicationError }] =
     useMutation(newParentApplicationMutation)
@@ -107,13 +203,9 @@ export const NewParent = () => {
           referred_by: values.refferedBy,
           state: values.state,
           program_year: parseInt(values.programYear!),
-          parent: {
-            first_name: values.firstName,
-            last_name: values.lastName,
-            email: values.email,
-            phone_number: values.phoneNumber,
-          },
+          parent: omit(values.parent, ['emailConfirm']),
           students: values.students,
+          meta: JSON.stringify(values.meta),
         },
       },
     }).then(() => {
@@ -202,41 +294,12 @@ export const NewParent = () => {
           initialValues={{
             programYear: undefined,
             state: undefined,
-            firstName: undefined,
-            lastName: undefined,
-            phoneNumber: undefined,
-            email: undefined,
-            emailConfirm: undefined,
             refferedBy: undefined,
             students: [emptyStudent],
+            meta: undefined,
+            parent: undefined,
           }}
-          validationSchema={object({
-            state: string().required('State is required'),
-            programYear: string().required('Grade Level is required'),
-            firstName: string().required('First Name is required'),
-            lastName: string().required('Last Name is required'),
-            phoneNumber: string()
-              .matches(isPhoneNumber, 'Phone number is invalid')
-              .test('max_spacing_interval', 'Phone number is invalid', function (value) {
-                if (value !== undefined) {
-                  return this.parent.phoneNumber.replace('-', '').length >= 10
-                }
-              })
-              .required('Phone number is required'),
-            email: yup.string().email('Enter a valid email').required('Email is required'),
-            emailConfirm: yup
-              .string()
-              .required('Email is required')
-              .oneOf([yup.ref('email')], 'Emails do not match'),
-            refferedBy: yup.string(),
-            students: yup.array(
-              yup.object({
-                first_name: yup.string().required('First Name needed'),
-                last_name: yup.string().required('Last Name needed'),
-                grade_level: yup.string().required('Grade Level is required'),
-              }),
-            ),
-          })}
+          validationSchema={object(validationSchema)}
           onSubmit={async (values) => {
             await submitApplication(values)
           }}
@@ -244,430 +307,358 @@ export const NewParent = () => {
           {({ values, errors, isSubmitting, isValid }) => {
             //console.log("Errors: ",errors)
             return (
-              <Form>
-                <Box
-                  paddingX={34}
-                  paddingTop={1}
-                  paddingBottom={10}
-                  sx={{
-                    backgroundImage: `url(${BGSVG})`,
-                    backgroundRepeat: 'no-repeat',
-                    backgroundPosition: 'top',
-                    alignItems: 'center',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    maxWidth: '1088px',
-                    marginLeft: 'auto',
-                    marginRight: 'auto',
-                  }}
-                >
-                  <Grid container rowSpacing={1.3} sx={{ marginLeft: '10px' }} paddingTop={10}>
-                    <Grid item xs={12}>
-                      <Title color={MTHBLUE} textAlign='center'>
-                        InfoCenter
-                      </Title>
-                    </Grid>
-                    <Grid item xs={12} marginBottom={3}>
-                      <Title fontWeight='500' textAlign='center'>
-                        Apply
-                      </Title>
-                    </Grid>
-                    <Grid item xs={12} display='flex' justifyContent={'center'}>
-                      <Field name={`state`} fullWidth focused>
-                        {({ field, form, meta }) => (
-                          <Box width={'406.73px'}>
-                            <DropDown
-                              name='state'
-                              labelTop
-                              dropDownItems={availableRegions}
-                              placeholder='State'
-                              setParentValue={(id) => {
-                                form.setFieldValue(field.name, id)
-                                setRegionId(id)
-                              }}
-                              alternate={true}
-                              sx={!!(meta.touched && Boolean(meta.error)) ? classes.textFieldError : classes.dropdown}
-                              size='small'
-                              error={{
-                                error: !!(meta.touched && Boolean(meta.error)),
-                                errorMsg: (meta.touched && meta.error) as string,
-                              }}
-                            />
-                          </Box>
-                        )}
-                      </Field>
-                    </Grid>
-                    <Grid item xs={12} display='flex' justifyContent={'center'}>
-                      <Box width={'406.73px'}>
-                        <Field name='programYear' fullWidth focused>
-                          {({ field, form, meta }) => (
-                            <Box width={'100%'}>
-                              <DropDown
-                                name='programYear'
-                                labelTop
-                                placeholder='Program Year'
-                                dropDownItems={schoolYears}
-                                setParentValue={(id) => {
-                                  form.setFieldValue(field.name, toNumber(id))
-                                  setGradesAndBirthDateCut(id)
-                                }}
-                                alternate={true}
-                                size='small'
-                                sx={!!(meta.touched && meta.error) ? classes.textFieldError : classes.dropdown}
-                                error={{
-                                  error: !!(meta.touched && meta.error),
-                                  errorMsg: (meta.touched && meta.error) as string,
-                                }}
-                              />
-                            </Box>
-                          )}
-                        </Field>
-                      </Box>
-                    </Grid>
-                    <Grid item xs={12} display='flex' justifyContent={'center'}>
-                      <Paragraph
-                        textAlign='center'
-                        sx={{
-                          fontSize: '11.2px',
-                        }}
-                      >
-                        Our tuition-free, personalized distance education program is available to home-based Utah
-                        residents between the ages of 5-18.
-                      </Paragraph>
-                    </Grid>
-                    <Grid item xs={12} display='flex' justifyContent={'center'}>
-                      <Paragraph
-                        sx={{
-                          fontSize: '11.2px',
-                          width: '125%',
-                          textAlign: 'center',
-                        }}
-                      >
-                        If you already have an InfoCenter account,
-                        <span style={{ fontSize: '11.2px', fontWeight: 700 }}>
-                          {'\u00A0'}please{'\u00A0'}
-                        </span>
-                        <Link
-                          to={DASHBOARD}
-                          style={{ fontSize: '11.2px', fontWeight: 700, color: MTHBLUE, textDecoration: 'none' }}
-                        >
-                          login{'\u00A0'}
-                        </Link>
-                        before submitting an application. Thank you!.
-                      </Paragraph>
-                    </Grid>
-                    <Grid item xs={12} display='flex' justifyContent={'center'}>
-                      <Box width={'451.53px'}>
-                        <Field name={`firstName`} fullWidth focused>
-                          {({ field, form, meta }) => (
-                            <Box width={'100%'}>
-                              <TextField
-                                name='firstName'
-                                size='small'
-                                label='Parent First Name'
-                                focused
-                                variant='outlined'
-                                {...field}
-                                inputProps={{
-                                  style: { color: 'black' },
-                                }}
-                                InputLabelProps={{
-                                  style: { color: SYSTEM_05 },
-                                }}
-                                type='text'
-                                sx={!!(meta.touched && meta.error) ? classes.textFieldError : classes.textfield}
-                                {...field}
-                                error={meta.touched && meta.error}
-                                helperText={meta.touched && meta.error}
-                              />
-                            </Box>
-                          )}
-                        </Field>
-                      </Box>
-                    </Grid>
-                    <Grid item xs={12} display='flex' justifyContent={'center'}>
-                      <Box width={'451.53px'}>
-                        <Field name={`lastName`} fullWidth focused>
-                          {({ field, form, meta }) => (
-                            <Box width={'100%'}>
-                              <TextField
-                                name='lastName'
-                                size='small'
-                                label='Parent Last Name'
-                                focused
-                                variant='outlined'
-                                inputProps={{
-                                  style: { color: 'black' },
-                                }}
-                                InputLabelProps={{
-                                  style: { color: SYSTEM_05 },
-                                }}
-                                sx={!!(meta.touched && meta.error) ? classes.textFieldError : classes.textfield}
-                                {...field}
-                                error={meta.touched && meta.error}
-                                helperText={meta.touched && meta.error}
-                              />
-                            </Box>
-                          )}
-                        </Field>
-                      </Box>
-                    </Grid>
-                    <Grid item xs={12} display='flex' justifyContent={'center'}>
-                      <Box width={'451.53px'}>
-                        <Field name={`phoneNumber`} fullWidth focused>
-                          {({ field, form, meta }) => (
-                            <Box width={'100%'}>
-                              <TextField
-                                name='phoneNumber'
-                                size='small'
-                                label='Parent Phone Number'
-                                focused
-                                variant='outlined'
-                                inputProps={{
-                                  style: { color: 'black' },
-                                }}
-                                InputLabelProps={{
-                                  style: { color: SYSTEM_05 },
-                                }}
-                                sx={!!(meta.touched && meta.error) ? classes.textFieldError : classes.textfield}
-                                {...field}
-                                error={meta.touched && meta.error}
-                                helperText={meta.touched && meta.error}
-                              />
-                            </Box>
-                          )}
-                        </Field>
-                      </Box>
-                    </Grid>
-                    <Grid item xs={12} display='flex' justifyContent={'center'}>
-                      <Box width={'451.53px'}>
-                        <Field name={`email`} fullWidth focused>
-                          {({ field, form, meta }) => {
-                            if (showEmailError) {
-                              form.setErrors({
-                                email: (
-                                  <Paragraph>
-                                    This email is already being used.
-                                    <Link
-                                      to={DASHBOARD}
-                                      style={{
-                                        fontSize: '11.2px',
-                                        fontWeight: 700,
-                                        color: MTHBLUE,
-                                        textDecoration: 'none',
-                                      }}
-                                    >
-                                      Please login{'\u00A0'}
-                                    </Link>
-                                    to complete an application
-                                  </Paragraph>
-                                ),
-                              })
-                            }
-                            return (
-                              <Box width={'100%'}>
-                                <TextField
-                                  name='email'
-                                  size='small'
-                                  label='Parent Email'
-                                  focused
-                                  variant='outlined'
-                                  inputProps={{
-                                    style: { color: 'black' },
-                                  }}
-                                  InputLabelProps={{
-                                    style: { color: SYSTEM_05 },
-                                  }}
-                                  sx={!!(meta.touched && meta.error) ? classes.textFieldError : classes.textfield}
-                                  {...field}
-                                  error={meta.error || showEmailError}
-                                  helperText={meta.touched && meta.error}
-                                  onKeyUp={() => {
-                                    // TODO fix validation here
-                                    checkEmail({
-                                      variables: {
-                                        email: field.value,
-                                      },
-                                    })
-                                  }}
-                                />
-                              </Box>
-                            )
-                          }}
-                        </Field>
-                      </Box>
-                    </Grid>
-                    <Grid item xs={12} display='flex' justifyContent={'center'}>
-                      <Box width={'451.53px'}>
-                        <Field name={`emailConfirm`} fullWidth focused>
-                          {({ field, form, meta }) => (
-                            <Box width={'100%'}>
-                              <TextField
-                                name='emailConfirm'
-                                size='small'
-                                label='Parent Email Confirm'
-                                focused
-                                variant='outlined'
-                                inputProps={{
-                                  style: { color: 'black' },
-                                }}
-                                InputLabelProps={{
-                                  style: { color: SYSTEM_05 },
-                                }}
-                                sx={!!(meta.touched && meta.error) ? classes.textFieldError : classes.textfield}
-                                {...field}
-                                error={meta.touched && meta.error}
-                                helperText={meta.touched && meta.error}
-                              />
-                            </Box>
-                          )}
-                        </Field>
-                      </Box>
-                    </Grid>
-                    <Grid item xs={12} display='flex' justifyContent={'center'}>
-                      <Box width={'451.53px'}>
-                        <FieldArray name='students'>
-                          {({ push, remove }) => (
-                            <>
-                              {values.students.map((_, index) => (
-                                <Grid item container spacing={2} xs={12} sm='auto'>
-                                  <Grid item xs={12}>
-                                    <Box
-                                      width={index === 0 ? '100%' : '103.9%'}
-                                      display='flex'
-                                      flexDirection='row'
-                                      alignItems={'center'}
-                                    >
-                                      <Field name={`students[${index}].first_name`} fullWidth focused>
-                                        {({ field, form, meta }) => (
-                                          <Box width={'100%'}>
-                                            <TextField
-                                              type='text'
-                                              size='small'
-                                              label='Student First Name'
-                                              focused
-                                              variant='outlined'
-                                              sx={
-                                                !!(meta.touched && meta.error)
-                                                  ? classes.textFieldError
-                                                  : classes.textfield
-                                              }
-                                              inputProps={{
-                                                style: { color: 'black' },
-                                              }}
-                                              InputLabelProps={{
-                                                style: { color: SYSTEM_05 },
-                                              }}
-                                              {...field}
-                                              error={meta.touched && meta.error}
-                                              helperText={meta.touched && meta.error}
-                                            />
-                                          </Box>
-                                        )}
-                                      </Field>
-                                      {index !== 0 ? (
-                                        <DeleteForeverOutlinedIcon
-                                          sx={{ left: 12, position: 'relative', color: 'darkgray' }}
-                                          onClick={() => remove(index)}
-                                        />
-                                      ) : null}
-                                    </Box>
-                                  </Grid>
-                                  <Grid item xs={12}>
-                                    <Field name={`students[${index}].last_name`} fullWidth focused>
-                                      {({ field, form, meta }) => (
-                                        <Box width={'100%'}>
-                                          <TextField
-                                            type='text'
-                                            size='small'
-                                            label='Student Last Name'
-                                            focused
-                                            variant='outlined'
-                                            sx={
-                                              !!(meta.touched && meta.error)
-                                                ? classes.textFieldError
-                                                : classes.textfield
-                                            }
-                                            inputProps={{
-                                              style: { color: 'black' },
-                                            }}
-                                            InputLabelProps={{
-                                              style: { color: SYSTEM_05 },
-                                            }}
-                                            {...field}
-                                            error={meta.touched && meta.error}
-                                            helperText={meta.touched && meta.error}
-                                          />
-                                        </Box>
-                                      )}
-                                    </Field>
-                                  </Grid>
-                                  <Grid item xs={12}>
-                                    <Field name={`students[${index}].grade_level`} fullWidth focused>
-                                      {({ field, form, meta }) => (
-                                        <Box width={'100%'}>
-                                          <DropDown
-                                            name={`students[${index}].grade_level`}
-                                            labelTop
-                                            placeholder={`Student Grade Level (${moment().diff(
-                                              birthDateCut,
-                                              'years',
-                                            )}) as of ${moment(birthDateCut).format('MMM Do YYYY')}`}
-                                            dropDownItems={gradesDropDownItems}
-                                            setParentValue={(id) => {
-                                              form.setFieldValue(field.name, id)
-                                            }}
-                                            alternate={true}
-                                            size='small'
-                                            sx={
-                                              !!(meta.touched && meta.error) ? classes.textFieldError : classes.dropdown
-                                            }
-                                            error={{
-                                              error: !!(meta.touched && meta.error),
-                                              errorMsg: (meta.touched && meta.error) as string,
-                                            }}
-                                          />
-                                        </Box>
-                                      )}
-                                    </Field>
-                                  </Grid>
-                                </Grid>
-                              ))}
-                              <Grid item>
-                                {typeof errors.students === 'string' ? (
-                                  <Paragraph color={RED}>{errors.students}</Paragraph>
-                                ) : null}
-                              </Grid>
-                              <Grid item xs={12} display='flex' justifyContent={'center'}>
-                                <Button
-                                  color='secondary'
-                                  variant='contained'
-                                  style={classes.addStudentButton}
-                                  onClick={() => push(emptyStudent)}
-                                >
-                                  Add Student
-                                </Button>
-                              </Grid>
-                            </>
-                          )}
-                        </FieldArray>
-                      </Box>
-                    </Grid>
-                    <Grid item xs={12} display='flex' justifyContent={'center'}>
-                      <Button
-                        variant='contained'
-                        type='submit'
-                        style={classes.submitButton}
-                        disabled={Boolean(Object.keys(errors).length) || showEmailError}
-                      >
-                        Submit to Utah School
-                      </Button>
-                    </Grid>
+            <Form>
+              <Box
+                paddingX={36}
+                paddingTop={18}
+                paddingBottom={10}
+                sx={{
+                  backgroundImage: `url(${BGSVG})`,
+                  backgroundRepeat: 'no-repeat',
+                  backgroundPosition: 'top',
+                  alignItems: 'center',
+                  display: 'flex',
+                  flexDirection: 'column',
+                }}
+              >
+                <Grid container rowSpacing={2} paddingTop={10}>
+                  <Grid item xs={12}>
+                    <Title color={MTHBLUE} textAlign='center'>
+                      InfoCenter
+                    </Title>
                   </Grid>
-                </Box>
-              </Form>
-            )
-          }}
+                  <Grid item xs={12}>
+                    <Title fontWeight='500' textAlign='center'>
+                      Apply
+                    </Title>
+                  </Grid>
+                  <Grid item xs={12} display='flex' justifyContent={'center'}>
+                    <Field 
+                      name={`state`}
+                      fullWidth
+                      focused
+                    >
+                      {({ field, form, meta }) => (
+                        <Box width={'406.73px'}>                                
+                          <DropDown
+                            name='state'
+                            labelTop
+                            dropDownItems={availableRegions}
+                            placeholder='State'
+                            setParentValue={(id) => {
+                              form.setFieldValue(field.name, id)
+                              setRegionId(id)
+                            }}
+                            alternate={true}
+                            sx={
+                              !!(meta.touched && Boolean(meta.error))
+                                ? classes.textFieldError
+                                : classes.dropdown
+                            }
+                            size='small'
+                            error={{
+                              error: !!(meta.touched && Boolean(meta.error)),
+                              errorMsg: (meta.touched && meta.error) as string,
+                            }}
+                          />
+                        </Box>
+                      )}
+                    </Field>
+                  </Grid>
+                {!questionLoading && questions.length > 0 && 
+                  questions.map((q) => 
+                    {
+                      if(q.slug === 'program_year') {
+                        return (
+                          <Grid item xs={12} display='flex' justifyContent={'center'}>
+                            <Box width={'406.73px'}>                                
+                              <Field 
+                                name='programYear'
+                                fullWidth
+                                focused
+                              >
+                              {({ field, form, meta }) => (
+                                <Box width={'100%'}>
+                                  <DropDown
+                                    name='programYear'
+                                    labelTop
+                                    placeholder='Program Year'
+                                    dropDownItems={schoolYears}
+                                    setParentValue={(id) => {
+                                      form.setFieldValue(field.name, toNumber(id))
+                                      setGradesAndBirthDateCut(id)
+                                    }}
+                                    alternate={true}
+                                    size='small'
+                                    sx={
+                                      !!(meta.touched && meta.error)
+                                        ? classes.textFieldError
+                                        : classes.dropdown
+                                    }
+                                    error={{
+                                      error: !!(meta.touched && meta.error),
+                                      errorMsg: (meta.touched &&  meta.error) as string,
+                                    }}
+                                  />
+                                </Box>
+                              )}
+                              </Field>
+                            </Box>
+                          </Grid>
+                        )
+                      }
+                      else if(q.slug === 'parent_email') {
+                        return (
+                          <Grid item xs={12} display='flex' justifyContent={'center'}>
+                            <Box width={'451.53px'}>
+                              <Field 
+                                name={`parent.email`}
+                                fullWidth
+                                focused
+                              >
+                              {({ field, form, meta }) => {
+                                  if( showEmailError ) {
+                                    form.setErrors({
+                                      parent: {email: (
+                                        <Paragraph>
+                                          This email is already being used.
+                                          <Link
+                                            to={DASHBOARD}
+                                            style={{ fontSize: '11.2px', fontWeight: 700, color: MTHBLUE, textDecoration: 'none' }}
+                                          >
+                                            Please login{'\u00A0'}
+                                          </Link>
+                                          to complete an application
+                                        </Paragraph>
+                                      )},
+                                    })
+                                  }
+                                return (
+                                  <Box width={'100%'}>
+                                    <TextField
+                                      name='parent.email'
+                                      size='small'
+                                      label='Parent Email'
+                                      focused
+                                      variant='outlined'
+                                      inputProps={{
+                                        style: { color: 'black' },
+                                      }}
+                                      InputLabelProps={{
+                                        style: { color: SYSTEM_05 },
+                                      }}
+                                      sx={
+                                        !!(meta.touched && meta.error)
+                                          ? classes.textFieldError
+                                          : classes.textfield
+                                      }
+                                      {...field}
+                                      error={meta.error || showEmailError}
+                                      helperText={meta.touched && meta.error}
+                                      onKeyUp={() => {
+                                        // TODO fix validation here
+                                        checkEmail({
+                                        variables: {
+                                          email: field.value
+                                        },
+                                        })
+                                      }}
+                                    />                          
+                                  </Box>
+                                )
+                              }}
+                              </Field>
+                            </Box>
+                          </Grid>
+                        )
+                      }
+                      else if(q.slug === 'parent_emailConfirm') {
+                        return (
+                          <Grid item xs={12} display='flex' justifyContent={'center'}>
+                            <Box width={'451.53px'}>
+                              <Field 
+                                name={`parent.emailConfirm`}
+                                fullWidth
+                                focused
+                              >
+                              {({ field, form, meta }) => (
+                                <Box width={'100%'}>
+                                  <TextField
+                                    name='emailConfirm'
+                                    size='small'
+                                    label='Parent Email Confirm'
+                                    focused
+                                    variant='outlined'
+                                    inputProps={{
+                                      style: { color: 'black' },
+                                    }}
+                                    InputLabelProps={{
+                                      style: { color: SYSTEM_05 },
+                                    }}
+                                    sx={
+                                      !!(meta.touched && meta.error)
+                                        ? classes.textFieldError
+                                        : classes.textfield
+                                    }
+                                    {...field}
+                                    error={meta.touched && meta.error}
+                                    helperText={meta.touched && meta.error}
+                                  />
+                                </Box>
+                                )}
+                              </Field>
+                            </Box>
+                          </Grid>
+                        )
+                      }
+                      else if(!q.slug?.includes('student_')) {
+                        return (
+                          <Grid item xs={12} display='flex' justifyContent={'center'}>
+                            <Box width={'451.53px'}>
+                              {q.slug?.includes('parent_') && (
+                                <Field
+                                  name = {`parent.${q.slug?.replace('parent_', '')}`}
+                                  fullWidth
+                                  focused
+                                >
+                                  {({ field, form, meta }) => (
+                                    <AdditionalQuestionItem question={q} field={field} form={form} meta={meta}/>
+                                  )}
+                                </Field>
+                              )}
+                              {q.slug?.includes('meta_') && (
+                                <Field
+                                  name = {`meta.${q.slug}`}
+                                  fullWidth
+                                  focused
+                                >
+                                  {({ field, form, meta }) => (
+                                    <AdditionalQuestionItem question={q} field={field} form={form} meta={meta}/>
+                                  )}
+                                </Field>
+                              )}
+                            </Box>
+                          </Grid>
+                        )
+                      }
+                    }
+                  )
+                }
+                <Grid item xs={12} display='flex' justifyContent={'center'}>
+                  <Box width={'451.53px'}>
+                    <FieldArray name="students">
+                      {({ push, remove }) => (
+                        <>
+                          {values.students.map((_, index) => (
+                              <Grid item container spacing={2} xs={12} sm="auto">
+                                {!questionLoading && questions.length > 0 && 
+                                  questions.map((q) => {
+                                    if(q.slug === 'student_grade_level') {
+                                      return (
+                                        <Grid item xs={12}>
+                                          <Field name={`students[${index}].grade_level`} fullWidth focused>
+                                            {({ field, form, meta }) => (
+                                              <Box width={'100%'}>
+                                                <DropDown
+                                                  name={`students[${index}].grade_level`}
+                                                  labelTop
+                                                  placeholder={`Student Grade Level (${moment().diff(
+                                                    birthDateCut,
+                                                    'years',
+                                                  )}) as of ${moment(birthDateCut).format('MMM Do YYYY')}`}
+                                                  dropDownItems={gradesDropDownItems}
+                                                  setParentValue={(id) => {
+                                                    form.setFieldValue(field.name, id)
+                                                  }}
+                                                  alternate={true}
+                                                  size='small'
+                                                  sx={
+                                                    !!(meta.touched && meta.error) ? classes.textFieldError : classes.dropdown
+                                                  }
+                                                  error={{
+                                                    error: !!(meta.touched && meta.error),
+                                                    errorMsg: (meta.touched && meta.error) as string,
+                                                  }}
+                                                />
+                                              </Box>
+                                            )}
+                                          </Field>
+                                        </Grid>
+                                      )
+                                    }
+                                    else if(q.slug?.includes('student_')) {
+                                      return (
+                                        <Grid item xs={12}>
+                                          <Box 
+                                            width={index === 0 ? '100%' : '103.9%'} 
+                                            display='flex' 
+                                            flexDirection='row' 
+                                            alignItems={'center'}
+                                          >
+                                            <Field 
+                                              name={`students[${index}].${q.slug?.replace('student_', '')}`}
+                                              fullWidth
+                                              focused
+                                            >
+                                              {({ field, form, meta }) => (
+                                                <Box width={'100%'}>
+                                                  <AdditionalQuestionItem question={q} key={index} field={field} form={form} meta={meta}/>
+                                                </Box>
+                                              )}
+                                            </Field>
+                                            {
+                                              index !== 0 && q.slug === 'student_first_name'
+                                              ? <DeleteForeverOutlinedIcon 
+                                                  sx={{left: 12, position: 'relative', color: 'darkgray'}}
+                                                  onClick={() => remove(index)}
+                                                />
+                                              : null
+                                            }
+                                          </Box>
+                                        </Grid>
+                                      )
+                                    }
+                                  })
+                                }
+                              </Grid>
+                          ))}
+                          <Grid item>
+                            {typeof errors.students === 'string' ? (
+                              <Paragraph color={RED}>
+                                {errors.students}
+                              </Paragraph>
+                            ) : null}
+                          </Grid>
+                          <Grid item xs={12} display='flex' justifyContent={'center'}>
+                            <Button
+                              color='secondary'
+                              variant='contained'
+                              style={classes.addStudentButton}
+                              onClick={() => push(emptyStudent)}
+                            >
+                              Add Student
+                            </Button>
+                          </Grid>
+                        </>
+                      )}
+                    </FieldArray>
+                  </Box>
+                </Grid>
+                <Grid item xs={12} display='flex' justifyContent={'center'}>
+                  <Button
+                    variant='contained'
+                    type='submit'
+                    style={classes.submitButton}
+                    disabled={ Boolean(Object.keys(errors).length) || showEmailError}
+                  >
+                    {`Submit to ${availableRegions[regionId - 1]?.label || ''} School`}
+                  </Button>
+                </Grid>
+              </Grid>
+            </Box>
+            </Form>
+          )}
+        }
         </Formik>
       ) : (
         <>

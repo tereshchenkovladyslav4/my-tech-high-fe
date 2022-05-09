@@ -105,6 +105,7 @@ export const getMeQuery = gql`
           secondary_email
           secondary_phone
           status
+          meta
         }
         applications {
           status
@@ -138,6 +139,7 @@ export const getMeQuery = gql`
         grade_levels {
           grade_level
         }
+        grade_level
         current_school_year_status {
           application_id
           application_school_year_id

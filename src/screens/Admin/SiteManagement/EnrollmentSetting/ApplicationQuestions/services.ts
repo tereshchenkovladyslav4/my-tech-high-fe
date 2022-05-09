@@ -9,6 +9,10 @@ export const getQuestionsGql = gql`
       question
       options
       required
+      validation
+      student_question
+      default_question
+      slug
     }
   }
 `
