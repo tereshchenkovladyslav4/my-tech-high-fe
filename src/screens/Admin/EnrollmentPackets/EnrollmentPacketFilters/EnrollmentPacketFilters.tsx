@@ -3,7 +3,6 @@ import React from 'react'
 import { MTHBLUE, BUTTON_LINEAR_GRADIENT } from '../../../../utils/constants'
 
 export const EnrollmentPacketFilters = ({ filters, setFilters, packetCount }) => {
-  console.log(packetCount)
   const handleSelectFilter = (value) => {
     if (filters.includes(value)) {
       setFilters(filters.filter((item) => item !== value))

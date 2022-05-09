@@ -16,7 +16,7 @@ import { ContentState, EditorState, RichUtils, convertFromHTML, convertToRaw } f
 import CloseIcon from '@mui/icons-material/Close'
 import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
 import { Add } from '@mui/icons-material'
-import { getEmailTemplateByIdQuery, getEmailRemindersQuery } from '../../services'
+import { getEmailTemplateByIdQuery, getEmailRemindersQuery } from '../../../../../graphql/queries/email-template'
 import { useQuery, useMutation } from '@apollo/client'
 import Wysiwyg from 'react-draft-wysiwyg'
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
@@ -34,6 +34,8 @@ const insertDescriptions = {
   period_list: 'List of Periods that need to be changed',
   files: 'List of files that need to be uploaded',
   instructions: 'Where the specific instructions to the parent will be included in the email',
+  application_year: 'School Year (2021-2022)',
+  student_grade_level: 'Current grade level (6) (Kindergarten)'
 }
 export const EmailTemplateModal = ({
   handleModem,
@@ -64,13 +66,7 @@ export const EmailTemplateModal = ({
     },
   ])
   const [addResponse, setAddResponse] = useState('')
-  const [response, setResponses] = useState([
-    {
-      title: '',
-      checked: false,
-      extraText: '',
-    },
-  ])
+  const [response, setResponses] = useState([])
 
   const { called, loading, error, data, refetch } = useQuery(getEmailTemplateByIdQuery, {
     variables: {
@@ -150,11 +146,20 @@ export const EmailTemplateModal = ({
       ...[
         {
           title: '',
-          checked: false,
           extraText: '',
         },
       ],
     ])
+  }
+
+  const handleGroupResponse = (index) => {
+    const groups = response.slice()
+
+    groups[index].responses.push({
+      title: '',
+      extraText: ''
+    })
+    setResponses(groups);
   }
 
   const handleChangeReminder = (value, i, field) => {
@@ -173,6 +178,15 @@ export const EmailTemplateModal = ({
 
     setAddResponse(JSON.stringify(standard_response))
   }
+
+  const handleChangeGroupResponse = (value, index, i, field) => {
+    const groups = response.slice()
+
+    groups[index].responses[i][field] = value;
+
+    setAddResponse(JSON.stringify(groups));
+  }
+
   const handleSave = () => {
     const reminderData = []
     if(reminders.length  > 0) {
@@ -202,6 +216,21 @@ export const EmailTemplateModal = ({
     
     switch (template.template) {
     case 'standard_response':
+      onSave({
+        id: template.id,
+        subject,
+        title: emailTitle,
+        from: emailFrom,
+        bcc: emailBcc,
+        template_name: emailTitle,
+        body: draftToHtml(convertToRaw(editorState.getCurrentContent())),
+        standard_responses: addResponse,
+        template: template.template,
+        inserts: template.inserts.join(','),
+        region_id: template.region_id
+      })
+      break;
+    case 'standard_response_groups':
       onSave({
         id: template.id,
         subject,
@@ -267,6 +296,45 @@ export const EmailTemplateModal = ({
       setResponses(emailTemplate.standard_responses
         && JSON.parse(emailTemplate.standard_responses).length > 0
               ? JSON.parse(emailTemplate.standard_responses) : [],)
+
+      //  Missing info
+      const standard_response_groups_default = 
+        [
+          {title: 'Birth Certificate Upload',
+          responses: [
+            {title: '',
+            extraText: ''}
+          ]},
+          {title: 'Immunization Upload',
+          responses: [
+            {title: '',
+            extraText: ''}
+          ]},
+          {title: 'Proof of Residency',
+          responses: [
+            {title: '',
+            extraText: ''}
+          ]},
+          {title: 'IEP or 504 Upload',
+          responses: [
+            {title: '',
+            extraText: ''}
+          ]},
+        ];
+      if(emailTemplate.standard_responses == '') {
+        if(type == 'standard_response_groups') {
+          setResponses(standard_response_groups_default);
+        }
+        else if(type == 'standard_response') {
+          setResponses([
+            {
+              title: '',
+              extraText: '',
+            },
+          ])
+        }
+      }
+
       setAddResponse(emailTemplate.standard_responses)
       setAvailableInserts(emailTemplate.inserts.split(","))
       setType(emailTemplate.template)
@@ -280,6 +348,10 @@ export const EmailTemplateModal = ({
       }
     }
   }, [data])
+
+  useEffect(() => {
+console.log(response);
+  }, [response])
 
   return (
     <Modal
@@ -404,6 +476,53 @@ export const EmailTemplateModal = ({
                     </Button>
                   </Grid>
                 </Box>
+              </Grid>
+            )}
+
+            {type === 'standard_response_groups' && (
+              <Grid container rowSpacing={2}>
+                {Object.keys(response)
+                .map((index) => (
+                  <Box sx={{ width: '100%', textAlign: 'right', marginTop: 4 }}>
+                    <Subtitle fontWeight='700' size='large' sx={{textAlign: 'left'}}>
+                        {response[index].title}
+                    </Subtitle>
+                    <Grid item xs={12} sx={{ textAlign: 'left' }}>
+                      {response[index].responses.length > 0 &&
+                        response[index].responses.map((reminder, i) => (
+                          <Box key={i} sx={{ width: '100%' }}>
+                            <Grid item xs={12} sx={{ marginTop: '25px', width: '80%' }}>
+                              <TextField
+                                size='small'
+                                placeholder='Edit Title'
+                                variant='outlined'
+                                onChange={(e) => handleChangeGroupResponse(e.target.value, index, i, 'title')}
+                                fullWidth
+                                value={response[index].responses[i].title}
+                              />
+                            </Grid>
+
+                            <Grid item xs={12} sx={{ marginTop: '25px' }}>
+                              <textarea
+                                variant='outlined'
+                                fullWidth
+                                value={response[index].responses[i].extraText}
+                                onChange={(e) => handleChangeGroupResponse(e.target.value, index, i, 'extraText')}
+                                rows={4}
+                                className={classes.textarea}
+                              />
+                            </Grid>
+                          </Box>
+                        ))}
+                    </Grid>
+                    <Grid item xs={12} sx={{ marginTop: '25px' }}>
+                      <Button className={classes.add} onClick={(e) => handleGroupResponse(index)}>
+                        <Add />
+                        Add Response
+                      </Button>
+                    </Grid>
+                  </Box>
+                ))}
               </Grid>
             )}
             {type === 'deadline' && (

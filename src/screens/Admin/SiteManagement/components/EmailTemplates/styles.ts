@@ -103,4 +103,7 @@ export const useStyles = makeStyles({
   select: {
     width: '150px',
   },
+  textarea: {
+    width: '100%'
+  }
 })

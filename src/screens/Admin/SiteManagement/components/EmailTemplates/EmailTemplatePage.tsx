@@ -1,15 +1,16 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Box, Grid, Card, OutlinedInput, InputAdornment, Typography } from '@mui/material'
 import SearchIcon from '@mui/icons-material/Search'
 import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
-import { getEmailTemplatesByRegionQuery } from '../../services'
+import { getEmailTemplatesByRegionQuery } from '../../../../../graphql/queries/email-template'
 import { makeStyles } from '@material-ui/core'
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew'
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
 import { EmailTemplateModal } from './EmailTemplateModal'
 import { useMutation, useQuery } from '@apollo/client'
-import { createEmailTemplateMutation, updateEmailTemplateMutation } from '../../services'
+import { createEmailTemplateMutation, updateEmailTemplateMutation } from '../../../../../graphql/queries/email-template'
 import ArrowBackIosOutlinedIcon from '@mui/icons-material/ArrowBackIosOutlined'
+import { UserContext } from '../../../../../providers/UserContext/UserProvider'
 
 const useStyles = makeStyles({
   category: {
@@ -102,11 +103,13 @@ const useStyles = makeStyles({
   },
 })
 export const EmailTemplatePage = ({ onBackPress }) => {
+  const { me, setMe } = useContext(UserContext)
   const [searchField, setSearchField] = useState('')
   const [openEdit, setOpenEdit] = useState(false)
   const [currentTemplate, setCurrentTemplate] = useState(null)
   const [currentCategory, setCurrentCategory] = useState(null)
   const classes = useStyles()
+
   const handleCloseEditModal = () => {
     setOpenEdit(false)
   }
@@ -120,11 +123,9 @@ export const EmailTemplatePage = ({ onBackPress }) => {
 
   const [emailTemplates, setEmailTemplates] = useState({})
 
-  const region = JSON.parse(localStorage.getItem('selectedRegion'));
-
   const { called, loading, error, data: emailTemplatesData, refetch } = useQuery(getEmailTemplatesByRegionQuery, {
     variables: {
-      regionId: region.region_id
+      regionId: me?.selectedRegionId
     },
     fetchPolicy: 'network-only',
   })

@@ -1,4 +1,4 @@
-import { useMutation } from '@apollo/client'
+import { useMutation, useQuery } from '@apollo/client'
 import { Alert, AlertColor, Avatar, Box, Button, Card, Grid, TextField } from '@mui/material'
 import React, { useContext, useEffect, useState } from 'react'
 import { Paragraph } from '../../../../components/Typography/Paragraph/Paragraph'
@@ -13,6 +13,7 @@ import * as yup from 'yup'
 import { useFormik } from 'formik'
 import { Prompt } from 'react-router-dom'
 import { values } from 'lodash'
+import { getMeQuery } from '../../../../root/services'
 
 type openAlertSaveType = {
   message: string,
@@ -22,7 +23,7 @@ type openAlertSaveType = {
 
 export const Profile = ({handleIsFormChange}) => {
   const classes = useStyles
-  const { me } = useContext(UserContext)
+  const { me, setMe } = useContext(UserContext)
   const { profile } = me as UserInfo
   const [submitUpdate, { data }] = useMutation(updateProfile)
   const [submitRemoveProfilePhoto, { data: userData }] = useMutation(removeProfilePhoto)
@@ -56,14 +57,7 @@ export const Profile = ({handleIsFormChange}) => {
       if(file) {
         const upload = await uploadPhoto(file)
         if(upload) {
-          setOpenSaveAlert({ message: 'Profile Updated Successfully', status: 'success', open: true })
-
-          setTimeout(() => {
-            setOpenSaveAlert({ message: '', status: 'success', open: false })
-
-            if(formik.values.email != me.email)
-              location.replace('/');
-          }, 2000)
+          onSubmitSuccess();
         }
         else {
           setOpenSaveAlert({ message: 'Unknown error occured while uploading profile photo.', status: 'error', open: true })
@@ -79,16 +73,7 @@ export const Profile = ({handleIsFormChange}) => {
         handleIsFormChange(false);
       }
       else {
-        setOpenSaveAlert({ message: 'Profile Updated Successfully', status: 'success', open: true })
-
-        setTimeout(() => {
-          setOpenSaveAlert({ message: '', status: 'success', open: false })
-
-          if(formik.values.email != me.email)
-            location.replace('/');
-        }, 2000)
-
-        handleIsFormChange(false);
+        onSubmitSuccess();
       }
     }).catch(err => {
       setOpenSaveAlert({ message: err?.message, status: 'error', open: true })
@@ -99,6 +84,38 @@ export const Profile = ({handleIsFormChange}) => {
 
       handleIsFormChange(false);
     })
+  }
+
+  const onSubmitSuccess = () => {
+    setOpenSaveAlert({ message: 'Profile Updated Successfully', status: 'success', open: true })
+
+    setMe((prev) => {
+      return {
+        ...prev,
+        email: formik.values.email,
+        profile: {
+          ...prev.profile,
+          first_name: formik.values.first_name,
+          last_name: formik.values.last_name,
+          email: formik.values.email,
+          preferred_first_name: formik.values.preferredFName,
+          preferred_last_name: formik.values.preferredLName,
+          phone: {
+            ...prev.profile.phone,
+            number: formik.values.phoneNumber
+          }
+        }
+      }
+    })
+
+    setTimeout(() => {
+      setOpenSaveAlert({ message: '', status: 'success', open: false })
+
+      if(formik.values.email != me.email)
+        location.replace('/');
+    }, 2000)
+
+    handleIsFormChange(false);
   }
 
   const onSubmitFailed = () => {

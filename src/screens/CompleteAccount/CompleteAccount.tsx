@@ -15,7 +15,6 @@ import { CompleteAccountSuccess } from '../CompleteAccountSuccess/CompleteAccoun
 
 export const CompleteAccount = () => {
   const token = window.location.href.split('=')[1]
-  console.log('here')
   const [confirmEmail] = useMutation(confirmAccount)
   const [showSuccess, setShowSuccess] = useState(false)
 
@@ -48,7 +47,6 @@ export const CompleteAccount = () => {
         verifyInput: {
           token,
           password: formik.values.password,
-          confirm_password: formik.values.confirmPassword,
         },
       },
     }).then(() => setShowSuccess(true))

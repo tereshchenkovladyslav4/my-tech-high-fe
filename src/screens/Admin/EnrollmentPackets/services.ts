@@ -44,6 +44,9 @@ export const getEnrollmentPacketsQuery = gql`
         missing_files
         special_ed
         student {
+          status {
+            status
+          }
           student_id
           grade_levels {
             grade_level

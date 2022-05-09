@@ -156,6 +156,7 @@ export const ApplicationTable = ({ filter }) => {
   } = useQuery(getEmailTemplateQuery, {
     variables: {
       template: 'Application Page',
+      regionId: me?.selectedRegionId
     },
     fetchPolicy: 'network-only',
   })

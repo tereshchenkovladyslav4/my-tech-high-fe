@@ -17,8 +17,10 @@ import Wysiwyg from 'react-draft-wysiwyg'
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
 import draftToHtml from 'draftjs-to-html'
 import htmlToDraft from 'html-to-draftjs'
+import { UserContext } from '../../providers/UserContext/UserProvider'
+import { isAfter } from 'date-fns'
 
-export const EmailModal = ({ handleSubmit, handleModem, title, options, setEmailTemplate, type, setEmailFrom, emailFrom }) => {
+export const EmailModal = ({ handleSubmit, handleModem, title, options, setEmailTemplate, type, setEmailFrom, emailFrom, setEmailBodyInfo }) => {
   let actionType = ''
   type === 'ageIssue' ? (actionType = 'AGE_ISSUE') : (actionType = 'MISSING_INFO')
 
@@ -193,23 +195,14 @@ export const EmailModal = ({ handleSubmit, handleModem, title, options, setEmail
   // )
 
   const student: any = useContext(studentContext)
-  const [standard_response, setStandardResponse] = useState({ title: '', extraText: '', checked: false })
+  const { me, setMe } = useContext(UserContext)
+  const [standard_responses, setStandardResponses] = useState([])
   const [template, setTemplate] = useState(null)
-  
-  const setEmailBodyInfo = (email: string) => {
-    const yearbegin = new Date(student.grade_levels[0].school_year.date_begin).getFullYear().toString()
-    const yearend = new Date(student.grade_levels[0].school_year.date_end).getFullYear().toString()
-    return email.toString()
-      .replace(/\[STUDENT_ID\]/g, student.student_id + '')
-      .replace(/\[STUDENT\]/g, student.person.first_name)
-      .replace(/\[PARENT\]/g, student.parent.person.first_name)
-      .replace(/<STUDENT GRADE>/g, student.grade_level)
-      .replace(/\[YEAR\]/g, `${yearbegin}-${yearend.substring(2, 4)}`)
-  }
-
+    
   const { data: emailTemplateData } = useQuery(getEmailTemplateQuery, {
     variables: {
       template: type === 'ageIssue' ? 'Age Issue' : 'Missing Information',
+      regionId: me?.selectedRegionId
     },
     fetchPolicy: 'network-only',
   })
@@ -238,10 +231,10 @@ export const EmailModal = ({ handleSubmit, handleModem, title, options, setEmail
   const classes = useStyles
 
   useEffect(() => {
-    console.log('here----------------------------------');
     if (template) {
       const { id, title, subject, from, bcc, body } = template
       setSubject(subject)
+      setEmailFrom(from)
       if (body) {
         // console.log(body.replace(/\[PARENT\]/g, 'test'))
         setBody(body)
@@ -255,26 +248,44 @@ export const EmailModal = ({ handleSubmit, handleModem, title, options, setEmail
   }, [template])
 
   useEffect(() => {
-    const HtmlInput = setEmailBodyInfo(body)
+    let HtmlInput: string = body
     let contentBlock
-    const word = "</span>"
-    const index = HtmlInput.indexOf(word)
-    let endIndex = 0
-    if (index !== -1) {
-      endIndex = index + word.length - 1
+
+    //  find the second </p>
+    let index = HtmlInput.indexOf("</p>", HtmlInput.indexOf("</p>") + 1) + 4;
+    
+    let standardResponseExtraText: string = ''
+      , standardResponseExtraSpan: string = '';
+    for(let i = 0; i < standard_responses.length; i++) {
+      if(type == 'ageIssue')
+        standardResponseExtraText += `<p>${standard_responses[i].extraText}</p>`;
+      else if(type == 'missingInfo') {
+        standardResponseExtraSpan += `<li>${standard_responses[i].title}</li>`;
+        standardResponseExtraText += `<p>${standard_responses[i].extraText}</p>`;
+      }
     }
 
-    const standardResponseExtraText = standard_response.extraText ? `<br/><br/>${setEmailBodyInfo(standard_response.extraText)}` : `${standard_response.extraText}`;
+    HtmlInput = HtmlInput
+      .replace(/\[FILES\]/g, `<ul>${standardResponseExtraSpan}</ul>`)
+      .replace(/\[INSTRUCTIONS\]/g, `<ul>${standardResponseExtraText}</ul>`)
+
+    if(type == 'ageIssue') {
+      HtmlInput = HtmlInput.slice(0, index) + standardResponseExtraText + HtmlInput.slice(index);
+    }
+    else {
+    }
+
+    HtmlInput = setEmailBodyInfo(HtmlInput);
 
     contentBlock = htmlToDraft(
-      HtmlInput.slice(0, endIndex + 1) + standardResponseExtraText + HtmlInput.slice(endIndex + 1),
+      HtmlInput
     )
 
     if (contentBlock) {
       const contentState = ContentState.createFromBlockArray(contentBlock.contentBlocks)
       setEditorState(EditorState.createWithContent(contentState))
     }
-  }, [body, standard_response])
+  }, [body, standard_responses])
 
   const handleEditorChange = (state) => {
     try {
@@ -293,7 +304,7 @@ export const EmailModal = ({ handleSubmit, handleModem, title, options, setEmail
     }
     if (handleSubmit) {
       handleSubmit(subject, draftToHtml(convertToRaw(editorState.getCurrentContent())), {
-        values: [standard_response],
+        values: standard_responses,
         type: actionType,
       })
     }
@@ -316,7 +327,8 @@ export const EmailModal = ({ handleSubmit, handleModem, title, options, setEmail
               options={options}
               type={type}
               setBody={setBody}
-              setStandardResponse={setStandardResponse}
+              standardResponses={standard_responses}
+              setStandardResponses={setStandardResponses}
             />
           )}
 

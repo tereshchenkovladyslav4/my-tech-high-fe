@@ -1,5 +1,5 @@
 import { Box, Button, Card, InputAdornment, OutlinedInput } from '@mui/material'
-import React, { useEffect, useState, useContext, useContext } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import { UserContext } from '../../../../providers/UserContext/UserProvider'
 import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
 import { GREEN_GRADIENT, RED_GRADIENT, YELLOW_GRADIENT } from '../../../../utils/constants'
@@ -60,6 +60,12 @@ export const EnrollmentPacketTable = () => {
   }
 
   const createData = (packet: Packet) => {
+    const _sort = sort?.split('|')
+    let grade_value = 0
+    if(sort && _sort[0]?.toLowerCase() === 'grade' && _sort[1]?.toLowerCase() === 'desc') {
+        grade_value = packet?.student?.grade_levels?.length - 1 
+    }
+    const status = ['Pending', 'Active', 'Withdrawn', '']
     return {
       id: packet.packet_id,
       submitted: moment(packet.deadline).format('MM/DD/YY'),
@@ -67,13 +73,13 @@ export const EnrollmentPacketTable = () => {
       deadline: moment(packet.deadline).format('MM/DD/YY'),
       student: `${packet.student.person?.first_name} ${packet.student.person?.last_name}`,
       grade:
-        packet.student.grade_levels.length && packet.student.grade_levels[0].grade_level
-          ? packet.student.grade_levels[0].grade_level == 'K'
+        packet.student.grade_levels.length && packet.student.grade_levels[grade_value].grade_level
+          ? packet.student.grade_levels[grade_value].grade_level == 'K' || packet.student.grade_levels[grade_value].grade_level === 'Kin'
             ? 'K'
-            : `${toOrdinalSuffix(Number(packet.student.grade_levels[0].grade_level))} Grade`
+            : `${toOrdinalSuffix(Number(packet.student.grade_levels[grade_value].grade_level))} Grade`
           : ' ',
       parent: `${packet.student.parent.person?.first_name} ${packet.student.parent.person?.last_name}`,
-      studentStatus: 'New',
+      studentStatus: status[packet.student?.status[0]?.status] || 'New',
       emailed: '',
       delete: (
         <DeleteForever
@@ -108,6 +114,7 @@ export const EnrollmentPacketTable = () => {
   } = useQuery(getEmailTemplateQuery, {
     variables: {
       template: 'Enrollment Packet Page',
+      regionId: me?.selectedRegionId
     },
     fetchPolicy: 'network-only',
   })

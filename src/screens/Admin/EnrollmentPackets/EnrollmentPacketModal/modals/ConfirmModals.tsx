@@ -2,7 +2,6 @@ import { useMutation, useQuery } from '@apollo/client'
 import React, { useState, useEffect, useContext } from 'react'
 import { EmailModal } from '../../../../../components/EmailModal/EmailModal'
 import { StandardResponseOption } from '../../../../../components/EmailModal/StandardReponses/types'
-import { AGE_ISSUE_OPTIONS, MISSING_INFO_OPTIONS } from '../../../../../utils/constants'
 import { sendEmailMutation } from '../../services'
 import EnrollmentWarnSaveModal from './ConfirmSaveModal'
 import { EnrollmentPacketFormType } from '../types'
@@ -41,23 +40,27 @@ export default function PacketConfirmModals({ packet, refetch, submitForm }) {
     submitForm()
   }
 
-  const setEmailBodyInfo = (email: string, student) => {
+  const setEmailBodyInfo = (body: string) => {
     const yearbegin = new Date(student.grade_levels[0].school_year.date_begin).getFullYear().toString()
     const yearend = new Date(student.grade_levels[0].school_year.date_end).getFullYear().toString()
 
-    return email.toString()
+    let url = window.location.href;
+    url = url.substring(0, url.indexOf('/', url.indexOf('//') + 2));
+
+    return body.toString()
       .replace(/\[STUDENT_ID\]/g, student.student_id + '')
       .replace(/\[FILES\]/g, packet.missing_files)
-      .replace(/\[LINK\]/g, `[HOST]/homeroom/enrollment/${student.student_id}`) //adding host detail from backend
+      .replace(/\[LINK\]/g, `<a href="${url}/homeroom/enrollment/${student.student_id}">${url}/homeroom/enrollment/${student.student_id}</a>`) //adding host detail from backend
       .replace(/\[STUDENT\]/g, student.person.first_name)
       .replace(/\[PARENT\]/g, student.parent.person.first_name)
-      .replace(/<STUDENT GRADE>/g, student.grade_level)
+      .replace(/\[STUDENT_GRADE_LEVEL\]/g, student.grade_levels[0].grade_level)
       .replace(/\[YEAR\]/g, `${yearbegin}-${yearend.substring(2, 4)}`)
+      .replace(/\[APPLICATION_YEAR\]/g, `${yearbegin}-${yearend.substring(2, 4)}`)
   }
 
   const handleEmailSend = (subject: string, body: string, options: StandardResponseOption) => {
     try {
-      const bodyData = setEmailBodyInfo(body, student)
+      const bodyData = setEmailBodyInfo(body)
       sendPacketEmail({
         variables: {
           emailInput: {
@@ -107,16 +110,16 @@ export default function PacketConfirmModals({ packet, refetch, submitForm }) {
     let newNotes = `${date} - ${type === 'AGE_ISSUE' ? 'Age Issue' : 'Missing Info'}\n`
     const newNotesLines: Array<string> = ['<SEP>']
 
-    const setEmailBodyInfo = (email: string, student) => {
-      const yearbegin = new Date(student.grade_levels[0].school_year.date_begin).getFullYear().toString()
-      const yearend = new Date(student.grade_levels[0].school_year.date_end).getFullYear().toString()
+    // const setEmailBodyInfo = (email: string, student) => {
+    //   const yearbegin = new Date(student.grade_levels[0].school_year.date_begin).getFullYear().toString()
+    //   const yearend = new Date(student.grade_levels[0].school_year.date_end).getFullYear().toString()
 
-      return email.toString()
-        .replace(/<STUDENT NAME>/g, student.person.first_name)
-        .replace(/<PARENT>/g, student.parent.person.first_name)
-        .replace(/<STUDENT GRADE>/g, student.grade_level)
-        .replace(/<SCHOOL YEAR>/g, `${yearbegin}-${yearend.substring(2, 4)}`)
-    }
+    //   return email.toString()
+    //     .replace(/<STUDENT NAME>/g, student.person.first_name)
+    //     .replace(/<PARENT>/g, student.parent.person.first_name)
+    //     .replace(/<STUDENT GRADE>/g, student.grade_level)
+    //     .replace(/<SCHOOL YEAR>/g, `${yearbegin}-${yearend.substring(2, 4)}`)
+    // }
 
     const replaceBlank = (text: string, body: string): string => {
       const startIdx = body.indexOf('but age-wise they could be in')
@@ -148,8 +151,8 @@ export default function PacketConfirmModals({ packet, refetch, submitForm }) {
     newNotesLines.splice(newNotesLines.indexOf('<SEP>'), 1)
     newNotes += newNotesLines.join('\n')
 
-    if (oldNotes.length) return setEmailBodyInfo(newNotes, student) + '\n\n' + oldNotes
-    return setEmailBodyInfo(newNotes, student) + '\n'
+    if (oldNotes.length) return setEmailBodyInfo(newNotes) + '\n\n' + oldNotes
+    return setEmailBodyInfo(newNotes) + '\n'
   }
 
   if (showMissingInfoModal)
@@ -157,12 +160,13 @@ export default function PacketConfirmModals({ packet, refetch, submitForm }) {
       <EmailModal
         handleModem={() => setValue('showMissingInfoModal', false)}
         title={`Missing Information on ${student.person.first_name}’s Enrollment Packet`}
-        options={MISSING_INFO_OPTIONS}
+        options={emailTemplate && emailTemplate.standard_responses && JSON.parse(emailTemplate?.standard_responses)}
         handleSubmit={handleEmailSend}
         setEmailTemplate={setEmailTemplate}
         type='missingInfo'
         setEmailFrom={setEmailFrom}
         emailFrom={emailFrom}
+        setEmailBodyInfo={setEmailBodyInfo}
       />
     )
   if (showAgeIssueModal) {
@@ -176,6 +180,7 @@ export default function PacketConfirmModals({ packet, refetch, submitForm }) {
         type='ageIssue'
         setEmailFrom={setEmailFrom}
         emailFrom={emailFrom}
+        setEmailBodyInfo={setEmailBodyInfo}
       />
     )
   }
