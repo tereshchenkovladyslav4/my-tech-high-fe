@@ -11,13 +11,14 @@ import { Metadata } from '../../components/Metadata/Metadata'
 import { Contact } from './Contact/Contact'
 import { Footer } from './Footer/Footer'
 import { useStyles } from './styles'
-import { loginMutation } from './service'
+import { loginMutation, resendVerificationEmailMutation } from './service'
 import { useMutation } from '@apollo/client'
 import { AuthContext } from '../../providers/AuthProvider/AuthContext'
 import { Link } from 'react-router-dom'
 import { ApolloError } from '../Admin/Users/interfaces'
 import { WarningModal } from '../../components/WarningModal/Warning'
 import { useHistory } from 'react-router-dom'
+import CustomModal from '../Admin/SiteManagement/EnrollmentSetting/components/CustomModal/CustomModals'
 export const Login = () => {
   const infocenterHelpLinks = [
     {
@@ -82,8 +83,12 @@ export const Login = () => {
 
   const classes = useStyles
   const [login, { data, loading, error }] = useMutation(loginMutation)
+  const [resendEmail, { data: resendEmailResponse, loading: resending, error: resendError }] = useMutation(
+    resendVerificationEmailMutation,
+  )
   const [username, setUsername] = useState<string | undefined>()
   const [password, setPassword] = useState<string | undefined>()
+  const [unverified, setUnverified] = useState<boolean>(false)
   const { setCredentials } = useContext(AuthContext)
   const history = useHistory()
   const loginAction = async () => {
@@ -99,11 +104,24 @@ export const Login = () => {
   const handleForgotPassword = () => {
     history.push('/forgot-password')
   }
+
+  const handleResendVerificationEmail = async () => {
+    resendEmail({
+      variables: {
+        email: username,
+      },
+    })
+  }
+
   useEffect(() => {
     if (!loading && data !== undefined) {
-      const jwt = data.login.jwt
-      localStorage.setItem('JWT', jwt)
-      setCredentials(jwt)
+      if (data.login?.unverified) {
+        setUnverified(true)
+      } else {
+        const jwt = data.login.jwt
+        localStorage.setItem('JWT', jwt)
+        setCredentials(jwt)
+      }
     } else {
       if (error?.networkError || error?.graphQLErrors?.length > 0 || error?.clientErrors.length > 0) {
         setApolloError({
@@ -115,6 +133,20 @@ export const Login = () => {
     }
   }, [loading])
 
+  useEffect(() => {
+    if (!resending && resendEmailResponse) {
+      if (!resendEmailResponse?.resendVerificationEmail) {
+        setApolloError({
+          title: 'Faild resend verification email.',
+          severity: 'Error',
+          flag: true,
+        })
+      } else {
+        setUnverified(false)
+      }
+    }
+  }, [resending])
+
   return (
     <Box sx={{ backgroundColor: 'white' }}>
       <Box sx={{ alignItems: 'center', marginBottom: 4 }}>
@@ -125,6 +157,21 @@ export const Login = () => {
             subtitle={apolloError.title}
             btntitle='Close'
             handleSubmit={() => setApolloError({ title: '', severity: '', flag: false })}
+          />
+        )}
+        {unverified && (
+          <CustomModal
+            title='Unverified Email'
+            description='This account needs to be verified first.'
+            subDescription='Check your email for a verification link or have one resend below.'
+            confirmStr='Resend'
+            cancelStr='Cancel'
+            onClose={() => {
+              setUnverified(false)
+            }}
+            onConfirm={() => {
+              handleResendVerificationEmail()
+            }}
           />
         )}
         <Grid

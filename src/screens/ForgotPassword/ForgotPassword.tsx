@@ -1,37 +1,47 @@
 import { Box } from '@mui/system'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { BUTTON_LINEAR_GRADIENT } from '../../utils/constants'
 import { Button, TextField, Typography } from '@mui/material'
 import { useStyles } from './styles'
 import { useMutation } from '@apollo/client'
-import { forgotPasswordMutation } from './service'
+import { forgotPasswordMutation, resendVerificationEmailMutation } from './service'
 import { useFormik } from 'formik'
 import * as yup from 'yup'
 import { makeStyles } from '@material-ui/styles'
+import { useHistory } from 'react-router-dom'
 
 const useHelperTextStyles = makeStyles(() => ({
-	root: {
-		color: "white",
-	},
+  root: {
+    color: 'white',
+  },
   error: {
-    "&.MuiFormHelperText-root.Mui-error": {
-      color: 'white'
-    }
-  }
-}));
+    '&.MuiFormHelperText-root.Mui-error': {
+      color: 'white',
+    },
+  },
+}))
+
+type Alert = {
+  message: string
+  type: string
+  description?: string
+}
 
 export const ForgotPassword = () => {
+  const classes = useStyles
   const token = window.location.href.split('=')[1]
+  const history = useHistory()
+  const helperTextStyles = useHelperTextStyles()
+  const [alert, setAlert] = useState<Alert>(null)
+  const [verifyStatus, setVerifyStatus] = useState<boolean>(true)
 
   const [forgotPassword] = useMutation(forgotPasswordMutation)
-  const [alert, setAlert] = useState(null)
-  const classes = useStyles
-
+  const [resendEmail, { data: resendEmailResponse, loading: resending, error: resendError }] = useMutation(
+    resendVerificationEmailMutation,
+  )
   const validationSchema = yup.object({
     email: yup.string().email('Enter a valid email').required('Email is required'),
   })
-  const helperTextStyles = useHelperTextStyles();
-
   const formik = useFormik({
     initialValues: {
       email: undefined,
@@ -51,16 +61,28 @@ export const ForgotPassword = () => {
     })
       .then((data) => {
         if (data?.data?.forgotPassword) {
-          setAlert({
-            type: 'success',
-            message: 'Instructions to reset your password have been emailed to you.',
-          })
-        } else {
-          formik.setErrors({ email: ' ' })
-          setAlert({
-            type: 'error',
-            message: 'We were unable to find an account associated with that email address.',
-          })
+          const { status, unverified } = data?.data?.forgotPassword
+          if (unverified) {
+            setVerifyStatus(false)
+            setAlert({
+              type: 'warning',
+              message: 'This account needs to be verified first.',
+              description: 'Check your email for a verification link or have one resent below',
+            })
+          } else {
+            if (status) {
+              setAlert({
+                type: 'success',
+                message: 'Instructions to reset your password have been emailed to you.',
+              })
+            } else {
+              formik.setErrors({ email: ' ' })
+              setAlert({
+                type: 'error',
+                message: 'We were unable to find an account associated with that email address.',
+              })
+            }
+          }
         }
       })
       .catch(() => {
@@ -72,6 +94,29 @@ export const ForgotPassword = () => {
       })
   }
 
+  const handleResendVerificationEmail = async () => {
+    resendEmail({
+      variables: {
+        email: formik.values.email,
+      },
+    })
+  }
+
+  useEffect(() => {
+    if (!resending && resendEmailResponse) {
+      if (!resendEmailResponse?.resendVerificationEmail) {
+        formik.setErrors({ email: ' ' })
+        setAlert({
+          type: 'error',
+          message: 'Faild resend verification email.',
+        })
+      } else {
+        setVerifyStatus(true)
+        history.push('/')
+      }
+    }
+  }, [resending])
+
   return (
     <Box
       sx={{
@@ -81,7 +126,7 @@ export const ForgotPassword = () => {
         paddingTop: 12,
         background: BUTTON_LINEAR_GRADIENT,
         width: '100%',
-        height: '100vh'
+        height: '100vh',
       }}
     >
       <Box>
@@ -124,20 +169,31 @@ export const ForgotPassword = () => {
           error={formik.touched.email && Boolean(formik.errors.email)}
           helperText={formik.touched.email && formik.errors.email}
           FormHelperTextProps={{
-						classes:{
-							root:helperTextStyles.root,
+            classes: {
+              root: helperTextStyles.root,
               error: helperTextStyles.error,
-						}
-				  }}
+            },
+          }}
         />
-        {alert && alert.message && (
+        {alert?.message && (
           <Typography fontSize={14} marginTop={3} color={alert.type === 'error' ? '#BD0043' : 'white'}>
             {alert.message}
           </Typography>
         )}
-        <Button variant='contained' sx={classes.button} type='submit'>
-          Reset Password
-        </Button>
+        {alert?.description && (
+          <Typography fontSize={14} marginTop={3} color={alert.type === 'error' ? '#BD0043' : 'white'}>
+            {alert.description}
+          </Typography>
+        )}
+        {verifyStatus ? (
+          <Button variant='contained' sx={classes.button} type='submit'>
+            Reset Password
+          </Button>
+        ) : (
+          <Button variant='contained' sx={classes.button} onClick={() => handleResendVerificationEmail()}>
+            Resend Verification Link
+          </Button>
+        )}
       </form>
     </Box>
   )

@@ -4,7 +4,15 @@ import React, { useEffect, useState } from 'react'
 import { SortableTableHeader } from './SortableTableHeader/SortableTableHeader'
 import { Order, SortableTableTemplateType } from './types'
 
-export const SortableTable: SortableTableTemplateType = ({ headCells, rows, onCheck, clearAll, onRowClick, onSortChange, onParentClick}) => {
+export const SortableTable: SortableTableTemplateType = ({
+  headCells,
+  rows,
+  onCheck,
+  clearAll,
+  onRowClick,
+  onSortChange,
+  onParentClick,
+}) => {
   const [order, setOrder] = useState<Order>('asc')
   const [orderBy, setOrderBy] = useState<keyof any>('name')
   const [selected, setSelected] = useState<readonly string[]>([])
@@ -115,6 +123,8 @@ export const SortableTable: SortableTableTemplateType = ({ headCells, rows, onCh
         }
 
       case 'emailed':
+        return '#4145FF'
+      case 'effective':
         return '#4145FF'
     }
   }

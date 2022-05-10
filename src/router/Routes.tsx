@@ -15,11 +15,10 @@ import { ParentLink } from '../screens/Parent/ParentLinks/ParentLink'
 import { Settings } from '../screens/Settings/Settings'
 import { APPLICATIONS, DASHBOARD, ENROLLMENT, HOMEROOM, PARENT_LINK, SETTINGS, USERS } from '../utils/constants'
 
-
 export const Routes: FunctionComponent = () => {
   const { me } = useContext(UserContext)
-  const { students } = me as UserInfo;
-  const [isSuper, setIsSuper] = useState(null);
+  const { students } = me as UserInfo
+  const [isSuper, setIsSuper] = useState(null)
 
   return (
     <Switch>
@@ -33,14 +32,18 @@ export const Routes: FunctionComponent = () => {
           const currStudent = find(students, { student_id: match?.params.id })
           const packetAccepted = currStudent.packets?.length > 0 && currStudent.packets?.at(-1).status === 'Accepted'
           const packetSubmitted = currStudent.packets?.length > 0 && currStudent.packets?.at(-1).status === 'Submitted'
-          if(currStudent === undefined){
+          if (currStudent === undefined) {
             return <Homeroom />
-          }else{
-            return (currStudent.applications.length > 0 && currStudent.applications.at(-1).status === 'Accepted')
-              ? (packetAccepted || packetSubmitted)
-                ? <Enrollment id={match?.params.id}/>
-                : <Enrollment id={match?.params.id}/>
-              : <Homeroom />
+          } else {
+            return currStudent.applications.length > 0 && currStudent.applications.at(-1).status === 'Accepted' ? (
+              packetAccepted || packetSubmitted ? (
+                <Enrollment id={match?.params.id} />
+              ) : (
+                <Enrollment id={match?.params.id} />
+              )
+            ) : (
+              <Homeroom />
+            )
           }
         }}
       />
@@ -49,10 +52,10 @@ export const Routes: FunctionComponent = () => {
         path={`${HOMEROOM}/:id`}
         children={({ match }) => {
           const currStudent = find(students, { student_id: match?.params.id })
-          
-          if(currStudent === undefined){
+
+          if (currStudent === undefined) {
             return <Homeroom />
-          }else{
+          } else {
             return <HomeroomStudentProfile />
           }
         }}
@@ -73,7 +76,7 @@ export const Routes: FunctionComponent = () => {
         <Settings />
       </Route>
       <Route path={PARENT_LINK}>
-        <ParentLink/>
+        <ParentLink />
       </Route>
     </Switch>
   )

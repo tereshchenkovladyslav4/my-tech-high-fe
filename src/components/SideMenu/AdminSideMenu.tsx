@@ -32,9 +32,9 @@ import BackupTableIcon from '@mui/icons-material/BackupTable'
 import AllInboxOutlinedIcon from '@mui/icons-material/AllInboxOutlined'
 import DatRangeOutlinedIcon from '@mui/icons-material/DateRangeOutlined'
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined'
-import KeyIcon from '@mui/icons-material/VpnKey';
-import DescriptionIcon from '@mui/icons-material/Description';
-import StorageIcon from '@mui/icons-material/Storage';
+import KeyIcon from '@mui/icons-material/VpnKey'
+import DescriptionIcon from '@mui/icons-material/Description'
+import StorageIcon from '@mui/icons-material/Storage'
 
 export const AdminSideMenu: FunctionComponent = () => {
   const history = useHistory()
@@ -43,7 +43,7 @@ export const AdminSideMenu: FunctionComponent = () => {
   //this isActive function will be used temporarily with enrollment till its routes are imporved/refactored
   const isActiveTemp = () =>
     (location.pathname.includes('enrollment') || location.pathname.includes('applications')) &&
-      !location.pathname.includes('setting')
+    !location.pathname.includes('setting')
       ? true
       : false
 
@@ -123,7 +123,7 @@ export const AdminSideMenu: FunctionComponent = () => {
       label: 'Settings',
       icon: <SettingsOutlinedIcon style={classes.logos} />,
     },
-  ];
+  ]
 
   return (
     <Box sx={classes.container}>
@@ -140,7 +140,7 @@ export const AdminSideMenu: FunctionComponent = () => {
           {map(navigationList, (item, index) => (
             <NavLink
               key={index}
-              exact={item.to !== SITE_MANAGEMENT ? true : false}
+              exact={item.to !== SITE_MANAGEMENT && item.to !== '/enrollment' ? true : false}
               to={item.to}
               style={classes.navLink}
               activeStyle={{

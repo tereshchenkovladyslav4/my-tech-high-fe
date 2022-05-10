@@ -5,6 +5,7 @@ import InfoIcon from '@mui/icons-material/InfoOutlined'
 export default function CustomModal({
   title,
   description,
+  subDescription,
   onClose,
   onConfirm,
   confirmStr = 'Confirm',
@@ -12,6 +13,7 @@ export default function CustomModal({
 }: {
   title: string
   description: string
+  subDescription?: string
   onClose: () => void
   onConfirm: () => void
   confirmStr?: string
@@ -30,7 +32,7 @@ export default function CustomModal({
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
-          width: '441px',
+          width: subDescription ? '550px' : '441px',
           height: 'auto',
           bgcolor: '#EEF4F8',
           borderRadius: 2,
@@ -43,6 +45,7 @@ export default function CustomModal({
           <Typography variant='h5'>{title}</Typography>
           <InfoIcon sx={{ fontSize: 50, margin: '20px 0px' }} />
           <Typography>{description}</Typography>
+          {subDescription && <Typography>{subDescription}</Typography>}
           <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: '30px', gap: '20px' }}>
             <Button
               sx={{ width: '160px', height: '36px', background: '#E7E7E7', borderRadius: '50px' }}

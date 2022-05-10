@@ -11,7 +11,16 @@ export const confirmAccount = gql`
 `
 export const forgotPasswordMutation = gql`
   mutation ForgotPassword($email: String!) {
-    forgotPassword(email: $email)
+    forgotPassword(email: $email) {
+      status
+      unverified
+    }
+  }
+`
+
+export const resendVerificationEmailMutation = gql`
+  mutation ResendVerificationEmail($email: String!) {
+    resendVerificationEmail(email: $email)
   }
 `
 
@@ -20,7 +29,7 @@ export const resetPasswordMutation = gql`
     resetPassword(verifyInput: $verifyInput) {
       email
       status
-      token 
+      token
     }
   }
 `
