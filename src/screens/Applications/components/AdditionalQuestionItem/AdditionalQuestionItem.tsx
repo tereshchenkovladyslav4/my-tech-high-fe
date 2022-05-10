@@ -75,6 +75,7 @@ export function AdditionalQuestionItem({ question: q, field, meta, form }: { que
               borderBottom: '1px solid ' + SYSTEM_07,
               marginTop: 2,
               marginBottom: 1,
+              wordWrap: 'break-word',
             }}
           >
             {q.question}
@@ -90,13 +91,13 @@ export function AdditionalQuestionItem({ question: q, field, meta, form }: { que
                 width: '100%',
               }}
             >
-              <Checkbox name={q.question.toLowerCase().replace(' ', '_')} {...field} value={o.value}/>
+              <Checkbox name={q.question.toLowerCase().replace(' ', '_')} {...field} value={o.label}/>
               {/* <Field type="checkbox" name="additional_questions.checked" value={o.label}>
               {({ field, form, meta }) => (
                 <Checkbox />
               )}
               </Field> */}
-              <Subtitle size='small'>{o.label}</Subtitle>
+              <Subtitle size='small' sx={{wordWrap: 'break-word',maxWidth: '90%',textAlign: 'start'}}>{o.label}</Subtitle>
             </Box>
           ))}
         </Box>
@@ -107,7 +108,7 @@ export function AdditionalQuestionItem({ question: q, field, meta, form }: { que
           <Checkbox
             name={q.question.toLowerCase().replace(' ', '_')} {...field} value={true}
           />
-          <Subtitle size='small' color={SYSTEM_05}>
+          <Subtitle size='small' color={SYSTEM_05} sx={{wordWrap: 'break-word',maxWidth: '90%',textAlign: 'start'}}>
             {q.question}
           </Subtitle>
         </Box>
@@ -124,6 +125,7 @@ export function AdditionalQuestionItem({ question: q, field, meta, form }: { que
               width: '100%',
               textAlign: 'start',
               borderBottom: '1px solid ' + SYSTEM_07,
+              wordWrap: 'break-word'
             }}
             color={SYSTEM_05}
           >
@@ -151,7 +153,7 @@ export function AdditionalQuestionItem({ question: q, field, meta, form }: { que
                     paddingLeft: '11px',
                   }}
                 >
-                  <FormControlLabel value={o.value} control={<Radio />} label={o.label} />
+                  <FormControlLabel value={o.label} control={<Radio />} label={o.label} />
                 </Box>
               ))}
             </RadioGroup>

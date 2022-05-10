@@ -1,4 +1,4 @@
-import { Avatar, Box, Button, Card, Checkbox, FormControlLabel, Grid, OutlinedInput } from '@mui/material'
+import { Avatar, Box, Button, Card, Checkbox, FormControlLabel, FormHelperText, Grid, OutlinedInput } from '@mui/material'
 import { find } from 'lodash'
 import React, { useContext, useEffect, useState } from 'react'
 import { Prompt, useHistory, useLocation } from 'react-router-dom'
@@ -21,8 +21,6 @@ import { DocumentUploadModal } from '../../../Enrollment/Documents/components/Do
 import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt'
 
 export const StudentProfile = () => {
-  // hook up formik
-  // if formik values !== me && navigating -> show warning
 
   const { me } = useContext(UserContext)
   const { students } = me as UserInfo
@@ -43,12 +41,6 @@ export const StudentProfile = () => {
   const [file, setFile] = useState<undefined | File>()
 
   const enrollmentLink = `${HOMEROOM + ENROLLMENT}/${student.student_id}`
-
-  //useEffect(() => {
-  //  setStudent(currStudent)
-  //}, [location])
-
-  const [testingPreferences, setTestingPreferences] = useState(student.testing_preference)
 
   const testingPreferencesItems: DropDownItem[] = [
     {
@@ -75,6 +67,13 @@ export const StudentProfile = () => {
     firstName: yup.string().nullable(),
     lastName: yup.string().nullable(),
     email: yup.string().email('Please enter a valid email').nullable().required('Email is required'),
+    password: yup
+      .string()
+      .matches(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/,
+        "Must Contain 8 Characters, One Uppercase, One Lowercase, One Number and One Special Case Character"
+      )
+      .nullable()
   })
 
   const formik = useFormik({
@@ -384,7 +383,9 @@ export const StudentProfile = () => {
                     value={formik.values.password}
                     onChange={formik.handleChange}
                     sx={classes.textField}
+                    error={formik.touched.password && Boolean(formik.errors.password)}
                   />
+                  <FormHelperText sx={{color: RED}} >{formik.touched.password && formik.errors.password}</FormHelperText>
                 </Box>
               )}
             </Grid>

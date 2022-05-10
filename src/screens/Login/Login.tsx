@@ -198,7 +198,7 @@ export const Login = () => {
               <Grid item xs={8}>
                 <Box display='flex' flexDirection='column' width='100%'>
                   <TextField
-                    label='Username'
+                    label='Email'
                     color='secondary'
                     focused
                     variant='outlined'

@@ -108,33 +108,47 @@ export const ExistingParent = () => {
       let valid_student = {}
       let valid_meta = {}
       questions.map((q) => {
-        if(q.slug?.includes('student_')) {
-          empty[`${q.slug.replace('student_', '')}`] = ''
-          if(q.required) {
-            if(q.slug.toLocaleLowerCase().includes('emailconfirm')) {
-              valid_student[`${q.slug.replace('student_', '')}`] = yup
-                  .string()
-                  .required('Email is required')
-                  .oneOf([yup.ref('email')], 'Emails do not match')
+        if(q.type !== 7) {
+          if(q.slug?.includes('student_')) {
+            empty[`${q.slug?.replace('student_', '')}`] = ''
+            if(q.required) {
+              if(q.slug?.toLocaleLowerCase().includes('emailconfrim')) {
+                valid_student[`${q.slug?.replace('student_', '')}`] = yup
+                    .string()
+                    .required('Email is required')
+                    .oneOf([yup.ref('email')], 'Emails do not match')
+              }
+              else if(q.type === 3) {
+                valid_student[`${q.slug?.replace('student_', '')}`] = yup.array().min(1).required(`${q.question} is required`)
+              }
+              else if(q.type === 4) {
+                valid_student[`${q.slug?.replace('student_', '')}`] = yup.boolean().oneOf([true], 'This field must be checked')
+              }
+              else {
+                valid_student[`${q.slug?.replace('student_', '')}`] = yup.string().required(`${q.question} is required`)
+              }
+            }
+          }
+          else if(q.slug?.includes('meta_') && q.required) {
+            if(q.validation === 1) {
+              valid_meta[`${q.slug}`] = yup.string().email('Enter a valid email').required('Email is required')
+            }
+            else if(q.validation === 2) {
+              valid_meta[`${q.slug}`] = yup.string()
+              .required(`${q.question} is required`)
+              .test(`${q.question}-selected`, `${q.question} is invalid`, (value) => {
+                return isNumber.test(value)
+              })
+            }
+            else if(q.type === 3) {
+              valid_meta[`${q.slug}`] = yup.array().min(1).required(`${q.question} is required`)
+            }
+            else if(q.type === 4) {
+              valid_meta[`${q.slug}`] = yup.boolean().oneOf([true], 'This field must be checked')
             }
             else {
-              valid_student[`${q.slug.replace('student_', '')}`] = yup.string().required(`${q.question} is required`)
+              valid_meta[`${q.slug}`] = yup.string().required(`${q.question} is required`)
             }
-          }
-        }
-        else if(q.slug?.includes('meta_') && q.required) {
-          if(q.validation === 1) {
-            valid_meta[`${q.slug}`] = yup.string().email('Enter a valid email').required('Email is required')
-          }
-          else if(q.validation === 2) {
-            valid_meta[`${q.slug}`] = yup.string()
-            .required(`${q.question} is required`)
-            .test(`${q.question}-selected`, `${q.question} is invalid`, (value) => {
-              return isNumber.test(value)
-            })
-          }
-          else {
-            valid_meta[`${q.slug}`] = yup.string().required(`${q.question} is required`)
           }
         }
       })
@@ -159,7 +173,6 @@ export const ExistingParent = () => {
       },
     }).then((res) => {
       setMe((prev) => {
-        console.log('receive students', res.data.createNewStudentApplication.students)
         return {
           ...prev,
           students: prev?.students?.concat(res.data.createNewStudentApplication.students),

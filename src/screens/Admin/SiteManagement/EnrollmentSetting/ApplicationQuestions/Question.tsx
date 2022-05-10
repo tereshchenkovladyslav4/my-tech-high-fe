@@ -33,7 +33,7 @@ export default function ApplicationQuestionItem({
   return (
     <>
       <Box display='flex' mt='20px' alignItems='center' justifyContent='center'>
-        <Box flex='1' paddingTop='10px' maxWidth={'80%'} overflow={'hidden'}>
+        <Box flex='1' paddingTop='10px' maxWidth={'80%'}>
           <Item question={item} />
         </Box>
         {!mainQuestion && (

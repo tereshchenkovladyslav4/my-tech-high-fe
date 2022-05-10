@@ -15,6 +15,7 @@ import { CompleteAccountSuccess } from '../CompleteAccountSuccess/CompleteAccoun
 
 export const CompleteAccount = () => {
   const token = window.location.href.split('=')[1]
+
   const [confirmEmail] = useMutation(confirmAccount)
   const [showSuccess, setShowSuccess] = useState(false)
 
@@ -22,7 +23,12 @@ export const CompleteAccount = () => {
 
   const validationSchema = yup.object({
     email: yup.string().email('Enter a valid email').required('Email is required'),
-    password: yup.string().min(8, 'Password should be of minimum 8 characters length').required('Password is required'),
+    password: yup.string()
+    .matches(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/,
+      "Must Contain 8 Characters, One Uppercase, One Lowercase, One Number and One Special Case Character"
+    )
+    .required('Password is required'),
     confirmPassword: yup
       .string()
       .required('Please enter your password again')
@@ -118,6 +124,7 @@ export const CompleteAccount = () => {
                   InputLabelProps={{
                     style: { color: SYSTEM_05 },
                   }}
+                  onBlur={formik.handleBlur}
                   value={formik.values.password}
                   onChange={formik.handleChange}
                   error={formik.touched.password && Boolean(formik.errors.password)}
