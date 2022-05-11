@@ -46,7 +46,7 @@ export default function DefaultQuestionModal({
                 }}
             >
                 <Box sx={{ textAlign: 'center', width: '100%' }}>
-                    <Typography variant='h5'>Default Questions</Typography>
+                    <Typography variant='h5' style={{ fontWeight: 700 }}>Default Questions</Typography>
                     <Box sx={{marginTop: '30px', px: 6}}>
                         <OutlinedInput
                             onFocus={(e) => (e.target.placeholder = '')}
@@ -102,7 +102,7 @@ export default function DefaultQuestionModal({
                             }}
                             onClick={handleCreate}
                         >
-                            Create Question
+                            Add Question
                         </Button>
                     </Box>
                 </Box>

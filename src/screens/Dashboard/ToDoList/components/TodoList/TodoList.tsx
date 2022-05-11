@@ -38,14 +38,55 @@ export const TodoList: FunctionComponent = () => {
       const { parent_todos } = data
       forOwn(parent_todos, (item, key) => {
         if (key !== '__typename') {
-          setTodoList((prev) => [...prev, item])
+          if( key === 'submit_enrollment_packet' ) {
+            const _students = item.students.reduce(function (r, a) {
+              r[a.current_school_year_status.application_date_accepted] = r[a.current_school_year_status.application_date_accepted] || []
+              r[a.current_school_year_status.application_date_accepted].push(a)
+              return r
+          }, Object.create(null))
+
+            const _item = { ...item, ...{parsed: _students} }
+            setTodoList((prev) => [...prev, _item])
+          } else {
+            setTodoList((prev) => [...prev, item])
+          }
         }
       })
     }
   }, [loading])
 
-  const renderTodoListItem = () =>
-    map(todoList, (el, idx) => el && el.students.length !== 0 && <ToDoListItem key={idx} todoItem={el} idx={idx} />)
+  const renderTodoListByAcceptedApplication = (el) => Object.entries(el.parsed).map(([key, value], i) => {
+        const item = {
+          "button": "Submit Now",
+          "dashboard": 1,
+          "homeroom": 1,
+          "icon": "",
+          "phrase": "Submit Enrollment Packet",
+          "students": value,
+          "date_accepted": key
+      }
+        return <ToDoListItem key={`sep-${key}`} todoItem={item} idx={i} todoDate={key} todoDeadline="08.12" />
+    }
+  )
+
+  const renderTodoListItem = () => {
+    return map(todoList, (el, idx) => {
+        if( el.parsed && Object.keys(el.parsed).length > 1 ) {
+          return renderTodoListByAcceptedApplication(el)
+        } else {
+          return el && el.students.length !== 0 && 
+            <ToDoListItem 
+              key={idx} 
+              todoItem={el} 
+              todoDate={el.students.at(-1)?.current_school_year_status.application_date_accepted || null} 
+              todoDeadline="08.12"
+              idx={idx} 
+            />
+        }
+      } 
+    )
+  }
+    
 
   return (
     <TableContainer>

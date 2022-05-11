@@ -63,7 +63,10 @@ export const Account = ({handleIsFormChange}) => {
     currentPassword: yup.string().required('Current Password is required'),
     newPassword: yup
       .string()
-      .min(8, 'New Password should be of minimum 8 characters length')
+      .matches(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/,
+        "Must Contain 8 Characters, One Uppercase, One Lowercase, One Number and One Special Case Character"
+      )
       .required('New Password is required'),
     confirmNewPassword: yup
       .string()
@@ -127,6 +130,7 @@ export const Account = ({handleIsFormChange}) => {
                   Current Password
                 </Paragraph>
                 <TextField
+                  onBlur={formik.handleBlur}
                   name='currentPassword'
                   type='password'
                   value={formik.values.currentPassword}

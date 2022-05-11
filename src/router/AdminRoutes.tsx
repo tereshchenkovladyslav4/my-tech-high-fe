@@ -12,6 +12,7 @@ import {
   EMAILTEMPLATES,
   SITE_MANAGEMENT,
   WITHDRAW,
+  ANNOUNCEMENTS,
 } from '../utils/constants'
 // import { APPLICATIONS, DASHBOARD, ENROLLMENT, ENROLLMENT_PACKETS, SETTINGS, USERS, SITE_MANAGEMENT } from '../utils/constants'
 import Enrollment from '../screens/Admin/Enrollment/Enrollment'
@@ -25,6 +26,7 @@ import AdminSettings from '../screens/Admin/Settings/AdminSettings'
 import { EmailTemplatePage } from '../screens/Admin/SiteManagement/components/EmailTemplates/EmailTemplatePage'
 import SiteManagement from '../screens/Admin/SiteManagement/SiteManagement'
 import { Withdraws } from '../screens/Admin/Withdraws'
+import { Announcements } from '../screens/Admin/Announcements'
 
 export const AdminRoutes: FunctionComponent = () => {
   return (
@@ -40,6 +42,9 @@ export const AdminRoutes: FunctionComponent = () => {
       </Route>
       <Route exact path={WITHDRAW}>
         <Withdraws />
+      </Route>
+      <Route exact path={ANNOUNCEMENTS}>
+        <Announcements />
       </Route>
       <Route path={ADMIN_APPLICATIONS}>
         <Applications />

@@ -35,7 +35,12 @@ export const ResetPassword = () => {
   const history = useHistory()
   const validationSchema = yup.object({
     email: yup.string().email('Enter a valid email').required('Email is required'),
-    password: yup.string().min(8, 'Password should be of minimum 8 characters length').required('Password is required'),
+    password: yup.string()
+    .matches(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/,
+      "Must Contain 8 Characters, One Uppercase, One Lowercase, One Number and One Special Case Character"
+    )
+    .required('Password is required'),
     confirmPassword: yup
       .string()
       .required('Please enter your password again')
@@ -128,7 +133,7 @@ export const ResetPassword = () => {
 							root:helperTextStyles.root,
               error: helperTextStyles.error,
 						}
-				  }}
+        }}
           helperText={formik.touched.email && formik.errors.email}
         />
         <TextField
@@ -152,7 +157,8 @@ export const ResetPassword = () => {
 							root:helperTextStyles.root,
               error: helperTextStyles.error,
 						}
-				  }}
+        }}
+          onBlur={formik.handleBlur}
           error={formik.touched.password && Boolean(formik.errors.password)}
           helperText={formik.touched.password && formik.errors.password}
         />

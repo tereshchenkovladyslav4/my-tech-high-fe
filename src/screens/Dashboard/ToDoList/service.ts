@@ -19,6 +19,19 @@ query Parent_todos {
           preferred_first_name
           preferred_last_name
         }
+        current_school_year_status {
+          student_id
+          school_year_id
+          application_id
+          application_status
+          packet_status
+          packet_id
+          application_school_year_id
+          grade_level
+          application_date_submitted
+          application_date_started
+          application_date_accepted
+        }
       }
     }
     resubmit_enrollment_packet {

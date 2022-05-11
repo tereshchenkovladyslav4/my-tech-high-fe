@@ -15,9 +15,12 @@ export const Header = ({
   selectedParent,
   parentId,
   isParent,
+  selectedParentType,
 }) => {
   const handleOpenObserverModal = () => {
-    setOpenObserverModal(true)
+    setOpenObserverModal(true);
+    // if (selectedParentType == "parent") {
+    // }
   }
   return (
     <Box

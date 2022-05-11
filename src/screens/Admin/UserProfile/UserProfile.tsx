@@ -15,6 +15,7 @@ export const UserProfile = ({ handleClose, data }) => {
   const classes = useStyles
   const [userInfo, setUserInfo] = useState<any>()
   const [phoneInfo, setPhoneInfo] = useState()
+  const [parentEmail, setParentEmail] = useState()
   const [students, setStudents] = useState([])
   const [observers, setObservers] = useState([])
   const [notes, setNotes] = useState('')
@@ -23,6 +24,7 @@ export const UserProfile = ({ handleClose, data }) => {
   const [studentStatus, setStudentStatus] = useState({})
   const [selectedParent, setSelectedParent] = useState(0)
   const [selectedStudent, setSelectedStudent] = useState(parseInt(data.student_id))
+  const [selectedParentType, setSelectedParentType] = useState("parent")
 
   const [applicationState, setApplicationState] = useState('')
   const {
@@ -36,7 +38,7 @@ export const UserProfile = ({ handleClose, data }) => {
     },
     fetchPolicy: 'cache-and-network',
   })
-
+  
   const [updateStudent, { data: studentData }] = useMutation(UpdateStudentMutation)
 
   const [updatePersonAddress, { data: updatedData }] = useMutation(updatePersonAddressMutation)
@@ -95,44 +97,58 @@ export const UserProfile = ({ handleClose, data }) => {
     refetch()
   }
   const handleChangeParent = (parent) => {
-      setSelectedStudent(0)
-      if (parent.observer_id) {
-        setSelectedParent(parseInt(parent.observer_id))
-        setUserInfo(parent.person)
-        setPhoneInfo(parent.person.phone)
-        setNotes(parent.notes || '')
-        setStudents(currentUserData.parentDetail.students.filter(x => x.student_id == parent.student_id))
-      } else {
-        setSelectedParent(parseInt(currentUserData.parentDetail.parent_id))
-        setUserInfo(currentUserData.parentDetail.person)
-        setPhoneInfo(currentUserData.parentDetail.phone)
-        setNotes(currentUserData.parentDetail.notes)
-        setStudents(currentUserData.parentDetail.students)
-      }
+    console.log("parent: ", parent);
+
+    setSelectedStudent(0)
+    if (parent.observer_id) {
+      setSelectedParent(parseInt(parent.observer_id))
+      setUserInfo(parent.person)
+      setPhoneInfo(parent.person.phone)
+      setNotes(parent.notes || '')
+      setStudents(currentUserData.parentDetail.students.filter(x => x.student_id == parent.student_id));
+      setSelectedParentType("observer");
+    } else {
+      setSelectedParent(parseInt(currentUserData.parentDetail.parent_id))
+      setUserInfo(currentUserData.parentDetail.person)
+      setPhoneInfo(currentUserData.parentDetail.phone)
+      setNotes(currentUserData.parentDetail.notes)
+      setParentEmail(currentUserData.parentDetail.person.email)
+      setStudents(currentUserData.parentDetail.students)
+      setSelectedParentType("parent");
+      console.log("currentUserData.parentDetail.email: ", currentUserData.parentDetail.person.email)
+    }
   }
+
   const handleChangeStudent = (student) => {
     // if (data.student_id) {
-      setSelectedParent(0)
-      setSelectedStudent(parseInt(student.student_id))
+    setSelectedParent(0)
+    setSelectedStudent(parseInt(student.student_id))
     // }
+
+    setSelectedParentType("parent");
   }
+
   useEffect(() => {
     if (currentUserData) {
       setUserInfo(currentUserData.parentDetail.person)
       setStudents(currentUserData.parentDetail.students)
       setPhoneInfo(currentUserData.parentDetail.phone)
       setNotes(currentUserData.parentDetail.notes)
+      setParentEmail(currentUserData.parentDetail.person.email)
       setObservers(currentUserData.parentDetail.observers)
       if (currentUserData.parentDetail.person.user.userRegions.length) {
         setApplicationState(currentUserData.parentDetail.person.user.userRegions[0].regionDetail.name)
-      } else if(currentUserData.parentDetail.person?.address?.state) {
+      } else if (currentUserData.parentDetail.person?.address?.state) {
         setApplicationState(currentUserData.parentDetail.person.address.state)
       }
-      if(!selectedStudent) {
+      if (!selectedStudent) {
         setSelectedParent(parseInt(currentUserData.parentDetail.parent_id))
       }
     }
   }, [currentUserData])
+
+  // console.log("openObserverModal: ", openObserverModal);
+
   return (
     <Card sx={classes.content}>
       <Box
@@ -151,6 +167,7 @@ export const UserProfile = ({ handleClose, data }) => {
           selectedParent={selectedParent}
           parentId={currentUserData?.parentDetail?.parent_id}
           isParent={data.parent_id ? true : false}
+          selectedParentType={selectedParentType}
         />
         <Box
           sx={{
@@ -180,7 +197,7 @@ export const UserProfile = ({ handleClose, data }) => {
         </Box>
       </Box>
       <Students students={students} selectedStudent={selectedStudent} handleChangeStudent={handleChangeStudent} />
-      {selectedParent && !selectedStudent ?(
+      {selectedParent && !selectedStudent ? (
         <ParentProfile
           userInfo={userInfo}
           setUserInfo={setUserInfo}
@@ -198,12 +215,14 @@ export const UserProfile = ({ handleClose, data }) => {
           studentStatus={studentStatus}
           applicationState={applicationState}
         />
-      ) :openObserverModal && (
+      ) : <></>}
+      {openObserverModal && (
         <NewUserModal
           handleModem={handleCloseObserverModal}
           visible={openObserverModal}
           students={students}
           data={data}
+          ParentEmailValue={parentEmail}
         />
       )}
     </Card>

@@ -13,6 +13,7 @@ type NewModalProps = {
   handleModem: (status?: boolean) => void
   students?: any[]
   data?: any
+  ParentEmailValue: string
 }
 
 export type NewModalTemplateType = FunctionComponent<NewModalProps>

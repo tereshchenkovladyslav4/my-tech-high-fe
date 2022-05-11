@@ -13,7 +13,8 @@ import { WarningModal } from '../../../../../components/WarningModal/Warning'
 import { DropDownItem } from '../../../../../components/DropDown/types'
 import { StudentsModal } from './StudentsModal'
 
-export const NewUserModal: NewModalTemplateType = ({ handleModem, visible, students = [], data }) => {
+export const NewUserModal: NewModalTemplateType = ({ handleModem, visible = false, students = [], data, ParentEmailValue }) => {
+  // console.log('www', students, data, ParentEmailValue)
   const classes = useStyles
   const [apolloError, setApolloError] = useState<ApolloError>({
     title: '',
@@ -21,7 +22,8 @@ export const NewUserModal: NewModalTemplateType = ({ handleModem, visible, stude
     flag: false,
   })
   const [email, setEmail] = useState('')
-  const [parentEmail, setParentEmail] = useState(data?.parent_id ? data?.person?.email : data?.parent?.person?.email)
+  // const [parentEmail, setParentEmail] = useState(data?.parent_id ? data?.person?.email : data?.parent?.person?.email)
+  const [parentEmail, setParentEmail] = useState(ParentEmailValue)
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
   const [region, setRegion] = useState('')
@@ -93,6 +95,8 @@ export const NewUserModal: NewModalTemplateType = ({ handleModem, visible, stude
     setShowStudentModal(false)
     if (status) handleModem()
   }
+
+  console.log("visible: ", visible)
 
   return (
     <Modal

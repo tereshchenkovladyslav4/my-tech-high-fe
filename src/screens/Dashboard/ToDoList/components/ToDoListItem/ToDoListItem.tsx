@@ -5,15 +5,23 @@ import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragr
 import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
 import { TodoListTemplateType } from './types'
 import SubjectIcon from '@mui/icons-material/Subject'
-import { HOMEROOM, ENROLLMENT, PRIMARY_MEDIUM_MOUSEOVER } from '../../../../../utils/constants'
+import { HOMEROOM, ENROLLMENT, PRIMARY_MEDIUM_MOUSEOVER, MTHORANGE } from '../../../../../utils/constants'
 import { imageA } from '../../../Dashboard'
 import { useHistory } from 'react-router-dom'
 import { map } from 'lodash'
 import { Person } from '../../../../HomeroomStudentProfile/Student/types'
+import WarningAmberOutlinedIcon from '@mui/icons-material/WarningAmberOutlined'
 
+const Row = (props) => (
+	<Box display='flex' flexDirection='row' alignItems='center' justifyContent={props.content || 'flex-start'}>
+	  {props.children}
+	</Box>
+  )
 export const ToDoListItem: TodoListTemplateType = ({
 	todoItem, 
-	idx
+	idx,
+	todoDate,
+	todoDeadline
 }) => {
 
 	const history = useHistory()
@@ -50,7 +58,7 @@ export const ToDoListItem: TodoListTemplateType = ({
 			<TableCell style={{ padding: 8 }} component='th' scope='row'>
 				<Metadata
 					title={<Subtitle fontWeight='500'>{todoItem.phrase}</Subtitle>}
-					subtitle={<Paragraph size='medium'>2:11 PM, September 12</Paragraph>}
+					subtitle={ todoDate && <Paragraph size='medium'>{todoDate}</Paragraph>}
 					image={<SubjectIcon style={{ color: 'black', marginRight: 24 }} />}
 				/>
 			</TableCell>
@@ -59,6 +67,29 @@ export const ToDoListItem: TodoListTemplateType = ({
 					{renderStudentAvatars()}
 				</Box>
 			</TableCell>
+			{ todoDeadline && 
+				<TableCell component='th' scope='row'>
+					<Box
+						sx={{
+						borderRadius: 1,
+						background: 'rgba(236, 89, 37, 0.1)',
+						width: 72,
+						height: 28,
+						display: 'flex',
+						justifyContent: 'center',
+						mr: 4,
+						padding: 0.4,
+						}}
+					>
+						<Row>
+						<WarningAmberOutlinedIcon fontSize='small' htmlColor={MTHORANGE} />
+						<Subtitle size={12} color={MTHORANGE} sx={{ ml: 1 }}>
+							{todoDeadline}
+						</Subtitle>
+						</Row>
+					</Box>
+				</TableCell>
+			}
 			<TableCell component='th' scope='row'>
 				<Button
 					onClick={() => history.push(link)}

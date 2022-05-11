@@ -60,7 +60,10 @@ export const Account = ({ handleIsFormChange }) => {
   const validationSchema = yup.object({
     newPassword: yup
       .string()
-      .min(8, 'Password should be of minimum 8 characters length')
+      .matches(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/,
+        "Must Contain 8 Characters, One Uppercase, One Lowercase, One Number and One Special Case Character"
+      )
       .required('Password is required'),
     confirmPassword: yup
       .string()
@@ -122,6 +125,7 @@ export const Account = ({ handleIsFormChange }) => {
                 <TextField
                   name='newPassword'
                   type='password'
+                  onBlur={formik.handleBlur}
                   value={formik.values.newPassword}
                   onChange={(e) => {
                     handleIsFormChange(true)
