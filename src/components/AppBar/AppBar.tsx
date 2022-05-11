@@ -23,9 +23,11 @@ export const AppBar: FunctionComponent = () => {
 
   const { students } = me
 
-  const [activeStudents] = useState(filter(students, (student) => {
-    return student?.status?.at(-1)?.status !== 2
-  }))
+  const [activeStudents] = useState(
+    filter(students, (student) => {
+      return student?.status?.at(-1)?.status !== 2
+    }),
+  )
 
   const location = useLocation()
 
@@ -49,7 +51,7 @@ export const AppBar: FunctionComponent = () => {
       }}
       startIcon={<AddIcon />}
     >
-      <Subtitle sx={{whiteSpace: 'nowrap'}}>Add Student</Subtitle>
+      <Subtitle sx={{ whiteSpace: 'nowrap' }}>Add Student</Subtitle>
     </Button>
   )
 
@@ -99,15 +101,13 @@ export const AppBar: FunctionComponent = () => {
     prevArrow: <SamplePrevArrow />,
   }
 
-  const gradeText = (student: StudentType) => (
+  const gradeText = (student: StudentType) =>
     student.grade_levels.at(-1)?.grade_level !== 'Kin'
-      ? `${toOrdinalSuffix((student.grade_levels.at(-1)?.grade_level as number))} Grade`
+      ? `${toOrdinalSuffix(student.grade_levels.at(-1)?.grade_level as number)} Grade`
       : 'Kindergarten'
-  )
 
   const getProfilePhoto = (person: Person) => {
-    if( !person.photo )
-      return 'image';
+    if (!person.photo) return 'image'
 
     const s3URL = 'https://infocenter-v2-dev.s3.us-west-2.amazonaws.com/'
     return s3URL + person.photo
@@ -115,22 +115,45 @@ export const AppBar: FunctionComponent = () => {
 
   const renderStudentHeader = () =>
     map(activeStudents, (student) => {
-      const link = student?.applications?.at(-1)?.status === 'Submitted' 
-        || student?.status?.at(-1)?.status === 2 
-        || student?.packets?.at(-1)?.status === 'Started' 
-        || student?.packets?.at(-1)?.status === 'Not Started'
-        ? HOMEROOM
-        :`${HOMEROOM}/${student.student_id}`
-      return  (
+      const link =
+        student?.applications?.at(-1)?.status === 'Submitted' ||
+        student?.status?.at(-1)?.status === 2 ||
+        student?.packets?.at(-1)?.status === 'Started' ||
+        student?.packets?.at(-1)?.status === 'Not Started'
+          ? HOMEROOM
+          : `${HOMEROOM}/${student.student_id}`
+      return (
         <Box sx={{ textDecoration: 'none', marginTop: 1 }}>
-          {
-            link ?
+          {link ? (
             <NavLink to={link} style={{ textDecoration: 'none' }}>
+              <Metadata
+                divider={true}
+                title={
+                  <Subtitle color={isActive(student.student_id) ? MTHBLUE : '#A1A1A1'}>
+                    {student.person.preferred_first_name ?? student.person.first_name}
+                  </Subtitle>
+                }
+                subtitle={
+                  <Paragraph color='#cccccc' size={'large'}>
+                    {gradeText(student)}
+                  </Paragraph>
+                }
+                image={
+                  <Avatar
+                    alt={student.person.preferred_first_name}
+                    src={getProfilePhoto(student.person)}
+                    variant='rounded'
+                    style={{ marginRight: 24 }}
+                  />
+                }
+              />
+            </NavLink>
+          ) : (
             <Metadata
               divider={true}
               title={
                 <Subtitle color={isActive(student.student_id) ? MTHBLUE : '#A1A1A1'}>
-                  { student.person.preferred_first_name ?? student.person.first_name }
+                  {student.person.first_name}
                 </Subtitle>
               }
               subtitle={
@@ -138,24 +161,16 @@ export const AppBar: FunctionComponent = () => {
                   {gradeText(student)}
                 </Paragraph>
               }
-              image={<Avatar alt={student.person.preferred_first_name} src={getProfilePhoto(student.person)} variant='rounded' style={{ marginRight: 24 }} />}
-              />
-          </NavLink>
-          : <Metadata
-            divider={true}
-            title={
-              <Subtitle color={isActive(student.student_id) ? MTHBLUE : '#A1A1A1'}>
-                {student.person.first_name}
-              </Subtitle>
-            }
-            subtitle={
-              <Paragraph color='#cccccc' size={'large'}>
-                {gradeText(student)}
-              </Paragraph>
-            }
-            image={<Avatar alt={student.person.first_name} src={getProfilePhoto(student.person)} variant='rounded' style={{ marginRight: 24 }} />}
-          />
-          }
+              image={
+                <Avatar
+                  alt={student.person.first_name}
+                  src={getProfilePhoto(student.person)}
+                  variant='rounded'
+                  style={{ marginRight: 24 }}
+                />
+              }
+            />
+          )}
         </Box>
       )
     })
@@ -163,31 +178,33 @@ export const AppBar: FunctionComponent = () => {
   return (
     <MUIAppBar position='static' sx={classes.appBar} elevation={0}>
       <div style={classes.toolbar}>
-        <Grid container justifyContent="flex-end" alignItems="center">
+        <Grid container justifyContent='flex-end' alignItems='center'>
           <Grid item xs={12} display='flex' justifyContent={'center'}>
-            <Box width={activeStudents.length > 3 ? '50vw' : '100%'} >
-            {
-              activeStudents && activeStudents.length > 3
-                ? <Slider {...settings} ref={sliderRef}>
+            <Box width={activeStudents.length > 3 ? '50vw' : '100%'}>
+              {activeStudents && activeStudents.length > 3 ? (
+                <Slider {...settings} ref={sliderRef}>
                   {renderStudentHeader()}
                 </Slider>
-                : activeStudents && (activeStudents.length > 0 && activeStudents.length <= 3)
-                && 
-                <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: "flex-end", }}>
-                  {renderStudentHeader()}
-                  <Divider
-                    sx={{
-                      background: 'black',
-                      height: 35,
-                      marginX: 3,
-                      marginTop: 2
-                    }}
-                    variant='middle'
-                    orientation='vertical'
-                  />
-                  <AddStudentButton />
-                </Box>
-            }
+              ) : (
+                activeStudents &&
+                activeStudents.length > 0 &&
+                activeStudents.length <= 3 && (
+                  <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
+                    {renderStudentHeader()}
+                    <Divider
+                      sx={{
+                        background: 'black',
+                        height: 35,
+                        marginX: 3,
+                        marginTop: 2,
+                      }}
+                      variant='middle'
+                      orientation='vertical'
+                    />
+                    <AddStudentButton />
+                  </Box>
+                )
+              )}
             </Box>
           </Grid>
         </Grid>

@@ -2,7 +2,7 @@ import React, { FunctionComponent, useContext } from 'react'
 import { Route, Switch } from 'react-router-dom'
 import { AdminDashboard } from '../screens/Admin/Dashboard/AdminDashboard'
 import {
-  APPLICATIONS,
+  ADMIN_APPLICATIONS,
   DASHBOARD,
   ENROLLMENT,
   ENROLLMENT_PACKETS,
@@ -41,7 +41,7 @@ export const AdminRoutes: FunctionComponent = () => {
       <Route exact path={WITHDRAW}>
         <Withdraws />
       </Route>
-      <Route path={APPLICATIONS}>
+      <Route path={ADMIN_APPLICATIONS}>
         <Applications />
       </Route>
       <Route path={SITE_MANAGEMENT}>
