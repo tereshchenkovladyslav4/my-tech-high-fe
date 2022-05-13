@@ -33,7 +33,7 @@ export default function DocumentsNew({id, questions}) {
   // const [submitPersonalMutation, { data }] = useMutation(enrollmentContactMutation)
     
   useEffect(() => {
-    if(questions.groups?.length > 0) {
+    if(questions?.groups?.length > 0) {
       let valid_student = {}
       let valid_parent = {}
       let valid_meta = {}
@@ -208,7 +208,6 @@ export default function DocumentsNew({id, questions}) {
     // }
     }
     else {
-      
       console.log('packet file store fail')
     }
   },[data])
@@ -303,7 +302,7 @@ export default function DocumentsNew({id, questions}) {
     <Grid container rowSpacing={3} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
       <Grid item xs={12}>
         <List>
-          {questions.groups[0]?.questions.map((item, index) => (
+          {questions?.groups[0]?.questions.map((item, index) => (
             <Grid item xs={12} marginTop={4}>
               <DocumentUpload
                 item={item}

@@ -57,14 +57,14 @@ export const DocumentUpload = ({ item } : {item : EnrollmentQuestion}) => {
         <Box display='flex' alignItems='center' justifyContent='start'>
           <Subtitle fontWeight='700'>{`${item.question} ${item.required ? "(required)" : ""}`}</Subtitle>
           <Box display='inline-flex' height='40px'>
+            <DragHandle />
             <IconButton onClick={() => setShowEditDialog(true)}>
               <EditIcon />
             </IconButton>
   
-            <IconButton onClick={() => setShowDeleteDialog(true)}>
+            {item.removable && <IconButton onClick={() => setShowDeleteDialog(true)}>
               <DeleteForeverOutlinedIcon />
-            </IconButton>
-            <DragHandle />
+            </IconButton>}
           </Box>
         </Box>
         <Paragraph size='medium'>{item.options[0].value}</Paragraph>
@@ -87,8 +87,8 @@ export const DocumentUpload = ({ item } : {item : EnrollmentQuestion}) => {
         {showEditDialog && <AddUploadModal onClose={() => setShowEditDialog(false)} editItem={item} />}
         {showDeleteDialog && (
           <CustomModal
-            title='Delete Group'
-            description='Are you sure you want to delete this group?'
+            title='Delete Question'
+            description='Are you sure you want to delete this question?'
             confirmStr='Delete'
             onClose={() => setShowDeleteDialog(false)}
             onConfirm={() => {

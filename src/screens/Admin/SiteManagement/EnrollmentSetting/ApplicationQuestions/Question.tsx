@@ -1,6 +1,6 @@
-import { Box, Checkbox, IconButton, outlinedInputClasses, Radio, TextField } from '@mui/material'
+import { Box, Checkbox, IconButton, outlinedInputClasses, Radio, TextField, FormGroup, FormControl, FormControlLabel } from '@mui/material'
 import { useFormikContext } from 'formik'
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import { DropDown } from '../../../../../components/DropDown/DropDown'
 import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
 import { ApplicationQuestion } from './types'
@@ -12,6 +12,7 @@ import AddNewQuestionModal from './AddNewQuestion'
 import CustomModal from '../components/CustomModal/CustomModals'
 import { SYSTEM_05, SYSTEM_07 } from '../../../../../utils/constants'
 import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragraph'
+import { ProgramYearContext } from '../provider/ProgramYearProvider'
 
 const DragHandle = SortableHandle(() => (
   <IconButton>
@@ -67,11 +68,14 @@ export default function ApplicationQuestionItem({
 }
 function Item({ question: q }: { question: ApplicationQuestion }) {
   const { values, errors, touched } = useFormikContext<ApplicationQuestion[]>()
+  const { setProgramYear } = useContext(ProgramYearContext)
 
   const index = values.find((i) => i.id === q.id)?.id
 
   function onChange(value: string) {
-    // setValues(values.map((v) => (v.id === q.id ? { ...v, response: value } : v)))
+    if(q.slug === 'program_year') {
+      setProgramYear(value)
+    }
   }
   if (q.type === 1) {
     return (
@@ -158,13 +162,27 @@ function Item({ question: q }: { question: ApplicationQuestion }) {
   } else if (q.type === 4) {
     return (
       <Box display='flex' alignItems='center'>
-        <Checkbox
-          checked={q.response === 'true'}
-          onChange={(e) => onChange(e.currentTarget.checked ? 'true' : 'false')}
-        />
-        <Subtitle size='small' color={SYSTEM_05} sx={{wordWrap: 'break-word',maxWidth: '90%',textAlign: 'start',}}>
-          {q.question}
-        </Subtitle>
+        <FormControl
+          required
+          name='acknowledge'
+          component="fieldset"
+          variant="standard"
+        >
+          <FormGroup style={{ width: '50%' }}>
+            <FormControlLabel
+              control={
+                <Checkbox  />
+              }
+              label={
+                <Paragraph size='medium'>
+                  <a style={{ color: '#111', textDecoration: 'none' }} href={q.options[0]?.label === 'web' ? q.options[0]?.value :`mailto:${q.options[0]?.value}`}>
+                      {q.question}
+                  </a>
+                </Paragraph>
+              }
+            />
+          </FormGroup>
+        </FormControl>
       </Box>
     )
   } else if (q.type === 5) {

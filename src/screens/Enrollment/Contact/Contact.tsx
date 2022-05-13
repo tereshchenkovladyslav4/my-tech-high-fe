@@ -274,7 +274,6 @@ export const Contact: ContactTemplateType = ({ id }) => {
 
   const nextTab = (e) => {
     e.preventDefault()
-    console.log(tab.currentTab)
     setTab({
       currentTab: tab.currentTab + 1
     })

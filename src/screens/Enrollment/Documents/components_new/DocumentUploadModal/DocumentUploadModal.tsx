@@ -64,7 +64,6 @@ export const DocumentUploadModal: DocumentUploadModalTemplateType = ({
 	const fileDrop = (e: HTMLInputEvent) => {
 			preventDefault(e);
 			const files = e.dataTransfer.files;
-			console.log(files)
 			if (limit && files.length > limit) {
 				setErrorMessage(`File submission limited to ${limit} files`);
 			}else {

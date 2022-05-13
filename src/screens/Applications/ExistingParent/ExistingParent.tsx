@@ -19,6 +19,7 @@ import moment from 'moment'
 import { ApplicationQuestion } from '../components/AdditionalQuestionItem/types'
 import { AdditionalQuestionItem } from '../components/AdditionalQuestionItem/AdditionalQuestionItem'
 import { getAllRegion } from '../../../graphql/queries/region'
+import { useHistory, useRouteMatch } from 'react-router-dom'
 
 export const getRegionByUserId = gql`
   query UserRegionByUserId($userId: ID!) {
@@ -161,6 +162,8 @@ export const ExistingParent = () => {
 
   const [submitApplicationAction, { data }] = useMutation(AddApplicationMutation)
 
+  const history = useHistory()
+
   const submitApplication = async (data) => {
     submitApplicationAction({
       variables: {
@@ -178,6 +181,7 @@ export const ExistingParent = () => {
           students: prev?.students?.concat(res.data.createNewStudentApplication.students),
         }
       })
+      history.push('/homeroom')
     })
   }
 
@@ -329,10 +333,7 @@ export const ExistingParent = () => {
                                               <DropDown
                                                 name={`students[${index}].grade_level`}
                                                 labelTop
-                                                placeholder={`Student Grade Level (${moment().diff(
-                                                  birthDateCut,
-                                                  'years',
-                                                )}) as of ${moment(birthDateCut).format('MMM Do YYYY')}`}
+                                                placeholder={`Student Grade Level (age) as of ${moment(birthDateCut).format('MMM Do YYYY')}`}
                                                 dropDownItems={gradesDropDownItems}
                                                 setParentValue={(id) => {
                                                   form.setFieldValue(field.name, id)

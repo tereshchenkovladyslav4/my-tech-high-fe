@@ -4,7 +4,7 @@ import { map } from 'lodash'
 import React, { Fragment, FunctionComponent, useEffect, useContext, useState } from 'react'
 import { UserContext } from '../../../../../../providers/UserContext/UserProvider'
 import { ToDoListItem } from '../ToDoListItem/ToDoListItem'
-import { WITHDRAW, APPLICATIONS, ENROLLMENT_PACKETS } from '../../../../../../utils/constants'
+import { WITHDRAWAL, ADMIN_APPLICATIONS, ENROLLMENT_PACKETS } from '../../../../../../utils/constants'
 
 export const getSubmittedApplicationCount = gql`
   query SubmittedApplicationCount($regionId: ID!) {
@@ -52,7 +52,7 @@ export const TodoList: FunctionComponent = () => {
         {
           id: 1,
           title: 'Applications',
-          link: APPLICATIONS,
+          link: ADMIN_APPLICATIONS,
           date: new Date(),
           severity: submiteedApplicationCountResponse?.submittedApplicationCount?.results?.Submitted,
         },
@@ -76,7 +76,7 @@ export const TodoList: FunctionComponent = () => {
         {
           id: 4,
           title: 'Withdrawals',
-          link: WITHDRAW,
+          link: WITHDRAWAL,
           date: new Date(),
           severity: 50,
         },

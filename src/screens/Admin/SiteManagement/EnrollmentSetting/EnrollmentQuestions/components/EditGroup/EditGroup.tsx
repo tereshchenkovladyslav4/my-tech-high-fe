@@ -27,7 +27,7 @@ export default function EditGroup({
             return
         }
         const currentTabData = values.filter((v) => v.tab_name === tabName)[0]
-        const updatedGroups = currentTabData.groups.map((v) => v.group_name === group ? {...v, group_name: groupName} : groupName)
+        const updatedGroups = currentTabData.groups.map((v) => v.group_name === group ? {...v, group_name: groupName} : v)
         
         const updatedTab = {...currentTabData, groups: updatedGroups}
         setValues(values.map((v) => (v.tab_name === updatedTab.tab_name ? updatedTab : v)))

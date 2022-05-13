@@ -26,3 +26,18 @@ export const changeUserStatusMutation = gql`
     }
   }
 `
+
+export const toggleMasqueradeMutation = gql`
+  mutation ToggleMasquerade($masqueradeInput: MasqueradeInput!){
+    toggleMasquerade(masqueradeInput: $masqueradeInput){
+      user_id
+    }
+  }
+`
+export const becomeUserMutation = gql`
+  mutation BecomeUser($userId: Float!){
+    masqueradeUser(userId: $userId){
+      jwt
+    }
+  }
+`

@@ -9,6 +9,7 @@ export const getAllUsers = gql`
       last_name
       last_login
       can_emulate
+      masquerade
       status
       level
       student {
@@ -30,6 +31,7 @@ export const getUsersByRegions = gql`
         email
         user_id
         first_name
+        masquerade
         last_name
         last_login
         can_emulate

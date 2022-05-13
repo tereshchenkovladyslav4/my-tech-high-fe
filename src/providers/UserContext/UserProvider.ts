@@ -18,6 +18,7 @@ export type UserInfo = {
   students?: StudentType[]
   profile?: Person
   selectedRegionId?: number
+  masquerade: boolean
 }
 
 export type UserContextType = {

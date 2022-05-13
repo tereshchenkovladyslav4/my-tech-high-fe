@@ -9,14 +9,15 @@ import { HeadCell } from '../../../components/SortableTable/SortableTableHeader/
 import { SortableUserTable } from '../../../components/SortableTable/SortableUserTable'
 import { Subtitle } from '../../../components/Typography/Subtitle/Subtitle'
 import { WarningModal } from '../../../components/WarningModal/Warning'
-import { changeUserStatusMutation } from '../../../graphql/mutation/user'
+import { changeUserStatusMutation, toggleMasqueradeMutation, becomeUserMutation } from '../../../graphql/mutation/user'
 import { getUsersByRegions } from '../../../graphql/queries/user'
 import { UserContext } from '../../../providers/UserContext/UserProvider'
-import { BUTTON_LINEAR_GRADIENT } from '../../../utils/constants'
+import { BUTTON_LINEAR_GRADIENT, DASHBOARD } from '../../../utils/constants'
 import { ApolloError, Region } from './interfaces'
 import { NewUserModal } from './NewUserModal/NewUserModal'
 import { UserFilters } from './UserFilters/UserFilters'
 import debounce from 'lodash.debounce'
+import { useHistory } from 'react-router-dom'
 
 type UserInfo = {
   user_id: number
@@ -25,7 +26,7 @@ type UserInfo = {
   level: string
   last_login: string
   status: number
-  can_emulate: boolean
+  masquerade: boolean
 }
 
 export const Users = () => {
@@ -45,6 +46,8 @@ export const Users = () => {
   const [selectedFilter, setSelectedFilter] = useState<Array<string>>(['Parent', 'Student'])
   const [sort, setSort] = useState<string>('status|ASC')
 
+  const history = useHistory()
+
   const { loading, error, data, refetch } = useQuery(getUsersByRegions, {
     variables: {
       skip: skip,
@@ -60,6 +63,27 @@ export const Users = () => {
 
   const [changeUserStatus, { data: responseData, loading: uploading, error: uploadingError }] =
     useMutation(changeUserStatusMutation)
+
+  const [toggleMasquerade, { data: masqueradeData, loading: masqueradeLoading, error: masqueradeError }] =
+    useMutation(toggleMasqueradeMutation)
+
+  const [becomeUserAction, { data: userData, loading: userLoading, error: userError }] =
+    useMutation(becomeUserMutation)
+
+  const becomeUser = (id) => {
+    becomeUserAction({
+      variables: {
+        userId:  Number(id)
+      }
+    })
+    .then((resp) => {
+      localStorage.setItem('masquerade' ,resp.data.masqueradeUser.jwt)
+    })
+    .then(() => {
+      history.push(DASHBOARD)
+      location.reload()
+    })
+  }
 
   useEffect(() => {
     if (!uploading && responseData !== undefined) {
@@ -117,10 +141,11 @@ export const Users = () => {
           level: level || 'null',
           last_login: user?.last_login ? moment(user?.last_login).format('L') : 'Never',
           status: user?.status,
-          can_emulate:
-            user?.role?.name.toLowerCase() === 'admin' || user?.role?.name.toLowerCase() === 'super admin'
-              ? true
-              : false,
+          masquerade:
+            user?.masquerade === 1 ? true : false
+            //user?.role?.name.toLowerCase() === 'admin' || user?.role?.name.toLowerCase() === 'super admin'
+            //  ? true
+            //  : false,
         })
       })
       setTotalUsers(total)
@@ -201,6 +226,29 @@ export const Users = () => {
 
   const changeHandler = (event) => {
     setSearchField(event)
+  }
+
+  const handleMasqueradeToggle = (id: number, masquerade: boolean) => {
+    const payload = {
+      user_id: Number(id),
+      masquerade,
+    }
+    toggleMasquerade({
+      variables: {
+        masqueradeInput: payload
+      },
+      refetchQueries: [{ 
+        query: getUsersByRegions,
+        variables: {
+          skip: skip,
+          sort: sort,
+          take: paginatinLimit,
+          search: searchField,
+          filters: selectedFilter,
+          regionId: me?.selectedRegionId,
+        },
+      }]
+    })
   }
 
   const debouncedChangeHandler = useCallback(debounce(changeHandler, 300), [])
@@ -305,16 +353,18 @@ export const Users = () => {
         </Box>
       </Box>
       <UserFilters setFilters={setSelectedFilter} filters={selectedFilter} />
-      <SortableUserTable
+    { rows.length > 1 && <SortableUserTable
         rows={rows}
         headCells={headCells}
         onCheck={() => {}}
         updateStatus={handleStatusChange}
+        toggleMasquerade={handleMasqueradeToggle}
         clearAll={false}
         onRowClick={() => null}
         type='core_user'
         onSortChange={sortChangeAction}
-      />
+        handleMasquerade={becomeUser}
+      />}
       {newUserModal && <NewUserModal visible={newUserModal} handleModem={handleModal} />}
     </Card>
   )

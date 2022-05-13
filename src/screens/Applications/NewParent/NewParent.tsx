@@ -330,7 +330,6 @@ export const NewParent = () => {
             <Form>
               <Box
                 paddingX={36}
-                paddingTop={18}
                 paddingBottom={10}
                 sx={{
                   backgroundImage: `url(${BGSVG})`,
@@ -339,6 +338,7 @@ export const NewParent = () => {
                   alignItems: 'center',
                   display: 'flex',
                   flexDirection: 'column',
+                  minHeight: '88vh',
                 }}
               >
                 <Grid container rowSpacing={2} paddingTop={10}>
@@ -582,10 +582,7 @@ export const NewParent = () => {
                                                 <DropDown
                                                   name={`students[${index}].grade_level`}
                                                   labelTop
-                                                  placeholder={`Student Grade Level (${moment().diff(
-                                                    birthDateCut,
-                                                    'years',
-                                                  )}) as of ${moment(birthDateCut).format('MMM Do YYYY')}`}
+                                                  placeholder={`Student Grade Level (age) as of ${moment(birthDateCut).format('MMM Do YYYY')}`}
                                                   dropDownItems={gradesDropDownItems}
                                                   setParentValue={(id) => {
                                                     form.setFieldValue(field.name, id)
@@ -653,6 +650,7 @@ export const NewParent = () => {
                             <Button
                               color='secondary'
                               variant='contained'
+                              disabled={regionId ? false : true}
                               style={classes.addStudentButton}
                               onClick={() => push(emptyStudent)}
                             >

@@ -30,7 +30,6 @@ export const Profile = ({handleIsFormChange}) => {
 
   const [imageModalOpen, setImageModalOpen] = useState(false)
   const [warningModalOpen, setWarningModalOpen] = useState(false)
-  const hasImage = !!me.avatar_url
   const [avatar, setAvatar] = useState(null)
   const [file, setFile] = useState<undefined | File>()
   

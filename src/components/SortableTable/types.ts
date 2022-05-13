@@ -13,6 +13,8 @@ type SortableTableProps = {
   onRowClick?: any
   onParentClick?: (id: number) => void
   onSortChange?: (property: keyof any, order: string) => void
+  toggleMasquerade?: (id: number, masquerade: boolean) => void
+  handleMasquerade?: (id: number) => void
 }
 
 export type SortableTableTemplateType = FunctionComponent<SortableTableProps>

@@ -19,11 +19,15 @@ export default function QuestionOptions({
   options,
   setOptions,
   type,
+  isAction = true,
+  isDefault,
   // setAction,
 }: {
   options: OptionsType[]
   setOptions: (options: OptionsType[]) => void
-  type: 1 | 2 | 3 | 4 | 5 | 6  
+  isAction: boolean
+  type: number
+  isDefault: boolean
   // setAction: () => void
 }) {
   // const tabName = useContext(TabContext)  
@@ -83,6 +87,7 @@ export default function QuestionOptions({
               variant='standard'
               value={opt.label}
               focused
+              disabled={isDefault}
               onChange={(e) => {
                 const val = e.currentTarget.value
                 const newOps = options.map((o) => (o.value === opt.value ? { ...o, label: val } : o))
@@ -104,6 +109,7 @@ export default function QuestionOptions({
                   cursor: 'pointer',
                   marginLeft: '10px',
                 }}
+                disabled={isDefault}
                 onClick={() => {
                   setOptions(
                     options.filter((o) => o.value !== opt.value).map((v, i) => ({ value: i, label: v.label.trim() })),
@@ -117,8 +123,9 @@ export default function QuestionOptions({
             )}
           </Box>
           <Box width='30%'>
-            <DropDown
+            {isAction && <DropDown
               sx={{
+                pointerEvents: isDefault ? 'none' : 'unset',
                 minWidth: '200px',
                 [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
                   {
@@ -140,7 +147,7 @@ export default function QuestionOptions({
                 // setAction(+v)
               }}
               size='small'
-            />
+            />}
           </Box>
         </Box>        
       ))}

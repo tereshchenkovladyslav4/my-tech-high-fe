@@ -1,5 +1,5 @@
 import { Alert, Box, Button, Card, Grid, IconButton, List, outlinedInputClasses, Typography } from '@mui/material'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext, useMemo } from 'react'
 // @ts-ignore
 import BGSVG from '../../../../../assets/ApplicationBG.svg'
 import { useStyles } from './styles'
@@ -9,7 +9,15 @@ import { Form, Formik } from 'formik'
 import { arrayMove, SortableContainer, SortableElement } from 'react-sortable-hoc'
 import AddNewQuestionModal from './AddNewQuestion/index'
 import { useMutation, useQuery } from '@apollo/client'
-import { getQuestionsGql, saveQuestionsGql, deleteQuestionGql } from './services'
+import { 
+  getQuestionsGql,
+  saveQuestionsGql, 
+  deleteQuestionGql, 
+  getCountiesByRegionId, 
+  getActiveSchoolYearsByRegionId,
+  getSchoolDistrictsByRegionId,
+  getAllRegion,
+  } from './services'
 import CustomModal from '../components/CustomModal/CustomModals'
 import { useHistory } from 'react-router-dom'
 import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded'
@@ -20,6 +28,11 @@ import AddQuestionModal from '../components/AddQuestionModal/AddQuestionModal'
 import DefaultQuestionModal from '../components/DefaultQuestionModal/DefaultQuestionModal'
 import { defaultQuestions } from '../constant/defaultQuestions'
 import { QuestionTypes } from '../EnrollmentQuestions/types'
+import moment from 'moment'
+import { DropDownItem } from '../../../../../components/DropDown/types'
+import {ProgramYearContext} from '../provider/ProgramYearProvider'
+import {GRADES} from '../../../../../utils/constants'
+import {toOrdinalSuffix} from '../../../../../utils/stringHelpers'
 
 const SortableItem = SortableElement(ApplicationQuestionItem)
 
@@ -43,11 +56,133 @@ export default function ApplicationQuestions() {
   const [deleteQuestion] = useMutation(deleteQuestionGql)
   const [openAddQuestion, setOpenAddQuestion] = useState('')
   const [editItem, setEditItem] = useState(null)
+  const {loading: countyLoading, data: countyData } = useQuery(getCountiesByRegionId, {
+    variables: {regionId: +region?.regionDetail?.id},
+    fetchPolicy: 'network-only',
+  })
+
+  const [counties, setCounties] = useState([])
+
+  useEffect(() => {
+    if (!countyLoading && countyData?.getCounties) {
+      setCounties(
+        countyData.getCounties
+          .map((v) => {return {label: v.county_name, value: v.id}})
+      )
+      setUnsavedChanges(false)
+    }
+  }, [countyData])
 
   const { data, refetch } = useQuery(getQuestionsGql, {
     variables: { input: { region_id: +region?.regionDetail?.id } },
     fetchPolicy: 'network-only',
   })
+
+  const { loading: schoolLoading, data: schoolYearData } = useQuery(getActiveSchoolYearsByRegionId, {
+    variables: {
+      regionId: +region?.regionDetail?.id,
+    },
+    fetchPolicy: 'network-only',
+  })
+
+  
+  const [schoolYears, setSchoolYears] = useState<Array<DropDownItem>>([])
+  const [schoolYearsData, setSchoolYearsData] = useState([])
+  const [grades, setGrades] = useState([])
+  const [gradesDropDownItems, setGradesDropDownItems] = useState<Array<DropDownItem>>([])
+  const [birthDateCut, setBirthDateCut] = useState<string>('')
+
+  useEffect(() => {
+    if (!schoolLoading && schoolYearData.getActiveSchoolYears) {
+      setSchoolYears(
+        schoolYearData.getActiveSchoolYears.map((item) => {
+          return {
+            label: moment(item.date_begin).format('YYYY') + '-' + moment(item.date_end).format('YYYY'),
+            value: item.school_year_id,
+          }
+        }),
+      )
+      setSchoolYearsData(schoolYearData.getActiveSchoolYears)
+    }
+  }, [schoolYearData])
+
+  const setGradesAndBirthDateCut = (id) => {
+    schoolYearsData.forEach((element) => {
+      if (id == element.school_year_id) {
+        setGrades(element.grades?.split(','))
+        setBirthDateCut(element.birth_date_cut)
+      }
+    })
+  }
+
+  const [programYear, setProgramYear] = useState()
+  const programYearContext = useMemo(
+    () => ({
+      programYear,
+      setProgramYear
+    }),
+    []
+  )
+
+  useEffect(() => {
+    if(programYear) {
+      setGradesAndBirthDateCut(programYear)
+    }
+  }, [programYear])
+
+  useEffect(() => {
+    parseGrades()
+  }, [grades])
+
+  const parseGrades = () => {
+    let dropDownItems = []
+    GRADES.forEach((grade) => {
+      if (grades?.includes(grade.toString())) {
+        if (typeof grade !== 'string') {
+          dropDownItems.push({
+            label: toOrdinalSuffix(grade) + ' Grade',
+            value: grade.toString(),
+          })
+        }
+        if (typeof grade == 'string') {
+          dropDownItems.push({
+            label: grade,
+            value: grade,
+          })
+        }
+      }
+    })
+    setGradesDropDownItems(dropDownItems)
+  }
+
+  const {loading: schoolDistrictsDataLoading, data: schoolDistrictsData} = useQuery(getSchoolDistrictsByRegionId, {
+    variables: {
+      regionId: +region?.regionDetail?.id,
+    },
+    skip: +region?.regionDetail?.id ? false : true,
+    fetchPolicy: 'network-only',
+  })
+  const [schoolDistricts, setSchoolDistricts] = useState<Array<DropDownItem>>([])
+
+  useEffect(() => {
+      if(!schoolDistrictsDataLoading && schoolDistrictsData?.schoolDistrict.length > 0) {
+          setSchoolDistricts(schoolDistrictsData?.schoolDistrict.map((d) => {return {label: d.school_district_name, value: d.school_district_name}}))
+      }
+  }, [schoolDistrictsDataLoading])
+
+  const { data: regionData, loading: regionDataLoading, error } = useQuery(getAllRegion)
+  const [availableRegions, setAvailableRegions] = useState([])
+  useEffect(() => {
+    !regionDataLoading &&
+      setAvailableRegions(
+        regionData.regions?.map((region) => ({
+          label: region.name,
+          value: region.id,
+        })),
+      )
+  }, [regionDataLoading])
+
+
   const history = useHistory()
   useEffect(() => {
     if (data?.getApplicationQuestions) {
@@ -79,15 +214,41 @@ export default function ApplicationQuestions() {
       unreg()
       window.onbeforeunload = null
     }
-  }, [history, unsavedChanges])
+  }, [history, unsavedChanges])  
 
   const onSelectDefaultQuestions = (selected) => {
     const selectedQuestion = defaultQuestions.filter((d) => d.label == selected)[0]
+    let options = []
+    if(selectedQuestion.slug === 'county') {
+      options = counties
+    }
+    else if(selectedQuestion.slug === 'program_year') {
+      options = schoolYears
+    }
+    else if(selectedQuestion.slug === 'packet_school_district') {
+      options = schoolDistricts
+    }
+    else if(selectedQuestion.slug === 'address_state') {
+      options = availableRegions
+    }
+    else if(selectedQuestion.slug === 'student_gender') {
+      options = [
+        {label: 'Male', value: 1},
+        {label: 'Female', value: 2},
+        {label: 'Non Binary', value: 3},
+        {label: 'Undeclared', value: 4},
+      ]
+    }
+    else if(selectedQuestion.slug === 'student_grade_level') {
+      options = gradesDropDownItems
+    }
+
     const editItemTemp = {
       type: QuestionTypes.find((q) => q.label === selectedQuestion.type).value,
       question: selectedQuestion.label,
       validation: selectedQuestion.validation,
       default_question: true,
+      options: options,
       slug: selectedQuestion.slug
     }
     setEditItem(editItemTemp)
@@ -114,7 +275,6 @@ export default function ApplicationQuestions() {
               deleteQuestion({ variables: { id: q.id } })
             }
           })
-          console.log('submit questions', vals)
           await saveQuestionsMutation({
             variables: {
               input: vals.map((v) => ({
@@ -207,22 +367,24 @@ export default function ApplicationQuestions() {
 
                 <Typography sx={{ color: '#1A1A1A', fontWeight: 500, fontSize: '24.1679px' }}>Apply</Typography>
 
-                <Box width='600px'>
-                  {initQuestions.map((it, index) => (
-                    <ApplicationQuestionItem key={index} item={it} mainQuestion={true} />
-                  ))}
-                  <SortableListContainer
-                    items={values}
-                    useDragHandle={true}
-                    onSortEnd={({ oldIndex, newIndex }) => {
-                      const newData = arrayMove(values, oldIndex, newIndex).map((v, i) => ({
-                        ...v,
-                        order: i + 1,
-                      }))
-                      setValues(newData)
-                    }}
-                  />
-                </Box>
+                <ProgramYearContext.Provider value={programYearContext}>
+                  <Box width='600px'>
+                    {initQuestions.map((it, index) => (
+                      <ApplicationQuestionItem key={index} item={it} mainQuestion={true} />
+                    ))}
+                    <SortableListContainer
+                      items={values}
+                      useDragHandle={true}
+                      onSortEnd={({ oldIndex, newIndex }) => {
+                        const newData = arrayMove(values, oldIndex, newIndex).map((v, i) => ({
+                          ...v,
+                          order: i + 1,
+                        }))
+                        setValues(newData)
+                      }}
+                    />
+                  </Box>
+                </ProgramYearContext.Provider>
                 {openAddQuestion === 'new' && <AddNewQuestionModal onClose={() => setOpenAddQuestion('')} editItem={editItem} newQuestion={true}/>}
                 {openAddQuestion === 'default' && <DefaultQuestionModal onClose={() => setOpenAddQuestion('')} onCreate={(e) => {onSelectDefaultQuestions(e)}}/>}
                 {openSelectQuestionType && <AddQuestionModal onClose={() => setOpenSelectQuestionType(false)} onCreate={(e) => {setOpenAddQuestion(e); setEditItem(null); setOpenSelectQuestionType(false)}}/>}

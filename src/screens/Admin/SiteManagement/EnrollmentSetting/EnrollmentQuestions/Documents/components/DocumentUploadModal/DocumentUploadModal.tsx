@@ -43,7 +43,7 @@ export const DocumentUploadModal: DocumentUploadModalTemplateType = ({
 				}
 		}, []);
 		const filterDeletedFiles = filter(filteredArr, (file) => !deletedFiles.includes(file))
-			setValidFiles([...filterDeletedFiles]);
+		setValidFiles([...filterDeletedFiles]);
 	}, [selectedFiles]);
 
 	const preventDefault = (e: HTMLInputEvent) => {
@@ -63,29 +63,33 @@ export const DocumentUploadModal: DocumentUploadModalTemplateType = ({
 	}
 
 	const fileDrop = (e: HTMLInputEvent) => {
-			preventDefault(e);
-			const files = e.dataTransfer.files;
-			console.log(files)
-			if (limit && files.length > limit) {
-				setErrorMessage(`File submission limited to ${limit} files`);
-			}else {
-				handleFiles(files);
-			}
+		preventDefault(e);
+		const files = e.dataTransfer.files;
+		
+		if (limit && files.length > limit) {
+			setErrorMessage(`File submission limited to ${limit} files`);
+		}else {
+			handleFiles(files);
+		}
 	}
 
 	const filesSelected = (e: any) => {
-		handleFiles(e.target.files)
+		if (limit && (selectedFiles.length + e.target.files.length > limit)) {
+			setErrorMessage(`File submission limited to ${limit} files`);
+		} else {
+			handleFiles(e.target.files)
+		}
 	}
 
 	const handleFiles = (files: FileList[]) => {
 		for(let i = 0; i < files.length; i++) {
-				const file = validateFile(files[i])
-				if (file.status === true) {
-						setSelectedFiles(prevArray => [...prevArray, files[i]]);
-				} else {
-						files[i]['invalid'] = true;
-						setErrorMessage(file.message);
-				}
+			const file = validateFile(files[i])
+			if (file.status === true) {
+				setSelectedFiles(prevArray => [...prevArray, files[i]]);
+			} else {
+				files[i]['invalid'] = true;
+				setErrorMessage(file.message);
+			}
 		}
 	}
 
@@ -185,7 +189,7 @@ export const DocumentUploadModal: DocumentUploadModalTemplateType = ({
 							Browse Files
 						</label>
 					</Button>
-					<Paragraph size='medium' fontWeight='700' color={RED}>{ validFiles.length === 0 &&  errorMessage }</Paragraph>
+					<Paragraph size='medium' fontWeight='700' color={RED}>{ validFiles.length === 0 && errorMessage }</Paragraph>
 				</Box>
 				<Box justifyContent={'space-between'} display='flex' flexDirection={'row'}>
 					<Button 

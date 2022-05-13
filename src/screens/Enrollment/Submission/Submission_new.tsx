@@ -50,7 +50,7 @@ export default function SubmissionNew({id, questions}) {
   const [validationSchema, setValidationSchema] = useState(yup.object({}))
     
   useEffect(() => {
-    if(questions.groups?.length > 0) {
+    if(questions?.groups?.length > 0) {
       let valid_student = {}
       let valid_parent = {}
       let valid_meta = {}
@@ -260,7 +260,7 @@ export default function SubmissionNew({id, questions}) {
         />
         }
         <Grid container rowSpacing={2} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
-            {questions.groups[0]?.questions.map((item, index) => (
+            {questions?.groups[0]?.questions.map((item, index) => (
                 <EnrollmentQuestionItem key={index} item={item} group={'root'} formik={formik}/>
             ))}
         </Grid>

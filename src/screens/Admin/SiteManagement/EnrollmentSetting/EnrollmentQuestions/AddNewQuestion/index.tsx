@@ -78,6 +78,13 @@ export default function AddNewQuestionModal({
 
   const [actionType, setActionType] = useState(1)
   const [actionType2, setActionType2] = useState(1)
+
+  useEffect(() => {
+    if(type === 2 || type === 6 || type === 7 || type === 4){
+      setActionType(1)
+      setActionType2(1)
+    }
+  }, [type])
   // const [additionalQuestion, setAdditionalQuestion] = useState<AdditionalQuestionType>({
   //   question: editItem?.additional?.question || '',
   //   type: editItem?.additional?.type || 1,
@@ -293,7 +300,7 @@ export default function AddNewQuestionModal({
           sx={{
             width: '100%',
             // minHeight: '460px',
-            maxHeight: '900px',
+            maxHeight: '90vh',
             overflow: 'auto',
             py: 4,
             px: 2,
@@ -403,11 +410,13 @@ export default function AddNewQuestionModal({
               placeholder='Type'
               defaultValue={type}
               // @ts-ignore
-              setParentValue={(v) => setType(+v)}
+              setParentValue={(v) => {
+                setType(+v)
+              }}
               size='small'
             />
           </Box>
-          <Box mt='30px' width='100%' display='flex' flexDirection='column'>
+          <Box mt='30px' width='100%' display='flex' flexDirection='column' maxHeight={'400px'} overflow='auto'>
             {type === 2 || type === 6 ? 
             (<Box height='50px' />) :
             type === 7 ? 
@@ -486,7 +495,7 @@ export default function AddNewQuestionModal({
               </Box>
             ) : 
             (
-              <QuestionOptions options={options} setOptions={setOptions} type={type} />
+              <QuestionOptions options={options} setOptions={setOptions} type={type} isDefault = {isDefaultQuestion}/>
             )}
           </Box>
 
@@ -669,7 +678,7 @@ export default function AddNewQuestionModal({
                 />
               </Box>
               <Box mt='30px' width='100%' display='flex' flexDirection='column'>
-                <QuestionOptions options={additionalOptions2} setOptions={setAdditionalOptions2} type={additionalQuestionType2}/>
+                <QuestionOptions options={additionalOptions2} setOptions={setAdditionalOptions2} type={additionalQuestionType2} isAction={false}/>
               </Box>
               <Box
                 sx={{

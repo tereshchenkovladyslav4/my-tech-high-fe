@@ -19,8 +19,23 @@ import Personal  from './Personal/Personal'
 import { Documents } from './Documents/Documents'
 import { TabContext } from './TabContextProvider'
 import { useRecoilValue } from 'recoil'
+import moment from 'moment'
+import {ProgramYearContext} from '../provider/ProgramYearProvider'
+import {GRADES} from '../../../../../utils/constants'
+import {toOrdinalSuffix} from '../../../../../utils/stringHelpers'
+import { DropDownItem } from '../../../../../components/DropDown/types'
 import { userRegionState } from '../../../../../providers/UserContext/UserProvider'
-import { getQuestionsGql, saveQuestionsGql, deleteQuestionsGql, deleteQuestionGroupGql } from './services'
+import { 
+  getQuestionsGql, 
+  saveQuestionsGql, 
+  deleteQuestionsGql, 
+  deleteQuestionGroupGql, 
+  getCountiesByRegionId,
+  getActiveSchoolYearsByRegionId,
+  getSchoolDistrictsByRegionId,
+  getAllRegion,
+
+} from './services'
 import { useMutation, useQuery } from '@apollo/client'
 import _ from 'lodash'
 import { QuestionTypes } from '../EnrollmentQuestions/types'
@@ -77,9 +92,9 @@ export default function EnrollmentQuestions() {
       setQuestionsData(jsonTabData)
       setUnsavedChanges(false)
     }
-    else {
-      setQuestionsData(initEnrollmentQuestions)
-    }
+    // else {
+    //   setQuestionsData(initEnrollmentQuestions)
+    // }
   }, [data])
 
   useEffect(() => {
@@ -137,13 +152,159 @@ export default function EnrollmentQuestions() {
     }
   }
 
+  const {loading: countyLoading, data: countyData } = useQuery(getCountiesByRegionId, {
+    variables: {regionId: +region?.regionDetail?.id},
+    fetchPolicy: 'network-only',
+  })
+
+  const [counties, setCounties] = useState([])
+
+  useEffect(() => {
+    if (!countyLoading && countyData?.getCounties) {
+      setCounties(
+        countyData.getCounties
+          .map((v) => {return {label: v.county_name, value: v.id}})
+      )
+      setUnsavedChanges(false)
+    }
+  }, [countyData])
+
+  const { loading: schoolLoading, data: schoolYearData } = useQuery(getActiveSchoolYearsByRegionId, {
+    variables: {
+      regionId: +region?.regionDetail?.id,
+    },
+    fetchPolicy: 'network-only',
+  })
+
+  const [schoolYears, setSchoolYears] = useState<Array<DropDownItem>>([])
+  const [schoolYearsData, setSchoolYearsData] = useState([])
+  const [grades, setGrades] = useState([])
+  const [gradesDropDownItems, setGradesDropDownItems] = useState<Array<DropDownItem>>([])
+  const [birthDateCut, setBirthDateCut] = useState<string>('')
+  useEffect(() => {
+    if (!schoolLoading && schoolYearData.getActiveSchoolYears) {
+      setSchoolYears(
+        schoolYearData.getActiveSchoolYears.map((item) => {
+          return {
+            label: moment(item.date_begin).format('YYYY') + '-' + moment(item.date_end).format('YYYY'),
+            value: item.school_year_id,
+          }
+        }),
+      )
+      setSchoolYearsData(schoolYearData.getActiveSchoolYears)
+    }
+  }, [schoolYearData])
+
+  const setGradesAndBirthDateCut = (id) => {
+    schoolYearsData.forEach((element) => {
+      if (id == element.school_year_id) {
+        setGrades(element.grades?.split(','))
+        setBirthDateCut(element.birth_date_cut)
+      }
+    })
+  }
+
+  const [programYear, setProgramYear] = useState()
+  const programYearContext = useMemo(
+    () => ({
+      programYear,
+      setProgramYear
+    }),
+    []
+  )
+
+  useEffect(() => {
+    if(programYear) {
+      setGradesAndBirthDateCut(programYear)
+    }
+  }, [programYear])
+
+  useEffect(() => {
+    parseGrades()
+  }, [grades])
+
+  const parseGrades = () => {
+    let dropDownItems = []
+    GRADES.forEach((grade) => {
+      if (grades?.includes(grade.toString())) {
+        if (typeof grade !== 'string') {
+          dropDownItems.push({
+            label: toOrdinalSuffix(grade) + ' Grade',
+            value: grade.toString(),
+          })
+        }
+        if (typeof grade == 'string') {
+          dropDownItems.push({
+            label: grade,
+            value: grade,
+          })
+        }
+      }
+    })
+    setGradesDropDownItems(dropDownItems)
+  }
+
+  const {loading: schoolDistrictsDataLoading, data: schoolDistrictsData} = useQuery(getSchoolDistrictsByRegionId, {
+    variables: {
+      regionId: +region?.regionDetail?.id,
+    },
+    skip: +region?.regionDetail?.id ? false : true,
+    fetchPolicy: 'network-only',
+  })
+  const [schoolDistricts, setSchoolDistricts] = useState<Array<DropDownItem>>([])
+
+  useEffect(() => {
+      if(!schoolDistrictsDataLoading && schoolDistrictsData?.schoolDistrict.length > 0) {
+          setSchoolDistricts(schoolDistrictsData?.schoolDistrict.map((d) => {return {label: d.school_district_name, value: d.school_district_name}}))
+      }
+  }, [schoolDistrictsDataLoading])
+
+  const { data: regionData, loading: regionDataLoading, error } = useQuery(getAllRegion)
+  const [availableRegions, setAvailableRegions] = useState([])
+  useEffect(() => {
+    !regionDataLoading &&
+      setAvailableRegions(
+        regionData.regions?.map((region) => ({
+          label: region.name,
+          value: region.id,
+        })),
+      )
+  }, [regionDataLoading])
+
+
   const onSelectDefaultQuestions = (selected) => {
     const selectedQuestion = defaultQuestions.filter((d) => d.label == selected)[0]
+    let options = []
+    if(selectedQuestion.slug === 'county') {
+      options = counties
+    }
+    else if(selectedQuestion.slug === 'program_year') {
+      options = schoolYears
+    }
+    else if(selectedQuestion.slug === 'packet_school_district') {
+      options = schoolDistricts
+    }
+    else if(selectedQuestion.slug === 'address_state') {
+      options = availableRegions
+    }
+    else if(selectedQuestion.slug === 'student_gender') {
+      options = [
+        {label: 'Male', value: 1},
+        {label: 'Female', value: 2},
+        {label: 'Non Binary', value: 3},
+        {label: 'Undeclared', value: 4},
+      ]
+    }
+    else if(selectedQuestion.slug === 'student_grade_level') {
+      options = gradesDropDownItems
+    }
+    
     const editItemTemp = {
       type: QuestionTypes.find((q) => q.label === selectedQuestion.type).value,
       question: selectedQuestion.label,
       validation: selectedQuestion.validation,
-      default_question: true,
+      default_question: true,      
+      options: options,
       slug: selectedQuestion.slug
     }
     setEditItem(editItemTemp)
@@ -268,20 +429,22 @@ export default function EnrollmentQuestions() {
                   </Box>
                   <Breadcrumbs steps={breadCrumbData} handleClick={handleBreadCrumbClicked}/>
                 </Box>
-                <TabContext.Provider value={breadCrumbData[currentTab].label}>
-                  <Box sx={classes.breadcrumbs}>
-                    {currentTab === 0 ? (
-                      <Contact />
-                    ) : currentTab === 1 ? (
-                      <Personal />
-                    ) : currentTab === 2 ? (
-                      <Education />
-                    ) : currentTab === 3 ? (
-                      <Documents />
-                    ) : (
-                      <Submission />
-                    )}
-                  </Box>
+                <TabContext.Provider value={breadCrumbData[currentTab]?.label}>
+                  <ProgramYearContext.Provider value={programYearContext}>
+                    <Box sx={classes.breadcrumbs}>
+                      {currentTab === 0 ? (
+                        <Contact />
+                      ) : currentTab === 1 ? (
+                        <Personal />
+                      ) : currentTab === 2 ? (
+                        <Education />
+                      ) : currentTab === 3 ? (
+                        <Documents />
+                      ) : (
+                        <Submission />
+                      )}
+                    </Box>
+                  </ProgramYearContext.Provider>
                   {openAddQuestion === 'new' && <AddNewQuestionModal onClose={() => setOpenAddQuestion('')} editItem={editItem} newQuestion={true}/>}
                   {openAddQuestion === 'default' && <DefaultQuestionModal onClose={() => setOpenAddQuestion('')} onCreate={(e) => {onSelectDefaultQuestions(e)}}/>}
                   {openSelectQuestionType && <AddQuestionModal onClose={() => setOpenSelectQuestionType(false)} onCreate={(e) => {setOpenAddQuestion(e); setEditItem(null); setOpenSelectQuestionType(false)}}/>}
@@ -298,7 +461,7 @@ export default function EnrollmentQuestions() {
                     <Button sx={{ ...classes.submitButton, color: 'white', marginTop: currentTab === 3 ? 3 : 10}} onClick={() => setOpenSelectQuestionType(true)}>
                       Add Question
                     </Button>
-                    <Button sx={{ ...classes.submitButton, color: 'white', width: '150px', marginTop: currentTab === 3 ? 3 : 10 }} onClick={() => setCurrentTab(currentTab + 1)}>
+                    <Button sx={{ ...classes.submitButton, color: 'white', width: '150px', marginTop: currentTab === 3 ? 3 : 10 }} onClick={() => {currentTab < 4 && setCurrentTab(currentTab + 1)}}>
                       Next
                     </Button>
                   </Box>      

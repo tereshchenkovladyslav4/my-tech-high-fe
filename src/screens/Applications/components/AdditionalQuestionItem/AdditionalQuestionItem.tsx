@@ -108,9 +108,11 @@ export function AdditionalQuestionItem({ question: q, field, meta, form }: { que
           <Checkbox
             name={q.question.toLowerCase().replace(' ', '_')} {...field} value={true}
           />
-          <Subtitle size='small' color={SYSTEM_05} sx={{wordWrap: 'break-word',maxWidth: '90%',textAlign: 'start'}}>
-            {q.question}
-          </Subtitle>
+          <Paragraph size='medium'>
+            <a style={{ color: '#111', textDecoration: 'none' }} href={q.options[0]?.label === 'web' ? q.options[0]?.value :`mailto:${q.options[0]?.value}`}>
+              {q.question}
+            </a>
+          </Paragraph>
         </Box>
       )
     } else if (q.type === 5) {

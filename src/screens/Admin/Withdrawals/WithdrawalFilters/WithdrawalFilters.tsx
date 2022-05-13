@@ -2,7 +2,7 @@ import { Button, Card, Box } from '@mui/material'
 import React from 'react'
 import { MTHBLUE, BUTTON_LINEAR_GRADIENT } from '../../../../utils/constants'
 
-const WithdrawFilters = ({ filters, setFilters, withdrawCount }) => {
+const WithdrawalFilters = ({ filters, setFilters, withdrawCount }) => {
   const handleSelectFilter = (value) => {
     if (filters.includes(value)) {
       setFilters(filters.filter((item) => item !== value))
@@ -18,7 +18,6 @@ const WithdrawFilters = ({ filters, setFilters, withdrawCount }) => {
         justifyContent: 'space-evenly',
         paddingX: '100px',
         marginY: 2,
-        paddingY: 3,
       }}
     >
       <Button
@@ -67,4 +66,4 @@ const WithdrawFilters = ({ filters, setFilters, withdrawCount }) => {
   )
 }
 
-export default WithdrawFilters
+export default WithdrawalFilters

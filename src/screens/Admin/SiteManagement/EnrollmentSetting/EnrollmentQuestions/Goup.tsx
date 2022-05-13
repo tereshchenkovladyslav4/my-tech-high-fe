@@ -51,6 +51,8 @@ export default function GroupItem({
         <Subtitle fontWeight='700'>{item.group_name}</Subtitle>
         {!mainQuestion && (
           <Box display='inline-flex' height='40px'>
+            
+            <DragHandle />
             <IconButton onClick={() => setShowEditDialog(true)}>
               <EditIcon />
             </IconButton>
@@ -58,7 +60,6 @@ export default function GroupItem({
             <IconButton onClick={() => setShowDeleteDialog(true)}>
               <DeleteForeverOutlinedIcon />
             </IconButton>
-            <DragHandle />
           </Box>
         )}
       </Box>

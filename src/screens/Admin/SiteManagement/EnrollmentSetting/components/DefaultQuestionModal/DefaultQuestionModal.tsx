@@ -65,7 +65,7 @@ export default function DefaultQuestionModal({
                             }
                         />
                     </Box>
-                    <Box sx={{marginTop: '30px', height: '600px', overflow: 'auto', width: '100%', textAlign: 'start', px: 4,}} >
+                    <Box sx={{marginTop: '30px', height: '60vh', overflow: 'auto', width: '100%', textAlign: 'start', px: 4,}} >
                         <FormControl>
                             <RadioGroup
                                 aria-labelledby="demo-controlled-radio-buttons-group"

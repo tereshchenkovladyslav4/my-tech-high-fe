@@ -1,31 +1,17 @@
 import { Box, Button, Card, FormControl, InputAdornment, MenuItem, OutlinedInput, Select } from '@mui/material'
 import React, { useEffect, useState, useContext } from 'react'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
-import ExpandLessIcon from '@mui/icons-material/ExpandLess'
-import { UserContext } from '../../../../providers/UserContext/UserProvider'
 import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
-import { GREEN_GRADIENT, RED_GRADIENT, YELLOW_GRADIENT, BUTTON_LINEAR_GRADIENT } from '../../../../utils/constants'
 import SearchIcon from '@mui/icons-material/Search'
 import { Pagination } from '../../../../components/Pagination/Pagination'
 import { HeadCell } from '../../../../components/SortableTable/SortableTableHeader/types'
 import { SortableTable } from '../../../../components/SortableTable/SortableTable'
-import { useQuery, useMutation } from '@apollo/client'
-import {
-  emailPacketMutation,
-  deletePacketMutation,
-  moveNextYearPacketMutation,
-  moveThisYearPacketMutation,
-} from '../services'
-import { map } from 'lodash'
-import moment from 'moment'
-import DeleteForever from '@mui/icons-material/Delete'
-import { toOrdinalSuffix } from '../../../../utils/stringHelpers'
 import { WarningModal } from '../../../../components/WarningModal/Warning'
 import { Packet } from '../../../HomeroomStudentProfile/Student/types'
-import { getEmailTemplateQuery } from '../../../../graphql/queries/email-template'
-import { WithdrawFilters } from '../WithdrawFilters'
+import { WithdrawalFilters } from '../WithdrawalFilters'
 import { ProfileContext } from '../../../../providers/ProfileProvider/ProfileContext'
 import { makeStyles } from '@material-ui/styles'
+import { useStyles } from './styles'
 
 const selectStyles = makeStyles({
   select: {
@@ -35,21 +21,17 @@ const selectStyles = makeStyles({
   },
 })
 
-const WithdrawTable = () => {
-  const { me, setMe } = useContext(UserContext)
+const WithdrawalTable = () => {
+  const classes = useStyles
+  const selectedClass = selectStyles()
   const [filters, setFilters] = useState(['Submitted', 'Resubmitted'])
-
-  const [emailTemplate, setEmailTemplate] = useState()
   const [searchField, setSearchField] = useState('')
-  // const [tableData, setTableData] = useState<Array<any>>([])
   const [selectedYear, setSelectedYear] = useState<string | number>('1')
   const [paginatinLimit, setPaginatinLimit] = useState(25)
   const [skip, setSkip] = useState<number>()
   const [sort, setSort] = useState('status|ASC')
-  const selectClasses = selectStyles()
-  const [totalPackets, setTotalPackets] = useState<number>()
+  const [totalPackets, setTotalPackets] = useState<number>(4)
   const [withdrawIds, setWithdrawIds] = useState<Array<string>>([])
-
   const [isShowModal, setIsShowModal] = useState(false)
   const [enrollmentPackets, setEnrollmentPackets] = useState<Array<Packet>>([])
   const [enrollmentPacket, setEnrollmentPacket] = useState<Packet | null>(null)
@@ -199,32 +181,17 @@ const WithdrawTable = () => {
   }
 
   return (
-    <Card sx={{ paddingTop: '24px', marginBottom: '24px', paddingBottom: '12px' }}>
+    <Card sx={classes.card}>
       {/*  Headers */}
-      <Box
-        sx={{
-          textAlign: 'left',
-          display: 'flex',
-          flexDirection: 'row',
-          alignItems: 'center',
-        }}
-      >
-        <Box
-          sx={{
-            textAlign: 'left',
-            display: 'flex',
-            flexDirection: 'row',
-            marginLeft: '24px',
-            alignItems: 'center',
-          }}
-        >
+      <Box sx={classes.pageHeader}>
+        <Box sx={classes.pageHeaderContent}>
           <Subtitle size='medium' fontWeight='700'>
-            Withdraws
+            Withdrawals
           </Subtitle>
           <Subtitle size='medium' fontWeight='700' sx={{ marginLeft: 2 }}>
             {totalPackets}
           </Subtitle>
-          <Box marginLeft={4}>
+          <Box marginLeft={4} sx={{ width: '300px' }}>
             <OutlinedInput
               onFocus={(e) => (e.target.placeholder = '')}
               onBlur={(e) => (e.target.placeholder = 'Search...')}
@@ -241,71 +208,18 @@ const WithdrawTable = () => {
             />
           </Box>
         </Box>
-        <Box
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-            width: '100%',
-            justifyContent: 'flex-end',
-            marginRight: '24px',
-          }}
-        >
-          <Button
-            sx={{
-              fontSize: 11,
-              fontWeight: 700,
-              borderRadius: 2,
-              textTransform: 'none',
-              background: RED_GRADIENT,
-              color: 'white',
-              width: '157px',
-              marginRight: 2,
-              height: '33px',
-              '&:hover': {
-                background: '#D23C33',
-                color: '#fff',
-              },
-            }}
-            onClick={handleOpenEmailModal}
-          >
+        <Box sx={classes.pageHeaderButtonGroup}>
+          <Button sx={classes.emailButton} onClick={handleOpenEmailModal}>
             Email
           </Button>
           <Button
-            sx={{
-              fontSize: 11,
-              fontWeight: 700,
-              borderRadius: 2,
-              textTransform: 'none',
-              height: '33px',
-              background: YELLOW_GRADIENT,
-              color: 'white',
-              width: '195px',
-              marginRight: 2,
-              '&:hover': {
-                background: '#FFD626',
-                color: '#fff',
-              },
-            }}
+            sx={classes.withdrawalButton}
             //onClick={handleMoveToThisYear}
           >
-            Withdraw
+            Withdrawal
           </Button>
           <Button
-            sx={{
-              fontSize: 11,
-              fontWeight: 700,
-              borderRadius: 2,
-              textTransform: 'none',
-              height: '33px',
-              background: GREEN_GRADIENT,
-              color: 'white',
-              width: '195px',
-              '&:hover': {
-                background: '#33FF7C',
-                color: 'fff',
-              },
-            }}
+            sx={classes.reinstateButton}
             //onClick={handleMoveToNextYear}
           >
             Reinstate
@@ -313,50 +227,14 @@ const WithdrawTable = () => {
         </Box>
       </Box>
       {/*  Pagination & Actions */}
-      <Box
-        sx={{
-          textAlign: 'left',
-          display: 'flex',
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          marginY: 4,
-          marginRight: '24px',
-        }}
-      >
-        <Box
-          sx={{
-            textAlign: 'left',
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'left',
-          }}
-        >
-          <Box
-            style={{
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'left',
-              justifyContent: 'flex-end',
-              marginLeft: '24px',
-            }}
-          >
+      <Box sx={classes.container}>
+        <Box sx={classes.content}>
+          <Box sx={classes.buttonDiv}>
             <Button
-              sx={{
-                borderRadius: 2,
-                textTransform: 'none',
-                height: 29,
-                color: 'white',
-                width: '150px',
-                background: BUTTON_LINEAR_GRADIENT,
-                '&:hover': {
-                  background: '#D23C33',
-                  color: '#fff',
-                },
-              }}
+              sx={classes.quickWithdrawalButton}
               //onClick={handleDeleteSelected}
             >
-              Quick Withdraw
+              Quick Withdrawal
             </Button>
           </Box>
         </Box>
@@ -369,7 +247,7 @@ const WithdrawTable = () => {
         />
       </Box>
       <Box>
-        <WithdrawFilters filters={filters} setFilters={setFilters} withdrawCount={withdrawCount} />
+        <WithdrawalFilters filters={filters} setFilters={setFilters} withdrawCount={withdrawCount} />
       </Box>
       <Box display='flex' flexDirection='row' justifyContent='end' sx={{ mr: 3 }} alignItems='center'>
         <FormControl variant='standard' sx={{ m: 1 }}>
@@ -382,7 +260,7 @@ const WithdrawTable = () => {
               setSelectedYear(e.target.value)
             }}
             label='year'
-            className={selectClasses.select}
+            className={selectedClass.select}
             sx={{ color: 'blue', border: 'none' }}
           >
             {schoolYears.map((sy) => (
@@ -415,4 +293,4 @@ const WithdrawTable = () => {
   )
 }
 
-export default WithdrawTable
+export default WithdrawalTable

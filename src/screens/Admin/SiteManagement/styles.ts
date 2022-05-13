@@ -47,5 +47,5 @@ export const useStyles = {
         textTransform: 'none',
         fontWeight: 700,
         height: 29,
-    },
+    }
 }

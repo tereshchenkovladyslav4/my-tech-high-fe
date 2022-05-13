@@ -163,7 +163,7 @@ export const Login = () => {
           <CustomModal
             title='Unverified Email'
             description='This account needs to be verified first.'
-            subDescription='Check your email for a verification link or have one resend below.'
+            subDescription='Check your email for a verification link or have one resent below.'
             confirmStr='Resend'
             cancelStr='Cancel'
             onClose={() => {

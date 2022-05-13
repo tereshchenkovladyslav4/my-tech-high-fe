@@ -81,9 +81,6 @@ export const Enrollment: EnrollmentTemplateType = ({id, disabled}: {id: number, 
       })
       setQuestionsData(jsonTabData)
     }
-    else {
-      setQuestionsData(initEnrollmentQuestions)
-    }
   }, [data, regionId])
 
   const enrollmentPacketContext = useMemo(
@@ -165,9 +162,9 @@ export const Enrollment: EnrollmentTemplateType = ({id, disabled}: {id: number, 
     }
   }
 
-  const [currentTabName, setCurrentTabName] = useState('Contact')
+  const [currentTabName, setCurrentTabName] = useState(breadCrumb[0].label)
   useEffect(() => {
-    const currentName = breadCrumb.find((b, index) => index === currentTab).label
+    const currentName = breadCrumb[currentTab].label
     setCurrentTabName(currentName)
   }, [currentTab, breadCrumb])
 

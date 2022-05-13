@@ -8,10 +8,12 @@ export default function QuestionOptions({
   options,
   setOptions,
   type,
+  isDefault,
 }: {
   options: OptionsType[]
   setOptions: (options: OptionsType[]) => void
-  type: 1 | 2 | 3 | 4 | 5 | 6
+  type: 1 | 2 | 3 | 4 | 5 | 6  
+  isDefault: boolean
 }) {
   return (
     <Box display='flex' flexDirection='column' width='80%'>
@@ -39,6 +41,7 @@ export default function QuestionOptions({
             variant='standard'
             value={opt.label}
             focused
+            disabled={isDefault}
             onChange={(e) => {
               const val = e.currentTarget.value
               const newOps = options.map((o) => (o.value === opt.value ? { ...o, label: val } : o))
@@ -60,6 +63,7 @@ export default function QuestionOptions({
                 cursor: 'pointer',
                 marginLeft: '10px',
               }}
+              disabled={isDefault}
               onClick={() => {
                 setOptions(
                   options.filter((o) => o.value !== opt.value).map((v, i) => ({ value: i, label: v.label.trim() })),

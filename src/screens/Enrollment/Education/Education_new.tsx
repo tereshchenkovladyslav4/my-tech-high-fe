@@ -27,7 +27,7 @@ export default function EducationNew({id, questions}) {
   const { setCurrentTab, packetId, student: enStudnet, disabled:disabledField } = useContext(EnrollmentContext)
     
   useEffect(() => {
-    if(questions.groups?.length > 0) {
+    if(questions?.groups?.length > 0) {
       let valid_student = {}
       let valid_parent = {}
       let valid_meta = {}
@@ -169,7 +169,7 @@ export default function EducationNew({id, questions}) {
   return (
     <form onSubmit={(e) => !disabled ? formik.handleSubmit(e) : nextTab(e)}>
       <Grid container rowSpacing={2} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
-        {questions.groups?.map((item, index) => (
+        {questions?.groups?.map((item, index) => (
           <GroupItem key={index} group={item} formik={formik}/>
         ))}
         <Box sx={classes.buttonContainer}>

@@ -1,8 +1,9 @@
 import {Modal, Box, TextField, Button, outlinedInputClasses, FormControl, RadioGroup, Radio, FormControlLabel} from '@mui/material'
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import { Title } from '../../../../../../../components/Typography/Title/Title'
-import { SYSTEM_07, SYSTEM_05 } from '../../../../../../../utils/constants'
+import { SYSTEM_07, SYSTEM_05, RED } from '../../../../../../../utils/constants'
 import { Subtitle } from '../../../../../../../components/Typography/Subtitle/Subtitle'
+import { Paragraph } from '../../../../../../../components/Typography/Paragraph/Paragraph'
 export default function EditLinkModal({
     onClose,
     setOption,
@@ -15,14 +16,34 @@ export default function EditLinkModal({
     const [value, setValue] = useState(editItem?.type || 'web')
     const [text, setText] = useState(editItem?.text || '')
     const [link, setLink] = useState(editItem?.link || '')
+    const [errText, setErrText] = useState('')    
+    const [errLink, setErrLink] = useState('')
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       setValue((event.target as HTMLInputElement).value)
     }
 
+    useEffect(() => {
+        if(text) {
+            setErrText('')
+        }
+    }, [text])
+
+    useEffect(() => {
+        if(link) {
+            setErrLink('')
+        }
+    }, [link])
+
     const handleSend = () => {
-        setOption({text, type: value, link})
-        onClose()
+        if(text && link) {
+            setOption({text, type: value, link})
+            onClose()
+        }
+        else{
+            text ? setErrText('') : setErrText('Text is required')
+            link ? setErrLink('') : setErrLink('Address is required')
+        }
     }
 
     return (
@@ -62,13 +83,16 @@ export default function EditLinkModal({
                         onChange={(v) => setText(v.currentTarget.value)}
                         focused
                     />
+                    <Paragraph color={RED} size='medium' fontWeight='700' >
+                        {errText}
+                    </Paragraph>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 4 }}>
                         <Box sx={{width: '30%'}}>
                             <Subtitle fontWeight='500'>Link to:</Subtitle>
                             <FormControl sx={{mt: 2}}>
                                 <RadioGroup
                                     aria-labelledby="demo-radio-buttons-group-label"
-                                    defaultValue="female"
+                                    defaultValue="web"
                                     name="radio-buttons-group"
                                     value={value}
                                     onChange={handleChange}
@@ -79,7 +103,7 @@ export default function EditLinkModal({
                             </FormControl>
                         </Box>
                         <Box sx={{width: '70%'}}>
-                            <Subtitle fontWeight='500'>To what email address should this link?</Subtitle>
+                            <Subtitle fontWeight='500'>To what {value} address should this link?</Subtitle>
                             <TextField
                                 size='small'
                                 sx={{
@@ -92,13 +116,16 @@ export default function EditLinkModal({
                                 InputLabelProps={{
                                 style: { color: SYSTEM_05 },
                                 }}
-                                placeholder="enter email"
+                                placeholder="enter address"
                                 variant='outlined'
                                 fullWidth
                                 value={link}
                                 onChange={(v) => setLink(v.currentTarget.value)}
                                 focused
                             />
+                            <Paragraph color={RED} size='medium' fontWeight='700' >
+                                {errLink}
+                            </Paragraph>
                         </Box>
                     </Box>
                     <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '50px' }}>
