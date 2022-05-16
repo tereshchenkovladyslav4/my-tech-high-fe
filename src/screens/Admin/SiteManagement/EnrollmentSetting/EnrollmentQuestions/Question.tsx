@@ -192,7 +192,7 @@ function Item({ question: q, setAdditionalQuestion }: { question: EnrollmentQues
     }, [q])
     function onChange(value: string | number) {
         if (q.type !== 2) {
-            if (q.options[+value - 1].action === 2) {
+            if (q.options[+value - 1]?.action === 2) {
                 if (q.type === 3) {
                     if (selectedOption.indexOf(value) > -1) {
                         setAdditionalQuestion(false)

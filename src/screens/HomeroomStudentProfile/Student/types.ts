@@ -67,6 +67,7 @@ export type Packet = {
   worked_in_agriculture: number
   secondary_contact_last: string
   is_age_issue?: boolean
+  packet_emails: Array<any>
   missing_files?: string[]
   meta?:string
 }
@@ -121,6 +122,7 @@ export type Address = {
   street2: string
   zip: string
   state: string
+  county_id: number
 }
 export type Parent = {
   parent_id?: number

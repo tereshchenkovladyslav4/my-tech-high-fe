@@ -134,7 +134,7 @@ export const defaultQuestions = [
     {
         label: 'County',
         type: 'Drop Down',
-        slug: 'county',
+        slug: 'address_county_id',
         validation: 0
     },
     {

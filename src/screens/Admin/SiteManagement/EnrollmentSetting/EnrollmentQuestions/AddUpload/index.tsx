@@ -45,7 +45,7 @@ export default function AddQuestionModal({
             removable,
             validation: 0,
             default_question: false,
-            student_question: false,
+            display_admin: false,
             slug: editItem?.slug || `meta_${+ new Date()}`
         }
         newQuestions = currentTabData.groups[0]?.questions.map((q) => q.question === editItem.question ? newQuestion : q)
@@ -60,7 +60,7 @@ export default function AddQuestionModal({
             required,
             removable,
             validation: 0,
-            student_question: false,
+            display_admin: false,
             default_question: false,
             slug: editItem?.slug || `meta_${+ new Date()}`
         }

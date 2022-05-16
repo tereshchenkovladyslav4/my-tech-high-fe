@@ -1,6 +1,6 @@
 import { Grid, Modal } from '@mui/material'
 import { Box } from '@mui/system'
-import React from 'react'
+import React, {useEffect, useState, useContext} from 'react'
 import { EnrollmentPacketFormType } from './types'
 import CloseIcon from '@mui/icons-material/Close'
 import { useStyles } from './styles'
@@ -17,13 +17,48 @@ import {
   updateCreateStudentImmunizationMutation,
   updateStudentStatusMutation,
 } from '../services'
-import { useMutation, useQuery } from '@apollo/client'
+import { useMutation, useQuery, gql } from '@apollo/client'
 import { FormProvider, useForm } from 'react-hook-form'
 import moment from 'moment'
 import PacketSaveButtons from './PacketSaveButtons'
 import PacketConfirmModals from './modals/ConfirmModals'
 import { Packet } from '../../../HomeroomStudentProfile/Student/types'
-import { studentContext } from './providers'
+import { studentContext, PacketModalQuestionsContext } from './providers'
+import { UserContext } from '../../../../providers/UserContext/UserProvider'
+import { EnrollmentQuestionTab } from '../../SiteManagement/EnrollmentSetting/EnrollmentQuestions/types'
+
+export const getPacketQuestionsGql = gql`
+  query getPacketEnrollmentQuestions($input: EnrollmentQuestionsInput) {
+    getPacketEnrollmentQuestions(input: $input) {
+      id
+      tab_name
+      is_active
+      region_id
+      groups {
+        id
+        group_name
+        tab_id
+        order
+        questions {
+          id
+          question
+          group_id
+          order
+          options
+          additional
+          additional2
+          required
+          removable
+          type
+          slug
+          default_question
+          display_admin
+          validation
+        }
+      }
+    }
+  }
+`
 
 export default function EnrollmentPacketModal({
   handleModem,
@@ -45,9 +80,13 @@ export default function EnrollmentPacketModal({
 
   const birthday = packet.student?.person?.date_of_birth
 
-  const methods = useForm<EnrollmentPacketFormType>({
-    shouldUnregister: false,
-    defaultValues: {
+  const { me, setMe } = useContext(UserContext)
+    const { data } = useQuery(getPacketQuestionsGql, {
+        variables: { input: { region_id: Number(me?.selectedRegionId) } },
+        fetchPolicy: 'network-only',
+    })
+
+    const initValues = {
       immunizations: [],
       notes: packet.admin_notes || '',
       status: packet.status || '',
@@ -63,36 +102,95 @@ export default function EnrollmentPacketModal({
       medicalExempt: packet.medical_exemption === 1,
       exemptionDate: packet.exemption_form_date ? moment(packet.exemption_form_date).format('MM/DD/yyyy') : '',
       enableExemptionDate: false,
-      secondary_contact_first: packet.secondary_contact_first || '',
-      secondary_contact_last: packet.secondary_contact_last || '',
-      secondary_phone: packet.secondary_phone || '',
-      secondary_email: packet.secondary_email || '',
-      date_of_birth: birthday ? moment(birthday).format('yyyy-MM-DD') : '',
-      birth_place: packet.birth_place || '',
-      birth_country: packet.birth_country || '',
-      last_school: packet.last_school || '',
-      last_school_address: packet.last_school_address || '',
-      last_school_type: packet.last_school_type,
-      household_size: packet.household_size,
-      household_income: packet.household_income,
-      language: packet.language || '',
-      language_home: packet.language_home || '',
-      language_home_child: packet.language_home_child || '',
-      language_friends: packet.language_friends || '',
-      language_home_preferred: packet.language_home_preferred || '',
-      hispanic: packet.hispanic || 0,
-      school_district: packet.school_district || '',
-      race: packet.race || '',
-      gender: packet.student?.person?.gender || '',
-      worked_in_agriculture: packet.worked_in_agriculture,
-      military: packet.military,
-      ferpa_agreement: packet.ferpa_agreement,
-      photo_permission: packet.photo_permission,
-      dir_permission: packet.dir_permission,
       signature_file_id: packet.signature_file_id || 0,
       missing_files: packet.missing_files || [],
-    },
+    }
+    const [questionsData, setQuestionsData] = useState<EnrollmentQuestionTab[]>()
+
+    useEffect(() => {
+      if (data?.getPacketEnrollmentQuestions.length > 0) {
+        const jsonTabData = data?.getPacketEnrollmentQuestions.map((t) => {
+          if(t.groups.length > 0) {
+            const jsonGroups = t.groups.map((g) => {
+              if(g.questions.length > 0) {
+                const jsonQuestions = g.questions.map((q) => {
+                  return {
+                    ...q,
+                    additional2: {... JSON.parse(q.additional2), options: JSON.parse(JSON.parse(q.additional2).options)} || [],
+                    additional: {... JSON.parse(q.additional), options: JSON.parse(JSON.parse(q.additional).options)} || [],
+                    options: JSON.parse(q.options) || []
+                  }
+                }).sort((a, b) => a.order - b.order)
+                return {...g, questions: jsonQuestions}
+              }            
+              return g
+            }).sort((a, b) => a.order - b.order)
+            return {...t, groups: jsonGroups}
+          }
+          return t
+        })
+        setQuestionsData(jsonTabData)
+      }
+      else {
+          setQuestionsData([])
+      }
+    }, [data])
+
+    const [dynamicValues, setDynamicValues] = useState(initValues)
+
+    useEffect(() => {
+      if(questionsData?.length > 0) {
+        let temp = {...dynamicValues}
+        questionsData.map((tab) => {
+          tab?.groups?.map((group) => {
+            group?.questions?.map((q) => {
+              if(q.display_admin) {
+                if(q.default_question) {                  
+                  if(q.slug.includes('packet_')) {
+                    const fieldName = q.slug.split('packet_')[1]
+                    temp[q.slug] = packet[fieldName]
+                    if(q.type === 6) {
+                      temp[q.slug] = moment(packet[fieldName]).format('YYYY-MM-DD')
+                    }
+                  }
+                  else if(q.slug.includes('student_')) {
+                    const fieldName = q.slug.split('student_')[1]
+                    temp[q.slug] = packet.student.person[fieldName]
+                    if(q.type === 6) {
+                      temp[q.slug] = moment(packet.student.person[fieldName]).format('YYYY-MM-DD')
+                    }
+                  }     
+                  else if(q.slug.includes('address_')) {
+                    const fieldName = q.slug.split('address_')[1]
+                    temp[q.slug] = packet.student.person.address[fieldName]
+                  }             
+                }
+                else {                    
+                  const fieldName = q.slug
+                  const metaJSON = JSON.parse(packet.meta)
+                  temp[q.slug] = metaJSON && metaJSON[fieldName] || ''
+                  if(q.type === 6) {
+                    temp[q.slug] = moment(metaJSON && metaJSON[fieldName] || null).format('YYYY-MM-DD')
+                  }
+                }
+              }
+            })
+          })
+        })
+        setDynamicValues(temp)
+      }
+      else {
+        setDynamicValues(initValues)
+      }
+    }, [questionsData])
+  const methods = useForm({
+    shouldUnregister: false,
+    defaultValues: dynamicValues,
   })
+
+  useEffect(() => {
+    methods.reset(dynamicValues)
+  }, [dynamicValues])
 
   async function onSubmit(vals: EnrollmentPacketFormType) {
     const status = vals.preSaveStatus
@@ -114,45 +212,55 @@ export default function EnrollmentPacketModal({
           },
         },
       })
+    }    
+    let temp = {
+      packet: {},
+      student: {
+        first_name: packet.student?.person?.first_name,
+        last_name: packet.student?.person?.last_name,
+        address: {},
+      },
+      meta: {},
+      student_person_id: Number(packet.student?.person?.person_id),
+      parent_person_id: Number(packet.student?.parent?.person?.person_id),
+      packet_id: Number(packet.packet_id),
+      admin_notes: vals.notes,
+      status,
+      is_age_issue: vals.age_issue,
+      exemption_form_date: vals.exemptionDate,
+      medical_exemption: vals.medicalExempt ? 1 : 0,          
+      missing_files: status === 'Missing Info' ? JSON.stringify(vals.missing_files) : '',
+    }
+    if(questionsData?.length > 0) {
+      questionsData.map((tab) => {
+        tab?.groups?.map((group) => {
+          group?.questions?.map((q) => {
+            if(q.display_admin) {
+              if(q.default_question) {                  
+                if(q.slug.includes('packet_')) {
+                  const fieldName = q.slug.split('packet_')[1]
+                  temp.packet[fieldName] = vals[q.slug]                  
+                }
+                else if(q.slug.includes('student_')) {
+                  const fieldName = q.slug.split('student_')[1]
+                  temp.student[fieldName] = vals[q.slug]
+                } 
+                else if(q.slug.includes('address_')) {
+                  const fieldName = q.slug.split('address_')[1]
+                  temp.student.address[fieldName] = vals[q.slug]
+                }                  
+              }
+              else { 
+                temp.meta[q.slug] = vals[q.slug]
+              }
+            }
+          })
+        })
+      })
     }
     await savePacket({
       variables: {
-        enrollmentPacketInput: {
-          student_person_id: Number(packet.student?.person?.person_id),
-          parent_person_id: Number(packet.student?.parent?.person?.person_id),
-          packet_id: Number(packet.packet_id),
-          admin_notes: vals.notes,
-          status,
-          is_age_issue: vals.age_issue,
-          exemption_form_date: vals.exemptionDate,
-          medical_exemption: vals.medicalExempt ? 1 : 0,
-          secondary_contact_first: vals.secondary_contact_first,
-          secondary_contact_last: vals.secondary_contact_last,
-          secondary_phone: vals.secondary_phone,
-          secondary_email: vals.secondary_email,
-          date_of_birth: vals.date_of_birth,
-          birth_country: vals.birth_country,
-          birth_place: vals.birth_place,
-          hispanic: Number(vals.hispanic),
-          race: vals.race,
-          language: vals.language,
-          language_home: vals.language_home,
-          language_home_child: vals.language_home_child,
-          language_friends: vals.language_friends,
-          language_home_preferred: vals.language_home_preferred,
-          last_school_type: vals.last_school_type,
-          last_school: vals.last_school,
-          last_school_address: vals.last_school_address,
-          school_district: vals.school_district,
-          household_size: Number(vals.household_size),
-          household_income: Number(vals.household_income),
-          worked_in_agriculture: Number(vals.worked_in_agriculture),
-          military: Number(vals.military),
-          ferpa_agreement: Number(vals.ferpa_agreement),
-          dir_permission: Number(vals.dir_permission),
-          photo_permission: Number(vals.photo_permission),
-          missing_files: status === 'Missing Info' ? JSON.stringify(vals.missing_files) : '',
-        },
+        enrollmentPacketInput: {...temp, meta: JSON.stringify(temp.meta)},
       },
     })
 
@@ -183,23 +291,25 @@ export default function EnrollmentPacketModal({
                 <EnrollmentPacketDropDownButton />
                 <CloseIcon onClick={() => handleModem()} style={classes.close} />
               </Box>
-              <Box sx={classes.content}>
-                <Grid container sx={{ padding: '10px 0px' }}>
-                  <Grid item md={6} sm={6} xs={12}>
-                    <EnrollmentJobsInfo packet={packet} />
-                    <EnrollmentPacketDocument packetData={packet} />
-                    <EnrollmentPacketNotes />
-                    <PacketSaveButtons submitForm={methods.handleSubmit(onSubmit)} />
+              <PacketModalQuestionsContext.Provider value={questionsData}>
+                <Box sx={classes.content}>
+                  <Grid container sx={{ padding: '10px 0px' }}>
+                    <Grid item md={6} sm={6} xs={12}>
+                      <EnrollmentJobsInfo packet={packet} />
+                      <EnrollmentPacketDocument packetData={packet} />
+                      <EnrollmentPacketNotes />
+                      <PacketSaveButtons submitForm={methods.handleSubmit(onSubmit)} />
+                    </Grid>
+                    <Grid item md={5} sm={5} xs={5}>
+                      {enableImmunization && <EnrollmentPacketVaccineView />}
+                    </Grid>
                   </Grid>
-                  <Grid item md={5} sm={5} xs={5}>
-                    {enableImmunization && <EnrollmentPacketVaccineView />}
+                  <Grid item md={12} sm={12} xs={12} sx={{ padding: '20px 0px' }}>
+                    <hr style={{ borderTop: `solid 1px ${SYSTEM_11}`, width: '97%', borderBottom: '0' }} />
                   </Grid>
-                </Grid>
-                <Grid item md={12} sm={12} xs={12} sx={{ padding: '20px 0px' }}>
-                  <hr style={{ borderTop: `solid 1px ${SYSTEM_11}`, width: '97%', borderBottom: '0' }} />
-                </Grid>
-                <EnrollmentPacketInfo />
-              </Box>
+                  <EnrollmentPacketInfo />
+                </Box>
+              </PacketModalQuestionsContext.Provider>
               <PacketConfirmModals packet={packet} refetch={refetch} submitForm={methods.handleSubmit(onSubmit)} />
             </Box>
           </studentContext.Provider>

@@ -42,6 +42,7 @@ import { QuestionTypes } from '../EnrollmentQuestions/types'
 import { defaultQuestions } from '../constant/defaultQuestions'
 import DefaultQuestionModal from '../components/DefaultQuestionModal/DefaultQuestionModal'
 import AddQuestionModal from '../components/AddQuestionModal/AddQuestionModal'
+import { UserContext } from '../../../../../providers/UserContext/UserProvider';
 
 export default function EnrollmentQuestions() {
   const [questionsData, setQuestionsData] = useState<EnrollmentQuestionTab[]>(initEnrollmentQuestions)
@@ -58,11 +59,13 @@ export default function EnrollmentQuestions() {
   const [saveQuestionsMutation] = useMutation(saveQuestionsGql)
   const [deleteQuestions] = useMutation(deleteQuestionsGql)
   const [deleteQuestionGroup] = useMutation(deleteQuestionGroupGql)
-  const region = useRecoilValue(userRegionState)
+  const { me } = useContext(UserContext)
   const { data, refetch } = useQuery(getQuestionsGql, {
-    variables: { input: { region_id: +region?.regionDetail?.id } },
+    variables: { input: { region_id: Number(me?.selectedRegionId) } },
     fetchPolicy: 'network-only',
   })
+  
+  
 
   const [editItem, setEditItem] = useState(null)
   const [openSelectQuestionType, setOpenSelectQuestionType] = useState(false)
@@ -92,9 +95,9 @@ export default function EnrollmentQuestions() {
       setQuestionsData(jsonTabData)
       setUnsavedChanges(false)
     }
-    // else {
-    //   setQuestionsData(initEnrollmentQuestions)
-    // }
+    else {
+      setQuestionsData(initEnrollmentQuestions)
+    }
   }, [data])
 
   useEffect(() => {
@@ -153,7 +156,7 @@ export default function EnrollmentQuestions() {
   }
 
   const {loading: countyLoading, data: countyData } = useQuery(getCountiesByRegionId, {
-    variables: {regionId: +region?.regionDetail?.id},
+    variables: {regionId: Number(me?.selectedRegionId)},
     fetchPolicy: 'network-only',
   })
 
@@ -163,15 +166,14 @@ export default function EnrollmentQuestions() {
     if (!countyLoading && countyData?.getCounties) {
       setCounties(
         countyData.getCounties
-          .map((v) => {return {label: v.county_name, value: v.id}})
+          .map((v) => {return {label: v.county_name, value: Number(v.id)}})
       )
-      setUnsavedChanges(false)
     }
   }, [countyData])
 
   const { loading: schoolLoading, data: schoolYearData } = useQuery(getActiveSchoolYearsByRegionId, {
     variables: {
-      regionId: +region?.regionDetail?.id,
+      regionId: Number(me?.selectedRegionId),
     },
     fetchPolicy: 'network-only',
   })
@@ -246,9 +248,9 @@ export default function EnrollmentQuestions() {
 
   const {loading: schoolDistrictsDataLoading, data: schoolDistrictsData} = useQuery(getSchoolDistrictsByRegionId, {
     variables: {
-      regionId: +region?.regionDetail?.id,
+      regionId: Number(me?.selectedRegionId),
     },
-    skip: +region?.regionDetail?.id ? false : true,
+    skip: me?.selectedRegionId ? false : true,
     fetchPolicy: 'network-only',
   })
   const [schoolDistricts, setSchoolDistricts] = useState<Array<DropDownItem>>([])
@@ -275,7 +277,7 @@ export default function EnrollmentQuestions() {
   const onSelectDefaultQuestions = (selected) => {
     const selectedQuestion = defaultQuestions.filter((d) => d.label == selected)[0]
     let options = []
-    if(selectedQuestion.slug === 'county') {
+    if(selectedQuestion.slug === 'address_county_id') {
       options = counties
     }
     else if(selectedQuestion.slug === 'program_year') {
@@ -357,7 +359,7 @@ export default function EnrollmentQuestions() {
                 is_active: v.is_active,
                 tab_name: v.tab_name,
                 groups: v.groups,
-                region_id: +region?.regionDetail?.id,
+                region_id: Number(me?.selectedRegionId),
               })),
             },
           })

@@ -113,7 +113,7 @@ export const NewParent = () => {
                     .oneOf([yup.ref('email')], 'Emails do not match')
               }
               else if(q.type === 3) {
-                valid_student[`${q.slug?.replace('student_', '')}`] = yup.array().min(1).required(`${q.question} is required`)
+                valid_student[`${q.slug?.replace('student_', '')}`] = yup.array().min(1, `${q.question} is required`).required(`${q.question} is required`)
               }
               else if(q.type === 4) {
                 valid_student[`${q.slug?.replace('student_', '')}`] = yup.boolean().oneOf([true], 'This field must be checked')
@@ -149,7 +149,7 @@ export const NewParent = () => {
                 })
               }
               else if(q.type === 3) {
-                valid_parent[`${q.slug?.replace('parent_', '')}`] = yup.array().min(1).required(`${q.question} is required`)
+                valid_parent[`${q.slug?.replace('parent_', '')}`] = yup.array().min(1, `${q.question} is required`).required(`${q.question} is required`)
               }
               else if(q.type === 4) {
                 valid_parent[`${q.slug?.replace('parent_', '')}`] = yup.boolean().oneOf([true], 'This field must be checked')
@@ -171,7 +171,7 @@ export const NewParent = () => {
               })
             }
             else if(q.type === 3) {
-              valid_meta[`${q.slug}`] = yup.array().min(1).required(`${q.question} is required`)
+              valid_meta[`${q.slug}`] = yup.array().min(1, `${q.question} is required`).required(`${q.question} is required`)
             }
             else if(q.type === 4) {
               valid_meta[`${q.slug}`] = yup.boolean().oneOf([true], 'This field must be checked')
@@ -325,7 +325,6 @@ export const NewParent = () => {
           }}
         >
           {({ values, errors, isSubmitting, isValid }) => {
-            //console.log("Errors: ",errors)
             return (
             <Form>
               <Box
@@ -650,7 +649,7 @@ export const NewParent = () => {
                             <Button
                               color='secondary'
                               variant='contained'
-                              disabled={regionId ? false : true}
+                              disabled={regionId && questions.filter(q => q.slug.includes('student_')).length > 0 ? false : true}
                               style={classes.addStudentButton}
                               onClick={() => push(emptyStudent)}
                             >

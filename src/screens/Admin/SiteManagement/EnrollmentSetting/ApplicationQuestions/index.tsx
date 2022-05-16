@@ -33,7 +33,7 @@ import { DropDownItem } from '../../../../../components/DropDown/types'
 import {ProgramYearContext} from '../provider/ProgramYearProvider'
 import {GRADES} from '../../../../../utils/constants'
 import {toOrdinalSuffix} from '../../../../../utils/stringHelpers'
-
+import { UserContext } from '../../../../../providers/UserContext/UserProvider'
 const SortableItem = SortableElement(ApplicationQuestionItem)
 
 const SortableListContainer = SortableContainer(({ items }: { items: ApplicationQuestion[] }) => (
@@ -51,13 +51,14 @@ export default function ApplicationQuestions() {
   const [cancelModal, setCancelModal] = useState(false)
   const [sucessAlert, setSucessAlert] = useState(false)
   const [unsavedChanges, setUnsavedChanges] = useState(false)
-  const region = useRecoilValue(userRegionState)
+  const { me } = useContext(UserContext)
+  
   const [saveQuestionsMutation] = useMutation(saveQuestionsGql)
   const [deleteQuestion] = useMutation(deleteQuestionGql)
   const [openAddQuestion, setOpenAddQuestion] = useState('')
   const [editItem, setEditItem] = useState(null)
   const {loading: countyLoading, data: countyData } = useQuery(getCountiesByRegionId, {
-    variables: {regionId: +region?.regionDetail?.id},
+    variables: {regionId: Number(me?.selectedRegionId)},
     fetchPolicy: 'network-only',
   })
 
@@ -74,13 +75,13 @@ export default function ApplicationQuestions() {
   }, [countyData])
 
   const { data, refetch } = useQuery(getQuestionsGql, {
-    variables: { input: { region_id: +region?.regionDetail?.id } },
+    variables: { input: { region_id: Number(me?.selectedRegionId) } },
     fetchPolicy: 'network-only',
   })
 
   const { loading: schoolLoading, data: schoolYearData } = useQuery(getActiveSchoolYearsByRegionId, {
     variables: {
-      regionId: +region?.regionDetail?.id,
+      regionId: Number(me?.selectedRegionId),
     },
     fetchPolicy: 'network-only',
   })
@@ -157,9 +158,9 @@ export default function ApplicationQuestions() {
 
   const {loading: schoolDistrictsDataLoading, data: schoolDistrictsData} = useQuery(getSchoolDistrictsByRegionId, {
     variables: {
-      regionId: +region?.regionDetail?.id,
+      regionId: Number(me?.selectedRegionId),
     },
-    skip: +region?.regionDetail?.id ? false : true,
+    skip: Number(me?.selectedRegionId) ? false : true,
     fetchPolicy: 'network-only',
   })
   const [schoolDistricts, setSchoolDistricts] = useState<Array<DropDownItem>>([])
@@ -287,7 +288,7 @@ export default function ApplicationQuestions() {
                 validation: v.validation,
                 student_question: v.student_question,
                 default_question: v.default_question,
-                region_id: +region?.regionDetail?.id,
+                region_id: Number(me?.selectedRegionId),
                 slug: v.slug || '',
               })),
             },

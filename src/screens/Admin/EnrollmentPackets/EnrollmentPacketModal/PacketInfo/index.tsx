@@ -10,6 +10,7 @@ import SecondaryContact from './SecondaryContact'
 import VoluntaryIncomeInfo from './VoluntaryIncomeInfo'
 import { SYSTEM_01 } from '../../../../../utils/constants'
 import SignatureComp from './Signature'
+import Info from './Info'
 
 export default function EnrollmentPacketInfo() {
     return (
@@ -19,7 +20,10 @@ export default function EnrollmentPacketInfo() {
                     Packet Info
                 </Title>
             </Grid>
-            <Grid item md={6} xs={12}>
+            <Grid item xs={12}>
+                <Info />
+            </Grid>
+            {/* <Grid item md={6} xs={12}>
                 <SecondaryContact />
             </Grid>
             <Grid item md={6} xs={12}>
@@ -28,14 +32,13 @@ export default function EnrollmentPacketInfo() {
             </Grid>
             <Grid item md={6} xs={12}>
                 <RaceInfo />
-                {/* <GenderInfo /> */}
             </Grid>
             <Grid item md={6} xs={12}>
                 <OtherInfo />
             </Grid>
             <Grid item md={6} xs={12}>
                 <LanguagesInfo />
-            </Grid>
+            </Grid> */}
             <Grid item md={6} xs={12}>
                 <SignatureComp />
             </Grid>

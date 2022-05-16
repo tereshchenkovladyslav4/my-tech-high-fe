@@ -19,7 +19,7 @@ export const DocumentUpload = ({item, formik, handleUpload, file, firstName, las
 
     const myRenamedFile = fileName.map((f, index) => {
       const fileType = f.name.split('.')[1]
-      return new File([f], `${firstName}.${lastName}${item.options[0].label}(${index + 1}).${fileType}`, {type: f.type})
+      return new File([f], `${firstName.charAt(0).toUpperCase()}.${lastName}${item.options[0].label}.${fileType}`, {type: f.type})
     })
     setFiles(myRenamedFile)
   }
@@ -77,6 +77,7 @@ export const DocumentUpload = ({item, formik, handleUpload, file, firstName, las
           && <DocumentUploadModal
             handleModem={() => setOpen(!open)}
             handleFile={handleFile}
+            limit = {1}
           /> 
         }
       </Box>

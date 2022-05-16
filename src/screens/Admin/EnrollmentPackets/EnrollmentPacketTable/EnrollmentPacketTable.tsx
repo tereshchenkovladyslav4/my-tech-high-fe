@@ -27,6 +27,7 @@ import { Packet } from '../../../HomeroomStudentProfile/Student/types'
 import { getEmailTemplateQuery } from '../../../../graphql/queries/email-template'
 import { EnrollmentPacketFilters } from '../EnrollmentPacketFilters/EnrollmentPacketFilters'
 import { ProfileContext } from '../../../../providers/ProfileProvider/ProfileContext'
+import { ApplicationEmailModal } from '../../Applications/ApplicationModal/ApplicationEmailModal'
 
 export const EnrollmentPacketTable = () => {
   const { me, setMe } = useContext(UserContext)
@@ -49,6 +50,9 @@ export const EnrollmentPacketTable = () => {
   const [deletePacket, { data: deleteData }] = useMutation(deletePacketMutation)
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [openEmailModal, setOpenEmailModal] = useState<boolean>(false)
+  const [emailHistory, setEmailHistory] = useState([])
+  const [openEmailShowModal, setOpenEmailShowModal] = useState<boolean>(false)
+
   const [openWarningModal, setOpenWarningModal] = useState<boolean>(false)
   const [packetCount, setpacketCount] = useState({})
   const { showModal, hideModal, store, setStore } = useContext(ProfileContext)
@@ -80,7 +84,11 @@ export const EnrollmentPacketTable = () => {
           : ' ',
       parent: `${packet.student.parent.person?.first_name} ${packet.student.parent.person?.last_name}`,
       studentStatus: status[packet.student?.status[0]?.status] || 'New',
-      emailed: '',
+      emailed: packet.packet_emails.length > 0 ? (
+        <Box sx={{ cursor: 'pointer' }} onClick={() => handleOpenEmailHistory(packet)}>
+          {moment(packet.packet_emails[0].created_at).format('MM/DD/YY')}
+        </Box>
+      ) : null,
       delete: (
         <DeleteForever
           className='delete-row'
@@ -130,6 +138,11 @@ export const EnrollmentPacketTable = () => {
     setSkip(() => {
       return paginatinLimit ? paginatinLimit * (page - 1) : 25
     })
+  }
+
+  const handleOpenEmailHistory = (data) => {
+    setEmailHistory(data?.packet_emails)
+    setOpenEmailShowModal(true)
   }
 
   const handlePacketSelect = (rowId: any) => {
@@ -534,6 +547,13 @@ export const EnrollmentPacketTable = () => {
           btntitle='Close'
           handleModem={() => setOpenWarningModal(!openWarningModal)}
           handleSubmit={() => setOpenWarningModal(!openWarningModal)}
+        />
+      )}
+        {openEmailShowModal && (
+        <ApplicationEmailModal
+          handleModem={() => setOpenEmailShowModal(!openEmailShowModal)}
+          handleSubmit={() => setOpenEmailShowModal(false)}
+          data={emailHistory}
         />
       )}
     </Card>

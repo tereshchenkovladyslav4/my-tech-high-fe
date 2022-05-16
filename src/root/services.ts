@@ -21,6 +21,7 @@ export const getMeQuery = gql`
           street
           street2
           zip
+          county_id
         }
         phone {
           phone_id
@@ -134,6 +135,7 @@ export const getMeQuery = gql`
             street2
             zip
             state
+            county_id
           }
         }
         grade_levels {

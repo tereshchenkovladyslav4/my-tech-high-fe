@@ -93,8 +93,8 @@ mutation SaveEnrollmentPacketSubmission($enrollmentPacketDocumentInput: Enrollme
 `
 
 export const enrollmentContactMutation = gql`
-  mutation SaveEnrollmentPacketContact($enrollmentPacketContactInput: EnrollmentPacketContactInput!) {
-    saveEnrollmentPacketContact(enrollmentPacketContactInput: $enrollmentPacketContactInput) {
+  mutation SaveEnrollmentPacketSubmit($enrollmentPacketContactInput: EnrollmentPacketSubmitInput!) {
+    saveEnrollmentPacketSubmit(enrollmentPacketContactInput: $enrollmentPacketContactInput) {
       packet {
         packet_id
       }

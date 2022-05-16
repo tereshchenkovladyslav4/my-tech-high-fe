@@ -25,7 +25,7 @@ export const getParentQuestionsGql = gql`
           type
           slug
           default_question
-          student_question
+          display_admin
           validation
         }
       }

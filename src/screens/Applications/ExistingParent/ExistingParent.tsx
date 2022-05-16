@@ -120,7 +120,7 @@ export const ExistingParent = () => {
                     .oneOf([yup.ref('email')], 'Emails do not match')
               }
               else if(q.type === 3) {
-                valid_student[`${q.slug?.replace('student_', '')}`] = yup.array().min(1).required(`${q.question} is required`)
+                valid_student[`${q.slug?.replace('student_', '')}`] = yup.array().min(1, `${q.question} is required`).required(`${q.question} is required`)
               }
               else if(q.type === 4) {
                 valid_student[`${q.slug?.replace('student_', '')}`] = yup.boolean().oneOf([true], 'This field must be checked')
@@ -142,7 +142,7 @@ export const ExistingParent = () => {
               })
             }
             else if(q.type === 3) {
-              valid_meta[`${q.slug}`] = yup.array().min(1).required(`${q.question} is required`)
+              valid_meta[`${q.slug}`] = yup.array().min(1, `${q.question} is required`).required(`${q.question} is required`)
             }
             else if(q.type === 4) {
               valid_meta[`${q.slug}`] = yup.boolean().oneOf([true], 'This field must be checked')

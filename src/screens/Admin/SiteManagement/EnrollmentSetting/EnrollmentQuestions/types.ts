@@ -65,7 +65,7 @@ export type EnrollmentQuestion = {
     additional?: AdditionalQuestionType    
     additional2?: AdditionalQuestionType
     validation?: string
-    student_question: boolean
+    display_admin: boolean
     default_question: boolean
     slug: string
 }

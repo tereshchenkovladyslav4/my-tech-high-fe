@@ -23,7 +23,7 @@ export default function ContactNew({id, questions}) {
 
   const classes = useStyles
 
-  const [validationSchema, setValidationSchema] = useState(yup.object({}))
+  const [validationSchema, setValidationSchema] = useState(null)
 
   useEffect(() => {
     if(questions?.groups?.length > 0) {
@@ -32,64 +32,67 @@ export default function ContactNew({id, questions}) {
       let valid_meta = {}
       questions.groups.map((g) => {
         g.questions.map((q) => {
-          if(q.slug?.includes('student_')) {
-            if(q.required) {
-              if(q.slug?.toLocaleLowerCase().includes('emailconfrim')) {
-                valid_student[`${q.slug?.replace('student_', '')}`] = yup
-                    .string()
-                    .required('Email is required')
-                    .oneOf([yup.ref('email')], 'Emails do not match')
-              }
-              else if(q.type === 3 || q.type === 4) {
-                valid_student[`${q.slug?.replace('student_', '')}`] = yup.array().min(1).required(`${q.question} is required`)
-              }
-              else {
-                valid_student[`${q.slug?.replace('student_', '')}`] = yup.string().required(`${q.question} is required`)
+          if(q.type !== 8 || q.type !== 7) {
+            if(q.slug?.includes('student_')) {
+            
+              if(q.required) {
+                if(q.slug?.toLocaleLowerCase().includes('emailconfrim')) {
+                  valid_student[`${q.slug?.replace('student_', '')}`] = yup
+                      .string()
+                      .required('Email is required')
+                      .oneOf([yup.ref('email')], 'Emails do not match')
+                }
+                else if(q.type === 3 || q.type === 4) {
+                  valid_student[`${q.slug?.replace('student_', '')}`] = yup.array().min(1).required(`${q.question} is required`)
+                }
+                else {
+                  valid_student[`${q.slug?.replace('student_', '')}`] = yup.string().required(`${q.question} is required`)
+                }
               }
             }
-          }
-          else if(q.slug?.includes('parent_')) {
-            if(q.required) {
-              if(q.slug?.toLocaleLowerCase().includes('emailconfirm')) {
-                valid_parent[`${q.slug?.replace('parent_', '')}`] = yup
-                    .string()
-                    .required('Email is required')
-                    .oneOf([yup.ref('email')], 'Emails do not match')
+            else if(q.slug?.includes('parent_')) {
+              if(q.required) {
+                if(q.slug?.toLocaleLowerCase().includes('emailconfirm')) {
+                  valid_parent[`${q.slug?.replace('parent_', '')}`] = yup
+                      .string()
+                      .required('Email is required')
+                      .oneOf([yup.ref('email')], 'Emails do not match')
+                }
+                else if(q.validation === 1) {
+                  valid_parent[`${q.slug?.replace('parent_', '')}`] = yup.string().email('Enter a valid email').required('Email is required')
+                }
+                else if(q.validation === 2) {
+                  valid_parent[`${q.slug?.replace('parent_', '')}`] = yup.string()
+                  .required(`${q.question} is required`)
+                  .test(`${q.question}-selected`, `${q.question} is invalid`, (value) => {
+                    return isNumber.test(value)
+                  })
+                }
+                else if(q.type === 3 || q.type === 4) {
+                  valid_parent[`${q.slug?.replace('parent_', '')}`] = yup.array().min(1).required(`${q.question} is required`)
+                }
+                else {
+                  valid_parent[`${q.slug?.replace('parent_', '')}`] = yup.string().required(`${q.question} is required`)
+                }
               }
-              else if(q.validation === 1) {
-                valid_parent[`${q.slug?.replace('parent_', '')}`] = yup.string().email('Enter a valid email').required('Email is required')
+            }
+            else if(q.slug?.includes('meta_') && q.required) {
+              if(q.validation === 1) {
+                valid_meta[`${q.slug}`] = yup.string().email('Enter a valid email').required('Email is required')
               }
               else if(q.validation === 2) {
-                valid_parent[`${q.slug?.replace('parent_', '')}`] = yup.string()
+                valid_meta[`${q.slug}`] = yup.string()
                 .required(`${q.question} is required`)
                 .test(`${q.question}-selected`, `${q.question} is invalid`, (value) => {
                   return isNumber.test(value)
                 })
               }
               else if(q.type === 3 || q.type === 4) {
-                valid_parent[`${q.slug?.replace('parent_', '')}`] = yup.array().min(1).required(`${q.question} is required`)
+                valid_meta[`${q.slug}`] = yup.array().min(1).required(`${q.question} is required`)
               }
               else {
-                valid_parent[`${q.slug?.replace('parent_', '')}`] = yup.string().required(`${q.question} is required`)
+                valid_meta[`${q.slug}`] = yup.string().required(`${q.question} is required`)
               }
-            }
-          }
-          else if(q.slug?.includes('meta_') && q.required) {
-            if(q.validation === 1) {
-              valid_meta[`${q.slug}`] = yup.string().email('Enter a valid email').required('Email is required')
-            }
-            else if(q.validation === 2) {
-              valid_meta[`${q.slug}`] = yup.string()
-              .required(`${q.question} is required`)
-              .test(`${q.question}-selected`, `${q.question} is invalid`, (value) => {
-                return isNumber.test(value)
-              })
-            }
-            else if(q.type === 3 || q.type === 4) {
-              valid_meta[`${q.slug}`] = yup.array().min(1).required(`${q.question} is required`)
-            }
-            else {
-              valid_meta[`${q.slug}`] = yup.string().required(`${q.question} is required`)
             }
           }
         })
@@ -100,14 +103,13 @@ export default function ContactNew({id, questions}) {
   }, [questions])
 
   const [submitContactMutation, { data }] = useMutation(enrollmentContactMutation)
-  
   const formik = useFormik({
     initialValues: {
       parent: {...profile, phone_number: profile.phone.number},
-      student: {...student.person, phone_number: student.person.phone.number},
-      packet: student.packets.at(-1),
+      student: {...student.person, phone_number: student.person.phone.number, grade_levels: student.grade_levels, grade_level: student.current_school_year_status.grade_level},
+      packet: {...student.packets.at(-1)},
       meta: student.packets.at(-1)?.meta && JSON.parse(student.packets.at(-1)?.meta) || {},
-      address: student.person.address,
+      address: {...student.person.address},
     },
     validationSchema: validationSchema,
     onSubmit: () => {

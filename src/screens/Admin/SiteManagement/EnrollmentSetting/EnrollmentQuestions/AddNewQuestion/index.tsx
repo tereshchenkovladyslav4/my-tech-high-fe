@@ -45,7 +45,7 @@ export default function AddNewQuestionModal({
   const { values, setValues } = useFormikContext<EnrollmentQuestionTab[]>()
 
   const [validation, setValidation] = useState(editItem?.validation ? true : false || false)  
-  const [addStudent, setAddStudent] = useState(editItem?.student_question || false)  
+  const [displayAdmin, setDisplayAdmin] = useState(editItem?.display_admin || false)  
   const [validationType, setValidationType] = useState(editItem?.validation || 1)
   const [isDefaultQuestion, setIsDefaultQuestion] = useState(editItem?.default_question || false)
 
@@ -171,7 +171,7 @@ export default function AddNewQuestionModal({
       return
     }
     
-    else if ([1, 3, 5].includes(type) && options.length && options[0].label.trim() === '') {
+    else if ([1, 3, 5].includes(type) && options.length && options[0].label.trim() === '' && editItem?.slug !== 'student_grade_level') {
       setError('Options are required')
       return
     }
@@ -216,7 +216,7 @@ export default function AddNewQuestionModal({
       additional2: additionalQuestion2Data,      
       default_question: isDefaultQuestion,
       validation: validation ? validationType : 0,
-      student_question: addStudent,
+      display_admin: displayAdmin,
       slug: editItem?.slug || `meta_${timestamp}`
     }
 
@@ -514,8 +514,8 @@ export default function AddNewQuestionModal({
               <Subtitle size='small'>Validation</Subtitle>
             </Box>
             <Box sx={{display: 'flex', alignItems: 'center',}}>
-              <Checkbox checked={addStudent} onClick={() => setAddStudent(!addStudent)} />
-              <Subtitle size='small'>Add Student Question</Subtitle>
+              <Checkbox checked={displayAdmin} onClick={() => setDisplayAdmin(!displayAdmin)} />
+              <Subtitle size='small'>Display for Admin</Subtitle>
             </Box>
             <Box sx={{display: 'flex', alignItems: 'center', 
               width: '124px',}}>

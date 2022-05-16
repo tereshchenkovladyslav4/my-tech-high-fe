@@ -43,6 +43,13 @@ export const getEnrollmentPacketsQuery = gql`
         is_age_issue
         missing_files
         special_ed
+        packet_emails {
+          subject
+          created_at
+          body
+          from_email
+        }
+        meta
         student {
           status {
             status

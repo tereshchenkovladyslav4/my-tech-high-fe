@@ -90,13 +90,6 @@ function Item({ question: q, setAdditionalQuestion, formik }: { question: Enroll
     
     const { me, setMe } = useContext(UserContext)
     const { userRegion } = me as UserInfo
-    const {loading, data: schoolDistrictsData} = useQuery(getSchoolDistrictsByRegionId, {
-        variables: {
-          regionId: me?.userRegion[0].region_id,
-        },
-        skip: me?.userRegion[0].region_id ? false : true,
-        fetchPolicy: 'network-only',
-      })
 
     const keyName = q.slug?.split('_')[0]
     const fieldName = !q.slug?.includes('meta_') ? q.slug?.replace(`${keyName}_`, '') : q.slug
@@ -109,27 +102,17 @@ function Item({ question: q, setAdditionalQuestion, formik }: { question: Enroll
     const [gradesDropDownItems, setGradesDropDownItems] = useState<Array<DropDownItem>>([])
 
     const [grades, setGrades] = useState([])
-    const [schoolDistricts, setSchoolDistricts] = useState<Array<DropDownItem>>([])
-
-    useEffect(() => {
-        if(!loading && schoolDistrictsData?.schoolDistrict.length > 0) {
-            setSchoolDistricts(schoolDistrictsData?.schoolDistrict.map((d) => {return {label: d.school_district_name, value: d.school_district_name}}))
-        }
-    }, [loading])
 
     const [dropDownItemsData, setDropDownItemsData] = useState<Array<DropDownItem>>([])
     useEffect(() => {
         if(q.slug === 'student_grade_level') {
             setDropDownItemsData(gradesDropDownItems || [])
         }
-        else if(q.slug === 'packet_school_district') {
-            setDropDownItemsData(schoolDistricts || [])
-        }
         else {
             setDropDownItemsData(q.options  || [])
         }
 
-    }, [q, schoolDistricts, gradesDropDownItems])
+    }, [q, gradesDropDownItems])
 
     useEffect(() => {
         if(formik.values.student?.grade_levels?.length > 0) {
@@ -245,13 +228,13 @@ function Item({ question: q, setAdditionalQuestion, formik }: { question: Enroll
                 borderColor: SYSTEM_07,
             },
             }}
-            defaultValue={getDropDownLabel(formik.values[`${keyName}`][`${fieldName}`])}
+            defaultValue={formik.values[`${keyName}`] && getDropDownLabel(formik.values[`${keyName}`][`${fieldName}`])}
             labelTop
             dropDownItems={dropDownItemsData}
             setParentValue={(v) => onChangeDropDown(v as string)}
             size='small'
             error={{
-                error: !!(formik.errors[`${keyName}`] && Boolean(formik.errors[`${keyName}`][`${fieldName}`])),
+                error: !!((formik.touched[`${keyName}`] && formik.touched[`${keyName}`][`${fieldName}`]) || formik.errors[`${keyName}`] && Boolean(formik.errors[`${keyName}`][`${fieldName}`])),
                 errorMsg: (formik.errors[`${keyName}`] && formik.errors[`${keyName}`][`${fieldName}`]) as string,
               }}
         />
@@ -284,7 +267,6 @@ function Item({ question: q, setAdditionalQuestion, formik }: { question: Enroll
     } else if (q.type === 3) {
         return (
             <>
-                <FormLabel sx={{ color: ERROR_RED, fontSize: '0.75rem' }}>{formik.errors[`${keyName}`] && formik.errors[`${keyName}`][`${fieldName}`]}</FormLabel>
                 <FormControl
                     required
                     component="fieldset"
@@ -326,13 +308,13 @@ function Item({ question: q, setAdditionalQuestion, formik }: { question: Enroll
                         </Grid>
                     </FormGroup>
                 </FormControl>
+                <FormLabel sx={{marginLeft: '14px', color: ERROR_RED, fontSize: '0.75rem' }}>{formik.errors[`${keyName}`] && formik.errors[`${keyName}`][`${fieldName}`]}</FormLabel>
             </>
             
         )
     } else if (q.type === 4) {
         return (
-            <>
-                <FormLabel sx={{ color: ERROR_RED, fontSize: '0.75rem' }}>{formik.errors[`${keyName}`] && formik.errors[`${keyName}`][`${fieldName}`]}</FormLabel>
+            <>                
                 <FormControl
                     required
                     name='acknowledge'
@@ -355,13 +337,13 @@ function Item({ question: q, setAdditionalQuestion, formik }: { question: Enroll
                         />
                     </FormGroup>
                 </FormControl>
+                <FormLabel sx={{marginLeft: '14px', color: ERROR_RED, fontSize: '0.75rem' }}>{formik.errors[`${keyName}`] && formik.errors[`${keyName}`][`${fieldName}`]}</FormLabel>
             </>
             
         )
     } else if (q.type === 5) {
         return (
             <>
-                <FormLabel sx={{ color: ERROR_RED, fontSize: '0.75rem' }}>{formik.errors[`${keyName}`] && formik.errors[`${keyName}`][`${fieldName}`]}</FormLabel>
                 <FormControl
                     required
                     component="fieldset"
@@ -384,8 +366,8 @@ function Item({ question: q, setAdditionalQuestion, formik }: { question: Enroll
                         </Grid>
                     </FormGroup>
                 </FormControl>
+                <FormLabel sx={{ marginLeft: '14px', color: ERROR_RED, fontSize: '0.75rem' }}>{formik.errors[`${keyName}`] && formik.errors[`${keyName}`][`${fieldName}`]}</FormLabel>
             </>
-            
         )
     }
     else if (q.type === 6) {
@@ -395,7 +377,8 @@ function Item({ question: q, setAdditionalQuestion, formik }: { question: Enroll
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             name={`${keyName}.${fieldName}`}
-            value={moment(formik.values[`${keyName}`][`${fieldName}`]).format('YYYY-MM-DD')}
+            defaultValue={null}
+            value={formik.values[`${keyName}`][`${fieldName}`] && moment(formik.values[`${keyName}`][`${fieldName}`]).format('YYYY-MM-DD')}
             sx={{
             minWidth: '100%',
 
