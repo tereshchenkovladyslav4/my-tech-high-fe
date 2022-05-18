@@ -25,7 +25,7 @@ export default function Enrollment() {
         <AdminEnrollmentCard title='School Assignments' link='https://google.com' img={schoolAssignmentsImg} />
       </Grid>
       <Grid item xs={4}>
-        <AdminEnrollmentCard title='Withdrawls' link={WITHDRAWAL} img={withdrawlsImg} />
+        <AdminEnrollmentCard title='Withdrawals' link={WITHDRAWAL} img={withdrawlsImg} />
       </Grid>
       <Grid item xs={4}>
         <AdminEnrollmentCard title='Testing Preference' link='https://google.com' img={testingPreferencesImg} />

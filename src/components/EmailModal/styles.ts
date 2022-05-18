@@ -56,4 +56,11 @@ export const useStyles = {
   isActive: {
     color: 'black',
   },
+  'ul.primary-bullet': {
+    listStyleType: 'lower-roman',
+  },
+  'ul.sub-bullet': {
+    listStyleType: 'square',
+    marginLeft: '-2em',
+  }
 }

@@ -16,7 +16,6 @@ import { KeyboardArrowDown } from '@mui/icons-material'
 import { makeStyles } from '@material-ui/styles'
 import { STATES_WITH_ABBREVIATION } from '../../../../utils/states'
 
-
 const selectStyles = makeStyles({
   select: {
     maxWidth: '150px',
@@ -48,7 +47,14 @@ const ordinal = (n) => {
   var v = n % 100
   return n + (s[(v - 20) % 10] || s[v] || s[0])
 }
-export const StudentProfile = ({ studentId, setStudentPerson, setStudentStatus, studentStatus, applicationState }) => {
+export const StudentProfile = ({
+  studentId,
+  setStudentPerson,
+  setStudentStatus,
+  studentStatus,
+  applicationState,
+  setIsChanged,
+}) => {
   const classes = selectStyles()
   const {
     loading: userLoading,
@@ -114,8 +120,7 @@ export const StudentProfile = ({ studentId, setStudentPerson, setStudentStatus, 
   }, [userInfo])
   useEffect(() => {
     if (currentUserData) {
-
-      const stateSelected = currentUserData.student.person.address.state ||  applicationState
+      const stateSelected = currentUserData.student.person.address.state || applicationState
 
       setEmail(currentUserData.student.person.email)
       setPreferredFirstName(currentUserData.student.person.preferred_first_name)
@@ -143,7 +148,8 @@ export const StudentProfile = ({ studentId, setStudentPerson, setStudentStatus, 
         special_ed: currentUserData.student.special_ed,
         diploma_seeking: currentUserData.student.diploma_seeking,
         testing_preference: currentUserData.student.testing_preference,
-        status: currentUserData.student.status.length && currentUserData.student.status[0].status,
+        status: currentUserData?.student?.status?.length && currentUserData.student.status[0].status,
+        date: currentUserData?.student?.status?.length > 0 ? currentUserData.student.status[0].date_updated : '',
         // grade_level: currentUserData.student.status.length && currentUserData.student.status[0].grade_level,
         school_year_id:
           currentUserData.student.applications.length && currentUserData.student.applications[0].school_year_id,
@@ -243,7 +249,7 @@ export const StudentProfile = ({ studentId, setStudentPerson, setStudentStatus, 
                 IconComponent={KeyboardArrowDown}
                 className={classes.select}
                 value={gradeLevel.includes('K') ? 'Kindergarten' : gradeLevel}
-                sx={{ color: "#cccccc", fontWeight: '700' }}
+                sx={{ color: '#cccccc', fontWeight: '700' }}
               >
                 <MenuItem value='Kindergarten'>Kindergarten</MenuItem>
                 {[...Array(12).keys()].map((item) => (
@@ -251,7 +257,12 @@ export const StudentProfile = ({ studentId, setStudentPerson, setStudentStatus, 
                 ))}
               </Select>
               {/* <Subtitle textAlign='left'>Unassigned</Subtitle> */}
-              <Select IconComponent={KeyboardArrowDown} className={classes.select} sx={{ color: "#cccccc", fontWeight: '700' }} value={'Unassigned'}>
+              <Select
+                IconComponent={KeyboardArrowDown}
+                className={classes.select}
+                sx={{ color: '#cccccc', fontWeight: '700' }}
+                value={'Unassigned'}
+              >
                 <MenuItem value='Unassigned'>Unassigned</MenuItem>
               </Select>
             </Box>
@@ -336,6 +347,7 @@ export const StudentProfile = ({ studentId, setStudentPerson, setStudentStatus, 
             currentUserData={currentUserData}
             setStudentStatuData={setStudentStatus}
             studentStatusData={studentStatus}
+            setIsChanged={setIsChanged}
           />
         </Grid>
         <Grid item xs={3}>

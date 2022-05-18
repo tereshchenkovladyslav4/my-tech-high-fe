@@ -252,7 +252,7 @@ export const EmailTemplateModal = ({
         title: emailTitle,
         from: emailFrom,
         bcc: emailBcc,
-        // deadline,
+        deadline: deadline,
         reminders: reminderData,
         template_name: emailTitle,
         template: template.template,
@@ -346,6 +346,15 @@ export const EmailTemplateModal = ({
           setEditorState(EditorState.createWithContent(contentState))
         }
       }
+
+      if( emailTemplate.category.category_name == 'Applications' ){
+        setDeadline( emailTemplate.region.application_deadline_num_days );
+      }
+
+      if( emailTemplate.category.category_name == 'Enrollment Packets' ){
+        setDeadline( emailTemplate.region.enrollment_packet_deadline_num_days );
+      }
+
     }
   }, [data])
 

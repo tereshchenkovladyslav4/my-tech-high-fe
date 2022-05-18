@@ -6,6 +6,12 @@ import SearchIcon from '@mui/icons-material/Search'
 import { Pagination } from '../../../../components/Pagination/Pagination'
 import { HeadCell } from '../../../../components/SortableTable/SortableTableHeader/types'
 import { SortableTable } from '../../../../components/SortableTable/SortableTable'
+import { useQuery, useMutation } from '@apollo/client'
+import { getWithdrawalsQuery } from '../services'
+import { map } from 'lodash'
+import moment from 'moment'
+import DeleteForever from '@mui/icons-material/Delete'
+import { toOrdinalSuffix } from '../../../../utils/stringHelpers'
 import { WarningModal } from '../../../../components/WarningModal/Warning'
 import { Packet } from '../../../HomeroomStudentProfile/Student/types'
 import { WithdrawalFilters } from '../WithdrawalFilters'
@@ -26,11 +32,13 @@ const WithdrawalTable = () => {
   const selectedClass = selectStyles()
   const [filters, setFilters] = useState(['Submitted', 'Resubmitted'])
   const [searchField, setSearchField] = useState('')
+  const [tableData, setTableData] = useState<Array<any>>([])
   const [selectedYear, setSelectedYear] = useState<string | number>('1')
   const [paginatinLimit, setPaginatinLimit] = useState(25)
   const [skip, setSkip] = useState<number>()
   const [sort, setSort] = useState('status|ASC')
-  const [totalPackets, setTotalPackets] = useState<number>(4)
+  const selectClasses = selectStyles()
+  const [totalWithdrawals, setTotalWithdrawals] = useState<number>(0)
   const [withdrawIds, setWithdrawIds] = useState<Array<string>>([])
   const [isShowModal, setIsShowModal] = useState(false)
   const [enrollmentPackets, setEnrollmentPackets] = useState<Array<Packet>>([])
@@ -40,6 +48,10 @@ const WithdrawalTable = () => {
   const [openWarningModal, setOpenWarningModal] = useState<boolean>(false)
   const [withdrawCount, setWithdrawCount] = useState<Array<String>>([])
   const { showModal, hideModal, store, setStore } = useContext(ProfileContext)
+  const { loading, error, data, refetch } = useQuery(getWithdrawalsQuery, {
+    variables: {},
+    fetchPolicy: 'network-only',
+  })
   const schoolYears = [
     {
       label: '21-22',
@@ -125,53 +137,6 @@ const WithdrawalTable = () => {
     },
   ]
 
-  const tableData = [
-    {
-      submitted: '09/09/21',
-      status: 'Requested',
-      effective: '09/09/21',
-      student: 'Smith, Hunter',
-      grade: '10',
-      soe: 'Nebo',
-      funding: 'Yes',
-      emailed: '09/09/21',
-      id: '1',
-    },
-    {
-      submitted: '09/09/21',
-      status: 'Notified',
-      effective: '10/01/21',
-      student: 'Smith, Hunter',
-      grade: '12',
-      soe: 'GPA',
-      funding: 'No',
-      emailed: '09/09/21',
-      id: '2',
-    },
-    {
-      submitted: '09/09/21',
-      status: 'Withdrawn',
-      effective: '09/09/21',
-      student: 'Smith, Hunter',
-      grade: '10',
-      soe: 'Nebo',
-      funding: 'No',
-      emailed: '09/09/21',
-      id: '3',
-    },
-    {
-      submitted: '09/09/21',
-      status: 'Requested',
-      effective: '09/09/21',
-      student: 'Smith, Hunter',
-      grade: '10',
-      soe: 'Nebo',
-      funding: 'No',
-      emailed: '',
-      id: '4',
-    },
-  ]
-
   const handleOpenEmailModal = () => {
     if (withdrawIds.length === 0) {
       setOpenWarningModal(true)
@@ -179,6 +144,25 @@ const WithdrawalTable = () => {
     }
     setOpenEmailModal(true)
   }
+
+  useEffect(() => {
+    if (!loading && data?.withdrawals) {
+      setTableData(
+        data?.withdrawals.map((withdrawal) => ({
+          submitted: withdrawal.date ? moment(withdrawal.date).format('MM/DD/YYYY') : '',
+          status: withdrawal.status,
+          effective: withdrawal.date_effective ? moment(withdrawal.date_effective).format('MM/DD/YYYY') : '',
+          student: withdrawal?.Student?.person?.first_name + ', ' + withdrawal?.Student?.person?.last_name,
+          grade: withdrawal?.Student?.grade_levels[0]?.grade_level,
+          soe: withdrawal?.soe,
+          funding: withdrawal?.funding,
+          emailed: withdrawal?.date_emailed ? moment(withdrawal.date_emailed).format('MM/DD/YYYY') : '',
+          id: withdrawal?.withdrawal_id,
+        })),
+      )
+      setTotalWithdrawals(data?.withdrawals.length)
+    }
+  }, [loading])
 
   return (
     <Card sx={classes.card}>
@@ -189,7 +173,7 @@ const WithdrawalTable = () => {
             Withdrawals
           </Subtitle>
           <Subtitle size='medium' fontWeight='700' sx={{ marginLeft: 2 }}>
-            {totalPackets}
+            {totalWithdrawals}
           </Subtitle>
           <Box marginLeft={4} sx={{ width: '300px' }}>
             <OutlinedInput
@@ -242,7 +226,7 @@ const WithdrawalTable = () => {
           setParentLimit={setPaginatinLimit}
           handlePageChange={handlePageChange}
           defaultValue={paginatinLimit || 25}
-          numPages={Math.ceil(totalPackets / paginatinLimit)}
+          numPages={Math.ceil(totalWithdrawals / paginatinLimit)}
           currentPage={currentPage}
         />
       </Box>

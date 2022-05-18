@@ -28,7 +28,16 @@ export const getEmailTemplateByIdQuery = gql`
       standard_responses
       template
       inserts
+      category_id
+      category {
+        category_name
+      }
       region_id
+      region {
+        id
+        application_deadline_num_days
+        enrollment_packet_deadline_num_days
+      }
     }
   }
 `
@@ -64,6 +73,11 @@ export const getEmailTemplatesByRegionQuery = gql`
       template
       inserts
       region_id
+      region {
+        id
+        application_deadline_num_days
+        enrollment_packet_deadline_num_days
+      }
     }
   }
 `

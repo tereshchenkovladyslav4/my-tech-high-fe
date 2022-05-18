@@ -260,21 +260,24 @@ export const EmailModal = ({ handleSubmit, handleModem, title, options, setEmail
       if(type == 'ageIssue')
         standardResponseExtraText += `<p>${standard_responses[i].extraText}</p>`;
       else if(type == 'missingInfo') {
-        standardResponseExtraSpan += `<li>${standard_responses[i].title}</li>`;
-        standardResponseExtraText += `<p>${standard_responses[i].extraText}</p>`;
+        standardResponseExtraSpan += `<li>${standard_responses[i].title}`;
+        if(standard_responses[i].extraText.trim() != '')
+          standardResponseExtraSpan += `<ul class="sub-bullet"><li>${standard_responses[i].extraText}</li></ul>`;
+        standardResponseExtraSpan += `</li>`;
+        //standardResponseExtraText += `<p>${standard_responses[i].extraText}</p>`;
       }
     }
 
     HtmlInput = HtmlInput
-      .replace(/\[FILES\]/g, `<ul>${standardResponseExtraSpan}</ul>`)
-      .replace(/\[INSTRUCTIONS\]/g, `<ul>${standardResponseExtraText}</ul>`)
+      .replace(/\[FILES\]/g, `<ul class="primary-bullet">${standardResponseExtraSpan}</ul>`)
+      .replace(/\[INSTRUCTIONS\]/g, ``);//`<ul>${standardResponseExtraText}</ul>`)
 
     if(type == 'ageIssue') {
       HtmlInput = HtmlInput.slice(0, index) + standardResponseExtraText + HtmlInput.slice(index);
     }
     else {
     }
-
+console.log(HtmlInput);
     HtmlInput = setEmailBodyInfo(HtmlInput);
 
     contentBlock = htmlToDraft(

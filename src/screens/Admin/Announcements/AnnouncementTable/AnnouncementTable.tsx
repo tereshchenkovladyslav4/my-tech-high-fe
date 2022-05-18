@@ -119,7 +119,7 @@ const AnnouncementTable = () => {
           <Box marginLeft={4} sx={classes.search}>
             <OutlinedInput
               onFocus={(e) => (e.target.placeholder = '')}
-              onBlur={(e) => (e.target.placeholder = 'Search title, message or student')}
+              onBlur={(e) => (e.target.placeholder = 'Search title, message, or student')}
               size='small'
               fullWidth
               value={searchField}
@@ -163,7 +163,7 @@ const AnnouncementTable = () => {
                       <Typography sx={{ fontSize: 12, fontWeight: 700, color: '#A1A1A1' }}>{row.date}</Typography>
                     </TableCell>
                     <TableCell sx={classes.tableCell} key={`${index}-2`}>
-                      <Typography sx={{ fontSize: 12, fontWeight: 700 }}>{row.subject}</Typography>
+                      <Typography sx={{ fontSize: 16, fontWeight: 700 }}>{row.subject}</Typography>
                     </TableCell>
                     <TableCell sx={classes.tableCell} key={`${index}-3`}>
                       <Typography sx={{ fontSize: 12, fontWeight: 700 }}>{row.postedBy}</Typography>

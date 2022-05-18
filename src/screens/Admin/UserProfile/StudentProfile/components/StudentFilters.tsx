@@ -4,12 +4,14 @@ import React, { useEffect, useState } from 'react'
 import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
 import { Title } from '../../../../../components/Typography/Title/Title'
-import { MTHBLUE, BLACK, BUTTON_LINEAR_GRADIENT } from '../../../../../utils/constants'
+import { MTHBLUE, BLACK, BUTTON_LINEAR_GRADIENT, RED_GRADIENT } from '../../../../../utils/constants'
 import moment from 'moment'
 import { DropDown } from '../../../../../components/DropDown/DropDown'
 import { DropDownItem } from '../../../../../components/DropDown/types'
 import { makeStyles } from '@material-ui/styles'
 import { KeyboardArrowDown } from '@mui/icons-material'
+import { WithdrawModal } from './WithdrawModal'
+import { ActiveModal } from './ActiveModal'
 
 const selectStyles = makeStyles({
   backgroundSelect: {
@@ -25,6 +27,21 @@ const selectStyles = makeStyles({
     },
     '&:after': {
       borderColor: BUTTON_LINEAR_GRADIENT,
+    },
+  },
+  withdrawBackgroundSelect: {
+    fontSize: '12px',
+    borderRadius: '8px',
+    minWidth: '135px',
+    height: '29px',
+    textAlign: 'center',
+    background: RED_GRADIENT,
+    color: '#F2F2F2',
+    '&:before': {
+      borderColor: RED_GRADIENT,
+    },
+    '&:after': {
+      borderColor: RED_GRADIENT,
     },
   },
   selectIcon: {
@@ -148,14 +165,34 @@ const ordinal = (n) => {
   var v = n % 100
   return n + (s[(v - 20) % 10] || s[v] || s[0])
 }
-export const StudentFilters = ({ currentUserData, setStudentStatuData, studentStatusData }) => {
+export const StudentFilters = ({ currentUserData, setStudentStatuData, studentStatusData, setIsChanged }) => {
   const classes = useStyles
   const selectClasses = selectStyles()
   const [showDetails, setShowDetails] = useState(false)
   const [applications, setApplications] = useState<any[]>([])
   const [studentStatus, setStudentStatus] = useState<any>()
   const [specialEd, setSpecialEd] = useState<any>()
+  const [showWithdrawalModal, setShowWithdrawalModal] = useState<boolean>(false)
+  const [showActiveModal, setShowActiveModal] = useState<boolean>(false)
   const [diplomaSeeking, setDiplomaSeeking] = useState<any>('')
+  const [status, setStatus] = useState<DropDownItem[]>([
+    {
+      label: ' ',
+      value: 4,
+    },
+    {
+      label: 'Pending',
+      value: 0,
+    },
+    {
+      label: 'Active',
+      value: 1,
+    },
+    {
+      label: 'Withdrawn',
+      value: 2,
+    },
+  ])
   const specialEds: DropDownItem[] = [
     {
       label: 'No',
@@ -184,24 +221,44 @@ export const StudentFilters = ({ currentUserData, setStudentStatuData, studentSt
       value: 1,
     },
   ]
-  const status: DropDownItem[] = [
-    {
-      label: ' ',
-      value: 4,
-    },
-    {
-      label: 'Pending',
-      value: 0,
-    },
-    {
-      label: 'Active',
-      value: 1,
-    },
-    {
-      label: 'Withdrawn',
-      value: 2,
-    },
-  ]
+
+  const handleChangeStudentStatus = (e) => {
+    if (e.target.value == 1) {
+      setShowActiveModal(true)
+      setStudentStatus(studentStatusData.status)
+      setStudentStatuData({ ...studentStatusData, ...{ status: e.target.value } })
+    } else if (e.target.value == 2) {
+      setShowWithdrawalModal(true)
+      setStudentStatus(studentStatusData.status)
+      setStudentStatuData({ ...studentStatusData, ...{ status: e.target.value } })
+    } else {
+      setStudentStatus(e.target.value)
+      setStudentStatuData({ ...studentStatusData, ...{ status: e.target.value } })
+    }
+  }
+
+  const handleSelectWithdrawOption = (withdrawOption) => {
+    setIsChanged(true)
+    setStudentStatuData({ ...studentStatusData, ...{ withdrawOption: withdrawOption } })
+    setShowWithdrawalModal(false)
+  }
+
+  const handleSelectActiveOption = (activeOption) => {
+    setIsChanged(true)
+    setStudentStatuData({ ...studentStatusData, ...{ activeOption: activeOption } })
+    setShowActiveModal(false)
+  }
+
+  const handleWithdrawCancel = () => {
+    setStudentStatuData({ ...studentStatusData, ...{ status: studentStatus } })
+    setShowWithdrawalModal(false)
+  }
+
+  const handleActiveCancel = () => {
+    setStudentStatuData({ ...studentStatusData, ...{ status: studentStatus } })
+    setShowActiveModal(false)
+  }
+
   useEffect(() => {
     if (currentUserData && currentUserData.student) {
       setApplications(currentUserData.student.applications)
@@ -210,6 +267,78 @@ export const StudentFilters = ({ currentUserData, setStudentStatuData, studentSt
   useEffect(() => {
     if (studentStatusData.diploma_seeking !== null && studentStatusData.diploma_seeking !== undefined) {
       setDiplomaSeeking(studentStatusData.diploma_seeking)
+    }
+
+    if (studentStatusData?.date) {
+      setStatus([
+        {
+          label: ' ',
+          value: 4,
+        },
+        {
+          label:
+            studentStatusData?.status == 0
+              ? `Pending (${moment(studentStatusData?.date).format('MM/DD/YYYY')})`
+              : 'Pending',
+          value: 0,
+        },
+        {
+          label:
+            studentStatusData?.status == 1
+              ? `Active (${moment(studentStatusData?.date).format('MM/DD/YYYY')})`
+              : 'Active',
+          value: 1,
+        },
+        {
+          label:
+            studentStatusData?.status == 2
+              ? `Withdrawn (${moment(studentStatusData?.date).format('MM/DD/YYYY')})`
+              : 'Withdrawn',
+          value: 2,
+        },
+      ])
+    }
+
+    if (studentStatusData.status == 2 && studentStatusData.withdrawOption && studentStatusData.withdrawOption > 0) {
+      setStatus([
+        {
+          label: ' ',
+          value: 4,
+        },
+        {
+          label: 'Pending',
+          value: 0,
+        },
+        {
+          label: 'Active',
+          value: 1,
+        },
+        {
+          label: `Withdrawn (${moment().format('MM/DD/YYYY')})`,
+          value: 2,
+        },
+      ])
+    }
+
+    if (studentStatusData.status == 1 && studentStatusData.activeOption && studentStatusData.activeOption > 0) {
+      setStatus([
+        {
+          label: ' ',
+          value: 4,
+        },
+        {
+          label: 'Pending',
+          value: 0,
+        },
+        {
+          label: `Active (${moment().format('MM/DD/YYYY')})`,
+          value: 1,
+        },
+        {
+          label: `Withdrawn`,
+          value: 2,
+        },
+      ])
     }
   }, [studentStatusData])
   return (
@@ -231,7 +360,9 @@ export const StudentFilters = ({ currentUserData, setStudentStatuData, studentSt
               Status
             </Subtitle>
             <Select
-              className={selectClasses.backgroundSelect}
+              className={
+                studentStatusData?.status != 2 ? selectClasses.backgroundSelect : selectClasses.withdrawBackgroundSelect
+              }
               IconComponent={KeyboardArrowDown}
               inputProps={{
                 classes: {
@@ -240,8 +371,7 @@ export const StudentFilters = ({ currentUserData, setStudentStatuData, studentSt
               }}
               value={+studentStatusData.status}
               onChange={(e) => {
-                setStudentStatus(e.target.value)
-                setStudentStatuData({ ...studentStatusData, ...{ status: e.target.value } })
+                handleChangeStudentStatus(e)
               }}
             >
               {status.map((item) => (
@@ -256,6 +386,26 @@ export const StudentFilters = ({ currentUserData, setStudentStatuData, studentSt
               {showDetails ? 'Hide' : 'View'} Details
             </Paragraph>
           </Box>
+          {showWithdrawalModal && (
+            <WithdrawModal
+              title='Withdraw'
+              description='How would you like to proceed with this withdraw?'
+              confirmStr='Withdraw'
+              cancelStr='Cancel'
+              onWithdraw={handleSelectWithdrawOption}
+              onClose={() => handleWithdrawCancel()}
+            />
+          )}
+          {showActiveModal && (
+            <ActiveModal
+              title='Reinstate'
+              description='How would you like to proceed with reinstating this student?'
+              confirmStr='Reinstate'
+              cancelStr='Cancel'
+              onActive={handleSelectActiveOption}
+              onClose={() => handleActiveCancel()}
+            />
+          )}
         </Grid>
         <Grid xs={4}>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>

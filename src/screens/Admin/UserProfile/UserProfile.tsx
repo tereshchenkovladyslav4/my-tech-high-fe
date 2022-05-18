@@ -11,7 +11,7 @@ import { getParentDetail, updatePersonAddressMutation, UpdateStudentMutation } f
 import { NewUserModal } from './components/NewUserModal/NewUserModal'
 import { useStyles } from './styles'
 
-export const UserProfile = ({ handleClose, data }) => {
+export const UserProfile = ({ handleClose, data, setIsChanged }) => {
   const classes = useStyles
   const [userInfo, setUserInfo] = useState<any>()
   const [phoneInfo, setPhoneInfo] = useState()
@@ -24,8 +24,7 @@ export const UserProfile = ({ handleClose, data }) => {
   const [studentStatus, setStudentStatus] = useState({})
   const [selectedParent, setSelectedParent] = useState(0)
   const [selectedStudent, setSelectedStudent] = useState(parseInt(data.student_id))
-  const [selectedParentType, setSelectedParentType] = useState("parent")
-
+  const [selectedParentType, setSelectedParentType] = useState('parent')
   const [applicationState, setApplicationState] = useState('')
   const {
     loading: userLoading,
@@ -38,7 +37,7 @@ export const UserProfile = ({ handleClose, data }) => {
     },
     fetchPolicy: 'cache-and-network',
   })
-  
+
   const [updateStudent, { data: studentData }] = useMutation(UpdateStudentMutation)
 
   const [updatePersonAddress, { data: updatedData }] = useMutation(updatePersonAddressMutation)
@@ -50,7 +49,7 @@ export const UserProfile = ({ handleClose, data }) => {
       person.person_id = Number(person.person_id)
       const phone: any = Object.assign({}, phoneInfo)
       phone.phone_id = Number(phone.phone_id)
-      delete person.user;
+      delete person.user
       const address = Object.assign({}, userInfo.address)
       address.address_id = address.address_id ? Number(address.address_id) : undefined
       await updatePersonAddress({
@@ -65,7 +64,7 @@ export const UserProfile = ({ handleClose, data }) => {
           },
         },
       })
-      handleClose()
+      handleClose(true)
     } else {
       const person: any = Object.assign({}, studentPerson)
       delete person.address
@@ -89,7 +88,7 @@ export const UserProfile = ({ handleClose, data }) => {
           updateStudentInput: studentStatus,
         },
       })
-      handleClose()
+      handleClose(true)
     }
   }
   const handleCloseObserverModal = () => {
@@ -97,7 +96,7 @@ export const UserProfile = ({ handleClose, data }) => {
     refetch()
   }
   const handleChangeParent = (parent) => {
-    console.log("parent: ", parent);
+    console.log('parent: ', parent)
 
     setSelectedStudent(0)
     if (parent.observer_id) {
@@ -105,8 +104,8 @@ export const UserProfile = ({ handleClose, data }) => {
       setUserInfo(parent.person)
       setPhoneInfo(parent.person.phone)
       setNotes(parent.notes || '')
-      setStudents(currentUserData.parentDetail.students.filter(x => x.student_id == parent.student_id));
-      setSelectedParentType("observer");
+      setStudents(currentUserData.parentDetail.students.filter((x) => x.student_id == parent.student_id))
+      setSelectedParentType('observer')
     } else {
       setSelectedParent(parseInt(currentUserData.parentDetail.parent_id))
       setUserInfo(currentUserData.parentDetail.person)
@@ -114,8 +113,8 @@ export const UserProfile = ({ handleClose, data }) => {
       setNotes(currentUserData.parentDetail.notes)
       setParentEmail(currentUserData.parentDetail.person.email)
       setStudents(currentUserData.parentDetail.students)
-      setSelectedParentType("parent");
-      console.log("currentUserData.parentDetail.email: ", currentUserData.parentDetail.person.email)
+      setSelectedParentType('parent')
+      console.log('currentUserData.parentDetail.email: ', currentUserData.parentDetail.person.email)
     }
   }
 
@@ -125,7 +124,7 @@ export const UserProfile = ({ handleClose, data }) => {
     setSelectedStudent(parseInt(student.student_id))
     // }
 
-    setSelectedParentType("parent");
+    setSelectedParentType('parent')
   }
 
   useEffect(() => {
@@ -186,13 +185,16 @@ export const UserProfile = ({ handleClose, data }) => {
               width: '92px',
               height: '25px',
             }}
-            onClick={handleSavePerson}
+            onClick={() => {
+              setIsChanged(false)
+              handleSavePerson()
+            }}
           >
             Save
           </Button>
           <CloseIcon
             style={{ color: 'white', background: BLACK, borderRadius: 2, cursor: 'pointer' }}
-            onClick={handleClose}
+            onClick={() => handleClose(false)}
           />
         </Box>
       </Box>
@@ -214,8 +216,11 @@ export const UserProfile = ({ handleClose, data }) => {
           setStudentStatus={setStudentStatus}
           studentStatus={studentStatus}
           applicationState={applicationState}
+          setIsChanged={setIsChanged}
         />
-      ) : <></>}
+      ) : (
+        <></>
+      )}
       {openObserverModal && (
         <NewUserModal
           handleModem={handleCloseObserverModal}

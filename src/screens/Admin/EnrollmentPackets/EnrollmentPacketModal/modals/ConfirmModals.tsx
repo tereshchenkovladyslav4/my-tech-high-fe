@@ -86,8 +86,8 @@ export default function PacketConfirmModals({ packet, refetch, submitForm }) {
         setValue('age_issue', true)
       } else if (options.type === 'MISSING_INFO') {
         setValue('showMissingInfoModal', false)
-        setValue('missingInfoAlert', true)
-        setTimeout(() => setValue('missingInfoAlert', false), 5000)
+        //setValue('missingInfoAlert', true)
+        //setTimeout(() => setValue('missingInfoAlert', false), 5000)
         setValue('preSaveStatus', 'Missing Info')
         setValue(
           'missing_files',

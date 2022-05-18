@@ -23,7 +23,22 @@ export const Root = () => {
       setTab({
         currentTab: 0,
       })
-      setMe(data.me)
+
+      //  Sort user regions by region name
+      let regions = [];
+      data.me.userRegion.forEach(region => {
+        let i;
+        for(i = 0; i < regions.length; i++) {
+          if(regions[i].regionDetail.name > region.regionDetail.name)
+            break;
+        }
+        regions.splice(i, 0, region);
+      });
+      //  Replace userRegion array with the sorted one.
+      setMe({
+        ...data.me,
+        userRegion: regions
+      });
       setVisitedTabs([])
       setIsSuper(Number(data.me?.level) === 1)
     }

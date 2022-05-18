@@ -90,7 +90,7 @@ export const AdminSideMenu: FunctionComponent = () => {
     },
     {
       to: CALENDAR,
-      label: 'Calender',
+      label: 'Calendar',
       icon: <DatRangeOutlinedIcon style={classes.logos} />,
     },
     {
