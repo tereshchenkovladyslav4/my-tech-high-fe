@@ -65,6 +65,30 @@ export const useStyles = {
     },
     marginRight: 4,
   },
+  leftArrowButton: {
+    background: '#FAFAFA',
+    color: 'black',
+    width: '45px',
+    height: '45px',
+    alignItems: 'center',
+    '&:hover': {
+      background: '#F5F5F5',
+      color: '#000',
+    },
+    marginRight: 4,
+  },
+  rightArrowButton: {
+    background: '#FAFAFA',
+    color: 'black',
+    width: '45px',
+    height: '45px',
+    alignItems: 'center',
+    '&:hover': {
+      background: '#F5F5F5',
+      color: '#000',
+    },
+    marginLeft: 4,
+  },
   search: { width: '300px' },
   pageTitle: {
     textAlign: 'left',

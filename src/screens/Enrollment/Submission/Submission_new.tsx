@@ -48,6 +48,13 @@ export default function SubmissionNew({id, questions}) {
   const student = students.find((s) => s.student_id === id)
 
   const [validationSchema, setValidationSchema] = useState(yup.object({}))
+
+  useEffect(() => {
+    if (disabled == true)
+      signatureRef.current.off();
+    else 
+      signatureRef.current.on();
+  }, [disabled])
     
   useEffect(() => {
     if(questions?.groups?.length > 0) {
@@ -56,7 +63,7 @@ export default function SubmissionNew({id, questions}) {
       let valid_meta = {}
       questions.groups.map((g) => {
         g.questions.map((q) => {
-          if(q.type !== 8 || q.type !== 7) {
+          if(q.type !== 8 && q.type !== 7) {
             if(q.slug?.includes('student_')) {
             
               if(q.required) {
@@ -126,21 +133,28 @@ export default function SubmissionNew({id, questions}) {
     }
   }, [questions])
 
-  const formik = useFormik({
-    initialValues: {
+  const [initFormikValues, setInitFormikValues] = useState({})
+
+  useEffect(() => {
+    setInitFormikValues({
       parent: {...profile, phone_number: profile.phone.number},
       student: {...student.person, phone_number: student.person.phone.number, grade_levels: student.grade_levels, grade_level: student.current_school_year_status.grade_level},
       packet: {...student.packets.at(-1)},
       meta: student.packets.at(-1)?.meta && JSON.parse(student.packets.at(-1)?.meta) || {},
       address: {...student.person.address},
-    },
+      school_year_id: student.current_school_year_status.school_year_id,
+    })
+  }, [profile, student])
+  const formik = useFormik({
+    enableReinitialize: true,
+    initialValues: initFormikValues,
     validationSchema: validationSchema,
     onSubmit: () => {
       if(!signatureRef.current.isEmpty()){
         getSignature()
       }
     },
-  });
+  })
 
   const handleSubmit = (e) => {
     if(signatureRef.current.isEmpty()){
@@ -199,41 +213,41 @@ export default function SubmissionNew({id, questions}) {
     //       }
     //     }
     //   })
-        submitEnrollment({
-            variables: {
-                enrollmentPacketContactInput: {
-                    student_id: parseInt(id as unknown as string),
-                    parent: omit(formik.values.parent, ['address', 'person_id', 'phone', 'emailConfirm']),
-                    packet: {
-                        secondary_contact_first: formik.values.packet?.secondary_contact_first || '', 
-                        secondary_contact_last: formik.values.packet?.secondary_contact_last || '', 
-                        school_district: formik.values.packet?.school_district || '',
-                      meta: JSON.stringify(formik.values.meta)},
-                    student: {
-                      ...omit(formik.values.student, ['person_id', 'photo', 'phone', 'grade_levels']),
-                      address: formik.values.address,              
-                    },
-                    signature_file_id: fileId,
-                    packet_id: parseFloat(packetId as unknown as string),
-                    school_year_id: student.current_school_year_status.school_year_id,
-                }
-            }
-        }).then((data) => {
-            setPacketId(data.data.saveEnrollmentPacketSubmit.packet.packet_id)
-            setMe((prev) => {
-                return {
-                    ...prev,
-                    students: prev?.students.map((student) => {
-                    const returnValue = { ...student }
-                    if (student.student_id === data.data.saveEnrollmentPacketSubmit.student.student_id) {
-                        return data.data.saveEnrollmentPacketSubmit.student
-                    }
-                    return returnValue
-                    }),
-                }
-            })
-            data && setShowSuccess(true)
-        })
+      submitEnrollment({
+          variables: {
+              enrollmentPacketContactInput: {
+                  student_id: parseInt(id as unknown as string),
+                  parent: omit(formik.values.parent, ['address', 'person_id', 'phone', 'emailConfirm']),
+                  packet: {
+                      secondary_contact_first: formik.values.packet?.secondary_contact_first || '', 
+                      secondary_contact_last: formik.values.packet?.secondary_contact_last || '', 
+                      school_district: formik.values.packet?.school_district || '',
+                    meta: JSON.stringify(formik.values.meta)},
+                  student: {
+                    ...omit(formik.values.student, ['person_id', 'photo', 'phone', 'grade_levels', 'emailConfirm']),
+                    address: formik.values.address,              
+                  },
+                  signature_file_id: fileId,
+                  packet_id: parseFloat(packetId as unknown as string),
+                  school_year_id: student.current_school_year_status.school_year_id,
+              }
+          }
+      }).then((data) => {
+          setPacketId(data.data.saveEnrollmentPacketSubmit.packet.packet_id)
+          setMe((prev) => {
+              return {
+                  ...prev,
+                  students: prev?.students.map((student) => {
+                  const returnValue = { ...student }
+                  if (student.student_id === data.data.saveEnrollmentPacketSubmit.student.student_id) {
+                      return data.data.saveEnrollmentPacketSubmit.student
+                  }
+                  return returnValue
+                  }),
+              }
+          })
+          data && setShowSuccess(true)
+      })
     }
   },fileId)
 
@@ -245,7 +259,7 @@ export default function SubmissionNew({id, questions}) {
 
   const nextTab = (e) => {
     e.preventDefault()
-    history.push(`${HOMEROOM}`)
+    history.push(`${HOMEROOM}` + '/' + id)
     window.scrollTo(0, 0)
     }
 
@@ -279,7 +293,7 @@ export default function SubmissionNew({id, questions}) {
             </Grid>
             <Grid item xs={12} sx={{display:'flex', justifyContent: 'center',}}>
                 <Box sx={{borderBottom:'1px solid', width: 500}}>
-                <SignatureCanvas 
+                <SignatureCanvas                     
                     canvasProps={{width: 500, height:100,}} 
                     ref={signatureRef}
                 />
@@ -303,7 +317,7 @@ export default function SubmissionNew({id, questions}) {
                 type='submit'
                 >
                 <Paragraph fontWeight='700' size='medium'>
-                { disabled ? 'Go Home' : 'Done'}
+                { disabled ? 'Okay' : 'Done'}
                 </Paragraph>
                 </Button>
             </Box>

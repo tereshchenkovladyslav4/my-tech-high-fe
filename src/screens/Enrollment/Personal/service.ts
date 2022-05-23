@@ -78,6 +78,7 @@ export const enrollmentPersonalMutation = gql`
             street2
             zip
             state
+            county_id
           }
         }
         grade_levels {
@@ -171,6 +172,7 @@ export const enrollmentContactMutation = gql`
             street2
             zip
             state
+            county_id
           }
         }
         grade_levels {

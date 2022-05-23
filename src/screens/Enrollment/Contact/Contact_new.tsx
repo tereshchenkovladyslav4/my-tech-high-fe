@@ -32,7 +32,7 @@ export default function ContactNew({id, questions}) {
       let valid_meta = {}
       questions.groups.map((g) => {
         g.questions.map((q) => {
-          if(q.type !== 8 || q.type !== 7) {
+          if(q.type !== 8 && q.type !== 7) {
             if(q.slug?.includes('student_')) {
             
               if(q.required) {
@@ -110,6 +110,7 @@ export default function ContactNew({id, questions}) {
       packet: {...student.packets.at(-1)},
       meta: student.packets.at(-1)?.meta && JSON.parse(student.packets.at(-1)?.meta) || {},
       address: {...student.person.address},
+      school_year_id: student.current_school_year_status.school_year_id,
     },
     validationSchema: validationSchema,
     onSubmit: () => {
@@ -129,8 +130,8 @@ export default function ContactNew({id, questions}) {
               school_district: formik.values.packet?.school_district || '',
               meta: JSON.stringify(formik.values.meta)},
             student: {
-              ...omit(formik.values.student, ['person_id', 'photo', 'phone', 'grade_levels']),
-              address: formik.values.address,              
+              ...omit(formik.values.student, ['person_id', 'photo', 'phone', 'grade_levels', 'emailConfirm']),
+              address: formik.values.address,   
             },
             school_year_id: student.current_school_year_status.school_year_id,
         }
@@ -143,6 +144,9 @@ export default function ContactNew({id, questions}) {
           profile: {
             ...prev.profile,
             ...formik.values.parent,
+            phone: {
+              number: formik.values.parent.phone_number
+            }
           },
           students: prev?.students.map((student) => {
             const returnValue = { ...student }

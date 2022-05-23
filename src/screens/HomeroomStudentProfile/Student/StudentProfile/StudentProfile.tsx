@@ -30,7 +30,7 @@ export const StudentProfile = () => {
   const history = useHistory()
 
   const { person } = student
-  const { status } = student?.packets.at(-1)
+  const status = student?.packets?.at(-1)?.status
 
   const [warn, setWarn] = useState(false)
   const [submitUpdate, { data }] = useMutation(updateProfile)

@@ -15,6 +15,7 @@ type SortableTableProps = {
   onSortChange?: (property: keyof any, order: string) => void
   toggleMasquerade?: (id: number, masquerade: boolean) => void
   handleMasquerade?: (id: number) => void
+  canMasquerade: boolean
 }
 
 export type SortableTableTemplateType = FunctionComponent<SortableTableProps>

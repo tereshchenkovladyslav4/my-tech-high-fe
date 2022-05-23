@@ -10,7 +10,7 @@ import { filter, map } from 'lodash'
 import {  useFormikContext } from 'formik'
 import EnrollmentQuestionItem from '../../../Question'
 
-export const DocumentUpload = ({item, formik, handleUpload, file, firstName, lastName}) => {
+export const DocumentUpload = ({item, formik, handleUpload, file, firstName, lastName, disabled}) => {
   const classes = useStyles
 
   const  [open, setOpen] = useState(false)
@@ -67,6 +67,7 @@ export const DocumentUpload = ({item, formik, handleUpload, file, firstName, las
         <Box sx={classes.buttonContainer}>
           <Paragraph size='medium'>{'Allowed file types: pdf, png, jpg, jpeg, gif, bmp (Less than 25MB)'}</Paragraph>
           <Button 
+            disabled={disabled}
             style={classes.button}
             onClick={() => setOpen(true)}
           >

@@ -31,7 +31,7 @@ export const getRegionByUserId = gql`
 
 export const getActiveSchoolYearsByRegionId = gql`
   query GetActiveSchoolYears($regionId: ID!) {
-    getActiveSchoolYears(region_id: $regionId) {
+    getSchoolYearsByRegionId(region_id: $regionId) {
       date_begin
       date_end
       date_reg_close
@@ -45,9 +45,9 @@ export const getActiveSchoolYearsByRegionId = gql`
 `
 
 export const ExistingParent = () => {
-  const [emptyStudent, setEmptyStudent] = useState({ first_name: '', last_name: '' , grade_level: undefined})
+  const [emptyStudent, setEmptyStudent] = useState({ first_name: '', last_name: '', grade_level: undefined })
   const initSchema = {
-    programYear: string().required('Grade Level is required')
+    programYear: string().required('Grade Level is required'),
   }
   const [validationSchema, setValidationSchema] = useState()
 
@@ -75,7 +75,7 @@ export const ExistingParent = () => {
   })
 
   const { loading: questionLoading, data: questionData } = useQuery(getQuestionsGql, {
-    variables: { input: { region_id: Number(regionId) } },    
+    variables: { input: { region_id: Number(regionId) } },
     // skip: regionId ? false : true,
     fetchPolicy: 'network-only',
   })
@@ -104,57 +104,62 @@ export const ExistingParent = () => {
   }, [questionData, regionId])
 
   useEffect(() => {
-    if(questions.length > 0) {
-      let empty = {...emptyStudent}
+    if (questions.length > 0) {
+      let empty = { ...emptyStudent }
       let valid_student = {}
       let valid_meta = {}
       questions.map((q) => {
-        if(q.type !== 7) {
-          if(q.slug?.includes('student_')) {
+        if (q.type !== 7) {
+          if (q.slug?.includes('student_')) {
             empty[`${q.slug?.replace('student_', '')}`] = ''
-            if(q.required) {
-              if(q.slug?.toLocaleLowerCase().includes('emailconfrim')) {
+            if (q.required) {
+              if (q.slug?.toLocaleLowerCase().includes('emailconfrim')) {
                 valid_student[`${q.slug?.replace('student_', '')}`] = yup
-                    .string()
-                    .required('Email is required')
-                    .oneOf([yup.ref('email')], 'Emails do not match')
-              }
-              else if(q.type === 3) {
-                valid_student[`${q.slug?.replace('student_', '')}`] = yup.array().min(1, `${q.question} is required`).required(`${q.question} is required`)
-              }
-              else if(q.type === 4) {
-                valid_student[`${q.slug?.replace('student_', '')}`] = yup.boolean().oneOf([true], 'This field must be checked')
-              }
-              else {
+                  .string()
+                  .required('Email is required')
+                  .oneOf([yup.ref('email')], 'Emails do not match')
+              } else if (q.type === 3) {
+                valid_student[`${q.slug?.replace('student_', '')}`] = yup
+                  .array()
+                  .min(1, `${q.question} is required`)
+                  .required(`${q.question} is required`)
+              } else if (q.type === 4) {
+                valid_student[`${q.slug?.replace('student_', '')}`] = yup
+                  .boolean()
+                  .oneOf([true], 'This field must be checked')
+              } else {
                 valid_student[`${q.slug?.replace('student_', '')}`] = yup.string().required(`${q.question} is required`)
               }
             }
-          }
-          else if(q.slug?.includes('meta_') && q.required) {
-            if(q.validation === 1) {
+          } else if (q.slug?.includes('meta_') && q.required) {
+            if (q.validation === 1) {
               valid_meta[`${q.slug}`] = yup.string().email('Enter a valid email').required('Email is required')
-            }
-            else if(q.validation === 2) {
-              valid_meta[`${q.slug}`] = yup.string()
-              .required(`${q.question} is required`)
-              .test(`${q.question}-selected`, `${q.question} is invalid`, (value) => {
-                return isNumber.test(value)
-              })
-            }
-            else if(q.type === 3) {
-              valid_meta[`${q.slug}`] = yup.array().min(1, `${q.question} is required`).required(`${q.question} is required`)
-            }
-            else if(q.type === 4) {
+            } else if (q.validation === 2) {
+              valid_meta[`${q.slug}`] = yup
+                .string()
+                .required(`${q.question} is required`)
+                .test(`${q.question}-selected`, `${q.question} is invalid`, (value) => {
+                  return isNumber.test(value)
+                })
+            } else if (q.type === 3) {
+              valid_meta[`${q.slug}`] = yup
+                .array()
+                .min(1, `${q.question} is required`)
+                .required(`${q.question} is required`)
+            } else if (q.type === 4) {
               valid_meta[`${q.slug}`] = yup.boolean().oneOf([true], 'This field must be checked')
-            }
-            else {
+            } else {
               valid_meta[`${q.slug}`] = yup.string().required(`${q.question} is required`)
             }
           }
         }
       })
       setEmptyStudent(empty)
-      setValidationSchema({...initSchema, students: yup.array(yup.object(valid_student)), meta: yup.object(valid_meta)})
+      setValidationSchema({
+        ...initSchema,
+        students: yup.array(yup.object(valid_student)),
+        meta: yup.object(valid_meta),
+      })
     }
   }, [questions])
 
@@ -171,7 +176,7 @@ export const ExistingParent = () => {
           state: 'UT',
           program_year: parseInt(data.programYear!),
           students: data.students,
-          meta: JSON.stringify(data.meta)
+          meta: JSON.stringify(data.meta),
         },
       },
     }).then((res) => {
@@ -222,16 +227,16 @@ export const ExistingParent = () => {
   }, [me?.user_id, regionData])
 
   useEffect(() => {
-    if (!schoolLoading && schoolYearData?.getActiveSchoolYears) {
+    if (!schoolLoading && schoolYearData?.getSchoolYearsByRegionId) {
       setSchoolYears(
-        schoolYearData?.getActiveSchoolYears.map((item) => {
+        schoolYearData?.getSchoolYearsByRegionId.map((item) => {
           return {
             label: moment(item.date_begin).format('YYYY') + '-' + moment(item.date_end).format('YYYY'),
             value: item.school_year_id,
           }
         }),
       )
-      setSchoolYearsData(schoolYearData?.getActiveSchoolYears)
+      setSchoolYearsData(schoolYearData?.getSchoolYearsByRegionId)
     }
   }, [regionId, schoolYearData])
 
@@ -295,36 +300,37 @@ export const ExistingParent = () => {
                     </Field>
                   </Box>
                 </Grid>
-                {!questionLoading && questions.length > 0 && (<Grid item xs={12} display='flex' justifyContent={'center'}>
-                  <Box width={'451.53px'}>
-                      {questions.map((q, index) => q.slug.includes('meta_') && 
-                      (
-                        <Grid item xs={12} display='flex' justifyContent={'center'}>
-                          <Box width={'451.53px'}>
-                            <Field
-                              name = {`meta.${q.slug}`}
-                              fullWidth
-                              focused
-                            >
-                              {({ field, form, meta }) => (
-                                <AdditionalQuestionItem question={q} field={field} form={form} meta={meta}/>
-                              )}
-                            </Field>
-                          </Box>
-                        </Grid>
-                      ))}
-                  </Box>
-                </Grid>)}
+                {!questionLoading && questions.length > 0 && (
+                  <Grid item xs={12} display='flex' justifyContent={'center'}>
+                    <Box width={'451.53px'}>
+                      {questions.map(
+                        (q, index) =>
+                          q.slug.includes('meta_') && (
+                            <Grid item xs={12} display='flex' justifyContent={'center'}>
+                              <Box width={'451.53px'}>
+                                <Field name={`meta.${q.slug}`} fullWidth focused>
+                                  {({ field, form, meta }) => (
+                                    <AdditionalQuestionItem question={q} field={field} form={form} meta={meta} />
+                                  )}
+                                </Field>
+                              </Box>
+                            </Grid>
+                          ),
+                      )}
+                    </Box>
+                  </Grid>
+                )}
                 <Grid item xs={12} display='flex' justifyContent={'center'}>
                   <Box width={'451.53px'}>
                     <FieldArray name='students'>
                       {({ push, remove }) => (
                         <>
                           {values.students.map((_, index) => (
-                            <Grid item container spacing={2} xs={12} sm="auto">
-                              {!questionLoading && questions.length > 0 && 
+                            <Grid item container spacing={2} xs={12} sm='auto'>
+                              {!questionLoading &&
+                                questions.length > 0 &&
                                 questions.map((q) => {
-                                  if(q.slug === 'student_grade_level') {
+                                  if (q.slug === 'student_grade_level') {
                                     return (
                                       <Grid item xs={12}>
                                         <Field name={`students[${index}].grade_level`} fullWidth focused>
@@ -333,7 +339,9 @@ export const ExistingParent = () => {
                                               <DropDown
                                                 name={`students[${index}].grade_level`}
                                                 labelTop
-                                                placeholder={`Student Grade Level (age) as of ${moment(birthDateCut).format('MMM Do YYYY')}`}
+                                                placeholder={`Student Grade Level (age) as of ${moment(
+                                                  birthDateCut,
+                                                ).format('MMM Do YYYY')}`}
                                                 dropDownItems={gradesDropDownItems}
                                                 setParentValue={(id) => {
                                                   form.setFieldValue(field.name, id)
@@ -341,7 +349,9 @@ export const ExistingParent = () => {
                                                 alternate={true}
                                                 size='small'
                                                 sx={
-                                                  !!(meta.touched && meta.error) ? classes.textFieldError : classes.dropdown
+                                                  !!(meta.touched && meta.error)
+                                                    ? classes.textFieldError
+                                                    : classes.dropdown
                                                 }
                                                 error={{
                                                   error: !!(meta.touched && meta.error),
@@ -353,41 +363,43 @@ export const ExistingParent = () => {
                                         </Field>
                                       </Grid>
                                     )
-                                  }
-                                  else if(q.slug.includes('student_')) {
+                                  } else if (q.slug.includes('student_')) {
                                     return (
                                       <Grid item xs={12}>
-                                        <Box 
-                                          width={index === 0 ? '100%' : '103.9%'} 
-                                          display='flex' 
-                                          flexDirection='row' 
+                                        <Box
+                                          width={index === 0 ? '100%' : '103.9%'}
+                                          display='flex'
+                                          flexDirection='row'
                                           alignItems={'center'}
                                         >
-                                          <Field 
+                                          <Field
                                             name={`students[${index}].${q.slug.replace('student_', '')}`}
                                             fullWidth
                                             focused
                                           >
                                             {({ field, form, meta }) => (
                                               <Box width={'100%'}>
-                                                <AdditionalQuestionItem question={q} key={index} field={field} form={form} meta={meta}/>
+                                                <AdditionalQuestionItem
+                                                  question={q}
+                                                  key={index}
+                                                  field={field}
+                                                  form={form}
+                                                  meta={meta}
+                                                />
                                               </Box>
                                             )}
                                           </Field>
-                                          {
-                                            index !== 0 && q.slug === 'student_first_name'
-                                            ? <DeleteForeverOutlinedIcon 
-                                                sx={{left: 12, position: 'relative', color: 'darkgray'}}
-                                                onClick={() => remove(index)}
-                                              />
-                                            : null
-                                          }
+                                          {index !== 0 && q.slug === 'student_first_name' ? (
+                                            <DeleteForeverOutlinedIcon
+                                              sx={{ left: 12, position: 'relative', color: 'darkgray' }}
+                                              onClick={() => remove(index)}
+                                            />
+                                          ) : null}
                                         </Box>
                                       </Grid>
                                     )
                                   }
-                                })
-                              }
+                                })}
                             </Grid>
                           ))}
                           <Grid item>
@@ -411,8 +423,13 @@ export const ExistingParent = () => {
                   </Box>
                 </Grid>
                 <Grid item xs={12}>
-                  <Button variant='contained' style={classes.submitButton} type='submit' disabled={ Boolean(Object.keys(errors).length)}>
-                  {`Submit to ${availableRegions[regionId - 1]?.label || ''} School`}
+                  <Button
+                    variant='contained'
+                    style={classes.submitButton}
+                    type='submit'
+                    disabled={Boolean(Object.keys(errors).length)}
+                  >
+                    {`Submit to ${availableRegions[regionId - 1]?.label || ''} School`}
                   </Button>
                 </Grid>
               </Grid>

@@ -44,7 +44,7 @@ export const AdminRoutes: FunctionComponent = () => {
       <Route exact path={WITHDRAWAL}>
         <Withdrawals />
       </Route>
-      <Route exact path={ANNOUNCEMENTS}>
+      <Route path={ANNOUNCEMENTS}>
         <Announcements />
       </Route>
       <Route exact path={CALENDAR}>

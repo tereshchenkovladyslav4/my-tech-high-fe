@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from '@apollo/client'
 import { Box, Button, Card } from '@mui/material'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { BLACK, BUTTON_LINEAR_GRADIENT } from '../../../utils/constants'
 import CloseIcon from '@mui/icons-material/Close'
 import { Header } from './components/Header/Header'
@@ -10,6 +10,7 @@ import { StudentProfile } from './StudentProfile/StudentProfile'
 import { getParentDetail, updatePersonAddressMutation, UpdateStudentMutation } from './services'
 import { NewUserModal } from './components/NewUserModal/NewUserModal'
 import { useStyles } from './styles'
+import { UserContext } from '../../../providers/UserContext/UserProvider'
 
 export const UserProfile = ({ handleClose, data, setIsChanged }) => {
   const classes = useStyles
@@ -26,6 +27,7 @@ export const UserProfile = ({ handleClose, data, setIsChanged }) => {
   const [selectedStudent, setSelectedStudent] = useState(parseInt(data.student_id))
   const [selectedParentType, setSelectedParentType] = useState('parent')
   const [applicationState, setApplicationState] = useState('')
+  const {me} = useContext(UserContext)
   const {
     loading: userLoading,
     error: userError,
@@ -41,6 +43,7 @@ export const UserProfile = ({ handleClose, data, setIsChanged }) => {
   const [updateStudent, { data: studentData }] = useMutation(UpdateStudentMutation)
 
   const [updatePersonAddress, { data: updatedData }] = useMutation(updatePersonAddressMutation)
+  
   const handleSavePerson = async () => {
     if (selectedParent) {
       const person: any = Object.assign({}, userInfo)
@@ -167,6 +170,7 @@ export const UserProfile = ({ handleClose, data, setIsChanged }) => {
           parentId={currentUserData?.parentDetail?.parent_id}
           isParent={data.parent_id ? true : false}
           selectedParentType={selectedParentType}
+          me={me}
         />
         <Box
           sx={{
@@ -198,7 +202,7 @@ export const UserProfile = ({ handleClose, data, setIsChanged }) => {
           />
         </Box>
       </Box>
-      <Students students={students} selectedStudent={selectedStudent} handleChangeStudent={handleChangeStudent} />
+      <Students students={students} selectedStudent={selectedStudent} handleChangeStudent={handleChangeStudent} me={me}/>
       {selectedParent && !selectedStudent ? (
         <ParentProfile
           userInfo={userInfo}

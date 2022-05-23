@@ -85,6 +85,7 @@ export const getParentDetailByEmail = gql`
             state
             zip
             city
+            county_id
           }
         }
       }
@@ -123,6 +124,7 @@ export const getParentDetailByEmail = gql`
             state
             zip
             city
+            county_id
           }
         }
       }
@@ -157,6 +159,7 @@ export const getParentDetailByEmail = gql`
           state
           zip
           city
+          county_id
         }
       }
     }

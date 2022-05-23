@@ -1,8 +1,10 @@
 import { useQuery } from '@apollo/client'
+import { Box } from '@mui/material'
 import React, { useContext, useEffect, useState } from 'react'
 import { AdminAppBar } from '../components/AdminAppBar/AdminAppBar'
 import { AppBar } from '../components/AppBar/AppBar'
 import { Flexbox } from '../components/Flexbox/Flexbox'
+import { MasqueradeFooter } from '../components/MasqueradeFooter/MasqueradeFooter'
 import { AdminSideMenu } from '../components/SideMenu/AdminSideMenu'
 import { SideMenu } from '../components/SideMenu/SideMenu'
 import { TabContext, UserContext } from '../providers/UserContext/UserProvider'
@@ -48,15 +50,16 @@ export const Root = () => {
     <LoadingScreen />
   ) : me !== null ? (
     !isSuper ? (
-      <Flexbox flexDirection='row'>
+      <Box sx={{height: '100%', flex: 1}}  alignItems={'center'}>
         <SideMenu />
-        <Flexbox flexDirection='column'>
+        <Box display='flex' flex={1} flexDirection={'column'} textAlign={'center'} justifyContent='space-between' height='100vh'>
           <div style={{ marginLeft: '260px' }}>
             {me?.level === 2 ? <AdminAppBar /> : <AppBar />}
             <Routes />
           </div>
-        </Flexbox>
-      </Flexbox>
+          { localStorage.getItem('masquerade') !== null && <MasqueradeFooter me={me}/> }
+        </Box>
+      </Box>
     ) : (
       <Flexbox flexDirection='row'>
         <AdminSideMenu />

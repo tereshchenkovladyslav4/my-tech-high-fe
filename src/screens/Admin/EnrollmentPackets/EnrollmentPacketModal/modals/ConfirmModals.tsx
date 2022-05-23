@@ -53,7 +53,7 @@ export default function PacketConfirmModals({ packet, refetch, submitForm }) {
       .replace(/\[LINK\]/g, `<a href="${url}/homeroom/enrollment/${student.student_id}">${url}/homeroom/enrollment/${student.student_id}</a>`) //adding host detail from backend
       .replace(/\[STUDENT\]/g, student.person.first_name)
       .replace(/\[PARENT\]/g, student.parent.person.first_name)
-      .replace(/\[STUDENT_GRADE_LEVEL\]/g, student.grade_levels[0].grade_level)
+      .replace(/\[STUDENT_GRADE_LEVEL\]/g, student?.grade_level || ' ')
       .replace(/\[YEAR\]/g, `${yearbegin}-${yearend.substring(2, 4)}`)
       .replace(/\[APPLICATION_YEAR\]/g, `${yearbegin}-${yearend.substring(2, 4)}`)
   }

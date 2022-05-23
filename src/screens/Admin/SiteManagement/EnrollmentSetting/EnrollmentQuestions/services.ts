@@ -59,7 +59,7 @@ export const getCountiesByRegionId = gql`
 `
 export const getActiveSchoolYearsByRegionId = gql`
   query GetActiveSchoolYears($regionId: ID!) {
-    getActiveSchoolYears(region_id: $regionId) {
+    getSchoolYearsByRegionId(region_id: $regionId) {
       date_begin
       date_end
       date_reg_close

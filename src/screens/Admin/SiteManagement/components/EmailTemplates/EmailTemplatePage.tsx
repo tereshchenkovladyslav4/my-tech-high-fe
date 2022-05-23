@@ -157,7 +157,7 @@ export const EmailTemplatePage = ({ onBackPress }) => {
     if(emailTemplatesData != undefined) {
       let templates = {};
       emailTemplatesData.emailTemplatesByRegion.forEach(emailTemplate => {
-        let category = null, category_name = emailTemplate.category.category_name;
+        let category = null, category_name = emailTemplate?.category?.category_name;
         
         if(!Object.keys(templates).find(x => x == category_name))
         templates[category_name] = [];
@@ -177,7 +177,7 @@ export const EmailTemplatePage = ({ onBackPress }) => {
           category_id: emailTemplate.category_id,
           category: emailTemplate.category,
           template: emailTemplate.template,
-          inserts: emailTemplate.inserts.split(","),
+          inserts: emailTemplate?.inserts?.split(","),
           region_id: emailTemplate.region_id,
         })
       });

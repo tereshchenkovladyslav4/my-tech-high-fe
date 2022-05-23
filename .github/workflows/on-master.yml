@@ -19,10 +19,10 @@ jobs:
           cache: 'npm'
 
       - name: Install
-        run: npm install
+        run: yarn
 
       - name: Build
-        run: npm run build-stag
+        run: yarn build-stag
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1

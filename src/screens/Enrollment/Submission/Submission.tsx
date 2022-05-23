@@ -183,7 +183,7 @@ export const Submission: FunctionComponent = () => {
     {showSuccess 
       && <SuccessModal 
         title='' 
-        subtitle='Your Enrollment Packet has been submitted successfully and is now pending approval.' 
+        subtitle={`${student.person.first_name}'s Enrollment Packet has been successfully submitted and is now pending approval.`}
         btntitle='Done'
         handleSubmit={() => {
           history.push(`${HOMEROOM}`)

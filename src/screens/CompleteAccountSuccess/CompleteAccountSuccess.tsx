@@ -45,7 +45,7 @@ export const CompleteAccountSuccess = () => {
               </Title>
               <Box marginTop={'50%'}>
                 <Title size='medium' fontWeight='500' textAlign='center'>
-                  You have successfully created your account. please continue
+                  You have successfully created your account. Please continue
                   <Link to={DASHBOARD} style={{ fontWeight: 700, color: MTHBLUE, textDecoration: 'none' }}>
                     {'\u00A0'}here{'\u00A0'}
                   </Link>

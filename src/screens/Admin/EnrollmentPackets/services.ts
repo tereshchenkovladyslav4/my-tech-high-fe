@@ -54,6 +54,7 @@ export const getEnrollmentPacketsQuery = gql`
           status {
             status
           }
+          grade_level
           student_id
           grade_levels {
             grade_level
@@ -73,6 +74,7 @@ export const getEnrollmentPacketsQuery = gql`
               preferred_last_name
               first_name
               last_name
+              middle_name
               email
               address {
                 street
@@ -91,8 +93,18 @@ export const getEnrollmentPacketsQuery = gql`
             preferred_last_name
             first_name
             last_name
+            middle_name
+            email
             date_of_birth
             gender
+            address {
+              street
+              street2
+              city
+              zip
+              state
+              county_id
+            }
           }
         }
         files {
@@ -194,6 +206,7 @@ export const savePacketMutation = gql`
                 street
                 street2
                 zip
+                county_id
               }
               date_of_birth
               email

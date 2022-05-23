@@ -123,6 +123,7 @@ export const DropDown: DropDownTemplateType = ({
             sx={alternate ? classes.alternate : classes.textfield}
             error={error?.error}
             helperText={error?.errorMsg}
+            disabled={disabled || false}
           >
             {renderDropDownItem}
           </CssTextField>

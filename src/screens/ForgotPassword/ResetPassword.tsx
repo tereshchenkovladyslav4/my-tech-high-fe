@@ -67,7 +67,6 @@ export const ResetPassword = () => {
         verifyInput: {
           token,
           password: formik.values.password,
-          confirm_password: formik.values.confirmPassword,
         },
       },
     })
@@ -178,7 +177,7 @@ export const ResetPassword = () => {
 							root:helperTextStyles.root,
               error: helperTextStyles.error
 						}
-				  }}
+        }}
           value={formik.values.confirmPassword}
           onChange={(e) => {
             formik.handleChange(e)
@@ -186,6 +185,9 @@ export const ResetPassword = () => {
           }}
           error={formik.touched.confirmPassword && Boolean(formik.errors.confirmPassword)}
           helperText={formik.touched.confirmPassword && formik.errors.confirmPassword}
+          style={{
+            marginTop: formik.touched.password && Boolean(formik.errors.password) ? '32px' : undefined
+          }}
         />
         {alert && alert.message && (
           <Typography fontSize={14} marginTop={3} color={alert.type === 'error' ? '#BD0043' : 'white'}>

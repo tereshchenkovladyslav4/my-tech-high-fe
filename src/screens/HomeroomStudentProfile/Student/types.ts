@@ -100,7 +100,7 @@ export type StudentType = {
   applications?: Application[]
   parent?: Parent
   hidden?: number
-  grade_level?: number
+  grade_level?: string
   current_school_year_status: {
     school_year_id: number,
     grade_level: string 

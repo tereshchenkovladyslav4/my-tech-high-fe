@@ -3,7 +3,7 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import { AppBar as MUIAppBar, Avatar, Box, Button, Divider, Grid } from '@mui/material'
 import { filter, map } from 'lodash'
-import React, { FunctionComponent, useContext, useRef, useState } from 'react'
+import React, { FunctionComponent, useContext, useEffect, useRef, useState } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 import Slider from 'react-slick'
 import { UserContext } from '../../providers/UserContext/UserProvider'
@@ -21,13 +21,10 @@ export const AppBar: FunctionComponent = () => {
 
   const { me } = useContext(UserContext)
 
-  const { students } = me
+  //const { students } = me
+  const [students, setStudents] = useState<StudentType[]>([])
 
-  const [activeStudents] = useState(
-    filter(students, (student) => {
-      return student?.status?.at(-1)?.status !== 2
-    }),
-  )
+  const [activeStudents, setActiveStudents] = useState<StudentType[]>([])
 
   const location = useLocation()
 
@@ -174,6 +171,17 @@ export const AppBar: FunctionComponent = () => {
         </Box>
       )
     })
+
+  useEffect(() => {
+    if (me?.students) {
+      setStudents(me?.students)
+      setActiveStudents(
+        filter(me?.students, (student) => {
+          return student?.status?.at(-1)?.status !== 2
+        }),
+      )
+    }
+  }, [me?.students])
 
   return (
     <MUIAppBar position='static' sx={classes.appBar} elevation={0}>

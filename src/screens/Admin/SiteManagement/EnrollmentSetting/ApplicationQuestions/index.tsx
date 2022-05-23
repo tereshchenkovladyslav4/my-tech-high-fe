@@ -94,16 +94,16 @@ export default function ApplicationQuestions() {
   const [birthDateCut, setBirthDateCut] = useState<string>('')
 
   useEffect(() => {
-    if (!schoolLoading && schoolYearData.getActiveSchoolYears) {
+    if (!schoolLoading && schoolYearData.getSchoolYearsByRegionId) {
       setSchoolYears(
-        schoolYearData.getActiveSchoolYears.map((item) => {
+        schoolYearData.getSchoolYearsByRegionId.map((item) => {
           return {
             label: moment(item.date_begin).format('YYYY') + '-' + moment(item.date_end).format('YYYY'),
             value: item.school_year_id,
           }
         }),
       )
-      setSchoolYearsData(schoolYearData.getActiveSchoolYears)
+      setSchoolYearsData(schoolYearData.getSchoolYearsByRegionId)
     }
   }, [schoolYearData])
 

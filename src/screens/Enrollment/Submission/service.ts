@@ -78,6 +78,7 @@ mutation SaveEnrollmentPacketSubmission($enrollmentPacketDocumentInput: Enrollme
           street2
           zip
           state
+          county_id
         }
       }
       grade_levels {
@@ -170,6 +171,7 @@ export const enrollmentContactMutation = gql`
             street2
             zip
             state
+            county_id
           }
         }
         grade_levels {

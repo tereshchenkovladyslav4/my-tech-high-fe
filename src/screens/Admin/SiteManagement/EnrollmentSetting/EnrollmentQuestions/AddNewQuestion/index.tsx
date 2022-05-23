@@ -436,6 +436,7 @@ export default function AddNewQuestionModal({
                   editorRef={(ref) => (editorRef.current = ref)}
                   editorState={editorState}
                   onEditorStateChange={setEditorState}
+                  handlePastedText={() => false}
                   toolbar={{
                     options: [
                       'inline', 

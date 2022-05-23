@@ -12,7 +12,7 @@ import { omit } from 'lodash';
 import { useMutation, useQuery } from '@apollo/client'
 import { isPhoneNumber, isNumber } from '../../../utils/stringHelpers'
 import * as yup from 'yup';
-import { HOMEROOM } from '../../../utils/constants'
+import { RED } from '../../../utils/constants'
 import { useHistory } from 'react-router-dom'
 import { uploadDocumentMutation, enrollmentContactMutation } from './service'
 import { LoadingScreen } from '../../LoadingScreen/LoadingScreen'
@@ -31,7 +31,7 @@ export default function DocumentsNew({id, questions}) {
 
   const [validationSchema, setValidationSchema] = useState(yup.object({}))
   // const [submitPersonalMutation, { data }] = useMutation(enrollmentContactMutation)
-    
+      
   useEffect(() => {
     if(questions?.groups?.length > 0) {
       let valid_student = {}
@@ -39,7 +39,7 @@ export default function DocumentsNew({id, questions}) {
       let valid_meta = {}
       questions.groups.map((g) => {
         g.questions.map((q) => {
-          if(q.type !== 8 || q.type !== 7) {
+          if(q.type !== 8 && q.type !== 7) {
             if(q.slug?.includes('student_')) {
             
               if(q.required) {
@@ -104,8 +104,9 @@ export default function DocumentsNew({id, questions}) {
           }
         })
       })
-      
       setValidationSchema(yup.object({parent: yup.object(valid_parent), students: yup.array(yup.object(valid_student)), meta: yup.object(valid_meta)}))
+
+      console.log(validationSchema);
     }
   }, [questions])
   
@@ -125,13 +126,13 @@ export default function DocumentsNew({id, questions}) {
               school_district: formik.values.packet?.school_district || '',
               meta: JSON.stringify(formik.values.meta)},
             student: {
-              ...omit(formik.values.student, ['person_id', 'photo', 'phone', 'grade_levels']),
-              address: formik.values.address,              
+              ...omit(formik.values.student, ['person_id', 'photo', 'phone', 'grade_levels', 'emailConfirm']),
+              address: formik.values.address, 
             },
             school_year_id: student.current_school_year_status.school_year_id,
         }
       }
-    }).then((data) => {
+    }).then(async (data) => {
       setPacketId(data.data.saveEnrollmentPacketContact.packet.packet_id)
       setMe((prev) => {
         return {
@@ -146,35 +147,31 @@ export default function DocumentsNew({id, questions}) {
         }
       })
       if(filesToUpload.length > 0) {
-        filesToUpload.map(async (uploadEl, idx) => {
+        let tempUploads = []
+        await Promise.all(filesToUpload.map(async (uploadEl, idx) => {
           var bodyFormData = new FormData();
           if(uploadEl.file){
             bodyFormData.append('file',uploadEl.file[0])
             bodyFormData.append('region', 'UT')
             bodyFormData.append('year', '2022')
-            fetch( import.meta.env.SNOWPACK_PUBLIC_S3_URL,{
+            const res = await fetch( import.meta.env.SNOWPACK_PUBLIC_S3_URL,{
               method: 'POST',
               body: bodyFormData,
               headers: {
                 'Authorization': `Bearer ${localStorage.getItem('JWT')}`
               },
             })
-            .then( async(res) => {
-              res.json()
-                .then( ({data}) => {
-                  setDocuments((curr) => (
-                    [
-                      ...curr,
-                      {
-                        kind: uploadEl.type,
-                        mth_file_id: data?.file.file_id
-                      }
-                    ]
-                  ))
-                })
-              })
+            const {data} = await res.json()
+            tempUploads.push(
+              {
+                kind: uploadEl.type,
+                mth_file_id: data?.file.file_id
+              }
+            )
           }
-        })
+        }
+        ))
+        setDocuments(tempUploads)
       }
       else {
         setVisitedTabs(Array.from(Array(tab.currentTab + 1).keys()))        
@@ -186,14 +183,21 @@ export default function DocumentsNew({id, questions}) {
     })
   }
 
-  const formik = useFormik({
-    initialValues: {
+  const [initFormikValues, setInitFormikValues] = useState({})
+
+  useEffect(() => {
+    setInitFormikValues({
       parent: {...profile, phone_number: profile.phone.number},
       student: {...student.person, phone_number: student.person.phone.number, grade_levels: student.grade_levels, grade_level: student.current_school_year_status.grade_level},
       packet: {...student.packets.at(-1)},
       meta: student.packets.at(-1)?.meta && JSON.parse(student.packets.at(-1)?.meta) || {},
       address: {...student.person.address},
-    },
+      school_year_id: student.current_school_year_status.school_year_id,
+    })
+  }, [profile, student])
+  const formik = useFormik({
+    enableReinitialize: true,
+    initialValues: initFormikValues,
     validationSchema: validationSchema,
     onSubmit: () => {
       goNext()
@@ -258,7 +262,6 @@ export default function DocumentsNew({id, questions}) {
     isLoading()
   }, [files])
 
-
   const nextTab = (e) => {
     e.preventDefault()
     setTab({
@@ -269,8 +272,14 @@ export default function DocumentsNew({id, questions}) {
 
   const [documents, setDocuments] = useState([])
       
-  const goNext = async () => {  
-    await submitDocuments()
+  const goNext = async () => {
+    let validDoc = true
+    questions?.groups[0]?.questions.map((item) => 
+      validDoc = validDoc && checkValidate(item)
+    )
+    if(validDoc) {
+      await submitDocuments()
+    }
   }
 
   useEffect(() => {
@@ -287,23 +296,25 @@ export default function DocumentsNew({id, questions}) {
   },[documents])
 
   const history = useHistory()
-
   const submitRecord = useCallback((documentType: string, file: File) => {
-    // switch(documentType){
-    //   case 'ur':
-    //     setResidencyRecord(file)
-    //     break;
-    //   case 'im':
-    //     setImmunRec(file)
-    //     break;
-    //   case 'bc':
-    //     setBirthCert(file)
-    //     break;
-    // }
     if(file){
       setFilesToUpload([...filesToUpload, {file: file, type: documentType}])
     }    
   }, [filesToUpload])
+
+  const checkValidate = (item) => {
+    if(item){
+      if(item.required) {
+        const exist = files?.filter((file) => file.name.includes(`${student.person.first_name.charAt(0).toUpperCase()}.${student.person.last_name}${item.options[0]?.label}`)).length > 0 ? true : false
+        const upload = filesToUpload?.filter((file) => file.type === item.question).length > 0 ? true : false
+        return exist || upload
+      }
+      else {
+        return true
+      }
+    }    
+    return false
+  }
 
   return (
     !dataLoading ? <form  onSubmit={(e) => !disabled ? formik.handleSubmit(e) : nextTab(e)}>
@@ -312,15 +323,19 @@ export default function DocumentsNew({id, questions}) {
       <Grid item xs={12}>
         <List>
           {questions?.groups[0]?.questions.map((item, index) => (
-            <Grid item xs={12} marginTop={4}>
+            <Grid item xs={12} marginTop={4} key={index}>
               <DocumentUpload
+                disabled={disabled}
                 item={item}
                 formik={formik}
                 handleUpload={submitRecord}
-                file={files && files.filter((file) => file.name.includes(`${student.person.first_name}.${student.person.last_name}${item.options[0]?.label}`)).sort((a, b) => b.file_id - a.file_id)}
+                file={files && files.filter((file) => file.name.includes(`${student.person.first_name.charAt(0).toUpperCase()}.${student.person.last_name}${item.options[0]?.label}`)).sort((a, b) => b.file_id - a.file_id)}
                 firstName={student.person.first_name}
                 lastName={student.person.last_name}
               />  
+              {item.type === 8 && !checkValidate(item) && <Paragraph color={RED} size='medium' fontWeight='700' sx={{marginLeft: '12px'}}>
+                File is required
+              </Paragraph>}
             </Grid>
           ))}
         </List>
@@ -331,7 +346,7 @@ export default function DocumentsNew({id, questions}) {
             type='submit'
           >
             <Paragraph fontWeight='700' size='medium'>
-                {'Save & Continue'}
+              {disabled ? 'Next' : 'Save & Continue'}
             </Paragraph>
           </Button>
       </Box>

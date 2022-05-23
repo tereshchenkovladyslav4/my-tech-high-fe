@@ -29,7 +29,7 @@ import SubmissionNew from './Submission/Submission_new';
 export const Enrollment: EnrollmentTemplateType = ({id, disabled}: {id: number, disabled: boolean}) => {
   const { me, setMe } = useContext(UserContext)
   const { students } = me
-  const { tab, setTab, visitedTabs, setVisitedTabs } = useContext(TabContext)
+  const { tab, setTab, visitedTabs, setVisitedTabs, } = useContext(TabContext)  
   const { currentTab } = tab 
   const [packetId, setPacketId] = useState<number>()
   const [student] = useState(find(students, {student_id:id}))

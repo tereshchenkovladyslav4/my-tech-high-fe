@@ -79,16 +79,16 @@ export const EmailTemplateModal = ({
     variables: {
       templateId: Number(template.id),
     },
-    skip: template.id,
+    // skip: template.id,
     fetchPolicy: 'network-only',
   })
 
   useEffect(() => {
     if (reminderData !== undefined) {
       console.log('reminderData', reminderData)
-      const reminders = []
+      const reminderDetail = []
       reminderData?.remindersByTemplateId.forEach(remin => {
-        const { reminder_id, title, subject, body, deadline } = remin
+        const { reminder_id, title, subject, body, reminder } = remin
         let editorState
         if (body) {
           const contentBlock = htmlToDraft(body)
@@ -100,16 +100,16 @@ export const EmailTemplateModal = ({
         } else {
           editorState = EditorState.createEmpty()
         }
-        reminders.push({
+        reminderDetail.push({
           reminderId: reminder_id,
-          reminderDay: deadline,
+          reminderDay: reminder,
           reminderTitle: title,
           reminderSubject: subject,
           reminderBody: body,
           editorState: editorState,
         })
       })
-      setReminders(reminders);
+      setReminders(reminderDetail);
     }
   }, [reminderData])
 
@@ -120,6 +120,10 @@ export const EmailTemplateModal = ({
       }
       setCurrentBlocks(state.blocks.length)
     } catch {}
+  }
+
+  const handleEditorStateChange = (editorState) => {
+    setEditorState(editorState);
   }
 
   //Add Reminder
@@ -198,7 +202,7 @@ export const EmailTemplateModal = ({
               title: remind.reminderTitle,
               subject: remind.reminderSubject,
               body: remind.reminderBody,
-              deadline: remind.reminderDay
+              reminder: remind.reminderDay
             }
           } else {
             newReminder = {
@@ -206,7 +210,7 @@ export const EmailTemplateModal = ({
               title: remind.reminderTitle,
               subject: remind.reminderSubject,
               body: remind.reminderBody,
-              deadline: remind.reminderDay
+              reminder: remind.reminderDay
             }
           }
           reminderData.push(newReminder);
@@ -336,7 +340,7 @@ export const EmailTemplateModal = ({
       }
 
       setAddResponse(emailTemplate.standard_responses)
-      setAvailableInserts(emailTemplate.inserts.split(","))
+      setAvailableInserts(emailTemplate?.inserts?.split(","))
       setType(emailTemplate.template)
       if (emailTemplate.body) {
         const contentBlock = htmlToDraft(emailTemplate.body)
@@ -348,11 +352,11 @@ export const EmailTemplateModal = ({
       }
 
       if( emailTemplate.category.category_name == 'Applications' ){
-        setDeadline( emailTemplate.region.application_deadline_num_days );
+        setDeadline( emailTemplate?.region?.application_deadline_num_days );
       }
 
       if( emailTemplate.category.category_name == 'Enrollment Packets' ){
-        setDeadline( emailTemplate.region.enrollment_packet_deadline_num_days );
+        setDeadline( emailTemplate?.region?.enrollment_packet_deadline_num_days );
       }
 
     }
@@ -376,6 +380,7 @@ console.log(response);
             inputProps={{ sx: { textOverflow: 'ellipsis', overflow: 'hidden' } }}
             size='small'
             fullWidth
+            multiline
             placeholder='[Email Title]'
             value={emailTitle}
             onChange={(e) => setEmailTitle(e.target.value)}
@@ -403,7 +408,8 @@ console.log(response);
             onContentStateChange={handleEditorChange}
             editorRef={(ref) => (editorRef.current = ref)}
             editorState={editorState}
-            onEditorStateChange={setEditorState}
+            onEditorStateChange={setEditorState}         
+            handlePastedText={() => false}   
             toolbar={{
               options: [
                 'inline',
@@ -454,10 +460,11 @@ console.log(response);
                 {response.length > 0 &&
                   response.map((reminder, i) => (
                     <Box key={i} sx={{ width: '100%' }}>
-                      <Grid item xs={12} sx={{ marginTop: '50px', width: 170 }}>
+                      <Grid item xs={12} sx={{ marginTop: '50px' }}>
                         <TextField
                           size='small'
                           placeholder='Edit Title'
+                          multiline
                           variant='outlined'
                           onChange={(e) => handleChangeResponse(e.target.value, i, 'title')}
                           fullWidth
@@ -599,6 +606,7 @@ console.log(response);
                           editorRef={(ref) => (editorRef.current = ref)}
                           editorState={reminder.editorState}
                           onEditorStateChange={(editorState) => handleChangeReminder(editorState, i, 'editorState')}
+                          handlePastedText={() => false}
                           toolbar={{
                             options: [
                               'inline',
@@ -671,7 +679,7 @@ console.log(response);
                     <Subtitle fontWeight='600' size='large' className='type-field'>
                       [{item}]
                     </Subtitle>
-                    <Subtitle fontWeight='600' color='#A3A3A4' sx={{ fontSize: '18px' }}>
+                    <Subtitle fontWeight='600' color='#A3A3A4' sx={{ fontSize: '18px', marginLeft: '30px'}}>
                       {insertDescriptions[item]}
                     </Subtitle>
                   </Box>

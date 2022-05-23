@@ -82,7 +82,7 @@ export const SideMenu: FunctionComponent = () => {
       access: [5, 15, checkAdminAccessOnSidebar('Homeroom Resources')],
     }, {
       to: PARENT_LINK,
-      label: 'Quick Link',
+      label: 'Quick Links',
       icon: <CallMadeRoundedIcon style={classes.logos} />,
       access: [15, checkAdminAccessOnSidebar('Parent Link')],
     }, {

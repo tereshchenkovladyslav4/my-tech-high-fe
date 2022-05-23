@@ -7,7 +7,8 @@ export const useStyles = {
         minHeight: "100%",
         width: "95%",
         margin: "auto",
-        pb: 4
+        pb: 4,
+        pt: 4
     },
     input: {
         border: "1px solid #1a1a1a46",
@@ -38,6 +39,7 @@ export const useStyles = {
             background: '#D23C33',
             color: '#fff',
         },
+        marginLeft: 'auto',
     },
     submitButton: {
         background: BUTTON_LINEAR_GRADIENT,

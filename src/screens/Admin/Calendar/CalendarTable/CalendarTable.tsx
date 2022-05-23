@@ -10,7 +10,7 @@ import SearchIcon from '@mui/icons-material/Search'
 import { useStyles } from './styles'
 import { DropDown } from '../../../../components/DropDown/DropDown'
 import { MTHGREEN, SYSTEM_06, SYSTEM_05, SYSTEM_02 } from '../../../../utils/constants'
-// import { CalendarComponent } from '../CalendarComponent'
+import { CalendarComponent } from '../CalendarComponent'
 
 const CalendarTable = () => {
   const classes = useStyles
@@ -101,7 +101,7 @@ const CalendarTable = () => {
           </Grid>
           <Grid item xs={1}></Grid>
           <Grid item xs={8}>
-            {/* <CalendarComponent /> */}
+            <CalendarComponent />
           </Grid>
         </Grid>
       </Box>

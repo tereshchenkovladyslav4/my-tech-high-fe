@@ -87,6 +87,7 @@ mutation SaveEnrollmentPacketEducation($enrollmentPacketEducationInput: Enrollme
           street
           street2
           zip
+          county_id
           state
         }
       }
@@ -180,6 +181,7 @@ export const enrollmentContactMutation = gql`
             street2
             zip
             state
+            county_id
           }
         }
         grade_levels {

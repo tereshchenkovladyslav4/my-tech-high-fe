@@ -96,7 +96,7 @@ export const useStyles = makeStyles({
     display: 'flex',
     alignItems: 'center',
     '& .type-field': {
-      width: '220px',
+      minWidth: '150px',
       textTransform: 'uppercase',
     },
   },

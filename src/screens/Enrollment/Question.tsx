@@ -11,13 +11,13 @@ import { toOrdinalSuffix } from '../../utils/stringHelpers'
 import moment from 'moment'
 import { UserContext, UserInfo } from '../../providers/UserContext/UserProvider'
 import { gql, useQuery } from '@apollo/client'
+import { EnrollmentContext } from '../../providers/EnrollmentPacketPrivder/EnrollmentPacketProvider';
 
-const getSchoolDistrictsByRegionId = gql`
-  query SchoolDistrict($regionId: ID!) {
-    schoolDistrict(id: $regionId) {
-      id
-      school_district_name
-      Region_id
+export const getActiveSchoolYearsByRegionId = gql`
+  query GetActiveSchoolYears($regionId: ID!) {
+    getSchoolYearsByRegionId(region_id: $regionId) {      
+      grades
+      school_year_id
     }
   }
 `
@@ -36,8 +36,8 @@ export default function EnrollmentQuestionItem({
     
     useEffect(() => {
         if(item.type === 1 || item.type === 3 || item.type === 5) {
-            formik.values.meta[`${item.slug}`] && item.options.find((o) => o.action === 2)?.label === formik.values.meta[`${item.slug}`] && formik.values.meta[`${item.slug}_additional`] && setAdditionalQuestion(true)
-            item.additional?.options.find((o) => o.action === 2)?.label === formik.values.meta[`${item.slug}_additional`] && formik.values.meta[`${item.slug}`] && formik.values.meta[`${item.slug}_additional`] && setAdditionalQuestion2(true)
+            formik.values.meta && formik.values.meta[`${item.slug}`] && item.options.find((o) => o.action === 2)?.label === formik.values.meta[`${item.slug}`] && formik.values.meta[`${item.slug}_additional`] && setAdditionalQuestion(true)
+            formik.values.meta && item.additional?.options.find((o) => o.action === 2)?.label === formik.values.meta[`${item.slug}_additional`] && formik.values.meta[`${item.slug}`] && formik.values.meta[`${item.slug}_additional`] && setAdditionalQuestion2(true)
         }
     }, [item, formik])
     
@@ -88,8 +88,26 @@ export default function EnrollmentQuestionItem({
 }
 function Item({ question: q, setAdditionalQuestion, formik }: { question: EnrollmentQuestion | AdditionalQuestionType, setAdditionalQuestion: (flag:boolean) => void, formik: any }) {
     
-    const { me, setMe } = useContext(UserContext)
-    const { userRegion } = me as UserInfo
+    const { me } = useContext(UserContext)
+    const { loading: schoolLoading, data: schoolYearData } = useQuery(getActiveSchoolYearsByRegionId, {
+        variables: {
+          regionId: me?.userRegion[0]?.region_id,
+        },
+        fetchPolicy: 'network-only',
+    })
+
+    const [grades, setGrades] = useState([])
+    useEffect(() => {
+        if (!schoolLoading && schoolYearData?.getSchoolYearsByRegionId) {           
+            schoolYearData.getSchoolYearsByRegionId.forEach((element) => {                
+                if (formik?.values?.school_year_id == element.school_year_id) {
+                  setGrades(element.grades?.split(','))
+                }
+              })
+        }
+    }, [me, schoolLoading, schoolYearData, formik])
+    
+    const { disabled } = useContext(EnrollmentContext);
 
     const keyName = q.slug?.split('_')[0]
     const fieldName = !q.slug?.includes('meta_') ? q.slug?.replace(`${keyName}_`, '') : q.slug
@@ -97,11 +115,10 @@ function Item({ question: q, setAdditionalQuestion, formik }: { question: Enroll
     const [fieldData, setFieldData] = useState(
         formik.values[`${keyName}`] ? formik.values[`${keyName}`][`${fieldName}`] : null
     )
-    const [otherValue, setOtherValue] = useState('')
+    const [otherValue, setOtherValue] = useState('')    
 
     const [gradesDropDownItems, setGradesDropDownItems] = useState<Array<DropDownItem>>([])
 
-    const [grades, setGrades] = useState([])
 
     const [dropDownItemsData, setDropDownItemsData] = useState<Array<DropDownItem>>([])
     useEffect(() => {
@@ -111,14 +128,7 @@ function Item({ question: q, setAdditionalQuestion, formik }: { question: Enroll
         else {
             setDropDownItemsData(q.options  || [])
         }
-
     }, [q, gradesDropDownItems])
-
-    useEffect(() => {
-        if(formik.values.student?.grade_levels?.length > 0) {
-            setGrades(formik.values.student?.grade_levels.map((l) => l.grade_level))
-        }
-    }, [formik.values])
 
     useEffect(() => {
         parseGrades()
@@ -221,7 +231,7 @@ function Item({ question: q, setAdditionalQuestion, formik }: { question: Enroll
 
     if (q.type === 1) {
         return (
-        <DropDown
+        <DropDown            
             sx={{
             minWidth: '100%',
             [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
@@ -230,6 +240,7 @@ function Item({ question: q, setAdditionalQuestion, formik }: { question: Enroll
             }}
             defaultValue={formik.values[`${keyName}`] && getDropDownLabel(formik.values[`${keyName}`][`${fieldName}`])}
             labelTop
+            disabled={disabled}
             dropDownItems={dropDownItemsData}
             setParentValue={(v) => onChangeDropDown(v as string)}
             size='small'
@@ -242,6 +253,7 @@ function Item({ question: q, setAdditionalQuestion, formik }: { question: Enroll
     } else if (q.type === 2) {
         return (
         <TextField
+            disabled={disabled}            
             name={`${keyName}.${fieldName}`}
             value={formik.values[`${keyName}`] ? formik.values[`${keyName}`][`${fieldName}`] : ''}
             onChange={formik.handleChange}
@@ -280,12 +292,13 @@ function Item({ question: q, setAdditionalQuestion, formik }: { question: Enroll
                                 <Grid item xs={q.options.length > 3 ? 6 : 12} key={index}> 
                                     <FormControlLabel
                                         control={
-                                            <Checkbox checked={multiSelected(o.label)} onClick={() => onChange(o.label)}/>
+                                            <Checkbox disabled={disabled} checked={multiSelected(o.label)} onClick={() => onChange(o.label)}/>
                                         }
                                         label={o.label} 
                                     />
                                     {o.label === 'Other' && (
                                     <TextField
+                                        disabled={disabled}
                                         size='small'
                                         sx={{
                                         maxWidth: '50%',
@@ -325,13 +338,20 @@ function Item({ question: q, setAdditionalQuestion, formik }: { question: Enroll
                     <FormGroup style={{ width: '50%' }}>
                         <FormControlLabel
                             control={
-                                <Checkbox checked={multiSelected(q.slug)} onClick={() => onChange(q.slug)} />
+                                <Checkbox checked={multiSelected(q.slug)} onClick={() => onChange(q.slug)} disabled={disabled}/>
                             }
                             label={
                                 <Paragraph size='medium'>
-                                    <a style={{ color: '#111', textDecoration: 'none' }} href={q.options[0]?.label === 'web' ? q.options[0]?.value :`mailto:${q.options[0]?.value}`}>
-                                        {q.question}
-                                    </a>
+                                    {disabled == true &&
+                                        <a style={{ color: '#111', textDecoration: 'none', pointerEvents: 'none' }} href={q.options[0]?.label === 'web' ? q.options[0]?.value :`mailto:${q.options[0]?.value}`}>
+                                            {q.question}
+                                        </a>
+                                    }
+                                    {disabled == false &&
+                                        <a style={{ color: '#111', textDecoration: 'none'}} href={q.options[0]?.label === 'web' ? q.options[0]?.value :`mailto:${q.options[0]?.value}`}>
+                                            {q.question}
+                                        </a>
+                                    }
                                 </Paragraph>
                             }
                         />
@@ -357,7 +377,7 @@ function Item({ question: q, setAdditionalQuestion, formik }: { question: Enroll
                             <Grid item xs={q.options.length > 3 ? 6 : 12}  key={index}> 
                                 <FormControlLabel
                                     control={
-                                        <Radio checked={fieldData === o.label} onClick={() => onChange(o.label)} />
+                                        <Radio checked={fieldData === o.label} onClick={() => onChange(o.label)} disabled={disabled}/>
                                     }
                                     label={o.label} 
                                 />
@@ -374,11 +394,12 @@ function Item({ question: q, setAdditionalQuestion, formik }: { question: Enroll
         return (
         <TextField
             size='small'        
+            disabled={disabled}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             name={`${keyName}.${fieldName}`}
             defaultValue={null}
-            value={formik.values[`${keyName}`][`${fieldName}`] && moment(formik.values[`${keyName}`][`${fieldName}`]).format('YYYY-MM-DD')}
+            value={formik.values[`${keyName}`] && formik.values[`${keyName}`][`${fieldName}`] && moment(formik.values[`${keyName}`][`${fieldName}`]).format('YYYY-MM-DD')}
             sx={{
             minWidth: '100%',
 

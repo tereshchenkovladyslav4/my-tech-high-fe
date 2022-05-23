@@ -49,7 +49,7 @@ export const getEmailRemindersQuery = gql`
       title
       subject
       body
-      deadline
+      reminder
       email_template_id
     }
   }

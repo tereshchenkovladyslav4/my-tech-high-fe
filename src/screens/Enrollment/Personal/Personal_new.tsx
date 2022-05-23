@@ -32,7 +32,7 @@ export default function PersonalNew({id, questions}) {
       let valid_meta = {}
       questions.groups.map((g) => {
         g.questions.map((q) => {
-          if(q.type !== 8 || q.type !== 7) {
+          if(q.type !== 8 && q.type !== 7) {
             if(q.slug?.includes('student_')) {
             
               if(q.required) {
@@ -102,14 +102,22 @@ export default function PersonalNew({id, questions}) {
     }
   }, [questions])
 
-  const formik = useFormik({
-    initialValues: {
+  const [initFormikValues, setInitFormikValues] = useState({})
+
+  useEffect(() => {
+    setInitFormikValues({
       parent: {...profile, phone_number: profile.phone.number},
       student: {...student.person, phone_number: student.person.phone.number, grade_levels: student.grade_levels, grade_level: student.current_school_year_status.grade_level},
       packet: {...student.packets.at(-1)},
       meta: student.packets.at(-1)?.meta && JSON.parse(student.packets.at(-1)?.meta) || {},
       address: {...student.person.address},
-    },
+      school_year_id: student.current_school_year_status.school_year_id,
+    })
+  }, [profile, student])
+
+  const formik = useFormik({
+    enableReinitialize: true,
+    initialValues: initFormikValues,
     validationSchema: validationSchema,
     onSubmit: () => {
       goNext()
@@ -117,9 +125,6 @@ export default function PersonalNew({id, questions}) {
   })
 
   const submitPersonal = async () => {
-    console.log("submit", 
-    student
-    )
     submitPersonalMutation({
       variables: {
         enrollmentPacketContactInput: {
@@ -131,8 +136,8 @@ export default function PersonalNew({id, questions}) {
               school_district: formik.values.packet?.school_district || '',
               meta: JSON.stringify(formik.values.meta)},
             student: {
-              ...omit(formik.values.student, ['person_id', 'photo', 'phone', 'grade_levels']),
-              address: formik.values.address,              
+              ...omit(formik.values.student, ['person_id', 'photo', 'phone', 'grade_levels', 'emailConfirm']),
+              address: formik.values.address,             
             },
             school_year_id: student.current_school_year_status.school_year_id,
         }
@@ -140,6 +145,13 @@ export default function PersonalNew({id, questions}) {
     }).then((data) => {
       setPacketId(data.data.saveEnrollmentPacketContact.packet.packet_id)
       setMe((prev) => {
+        console.log('res_personal', prev, prev?.students.map((student) => {
+          const returnValue = { ...student }
+          if (student.student_id === data.data.saveEnrollmentPacketContact.student.student_id) {
+            return data.data.saveEnrollmentPacketContact.student
+          }
+          return returnValue
+        }))
         return {
           ...prev,
           students: prev?.students.map((student) => {

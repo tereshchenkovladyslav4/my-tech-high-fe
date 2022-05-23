@@ -140,7 +140,7 @@ export const AdminSideMenu: FunctionComponent = () => {
           {map(navigationList, (item, index) => (
             <NavLink
               key={index}
-              exact={item.to !== SITE_MANAGEMENT && item.to !== '/enrollment' ? true : false}
+              exact={item.to !== SITE_MANAGEMENT && item.to !== ENROLLMENT && item.to !== ANNOUNCEMENTS ? true : false}
               to={item.to}
               style={classes.navLink}
               activeStyle={{

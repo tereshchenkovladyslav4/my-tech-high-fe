@@ -354,6 +354,7 @@ export const Users = () => {
       </Box>
       <UserFilters setFilters={setSelectedFilter} filters={selectedFilter} />
     { rows.length > 1 && <SortableUserTable
+        canMasquerade={me.masquerade}
         rows={rows}
         headCells={headCells}
         onCheck={() => {}}

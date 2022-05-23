@@ -5,9 +5,9 @@ import { Subtitle } from '../Typography/Subtitle/Subtitle'
 import { WarningModalTemplateType } from './types'
 import CloseIcon from '@mui/icons-material/Close'
 import { useStyles } from './styles'
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline'
 import { Paragraph } from '../Typography/Paragraph/Paragraph'
 import { SYSTEM_01 } from '../../utils/constants'
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 
 export const SuccessModal: WarningModalTemplateType = ({
   title,
@@ -28,7 +28,7 @@ export const SuccessModal: WarningModalTemplateType = ({
           <Subtitle fontWeight='700'>{title}</Subtitle>
         </Box>
         <Box sx={classes.content as object}>
-          {showIcon && <ErrorOutlineIcon style={classes.errorOutline} />}
+          {showIcon && <CheckCircleOutlineIcon style={classes.errorOutline} />}
           <Paragraph size='large' color={SYSTEM_01}>
             {subtitle}
           </Paragraph>

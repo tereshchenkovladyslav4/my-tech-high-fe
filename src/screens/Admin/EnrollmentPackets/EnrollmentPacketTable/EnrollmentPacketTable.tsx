@@ -77,7 +77,7 @@ export const EnrollmentPacketTable = () => {
       deadline: moment(packet.deadline).format('MM/DD/YY'),
       student: `${packet.student.person?.first_name} ${packet.student.person?.last_name}`,
       grade:
-        packet.student.grade_levels.length && packet.student.grade_levels[grade_value].grade_level
+        packet.student.grade_levels?.length && packet.student.grade_levels[grade_value].grade_level
           ? packet.student.grade_levels[grade_value].grade_level == 'K' || packet.student.grade_levels[grade_value].grade_level === 'Kin'
             ? 'K'
             : `${toOrdinalSuffix(Number(packet.student.grade_levels[grade_value].grade_level))} Grade`

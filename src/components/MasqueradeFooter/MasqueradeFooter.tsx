@@ -6,10 +6,10 @@ import { Paragraph } from '../Typography/Paragraph/Paragraph'
 export const MasqueradeFooter = ({me}) => {
 
 	const getProfilePhoto = (person: Person) => {
-    if (!person.photo) return 'image'
+    if (!person?.photo) return 'image'
 
     const s3URL = 'https://infocenter-v2-dev.s3.us-west-2.amazonaws.com/'
-    return s3URL + person.photo
+    return s3URL + person?.photo
   }
 
 	return (
@@ -20,7 +20,7 @@ export const MasqueradeFooter = ({me}) => {
 				height: '100px', 
 				bottom: 0, 
 				zIndex: 999999, 
-				position: 'absolute',
+				position: 'sticky',
 				display:'flex',
 				justifyContent: 'space-between',
 				paddingX: 10,

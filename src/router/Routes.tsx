@@ -1,6 +1,7 @@
 import { find } from 'lodash'
 import React, { FunctionComponent, useContext, useEffect, useState } from 'react'
 import { Route, Switch } from 'react-router-dom'
+import { QuickLinks } from '../components/QuickLink/QuickLinks'
 import { UserContext, UserInfo } from '../providers/UserContext/UserProvider'
 import { AdminDashboard } from '../screens/Admin/Dashboard/AdminDashboard'
 import AdminEnrollment from '../screens/Admin/Enrollment/Enrollment'
@@ -11,7 +12,6 @@ import { Enrollment } from '../screens/Enrollment/Enrollment'
 import { Homeroom } from '../screens/Homeroom/Homeroom'
 import { HomeroomStudentProfile } from '../screens/HomeroomStudentProfile/HomeroomStudentProfile'
 import { StudentType } from '../screens/HomeroomStudentProfile/Student/types'
-import { ParentLink } from '../screens/Parent/ParentLinks/ParentLink'
 import { Settings } from '../screens/Settings/Settings'
 import { APPLICATIONS, DASHBOARD, ENROLLMENT, HOMEROOM, PARENT_LINK, SETTINGS, USERS } from '../utils/constants'
 
@@ -32,14 +32,15 @@ export const Routes: FunctionComponent = () => {
           const currStudent = find(students, { student_id: match?.params.id })
           const packetAccepted = currStudent.packets?.length > 0 && currStudent.packets?.at(-1).status === 'Accepted'
           const packetSubmitted = currStudent.packets?.length > 0 && currStudent.packets?.at(-1).status === 'Submitted'
+          const packetStarted = currStudent.packets?.length > 0 && currStudent.packets?.at(-1).status === 'Started'
           if (currStudent === undefined) {
             return <Homeroom />
           } else {
             return currStudent.applications.length > 0 && currStudent.applications.at(-1).status === 'Accepted' ? (
-              packetAccepted || packetSubmitted ? (
-                <Enrollment id={match?.params.id} />
+              packetAccepted ? (
+                <Enrollment id={match?.params.id} disabled={true}  />
               ) : (
-                <Enrollment id={match?.params.id} />
+                <Enrollment id={match?.params.id} disabled={false} />
               )
             ) : (
               <Homeroom />
@@ -76,7 +77,7 @@ export const Routes: FunctionComponent = () => {
         <Settings />
       </Route>
       <Route path={PARENT_LINK}>
-        <ParentLink />
+        <QuickLinks />
       </Route>
     </Switch>
   )

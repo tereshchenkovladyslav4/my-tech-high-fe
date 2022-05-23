@@ -11,6 +11,7 @@ import { EnrollmentPacketDocument } from './PacketDocuments'
 import EnrollmentPacketNotes from './PacketNotes'
 import EnrollmentPacketVaccineView from './VaccineView/index'
 import EnrollmentPacketInfo from './PacketInfo/index'
+import { omit } from 'lodash';
 import {
   getSettingsQuery,
   savePacketMutation,
@@ -88,6 +89,7 @@ export default function EnrollmentPacketModal({
 
     const initValues = {
       immunizations: [],
+      parent: {...packet.student.parent.person},
       notes: packet.admin_notes || '',
       status: packet.status || '',
       preSaveStatus: packet.status || '',
@@ -104,6 +106,7 @@ export default function EnrollmentPacketModal({
       enableExemptionDate: false,
       signature_file_id: packet.signature_file_id || 0,
       missing_files: packet.missing_files || [],
+      school_year_id: packet.student.current_school_year_status.school_year_id
     }
     const [questionsData, setQuestionsData] = useState<EnrollmentQuestionTab[]>()
 
@@ -156,6 +159,7 @@ export default function EnrollmentPacketModal({
                   else if(q.slug.includes('student_')) {
                     const fieldName = q.slug.split('student_')[1]
                     temp[q.slug] = packet.student.person[fieldName]
+                    temp['student_grade_level'] = packet.student.grade_levels[0]?.grade_level
                     if(q.type === 6) {
                       temp[q.slug] = moment(packet.student.person[fieldName]).format('YYYY-MM-DD')
                     }
@@ -163,7 +167,15 @@ export default function EnrollmentPacketModal({
                   else if(q.slug.includes('address_')) {
                     const fieldName = q.slug.split('address_')[1]
                     temp[q.slug] = packet.student.person.address[fieldName]
-                  }             
+                  }  
+                  else if(q.slug.includes('parent_')) {
+                    const fieldName = q.slug.split('parent_')[1]
+                    temp[q.slug] = packet.student.parent.person[fieldName]
+                    temp['parent_phone_number'] = packet.student.parent.phone.number
+                    if(q.type === 6) {
+                      temp[q.slug] = moment(packet.student.parent.person[fieldName]).format('YYYY-MM-DD')
+                    }
+                  }            
                 }
                 else {                    
                   const fieldName = q.slug
@@ -220,6 +232,7 @@ export default function EnrollmentPacketModal({
         last_name: packet.student?.person?.last_name,
         address: {},
       },
+      parent: {...omit(packet.student.parent.person, ['person_id', 'address', 'emailConfirm'])},
       meta: {},
       student_person_id: Number(packet.student?.person?.person_id),
       parent_person_id: Number(packet.student?.parent?.person?.person_id),
@@ -230,6 +243,8 @@ export default function EnrollmentPacketModal({
       exemption_form_date: vals.exemptionDate,
       medical_exemption: vals.medicalExempt ? 1 : 0,          
       missing_files: status === 'Missing Info' ? JSON.stringify(vals.missing_files) : '',
+      school_year_id: packet.student.current_school_year_status.school_year_id,
+      student_id: Number(packet.student.student_id),
     }
     if(questionsData?.length > 0) {
       questionsData.map((tab) => {
@@ -243,11 +258,19 @@ export default function EnrollmentPacketModal({
                 }
                 else if(q.slug.includes('student_')) {
                   const fieldName = q.slug.split('student_')[1]
-                  temp.student[fieldName] = vals[q.slug]
+                  if(fieldName !== 'student_emailConfirm') {
+                    temp.student[fieldName] = vals[q.slug]
+                  }
                 } 
                 else if(q.slug.includes('address_')) {
                   const fieldName = q.slug.split('address_')[1]
                   temp.student.address[fieldName] = vals[q.slug]
+                }  
+                else if(q.slug.includes('parent_')) {
+                  const fieldName = q.slug.split('parent_')[1]
+                  if(fieldName !== 'parent_emailConfirm') {                    
+                    temp.parent[fieldName] = vals[q.slug]
+                  }
                 }                  
               }
               else { 
@@ -260,7 +283,7 @@ export default function EnrollmentPacketModal({
     }
     await savePacket({
       variables: {
-        enrollmentPacketInput: {...temp, meta: JSON.stringify(temp.meta)},
+        enrollmentPacketInput: {...temp, student:omit(temp.student, ['emailConfirm']), parent: omit(temp.parent, ['emailConfirm']), meta: JSON.stringify(temp.meta)},
       },
     })
 

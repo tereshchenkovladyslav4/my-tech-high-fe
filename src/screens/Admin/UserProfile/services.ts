@@ -33,6 +33,7 @@ export const getParentDetail = gql`
             state
             zip
             city
+            county_id
           }
         }
       }
@@ -64,6 +65,9 @@ export const getParentDetail = gql`
           preferred_last_name
           gender
           date_of_birth
+          user{
+            user_id
+          }
           address {
             address_id
             street
@@ -71,6 +75,7 @@ export const getParentDetail = gql`
             state
             zip
             city
+            county_id
           }
         }
       }
@@ -92,6 +97,7 @@ export const getParentDetail = gql`
         gender
         date_of_birth
         user {
+          user_id
           userRegions {
             regionDetail {
               name
@@ -105,6 +111,7 @@ export const getParentDetail = gql`
           state
           zip
           city
+          county_id
         }
       }
     }
@@ -158,6 +165,7 @@ export const getStudentDetail = gql`
           state
           zip
           city
+          county_id
         }
         phone {
           person_id

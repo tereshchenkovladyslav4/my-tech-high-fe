@@ -1,4 +1,4 @@
-import { FormControlLabel, Checkbox, Avatar, Grid } from '@mui/material'
+import { FormControlLabel, Checkbox, Avatar, Grid, Tooltip } from '@mui/material'
 import { Box } from '@mui/system'
 import React, { useState, useRef } from 'react'
 import { Metadata } from '../../../../../components/Metadata/Metadata'
@@ -8,13 +8,19 @@ import Slider from 'react-slick'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import moment from 'moment'
+import AccountBoxOutlinedIcon from '@mui/icons-material/AccountBoxOutlined';
+import { becomeUserMutation } from '../../../../../graphql/mutation/user'
+import { useMutation } from '@apollo/client'
+import { DASHBOARD } from '../../../../../utils/constants'
+import { useHistory } from 'react-router-dom'
 
 const ordinal = (n) => {
   var s = ['th', 'st', 'nd', 'rd']
   var v = n % 100
   return n + (s[(v - 20) % 10] || s[v] || s[0])
 }
-export const Students = ({ students, selectedStudent, handleChangeStudent }) => {
+export const Students = ({ students, selectedStudent, handleChangeStudent, me }) => {
+  const history = useHistory()
   const sliderRef = useRef(null)
   const [showAll, setShowAll] = useState(false)
   const status = ['Pending', 'Active', 'Withdrawn', 'Graduated', '']
@@ -60,6 +66,24 @@ export const Students = ({ students, selectedStudent, handleChangeStudent }) => 
     slidesToScroll: 1,
     nextArrow: <SampleNextArrow />,
     prevArrow: <SamplePrevArrow />,
+  }
+  
+  const [becomeUserAction, { data, loading: userLoading, error: userError }] =
+  useMutation(becomeUserMutation)
+
+  const becomeUser = (id) => {
+    becomeUserAction({
+      variables: {
+        userId:  Number(id)
+      }
+    })
+    .then((resp) => {
+      localStorage.setItem('masquerade' ,resp.data.masqueradeUser.jwt)
+    })
+    .then(() => {
+      history.push(DASHBOARD)
+      location.reload()
+    })
   }
 
   return (
@@ -113,12 +137,23 @@ export const Students = ({ students, selectedStudent, handleChangeStudent }) => 
                       </Subtitle>
                     }
                     subtitle={
-                      <Paragraph color='#cccccc' size={'large'}>
-                        {(item.grade_levels.length && item.grade_levels[0].grade_level && item.grade_levels[0].grade_level.includes('K'))
-                          ? 'Kindergarten'
-                          : ordinal(item.grade_level || (item.grade_levels.length && item.grade_levels[0].grade_level)) +
-                            ' Grade'}
-                      </Paragraph>
+                      <Box display={'flex'} flexDirection='row' alignItems={'center'} alignContent='center'>
+                        <Paragraph color='#cccccc' size={'large'}>
+                          {(item.grade_levels.length && item.grade_levels[0].grade_level && item.grade_levels[0].grade_level.includes('K'))
+                            ? 'Kindergarten'
+                            : ordinal(item.grade_level || (item.grade_levels.length && item.grade_levels[0].grade_level)) +
+                              ' Grade'}
+                        </Paragraph>
+                        {
+                          selectedStudent === parseInt(item.student_id) && Boolean(me.masquerade)
+                            && <Tooltip title='Masquerade'>
+                            <AccountBoxOutlinedIcon 
+                              sx={{color: '#4145FF', height: 15, width: 15}}
+                              onClick={() => becomeUser(item.person.user.user_id)}
+                            />
+                          </Tooltip>
+                        }
+                      </Box>
                     }
                     image={<Avatar alt='Remy Sharp' variant='rounded' style={{ marginRight: 8 }} />}
                   />

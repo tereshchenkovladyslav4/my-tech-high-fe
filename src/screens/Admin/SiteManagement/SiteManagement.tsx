@@ -15,32 +15,18 @@ import SchoolPartnerImage from '../../../assets/schoolAssignments.png'
 import { ItemCard } from '../../../components/ItemCard/ItemCard'
 import EnrollmentSetting from './EnrollmentSetting/EnrollmentSetting'
 import { ProgramSetting } from './ProgramSetting'
-import QuickLinkEdit from './QuickLink/QuickLinkEdit'
 import Withdrawal from './Withdrawal/Withdrawal'
 import { Years } from './Years'
 import { EmailTemplatePage } from './components/EmailTemplates/EmailTemplatePage'
-import { UserContext } from '../../../providers/UserContext/UserProvider'
-import { getQuickLinksByRegionQuery } from '../../../graphql/queries/quick-link'
-import { useMutation, useQuery } from '@apollo/client'
-import { QuickLinkCard } from '../../../components/QuickLinkCard/QuickLinkCard'
-import { QuickLink } from '../../../components/QuickLinkCard/QuickLinkCardProps'
-import { updateQuickLinkMutation } from '../../../graphql/mutation/quick-link'
-import QuickLinkReservedEdit from './QuickLink/QuickLinkReservedEdit'
-import { arrayMove, SortableContainer, SortableElement } from 'react-sortable-hoc'
-import { useStyles } from './styles'
-import { WarningModal } from '../../../components/WarningModal/Warning'
+import { QuickLinks } from '../../../components/QuickLink/QuickLinks'
 
 const SiteManagement: React.FC = () => {
-  const { me, setMe } = useContext(UserContext)
   const { path, isExact } = useRouteMatch('/site-management')
   const [currentView, setCurrentView] = useState('root')
   const [prevView, setPrevView] = useState([])
   const [selected, setSelected] = useState(null)
   const [prevSelected, setPrevSelected] = useState([])
   const currentYear = new Date().getFullYear()
-  const [quickLinks, setQuickLinks] = useState([])
-  const [warningModalOpen, setWarningModalOpen] = useState(null)
-  const classes = useStyles
 
   const items = [
     {
@@ -117,73 +103,6 @@ const SiteManagement: React.FC = () => {
     },
   ]
 
-  const { called, loading, error, data: quickLinksData, refetch } = useQuery(getQuickLinksByRegionQuery, {
-    variables: {
-      regionId: me?.selectedRegionId
-    },
-    fetchPolicy: 'network-only',
-  })
-
-  useEffect(() => {
-    if(quickLinksData != undefined) {
-      const { getQuickLinksByRegion } = quickLinksData;
-
-      arrangeQuickLinks(getQuickLinksByRegion.concat([{
-        id: 0,
-        title: 'Add New',
-        subtitle: 'Subtitle',
-        region_id: me?.selectedRegionId,
-        sequence: getQuickLinksByRegion.length,
-        reserved: '',
-        flag: 0
-      }]));
-    }
-  }, [quickLinksData]);
-
-  const [updateQuickLink, {data: updateQuickLinkData}] = useMutation(updateQuickLinkMutation);
-  const updateQuickLinks = (quickLink: QuickLink) => {
-    //  Check if exists
-    let i;
-    for(i = 0; i < quickLinks.length; i++) {
-      if(quickLinks[i].id == quickLink.id)
-        break;
-    }
-
-    if(i == quickLinks.length) {
-      //  Add
-      let newQuickLinks = JSON.parse(JSON.stringify(quickLinks));
-      newQuickLinks.splice(newQuickLinks.length - 1, 0, quickLink);
-      arrangeQuickLinks(newQuickLinks);
-    }
-    else {
-      //  Update
-      let newQuickLinks = JSON.parse(JSON.stringify(quickLinks));
-      for(i = 0; i < newQuickLinks.length; i++) {
-        if(newQuickLinks[i].id == quickLink.id) {
-          if(newQuickLinks[i].flag != quickLink.flag) {
-            updateQuickLink({
-              variables: {
-                quickLinkInput: {
-                    quickLink: {
-                        id: quickLink.id,
-                        flag: quickLink.flag
-                    }
-                }
-              }
-            });
-          }
-
-          Object.assign(newQuickLinks[i], quickLink);
-          if(quickLink.flag == 2) {
-            newQuickLinks.splice(i, 1);
-          }
-          break;
-        }
-      }
-      arrangeQuickLinks(newQuickLinks);
-    }
-  }
-
   const onBackPress = () => {
     if (prevView.length === 1) {
       setCurrentView(prevView[0])
@@ -200,15 +119,6 @@ const SiteManagement: React.FC = () => {
       setPrevView(updatedPrevView)
       setPrevSelected(updatedPrevSelected)
     }
-  }
-
-  const onBackToQuickLinkEdit = () => {
-    setCurrentView('quick-link')
-  }
-
-  const onMoveToQuickLinkReservedEdit = (quickLink: QuickLink) => {
-    setSelected(quickLink);
-    setCurrentView('quick-link-reserved')
   }
 
   const BackHeader = () => (
@@ -253,145 +163,22 @@ const SiteManagement: React.FC = () => {
     </Grid>
   )
 
-  const SortableQuickLinkCard = SortableElement(({item, action, onAction}) => (
-    <li style={{listStyleType: 'none', display: 'inline-block', width: '33%'}}><QuickLinkCard item={item} action={action} onAction={onAction} /></li>
-  ));
-
-  const SortableQuickLinkListContainer = SortableContainer(({ items }: { items: QuickLink[] }) => (
-    <ul style={{textAlign: 'left'}}>
-      {items.map((item, idx) => (
-        <SortableQuickLinkCard index={idx} key={idx}
-          item={item}
-          action={item.id == 0 ? false : true}
-          onAction={(evt_type) => {
-            switch(evt_type) {
-              case "edit":
-                setPrevView((prevView) => [...prevView, currentView])
-                setCurrentView('quick-link')
-                setPrevSelected((prevSelected) => [...prevSelected, selected])
-                setSelected(item)
-                break;
-              case "add":
-                setPrevView((prevView) => [...prevView, currentView])
-                setCurrentView('quick-link')
-                setPrevSelected((prevSelected) => [...prevSelected, selected])
-                setSelected(item)
-                break;
-              case "archive":
-                updateQuickLinks({
-                  ...item,
-                  flag: 1
-                });
-                break;
-              case "restore":
-                updateQuickLinks({
-                  ...item,
-                  flag: 0
-                });
-                break;
-              case "delete":
-                setWarningModalOpen(item);
-                break;
-              default:
-                break;
-            }
-          }}
-        />
-      ))}
-    </ul>
-  ))
-
-  const onRemoveQuickLink = () => {
-    updateQuickLinks({
-      ...warningModalOpen,
-      flag: 2
-    });
-    setWarningModalOpen(null);
-  }
-
-  const arrangeQuickLinks = (oldQuickLinks: QuickLink[]) => {
-    if(oldQuickLinks == null)
-      oldQuickLinks = quickLinks;
-
-    let i, newQuickLinks = [];
-    for(i = 0; i < oldQuickLinks.length; i++) {
-      if(oldQuickLinks[i].flag == 0 && oldQuickLinks[i].id != 0)
-        newQuickLinks.push({
-          ...oldQuickLinks[i]
-        });
-    }
-    for(i = 0; i < oldQuickLinks.length; i++) {
-      if(oldQuickLinks[i].id == 0)
-        newQuickLinks.push({
-          ...oldQuickLinks[i]
-        });
-    }
-    for(i = 0; i < oldQuickLinks.length; i++) {
-      if(oldQuickLinks[i].flag == 1 && oldQuickLinks[i].id != 0)
-        newQuickLinks.push({
-          ...oldQuickLinks[i]
-        });
-    }
-
-    for(i = 0; i < newQuickLinks.length; i++) {
-      if(i != newQuickLinks[i].sequence) {
-        newQuickLinks[i].sequence = i;
-        if(newQuickLinks[i].id != 0) {
-          updateQuickLink({
-            variables: {
-              quickLinkInput: {
-                  quickLink: {
-                      id: newQuickLinks[i].id,
-                      sequence: newQuickLinks[i].sequence
-                  }
-              }
-            }
-          });
-        }
-      }
-    }
-    setQuickLinks(newQuickLinks);
-  }
-
   return (
     <Box sx={{ px: 1, my: 4 }}>
-      {currentView !== 'root' && currentView !== 'email-template' && currentView !== 'quick-link' && currentView !== 'quick-link-reserved' && <BackHeader />}
+      {currentView !== 'root' && currentView !== 'email-template' && currentView !== 'quick-links' && <BackHeader />}
       {isExact &&
         (currentView === 'root' ? (
           renderCardsHandler(items)
         ) : currentView === 'quick-links' ? (
-          <SortableQuickLinkListContainer
-            axis="xy"
-            items={quickLinks}
-            useDragHandle={true}
-            onSortEnd={({ oldIndex, newIndex }) => {
-              const newQuickLinks = arrayMove(quickLinks, oldIndex, newIndex).map((v, i) => ({
-                ...v,
-                order: i,
-              }));
-              arrangeQuickLinks(newQuickLinks);
-            }}
+          <QuickLinks
+            backAction={onBackPress}
           />
-        ) : currentView === 'withdrawal' ? (
+        ) : currentView === 'quick-link-withdrawal' ? (
           <Withdrawal />
         ) : currentView === 'years' ? (
           <Years />
-        ) : currentView === 'program-settifng' ? (
+        ) : currentView === 'program-setting' ? (
           <ProgramSetting />
-        ) : currentView === 'quick-link' ? (
-          <QuickLinkEdit
-            quickLink={selected}
-            updateQuickLinks={updateQuickLinks}
-            backAction={onBackPress}
-            moveToReserved={onMoveToQuickLinkReservedEdit}
-          />
-        ) : currentView === 'quick-link-reserved' ? (
-          <QuickLinkReservedEdit
-            quickLink={selected}
-            updateQuickLinks={updateQuickLinks}
-            backAction={onBackPress}
-            backToEdit={onBackToQuickLinkEdit}
-          />
         ) : (
           currentView === 'email-template' && <EmailTemplatePage onBackPress={onBackPress} />
         ))}
@@ -407,15 +194,6 @@ const SiteManagement: React.FC = () => {
           <Years />
         </Route>
       </Switch>
-      {
-        warningModalOpen != null
-          && <WarningModal
-            handleSubmit={() => onRemoveQuickLink()}
-            handleModem={() => setWarningModalOpen(null)}
-            title='Delete Quick Link'
-            subtitle='Are you sure you want to delete this quick link?'
-          /> 
-      }
     </Box>
   )
 }

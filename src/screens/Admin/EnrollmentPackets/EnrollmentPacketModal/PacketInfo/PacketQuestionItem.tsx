@@ -14,6 +14,15 @@ import { gql, useQuery } from '@apollo/client'
 import { Controller, useFormContext } from 'react-hook-form'
 import { EnrollmentPacketFormType } from '../types'
 
+export const getActiveSchoolYearsByRegionId = gql`
+  query GetActiveSchoolYears($regionId: ID!) {
+    getSchoolYearsByRegionId(region_id: $regionId) {      
+      grades
+      school_year_id
+    }
+  }
+`
+
 export default function PacketQuestionItem({
   item,
 }: {
@@ -68,13 +77,33 @@ export default function PacketQuestionItem({
     )
 }
 function Item({ question: q, setAdditionalQuestion }: { question: EnrollmentQuestion | AdditionalQuestionType, setAdditionalQuestion: (flag:boolean) => void}) {
-    const { control } = useFormContext()
-   
+    const { control, watch } = useFormContext()
+    const [school_year_id] = watch(['school_year_id'])
     const [otherValue, setOtherValue] = useState('')
 
     const [gradesDropDownItems, setGradesDropDownItems] = useState<Array<DropDownItem>>([])
 
+    const { me } = useContext(UserContext)
+
     const [grades, setGrades] = useState([])
+
+    const { loading: schoolLoading, data: schoolYearData } = useQuery(getActiveSchoolYearsByRegionId, {
+        variables: {
+          regionId: me?.selectedRegionId,
+        },
+        fetchPolicy: 'network-only',
+    })
+
+    useEffect(() => {
+        if (!schoolLoading && schoolYearData?.getSchoolYearsByRegionId) {           
+            schoolYearData.getSchoolYearsByRegionId.forEach((element) => {                
+                if (school_year_id == element.school_year_id) {
+                  setGrades(element.grades?.split(','))
+                }
+              })
+        }
+    }, [me, schoolLoading, schoolYearData, school_year_id])
+
     const [dropDownItemsData, setDropDownItemsData] = useState<Array<DropDownItem>>([])
 
     useEffect(() => {

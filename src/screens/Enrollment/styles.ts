@@ -6,6 +6,7 @@ export const useStyles = {
     marginTop: '32px',
     textAlign: 'left' as const,
     marginBottom: '32px',
+    maxWidth: '100% !important',
   },
   header: {
     display: 'flex',

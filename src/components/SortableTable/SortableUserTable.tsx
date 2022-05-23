@@ -19,6 +19,7 @@ export const SortableUserTable: SortableTableTemplateType = ({
   onSortChange,
   toggleMasquerade,
   handleMasquerade,
+  canMasquerade,
 }) => {
   const [order, setOrder] = useState<Order>('asc')
   const [orderBy, setOrderBy] = useState<keyof any>('status')
@@ -148,6 +149,7 @@ export const SortableUserTable: SortableTableTemplateType = ({
                                 {val}
                               </Typography>
                               : idx === 0
+                                ? canMasquerade
                                 ? <Tooltip title='Masquerade'>
                                   <Typography
                                     sx={{ fontSize: 12, fontWeight: 700, color: '#4145FF', textDecoration: 'underline', zIndex: 9999 }}
@@ -156,6 +158,11 @@ export const SortableUserTable: SortableTableTemplateType = ({
                                     {val}
                                   </Typography>
                                 </Tooltip>
+                                : <Typography
+                                sx={{ fontSize: 12, fontWeight: 700, color: '#4145FF', textDecoration: 'underline', zIndex: 9999 }}
+                                >
+                                {val}
+                              </Typography>
                                 : <Typography sx={{ fontSize: 12, fontWeight: 700 }}>{val}</Typography>
                             }
                           </Box>
