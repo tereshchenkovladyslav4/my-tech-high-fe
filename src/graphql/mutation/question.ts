@@ -7,9 +7,7 @@ export const saveQuestionsMutation = gql`
 `
 
 export const deleteQuestionMutation = gql`
-  mutation DeleteQuestion($id: ID!) {
-    deleteQuestion(id: $id) {
-      id
-    }
+  mutation DeleteQuestion($questionId: Int!) {
+    deleteQuestion(question_id: $questionId)
   }
 `

@@ -101,12 +101,41 @@ export const AdminAppBar: FunctionComponent = () => {
   }
 
   const settings = {
+    className: "slider variable-width",
     infinite: false,
     speed: 500,
-    slidesToShow: 4,
+    slidesToShow: 5,
     slidesToScroll: 1,
     nextArrow: <SampleNextArrow />,
     prevArrow: <SamplePrevArrow />,
+    variableWidth: true,
+    rows: 1,
+    responsive: [
+      {
+        breakpoint: 1920,
+        settings: {
+          slidesToShow: 4,
+        }
+      },
+      {
+        breakpoint: 1600,
+        settings: {
+          slidesToShow: 3
+        }
+      },
+      {
+        breakpoint: 1368,
+        settings: {
+          slidesToShow: 2
+        }
+      },
+      {
+        breakpoint: 960,
+        settings: {
+          slidesToShow: 1
+        }
+      },
+    ]
   }
 
   useEffect(() => {
@@ -178,7 +207,7 @@ export const AdminAppBar: FunctionComponent = () => {
               </Paragraph>
             }
             image={
-              <Box sx={{ position: 'relative' }}>
+              <Box sx={{position: 'relative'}}>
                 <Avatar
                   alt={region?.regionDetail.name}
                   src={region?.regionDetail?.state_logo}
@@ -245,9 +274,11 @@ export const AdminAppBar: FunctionComponent = () => {
           </Grid>
           <Grid item xs={1} />
           <Grid item xs={7}>
-            <Slider {...settings} ref={sliderRef}>
-              {renderRegionHeader()}
-            </Slider>
+            <Box width={'calc(58vw - 200px)'}>
+              <Slider {...settings} ref={sliderRef}>
+                {renderRegionHeader()}
+              </Slider>
+            </Box>
           </Grid>
         </Grid>
       </div>

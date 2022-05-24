@@ -6,25 +6,66 @@ import { useStyles } from '../styles';
 import { arrayMove, SortableContainer, SortableElement } from 'react-sortable-hoc';
 import { defaultQuestions, Question, QUESTION_TYPE } from '../../../../components/QuestionItem/QuestionItemProps';
 import QuestionItem from '../../../../components/QuestionItem/QuestionItem';
-import { UserContext } from '../../../../providers/UserContext/UserProvider';
 import { Formik, Form, Field } from 'formik';
 import { useHistory } from 'react-router-dom';
 import { useMutation, useQuery } from '@apollo/client';
 import { saveQuestionsMutation, deleteQuestionMutation } from '../../../../graphql/mutation/question';
 import { getQuestionsByRegionQuery } from '../../../../graphql/queries/question';
-import AddNewQuestionModal from '../../../../components/QuestionItem/AddNewQuestion';
+import QuestionModal from '../../../../components/QuestionItem/AddNewQuestion';
 import CustomConfirmModal from '../../../../components/CustomConfirmModal/CustomConfirmModal';
-import AddQuestionModal from '../../../../components/QuestionItem/AddNewQuestion/AddQuestionModal';
+import SelectDefaultCustomQuestionModal from '../../../../components/QuestionItem/AddNewQuestion/SelectDefaultCustomQuestionModal';
 import { QuickLink } from '../../../../components/QuickLink/QuickLinkCardProps'
 import _ from 'lodash';
 import DefaultQuestionModal from '../../../../components/QuestionItem/AddNewQuestion/DefaultQuestionModal';
 
+//	Possible Question Types List
+const QuestionTypes = [
+	{
+		value: QUESTION_TYPE.DROPDOWN,
+		label: 'Drop Down',
+	},
+	{
+		value: QUESTION_TYPE.TEXTFIELD,
+		label: 'Text Field',
+	},
+	{
+		value: QUESTION_TYPE.CHECKBOX,
+		label: 'Checkbox',
+	},
+	{
+		value: QUESTION_TYPE.AGREEMENT,
+		label: 'Agreement',
+	},
+	{
+		value: QUESTION_TYPE.MULTIPLECHOICES,
+		label: 'Multiple Choices',
+	},
+	{
+		value: QUESTION_TYPE.INFORMATION,
+		label: 'Information',
+	}
+];
+const AdditionalQuestionTypes = [
+	{
+		value: QUESTION_TYPE.DROPDOWN,
+		label: 'Drop Down',
+	},
+	{
+		value: QUESTION_TYPE.CHECKBOX,
+		label: 'Checkbox',
+	},
+	{
+		value: QUESTION_TYPE.MULTIPLECHOICES,
+		label: 'Multiple Choices',
+	}
+];
+
 const SortableItem = SortableElement(QuestionItem)
 
-const SortableListContainer = SortableContainer(({ questions }: { questions: Question[] }) => (
+const SortableListContainer = SortableContainer(({ questionsList }: { questionsList: Question[][] }) => (
 	<List sx={{width: '100%'}}>
-	{questions.map((question, index) => (
-		<SortableItem index={index} key={index} question={question} />
+	{questionsList.map((questions, index) => (
+		<SortableItem index={index} key={index} questions={questions} questionTypes={QuestionTypes} additionalQuestionTypes={AdditionalQuestionTypes} />
 	))}
 	</List>
 ))
@@ -40,7 +81,6 @@ const WithDrawal: React.FC<
 > = ({quickLink, updateQuickLinks, action, handleChange, region}) => {
 	const classes = useStyles;
 	
-	const signatureRef = useRef(null)
 	//	questions state on the page
 	const [questions, setQuestions] = useState<Question[]>([]);
 	//	Flag State which indicates to show the Question Type Selection Modal (Choose between Default and Custom)
@@ -66,7 +106,7 @@ const WithDrawal: React.FC<
 	const [deleteQuestion] = useMutation(deleteQuestionMutation);
 	const [openAddQuestion, setOpenAddQuestion] = useState('');
 	//	The Question Item which is currently editing
-	const [editItem, setEditItem] = useState(null);
+	const [currentQuestions, setCurrentQuestions] = useState([]);
 
 	//	Read existing questions from the database and show, Initialize Unsaved flag state to false
 	useEffect(() => {
@@ -87,6 +127,7 @@ const WithDrawal: React.FC<
 						slug: 'student',
 						validation: 0,
 						required: true,
+						additionalQuestion: '',
 						response: ''
 					},
 					{
@@ -102,6 +143,7 @@ const WithDrawal: React.FC<
 						slug: 'effective_withdraw_date',
 						validation: 0,
 						required: true,
+						additionalQuestion: '',
 						response: ''
 					},
 					{
@@ -117,6 +159,7 @@ const WithDrawal: React.FC<
 						slug: 'signature',
 						validation: 0,
 						required: true,
+						additionalQuestion: '',
 						response: ''
 					},
 				]);
@@ -128,7 +171,9 @@ const WithDrawal: React.FC<
 							...v,
 							options: JSON.parse(v.options),
 							mainQuestion: v.mainQuestion == 1 ? true : false,
-							defaultQuestion: v.defaultQuestion == 1 ? true : false
+							defaultQuestion: v.defaultQuestion == 1 ? true : false,
+							required: v.required == 1 ? true : false,
+							response: ''
 						}
 					})
 				);
@@ -172,7 +217,7 @@ const WithDrawal: React.FC<
 
 	const onSelectDefaultQuestions = (selected) => {
 		const question = defaultQuestions.find(x => x.question == selected);
-		const editItemTemp = {
+		const newDefaultQuestion = {
 			region_id: region,
 			section: 'quick-link-withdrawal',
 			type: question.type,
@@ -186,7 +231,7 @@ const WithDrawal: React.FC<
 			required: false,
 			response: ''
 		};
-		setEditItem(editItemTemp);
+		setCurrentQuestions([newDefaultQuestion])
 		setOpenAddQuestion('new');
 	}
 
@@ -204,13 +249,12 @@ const WithDrawal: React.FC<
 						setUnsavedChanges(!unsavedChanges)
 						handleChange(!unsavedChanges);
 					}
-					console.log(values, questions, unsavedChanges);
 				}}
 				onSubmit={async (vals) => {
 					let newquestions = vals.map((v) => v);
 					questions.filter(x => !x.mainQuestion).forEach((q) => {
 						if (!newquestions.find((v) => v.id === q.id)) {
-							deleteQuestion({ variables: { id: q.id } })
+							deleteQuestion({ variables: { questionId: q.id } })
 						}
 					});
 
@@ -243,7 +287,8 @@ const WithDrawal: React.FC<
 								mainQuestion: v.mainQuestion ? 1 : 0,
 								defaultQuestion: v.defaultQuestion ? 1 : 0,
 								options: JSON.stringify(v.options),
-								required: v.required ? 1 : 0
+								required: v.required ? 1 : 0,
+								additionalQuestion: v.additionalQuestion
 							}}}),
 						},
 					});
@@ -280,36 +325,43 @@ const WithDrawal: React.FC<
 								</Button>
 							</Box>
 							<CircleIcon />
-							<Stack justifyContent="center" alignItems={"center"} direction="column" sx={{ width: "50%", margin: "auto", mt: 2 }}>
+							<Stack justifyContent="center" alignItems={"center"} direction="column" sx={{ width: "50%", margin: "auto", mt: 2, ml: 'calc(25% + 60px)' }}>
 								<List sx={{width: '100%'}}>
-									<QuestionItem question={questions[0]} />
-									<QuestionItem question={questions[1]} />
+									<QuestionItem questions={[questions[0]]} questionTypes={QuestionTypes} additionalQuestionTypes={AdditionalQuestionTypes} />
+									<QuestionItem questions={[questions[1]]} questionTypes={QuestionTypes} additionalQuestionTypes={AdditionalQuestionTypes} />
 								</List>
 								<SortableListContainer
-										questions={values}
+										questionsList={values.filter(v => v.additionalQuestion == '').map(v => {
+											let arr = [v], current = v, child;
+											while(child = values.find(x => x.additionalQuestion == current.slug)) {
+												arr.push(child);
+												current = child;
+											}
+											console.log(arr);
+											return arr;
+										})}
 										useDragHandle={true}
-										onSortEnd={({ oldIndex, newIndex }) => {console.log(values);
+										onSortEnd={({ oldIndex, newIndex }) => {
 											const newData = arrayMove(values, oldIndex, newIndex).map((v, i) => ({
 												...v,
 												sequence: i + 1,
 											}));
-											console.log(newData);
 											setValues(newData)
 										}}
 									/>
 								<List sx={{width: '100%', pt: 0}}>
-									<QuestionItem question={questions[questions.length - 1]} />
+									<QuestionItem questions={[questions[questions.length - 1]]} questionTypes={QuestionTypes} additionalQuestionTypes={AdditionalQuestionTypes} />
 								</List>
 							</Stack>
-							<Box sx={{ width: "55%", margin: "auto", mt: 2, textAlign: 'left' }}>
-								<Button variant='contained' sx={{...classes.button, width: '80%'}} onClick={() => setOpenSelectQuestionType(true)}>
+							<Box sx={{ width: "55%", margin: "auto", mt: 2 }}>
+								<Button variant='contained' sx={{...classes.button, width: '100%'}} onClick={() => setOpenSelectQuestionType(true)}>
 									<Subtitle size={12} >
 										+ Add Question
 									</Subtitle>
 								</Button>
 							</Box>
-							<Box sx={{ width: "55%", margin: "auto", mt: 2, textAlign: 'left' }}>
-								<Button variant='contained' sx={{...classes.button, width: '80%'}} >
+							<Box sx={{ width: "55%", margin: "auto", mt: 2 }}>
+								<Button variant='contained' sx={{...classes.button, width: '100%'}} >
 									<Subtitle size={12} >
 										Submit Withdrawal Request
 									</Subtitle>
@@ -317,17 +369,40 @@ const WithDrawal: React.FC<
 							</Box>
 						</Box>
 						{openAddQuestion === 'new' &&
-							<AddNewQuestionModal onClose={() => setOpenAddQuestion('')} editItem={editItem} region={region} />}
+							<QuestionModal onClose={() => setOpenAddQuestion('')} questions={currentQuestions} questionTypes={QuestionTypes} additionalQuestionTypes={AdditionalQuestionTypes} />}
 						{openAddQuestion === 'default' &&
 							<DefaultQuestionModal onClose={() => setOpenAddQuestion('')} onCreate={e => onSelectDefaultQuestions(e)} />}
 						{openSelectQuestionType &&
-							<AddQuestionModal onClose={() => setOpenSelectQuestionType(false)} onCreate={e => {setOpenAddQuestion(e); setEditItem(null); setOpenSelectQuestionType(false)}} />}
+							<SelectDefaultCustomQuestionModal
+								onClose={() => setOpenSelectQuestionType(false)}
+								onCreate={e => {
+									setOpenAddQuestion(e);
+									if(e === 'new') {
+										//	Prototype of a question
+										setCurrentQuestions([{
+											region_id: region,
+											section: 'quick-link-withdrawal',
+											type: QUESTION_TYPE.TEXTFIELD,
+											sequence: values.length,
+											question: '',
+											defaultQuestion: false,
+											mainQuestion: false,
+											additionalQuestion: '',
+											validation: 0,
+											slug: `meta_${+new Date()}`,
+											options: [],
+											required: false,
+											response: ''
+										}]);
+									}
+									setOpenSelectQuestionType(false);
+								}} />}
 						{unSaveChangeModal != null &&
 							<CustomConfirmModal
 								header='Unsaved Changes'
 								content='Are you sure you want to leave without saving changes?'
 								handleConfirmModalChange={(val: boolean, isOk: boolean) => {
-									setUnSaveChangeModal(null);console.log(val, isOk);
+									setUnSaveChangeModal(null);
 									if(isOk) {
 										setUnsavedChanges(false);
 										handleChange(false);

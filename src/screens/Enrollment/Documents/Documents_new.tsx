@@ -249,13 +249,14 @@ export default function DocumentsNew({id, questions}) {
   const [dataLoading, setDataLoading] = useState(true)
 
   const isLoading = () => {
-    if(disabled){
-      if(files?.length > 0){
-        setDataLoading(false)
-      }
-    } else{
-      setDataLoading(false)
-    }
+    // if(disabled){
+    //   if(files?.length > 0){
+    //     setDataLoading(false)
+    //   }
+    // } else{
+    //   setDataLoading(false)
+    // }
+    setDataLoading(false);
   }
 
   useEffect(() => {
@@ -333,7 +334,7 @@ export default function DocumentsNew({id, questions}) {
                 firstName={student.person.first_name}
                 lastName={student.person.last_name}
               />  
-              {item.type === 8 && !checkValidate(item) && <Paragraph color={RED} size='medium' fontWeight='700' sx={{marginLeft: '12px'}}>
+              {item.type === 8 && !checkValidate(item) && !disabled && <Paragraph color={RED} size='medium' fontWeight='700' sx={{marginLeft: '12px'}}>
                 File is required
               </Paragraph>}
             </Grid>

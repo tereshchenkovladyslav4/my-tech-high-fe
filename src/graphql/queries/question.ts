@@ -14,6 +14,7 @@ export const getQuestionsByRegionQuery = gql`
 			validation
 			mainQuestion
 			defaultQuestion
+			additionalQuestion
 			required
 		}
 	}

@@ -31,10 +31,10 @@ export const QuestionTypes = [
 		value: QUESTION_TYPE.MULTIPLECHOICES,
 		label: 'Multiple Choices',
 	},
-//	{
-//		value: QUESTION_TYPE.CALENDAR,
-//		label: 'Calendar',
-//	},
+	{
+		value: QUESTION_TYPE.CALENDAR,
+		label: 'Calendar',
+	},
 	{
 		value: QUESTION_TYPE.INFORMATION,
 		label: 'Information',
@@ -54,6 +54,7 @@ export type Question = {
 	defaultQuestion: boolean;		//	false => Custom Question, true => Default Question
 	validation: number;					//	0 => None, 1 => Numbers, 2 => Email
 	required: boolean;
+	additionalQuestion: string;	//	The slug of parent question for Additional Question 
 
 	response: any;	//	Available for parents only
 }

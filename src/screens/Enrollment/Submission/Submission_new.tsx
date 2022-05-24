@@ -267,10 +267,10 @@ export default function SubmissionNew({id, questions}) {
 
   return (
     <form onSubmit={(e) => !disabled ? handleSubmit(e) : nextTab(e)}>
-        {showSuccess 
+        {!showSuccess 
         && <SuccessModal 
-            title='' 
-            subtitle='Your Enrollment Packet has been submitted successfully and is now pending approval.' 
+            title='Success'
+            subtitle={`${student.person.first_name}'s Enrollment Packet has been successfully submitted and is now pending approval.`}
             btntitle='Done'
             handleSubmit={() => {
             history.push(`${HOMEROOM}`)
@@ -317,7 +317,7 @@ export default function SubmissionNew({id, questions}) {
                 type='submit'
                 >
                 <Paragraph fontWeight='700' size='medium'>
-                { disabled ? 'Okay' : 'Done'}
+                { disabled ? 'Go Back to Student Profile' : 'Done'}
                 </Paragraph>
                 </Button>
             </Box>

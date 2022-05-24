@@ -7,42 +7,153 @@ import { EditorState, convertToRaw, ContentState } from 'draft-js'
 import Wysiwyg from 'react-draft-wysiwyg'
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
 import draftToHtml from 'draftjs-to-html'
-import { convertFromHTML } from 'draft-convert'
-import { Question, QuestionTypes, QUESTION_TYPE } from '../QuestionItemProps'
+import { Question, QUESTION_TYPE } from '../QuestionItemProps'
 import { SYSTEM_07 } from '../../../utils/constants'
 import { DropDown } from '../../DropDown/DropDown'
 import { validationTypes } from '../../../screens/Admin/SiteManagement/EnrollmentSetting/constant/defaultQuestions'
-import { UserContext } from '../../../providers/UserContext/UserProvider'
 import moment from 'moment'
 import { useQuery } from '@apollo/client'
 import { getActiveSchoolYearsByRegionId } from '../../../screens/Admin/SiteManagement/EnrollmentSetting/EnrollmentQuestions/services';
 import htmlToDraft from 'html-to-draftjs'
 
-export default function AddNewQuestionModal({
+export default function QuestionModal({
 	onClose,
-	editItem,
-	region
+	questions,
+	questionTypes,
+	additionalQuestionTypes
 }: {
 	onClose: () => void,
-	editItem?: Question,
-	region: number
+	questions?: Question[],
+	questionTypes: any[],
+	additionalQuestionTypes: any[]
 }) {
-	const { me } = useContext(UserContext);
 	//	Formik values context
 	const { values, setValues } = useFormikContext<Question[]>();
+
+	const [ editQuestions, setEditQuestions ] = useState(questions);
+	const [ deleteIds, setDeleteIds ] = useState([]);
+	
+	useEffect(() => {
+		if(editQuestions.length == 0) {
+			return;
+		}
+
+		//	Set Editor Content
+		setEditorState(EditorState.createWithContent(ContentState.createFromBlockArray(htmlToDraft(editQuestions[0].question).contentBlocks)));
+
+		if(editQuestions[0].defaultQuestion)
+			return;
+
+		//	Detect Changes
+		let bHasChange = false;
+		const newQuestions = editQuestions.map(
+			question => {
+				if([QUESTION_TYPE.MULTIPLECHOICES
+					, QUESTION_TYPE.CHECKBOX
+					, QUESTION_TYPE.DROPDOWN].find(x => x == question.type)) {
+					if(question.options.length == 0) {
+						bHasChange = true;
+						return {
+							...question,
+							options: [{
+								value: 1,
+								label: ''
+							}]
+						};
+					}
+					else if(question.options[question.options.length - 1].label.trim() != '') {
+						bHasChange = true;
+						return {
+							...question,
+							options: [
+								...question.options,
+								{
+									value: question.options.length + 1,
+									label: ''
+								}]
+						};
+					}
+					else {
+						return question;
+					}
+				}
+				else {
+					return question;
+				}
+			}
+		);
+
+		//	Handle additional questions
+		for(let i = 0; i < newQuestions.length; i++) {
+			let question = newQuestions[i];
+			if(question.options.find(o => o.action == 2)		//	If one option is set to Ask an additional question
+				&& i == newQuestions.length - 1)							//	And no additional question exists
+			{
+				//	Add One
+				newQuestions.push({
+					id: undefined,
+					region_id: newQuestions[0].region_id,
+					section: newQuestions[0].section,
+					type: QUESTION_TYPE.DROPDOWN,
+					sequence: newQuestions[0].sequence,
+					question: '',
+					defaultQuestion: false,
+					mainQuestion: false,
+					additionalQuestion: question.slug,
+					validation: 0,
+					slug: `meta_${+new Date()}`,
+					options: [{
+						value: 1,
+						label: ''
+					}],
+					required: false,
+					response: ''
+				});
+				bHasChange = true;
+			}
+			else if(question.options.find(o => o.action == 2) == null	//	If no options is set to Ask an additional question
+				&& i < newQuestions.length - 1)								//	And this is the latest question
+			{
+				bHasChange = true;
+				//	Remove all following additional questions
+				for(let j = newQuestions.length - 1; j > i; j--) {
+					if(newQuestions[j].id != undefined) {
+						deleteIds.push(newQuestions[j].id);
+					}
+					newQuestions.pop();
+				}
+				setDeleteIds(deleteIds);
+			}
+		}
+
+		if(bHasChange)
+			setEditQuestions(
+				newQuestions
+			);
+	}, [editQuestions]);
+
 	//	The fields of editItem(Question)
-	const [question, setQuestion] = useState(editItem?.question || '');
-	const [type, setType] = useState(editItem?.type || QUESTION_TYPE.DROPDOWN);
-	const [validationType, setValidationType] = useState(editItem?.validation || 1);
-	const [required, setRequired] = useState(editItem?.required || false);
-	const [validation, setValidation] = useState(editItem?.validation ? true : false || false);
-	const [options, setOptions] = useState(editItem?.options || [])
+	const setQuestionValue = (id, slug, field, value) => {
+		const newQuestions = editQuestions.map(
+			question => {
+				if(question.id == id && question.slug == slug) {	//	We compare slug if id is undefined when adding new question
+					question[field] = value;
+					return question;
+				}
+				else {
+					return question;
+				}
+			}
+		);
+
+		setEditQuestions(newQuestions);
+	};
 
 	//	Error State
 	const [error, setError] = useState('')
 
 	//	Editor related states and functions
-	const [editorState, setEditorState] = useState(EditorState.createWithContent(ContentState.createFromBlockArray(htmlToDraft(editItem?.question || '').contentBlocks)));
+	const [editorState, setEditorState] = useState(EditorState.createWithContent(ContentState.createFromBlockArray(htmlToDraft('').contentBlocks)));
 	const editorRef = useRef(null);
 	const [currentBlocks, setCurrentBlocks] = useState(0)
 	const handleEditorChange = (state) => {
@@ -55,98 +166,99 @@ export default function AddNewQuestionModal({
 	}
 
 	//	States for default options of default questions
+	//	program_year
 	const {loading: schoolLoading, data: schoolYearData} = useQuery(getActiveSchoolYearsByRegionId, {
 		variables: {
-			regionId: region,
+			regionId: questions[0].region_id,
 		},
-		skip: (editItem?.defaultQuestion === false || editItem?.options.length > 0 || editItem?.slug != 'program_year'),
+		skip: (questions[0]?.defaultQuestion === false || questions[0]?.options.length > 0 || questions[0]?.slug != 'program_year'),
 		fetchPolicy: 'network-only',
 	});
 	useEffect(() => {
 		if (!schoolLoading && schoolYearData && schoolYearData.getActiveSchoolYears) {
-			setOptions(
-				schoolYearData.getActiveSchoolYears.map((item) => {
-					return {
-						label: moment(item.date_begin).format('YYYY') + '-' + moment(item.date_end).format('YYYY'),
-						value: item.school_year_id,
+			setEditQuestions(
+				[
+					{
+						...editQuestions[0],
+						options: schoolYearData.getActiveSchoolYears.map((item) => {
+							return {
+								label: moment(item.date_begin).format('YYYY') + '-' + moment(item.date_end).format('YYYY'),
+								value: item.school_year_id,
+							}
+						})
 					}
-				}),
+				]
 			)
 		}
 	}, [schoolYearData]);
 
 	//	Save handler
 	function onSave() {
-		//	Validation check
-		if (question.trim() === '' && type !== QUESTION_TYPE.INFORMATION && type !== QUESTION_TYPE.AGREEMENT) {
-			setError('Question is required')
-			return
-		} else if ([QUESTION_TYPE.DROPDOWN
-								, QUESTION_TYPE.CHECKBOX
-								, QUESTION_TYPE.MULTIPLECHOICES].includes(type)
-								&& options.length && options[0].label.trim() === '' && !editItem.defaultQuestion) {
-			setError('Options are required')
-			return
+		let newQuestions = editQuestions.filter(x => x.question.trim());
+
+		let newValues = values.map(v => v);
+
+		const min = Math.min.apply(null, values.map(value => value.id));
+		let newid = min - 1;
+		//	-9 ~ 0 is reserved
+		if(newid > -10)	newid = -10;
+
+		for(let i = 0; i < newQuestions.length; i++) {
+			let newQuestion = newQuestions[i];
+			//	Validation check
+			if (newQuestion.question.trim() === '' && newQuestion.type !== QUESTION_TYPE.INFORMATION && newQuestion.type !== QUESTION_TYPE.AGREEMENT) {
+				setError('Question is required')
+				return
+			} else if ([QUESTION_TYPE.DROPDOWN
+									, QUESTION_TYPE.CHECKBOX
+									, QUESTION_TYPE.MULTIPLECHOICES].includes(newQuestion.type)
+									&& newQuestion.options.length && newQuestion.options[0].label.trim() === '' && !newQuestion.defaultQuestion) {
+				setError('Options are required')
+				return
+			}
+
+			//	Generate new object from the edited information
+			const item: Question = {
+				id: newQuestion.id,
+				region_id: newQuestion.region_id,
+				section: newQuestion.section || 'quick-link-withdrawal',
+				sequence: newQuestion.sequence || newValues.length + 1,
+				question: newQuestion.type === QUESTION_TYPE.INFORMATION
+								|| newQuestion.type === QUESTION_TYPE.AGREEMENT
+									? draftToHtml(convertToRaw(editorState.getCurrentContent()))
+									: newQuestion.question,
+				type: newQuestion.type,
+				options: newQuestion.options.filter((v) => v.label.trim()),
+				mainQuestion: false,
+				defaultQuestion: newQuestion.defaultQuestion,
+				validation: newQuestion.validation,
+				required: newQuestion.required,
+				slug: newQuestion.slug || `meta_${+new Date()}`,
+				additionalQuestion: newQuestion.additionalQuestion,
+
+				response: '',
+			};
+
+			let id = newQuestion.id;
+			if(id === undefined) {	//	Insert case
+				//	Generate new id
+				item.id = newid--;
+				//setValues([...values, item])
+				newValues.push(item);
+			}
+			else {									//	Update case
+				newValues = newValues.map((v) => (v.id === newQuestion.id ? item : v));
+			}
 		}
 
-		//	Generate new object from the edited information
-		const item: Question = {
-			id: editItem?.id,
-			region_id: region,
-			section: 'quick-link-withdrawal',
-			sequence: editItem?.sequence || values.length + 1,
-			question: type === QUESTION_TYPE.INFORMATION || type === QUESTION_TYPE.AGREEMENT ? draftToHtml(convertToRaw(editorState.getCurrentContent())) : question,
-			type,
-			options: options.filter((v) => v.label.trim()),
-			mainQuestion: false,
-			defaultQuestion: editItem?.defaultQuestion,
-			validation: validation ? validationType : 0,
-			required,
-			slug: `meta_${+new Date()}`,
-
-			response: '',
-		};
-
-		let id = editItem?.id;
-		if(id === undefined) {	//	Insert case
-			//	Generate new id
-			const min = Math.min.apply(null, values.map(value => value.id));
-			id = min - 1;
-			//	-9 ~ 0 is reserved
-			if(id > -10)	id = -10;
-			item.id = id;
-
-			setValues([...values, item])
-		}
-		else {									//	Update case
-			setValues(values.map((v) => (v.id === editItem.id ? item : v)))
-		}
-		
+		newValues = newValues.filter((i) => deleteIds.find(x => x == i.id) == null);
+		setValues(newValues);
+			
 		onClose()
 	}
 
-	//	Detect type Drop Down changes
-	useEffect(() => {
-		if(editItem?.defaultQuestion)
-			return;
-
-		if([QUESTION_TYPE.MULTIPLECHOICES
-			, QUESTION_TYPE.CHECKBOX
-			, QUESTION_TYPE.DROPDOWN].find(x => x == type) != null) {
-			if(options.length == 0) {
-				setOptions([{
-					value: 1,
-					label: '',
-				}]);
-			}
-		}
-		else {
-			setOptions([]);
-		}
-	}, [type]);
-
 	//	Set default options for default questions
-	// useEffect(() => {console.log(options);
+	// useEffect(() => {
 	// 	if(options.length == 0 && editItem?.defaultQuestion) {
 	// 		switch(editItem?.slug) {
 	// 			case 'student_grade_level':
@@ -181,6 +293,8 @@ export default function AddNewQuestionModal({
 					left: '50%',
 					transform: 'translate(-50%, -50%)',
 					width: '800px',
+					height: '97vh',
+					overflowY: 'auto',
 					bgcolor: '#fff',
 					borderRadius: 8,
 					p: 4,
@@ -202,138 +316,158 @@ export default function AddNewQuestionModal({
 					</Button>
 				</Box>
 
+				{editQuestions.map((newQuestion, i) => (
 				<Box
-					sx={{
-						width: '100%',
-						height: '40px',
-						mt: '40px',
-						display: 'flex',
-						alignItems: 'center',
-						justifyContent: 'space-between',
-					}}
-				>
-					<TextField
-						size='small'
+					key={i}>
+					<Box
 						sx={{
-							visibility: (type === QUESTION_TYPE.INFORMATION || type == QUESTION_TYPE.AGREEMENT) ? 'hidden' : 'visible',
-							minWidth: '400px',
-							[`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
-							{
-								borderColor: SYSTEM_07,
-							},
+							width: '100%',
+							height: '40px',
+							mt: '40px',
+							display: 'flex',
+							alignItems: 'center',
+							justifyContent: 'space-between',
 						}}
-						label='Question'
-						variant='outlined'
-						value={question}
-						onChange={(v) => setQuestion(v.currentTarget.value)}
-						focused
-						disabled={editItem?.defaultQuestion}
-					/>
-					<DropDown
-						sx={{
-							pointerEvents: editItem?.defaultQuestion ? 'none' : 'unset',
-							minWidth: '200px',
-							[`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
-							{
-								borderColor: SYSTEM_07,
-							},
-							marginRight: '50px'
-						}}
-						labelTop
-						dropDownItems={QuestionTypes}
-						placeholder='Type'
-						defaultValue={type}
-						// @ts-ignore
-						setParentValue={(v) => setType(+v)}
-						size='small'
-					/>
-				</Box>
-				<Box mt='30px' width='100%' display='flex' flexDirection='column'>
-					{type === QUESTION_TYPE.TEXTFIELD || type === QUESTION_TYPE.CALENDAR ? (
-						<Box height='50px' />
-					) : type === QUESTION_TYPE.INFORMATION || type === QUESTION_TYPE.AGREEMENT ? (
-						<Box sx={{
-							border: '1px solid #d1d1d1',
-							borderRadius: 1,
-							'div.DraftEditor-editorContainer': {
-								minHeight: '200px',
-								maxHeight: '250px',
-								overflow: 'auto',
-								padding: 1,
-							},
-						}}>
-							<Wysiwyg.Editor
-								onContentStateChange={handleEditorChange}
-								editorRef={(ref) => (editorRef.current = ref)}
-								editorState={editorState}
-								onEditorStateChange={setEditorState}
-								toolbar={{
-									options: [
-										'inline', 
-										'list',
-										'link',
-									],
-									inline: {
-										options: ['bold', 'italic'],
-									},
-									list: {
-										options: ['unordered', 'ordered'],
-									}
-								}}
-							/>
-						</Box>
-					) :
-					!editItem?.defaultQuestion && (
-						<QuestionOptions options={options} setOptions={setOptions} type={type} />
-					)}
-				</Box>
+					>
+						<TextField
+							size='small'
+							sx={{
+								visibility: (newQuestion.type === QUESTION_TYPE.INFORMATION
+									|| newQuestion.type == QUESTION_TYPE.AGREEMENT)
+										? 'hidden' : 'visible',
+								minWidth: '400px',
+								[`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
+								{
+									borderColor: SYSTEM_07,
+								},
+							}}
+							label='Question'
+							variant='outlined'
+							value={newQuestion.question}
+							onChange={(v) => {
+								setQuestionValue(newQuestion.id, newQuestion.slug, 'question', v.currentTarget.value);
+							}}
+							focused
+							disabled={newQuestion.defaultQuestion}
+						/>
+						<DropDown
+							sx={{
+								pointerEvents: newQuestion.defaultQuestion ? 'none' : 'unset',
+								minWidth: '200px',
+								[`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
+								{
+									borderColor: SYSTEM_07,
+								},
+								marginRight: '50px'
+							}}
+							labelTop
+							dropDownItems={i == 0 ? questionTypes : additionalQuestionTypes}
+							placeholder='Type'
+							defaultValue={newQuestion.type}
+							// @ts-ignore
+							setParentValue={(v) => {
+								setQuestionValue(newQuestion.id, newQuestion.slug, 'type', +v);
+							}}
+							size='small'
+						/>
+					</Box>
+					<Box mt='30px' width='100%' display='flex' flexDirection='column'>
+						{newQuestion.type === QUESTION_TYPE.TEXTFIELD
+						|| newQuestion.type === QUESTION_TYPE.CALENDAR ? (
+							<Box height='50px' />
+						) : newQuestion.type === QUESTION_TYPE.INFORMATION || newQuestion.type === QUESTION_TYPE.AGREEMENT ? (
+							<Box sx={{
+								border: '1px solid #d1d1d1',
+								borderRadius: 1,
+								'div.DraftEditor-editorContainer': {
+									minHeight: '200px',
+									maxHeight: '250px',
+									overflow: 'auto',
+									padding: 1,
+								},
+							}}>
+								<Wysiwyg.Editor
+									onContentStateChange={handleEditorChange}
+									editorRef={(ref) => (editorRef.current = ref)}
+									editorState={editorState}
+									onEditorStateChange={setEditorState}
+									toolbar={{
+										options: [
+											'inline', 
+											'list',
+											'link',
+										],
+										inline: {
+											options: ['bold', 'italic'],
+										},
+										list: {
+											options: ['unordered', 'ordered'],
+										}
+									}}
+								/>
+							</Box>
+						) :
+						!newQuestion.defaultQuestion && (
+							<QuestionOptions
+								options={newQuestion.options}
+								setOptions={(options) => setQuestionValue(newQuestion.id, newQuestion.slug, 'options', options)}
+								type={newQuestion.type} />
+						)}
+					</Box>
 
-				<Box
-					sx={{
-						width: '100%',
-						height: '40px',
-						mt: '40px',
-						display: 'flex',
-						alignItems: 'center',
-						justifyContent: 'space-between',
-					}}
-				>
-					<Box sx={{display: 'flex', alignItems: 'center', visibility: type === QUESTION_TYPE.TEXTFIELD ? 'visible' : 'hidden'}}>
-						<Checkbox checked={validation} onClick={() => setValidation(!validation)} disabled={editItem?.defaultQuestion}/>
-						<Subtitle size='small'>Validation</Subtitle>
-					</Box>
-					<Box sx={{display: 'flex', alignItems: 'center',}}>
-						<Checkbox checked={required} onClick={() => setRequired(!required)} />
-						<Subtitle size='small'>Required</Subtitle>
-					</Box>
-				</Box>
-				<Box sx={{
-						width: '100%',
-						height: '40px',
-						mt: '40px',
-						alignItems: 'center',
-						justifyContent: 'start',
-						display: validation ? 'flex' : 'none',
-					}}
-				>
-					<DropDown
+					<Box
 						sx={{
-							pointerEvents: editItem?.defaultQuestion ? 'none' : 'unset',
-							minWidth: '200px',
-							[`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
-							{
-								borderColor: SYSTEM_07,
-							},
+							width: '100%',
+							height: '40px',
+							mt: '40px',
+							display: 'flex',
+							alignItems: 'center',
+							justifyContent: 'space-between',
 						}}
-						labelTop
-						dropDownItems={validationTypes}
-						placeholder='Type'
-						defaultValue={validationType}
-						// @ts-ignore
-						setParentValue={(v) => setValidationType(+v)}
-						size='small'
-					/>
-				</Box>
+					>
+						<Box sx={{display: 'flex', alignItems: 'center', visibility: newQuestion.type === QUESTION_TYPE.TEXTFIELD ? 'visible' : 'hidden'}}>
+							<Checkbox checked={newQuestion.validation ? true : false} onClick={() => {
+								setQuestionValue(newQuestion.id, newQuestion.slug, 'validation', newQuestion.validation ? 0 : 1);
+							}} disabled={newQuestion.defaultQuestion}/>
+							<Subtitle size='small'>Validation</Subtitle>
+						</Box>
+						<Box sx={{display: 'flex', alignItems: 'center',}}>
+							<Checkbox checked={newQuestion.required ? true : false} onClick={() => {
+								setQuestionValue(newQuestion.id, newQuestion.slug, 'required', newQuestion.required ? 0 : 1);
+							}} />
+							<Subtitle size='small'>Required</Subtitle>
+						</Box>
+					</Box>
+					<Box sx={{
+							width: '100%',
+							height: '40px',
+							mt: '40px',
+							alignItems: 'center',
+							justifyContent: 'start',
+							display: newQuestion.validation ? 'flex' : 'none',
+						}}
+					>
+						<DropDown
+							sx={{
+								pointerEvents: newQuestion.defaultQuestion ? 'none' : 'unset',
+								minWidth: '200px',
+								[`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
+								{
+									borderColor: SYSTEM_07,
+								},
+							}}
+							labelTop
+							dropDownItems={validationTypes}
+							placeholder='Type'
+							defaultValue={newQuestion.validation}
+							// @ts-ignore
+							setParentValue={(v) => {
+								setQuestionValue(newQuestion.id, newQuestion.slug, 'validation', +v);
+							}}
+							size='small'
+						/>
+					</Box>
+				</Box> ))}
 				{error && <Typography color='red'>{error}</Typography>}
 			</Box>
 		</Modal>

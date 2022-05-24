@@ -58,7 +58,7 @@ export const QuickLinks: React.FC<any> = ({backAction}) => {
 			if(page != '' && hasChange) {
 				showLeavingConfirmModal(true);
 			}
-			else {console.log('region', nextRegion)
+			else {
 				setRegion(nextRegion);
 			}
 		}

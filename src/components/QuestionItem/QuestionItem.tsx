@@ -1,13 +1,13 @@
 import { Box, Button, Checkbox, IconButton, outlinedInputClasses, Radio, TextField } from '@mui/material'
 import { useFormikContext } from 'formik'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { Subtitle } from '../Typography/Subtitle/Subtitle'
 import DehazeIcon from '@mui/icons-material/Dehaze'
 import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined'
 import EditIcon from '@mui/icons-material/Edit'
 import { SortableHandle } from 'react-sortable-hoc'
 import { Question, QUESTION_TYPE } from './QuestionItemProps'
-import AddNewQuestionModal from './AddNewQuestion'
+import QuestionModal from './AddNewQuestion'
 import { SYSTEM_05, SYSTEM_07 } from '../../utils/constants'
 import { DropDown } from '../DropDown/DropDown'
 import { Paragraph } from '../Typography/Paragraph/Paragraph'
@@ -21,9 +21,13 @@ const DragHandle = SortableHandle(() => (
 ))
 
 export default function QuestionItem({
-	question,
+	questions,
+	questionTypes,
+	additionalQuestionTypes
 }: {
-	question?: Question
+	questions: Question[],
+	questionTypes: any[],
+	additionalQuestionTypes: any[]
 }) {
 	//	Formik values context
 	const { values, setValues } = useFormikContext<Question[]>();
@@ -37,9 +41,9 @@ export default function QuestionItem({
 		<>
 			<Box display='flex' mt='20px' alignItems='center' justifyContent='left'>
 				<Box flex='1' paddingTop='10px' maxWidth={'80%'}>
-					<Item question={question} />
+					<Item question={questions[0]} />
 				</Box>
-				{!question?.mainQuestion && (
+				{!questions[0]?.mainQuestion && (
 					<Box display='inline-flex' paddingTop='10px' height='40px' alignItems='center' justifyContent='center'>
 						<DragHandle />
 						
@@ -53,7 +57,7 @@ export default function QuestionItem({
 					</Box>
 				)}
 			</Box>
-			{showEditDialog && <AddNewQuestionModal onClose={() => setShowEditDialog(false)} editItem={question} />}
+			{showEditDialog && <QuestionModal onClose={() => setShowEditDialog(false)} questions={questions} questionTypes={questionTypes} additionalQuestionTypes={additionalQuestionTypes} />}
 			{showDeleteDialog && (
 				<CustomConfirmModal
 					header="Delete Question" 
@@ -61,7 +65,7 @@ export default function QuestionItem({
 					handleConfirmModalChange={(val: boolean, isOk: boolean) => {
 						setShowDeleteDialog(false);
 						if(isOk) {
-							setValues(values.filter((i) => i.id !== question.id))
+							setValues(values.filter((i) => i.id !== questions[0].id))
 						}
 					}}
 				/>

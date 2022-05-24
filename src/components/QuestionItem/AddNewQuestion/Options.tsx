@@ -1,8 +1,20 @@
-import React from 'react'
-import { Box, Radio, TextField, Checkbox, IconButton } from '@mui/material'
+import React, { useEffect, useState } from 'react'
+import { Box, Radio, TextField, Checkbox, IconButton, outlinedInputClasses } from '@mui/material'
 import CloseSharp from '@mui/icons-material/CloseSharp';
 import { SYSTEM_07 } from '../../../utils/constants';
 import { QUESTION_TYPE } from '../QuestionItemProps';
+import { DropDown } from '../../DropDown/DropDown';
+
+const actionTypes = [
+	{
+		value: 1,
+		label: 'Continue to next',
+	},
+	{
+		value: 2,
+		label: 'Ask an additional question',
+	},
+]
 
 export default function QuestionOptions({
 	options,
@@ -13,65 +25,118 @@ export default function QuestionOptions({
 	setOptions: (options: Array<any>) => void
 	type: QUESTION_TYPE
 }) {
+	const [enableAction, setEnableAction] = useState(true)
+	useEffect(() => {
+		if(options.filter((o) => o.action === 2).length > 0) {
+			setEnableAction(false)
+		}
+		else {
+			setEnableAction(true)
+		}
+	}, [options])
+
 	return (
-		<Box display='flex' flexDirection='column' width='80%'>
+		<Box display='flex' flexDirection='column' width='100%'>
 			{options.map((opt, i) => (
-				<Box
-					key={opt.value}
+				<Box display='flex' width='100%' 
 					sx={{
-						display: 'flex',
-						py: '10px',
+						alignItems: 'center', 
+						justifyContent: 'space-around',
+						borderBottom: `2px solid ${SYSTEM_07}`, 
 						opacity: opt.label.trim() || i === 0 ? 1 : 0.3,
-					}}
+					}}					
+					key={opt.value}
 				>
-					{type === QUESTION_TYPE.CHECKBOX ? <Checkbox /> : type === QUESTION_TYPE.MULTIPLECHOICES ? <Radio /> : null}
-					<TextField
-						size='small'
+					<Box
+						key={opt.value}
 						sx={{
-							flex: 1,
-							p: '5px',
-							pl: '10px',
-							'& .MuiInput-underline:after': {
-								borderWidth: '1px',
-								borderColor: SYSTEM_07,
-							},
+							display: 'flex',
+							py: '10px',
+							alignItems: 'center'
 						}}
-						placeholder='Add Option'
-						variant='standard'
-						value={opt.label}
-						focused
-						onChange={(e) => {
-							const val = e.currentTarget.value;
-							const newOps = options.map((o) => (o.value === opt.value ? { ...o, label: val } : o));
-							if (i === options.length - 1) {
-								setOptions([...newOps, { value: options.length + 1, label: '' }])
-							} else {
-								setOptions(newOps)
-							}
-						}}
-					/>
-					{options.length > 1 ? (
-						<IconButton
+						width='50%'
+					>
+						{type === QUESTION_TYPE.CHECKBOX ? <Checkbox /> : type === QUESTION_TYPE.MULTIPLECHOICES ? <Radio /> : null}
+						<TextField
+							size='small'
 							sx={{
-								color: '#fff',
-								bgcolor: '#000',
-								width: '30px',
-								height: '30px',
-								borderRadius: '5px',
-								cursor: 'pointer',
-								marginLeft: '10px',
+								flex: 1,
+								p: '5px',
+								pl: '10px',
+								'& .MuiInput-underline:after': {
+									borderWidth: '0px',
+									borderColor: 'transparent',
+								},
+								'& .MuiInput-underline:before': {
+									borderWidth: '0px',
+									borderColor: 'transparent',
+								},
+								'& .MuiInput-root:hover:not(.Mui-disabled):before': {
+									borderWidth: '0px',
+									borderColor: 'transparent',
+								},
+								'& :hover': {
+									borderWidth: '0px',
+									borderColor: 'transparent',
+								},
 							}}
-							onClick={() => {
-								setOptions(
-									options.filter((o) => o.value !== opt.value).map((v, i) => ({ value: i, label: v.label.trim() })),
-								)
+							placeholder='Add Option'
+							variant='standard'
+							value={opt.label}
+							focused
+							onChange={(e) => {
+								const val = e.currentTarget.value;
+								const newOps = options.map((o) => (o.value === opt.value ? { ...o, label: val } : o));
+								if (i === options.length - 1) {
+									setOptions([...newOps, { value: options.length + 1, label: '', action: 1 }])
+								} else {
+									setOptions(newOps)
+								}
 							}}
-						>
-							<CloseSharp />
-						</IconButton>
-					) : (
-						<Box width='40px' />
-					)}
+						/>
+						{opt.label.trim() ? (
+							<IconButton
+								sx={{
+									color: '#fff',
+									bgcolor: '#000',
+									width: '30px',
+									height: '30px',
+									borderRadius: '5px',
+									cursor: 'pointer',
+									marginLeft: '10px',
+								}}
+								onClick={() => {
+									setOptions(
+										options.filter((o) => o.value !== opt.value).map((v, i) => ({ value: i, label: v.label.trim(), action: v.action })),
+									)
+								}}
+							>
+								<CloseSharp />
+							</IconButton>
+						) : (
+							<Box width='40px' />
+						)}
+					</Box>
+					<Box width='30%'>
+						<DropDown
+							sx={{
+								minWidth: '200px',
+								[`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
+									{
+										borderColor: 'transparent'
+									}
+							}}
+							labelTop
+							dropDownItems={(opt.action !== 2 && !enableAction || opt.label.trim() == '') ? actionTypes.filter((a) => a.value === 1) : actionTypes}
+							defaultValue={opt.action || 1}
+							setParentValue={(v) => {
+								const val = +v;
+								const newOps = options.map((o) => (o.value === opt.value ? {...o, action: val} : o));
+								setOptions(newOps);
+							}}
+							size='small'
+						/>
+					</Box>
 				</Box>
 			))}
 		</Box>

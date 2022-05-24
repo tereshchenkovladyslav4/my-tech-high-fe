@@ -181,6 +181,10 @@ export const StudentFilters = ({ currentUserData, setStudentStatuData, studentSt
       value: 4,
     },
     {
+      label: 'Applied',
+      value: 5,
+    },
+    {
       label: 'Pending',
       value: 0,
     },
@@ -277,6 +281,13 @@ export const StudentFilters = ({ currentUserData, setStudentStatuData, studentSt
         },
         {
           label:
+            studentStatusData?.status == 5
+              ? `Applied (${moment(studentStatusData?.date).format('MM/DD/YYYY')})`
+              : 'Applied',
+          value: 5,
+        },
+        {
+          label:
             studentStatusData?.status == 0
               ? `Pending (${moment(studentStatusData?.date).format('MM/DD/YYYY')})`
               : 'Pending',
@@ -306,6 +317,10 @@ export const StudentFilters = ({ currentUserData, setStudentStatuData, studentSt
           value: 4,
         },
         {
+          label: 'Applied',
+          value: 5,
+        },
+        {
           label: 'Pending',
           value: 0,
         },
@@ -325,6 +340,10 @@ export const StudentFilters = ({ currentUserData, setStudentStatuData, studentSt
         {
           label: ' ',
           value: 4,
+        },
+        {
+          label: 'Applied',
+          value: 5,
         },
         {
           label: 'Pending',

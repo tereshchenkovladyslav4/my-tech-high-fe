@@ -12,7 +12,7 @@ export const Metadata: MetadataTemplateType = ({
   divider,
 }) =>
   !verticle ? (
-    <ListItem secondaryAction={secondaryAction} disableGutters={disableGutters}>
+    <ListItem sx={{px: 0}} secondaryAction={secondaryAction} disableGutters={disableGutters}>
       {divider && (
         <Divider
           sx={{

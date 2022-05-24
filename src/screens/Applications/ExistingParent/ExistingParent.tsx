@@ -183,7 +183,15 @@ export const ExistingParent = () => {
       setMe((prev) => {
         return {
           ...prev,
-          students: prev?.students?.concat(res.data.createNewStudentApplication.students),
+          students: prev?.students?.concat(res.data.createNewStudentApplication.students).sort(function (a, b) {
+            if (a.person.first_name < b.person.first_name) {
+              return -1
+            }
+            if (a.person.first_name > b.person.first_name) {
+              return 1
+            }
+            return 0
+          }),
         }
       })
       history.push('/homeroom')
