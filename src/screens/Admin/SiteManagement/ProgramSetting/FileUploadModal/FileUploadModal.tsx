@@ -17,7 +17,6 @@ type ValidateFileResponse = {
   status: boolean
   message?: string
 }
-
 export const FileUploadModal: FileUploadModalTemplateType = ({
   handleModem,
   handleFile,
@@ -25,6 +24,7 @@ export const FileUploadModal: FileUploadModalTemplateType = ({
   extensions,
   limit,
   invalidMessage,
+  type,
 }) => {
   const classes = useStyles
 
@@ -32,7 +32,10 @@ export const FileUploadModal: FileUploadModalTemplateType = ({
   const [validFiles, setValidFiles] = useState<File[]>([])
   const [errorMessage, setErrorMessage] = useState('')
   const [deletedFiles, setDeletedFiles] = useState([])
-
+  const template = type === 'county' 
+    ? import.meta.env.SNOWPACK_PUBLIC_COUNTIES_TEMPLATE 
+    : import.meta.env.SNOWPACK_PUBLIC_SCHOOL_DISTRICT_TEMPLATE
+    
   useEffect(() => {
     let filteredArr = selectedFiles.reduce((acc, current) => {
       const x = acc.find((item) => item.name === current.name)
@@ -182,6 +185,7 @@ export const FileUploadModal: FileUploadModalTemplateType = ({
               <Paragraph size='medium' fontWeight='700' sx={classes.dragAndDropText}>
                 Drag &amp; Drop to Upload
               </Paragraph>
+              <Paragraph sx={{cursor:'pointer'}}color='blue' onClick={() => window.open(template)}>Download Template</Paragraph>
               <Paragraph size='medium' color={SYSTEM_06}>
                 {' '}
                 Or

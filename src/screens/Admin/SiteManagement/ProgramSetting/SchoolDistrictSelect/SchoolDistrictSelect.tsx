@@ -117,6 +117,7 @@ export default function SchoolDistrictSelect({
           multi={false}
           handleFile={handleFile}
           invalidMessage={invalidMessage}
+          type='schoolDistrict'
         />
       )}
       {customModalOpen && (

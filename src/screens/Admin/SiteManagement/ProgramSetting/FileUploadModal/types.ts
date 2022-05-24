@@ -8,6 +8,7 @@ type SubmissionModal = {
   handleFile: any
   limit?: number
   invalidMessage?: string
+  type?: 'county' | 'schoolDistrict'
 }
 
 export type S3FileType = {

@@ -114,6 +114,7 @@ export default function CountySelect({
           multi={false}
           handleFile={handleFile}
           invalidMessage={invalidMessage}
+          type='county'
         />
       )}
       {customModalOpen && (
