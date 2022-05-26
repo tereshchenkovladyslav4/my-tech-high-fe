@@ -293,7 +293,7 @@ export default function QuestionModal({
 					left: '50%',
 					transform: 'translate(-50%, -50%)',
 					width: '800px',
-					height: '97vh',
+					maxHeight: '97vh',
 					overflowY: 'auto',
 					bgcolor: '#fff',
 					borderRadius: 8,

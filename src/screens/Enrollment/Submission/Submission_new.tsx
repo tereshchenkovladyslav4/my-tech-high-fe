@@ -267,7 +267,7 @@ export default function SubmissionNew({id, questions}) {
 
   return (
     <form onSubmit={(e) => !disabled ? handleSubmit(e) : nextTab(e)}>
-        {!showSuccess 
+        {showSuccess 
         && <SuccessModal 
             title='Success'
             subtitle={`${student.person.first_name}'s Enrollment Packet has been successfully submitted and is now pending approval.`}

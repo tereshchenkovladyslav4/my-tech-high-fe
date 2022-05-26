@@ -120,13 +120,13 @@ const Years: React.FC = () => {
         variables: {
           updateSchoolYearInput: {
             school_year_id: parseInt(selectedYearId),
-            date_begin: moment(schoolYearOpen),
-            date_end: moment(schoolYearClose),
-            date_reg_close: moment(applicationsClose),
-            date_reg_open: moment(applicationsOpen),
+            date_begin: moment(schoolYearOpen).format('YYYY-MM-DD'),
+            date_end: moment(schoolYearClose).format('YYYY-MM-DD'),
+            date_reg_close: moment(applicationsClose).format('YYYY-MM-DD'),
+            date_reg_open: moment(applicationsOpen).format('YYYY-MM-DD'),
             midyear_application: midYearStatus ? 1 : 0,
-            midyear_application_open: moment(midYearOpen),
-            midyear_application_close: moment(midYearClose),
+            midyear_application_open: moment(midYearOpen).format('YYYY-MM-DD'),
+            midyear_application_close: moment(midYearClose).format('YYYY-MM-DD'),
           },
         },
       })
@@ -136,13 +136,13 @@ const Years: React.FC = () => {
         variables: {
           createSchoolYearInput: {
             RegionId: me.selectedRegionId,
-            date_begin: moment(schoolYearOpen),
-            date_end: moment(schoolYearClose),
-            date_reg_close: moment(applicationsClose),
-            date_reg_open: moment(applicationsOpen),
+            date_begin: moment(schoolYearOpen).format('YYYY-MM-DD'),
+            date_end: moment(schoolYearClose).format('YYYY-MM-DD'),
+            date_reg_close: moment(applicationsClose).format('YYYY-MM-DD'),
+            date_reg_open: moment(applicationsOpen).format('YYYY-MM-DD'),
             midyear_application: midYearStatus ? 1 : 0,
-            midyear_application_open: moment(midYearOpen),
-            midyear_application_close: moment(midYearClose),
+            midyear_application_open: moment(midYearOpen).format('YYYY-MM-DD'),
+            midyear_application_close: moment(midYearClose).format('YYYY-MM-DD'),
           },
         },
       })
@@ -277,7 +277,15 @@ const Years: React.FC = () => {
     if (schoolYearData?.data?.region?.SchoolYears) {
       let schoolYearsArr: SchoolYears[] = []
       let cnt = 0
+      
       schoolYearData?.data?.region?.SchoolYears.forEach((schoolYear) => {
+        schoolYear.date_begin = moment(schoolYear.date_begin.substring(0, 10)).toISOString();
+        schoolYear.date_end = moment(schoolYear.date_end.substring(0, 10)).toISOString();
+        schoolYear.date_reg_open = moment(schoolYear.date_reg_open.substring(0, 10)).toISOString();
+        schoolYear.date_reg_close = moment(schoolYear.date_reg_close.substring(0, 10)).toISOString();
+        schoolYear.midyear_application_open = moment(schoolYear.midyear_application_open.substring(0, 10)).toISOString();
+        schoolYear.midyear_application_close = moment(schoolYear.midyear_application_close.substring(0, 10)).toISOString();
+
         if (schoolYear.school_year_id == selectedYearId) {
           setSchoolYearOpen(schoolYear.date_begin)
           setSchoolYearClose(schoolYear.date_end)
