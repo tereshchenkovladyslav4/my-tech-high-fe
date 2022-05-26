@@ -56,6 +56,7 @@ export const StudentProfile = ({
   setIsChanged,
 }) => {
   const classes = selectStyles()
+  const [originStudentStatus, setOriginStudentStatus] = useState({})
   const {
     loading: userLoading,
     error: userError,
@@ -153,6 +154,9 @@ export const StudentProfile = ({
         // grade_level: currentUserData.student.status.length && currentUserData.student.status[0].grade_level,
         school_year_id:
           currentUserData.student.applications.length && currentUserData.student.applications[0].school_year_id,
+      })
+      setOriginStudentStatus({
+        status: currentUserData?.student?.status?.length && currentUserData.student.status[0].status,
       })
       if (currentUserData.student.testing_preference) {
         setHispanicOrLatino(currentUserData.student.testing_preference)
@@ -347,6 +351,7 @@ export const StudentProfile = ({
             currentUserData={currentUserData}
             setStudentStatuData={setStudentStatus}
             studentStatusData={studentStatus}
+            originStudentStatus={originStudentStatus}
             setIsChanged={setIsChanged}
           />
         </Grid>

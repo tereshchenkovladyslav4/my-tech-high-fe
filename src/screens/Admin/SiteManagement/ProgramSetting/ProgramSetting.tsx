@@ -16,9 +16,11 @@ import { Prompt, useHistory } from 'react-router-dom'
 import { StateLogoFileType } from './StateLogo/StateLogoTypes'
 import { DropDown } from '../../../../components/DropDown/DropDown'
 import { DropDownItem } from '../../../../components/DropDown/types'
+import { getAllRegion } from '../../../../graphql/queries/region'
 import { CountyFileType } from './CountySelect/CountySelectTypes'
 import { SchoolDistrictFileType } from './SchoolDistrictSelect/SchoolDistrictSelectTypes'
 import moment from 'moment'
+import { map } from 'lodash'
 import {
   getSchoolYearsByRegionId,
   removeCountyInfoByRegionId,
@@ -58,8 +60,10 @@ const ProgramSetting: React.FC = () => {
   const history = useHistory()
   const { me, setMe } = useContext(UserContext)
   const [stateName, setStateName] = useState<string>()
+  const [newStateName, setNewStateName] = useState<string>('')
   const [program, setProgram] = useState<string>()
   const [specialEd, setSpecialEd] = useState<boolean>()
+  const [isInvalidStateName, setIsInvalidStateName] = useState<boolean>(false)
   const [birthDate, setBirthDate] = useState<string>('')
   const [stateLogo, setStateLogo] = useState<string>()
   const [countyArray, setCountyArray] = useState<Array<any>>([])
@@ -76,9 +80,11 @@ const ProgramSetting: React.FC = () => {
     file: null,
   })
   const [isChanged, setIsChanged] = useState<boolean>(false)
+  const [stateInvalid, setStateInvalid] = useState<boolean>(false)
   const [schoolYears, setSchoolYears] = useState<SchoolYears[]>([])
   const [years, setYears] = useState<DropDownItem[]>([])
   const [selectedYearId, setSelectedYearId] = useState<string>('')
+  const [allRegions, setAllRegions] = useState<DropDownItem[]>([])
   const [stateLogoFile, setStateLogoFile] = useState<StateLogoFileType>()
   const [submitSave, { data, loading, error }] = useMutation(updateStateNameMutation)
   const [submitSchoolYearSave, {}] = useMutation(updateSchoolYearMutation)
@@ -92,6 +98,7 @@ const ProgramSetting: React.FC = () => {
     skip: me?.selectedRegionId ? false : true,
     fetchPolicy: 'network-only',
   })
+  const { data: regionData, loading: regionDataLoading } = useQuery(getAllRegion)
 
   const getRegionById = (id: number) => {
     return me.userRegion.find((region) => region.region_id === id)
@@ -219,6 +226,10 @@ const ProgramSetting: React.FC = () => {
   }
 
   const handleClickSave = async () => {
+    if (isInvalidStateName) {
+      setStateInvalid(true)
+      return
+    }
     let imageLocation: string
     if (stateLogoFile) {
       imageLocation = await uploadImage(stateLogoFile.file)
@@ -242,7 +253,7 @@ const ProgramSetting: React.FC = () => {
       variables: {
         updateRegionInput: {
           id: me.selectedRegionId,
-          name: stateName,
+          name: newStateName ? newStateName : stateName,
           program: program,
           state_logo: imageLocation ? imageLocation : stateLogo,
           county_file_name: county.name,
@@ -289,9 +300,19 @@ const ProgramSetting: React.FC = () => {
     setIsChanged(false)
 
     setMe((prevMe) => {
-      const updatedRegions = prevMe?.userRegion.map((prevRegion) => {
-        return prevRegion.region_id == me.selectedRegionId ? forSaveUpdatedRegion : prevRegion
-      })
+      const updatedRegions = prevMe?.userRegion
+        .map((prevRegion) => {
+          return prevRegion.region_id == me.selectedRegionId ? forSaveUpdatedRegion : prevRegion
+        })
+        .sort(function (a, b) {
+          if (a.regionDetail.name < b.regionDetail.name) {
+            return -1
+          }
+          if (a.regionDetail.name > b.regionDetail.name) {
+            return 1
+          }
+          return 0
+        })
 
       return {
         ...prevMe,
@@ -369,6 +390,16 @@ const ProgramSetting: React.FC = () => {
     setDropYears(schoolYears)
   }, [schoolYears])
 
+  useEffect(() => {
+    !regionDataLoading &&
+      setAllRegions(
+        map(regionData.regions, (region) => ({
+          label: region.name,
+          value: region.id.toString(),
+        })),
+      )
+  }, [regionData])
+
   return (
     <Box sx={classes.base}>
       <Prompt
@@ -424,7 +455,16 @@ const ProgramSetting: React.FC = () => {
           }}
         />
       </Stack>
-      <StateSelect stateName={stateName} setStateName={setStateName} setIsChanged={setIsChanged} />
+      <StateSelect
+        stateName={stateName}
+        regions={allRegions}
+        setIsChanged={setIsChanged}
+        setIsInvalidStateName={setIsInvalidStateName}
+        stateInvalid={stateInvalid}
+        setStateInvalid={setStateInvalid}
+        newStateName={newStateName}
+        setNewStateName={setNewStateName}
+      />
       <StateLogo
         stateLogo={stateLogo}
         setStateLogo={setStateLogo}

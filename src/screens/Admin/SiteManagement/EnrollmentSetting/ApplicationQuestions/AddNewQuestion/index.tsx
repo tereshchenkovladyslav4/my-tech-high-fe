@@ -20,7 +20,7 @@ export default function AddNewQuestionModal({
   editItem,
   newQuestion,
 }: {
-  onClose: () => void
+  onClose: (e: boolean) => void
   editItem?: ApplicationQuestion
   newQuestion?: boolean
 }) {
@@ -91,7 +91,7 @@ export default function AddNewQuestionModal({
       setValues([...values, item])
     }
 
-    onClose()
+    onClose(false)
   }
 
   return (
@@ -116,7 +116,7 @@ export default function AddNewQuestionModal({
             justifyContent: 'end',
           }}
         >
-          <Button sx={styles.cancelButton} onClick={() => onClose()}>
+          <Button sx={styles.cancelButton} onClick={() => onClose(true)}>
             Cancel
           </Button>
           <Button sx={styles.actionButtons} onClick={() => onSave()}>

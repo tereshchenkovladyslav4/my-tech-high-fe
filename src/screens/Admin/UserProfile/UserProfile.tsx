@@ -27,7 +27,7 @@ export const UserProfile = ({ handleClose, data, setIsChanged }) => {
   const [selectedStudent, setSelectedStudent] = useState(parseInt(data.student_id))
   const [selectedParentType, setSelectedParentType] = useState('parent')
   const [applicationState, setApplicationState] = useState('')
-  const {me} = useContext(UserContext)
+  const { me } = useContext(UserContext)
   const {
     loading: userLoading,
     error: userError,
@@ -43,7 +43,7 @@ export const UserProfile = ({ handleClose, data, setIsChanged }) => {
   const [updateStudent, { data: studentData }] = useMutation(UpdateStudentMutation)
 
   const [updatePersonAddress, { data: updatedData }] = useMutation(updatePersonAddressMutation)
-  
+
   const handleSavePerson = async () => {
     if (selectedParent) {
       const person: any = Object.assign({}, userInfo)
@@ -202,7 +202,12 @@ export const UserProfile = ({ handleClose, data, setIsChanged }) => {
           />
         </Box>
       </Box>
-      <Students students={students} selectedStudent={selectedStudent} handleChangeStudent={handleChangeStudent} me={me}/>
+      <Students
+        students={students}
+        selectedStudent={selectedStudent}
+        handleChangeStudent={handleChangeStudent}
+        me={me}
+      />
       {selectedParent && !selectedStudent ? (
         <ParentProfile
           userInfo={userInfo}

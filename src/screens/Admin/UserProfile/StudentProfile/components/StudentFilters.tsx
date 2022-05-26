@@ -165,7 +165,13 @@ const ordinal = (n) => {
   var v = n % 100
   return n + (s[(v - 20) % 10] || s[v] || s[0])
 }
-export const StudentFilters = ({ currentUserData, setStudentStatuData, studentStatusData, setIsChanged }) => {
+export const StudentFilters = ({
+  currentUserData,
+  setStudentStatuData,
+  originStudentStatus,
+  studentStatusData,
+  setIsChanged,
+}) => {
   const classes = useStyles
   const selectClasses = selectStyles()
   const [showDetails, setShowDetails] = useState(false)
@@ -227,12 +233,16 @@ export const StudentFilters = ({ currentUserData, setStudentStatuData, studentSt
   ]
 
   const handleChangeStudentStatus = (e) => {
-    if (e.target.value == 1) {
-      setShowActiveModal(true)
+    if (e.target.value == 1 || e.target.value == 0) {
+      if (originStudentStatus?.status == 2) {
+        setShowActiveModal(true)
+      }
       setStudentStatus(studentStatusData.status)
       setStudentStatuData({ ...studentStatusData, ...{ status: e.target.value } })
     } else if (e.target.value == 2) {
-      setShowWithdrawalModal(true)
+      if (originStudentStatus?.status == 1 || originStudentStatus?.status == 0) {
+        setShowWithdrawalModal(true)
+      }
       setStudentStatus(studentStatusData.status)
       setStudentStatuData({ ...studentStatusData, ...{ status: e.target.value } })
     } else {

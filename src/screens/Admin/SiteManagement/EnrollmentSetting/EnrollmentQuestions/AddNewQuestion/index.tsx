@@ -24,7 +24,7 @@ export default function AddNewQuestionModal({
   group,
   newQuestion,
 }: {
-  onClose: () => void
+  onClose: (e: boolean) => void // true: Close Add Question Modal false: Open Add Question Modal
   editItem?: EnrollmentQuestion
   group?: string
   newQuestion?: boolean
@@ -278,7 +278,7 @@ export default function AddNewQuestionModal({
       }  
     }
 
-    onClose()
+    onClose(false)
   }
 
   return (
@@ -314,7 +314,7 @@ export default function AddNewQuestionModal({
               justifyContent: 'end',
             }}
           >
-            <Button sx={styles.cancelButton} onClick={() => onClose()}>
+            <Button sx={styles.cancelButton} onClick={() => onClose(true)}>
               Cancel
             </Button>
             <Button sx={styles.actionButtons} onClick={() => onSave()}>
@@ -358,7 +358,7 @@ export default function AddNewQuestionModal({
               }}
               labelTop
               dropDownItems={dropdownOptions}
-              placeholder='Groups'
+              placeholder='Add to Group'
               defaultValue={groupType}
               // @ts-ignore
               setParentValue={(v) => {

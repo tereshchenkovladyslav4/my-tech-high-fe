@@ -279,12 +279,12 @@ const Years: React.FC = () => {
       let cnt = 0
       
       schoolYearData?.data?.region?.SchoolYears.forEach((schoolYear) => {
-        schoolYear.date_begin = moment(schoolYear.date_begin.substring(0, 10)).toISOString();
-        schoolYear.date_end = moment(schoolYear.date_end.substring(0, 10)).toISOString();
-        schoolYear.date_reg_open = moment(schoolYear.date_reg_open.substring(0, 10)).toISOString();
-        schoolYear.date_reg_close = moment(schoolYear.date_reg_close.substring(0, 10)).toISOString();
-        schoolYear.midyear_application_open = moment(schoolYear.midyear_application_open.substring(0, 10)).toISOString();
-        schoolYear.midyear_application_close = moment(schoolYear.midyear_application_close.substring(0, 10)).toISOString();
+        schoolYear.date_begin = moment(schoolYear.date_begin?.substring(0, 10)).toISOString();
+        schoolYear.date_end = moment(schoolYear.date_end?.substring(0, 10)).toISOString();
+        schoolYear.date_reg_open = moment(schoolYear.date_reg_open?.substring(0, 10)).toISOString();
+        schoolYear.date_reg_close = moment(schoolYear.date_reg_close?.substring(0, 10)).toISOString();
+        schoolYear.midyear_application_open = moment(schoolYear.midyear_application_open?.substring(0, 10)).toISOString();
+        schoolYear.midyear_application_close = moment(schoolYear.midyear_application_close?.substring(0, 10)).toISOString();
 
         if (schoolYear.school_year_id == selectedYearId) {
           setSchoolYearOpen(schoolYear.date_begin)

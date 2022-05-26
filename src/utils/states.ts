@@ -8,218 +8,250 @@ export const STATES_WITH_ID = [
 ]
 
 export const STATES_WITH_ABBREVIATION = {
-  'Arizona': 'AZ',
-  'Colorado' : 'CO',
-  'Idaho' : 'ID' ,
-  'Tennessee' : 'TN',
-  'Indiana' : 'IN',
-  'Wyoming' : 'WY',
-  'Utah' : 'UT'
+  Arizona: 'AZ',
+  Colorado: 'CO',
+  Idaho: 'ID',
+  Tennessee: 'TN',
+  Indiana: 'IN',
+  Wyoming: 'WY',
+  Utah: 'UT',
 }
 
 export const usStates = [
   {
-    label: 'AL',
+    label: 'Alabama',
     value: 'AL',
   },
   {
-    label: 'AK',
+    label: 'Alaska',
     value: 'AK',
   },
   {
-    label: 'AZ',
+    label: 'American Samoa',
+    value: 'AS',
+  },
+  {
+    label: 'Arizona',
     value: 'AZ',
   },
   {
-    label: 'AR',
+    label: 'Arkansas',
     value: 'AR',
   },
   {
-    label: 'CA',
+    label: 'California',
     value: 'CA',
   },
   {
-    label: 'CO',
+    label: 'Colorado',
     value: 'CO',
   },
   {
-    label: 'CT',
+    label: 'Connecticut',
     value: 'CT',
   },
   {
-    label: 'DE',
+    label: 'Delaware',
     value: 'DE',
   },
   {
-    label: 'DC',
+    label: 'District Of Columbia',
     value: 'DC',
   },
   {
-    label: 'FL',
+    label: 'Federated States Of Micronesia',
+    value: 'FM',
+  },
+  {
+    label: 'Florida',
     value: 'FL',
   },
   {
-    label: 'GA',
+    label: 'Georgia',
     value: 'GA',
   },
   {
-    label: 'HI',
+    label: 'Guam',
+    value: 'GU',
+  },
+  {
+    label: 'Hawaii',
     value: 'HI',
   },
   {
-    label: 'ID',
+    label: 'Idaho',
     value: 'ID',
   },
   {
-    label: 'IL',
+    label: 'Illinois',
     value: 'IL',
   },
   {
-    label: 'IN',
+    label: 'Indiana',
     value: 'IN',
   },
   {
-    label: 'IA',
+    label: 'Iowa',
     value: 'IA',
   },
   {
-    label: 'KS',
+    label: 'Kansas',
     value: 'KS',
   },
   {
-    label: 'KY',
+    label: 'Kentucky',
     value: 'KY',
   },
   {
-    label: 'LA',
+    label: 'Louisiana',
     value: 'LA',
   },
   {
-    label: 'ME',
+    label: 'Maine',
     value: 'ME',
   },
   {
-    label: 'MD',
+    label: 'Marshall Islands',
+    value: 'MH',
+  },
+  {
+    label: 'Maryland',
     value: 'MD',
   },
   {
-    label: 'MA',
+    label: 'Massachusetts',
     value: 'MA',
   },
   {
-    label: 'MI',
+    label: 'Michigan',
     value: 'MI',
   },
   {
-    label: 'MN',
+    label: 'Minnesota',
     value: 'MN',
   },
   {
-    label: 'MS',
+    label: 'Mississippi',
     value: 'MS',
   },
   {
-    label: 'MO',
+    label: 'Missouri',
     value: 'MO',
   },
   {
-    label: 'MT',
+    label: 'Montana',
     value: 'MT',
   },
   {
-    label: 'NE',
+    label: 'Nebraska',
     value: 'NE',
   },
   {
-    label: 'NV',
+    label: 'Nevada',
     value: 'NV',
   },
   {
-    label: 'NH',
+    label: 'New Hampshire',
     value: 'NH',
   },
   {
-    label: 'NJ',
+    label: 'New Jersey',
     value: 'NJ',
   },
   {
-    label: 'NM',
+    label: 'New Mexico',
     value: 'NM',
   },
   {
-    label: 'NY',
+    label: 'New York',
     value: 'NY',
   },
   {
-    label: 'NC',
+    label: 'North Carolina',
     value: 'NC',
   },
   {
-    label: 'ND',
+    label: 'North Dakota',
     value: 'ND',
   },
   {
-    label: 'OH',
+    label: 'Northern Mariana Islands',
+    value: 'MP',
+  },
+  {
+    label: 'Ohio',
     value: 'OH',
   },
   {
-    label: 'OK',
+    label: 'Oklahoma',
     value: 'OK',
   },
   {
-    label: 'OR',
+    label: 'Oregon',
     value: 'OR',
   },
   {
-    label: 'PA',
+    label: 'Palau',
+    value: 'PW',
+  },
+  {
+    label: 'Pennsylvania',
     value: 'PA',
   },
   {
-    label: 'RI',
+    label: 'Puerto Rico',
+    value: 'PR',
+  },
+  {
+    label: 'Rhode Island',
     value: 'RI',
   },
   {
-    label: 'SC',
+    label: 'South Carolina',
     value: 'SC',
   },
   {
-    label: 'SD',
+    label: 'South Dakota',
     value: 'SD',
   },
   {
-    label: 'TN',
+    label: 'Tennessee',
     value: 'TN',
   },
   {
-    label: 'TX',
+    label: 'Texas',
     value: 'TX',
   },
   {
-    label: 'UT',
+    label: 'Utah',
     value: 'UT',
   },
   {
-    label: 'VT',
+    label: 'Vermont',
     value: 'VT',
   },
   {
-    label: 'VA',
+    label: 'Virgin Islands',
+    value: 'VI',
+  },
+  {
+    label: 'Virginia',
     value: 'VA',
   },
   {
-    label: 'WA',
+    label: 'Washington',
     value: 'WA',
   },
   {
-    label: 'WV',
+    label: 'West Virginia',
     value: 'WV',
   },
   {
-    label: 'WI',
+    label: 'Wisconsin',
     value: 'WI',
   },
   {
-    label: 'WY',
+    label: 'Wyoming',
     value: 'WY',
   },
 ]

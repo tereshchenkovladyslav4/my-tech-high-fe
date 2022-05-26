@@ -16,6 +16,7 @@ import { WarningModal } from '../../../../components/WarningModal/Warning'
 import { Packet } from '../../../HomeroomStudentProfile/Student/types'
 import { WithdrawalFilters } from '../WithdrawalFilters'
 import { ProfileContext } from '../../../../providers/ProfileProvider/ProfileContext'
+import { UserContext } from '../../../../providers/UserContext/UserProvider'
 import { makeStyles } from '@material-ui/styles'
 import { useStyles } from './styles'
 
@@ -30,6 +31,7 @@ const selectStyles = makeStyles({
 const WithdrawalTable = () => {
   const classes = useStyles
   const selectedClass = selectStyles()
+  const { me, setMe } = useContext(UserContext)
   const [filters, setFilters] = useState(['Submitted', 'Resubmitted'])
   const [searchField, setSearchField] = useState('')
   const [tableData, setTableData] = useState<Array<any>>([])
@@ -49,7 +51,10 @@ const WithdrawalTable = () => {
   const [withdrawCount, setWithdrawCount] = useState<Array<String>>([])
   const { showModal, hideModal, store, setStore } = useContext(ProfileContext)
   const { loading, error, data, refetch } = useQuery(getWithdrawalsQuery, {
-    variables: {},
+    variables: {
+      regionId: me?.selectedRegionId,
+    },
+    skip: me?.selectedRegionId ? false : true,
     fetchPolicy: 'network-only',
   })
   const schoolYears = [
@@ -152,8 +157,8 @@ const WithdrawalTable = () => {
           submitted: withdrawal.date ? moment(withdrawal.date).format('MM/DD/YYYY') : '',
           status: withdrawal.status,
           effective: withdrawal.date_effective ? moment(withdrawal.date_effective).format('MM/DD/YYYY') : '',
-          student: withdrawal?.Student?.person?.first_name + ', ' + withdrawal?.Student?.person?.last_name,
-          grade: withdrawal?.Student?.grade_levels[0]?.grade_level,
+          student: withdrawal?.first_name + ', ' + withdrawal?.last_name,
+          grade: withdrawal?.grade_level,
           soe: withdrawal?.soe,
           funding: withdrawal?.funding,
           emailed: withdrawal?.date_emailed ? moment(withdrawal.date_emailed).format('MM/DD/YYYY') : '',

@@ -386,8 +386,8 @@ export default function ApplicationQuestions() {
                     />
                   </Box>
                 </ProgramYearContext.Provider>
-                {openAddQuestion === 'new' && <AddNewQuestionModal onClose={() => setOpenAddQuestion('')} editItem={editItem} newQuestion={true}/>}
-                {openAddQuestion === 'default' && <DefaultQuestionModal onClose={() => setOpenAddQuestion('')} onCreate={(e) => {onSelectDefaultQuestions(e)}}/>}
+                {openAddQuestion === 'new' && <AddNewQuestionModal onClose={(e) => {setOpenAddQuestion(''); setOpenSelectQuestionType(e)}} editItem={editItem} newQuestion={true}/>}
+                {openAddQuestion === 'default' && <DefaultQuestionModal onClose={() => {setOpenAddQuestion(''); setOpenSelectQuestionType(true)}} onCreate={(e) => {onSelectDefaultQuestions(e)}}/>}
                 {openSelectQuestionType && <AddQuestionModal onClose={() => setOpenSelectQuestionType(false)} onCreate={(e) => {setOpenAddQuestion(e); setEditItem(null); setOpenSelectQuestionType(false)}}/>}
 
                 <Button sx={{ ...useStyles.submitButton, color: 'white' }} onClick={() => setOpenSelectQuestionType(true)}>

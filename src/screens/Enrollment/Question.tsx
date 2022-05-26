@@ -115,12 +115,14 @@ function Item({ question: q, setAdditionalQuestion, formik }: { question: Enroll
     const [fieldData, setFieldData] = useState(
         formik.values[`${keyName}`] ? formik.values[`${keyName}`][`${fieldName}`] : null
     )
+
+    useEffect(() => {
+        setFieldData(formik.values[`${keyName}`] ? formik.values[`${keyName}`][`${fieldName}`] : null)
+    }, [formik])
     const [otherValue, setOtherValue] = useState('')    
-
     const [gradesDropDownItems, setGradesDropDownItems] = useState<Array<DropDownItem>>([])
-
-
     const [dropDownItemsData, setDropDownItemsData] = useState<Array<DropDownItem>>([])
+
     useEffect(() => {
         if(q.slug === 'student_grade_level') {
             setDropDownItemsData(gradesDropDownItems || [])
@@ -158,7 +160,7 @@ function Item({ question: q, setAdditionalQuestion, formik }: { question: Enroll
     
     const multiSelected = useCallback((value: string | number) => {
         if(q.type === 3) {
-            return fieldData?.find((f) => f.label === value)
+            return fieldData?.find((f) => f.label == value) ? true : false
         }
         return fieldData?.indexOf(value) >= 0
     },[fieldData])

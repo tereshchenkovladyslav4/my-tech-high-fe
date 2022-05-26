@@ -1,25 +1,19 @@
 import { gql } from '@apollo/client'
 
 export const getWithdrawalsQuery = gql`
-  query Withdrawals {
-    withdrawals {
-      withdrawal_id
-      status
-      soe
-      funding
-      date_emailed
-      date_effective
-      date
+  query Withdrawals($regionId: Float!) {
+    withdrawals(region_id: $regionId) {
       StudentId
-      Student {
-        grade_levels {
-          grade_level
-        }
-        person {
-          first_name
-          last_name
-        }
-      }
+      date
+      date_effective
+      date_emailed
+      first_name
+      funding
+      grade_level
+      last_name
+      soe
+      status
+      withdrawal_id
     }
   }
 `

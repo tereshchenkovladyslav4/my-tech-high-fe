@@ -154,6 +154,12 @@ export const Enrollment: EnrollmentTemplateType = ({id, disabled}: {id: number, 
 
   const history = useHistory()
 
+  useEffect(() => {
+    setTab({
+      currentTab: 0
+    })
+  }, [history])
+
   const handleBreadCrumbClicked = (idx) => {
     if(includes(visitedTabs, idx) || disabled){
       setTab({
@@ -200,8 +206,6 @@ export const Enrollment: EnrollmentTemplateType = ({id, disabled}: {id: number, 
           )} */}
           {currentTabName === 'Contact' ? (
             <ContactNew id={id} questions = {questionsData.filter((q) => q.tab_name === currentTabName)[0]}/>
-            // <EducationNew id={id} questions = {questionsData.filter((q) => q.tab_name === 'Education')[0]}/>
-            // <Education />
           ) : currentTabName === 'Personal' ? (
             <PersonalNew id={id} questions = {questionsData.filter((q) => q.tab_name === currentTabName)[0]}/>
           ) : currentTabName === 'Education' ? (

@@ -37,23 +37,34 @@ export default function DocumentsNew({id, questions}) {
       let valid_student = {}
       let valid_parent = {}
       let valid_meta = {}
+      let valid_address = {}
+      let valid_packet = {}
       questions.groups.map((g) => {
         g.questions.map((q) => {
           if(q.type !== 8 && q.type !== 7) {
             if(q.slug?.includes('student_')) {
-            
               if(q.required) {
-                if(q.slug?.toLocaleLowerCase().includes('emailconfrim')) {
+                if(q.slug?.toLocaleLowerCase().includes('emailconfirm')) {
                   valid_student[`${q.slug?.replace('student_', '')}`] = yup
                       .string()
                       .required('Email is required')
                       .oneOf([yup.ref('email')], 'Emails do not match')
                 }
+                else if(q.validation === 1) {
+                  valid_student[`${q.slug?.replace('student_', '')}`] = yup.string().email('Enter a valid email').required('Email is required').nullable()
+                }
+                else if(q.validation === 2) {
+                  valid_student[`${q.slug?.replace('student_', '')}`] = yup.string()
+                  .required(`${q.question} is required`)
+                  .test(`${q.question}-selected`, `${q.question} is invalid`, (value) => {
+                    return isNumber.test(value)
+                  })
+                }
                 else if(q.type === 3 || q.type === 4) {
-                  valid_student[`${q.slug?.replace('student_', '')}`] = yup.array().min(1).required(`${q.question} is required`)
+                  valid_student[`${q.slug?.replace('student_', '')}`] = yup.array().min(1).required(`${q.question} is required`).nullable()
                 }
                 else {
-                  valid_student[`${q.slug?.replace('student_', '')}`] = yup.string().required(`${q.question} is required`)
+                  valid_student[`${q.slug?.replace('student_', '')}`] = yup.string().required(`${q.question} is required`).nullable()
                 }
               }
             }
@@ -66,7 +77,7 @@ export default function DocumentsNew({id, questions}) {
                       .oneOf([yup.ref('email')], 'Emails do not match')
                 }
                 else if(q.validation === 1) {
-                  valid_parent[`${q.slug?.replace('parent_', '')}`] = yup.string().email('Enter a valid email').required('Email is required')
+                  valid_parent[`${q.slug?.replace('parent_', '')}`] = yup.string().email('Enter a valid email').required('Email is required').nullable()
                 }
                 else if(q.validation === 2) {
                   valid_parent[`${q.slug?.replace('parent_', '')}`] = yup.string()
@@ -76,16 +87,16 @@ export default function DocumentsNew({id, questions}) {
                   })
                 }
                 else if(q.type === 3 || q.type === 4) {
-                  valid_parent[`${q.slug?.replace('parent_', '')}`] = yup.array().min(1).required(`${q.question} is required`)
+                  valid_parent[`${q.slug?.replace('parent_', '')}`] = yup.array().min(1).required(`${q.question} is required`).nullable()
                 }
                 else {
-                  valid_parent[`${q.slug?.replace('parent_', '')}`] = yup.string().required(`${q.question} is required`)
+                  valid_parent[`${q.slug?.replace('parent_', '')}`] = yup.string().required(`${q.question} is required`).nullable()
                 }
               }
             }
             else if(q.slug?.includes('meta_') && q.required) {
               if(q.validation === 1) {
-                valid_meta[`${q.slug}`] = yup.string().email('Enter a valid email').required('Email is required')
+                valid_meta[`${q.slug}`] = yup.string().email('Enter a valid email').required('Email is required').nullable()
               }
               else if(q.validation === 2) {
                 valid_meta[`${q.slug}`] = yup.string()
@@ -95,18 +106,23 @@ export default function DocumentsNew({id, questions}) {
                 })
               }
               else if(q.type === 3 || q.type === 4) {
-                valid_meta[`${q.slug}`] = yup.array().min(1).required(`${q.question} is required`)
+                valid_meta[`${q.slug}`] = yup.array().min(1).required(`${q.question} is required`).nullable()
               }
               else {
-                valid_meta[`${q.slug}`] = yup.string().required(`${q.question} is required`)
+                valid_meta[`${q.slug}`] = yup.string().required(`${q.question} is required`).nullable()
               }
+            }
+            else if(q.slug?.includes('address_') && q.required) {
+              valid_address[`${q.slug?.replace('address_', '')}`] = yup.string().required(`${q.question} is required`).nullable()
+            }
+            else if(q.slug?.includes('packet_') && q.required) {
+              valid_packet[`${q.slug?.replace('packet_', '')}`] = yup.string().required(`${q.question} is required`).nullable()
             }
           }
         })
       })
-      setValidationSchema(yup.object({parent: yup.object(valid_parent), students: yup.array(yup.object(valid_student)), meta: yup.object(valid_meta)}))
-
-      console.log(validationSchema);
+      
+      setValidationSchema(yup.object({parent: yup.object(valid_parent), student: yup.object(valid_student), meta: yup.object(valid_meta), address: yup.object(valid_address), packet: yup.object(valid_packet)}))
     }
   }, [questions])
   
