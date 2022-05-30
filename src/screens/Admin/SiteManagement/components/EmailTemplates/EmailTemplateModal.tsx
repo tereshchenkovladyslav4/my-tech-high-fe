@@ -476,10 +476,10 @@ console.log(response);
                         <TextField
                           size='small'
                           variant='outlined'
+                          multiline
                           fullWidth
                           value={response[i].extraText}
                           onChange={(e) => handleChangeResponse(e.target.value, i, 'extraText')}
-                          rows={4}
                         />
                       </Grid>
                     </Box>

@@ -46,14 +46,14 @@ export default function PacketConfirmModals({ packet, refetch, submitForm }) {
 
     let url = window.location.href;
     url = url.substring(0, url.indexOf('/', url.indexOf('//') + 2));
-
+    const garde_level = student.grade_levels?.[0]?.grade_level.toLowerCase() === 'k' ? 'Kindergarten': student.grade_levels?.[0]?.grade_level
     return body.toString()
       .replace(/\[STUDENT_ID\]/g, student.student_id + '')
       .replace(/\[FILES\]/g, packet.missing_files)
       .replace(/\[LINK\]/g, `<a href="${url}/homeroom/enrollment/${student.student_id}">${url}/homeroom/enrollment/${student.student_id}</a>`) //adding host detail from backend
       .replace(/\[STUDENT\]/g, student.person.first_name)
       .replace(/\[PARENT\]/g, student.parent.person.first_name)
-      .replace(/\[STUDENT_GRADE_LEVEL\]/g, student?.grade_level || ' ')
+      .replace(/\[STUDENT_GRADE_LEVEL\]/g, garde_level || ' ')
       .replace(/\[YEAR\]/g, `${yearbegin}-${yearend.substring(2, 4)}`)
       .replace(/\[APPLICATION_YEAR\]/g, `${yearbegin}-${yearend.substring(2, 4)}`)
   }
