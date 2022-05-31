@@ -15,7 +15,7 @@ import SchoolPartnerImage from '../../../assets/schoolAssignments.png'
 import { ItemCard } from '../../../components/ItemCard/ItemCard'
 import EnrollmentSetting from './EnrollmentSetting/EnrollmentSetting'
 import { ProgramSetting } from './ProgramSetting'
-import Withdrawal from './Withdrawal/Withdrawal'
+import Withdrawal from '../../../components/QuickLink/Withdrawal/Withdrawal'
 import { Years } from './Years'
 import { EmailTemplatePage } from './components/EmailTemplates/EmailTemplatePage'
 import { QuickLinks } from '../../../components/QuickLink/QuickLinks'
@@ -173,8 +173,6 @@ const SiteManagement: React.FC = () => {
           <QuickLinks
             backAction={onBackPress}
           />
-        ) : currentView === 'quick-link-withdrawal' ? (
-          <Withdrawal />
         ) : currentView === 'years' ? (
           <Years />
         ) : currentView === 'program-setting' ? (

@@ -1,15 +1,15 @@
 import { gql } from '@apollo/client'
 export const getAnnouncementsQuery = gql`
-  query Announcements {
-    announcements {
+  query Announcements($regionId: Float!) {
+    announcements(region_id: $regionId) {
       RegionId
       announcement_id
       body
       date
       filter_grades
       filter_users
-      schedule_time
       posted_by
+      schedule_time
       status
       subject
     }

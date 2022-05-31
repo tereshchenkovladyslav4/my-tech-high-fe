@@ -67,22 +67,21 @@ export const Users = () => {
   const [toggleMasquerade, { data: masqueradeData, loading: masqueradeLoading, error: masqueradeError }] =
     useMutation(toggleMasqueradeMutation)
 
-  const [becomeUserAction, { data: userData, loading: userLoading, error: userError }] =
-    useMutation(becomeUserMutation)
+  const [becomeUserAction, { data: userData, loading: userLoading, error: userError }] = useMutation(becomeUserMutation)
 
   const becomeUser = (id) => {
     becomeUserAction({
       variables: {
-        userId:  Number(id)
-      }
+        userId: Number(id),
+      },
     })
-    .then((resp) => {
-      localStorage.setItem('masquerade' ,resp.data.masqueradeUser.jwt)
-    })
-    .then(() => {
-      history.push(DASHBOARD)
-      location.reload()
-    })
+      .then((resp) => {
+        localStorage.setItem('masquerade', resp.data.masqueradeUser.jwt)
+      })
+      .then(() => {
+        history.push(DASHBOARD)
+        location.reload()
+      })
   }
 
   useEffect(() => {
@@ -141,11 +140,10 @@ export const Users = () => {
           level: level || 'null',
           last_login: user?.last_login ? moment(user?.last_login).format('L') : 'Never',
           status: user?.status,
-          masquerade:
-            user?.masquerade === 1 ? true : false
-            //user?.role?.name.toLowerCase() === 'admin' || user?.role?.name.toLowerCase() === 'super admin'
-            //  ? true
-            //  : false,
+          masquerade: user?.masquerade === 1 ? true : false,
+          //user?.role?.name.toLowerCase() === 'admin' || user?.role?.name.toLowerCase() === 'super admin'
+          //  ? true
+          //  : false,
         })
       })
       setTotalUsers(total)
@@ -235,19 +233,21 @@ export const Users = () => {
     }
     toggleMasquerade({
       variables: {
-        masqueradeInput: payload
+        masqueradeInput: payload,
       },
-      refetchQueries: [{ 
-        query: getUsersByRegions,
-        variables: {
-          skip: skip,
-          sort: sort,
-          take: paginatinLimit,
-          search: searchField,
-          filters: selectedFilter,
-          regionId: me?.selectedRegionId,
+      refetchQueries: [
+        {
+          query: getUsersByRegions,
+          variables: {
+            skip: skip,
+            sort: sort,
+            take: paginatinLimit,
+            search: searchField,
+            filters: selectedFilter,
+            regionId: me?.selectedRegionId,
+          },
         },
-      }]
+      ],
     })
   }
 
@@ -353,19 +353,21 @@ export const Users = () => {
         </Box>
       </Box>
       <UserFilters setFilters={setSelectedFilter} filters={selectedFilter} />
-    { rows.length > 1 && <SortableUserTable
-        canMasquerade={me.masquerade}
-        rows={rows}
-        headCells={headCells}
-        onCheck={() => {}}
-        updateStatus={handleStatusChange}
-        toggleMasquerade={handleMasqueradeToggle}
-        clearAll={false}
-        onRowClick={() => null}
-        type='core_user'
-        onSortChange={sortChangeAction}
-        handleMasquerade={becomeUser}
-      />}
+      {rows.length > 0 && (
+        <SortableUserTable
+          canMasquerade={me.masquerade}
+          rows={rows}
+          headCells={headCells}
+          onCheck={() => {}}
+          updateStatus={handleStatusChange}
+          toggleMasquerade={handleMasqueradeToggle}
+          clearAll={false}
+          onRowClick={() => null}
+          type='core_user'
+          onSortChange={sortChangeAction}
+          handleMasquerade={becomeUser}
+        />
+      )}
       {newUserModal && <NewUserModal visible={newUserModal} handleModem={handleModal} />}
     </Card>
   )

@@ -238,7 +238,7 @@ const WithdrawalTable = () => {
       <Box>
         <WithdrawalFilters filters={filters} setFilters={setFilters} withdrawCount={withdrawCount} />
       </Box>
-      <Box display='flex' flexDirection='row' justifyContent='end' sx={{ mr: 3 }} alignItems='center'>
+      <Box display='flex' flexDirection='row' justifyContent='flex-end' sx={{ mr: 3 }} alignItems='center'>
         <FormControl variant='standard' sx={{ m: 1 }}>
           <Select
             size='small'

@@ -174,17 +174,24 @@ const Years: React.FC = () => {
     } else if (val) {
       schoolYears.forEach((schoolYear) => {
         if (schoolYear.schoolYearId == parseInt(val)) {
-          console.log(schoolYear);
           let open = new Date(schoolYear.schoolYearOpen);
           open.setFullYear(open.getFullYear() + 1);
           setSchoolYearOpen(open.toISOString());
           let close = new Date(schoolYear.schoolYearClose);
-          close.setFullYear(open.getFullYear() + 1);
+          close.setFullYear(close.getFullYear() + 1);
           setSchoolYearClose(close.toISOString());
-          setApplicationsOpen(schoolYear.applicationsOpen)
-          setApplicationsClose(schoolYear.applicationsClose)
-          setMidYearOpen(schoolYear.midYearOpen)
-          setMidYearClose(schoolYear.midYearClose)
+          open = new Date(schoolYear.applicationsOpen);
+          open.setFullYear(open.getFullYear() + 1);
+          setApplicationsOpen(open.toISOString());
+          close = new Date(schoolYear.applicationsClose);
+          close.setFullYear(close.getFullYear() + 1);
+          setApplicationsClose(close.toISOString())
+          open = new Date(schoolYear.midYearOpen);
+          open.setFullYear(open.getFullYear() + 1);
+          setMidYearOpen(open.toISOString());
+          close = new Date(schoolYear.midYearClose);
+          close.setFullYear(close.getFullYear() + 1);
+          setMidYearClose(close.toISOString());
           setMidYearStatus(schoolYear.midYearStatus)
         }
       })

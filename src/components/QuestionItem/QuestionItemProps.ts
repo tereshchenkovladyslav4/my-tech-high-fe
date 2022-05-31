@@ -52,7 +52,7 @@ export type Question = {
 	slug: string;
 	mainQuestion: boolean;			//	Shows if this question is from System or not, false => Admin created, true => Comes from system prototype
 	defaultQuestion: boolean;		//	false => Custom Question, true => Default Question
-	validation: number;					//	0 => None, 1 => Numbers, 2 => Email
+	validation: number;					//	0 => None, 2 => Numbers, 1 => Email
 	required: boolean;
 	additionalQuestion: string;	//	The slug of parent question for Additional Question 
 

@@ -83,7 +83,7 @@ export const EnrollmentPacketTable = () => {
             : `${toOrdinalSuffix(Number(packet.student.grade_levels[grade_value].grade_level))} Grade`
           : ' ',
       parent: `${packet.student.parent.person?.first_name} ${packet.student.parent.person?.last_name}`,
-      studentStatus: status[packet.student?.status[0]?.status] || 'New',
+      studentStatus: packet.student?.reenrolled > 0 ? 'Update' : ( 'New' ),
       emailed: packet.packet_emails.length > 0 ? (
         <Box sx={{ cursor: 'pointer' }} onClick={() => handleOpenEmailHistory(packet)}>
           {moment(packet.packet_emails[0].created_at).format('MM/DD/YY')}

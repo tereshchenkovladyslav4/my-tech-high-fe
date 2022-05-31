@@ -11,9 +11,6 @@ import { Question, QUESTION_TYPE } from '../QuestionItemProps'
 import { SYSTEM_07 } from '../../../utils/constants'
 import { DropDown } from '../../DropDown/DropDown'
 import { validationTypes } from '../../../screens/Admin/SiteManagement/EnrollmentSetting/constant/defaultQuestions'
-import moment from 'moment'
-import { useQuery } from '@apollo/client'
-import { getActiveSchoolYearsByRegionId } from '../../../screens/Admin/SiteManagement/EnrollmentSetting/EnrollmentQuestions/services';
 import htmlToDraft from 'html-to-draftjs'
 
 export default function QuestionModal({
@@ -30,16 +27,24 @@ export default function QuestionModal({
 	//	Formik values context
 	const { values, setValues } = useFormikContext<Question[]>();
 
-	const [ editQuestions, setEditQuestions ] = useState(questions);
+	const [ editQuestions, setEditQuestions ] = useState(JSON.parse(JSON.stringify(questions)));
 	const [ deleteIds, setDeleteIds ] = useState([]);
+
+	const editQuestionsRef = useRef([]);
 	
 	useEffect(() => {
 		if(editQuestions.length == 0) {
 			return;
 		}
 
-		//	Set Editor Content
-		setEditorState(EditorState.createWithContent(ContentState.createFromBlockArray(htmlToDraft(editQuestions[0].question).contentBlocks)));
+		if(editQuestionsRef.current.length == 0 && editQuestions.length > 0) {
+			//	Set Editor Content
+			(editQuestions[0].type == QUESTION_TYPE.AGREEMENT || editQuestions[0].type == QUESTION_TYPE.INFORMATION)
+				&& draftToHtml(convertToRaw(editorState.getCurrentContent())) != editQuestions[0].question
+				&& setEditorState(EditorState.createWithContent(ContentState.createFromBlockArray(htmlToDraft(editQuestions[0].question).contentBlocks)));
+		}
+
+		editQuestionsRef.current = editQuestions;
 
 		if(editQuestions[0].defaultQuestion)
 			return;
@@ -161,36 +166,11 @@ export default function QuestionModal({
 			if (currentBlocks !== 0 && currentBlocks !== state.blocks.length) {
 				editorRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' })
 			}
-			setCurrentBlocks(state.blocks.length)
+			setCurrentBlocks(state.blocks.length);
+
+			setQuestionValue(questions[0].id, questions[0].slug, 'question', draftToHtml(convertToRaw(editorState.getCurrentContent())));
 		} catch {}
 	}
-
-	//	States for default options of default questions
-	//	program_year
-	const {loading: schoolLoading, data: schoolYearData} = useQuery(getActiveSchoolYearsByRegionId, {
-		variables: {
-			regionId: questions[0].region_id,
-		},
-		skip: (questions[0]?.defaultQuestion === false || questions[0]?.options.length > 0 || questions[0]?.slug != 'program_year'),
-		fetchPolicy: 'network-only',
-	});
-	useEffect(() => {
-		if (!schoolLoading && schoolYearData && schoolYearData.getActiveSchoolYears) {
-			setEditQuestions(
-				[
-					{
-						...editQuestions[0],
-						options: schoolYearData.getActiveSchoolYears.map((item) => {
-							return {
-								label: moment(item.date_begin).format('YYYY') + '-' + moment(item.date_end).format('YYYY'),
-								value: item.school_year_id,
-							}
-						})
-					}
-				]
-			)
-		}
-	}, [schoolYearData]);
 
 	//	Save handler
 	function onSave() {
@@ -243,15 +223,15 @@ export default function QuestionModal({
 			if(id === undefined) {	//	Insert case
 				//	Generate new id
 				item.id = newid--;
-				//setValues([...values, item])
-				newValues.push(item);
+				newValues.splice(newValues.length - 1, 0, item);
+				//newValues.push(item);
 			}
 			else {									//	Update case
 				newValues = newValues.map((v) => (v.id === newQuestion.id ? item : v));
 			}
 		}
 
-		newValues = newValues.filter((i) => deleteIds.find(x => x == i.id) == null);
+		newValues = newValues.filter((i) => deleteIds.find(x => x == i.id) == null);console.log(newValues);
 		setValues(newValues);
 			
 		onClose()

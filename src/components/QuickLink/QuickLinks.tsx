@@ -12,7 +12,7 @@ import ArrowBackIosOutlinedIcon from '@mui/icons-material/ArrowBackIosOutlined'
 import QuickLinkReservedEdit from './QuickLinkReservedEdit';
 import CustomConfirmModal from '../CustomConfirmModal/CustomConfirmModal';
 import { useHistory } from 'react-router-dom';
-import Withdrawal from '../../screens/Admin/SiteManagement/Withdrawal/Withdrawal';
+import Withdrawal from './Withdrawal/Withdrawal';
 
 export const QuickLinks: React.FC<any> = ({backAction}) => {
 	const { me, setMe } = useContext(UserContext)
@@ -203,6 +203,9 @@ export const QuickLinks: React.FC<any> = ({backAction}) => {
 									switch(item.type) {
 										case QUICKLINK_TYPE.WEBSITE_LINK:
 											window.open(item.reserved, '_blank');
+										case QUICKLINK_TYPE.WITHDRAWAL:
+											selectQuickLink(item);
+											break;
 										default:
 											console.error('Not implemented yet.', item);
 											break;

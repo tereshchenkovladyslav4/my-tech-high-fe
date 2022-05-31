@@ -27,6 +27,7 @@ import { gql, useQuery } from '@apollo/client'
 import moment from 'moment'
 import { AnnouncementType } from '../types'
 import { getAnnouncementsQuery } from '../services'
+import { UserContext } from '../../../../providers/UserContext/UserProvider'
 
 type AnnouncementTableProps = {
   setPage: (value: string) => void
@@ -38,6 +39,7 @@ type Order = 'asc' | 'desc'
 const AnnouncementTable = ({ setPage, setAnnouncement }: AnnouncementTableProps) => {
   const classes = useStyles
   const history = useHistory()
+  const { me } = useContext(UserContext)
   const [searchField, setSearchField] = useState<string>()
   const [tableDatas, setTableDatas] = useState<AnnouncementType[]>([])
   const [totalAnnouncements, setTotalAnnouncements] = useState<number>(0)
@@ -45,7 +47,10 @@ const AnnouncementTable = ({ setPage, setAnnouncement }: AnnouncementTableProps)
   const [orderBy, setOrderBy] = useState<keyof any>('date')
   const [selected, setSelected] = useState<readonly string[]>([])
   const { loading, error, data, refetch } = useQuery(getAnnouncementsQuery, {
-    variables: {},
+    variables: {
+      regionId: me?.selectedRegionId,
+    },
+    skip: me?.selectedRegionId ? false : true,
     fetchPolicy: 'network-only',
   })
   const tableHeaders: HeadCell[] = [

@@ -11,6 +11,7 @@ import { createQuickLinkMutation, updateQuickLinkMutation } from '../../graphql/
 import { useMutation } from '@apollo/client';
 import { Paragraph } from '../Typography/Paragraph/Paragraph';
 import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt'
+import CustomConfirmModal from '../CustomConfirmModal/CustomConfirmModal';
 
 const QuickLinkEdit: React.FC<
 	{
@@ -41,6 +42,9 @@ const QuickLinkEdit: React.FC<
 	const [submitUpdate, {data: updateData}] = useMutation(updateQuickLinkMutation);
 
 	const [imageModalOpen, setImageModalOpen] = useState(false);
+	//	Flag State which indicates to show image delete confirmation modal
+	const [imageDeleteConfirmModal, showImageDeleteConfirmModal] = useState(false);
+
 	const [file, setFile] = useState<undefined | File>();
 	const [image, setImage] = useState('');
 
@@ -119,10 +123,7 @@ const QuickLinkEdit: React.FC<
 	}, [pageStatus]);
 
 	const onRemovePhoto = () => {
-		setFile(undefined);
-		setImage('');
-
-		handleChange(true);
+		showImageDeleteConfirmModal(true);
 	}
 
 	const validationSchema = yup.object({
@@ -186,12 +187,13 @@ const QuickLinkEdit: React.FC<
 							title: formik.values.title,
 							subtitle: formik.values.subtitle,
 							type: formik.values.type,
-							image_url: img ? img.key : quickLink.image_url
+							image_url: img ? img.key : (image == '' ? '' : quickLink.image_url)
 						}
 					}
 				}
 			}).then(async(res) => {
 				if(img) formik.values.image_url = img.key;
+				else if(image == '')	formik.values.image_url = '';
 				onSubmitSuccess(quickLink.id);
 			}).catch(err => {
 				onSubmitFailed(err?.message);
@@ -215,7 +217,7 @@ const QuickLinkEdit: React.FC<
 					/>
 					<Box onClick={onRemovePhoto} sx={{ cursor: 'pointer' }}>
 						<Paragraph size='medium' fontWeight='500' textAlign='center' color='#4145FF'>
-							Remove Profile Picture
+							Remove Image
 						</Paragraph>
 					</Box>
 				</>
@@ -271,7 +273,6 @@ const QuickLinkEdit: React.FC<
 						formik.handleChange(e);
 						handleChange(true);
 					}}
-					style={classes.input}
 					sx={{ my: 2, width: "65%" }}
 					error={formik.touched.title && Boolean(formik.errors.title)}
 					helperText={formik.touched.title && formik.errors.title}
@@ -286,7 +287,6 @@ const QuickLinkEdit: React.FC<
 						formik.handleChange(e);
 						handleChange(true);
 					}}
-					style={classes.input}
 					sx={{ my: 2, width: "65%" }}
 				/>
 				{quickLink.type != QUICKLINK_TYPE.WITHDRAWAL &&
@@ -301,6 +301,7 @@ const QuickLinkEdit: React.FC<
 						size='small'
 						defaultValue={quickLink.type || typeArr[0].value}
 						sx={{ my: 2, width: "65%" }}
+						disabled={quickLink.id > 0}
 					/>
 				}
 			</Stack>
@@ -342,6 +343,21 @@ const QuickLinkEdit: React.FC<
 			</Stack>
 			{imageModalOpen && (
 				<DocumentUploadModal handleModem={() => setImageModalOpen(!imageModalOpen)} handleFile={(fileName: File) => setFile(fileName)} limit={1} />
+			)}
+			{imageDeleteConfirmModal && (
+				<CustomConfirmModal
+					header='Delete Image'
+					content='Are you sure you want to delete this image?'
+					handleConfirmModalChange={(val: boolean, isOk: boolean) => {
+						showImageDeleteConfirmModal(false);
+						if(isOk) {
+							setFile(undefined);
+							setImage('');
+
+							handleChange(true);
+						}
+					}}
+				/>
 			)}
 		</Stack >
 	</form>)

@@ -96,6 +96,7 @@ export type StudentType = {
   student_id: number
   parent_id: number
   person_id: number
+  reenrolled: number
   packets?: Packet[]
   applications?: Application[]
   parent?: Parent
@@ -106,7 +107,14 @@ export type StudentType = {
     grade_level: string 
   }
   status: Status[]
+  reenrollment_status: ReenrollmentStatus[]
   testing_preference: string,
+}
+
+export type ReenrollmentStatus = {
+  student_id: number
+  reenrolled: number
+  school_year_id: number
 }
 
 export type Status = {

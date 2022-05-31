@@ -72,7 +72,7 @@ export const useStyles = {
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'end',
+    justifyContent: 'flex-end',
     marginRight: 4,
   },
 }

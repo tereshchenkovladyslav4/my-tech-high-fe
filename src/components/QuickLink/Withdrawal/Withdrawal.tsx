@@ -1,22 +1,23 @@
 import { Alert, Box, Button, Card, Grid, IconButton, List, Stack, TextField, Typography } from '@mui/material';
 import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle';
+import { Subtitle } from '../../Typography/Subtitle/Subtitle';
 import CircleIcon from './CircleIcon';
-import { useStyles } from '../styles';
+import { useStyles } from '../../../screens/Admin/SiteManagement/styles';
 import { arrayMove, SortableContainer, SortableElement } from 'react-sortable-hoc';
-import { defaultQuestions, Question, QUESTION_TYPE } from '../../../../components/QuestionItem/QuestionItemProps';
-import QuestionItem from '../../../../components/QuestionItem/QuestionItem';
+import { defaultQuestions, Question, QUESTION_TYPE } from '../../QuestionItem/QuestionItemProps';
+import QuestionItem from '../../QuestionItem/QuestionItem';
 import { Formik, Form, Field } from 'formik';
 import { useHistory } from 'react-router-dom';
 import { useMutation, useQuery } from '@apollo/client';
-import { saveQuestionsMutation, deleteQuestionMutation } from '../../../../graphql/mutation/question';
-import { getQuestionsByRegionQuery } from '../../../../graphql/queries/question';
-import QuestionModal from '../../../../components/QuestionItem/AddNewQuestion';
-import CustomConfirmModal from '../../../../components/CustomConfirmModal/CustomConfirmModal';
-import SelectDefaultCustomQuestionModal from '../../../../components/QuestionItem/AddNewQuestion/SelectDefaultCustomQuestionModal';
-import { QuickLink } from '../../../../components/QuickLink/QuickLinkCardProps'
+import { saveQuestionsMutation, deleteQuestionMutation } from '../../../graphql/mutation/question';
+import { getQuestionsByRegionQuery } from '../../../graphql/queries/question';
+import QuestionModal from '../../QuestionItem/AddNewQuestion';
+import CustomConfirmModal from '../../CustomConfirmModal/CustomConfirmModal';
+import SelectDefaultCustomQuestionModal from '../../QuestionItem/AddNewQuestion/SelectDefaultCustomQuestionModal';
+import { QuickLink } from '../QuickLinkCardProps'
 import _ from 'lodash';
-import DefaultQuestionModal from '../../../../components/QuestionItem/AddNewQuestion/DefaultQuestionModal';
+import DefaultQuestionModal from '../../QuestionItem/AddNewQuestion/DefaultQuestionModal';
+import { UserContext } from '../../../providers/UserContext/UserProvider';
 
 //	Possible Question Types List
 const QuestionTypes = [
@@ -60,16 +61,6 @@ const AdditionalQuestionTypes = [
 	}
 ];
 
-const SortableItem = SortableElement(QuestionItem)
-
-const SortableListContainer = SortableContainer(({ questionsList }: { questionsList: Question[][] }) => (
-	<List sx={{width: '100%'}}>
-	{questionsList.map((questions, index) => (
-		<SortableItem index={index} key={index} questions={questions} questionTypes={QuestionTypes} additionalQuestionTypes={AdditionalQuestionTypes} />
-	))}
-	</List>
-))
-
 const WithDrawal: React.FC<
 {
 	quickLink: QuickLink
@@ -80,6 +71,23 @@ const WithDrawal: React.FC<
 }
 > = ({quickLink, updateQuickLinks, action, handleChange, region}) => {
 	const classes = useStyles;
+
+	const { me } = useContext(UserContext);
+	const isEditable = () => {
+		if(me?.level <= 2)
+			return true;
+		return false;
+	}
+
+	const SortableItem = SortableElement(QuestionItem)
+
+	const SortableListContainer = SortableContainer(({ questionsList }: { questionsList: Question[][] }) => (
+		<List sx={{width: '100%'}}>
+		{questionsList.map((questions, index) => (
+			<SortableItem index={index} key={index} questions={questions} questionTypes={QuestionTypes} additionalQuestionTypes={AdditionalQuestionTypes} hasAction={isEditable()} />
+		))}
+		</List>
+	))
 	
 	//	questions state on the page
 	const [questions, setQuestions] = useState<Question[]>([]);
@@ -112,7 +120,8 @@ const WithDrawal: React.FC<
 	useEffect(() => {
 		if(questionsData?.questionsByRegion) {
 			if(questionsData.questionsByRegion.length == 0) {
-				//  Initial questions
+				//  Initial questions for admin
+				isEditable() &&
 				setQuestions([
 					{
 						id: -1,
@@ -224,6 +233,7 @@ const WithDrawal: React.FC<
 			sequence: 3,
 			question: question.question,
 			defaultQuestion: true,
+			additionalQuestion: '',
 			mainQuestion: false,
 			validation: question.validation || 0,
 			slug: question.slug,
@@ -233,7 +243,7 @@ const WithDrawal: React.FC<
 		};
 		setCurrentQuestions([newDefaultQuestion])
 		setOpenAddQuestion('new');
-	}
+	};
 
 	return (
 		<Grid
@@ -242,15 +252,41 @@ const WithDrawal: React.FC<
 			}}
 		>
 			<Formik
-				initialValues={questions.filter(x => !x.mainQuestion)}
+				initialValues={questions}
 				enableReinitialize={true}
 				validate={(values) => {
 					if (_.isEqual(values, questions) === unsavedChanges) {
 						setUnsavedChanges(!unsavedChanges)
 						handleChange(!unsavedChanges);
 					}
+
+					if(!isEditable()) {
+						//	Check validation on parent side only
+						const errors = {};
+						values.forEach(val => {
+							if(val.required && val.response == '')
+								errors[val.id] = 'This field is required';
+							else if(!val.required && val.response != '' && val.validation > 0) {
+								if(val.validation == 2) {
+									//	Check numbers
+									if(!(new RegExp(/^[0-9]+$/).test(val.response)))
+										errors[val.id] = 'Please enter numbers only.';
+								}
+								else {
+									//	Check email
+									if(!(new RegExp(/(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/).test(val.response)))
+										errors[val.id] = 'Please enter valid email address.';
+								}
+							}
+						});
+						return errors;
+					}
 				}}
 				onSubmit={async (vals) => {
+					if(!isEditable()) {
+						console.log(vals);
+						return;
+					}
 					let newquestions = vals.map((v) => v);
 					questions.filter(x => !x.mainQuestion).forEach((q) => {
 						if (!newquestions.find((v) => v.id === q.id)) {
@@ -258,16 +294,6 @@ const WithDrawal: React.FC<
 						}
 					});
 
-					let begin = 0;
-					questions.filter(x => x.mainQuestion).forEach(question => {
-						if(question.type != QUESTION_TYPE.SIGNATURE) {
-							newquestions.splice(begin, 0, question);
-							begin++;
-						}
-						else {
-							newquestions.push(question);
-						}
-					});
 					for(let i = 0; i < newquestions.length; i++) {
 						if(newquestions[i].id < 0)	newquestions[i].id = 0;
 						newquestions[i].sequence = i + 1;
@@ -307,7 +333,9 @@ const WithDrawal: React.FC<
 					<Form>
 						<Box sx={classes.base}>
 							<Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', width: '100%' }}>
-								<Typography sx={{ fontWeight: 700, fontSize: 20, ml: 1 }}>Withdraw</Typography>
+								<Typography sx={{ fontWeight: 700, fontSize: 20, ml: 1 }}>Withdrawal</Typography>
+								{isEditable() && (
+									<>
 								<Button
 										variant='contained'
 										color='secondary'
@@ -323,36 +351,87 @@ const WithDrawal: React.FC<
 								<Button variant='contained' disableElevation sx={classes.submitButton} type="submit">
 									Save
 								</Button>
+								</>
+								)}
 							</Box>
 							<CircleIcon />
-							<Stack justifyContent="center" alignItems={"center"} direction="column" sx={{ width: "50%", margin: "auto", mt: 2, ml: 'calc(25% + 60px)' }}>
+							<Stack justifyContent="center" alignItems={"center"} direction="column"
+									sx={{ width: "50%", margin: "auto", mt: 2, ml: isEditable() ? 'calc(25% + 60px)' : 'auto' }}>
 								<List sx={{width: '100%'}}>
-									<QuestionItem questions={[questions[0]]} questionTypes={QuestionTypes} additionalQuestionTypes={AdditionalQuestionTypes} />
-									<QuestionItem questions={[questions[1]]} questionTypes={QuestionTypes} additionalQuestionTypes={AdditionalQuestionTypes} />
+									<QuestionItem
+										questions={[values[0]]}
+										questionTypes={QuestionTypes}
+										additionalQuestionTypes={AdditionalQuestionTypes}
+										hasAction={isEditable()} />
+									<QuestionItem
+										questions={[values[1]]}
+										questionTypes={QuestionTypes}
+										additionalQuestionTypes={AdditionalQuestionTypes}
+										hasAction={isEditable()} />
 								</List>
 								<SortableListContainer
-										questionsList={values.filter(v => v.additionalQuestion == '').map(v => {
-											let arr = [v], current = v, child;
-											while(child = values.find(x => x.additionalQuestion == current.slug)) {
-												arr.push(child);
-												current = child;
-											}
-											console.log(arr);
-											return arr;
-										})}
+										questionsList={
+											values.filter(v =>
+												isEditable() ? (v.additionalQuestion == '' && v.mainQuestion == false)	//	Admin
+												: (!v.mainQuestion && (v.additionalQuestion == ''
+													|| (values.find(x => x.slug == v.additionalQuestion).response != ''
+														&& (values.find(x => x.slug == v.additionalQuestion).options.find(
+															x => x.value == values.find(y => y.slug == v.additionalQuestion).response
+																		|| values.find(y => y.slug == v.additionalQuestion).response.toString().indexOf('"' + x.value + '"') >= 0).action == 2)))) 		// Parent
+											).map(v => {
+												let arr = [v], current = v, child;
+												while(child = values.find(x => x.additionalQuestion == current.slug)) {
+													arr.push(child);
+													current = child;
+												}
+												return arr;
+											})
+										}
 										useDragHandle={true}
 										onSortEnd={({ oldIndex, newIndex }) => {
-											const newData = arrayMove(values, oldIndex, newIndex).map((v, i) => ({
-												...v,
-												sequence: i + 1,
-											}));
-											setValues(newData)
+											//	Find indexs
+											const groups = values.filter(v => (v.additionalQuestion == '' && v.mainQuestion == false)
+											).map(v => {
+												let arr = [v], current = v, child;
+												while(child = values.find(x => x.additionalQuestion == current.slug)) {
+													arr.push(child);
+													current = child;
+												}
+												return arr;
+											});
+											const newData = arrayMove(groups, oldIndex, newIndex);
+
+											let newValues = [];
+											newValues.push(values[0]);
+											newValues.push(values[1]);
+											newData.forEach(group => {
+												group.forEach(q => {
+													newValues.push({
+														...q,
+														sequence: newValues.length + 1
+													})
+												})
+											});
+											newValues.push(values[values.length - 1]);
+											//oldIndex = values.findIndex(x => x.id == groups[oldIndex].id);
+											//newIndex = values.findIndex(x => x.id == groups[newIndex].id);
+
+											//const newData = arrayMove(values, oldIndex, newIndex).map((v, i) => ({
+											//	...v,
+											//	sequence: i + 1,
+											//}));
+											setValues(newValues)
 										}}
 									/>
 								<List sx={{width: '100%', pt: 0}}>
-									<QuestionItem questions={[questions[questions.length - 1]]} questionTypes={QuestionTypes} additionalQuestionTypes={AdditionalQuestionTypes} />
+									<QuestionItem
+										questions={[values[values.length - 1]]}
+										questionTypes={QuestionTypes}
+										additionalQuestionTypes={AdditionalQuestionTypes}
+										hasAction={isEditable()} />
 								</List>
 							</Stack>
+							{isEditable() && (
 							<Box sx={{ width: "55%", margin: "auto", mt: 2 }}>
 								<Button variant='contained' sx={{...classes.button, width: '100%'}} onClick={() => setOpenSelectQuestionType(true)}>
 									<Subtitle size={12} >
@@ -360,8 +439,9 @@ const WithDrawal: React.FC<
 									</Subtitle>
 								</Button>
 							</Box>
+							)}
 							<Box sx={{ width: "55%", margin: "auto", mt: 2 }}>
-								<Button variant='contained' sx={{...classes.button, width: '100%'}} >
+								<Button variant='contained' sx={{...classes.button, width: '100%'}} type={isEditable() ? "button" : "submit"}>
 									<Subtitle size={12} >
 										Submit Withdrawal Request
 									</Subtitle>

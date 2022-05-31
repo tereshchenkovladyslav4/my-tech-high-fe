@@ -54,6 +54,7 @@ export const getEnrollmentPacketsQuery = gql`
           status {
             status
           }
+          reenrolled
           grade_level
           student_id
           grade_levels {

@@ -6,11 +6,16 @@ import CloseIcon from '@mui/icons-material/Close'
 import { useStyles } from '../../styles'
 import { AnnouncmentTemplateType } from './types'
 
-export const AnnouncementItem: AnnouncmentTemplateType = ({ title, subtitle, onClose }) => {
+const AnnouncementItem: AnnouncmentTemplateType = ({ title, subtitle, onClose, setSectionName }) => {
   const classes = useStyles
   const [style, setStyle] = useState({ display: 'none' })
   return (
-    <Box onMouseEnter={(e) => setStyle({ display: 'block' })} onMouseLeave={(e) => setStyle({ display: 'none' })}>
+    <Box
+      sx={classes.announcementItem}
+      onMouseEnter={(e) => setStyle({ display: 'block' })}
+      onMouseLeave={(e) => setStyle({ display: 'none' })}
+      onClick={() => setSectionName('readMore')}
+    >
       <Metadata
         disableGutters
         title={<Paragraph size='large'>{title}</Paragraph>}
@@ -24,3 +29,5 @@ export const AnnouncementItem: AnnouncmentTemplateType = ({ title, subtitle, onC
     </Box>
   )
 }
+
+export default AnnouncementItem

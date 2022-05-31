@@ -12,13 +12,14 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { Paragraph } from '../../../../components/Typography/Paragraph/Paragraph'
 import { map } from 'lodash'
-import { useMutation } from '@apollo/client'
+import { useMutation, useQuery } from '@apollo/client'
 import draftToHtml from 'draftjs-to-html'
 import htmlToDraft from 'html-to-draftjs'
 import { UserContext } from '../../../../providers/UserContext/UserProvider'
 import { AnnouncementType } from '../types'
 import { CreateAnnouncementMutation, UpdateAnnouncementMutation } from '../services'
 import { PublishModal } from '../PublishModal'
+import { getSchoolYearsByRegionId } from '../../SiteManagement/ProgramSetting/services'
 
 type NewAnnouncementProps = {
   announcement?: AnnouncementType
@@ -37,9 +38,9 @@ const NewAnnouncement = ({ setPage, announcement, setAnnouncement }: NewAnnounce
   const [expand, setExpand] = useState<boolean>(true)
   const [showPublishModal, setShowPublishModal] = useState<boolean>(false)
   const [cronJobTime, setCronJobTime] = useState<Date | null | ''>(new Date())
-  const [grades, setGrades] = useState<string[]>([])
+  const [grades, setGrades] = useState<string[]>([...['all'], ...GRADES.map((item) => item.toString())])
   const [users, setUsers] = useState<string[]>([])
-  const defaultEmail = 'Vivamus sagitis lacus vel augue laoreet rutrum faucibus dolor auctor...'
+  const defaultEmail = ''
   const [editorState, setEditorState] = useState(
     EditorState.createWithContent(ContentState.createFromText(defaultEmail)),
   )
@@ -51,6 +52,13 @@ const NewAnnouncement = ({ setPage, announcement, setAnnouncement }: NewAnnounce
   const editorRef = useRef(null)
   const [submitCreate, {}] = useMutation(CreateAnnouncementMutation)
   const [submitSave, {}] = useMutation(UpdateAnnouncementMutation)
+  // const schoolYearData = useQuery(getSchoolYearsByRegionId, {
+  //   variables: {
+  //     regionId: me?.selectedRegionId,
+  //   },
+  //   skip: me?.selectedRegionId ? false : true,
+  //   fetchPolicy: 'network-only',
+  // })
 
   const handlePublish = () => {
     setShowPublishModal(false)
@@ -404,6 +412,7 @@ const NewAnnouncement = ({ setPage, announcement, setAnnouncement }: NewAnnounce
               <Box sx={classes.editor}>
                 <Wysiwyg.Editor
                   onContentStateChange={handleEditorChange}
+                  placeholder='  Type here...'
                   editorRef={(ref) => (editorRef.current = ref)}
                   editorState={editorState}
                   onEditorStateChange={(e) => {
