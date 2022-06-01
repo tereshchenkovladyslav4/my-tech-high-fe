@@ -43,3 +43,12 @@ export const UpdateAnnouncementMutation = gql`
     }
   }
 `
+
+export const GetCurrentSchoolYearByRegionId = gql`
+  query Schoolyear_getcurrent($regionId: Float!) {
+    schoolyear_getcurrent(region_id: $regionId) {
+      grades
+      RegionId
+    }
+  }
+`

@@ -5,7 +5,7 @@ import { useStyles } from './styles'
 import CloseIcon from '@mui/icons-material/Close'
 import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragraph'
 import { RED, SYSTEM_06 } from '../../../../../utils/constants'
-import { filter, includes, isEqual, map, pull, remove } from 'lodash'
+import { filter, has, includes, isEqual, map, pull, remove } from 'lodash'
 import { FileListItem } from './FileListItem'
 import UploadFileIcon from '../../../../../assets/icons/file-upload.svg'
 
@@ -27,7 +27,6 @@ export const FileUploadModal: FileUploadModalTemplateType = ({
   type,
 }) => {
   const classes = useStyles
-
   const [selectedFiles, setSelectedFiles] = useState([])
   const [validFiles, setValidFiles] = useState<File[]>([])
   const [errorMessage, setErrorMessage] = useState('')
@@ -83,6 +82,31 @@ export const FileUploadModal: FileUploadModalTemplateType = ({
     handleFiles(files as unknown as FileList[])
   }
 
+
+  const readFile = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsText(file)
+      reader.onloadend = (event) => {
+        const parsedFile = csvToArray(event.target.result)
+        let isValid
+        if(type === 'county'){
+          isValid = map(parsedFile, (currFile) => has(currFile, 'County Name\r'))
+        }else{
+          isValid = map(parsedFile, (currFile) => (has(currFile, 'School District Code\r') && has(currFile, 'School District Name')))
+        }
+        if(!isValid.includes(false)){
+          resolve({})
+        }
+        else{
+          setErrorMessage('Incorrect Format')
+          reject
+        }
+      }
+    });
+  }
+
+
   const addDeletedFiles = (files) => {
     map(files, (file) => {
       if (includes(JSON.stringify(deletedFiles), JSON.stringify(file))) {
@@ -97,18 +121,48 @@ export const FileUploadModal: FileUploadModalTemplateType = ({
 
   const handleFiles = (files: FileList[]) => {
     for (let i = 0; i < files.length; i++) {
-      const file = validateFile(files[i])
-      if (file.status === true) {
-        setSelectedFiles((prevArray) => [...prevArray, files[i]])
-      } else {
-        files[i]['invalid'] = true
-        setErrorMessage(file.message)
-      }
+      // readfile then validate file file
+      readFile(files[i]).then(() => {
+        const file = validateFile(files[i])
+        if (file.status === true) {
+          setSelectedFiles((prevArray) => [...prevArray, files[i]])
+        } else {
+          files[i]['invalid'] = true
+          setErrorMessage(file.message)
+        }
+      })
     }
   }
 
-  const validateFile = (file: File): ValidateFileResponse => {
-    // Get the size of the file by files.item(i).size.
+  const csvToArray = (str, delimiter = ",") => {
+
+    // slice from start of text to the first \n index
+    // use split to create an array from string by delimiter
+    const headers = str.slice(0, str.indexOf("\n")).split(delimiter);
+
+    // slice from \n index + 1 to the end of the text
+    // use split to create an array of each csv value row
+    const rows = str.slice(str.indexOf("\n") + 1).split("\n");
+
+    // Map the rows
+    // split values from each row into an array
+    // use headers.reduce to create an object
+    // object properties derived from headers:values
+    // the object passed as an element of the array
+    const arr = rows.map(function (row) {
+      const values = row.split(delimiter);
+      const el = headers.reduce(function (object, header, index) {
+        object[header] = values[index];
+        return object;
+      }, {});
+      return el;
+    });
+
+    // return the array
+    return arr;
+  }
+
+  const validateFile = (file: File)=> {
     const validTypes = extensions?.replace(/\s/g, '').split(',')
     if (Math.round(file.size / 1024) > 25000) {
       return {
@@ -123,9 +177,7 @@ export const FileUploadModal: FileUploadModalTemplateType = ({
         message: invalidMessage,
       }
     }
-    return {
-      status: true,
-    }
+      return {status: true }
   }
 
   const submitAndClose = () => {
@@ -195,7 +247,6 @@ export const FileUploadModal: FileUploadModalTemplateType = ({
                   <label>
                     <input
                       type='file'
-                      onSubmit={() => window.alert('h')}
                       style={classes.input}
                       onChange={filesSelected}
                       multiple
@@ -210,7 +261,6 @@ export const FileUploadModal: FileUploadModalTemplateType = ({
                   <label>
                     <input
                       type='file'
-                      onSubmit={() => window.alert('h')}
                       style={classes.input}
                       onChange={filesSelected}
                       accept={extensions}

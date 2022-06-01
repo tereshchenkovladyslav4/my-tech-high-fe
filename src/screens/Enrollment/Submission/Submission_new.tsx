@@ -13,7 +13,7 @@ import { useHistory } from 'react-router-dom'
 import { SuccessModal } from '../../../components/SuccessModal/SuccessModal'
 import EnrollmentQuestionItem from '../Question'
 import { useFormik } from 'formik'
-import { omit } from 'lodash';
+import { capitalize, omit } from 'lodash';
 import { useMutation, useQuery } from '@apollo/client'
 import { isPhoneNumber, isNumber } from '../../../utils/stringHelpers'
 import * as yup from 'yup';
@@ -287,7 +287,7 @@ export default function SubmissionNew({id, questions}) {
         {showSuccess 
         && <SuccessModal 
             title='Success'
-            subtitle={`${student.person.first_name}'s Enrollment Packet has been successfully submitted and is now pending approval.`}
+            subtitle={`${capitalize(student.person.first_name)}'s Enrollment Packet has been submitted successfully and is now pending approval.`}
             btntitle='Done'
             handleSubmit={() => {
             history.push(`${HOMEROOM}`)

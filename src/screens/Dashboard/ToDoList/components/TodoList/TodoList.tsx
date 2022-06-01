@@ -55,17 +55,20 @@ export const TodoList: FunctionComponent = () => {
     }
   }, [loading])
 
-  const renderTodoListByAcceptedApplication = (el) => Object.entries(el.parsed).map(([key, value], i) => {
-        const item = {
+  const renderTodoListByAcceptedApplication = (el) => Object.entries(el.parsed).map(([key, value]:any, i) => {
+      const deadline = value.at(-1)?.current_school_year_status.enrollment_packet_date_deadline || null;  
+      const item = {
           "button": "Submit Now",
           "dashboard": 1,
           "homeroom": 1,
           "icon": "",
           "phrase": "Submit Enrollment Packet",
           "students": value,
-          "date_accepted": key
+          "date_accepted": key,
+          "date_deadline": deadline
       }
-        return <ToDoListItem key={`sep-${key}`} todoItem={item} idx={i} todoDate={key} todoDeadline="08.12" />
+        
+        return <ToDoListItem key={`sep-${key}`} todoItem={item} idx={i} todoDate={key} todoDeadline={deadline} />
     }
   )
 
@@ -79,7 +82,7 @@ export const TodoList: FunctionComponent = () => {
               key={idx} 
               todoItem={el} 
               todoDate={el.students.at(-1)?.current_school_year_status.application_date_accepted || null} 
-              todoDeadline="08.12"
+              todoDeadline={el.students.at(-1)?.current_school_year_status.enrollment_packet_date_deadline || null}
               idx={idx} 
             />
         }

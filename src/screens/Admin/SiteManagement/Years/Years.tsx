@@ -174,24 +174,24 @@ const Years: React.FC = () => {
     } else if (val) {
       schoolYears.forEach((schoolYear) => {
         if (schoolYear.schoolYearId == parseInt(val)) {
-          let open = new Date(schoolYear.schoolYearOpen);
-          open.setFullYear(open.getFullYear() + 1);
-          setSchoolYearOpen(open.toISOString());
-          let close = new Date(schoolYear.schoolYearClose);
-          close.setFullYear(close.getFullYear() + 1);
-          setSchoolYearClose(close.toISOString());
-          open = new Date(schoolYear.applicationsOpen);
-          open.setFullYear(open.getFullYear() + 1);
-          setApplicationsOpen(open.toISOString());
-          close = new Date(schoolYear.applicationsClose);
-          close.setFullYear(close.getFullYear() + 1);
+          let open = new Date(schoolYear.schoolYearOpen)
+          open.setFullYear(open.getFullYear() + 1)
+          setSchoolYearOpen(open.toISOString())
+          let close = new Date(schoolYear.schoolYearClose)
+          close.setFullYear(close.getFullYear() + 1)
+          setSchoolYearClose(close.toISOString())
+          open = new Date(schoolYear.applicationsOpen)
+          open.setFullYear(open.getFullYear() + 1)
+          setApplicationsOpen(open.toISOString())
+          close = new Date(schoolYear.applicationsClose)
+          close.setFullYear(close.getFullYear() + 1)
           setApplicationsClose(close.toISOString())
-          open = new Date(schoolYear.midYearOpen);
-          open.setFullYear(open.getFullYear() + 1);
-          setMidYearOpen(open.toISOString());
-          close = new Date(schoolYear.midYearClose);
-          close.setFullYear(close.getFullYear() + 1);
-          setMidYearClose(close.toISOString());
+          open = new Date(schoolYear.midYearOpen)
+          open.setFullYear(open.getFullYear() + 1)
+          setMidYearOpen(open.toISOString())
+          close = new Date(schoolYear.midYearClose)
+          close.setFullYear(close.getFullYear() + 1)
+          setMidYearClose(close.toISOString())
           setMidYearStatus(schoolYear.midYearStatus)
         }
       })
@@ -284,33 +284,37 @@ const Years: React.FC = () => {
     if (schoolYearData?.data?.region?.SchoolYears) {
       let schoolYearsArr: SchoolYears[] = []
       let cnt = 0
-      
+
       schoolYearData?.data?.region?.SchoolYears.forEach((schoolYear) => {
-        schoolYear.date_begin = moment(schoolYear.date_begin?.substring(0, 10)).toISOString();
-        schoolYear.date_end = moment(schoolYear.date_end?.substring(0, 10)).toISOString();
-        schoolYear.date_reg_open = moment(schoolYear.date_reg_open?.substring(0, 10)).toISOString();
-        schoolYear.date_reg_close = moment(schoolYear.date_reg_close?.substring(0, 10)).toISOString();
-        schoolYear.midyear_application_open = moment(schoolYear.midyear_application_open?.substring(0, 10)).toISOString();
-        schoolYear.midyear_application_close = moment(schoolYear.midyear_application_close?.substring(0, 10)).toISOString();
+        const schoolYear_date_begin = moment(schoolYear.date_begin?.substring(0, 10)).toISOString()
+        const schoolYear_date_end = moment(schoolYear.date_end?.substring(0, 10)).toISOString()
+        const schoolYear_date_reg_open = moment(schoolYear.date_reg_open?.substring(0, 10)).toISOString()
+        const schoolYear_date_reg_close = moment(schoolYear.date_reg_close?.substring(0, 10)).toISOString()
+        const schoolYear_midyear_application_open = moment(
+          schoolYear.midyear_application_open?.substring(0, 10),
+        ).toISOString()
+        const schoolYear_midyear_application_close = moment(
+          schoolYear.midyear_application_close?.substring(0, 10),
+        ).toISOString()
 
         if (schoolYear.school_year_id == selectedYearId) {
-          setSchoolYearOpen(schoolYear.date_begin)
-          setSchoolYearClose(schoolYear.date_end)
-          setApplicationsOpen(schoolYear.date_reg_open)
-          setApplicationsClose(schoolYear.date_reg_close)
-          setMidYearOpen(schoolYear.midyear_application_open)
-          setMidYearClose(schoolYear.midyear_application_close)
+          setSchoolYearOpen(schoolYear_date_begin)
+          setSchoolYearClose(schoolYear_date_end)
+          setApplicationsOpen(schoolYear_date_reg_open)
+          setApplicationsClose(schoolYear_date_reg_close)
+          setMidYearOpen(schoolYear_midyear_application_open)
+          setMidYearClose(schoolYear_midyear_application_close)
           setMidYearStatus(schoolYear.midyear_application)
           cnt++
         }
         schoolYearsArr.push({
           schoolYearId: schoolYear.school_year_id,
-          schoolYearOpen: schoolYear.date_begin,
-          schoolYearClose: schoolYear.date_end,
-          applicationsOpen: schoolYear.date_reg_open,
-          applicationsClose: schoolYear.date_reg_close,
-          midYearOpen: schoolYear.midyear_application_open,
-          midYearClose: schoolYear.midyear_application_close,
+          schoolYearOpen: schoolYear_date_begin,
+          schoolYearClose: schoolYear_date_end,
+          applicationsOpen: schoolYear_date_reg_open,
+          applicationsClose: schoolYear_date_reg_close,
+          midYearOpen: schoolYear_midyear_application_open,
+          midYearClose: schoolYear_midyear_application_close,
           midYearStatus: schoolYear.midyear_application,
         })
       })

@@ -31,6 +31,9 @@ query Parent_todos {
           application_date_submitted
           application_date_started
           application_date_accepted
+          application_deadline_num_days
+          enrollment_packet_deadline_num_days
+          enrollment_packet_date_deadline
         }
       }
     }
@@ -50,6 +53,22 @@ query Parent_todos {
           preferred_first_name
           preferred_last_name
         }
+        current_school_year_status {
+          student_id
+          school_year_id
+          application_id
+          application_status
+          packet_status
+          packet_id
+          application_school_year_id
+          grade_level
+          application_date_submitted
+          application_date_started
+          application_date_accepted
+          application_deadline_num_days
+          enrollment_packet_deadline_num_days
+          enrollment_packet_date_deadline
+        }
       }
     }
     submit_schedule {
@@ -67,6 +86,22 @@ query Parent_todos {
           photo
           preferred_first_name
           preferred_last_name
+        }
+        current_school_year_status {
+          student_id
+          school_year_id
+          application_id
+          application_status
+          packet_status
+          packet_id
+          application_school_year_id
+          grade_level
+          application_date_submitted
+          application_date_started
+          application_date_accepted
+          application_deadline_num_days
+          enrollment_packet_deadline_num_days
+          enrollment_packet_date_deadline
         }
       }
     }
@@ -86,6 +121,22 @@ query Parent_todos {
           preferred_first_name
           preferred_last_name
         }
+        current_school_year_status {
+          student_id
+          school_year_id
+          application_id
+          application_status
+          packet_status
+          packet_id
+          application_school_year_id
+          grade_level
+          application_date_submitted
+          application_date_started
+          application_date_accepted
+          application_deadline_num_days
+          enrollment_packet_deadline_num_days
+          enrollment_packet_date_deadline
+        }
       }
     }
     resubmit_direct_order {
@@ -103,6 +154,22 @@ query Parent_todos {
           photo
           preferred_first_name
           preferred_last_name
+        }
+        current_school_year_status {
+          student_id
+          school_year_id
+          application_id
+          application_status
+          packet_status
+          packet_id
+          application_school_year_id
+          grade_level
+          application_date_submitted
+          application_date_started
+          application_date_accepted
+          application_deadline_num_days
+          enrollment_packet_deadline_num_days
+          enrollment_packet_date_deadline
         }
       }
     }
@@ -122,6 +189,22 @@ query Parent_todos {
           preferred_first_name
           preferred_last_name
         }
+        current_school_year_status {
+          student_id
+          school_year_id
+          application_id
+          application_status
+          packet_status
+          packet_id
+          application_school_year_id
+          grade_level
+          application_date_submitted
+          application_date_started
+          application_date_accepted
+          application_deadline_num_days
+          enrollment_packet_deadline_num_days
+          enrollment_packet_date_deadline
+        }
       }
     }
     missing_learning_log {
@@ -139,6 +222,22 @@ query Parent_todos {
           photo
           preferred_first_name
           preferred_last_name
+        }
+        current_school_year_status {
+          student_id
+          school_year_id
+          application_id
+          application_status
+          packet_status
+          packet_id
+          application_school_year_id
+          grade_level
+          application_date_submitted
+          application_date_started
+          application_date_accepted
+          application_deadline_num_days
+          enrollment_packet_deadline_num_days
+          enrollment_packet_date_deadline
         }
       }
     }
@@ -158,6 +257,22 @@ query Parent_todos {
           preferred_first_name
           preferred_last_name
         }
+        current_school_year_status {
+          student_id
+          school_year_id
+          application_id
+          application_status
+          packet_status
+          packet_id
+          application_school_year_id
+          grade_level
+          application_date_submitted
+          application_date_started
+          application_date_accepted
+          application_deadline_num_days
+          enrollment_packet_deadline_num_days
+          enrollment_packet_date_deadline
+        }
       }
     }
     submit_testing_preference {
@@ -175,6 +290,22 @@ query Parent_todos {
           photo
           preferred_first_name
           preferred_last_name
+        }
+        current_school_year_status {
+          student_id
+          school_year_id
+          application_id
+          application_status
+          packet_status
+          packet_id
+          application_school_year_id
+          grade_level
+          application_date_submitted
+          application_date_started
+          application_date_accepted
+          application_deadline_num_days
+          enrollment_packet_deadline_num_days
+          enrollment_packet_date_deadline
         }
       }
     }
@@ -194,6 +325,22 @@ query Parent_todos {
           preferred_first_name
           preferred_last_name
         }
+        current_school_year_status {
+          student_id
+          school_year_id
+          application_id
+          application_status
+          packet_status
+          packet_id
+          application_school_year_id
+          grade_level
+          application_date_submitted
+          application_date_started
+          application_date_accepted
+          application_deadline_num_days
+          enrollment_packet_deadline_num_days
+          enrollment_packet_date_deadline
+        }
       }
     }
     request_homeroom_resources {
@@ -211,6 +358,22 @@ query Parent_todos {
           photo
           preferred_first_name
           preferred_last_name
+        }
+        current_school_year_status {
+          student_id
+          school_year_id
+          application_id
+          application_status
+          packet_status
+          packet_id
+          application_school_year_id
+          grade_level
+          application_date_submitted
+          application_date_started
+          application_date_accepted
+          application_deadline_num_days
+          enrollment_packet_deadline_num_days
+          enrollment_packet_date_deadline
         }
       }
     }

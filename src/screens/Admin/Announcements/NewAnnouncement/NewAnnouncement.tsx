@@ -17,9 +17,8 @@ import draftToHtml from 'draftjs-to-html'
 import htmlToDraft from 'html-to-draftjs'
 import { UserContext } from '../../../../providers/UserContext/UserProvider'
 import { AnnouncementType } from '../types'
-import { CreateAnnouncementMutation, UpdateAnnouncementMutation } from '../services'
+import { CreateAnnouncementMutation, GetCurrentSchoolYearByRegionId, UpdateAnnouncementMutation } from '../services'
 import { PublishModal } from '../PublishModal'
-import { getSchoolYearsByRegionId } from '../../SiteManagement/ProgramSetting/services'
 
 type NewAnnouncementProps = {
   announcement?: AnnouncementType
@@ -38,7 +37,8 @@ const NewAnnouncement = ({ setPage, announcement, setAnnouncement }: NewAnnounce
   const [expand, setExpand] = useState<boolean>(true)
   const [showPublishModal, setShowPublishModal] = useState<boolean>(false)
   const [cronJobTime, setCronJobTime] = useState<Date | null | ''>(new Date())
-  const [grades, setGrades] = useState<string[]>([...['all'], ...GRADES.map((item) => item.toString())])
+  const [grades, setGrades] = useState<string[]>([])
+  const [availableGrades, setAvailableGrades] = useState<(string | number)[]>([])
   const [users, setUsers] = useState<string[]>([])
   const defaultEmail = ''
   const [editorState, setEditorState] = useState(
@@ -52,13 +52,13 @@ const NewAnnouncement = ({ setPage, announcement, setAnnouncement }: NewAnnounce
   const editorRef = useRef(null)
   const [submitCreate, {}] = useMutation(CreateAnnouncementMutation)
   const [submitSave, {}] = useMutation(UpdateAnnouncementMutation)
-  // const schoolYearData = useQuery(getSchoolYearsByRegionId, {
-  //   variables: {
-  //     regionId: me?.selectedRegionId,
-  //   },
-  //   skip: me?.selectedRegionId ? false : true,
-  //   fetchPolicy: 'network-only',
-  // })
+  const schoolYearData = useQuery(GetCurrentSchoolYearByRegionId, {
+    variables: {
+      regionId: me?.selectedRegionId,
+    },
+    skip: me?.selectedRegionId ? false : true,
+    fetchPolicy: 'network-only',
+  })
 
   const handlePublish = () => {
     setShowPublishModal(false)
@@ -77,6 +77,7 @@ const NewAnnouncement = ({ setPage, announcement, setAnnouncement }: NewAnnounce
 
   const validation = () => {
     if (
+      availableGrades?.length > 0 &&
       grades?.length > 0 &&
       users?.length > 0 &&
       subject &&
@@ -85,13 +86,21 @@ const NewAnnouncement = ({ setPage, announcement, setAnnouncement }: NewAnnounce
     ) {
       return true
     } else {
-      if (grades?.length == 0) setGradesInvalid(true)
+      if (availableGrades?.length == 0 || grades?.length == 0) setGradesInvalid(true)
       if (users?.length == 0) setUsersInvalid(true)
       if (!emailFrom) setEmailInvalid(true)
       if (!subject) setSubjectInvalid(true)
       if (draftToHtml(convertToRaw(editorState.getCurrentContent())).length <= 8) setBodyInvalid(true)
       return false
     }
+  }
+
+  const setFlagDefault = () => {
+    setGradesInvalid(false)
+    setUsersInvalid(false)
+    setEmailInvalid(false)
+    setSubjectInvalid(false)
+    setBodyInvalid(false)
   }
 
   const handleSaveClick = async (status: string = 'Draft') => {
@@ -173,7 +182,7 @@ const NewAnnouncement = ({ setPage, announcement, setAnnouncement }: NewAnnounce
 
   const handleChangeAll = (e) => {
     if (e.target.checked) {
-      setGrades([...['all'], ...GRADES.map((item) => item.toString())])
+      setGrades([...['all'], ...availableGrades.map((item) => item.toString())])
       setGradesInvalid(false)
     } else {
       setGrades([])
@@ -191,7 +200,7 @@ const NewAnnouncement = ({ setPage, announcement, setAnnouncement }: NewAnnounce
   }
 
   const renderGrades = () =>
-    map(GRADES, (grade, index) => {
+    map(availableGrades, (grade, index) => {
       if (typeof grade !== 'string') {
         return (
           <FormControlLabel
@@ -337,6 +346,30 @@ const NewAnnouncement = ({ setPage, announcement, setAnnouncement }: NewAnnounce
       }
     }
   }, [announcement])
+
+  useEffect(() => {
+    if (schoolYearData?.data?.schoolyear_getcurrent) {
+      const availGrades = schoolYearData?.data?.schoolyear_getcurrent?.grades?.split(',').map((item) => {
+        if (item == 'Kindergarten') return 'Kindergarten'
+        else return Number(item)
+      })
+      console.log(availGrades, 'grades')
+      setAvailableGrades(availGrades)
+      setGrades([
+        ...['all'],
+        ...GRADES.map((item) => {
+          if (availGrades.includes(item)) {
+            return item.toString()
+          }
+        }),
+      ])
+      setFlagDefault()
+    } else {
+      setAvailableGrades([])
+      setGrades([])
+      setFlagDefault()
+    }
+  }, [me?.selectedRegionId, schoolYearData])
 
   return (
     <Card sx={classes.cardBody}>
