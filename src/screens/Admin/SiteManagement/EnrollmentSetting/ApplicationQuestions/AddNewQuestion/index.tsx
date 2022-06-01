@@ -6,7 +6,7 @@ import { Subtitle } from '../../../../../../components/Typography/Subtitle/Subti
 import { SYSTEM_07 } from '../../../../../../utils/constants'
 import { ApplicationQuestion, OptionsType, QuestionTypes } from '../types'
 import QuestionOptions from './Options'
-import { EditorState, convertToRaw } from 'draft-js'
+import { EditorState, convertToRaw, ContentState } from 'draft-js'
 import Wysiwyg from 'react-draft-wysiwyg'
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
 import draftToHtml from 'draftjs-to-html'
@@ -14,6 +14,7 @@ import { convertFromHTML } from 'draft-convert'
 import { validationTypes } from '../../constant/defaultQuestions'
 import { Paragraph } from '../../../../../../components/Typography/Paragraph/Paragraph'
 import EditLinkModal from '../../EnrollmentQuestions/components/EditLinkModal'
+import htmlToDraft from 'html-to-draftjs'
 
 export default function AddNewQuestionModal({
   onClose,
@@ -46,7 +47,7 @@ export default function AddNewQuestionModal({
 
   const [error, setError] = useState('')
 
-  const [editorState, setEditorState] = useState(EditorState.createWithContent(convertFromHTML(editItem?.question || '')))
+  const [editorState, setEditorState] = useState(EditorState.createWithContent(ContentState.createFromBlockArray(htmlToDraft(editItem?.question || '').contentBlocks)))
   const editorRef = useRef(null)
   const [currentBlocks, setCurrentBlocks] = useState(0)
   const handleEditorChange = (state) => {
@@ -59,13 +60,14 @@ export default function AddNewQuestionModal({
   }
 
   function onSave() {
-    if (type === 4 ) {
-      if(agreement.text.trim() === ''){
-        setError('Text is required')
-        return
-      }
-    } 
-    else if (question.trim() === '' && type !== 7) {
+    //if (type === 4 ) {
+    //  if(agreement.text.trim() === ''){
+    //    setError('Text is required')
+    //    return
+    //  }
+    //} 
+    //else 
+    if (question.trim() === '' && type !== 7 && type !== 4) {
       setError('Question is required')
       return
     } else if ([1, 3, 5].includes(type) && options.length && options[0].label.trim() === '' && !isDefaultQuestion) {
@@ -75,9 +77,9 @@ export default function AddNewQuestionModal({
     const item = {
       id: editItem?.id,
       order: editItem?.order || values.length + 1,
-      question: type === 7 ? draftToHtml(convertToRaw(editorState.getCurrentContent())) : type === 4 ? agreement.text : question,
+      question: type === 7 || type === 4 ? draftToHtml(convertToRaw(editorState.getCurrentContent())) : question,
       type,
-      options: type === 4 ? [{label: agreement.type, value: agreement.link}] : options.filter((v) => v.label.trim()),
+      options: options.filter((v) => v.label.trim()),
       required,
       default_question: isDefaultQuestion,
       validation: validation ? validationType : 0,
@@ -172,7 +174,7 @@ export default function AddNewQuestionModal({
         <Box mt='30px' width='100%' display='flex' flexDirection='column' maxHeight={'600px'} overflow='auto'>
           {type === 2 || type === 6 ? (
             <Box height='50px' />
-          ) : type === 7 ? (
+          ) : (type === 7 || type === 4) ? (
             <Box sx={{
               border: '1px solid #d1d1d1',
               borderRadius: 1,
@@ -203,48 +205,6 @@ export default function AddNewQuestionModal({
                   }
                 }}
               />
-            </Box>
-          ) : 
-          type === 4 ? 
-          (
-            <Box
-              sx={{ 
-                width: '80%',
-                display: 'flex',
-                py: '10px',
-                justifyContent: 'space-between',
-              }}
-            >
-              <FormControl
-                required
-                name='acknowledge'
-                component="fieldset"
-                variant="standard"
-              >
-                  <FormGroup>
-                      <FormControlLabel
-                        control={
-                            <Checkbox  />
-                        }
-                        label={
-                            <Paragraph size='large'>
-                                {agreement.text || "Add text"}
-                            </Paragraph>
-                        }
-                      />
-                  </FormGroup>
-              </FormControl>
-              <IconButton onClick = {() => setOpenLinkModal(true)}>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
-                  <rect width="24" height="24" fill="url(#pattern0)" fill-opacity="0.5"/>
-                  <defs>
-                  <pattern id="pattern0" patternContentUnits="objectBoundingBox" width="1" height="1">
-                  <use xlinkHref="#image0_3343_40736" transform="scale(0.01)"/>
-                  </pattern>
-                  <image id="image0_3343_40736" width="100" height="100" xlinkHref="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAABmJLR0QA/wD/AP+gvaeTAAAENElEQVR4nO3cS2xUVRzH8S8tMVGpbW0ZJC7kYcCwMoghYYML3CjRnVGbiu5UZM9aA2HDhoW64xU2hA0b3LAAEwMUH1SqQRay49VWAYsmSFsW/xlSZy5z/ueeW+rc+/skd9GZe//n3POfuedx7xREREREREREREREREREREREREREREREpMWiguPVgM3Ay8Ca+t9PFxD3JLAzMcYeYEsBdZkCxoHLwE/A6frf/xv9wA5gBJgBZudhO1pAPY/OU91mgLPAdqCvgHrm1o996u4wPyfaKQmZu90GdrMAiRkGbiRUvKwJaWzXgaEC6hzUAxx5jCfWqQlpbIeAJTGV7IrYtwacAt6PKaDihrE2q3kP8CakBnwLrM9Rqap7BWu7pZ6dPQnpAb4B1iZUqurWAidwTAEWO4J9Tfw34z42DL4C3ATuRR7f7GLi8QDHgd8TYzyBXS1WAa/ia7+GDcBXwAcpFRgmrhO7UC/w2ZRCO8QAdq6jxLVR7j64H//QdhxLXswgoSy6gG3ABP4hca55yh5nAReBlXnPpkRWA2P42mxXbPB+bNbpScYzaedRKr34knKLyG/JDkfQCexTIf+1AhvIhNrv05igI46Aw4VUv5y2EW6/M95gNcKrtqNUswP36gJ+pH0bzgCDzQdmjaNfI3yfZG89YF7rgCcTjn8c/gF+zXnsDLAP2N9mn0VYWx8LBdtF+8z+i43BU3hHIwu5jSWe4wDWVu3K+Lz5oKzLzppAQSPAZEpNK2IS+D6wT8tyVFZClgWCXPHWSIJt1bIKnJWQ0Pr9NXd15Grg/ZY5XJ6RUtEPRpRZdFtlJWQqcMzy2EIq7PnA+3eaX8hKyI1AkBXu6sgLgfdvNr+QlZDLgSAbyZjQSIsB7B5IO781v5A1MbwQCNINvAkc9NUr0zt0xsQwxVuEb2CNegItJbx08jOWGMnWja2Et2vDaSKuNGcDwWaxBTTJ9hHh9vsuJuBnjoCTwIuFVL9cVmJ3UEPt93FM0D58N6jGsJsyYnqBXwi325/kaLfdjsCNpKxKO49SWI0vGbPAF3kK6MNuyHsKmMD6lCreI+nG+oxJfG11lYTb3kPOQuaOvj4kfXm+Ewxi5xoaTTVv77YL6llrOUT87dpp4Dy22nmd8Ow/5BL2oFuKt4GXEmMsA57DLtEbiB/6H8C+TUmWYI0b8ykoeuvUp9/nbueAp0KV9Fzzp4A3yJjmi9slYCvwd2hHbyc8Dmwi4kkJeeg89rtL1+8QY0ZFfwCvA4dzVKqqDmAPMrSs6j5K7DD1LvaA8RDpHXWZXQPewzrw4GWqKH3YEyqeGX1VOvVb2KRvQVcverHHIs9gw92qJWQaWyj8hAISEfODk0e5DXxZ3wZp/ccBPQWUkfpDm0aMHwqI8xfWJ8z9xwF6LEpERERERERERERERERERERERERERERkPj0AfrEo+sYtddsAAAAASUVORK5CYII="/>
-                  </defs>
-                </svg>
-              </IconButton>
             </Box>
           ) : 
           !isDefaultQuestion && (

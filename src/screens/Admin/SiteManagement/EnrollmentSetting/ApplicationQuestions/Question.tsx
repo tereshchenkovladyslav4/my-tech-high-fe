@@ -161,28 +161,11 @@ function Item({ question: q }: { question: ApplicationQuestion }) {
     )
   } else if (q.type === 4) {
     return (
-      <Box display='flex' alignItems='center'>
-        <FormControl
-          required
-          name='acknowledge'
-          component="fieldset"
-          variant="standard"
-        >
-          <FormGroup style={{ width: '50%' }}>
-            <FormControlLabel
-              control={
-                <Checkbox  />
-              }
-              label={
-                <Paragraph size='medium'>
-                  <a style={{ color: '#111', textDecoration: 'none' }} href={q.options[0]?.label === 'web' ? q.options[0]?.value :`mailto:${q.options[0]?.value}`}>
-                      {q.question}
-                  </a>
-                </Paragraph>
-              }
-            />
-          </FormGroup>
-        </FormControl>
+      <Box display="flex" alignItems='center'>
+        <Checkbox checked={q.response == 'true'} onClick={() => {}} />
+        <Paragraph size='large'>
+            <p dangerouslySetInnerHTML={{ __html: q.question }}></p>
+        </Paragraph>
       </Box>
     )
   } else if (q.type === 5) {

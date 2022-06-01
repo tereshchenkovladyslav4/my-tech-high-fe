@@ -203,6 +203,7 @@ export const QuickLinks: React.FC<any> = ({backAction}) => {
 									switch(item.type) {
 										case QUICKLINK_TYPE.WEBSITE_LINK:
 											window.open(item.reserved, '_blank');
+											break;
 										case QUICKLINK_TYPE.WITHDRAWAL:
 											selectQuickLink(item);
 											break;
