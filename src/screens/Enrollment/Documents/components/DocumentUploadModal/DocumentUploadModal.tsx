@@ -4,10 +4,10 @@ import { DocumentUploadModalTemplateType } from './types'
 import { useStyles } from './styles'
 import CloseIcon from '@mui/icons-material/Close';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
-import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragraph';
+import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragraph'
 import { RED, SYSTEM_06 } from '../../../../../utils/constants';
 import { DocumentListItem } from '../DocumentList/DocumentListItem';
-import { filter, includes, isEqual, map, pull, remove } from 'lodash';
+import { filter, map, remove } from 'lodash';
 
 interface HTMLInputEvent extends Event {
 	target: HTMLInputElement & EventTarget & File;
@@ -64,7 +64,6 @@ export const DocumentUploadModal: DocumentUploadModalTemplateType = ({
 	const fileDrop = (e: HTMLInputEvent) => {
 			preventDefault(e);
 			const files = e.dataTransfer.files;
-			addDeletedFiles(files)
 			if (limit && files.length > limit) {
 				setErrorMessage(`File submission limited to ${limit} files`);
 			}else {
@@ -73,39 +72,24 @@ export const DocumentUploadModal: DocumentUploadModalTemplateType = ({
 	}
 
 	const filesSelected = (e: any) => {
-		setErrorMessage('')
-		const files = e.target.files as File[]
-		addDeletedFiles(files)
-		handleFiles(files as unknown as FileList[])
-	}
-
-	const addDeletedFiles = (files) => {
-		map(files, (file) => {
-			if(includes(JSON.stringify(deletedFiles), JSON.stringify(file))){
-				setDeletedFiles((prev) => {
-					const newFiles = [...prev]
-					pull(newFiles, deletedFiles[0])
-					return newFiles
-				})
-			}
-		})
+		handleFiles(e.target.files)
 	}
 
 	const handleFiles = (files: FileList[]) => {
-			for(let i = 0; i < files.length; i++) {
-					const file = validateFile(files[i])
-					if (file.status === true) {
-							setSelectedFiles(prevArray => [...prevArray, files[i]]);
-					} else {
-							files[i]['invalid'] = true;
-							setErrorMessage(file.message);
-					}
-			}
+		for(let i = 0; i < files.length; i++) {
+				const file = validateFile(files[i])
+				if (file.status === true) {
+						setSelectedFiles(prevArray => [...prevArray, files[i]]);
+				} else {
+						files[i]['invalid'] = true;
+						setErrorMessage(file.message);
+				}
+		}
 	}
 
 	const validateFile = (file: File): ValidateFileResponse => {
 		// Get the size of the file by files.item(i).size.
-			const validTypes = ['application/pdf', "image/png", "image/jpeg", "image/gif", "image/bmp"]
+			const validTypes = ['application/pdf', "image/png", "image/jpeg"]
 			if(Math.round((file.size/1024)) > 25000){
 				return {
 					status: false,
@@ -133,12 +117,15 @@ export const DocumentUploadModal: DocumentUploadModalTemplateType = ({
 		setDeletedFiles((prev) => ([...prev, file]))
 	}
 
+	useEffect(() => {
+		console.log(validFiles)
+	},[validFiles])
+
+
 	const renderFiles = () => map(validFiles, (file) =>	<Box>
 		<DocumentListItem file={file as File} closeAction={deleteFile}/>
 	</Box>
 	)
-
-
 	return (
 		<Modal
 			open={true}
@@ -164,7 +151,7 @@ export const DocumentUploadModal: DocumentUploadModalTemplateType = ({
 					}
 				</Box>
 				<Box
-					display={(validFiles.length >= limit) ? `none`: `flex`}
+					display='flex' 
 					flexDirection='column' 
 					alignItems={'center'}
 					onDragOver={dragOver}
@@ -188,19 +175,15 @@ export const DocumentUploadModal: DocumentUploadModalTemplateType = ({
 						<label>
 							<input 
 								type="file"
-								onSubmit={() => {}}
 								style={classes.input}
 								onChange={filesSelected}
 								multiple
-								accept='application/pdf, image/png, image/jpeg, image/gif, image/bmp'
-								onClick={(event)=> {
-									event.currentTarget.value = ''
-								}}
+								accept='application/pdf, image/png, image/jpeg'
 							/>
 							Browse Files
 						</label>
 					</Button>
-					<Paragraph size='medium' fontWeight='700' color={RED}>{ errorMessage }</Paragraph>
+					<Paragraph size='medium' fontWeight='700' color={RED}>{ validFiles.length === 0 &&  errorMessage }</Paragraph>
 				</Box>
 				<Box justifyContent={'space-between'} display='flex' flexDirection={'row'}>
 					<Button 

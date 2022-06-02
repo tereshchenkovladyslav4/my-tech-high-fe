@@ -160,6 +160,7 @@ export default function EnrollmentPacketModal({
                     const fieldName = q.slug.split('student_')[1]
                     temp[q.slug] = packet.student.person[fieldName]
                     temp['student_grade_level'] = packet.student.grade_levels[0]?.grade_level
+                    temp['student_emailConfirm'] = packet.student.person.email
                     if(q.type === 6) {
                       temp[q.slug] = moment(packet.student.person[fieldName]).format('YYYY-MM-DD')
                     }
@@ -172,6 +173,7 @@ export default function EnrollmentPacketModal({
                     const fieldName = q.slug.split('parent_')[1]
                     temp[q.slug] = packet.student.parent.person[fieldName]
                     temp['parent_phone_number'] = packet.student.parent.phone.number
+                    temp['parent_emailConfirm'] = packet.student.parent.person.email
                     if(q.type === 6) {
                       temp[q.slug] = moment(packet.student.parent.person[fieldName]).format('YYYY-MM-DD')
                     }

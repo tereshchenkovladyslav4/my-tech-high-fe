@@ -329,7 +329,7 @@ export const NewUserModal: NewModalTemplateType = ({ handleModem, visible }) => 
           flag: true,
         })
         return
-      } else if (roleData.label.toLowerCase() === 'admin' && !selectedState) {
+      } else if (roleData.label.toLowerCase() === 'admin' && (!regions || regions.length === 0)) {
         setApolloError({
           title: 'Need to select State.',
           severity: 'Warning',

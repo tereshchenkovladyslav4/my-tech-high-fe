@@ -1,10 +1,8 @@
 import { Box } from '@mui/system'
 import { map } from 'lodash'
 import React from 'react'
-import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragraph'
 import { DocumentsTemplateType } from './types'
-import CloseIcon from '@mui/icons-material/Close';
-import { useStyles } from './styles'
+import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragraph'
 import { DocumentListItem } from './DocumentListItem'
 
 export const DocumentList: DocumentsTemplateType = ({files}) => {

@@ -3,9 +3,7 @@ import React from 'react'
 import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragraph'
 import CloseIcon from '@mui/icons-material/Close';
 import { useStyles } from './styles'
-import { DocumentListItemTemplateType } from './types';
-import { GQLFile } from '../../../../HomeroomStudentProfile/Student/types';
-import { DASHBOARD } from '../../../../../utils/constants';
+import { DocumentListItemTemplateType } from './types'
 import { S3FileType } from '../DocumentUploadModal/types';
 
 export const DocumentListItem: DocumentListItemTemplateType = ({file, closeAction}) => {

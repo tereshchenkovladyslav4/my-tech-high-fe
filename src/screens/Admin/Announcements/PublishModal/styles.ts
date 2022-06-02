@@ -32,6 +32,7 @@ export const useStyles = {
     height: '36px',
     background: '#E7E7E7',
     borderRadius: '50px',
+    marginRight: '50px',
   },
   publishBtn: {
     width: '160px',
@@ -43,6 +44,7 @@ export const useStyles = {
   scheduleContainer: {
     display: 'flex',
     justifyContent: 'space-between',
+    marginTop: '50px',
   },
   scheduleSendBtn: {
     width: '160px',

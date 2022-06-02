@@ -121,93 +121,95 @@ export const Students = ({ students, selectedStudent, handleChangeStudent, me })
           marginTop: '24px',
         }}
       >
-        <Grid item xs={10}>
-          <Slider {...settings} ref={sliderRef}>
-            {students
-              .filter(
-                (item) =>
-                  item.status.length === 0 || (item.status.length && Number(item.status[0].status) < 2)
-              )
-              .map((item) => (
-                <Box sx={{ cursor: 'pointer' }} onClick={() => handleChangeStudent(item)}>
-                  <Metadata
-                    title={
-                      <Subtitle fontWeight='700' color={selectedStudent === parseInt(item.student_id) ? '#4145FF' : '#cccccc'}>
-                        {item.person.first_name}
-                      </Subtitle>
-                    }
-                    subtitle={
-                      <Box display={'flex'} flexDirection='row' alignItems={'center'} alignContent='center'>
-                        <Paragraph color='#cccccc' size={'large'}>
-                          {(item.grade_levels.length && item.grade_levels[0].grade_level && item.grade_levels[0].grade_level.includes('K'))
-                            ? 'Kindergarten'
-                            : ordinal(item.grade_level || (item.grade_levels.length && item.grade_levels[0].grade_level)) +
-                              ' Grade'}
-                        </Paragraph>
-                        {
-                          selectedStudent === parseInt(item.student_id) && Boolean(me.masquerade)
-                            && <Tooltip title='Masquerade'>
-                            <AccountBoxOutlinedIcon 
-                              sx={{color: '#4145FF', height: 15, width: 15}}
-                              onClick={() => becomeUser(item.person.user.user_id)}
-                            />
-                          </Tooltip>
-                        }
-                      </Box>
-                    }
-                    image={<Avatar alt='Remy Sharp' variant='rounded' style={{ marginRight: 8 }} />}
-                  />
-                </Box>
-              ))}
+        <Grid container>
+          <Grid xs={10}>
+            <Slider {...settings} ref={sliderRef} >
               {students
-              .filter(
-                (item) =>
-                item.status.length > 0 && 
-                  ((Number(item.status[0].status) === 2) && (!item.person.date_of_birth || item.person.date_of_birth && moment(item.person.date_of_birth) > moment().subtract('years', 19))),
-              )
-              .map((item) => (
-                <Box sx={{ cursor: 'pointer' }} onClick={() => handleChangeStudent(item)}>
-                  <Metadata
-                    title={
-                      <Subtitle fontWeight='700' color={selectedStudent === parseInt(item.student_id) ? '#4145FF' : '#cccccc'}>
-                        {item.person.first_name}
-                      </Subtitle>
-                    }
-                    subtitle={
-                      <Paragraph color='#cccccc' size={'large'}>
-                        {status[item.status[0].status]}
-                      </Paragraph>
-                    }
-                    image={<Avatar alt='Remy Sharp' variant='rounded' style={{ marginRight: 8 }} />}
-                  />
-                </Box>
-              ))}
+                .filter(
+                  (item) =>
+                    item.status.length === 0 || (item.status.length && Number(item.status[0].status) < 2)
+                )
+                .map((item) => (
+                  <Box sx={{ cursor: 'pointer' }} onClick={() => handleChangeStudent(item)}>
+                    <Metadata
+                      title={
+                        <Subtitle fontWeight='700' color={selectedStudent === parseInt(item.student_id) ? '#4145FF' : '#cccccc'}>
+                          {item.person.first_name}
+                        </Subtitle>
+                      }
+                      subtitle={
+                        <Box display={'flex'} flexDirection='row' alignItems={'center'} alignContent='center'>
+                          <Paragraph color='#cccccc' size={'large'}>
+                            {(item.grade_levels.length && item.grade_levels[0].grade_level && item.grade_levels[0].grade_level.includes('K'))
+                              ? 'Kindergarten'
+                              : ordinal(item.grade_level || (item.grade_levels.length && item.grade_levels[0].grade_level)) +
+                                ' Grade'}
+                          </Paragraph>
+                          {
+                            selectedStudent === parseInt(item.student_id) && Boolean(me.masquerade)
+                              && <Tooltip title='Masquerade'>
+                              <AccountBoxOutlinedIcon 
+                                sx={{color: '#4145FF', height: 15, width: 15}}
+                                onClick={() => becomeUser(item.person.user.user_id)}
+                              />
+                            </Tooltip>
+                          }
+                        </Box>
+                      }
+                      image={<Avatar alt='Remy Sharp' variant='rounded' style={{ marginRight: 8 }} />}
+                    />
+                  </Box>
+                ))}
+                {students
+                .filter(
+                  (item) =>
+                  item.status.length > 0 && 
+                    ((Number(item.status[0].status) === 2) && (!item.person.date_of_birth || item.person.date_of_birth && moment(item.person.date_of_birth) > moment().subtract('years', 19))),
+                )
+                .map((item) => (
+                  <Box sx={{ cursor: 'pointer' }} onClick={() => handleChangeStudent(item)}>
+                    <Metadata
+                      title={
+                        <Subtitle fontWeight='700' color={selectedStudent === parseInt(item.student_id) ? '#4145FF' : '#cccccc'}>
+                          {item.person.first_name}
+                        </Subtitle>
+                      }
+                      subtitle={
+                        <Paragraph color='#cccccc' size={'large'}>
+                          {status[item.status[0].status]}
+                        </Paragraph>
+                      }
+                      image={<Avatar alt='Remy Sharp' variant='rounded' style={{ marginRight: 8 }} />}
+                    />
+                  </Box>
+                ))}
 
-            {students
-              .filter(
-                (item) =>
-                  showAll && ((item.status.length && Number(item.status[0].status) > 1) &&
-                  (item.status.length && Number(item.status[0].status) === 3 ) ||
-                  (item.status.length && Number(item.status[0].status) === 2  && (item.person.date_of_birth && moment(item.person.date_of_birth) < moment().subtract('years', 19)))) ,
-              )
-              .map((item) => (
-                <Box sx={{ cursor: 'pointer' }} onClick={() => handleChangeStudent(item)}>
-                  <Metadata
-                    title={
-                      <Subtitle fontWeight='700' color={selectedStudent === parseInt(item.student_id) ? '#4145FF' : '#cccccc'}>
-                        {item.person.first_name}
-                      </Subtitle>
-                    }
-                    subtitle={
-                      <Paragraph color='#cccccc' size={'large'}>
-                        {status[item.status[0].status]}
-                      </Paragraph>
-                    }
-                    image={<Avatar alt='Remy Sharp' variant='rounded' style={{ marginRight: 8 }} />}
-                  />
-                </Box>
-              ))}
-          </Slider>
+              {students
+                .filter(
+                  (item) =>
+                    showAll && ((item.status.length && Number(item.status[0].status) > 1) &&
+                    (item.status.length && Number(item.status[0].status) === 3 ) ||
+                    (item.status.length && Number(item.status[0].status) === 2  && (item.person.date_of_birth && moment(item.person.date_of_birth) < moment().subtract('years', 19)))) ,
+                )
+                .map((item) => (
+                  <Box sx={{ cursor: 'pointer' }} onClick={() => handleChangeStudent(item)}>
+                    <Metadata
+                      title={
+                        <Subtitle fontWeight='700' color={selectedStudent === parseInt(item.student_id) ? '#4145FF' : '#cccccc'}>
+                          {item.person.first_name}
+                        </Subtitle>
+                      }
+                      subtitle={
+                        <Paragraph color='#cccccc' size={'large'}>
+                          {status[item.status[0].status]}
+                        </Paragraph>
+                      }
+                      image={<Avatar alt='Remy Sharp' variant='rounded' style={{ marginRight: 8 }} />}
+                    />
+                  </Box>
+                ))}
+            </Slider>
+          </Grid>
         </Grid>
       </Box>
     </Box>

@@ -37,6 +37,7 @@ export const getEmailTemplateByIdQuery = gql`
         id
         application_deadline_num_days
         enrollment_packet_deadline_num_days
+        withdraw_deadline_num_days
       }
     }
   }
@@ -77,6 +78,7 @@ export const getEmailTemplatesByRegionQuery = gql`
         id
         application_deadline_num_days
         enrollment_packet_deadline_num_days
+        withdraw_deadline_num_days
       }
     }
   }

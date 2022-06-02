@@ -75,20 +75,21 @@ const NewAnnouncement = ({ setPage, announcement, setAnnouncement }: NewAnnounce
     history.push(ANNOUNCEMENTS)
   }
 
-  const validation = () => {
+  const validation = (): boolean => {
     if (
       availableGrades?.length > 0 &&
       grades?.length > 0 &&
       users?.length > 0 &&
       subject &&
       emailFrom &&
+      isEmail(emailFrom) &&
       draftToHtml(convertToRaw(editorState.getCurrentContent())).length > 8
     ) {
       return true
     } else {
       if (availableGrades?.length == 0 || grades?.length == 0) setGradesInvalid(true)
       if (users?.length == 0) setUsersInvalid(true)
-      if (!emailFrom) setEmailInvalid(true)
+      if (!emailFrom || !isEmail(emailFrom)) setEmailInvalid(true)
       if (!subject) setSubjectInvalid(true)
       if (draftToHtml(convertToRaw(editorState.getCurrentContent())).length <= 8) setBodyInvalid(true)
       return false
@@ -197,6 +198,13 @@ const NewAnnouncement = ({ setPage, announcement, setAnnouncement }: NewAnnounce
       setGrades([...grades, e.target.value])
     }
     setGradesInvalid(false)
+  }
+
+  const isEmail = (email: string): boolean => {
+    const regexp = new RegExp(
+      /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+    )
+    return regexp.test(email)
   }
 
   const renderGrades = () =>
@@ -331,29 +339,11 @@ const NewAnnouncement = ({ setPage, announcement, setAnnouncement }: NewAnnounce
   }
 
   useEffect(() => {
-    if (announcement) {
-      setAnnouncementId(announcement.id)
-      setEmailFrom(announcement.postedBy)
-      setGrades(JSON.parse(announcement.filterGrades))
-      setUsers(JSON.parse(announcement.filterUsers))
-      setSubject(announcement.subject)
-      if (announcement.body) {
-        const contentBlock = htmlToDraft(announcement.body)
-        if (contentBlock) {
-          const contentState = ContentState.createFromBlockArray(contentBlock.contentBlocks)
-          setEditorState(EditorState.createWithContent(contentState))
-        }
-      }
-    }
-  }, [announcement])
-
-  useEffect(() => {
     if (schoolYearData?.data?.schoolyear_getcurrent) {
       const availGrades = schoolYearData?.data?.schoolyear_getcurrent?.grades?.split(',').map((item) => {
         if (item == 'Kindergarten') return 'Kindergarten'
         else return Number(item)
       })
-      console.log(availGrades, 'grades')
       setAvailableGrades(availGrades)
       setGrades([
         ...['all'],
@@ -363,13 +353,28 @@ const NewAnnouncement = ({ setPage, announcement, setAnnouncement }: NewAnnounce
           }
         }),
       ])
+      if (announcement) {
+        setAnnouncementId(announcement.id)
+        setEmailFrom(announcement.postedBy)
+        setGrades(JSON.parse(announcement.filterGrades))
+        setUsers(JSON.parse(announcement.filterUsers))
+        setSubject(announcement.subject)
+        if (announcement.body) {
+          const contentBlock = htmlToDraft(announcement.body)
+          if (contentBlock) {
+            const contentState = ContentState.createFromBlockArray(contentBlock.contentBlocks)
+            setEditorState(EditorState.createWithContent(contentState))
+          }
+        }
+        return
+      }
       setFlagDefault()
     } else {
       setAvailableGrades([])
       setGrades([])
       setFlagDefault()
     }
-  }, [me?.selectedRegionId, schoolYearData])
+  }, [me?.selectedRegionId, schoolYearData, announcement])
 
   return (
     <Card sx={classes.cardBody}>
@@ -413,7 +418,10 @@ const NewAnnouncement = ({ setPage, announcement, setAnnouncement }: NewAnnounce
                 value={emailFrom}
                 size='small'
                 fullWidth
-                onChange={(e) => setEmailFrom(e.target.value)}
+                onChange={(e) => {
+                  setEmailFrom(e.target.value)
+                  setEmailInvalid(false)
+                }}
                 placeholder='From/Reply to'
                 sx={classes.subject}
               />
@@ -424,7 +432,7 @@ const NewAnnouncement = ({ setPage, announcement, setAnnouncement }: NewAnnounce
               )}
               {emailInvalid && emailFrom != '' && (
                 <Subtitle size='small' color={RED} fontWeight='700'>
-                  Invalid Email!. Please enter registered email
+                  Invalid Email. Please enter registered email
                 </Subtitle>
               )}
               <OutlinedInput
@@ -471,7 +479,7 @@ const NewAnnouncement = ({ setPage, announcement, setAnnouncement }: NewAnnounce
               </Box>
               {bodyInvalid && (
                 <Subtitle size='small' color={RED} fontWeight='700'>
-                  Please enter email text
+                  Please enter email content.
                 </Subtitle>
               )}
             </Box>

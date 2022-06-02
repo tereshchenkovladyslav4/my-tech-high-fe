@@ -48,7 +48,9 @@ export default function PublishModal({
     >
       <Box sx={classes.modalContainer}>
         <Box sx={classes.modalBody}>
-          <Typography variant='h5'>Publish</Typography>
+          <Typography variant='h5' fontWeight={'bold'}>
+            Publish
+          </Typography>
           <InfoIcon sx={classes.modalIcon} />
           <Typography>Do you want to publish this announcement now?</Typography>
           <Box sx={classes.buttonGroup}>

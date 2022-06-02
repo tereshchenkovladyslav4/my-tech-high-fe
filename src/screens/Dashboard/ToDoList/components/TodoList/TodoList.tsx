@@ -10,6 +10,7 @@ import { useQuery } from '@apollo/client'
 import { getTodoList } from '../../service'
 import { forOwn, map } from 'lodash'
 import { ToDoListItem } from '../ToDoListItem/ToDoListItem'
+import { TodoListTemplateType } from './types'
 
 const imageA =
   'https://api.time.com/wp-content/uploads/2017/12/terry-crews-person-of-year-2017-time-magazine-facebook-1.jpg?quality=85'
@@ -19,9 +20,10 @@ const imageC = 'https://www.bentbusinessmarketing.com/wp-content/uploads/2013/02
 const images = [imageA, imageB, imageC]
 const image = images[Math.floor(Math.random() * images.length)]
 
-export const TodoList: FunctionComponent = () => {
+export const TodoList: TodoListTemplateType = ({
+  handleShowEmpty
+}) => {
   const [todoList, setTodoList] = useState<Array<any>>([])
-
   const [paginatinLimit, setPaginatinLimit] = useState(25)
   const [skip, setSkip] = useState()
 
@@ -36,6 +38,7 @@ export const TodoList: FunctionComponent = () => {
   useEffect(() => {
     if (data !== undefined) {
       const { parent_todos } = data
+      let todoListCount = 0;
       forOwn(parent_todos, (item, key) => {
         if (key !== '__typename') {
           if( key === 'submit_enrollment_packet' ) {
@@ -50,8 +53,16 @@ export const TodoList: FunctionComponent = () => {
           } else {
             setTodoList((prev) => [...prev, item])
           }
+
+          if( item.students.length !== 0 ) {
+            todoListCount++;
+          }
         }
       })
+
+      if( todoListCount == 0 ) {
+        handleShowEmpty(true)
+      }
     }
   }, [loading])
 

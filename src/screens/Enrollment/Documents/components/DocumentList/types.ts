@@ -1,5 +1,4 @@
 import { FunctionComponent } from "react"
-import { GQLFile } from "../../../../HomeroomStudentProfile/Student/types"
 import { S3FileType } from "../DocumentUploadModal/types"
 
 type DocumentsProps = {

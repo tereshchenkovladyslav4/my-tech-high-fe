@@ -122,7 +122,7 @@ const ProgramSetting: React.FC = () => {
     if (file) {
       bodyFormData.append('file', file)
       bodyFormData.append('region', stateName)
-      bodyFormData.append('year', '2022')
+      bodyFormData.append('directory', 'stateLogo')
 
       const response = await fetch(import.meta.env.SNOWPACK_PUBLIC_S3_URL, {
         method: 'POST',

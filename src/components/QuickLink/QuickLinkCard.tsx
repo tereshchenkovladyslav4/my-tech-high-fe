@@ -5,7 +5,7 @@ import AddNewIcon from '../../assets/add-new.png';
 import DeleteIcon from '../../assets/delete.png';
 import EditIcon from '@mui/icons-material/Edit';
 import DehazeIcon from '@mui/icons-material/Dehaze'
-import LoginIcon from '@mui/icons-material/Login';
+import ArchiveIcon from '../../assets/archive.png';
 import CallMissedOutgoingIcon from '@mui/icons-material/CallMissedOutgoing';
 import { SYSTEM_01 } from '../../utils/constants'
 import { SortableHandle } from 'react-sortable-hoc';
@@ -80,10 +80,10 @@ export const QuickLinkCard: React.FC<QuickLinkCardProps> = ({ item, action, onAc
                 e.stopPropagation();
               }} />
               {item.flag == 0 &&
-                <LoginIcon htmlColor={SYSTEM_01} sx={{ transform: 'rotate(90deg)' }} onClick={(e) => {
+                <img onClick={(e) => {
                   onAction('archive');
                   e.stopPropagation();
-                }} />
+                }} src={ArchiveIcon} />
               }
               {item.flag == 1 &&
                 <CallMissedOutgoingIcon htmlColor={SYSTEM_01} onClick={(e) => {

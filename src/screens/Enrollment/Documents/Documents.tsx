@@ -1,75 +1,272 @@
-import { Box, Button, Grid } from '@mui/material'
-import React, { FunctionComponent, useContext,  useEffect,  useState } from 'react'
-import { Paragraph } from '../../../components/Typography/Paragraph/Paragraph'
-import { Subtitle } from '../../../components/Typography/Subtitle/Subtitle'
+import { Box, Grid } from '@mui/material'
+import React, { useCallback, useContext, useEffect, useState } from 'react'
 import { DocumentUpload } from './components/DocumentUpload/DocumentUpload'
+import { List, Button } from '@mui/material'
+import { TabContext, UserContext, UserInfo } from '../../../providers/UserContext/UserProvider'
+import { Paragraph } from '../../../components/Typography/Paragraph/Paragraph'
 import { useStyles } from '../styles'
+import { useFormik } from 'formik'
 import { EnrollmentContext } from '../../../providers/EnrollmentPacketPrivder/EnrollmentPacketProvider'
-import { useLazyQuery, useMutation, useQuery } from '@apollo/client'
-import { uploadDocumentMutation } from './service'
-import { DocumentType } from './components/DocumentUpload/types'
-import { filter, map, toNumber } from 'lodash'
-import { useHistory } from 'react-router-dom'
-import { HOMEROOM } from '../../../utils/constants'
-import { GQLFile } from '../../HomeroomStudentProfile/Student/types'
 import { getPacketFiles } from '../../Admin/EnrollmentPackets/services'
-import { S3FileType } from './components/DocumentUploadModal/types'
+import { omit } from 'lodash';
+import { useMutation, useQuery } from '@apollo/client'
+import { isPhoneNumber, isNumber } from '../../../utils/stringHelpers'
+import * as yup from 'yup';
+import { RED } from '../../../utils/constants'
+import { useHistory } from 'react-router-dom'
+import { uploadDocumentMutation, enrollmentContactMutation } from './service'
 import { LoadingScreen } from '../../LoadingScreen/LoadingScreen'
-import { TabContext, UserContext } from '../../../providers/UserContext/UserProvider'
 import { SuccessModal } from '../../../components/SuccessModal/SuccessModal'
-export const Documents: FunctionComponent = () => {
+import { S3FileType } from './components/DocumentUploadModal/types'
 
-  const { packetId, student, disabled } = useContext(EnrollmentContext)
-
-  const { me, setMe } = useContext(UserContext)
+export default function Documents({id, questions}) {
+  const classes = useStyles
   const { tab, setTab, visitedTabs, setVisitedTabs } = useContext(TabContext)
 
-  const classes = useStyles
-  const [birthCert, setBirthCert] = useState<File | GQLFile>()
-  const [immunRec, setImmunRec] = useState<File>()
-  const [residencyRecord, setResidencyRecord] = useState<File>()
+  const { me, setMe } = useContext(UserContext)
+  const { setPacketId, disabled, packetId } = useContext(EnrollmentContext)
+  const { profile, students } = me as UserInfo
+
+  const student = students.find((s) => s.student_id === id)
+
+  const [validationSchema, setValidationSchema] = useState(yup.object({}))
+  // const [submitPersonalMutation, { data }] = useMutation(enrollmentContactMutation)
+      
+  useEffect(() => {
+    if(questions?.groups?.length > 0) {
+      let valid_student = {}
+      let valid_parent = {}
+      let valid_meta = {}
+      let valid_address = {}
+      let valid_packet = {}
+      questions.groups.map((g) => {
+        g.questions.map((q) => {
+          if(q.type !== 8 && q.type !== 7) {
+            if(q.slug?.includes('student_')) {
+              if(q.required) {
+                if(q.slug?.toLocaleLowerCase().includes('emailconfirm')) {
+                  valid_student[`${q.slug?.replace('student_', '')}`] = yup
+                      .string()
+                      .required('Email is required')
+                      .oneOf([yup.ref('email')], 'Emails do not match')
+                }
+                else if(q.validation === 1) {
+                  valid_student[`${q.slug?.replace('student_', '')}`] = yup.string().email('Enter a valid email').required('Email is required').nullable()
+                }
+                else if(q.validation === 2) {
+                  valid_student[`${q.slug?.replace('student_', '')}`] = yup.string()
+                  .required(`${q.question} is required`)
+                  .test(`${q.question}-selected`, `${q.question} is invalid`, (value) => {
+                    return isNumber.test(value)
+                  })
+                }
+                else if(q.type === 3 || q.type === 4) {
+                  valid_student[`${q.slug?.replace('student_', '')}`] = yup.array().min(1).required(`${q.question} is required`).nullable()
+                }
+                else {
+                  valid_student[`${q.slug?.replace('student_', '')}`] = yup.string().required(`${q.question} is required`).nullable()
+                }
+              }
+            }
+            else if(q.slug?.includes('parent_')) {
+              if(q.required) {
+                if(q.slug?.toLocaleLowerCase().includes('emailconfirm')) {
+                  valid_parent[`${q.slug?.replace('parent_', '')}`] = yup
+                      .string()
+                      .required('Email is required')
+                      .oneOf([yup.ref('email')], 'Emails do not match')
+                }
+                else if(q.validation === 1) {
+                  valid_parent[`${q.slug?.replace('parent_', '')}`] = yup.string().email('Enter a valid email').required('Email is required').nullable()
+                }
+                else if(q.validation === 2) {
+                  valid_parent[`${q.slug?.replace('parent_', '')}`] = yup.string()
+                  .required(`${q.question} is required`)
+                  .test(`${q.question}-selected`, `${q.question} is invalid`, (value) => {
+                    return isNumber.test(value)
+                  })
+                }
+                else if(q.type === 3 || q.type === 4) {
+                  valid_parent[`${q.slug?.replace('parent_', '')}`] = yup.array().min(1).required(`${q.question} is required`).nullable()
+                }
+                else {
+                  valid_parent[`${q.slug?.replace('parent_', '')}`] = yup.string().required(`${q.question} is required`).nullable()
+                }
+              }
+            }
+            else if(q.slug?.includes('meta_') && q.required) {
+              if(q.validation === 1) {
+                valid_meta[`${q.slug}`] = yup.string().email('Enter a valid email').required('Email is required').nullable()
+              }
+              else if(q.validation === 2) {
+                valid_meta[`${q.slug}`] = yup.string()
+                .required(`${q.question} is required`)
+                .test(`${q.question}-selected`, `${q.question} is invalid`, (value) => {
+                  return isNumber.test(value)
+                })
+              }
+              else if(q.type === 3 || q.type === 4) {
+                valid_meta[`${q.slug}`] = yup.array().min(1).required(`${q.question} is required`).nullable()
+              }
+              else {
+                valid_meta[`${q.slug}`] = yup.string().required(`${q.question} is required`).nullable()
+              }
+            }
+            else if(q.slug?.includes('address_') && q.required) {
+              valid_address[`${q.slug?.replace('address_', '')}`] = yup.string().required(`${q.question} is required`).nullable()
+            }
+            else if(q.slug?.includes('packet_') && q.required) {
+              valid_packet[`${q.slug?.replace('packet_', '')}`] = yup.string().required(`${q.question} is required`).nullable()
+            }
+          }
+        })
+      })
+      
+      setValidationSchema(yup.object({parent: yup.object(valid_parent), student: yup.object(valid_student), meta: yup.object(valid_meta), address: yup.object(valid_address), packet: yup.object(valid_packet)}))
+    }
+  }, [questions])
   
-  const missingInfo = student.packets?.at(-1).status === 'Missing Info'
+  const [submitDocumentMutation] = useMutation(enrollmentContactMutation)
 
-  const missingFiles = student.packets?.at(-1).missing_files
+  const [filesToUpload, setFilesToUpload] = useState([])
 
-  const bcFile = filter(student.packets.at(-1).files,(file) => file.kind == 'bc').at(-1)
-  const imFile = filter(student.packets.at(-1).files,(file) => file.kind == 'im').at(-1)
-  const urFile = filter(student.packets.at(-1).files,(file) => file.kind == 'ur').at(-1)
+  const submitDocuments = async () => {
+    submitDocumentMutation({
+      variables: {
+        enrollmentPacketContactInput: {
+          student_id: parseInt(id as unknown as string),
+            parent: omit(formik.values.parent, ['address', 'person_id', 'phone', 'emailConfirm']),
+            packet: {
+              secondary_contact_first: formik.values.packet?.secondary_contact_first || '', 
+              secondary_contact_last: formik.values.packet?.secondary_contact_last || '', 
+              school_district: formik.values.packet?.school_district || '',
+              meta: JSON.stringify(formik.values.meta)},
+            student: {
+              ...omit(formik.values.student, ['person_id', 'photo', 'phone', 'grade_levels', 'emailConfirm']),
+              address: formik.values.address, 
+            },
+            school_year_id: student.current_school_year_status.school_year_id,
+        }
+      }
+    }).then(async (data) => {
+      setPacketId(data.data.saveEnrollmentPacketContact.packet.packet_id)
+      setMe((prev) => {
+        return {
+          ...prev,
+          students: prev?.students.map((student) => {
+            const returnValue = { ...student }
+            if (student.student_id === data.data.saveEnrollmentPacketContact.student.student_id) {
+              return data.data.saveEnrollmentPacketContact.student
+            }
+            return returnValue
+          }),
+        }
+      })
+      if(filesToUpload.length > 0) {
+        let tempUploads = []
+        await Promise.all(filesToUpload.map(async (uploadEl, idx) => {
+          var bodyFormData = new FormData();
+          if(uploadEl.file){
+            bodyFormData.append('file',uploadEl.file[0])
+            bodyFormData.append('region', 'UT')
+            bodyFormData.append('year', '2022')
+            const res = await fetch( import.meta.env.SNOWPACK_PUBLIC_S3_URL,{
+              method: 'POST',
+              body: bodyFormData,
+              headers: {
+                'Authorization': `Bearer ${localStorage.getItem('JWT')}`
+              },
+            })
+            const {data} = await res.json()
+            tempUploads.push(
+              {
+                kind: uploadEl.type,
+                mth_file_id: data?.file.file_id
+              }
+            )
+          }
+        }
+        ))
+        setDocuments(tempUploads)
+      }
+      else {
+        setVisitedTabs(Array.from(Array(tab.currentTab + 1).keys()))        
+        setTab({
+          currentTab: tab.currentTab + 1,
+        })
+        window.scrollTo(0, 0)
+      }
+    })
+  }
 
-  const fileIds = [bcFile?.file_id, imFile?.file_id, urFile?.file_id]
+  const [initFormikValues, setInitFormikValues] = useState({})
 
-  const [dataLoading, setDataLoading] = useState(true)
+  useEffect(() => {
+    setInitFormikValues({
+      parent: {...profile, phone_number: profile.phone.number, emailConfirm: profile.email},
+      student: {...student.person, phone_number: student.person.phone.number, grade_levels: student.grade_levels, grade_level: student.current_school_year_status.grade_level, emailConfirm: student.person.email},
+      packet: {...student.packets.at(-1)},
+      meta: student.packets.at(-1)?.meta && JSON.parse(student.packets.at(-1)?.meta) || {},
+      address: {...student.person.address},
+      school_year_id: student.current_school_year_status.school_year_id,
+    })
+  }, [profile, student])
+  const formik = useFormik({
+    enableReinitialize: true,
+    initialValues: initFormikValues,
+    validationSchema: validationSchema,
+    onSubmit: () => {
+      goNext()
+    },
+  })
 
   const [files, setFiles] = useState<S3FileType[]>()
 
-  const [showSuccess, setShowSuccess] = useState(false)
+  const [uploadDocument,{data}] = useMutation(uploadDocumentMutation)
 
-  const { loading, error, data: fileData, } = useQuery(getPacketFiles, {
+  useEffect(() => {
+    if(data){
+      // if(!missingInfo){
+        setMe((prev) => {
+          return {
+            ...prev,
+            students: prev?.students.map((student) => {
+              const returnValue = { ...student }
+              if (student.student_id === data.saveEnrollmentPacketDocument.student.student_id) {
+                return data.saveEnrollmentPacketDocument.student
+              }
+              return returnValue
+            }),
+          }
+        })
+        setVisitedTabs(Array.from(Array(tab.currentTab + 1).keys()))        
+        setTab({
+          currentTab: tab.currentTab + 1,
+        })
+        window.scrollTo(0, 0)
+      // }else{
+        
+    // }
+    }
+    else {
+      console.log('packet file store fail')
+    }
+  },[data])
+
+  const [fileIds, setFileIds] = useState<String[]>()
+
+  useEffect(() => {
+    let temp = []
+    student.packets.at(-1).files.map((f) => {temp.push(f?.mth_file_id)})
+    setFileIds(temp)
+  }, student.packets)
+
+  const { loading, error, data: fileData, refetch} = useQuery(getPacketFiles, {
     variables: {
-      fileIds: fileIds.toString()
+      fileIds: fileIds?.toString() || ''
     },
     fetchPolicy: 'network-only',
   })
-
-  const [documents, setDocuments] = useState([])
-
-  const [uploadDocument,{data}] = useMutation(uploadDocumentMutation)
-  const history = useHistory()
-
-  const submitRecord = (documentType: DocumentType, file: File) => {
-    switch(documentType){
-      case 'ur':
-        setResidencyRecord(file)
-        break;
-      case 'im':
-        setImmunRec(file)
-        break;
-      case 'bc':
-        setBirthCert(file)
-        break;
-    }
-  }
 
   useEffect(() => {
     if(!loading && fileData !== undefined){
@@ -77,55 +274,45 @@ export const Documents: FunctionComponent = () => {
     }
   },[loading])
 
-  const onNext = async () => {
-    const filesToUpload = [
-      {
-        file: birthCert,
-        type: 'bc'
-      },
-      {
-        file: immunRec,
-        type: 'im'
-      },
-      {
-        file: residencyRecord,
-        type: 'ur'
-      }
-    ]
+  const [dataLoading, setDataLoading] = useState(true)
 
-    map(filesToUpload, async (uploadEl, idx) => {
-      var bodyFormData = new FormData();
-      if(uploadEl.file){
-        bodyFormData.append('file',uploadEl.file[0])
-        bodyFormData.append('region', 'UT')
-        bodyFormData.append('year', '2022')
-        fetch( import.meta.env.SNOWPACK_PUBLIC_S3_URL,{
-          method: 'POST',
-          body: bodyFormData,
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('JWT')}`
-          },
-        })
-        .then( async(res) => {
-          res.json()
-            .then( ({data}) => {
-              setDocuments((curr) => (
-                [
-                  ...curr,
-                  {
-                    kind: uploadEl.type,
-                    mth_file_id: data.file.file_id
-                  }
-                ]
-              ))
-            })
-          })
-      }
-    })
+  const isLoading = () => {
+    // if(disabled){
+    //   if(files?.length > 0){
+    //     setDataLoading(false)
+    //   }
+    // } else{
+    //   setDataLoading(false)
+    // }
+    setDataLoading(false);
   }
 
   useEffect(() => {
-    if(documents?.length === 3){
+    isLoading()
+  }, [files])
+
+  const nextTab = (e) => {
+    e.preventDefault()
+    setTab({
+      currentTab: tab.currentTab + 1
+    })
+    window.scrollTo(0, 0)
+  }
+
+  const [documents, setDocuments] = useState([])
+      
+  const goNext = async () => {
+    let validDoc = true
+    questions?.groups[0]?.questions.map((item) => 
+      validDoc = validDoc && checkValidate(item)
+    )
+    if(validDoc) {
+      await submitDocuments()
+    }
+  }
+
+  useEffect(() => {
+    if(documents?.length > 0){
         uploadDocument({
           variables: {
             enrollmentPacketDocumentInput: {
@@ -137,112 +324,58 @@ export const Documents: FunctionComponent = () => {
       }
   },[documents])
 
-  useEffect(() => {
-    if(data){
-      if(!missingInfo){
-        setVisitedTabs([0, 1, 2, 3, 4])        
-        setTab({
-          currentTab: 4,
-        })
-        window.scrollTo(0, 0)
-      }else{
-        setShowSuccess(true)
-    }
-  }},[data])
+  const history = useHistory()
+  const submitRecord = useCallback((documentType: string, file: File) => {
+    if(file){
+      setFilesToUpload([...filesToUpload, {file: file, type: documentType}])
+    }    
+  }, [filesToUpload])
 
-  const nextTab = (e) => {
-    e.preventDefault()
-    setTab({
-      currentTab: 4,
-    })
-    window.scrollTo(0, 0)
-  }
-
-  const isLoading = () => {
-    if(disabled){
-      if(files?.length > 0){
-        setDataLoading(false)
+  const checkValidate = (item) => {
+    if(item){
+      if(item.required) {
+        const exist = files?.filter((file) => file.name.includes(`${student.person.first_name.charAt(0).toUpperCase()}.${student.person.last_name}${item.options[0]?.label}`)).length > 0 ? true : false
+        const upload = filesToUpload?.filter((file) => file.type === item.question).length > 0 ? true : false
+        return exist || upload
       }
-    }else{
-      setDataLoading(false)
-    }
+      else {
+        return true
+      }
+    }    
+    return false
   }
 
-  useEffect(() => {
-    isLoading()
-  }, [files])
-
-  const onSubmit = () => {
-    history.push(`${HOMEROOM}`)
-    location.reload()
-  }
   return (
-    !dataLoading ? <form>
-    {showSuccess 
-      && <SuccessModal 
-        title='' 
-        subtitle='Your Enrollment Packet has been submitted successfully and is now pending approval.' 
-        handleSubmit={onSubmit} 
-        btntitle="Done"
-      />
-    }
+    !dataLoading ? <form  onSubmit={(e) => !disabled ? formik.handleSubmit(e) : nextTab(e)}>
+      
     <Grid container rowSpacing={3} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
       <Grid item xs={12}>
-        <Box width='50%'>
-          <Subtitle fontWeight='700'>Required Documents to scan (or photograph) and upload</Subtitle>
-          <Paragraph size='medium'>
-            All documents are kept private and secure. Please upload files specific to this student (ie don&apos;t include
-            another student&apos;s documents).
-          </Paragraph>
-        </Box>
-      </Grid>
-      <Grid item xs={12} marginTop={4}>
-        <DocumentUpload
-          title={"Enrollment's Birth Certificate (required)"}
-          subtitle={'Allowed file types: pdf, png, jpg, jpeg, gif, bmp (Less than 25MB)'}
-          document='bc'
-          handleUpload={submitRecord}
-          file={files && filter(files,(file) => file.file_id === bcFile.file_id )}
-          disabled={disabled && !missingFiles.includes('bc')}
-        />
-      </Grid>
-      <Grid item xs={12}>
-        <DocumentUpload
-          title={"Enrollment's Immunization Record or Personal Exemption Form (required)"}
-          subtitle={'Allowed file types: pdf, png, jpg, jpeg, gif, bmp (Less than 25MB)'}
-          document='im'
-          handleUpload={submitRecord}
-          file={files && filter(files,(file) => file.file_id === imFile.file_id )}
-          disabled={disabled && !missingFiles.includes('im')}
-        />
-      </Grid>
-      <Grid item xs={12}>
-        <DocumentUpload
-          title={
-            "Parent's Proof of Utah Residency issued within 60 days such as a current utility bill, mortgage or rental statement (required)"
-          }
-          subtitle={'Allowed file types: pdf, png, jpg, jpeg, gif, bmp (Less than 25MB)'}
-          document='ur'
-          handleUpload={submitRecord}
-          file={files && filter(files,(file) => file.file_id === urFile.file_id )}
-          disabled={disabled && !missingFiles.includes('ur')}
-        />
+        <List>
+          {questions?.groups[0]?.questions.map((item, index) => (
+            <Grid item xs={12} marginTop={4} key={index}>
+              <DocumentUpload
+                disabled={disabled}
+                item={item}
+                formik={formik}
+                handleUpload={submitRecord}
+                file={files && files.filter((file) => file.name.includes(`${student.person.first_name.charAt(0).toUpperCase()}.${student.person.last_name}${item.options[0]?.label}`)).sort((a, b) => b.file_id - a.file_id)}
+                firstName={student.person.first_name}
+                lastName={student.person.last_name}
+              />  
+              {item.type === 8 && !checkValidate(item) && !disabled && <Paragraph color={RED} size='medium' fontWeight='700' sx={{marginLeft: '12px'}}>
+                File is required
+              </Paragraph>}
+            </Grid>
+          ))}
+        </List>
       </Grid>
       <Box sx={classes.buttonContainer}>
           <Button
             sx={classes.button}
-            onClick={(e) => disabled 
-              ? nextTab(e)
-              : onNext() 
-            }
+            type='submit'
           >
             <Paragraph fontWeight='700' size='medium'>
-            { disabled 
-              ? 'Next' 
-              : student.packets?.at(-1).status === 'Missing Info'
-                ? 'Submit'
-                : 'Save & Continue'
-            }
+              {disabled ? 'Next' : 'Save & Continue'}
             </Paragraph>
           </Button>
       </Box>

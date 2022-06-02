@@ -5,6 +5,7 @@ type WarningModalProps = {
   subtitle: string
   handleModem: () => void
   btntitle?: string
+  canceltitle?: string
   handleSubmit: () => void
   showIcon?: boolean
 }

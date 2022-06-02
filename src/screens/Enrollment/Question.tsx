@@ -160,7 +160,7 @@ function Item({ question: q, setAdditionalQuestion, formik }: { question: Enroll
     
     const multiSelected = useCallback((value: string | number) => {
         if(q.type === 3) {
-            return fieldData?.find((f) => f.label == value) ? true : false
+            return fieldData?.length > 0 && fieldData?.find((f) => f.label == value) ? true : false
         }
         return fieldData?.indexOf(value) >= 0
     },[fieldData])

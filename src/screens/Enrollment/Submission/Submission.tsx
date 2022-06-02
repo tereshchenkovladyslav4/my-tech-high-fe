@@ -7,21 +7,22 @@ import { Subtitle } from '../../../components/Typography/Subtitle/Subtitle'
 import { HOMEROOM, RED } from '../../../utils/constants'
 import { useStyles } from '../styles'
 import SignatureCanvas from 'react-signature-canvas'
-import { useFormik } from 'formik';
-import * as yup from 'yup';
-import { useMutation } from '@apollo/client'
-import { submitEnrollmentMutation } from './service'
+import { submitEnrollmentMutation, enrollmentContactMutation } from './service'
 import { EnrollmentContext } from '../../../providers/EnrollmentPacketPrivder/EnrollmentPacketProvider'
 import { useHistory } from 'react-router-dom'
 import { SuccessModal } from '../../../components/SuccessModal/SuccessModal'
+import EnrollmentQuestionItem from '../Question'
+import { useFormik } from 'formik'
+import { capitalize, omit } from 'lodash';
+import { useMutation, useQuery } from '@apollo/client'
+import { isPhoneNumber, isNumber } from '../../../utils/stringHelpers'
+import * as yup from 'yup';
+import { TabContext, UserContext, UserInfo } from '../../../providers/UserContext/UserProvider'
 
-export const Submission: FunctionComponent = () => {
+export default function Submission({id, questions}) {
 
-  const { packetId, student, disabled, setMe } = useContext(EnrollmentContext)
-
-  const setFerpa = (id: any) => formik.values.ferpa = id
-  const setStudentPhoto = (id: any) => formik.values.studentPhoto = id
-  const setDistrict = (id: any) => formik.values.schoolDistrict = id
+  const { setPacketId, packetId, disabled } = useContext(EnrollmentContext)
+  
   const classes = useStyles
   const [understand, setUnderstand] = useState(false)
   const [approve, setApprove] = useState(false)
@@ -31,7 +32,7 @@ export const Submission: FunctionComponent = () => {
   const[signatureInvalid, setSignatureInvalid] = useState(false)
 
   const [showSuccess, setShowSuccess] = useState(false)
-  const [submitEnrollment, {data}] = useMutation(submitEnrollmentMutation)
+  const [submitEnrollment, {data}] = useMutation(enrollmentContactMutation)
 
   const dataUrlToFile = async (dataUrl: string, fileName: string): Promise<File> =>  {
     const res: Response = await fetch(dataUrl);
@@ -41,49 +42,136 @@ export const Submission: FunctionComponent = () => {
 
   const history = useHistory()
   
-  const validationSchema = yup.object({
-    printName: yup
-      .string()
-      .nullable()
-      .required('Printed name is required'),
-    ferpa: yup
-      .string()
-      .nullable()
-      .required('Ferpa response is required'),
-    studentPhoto: yup
-      .string()
-      .nullable()
-      .required('Student Photo response is required'),
-    schoolDistrict: yup
-      .string()
-      .nullable()
-      .required('School District permission is required'),
-    understand: yup
-      .bool()
-      .nullable()
-      .oneOf([true], 'Field must be checked'),
-    approve: yup
-      .bool()
-      .nullable()
-      .oneOf([true], 'Field must be checked'),
-  })
+  const { me, setMe } = useContext(UserContext)
+  const { profile, students } = me as UserInfo
 
+  const student = students.find((s) => s.student_id === id)
+
+  const [validationSchema, setValidationSchema] = useState(yup.object({}))
+
+  useEffect(() => {
+    if (disabled == true)
+      signatureRef.current.off();
+    else 
+      signatureRef.current.on();
+  }, [disabled])
+    
+  useEffect(() => {
+    if(questions?.groups?.length > 0) {
+      let valid_student = {}
+      let valid_parent = {}
+      let valid_meta = {}
+      let valid_address = {}
+      let valid_packet = {}
+      questions.groups.map((g) => {
+        g.questions.map((q) => {
+          if(q.type !== 8 && q.type !== 7) {
+            if(q.slug?.includes('student_')) {
+              if(q.required) {
+                if(q.slug?.toLocaleLowerCase().includes('emailconfirm')) {
+                  valid_student[`${q.slug?.replace('student_', '')}`] = yup
+                      .string()
+                      .required('Email is required')
+                      .oneOf([yup.ref('email')], 'Emails do not match')
+                }
+                else if(q.validation === 1) {
+                  valid_student[`${q.slug?.replace('student_', '')}`] = yup.string().email('Enter a valid email').required('Email is required').nullable()
+                }
+                else if(q.validation === 2) {
+                  valid_student[`${q.slug?.replace('student_', '')}`] = yup.string()
+                  .required(`${q.question} is required`)
+                  .test(`${q.question}-selected`, `${q.question} is invalid`, (value) => {
+                    return isNumber.test(value)
+                  })
+                }
+                else if(q.type === 3 || q.type === 4) {
+                  valid_student[`${q.slug?.replace('student_', '')}`] = yup.array().min(1).required(`${q.question} is required`).nullable()
+                }
+                else {
+                  valid_student[`${q.slug?.replace('student_', '')}`] = yup.string().required(`${q.question} is required`).nullable()
+                }
+              }
+            }
+            else if(q.slug?.includes('parent_')) {
+              if(q.required) {
+                if(q.slug?.toLocaleLowerCase().includes('emailconfirm')) {
+                  valid_parent[`${q.slug?.replace('parent_', '')}`] = yup
+                      .string()
+                      .required('Email is required')
+                      .oneOf([yup.ref('email')], 'Emails do not match')
+                }
+                else if(q.validation === 1) {
+                  valid_parent[`${q.slug?.replace('parent_', '')}`] = yup.string().email('Enter a valid email').required('Email is required').nullable()
+                }
+                else if(q.validation === 2) {
+                  valid_parent[`${q.slug?.replace('parent_', '')}`] = yup.string()
+                  .required(`${q.question} is required`)
+                  .test(`${q.question}-selected`, `${q.question} is invalid`, (value) => {
+                    return isNumber.test(value)
+                  })
+                }
+                else if(q.type === 3 || q.type === 4) {
+                  valid_parent[`${q.slug?.replace('parent_', '')}`] = yup.array().min(1).required(`${q.question} is required`).nullable()
+                }
+                else {
+                  valid_parent[`${q.slug?.replace('parent_', '')}`] = yup.string().required(`${q.question} is required`).nullable()
+                }
+              }
+            }
+            else if(q.slug?.includes('meta_') && q.required) {
+              if(q.validation === 1) {
+                valid_meta[`${q.slug}`] = yup.string().email('Enter a valid email').required('Email is required').nullable()
+              }
+              else if(q.validation === 2) {
+                valid_meta[`${q.slug}`] = yup.string()
+                .required(`${q.question} is required`)
+                .test(`${q.question}-selected`, `${q.question} is invalid`, (value) => {
+                  return isNumber.test(value)
+                })
+              }
+              else if(q.type === 3 || q.type === 4) {
+                valid_meta[`${q.slug}`] = yup.array().min(1).required(`${q.question} is required`).nullable()
+              }
+              else {
+                valid_meta[`${q.slug}`] = yup.string().required(`${q.question} is required`).nullable()
+              }
+            }
+            else if(q.slug?.includes('address_') && q.required) {
+              valid_address[`${q.slug?.replace('address_', '')}`] = yup.string().required(`${q.question} is required`).nullable()
+            }
+            else if(q.slug?.includes('packet_') && q.required) {
+              valid_packet[`${q.slug?.replace('packet_', '')}`] = yup.string().required(`${q.question} is required`).nullable()
+            }
+          }
+        })
+      })
+      
+      setValidationSchema(yup.object({parent: yup.object(valid_parent), student: yup.object(valid_student), meta: yup.object(valid_meta), address: yup.object(valid_address), packet: yup.object(valid_packet)}))
+    }
+  }, [questions])
+
+  const [initFormikValues, setInitFormikValues] = useState({})
+
+  useEffect(() => {
+    setInitFormikValues({
+      parent: {...profile, phone_number: profile.phone.number, emailConfirm: profile.email},
+      student: {...student.person, phone_number: student.person.phone.number, grade_levels: student.grade_levels, grade_level: student.current_school_year_status.grade_level, emailConfirm: student.person.email},
+      packet: {...student.packets.at(-1)},
+      meta: student.packets.at(-1)?.meta && JSON.parse(student.packets.at(-1)?.meta) || {},
+      address: {...student.person.address},
+      school_year_id: student.current_school_year_status.school_year_id,
+    })
+  }, [profile, student])
   const formik = useFormik({
-    initialValues: {
-      printName: undefined,
-      ferpa: student.packets.at(-1)?.ferpa_agreement,
-      studentPhoto: student.packets.at(-1)?.photo_permission,
-      schoolDistrict: student.packets.at(-1)?.photo_permission,
-      understand,
-      approve,
-    },
+    enableReinitialize: true,
+    initialValues: initFormikValues,
     validationSchema: validationSchema,
     onSubmit: () => {
       if(!signatureRef.current.isEmpty()){
         getSignature()
       }
     },
-  });
+  })
 
   const handleSubmit = (e) => {
     if(signatureRef.current.isEmpty()){
@@ -91,17 +179,6 @@ export const Submission: FunctionComponent = () => {
     }
     formik.handleSubmit(e)
   }
-
-  const dropDownOptions: DropDownItem[] = [
-    {
-      label: 'Approve',
-      value: 1,
-    },
-    {
-      label: 'Deny',
-      value: 2,
-    },
-  ]
   
   const resetSignature = () => {
     signatureRef.current.clear()
@@ -111,14 +188,6 @@ export const Submission: FunctionComponent = () => {
     const file = await dataUrlToFile(signatureRef.current.getTrimmedCanvas().toDataURL('image/png'), 'signature')
     setSignature(file)
   }
-
-  useEffect(() => {
-    formik.values.understand = understand
-  },[understand])
-
-  useEffect(() => {
-    formik.values.approve = approve
-  },[approve])
 
   useEffect(() => {
     if(signature){
@@ -147,212 +216,129 @@ export const Submission: FunctionComponent = () => {
 
   useEffect(() => {
     if(fileId){
+    //   submitEnrollment({
+    //     variables: {
+    //       enrollmentPacketDocumentInput: {
+    //         ferpa_agreement: formik.values.ferpa,
+    //         photo_permission: formik.values.studentPhoto,
+    //         dir_permission: formik.values.schoolDistrict,
+    //         signature_name: formik.values.printName,
+    //         signature_file_id: fileId,
+    //         agrees_to_policy: formik.values.understand ? 1 : 0,
+    //         approves_enrollment: formik.values.approve ? 1 : 0,
+    //         packet_id: parseFloat(packetId as unknown as string),
+    //       }
+    //     }
+    //   })
       submitEnrollment({
-        variables: {
-          enrollmentPacketDocumentInput: {
-            ferpa_agreement: formik.values.ferpa,
-            photo_permission: formik.values.studentPhoto,
-            dir_permission: formik.values.schoolDistrict,
-            signature_name: formik.values.printName,
-            signature_file_id: fileId,
-            agrees_to_policy: formik.values.understand ? 1 : 0,
-            approves_enrollment: formik.values.approve ? 1 : 0,
-            packet_id: parseFloat(packetId as unknown as string),
+          variables: {
+              enrollmentPacketContactInput: {
+                  student_id: parseInt(id as unknown as string),
+                  parent: omit(formik.values.parent, ['address', 'person_id', 'phone', 'emailConfirm']),
+                  packet: {
+                      secondary_contact_first: formik.values.packet?.secondary_contact_first || '', 
+                      secondary_contact_last: formik.values.packet?.secondary_contact_last || '', 
+                      school_district: formik.values.packet?.school_district || '',
+                    meta: JSON.stringify(formik.values.meta)},
+                  student: {
+                    ...omit(formik.values.student, ['person_id', 'photo', 'phone', 'grade_levels', 'emailConfirm']),
+                    address: formik.values.address,              
+                  },
+                  signature_file_id: fileId,
+                  packet_id: parseFloat(packetId as unknown as string),
+                  school_year_id: student.current_school_year_status.school_year_id,
+              }
           }
-        }
+      }).then((data) => {
+          setPacketId(data.data.saveEnrollmentPacketSubmit.packet.packet_id)
+          setMe((prev) => {
+              return {
+                  ...prev,
+                  students: prev?.students.map((student) => {
+                  const returnValue = { ...student }
+                  if (student.student_id === data.data.saveEnrollmentPacketSubmit.student.student_id) {
+                      return data.data.saveEnrollmentPacketSubmit.student
+                  }
+                  return returnValue
+                  }),
+              }
+          })
+          data && setShowSuccess(true)
       })
     }
   },fileId)
 
-  useEffect(() => {
-    if(data !== undefined){
-      data && setShowSuccess(true)
-    }
-  },[data])
+//   useEffect(() => {
+//     if(data !== undefined){
+//       data && setShowSuccess(true)
+//     }
+//   },[data])
 
   const nextTab = (e) => {
     e.preventDefault()
-    history.push(`${HOMEROOM}`)
+    history.push(`${HOMEROOM}` + '/' + id)
     window.scrollTo(0, 0)
-}
+    }
 
 
 
   return (
     <form onSubmit={(e) => !disabled ? handleSubmit(e) : nextTab(e)}>
-    {showSuccess 
-      && <SuccessModal 
-        title='' 
-        subtitle={`${student.person.first_name}'s Enrollment Packet has been successfully submitted and is now pending approval.`}
-        btntitle='Done'
-        handleSubmit={() => {
-          history.push(`${HOMEROOM}`)
-          location.reload()
-        }}
-      />
-    }
-    <Grid container rowSpacing={3} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
-      <Grid item xs={12}>
-        <Box width='50%'>
-          <Subtitle fontWeight='700'>Required Documents to scan (or photograph) and upload</Subtitle>
-          <Box marginTop={1}>
-            <Paragraph size='medium'>
-              All documents are kept private and secure. Please upload files specific to this student (ie don&apos;t
-              include another student&apos;s documents).
-            </Paragraph>
-          </Box> 
-        </Box>
-      </Grid>
-      <Grid item xs={6}>
-        <FormControl
-          disabled={disabled}
-          required
-          component="fieldset"
-          variant="standard"
-          error={formik.touched.understand && Boolean(formik.errors.understand)}
-          
-        >
-        <FormGroup
-        >
-          <FormControlLabel
-            control={<Checkbox
-              disabled={disabled}
-              checked={understand}
-              onClick={() =>  setUnderstand(!understand)}
-            />}
-            label={
-              <Paragraph size='medium'>
-                I have read, understand, and agree to abide by the information outlined in the Enrollment Packet Policies page, including the repayment policy for withdrawing early or failing to demonstrate active participation (up to $350/course).
-              </Paragraph>
-            }
-          />
-          <FormHelperText>{formik.touched.understand && formik.errors.understand}</FormHelperText>
-        </FormGroup>
-        </FormControl>
-      </Grid>
-      <Grid item xs={6}>
-      <FormControl
-          required
-          component="fieldset"
-          variant="standard"
-          error={formik.touched.understand && Boolean(formik.errors.understand)}
-        >
-        <FormGroup>
-          <FormControlLabel
-            control={<Checkbox 
-              disabled={disabled}
-              checked={approve}
-              onClick={() =>  setApprove(!approve)}
-            />}
-            label={
-              <Paragraph size='medium'>
-                I approve for my student to be enrolled in any one of the following schools (Gateway Preparatory Academy, Digital Education Center - Tooele County School District, Advanced Learning Center - Nebo School District, and Southwest Education Academy - Iron County School District)
-              </Paragraph>
-            }
-          />
-          <FormHelperText>{formik.touched.approve && formik.errors.approve}</FormHelperText>
-        </FormGroup>
-        </FormControl>
-      </Grid>
-      <Grid item xs={4} marginTop={4}>
-        <Subtitle fontWeight='500'>FERPA Agreement Options</Subtitle>
-        <DropDown
-          disabled={disabled}
-          size='small'
-          dropDownItems={dropDownOptions}
-          defaultValue={formik.values.ferpa}
-          setParentValue={setFerpa}
-          error={{
-            error: !!(formik.touched.ferpa && Boolean(formik.errors.ferpa)),
-            errorMsg: (formik.touched.ferpa && formik.errors.ferpa) as string,
-          }}
+        {showSuccess 
+        && <SuccessModal 
+            title='Success'
+            subtitle={`${capitalize(student.person.first_name)}'s Enrollment Packet has been submitted successfully and is now pending approval.`}
+            btntitle='Done'
+            handleSubmit={() => {
+            history.push(`${HOMEROOM}`)
+            location.reload()
+            }}
         />
-      </Grid>
-      <Grid item xs={4} marginTop={4}>
-        <Subtitle fontWeight='500'>Student Photo Permissions</Subtitle>
-        <DropDown
-          disabled={disabled}
-          size='small'
-          dropDownItems={dropDownOptions}
-          defaultValue={formik.values.studentPhoto}
-          setParentValue={setStudentPhoto}
-          error={{
-            error: !!(formik.touched.studentPhoto && Boolean(formik.errors.studentPhoto)),
-            errorMsg: (formik.touched.studentPhoto && formik.errors.studentPhoto) as string,
-          }}
-        />
-      </Grid>
-      <Grid item xs={4} marginTop={4}>
-        <Subtitle fontWeight='500'>School Student Directory Permissions</Subtitle>
-        <DropDown
-          disabled={disabled}
-          size='small'
-          dropDownItems={dropDownOptions}
-          defaultValue={formik.values.schoolDistrict}
-          setParentValue={setDistrict}
-          error={{
-            error: !!(formik.touched.schoolDistrict && Boolean(formik.errors.schoolDistrict)),
-            errorMsg: (formik.touched.schoolDistrict && formik.errors.schoolDistrict) as string,
-          }}
-        />
-      </Grid>
-      <Grid item xs={12} marginTop={4}  justifyContent='center' display={'flex'}>
-        <Box width={'60%'}>
-        <Paragraph size='medium' textAlign='center'>
-          I certify that I am the legal guardian or custodial parent of this student. I certify that I have read and understood the information on this registration site and that the information entered is true and accurate.
-        </Paragraph>
-      </Box>
-      </Grid>
-      <Grid item xs={12}>
-        <Box display='flex' flexDirection='column' alignItems='center' justifyContent={'center'} width='100%'>
-          <TextField
-            disabled={disabled}
-            size='small'
-            variant='outlined'
-            fullWidth
-            name='printName'
-            value={formik.values.printName}
-            onChange={formik.handleChange}
-            error={formik.touched.printName && Boolean(formik.errors.printName)}
-            helperText={formik.touched.printName && formik.errors.printName}
-            style={{ width: '45%' }}
-          />
-          <Box sx={{ width: '35%', display:'flex', flexDirection: 'row', justifyContent: 'center'  }}>
-            <FormHelperText style={{textAlign:'center'}}>Type full legal parent name and provide a Digital Signature below. Signature (use the mouse to sign)</FormHelperText>
-          </Box>
-        </Box>
-      </Grid>
-      <Grid item xs={12} sx={{display:'flex', justifyContent: 'center',}}>
-        <Box sx={{borderBottom:'1px solid', width: 500}}>
-          <SignatureCanvas 
-            canvasProps={{width: 500, height:100,}} 
-            ref={signatureRef}
-          />
-        </Box>
-      </Grid>
-      {signatureInvalid 
-        &&  <Grid 
-          item 
-          xs={12} 
-          sx={{display:'flex', justifyContent: 'center',}}
-        >
-          <FormHelperText style={{textAlign:'center',color: RED}}>Signature required</FormHelperText>
+        }
+        <Grid container rowSpacing={2} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
+            {questions?.groups[0]?.questions.map((item, index) => (
+                <EnrollmentQuestionItem key={index} item={item} group={'root'} formik={formik}/>
+            ))}
         </Grid>
-      }
-      <Grid item xs={12} sx={{display:'flex', justifyContent: 'center',}}>
-        <Paragraph size='medium' sx={{textDecoration: 'underline', cursor: 'pointer'}} onClick={() => resetSignature()}>Reset</Paragraph>
-      </Grid>
-      <Box sx={classes.buttonContainer}>
-        <Button
-          sx={classes.button}
-          type='submit'
-        >
-          <Paragraph fontWeight='700' size='medium'>
-          { disabled ? 'Go Home' : 'Done'}
-          </Paragraph>
-        </Button>
-      </Box>
-    </Grid>
+        <Grid container rowSpacing={3} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
+            <Grid item xs={12}>
+                <Box display='flex' flexDirection='column' alignItems='center' justifyContent={'center'} width='100%'>
+                <Box sx={{ width: '35%', display:'flex', flexDirection: 'row', justifyContent: 'center'  }}>
+                    <FormHelperText style={{textAlign:'center'}}>Type full legal parent name and provide a Digital Signature below. Signature (use the mouse to sign)</FormHelperText>
+                </Box>
+                </Box>
+            </Grid>
+            <Grid item xs={12} sx={{display:'flex', justifyContent: 'center',}}>
+                <Box sx={{borderBottom:'1px solid', width: 500}}>
+                <SignatureCanvas                     
+                    canvasProps={{width: 500, height:100,}} 
+                    ref={signatureRef}
+                />
+                </Box>
+            </Grid>
+            {signatureInvalid 
+                &&  <Grid 
+                item 
+                xs={12} 
+                sx={{display:'flex', justifyContent: 'center',}}
+                >
+                <FormHelperText style={{textAlign:'center',color: RED}}>Signature required</FormHelperText>
+                </Grid>
+            }
+            <Grid item xs={12} sx={{display:'flex', justifyContent: 'center',}}>
+                <Paragraph size='medium' sx={{textDecoration: 'underline', cursor: 'pointer'}} onClick={() => resetSignature()}>Reset</Paragraph>
+            </Grid>
+            <Box sx={classes.buttonContainer}>
+                <Button
+                sx={classes.button}
+                type='submit'
+                >
+                <Paragraph fontWeight='700' size='medium'>
+                { disabled ? 'Go Back to Student Profile' : 'Done'}
+                </Paragraph>
+                </Button>
+            </Box>
+        </Grid>
     </form>
   )
 }

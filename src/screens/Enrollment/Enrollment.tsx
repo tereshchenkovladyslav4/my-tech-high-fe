@@ -3,11 +3,6 @@ import React, { FunctionComponent, useContext, useEffect, useMemo, useState } fr
 import { Subtitle } from '../../components/Typography/Subtitle/Subtitle'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import { Breadcrumbs } from '../../components/Breadcrumbs/Breadcrumbs'
-import { Submission } from './Submission/Submission'
-import { Contact } from './Contact/Contact'
-import { Personal } from './Personal/Personal'
-import { Education } from './Education/Education'
-import { Documents } from './Documents/Documents'
 import { Paragraph } from '../../components/Typography/Paragraph/Paragraph'
 import { Step } from '../../components/Breadcrumbs/types'
 import { useStyles } from './styles'
@@ -20,11 +15,11 @@ import { useMutation, useQuery } from '@apollo/client'
 import { getParentQuestionsGql, getRegionByUserId} from './services'
 import { TabContext, TabInfo, UserContext, UserInfo } from '../../providers/UserContext/UserProvider'
 import { EnrollmentQuestionTab, initEnrollmentQuestions } from '../Admin/SiteManagement/EnrollmentSetting/EnrollmentQuestions/types';
-import ContactNew from './Contact/Contact_new';
-import PersonalNew from './Personal/Personal_new';
-import EducationNew from './Education/Education_new';
-import DocumentsNew from './Documents/Documents_new';
-import SubmissionNew from './Submission/Submission_new';
+import Contact from './Contact/Contact';
+import Personal from './Personal/Personal';
+import Education from './Education/Education';
+import Documents from './Documents/Documents';
+import Submission from './Submission/Submission';
 
 export const Enrollment: EnrollmentTemplateType = ({id, disabled}: {id: number, disabled: boolean}) => {
   const { me, setMe } = useContext(UserContext)
@@ -205,15 +200,15 @@ export const Enrollment: EnrollmentTemplateType = ({id, disabled}: {id: number, 
             <Submission />
           )} */}
           {currentTabName === 'Contact' ? (
-            <ContactNew id={id} questions = {questionsData.filter((q) => q.tab_name === currentTabName)[0]}/>
+            <Contact id={id} questions = {questionsData.filter((q) => q.tab_name === currentTabName)[0]}/>
           ) : currentTabName === 'Personal' ? (
-            <PersonalNew id={id} questions = {questionsData.filter((q) => q.tab_name === currentTabName)[0]}/>
+            <Personal id={id} questions = {questionsData.filter((q) => q.tab_name === currentTabName)[0]}/>
           ) : currentTabName === 'Education' ? (
-            <EducationNew id={id} questions = {questionsData.filter((q) => q.tab_name === currentTabName)[0]}/>
+            <Education id={id} questions = {questionsData.filter((q) => q.tab_name === currentTabName)[0]}/>
           ) : currentTabName === 'Documents' ? (
-            <DocumentsNew id={id} questions = {questionsData.filter((q) => q.tab_name === currentTabName)[0]}/>
+            <Documents id={id} questions = {questionsData.filter((q) => q.tab_name === currentTabName)[0]}/>
           ) : (
-            <SubmissionNew id={id} questions = {questionsData.filter((q) => q.tab_name === currentTabName)[0]}/>
+            <Submission id={id} questions = {questionsData.filter((q) => q.tab_name === currentTabName)[0]}/>
           )}
         </Box>
       </Card>

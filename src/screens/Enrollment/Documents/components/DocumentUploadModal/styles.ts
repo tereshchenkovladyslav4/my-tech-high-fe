@@ -1,4 +1,4 @@
-import { BUTTON_LINEAR_GRADIENT } from "../../../../../utils/constants";
+import { BUTTON_LINEAR_GRADIENT } from '../../../../../utils/constants'
 
 export const useStyles = {
 	modalCard: {

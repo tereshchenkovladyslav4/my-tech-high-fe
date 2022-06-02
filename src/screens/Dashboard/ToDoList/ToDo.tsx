@@ -6,7 +6,12 @@ import { TodoList } from './components/TodoList/TodoList'
 import { Subtitle } from '../../../components/Typography/Subtitle/Subtitle'
 
 export const ToDo: FunctionComponent = () => {
-  const [showEmpty] = useState(false)
+  const [showEmpty, setShowEmpty] = useState(false)
+
+  const handleShowEmpty = ( isEmpty : boolean) => {
+    setShowEmpty(isEmpty)
+  }
+
   return (
     <Card style={{ borderRadius: 12 }}>
       <Box
@@ -21,7 +26,7 @@ export const ToDo: FunctionComponent = () => {
           <Subtitle size='large' fontWeight='bold'>
             To Do List
           </Subtitle>
-          {!showEmpty ? <TodoList /> : <EmptyState title='Congrats!' subtitle='You are all caught up.' />}
+          {!showEmpty ? <TodoList handleShowEmpty={handleShowEmpty} /> : <EmptyState title='Congrats!' subtitle='You are all caught up.' />}
         </Flexbox>
       </Box>
     </Card>

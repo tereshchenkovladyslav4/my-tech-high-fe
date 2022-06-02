@@ -359,6 +359,10 @@ export const EmailTemplateModal = ({
         setDeadline( emailTemplate?.region?.enrollment_packet_deadline_num_days );
       }
 
+      if( emailTemplate.category.category_name == 'Withdraw' ){
+        setDeadline( emailTemplate?.region?.withdraw_deadline_num_days );
+      }
+
     }
   }, [data])
 

@@ -14,6 +14,7 @@ export const WarningModal: WarningModalTemplateType = ({
   title,
   subtitle,
   btntitle = 'Submit',
+  canceltitle = '',
   handleSubmit,
   showIcon = true,
 }) => {
@@ -35,9 +36,16 @@ export const WarningModal: WarningModalTemplateType = ({
           <Paragraph size='large' color={SYSTEM_01}>
             {subtitle}
           </Paragraph>
-          <Button variant='contained' disableElevation sx={classes.submitButton} onClick={handleSubmit}>
-            {btntitle}
-          </Button>
+          <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', width: '100%' }}>
+            {canceltitle != '' && (
+            <Button variant='contained' disableElevation sx={classes.button} onClick={handleModem}>
+              {canceltitle}
+            </Button>
+            )}
+            <Button variant='contained' disableElevation sx={classes.submit} onClick={handleSubmit}>
+              {btntitle}
+            </Button>
+          </Box>
         </Box>
       </Box>
     </Modal>

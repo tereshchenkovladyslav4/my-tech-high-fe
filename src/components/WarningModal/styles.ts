@@ -39,10 +39,21 @@ export const useStyles = {
 		justifyContent: 'center',
 		height: '100%'
 	},
-	submitButton: {
+	button: {
 		borderRadius: 10,
 		width: '200px',
-		marginTop: 4,
+		margin: 4,
+		background: '#E7E7E7',
+		color: 'black',
+		'&:hover': {
+			color: '#fff',
+		},
+	},
+	submit: {
+		borderRadius: 10,
+		width: '200px',
+		margin: 4,
+		background: 'black',
 		'&:hover': {
 			color: '#000',
 		},
