@@ -16,5 +16,6 @@ type AnnnouncementProps = {
   announcements: Announcement[]
   setAnnouncements: (value: Announcement[]) => void
   setSectionName: (value: React.SetStateAction<string>) => void
+  setSelectedAnnouncement: (value: Announcement) => void
 }
 export type AnnouncementTemplateType = FunctionComponent<AnnnouncementProps>

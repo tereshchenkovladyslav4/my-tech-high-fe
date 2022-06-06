@@ -34,7 +34,15 @@ export const QuickLinkCard: React.FC<QuickLinkCardProps> = ({ item, action, onAc
       }}
     >
       {item.id != 0 &&
+      <>
         <CardMedia component='img' sx={{ height: 240 }} src={item.image_url ? 'https://infocenter-v2-dev.s3.us-west-2.amazonaws.com/' + item.image_url : '../src/assets/quick-link.png'} />
+        {!item.image_url && (
+        <Box sx={{width: '100%', position: 'absolute', left: 0, textAlign: 'center', top: '100px', color: 'white'}}>
+          <Typography fontSize='40px' component='div'>
+            {item.title}
+          </Typography>
+        </Box>)}
+      </>
       }
       {item.id == 0 && 
         <Box sx={{

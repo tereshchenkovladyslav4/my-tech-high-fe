@@ -25,6 +25,7 @@ export const Dashboard: FunctionComponent = () => {
   const [sectionName, setSectionName] = useState<string>('root')
   const [inProp, setInProp] = useState<boolean>(false)
   const [announcements, setAnnouncements] = useState<Announcement[]>([])
+  const [selectedAnnouncement, setSelectedAnnouncement] = useState<Announcement>()
   const { data: announcementData, refetch } = useQuery(getUserAnnouncements, {
     variables: {
       request: {
@@ -59,7 +60,7 @@ export const Dashboard: FunctionComponent = () => {
           announcementId: announcement.announcement_id,
           userId: announcement.user_id,
           date: moment(announcement.date).format('MMMM DD'),
-          grades: announcement.fitler_grades,
+          grades: announcement.filter_grades,
           regionId: announcement.RegionId,
         })),
       )
@@ -90,12 +91,17 @@ export const Dashboard: FunctionComponent = () => {
           announcements={announcements}
           setAnnouncements={setAnnouncements}
           setSectionName={setSectionName}
+          setSelectedAnnouncement={setSelectedAnnouncement}
         />
       </Card>
     </Box>
   ) : sectionName == 'viewAll' ? (
-    <AnnouncementSection inProp={inProp} setSectionName={setSectionName} />
+    <AnnouncementSection
+      inProp={inProp}
+      setSectionName={setSectionName}
+      setSelectedAnnouncement={setSelectedAnnouncement}
+    />
   ) : (
-    <ReadMoreSection inProp={inProp} setSectionName={setSectionName} />
+    <ReadMoreSection inProp={inProp} setSectionName={setSectionName} announcement={selectedAnnouncement} />
   )
 }

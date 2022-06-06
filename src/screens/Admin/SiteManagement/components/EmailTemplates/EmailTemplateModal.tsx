@@ -53,6 +53,7 @@ export const EmailTemplateModal = ({
   const [deadline, setDeadline] = useState('')
   const [type, setType] = useState('standard')
   const [availableInserts, setAvailableInserts] = useState([])
+  const [availableInsertDescription, setAvailableInsertDescription] = useState({})
   const editorRef = useRef(null)
   const [currentBlocks, setCurrentBlocks] = useState(0)
   const [reminders, setReminders] = useState([
@@ -342,6 +343,18 @@ export const EmailTemplateModal = ({
       setAddResponse(emailTemplate.standard_responses)
       setAvailableInserts(emailTemplate?.inserts?.split(","))
       setType(emailTemplate.template)
+      if (emailTemplate.category.category_name != 'Withdraw')
+        setAvailableInsertDescription(insertDescriptions);
+      else 
+        setAvailableInsertDescription({
+          parent: "Parent's First Name",
+          student: "Student's First Name",
+          year: 'School Year (2021-2022)',
+          deadline: 'Due Date',
+          teacher: 'Teacher Full Name',
+          link: "Link to Withdraw Form to sign",
+        });
+
       if (emailTemplate.body) {
         const contentBlock = htmlToDraft(emailTemplate.body)
         if (contentBlock) {
@@ -360,7 +373,7 @@ export const EmailTemplateModal = ({
       }
 
       if( emailTemplate.category.category_name == 'Withdraw' ){
-        setDeadline( emailTemplate?.region?.withdraw_deadline_num_days );
+        setDeadline( emailTemplate?.region?.withdraw_deadline_num_days );        
       }
 
     }
@@ -684,7 +697,7 @@ console.log(response);
                       [{item}]
                     </Subtitle>
                     <Subtitle fontWeight='600' color='#A3A3A4' sx={{ fontSize: '18px', marginLeft: '30px'}}>
-                      {insertDescriptions[item]}
+                      {availableInsertDescription[item]}
                     </Subtitle>
                   </Box>
                 ))}

@@ -7,7 +7,7 @@ import DirectOrdersImage from '../../../assets/direct-orders.png'
 import EmailTemplateImage from '../../../assets/email-template.png'
 import EnrollmentImg from '../../../assets/enrollment.png'
 import HomeRoomImage from '../../../assets/homeroom.png'
-import QuickLinkImage from '../../../assets/quick-link.png'
+import QuickLinksImage from '../../../assets/quick-links.png'
 import ReEnrollLinkImage from '../../../assets/re-enroll.png'
 import ProgramSettingImage from '../../../assets/program-setting.png'
 import YearstImg from '../../../assets/schedules.png'
@@ -15,7 +15,6 @@ import SchoolPartnerImage from '../../../assets/schoolAssignments.png'
 import { ItemCard } from '../../../components/ItemCard/ItemCard'
 import EnrollmentSetting from './EnrollmentSetting/EnrollmentSetting'
 import { ProgramSetting } from './ProgramSetting'
-import Withdrawal from '../../../components/QuickLink/Withdrawal/Withdrawal'
 import { Years } from './Years'
 import { EmailTemplatePage } from './components/EmailTemplates/EmailTemplatePage'
 import { QuickLinks } from '../../../components/QuickLink/QuickLinks'
@@ -89,7 +88,7 @@ const SiteManagement: React.FC = () => {
       id: 8,
       title: 'Quick Links',
       subtitle: '',
-      img: QuickLinkImage,
+      img: QuickLinksImage,
       isLink: false,
       to: `quick-links`,
     },

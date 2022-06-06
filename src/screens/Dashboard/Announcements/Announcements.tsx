@@ -14,7 +14,12 @@ import { useMutation } from '@apollo/client'
 import { deleteUserAnnouncementById, deleteUserAnnouncementByUserId } from '../services'
 import { UserContext } from '../../../providers/UserContext/UserProvider'
 
-const Announcements: AnnouncementTemplateType = ({ announcements, setAnnouncements, setSectionName }) => {
+const Announcements: AnnouncementTemplateType = ({
+  announcements,
+  setAnnouncements,
+  setSelectedAnnouncement,
+  setSectionName,
+}) => {
   const classes = useStyles
   const { me, setMe } = useContext(UserContext)
   const [deleteAnnouncementById, {}] = useMutation(deleteUserAnnouncementById)
@@ -46,10 +51,10 @@ const Announcements: AnnouncementTemplateType = ({ announcements, setAnnouncemen
       return (
         <AnnouncementItem
           key={idx}
-          title={announcement.subject}
-          subtitle={announcement.date}
           onClose={() => onDeleteById(announcement.id)}
           setSectionName={setSectionName}
+          announcement={announcement}
+          setSelectedAnnouncement={setSelectedAnnouncement}
         />
       )
     })

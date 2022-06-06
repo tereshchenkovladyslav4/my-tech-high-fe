@@ -109,9 +109,7 @@ export function AdditionalQuestionItem({ question: q, field, meta, form }: { que
             name={q.question.toLowerCase().replace(' ', '_')} {...field} value={true}
           />
           <Paragraph size='medium'>
-            <a style={{ color: '#111', textDecoration: 'none' }} href={q.options[0]?.label === 'web' ? q.options[0]?.value :`mailto:${q.options[0]?.value}`}>
-              {q.question}
-            </a>
+            <p dangerouslySetInnerHTML={{ __html: q.question }}></p>
           </Paragraph>
         </Box>
       )

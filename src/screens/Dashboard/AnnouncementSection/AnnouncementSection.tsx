@@ -15,7 +15,7 @@ import { Paragraph } from '../../../components/Typography/Paragraph/Paragraph'
 import { debounce } from 'lodash'
 import { Person } from '../../HomeroomStudentProfile/Student/types'
 
-const AnnouncementSection = ({ inProp, setSectionName }: AnnouncementSectionProps) => {
+const AnnouncementSection = ({ inProp, setSectionName, setSelectedAnnouncement }: AnnouncementSectionProps) => {
   const { me } = useContext(UserContext)
   const [limit, setLimit] = useState<number>(10)
   const { students } = me
@@ -71,17 +71,37 @@ const AnnouncementSection = ({ inProp, setSectionName }: AnnouncementSectionProp
       setAnnouncementTableData(
         userAnnouncements.map((announcement) => ({
           date: <ListItemText secondary={moment(announcement.date).format('MMMM DD')} />,
-          subject: <Subtitle fontWeight='500'>{announcement.subject}</Subtitle>,
+          subject: (
+            <Subtitle fontWeight='500' sx={{ maxWidth: '500px' }}>
+              {announcement.subject}
+            </Subtitle>
+          ),
           avatars: avatarGroup(announcement.filter_grades),
           description: (
             <>
               <Box sx={{ display: 'flex', paddingY: '25px' }}>
-                <Paragraph size='medium'>{extractContent(announcement.body).slice(0, 50)}...</Paragraph>
-                <Button sx={{ marginTop: '-7px' }} onClick={() => setSectionName('readMore')}>
-                  <Paragraph size='medium' sx={{ textDecoration: 'underline' }} color='#4145FF'>
+                <Paragraph size='medium'>
+                  {extractContent(announcement.body).slice(0, 50)}...
+                  <a
+                    style={{ color: '#4145FF', cursor: 'pointer', textDecoration: 'underline' }}
+                    onClick={() => {
+                      setSelectedAnnouncement({
+                        id: announcement.id,
+                        subject: announcement.subject,
+                        body: extractContent(announcement.body),
+                        sender: announcement.sender,
+                        announcementId: announcement.announcement_id,
+                        userId: announcement.user_id,
+                        date: moment(announcement.date).format('MMMM DD'),
+                        grades: announcement.filter_grades,
+                        regionId: announcement.RegionId,
+                      })
+                      setSectionName('readMore')
+                    }}
+                  >
                     Read More
-                  </Paragraph>
-                </Button>
+                  </a>
+                </Paragraph>
               </Box>
             </>
           ),

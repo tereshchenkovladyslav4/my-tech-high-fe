@@ -31,4 +31,5 @@ export const useStyles = {
     alignItems: 'center',
     width: '100%',
   },
+  readMoreSection: { display: 'flex', padding: '10px 90px' },
 }

@@ -121,7 +121,7 @@ export const QuickLinks: React.FC<any> = ({backAction}) => {
 			const { getQuickLinksByRegion } = quickLinksData;
 
 			arrangeQuickLinks(
-				!isEditable() ? getQuickLinksByRegion :
+				!isEditable() ? getQuickLinksByRegion.filter(x => x.flag == 0) :
 					getQuickLinksByRegion.concat([{
 						id: 0,
 						title: 'Add New',

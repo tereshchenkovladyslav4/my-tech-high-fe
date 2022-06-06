@@ -12,10 +12,11 @@ export const HomeroomGrade: FunctionComponent = () => {
 
   const { me } = useContext(UserContext)
   const { students } = me as UserInfo
-  
-  const renderStudents = () => map(students, (student) => {
-    return student.status.at(-1)?.status !== 2 && <StudentGrade student={student} />
-  })
+
+  const renderStudents = () =>
+    map(students, (student) => {
+      return student.status.at(-1)?.status !== 2 && <StudentGrade student={student} />
+    })
 
   return (
     <Card style={{ borderRadius: 12 }}>

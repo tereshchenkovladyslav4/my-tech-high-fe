@@ -1,5 +1,5 @@
 import { Box } from '@mui/system'
-import React, { useState, useContext } from 'react'
+import React, { useState, useContext, useEffect } from 'react'
 import { BUTTON_LINEAR_GRADIENT } from '../../utils/constants'
 import { Button, TextField } from '@mui/material'
 import { useStyles } from './styles'
@@ -29,7 +29,7 @@ export const ResetPassword = () => {
   const [user_id, email] = decodedToken.split('-')
   const [resetPassword] = useMutation(resetPasswordMutation)
   const [showSuccess, setShowSuccess] = useState(false)
-  const { setCredentials } = useContext(AuthContext)
+  const { credentials, setCredentials } = useContext(AuthContext)
   const [alert, setAlert] = useState(null)
   const classes = useStyles
   const history = useHistory()
@@ -74,7 +74,6 @@ export const ResetPassword = () => {
         if (data?.data?.resetPassword) {
           localStorage.setItem('JWT', data.data.resetPassword.token)
           setCredentials(data.data.resetPassword.token)
-          history.push('/')
         } else {
           setAlert({
             type: 'error',
@@ -89,7 +88,13 @@ export const ResetPassword = () => {
           message: error.message,
         })
       })
-  }
+    }
+
+  useEffect(() => {
+    if(credentials){
+      history.push('/')
+    }
+  },[credentials])
 
   return !showSuccess ? (
     <Box
