@@ -18,6 +18,11 @@ const ReadMoreSection = ({ inProp, announcement, setSectionName }: ReadMoreSecti
     const s3URL = 'https://infocenter-v2-dev.s3.us-west-2.amazonaws.com/'
     return s3URL + person.photo
   }
+
+  const innerHtml = (value: string) => {
+    return { __html: value }
+  }
+
   const avatarGroup = (gradeFilter: string) => {
     const grades = JSON.parse(gradeFilter)
     return (
@@ -63,7 +68,9 @@ const ReadMoreSection = ({ inProp, announcement, setSectionName }: ReadMoreSecti
               <ListItemText secondary={announcement.date} />
             </Box>
             <Box sx={classes.readMoreSection}>{announcement?.grades && avatarGroup(announcement?.grades)}</Box>
-            <Box sx={classes.readMoreSection}>{announcement?.body}</Box>
+            <Box sx={classes.readMoreSection}>
+              <div dangerouslySetInnerHTML={innerHtml(announcement?.body)}></div>
+            </Box>
           </Card>
         </Grid>
       </Grid>

@@ -13,6 +13,7 @@ import { Title } from '../../../components/Typography/Title/Title'
 import { useMutation } from '@apollo/client'
 import { deleteUserAnnouncementById, deleteUserAnnouncementByUserId } from '../services'
 import { UserContext } from '../../../providers/UserContext/UserProvider'
+import BGSVG from '../../../assets/AnnouncementBG.svg'
 
 const Announcements: AnnouncementTemplateType = ({
   announcements,
@@ -59,7 +60,23 @@ const Announcements: AnnouncementTemplateType = ({
       )
     })
   return (
-    <Box paddingY={1.5} paddingX={3}>
+    <Box
+      sx={
+        announcements?.length == 0 && {
+          backgroundImage: `url(${BGSVG})`,
+          backgroundRepeat: 'no-repeat',
+          backgroundPosition: 'top',
+          alignItems: 'center',
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: '60vh',
+          justifyContent: 'center',
+          textAlign: 'center',
+        }
+      }
+      paddingY={1.5}
+      paddingX={3}
+    >
       <Flexbox flexDirection='column' textAlign='left'>
         <Box
           display='flex'
@@ -68,11 +85,9 @@ const Announcements: AnnouncementTemplateType = ({
           sx={{ paddingX: '20px' }}
           alignItems='center'
         >
-          <Paragraph size='large' fontWeight='700'>
-            Announcements
-          </Paragraph>
+          <Paragraph sx={{ fontSize: '20px', fontWeight: '700' }}>Announcements</Paragraph>
           <Button onClick={() => setSectionName('viewAll')}>
-            <Paragraph size='medium' color='#4145FF'>
+            <Paragraph size='medium' sx={{ textDecoration: 'underline' }} color='#4145FF'>
               View All
             </Paragraph>
           </Button>
@@ -87,16 +102,14 @@ const Announcements: AnnouncementTemplateType = ({
             </Box>
           </Box>
         ) : (
-          <Box marginTop={20}>
-            <EmptyState
-              title={<Title>Congrats!</Title>}
-              subtitle={
-                <Subtitle color={SYSTEM_06} fontWeight='700'>
-                  You are all caught up.
-                </Subtitle>
-              }
-            />
-          </Box>
+          <EmptyState
+            title={<Title sx={{ fontSize: '12.85px' }}>Congrats!</Title>}
+            subtitle={
+              <Subtitle color={SYSTEM_06} sx={{ fontSize: '12.85px' }} fontWeight='500'>
+                You are all caught up.
+              </Subtitle>
+            }
+          />
         )}
       </Flexbox>
     </Box>

@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { FunctionComponent } from 'react'
 
-export const Logo: FunctionComponent = (props: React.SVGProps<SVGSVGElement>) => (
+export const MTHLogo: FunctionComponent = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
     width={32}
     height={32}

@@ -6,7 +6,16 @@ import { Subtitle } from '../Typography/Subtitle/Subtitle'
 
 export const EmptyState: EmptyStateTemplateType = ({ title, subtitle, image }) => (
   <Container>
-    <Box display='flex' flexDirection='column' justifyContent='center' textAlign='center'>
+    <Box
+      sx={{
+        alignItems: 'center',
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: '60vh',
+        justifyContent: 'center',
+        textAlign: 'center',
+      }}
+    >
       <img src={image} />
       <Title>{title}</Title>
       <Subtitle>{subtitle}</Subtitle>

@@ -21,10 +21,10 @@ import { useStyles } from '../styles'
 import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt'
 import { DocumentUploadModal } from '../../Enrollment/Documents/components/DocumentUploadModal/DocumentUploadModal'
 import { DropDown } from '../../../components/DropDown/DropDown'
-import { WarningModal } from '../../../components/WarningModal/Warning'
 import { usStates } from '../../../utils/states'
 import * as yup from 'yup'
 import { useFormik } from 'formik'
+import CustomConfirmModal from '../../../components/CustomConfirmModal/CustomConfirmModal'
 
 type openAlertSaveType = {
 	message: string
@@ -550,19 +550,14 @@ export const Profile = ({ handleIsFormChange }) => {
 					/>
 				)}
 				{warningModalOpen && warningModalOpen.title + warningModalOpen.subtitle != '' && (
-					<WarningModal
-						handleSubmit={() => {
-							if(warningModalOpen.callback) warningModalOpen.callback();
+					<CustomConfirmModal
+						header={warningModalOpen.title}
+						content={warningModalOpen.subtitle}
+						handleConfirmModalChange={(val: boolean, isOk: boolean) => {
+							if(isOk && warningModalOpen.callback)	warningModalOpen.callback();
 							setWarningModalOpen({title: '', subtitle: '', callback: null});
 						}}
-						handleModem={() => {
-							setWarningModalOpen({title: '', subtitle: '', callback: null});
-						}}
-						title={warningModalOpen.title}
-						subtitle={warningModalOpen.subtitle}
-						btntitle="Yes"
-						canceltitle="Cancel"
-				/>
+					/>
 				)}
 			</Card>
 		</form>

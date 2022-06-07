@@ -24,4 +24,8 @@ export const useStyles = {
     height: '100%',
     width: '100%',
   },
+  logoTitle: {
+    marginLeft: '25px',
+    marginTop: '25px',
+  },
 }

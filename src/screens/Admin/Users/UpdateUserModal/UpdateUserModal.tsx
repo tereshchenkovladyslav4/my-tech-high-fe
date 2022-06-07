@@ -512,7 +512,7 @@ export const UpdateUserModal: UpdateModalTemplateType = ({ handleModem, userID, 
                   setSelectedState(Number(value))
                 }}
               />
-              {selectedState ? (
+              {!!selectedState && (
                 <Box sx={{ mt: 2 }}>
                   <Subtitle>Parent Email</Subtitle>
                   <TextField
@@ -523,8 +523,6 @@ export const UpdateUserModal: UpdateModalTemplateType = ({ handleModem, userID, 
                     onChange={(e) => setParentEmail(e.target.value)}
                   />
                 </Box>
-              ) : (
-                <Fragment />
               )}
             </Grid>
           </Grid>
@@ -543,7 +541,7 @@ export const UpdateUserModal: UpdateModalTemplateType = ({ handleModem, userID, 
                   setSelectedState(Number(value))
                 }}
               />
-              {selectedState && (
+              {!!selectedState && (
                 <Box sx={{ mt: 2 }}>
                   <Subtitle>Parent Email</Subtitle>
                   <TextField
@@ -600,7 +598,7 @@ export const UpdateUserModal: UpdateModalTemplateType = ({ handleModem, userID, 
                 placeholder='Select State'
                 setParentValue={(value) => setSelectedState(Number(value))}
               />
-              {selectedState && (
+              {!!selectedState && (
                 <Box>
                   <DropDown
                     size='small'
@@ -630,7 +628,7 @@ export const UpdateUserModal: UpdateModalTemplateType = ({ handleModem, userID, 
                 setParentValue={(value) => setSelectedState(Number(value))}
                 sx={{ width: '100%' }}
               />
-              {selectedState && (
+              {!!selectedState && (
                 <Box sx={{ mt: 2 }}>
                   <DropDown
                     size='small'

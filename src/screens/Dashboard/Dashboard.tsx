@@ -38,12 +38,6 @@ export const Dashboard: FunctionComponent = () => {
     fetchPolicy: 'network-only',
   })
 
-  const extractContent = (s) => {
-    let span = document.createElement('span')
-    span.innerHTML = s
-    return span.textContent || span.innerText
-  }
-
   useEffect(() => {
     setInProp(!inProp)
   }, [sectionName])
@@ -55,7 +49,7 @@ export const Dashboard: FunctionComponent = () => {
         userAnnouncements.map((announcement) => ({
           id: announcement.id,
           subject: announcement.subject,
-          body: extractContent(announcement.body),
+          body: announcement.body,
           sender: announcement.sender,
           announcementId: announcement.announcement_id,
           userId: announcement.user_id,

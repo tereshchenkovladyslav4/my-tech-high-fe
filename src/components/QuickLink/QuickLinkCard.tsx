@@ -83,7 +83,7 @@ export const QuickLinkCard: React.FC<QuickLinkCardProps> = ({ item, action, onAc
           {action &&
             <Stack direction="row" spacing={1.5} alignItems="center">
               <DragHandle />
-              <EditIcon htmlColor={SYSTEM_01} onClick={(e) => {
+              <EditIcon sx={{marginLeft: '5px !important'}} htmlColor={SYSTEM_01} onClick={(e) => {
                 onAction('edit');
                 e.stopPropagation();
               }} />

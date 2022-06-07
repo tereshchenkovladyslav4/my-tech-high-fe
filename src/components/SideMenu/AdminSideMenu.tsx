@@ -1,6 +1,6 @@
 import { List, ListItem, Box, ListItemButton } from '@mui/material'
 import React, { FunctionComponent, useContext } from 'react'
-import { Logo } from '../../components/SVG/Logo'
+import { MTHLogo } from '../SVG/MTHLogo'
 import { Paragraph } from '../Typography/Paragraph/Paragraph'
 import { useStyles } from './styles'
 import { NavLink, useHistory, useLocation } from 'react-router-dom'
@@ -131,7 +131,7 @@ export const AdminSideMenu: FunctionComponent = () => {
         <List style={classes.navbar}>
           <ListItem disablePadding style={classes.myTechHigh}>
             <ListItemButton>
-              <Logo style={classes.logos} />
+              <MTHLogo style={classes.logos} />
               <Paragraph fontFamily='Helvetica' size='medium' fontWeight='bold'>
                 MY TECH HIGH
               </Paragraph>

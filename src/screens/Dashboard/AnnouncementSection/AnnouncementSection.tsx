@@ -31,7 +31,7 @@ const AnnouncementSection = ({ inProp, setSectionName, setSelectedAnnouncement }
   const avatarGroup = (gradeFilter: string) => {
     const grades = JSON.parse(gradeFilter)
     return (
-      <AvatarGroup max={5} spacing={0}>
+      <AvatarGroup max={5} sx={{ maxWidth: '300px', justifyContent: 'start' }} spacing={0}>
         {students &&
           students.map((student) => {
             if (student?.grade_levels && grades.includes(student?.grade_levels[0].grade_level)) {
@@ -70,9 +70,9 @@ const AnnouncementSection = ({ inProp, setSectionName, setSelectedAnnouncement }
       const { userAnnouncements } = announcementData
       setAnnouncementTableData(
         userAnnouncements.map((announcement) => ({
-          date: <ListItemText secondary={moment(announcement.date).format('MMMM DD')} />,
+          date: <ListItemText sx={{ minWidth: '120px' }} secondary={moment(announcement.date).format('MMMM DD')} />,
           subject: (
-            <Subtitle fontWeight='500' sx={{ maxWidth: '500px' }}>
+            <Subtitle fontWeight='bold' sx={{ maxWidth: '300px' }}>
               {announcement.subject}
             </Subtitle>
           ),
@@ -83,12 +83,18 @@ const AnnouncementSection = ({ inProp, setSectionName, setSelectedAnnouncement }
                 <Paragraph size='medium'>
                   {extractContent(announcement.body).slice(0, 50)}...
                   <a
-                    style={{ color: '#4145FF', cursor: 'pointer', textDecoration: 'underline' }}
+                    style={{
+                      color: '#4145FF',
+                      cursor: 'pointer',
+                      fontWeight: 'bold',
+                      fontSize: '14px',
+                      textDecoration: 'underline',
+                    }}
                     onClick={() => {
                       setSelectedAnnouncement({
                         id: announcement.id,
                         subject: announcement.subject,
-                        body: extractContent(announcement.body),
+                        body: announcement.body,
                         sender: announcement.sender,
                         announcementId: announcement.announcement_id,
                         userId: announcement.user_id,

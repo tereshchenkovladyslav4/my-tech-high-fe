@@ -3,7 +3,8 @@ import React, { FunctionComponent, useContext, useEffect, useState } from 'react
 import CreditCardRoundedIcon from '@mui/icons-material/CreditCardRounded'
 import CallMadeRoundedIcon from '@mui/icons-material/CallMadeRounded'
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded'
-import { Logo } from '../../components/SVG/Logo'
+import { TTALogo } from '../SVG/TTALogo'
+import { MTHLogo } from '../SVG/MTHLogo'
 import { Paragraph } from '../Typography/Paragraph/Paragraph'
 import BackupTableIcon from '@mui/icons-material/BackupTable'
 import { useStyles } from './styles'
@@ -21,36 +22,33 @@ import {
   REIMBURSMENTS,
   REPORTS,
   SETTINGS,
-  USERS
+  USERS,
 } from '../../utils/constants'
 import { UserContext } from '../../providers/UserContext/UserProvider'
 import { AuthContext } from '../../providers/AuthProvider/AuthContext'
 import LogoutIcon from '@mui/icons-material/Logout'
-import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined';
+import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined'
 import AllInboxOutlinedIcon from '@mui/icons-material/AllInboxOutlined'
 import DatRangeOutlinedIcon from '@mui/icons-material/DateRangeOutlined'
-import ReportGmailerrorredIcon from '@mui/icons-material/ReportGmailerrorred';
-import DescriptionIcon from '@mui/icons-material/Description';
+import DescriptionIcon from '@mui/icons-material/Description'
 import { map, some } from 'lodash'
-import { AccessType } from '../../providers/UserContext/types'
 const noSidebarUsers = [15, 14, 16, 11, 9, 10, 13, 12]
 
 export const SideMenu: FunctionComponent = () => {
   const history = useHistory()
   const classes = useStyles
-  const location = useLocation();
+  const location = useLocation()
   const { me, setMe } = useContext(UserContext)
-  const isActive = () => (location.pathname.includes('homeroom'));
-
-  const [authorizedList, setAuthorizedList] = useState([]);
-
-  const checkAdminAccessOnSidebar = label => {
-    const adminAccessArr = me.userAccess;
-    const role = some(adminAccessArr, (access: any) => access?.accessDetail?.name === label);
+  const userRegion = me?.userRegion?.at(-1)
+  const isActive = () => location.pathname.includes('homeroom')
+  const [authorizedList, setAuthorizedList] = useState([])
+  const checkAdminAccessOnSidebar = (label) => {
+    const adminAccessArr = me.userAccess
+    const role = some(adminAccessArr, (access: any) => access?.accessDetail?.name === label)
     if (role) {
       return me.level
     } else {
-      -1
+      ;-1
     }
   }
 
@@ -60,42 +58,50 @@ export const SideMenu: FunctionComponent = () => {
       label: 'Announcements',
       icon: <AllInboxOutlinedIcon style={classes.logos} />,
       access: [7, checkAdminAccessOnSidebar('Announcements')],
-    }, {
+    },
+    {
       to: CALENDAR,
       label: 'Calender',
       icon: <DatRangeOutlinedIcon style={classes.logos} />,
       access: [7, checkAdminAccessOnSidebar('Calender')],
-    }, {
+    },
+    {
       to: CURRICULUM,
       label: 'Curriculum',
       icon: <AllInboxOutlinedIcon style={classes.logos} />,
       access: [6, 8, checkAdminAccessOnSidebar('Curriculum')],
-    }, {
+    },
+    {
       to: ENROLLMENT,
       label: 'Enrollment',
       icon: <BackupTableIcon style={classes.logos} />,
       access: [4, checkAdminAccessOnSidebar('Enrollment')],
-    }, {
+    },
+    {
       to: HOMEROOM,
       label: 'Homeroom',
-      icon: <PeopleAltOutlinedIcon style={classes.logos}/>,
+      icon: <PeopleAltOutlinedIcon style={classes.logos} />,
       access: [5, 15, checkAdminAccessOnSidebar('Homeroom Resources')],
-    }, {
+    },
+    {
       to: PARENT_LINK,
       label: 'Quick Links',
       icon: <CallMadeRoundedIcon style={classes.logos} />,
       access: [15, checkAdminAccessOnSidebar('Parent Link')],
-    }, {
+    },
+    {
       to: RECORDS,
       label: 'Records',
       icon: <CallMadeRoundedIcon style={classes.logos} />,
       access: [4, 6, 8, checkAdminAccessOnSidebar('Records')],
-    }, {
+    },
+    {
       to: REIMBURSMENTS,
       label: 'Reimbursements & Direct Orders',
       icon: <CreditCardRoundedIcon style={classes.logos} />,
       access: [3, 15, checkAdminAccessOnSidebar('Reimbursements & Direct Orders')],
-    }, {
+    },
+    {
       to: REPORTS,
       label: 'Reports',
       icon: <CallMadeRoundedIcon style={classes.logos} />,
@@ -107,27 +113,26 @@ export const SideMenu: FunctionComponent = () => {
       icon: <PeopleAltOutlinedIcon style={classes.logos} />,
       access: [2],
     },
-  ];
+  ]
 
   useEffect(() => {
-    const updatedList = [];
-    map(navigationList, item => {
-      const listed = item.access.some(level => level === Number(me?.role?.level));
+    const updatedList = []
+    map(navigationList, (item) => {
+      const listed = item.access.some((level) => level === Number(me?.role?.level))
       if (listed) updatedList.push(item)
-    });
+    })
     setAuthorizedList(updatedList)
-  }, []);
+  }, [])
 
-  const { signOut } = useContext(AuthContext);
-  const [unauthorizedAtAll, setUnauthorizedAtAll] = useState(true);
+  const { signOut } = useContext(AuthContext)
+  const [unauthorizedAtAll, setUnauthorizedAtAll] = useState(true)
 
   useEffect(() => {
-    const isUnauthorized = noSidebarUsers.some(level => {
+    const isUnauthorized = noSidebarUsers.some((level) => {
       return level === Number(me?.role?.level)
     })
-    setUnauthorizedAtAll(isUnauthorized);
-  }, []);
-
+    setUnauthorizedAtAll(isUnauthorized)
+  }, [])
 
   const logout = () => {
     setMe(null)
@@ -141,11 +146,20 @@ export const SideMenu: FunctionComponent = () => {
         <List style={classes.navbar}>
           <ListItem disablePadding style={classes.myTechHigh} onClick={() => history.push(DASHBOARD)}>
             <ListItemButton component='a'>
-              <Logo style={classes.logos} />
-              <Paragraph fontFamily='Helvetica' size='medium' fontWeight='bold'>
-                {' '}
-                MY TECH HIGH
-              </Paragraph>
+              {userRegion?.regionDetail.program == 'MTH' ? <MTHLogo /> : <TTALogo />}
+              <Box sx={classes.logoTitle}>
+                <Paragraph fontFamily='Helvetica' size='medium' fontWeight='bold'>
+                  {userRegion?.regionDetail.program == 'MTH' ? 'MY TECH HIGH' : 'Tech Trep Academy'}
+                </Paragraph>
+                <Paragraph
+                  fontFamily='Helvetica'
+                  size='small'
+                  fontWeight='bold'
+                  sx={{ fontSize: '12px', color: '#CCCCCC', textAlign: 'center', paddingTop: '5px' }}
+                >
+                  {userRegion?.regionDetail.name}
+                </Paragraph>
+              </Box>
             </ListItemButton>
           </ListItem>
           <NavLink
@@ -164,9 +178,9 @@ export const SideMenu: FunctionComponent = () => {
               </ListItemButton>
             </ListItem>
           </NavLink>
-          {map(authorizedList, (item, index) => (
-            item.label !== 'Homeroom'
-              ? <NavLink
+          {map(authorizedList, (item, index) =>
+            item.label !== 'Homeroom' ? (
+              <NavLink
                 key={index}
                 exact
                 to={item.to}
@@ -183,24 +197,26 @@ export const SideMenu: FunctionComponent = () => {
                   </ListItemButton>
                 </ListItem>
               </NavLink>
-            : <NavLink
-            key={index}
-            exact
-            to={item.to}
-            style={(classes.navLink, { color: isActive() ? '#4145FF' : '#CCC', textDecoration: 'none'  })}
-            activeStyle={{
-              backgroundColor: ACTIVELINKBACKGROUND,
-              color: '#4145FF',
-            }}
-          >
-            <ListItem disablePadding style={{ backgroundColor: 'inherit' }}>
-              <ListItemButton style={{ textDecoration: 'none' }}>
-                {item.icon}
-                <Paragraph size='medium'>{item.label}</Paragraph>
-              </ListItemButton>
-            </ListItem>
-          </NavLink>
-          ))}
+            ) : (
+              <NavLink
+                key={index}
+                exact
+                to={item.to}
+                style={(classes.navLink, { color: isActive() ? '#4145FF' : '#CCC', textDecoration: 'none' })}
+                activeStyle={{
+                  backgroundColor: ACTIVELINKBACKGROUND,
+                  color: '#4145FF',
+                }}
+              >
+                <ListItem disablePadding style={{ backgroundColor: 'inherit' }}>
+                  <ListItemButton style={{ textDecoration: 'none' }}>
+                    {item.icon}
+                    <Paragraph size='medium'>{item.label}</Paragraph>
+                  </ListItemButton>
+                </ListItem>
+              </NavLink>
+            ),
+          )}
           <NavLink
             exact
             to={SETTINGS}
