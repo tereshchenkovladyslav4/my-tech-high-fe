@@ -5,6 +5,7 @@ export const useStyles = {
   textField: {
     [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
       borderColor: SYSTEM_07,
+      borderWidth: '2px'
     },
     marginY: 2,
     width: '100%',
@@ -16,19 +17,10 @@ export const useStyles = {
     marginY: 2,
     width: '100%',
   },
-  textfield: {
-    color: 'green',
-    [`& .${outlinedInputClasses.root} .${outlinedInputClasses.notchedOutline}`]: {
-      borderColor: SYSTEM_07,
-      borderWidth: '1px',
-    },
-    marginTop: 2,
-    marginBottom: 1,
-    width: '100%',
-  },
   dropdown: {
     [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
       borderColor: SYSTEM_07,
+      borderWidth: '2px'
     },
     marginY: 2,
     width: '100%',

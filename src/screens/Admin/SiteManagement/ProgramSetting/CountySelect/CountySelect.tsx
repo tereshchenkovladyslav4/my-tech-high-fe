@@ -9,6 +9,20 @@ import { FileUploadModal } from '../FileUploadModal/FileUploadModal'
 import { CountyFileType } from './CountySelectTypes'
 import CustomModal from '../../EnrollmentSetting/components/CustomModal/CustomModals'
 import DownloadFileIcon from '../../../../../assets/icons/file-download.svg'
+import { Tooltip } from '@material-ui/core'
+import { makeStyles } from '@material-ui/core/styles'
+
+const useStyles = makeStyles(() => ({
+  customTooltip: {
+    backgroundColor: '#767676',
+    fontSize: '14px',
+    borderRadius: 12,
+    paddingLeft: 10,
+    paddingRight: 10,
+    paddingTop: 9,
+    paddingBottom: 9,
+  },
+}))
 
 export default function CountySelect({
   county,
@@ -24,6 +38,7 @@ export default function CountySelect({
     '.csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel, text/csv'
   const invalidMessage = 'Please only submit CSV or Excel File'
 
+  const classes = useStyles()
   const handleFile = (fileName: File) => {
     const countyArray = []
     Papa.parse(fileName[0], {
@@ -97,10 +112,26 @@ export default function CountySelect({
             {county.path && (
               <>
                 <Box sx={{ marginLeft: '40px' }} onClick={handleDownload}>
-                  <img src={DownloadFileIcon} alt='Download Icon' />
+                  <Tooltip
+                    title='Download'
+                    placement='top'
+                    classes={{
+                      tooltip: classes.customTooltip,
+                    }}
+                  >
+                    <img src={DownloadFileIcon} alt='Download Icon' />
+                  </Tooltip>
                 </Box>
                 <Box sx={{ marginLeft: '20px', marginTop: '3px' }}>
-                  <DeleteForeverOutlinedIcon onClick={() => setCustomModalOpen(true)} />
+                  <Tooltip
+                    title='Delete'
+                    placement='top'
+                    classes={{
+                      tooltip: classes.customTooltip,
+                    }}
+                  >
+                    <DeleteForeverOutlinedIcon onClick={() => setCustomModalOpen(true)} />
+                  </Tooltip>
                 </Box>
               </>
             )}

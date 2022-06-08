@@ -45,7 +45,7 @@ export function AdditionalQuestionItem({ question: q, field, meta, form }: { que
           sx={
             !!(meta.touched && meta.error)
               ? classes.textFieldError
-              : classes.textfield
+              : classes.textField
           }
           label={q.question}
           name={q.question.toLowerCase().replace(' ', '_')}
@@ -168,7 +168,7 @@ export function AdditionalQuestionItem({ question: q, field, meta, form }: { que
           sx={
             !!(meta.touched && meta.error)
               ? classes.textFieldError
-              : classes.textfield
+              : classes.textField
           }
           InputLabelProps={{
             style: { color: SYSTEM_05 },
@@ -188,9 +188,11 @@ export function AdditionalQuestionItem({ question: q, field, meta, form }: { que
       )
     } else if (q.type === 7) {
       return (
-        <Paragraph size='large'>
-          <p dangerouslySetInnerHTML={{ __html: q.question }}></p>
-        </Paragraph>
+        <Box display='block' sx={{marginTop: 2, marginBottom: 1, textAlign: 'center'}}>
+          <Paragraph size='large'>
+            <p dangerouslySetInnerHTML={{ __html: q.question }}></p>
+          </Paragraph>
+        </Box>
       )
     }
     return null

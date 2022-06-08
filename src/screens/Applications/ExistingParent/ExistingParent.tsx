@@ -132,6 +132,9 @@ export const ExistingParent = () => {
               }
             }
           } else if (q.slug?.includes('meta_') && q.required) {
+            if(q.student_question) {
+              empty[`${q.slug}`] = ''
+            }
             if (q.validation === 1) {
               valid_meta[`${q.slug}`] = yup.string().email('Enter a valid email').required('Email is required')
             } else if (q.validation === 2) {
@@ -170,12 +173,15 @@ export const ExistingParent = () => {
   const history = useHistory()
 
   const submitApplication = async (data) => {
+    const submitStudents = data.students?.map((s) => {
+      return {...s, meta: JSON.stringify(s?.meta || {})}
+    })
     submitApplicationAction({
       variables: {
         createApplicationInput: {
           state: 'UT',
           program_year: parseInt(data.programYear!),
-          students: data.students,
+          students: submitStudents,
           meta: JSON.stringify(data.meta),
         },
       },
@@ -258,7 +264,7 @@ export const ExistingParent = () => {
         initialValues={{
           programYear: undefined,
           students: [emptyStudent],
-          meta: undefined,
+          meta: {},
         }}
         validationSchema={object(validationSchema)}
         onSubmit={async (values) => {
@@ -313,7 +319,7 @@ export const ExistingParent = () => {
                     <Box width={'451.53px'}>
                       {questions.map(
                         (q, index) =>
-                          q.slug.includes('meta_') && (
+                        !q.student_question && q.slug.includes('meta_') && (
                             <Grid item xs={12} display='flex' justifyContent={'center'}>
                               <Box width={'451.53px'}>
                                 <Field name={`meta.${q.slug}`} fullWidth focused>
@@ -403,6 +409,36 @@ export const ExistingParent = () => {
                                               onClick={() => remove(index)}
                                             />
                                           ) : null}
+                                        </Box>
+                                      </Grid>
+                                    )
+                                  }
+                                  else if (q.slug?.includes('meta_') && q.student_question) {
+                                    return (
+                                      <Grid item xs={12}>
+                                        <Box
+                                          width={index === 0 ? '100%' : '103.9%'}
+                                          display='flex'
+                                          flexDirection='row'
+                                          alignItems={'center'}
+                                        >
+                                          <Field
+                                            name={`students[${index}].meta.${q.slug}`}
+                                            fullWidth
+                                            focused
+                                          >
+                                            {({ field, form, meta }) => (
+                                              <Box width={'100%'}>
+                                                <AdditionalQuestionItem
+                                                  question={q}
+                                                  key={index}
+                                                  field={field}
+                                                  form={form}
+                                                  meta={meta}
+                                                />
+                                              </Box>
+                                            )}
+                                          </Field>
                                         </Box>
                                       </Grid>
                                     )

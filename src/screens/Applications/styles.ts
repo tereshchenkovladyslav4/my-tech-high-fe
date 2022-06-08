@@ -5,7 +5,9 @@ export const useStyles = {
   textField: {
     [`& .${outlinedInputClasses.root} .${outlinedInputClasses.notchedOutline}`]: {
       borderColor: SYSTEM_07,
+      borderWidth: '2px'
     },
+    width: '100%',
   },
   addStudentButton: {
     borderRadius: 8,
@@ -30,18 +32,10 @@ export const useStyles = {
     marginY: 2,
     width: '100%',
   },
-  textfield: {
-    color: 'green',
-    [`& .${outlinedInputClasses.root} .${outlinedInputClasses.notchedOutline}`]: {
-      borderColor: SYSTEM_07,
-      borderWidth: '1px',
-    },
-    marginY: 2,
-    width: '100%',
-  },
   dropdown:{
     [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
       borderColor: SYSTEM_07,
+      borderWidth: '2px'
     },
     marginY: 2,
     width: '100%',

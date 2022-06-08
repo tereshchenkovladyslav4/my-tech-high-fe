@@ -11,6 +11,7 @@ export type ApplicationQuestion = {
   response?: string
   region_id?: number
   default_question: boolean
+  student_question: boolean
   validation: number
   slug: string
 }

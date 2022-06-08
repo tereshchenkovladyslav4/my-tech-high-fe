@@ -58,6 +58,7 @@ export const getQuestionsGql = gql`
       required
       validation
       default_question
+      student_question
       slug
     }
   }

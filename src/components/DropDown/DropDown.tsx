@@ -120,7 +120,7 @@ export const DropDown: DropDownTemplateType = ({
             }}
             select // tell TextField to render select
             label={placeholder}
-            sx={alternate ? classes.alternate : classes.textfield}
+            sx={alternate ? {...sx, ...classes.alternate} : {...sx, ...classes.textfield}}
             error={error?.error}
             helperText={error?.errorMsg}
             disabled={disabled || false}

@@ -145,6 +145,9 @@ export const NewParent = () => {
               }
             }
           } else if (q.slug?.includes('meta_') && q.required) {
+            if(q.student_question) {
+              empty[`${q.slug}`] = ''
+            }
             if (q.validation === 1) {
               valid_meta[`${q.slug}`] = yup.string().email('Enter a valid email').required('Email is required')
             } else if (q.validation === 2) {
@@ -207,6 +210,9 @@ export const NewParent = () => {
   }, [regionId, schoolYearData])
 
   const submitApplication = async (values) => {
+    const submitStudents = values.students?.map((s) => {
+      return {...s, meta: JSON.stringify(s?.meta || {})}
+    })
     submitApplicationAction({
       variables: {
         createApplicationInput: {
@@ -214,7 +220,7 @@ export const NewParent = () => {
           state: values.state,
           program_year: parseInt(values.programYear!),
           parent: omit(values.parent, ['emailConfirm']),
-          students: values.students,
+          students: submitStudents,
           meta: JSON.stringify(values.meta),
         },
       },
@@ -306,7 +312,7 @@ export const NewParent = () => {
             state: undefined,
             refferedBy: undefined,
             students: [emptyStudent],
-            meta: undefined,
+            meta: {},
             parent: undefined,
           }}
           validationSchema={object(validationSchema)}
@@ -443,7 +449,7 @@ export const NewParent = () => {
                                             style: { color: SYSTEM_05 },
                                           }}
                                           sx={
-                                            !!(meta.touched && meta.error) ? classes.textFieldError : classes.textfield
+                                            !!(meta.touched && meta.error) ? classes.textFieldError : classes.textField
                                           }
                                           {...field}
                                           error={meta.error || showEmailError}
@@ -483,7 +489,7 @@ export const NewParent = () => {
                                         InputLabelProps={{
                                           style: { color: SYSTEM_05 },
                                         }}
-                                        sx={!!(meta.touched && meta.error) ? classes.textFieldError : classes.textfield}
+                                        sx={!!(meta.touched && meta.error) ? classes.textFieldError : classes.textField}
                                         {...field}
                                         error={meta.touched && meta.error}
                                         helperText={meta.touched && meta.error}
@@ -505,7 +511,7 @@ export const NewParent = () => {
                                     )}
                                   </Field>
                                 )}
-                                {q.slug?.includes('meta_') && (
+                                {q.slug?.includes('meta_') && !q.student_question && (
                                   <Field name={`meta.${q.slug}`} fullWidth focused>
                                     {({ field, form, meta }) => (
                                       <AdditionalQuestionItem question={q} field={field} form={form} meta={meta} />
@@ -592,6 +598,36 @@ export const NewParent = () => {
                                                   onClick={() => remove(index)}
                                                 />
                                               ) : null}
+                                            </Box>
+                                          </Grid>
+                                        )
+                                      }
+                                      else if (q.slug?.includes('meta_') && q.student_question) {
+                                        return (
+                                          <Grid item xs={12}>
+                                            <Box
+                                              width={index === 0 ? '100%' : '103.9%'}
+                                              display='flex'
+                                              flexDirection='row'
+                                              alignItems={'center'}
+                                            >
+                                              <Field
+                                                name={`students[${index}].meta.${q.slug}`}
+                                                fullWidth
+                                                focused
+                                              >
+                                                {({ field, form, meta }) => (
+                                                  <Box width={'100%'}>
+                                                    <AdditionalQuestionItem
+                                                      question={q}
+                                                      key={index}
+                                                      field={field}
+                                                      form={form}
+                                                      meta={meta}
+                                                    />
+                                                  </Box>
+                                                )}
+                                              </Field>
                                             </Box>
                                           </Grid>
                                         )

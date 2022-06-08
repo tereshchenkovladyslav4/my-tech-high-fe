@@ -87,6 +87,7 @@ function Item({ question: q }: { question: ApplicationQuestion }) {
           borderColor: errors[index] ? 'red' : '',
           [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
             borderColor: SYSTEM_07,
+            borderWidth: '2px'
           },
         }}
         labelTop
