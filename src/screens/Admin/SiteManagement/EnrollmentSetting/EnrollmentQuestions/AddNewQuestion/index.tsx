@@ -51,8 +51,7 @@ export default function AddNewQuestionModal({
 
   const [question, setQuestion] = useState(editItem?.question || '')
   const [type, setType] = useState(editItem?.type || 1)
-  const [required, setRequired] = useState(editItem?.required || false)  
-  const [removable, setRemovable] = useState(editItem?.removable || false)
+  const [required, setRequired] = useState(editItem?.required || false)
   const [options, setOptions] = useState<OptionsType[]>([
     ...(editItem?.options || [{ label: '', value: 1, action: 1 }]),
     { label: '', value: (editItem?.options?.length || 1) + 1 , action: 1},
@@ -211,7 +210,6 @@ export default function AddNewQuestionModal({
       order: editItem?.order || tempQuestionOrder,
       options: type === 4 ? [{label: agreement.type, value: agreement.link}] : options.filter((v) => v.label.trim()),
       required,
-      removable,
       additional: additionalQuestionData,
       additional2: additionalQuestion2Data,      
       default_question: isDefaultQuestion,
@@ -230,6 +228,49 @@ export default function AddNewQuestionModal({
         })
         const updatedTab = {...currentTabData, groups: updatedGroups, id: currentTabData.id}
         setValues(values.map((v) => (v.tab_name === updatedTab.tab_name ? updatedTab : v)))
+      }
+      else {
+        //  group: oldGroup
+        //  groupType: newGroup
+        let groups = currentTabData.groups;
+        if(!currentGroup) {
+          groups.push({
+            id: undefined,
+            tab_id: currentTabData.id,
+            group_name: groupName,
+            order: currentTabData.groups.length + 1,
+            questions: [],
+          });
+        }
+        const updatedTab = {
+          ...currentTabData,
+          groups: groups.map(g => {
+            if(g.group_name == group) {
+              //  Remove from oldGroup
+              const questions = g.questions.filter(q => q.id !== editItem.id);
+              for(let i = 0; i < questions.length; i++) {
+                questions[i].order = i + 1;
+              }
+              return {
+                ...g,
+                questions: questions
+              }
+            }
+            else if(g.group_name == groupName) {
+              //  Add to new Group
+              const questions = g.questions.concat(questionItem);
+              for(let i = 0; i < questions.length; i++) {
+                questions[i].order = i + 1;
+              }
+              return {
+                ...g,
+                questions: questions
+              }
+            }
+            return g;
+          })
+        }
+        setValues(values.map((v) => (v.tab_name === updatedTab.tab_name ? updatedTab : v)));
       }
       // else { // change group type
       //   const doubleQuestion = currentTabData.groups.filter((v) => v.group_name === groupType)[0].questions.filter((q) => q.question === question)
@@ -349,7 +390,7 @@ export default function AddNewQuestionModal({
             />
             <DropDown
               sx={{
-                pointerEvents: !newQuestion ? 'none' : 'unset',
+                pointerEvents: 'unset',
                 minWidth: '200px',
                 [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
                   {
@@ -529,8 +570,8 @@ export default function AddNewQuestionModal({
             height: '40px',
             mt: '10px',
             alignItems: 'center',
-            display: 'flex',
             justifyContent: 'space-between',
+            display: validation ? 'flex' : 'none',
           }}
         >
           <DropDown
@@ -551,16 +592,6 @@ export default function AddNewQuestionModal({
             setParentValue={(v) => setValidationType(+v)}
             size='small'
           />
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              width: '124px',
-            }}
-          >
-            <Checkbox checked={removable} onClick={() => setRemovable(!removable)} />
-            <Subtitle size='small'>Removable</Subtitle>
-          </Box>
         </Box>
           {actionType === 2 && (
             <Box>

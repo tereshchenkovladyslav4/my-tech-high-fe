@@ -356,10 +356,10 @@ export const EmailTemplateModal = ({
 						i--;
 					}
 				}
-				//standard_response_groups_default.forEach(group => {
-				//	if(tmpArr.find(x => x.id == group.id) == null)
-				//		tmpArr.push(group);
-				//});
+				standard_response_groups_default.forEach(group => {
+					if(tmpArr.find(x => x.id == group.id) == null)
+						tmpArr.push(group);
+				});
 				setResponses(tmpArr);
 			}
 

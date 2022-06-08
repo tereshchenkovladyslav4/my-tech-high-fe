@@ -16,6 +16,16 @@
 <body>
 	<div id="root"></div>
 	<script type="module" src="/index.js"></script>
+	<script>
+		window.setFormChanged = function(form_name, flag) {
+			const forms = document.getElementsByTagName('form');
+			for(let i = 0; i < forms.length; i++) {
+				if(forms[i].name == form_name) {	//	Change attribute of this form only
+					forms[i].setAttribute('changed', flag);
+				}
+			}
+		}
+	</script>
 </body>
 
 </html>

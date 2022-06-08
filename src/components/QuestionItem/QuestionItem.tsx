@@ -1,4 +1,4 @@
-import { Box, Button, Checkbox, IconButton, outlinedInputClasses, Radio, TextField } from '@mui/material'
+import { Box, Button, Checkbox, IconButton, MenuItem, outlinedInputClasses, inputLabelClasses, Radio, Select, TextField } from '@mui/material'
 import { useFormikContext } from 'formik'
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import { Subtitle } from '../Typography/Subtitle/Subtitle'
@@ -8,7 +8,7 @@ import EditIcon from '@mui/icons-material/Edit'
 import { SortableHandle } from 'react-sortable-hoc'
 import { Question, QUESTION_TYPE } from './QuestionItemProps'
 import QuestionModal from './AddNewQuestion'
-import { SYSTEM_05, SYSTEM_07 } from '../../utils/constants'
+import { SYSTEM_05, SYSTEM_07, GRADES } from '../../utils/constants'
 import { DropDown } from '../DropDown/DropDown'
 import { Paragraph } from '../Typography/Paragraph/Paragraph'
 import SignaturePad from 'react-signature-pad-wrapper';
@@ -22,6 +22,8 @@ import {
 } from '../../screens/Admin/SiteManagement/EnrollmentSetting/EnrollmentQuestions/services';
 import moment from 'moment'
 import { UserContext } from '../../providers/UserContext/UserProvider'
+import _ from 'lodash'
+import { toOrdinalSuffix } from '../../utils/stringHelpers'
 
 const DragHandle = SortableHandle(() => (
 	<IconButton>
@@ -55,7 +57,8 @@ export default function QuestionItem({
 		setValues(
 			values.map((v) => (v.id == questions[0].id ? {
 				...v,
-				options: options
+				options: options,
+				response: options.length > 0 && questions[0].mainQuestion ? options[0].value : ''
 			} : v))
 		)
 	};
@@ -64,84 +67,121 @@ export default function QuestionItem({
 		variables: {
 			regionId: questions[0]?.region_id,
 		},
-		skip: (hasAction || questions[0]?.defaultQuestion === false || questions[0]?.options.length > 0 || questions[0]?.slug != 'program_year'),
+		skip: (hasAction || questions[0]?.defaultQuestion === false || questions[0]?.options.length > 0 || (questions[0]?.slug != 'program_year' && questions[0]?.slug != 'student_grade_level')),
 		fetchPolicy: 'network-only',
 	});
 	useEffect(() => {
 		if (!schoolLoading && schoolYearData && schoolYearData.getSchoolYearsByRegionId) {
-			updateOptionsForDefaultQuestion(
-				schoolYearData.getSchoolYearsByRegionId.map((item) => {
-					return {
-						label: moment(item.date_begin).format('YYYY') + '-' + moment(item.date_end).format('YYYY'),
-						value: item.school_year_id,
-					}
-				})
-			);
+			if(questions[0]?.slug == 'program_year') {
+				updateOptionsForDefaultQuestion(
+					schoolYearData.getSchoolYearsByRegionId.map((item) => {
+						return {
+							label: moment(item.date_begin).format('YYYY') + '-' + moment(item.date_end).format('YYYY'),
+							value: item.school_year_id,
+						}
+					})
+				);
+			}
 		}
 	}, [schoolYearData]);
+
+	//	student_grade_level
+	const [grades, setGrades] = useState([]);
+	useEffect(() => {
+		if(schoolYearData && schoolYearData.getSchoolYearsByRegionId && questions[0]?.slug == 'student_grade_level') {
+			const program_year = values.find(x => x.slug == 'program_year');
+			if(program_year != null && program_year.response != '') {
+				let newGrades = schoolYearData.getSchoolYearsByRegionId.find(element => program_year.response == element.school_year_id).grades?.split(',');
+				if(!_.isEqual(grades, newGrades)) {
+					setGrades(newGrades);
+					parseGrades(newGrades);
+				}
+			}
+		}
+	}, [values, schoolYearData]);
+	const parseGrades = (newGrades) => {
+		let dropDownItems = []
+		GRADES.forEach((grade) => {
+			if (newGrades?.includes(grade.toString())) {
+				if (typeof grade !== 'string') {
+					dropDownItems.push({
+						label: toOrdinalSuffix(grade) + ' Grade',
+						value: grade.toString(),
+					})
+				}
+				if (typeof grade == 'string') {
+					dropDownItems.push({
+						label: grade,
+						value: grade,
+					})
+				}
+			}
+		})
+		updateOptionsForDefaultQuestion(dropDownItems);
+	}
+
 	//	address_county_id
 	const {loading: countyLoading, data: countyData } = useQuery(getCountiesByRegionId, {
-    variables: {regionId: questions[0]?.region_id},
+		variables: {regionId: questions[0]?.region_id},
 		skip: hasAction || questions[0]?.defaultQuestion === false || questions[0]?.options.length > 0 || questions[0]?.slug != 'address_county_id',
-    fetchPolicy: 'network-only',
-  });
-  useEffect(() => {
-    !countyLoading && countyData?.getCounties &&
-      updateOptionsForDefaultQuestion(
-        countyData.getCounties
-          .map((v) => {return {label: v.county_name, value: Number(v.id)}})
-      )
-  }, [countyData]);
+		fetchPolicy: 'network-only',
+	});
+	useEffect(() => {
+		!countyLoading && countyData?.getCounties &&
+			updateOptionsForDefaultQuestion(
+				countyData.getCounties
+					.map((v) => {return {label: v.county_name, value: Number(v.id)}})
+			)
+	}, [countyData]);
 	//	packet_school_district
 	const {loading: schoolDistrictsDataLoading, data: schoolDistrictsData} = useQuery(getSchoolDistrictsByRegionId, {
-    variables: {
-      regionId: questions[0]?.region_id,
-    },
-    skip: hasAction || questions[0]?.defaultQuestion === false || questions[0]?.options.length > 0 || questions[0]?.slug != 'packet_school_district',
-    fetchPolicy: 'network-only',
-  })
-  useEffect(() => {
-      !schoolDistrictsDataLoading && schoolDistrictsData?.schoolDistrict.length > 0 &&
-      	updateOptionsForDefaultQuestion(
-					schoolDistrictsData?.schoolDistrict.map((d) => {return {label: d.school_district_name, value: d.school_district_name}})
-				)
-  }, [schoolDistrictsDataLoading])
+		variables: {
+			regionId: questions[0]?.region_id,
+		},
+		skip: hasAction || questions[0]?.defaultQuestion === false || questions[0]?.options.length > 0 || questions[0]?.slug != 'packet_school_district',
+		fetchPolicy: 'network-only',
+	})
+	useEffect(() => {
+		!schoolDistrictsDataLoading && schoolDistrictsData?.schoolDistrict.length > 0 &&
+			updateOptionsForDefaultQuestion(
+				schoolDistrictsData?.schoolDistrict.map((d) => {return {label: d.school_district_name, value: d.school_district_name}})
+			)
+	}, [schoolDistrictsDataLoading])
 	//	address_state
 	const { data: regionData, loading: regionDataLoading } = useQuery(getAllRegion, {
 		skip: hasAction || questions[0]?.defaultQuestion === false || questions[0]?.options.length > 0 || questions[0]?.slug != 'address_state',
 		fetchPolicy: 'network-only'
 	});
-  useEffect(() => {
-    !regionDataLoading && regionData && regionData.regions &&
-      updateOptionsForDefaultQuestion(
-        regionData.regions?.map((region) => ({
-          label: region.name,
-          value: region.id,
-        }))
-      );
-  }, [regionData])
+	useEffect(() => {
+		!regionDataLoading && regionData && regionData.regions &&
+			updateOptionsForDefaultQuestion(
+				regionData.regions?.map((region) => ({
+					label: region.name,
+					value: region.id,
+				}))
+			);
+	}, [regionData])
 	//	student_gender
 	useEffect(() => {
 		!hasAction && questions[0]?.defaultQuestion && questions[0]?.options.length == 0 && questions[0]?.slug == 'student_gender' &&
 			updateOptionsForDefaultQuestion([
         {label: 'Male', value: 1},
         {label: 'Female', value: 2},
-        {label: 'Non Binary', value: 3},
-        {label: 'Undeclared', value: 4},
+//        {label: 'Non Binary', value: 3},
+//        {label: 'Undeclared', value: 4},
       ]);
 	}, []);
-	//	student_grade_level
-	//	TODO
 
 	//	student
 	useEffect(() => {
-		!hasAction && questions[0]?.mainQuestion && questions[0]?.options.length == 0 && questions[0]?.slug == 'student' &&
+		if(!hasAction && questions[0]?.mainQuestion && questions[0]?.options.length == 0 && questions[0]?.slug == 'student') {
 			updateOptionsForDefaultQuestion(
 				me?.students?.map((student) => ({
 					label: student.person.first_name,
 					value: student.student_id
 				}))
 			);
+		}
 	}, [questions]);
 
 	return (
@@ -152,7 +192,7 @@ export default function QuestionItem({
 				</Box>
 				{hasAction && !questions[0]?.mainQuestion && (
 					<Box display='inline-flex' paddingTop='10px' height='40px' alignItems='center' justifyContent='center'>
-						<DragHandle />
+						
 						
 						<IconButton onClick={() => setShowEditDialog(true)}>
 							<EditIcon />
@@ -161,6 +201,7 @@ export default function QuestionItem({
 						<IconButton onClick={() => setShowDeleteDialog(true)}>
 							<DeleteForeverOutlinedIcon />
 						</IconButton>
+						<DragHandle />
 					</Box>
 				)}
 			</Box>
@@ -187,7 +228,7 @@ function Item({ question: q }: { question: Question }) {
 	const { values, setValues, errors, touched } = useFormikContext<Question[]>();
 
 	//	Response
-	const setQuestionResponse = (value) => {//console.log(q, value);
+	const setQuestionResponse = (value) => {
 		if(q.type == QUESTION_TYPE.CHECKBOX) {
 			if(q.response.indexOf('"' + value + '"') >= 0) {
 				q.response = q.response.replace('"' + value + '"', '');
@@ -203,8 +244,8 @@ function Item({ question: q }: { question: Question }) {
 		} : v));
 		let current = q;
 		while(newValues.find(x => current.slug == x.additionalQuestion)
-		&& (current.response == '' || current.options.find(x => x.value == current.response
-													|| current.response.toString().indexOf('"' + x.value + '"') >= 0).action != 2)) {
+			&& (current.response == '' || current.options.find(x => x.value == current.response
+			|| current.response.toString().indexOf('"' + x.value + '"') >= 0).action != 2)) {
 			current = newValues.find(x => current.slug == x.additionalQuestion);
 			current.response = '';
 		}
@@ -221,11 +262,18 @@ function Item({ question: q }: { question: Question }) {
 						marginTop: '10px',
 						maxWidth: '100%',
 						borderColor: errors[q.id] ? 'red' : '',
-						[`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
+						[`& .${outlinedInputClasses.root} .${outlinedInputClasses.notchedOutline}`]: {
 							borderColor: SYSTEM_07,
+							borderWidth: '2px',
 						},
+						[`& .${inputLabelClasses.root}.${inputLabelClasses.focused}`]: {
+							transform: 'translate(14px, -11px) scale(1)'
+						},
+						[`& .${outlinedInputClasses.root} .${outlinedInputClasses.notchedOutline} span`]: {
+							fontSize: 16
+						}
 					}}
-					name={q.id.toString()}
+					name={`Question${q.id}`}
 					labelTop
 					dropDownItems={q.options || []}
 					placeholder={q.question}
@@ -233,8 +281,8 @@ function Item({ question: q }: { question: Question }) {
 					alternate={true}
 					size='small'
 					error={{
-						error: !!touched[q.id] && !!errors[q.id],
-						errorMsg: !!touched[q.id] && !!errors[q.id] ? 'This field is required' : ''
+						error: (!!errors[q.id]),
+						errorMsg: (!!errors[q.id]) ? errors[q.id].toString() : ''
 					}}
 				/>
 			);
@@ -246,12 +294,22 @@ function Item({ question: q }: { question: Question }) {
 						marginTop: '10px',
 						minWidth: '100%',
 						maxWidth: '100%',
-						[`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
+						[`& .${outlinedInputClasses.root} .${outlinedInputClasses.notchedOutline}`]: {
 							borderColor: SYSTEM_07,
+							borderWidth: '2px'
+						},
+						[`& .${inputLabelClasses.root}.${inputLabelClasses.focused}`]: {
+							transform: 'translate(14px, -11px) scale(1)'
+						},
+						[`& .${outlinedInputClasses.root} .${outlinedInputClasses.notchedOutline} span`]: {
+							fontSize: 16
 						}
 					}}
 					InputLabelProps={{
-						style: { color: SYSTEM_05 },
+						style: { color: SYSTEM_05, fontSize: 16 },
+					}}
+					InputProps={{
+						style: {fontSize: 16}
 					}}
 					FormHelperTextProps={{
 						style: {
@@ -261,9 +319,9 @@ function Item({ question: q }: { question: Question }) {
 					label={q.question}
 					variant='outlined'
 					value={q.response}
-					onChange={(e) => (setQuestionResponse(e.currentTarget.value))}
-					name={q.id.toString()}
-					error={!!touched[q.id] && !!errors[q.id]}
+					onChange={(e) => {setQuestionResponse(e.currentTarget.value);}}
+					name={`Question${q.id}`}
+					error={!!(touched[q.id] && Boolean(errors[q.id]))}
 					helperText={errors[q.id]}
 				/>
 			);
@@ -273,7 +331,7 @@ function Item({ question: q }: { question: Question }) {
 					<Subtitle
 						color={SYSTEM_05}
 						sx={{
-							paddingLeft: '20px',
+							paddingLeft: 0,
 							paddingBottom: '10px',
 							width: '100%',
 							maxWidth: '100%',
@@ -296,8 +354,13 @@ function Item({ question: q }: { question: Question }) {
 							}}
 						>
 							<Checkbox
+								name={"Question" + q.id.toString()}
 								checked={q.response?.indexOf('"' + o.value + '"') >= 0}
-								onClick={() => setQuestionResponse(o.value)} />
+								onClick={() => setQuestionResponse(o.value)}
+								sx={{
+									paddingLeft: 0
+								}}
+							/>
 							<Subtitle size='small' sx={{wordWrap: 'break-word',maxWidth: '90%',textAlign: 'start',}}>{o.label}</Subtitle>
 						</Box>
 					))}
@@ -309,10 +372,12 @@ function Item({ question: q }: { question: Question }) {
 					<Checkbox
 						checked={q.response === true}
 						onChange={(e) => setQuestionResponse(e.currentTarget.checked)}
+						name={`Question${q.id}`}
+						sx={{
+							paddingLeft: 0
+						}}
 					/>
-					<Subtitle size='small' color={SYSTEM_05} sx={{wordWrap: 'break-word', maxWidth: '90%', textAlign: 'start',}}>
-						<p dangerouslySetInnerHTML={{ __html: q.question }}></p>
-					</Subtitle>
+					<p dangerouslySetInnerHTML={{ __html: q.question }}></p>
 				</Box>
 			);
 		case QUESTION_TYPE.MULTIPLECHOICES:
@@ -320,7 +385,7 @@ function Item({ question: q }: { question: Question }) {
 				<Box>
 					<Subtitle
 						sx={{
-							paddingLeft: '20px',
+							paddingLeft: 0,
 							paddingBottom: '10px',
 							width: '100%',
 							textAlign: 'start',
@@ -346,6 +411,10 @@ function Item({ question: q }: { question: Question }) {
 							<Radio
 								checked={o.value == q.response}
 								onChange={(e) => e.currentTarget.checked && setQuestionResponse(o.value)}
+								name={`Question${q.id}`}
+								sx={{
+									paddingLeft: 0
+								}}
 							/>
 							<Subtitle size='small' sx={{wordWrap: 'break-word', maxWidth: '90%', textAlign: 'start'}}>{o.label}</Subtitle>
 						</Box>
@@ -360,7 +429,7 @@ function Item({ question: q }: { question: Question }) {
 					sx={{
 						marginTop: '10px',
 						minWidth: '100%',
-						[`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
+						[`& .${outlinedInputClasses.root} .${outlinedInputClasses.notchedOutline}`]: {
 							borderColor: SYSTEM_07,
 						},
 					}}
@@ -371,9 +440,10 @@ function Item({ question: q }: { question: Question }) {
 					variant='outlined'
 					value={q.response}
 					onChange={(v) => setQuestionResponse(v.currentTarget.value)}
-					focused
 					type="date"
+					focused
 					inputProps={{min: moment().format('YYYY-MM-DD')}}
+					name={"Question" + q.id.toString()}
 					FormHelperTextProps={{
 						style: {
 							color: '#BD0043'
@@ -396,11 +466,26 @@ function Item({ question: q }: { question: Question }) {
 						placeholder="Entry"
 						fullWidth
 						value={q.response}
-						onChange={function(e: any): void {}}
+						sx={{
+							minWidth: '100%',
+							maxWidth: '100%',
+							[`& .${outlinedInputClasses.root} .${outlinedInputClasses.notchedOutline}`]: {
+								borderColor: SYSTEM_07,
+								borderWidth: '2px',
+							},
+							mb: 2,
+							background: '#fff'
+						}}
+						name={"Question" + q.id.toString()}
 						size="medium"
-						sx={{ mb: 2, background: "#fff" }}
-						value={q.response}
 						onChange={(v) => setQuestionResponse(v.currentTarget.value)}
+						FormHelperTextProps={{
+							style: {
+								color: '#BD0043'
+							}
+						}}
+						error={!!touched[q.id] && !!errors[q.id]}
+						helperText={errors[q.id] ? 'Parent Name is required.' : ''}
 					/>
 					<Subtitle size={12}>
 						{q.question}

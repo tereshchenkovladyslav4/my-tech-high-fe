@@ -21,7 +21,6 @@ export const getParentQuestionsGql = gql`
           additional
           additional2
           required
-          removable
           type
           slug
           default_question

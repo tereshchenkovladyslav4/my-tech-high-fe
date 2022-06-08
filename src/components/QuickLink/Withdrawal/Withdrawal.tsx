@@ -7,7 +7,7 @@ import { arrayMove, SortableContainer, SortableElement } from 'react-sortable-ho
 import { defaultQuestions, Question, QUESTION_TYPE } from '../../QuestionItem/QuestionItemProps';
 import QuestionItem from '../../QuestionItem/QuestionItem';
 import { Formik, Form, Field } from 'formik';
-import { useHistory } from 'react-router-dom';
+import { Prompt } from 'react-router-dom';
 import { useMutation, useQuery } from '@apollo/client';
 import { saveQuestionsMutation, deleteQuestionMutation } from '../../../graphql/mutation/question';
 import { getQuestionsByRegionQuery } from '../../../graphql/queries/question';
@@ -93,14 +93,15 @@ const WithDrawal: React.FC<
 	const [questions, setQuestions] = useState<Question[]>([]);
 	//	Flag State which indicates to show the Question Type Selection Modal (Choose between Default and Custom)
 	const [openSelectQuestionType, setOpenSelectQuestionType] = useState(false);
-	//	Flag State which indicates to show the leaving confirmation modal
-	const [unSaveChangeModal, setUnSaveChangeModal] = useState(null);
 	//	Flag State which indicates to show the cancel confirmation modal
 	const [cancelModal, setCancelModal] = useState(false);
 	//	Flag State which indicates Questions saved Success Message
 	const [successAlert, setSuccessAlert] = useState(false);
 	//	Flag State which indicates if the Form has values changed. true => Form has values changed. false => No
 	const [unsavedChanges, setUnsavedChanges] = useState(false);
+	useEffect(() => {
+		window['setFormChanged']('WithdrawalForm', unsavedChanges);
+	}, [unsavedChanges]);
 
 	//	Select Questions Query from the Database
 	const {data: questionsData, refetch: refetchQuestionData} = useQuery(getQuestionsByRegionQuery, {
@@ -191,31 +192,8 @@ const WithDrawal: React.FC<
 		}
 	}, [questionsData]);
 
-	//	Check page leaving event
-	const history = useHistory();
-	useEffect(() => {
-		window.onbeforeunload = (e) => {
-			//	if there is no changes, just leave the page
-			if(!unsavedChanges)	return;
-			//	else prevent leaving
-			e?.preventDefault();
-			return 'Unsaved changes';	//	Legacy method for cross browser support
-		};
-
-		const unreg = history.block(() => {
-			if(unsavedChanges) {
-				return JSON.stringify({
-					header: 'Unsaved Changes',
-					content: 'Are you sure you want to leave without saving changes?'
-				})
-			}
-			return
-		});
-		return () => {
-			unreg()
-			window.onbeforeunload = null
-		}
-	}, [history, unsavedChanges]);
+	//	This state helps for the validation check run when submit only
+	const [isSubmitting, setIsSubmitting] = useState(false);
 
 	//	Remove Success Message after 5 seconds when showed
 	useEffect(() => {
@@ -251,23 +229,47 @@ const WithDrawal: React.FC<
 				padding: '1rem 2.5rem',
 			}}
 		>
+			{questions.length > 0 && (
 			<Formik
 				initialValues={questions}
 				enableReinitialize={true}
 				validate={(values) => {
-					if (_.isEqual(values, questions) === unsavedChanges) {
+					let isEqual = true;
+					if(isEditable()) {
+						isEqual = _.isEqual(values, questions);
+					}
+					else {
+						//	Parent
+						//	Compare response only
+						for(var i = 0; i < values.length; i++) {
+							if(values[i].response != questions[i].response) {
+								isEqual = false;
+								break;
+							}
+						}
+					}
+					if (isEqual === unsavedChanges) {
 						setUnsavedChanges(!unsavedChanges)
 						handleChange(!unsavedChanges);
 					}
 
-					if(!isEditable()) {
+					if(!isEditable() && isSubmitting) {
 						//	Check validation on parent side only
 						const errors = {};
 						values.forEach(val => {
-							if(val.required && val.response == '')
-								errors[val.id] = 'This field is required';
+							if(val.required && val.response == '') {
+								//	Check Additional questions
+								if(val.additionalQuestion != '') {
+									const parent = values.find(v => v.slug == val.additionalQuestion);
+									if(parent.response != '' && parent.options.find(o => o.value == parent.response).action == 2) {
+										errors[val.id] = val.question + ' is required.';
+									}
+								}
+								else
+									errors[val.id] = val.question + ' is required.';
+							}
 							else if(!val.required && val.response != '' && val.validation > 0) {
-								if(val.validation == 2) {
+								if(val.validation == 1) {
 									//	Check numbers
 									if(!(new RegExp(/^[0-9]+$/).test(val.response)))
 										errors[val.id] = 'Please enter numbers only.';
@@ -282,55 +284,68 @@ const WithDrawal: React.FC<
 						return errors;
 					}
 				}}
-				onSubmit={async (vals) => {
-					if(!isEditable()) {
-						console.log(vals);
-						return;
-					}
-					let newquestions = vals.map((v) => v);
-					questions.filter(x => !x.mainQuestion).forEach((q) => {
-						if (!newquestions.find((v) => v.id === q.id)) {
-							deleteQuestion({ variables: { questionId: q.id } })
+				onSubmit={async (vals, formikBag) => {
+					setIsSubmitting(true);
+					formikBag.validateForm().then(async(res) => {
+						//setIsSubmitting(false);
+						if(Object.keys(res).length > 0) {
+							console.log(res);
+							return;
 						}
-					});
 
-					for(let i = 0; i < newquestions.length; i++) {
-						if(newquestions[i].id < 0)	newquestions[i].id = 0;
-						newquestions[i].sequence = i + 1;
-					}
-					
-					const {data} = await saveQuestions({
-						variables: {
-							questionsInput: newquestions.map((v) => {return {question: {
-								id: Number(v.id),
-								region_id: v.region_id,
-								section: v.section,
-								sequence: v.sequence,
-								slug: v.slug,
-								type: v.type,
-								question: v.question,
-								validation: v.validation,
-								mainQuestion: v.mainQuestion ? 1 : 0,
-								defaultQuestion: v.defaultQuestion ? 1 : 0,
-								options: JSON.stringify(v.options),
-								required: v.required ? 1 : 0,
-								additionalQuestion: v.additionalQuestion
-							}}}),
-						},
-					});
-					if(data.saveQuestions) {
-						refetchQuestionData();
-						setSuccessAlert(true);
-						setUnsavedChanges(false);
-						handleChange(false);
-					}
-					else {
-						console.error(data);
-					}
+						if(!isEditable()) {
+							console.log(vals);
+							return;
+						}
+						let newquestions = vals.map((v) => v);
+						questions.filter(x => !x.mainQuestion).forEach((q) => {
+							if (!newquestions.find((v) => v.id === q.id)) {
+								deleteQuestion({ variables: { questionId: q.id } })
+							}
+						});
+	
+						for(let i = 0; i < newquestions.length; i++) {
+							if(newquestions[i].id < 0)	newquestions[i].id = 0;
+							newquestions[i].sequence = i + 1;
+						}
+						
+						const {data} = await saveQuestions({
+							variables: {
+								questionsInput: newquestions.map((v) => {return {question: {
+									id: Number(v.id),
+									region_id: v.region_id,
+									section: v.section,
+									sequence: v.sequence,
+									slug: v.slug,
+									type: v.type,
+									question: v.question,
+									validation: v.validation,
+									mainQuestion: v.mainQuestion ? 1 : 0,
+									defaultQuestion: v.defaultQuestion ? 1 : 0,
+									options: JSON.stringify(v.options),
+									required: v.required ? 1 : 0,
+									additionalQuestion: v.additionalQuestion
+								}}}),
+							},
+						});
+						if(data.saveQuestions) {
+							refetchQuestionData();
+							setSuccessAlert(true);
+							setUnsavedChanges(false);
+							handleChange(false);
+						}
+						else {
+							console.error(data);
+						}
+					}).catch(err => {
+						//setIsSubmitting(false);
+					})
 				}}
 			>
 				{({ values, setValues }) => (
-					<Form>
+					<Form
+						name={'WithdrawalForm'}
+						>
 						<Box sx={classes.base}>
 							<Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', width: '100%' }}>
 								<Typography sx={{ fontWeight: 700, fontSize: 20, ml: 1 }}>Withdrawal</Typography>
@@ -435,7 +450,7 @@ const WithDrawal: React.FC<
 							<Box sx={{ width: "55%", margin: "auto", mt: 2 }}>
 								<Button variant='contained' sx={{...classes.button, width: '100%'}} onClick={() => setOpenSelectQuestionType(true)}>
 									<Subtitle size={12} >
-										+ Add Question
+										Add Question
 									</Subtitle>
 								</Button>
 							</Box>
@@ -449,9 +464,20 @@ const WithDrawal: React.FC<
 							</Box>
 						</Box>
 						{openAddQuestion === 'new' &&
-							<QuestionModal onClose={() => setOpenAddQuestion('')} questions={currentQuestions} questionTypes={QuestionTypes} additionalQuestionTypes={AdditionalQuestionTypes} />}
+							<QuestionModal
+								onClose={(res) => {
+										setOpenAddQuestion('');
+										if(!res)	setOpenSelectQuestionType(true);
+									}
+								}
+								questions={currentQuestions}
+								questionTypes={QuestionTypes}
+								additionalQuestionTypes={AdditionalQuestionTypes} />}
 						{openAddQuestion === 'default' &&
-							<DefaultQuestionModal onClose={() => setOpenAddQuestion('')} onCreate={e => onSelectDefaultQuestions(e)} />}
+							<DefaultQuestionModal onClose={() => {
+								setOpenAddQuestion('');
+								setOpenSelectQuestionType(true);
+							}} onCreate={e => onSelectDefaultQuestions(e)} />}
 						{openSelectQuestionType &&
 							<SelectDefaultCustomQuestionModal
 								onClose={() => setOpenSelectQuestionType(false)}
@@ -477,20 +503,13 @@ const WithDrawal: React.FC<
 									}
 									setOpenSelectQuestionType(false);
 								}} />}
-						{unSaveChangeModal != null &&
-							<CustomConfirmModal
-								header='Unsaved Changes'
-								content='Are you sure you want to leave without saving changes?'
-								handleConfirmModalChange={(val: boolean, isOk: boolean) => {
-									setUnSaveChangeModal(null);
-									if(isOk) {
-										setUnsavedChanges(false);
-										handleChange(false);
-										action('');
-									}
-								}}
-							/>
-						}
+						<Prompt
+							when={unsavedChanges ? true : false}
+							message={JSON.stringify({
+								header: 'Unsaved Changes',
+								content: 'Are you sure you want to leave without saving changes?',
+							})}
+						/>
 						{cancelModal &&
 							<CustomConfirmModal
 								header='Cancel Changes'
@@ -520,6 +539,7 @@ const WithDrawal: React.FC<
 					</Form>
 				)}
 			</Formik>
+			)}
 		</Grid>
 	)
 }

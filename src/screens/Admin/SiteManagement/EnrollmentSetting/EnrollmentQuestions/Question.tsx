@@ -1,4 +1,4 @@
-import { Box, Checkbox, IconButton, outlinedInputClasses, Radio, TextField, Grid, FormGroup, FormControl, FormControlLabel } from '@mui/material'
+import { Box, Checkbox, IconButton, outlinedInputClasses, Radio, TextField, Grid, FormGroup, FormControl, FormControlLabel, Tooltip } from '@mui/material'
 import { useFormikContext } from 'formik'
 import React, { useState, useEffect, useContext } from 'react'
 import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragraph'
@@ -21,9 +21,11 @@ import { TabContext } from './TabContextProvider'
 import { ProgramYearContext } from '../provider/ProgramYearProvider'
 
 const DragHandle = SortableHandle(() => (
-    <IconButton>
-        <DehazeIcon />
-    </IconButton>
+    <Tooltip title="Move">
+        <IconButton>
+            <DehazeIcon />
+        </IconButton>
+    </Tooltip>
 ))
 
 export default function EnrollmentQuestionItem({
@@ -74,13 +76,18 @@ export default function EnrollmentQuestionItem({
                 </FormControl>
                 {!mainQuestion && (
                     <Box display='inline-flex' height='40px'>
-                        <IconButton onClick={() => setShowEditDialog(true)}>
-                            <EditIcon />
-                        </IconButton>
+                        <Tooltip title="Edit">
+                            <IconButton onClick={() => setShowEditDialog(true)}>
+                                <EditIcon />
+                            </IconButton>
+                        </Tooltip>
 
-                        {item.removable && (<IconButton onClick={() => setShowDeleteDialog(true)}>
-                            <DeleteForeverOutlinedIcon />
-                        </IconButton>)}
+                        <Tooltip title="Delete">
+                            <IconButton onClick={() => setShowDeleteDialog(true)}>
+                                <DeleteForeverOutlinedIcon />
+                            </IconButton>
+                        </Tooltip>
+
                         <DragHandle />
                     </Box>
                 )}
@@ -96,13 +103,18 @@ export default function EnrollmentQuestionItem({
                     </Paragraph>
                     {!mainQuestion && (
                         <Box display='inline-flex' height='40px'>
-                            <IconButton onClick={() => setShowEditDialog(true)}>
-                                <EditIcon />
-                            </IconButton>
+                            <Tooltip title="Edit">
+                                <IconButton onClick={() => setShowEditDialog(true)}>
+                                    <EditIcon />
+                                </IconButton>
+                            </Tooltip>
 
-                            {item.removable && (<IconButton onClick={() => setShowDeleteDialog(true)}>
-                                <DeleteForeverOutlinedIcon />
-                            </IconButton>)}
+                            <Tooltip title="Delete">
+                                <IconButton onClick={() => setShowDeleteDialog(true)}>
+                                    <DeleteForeverOutlinedIcon />
+                                </IconButton>
+                            </Tooltip>
+                            
                             <DragHandle />
                         </Box>
                     )}
@@ -117,14 +129,19 @@ export default function EnrollmentQuestionItem({
                     <Subtitle fontWeight='500'>{item.question}</Subtitle>
                     {!mainQuestion && (
                         <Box display='inline-flex' height='40px'>
-                            <DragHandle />
-                            <IconButton onClick={() => setShowEditDialog(true)}>
-                                <EditIcon />
-                            </IconButton>
+                            <Tooltip title="Edit">
+                                <IconButton onClick={() => setShowEditDialog(true)}>
+                                    <EditIcon />
+                                </IconButton>
+                            </Tooltip>
 
-                            {item.removable && (<IconButton onClick={() => setShowDeleteDialog(true)}>
-                                <DeleteForeverOutlinedIcon />
-                            </IconButton>)}
+                            <Tooltip title="Delete">
+                                <IconButton onClick={() => setShowDeleteDialog(true)}>
+                                    <DeleteForeverOutlinedIcon />
+                                </IconButton>
+                            </Tooltip>
+
+                            <DragHandle />
 
                         </Box>
                     )}

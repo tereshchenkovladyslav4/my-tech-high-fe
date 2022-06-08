@@ -9,11 +9,13 @@ import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
 import SearchIcon from '@mui/icons-material/Search'
 import { useStyles } from './styles'
 import { DropDown } from '../../../../components/DropDown/DropDown'
-import { MTHGREEN, SYSTEM_06, SYSTEM_05, SYSTEM_02 } from '../../../../utils/constants'
+import { MTHGREEN, SYSTEM_06, SYSTEM_05, SYSTEM_02, CALENDAR } from '../../../../utils/constants'
 import { CalendarComponent } from '../CalendarComponent'
+import { useHistory } from 'react-router-dom'
 
 const CalendarTable = () => {
   const classes = useStyles
+  const history = useHistory()
   const [searchField, setSearchField] = useState<string>()
 
   return (
@@ -25,7 +27,13 @@ const CalendarTable = () => {
           </Subtitle>
         </Box>
         <Box sx={classes.pageTopRight}>
-          <Button disableElevation variant='contained' sx={classes.editButton} startIcon={<ModeEditIcon />}>
+          <Button
+            disableElevation
+            variant='contained'
+            sx={classes.editButton}
+            startIcon={<ModeEditIcon />}
+            onClick={() => history.push(`${CALENDAR}/editType`)}
+          >
             <Subtitle sx={{ whiteSpace: 'nowrap' }}>Edit Type</Subtitle>
           </Button>
           <Button disableElevation variant='contained' sx={classes.addButton} startIcon={<AddIcon />}>

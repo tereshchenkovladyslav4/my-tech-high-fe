@@ -11,11 +11,11 @@ import QuickLinkEdit from './QuickLinkEdit';
 import ArrowBackIosOutlinedIcon from '@mui/icons-material/ArrowBackIosOutlined'
 import QuickLinkReservedEdit from './QuickLinkReservedEdit';
 import CustomConfirmModal from '../CustomConfirmModal/CustomConfirmModal';
-import { useHistory } from 'react-router-dom';
+import { Prompt, useHistory } from 'react-router-dom';
 import Withdrawal from './Withdrawal/Withdrawal';
 
 export const QuickLinks: React.FC<any> = ({backAction}) => {
-	const { me, setMe } = useContext(UserContext)
+	const { me } = useContext(UserContext)
 
 	//	Quick Links state which saves Quick Links array
 	const [quickLinks, setQuickLinks] = useState([]);
@@ -55,12 +55,7 @@ export const QuickLinks: React.FC<any> = ({backAction}) => {
 		}
 
 		if(nextRegion != 0) {
-			if(page != '' && hasChange) {
-				showLeavingConfirmModal(true);
-			}
-			else {
-				setRegion(nextRegion);
-			}
+			setRegion(nextRegion);
 		}
 	}
 
@@ -71,34 +66,12 @@ export const QuickLinks: React.FC<any> = ({backAction}) => {
 		}
 	}, [region]);
 
-	const history = useHistory();
-	useEffect(() => {
-		window.onbeforeunload = (e) => {
-			if(!hasChange)	return;
-			e?.preventDefault();
-			return 'Unsaved changes';
-		};
-		const unreg = history.block(() => {
-			if(hasChange) {
-				return JSON.stringify({
-          header: 'Unsaved Changes',
-          content: 'Are you sure you want to leave without saving changes?'
-				})
-			}
-		});
-		return () => {
-			unreg();
-			window.onbeforeunload = null;
-		};
-	}, [history, hasChange]);
-
 	//	A State which indicates which page is showing now.	'' => List Page, 'edit' => Edit Page, 'reserved' => Reserved information edit page(Website Link Edit Page)
 	const [page, setPage] = useState('');
 	useEffect(() => {
 		if(page == '') {
 			selectQuickLink(null);
 			setChanged(false);
-			resetRegion();
 		}
 	}, [page]);
 	useEffect(() => {
@@ -186,9 +159,18 @@ export const QuickLinks: React.FC<any> = ({backAction}) => {
 
 		setChanged(false);
 	}
-	const SortableQuickLinkCard = SortableElement(({item, action, onAction}) => (
-		<li style={{listStyleType: 'none', display: 'inline-block', width: '33%'}}><QuickLinkCard item={item} action={action} onAction={onAction} /></li>
+	const SortableQuickLinkCard = SortableElement(({item, action, onAction, background}) => (
+		<li style={{listStyleType: 'none', display: 'inline-block', width: '33%'}}><QuickLinkCard item={item} action={action} onAction={onAction} background={background} /></li>
 	));
+
+	const getColor = (items, idx) => {
+		let isBlue = true;
+		for(let i = 0; i < idx; i++) {
+			if(!items[i].image_url)
+				isBlue = !isBlue;
+		}
+		return isBlue ? 'blue' : 'orange';
+	}
 
 	const SortableQuickLinkListContainer = SortableContainer(({ items }: { items: QuickLink[] }) => (
 		<ul style={{textAlign: 'left'}}>
@@ -196,6 +178,7 @@ export const QuickLinks: React.FC<any> = ({backAction}) => {
 				<SortableQuickLinkCard index={idx} key={idx}
 					item={item}
 					action={!isEditable() || item.id == 0 ? false : true}
+					background={getColor(items, idx)}
 					onAction={(evt_type) => {
 						switch(evt_type) {
 							case "click":
@@ -395,6 +378,13 @@ export const QuickLinks: React.FC<any> = ({backAction}) => {
 						}}
 					/>
 			}
+			<Prompt
+				when={hasChange ? true : false}
+				message={JSON.stringify({
+					header: 'Unsaved Changes',
+					content: 'Are you sure you want to leave without saving changes?',
+				})}
+			/>
 		</Box>
 	);
 }

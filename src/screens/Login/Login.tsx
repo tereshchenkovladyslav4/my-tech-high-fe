@@ -11,14 +11,15 @@ import { Metadata } from '../../components/Metadata/Metadata'
 import { Contact } from './Contact/Contact'
 import { Footer } from './Footer/Footer'
 import { useStyles } from './styles'
-import { loginMutation, resendVerificationEmailMutation } from './service'
-import { useMutation } from '@apollo/client'
-import { AuthContext } from '../../providers/AuthProvider/AuthContext'
-import { Link } from 'react-router-dom'
-import { ApolloError } from '../Admin/Users/interfaces'
-import { WarningModal } from '../../components/WarningModal/Warning'
-import { useHistory } from 'react-router-dom'
-import CustomModal from '../Admin/SiteManagement/EnrollmentSetting/components/CustomModal/CustomModals'
+import { loginMutation, resendVerificationEmailMutation } from './service';
+import { useMutation } from '@apollo/client';
+import { AuthContext } from '../../providers/AuthProvider/AuthContext';
+import { Link } from 'react-router-dom';
+import { ApolloError } from '../Admin/Users/interfaces';
+import { WarningModal } from '../../components/WarningModal/Warning';
+import { useHistory } from 'react-router-dom';
+import CustomModal from '../Admin/SiteManagement/EnrollmentSetting/components/CustomModal/CustomModals';
+
 export const Login = () => {
   const infocenterHelpLinks = [
     {
@@ -73,7 +74,7 @@ export const Login = () => {
 
   const renderInfocenterHelpLinks = (arr: Array<any>, canvas?: boolean) =>
     map(arr, (link, idx) => (
-      <Grid item xs={12} textAlign='left'>
+      <Grid item key={idx} xs={12} textAlign='left'>
         <Paragraph size='large' color={canvas ? 'black' : 'white'}>
           {link.title}
         </Paragraph>
@@ -86,8 +87,8 @@ export const Login = () => {
   const [resendEmail, { data: resendEmailResponse, loading: resending, error: resendError }] = useMutation(
     resendVerificationEmailMutation,
   )
-  const [username, setUsername] = useState<string | undefined>()
-  const [password, setPassword] = useState<string | undefined>()
+  const [username, setUsername] = useState<string>('')
+  const [password, setPassword] = useState<string>('')
   const [unverified, setUnverified] = useState<boolean>(false)
   const { setCredentials } = useContext(AuthContext)
   const history = useHistory()

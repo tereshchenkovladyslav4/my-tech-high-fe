@@ -49,7 +49,6 @@ export const getPacketQuestionsGql = gql`
           additional
           additional2
           required
-          removable
           type
           slug
           default_question

@@ -1,4 +1,4 @@
-import { Box, Checkbox, IconButton, outlinedInputClasses, Radio, TextField, FormGroup, FormControl, FormControlLabel } from '@mui/material'
+import { Box, Checkbox, IconButton, outlinedInputClasses, Radio, TextField, FormGroup, FormControl, FormControlLabel, Tooltip, inputLabelClasses } from '@mui/material'
 import { useFormikContext } from 'formik'
 import React, { useState, useContext } from 'react'
 import { DropDown } from '../../../../../components/DropDown/DropDown'
@@ -15,9 +15,11 @@ import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragr
 import { ProgramYearContext } from '../provider/ProgramYearProvider'
 
 const DragHandle = SortableHandle(() => (
-  <IconButton>
-    <DehazeIcon />
-  </IconButton>
+  <Tooltip title="Move">
+    <IconButton>
+      <DehazeIcon />
+    </IconButton>
+  </Tooltip>
 ))
 
 export default function ApplicationQuestionItem({
@@ -39,13 +41,17 @@ export default function ApplicationQuestionItem({
         </Box>
         {!mainQuestion && (
           <Box display='inline-flex' paddingTop='10px' height='40px' alignItems='center' justifyContent='center'>
-            <IconButton onClick={() => setShowEditDialog(true)}>
-              <EditIcon />
-            </IconButton>
+            <Tooltip title="Edit">
+              <IconButton onClick={() => setShowEditDialog(true)}>
+                <EditIcon />
+              </IconButton>
+            </Tooltip>
 
-            <IconButton onClick={() => setShowDeleteDialog(true)}>
-              <DeleteForeverOutlinedIcon />
-            </IconButton>
+            <Tooltip title="Delete">
+              <IconButton onClick={() => setShowDeleteDialog(true)}>
+                <DeleteForeverOutlinedIcon />
+              </IconButton>
+            </Tooltip>
             <DragHandle />
           </Box>
         )}
@@ -89,6 +95,12 @@ function Item({ question: q }: { question: ApplicationQuestion }) {
             borderColor: SYSTEM_07,
             borderWidth: '2px'
           },
+          [`& .${inputLabelClasses.root}.${inputLabelClasses.focused}`]: {
+            transform: 'translate(14px, -11px) scale(1)'
+          },
+          [`& .${outlinedInputClasses.root} .${outlinedInputClasses.notchedOutline} span`]: {
+            fontSize: 16
+          }
         }}
         labelTop
         dropDownItems={q.options || []}
@@ -113,6 +125,12 @@ function Item({ question: q }: { question: ApplicationQuestion }) {
           [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
             borderColor: SYSTEM_07,
           },
+          [`& .${inputLabelClasses.root}.${inputLabelClasses.focused}`]: {
+            transform: 'translate(14px, -11px) scale(1)'
+          },
+          [`& .${outlinedInputClasses.root} .${outlinedInputClasses.notchedOutline} span`]: {
+            fontSize: 16
+          }
         }}
         InputLabelProps={{
           style: { color: SYSTEM_05 },
@@ -132,7 +150,7 @@ function Item({ question: q }: { question: ApplicationQuestion }) {
         <Subtitle
           color={SYSTEM_05}
           sx={{
-            paddingLeft: '20px',
+            paddingLeft: 0,
             paddingBottom: '10px',
             width: '100%',
             maxWidth: '100%',
@@ -154,7 +172,14 @@ function Item({ question: q }: { question: ApplicationQuestion }) {
               width: '100%',
             }}
           >
-            <Checkbox checked={o.value === +q.response} onClick={() => onChange(o.value + '')} />
+            <Checkbox checked={o.value === +q.response} onClick={() => onChange(o.value + '')}
+              sx={{
+                paddingLeft: 0,
+                color: '#4145FF',
+                '&.Mui-checked': {
+                  color: '#4145FF'
+                }
+              }} />
             <Subtitle size='small' sx={{wordWrap: 'break-word',maxWidth: '90%',textAlign: 'start',}}>{o.label}</Subtitle>
           </Box>
         ))}
@@ -163,8 +188,15 @@ function Item({ question: q }: { question: ApplicationQuestion }) {
   } else if (q.type === 4) {
     return (
       <Box display="flex" alignItems='center'>
-        <Checkbox checked={q.response == 'true'} onClick={() => {}} />
-        <Paragraph size='large'>
+        <Checkbox checked={q.response == 'true'} onClick={() => {}}
+          sx={{
+            paddingLeft: 0,
+            color: '#4145FF',
+            '&.Mui-checked': {
+              color: '#4145FF'
+            }
+          }} />
+        <Paragraph size='large' sx={{fontSize: 16}}>
             <p dangerouslySetInnerHTML={{ __html: q.question }}></p>
         </Paragraph>
       </Box>
@@ -174,7 +206,7 @@ function Item({ question: q }: { question: ApplicationQuestion }) {
       <Box>
         <Subtitle
           sx={{
-            paddingLeft: '20px',
+            paddingLeft: 0,
             paddingBottom: '10px',
             width: '100%',
             textAlign: 'start',
@@ -197,7 +229,14 @@ function Item({ question: q }: { question: ApplicationQuestion }) {
               width: '100%',
             }}
           >
-            <Radio checked={false} />
+            <Radio checked={false}
+              sx={{
+                paddingLeft: 0,
+                color: '#4145FF',
+                '&.Mui-checked': {
+                  color: '#4145FF'
+                }
+              }} />
             <Subtitle size='small' sx={{wordWrap: 'break-word',maxWidth: '90%',textAlign: 'start'}}>{o.label}</Subtitle>
           </Box>
         ))}
@@ -211,10 +250,15 @@ function Item({ question: q }: { question: ApplicationQuestion }) {
         sx={{
           marginTop: '10px',
           minWidth: '100%',
-
           [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
             borderColor: SYSTEM_07,
           },
+          [`& .${inputLabelClasses.root}.${inputLabelClasses.focused}`]: {
+            transform: 'translate(14px, -11px) scale(1)'
+          },
+          [`& .${outlinedInputClasses.root} .${outlinedInputClasses.notchedOutline} span`]: {
+            fontSize: 16
+          }
         }}
         InputLabelProps={{
           style: { color: SYSTEM_05 },
@@ -232,7 +276,7 @@ function Item({ question: q }: { question: ApplicationQuestion }) {
   }
   else if (q.type === 7) {
     return (
-      <Paragraph size='large'>
+      <Paragraph size='large' sx={{fontSize: 16}}>
           <p dangerouslySetInnerHTML={{ __html: q.question }}></p>
       </Paragraph>
     )

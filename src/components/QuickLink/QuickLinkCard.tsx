@@ -11,7 +11,7 @@ import { SYSTEM_01 } from '../../utils/constants'
 import { SortableHandle } from 'react-sortable-hoc';
 import EastIcon from '@mui/icons-material/East';
 
-export const QuickLinkCard: React.FC<QuickLinkCardProps> = ({ item, action, onAction }) => {
+export const QuickLinkCard: React.FC<QuickLinkCardProps> = ({ item, action, onAction, background }) => {
 	const DragHandle = SortableHandle(() => (
 		<IconButton>
 			<Tooltip title="Move">
@@ -37,7 +37,7 @@ export const QuickLinkCard: React.FC<QuickLinkCardProps> = ({ item, action, onAc
 		>
 			{item.id != 0 &&
 				<>
-					<CardMedia component='img' sx={{ height: 240 }} src={item.image_url ? 'https://infocenter-v2-dev.s3.us-west-2.amazonaws.com/' + item.image_url : '../src/assets/quick-link.png'} />
+					<CardMedia component='img' sx={{ height: 240 }} src={item.image_url ? 'https://infocenter-v2-dev.s3.us-west-2.amazonaws.com/' + item.image_url : (background == 'orange' ? '../src/assets/quick-link-orange.png' : '../src/assets/quick-link-blue.png')} />
 					{!item.image_url && (
 						<Box sx={{ width: '100%', position: 'absolute', left: 0, textAlign: 'center', top: '100px', color: 'white' }}>
 							<Typography fontSize='40px' component='div'>

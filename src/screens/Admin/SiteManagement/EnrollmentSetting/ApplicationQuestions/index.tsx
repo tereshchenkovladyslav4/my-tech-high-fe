@@ -236,8 +236,8 @@ export default function ApplicationQuestions() {
       options = [
         {label: 'Male', value: 1},
         {label: 'Female', value: 2},
-        {label: 'Non Binary', value: 3},
-        {label: 'Undeclared', value: 4},
+//        {label: 'Non Binary', value: 3},
+//        {label: 'Undeclared', value: 4},
       ]
     }
     else if(selectedQuestion.slug === 'student_grade_level') {

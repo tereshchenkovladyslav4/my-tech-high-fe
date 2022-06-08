@@ -177,6 +177,12 @@ export const NewParent = () => {
         students: yup.array(yup.object(valid_student)),
         meta: yup.object(valid_meta),
       })
+      console.log({
+        ...initSchema,
+        parent: yup.object(valid_parent),
+        students: yup.array(yup.object(valid_student)),
+        meta: yup.object(valid_meta),
+      })
     }
   }, [questions])
 

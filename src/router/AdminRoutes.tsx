@@ -47,7 +47,7 @@ export const AdminRoutes: FunctionComponent = () => {
       <Route path={ANNOUNCEMENTS}>
         <Announcements />
       </Route>
-      <Route exact path={CALENDAR}>
+      <Route path={CALENDAR}>
         <Calendar />
       </Route>
       <Route path={ADMIN_APPLICATIONS}>

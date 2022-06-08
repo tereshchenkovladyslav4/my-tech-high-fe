@@ -238,7 +238,7 @@ const QuickLinkEdit: React.FC<
 	)
 
 	return (
-	<form onSubmit={formik.handleSubmit} style={{height: '100%'}}>
+	<form name="QuickLinkEditForm" onSubmit={formik.handleSubmit} style={{height: '100%'}}>
 		<Stack
 			direction="column"
 			justifyContent="center"
@@ -272,6 +272,7 @@ const QuickLinkEdit: React.FC<
 					onChange={(e) => {
 						formik.handleChange(e);
 						handleChange(true);
+						window['setFormChanged']('QuickLinkEditForm', true);
 					}}
 					sx={{ my: 2, width: "65%" }}
 					error={formik.touched.title && Boolean(formik.errors.title)}
@@ -286,6 +287,7 @@ const QuickLinkEdit: React.FC<
 					onChange={(e) => {
 						formik.handleChange(e);
 						handleChange(true);
+						window['setFormChanged']('QuickLinkEditForm', true);
 					}}
 					sx={{ my: 2, width: "65%" }}
 				/>
@@ -297,6 +299,7 @@ const QuickLinkEdit: React.FC<
 						setParentValue={(value) => {
 							formik.values.type = Number(value);
 							handleChange(true);
+							window['setFormChanged']('QuickLinkEditForm', true);
 						}}
 						size='small'
 						defaultValue={quickLink.type || typeArr[0].value}
@@ -355,6 +358,7 @@ const QuickLinkEdit: React.FC<
 							setImage('');
 
 							handleChange(true);
+							window['setFormChanged']('QuickLinkEditForm', true);
 						}
 					}}
 				/>

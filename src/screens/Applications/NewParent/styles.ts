@@ -1,4 +1,4 @@
-import { outlinedInputClasses } from '@mui/material'
+import { inputLabelClasses, outlinedInputClasses } from '@mui/material'
 import { SYSTEM_07 } from '../../../utils/constants'
 
 export const useStyles = {
@@ -9,6 +9,12 @@ export const useStyles = {
     },
     marginY: 2,
     width: '100%',
+    [`& .${inputLabelClasses.root}.${inputLabelClasses.focused}`]: {
+      transform: 'translate(14px, -11px) scale(1)'
+    },
+    [`& .${outlinedInputClasses.root} .${outlinedInputClasses.notchedOutline} span`]: {
+      fontSize: 16
+    }
   },
   textFieldError: {
     [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
@@ -16,6 +22,12 @@ export const useStyles = {
     },
     marginY: 2,
     width: '100%',
+    [`& .${inputLabelClasses.root}.${inputLabelClasses.focused}`]: {
+      transform: 'translate(14px, -11px) scale(1)'
+    },
+    [`& .${outlinedInputClasses.root} .${outlinedInputClasses.notchedOutline} span`]: {
+      fontSize: 16
+    }
   },
   dropdown: {
     [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
@@ -24,6 +36,12 @@ export const useStyles = {
     },
     marginY: 2,
     width: '100%',
+    [`& .${inputLabelClasses.root}.${inputLabelClasses.focused}`]: {
+      transform: 'translate(14px, -11px) scale(1)'
+    },
+    [`& .${outlinedInputClasses.root} .${outlinedInputClasses.notchedOutline} span`]: {
+      fontSize: 16
+    }
   },
   addStudentButton: {
     borderRadius: 8,

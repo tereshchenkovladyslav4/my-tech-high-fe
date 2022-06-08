@@ -9,6 +9,7 @@ import {
   DialogTitle,
   DialogActions,
   Button,
+  Tooltip,
 } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import { ImmunizationsData } from '../Immunizations'
@@ -60,9 +61,11 @@ const ImminizationItemInformation: React.FC<{ itemData: ImmunizationsData, setti
 }
 
 const DragHandle = SortableHandle(({ disabled }: { disabled: boolean }) => (
-  <IconButton disabled={disabled}>
-    <DehazeIcon />
-  </IconButton>
+  <Tooltip title="Move">
+    <IconButton disabled={disabled}>
+      <DehazeIcon />
+    </IconButton>
+  </Tooltip>
 ))
 
 const ImmunizationItem: React.FC<{
@@ -167,9 +170,11 @@ const ImmunizationItem: React.FC<{
       >
         <ImminizationItemInformation itemData={itemData} settingsEnabled={settingsEnabled} />
         <Box sx={{ opacity: enabled ? 1 : 0.38 }} display='inline-flex'>
-          <IconButton disabled={!enabled} onClick={handleClickOpen}>
-            <DeleteForeverOutlinedIcon />
-          </IconButton>
+          <Tooltip title="Delete">
+            <IconButton disabled={!enabled} onClick={handleClickOpen}>
+              <DeleteForeverOutlinedIcon />
+            </IconButton>
+          </Tooltip>
           <DragHandle disabled={!enabled} />
         </Box>
       </ListItem>

@@ -20,8 +20,8 @@ export const Table: TableTemplateType = ({ tableHeaders, tableBody }) => {
     )
 
   const renderTableBody = () =>
-    map(rows, (obj) => (
-      <TableRow>
+    map(rows, (obj, idx) => (
+      <TableRow key={idx}>
         {Object.values(obj).map((val, idx) => (
           <TableCell sx={{ paddingY: 0 }} key={`${val}-${idx}`}>
             {val}

@@ -30,6 +30,7 @@ export const ACTIVELINKBACKGROUND = 'rgba(65, 69, 255, 0.04)'
 export const BUTTON_LINEAR_GRADIENT = `linear-gradient(90deg, #3E2783 0%, rgba(62, 39, 131, 0) 100%),
 linear-gradient(0deg, #4145FF, #4145FF)`
 export const RED_GRADIENT = 'linear-gradient(180deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0) 100%), #D23C33;'
+export const BLUE_GRDIENT = 'linear-gradient(180deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0) 100%), #4145FF;'
 export const YELLOW_GRADIENT = 'linear-gradient(90deg, rgba(0, 0, 0, 0.5) 0%, rgba(62, 39, 131, 0) 100%), #FFD626;'
 export const GREEN_GRADIENT = 'linear-gradient(90deg, rgba(0, 0, 0, 0.5) 0%, rgba(62, 39, 131, 0) 100%), #33FF7C;'
 export const BLACK_GRADIENT = 'linear-gradient(90deg, rgba(0, 0, 0, 0.8) 0%, rgba(20, 20, 20, 0.2) 100%), #fff;'

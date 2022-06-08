@@ -210,8 +210,8 @@ export const SchoolYear = () => {
                   className={selectClasses.select}
                   sx={{ color: 'blue', border: 'none' }}
                 >
-                  {schoolYears.map((sy) => (
-                    <MenuItem value={sy.value}>{sy.label}</MenuItem>
+                  {schoolYears.map((sy, i) => (
+                    <MenuItem key={i} value={sy.value}>{sy.label}</MenuItem>
                   ))}
                 </Select>
               </FormControl>
@@ -223,7 +223,7 @@ export const SchoolYear = () => {
             <Grid container paddingX={4} paddingY={2}>
               <Grid item xs={2}></Grid>
               {status.map((val) => (
-                <Grid item xs={2}>
+                <Grid item key={val} xs={2}>
                   <Box marginBottom={3}>
                     <Paragraph size='large' sx={{ fontSize: 'lg' }} fontWeight='700'>
                       {val}
@@ -238,8 +238,8 @@ export const SchoolYear = () => {
                   </Paragraph>
                 </Box>
               </Grid>
-              {schoolYearDataCount[0].students.map((student) => (
-                <Grid item xs={2} padding={2} sx={{ backgroundColor: '#FAFAFA' }}>
+              {schoolYearDataCount[0].students.map((student, i) => (
+                <Grid item key={i} xs={2} padding={2} sx={{ backgroundColor: '#FAFAFA' }}>
                   <Paragraph size='medium'>{student.count}</Paragraph>
                 </Grid>
               ))}
@@ -250,8 +250,8 @@ export const SchoolYear = () => {
                   </Paragraph>
                 </Box>
               </Grid>
-              {schoolYearDataCount[0].parents.map((parent) => (
-                <Grid item xs={2} padding={2}>
+              {schoolYearDataCount[0].parents.map((parent, i) => (
+                <Grid item key={i} xs={2} padding={2}>
                   <Paragraph size='medium'>{parent.count}</Paragraph>
                 </Grid>
               ))}
@@ -262,8 +262,8 @@ export const SchoolYear = () => {
                   </Paragraph>
                 </Box>
               </Grid>
-              {schoolYearDataCount[0].special_ed.map((sped) => (
-                <Grid item xs={2} padding={2} sx={{ backgroundColor: '#FAFAFA' }}>
+              {schoolYearDataCount[0].special_ed.map((sped, i) => (
+                <Grid item key={i} xs={2} padding={2} sx={{ backgroundColor: '#FAFAFA' }}>
                   <Paragraph size='medium'>{sped.count}</Paragraph>
                 </Grid>
               ))}

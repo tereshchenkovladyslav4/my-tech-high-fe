@@ -62,6 +62,8 @@ export const AdminSideMenu: FunctionComponent = () => {
     history.push(DASHBOARD)
   }
 
+  const unExactPages = [SITE_MANAGEMENT, ENROLLMENT, ANNOUNCEMENTS, CALENDAR]
+
   const navigationList = [
     {
       to: DASHBOARD,
@@ -140,7 +142,7 @@ export const AdminSideMenu: FunctionComponent = () => {
           {map(navigationList, (item, index) => (
             <NavLink
               key={index}
-              exact={item.to !== SITE_MANAGEMENT && item.to !== ENROLLMENT && item.to !== ANNOUNCEMENTS ? true : false}
+              exact={unExactPages.includes(item.to) ? false : true}
               to={item.to}
               style={classes.navLink}
               activeStyle={{

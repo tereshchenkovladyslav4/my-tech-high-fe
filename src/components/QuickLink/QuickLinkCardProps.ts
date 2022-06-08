@@ -21,4 +21,5 @@ export interface QuickLinkCardProps {
 	item: QuickLink
 	action: boolean
 	onAction?: (evt_type: string) => void
+	background?: string
 }

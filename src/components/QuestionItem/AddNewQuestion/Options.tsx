@@ -27,12 +27,12 @@ export default function QuestionOptions({
 }) {
 	const [enableAction, setEnableAction] = useState(true)
 	useEffect(() => {
-		if(options.filter((o) => o.action === 2).length > 0) {
-			setEnableAction(false)
-		}
-		else {
-			setEnableAction(true)
-		}
+		//if(options.filter((o) => o.action === 2).length > 0) {
+		//	setEnableAction(false)
+		//}
+		//else {
+		//	setEnableAction(true)
+		//}
 	}, [options])
 
 	return (

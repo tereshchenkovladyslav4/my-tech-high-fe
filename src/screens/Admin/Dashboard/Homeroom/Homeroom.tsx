@@ -42,6 +42,7 @@ export const Homeroom = () => {
       const backgroundColor = idx === 0 || idx % 2 == 0 ? '#FAFAFA' : 'white'
       return (
         <DataRow
+          key={idx}
           backgroundColor={backgroundColor}
           label={
             <Paragraph size='medium' fontWeight='500'>

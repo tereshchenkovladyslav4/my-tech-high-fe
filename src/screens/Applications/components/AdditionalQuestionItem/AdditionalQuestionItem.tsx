@@ -68,7 +68,7 @@ export function AdditionalQuestionItem({ question: q, field, meta, form }: { que
           <Subtitle
             color={SYSTEM_05}
             sx={{
-              paddingLeft: '20px',
+              paddingLeft: 0,
               paddingBottom: '10px',
               width: '100%',
               textAlign: 'start',
@@ -91,7 +91,14 @@ export function AdditionalQuestionItem({ question: q, field, meta, form }: { que
                 width: '100%',
               }}
             >
-              <Checkbox name={q.question.toLowerCase().replace(' ', '_')} {...field} value={o.label}/>
+              <Checkbox name={q.question.toLowerCase().replace(' ', '_')} {...field} value={o.label}
+                sx={{
+                  paddingLeft: 0,
+                  color: '#4145FF',
+                  '&.Mui-checked': {
+                    color: '#4145FF'
+                  }
+                }} />
               {/* <Field type="checkbox" name="additional_questions.checked" value={o.label}>
               {({ field, form, meta }) => (
                 <Checkbox />
@@ -107,8 +114,15 @@ export function AdditionalQuestionItem({ question: q, field, meta, form }: { que
         <Box display='flex' alignItems='center' sx={{marginTop: 2, marginBottom: 1,}}>
           <Checkbox
             name={q.question.toLowerCase().replace(' ', '_')} {...field} value={true}
+            sx={{
+              paddingLeft: 0,
+              color: '#4145FF',
+              '&.Mui-checked': {
+                color: '#4145FF'
+              }
+            }}
           />
-          <Paragraph size='medium'>
+          <Paragraph size='medium' sx={{fontSize: 16}}>
             <p dangerouslySetInnerHTML={{ __html: q.question }}></p>
           </Paragraph>
         </Box>
@@ -120,7 +134,7 @@ export function AdditionalQuestionItem({ question: q, field, meta, form }: { que
             sx={{
               marginTop: 2,
               marginBottom: 1,
-              paddingLeft: '20px',
+              paddingLeft: 0,
               paddingBottom: '10px',
               width: '100%',
               textAlign: 'start',
@@ -150,10 +164,15 @@ export function AdditionalQuestionItem({ question: q, field, meta, form }: { que
                     borderBottom: '1px solid ' + SYSTEM_07,
                     marginTop: '10px',
                     width: '100%',
-                    paddingLeft: '11px',
+                    paddingLeft: 0,
                   }}
                 >
-                  <FormControlLabel value={o.label} control={<Radio />} label={o.label} />
+                  <FormControlLabel value={o.label} control={<Radio sx={{
+                      color: '#4145FF',
+                      '&.Mui-checked': {
+                        color: '#4145FF'
+                      }
+                    }} />} label={o.label} />
                 </Box>
               ))}
             </RadioGroup>
@@ -189,7 +208,7 @@ export function AdditionalQuestionItem({ question: q, field, meta, form }: { que
     } else if (q.type === 7) {
       return (
         <Box display='block' sx={{marginTop: 2, marginBottom: 1, textAlign: 'center'}}>
-          <Paragraph size='large'>
+          <Paragraph size='large' sx={{fontSize: 16}}>
             <p dangerouslySetInnerHTML={{ __html: q.question }}></p>
           </Paragraph>
         </Box>

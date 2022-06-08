@@ -1,4 +1,4 @@
-import { Box, Grid, IconButton, outlinedInputClasses, Radio, TextField, List } from '@mui/material'
+import { Box, Grid, IconButton, outlinedInputClasses, Radio, TextField, List, Tooltip } from '@mui/material'
 import { useFormikContext } from 'formik'
 import React, { useContext, useState } from 'react'
 import { DropDown } from '../../../../../components/DropDown/DropDown'
@@ -18,9 +18,11 @@ import EditGroup from './components/EditGroup/EditGroup'
 import { TabContext } from './TabContextProvider'
 
 const DragHandle = SortableHandle(() => (
-  <IconButton>
-    <DehazeIcon />
-  </IconButton>
+  <Tooltip title="Move">
+    <IconButton>
+      <DehazeIcon />
+    </IconButton>
+  </Tooltip>
 ))
 
 const SortableItem = SortableElement(EnrollmentQuestionItem)
@@ -51,15 +53,19 @@ export default function GroupItem({
         <Subtitle fontWeight='700'>{item.group_name}</Subtitle>
         {!mainQuestion && (
           <Box display='inline-flex' height='40px'>
+            <Tooltip title="Edit">
+              <IconButton onClick={() => setShowEditDialog(true)}>
+                <EditIcon />
+              </IconButton>
+            </Tooltip>
+
+            <Tooltip title="Delete">
+              <IconButton onClick={() => setShowDeleteDialog(true)}>
+                <DeleteForeverOutlinedIcon />
+              </IconButton>
+            </Tooltip>
             
             <DragHandle />
-            <IconButton onClick={() => setShowEditDialog(true)}>
-              <EditIcon />
-            </IconButton>
-
-            <IconButton onClick={() => setShowDeleteDialog(true)}>
-              <DeleteForeverOutlinedIcon />
-            </IconButton>
           </Box>
         )}
       </Box>

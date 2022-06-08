@@ -5,6 +5,10 @@ import { DropDownItem } from '../../../../../../components/DropDown/types'
 import { Subtitle } from '../../../../../../components/Typography/Subtitle/Subtitle'
 import { SYSTEM_07 } from '../../../../../../utils/constants'
 import { EnrollmentQuestion, EnrollmentQuestionGroup, EnrollmentQuestionTab, OptionsType, QuestionTypes } from '../types'
+import Wysiwyg from 'react-draft-wysiwyg'
+import { ContentState, convertToRaw, EditorState } from 'draft-js'
+import htmlToDraft from 'html-to-draftjs'
+import draftToHtml from 'draftjs-to-html'
 
 export default function AddQuestionModal({
   onClose,
@@ -20,7 +24,7 @@ export default function AddQuestionModal({
   const [description, setDescription] = useState(editItem?.options[0]?.value || '')
 
   const [required, setRequired] = useState(editItem?.required || false)
-  const [removable, setRemovable] = useState(editItem?.removable || false)
+  // const [removable, setRemovable] = useState(editItem?.removable || false)
   const [error, setError] = useState('')
 
   const currentTabData = values.filter((v) => v.tab_name === "Documents")[0]
@@ -42,7 +46,7 @@ export default function AddQuestionModal({
             order: editItem.order,
             options: [{label: fileName, value: description}],
             required,
-            removable,
+            // removable,
             validation: 0,
             default_question: false,
             display_admin: false,
@@ -58,7 +62,7 @@ export default function AddQuestionModal({
             order: currentTabData.groups[0]?.questions?.length + 1 || 1,
             options: [{label: fileName, value: description}],
             required,
-            removable,
+            // removable,
             validation: 0,
             display_admin: false,
             default_question: false,
@@ -75,6 +79,21 @@ export default function AddQuestionModal({
     setValues(values.map((v) => (v.tab_name === updatedTab.tab_name ? updatedTab : v)))
     onClose()
   }
+
+  //	Editor related states and functions
+	const [editorState, setEditorState] = useState(EditorState.createWithContent(ContentState.createFromBlockArray(htmlToDraft(editItem?.options[0]?.value.toString() || '').contentBlocks)));
+	const editorRef = useRef(null);
+	const [currentBlocks, setCurrentBlocks] = useState(0)
+	const handleEditorChange = (state) => {
+		try {
+			if (currentBlocks !== 0 && currentBlocks !== state.blocks.length) {
+				editorRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' })
+			}
+			setCurrentBlocks(state.blocks.length);
+
+      setDescription(draftToHtml(convertToRaw(editorState.getCurrentContent())));
+		} catch {}
+	}
 
   return (
     <Modal open={true} aria-labelledby='child-modal-title' aria-describedby='child-modal-description'>
@@ -146,30 +165,35 @@ export default function AddQuestionModal({
             focused
           />
         </Box>
-        <Box
-          sx={{
-            width: '100%',
-            height: '40px',
-            mt: '40px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}
-        >
-          <TextField
-            size='small'
-            sx={{
-              minWidth: '300px',
-              [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
-                {
-                  borderColor: SYSTEM_07,
-                },
+        <Subtitle sx={{mt: '20px', mb: 1}}>Description</Subtitle>
+        <Box sx={{
+          border: '1px solid #d1d1d1',
+          borderRadius: 1,
+          'div.DraftEditor-editorContainer': {
+            minHeight: '200px',
+            maxHeight: '250px',
+            overflow: 'auto',
+            padding: 1,
+          },
+        }}>
+          <Wysiwyg.Editor
+            onContentStateChange={handleEditorChange}
+            editorRef={(ref) => (editorRef.current = ref)}
+            editorState={editorState}
+            onEditorStateChange={setEditorState}
+            toolbar={{
+              options: [
+                'inline', 
+                'list',
+                'link',
+              ],
+              inline: {
+                options: ['bold', 'italic'],
+              },
+              list: {
+                options: ['unordered', 'ordered'],
+              }
             }}
-            label='Description'
-            variant='outlined'
-            value={description}
-            onChange={(v) => setDescription(v.currentTarget.value)}
-            focused
           />
         </Box>
 
@@ -195,7 +219,7 @@ export default function AddQuestionModal({
                 <Checkbox checked={required} onClick={() => setRequired(!required)} />
                 <Subtitle size='small'>Required</Subtitle>
             </Box>
-            <Box
+            {/* <Box
               sx={{
                 display: 'flex',
                 alignItems: 'center',
@@ -203,7 +227,7 @@ export default function AddQuestionModal({
             >
               <Checkbox checked={removable} onClick={() => setRemovable(!removable)} />
               <Subtitle size='small'>Removable</Subtitle>
-            </Box>
+            </Box> */}
           </Box>
         </Box>
         {error && <Typography color='red'>{error}</Typography>}

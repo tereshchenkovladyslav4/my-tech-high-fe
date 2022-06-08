@@ -81,7 +81,7 @@ const QuickLinkReservedEdit: React.FC<
 	}
 
 	return (
-	<form onSubmit={formik.handleSubmit} style={{height: '100%'}}>
+	<form name='QuickLinkReservedEditForm' onSubmit={formik.handleSubmit} style={{height: '100%'}}>
 		{quickLink.type == QUICKLINK_TYPE.WEBSITE_LINK && (
 		<Stack
 			direction="column"
@@ -118,6 +118,7 @@ const QuickLinkReservedEdit: React.FC<
 					onChange={(e) => {
 						formik.handleChange(e);
 						handleChange(true);
+						window['setFormChanged']('QuickLinkReservedEditForm', true);
 					}}
 					style={classes.input}
 					sx={{ my: 2, width: "65%" }}

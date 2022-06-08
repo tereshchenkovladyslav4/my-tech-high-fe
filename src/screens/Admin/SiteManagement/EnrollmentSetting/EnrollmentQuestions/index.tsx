@@ -273,6 +273,9 @@ export default function EnrollmentQuestions() {
       )
   }, [regionDataLoading])
 
+  useEffect(() => {
+    window["setFormChanged"]('EnrollmentQuestionsForm', unsavedChanges);
+  }, [unsavedChanges]);
 
   const onSelectDefaultQuestions = (selected) => {
     const selectedQuestion = defaultQuestions.filter((d) => d.label == selected)[0]
@@ -293,8 +296,8 @@ export default function EnrollmentQuestions() {
       options = [
         {label: 'Male', value: 1},
         {label: 'Female', value: 2},
-        {label: 'Non Binary', value: 3},
-        {label: 'Undeclared', value: 4},
+//        {label: 'Non Binary', value: 3},
+//        {label: 'Undeclared', value: 4},
       ]
     }
     else if(selectedQuestion.slug === 'student_grade_level') {
@@ -371,7 +374,7 @@ export default function EnrollmentQuestions() {
         }}
       >
          {({ values, setValues, submitForm }) => (
-          <Form>
+          <Form name="EnrollmentQuestionsForm">
             <Card sx={styles.card}>
               <Box
                 sx={{

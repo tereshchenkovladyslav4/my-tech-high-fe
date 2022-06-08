@@ -60,11 +60,10 @@ export type EnrollmentQuestion = {
     question: string
     options?: OptionsType[]
     required: boolean
-    removable: boolean
     order: number
     additional?: AdditionalQuestionType    
     additional2?: AdditionalQuestionType
-    validation?: string
+    validation?: number
     display_admin: boolean
     default_question: boolean
     slug: string

@@ -25,11 +25,11 @@ export const Metadata: MetadataTemplateType = ({
         />
       )}
       {image && image}
-      <ListItemText primary={title} secondary={subtitle} />
+      <ListItemText disableTypography primary={title} secondary={subtitle} />
     </ListItem>
   ) : (
     <Box flexDirection='column' textAlign='center' alignItems='center' display='flex'>
       {image && image}
-      <ListItemText primary={title} secondary={subtitle} />
+      <ListItemText disableTypography primary={title} secondary={subtitle} />
     </Box>
   )

@@ -10,7 +10,6 @@ import draftToHtml from 'draftjs-to-html'
 import { Question, QUESTION_TYPE } from '../QuestionItemProps'
 import { SYSTEM_07 } from '../../../utils/constants'
 import { DropDown } from '../../DropDown/DropDown'
-import { validationTypes } from '../../../screens/Admin/SiteManagement/EnrollmentSetting/constant/defaultQuestions'
 import htmlToDraft from 'html-to-draftjs'
 
 export default function QuestionModal({
@@ -19,11 +18,22 @@ export default function QuestionModal({
 	questionTypes,
 	additionalQuestionTypes
 }: {
-	onClose: () => void,
+	onClose: (res) => void,
 	questions?: Question[],
 	questionTypes: any[],
 	additionalQuestionTypes: any[]
 }) {
+	const validationTypes = [
+		{
+			label: 'Email',
+			value: 2
+		},
+		{
+			label: 'Numbers',
+			value: 1
+		}
+	];
+	
 	//	Formik values context
 	const { values, setValues } = useFormikContext<Question[]>();
 
@@ -231,10 +241,10 @@ export default function QuestionModal({
 			}
 		}
 
-		newValues = newValues.filter((i) => deleteIds.find(x => x == i.id) == null);console.log(newValues);
+		newValues = newValues.filter((i) => deleteIds.find(x => x == i.id) == null);
 		setValues(newValues);
 			
-		onClose()
+		onClose(true);
 	}
 
 	//	Set default options for default questions
@@ -288,7 +298,7 @@ export default function QuestionModal({
 						justifyContent: 'end',
 					}}
 				>
-					<Button sx={styles.cancelButton} onClick={() => onClose()}>
+					<Button sx={styles.cancelButton} onClick={() => onClose(false)}>
 						Cancel
 					</Button>
 					<Button sx={styles.actionButtons} onClick={() => onSave()}>

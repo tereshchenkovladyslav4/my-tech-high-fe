@@ -1,4 +1,4 @@
-import { Button, IconButton, Grid } from '@mui/material'
+import { Button, IconButton, Grid, Tooltip } from '@mui/material'
 import { Box } from '@mui/system'
 import React, { useEffect, useState } from 'react'
 import { Paragraph } from '../../../../../../../../components/Typography/Paragraph/Paragraph'
@@ -18,9 +18,11 @@ import AddUploadModal from '../../../AddUpload/index'
 import EnrollmentQuestionItem from '../../../Question'
 
 const DragHandle = SortableHandle(() => (
-  <IconButton>
-    <DehazeIcon />
-  </IconButton>
+  <Tooltip title="Move">
+    <IconButton>
+      <DehazeIcon />
+    </IconButton>
+  </Tooltip>
 ))
 
 export const DocumentUpload = ({ item } : {item : EnrollmentQuestion}) => {
@@ -57,17 +59,25 @@ export const DocumentUpload = ({ item } : {item : EnrollmentQuestion}) => {
         <Box display='flex' alignItems='center' justifyContent='start'>
           <Subtitle fontWeight='700'>{`${item.question} ${item.required ? "(required)" : ""}`}</Subtitle>
           <Box display='inline-flex' height='40px'>
-            <DragHandle />
-            <IconButton onClick={() => setShowEditDialog(true)}>
-              <EditIcon />
-            </IconButton>
+            <Tooltip title="Edit">
+              <IconButton onClick={() => setShowEditDialog(true)}>
+                <EditIcon />
+              </IconButton>
+            </Tooltip>
   
-            {item.removable && <IconButton onClick={() => setShowDeleteDialog(true)}>
-              <DeleteForeverOutlinedIcon />
-            </IconButton>}
+
+            <Tooltip title="Delete">
+              <IconButton onClick={() => setShowDeleteDialog(true)}>
+                <DeleteForeverOutlinedIcon />
+              </IconButton>
+            </Tooltip>
+            
+            <DragHandle />
           </Box>
         </Box>
-        <Paragraph size='medium'>{item.options[0].value}</Paragraph>
+        <Paragraph size='medium'>
+          <p dangerouslySetInnerHTML={{ __html: item.options[0].value }}></p>
+        </Paragraph>
         { files && renderFiles()}
         <Box sx={classes.buttonContainer}>
           <Paragraph size='medium'>{'Allowed file types: pdf, png, jpg, jpeg, gif, bmp (Less than 25MB)'}</Paragraph>

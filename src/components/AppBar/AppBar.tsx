@@ -111,7 +111,7 @@ export const AppBar: FunctionComponent = () => {
   }
 
   const renderStudentHeader = () =>
-    map(activeStudents, (student) => {
+    map(activeStudents, (student, idx) => {
       const link =
         student?.applications?.at(-1)?.status === 'Submitted' ||
         student?.status?.at(-1)?.status === 2 ||
@@ -120,7 +120,7 @@ export const AppBar: FunctionComponent = () => {
           ? HOMEROOM
           : `${HOMEROOM}/${student.student_id}`
       return (
-        <Box sx={{ textDecoration: 'none', marginTop: 1 }}>
+        <Box key={idx} sx={{ textDecoration: 'none', marginTop: 1 }}>
           {link ? (
             <NavLink to={link} style={{ textDecoration: 'none' }}>
               <Metadata
