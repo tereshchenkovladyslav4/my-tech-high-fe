@@ -4,11 +4,15 @@ import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle
 import { DropDownItem } from '../../../../../components/DropDown/types'
 import { RED } from '../../../../../utils/constants'
 import { usStates } from '../../../../../utils/states'
+import { useStyles } from '../../styles'
+import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDownOutlined'
+import { useQuery } from '@apollo/client'
+import { getAllRegion } from '../../../../../graphql/queries/region'
+import { map } from 'lodash'
 
 type StateSelectProps = {
   stateName: string
   newStateName: string
-  regions: DropDownItem[]
   stateInvalid: boolean
   setNewStateName: (value: string) => void
   setIsChanged: (value: boolean) => void
@@ -19,17 +23,19 @@ type StateSelectProps = {
 export default function StateSelect({
   stateName,
   newStateName,
-  regions,
   stateInvalid,
   setNewStateName,
   setIsChanged,
   setIsInvalidStateName,
   setStateInvalid,
 }: StateSelectProps) {
+  const classes = useStyles
   const [stateInvalidMessage, setStateInvalidMessage] = useState<string>('')
   const [selectedRegionName, setSelectedRegionName] = useState<string>('')
   const [showNewRegionName, setShowNewRegionName] = useState<boolean>(false)
   const [allStates, setAllStates] = useState<DropDownItem[]>(usStates)
+  const [regions, setAllRegions] = useState<DropDownItem[]>([])
+  const { data: regionData, loading: regionDataLoading } = useQuery(getAllRegion)
 
   useEffect(() => {
     if (stateName) {
@@ -64,6 +70,16 @@ export default function StateSelect({
       }
     }
   }, [stateName])
+
+  useEffect(() => {
+    !regionDataLoading &&
+      setAllRegions(
+        map(regionData.regions, (region) => ({
+          label: region.name,
+          value: region.id.toString(),
+        })),
+      )
+  }, [regionData])
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNewStateName(event?.target?.value)
@@ -126,51 +142,43 @@ export default function StateSelect({
   }
 
   return (
-    <Stack direction='row' spacing={1} alignItems='center' sx={{ my: 2 }}>
-      <Subtitle size={16} fontWeight='600' textAlign='left' sx={{ minWidth: 150 }}>
-        State
-      </Subtitle>
-      <Typography>|</Typography>
-      <Box
-        component='form'
-        sx={{
-          '& > :not(style)': { m: 1, minWidth: '600px' },
-        }}
-        noValidate
-        autoComplete='off'
-      >
-        <Box sx={{ display: 'flex', justifyContent: 'start' }}>
-          <FormControl variant='standard' sx={{ m: 1, width: 200, display: 'flex' }}>
-            <Select
-              labelId='demo-simple-select-standard-label'
-              id='demo-simple-select-standard'
-              value={selectedRegionName}
-              onChange={handleChangeValue}
-              label='Program'
-            >
-              <MenuItem key={0} value={''}>
-                {''}
+    <Box component='form' sx={{ ...classes.gradeBox, minWidth: '600px' }} noValidate autoComplete='off'>
+      <Box sx={{ display: 'flex', justifyContent: 'start', padding: 0 }}>
+        <FormControl sx={{ m: 1, minWidth: 165 }}>
+          <Select
+            labelId='demo-simple-select-standard-label'
+            id='demo-simple-select-standard'
+            value={selectedRegionName}
+            onChange={handleChangeValue}
+            IconComponent={() => <KeyboardArrowDownOutlinedIcon style={{ marginRight: 10 }} />}
+          >
+            <MenuItem key={0} value={''}>
+              {''}
+            </MenuItem>
+            {allStates.map((region, index) => (
+              <MenuItem key={index + 1} value={region.value.toString()}>
+                {region.label}
               </MenuItem>
-              {allStates.map((region, index) => (
-                <MenuItem key={index + 1} value={region.value.toString()}>
-                  {region.label}
-                </MenuItem>
-              ))}
-              <MenuItem key={allStates.length + 1} value={'other'}>
-                {'Other'}
-              </MenuItem>
-            </Select>
-          </FormControl>
-          {showNewRegionName && (
-            <TextField id='outlined-name' sx={{ width: '200px' }} value={newStateName} onChange={handleChange} />
-          )}
-        </Box>
-        {stateInvalid && (
-          <Subtitle size='small' textAlign='left' color={RED} fontWeight='700'>
-            {stateInvalidMessage}
-          </Subtitle>
+            ))}
+            <MenuItem key={allStates.length + 1} value={'other'}>
+              {'Other'}
+            </MenuItem>
+          </Select>
+        </FormControl>
+        {showNewRegionName && (
+          <TextField
+            id='outlined-name'
+            sx={{ width: '200px', marginTop: '8px' }}
+            value={newStateName}
+            onChange={handleChange}
+          />
         )}
       </Box>
-    </Stack>
+      {stateInvalid && (
+        <Subtitle size='small' textAlign='left' color={RED} fontWeight='700'>
+          {stateInvalidMessage}
+        </Subtitle>
+      )}
+    </Box>
   )
 }

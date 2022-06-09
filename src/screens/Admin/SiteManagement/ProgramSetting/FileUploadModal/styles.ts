@@ -65,4 +65,10 @@ export const useStyles = {
   text: {
     cursor: 'pointer',
   },
+  fileListItem: {
+    display: 'flex',
+    flexDirection: 'row',
+    color: '#7B61FF',
+    marginTop: '6px',
+  },
 }

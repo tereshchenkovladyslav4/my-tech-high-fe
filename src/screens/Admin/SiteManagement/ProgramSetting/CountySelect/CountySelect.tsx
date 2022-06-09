@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { Box, Typography, Stack } from '@mui/material'
+import React, { useContext, useState } from 'react'
+import { Box, Stack } from '@mui/material'
 import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined'
 import Papa from 'papaparse'
 import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
@@ -11,6 +11,9 @@ import CustomModal from '../../EnrollmentSetting/components/CustomModal/CustomMo
 import DownloadFileIcon from '../../../../../assets/icons/file-download.svg'
 import { Tooltip } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
+import { useMutation } from '@apollo/client'
+import { removeCountyInfoByRegionId, removeFileByFileId } from '../services'
+import { UserContext } from '../../../../../providers/UserContext/UserProvider'
 
 const useStyles = makeStyles(() => ({
   customTooltip: {
@@ -24,16 +27,13 @@ const useStyles = makeStyles(() => ({
   },
 }))
 
-export default function CountySelect({
-  county,
-  setCounty,
-  setCountyArray,
-  handleCountyInfoDelete,
-  setIsChanged,
-}: CountySelectProps) {
+export default function CountySelect({ county, setCounty, setCountyArray, setIsChanged }: CountySelectProps) {
+  const { me } = useContext(UserContext)
   const [open, setOpen] = useState<boolean>(false)
   const [customModalOpen, setCustomModalOpen] = useState<boolean>(false)
   const [replaceModalOpen, setReplaceModalOpen] = useState<boolean>(false)
+  const [countyInfoDelete, {}] = useMutation(removeCountyInfoByRegionId)
+  const [fileDelete, {}] = useMutation(removeFileByFileId)
   const extensions =
     '.csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel, text/csv'
   const invalidMessage = 'Please only submit CSV or Excel File'
@@ -70,6 +70,27 @@ export default function CountySelect({
     })
   }
 
+  const handleCountyInfoDelete = async () => {
+    const deleteResponse = await countyInfoDelete({
+      variables: {
+        regionId: me?.selectedRegionId,
+      },
+    })
+    setCounty({
+      name: '',
+      path: '',
+      file: null,
+    })
+
+    if (deleteResponse?.data?.removeCountyInfoByRegionId) {
+      await fileDelete({
+        variables: {
+          fileId: deleteResponse?.data?.removeCountyInfoByRegionId,
+        },
+      })
+    }
+  }
+
   const handleConfirm = () => {
     setCustomModalOpen(false)
     handleCountyInfoDelete()
@@ -90,12 +111,12 @@ export default function CountySelect({
   }
 
   return (
-    <Stack direction='row' spacing={1} alignItems='center' sx={{ my: 2 }}>
-      <Subtitle size={16} fontWeight='600' textAlign='left' sx={{ minWidth: 150 }}>
-        Counties
-      </Subtitle>
-      <Typography>|</Typography>
-      <Box>
+    <Box>
+      <Box
+        sx={{
+          '& > :not(style)': { m: 1, paddingLeft: 2 },
+        }}
+      >
         {!county?.name ? (
           <Stack direction='row' sx={{ ml: 1.5, cursor: 'pointer' }} alignItems='center' onClick={handleClickOpen}>
             <Subtitle size={12} color={MTHBLUE} fontWeight='500'>
@@ -168,6 +189,6 @@ export default function CountySelect({
           onClose={() => setReplaceModalOpen(false)}
         />
       )}
-    </Stack>
+    </Box>
   )
 }

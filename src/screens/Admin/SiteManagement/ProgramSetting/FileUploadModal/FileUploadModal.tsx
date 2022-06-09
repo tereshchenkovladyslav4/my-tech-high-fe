@@ -4,7 +4,12 @@ import { FileUploadModalTemplateType } from './types'
 import { useStyles } from './styles'
 import CloseIcon from '@mui/icons-material/Close'
 import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragraph'
-import { RED, SYSTEM_06 } from '../../../../../utils/constants'
+import {
+  RED,
+  SNOWPACK_PUBLIC_COUNTIES_TEMPLATE,
+  SNOWPACK_PUBLIC_SCHOOL_DISTRICT_TEMPLATE,
+  SYSTEM_06,
+} from '../../../../../utils/constants'
 import { filter, has, includes, isEqual, map, pull, remove } from 'lodash'
 import { FileListItem } from './FileListItem'
 import UploadFileIcon from '../../../../../assets/icons/file-upload.svg'
@@ -31,10 +36,8 @@ export const FileUploadModal: FileUploadModalTemplateType = ({
   const [validFiles, setValidFiles] = useState<File[]>([])
   const [errorMessage, setErrorMessage] = useState('')
   const [deletedFiles, setDeletedFiles] = useState([])
-  const template = type === 'county' 
-    ? import.meta.env.SNOWPACK_PUBLIC_COUNTIES_TEMPLATE 
-    : import.meta.env.SNOWPACK_PUBLIC_SCHOOL_DISTRICT_TEMPLATE
-    
+  const template = type === 'county' ? SNOWPACK_PUBLIC_COUNTIES_TEMPLATE : SNOWPACK_PUBLIC_SCHOOL_DISTRICT_TEMPLATE
+
   useEffect(() => {
     let filteredArr = selectedFiles.reduce((acc, current) => {
       const x = acc.find((item) => item.name === current.name)
@@ -82,30 +85,30 @@ export const FileUploadModal: FileUploadModalTemplateType = ({
     handleFiles(files as unknown as FileList[])
   }
 
-
   const readFile = (file) => {
     return new Promise((resolve, reject) => {
-      const reader = new FileReader();
+      const reader = new FileReader()
       reader.readAsText(file)
       reader.onloadend = (event) => {
         const parsedFile = csvToArray(event.target.result)
         let isValid
-        if(type === 'county'){
+        if (type === 'county') {
           isValid = map(parsedFile, (currFile) => has(currFile, 'County Name\r'))
-        }else{
-          isValid = map(parsedFile, (currFile) => (has(currFile, 'School District Code\r') && has(currFile, 'School District Name')))
+        } else {
+          isValid = map(
+            parsedFile,
+            (currFile) => has(currFile, 'School District Code\r') && has(currFile, 'School District Name'),
+          )
         }
-        if(!isValid.includes(false)){
+        if (!isValid.includes(false)) {
           resolve({})
-        }
-        else{
+        } else {
           setErrorMessage('Incorrect Format')
           reject
         }
       }
-    });
+    })
   }
-
 
   const addDeletedFiles = (files) => {
     map(files, (file) => {
@@ -134,15 +137,14 @@ export const FileUploadModal: FileUploadModalTemplateType = ({
     }
   }
 
-  const csvToArray = (str, delimiter = ",") => {
-
+  const csvToArray = (str, delimiter = ',') => {
     // slice from start of text to the first \n index
     // use split to create an array from string by delimiter
-    const headers = str.slice(0, str.indexOf("\n")).split(delimiter);
+    const headers = str.slice(0, str.indexOf('\n')).split(delimiter)
 
     // slice from \n index + 1 to the end of the text
     // use split to create an array of each csv value row
-    const rows = str.slice(str.indexOf("\n") + 1).split("\n");
+    const rows = str.slice(str.indexOf('\n') + 1).split('\n')
 
     // Map the rows
     // split values from each row into an array
@@ -150,19 +152,19 @@ export const FileUploadModal: FileUploadModalTemplateType = ({
     // object properties derived from headers:values
     // the object passed as an element of the array
     const arr = rows.map(function (row) {
-      const values = row.split(delimiter);
+      const values = row.split(delimiter)
       const el = headers.reduce(function (object, header, index) {
-        object[header] = values[index];
-        return object;
-      }, {});
-      return el;
-    });
+        object[header] = values[index]
+        return object
+      }, {})
+      return el
+    })
 
     // return the array
-    return arr;
+    return arr
   }
 
-  const validateFile = (file: File)=> {
+  const validateFile = (file: File) => {
     const validTypes = extensions?.replace(/\s/g, '').split(',')
     if (Math.round(file.size / 1024) > 25000) {
       return {
@@ -177,7 +179,7 @@ export const FileUploadModal: FileUploadModalTemplateType = ({
         message: invalidMessage,
       }
     }
-      return {status: true }
+    return { status: true }
   }
 
   const submitAndClose = () => {
@@ -237,7 +239,9 @@ export const FileUploadModal: FileUploadModalTemplateType = ({
               <Paragraph size='medium' fontWeight='700' sx={classes.dragAndDropText}>
                 Drag &amp; Drop to Upload
               </Paragraph>
-              <Paragraph sx={{cursor:'pointer'}}color='blue' onClick={() => window.open(template)}>Download Template</Paragraph>
+              <Paragraph sx={{ cursor: 'pointer' }} color='blue' onClick={() => window.open(template)}>
+                Download Template
+              </Paragraph>
               <Paragraph size='medium' color={SYSTEM_06}>
                 {' '}
                 Or

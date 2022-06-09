@@ -60,9 +60,10 @@ export const DocumentUpload = ({item, formik, handleUpload, file, firstName, las
       <Box sx={classes.container}>
         <Box display='flex' alignItems='center' justifyContent='start'>
           <Subtitle fontWeight='700'>{`${item.question} ${item.required ? "(required)" : ""}`}</Subtitle>
-          
         </Box>
-        <Paragraph size='medium'>{item.options[0].value}</Paragraph>
+        <Paragraph size='medium'>
+          <p dangerouslySetInnerHTML={{ __html: item.options[0].value }}></p>
+        </Paragraph>
         { files ? renderFiles(true) :  renderFiles(false)}
         <Box sx={classes.buttonContainer}>
           <Paragraph size='medium'>{'Allowed file types: pdf, png, jpg, jpeg, gif, bmp (Less than 25MB)'}</Paragraph>

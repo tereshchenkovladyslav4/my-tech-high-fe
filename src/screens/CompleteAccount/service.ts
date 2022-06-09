@@ -10,3 +10,8 @@ export const confirmAccount = gql`
 	}
 `
 
+export const sendApplicationEmail = gql`
+  mutation SendApplicationReceiveEmail($email: String!) {
+    sendApplicationReceiveEmail(email: $email)
+  }
+`

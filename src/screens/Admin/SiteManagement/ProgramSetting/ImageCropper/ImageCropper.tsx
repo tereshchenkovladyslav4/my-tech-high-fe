@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import Cropper from 'react-cropper'
-import { Box, Button, FormGroup, Typography, Stack, Dialog, DialogTitle, DialogActions } from '@mui/material'
+import { Box, Button, Stack, Dialog, DialogTitle, DialogActions } from '@mui/material'
 import 'cropperjs/dist/cropper.css'
 
 export type StateLogoFileType = {
@@ -16,7 +16,7 @@ export type ImageCropperProps = {
   setIsChanged: (value: boolean) => void
 }
 
-export default function ImageCropper ({ imageToCrop, classes, setStateLogoFile, setIsChanged }: ImageCropperProps) {
+export default function ImageCropper({ imageToCrop, classes, setStateLogoFile, setIsChanged }: ImageCropperProps) {
   const [cropper, setCropper] = useState<any>()
   const [open, setOpen] = useState<boolean>(false)
 
@@ -24,9 +24,9 @@ export default function ImageCropper ({ imageToCrop, classes, setStateLogoFile, 
     setOpen(true)
   }, [imageToCrop])
 
-  const blobToFile = (theBlob: Blob, fileName:string = 'CroppedImage'): File => {
+  const blobToFile = (theBlob: Blob, fileName: string = 'CroppedImage'): File => {
     const myFile = new File([theBlob], 'image.jpeg', {
-      type: theBlob.type
+      type: theBlob.type,
     })
     return myFile
   }
@@ -34,11 +34,11 @@ export default function ImageCropper ({ imageToCrop, classes, setStateLogoFile, 
   const handleClose = () => {
     setOpen(false)
   }
-  
+
   const handleSave = () => {
     setOpen(false)
     if (typeof cropper !== 'undefined') {
-      cropper.getCroppedCanvas().toBlob(blob => {
+      cropper.getCroppedCanvas().toBlob((blob) => {
         const croppedImageFile = blobToFile(blob)
         setStateLogoFile({
           name: croppedImageFile.name,
@@ -53,30 +53,8 @@ export default function ImageCropper ({ imageToCrop, classes, setStateLogoFile, 
   return (
     <>
       {imageToCrop && (
-        <Dialog
-          open={open}
-          onClose={handleClose}
-          fullWidth={true}
-          maxWidth={'xl'}
-          sx={{
-            marginX: 'auto',
-            paddingY: '10px',
-            borderRadius: 10,
-            textAlign: 'center',
-            alignItems: 'center',
-            display: 'flex',
-            flexDirection: 'column',
-          }}
-        >
-          <DialogTitle
-            sx={{
-              fontWeight: 'bold',
-              marginTop: '10px',
-              textAlign: 'left'
-            }}
-          >
-            {'Image Cropper'}
-          </DialogTitle>
+        <Dialog open={open} onClose={handleClose} fullWidth={true} maxWidth={'xl'} sx={classes.imageCropper}>
+          <DialogTitle sx={classes.imageCropperDialogTitle}>{'Image Cropper'}</DialogTitle>
           <Box sx={{ maxWidth: '50vw', minWidth: '400px', overflow: 'hidden' }}>
             <Stack>
               <Box>
@@ -102,16 +80,11 @@ export default function ImageCropper ({ imageToCrop, classes, setStateLogoFile, 
               </Box>
             </Stack>
           </Box>
-          <DialogActions
-            sx={{
-              justifyContent: 'center',
-              marginBottom: 2,
-            }}
-          >
-            <Button variant='contained' sx={classes.cancelButton} onClick={handleClose} >
+          <DialogActions sx={classes.dialogAction}>
+            <Button variant='contained' sx={classes.cancelButton} onClick={handleClose}>
               Cancel
             </Button>
-            <Button variant='contained' sx={classes.submitButton} onClick={handleSave} >
+            <Button variant='contained' sx={classes.submitButton} onClick={handleSave}>
               Save
             </Button>
           </DialogActions>

@@ -1,4 +1,5 @@
 import { gql } from '@apollo/client'
+import { SNOWPACK_PUBLIC_S3_URL } from '../../../../utils/constants'
 
 export const updateStateNameMutation = gql`
   mutation UpdateRegion($updateRegionInput: UpdateRegionInput!) {
@@ -59,3 +60,45 @@ export const removeSchoolDistrictInfoByRegionId = gql`
     removeSchoolDistrictInfoByRegionId(region_id: $regionId)
   }
 `
+
+export const uploadImage = async (file, stateName) => {
+  const bodyFormData = new FormData()
+  if (file) {
+    bodyFormData.append('file', file)
+    bodyFormData.append('region', stateName)
+    bodyFormData.append('directory', 'stateLogo')
+
+    const response = await fetch(SNOWPACK_PUBLIC_S3_URL, {
+      method: 'POST',
+      body: bodyFormData,
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('JWT')}`,
+      },
+    })
+    const {
+      data: { s3 },
+    } = await response.json()
+    return s3.Location
+  }
+}
+
+export const uploadFile = async (file, type, stateName) => {
+  const bodyFormData = new FormData()
+  if (file) {
+    bodyFormData.append('file', file)
+    bodyFormData.append('region', stateName)
+    bodyFormData.append('directory', type)
+
+    const response = await fetch(SNOWPACK_PUBLIC_S3_URL, {
+      method: 'POST',
+      body: bodyFormData,
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('JWT')}`,
+      },
+    })
+    const {
+      data: { s3 },
+    } = await response.json()
+    return s3.Location
+  }
+}

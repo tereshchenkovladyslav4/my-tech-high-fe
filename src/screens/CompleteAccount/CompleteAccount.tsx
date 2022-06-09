@@ -8,7 +8,7 @@ import { useStyles } from './styles'
 import { Paragraph } from '../../components/Typography/Paragraph/Paragraph'
 import { NewApplicationFooter } from '../../components/NewApplicationFooter/NewApplicationFooter'
 import { useMutation } from '@apollo/client'
-import { confirmAccount } from './service'
+import { confirmAccount, sendApplicationEmail } from './service'
 import { useFormik } from 'formik'
 import * as yup from 'yup'
 import { CompleteAccountSuccess } from '../CompleteAccountSuccess/CompleteAccountSuccess'
@@ -17,6 +17,7 @@ export const CompleteAccount = () => {
   const token = window.location.href.split('=')[1]
 
   const [confirmEmail] = useMutation(confirmAccount)
+  const [sendApplicationReceiveEmail] = useMutation(sendApplicationEmail)
   const [showSuccess, setShowSuccess] = useState(false)
 
   const classes = useStyles
@@ -55,7 +56,11 @@ export const CompleteAccount = () => {
           password: formik.values.password,
         },
       },
-    }).then(() => setShowSuccess(true))
+    }).then(
+      () => {
+        setShowSuccess(true)
+        sendApplicationReceiveEmail({ variables: { email: formik.values.email } })
+      })
   }
 
   return !showSuccess ? (

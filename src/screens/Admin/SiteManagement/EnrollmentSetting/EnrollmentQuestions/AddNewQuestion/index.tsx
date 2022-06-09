@@ -231,8 +231,9 @@ export default function AddNewQuestionModal({
       }
       else {
         //  group: oldGroup
-        //  groupType: newGroup
+        //  groupName: newGroup
         let groups = currentTabData.groups;
+        let newGroupName: string = groupName;
         if(!currentGroup) {
           groups.push({
             id: undefined,
@@ -241,6 +242,9 @@ export default function AddNewQuestionModal({
             order: currentTabData.groups.length + 1,
             questions: [],
           });
+        }
+        else {
+          newGroupName = groupType;
         }
         const updatedTab = {
           ...currentTabData,
@@ -256,7 +260,7 @@ export default function AddNewQuestionModal({
                 questions: questions
               }
             }
-            else if(g.group_name == groupName) {
+            else if(g.group_name == newGroupName) {
               //  Add to new Group
               const questions = g.questions.concat(questionItem);
               for(let i = 0; i < questions.length; i++) {

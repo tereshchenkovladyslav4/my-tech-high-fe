@@ -24,6 +24,9 @@ export const EMAILTEMPLATES = `/email-templates`
 export const SITE_MANAGEMENT = '/site-management'
 export const FORGOT_PASSWORD = '/forgot-password'
 export const RESET_PASSWORD = '/reset-password'
+export const SNOWPACK_PUBLIC_S3_URL = import.meta.env.SNOWPACK_PUBLIC_S3_URL
+export const SNOWPACK_PUBLIC_SCHOOL_DISTRICT_TEMPLATE = import.meta.env.SNOWPACK_PUBLIC_SCHOOL_DISTRICT_TEMPLATE
+export const SNOWPACK_PUBLIC_COUNTIES_TEMPLATE = import.meta.env.SNOWPACK_PUBLIC_COUNTIES_TEMPLATE
 
 // COLORS
 export const ACTIVELINKBACKGROUND = 'rgba(65, 69, 255, 0.04)'

@@ -83,7 +83,7 @@ export const ApplicationTable = ({ filter }) => {
       emailed:
         application.application_emails.length > 0 ? (
           <Box sx={{ cursor: 'pointer' }} onClick={() => handleOpenEmailHistory(application)}>
-            {moment(application.application_emails[0].created_at).format('MM/DD/YY')}
+            {moment(application.application_emails[application.application_emails.length -1].created_at).format('MM/DD/YY')}
           </Box>
         ) : null,
       actions: (

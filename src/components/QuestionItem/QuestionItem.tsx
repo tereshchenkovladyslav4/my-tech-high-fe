@@ -165,11 +165,11 @@ export default function QuestionItem({
 	useEffect(() => {
 		!hasAction && questions[0]?.defaultQuestion && questions[0]?.options.length == 0 && questions[0]?.slug == 'student_gender' &&
 			updateOptionsForDefaultQuestion([
-        {label: 'Male', value: 1},
-        {label: 'Female', value: 2},
-//        {label: 'Non Binary', value: 3},
-//        {label: 'Undeclared', value: 4},
-      ]);
+				{label: 'Male', value: 1},
+				{label: 'Female', value: 2},
+//				{label: 'Non Binary', value: 3},
+//				{label: 'Undeclared', value: 4},
+			]);
 	}, []);
 
 	//	student
@@ -264,7 +264,7 @@ function Item({ question: q }: { question: Question }) {
 						borderColor: errors[q.id] ? 'red' : '',
 						[`& .${outlinedInputClasses.root} .${outlinedInputClasses.notchedOutline}`]: {
 							borderColor: SYSTEM_07,
-							borderWidth: '2px',
+							borderWidth: '2px !important',
 						},
 						[`& .${inputLabelClasses.root}.${inputLabelClasses.focused}`]: {
 							transform: 'translate(14px, -11px) scale(1)'
@@ -423,6 +423,12 @@ function Item({ question: q }: { question: Question }) {
 			);
 			break;
 		case QUESTION_TYPE.CALENDAR:
+			let min: string = '';
+			if(q.slug == 'effective_withdraw_date') {
+				min = moment().format('YYYY-MM-DD');
+			} else {
+				min = moment('1900-01-01').format('YYYY-MM-DD');
+			}
 			return (
 				<TextField
 					size='small'
@@ -431,7 +437,14 @@ function Item({ question: q }: { question: Question }) {
 						minWidth: '100%',
 						[`& .${outlinedInputClasses.root} .${outlinedInputClasses.notchedOutline}`]: {
 							borderColor: SYSTEM_07,
+							borderWidth: '2px'
 						},
+						[`& .${inputLabelClasses.root}.${inputLabelClasses.focused}`]: {
+							transform: 'translate(14px, -11px) scale(1)'
+						},
+						[`& .${outlinedInputClasses.root} .${outlinedInputClasses.notchedOutline} span`]: {
+							fontSize: 16
+						}
 					}}
 					InputLabelProps={{
 						style: { color: SYSTEM_05 },
@@ -442,7 +455,7 @@ function Item({ question: q }: { question: Question }) {
 					onChange={(v) => setQuestionResponse(v.currentTarget.value)}
 					type="date"
 					focused
-					inputProps={{min: moment().format('YYYY-MM-DD')}}
+					inputProps={{min: min}}
 					name={"Question" + q.id.toString()}
 					FormHelperTextProps={{
 						style: {
@@ -487,7 +500,10 @@ function Item({ question: q }: { question: Question }) {
 						error={!!touched[q.id] && !!errors[q.id]}
 						helperText={errors[q.id] ? 'Parent Name is required.' : ''}
 					/>
-					<Subtitle size={12}>
+					<Subtitle size={12}
+						sx={{
+							color: 'rgb(118, 118, 118)'
+						}}>
 						{q.question}
 					</Subtitle>
 					<SignaturePad

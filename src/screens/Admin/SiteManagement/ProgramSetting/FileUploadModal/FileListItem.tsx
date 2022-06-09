@@ -17,13 +17,7 @@ export const FileListItem: FileListItemTemplateType = ({ file, closeAction }) =>
 
   return (
     <>
-      <Box
-        onClick={() => !closeAction && window.open((file as S3FileType).signedUrl)}
-        display='flex'
-        flexDirection='row'
-        color='#7B61FF'
-        marginTop='6px'
-      >
+      <Box onClick={() => !closeAction && window.open((file as S3FileType).signedUrl)} sx={classes.fileListItem}>
         <Paragraph sx={classes.text}>{file.name}</Paragraph>
         {closeAction && <DeleteForeverOutlinedIcon style={classes.delete} onClick={() => handleDelete()} />}
       </Box>

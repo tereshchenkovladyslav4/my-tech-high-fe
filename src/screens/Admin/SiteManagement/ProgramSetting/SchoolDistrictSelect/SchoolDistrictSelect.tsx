@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { Box, Typography, Stack } from '@mui/material'
+import React, { useContext, useState } from 'react'
+import { Box, Stack } from '@mui/material'
 import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined'
 import Papa from 'papaparse'
 import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
@@ -9,17 +9,37 @@ import { FileUploadModal } from '../FileUploadModal/FileUploadModal'
 import { SchoolDistrictFileType } from './SchoolDistrictSelectTypes'
 import CustomModal from '../../EnrollmentSetting/components/CustomModal/CustomModals'
 import DownloadFileIcon from '../../../../../assets/icons/file-download.svg'
+import { useMutation } from '@apollo/client'
+import { removeFileByFileId, removeSchoolDistrictInfoByRegionId } from '../services'
+import { UserContext } from '../../../../../providers/UserContext/UserProvider'
+import { Tooltip } from '@material-ui/core'
+import { makeStyles } from '@material-ui/core/styles'
+
+const useStyles = makeStyles(() => ({
+  customTooltip: {
+    backgroundColor: '#767676',
+    fontSize: '14px',
+    borderRadius: 12,
+    paddingLeft: 10,
+    paddingRight: 10,
+    paddingTop: 9,
+    paddingBottom: 9,
+  },
+}))
 
 export default function SchoolDistrictSelect({
   schoolDistrict,
   setSchoolDistrict,
   setSchoolDistrictArray,
-  handleSchoolDistrictInfoDelete,
   setIsChanged,
 }: SchoolDistrictSelectProps) {
+  const classes = useStyles()
+  const { me } = useContext(UserContext)
   const [open, setOpen] = useState<boolean>(false)
   const [customModalOpen, setCustomModalOpen] = useState<boolean>(false)
   const [replaceModalOpen, setReplaceModalOpen] = useState<boolean>(false)
+  const [schoolDistrictInfoDelete, {}] = useMutation(removeSchoolDistrictInfoByRegionId)
+  const [fileDelete, {}] = useMutation(removeFileByFileId)
   const extensions =
     '.csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel, text/csv'
   const invalidMessage = 'Please only submit CSV or Excel File'
@@ -63,6 +83,27 @@ export default function SchoolDistrictSelect({
     handleSchoolDistrictInfoDelete()
   }
 
+  const handleSchoolDistrictInfoDelete = async () => {
+    const deleteResponse = await schoolDistrictInfoDelete({
+      variables: {
+        regionId: me?.selectedRegionId,
+      },
+    })
+    setSchoolDistrict({
+      name: '',
+      path: '',
+      file: null,
+    })
+
+    if (deleteResponse?.data?.removeSchoolDistrictInfoByRegionId) {
+      await fileDelete({
+        variables: {
+          fileId: deleteResponse?.data?.removeSchoolDistrictInfoByRegionId,
+        },
+      })
+    }
+  }
+
   const handleReplaceConfirm = () => {
     setReplaceModalOpen(false)
     setOpen(true)
@@ -78,12 +119,12 @@ export default function SchoolDistrictSelect({
   }
 
   return (
-    <Stack direction='row' spacing={1} alignItems='center' sx={{ my: 2 }}>
-      <Subtitle size={16} fontWeight='600' textAlign='left' sx={{ minWidth: 150 }}>
-        School Districts
-      </Subtitle>
-      <Typography>|</Typography>
-      <Box>
+    <>
+      <Box
+        sx={{
+          '& > :not(style)': { m: 1, paddingLeft: 2 },
+        }}
+      >
         {!schoolDistrict?.name ? (
           <Stack direction='row' sx={{ ml: 1.5, cursor: 'pointer' }} alignItems='center' onClick={handleClickOpen}>
             <Subtitle size={12} color={MTHBLUE} fontWeight='500'>
@@ -100,10 +141,26 @@ export default function SchoolDistrictSelect({
             {schoolDistrict.path && (
               <>
                 <Box sx={{ marginLeft: '40px' }} onClick={handleDownload}>
-                  <img src={DownloadFileIcon} alt='Download Icon' />
+                  <Tooltip
+                    title='Download'
+                    placement='top'
+                    classes={{
+                      tooltip: classes.customTooltip,
+                    }}
+                  >
+                    <img src={DownloadFileIcon} alt='Download Icon' />
+                  </Tooltip>
                 </Box>
                 <Box sx={{ marginLeft: '20px', marginTop: '3px' }}>
-                  <DeleteForeverOutlinedIcon onClick={() => setCustomModalOpen(true)} />
+                  <Tooltip
+                    title='Delete'
+                    placement='top'
+                    classes={{
+                      tooltip: classes.customTooltip,
+                    }}
+                  >
+                    <DeleteForeverOutlinedIcon onClick={() => setCustomModalOpen(true)} />
+                  </Tooltip>
                 </Box>
               </>
             )}
@@ -140,6 +197,6 @@ export default function SchoolDistrictSelect({
           onClose={() => setReplaceModalOpen(false)}
         />
       )}
-    </Stack>
+    </>
   )
 }

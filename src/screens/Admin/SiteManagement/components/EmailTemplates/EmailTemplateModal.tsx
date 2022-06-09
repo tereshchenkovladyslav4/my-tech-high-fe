@@ -325,7 +325,7 @@ export const EmailTemplateModal = ({
 			const tab = enrollmentQuestionsData.getEnrollmentQuestions.find(x => x.tab_name == "Documents");
 			if(tab) {
 				tab.groups.forEach(group => {
-					group.questions.forEach(question => {
+					group.questions.filter(q => q.type == 8).forEach(question => {
 						standard_response_groups_default.push({
 							id: question.id,
 							title: question.question,
@@ -362,7 +362,17 @@ export const EmailTemplateModal = ({
 				});
 				setResponses(tmpArr);
 			}
+			if( emailTemplate.category.category_name == 'Applications' ){
+				setDeadline( emailTemplate?.region?.application_deadline_num_days );        
+			}
 
+			if( emailTemplate.category.category_name == 'Enrollment Packets' ){
+				setDeadline( emailTemplate?.region?.enrollment_packet_deadline_num_days );
+			}
+
+			if( emailTemplate.category.category_name == 'Withdraw' ){
+				setDeadline( emailTemplate?.region?.withdraw_deadline_num_days );
+			}
 			setAddResponse(emailTemplate.standard_responses)
 			setAvailableInserts(emailTemplate?.inserts?.split(","))
 			setType(emailTemplate.template)
@@ -385,21 +395,9 @@ export const EmailTemplateModal = ({
 					setEditorState(EditorState.createWithContent(contentState))
 				}
 			}
-
-			if( emailTemplate.category.category_name == 'Withdraw' ){
-				setDeadline( emailTemplate?.region?.withdraw_deadline_num_days );        
-			}
-
-			if( emailTemplate.category.category_name == 'Enrollment Packets' ){
-				setDeadline( emailTemplate?.region?.enrollment_packet_deadline_num_days );
-			}
-
-			if( emailTemplate.category.category_name == 'Withdraw' ){
-				setDeadline( emailTemplate?.region?.withdraw_deadline_num_days );
-			}
 		}
 	}, [data, enrollmentQuestionsData])
-
+  console.log('deadline', deadline);
 	return (
 		<Modal
 			open={true}
