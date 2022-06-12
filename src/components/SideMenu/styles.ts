@@ -25,7 +25,6 @@ export const useStyles = {
     width: '100%',
   },
   logoTitle: {
-    marginLeft: '25px',
     marginTop: '25px',
   },
 }

@@ -21,13 +21,24 @@ const DocumentItem = ({item}) => {
 
 const SortableItem = SortableElement(DocumentItem)
 
-const SortableListContainer = SortableContainer(({ items }: { items: EnrollmentQuestion[] }) => (
-  <List>
-    {items.map((item, index) => (
-      <SortableItem index={index} key={index} item={item} />
-    ))}
-  </List>
-))
+const SortableListContainer = SortableContainer(({ items }: { items: EnrollmentQuestion[] }) => {
+  const questionsArr = items.map((q) => {
+    let arr = [q], current = q, child;
+      while(child = items.find(x => x.additional_question == current.slug)) {
+        arr.push(child);
+        current = child;
+      }
+      return arr;
+  })
+  const questionsLists = questionsArr.filter((item) => !item[0].additional_question)
+  return (
+    <List>
+      {questionsLists.map((item, index) => (
+        <SortableItem index={index} key={index} item={item} />
+      ))}
+    </List>
+  )
+      })
 
 export const Documents: FunctionComponent = () => {
   const tabName = useContext(TabContext)

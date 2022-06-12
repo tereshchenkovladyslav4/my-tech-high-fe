@@ -27,14 +27,14 @@ export const useStyles = {
     },
     [`& .${outlinedInputClasses.root} .${outlinedInputClasses.notchedOutline} span`]: {
       fontSize: 16
-    }
+    },
   },
   dropdown: {
     [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
       borderColor: SYSTEM_07,
       borderWidth: '2px'
     },
-    marginY: 2,
+    // marginY: 2,
     width: '100%',
     [`& .${inputLabelClasses.root}.${inputLabelClasses.focused}`]: {
       transform: 'translate(14px, -11px) scale(1)'

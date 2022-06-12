@@ -34,12 +34,12 @@ export default function EnrollmentQuestionItem({
     const [additionalQuestion, setAdditionalQuestion] = useState(false)
     const [additionalQuestion2, setAdditionalQuestion2] = useState(false)
     
-    useEffect(() => {
-        if(item.type === 1 || item.type === 3 || item.type === 5) {
-            formik.values.meta && formik.values.meta[`${item.slug}`] && item.options.find((o) => o.action === 2)?.label === formik.values.meta[`${item.slug}`] && formik.values.meta[`${item.slug}_additional`] && setAdditionalQuestion(true)
-            formik.values.meta && item.additional?.options.find((o) => o.action === 2)?.label === formik.values.meta[`${item.slug}_additional`] && formik.values.meta[`${item.slug}`] && formik.values.meta[`${item.slug}_additional`] && setAdditionalQuestion2(true)
-        }
-    }, [item, formik])
+    // useEffect(() => {
+    //     if(item.type === 1 || item.type === 3 || item.type === 5) {
+    //         formik.values.meta && formik.values.meta[`${item.slug}`] && item.options.find((o) => o.action === 2)?.label === formik.values.meta[`${item.slug}`] && formik.values.meta[`${item.slug}_additional`] && setAdditionalQuestion(true)
+    //         formik.values.meta && item.additional?.options.find((o) => o.action === 2)?.label === formik.values.meta[`${item.slug}_additional`] && formik.values.meta[`${item.slug}`] && formik.values.meta[`${item.slug}_additional`] && setAdditionalQuestion2(true)
+    //     }
+    // }, [item, formik])
     
     let questionEle
     if(item.type === 7) {
@@ -67,7 +67,7 @@ export default function EnrollmentQuestionItem({
     return (
     <>
         {questionEle}
-        {additionalQuestion && (
+        {/* {additionalQuestion && (
             <Grid item xs={12}>
                 <Box alignItems='center' width={'50%'}>
                     <Subtitle fontWeight='500'>{item.additional?.question}</Subtitle>
@@ -82,11 +82,11 @@ export default function EnrollmentQuestionItem({
                     <Item question={item.additional2} setAdditionalQuestion = {() => {}} formik={formik}/>
                 </Box>
             </Grid>
-        )}        
+        )}         */}
     </>
     )
 }
-function Item({ question: q, setAdditionalQuestion, formik }: { question: EnrollmentQuestion | AdditionalQuestionType, setAdditionalQuestion: (flag:boolean) => void, formik: any }) {
+function Item({ question: q, setAdditionalQuestion, formik }: { question: EnrollmentQuestion, setAdditionalQuestion: (flag:boolean) => void, formik: any }) {
     
     const { me } = useContext(UserContext)
     const { loading: schoolLoading, data: schoolYearData } = useQuery(getActiveSchoolYearsByRegionId, {

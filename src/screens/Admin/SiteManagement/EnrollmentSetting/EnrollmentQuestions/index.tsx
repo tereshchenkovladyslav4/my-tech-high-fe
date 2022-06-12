@@ -79,8 +79,6 @@ export default function EnrollmentQuestions() {
               const jsonQuestions = g.questions.map((q) => {
                 return {
                   ...q,
-                  additional2: {... JSON.parse(q.additional2), options: JSON.parse(JSON.parse(q.additional2).options)} || [],
-                  additional: {... JSON.parse(q.additional), options: JSON.parse(JSON.parse(q.additional).options)} || [],
                   options: JSON.parse(q.options) || []
                 }
               }).sort((a, b) => a.order - b.order)
@@ -312,7 +310,7 @@ export default function EnrollmentQuestions() {
       options: options,
       slug: selectedQuestion.slug
     }
-    setEditItem(editItemTemp)
+    setEditItem([editItemTemp])
     setOpenAddQuestion('new')
   }
 
@@ -336,8 +334,6 @@ export default function EnrollmentQuestions() {
               const submitQuestions = g.questions.map((q) => {                
                 return {
                   ...q,
-                  additional2: JSON.stringify({...q.additional2, options: JSON.stringify(q.additional2?.options || [])}),
-                  additional: JSON.stringify({...q.additional, options: JSON.stringify(q.additional?.options || [])}),
                   options: JSON.stringify(q?.options || [])
                 }
               })
@@ -450,9 +446,9 @@ export default function EnrollmentQuestions() {
                       )}
                     </Box>
                   </ProgramYearContext.Provider>
-                  {openAddQuestion === 'new' && <AddNewQuestionModal onClose={(e) => {setOpenAddQuestion(''); setOpenSelectQuestionType(e)}} editItem={editItem} newQuestion={true}/>}
+                  {openAddQuestion === 'new' && <AddNewQuestionModal onClose={(e) => {setOpenAddQuestion(''); setOpenSelectQuestionType(e)}} editItem={editItem} isNewQuestion={true}/>}
                   {openAddQuestion === 'default' && <DefaultQuestionModal onClose={() => {setOpenAddQuestion(''); setOpenSelectQuestionType(true)}} onCreate={(e) => {onSelectDefaultQuestions(e)}}/>}
-                  {openSelectQuestionType && <AddQuestionModal onClose={() => setOpenSelectQuestionType(false)} onCreate={(e) => {setOpenAddQuestion(e); setEditItem(null); setOpenSelectQuestionType(false)}}/>}
+                  {openSelectQuestionType && <AddQuestionModal onClose={() => setOpenSelectQuestionType(false)} onCreate={(e) => {setOpenAddQuestion(e); setEditItem([]); setOpenSelectQuestionType(false)}}/>}
 
                   {openAddUpload && <AddUploadModal onClose={() => setOpenAddUpload(false)}/>}
                   {currentTab === 3 && (

@@ -347,15 +347,15 @@ export const AdminAppBar: FunctionComponent = () => {
 				</Grid>
 				{unsavedChanges && (
 					<CustomConfirmModal
-							header='Cancel Changes'
-							content='Are you sure you want to cancel changes made?'
-							handleConfirmModalChange={(val: boolean, isOk: boolean) => {
-								if(isOk) {
-									setRegion(unsavedChanges);
-								}
-								setUnsavedChanges(0);
-							}}
-						/>
+						header='Unsaved Changes'
+						content='Are you sure you want to leave without saving changes?'
+						handleConfirmModalChange={(val: boolean, isOk: boolean) => {
+							if(isOk) {
+								setRegion(unsavedChanges);
+							}
+							setUnsavedChanges(0);
+						}}
+					/>
 				)}
 			</div>
 		</MUIAppBar>

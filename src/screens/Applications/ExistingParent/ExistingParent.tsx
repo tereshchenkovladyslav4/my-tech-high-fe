@@ -108,6 +108,7 @@ export const ExistingParent = () => {
       let empty = { ...emptyStudent }
       let valid_student = {}
       let valid_meta = {}
+      let valid_student_meta = {}
       questions.map((q) => {
         if (q.type !== 7) {
           if (q.slug?.includes('student_')) {
@@ -134,33 +135,51 @@ export const ExistingParent = () => {
           } else if (q.slug?.includes('meta_') && q.required) {
             if(q.student_question) {
               empty[`${q.slug}`] = ''
+              if (q.validation === 1) {
+                valid_student_meta[`${q.slug}`] = yup.string().email('Enter a valid email').required('Email is required')
+              } else if (q.validation === 2) {
+                valid_student_meta[`${q.slug}`] = yup
+                  .string()
+                  .required(`${q.question} is required`)
+                  .test(`${q.question}-selected`, `${q.question} is invalid`, (value) => {
+                    return isNumber.test(value)
+                  })
+              } else if (q.type === 3) {
+                valid_student_meta[`${q.slug}`] = yup.array().min(1, `${q.question} is required`).required(`${q.question} is required`).nullable()
+              } else if (q.type === 4) {
+                valid_student_meta[`${q.slug}`] = yup.boolean().oneOf([true], 'This field must be checked')
+              } else {
+                valid_student_meta[`${q.slug}`] = yup.string().required(`${q.question} is required`)
+              }
             }
-            if (q.validation === 1) {
-              valid_meta[`${q.slug}`] = yup.string().email('Enter a valid email').required('Email is required')
-            } else if (q.validation === 2) {
-              valid_meta[`${q.slug}`] = yup
-                .string()
-                .required(`${q.question} is required`)
-                .test(`${q.question}-selected`, `${q.question} is invalid`, (value) => {
-                  return isNumber.test(value)
-                })
-            } else if (q.type === 3) {
-              valid_meta[`${q.slug}`] = yup
-                .array()
-                .min(1, `${q.question} is required`)
-                .required(`${q.question} is required`)
-            } else if (q.type === 4) {
-              valid_meta[`${q.slug}`] = yup.boolean().oneOf([true], 'This field must be checked')
-            } else {
-              valid_meta[`${q.slug}`] = yup.string().required(`${q.question} is required`)
-            }
+            else {
+              if (q.validation === 1) {
+                valid_meta[`${q.slug}`] = yup.string().email('Enter a valid email').required('Email is required')
+              } else if (q.validation === 2) {
+                valid_meta[`${q.slug}`] = yup
+                  .string()
+                  .required(`${q.question} is required`)
+                  .test(`${q.question}-selected`, `${q.question} is invalid`, (value) => {
+                    return isNumber.test(value)
+                  })
+              } else if (q.type === 3) {
+                valid_meta[`${q.slug}`] = yup
+                  .array()
+                  .min(1, `${q.question} is required`)
+                  .required(`${q.question} is required`)
+              } else if (q.type === 4) {
+                valid_meta[`${q.slug}`] = yup.boolean().oneOf([true], 'This field must be checked')
+              } else {
+                valid_meta[`${q.slug}`] = yup.string().required(`${q.question} is required`)
+              }
+            }            
           }
         }
       })
       setEmptyStudent(empty)
       setValidationSchema({
         ...initSchema,
-        students: yup.array(yup.object(valid_student)),
+        students: yup.array(yup.object({...valid_student, meta: yup.object(valid_student_meta)})),
         meta: yup.object(valid_meta),
       })
     }

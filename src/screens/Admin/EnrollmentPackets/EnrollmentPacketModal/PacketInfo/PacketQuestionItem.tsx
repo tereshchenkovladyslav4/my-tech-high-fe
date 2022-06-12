@@ -57,7 +57,7 @@ export default function PacketQuestionItem({
     return (
     <>
         {questionEle}
-        {additionalQuestion && (
+        {/* {additionalQuestion && (
             <Grid item xs={12}>
                 <Box alignItems='center' width={'50%'}>
                     <Subtitle fontWeight='500'>{item.additional?.question}</Subtitle>
@@ -72,11 +72,11 @@ export default function PacketQuestionItem({
                     <Item question={item.additional2} setAdditionalQuestion = {() => {}}/>
                 </Box>
             </Grid>
-        )}        
+        )}         */}
     </>
     )
 }
-function Item({ question: q, setAdditionalQuestion }: { question: EnrollmentQuestion | AdditionalQuestionType, setAdditionalQuestion: (flag:boolean) => void}) {
+function Item({ question: q, setAdditionalQuestion }: { question: EnrollmentQuestion, setAdditionalQuestion: (flag:boolean) => void}) {
     const { control, watch } = useFormContext()
     const [school_year_id] = watch(['school_year_id'])
     const [otherValue, setOtherValue] = useState('')

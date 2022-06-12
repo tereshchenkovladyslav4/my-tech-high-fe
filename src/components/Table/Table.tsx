@@ -3,9 +3,9 @@ import { map } from 'lodash'
 import React, { useState } from 'react'
 import { TableTemplateType } from './types'
 
-export const Table: TableTemplateType = ({ tableHeaders, tableBody }) => {
+export const Table: TableTemplateType = ({ tableHeaders, tableBody, isHover = false }) => {
   const [rows] = useState(tableBody)
-  
+
   const renderTableHeaders = () =>
     tableHeaders && (
       <TableHead>
@@ -20,10 +20,15 @@ export const Table: TableTemplateType = ({ tableHeaders, tableBody }) => {
     )
 
   const renderTableBody = () =>
-    map(rows, (obj, idx) => (
-      <TableRow key={idx}>
+    map(rows, (obj) => (
+      <TableRow hover={isHover ? true : false}>
         {Object.values(obj).map((val, idx) => (
-          <TableCell sx={{ paddingY: 0 }} key={`${val}-${idx}`}>
+          <TableCell
+            sx={{
+              paddingY: 0,
+            }}
+            key={`${val}-${idx}`}
+          >
             {val}
           </TableCell>
         ))}

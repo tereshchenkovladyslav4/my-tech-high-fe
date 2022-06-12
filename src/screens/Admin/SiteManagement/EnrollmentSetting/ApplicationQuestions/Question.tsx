@@ -87,7 +87,7 @@ function Item({ question: q }: { question: ApplicationQuestion }) {
     return (
       <DropDown
         sx={{
-          marginTop: '10px',
+          // marginTop: '10px',
           minWidth: '100%',
           maxWidth: '100%',
           borderColor: errors[index] ? 'red' : '',

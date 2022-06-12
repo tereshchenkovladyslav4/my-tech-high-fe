@@ -9,6 +9,7 @@ export const TTALogo: FunctionComponent = (props: React.SVGProps<SVGSVGElement>)
     fill='none'
     xmlns='http://www.w3.org/2000/svg'
     xmlnsXlink='http://www.w3.org/1999/xlink'
+    {...props}
   >
     <rect width='71' height='28' rx='9' fill='url(#pattern0)' />
     <defs>

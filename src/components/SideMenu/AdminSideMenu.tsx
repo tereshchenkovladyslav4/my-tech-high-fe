@@ -133,7 +133,7 @@ export const AdminSideMenu: FunctionComponent = () => {
         <List style={classes.navbar}>
           <ListItem disablePadding style={classes.myTechHigh}>
             <ListItemButton>
-              <MTHLogo style={classes.logos} />
+              <MTHLogo />
               <Paragraph fontFamily='Helvetica' size='medium' fontWeight='bold'>
                 MY TECH HIGH
               </Paragraph>

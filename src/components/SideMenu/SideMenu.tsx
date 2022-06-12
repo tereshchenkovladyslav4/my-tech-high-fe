@@ -148,11 +148,10 @@ export const SideMenu: FunctionComponent = () => {
             <ListItemButton component='a'>
               {userRegion?.regionDetail.program == 'MTH' ? <MTHLogo /> : <TTALogo />}
               <Box sx={classes.logoTitle}>
-                <Paragraph fontFamily='Helvetica' size='medium' fontWeight='bold'>
+                <Paragraph size='medium' fontWeight='bold'>
                   {userRegion?.regionDetail.program == 'MTH' ? 'MY TECH HIGH' : 'Tech Trep Academy'}
                 </Paragraph>
                 <Paragraph
-                  fontFamily='Helvetica'
                   size='small'
                   fontWeight='bold'
                   sx={{ fontSize: '12px', color: '#CCCCCC', textAlign: 'center', paddingTop: '5px' }}

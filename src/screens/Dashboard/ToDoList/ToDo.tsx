@@ -17,7 +17,7 @@ const EmptyStateWrapper = (props) => (
         display='flex'
         justifyContent='space-between'
         sx={{
-          padding: '160px 0'
+          minHeight: '40vh'
         }}
       >
 	  <EmptyState
@@ -36,7 +36,7 @@ const emptyStateHandler = (showEmpty: boolean) => {
     return {
       backgroundImage: `url(${BGSVG})`,
       backgroundRepeat: 'no-repeat',
-      backgroundPosition: 'center right',
+      backgroundPosition: 'bottom right',
     }
   }
   

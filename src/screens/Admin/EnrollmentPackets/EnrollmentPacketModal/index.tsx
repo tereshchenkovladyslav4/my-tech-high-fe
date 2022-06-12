@@ -46,8 +46,7 @@ export const getPacketQuestionsGql = gql`
           group_id
           order
           options
-          additional
-          additional2
+          additional_question
           required
           type
           slug
@@ -118,8 +117,6 @@ export default function EnrollmentPacketModal({
                 const jsonQuestions = g.questions.map((q) => {
                   return {
                     ...q,
-                    additional2: {... JSON.parse(q.additional2), options: JSON.parse(JSON.parse(q.additional2).options)} || [],
-                    additional: {... JSON.parse(q.additional), options: JSON.parse(JSON.parse(q.additional).options)} || [],
                     options: JSON.parse(q.options) || []
                   }
                 }).sort((a, b) => a.order - b.order)

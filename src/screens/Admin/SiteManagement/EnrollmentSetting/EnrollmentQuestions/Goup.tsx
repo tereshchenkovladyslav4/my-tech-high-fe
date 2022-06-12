@@ -27,13 +27,24 @@ const DragHandle = SortableHandle(() => (
 
 const SortableItem = SortableElement(EnrollmentQuestionItem)
 
-const SortableListContainer = SortableContainer(({ group }: { group: EnrollmentQuestionGroup }) => (
-    <Grid container rowSpacing={2} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
-        {group.questions.map((item, index) => (
+const SortableListContainer = SortableContainer(({ group }: { group: EnrollmentQuestionGroup }) => 
+  {
+    const questionsArr = group.questions.map((q) => {
+      let arr = [q], current = q, child;
+        while(child = group.questions.find(x => x.additional_question == current.slug)) {
+          arr.push(child);
+          current = child;
+        }
+        return arr;
+    })
+    const questionsLists = questionsArr.filter((item) => !item[0].additional_question)
+    return (<Grid container rowSpacing={2} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
+        {questionsLists.map((item, index) => (
         <SortableItem index={index} key={index} item={item} group={group.group_name}/>
         ))}
-    </Grid>
-))
+    </Grid>)
+  }
+)
 
 export default function GroupItem({
   item,

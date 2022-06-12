@@ -61,8 +61,7 @@ export type EnrollmentQuestion = {
     options?: OptionsType[]
     required: boolean
     order: number
-    additional?: AdditionalQuestionType    
-    additional2?: AdditionalQuestionType
+    additional_question: string
     validation?: number
     display_admin: boolean
     default_question: boolean

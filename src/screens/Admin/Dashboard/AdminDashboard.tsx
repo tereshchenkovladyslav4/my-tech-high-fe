@@ -71,21 +71,18 @@ export const AdminDashboard: FunctionComponent = () => {
   ]
 
   return showAnnouncements ? (
-    <Grid container justifyContent='center' >
-      <Grid item xs={8} sx={{ paddingX: 2, my: 4 }}>
+    <Grid container justifyContent='center' spacing={{xs: 2}} sx={{margin: '0 !important', width: 'calc(100% - 16px) !important'}} >
+      <Grid item xs={12} lg={8}>
         <Box marginBottom={5}>
           <SchoolYear />
         </Box>
         <ToDo />
       </Grid>
-      <Grid item xs={4}>
+      <Grid item xs={12} lg={4}>
         <Card
           style={{
-            width: 300,
-            marginRight: 25,
+            width: '100%',
             borderRadius: 12,
-            marginTop: 30,
-            marginBottom: 30,
             paddingTop: 24,
             paddingBottom: 24,
           }}

@@ -9,6 +9,7 @@ import { CSSTransition, TransitionGroup } from 'react-transition-group'
 import { AnnouncementSectionProps } from './types'
 import { UserContext } from '../../../providers/UserContext/UserProvider'
 import { useQuery } from '@apollo/client'
+import { useStyles } from './styles'
 import { getUserAnnouncements } from '../services'
 import moment from 'moment'
 import { Paragraph } from '../../../components/Typography/Paragraph/Paragraph'
@@ -28,13 +29,21 @@ const AnnouncementSection = ({ inProp, setSectionName, setSelectedAnnouncement }
     return s3URL + person.photo
   }
 
+  const classes = useStyles
   const avatarGroup = (gradeFilter: string) => {
     const grades = JSON.parse(gradeFilter)
+    console.log(grades, 'grades')
+    console.log(students, 'students')
     return (
       <AvatarGroup max={5} sx={{ maxWidth: '300px', justifyContent: 'start' }} spacing={0}>
         {students &&
           students.map((student) => {
-            if (student?.grade_levels && grades.includes(student?.grade_levels[0].grade_level)) {
+            if (
+              student?.grade_levels &&
+              grades.includes(
+                student?.grade_levels[0].grade_level == 'Kin' ? 'Kindergarten' : student?.grade_levels[0].grade_level,
+              )
+            ) {
               return <Avatar alt={student.person.preferred_first_name} src={getProfilePhoto(student.person)} />
             }
           })}
@@ -70,26 +79,24 @@ const AnnouncementSection = ({ inProp, setSectionName, setSelectedAnnouncement }
       const { userAnnouncements } = announcementData
       setAnnouncementTableData(
         userAnnouncements.map((announcement) => ({
-          date: <ListItemText sx={{ minWidth: '120px' }} secondary={moment(announcement.date).format('MMMM DD')} />,
+          date: (
+            <Subtitle fontWeight='500' sx={{ fontSize: '12px', color: '#A1A1A1', maxWidth: '300px' }}>
+              {moment(announcement.date).format('MMMM DD')}
+            </Subtitle>
+          ),
           subject: (
             <Subtitle fontWeight='bold' sx={{ maxWidth: '300px' }}>
-              {announcement.subject}
+              {extractContent(announcement.subject).slice(0, 60)}
             </Subtitle>
           ),
           avatars: avatarGroup(announcement.filter_grades),
           description: (
             <>
-              <Box sx={{ display: 'flex', paddingY: '25px' }}>
+              <Box sx={{ display: 'flex', paddingY: '25px', width: '350px' }}>
                 <Paragraph size='medium'>
-                  {extractContent(announcement.body).slice(0, 50)}...
+                  {extractContent(announcement.body).slice(0, 100)}
                   <a
-                    style={{
-                      color: '#4145FF',
-                      cursor: 'pointer',
-                      fontWeight: 'bold',
-                      fontSize: '14px',
-                      textDecoration: 'underline',
-                    }}
+                    style={classes.readMore}
                     onClick={() => {
                       setSelectedAnnouncement({
                         id: announcement.id,
@@ -121,19 +128,12 @@ const AnnouncementSection = ({ inProp, setSectionName, setSelectedAnnouncement }
   return (
     <TransitionGroup>
       <CSSTransition in={inProp} timeout={1000} classNames='my-node'>
-        <Box display='flex' flexDirection='row' textAlign='left' paddingX='20px' marginTop={2}>
+        <Box sx={classes.cardAll}>
           <Grid container spacing={2} justifyContent='center'>
             <Grid item xs={12}>
               <Card>
-                <Box
-                  display='flex'
-                  flexDirection='row'
-                  textAlign='left'
-                  marginTop={2}
-                  justifyContent='space-between'
-                  marginX={4}
-                >
-                  <Box display='flex' flexDirection='row' alignItems='center' alignContent='center'>
+                <Box sx={classes.cardBox}>
+                  <Box sx={classes.cardItem}>
                     <Button onClick={() => setSectionName('root')}>
                       <ChevronLeftIcon sx={{ marginRight: 0.5, marginLeft: -2.5 }} />
                     </Button>
@@ -160,15 +160,21 @@ const AnnouncementSection = ({ inProp, setSectionName, setSelectedAnnouncement }
                     />
                   </Box>
                 </Box>
-                <Box paddingY='20px'>{announcementTableData && <Table tableBody={announcementTableData} />}</Box>
-                <Box sx={{ alignItems: 'center', textAlign: 'center', marginLeft: '', marginRight: 'auto' }}>
+                <Box padding='50px'>
+                  {announcementTableData && <Table tableBody={announcementTableData} isHover={true} />}
+                </Box>
+                <Box sx={classes.button}>
                   <Button
                     onClick={() => {
                       setLimit(limit + 10)
                       refetch()
                     }}
                   >
-                    <Paragraph size='large' sx={{ textDecoration: 'underline' }} color='#4145FF'>
+                    <Paragraph
+                      size='large'
+                      sx={{ textDecoration: 'underline', fontWeight: 700, fontSize: '16px' }}
+                      color='#4145FF'
+                    >
                       Load More
                     </Paragraph>
                   </Button>

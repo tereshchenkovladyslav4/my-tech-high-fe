@@ -61,8 +61,8 @@ export const Enrollment: EnrollmentTemplateType = ({id, disabled}: {id: number, 
               const jsonQuestions = g.questions.map((q) => {
                 return {
                   ...q,
-                  additional2: {... JSON.parse(q.additional2), options: JSON.parse(JSON.parse(q.additional2).options)} || [],
-                  additional: {... JSON.parse(q.additional), options: JSON.parse(JSON.parse(q.additional).options)} || [],
+                  // additional2: {... JSON.parse(q.additional2), options: JSON.parse(JSON.parse(q.additional2).options)} || [],
+                  // additional: {... JSON.parse(q.additional), options: JSON.parse(JSON.parse(q.additional).options)} || [],
                   options: JSON.parse(q.options) || []
                 }
               }).sort((a, b) => a.order - b.order)

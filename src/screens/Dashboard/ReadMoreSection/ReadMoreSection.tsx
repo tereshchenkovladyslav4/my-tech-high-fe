@@ -29,7 +29,12 @@ const ReadMoreSection = ({ inProp, announcement, setSectionName }: ReadMoreSecti
       <AvatarGroup max={5} spacing={0}>
         {students &&
           students.map((student) => {
-            if (student?.grade_levels && grades.includes(student?.grade_levels[0].grade_level)) {
+            if (
+              student?.grade_levels &&
+              grades.includes(
+                student?.grade_levels[0].grade_level == 'Kin' ? 'Kindergarten' : student?.grade_levels[0].grade_level,
+              )
+            ) {
               return <Avatar alt={student.person.preferred_first_name} src={getProfilePhoto(student.person)} />
             }
           })}

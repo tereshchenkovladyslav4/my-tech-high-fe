@@ -8,30 +8,33 @@ import { Paragraph } from '../../../../../../components/Typography/Paragraph/Par
 import { SYSTEM_07 } from '../../../../../../utils/constants'
 import { useStyles } from '../styles'
 import { EnrollmentQuestion, EnrollmentQuestionGroup, EnrollmentQuestionTab, OptionsType, QuestionTypes, ActionQuestionTypes, AdditionalQuestionType } from '../types'
-import QuestionOptions from './Options'
-import { EditorState, convertToRaw } from 'draft-js'
+// import QuestionOptions from './Options'
+import { EditorState, convertToRaw, ContentState } from 'draft-js'
 import Wysiwyg from 'react-draft-wysiwyg'
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
 import draftToHtml from 'draftjs-to-html'
 import { convertFromHTML } from 'draft-convert'
 import { TabContext } from '../TabContextProvider'
-import EditLinkModal from '../components/EditLinkModal'
 import { validationTypes } from '../../constant/defaultQuestions'
+import { QUESTION_TYPE } from '../../../../../../components/QuestionItem/QuestionItemProps'
+import htmlToDraft from 'html-to-draftjs'
+import QuestionOptions from '../../../../../../components/QuestionItem/AddNewQuestion/Options'
 
 export default function AddNewQuestionModal({
   onClose,
   editItem,
   group,
-  newQuestion,
+  isNewQuestion,
 }: {
   onClose: (e: boolean) => void // true: Close Add Question Modal false: Open Add Question Modal
-  editItem?: EnrollmentQuestion
+  editItem?: EnrollmentQuestion[]
   group?: string
-  newQuestion?: boolean
+  isNewQuestion?: boolean
 }) {
   const tabName = useContext(TabContext)
-  const [editorState, setEditorState] = useState(EditorState.createWithContent(convertFromHTML(editItem?.question || '')))
-  const editorRef = useRef(null)
+  const [editorState, setEditorState] = useState(EditorState.createWithContent(ContentState.createFromBlockArray(htmlToDraft('').contentBlocks)));
+  const editorRef = useRef(null)  
+	const [ deleteIds, setDeleteIds ] = useState([]);
   const [currentBlocks, setCurrentBlocks] = useState(0)
   const handleEditorChange = (state) => {
     try {
@@ -44,18 +47,6 @@ export default function AddNewQuestionModal({
 
   const { values, setValues } = useFormikContext<EnrollmentQuestionTab[]>()
 
-  const [validation, setValidation] = useState(editItem?.validation ? true : false || false)  
-  const [displayAdmin, setDisplayAdmin] = useState(editItem?.display_admin || false)  
-  const [validationType, setValidationType] = useState(editItem?.validation || 1)
-  const [isDefaultQuestion, setIsDefaultQuestion] = useState(editItem?.default_question || false)
-
-  const [question, setQuestion] = useState(editItem?.question || '')
-  const [type, setType] = useState(editItem?.type || 1)
-  const [required, setRequired] = useState(editItem?.required || false)
-  const [options, setOptions] = useState<OptionsType[]>([
-    ...(editItem?.options || [{ label: '', value: 1, action: 1 }]),
-    { label: '', value: (editItem?.options?.length || 1) + 1 , action: 1},
-  ])
   const [error, setError] = useState('')
   const currentTabData = values.filter((v) => v.tab_name === tabName)[0]
   const dropdownOptions: DropDownItem[] = currentTabData.groups.map((v) => {
@@ -66,78 +57,139 @@ export default function AddNewQuestionModal({
   })
   const [groupName, setGroupName] = useState('')
   const [addGroup, setAddGroup] = useState(false)
-  const [groupType, setGroupType] = useState(!newQuestion ? group : (dropdownOptions[0]?.value || -1))
+  const [groupType, setGroupType] = useState(!isNewQuestion ? group : (dropdownOptions[0]?.value || -1))  
 
-  const [openLinkModal, setOpenLinkModal] = useState(false)
-  const [agreement, setAgreement] = useState({
-    text: editItem?.question || '', 
-    type: editItem?.options?.length > 0 && editItem?.options[0]?.label || 'web', 
-    link: editItem?.options?.length > 0 && editItem?.options[0]?.value || ''
-  })
+  const templateQuestion: EnrollmentQuestion = {
+    question: '',
+    type: 1,
+    group_id: editItem[0]?.group_id,
+    options: [{label: '', value: 1, action: 1}],
+    required: false,
+    order: 1,
+    display_admin: false,
+    default_question: false,
+    slug: editItem[0]?.slug || `meta_${+ new Date()}`,
+    additional_question: '',
+  }
+  const [editQuestions, setEditQuestions] = useState(editItem.length > 0 ? editItem : [templateQuestion])
 
-  const [actionType, setActionType] = useState(1)
-  const [actionType2, setActionType2] = useState(1)
-
+  const setQuestionValue = (id, slug, field, value) => {
+		const newQuestions = editQuestions.map(
+			question => {
+				if(question.id == id && question.slug == slug) {	//	We compare slug if id is undefined when adding new question
+					question[field] = value;
+					return question;
+				}
+				else {
+					return question;
+				}
+			}
+		)
+		setEditQuestions(newQuestions);
+	};
+  const editQuestionsRef = useRef([]);
   useEffect(() => {
-    if(type === 2 || type === 6 || type === 7 || type === 4){
-      setActionType(1)
-      setActionType2(1)
-    }
-  }, [type])
-  // const [additionalQuestion, setAdditionalQuestion] = useState<AdditionalQuestionType>({
-  //   question: editItem?.additional?.question || '',
-  //   type: editItem?.additional?.type || 1,
-  //   required: editItem?.additional?.required || false,
-  //   options: [
-  //     ...(editItem?.additional?.options || [{ label: '', value: 1 }]),
-  //     { label: '', value: (editItem?.additional?.options?.length || 1) + 1 },
-  //   ],
-  //   action: editItem?.additional?.action || 1
-  // })
-  // const [additionalQuestion2, setAdditionalQuestion2] = useState<AdditionalQuestionType>({
-  //   question: editItem?.additional2?.question || '',
-  //   type: editItem?.additional2?.type || 1,
-  //   required: editItem?.additional2?.required || false,
-  //   options: [
-  //     ...(editItem?.additional2?.options || [{ label: '', value: 1 }]),
-  //     { label: '', value: (editItem?.additional2?.options?.length || 1) + 1 },
-  //   ],
-  //   action: editItem?.additional2?.action || 1
-  // })
-  const [additionalQuestion, setAdditionalQuestion] = useState(editItem?.additional?.question || '')
-  const [additionalQuestion2, setAdditionalQuestion2] = useState(editItem?.additional2?.question || '')
-  const [additionalQuestionType, setAdditionalQuestionType] = useState(editItem?.additional?.type || 1)
-  const [additionalQuestionType2, setAdditionalQuestionType2] = useState(editItem?.additional2?.type || 1)
-  const [additionalQuestionRequired, setAdditionalQuestionRequired] = useState(editItem?.additional?.required || false) 
-  const [additionalQuestion2Required, setAdditionalQuestion2Required] = useState(editItem?.additional2?.required || false) 
+		if(editQuestions.length == 0) {
+			return;
+		}
 
-  const [additionalOptions, setAdditionalOptions] = useState<OptionsType[]>([
-    ...(editItem?.additional?.options || [{ label: '', value: 1, action: 1 }]),
-    { label: '', value: (editItem?.additional?.options?.length || 1) + 1, action: 1 },
-  ])
+		if(editQuestionsRef.current.length == 0 && editQuestions.length > 0) {
+			//	Set Editor Content
+			(editQuestions[0].type == QUESTION_TYPE.AGREEMENT || editQuestions[0].type == QUESTION_TYPE.INFORMATION)
+				&& draftToHtml(convertToRaw(editorState.getCurrentContent())) != editQuestions[0].question
+				&& setEditorState(EditorState.createWithContent(ContentState.createFromBlockArray(htmlToDraft(editQuestions[0].question).contentBlocks)));
+		}
 
-  const [additionalOptions2, setAdditionalOptions2] = useState<OptionsType[]>([
-    ...(editItem?.additional2?.options || [{ label: '', value: 1, action: 1 }]),
-    { label: '', value: (editItem?.additional2?.options?.length || 1) + 1, action: 1 },
-  ])
+		editQuestionsRef.current = editQuestions;
 
-  useEffect(() => {
-    if (options.filter((a) => a.action === 2).length >= 1) {
-      setActionType(2)
-    }
-    else {
-      setActionType(1)
-    }
-  }, [options])
+		if(editQuestions[0].default_question)
+			return;
 
-  useEffect(() => {
-    if (additionalOptions.filter((a) => a.action === 2).length >= 1) {
-      setActionType2(2)
-    }
-    else {
-      setActionType2(1)
-    }
-  }, [additionalOptions])
+		//	Detect Changes
+		let bHasChange = false;
+		const newQuestions = editQuestions.map(
+			question => {
+				if([QUESTION_TYPE.MULTIPLECHOICES
+					, QUESTION_TYPE.CHECKBOX
+					, QUESTION_TYPE.DROPDOWN].find(x => x == question.type)) {
+					if(question.options.length == 0) {
+						bHasChange = true;
+						return {
+							...question,
+							options: [{
+								value: 1,
+								label: ''
+							}]
+						};
+					}
+					else if(question.options[question.options.length - 1].label?.trim() != '') {
+						bHasChange = true;
+						return {
+							...question,
+							options: [
+								...question.options,
+								{
+									value: question.options.length + 1,
+									label: ''
+								}]
+						};
+					}
+					else {
+						return question;
+					}
+				}
+				else {
+					return question;
+				}
+			}
+		);
+
+		//	Handle additional questions
+		for(let i = 0; i < newQuestions.length; i++) {
+			let question = newQuestions[i];
+			if(question.options.find(o => o.action == 2)		//	If one option is set to Ask an additional question
+				&& i == newQuestions.length - 1)							//	And no additional question exists
+			{
+				//	Add One
+				newQuestions.push({
+					id: undefined,
+					type: QUESTION_TYPE.DROPDOWN,
+					order: newQuestions.length + 1,
+					question: '',
+					default_question: false,
+					additional_question: question.slug,
+					validation: 0,
+					slug: `meta_${+new Date()}`,
+					options: [{
+						value: 1,
+						label: '',
+            action: 1,
+					}],
+					required: false,
+          display_admin: question.display_admin
+				});
+				bHasChange = true;
+			}
+			else if((question.options.find(o => o.action == 2) == null || question.type === QUESTION_TYPE.AGREEMENT || question.type === QUESTION_TYPE.TEXTFIELD || question.type === QUESTION_TYPE.CALENDAR || question.type === QUESTION_TYPE.INFORMATION)	//	If no options is set to Ask an additional question
+				&& i < newQuestions.length - 1)								//	And this is the latest question
+			{
+				bHasChange = true;
+				//	Remove all following additional questions
+				for(let j = newQuestions.length - 1; j > i; j--) {
+					if(newQuestions[j].id != undefined) {
+						deleteIds.push(newQuestions[j].id);
+					}
+					newQuestions.pop();
+				}
+				setDeleteIds(deleteIds);
+			}
+		}
+
+		if(bHasChange)
+			setEditQuestions(
+				newQuestions
+			);
+	}, [editQuestions])
 
   useEffect(() => {
     if(tabName === 'Documents' || tabName === 'Submission') {
@@ -159,21 +211,6 @@ export default function AddNewQuestionModal({
       setError('Group is required')
       return
     }
-    if (type === 4 ) {
-      if(agreement.text.trim() === ''){
-        setError('Text is required')
-        return
-      }
-    } 
-    else if (question.trim() === '' && type !== 7) {
-      setError('Question is required')
-      return
-    }
-    
-    else if ([1, 3, 5].includes(type) && options.length && options[0].label.trim() === '' && editItem?.slug !== 'student_grade_level') {
-      setError('Options are required')
-      return
-    }
 
     const currentGroup = currentTabData.groups.filter((v) => v.group_name === groupName || v.group_name === groupType)[0]
     if(addGroup && currentGroup) {
@@ -185,44 +222,71 @@ export default function AddNewQuestionModal({
       tempQuestionOrder = currentGroup.questions.length + 1
     }
 
-    const timestamp = + new Date()
-    const additionalQuestionData = {
-      type: additionalQuestionType,
-      question: additionalQuestion,
-      options: additionalOptions.filter((v) => v.label.trim()),  
-      required: additionalQuestionRequired,
-      slug: `meta_${timestamp}_additional`
-    }
+    let newQuestions = editQuestions.filter(x => x.question.trim());
+    let newQuestionsArr = []
+		for(let i = 0; i < newQuestions.length; i++) {
+			let newQuestion = newQuestions[i];
+			//	Validation check
+			if (newQuestion.question.trim() === '' && newQuestion.type !== QUESTION_TYPE.INFORMATION && newQuestion.type !== QUESTION_TYPE.AGREEMENT) {
+				setError('Question is required')
+				return
+			} else if ([QUESTION_TYPE.DROPDOWN
+									, QUESTION_TYPE.CHECKBOX
+									, QUESTION_TYPE.MULTIPLECHOICES].includes(newQuestion.type)
+									&& newQuestion.options.length && newQuestion.options[0].label.trim() === '' && !newQuestion.default_question) {
+				setError('Options are required')
+				return
+			}
 
-    const additionalQuestion2Data = {
-      type: additionalQuestionType2,
-      question: additionalQuestion2,
-      options: additionalOptions2.filter((v) => v.label.trim()),    
-      required: additionalQuestion2Required  ,
-      slug: `meta_${timestamp}_additional2`
-    }
+			//	Generate new object from the edited information
+			const item : EnrollmentQuestion = {
+				id: newQuestion.id,
+				order: newQuestion.order || tempQuestionOrder,
+				question: newQuestion.type === QUESTION_TYPE.INFORMATION
+								|| newQuestion.type === QUESTION_TYPE.AGREEMENT
+									? draftToHtml(convertToRaw(editorState.getCurrentContent()))
+									: newQuestion.question,
+				type: newQuestion.type,
+				options: newQuestion.options.filter((v) => v.label.trim()),
+				display_admin: newQuestion.display_admin,
+				default_question: newQuestion.default_question,
+				validation: newQuestion.validation,
+				required: newQuestion.required,
+				slug: newQuestion.slug || `meta_${+new Date()}`,
+				additional_question: newQuestion.additional_question
+			};
+      newQuestionsArr.push(item)
+			// let id = newQuestion.id;
+			// if(id === undefined) {	//	Insert case
+			// 	//	Generate new id
+			// 	item.id = newid--;
+			// 	newValues.splice(newValues.length - 1, 0, item);
+			// 	//newValues.push(item);
+			// }
+			// else {									//	Update case
+			// 	newValues = newValues.map((v) => (v.id === newQuestion.id ? item : v));
+			// }
+		}
 
-    const questionItem = {
-      id: editItem?.id,
-      group_id: editItem?.group_id,
-      type,
-      question: type === 7 ? draftToHtml(convertToRaw(editorState.getCurrentContent())) : type === 4 ? agreement.text : question,
-      order: editItem?.order || tempQuestionOrder,
-      options: type === 4 ? [{label: agreement.type, value: agreement.link}] : options.filter((v) => v.label.trim()),
-      required,
-      additional: additionalQuestionData,
-      additional2: additionalQuestion2Data,      
-      default_question: isDefaultQuestion,
-      validation: validation ? validationType : 0,
-      display_admin: displayAdmin,
-      slug: editItem?.slug || `meta_${timestamp}`
-    }
+		// newValues = newValues.filter((i) => deleteIds.find(x => x == i.id) == null);
 
-    if(!newQuestion) { //edit a question 
+    if(!isNewQuestion) { //edit a question 
       if(group === groupType) {  // no change group type
         const updatedGroups = currentTabData.groups.map((v) => {
           if(v.group_name === groupType) {
-            v.questions = v.questions.map((q) => q.question === editItem.question ? questionItem : q)
+            let existQuestions = []
+            v.questions = v.questions.map((q) => {
+              const updateItem = editItem.find((e) => e.slug === q.slug)
+              if(updateItem) {
+                existQuestions.push(newQuestionsArr.find((n) => n.slug === updateItem.slug))
+                return newQuestionsArr.find((n) => n.slug === updateItem.slug)
+              }
+              else {
+                return q
+              }
+            })
+            const addQuestions = newQuestionsArr.filter((n) => existQuestions.find((q) => q.slug === n.slug) == null )
+            v.questions = v.questions.concat(addQuestions).map((q, index) => {return {...q, order: index + 1}})
           }
           return v
         })
@@ -251,7 +315,8 @@ export default function AddNewQuestionModal({
           groups: groups.map(g => {
             if(g.group_name == group) {
               //  Remove from oldGroup
-              const questions = g.questions.filter(q => q.id !== editItem.id);
+              // const questions = g.questions.filter(q => q.id !== editItem[0].id);
+              const questions = g.questions.filter(q => editItem.find((e) => e.id === q.id) == null);
               for(let i = 0; i < questions.length; i++) {
                 questions[i].order = i + 1;
               }
@@ -262,7 +327,7 @@ export default function AddNewQuestionModal({
             }
             else if(g.group_name == newGroupName) {
               //  Add to new Group
-              const questions = g.questions.concat(questionItem);
+              const questions = g.questions.concat(newQuestionsArr);
               for(let i = 0; i < questions.length; i++) {
                 questions[i].order = i + 1;
               }
@@ -305,18 +370,18 @@ export default function AddNewQuestionModal({
     else { //create a question 
       let groupItem: EnrollmentQuestionGroup
       if(currentGroup) {
-        groupItem = {...currentGroup, questions: [...currentGroup.questions, questionItem]}
+        groupItem = {...currentGroup, questions: currentGroup.questions.concat(newQuestionsArr).map((q, index) => {return {...q, order: index + 1}})}
         const updatedGroups = currentTabData.groups.map((v) => (v.group_name === groupItem.group_name) ? groupItem : v)
         const updatedTab = {...currentTabData, groups: updatedGroups, id: currentTabData.id}
         setValues(values.map((v) => (v.tab_name === updatedTab.tab_name ? updatedTab : v)))
       }
       else {
         groupItem = {
-          id: editItem?.group_id,
+          id: editItem && editItem[0]?.group_id,
           tab_id: currentTabData.id,
           group_name: groupName,
-          order: editItem?.order || currentTabData.groups.length + 1,
-          questions: [questionItem],
+          order: editItem[0]?.order || currentTabData.groups.length + 1,
+          questions: newQuestionsArr,
         }
         const updatedTab = {...currentTabData, groups: [...currentTabData.groups, groupItem], id: currentTabData.id}
         setValues(values.map((v) => (v.tab_name === updatedTab.tab_name ? updatedTab : v)))
@@ -414,336 +479,153 @@ export default function AddNewQuestionModal({
               isAddable
             />
           </Box>)}
-          <Box
-            sx={{
-              width: '100%',
-              height: '40px',
-              mt: '40px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-            }}
-          >
-            <TextField
-              size='small'
-              sx={{
-                visibility: (type === 7 || type === 4) ? 'hidden' : 'visible',
-                minWidth: '300px',
-                [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
-                  {
-                    borderColor: SYSTEM_07,
-                  },
-              }}
-              label='Question'
-              variant='outlined'
-              value={question}
-              onChange={(v) => setQuestion(v.currentTarget.value)}
-              focused
-              disabled={isDefaultQuestion}
-            />
-            <DropDown
-              sx={{
-                pointerEvents: isDefaultQuestion ? 'none' : 'unset',
-                minWidth: '200px',
-                [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
-                  {
-                    borderColor: SYSTEM_07,
-                  },
-              }}
-              labelTop
-              dropDownItems={QuestionTypes}
-              placeholder='Type'
-              defaultValue={type}
-              // @ts-ignore
-              setParentValue={(v) => {
-                setType(+v)
-              }}
-              size='small'
-            />
-          </Box>
-          <Box mt='30px' width='100%' display='flex' flexDirection='column' maxHeight={'400px'} overflow='auto'>
-            {type === 2 || type === 6 ? 
-            (<Box height='50px' />) :
-            type === 7 ? 
-            (
-              <Box sx={{
-                border: '1px solid #d1d1d1',
-                borderRadius: 1,
-                'div.DraftEditor-editorContainer': {
-                  minHeight: '200px',
-                  maxHeight: '250px',
-                  overflow: 'auto',
-                  padding: 1,
-                },
-              }}>
-                <Wysiwyg.Editor
-                  onContentStateChange={handleEditorChange}
-                  editorRef={(ref) => (editorRef.current = ref)}
-                  editorState={editorState}
-                  onEditorStateChange={setEditorState}
-                  handlePastedText={() => false}
-                  toolbar={{
-                    options: [
-                      'inline', 
-                      'list',
-                      'link',
-                    ],
-                    inline: {
-                      options: ['bold', 'italic'],
-                    },
-                    list: {
-                      options: ['unordered', 'ordered'],
-                    }
-                  }}
-                />
-              </Box>
-            ) : 
-            type === 4 ? 
-            (
-              <Box
-                sx={{ 
-                  width: '80%',
-                  display: 'flex',
-                  py: '10px',
-                  justifyContent: 'space-between',
-                }}
-              >
-                <FormControl
-                  required
-                  name='acknowledge'
-                  component="fieldset"
-                  variant="standard"
-                >
-                    <FormGroup>
-                        <FormControlLabel
-                          control={
-                              <Checkbox  />
-                          }
-                          label={
-                              <Paragraph size='large'>
-                                  {agreement.text || "Add text"}
-                              </Paragraph>
-                          }
-                        />
-                    </FormGroup>
-                </FormControl>
-                <IconButton onClick = {() => setOpenLinkModal(true)}>
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
-                    <rect width="24" height="24" fill="url(#pattern0)" fill-opacity="0.5"/>
-                    <defs>
-                    <pattern id="pattern0" patternContentUnits="objectBoundingBox" width="1" height="1">
-                    <use xlinkHref="#image0_3343_40736" transform="scale(0.01)"/>
-                    </pattern>
-                    <image id="image0_3343_40736" width="100" height="100" xlinkHref="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAABmJLR0QA/wD/AP+gvaeTAAAENElEQVR4nO3cS2xUVRzH8S8tMVGpbW0ZJC7kYcCwMoghYYML3CjRnVGbiu5UZM9aA2HDhoW64xU2hA0b3LAAEwMUH1SqQRay49VWAYsmSFsW/xlSZy5z/ueeW+rc+/skd9GZe//n3POfuedx7xREREREREREREREREREREREREREREREpMWiguPVgM3Ay8Ca+t9PFxD3JLAzMcYeYEsBdZkCxoHLwE/A6frf/xv9wA5gBJgBZudhO1pAPY/OU91mgLPAdqCvgHrm1o996u4wPyfaKQmZu90GdrMAiRkGbiRUvKwJaWzXgaEC6hzUAxx5jCfWqQlpbIeAJTGV7IrYtwacAt6PKaDihrE2q3kP8CakBnwLrM9Rqap7BWu7pZ6dPQnpAb4B1iZUqurWAidwTAEWO4J9Tfw34z42DL4C3ATuRR7f7GLi8QDHgd8TYzyBXS1WAa/ia7+GDcBXwAcpFRgmrhO7UC/w2ZRCO8QAdq6jxLVR7j64H//QdhxLXswgoSy6gG3ABP4hca55yh5nAReBlXnPpkRWA2P42mxXbPB+bNbpScYzaedRKr34knKLyG/JDkfQCexTIf+1AhvIhNrv05igI46Aw4VUv5y2EW6/M95gNcKrtqNUswP36gJ+pH0bzgCDzQdmjaNfI3yfZG89YF7rgCcTjn8c/gF+zXnsDLAP2N9mn0VYWx8LBdtF+8z+i43BU3hHIwu5jSWe4wDWVu3K+Lz5oKzLzppAQSPAZEpNK2IS+D6wT8tyVFZClgWCXPHWSIJt1bIKnJWQ0Pr9NXd15Grg/ZY5XJ6RUtEPRpRZdFtlJWQqcMzy2EIq7PnA+3eaX8hKyI1AkBXu6sgLgfdvNr+QlZDLgSAbyZjQSIsB7B5IO781v5A1MbwQCNINvAkc9NUr0zt0xsQwxVuEb2CNegItJbx08jOWGMnWja2Et2vDaSKuNGcDwWaxBTTJ9hHh9vsuJuBnjoCTwIuFVL9cVmJ3UEPt93FM0D58N6jGsJsyYnqBXwi325/kaLfdjsCNpKxKO49SWI0vGbPAF3kK6MNuyHsKmMD6lCreI+nG+oxJfG11lYTb3kPOQuaOvj4kfXm+Ewxi5xoaTTVv77YL6llrOUT87dpp4Dy22nmd8Ow/5BL2oFuKt4GXEmMsA57DLtEbiB/6H8C+TUmWYI0b8ykoeuvUp9/nbueAp0KV9Fzzp4A3yJjmi9slYCvwd2hHbyc8Dmwi4kkJeeg89rtL1+8QY0ZFfwCvA4dzVKqqDmAPMrSs6j5K7DD1LvaA8RDpHXWZXQPewzrw4GWqKH3YEyqeGX1VOvVb2KRvQVcverHHIs9gw92qJWQaWyj8hAISEfODk0e5DXxZ3wZp/ccBPQWUkfpDm0aMHwqI8xfWJ8z9xwF6LEpERERERERERERERERERERERERERERkPj0AfrEo+sYtddsAAAAASUVORK5CYII="/>
-                    </defs>
-                  </svg>
-                </IconButton>
-              </Box>
-            ) : 
-            (
-              <QuestionOptions options={options} setOptions={setOptions} type={type} isDefault = {isDefaultQuestion}/>
-            )}
-          </Box>
 
-          <Box
-            sx={{
-              width: '100%',
-              height: '40px',
-              mt: '40px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-            }}
-          >
-            <Box sx={{display: 'flex', alignItems: 'center', visibility: type === 2 ? 'visible' : 'hidden'}}>
-              <Checkbox checked={validation} onClick={() => setValidation(!validation)} disabled={isDefaultQuestion}/>
-              <Subtitle size='small'>Validation</Subtitle>
-            </Box>
-            <Box sx={{display: 'flex', alignItems: 'center',}}>
-              <Checkbox checked={displayAdmin} onClick={() => setDisplayAdmin(!displayAdmin)} />
-              <Subtitle size='small'>Display for Admin</Subtitle>
-            </Box>
-            <Box sx={{display: 'flex', alignItems: 'center', 
-              width: '124px',}}>
-              <Checkbox checked={required} onClick={() => setRequired(!required)} />
-              <Subtitle size='small'>Required</Subtitle>
-            </Box>
-          </Box>
-          <Box sx={{
-            width: '100%',
-            height: '40px',
-            mt: '10px',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            display: validation ? 'flex' : 'none',
-          }}
-        >
-          <DropDown
-            sx={{
-              visibility: validation ? 'visible' : 'hidden',
-              pointerEvents: isDefaultQuestion ? 'none' : 'unset',
-              width: '200px',
-              [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
-              {
-                borderColor: SYSTEM_07,
-              },
-            }}
-            labelTop
-            dropDownItems={validationTypes}
-            placeholder='Type'
-            defaultValue={validationType}
-            // @ts-ignore
-            setParentValue={(v) => setValidationType(+v)}
-            size='small'
-          />
-        </Box>
-          {actionType === 2 && (
-            <Box>
-              <Subtitle size='large'>Additional Questions</Subtitle>
-              <Box
+          {editQuestions.map((e) => (
+            <>
+            <Box
+              sx={{
+                width: '100%',
+                height: '40px',
+                mt: '40px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}
+            >
+              <TextField
+                size='small'
                 sx={{
-                  width: '100%',
-                  height: '40px',
-                  mt: '40px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
+                  visibility: (e.type === QUESTION_TYPE.INFORMATION || e.type === QUESTION_TYPE.AGREEMENT) ? 'hidden' : 'visible',
+                  minWidth: '300px',
+                  [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
+                    {
+                      borderColor: SYSTEM_07,
+                    },
                 }}
-              >
-                <TextField
-                  size='small'
-                  sx={{
-                    minWidth: '300px',
-                    [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
-                      {
-                        borderColor: SYSTEM_07,
-                      },
-                  }}
-                  label='Question'
-                  variant='outlined'
-                  value={additionalQuestion}
-                  onChange={(v) => setAdditionalQuestion(v.currentTarget.value)}
-                  focused
-                />
-                <DropDown
-                  sx={{
-                    minWidth: '200px',
-                    [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
-                      {
-                        borderColor: SYSTEM_07,
-                      },
-                  }}
-                  labelTop
-                  dropDownItems={ActionQuestionTypes}
-                  placeholder='Type'
-                  defaultValue={additionalQuestionType}
-                  // @ts-ignore
-                  setParentValue={(v) => setAdditionalQuestionType(+v)}
-                  size='small'
-                />
-              </Box>
-              <Box mt='30px' width='100%' display='flex' flexDirection='column'>
-                <QuestionOptions options={additionalOptions} setOptions={setAdditionalOptions} type={additionalQuestionType}/>
-              </Box>
-              <Box
+                label='Question'
+                variant='outlined'
+                value={e.question}
+                onChange={(v) => setQuestionValue(e.id, e.slug, 'question', v.currentTarget.value)}
+                focused
+                disabled={e.default_question}
+              />
+              <DropDown
                 sx={{
-                  width: '100%',
-                  height: '40px',
-                  mt: '40px',
-                  display: 'flex',
-                  // alignItems: 'center',
-                  flexDirection: 'column',
-                  alignItems: 'end',
+                  pointerEvents: e.default_question ? 'none' : 'unset',
+                  minWidth: '200px',
+                  [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
+                    {
+                      borderColor: SYSTEM_07,
+                    },
                 }}
-              >
-                <Box
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                  }}
-                >
-                    <Checkbox checked={additionalQuestionRequired} onClick={() => setAdditionalQuestionRequired(!additionalQuestionRequired)} />
-                    <Subtitle size='small'>Required</Subtitle>
+                labelTop
+                dropDownItems={QuestionTypes}
+                placeholder='Type'
+                defaultValue={e.type}
+                // @ts-ignore
+                setParentValue={(v) => {
+                  setQuestionValue(e.id, e.slug, 'type', +v);
+                }}
+                size='small'
+              />
+            </Box>
+            <Box mt='30px' width='100%' display='flex' flexDirection='column' maxHeight={'400px'} overflow='auto'>
+              {e.type === QUESTION_TYPE.TEXTFIELD || e.type === QUESTION_TYPE.CALENDAR ? 
+              (<Box height='50px' />) :
+              e.type === QUESTION_TYPE.INFORMATION || e.type === QUESTION_TYPE.AGREEMENT ?  
+              (
+                <Box sx={{
+                  border: '1px solid #d1d1d1',
+                  borderRadius: 1,
+                  'div.DraftEditor-editorContainer': {
+                    minHeight: '200px',
+                    maxHeight: '250px',
+                    overflow: 'auto',
+                    padding: 1,
+                  },
+                }}>
+                  <Wysiwyg.Editor
+                    onContentStateChange={handleEditorChange}
+                    editorRef={(ref) => (editorRef.current = ref)}
+                    editorState={editorState}
+                    onEditorStateChange={setEditorState}
+                    handlePastedText={() => false}
+                    toolbar={{
+                      options: [
+                        'inline', 
+                        'list',
+                        'link',
+                      ],
+                      inline: {
+                        options: ['bold', 'italic'],
+                      },
+                      list: {
+                        options: ['unordered', 'ordered'],
+                      }
+                    }}
+                  />
                 </Box>
+              ) :
+              (
+                <QuestionOptions options={e.options} setOptions={(options) => setQuestionValue(e.id, e.slug, 'options', options)} type={e.type}/>
+              )}
+            </Box>
+            <Box
+              sx={{
+                width: '100%',
+                height: '40px',
+                mt: '40px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}
+            >
+              <Box sx={{display: 'flex', alignItems: 'center', visibility: e.type === QUESTION_TYPE.TEXTFIELD ? 'visible' : 'hidden'}}>
+                <Checkbox checked={e.validation ? true : false} onClick={() => setQuestionValue(e.id, e.slug, 'validation', !e.validation)} disabled={e.default_question}/>
+                <Subtitle size='small'>Validation</Subtitle>
+              </Box>
+              {!e.additional_question && <Box sx={{display: 'flex', alignItems: 'center',}}>
+                <Checkbox checked={e.display_admin} onClick={() => setQuestionValue(e.id, e.slug, 'display_admin', !e.display_admin)} />
+                <Subtitle size='small'>Display for Admin</Subtitle>
+              </Box>}
+              <Box sx={{display: 'flex', alignItems: 'center', 
+                width: '124px',}}>
+                <Checkbox checked={e.required} onClick={() => setQuestionValue(e.id, e.slug, 'required', !e.required)} />
+                <Subtitle size='small'>Required</Subtitle>
               </Box>
             </Box>
-          )}
-          {actionType === 2 && actionType2 === 2 && (
-            <Box>
-              <Subtitle size='large'>Additional Questions</Subtitle>
-              <Box
+            <Box sx={{
+                width: '100%',
+                height: '40px',
+                mt: '10px',
+                alignItems: 'center',
+                display: 'flex',
+                justifyContent: 'space-between',
+              }}
+            >
+              <DropDown
                 sx={{
-                  width: '100%',
-                  height: '40px',
-                  mt: '40px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
+                  visibility: e.type === QUESTION_TYPE.TEXTFIELD && e.validation ? 'visible' : 'hidden',
+                  pointerEvents: e.default_question ? 'none' : 'unset',
+                  width: '200px',
+                  [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
+                  {
+                    borderColor: SYSTEM_07,
+                  },
                 }}
-              >
-                <TextField
-                  size='small'
-                  sx={{
-                    minWidth: '300px',
-                    [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
-                      {
-                        borderColor: SYSTEM_07,
-                      },
-                  }}
-                  label='Question'
-                  variant='outlined'
-                  value={additionalQuestion2}
-                  onChange={(v) => setAdditionalQuestion2(v.currentTarget.value)}
-                  focused
-                />
-                <DropDown
-                  sx={{
-                    minWidth: '200px',
-                    [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
-                      {
-                        borderColor: SYSTEM_07,
-                      },
-                  }}
-                  labelTop
-                  dropDownItems={ActionQuestionTypes}
-                  placeholder='Type'
-                  defaultValue={additionalQuestionType2}
-                  // @ts-ignore
-                  setParentValue={(v) => setAdditionalQuestionType2(+v)}
-                  size='small'
-                />
-              </Box>
-              <Box mt='30px' width='100%' display='flex' flexDirection='column'>
-                <QuestionOptions options={additionalOptions2} setOptions={setAdditionalOptions2} type={additionalQuestionType2} isAction={false}/>
-              </Box>
-              <Box
-                sx={{
-                  width: '100%',
-                  height: '40px',
-                  mt: '40px',
-                  display: 'flex',
-                  // alignItems: 'center',
-                  flexDirection: 'column',
-                  alignItems: 'end',
-                  justifyContent: 'space-between',
-                }}
-              >
-                <Box
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                  }}
-                >
-                    <Checkbox checked={additionalQuestion2Required} onClick={() => setAdditionalQuestion2Required(!additionalQuestion2Required)} />
-                    <Subtitle size='small'>Required</Subtitle>
-                </Box>
-              </Box>
+                labelTop
+                dropDownItems={validationTypes}
+                placeholder='Type'
+                defaultValue={e.validation}
+                // @ts-ignore
+                setParentValue={(v) => setQuestionValue(e.id, e.slug, 'validation', +v)}
+                size='small'
+              />
             </Box>
-          )}
+          </>
+          ))}
           {error && <Typography color='red'>{error}</Typography>}
-          {openLinkModal && (<EditLinkModal onClose={() => setOpenLinkModal(false)} setOption={setAgreement} editItem={agreement}/>)}
-        </Box>
-        
+        </Box>        
       </Box>
     </Modal>
   )

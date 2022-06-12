@@ -269,6 +269,9 @@ function Item({ question: q }: { question: Question }) {
 						[`& .${inputLabelClasses.root}.${inputLabelClasses.focused}`]: {
 							transform: 'translate(14px, -11px) scale(1)'
 						},
+						[`& .${inputLabelClasses.root}.${inputLabelClasses.shrink}`]: {
+							transform: 'translate(14px, -11px) scale(1)'
+						},
 						[`& .${outlinedInputClasses.root} .${outlinedInputClasses.notchedOutline} span`]: {
 							fontSize: 16
 						}
@@ -299,6 +302,9 @@ function Item({ question: q }: { question: Question }) {
 							borderWidth: '2px'
 						},
 						[`& .${inputLabelClasses.root}.${inputLabelClasses.focused}`]: {
+							transform: 'translate(14px, -11px) scale(1)'
+						},
+						[`& .${inputLabelClasses.root}.${inputLabelClasses.shrink}`]: {
 							transform: 'translate(14px, -11px) scale(1)'
 						},
 						[`& .${outlinedInputClasses.root} .${outlinedInputClasses.notchedOutline} span`]: {
@@ -440,6 +446,9 @@ function Item({ question: q }: { question: Question }) {
 							borderWidth: '2px'
 						},
 						[`& .${inputLabelClasses.root}.${inputLabelClasses.focused}`]: {
+							transform: 'translate(14px, -11px) scale(1)'
+						},
+						[`& .${inputLabelClasses.root}.${inputLabelClasses.shrink}`]: {
 							transform: 'translate(14px, -11px) scale(1)'
 						},
 						[`& .${outlinedInputClasses.root} .${outlinedInputClasses.notchedOutline} span`]: {

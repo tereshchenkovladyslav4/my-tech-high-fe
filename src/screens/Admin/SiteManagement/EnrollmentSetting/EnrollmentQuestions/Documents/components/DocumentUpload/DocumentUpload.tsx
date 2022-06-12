@@ -25,7 +25,7 @@ const DragHandle = SortableHandle(() => (
   </Tooltip>
 ))
 
-export const DocumentUpload = ({ item } : {item : EnrollmentQuestion}) => {
+export const DocumentUpload = ({ item } : {item : EnrollmentQuestion[]}) => {
   const classes = useStyles
 
   const  [open, setOpen] = useState(false)
@@ -46,7 +46,7 @@ export const DocumentUpload = ({ item } : {item : EnrollmentQuestion}) => {
       />
     ))
   }
-  if(item.type !== 8) {
+  if(item[0].type !== 8) {
     return (
       <Grid container rowSpacing={2} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
         <EnrollmentQuestionItem item={item} group={'root'} />
@@ -57,7 +57,7 @@ export const DocumentUpload = ({ item } : {item : EnrollmentQuestion}) => {
     return (
       <Box sx={classes.container}>
         <Box display='flex' alignItems='center' justifyContent='start'>
-          <Subtitle fontWeight='700'>{`${item.question} ${item.required ? "(required)" : ""}`}</Subtitle>
+          <Subtitle fontWeight='700'>{`${item[0].question} ${item[0].required ? "(required)" : ""}`}</Subtitle>
           <Box display='inline-flex' height='40px'>
             <Tooltip title="Edit">
               <IconButton onClick={() => setShowEditDialog(true)}>
@@ -76,7 +76,7 @@ export const DocumentUpload = ({ item } : {item : EnrollmentQuestion}) => {
           </Box>
         </Box>
         <Paragraph size='medium'>
-          <p dangerouslySetInnerHTML={{ __html: item.options[0].value }}></p>
+          <p dangerouslySetInnerHTML={{ __html: item[0].options[0].value }}></p>
         </Paragraph>
         { files && renderFiles()}
         <Box sx={classes.buttonContainer}>
@@ -94,7 +94,7 @@ export const DocumentUpload = ({ item } : {item : EnrollmentQuestion}) => {
             handleFile={handleFile}
           /> 
         }
-        {showEditDialog && <AddUploadModal onClose={() => setShowEditDialog(false)} editItem={item} />}
+        {showEditDialog && <AddUploadModal onClose={() => setShowEditDialog(false)} editItem={item[0]} />}
         {showDeleteDialog && (
           <CustomModal
             title='Delete Question'
@@ -105,7 +105,7 @@ export const DocumentUpload = ({ item } : {item : EnrollmentQuestion}) => {
               setShowDeleteDialog(false)
               const newValues = values.map((v) => {
                   if(v.tab_name === "Documents") {
-                      const newQuestions = v.groups[0]?.questions.filter((q) => q.question !== item.question).sort((a, b) => a.order - b.order).map((item, index) => {
+                      const newQuestions = v.groups[0]?.questions.filter((q) => q.question !== item[0].question).sort((a, b) => a.order - b.order).map((item, index) => {
                           item.order = index + 1
                           return item
                       })

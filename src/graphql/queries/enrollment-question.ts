@@ -18,8 +18,7 @@ export const getEnrollmentQuestionsGql = gql`
 					group_id
 					order
 					options
-					additional
-					additional2
+					additional_question
 					required
 					type
 					slug

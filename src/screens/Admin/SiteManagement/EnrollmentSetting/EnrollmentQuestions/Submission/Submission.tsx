@@ -12,13 +12,24 @@ import { arrayMove, SortableContainer, SortableElement, SortableHandle } from 'r
 import EnrollmentQuestionItem from '../Question'
 const SortableItem = SortableElement(EnrollmentQuestionItem)
 
-const SortableListContainer = SortableContainer(({ items }: { items: EnrollmentQuestion[] }) => (
+const SortableListContainer = SortableContainer(({ items }: { items: EnrollmentQuestion[] }) => {
+  const questionsArr = items.map((q) => {
+    let arr = [q], current = q, child;
+      while(child = items.find(x => x.additional_question == current.slug)) {
+        arr.push(child);
+        current = child;
+      }
+      return arr;
+  })
+  const questionsLists = questionsArr.filter((item) => !item[0].additional_question)
+  return (
     <Grid container rowSpacing={2} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
-        {items.map((item, index) => (
+        {questionsLists.map((item, index) => (
         <SortableItem index={index} key={index} item={item} group={'root'}/>
         ))}
     </Grid>
-))
+  )
+})
 
 export const Submission: FunctionComponent = () => {
   const signatureRef = useRef()

@@ -62,32 +62,36 @@ export const Dashboard: FunctionComponent = () => {
   }, [me?.user_id, announcementData])
 
   return sectionName == 'root' ? (
-    <Box display='flex' flexDirection='row' textAlign='left' marginTop={2}>
-      <Grid container spacing={2} justifyContent='center' sx={{ width: 'calc(100% - 350px)', paddingX: '20px' }}>
-        <Grid item xs={12}>
-          <HomeroomGrade />
+    <Box>
+      <Grid container spacing={2} justifyContent='center' sx={{ margin: '0 !important', width: 'calc(100% - 16px) !important' }}>
+        <Grid item xs={12} lg={8}>
+          <Box marginBottom={2}>
+            <HomeroomGrade />
+          </Box>
+          <Box marginBottom={2}>
+            <Calendar />
+          </Box>
+          <Box marginBottom={2}>
+            <ToDo />
+          </Box>
         </Grid>
-        <Grid item xs={12}>
-          <Calendar />
-        </Grid>
-        <Grid item xs={12}>
-          <ToDo />
+        <Grid item xs={12} lg={4}>
+          <Card
+            style={{
+              width: '100%',
+              marginRight: 25,
+              borderRadius: 12,
+            }}
+          >
+            <Announcements
+              announcements={announcements}
+              setAnnouncements={setAnnouncements}
+              setSectionName={setSectionName}
+              setSelectedAnnouncement={setSelectedAnnouncement}
+            />
+          </Card>
         </Grid>
       </Grid>
-      <Card
-        style={{
-          width: 350,
-          marginRight: 25,
-          borderRadius: 12,
-        }}
-      >
-        <Announcements
-          announcements={announcements}
-          setAnnouncements={setAnnouncements}
-          setSectionName={setSectionName}
-          setSelectedAnnouncement={setSelectedAnnouncement}
-        />
-      </Card>
     </Box>
   ) : sectionName == 'viewAll' ? (
     <AnnouncementSection

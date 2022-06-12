@@ -69,7 +69,6 @@ export const AppBar: FunctionComponent = () => {
           alignItems: 'center',
         }}
       >
-        <AddStudentButton />
         <ChevronRightIcon
           style={{ ...style, display: 'block', color: 'black', background: '#FAFAFA', cursor: 'pointer' }}
           onClick={() => sliderRef.current.slickNext()}
@@ -90,12 +89,48 @@ export const AppBar: FunctionComponent = () => {
   }
 
   const settings = {
+		className: "slider variable-width",
     infinite: false,
     speed: 500,
-    slidesToShow: 3,
+    slidesToShow: Math.min(5, activeStudents.length),
     slidesToScroll: 1,
     nextArrow: <SampleNextArrow />,
     prevArrow: <SamplePrevArrow />,
+		variableWidth: true,
+		rows: 1,
+		responsive: [
+			{
+				breakpoint: 1920,
+				settings: {
+					slidesToShow: Math.min(5, activeStudents.length),
+				}
+			},
+			{
+				breakpoint: 1600,
+				settings: {
+					slidesToShow: Math.min(4, activeStudents.length)
+				}
+			},
+			{
+				breakpoint: 1368,
+				settings: {
+					slidesToShow: Math.min(3, activeStudents.length)
+				}
+			},
+      {
+        breakpoint: 1135,
+        settings: {
+          slidesToShow: Math.min(2, activeStudents.length)
+        }
+      },
+			{
+				breakpoint: 960,
+				settings: {
+					slidesToShow: Math.min(1, activeStudents.length),
+          variableWidth: false
+				}
+			},
+		]
   }
 
   const gradeText = (student: StudentType) =>
@@ -186,34 +221,14 @@ export const AppBar: FunctionComponent = () => {
   return (
     <MUIAppBar position='static' sx={classes.appBar} elevation={0}>
       <div style={classes.toolbar}>
-        <Grid container justifyContent='flex-end' alignItems='center'>
-          <Grid item xs={12} display='flex' justifyContent={'center'}>
-            <Box width={activeStudents.length > 3 ? '50vw' : '100%'}>
-              {activeStudents && activeStudents.length > 3 ? (
+        <Grid container justifyContent='flex' alignItems='center'>
+          <Grid item xs={12} display='flex' justifyContent={'flex-end'} alignItems='center'>
+            <Box width={'calc(100vw - 600px)'} sx={{marginRight: '50px'}}>
                 <Slider {...settings} ref={sliderRef}>
                   {renderStudentHeader()}
                 </Slider>
-              ) : (
-                activeStudents &&
-                activeStudents.length > 0 &&
-                activeStudents.length <= 3 && (
-                  <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
-                    {renderStudentHeader()}
-                    <Divider
-                      sx={{
-                        background: 'black',
-                        height: 35,
-                        marginX: 3,
-                        marginTop: 2,
-                      }}
-                      variant='middle'
-                      orientation='vertical'
-                    />
-                    <AddStudentButton />
-                  </Box>
-                )
-              )}
             </Box>
+            <AddStudentButton />
           </Grid>
         </Grid>
       </div>

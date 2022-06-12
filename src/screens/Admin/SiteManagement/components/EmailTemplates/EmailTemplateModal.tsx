@@ -197,7 +197,7 @@ export const EmailTemplateModal = ({
 	const handleChangeGroupResponse = (value, index, i, field) => {
 		const groups = response.slice()
 
-		groups[index].responses[i][field] = value.trim();
+		groups[index].responses[i][field] = value;
 
 		const optimized = groups.map(g => {
 			return {
