@@ -10,6 +10,7 @@ export default function CustomModal({
   onConfirm,
   confirmStr = 'Confirm',
   cancelStr = 'Cancel',
+  backgroundColor = '#EEF4F8',
 }: {
   title: string
   description: string
@@ -18,6 +19,7 @@ export default function CustomModal({
   onConfirm: () => void
   confirmStr?: string
   cancelStr?: string
+  backgroundColor?: string
 }) {
   return (
     <Modal
@@ -32,9 +34,9 @@ export default function CustomModal({
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
-          width: subDescription ? '550px' : '441px',
+          width: subDescription ? '550px' : '450px',
           height: 'auto',
-          bgcolor: '#EEF4F8',
+          bgcolor: backgroundColor,
           borderRadius: 2,
           display: 'flex',
           justifyContent: 'center',

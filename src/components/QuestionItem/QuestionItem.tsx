@@ -175,12 +175,14 @@ export default function QuestionItem({
 	//	student
 	useEffect(() => {
 		if(!hasAction && questions[0]?.mainQuestion && questions[0]?.options.length == 0 && questions[0]?.slug == 'student') {
-			updateOptionsForDefaultQuestion(
-				me?.students?.map((student) => ({
-					label: student.person.first_name,
-					value: student.student_id
-				}))
-			);
+			if(me?.students?.length > 0) {
+				updateOptionsForDefaultQuestion(
+					me?.students?.map((student) => ({
+						label: student.person.first_name,
+						value: student.student_id
+					}))
+				);
+			}
 		}
 	}, [questions]);
 

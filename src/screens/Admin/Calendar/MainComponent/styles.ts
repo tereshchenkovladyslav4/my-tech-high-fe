@@ -1,4 +1,4 @@
-import { BLACK, SYSTEM_01, SYSTEM_04, SYSTEM_06, SYSTEM_08 } from '../../../../utils/constants'
+import { BLACK, BLUE_GRDIENT, SYSTEM_01, SYSTEM_04, SYSTEM_06, SYSTEM_08 } from '../../../../utils/constants'
 
 export const useStyles = {
   cardBody: {
@@ -47,6 +47,21 @@ export const useStyles = {
   arrowButtonGroup: {
     marginTop: 4,
     display: 'flex',
+  },
+  saveBtn: {
+    fontSize: 11,
+    fontWeight: 700,
+    borderRadius: 2,
+    textTransform: 'none',
+    height: '48px',
+    background: BLUE_GRDIENT,
+    color: 'white',
+    width: '140px',
+    marginRight: 2,
+    '&:hover': {
+      background: '#4145FF',
+      color: '#fff',
+    },
   },
   clubButton: {
     mt: 1.5,

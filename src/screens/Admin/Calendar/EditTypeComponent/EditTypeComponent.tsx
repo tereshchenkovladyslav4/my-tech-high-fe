@@ -114,7 +114,7 @@ const EditTypeComponent = () => {
           </Grid>
           <Grid item xs={6}>
             <Box paddingX={'50px'} paddingY={'45px'}>
-              <EditEventType eventTypeCount={eventTypes.length} onSave={refetch} />
+              <EditEventType eventTypeCount={eventTypes.length} onCancel={() => {}} onSave={refetch} />
             </Box>
           </Grid>
         </Grid>
@@ -135,6 +135,7 @@ const EditTypeComponent = () => {
           description='Are you sure you want to archive this Event Type?'
           cancelStr='Cancel'
           confirmStr='Archive'
+          backgroundColor='#FFFFFF'
           onClose={() => {
             setShowArchivedModal(false)
           }}
@@ -150,6 +151,7 @@ const EditTypeComponent = () => {
           description='Are you sure you want to unarchive this Event Type?'
           cancelStr='Cancel'
           confirmStr='Unarchive'
+          backgroundColor='#FFFFFF'
           onClose={() => {
             setShowUnarchivedModal(false)
           }}

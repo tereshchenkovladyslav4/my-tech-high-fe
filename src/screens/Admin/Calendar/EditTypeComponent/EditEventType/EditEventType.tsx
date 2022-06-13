@@ -7,6 +7,7 @@ import { SYSTEM_05 } from '../../../../../utils/constants'
 import { useMutation } from '@apollo/client'
 import { UserContext } from '../../../../../providers/UserContext/UserProvider'
 import { createEventTypeMutation, updateEventTypeMutation } from '../services'
+import { ColorPicker } from '../../components/EditEventType'
 
 type EditEventTypeProps = {
   eventType?: EventType
@@ -24,6 +25,11 @@ const EditEventType = ({ eventType, eventTypeCount, onCancel, onSave }: EditEven
   const [submitCreate, {}] = useMutation(createEventTypeMutation)
   const [submitUpdate, {}] = useMutation(updateEventTypeMutation)
 
+  const handleCancelClick = () => {
+    setName('')
+    setColor('#000000')
+    onCancel()
+  }
   const handleSaveClick = async () => {
     if (name && color && !eventTypeId) {
       await submitCreate({
@@ -74,18 +80,9 @@ const EditEventType = ({ eventType, eventTypeCount, onCancel, onSave }: EditEven
         value={name}
         onChange={(e) => setName(e.target.value)}
       />
-      <TextField
-        size='small'
-        variant='outlined'
-        label='Color'
-        sx={classes.textfield}
-        type='color'
-        fullWidth
-        value={color}
-        onChange={(e) => setColor(e.target.value)}
-      />
+      <ColorPicker color={color} setColor={setColor} />
       <Box sx={{ display: 'flex', justifyContent: 'space-evenly', paddingY: '25px' }}>
-        <Button sx={classes.cancelBtn} onClick={onCancel}>
+        <Button sx={classes.cancelBtn} onClick={() => handleCancelClick()}>
           Cancel
         </Button>
         <Button sx={classes.saveBtn} onClick={() => handleSaveClick()}>

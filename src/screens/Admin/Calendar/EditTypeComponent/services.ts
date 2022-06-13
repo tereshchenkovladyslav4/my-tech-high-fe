@@ -15,6 +15,32 @@ export const getEventTypesQuery = gql`
   }
 `
 
+export const getEventsQuery = gql`
+  query EventsByRegionId($regionId: Float!) {
+    eventsByRegionId(region_id: $regionId) {
+      EventType {
+        priority
+        color
+        name
+        RegionId
+      }
+      TypeId
+      description
+      end_date
+      event_id
+      start_date
+      time
+      title
+      filter_grades
+      filter_other
+      filter_program_year
+      filter_provider
+      filter_school_of_enrollment
+      filter_users
+    }
+  }
+`
+
 export const createEventTypeMutation = gql`
   mutation CreateEventType($createEventTypeInput: CreateEventTypeInput!) {
     createEventType(createEventTypeInput: $createEventTypeInput) {
@@ -35,6 +61,14 @@ export const updateEventTypesMutation = gql`
   mutation UpdateEventTypes($updateEventTypeInputs: UpdateEventTypeInputs!) {
     updateEventTypes(updateEventTypeInputs: $updateEventTypeInputs) {
       event_type_id
+    }
+  }
+`
+
+export const createEventMutation = gql`
+  mutation CreateEvent($createEventInput: CreateEventInput!) {
+    createEvent(createEventInput: $createEventInput) {
+      event_id
     }
   }
 `

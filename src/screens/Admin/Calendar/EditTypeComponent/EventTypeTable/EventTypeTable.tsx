@@ -1,5 +1,5 @@
 import { Box, Typography } from '@mui/material'
-import React from 'react'
+import React, { useState } from 'react'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
 import MenuIcon from '@mui/icons-material/Menu'
 import ModeEditIcon from '@mui/icons-material/ModeEdit'
@@ -28,6 +28,7 @@ const EventTypeTable = ({
   setEventTypes,
 }: EventTypeTableProps) => {
   const classes = useStyles
+  const [isDragDisable, setIsDragDisable] = useState<boolean>(true)
   const archivedTypes = () =>
     eventTypes
       .filter((type) => type.archived)
@@ -35,7 +36,9 @@ const EventTypeTable = ({
         <Box key={index} sx={{ ...classes.tableCotainer, color: '#A3A3A4' }}>
           <Typography sx={classes.typeName}>{eventType.name}</Typography>
           <Typography sx={classes.color}>{eventType.color.toLocaleUpperCase()}</Typography>
-          <Box sx={{ ...classes.circle, backgroundColor: eventType.color }}></Box>
+          <Box sx={classes.circleBox}>
+            <Box sx={{ ...classes.circle, backgroundColor: eventType.color }}></Box>
+          </Box>
           <Box sx={classes.action}>
             <CallMissedOutgoingIcon
               sx={classes.iconCursor}
@@ -86,56 +89,103 @@ const EventTypeTable = ({
   }
 
   return (
-    <Box sx={{ padding: '40px', paddingBottom: alert ? '20px' : undefined, borderRight: '1px solid #E7E7E7' }}>
+    <Box
+      sx={{
+        padding: '40px',
+        paddingBottom: alert ? '20px' : undefined,
+        borderRight: '1px solid #E7E7E7',
+        position: 'relative',
+      }}
+    >
       <Box sx={classes.tableCotainer}>
         <Typography sx={{ ...classes.typeName, fontWeight: 'bold' }}>Type Name</Typography>
         <Typography sx={{ ...classes.color, fontWeight: 'bold' }}>Color</Typography>
       </Box>
-      <DragDropContext onDragEnd={onDragEnd}>
-        <Droppable droppableId='droppable'>
-          {(provided, snapshot) => (
-            <div {...provided.droppableProps} ref={provided.innerRef} style={getListStyle(snapshot.isDraggingOver)}>
-              {eventTypes
-                .filter((eventType) => !eventType.archived)
-                .map((item, index) => (
-                  <Draggable key={item.id.toString()} draggableId={item.id.toString()} index={index}>
-                    {(provided, snapshot) => (
-                      <div
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                        style={getItemStyle(snapshot.isDragging, provided.draggableProps.style)}
-                      >
-                        <Box key={index} sx={classes.tableCotainer}>
-                          <Typography sx={classes.typeName}>{item.name}</Typography>
-                          <Typography sx={classes.color}>{item.color.toLocaleUpperCase()}</Typography>
-                          <Box sx={{ ...classes.circle, backgroundColor: item.color }}></Box>
-                          <Box sx={classes.action}>
-                            <MenuIcon sx={classes.iconCursor} fontSize='medium' />
-                            <ModeEditIcon
-                              sx={classes.iconCursor}
-                              fontSize='medium'
-                              onClick={() => handleEditClick(item)}
-                            />
-                            <SystemUpdateAltIcon
-                              sx={classes.iconCursor}
-                              fontSize='medium'
-                              onClick={() => {
-                                setSelectedEventType(item)
-                                setShowArchivedModal(true)
+      <Box>
+        <DragDropContext onDragEnd={onDragEnd}>
+          <Droppable droppableId='droppable'>
+            {(provided, snapshot) => (
+              <Box {...provided.droppableProps} ref={provided.innerRef} style={getListStyle(snapshot.isDraggingOver)}>
+                {eventTypes
+                  .filter((eventType) => !eventType.archived)
+                  .map((item, index) => (
+                    <Draggable
+                      key={item.id.toString()}
+                      draggableId={item.id.toString()}
+                      index={index}
+                      isDragDisabled={isDragDisable}
+                    >
+                      {(provided, snapshot) => (
+                        <Box
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                          style={getItemStyle(snapshot.isDragging, provided.draggableProps.style)}
+                        >
+                          <Box key={index} sx={classes.tableCotainer} draggable='false'>
+                            <Typography
+                              sx={classes.typeName}
+                              onMouseOver={() => {
+                                setIsDragDisable(true)
                               }}
-                            />
+                            >
+                              {item.name}
+                            </Typography>
+                            <Typography
+                              sx={classes.color}
+                              onMouseOver={() => {
+                                setIsDragDisable(true)
+                              }}
+                            >
+                              {item.color.toLocaleUpperCase()}
+                            </Typography>
+                            <Box
+                              sx={classes.circleBox}
+                              onMouseOver={() => {
+                                setIsDragDisable(true)
+                              }}
+                            >
+                              <Box sx={{ ...classes.circle, backgroundColor: item.color }}></Box>
+                            </Box>
+                            <Box sx={classes.action}>
+                              <MenuIcon
+                                sx={classes.iconCursor}
+                                onMouseOver={() => {
+                                  setIsDragDisable(false)
+                                }}
+                                fontSize='medium'
+                              />
+                              <ModeEditIcon
+                                sx={classes.iconCursor}
+                                fontSize='medium'
+                                onClick={() => handleEditClick(item)}
+                                onMouseOver={() => {
+                                  setIsDragDisable(true)
+                                }}
+                              />
+                              <SystemUpdateAltIcon
+                                sx={classes.iconCursor}
+                                fontSize='medium'
+                                onClick={() => {
+                                  setSelectedEventType(item)
+                                  setShowArchivedModal(true)
+                                }}
+                                onMouseOver={() => {
+                                  setIsDragDisable(true)
+                                }}
+                              />
+                            </Box>
                           </Box>
                         </Box>
-                      </div>
-                    )}
-                  </Draggable>
-                ))}
-              {provided.placeholder}
-            </div>
-          )}
-        </Droppable>
-      </DragDropContext>
+                      )}
+                    </Draggable>
+                  ))}
+                {provided.placeholder}
+              </Box>
+            )}
+          </Droppable>
+        </DragDropContext>
+      </Box>
       {archivedTypes()}
     </Box>
   )

@@ -1,11 +1,15 @@
-import React, { Children, useState } from 'react'
+import React, { Children, useContext, useEffect, useState } from 'react'
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew'
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
 import moment from 'moment'
 import { Calendar, momentLocalizer } from 'react-big-calendar'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
-import { Button, ButtonGroup } from '@mui/material'
-import { useStyles } from '../CalendarTable/styles'
+import { Box, Button, ButtonGroup } from '@mui/material'
+import { useStyles } from '../MainComponent/styles'
+import { useQuery } from '@apollo/client'
+import { getEventsQuery } from '../EditTypeComponent/services'
+import { UserContext } from '../../../../providers/UserContext/UserProvider'
+import { CalendarEvent } from '../types'
 
 moment.locale('ko', {
   week: {
@@ -16,36 +20,32 @@ moment.locale('ko', {
 const localizer = momentLocalizer(moment)
 
 const CalendarComponent = () => {
-  const [selectedDate, setSelectedDate] = useState(new Date(2021, 2, 1))
+  const { me } = useContext(UserContext)
+  const [selectedDate, setSelectedDate] = useState(new Date())
   const classes = useStyles
-  const myEventsList = [
-    {
-      id: 0,
-      title: 'Club',
-      allDay: true,
-      start: new Date(2021, 2, 1),
-      end: new Date(2021, 2, 1),
-      color: '#2B9EB7',
-      backgroundColor: '#EEF4F8',
+  const [eventList, setEventList] = useState<CalendarEvent[]>([])
+  const { loading, data, refetch } = useQuery(getEventsQuery, {
+    variables: {
+      regionId: me?.selectedRegionId,
     },
-    {
-      id: 1,
-      title: 'Field Trip',
-      start: new Date(2021, 2, 2),
-      end: new Date(2021, 2, 2),
-      color: '#7B61FF',
-      backgroundColor: '#FFFFFF',
-    },
-
-    {
-      id: 2,
-      title: 'Deadline',
-      start: new Date(2021, 2, 2),
-      end: new Date(2021, 2, 2),
-      color: '#EC5925',
-      backgroundColor: '#FFFFFF',
-    },
-  ]
+    skip: me?.selectedRegionId ? false : true,
+    fetchPolicy: 'network-only',
+  })
+  useEffect(() => {
+    if (!loading && data?.eventsByRegionId) {
+      const eventLists = data?.eventsByRegionId
+      setEventList(
+        eventLists.map((event) => ({
+          id: event.event_id,
+          title: event.EventType.name,
+          start: new Date(event.start_date),
+          end: new Date(event.end_date),
+          color: event.EventType.color,
+          backgroundColor: '#FFFFFF',
+        })),
+      )
+    }
+  }, [data])
 
   const Event = ({ event }) => {
     return (
@@ -69,8 +69,8 @@ const CalendarComponent = () => {
 
   const CustomToolbar = () => {
     return (
-      <div className='toolbar-container'>
-        <div style={{ display: 'flex', marginBottom: '20px' }}>
+      <Box className='toolbar-container'>
+        <Box style={{ display: 'flex', marginBottom: '20px' }}>
           <Button
             disableElevation
             variant='contained'
@@ -98,16 +98,16 @@ const CalendarComponent = () => {
               }
             }}
           ></Button>
-        </div>
-      </div>
+        </Box>
+      </Box>
     )
   }
 
   return (
-    <div>
+    <Box>
       <Calendar
         localizer={localizer}
-        events={myEventsList}
+        events={eventList}
         startAccessor='start'
         endAccessor='end'
         style={{ height: 600 }}
@@ -127,7 +127,7 @@ const CalendarComponent = () => {
           dateCellWrapper: ColoredDateCellWrapper,
         }}
       />
-    </div>
+    </Box>
   )
 }
 

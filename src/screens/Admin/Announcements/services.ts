@@ -49,6 +49,11 @@ export const GetCurrentSchoolYearByRegionId = gql`
     schoolyear_getcurrent(region_id: $regionId) {
       grades
       RegionId
+      date_begin
+      date_end
+      midyear_application
+      midyear_application_open
+      midyear_application_close
     }
   }
 `

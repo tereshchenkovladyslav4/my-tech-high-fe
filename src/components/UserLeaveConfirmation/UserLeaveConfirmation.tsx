@@ -1,12 +1,11 @@
 import ReactDOM from 'react-dom'
 import React from 'react'
-import CloseIcon from '@mui/icons-material/Close'
-import { Box, Button, Modal } from '@mui/material'
+import { Box, Button, Modal, Typography } from '@mui/material'
 import { SYSTEM_01 } from '../../utils/constants'
 import { Paragraph } from '../Typography/Paragraph/Paragraph'
 import { Subtitle } from '../Typography/Subtitle/Subtitle'
 import { useStyles } from './styles'
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline'
+import InfoIcon from '@mui/icons-material/InfoOutlined'
 
 export const UserLeaveConfirmation = (
   message,
@@ -32,15 +31,15 @@ export const UserLeaveConfirmation = (
   }
 
   document.body.appendChild(container)
-  const { header, content } = JSON.parse(message)
+  const { header, content, bgColor } = JSON.parse(message)
   ReactDOM.render(
     <Modal open={true}>
-      <Box sx={classes.modalCard}>
+      <Box sx={{ ...classes.modalCard, backgroundColor: bgColor }}>
         <Box sx={classes.header as object}>
-          <Subtitle fontWeight='700'>{header}</Subtitle>
+          <Typography variant='h5'>{header}</Typography>
         </Box>
         <Box sx={classes.content as object}>
-          <ErrorOutlineIcon style={classes.errorOutline} />
+          <InfoIcon sx={{ fontSize: 50, margin: '20px 0px' }} />
           <Paragraph size='large' color={SYSTEM_01}>
             {content}
           </Paragraph>

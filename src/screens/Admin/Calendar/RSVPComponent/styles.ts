@@ -20,56 +20,14 @@ export const useStyles = {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-end',
-    marginRight: '24px',
+    marginRight: '30px',
   },
   pageTitle: {
     textAlign: 'left',
     display: 'flex',
     flexDirection: 'row',
-    marginLeft: '24px',
+    marginLeft: '30px',
     alignItems: 'center',
-  },
-  tableCotainer: {
-    display: 'flex',
-    padding: '10px',
-    borderBottom: '1px solid #E7E7E7',
-  },
-  circleBox: {
-    width: 'calc(65% - 250px)',
-  },
-  circle: {
-    borderRadius: 50,
-    width: '15px',
-    height: '15px',
-    marginTop: '5px',
-  },
-  typeName: {
-    width: '35%',
-  },
-  action: {
-    width: '150px',
-    display: 'flex',
-    justifyContent: 'start',
-    zIndex: 900,
-  },
-  color: {
-    width: '100px',
-    textAlign: 'left',
-  },
-  eventTypeBody: {
-    width: '480px',
-    display: 'grid',
-    textAlign: 'left',
-  },
-  textfield: {
-    color: 'green',
-    [`& .${outlinedInputClasses.root} .${outlinedInputClasses.notchedOutline}`]: {
-      borderColor: SYSTEM_07,
-      borderWidth: '1px',
-    },
-    marginTop: 2,
-    marginBottom: 1,
-    width: '100%',
   },
   cancelBtn: {
     fontSize: 11,
@@ -80,6 +38,7 @@ export const useStyles = {
     color: 'white',
     width: '92px',
     height: '33px',
+    marginRight: '30px',
     '&:hover': {
       background: '#D23C33',
       color: '#fff',
@@ -99,11 +58,14 @@ export const useStyles = {
       color: '#fff',
     },
   },
+  action: {
+    width: '150px',
+    display: 'flex',
+    justifyContent: 'start',
+    zIndex: 900,
+  },
   iconCursor: {
     width: '50px',
     cursor: 'pointer',
-  },
-  posi_rela: {
-    position: 'relative',
   },
 }

@@ -1,12 +1,10 @@
-import { outlinedInputClasses } from '@mui/material'
-import { BLUE_GRDIENT, RED_GRADIENT, SYSTEM_07 } from '../../../../utils/constants'
+import { GREEN_GRADIENT, RED_GRADIENT, BUTTON_LINEAR_GRADIENT, BLUE_GRDIENT } from '../../../../utils/constants'
 
 export const useStyles = {
   cardBody: {
     paddingTop: '24px',
     marginBottom: '24px',
     paddingBottom: '12px',
-    minHeight: '80vh',
   },
   pageTop: {
     textAlign: 'left',
@@ -29,48 +27,6 @@ export const useStyles = {
     marginLeft: '24px',
     alignItems: 'center',
   },
-  tableCotainer: {
-    display: 'flex',
-    padding: '10px',
-    borderBottom: '1px solid #E7E7E7',
-  },
-  circleBox: {
-    width: 'calc(65% - 250px)',
-  },
-  circle: {
-    borderRadius: 50,
-    width: '15px',
-    height: '15px',
-    marginTop: '5px',
-  },
-  typeName: {
-    width: '35%',
-  },
-  action: {
-    width: '150px',
-    display: 'flex',
-    justifyContent: 'start',
-    zIndex: 900,
-  },
-  color: {
-    width: '100px',
-    textAlign: 'left',
-  },
-  eventTypeBody: {
-    width: '480px',
-    display: 'grid',
-    textAlign: 'left',
-  },
-  textfield: {
-    color: 'green',
-    [`& .${outlinedInputClasses.root} .${outlinedInputClasses.notchedOutline}`]: {
-      borderColor: SYSTEM_07,
-      borderWidth: '1px',
-    },
-    marginTop: 2,
-    marginBottom: 1,
-    width: '100%',
-  },
   cancelBtn: {
     fontSize: 11,
     fontWeight: 700,
@@ -79,6 +35,7 @@ export const useStyles = {
     background: RED_GRADIENT,
     color: 'white',
     width: '92px',
+    marginRight: 2,
     height: '33px',
     '&:hover': {
       background: '#D23C33',
@@ -94,16 +51,34 @@ export const useStyles = {
     background: BLUE_GRDIENT,
     color: 'white',
     width: '92px',
+    marginRight: 2,
     '&:hover': {
       background: '#4145FF',
       color: '#fff',
     },
   },
-  iconCursor: {
-    width: '50px',
-    cursor: 'pointer',
+  subject: {
+    marginTop: 2,
   },
-  posi_rela: {
-    position: 'relative',
+  editor: {
+    border: '1px solid #d1d1d1',
+    borderRadius: 1,
+    marginBottom: '24px',
+    'div.DraftEditor-editorContainer': {
+      minHeight: '200px',
+      maxHeight: '250px',
+      overflow: 'scroll',
+      padding: 1,
+      '.public-DraftStyleDefault-block': {
+        margin: 0,
+      },
+    },
+  },
+  arrowButton: {
+    fontSize: '15px',
+    stroke: 'black',
+    strokeWidth: 2,
+    marginTop: '3px',
+    marginRight: '10px',
   },
 }
