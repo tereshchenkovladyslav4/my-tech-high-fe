@@ -12,6 +12,7 @@ import { getSchoolYearsByRegionId } from '../services'
 export default function SchoolYearSelect({
   setSelectedYearId,
   setSpecialEd,
+  setEnroll,
   setBirthDate,
   setGrades,
   selectedYearId,
@@ -34,6 +35,7 @@ export default function SchoolYearSelect({
       schoolYears.forEach((schoolYear) => {
         if (val == schoolYear.schoolYearId) {
           setSpecialEd(schoolYear.specialEd)
+          setEnroll(schoolYear.enrollmentPacket)
           setBirthDate(schoolYear.birthDateCut)
           setGrades(schoolYear.grades)
         }
@@ -52,6 +54,7 @@ export default function SchoolYearSelect({
         ) {
           setSelectedYearId(schoolYear.schoolYearId)
           setSpecialEd(schoolYear.specialEd)
+          setEnroll(schoolYear.enrollmentPacket)
           setBirthDate(schoolYear.birthDateCut)
           setGrades(schoolYear.grades)
         }
@@ -84,6 +87,7 @@ export default function SchoolYearSelect({
         SchoolYears?.map((schoolYear) => {
           if (selectedYearId == schoolYear.school_year_id) {
             setSpecialEd(schoolYear.special_ed)
+            setEnroll(schoolYear.enrollment_packet)
             setBirthDate(schoolYear.birth_date_cut)
             setGrades(schoolYear.grades)
             cnt++
@@ -95,6 +99,7 @@ export default function SchoolYearSelect({
             grades: schoolYear.grades,
             birthDateCut: schoolYear.birth_date_cut,
             specialEd: schoolYear.special_ed,
+            enrollmentPacket: schoolYear.enrollment_packet,
           }
         }).sort((a, b) => {
           if (new Date(a.schoolYearOpen) > new Date(b.schoolYearOpen)) return 1
@@ -105,6 +110,7 @@ export default function SchoolYearSelect({
       if (cnt == 0) {
         setSelectedYearId('')
         setSpecialEd(false)
+        setEnroll(false)
         setBirthDate(null)
         setGrades(null)
       }

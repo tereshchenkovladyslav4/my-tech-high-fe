@@ -7,6 +7,7 @@ export type SchoolYears = {
   grades: string
   birthDateCut: string
   specialEd: boolean
+  enrollmentPacket: boolean
 }
 
 export type ProgramSettingType = {

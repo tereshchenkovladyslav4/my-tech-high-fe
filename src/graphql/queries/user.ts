@@ -96,7 +96,6 @@ export const getParentDetailByEmail = gql`
         special_ed
         teacher_notes
         diploma_seeking
-        school_of_enrollment
         testing_preference
         status {
           student_id

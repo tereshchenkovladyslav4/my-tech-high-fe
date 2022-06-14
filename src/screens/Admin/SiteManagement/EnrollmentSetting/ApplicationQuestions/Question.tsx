@@ -98,6 +98,13 @@ function Item({ question: q }: { question: ApplicationQuestion }) {
           [`& .${inputLabelClasses.root}.${inputLabelClasses.focused}`]: {
             transform: 'translate(14px, -11px) scale(1)'
           },
+          [`& .${outlinedInputClasses.notchedOutline}`]: {
+            borderColor: SYSTEM_07,
+            borderWidth: '2px'
+          },
+          [`& .${inputLabelClasses.root}.${inputLabelClasses.shrink}`]: {
+            transform: 'translate(14px, -11px) scale(1)'
+          },
           [`& .${outlinedInputClasses.root} .${outlinedInputClasses.notchedOutline} span`]: {
             fontSize: 16
           }
@@ -180,7 +187,7 @@ function Item({ question: q }: { question: ApplicationQuestion }) {
                   color: '#4145FF'
                 }
               }} />
-            <Subtitle size='small' sx={{wordWrap: 'break-word',maxWidth: '90%',textAlign: 'start',}}>{o.label}</Subtitle>
+            <Subtitle size='small' sx={{wordWrap: 'break-word',maxWidth: '90%',textAlign: 'start', color: SYSTEM_05}}>{o.label}</Subtitle>
           </Box>
         ))}
       </Box>
@@ -196,7 +203,7 @@ function Item({ question: q }: { question: ApplicationQuestion }) {
               color: '#4145FF'
             }
           }} />
-        <Paragraph size='large' sx={{fontSize: 16}}>
+        <Paragraph size='large' sx={{fontSize: 16, color: SYSTEM_05}}>
             <p dangerouslySetInnerHTML={{ __html: q.question }}></p>
         </Paragraph>
       </Box>
@@ -237,7 +244,7 @@ function Item({ question: q }: { question: ApplicationQuestion }) {
                   color: '#4145FF'
                 }
               }} />
-            <Subtitle size='small' sx={{wordWrap: 'break-word',maxWidth: '90%',textAlign: 'start'}}>{o.label}</Subtitle>
+            <Subtitle size='small' sx={{wordWrap: 'break-word',maxWidth: '90%',textAlign: 'start', color: SYSTEM_05}}>{o.label}</Subtitle>
           </Box>
         ))}
       </Box>

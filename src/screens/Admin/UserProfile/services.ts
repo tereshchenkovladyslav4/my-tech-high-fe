@@ -44,7 +44,6 @@ export const getParentDetail = gql`
         special_ed
         teacher_notes
         diploma_seeking
-        school_of_enrollment
         testing_preference
         status {
           student_id
@@ -131,7 +130,6 @@ export const getStudentDetail = gql`
     student(student_id: $student_id) {
       student_id
       special_ed
-      school_of_enrollment
       diploma_seeking
       reenrolled
       teacher_notes

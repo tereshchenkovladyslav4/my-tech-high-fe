@@ -12,13 +12,16 @@ export const SortableTable: SortableTableTemplateType = ({
   onRowClick,
   onSortChange,
   onParentClick,
+  hideCheck=false
 }) => {
   const [order, setOrder] = useState<Order>('asc')
   const [orderBy, setOrderBy] = useState<keyof any>('name')
   const [selected, setSelected] = useState<readonly string[]>([])
 
   useEffect(() => {
-    onCheck(selected)
+    if(onCheck){
+      onCheck(selected)
+    }
   }, [selected])
 
   useEffect(() => {
@@ -129,9 +132,9 @@ export const SortableTable: SortableTableTemplateType = ({
     }
   }
   return (
-    <Box sx={{ width: '100%' }}>
+    <Box sx={{ width: '100%',overflow: 'hidden'}}>
       <TableContainer>
-        <Table sx={{ minWidth: 750 }} aria-labelledby='tableTitle' size='small'>
+        <Table aria-labelledby='tableTitle' size='small'>
           <SortableTableHeader
             numSelected={selected.length}
             order={order}
@@ -140,12 +143,12 @@ export const SortableTable: SortableTableTemplateType = ({
             onRequestSort={handleRequestSort}
             rowCount={rows.length}
             headCells={headCells}
+            noCheckbox={hideCheck}
           />
           <TableBody>
             {rows.map((row) => {
               const isItemSelected = isSelected(row.id.toString())
               const labelId = `enhanced-table-checkbox-${row.id}`
-
               return (
                 <TableRow
                   hover
@@ -155,20 +158,23 @@ export const SortableTable: SortableTableTemplateType = ({
                   key={row.id}
                   selected={isItemSelected}
                 >
-                  <TableCell
-                    padding='checkbox'
-                    onClick={(event) => {
-                      handleClick(event, row.id)
-                    }}
-                  >
-                    <Checkbox
-                      color='primary'
-                      checked={isItemSelected}
-                      inputProps={{
-                        'aria-labelledby': labelId,
+                  {
+                    !hideCheck && 
+                    <TableCell
+                      padding='checkbox'
+                      onClick={(event) => {
+                        handleClick(event, row.id)
                       }}
-                    />
-                  </TableCell>
+                    >
+                      <Checkbox
+                        color='primary'
+                        checked={isItemSelected}
+                        inputProps={{
+                          'aria-labelledby': labelId,
+                        }}
+                      />
+                    </TableCell>
+                  }
                   {Object.keys(row).map((key, idx) => {
                     return key === 'student' ? (
                       <TableCell

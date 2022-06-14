@@ -94,6 +94,7 @@ const ProgramSetting: React.FC = () => {
             grades: grades,
             birth_date_cut: birthDate,
             special_ed: specialEd,
+            enrollment_packet: enroll,
           },
         },
       })
@@ -148,6 +149,7 @@ const ProgramSetting: React.FC = () => {
       <SchoolYearSelect
         setSelectedYearId={setSelectedYearId}
         setSpecialEd={setSpecialEd}
+        setEnroll={setEnroll}
         setBirthDate={setBirthDate}
         setGrades={setGrades}
         selectedYearId={selectedYearId}

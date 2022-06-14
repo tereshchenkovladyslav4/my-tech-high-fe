@@ -19,6 +19,7 @@ export type UserInfo = {
   profile?: Person
   selectedRegionId?: number
   masquerade: boolean
+  currentTab?: number
 }
 
 export type UserContextType = {

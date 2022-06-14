@@ -30,6 +30,7 @@ export const getSchoolYearsByRegionId = gql`
         grades
         birth_date_cut
         special_ed
+        enrollment_packet
       }
       county_file_name
       county_file_path

@@ -11,7 +11,7 @@ import {
   getActiveSchoolYearsByRegionId,
   getQuestionsGql,
 } from './service'
-import { useStyles } from './styles'
+import { useStyles } from '../styles'
 import BGSVG from '../../../assets/ApplicationBG.svg'
 import { DASHBOARD, GRADES, MTHBLUE, RED, SYSTEM_05 } from '../../../utils/constants'
 import { NewApplicationFooter } from '../../../components/NewApplicationFooter/NewApplicationFooter'
@@ -367,7 +367,7 @@ export const NewParent = () => {
                     <Grid item xs={12} display='flex' justifyContent={'center'}>
                       <Field name={`state`} fullWidth focused>
                         {({ field, form, meta }) => (
-                          <Box width={'406.73px'}>
+                          <Box width={'451.53px'}>
                             <DropDown
                               name='state'
                               labelTop
@@ -395,7 +395,7 @@ export const NewParent = () => {
                         if (q.slug === 'program_year') {
                           return (
                             <Grid item xs={12} display='flex' justifyContent={'center'}>
-                              <Box width={'406.73px'}>
+                              <Box width={'451.53px'}>
                                 <Field name='programYear' fullWidth focused>
                                   {({ field, form, meta }) => (
                                     <Box width={'100%'}>
@@ -659,8 +659,8 @@ export const NewParent = () => {
                               </Grid>
                               <Grid item xs={12} display='flex' justifyContent={'center'}>
                                 <Button
-                                  color='secondary'
-                                  variant='contained'
+                                  // color='secondary'
+                                  // variant='contained'
                                   disabled={
                                     regionId && questions.filter((q) => q.slug.includes('student_')).length > 0
                                       ? false

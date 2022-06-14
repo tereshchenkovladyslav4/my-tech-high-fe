@@ -73,8 +73,6 @@ export function AdditionalQuestionItem({ question: q, field, meta, form }: { que
               width: '100%',
               textAlign: 'start',
               borderBottom: '1px solid ' + SYSTEM_07,
-              marginTop: 2,
-              marginBottom: 1,
               wordWrap: 'break-word',
             }}
           >
@@ -87,7 +85,6 @@ export function AdditionalQuestionItem({ question: q, field, meta, form }: { que
               alignItems='center'
               sx={{
                 borderBottom: '1px solid ' + SYSTEM_07,
-                marginTop: '10px',
                 width: '100%',
               }}
             >
@@ -104,14 +101,14 @@ export function AdditionalQuestionItem({ question: q, field, meta, form }: { que
                 <Checkbox />
               )}
               </Field> */}
-              <Subtitle size='small' sx={{wordWrap: 'break-word',maxWidth: '90%',textAlign: 'start'}}>{o.label}</Subtitle>
+              <Subtitle size='small' sx={{wordWrap: 'break-word',maxWidth: '90%',textAlign: 'start', color: SYSTEM_05}}>{o.label}</Subtitle>
             </Box>
           ))}
         </Box>
       )
     } else if (q.type === 4) {
       return (
-        <Box display='flex' alignItems='center' sx={{marginTop: 2, marginBottom: 1,}}>
+        <Box display='flex' alignItems='center'>
           <Checkbox
             name={q.question.toLowerCase().replace(' ', '_')} {...field} value={true}
             sx={{
@@ -122,18 +119,16 @@ export function AdditionalQuestionItem({ question: q, field, meta, form }: { que
               }
             }}
           />
-          <Paragraph size='medium' sx={{fontSize: 16}}>
+          <Paragraph size='medium' sx={{fontSize: 16, color: SYSTEM_05}}>
             <p dangerouslySetInnerHTML={{ __html: q.question }}></p>
           </Paragraph>
         </Box>
       )
     } else if (q.type === 5) {
       return (
-        <Box sx={{marginBottom: 1}}>
+        <Box>
           <Subtitle
             sx={{
-              marginTop: 2,
-              marginBottom: 1,
               paddingLeft: 0,
               paddingBottom: '10px',
               width: '100%',
@@ -162,7 +157,6 @@ export function AdditionalQuestionItem({ question: q, field, meta, form }: { que
                   alignItems='center'
                   sx={{
                     borderBottom: '1px solid ' + SYSTEM_07,
-                    marginTop: '10px',
                     width: '100%',
                     paddingLeft: 0,
                   }}
@@ -172,7 +166,7 @@ export function AdditionalQuestionItem({ question: q, field, meta, form }: { que
                       '&.Mui-checked': {
                         color: '#4145FF'
                       }
-                    }} />} label={o.label} />
+                    }} />} label={o.label} sx={{color: SYSTEM_05}}/>
                 </Box>
               ))}
             </RadioGroup>
@@ -207,7 +201,7 @@ export function AdditionalQuestionItem({ question: q, field, meta, form }: { que
       )
     } else if (q.type === 7) {
       return (
-        <Box display='block' sx={{marginTop: 2, marginBottom: 1, textAlign: 'center'}}>
+        <Box display='block' sx={{textAlign: 'center'}}>
           <Paragraph size='large' sx={{fontSize: 16}}>
             <p dangerouslySetInnerHTML={{ __html: q.question }}></p>
           </Paragraph>

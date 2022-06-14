@@ -51,6 +51,7 @@ export const GetCurrentSchoolYearByRegionId = gql`
       RegionId
       date_begin
       date_end
+      enrollment_packet
       midyear_application
       midyear_application_open
       midyear_application_close

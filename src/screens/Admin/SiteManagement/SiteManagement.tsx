@@ -18,6 +18,7 @@ import { ProgramSetting } from './ProgramSetting'
 import { Years } from './Years'
 import { EmailTemplatePage } from './components/EmailTemplates/EmailTemplatePage'
 import { QuickLinks } from '../../../components/QuickLink/QuickLinks'
+import { SchoolPartner } from './SchoolPartner/SchoolPartner'
 
 const SiteManagement: React.FC = () => {
   const { path, isExact } = useRouteMatch('/site-management')
@@ -56,7 +57,7 @@ const SiteManagement: React.FC = () => {
       id: 4,
       title: 'School Partners',
       subtitle: 'Add and Edit',
-      isLink: false,
+      isLink: true,
       img: SchoolPartnerImage,
       to: `school-partner`,
     },
@@ -174,7 +175,9 @@ const SiteManagement: React.FC = () => {
           />
         ) : currentView === 'years' ? (
           <Years />
-        ) : currentView === 'program-setting' ? (
+        ) : currentView === 'school-partner' ? (
+          <SchoolPartner/>
+        ) :currentView === 'program-setting' ? (
           <ProgramSetting />
         ) : (
           currentView === 'email-template' && <EmailTemplatePage onBackPress={onBackPress} />
@@ -189,6 +192,9 @@ const SiteManagement: React.FC = () => {
         </Route>
         <Route exact path={`/site-management/years`}>
           <Years />
+        </Route>
+        <Route exact path={`/site-management/school-partner`}>
+          <SchoolPartner />
         </Route>
       </Switch>
     </Box>

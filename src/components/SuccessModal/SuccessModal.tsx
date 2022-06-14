@@ -20,8 +20,6 @@ export const SuccessModal: WarningModalTemplateType = ({
   return (
     <Modal
       open={true}
-      aria-labelledby='modal-modal-title'
-      aria-describedby='modal-modal-description'
     >
       <Box sx={classes.modalCard}>
         <Box sx={classes.header as object}>
