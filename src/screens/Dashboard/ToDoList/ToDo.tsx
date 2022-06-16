@@ -7,46 +7,51 @@ import { Subtitle } from '../../../components/Typography/Subtitle/Subtitle'
 import BGSVG from '../../../assets/ToDoListBG.svg'
 import { SYSTEM_06 } from '../../../utils/constants'
 import { Title } from '../../../components/Typography/Title/Title'
+import { SchoolYearType } from '../HomeroomGrade/components/StudentGrade/types'
 
 const EmptyStateWrapper = (props) => (
   <Box
-        flexDirection='row'
-        textAlign='left'
-        paddingY={1.5}
-        paddingX={3}
-        display='flex'
-        justifyContent='space-between'
-        sx={{
-          minHeight: '40vh'
-        }}
-      >
-	  <EmptyState
-              title={<Title>{props.title}</Title>}
-              subtitle={
-                <Subtitle color={SYSTEM_06} fontWeight='700'>
-                  {props.subtitle}
-                </Subtitle>
-              }
-            />
+    flexDirection='row'
+    textAlign='left'
+    paddingY={1.5}
+    paddingX={3}
+    display='flex'
+    justifyContent='space-between'
+    sx={{
+      minHeight: '40vh',
+    }}
+  >
+    <EmptyState
+      title={<Title>{props.title}</Title>}
+      subtitle={
+        <Subtitle color={SYSTEM_06} fontWeight='700'>
+          {props.subtitle}
+        </Subtitle>
+      }
+    />
   </Box>
-  )
+)
 
 const emptyStateHandler = (showEmpty: boolean) => {
-  if( showEmpty ) {
+  if (showEmpty) {
     return {
       backgroundImage: `url(${BGSVG})`,
       backgroundRepeat: 'no-repeat',
       backgroundPosition: 'bottom right',
     }
   }
-  
+
   return {}
 }
 
-export const ToDo: FunctionComponent = () => {
+type TodoProps = {
+  schoolYears: SchoolYearType[]
+}
+
+export const ToDo: FunctionComponent<TodoProps> = ({ schoolYears }) => {
   const [showEmpty, setShowEmpty] = useState(false)
 
-  const handleShowEmpty = ( isEmpty : boolean) => {
+  const handleShowEmpty = (isEmpty: boolean) => {
     setShowEmpty(isEmpty)
   }
 
@@ -65,7 +70,11 @@ export const ToDo: FunctionComponent = () => {
           <Subtitle size='large' fontWeight='bold'>
             To Do List
           </Subtitle>
-          {!showEmpty ? <TodoList handleShowEmpty={handleShowEmpty} /> : <EmptyStateWrapper title='Congrats!' subtitle='You are all caught up.' />}
+          {!showEmpty ? (
+            <TodoList schoolYears={schoolYears} handleShowEmpty={handleShowEmpty} />
+          ) : (
+            <EmptyStateWrapper title='Congrats!' subtitle='You are all caught up.' />
+          )}
         </Flexbox>
       </Box>
     </Card>

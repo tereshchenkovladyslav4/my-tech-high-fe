@@ -45,7 +45,7 @@ export const getActiveSchoolYearsByRegionId = gql`
 `
 
 export const ExistingParent = () => {
-  const [emptyStudent, setEmptyStudent] = useState({ first_name: '', last_name: '', grade_level: undefined })
+  const [emptyStudent, setEmptyStudent] = useState({ first_name: '', last_name: '', grade_level: undefined, meta: {} })
   const initSchema = {
     programYear: string().required('Grade Level is required'),
   }
@@ -134,7 +134,7 @@ export const ExistingParent = () => {
             }
           } else if (q.slug?.includes('meta_') && q.required) {
             if(q.student_question) {
-              empty[`${q.slug}`] = ''
+              empty['meta'][`${q.slug}`] = ''
               if (q.validation === 1) {
                 valid_student_meta[`${q.slug}`] = yup.string().email('Enter a valid email').required('Email is required')
               } else if (q.validation === 2) {
@@ -307,7 +307,7 @@ export const ExistingParent = () => {
             >
               <Grid container>
                 <Grid item xs={12} display='flex' justifyContent={'center'}>
-                  <Box width={'406.73px'}>
+                  <Box width={'451.53px'}>
                     <Field name='programYear' fullWidth focused>
                       {({ field, form, meta }) => (
                         <Box width={'100%'} display='block'>
@@ -363,6 +363,7 @@ export const ExistingParent = () => {
                               {!questionLoading &&
                                 questions.length > 0 &&
                                 questions.map((q) => {
+                                  const firstQuestionSlug = questions.filter((qf) => qf.question.includes('student_') || qf.student_question)[0].slug                                      
                                   if (q.slug === 'student_grade_level') {
                                     return (
                                       <Grid item xs={12}>
@@ -394,13 +395,19 @@ export const ExistingParent = () => {
                                             </Box>
                                           )}
                                         </Field>
+                                        {index !== 0 && q.slug === firstQuestionSlug ? (
+                                            <DeleteForeverOutlinedIcon
+                                              sx={{ left: 12, position: 'relative', color: 'darkgray' }}
+                                              onClick={() => remove(index)}
+                                            />
+                                          ) : null}
                                       </Grid>
                                     )
                                   } else if (q.slug.includes('student_')) {
                                     return (
                                       <Grid item xs={12}>
                                         <Box
-                                          width={index === 0 ? '100%' : '103.9%'}
+                                          width={'100%'}
                                           display='flex'
                                           flexDirection='row'
                                           alignItems={'center'}
@@ -422,7 +429,7 @@ export const ExistingParent = () => {
                                               </Box>
                                             )}
                                           </Field>
-                                          {index !== 0 && q.slug === 'student_first_name' ? (
+                                          {index !== 0 && q.slug === firstQuestionSlug ? (
                                             <DeleteForeverOutlinedIcon
                                               sx={{ left: 12, position: 'relative', color: 'darkgray' }}
                                               onClick={() => remove(index)}
@@ -436,7 +443,7 @@ export const ExistingParent = () => {
                                     return (
                                       <Grid item xs={12}>
                                         <Box
-                                          width={index === 0 ? '100%' : '103.9%'}
+                                          width={'100%'}
                                           display='flex'
                                           flexDirection='row'
                                           alignItems={'center'}
@@ -458,6 +465,12 @@ export const ExistingParent = () => {
                                               </Box>
                                             )}
                                           </Field>
+                                          {index !== 0 && q.slug === firstQuestionSlug ? (
+                                            <DeleteForeverOutlinedIcon
+                                              sx={{ left: 12, position: 'relative', color: 'darkgray' }}
+                                              onClick={() => remove(index)}
+                                            />
+                                          ) : null}
                                         </Box>
                                       </Grid>
                                     )

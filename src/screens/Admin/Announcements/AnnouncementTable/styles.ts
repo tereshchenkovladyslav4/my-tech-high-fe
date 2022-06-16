@@ -1,4 +1,4 @@
-import { BLACK, SYSTEM_01, SYSTEM_04, SYSTEM_06, SYSTEM_08 } from '../../../../utils/constants'
+import { SYSTEM_01, SYSTEM_08 } from '../../../../utils/constants'
 
 export const useStyles = {
   cardBody: {

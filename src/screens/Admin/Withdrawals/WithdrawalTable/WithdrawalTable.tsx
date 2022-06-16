@@ -6,14 +6,9 @@ import SearchIcon from '@mui/icons-material/Search'
 import { Pagination } from '../../../../components/Pagination/Pagination'
 import { HeadCell } from '../../../../components/SortableTable/SortableTableHeader/types'
 import { SortableTable } from '../../../../components/SortableTable/SortableTable'
-import { useQuery, useMutation } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 import { getWithdrawalsQuery } from '../services'
-import { map } from 'lodash'
 import moment from 'moment'
-import DeleteForever from '@mui/icons-material/Delete'
-import { toOrdinalSuffix } from '../../../../utils/stringHelpers'
-import { WarningModal } from '../../../../components/WarningModal/Warning'
-import { Packet } from '../../../HomeroomStudentProfile/Student/types'
 import { WithdrawalFilters } from '../WithdrawalFilters'
 import { ProfileContext } from '../../../../providers/ProfileProvider/ProfileContext'
 import { UserContext } from '../../../../providers/UserContext/UserProvider'
@@ -31,7 +26,7 @@ const selectStyles = makeStyles({
 const WithdrawalTable = () => {
   const classes = useStyles
   const selectedClass = selectStyles()
-  const { me, setMe } = useContext(UserContext)
+  const { me } = useContext(UserContext)
   const [filters, setFilters] = useState(['Submitted', 'Resubmitted'])
   const [searchField, setSearchField] = useState('')
   const [tableData, setTableData] = useState<Array<any>>([])
@@ -39,15 +34,9 @@ const WithdrawalTable = () => {
   const [paginatinLimit, setPaginatinLimit] = useState(25)
   const [skip, setSkip] = useState<number>()
   const [sort, setSort] = useState('status|ASC')
-  const selectClasses = selectStyles()
   const [totalWithdrawals, setTotalWithdrawals] = useState<number>(0)
   const [withdrawIds, setWithdrawIds] = useState<Array<string>>([])
-  const [isShowModal, setIsShowModal] = useState(false)
-  const [enrollmentPackets, setEnrollmentPackets] = useState<Array<Packet>>([])
-  const [enrollmentPacket, setEnrollmentPacket] = useState<Packet | null>(null)
   const [currentPage, setCurrentPage] = useState<number>(1)
-  const [openEmailModal, setOpenEmailModal] = useState<boolean>(false)
-  const [openWarningModal, setOpenWarningModal] = useState<boolean>(false)
   const [withdrawCount, setWithdrawCount] = useState<Array<String>>([])
   const { showModal, hideModal, store, setStore } = useContext(ProfileContext)
   const { loading, error, data, refetch } = useQuery(getWithdrawalsQuery, {
@@ -72,23 +61,11 @@ const WithdrawalTable = () => {
     },
   ]
 
-  const handleOpenProfile = (rowId: number) => {
-    const row = enrollmentPackets?.find((el) => el.packet_id === rowId)
-    showModal(row.student.parent)
-    setStore(true)
-  }
-
   const handlePageChange = (page) => {
     setCurrentPage(page)
     setSkip(() => {
       return paginatinLimit ? paginatinLimit * (page - 1) : 25
     })
-  }
-
-  const handlePacketSelect = (rowId: any) => {
-    const row = enrollmentPackets?.find((el) => el.packet_id === rowId)
-    setEnrollmentPacket(row)
-    setIsShowModal(true)
   }
 
   const headCells: HeadCell[] = [
@@ -142,14 +119,6 @@ const WithdrawalTable = () => {
     },
   ]
 
-  const handleOpenEmailModal = () => {
-    if (withdrawIds.length === 0) {
-      setOpenWarningModal(true)
-      return
-    }
-    setOpenEmailModal(true)
-  }
-
   useEffect(() => {
     if (!loading && data?.withdrawals) {
       setTableData(
@@ -198,9 +167,7 @@ const WithdrawalTable = () => {
           </Box>
         </Box>
         <Box sx={classes.pageHeaderButtonGroup}>
-          <Button sx={classes.emailButton} onClick={handleOpenEmailModal}>
-            Email
-          </Button>
+          <Button sx={classes.emailButton}>Email</Button>
           <Button
             sx={classes.withdrawalButton}
             //onClick={handleMoveToThisYear}
@@ -265,19 +232,8 @@ const WithdrawalTable = () => {
         headCells={headCells}
         onCheck={setWithdrawIds}
         clearAll={false}
-        onRowClick={handlePacketSelect}
-        onParentClick={handleOpenProfile}
         //onSortChange={sortChangeAction}
       />
-      {openWarningModal && (
-        <WarningModal
-          title='Warning'
-          subtitle='Please select Packets'
-          btntitle='Close'
-          handleModem={() => setOpenWarningModal(!openWarningModal)}
-          handleSubmit={() => setOpenWarningModal(!openWarningModal)}
-        />
-      )}
     </Card>
   )
 }

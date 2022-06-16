@@ -207,16 +207,15 @@ export const SchoolPartner = () => {
           </Typography>
         </Box>
       </Box>
-			<Grid container>
-				<Grid item xs={6}>
-					<Box sx={{ marginTop: 4 }}>
-						<SortableTable
-							headCells={tableHeaders}
-							rows={renderRows()}
-							onSortChange={() => {}}
-							hideCheck={true}
-						/>
-					</Box>
+			<Grid container columnSpacing={8}>
+				<Grid item xs={6} sx={{ marginTop: 4, borderRight: '1px solid black'}}>
+					<SortableTable
+						headCells={tableHeaders}
+						rows={renderRows()}
+						onSortChange={() => {}}
+						hideCheck={true}
+						hover={false}
+					/>
 				</Grid>
 				<Grid item xs={6}>
 					<Formik
@@ -251,7 +250,7 @@ export const SchoolPartner = () => {
 											flexDirection: 'column'
 										}}
 									> 
-										<Subtitle textAlign='left' size='large'>New School Partner</Subtitle>
+										<Subtitle textAlign='left' size='large' fontWeight='900'>New School Partner</Subtitle>
 											{ !isUploading
 												? <>
 													<Box
@@ -269,7 +268,16 @@ export const SchoolPartner = () => {
 																	fullWidth
 																	variant='outlined'
 																	focused
-																	sx={{ width: '100%', marginTop: 2 }}
+																	sx={{ 
+																		width: '100%', 
+																		marginTop: 2,
+																		'& .MuiOutlinedInput-root': {
+																			'&.Mui-focused fieldset': {
+																				borderColor: '#333',
+																				borderWidth: '1px',
+																			},
+																		}
+																	}}
 																	size='small'
 																	{...field}
 																	error={meta.error}
@@ -282,12 +290,21 @@ export const SchoolPartner = () => {
 															{({ field, form, meta }) => (
 																<TextField
 																	name='abbreviation'
-																	label="Partner Name"
+																	label="Abbreviation"
 																	placeholder="Entry"
 																	fullWidth
 																	variant='outlined'
 																	focused
-																	sx={{ width: '100%', marginTop: 2 }}
+																	sx={{ 
+																		width: '100%', 
+																		marginTop: 2,
+																		'& .MuiOutlinedInput-root': {
+																			'&.Mui-focused fieldset': {
+																				borderColor: '#333',
+																				borderWidth: '1px',
+																			},
+																		}
+																	}}
 																	size='small'
 																	{...field}
 																	error={meta.error}
@@ -330,7 +347,15 @@ export const SchoolPartner = () => {
 																{
 																	!selectedFiles
 																	? <>
-																		<SystemUpdateAltRoundedIcon sx={{ width: 35, height: 35, cursor: 'pointer'}}/>
+																		<SystemUpdateAltRoundedIcon 
+																			sx={{ 
+																				width: 35, 
+																				height: 35, 
+																				cursor: 'pointer',
+																				WebkitTransform: 'rotateX(180deg)', 
+																				transform: 'rotateX(180deg)',
+																			}}
+																		/>
 																		<Paragraph size='large'>Upload Logo</Paragraph>
 																	</>
 																	: <img 

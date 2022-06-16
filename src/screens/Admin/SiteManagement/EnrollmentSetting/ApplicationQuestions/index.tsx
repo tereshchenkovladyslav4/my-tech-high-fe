@@ -220,7 +220,7 @@ export default function ApplicationQuestions() {
   const onSelectDefaultQuestions = (selected) => {
     const selectedQuestion = defaultQuestions.filter((d) => d.label == selected)[0]
     let options = []
-    if(selectedQuestion.slug === 'county') {
+    if(selectedQuestion.slug === 'address_county_id') {
       options = counties
     }
     else if(selectedQuestion.slug === 'program_year') {

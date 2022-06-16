@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import { Box, Checkbox, IconButton, outlinedInputClasses,FormControl, FormControlLabel, Radio, TextField, RadioGroup } from '@mui/material'
 import { ApplicationQuestion } from './types'
 import { DropDown } from '../../../../components/DropDown/DropDown'
@@ -7,21 +7,52 @@ import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
 import { Paragraph } from '../../../../components/Typography/Paragraph/Paragraph'
 import { useStyles } from '../../styles'
 import { Field, FieldArray, Form, Formik, useFormik } from 'formik'
+import { useQuery } from '@apollo/client'
+import { 
+  getActiveSchoolYearsByRegionId, 
+	getCountiesByRegionId,
+	getSchoolDistrictsByRegionId,
+	getAllRegion } 
+from '../../../Admin/SiteManagement/EnrollmentSetting/EnrollmentQuestions/services'
 export function AdditionalQuestionItem({ question: q, field, meta, form }: { question: ApplicationQuestion, field: any, meta: any, form: any }) {
     const classes = useStyles
-    const [value, setValue] = useState(1)
-    const handleChange = (e) => {
-        setValue(e.target.value)
+    const [options, setOptions] = useState(q?.options || [])
+    const updateOptionsForDefaultQuestion = (options) => {
+      setOptions(options)
     }
-    // const index = values.find((i) => i.id === q.id)?.id
-    function onChange(value: string) {
-      // setValues(values.map((v) => (v.id === q.id ? { ...v, response: value } : v)))
-    }
+    //	address_county_id
+    const {loading: countyLoading, data: countyData } = useQuery(getCountiesByRegionId, {
+      variables: {regionId: q?.region_id},
+      skip: q?.slug != 'address_county_id',
+      fetchPolicy: 'network-only',
+    });
+    useEffect(() => {
+      !countyLoading && countyData?.getCounties &&
+        updateOptionsForDefaultQuestion(
+          countyData.getCounties
+            .map((v) => {return {label: v.county_name, value: Number(v.id)}})
+        )
+    }, [countyData]);
+    //	packet_school_district
+    const {loading: schoolDistrictsDataLoading, data: schoolDistrictsData} = useQuery(getSchoolDistrictsByRegionId, {
+      variables: {
+        regionId: q?.region_id,
+      },
+      skip: q?.slug != 'packet_school_district',
+      fetchPolicy: 'network-only',
+    })
+    useEffect(() => {
+      !schoolDistrictsDataLoading && schoolDistrictsData?.schoolDistrict.length > 0 &&
+        updateOptionsForDefaultQuestion(
+          schoolDistrictsData?.schoolDistrict.map((d) => {return {label: d.school_district_name, value: d.school_district_name}})
+        )
+    }, [schoolDistrictsDataLoading])
+    
     if (q.type === 1) {
       return (
         <DropDown
           labelTop
-          dropDownItems={q.options || []}
+          dropDownItems={options || []}
           placeholder={q.question}
           setParentValue={(id) => form.setFieldValue(field.name, id)}
           alternate={true}
@@ -64,7 +95,7 @@ export function AdditionalQuestionItem({ question: q, field, meta, form }: { que
       )
     } else if (q.type === 3) {
       return (
-        <Box sx={{marginBottom: 1}}>
+        <Box sx={{marginY: 2}}>
           <Subtitle
             color={SYSTEM_05}
             sx={{
@@ -78,7 +109,7 @@ export function AdditionalQuestionItem({ question: q, field, meta, form }: { que
           >
             {q.question}
           </Subtitle>
-          {(q.options ?? []).map((o) => (
+          {(options ?? []).map((o) => (
             <Box
               key={o.value}
               display='flex'
@@ -108,11 +139,12 @@ export function AdditionalQuestionItem({ question: q, field, meta, form }: { que
       )
     } else if (q.type === 4) {
       return (
-        <Box display='flex' alignItems='center'>
+        <Box display='flex' alignItems='center' sx={{marginTop: 2, marginBottom: 2, '& p': {margin: 0}}}>
           <Checkbox
             name={q.question.toLowerCase().replace(' ', '_')} {...field} value={true}
             sx={{
               paddingLeft: 0,
+              paddingY: 0,
               color: '#4145FF',
               '&.Mui-checked': {
                 color: '#4145FF'
@@ -126,7 +158,7 @@ export function AdditionalQuestionItem({ question: q, field, meta, form }: { que
       )
     } else if (q.type === 5) {
       return (
-        <Box>
+        <Box sx={{marginY: 2}}>
           <Subtitle
             sx={{
               paddingLeft: 0,
@@ -150,7 +182,7 @@ export function AdditionalQuestionItem({ question: q, field, meta, form }: { que
               name={q.question.toLowerCase().replace(' ', '_')}
               {...field}
             >
-              {(q.options ?? []).map((o) => (
+              {options.map((o) => (
                 <Box
                   key={o.value}
                   display='flex'
@@ -201,7 +233,7 @@ export function AdditionalQuestionItem({ question: q, field, meta, form }: { que
       )
     } else if (q.type === 7) {
       return (
-        <Box display='block' sx={{textAlign: 'center'}}>
+        <Box display='block' sx={{marginTop: 2, marginBottom: 2, textAlign: 'center'}}>
           <Paragraph size='large' sx={{fontSize: 16}}>
             <p dangerouslySetInnerHTML={{ __html: q.question }}></p>
           </Paragraph>

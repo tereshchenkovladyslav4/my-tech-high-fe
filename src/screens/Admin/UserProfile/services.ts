@@ -64,7 +64,7 @@ export const getParentDetail = gql`
           preferred_last_name
           gender
           date_of_birth
-          user{
+          user {
             user_id
           }
           address {
@@ -198,5 +198,18 @@ export const CreateObserMutation = gql`
 export const UpdateStudentMutation = gql`
   mutation UpdateStudent($updateStudentInput: UpdateStudentInput!) {
     updateStudent(updateStudentInput: $updateStudentInput)
+  }
+`
+export const CreateWithdrawal = gql`
+  mutation CreateOrUpdateWithdrawal($updateWithdrawalInput: UpdateWithdrawalInput!) {
+    createOrUpdateWithdrawal(updateWithdrawalInput: $updateWithdrawalInput) {
+      withdrawal_id
+    }
+  }
+`
+
+export const DeleteWithdrawal = gql`
+  mutation DeleteWithdrawal($studentId: Float!) {
+    deleteWithdrawal(student_id: $studentId)
   }
 `

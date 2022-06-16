@@ -12,7 +12,8 @@ export const SortableTable: SortableTableTemplateType = ({
   onRowClick,
   onSortChange,
   onParentClick,
-  hideCheck=false
+  hideCheck=false,
+  hover=true
 }) => {
   const [order, setOrder] = useState<Order>('asc')
   const [orderBy, setOrderBy] = useState<keyof any>('name')
@@ -151,7 +152,7 @@ export const SortableTable: SortableTableTemplateType = ({
               const labelId = `enhanced-table-checkbox-${row.id}`
               return (
                 <TableRow
-                  hover
+                  hover={hover}
                   role='checkbox'
                   aria-checked={isItemSelected}
                   tabIndex={-1}

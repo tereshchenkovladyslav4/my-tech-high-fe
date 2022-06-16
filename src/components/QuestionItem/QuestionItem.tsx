@@ -261,7 +261,7 @@ function Item({ question: q }: { question: Question }) {
 			return (
 				<DropDown
 					sx={{
-						marginTop: '10px',
+						marginTop: '5px',
 						maxWidth: '100%',
 						borderColor: errors[q.id] ? 'red' : '',
 						[`& .${outlinedInputClasses.root} .${outlinedInputClasses.notchedOutline}`]: {
@@ -385,7 +385,7 @@ function Item({ question: q }: { question: Question }) {
 							paddingLeft: 0
 						}}
 					/>
-					<p dangerouslySetInnerHTML={{ __html: q.question }}></p>
+					<p style={{color: SYSTEM_05}} dangerouslySetInnerHTML={{ __html: q.question }}></p>
 				</Box>
 			);
 		case QUESTION_TYPE.MULTIPLECHOICES:
@@ -485,7 +485,7 @@ function Item({ question: q }: { question: Question }) {
 			);
 		case QUESTION_TYPE.SIGNATURE:
 			return (
-				<Box sx={{ width: "100%", margin: "auto", mt: 0 }}>
+				<Box sx={{ width: "100%", margin: "auto", mt: '10px' }}>
 					<TextField
 						placeholder="Entry"
 						fullWidth

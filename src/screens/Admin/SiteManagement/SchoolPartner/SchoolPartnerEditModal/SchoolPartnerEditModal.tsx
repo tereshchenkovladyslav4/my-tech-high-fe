@@ -155,7 +155,16 @@ export const SchoolPartnerEditModal = ({
 											fullWidth
 											variant='outlined'
 											focused
-											sx={{ width: '100%', marginTop: 2 }}
+											sx={{ 
+												width: '100%', 
+												marginTop: 2,
+												'& .MuiOutlinedInput-root': {
+													'&.Mui-focused fieldset': {
+														borderColor: '#333',
+														borderWidth: '1px',
+													},
+												}
+											}}
 											size='small'
 											{...field}
 											error={meta.error}
@@ -168,12 +177,21 @@ export const SchoolPartnerEditModal = ({
 									{({ field, form, meta }) => (
 										<TextField
 											name='abbreviation'
-											label="Partner Name"
+											label="Abbreviation"
 											placeholder="Entry"
 											fullWidth
 											variant='outlined'
 											focused
-											sx={{ width: '100%', marginTop: 2 }}
+											sx={{ 
+												width: '100%', 
+												marginTop: 2,
+												'& .MuiOutlinedInput-root': {
+													'&.Mui-focused fieldset': {
+														borderColor: '#333',
+														borderWidth: '1px',
+													},
+												}
+											}}
 											size='small'
 											{...field}
 											error={meta.error}
@@ -244,7 +262,16 @@ export const SchoolPartnerEditModal = ({
 												{
 													!selectedFiles
 													? <>
-														<SystemUpdateAltRoundedIcon sx={{ width: 35, height: 35, cursor: 'pointer', alignSelf:'center'}}/>
+														<SystemUpdateAltRoundedIcon 
+															sx={{ 
+																width: 35, 
+																height: 35, 
+																cursor: 'pointer', 
+																alignSelf:'center', 
+																WebkitTransform: 'rotateX(180deg)', 
+																transform: 'rotateX(180deg)', 
+															}}
+														/>
 														<Paragraph size='large'>Upload Logo</Paragraph>
 													</>
 													: <img 

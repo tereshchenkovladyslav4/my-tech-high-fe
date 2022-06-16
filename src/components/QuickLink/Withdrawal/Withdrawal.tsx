@@ -82,7 +82,7 @@ const WithDrawal: React.FC<
 	const SortableItem = SortableElement(QuestionItem)
 
 	const SortableListContainer = SortableContainer(({ questionsList }: { questionsList: Question[][] }) => (
-		<List sx={{width: '100%'}}>
+		<List sx={{width: '100%', py: 0}}>
 		{questionsList.map((questions, index) => (
 			<SortableItem index={index} key={index} questions={questions} questionTypes={QuestionTypes} additionalQuestionTypes={AdditionalQuestionTypes} hasAction={isEditable()} />
 		))}
@@ -372,7 +372,7 @@ const WithDrawal: React.FC<
 							<CircleIcon />
 							<Stack justifyContent="center" alignItems={"center"} direction="column"
 									sx={{ width: "50%", margin: "auto", mt: 2, ml: isEditable() ? 'calc(25% + 60px)' : 'auto' }}>
-								<List sx={{width: '100%'}}>
+								<List sx={{width: '100%', py: 0}}>
 									<QuestionItem
 										questions={[values[0]]}
 										questionTypes={QuestionTypes}
@@ -438,7 +438,7 @@ const WithDrawal: React.FC<
 											setValues(newValues)
 										}}
 									/>
-								<List sx={{width: '100%', pt: 0}}>
+								<List sx={{width: '100%', py: 0}}>
 									<QuestionItem
 										questions={[values[values.length - 1]]}
 										questionTypes={QuestionTypes}
@@ -447,7 +447,7 @@ const WithDrawal: React.FC<
 								</List>
 							</Stack>
 							{isEditable() && (
-							<Box sx={{ width: "55%", margin: "auto", mt: 2 }}>
+							<Box sx={{ width: "40%", margin: "auto", mt: 2, ml: 'calc(25% + 60px)' }}>
 								<Button variant='contained' sx={{...classes.button, width: '100%'}} onClick={() => setOpenSelectQuestionType(true)}>
 									<Subtitle size={12} >
 										Add Question
@@ -455,7 +455,7 @@ const WithDrawal: React.FC<
 								</Button>
 							</Box>
 							)}
-							<Box sx={{ width: "55%", margin: "auto", mt: 2 }}>
+							<Box sx={{ width: "40%", margin: "auto", mt: 2, ml: 'calc(25% + 60px)' }}>
 								<Button variant='contained' sx={{...classes.button, width: '100%'}} type={isEditable() ? "button" : "submit"}>
 									<Subtitle size={12} >
 										Submit Withdrawal Request

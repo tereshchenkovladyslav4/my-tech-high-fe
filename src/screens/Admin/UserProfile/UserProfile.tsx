@@ -7,7 +7,13 @@ import { Header } from './components/Header/Header'
 import { Students } from './components/Students/Students'
 import { ParentProfile } from './ParentProfile/ParentProfile'
 import { StudentProfile } from './StudentProfile/StudentProfile'
-import { getParentDetail, updatePersonAddressMutation, UpdateStudentMutation } from './services'
+import {
+  CreateWithdrawal,
+  DeleteWithdrawal,
+  getParentDetail,
+  updatePersonAddressMutation,
+  UpdateStudentMutation,
+} from './services'
 import { NewUserModal } from './components/NewUserModal/NewUserModal'
 import { useStyles } from './styles'
 import { UserContext } from '../../../providers/UserContext/UserProvider'
@@ -22,7 +28,7 @@ export const UserProfile = ({ handleClose, data, setIsChanged }) => {
   const [notes, setNotes] = useState('')
   const [studentPerson, setStudentPerson] = useState<any>()
   const [openObserverModal, setOpenObserverModal] = useState(false)
-  const [studentStatus, setStudentStatus] = useState({})
+  const [studentStatus, setStudentStatus] = useState<any>({})
   const [selectedParent, setSelectedParent] = useState(0)
   const [selectedStudent, setSelectedStudent] = useState(parseInt(data.student_id))
   const [selectedParentType, setSelectedParentType] = useState('parent')
@@ -40,7 +46,9 @@ export const UserProfile = ({ handleClose, data, setIsChanged }) => {
     fetchPolicy: 'cache-and-network',
   })
 
-  const [updateStudent, { data: studentData }] = useMutation(UpdateStudentMutation)
+  const [updateStudent] = useMutation(UpdateStudentMutation)
+  const [createWithdrawal] = useMutation(CreateWithdrawal)
+  const [deleteWithdrawal] = useMutation(DeleteWithdrawal)
 
   const [updatePersonAddress, { data: updatedData }] = useMutation(updatePersonAddressMutation)
 
@@ -88,9 +96,36 @@ export const UserProfile = ({ handleClose, data, setIsChanged }) => {
       })
       await updateStudent({
         variables: {
-          updateStudentInput: studentStatus,
+          updateStudentInput: {
+            student_id: studentStatus?.student_id ? studentStatus?.student_id : null,
+            grade_level: studentStatus?.student_id ? studentStatus?.grade_level : null,
+            special_ed: studentStatus?.student_id ? studentStatus?.special_ed : null,
+            diploma_seeking: studentStatus?.student_id ? studentStatus?.diploma_seeking : null,
+            status: studentStatus?.student_id ? studentStatus?.status : null,
+            school_year_id: studentStatus?.student_id ? studentStatus?.school_year_id : null,
+            testing_preference: studentStatus?.student_id ? studentStatus?.testing_preference : null,
+            date: studentStatus?.student_id ? studentStatus?.date : null,
+          },
         },
       })
+      if (studentStatus?.withdrawOption && studentStatus?.withdrawOption > 0) {
+        await createWithdrawal({
+          variables: {
+            updateWithdrawalInput: {
+              StudentId: studentStatus?.student_id,
+              status: studentStatus?.withdrawOption == 1 ? 'Notified' : 'Withdrawn',
+            },
+          },
+        })
+      }
+
+      if (studentStatus?.activeOption && studentStatus?.activeOption == 1) {
+        await deleteWithdrawal({
+          variables: {
+            studentId: studentStatus?.student_id,
+          },
+        })
+      }
       handleClose(true)
     }
   }

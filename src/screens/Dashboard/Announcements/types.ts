@@ -1,15 +1,16 @@
 import { FunctionComponent } from 'react'
 
 export type Announcement = {
-  id: number
-  subject: string
-  body: string
-  sender: string
-  announcementId: number
-  userId: number
-  date: string
-  grades: string
-  regionId: number
+  id?: number
+  subject?: string
+  body?: string
+  sender?: string
+  announcementId?: number
+  userId?: number
+  date?: string
+  grades?: string
+  regionId?: number
+  isArchived?: boolean
 }
 
 type AnnnouncementProps = {

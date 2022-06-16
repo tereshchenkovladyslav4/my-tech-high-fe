@@ -53,6 +53,7 @@ export const getQuestionsGql = gql`
       default_question
       student_question
       validation
+      region_id
       slug
     }
   }

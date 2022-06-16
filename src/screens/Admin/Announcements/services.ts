@@ -12,6 +12,7 @@ export const getAnnouncementsQuery = gql`
       schedule_time
       status
       subject
+      isArchived
     }
   }
 `

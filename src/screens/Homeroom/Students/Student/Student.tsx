@@ -6,7 +6,7 @@ import { MTHORANGE, HOMEROOM, ENROLLMENT } from '../../../../utils/constants'
 import { toOrdinalSuffix } from '../../../../utils/stringHelpers'
 import { StudentTemplateType } from './type'
 import { useHistory } from 'react-router-dom'
-import { CircleData } from '../../../Dashboard/HomeroomGrade/components/StudentGrade/types'
+import { CircleData, SchoolYearType } from '../../../Dashboard/HomeroomGrade/components/StudentGrade/types'
 import { Person } from '../../../HomeroomStudentProfile/Student/types'
 import { Avatar } from '@mui/material'
 import { Metadata } from '../../../../components/Metadata/Metadata'
@@ -15,13 +15,14 @@ import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline'
 import ScheduleIcon from '@mui/icons-material/Schedule'
 import { UserContext } from '../../../../providers/UserContext/UserProvider'
 import { useQuery } from '@apollo/client'
-import { GetCurrentSchoolYearByRegionId } from '../../../Admin/Announcements/services'
+import {} from '../../../Admin/Announcements/services'
+import { getSchoolYearsByRegionId } from '../../../Admin/Dashboard/SchoolYear/SchoolYear'
 
 export const Student: StudentTemplateType = ({ student }) => {
   const { me, setMe } = useContext(UserContext)
   const { region_id } = me?.userRegion?.at(-1)
-  const [enrollmentPacketFlag, setEnrollmentPacketFlag] = useState<boolean>(false)
-  const schoolYearData = useQuery(GetCurrentSchoolYearByRegionId, {
+  const [schoolYears, setSchoolYears] = useState<SchoolYearType[]>([])
+  const schoolYearData = useQuery(getSchoolYearsByRegionId, {
     variables: {
       regionId: region_id,
     },
@@ -30,12 +31,29 @@ export const Student: StudentTemplateType = ({ student }) => {
   })
 
   useEffect(() => {
-    if (schoolYearData?.data?.schoolyear_getcurrent) {
-      setEnrollmentPacketFlag(schoolYearData?.data?.schoolyear_getcurrent?.enrollment_packet)
+    if (schoolYearData?.data?.region?.SchoolYears) {
+      const { SchoolYears } = schoolYearData?.data?.region
+      setSchoolYears(
+        SchoolYears.map((item) => ({
+          school_year_id: item.school_year_id,
+          enrollment_packet: item.enrollment_packet,
+        })),
+      )
     } else {
-      setEnrollmentPacketFlag(false)
+      setSchoolYears([])
     }
   }, [region_id, schoolYearData])
+
+  const checkEnrollPacketStatus = (student): boolean => {
+    if (student?.status?.at(-1).status != 0) return true
+    if (schoolYears.length > 0) {
+      const { enrollment_packet } = schoolYears
+        ?.filter((item) => item.school_year_id == student?.current_school_year_status?.school_year_id)
+        .at(-1)
+      return enrollment_packet
+    }
+    return false
+  }
 
   const enrollmentLink = `${HOMEROOM + ENROLLMENT}/${student.student_id}`
   const homeroomLink = `${HOMEROOM}/${student.student_id}`
@@ -178,7 +196,7 @@ export const Student: StudentTemplateType = ({ student }) => {
       setCircleData({
         color: MTHORANGE,
         progress: 50,
-        message: 'Finish Submitting Enrollment Packet',
+        message: 'Please Submit Enrollment Packet',
         icon: (
           <ErrorOutlineIcon
             sx={{ color: MTHORANGE, marginTop: 2, cursor: 'pointer' }}
@@ -220,7 +238,7 @@ export const Student: StudentTemplateType = ({ student }) => {
         subtitle={
           <Box>
             <Subtitle size={'large'}>{gradeText}</Subtitle>
-            {showToolTip && enrollmentPacketFlag && (
+            {showToolTip && checkEnrollPacketStatus(student) && (
               <>
                 {circleData?.icon}
                 <Paragraph size='medium' color={circleData?.color}>
@@ -242,7 +260,7 @@ export const Student: StudentTemplateType = ({ student }) => {
             variant='rounded'
             src={getProfilePhoto(student.person)}
             onClick={() => {
-              if (enrollmentPacketFlag) {
+              if (checkEnrollPacketStatus(student)) {
                 setMe({
                   ...me,
                   currentTab: 0,

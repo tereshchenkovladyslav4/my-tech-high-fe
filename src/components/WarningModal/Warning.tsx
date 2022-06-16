@@ -28,7 +28,13 @@ export const WarningModal: WarningModalTemplateType = ({
     >
       <Box sx={classes.modalCard}>
         <Box sx={classes.header as object}>
-          <Subtitle fontWeight='700'>{title}</Subtitle>
+          <Subtitle 
+            fontWeight='700' 
+            textAlign='center'
+            sx={{marginLeft: '45%'}}
+          >
+            {title}
+          </Subtitle>
           <CloseIcon onClick={() => handleModem()} style={classes.close} />
         </Box>
         <Box sx={classes.content as object}>
@@ -36,7 +42,7 @@ export const WarningModal: WarningModalTemplateType = ({
           <Paragraph size='large' color={SYSTEM_01}>
             {subtitle}
           </Paragraph>
-          <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', width: '100%' }}>
+          <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', width: '100%' }}>
             {canceltitle != '' && (
             <Button variant='contained' disableElevation sx={classes.button} onClick={handleModem}>
               {canceltitle}

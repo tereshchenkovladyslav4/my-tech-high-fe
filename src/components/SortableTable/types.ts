@@ -4,9 +4,9 @@ import { HeadCell } from './SortableTableHeader/types'
 export type Order = 'asc' | 'desc'
 
 type SortableTableProps = {
-  rows: any
+  rows?: any
   type?: string
-  headCells: HeadCell[]
+  headCells?: HeadCell[]
   onCheck?: any
   clearAll?: boolean
   updateStatus?: (id: number, status: string) => void
@@ -15,8 +15,9 @@ type SortableTableProps = {
   onSortChange?: (property: keyof any, order: string) => void
   toggleMasquerade?: (id: number, masquerade: boolean) => void
   handleMasquerade?: (id: number) => void
-  canMasquerade?: boolean,
-  hideCheck?: boolean,
+  canMasquerade?: boolean
+  hideCheck?: boolean
+  hover?: boolean
 }
 
 export type SortableTableTemplateType = FunctionComponent<SortableTableProps>

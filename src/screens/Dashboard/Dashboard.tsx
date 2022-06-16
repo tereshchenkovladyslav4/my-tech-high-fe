@@ -12,6 +12,8 @@ import { getUserAnnouncements } from './services'
 import { Announcement } from './Announcements/types'
 import { AnnouncementSection } from './AnnouncementSection'
 import { ReadMoreSection } from './ReadMoreSection'
+import { SchoolYearType } from './HomeroomGrade/components/StudentGrade/types'
+import { getSchoolYearsByRegionId } from '../Admin/Dashboard/SchoolYear/SchoolYear'
 
 export const imageA =
   'https://api.time.com/wp-content/uploads/2017/12/terry-crews-person-of-year-2017-time-magazine-facebook-1.jpg?quality=85'
@@ -22,10 +24,31 @@ export const imageC =
 
 export const Dashboard: FunctionComponent = () => {
   const { me } = useContext(UserContext)
+  const { region_id } = me?.userRegion?.at(-1)
   const [sectionName, setSectionName] = useState<string>('root')
   const [inProp, setInProp] = useState<boolean>(false)
   const [announcements, setAnnouncements] = useState<Announcement[]>([])
   const [selectedAnnouncement, setSelectedAnnouncement] = useState<Announcement>()
+  const [schoolYears, setSchoolYears] = useState<SchoolYearType[]>([])
+  const schoolYearData = useQuery(getSchoolYearsByRegionId, {
+    variables: {
+      regionId: region_id,
+    },
+    skip: region_id ? false : true,
+    fetchPolicy: 'network-only',
+  })
+
+  useEffect(() => {
+    if (schoolYearData?.data?.region?.SchoolYears) {
+      const { SchoolYears } = schoolYearData?.data?.region
+      setSchoolYears(
+        SchoolYears.map((item) => ({
+          school_year_id: item.school_year_id,
+          enrollment_packet: item.enrollment_packet,
+        })),
+      )
+    }
+  }, [region_id, schoolYearData?.data?.region?.SchoolYears])
   const { data: announcementData, refetch } = useQuery(getUserAnnouncements, {
     variables: {
       request: {
@@ -63,7 +86,12 @@ export const Dashboard: FunctionComponent = () => {
 
   return sectionName == 'root' ? (
     <Box>
-      <Grid container spacing={2} justifyContent='center' sx={{ margin: '0 !important', width: 'calc(100% - 16px) !important' }}>
+      <Grid
+        container
+        spacing={2}
+        justifyContent='center'
+        sx={{ margin: '0 !important', width: 'calc(100% - 16px) !important' }}
+      >
         <Grid item xs={12} lg={8}>
           <Box marginBottom={2}>
             <HomeroomGrade />
@@ -71,9 +99,7 @@ export const Dashboard: FunctionComponent = () => {
           <Box marginBottom={2}>
             <Calendar />
           </Box>
-          <Box marginBottom={2}>
-            <ToDo />
-          </Box>
+          <Box marginBottom={2}>{schoolYears.length > 0 && <ToDo schoolYears={schoolYears} />}</Box>
         </Grid>
         <Grid item xs={12} lg={4}>
           <Card

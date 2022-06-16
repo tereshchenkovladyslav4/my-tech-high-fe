@@ -30,6 +30,7 @@ export const getSchoolYearsByRegionId = gql`
         midyear_application
         midyear_application_open
         midyear_application_close
+        enrollment_packet
       }
     }
   }
@@ -211,7 +212,9 @@ export const SchoolYear = () => {
                   sx={{ color: 'blue', border: 'none' }}
                 >
                   {schoolYears.map((sy, i) => (
-                    <MenuItem key={i} value={sy.value}>{sy.label}</MenuItem>
+                    <MenuItem key={i} value={sy.value}>
+                      {sy.label}
+                    </MenuItem>
                   ))}
                 </Select>
               </FormControl>

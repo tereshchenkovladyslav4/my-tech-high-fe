@@ -176,12 +176,12 @@ export const ForgotPassword = () => {
           }}
         />
         {alert?.message && (
-          <Typography fontSize={14} marginTop={3} color={alert.type === 'error' ? '#BD0043' : 'white'}>
+          <Typography fontSize={14} marginTop={3} color={alert.type === 'error' ? 'white' : 'white'}>
             {alert.message}
           </Typography>
         )}
         {alert?.description && (
-          <Typography fontSize={14} marginTop={3} color={alert.type === 'error' ? '#BD0043' : 'white'}>
+          <Typography fontSize={14} marginTop={3} color={alert.type === 'error' ? 'white' : 'white'}>
             {alert.description}
           </Typography>
         )}
