@@ -321,6 +321,15 @@ const WithDrawal: React.FC<
 							return;
 						}
 						let newquestions = vals.map((v) => v);
+						let length = newquestions.length;
+						//	Remove unncessary additional questions if exists
+						while(true) {
+							newquestions = newquestions.filter(q => q.additionalQuestion == '' || newquestions.find(x => x.slug == q.additionalQuestion) != null);
+							if(length == newquestions.length)
+								break;
+							length = newquestions.length;
+						}
+						
 						questions.filter(x => !x.mainQuestion).forEach((q) => {
 							if (!newquestions.find((v) => v.id === q.id)) {
 								deleteQuestion({ variables: { questionId: q.id } })

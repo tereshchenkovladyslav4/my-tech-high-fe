@@ -208,7 +208,7 @@ export const SchoolPartner = () => {
         </Box>
       </Box>
 			<Grid container columnSpacing={8}>
-				<Grid item xs={6} sx={{ marginTop: 4, borderRight: '1px solid black'}}>
+				<Grid item xs={6} sx={{ marginTop: 4, borderRight: '1px solid #E7E7E7'}} paddingX={2}>
 					<SortableTable
 						headCells={tableHeaders}
 						rows={renderRows()}

@@ -15,6 +15,7 @@ export const SortableTable: SortableTableTemplateType = ({
   hideCheck=false,
   hover=true
 }) => {
+  
   const [order, setOrder] = useState<Order>('asc')
   const [orderBy, setOrderBy] = useState<keyof any>('name')
   const [selected, setSelected] = useState<readonly string[]>([])
@@ -132,6 +133,7 @@ export const SortableTable: SortableTableTemplateType = ({
         return '#4145FF'
     }
   }
+
   return (
     <Box sx={{ width: '100%',overflow: 'hidden'}}>
       <TableContainer>
@@ -158,6 +160,7 @@ export const SortableTable: SortableTableTemplateType = ({
                   tabIndex={-1}
                   key={row.id}
                   selected={isItemSelected}
+                  sx={{ borderBottom: '1.5px solid #E7E7E7' }}
                 >
                   {
                     !hideCheck && 
