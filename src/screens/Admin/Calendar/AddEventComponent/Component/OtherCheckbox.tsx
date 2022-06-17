@@ -28,7 +28,7 @@ const OtherCheckBox = ({ others, setOthers }: OtherCheckBoxProps) => {
     },
   ])
 
-  const handleChangeOthers = (e) => {
+  const handleChangeOthers = (e: any) => {
     if (others.includes(e.target.value)) {
       setOthers(others.filter((item) => item !== e.target.value && !!item))
     } else {

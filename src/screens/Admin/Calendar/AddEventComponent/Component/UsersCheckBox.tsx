@@ -28,7 +28,7 @@ const UsersCheckBox = ({ users, setUsers }: UsersCheckBoxProps) => {
     },
   ])
 
-  const handleChangeUsers = (e) => {
+  const handleChangeUsers = (e: any) => {
     if (users.includes(e.target.value)) {
       setUsers(users.filter((item) => item !== e.target.value && !!item))
     } else {

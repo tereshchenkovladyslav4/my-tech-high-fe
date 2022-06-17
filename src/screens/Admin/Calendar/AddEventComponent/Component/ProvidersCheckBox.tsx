@@ -28,7 +28,7 @@ const ProvidersCheckBox = ({ providers, setProviders }: ProvidersCheckBoxProps) 
     },
   ])
 
-  const handleChangeProviders = (e) => {
+  const handleChangeProviders = (e: any) => {
     if (providers.includes(e.target.value)) {
       setProviders(providers.filter((item) => item !== e.target.value && !!item))
     } else {

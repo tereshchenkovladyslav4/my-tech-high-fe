@@ -7,7 +7,7 @@ import { EventComponent } from '../EventComponent'
 
 const MainComponent = () => {
   const classes = useStyles
-  const [searchField, setSearchField] = useState<string>()
+  const [searchField, setSearchField] = useState<string>('')
 
   return (
     <Card sx={classes.cardBody}>

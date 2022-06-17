@@ -294,7 +294,7 @@ export const ExistingParent = () => {
         {({ values, errors, isSubmitting, isValid }) => (
           <Form>
             <Box
-              paddingX={36}
+              // paddingX={36}
               paddingTop={18}
               paddingBottom={10}
               sx={{
@@ -306,7 +306,7 @@ export const ExistingParent = () => {
                 flexDirection: 'column',
               }}
             >
-              <Grid container>
+              <Grid container rowSpacing={2}>
                 <Grid item xs={12} display='flex' justifyContent={'center'}>
                   <Box width={'451.53px'}>
                     <Field name='programYear' fullWidth focused>
@@ -334,33 +334,30 @@ export const ExistingParent = () => {
                     </Field>
                   </Box>
                 </Grid>
-                {!questionLoading && questions.length > 0 && (
-                  <Grid item xs={12} display='flex' justifyContent={'center'}>
-                    <Box width={'451.53px'}>
-                      {questions.map(
-                        (q, index) =>
-                        !q.student_question && q.slug.includes('meta_') && (
-                            <Grid item xs={12} display='flex' justifyContent={'center'}>
-                              <Box width={'451.53px'}>
-                                <Field name={`meta.${q.slug}`} fullWidth focused>
-                                  {({ field, form, meta }) => (
-                                    <AdditionalQuestionItem question={q} field={field} form={form} meta={meta} />
-                                  )}
-                                </Field>
-                              </Box>
-                            </Grid>
-                          ),
-                      )}
-                    </Box>
-                  </Grid>
+                {!questionLoading && questions.length > 0 && questions.map((q, index) =>
+                  !q.student_question && q.slug.includes('meta_') && (
+                      <Grid item xs={12} display='flex' justifyContent={'center'} key={index}>
+                        <Box width={'451.53px'}>
+                          <Grid item xs={12} display='flex' justifyContent={'center'}>
+                            <Box width={'451.53px'}>
+                              <Field name={`meta.${q.slug}`} fullWidth focused>
+                                {({ field, form, meta }) => (
+                                  <AdditionalQuestionItem question={q} field={field} form={form} meta={meta} />
+                                )}
+                              </Field>
+                            </Box>
+                          </Grid>
+                        </Box>
+                      </Grid>
+                    ),
                 )}
                 <Grid item xs={12} display='flex' justifyContent={'center'}>
                   <Box width={'451.53px'}>
                     <FieldArray name='students'>
                       {({ push, remove }) => (
-                        <>
+                        <Grid item container spacing={2} xs={12} sm='auto'>
                           {values.students.map((_, index) => (
-                            <Grid item container spacing={2} xs={12} sm='auto'>
+                            <>
                               {!questionLoading &&
                                 questions.length > 0 &&
                                 questions.map((q) => {
@@ -477,7 +474,7 @@ export const ExistingParent = () => {
                                     )
                                   }
                                 })}
-                            </Grid>
+                            </>
                           ))}
                           <Grid item>
                             {typeof errors.students === 'string' ? (
@@ -494,7 +491,7 @@ export const ExistingParent = () => {
                               Add Student
                             </Button>
                           </Grid>
-                        </>
+                        </Grid>
                       )}
                     </FieldArray>
                   </Box>

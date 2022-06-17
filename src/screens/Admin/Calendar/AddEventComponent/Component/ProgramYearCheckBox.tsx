@@ -23,7 +23,7 @@ const ProgramYearCheckBox = ({ programYears, setProgramYears }: ProgramYearProps
     fetchPolicy: 'network-only',
   })
 
-  const handleChangeProgramYears = (e) => {
+  const handleChangeProgramYears = (e: any) => {
     if (programYears.includes(e.target.value)) {
       setProgramYears(programYears.filter((item) => item !== e.target.value && !!item))
     } else {

@@ -18,6 +18,7 @@ import { QuickLink } from '../QuickLinkCardProps'
 import _ from 'lodash';
 import DefaultQuestionModal from '../../QuestionItem/AddNewQuestion/DefaultQuestionModal';
 import { UserContext } from '../../../providers/UserContext/UserProvider';
+import { saveWithdrawalMutation } from '../../../graphql/mutation/withdrawal';
 
 //	Possible Question Types List
 const QuestionTypes = [
@@ -116,6 +117,8 @@ const WithDrawal: React.FC<
 	const [openAddQuestion, setOpenAddQuestion] = useState('');
 	//	The Question Item which is currently editing
 	const [currentQuestions, setCurrentQuestions] = useState([]);
+	//	Submit withdrawal responses mutation into the database
+	const [submitResponses] = useMutation(saveWithdrawalMutation);
 
 	//	Read existing questions from the database and show, Initialize Unsaved flag state to false
 	useEffect(() => {
@@ -240,8 +243,8 @@ const WithDrawal: React.FC<
 					}
 					else {
 						//	Parent
-						//	Compare response only
-						for(var i = 0; i < values.length; i++) {
+						//	Compare response only (Except Student)
+						for(var i = 1; i < values.length; i++) {
 							if(values[i].response != questions[i].response) {
 								isEqual = false;
 								break;
@@ -268,7 +271,7 @@ const WithDrawal: React.FC<
 								else
 									errors[val.id] = val.question + ' is required.';
 							}
-							else if(!val.required && val.response != '' && val.validation > 0) {
+							else if(val.validation > 0 && val.response != '') {
 								if(val.validation == 1) {
 									//	Check numbers
 									if(!(new RegExp(/^[0-9]+$/).test(val.response)))
@@ -294,7 +297,27 @@ const WithDrawal: React.FC<
 						}
 
 						if(!isEditable()) {
-							console.log(vals);
+							const {data} = await submitResponses({
+								variables: {
+									withdrawalInput: {
+										withdrawal: {
+											StudentId: parseInt(vals[0].response),
+											date: new Date().toISOString(),
+											date_effective: vals[1].response,
+											//reason_txt: JSON.stringify(vals.map(v => v).splice(2)),
+											status: 'Requested'
+										}
+									}
+								}
+							});
+							if(data && data.saveWithdrawal) {
+								//	TODO : Redirect to the previous page, show error message if error returns.
+							}
+
+							setUnsavedChanges(false);
+							handleChange(false);
+							action('');
+
 							return;
 						}
 						let newquestions = vals.map((v) => v);

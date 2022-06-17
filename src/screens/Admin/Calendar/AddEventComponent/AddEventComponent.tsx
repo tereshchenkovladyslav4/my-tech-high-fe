@@ -12,8 +12,9 @@ import CustomModal from '../../SiteManagement/EnrollmentSetting/components/Custo
 import { useMutation } from '@apollo/client'
 import { createEventMutation } from '../EditTypeComponent/services'
 import moment from 'moment'
+import { RSVPComponent } from '../RSVPComponent'
 
-const AddEventComponent = ({ setPreviousPage }: { setPreviousPage: (value: string) => void }) => {
+const AddEventComponent = () => {
   const classes = useStyles
   const history = useHistory()
   const [event, setEvent] = useState<EventVM>({
@@ -54,6 +55,7 @@ const AddEventComponent = ({ setPreviousPage }: { setPreviousPage: (value: strin
   const [schoolofEnrollments, setSchoolofEnrollment] = useState<string[]>([])
   const [others, setOthers] = useState<string[]>([])
   const [providers, setProviders] = useState<string[]>([])
+  const [showRSVPForm, setShowRSVPForm] = useState<boolean>(false)
   const [submitCreate, {}] = useMutation(createEventMutation)
   const validation = (): boolean => {
     if (
@@ -120,73 +122,80 @@ const AddEventComponent = ({ setPreviousPage }: { setPreviousPage: (value: strin
   }
   return (
     <Card sx={classes.cardBody}>
-      <Prompt
-        when={isChanged ? true : false}
-        message={JSON.stringify({
-          header: 'Unsaved Changes',
-          content: 'Are you sure you want to leave without saving changes?',
-          bgColor: '#EEF4F8',
-        })}
-      />
-      <Box sx={classes.pageTop}>
-        <Box sx={classes.pageTitle}>
-          <IconButton
-            onClick={() => handleCancelClick()}
-            sx={{
-              position: 'relative',
-            }}
-          >
-            <ArrowBackIosRoundedIcon sx={classes.arrowButton} />
-          </IconButton>
-          <Subtitle size='medium' sx={{ fontSize: '20px' }} fontWeight='700'>
-            Add Event
-          </Subtitle>
-        </Box>
-        <Box sx={classes.pageTopRight}>
-          <Button sx={classes.cancelBtn} onClick={() => setShowCancelModal(true)}>
-            Cancel
-          </Button>
-          <Button sx={classes.saveBtn} onClick={handleSaveClick}>
-            Save
-          </Button>
-        </Box>
-      </Box>
-      <Box sx={{ width: '100%', padding: 3 }}>
-        <Grid container justifyContent='space-between'>
-          <Grid item xs={6} sx={{ textAlign: 'left', marginTop: 'auto', marginBottom: 'auto' }}>
-            <EditEventComponent
-              event={event}
-              setEvent={setEvent}
-              setIsChanged={setIsChanged}
-              invalidOption={invalidOption}
-              setInvalidOption={setInvalidOption}
-              setPreviousPage={setPreviousPage}
-            />
-          </Grid>
-          <Grid item xs={6} sx={{ marginTop: '30px' }}>
-            <FilterComponent
-              grades={grades}
-              programYears={programYears}
-              users={users}
-              schoolofEnrollments={schoolofEnrollments}
-              others={others}
-              providers={providers}
-              setGrades={setGrades}
-              setProgramYears={setProgramYears}
-              setUsers={setUsers}
-              setSchoolofEnrollment={setSchoolofEnrollment}
-              setOthers={setOthers}
-              setProviders={setProviders}
-            />
-          </Grid>
-        </Grid>
-      </Box>
+      {!showRSVPForm ? (
+        <>
+          <Prompt
+            when={isChanged ? true : false}
+            message={JSON.stringify({
+              header: 'Unsaved Changes',
+              content: 'Are you sure you want to leave without saving changes?',
+            })}
+          />
+          <Box sx={classes.pageTop}>
+            <Box sx={classes.pageTitle}>
+              <IconButton
+                onClick={() => handleCancelClick()}
+                sx={{
+                  position: 'relative',
+                }}
+              >
+                <ArrowBackIosRoundedIcon sx={classes.arrowButton} />
+              </IconButton>
+              <Subtitle size='medium' sx={{ fontSize: '20px' }} fontWeight='700'>
+                Add Event
+              </Subtitle>
+            </Box>
+            <Box sx={classes.pageTopRight}>
+              <Button sx={classes.cancelBtn} onClick={() => setShowCancelModal(true)}>
+                Cancel
+              </Button>
+              <Button sx={classes.saveBtn} onClick={handleSaveClick}>
+                Save
+              </Button>
+            </Box>
+          </Box>
+          <Box sx={{ width: '100%', padding: 3 }}>
+            <Grid container justifyContent='space-between'>
+              <Grid item xs={6} sx={{ textAlign: 'left', marginTop: 'auto', marginBottom: 'auto' }}>
+                <EditEventComponent
+                  event={event}
+                  setEvent={setEvent}
+                  setIsChanged={setIsChanged}
+                  invalidOption={invalidOption}
+                  setInvalidOption={setInvalidOption}
+                  handleAddRSVPClick={() => setShowRSVPForm(true)}
+                />
+              </Grid>
+              <Grid item xs={6} sx={{ marginTop: '30px' }}>
+                <FilterComponent
+                  grades={grades}
+                  programYears={programYears}
+                  users={users}
+                  schoolofEnrollments={schoolofEnrollments}
+                  others={others}
+                  providers={providers}
+                  setGrades={setGrades}
+                  setProgramYears={setProgramYears}
+                  setUsers={setUsers}
+                  setSchoolofEnrollment={setSchoolofEnrollment}
+                  setOthers={setOthers}
+                  setProviders={setProviders}
+                />
+              </Grid>
+            </Grid>
+          </Box>
+        </>
+      ) : (
+        <RSVPComponent setShowRSVPForm={setShowRSVPForm} />
+      )}
+
       {showCancelModal && (
         <CustomModal
           title='Cancel Changes'
           description='Are you sure you want to cancel changes?'
           cancelStr='No'
           confirmStr='Yes'
+          backgroundColor='#FFFFFF'
           onClose={() => {
             setShowCancelModal(false)
           }}

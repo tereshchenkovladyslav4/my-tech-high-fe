@@ -1,19 +1,20 @@
-import { Box, Button, Card, Grid, IconButton, TextField } from '@mui/material'
-import React, { useEffect, useState, useContext } from 'react'
-import { useHistory } from 'react-router-dom'
+import React from 'react'
+import { Box, Button, Grid, TextField } from '@mui/material'
 import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
-import { CALENDAR } from '../../../../utils/constants'
 import { DropDown } from '../../SiteManagement/components/DropDown/DropDown'
 import { useStyles } from './styles'
 import MenuIcon from '@mui/icons-material/Menu'
 import ModeEditIcon from '@mui/icons-material/ModeEdit'
 import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined'
 
-const RSVPComponent = ({ previousPage }: { previousPage: string }) => {
+type RSVPComponentProps = {
+  setShowRSVPForm: (value: boolean) => void
+}
+
+const RSVPComponent = ({ setShowRSVPForm }: RSVPComponentProps) => {
   const classes = useStyles
-  const history = useHistory()
   return (
-    <Card sx={classes.cardBody}>
+    <>
       <Box sx={classes.pageTop}>
         <Box sx={classes.pageTitle}>
           <Subtitle size='medium' fontWeight='700'>
@@ -21,15 +22,12 @@ const RSVPComponent = ({ previousPage }: { previousPage: string }) => {
           </Subtitle>
         </Box>
         <Box sx={classes.pageTopRight}>
-          <Button
-            sx={classes.cancelBtn}
-            onClick={() => {
-              history.push(`${CALENDAR}${previousPage}`)
-            }}
-          >
+          <Button sx={classes.cancelBtn} onClick={() => setShowRSVPForm(false)}>
             Cancel
           </Button>
-          <Button sx={classes.saveBtn}>Save</Button>
+          <Button sx={classes.saveBtn} onClick={() => setShowRSVPForm(false)}>
+            Save
+          </Button>
         </Box>
       </Box>
       <Box sx={{ width: '100%', padding: 3 }}>
@@ -104,7 +102,7 @@ const RSVPComponent = ({ previousPage }: { previousPage: string }) => {
           </Grid>
         </Grid>
       </Box>
-    </Card>
+    </>
   )
 }
 

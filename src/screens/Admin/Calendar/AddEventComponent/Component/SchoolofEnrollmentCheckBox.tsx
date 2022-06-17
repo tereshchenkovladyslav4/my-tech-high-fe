@@ -1,34 +1,35 @@
 import { Box, Checkbox, FormControlLabel } from '@mui/material'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragraph'
 import { map } from 'lodash'
 import { DropDownItem } from '../../../SiteManagement/components/DropDown/types'
+import { useQuery } from '@apollo/client'
+import { GetSchoolsOfEnrollment } from '../../../SiteManagement/SchoolPartner/services'
 
 type SchoolofEnrollmentProps = {
   schoolofEnrollments: string[]
   setSchoolofEnrollment: (value: string[]) => void
 }
 const SchoolofEnrollmentCheckBox = ({ schoolofEnrollments, setSchoolofEnrollment }: SchoolofEnrollmentProps) => {
-  const [schoolofEnrollmentList, setSchoolofEnrollmentList] = useState<DropDownItem[]>([
-    {
-      label: 'Toole',
-      value: 'toole',
-    },
-    {
-      label: 'Nebo',
-      value: 'nebo',
-    },
-    {
-      label: 'Other',
-      value: 'other',
-    },
-    {
-      label: 'Providers',
-      value: 'providers',
-    },
-  ])
+  const { loading, data } = useQuery(GetSchoolsOfEnrollment, {
+    fetchPolicy: 'network-only',
+  })
+  const [schoolofEnrollmentList, setSchoolofEnrollmentList] = useState<DropDownItem[]>([])
 
-  const handleChangeSchoolYearEnrollment = (e) => {
+  useEffect(() => {
+    if (!loading && data?.getSchoolsOfEnrollment) {
+      setSchoolofEnrollmentList(
+        data?.getSchoolsOfEnrollment
+          ?.filter((item: any) => !!item.active)
+          .map((schoolOfEnroll: any) => ({
+            label: schoolOfEnroll?.name,
+            value: schoolOfEnroll?.abbreviation,
+          })),
+      )
+    }
+  }, [data])
+
+  const handleChangeSchoolYearEnrollment = (e: any) => {
     if (schoolofEnrollments.includes(e.target.value)) {
       setSchoolofEnrollment(schoolofEnrollments.filter((item) => item !== e.target.value && !!item))
     } else {

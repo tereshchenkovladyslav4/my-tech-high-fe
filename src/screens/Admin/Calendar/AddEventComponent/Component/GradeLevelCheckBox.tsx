@@ -23,7 +23,7 @@ const GradeLevelCheckBox = ({ grades, setGrades }: GradeLevelCheckBoxProps) => {
     fetchPolicy: 'network-only',
   })
 
-  const handleChangeGrades = (e) => {
+  const handleChangeGrades = (e: any) => {
     if (grades.includes(e.target.value)) {
       setGrades(grades.filter((item) => item !== e.target.value).filter((item) => item !== 'all'))
     } else {
@@ -36,7 +36,7 @@ const GradeLevelCheckBox = ({ grades, setGrades }: GradeLevelCheckBoxProps) => {
     }
   }
 
-  const handleChangeAll = (e) => {
+  const handleChangeAll = (e: any) => {
     if (e.target.checked) {
       setGrades([...['all'], ...availableGrades.map((item) => item.toString())])
     } else {
@@ -79,7 +79,7 @@ const GradeLevelCheckBox = ({ grades, setGrades }: GradeLevelCheckBoxProps) => {
 
   useEffect(() => {
     if (schoolYearData?.data?.schoolyear_getcurrent) {
-      const availGrades = schoolYearData?.data?.schoolyear_getcurrent?.grades?.split(',').map((item) => {
+      const availGrades = schoolYearData?.data?.schoolyear_getcurrent?.grades?.split(',').map((item: any) => {
         if (item == 'Kindergarten') return 'Kindergarten'
         else return Number(item)
       })
@@ -89,8 +89,10 @@ const GradeLevelCheckBox = ({ grades, setGrades }: GradeLevelCheckBoxProps) => {
         ...GRADES.map((item) => {
           if (availGrades.includes(item)) {
             return item.toString()
+          } else {
+            return ''
           }
-        }),
+        }).filter((item) => item),
       ])
     } else {
       setAvailableGrades([])

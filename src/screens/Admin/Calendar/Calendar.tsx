@@ -1,15 +1,13 @@
+import React from 'react'
 import { Box, Grid } from '@mui/material'
-import React, { useState } from 'react'
 import { Route, Switch, useRouteMatch } from 'react-router-dom'
 import { CALENDAR } from '../../../utils/constants'
 import { AddEventComponent } from './AddEventComponent'
 import { MainComponent } from './MainComponent'
 import { EditTypeComponent } from './EditTypeComponent'
-import { RSVPComponent } from './RSVPComponent'
 
 const Calendar = () => {
-  const { isExact } = useRouteMatch(CALENDAR)
-  const [previousPage, setPreviousPage] = useState<string>('/')
+  const isExact = useRouteMatch(CALENDAR)?.isExact
   return (
     <Box sx={{ marginX: 4 }}>
       <Grid container rowSpacing={2}>
@@ -23,10 +21,7 @@ const Calendar = () => {
           <EditTypeComponent />
         </Route>
         <Route exact path={`${CALENDAR}/addEvent`}>
-          <AddEventComponent setPreviousPage={setPreviousPage} />
-        </Route>
-        <Route exact path={`${CALENDAR}/rsvp`}>
-          <RSVPComponent previousPage={previousPage} />
+          <AddEventComponent />
         </Route>
       </Switch>
     </Box>

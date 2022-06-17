@@ -44,7 +44,9 @@ export default function CustomModal({
         }}
       >
         <Box sx={{ textAlign: 'center' }}>
-          <Typography variant='h5'>{title}</Typography>
+          <Typography variant='h5' fontWeight={'bold'}>
+            {title}
+          </Typography>
           <InfoIcon sx={{ fontSize: 50, margin: '20px 0px' }} />
           <Typography>{description}</Typography>
           {subDescription && <Typography>{subDescription}</Typography>}
@@ -59,7 +61,7 @@ export default function CustomModal({
               sx={{
                 width: '160px',
                 height: '36px',
-                background: '#43484F',
+                background: '#000000',
                 borderRadius: '50px',
                 color: 'white',
               }}

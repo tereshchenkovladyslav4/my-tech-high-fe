@@ -93,13 +93,17 @@ export const Dashboard: FunctionComponent = () => {
         sx={{ margin: '0 !important', width: 'calc(100% - 16px) !important' }}
       >
         <Grid item xs={12} lg={8}>
-          <Box marginBottom={2}>
-            <HomeroomGrade schoolYears={schoolYears} />
-          </Box>
-          <Box marginBottom={2}>
-            <Calendar />
-          </Box>
-          <Box marginBottom={2}>{schoolYears.length > 0 && <ToDo schoolYears={schoolYears} />}</Box>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <HomeroomGrade schoolYears={schoolYears} />
+            </Grid>
+            <Grid item xs={12} order={{xs: 3, lg: 2}}>
+              <Calendar />
+            </Grid>
+            <Grid item xs={12} order={{xs: 2, lg: 3}}>
+              {schoolYears.length > 0 && <ToDo schoolYears={schoolYears} />}
+            </Grid>
+          </Grid>
         </Grid>
         <Grid item xs={12} lg={4}>
           <Card

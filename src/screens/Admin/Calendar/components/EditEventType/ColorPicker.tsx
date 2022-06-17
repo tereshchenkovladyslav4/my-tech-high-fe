@@ -52,7 +52,7 @@ const ColorPicker = ({ color, setColor }: ColorPickerProps) => {
   const handleClose = () => {
     setDisplayColorPicker(false)
   }
-  const handleChange = (value) => {
+  const handleChange = (value: any) => {
     setColor(value.hex.toLocaleUpperCase())
   }
   return (

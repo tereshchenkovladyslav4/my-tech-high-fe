@@ -4,7 +4,7 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
 import moment from 'moment'
 import { Calendar, momentLocalizer } from 'react-big-calendar'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
-import { Box, Button, ButtonGroup } from '@mui/material'
+import { Box, Button } from '@mui/material'
 import { useStyles } from '../MainComponent/styles'
 import { useQuery } from '@apollo/client'
 import { getEventsQuery } from '../EditTypeComponent/services'
@@ -24,7 +24,7 @@ const CalendarComponent = () => {
   const [selectedDate, setSelectedDate] = useState(new Date())
   const classes = useStyles
   const [eventList, setEventList] = useState<CalendarEvent[]>([])
-  const { loading, data, refetch } = useQuery(getEventsQuery, {
+  const { loading, data } = useQuery(getEventsQuery, {
     variables: {
       regionId: me?.selectedRegionId,
     },
@@ -35,19 +35,20 @@ const CalendarComponent = () => {
     if (!loading && data?.eventsByRegionId) {
       const eventLists = data?.eventsByRegionId
       setEventList(
-        eventLists.map((event) => ({
+        eventLists.map((event: any) => ({
           id: event.event_id,
           title: event.EventType.name,
           start: new Date(event.start_date),
           end: new Date(event.end_date),
           color: event.EventType.color,
-          backgroundColor: '#FFFFFF',
+          backgroundColor: '#EEF4F8',
+          allDay: true,
         })),
       )
     }
   }, [data])
 
-  const Event = ({ event }) => {
+  const Event = ({ event }: any) => {
     return (
       <span style={{ color: event.color }}>
         <strong>{event.title}</strong>
@@ -55,7 +56,7 @@ const CalendarComponent = () => {
     )
   }
 
-  const ColoredDateCellWrapper = ({ children, value }) =>
+  const ColoredDateCellWrapper = ({ children, value }: any) =>
     React.cloneElement(Children.only(children), {
       style: {
         ...children.style,
@@ -64,7 +65,7 @@ const CalendarComponent = () => {
     })
 
   const formats = {
-    weekdayFormat: (date, culture, localizer) => localizer.format(date, 'dd', culture),
+    weekdayFormat: (date: any, culture: any, localizer: any) => localizer.format(date, 'dd', culture),
   }
 
   const CustomToolbar = () => {
@@ -114,7 +115,7 @@ const CalendarComponent = () => {
         defaultDate={selectedDate}
         date={selectedDate}
         formats={formats}
-        eventPropGetter={(event, start, end, isSelected) => ({
+        eventPropGetter={(event: any, start: any, end: any, isSelected: any) => ({
           event,
           start,
           end,

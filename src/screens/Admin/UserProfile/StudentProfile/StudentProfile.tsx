@@ -9,12 +9,13 @@ import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
 import { Title } from '../../../../components/Typography/Title/Title'
 import { BUTTON_LINEAR_GRADIENT, MTHBLUE, RED } from '../../../../utils/constants'
 import { StudentFilters } from './components/StudentFilters'
-import { getStudentDetail } from '../services'
+import { getStudentDetail} from '../services'
 import moment from 'moment'
 import { WarningModal } from '../../../../components/WarningModal/Warning'
 import { KeyboardArrowDown } from '@mui/icons-material'
 import { makeStyles } from '@material-ui/styles'
 import { STATES_WITH_ABBREVIATION } from '../../../../utils/states'
+import ProfilePacketModal from '../../EnrollmentPackets/EnrollmentPacketModal/ProfilePacketModal';
 
 const selectStyles = makeStyles({
   select: {
@@ -90,6 +91,17 @@ export const StudentProfile = ({
   const [packets, setPackets] = useState([])
   const [openNotes, setOpenNotes] = useState(false)
   const [canMessage, setCanMessage] = useState(false)
+  const [showPacketModal, setShowPacketModal] = useState(false);
+  const [packetID, setPacketID] = useState(0);
+
+  const handlePacket = () => {    
+
+    if (packets.length <= 0)
+      return;
+
+    setPacketID(packets[0].packet_id);
+    setShowPacketModal(true);
+  }
 
   const hispanicOrLatinoItems: DropDownItem[] = [
     {
@@ -288,10 +300,18 @@ export const StudentProfile = ({
                 borderRadius: 2,
                 fontWeight: '800',
               }}
-            >
+              onClick={handlePacket}
+            >              
+              {packets.length ? `${packets[0].status}` : ''}                
               {packets.length && packets[0].status === 'Accepted'
-                ? `Accepted ${moment(packets[0].date_accepted).format('l')}`
+                ? ` ${moment(packets[0].date_accepted).format('MM/DD/YY')}`
                 : ''}
+              {packets.length && packets[0].status === 'Submitted'
+              ? ` ${moment(packets[0].date_submitted).format('MM/DD/YY')}`
+              : ''}
+              {packets.length && packets[0].status === 'Resubmitted'
+              ? ` ${moment(packets[0].deadline).format('MM/DD/YY')}`
+              : ''}
             </Button>
           </Grid>
           <Grid item xs={3} sx={{ alignItems: 'center', display: 'flex', fontWeight: '700' }}>
@@ -610,6 +630,13 @@ export const StudentProfile = ({
           btntitle='Close'
           handleSubmit={() => setOpenNotes(false)}
           showIcon={false}
+        />
+      )}
+      {showPacketModal && (
+        <ProfilePacketModal
+          handleModem={() => setShowPacketModal(false)}
+          packet_id={packetID}
+          refetch={() => refetch()}
         />
       )}
     </Box>

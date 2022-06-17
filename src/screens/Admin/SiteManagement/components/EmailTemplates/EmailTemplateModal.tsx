@@ -25,6 +25,7 @@ import htmlToDraft from 'html-to-draftjs'
 import { useStyles } from './styles'
 import { getEnrollmentQuestionsGql } from '../../../../../graphql/queries/enrollment-question'
 import { UserContext } from '../../../../../providers/UserContext/UserProvider'
+import { orderBy } from 'lodash'
 
 const insertDescriptions = {
 	parent: "Parent's First Name",
@@ -325,13 +326,15 @@ export const EmailTemplateModal = ({
 			const tab = enrollmentQuestionsData.getEnrollmentQuestions.find(x => x.tab_name == "Documents");
 			if(tab) {
 				tab.groups.forEach(group => {
-					group.questions.filter(q => q.type == 8).forEach(question => {
+					const group_questions = group.questions.filter(q => q.type == 8);
+					group_questions.forEach(question => {
 						standard_response_groups_default.push({
 							id: question.id,
 							title: question.question,
-							responses: []
+							responses: [],
+							order: question.order
 						});
-					})
+					});
 				});
 			}
 			
@@ -357,9 +360,13 @@ export const EmailTemplateModal = ({
 					}
 				}
 				standard_response_groups_default.forEach(group => {
-					if(tmpArr.find(x => x.id == group.id) == null)
+					let res = tmpArr.find(x => x.id == group.id);
+					if(res == null)
 						tmpArr.push(group);
+					else
+						res.order = group.order;
 				});
+				tmpArr.sort(function(a, b) { return a.order - b.order; });
 				setResponses(tmpArr);
 			}
 			if( emailTemplate.category.category_name == 'Applications' ){

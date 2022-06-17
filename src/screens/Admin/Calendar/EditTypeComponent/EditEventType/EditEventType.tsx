@@ -10,16 +10,16 @@ import { createEventTypeMutation, updateEventTypeMutation } from '../services'
 import { ColorPicker } from '../../components/EditEventType'
 
 type EditEventTypeProps = {
-  eventType?: EventType
+  eventType?: EventType | null
   eventTypeCount?: number
-  onCancel?: () => void
-  onSave?: () => void
+  onCancel: () => void
+  onSave: () => void
 }
 
 const EditEventType = ({ eventType, eventTypeCount, onCancel, onSave }: EditEventTypeProps) => {
   const classes = useStyles
   const { me } = useContext(UserContext)
-  const [eventTypeId, setEventTypeId] = useState<number>(eventType?.id)
+  const [eventTypeId, setEventTypeId] = useState<number>(Number(eventType?.id))
   const [name, setName] = useState<string>(eventType?.name || '')
   const [color, setColor] = useState<string>(eventType?.color || '#000000')
   const [submitCreate, {}] = useMutation(createEventTypeMutation)

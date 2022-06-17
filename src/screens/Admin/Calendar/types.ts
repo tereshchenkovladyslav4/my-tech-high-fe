@@ -30,12 +30,12 @@ export type EventInvalidOption = {
 }
 
 export type EventVM = {
-  title: string
-  type: number
-  startDate: Date
-  endDate: Date
-  time: string
-  description: string
+  title?: string
+  type?: number
+  startDate?: Date
+  endDate?: Date
+  time?: string
+  description?: string
 }
 
 export type CalendarEvent = {

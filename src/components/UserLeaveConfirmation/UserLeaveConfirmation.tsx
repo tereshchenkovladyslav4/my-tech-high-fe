@@ -36,7 +36,9 @@ export const UserLeaveConfirmation = (
     <Modal open={true}>
       <Box sx={{ ...classes.modalCard, backgroundColor: bgColor }}>
         <Box sx={classes.header as object}>
-          <Typography variant='h5'>{header}</Typography>
+          <Typography variant='h5' fontWeight={'bold'}>
+            {header}
+          </Typography>
         </Box>
         <Box sx={classes.content as object}>
           <InfoIcon sx={{ fontSize: 50, margin: '20px 0px' }} />

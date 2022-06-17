@@ -17,7 +17,7 @@ export default function AddQuestionModal({
   onClose: () => void
   editItem?: EnrollmentQuestion
 }) {
-
+  console.log('edit', editItem)
   const { values, setValues } = useFormikContext<EnrollmentQuestionTab[]>()
   const [uploadTitle, setUploadTitle ] = useState(editItem?.question || '')
   const [ fileName, setFileName ] = useState(editItem?.options[0]?.label || '')
@@ -40,19 +40,21 @@ export default function AddQuestionModal({
     }
     let newQuestions : EnrollmentQuestion[]
     if(editItem) {
+      console.log('update')
         const newQuestion : EnrollmentQuestion = {
-            type: 8,
-            question: uploadTitle,
-            order: editItem.order,
-            options: [{label: fileName, value: description}],
-            required,
-            // removable,
-            validation: 0,
-            default_question: false,
-            display_admin: false,
-            slug: editItem?.slug || `meta_${+ new Date()}`
+          id: editItem?.id,
+          type: 8,
+          question: uploadTitle,
+          order: editItem.order,
+          options: [{label: fileName, value: description}],
+          required,
+          // removable,
+          validation: 0,
+          default_question: false,
+          display_admin: false,
+          slug: editItem?.slug || `meta_${+ new Date()}`
         }
-        newQuestions = currentTabData.groups[0]?.questions.map((q) => q.question === editItem.question ? newQuestion : q)
+        newQuestions = currentTabData.groups[0]?.questions.map((q) => q.slug === editItem.slug ? newQuestion : q)
 
     }
     else {
@@ -71,6 +73,7 @@ export default function AddQuestionModal({
         newQuestions = currentTabData.groups[0]?.questions ? [...currentTabData.groups[0]?.questions, newQuestion] : [newQuestion]
     }
     const newGroup : EnrollmentQuestionGroup = {
+        id: currentTabData.groups[0].id,
         group_name: "root",
         order: 1,
         questions: newQuestions
@@ -219,15 +222,6 @@ export default function AddQuestionModal({
                 <Checkbox checked={required} onClick={() => setRequired(!required)} />
                 <Subtitle size='small'>Required</Subtitle>
             </Box>
-            {/* <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-              }}
-            >
-              <Checkbox checked={removable} onClick={() => setRemovable(!removable)} />
-              <Subtitle size='small'>Removable</Subtitle>
-            </Box> */}
           </Box>
         </Box>
         {error && <Typography color='red'>{error}</Typography>}

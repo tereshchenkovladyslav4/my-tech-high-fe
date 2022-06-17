@@ -139,6 +139,12 @@ export const getStudentDetail = gql`
       }
       packets {
         student_id
+        packet_id
+        status
+        deadline
+        date_submitted
+        date_accepted
+        date_last_submitted
       }
       status {
         student_id

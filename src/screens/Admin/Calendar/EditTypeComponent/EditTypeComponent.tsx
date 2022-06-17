@@ -21,7 +21,7 @@ const EditTypeComponent = () => {
   const [showEditModal, setShowEditModal] = useState<boolean>(false)
   const [showArchivedModal, setShowArchivedModal] = useState<boolean>(false)
   const [showUnarchivedModal, setShowUnarchivedModal] = useState<boolean>(false)
-  const [selectedEventType, setSelectedEventType] = useState<EventType>()
+  const [selectedEventType, setSelectedEventType] = useState<EventType | null>(null)
   const [eventTypes, setEventTypes] = useState<EventType[]>([])
   const [submitUpdate, {}] = useMutation(updateEventTypeMutation)
   const [submitUpdates, {}] = useMutation(updateEventTypesMutation)
@@ -32,12 +32,12 @@ const EditTypeComponent = () => {
     skip: me?.selectedRegionId ? false : true,
     fetchPolicy: 'network-only',
   })
-  const handleEditClick = (item) => {
+  const handleEditClick = (item: any) => {
     setSelectedEventType(item)
     setShowEditModal(true)
   }
 
-  const handleUpdateEventType = async (eventType) => {
+  const handleUpdateEventType = async (eventType: EventType | null) => {
     if (eventType) {
       await submitUpdate({
         variables: {
@@ -55,7 +55,7 @@ const EditTypeComponent = () => {
     }
   }
 
-  const handleUpdateEventTypes = async (eventTypes) => {
+  const handleUpdateEventTypes = async (eventTypes: EventType[]) => {
     if (eventTypes) {
       await submitUpdates({
         variables: {
@@ -77,7 +77,7 @@ const EditTypeComponent = () => {
   useEffect(() => {
     if (!loading && data?.eventTypes) {
       setEventTypes(
-        data?.eventTypes.map((eventType) => ({
+        data?.eventTypes.map((eventType: any) => ({
           id: Number(eventType.event_type_id),
           name: eventType.name,
           color: eventType.color,
@@ -131,7 +131,7 @@ const EditTypeComponent = () => {
       )}
       {showArchivedModal && (
         <CustomModal
-          title='Archive Event Type'
+          title='Archive'
           description='Are you sure you want to archive this Event Type?'
           cancelStr='Cancel'
           confirmStr='Archive'
@@ -147,7 +147,7 @@ const EditTypeComponent = () => {
       )}
       {showUnarchivedModal && (
         <CustomModal
-          title='Unarchive Event Type'
+          title='Unarchive'
           description='Are you sure you want to unarchive this Event Type?'
           cancelStr='Cancel'
           confirmStr='Unarchive'

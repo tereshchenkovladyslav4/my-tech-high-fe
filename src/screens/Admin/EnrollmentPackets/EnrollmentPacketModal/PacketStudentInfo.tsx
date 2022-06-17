@@ -8,8 +8,14 @@ import { Packet } from '../../../HomeroomStudentProfile/Student/types'
 import { parseGradeLevel } from '../../../../utils/stringHelpers'
 import { ProfileContext } from '../../../../providers/ProfileProvider/ProfileContext'
 
-export function EnrollmentJobsInfo({ packet }: { packet: Packet }) {
+export function EnrollmentJobsInfo({ packet, handleModem }: { packet: Packet, handleModem: () => void }) {
   const { showModal } = useContext(ProfileContext)
+
+  const profileClicked = (profileData) => {
+    showModal(profileData);
+    handleModem();
+  }
+
   const student = packet.student
   const phoneFormat = (phone: string) => {
     phone = phone.replaceAll('-', '')
@@ -58,7 +64,7 @@ export function EnrollmentJobsInfo({ packet }: { packet: Packet }) {
             cursor: 'pointer',
           }}
         >
-          <span onClick={() => showModal(student)}>
+          <span onClick={() => profileClicked(student)}>
             {student.person.first_name} {student.person.last_name}
           </span>
         </Title>
@@ -105,7 +111,7 @@ export function EnrollmentJobsInfo({ packet }: { packet: Packet }) {
             cursor: 'pointer',
           }}
         >
-          <span onClick={() => showModal(student.parent)}>
+          <span onClick={() => profileClicked(student.parent)}>
             {student.parent.person.first_name} {student.parent.person.last_name}
           </span>
         </Title>

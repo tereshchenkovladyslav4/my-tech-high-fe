@@ -11,9 +11,8 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import moment from 'moment'
 import BulletEditor from './BulletEditor'
 import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
-import { CALENDAR, RED } from '../../../../../utils/constants'
+import { RED } from '../../../../../utils/constants'
 import { EventVM, EventInvalidOption } from '../../types'
-import { useHistory } from 'react-router-dom'
 
 type EditEventComponentProps = {
   event: EventVM
@@ -21,7 +20,7 @@ type EditEventComponentProps = {
   setEvent: (value: EventVM) => void
   setInvalidOption: (value: EventInvalidOption) => void
   setIsChanged: (value: boolean) => void
-  setPreviousPage: (value: string) => void
+  handleAddRSVPClick: () => void
 }
 const EditEventComponent = ({
   event,
@@ -29,12 +28,11 @@ const EditEventComponent = ({
   invalidOption,
   setInvalidOption,
   setIsChanged,
-  setPreviousPage,
+  handleAddRSVPClick,
 }: EditEventComponentProps) => {
   const { me } = useContext(UserContext)
-  const history = useHistory()
   const [eventTypes, setEventTypes] = useState<DropDownItem[]>([])
-  const { loading, data, refetch } = useQuery(getEventTypesQuery, {
+  const { loading, data } = useQuery(getEventTypesQuery, {
     variables: {
       regionId: me?.selectedRegionId,
     },
@@ -46,8 +44,8 @@ const EditEventComponent = ({
     if (!loading && data?.eventTypes) {
       setEventTypes(
         data?.eventTypes
-          .filter((item) => !item.archived)
-          .map((eventType) => ({
+          .filter((item: any) => !item.archived)
+          .map((eventType: any) => ({
             label: eventType.name,
             value: `${eventType.event_type_id}`,
           })),
@@ -74,24 +72,25 @@ const EditEventComponent = ({
           {invalidOption?.title.message}
         </Subtitle>
       )}
-      <DropDown
-        dropDownItems={eventTypes}
-        placeholder='Type'
-        labelTop
-        setParentValue={(value) => {
-          setEvent({ ...event, type: Number(value) })
-          setIsChanged(true)
-          setInvalidOption({ ...invalidOption, type: { status: false, message: '' } })
-        }}
-        size='medium'
-        defaultValue={`${event?.type}`}
-        sx={{ my: 1, width: '65%' }}
-      />
-      {invalidOption?.type.status && (
-        <Subtitle size={'small'} sx={{ color: RED, width: '65%' }}>
-          {invalidOption?.type.message}
-        </Subtitle>
-      )}
+      <Box sx={{ my: 1, width: '65%' }}>
+        <DropDown
+          dropDownItems={eventTypes}
+          placeholder='Type'
+          labelTop
+          setParentValue={(value) => {
+            setEvent({ ...event, type: Number(value) })
+            setIsChanged(true)
+            setInvalidOption({ ...invalidOption, type: { status: false, message: '' } })
+          }}
+          size='medium'
+          defaultValue={`${event?.type}`}
+        />
+        {invalidOption?.type.status && (
+          <Subtitle size={'small'} sx={{ color: RED, width: '65%' }}>
+            {invalidOption?.type.message}
+          </Subtitle>
+        )}
+      </Box>
       <LocalizationProvider dateAdapter={AdapterDateFns}>
         <Box sx={{ display: 'flex', width: '65%', my: 1, justifyContent: 'space-between' }}>
           <Box sx={{ display: 'grid' }}>
@@ -101,7 +100,7 @@ const EditEventComponent = ({
               inputFormat='MM/dd/yyyy'
               value={event?.startDate}
               onChange={(e) => {
-                setEvent({ ...event, startDate: e })
+                setEvent({ ...event, startDate: e || new Date() })
                 setIsChanged(true)
                 setInvalidOption({ ...invalidOption, startDate: { status: false, message: '' } })
               }}
@@ -120,7 +119,7 @@ const EditEventComponent = ({
               inputFormat='MM/dd/yyyy'
               value={event?.endDate}
               onChange={(e) => {
-                setEvent({ ...event, endDate: e })
+                setEvent({ ...event, endDate: e || new Date() })
                 setIsChanged(true)
                 setInvalidOption({ ...invalidOption, endDate: { status: false, message: '' } })
               }}
@@ -164,8 +163,7 @@ const EditEventComponent = ({
           width: '65%',
         }}
         onClick={() => {
-          setPreviousPage('/addEvent')
-          history.push(`${CALENDAR}/rsvp`)
+          handleAddRSVPClick()
         }}
       >
         Add RSVP Form

@@ -61,7 +61,7 @@ export const AppBar: FunctionComponent = () => {
           flexDirection: 'row',
           textAlign: 'center',
           right: '-160px',
-          top: '31%',
+          top: 'calc(50% - 15px)',
           width: '150px',
           height: '30px',
           marginLeft: 2,

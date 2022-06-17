@@ -11,7 +11,7 @@ export const EmptyState: EmptyStateTemplateType = ({ title, subtitle, image }) =
         alignItems: 'center',
         display: 'flex',
         flexDirection: 'column',
-        minHeight: '50vh',
+        minHeight: '40vh',
         justifyContent: 'center',
         textAlign: 'center',
       }}

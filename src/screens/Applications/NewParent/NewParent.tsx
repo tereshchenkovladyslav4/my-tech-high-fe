@@ -319,7 +319,7 @@ export const NewParent = () => {
             return (
               <Form>
                 <Box
-                  paddingX={36}
+                  // paddingX={36}
                   paddingBottom={10}
                   sx={{
                     backgroundImage: `url(${BGSVG})`,

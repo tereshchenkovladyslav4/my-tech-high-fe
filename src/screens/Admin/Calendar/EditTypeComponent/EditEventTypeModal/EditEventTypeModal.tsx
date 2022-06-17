@@ -11,7 +11,7 @@ export default function EditEventTypeModal({
 }: {
   onCancel: () => void
   onSave: () => void
-  eventType: EventType
+  eventType: EventType | null
 }) {
   const classes = useStyles
 

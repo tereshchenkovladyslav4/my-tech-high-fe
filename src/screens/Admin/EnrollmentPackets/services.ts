@@ -116,6 +116,121 @@ export const getEnrollmentPacketsQuery = gql`
     }
   }
 `
+
+export const getEnrollmentPacketQuery = gql`
+  query EnrollmentPacket($packet_id: ID!) {
+    packet(packet_id: $packet_id) {
+      packet_id
+      status
+      exemption_form_date
+      medical_exemption
+      date_last_submitted
+      date_submitted
+      deadline
+      admin_notes
+      birth_place
+      birth_country
+      secondary_email
+      secondary_phone
+      signature_file_id
+      signature_name
+      race
+      language
+      photo_permission
+      language_friends
+      language_home
+      language_home_child
+      language_home_preferred
+      dir_permission
+      household_size
+      household_income
+      ferpa_agreement
+      school_district
+      last_school_address
+      last_school
+      reupload_files
+      last_school_type
+      worked_in_agriculture
+      military
+      hispanic
+      secondary_contact_first
+      secondary_contact_last
+      is_age_issue
+      missing_files
+      special_ed
+      packet_emails {
+        subject
+        created_at
+        body
+        from_email
+      }
+      meta
+      student {
+        status {
+          status
+        }
+        reenrolled
+        grade_level
+        student_id
+        grade_levels {
+          grade_level
+          school_year {
+            date_begin
+            date_end
+          }
+        }
+        current_school_year_status {
+          school_year_id
+        }
+        parent {
+          parent_id
+          person {
+            person_id
+            preferred_first_name
+            preferred_last_name
+            first_name
+            last_name
+            middle_name
+            email
+            address {
+              street
+              city
+              zip
+              state
+            }
+          }
+          phone {
+            number
+          }
+        }
+        person {
+          person_id
+          preferred_first_name
+          preferred_last_name
+          first_name
+          last_name
+          middle_name
+          email
+          date_of_birth
+          gender
+          address {
+            street
+            street2
+            city
+            zip
+            state
+            county_id
+          }
+        }
+      }
+      files {
+        kind
+        mth_file_id
+      }      
+    }
+  }
+`
+
 export const getEnrollmentPacketStatusesQuery = gql`
   query packetStatuses {
     packetStatuses {

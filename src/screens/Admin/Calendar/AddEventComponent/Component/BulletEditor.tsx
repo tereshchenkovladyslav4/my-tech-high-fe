@@ -18,7 +18,7 @@ const BulletEditor = ({ value, setValue }: BulletEditorProps) => {
     EditorState.createWithContent(ContentState.createFromText(value || '')),
   )
 
-  const handleEditorChange = (state) => {
+  const handleEditorChange = (state: any) => {
     try {
       if (currentBlocks !== 0 && currentBlocks !== state.blocks.length) {
         editorRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' })
