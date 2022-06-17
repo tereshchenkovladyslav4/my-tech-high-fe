@@ -11,6 +11,7 @@ import { omit } from 'lodash';
 import { EnrollmentContext } from '../../../providers/EnrollmentPacketPrivder/EnrollmentPacketProvider'
 import { enrollmentContactMutation, getSchoolDistrictsByRegionId } from './service'
 import { useFormik } from 'formik'
+import { QUESTION_TYPE } from '../../../components/QuestionItem/QuestionItemProps'
 
 export default function Education({id, questions}) {
     const { tab, setTab, visitedTabs, setVisitedTabs } = useContext(TabContext)
@@ -35,7 +36,7 @@ export default function Education({id, questions}) {
       let valid_packet = {}
       questions.groups.map((g) => {
         g.questions.map((q) => {
-          if(q.type !== 8 && q.type !== 7) {
+          if(q.type !== QUESTION_TYPE.UPLOAD && q.type !== QUESTION_TYPE.INFORMATION) {
             if(q.slug?.includes('student_')) {
               if(q.required) {
                 if(q.slug?.toLocaleLowerCase().includes('emailconfirm')) {
@@ -54,7 +55,7 @@ export default function Education({id, questions}) {
                     return isNumber.test(value)
                   })
                 }
-                else if(q.type === 3 || q.type === 4) {
+                else if(q.type === QUESTION_TYPE.CHECKBOX || q.type === QUESTION_TYPE.AGREEMENT) {
                   valid_student[`${q.slug?.replace('student_', '')}`] = yup.array().min(1).required(`${q.question} is required`).nullable()
                 }
                 else {
@@ -80,7 +81,7 @@ export default function Education({id, questions}) {
                     return isNumber.test(value)
                   })
                 }
-                else if(q.type === 3 || q.type === 4) {
+                else if(q.type === QUESTION_TYPE.CHECKBOX || q.type === QUESTION_TYPE.AGREEMENT) {
                   valid_parent[`${q.slug?.replace('parent_', '')}`] = yup.array().min(1).required(`${q.question} is required`).nullable()
                 }
                 else {
@@ -99,7 +100,7 @@ export default function Education({id, questions}) {
                   return isNumber.test(value)
                 })
               }
-              else if(q.type === 3 || q.type === 4) {
+              else if(q.type === QUESTION_TYPE.CHECKBOX || q.type === QUESTION_TYPE.AGREEMENT) {
                 valid_meta[`${q.slug}`] = yup.array().min(1).required(`${q.question} is required`).nullable()
               }
               else {

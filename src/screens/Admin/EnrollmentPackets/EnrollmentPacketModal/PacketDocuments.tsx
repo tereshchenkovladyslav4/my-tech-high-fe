@@ -10,6 +10,7 @@ import { useStyles } from './styles'
 import DeleteIcon from '../../../../assets/icons/icon-delete-small.svg'
 import CustomModal from '../../SiteManagement/EnrollmentSetting/components/CustomModal/CustomModals'
 import { PacketModalQuestionsContext } from './providers'
+import { QUESTION_TYPE } from '../../../../components/QuestionItem/QuestionItemProps'
 
 export const EnrollmentPacketDocument = ({ packetData }) => {
   const questions = useContext(PacketModalQuestionsContext)
@@ -99,7 +100,7 @@ export const EnrollmentPacketDocument = ({ packetData }) => {
           xs={12}
         >
           {questions?.length > 0 && questions?.find((tab) => tab.tab_name === 'Documents')?.groups[0]?.questions?.map((q) => {
-            if(q.type === 8) {
+            if(q.type === QUESTION_TYPE.UPLOAD) {
               return (
                 <Paragraph color={SYSTEM_06} sx={{ fontSize: '14px' }} fontWeight='400'>
                   {q.question}
@@ -110,7 +111,7 @@ export const EnrollmentPacketDocument = ({ packetData }) => {
         </Grid>
         <Grid item md={6} sm={6} xs={12}>
         {questions?.length > 0 && questions?.find((tab) => tab.tab_name === 'Documents')?.groups[0]?.questions?.map((q) => {
-            if(q.type === 8) {
+            if(q.type === QUESTION_TYPE.UPLOAD) {
               return (
                 <div>
                   {files?.length > 0 && files?.find((e) => e.kind === q.question) ? (

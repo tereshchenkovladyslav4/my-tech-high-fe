@@ -11,6 +11,11 @@ export type Announcement = {
   grades?: string
   regionId?: number
   isArchived?: boolean
+  postedBy?: string
+  status?: string
+  filterGrades?: string
+  filterUsers?: string
+  scheduleTime?: Date
 }
 
 type AnnnouncementProps = {

@@ -28,6 +28,7 @@ import { object, string } from 'yup'
 import { ApplicationQuestion } from '../components/AdditionalQuestionItem/types'
 import { AdditionalQuestionItem } from '../components/AdditionalQuestionItem/AdditionalQuestionItem'
 import { omit } from 'lodash'
+import { QUESTION_TYPE } from '../../../components/QuestionItem/QuestionItemProps'
 
 export type StudentInput = {
   first_name: string
@@ -84,7 +85,7 @@ export const NewParent = () => {
       let valid_parent = {}
       let valid_meta = {}
       questions.map((q) => {
-        if (q.type !== 7) {
+        if (q.type !== QUESTION_TYPE.INFORMATION) {
           if (q.slug?.includes('student_')) {
             empty[`${q.slug?.replace('student_', '')}`] = ''
             if (q.required) {
@@ -93,12 +94,12 @@ export const NewParent = () => {
                   .string()
                   .required('Email is required')
                   .oneOf([yup.ref('email')], 'Emails do not match')
-              } else if (q.type === 3) {
+              } else if (q.type === QUESTION_TYPE.CHECKBOX) {
                 valid_student[`${q.slug?.replace('student_', '')}`] = yup
                   .array()
                   .min(1, `${q.question} is required`)
                   .required(`${q.question} is required`)
-              } else if (q.type === 4) {
+              } else if (q.type === QUESTION_TYPE.AGREEMENT) {
                 valid_student[`${q.slug?.replace('student_', '')}`] = yup
                   .boolean()
                   .oneOf([true], 'This field must be checked')
@@ -132,12 +133,12 @@ export const NewParent = () => {
                   .test(`${q.question}-selected`, `${q.question} is invalid`, (value) => {
                     return isNumber.test(value)
                   })
-              } else if (q.type === 3) {
+              } else if (q.type === QUESTION_TYPE.CHECKBOX) {
                 valid_parent[`${q.slug?.replace('parent_', '')}`] = yup
                   .array()
                   .min(1, `${q.question} is required`)
                   .required(`${q.question} is required`)
-              } else if (q.type === 4) {
+              } else if (q.type === QUESTION_TYPE.AGREEMENT) {
                 valid_parent[`${q.slug?.replace('parent_', '')}`] = yup
                   .boolean()
                   .oneOf([true], 'This field must be checked')
@@ -157,9 +158,9 @@ export const NewParent = () => {
                   .test(`${q.question}-selected`, `${q.question} is invalid`, (value) => {
                     return isNumber.test(value)
                   })
-              } else if (q.type === 3) {
+              } else if (q.type === QUESTION_TYPE.CHECKBOX) {
                 valid_student_meta[`${q.slug}`] = yup.array().min(1, `${q.question} is required`).required(`${q.question} is required`).nullable()
-              } else if (q.type === 4) {
+              } else if (q.type === QUESTION_TYPE.AGREEMENT) {
                 valid_student_meta[`${q.slug}`] = yup.boolean().oneOf([true], 'This field must be checked')
               } else {
                 valid_student_meta[`${q.slug}`] = yup.string().required(`${q.question} is required`)
@@ -175,9 +176,9 @@ export const NewParent = () => {
                   .test(`${q.question}-selected`, `${q.question} is invalid`, (value) => {
                     return isNumber.test(value)
                   })
-              } else if (q.type === 3) {
+              } else if (q.type === QUESTION_TYPE.CHECKBOX) {
                 valid_meta[`${q.slug}`] = yup.array().min(1, `${q.question} is required`).required(`${q.question} is required`).nullable()
-              } else if (q.type === 4) {
+              } else if (q.type === QUESTION_TYPE.AGREEMENT) {
                 valid_meta[`${q.slug}`] = yup.boolean().oneOf([true], 'This field must be checked')
               } else {
                 valid_meta[`${q.slug}`] = yup.string().required(`${q.question} is required`)

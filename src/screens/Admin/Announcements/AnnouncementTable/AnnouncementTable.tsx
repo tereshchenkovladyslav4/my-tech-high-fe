@@ -3,21 +3,21 @@ import React, { useEffect, useState, useContext } from 'react'
 import { useStyles } from './styles'
 import { useMutation, useQuery } from '@apollo/client'
 import moment from 'moment'
-import { AnnouncementType } from '../types'
 import { getAnnouncementsQuery, UpdateAnnouncementMutation } from '../services'
 import { UserContext } from '../../../../providers/UserContext/UserProvider'
 import { PageHeader } from './PageHeader'
 import { PageContent } from './PageContent'
+import { Announcement } from '../../../Dashboard/Announcements/types'
 
 type AnnouncementTableProps = {
-  setAnnouncement: (value: AnnouncementType) => void
+  setAnnouncement: (value: Announcement) => void
 }
 
 const AnnouncementTable = ({ setAnnouncement }: AnnouncementTableProps) => {
   const classes = useStyles
   const { me } = useContext(UserContext)
-  const [searchField, setSearchField] = useState<string>()
-  const [tableDatas, setTableDatas] = useState<AnnouncementType[]>([])
+  const [searchField, setSearchField] = useState<string>('')
+  const [tableDatas, setTableDatas] = useState<Announcement[]>([])
   const [totalAnnouncements, setTotalAnnouncements] = useState<number>(0)
   const [showArchivedAnnouncement, setShowArchivedAnnouncement] = useState<boolean>(false)
   const { loading, data, refetch } = useQuery(getAnnouncementsQuery, {
@@ -28,7 +28,7 @@ const AnnouncementTable = ({ setAnnouncement }: AnnouncementTableProps) => {
     fetchPolicy: 'network-only',
   })
   const [submitSave, {}] = useMutation(UpdateAnnouncementMutation)
-  const handleArchiveChangeStatus = async (announcement: AnnouncementType) => {
+  const handleArchiveChangeStatus = async (announcement: Announcement) => {
     await submitSave({
       variables: {
         updateAnnouncementInput: {
@@ -43,7 +43,7 @@ const AnnouncementTable = ({ setAnnouncement }: AnnouncementTableProps) => {
   useEffect(() => {
     if (!loading && data?.announcements) {
       setTableDatas(
-        data?.announcements.map((announcement) => ({
+        data?.announcements.map((announcement: any) => ({
           id: announcement.announcement_id,
           date: announcement.date ? moment(announcement.date).format('MMMM DD') : '',
           subject: announcement.subject,

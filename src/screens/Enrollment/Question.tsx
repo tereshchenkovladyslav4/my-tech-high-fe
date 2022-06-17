@@ -12,6 +12,7 @@ import moment from 'moment'
 import { UserContext, UserInfo } from '../../providers/UserContext/UserProvider'
 import { gql, useQuery } from '@apollo/client'
 import { EnrollmentContext } from '../../providers/EnrollmentPacketPrivder/EnrollmentPacketProvider';
+import { QUESTION_TYPE } from '../../components/QuestionItem/QuestionItemProps'
 
 export const getActiveSchoolYearsByRegionId = gql`
   query GetActiveSchoolYears($regionId: ID!) {
@@ -27,66 +28,97 @@ export default function EnrollmentQuestionItem({
   group,
   formik,
 }: {
-  item: EnrollmentQuestion
+  item: EnrollmentQuestion[]
   group: string
   formik: any
-}) {
-    const [additionalQuestion, setAdditionalQuestion] = useState(false)
-    const [additionalQuestion2, setAdditionalQuestion2] = useState(false)
+}) { 
+
+    const [questionItems, setQuestionItems] = useState<Array<any>>([<Grid></Grid>])
+
+    useEffect(() => {
+        if(item) {            
+            let childsEnable = false
+            setQuestionItems(item.map((i) => { 
+                if(formik.values.meta && formik.values.meta[`${i.additional_question}`]) {                    
+                    const parentIsAction = item.find((ii) => ii.slug == i.additional_question).options.filter((o) => o.action == 2).find((po) => formik.values.meta[`${i.additional_question}`].length > 1 ? formik.values.meta[`${i.additional_question}`].find((fv) => fv.label == po.label) : po.label == formik.values.meta[`${i.additional_question}`] || po.value == formik.values.meta[`${i.additional_question}`])
+                    if(parentIsAction && !childsEnable) {
+                        return {...i, isEnable: true}
+                    }
+                    else {
+                        childsEnable = true
+                        return {...i, isEnable: false}
+                    }
+                }
+                else {
+                    return {...i, isEnable: false}
+                }
+            }))
+        }
+        else {
+            setQuestionItems([<Grid></Grid>])
+        }
+    }, [item])
     
-    // useEffect(() => {
-    //     if(item.type === 1 || item.type === 3 || item.type === 5) {
-    //         formik.values.meta && formik.values.meta[`${item.slug}`] && item.options.find((o) => o.action === 2)?.label === formik.values.meta[`${item.slug}`] && formik.values.meta[`${item.slug}_additional`] && setAdditionalQuestion(true)
-    //         formik.values.meta && item.additional?.options.find((o) => o.action === 2)?.label === formik.values.meta[`${item.slug}_additional`] && formik.values.meta[`${item.slug}`] && formik.values.meta[`${item.slug}_additional`] && setAdditionalQuestion2(true)
-    //     }
-    // }, [item, formik])
-    
-    let questionEle
-    if(item.type === 7) {
-        questionEle = (
-            <Grid item xs={6}>
-                <Box display='flex' alignItems='center'>
-                    <Paragraph size='large'>
-                        <p dangerouslySetInnerHTML={{ __html: item.question }}></p>
-                    </Paragraph>
-                </Box>
-            </Grid>
-        )
-    }
-    else {
-        questionEle = (
-            <Grid item xs={6}>
-                {item.type !== 4 && (<Box display='flex' alignItems='center'>
-                    <Subtitle fontWeight='500'>{item.question}</Subtitle>
-                </Box>)}
-                <Item question={item} setAdditionalQuestion = {setAdditionalQuestion} formik={formik}/>
-            </Grid>
-        )
+    const handleAdditionalAction = (slug, value) => {
+        let index = 1000
+        const updateQuestionItems = questionItems.map((q) => {
+            if(q.additional_question === slug) {
+                index = q.order
+                return {...q, isEnable: value}
+            }
+            else {
+                if(value) {
+                    return q
+                }
+                else {
+                    if(q.order > index) {
+                        return {...q, isEnable: false}
+                    }
+                    else {
+                        return q
+                    }
+                    
+                }
+            }
+        })
+        setQuestionItems(updateQuestionItems)
     }
     
     return (
     <>
-        {questionEle}
-        {/* {additionalQuestion && (
-            <Grid item xs={12}>
-                <Box alignItems='center' width={'50%'}>
-                    <Subtitle fontWeight='500'>{item.additional?.question}</Subtitle>
-                    <Item question={item.additional} setAdditionalQuestion = {setAdditionalQuestion2} formik={formik}/>
-                </Box>
-            </Grid>
+        {questionItems.map((q) => {
+                if((q.additional_question && q.isEnable) || !q.additional_question) {
+                    if(q.type === QUESTION_TYPE.INFORMATION) {
+                        return (
+                            <Grid item xs={6}>
+                                <Box display='flex' alignItems='center'>
+                                    <Paragraph size='large'>
+                                        <p dangerouslySetInnerHTML={{ __html: q.question }}></p>
+                                    </Paragraph>
+                                </Box>
+                            </Grid>
+                        )
+                    }
+                    else {
+                        return (
+                            <Grid item xs={questionItems.length > 1 ? 12 : 6}>
+                                {q.type !== QUESTION_TYPE.AGREEMENT && (
+                                <Box display='flex' alignItems='center' width={questionItems.length > 1 ? '50%' : '100%'}>
+                                    <Subtitle fontWeight='500'>{q.question}</Subtitle>
+                                </Box>)}
+                                <Box alignItems='center' width={questionItems.length > 1 ? '49%' : '100%'}>
+                                    <Item question={q} setAdditionalQuestion = {(slug, value) => handleAdditionalAction(slug, value)} formik={formik}/>
+                                </Box>
+                            </Grid>
+                        )
+                    }
+                }
+            }
         )}
-        {additionalQuestion && additionalQuestion2 && (
-            <Grid item xs={12}>
-                <Box alignItems='center' width={'50%'}>
-                    <Subtitle fontWeight='500'>{item.additional?.question}</Subtitle>
-                    <Item question={item.additional2} setAdditionalQuestion = {() => {}} formik={formik}/>
-                </Box>
-            </Grid>
-        )}         */}
     </>
     )
 }
-function Item({ question: q, setAdditionalQuestion, formik }: { question: EnrollmentQuestion, setAdditionalQuestion: (flag:boolean) => void, formik: any }) {
+function Item({ question: q, setAdditionalQuestion, formik }: { question: EnrollmentQuestion, setAdditionalQuestion: (slug:string, flag: boolean) => void, formik: any }) {
     
     const { me } = useContext(UserContext)
     const { loading: schoolLoading, data: schoolYearData } = useQuery(getActiveSchoolYearsByRegionId, {
@@ -159,23 +191,27 @@ function Item({ question: q, setAdditionalQuestion, formik }: { question: Enroll
 
     
     const multiSelected = useCallback((value: string | number) => {
-        if(q.type === 3) {
-            return fieldData?.length > 0 && fieldData?.find((f) => f.label == value) ? true : false
+        let res = false
+        if(q.type === QUESTION_TYPE.CHECKBOX) {
+            res = fieldData?.length > 0 && fieldData?.find((f) => f.label == value) ? true : false            
         }
-        return fieldData?.indexOf(value) >= 0
+        else {
+            res = fieldData?.indexOf(value) >= 0
+        }
+        return res  
     },[fieldData])
 
     useEffect(()=> {
-        if(q.type !== 2 && fieldData) {
+        if(q.type !== QUESTION_TYPE.TEXTFIELD && fieldData && keyName && fieldName) {
             formik.values[`${keyName}`][`${fieldName}`] = fieldData
-            if(q.type === 3) {
+            if(q.type === QUESTION_TYPE.CHECKBOX) {
                 const otherTemp = multiSelected('Other')
                 if(otherTemp) {
                     setOtherValue(otherTemp?.value)
                 }
             }
         }
-    }, [fieldData, q])
+    }, [fieldData, q, keyName, fieldName])
     
     function getDropDownLabel(value: string | number) {
         const selected = dropDownItemsData.find((f) => f.value === value)
@@ -197,14 +233,35 @@ function Item({ question: q, setAdditionalQuestion, formik }: { question: Enroll
     }
 
     const onChange = useCallback((value: string | number) => {
-        if(q.type !== 2) {
-            if(q.options.find((f) => f.label === value)?.action === 2) {
-                setAdditionalQuestion(true)
+        if(q.type !== QUESTION_TYPE.TEXTFIELD) {
+            if(q.type === QUESTION_TYPE.DROPDOWN) {                
+                if(q.options.find((f) => f.value === value)?.action == 2) {
+                    setAdditionalQuestion(q.slug, true)
+                }
+                else {
+                    setAdditionalQuestion(q.slug, false)
+                }
             }
             else {
-                setAdditionalQuestion(false)
+                if(q.options?.find((f) => f.label === value)?.action == 2) {
+                    if(q.type === QUESTION_TYPE.CHECKBOX) {
+                        if(fieldData?.find((f) => f.label === value)) {
+                            setAdditionalQuestion(q.slug, false)
+                        }
+                        else {
+                            setAdditionalQuestion(q.slug, true)
+                        }
+                    }
+                    else {
+                        setAdditionalQuestion(q.slug, true)
+                    }
+                }
+                else {
+                    setAdditionalQuestion(q.slug, false)
+                }
             }
-            if(q.type === 4){
+            if(q.type === QUESTION_TYPE.AGREEMENT){
+               
                 if(fieldData && fieldData.indexOf(value) >= 0) {
                     setFieldData(fieldData.filter((f) => f !== value))
                 }
@@ -212,7 +269,7 @@ function Item({ question: q, setAdditionalQuestion, formik }: { question: Enroll
                     setFieldData(fieldData ? [...fieldData, value] : [value])
                 }
             }
-            else if(q.type === 3) {
+            else if(q.type === QUESTION_TYPE.CHECKBOX) {                
                 if(fieldData && fieldData?.find((f) => f.label === value)) {
                     setFieldData(fieldData?.filter((f) => f.label !== value))
                 }
@@ -231,7 +288,7 @@ function Item({ question: q, setAdditionalQuestion, formik }: { question: Enroll
         }
     },[fieldData, otherValue])
 
-    if (q.type === 1) {
+    if (q.type === QUESTION_TYPE.DROPDOWN) {
         return (
         <DropDown            
             sx={{
@@ -252,7 +309,7 @@ function Item({ question: q, setAdditionalQuestion, formik }: { question: Enroll
               }}
         />
         )
-    } else if (q.type === 2) {
+    } else if (q.type === QUESTION_TYPE.TEXTFIELD) {
         return (
         <TextField
             disabled={disabled}            
@@ -278,7 +335,7 @@ function Item({ question: q, setAdditionalQuestion, formik }: { question: Enroll
             helperText={formik.errors[`${keyName}`] && formik.errors[`${keyName}`][`${fieldName}`]}
         />
         )
-    } else if (q.type === 3) {
+    } else if (q.type === QUESTION_TYPE.CHECKBOX) {
         return (
             <>
                 <FormControl
@@ -290,7 +347,7 @@ function Item({ question: q, setAdditionalQuestion, formik }: { question: Enroll
                 >
                     <FormGroup style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
                         <Grid container>
-                            {(q.options ?? []).map((o, index) => (
+                            {(q.options).map((o, index) => (
                                 <Grid item xs={q.options.length > 3 ? 6 : 12} key={index}> 
                                     <FormControlLabel
                                         control={
@@ -327,7 +384,7 @@ function Item({ question: q, setAdditionalQuestion, formik }: { question: Enroll
             </>
             
         )
-    } else if (q.type === 4) {
+    } else if (q.type === QUESTION_TYPE.AGREEMENT) {
         return (
             <>                
                 <FormControl
@@ -337,7 +394,7 @@ function Item({ question: q, setAdditionalQuestion, formik }: { question: Enroll
                     variant="standard"
                     error={ formik.errors[`${keyName}`] && Boolean(formik.errors[`${keyName}`][`${fieldName}`])}
                 >
-                    <FormGroup style={{ width: '50%' }}>
+                    <FormGroup>
                         <FormControlLabel
                             control={
                                 <Checkbox checked={multiSelected(q.slug)} onClick={() => onChange(q.slug)} disabled={disabled}/>
@@ -345,14 +402,10 @@ function Item({ question: q, setAdditionalQuestion, formik }: { question: Enroll
                             label={
                                 <Paragraph size='medium'>
                                     {disabled == true &&
-                                        <a style={{ color: '#111', textDecoration: 'none', pointerEvents: 'none' }} href={q.options[0]?.label === 'web' ? q.options[0]?.value :`mailto:${q.options[0]?.value}`}>
-                                            {q.question}
-                                        </a>
+                                        <p dangerouslySetInnerHTML={{ __html: q.question }}></p>
                                     }
                                     {disabled == false &&
-                                        <a style={{ color: '#111', textDecoration: 'none'}} href={q.options[0]?.label === 'web' ? q.options[0]?.value :`mailto:${q.options[0]?.value}`}>
-                                            {q.question}
-                                        </a>
+                                        <p dangerouslySetInnerHTML={{ __html: q.question }}></p>
                                     }
                                 </Paragraph>
                             }
@@ -363,7 +416,7 @@ function Item({ question: q, setAdditionalQuestion, formik }: { question: Enroll
             </>
             
         )
-    } else if (q.type === 5) {
+    } else if (q.type === QUESTION_TYPE.MULTIPLECHOICES) {
         return (
             <>
                 <FormControl
@@ -375,7 +428,7 @@ function Item({ question: q, setAdditionalQuestion, formik }: { question: Enroll
                 >
                     <FormGroup style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
                         <Grid container>
-                            {(q.options ?? []).map((o, index) => (
+                            {(q.options).map((o, index) => (
                             <Grid item xs={q.options.length > 3 ? 6 : 12}  key={index}> 
                                 <FormControlLabel
                                     control={
@@ -392,7 +445,7 @@ function Item({ question: q, setAdditionalQuestion, formik }: { question: Enroll
             </>
         )
     }
-    else if (q.type === 6) {
+    else if (q.type === QUESTION_TYPE.CALENDAR) {
         return (
         <TextField
             size='small'        

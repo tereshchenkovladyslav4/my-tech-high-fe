@@ -18,6 +18,7 @@ import { uploadDocumentMutation, enrollmentContactMutation } from './service'
 import { LoadingScreen } from '../../LoadingScreen/LoadingScreen'
 import { SuccessModal } from '../../../components/SuccessModal/SuccessModal'
 import { S3FileType } from './components/DocumentUploadModal/types'
+import { QUESTION_TYPE } from '../../../components/QuestionItem/QuestionItemProps'
 
 export default function Documents({id, questions}) {
   const classes = useStyles
@@ -41,7 +42,7 @@ export default function Documents({id, questions}) {
       let valid_packet = {}
       questions.groups.map((g) => {
         g.questions.map((q) => {
-          if(q.type !== 8 && q.type !== 7) {
+          if(q.type !== QUESTION_TYPE.UPLOAD && q.type !== QUESTION_TYPE.INFORMATION) {
             if(q.slug?.includes('student_')) {
               if(q.required) {
                 if(q.slug?.toLocaleLowerCase().includes('emailconfirm')) {
@@ -60,7 +61,7 @@ export default function Documents({id, questions}) {
                     return isNumber.test(value)
                   })
                 }
-                else if(q.type === 3 || q.type === 4) {
+                else if(q.type === QUESTION_TYPE.CHECKBOX || q.type === QUESTION_TYPE.AGREEMENT) {
                   valid_student[`${q.slug?.replace('student_', '')}`] = yup.array().min(1).required(`${q.question} is required`).nullable()
                 }
                 else {
@@ -86,7 +87,7 @@ export default function Documents({id, questions}) {
                     return isNumber.test(value)
                   })
                 }
-                else if(q.type === 3 || q.type === 4) {
+                else if(q.type === QUESTION_TYPE.CHECKBOX || q.type === QUESTION_TYPE.AGREEMENT) {
                   valid_parent[`${q.slug?.replace('parent_', '')}`] = yup.array().min(1).required(`${q.question} is required`).nullable()
                 }
                 else {
@@ -105,7 +106,7 @@ export default function Documents({id, questions}) {
                   return isNumber.test(value)
                 })
               }
-              else if(q.type === 3 || q.type === 4) {
+              else if(q.type === QUESTION_TYPE.CHECKBOX || q.type === QUESTION_TYPE.AGREEMENT) {
                 valid_meta[`${q.slug}`] = yup.array().min(1).required(`${q.question} is required`).nullable()
               }
               else {
@@ -362,7 +363,7 @@ export default function Documents({id, questions}) {
                 firstName={student.person.first_name}
                 lastName={student.person.last_name}
               />  
-              {item.type === 8 && !checkValidate(item) && !disabled && <Paragraph color={RED} size='medium' fontWeight='700' sx={{marginLeft: '12px'}}>
+              {item.type === QUESTION_TYPE.UPLOAD && !checkValidate(item) && !disabled && <Paragraph color={RED} size='medium' fontWeight='700' sx={{marginLeft: '12px'}}>
                 File is required
               </Paragraph>}
             </Grid>

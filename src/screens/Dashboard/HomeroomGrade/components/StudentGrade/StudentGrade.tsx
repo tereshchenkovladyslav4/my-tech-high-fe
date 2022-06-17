@@ -1,55 +1,18 @@
 import { Avatar, Box, CircularProgress, IconButton, Tooltip } from '@mui/material'
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Metadata } from '../../../../../components/Metadata/Metadata'
 import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
-import { CircleData, SchoolYearType, StudentGradeTemplateType } from './types'
+import { CircleData, StudentGradeTemplateType } from './types'
 import { useStyles } from './styles'
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline'
 import ScheduleIcon from '@mui/icons-material/Schedule'
 import { Person } from '../../../../HomeroomStudentProfile/Student/types'
 import { useHistory } from 'react-router-dom'
-import { UserContext } from '../../../../../providers/UserContext/UserProvider'
-import { useQuery } from '@apollo/client'
 import {} from '../../../../Admin/Announcements/services'
-import { getSchoolYearsByRegionId } from '../../../../Admin/Dashboard/SchoolYear/SchoolYear'
+import { checkEnrollPacketStatus } from '../../../../../utils/utils'
 
-export const StudentGrade: StudentGradeTemplateType = ({ student }) => {
-  const { me } = useContext(UserContext)
-  const { region_id } = me?.userRegion?.at(-1)
-  const [schoolYears, setSchoolYears] = useState<SchoolYearType[]>([])
-  const schoolYearData = useQuery(getSchoolYearsByRegionId, {
-    variables: {
-      regionId: region_id,
-    },
-    skip: region_id ? false : true,
-    fetchPolicy: 'network-only',
-  })
-
-  useEffect(() => {
-    if (schoolYearData?.data?.region?.SchoolYears) {
-      const { SchoolYears } = schoolYearData?.data?.region
-      setSchoolYears(
-        SchoolYears.map((item) => ({
-          school_year_id: item.school_year_id,
-          enrollment_packet: item.enrollment_packet,
-        })),
-      )
-    } else {
-      setSchoolYears([])
-    }
-  }, [region_id, schoolYearData])
-
-  const checkEnrollPacketStatus = (student): boolean => {
-    if (student?.status?.at(-1).status != 0) return true
-    if (schoolYears.length > 0) {
-      const { enrollment_packet } = schoolYears
-        ?.filter((item) => item.school_year_id == student?.current_school_year_status?.school_year_id)
-        .at(-1)
-      return enrollment_packet
-    }
-    return false
-  }
+export const StudentGrade: StudentGradeTemplateType = ({ student, schoolYears }) => {
   const red = '#D23C33'
   const blue = '#2B9EB7'
   const classes = useStyles
@@ -140,8 +103,8 @@ export const StudentGrade: StudentGradeTemplateType = ({ student }) => {
           <Paragraph fontWeight={'700'} color='black' size='medium'>
             {student.person.preferred_first_name ?? student.person.first_name}
           </Paragraph>
-          {checkEnrollPacketStatus(student) && (
-            <Tooltip title={circleData?.message}>
+          {checkEnrollPacketStatus(schoolYears, student) && (
+            <Tooltip title={circleData?.message || ''}>
               <IconButton onClick={redirect}>{circleData?.icon}</IconButton>
             </Tooltip>
           )}
@@ -151,7 +114,7 @@ export const StudentGrade: StudentGradeTemplateType = ({ student }) => {
         <Box sx={classes.progressContainer} position='relative'>
           <CircularProgress
             variant='determinate'
-            value={checkEnrollPacketStatus(student) ? circleData?.progress : null}
+            value={checkEnrollPacketStatus(schoolYears, student) ? circleData?.progress : 0}
             size={60}
             sx={{ color: circleData?.color }}
           />

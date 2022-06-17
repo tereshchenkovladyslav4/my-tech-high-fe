@@ -1,16 +1,15 @@
 import { useQuery } from '@apollo/client'
 import { Grid } from '@mui/material'
-import { Box } from '@mui/system'
 import React, { FunctionComponent, useContext, useEffect, useState } from 'react'
 import { UserContext } from '../../providers/UserContext/UserProvider'
+import { SchoolYearType } from '../../utils/utils.types'
 import { getSchoolYearsByRegionId } from '../Admin/Dashboard/SchoolYear/SchoolYear'
-import { SchoolYearType } from '../Dashboard/HomeroomGrade/components/StudentGrade/types'
 import { ToDo } from '../Dashboard/ToDoList/ToDo'
 import { Students } from './Students/Students'
 
 export const Homeroom: FunctionComponent = () => {
   const { me } = useContext(UserContext)
-  const { region_id } = me?.userRegion?.at(-1)
+  const region_id = me?.userRegion?.at(-1)?.region_id
   const [schoolYears, setSchoolYears] = useState<SchoolYearType[]>([])
   const schoolYearData = useQuery(getSchoolYearsByRegionId, {
     variables: {
@@ -24,7 +23,7 @@ export const Homeroom: FunctionComponent = () => {
     if (schoolYearData?.data?.region?.SchoolYears) {
       const { SchoolYears } = schoolYearData?.data?.region
       setSchoolYears(
-        SchoolYears.map((item) => ({
+        SchoolYears.map((item: SchoolYearType) => ({
           school_year_id: item.school_year_id,
           enrollment_packet: item.enrollment_packet,
         })),
@@ -34,7 +33,7 @@ export const Homeroom: FunctionComponent = () => {
   return (
     <Grid container padding={4} rowSpacing={4}>
       <Grid item xs={12}>
-        <Students />
+        <Students schoolYears={schoolYears} />
       </Grid>
       <Grid item xs={12}>
         {schoolYears.length > 0 && <ToDo schoolYears={schoolYears} />}

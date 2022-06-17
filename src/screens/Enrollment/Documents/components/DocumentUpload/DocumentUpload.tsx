@@ -9,6 +9,7 @@ import { DocumentListItem } from '../DocumentList/DocumentListItem'
 import { filter, map } from 'lodash'
 import {  useFormikContext } from 'formik'
 import EnrollmentQuestionItem from '../../../Question'
+import { QUESTION_TYPE } from '../../../../../components/QuestionItem/QuestionItemProps'
 
 export const DocumentUpload = ({item, formik, handleUpload, file, firstName, lastName, disabled}) => {
   const classes = useStyles
@@ -48,7 +49,7 @@ export const DocumentUpload = ({item, formik, handleUpload, file, firstName, las
       />
     // ))
   }
-  if(item.type !== 8) {
+  if(item.type !== QUESTION_TYPE.UPLOAD) {
     return (
       <Grid container rowSpacing={2} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
         <EnrollmentQuestionItem item={item} group={'root'} formik={formik}/>

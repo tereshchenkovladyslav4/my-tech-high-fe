@@ -8,10 +8,10 @@ import { UserContext } from '../../../providers/UserContext/UserProvider'
 import { Person } from '../../HomeroomStudentProfile/Student/types'
 import { useStyles } from '../Announcements/styles'
 
-const ReadMoreSection = ({ inProp, announcement, setSectionName }: ReadMoreSectionProps) => {
+const ReadMoreSection = ({ announcement, setSectionName }: ReadMoreSectionProps) => {
   const classes = useStyles
   const { me } = useContext(UserContext)
-  const { students } = me
+  const students = me?.students
   const getProfilePhoto = (person: Person) => {
     if (!person.photo) return 'image'
 
@@ -70,11 +70,11 @@ const ReadMoreSection = ({ inProp, announcement, setSectionName }: ReadMoreSecti
               </Box>
             </Box>
             <Box sx={classes.readMoreSection}>
-              <ListItemText secondary={announcement.date} />
+              <ListItemText secondary={announcement?.date} />
             </Box>
             <Box sx={classes.readMoreSection}>{announcement?.grades && avatarGroup(announcement?.grades)}</Box>
             <Box sx={classes.readMoreSection}>
-              <div dangerouslySetInnerHTML={innerHtml(announcement?.body)}></div>
+              <div dangerouslySetInnerHTML={innerHtml(announcement?.body || '')}></div>
             </Box>
           </Card>
         </Grid>

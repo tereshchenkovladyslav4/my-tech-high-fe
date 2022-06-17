@@ -1,5 +1,5 @@
 import { FunctionComponent } from 'react'
-import { SchoolYearType } from '../../../HomeroomGrade/components/StudentGrade/types'
+import { SchoolYearType } from '../../../../../utils/utils.types'
 
 type TodoListProps = {
   handleShowEmpty: (isEmpty: boolean) => void

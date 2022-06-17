@@ -13,6 +13,7 @@ import CustomModal from '../components/CustomModal/CustomModals'
 import { SYSTEM_05, SYSTEM_07 } from '../../../../../utils/constants'
 import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragraph'
 import { ProgramYearContext } from '../provider/ProgramYearProvider'
+import { QUESTION_TYPE } from '../../../../../components/QuestionItem/QuestionItemProps'
 
 const DragHandle = SortableHandle(() => (
   <Tooltip title="Move">
@@ -83,7 +84,7 @@ function Item({ question: q }: { question: ApplicationQuestion }) {
       setProgramYear(value)
     }
   }
-  if (q.type === 1) {
+  if (q.type === QUESTION_TYPE.DROPDOWN) {
     return (
       <DropDown
         sx={{
@@ -121,7 +122,7 @@ function Item({ question: q }: { question: ApplicationQuestion }) {
         }}
       />
     )
-  } else if (q.type === 2) {
+  } else if (q.type === QUESTION_TYPE.TEXTFIELD) {
     return (
       <TextField
         size='small'
@@ -151,7 +152,7 @@ function Item({ question: q }: { question: ApplicationQuestion }) {
         helperText={errors[index]}
       />
     )
-  } else if (q.type === 3) {
+  } else if (q.type === QUESTION_TYPE.CHECKBOX) {
     return (
       <Box>
         <Subtitle
@@ -192,7 +193,7 @@ function Item({ question: q }: { question: ApplicationQuestion }) {
         ))}
       </Box>
     )
-  } else if (q.type === 4) {
+  } else if (q.type === QUESTION_TYPE.AGREEMENT) {
     return (
       <Box display="flex" alignItems='center'>
         <Checkbox checked={q.response == 'true'} onClick={() => {}}
@@ -208,7 +209,7 @@ function Item({ question: q }: { question: ApplicationQuestion }) {
         </Paragraph>
       </Box>
     )
-  } else if (q.type === 5) {
+  } else if (q.type === QUESTION_TYPE.MULTIPLECHOICES) {
     return (
       <Box>
         <Subtitle
@@ -250,7 +251,7 @@ function Item({ question: q }: { question: ApplicationQuestion }) {
       </Box>
     )
   }
-  else if (q.type === 6) {
+  else if (q.type === QUESTION_TYPE.CALENDAR) {
     return (
       <TextField
         size='small'
@@ -281,7 +282,7 @@ function Item({ question: q }: { question: ApplicationQuestion }) {
       />
     )
   }
-  else if (q.type === 7) {
+  else if (q.type === QUESTION_TYPE.INFORMATION) {
     return (
       <Paragraph size='large' sx={{fontSize: 16}}>
           <p dangerouslySetInnerHTML={{ __html: q.question }}></p>

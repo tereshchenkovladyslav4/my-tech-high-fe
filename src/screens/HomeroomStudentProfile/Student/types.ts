@@ -1,4 +1,5 @@
 import { FunctionComponent } from 'react'
+import { SchoolYearType } from '../../../utils/utils.types'
 
 export type GradeLevel = {
   grade_level: number | string
@@ -69,7 +70,7 @@ export type Packet = {
   is_age_issue?: boolean
   packet_emails: Array<any>
   missing_files?: string[]
-  meta?:string
+  meta?: string
 }
 
 export type Application = {
@@ -103,12 +104,12 @@ export type StudentType = {
   hidden?: number
   grade_level?: string
   current_school_year_status: {
-    school_year_id: number,
-    grade_level: string 
+    school_year_id: number
+    grade_level: string
   }
   status: Status[]
   reenrollment_status: ReenrollmentStatus[]
-  testing_preference: string,
+  testing_preference: string
 }
 
 export type ReenrollmentStatus = {
@@ -165,5 +166,6 @@ export type Person = {
 }
 export type StudentProps = {
   student: StudentType
+  schoolYears: SchoolYearType[]
 }
 export type StudentComponentType = FunctionComponent<StudentProps>

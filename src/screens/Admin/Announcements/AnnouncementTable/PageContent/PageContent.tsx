@@ -8,14 +8,15 @@ import { useStyles } from '../styles'
 import { SortableTableHeader } from '../../../../../components/SortableTable/SortableTableHeader/SortableTableHeader'
 import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt'
 import { ANNOUNCEMENTS } from '../../../../../utils/constants'
-import { AnnouncementType, toolTipStyles } from '../../types'
+import { toolTipStyles } from '../../types'
 import CallMissedOutgoingIcon from '@mui/icons-material/CallMissedOutgoing'
+import { Announcement } from '../../../../Dashboard/Announcements/types'
 
 type PageContentProps = {
-  tableDatas: AnnouncementType[]
+  tableDatas: Announcement[]
   showArchivedAnnouncement: boolean
-  setAnnouncement: (value: AnnouncementType) => void
-  handleArchiveChangeStatus: (value: AnnouncementType) => void
+  setAnnouncement: (value: Announcement) => void
+  handleArchiveChangeStatus: (value: Announcement) => void
 }
 
 type Order = 'asc' | 'desc'

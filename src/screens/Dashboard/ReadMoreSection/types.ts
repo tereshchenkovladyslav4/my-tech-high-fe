@@ -1,8 +1,7 @@
-import { AnnouncementType } from '../../Admin/Announcements/types'
 import { Announcement } from '../Announcements/types'
 
 export type ReadMoreSectionProps = {
-  inProp: boolean
-  announcement: Announcement | AnnouncementType
+  inProp?: boolean
+  announcement: Announcement
   setSectionName: (value: React.SetStateAction<string>) => void
 }

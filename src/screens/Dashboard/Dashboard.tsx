@@ -12,8 +12,8 @@ import { getUserAnnouncements } from './services'
 import { Announcement } from './Announcements/types'
 import { AnnouncementSection } from './AnnouncementSection'
 import { ReadMoreSection } from './ReadMoreSection'
-import { SchoolYearType } from './HomeroomGrade/components/StudentGrade/types'
 import { getSchoolYearsByRegionId } from '../Admin/Dashboard/SchoolYear/SchoolYear'
+import { SchoolYearType } from '../../utils/utils.types'
 
 export const imageA =
   'https://api.time.com/wp-content/uploads/2017/12/terry-crews-person-of-year-2017-time-magazine-facebook-1.jpg?quality=85'
@@ -24,11 +24,11 @@ export const imageC =
 
 export const Dashboard: FunctionComponent = () => {
   const { me } = useContext(UserContext)
-  const { region_id } = me?.userRegion?.at(-1)
+  const region_id = me?.userRegion?.at(-1)?.region_id
   const [sectionName, setSectionName] = useState<string>('root')
   const [inProp, setInProp] = useState<boolean>(false)
   const [announcements, setAnnouncements] = useState<Announcement[]>([])
-  const [selectedAnnouncement, setSelectedAnnouncement] = useState<Announcement>()
+  const [selectedAnnouncement, setSelectedAnnouncement] = useState<Announcement>({})
   const [schoolYears, setSchoolYears] = useState<SchoolYearType[]>([])
   const schoolYearData = useQuery(getSchoolYearsByRegionId, {
     variables: {
@@ -42,7 +42,7 @@ export const Dashboard: FunctionComponent = () => {
     if (schoolYearData?.data?.region?.SchoolYears) {
       const { SchoolYears } = schoolYearData?.data?.region
       setSchoolYears(
-        SchoolYears.map((item) => ({
+        SchoolYears.map((item: SchoolYearType) => ({
           school_year_id: item.school_year_id,
           enrollment_packet: item.enrollment_packet,
         })),
@@ -69,7 +69,7 @@ export const Dashboard: FunctionComponent = () => {
     if (announcementData?.userAnnouncements) {
       const { userAnnouncements } = announcementData
       setAnnouncements(
-        userAnnouncements.map((announcement) => ({
+        userAnnouncements.map((announcement: any) => ({
           id: announcement.id,
           subject: announcement.subject,
           body: announcement.body,
@@ -94,7 +94,7 @@ export const Dashboard: FunctionComponent = () => {
       >
         <Grid item xs={12} lg={8}>
           <Box marginBottom={2}>
-            <HomeroomGrade />
+            <HomeroomGrade schoolYears={schoolYears} />
           </Box>
           <Box marginBottom={2}>
             <Calendar />

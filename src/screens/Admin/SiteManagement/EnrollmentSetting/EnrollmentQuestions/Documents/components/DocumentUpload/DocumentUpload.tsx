@@ -16,6 +16,7 @@ import {  useFormikContext } from 'formik'
 import { EnrollmentQuestionTab, EnrollmentQuestion } from '../../../types'
 import AddUploadModal from '../../../AddUpload/index'
 import EnrollmentQuestionItem from '../../../Question'
+import { QUESTION_TYPE } from '../../../../../../../../components/QuestionItem/QuestionItemProps'
 
 const DragHandle = SortableHandle(() => (
   <Tooltip title="Move">
@@ -46,7 +47,7 @@ export const DocumentUpload = ({ item } : {item : EnrollmentQuestion[]}) => {
       />
     ))
   }
-  if(item[0].type !== 8) {
+  if(item[0].type !== QUESTION_TYPE.UPLOAD) {
     return (
       <Grid container rowSpacing={2} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
         <EnrollmentQuestionItem item={item} group={'root'} />

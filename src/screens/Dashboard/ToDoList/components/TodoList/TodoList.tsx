@@ -1,27 +1,16 @@
 import { Table, TableBody, TableContainer } from '@mui/material'
-import React, { useContext, useEffect, useState } from 'react'
-import { UserContext } from '../../../../../providers/UserContext/UserProvider'
+import React, { useEffect, useState } from 'react'
 import { useQuery } from '@apollo/client'
 import { getTodoList } from '../../service'
 import { forOwn, map } from 'lodash'
 import { ToDoListItem } from '../ToDoListItem/ToDoListItem'
 import { TodoListTemplateType } from './types'
+import { checkEnrollPacketStatus } from '../../../../../utils/utils'
 
 export const TodoList: TodoListTemplateType = ({ handleShowEmpty, schoolYears }) => {
-  const { me } = useContext(UserContext)
   const [todoList, setTodoList] = useState<Array<any>>([])
   const [paginatinLimit, setPaginatinLimit] = useState(25)
   const [skip, setSkip] = useState()
-
-  const checkEnrollPacketStatus = (student): boolean => {
-    if (schoolYears.length > 0) {
-      const { enrollment_packet } = schoolYears
-        ?.filter((item) => item.school_year_id == student?.current_school_year_status?.school_year_id)
-        .at(-1)
-      return enrollment_packet
-    }
-    return false
-  }
 
   const { loading, error, data } = useQuery(getTodoList, {
     variables: {
@@ -41,7 +30,8 @@ export const TodoList: TodoListTemplateType = ({ handleShowEmpty, schoolYears })
             const _students = item.students.reduce(function (r, a) {
               r[a.current_school_year_status.application_date_accepted] =
                 r[a.current_school_year_status.application_date_accepted] || []
-              if (checkEnrollPacketStatus(a)) r[a.current_school_year_status.application_date_accepted].push(a)
+              if (checkEnrollPacketStatus(schoolYears, a))
+                r[a.current_school_year_status.application_date_accepted].push(a)
               return r
             }, Object.create(null))
             const _item = { ...item, ...{ parsed: _students } }
@@ -62,7 +52,7 @@ export const TodoList: TodoListTemplateType = ({ handleShowEmpty, schoolYears })
     }
   }, [loading])
 
-  const renderTodoListByAcceptedApplication = (el) =>
+  const renderTodoListByAcceptedApplication = (el: any) =>
     Object.entries(el.parsed).map(([key, value]: any, i) => {
       const deadline = value.at(-1)?.current_school_year_status.enrollment_packet_date_deadline || null
       const item = {
@@ -86,17 +76,20 @@ export const TodoList: TodoListTemplateType = ({ handleShowEmpty, schoolYears })
       } else {
         return (
           el &&
-          el.students.filter((student) => !!checkEnrollPacketStatus(student)).length !== 0 && (
+          el.students.filter((student: any) => !!checkEnrollPacketStatus(schoolYears, student)).length !== 0 && (
             <ToDoListItem
               key={idx}
-              todoItem={{ ...el, students: el.students.filter((student) => checkEnrollPacketStatus(student)) }}
+              todoItem={{
+                ...el,
+                students: el.students.filter((student: any) => checkEnrollPacketStatus(schoolYears, student)),
+              }}
               todoDate={
-                el.students.filter((student) => checkEnrollPacketStatus(student)).at(-1)?.current_school_year_status
-                  .application_date_accepted || null
+                el.students.filter((student: any) => checkEnrollPacketStatus(schoolYears, student)).at(-1)
+                  ?.current_school_year_status.application_date_accepted || null
               }
               todoDeadline={
-                el.students.filter((student) => checkEnrollPacketStatus(student)).at(-1)?.current_school_year_status
-                  .enrollment_packet_date_deadline || null
+                el.students.filter((student: any) => checkEnrollPacketStatus(schoolYears, student)).at(-1)
+                  ?.current_school_year_status.enrollment_packet_date_deadline || null
               }
               idx={idx}
             />

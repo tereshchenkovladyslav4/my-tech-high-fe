@@ -13,14 +13,22 @@ export default function GroupItem({
     group: EnrollmentQuestionGroup
     formik: any
 }) {
-
+  const questionsArr = group.questions.map((q) => {
+    let arr = [q], current = q, child;
+      while(child = group.questions.find(x => x.additional_question == current.slug)) {
+        arr.push(child);
+        current = child;
+      }
+      return arr;
+  })
+  const questionsLists = questionsArr.filter((item) => !item[0].additional_question)
   return (
     <>
         <Box display='flex' mt='20px' alignItems='center' justifyContent='start'>
             <Subtitle fontWeight='700'>{group.group_name}</Subtitle>        
         </Box>
         <Grid container rowSpacing={2} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
-            {group.questions.map((item, index) => (
+            {questionsLists.map((item, index) => (
                 <EnrollmentQuestionItem key={index} item={item} group={group.group_name} formik={formik}/>
             ))}
         </Grid>

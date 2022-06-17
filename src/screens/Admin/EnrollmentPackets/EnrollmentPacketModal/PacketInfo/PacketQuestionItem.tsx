@@ -13,6 +13,7 @@ import { UserContext, UserInfo } from '../../../../../providers/UserContext/User
 import { gql, useQuery } from '@apollo/client'
 import { Controller, useFormContext } from 'react-hook-form'
 import { EnrollmentPacketFormType } from '../types'
+import { QUESTION_TYPE } from '../../../../../components/QuestionItem/QuestionItemProps'
 
 export const getActiveSchoolYearsByRegionId = gql`
   query GetActiveSchoolYears($regionId: ID!) {
@@ -26,57 +27,95 @@ export const getActiveSchoolYearsByRegionId = gql`
 export default function PacketQuestionItem({
   item,
 }: {
-  item: EnrollmentQuestion
+  item: EnrollmentQuestion[]
 }) {
-    const [additionalQuestion, setAdditionalQuestion] = useState(false)
-    const [additionalQuestion2, setAdditionalQuestion2] = useState(false)
+    const [questionItems, setQuestionItems] = useState<Array<any>>([<Grid></Grid>])
+    const { getValues, control } = useFormContext()
+    const values = getValues()
+    useEffect(() => {
+        if(item) {            
+            let childsEnable = false
+            setQuestionItems(item.map((i) => { 
+                if(values[`${i.additional_question}`]) {                    
+                    const parentIsAction = item.find((ii) => ii.slug == i.additional_question).options.filter((o) => o.action == 2).find((po) => values[`${i.additional_question}`].length > 1 ? values[`${i.additional_question}`].find((fv) => fv.label == po.label) : po.label == values[`${i.additional_question}`] || po.value == values[`${i.additional_question}`])
+                    if(parentIsAction && !childsEnable) {
+                        return {...i, isEnable: true}
+                    }
+                    else {
+                        childsEnable = true
+                        return {...i, isEnable: false}
+                    }
+                }
+                else {
+                    return {...i, isEnable: false}
+                }
+            }))
+        }
+        else {
+            setQuestionItems([<Grid></Grid>])
+        }
+    }, [item, values])
     
-    let questionEle
-    if(item.type === 7) {
-        questionEle = (
-            <Grid item xs={6}>
-                <Box display='flex' alignItems='center'>
-                    <Paragraph size='large'>
-                        <p dangerouslySetInnerHTML={{ __html: item.question }}></p>
-                    </Paragraph>
-                </Box>
-            </Grid>
-        )
-    }
-    else {
-        questionEle = (
-            <Grid item xs={6}>
-                {item.type !== 4 && (<Box display='flex' alignItems='center'>
-                    <Subtitle fontWeight='500'>{item.question}</Subtitle>
-                </Box>)}
-                <Item question={item} setAdditionalQuestion = {setAdditionalQuestion}/>
-            </Grid>
-        )
+    const handleAdditionalAction = (slug, value) => {
+        let index = 1000
+        const updateQuestionItems = questionItems.map((q) => {
+            if(q.additional_question === slug) {
+                index = q.order
+                return {...q, isEnable: value}
+            }
+            else {
+                if(value) {
+                    return q
+                }
+                else {
+                    if(q.order > index) {
+                        return {...q, isEnable: false}
+                    }
+                    else {
+                        return q
+                    }
+                    
+                }
+            }
+        })
+        setQuestionItems(updateQuestionItems)
     }
     
     return (
     <>
-        {questionEle}
-        {/* {additionalQuestion && (
-            <Grid item xs={12}>
-                <Box alignItems='center' width={'50%'}>
-                    <Subtitle fontWeight='500'>{item.additional?.question}</Subtitle>
-                    <Item question={item.additional} setAdditionalQuestion = {setAdditionalQuestion2}/>
-                </Box>
-            </Grid>
+        {questionItems.map((q) => {
+                if((q.additional_question && q.isEnable) || !q.additional_question) {
+                    if(q.type === QUESTION_TYPE.INFORMATION) {
+                        return (
+                            <Grid item xs={6}>
+                                <Box display='flex' alignItems='center'>
+                                    <Paragraph size='large'>
+                                        <p dangerouslySetInnerHTML={{ __html: q.question }}></p>
+                                    </Paragraph>
+                                </Box>
+                            </Grid>
+                        )
+                    }
+                    else {
+                        return (
+                            <Grid item xs={questionItems.length > 1 ? 12 : 6}>
+                                {q.type !== QUESTION_TYPE.AGREEMENT && (
+                                <Box display='flex' alignItems='center' width={questionItems.length > 1 ? '50%' : '100%'}>
+                                    <Subtitle fontWeight='500'>{q.question}</Subtitle>
+                                </Box>)}
+                                <Box alignItems='center' width={questionItems.length > 1 ? '49%' : '100%'}>
+                                    <Item question={q} setAdditionalQuestion = {(slug, value) => handleAdditionalAction(slug, value)}/>
+                                </Box>
+                            </Grid>
+                        )
+                    }
+                }
+            }
         )}
-        {additionalQuestion && additionalQuestion2 && (
-            <Grid item xs={12}>
-                <Box alignItems='center' width={'50%'}>
-                    <Subtitle fontWeight='500'>{item.additional?.question}</Subtitle>
-                    <Item question={item.additional2} setAdditionalQuestion = {() => {}}/>
-                </Box>
-            </Grid>
-        )}         */}
     </>
     )
 }
-function Item({ question: q, setAdditionalQuestion }: { question: EnrollmentQuestion, setAdditionalQuestion: (flag:boolean) => void}) {
+function Item({ question: q, setAdditionalQuestion }: { question: EnrollmentQuestion, setAdditionalQuestion: (slug:string, flag: boolean) => void}) {
     const { control, watch } = useFormContext()
     const [school_year_id] = watch(['school_year_id'])
     const [otherValue, setOtherValue] = useState('')
@@ -150,7 +189,7 @@ function Item({ question: q, setAdditionalQuestion }: { question: EnrollmentQues
     }
     
     const multiSelected = (fieldValue, value) => {
-        if(q.type === 3) {
+        if(q.type === QUESTION_TYPE.CHECKBOX) {
             return fieldValue?.length > 0 && fieldValue?.find((f) => f.label === value) || false
         }
         else {
@@ -164,7 +203,7 @@ function Item({ question: q, setAdditionalQuestion }: { question: EnrollmentQues
         field.onChange(updated)
     }
 
-    if (q.type === 1) {
+    if (q.type === QUESTION_TYPE.DROPDOWN) {
         return (
             <Controller
                 name={q.slug}
@@ -190,7 +229,7 @@ function Item({ question: q, setAdditionalQuestion }: { question: EnrollmentQues
                 }
             />
         )
-    } else if (q.type === 2) {
+    } else if (q.type === QUESTION_TYPE.TEXTFIELD) {
         return (
             <Controller
                 name={q.slug}
@@ -215,7 +254,7 @@ function Item({ question: q, setAdditionalQuestion }: { question: EnrollmentQues
             />
         
         )
-    } else if (q.type === 3) {
+    } else if (q.type === QUESTION_TYPE.CHECKBOX) {
         return (
             <Controller
                 name={q.slug}
@@ -230,7 +269,7 @@ function Item({ question: q, setAdditionalQuestion }: { question: EnrollmentQues
                 >
                     <FormGroup style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
                         <Grid container>
-                            {(q.options ?? []).map((o, index) => (
+                            {(q.options).map((o, index) => (
                                 <Grid item xs={q.options.length > 3 ? 6 : 12} key={index}> 
                                     <FormControlLabel
                                         control={
@@ -265,7 +304,7 @@ function Item({ question: q, setAdditionalQuestion }: { question: EnrollmentQues
             }
             />
         )
-    } else if (q.type === 4) {
+    } else if (q.type === QUESTION_TYPE.AGREEMENT) {
         return (
             <Controller
             name={q.slug}
@@ -298,7 +337,7 @@ function Item({ question: q, setAdditionalQuestion }: { question: EnrollmentQues
             />
             
         )
-    } else if (q.type === 5) {
+    } else if (q.type === QUESTION_TYPE.MULTIPLECHOICES) {
         return (
             <Controller
             name={q.slug}
@@ -330,7 +369,7 @@ function Item({ question: q, setAdditionalQuestion }: { question: EnrollmentQues
             />
         )
     }
-    else if (q.type === 6) {
+    else if (q.type === QUESTION_TYPE.CALENDAR) {
         return (
             <Controller
                 name={q.slug}

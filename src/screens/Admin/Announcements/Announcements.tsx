@@ -4,13 +4,13 @@ import { Route, Switch, useHistory, useRouteMatch } from 'react-router-dom'
 import { AnnouncementTable } from './AnnouncementTable'
 import { NewAnnouncement } from './NewAnnouncement'
 import { ANNOUNCEMENTS } from '../../../utils/constants'
-import { AnnouncementType } from './types'
 import { ReadMoreSection } from '../../Dashboard/ReadMoreSection'
+import { Announcement } from '../../Dashboard/Announcements/types'
 
 const Announcemnets = () => {
   const { isExact } = useRouteMatch(ANNOUNCEMENTS)
   const history = useHistory()
-  const [announcement, setAnnouncement] = useState<AnnouncementType>()
+  const [announcement, setAnnouncement] = useState<Announcement>({})
   return (
     <Box sx={{ marginX: 4 }}>
       <Grid container rowSpacing={2}>

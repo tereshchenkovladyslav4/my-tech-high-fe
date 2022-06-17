@@ -1,21 +1,22 @@
 import React, { FunctionComponent, useContext } from 'react'
 import { StudentGrade } from './components/StudentGrade/StudentGrade'
 import Box from '@mui/material/Box'
-import { Paragraph } from '../../../components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '../../../components/Typography/Subtitle/Subtitle'
 import { Avatar, Card, Stack } from '@mui/material'
-import { useStyles } from './styles'
 import { UserContext, UserInfo } from '../../../providers/UserContext/UserProvider'
 import { map } from 'lodash'
-export const HomeroomGrade: FunctionComponent = () => {
-  const classes = useStyles
+import { SchoolYearType } from '../../../utils/utils.types'
 
+type HomeroomGradeProps = {
+  schoolYears: SchoolYearType[]
+}
+export const HomeroomGrade: FunctionComponent<HomeroomGradeProps> = ({ schoolYears }) => {
   const { me } = useContext(UserContext)
   const { students } = me as UserInfo
 
   const renderStudents = () =>
     map(students, (student) => {
-      return student.status.at(-1)?.status !== 2 && <StudentGrade student={student} />
+      return student.status.at(-1)?.status !== 2 && <StudentGrade schoolYears={schoolYears} student={student} />
     })
 
   return (

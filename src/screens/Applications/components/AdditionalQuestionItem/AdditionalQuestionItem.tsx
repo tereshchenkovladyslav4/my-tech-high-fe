@@ -14,6 +14,7 @@ import {
 	getSchoolDistrictsByRegionId,
 	getAllRegion } 
 from '../../../Admin/SiteManagement/EnrollmentSetting/EnrollmentQuestions/services'
+import { QUESTION_TYPE } from '../../../../components/QuestionItem/QuestionItemProps'
 export function AdditionalQuestionItem({ question: q, field, meta, form }: { question: ApplicationQuestion, field: any, meta: any, form: any }) {
     const classes = useStyles
     const [options, setOptions] = useState(q?.options || [])
@@ -48,7 +49,7 @@ export function AdditionalQuestionItem({ question: q, field, meta, form }: { que
         )
     }, [schoolDistrictsDataLoading])
     
-    if (q.type === 1) {
+    if (q.type === QUESTION_TYPE.DROPDOWN) {
       return (
         <DropDown
           labelTop
@@ -69,7 +70,7 @@ export function AdditionalQuestionItem({ question: q, field, meta, form }: { que
           }}
         />
       )
-    } else if (q.type === 2) {
+    } else if (q.type === QUESTION_TYPE.TEXTFIELD) {
       return (
         <TextField
           size='small'
@@ -93,7 +94,7 @@ export function AdditionalQuestionItem({ question: q, field, meta, form }: { que
           helperText={meta.touched && meta.error}
         />
       )
-    } else if (q.type === 3) {
+    } else if (q.type === QUESTION_TYPE.CHECKBOX) {
       return (
         <Box sx={{marginY: 2}}>
           <Subtitle
@@ -137,7 +138,7 @@ export function AdditionalQuestionItem({ question: q, field, meta, form }: { que
           ))}
         </Box>
       )
-    } else if (q.type === 4) {
+    } else if (q.type === QUESTION_TYPE.AGREEMENT) {
       return (
         <Box display='flex' alignItems='center' sx={{marginTop: 2, marginBottom: 2, '& p': {margin: 0}}}>
           <Checkbox
@@ -156,7 +157,7 @@ export function AdditionalQuestionItem({ question: q, field, meta, form }: { que
           </Paragraph>
         </Box>
       )
-    } else if (q.type === 5) {
+    } else if (q.type === QUESTION_TYPE.MULTIPLECHOICES) {
       return (
         <Box sx={{marginY: 2}}>
           <Subtitle
@@ -206,7 +207,7 @@ export function AdditionalQuestionItem({ question: q, field, meta, form }: { que
           
         </Box>
       )
-    }  else if (q.type === 6) {
+    }  else if (q.type === QUESTION_TYPE.CALENDAR) {
       return (
         <TextField
           size='small'
@@ -231,7 +232,7 @@ export function AdditionalQuestionItem({ question: q, field, meta, form }: { que
           type="date"
         />
       )
-    } else if (q.type === 7) {
+    } else if (q.type === QUESTION_TYPE.INFORMATION) {
       return (
         <Box display='block' sx={{marginTop: 2, marginBottom: 2, textAlign: 'center'}}>
           <Paragraph size='large' sx={{fontSize: 16}}>

@@ -19,6 +19,7 @@ import CustomModal from '../components/CustomModal/CustomModals'
 import { SYSTEM_05, SYSTEM_07 } from '../../../../../utils/constants'
 import { TabContext } from './TabContextProvider'
 import { ProgramYearContext } from '../provider/ProgramYearProvider'
+import { QUESTION_TYPE } from '../../../../../components/QuestionItem/QuestionItemProps'
 
 const DragHandle = SortableHandle(() => (
     <Tooltip title="Move">
@@ -81,9 +82,9 @@ export default function EnrollmentQuestionItem({
         <>
             {questionItems.map((q) => {
                 if((q.additional_question && q.isEnable) || !q.additional_question) {
-                    if (q.type === 4) {
+                    if (q.type === QUESTION_TYPE.AGREEMENT) {
                         return (
-                            <Grid item xs={q.additional_question ? 12 : 6}>
+                            <Grid item xs={questionItems.length > 1 ? 12 : 6}>
                                 <FormControl
                                     required
                                     name='acknowledge'
@@ -97,9 +98,7 @@ export default function EnrollmentQuestionItem({
                                             }
                                             label={
                                                 <Paragraph size='medium'>
-                                                    <a style={{ color: '#111', textDecoration: 'none' }} href={item[0].options[0]?.label === 'web' ? item[0].options[0]?.value : `mailto:${item[0].options[0]?.value}`}>
-                                                        {item[0].question}
-                                                    </a>
+                                                    <p dangerouslySetInnerHTML={{ __html: q.question }}></p>
                                                 </Paragraph>
                                             }
                                         />
@@ -125,10 +124,10 @@ export default function EnrollmentQuestionItem({
                             </Grid>
                         )
                     }
-                    else if (q.type === 7) {
+                    else if (q.type === QUESTION_TYPE.INFORMATION) {
                         return (
-                            <Grid item xs={q.additional_question ? 12 : 6}>
-                                <Box display='flex' alignItems='center' width={q.additional_question ? '50%' : '100%'}>
+                            <Grid item xs={questionItems.length > 1 ? 12 : 6}>
+                                <Box display='flex' alignItems='center' width={questionItems.length > 1 ? '50%' : '100%'}>
                                     <Paragraph size='large'>
                                         <p dangerouslySetInnerHTML={{ __html: q.question }}></p>
                                     </Paragraph>
@@ -155,8 +154,8 @@ export default function EnrollmentQuestionItem({
                     }
                     else {
                         return (
-                            <Grid item xs={q.additional_question ? 12 : 6}>
-                                <Box display='flex' alignItems='center' width={q.additional_question ? '50%' : '100%'}>
+                            <Grid item xs={questionItems.length > 1 ? 12 : 6}>
+                                <Box display='flex' alignItems='center' width={questionItems.length > 1 ? '50%' : '100%'}>
                                     <Subtitle fontWeight='500'>{q.question}</Subtitle>
                                     {!q.additional_question && !mainQuestion && (
                                         <Box display='inline-flex' height='40px'>
@@ -177,7 +176,7 @@ export default function EnrollmentQuestionItem({
                                         </Box>
                                     )}
                                 </Box>
-                                <Box alignItems='center' width={q.additional_question ? '50%' : '100%'}>
+                                <Box alignItems='center' width={questionItems.length > 1 ? '49%' : '100%'}>
                                     <Item question={q} setAdditionalQuestion={(slug, value) => handleAdditionalAction(slug, value)} />
                                 </Box>
                                 
@@ -224,9 +223,9 @@ function Item({ question: q, setAdditionalQuestion }: { question: EnrollmentQues
         setSelectedOption([])
     }, [q])
     function onChange(value: string | number) {
-        if (q.type !== 2) {
+        if (q.type !== QUESTION_TYPE.TEXTFIELD) {
             if (q.options[+value - 1]?.action === 2) {
-                if (q.type === 3) {
+                if (q.type === QUESTION_TYPE.CHECKBOX) {
                     if (selectedOption.indexOf(value) > -1) {
                         setAdditionalQuestion(q.slug, false)
                     }
@@ -239,11 +238,11 @@ function Item({ question: q, setAdditionalQuestion }: { question: EnrollmentQues
                 }
             }
             else {
-                if (q.type !== 3) {
+                if (q.type !== QUESTION_TYPE.CHECKBOX) {
                     setAdditionalQuestion(q.slug, false)
                 }
             }
-            if (q.type === 3) {
+            if (q.type === QUESTION_TYPE.CHECKBOX) {
                 if (selectedOption.indexOf(value) > -1) {
                     setSelectedOption(selectedOption.filter(s => s !== value))
                 }
@@ -259,11 +258,12 @@ function Item({ question: q, setAdditionalQuestion }: { question: EnrollmentQues
             setProgramYear(value)
         }
     }
-    if (q.type === 1) {
+    if (q.type === QUESTION_TYPE.DROPDOWN) {
         return (
             <DropDown
                 sx={{
-                    minWidth: '100%',
+                    margin: '0 !important',
+                    width: '100%',
                     [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
                         borderColor: SYSTEM_07,
                     },
@@ -275,7 +275,7 @@ function Item({ question: q, setAdditionalQuestion }: { question: EnrollmentQues
                 size='small'
             />
         )
-    } else if (q.type === 2) {
+    } else if (q.type === QUESTION_TYPE.TEXTFIELD) {
         return (
             <TextField
                 size='small'
@@ -294,7 +294,7 @@ function Item({ question: q, setAdditionalQuestion }: { question: EnrollmentQues
                 focused
             />
         )
-    } else if (q.type === 3) {
+    } else if (q.type === QUESTION_TYPE.CHECKBOX) {
         return (
             <FormControl
                 required
@@ -335,7 +335,7 @@ function Item({ question: q, setAdditionalQuestion }: { question: EnrollmentQues
                 </FormGroup>
             </FormControl>
         )
-    } else if (q.type === 5) {
+    } else if (q.type === QUESTION_TYPE.MULTIPLECHOICES) {
         return (
             <FormControl
                 required
@@ -360,7 +360,7 @@ function Item({ question: q, setAdditionalQuestion }: { question: EnrollmentQues
             </FormControl>
         )
     }
-    else if (q.type === 6) {
+    else if (q.type === QUESTION_TYPE.CALENDAR) {
         return (
             <TextField
                 size='small'

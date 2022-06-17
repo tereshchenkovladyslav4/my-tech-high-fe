@@ -8,16 +8,16 @@ import { useMutation, useQuery } from '@apollo/client'
 import draftToHtml from 'draftjs-to-html'
 import htmlToDraft from 'html-to-draftjs'
 import { UserContext } from '../../../../providers/UserContext/UserProvider'
-import { AnnouncementType } from '../types'
 import { CreateAnnouncementMutation, GetCurrentSchoolYearByRegionId, UpdateAnnouncementMutation } from '../services'
 import { PublishModal } from '../PublishModal'
 import { HeaderComponent } from './HeaderComponent'
 import { EditComponent } from './EditComponent'
 import { FilterComponent } from './FilterComponent'
+import { Announcement } from '../../../Dashboard/Announcements/types'
 
 type NewAnnouncementProps = {
-  announcement?: AnnouncementType
-  setAnnouncement?: (value: AnnouncementType) => void
+  announcement?: Announcement
+  setAnnouncement?: (value: Announcement) => void | undefined
 }
 
 const NewAnnouncement = ({ announcement, setAnnouncement }: NewAnnouncementProps) => {
@@ -165,16 +165,18 @@ const NewAnnouncement = ({ announcement, setAnnouncement }: NewAnnouncementProps
         ...GRADES.map((item) => {
           if (availGrades.includes(item)) {
             return item.toString()
+          } else {
+            return ''
           }
-        }),
+        }).filter((item) => item),
       ])
       if (announcement) {
-        setAnnouncementId(announcement.id)
-        setEmailFrom(announcement.postedBy)
-        setGrades(JSON.parse(announcement.filterGrades))
-        setUsers(JSON.parse(announcement.filterUsers))
-        setSubject(announcement.subject)
-        setIsArchived(announcement.isArchived)
+        setAnnouncementId(Number(announcement?.id))
+        setEmailFrom(announcement?.postedBy || '')
+        setGrades(JSON.parse(announcement?.filterGrades || ''))
+        setUsers(JSON.parse(announcement?.filterUsers || ''))
+        setSubject(announcement?.subject || '')
+        setIsArchived(!!announcement?.isArchived)
         if (announcement.body) {
           const contentBlock = htmlToDraft(announcement.body)
           if (contentBlock) {

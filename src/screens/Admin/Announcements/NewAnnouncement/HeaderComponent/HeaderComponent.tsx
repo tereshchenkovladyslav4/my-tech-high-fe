@@ -5,11 +5,11 @@ import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle
 import { useStyles } from '../styles'
 import { ANNOUNCEMENTS } from '../../../../../utils/constants'
 import { useHistory } from 'react-router-dom'
-import { AnnouncementType } from '../../types'
+import { Announcement } from '../../../../Dashboard/Announcements/types'
 
 type HeaderComponentProps = {
-  announcement?: AnnouncementType
-  setAnnouncement?: (value: AnnouncementType) => void
+  announcement?: Announcement
+  setAnnouncement?: (value: Announcement) => void
   handleSaveClick: () => void
   handlePublishClick: () => void
 }
