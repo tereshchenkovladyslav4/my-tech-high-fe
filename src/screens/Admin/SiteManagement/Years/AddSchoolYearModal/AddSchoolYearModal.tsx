@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { Box, Button, Dialog, DialogTitle, DialogActions } from '@mui/material'
-import { DropDown } from '../../../../../components/DropDown/DropDown'
 import { useStyles } from '../../styles'
-import { DropDownItem } from '../../../../../components/DropDown/types'
+import { DropDownItem } from '../../components/DropDown/types'
+import { DropDown } from '../../components/DropDown/DropDown'
 
 type AddSchoolYearModalProps = {
   addSchoolYears: DropDownItem[]
@@ -66,11 +66,11 @@ export default function AddSchoolYearModal({
       </DialogTitle>
       <Box sx={{ minWidth: '400px', marginBottom: 5, paddingX: 10 }}>
         <DropDown
-          labelTop='Clone from'
+          labelTop={true}
           dropDownItems={addSchoolYears}
           defaultValue={'none'}
           placeholder={'Clone from'}
-          setParentValue={(val, index) => {
+          setParentValue={(val) => {
             setSelectedSchoolYearId(val)
           }}
         />

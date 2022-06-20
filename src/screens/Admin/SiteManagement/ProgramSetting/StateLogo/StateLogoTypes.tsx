@@ -7,7 +7,7 @@ export type StateLogoFileType = {
 export type StateLogoProps = {
   stateLogo: string
   setStateLogo: (value: string) => void
-  stateLogoFile: StateLogoFileType
+  stateLogoFile: StateLogoFileType | null
   setStateLogoFile: (value: StateLogoFileType) => void
   setIsChanged: (value: boolean) => void
 }

@@ -19,6 +19,7 @@ import {
 import { map } from 'lodash'
 import moment from 'moment'
 import DeleteForever from '@mui/icons-material/Delete'
+import Tooltip from '@mui/material/Tooltip';
 import { toOrdinalSuffix } from '../../../../utils/stringHelpers'
 import { ApplicationEmailModal as EmailModal } from '../../../../components/EmailModal/ApplicationEmailModal'
 import EnrollmentPacketModal from '../EnrollmentPacketModal'
@@ -90,14 +91,24 @@ export const EnrollmentPacketTable = () => {
         </Box>
       ) : null,
       delete: (
-        <DeleteForever
-          className='delete-row'
-          onClick={(event) => handleDelete(packet.packet_id)}
-          sx={{
-            borderRadius: 1,
-            cursor: 'pointer',
-          }}
-        />
+        <Tooltip title="Delete" arrow>
+          <Box display={'flex'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'}
+            className='delete-row'
+            onClick={(event) => handleDelete(packet.packet_id)}
+            sx={{
+              borderRadius: 1,
+              cursor: 'pointer',
+              minHeight: '40px'
+            }}
+          >
+            <svg width='14' height='18' viewBox='0 0 14 18' fill='none' xmlns='http://www.w3.org/2000/svg'>
+                  <path
+                    d='M9.12 7.47L7 9.59L4.87 7.47L3.46 8.88L5.59 11L3.47 13.12L4.88 14.53L7 12.41L9.12 14.53L10.53 13.12L8.41 11L10.53 8.88L9.12 7.47ZM10.5 1L9.5 0H4.5L3.5 1H0V3H14V1H10.5ZM1 16C1 17.1 1.9 18 3 18H11C12.1 18 13 17.1 13 16V4H1V16ZM3 6H11V16H3V6Z'
+                    fill='#323232'
+                  />
+            </svg>
+          </Box>
+        </Tooltip>
       ),
     }
   }

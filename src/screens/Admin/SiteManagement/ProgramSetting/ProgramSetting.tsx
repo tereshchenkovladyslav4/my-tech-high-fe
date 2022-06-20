@@ -7,31 +7,31 @@ import { Prompt } from 'react-router-dom'
 import { StateLogoFileType } from './StateLogo/StateLogoTypes'
 import { CountyFileType } from './CountySelect/CountySelectTypes'
 import { SchoolDistrictFileType } from './SchoolDistrictSelect/SchoolDistrictSelectTypes'
-import { updateSchoolYearMutation, updateStateNameMutation, uploadFile, uploadImage } from './services'
-import { PageHeader } from './PageHeader'
+import { PageHeader } from '../components/PageHeader'
 import { PageContent } from './PageContent'
 import { SchoolYearSelect } from './SchoolYearSelect'
+import { updateSchoolYearMutation, updateStateNameMutation, uploadFile, uploadImage } from '../services'
 
 const ProgramSetting: React.FC = () => {
   const classes = useStyles
   const { me, setMe } = useContext(UserContext)
-  const [stateName, setStateName] = useState<string>()
+  const [stateName, setStateName] = useState<string>('')
   const [newStateName, setNewStateName] = useState<string>('')
-  const [program, setProgram] = useState<string>()
-  const [specialEd, setSpecialEd] = useState<boolean>()
-  const [enroll, setEnroll] = useState<boolean>()
+  const [program, setProgram] = useState<string>('')
+  const [specialEd, setSpecialEd] = useState<boolean>(false)
+  const [enroll, setEnroll] = useState<boolean>(false)
   const [isInvalidStateName, setIsInvalidStateName] = useState<boolean>(false)
   const [birthDate, setBirthDate] = useState<string>('')
-  const [stateLogo, setStateLogo] = useState<string>()
+  const [stateLogo, setStateLogo] = useState<string>('')
   const [countyArray, setCountyArray] = useState<Array<any>>([])
   const [schoolDistrictArray, setSchoolDistrictArray] = useState<Array<any>>([])
-  const [grades, setGrades] = useState<string>()
-  const [county, setCounty] = useState<CountyFileType>()
-  const [schoolDistrict, setSchoolDistrict] = useState<SchoolDistrictFileType>()
+  const [grades, setGrades] = useState<string>('')
+  const [county, setCounty] = useState<CountyFileType | null>(null)
+  const [schoolDistrict, setSchoolDistrict] = useState<SchoolDistrictFileType | null>(null)
   const [isChanged, setIsChanged] = useState<boolean>(false)
   const [stateInvalid, setStateInvalid] = useState<boolean>(false)
   const [selectedYearId, setSelectedYearId] = useState<string>('')
-  const [stateLogoFile, setStateLogoFile] = useState<StateLogoFileType>()
+  const [stateLogoFile, setStateLogoFile] = useState<StateLogoFileType | null>(null)
   const [submitSave, {}] = useMutation(updateStateNameMutation)
   const [submitSchoolYearSave, {}] = useMutation(updateSchoolYearMutation)
 
@@ -40,17 +40,17 @@ const ProgramSetting: React.FC = () => {
       setStateInvalid(true)
       return
     }
-    let imageLocation: string
+    let imageLocation: string = ''
     if (stateLogoFile) {
       imageLocation = await uploadImage(stateLogoFile.file, stateName)
     }
 
-    let countyFileLocation: string
+    let countyFileLocation: string = ''
     if (county?.file && countyArray.length > 0) {
       countyFileLocation = await uploadFile(county.file, 'county', stateName)
     }
 
-    let schoolDistrictFileLocation: string
+    let schoolDistrictFileLocation: string = ''
     if (schoolDistrict?.file && schoolDistrictArray.length > 0) {
       schoolDistrictFileLocation = await uploadFile(schoolDistrict.file, 'schoolDistrict', stateName)
     }
@@ -58,15 +58,15 @@ const ProgramSetting: React.FC = () => {
     const submitedResponse = await submitSave({
       variables: {
         updateRegionInput: {
-          id: me.selectedRegionId,
+          id: me?.selectedRegionId,
           name: newStateName ? newStateName : stateName,
           program: program,
           state_logo: imageLocation ? imageLocation : stateLogo,
-          county_file_name: county.name,
-          county_file_path: countyFileLocation ? countyFileLocation : county.path,
+          county_file_name: county?.name,
+          county_file_path: countyFileLocation ? countyFileLocation : county?.path,
           county_array: JSON.stringify(countyArray),
-          school_district_file_name: schoolDistrict.name,
-          school_district_file_path: schoolDistrictFileLocation ? schoolDistrictFileLocation : schoolDistrict.path,
+          school_district_file_name: schoolDistrict?.name,
+          school_district_file_path: schoolDistrictFileLocation ? schoolDistrictFileLocation : schoolDistrict?.path,
           school_district_array: JSON.stringify(schoolDistrictArray),
         },
       },
@@ -75,16 +75,15 @@ const ProgramSetting: React.FC = () => {
     setCounty((prev) => {
       return {
         ...prev,
-        path: countyFileLocation ? countyFileLocation : county.path,
+        path: countyFileLocation ? countyFileLocation : county?.path,
       }
     })
 
-    setSchoolDistrict((prev) => {
-      return {
-        ...prev,
-        path: schoolDistrictFileLocation ? schoolDistrictFileLocation : schoolDistrict.path,
-      }
-    })
+    if (schoolDistrict)
+      setSchoolDistrict({
+        ...schoolDistrict,
+        path: schoolDistrictFileLocation ? schoolDistrictFileLocation : schoolDistrict?.path,
+      })
 
     if (selectedYearId && (grades || birthDate || specialEd)) {
       await submitSchoolYearSave({
@@ -101,15 +100,15 @@ const ProgramSetting: React.FC = () => {
     }
 
     const forSaveUpdatedRegion = {
-      region_id: me.selectedRegionId,
+      region_id: me?.selectedRegionId,
       regionDetail: submitedResponse.data.updateRegion,
     }
     setIsChanged(false)
 
     setMe((prevMe) => {
       const updatedRegions = prevMe?.userRegion
-        .map((prevRegion) => {
-          return prevRegion.region_id == me.selectedRegionId ? forSaveUpdatedRegion : prevRegion
+        ?.map((prevRegion) => {
+          return prevRegion.region_id == me?.selectedRegionId ? forSaveUpdatedRegion : prevRegion
         })
         .sort(function (a, b) {
           if (a.regionDetail.name < b.regionDetail.name) {
@@ -129,12 +128,12 @@ const ProgramSetting: React.FC = () => {
   }
 
   useEffect(() => {
-    const selectedRegion = me.userRegion.find((region) => region.region_id === me?.selectedRegionId)
-    setStateName(selectedRegion?.regionDetail?.name)
-    setProgram(selectedRegion?.regionDetail?.program)
-    setStateLogo(selectedRegion?.regionDetail?.state_logo)
+    const selectedRegion = me?.userRegion?.find((region) => region.region_id === me?.selectedRegionId)
+    setStateName(selectedRegion?.regionDetail?.name || '')
+    setProgram(selectedRegion?.regionDetail?.program || '')
+    setStateLogo(selectedRegion?.regionDetail?.state_logo || '')
     setStateLogoFile(null)
-  }, [me.selectedRegionId])
+  }, [me?.selectedRegionId])
 
   return (
     <Box sx={classes.base}>

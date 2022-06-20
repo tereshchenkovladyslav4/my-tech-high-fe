@@ -35,8 +35,8 @@ const insertDescriptions = {
 	teacher: 'Teacher Full Name',
 	link: "The link for the parent to access student's packet",
 	period_list: 'List of Periods that need to be changed',
-	files: 'List of files that need to be uploaded',
-	instructions: 'Where the specific instructions to the parent will be included in the email',
+	files: 'Title for standard response',//'List of files that need to be uploaded',
+	instructions: 'Description for standard response',//'Where the specific instructions to the parent will be included in the email',
 	application_year: 'School Year (2021-2022)',
 	student_grade_level: 'Current grade level (6) (Kindergarten)'
 }
@@ -57,6 +57,7 @@ export const EmailTemplateModal = ({
   const [deadline, setDeadline] = useState('')
   const [type, setType] = useState('standard')
   const [availableInserts, setAvailableInserts] = useState([])
+  const [template_name, setTemplateName] = useState('');
   const [availableInsertDescription, setAvailableInsertDescription] = useState({})
   const editorRef = useRef(null)
   const [currentBlocks, setCurrentBlocks] = useState(0)
@@ -317,12 +318,13 @@ export const EmailTemplateModal = ({
 			setSubject(emailTemplate.subject)
 			setEmailBcc(emailTemplate.bcc)
 			setEmailFrom(emailTemplate.from)
+			setTemplateName(emailTemplate.template_name);
 			setResponses(emailTemplate.standard_responses
 				&& JSON.parse(emailTemplate.standard_responses).length > 0
 							? JSON.parse(emailTemplate.standard_responses) : [],)
 
 			//	Missing info
-			const standard_response_groups_default = [];
+			const standard_response_groups_default: Array<any> = [];
 			const tab = enrollmentQuestionsData.getEnrollmentQuestions.find(x => x.tab_name == "Documents");
 			if(tab) {
 				tab.groups.forEach(group => {
@@ -353,6 +355,8 @@ export const EmailTemplateModal = ({
 			}
 			else if(emailTemplate.template == 'standard_response_groups') {
 				let tmpArr = JSON.parse(emailTemplate.standard_responses);
+				console.log(emailTemplate.standard_responses);
+				console.log(standard_response_groups_default);
 				for(var i = 0; i < tmpArr.length; i++) {
 					if(standard_response_groups_default.find(x => x.id == tmpArr[i].id) == null) {
 						tmpArr.splice(i, 1);
@@ -363,8 +367,10 @@ export const EmailTemplateModal = ({
 					let res = tmpArr.find(x => x.id == group.id);
 					if(res == null)
 						tmpArr.push(group);
-					else
+					else {
 						res.order = group.order;
+						res.title = group.title;
+					}
 				});
 				tmpArr.sort(function(a, b) { return a.order - b.order; });
 				setResponses(tmpArr);
@@ -580,6 +586,7 @@ export const EmailTemplateModal = ({
 						)}
 						{type === 'deadline' && (
 							<>
+								{template_name != 'Packet Accepted' && (
 								<Grid item xs={12}>
 									<Subtitle fontWeight='700' size='large'>
 										Deadline (Days)
@@ -598,6 +605,7 @@ export const EmailTemplateModal = ({
 										))}
 									</Select>
 								</Grid>
+								)}
 								{reminders.map((reminder, i) => (
 									<Box key={i} sx={{ width: '100%' }}>
 										<Grid item xs={12}>

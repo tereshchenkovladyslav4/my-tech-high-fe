@@ -1,5 +1,4 @@
 import { FormControl, Select, MenuItem, TextField, FormHelperText, Divider } from '@mui/material'
-
 import { Box, styled } from '@mui/system'
 import { map } from 'lodash'
 import React, { useEffect, useState } from 'react'
@@ -7,7 +6,6 @@ import { DropDownTemplateType } from './types'
 import { useStyles } from './styles'
 import { SYSTEM_05 } from '../../../../../utils/constants'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
-import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDownOutlined'
 import { makeStyles } from '@material-ui/styles'
 
 const CssTextField = styled(TextField, {
@@ -137,7 +135,7 @@ export const DropDown: DropDownTemplateType = ({
             value={value || ''}
             onChange={(e) => handleChange(e.target.value)}
             InputLabelProps={{
-              style: { color: alternate && SYSTEM_05 },
+              style: { color: alternate ? SYSTEM_05 : '' },
             }}
             select // tell TextField to render select
             label={placeholder}

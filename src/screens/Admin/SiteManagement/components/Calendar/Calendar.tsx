@@ -1,21 +1,18 @@
 import React from 'react'
-import { Box, Button, Typography, IconButton, Stack, TextField } from '@mui/material'
-import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded'
-import { useStyles } from '../../styles'
-import { useHistory } from 'react-router-dom'
+import { Stack, TextField } from '@mui/material'
 import { CalendarProps } from './CalendarProps'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker'
 
-export default function Calendar({ birthDate, handleChange }: CalendarProps) {
+export default function Calendar({ date, label, handleChange }: CalendarProps) {
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <Stack spacing={3}>
+      <Stack spacing={3} marginRight={8}>
         <MobileDatePicker
-          label='Date'
+          label={label || 'Date'}
           inputFormat='MM/dd/yyyy'
-          value={birthDate}
+          value={date}
           onChange={handleChange}
           renderInput={(params) => <TextField {...params} />}
         />

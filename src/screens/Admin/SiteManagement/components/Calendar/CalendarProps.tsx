@@ -1,4 +1,5 @@
 export type CalendarProps = {
-  birthDate: string
-  handleChange?: (value: Date | null) => void
+  date: string | Date | undefined
+  label: string
+  handleChange: (value: Date | null) => void
 }

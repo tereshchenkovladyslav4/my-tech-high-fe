@@ -35,7 +35,6 @@ export const useStyles = {
       background: '#D23C33',
       color: '#fff',
     },
-    marginLeft: 'auto',
   },
   submitButton: {
     background: BUTTON_LINEAR_GRADIENT,
@@ -71,10 +70,10 @@ export const useStyles = {
     minHeight: '53px',
   },
   selectBox: {
-    my: 2,
     paddingLeft: '29px',
     borderRadius: '8px',
     alignItems: 'center',
+    paddingY: 2,
   },
   gradesDialog: {
     marginX: 'auto',

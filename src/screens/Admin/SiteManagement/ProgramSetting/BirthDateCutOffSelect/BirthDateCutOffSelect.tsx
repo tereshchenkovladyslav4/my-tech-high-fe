@@ -18,7 +18,7 @@ export default function BirthDateCutOffSelect({ birthDate, setBirthDate, setIsCh
   }
   return (
     <Box component='form' sx={{ ...classes.gradeBox, maxWidth: '190px' }} noValidate autoComplete='off'>
-      <Calendar birthDate={birthDate} handleChange={handleChange} />
+      <Calendar date={birthDate} label={'Date'} handleChange={handleChange} />
     </Box>
   )
 }

@@ -38,7 +38,7 @@ export default function ImageCropper({ imageToCrop, classes, setStateLogoFile, s
   const handleSave = () => {
     setOpen(false)
     if (typeof cropper !== 'undefined') {
-      cropper.getCroppedCanvas().toBlob((blob) => {
+      cropper.getCroppedCanvas().toBlob((blob: Blob) => {
         const croppedImageFile = blobToFile(blob)
         setStateLogoFile({
           name: croppedImageFile.name,

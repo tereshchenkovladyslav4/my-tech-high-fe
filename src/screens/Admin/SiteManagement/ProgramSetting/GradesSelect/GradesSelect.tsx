@@ -5,7 +5,6 @@ import {
   FormControlLabel,
   FormGroup,
   Checkbox,
-  Typography,
   Stack,
   Dialog,
   DialogTitle,

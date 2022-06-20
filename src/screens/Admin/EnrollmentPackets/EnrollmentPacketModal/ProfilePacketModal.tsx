@@ -179,7 +179,7 @@ export default function ProfilePacketModal({
     }, [initValues])
 
     useEffect(() => {
-      if(questionsData?.length > 0) {
+      if(questionsData?.length > 0 && packetLoading == false) {
         let temp = {...dynamicValues}
         questionsData.map((tab) => {
           tab?.groups?.map((group) => {

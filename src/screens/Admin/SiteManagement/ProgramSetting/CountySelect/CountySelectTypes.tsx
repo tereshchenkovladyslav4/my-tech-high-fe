@@ -5,7 +5,7 @@ export type CountyFileType = {
 }
 
 export type CountySelectProps = {
-  county: CountyFileType
+  county: CountyFileType | null
   setCounty: (value: any) => void
   setCountyArray: (value: any) => void
   setIsChanged: (value: boolean) => void

@@ -1,10 +1,5 @@
-import React, { useState } from 'react'
-import { Box, Button, Typography, IconButton } from '@mui/material'
-import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded'
-import { useStyles } from '../../styles'
-import { useHistory } from 'react-router-dom'
+import React from 'react'
 import { PageContentProps } from './PageContentProps'
-import { ProgramSettingType } from '../types'
 import { StateSelect } from '../StateSelect'
 import { StateLogo } from '../StateLogo'
 import { ProgramSelect } from '../ProgramSelect'
@@ -14,8 +9,8 @@ import { GradesSelect } from '../GradesSelect'
 import { BirthDateCutOffSelect } from '../BirthDateCutOffSelect'
 import { SpecialEdSelect } from '../SpecialEdSelect'
 import EnrollPacketSelect from '../EnrollmentPackets/EnrollmentPacketSelect'
-import { CommonSelect } from '../CommonSelect'
-import { DropDownItem } from '../../components/DropDown/types'
+import { CommonSelect } from '../../components/CommonSelect'
+import { CommonSelectType } from '../../types'
 
 export default function PageContent({
   stateSelectItem,
@@ -29,10 +24,7 @@ export default function PageContent({
   enrollItem,
   setIsChanged,
 }: PageContentProps) {
-  const history = useHistory()
-  const classes = useStyles
-
-  const programSettingList: ProgramSettingType[] = [
+  const programSettingList: CommonSelectType[] = [
     {
       name: 'State',
       component: (

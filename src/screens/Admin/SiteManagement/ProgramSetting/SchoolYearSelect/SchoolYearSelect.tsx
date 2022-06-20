@@ -7,7 +7,7 @@ import { SchoolYears } from '../types'
 import { DropDownItem } from '../../components/DropDown/types'
 import moment from 'moment'
 import { useQuery } from '@apollo/client'
-import { getSchoolYearsByRegionId } from '../services'
+import { getSchoolYearsByRegionId } from '../../services'
 
 export default function SchoolYearSelect({
   setSelectedYearId,
@@ -29,11 +29,11 @@ export default function SchoolYearSelect({
     skip: me?.selectedRegionId ? false : true,
     fetchPolicy: 'network-only',
   })
-  const handleSelectYear = (val) => {
+  const handleSelectYear = (val: string = '') => {
     setSelectedYearId(val)
     if (schoolYears && schoolYears.length > 0) {
       schoolYears.forEach((schoolYear) => {
-        if (val == schoolYear.schoolYearId) {
+        if (val == schoolYear.schoolYearId.toString()) {
           setSpecialEd(schoolYear.specialEd)
           setEnroll(schoolYear.enrollmentPacket)
           setBirthDate(schoolYear.birthDateCut)
@@ -43,7 +43,7 @@ export default function SchoolYearSelect({
     }
   }
 
-  const setDropYears = (schoolYearsArr) => {
+  const setDropYears = (schoolYearsArr: SchoolYears[]) => {
     let dropYears: DropDownItem[] = []
     if (schoolYearsArr && schoolYearsArr.length > 0) {
       schoolYearsArr.forEach((schoolYear) => {
@@ -52,7 +52,7 @@ export default function SchoolYearSelect({
           parseInt(moment(schoolYear.schoolYearClose).format('YYYY')) <= parseInt(moment().format('YYYY')) + 1 &&
           selectedYearId == ''
         ) {
-          setSelectedYearId(schoolYear.schoolYearId)
+          setSelectedYearId(schoolYear.schoolYearId.toString())
           setSpecialEd(schoolYear.specialEd)
           setEnroll(schoolYear.enrollmentPacket)
           setBirthDate(schoolYear.birthDateCut)
@@ -74,17 +74,17 @@ export default function SchoolYearSelect({
       setCounty({
         name: schoolYearData?.data?.region.county_file_name,
         path: schoolYearData?.data?.region.county_file_path,
-        file: null,
+        file: undefined,
       })
       setSchoolDistrict({
         name: schoolYearData?.data?.region.school_district_file_name,
         path: schoolYearData?.data?.region.school_district_file_path,
-        file: null,
+        file: undefined,
       })
       let cnt = 0
       const { SchoolYears } = schoolYearData?.data?.region
       setSchoolYears(
-        SchoolYears?.map((schoolYear) => {
+        SchoolYears?.map((schoolYear: any) => {
           if (selectedYearId == schoolYear.school_year_id) {
             setSpecialEd(schoolYear.special_ed)
             setEnroll(schoolYear.enrollment_packet)
@@ -101,7 +101,7 @@ export default function SchoolYearSelect({
             specialEd: schoolYear.special_ed,
             enrollmentPacket: schoolYear.enrollment_packet,
           }
-        }).sort((a, b) => {
+        }).sort((a: SchoolYears, b: SchoolYears) => {
           if (new Date(a.schoolYearOpen) > new Date(b.schoolYearOpen)) return 1
           else if (new Date(a.schoolYearOpen) == new Date(b.schoolYearOpen)) return 0
           else return -1
@@ -111,11 +111,11 @@ export default function SchoolYearSelect({
         setSelectedYearId('')
         setSpecialEd(false)
         setEnroll(false)
-        setBirthDate(null)
-        setGrades(null)
+        setBirthDate('')
+        setGrades('')
       }
     }
-  }, [me.selectedRegionId, schoolYearData?.data?.region])
+  }, [me?.selectedRegionId, schoolYearData?.data?.region])
 
   useEffect(() => {
     setDropYears(schoolYears)
@@ -128,7 +128,7 @@ export default function SchoolYearSelect({
         defaultValue={selectedYearId}
         sx={{ width: '200px' }}
         borderNone={true}
-        setParentValue={(val, index) => {
+        setParentValue={(val) => {
           handleSelectYear(val)
         }}
       />

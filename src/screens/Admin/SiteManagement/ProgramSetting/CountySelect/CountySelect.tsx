@@ -12,8 +12,8 @@ import DownloadFileIcon from '../../../../../assets/icons/file-download.svg'
 import { Tooltip } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import { useMutation } from '@apollo/client'
-import { removeCountyInfoByRegionId, removeFileByFileId } from '../services'
 import { UserContext } from '../../../../../providers/UserContext/UserProvider'
+import { removeCountyInfoByRegionId, removeFileByFileId } from '../../services'
 
 const useStyles = makeStyles(() => ({
   customTooltip: {
@@ -39,13 +39,13 @@ export default function CountySelect({ county, setCounty, setCountyArray, setIsC
   const invalidMessage = 'Please only submit CSV or Excel File'
 
   const classes = useStyles()
-  const handleFile = (fileName: File) => {
-    const countyArray = []
+  const handleFile = (fileName: File[]) => {
+    const countyArray: any[] = []
     Papa.parse(fileName[0], {
       header: true,
       skipEmptyLines: true,
-      complete: function (results) {
-        results?.data.forEach((ele) => {
+      complete: function (results: any) {
+        results?.data.forEach((ele: any) => {
           let obj: any = {}
           if (Object.keys(ele).includes('County Name')) {
             obj.county_name = Object.values(ele)[0]
@@ -102,7 +102,7 @@ export default function CountySelect({ county, setCounty, setCountyArray, setIsC
   }
 
   const handleDownload = () => {
-    window.open(county.path)
+    window.open(county?.path)
   }
 
   const handleClickOpen = () => {

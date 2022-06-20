@@ -152,6 +152,11 @@ export const HomeroomGrade: FunctionComponent<HomeroomGradeProps> = ({ schoolYea
                 ))
             , mr: '20px'
             }}>
+            <style dangerouslySetInnerHTML={{__html: `
+              .slick-track {
+                display: flex;
+              }
+            `}} />
             <Slider {...settings} ref={sliderRef}>
               {renderStudents()}
             </Slider>

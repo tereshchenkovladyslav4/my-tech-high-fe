@@ -10,7 +10,7 @@ import {
   SNOWPACK_PUBLIC_SCHOOL_DISTRICT_TEMPLATE,
   SYSTEM_06,
 } from '../../../../../utils/constants'
-import { filter, has, includes, isEqual, map, pull, remove } from 'lodash'
+import { filter, has, includes, map, pull } from 'lodash'
 import { FileListItem } from './FileListItem'
 import UploadFileIcon from '../../../../../assets/icons/file-upload.svg'
 
@@ -18,10 +18,6 @@ interface HTMLInputEvent extends Event {
   target: HTMLInputElement & EventTarget & File
 }
 
-type ValidateFileResponse = {
-  status: boolean
-  message?: string
-}
 export const FileUploadModal: FileUploadModalTemplateType = ({
   handleModem,
   handleFile,
@@ -40,7 +36,7 @@ export const FileUploadModal: FileUploadModalTemplateType = ({
 
   useEffect(() => {
     let filteredArr = selectedFiles.reduce((acc, current) => {
-      const x = acc.find((item) => item.name === current.name)
+      const x = acc.find((item) => item?.name === current?.name)
       if (!x) {
         return acc.concat([current])
       } else {
@@ -69,7 +65,7 @@ export const FileUploadModal: FileUploadModalTemplateType = ({
 
   const fileDrop = (e: HTMLInputEvent) => {
     preventDefault(e)
-    const files = e.dataTransfer.files
+    const files = e?.dataTransfer?.files
     addDeletedFiles(files)
     if (limit && files.length > limit) {
       setErrorMessage(`File submission limited to ${limit} files`)
@@ -78,19 +74,19 @@ export const FileUploadModal: FileUploadModalTemplateType = ({
     }
   }
 
-  const filesSelected = (e: any) => {
+  const filesSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
     setErrorMessage('')
     const files = e.target.files as File[]
     addDeletedFiles(files)
     handleFiles(files as unknown as FileList[])
   }
 
-  const readFile = (file) => {
+  const readFile = (file: File) => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader()
       reader.readAsText(file)
       reader.onloadend = (event) => {
-        const parsedFile = csvToArray(event.target.result)
+        const parsedFile = csvToArray(event?.target?.result)
         let isValid
         if (type === 'county') {
           isValid = map(parsedFile, (currFile) => has(currFile, 'County Name\r'))
@@ -110,7 +106,7 @@ export const FileUploadModal: FileUploadModalTemplateType = ({
     })
   }
 
-  const addDeletedFiles = (files) => {
+  const addDeletedFiles = (files: File[]) => {
     map(files, (file) => {
       if (includes(JSON.stringify(deletedFiles), JSON.stringify(file))) {
         setDeletedFiles((prev) => {
@@ -137,7 +133,7 @@ export const FileUploadModal: FileUploadModalTemplateType = ({
     }
   }
 
-  const csvToArray = (str, delimiter = ',') => {
+  const csvToArray = (str: string, delimiter = ',') => {
     // slice from start of text to the first \n index
     // use split to create an array from string by delimiter
     const headers = str.slice(0, str.indexOf('\n')).split(delimiter)

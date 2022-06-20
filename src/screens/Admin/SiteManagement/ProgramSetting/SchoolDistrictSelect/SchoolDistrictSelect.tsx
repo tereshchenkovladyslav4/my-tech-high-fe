@@ -10,10 +10,10 @@ import { SchoolDistrictFileType } from './SchoolDistrictSelectTypes'
 import CustomModal from '../../EnrollmentSetting/components/CustomModal/CustomModals'
 import DownloadFileIcon from '../../../../../assets/icons/file-download.svg'
 import { useMutation } from '@apollo/client'
-import { removeFileByFileId, removeSchoolDistrictInfoByRegionId } from '../services'
 import { UserContext } from '../../../../../providers/UserContext/UserProvider'
 import { Tooltip } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
+import { removeFileByFileId, removeSchoolDistrictInfoByRegionId } from '../../services'
 
 const useStyles = makeStyles(() => ({
   customTooltip: {
@@ -44,8 +44,8 @@ export default function SchoolDistrictSelect({
     '.csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel, text/csv'
   const invalidMessage = 'Please only submit CSV or Excel File'
 
-  const handleFile = (fileName: File) => {
-    const schoolDistrictArray = []
+  const handleFile = (fileName: File[]) => {
+    const schoolDistrictArray: any[] = []
     const data: SchoolDistrictFileType = {
       name: fileName ? fileName[0]?.name : '',
       path: '',
@@ -54,8 +54,8 @@ export default function SchoolDistrictSelect({
     Papa.parse(fileName[0], {
       header: true,
       skipEmptyLines: true,
-      complete: function (results) {
-        results?.data.forEach((ele) => {
+      complete: function (results: any) {
+        results?.data.forEach((ele: any) => {
           let obj: any = {}
           if (Object.keys(ele).includes('School District Name')) {
             obj.school_district_name = Object.values(ele)[0]
@@ -110,7 +110,7 @@ export default function SchoolDistrictSelect({
   }
 
   const handleDownload = () => {
-    window.open(schoolDistrict.path)
+    window.open(schoolDistrict?.path)
   }
 
   const handleClickOpen = () => {

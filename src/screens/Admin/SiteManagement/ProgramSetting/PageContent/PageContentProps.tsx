@@ -14,7 +14,7 @@ export type PageContentProps = {
   stateLogoItem: {
     stateLogo: string
     setStateLogo: (value: string) => void
-    stateLogoFile: StateLogoFileType
+    stateLogoFile: StateLogoFileType | null
     setStateLogoFile: (value: StateLogoFileType) => void
   }
   programItem: {
@@ -22,12 +22,12 @@ export type PageContentProps = {
     setProgram: (value: string) => void
   }
   countyItem: {
-    county: CountyFileType
+    county: CountyFileType | null
     setCounty: (value: CountyFileType) => void
     setCountyArray: (value: Array<any>) => void
   }
   schoolDistrictItem: {
-    schoolDistrict: SchoolDistrictFileType
+    schoolDistrict: SchoolDistrictFileType | null
     setSchoolDistrict: (value: SchoolDistrictFileType) => void
     setSchoolDistrictArray: (value: Array<any>) => void
   }
