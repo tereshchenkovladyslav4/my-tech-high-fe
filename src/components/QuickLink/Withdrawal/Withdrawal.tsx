@@ -304,7 +304,7 @@ const WithDrawal: React.FC<
 											StudentId: parseInt(vals[0].response),
 											date: new Date().toISOString(),
 											date_effective: vals[1].response,
-											//reason_txt: JSON.stringify(vals.map(v => v).splice(2)),
+											response: JSON.stringify(vals.map(v => v).splice(2)),
 											status: 'Requested'
 										}
 									}

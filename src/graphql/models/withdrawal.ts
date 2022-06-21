@@ -7,4 +7,5 @@ export type Withdrawal = {
 	date_effective: Date;
 	funding: boolean;
 	date_emailed: Date;
+	response: string;
 };

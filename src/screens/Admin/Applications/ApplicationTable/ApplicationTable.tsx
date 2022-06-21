@@ -54,7 +54,6 @@ export const ApplicationTable = ({ filter }) => {
   const [tableData, setTableData] = useState<Array<any>>([])
   const [applicationIds, setApplicationIds] = useState<Array<string>>([])
   const [currentPage, setCurrentPage] = useState<number>(1)
-  const [acceptMidYear, setAcceptMidYear] = useState<boolean>(false)
   const [openEditModal, setOpenEditModal] = useState<boolean>(false)
   const [schoolYears, setSchoolYears] = useState([])
   const [editData, setEditData] = useState<any>()
@@ -83,7 +82,9 @@ export const ApplicationTable = ({ filter }) => {
       emailed:
         application.application_emails.length > 0 ? (
           <Box sx={{ cursor: 'pointer' }} onClick={() => handleOpenEmailHistory(application)}>
-            {moment(application.application_emails[application.application_emails.length -1].created_at).format('MM/DD/YY')}
+            {moment(application.application_emails[application.application_emails.length - 1].created_at).format(
+              'MM/DD/YY',
+            )}
           </Box>
         ) : null,
       actions: (
@@ -156,7 +157,7 @@ export const ApplicationTable = ({ filter }) => {
   } = useQuery(getEmailTemplateQuery, {
     variables: {
       template: 'Application Page',
-      regionId: me?.selectedRegionId
+      regionId: me?.selectedRegionId,
     },
     fetchPolicy: 'network-only',
   })
@@ -302,7 +303,7 @@ export const ApplicationTable = ({ filter }) => {
         },
       },
     })
-    setApplicationIds([]);
+    setApplicationIds([])
     refetch()
   }
 
@@ -318,7 +319,7 @@ export const ApplicationTable = ({ filter }) => {
         },
       },
     })
-    setApplicationIds([]);
+    setApplicationIds([])
     refetch()
   }
 
@@ -336,7 +337,6 @@ export const ApplicationTable = ({ filter }) => {
       variables: {
         acceptApplicationInput: {
           application_ids: applicationIds,
-          midyear_application: acceptMidYear,
         },
       },
     })
@@ -410,10 +410,6 @@ export const ApplicationTable = ({ filter }) => {
       },
     })
     refetch()
-  }
-
-  const handleChangeMidYer = (e) => {
-    setAcceptMidYear(e.target.checked)
   }
 
   const handleEditApplication = (data) => {
@@ -652,12 +648,6 @@ export const ApplicationTable = ({ filter }) => {
           >
             Accept
           </Button>
-          <FormGroup>
-            <FormControlLabel
-              control={<Checkbox value={acceptMidYear} onChange={handleChangeMidYer} />}
-              label='Accept as Mid-year'
-            />
-          </FormGroup>
         </Box>
         <Pagination
           setParentLimit={handleChangePageLimit}
