@@ -69,6 +69,8 @@ export const Users = () => {
 
   const [becomeUserAction, { data: userData, loading: userLoading, error: userError }] = useMutation(becomeUserMutation)
 
+
+
   const becomeUser = (id) => {
     becomeUserAction({
       variables: {
@@ -77,6 +79,7 @@ export const Users = () => {
     })
       .then((resp) => {
         localStorage.setItem('masquerade', resp.data.masqueradeUser.jwt)
+        localStorage.setItem('previousPage', '/users')
       })
       .then(() => {
         history.push(DASHBOARD)

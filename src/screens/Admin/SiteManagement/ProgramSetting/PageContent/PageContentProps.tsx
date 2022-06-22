@@ -42,6 +42,8 @@ export type PageContentProps = {
   specialEdItem: {
     specialEd: boolean
     setSpecialEd: (value: boolean) => void
+    speicalEdOptions: Array<any>
+    setSpecialEdOptions: (value: Array<any>) => void
   }
   enrollItem: {
     enroll: boolean

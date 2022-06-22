@@ -5,7 +5,7 @@ import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
 import { useStyles } from './styles'
 import { CALENDAR } from '../../../../utils/constants'
 import { useHistory } from 'react-router-dom'
-import { EventType } from '../types'
+import { EventType, EventTypeResponseVM } from '../types'
 import { EditEventType } from './EditEventType'
 import { EditEventTypeModal } from './EditEventTypeModal'
 import CustomModal from '../../SiteManagement/EnrollmentSetting/components/CustomModal/CustomModals'
@@ -77,7 +77,7 @@ const EditTypeComponent = () => {
   useEffect(() => {
     if (!loading && data?.eventTypes) {
       setEventTypes(
-        data?.eventTypes.map((eventType: any) => ({
+        data?.eventTypes.map((eventType: EventTypeResponseVM) => ({
           id: Number(eventType.event_type_id),
           name: eventType.name,
           color: eventType.color,

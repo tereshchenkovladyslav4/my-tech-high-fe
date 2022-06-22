@@ -1,5 +1,5 @@
 import { Box, Button, Card, Grid, IconButton } from '@mui/material'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded'
 import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
 import { CALENDAR } from '../../../../utils/constants'
@@ -7,24 +7,36 @@ import { Prompt, useHistory } from 'react-router-dom'
 import { useStyles } from './styles'
 import EditEventComponent from './Component/EditEventComponent'
 import FilterComponent from './Component/FilterComponent'
-import { EventInvalidOption, EventVM } from '../types'
+import { AddEventComponentProps, EventInvalidOption, EventVM } from '../types'
 import CustomModal from '../../SiteManagement/EnrollmentSetting/components/CustomModal/CustomModals'
 import { useMutation } from '@apollo/client'
-import { createEventMutation } from '../EditTypeComponent/services'
-import moment from 'moment'
+import { updateEventMutation } from '../EditTypeComponent/services'
 import { RSVPComponent } from '../RSVPComponent'
+import { convertDateToUTCDate } from '../../../../utils/utils'
+import moment from 'moment'
 
-const AddEventComponent = () => {
+const AddEventComponent = ({ selectedEvent }: AddEventComponentProps) => {
   const classes = useStyles
   const history = useHistory()
   const [event, setEvent] = useState<EventVM>({
     title: '',
-    type: 0,
+    eventTypeId: 0,
     startDate: new Date(),
     endDate: new Date(),
-    time: '',
-    description: '',
+    time: moment(new Date()).format('HH:mm'),
   })
+  useEffect(() => {
+    if (selectedEvent) {
+      setEvent(selectedEvent)
+      if (selectedEvent?.filters?.grades) setGrades(JSON.parse(selectedEvent?.filters?.grades))
+      if (selectedEvent?.filters?.programYear) setProgramYears(JSON.parse(selectedEvent?.filters?.programYear))
+      if (selectedEvent?.filters?.users) setUsers(JSON.parse(selectedEvent?.filters?.users))
+      if (selectedEvent?.filters?.schoolOfEnrollment)
+        setSchoolofEnrollment(JSON.parse(selectedEvent?.filters?.schoolOfEnrollment))
+      if (selectedEvent?.filters?.other) setOthers(JSON.parse(selectedEvent?.filters?.other))
+      if (selectedEvent?.filters?.provider) setProviders(JSON.parse(selectedEvent?.filters?.provider))
+    }
+  }, [selectedEvent])
   const [isChanged, setIsChanged] = useState<boolean>(false)
   const [invalidOption, setInvalidOption] = useState<EventInvalidOption>({
     title: {
@@ -56,38 +68,40 @@ const AddEventComponent = () => {
   const [others, setOthers] = useState<string[]>([])
   const [providers, setProviders] = useState<string[]>([])
   const [showRSVPForm, setShowRSVPForm] = useState<boolean>(false)
-  const [submitCreate, {}] = useMutation(createEventMutation)
+  const [submitSave, {}] = useMutation(updateEventMutation)
   const validation = (): boolean => {
     if (
-      event.title &&
+      event?.title &&
       event.title.length < 100 &&
-      event.type &&
+      event.eventTypeId &&
       event.startDate &&
       event.endDate &&
-      event.description
+      event.startDate <= event.endDate &&
+      event.description &&
+      event.description.length > 9
     ) {
       return true
     } else {
       setInvalidOption({
         title: {
-          status: event.title && event.title.length < 100 ? false : true,
-          message: event.title && event.title.length < 100 ? '' : 'Invalid Title',
+          status: event?.title && event?.title.length < 100 ? false : true,
+          message: event?.title && event?.title.length < 100 ? '' : 'Title Required',
         },
         type: {
-          status: event.type ? false : true,
-          message: event.type ? '' : 'Invalid Type',
+          status: event?.eventTypeId ? false : true,
+          message: event?.eventTypeId ? '' : 'Type Required',
         },
         startDate: {
-          status: event.startDate ? false : true,
-          message: event.startDate ? '' : 'Invalid Start Date',
+          status: event?.startDate ? false : true,
+          message: event?.startDate ? '' : 'Invalid Start Date',
         },
         endDate: {
-          status: event.endDate ? false : true,
-          message: event.endDate ? '' : 'Invalid End Date',
+          status: event?.startDate && event?.endDate && event?.startDate <= event?.endDate ? false : true,
+          message: event?.startDate && event?.endDate && event?.startDate <= event?.endDate ? '' : 'Invalid End Date',
         },
         description: {
-          status: event.description ? false : true,
-          message: event.description ? '' : 'Invalid Description',
+          status: event?.description && event.description.length > 9 ? false : true,
+          message: event?.description && event.description.length > 9 ? '' : 'Description Required',
         },
       })
       return false
@@ -96,16 +110,17 @@ const AddEventComponent = () => {
   const handleCancelClick = () => {
     history.push(CALENDAR)
   }
+
   const handleSaveClick = async () => {
     if (validation()) {
-      await submitCreate({
+      await submitSave({
         variables: {
           createEventInput: {
-            TypeId: event?.type,
+            event_id: event?.eventId,
+            TypeId: event?.eventTypeId,
             description: event?.description,
-            end_date: moment(event?.endDate).format('yyyy-MM-DD'),
-            start_date: moment(event?.startDate).format('yyyy-MM-DD'),
-            time: event?.time,
+            end_date: convertDateToUTCDate(event?.endDate, event?.time),
+            start_date: convertDateToUTCDate(event?.startDate, event?.time),
             title: event?.title,
             filter_grades: JSON.stringify(grades.filter((grade) => grade)),
             filter_other: JSON.stringify(others),
@@ -142,7 +157,7 @@ const AddEventComponent = () => {
                 <ArrowBackIosRoundedIcon sx={classes.arrowButton} />
               </IconButton>
               <Subtitle size='medium' sx={{ fontSize: '20px' }} fontWeight='700'>
-                Add Event
+                {selectedEvent?.eventId ? 'Edit Event' : 'Add Event'}
               </Subtitle>
             </Box>
             <Box sx={classes.pageTopRight}>
@@ -202,7 +217,7 @@ const AddEventComponent = () => {
           onConfirm={() => {
             setShowCancelModal(false)
             setIsChanged(false)
-            history.push(CALENDAR)
+            setTimeout(() => history.push(CALENDAR), 300)
           }}
         />
       )}

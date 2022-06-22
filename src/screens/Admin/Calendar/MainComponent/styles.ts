@@ -66,7 +66,7 @@ export const useStyles = {
   clubButton: {
     mt: 1.5,
     background: '#2b9db72b',
-    width: 72,
+    width: 'auto',
   },
   arrowButton: {
     background: '#FAFAFA',

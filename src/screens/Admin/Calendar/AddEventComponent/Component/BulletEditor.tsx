@@ -4,6 +4,7 @@ import Wysiwyg from 'react-draft-wysiwyg'
 import draftToHtml from 'draftjs-to-html'
 import { useStyles } from '../styles'
 import { Box } from '@mui/material'
+import htmlToDraft from 'html-to-draftjs'
 
 type BulletEditorProps = {
   value?: string
@@ -14,9 +15,9 @@ const BulletEditor = ({ value, setValue }: BulletEditorProps) => {
   const classes = useStyles
   const [currentBlocks, setCurrentBlocks] = useState<number>(0)
   const editorRef = useRef(null)
-  const [editorState, setEditorState] = useState(
-    EditorState.createWithContent(ContentState.createFromText(value || '')),
-  )
+  const contentBlock = htmlToDraft(value || '')
+  const contentState = ContentState.createFromBlockArray(contentBlock.contentBlocks)
+  const [editorState, setEditorState] = useState(EditorState.createWithContent(contentState))
 
   const handleEditorChange = (state: any) => {
     try {

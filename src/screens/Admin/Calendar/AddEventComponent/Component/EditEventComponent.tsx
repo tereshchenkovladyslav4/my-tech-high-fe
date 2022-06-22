@@ -8,20 +8,12 @@ import { UserContext } from '../../../../../providers/UserContext/UserProvider'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
-import moment from 'moment'
 import BulletEditor from './BulletEditor'
 import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
 import { RED } from '../../../../../utils/constants'
-import { EventVM, EventInvalidOption } from '../../types'
+import { EditEventComponentProps } from '../../types'
+import { useStyles } from '../styles'
 
-type EditEventComponentProps = {
-  event: EventVM
-  invalidOption: EventInvalidOption
-  setEvent: (value: EventVM) => void
-  setInvalidOption: (value: EventInvalidOption) => void
-  setIsChanged: (value: boolean) => void
-  handleAddRSVPClick: () => void
-}
 const EditEventComponent = ({
   event,
   setEvent,
@@ -31,6 +23,7 @@ const EditEventComponent = ({
   handleAddRSVPClick,
 }: EditEventComponentProps) => {
   const { me } = useContext(UserContext)
+  const classes = useStyles
   const [eventTypes, setEventTypes] = useState<DropDownItem[]>([])
   const { loading, data } = useQuery(getEventTypesQuery, {
     variables: {
@@ -78,12 +71,12 @@ const EditEventComponent = ({
           placeholder='Type'
           labelTop
           setParentValue={(value) => {
-            setEvent({ ...event, type: Number(value) })
+            setEvent({ ...event, eventTypeId: Number(value) })
             setIsChanged(true)
             setInvalidOption({ ...invalidOption, type: { status: false, message: '' } })
           }}
           size='medium'
-          defaultValue={`${event?.type}`}
+          defaultValue={`${event?.eventTypeId}`}
         />
         {invalidOption?.type.status && (
           <Subtitle size={'small'} sx={{ color: RED, width: '65%' }}>
@@ -138,7 +131,7 @@ const EditEventComponent = ({
         label='Time'
         type='time'
         size='small'
-        defaultValue={moment(new Date()).format('HH:mm')}
+        defaultValue={event?.time}
         InputLabelProps={{
           shrink: true,
         }}
@@ -153,15 +146,7 @@ const EditEventComponent = ({
       />
       <Button
         variant={'outlined'}
-        sx={{
-          color: '#000',
-          borderRadius: 1,
-          textTransform: 'none',
-          height: 37,
-          whiteSpace: 'nowrap',
-          my: 1,
-          width: '65%',
-        }}
+        sx={classes.addRSVPButton}
         onClick={() => {
           handleAddRSVPClick()
         }}
@@ -169,14 +154,26 @@ const EditEventComponent = ({
         Add RSVP Form
       </Button>
       <Box sx={{ my: 1, width: '65%' }}>
-        <BulletEditor
-          value={event?.description}
-          setValue={(value) => {
-            setEvent({ ...event, description: value })
-            setIsChanged(true)
-            setInvalidOption({ ...invalidOption, description: { status: false, message: '' } })
-          }}
-        />
+        {!event?.eventId && (
+          <BulletEditor
+            value={event.description}
+            setValue={(value) => {
+              setEvent({ ...event, description: value })
+              setIsChanged(true)
+              setInvalidOption({ ...invalidOption, description: { status: false, message: '' } })
+            }}
+          />
+        )}
+        {event?.eventId && event?.eventId > 0 && event?.description && (
+          <BulletEditor
+            value={event.description}
+            setValue={(value) => {
+              setEvent({ ...event, description: value })
+              setIsChanged(true)
+              setInvalidOption({ ...invalidOption, description: { status: false, message: '' } })
+            }}
+          />
+        )}
       </Box>
       {invalidOption?.description.status && (
         <Subtitle size={'small'} sx={{ color: RED, width: '65%' }}>

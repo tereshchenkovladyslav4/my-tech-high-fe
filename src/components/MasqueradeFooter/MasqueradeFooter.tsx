@@ -1,6 +1,8 @@
 import { Box, Avatar, Button } from '@mui/material'
 import React from 'react'
+import { useHistory } from 'react-router-dom'
 import { Person } from '../../screens/HomeroomStudentProfile/Student/types'
+import { DASHBOARD } from '../../utils/constants'
 import { Paragraph } from '../Typography/Paragraph/Paragraph'
 
 export const MasqueradeFooter = ({me}) => {
@@ -11,6 +13,9 @@ export const MasqueradeFooter = ({me}) => {
     const s3URL = 'https://infocenter-v2-dev.s3.us-west-2.amazonaws.com/'
     return s3URL + person?.photo
   }
+
+	const history = useHistory()
+
 
 	return (
 		<Box 
@@ -25,6 +30,7 @@ export const MasqueradeFooter = ({me}) => {
 				justifyContent: 'space-between',
 				paddingX: 10,
 				alignContent: 'center',
+				paddingY: 2,
 			}} 
 		>
 		<Box sx={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
@@ -47,10 +53,11 @@ export const MasqueradeFooter = ({me}) => {
 				variant='contained'
 				onClick={() => {
 					localStorage.removeItem('masquerade')
-					location.reload()
+					const prevPage = localStorage.getItem('previousPage')
+					history.push(prevPage || DASHBOARD)
+					location.reload()	
 				}}
 				sx={{
-					height: '53px',
 					background: 'rgba(231, 231, 231, 1)',
 					color: 'black',
 					borderRadius: '33.33440017700195px',
@@ -58,6 +65,8 @@ export const MasqueradeFooter = ({me}) => {
 						background: '#000',
 						color: '#fff',
 					},
+					paddingY: 1,
+					paddingX: 4,
 				}}
 			> 
 				Stop Acting as User

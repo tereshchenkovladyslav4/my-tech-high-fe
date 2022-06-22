@@ -20,6 +20,7 @@ const ProgramSetting: React.FC = () => {
   const [program, setProgram] = useState<string>('')
   const [specialEd, setSpecialEd] = useState<boolean>(false)
   const [enroll, setEnroll] = useState<boolean>(false)
+  const [specialEdOptions, setSpecialEdOptions] = useState([]);
   const [isInvalidStateName, setIsInvalidStateName] = useState<boolean>(false)
   const [birthDate, setBirthDate] = useState<string>('')
   const [stateLogo, setStateLogo] = useState<string>('')
@@ -86,6 +87,13 @@ const ProgramSetting: React.FC = () => {
       })
 
     if (selectedYearId && (grades || birthDate || specialEd)) {
+      var special_ed_options = '';
+      specialEdOptions.map((option) => {
+        if (option.option_value != '')
+        special_ed_options += option.option_value + ','
+      });
+      special_ed_options = special_ed_options.slice(0, -1);
+      
       await submitSchoolYearSave({
         variables: {
           updateSchoolYearInput: {
@@ -93,6 +101,7 @@ const ProgramSetting: React.FC = () => {
             grades: grades,
             birth_date_cut: birthDate,
             special_ed: specialEd,
+            special_ed_options: special_ed_options,
             enrollment_packet: enroll,
           },
         },
@@ -148,6 +157,7 @@ const ProgramSetting: React.FC = () => {
       <SchoolYearSelect
         setSelectedYearId={setSelectedYearId}
         setSpecialEd={setSpecialEd}
+        setSpecialEdOptions={setSpecialEdOptions}
         setEnroll={setEnroll}
         setBirthDate={setBirthDate}
         setGrades={setGrades}
@@ -170,7 +180,7 @@ const ProgramSetting: React.FC = () => {
         schoolDistrictItem={{ schoolDistrict, setSchoolDistrict, setSchoolDistrictArray }}
         gradesItem={{ grades, setGrades }}
         birthDayCutItem={{ birthDate, setBirthDate }}
-        specialEdItem={{ specialEd, setSpecialEd }}
+        specialEdItem={{ specialEd, setSpecialEd, specialEdOptions, setSpecialEdOptions }}
         enrollItem={{ enroll, setEnroll }}
         setIsChanged={setIsChanged}
       />

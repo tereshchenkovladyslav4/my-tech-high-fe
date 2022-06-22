@@ -28,6 +28,7 @@ import SiteManagement from '../screens/Admin/SiteManagement/SiteManagement'
 import { Withdrawals } from '../screens/Admin/Withdrawals'
 import { Announcements } from '../screens/Admin/Announcements'
 import { Calendar } from '../screens/Admin/Calendar'
+import { UserContext } from '../providers/UserContext/UserProvider'
 
 export const AdminRoutes: FunctionComponent = () => {
   return (

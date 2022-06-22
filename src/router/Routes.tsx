@@ -1,6 +1,6 @@
 import { find } from 'lodash'
 import React, { FunctionComponent, useContext, useEffect, useState } from 'react'
-import { Route, Switch } from 'react-router-dom'
+import { Redirect, Route, Switch } from 'react-router-dom'
 import { QuickLinks } from '../components/QuickLink/QuickLinks'
 import { UserContext, UserInfo } from '../providers/UserContext/UserProvider'
 import { AdminDashboard } from '../screens/Admin/Dashboard/AdminDashboard'
@@ -23,7 +23,7 @@ export const Routes: FunctionComponent = () => {
   return (
     <Switch>
       <Route exact path={DASHBOARD}>
-        {isSuper ? <AdminDashboard /> : <Dashboard />}
+        <Dashboard />
       </Route>
       <Route
         exact
@@ -64,14 +64,8 @@ export const Routes: FunctionComponent = () => {
       <Route path={HOMEROOM}>
         <Homeroom />
       </Route>
-      <Route path={ENROLLMENT}>
-        <AdminEnrollment />
-      </Route>
       <Route path={APPLICATIONS}>
         <Applications />
-      </Route>
-      <Route path={USERS}>
-        <Users />
       </Route>
       <Route path={SETTINGS}>
         <Settings />
@@ -79,6 +73,7 @@ export const Routes: FunctionComponent = () => {
       <Route path={PARENT_LINK}>
         <QuickLinks />
       </Route>
+      <Route render={() => <Redirect to={{pathname: "/"}} />} />
     </Switch>
   )
 }

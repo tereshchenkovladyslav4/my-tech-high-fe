@@ -586,7 +586,6 @@ export const EmailTemplateModal = ({
 						)}
 						{type === 'deadline' && (
 							<>
-								{template_name != 'Packet Accepted' && (
 								<Grid item xs={12}>
 									<Subtitle fontWeight='700' size='large'>
 										Deadline (Days)
@@ -604,8 +603,7 @@ export const EmailTemplateModal = ({
 											</MenuItem>
 										))}
 									</Select>
-								</Grid>
-								)}
+								</Grid>								
 								{reminders.map((reminder, i) => (
 									<Box key={i} sx={{ width: '100%' }}>
 										<Grid item xs={12}>

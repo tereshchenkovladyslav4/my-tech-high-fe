@@ -10,11 +10,11 @@ import { DropDown } from '../../../../components/DropDown/DropDown'
 import SearchIcon from '@mui/icons-material/Search'
 
 type HeaderComponentProps = {
-  searchField: string
-  setSearchField: (value: string) => void
+  searchField: string | undefined
+  setSearchField?: (value: string | undefined) => void
 }
 
-const HeaderComponent = ({ searchField, setSearchField }: HeaderComponentProps) => {
+const HeaderComponent = ({ searchField }: HeaderComponentProps) => {
   const classes = useStyles
   const history = useHistory()
   return (
@@ -57,7 +57,7 @@ const HeaderComponent = ({ searchField, setSearchField }: HeaderComponentProps) 
             onBlur={(e) => (e.target.placeholder = 'Search Event')}
             size='small'
             fullWidth
-            value={searchField}
+            value={searchField ? searchField : ''}
             placeholder='Search Event'
             onChange={(e) => {}}
             startAdornment={

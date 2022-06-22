@@ -50,6 +50,7 @@ export const AdminAppBar: FunctionComponent = () => {
 	const sliderRef = useRef()
 	const [searchField, setSearchField] = useState('')
 	const [selected, setSelected] = useRecoilState(userRegionState)
+
 	const [searchListView, setSearchListView] = useState(false)
 	const [personInfoList, setPersonInfoList] = useState<any[]>([])
 	const { showModal, hideModal, store, setStore } = useContext(ProfileContext)
@@ -141,7 +142,12 @@ export const AdminAppBar: FunctionComponent = () => {
 
 	useEffect(() => {
 		if (me?.selectedRegionId == null) {
-			handleRegionChange(me?.userRegion[0])
+			const localStorageRegion = localStorage.getItem('selectedRegion')
+			if(localStorageRegion !== null){
+				handleRegionChange(JSON.parse(localStorageRegion))
+			}else{
+				handleRegionChange(me?.userRegion[0])
+			}
 		}
 	}, [])
 
@@ -163,46 +169,6 @@ export const AdminAppBar: FunctionComponent = () => {
 			//	Get changed property of the form
 			if(form.getAttribute('changed') == 'true')
 				bHasChange = true;
-
-			//if(form.name == 'WithdrawalForm'
-			//|| form.name == 'CustomFormName'	//	Add Form Name here.
-			//	) {
-				//	Manually compare the values of DOM elements
-				// let inputs = form.getElementsByTagName("input");
-				// for(let j = 0; j < inputs.length; j++) {
-				// 	if(inputs[j].type == 'text' || inputs[j].type == 'date') {
-				// 		//	React sets defaultValue with the value every time it changes, so we compare with empty string for the default forms.
-				// 		//	If someone needs custom check, he needs to add another if instead of above if(comparing form names)
-				// 		if(inputs[j].value != '')//inputs[j].defaultValue)
-				// 			bHasChange = true;
-				// 	}
-				// 	else if(inputs[j].type == 'checkbox' || inputs[j].type == 'radio') {
-				// 		if(inputs[j].checked)// != inputs[j].defaultChecked)
-				// 			bHasChange = true;
-				// 	}
-				// 	else {
-				// 		console.log(inputs[j].type, inputs[j]);
-				// 	}
-
-				// 	if(bHasChange)	break;
-				// }
-
-				// let textareas = form.getElementsByTagName("textarea");
-				// for(let j = 0; j < textareas.length; j++) {
-				// 	console.log(textareas[j].value, textareas[j].defaultValue);
-				// }
-
-				// let selects = form.getElementsByTagName("select");
-				// for(let j = 0; j < selects.length; j++) {
-				// 	let select = selects[j];
-				// 	console.log(select.selectedIndex, select.options);
-				// 	if (select.selectedIndex >= 0 && !select.options[select.selectedIndex].defaultSelected) {
-				// 		bHasChange = true;
-				// 	}
-				// 	if(bHasChange)	break;
-				// }
-				// if(bHasChange)	break;
-			//}
 		}
 
 		if(bHasChange) {

@@ -6,11 +6,11 @@ export const getEventTypesQuery = gql`
       RegionId
       archived
       color
-      created_date
+      created_at
       event_type_id
       name
       priority
-      updated_date
+      updated_at
     }
   }
 `
@@ -19,17 +19,20 @@ export const getEventsQuery = gql`
   query EventsByRegionId($regionId: Float!) {
     eventsByRegionId(region_id: $regionId) {
       EventType {
-        priority
-        color
-        name
         RegionId
+        archived
+        color
+        created_at
+        event_type_id
+        name
+        priority
+        updated_at
       }
       TypeId
       description
       end_date
       event_id
       start_date
-      time
       title
       filter_grades
       filter_other
@@ -65,10 +68,16 @@ export const updateEventTypesMutation = gql`
   }
 `
 
-export const createEventMutation = gql`
+export const updateEventMutation = gql`
   mutation CreateEvent($createEventInput: CreateEventInput!) {
     createEvent(createEventInput: $createEventInput) {
       event_id
     }
+  }
+`
+
+export const deleteEventByIdMutation = gql`
+  mutation RemoveEventById($eventId: Float!) {
+    removeEventById(event_id: $eventId)
   }
 `

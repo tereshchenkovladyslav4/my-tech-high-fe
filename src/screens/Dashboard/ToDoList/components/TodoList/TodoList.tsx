@@ -21,7 +21,7 @@ export const TodoList: TodoListTemplateType = ({ handleShowEmpty, schoolYears })
   })
 
   useEffect(() => {
-    if (data !== undefined && schoolYears.length > 0) {
+    if (data !== undefined && schoolYears?.length > 0) {
       const { parent_todos } = data
       let todoListCount = 0
       forOwn(parent_todos, (item, key) => {

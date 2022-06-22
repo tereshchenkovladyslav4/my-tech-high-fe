@@ -79,6 +79,7 @@ export const Students = ({ students, selectedStudent, handleChangeStudent, me })
     })
     .then((resp) => {
       localStorage.setItem('masquerade' ,resp.data.masqueradeUser.jwt)
+      localStorage.setItem('previousPage',location.href.replace(import.meta.env.SNOWPACK_PUBLIC_WEB_URL, ''))
     })
     .then(() => {
       history.push(DASHBOARD)

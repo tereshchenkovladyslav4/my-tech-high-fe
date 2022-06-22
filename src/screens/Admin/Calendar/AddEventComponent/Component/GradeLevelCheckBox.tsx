@@ -108,7 +108,7 @@ const GradeLevelCheckBox = ({ grades, setGrades }: GradeLevelCheckBoxProps) => {
       }}
     >
       <Paragraph size='large' fontWeight='700'>
-        Grad Level
+        Grade Level
       </Paragraph>
       <FormControlLabel
         sx={{ height: 30 }}

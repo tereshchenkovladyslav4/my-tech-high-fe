@@ -1,4 +1,4 @@
-import React, { Children, useContext, useEffect, useState } from 'react'
+import React, { Children, useState } from 'react'
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew'
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
 import moment from 'moment'
@@ -6,10 +6,7 @@ import { Calendar, momentLocalizer } from 'react-big-calendar'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import { Box, Button } from '@mui/material'
 import { useStyles } from '../MainComponent/styles'
-import { useQuery } from '@apollo/client'
-import { getEventsQuery } from '../EditTypeComponent/services'
-import { UserContext } from '../../../../providers/UserContext/UserProvider'
-import { CalendarEvent } from '../types'
+import { CalendarComponentProps } from '../types'
 
 moment.locale('ko', {
   week: {
@@ -19,34 +16,9 @@ moment.locale('ko', {
 })
 const localizer = momentLocalizer(moment)
 
-const CalendarComponent = () => {
-  const { me } = useContext(UserContext)
+const CalendarComponent = ({ eventList }: CalendarComponentProps) => {
   const [selectedDate, setSelectedDate] = useState(new Date())
   const classes = useStyles
-  const [eventList, setEventList] = useState<CalendarEvent[]>([])
-  const { loading, data } = useQuery(getEventsQuery, {
-    variables: {
-      regionId: me?.selectedRegionId,
-    },
-    skip: me?.selectedRegionId ? false : true,
-    fetchPolicy: 'network-only',
-  })
-  useEffect(() => {
-    if (!loading && data?.eventsByRegionId) {
-      const eventLists = data?.eventsByRegionId
-      setEventList(
-        eventLists.map((event: any) => ({
-          id: event.event_id,
-          title: event.EventType.name,
-          start: new Date(event.start_date),
-          end: new Date(event.end_date),
-          color: event.EventType.color,
-          backgroundColor: '#EEF4F8',
-          allDay: true,
-        })),
-      )
-    }
-  }, [data])
 
   const Event = ({ event }: any) => {
     return (
@@ -111,7 +83,7 @@ const CalendarComponent = () => {
         events={eventList}
         startAccessor='start'
         endAccessor='end'
-        style={{ height: 600 }}
+        style={{ minHeight: 730 }}
         defaultDate={selectedDate}
         date={selectedDate}
         formats={formats}

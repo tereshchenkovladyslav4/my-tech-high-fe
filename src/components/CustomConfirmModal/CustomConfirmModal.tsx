@@ -9,11 +9,12 @@ import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline'
 type CustomConfirmModalType = {
 	header: string
 	content: string
+	confirmBtnTitle: string
 	handleConfirmModalChange: (val: boolean, isOk: boolean) => void
 }
 
 export default function CustomConfirmModal (
-	{ header, content, handleConfirmModalChange }: CustomConfirmModalType
+	{ header, content, confirmBtnTitle = 'Yes', handleConfirmModalChange }: CustomConfirmModalType
 ) {
 	const classes = useStyles
 
@@ -43,7 +44,7 @@ export default function CustomConfirmModal (
 							Cancel
 						</Button>
 						<Button variant='contained' disableElevation sx={classes.submitButton} onClick={handleConfirm}>
-							Yes
+							{confirmBtnTitle}
 						</Button>
 					</Box>
 				</Box>

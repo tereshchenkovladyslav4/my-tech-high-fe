@@ -1,4 +1,5 @@
 import { SchoolYearType } from './utils.types'
+import moment from 'moment'
 
 export const checkEnrollPacketStatus = (schoolYears: SchoolYearType[], student: any): boolean => {
   if (student?.status && student?.status?.at(-1)?.status != 0) return true
@@ -11,4 +12,8 @@ export const checkEnrollPacketStatus = (schoolYears: SchoolYearType[], student: 
   } else {
     return false
   }
+}
+
+export const convertDateToUTCDate = (date: Date | string | undefined, time: string = '00:00') => {
+  return new Date(`${moment(new Date(date || '')).format('yyyy-MM-DD')} ${time}`).toISOString()
 }

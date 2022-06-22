@@ -81,4 +81,13 @@ export const useStyles = {
     marginTop: '3px',
     marginRight: '10px',
   },
+  addRSVPButton: {
+    color: '#000',
+    borderRadius: 1,
+    textTransform: 'none',
+    height: 37,
+    whiteSpace: 'nowrap',
+    my: 1,
+    width: '65%',
+  },
 }

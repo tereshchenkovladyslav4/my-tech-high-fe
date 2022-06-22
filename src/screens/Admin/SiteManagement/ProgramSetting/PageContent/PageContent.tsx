@@ -105,6 +105,8 @@ export default function PageContent({
         <SpecialEdSelect
           specialEd={specialEdItem?.specialEd}
           setSpecialEd={specialEdItem?.setSpecialEd}
+          specialEdOptions = {specialEdItem?.specialEdOptions}
+          setSpecialEdOptions = {specialEdItem?.setSpecialEdOptions}
           setIsChanged={setIsChanged}
         />
       ),
