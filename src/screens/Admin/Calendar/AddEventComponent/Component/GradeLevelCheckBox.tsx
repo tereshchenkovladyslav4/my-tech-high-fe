@@ -1,18 +1,22 @@
 import { Box, Card, Checkbox, FormControlLabel, Grid } from '@mui/material'
 import React, { useContext, useEffect, useState } from 'react'
-import { GRADES } from '../../../../../utils/constants'
+import { GRADES, RED } from '../../../../../utils/constants'
 import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragraph'
 import { map } from 'lodash'
 import { toOrdinalSuffix } from '../../../../../utils/stringHelpers'
 import { useQuery } from '@apollo/client'
 import { GetCurrentSchoolYearByRegionId } from '../../../Announcements/services'
 import { UserContext } from '../../../../../providers/UserContext/UserProvider'
+import { EventInvalidOption } from '../../types'
+import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
 
 type GradeLevelCheckBoxProps = {
   grades: string[]
+  invalidOption: EventInvalidOption
+  setInvalidOption: (value: EventInvalidOption) => void
   setGrades: (value: string[]) => void
 }
-const GradeLevelCheckBox = ({ grades, setGrades }: GradeLevelCheckBoxProps) => {
+const GradeLevelCheckBox = ({ grades, invalidOption, setGrades, setInvalidOption }: GradeLevelCheckBoxProps) => {
   const { me } = useContext(UserContext)
   const [availableGrades, setAvailableGrades] = useState<(string | number)[]>([])
   const schoolYearData = useQuery(GetCurrentSchoolYearByRegionId, {
@@ -26,12 +30,15 @@ const GradeLevelCheckBox = ({ grades, setGrades }: GradeLevelCheckBoxProps) => {
   const handleChangeGrades = (e: any) => {
     if (grades.includes(e.target.value)) {
       setGrades(grades.filter((item) => item !== e.target.value).filter((item) => item !== 'all'))
+      setInvalidOption({ ...invalidOption, gradeFilter: { status: false, message: '' } })
     } else {
       let temp = [...grades, e.target.value].filter((item) => !!item)
       if (temp.length == availableGrades.length) {
         setGrades(['all', ...grades, e.target.value].filter((item) => !!item))
+        setInvalidOption({ ...invalidOption, gradeFilter: { status: false, message: '' } })
       } else {
         setGrades(temp)
+        setInvalidOption({ ...invalidOption, gradeFilter: { status: false, message: '' } })
       }
     }
   }
@@ -39,8 +46,13 @@ const GradeLevelCheckBox = ({ grades, setGrades }: GradeLevelCheckBoxProps) => {
   const handleChangeAll = (e: any) => {
     if (e.target.checked) {
       setGrades([...['all'], ...availableGrades.map((item) => item.toString())])
+      setInvalidOption({ ...invalidOption, gradeFilter: { status: false, message: '' } })
     } else {
       setGrades([])
+      setInvalidOption({
+        ...invalidOption,
+        gradeFilter: { status: true, message: 'At least one Grade Level must be selected' },
+      })
     }
   }
 
@@ -120,6 +132,11 @@ const GradeLevelCheckBox = ({ grades, setGrades }: GradeLevelCheckBoxProps) => {
         }
       />
       {renderGrades()}
+      {invalidOption?.gradeFilter.status && (
+        <Subtitle size='small' color={RED} fontWeight='700'>
+          {invalidOption.gradeFilter.message}
+        </Subtitle>
+      )}
     </Box>
   )
 }

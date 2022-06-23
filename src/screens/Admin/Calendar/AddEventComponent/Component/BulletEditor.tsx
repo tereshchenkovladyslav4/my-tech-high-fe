@@ -28,7 +28,7 @@ const BulletEditor = ({ value, setValue }: BulletEditorProps) => {
     } catch {}
   }
 
-  const handleBodyChange = (e) => {
+  const handleBodyChange = (e: EditorState) => {
     setEditorState(e)
     setValue(draftToHtml(convertToRaw(editorState.getCurrentContent())))
   }

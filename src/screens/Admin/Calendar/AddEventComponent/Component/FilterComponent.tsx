@@ -10,6 +10,7 @@ import UsersCheckBox from './UsersCheckBox'
 import SchoolofEnrollmentCheckBox from './SchoolofEnrollmentCheckBox'
 import OtherCheckBox from './OtherCheckbox'
 import ProvidersCheckBox from './ProvidersCheckBox'
+import { EventInvalidOption } from '../../types'
 
 type FilterComponentProps = {
   grades: string[]
@@ -18,6 +19,8 @@ type FilterComponentProps = {
   schoolofEnrollments: string[]
   others: string[]
   providers: string[]
+  invalidOption: EventInvalidOption
+  setInvalidOption: (value: EventInvalidOption) => void
   setGrades: (value: string[]) => void
   setProgramYears: (value: string[]) => void
   setUsers: (value: string[]) => void
@@ -32,6 +35,8 @@ const FilterComponent = ({
   schoolofEnrollments,
   others,
   providers,
+  invalidOption,
+  setInvalidOption,
   setGrades,
   setProgramYears,
   setUsers,
@@ -69,7 +74,12 @@ const FilterComponent = ({
               flexDirection: 'column',
             }}
           >
-            <GradeLevelCheckBox grades={grades} setGrades={setGrades} />
+            <GradeLevelCheckBox
+              grades={grades}
+              setGrades={setGrades}
+              invalidOption={invalidOption}
+              setInvalidOption={setInvalidOption}
+            />
             <ProgramYearCheckBox programYears={programYears} setProgramYears={setProgramYears} />
           </Box>
         </Grid>

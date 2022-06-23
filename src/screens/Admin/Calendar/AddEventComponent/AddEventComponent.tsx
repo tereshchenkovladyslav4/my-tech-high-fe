@@ -1,7 +1,5 @@
-import { Box, Button, Card, Grid, IconButton } from '@mui/material'
+import { Box, Card, Grid } from '@mui/material'
 import React, { useEffect, useState } from 'react'
-import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded'
-import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
 import { CALENDAR } from '../../../../utils/constants'
 import { Prompt, useHistory } from 'react-router-dom'
 import { useStyles } from './styles'
@@ -13,53 +11,15 @@ import { useMutation } from '@apollo/client'
 import { updateEventMutation } from '../EditTypeComponent/services'
 import { RSVPComponent } from '../RSVPComponent'
 import { convertDateToUTCDate } from '../../../../utils/utils'
-import moment from 'moment'
+import { defaultEvent, defaultInvalidOption } from '../defaultValue'
+import HeaderComponent from './HeaderComponent'
 
 const AddEventComponent = ({ selectedEvent }: AddEventComponentProps) => {
   const classes = useStyles
   const history = useHistory()
-  const [event, setEvent] = useState<EventVM>({
-    title: '',
-    eventTypeId: 0,
-    startDate: new Date(),
-    endDate: new Date(),
-    time: moment(new Date()).format('HH:mm'),
-  })
-  useEffect(() => {
-    if (selectedEvent) {
-      setEvent(selectedEvent)
-      if (selectedEvent?.filters?.grades) setGrades(JSON.parse(selectedEvent?.filters?.grades))
-      if (selectedEvent?.filters?.programYear) setProgramYears(JSON.parse(selectedEvent?.filters?.programYear))
-      if (selectedEvent?.filters?.users) setUsers(JSON.parse(selectedEvent?.filters?.users))
-      if (selectedEvent?.filters?.schoolOfEnrollment)
-        setSchoolofEnrollment(JSON.parse(selectedEvent?.filters?.schoolOfEnrollment))
-      if (selectedEvent?.filters?.other) setOthers(JSON.parse(selectedEvent?.filters?.other))
-      if (selectedEvent?.filters?.provider) setProviders(JSON.parse(selectedEvent?.filters?.provider))
-    }
-  }, [selectedEvent])
+  const [event, setEvent] = useState<EventVM>(defaultEvent)
   const [isChanged, setIsChanged] = useState<boolean>(false)
-  const [invalidOption, setInvalidOption] = useState<EventInvalidOption>({
-    title: {
-      status: false,
-      message: '',
-    },
-    type: {
-      status: false,
-      message: '',
-    },
-    startDate: {
-      status: false,
-      message: '',
-    },
-    endDate: {
-      status: false,
-      message: '',
-    },
-    description: {
-      status: false,
-      message: '',
-    },
-  })
+  const [invalidOption, setInvalidOption] = useState<EventInvalidOption>(defaultInvalidOption)
   const [grades, setGrades] = useState<string[]>([])
   const [showCancelModal, setShowCancelModal] = useState<boolean>(false)
   const [programYears, setProgramYears] = useState<string[]>([])
@@ -71,21 +31,25 @@ const AddEventComponent = ({ selectedEvent }: AddEventComponentProps) => {
   const [submitSave, {}] = useMutation(updateEventMutation)
   const validation = (): boolean => {
     if (
-      event?.title &&
-      event.title.length < 100 &&
+      event?.title?.length < 100 &&
       event.eventTypeId &&
       event.startDate &&
       event.endDate &&
       event.startDate <= event.endDate &&
-      event.description &&
-      event.description.length > 9
+      event.description?.length > 9 &&
+      grades?.length > 0
     ) {
       return true
     } else {
       setInvalidOption({
         title: {
-          status: event?.title && event?.title.length < 100 ? false : true,
-          message: event?.title && event?.title.length < 100 ? '' : 'Title Required',
+          status: event?.title?.length < 100 && event?.title?.length > 0 ? false : true,
+          message:
+            event?.title?.length < 100 && event?.title?.length > 0
+              ? ''
+              : event?.title
+              ? 'Invalid Title'
+              : 'Title Required',
         },
         type: {
           status: event?.eventTypeId ? false : true,
@@ -96,12 +60,16 @@ const AddEventComponent = ({ selectedEvent }: AddEventComponentProps) => {
           message: event?.startDate ? '' : 'Invalid Start Date',
         },
         endDate: {
-          status: event?.startDate && event?.endDate && event?.startDate <= event?.endDate ? false : true,
-          message: event?.startDate && event?.endDate && event?.startDate <= event?.endDate ? '' : 'Invalid End Date',
+          status: event?.startDate <= event?.endDate ? false : true,
+          message: event?.startDate <= event?.endDate ? '' : 'Invalid End Date',
         },
         description: {
-          status: event?.description && event.description.length > 9 ? false : true,
-          message: event?.description && event.description.length > 9 ? '' : 'Description Required',
+          status: event?.description?.length > 9 ? false : true,
+          message: event?.description?.length > 9 ? '' : 'Description Required',
+        },
+        gradeFilter: {
+          status: grades?.length > 0 ? false : true,
+          message: grades?.length > 0 ? '' : 'At least one Grade Level must be selected',
         },
       })
       return false
@@ -135,6 +103,20 @@ const AddEventComponent = ({ selectedEvent }: AddEventComponentProps) => {
       history.push(CALENDAR)
     }
   }
+
+  useEffect(() => {
+    if (selectedEvent) {
+      setEvent(selectedEvent)
+      if (selectedEvent?.filters?.grades) setGrades(JSON.parse(selectedEvent?.filters?.grades))
+      if (selectedEvent?.filters?.programYear) setProgramYears(JSON.parse(selectedEvent?.filters?.programYear))
+      if (selectedEvent?.filters?.users) setUsers(JSON.parse(selectedEvent?.filters?.users))
+      if (selectedEvent?.filters?.schoolOfEnrollment)
+        setSchoolofEnrollment(JSON.parse(selectedEvent?.filters?.schoolOfEnrollment))
+      if (selectedEvent?.filters?.other) setOthers(JSON.parse(selectedEvent?.filters?.other))
+      if (selectedEvent?.filters?.provider) setProviders(JSON.parse(selectedEvent?.filters?.provider))
+    }
+  }, [selectedEvent])
+
   return (
     <Card sx={classes.cardBody}>
       {!showRSVPForm ? (
@@ -146,29 +128,12 @@ const AddEventComponent = ({ selectedEvent }: AddEventComponentProps) => {
               content: 'Are you sure you want to leave without saving changes?',
             })}
           />
-          <Box sx={classes.pageTop}>
-            <Box sx={classes.pageTitle}>
-              <IconButton
-                onClick={() => handleCancelClick()}
-                sx={{
-                  position: 'relative',
-                }}
-              >
-                <ArrowBackIosRoundedIcon sx={classes.arrowButton} />
-              </IconButton>
-              <Subtitle size='medium' sx={{ fontSize: '20px' }} fontWeight='700'>
-                {selectedEvent?.eventId ? 'Edit Event' : 'Add Event'}
-              </Subtitle>
-            </Box>
-            <Box sx={classes.pageTopRight}>
-              <Button sx={classes.cancelBtn} onClick={() => setShowCancelModal(true)}>
-                Cancel
-              </Button>
-              <Button sx={classes.saveBtn} onClick={handleSaveClick}>
-                Save
-              </Button>
-            </Box>
-          </Box>
+          <HeaderComponent
+            title={selectedEvent?.eventId ? 'Edit Event' : 'Add Event'}
+            handleCancelClick={handleCancelClick}
+            setShowCancelModal={setShowCancelModal}
+            handleSaveClick={handleSaveClick}
+          />
           <Box sx={{ width: '100%', padding: 3 }}>
             <Grid container justifyContent='space-between'>
               <Grid item xs={6} sx={{ textAlign: 'left', marginTop: 'auto', marginBottom: 'auto' }}>
@@ -195,6 +160,8 @@ const AddEventComponent = ({ selectedEvent }: AddEventComponentProps) => {
                   setSchoolofEnrollment={setSchoolofEnrollment}
                   setOthers={setOthers}
                   setProviders={setProviders}
+                  invalidOption={invalidOption}
+                  setInvalidOption={setInvalidOption}
                 />
               </Grid>
             </Grid>
@@ -203,7 +170,6 @@ const AddEventComponent = ({ selectedEvent }: AddEventComponentProps) => {
       ) : (
         <RSVPComponent setShowRSVPForm={setShowRSVPForm} />
       )}
-
       {showCancelModal && (
         <CustomModal
           title='Cancel Changes'

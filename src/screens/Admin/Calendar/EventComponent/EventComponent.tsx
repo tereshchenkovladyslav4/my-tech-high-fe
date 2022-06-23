@@ -13,6 +13,7 @@ import { EventComponentProps, EventVM } from '../types'
 import moment from 'moment'
 import { useMutation } from '@apollo/client'
 import { deleteEventByIdMutation } from '../EditTypeComponent/services'
+import CustomModal from '../../SiteManagement/EnrollmentSetting/components/CustomModal/CustomModals'
 
 const toolTipStyles = makeStyles(() => ({
   customTooltip: {
@@ -30,14 +31,11 @@ const EventComponent = ({ events, setEvents, setEvent, refetch }: EventComponent
   const classes = useStyles
   const toolTipClass = toolTipStyles()
   const history = useHistory()
-  const [selectedEvent, setSelectedEvent] = useState<EventVM>()
+  const [selectedEvent, setSelectedEvent] = useState<EventVM | undefined>()
   const [selectedIndex, setSelectedIndex] = useState<number>(0)
+  const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false)
   const [deleteEventById, {}] = useMutation(deleteEventByIdMutation)
-  useEffect(() => {
-    if (events?.length > 0) {
-      setSelectedEvent(events[selectedIndex])
-    }
-  }, [events])
+
   const handleRSVPClick = () => {
     history.push(`${CALENDAR}/rsvp`)
   }
@@ -62,6 +60,7 @@ const EventComponent = ({ events, setEvents, setEvent, refetch }: EventComponent
         },
       })
       refetch()
+      setShowDeleteModal(false)
     }
   }
   const renderFilter = (): string => {
@@ -90,6 +89,15 @@ const EventComponent = ({ events, setEvents, setEvent, refetch }: EventComponent
       setSelectedEvent(events?.at(selectedIndex + 1))
     }
   }
+
+  useEffect(() => {
+    if (events?.length > 0) {
+      setSelectedEvent(events[selectedIndex])
+    } else {
+      setSelectedEvent(undefined)
+    }
+  }, [events])
+
   return (
     <Stack>
       {selectedEvent && (
@@ -117,7 +125,7 @@ const EventComponent = ({ events, setEvents, setEvent, refetch }: EventComponent
                 <ModeEditIcon />
               </Tooltip>
             </Button>
-            <Button sx={{ mt: 1.5, width: 40 }} onClick={() => handleDelete()}>
+            <Button sx={{ mt: 1.5, width: 40 }} onClick={() => setShowDeleteModal(true)}>
               <Tooltip
                 title='Delete'
                 placement='top'
@@ -162,6 +170,21 @@ const EventComponent = ({ events, setEvents, setEvent, refetch }: EventComponent
           onClick={() => handleNextEventView()}
         ></Button>
       </Box>
+      {showDeleteModal && (
+        <CustomModal
+          title='Delete'
+          description='Are you sure you want to delete this event?'
+          cancelStr='Cancel'
+          confirmStr='Delete'
+          backgroundColor='#FFFFFF'
+          onClose={() => {
+            setShowDeleteModal(false)
+          }}
+          onConfirm={() => {
+            handleDelete()
+          }}
+        />
+      )}
     </Stack>
   )
 }

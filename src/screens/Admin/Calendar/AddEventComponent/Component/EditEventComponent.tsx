@@ -89,7 +89,6 @@ const EditEventComponent = ({
           <Box sx={{ display: 'grid' }}>
             <DatePicker
               label='Start Date'
-              disablePast
               inputFormat='MM/dd/yyyy'
               value={event?.startDate}
               onChange={(e) => {
@@ -108,7 +107,6 @@ const EditEventComponent = ({
           <Box sx={{ display: 'grid' }}>
             <DatePicker
               label='End Date'
-              disablePast
               inputFormat='MM/dd/yyyy'
               value={event?.endDate}
               onChange={(e) => {
@@ -164,7 +162,7 @@ const EditEventComponent = ({
             }}
           />
         )}
-        {event?.eventId && event?.eventId > 0 && event?.description && (
+        {!!event?.eventId && event?.eventId > 0 && event?.description && (
           <BulletEditor
             value={event.description}
             setValue={(value) => {

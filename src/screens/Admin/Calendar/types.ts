@@ -27,19 +27,23 @@ export type EventInvalidOption = {
     status: boolean
     message: string
   }
+  gradeFilter: {
+    status: boolean
+    message: string
+  }
 }
 
 export type EventVM = {
   eventId?: number
-  title?: string
-  eventTypeId?: number
-  eventTypeColor?: string
-  eventTypeName?: string
-  startDate?: Date
-  endDate?: Date
-  time?: string
-  description?: string
-  filters?: {
+  title: string
+  eventTypeId: number
+  eventTypeColor: string
+  eventTypeName: string
+  startDate: Date
+  endDate: Date
+  time: string
+  description: string
+  filters: {
     grades: string
     other: string
     programYear: string
@@ -104,7 +108,14 @@ export type MainComponentProps = {
 }
 
 export type AddEventComponentProps = {
-  selectedEvent: EventVM | undefined
+  selectedEvent: EventVM
+}
+
+export type HeaderComponentProps = {
+  title: string
+  handleCancelClick: () => void
+  setShowCancelModal: (value: boolean) => void
+  handleSaveClick: () => void
 }
 
 export type EditEventComponentProps = {

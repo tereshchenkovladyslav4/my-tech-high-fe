@@ -6,14 +6,27 @@ import { HeaderComponent } from '../HeaderComponent'
 import { EventComponent } from '../EventComponent'
 import { UserContext } from '../../../../providers/UserContext/UserProvider'
 import { useQuery } from '@apollo/client'
-import { getEventsQuery } from '../EditTypeComponent/services'
-import { CalendarEvent, EventResponseVM, EventVM, MainComponentProps } from '../types'
+import { getEventsQuery, getEventTypesQuery } from '../EditTypeComponent/services'
+import { CalendarEvent, EventResponseVM, EventTypeResponseVM, EventVM, MainComponentProps } from '../types'
+import { MultiSelectDropDownListType } from '../components/MultiSelectDropDown/MultiSelectDropDown'
+import moment from 'moment'
+
 const MainComponent = ({ setEvent }: MainComponentProps) => {
   const classes = useStyles
   const [searchField, setSearchField] = useState<string | undefined>('')
   const { me } = useContext(UserContext)
   const [calendarEventList, setCalendarEventList] = useState<CalendarEvent[]>([])
   const [events, setEvents] = useState<EventVM[]>([])
+  const [eventTypeLists, setEventTypeLists] = useState<MultiSelectDropDownListType[]>([])
+  const [selectedEventTypes, setSelectedEventTypes] = useState<string[]>([])
+
+  const { loading: eventTypeLoading, data: eventTypeData } = useQuery(getEventTypesQuery, {
+    variables: {
+      regionId: me?.selectedRegionId,
+    },
+    skip: me?.selectedRegionId ? false : true,
+    fetchPolicy: 'network-only',
+  })
 
   const { loading, data, refetch } = useQuery(getEventsQuery, {
     variables: {
@@ -43,8 +56,8 @@ const MainComponent = ({ setEvent }: MainComponentProps) => {
         eventLists.map((event: EventResponseVM) => ({
           id: event.event_id,
           title: event.EventType.name,
-          start: new Date(event.start_date),
-          end: new Date(event.end_date),
+          start: moment(new Date(event.start_date)).format('yyyy-MM-DD'),
+          end: moment(new Date(event.end_date)).format('yyyy-MM-DD'),
           color: event.EventType.color,
           backgroundColor: hexToRgbA(event.EventType.color || ''),
           allDay: true,
@@ -57,8 +70,8 @@ const MainComponent = ({ setEvent }: MainComponentProps) => {
           eventTypeId: event.TypeId,
           eventTypeColor: event.EventType.color,
           eventTypeName: event.EventType.name,
-          startDate: event.start_date,
-          endDate: event.end_date,
+          startDate: new Date(event.start_date),
+          endDate: new Date(event.end_date),
           time: event.time,
           description: event.description,
           filters: {
@@ -78,17 +91,45 @@ const MainComponent = ({ setEvent }: MainComponentProps) => {
     }
   }, [data])
 
+  useEffect(() => {
+    if (!eventTypeLoading && eventTypeData?.eventTypes) {
+      setEventTypeLists(
+        eventTypeData?.eventTypes
+          ?.filter((item: EventTypeResponseVM) => !item.archived)
+          ?.map((eventType: EventTypeResponseVM) => ({
+            name: eventType.name,
+            color: eventType.color,
+          })),
+      )
+
+      setSelectedEventTypes(eventTypeData?.eventTypes.map((eventType: EventTypeResponseVM) => eventType.name))
+    }
+  }, [eventTypeData])
+
   return (
     <Card sx={classes.cardBody}>
-      <HeaderComponent searchField={searchField} setSearchField={setSearchField} />
+      <HeaderComponent
+        searchField={searchField}
+        setSearchField={setSearchField}
+        eventTypeLists={eventTypeLists}
+        selectedEventTypes={selectedEventTypes}
+        setSelectedEventTypes={setSelectedEventTypes}
+      />
       <Box sx={{ width: '100%', padding: 3 }}>
         <Grid container justifyContent='space-between'>
           <Grid item xs={3} sx={{ textAlign: 'left', marginTop: 'auto', marginBottom: 'auto' }}>
-            <EventComponent events={events} setEvents={setEvents} setEvent={setEvent} refetch={refetch} />
+            <EventComponent
+              events={events?.filter((event: EventVM) => selectedEventTypes.includes(event?.eventTypeName || ''))}
+              setEvents={setEvents}
+              setEvent={setEvent}
+              refetch={refetch}
+            />
           </Grid>
           <Grid item xs={1}></Grid>
           <Grid item xs={8}>
-            <CalendarComponent eventList={calendarEventList} />
+            <CalendarComponent
+              eventList={calendarEventList?.filter((list: CalendarEvent) => selectedEventTypes.includes(list?.title))}
+            />
           </Grid>
         </Grid>
       </Box>

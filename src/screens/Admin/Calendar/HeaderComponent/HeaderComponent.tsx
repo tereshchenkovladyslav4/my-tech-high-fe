@@ -6,15 +6,24 @@ import { useHistory } from 'react-router-dom'
 import { useStyles } from '../MainComponent/styles'
 import ModeEditIcon from '@mui/icons-material/ModeEdit'
 import AddIcon from '@mui/icons-material/Add'
-import { DropDown } from '../../../../components/DropDown/DropDown'
 import SearchIcon from '@mui/icons-material/Search'
+import { MultiSelectDropDown } from '../components/MultiSelectDropDown'
+import { MultiSelectDropDownListType } from '../components/MultiSelectDropDown/MultiSelectDropDown'
 
 type HeaderComponentProps = {
   searchField: string | undefined
+  eventTypeLists: MultiSelectDropDownListType[]
+  selectedEventTypes: string[]
+  setSelectedEventTypes: (value: string[]) => void
   setSearchField?: (value: string | undefined) => void
 }
 
-const HeaderComponent = ({ searchField }: HeaderComponentProps) => {
+const HeaderComponent = ({
+  searchField,
+  eventTypeLists,
+  selectedEventTypes,
+  setSelectedEventTypes,
+}: HeaderComponentProps) => {
   const classes = useStyles
   const history = useHistory()
   return (
@@ -43,13 +52,10 @@ const HeaderComponent = ({ searchField }: HeaderComponentProps) => {
         >
           <Subtitle sx={{ whiteSpace: 'nowrap' }}>Add Event</Subtitle>
         </Button>
-        <DropDown
-          dropDownItems={[]}
-          placeholder={'Select Filter'}
-          defaultValue={null}
-          size='small'
-          sx={{ width: '200px' }}
-          setParentValue={() => {}}
+        <MultiSelectDropDown
+          checkBoxLists={eventTypeLists}
+          selectedLists={selectedEventTypes}
+          setSelectedLists={setSelectedEventTypes}
         />
         <Box marginLeft={4} sx={classes.search}>
           <OutlinedInput
