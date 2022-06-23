@@ -43,6 +43,14 @@ export const getAllPersonInfoBySearchItem = gql`
 	}
 `
 
+function getWindowDimensions() {
+	const { outerWidth: width, outerHeight: height } = window;
+	return {
+		width,
+		height
+	};
+}
+
 export const AdminAppBar: FunctionComponent = () => {
 	const classes = useStyles
 	const { me, setMe } = useContext(UserContext)
@@ -64,6 +72,11 @@ export const AdminAppBar: FunctionComponent = () => {
 		skip: me?.selectedRegionId && searchField ? false : true,
 		fetchPolicy: 'network-only',
 	})
+
+	const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions());
+
+
+
 	const isActive = (id) => location.pathname.includes(`homeroom/${id}`)
 	function SampleNextArrow(props) {
 		const { className, style, onClick } = props
@@ -149,6 +162,13 @@ export const AdminAppBar: FunctionComponent = () => {
 				handleRegionChange(me?.userRegion[0])
 			}
 		}
+
+		function handleResize() {
+			setWindowDimensions(getWindowDimensions());
+		}
+
+		window.addEventListener('resize', handleResize);
+		return () => window.removeEventListener('resize', handleResize);
 	}, [])
 
 	useEffect(() => {
@@ -158,20 +178,20 @@ export const AdminAppBar: FunctionComponent = () => {
 	}, [me?.selectedRegionId, personInfos])
 
 	//	Flag state which indicates to leaving confirmation modal when changing region
-	const [ unsavedChanges, setUnsavedChanges ] = useState(0);
+	const [unsavedChanges, setUnsavedChanges] = useState(0);
 
 	const handleRegionChange = (region) => {
 		//	Check if there is any form and form is changed
 		const forms = document.getElementsByTagName("form");
 		let bHasChange: boolean = false;
-		for(let i = 0; i < forms.length; i++) {
+		for (let i = 0; i < forms.length; i++) {
 			let form = forms[i];
 			//	Get changed property of the form
-			if(form.getAttribute('changed') == 'true')
+			if (form.getAttribute('changed') == 'true')
 				bHasChange = true;
 		}
 
-		if(bHasChange) {
+		if (bHasChange) {
 			setUnsavedChanges(region);
 			return;
 		}
@@ -237,7 +257,7 @@ export const AdminAppBar: FunctionComponent = () => {
 							</Paragraph>
 						}
 						image={
-							<Box sx={{position: 'relative'}}>
+							<Box sx={{ position: 'relative' }}>
 								<Avatar
 									alt={region?.regionDetail.name}
 									src={region?.regionDetail?.state_logo}
@@ -304,7 +324,8 @@ export const AdminAppBar: FunctionComponent = () => {
 					</Grid>
 					<Grid item xs={1} />
 					<Grid item xs={7}>
-						<Box width={'calc(58vw - 200px)'}>
+						<Box width={windowDimensions.width > 639 ? 'calc(58vw - 200px)' : windowDimensions.width > 565 ? 'calc(58vw - 150px)' : windowDimensions.width > 505 ? 'calc(58vw - 105px)' :
+							windowDimensions.width > 400 ? 'calc(58vw - 60px)' : windowDimensions.width > 350 ? 'calc(58vw - 30px)' : windowDimensions.width > 295 ? '58vw' : windowDimensions.width > 230 ? '75vw' : windowDimensions.width > 175 ? '97vw' : '160vw' }>
 							<Slider {...settings} ref={sliderRef}>
 								{renderRegionHeader()}
 							</Slider>
@@ -316,7 +337,7 @@ export const AdminAppBar: FunctionComponent = () => {
 						header='Unsaved Changes'
 						content='Are you sure you want to leave without saving changes?'
 						handleConfirmModalChange={(val: boolean, isOk: boolean) => {
-							if(isOk) {
+							if (isOk) {
 								setRegion(unsavedChanges);
 							}
 							setUnsavedChanges(0);

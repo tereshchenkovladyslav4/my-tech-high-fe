@@ -1,43 +1,57 @@
-import { Button, Card, Box } from '@mui/material'
 import React from 'react'
-import { MTHBLUE, BUTTON_LINEAR_GRADIENT, WITHDRAWAL_STATUS_LABEL } from '../../../../utils/constants';
+import { Button, Box } from '@mui/material'
+import { MTHBLUE, BUTTON_LINEAR_GRADIENT, WITHDRAWAL_STATUS_LABEL } from '../../../../utils/constants'
+import { WithdrawalFiltersProps } from '../type'
 
-const WithdrawalFilters = ({ filters, setFilters, withdrawCount }) => {
-	const handleSelectFilter = (value) => {
-		if (filters.includes(value)) {
-			setFilters(filters.filter((item) => item !== value))
-		} else {
-			setFilters([...filters, ...[value]])
-		}
-	}
-	return (
-		<Box
-			sx={{
-				display: 'flex',
-				flexDirection: 'row',
-				justifyContent: 'space-evenly',
-				paddingX: '100px',
-				marginY: 2,
-			}}
-		>
-			{WITHDRAWAL_STATUS_LABEL.map((label) => (
-				<Button
-					variant={filters.includes(label) ? 'text' : 'outlined'}
-					sx={{
-						background: filters.includes(label) && BUTTON_LINEAR_GRADIENT,
-						color: filters.includes(label) ? 'white' : MTHBLUE,
-						borderRadius: 2,
-						textTransform: 'none',
-						height: 25,
-						whiteSpace: 'nowrap',
-					}}
-					onClick={() => handleSelectFilter(label)}
-				>
-					{label} ({withdrawCount && withdrawCount[label] ? withdrawCount[label] : 0})
-				</Button>
-			))}
-		</Box>
-	)
+const WithdrawalFilters = ({ filters, setFilters, withdrawCount }: WithdrawalFiltersProps) => {
+  const handleSelectFilter = (value: string) => {
+    if (filters.includes(value)) {
+      setFilters(filters.filter((item) => item !== value))
+    } else {
+      setFilters([...filters, ...[value]])
+    }
+  }
+
+  const getCount = (value: string) => {
+    switch (value) {
+      case 'Notified':
+        return withdrawCount?.Notified || 0
+      case 'Requested':
+        return withdrawCount?.Requested || 0
+      case 'Withdrawn':
+        return withdrawCount?.Withdrawn || 0
+      default:
+        return 0
+    }
+  }
+  return (
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-evenly',
+        paddingX: '100px',
+        marginY: 2,
+      }}
+    >
+      {WITHDRAWAL_STATUS_LABEL.map((label: string) => (
+        <Button
+          variant={filters.includes(label) ? 'text' : 'outlined'}
+          sx={{
+            background: (filters.includes(label) && BUTTON_LINEAR_GRADIENT) || null,
+            color: filters.includes(label) ? 'white' : MTHBLUE,
+            borderRadius: 2,
+            textTransform: 'none',
+            height: 25,
+            whiteSpace: 'nowrap',
+          }}
+          onClick={() => handleSelectFilter(label)}
+        >
+          {label} ({getCount(label)})
+        </Button>
+      ))}
+    </Box>
+  )
 }
 
 export default WithdrawalFilters

@@ -52,7 +52,7 @@ export const CalendarComponent: FunctionComponent = () => {
   return (
     <div style={{ fontSize: 14 }}>
       <div>
-        <table>
+        <table className='m-w-100'>
           <thead>
             <tr>{weekdayshortname}</tr>
           </thead>

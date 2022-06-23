@@ -3,10 +3,10 @@ import { FunctionComponent } from 'react'
 type WarningModalProps = {
   title: string
   subtitle: string
-  handleModem: () => void
+  handleModem?: () => void
   btntitle?: string
   canceltitle?: string
-  handleSubmit: () => void
+  handleSubmit?: () => void
   showIcon?: boolean
 }
 

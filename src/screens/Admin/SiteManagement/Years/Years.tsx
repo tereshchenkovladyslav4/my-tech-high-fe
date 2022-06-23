@@ -28,19 +28,23 @@ const Years: React.FC = () => {
   const [submitSave] = useMutation(updateSchoolYearMutation)
   const [submitCreate, {}] = useMutation(createSchoolYearMutation)
 
+  const convertLocalDateToUTCDate = (date: Date | undefined) => {
+    return new Date(date || '').toISOString()
+  }
+
   const handleClickSave = async () => {
     if (selectedYearId && selectedYearId != 'add') {
       const submitedResponse = await submitSave({
         variables: {
           updateSchoolYearInput: {
             school_year_id: parseInt(selectedYearId),
-            date_begin: moment(schoolYearItem?.open).format('YYYY-MM-DD'),
-            date_end: moment(schoolYearItem?.close).format('YYYY-MM-DD'),
-            date_reg_close: moment(applicationItem?.open).format('YYYY-MM-DD'),
-            date_reg_open: moment(applicationItem?.close).format('YYYY-MM-DD'),
+            date_begin: convertLocalDateToUTCDate(schoolYearItem?.open),
+            date_end: convertLocalDateToUTCDate(schoolYearItem?.close),
+            date_reg_open: convertLocalDateToUTCDate(applicationItem?.open),
+            date_reg_close: convertLocalDateToUTCDate(applicationItem?.close),
             midyear_application: midYearItem?.status ? 1 : 0,
-            midyear_application_open: moment(midYearItem?.open).format('YYYY-MM-DD'),
-            midyear_application_close: moment(midYearItem?.close).format('YYYY-MM-DD'),
+            midyear_application_open: convertLocalDateToUTCDate(midYearItem?.open),
+            midyear_application_close: convertLocalDateToUTCDate(midYearItem?.close),
           },
         },
       })
@@ -50,13 +54,13 @@ const Years: React.FC = () => {
         variables: {
           createSchoolYearInput: {
             RegionId: me?.selectedRegionId,
-            date_begin: moment(schoolYearItem?.open).format('YYYY-MM-DD'),
-            date_end: moment(schoolYearItem?.close).format('YYYY-MM-DD'),
-            date_reg_close: moment(applicationItem?.open).format('YYYY-MM-DD'),
-            date_reg_open: moment(applicationItem?.close).format('YYYY-MM-DD'),
+            date_begin: convertLocalDateToUTCDate(schoolYearItem?.open),
+            date_end: convertLocalDateToUTCDate(schoolYearItem?.close),
+            date_reg_open: convertLocalDateToUTCDate(applicationItem?.open),
+            date_reg_close: convertLocalDateToUTCDate(applicationItem?.close),
             midyear_application: midYearItem?.status ? 1 : 0,
-            midyear_application_open: moment(midYearItem?.open).format('YYYY-MM-DD'),
-            midyear_application_close: moment(midYearItem?.close).format('YYYY-MM-DD'),
+            midyear_application_open: convertLocalDateToUTCDate(midYearItem?.open),
+            midyear_application_close: convertLocalDateToUTCDate(midYearItem?.close),
           },
         },
       })
@@ -84,24 +88,24 @@ const Years: React.FC = () => {
           let close = new Date(schoolYear.schoolYearClose)
           close.setFullYear(close.getFullYear() + 1)
           setSchoolYearItem({
-            open: open.toISOString(),
-            close: close.toISOString(),
+            open: open,
+            close: close,
           })
           open = new Date(schoolYear.applicationsOpen)
           open.setFullYear(open.getFullYear() + 1)
           close = new Date(schoolYear.applicationsClose)
           close.setFullYear(close.getFullYear() + 1)
           setApplicationItem({
-            open: open.toISOString(),
-            close: close.toISOString(),
+            open: open,
+            close: close,
           })
           open = new Date(schoolYear.midYearOpen)
           open.setFullYear(open.getFullYear() + 1)
           close = new Date(schoolYear.midYearClose)
           close.setFullYear(close.getFullYear() + 1)
           setMidYearItem({
-            open: open.toISOString(),
-            close: close.toISOString(),
+            open: open,
+            close: close,
             status: schoolYear.midYearStatus,
           })
         }

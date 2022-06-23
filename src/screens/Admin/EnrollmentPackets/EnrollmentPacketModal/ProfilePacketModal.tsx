@@ -29,6 +29,7 @@ import { studentContext, PacketModalQuestionsContext } from './providers';
 import { UserContext } from '../../../../providers/UserContext/UserProvider'
 import { EnrollmentQuestionTab } from '../../SiteManagement/EnrollmentSetting/EnrollmentQuestions/types'
 import { LocalConvenienceStoreOutlined } from '@mui/icons-material'
+import { QUESTION_TYPE } from '../../../../components/QuestionItem/QuestionItemProps'
 
 export const getPacketQuestionsGql = gql`
   query getPacketEnrollmentQuestions($input: EnrollmentQuestionsInput) {
@@ -184,12 +185,12 @@ export default function ProfilePacketModal({
         questionsData.map((tab) => {
           tab?.groups?.map((group) => {
             group?.questions?.map((q) => {
-              if(q.display_admin) {
+              // if(q.display_admin) {
                 if(q.default_question) {                  
                   if(q.slug.includes('packet_')) {
                     const fieldName = q.slug.split('packet_')[1]
                     temp[q.slug] = packet[fieldName]
-                    if(q.type === 6) {
+                    if(q.type === QUESTION_TYPE.CALENDAR) {
                       temp[q.slug] = moment(packet[fieldName]).format('YYYY-MM-DD')
                     }
                   }
@@ -198,7 +199,7 @@ export default function ProfilePacketModal({
                     temp[q.slug] = packet.student.person[fieldName]
                     temp['student_grade_level'] = packet.student.grade_levels[0]?.grade_level
                     temp['student_emailConfirm'] = packet.student.person.email
-                    if(q.type === 6) {
+                    if(q.type === QUESTION_TYPE.CALENDAR) {
                       temp[q.slug] = moment(packet.student.person[fieldName]).format('YYYY-MM-DD')
                     }
                   }     
@@ -211,7 +212,7 @@ export default function ProfilePacketModal({
                     temp[q.slug] = packet.student.parent.person[fieldName]
                     temp['parent_phone_number'] = packet.student.parent.phone.number
                     temp['parent_emailConfirm'] = packet.student.parent.person.email
-                    if(q.type === 6) {
+                    if(q.type === QUESTION_TYPE.CALENDAR) {
                       temp[q.slug] = moment(packet.student.parent.person[fieldName]).format('YYYY-MM-DD')
                     }
                   }            
@@ -220,11 +221,11 @@ export default function ProfilePacketModal({
                   const fieldName = q.slug
                   const metaJSON = JSON.parse(packet.meta)
                   temp[q.slug] = metaJSON && metaJSON[fieldName] || ''
-                  if(q.type === 6) {
+                  if(q.type === QUESTION_TYPE.CALENDAR) {
                     temp[q.slug] = moment(metaJSON && metaJSON[fieldName] || null).format('YYYY-MM-DD')
                   }
                 }
-              }
+              // }
             })
           })
         })
@@ -242,7 +243,6 @@ export default function ProfilePacketModal({
     })
 
   useEffect(() => {
-      console.log(dynamicValues);
     methods.reset(dynamicValues);
     if (!packetLoading)
         setDynamicValueStatus(true);
@@ -294,7 +294,7 @@ export default function ProfilePacketModal({
       questionsData.map((tab) => {
         tab?.groups?.map((group) => {
           group?.questions?.map((q) => {
-            if(q.display_admin) {
+            // if(q.display_admin) {
               if(q.default_question) {                  
                 if(q.slug.includes('packet_')) {
                   const fieldName = q.slug.split('packet_')[1]
@@ -320,11 +320,12 @@ export default function ProfilePacketModal({
               else { 
                 temp.meta[q.slug] = vals[q.slug]
               }
-            }
+            // }
           })
         })
       })
     }
+    
     await savePacket({
       variables: {
         enrollmentPacketInput: {...temp, student:omit(temp.student, ['emailConfirm']), parent: omit(temp.parent, ['emailConfirm']), meta: JSON.stringify(temp.meta)},

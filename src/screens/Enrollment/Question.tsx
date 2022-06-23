@@ -39,8 +39,8 @@ export default function EnrollmentQuestionItem({
         if(item) {            
             let childsEnable = false
             setQuestionItems(item.map((i) => { 
-                if(formik.values.meta && formik.values.meta[`${i.additional_question}`]) {                    
-                    const parentIsAction = item.find((ii) => ii.slug == i.additional_question).options.filter((o) => o.action == 2).find((po) => formik.values.meta[`${i.additional_question}`].length > 1 ? formik.values.meta[`${i.additional_question}`].find((fv) => fv.label == po.label) : po.label == formik.values.meta[`${i.additional_question}`] || po.value == formik.values.meta[`${i.additional_question}`])
+                if(formik.values.meta && formik.values.meta[`${i.additional_question}`]) {              
+                    const parentIsAction = item.find((ii) => ii.slug == i.additional_question)?.options?.filter((o) => o.action == 2).find((po) => Array.isArray(formik.values.meta[`${i.additional_question}`]) ? formik.values.meta[`${i.additional_question}`].find((fv) => fv.label == po.label) : po.label == formik.values.meta[`${i.additional_question}`] || po.value == formik.values.meta[`${i.additional_question}`])
                     if(parentIsAction && !childsEnable) {
                         return {...i, isEnable: true}
                     }
@@ -63,11 +63,19 @@ export default function EnrollmentQuestionItem({
         let index = 1000
         const updateQuestionItems = questionItems.map((q) => {
             if(q.additional_question === slug) {
-                index = q.order
-                return {...q, isEnable: value}
+                index = q.order                
+                return {...q, isEnable: value}                
             }
             else {
                 if(value) {
+                    // if(q.order > index) {
+                    //     const actionOption = questionItems.find((qI) => qI.slug == q.additional_question).options.find((qo) => qo.action == 2)
+                    //     const enableShow = Array.isArray(formik.values.meta[`${q.additional_question}`]) ? formik.values.meta[`${q.additional_question}`].find((v) => v.label == actionOption.label) : formik.values.meta[`${q.additional_question}`] == actionOption.label || actionOption.value == formik.values.meta[`${q.additional_question}`]
+                    //     return {...q, isEnable: enableShow}
+                    // }
+                    // else {
+                    //     return q
+                    // }
                     return q
                 }
                 else {
@@ -150,7 +158,13 @@ function Item({ question: q, setAdditionalQuestion, formik }: { question: Enroll
 
     useEffect(() => {
         setFieldData(formik.values[`${keyName}`] ? formik.values[`${keyName}`][`${fieldName}`] : null)
-    }, [formik])
+        if(q.type === QUESTION_TYPE.CHECKBOX) {
+            const otherTemp = multiSelected('Other')
+            if(otherTemp) {
+                setOtherValue(formik.values[`${keyName}`][`${fieldName}`].find((other) => other.label == 'Other').value)
+            }
+        }
+    }, [formik, q])
     const [otherValue, setOtherValue] = useState('')    
     const [gradesDropDownItems, setGradesDropDownItems] = useState<Array<DropDownItem>>([])
     const [dropDownItemsData, setDropDownItemsData] = useState<Array<DropDownItem>>([])
@@ -193,7 +207,7 @@ function Item({ question: q, setAdditionalQuestion, formik }: { question: Enroll
     const multiSelected = useCallback((value: string | number) => {
         let res = false
         if(q.type === QUESTION_TYPE.CHECKBOX) {
-            res = fieldData?.length > 0 && fieldData?.find((f) => f.label == value) ? true : false            
+            res = Array.isArray(fieldData) && fieldData?.find((f) => f.label == value) ? true : false            
         }
         else {
             res = fieldData?.indexOf(value) >= 0
@@ -202,14 +216,8 @@ function Item({ question: q, setAdditionalQuestion, formik }: { question: Enroll
     },[fieldData])
 
     useEffect(()=> {
-        if(q.type !== QUESTION_TYPE.TEXTFIELD && fieldData && keyName && fieldName) {
+        if(q.type !== QUESTION_TYPE.TEXTFIELD && q.type !== QUESTION_TYPE.CALENDAR && fieldData && keyName && fieldName) {
             formik.values[`${keyName}`][`${fieldName}`] = fieldData
-            if(q.type === QUESTION_TYPE.CHECKBOX) {
-                const otherTemp = multiSelected('Other')
-                if(otherTemp) {
-                    setOtherValue(otherTemp?.value)
-                }
-            }
         }
     }, [fieldData, q, keyName, fieldName])
     
@@ -233,35 +241,34 @@ function Item({ question: q, setAdditionalQuestion, formik }: { question: Enroll
     }
 
     const onChange = useCallback((value: string | number) => {
-        if(q.type !== QUESTION_TYPE.TEXTFIELD) {
-            if(q.type === QUESTION_TYPE.DROPDOWN) {                
-                if(q.options.find((f) => f.value === value)?.action == 2) {
-                    setAdditionalQuestion(q.slug, true)
-                }
-                else {
-                    setAdditionalQuestion(q.slug, false)
-                }
-            }
-            else {
-                if(q.options?.find((f) => f.label === value)?.action == 2) {
-                    if(q.type === QUESTION_TYPE.CHECKBOX) {
-                        if(fieldData?.find((f) => f.label === value)) {
-                            setAdditionalQuestion(q.slug, false)
-                        }
-                        else {
-                            setAdditionalQuestion(q.slug, true)
-                        }
+        if(q.type !== QUESTION_TYPE.TEXTFIELD && q.type !== QUESTION_TYPE.CALENDAR) {     
+            if(q?.options?.find((f) => f.value === value || f.label === value)?.action == 2) {
+                if(q.type === QUESTION_TYPE.CHECKBOX) {
+                    if(Array.isArray(fieldData) && fieldData?.find((f) => f.label === value)) {
+                        setAdditionalQuestion(q.slug, false)
                     }
                     else {
                         setAdditionalQuestion(q.slug, true)
                     }
                 }
                 else {
-                    setAdditionalQuestion(q.slug, false)
+                    setAdditionalQuestion(q.slug, true)
                 }
             }
-            if(q.type === QUESTION_TYPE.AGREEMENT){
-               
+            else {
+                if(q.type === QUESTION_TYPE.CHECKBOX) {
+                    if(Array.isArray(fieldData) && fieldData?.find((f) => q.options?.find((qq) => qq.action == 2 && f.label == qq.label))) {
+                        setAdditionalQuestion(q.slug, true)
+                    }
+                    else {
+                        setAdditionalQuestion(q.slug, false)
+                    }
+                }
+                else {
+                    setAdditionalQuestion(q.slug, false) 
+                }
+            }        
+            if(q.type === QUESTION_TYPE.AGREEMENT){               
                 if(fieldData && fieldData.indexOf(value) >= 0) {
                     setFieldData(fieldData.filter((f) => f !== value))
                 }
@@ -270,7 +277,7 @@ function Item({ question: q, setAdditionalQuestion, formik }: { question: Enroll
                 }
             }
             else if(q.type === QUESTION_TYPE.CHECKBOX) {                
-                if(fieldData && fieldData?.find((f) => f.label === value)) {
+                if(Array.isArray(fieldData) && fieldData?.find((f) => f.label === value)) {
                     setFieldData(fieldData?.filter((f) => f.label !== value))
                 }
                 else {
@@ -284,9 +291,9 @@ function Item({ question: q, setAdditionalQuestion, formik }: { question: Enroll
             }
             else {
                 setFieldData(value)
-            }            
+            }
         }
-    },[fieldData, otherValue])
+    },[fieldData, otherValue, q])
 
     if (q.type === QUESTION_TYPE.DROPDOWN) {
         return (
@@ -296,15 +303,16 @@ function Item({ question: q, setAdditionalQuestion, formik }: { question: Enroll
             [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
                 borderColor: SYSTEM_07,
             },
+            marginY: 0,
             }}
-            defaultValue={formik.values[`${keyName}`] && getDropDownLabel(formik.values[`${keyName}`][`${fieldName}`])}
+            defaultValue={getDropDownLabel(fieldData)}
             labelTop
             disabled={disabled}
             dropDownItems={dropDownItemsData}
             setParentValue={(v) => onChangeDropDown(v as string)}
             size='small'
             error={{
-                error: !!((formik.touched[`${keyName}`] && formik.touched[`${keyName}`][`${fieldName}`]) || formik.errors[`${keyName}`] && Boolean(formik.errors[`${keyName}`][`${fieldName}`])),
+                error: !!(formik.errors[`${keyName}`] && Boolean(formik.errors[`${keyName}`][`${fieldName}`])),
                 errorMsg: (formik.errors[`${keyName}`] && formik.errors[`${keyName}`][`${fieldName}`]) as string,
               }}
         />

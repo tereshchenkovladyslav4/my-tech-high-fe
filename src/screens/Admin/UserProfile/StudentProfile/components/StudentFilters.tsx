@@ -12,6 +12,12 @@ import { makeStyles } from '@material-ui/styles'
 import { KeyboardArrowDown } from '@mui/icons-material'
 import { WithdrawModal } from './WithdrawModal'
 import { ActiveModal } from './ActiveModal'
+import {
+  STUDENT_STATUS_ACTIVE,
+  STUDENT_STATUS_APPLIED,
+  STUDENT_STATUS_PENDING,
+  STUDENT_STATUS_WITHDRAWAL,
+} from '../../../../../utils/StudentStatusConstants'
 
 const selectStyles = makeStyles({
   backgroundSelect: {
@@ -188,19 +194,19 @@ export const StudentFilters = ({
     },
     {
       label: 'Applied',
-      value: 5,
+      value: STUDENT_STATUS_APPLIED,
     },
     {
       label: 'Pending',
-      value: 0,
+      value: STUDENT_STATUS_PENDING,
     },
     {
       label: 'Active',
-      value: 1,
+      value: STUDENT_STATUS_ACTIVE,
     },
     {
       label: 'Withdrawn',
-      value: 2,
+      value: STUDENT_STATUS_WITHDRAWAL,
     },
   ])
   const specialEds: DropDownItem[] = [
@@ -294,28 +300,28 @@ export const StudentFilters = ({
             studentStatusData?.status == 5
               ? `Applied (${moment(studentStatusData?.date).format('MM/DD/YYYY')})`
               : 'Applied',
-          value: 5,
+          value: STUDENT_STATUS_APPLIED,
         },
         {
           label:
             studentStatusData?.status == 0
               ? `Pending (${moment(studentStatusData?.date).format('MM/DD/YYYY')})`
               : 'Pending',
-          value: 0,
+          value: STUDENT_STATUS_PENDING,
         },
         {
           label:
             studentStatusData?.status == 1
               ? `Active (${moment(studentStatusData?.date).format('MM/DD/YYYY')})`
               : 'Active',
-          value: 1,
+          value: STUDENT_STATUS_ACTIVE,
         },
         {
           label:
             studentStatusData?.status == 2
               ? `Withdrawn (${moment(studentStatusData?.date).format('MM/DD/YYYY')})`
               : 'Withdrawn',
-          value: 2,
+          value: STUDENT_STATUS_WITHDRAWAL,
         },
       ])
     }
@@ -328,19 +334,19 @@ export const StudentFilters = ({
         },
         {
           label: 'Applied',
-          value: 5,
+          value: STUDENT_STATUS_APPLIED,
         },
         {
           label: 'Pending',
-          value: 0,
+          value: STUDENT_STATUS_PENDING,
         },
         {
           label: 'Active',
-          value: 1,
+          value: STUDENT_STATUS_PENDING,
         },
         {
           label: `Withdrawn (${moment().format('MM/DD/YYYY')})`,
-          value: 2,
+          value: STUDENT_STATUS_WITHDRAWAL,
         },
       ])
     }
@@ -353,19 +359,19 @@ export const StudentFilters = ({
         },
         {
           label: 'Applied',
-          value: 5,
+          value: STUDENT_STATUS_APPLIED,
         },
         {
           label: 'Pending',
-          value: 0,
+          value: STUDENT_STATUS_PENDING,
         },
         {
           label: `Active (${moment().format('MM/DD/YYYY')})`,
-          value: 1,
+          value: STUDENT_STATUS_ACTIVE,
         },
         {
           label: `Withdrawn`,
-          value: 2,
+          value: STUDENT_STATUS_WITHDRAWAL,
         },
       ])
     }

@@ -5,7 +5,6 @@ import { map } from 'lodash'
 import moment from 'moment'
 import React, { useContext, useEffect, useState, useCallback } from 'react'
 import { Pagination } from '../../../components/Pagination/Pagination'
-import { HeadCell } from '../../../components/SortableTable/SortableTableHeader/types'
 import { SortableUserTable } from '../../../components/SortableTable/SortableUserTable'
 import { Subtitle } from '../../../components/Typography/Subtitle/Subtitle'
 import { WarningModal } from '../../../components/WarningModal/Warning'
@@ -18,6 +17,7 @@ import { NewUserModal } from './NewUserModal/NewUserModal'
 import { UserFilters } from './UserFilters/UserFilters'
 import debounce from 'lodash.debounce'
 import { useHistory } from 'react-router-dom'
+import { USERS_HEADCELLS } from '../../../utils/PageHeadCellsConstant'
 
 type UserInfo = {
   user_id: number
@@ -167,51 +167,6 @@ export const Users = () => {
     setNewUserModal(!newUserModal)
   }
 
-  const headCells: HeadCell[] = [
-    {
-      id: 'user_id',
-      numeric: false,
-      disablePadding: true,
-      label: 'ID',
-    },
-    {
-      id: 'first_name',
-      numeric: false,
-      disablePadding: true,
-      label: 'Name',
-    },
-    {
-      id: 'email',
-      numeric: false,
-      disablePadding: true,
-      label: 'Email',
-    },
-    {
-      id: 'level',
-      numeric: false,
-      disablePadding: true,
-      label: 'Level',
-    },
-    {
-      id: 'last_login',
-      numeric: false,
-      disablePadding: true,
-      label: 'Last Login',
-    },
-    {
-      id: 'status',
-      numeric: false,
-      disablePadding: true,
-      label: 'Status',
-    },
-    {
-      id: 'can_emulate',
-      numeric: false,
-      disablePadding: true,
-      label: 'Can Emulate',
-    },
-  ]
-
   const handlePageChange = (page) => {
     setCurrentPage(page)
     setSkip(() => {
@@ -358,9 +313,9 @@ export const Users = () => {
       <UserFilters setFilters={setSelectedFilter} filters={selectedFilter} />
       {rows.length > 0 && (
         <SortableUserTable
-          canMasquerade={me.masquerade}
+          canMasquerade={me?.masquerade}
           rows={rows}
-          headCells={headCells}
+          headCells={USERS_HEADCELLS}
           onCheck={() => {}}
           updateStatus={handleStatusChange}
           toggleMasquerade={handleMasqueradeToggle}

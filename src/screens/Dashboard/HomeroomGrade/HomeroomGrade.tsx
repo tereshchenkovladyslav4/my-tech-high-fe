@@ -76,15 +76,15 @@ export const HomeroomGrade: FunctionComponent<HomeroomGradeProps> = ({ schoolYea
   }
 
   const settings = {
-		className: "slider variable-width",
+    className: "slider variable-width",
     infinite: false,
     speed: 500,
     slidesToShow: Math.min(5, students.filter(x => x.status.at(-1)?.status !== 2).length),
     slidesToScroll: 1,
     nextArrow: <SampleNextArrow />,
     prevArrow: <SamplePrevArrow />,
-		variableWidth: true,
-		rows: 1,
+    variableWidth: true,
+    rows: 1,
     responsive: [
       {
         breakpoint: 770,
@@ -119,8 +119,10 @@ export const HomeroomGrade: FunctionComponent<HomeroomGradeProps> = ({ schoolYea
         textAlign='left'
         paddingY={1.5}
         paddingX={3}
-        display='flex'
         justifyContent='space-between'
+        sx={{
+          display: { xs: 'block', sm: 'flex' }
+        }}
       >
         <Box display='flex' justifyContent='space-between' flexDirection='column'>
           <Subtitle size='large' fontWeight='bold'>
@@ -144,25 +146,31 @@ export const HomeroomGrade: FunctionComponent<HomeroomGradeProps> = ({ schoolYea
 
         <Stack display='flex' justifyContent='flex-end' alignSelf='center' marginY={1} direction='row' spacing={2}>
           {students && students.length > 2 && (
-          <Box sx={{
-            width: windowDimensions.width > 770 ? (Math.min(students.filter(x => x.status.at(-1)?.status !== 2).length, 5) * 60) + 'px'
-              : (windowDimensions.width > 710 ? (Math.min(students.filter(x => x.status.at(-1)?.status !== 2).length, 4) * 60) + 'px'
-                : (windowDimensions.width > 650 ? (Math.min(students.filter(x => x.status.at(-1)?.status !== 2).length, 3) * 60) + 'px'
-                  : (Math.min(students.filter(x => x.status.at(-1)?.status !== 2).length, 2) * 60) + 'px'
-                ))
-            , mr: '20px'
+            <Box sx={{
+              width: windowDimensions.width > 770 ? (Math.min(students.filter(x => x.status.at(-1)?.status !== 2).length, 5) * 60) + 'px'
+                : (windowDimensions.width > 710 ? (Math.min(students.filter(x => x.status.at(-1)?.status !== 2).length, 4) * 60) + 'px'
+                  : (windowDimensions.width > 650 ? (Math.min(students.filter(x => x.status.at(-1)?.status !== 2).length, 3) * 60) + 'px'
+                    // : (Math.min(students.filter(x => x.status.at(-1)?.status !== 2).length, 2) * 60) + 'px'
+                    : '85%'
+                  ))
+              , mr: '20px'
             }}>
-            <style dangerouslySetInnerHTML={{__html: `
+              <style dangerouslySetInnerHTML={{
+                __html: `
               .slick-track {
                 display: flex;
               }
             `}} />
-            <Slider {...settings} ref={sliderRef}>
-              {renderStudents()}
-            </Slider>
-          </Box>
+              <Slider {...settings} ref={sliderRef}>
+                {renderStudents()}
+              </Slider>
+            </Box>
           )}
-          {students && students.length <= 2 && renderStudents()}
+          {students && students.length <= 2 && (
+            <Box sx={{ width: '100%' }}>
+              {renderStudents()}
+            </Box>
+          )}
         </Stack>
       </Box>
     </Card>

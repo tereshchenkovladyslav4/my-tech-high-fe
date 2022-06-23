@@ -275,3 +275,10 @@
   line-height: 12px;
 }
 /* @end tail.DateTime */
+
+/* mobile */
+@media screen and (max-width: 600px) {
+  .m-w-100 {
+    width: 100%;
+  }
+}

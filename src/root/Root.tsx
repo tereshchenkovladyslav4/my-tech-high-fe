@@ -1,5 +1,6 @@
 import { useQuery } from '@apollo/client'
 import { Box } from '@mui/material'
+import { makeStyles, Theme } from "@material-ui/core/styles";
 import React, { useContext, useEffect, useState } from 'react'
 import { AdminAppBar } from '../components/AdminAppBar/AdminAppBar'
 import { AppBar } from '../components/AppBar/AppBar'
@@ -14,12 +15,22 @@ import { UnauthenticatedRoutes } from '../router/UnauthenticatedRoutes'
 import { LoadingScreen } from '../screens/LoadingScreen/LoadingScreen'
 import { getMeQuery } from './services'
 
+const useStyles = makeStyles((theme: Theme) => ({
+  content: {
+    [theme.breakpoints.down('xs')]: {
+      marginLeft: '0',
+    },
+    marginLeft: '260px',
+  }
+}));
+
 export const Root = () => {
+  const classes = useStyles();
   const { me, setMe } = useContext(UserContext)
   const { setTab, setVisitedTabs } = useContext(TabContext)
-  const { loading, error, data } = useQuery(getMeQuery, { skip: me ? true : false})
+  const { loading, error, data } = useQuery(getMeQuery, { skip: me ? true : false })
   const [isSuper, setIsSuper] = useState(null)
-  
+
   useEffect(() => {
     if (!loading && me === null && data !== undefined) {
       setTab({
@@ -30,8 +41,8 @@ export const Root = () => {
       let regions = [];
       data.me.userRegion.forEach(region => {
         let i;
-        for(i = 0; i < regions.length; i++) {
-          if(regions[i].regionDetail.name > region.regionDetail.name)
+        for (i = 0; i < regions.length; i++) {
+          if (regions[i].regionDetail.name > region.regionDetail.name)
             break;
         }
         regions.splice(i, 0, region);
@@ -46,18 +57,20 @@ export const Root = () => {
     }
   }, [loading])
 
-  return loading && !me ?  (
+  return loading && !me ? (
     <LoadingScreen />
   ) : me !== null ? (
     !isSuper ? (
-      <Box sx={{height: '100%', flex: 1}}  alignItems={'center'}>
+      <Box sx={{ height: '100%', flex: 1 }} alignItems={'center'}>
         <SideMenu />
         <Box display='flex' flex={1} flexDirection={'column'} textAlign={'center'} justifyContent='space-between' height='100vh'>
-          <div style={{ marginLeft: '260px' }}>
+          <div className={classes.content}>
             {me?.level === 2 ? <AdminAppBar /> : <AppBar />}
-            <Routes />
+            <Box sx={{ marginTop: { xs: '65px', sm: 0 }, marginBottom: { xs: '15px', sm: 0 } }}>
+              <Routes />
+            </Box>
           </div>
-          { localStorage.getItem('masquerade') !== null && <MasqueradeFooter me={me}/> }
+          {localStorage.getItem('masquerade') !== null && <MasqueradeFooter me={me} />}
         </Box>
       </Box>
     ) : (

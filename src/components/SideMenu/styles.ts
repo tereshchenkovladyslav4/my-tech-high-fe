@@ -27,4 +27,15 @@ export const useStyles = {
   logoTitle: {
     marginTop: '25px',
   },
+  // mobile
+  mobileContainer: {
+    position: 'fixed',
+    width: '100%',
+    bgcolor: '#fff',
+    height: '100vh',
+  },
+  mobileNavText:{
+    lineHeight: '2',
+    fontSize: '24px'
+  }
 }

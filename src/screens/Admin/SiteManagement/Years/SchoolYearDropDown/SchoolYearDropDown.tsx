@@ -124,41 +124,30 @@ export default function SchoolYearDropDown({
       let cnt = 0
 
       schoolYearData?.data?.region?.SchoolYears.forEach((schoolYear: any) => {
-        const schoolYear_date_begin = moment(schoolYear.date_begin?.substring(0, 10)).toISOString()
-        const schoolYear_date_end = moment(schoolYear.date_end?.substring(0, 10)).toISOString()
-        const schoolYear_date_reg_open = moment(schoolYear.date_reg_open?.substring(0, 10)).toISOString()
-        const schoolYear_date_reg_close = moment(schoolYear.date_reg_close?.substring(0, 10)).toISOString()
-        const schoolYear_midyear_application_open = moment(
-          schoolYear.midyear_application_open?.substring(0, 10),
-        ).toISOString()
-        const schoolYear_midyear_application_close = moment(
-          schoolYear.midyear_application_close?.substring(0, 10),
-        ).toISOString()
-
         if (schoolYear.school_year_id == selectedYearId) {
           setSchoolYearItem({
-            open: schoolYear_date_begin,
-            close: schoolYear_date_end,
+            open: new Date(schoolYear.date_begin),
+            close: new Date(schoolYear.date_end),
           })
           setApplicationItem({
-            open: schoolYear_date_reg_open,
-            close: schoolYear_date_reg_close,
+            open: new Date(schoolYear.date_reg_open),
+            close: new Date(schoolYear.date_reg_close),
           })
           setMidYearItem({
-            open: schoolYear_midyear_application_open,
-            close: schoolYear_midyear_application_close,
+            open: new Date(schoolYear.midyear_application_open),
+            close: new Date(schoolYear.midyear_application_close),
             status: schoolYear.midyear_application,
           })
           cnt++
         }
         schoolYearsArr.push({
           schoolYearId: schoolYear.school_year_id,
-          schoolYearOpen: schoolYear_date_begin,
-          schoolYearClose: schoolYear_date_end,
-          applicationsOpen: schoolYear_date_reg_open,
-          applicationsClose: schoolYear_date_reg_close,
-          midYearOpen: schoolYear_midyear_application_open,
-          midYearClose: schoolYear_midyear_application_close,
+          schoolYearOpen: new Date(schoolYear.date_begin),
+          schoolYearClose: new Date(schoolYear.date_end),
+          applicationsOpen: new Date(schoolYear.date_reg_open),
+          applicationsClose: new Date(schoolYear.date_reg_close),
+          midYearOpen: new Date(schoolYear.midyear_application_open),
+          midYearClose: new Date(schoolYear.midyear_application_close),
           midYearStatus: schoolYear.midyear_application,
         })
       })

@@ -95,7 +95,7 @@ export default function Documents({id, questions}) {
                 }
               }
             }
-            else if(q.slug?.includes('meta_') && q.required) {
+            else if(q.slug?.includes('meta_') && q.required && !q.additional_question) {
               if(q.validation === 1) {
                 valid_meta[`${q.slug}`] = yup.string().email('Enter a valid email').required('Email is required').nullable()
               }
@@ -345,25 +345,33 @@ export default function Documents({id, questions}) {
     }    
     return false
   }
-
+  const questionsArr = questions?.groups[0]?.questions.map((q) => {
+    let arr = [q], current = q, child;
+      while(child = questions?.groups[0]?.questions.find(x => x.additional_question == current.slug)) {
+        arr.push(child);
+        current = child;
+      }
+      return arr;
+  })
+  const questionsLists = questionsArr.filter((item) => !item[0].additional_question)
   return (
     !dataLoading ? <form  onSubmit={(e) => !disabled ? formik.handleSubmit(e) : nextTab(e)}>
       
     <Grid container rowSpacing={3} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
       <Grid item xs={12}>
         <List>
-          {questions?.groups[0]?.questions.map((item, index) => (
+          {questionsLists.map((item, index) => (
             <Grid item xs={12} marginTop={4} key={index}>
               <DocumentUpload
                 disabled={disabled}
                 item={item}
                 formik={formik}
                 handleUpload={submitRecord}
-                file={files && files.filter((file) => file.name.includes(`${student.person.first_name.charAt(0).toUpperCase()}.${student.person.last_name}${item.options[0]?.label}`)).sort((a, b) => b.file_id - a.file_id)}
+                file={files && files.filter((file) => file.name.includes(`${student.person.first_name.charAt(0).toUpperCase()}.${student.person.last_name}${item[0].options[0]?.label}`)).sort((a, b) => b.file_id - a.file_id)}
                 firstName={student.person.first_name}
                 lastName={student.person.last_name}
               />  
-              {item.type === QUESTION_TYPE.UPLOAD && !checkValidate(item) && !disabled && <Paragraph color={RED} size='medium' fontWeight='700' sx={{marginLeft: '12px'}}>
+              {item[0].type === QUESTION_TYPE.UPLOAD && !checkValidate(item[0]) && !disabled && <Paragraph color={RED} size='medium' fontWeight='700' sx={{marginLeft: '12px'}}>
                 File is required
               </Paragraph>}
             </Grid>

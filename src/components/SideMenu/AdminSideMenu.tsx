@@ -34,7 +34,9 @@ import DatRangeOutlinedIcon from '@mui/icons-material/DateRangeOutlined'
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined'
 import KeyIcon from '@mui/icons-material/VpnKey'
 import DescriptionIcon from '@mui/icons-material/Description'
-import StorageIcon from '@mui/icons-material/Storage'
+import MarkunreadMailboxOutlinedIcon from '@mui/icons-material/MarkunreadMailboxOutlined';
+import RecentActorsOutlinedIcon from '@mui/icons-material/RecentActorsOutlined';
+import PermIdentityOutlinedIcon from '@mui/icons-material/PermIdentityOutlined';
 
 export const AdminSideMenu: FunctionComponent = () => {
   const history = useHistory()
@@ -83,12 +85,12 @@ export const AdminSideMenu: FunctionComponent = () => {
     {
       to: HOMEROOM,
       label: 'Homeroom',
-      icon: <BackupTableIcon style={classes.logos} />,
+      icon: <PeopleAltOutlinedIcon style={classes.logos} />,
     },
     {
       to: ANNOUNCEMENTS,
       label: 'Announcements',
-      icon: <AllInboxOutlinedIcon style={classes.logos} />,
+      icon: <MarkunreadMailboxOutlinedIcon style={classes.logos} />,
     },
     {
       to: CALENDAR,
@@ -113,12 +115,12 @@ export const AdminSideMenu: FunctionComponent = () => {
     {
       to: RECORDS,
       label: 'Records',
-      icon: <StorageIcon style={classes.logos} />,
+      icon: <RecentActorsOutlinedIcon style={classes.logos} />,
     },
     {
       to: USERS,
       label: 'Users',
-      icon: <PeopleAltOutlinedIcon style={classes.logos} />,
+      icon: <PermIdentityOutlinedIcon style={classes.logos} />,
     },
     {
       to: SETTINGS,

@@ -7,16 +7,11 @@ import { Header } from './components/Header/Header'
 import { Students } from './components/Students/Students'
 import { ParentProfile } from './ParentProfile/ParentProfile'
 import { StudentProfile } from './StudentProfile/StudentProfile'
-import {
-  CreateWithdrawal,
-  DeleteWithdrawal,
-  getParentDetail,
-  updatePersonAddressMutation,
-  UpdateStudentMutation,
-} from './services'
+import { DeleteWithdrawal, getParentDetail, updatePersonAddressMutation, UpdateStudentMutation } from './services'
 import { NewUserModal } from './components/NewUserModal/NewUserModal'
 import { useStyles } from './styles'
 import { UserContext } from '../../../providers/UserContext/UserProvider'
+import { saveWithdrawalMutation } from '../../../graphql/mutation/withdrawal'
 
 export const UserProfile = ({ handleClose, data, setIsChanged }) => {
   const classes = useStyles
@@ -33,6 +28,7 @@ export const UserProfile = ({ handleClose, data, setIsChanged }) => {
   const [selectedStudent, setSelectedStudent] = useState(parseInt(data.student_id))
   const [selectedParentType, setSelectedParentType] = useState('parent')
   const [applicationState, setApplicationState] = useState('')
+  const [requesting, setRequesting] = useState<boolean>(false)
   const { me } = useContext(UserContext)
   const {
     loading: userLoading,
@@ -47,7 +43,7 @@ export const UserProfile = ({ handleClose, data, setIsChanged }) => {
   })
 
   const [updateStudent] = useMutation(UpdateStudentMutation)
-  const [createWithdrawal] = useMutation(CreateWithdrawal)
+  const [createWithdrawal] = useMutation(saveWithdrawalMutation)
   const [deleteWithdrawal] = useMutation(DeleteWithdrawal)
 
   const [updatePersonAddress, { data: updatedData }] = useMutation(updatePersonAddressMutation)
@@ -75,6 +71,7 @@ export const UserProfile = ({ handleClose, data, setIsChanged }) => {
           },
         },
       })
+      setRequesting(false)
       handleClose(true)
     } else {
       const person: any = Object.assign({}, studentPerson)
@@ -111,9 +108,11 @@ export const UserProfile = ({ handleClose, data, setIsChanged }) => {
       if (studentStatus?.withdrawOption && studentStatus?.withdrawOption > 0) {
         await createWithdrawal({
           variables: {
-            updateWithdrawalInput: {
-              StudentId: studentStatus?.student_id,
-              status: studentStatus?.withdrawOption == 1 ? 'Notified' : 'Withdrawn',
+            withdrawalInput: {
+              withdrawal: {
+                StudentId: studentStatus?.student_id,
+                status: studentStatus?.withdrawOption == 1 ? 'Notified' : 'Withdrawn',
+              },
             },
           },
         })
@@ -126,6 +125,7 @@ export const UserProfile = ({ handleClose, data, setIsChanged }) => {
           },
         })
       }
+      setRequesting(false)
       handleClose(true)
     }
   }
@@ -215,22 +215,25 @@ export const UserProfile = ({ handleClose, data, setIsChanged }) => {
             justifyContent: 'flex-end',
           }}
         >
-          <Button
-            sx={{
-              background: BUTTON_LINEAR_GRADIENT,
-              textTransform: 'none',
-              color: 'white',
-              marginRight: 2,
-              width: '92px',
-              height: '25px',
-            }}
-            onClick={() => {
-              setIsChanged(false)
-              handleSavePerson()
-            }}
-          >
-            Save
-          </Button>
+          {!requesting && (
+            <Button
+              sx={{
+                background: BUTTON_LINEAR_GRADIENT,
+                textTransform: 'none',
+                color: 'white',
+                marginRight: 2,
+                width: '92px',
+                height: '25px',
+              }}
+              onClick={() => {
+                setIsChanged(false)
+                setRequesting(true)
+                handleSavePerson()
+              }}
+            >
+              Save
+            </Button>
+          )}
           <CloseIcon
             style={{ color: 'white', background: BLACK, borderRadius: 2, cursor: 'pointer' }}
             onClick={() => handleClose(false)}

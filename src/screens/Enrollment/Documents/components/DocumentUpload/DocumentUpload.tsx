@@ -20,7 +20,7 @@ export const DocumentUpload = ({item, formik, handleUpload, file, firstName, las
 
     const myRenamedFile = fileName.map((f, index) => {
       const fileType = f.name.split('.')[1]
-      return new File([f], `${firstName.charAt(0).toUpperCase()}.${lastName}${item.options[0].label}.${fileType}`, {type: f.type})
+      return new File([f], `${firstName.charAt(0).toUpperCase()}.${lastName}${item[0].options[0].label}.${fileType}`, {type: f.type})
     })
     setFiles(myRenamedFile)
   }
@@ -29,8 +29,8 @@ export const DocumentUpload = ({item, formik, handleUpload, file, firstName, las
 	}
 
   useEffect(() =>{
-    handleUpload(item.question, files)
-  },[item, files])
+    handleUpload(item[0].question, files)
+  },[item[0], files])
 
   const renderFiles = (upload) => {
     return upload
@@ -49,7 +49,7 @@ export const DocumentUpload = ({item, formik, handleUpload, file, firstName, las
       />
     // ))
   }
-  if(item.type !== QUESTION_TYPE.UPLOAD) {
+  if(item[0].type !== QUESTION_TYPE.UPLOAD) {
     return (
       <Grid container rowSpacing={2} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
         <EnrollmentQuestionItem item={item} group={'root'} formik={formik}/>
@@ -60,10 +60,10 @@ export const DocumentUpload = ({item, formik, handleUpload, file, firstName, las
     return (
       <Box sx={classes.container}>
         <Box display='flex' alignItems='center' justifyContent='start'>
-          <Subtitle fontWeight='700'>{`${item.question} ${item.required ? "(required)" : ""}`}</Subtitle>
+          <Subtitle fontWeight='700'>{`${item[0].question} ${item[0].required ? "(required)" : ""}`}</Subtitle>
         </Box>
         <Paragraph size='medium'>
-          <p dangerouslySetInnerHTML={{ __html: item.options[0].value }}></p>
+          <p dangerouslySetInnerHTML={{ __html: item[0].options[0].value }}></p>
         </Paragraph>
         { files ? renderFiles(true) :  renderFiles(false)}
         <Box sx={classes.buttonContainer}>

@@ -1,18 +1,15 @@
-import { Box, Checkbox, FormLabel, outlinedInputClasses, Radio, TextField, Grid, FormGroup, FormControl, FormControlLabel} from '@mui/material'
-import { useFormikContext } from 'formik'
+import { Box, Checkbox, outlinedInputClasses, Radio, TextField, Grid, FormGroup, FormControl, FormControlLabel} from '@mui/material'
 import React, { useState, useEffect, useContext, useCallback } from 'react'
 import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragraph'
 import { DropDown } from '../../../../../components/DropDown/DropDown'
 import { SYSTEM_05, SYSTEM_07,ERROR_RED, GRADES } from '../../../../../utils/constants'
-import { AdditionalQuestionType, EnrollmentQuestion } from '../../../SiteManagement/EnrollmentSetting/EnrollmentQuestions/types'
+import { EnrollmentQuestion } from '../../../SiteManagement/EnrollmentSetting/EnrollmentQuestions/types'
 import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
 import { DropDownItem } from '../../../../../components/DropDown/types'
 import { toOrdinalSuffix } from '../../../../../utils/stringHelpers'
-import moment from 'moment'
-import { UserContext, UserInfo } from '../../../../../providers/UserContext/UserProvider'
+import { UserContext } from '../../../../../providers/UserContext/UserProvider'
 import { gql, useQuery } from '@apollo/client'
-import { Controller, useFormContext } from 'react-hook-form'
-import { EnrollmentPacketFormType } from '../types'
+import { Controller, ControllerRenderProps, useFormContext } from 'react-hook-form'
 import { QUESTION_TYPE } from '../../../../../components/QuestionItem/QuestionItemProps'
 
 export const getActiveSchoolYearsByRegionId = gql`
@@ -30,14 +27,15 @@ export default function PacketQuestionItem({
   item: EnrollmentQuestion[]
 }) {
     const [questionItems, setQuestionItems] = useState<Array<any>>([<Grid></Grid>])
-    const { getValues, control } = useFormContext()
+    const { getValues } = useFormContext()
     const values = getValues()
+    
     useEffect(() => {
         if(item) {            
             let childsEnable = false
             setQuestionItems(item.map((i) => { 
                 if(values[`${i.additional_question}`]) {                    
-                    const parentIsAction = item.find((ii) => ii.slug == i.additional_question).options.filter((o) => o.action == 2).find((po) => values[`${i.additional_question}`].length > 1 ? values[`${i.additional_question}`].find((fv) => fv.label == po.label) : po.label == values[`${i.additional_question}`] || po.value == values[`${i.additional_question}`])
+                    const parentIsAction = item.find((ii) => ii.slug == i.additional_question).options.filter((o) => o.action == 2).find((po) => Array.isArray(values[`${i.additional_question}`]) ? values[`${i.additional_question}`].find((fv) => fv.label == po.label) : po.label == values[`${i.additional_question}`] || po.value == values[`${i.additional_question}`])
                     if(parentIsAction && !childsEnable) {
                         return {...i, isEnable: true}
                     }
@@ -54,7 +52,7 @@ export default function PacketQuestionItem({
         else {
             setQuestionItems([<Grid></Grid>])
         }
-    }, [item, values])
+    }, [item])
     
     const handleAdditionalAction = (slug, value) => {
         let index = 1000
@@ -65,6 +63,15 @@ export default function PacketQuestionItem({
             }
             else {
                 if(value) {
+                    // if(q.order > index) {
+                    //     console.log('childe', q, values[`${q.slug}`])
+                    //     const actionOption = q.options.find((qo) => qo.action == 2)
+                    //     const enableShow = values[`${q.slug}`].length > 0 ? values[`${q.slug}`].find((v) => v.label == actionOption.label) : values[`${q.slug}`] == actionOption.label || actionOption.value == values[`${q.slug}`]
+                    //     return {...q, isEnable: enableShow}
+                    // }
+                    // else {
+                    //     return q
+                    // }
                     return q
                 }
                 else {
@@ -116,7 +123,7 @@ export default function PacketQuestionItem({
     )
 }
 function Item({ question: q, setAdditionalQuestion }: { question: EnrollmentQuestion, setAdditionalQuestion: (slug:string, flag: boolean) => void}) {
-    const { control, watch } = useFormContext()
+    const { control, watch, setValue, getValues } = useFormContext()
     const [school_year_id] = watch(['school_year_id'])
     const [otherValue, setOtherValue] = useState('')
 
@@ -132,6 +139,27 @@ function Item({ question: q, setAdditionalQuestion }: { question: EnrollmentQues
         },
         fetchPolicy: 'network-only',
     })
+
+    const values = getValues()
+    const [fieldData, setFieldData] = useState(values[`${q.slug}`])
+
+    useEffect(() => {
+        if(values) {
+            setFieldData(values[`${q.slug}`])
+            if(q.type === QUESTION_TYPE.CHECKBOX) {
+                const otherTemp = multiSelected('Other')
+                if(otherTemp) {
+                    setOtherValue(values[`${q.slug}`].find((other) => other.label == 'Other').value)
+                }
+            }
+        }        
+    }, [q])
+    
+    useEffect(()=> {
+        if(q.type !== QUESTION_TYPE.TEXTFIELD && q.type !== QUESTION_TYPE.CALENDAR && fieldData) {
+            setValue(q.slug, fieldData)
+        }
+    }, [fieldData, q])
 
     useEffect(() => {
         if (!schoolLoading && schoolYearData?.getSchoolYearsByRegionId) {           
@@ -179,29 +207,85 @@ function Item({ question: q, setAdditionalQuestion }: { question: EnrollmentQues
         setGradesDropDownItems(dropDownItems)
      }
 
-    function handleChangeOther(field, value: string) {
-        const otherTemp = multiSelected(field, 'Other')
+    function handleChangeOther(value: string) {
+        const otherTemp = multiSelected('Other')
         if(otherTemp) {
-            const updateOther = field?.value?.map((f) => f.label === 'Other' ? {label: 'Other', value: value} : f)
-            field.onChange(updateOther)
+            const updateOther = fieldData.map((f) => f.label === 'Other' ? {label: 'Other', value: value} : f)
+            setFieldData(updateOther)
         }
         setOtherValue(value)
     }
     
-    const multiSelected = (fieldValue, value) => {
+    const multiSelected = useCallback((value: string | number) => {
+        let res = false
         if(q.type === QUESTION_TYPE.CHECKBOX) {
-            return fieldValue?.length > 0 && fieldValue?.find((f) => f.label === value) || false
+            res = Array.isArray(fieldData) && fieldData?.find((f) => f.label == value) ? true : false            
         }
         else {
-            return fieldValue?.length > 0 && fieldValue?.indexOf(value) > -1 || false
+            res = fieldData?.indexOf(value) >= 0
         }
-    }
+        return res  
+    },[fieldData, q])
 
-    const onChange = (field, value) => {
-        const temp = [...field?.value]
-        const updated = multiSelected(temp, value) ? temp.filter((t) => t.label !== value) : [...temp, {label: value, value: value}]
-        field.onChange(updated)
+    const onHandleChange = useCallback((value) => {
+        if(q?.options?.find((f) => f.value === value || f.label === value)?.action == 2) {
+            if(q.type === QUESTION_TYPE.CHECKBOX) {
+                if(Array.isArray(fieldData) && fieldData?.find((f) => f.label === value)) {
+                    setAdditionalQuestion(q.slug, false)
+                }
+                else {
+                    setAdditionalQuestion(q.slug, true)
+                }
+            }
+            else {
+                setAdditionalQuestion(q.slug, true)
+            }
+        }
+        else {
+            if(q.type === QUESTION_TYPE.CHECKBOX) {
+                if(Array.isArray(fieldData) && fieldData?.find((f) => q.options?.find((qq) => qq.action == 2 && f.label == qq.label))) {
+                    setAdditionalQuestion(q.slug, true)
+                }
+                else {
+                    setAdditionalQuestion(q.slug, false)
+                }
+            }
+            else {
+                setAdditionalQuestion(q.slug, false) 
+            }
+        }   
+        if(q.type === QUESTION_TYPE.AGREEMENT){               
+            if(Array.isArray(fieldData) && fieldData.indexOf(value) >= 0) {
+                setFieldData(fieldData.filter((f) => f !== value))
+            }
+            else {
+                setFieldData(fieldData ? [...fieldData, value] : [value])
+            }
+        }
+        else if(q.type === QUESTION_TYPE.CHECKBOX) {
+            if(Array.isArray(fieldData) && fieldData?.find((f) => f.label === value)) {
+                setFieldData(fieldData?.filter((f) => f.label !== value))
+            }
+            else {
+                if(value === 'Other') {
+                    setFieldData(fieldData ? [...fieldData, {label: value, value: otherValue}] : [{label: value, value: otherValue}])
+                }
+                else {
+                    const temp = fieldData ? [...fieldData, {label: value, value: value}] : [{label: value, value: value}]
+                    setFieldData(temp)
+                }
+            }
+        }
+        else {
+            setFieldData(value)
+        }  
+    }, [fieldData, q])
+
+    function onChangeDropDown( value: string | number) {
+        const selected = dropDownItemsData.find((f) => f.value === value)
+        onHandleChange(selected?.value)
     }
+    
 
     if (q.type === QUESTION_TYPE.DROPDOWN) {
         return (
@@ -219,7 +303,7 @@ function Item({ question: q, setAdditionalQuestion }: { question: EnrollmentQues
                         defaultValue={field.value}
                         labelTop
                         dropDownItems={dropDownItemsData}
-                        setParentValue={(v) => field.onChange(v as string)}
+                        setParentValue={(v) => onChangeDropDown(v as string)}
                         size='small'
                         // error={{
                         //     error: !!(formik.errors[`${keyName}`] && Boolean(formik.errors[`${keyName}`][`${fieldName}`])),
@@ -273,7 +357,7 @@ function Item({ question: q, setAdditionalQuestion }: { question: EnrollmentQues
                                 <Grid item xs={q.options.length > 3 ? 6 : 12} key={index}> 
                                     <FormControlLabel
                                         control={
-                                            <Checkbox checked={multiSelected(field.value, o.label)} onClick={() => onChange(field, o.label)}/>
+                                            <Checkbox checked={multiSelected(o.label)} onClick={() => onHandleChange(o.label)}/>
                                         }
                                         label={o.label} 
                                     />
@@ -292,8 +376,8 @@ function Item({ question: q, setAdditionalQuestion }: { question: EnrollmentQues
                                         }}
                                         variant='outlined'
                                         fullWidth
-                                        value={otherValue || field.value?.length > 0 && field.value?.find((f) => f.label === 'Other')?.value}
-                                        onChange={(e) => handleChangeOther(field, e.target.value)}
+                                        value={otherValue}
+                                        onChange={(e) => handleChangeOther(e.target.value)}
                                     />)
                                     }
                                 </Grid>
@@ -321,13 +405,11 @@ function Item({ question: q, setAdditionalQuestion }: { question: EnrollmentQues
                     <FormGroup style={{ width: '50%' }}>
                         <FormControlLabel
                             control={
-                                <Checkbox checked={multiSelected(field.value, q.slug)}  onClick={() => onChange(field, q.slug)} />
+                                <Checkbox checked={multiSelected(q.slug)}  onClick={() => onHandleChange(q.slug)} />
                             }
                             label={
                                 <Paragraph size='medium'>
-                                    <a style={{ color: '#111', textDecoration: 'none' }} href={q.options[0]?.label === 'web' ? q.options[0]?.value :`mailto:${q.options[0]?.value}`}>
-                                        {q.question}
-                                    </a>
+                                    <p dangerouslySetInnerHTML={{ __html: q.question }}></p>
                                 </Paragraph>
                             }
                         />
@@ -352,11 +434,11 @@ function Item({ question: q, setAdditionalQuestion }: { question: EnrollmentQues
                 >
                     <FormGroup style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
                         <Grid container>
-                            {(q.options ?? []).map((o, index) => (
+                            {(q.options).map((o, index) => (
                             <Grid item xs={q.options.length > 3 ? 6 : 12}  key={index}> 
                                 <FormControlLabel
                                     control={
-                                        <Radio checked={field.value === o.label} onClick={() => field.onChange(o.label)} />
+                                        <Radio checked={field.value === o.label} onClick={() => onHandleChange(o.label)} />
                                     }
                                     label={o.label} 
                                 />

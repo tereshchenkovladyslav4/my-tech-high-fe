@@ -37,9 +37,14 @@ const AnnouncementItem: AnnouncmentTemplateType = ({
           </Paragraph>
         }
         secondaryAction={
-          <Box position='absolute' sx={classes.closeIconContainer}>
-            <CloseIcon sx={style} style={classes.closeIcon} onClick={() => onClose()} />
-          </Box>
+          <>
+            <Box position='absolute' sx={{ ...classes.closeIconContainer, display: { xs: 'none',md:'block' } }}>
+              <CloseIcon sx={style} style={classes.closeIcon} onClick={() => onClose()} />
+            </Box>
+            <Box position='absolute' sx={{ ...classes.closeIconContainer, right: '-33px', display: { xs: 'block', md:'none' } }}>
+              <CloseIcon style={classes.closeIcon} onClick={() => onClose()} />
+            </Box>
+          </>
         }
       />
     </Box>

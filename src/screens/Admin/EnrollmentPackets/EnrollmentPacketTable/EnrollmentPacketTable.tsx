@@ -29,6 +29,7 @@ import { getEmailTemplateQuery } from '../../../../graphql/queries/email-templat
 import { EnrollmentPacketFilters } from '../EnrollmentPacketFilters/EnrollmentPacketFilters'
 import { ProfileContext } from '../../../../providers/ProfileProvider/ProfileContext'
 import { ApplicationEmailModal } from '../../Applications/ApplicationModal/ApplicationEmailModal'
+import { ENROLLMENT_PACKET_HEADCELLS } from '../../../../utils/PageHeadCellsConstant'
 
 export const EnrollmentPacketTable = () => {
   const { me, setMe } = useContext(UserContext)
@@ -67,8 +68,8 @@ export const EnrollmentPacketTable = () => {
   const createData = (packet: Packet) => {
     const _sort = sort?.split('|')
     let grade_value = 0
-    if(sort && _sort[0]?.toLowerCase() === 'grade' && _sort[1]?.toLowerCase() === 'desc') {
-        grade_value = packet?.student?.grade_levels?.length - 1 
+    if (sort && _sort[0]?.toLowerCase() === 'grade' && _sort[1]?.toLowerCase() === 'desc') {
+      grade_value = packet?.student?.grade_levels?.length - 1
     }
     const status = ['Pending', 'Active', 'Withdrawn', '']
     return {
@@ -79,17 +80,19 @@ export const EnrollmentPacketTable = () => {
       student: `${packet.student.person?.first_name} ${packet.student.person?.last_name}`,
       grade:
         packet.student.grade_levels?.length && packet.student.grade_levels[grade_value].grade_level
-          ? packet.student.grade_levels[grade_value].grade_level == 'K' || packet.student.grade_levels[grade_value].grade_level === 'Kin'
+          ? packet.student.grade_levels[grade_value].grade_level == 'K' ||
+            packet.student.grade_levels[grade_value].grade_level === 'Kin'
             ? 'K'
             : `${toOrdinalSuffix(Number(packet.student.grade_levels[grade_value].grade_level))} Grade`
           : ' ',
       parent: `${packet.student.parent.person?.first_name} ${packet.student.parent.person?.last_name}`,
-      studentStatus: packet.student?.reenrolled > 0 ? 'Update' : ( 'New' ),
-      emailed: packet.packet_emails.length > 0 ? (
-        <Box sx={{ cursor: 'pointer' }} onClick={() => handleOpenEmailHistory(packet)}>
-          {moment(packet.packet_emails[0].created_at).format('MM/DD/YY')}
-        </Box>
-      ) : null,
+      studentStatus: packet.student?.reenrolled > 0 ? 'Update' : 'New',
+      emailed:
+        packet.packet_emails.length > 0 ? (
+          <Box sx={{ cursor: 'pointer' }} onClick={() => handleOpenEmailHistory(packet)}>
+            {moment(packet.packet_emails[0].created_at).format('MM/DD/YY')}
+          </Box>
+        ) : null,
       delete: (
         <Tooltip title="Delete" arrow>
           <Box display={'flex'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'}
@@ -133,7 +136,7 @@ export const EnrollmentPacketTable = () => {
   } = useQuery(getEmailTemplateQuery, {
     variables: {
       template: 'Enrollment Packet Page',
-      regionId: me?.selectedRegionId
+      regionId: me?.selectedRegionId,
     },
     fetchPolicy: 'network-only',
   })
@@ -194,62 +197,6 @@ export const EnrollmentPacketTable = () => {
       setpacketCount(countGroup.packetCountByRegionId.results)
     }
   }, [countGroup])
-  const headCells: HeadCell[] = [
-    // {
-    //   id: 'id',
-    //   numeric: false,
-    //   disablePadding: true,
-    //   label: 'ID',
-    // },
-    {
-      id: 'submitted',
-      numeric: false,
-      disablePadding: true,
-      label: 'Submitted',
-    },
-    {
-      id: 'status',
-      numeric: false,
-      disablePadding: true,
-      label: 'Status',
-    },
-    {
-      id: 'deadline',
-      numeric: false,
-      disablePadding: true,
-      label: 'Deadline',
-    },
-    {
-      id: 'student',
-      numeric: false,
-      disablePadding: true,
-      label: 'Student',
-    },
-    {
-      id: 'grade',
-      numeric: false,
-      disablePadding: true,
-      label: 'Grade',
-    },
-    {
-      id: 'parent',
-      numeric: false,
-      disablePadding: true,
-      label: 'Parent',
-    },
-    {
-      id: 'studentStatus',
-      numeric: false,
-      disablePadding: true,
-      label: 'Student',
-    },
-    {
-      id: 'emailed',
-      numeric: false,
-      disablePadding: true,
-      label: 'Emailed',
-    },
-  ]
 
   const handleOpenEmailModal = () => {
     if (packetIds.length === 0) {
@@ -529,7 +476,7 @@ export const EnrollmentPacketTable = () => {
       </Box>
       <SortableTable
         rows={tableData}
-        headCells={headCells}
+        headCells={ENROLLMENT_PACKET_HEADCELLS}
         onCheck={setPacketIds}
         clearAll={false}
         onRowClick={handlePacketSelect}
@@ -560,7 +507,7 @@ export const EnrollmentPacketTable = () => {
           handleSubmit={() => setOpenWarningModal(!openWarningModal)}
         />
       )}
-        {openEmailShowModal && (
+      {openEmailShowModal && (
         <ApplicationEmailModal
           handleModem={() => setOpenEmailShowModal(!openEmailShowModal)}
           handleSubmit={() => setOpenEmailShowModal(false)}

@@ -119,7 +119,7 @@ export default function Submission({id, questions}) {
                 }
               }
             }
-            else if(q.slug?.includes('meta_') && q.required) {
+            else if(q.slug?.includes('meta_') && q.required && !q.additional_question) {
               if(q.validation === 1) {
                 valid_meta[`${q.slug}`] = yup.string().email('Enter a valid email').required('Email is required').nullable()
               }
@@ -281,7 +281,15 @@ export default function Submission({id, questions}) {
     window.scrollTo(0, 0)
     }
 
-
+  const questionsArr = questions?.groups[0]?.questions.map((q) => {
+    let arr = [q], current = q, child;
+      while(child = questions?.groups[0]?.questions.find(x => x.additional_question == current.slug)) {
+        arr.push(child);
+        current = child;
+      }
+      return arr;
+  })
+  const questionsLists = questionsArr.filter((item) => !item[0].additional_question)
 
   return (
     <form onSubmit={(e) => !disabled ? handleSubmit(e) : nextTab(e)}>
@@ -297,7 +305,7 @@ export default function Submission({id, questions}) {
         />
         }
         <Grid container rowSpacing={2} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
-            {questions?.groups[0]?.questions.map((item, index) => (
+            {questionsLists.map((item, index) => (
                 <EnrollmentQuestionItem key={index} item={item} group={'root'} formik={formik}/>
             ))}
         </Grid>

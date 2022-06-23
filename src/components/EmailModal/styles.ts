@@ -11,7 +11,7 @@ export const useStyles = {
     p: 4,
     borderRadius: 2,
     overflowY: 'auto',
-    height: '97vh'
+    maxHeight: '97vh',
   },
   editor: {
     border: '1px solid #d1d1d1',
@@ -62,5 +62,5 @@ export const useStyles = {
   'ul.sub-bullet': {
     listStyleType: 'square',
     marginLeft: '-2em',
-  }
+  },
 }

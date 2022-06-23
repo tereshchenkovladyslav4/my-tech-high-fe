@@ -39,6 +39,7 @@ import moment from 'moment'
 import { WarningModal } from '../../../../components/WarningModal/Warning'
 import { ApplicationModal } from '../ApplicationModal/ApplicationModal'
 import { ApplicationEmailModal } from '../ApplicationModal/ApplicationEmailModal'
+import { APPLICATION_HEADCELLS } from '../../../../utils/PageHeadCellsConstant'
 export const ApplicationTable = ({ filter }) => {
   const { me, setMe } = useContext(UserContext)
   const [emailTemplate, setEmailTemplate] = useState()
@@ -219,80 +220,6 @@ export const ApplicationTable = ({ filter }) => {
       localStorage.removeItem('pageLimit')
     }
   }, [])
-  const tableHeaders: HeadCell[] = [
-    // {
-    // 	id: 'id',
-    // 	numeric: false,
-    // 	disablePadding: true,
-    // 	label: 'ID'
-    // },
-    {
-      id: 'submitted',
-      numeric: false,
-      disablePadding: true,
-      label: 'Submitted',
-    },
-    {
-      id: 'year',
-      numeric: false,
-      disablePadding: true,
-      label: 'Year',
-    },
-    {
-      id: 'student',
-      numeric: false,
-      disablePadding: true,
-      label: 'Student',
-    },
-    {
-      id: 'grade',
-      numeric: false,
-      disablePadding: true,
-      label: 'Grade',
-    },
-    {
-      id: 'sped',
-      numeric: false,
-      disablePadding: true,
-      label: 'SPED',
-    },
-    {
-      id: 'parent',
-      numeric: false,
-      disablePadding: true,
-      label: 'Parent',
-    },
-    // {
-    //   id: 'status',
-    //   numeric: false,
-    //   disablePadding: true,
-    //   label: 'Status',
-    // },
-    {
-      id: 'relation',
-      numeric: false,
-      disablePadding: true,
-      label: 'Relation',
-    },
-    {
-      id: 'verified',
-      numeric: false,
-      disablePadding: true,
-      label: 'Verified',
-    },
-    {
-      id: 'emailed',
-      numeric: false,
-      disablePadding: true,
-      label: 'Emailed',
-    },
-    {
-      id: 'Actions',
-      numeric: false,
-      disablePadding: true,
-      label: 'Actions',
-    },
-  ]
 
   const [deleteApplication, { data: deleteData }] = useMutation(deleteApplicationMutation)
   const handleDelete = async (id) => {
@@ -659,7 +586,7 @@ export const ApplicationTable = ({ filter }) => {
       </Box>
       <SortableTable
         rows={tableData}
-        headCells={tableHeaders}
+        headCells={APPLICATION_HEADCELLS}
         onCheck={setApplicationIds}
         clearAll={shouldClear}
         onSortChange={sortChangeAction}

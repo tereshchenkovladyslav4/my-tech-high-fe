@@ -11,6 +11,7 @@ import { ANNOUNCEMENTS } from '../../../../../utils/constants'
 import { toolTipStyles } from '../../types'
 import CallMissedOutgoingIcon from '@mui/icons-material/CallMissedOutgoing'
 import { Announcement } from '../../../../Dashboard/Announcements/types'
+import { ANNOUNCEMENT_HEADCELLS } from '../../../../../utils/PageHeadCellsConstant'
 
 type PageContentProps = {
   tableDatas: Announcement[]
@@ -33,35 +34,7 @@ const PageContent = ({
   const [order, setOrder] = useState<Order>('asc')
   const [orderBy, setOrderBy] = useState<keyof any>('date')
   const [selected, setSelected] = useState<readonly string[]>([])
-  const tableHeaders: HeadCell[] = [
-    {
-      id: 'date',
-      numeric: false,
-      disablePadding: true,
-      label: 'Date',
-    },
-    {
-      id: 'subject',
-      numeric: false,
-      disablePadding: true,
-      label: 'Subject',
-    },
-    {
-      id: 'postedBy',
-      numeric: false,
-      disablePadding: true,
-      label: 'Posted By',
-    },
-    {
-      id: 'status',
-      numeric: false,
-      disablePadding: true,
-      label: 'Status',
-    },
-  ]
-
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {}
-
   const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof any) => {
     const isAsc = orderBy === property && order === 'asc'
     setOrder(isAsc ? 'desc' : 'asc')
@@ -79,7 +52,7 @@ const PageContent = ({
             onSelectAllClick={handleSelectAllClick}
             onRequestSort={handleRequestSort}
             rowCount={tableDatas.length}
-            headCells={tableHeaders}
+            headCells={ANNOUNCEMENT_HEADCELLS}
             noCheckbox
           />
           <TableBody>

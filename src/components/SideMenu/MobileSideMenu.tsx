@@ -1,5 +1,6 @@
 import { List, ListItem, Box, ListItemButton } from '@mui/material'
 import React, { FunctionComponent, useContext, useEffect, useState } from 'react'
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import CreditCardRoundedIcon from '@mui/icons-material/CreditCardRounded'
 import CallMadeRoundedIcon from '@mui/icons-material/CallMadeRounded'
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded'
@@ -34,7 +35,11 @@ import DescriptionIcon from '@mui/icons-material/Description'
 import { map, some } from 'lodash'
 const noSidebarUsers = [15, 14, 16, 11, 9, 10, 13, 12]
 
-export const SideMenu: FunctionComponent = () => {
+type Props = {
+  handleDrawerClose: (type: string, name: string) => void
+}
+
+export const MobileSideMenu: FunctionComponent<Props> = ({ handleDrawerClose }) => {
   const history = useHistory()
   const classes = useStyles
   const location = useLocation()
@@ -56,61 +61,51 @@ export const SideMenu: FunctionComponent = () => {
     {
       to: ANNOUNCEMENTS,
       label: 'Announcements',
-      icon: <AllInboxOutlinedIcon style={classes.logos} />,
       access: [7, checkAdminAccessOnSidebar('Announcements')],
     },
     {
       to: CALENDAR,
       label: 'Calender',
-      icon: <DatRangeOutlinedIcon style={classes.logos} />,
       access: [7, checkAdminAccessOnSidebar('Calender')],
     },
     {
       to: CURRICULUM,
       label: 'Curriculum',
-      icon: <AllInboxOutlinedIcon style={classes.logos} />,
       access: [6, 8, checkAdminAccessOnSidebar('Curriculum')],
     },
     {
       to: ENROLLMENT,
       label: 'Enrollment',
-      icon: <BackupTableIcon style={classes.logos} />,
       access: [4, checkAdminAccessOnSidebar('Enrollment')],
     },
     {
       to: HOMEROOM,
       label: 'Homeroom',
-      icon: <PeopleAltOutlinedIcon style={classes.logos} />,
       access: [5, 15, checkAdminAccessOnSidebar('Homeroom Resources')],
     },
     {
       to: PARENT_LINK,
       label: 'Quick Links',
-      icon: <CallMadeRoundedIcon style={classes.logos} />,
       access: [15, checkAdminAccessOnSidebar('Parent Link')],
     },
     {
       to: RECORDS,
       label: 'Records',
-      icon: <CallMadeRoundedIcon style={classes.logos} />,
       access: [4, 6, 8, checkAdminAccessOnSidebar('Records')],
     },
     {
       to: REIMBURSMENTS,
       label: 'Reimbursements & Direct Orders',
-      icon: <CreditCardRoundedIcon style={classes.logos} />,
       access: [3, 15, checkAdminAccessOnSidebar('Reimbursements & Direct Orders')],
     },
     {
       to: REPORTS,
       label: 'Reports',
-      icon: <CallMadeRoundedIcon style={classes.logos} />,
       access: [6, 8, checkAdminAccessOnSidebar('Reports')],
     },
     {
       to: USERS,
       label: 'Users',
-      icon: <PeopleAltOutlinedIcon style={classes.logos} />,
       access: [2],
     },
   ]
@@ -141,26 +136,9 @@ export const SideMenu: FunctionComponent = () => {
   }
 
   return (
-    <Box sx={{ ...classes.container, display: { xs: 'none', sm: 'block'} }}>
+    <Box sx={classes.mobileContainer}>
       <nav aria-label='secondary mailbox folders' style={classes.navbar}>
         <List style={classes.navbar}>
-          <ListItem disablePadding style={classes.myTechHigh} onClick={() => history.push(DASHBOARD)}>
-            <ListItemButton component='a'>
-              {userRegion?.regionDetail.program == 'MTH' ? <MTHLogo /> : <TTALogo />}
-              <Box sx={classes.logoTitle}>
-                <Paragraph size='medium' fontWeight='bold'>
-                  {userRegion?.regionDetail.program == 'MTH' ? 'MY TECH HIGH' : 'Tech Trep Academy'}
-                </Paragraph>
-                <Paragraph
-                  size='small'
-                  fontWeight='bold'
-                  sx={{ fontSize: '12px', color: '#CCCCCC', textAlign: 'center', paddingTop: '5px' }}
-                >
-                  {userRegion?.regionDetail.name}
-                </Paragraph>
-              </Box>
-            </ListItemButton>
-          </ListItem>
           <NavLink
             exact
             to={DASHBOARD}
@@ -170,10 +148,10 @@ export const SideMenu: FunctionComponent = () => {
               color: '#4145FF',
             }}
           >
-            <ListItem disablePadding style={{ backgroundColor: 'inherit' }}>
-              <ListItemButton style={{ textDecoration: 'none' }}>
-                <DescriptionIcon style={classes.logos} />
-                <Paragraph size='medium'>Dashboard</Paragraph>
+            <ListItem disablePadding style={{ backgroundColor: 'inherit' }} onClick={() => handleDrawerClose('side', 'dashboard')}>
+              <ListItemButton style={{ textDecoration: 'none', justifyContent: 'space-between' }}>
+                <Paragraph sx={classes.mobileNavText}>Dashboard</Paragraph>
+                <ArrowForwardIcon />
               </ListItemButton>
             </ListItem>
           </NavLink>
@@ -189,10 +167,10 @@ export const SideMenu: FunctionComponent = () => {
                   color: '#4145FF',
                 }}
               >
-                <ListItem disablePadding style={{ backgroundColor: 'inherit' }}>
-                  <ListItemButton style={{ textDecoration: 'none' }}>
-                    {item.icon}
-                    <Paragraph size='medium'>{item.label}</Paragraph>
+                <ListItem disablePadding style={{ backgroundColor: 'inherit' }}  onClick={() => handleDrawerClose('side', item.label)}>
+                  <ListItemButton style={{ textDecoration: 'none', justifyContent: 'space-between' }}>
+                    <Paragraph sx={classes.mobileNavText}>{item.label}</Paragraph>
+                    <ArrowForwardIcon />
                   </ListItemButton>
                 </ListItem>
               </NavLink>
@@ -207,10 +185,11 @@ export const SideMenu: FunctionComponent = () => {
                   color: '#4145FF',
                 }}
               >
-                <ListItem disablePadding style={{ backgroundColor: 'inherit' }}>
-                  <ListItemButton style={{ textDecoration: 'none' }}>
+                <ListItem disablePadding style={{ backgroundColor: 'inherit' }} onClick={() => handleDrawerClose('side', item.label)}>
+                  <ListItemButton style={{ textDecoration: 'none', justifyContent: 'space-between' }}>
                     {item.icon}
-                    <Paragraph size='medium'>{item.label}</Paragraph>
+                    <Paragraph sx={classes.mobileNavText}>{item.label}</Paragraph>
+                    <ArrowForwardIcon />
                   </ListItemButton>
                 </ListItem>
               </NavLink>
@@ -225,20 +204,21 @@ export const SideMenu: FunctionComponent = () => {
               color: '#4145FF',
             }}
           >
-            <ListItem disablePadding style={{ backgroundColor: 'inherit' }}>
-              <ListItemButton>
-                <SettingsRoundedIcon style={classes.logos} />
-                <Paragraph size='medium'>Settings</Paragraph>
+            <ListItem disablePadding style={{ backgroundColor: 'inherit' }}  onClick={() => handleDrawerClose('side', 'settings')}>
+              <ListItemButton style={{ justifyContent: 'space-between' }}>
+                <Paragraph sx={classes.mobileNavText}>Settings</Paragraph>
+                <ArrowForwardIcon />
               </ListItemButton>
             </ListItem>
           </NavLink>
 
-          <ListItem disablePadding style={{ position: 'absolute', bottom: 20 }} onClick={() => logout()}>
-            <ListItemButton>
-              <LogoutIcon style={classes.logos} sx={{ color: '#CCC' }} />
-              <Paragraph size='medium' color='#CCCCCC'>
+          <ListItem disablePadding style={{ position: 'absolute', bottom: 64 }} onClick={() => logout()}>
+            <ListItemButton style={{ justifyContent: 'space-between' }}>
+              {/* <LogoutIcon style={classes.logos} sx={{ color: '#CCC' }} /> */}
+              <Paragraph sx={classes.mobileNavText} color='#CCCCCC' style={{ justifyContent: 'space-between' }}>
                 Sign Out
               </Paragraph>
+              <ArrowForwardIcon />
             </ListItemButton>
           </ListItem>
         </List>

@@ -12,14 +12,14 @@ type OpenAndCloseSelectProps = {
 export default function OpenAndCloseSelect({ item, setItem, setIsChanged }: OpenAndCloseSelectProps) {
   const openHandleChange = (value: Date | null) => {
     if (value) {
-      if (item) setItem({ ...item, open: moment(value).format('MM/DD/yyyy') })
+      if (item) setItem({ ...item, open: value })
       setIsChanged(true)
     }
   }
 
   const closeHandleChange = (value: Date | null) => {
     if (value) {
-      if (item) setItem({ ...item, close: moment(value).format('MM/DD/yyyy') })
+      if (item) setItem({ ...item, close: value })
       setIsChanged(true)
     }
   }

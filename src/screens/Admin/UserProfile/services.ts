@@ -206,13 +206,6 @@ export const UpdateStudentMutation = gql`
     updateStudent(updateStudentInput: $updateStudentInput)
   }
 `
-export const CreateWithdrawal = gql`
-  mutation CreateOrUpdateWithdrawal($updateWithdrawalInput: UpdateWithdrawalInput!) {
-    createOrUpdateWithdrawal(updateWithdrawalInput: $updateWithdrawalInput) {
-      withdrawal_id
-    }
-  }
-`
 
 export const DeleteWithdrawal = gql`
   mutation DeleteWithdrawal($studentId: Float!) {

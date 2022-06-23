@@ -28,14 +28,9 @@ export const WarningModal: WarningModalTemplateType = ({
     >
       <Box sx={classes.modalCard}>
         <Box sx={classes.header as object}>
-          <Subtitle 
-            fontWeight='700' 
-            textAlign='center'
-            sx={{marginLeft: '45%'}}
-          >
+          <Subtitle fontWeight='bold' textAlign='center'>
             {title}
           </Subtitle>
-          <CloseIcon onClick={() => handleModem()} style={classes.close} />
         </Box>
         <Box sx={classes.content as object}>
           {showIcon && <ErrorOutlineIcon style={classes.errorOutline} />}
@@ -44,9 +39,9 @@ export const WarningModal: WarningModalTemplateType = ({
           </Paragraph>
           <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', width: '100%' }}>
             {canceltitle != '' && (
-            <Button variant='contained' disableElevation sx={classes.button} onClick={handleModem}>
-              {canceltitle}
-            </Button>
+              <Button variant='contained' disableElevation sx={classes.button} onClick={handleModem}>
+                {canceltitle}
+              </Button>
             )}
             <Button variant='contained' disableElevation sx={classes.submit} onClick={handleSubmit}>
               {btntitle}

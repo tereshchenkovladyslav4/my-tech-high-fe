@@ -18,4 +18,8 @@ export const useStyles = {
     color: 'black',
     marginRight: 24,
   },
+  appMobileBar: {
+    backgroundColor: 'white',
+    alignItems: 'flex-end',
+  },
 }

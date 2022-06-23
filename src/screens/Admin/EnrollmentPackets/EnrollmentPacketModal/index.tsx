@@ -200,7 +200,6 @@ export default function EnrollmentPacketModal({
   })
 
   useEffect(() => {
-    console.log(dynamicValues);
     methods.reset(dynamicValues)
   }, [dynamicValues])
 
@@ -250,7 +249,7 @@ export default function EnrollmentPacketModal({
       questionsData.map((tab) => {
         tab?.groups?.map((group) => {
           group?.questions?.map((q) => {
-            if(q.display_admin) {
+            // if(q.display_admin) {
               if(q.default_question) {                  
                 if(q.slug.includes('packet_')) {
                   const fieldName = q.slug.split('packet_')[1]
@@ -276,7 +275,7 @@ export default function EnrollmentPacketModal({
               else { 
                 temp.meta[q.slug] = vals[q.slug]
               }
-            }
+            // }
           })
         })
       })
