@@ -66,7 +66,7 @@ export const QuickLinkCard: React.FC<QuickLinkCardProps> = ({ item, action, onAc
 					alignItems: item.subtitle ? "center" : "flex-start",
 					alignContent: 'flex-start',
 				}}>
-					<Typography fontSize='20px' component='div'>
+					<Typography fontSize='20px' component='div' fontWeight={900}>
 						{item.title}
 					</Typography>
 					{/* !action &&
@@ -84,8 +84,6 @@ export const QuickLinkCard: React.FC<QuickLinkCardProps> = ({ item, action, onAc
 					}
 					{action &&
 						<Stack direction="row" spacing={1.5} alignItems="center">
-							<DragHandle />
-
 							<Tooltip title="Edit">
 								<EditIcon htmlColor={SYSTEM_01} onClick={(e) => {
 									onAction('edit');
@@ -108,6 +106,7 @@ export const QuickLinkCard: React.FC<QuickLinkCardProps> = ({ item, action, onAc
 									}} />
 								</Tooltip>
 							}
+							<DragHandle />
 						</Stack>
 					}
 				</Stack>

@@ -152,7 +152,7 @@ export const AdminSideMenu: FunctionComponent = () => {
                 color: '#4145FF',
               }}
             >
-              <ListItem disablePadding style={{ backgroundColor: 'inherit' }}>
+              <ListItem disablePadding style={{ backgroundColor: 'inherit', borderLeft: '3px solid' }}>
                 <ListItemButton style={{ textDecoration: 'none' }}>
                   {item.icon}
                   <Paragraph size='medium'>{item.label}</Paragraph>
