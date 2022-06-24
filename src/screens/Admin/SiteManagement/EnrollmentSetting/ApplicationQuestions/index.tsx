@@ -57,6 +57,8 @@ export default function ApplicationQuestions() {
   const [deleteQuestion] = useMutation(deleteQuestionGql)
   const [openAddQuestion, setOpenAddQuestion] = useState('')
   const [editItem, setEditItem] = useState(null)
+  const [specialEd, setSpecialEd] = useState(false)
+  const [specialEdOptions, setSpecialEdOptions]  = useState([])
   const {loading: countyLoading, data: countyData } = useQuery(getCountiesByRegionId, {
     variables: {regionId: Number(me?.selectedRegionId)},
     fetchPolicy: 'network-only',
@@ -86,6 +88,20 @@ export default function ApplicationQuestions() {
     fetchPolicy: 'network-only',
   })
 
+  const convertSpeicalEdOptions = (optionString) => {    
+    var temp = []
+    if (optionString != '' && optionString != null) {
+      const optionArray = optionString.split(',');
+      optionArray.map((option, index) => {
+        temp.push({
+          label: option.trim(),
+          value: index
+        });
+      });
+    }
+    return temp;
+  }
+
   
   const [schoolYears, setSchoolYears] = useState<Array<DropDownItem>>([])
   const [schoolYearsData, setSchoolYearsData] = useState([])
@@ -104,6 +120,10 @@ export default function ApplicationQuestions() {
         }),
       )
       setSchoolYearsData(schoolYearData.getSchoolYearsByRegionId)
+      if (schoolYearData.getSchoolYearsByRegionId.length > 0) {
+        setSpecialEd(schoolYearData.getSchoolYearsByRegionId[0].special_ed);
+        setSpecialEdOptions(convertSpeicalEdOptions(schoolYearData.getSchoolYearsByRegionId[0].special_ed_options))
+      }
     }
   }, [schoolYearData])
 
@@ -218,32 +238,45 @@ export default function ApplicationQuestions() {
   }, [history, unsavedChanges])  
 
   const onSelectDefaultQuestions = (selected) => {
-    const selectedQuestion = defaultQuestions.filter((d) => d.label == selected)[0]
     let options = []
-    if(selectedQuestion.slug === 'address_county_id') {
-      options = counties
+    let selectedQuestion = {}
+    if (selected == 'Special Education') {
+      options = specialEdOptions;
+      selectedQuestion = {
+        label: 'Has this student ever been diagnosed with a learning disability or ever qualified for Special Education Services (including Speech Therapy)?',
+        type: 'Multiple Choices',
+        slug: 'meta_special_education',
+        validation: 0
+      }
     }
-    else if(selectedQuestion.slug === 'program_year') {
-      options = schoolYears
+    else {
+      selectedQuestion = defaultQuestions.filter((d) => d.label == selected)[0]
+      
+      if(selectedQuestion.slug === 'address_county_id') {
+        options = counties
+      }
+      else if(selectedQuestion.slug === 'program_year') {
+        options = schoolYears
+      }
+      else if(selectedQuestion.slug === 'packet_school_district') {
+        options = schoolDistricts
+      }
+      else if(selectedQuestion.slug === 'address_state') {
+        options = availableRegions
+      }
+      else if(selectedQuestion.slug === 'student_gender') {
+        options = [
+          {label: 'Male', value: 1},
+          {label: 'Female', value: 2},
+  //        {label: 'Non Binary', value: 3},
+  //        {label: 'Undeclared', value: 4},
+        ]
+      }
+      else if(selectedQuestion.slug === 'student_grade_level') {
+        options = gradesDropDownItems
+      }
     }
-    else if(selectedQuestion.slug === 'packet_school_district') {
-      options = schoolDistricts
-    }
-    else if(selectedQuestion.slug === 'address_state') {
-      options = availableRegions
-    }
-    else if(selectedQuestion.slug === 'student_gender') {
-      options = [
-        {label: 'Male', value: 1},
-        {label: 'Female', value: 2},
-//        {label: 'Non Binary', value: 3},
-//        {label: 'Undeclared', value: 4},
-      ]
-    }
-    else if(selectedQuestion.slug === 'student_grade_level') {
-      options = gradesDropDownItems
-    }
-
+    
     const editItemTemp = {
       type: QuestionTypes.find((q) => q.label === selectedQuestion.type).value,
       question: selectedQuestion.label,
@@ -387,7 +420,7 @@ export default function ApplicationQuestions() {
                   </Box>
                 </ProgramYearContext.Provider>
                 {openAddQuestion === 'new' && <AddNewQuestionModal onClose={(e) => {setOpenAddQuestion(''); setOpenSelectQuestionType(e)}} editItem={editItem} newQuestion={true}/>}
-                {openAddQuestion === 'default' && <DefaultQuestionModal onClose={() => {setOpenAddQuestion(''); setOpenSelectQuestionType(true)}} onCreate={(e) => {onSelectDefaultQuestions(e)}}/>}
+                {openAddQuestion === 'default' && <DefaultQuestionModal onClose={() => {setOpenAddQuestion(''); setOpenSelectQuestionType(true)}} onCreate={(e) => {onSelectDefaultQuestions(e)}} special_ed={specialEd}/>}
                 {openSelectQuestionType && <AddQuestionModal onClose={() => setOpenSelectQuestionType(false)} onCreate={(e) => {setOpenAddQuestion(e); setEditItem(null); setOpenSelectQuestionType(false)}}/>}
 
                 <Button sx={{ ...useStyles.submitButton, color: 'white' }} onClick={() => setOpenSelectQuestionType(true)}>

@@ -5,3 +5,9 @@ export const saveWithdrawalMutation = gql`
 		saveWithdrawal(withdrawalInput: $withdrawalInput)
 	}
 `
+
+export const deleteWithdrawalMutation = gql`
+	mutation DeleteWithdrawal($studentId: Int!) {
+		deleteWithdrawal(student_id: $studentId)
+	}
+`

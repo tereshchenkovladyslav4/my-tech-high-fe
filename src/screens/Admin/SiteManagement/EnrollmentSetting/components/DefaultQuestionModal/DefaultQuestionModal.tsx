@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import { 
     Box, 
     Button, 
@@ -17,11 +17,14 @@ import { defaultQuestions } from '../../constant/defaultQuestions'
 export default function DefaultQuestionModal({
   onClose,
   onCreate,
+  special_ed = false
 }: {
   onClose: () => void
   onCreate: (value: string) => void
+  special_ed: boolean
 }) {
     const [value, setValue] = useState(defaultQuestions[0].label)
+    const [questions, setQuestions] = useState(defaultQuestions)
     const [searchField, setSearchField] = useState('')
     const handleChange = (e) => {
         setValue(e.target.value)
@@ -29,6 +32,21 @@ export default function DefaultQuestionModal({
     const handleCreate = () => {
         onCreate(value)
     }
+
+    useEffect(() => {
+        if (special_ed == true) {
+            setQuestions([
+                ...questions,
+                {
+                    label: 'Special Education',
+                    type: 'Multiple Choices',
+                    slug: 'meta_special_education',
+                    validation: 0
+                }
+            ])
+        }
+    }, [special_ed]);
+    
     return (
         <Modal open={true} aria-labelledby='child-modal-title' aria-describedby='child-modal-description'>
             <Box
@@ -73,7 +91,7 @@ export default function DefaultQuestionModal({
                                 value={value}
                                 onChange={handleChange}
                             >
-                                {defaultQuestions.sort((a, b) =>{
+                                {questions.sort((a, b) =>{
                                     if(a.label < b.label) { return -1; }
                                     if(a.label > b.label) { return 1; }
                                     return 0;

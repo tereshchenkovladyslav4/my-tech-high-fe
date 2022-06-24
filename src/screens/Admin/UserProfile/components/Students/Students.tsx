@@ -10,7 +10,7 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import moment from 'moment'
 import AccountBoxOutlinedIcon from '@mui/icons-material/AccountBoxOutlined';
 import { becomeUserMutation } from '../../../../../graphql/mutation/user'
-import { useMutation } from '@apollo/client'
+import { useMutation, useQuery } from '@apollo/client'
 import { DASHBOARD } from '../../../../../utils/constants'
 import { useHistory } from 'react-router-dom'
 
@@ -23,7 +23,8 @@ export const Students = ({ students, selectedStudent, handleChangeStudent, me })
   const history = useHistory()
   const sliderRef = useRef(null)
   const [showAll, setShowAll] = useState(false)
-  const status = ['Pending', 'Active', 'Withdrawn', 'Graduated', '']
+  const status = ['Pending', 'Active', 'Withdrawn', 'Graduated', ''];
+
   function SampleNextArrow(props) {
     const { className, style, onClick } = props
     return (

@@ -64,6 +64,7 @@ export const getActiveSchoolYearsByRegionId = gql`
       date_reg_open
       grades
       special_ed
+      special_ed_options
       birth_date_cut
       school_year_id
     }

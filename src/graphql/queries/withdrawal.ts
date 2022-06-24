@@ -30,3 +30,13 @@ export const getWithdrawalsCountByStatusQuery = gql`
 		}
 	}
 `
+
+export const getWithdrawalStatusQuery = gql`
+	query withdrawalStatus($filter: JSON) {
+		withdrawalStatus(filter: $filter) {
+			error
+			message
+			results
+		}
+	}
+`

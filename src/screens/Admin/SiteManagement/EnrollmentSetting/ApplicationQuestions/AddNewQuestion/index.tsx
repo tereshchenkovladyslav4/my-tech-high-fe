@@ -207,7 +207,7 @@ export default function AddNewQuestionModal({
               />
             </Box>
           ) : 
-          !isDefaultQuestion && (
+          !isDefaultQuestion  && (
             <QuestionOptions options={options} setOptions={setOptions} type={type} isDefault = {isDefaultQuestion} />
           )}
         </Box>

@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
 import { Title } from '../../../../../components/Typography/Title/Title'
-import { MTHBLUE, BLACK, BUTTON_LINEAR_GRADIENT, RED_GRADIENT } from '../../../../../utils/constants'
+import { MTHBLUE, BLACK, BUTTON_LINEAR_GRADIENT, RED_GRADIENT, YELLOW_GRADIENT } from '../../../../../utils/constants'
 import moment from 'moment'
 import { DropDown } from '../../../../../components/DropDown/DropDown'
 import { DropDownItem } from '../../../../../components/DropDown/types'
@@ -18,6 +18,8 @@ import {
   STUDENT_STATUS_PENDING,
   STUDENT_STATUS_WITHDRAWAL,
 } from '../../../../../utils/StudentStatusConstants'
+import { deleteWithdrawalMutation } from '../../../../../graphql/mutation/withdrawal'
+import { useMutation } from '@apollo/client'
 
 const selectStyles = makeStyles({
   backgroundSelect: {
@@ -48,6 +50,21 @@ const selectStyles = makeStyles({
     },
     '&:after': {
       borderColor: RED_GRADIENT,
+    },
+  },
+  yelloBackgroundSelect: {
+    fontSize: '12px',
+    borderRadius: '8px',
+    minWidth: '135px',
+    height: '29px',
+    textAlign: 'center',
+    background: YELLOW_GRADIENT,
+    color: '#F2F2F2',
+    '&:before': {
+      borderColor: YELLOW_GRADIENT,
+    },
+    '&:after': {
+      borderColor: YELLOW_GRADIENT,
     },
   },
   selectIcon: {
@@ -176,6 +193,8 @@ export const StudentFilters = ({
   setStudentStatuData,
   originStudentStatus,
   studentStatusData,
+  withdrawalStatus,
+  setWithdrawalStatus,
   setIsChanged,
 }) => {
   const classes = useStyles
@@ -375,7 +394,19 @@ export const StudentFilters = ({
         },
       ])
     }
-  }, [studentStatusData])
+  }, [studentStatusData]);
+
+  const [deleteWithdrawal] = useMutation(deleteWithdrawalMutation);
+  const onRemoveWithdrawalRequest = async () => {
+    const {data} = await deleteWithdrawal({
+      variables: {
+        studentId: parseInt(currentUserData.student.student_id)
+      }
+    });
+    if(data.deleteWithdrawal)
+      setWithdrawalStatus({});
+  };
+
   return (
     <Box
       sx={{
@@ -394,27 +425,37 @@ export const StudentFilters = ({
                 ).format('YY')}`}{' '}
               Status
             </Subtitle>
-            <Select
-              className={
-                studentStatusData?.status != 2 ? selectClasses.backgroundSelect : selectClasses.withdrawBackgroundSelect
-              }
-              IconComponent={KeyboardArrowDown}
-              inputProps={{
-                classes: {
-                  icon: selectClasses.selectIcon,
-                },
-              }}
-              value={+studentStatusData.status}
-              onChange={(e) => {
-                handleChangeStudentStatus(e)
-              }}
-            >
-              {status.map((item) => (
-                <MenuItem key={item.value} value={item.value} sx={{ height: '35px' }}>
-                  {item.label}
-                </MenuItem>
-              ))}
-            </Select>
+            <Box>
+              <Select
+                className={
+                  studentStatusData?.status != 2
+                    ? (withdrawalStatus?.status == 'Requested' ? selectClasses.yelloBackgroundSelect : selectClasses.backgroundSelect)
+                    : selectClasses.withdrawBackgroundSelect
+                }
+                IconComponent={KeyboardArrowDown}
+                inputProps={{
+                  classes: {
+                    icon: selectClasses.selectIcon,
+                  },
+                }}
+                value={+studentStatusData.status}
+                onChange={(e) => {
+                  handleChangeStudentStatus(e)
+                }}
+              >
+                {status.map((item) => (
+                  <MenuItem key={item.value} value={item.value} sx={{ height: '35px' }}>
+                    {item.label}
+                  </MenuItem>
+                ))}
+              </Select>
+              {withdrawalStatus?.status == 'Requested' && (
+              <Box onClick={() => onRemoveWithdrawalRequest()}>
+                <Paragraph sx={{ color: MTHBLUE, my: '5px' }} textAlign="center">
+                  Remove Withdraw Request
+                </Paragraph>
+              </Box>)}
+            </Box>
           </Box>
           <Box onClick={() => setShowDetails(!showDetails)}>
             <Paragraph sx={{ textDecoration: 'underline', color: MTHBLUE }}>

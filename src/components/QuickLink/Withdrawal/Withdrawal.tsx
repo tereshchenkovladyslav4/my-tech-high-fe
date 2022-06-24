@@ -7,7 +7,6 @@ import { arrayMove, SortableContainer, SortableElement } from 'react-sortable-ho
 import { defaultQuestions, Question, QUESTION_TYPE } from '../../QuestionItem/QuestionItemProps';
 import QuestionItem from '../../QuestionItem/QuestionItem';
 import { Formik, Form, Field } from 'formik';
-import { Prompt } from 'react-router-dom';
 import { useMutation, useQuery } from '@apollo/client';
 import { saveQuestionsMutation, deleteQuestionMutation } from '../../../graphql/mutation/question';
 import { getQuestionsByRegionQuery } from '../../../graphql/queries/question';
@@ -19,6 +18,7 @@ import _ from 'lodash';
 import DefaultQuestionModal from '../../QuestionItem/AddNewQuestion/DefaultQuestionModal';
 import { UserContext } from '../../../providers/UserContext/UserProvider';
 import { saveWithdrawalMutation } from '../../../graphql/mutation/withdrawal';
+import { Prompt } from 'react-router-dom';
 
 //	Possible Question Types List
 const QuestionTypes = [
@@ -62,7 +62,7 @@ const AdditionalQuestionTypes = [
 	}
 ];
 
-const WithDrawal: React.FC<
+const Withdrawal: React.FC<
 {
 	quickLink: QuickLink
 	, updateQuickLinks: (quickLink: QuickLink) => void
@@ -252,7 +252,7 @@ const WithDrawal: React.FC<
 						}
 					}
 					if (isEqual === unsavedChanges) {
-						setUnsavedChanges(!unsavedChanges)
+						setUnsavedChanges(!unsavedChanges);
 						handleChange(!unsavedChanges);
 					}
 
@@ -260,18 +260,27 @@ const WithDrawal: React.FC<
 						//	Check validation on parent side only
 						const errors = {};
 						values.forEach(val => {
-							if(val.required && val.response == '') {
+							if(val.required && val.response === '') {
 								//	Check Additional questions
 								if(val.additionalQuestion != '') {
 									const parent = values.find(v => v.slug == val.additionalQuestion);
-									if(parent.response != '' && parent.options.find(o => o.value == parent.response).action == 2) {
-										errors[val.id] = val.question + ' is required.';
+									if(parent.response !== '') {
+										let bExist: boolean = false;
+										for(let i = 0; i < parent.response.length; i++) {
+											if(parent.options.find(o => o.value == parent.response.substr(i, 1)).action == 2) {
+												bExist = true;
+												break;
+											}
+										}
+										if(bExist) {
+											errors[val.id] = val.question + ' is required.';
+										}
 									}
 								}
 								else
 									errors[val.id] = val.question + ' is required.';
 							}
-							else if(val.validation > 0 && val.response != '') {
+							else if(val.validation > 0 && val.response !== '') {
 								if(val.validation == 1) {
 									//	Check numbers
 									if(!(new RegExp(/^[0-9]+$/).test(val.response)))
@@ -320,15 +329,37 @@ const WithDrawal: React.FC<
 
 							return;
 						}
-						let newquestions = vals.map((v) => v);
+						let newquestions: Array<any> = [];// = vals.map((v) => v);
+						//	Move additional questions behind the parent question
+						for(let i: number = 0; i < vals.length; i++) {
+							if(vals[i].additionalQuestion === '') {
+								newquestions.push(vals[i]);
+								vals.splice(i, 1);
+								i--;
+							}
+						}
 						let length = newquestions.length;
-						//	Remove unncessary additional questions if exists
 						while(true) {
-							newquestions = newquestions.filter(q => q.additionalQuestion == '' || newquestions.find(x => x.slug == q.additionalQuestion) != null);
+							for(let i: number = 0; i < vals.length; i++) {
+								let parentIndex: number = newquestions.findIndex(q => q.slug === vals[i].additionalQuestion);
+								if(parentIndex >= 0) {
+									newquestions.splice(parentIndex + 1, 0, vals[i]);
+									vals.splice(i, 1);
+									i--;
+								}
+							}
 							if(length == newquestions.length)
 								break;
 							length = newquestions.length;
 						}
+
+						//	Remove unncessary additional questions if exists
+						//while(true) {
+						//	newquestions = newquestions.filter(q => q.additionalQuestion == '' || newquestions.find(x => x.slug == q.additionalQuestion) != null);
+						//	if(length == newquestions.length)
+						//		break;
+						//	length = newquestions.length;
+						//}
 						
 						questions.filter(x => !x.mainQuestion).forEach((q) => {
 							if (!newquestions.find((v) => v.id === q.id)) {
@@ -421,10 +452,10 @@ const WithDrawal: React.FC<
 											values.filter(v =>
 												isEditable() ? (v.additionalQuestion == '' && v.mainQuestion == false)	//	Admin
 												: (!v.mainQuestion && (v.additionalQuestion == ''
-													|| (values.find(x => x.slug == v.additionalQuestion).response != ''
-														&& (values.find(x => x.slug == v.additionalQuestion).options.find(
-															x => x.value == values.find(y => y.slug == v.additionalQuestion).response
-																		|| values.find(y => y.slug == v.additionalQuestion).response.toString().indexOf('"' + x.value + '"') >= 0).action == 2)))) 		// Parent
+													|| (values.find(x => x.slug == v.additionalQuestion)?.response != ''
+														&& (values.find(x => x.slug == v.additionalQuestion)?.options.find(
+															x => x.action == 2 && (x.value == values.find(y => y.slug == v.additionalQuestion)?.response
+																		|| values.find(y => y.slug == v.additionalQuestion)?.response.toString().indexOf(x.value) >= 0)) != null)))) 		// Parent
 											).map(v => {
 												let arr = [v], current = v, child;
 												while(child = values.find(x => x.additionalQuestion == current.slug)) {
@@ -576,5 +607,5 @@ const WithDrawal: React.FC<
 	)
 }
 
-export { WithDrawal as default };
+export { Withdrawal as default };
 

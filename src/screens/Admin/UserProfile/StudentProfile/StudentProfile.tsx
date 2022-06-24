@@ -16,6 +16,7 @@ import { KeyboardArrowDown } from '@mui/icons-material'
 import { makeStyles } from '@material-ui/styles'
 import { STATES_WITH_ABBREVIATION } from '../../../../utils/states'
 import ProfilePacketModal from '../../EnrollmentPackets/EnrollmentPacketModal/ProfilePacketModal';
+import { getWithdrawalStatusQuery } from '../../../../graphql/queries/withdrawal'
 
 const selectStyles = makeStyles({
   select: {
@@ -69,6 +70,24 @@ export const StudentProfile = ({
     },
     fetchPolicy: 'cache-and-network',
   })
+
+  const [withdrawalStatus, setWithdrawalStatus] = useState('');
+  //  Load withdrawal status from database
+  const { data: withdrawalStatusData } = useQuery(getWithdrawalStatusQuery, {
+    variables: {
+      filter: {
+        StudentId: studentId
+      },
+    },
+    fetchPolicy: 'network-only',
+  })
+  useEffect(() => {
+    if (withdrawalStatusData && withdrawalStatusData.withdrawalStatus.error === false) {
+      if(withdrawalStatusData.withdrawalStatus.results.length > 0)
+        setWithdrawalStatus(withdrawalStatusData.withdrawalStatus.results[0]);
+    }
+  }, [withdrawalStatusData]);
+  //
 
   const [userInfo, setUserInfo] = useState<any>({})
   const [preferedFirstName, setPreferredFirstName] = useState('')
@@ -372,6 +391,8 @@ export const StudentProfile = ({
             setStudentStatuData={setStudentStatus}
             studentStatusData={studentStatus}
             originStudentStatus={originStudentStatus}
+            withdrawalStatus={withdrawalStatus}
+            setWithdrawalStatus={setWithdrawalStatus}
             setIsChanged={setIsChanged}
           />
         </Grid>

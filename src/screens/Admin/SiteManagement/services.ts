@@ -27,6 +27,7 @@ export const getSchoolYearsByRegionId = gql`
         grades
         birth_date_cut
         special_ed
+        special_ed_options
         enrollment_packet
         date_reg_close
         date_reg_open

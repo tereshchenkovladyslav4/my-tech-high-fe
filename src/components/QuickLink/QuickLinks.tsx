@@ -11,7 +11,7 @@ import QuickLinkEdit from './QuickLinkEdit';
 import ArrowBackIosOutlinedIcon from '@mui/icons-material/ArrowBackIosOutlined'
 import QuickLinkReservedEdit from './QuickLinkReservedEdit';
 import CustomConfirmModal from '../CustomConfirmModal/CustomConfirmModal';
-import { Prompt, useHistory } from 'react-router-dom';
+import { Prompt } from 'react-router-dom';
 import Withdrawal from './Withdrawal/Withdrawal';
 
 export const QuickLinks: React.FC<any> = ({backAction}) => {

@@ -1,30 +1,27 @@
 import React, {useState, useEffect} from 'react'
-import { Box, Checkbox, IconButton, outlinedInputClasses,FormControl, FormControlLabel, Radio, TextField, RadioGroup } from '@mui/material'
+import { Box, Checkbox, FormControl, FormControlLabel, Radio, TextField, RadioGroup } from '@mui/material'
 import { ApplicationQuestion } from './types'
 import { DropDown } from '../../../../components/DropDown/DropDown'
 import { SYSTEM_05, SYSTEM_07 } from '../../../../utils/constants'
 import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
 import { Paragraph } from '../../../../components/Typography/Paragraph/Paragraph'
 import { useStyles } from '../../styles'
-import { Field, FieldArray, Form, Formik, useFormik } from 'formik'
 import { useQuery } from '@apollo/client'
 import { 
-  getActiveSchoolYearsByRegionId, 
 	getCountiesByRegionId,
 	getSchoolDistrictsByRegionId,
-	getAllRegion } 
-from '../../../Admin/SiteManagement/EnrollmentSetting/EnrollmentQuestions/services'
+} from '../../../Admin/SiteManagement/EnrollmentSetting/EnrollmentQuestions/services'
 import { QUESTION_TYPE } from '../../../../components/QuestionItem/QuestionItemProps'
 export function AdditionalQuestionItem({ question: q, field, meta, form }: { question: ApplicationQuestion, field: any, meta: any, form: any }) {
     const classes = useStyles
     const [options, setOptions] = useState(q?.options || [])
-    const updateOptionsForDefaultQuestion = (options) => {
-      setOptions(options)
+    const updateOptionsForDefaultQuestion = (updatedOptions) => {
+      setOptions(updatedOptions)
     }
     //	address_county_id
     const {loading: countyLoading, data: countyData } = useQuery(getCountiesByRegionId, {
       variables: {regionId: q?.region_id},
-      skip: q?.slug != 'address_county_id',
+      skip: q?.slug != 'address_county_id' || !q?.region_id,
       fetchPolicy: 'network-only',
     });
     useEffect(() => {
@@ -33,21 +30,23 @@ export function AdditionalQuestionItem({ question: q, field, meta, form }: { que
           countyData.getCounties
             .map((v) => {return {label: v.county_name, value: Number(v.id)}})
         )
+        
     }, [countyData]);
     //	packet_school_district
     const {loading: schoolDistrictsDataLoading, data: schoolDistrictsData} = useQuery(getSchoolDistrictsByRegionId, {
       variables: {
         regionId: q?.region_id,
       },
-      skip: q?.slug != 'packet_school_district',
+      skip: q?.slug != 'packet_school_district' || !q?.region_id,
       fetchPolicy: 'network-only',
     })
     useEffect(() => {
+      console.log('schoolDistrictsData', schoolDistrictsDataLoading,schoolDistrictsData)
       !schoolDistrictsDataLoading && schoolDistrictsData?.schoolDistrict.length > 0 &&
         updateOptionsForDefaultQuestion(
           schoolDistrictsData?.schoolDistrict.map((d) => {return {label: d.school_district_name, value: d.school_district_name}})
         )
-    }, [schoolDistrictsDataLoading])
+    }, [schoolDistrictsData])
     
     if (q.type === QUESTION_TYPE.DROPDOWN) {
       return (

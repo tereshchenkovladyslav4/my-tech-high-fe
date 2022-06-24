@@ -8,7 +8,7 @@ import EditIcon from '@mui/icons-material/Edit'
 import { SortableHandle } from 'react-sortable-hoc'
 import { Question, QUESTION_TYPE } from './QuestionItemProps'
 import QuestionModal from './AddNewQuestion'
-import { SYSTEM_05, SYSTEM_07, GRADES } from '../../utils/constants'
+import { SYSTEM_05, SYSTEM_07, GRADES, RED } from '../../utils/constants'
 import { DropDown } from '../DropDown/DropDown'
 import { Paragraph } from '../Typography/Paragraph/Paragraph'
 import SignaturePad from 'react-signature-pad-wrapper';
@@ -232,11 +232,11 @@ function Item({ question: q }: { question: Question }) {
 	//	Response
 	const setQuestionResponse = (value) => {
 		if(q.type == QUESTION_TYPE.CHECKBOX) {
-			if(q.response.indexOf('"' + value + '"') >= 0) {
-				q.response = q.response.replace('"' + value + '"', '');
+			if(q.response.indexOf(value) >= 0) {
+				q.response = q.response.replace(value, '');
 			}
 			else {
-				q.response += '"' + value + '"';
+				q.response += value;
 			}
 			value = q.response;
 		}
@@ -247,7 +247,7 @@ function Item({ question: q }: { question: Question }) {
 		let current = q;
 		while(newValues.find(x => current.slug == x.additionalQuestion)
 			&& (current.response == '' || current.options.find(x => x.value == current.response
-			|| current.response.toString().indexOf('"' + x.value + '"') >= 0).action != 2)) {
+			|| current.response.toString().indexOf(x.value) >= 0).action != 2)) {
 			current = newValues.find(x => current.slug == x.additionalQuestion);
 			current.response = '';
 		}
@@ -283,6 +283,7 @@ function Item({ question: q }: { question: Question }) {
 					dropDownItems={q.options || []}
 					placeholder={q.question}
 					setParentValue={(val) => {setQuestionResponse(val)}}
+					defaultValue={q.response}
 					alternate={true}
 					size='small'
 					error={{
@@ -363,7 +364,7 @@ function Item({ question: q }: { question: Question }) {
 						>
 							<Checkbox
 								name={"Question" + q.id.toString()}
-								checked={q.response?.indexOf('"' + o.value + '"') >= 0}
+								checked={q.response?.indexOf(o.value) >= 0}
 								onClick={() => setQuestionResponse(o.value)}
 								sx={{
 									paddingLeft: 0
@@ -372,20 +373,28 @@ function Item({ question: q }: { question: Question }) {
 							<Subtitle size='small' sx={{wordWrap: 'break-word',maxWidth: '90%',textAlign: 'start',}}>{o.label}</Subtitle>
 						</Box>
 					))}
+					{Boolean(errors[q.id]) && (
+						<Paragraph color="#BD0043" textAlign="left" sx={{marginTop: '4px', marginLeft: '14px', fontSize: '0.75rem'}}>{errors[q.id]}</Paragraph>
+					)}
 				</Box>
 			);
 		case QUESTION_TYPE.AGREEMENT:
 			return (
-				<Box display='flex' alignItems='center'>
-					<Checkbox
-						checked={q.response === true}
-						onChange={(e) => setQuestionResponse(e.currentTarget.checked)}
-						name={`Question${q.id}`}
-						sx={{
-							paddingLeft: 0
-						}}
-					/>
-					<p style={{color: SYSTEM_05}} dangerouslySetInnerHTML={{ __html: q.question }}></p>
+				<Box>
+					<Box display='flex' alignItems='center'>
+						<Checkbox
+							checked={q.response === true}
+							onChange={(e) => setQuestionResponse(e.currentTarget.checked)}
+							name={`Question${q.id}`}
+							sx={{
+								paddingLeft: 0
+							}}
+						/>
+						<p style={{color: SYSTEM_05}} dangerouslySetInnerHTML={{ __html: q.question }}></p>
+					</Box>
+					{Boolean(errors[q.id]) && (
+						<Paragraph color="#BD0043" textAlign="left" sx={{marginTop: '4px', marginLeft: '14px', fontSize: '0.75rem'}}>This field is required.</Paragraph>
+					)}
 				</Box>
 			);
 		case QUESTION_TYPE.MULTIPLECHOICES:
@@ -427,6 +436,9 @@ function Item({ question: q }: { question: Question }) {
 							<Subtitle size='small' sx={{wordWrap: 'break-word', maxWidth: '90%', textAlign: 'start'}}>{o.label}</Subtitle>
 						</Box>
 					))}
+					{Boolean(errors[q.id]) && (
+						<Paragraph color="#BD0043" textAlign="left" sx={{marginTop: '4px', marginLeft: '14px', fontSize: '0.75rem'}}>{errors[q.id]}</Paragraph>
+					)}
 				</Box>
 			);
 			break;
@@ -480,7 +492,7 @@ function Item({ question: q }: { question: Question }) {
 		case QUESTION_TYPE.INFORMATION:
 			return (
 				<Paragraph size='large'>
-					<p dangerouslySetInnerHTML={{ __html: q.question }}></p>
+					<span dangerouslySetInnerHTML={{ __html: q.question }}></span>
 				</Paragraph>
 			);
 		case QUESTION_TYPE.SIGNATURE:
@@ -525,9 +537,9 @@ function Item({ question: q }: { question: Question }) {
 					/>
 					<Box sx={{ height: 1, width: "100%", borderBottom: "1px solid #000", mb: 0.5 }} />
 					<Button onClick={function(e: any): void {if(signature.current) {signature.current.clear();}}}>
-							<Subtitle size={12} sx={{textDecoration: 'underline'}} >
-									Reset
-							</Subtitle>
+						<Subtitle size={12} sx={{textDecoration: 'underline'}} >
+							Reset
+						</Subtitle>
 					</Button>
 			</Box>
 			);
