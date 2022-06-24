@@ -191,8 +191,8 @@ export const AdminAppBar: FunctionComponent = () => {
 				bHasChange = true;
 		}
 
-		if (bHasChange) {
-			setUnsavedChanges(region);
+		if(bHasChange) {
+			setUnsavedChanges(region.region_id);
 			return;
 		}
 
@@ -332,7 +332,7 @@ export const AdminAppBar: FunctionComponent = () => {
 						</Box>
 					</Grid>
 				</Grid>
-				{unsavedChanges && (
+				{(unsavedChanges !== 0) && (
 					<CustomConfirmModal
 						header='Unsaved Changes'
 						content='Are you sure you want to leave without saving changes?'
