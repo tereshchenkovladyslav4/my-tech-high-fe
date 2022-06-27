@@ -57,7 +57,7 @@ const MainComponent = ({ setEvent }: MainComponentProps) => {
           id: event.event_id,
           title: event.EventType.name,
           start: moment(new Date(event.start_date)).format('yyyy-MM-DD'),
-          end: moment(new Date(event.end_date)).format('yyyy-MM-DD'),
+          end: moment(new Date(event.end_date).setDate(new Date(event.end_date).getDate() + 1)).format('yyyy-MM-DD'),
           color: event.EventType.color,
           backgroundColor: hexToRgbA(event.EventType.color || ''),
           allDay: true,
