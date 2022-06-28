@@ -12,6 +12,7 @@
     "lint": "eslint --ext .ts,.tsx .",
     "build-dev": "cp -v .env.dev .env && snowpack build",
     "build-stag": "cp -v .env.staging .env && snowpack build",
+    "build-demo": "cp -v .env.demo .env && snowpack build",
     "build-prod": "cp -v .env.prod .env && snowpack build"
   },
   "devDependencies": {

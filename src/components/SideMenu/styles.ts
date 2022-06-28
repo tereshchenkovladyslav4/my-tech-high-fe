@@ -36,6 +36,8 @@ export const useStyles = {
   },
   mobileNavText:{
     lineHeight: '2',
-    fontSize: '24px'
+    fontSize: '32px',
+    fontWeight: '500',
+    color: '#0E0E0E'
   }
 }

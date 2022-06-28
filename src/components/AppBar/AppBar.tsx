@@ -263,6 +263,7 @@ export const AppBar: FunctionComponent = () => {
       : 'Kindergarten'
 
   const getProfilePhoto = (person: Person) => {
+
     if (!person.photo) return 'image'
 
     const s3URL = 'https://infocenter-v2-dev.s3.us-west-2.amazonaws.com/'
@@ -296,7 +297,7 @@ export const AppBar: FunctionComponent = () => {
                 }
                 image={
                   <Avatar
-                    alt={student.person.preferred_first_name}
+                    alt={student.person.preferred_first_name ?? student.person.first_name}
                     src={getProfilePhoto(student.person)}
                     variant='rounded'
                     style={{ marginRight: 24 }}
@@ -319,7 +320,7 @@ export const AppBar: FunctionComponent = () => {
               }
               image={
                 <Avatar
-                  alt={student.person.first_name}
+                  alt={student.person.preferred_first_name ?? student.person.first_name}
                   src={getProfilePhoto(student.person)}
                   variant='rounded'
                   style={{ marginRight: 24 }}
@@ -449,8 +450,7 @@ export const AppBar: FunctionComponent = () => {
     if (theIcon.type === 'side') {
       switch (theIcon.name) {
         case 'dashboard':
-          return <DescriptionIcon />;
-
+          return <BackupTableIcon />;
         case 'settings':
           return <SettingsIcon />;
         case 'Announcements':
@@ -471,11 +471,8 @@ export const AppBar: FunctionComponent = () => {
           return <CreditCardRoundedIcon />
         case 'Reports':
           return <CallMadeRoundedIcon />
-
         case 'Users':
           return <PeopleAltOutlinedIcon />
-
-
         default:
           return <BackupTableIcon />;
       }
@@ -509,7 +506,9 @@ export const AppBar: FunctionComponent = () => {
                   {renderStudentHeader()}
                 </Slider>
               </Box>
-              <AddStudentButton />
+              <Box sx={{ paddingTop: activeStudents.length === 0 ? '20px' : '' }}>
+                <AddStudentButton />
+              </Box>
             </Grid>
           </Grid>
         </div>
@@ -521,7 +520,7 @@ export const AppBar: FunctionComponent = () => {
             edge="start"
             aria-label="open drawer"
             onClick={openMobileSide ? handleDrawerClose : handleDrawerOpen}
-            sx={{ mr: 2 }}
+            sx={{ mr: 2, color: '#000000' }}
           >
             {!openMobileSide ? (
               <MenuIcon />
@@ -536,6 +535,9 @@ export const AppBar: FunctionComponent = () => {
               aria-controls={openStudentList ? 'basic-menu' : undefined}
               aria-haspopup="true"
               aria-expanded={openStudentList ? 'true' : undefined}
+              sx={{
+                color:'#323232'
+              }}
               onClick={handleAnchorClick}
             >
               {!openStudentList ? (

@@ -158,7 +158,7 @@ export const Students = ({ students, selectedStudent, handleChangeStudent, me })
                           }
                         </Box>
                       }
-                      image={<Avatar alt='Remy Sharp' variant='rounded' style={{ marginRight: 8 }} />}
+                      image={<Avatar alt={item.person.preferred_first_name ?? item.person.first_name} src="image" variant='rounded' style={{ marginRight: 8 }} />}
                     />
                   </Box>
                 ))}
@@ -181,7 +181,7 @@ export const Students = ({ students, selectedStudent, handleChangeStudent, me })
                           {status[item.status[0].status]}
                         </Paragraph>
                       }
-                      image={<Avatar alt='Remy Sharp' variant='rounded' style={{ marginRight: 8 }} />}
+                      image={<Avatar alt={item.person.preferred_first_name ?? item.person.first_name} src="image" variant='rounded' style={{ marginRight: 8 }} />}
                     />
                   </Box>
                 ))}
@@ -206,7 +206,7 @@ export const Students = ({ students, selectedStudent, handleChangeStudent, me })
                           {status[item.status[0].status]}
                         </Paragraph>
                       }
-                      image={<Avatar alt='Remy Sharp' variant='rounded' style={{ marginRight: 8 }} />}
+                      image={<Avatar alt={item.person.preferred_first_name ?? item.person.first_name} src="image" variant='rounded' style={{ marginRight: 8 }} />}
                     />
                   </Box>
                 ))}

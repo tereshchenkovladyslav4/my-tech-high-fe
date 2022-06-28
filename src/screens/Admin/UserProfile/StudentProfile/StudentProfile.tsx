@@ -262,9 +262,10 @@ export const StudentProfile = ({
             }}
           >
             <Avatar
-              alt='Remy Sharp'
+              alt={preferedFirstName ?? legalFirstName}
+              src="image"
               variant='rounded'
-              style={{ height: '127px', width: '127px', marginRight: '12px' }}
+              style={{ height: '127px', width: '127px', marginRight: '12px', fontSize: '3rem' }}
             />
             <Box
               sx={{

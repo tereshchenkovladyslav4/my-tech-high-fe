@@ -1,16 +1,4 @@
-import {
-  Box,
-  Button,
-  Card,
-  Checkbox,
-  FormControlLabel,
-  FormGroup,
-  InputAdornment,
-  Modal,
-  OutlinedInput,
-  TextField,
-  Typography,
-} from '@mui/material'
+import { Box, Button, Card, InputAdornment, OutlinedInput, Tooltip } from '@mui/material'
 import React, { useEffect, useState, useContext } from 'react'
 import { UserContext } from '../../../../providers/UserContext/UserProvider'
 import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
@@ -18,7 +6,6 @@ import { BUTTON_LINEAR_GRADIENT, GREEN_GRADIENT, RED_GRADIENT, YELLOW_GRADIENT }
 import SearchIcon from '@mui/icons-material/Search'
 import { Paragraph } from '../../../../components/Typography/Paragraph/Paragraph'
 import { Pagination } from '../../../../components/Pagination/Pagination'
-import { HeadCell } from '../../../../components/SortableTable/SortableTableHeader/types'
 import { SortableTable } from '../../../../components/SortableTable/SortableTable'
 import { ApplicationEmailModal as EmailModal } from '../../../../components/EmailModal/ApplicationEmailModal'
 import { useQuery, useMutation } from '@apollo/client'
@@ -40,35 +27,45 @@ import { WarningModal } from '../../../../components/WarningModal/Warning'
 import { ApplicationModal } from '../ApplicationModal/ApplicationModal'
 import { ApplicationEmailModal } from '../ApplicationModal/ApplicationEmailModal'
 import { APPLICATION_HEADCELLS } from '../../../../utils/PageHeadCellsConstant'
-export const ApplicationTable = ({ filter }) => {
-  const { me, setMe } = useContext(UserContext)
-  const [emailTemplate, setEmailTemplate] = useState()
-  const [pageLoading, setPageLoading] = useState(false)
-  const [seachField, setSearchField] = useState('')
-  const [shouldClear, setShouldClear] = useState(false)
-  const [open, setOpen] = useState(false)
-  const [openAlert, setOpenAlert] = useState(false)
-  const [paginatinLimit, setPaginatinLimit] = useState(Number(localStorage.getItem('pageLimit')) || 25)
-  const [sort, setSort] = useState('status|ASC')
+import { ApplicationTableProps, EmailTemplateVM, SchoolYearVM } from '../type'
+
+export const ApplicationTable = ({ filter }: ApplicationTableProps) => {
+  const { me } = useContext(UserContext)
+  const [emailTemplate, setEmailTemplate] = useState<EmailTemplateVM>()
+  const [pageLoading, setPageLoading] = useState<boolean>(false)
+  const [seachField, setSearchField] = useState<string>('')
+  const [open, setOpen] = useState<boolean>(false)
+  const [openAlert, setOpenAlert] = useState<boolean>(false)
+  const [paginatinLimit, setPaginatinLimit] = useState<number>(Number(localStorage.getItem('pageLimit')) || 25)
+  const [sort, setSort] = useState<string>('status|ASC')
   const [skip, setSkip] = useState<number>(0)
   const [totalApplications, setTotalApplications] = useState<number>()
   const [tableData, setTableData] = useState<Array<any>>([])
   const [applicationIds, setApplicationIds] = useState<Array<string>>([])
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [openEditModal, setOpenEditModal] = useState<boolean>(false)
-  const [schoolYears, setSchoolYears] = useState([])
+  const [schoolYears, setSchoolYears] = useState<SchoolYearVM[]>([])
   const [editData, setEditData] = useState<any>()
   const [openEmailModal, setOpenEmailModal] = useState<boolean>(false)
   const [emailHistory, setEmailHistory] = useState([])
-  const specialEds = ['None', 'IEP', '504', 'Exit']
   const status = ['New', 'Sibling', 'Returning', 'Hidden']
   const createData = (application: any) => {
     return {
       id: application.application_id,
       submitted: application.date_submitted ? moment(application.date_submitted).format('MM/DD/YY') : null,
-      year: `${moment(application.school_year.date_begin).format('YYYY')}-${moment(
-        application.school_year.date_end,
-      ).format('YY')}`,
+      year: (
+        <Box>
+          {`${moment(new Date(application.school_year.date_begin)).format('YYYY')} -
+            ${moment(new Date(application.school_year.date_end)).format('YY')}`}
+          {application.midyear_application ? (
+            <>
+              <br /> Mid-Year
+            </>
+          ) : (
+            ''
+          )}
+        </Box>
+      ),
       student: `${application.student.person?.last_name}, ${application.student.person?.first_name}`,
       grade:
         application.student.grade_levels.length &&
@@ -120,18 +117,20 @@ export const ApplicationTable = ({ filter }) => {
             </Paragraph>
           </Box>
           <Box
-            onClick={(event) => handleDelete(application.application_id)}
+            onClick={() => handleDelete(application.application_id)}
             sx={{
               borderRadius: 1,
               cursor: 'pointer',
             }}
           >
-            <svg width='14' height='18' viewBox='0 0 14 18' fill='none' xmlns='http://www.w3.org/2000/svg'>
-              <path
-                d='M9.12 7.47L7 9.59L4.87 7.47L3.46 8.88L5.59 11L3.47 13.12L4.88 14.53L7 12.41L9.12 14.53L10.53 13.12L8.41 11L10.53 8.88L9.12 7.47ZM10.5 1L9.5 0H4.5L3.5 1H0V3H14V1H10.5ZM1 16C1 17.1 1.9 18 3 18H11C12.1 18 13 17.1 13 16V4H1V16ZM3 6H11V16H3V6Z'
-                fill='#323232'
-              />
-            </svg>
+            <Tooltip title="Delete">
+              <svg width='14' height='18' viewBox='0 0 14 18' fill='none' xmlns='http://www.w3.org/2000/svg'>
+                <path
+                  d='M9.12 7.47L7 9.59L4.87 7.47L3.46 8.88L5.59 11L3.47 13.12L4.88 14.53L7 12.41L9.12 14.53L10.53 13.12L8.41 11L10.53 8.88L9.12 7.47ZM10.5 1L9.5 0H4.5L3.5 1H0V3H14V1H10.5ZM1 16C1 17.1 1.9 18 3 18H11C12.1 18 13 17.1 13 16V4H1V16ZM3 6H11V16H3V6Z'
+                  fill='#323232'
+                />
+              </svg>
+            </Tooltip>
           </Box>
         </Box>
       ),
@@ -139,7 +138,7 @@ export const ApplicationTable = ({ filter }) => {
   }
 
   const { loading: schoolLoading, data: schoolYearData } = useQuery(getSchoolYearQuery)
-  const { called, loading, error, data, refetch } = useQuery(getApplicationsQuery, {
+  const { data, refetch } = useQuery(getApplicationsQuery, {
     variables: {
       filter: filter,
       skip: skip,
@@ -151,11 +150,7 @@ export const ApplicationTable = ({ filter }) => {
     skip: me?.selectedRegionId ? false : true,
     fetchPolicy: 'network-only',
   })
-  const {
-    loading: templateLoading,
-    data: emailTemplateData,
-    refetch: refetchEmailTemplate,
-  } = useQuery(getEmailTemplateQuery, {
+  const { data: emailTemplateData, refetch: refetchEmailTemplate } = useQuery(getEmailTemplateQuery, {
     variables: {
       template: 'Application Page',
       regionId: me?.selectedRegionId,
@@ -221,8 +216,8 @@ export const ApplicationTable = ({ filter }) => {
     }
   }, [])
 
-  const [deleteApplication, { data: deleteData }] = useMutation(deleteApplicationMutation)
-  const handleDelete = async (id) => {
+  const [deleteApplication] = useMutation(deleteApplicationMutation)
+  const handleDelete = async (id: string) => {
     await deleteApplication({
       variables: {
         deleteApplicationInput: {
@@ -588,7 +583,6 @@ export const ApplicationTable = ({ filter }) => {
         rows={tableData}
         headCells={APPLICATION_HEADCELLS}
         onCheck={setApplicationIds}
-        clearAll={shouldClear}
         onSortChange={sortChangeAction}
       />
       {open && (

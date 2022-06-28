@@ -8,15 +8,18 @@ import { Paragraph } from '../../../../components/Typography/Paragraph/Paragraph
 import { map } from 'lodash'
 import { toOrdinalSuffix } from '../../../../utils/stringHelpers'
 import { useHistory } from 'react-router-dom'
-export const Filters = ({ filter, setFilter }) => {
+import { FiltersProps } from '../type'
+
+export const Filters = ({ filter, setFilter }: FiltersProps) => {
   const history = useHistory()
-  const [expand, setExpand] = useState(false)
-  const [grades, setGrades] = useState([])
-  const [schoolYear, setSchoolYear] = useState([])
-  const [specialEd, setSpecialEd] = useState([])
-  const [status, setStatus] = useState([])
-  const [accountStatus, setAccountStatus] = useState([])
-  const [visibility, setVisibility] = useState([])
+  const [expand, setExpand] = useState<boolean>(false)
+  const [grades, setGrades] = useState<string[]>([])
+  const [schoolYear, setSchoolYear] = useState<string[]>([])
+  const [specialEd, setSpecialEd] = useState<string[]>([])
+  const [status, setStatus] = useState<string[]>([])
+  const [accountStatus, setAccountStatus] = useState<string[]>([])
+  const [visibility, setVisibility] = useState<string[]>([])
+
   const chevron = () =>
     !expand ? (
       <ChevronRightIcon
@@ -35,49 +38,50 @@ export const Filters = ({ filter, setFilter }) => {
         }}
       />
     )
-  const handleChangeGrades = (e) => {
+
+  const handleChangeGrades = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (grades.includes(e.target.value)) {
       setGrades(grades.filter((item) => item !== e.target.value).filter((item) => item !== 'all'))
     } else {
       setGrades([...grades, e.target.value])
     }
   }
-  const handleChangeSchoolYear = (e) => {
+  const handleChangeSchoolYear = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (schoolYear.includes(e.target.value)) {
       setSchoolYear(schoolYear.filter((item) => item !== e.target.value))
     } else {
       setSchoolYear([...schoolYear, e.target.value])
     }
   }
-  const handleChangeSpecialEd = (e) => {
+  const handleChangeSpecialEd = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (specialEd.includes(e.target.value)) {
       setSpecialEd(specialEd.filter((item) => item !== e.target.value))
     } else {
       setSpecialEd([...specialEd, e.target.value])
     }
   }
-  const handleChangeStatus = (e) => {
+  const handleChangeStatus = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (status.includes(e.target.value)) {
       setStatus(status.filter((item) => item !== e.target.value))
     } else {
       setStatus([...status, e.target.value])
     }
   }
-  const handleChangeAccountStatus = (e) => {
+  const handleChangeAccountStatus = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (accountStatus.includes(e.target.value)) {
       setAccountStatus(accountStatus.filter((item) => item !== e.target.value))
     } else {
       setAccountStatus([...accountStatus, e.target.value])
     }
   }
-  const handleChangeVisibility = (e) => {
+  const handleChangeVisibility = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (visibility.includes(e.target.value)) {
       setVisibility(visibility.filter((item) => item !== e.target.value))
     } else {
       setVisibility([...visibility, e.target.value])
     }
   }
-  const handleChangeAll = (e) => {
+  const handleChangeAll = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.checked) {
       setGrades([...['all'], ...GRADES.map((item) => item.toString())])
     } else {
@@ -117,7 +121,7 @@ export const Filters = ({ filter, setFilter }) => {
     setStatus([])
     setSchoolYear([])
     setVisibility([])
-    setFilter({})
+    setFilter(undefined)
     const state = {}
     history.replace({ ...history.location, state })
   }

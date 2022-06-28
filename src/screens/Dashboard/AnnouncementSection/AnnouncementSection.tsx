@@ -44,7 +44,7 @@ const AnnouncementSection = ({ inProp, setSectionName, setSelectedAnnouncement }
                 student?.grade_levels[0].grade_level == 'Kin' ? 'Kindergarten' : student?.grade_levels[0].grade_level,
               )
             ) {
-              return <Avatar alt={student.person.preferred_first_name} src={getProfilePhoto(student.person)} />
+              return <Avatar alt={student.person.preferred_first_name ?? student.person.first_name} src={getProfilePhoto(student.person)} />
             }
           })}
       </AvatarGroup>

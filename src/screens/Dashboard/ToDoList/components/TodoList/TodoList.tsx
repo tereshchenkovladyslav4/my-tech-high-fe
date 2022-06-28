@@ -1,4 +1,4 @@
-import { Table, TableBody, TableContainer } from '@mui/material'
+import { Table, TableBody, TableContainer, Box } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import { useQuery } from '@apollo/client'
 import { getTodoList } from '../../service'
@@ -100,10 +100,18 @@ export const TodoList: TodoListTemplateType = ({ handleShowEmpty, schoolYears })
   }
 
   return (
-    <TableContainer>
-      <Table sx={{ minWidth: 650 }} aria-label='simple table'>
-        <TableBody>{renderTodoListItem()}</TableBody>
-      </Table>
-    </TableContainer>
+    <>
+      <Box sx={{ display: { xs: 'none', sm: 'none', md: 'block' } }}>
+        <TableContainer >
+          <Table aria-label='simple table'>
+            <TableBody>{renderTodoListItem()}</TableBody>
+          </Table>
+        </TableContainer>
+      </Box>
+      <Box sx={{ display: { sm: 'block', md: 'none' } }}>
+        {renderTodoListItem()}
+      </Box>
+    </>
+
   )
 }

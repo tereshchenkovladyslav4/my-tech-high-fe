@@ -77,7 +77,7 @@ export const Header = ({
               }
             </Box>
           }
-          image={<Avatar alt='Remy Sharp' variant='rounded' style={{ marginRight: 8 }} />}
+          image={<Avatar alt={userData &&  (userData.preferred_first_name ?? userData.first_name)} src="image" variant='rounded' style={{ marginRight: 8 }} />}
         />
 
       </Box>
@@ -107,7 +107,7 @@ export const Header = ({
                 }
               </Box>
             }
-            image={<Avatar alt='Remy Sharp' variant='rounded' style={{ marginRight: 8 }} />}
+            image={<Avatar alt={item.person.preferred_first_name ?? item.person.first_name}  src="image" variant='rounded' style={{ marginRight: 8 }} />}
           />
         </Box>
       ))}

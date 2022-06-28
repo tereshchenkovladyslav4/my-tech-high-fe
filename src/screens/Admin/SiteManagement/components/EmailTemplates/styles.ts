@@ -61,7 +61,7 @@ export const useStyles = makeStyles({
   },
   close: {
     background: 'black',
-    borderRadius: 1,
+    borderRadius: 4,
     color: 'white',
     cursor: 'pointer',
   },
@@ -79,10 +79,10 @@ export const useStyles = makeStyles({
     borderRadius: 8,
     textTransform: 'none',
     height: 24,
-    background: '#000',
-    color: 'white',
-    marginRight: '12px',
-    width: '92px',
+    background: '#000 !important',
+    color: 'white !important',
+    marginRight: '12px !important',
+    width: '92px'
   },
   add: {
     borderRadius: 8,

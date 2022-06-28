@@ -1,8 +1,8 @@
-import { Card } from '@mui/material'
+import { Card, Box } from '@mui/material'
 import React, { useEffect, useState, useContext } from 'react'
 import { SortableTable } from '../../../../components/SortableTable/SortableTable'
 import { useMutation, useQuery } from '@apollo/client'
-import { getWithdrawalsQuery } from '../../../../graphql/queries/withdrawal'
+import { getEmailByWithdrawalId, getWithdrawalsQuery } from '../../../../graphql/queries/withdrawal'
 import moment from 'moment'
 import { WarningModal } from '../../../../components/WarningModal/Warning'
 import { UserContext } from '../../../../providers/UserContext/UserProvider'
@@ -16,6 +16,7 @@ import { WithdrawalResponseVM } from '../type'
 import { ApplicationEmailModal as EmailModal } from '../../../../components/EmailModal/ApplicationEmailModal'
 import { getEmailTemplateQuery } from '../../../../graphql/queries/email-template'
 import { emailWithdrawalMutation } from '../service'
+import { WithdrawalEmailModal } from './WithdrawalEmailModal'
 
 const WithdrawalPage = () => {
   const classes = useStyles
@@ -23,7 +24,7 @@ const WithdrawalPage = () => {
   const [searchField, setSearchField] = useState('')
   const [tableData, setTableData] = useState<Array<any>>([])
   const [skip, setSkip] = useState<number>(0)
-  const [sort, setSort] = useState('status|ASC')
+  const [sort, setSort] = useState('submitted|asc')
   const [paginationLimit, setPaginationLimit] = useState<number>(25)
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>([
     WITHDRAWAL_STATUS_LABEL[0],
@@ -36,6 +37,10 @@ const WithdrawalPage = () => {
   const [checkedWithdrawalIds, setCheckedWithdrawalIds] = useState<Array<string>>([])
   const [isShowModal, setIsShowModal] = useState(false)
   const [openEmailModal, setOpenEmailModal] = useState<boolean>(false)
+
+  const [openEmailHistoryModal, setOpenEmailHistoryModal] = useState<boolean>(false)
+  const [withdrawId, setWithdrawId] = useState('')
+
   const [openWarningModal, setOpenWarningModal] = useState<boolean>(false)
   const { loading, data, refetch } = useQuery(getWithdrawalsQuery, {
     variables: {
@@ -51,6 +56,16 @@ const WithdrawalPage = () => {
     skip: me?.selectedRegionId ? false : true,
     fetchPolicy: 'network-only',
   })
+
+
+  const { loading: emailLoading, data: emailData, refetch: emailRefetch } = useQuery(getEmailByWithdrawalId, {
+    variables: {
+      withdrawId: withdrawId,
+    },
+    skip: (withdrawId === ''),
+    fetchPolicy: 'network-only',
+  })
+
   const [emailPacket, { data: emailStatus }] = useMutation(emailWithdrawalMutation)
 
   const { data: emailTemplateData, refetch: refetchEmailTemplate } = useQuery(getEmailTemplateQuery, {
@@ -60,6 +75,13 @@ const WithdrawalPage = () => {
     },
     fetchPolicy: 'network-only',
   })
+
+  const handleOpenEmailHistory = (withdrawal_id: number) => {
+    console.log('withdrawal.withdrawal_id', withdrawal_id)
+    setWithdrawId(parseInt(withdrawal_id));
+    setOpenEmailHistoryModal(true)
+  }
+
   useEffect(() => {
     if (emailTemplateData !== undefined) {
       const { emailTemplateName } = emailTemplateData
@@ -80,7 +102,11 @@ const WithdrawalPage = () => {
           grade: withdrawal?.grade_level,
           soe: withdrawal?.soe,
           funding: withdrawal?.funding, //	TODO
-          emailed: withdrawal?.date_emailed ? moment(withdrawal.date_emailed).format('MM/DD/YY') : '',
+          emailed: (withdrawal?.date_emailed) ? (
+            <Box sx={{ cursor: 'pointer' }} onClick={() => handleOpenEmailHistory(withdrawal.withdrawal_id)}>
+              {moment(withdrawal.date_emailed).format('MM/DD/YY')}
+            </Box>
+          ) : '',
           id: withdrawal?.withdrawal_id,
         })),
       )
@@ -106,7 +132,7 @@ const WithdrawalPage = () => {
     setIsShowModal(true)
   }
 
-  const onWithdrawClick = () => {}
+  const onWithdrawClick = () => { }
 
   const onEmailClick = () => {
     if (checkedWithdrawalIds.length === 0) {
@@ -149,7 +175,7 @@ const WithdrawalPage = () => {
       refetch()
       refetchEmailTemplate()
       setOpenEmailModal(false)
-    } catch (error) {}
+    } catch (error) { }
   }
 
   return (
@@ -198,6 +224,12 @@ const WithdrawalPage = () => {
           title={checkedWithdrawalIds.length + ' Recipients'}
           handleSubmit={handleEmailSend}
           template={emailTemplate}
+        />
+      )}
+      {openEmailHistoryModal && !emailLoading && (
+        <WithdrawalEmailModal
+          handleClose={() => setOpenEmailHistoryModal(false)}
+          data={emailData?.getEmailsByWithdrawId}
         />
       )}
     </Card>

@@ -21,6 +21,17 @@ export const getWithdrawalsQuery = gql`
 	}
 `
 
+export const getEmailByWithdrawalId = gql`
+	query GetEmailsByWithdrawId($withdrawId: Int!) {
+		getEmailsByWithdrawId(withdrawId: $withdrawId) {
+			subject
+			body
+			from_email
+			created_at
+		}
+	}
+`
+
 export const getWithdrawalsCountByStatusQuery = gql`
 	query WithdrawalCountsByStatus($filter: JSON) {
 		withdrawalCountsByStatus(filter: $filter) {

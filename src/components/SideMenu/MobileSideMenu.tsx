@@ -1,4 +1,4 @@
-import { List, ListItem, Box, ListItemButton } from '@mui/material'
+import { List, ListItem, Box, ListItemButton, IconButton } from '@mui/material'
 import React, { FunctionComponent, useContext, useEffect, useState } from 'react'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import CreditCardRoundedIcon from '@mui/icons-material/CreditCardRounded'
@@ -151,7 +151,12 @@ export const MobileSideMenu: FunctionComponent<Props> = ({ handleDrawerClose }) 
             <ListItem disablePadding style={{ backgroundColor: 'inherit' }} onClick={() => handleDrawerClose('side', 'dashboard')}>
               <ListItemButton style={{ textDecoration: 'none', justifyContent: 'space-between' }}>
                 <Paragraph sx={classes.mobileNavText}>Dashboard</Paragraph>
-                <ArrowForwardIcon />
+                <IconButton
+                  sx={{
+                    color: '#0E0E0E',
+                  }}>
+                  <ArrowForwardIcon />
+                </IconButton>
               </ListItemButton>
             </ListItem>
           </NavLink>
@@ -167,10 +172,15 @@ export const MobileSideMenu: FunctionComponent<Props> = ({ handleDrawerClose }) 
                   color: '#4145FF',
                 }}
               >
-                <ListItem disablePadding style={{ backgroundColor: 'inherit' }}  onClick={() => handleDrawerClose('side', item.label)}>
+                <ListItem disablePadding style={{ backgroundColor: 'inherit' }} onClick={() => handleDrawerClose('side', item.label)}>
                   <ListItemButton style={{ textDecoration: 'none', justifyContent: 'space-between' }}>
                     <Paragraph sx={classes.mobileNavText}>{item.label}</Paragraph>
-                    <ArrowForwardIcon />
+                    <IconButton
+                      sx={{
+                        color: '#0E0E0E',
+                      }}>
+                      <ArrowForwardIcon />
+                    </IconButton>
                   </ListItemButton>
                 </ListItem>
               </NavLink>
@@ -189,7 +199,12 @@ export const MobileSideMenu: FunctionComponent<Props> = ({ handleDrawerClose }) 
                   <ListItemButton style={{ textDecoration: 'none', justifyContent: 'space-between' }}>
                     {item.icon}
                     <Paragraph sx={classes.mobileNavText}>{item.label}</Paragraph>
-                    <ArrowForwardIcon />
+                    <IconButton
+                      sx={{
+                        color: '#0E0E0E',
+                      }}>
+                      <ArrowForwardIcon />
+                    </IconButton>
                   </ListItemButton>
                 </ListItem>
               </NavLink>
@@ -204,10 +219,15 @@ export const MobileSideMenu: FunctionComponent<Props> = ({ handleDrawerClose }) 
               color: '#4145FF',
             }}
           >
-            <ListItem disablePadding style={{ backgroundColor: 'inherit' }}  onClick={() => handleDrawerClose('side', 'settings')}>
+            <ListItem disablePadding style={{ backgroundColor: 'inherit' }} onClick={() => handleDrawerClose('side', 'settings')}>
               <ListItemButton style={{ justifyContent: 'space-between' }}>
                 <Paragraph sx={classes.mobileNavText}>Settings</Paragraph>
-                <ArrowForwardIcon />
+                <IconButton
+                  sx={{
+                    color: '#0E0E0E',
+                  }}>
+                  <ArrowForwardIcon />
+                </IconButton>
               </ListItemButton>
             </ListItem>
           </NavLink>
@@ -218,7 +238,12 @@ export const MobileSideMenu: FunctionComponent<Props> = ({ handleDrawerClose }) 
               <Paragraph sx={classes.mobileNavText} color='#CCCCCC' style={{ justifyContent: 'space-between' }}>
                 Sign Out
               </Paragraph>
-              <ArrowForwardIcon />
+              <IconButton
+                sx={{
+                  color: '#0E0E0E',
+                }}>
+                <ArrowForwardIcon />
+              </IconButton>
             </ListItemButton>
           </ListItem>
         </List>

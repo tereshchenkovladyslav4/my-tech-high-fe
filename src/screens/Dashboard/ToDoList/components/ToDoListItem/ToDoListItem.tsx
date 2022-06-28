@@ -51,7 +51,7 @@ export const ToDoListItem: TodoListTemplateType = ({ todoItem, idx, todoDate, to
 
   const renderStudentAvatars = () => {
     return (
-      <AvatarGroup>
+      <AvatarGroup style={{ justifyContent: 'flex-end' }}>
         {map(todoItem.students, (student) => (
           <Avatar
             alt={`${student.person.first_name} ${student.person.last_name}`}
@@ -64,196 +64,126 @@ export const ToDoListItem: TodoListTemplateType = ({ todoItem, idx, todoDate, to
   const link = students.length > 1 ? HOMEROOM : `${HOMEROOM + ENROLLMENT}/${students.at(-1)?.student_id}`
 
   return (
-    !!todoItem.students.length && (
-      (windowDimensions.width > 650) ? (
-        <TableRow
-          sx={{
-            '&:last-child td, &:last-child th': { border: 0 },
-            display: { xs: 'none', md: 'block' }
-          }}
-        >
-          <TableCell style={{ padding: 8 }} component='th' scope='row'>
-            <Metadata
-              title={<Subtitle fontWeight='500'>{todoItem.phrase}</Subtitle>}
-              subtitle={todoDate && <Paragraph size='medium'>{todoDate}</Paragraph>}
-              image={<SubjectIcon style={{ color: 'black', marginRight: 24 }} />}
-            />
+    !!todoItem.students.length &&
+    (windowDimensions.width >= 900 ? (
+      <TableRow
+        sx={{
+          '&:last-child td, &:last-child th': { border: 0 },
+        }}
+      >
+        <TableCell style={{ width: '40%' }} sx={{ paddingX: '8px' }} component='th' scope='row'>
+          <Metadata
+            title={<Subtitle fontWeight='500'>{todoItem.phrase}</Subtitle>}
+            subtitle={todoDate && <Paragraph size='medium'>{todoDate}</Paragraph>}
+            image={<SubjectIcon style={{ color: 'black', marginRight: 24 }} />}
+          />
+        </TableCell>
+        <TableCell component='th' scope='row' sx={{ paddingX: '8px' }} style={{ width: '40%' }} >
+          <Box>
+            {renderStudentAvatars()}
+          </Box>
+        </TableCell>
+        {todoDeadline && (
+          <TableCell component='th' scope='row' sx={{ paddingX: '8px' }} style={{ width: '10%' }}>
+            <Box
+              sx={{
+                borderRadius: 1,
+                background: 'rgba(236, 89, 37, 0.1)',
+                width: 72,
+                height: 28,
+                display: 'flex',
+                justifyContent: 'center',
+                mr: 4,
+                padding: 0.4,
+              }}
+            >
+              <Row>
+                <WarningAmberOutlinedIcon fontSize='small' htmlColor={MTHORANGE} />
+                <Subtitle size={12} color={MTHORANGE} sx={{ ml: 1 }}>
+                  {todoDeadline}
+                </Subtitle>
+              </Row>
+            </Box>
           </TableCell>
-          <TableCell component='th' scope='row'>
-            <Box width={'100px'}>{renderStudentAvatars()}</Box>
-          </TableCell>
+        )}
+        <TableCell component='th' scope='row' sx={{ paddingX: '8px' }} style={{ width: '10%' }}>
+          <Button
+            onClick={() => history.push(link)}
+            variant='contained'
+            sx={{
+              borderRadius: 2,
+              fontSize: 12,
+              background: 'linear-gradient(90deg, #3E2783 0%, rgba(62, 39, 131, 0) 100%) #4145FF',
+              width: 140,
+              height: 48,
+              fontWeight: 700,
+              textTransform: 'none',
+              '&:hover': {
+                background: PRIMARY_MEDIUM_MOUSEOVER,
+                color: 'white',
+              },
+            }}
+          >
+            {todoItem.button}
+          </Button>
+        </TableCell>
+      </TableRow>
+    ) : (
+      <Box sx={{ display: 'block', padding: '15px', backgroundColor: 'white', borderRadius: '6px', marginTop: '15px' }} >
+        <Box sx={{ width: '100%' }}>
+          <Metadata
+            title={<Subtitle fontWeight='500'>{todoItem.phrase}</Subtitle>}
+            subtitle={todoDate && <Paragraph size='medium'>{todoDate}</Paragraph>}
+            image={<SubjectIcon style={{ color: 'black', marginRight: 24 }} />}
+          />
+        </Box>
+        <Box sx={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '12px' }}>
+          <Box sx={{ marginRight: '24px' }}>
+            {renderStudentAvatars()}
+          </Box>
           {todoDeadline && (
-            <TableCell component='th' scope='row'>
-              <Box
-                sx={{
-                  borderRadius: 1,
-                  background: 'rgba(236, 89, 37, 0.1)',
-                  width: 72,
-                  height: 28,
-                  display: 'flex',
-                  justifyContent: 'center',
-                  mr: 4,
-                  padding: 0.4,
-                }}
-              >
-                <Row>
-                  <WarningAmberOutlinedIcon fontSize='small' htmlColor={MTHORANGE} />
-                  <Subtitle size={12} color={MTHORANGE} sx={{ ml: 1 }}>
-                    {todoDeadline}
-                  </Subtitle>
-                </Row>
-              </Box>
-            </TableCell>
-          )}
-          <TableCell component='th' scope='row'>
-            <Button
-              onClick={() => history.push(link)}
-              variant='contained'
+            <Box
               sx={{
-                borderRadius: 2,
-                fontSize: 12,
-                background: 'linear-gradient(90deg, #3E2783 0%, rgba(62, 39, 131, 0) 100%) #4145FF',
-                width: 140,
-                height: 48,
-                fontWeight: 700,
-                textTransform: 'none',
-                '&:hover': {
-                  background: PRIMARY_MEDIUM_MOUSEOVER,
-                  color: 'white',
-                },
+                borderRadius: 1,
+                background: 'rgba(236, 89, 37, 0.1)',
+                width: 72,
+                height: 28,
+                display: 'flex',
+                justifyContent: 'center',
+                mr: 4,
+                padding: 0.4,
               }}
             >
-              {todoItem.button}
-            </Button>
-          </TableCell>
-        </TableRow>
-      ) : (
-        <TableRow
+              <Row>
+                <WarningAmberOutlinedIcon fontSize='small' htmlColor={MTHORANGE} />
+                <Subtitle size={12} color={MTHORANGE} sx={{ ml: 1 }}>
+                  {todoDeadline}
+                </Subtitle>
+              </Row>
+            </Box>
+          )}
+        </Box>
+        <Button
+          onClick={() => history.push(link)}
+          variant='contained'
           sx={{
-            '&:last-child td, &:last-child th': { border: 0 },
+            borderRadius: 2,
+            fontSize: 12,
+            background: 'linear-gradient(90deg, #3E2783 0%, rgba(62, 39, 131, 0) 100%) #4145FF',
+            width: '100%',
+            height: 48,
+            fontWeight: 700,
+            textTransform: 'none',
+            '&:hover': {
+              background: PRIMARY_MEDIUM_MOUSEOVER,
+              color: 'white',
+            },
+            marginTop: '24px'
           }}
         >
-          <TableCell style={{ padding: 8, display: 'block' }} component='th' scope='row'>
-            <Box sx={{ width: '100%' }}>
-              <Metadata
-                title={<Subtitle fontWeight='500'>{todoItem.phrase}</Subtitle>}
-                subtitle={todoDate && <Paragraph size='medium'>{todoDate}</Paragraph>}
-                image={<SubjectIcon style={{ color: 'black', marginRight: 24 }} />}
-              />
-            </Box>
-            <Box sx={{ width: '100%', display: 'flex', alignItems: 'center' }}>
-              <Box width={'100px'} sx={{ marginRight: '24px' }}>{renderStudentAvatars()}</Box>
-              {todoDeadline && (
-                <Box
-                  sx={{
-                    borderRadius: 1,
-                    background: 'rgba(236, 89, 37, 0.1)',
-                    width: 72,
-                    height: 28,
-                    display: 'flex',
-                    justifyContent: 'center',
-                    mr: 4,
-                    padding: 0.4,
-                  }}
-                >
-                  <Row>
-                    <WarningAmberOutlinedIcon fontSize='small' htmlColor={MTHORANGE} />
-                    <Subtitle size={12} color={MTHORANGE} sx={{ ml: 1 }}>
-                      {todoDeadline}
-                    </Subtitle>
-                  </Row>
-                </Box>
-              )}
-            </Box>
-            <Button
-              onClick={() => history.push(link)}
-              variant='contained'
-              sx={{
-                borderRadius: 2,
-                fontSize: 12,
-                background: 'linear-gradient(90deg, #3E2783 0%, rgba(62, 39, 131, 0) 100%) #4145FF',
-                width: 300,
-                height: 48,
-                fontWeight: 700,
-                textTransform: 'none',
-                '&:hover': {
-                  background: PRIMARY_MEDIUM_MOUSEOVER,
-                  color: 'white',
-                },
-                marginTop:'24px'
-              }}
-            >
-              {todoItem.button}
-            </Button>
-          </TableCell>
-        </TableRow>
-      )
-    )
+          {todoItem.button}
+        </Button>
+      </Box>
+    ))
   )
 }
-
-
-/* <Box sx={{ display: { xs: 'block', md: 'none' } }} key={idx}>
-        {
-          !!todoItem.students.length && (
-            <TableRow
-              sx={{
-                '&:last-child td, &:last-child th': { border: 0 },
-              }}
-            >
-              <TableCell style={{ padding: 8 }} component='th' scope='row'>
-                <Box sx={{ width: '100%' }}>
-                  <Metadata
-                    title={<Subtitle fontWeight='500'>{todoItem.phrase}</Subtitle>}
-                    subtitle={todoDate && <Paragraph size='medium'>{todoDate}</Paragraph>}
-                    image={<SubjectIcon style={{ color: 'black', marginRight: 24 }} />}
-                  />
-                </Box>
-                <Box sx={{ width: '100%', display: 'flex' }}>
-                  <Box width={'100px'}>{renderStudentAvatars()}</Box>
-                  {todoDeadline && (
-                    <Box
-                      sx={{
-                        borderRadius: 1,
-                        background: 'rgba(236, 89, 37, 0.1)',
-                        width: 72,
-                        height: 28,
-                        display: 'flex',
-                        justifyContent: 'center',
-                        mr: 4,
-                        padding: 0.4,
-                      }}
-                    >
-                      <Row>
-                        <WarningAmberOutlinedIcon fontSize='small' htmlColor={MTHORANGE} />
-                        <Subtitle size={12} color={MTHORANGE} sx={{ ml: 1 }}>
-                          {todoDeadline}
-                        </Subtitle>
-                      </Row>
-                    </Box>
-                  )}
-                </Box>
-                <Button
-                  onClick={() => history.push(link)}
-                  variant='contained'
-                  sx={{
-                    borderRadius: 2,
-                    fontSize: 12,
-                    background: 'linear-gradient(90deg, #3E2783 0%, rgba(62, 39, 131, 0) 100%) #4145FF',
-                    width: 140,
-                    height: 48,
-                    fontWeight: 700,
-                    textTransform: 'none',
-                    '&:hover': {
-                      background: PRIMARY_MEDIUM_MOUSEOVER,
-                      color: 'white',
-                    },
-                  }}
-                >
-                  {todoItem.button}
-                </Button>
-              </TableCell>
-            </TableRow>
-          )
-        }
-      </Box> */
