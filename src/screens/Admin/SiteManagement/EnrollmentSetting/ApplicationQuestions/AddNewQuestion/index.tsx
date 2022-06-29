@@ -1,6 +1,6 @@
 import { Box, Button, Checkbox, Modal, outlinedInputClasses, TextField, Typography, FormGroup, FormControl, FormControlLabel, IconButton } from '@mui/material'
 import { useFormikContext } from 'formik'
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { DropDown } from '../../../../../../components/DropDown/DropDown'
 import { Subtitle } from '../../../../../../components/Typography/Subtitle/Subtitle'
 import { SYSTEM_07 } from '../../../../../../utils/constants'
@@ -14,6 +14,7 @@ import { convertFromHTML } from 'draft-convert'
 import { validationTypes } from '../../constant/defaultQuestions'
 import { Paragraph } from '../../../../../../components/Typography/Paragraph/Paragraph'
 import EditLinkModal from '../../EnrollmentQuestions/components/EditLinkModal'
+import CustomModal from '../../components/CustomModal/CustomModals'
 import htmlToDraft from 'html-to-draftjs'
 
 export default function AddNewQuestionModal({
@@ -46,6 +47,42 @@ export default function AddNewQuestionModal({
   const [openLinkModal, setOpenLinkModal] = useState(false)
 
   const [error, setError] = useState('')
+
+  const [clickedEvent, setClickedEvent] = useState({})  
+  const [warningPopup, setWarningPopup] = useState(false)
+  const [ableToEdit, setAbleToEdit] = useState(false)
+
+  const setCancelWarningPopup = () => {
+    setWarningPopup(false);   
+    setAbleToEdit(false);
+  }
+
+  const setConfirmWarningPopup = () => {
+    setWarningPopup(false);    
+    setAbleToEdit(true);
+  }
+
+  useEffect(() => {
+    if (ableToEdit == true)
+      clickedEvent.target.focus()
+  }, [ableToEdit])
+
+  const setFocused = (event) => {    
+    console.log('focused');
+    if (!isDefaultQuestion)
+      return;
+
+    if (!ableToEdit || clickedEvent.target != event.target) {
+      event.preventDefault();
+      event.target.blur();
+      setClickedEvent(event)
+      setWarningPopup(true);
+    }
+  }
+
+  const setBlured = (event) => {
+    setAbleToEdit(false);
+  }
 
   const [editorState, setEditorState] = useState(EditorState.createWithContent(ContentState.createFromBlockArray(htmlToDraft(editItem?.question || '').contentBlocks)))
   const editorRef = useRef(null)
@@ -97,6 +134,7 @@ export default function AddNewQuestionModal({
   }
 
   return (
+    <>
     <Modal open={true} aria-labelledby='child-modal-title' aria-describedby='child-modal-description'>
       <Box
         sx={{
@@ -150,8 +188,10 @@ export default function AddNewQuestionModal({
             variant='outlined'
             value={question}
             onChange={(v) => setQuestion(v.currentTarget.value)}
+            onFocus={(v) => setFocused(v)}
+            onBlur={(v) => setBlured(v)}
             focused
-            disabled={isDefaultQuestion}
+            // disabled={isDefaultQuestion}
           />
           <DropDown
             sx={{
@@ -191,6 +231,8 @@ export default function AddNewQuestionModal({
                 editorState={editorState}
                 onEditorStateChange={setEditorState}
                 handlePastedText={() => false}
+                onFocus={(v) => setFocused(v)}
+                onBlur={(v) => setBlured(v)}
                 toolbar={{
                   options: [
                     'inline', 
@@ -206,9 +248,8 @@ export default function AddNewQuestionModal({
                 }}
               />
             </Box>
-          ) : 
-          !isDefaultQuestion  && (
-            <QuestionOptions options={options} setOptions={setOptions} type={type} isDefault = {isDefaultQuestion} />
+          ) : (
+          <QuestionOptions options={options} setOptions={setOptions} type={type} isDefault = {isDefaultQuestion} setFocused={setFocused} setBlured={setBlured}/>
           )}
         </Box>
 
@@ -266,6 +307,21 @@ export default function AddNewQuestionModal({
         {openLinkModal && (<EditLinkModal onClose={() => setOpenLinkModal(false)} setOption={setAgreement} editItem={agreement}/>)}
       </Box>
     </Modal>
+    {warningPopup && (
+      <CustomModal
+        title='Default Question'
+        description='You are attempting to edit a default question. You may customize the way the question is asked, but the default ask of question will remain the same in the application. Are you sure you want to edit?'
+        cancelStr='No'
+        confirmStr='Yes'
+        onClose={() => {
+          setCancelWarningPopup()
+        }}
+        onConfirm={() => {
+          setConfirmWarningPopup()
+        }}
+                  />
+    )}
+    </>
   )
 }
 

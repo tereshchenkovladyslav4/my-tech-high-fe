@@ -42,7 +42,7 @@ const MultiSelectDropDown = ({ checkBoxLists = [], selectedLists, setSelectedLis
 
   return (
     <div>
-      <FormControl sx={{ width: 300 }}>
+      <FormControl sx={{ maxWidth: 200 }}>
         <InputLabel id='demo-multiple-checkbox-label' sx={{ mt: -1 }}>
           Select Filter
         </InputLabel>

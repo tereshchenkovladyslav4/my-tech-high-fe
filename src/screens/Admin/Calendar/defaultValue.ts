@@ -1,4 +1,3 @@
-import moment from 'moment'
 import { EventInvalidOption, EventVM } from './types'
 
 export const defaultEvent: EventVM = {
@@ -6,7 +5,7 @@ export const defaultEvent: EventVM = {
   eventTypeId: 0,
   startDate: new Date(),
   endDate: new Date(),
-  time: moment(new Date()).format('HH:mm'),
+  time: '00:00',
   eventId: 0,
   eventTypeColor: '',
   eventTypeName: '',

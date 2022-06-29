@@ -108,7 +108,7 @@ export type MainComponentProps = {
 }
 
 export type AddEventComponentProps = {
-  selectedEvent: EventVM
+  selectedEvent: EventVM | undefined
 }
 
 export type HeaderComponentProps = {

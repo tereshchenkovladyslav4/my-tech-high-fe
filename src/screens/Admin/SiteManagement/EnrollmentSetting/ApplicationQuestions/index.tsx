@@ -95,7 +95,7 @@ export default function ApplicationQuestions() {
       optionArray.map((option, index) => {
         temp.push({
           label: option.trim(),
-          value: index
+          value: index + 1
         });
       });
     }

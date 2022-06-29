@@ -55,12 +55,26 @@ export const WithdrawalEmailModal: any = ({ handleClose, data }) => {
       }
     } else {
       if (subjectSortDirection === '' || subjectSortDirection === 'DESC') {
-        const sort = sortBy(sortedData, 'subject')
-        setEmailData(sort)
+        sortedData.sort((a, b) => {
+          if (a.subject[0].toLowerCase() < b.subject[0].toLowerCase()) { return -1; }
+          if (a.subject[0].toLowerCase() > b.subject[0].toLowerCase()) { return 1; }
+          return 1;
+        })
+        setEmailData(sortedData)
+
+        // const sort = sortBy(sortedData, 'subject')
+        // setEmailData(sort)
         setSubjectSortDirection('ASC')
       } else {
-        const sort = sortBy(sortedData, 'subject').reverse()
-        setEmailData(sort)
+        sortedData.sort((a, b) => {
+          if (a.subject[0].toLowerCase() > b.subject[0].toLowerCase()) { return -1; }
+          if (a.subject[0].toLowerCase() < b.subject[0].toLowerCase()) { return 1; }
+          return -1;
+        })
+        setEmailData(sortedData)
+
+        // const sort = sortBy(sortedData, 'subject').reverse()
+        // setEmailData(sort)
         setSubjectSortDirection('DESC')
       }
     }
@@ -78,7 +92,7 @@ export const WithdrawalEmailModal: any = ({ handleClose, data }) => {
           <Box display={'flex'} flexDirection={'row'} sx={{ marginRight: '10px' }} justifyContent={'end'}>
             <CloseIcon style={classes.close} onClick={handleClose} />
           </Box>
-          <Box sx={{...classes.content, display: 'block'}}>
+          <Box sx={{ ...classes.content, display: 'block' }}>
             <Box sx={classes.emailRowHead}>
               <Subtitle fontWeight='700' sx={classes.emailLabel}>
                 Sent Date
@@ -117,7 +131,7 @@ export const WithdrawalEmailModal: any = ({ handleClose, data }) => {
                 )}
               </Subtitle>
             </Box>
-            {emailData.slice(0, 5).map((item, index) => (
+            {emailData && emailData.slice(0, 5).map((item, index) => (
               <Box sx={classes.emailRow} key={index} onClick={() => handleEmailView(item)}>
                 <Grid container rowSpacing={2}>
                   <Grid item xs={4}>

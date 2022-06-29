@@ -27,7 +27,7 @@ const toolTipStyles = makeStyles(() => ({
   },
 }))
 
-const EventComponent = ({ events, setEvents, setEvent, refetch }: EventComponentProps) => {
+const EventComponent = ({ events, setEvent, refetch }: EventComponentProps) => {
   const classes = useStyles
   const toolTipClass = toolTipStyles()
   const history = useHistory()
@@ -41,15 +41,9 @@ const EventComponent = ({ events, setEvents, setEvent, refetch }: EventComponent
   }
 
   const renderDate = (): string => {
-    if (selectedEvent?.time) {
-      return `${moment(selectedEvent?.time).format('hh:mm A')}, ${moment(selectedEvent?.startDate).format(
-        'MMMM DD',
-      )} - ${moment(selectedEvent?.endDate).format('MMMM DD')}`
-    } else {
-      return `${moment(selectedEvent?.startDate).format('MMMM DD')} - ${moment(selectedEvent?.endDate).format(
-        'MMMM DD',
-      )}`
-    }
+    return `${moment(selectedEvent?.startDate).format('hh:mm A')}, ${moment(selectedEvent?.startDate).format(
+      'MMMM DD',
+    )} - ${moment(selectedEvent?.endDate).format('MMMM DD')}`
   }
 
   const handleDelete = async () => {
@@ -112,6 +106,7 @@ const EventComponent = ({ events, setEvents, setEvent, refetch }: EventComponent
               sx={{ mt: 1.5, width: 40 }}
               onClick={() => {
                 history.push(`${CALENDAR}/addEvent`)
+                console.log()
                 setEvent(selectedEvent)
               }}
             >

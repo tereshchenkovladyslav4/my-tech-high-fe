@@ -34,10 +34,12 @@ export type PageHeaderProps = {
 export type PageActionProps = {
   totalWithdrawals: number
   searchField: string
+  selectedYear: string | number
   paginationLimit: number
   selectedStatuses: string[]
   setSelectedStatuses: (value: string[]) => void
   setSkip: (value: number) => void
   setPaginationLimit: (value: number) => void
+  setSelectedYear: (value: string | number) => void
   onQuickWithdrawalClick: () => void
 }

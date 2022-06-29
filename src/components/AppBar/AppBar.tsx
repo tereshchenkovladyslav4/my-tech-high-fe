@@ -212,50 +212,43 @@ export const AppBar: FunctionComponent = () => {
     )
   }
 
-  const settings = {
-    className: "slider variable-width",
-    infinite: false,
-    speed: 500,
-    slidesToShow: Math.min(5, activeStudents.length),
-    slidesToScroll: 1,
-    nextArrow: <SampleNextArrow />,
-    prevArrow: <SamplePrevArrow />,
-    variableWidth: true,
-    rows: 1,
-    responsive: [
-      {
-        breakpoint: 1920,
-        settings: {
-          slidesToShow: Math.min(5, activeStudents.length),
-        }
-      },
-      {
-        breakpoint: 1600,
-        settings: {
-          slidesToShow: Math.min(4, activeStudents.length)
-        }
-      },
-      {
-        breakpoint: 1368,
-        settings: {
-          slidesToShow: Math.min(3, activeStudents.length)
-        }
-      },
-      {
-        breakpoint: 1135,
-        settings: {
-          slidesToShow: Math.min(2, activeStudents.length)
-        }
-      },
-      {
-        breakpoint: 960,
-        settings: {
-          slidesToShow: Math.min(1, activeStudents.length),
-          variableWidth: false
-        }
-      },
-    ]
-  }
+	const settings = {
+		className: "slider variable-width",
+		infinite: false,
+		speed: 500,
+		slidesToShow: 3,
+		slidesToScroll: 1,
+		nextArrow: <SampleNextArrow />,
+		prevArrow: <SamplePrevArrow />,
+
+		rows: 1,
+		responsive: [
+			{
+				breakpoint: 1920,
+				settings: {
+					slidesToShow: 3,
+				}
+			},
+			{
+				breakpoint: 1600,
+				settings: {
+					slidesToShow: 3
+				}
+			},
+			{
+				breakpoint: 1368,
+				settings: {
+					slidesToShow: 2
+				}
+			},
+			{
+				breakpoint: 960,
+				settings: {
+					slidesToShow: 1
+				}
+			},
+		]
+	}
 
   const gradeText = (student: StudentType) =>
     student.grade_levels.at(-1)?.grade_level !== 'Kin'
@@ -263,7 +256,6 @@ export const AppBar: FunctionComponent = () => {
       : 'Kindergarten'
 
   const getProfilePhoto = (person: Person) => {
-
     if (!person.photo) return 'image'
 
     const s3URL = 'https://infocenter-v2-dev.s3.us-west-2.amazonaws.com/'
@@ -297,7 +289,7 @@ export const AppBar: FunctionComponent = () => {
                 }
                 image={
                   <Avatar
-                    alt={student.person.preferred_first_name ?? student.person.first_name}
+                    alt={student.person.preferred_first_name}
                     src={getProfilePhoto(student.person)}
                     variant='rounded'
                     style={{ marginRight: 24 }}
@@ -320,7 +312,7 @@ export const AppBar: FunctionComponent = () => {
               }
               image={
                 <Avatar
-                  alt={student.person.preferred_first_name ?? student.person.first_name}
+                  alt={student.person.first_name}
                   src={getProfilePhoto(student.person)}
                   variant='rounded'
                   style={{ marginRight: 24 }}
@@ -450,7 +442,8 @@ export const AppBar: FunctionComponent = () => {
     if (theIcon.type === 'side') {
       switch (theIcon.name) {
         case 'dashboard':
-          return <BackupTableIcon />;
+          return <DescriptionIcon />;
+
         case 'settings':
           return <SettingsIcon />;
         case 'Announcements':
@@ -471,8 +464,11 @@ export const AppBar: FunctionComponent = () => {
           return <CreditCardRoundedIcon />
         case 'Reports':
           return <CallMadeRoundedIcon />
+
         case 'Users':
           return <PeopleAltOutlinedIcon />
+
+
         default:
           return <BackupTableIcon />;
       }
@@ -500,15 +496,14 @@ export const AppBar: FunctionComponent = () => {
       <MUIAppBar position='static' sx={{ ...classes.appBar, display: { xs: 'none', sm: 'block' } }} elevation={0}>
         <div style={classes.toolbar}>
           <Grid container justifyContent='flex' alignItems='center'>
-            <Grid item xs={12} display='flex' justifyContent={'flex-end'} alignItems='center'>
-              <Box width={'calc(100vw - 600px)'} sx={{ marginRight: '50px' }}>
+            <Grid item xs={4}/>
+            <Grid item xs={8} display='flex' justifyContent={'flex-end'} alignItems='center'>
+              <Box width={'600px'} sx={{ marginRight: '50px' }}>
                 <Slider {...settings} ref={sliderRef}>
                   {renderStudentHeader()}
                 </Slider>
               </Box>
-              <Box sx={{ paddingTop: activeStudents.length === 0 ? '20px' : '' }}>
-                <AddStudentButton />
-              </Box>
+              <AddStudentButton />
             </Grid>
           </Grid>
         </div>
@@ -520,7 +515,7 @@ export const AppBar: FunctionComponent = () => {
             edge="start"
             aria-label="open drawer"
             onClick={openMobileSide ? handleDrawerClose : handleDrawerOpen}
-            sx={{ mr: 2, color: '#000000' }}
+            sx={{ mr: 2 }}
           >
             {!openMobileSide ? (
               <MenuIcon />
@@ -535,9 +530,6 @@ export const AppBar: FunctionComponent = () => {
               aria-controls={openStudentList ? 'basic-menu' : undefined}
               aria-haspopup="true"
               aria-expanded={openStudentList ? 'true' : undefined}
-              sx={{
-                color:'#323232'
-              }}
               onClick={handleAnchorClick}
             >
               {!openStudentList ? (

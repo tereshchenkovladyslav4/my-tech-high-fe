@@ -129,7 +129,8 @@ const EditEventComponent = ({
         label='Time'
         type='time'
         size='small'
-        defaultValue={event?.time}
+        defaultValue={'00:00'}
+        value={event?.time}
         InputLabelProps={{
           shrink: true,
         }}

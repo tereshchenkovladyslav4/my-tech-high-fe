@@ -19,6 +19,7 @@ import { validationTypes } from '../../constant/defaultQuestions'
 import { QUESTION_TYPE } from '../../../../../../components/QuestionItem/QuestionItemProps'
 import htmlToDraft from 'html-to-draftjs'
 import QuestionOptions from '../../../../../../components/QuestionItem/AddNewQuestion/Options'
+import CustomModal from '../../components/CustomModal/CustomModals'
 
 export default function AddNewQuestionModal({
   onClose,
@@ -36,6 +37,7 @@ export default function AddNewQuestionModal({
   const editorRef = useRef(null)  
 	const [ deleteIds, setDeleteIds ] = useState([]);
   const [currentBlocks, setCurrentBlocks] = useState(0)
+  const [isDefaultQuestion, setIsDefaultQuestion] = useState(editItem[0]?.default_question || false)
   const handleEditorChange = (state) => {
     try {
       if (currentBlocks !== 0 && currentBlocks !== state.blocks.length) {
@@ -102,8 +104,8 @@ export default function AddNewQuestionModal({
 
 		editQuestionsRef.current = editQuestions;
 
-		if(editQuestions[0].default_question)
-			return;
+		// if(editQuestions[0].default_question)
+		// 	return;
 
 		//	Detect Changes
 		let bHasChange = false;
@@ -391,7 +393,44 @@ export default function AddNewQuestionModal({
     onClose(false)
   }
 
+  const [clickedEvent, setClickedEvent] = useState({})  
+  const [warningPopup, setWarningPopup] = useState(false)
+  const [ableToEdit, setAbleToEdit] = useState(false)
+
+  const setCancelWarningPopup = () => {
+    setWarningPopup(false);   
+    setAbleToEdit(false);
+  }
+
+  const setConfirmWarningPopup = () => {
+    setWarningPopup(false);    
+    setAbleToEdit(true);
+  }
+
+  useEffect(() => {
+    if (ableToEdit == true)
+      clickedEvent.target.focus()
+  }, [ableToEdit])
+
+  const setFocused = (event) => {    
+    console.log('focused');
+    if (!isDefaultQuestion)
+      return;
+
+    if (!ableToEdit || clickedEvent.target != event.target) {
+      event.preventDefault();
+      event.target.blur();
+      setClickedEvent(event)
+      setWarningPopup(true);
+    }
+  }
+
+  const setBlured = (event) => {
+    setAbleToEdit(false);
+  }
+
   return (
+    <>
     <Modal open={true} aria-labelledby='child-modal-title' aria-describedby='child-modal-description'>
       <Box
         sx={{
@@ -506,8 +545,10 @@ export default function AddNewQuestionModal({
                 variant='outlined'
                 value={e.question}
                 onChange={(v) => setQuestionValue(e.id, e.slug, 'question', v.currentTarget.value)}
+                onFocus={(v) => setFocused(v)}
+                onBlur={(v) => setBlured(v)}
                 focused
-                disabled={e.default_question}
+                // disabled={e.default_question}
               />
               <DropDown
                 sx={{
@@ -550,6 +591,8 @@ export default function AddNewQuestionModal({
                     editorState={editorState}
                     onEditorStateChange={setEditorState}
                     handlePastedText={() => false}
+                    onFocus={(v) => setFocused(v)}
+                    onBlur={(v) => setBlured(v)}
                     toolbar={{
                       options: [
                         'inline', 
@@ -567,7 +610,7 @@ export default function AddNewQuestionModal({
                 </Box>
               ) :
               (
-                <QuestionOptions options={e.options} setOptions={(options) => setQuestionValue(e.id, e.slug, 'options', options)} type={e.type}/>
+                <QuestionOptions options={e.options} setOptions={(options) => setQuestionValue(e.id, e.slug, 'options', options)} type={e.type} setFocused={setFocused} setBlured={setBlured} />
               )}
             </Box>
             <Box
@@ -628,6 +671,21 @@ export default function AddNewQuestionModal({
         </Box>        
       </Box>
     </Modal>
+    {warningPopup && (
+      <CustomModal
+        title='Default Question'
+        description='You are attempting to edit a default question. You may customize the way the question is asked, but the default ask of question will remain the same in the application. Are you sure you want to edit?'
+        cancelStr='No'
+        confirmStr='Yes'
+        onClose={() => {
+          setCancelWarningPopup()
+        }}
+        onConfirm={() => {
+          setConfirmWarningPopup()
+        }}
+    />
+    )}
+    </>
   )
 }
 

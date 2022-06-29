@@ -9,6 +9,8 @@ import { UserContext } from '../../../../providers/UserContext/UserProvider'
 import { makeStyles } from '@material-ui/styles'
 import { useStyles } from './styles'
 import { PageActionProps, WithdrawalCount } from '../type'
+import { getSchoolYearsByRegionId } from '../../Dashboard/SchoolYear/SchoolYear'
+import moment from 'moment';
 
 const selectStyles = makeStyles({
   select: {
@@ -17,6 +19,13 @@ const selectStyles = makeStyles({
     },
   },
 })
+
+type SchoolYearType = {
+  school_year_id: number
+  date_begin: Date,
+  date_end: Date
+}
+
 
 const PageAction = ({
   totalWithdrawals,
@@ -27,27 +36,54 @@ const PageAction = ({
   onQuickWithdrawalClick,
   setSkip,
   setPaginationLimit,
+  selectedYear,
+  setSelectedYear
 }: PageActionProps) => {
   const { me } = useContext(UserContext)
   const classes = useStyles
   const selectedClass = selectStyles()
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [withdrawalCounts, setWithdrawalCounts] = useState<WithdrawalCount>()
-  const [selectedYear, setSelectedYear] = useState<string | number>('1')
-  const schoolYears = [
-    {
-      label: '21-22',
-      value: '1',
+  const [schoolYears, setSchoolYears] = useState<SchoolYearType[]>([])
+
+  
+  // const [selectedYear, setSelectedYear] = useState<string | number>('1')
+  // const schoolYears = [
+  //   {
+  //     label: '21-22',
+  //     value: '1',
+  //   },
+  //   {
+  //     label: '22-23',
+  //     value: '2',
+  //   },
+  //   {
+  //     label: '23-24',
+  //     value: '3',
+  //   },
+  // ]
+  const schoolYearData = useQuery(getSchoolYearsByRegionId, {
+    variables: {
+      regionId: me?.selectedRegionId,
     },
-    {
-      label: '22-23',
-      value: '2',
-    },
-    {
-      label: '23-24',
-      value: '3',
-    },
-  ]
+    skip: me?.selectedRegionId ? false : true,
+    fetchPolicy: 'network-only',
+  })
+
+  
+
+  useEffect(() => {
+    if (schoolYearData?.data?.region?.SchoolYears) {
+      const { SchoolYears } = schoolYearData?.data?.region
+      setSchoolYears(
+        SchoolYears.map((item : SchoolYearType) => ({
+          school_year_id: item.school_year_id,
+          label: moment(item.date_begin).format('YY') + '-' + moment(item.date_end).format('YY'),
+        })),
+      )
+      setSelectedYear(SchoolYears[0].school_year_id)
+    }
+  }, [schoolYearData?.data?.region?.SchoolYears])
 
   //	Table Page change action
   const handlePageChange = (page: number) => {
@@ -60,6 +96,7 @@ const PageAction = ({
       filter: {
         region_id: me?.selectedRegionId,
         keyword: searchField,
+        selectedYear: selectedYear
       },
     },
     skip: me?.selectedRegionId ? false : true,
@@ -111,7 +148,7 @@ const PageAction = ({
             sx={{ color: 'blue', border: 'none' }}
           >
             {schoolYears.map((sy) => (
-              <MenuItem key={sy.value} value={sy.value}>
+              <MenuItem key={sy.school_year_id} value={sy.school_year_id}>
                 {sy.label}
               </MenuItem>
             ))}

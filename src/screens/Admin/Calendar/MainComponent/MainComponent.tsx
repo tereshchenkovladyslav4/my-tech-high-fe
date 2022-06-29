@@ -72,7 +72,7 @@ const MainComponent = ({ setEvent }: MainComponentProps) => {
           eventTypeName: event.EventType.name,
           startDate: new Date(event.start_date),
           endDate: new Date(event.end_date),
-          time: event.time,
+          time: moment(new Date(event.start_date)).format('HH:mm'),
           description: event.description,
           filters: {
             grades: event.filter_grades,

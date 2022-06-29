@@ -79,7 +79,7 @@ export default function EnrollmentQuestions() {
       optionArray.map((option, index) => {
         temp.push({
           label: option.trim(),
-          value: index
+          value: index + 1
         });
       });
     }

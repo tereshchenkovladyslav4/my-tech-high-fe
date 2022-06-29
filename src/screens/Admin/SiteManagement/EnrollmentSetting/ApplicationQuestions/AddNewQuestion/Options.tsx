@@ -9,11 +9,15 @@ export default function QuestionOptions({
   setOptions,
   type,
   isDefault,
+  setFocused,
+  setBlured,
 }: {
   options: OptionsType[]
   setOptions: (options: OptionsType[]) => void
   type: 1 | 2 | 3 | 4 | 5 | 6  
   isDefault: boolean
+  setFocused: (event:Event) => void
+  setBlured: (event:Event) => void
 }) {
   return (
     <Box display='flex' flexDirection='column' width='80%'>
@@ -40,8 +44,10 @@ export default function QuestionOptions({
             placeholder='Add Option'
             variant='standard'
             value={opt.label}
+            onFocus={(v) => setFocused(v)}
+            onBlur={(v) => setBlured(v)}
             focused
-            disabled={isDefault}
+            // disabled={isDefault}
             onChange={(e) => {
               const val = e.currentTarget.value
               const newOps = options.map((o) => (o.value === opt.value ? { ...o, label: val } : o))
@@ -63,7 +69,7 @@ export default function QuestionOptions({
                 cursor: 'pointer',
                 marginLeft: '10px',
               }}
-              disabled={isDefault}
+              // disabled={isDefault}
               onClick={() => {
                 setOptions(
                   options.filter((o) => o.value !== opt.value).map((v, i) => ({ value: i, label: v.label.trim() })),

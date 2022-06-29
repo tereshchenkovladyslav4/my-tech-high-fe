@@ -7,3 +7,9 @@ export const emailWithdrawalMutation = gql`
     }
   }
 `
+
+export const updateWithdrawalMutation = gql`
+  mutation UpdateWithdrawal($updateWithdrawalInput: UpdateWithdrawalInput!) {
+    updateWithdrawal(updateWithdrawalInput: $updateWithdrawalInput)
+  }
+`

@@ -1,4 +1,4 @@
-import { BLACK, BLUE_GRDIENT, SYSTEM_01, SYSTEM_04, SYSTEM_06, SYSTEM_08 } from '../../../../utils/constants'
+import { BLUE_GRDIENT } from '../../../../utils/constants'
 
 export const useStyles = {
   cardBody: {
@@ -17,7 +17,7 @@ export const useStyles = {
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'flex-end',
+    justifyContent: 'space-between',
     marginRight: '24px',
   },
   editButton: {

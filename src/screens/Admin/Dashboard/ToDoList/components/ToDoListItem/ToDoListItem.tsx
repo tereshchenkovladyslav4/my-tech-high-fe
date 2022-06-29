@@ -37,7 +37,7 @@ export const ToDoListItem: TodoListTemplateType = ({ todoItem, idx }) => {
     }
   }
   return (
-    <Card style={{ borderRadius: 8, padding: '5px 5px 5px 15px', marginBottom: '20px' }}>
+    <Box style={{ padding: '5px 5px 5px 15px', marginBottom: '20px' }}>
       <Box key={idx}>
         <Row content='space-between'>
           <Box>
@@ -92,6 +92,6 @@ export const ToDoListItem: TodoListTemplateType = ({ todoItem, idx }) => {
           </Box>
         </Row>
       </Box>
-    </Card>
+    </Box>
   )
 }

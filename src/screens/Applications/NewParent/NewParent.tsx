@@ -616,6 +616,7 @@ export const NewParent = () => {
                               </Grid>
                             )
                           } else if (q.slug?.includes('student_')) {
+                            console.log(q.slug);
                             return (
                               <Grid item xs={12} display='flex' justifyContent={'center'}>
                                 <Box width={'451.53px'} display='flex' flexDirection='row' alignItems={'center'}>
