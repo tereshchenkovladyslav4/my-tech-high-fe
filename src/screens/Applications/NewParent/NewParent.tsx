@@ -111,6 +111,13 @@ export const NewParent = () => {
               } else {
                 valid_student[`${q.slug?.replace('student_', '')}`] = yup.string().required(`${q.question} is required`)
               }
+            } else {
+              if (q.slug?.toLocaleLowerCase().includes('emailconfrim')) {
+                valid_student[`${q.slug?.replace('student_', '')}`] = yup
+                  .string()
+                  .oneOf([yup.ref('email')], 'Emails do not match')
+                  .nullable(true)
+              }
             }
           } else if (q.slug?.includes('parent_')) {
             if (q.required) {
@@ -127,13 +134,6 @@ export const NewParent = () => {
               } else if (q.validation === 2) {
                 valid_parent[`${q.slug?.replace('parent_', '')}`] = yup
                   .string()
-                  // .matches(isPhoneNumber, 'Phone number is invalid')
-                  // .test('max_spacing_interval', 'Phone number is invalid', function (value) {
-                  //   if (value !== undefined) {
-                  //     return this.parent.phone_number.replaceAll('-', '').length >= 13
-                  //   }
-                  // })
-                  // .required('Phone number is required')
                   .required(`${q.question} is required`)
                   .test(`${q.question}-selected`, `${q.question} is invalid`, (value: any) => {
                     return isNumber.test(value)
@@ -150,93 +150,231 @@ export const NewParent = () => {
               } else {
                 valid_parent[`${q.slug?.replace('parent_', '')}`] = yup.string().required(`${q.question} is required`)
               }
-            }
-          } else if (q.slug?.includes('meta_') && q.required) {
-            if (q.student_question) {
-              empty['meta'][`${q.slug}`] = ''
-              if (q.validation === 1) {
-                valid_student_meta[`${q.slug}`] = yup
+            } else {
+              if (q.slug?.toLocaleLowerCase().includes('emailconfirm')) {
+                valid_parent[`${q.slug?.replace('parent_', '')}`] = yup
+                  .string()
+                  .oneOf([yup.ref('email')], 'Emails do not match')
+                  .nullable(true)
+              } else if (q.validation === 1) {
+                valid_parent[`${q.slug?.replace('parent_', '')}`] = yup
                   .string()
                   .email('Enter a valid email')
-                  .required('Email is required')
+                  .nullable(true)
               } else if (q.validation === 2) {
-                valid_student_meta[`${q.slug}`] = yup
+                valid_parent[`${q.slug?.replace('parent_', '')}`] = yup
                   .string()
-                  .required(`${q.question} is required`)
                   .test(`${q.question}-selected`, `${q.question} is invalid`, (value: any) => {
-                    return isNumber.test(value)
+                    return !value || isNumber.test(value)
                   })
-              } else if (q.type === QUESTION_TYPE.CHECKBOX) {
-                valid_student_meta[`${q.slug}`] = yup
-                  .array()
-                  .min(1, `${q.question} is required`)
-                  .required(`${q.question} is required`)
-                  .nullable()
-              } else if (q.type === QUESTION_TYPE.AGREEMENT) {
-                valid_student_meta[`${q.slug}`] = yup.boolean().oneOf([true], 'This field must be checked')
+                  .nullable(true)
+              }
+            }
+          } else if (q.slug?.includes('meta_')) {
+            if (q.required) {
+              if (q.student_question) {
+                empty['meta'][`${q.slug}`] = ''
+                if (q.validation === 1) {
+                  valid_student_meta[`${q.slug}`] = yup
+                    .string()
+                    .email('Enter a valid email')
+                    .required('Email is required')
+                } else if (q.validation === 2) {
+                  valid_student_meta[`${q.slug}`] = yup
+                    .string()
+                    .required(`${q.question} is required`)
+                    .test(`${q.question}-selected`, `${q.question} is invalid`, (value: any) => {
+                      return isNumber.test(value)
+                    })
+                } else if (q.type === QUESTION_TYPE.CHECKBOX) {
+                  valid_student_meta[`${q.slug}`] = yup
+                    .array()
+                    .min(1, `${q.question} is required`)
+                    .required(`${q.question} is required`)
+                    .nullable()
+                } else if (q.type === QUESTION_TYPE.AGREEMENT) {
+                  valid_student_meta[`${q.slug}`] = yup.boolean().oneOf([true], 'This field must be checked')
+                } else {
+                  valid_student_meta[`${q.slug}`] = yup.string().required(`${q.question} is required`)
+                }
               } else {
-                valid_student_meta[`${q.slug}`] = yup.string().required(`${q.question} is required`)
+                if (q.validation === 1) {
+                  valid_meta[`${q.slug}`] = yup.string().email('Enter a valid email').required('Email is required')
+                } else if (q.validation === 2) {
+                  valid_meta[`${q.slug}`] = yup
+                    .string()
+                    .required(`${q.question} is required`)
+                    .test(`${q.question}-selected`, `${q.question} is invalid`, (value: any) => {
+                      return isNumber.test(value)
+                    })
+                } else if (q.type === QUESTION_TYPE.CHECKBOX) {
+                  valid_meta[`${q.slug}`] = yup
+                    .array()
+                    .min(1, `${q.question} is required`)
+                    .required(`${q.question} is required`)
+                    .nullable()
+                } else if (q.type === QUESTION_TYPE.AGREEMENT) {
+                  valid_meta[`${q.slug}`] = yup.boolean().oneOf([true], 'This field must be checked')
+                } else {
+                  valid_meta[`${q.slug}`] = yup.string().required(`${q.question} is required`)
+                }
               }
             } else {
-              if (q.validation === 1) {
-                valid_meta[`${q.slug}`] = yup.string().email('Enter a valid email').required('Email is required')
-              } else if (q.validation === 2) {
-                valid_meta[`${q.slug}`] = yup
-                  .string()
-                  .required(`${q.question} is required`)
-                  .test(`${q.question}-selected`, `${q.question} is invalid`, (value: any) => {
-                    return isNumber.test(value)
-                  })
-              } else if (q.type === QUESTION_TYPE.CHECKBOX) {
-                valid_meta[`${q.slug}`] = yup
-                  .array()
-                  .min(1, `${q.question} is required`)
-                  .required(`${q.question} is required`)
-                  .nullable()
-              } else if (q.type === QUESTION_TYPE.AGREEMENT) {
-                valid_meta[`${q.slug}`] = yup.boolean().oneOf([true], 'This field must be checked')
+              if (q.student_question) {
+                empty['meta'][`${q.slug}`] = ''
+                if (q.validation === 1) {
+                  valid_student_meta[`${q.slug}`] = yup
+                    .string()
+                    .email('Enter a valid email')
+                    .nullable(true)
+                } else if (q.validation === 2) {
+                  valid_student_meta[`${q.slug}`] = yup
+                    .string()
+                    .test(`${q.question}-selected`, `${q.question} is invalid`, (value: any) => {
+                      return !value || isNumber.test(value)
+                    })
+                    .nullable(true)
+                }
               } else {
-                valid_meta[`${q.slug}`] = yup.string().required(`${q.question} is required`)
+                if (q.validation === 1) {
+                  valid_meta[`${q.slug}`] = yup.string().email('Enter a valid email').nullable(true)
+                } else if (q.validation === 2) {
+                  valid_meta[`${q.slug}`] = yup
+                    .string()
+                    .test(`${q.question}-selected`, `${q.question} is invalid`, (value: any) => {
+                      return !value || isNumber.test(value)
+                    })
+                    .nullable(true)
+                }
               }
             }
           }
-          else if (q.slug?.includes('address_') && q.required){
-            if (!q.student_question) {
-              if (q.validation === 2) {
-                valid_address[`${q.slug?.replace('address_', '')}`] = yup
-                  .string()
-                  // .matches(isPhoneNumber, 'Phone number is invalid')
-                  // .test('max_spacing_interval', 'Phone number is invalid', function (value) {
-                  //   if (value !== undefined) {
-                  //     return this.parent.phone_number.replaceAll('-', '').length >= 13
-                  //   }
-                  // })
-                  // .required('Phone number is required')
-                  .required(`${q.question} is required`)
-                  .test(`${q.question}-selected`, `${q.question} is invalid`, (value: any) => {
-                    return isNumber.test(value)
-                  })
+          else if (q.slug?.includes('address_')) {
+            if (q.required) {
+              if (!q.student_question) {
+                if (q.validation === 2) {
+                  valid_address[`${q.slug?.replace('address_', '')}`] = yup
+                    .string()
+                    // .matches(isPhoneNumber, 'Phone number is invalid')
+                    // .test('max_spacing_interval', 'Phone number is invalid', function (value) {
+                    //   if (value !== undefined) {
+                    //     return this.parent.phone_number.replaceAll('-', '').length >= 13
+                    //   }
+                    // })
+                    // .required('Phone number is required')
+                    .required(`${q.question} is required`)
+                    .test(`${q.question}-selected`, `${q.question} is invalid`, (value: any) => {
+                      return isNumber.test(value)
+                    })
+                }
+                else {
+                  valid_address[`${q.slug?.replace('address_', '')}`] = yup.string().required(`${q.question} is required`)
+                }
               }
               else {
-                valid_address[`${q.slug?.replace('address_', '')}`] = yup.string().required(`${q.question} is required`)
+                if (q.validation === 2) {
+                  valid_student_address[`${q.slug?.replace('address_', '')}`] = yup
+                    .string()
+                    .required(`${q.question} is required`)
+                    .test(`${q.question}-selected`, `${q.question} is invalid`, (value: any) => {
+                      return isNumber.test(value)
+                    })
+                } else {
+                  valid_student_address[`${q.slug?.replace('address_', '')}`] = yup.string().required(`${q.question} is required`)
+                }
+              }
+            } else {
+              if (!q.student_question) {
+                if (q.validation === 2) {
+                  valid_address[`${q.slug?.replace('address_', '')}`] = yup
+                    .string()
+                    // .matches(isPhoneNumber, 'Phone number is invalid')
+                    // .test('max_spacing_interval', 'Phone number is invalid', function (value) {
+                    //   if (value !== undefined) {
+                    //     return this.parent.phone_number.replaceAll('-', '').length >= 13
+                    //   }
+                    // })
+                    // .required('Phone number is required')
+                    .test(`${q.question}-selected`, `${q.question} is invalid`, (value: any) => {
+                      return !value || isNumber.test(value)
+                    })
+                    .nullable(true)
+                }
+              }
+              else {
+                if (q.validation === 2) {
+                  valid_student_address[`${q.slug?.replace('address_', '')}`] = yup
+                    .string()
+                    .test(`${q.question}-selected`, `${q.question} is invalid`, (value: any) => {
+                      return !value || isNumber.test(value)
+                    })
+                    .nullable(true)
+                }
               }
             }
-            else {
-              if (q.validation === 2) {
-                valid_student_address[`${q.slug?.replace('address_', '')}`] = yup
-                  .string()
-                  .required(`${q.question} is required`)
-                  .test(`${q.question}-selected`, `${q.question} is invalid`, (value: any) => {
-                    return isNumber.test(value)
-                  })
-              } else {
-                valid_student_address[`${q.slug?.replace('address_', '')}`] = yup.string().required(`${q.question} is required`)
-              }
-            }
+
           }
-          else if (q.slug?.includes('packet_') && q.required){
+          else if (q.slug?.includes('address_')) {
+            if (q.required) {
+              if (!q.student_question) {
+                if (q.validation === 2) {
+                  valid_address[`${q.slug?.replace('address_', '')}`] = yup
+                    .string()
+                    // .matches(isPhoneNumber, 'Phone number is invalid')
+                    // .test('max_spacing_interval', 'Phone number is invalid', function (value) {
+                    //   if (value !== undefined) {
+                    //     return this.parent.phone_number.replaceAll('-', '').length >= 13
+                    //   }
+                    // })
+                    // .required('Phone number is required')
+                    .required(`${q.question} is required`)
+                    .test(`${q.question}-selected`, `${q.question} is invalid`, (value: any) => {
+                      return isNumber.test(value)
+                    })
+                }
+                else {
+                  valid_address[`${q.slug?.replace('address_', '')}`] = yup.string().required(`${q.question} is required`)
+                }
+              }
+              else {
+                if (q.validation === 2) {
+                  valid_student_address[`${q.slug?.replace('address_', '')}`] = yup
+                    .string()
+                    .required(`${q.question} is required`)
+                    .test(`${q.question}-selected`, `${q.question} is invalid`, (value: any) => {
+                      return isNumber.test(value)
+                    })
+                } else {
+                  valid_student_address[`${q.slug?.replace('address_', '')}`] = yup.string().required(`${q.question} is required`)
+                }
+              }
+            } else {
+              if (!q.student_question) {
+                if (q.validation === 2) {
+                  valid_address[`${q.slug?.replace('address_', '')}`] = yup
+                    .string()
+                    .test(`${q.question}-selected`, `${q.question} is invalid`, (value: any) => {
+                      return !value || isNumber.test(value)
+                    })
+                    .nullable(true)
+                }
+              }
+              else {
+                if (q.validation === 2) {
+                  valid_student_address[`${q.slug?.replace('address_', '')}`] = yup
+                    .string()
+                    .test(`${q.question}-selected`, `${q.question} is invalid`, (value: any) => {
+                      return !value || isNumber.test(value)
+                    })
+                    .nullable(true)
+                }
+              }
+            }
+
+          }
+          else if (q.slug?.includes('packet_') && q.required) {
             if (!q.student_question) {
-              valid_packet[`${q.slug?.replace('packet_', '')}`] = yup.string().required(`${q.question} is required`)                
+              valid_packet[`${q.slug?.replace('packet_', '')}`] = yup.string().required(`${q.question} is required`)
             }
             else {
               valid_student_packet[`${q.slug?.replace('packet_', '')}`] = yup.string().required(`${q.question} is required`)
@@ -247,8 +385,8 @@ export const NewParent = () => {
       setEmptyStudent(empty)
       setValidationSchema({
         ...initSchema,
-        parent: yup.object(valid_parent),        
-        address: yup.object(valid_address),      
+        parent: yup.object(valid_parent),
+        address: yup.object(valid_address),
         packet: yup.object(valid_packet),
         students: yup.array(yup.object({ ...valid_student, meta: yup.object(valid_student_meta), address: yup.object(valid_student_address), packet: yup.object(valid_student_packet) })),
         meta: yup.object(valid_meta),
@@ -286,7 +424,8 @@ export const NewParent = () => {
             label: `${moment(item.date_begin).format('YYYY')} - ${moment(item.date_end).format('YYYY')}`,
             value: item.school_year_id,
           })
-          if (item?.midyear_application) {
+
+          if (item && moment().isAfter(item?.midyear_application_open) && moment().isBefore(item?.midyear_application_close)) {
             schoolYearsArray.push({
               label: `${moment(item.midyear_application_open).format('YYYY')} - ${moment(
                 item.midyear_application_close,
@@ -303,9 +442,8 @@ export const NewParent = () => {
 
   const submitApplication = async (values) => {
     const submitStudents = values.students?.map((s) => {
-      return { ...s, meta: JSON.stringify(s?.meta || {}), address: {...s.address, school_district: s.packet.school_district}, packet: omit(s.packet, ['school_district']) }
+      return { ...s, meta: JSON.stringify(s?.meta || {}), address: { ...s.address, school_district: s.packet?.school_district }, packet: omit(s.packet, ['school_district']) }
     })
-    console.log('values', values)
     submitApplicationAction({
       variables: {
         createApplicationInput: {
@@ -316,7 +454,7 @@ export const NewParent = () => {
           students: submitStudents,
           midyear_application: midYearApplication,
           meta: JSON.stringify(values.meta),
-          address: {...values.address, school_district: values.packet?.school_district},
+          address: { ...values.address, school_district: values.packet?.school_district },
           packet: omit(values.packet, ['school_district']),
         },
       },
@@ -395,7 +533,6 @@ export const NewParent = () => {
           }}
         >
           {({ values, errors }) => {
-            console.log('errors',errors)
             return (
               <Form>
                 <Box
@@ -561,7 +698,7 @@ export const NewParent = () => {
                                       <TextField
                                         name='emailConfirm'
                                         size='small'
-                                        label='Parent Email Confirm'
+                                        label='Parent Email Again'
                                         focused
                                         variant='outlined'
                                         inputProps={{
@@ -649,7 +786,7 @@ export const NewParent = () => {
                             const parentFieldName = q.slug?.split('_')[0]
                             const childFieldName = q.slug?.replace(parentFieldName + '_', '')
                             return (
-                              <Grid item xs={12}  display='flex' justifyContent={'center'}>
+                              <Grid item xs={12} display='flex' justifyContent={'center'}>
                                 <Box
                                   width={'451.53px'}
                                   display='flex'
@@ -677,7 +814,7 @@ export const NewParent = () => {
                             )
                           }
                         }
-                        else if(q.slug?.includes('meta_')) {
+                        else if (q.slug?.includes('meta_')) {
                           return (
                             <Grid item xs={12} display='flex' justifyContent={'center'}>
                               <Box width={'451.53px'}>
@@ -690,7 +827,7 @@ export const NewParent = () => {
                             </Grid>
                           )
                         }
-                        else{
+                        else {
                           const parentFieldName = q.slug?.split('_')[0]
                           const childFieldName = q.slug?.replace(parentFieldName + '_', '')
                           return (
@@ -830,7 +967,7 @@ export const NewParent = () => {
                                         const parentFieldName = q.slug?.split('_')[0]
                                         const childFieldName = q.slug?.replace(parentFieldName + '_', '')
                                         return (
-                                          <Grid item xs={12}  display='flex' justifyContent={'center'}>
+                                          <Grid item xs={12} display='flex' justifyContent={'center'}>
                                             <Box
                                               width={'451.53px'}
                                               display='flex'

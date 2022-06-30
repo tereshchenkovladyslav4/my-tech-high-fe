@@ -394,18 +394,17 @@ export const StudentFilters = ({
         },
       ])
     }
-  }, [studentStatusData]);
+  }, [studentStatusData])
 
-  const [deleteWithdrawal] = useMutation(deleteWithdrawalMutation);
+  const [deleteWithdrawal] = useMutation(deleteWithdrawalMutation)
   const onRemoveWithdrawalRequest = async () => {
-    const {data} = await deleteWithdrawal({
+    const { data } = await deleteWithdrawal({
       variables: {
-        studentId: parseInt(currentUserData.student.student_id)
-      }
-    });
-    if(data.deleteWithdrawal)
-      setWithdrawalStatus({});
-  };
+        studentId: parseInt(currentUserData.student.student_id),
+      },
+    })
+    if (data.deleteWithdrawal) setWithdrawalStatus({})
+  }
 
   return (
     <Box
@@ -429,7 +428,9 @@ export const StudentFilters = ({
               <Select
                 className={
                   studentStatusData?.status != 2
-                    ? (withdrawalStatus?.status == 'Requested' ? selectClasses.yelloBackgroundSelect : selectClasses.backgroundSelect)
+                    ? withdrawalStatus?.status == 'Requested'
+                      ? selectClasses.yelloBackgroundSelect
+                      : selectClasses.backgroundSelect
                     : selectClasses.withdrawBackgroundSelect
                 }
                 IconComponent={KeyboardArrowDown}
@@ -450,11 +451,12 @@ export const StudentFilters = ({
                 ))}
               </Select>
               {withdrawalStatus?.status == 'Requested' && (
-              <Box onClick={() => onRemoveWithdrawalRequest()}>
-                <Paragraph sx={{ color: MTHBLUE, my: '5px' }} textAlign="center">
-                  Remove Withdraw Request
-                </Paragraph>
-              </Box>)}
+                <Box onClick={() => onRemoveWithdrawalRequest()}>
+                  <Paragraph sx={{ color: MTHBLUE, my: '5px' }} textAlign='center'>
+                    Remove Withdraw Request
+                  </Paragraph>
+                </Box>
+              )}
             </Box>
           </Box>
           <Box onClick={() => setShowDetails(!showDetails)}>

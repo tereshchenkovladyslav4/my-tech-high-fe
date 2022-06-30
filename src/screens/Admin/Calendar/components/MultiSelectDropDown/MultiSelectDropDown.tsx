@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import OutlinedInput from '@mui/material/OutlinedInput'
 import InputLabel from '@mui/material/InputLabel'
 import MenuItem from '@mui/material/MenuItem'
@@ -30,6 +30,7 @@ type MultiSelectDropDownProps = {
 }
 
 const MultiSelectDropDown = ({ checkBoxLists = [], selectedLists, setSelectedLists }: MultiSelectDropDownProps) => {
+  const [focus, setFocus] = useState<boolean>(false)
   const handleChange = (event: SelectChangeEvent<typeof selectedLists>) => {
     const {
       target: { value },
@@ -42,20 +43,19 @@ const MultiSelectDropDown = ({ checkBoxLists = [], selectedLists, setSelectedLis
 
   return (
     <div>
-      <FormControl sx={{ maxWidth: 200 }}>
-        <InputLabel id='demo-multiple-checkbox-label' sx={{ mt: -1 }}>
-          Select Filter
-        </InputLabel>
+      <FormControl sx={{ width: 200, m: 1 }} size='small'>
+        <InputLabel id='multiple-checkbox-label'>Select Filter</InputLabel>
         <Select
-          labelId='demo-multiple-checkbox-label'
-          id='demo-multiple-checkbox'
+          labelId='multiple-checkbox-label'
+          id='multiple-checkbox'
           multiple
-          value={selectedLists}
-          size='small'
+          value={focus ? selectedLists : []}
           onChange={handleChange}
           input={<OutlinedInput label='Select Filter' />}
           renderValue={(selected) => selected.join(', ')}
           MenuProps={MenuProps}
+          onOpen={() => setFocus(true)}
+          onClose={() => setFocus(false)}
         >
           {checkBoxLists.map((list) => (
             <MenuItem key={list?.name} value={list?.name}>

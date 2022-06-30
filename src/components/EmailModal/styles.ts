@@ -50,8 +50,11 @@ export const useStyles = {
     color: '#e7e7e7',
     cursor: 'pointer',
   },
-  subject: {
+  from: {
     marginTop: 2,
+  },
+  subject: {
+    marginTop: 0,
   },
   isActive: {
     color: 'black',

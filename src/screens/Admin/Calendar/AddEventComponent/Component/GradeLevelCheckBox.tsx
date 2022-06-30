@@ -1,4 +1,4 @@
-import { Box, Card, Checkbox, FormControlLabel, Grid } from '@mui/material'
+import { Box, Checkbox, FormControlLabel } from '@mui/material'
 import React, { useContext, useEffect, useState } from 'react'
 import { GRADES, RED } from '../../../../../utils/constants'
 import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragraph'
@@ -96,16 +96,17 @@ const GradeLevelCheckBox = ({ grades, invalidOption, setGrades, setInvalidOption
         else return Number(item)
       })
       setAvailableGrades(availGrades)
-      setGrades([
-        ...['all'],
-        ...GRADES.map((item) => {
-          if (availGrades.includes(item)) {
-            return item.toString()
-          } else {
-            return ''
-          }
-        }).filter((item) => item),
-      ])
+      if (grades.length == 0)
+        setGrades([
+          ...['all'],
+          ...GRADES.map((item) => {
+            if (availGrades.includes(item)) {
+              return item.toString()
+            } else {
+              return ''
+            }
+          }).filter((item) => item),
+        ])
     } else {
       setAvailableGrades([])
       setGrades([])

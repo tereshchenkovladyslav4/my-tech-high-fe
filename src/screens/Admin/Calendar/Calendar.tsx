@@ -10,12 +10,19 @@ import { EventVM } from './types'
 const Calendar = () => {
   const isExact = useRouteMatch(CALENDAR)?.isExact
   const [event, setEvent] = useState<EventVM>()
+  const [selectedEventIndex, setSelectedEventIndex] = useState<number>(0)
   return (
     <Box sx={{ marginX: 4 }}>
       <Grid container rowSpacing={2}>
         <Grid item xs={12}></Grid>
         <Grid item xs={12}>
-          {isExact && <MainComponent setEvent={setEvent} />}
+          {isExact && (
+            <MainComponent
+              selectedEventIndex={selectedEventIndex}
+              setSelectedEventIndex={setSelectedEventIndex}
+              setEvent={setEvent}
+            />
+          )}
         </Grid>
       </Grid>
       <Switch>

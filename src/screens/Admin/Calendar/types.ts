@@ -93,7 +93,7 @@ export type EventResponseVM = {
   filter_program_year: string
   filter_provider: string
   filter_school_of_enrollment: string
-  fitler_users: string
+  filter_users: string
 }
 
 export type EventComponentProps = {
@@ -101,10 +101,14 @@ export type EventComponentProps = {
   refetch: () => void
   setEvents: (value: EventVM[]) => void
   setEvent: (value: EventVM) => void
+  selectedEventIndex: number
+  setSelectedEventIndex: (value: number) => void
 }
 
 export type MainComponentProps = {
   setEvent: (value: EventVM | undefined) => void
+  selectedEventIndex: number
+  setSelectedEventIndex: (value: number) => void
 }
 
 export type AddEventComponentProps = {

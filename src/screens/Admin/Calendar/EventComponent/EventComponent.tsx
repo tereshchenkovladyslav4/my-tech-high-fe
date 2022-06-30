@@ -1,7 +1,7 @@
 import { Box, Button, Stack, Tooltip } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
-import { CALENDAR, MTHGREEN, SYSTEM_02, SYSTEM_05, SYSTEM_06 } from '../../../../utils/constants'
+import { CALENDAR, GRADES, MTHGREEN, SYSTEM_02, SYSTEM_05, SYSTEM_06 } from '../../../../utils/constants'
 import { useHistory } from 'react-router-dom'
 import { useStyles } from '../MainComponent/styles'
 import ModeEditIcon from '@mui/icons-material/ModeEdit'
@@ -27,12 +27,17 @@ const toolTipStyles = makeStyles(() => ({
   },
 }))
 
-const EventComponent = ({ events, setEvent, refetch }: EventComponentProps) => {
+const EventComponent = ({
+  selectedEventIndex,
+  setSelectedEventIndex,
+  events,
+  setEvent,
+  refetch,
+}: EventComponentProps) => {
   const classes = useStyles
   const toolTipClass = toolTipStyles()
   const history = useHistory()
   const [selectedEvent, setSelectedEvent] = useState<EventVM | undefined>()
-  const [selectedIndex, setSelectedIndex] = useState<number>(0)
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false)
   const [deleteEventById, {}] = useMutation(deleteEventByIdMutation)
 
@@ -60,8 +65,16 @@ const EventComponent = ({ events, setEvent, refetch }: EventComponentProps) => {
   const renderFilter = (): string => {
     let grades = ''
     if (selectedEvent?.filters?.grades) {
-      grades = JSON.parse(selectedEvent?.filters?.grades)
-        .filter((item: string) => item != 'all')
+      grades = GRADES.map((item) => {
+        if (
+          JSON.parse(selectedEvent?.filters?.grades)
+            .filter((item: string) => item != 'all')
+            .includes(`${item}`)
+        ) {
+          return item
+        }
+      })
+        .filter((item) => item)
         .join(',')
     }
     return grades
@@ -71,22 +84,26 @@ const EventComponent = ({ events, setEvent, refetch }: EventComponentProps) => {
   }
 
   const handlePrevEventView = () => {
-    if (selectedIndex - 1 >= 0) {
-      setSelectedIndex(selectedIndex - 1)
-      setSelectedEvent(events?.at(selectedIndex - 1))
+    if (selectedEventIndex - 1 >= 0) {
+      setSelectedEventIndex(selectedEventIndex - 1)
+      setSelectedEvent(events?.at(selectedEventIndex - 1))
     }
   }
 
   const handleNextEventView = () => {
-    if (selectedIndex + 1 < events?.length) {
-      setSelectedIndex(selectedIndex + 1)
-      setSelectedEvent(events?.at(selectedIndex + 1))
+    if (selectedEventIndex + 1 < events?.length) {
+      setSelectedEventIndex(selectedEventIndex + 1)
+      setSelectedEvent(events?.at(selectedEventIndex + 1))
     }
   }
 
   useEffect(() => {
     if (events?.length > 0) {
-      setSelectedEvent(events[selectedIndex])
+      if (selectedEventIndex + 1 > events?.length) {
+        setSelectedEvent(events[0])
+        setSelectedEventIndex(0)
+      }
+      setSelectedEvent(events[selectedEventIndex])
     } else {
       setSelectedEvent(undefined)
     }
@@ -146,25 +163,27 @@ const EventComponent = ({ events, setEvent, refetch }: EventComponentProps) => {
           </Subtitle>
         </>
       )}
-      <Box sx={classes.arrowButtonGroup}>
-        <Button sx={classes.saveBtn} onClick={() => handleRSVPClick()}>
-          RSVP
-        </Button>
-        <Button
-          disableElevation
-          variant='contained'
-          sx={classes.arrowButton}
-          startIcon={<ArrowBackIosNewIcon />}
-          onClick={() => handlePrevEventView()}
-        ></Button>
-        <Button
-          disableElevation
-          variant='contained'
-          sx={classes.arrowButton}
-          startIcon={<ArrowForwardIosIcon />}
-          onClick={() => handleNextEventView()}
-        ></Button>
-      </Box>
+      {!!selectedEvent && (
+        <Box sx={classes.arrowButtonGroup}>
+          <Button sx={classes.saveBtn} onClick={() => handleRSVPClick()}>
+            RSVP
+          </Button>
+          <Button
+            disableElevation
+            variant='contained'
+            sx={classes.arrowButton}
+            startIcon={<ArrowBackIosNewIcon />}
+            onClick={() => handlePrevEventView()}
+          ></Button>
+          <Button
+            disableElevation
+            variant='contained'
+            sx={classes.arrowButton}
+            startIcon={<ArrowForwardIosIcon />}
+            onClick={() => handleNextEventView()}
+          ></Button>
+        </Box>
+      )}
       {showDeleteModal && (
         <CustomModal
           title='Delete'

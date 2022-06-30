@@ -10,7 +10,7 @@ import { makeStyles } from '@material-ui/styles'
 import { useStyles } from './styles'
 import { PageActionProps, WithdrawalCount } from '../type'
 import { getSchoolYearsByRegionId } from '../../Dashboard/SchoolYear/SchoolYear'
-import moment from 'moment';
+import moment from 'moment'
 
 const selectStyles = makeStyles({
   select: {
@@ -22,10 +22,10 @@ const selectStyles = makeStyles({
 
 type SchoolYearType = {
   school_year_id: number
-  date_begin: Date,
+  date_begin: Date
   date_end: Date
+  label?: string
 }
-
 
 const PageAction = ({
   totalWithdrawals,
@@ -37,7 +37,7 @@ const PageAction = ({
   setSkip,
   setPaginationLimit,
   selectedYear,
-  setSelectedYear
+  setSelectedYear,
 }: PageActionProps) => {
   const { me } = useContext(UserContext)
   const classes = useStyles
@@ -45,23 +45,6 @@ const PageAction = ({
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [withdrawalCounts, setWithdrawalCounts] = useState<WithdrawalCount>()
   const [schoolYears, setSchoolYears] = useState<SchoolYearType[]>([])
-
-  
-  // const [selectedYear, setSelectedYear] = useState<string | number>('1')
-  // const schoolYears = [
-  //   {
-  //     label: '21-22',
-  //     value: '1',
-  //   },
-  //   {
-  //     label: '22-23',
-  //     value: '2',
-  //   },
-  //   {
-  //     label: '23-24',
-  //     value: '3',
-  //   },
-  // ]
   const schoolYearData = useQuery(getSchoolYearsByRegionId, {
     variables: {
       regionId: me?.selectedRegionId,
@@ -70,13 +53,11 @@ const PageAction = ({
     fetchPolicy: 'network-only',
   })
 
-  
-
   useEffect(() => {
     if (schoolYearData?.data?.region?.SchoolYears) {
       const { SchoolYears } = schoolYearData?.data?.region
       setSchoolYears(
-        SchoolYears.map((item : SchoolYearType) => ({
+        SchoolYears.map((item: SchoolYearType) => ({
           school_year_id: item.school_year_id,
           label: moment(item.date_begin).format('YY') + '-' + moment(item.date_end).format('YY'),
         })),
@@ -96,7 +77,7 @@ const PageAction = ({
       filter: {
         region_id: me?.selectedRegionId,
         keyword: searchField,
-        selectedYear: selectedYear
+        selectedYear: selectedYear,
       },
     },
     skip: me?.selectedRegionId ? false : true,
@@ -149,7 +130,7 @@ const PageAction = ({
           >
             {schoolYears.map((sy) => (
               <MenuItem key={sy.school_year_id} value={sy.school_year_id}>
-                {sy.label}
+                {sy?.label}
               </MenuItem>
             ))}
           </Select>

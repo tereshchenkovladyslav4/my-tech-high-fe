@@ -20,15 +20,14 @@ import { ApplicationEmailModal as EmailModal } from '../../../../components/Emai
 import { getEmailTemplateQuery } from '../../../../graphql/queries/email-template'
 import { emailWithdrawalMutation, updateWithdrawalMutation } from '../service'
 import { WithdrawalEmailModal } from './WithdrawalEmailModal'
-import { CalendarPickerView } from '@mui/x-date-pickers/internals/models'
 
 const WithdrawalPage = () => {
   const classes = useStyles
   const { me } = useContext(UserContext)
-  const [searchField, setSearchField] = useState('')
+  const [searchField, setSearchField] = useState<string>('')
   const [tableData, setTableData] = useState<Array<any>>([])
   const [skip, setSkip] = useState<number>(0)
-  const [sort, setSort] = useState('submitted|asc')
+  const [sort, setSort] = useState<string>('submitted|asc')
   const [paginationLimit, setPaginationLimit] = useState<number>(25)
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>([
     WITHDRAWAL_STATUS_LABEL[0],
@@ -36,25 +35,20 @@ const WithdrawalPage = () => {
   ])
   // filtering by year
   const [selectedYear, setSelectedYear] = useState<string | number>('1')
-
   const [emailTemplate, setEmailTemplate] = useState()
   const [withdrawals, setWithdrawals] = useState<Array<Withdrawal>>([])
-  const [currentWithdrawal, setCurrentWithdrawal] = useState<Withdrawal | null>()
+  //const [currentWithdrawal, setCurrentWithdrawal] = useState<Withdrawal | null>()
   const [totalWithdrawals, setTotalWithdrawals] = useState<number>(0)
   const [checkedWithdrawalIds, setCheckedWithdrawalIds] = useState<Array<string>>([])
-  const [isShowModal, setIsShowModal] = useState(false)
+  //const [isShowModal, setIsShowModal] = useState(false)
   const [openEmailModal, setOpenEmailModal] = useState<boolean>(false)
-
-
   const [openEmailHistoryModal, setOpenEmailHistoryModal] = useState<boolean>(false)
-  const [withdrawId, setWithdrawId] = useState('')
-
+  const [withdrawId, setWithdrawId] = useState<number>(0)
   const [openEffectiveCalendar, setOpenEffectiveCalendar] = useState<boolean>(false)
   const [effective, setEffective] = useState({
     date: '',
-    withdrawId: 0
+    withdrawId: 0,
   })
-
 
   const [openWarningModal, setOpenWarningModal] = useState<boolean>(false)
   const { loading, data, refetch } = useQuery(getWithdrawalsQuery, {
@@ -66,23 +60,22 @@ const WithdrawalPage = () => {
         region_id: me?.selectedRegionId,
         status: selectedStatuses,
         keyword: searchField,
-        selectedYear: selectedYear
+        selectedYear: selectedYear,
       },
     },
     skip: me?.selectedRegionId ? false : true,
     fetchPolicy: 'network-only',
   })
 
-
-  const { loading: emailLoading, data: emailData, refetch: emailRefetch } = useQuery(getEmailByWithdrawalId, {
+  const { loading: emailLoading, data: emailData } = useQuery(getEmailByWithdrawalId, {
     variables: {
-      withdrawId: withdrawId,
+      withdrawId: Number(withdrawId),
     },
-    skip: (withdrawId === ''),
+    skip: withdrawId === 0,
     fetchPolicy: 'network-only',
   })
 
-  const [emailPacket, { data: emailStatus }] = useMutation(emailWithdrawalMutation)
+  const [emailWithdrawal] = useMutation(emailWithdrawalMutation)
   const [updateWithdrawal] = useMutation(updateWithdrawalMutation)
 
   const { data: emailTemplateData, refetch: refetchEmailTemplate } = useQuery(getEmailTemplateQuery, {
@@ -94,24 +87,22 @@ const WithdrawalPage = () => {
   })
 
   const handleOpenEmailHistory = (withdrawal_id: number) => {
-    setWithdrawId(parseInt(withdrawal_id));
+    setWithdrawId(withdrawal_id)
     setOpenEmailHistoryModal(true)
   }
-
-
 
   const handleOpenEffectiveCalendar = (effectDate: string, withdrawId: number) => {
     setEffective({
       date: effectDate,
-      withdrawId: withdrawId
-    });
-    setOpenEffectiveCalendar(true);
+      withdrawId: withdrawId,
+    })
+    setOpenEffectiveCalendar(true)
   }
 
   const openHandleEffectiveChange = (value: Date | null) => {
     setEffective({
       ...effective,
-      date: value?.toString()
+      date: value?.toString() || '',
     })
   }
 
@@ -124,8 +115,6 @@ const WithdrawalPage = () => {
     }
   }, [emailTemplateData])
 
-
-
   useEffect(() => {
     if (!loading && data?.withdrawals) {
       setTableData(
@@ -133,19 +122,26 @@ const WithdrawalPage = () => {
           submitted: withdrawal.date ? moment(withdrawal.date).format('MM/DD/YY') : '',
           status: withdrawal.status,
           effective: withdrawal.date_effective ? (
-            <Box sx={{ cursor: 'pointer' }} onClick={() => handleOpenEffectiveCalendar(withdrawal.date_effective, withdrawal.withdrawal_id)}>
+            <Box
+              sx={{ cursor: 'pointer' }}
+              onClick={() => handleOpenEffectiveCalendar(withdrawal.date_effective, withdrawal.withdrawal_id)}
+            >
               {moment(withdrawal.date_effective).format('MM/DD/YY')}
             </Box>
-          ) : '',
+          ) : (
+            ''
+          ),
           student: withdrawal?.student_name,
           grade: withdrawal?.grade_level === 'Kin' ? 'K' : withdrawal?.grade_level,
           soe: withdrawal?.soe,
           funding: withdrawal?.funding, //	TODO
-          emailed: (withdrawal?.date_emailed) ? (
+          emailed: withdrawal?.date_emailed ? (
             <Box sx={{ cursor: 'pointer' }} onClick={() => handleOpenEmailHistory(withdrawal.withdrawal_id)}>
               {moment(withdrawal.date_emailed).format('MM/DD/YY')}
             </Box>
-          ) : '',
+          ) : (
+            ''
+          ),
           id: withdrawal?.withdrawal_id,
         })),
       )
@@ -167,11 +163,11 @@ const WithdrawalPage = () => {
 
   const handleWithdrawSelect = (rowId: any) => {
     const row = withdrawals?.find((item) => item.withdrawal_id === rowId)
-    setCurrentWithdrawal(row)
-    setIsShowModal(true)
+    //setCurrentWithdrawal(row)
+    //setIsShowModal(true)
   }
 
-  const onWithdrawClick = () => { }
+  const onWithdrawClick = () => {}
 
   const onEmailClick = () => {
     if (checkedWithdrawalIds.length === 0) {
@@ -189,22 +185,23 @@ const WithdrawalPage = () => {
     //	TODO
   }
 
-  const handleEmailSend = (subject: string, body: string) => {
+  const handleEmailSend = (from: string, subject: string, body: string) => {
     if (checkedWithdrawalIds.length === 0) {
       return
     }
-    onSendEmail(subject, body)
+    onSendEmail(from, subject, body)
   }
 
-  const onSendEmail = async (subject: string, body: string) => {
+  const onSendEmail = async (from: string, subject: string, body: string) => {
     if (checkedWithdrawalIds.length === 0) {
       return
     }
     try {
-      await emailPacket({
+      await emailWithdrawal({
         variables: {
           emailWithdrawalInput: {
             withdrawal_ids: checkedWithdrawalIds.map((id) => Number(id)),
+            from: from,
             subject: subject,
             body: body,
             region_id: me?.selectedRegionId,
@@ -214,17 +211,17 @@ const WithdrawalPage = () => {
       refetch()
       refetchEmailTemplate()
       setOpenEmailModal(false)
-    } catch (error) { }
+    } catch (error) {}
   }
 
   const handleAcceptDate = async (e: any) => {
-    const acceptDate = moment(e).format('YYYY-MM-DD');
+    const acceptDate = moment(e).format('YYYY-MM-DD')
     await updateWithdrawal({
       variables: {
         updateWithdrawalInput: {
-          withdrawal_id: parseInt(effective.withdrawId),
+          withdrawal_id: effective?.withdrawId,
           value: acceptDate?.toString(),
-          field: "date_effective",
+          field: 'date_effective',
         },
       },
     })
@@ -279,6 +276,7 @@ const WithdrawalPage = () => {
           title={checkedWithdrawalIds.length + ' Recipients'}
           handleSubmit={handleEmailSend}
           template={emailTemplate}
+          editFrom={true}
         />
       )}
       {openEmailHistoryModal && !emailLoading && (
@@ -288,18 +286,20 @@ const WithdrawalPage = () => {
         />
       )}
 
-      <LocalizationProvider dateAdapter={AdapterDateFns} localeText="Save" cancelButtonLabel="Cancel">
+      <LocalizationProvider dateAdapter={AdapterDateFns} localeText='Save' cancelButtonLabel='Cancel'>
         <Stack spacing={3} marginRight={8}>
           <MobileDatePicker
             label={'Select One Date'}
             inputFormat='MM/dd/yyyy'
             value={effective.date}
             onChange={openHandleEffectiveChange}
-            onClose={() => { setOpenEffectiveCalendar(false); }}
+            onClose={() => {
+              setOpenEffectiveCalendar(false)
+            }}
             open={openEffectiveCalendar}
             onAccept={handleAcceptDate}
             // onAccept={onAcceptDate}
-            okText="Save"
+            okText='Save'
             renderInput={(params) => <TextField {...params} sx={{ display: 'none' }} />}
           />
         </Stack>

@@ -17,16 +17,18 @@ export const ApplicationEmailModal: EmailModalTemplateType = ({
   handleModem,
   title,
   options,
+  editFrom,
   template,
 }) => {
   const classes = useStyles
   const [editorState, setEditorState] = useState(EditorState.createEmpty())
   const [subject, setSubject] = useState('')
+  const [emailFrom, setEmailFrom] = useState('')
   const editorRef = useRef(null)
   const [currentBlocks, setCurrentBlocks] = useState(0)
   const onSubmit = () => {
     if (handleSubmit && subject) {
-      handleSubmit(subject, draftToHtml(convertToRaw(editorState.getCurrentContent())))
+      handleSubmit(emailFrom, subject, draftToHtml(convertToRaw(editorState.getCurrentContent())))
     }
   }
   const handleEditorChange = (state) => {
@@ -42,7 +44,7 @@ export const ApplicationEmailModal: EmailModalTemplateType = ({
     if (template) {
       const { id, title, subject, from, bcc, body } = template
       setSubject(subject)
-
+      setEmailFrom(from)
       if (body) {
         const contentBlock = htmlToDraft(body)
         if (contentBlock) {
@@ -62,6 +64,16 @@ export const ApplicationEmailModal: EmailModalTemplateType = ({
       <Box sx={classes.modalCard}>
         <Title fontWeight='700'>{title}</Title>
         {/* {options && <StandardResponses options={options} />} */}
+        {editFrom && (
+          <OutlinedInput
+            value={emailFrom}
+            size='small'
+            fullWidth
+            placeholder='From: email in template'
+            sx={classes.from}
+            onChange={(e) => setSubject(e.target.value)}
+          />
+        )}
         <OutlinedInput
           value={subject}
           size='small'

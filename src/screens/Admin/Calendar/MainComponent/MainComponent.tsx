@@ -11,7 +11,7 @@ import { CalendarEvent, EventResponseVM, EventTypeResponseVM, EventVM, MainCompo
 import { MultiSelectDropDownListType } from '../components/MultiSelectDropDown/MultiSelectDropDown'
 import moment from 'moment'
 
-const MainComponent = ({ setEvent }: MainComponentProps) => {
+const MainComponent = ({ selectedEventIndex, setSelectedEventIndex, setEvent }: MainComponentProps) => {
   const classes = useStyles
   const [searchField, setSearchField] = useState<string | undefined>('')
   const { me } = useContext(UserContext)
@@ -80,7 +80,7 @@ const MainComponent = ({ setEvent }: MainComponentProps) => {
             programYear: event.filter_program_year,
             provider: event.filter_provider,
             schoolOfEnrollment: event.filter_school_of_enrollment,
-            users: event.fitler_users,
+            users: event.filter_users,
           },
         })),
       )
@@ -102,7 +102,11 @@ const MainComponent = ({ setEvent }: MainComponentProps) => {
           })),
       )
 
-      setSelectedEventTypes(eventTypeData?.eventTypes.map((eventType: EventTypeResponseVM) => eventType.name))
+      setSelectedEventTypes(
+        eventTypeData?.eventTypes
+          .filter((item: EventTypeResponseVM) => !item.archived)
+          .map((eventType: EventTypeResponseVM) => eventType.name),
+      )
     }
   }, [eventTypeData])
 
@@ -123,6 +127,8 @@ const MainComponent = ({ setEvent }: MainComponentProps) => {
               setEvents={setEvents}
               setEvent={setEvent}
               refetch={refetch}
+              selectedEventIndex={selectedEventIndex}
+              setSelectedEventIndex={setSelectedEventIndex}
             />
           </Grid>
           <Grid item xs={1}></Grid>

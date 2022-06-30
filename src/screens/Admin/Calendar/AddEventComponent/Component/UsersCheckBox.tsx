@@ -1,4 +1,4 @@
-import { Box, Checkbox, FormControlLabel, Grid } from '@mui/material'
+import { Box, Checkbox, FormControlLabel } from '@mui/material'
 import React, { useState } from 'react'
 import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragraph'
 import { map } from 'lodash'
@@ -41,9 +41,7 @@ const UsersCheckBox = ({ users, setUsers }: UsersCheckBoxProps) => {
       <FormControlLabel
         key={index}
         sx={{ height: 30 }}
-        control={
-          <Checkbox checked={users.includes(user.value.toString())} value={user.value} onChange={handleChangeUsers} />
-        }
+        control={<Checkbox checked={users.includes(`${user.value}`)} value={user.value} onChange={handleChangeUsers} />}
         label={
           <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
             {user.label}
