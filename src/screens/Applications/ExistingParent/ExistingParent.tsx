@@ -376,7 +376,11 @@ export const ExistingParent = () => {
 
   const submitApplication = async (data) => {
     const submitStudents = data.students?.map((s) => {
-      return { ...s, meta: JSON.stringify(s?.meta || {}), address: { ...s.address, county_id: Number(s.address?.county_id) || -1, school_district: s.packet?.school_district }, packet: omit(s.packet, ['school_district']) }
+      return { ...s, 
+        meta: JSON.stringify(s?.meta || {}), 
+      // address: { ...s.address, county_id: Number(s.address?.county_id) || -1,
+      //    school_district: s.packet?.school_district }, packet: omit(s.packet, ['school_district']) 
+        }
     })
     submitApplicationAction({
       variables: {
@@ -385,6 +389,8 @@ export const ExistingParent = () => {
           program_year: parseInt(data.programYear!),
           students: submitStudents,
           meta: JSON.stringify(data.meta),
+          // address: { ...data.address, school_district: data.packet?.school_district, county_id: data.county?.county ? parseInt(data.county?.county) : null },
+          // packet: omit(data.packet, ['school_district']),
         },
       },
     }).then((res) => {

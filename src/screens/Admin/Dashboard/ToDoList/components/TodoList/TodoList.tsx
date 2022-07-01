@@ -7,6 +7,7 @@ import { ToDoListItem } from '../ToDoListItem/ToDoListItem'
 import { WITHDRAWAL, ADMIN_APPLICATIONS, ENROLLMENT_PACKETS } from '../../../../../../utils/constants'
 import { Flexbox } from '../../../../../../components/Flexbox/Flexbox'
 import { Subtitle } from '../../../../../../components/Typography/Subtitle/Subtitle'
+import { Card } from '@mui/material'
 
 export const getSubmittedApplicationCount = gql`
   query SubmittedApplicationCount($regionId: ID!) {
@@ -115,13 +116,13 @@ export const TodoList: FunctionComponent = () => {
     })
 
   return (
-    <Box sx={{ mt: 1.5, backgroundColor: { xs: '#F8F8F8', sm: '#F8F8F8', md: '#FFFFFF', }, padding: 4 }}>
+    <Card sx={{ mt: 1.5, backgroundColor: { xs: '#F8F8F8', sm: '#F8F8F8', md: '#FFFFFF', }, padding: 4 }}>
       <Flexbox flexDirection='column' textAlign='left'>
         <Subtitle size='large' fontWeight='bold' sx={{ marginBottom: 2}}>
           To Do List
         </Subtitle>
         {renderTodoListItem()}
       </Flexbox>
-    </Box>
+    </Card>
   )
 }

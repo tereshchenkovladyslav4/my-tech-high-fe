@@ -1,5 +1,5 @@
 import { Box, Button, Card, Checkbox, FormControlLabel, Grid } from '@mui/material'
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
@@ -8,17 +8,29 @@ import { Paragraph } from '../../../../components/Typography/Paragraph/Paragraph
 import { map } from 'lodash'
 import { toOrdinalSuffix } from '../../../../utils/stringHelpers'
 import { useHistory } from 'react-router-dom'
-import { FiltersProps } from '../type'
+import { FiltersProps, SchoolYearVM } from '../type'
+import { useQuery } from '@apollo/client'
+import { getActiveSchoolYearsByRegionId } from '../../../Applications/NewParent/service'
+import { UserContext } from '../../../../providers/UserContext/UserProvider'
+import moment from 'moment'
 
 export const Filters = ({ filter, setFilter }: FiltersProps) => {
+  const { me } = useContext(UserContext)
   const history = useHistory()
   const [expand, setExpand] = useState<boolean>(false)
   const [grades, setGrades] = useState<string[]>([])
   const [schoolYear, setSchoolYear] = useState<string[]>([])
+  const [schoolYears, setSchoolYears] = useState<SchoolYearVM[]>([])
   const [specialEd, setSpecialEd] = useState<string[]>([])
   const [status, setStatus] = useState<string[]>([])
   const [accountStatus, setAccountStatus] = useState<string[]>([])
   const [visibility, setVisibility] = useState<string[]>([])
+  const { loading: schoolYearLoading, data: schoolYearData } = useQuery(getActiveSchoolYearsByRegionId, {
+    variables: {
+      regionId: me?.selectedRegionId,
+    },
+    fetchPolicy: 'network-only',
+  })
 
   const chevron = () =>
     !expand ? (
@@ -232,36 +244,64 @@ export const Filters = ({ filter, setFilter }: FiltersProps) => {
             <Paragraph size='large' fontWeight='700'>
               School Year
             </Paragraph>
-            <FormControlLabel
-              sx={{ height: 30 }}
-              control={
-                <Checkbox
-                  value='2021-2022'
-                  checked={schoolYear.includes('2021-2022')}
-                  onChange={handleChangeSchoolYear}
-                />
+            {schoolYears?.map((item) => {
+              if (item.midyear_application) {
+                return (
+                  <>
+                    <FormControlLabel
+                      sx={{ height: 30 }}
+                      control={
+                        <Checkbox
+                          value={`${item.school_year_id}`}
+                          checked={schoolYear.includes(`${item.school_year_id}`)}
+                          onChange={handleChangeSchoolYear}
+                        />
+                      }
+                      label={
+                        <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
+                          {`${moment(item.date_begin).format('yyyy')}-${moment(item.date_end).format('yy')}`}
+                        </Paragraph>
+                      }
+                    />
+                    <FormControlLabel
+                      sx={{ height: 30 }}
+                      control={
+                        <Checkbox
+                          value={`${item.school_year_id}-midyear`}
+                          checked={schoolYear.includes(`${item.school_year_id}-midyear`)}
+                          onChange={handleChangeSchoolYear}
+                        />
+                      }
+                      label={
+                        <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
+                          {`${moment(item.midyear_application_open).format('yyyy')}-${moment(
+                            item.midyear_application_close,
+                          ).format('yy')} Mid-Year`}
+                        </Paragraph>
+                      }
+                    />
+                  </>
+                )
+              } else {
+                return (
+                  <FormControlLabel
+                    sx={{ height: 30 }}
+                    control={
+                      <Checkbox
+                        value={`${item.school_year_id}`}
+                        checked={schoolYear.includes(`${item.school_year_id}`)}
+                        onChange={handleChangeSchoolYear}
+                      />
+                    }
+                    label={
+                      <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
+                        {`${moment(item.date_begin).format('yyyy')}-${moment(item.date_end).format('yy')}`}
+                      </Paragraph>
+                    }
+                  />
+                )
               }
-              label={
-                <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
-                  2021-22
-                </Paragraph>
-              }
-            />
-            <FormControlLabel
-              sx={{ height: 30 }}
-              control={
-                <Checkbox
-                  value='2022-2023'
-                  checked={schoolYear.includes('2022-2023')}
-                  onChange={handleChangeSchoolYear}
-                />
-              }
-              label={
-                <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
-                  2022-23
-                </Paragraph>
-              }
-            />
+            })}
 
             <Paragraph sx={{ marginTop: '12px' }} size='large' fontWeight='700'>
               Special Ed
@@ -463,6 +503,12 @@ export const Filters = ({ filter, setFilter }: FiltersProps) => {
       setFilter(state)
     }
   }, [])
+
+  useEffect(() => {
+    if (!schoolYearLoading && schoolYearData.getSchoolYearsByRegionId) {
+      setSchoolYears(schoolYearData.getSchoolYearsByRegionId)
+    }
+  }, [schoolYearData])
 
   return (
     <Card sx={{ marginTop: 2, padding: 2 }}>

@@ -442,8 +442,13 @@ export const NewParent = () => {
 
   const submitApplication = async (values) => {
     const submitStudents = values.students?.map((s) => {
-      return { ...s, meta: JSON.stringify(s?.meta || {}), address: { ...s.address, school_district: s.packet?.school_district }, packet: omit(s.packet, ['school_district']) }
+      return {
+        ...s, meta: JSON.stringify(s?.meta || {}),
+        // address: { ...s.address, school_district: s.packet?.school_district },
+        // packet: omit(s.packet, ['school_district'])
+      }
     })
+    console.log({values})
     submitApplicationAction({
       variables: {
         createApplicationInput: {
@@ -454,7 +459,7 @@ export const NewParent = () => {
           students: submitStudents,
           midyear_application: midYearApplication,
           meta: JSON.stringify(values.meta),
-          address: { ...values.address, school_district: values.packet?.school_district },
+          address: { ...values.address, school_district: values.packet?.school_district, county_id: values.county?.county ? parseInt(values.county?.county) : null },
           packet: omit(values.packet, ['school_district']),
         },
       },

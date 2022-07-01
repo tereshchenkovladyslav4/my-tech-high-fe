@@ -20,6 +20,7 @@ import {
 } from '../../../../../utils/StudentStatusConstants'
 import { deleteWithdrawalMutation } from '../../../../../graphql/mutation/withdrawal'
 import { useMutation } from '@apollo/client'
+import CustomConfirmModal from '../../../../../components/CustomConfirmModal/CustomConfirmModal'
 
 const selectStyles = makeStyles({
   backgroundSelect: {
@@ -199,12 +200,13 @@ export const StudentFilters = ({
 }) => {
   const classes = useStyles
   const selectClasses = selectStyles()
-  const [showDetails, setShowDetails] = useState(false)
+  const [showDetails, setShowDetails] = useState<boolean>(false)
   const [applications, setApplications] = useState<any[]>([])
   const [studentStatus, setStudentStatus] = useState<any>()
   const [specialEd, setSpecialEd] = useState<any>()
   const [showWithdrawalModal, setShowWithdrawalModal] = useState<boolean>(false)
   const [showActiveModal, setShowActiveModal] = useState<boolean>(false)
+  const [showConfirmModal, setShowConfirmModal] = useState<boolean>(false)
   const [diplomaSeeking, setDiplomaSeeking] = useState<any>('')
   const [status, setStatus] = useState<DropDownItem[]>([
     {
@@ -398,6 +400,10 @@ export const StudentFilters = ({
 
   const [deleteWithdrawal] = useMutation(deleteWithdrawalMutation)
   const onRemoveWithdrawalRequest = async () => {
+    setShowConfirmModal(true);
+  }
+
+  const confirmRemoveWithdraw = async () => {
     const { data } = await deleteWithdrawal({
       variables: {
         studentId: parseInt(currentUserData.student.student_id),
@@ -418,11 +424,15 @@ export const StudentFilters = ({
         <Grid xs={4} display={'flex'} flexDirection={'column'} textAlign='left'>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <Subtitle fontWeight='700' sx={{ marginRight: '30px', marginBottom: '5px' }}>
-              {applications.length &&
-                `${moment(applications[0].school_year.date_begin).format('YYYY')} - ${moment(
-                  applications[0].school_year.date_end,
-                ).format('YY')}`}{' '}
-              Status
+              {applications?.[0]?.midyear_application
+                ? `${moment(applications[0].school_year.midyear_application_open).format('YYYY')} - ${moment(
+                    applications[0].school_year.midyear_application_close,
+                  ).format('YY')} Mid-year Status`
+                : applications?.[0]
+                ? `${moment(applications[0].school_year.date_begin).format('YYYY')} - ${moment(
+                    applications[0].school_year.date_end,
+                  ).format('YY')} Status`
+                : ''}
             </Subtitle>
             <Box>
               <Select
@@ -482,6 +492,19 @@ export const StudentFilters = ({
               cancelStr='Cancel'
               onActive={handleSelectActiveOption}
               onClose={() => handleActiveCancel()}
+            />
+          )}
+          {showConfirmModal && (
+            <CustomConfirmModal
+              header='Remove Request'
+              content='Are you sure you want to remove this Withdraw Request?'
+              confirmBtnTitle='Delete'
+              handleConfirmModalChange={(val: boolean, isOk: boolean) => {
+                if (isOk) {
+                  confirmRemoveWithdraw();
+                }
+                setShowConfirmModal(false);
+              }}
             />
           )}
         </Grid>
@@ -573,9 +596,13 @@ export const StudentFilters = ({
               {applications.map((application) => (
                 <Box sx={classes.formRow}>
                   <Subtitle sx={classes.formLabel as object} fontWeight='500'>
-                    {`${moment(application.school_year.date_begin).format('YYYY')}-${moment(
-                      application.school_year.date_end,
-                    ).format('YY')}`}
+                    {application.midyear_application
+                      ? `${moment(application.school_year.midyear_application_open).format('YYYY')}-${moment(
+                          application.school_year.midyear_application_close,
+                        ).format('YY')} Mid-year`
+                      : `${moment(application.school_year.date_begin).format('YYYY')}-${moment(
+                          application.school_year.date_end,
+                        ).format('YY')}`}
                     <Box sx={classes.labelAfter as object}></Box>
                   </Subtitle>
                   <Box sx={classes.formRow}>

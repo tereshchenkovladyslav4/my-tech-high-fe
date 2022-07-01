@@ -212,43 +212,43 @@ export const AppBar: FunctionComponent = () => {
     )
   }
 
-	const settings = {
-		className: "slider variable-width",
-		infinite: false,
-		speed: 500,
-		slidesToShow: 3,
-		slidesToScroll: 1,
-		nextArrow: <SampleNextArrow />,
-		prevArrow: <SamplePrevArrow />,
+  const settings = {
+    className: "slider variable-width",
+    infinite: false,
+    speed: 500,
+    slidesToShow: 3,
+    slidesToScroll: 1,
+    nextArrow: <SampleNextArrow />,
+    prevArrow: <SamplePrevArrow />,
 
-		rows: 1,
-		responsive: [
-			{
-				breakpoint: 1920,
-				settings: {
-					slidesToShow: 3,
-				}
-			},
-			{
-				breakpoint: 1600,
-				settings: {
-					slidesToShow: 3
-				}
-			},
-			{
-				breakpoint: 1368,
-				settings: {
-					slidesToShow: 2
-				}
-			},
-			{
-				breakpoint: 960,
-				settings: {
-					slidesToShow: 1
-				}
-			},
-		]
-	}
+    rows: 1,
+    responsive: [
+      {
+        breakpoint: 1920,
+        settings: {
+          slidesToShow: 3,
+        }
+      },
+      {
+        breakpoint: 1600,
+        settings: {
+          slidesToShow: 3
+        }
+      },
+      {
+        breakpoint: 1368,
+        settings: {
+          slidesToShow: 2
+        }
+      },
+      {
+        breakpoint: 960,
+        settings: {
+          slidesToShow: 1
+        }
+      },
+    ]
+  }
 
   const gradeText = (student: StudentType) =>
     student.grade_levels.at(-1)?.grade_level !== 'Kin'
@@ -496,14 +496,16 @@ export const AppBar: FunctionComponent = () => {
       <MUIAppBar position='static' sx={{ ...classes.appBar, display: { xs: 'none', sm: 'block' } }} elevation={0}>
         <div style={classes.toolbar}>
           <Grid container justifyContent='flex' alignItems='center'>
-            <Grid item xs={4}/>
+            <Grid item xs={4} />
             <Grid item xs={8} display='flex' justifyContent={'flex-end'} alignItems='center'>
               <Box width={'600px'} sx={{ marginRight: '50px' }}>
                 <Slider {...settings} ref={sliderRef}>
                   {renderStudentHeader()}
                 </Slider>
               </Box>
-              <AddStudentButton />
+              <Box sx={{ paddingTop: activeStudents.length === 0 ? '20px' : '' }}>
+                <AddStudentButton />
+              </Box>
             </Grid>
           </Grid>
         </div>

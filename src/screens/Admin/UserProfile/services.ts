@@ -185,9 +185,12 @@ export const getStudentDetail = gql`
         date_accepted
         status
         school_year_id
+        midyear_application
         school_year {
           date_begin
           date_end
+          midyear_application_open
+          midyear_application_close
         }
       }
     }

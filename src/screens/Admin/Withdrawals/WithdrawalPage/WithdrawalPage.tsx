@@ -20,6 +20,7 @@ import { ApplicationEmailModal as EmailModal } from '../../../../components/Emai
 import { getEmailTemplateQuery } from '../../../../graphql/queries/email-template'
 import { emailWithdrawalMutation, updateWithdrawalMutation } from '../service'
 import { WithdrawalEmailModal } from './WithdrawalEmailModal'
+import { CalendarPickerView } from '@mui/x-date-pickers/internals/models'
 
 const WithdrawalPage = () => {
   const classes = useStyles
@@ -49,6 +50,7 @@ const WithdrawalPage = () => {
     date: '',
     withdrawId: 0,
   })
+
 
   const [openWarningModal, setOpenWarningModal] = useState<boolean>(false)
   const { loading, data, refetch } = useQuery(getWithdrawalsQuery, {
@@ -87,16 +89,18 @@ const WithdrawalPage = () => {
   })
 
   const handleOpenEmailHistory = (withdrawal_id: number) => {
-    setWithdrawId(withdrawal_id)
+    setWithdrawId(parseInt(withdrawal_id));
     setOpenEmailHistoryModal(true)
   }
+
+
 
   const handleOpenEffectiveCalendar = (effectDate: string, withdrawId: number) => {
     setEffective({
       date: effectDate,
-      withdrawId: withdrawId,
-    })
-    setOpenEffectiveCalendar(true)
+      withdrawId: withdrawId
+    });
+    setOpenEffectiveCalendar(true);
   }
 
   const openHandleEffectiveChange = (value: Date | null) => {
@@ -115,6 +119,8 @@ const WithdrawalPage = () => {
     }
   }, [emailTemplateData])
 
+
+
   useEffect(() => {
     if (!loading && data?.withdrawals) {
       setTableData(
@@ -122,15 +128,10 @@ const WithdrawalPage = () => {
           submitted: withdrawal.date ? moment(withdrawal.date).format('MM/DD/YY') : '',
           status: withdrawal.status,
           effective: withdrawal.date_effective ? (
-            <Box
-              sx={{ cursor: 'pointer' }}
-              onClick={() => handleOpenEffectiveCalendar(withdrawal.date_effective, withdrawal.withdrawal_id)}
-            >
+            <Box sx={{ cursor: 'pointer' }} onClick={() => handleOpenEffectiveCalendar(withdrawal.date_effective, withdrawal.withdrawal_id)}>
               {moment(withdrawal.date_effective).format('MM/DD/YY')}
             </Box>
-          ) : (
-            ''
-          ),
+          ) : '',
           student: withdrawal?.student_name,
           grade: withdrawal?.grade_level === 'Kin' ? 'K' : withdrawal?.grade_level,
           soe: withdrawal?.soe,
@@ -215,11 +216,11 @@ const WithdrawalPage = () => {
   }
 
   const handleAcceptDate = async (e: any) => {
-    const acceptDate = moment(e).format('YYYY-MM-DD')
+    const acceptDate = moment(e).format('YYYY-MM-DD');
     await updateWithdrawal({
       variables: {
         updateWithdrawalInput: {
-          withdrawal_id: effective?.withdrawId,
+          withdrawal_id: parseInt(effective?.withdrawId),
           value: acceptDate?.toString(),
           field: 'date_effective',
         },

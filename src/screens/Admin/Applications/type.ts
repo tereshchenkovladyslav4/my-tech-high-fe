@@ -31,4 +31,7 @@ export type SchoolYearVM = {
   date_begin: string
   date_end: string
   school_year_id: string
+  midyear_application: boolean
+  midyear_application_open: string
+  midyear_application_close: string
 }
