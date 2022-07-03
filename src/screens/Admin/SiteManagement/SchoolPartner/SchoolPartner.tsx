@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react'
 import { useStyles } from '../styles'
 import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded'
 import { useHistory } from 'react-router-dom'
-import { Title } from '../../../../components/Typography/Title/Title'
 import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
 import SystemUpdateAltRoundedIcon from '@mui/icons-material/SystemUpdateAltRounded'
 import { Paragraph } from '../../../../components/Typography/Paragraph/Paragraph'
@@ -32,13 +31,16 @@ export type ValidateFileResponse = {
 export const SchoolPartner = () => {
   const classes = useStyles
   const history = useHistory()
+  const localStorageRegion = JSON.parse(localStorage.getItem('selectedRegion'))['region_id']
 
   const [createNewSchoolPartner, { data, error, loading }] = useMutation(CreateNewSchoolPartnerMutation)
+
   const {
     loading: schoolLoading,
     data: schoolsOfEnrollmentData,
     refetch,
   } = useQuery(GetSchoolsOfEnrollment, {
+    variables: { regionId: localStorageRegion },
     fetchPolicy: 'network-only',
   })
 
@@ -111,9 +113,8 @@ export const SchoolPartner = () => {
       return imageUrl.data.file.item1
     }
   }
-
   const renderRows = () => {
-    const sortedElements = sortBy(schoolsOfEnrollmentData?.getSchoolsOfEnrollment, (el) => el.active !== 1)
+    const sortedElements = sortBy(schoolsOfEnrollmentData?.getSchoolsOfEnrollmentByRegion, (el) => el.active !== 1)
     return map(sortedElements, (el) => {
       return el.active === 1
         ? {
@@ -233,6 +234,7 @@ export const SchoolPartner = () => {
                       name: values.partnerName,
                       abbreviation: values.abbreviation,
                       photo: resp,
+                      region_id: localStorageRegion
                     },
                   },
                 }).then(() => {
