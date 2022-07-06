@@ -211,7 +211,7 @@ export const UpdateStudentMutation = gql`
 `
 
 export const DeleteWithdrawal = gql`
-  mutation DeleteWithdrawal($studentId: Float!) {
+  mutation DeleteWithdrawal($studentId: Int!) {
     deleteWithdrawal(student_id: $studentId)
   }
 `

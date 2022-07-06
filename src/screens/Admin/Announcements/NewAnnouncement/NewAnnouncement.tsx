@@ -1,14 +1,14 @@
 import { Box, Card, Grid } from '@mui/material'
 import React, { useEffect, useState, useContext } from 'react'
 import { useStyles } from './styles'
-import { ANNOUNCEMENTS, GRADES } from '../../../../utils/constants'
+import { ANNOUNCEMENTS } from '../../../../utils/constants'
 import { useHistory } from 'react-router-dom'
 import { ContentState, EditorState, convertToRaw } from 'draft-js'
-import { useMutation, useQuery } from '@apollo/client'
+import { useMutation } from '@apollo/client'
 import draftToHtml from 'draftjs-to-html'
 import htmlToDraft from 'html-to-draftjs'
 import { UserContext } from '../../../../providers/UserContext/UserProvider'
-import { CreateAnnouncementMutation, GetCurrentSchoolYearByRegionId, UpdateAnnouncementMutation } from '../services'
+import { CreateAnnouncementMutation, UpdateAnnouncementMutation } from '../services'
 import { PublishModal } from '../PublishModal'
 import { HeaderComponent } from './HeaderComponent'
 import { EditComponent } from './EditComponent'
@@ -16,8 +16,8 @@ import { FilterComponent } from './FilterComponent'
 import { Announcement } from '../../../Dashboard/Announcements/types'
 
 type NewAnnouncementProps = {
-  announcement?: Announcement
-  setAnnouncement?: (value: Announcement) => void | undefined
+  announcement: Announcement | null
+  setAnnouncement: (value: Announcement | null) => void
 }
 
 const NewAnnouncement = ({ announcement, setAnnouncement }: NewAnnouncementProps) => {
@@ -31,7 +31,6 @@ const NewAnnouncement = ({ announcement, setAnnouncement }: NewAnnouncementProps
   const [showPublishModal, setShowPublishModal] = useState<boolean>(false)
   const [cronJobTime, setCronJobTime] = useState<Date | null | ''>(new Date())
   const [grades, setGrades] = useState<string[]>([])
-  const [availableGrades, setAvailableGrades] = useState<(string | number)[]>([])
   const [users, setUsers] = useState<string[]>([])
   const defaultEmail = ''
   const [editorState, setEditorState] = useState(
@@ -44,13 +43,6 @@ const NewAnnouncement = ({ announcement, setAnnouncement }: NewAnnouncementProps
   const [usersInvalid, setUsersInvalid] = useState<boolean>(false)
   const [submitCreate, {}] = useMutation(CreateAnnouncementMutation)
   const [submitSave, {}] = useMutation(UpdateAnnouncementMutation)
-  const schoolYearData = useQuery(GetCurrentSchoolYearByRegionId, {
-    variables: {
-      regionId: me?.selectedRegionId,
-    },
-    skip: me?.selectedRegionId ? false : true,
-    fetchPolicy: 'network-only',
-  })
 
   const handlePublish = () => {
     setShowPublishModal(false)
@@ -68,7 +60,6 @@ const NewAnnouncement = ({ announcement, setAnnouncement }: NewAnnouncementProps
 
   const validation = (): boolean => {
     if (
-      availableGrades?.length > 0 &&
       grades?.length > 0 &&
       users?.length > 0 &&
       subject &&
@@ -78,7 +69,7 @@ const NewAnnouncement = ({ announcement, setAnnouncement }: NewAnnouncementProps
     ) {
       return true
     } else {
-      if (availableGrades?.length == 0 || grades?.length == 0) setGradesInvalid(true)
+      if (grades?.length == 0) setGradesInvalid(true)
       if (users?.length == 0) setUsersInvalid(true)
       if (!emailFrom || !isEmail(emailFrom)) setEmailInvalid(true)
       if (!subject) setSubjectInvalid(true)
@@ -154,45 +145,24 @@ const NewAnnouncement = ({ announcement, setAnnouncement }: NewAnnouncementProps
   }
 
   useEffect(() => {
-    if (schoolYearData?.data?.schoolyear_getcurrent) {
-      const availGrades = schoolYearData?.data?.schoolyear_getcurrent?.grades?.split(',').map((item) => {
-        if (item == 'Kindergarten') return 'Kindergarten'
-        else return Number(item)
-      })
-      setAvailableGrades(availGrades)
-      setGrades([
-        ...['all'],
-        ...GRADES.map((item) => {
-          if (availGrades.includes(item)) {
-            return item.toString()
-          } else {
-            return ''
-          }
-        }).filter((item) => item),
-      ])
-      if (announcement) {
-        setAnnouncementId(Number(announcement?.id))
-        setEmailFrom(announcement?.postedBy || '')
-        setGrades(JSON.parse(announcement?.filterGrades || ''))
-        setUsers(JSON.parse(announcement?.filterUsers || ''))
-        setSubject(announcement?.subject || '')
-        setIsArchived(!!announcement?.isArchived)
-        if (announcement.body) {
-          const contentBlock = htmlToDraft(announcement.body)
-          if (contentBlock) {
-            const contentState = ContentState.createFromBlockArray(contentBlock.contentBlocks)
-            setEditorState(EditorState.createWithContent(contentState))
-          }
+    if (announcement) {
+      setAnnouncementId(Number(announcement?.id))
+      setEmailFrom(announcement?.postedBy || '')
+      setGrades(JSON.parse(announcement?.filterGrades || ''))
+      setUsers(JSON.parse(announcement?.filterUsers || ''))
+      setSubject(announcement?.subject || '')
+      setIsArchived(!!announcement?.isArchived)
+      if (announcement.body) {
+        const contentBlock = htmlToDraft(announcement.body)
+        if (contentBlock) {
+          const contentState = ContentState.createFromBlockArray(contentBlock.contentBlocks)
+          setEditorState(EditorState.createWithContent(contentState))
         }
-        return
       }
-      setFlagDefault()
-    } else {
-      setAvailableGrades([])
-      setGrades([])
-      setFlagDefault()
+      return
     }
-  }, [me?.selectedRegionId, schoolYearData, announcement])
+    setFlagDefault()
+  }, [me?.selectedRegionId, announcement])
 
   return (
     <Card sx={classes.cardBody}>
@@ -223,7 +193,6 @@ const NewAnnouncement = ({ announcement, setAnnouncement }: NewAnnouncementProps
           <Grid item xs={6}>
             <Card sx={{ marginTop: 2, padding: 2 }}>
               <FilterComponent
-                availableGrades={availableGrades}
                 grades={grades}
                 users={users}
                 gradesInvalid={gradesInvalid}

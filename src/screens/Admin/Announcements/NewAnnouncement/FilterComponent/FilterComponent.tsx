@@ -1,5 +1,5 @@
 import { Box, Checkbox, FormControlLabel, Grid } from '@mui/material'
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
 import { MTHBLUE, RED } from '../../../../../utils/constants'
 import { toOrdinalSuffix } from '../../../../../utils/stringHelpers'
@@ -7,9 +7,12 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragraph'
 import { map } from 'lodash'
+import { CheckBoxList } from '../../../Calendar/components/CheckBoxList'
+import { defaultUserList } from '../../../Calendar/defaultValue'
+import { UserContext } from '../../../../../providers/UserContext/UserProvider'
+import { useCurrentGradeAndProgramByRegionId } from '../../../Calendar/hooks/useCurrentGradeAndProgram'
 
 type FilterComponentProps = {
-  availableGrades: (string | number)[]
   grades: string[]
   users: string[]
   gradesInvalid: boolean
@@ -21,7 +24,6 @@ type FilterComponentProps = {
 }
 
 const FilterComponent = ({
-  availableGrades,
   grades,
   users,
   gradesInvalid,
@@ -31,6 +33,8 @@ const FilterComponent = ({
   setGradesInvalid,
   setUsersInvalid,
 }: FilterComponentProps) => {
+  const { me } = useContext(UserContext)
+  const { loading, gradeList } = useCurrentGradeAndProgramByRegionId(Number(me?.selectedRegionId), grades, setGrades)
   const [expand, setExpand] = useState<boolean>(true)
   const chevron = () =>
     !expand ? (
@@ -50,65 +54,7 @@ const FilterComponent = ({
         }}
       />
     )
-  const handleChangeAll = (e) => {
-    if (e.target.checked) {
-      setGrades([...['all'], ...availableGrades.map((item) => item.toString())])
-      setGradesInvalid(false)
-    } else {
-      setGrades([])
-      setGradesInvalid(true)
-    }
-  }
-  const handleChangeGrades = (e) => {
-    if (grades.includes(e.target.value)) {
-      setGrades(grades.filter((item) => item !== e.target.value).filter((item) => item !== 'all'))
-    } else {
-      setGrades([...grades, e.target.value])
-    }
-    setGradesInvalid(false)
-  }
-  const renderGrades = () =>
-    map(availableGrades, (grade, index) => {
-      if (typeof grade !== 'string') {
-        return (
-          <FormControlLabel
-            key={index}
-            sx={{ height: 30 }}
-            control={
-              <Checkbox checked={grades.includes(grade.toString())} value={grade} onChange={handleChangeGrades} />
-            }
-            label={
-              <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>{`${toOrdinalSuffix(
-                grade,
-              )} Grade`}</Paragraph>
-            }
-          />
-        )
-      } else {
-        return (
-          <FormControlLabel
-            key={index}
-            sx={{ height: 30 }}
-            control={<Checkbox checked={grades.includes(grade)} value={grade} onChange={handleChangeGrades} />}
-            label={
-              <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
-                {grade}
-              </Paragraph>
-            }
-          />
-        )
-      }
-    })
 
-  const handleChangeUsers = (e) => {
-    if (users.includes(e.target.value)) {
-      setUsers(users.filter((item) => item !== e.target.value))
-      setUsersInvalid(false)
-    } else {
-      setUsers([...users, e.target.value])
-      setUsersInvalid(false)
-    }
-  }
   const Filters = () => (
     <Grid container sx={{ textAlign: 'left', marginY: '12px' }}>
       <Grid item container xs={12}>
@@ -119,19 +65,16 @@ const FilterComponent = ({
               flexDirection: 'column',
             }}
           >
-            <Paragraph size='large' fontWeight='700'>
-              Grades
-            </Paragraph>
-            <FormControlLabel
-              sx={{ height: 30 }}
-              control={<Checkbox value='all' checked={grades.includes('all')} onChange={handleChangeAll} />}
-              label={
-                <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
-                  Select All
-                </Paragraph>
-              }
+            <CheckBoxList
+              title={'Grades'}
+              values={grades}
+              setValues={(value) => {
+                setGrades(value)
+                setGradesInvalid(false)
+              }}
+              checkboxLists={gradeList}
+              haveSelectAll={true}
             />
-            {renderGrades()}
             {gradesInvalid && (
               <Subtitle size='small' color={RED} fontWeight='700'>
                 Please select one at least
@@ -142,44 +85,15 @@ const FilterComponent = ({
         <Grid item xs={6}></Grid>
         <Grid item xs={6}>
           <Box sx={{ display: 'grid' }}>
-            <Paragraph sx={{ marginTop: '12px' }} size='large' fontWeight='700'>
-              Users
-            </Paragraph>
-            <FormControlLabel
-              sx={{ height: 30 }}
-              control={<Checkbox value='1' checked={users.includes('1')} onChange={handleChangeUsers} />}
-              label={
-                <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
-                  Parents/Observers
-                </Paragraph>
-              }
-            />
-            <FormControlLabel
-              sx={{ height: 30 }}
-              control={<Checkbox value='2' checked={users.includes('2')} onChange={handleChangeUsers} />}
-              label={
-                <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
-                  Students
-                </Paragraph>
-              }
-            />
-            <FormControlLabel
-              sx={{ height: 30 }}
-              control={<Checkbox value='3' checked={users.includes('3')} onChange={handleChangeUsers} />}
-              label={
-                <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
-                  Teachers & Assistants
-                </Paragraph>
-              }
-            />
-            <FormControlLabel
-              sx={{ height: 30 }}
-              control={<Checkbox value='0' checked={users.includes('0')} onChange={handleChangeUsers} />}
-              label={
-                <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
-                  Admin
-                </Paragraph>
-              }
+            <CheckBoxList
+              title={'Users'}
+              values={users}
+              setValues={(value) => {
+                setUsers(value)
+                setUsersInvalid(false)
+              }}
+              checkboxLists={defaultUserList}
+              haveSelectAll={false}
             />
             {usersInvalid && (
               <Subtitle size='small' color={RED} fontWeight='700'>

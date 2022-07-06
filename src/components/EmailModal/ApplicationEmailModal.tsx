@@ -71,7 +71,7 @@ export const ApplicationEmailModal: EmailModalTemplateType = ({
             fullWidth
             placeholder='From: email in template'
             sx={classes.from}
-            onChange={(e) => setSubject(e.target.value)}
+            onChange={(e) => setEmailFrom(e.target.value)}
           />
         )}
         <OutlinedInput

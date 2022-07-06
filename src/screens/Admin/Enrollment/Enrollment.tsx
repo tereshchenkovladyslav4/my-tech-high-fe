@@ -16,13 +16,13 @@ export default function Enrollment() {
         <AdminEnrollmentCard title='Applications' link={ADMIN_APPLICATIONS} img={applicationsImg} />
       </Grid>
       <Grid item xs={4}>
-        <AdminEnrollmentCard title='Packets' link={ENROLLMENT_PACKETS} img={enrollmentImg} />
+        <AdminEnrollmentCard title='Enrollment Packets' link={ENROLLMENT_PACKETS} img={enrollmentImg} />
       </Grid>
       <Grid item xs={4}>
         <AdminEnrollmentCard title='Schedules' link={'https://google.com'} img={schedules} />
       </Grid>
       <Grid item xs={4}>
-        <AdminEnrollmentCard title='School Assignments' link='https://google.com' img={schoolAssignmentsImg} />
+        <AdminEnrollmentCard title='School of Enrollment' link='https://google.com' img={schoolAssignmentsImg} />
       </Grid>
       <Grid item xs={4}>
         <AdminEnrollmentCard title='Withdrawals' link={WITHDRAWAL} img={withdrawlsImg} />

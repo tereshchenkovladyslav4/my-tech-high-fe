@@ -8,8 +8,8 @@ import { useHistory } from 'react-router-dom'
 import { Announcement } from '../../../../Dashboard/Announcements/types'
 
 type HeaderComponentProps = {
-  announcement?: Announcement
-  setAnnouncement?: (value: Announcement) => void
+  announcement: Announcement | null
+  setAnnouncement: (value: Announcement | null) => void
   handleSaveClick: () => void
   handlePublishClick: () => void
 }

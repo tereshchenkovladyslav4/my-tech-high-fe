@@ -5,7 +5,6 @@ import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
 import { GREEN_GRADIENT, RED_GRADIENT, YELLOW_GRADIENT } from '../../../../utils/constants'
 import SearchIcon from '@mui/icons-material/Search'
 import { Pagination } from '../../../../components/Pagination/Pagination'
-import { HeadCell } from '../../../../components/SortableTable/SortableTableHeader/types'
 import { SortableTable } from '../../../../components/SortableTable/SortableTable'
 import { useQuery, useMutation } from '@apollo/client'
 import {
@@ -18,8 +17,7 @@ import {
 } from '../services'
 import { map } from 'lodash'
 import moment from 'moment'
-import DeleteForever from '@mui/icons-material/Delete'
-import Tooltip from '@mui/material/Tooltip';
+import Tooltip from '@mui/material/Tooltip'
 import { toOrdinalSuffix } from '../../../../utils/stringHelpers'
 import { ApplicationEmailModal as EmailModal } from '../../../../components/EmailModal/ApplicationEmailModal'
 import EnrollmentPacketModal from '../EnrollmentPacketModal'
@@ -32,7 +30,7 @@ import { ApplicationEmailModal } from '../../Applications/ApplicationModal/Appli
 import { ENROLLMENT_PACKET_HEADCELLS } from '../../../../utils/PageHeadCellsConstant'
 
 export const EnrollmentPacketTable = () => {
-  const { me, setMe } = useContext(UserContext)
+  const { me } = useContext(UserContext)
   const [filters, setFilters] = useState(['Submitted', 'Resubmitted'])
 
   const [emailTemplate, setEmailTemplate] = useState()
@@ -49,7 +47,7 @@ export const EnrollmentPacketTable = () => {
   const [isShowModal, setIsShowModal] = useState(false)
   const [enrollmentPackets, setEnrollmentPackets] = useState<Array<Packet>>([])
   const [enrollmentPacket, setEnrollmentPacket] = useState<Packet | null>(null)
-  const [deletePacket, { data: deleteData }] = useMutation(deletePacketMutation)
+  const [deletePacket] = useMutation(deletePacketMutation)
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [openEmailModal, setOpenEmailModal] = useState<boolean>(false)
   const [emailHistory, setEmailHistory] = useState([])
@@ -57,7 +55,7 @@ export const EnrollmentPacketTable = () => {
 
   const [openWarningModal, setOpenWarningModal] = useState<boolean>(false)
   const [packetCount, setpacketCount] = useState({})
-  const { showModal, hideModal, store, setStore } = useContext(ProfileContext)
+  const { showModal, setStore } = useContext(ProfileContext)
 
   const handleOpenProfile = (rowId: number) => {
     const row = enrollmentPackets?.find((el) => el.packet_id === rowId)
@@ -71,7 +69,6 @@ export const EnrollmentPacketTable = () => {
     if (sort && _sort[0]?.toLowerCase() === 'grade' && _sort[1]?.toLowerCase() === 'desc') {
       grade_value = packet?.student?.grade_levels?.length - 1
     }
-    const status = ['Pending', 'Active', 'Withdrawn', '']
     return {
       id: packet.packet_id,
       submitted: moment(packet.deadline).format('MM/DD/YY'),
@@ -90,25 +87,29 @@ export const EnrollmentPacketTable = () => {
       emailed:
         packet.packet_emails.length > 0 ? (
           <Box sx={{ cursor: 'pointer' }} onClick={() => handleOpenEmailHistory(packet)}>
-            {moment(packet.packet_emails[0].created_at).format('MM/DD/YY')}
+            {moment(packet?.packet_emails?.at(-1)?.created_at).format('MM/DD/YY')}
           </Box>
         ) : null,
       delete: (
-        <Tooltip title="Delete" arrow>
-          <Box display={'flex'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'}
+        <Tooltip title='Delete' arrow>
+          <Box
+            display={'flex'}
+            flexDirection={'column'}
+            justifyContent={'center'}
+            alignItems={'center'}
             className='delete-row'
             onClick={(event) => handleDelete(packet.packet_id)}
             sx={{
               borderRadius: 1,
               cursor: 'pointer',
-              minHeight: '40px'
+              minHeight: '40px',
             }}
           >
             <svg width='14' height='18' viewBox='0 0 14 18' fill='none' xmlns='http://www.w3.org/2000/svg'>
-                  <path
-                    d='M9.12 7.47L7 9.59L4.87 7.47L3.46 8.88L5.59 11L3.47 13.12L4.88 14.53L7 12.41L9.12 14.53L10.53 13.12L8.41 11L10.53 8.88L9.12 7.47ZM10.5 1L9.5 0H4.5L3.5 1H0V3H14V1H10.5ZM1 16C1 17.1 1.9 18 3 18H11C12.1 18 13 17.1 13 16V4H1V16ZM3 6H11V16H3V6Z'
-                    fill='#323232'
-                  />
+              <path
+                d='M9.12 7.47L7 9.59L4.87 7.47L3.46 8.88L5.59 11L3.47 13.12L4.88 14.53L7 12.41L9.12 14.53L10.53 13.12L8.41 11L10.53 8.88L9.12 7.47ZM10.5 1L9.5 0H4.5L3.5 1H0V3H14V1H10.5ZM1 16C1 17.1 1.9 18 3 18H11C12.1 18 13 17.1 13 16V4H1V16ZM3 6H11V16H3V6Z'
+                fill='#323232'
+              />
             </svg>
           </Box>
         </Tooltip>
@@ -116,7 +117,7 @@ export const EnrollmentPacketTable = () => {
     }
   }
 
-  const { loading, error, data, refetch } = useQuery(getEnrollmentPacketsQuery, {
+  const { loading, data, refetch } = useQuery(getEnrollmentPacketsQuery, {
     variables: {
       skip: skip,
       sort: sort,
@@ -129,11 +130,7 @@ export const EnrollmentPacketTable = () => {
     fetchPolicy: 'network-only',
   })
 
-  const {
-    loading: templateLoading,
-    data: emailTemplateData,
-    refetch: refetchEmailTemplate,
-  } = useQuery(getEmailTemplateQuery, {
+  const { data: emailTemplateData, refetch: refetchEmailTemplate } = useQuery(getEmailTemplateQuery, {
     variables: {
       template: 'Enrollment Packet Page',
       regionId: me?.selectedRegionId,
@@ -141,7 +138,7 @@ export const EnrollmentPacketTable = () => {
     fetchPolicy: 'network-only',
   })
 
-  const { loading: countLoading, data: countGroup } = useQuery(packetCountQuery, {
+  const { data: countGroup } = useQuery(packetCountQuery, {
     variables: {
       regionId: me?.selectedRegionId,
     },
@@ -206,9 +203,9 @@ export const EnrollmentPacketTable = () => {
     setOpenEmailModal(true)
   }
 
-  const [emailPacket, { data: emailStatus }] = useMutation(emailPacketMutation)
+  const [emailPacket] = useMutation(emailPacketMutation)
 
-  const onSendEmail = async (subject: string, body: string) => {
+  const onSendEmail = async (from: string, subject: string, body: string) => {
     if (packetIds.length === 0) {
       return
     }
@@ -217,6 +214,7 @@ export const EnrollmentPacketTable = () => {
         variables: {
           emailApplicationInput: {
             application_ids: packetIds.map((id) => Number(id)),
+            from: from,
             subject: subject,
             body: body,
           },
@@ -224,15 +222,15 @@ export const EnrollmentPacketTable = () => {
       })
       refetch()
       refetchEmailTemplate()
-      setOpenEmailModal(false)
     } catch (error) {}
   }
 
-  const handleEmailSend = (subject: string, body: string) => {
+  const handleEmailSend = (from: string, subject: string, body: string) => {
+    setOpenEmailModal(false)
     if (packetIds.length === 0) {
       return
     }
-    onSendEmail(subject, body)
+    onSendEmail(from, subject, body)
   }
 
   const handleDelete = async (id) => {
@@ -261,7 +259,7 @@ export const EnrollmentPacketTable = () => {
     refetch()
   }
 
-  const [moveThisYearPacket, { data: thisYearData }] = useMutation(moveThisYearPacketMutation)
+  const [moveThisYearPacket] = useMutation(moveThisYearPacketMutation)
 
   const handleMoveToThisYear = async () => {
     try {
@@ -279,7 +277,7 @@ export const EnrollmentPacketTable = () => {
       refetch()
     } catch (error) {}
   }
-  const [moveNextYearPacket, { data: nextYearData }] = useMutation(moveNextYearPacketMutation)
+  const [moveNextYearPacket] = useMutation(moveNextYearPacketMutation)
 
   const handleMoveToNextYear = async () => {
     if (packetIds.length === 0) {
@@ -492,7 +490,7 @@ export const EnrollmentPacketTable = () => {
       )}
       {openEmailModal && (
         <EmailModal
-          handleModem={() => setOpenEmailModal(!openEmailModal)}
+          handleModem={() => setOpenEmailModal(false)}
           title={packetIds.length + ' Recipients'}
           handleSubmit={handleEmailSend}
           template={emailTemplate}

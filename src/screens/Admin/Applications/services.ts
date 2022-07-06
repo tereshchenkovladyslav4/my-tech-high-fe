@@ -30,6 +30,8 @@ export const getApplicationsQuery = gql`
         school_year {
           date_begin
           date_end
+          midyear_application_open
+          midyear_application_close
         }
         student {
           student_id

@@ -2,9 +2,9 @@ import React, { useState } from 'react'
 import { Box, Grid } from '@mui/material'
 import { Route, Switch, useRouteMatch } from 'react-router-dom'
 import { CALENDAR } from '../../../utils/constants'
-import { AddEventComponent } from './AddEventComponent'
+import { AddEvent } from './AddEvent'
 import { MainComponent } from './MainComponent'
-import { EditTypeComponent } from './EditTypeComponent'
+import { EditType } from './EditType'
 import { EventVM } from './types'
 
 const Calendar = () => {
@@ -27,10 +27,10 @@ const Calendar = () => {
       </Grid>
       <Switch>
         <Route exact path={`${CALENDAR}/editType`}>
-          <EditTypeComponent />
+          <EditType />
         </Route>
         <Route exact path={`${CALENDAR}/addEvent`}>
-          <AddEventComponent selectedEvent={event} />
+          <AddEvent selectedEvent={event} />
         </Route>
       </Switch>
     </Box>

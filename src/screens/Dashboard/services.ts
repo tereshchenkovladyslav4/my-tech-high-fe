@@ -18,7 +18,7 @@ export const getUserAnnouncements = gql`
 `
 
 export const deleteUserAnnouncementById = gql`
-  mutation DeleteUserAnnouncementById($id: Float!) {
+  mutation DeleteUserAnnouncementById($id: Int!) {
     deleteUserAnnouncementById(id: $id) {
       error
       message
@@ -27,7 +27,7 @@ export const deleteUserAnnouncementById = gql`
 `
 
 export const deleteUserAnnouncementByUserId = gql`
-  mutation DeleteUserAnnouncementsByUserId($userId: Float!) {
+  mutation DeleteUserAnnouncementsByUserId($userId: Int!) {
     deleteUserAnnouncementsByUserId(user_id: $userId) {
       error
       message

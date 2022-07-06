@@ -10,7 +10,7 @@ import { Announcement } from '../../Dashboard/Announcements/types'
 const Announcemnets = () => {
   const { isExact } = useRouteMatch(ANNOUNCEMENTS)
   const history = useHistory()
-  const [announcement, setAnnouncement] = useState<Announcement>({})
+  const [announcement, setAnnouncement] = useState<Announcement | null>(null)
   return (
     <Box sx={{ marginX: 4 }}>
       <Grid container rowSpacing={2}>
@@ -21,7 +21,7 @@ const Announcemnets = () => {
       </Grid>
       <Switch>
         <Route exact path={`${ANNOUNCEMENTS}/new`}>
-          <NewAnnouncement />
+          <NewAnnouncement announcement={announcement} setAnnouncement={setAnnouncement} />
         </Route>
         <Route exact path={`${ANNOUNCEMENTS}/edit`}>
           <NewAnnouncement announcement={announcement} setAnnouncement={setAnnouncement} />

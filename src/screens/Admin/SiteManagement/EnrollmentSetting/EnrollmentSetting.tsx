@@ -39,7 +39,7 @@ const EnrollmentSetting: React.FC = () => {
   const items = [
     {
       id: 1,
-      title: 'Application Question',
+      title: 'Application Questions',
       subtitle: '',
       img: ApplicationQuestionImage,
       isLink: false,
@@ -47,7 +47,7 @@ const EnrollmentSetting: React.FC = () => {
     },
     {
       id: 2,
-      title: 'Enrollment Question',
+      title: 'Enrollment Questions',
       subtitle: '',
       img: EnrollmentQuestionImage,
       isLink: false,

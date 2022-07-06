@@ -55,14 +55,17 @@ export const ApplicationTable = ({ filter }: ApplicationTableProps) => {
       submitted: application.date_submitted ? moment(application.date_submitted).format('MM/DD/YY') : null,
       year: (
         <Box>
-          {`${moment(new Date(application.school_year.date_begin)).format('YYYY')} -
-            ${moment(new Date(application.school_year.date_end)).format('YY')}`}
           {application.midyear_application ? (
             <>
+              {`${moment(new Date(application.school_year.midyear_application_open)).format('YYYY')} -
+              ${moment(new Date(application.school_year.midyear_application_close)).format('YY')}`}
               <br /> Mid-Year
             </>
           ) : (
-            ''
+            <>
+              {`${moment(new Date(application.school_year.date_begin)).format('YYYY')} -
+              ${moment(new Date(application.school_year.date_end)).format('YY')}`}
+            </>
           )}
         </Box>
       ),
@@ -252,7 +255,7 @@ export const ApplicationTable = ({ filter }: ApplicationTableProps) => {
     }
     await approveApplicationAction()
   }
-  const [approveApplication, { data: dt }] = useMutation(approveApplicationMutation)
+  const [approveApplication] = useMutation(approveApplicationMutation)
 
   const approveApplicationAction = async () => {
     await approveApplication({
@@ -264,9 +267,9 @@ export const ApplicationTable = ({ filter }: ApplicationTableProps) => {
     })
     refetch()
   }
-  const [emailApplication, { data: emailStatus }] = useMutation(emailApplicationMutation)
+  const [emailApplication] = useMutation(emailApplicationMutation)
 
-  const onSendEmail = async (subject: string, body: string) => {
+  const onSendEmail = async (from: string, subject: string, body: string) => {
     if (applicationIds.length === 0) {
       return
     }
@@ -275,6 +278,7 @@ export const ApplicationTable = ({ filter }: ApplicationTableProps) => {
         variables: {
           emailApplicationInput: {
             application_ids: applicationIds.map((item) => parseInt(item)),
+            from: from,
             subject: subject,
             body: body,
           },
@@ -285,11 +289,11 @@ export const ApplicationTable = ({ filter }: ApplicationTableProps) => {
       setOpen(false)
     } catch (error) {}
   }
-  const handleEmailSend = (subject: string, body: string) => {
+  const handleEmailSend = (from: string, subject: string, body: string) => {
     if (applicationIds.length === 0) {
       return
     }
-    onSendEmail(subject, body)
+    onSendEmail(from, subject, body)
   }
   const handleOpenEmailModal = () => {
     if (applicationIds.length === 0) {
@@ -299,7 +303,7 @@ export const ApplicationTable = ({ filter }: ApplicationTableProps) => {
     }
   }
 
-  const [moveThisYearApplication, { data: thisYearData }] = useMutation(moveThisYearApplicationMutation)
+  const [moveThisYearApplication] = useMutation(moveThisYearApplicationMutation)
 
   const handleMoveToThisYear = async () => {
     try {
@@ -317,7 +321,7 @@ export const ApplicationTable = ({ filter }: ApplicationTableProps) => {
       refetch()
     } catch (error) {}
   }
-  const [moveNextYearApplication, { data: nextYearData }] = useMutation(moveNextYearApplicationMutation)
+  const [moveNextYearApplication] = useMutation(moveNextYearApplicationMutation)
 
   const handleMoveToNextYear = async () => {
     if (applicationIds.length === 0) {
@@ -338,7 +342,7 @@ export const ApplicationTable = ({ filter }: ApplicationTableProps) => {
     setEditData(data)
     setOpenEditModal(true)
   }
-  const [updateApplication, { data: updatedData }] = useMutation(updateApplicationMutation)
+  const [updateApplication] = useMutation(updateApplicationMutation)
   const handleSaveApplication = async (data) => {
     await updateApplication({
       variables: {
@@ -353,7 +357,7 @@ export const ApplicationTable = ({ filter }: ApplicationTableProps) => {
     refetch()
     setOpenEditModal(false)
   }
-  const [toogleHideApplication, { data: toggleData }] = useMutation(toggleHideApplicationMutation)
+  const [toogleHideApplication] = useMutation(toggleHideApplicationMutation)
   const handleToggleHideApplication = async (application_id, status) => {
     await toogleHideApplication({
       variables: {

@@ -32,7 +32,7 @@ export default function PublishModal({
     }
   }
 
-  const handleTimeChange = (value) => {
+  const handleTimeChange = (value: string) => {
     const selectedDate = new Date(dateTime).setHours(Number(value.split(':')[0]), Number(value.split(':')[1]), 0, 0)
     setDateTime(new Date(selectedDate))
     setCronJobTime(new Date(selectedDate))
@@ -70,8 +70,8 @@ export default function PublishModal({
                   inputFormat='MM/dd/yyyy'
                   value={dateTime}
                   onChange={(e) => {
-                    setDateTime(e)
-                    setCronJobTime(new Date(e))
+                    setDateTime(e || new Date())
+                    setCronJobTime(new Date(e || ''))
                     setInvalidTime(false)
                   }}
                   renderInput={(params) => <TextField color='primary' size='small' {...params} />}

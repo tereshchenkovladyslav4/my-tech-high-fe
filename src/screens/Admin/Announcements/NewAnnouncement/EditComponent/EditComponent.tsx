@@ -38,7 +38,7 @@ const EditComponent = ({
   const editorRef = useRef(null)
   const [currentBlocks, setCurrentBlocks] = useState<number>(0)
 
-  const handleBodyChange = (e) => {
+  const handleBodyChange = (e: Wysiwyg.EditorState) => {
     setEditorState(e)
     setBodyInvalid(false)
   }
@@ -53,7 +53,7 @@ const EditComponent = ({
   }
 
   return (
-    <Box sx={{ padding: '40px', paddingBottom: alert ? '20px' : undefined }}>
+    <Box sx={{ padding: '40px', paddingBottom: '20px' }}>
       <OutlinedInput
         value={emailFrom}
         size='small'

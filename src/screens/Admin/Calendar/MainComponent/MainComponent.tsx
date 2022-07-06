@@ -1,12 +1,12 @@
 import { Box, Card, Grid } from '@mui/material'
 import React, { useContext, useEffect, useState } from 'react'
 import { useStyles } from './styles'
-import { CalendarComponent } from '../CalendarComponent'
+import { EventCalendar } from '../EventCalendar'
 import { HeaderComponent } from '../HeaderComponent'
-import { EventComponent } from '../EventComponent'
+import { EventDetail } from '../EventDetail'
 import { UserContext } from '../../../../providers/UserContext/UserProvider'
 import { useQuery } from '@apollo/client'
-import { getEventsQuery, getEventTypesQuery } from '../EditTypeComponent/services'
+import { getEventsQuery, getEventTypesQuery } from '../services'
 import { CalendarEvent, EventResponseVM, EventTypeResponseVM, EventVM, MainComponentProps } from '../types'
 import { MultiSelectDropDownListType } from '../components/MultiSelectDropDown/MultiSelectDropDown'
 import moment from 'moment'
@@ -73,6 +73,7 @@ const MainComponent = ({ selectedEventIndex, setSelectedEventIndex, setEvent }: 
           startDate: new Date(event.start_date),
           endDate: new Date(event.end_date),
           time: moment(new Date(event.start_date)).format('HH:mm'),
+          allDay: event.all_day,
           description: event.description,
           filters: {
             grades: event.filter_grades,
@@ -122,7 +123,7 @@ const MainComponent = ({ selectedEventIndex, setSelectedEventIndex, setEvent }: 
       <Box sx={{ width: '100%', padding: 3 }}>
         <Grid container justifyContent='space-between'>
           <Grid item xs={3} sx={{ textAlign: 'left', marginTop: 'auto', marginBottom: 'auto' }}>
-            <EventComponent
+            <EventDetail
               events={events?.filter((event: EventVM) => selectedEventTypes.includes(event?.eventTypeName || ''))}
               setEvents={setEvents}
               setEvent={setEvent}
@@ -133,7 +134,9 @@ const MainComponent = ({ selectedEventIndex, setSelectedEventIndex, setEvent }: 
           </Grid>
           <Grid item xs={1}></Grid>
           <Grid item xs={8}>
-            <CalendarComponent
+            <EventCalendar
+              events={events?.filter((event: EventVM) => selectedEventTypes.includes(event?.eventTypeName || ''))}
+              setSelectedEventIndex={setSelectedEventIndex}
               eventList={calendarEventList?.filter((list: CalendarEvent) => selectedEventTypes.includes(list?.title))}
             />
           </Grid>

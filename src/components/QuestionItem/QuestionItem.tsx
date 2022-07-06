@@ -192,10 +192,9 @@ export default function QuestionItem({
 				<Box flex='1' paddingTop='10px' maxWidth={hasAction ? '80%' : '100%'}>
 					<Item question={questions[0]} />
 				</Box>
+				{console.log({questions})}
 				{hasAction && !questions[0]?.mainQuestion && (
 					<Box display='inline-flex' paddingTop='10px' height='40px' alignItems='center' justifyContent='center'>
-						
-						
 						<IconButton onClick={() => setShowEditDialog(true)}>
 							<EditIcon />
 						</IconButton>

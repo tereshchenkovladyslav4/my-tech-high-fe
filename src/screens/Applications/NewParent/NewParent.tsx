@@ -39,7 +39,7 @@ export type StudentInput = {
 
 export const NewParent = () => {
   const classes = useStyles
-  const [emptyStudent, setEmptyStudent] = useState({ first_name: '', last_name: '', grade_level: undefined, meta: {}, packet: {}, address: {} })
+  const [emptyStudent, setEmptyStudent] = useState({ first_name: '', last_name: '', grade_level: undefined, meta: {} })
   const initSchema = {
     state: string().required('State is required'),
     programYear: string().required('Grade Level is required'),
@@ -388,7 +388,7 @@ export const NewParent = () => {
         parent: yup.object(valid_parent),
         address: yup.object(valid_address),
         packet: yup.object(valid_packet),
-        students: yup.array(yup.object({ ...valid_student, meta: yup.object(valid_student_meta), address: yup.object(valid_student_address), packet: yup.object(valid_student_packet) })),
+        students: yup.array(yup.object({ ...valid_student, meta: yup.object(valid_student_meta) })),
         meta: yup.object(valid_meta),
       })
     }

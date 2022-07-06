@@ -43,6 +43,7 @@ export type EventVM = {
   endDate: Date
   time: string
   description: string
+  allDay: boolean
   filters: {
     grades: string
     other: string
@@ -63,9 +64,11 @@ export type CalendarEvent = {
   allDay?: boolean
 }
 
-export type CalendarComponentProps = {
+export type EventCalendarProps = {
   eventList: CalendarEvent[]
+  events: EventVM[]
   setEventList?: (value: CalendarEvent[] | undefined) => void
+  setSelectedEventIndex: (value: number) => void
 }
 
 export type EventTypeResponseVM = {
@@ -86,6 +89,7 @@ export type EventResponseVM = {
   EventType: EventTypeResponseVM
   start_date: Date
   end_date: Date
+  all_day: boolean
   time: string
   description: string
   filter_grades: string
@@ -96,7 +100,7 @@ export type EventResponseVM = {
   filter_users: string
 }
 
-export type EventComponentProps = {
+export type EventDetailProps = {
   events: EventVM[]
   refetch: () => void
   setEvents: (value: EventVM[]) => void
@@ -111,7 +115,7 @@ export type MainComponentProps = {
   setSelectedEventIndex: (value: number) => void
 }
 
-export type AddEventComponentProps = {
+export type AddEventProps = {
   selectedEvent: EventVM | undefined
 }
 
@@ -122,11 +126,29 @@ export type HeaderComponentProps = {
   handleSaveClick: () => void
 }
 
-export type EditEventComponentProps = {
+export type EventFormProps = {
   event: EventVM
   invalidOption: EventInvalidOption
   setEvent: (value: EventVM) => void
   setInvalidOption: (value: EventInvalidOption) => void
   setIsChanged: (value: boolean) => void
   handleAddRSVPClick: () => void
+}
+
+export type FilterComponentProps = {
+  grades: string[]
+  programYears: string[]
+  users: string[]
+  schoolofEnrollments: string[]
+  others: string[]
+  providers: string[]
+  invalidOption: EventInvalidOption
+  setInvalidOption: (value: EventInvalidOption) => void
+  setGrades: (value: string[]) => void
+  setProgramYears: (value: string[]) => void
+  setUsers: (value: string[]) => void
+  setSchoolofEnrollment: (value: string[]) => void
+  setOthers: (value: string[]) => void
+  setProviders: (value: string[]) => void
+  setIsChanged: (value: boolean) => void
 }

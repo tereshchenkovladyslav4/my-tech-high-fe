@@ -499,9 +499,14 @@ export const AppBar: FunctionComponent = () => {
             <Grid item xs={4} />
             <Grid item xs={8} display='flex' justifyContent={'flex-end'} alignItems='center'>
               <Box width={'600px'} sx={{ marginRight: '50px' }}>
-                <Slider {...settings} ref={sliderRef}>
-                  {renderStudentHeader()}
-                </Slider>
+                {activeStudents.length > 3
+                ? <Slider {...settings} ref={sliderRef}>
+                    {renderStudentHeader()}
+                  </Slider>
+                : <Box display='flex' flexDirection='row' alignContent='center' alignItems='center' justifyContent='end'>
+                    { renderStudentHeader() }
+                  </Box>
+                }
               </Box>
               <Box sx={{ paddingTop: activeStudents.length === 0 ? '20px' : '' }}>
                 <AddStudentButton />

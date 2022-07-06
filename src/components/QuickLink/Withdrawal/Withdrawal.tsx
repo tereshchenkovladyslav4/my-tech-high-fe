@@ -98,21 +98,24 @@ const Withdrawal: React.FC<
 			}
 			return arr;
 		})
-		
+		return sortList;
 
-		let newValues = [];
-		sortList.forEach(group => {
-			group.forEach(q => {
-				if((q.additionalQuestion == '' || values.find(x => x.slug == q.additionalQuestion)?.response != '') && 
-					!newValues.find(f => f.find(ff => ff.id === q.id))){
-					newValues.push([{
-						...q,
-						sequence: newValues.length + 1
-					}])
-				}
-			})
-		});
-		return newValues;
+		// let newValues = [];
+		// sortList.forEach(group => {
+		// 	group.forEach(q => {
+		// 		const parent = values.find(x => x.slug == q.additionalQuestion);
+		// 		// const isSel = parent?.options.find()
+		// 		if((q.additionalQuestion == '' || (parent?.response != '' )) && 
+		// 			!newValues.find(f => f.find(ff => ff.id === q.id))){
+		// 			newValues.push([{
+		// 				...q,
+		// 				sequence: newValues.length + 1
+		// 			}])
+		// 		}
+		// 	})
+		// });
+		// console.log({newValues})
+		// return newValues;
 	}
 
 	const SortableListContainer = SortableContainer(({ questionsList }: { questionsList: Question[][] }) => {
@@ -486,8 +489,7 @@ const Withdrawal: React.FC<
 											hasAction={isEditable()} />
 									</List>
 									<SortableListContainer
-										questionsList={questionSortList(values)
-										}
+										questionsList={questionSortList(values)}
 										useDragHandle={true}
 
 										onSortEnd={({ oldIndex, newIndex }) => {

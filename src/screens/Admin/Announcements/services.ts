@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client'
 export const getAnnouncementsQuery = gql`
-  query Announcements($regionId: Float!) {
+  query Announcements($regionId: Int!) {
     announcements(region_id: $regionId) {
       RegionId
       announcement_id
@@ -46,7 +46,7 @@ export const UpdateAnnouncementMutation = gql`
 `
 
 export const GetCurrentSchoolYearByRegionId = gql`
-  query Schoolyear_getcurrent($regionId: Float!) {
+  query Schoolyear_getcurrent($regionId: Int!) {
     schoolyear_getcurrent(region_id: $regionId) {
       grades
       RegionId

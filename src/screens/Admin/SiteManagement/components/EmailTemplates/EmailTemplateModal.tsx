@@ -441,38 +441,61 @@ export const EmailTemplateModal = ({
 					</Box>
 				</Box>
 				<Typography fontWeight='700'></Typography>
-				<OutlinedInput
-					value={subject}
-					size='small'
-					fullWidth
-					placeholder='Subject'
-					onChange={(e) => setSubject(e.target.value)}
-				/>
-				<Box className={classes.editor}>
-					<Wysiwyg.Editor
-						onContentStateChange={handleEditorChange}
-						editorRef={(ref) => (editorRef.current = ref)}
-						editorState={editorState}
-						onEditorStateChange={setEditorState}				 
-						handlePastedText={() => false}	 
-						toolbar={{
-							options: [
-								'inline',
-								'blockType',
-								'fontSize',
-								'fontFamily',
-								'list',
-								'textAlign',
-								'colorPicker',
-								'link',
-								'embedded' /*, 'emoji'*/,
-								'image',
-								'remove',
-								'history',
-							],
-						}}
+				{type === 'deadline' ?
+				<>
+					<Grid item xs={12} sx={{ marginTop: '10px', marginBottom: '10px' }}>
+						<Subtitle fontWeight='700' size='large'>
+							Packet Deadline (Days)
+						</Subtitle>
+						<Select
+							size='small'
+							name='deadline'
+							onChange={(e) => setDeadline(e.target.value)}
+							value={deadline}
+							className={classes.select}
+						>
+							{[...Array(30).keys()].map((i) => (
+								<MenuItem value={i} key={i}>
+									{i}
+								</MenuItem>
+							))}
+						</Select>
+					</Grid>
+				</>:
+				<>
+					<OutlinedInput
+						value={subject}
+						size='small'
+						fullWidth
+						placeholder='Subject'
+						onChange={(e) => setSubject(e.target.value)}
 					/>
-				</Box>
+					<Box className={classes.editor}>
+						<Wysiwyg.Editor
+							onContentStateChange={handleEditorChange}
+							editorRef={(ref) => (editorRef.current = ref)}
+							editorState={editorState}
+							onEditorStateChange={setEditorState}				 
+							handlePastedText={() => false}	 
+							toolbar={{
+								options: [
+									'inline',
+									'blockType',
+									'fontSize',
+									'fontFamily',
+									'list',
+									'textAlign',
+									'colorPicker',
+									'link',
+									'embedded' /*, 'emoji'*/,
+									'image',
+									'remove',
+									'history',
+								],
+							}}
+						/>
+					</Box>
+				</>}
 				<Box>
 					<Grid container rowSpacing={2}>
 						<Grid item xs={12}>
@@ -585,28 +608,10 @@ export const EmailTemplateModal = ({
 							</Grid>
 						)}
 						{type === 'deadline' && (
-							<>
-								<Grid item xs={12}>
-									<Subtitle fontWeight='700' size='large'>
-										Deadline (Days)
-									</Subtitle>
-									<Select
-										size='small'
-										name='deadline'
-										onChange={(e) => setDeadline(e.target.value)}
-										value={deadline}
-										className={classes.select}
-									>
-										{[...Array(30).keys()].map((i) => (
-											<MenuItem value={i} key={i}>
-												{i}
-											</MenuItem>
-										))}
-									</Select>
-								</Grid>								
+							<>						
 								{reminders.map((reminder, i) => (
 									<Box key={i} sx={{ width: '100%' }}>
-										<Grid item xs={12}>
+										<Grid item xs={12} sx={{ marginTop: '10px' }}>
 											<Subtitle fontWeight='700' size='large'>
 												Reminder {i + 1} (Days before deadline)
 											</Subtitle>
