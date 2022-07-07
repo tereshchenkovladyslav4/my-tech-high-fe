@@ -37,6 +37,8 @@ export type PageActionProps = {
   selectedYear: string | number
   paginationLimit: number
   selectedStatuses: string[]
+  withdrawalCounts: WithdrawalCount
+  setWithdrawalCounts: (value: WithdrawalCount) => void
   setSelectedStatuses: (value: string[]) => void
   setSkip: (value: number) => void
   setPaginationLimit: (value: number) => void

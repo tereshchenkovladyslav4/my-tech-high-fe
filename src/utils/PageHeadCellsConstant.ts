@@ -212,13 +212,13 @@ export const ENROLLMENT_PACKET_HEADCELLS: HeadCell[] = [
 
 export const SCHOOL_PARTNER_HEADCELLS: HeadCell[] = [
   {
-    id: 'submitted',
+    id: 'name',
     numeric: false,
     disablePadding: true,
     label: 'Partner Name',
   },
   {
-    id: 'year',
+    id: 'abbreviation',
     numeric: false,
     disablePadding: true,
     label: 'Abbreviation',

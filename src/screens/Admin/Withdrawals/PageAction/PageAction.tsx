@@ -3,12 +3,11 @@ import React, { useEffect, useState, useContext } from 'react'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { Pagination } from '../../../../components/Pagination/Pagination'
 import { useQuery } from '@apollo/client'
-import { getWithdrawalsCountByStatusQuery } from '../../../../graphql/queries/withdrawal'
 import { WithdrawalFilters } from '../WithdrawalFilters'
 import { UserContext } from '../../../../providers/UserContext/UserProvider'
 import { makeStyles } from '@material-ui/styles'
 import { useStyles } from './styles'
-import { PageActionProps, WithdrawalCount } from '../type'
+import { PageActionProps } from '../type'
 import { getSchoolYearsByRegionId } from '../../Dashboard/SchoolYear/SchoolYear'
 import moment from 'moment'
 
@@ -32,6 +31,8 @@ const PageAction = ({
   searchField,
   paginationLimit,
   selectedStatuses,
+  withdrawalCounts,
+  setWithdrawalCounts,
   setSelectedStatuses,
   onQuickWithdrawalClick,
   setSkip,
@@ -43,7 +44,6 @@ const PageAction = ({
   const classes = useStyles
   const selectedClass = selectStyles()
   const [currentPage, setCurrentPage] = useState<number>(1)
-  const [withdrawalCounts, setWithdrawalCounts] = useState<WithdrawalCount>()
   const [schoolYears, setSchoolYears] = useState<SchoolYearType[]>([])
   const schoolYearData = useQuery(getSchoolYearsByRegionId, {
     variables: {
@@ -52,6 +52,12 @@ const PageAction = ({
     skip: me?.selectedRegionId ? false : true,
     fetchPolicy: 'network-only',
   })
+
+  //	Table Page change action
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page)
+    setSkip(paginationLimit ? paginationLimit * (page - 1) : 25)
+  }
 
   useEffect(() => {
     if (schoolYearData?.data?.region?.SchoolYears) {
@@ -66,33 +72,10 @@ const PageAction = ({
     }
   }, [schoolYearData?.data?.region?.SchoolYears])
 
-  //	Table Page change action
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page)
-    setSkip(paginationLimit ? paginationLimit * (page - 1) : 25)
-  }
-
   const handlePageLimit = (limit: number) => {
-    setPaginationLimit(limit);
-    handlePageChange(1);
+    setPaginationLimit(limit)
+    handlePageChange(1)
   }
-
-  const { data: withdrawalsCountData } = useQuery(getWithdrawalsCountByStatusQuery, {
-    variables: {
-      filter: {
-        region_id: me?.selectedRegionId,
-        keyword: searchField,
-        selectedYear: selectedYear,
-      },
-    },
-    skip: me?.selectedRegionId ? false : true,
-    fetchPolicy: 'network-only',
-  })
-  useEffect(() => {
-    if (withdrawalsCountData && withdrawalsCountData.withdrawalCountsByStatus.error === false) {
-      setWithdrawalCounts(withdrawalsCountData.withdrawalCountsByStatus.results)
-    }
-  }, [withdrawalsCountData])
 
   return (
     <>

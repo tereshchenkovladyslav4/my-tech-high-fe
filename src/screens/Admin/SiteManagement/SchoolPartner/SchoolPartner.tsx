@@ -3,12 +3,11 @@ import { Box } from '@mui/system'
 import React, { useEffect, useState } from 'react'
 import { useStyles } from '../styles'
 import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded'
-import { useHistory } from 'react-router-dom'
+import { Prompt, useHistory } from 'react-router-dom'
 import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
 import SystemUpdateAltRoundedIcon from '@mui/icons-material/SystemUpdateAltRounded'
 import { Paragraph } from '../../../../components/Typography/Paragraph/Paragraph'
 import { BUTTON_LINEAR_GRADIENT, RED_GRADIENT } from '../../../../utils/constants'
-import { HeadCell } from '../../../../components/SortableTable/SortableTableHeader/types'
 import { SortableTable } from '../../../../components/SortableTable/SortableTable'
 import CreateIcon from '@mui/icons-material/Create'
 import { SchoolPartnerEditModal } from './SchoolPartnerEditModal/SchoolPartnerEditModal'
@@ -17,7 +16,7 @@ import { Field, Form, Formik, useFormik } from 'formik'
 import * as yup from 'yup'
 import { useMutation, useQuery } from '@apollo/client'
 import { CreateNewSchoolPartnerMutation, GetSchoolsOfEnrollment } from './services'
-import { map, orderBy, sortBy } from 'lodash'
+import { map, sortBy, upperCase } from 'lodash'
 import { ArchiveSchoolPartnerModal } from './ArchiveSchoolPartnerModal/ArchiveSchoolPartnerModal'
 import CallMissedOutgoingIcon from '@mui/icons-material/CallMissedOutgoing'
 import { SchoolPartnerType } from './types'
@@ -32,7 +31,11 @@ export const SchoolPartner = () => {
   const classes = useStyles
   const history = useHistory()
   const localStorageRegion = JSON.parse(localStorage.getItem('selectedRegion'))['region_id']
-
+  const [unsavedChanges, setUnsavedChanges] = useState(false)
+  const [sort, setSort] = useState({
+    column: 'name',
+    direction: 'ASC'
+  })
   const [createNewSchoolPartner, { data, error, loading }] = useMutation(CreateNewSchoolPartnerMutation)
 
   const {
@@ -40,7 +43,10 @@ export const SchoolPartner = () => {
     data: schoolsOfEnrollmentData,
     refetch,
   } = useQuery(GetSchoolsOfEnrollment, {
-    variables: { regionId: localStorageRegion },
+    variables: { schoolPartnerArgs: {
+      region_id: 1,
+      sort
+    } },
     fetchPolicy: 'network-only',
   })
 
@@ -71,6 +77,7 @@ export const SchoolPartner = () => {
   const handleFiles = (files: File[]) => {
     const file = validateFile(files[0])
     if (file.status === true) {
+      setUnsavedChanges(true)
       setSelectedFiles(files[0])
     } else {
       files[0]['invalid'] = true
@@ -182,10 +189,25 @@ export const SchoolPartner = () => {
     }
   }, [archiveModal])
 
+  const sortChangeAction = (property: keyof any, order: string) => {
+    setSort({
+      column: property.toString(),
+      direction: upperCase(order)
+    })
+    refetch()
+  }
+
   return (
     <Box sx={classes.base}>
       {openEditModal && <SchoolPartnerEditModal handleModem={() => setOpenEditModal(undefined)} el={openEditModal} />}
       {archiveModal && <ArchiveSchoolPartnerModal handleModem={() => setArchiveModal(undefined)} el={archiveModal} />}
+      <Prompt
+        when={unsavedChanges ? true : false}
+        message={JSON.stringify({
+          header: 'Unsaved Changes',
+          content: 'Are you sure you want to leave without saving changes?',
+        })}
+      />
       <Box
         sx={{
           display: 'flex',
@@ -216,9 +238,9 @@ export const SchoolPartner = () => {
           <SortableTable
             headCells={SCHOOL_PARTNER_HEADCELLS}
             rows={renderRows()}
-            onSortChange={() => {}}
             hideCheck={true}
             hover={false}
+            onSortChange={sortChangeAction}
           />
         </Grid>
         <Grid item xs={6}>
@@ -242,6 +264,7 @@ export const SchoolPartner = () => {
                   setSelectedFiles(undefined)
                   refetch()
                   setIsUploading(false)
+                  setUnsavedChanges(false)
                 })
               })
             }}
@@ -266,7 +289,7 @@ export const SchoolPartner = () => {
                             flexDirection: 'column',
                           }}
                         >
-                          <Field name={`partnerName`} fullWidth focused>
+                          <Field name={`partnerName`} fullWidth focused >
                             {({ field, form, meta }) => (
                               <TextField
                                 name='partnerName'
@@ -290,6 +313,7 @@ export const SchoolPartner = () => {
                                 error={meta.error}
                                 helperText={meta.touched && meta.error}
                                 value={values.partnerName || ''}
+                                onBlur={() => setUnsavedChanges(values.partnerName !== '')}
                               />
                             )}
                           </Field>
@@ -317,6 +341,7 @@ export const SchoolPartner = () => {
                                 error={meta.error}
                                 helperText={meta.touched && meta.error}
                                 value={values.abbreviation || ''}
+                                onBlur={() => setUnsavedChanges(values.abbreviation !== '')}
                               />
                             )}
                           </Field>
@@ -397,6 +422,7 @@ export const SchoolPartner = () => {
                               }}
                               onClick={() => {
                                 resetForm()
+                                setUnsavedChanges(false)
                                 setSelectedFiles(undefined)
                               }}
                             >

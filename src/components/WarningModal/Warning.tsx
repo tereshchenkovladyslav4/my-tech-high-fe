@@ -1,9 +1,7 @@
-import { Button, Modal } from '@mui/material'
+import { Button, Modal, Typography } from '@mui/material'
 import { Box } from '@mui/system'
 import React from 'react'
-import { Subtitle } from '../Typography/Subtitle/Subtitle'
 import { WarningModalTemplateType } from './types'
-import CloseIcon from '@mui/icons-material/Close'
 import { useStyles } from './styles'
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline'
 import { Paragraph } from '../Typography/Paragraph/Paragraph'
@@ -28,9 +26,9 @@ export const WarningModal: WarningModalTemplateType = ({
     >
       <Box sx={classes.modalCard}>
         <Box sx={classes.header as object}>
-          <Subtitle fontWeight='bold' textAlign='center'>
+          <Typography variant='h5' fontSize={'20px'} fontWeight={'bold'}>
             {title}
-          </Subtitle>
+          </Typography>
         </Box>
         <Box sx={classes.content as object}>
           {showIcon && <ErrorOutlineIcon style={classes.errorOutline} />}

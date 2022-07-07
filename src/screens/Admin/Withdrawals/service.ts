@@ -13,3 +13,14 @@ export const updateWithdrawalMutation = gql`
     updateWithdrawal(updateWithdrawalInput: $updateWithdrawalInput)
   }
 `
+
+export const quickWithdrawalMutation = gql`
+  mutation QuickWithdrawal($quickWithdrawalInput: QuickWithdrawalInput!) {
+    quickWithdrawal(quickWithdrawalInput: $quickWithdrawalInput)
+  }
+`
+export const reinstateWithdrawalMutation = gql`
+  mutation ReinstateWithdrawal($reinstateWithdrawalInput: ReinstateWithdrawalInput!) {
+    reinstateWithdrawal(reinstateWithdrawalInput: $reinstateWithdrawalInput)
+  }
+`
