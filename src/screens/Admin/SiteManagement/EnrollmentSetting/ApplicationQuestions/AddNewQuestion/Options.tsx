@@ -1,8 +1,9 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Box, Radio, TextField, Checkbox, IconButton, Button } from '@mui/material'
 import { OptionsType } from '../types'
 import { SYSTEM_07 } from '../../../../../../utils/constants'
 import CloseSharp from '@mui/icons-material/CloseSharp'
+import CustomModal from '../../components/CustomModal/CustomModals'
 
 export default function QuestionOptions({
   options,
@@ -19,7 +20,22 @@ export default function QuestionOptions({
   setFocused: (event:Event) => void
   setBlured: (event:Event) => void
 }) {
+  const [warningPopup, setWarningPopup] = useState(false);  
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const setCancelWarningPopup = () => {
+    setWarningPopup(false);
+  }
+
+  const setConfirmWarningPopup = () => {
+    setOptions(
+      options.filter((o) => o.value !== currentIndex).map((v, i) => ({ value: i, label: v.label.trim() })),
+    )
+    setWarningPopup(false);
+  }
+
   return (
+    <>
     <Box display='flex' flexDirection='column' width='80%'>
       {options.map((opt, i) => (
         <Box
@@ -71,9 +87,15 @@ export default function QuestionOptions({
               }}
               // disabled={isDefault}
               onClick={() => {
-                setOptions(
-                  options.filter((o) => o.value !== opt.value).map((v, i) => ({ value: i, label: v.label.trim() })),
-                )
+                if (isDefault) {
+                  setWarningPopup(true);
+                  setCurrentIndex(opt.value);
+                }
+                else {
+                  setOptions(
+                    options.filter((o) => o.value !== opt.value).map((v, i) => ({ value: i, label: v.label.trim() })),
+                  )
+                }
               }}
             >
               <CloseSharp />
@@ -84,5 +106,20 @@ export default function QuestionOptions({
         </Box>
       ))}
     </Box>
+    {warningPopup && (
+      <CustomModal
+        title='Default Question'
+        description='You are attempting to edit a default question. You may customize the way the question is asked, but the default ask of question will remain the same in the application. Are you sure you want to edit?'
+        cancelStr='No'
+        confirmStr='Yes'
+        onClose={() => {
+          setCancelWarningPopup()
+        }}
+        onConfirm={() => {
+          setConfirmWarningPopup()
+        }}
+                  />
+    )}
+    </>
   )
 }

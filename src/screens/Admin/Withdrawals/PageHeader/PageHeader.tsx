@@ -19,7 +19,7 @@ const PageHeader = ({
     <Box sx={classes.pageHeader}>
       <Box sx={classes.pageHeaderContent}>
         <Subtitle size='medium' fontWeight='700'>
-          Withdrawals
+          Withdraws
         </Subtitle>
         <Subtitle size='medium' fontWeight='700' sx={{ marginLeft: 2 }}>
           {totalWithdrawals}

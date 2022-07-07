@@ -59,7 +59,7 @@ const PageAction = ({
       setSchoolYears(
         SchoolYears.map((item: SchoolYearType) => ({
           school_year_id: item.school_year_id,
-          label: moment(item.date_begin).format('YY') + '-' + moment(item.date_end).format('YY'),
+          label: moment(item.date_begin).format('YY') + ' - ' + moment(item.date_end).format('YY'),
         })),
       )
       setSelectedYear(SchoolYears[0].school_year_id)
@@ -70,6 +70,11 @@ const PageAction = ({
   const handlePageChange = (page: number) => {
     setCurrentPage(page)
     setSkip(paginationLimit ? paginationLimit * (page - 1) : 25)
+  }
+
+  const handlePageLimit = (limit: number) => {
+    setPaginationLimit(limit);
+    handlePageChange(1);
   }
 
   const { data: withdrawalsCountData } = useQuery(getWithdrawalsCountByStatusQuery, {
@@ -100,7 +105,7 @@ const PageAction = ({
           </Box>
         </Box>
         <Pagination
-          setParentLimit={setPaginationLimit}
+          setParentLimit={handlePageLimit}
           handlePageChange={handlePageChange}
           defaultValue={paginationLimit || 25}
           numPages={Math.ceil(totalWithdrawals / paginationLimit)}

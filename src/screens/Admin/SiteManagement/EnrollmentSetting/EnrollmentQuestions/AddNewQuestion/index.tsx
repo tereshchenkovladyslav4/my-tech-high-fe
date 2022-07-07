@@ -519,7 +519,7 @@ export default function AddNewQuestionModal({
             />
           </Box>)}
 
-          {editQuestions.map((e) => (
+          {editQuestions.map((e, i) => (
             <>
             <Box
               sx={{
@@ -545,8 +545,14 @@ export default function AddNewQuestionModal({
                 variant='outlined'
                 value={e.question}
                 onChange={(v) => setQuestionValue(e.id, e.slug, 'question', v.currentTarget.value)}
-                onFocus={(v) => setFocused(v)}
-                onBlur={(v) => setBlured(v)}
+                onFocus={(v) => {
+                  if (i == 0)
+                    setFocused(v)
+                }}
+                onBlur={(v) => {
+                  if (i == 0)
+                    setBlured(v)
+                }}
                 focused
                 // disabled={e.default_question}
               />
@@ -591,8 +597,14 @@ export default function AddNewQuestionModal({
                     editorState={editorState}
                     onEditorStateChange={setEditorState}
                     handlePastedText={() => false}
-                    onFocus={(v) => setFocused(v)}
-                    onBlur={(v) => setBlured(v)}
+                    onFocus={(v) => {
+                      if (i == 0)
+                        setFocused(v)
+                    }}
+                    onBlur={(v) => {
+                      if (i == 0)
+                        setBlured(v)
+                    }}
                     toolbar={{
                       options: [
                         'inline', 
@@ -610,7 +622,7 @@ export default function AddNewQuestionModal({
                 </Box>
               ) :
               (
-                <QuestionOptions options={e.options} setOptions={(options) => setQuestionValue(e.id, e.slug, 'options', options)} type={e.type} setFocused={setFocused} setBlured={setBlured} />
+                <QuestionOptions options={e.options} setOptions={(options) => setQuestionValue(e.id, e.slug, 'options', options)} type={e.type} setFocused={i == 0 ? setFocused : setBlured} setBlured={setBlured} isDefault={i == 0 ? isDefaultQuestion : false}/>
               )}
             </Box>
             <Box

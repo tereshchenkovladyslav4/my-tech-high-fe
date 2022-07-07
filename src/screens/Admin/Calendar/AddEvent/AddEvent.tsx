@@ -89,8 +89,8 @@ const AddEvent = ({ selectedEvent }: AddEventProps) => {
       await submitSave({
         variables: {
           createEventInput: {
-            event_id: event?.eventId,
-            TypeId: event?.eventTypeId,
+            event_id: Number(event?.eventId),
+            TypeId: Number(event?.eventTypeId),
             description: event?.description,
             end_date: convertDateToUTCDate(event?.endDate, event?.time),
             start_date: convertDateToUTCDate(event?.startDate, event?.time),

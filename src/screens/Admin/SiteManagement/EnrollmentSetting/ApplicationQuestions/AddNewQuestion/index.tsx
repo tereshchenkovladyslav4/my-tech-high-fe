@@ -270,10 +270,10 @@ export default function AddNewQuestionModal({
           <Box sx={{display: 'flex', alignItems: 'center',}}>
             {console.log({editItem})}
             {editItem?.slug && 
-            ['packet_school_district', 'packet_secondary_contact_first', 'packet_secondary_contact_last', 'address_county_id', 'address_zip', 'address_city', 'address_street'].indexOf(editItem?.slug) !== -1 ? (
+            ['packet_school_district', 'packet_secondary_contact_first', 'packet_secondary_contact_last', 'address_county_id', 'address_zip', 'address_city', 'address_street', 'program_year'].indexOf(editItem?.slug) !== -1 ? (
               <Checkbox onClick={() => setAddStudent(!addStudent)} disabled />
             ): (
-              <Checkbox checked={addStudent} onClick={() => setAddStudent(!addStudent)}  />
+                <Checkbox checked={addStudent} onClick={() => setAddStudent(!addStudent)}  />
             )}
             <Subtitle size='small'>Add Student Question</Subtitle>
           </Box>

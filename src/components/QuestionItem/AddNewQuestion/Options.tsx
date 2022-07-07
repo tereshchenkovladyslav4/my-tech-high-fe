@@ -4,6 +4,7 @@ import CloseSharp from '@mui/icons-material/CloseSharp';
 import { SYSTEM_07 } from '../../../utils/constants';
 import { QUESTION_TYPE } from '../QuestionItemProps';
 import { DropDown } from '../../DropDown/DropDown';
+import CustomModal from '../../../screens/Admin/SiteManagement/EnrollmentSetting/components/CustomModal/CustomModals';
 
 const actionTypes = [
 	{
@@ -22,24 +23,49 @@ export default function QuestionOptions({
 	type,
 	setFocused,
 	setBlured,
+	isDefault
 }: {
 	options: Array<any>
 	setOptions: (options: Array<any>) => void
 	type: QUESTION_TYPE
 	setFocused?: (event:Event) => void
 	setBlured?: (event:Event) => void
+  isDefault: boolean
 }) {
 	const [enableAction, setEnableAction] = useState(true)
+	const [warningPopup, setWarningPopup] = useState(false);  
+	const [currentIndex, setCurrentIndex] = useState(-1);
+	const [selectedValue, setValue] = useState(0);
+	const [warningType, setWarningType] = useState('');
+
+	const setCancelWarningPopup = () => {				
+		setWarningPopup(false);				
+	}
+
+	const setConfirmWarningPopup = () => {
+		if (warningType == 'DeleteOption') {
+			setOptions(
+				options.filter((o) => o.value !== currentIndex).map((v, i) => ({ value: i, label: v.label.trim(), action: v.action })),			
+			)
+		}
+		else if (warningType == 'ChangeOption') {
+			const newOps = options.map((o) => (o.value === currentIndex ? {...o, action: selectedValue} : o));
+			setOptions(newOps);
+		}
+
+		setWarningPopup(false);
+	}
 	useEffect(() => {
 		//if(options.filter((o) => o.action === 2).length > 0) {
 		//	setEnableAction(false)
 		//}
 		//else {
 		//	setEnableAction(true)
-		//}
+		//}		
 	}, [options])
 
 	return (
+		<>
 		<Box display='flex' flexDirection='column' width='100%'>
 			{options.map((opt, i) => (
 				<Box display='flex' width='100%' 
@@ -112,9 +138,16 @@ export default function QuestionOptions({
 									marginLeft: '10px',
 								}}
 								onClick={() => {
-									setOptions(
-										options.filter((o) => o.value !== opt.value).map((v, i) => ({ value: i, label: v.label.trim(), action: v.action })),
-									)
+									if (isDefault) {
+										setWarningType('DeleteOption')
+										setWarningPopup(true);
+										setCurrentIndex(opt.value);
+									  }
+									  else {
+										setOptions(
+											options.filter((o) => o.value !== opt.value).map((v, i) => ({ value: i, label: v.label.trim(), action: v.action })),
+										)
+									}
 								}}
 							>
 								<CloseSharp />
@@ -134,17 +167,43 @@ export default function QuestionOptions({
 							}}
 							labelTop
 							dropDownItems={(opt.action !== 2 && !enableAction || opt.label.trim() == '') ? actionTypes.filter((a) => a.value === 1) : actionTypes}
-							defaultValue={opt.action || 1}
+							defaultValue={opt.action || 1}							
 							setParentValue={(v) => {
 								const val = +v;
-								const newOps = options.map((o) => (o.value === opt.value ? {...o, action: val} : o));
-								setOptions(newOps);
-							}}
+								if (isDefault) {
+									setWarningType('ChangeOption')
+									setWarningPopup(true);		
+									setCurrentIndex(opt.value)
+									setValue(val)							
+								} 
+								else {
+									const newOps = options.map((o) => (o.value === opt.value ? {...o, action: val} : o));
+									setOptions(newOps);
+								}
+								
+							}}							
 							size='small'
+							auto={false}
 						/>
 					</Box>
 				</Box>
 			))}
 		</Box>
+		{warningPopup && (
+		<CustomModal
+			title='Default Question'
+			description='You are attempting to edit a default question. You may customize the way the question is asked, but the default ask of question will remain the same in the application. Are you sure you want to edit?'
+			cancelStr='No'
+			confirmStr='Yes'
+			onClose={() => {
+			setCancelWarningPopup()
+			}}
+			onConfirm={() => {
+			setConfirmWarningPopup()
+			}}
+					/>
+		)}
+		</>
+
 	)
 }

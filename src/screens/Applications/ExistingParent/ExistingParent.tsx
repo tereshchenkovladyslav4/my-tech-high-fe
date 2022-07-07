@@ -569,7 +569,7 @@ export const ExistingParent = () => {
                                   <DropDown
                                     name={`students[0].grade_level`}
                                     labelTop
-                                    placeholder={`Student Grade Level (age) as of ${moment(birthDateCut).format(
+                                    placeholder={`${q.question} (age) as of ${moment(birthDateCut).format(
                                       'MMM Do YYYY',
                                     )}`}
                                     dropDownItems={gradesDropDownItems}
@@ -676,7 +676,7 @@ export const ExistingParent = () => {
                                               <DropDown
                                                 name={`students[${index}].grade_level`}
                                                 labelTop
-                                                placeholder={`Student Grade Level (age) as of ${moment(
+                                                placeholder={`${q.question} (age) as of ${moment(
                                                   birthDateCut,
                                                 ).format('MMM Do YYYY')}`}
                                                 dropDownItems={gradesDropDownItems}

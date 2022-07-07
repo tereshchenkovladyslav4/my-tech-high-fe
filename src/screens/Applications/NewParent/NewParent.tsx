@@ -602,8 +602,8 @@ export const NewParent = () => {
                                       <DropDown
                                         name='programYear'
                                         labelTop
-                                        placeholder='Program Year'
-                                        dropDownItems={schoolYears}
+                                        placeholder={q.question}
+                                        dropDownItems={q.options}
                                         setParentValue={(id) => {
                                           if (id?.indexOf('mid') > 0) {
                                             id = id?.split('-')?.at(0)
@@ -662,7 +662,7 @@ export const NewParent = () => {
                                         <TextField
                                           name='parent.email'
                                           size='small'
-                                          label='Parent Email'
+                                          label={q.question}
                                           focused
                                           variant='outlined'
                                           inputProps={{
@@ -703,7 +703,7 @@ export const NewParent = () => {
                                       <TextField
                                         name='emailConfirm'
                                         size='small'
-                                        label='Parent Email Again'
+                                        label={q.question}
                                         focused
                                         variant='outlined'
                                         inputProps={{
@@ -734,7 +734,7 @@ export const NewParent = () => {
                                         <DropDown
                                           name={`students[0].grade_level`}
                                           labelTop
-                                          placeholder={`Student Grade Level (age) as of ${moment(birthDateCut).format(
+                                          placeholder={`${q.question} (age) as of ${moment(birthDateCut).format(
                                             'MMM Do YYYY',
                                           )}`}
                                           dropDownItems={gradesDropDownItems}
@@ -871,7 +871,7 @@ export const NewParent = () => {
                                                   <DropDown
                                                     name={`students[${index}].grade_level`}
                                                     labelTop
-                                                    placeholder={`Student Grade Level (age) as of ${moment(
+                                                    placeholder={`${q.question} (age) as of ${moment(
                                                       birthDateCut,
                                                     ).format('MMM Do YYYY')}`}
                                                     dropDownItems={gradesDropDownItems}

@@ -222,7 +222,7 @@ const WithdrawalPage = () => {
         updateWithdrawalInput: {
           withdrawal_id: parseInt(effective?.withdrawId),
           value: acceptDate?.toString(),
-          field: 'date_effective',
+          field: "date_effective",
         },
       },
     })

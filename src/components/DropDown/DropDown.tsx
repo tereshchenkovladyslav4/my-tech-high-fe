@@ -57,10 +57,12 @@ export const DropDown: DropDownTemplateType = ({
   dropdownColor,
   isAddable,
   idx,
+  auto = true
 }) => {
   const [value, setValue] = useState(defaultValue)
-  const handleChange = (val: string) => {
-    setValue(val)
+  const handleChange = (val: string) => {    
+    if (auto)
+      setValue(val)
     setParentValue(val, idx)
   }
 

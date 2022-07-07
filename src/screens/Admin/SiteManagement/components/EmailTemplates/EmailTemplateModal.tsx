@@ -376,7 +376,7 @@ export const EmailTemplateModal = ({
 				setResponses(tmpArr);
 			}
 			if( emailTemplate.category.category_name == 'Applications' ){
-				setDeadline( emailTemplate?.region?.application_deadline_num_days );        
+				setDeadline( emailTemplate?.region?.enrollment_packet_deadline_num_days );        
 			}
 
 			if( emailTemplate.category.category_name == 'Enrollment Packets' ){
@@ -389,9 +389,17 @@ export const EmailTemplateModal = ({
 			setAddResponse(emailTemplate.standard_responses)
 			setAvailableInserts(emailTemplate?.inserts?.split(","))
 			setType(emailTemplate.template)
-			if (emailTemplate.category.category_name != 'Withdraw')
+			console.log('emailTemplate.template_name', emailTemplate.template_name);
+			if (emailTemplate.category.category_name != 'Withdraw') {
 				setAvailableInsertDescription(insertDescriptions);
-			else 
+			}
+			if(emailTemplate.template_name === 'Application Accepted') {
+				setAvailableInsertDescription({
+					...insertDescriptions,
+					deadline: 'Deadline set in the Packet Reminders Template'
+				}) 
+			}
+			if(emailTemplate.category.category_name === 'Withdraw') { 
 				setAvailableInsertDescription({
 					parent: "Parent's First Name",
 					student: "Student's First Name",
@@ -400,6 +408,7 @@ export const EmailTemplateModal = ({
 					teacher: 'Teacher Full Name',
 					link: "Link to Withdraw Form to sign",
 				});
+			}
 			if (emailTemplate.body) {
 				const contentBlock = htmlToDraft(emailTemplate.body)
 				if (contentBlock) {
