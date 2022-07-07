@@ -51,7 +51,7 @@ const EventDetail = ({ selectedEventIndex, setSelectedEventIndex, events, setEve
     if (selectedEvent?.eventId) {
       await deleteEventById({
         variables: {
-          eventId: selectedEvent.eventId,
+          eventId: Number(selectedEvent.eventId),
         },
       })
       refetch()

@@ -34,7 +34,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({ title, subTitle, img, link, 
           alignItems: subTitle ? "center" : "flex-start",
           alignContent: 'flex-start',
         }}>
-          <Typography fontSize='20px' component='div'>
+          <Typography fontSize='20px' component='div' fontWeight={'700'}>
             {title}
           </Typography>
           {!action &&

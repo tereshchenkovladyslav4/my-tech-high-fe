@@ -35,7 +35,7 @@ export const AdminEnrollmentCard: AdminEnrollmentCardTemplateType = ({
 						alignContent:'center'
 					}}
 				>
-					<Subtitle>{title}</Subtitle>
+					<Subtitle size='large' fontWeight='700'>{title}</Subtitle>
 					<EastIcon/>
 				</CardContent>
 			</Card>
