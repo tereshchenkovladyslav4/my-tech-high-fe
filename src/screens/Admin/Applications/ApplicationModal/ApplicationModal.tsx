@@ -17,22 +17,23 @@ const selectStyles = makeStyles({
     minWidth: '80px',
     height: '29px',
     textAlign: 'center',
-    // background: BUTTON_LINEAR_GRADIENT,
-    // color: '#F2F2F2',
-    // '&:before': {
-    //   borderColor: BUTTON_LINEAR_GRADIENT,
-    // },
-    // '&:after': {
-    //   borderColor: BUTTON_LINEAR_GRADIENT,
-    // },
   },
-  // selectIcon: {
-  //   fill: '#F2F2F2',
-  //   color: '#F2F2F2',
-  // },
-  // selectRoot: {
-  //   color: '#F2F2F2',
-  // },
+  statusSelect: {
+    fontSize: '12px',
+    borderRadius: '15px',
+    minWidth: '80px',
+    height: '29px',
+    textAlign: 'center',
+    background: BUTTON_LINEAR_GRADIENT,
+    marginLeft: '30px',
+    color: 'white !important',
+    '&:before': {
+      borderColor: 'white',
+    },
+    '&:after': {
+      borderColor: 'white',
+    },
+  }
 })
 export const ApplicationModal: ApplicationModalType = ({
   handleModem,
@@ -71,7 +72,21 @@ export const ApplicationModal: ApplicationModalType = ({
           <Form onSubmit={handleSubmit}>
             <Box sx={classes.modalCard}>
               <Box sx={classes.header as object}>
-                <Subtitle fontWeight='700'>{title}</Subtitle>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <Subtitle fontWeight='700'>{title}</Subtitle>
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <Select
+                      className={selectClasses.statusSelect}
+                      size='small'
+                      name='status'
+                      onChange={handleChange}
+                      value={values.status}
+                    >
+                      <MenuItem value='Submitted'>Submitted</MenuItem>
+                      <MenuItem value='Accepted'>Accepted</MenuItem>
+                    </Select>
+                  </Box>
+                </Box>
                 <Box sx={classes.headerRight as object}>
                   <Button size='small' variant='contained' disableElevation sx={classes.submitButton} type='submit'>
                     {btntitle}
@@ -98,9 +113,27 @@ export const ApplicationModal: ApplicationModalType = ({
                     Application
                     <Box sx={classes.labelAfter as object}></Box>
                   </Subtitle>
-                  <Subtitle sx={classes.formValue as object} fontWeight='500'>
-                    {data.date_submitted ? 'Submitted ' + moment(data.date_submitted).format('MM/DD/yy') : null}
+                  <Subtitle sx={classes.formLabel as object} fontWeight='500'>
+                    {data.date_submitted ? moment(data.date_submitted).format('MM/DD/yy') : null}
                   </Subtitle>
+                </Box>
+                <Box sx={classes.formRow}>
+                  <Subtitle sx={classes.formLabel as object} fontWeight='500'>
+                      Program Year
+                    <Box sx={classes.labelAfter as object}></Box>
+                  </Subtitle>
+                  <Select
+                    className={selectClasses.select}
+                    style={{ marginLeft: '30px'}}
+                    size='small'
+                    name='school_year_id'
+                    onChange={handleChange}
+                    value={values.school_year_id}
+                  >
+                    {schoolYears?.map((item) => (
+                      <MenuItem value={item.school_year_id}>{item.label}</MenuItem>
+                    ))}
+                  </Select>
                 </Box>
                 <Box sx={classes.formRow}>
                   <Subtitle sx={classes.formLabel as object} fontWeight='500'>
@@ -120,94 +153,16 @@ export const ApplicationModal: ApplicationModalType = ({
                     Contact
                     <Box sx={classes.labelAfter as object}></Box>
                   </Subtitle>
-                  <Box sx={classes.formRow}>
-                    <Subtitle sx={classes.formValue as object} fontWeight='500'>
-                      <a style={{ color: '#7b61ff' }} href={`mailto:${data?.student?.parent?.person?.email}`}>
+                  <Box sx={{...classes.formRow, background: 'unset !important'}}>
+                    <Subtitle sx={{...classes.formValue as object}} fontWeight='500'>
+                      <a style={{ color: 'black' }} href={`mailto:${data?.student?.parent?.person?.email}`}>
                         {data?.student?.parent?.person?.email}
                       </a>
                       <Box sx={classes.labelAfter as object}></Box>
                     </Subtitle>
-                    <Subtitle sx={classes.formValue as object} fontWeight='500'>
+                    <Subtitle sx={{...classes.formValue as object, color: 'black'}} fontWeight='500'>
                       {data?.student?.parent?.person?.phone?.number}
                     </Subtitle>
-                  </Box>
-                </Box>
-                <Box sx={classes.formRow}>
-                  <Subtitle sx={classes.formLabel as object} fontWeight='500'>
-                    Referred By
-                    <Box sx={classes.labelAfter as object}></Box>
-                  </Subtitle>
-                  <Subtitle sx={classes.formValue as object} fontWeight='500'>
-                    {data?.referred_by}
-                  </Subtitle>
-                </Box>
-                <Box sx={{ display: 'flex', alignItems: 'center', pl: 2 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <Subtitle sx={{ pr: 3 }} fontWeight='700'>
-                      Mid-year Application
-                    </Subtitle>
-                    <Select
-                      size='small'
-                      name='midyear_application'
-                      onChange={handleChange}
-                      value={values.midyear_application || 'false'}
-                      className={selectClasses.select}
-                      // inputProps={{
-                      //   classes: {
-                      //     icon: selectClasses.selectIcon,
-                      //   },
-                      // }}
-                    >
-                      <MenuItem value='false'>No</MenuItem>
-                      <MenuItem value='true'>Yes</MenuItem>
-                    </Select>
-                  </Box>
-                  <Box sx={{ display: 'flex', alignItems: 'center', px: 5 }}>
-                    <Subtitle sx={{ pr: 3 }} fontWeight='700'>
-                      School Year
-                    </Subtitle>
-                    <Select
-                      className={selectClasses.select}
-                      // inputProps={{
-                      //   classes: {
-                      //     icon: selectClasses.selectIcon,
-                      //   },
-                      // }}
-                      size='small'
-                      name='school_year_id'
-                      onChange={handleChange}
-                      value={values.school_year_id}
-                    >
-                      {schoolYears?.map((item) => (
-                        <MenuItem value={item.school_year_id}>{`${moment(item.date_begin).format('YYYY')}-${moment(
-                          item.date_end,
-                        ).format('YY')}`}</MenuItem>
-                      ))}
-                    </Select>
-                  </Box>
-                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <Subtitle sx={{ pr: 3 }} fontWeight='700'>
-                      Status
-                    </Subtitle>
-                    <Select
-                      className={selectClasses.select}
-                      // inputProps={{
-                      //   classes: {
-                      //     icon: selectClasses.selectIcon,
-                      //   },
-                      // }}
-                      size='small'
-                      name='status'
-                      onChange={handleChange}
-                      value={values.status}
-                    >
-                      <MenuItem value='Submitted'>Submitted</MenuItem>
-                      <MenuItem value='Accepted'>Accepted</MenuItem>
-
-                      {/* <MenuItem value='0'>Sibling</MenuItem>
-                      <MenuItem value='1'>New</MenuItem>
-                      <MenuItem value='2'>Returning</MenuItem> */}
-                    </Select>
                   </Box>
                 </Box>
               </Box>

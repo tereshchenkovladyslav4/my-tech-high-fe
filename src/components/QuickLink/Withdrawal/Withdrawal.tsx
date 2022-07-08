@@ -84,8 +84,9 @@ const Withdrawal: React.FC<
 
 	const questionSortList = (values) => {
 		const sortList = values.filter(v =>
-			isEditable() ? (v.additionalQuestion == '' && v.mainQuestion == false)	//	Admin
-				: (!v.mainQuestion && (v.additionalQuestion == ''
+			// isEditable() ? (v.additionalQuestion == '' && v.mainQuestion == false)	//	Admin  (ask additional question)
+			// 	: 
+				(!v.mainQuestion && (v.additionalQuestion == ''
 					|| (values.find(x => x.slug == v.additionalQuestion)?.response != ''
 						&& (values.find(x => x.slug == v.additionalQuestion)?.options.find(
 							x => x.action == 2 && (x.value == values.find(y => y.slug == v.additionalQuestion)?.response
@@ -452,7 +453,7 @@ const Withdrawal: React.FC<
 						>
 							<Box sx={classes.base}>
 								<Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', width: '100%' }}>
-									<Typography sx={{ fontWeight: 700, fontSize: 20, ml: 1 }}>Withdrawal</Typography>
+									<Typography sx={{ fontWeight: 700, fontSize: 20, ml: 1 }}>Withdraw</Typography>
 									{isEditable() && (
 										<>
 											<Button

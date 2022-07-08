@@ -105,7 +105,11 @@ export const StudentGrade: StudentGradeTemplateType = ({ student, schoolYears })
           </Paragraph>
           {checkEnrollPacketStatus(schoolYears, student) && (
             <Tooltip title={circleData?.message || ''}>
-              <IconButton onClick={redirect}>{circleData?.icon}</IconButton>
+              <IconButton onClick={() => {
+                  if (checkEnrollPacketStatus(schoolYears, student)) {
+                    redirect
+                  }
+                }}>{circleData?.icon}</IconButton>
             </Tooltip>
           )}
         </Box>

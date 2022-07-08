@@ -28,6 +28,8 @@ import { ApplicationModal } from '../ApplicationModal/ApplicationModal'
 import { ApplicationEmailModal } from '../ApplicationModal/ApplicationEmailModal'
 import { APPLICATION_HEADCELLS } from '../../../../utils/PageHeadCellsConstant'
 import { ApplicationTableProps, EmailTemplateVM, SchoolYearVM } from '../type'
+import { getActiveSchoolYearsByRegionId } from '../../../Enrollment/Question'
+import { getSchoolYearsByRegionId } from '../../SiteManagement/services'
 
 export const ApplicationTable = ({ filter }: ApplicationTableProps) => {
   const { me } = useContext(UserContext)
@@ -140,7 +142,15 @@ export const ApplicationTable = ({ filter }: ApplicationTableProps) => {
     }
   }
 
-  const { loading: schoolLoading, data: schoolYearData } = useQuery(getSchoolYearQuery)
+  // const { loading: schoolLoading, data: schoolYearData } = useQuery(getSchoolYearQuery)
+  const { loading: schoolLoading, data: schoolYearData } = useQuery(getSchoolYearsByRegionId, {
+    variables: {
+      regionId: me?.selectedRegionId,
+    },
+    skip: me?.selectedRegionId ? false : true,
+    fetchPolicy: 'network-only',
+  });
+
   const { data, refetch } = useQuery(getApplicationsQuery, {
     variables: {
       filter: filter,
@@ -177,9 +187,31 @@ export const ApplicationTable = ({ filter }: ApplicationTableProps) => {
       }
     }
   }, [emailTemplateData])
+  
+  
   useEffect(() => {
-    setSchoolYears(schoolYearData?.schoolYears)
-  }, [schoolLoading])
+    if (schoolYearData?.region?.SchoolYears) {
+      const { SchoolYears } = schoolYearData?.region;
+      let yearList = [];
+      SchoolYears.map((item: any) => {
+        yearList.push({
+          school_year_id: item.school_year_id,
+          label: moment(item.date_begin).format('YYYY') + ' - ' + moment(item.date_end).format('YY'),
+        });
+        if(item.midyear_application === 1){
+          yearList.push({
+            school_year_id: -1 * item.school_year_id,
+            label: moment(item.date_begin).format('YYYY') + ' - ' + moment(item.date_end).format('YY') + ' Mid-Year',
+          });
+        }
+      });
+      setSchoolYears(yearList)
+    }
+  }, [schoolYearData?.region?.SchoolYears]);
+
+  // useEffect(() => {
+  //   setSchoolYears(schoolYearData?.schoolYears)
+  // }, [schoolLoading])
 
   useEffect(() => {
     if (pageLoading) {
@@ -339,7 +371,10 @@ export const ApplicationTable = ({ filter }: ApplicationTableProps) => {
   }
 
   const handleEditApplication = (data) => {
-    setEditData(data)
+    setEditData({
+      ...data,
+      school_year_id: data.midyear_application ? -1 * data.school_year_id : data.school_year_id
+    })
     setOpenEditModal(true)
   }
   const [updateApplication] = useMutation(updateApplicationMutation)
@@ -348,9 +383,9 @@ export const ApplicationTable = ({ filter }: ApplicationTableProps) => {
       variables: {
         updateApplicationInput: {
           application_id: Number(data.application_id),
-          school_year_id: Number(data.school_year_id),
+          school_year_id: Math.abs(Number(data.school_year_id)),
           status: data.status,
-          midyear_application: data.midyear_application === 'true' ? true : false,
+          midyear_application: data.school_year_id < 0 ? true : false,
         },
       },
     })

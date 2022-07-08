@@ -490,8 +490,11 @@ function Item({ question: q }: { question: Question }) {
 			);
 		case QUESTION_TYPE.INFORMATION:
 			return (
-				<Paragraph size='large'>
-					<span dangerouslySetInnerHTML={{ __html: q.question }}></span>
+				<Paragraph size='large' sx={{
+					color: 'rgb(118, 118, 118)',
+					fontSize: '16px'
+				}}>
+					<span dangerouslySetInnerHTML={{ __html: q.question }} ></span>
 				</Paragraph>
 			);
 		case QUESTION_TYPE.SIGNATURE:

@@ -327,7 +327,6 @@ export const StudentProfile = () => {
                   <Button
                     sx={classes.enrollmentButton}
                     variant='contained'
-                    onClick={() => history.push(enrollmentLink)}
                   >
                     Submitted
                   </Button>

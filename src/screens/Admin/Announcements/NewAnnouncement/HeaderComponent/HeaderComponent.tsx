@@ -1,11 +1,12 @@
 import { Box, Button, IconButton } from '@mui/material'
-import React from 'react'
+import React, { useState } from 'react'
 import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded'
 import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
 import { useStyles } from '../styles'
 import { ANNOUNCEMENTS } from '../../../../../utils/constants'
 import { useHistory } from 'react-router-dom'
 import { Announcement } from '../../../../Dashboard/Announcements/types'
+import CustomModal from '../../../../../components/CustomModal/CustomModals'
 
 type HeaderComponentProps = {
   announcement: Announcement | null
@@ -22,14 +23,27 @@ const HeaderComponent = ({
 }: HeaderComponentProps) => {
   const classes = useStyles
   const history = useHistory()
+  const [showCancelModal, setShowCancelModal] = useState(false)
 
   const handleBackClick = () => {
     if (announcement) setAnnouncement(null)
     history.push(ANNOUNCEMENTS)
   }
 
+
   return (
     <Box sx={classes.pageTop}>
+      {showCancelModal && 
+        <CustomModal
+          title={'Cancel Changes'}
+          description={'Are you sure you want to cancel changes?'}
+          confirmStr='Yes'
+          cancelStr='No'
+          onClose={() => setShowCancelModal(false)}
+          onConfirm={handleBackClick}
+          backgroundColor='white'
+        />
+      }
       <Box sx={classes.pageTitle}>
         <IconButton
           onClick={handleBackClick}
@@ -50,7 +64,7 @@ const HeaderComponent = ({
         )}
       </Box>
       <Box sx={classes.pageTopRight}>
-        <Button sx={classes.cancelBtn} onClick={() => handleBackClick()}>
+        <Button sx={classes.cancelBtn} onClick={() => setShowCancelModal(true)}>
           Cancel
         </Button>
         <Button sx={classes.saveBtn} onClick={() => handleSaveClick()}>

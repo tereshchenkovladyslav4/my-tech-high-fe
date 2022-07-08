@@ -10,6 +10,7 @@ import {
 	IconButton,
 	Select,
 	MenuItem,
+	Tooltip
 } from '@mui/material'
 import { ContentState, EditorState, RichUtils, convertFromHTML, convertToRaw } from 'draft-js'
 
@@ -419,7 +420,11 @@ export const EmailTemplateModal = ({
 			}
 		}
 	}, [data, enrollmentQuestionsData])
-  console.log('deadline', deadline);
+
+	const handleRemoveReminder = (i) => {
+		  const newReminder = reminders.filter((item, index) => index !== i);
+		  setReminders(newReminder);
+	}
 	return (
 		<Modal
 			open={true}
@@ -620,10 +625,17 @@ export const EmailTemplateModal = ({
 							<>						
 								{reminders.map((reminder, i) => (
 									<Box key={i} sx={{ width: '100%' }}>
-										<Grid item xs={12} sx={{ marginTop: '10px' }}>
-											<Subtitle fontWeight='700' size='large'>
-												Reminder {i + 1} (Days before deadline)
-											</Subtitle>
+										<Grid item xs={12}>
+											<Box sx={{display: 'flex', alignItems: 'center'}}>
+												<Subtitle fontWeight='700' size='large'>
+													Reminder {i + 1} (Days before deadline)
+												</Subtitle>
+												{(i === reminders.length - 1) && (
+													<Tooltip title='Remove Reminder' style={{marginLeft: '10px'}} placement="top">
+														<CloseIcon onClick={() => handleRemoveReminder(i)} className={classes.close} />
+													</Tooltip>
+												)}
+											</Box>
 											<Select
 												size='small'
 												name='reminderDay'

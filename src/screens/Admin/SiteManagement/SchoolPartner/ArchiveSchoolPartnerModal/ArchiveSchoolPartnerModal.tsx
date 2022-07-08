@@ -1,13 +1,9 @@
-import { Box, Button, Modal } from '@mui/material'
 import React from 'react'
-import { Title } from '../../../../../components/Typography/Title/Title'
-import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
-import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle';
-import { useMutation } from '@apollo/client';
 import { ToggleSchoolPartnerMutation } from '../services';
 import { toNumber } from 'lodash';
 import { SchoolPartnerType } from '../types';
 import CustomModal from '../../../../../components/CustomModal/CustomModals';
+import { useMutation } from '@apollo/client';
 
 
 export const ArchiveSchoolPartnerModal = ({
@@ -46,6 +42,7 @@ export const ArchiveSchoolPartnerModal = ({
 			confirmStr='Archive'
 			onClose={() => handleModem()}
 			onConfirm={handleArchive}
+			backgroundColor='white'
 		/>
 	)
 }

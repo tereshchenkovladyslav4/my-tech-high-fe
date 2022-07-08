@@ -505,6 +505,17 @@ export const AppBar: FunctionComponent = () => {
                   </Slider>
                 : <Box display='flex' flexDirection='row' alignContent='center' alignItems='center' justifyContent='end'>
                     { renderStudentHeader() }
+                    <Divider
+                      sx={{
+                        background: 'black',
+                        height: 35,
+                        marginX: 3,
+                        marginTop: 2
+                      }}
+                      variant='middle'
+                      orientation='vertical'
+                      
+                    />
                   </Box>
                 }
               </Box>

@@ -18,8 +18,6 @@ import {
   STUDENT_STATUS_PENDING,
   STUDENT_STATUS_WITHDRAWAL,
 } from '../../../../../utils/StudentStatusConstants'
-import { deleteWithdrawalMutation } from '../../../../../graphql/mutation/withdrawal'
-import { useMutation } from '@apollo/client'
 import CustomConfirmModal from '../../../../../components/CustomConfirmModal/CustomConfirmModal'
 
 const selectStyles = makeStyles({
@@ -402,18 +400,9 @@ export const StudentFilters = ({
     }
   }, [studentStatusData])
 
-  const [deleteWithdrawal] = useMutation(deleteWithdrawalMutation)
+
   const onRemoveWithdrawalRequest = async () => {
     setShowConfirmModal(true)
-  }
-
-  const confirmRemoveWithdraw = async () => {
-    const { data } = await deleteWithdrawal({
-      variables: {
-        studentId: parseInt(currentUserData.student.student_id),
-      },
-    })
-    if (data.deleteWithdrawal) setWithdrawalStatus({})
   }
 
   return (
@@ -513,7 +502,8 @@ export const StudentFilters = ({
               confirmBtnTitle='Delete'
               handleConfirmModalChange={(val: boolean, isOk: boolean) => {
                 if (isOk) {
-                  confirmRemoveWithdraw()
+                  setWithdrawalStatus({});
+                  setStudentStatuData({ ...studentStatusData, ...{ activeOption : true } })
                 }
                 setShowConfirmModal(false)
               }}

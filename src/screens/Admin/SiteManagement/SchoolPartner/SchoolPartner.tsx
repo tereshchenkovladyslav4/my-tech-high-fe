@@ -44,7 +44,7 @@ export const SchoolPartner = () => {
     refetch,
   } = useQuery(GetSchoolsOfEnrollment, {
     variables: { schoolPartnerArgs: {
-      region_id: 1,
+      region_id: localStorageRegion,
       sort
     } },
     fetchPolicy: 'network-only',
@@ -194,7 +194,6 @@ export const SchoolPartner = () => {
       column: property.toString(),
       direction: upperCase(order)
     })
-    refetch()
   }
 
   return (
