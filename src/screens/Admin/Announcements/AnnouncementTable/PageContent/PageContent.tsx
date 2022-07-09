@@ -6,6 +6,7 @@ import { useHistory } from 'react-router-dom'
 import { useStyles } from '../styles'
 import { SortableTableHeader } from '../../../../../components/SortableTable/SortableTableHeader/SortableTableHeader'
 import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt'
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import { ANNOUNCEMENTS } from '../../../../../utils/constants'
 import { toolTipStyles } from '../../types'
 import CallMissedOutgoingIcon from '@mui/icons-material/CallMissedOutgoing'
@@ -17,6 +18,7 @@ type PageContentProps = {
   showArchivedAnnouncement: boolean
   setAnnouncement: (value: Announcement) => void
   handleArchiveChangeStatus: (value: Announcement) => void
+  handleDelete: (id: number) => void
 }
 
 type Order = 'asc' | 'desc'
@@ -26,6 +28,7 @@ const PageContent = ({
   showArchivedAnnouncement,
   setAnnouncement,
   handleArchiveChangeStatus,
+  handleDelete
 }: PageContentProps) => {
   const classes = useStyles
   const toolTipClasses = toolTipStyles()
@@ -114,21 +117,40 @@ const PageContent = ({
                       </Tooltip>
                     </TableCell>
                     {!row.isArchived ? (
-                      <TableCell
-                        sx={classes.tableCell}
-                        key={`${index}-7`}
-                        onClick={() => handleArchiveChangeStatus(row)}
-                      >
-                        <Tooltip
-                          title='Archive'
-                          placement='top'
-                          classes={{
-                            tooltip: toolTipClasses.customTooltip,
-                          }}
+                      row.status === 'Published' ? (
+                        <TableCell
+                          sx={classes.tableCell}
+                          key={`${index}-7`}
+                          onClick={() => handleArchiveChangeStatus(row)}
                         >
-                          <SystemUpdateAltIcon fontSize='medium' />
-                        </Tooltip>
-                      </TableCell>
+                          <Tooltip
+                            title='Archive'
+                            placement='top'
+                            classes={{
+                              tooltip: toolTipClasses.customTooltip,
+                            }}
+                          >
+                            <SystemUpdateAltIcon fontSize='medium' />
+                          </Tooltip>
+                        </TableCell>
+                      ) : (
+                        <TableCell
+                          sx={classes.tableCell}
+                          key={`${index}-7`}
+                          onClick={() => handleDelete(row.id)}
+                        >
+                          {console.log('rowrow', row)}
+                          <Tooltip
+                            title='Delete'
+                            placement='top'
+                            classes={{
+                              tooltip: toolTipClasses.customTooltip,
+                            }}
+                          >
+                            <DeleteForeverIcon fontSize='medium' />
+                          </Tooltip>
+                        </TableCell>
+                      )
                     ) : (
                       <TableCell
                         sx={classes.tableCell}

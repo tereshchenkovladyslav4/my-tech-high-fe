@@ -13,6 +13,7 @@ type HeaderComponentProps = {
   setAnnouncement: (value: Announcement | null) => void
   handleSaveClick: () => void
   handlePublishClick: () => void
+  isNew: boolean
 }
 
 const HeaderComponent = ({
@@ -20,6 +21,7 @@ const HeaderComponent = ({
   setAnnouncement,
   handleSaveClick,
   handlePublishClick,
+  isNew
 }: HeaderComponentProps) => {
   const classes = useStyles
   const history = useHistory()
@@ -67,9 +69,11 @@ const HeaderComponent = ({
         <Button sx={classes.cancelBtn} onClick={() => setShowCancelModal(true)}>
           Cancel
         </Button>
-        <Button sx={classes.saveBtn} onClick={() => handleSaveClick()}>
-          Save
-        </Button>
+        { isNew && 
+          <Button sx={classes.saveBtn} onClick={() => handleSaveClick()}>
+            Save
+          </Button>
+        }
         <Button sx={classes.publishBtn} onClick={() => handlePublishClick()}>
           Publish
         </Button>

@@ -400,7 +400,6 @@ export const StudentFilters = ({
     }
   }, [studentStatusData])
 
-
   const onRemoveWithdrawalRequest = async () => {
     setShowConfirmModal(true)
   }
@@ -463,7 +462,7 @@ export const StudentFilters = ({
               </Select>
               {withdrawalStatus?.status == 'Requested' && (
                 <Box onClick={() => onRemoveWithdrawalRequest()}>
-                  <Paragraph sx={{ color: MTHBLUE, my: '5px' }} textAlign='center'>
+                  <Paragraph sx={{ color: MTHBLUE, my: '5px', cursor: 'pointer' }} textAlign='center'>
                     Remove Withdraw Request
                   </Paragraph>
                 </Box>
@@ -502,8 +501,8 @@ export const StudentFilters = ({
               confirmBtnTitle='Delete'
               handleConfirmModalChange={(val: boolean, isOk: boolean) => {
                 if (isOk) {
-                  setWithdrawalStatus({});
-                  setStudentStatuData({ ...studentStatusData, ...{ activeOption : true } })
+                  setWithdrawalStatus({})
+                  setStudentStatuData({ ...studentStatusData, ...{ activeOption: true } })
                 }
                 setShowConfirmModal(false)
               }}

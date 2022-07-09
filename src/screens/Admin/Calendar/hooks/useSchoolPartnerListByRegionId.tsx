@@ -10,7 +10,10 @@ export const useSchoolPartnerListByRegionId = (regionId: number) => {
     error,
   } = useQuery(GetSchoolsOfEnrollment, {
     variables: {
-      regionId: regionId,
+      schoolPartnerArgs: {
+        region_id: regionId,
+        sort: null,
+      },
     },
     skip: regionId ? false : true,
     fetchPolicy: 'network-only',

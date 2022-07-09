@@ -52,19 +52,19 @@ export const defaultInvalidOption: EventInvalidOption = {
 export const defaultUserList: CheckBoxListVM[] = [
   {
     label: 'Parents/Observers',
-    value: 'parent/observers',
+    value: '1',
   },
   {
     label: 'Students',
-    value: 'students',
+    value: '2',
   },
   {
     label: 'Teachers & Assistants',
-    value: 'teacher&assistants',
+    value: '3',
   },
   {
     label: 'Admin',
-    value: 'admin',
+    value: '0',
   },
 ]
 

@@ -191,10 +191,16 @@ export const AdminAppBar: FunctionComponent = () => {
 				bHasChange = true;
 		}
 
+		const programSettings = document.getElementsByClassName('program-set');
+		if(programSettings.length > 0 && programSettings[0].value == '1'){
+			bHasChange = true;
+		}
+
 		if(bHasChange) {
-			setUnsavedChanges(region.region_id);
+			setUnsavedChanges(region);
 			return;
 		}
+		console.log(region)
 
 		setRegion(region);
 	}

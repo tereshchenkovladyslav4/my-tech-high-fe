@@ -142,15 +142,17 @@ const ProgramSetting: React.FC = () => {
     setProgram(selectedRegion?.regionDetail?.program || '')
     setStateLogo(selectedRegion?.regionDetail?.state_logo || '')
     setStateLogoFile(null)
+    setIsChanged(false)
   }, [me?.selectedRegionId])
 
   return (
     <Box sx={classes.base}>
+      <input type="hidden" value={isChanged ? '1' : '0'} className="program-set" />
       <Prompt
         when={isChanged ? true : false}
         message={JSON.stringify({
-          header: 'Unsaved Work',
-          content: 'Changes you made will not be saved',
+          header: 'Unsaved Changes',
+          content: 'Are you sure you want to leave without saving changes?',
         })}
       />
       <PageHeader title='Program Settings' handleClickSave={handleClickSave} />

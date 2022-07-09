@@ -3,11 +3,12 @@ import React, { useEffect, useState, useContext } from 'react'
 import { useStyles } from './styles'
 import { useMutation, useQuery } from '@apollo/client'
 import moment from 'moment'
-import { getAnnouncementsQuery, UpdateAnnouncementMutation } from '../services'
+import { deleteAnnouncementsById, getAnnouncementsQuery, UpdateAnnouncementMutation } from '../services'
 import { UserContext } from '../../../../providers/UserContext/UserProvider'
 import { PageHeader } from './PageHeader'
 import { PageContent } from './PageContent'
 import { Announcement } from '../../../Dashboard/Announcements/types'
+import CustomConfirmModal from '../../../../components/CustomConfirmModal/CustomConfirmModal'
 
 type AnnouncementTableProps = {
   setAnnouncement: (value: Announcement) => void
@@ -20,6 +21,8 @@ const AnnouncementTable = ({ setAnnouncement }: AnnouncementTableProps) => {
   const [tableDatas, setTableDatas] = useState<Announcement[]>([])
   const [totalAnnouncements, setTotalAnnouncements] = useState<number>(0)
   const [showArchivedAnnouncement, setShowArchivedAnnouncement] = useState<boolean>(false)
+  const [showConfirmModal, setShowConfirmModal] = useState<number>(0);
+
   const { loading, data, refetch } = useQuery(getAnnouncementsQuery, {
     variables: {
       regionId: me?.selectedRegionId,
@@ -35,6 +38,20 @@ const AnnouncementTable = ({ setAnnouncement }: AnnouncementTableProps) => {
           announcement_id: Number(announcement.id),
           isArchived: !announcement.isArchived,
         },
+      },
+    })
+    refetch()
+  }
+
+  const [deleteAnnouncementById, {}] = useMutation(deleteAnnouncementsById)
+  const handleDelete = (id: number) => {
+    setShowConfirmModal(parseInt(id))
+  }
+
+  const confirmDeleteAnnouncement = async (id: number) => {
+    const response = await deleteAnnouncementById({
+      variables: {
+        id: id,
       },
     })
     refetch()
@@ -75,7 +92,21 @@ const AnnouncementTable = ({ setAnnouncement }: AnnouncementTableProps) => {
         showArchivedAnnouncement={showArchivedAnnouncement}
         setAnnouncement={setAnnouncement}
         handleArchiveChangeStatus={handleArchiveChangeStatus}
+        handleDelete={handleDelete}
       />
+      {(showConfirmModal !== 0) && (
+        <CustomConfirmModal
+          header='Delete Announcement'
+          content='Are you sure you want to delete this Announcement?'
+          confirmBtnTitle='Delete'
+          handleConfirmModalChange={(val: boolean, isOk: boolean) => {
+            if (isOk) {
+              confirmDeleteAnnouncement(showConfirmModal)
+            }
+            setShowConfirmModal(0)
+          }}
+        />
+      )}
     </Card>
   )
 }

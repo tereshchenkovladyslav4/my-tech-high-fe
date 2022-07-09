@@ -44,6 +44,8 @@ const NewAnnouncement = ({ announcement, setAnnouncement }: NewAnnouncementProps
   const [submitCreate, {}] = useMutation(CreateAnnouncementMutation)
   const [submitSave, {}] = useMutation(UpdateAnnouncementMutation)
 
+  const isNew = announcement?.status === undefined
+
   const handlePublish = () => {
     setShowPublishModal(false)
     handleSaveClick('Published')
@@ -171,6 +173,7 @@ const NewAnnouncement = ({ announcement, setAnnouncement }: NewAnnouncementProps
         setAnnouncement={setAnnouncement}
         handleSaveClick={handleSaveClick}
         handlePublishClick={handlePublishClick}
+        isNew={isNew}
       />
       <Box sx={{ width: '100%', padding: 3 }}>
         <Grid container justifyContent='space-between'>
