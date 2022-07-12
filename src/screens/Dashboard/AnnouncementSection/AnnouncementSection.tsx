@@ -15,13 +15,13 @@ import moment from 'moment'
 import { Paragraph } from '../../../components/Typography/Paragraph/Paragraph'
 import { debounce } from 'lodash'
 import { Person } from '../../HomeroomStudentProfile/Student/types'
+import { extractContent } from '../../../utils/utils'
 
 const AnnouncementSection = ({ inProp, setSectionName, setSelectedAnnouncement }: AnnouncementSectionProps) => {
   const { me } = useContext(UserContext)
   const [limit, setLimit] = useState<number>(10)
-  const { students } = me
   const [searchField, setSearchField] = useState<string>()
-  const [announcementTableData, setAnnouncementTableData] = useState()
+  const [announcementTableData, setAnnouncementTableData] = useState([])
   const getProfilePhoto = (person: Person) => {
     if (!person.photo) return 'image'
 
@@ -32,19 +32,22 @@ const AnnouncementSection = ({ inProp, setSectionName, setSelectedAnnouncement }
   const classes = useStyles
   const avatarGroup = (gradeFilter: string) => {
     const grades = JSON.parse(gradeFilter)
-    console.log(grades, 'grades')
-    console.log(students, 'students')
     return (
       <AvatarGroup max={5} sx={{ maxWidth: '300px', justifyContent: 'start' }} spacing={0}>
-        {students &&
-          students.map((student) => {
+        {me?.students &&
+          me?.students.map((student) => {
             if (
               student?.grade_levels &&
               grades.includes(
                 student?.grade_levels[0].grade_level == 'Kin' ? 'Kindergarten' : student?.grade_levels[0].grade_level,
               )
             ) {
-              return <Avatar alt={student.person.preferred_first_name ?? student.person.first_name} src={getProfilePhoto(student.person)} />
+              return (
+                <Avatar
+                  alt={student.person.preferred_first_name ?? student.person.first_name}
+                  src={getProfilePhoto(student.person)}
+                />
+              )
             }
           })}
       </AvatarGroup>
@@ -62,13 +65,7 @@ const AnnouncementSection = ({ inProp, setSectionName, setSelectedAnnouncement }
     fetchPolicy: 'network-only',
   })
 
-  const extractContent = (s) => {
-    let span = document.createElement('span')
-    span.innerHTML = s
-    return span.textContent || span.innerText
-  }
-
-  const changeHandler = (event) => {
+  const changeHandler = (event: string) => {
     setSearchField(event)
   }
 
@@ -78,7 +75,7 @@ const AnnouncementSection = ({ inProp, setSectionName, setSelectedAnnouncement }
     if (announcementData?.userAnnouncements) {
       const { userAnnouncements } = announcementData
       setAnnouncementTableData(
-        userAnnouncements.map((announcement) => ({
+        userAnnouncements.map((announcement: any) => ({
           date: (
             <Subtitle fontWeight='500' sx={{ fontSize: '12px', color: '#A1A1A1', maxWidth: '300px' }}>
               {moment(announcement.date).format('MMMM DD')}
@@ -121,7 +118,7 @@ const AnnouncementSection = ({ inProp, setSectionName, setSelectedAnnouncement }
         })),
       )
     } else {
-      setAnnouncementTableData(null)
+      setAnnouncementTableData([])
     }
   }, [me?.user_id, announcementData])
 

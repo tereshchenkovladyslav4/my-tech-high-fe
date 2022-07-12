@@ -32,6 +32,8 @@ export default function SchoolDistrictSelect({
   setSchoolDistrict,
   setSchoolDistrictArray,
   setIsChanged,
+  setIsDelete,
+  isDelete
 }: SchoolDistrictSelectProps) {
   const classes = useStyles()
   const { me } = useContext(UserContext)
@@ -80,29 +82,19 @@ export default function SchoolDistrictSelect({
 
   const handleConfirm = () => {
     setCustomModalOpen(false)
-    handleSchoolDistrictInfoDelete()
-  }
-
-  const handleSchoolDistrictInfoDelete = async () => {
-    const deleteResponse = await schoolDistrictInfoDelete({
-      variables: {
-        regionId: me?.selectedRegionId,
-      },
-    })
+    setIsDelete({
+      ...isDelete,
+      schoolDistrict: true
+    });
+    setIsChanged(true);
     setSchoolDistrict({
       name: '',
       path: '',
       file: null,
     })
-
-    if (deleteResponse?.data?.removeSchoolDistrictInfoByRegionId) {
-      await fileDelete({
-        variables: {
-          fileId: deleteResponse?.data?.removeSchoolDistrictInfoByRegionId,
-        },
-      })
-    }
   }
+
+  
 
   const handleReplaceConfirm = () => {
     setReplaceModalOpen(false)

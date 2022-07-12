@@ -439,3 +439,9 @@ export const packetCountQuery = gql`
     }
   }
 `
+
+export const updateEnrollmentSchoolYearByIds = gql`
+  mutation UpdateEnrollmentSchoolYearByIds($updateEnrollmentSchoolYearByIdsInput: UpdateSchoolYearIdsInput!) {
+    updateEnrollmentSchoolYearByIds(updateEnrollmentSchoolYearByIdsInput: $updateEnrollmentSchoolYearByIdsInput)
+  }
+`

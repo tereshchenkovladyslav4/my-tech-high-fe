@@ -31,34 +31,39 @@ export const ItemCard: React.FC<ItemCardProps> = ({ title, subTitle, img, link, 
           display: 'flex',
           flexDirection: 'row',
           justifyContent: 'space-between',
-          alignItems: subTitle ? "center" : "flex-start",
+          alignItems: "center",
           alignContent: 'flex-start',
         }}>
-          <Typography fontSize='20px' component='div' fontWeight={'700'}>
-            {title}
-          </Typography>
-          {!action &&
-            <EastIcon sx={{ mt: subTitle ? 0 : 0.75 }} />
-          }
-        </Box>
-        <Stack direction="row" justifyContent="space-between" alignItems="center">
-          <Typography color='#A1A1A1' fontSize='16px' fontWeight='700px' sx={{ visibility: subTitle ? "shown" : "hidden" }}>
-            {subTitle || "N/A"}
-          </Typography>
-          {action &&
-            <Stack direction="row" spacing={1.5} alignItems="center">
-              <DehazeIcon htmlColor={SYSTEM_01} />
-              <EditIcon htmlColor={SYSTEM_01} onClick={(e) => {
-                alert(`Edit ${title}`);
-                e.stopPropagation();
-              }} />
-              <LoginIcon htmlColor={SYSTEM_01} sx={{ transform: 'rotate(90deg)' }} onClick={(e) => {
-                alert(`Download ${title}`);
-                e.stopPropagation();
-              }} />
+          <Box>
+            <Typography fontSize='20px' component='div' fontWeight={'700'}>
+              {title}
+            </Typography>
+            <Stack direction="row" justifyContent="space-between" alignItems="center">
+              <Typography color='#A1A1A1' fontSize='16px' fontWeight='500' sx={{ visibility: subTitle ? "shown" : "hidden" }}>
+                {subTitle || "N/A"} 
+              </Typography>
+              {action &&
+                <Stack direction="row" spacing={1.5} alignItems="center">
+                  <DehazeIcon htmlColor={SYSTEM_01} />
+                  <EditIcon htmlColor={SYSTEM_01} onClick={(e) => {
+                    alert(`Edit ${title}`);
+                    e.stopPropagation();
+                  }} />
+                  <LoginIcon htmlColor={SYSTEM_01} sx={{ transform: 'rotate(90deg)' }} onClick={(e) => {
+                    alert(`Download ${title}`);
+                    e.stopPropagation();
+                  }} />
+                </Stack>
+              }
             </Stack>
-          }
-        </Stack>
+          </Box>
+          <Box sx={{display: 'flex', alignItems: 'center'}} >
+            {!action &&
+              <EastIcon sx={{ mt: subTitle ? 0 : 0.75 }} />
+            }
+          </Box>
+        </Box>
+        
 
       </CardContent>
     </Card >

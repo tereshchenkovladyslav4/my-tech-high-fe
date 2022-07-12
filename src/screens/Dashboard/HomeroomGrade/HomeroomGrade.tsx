@@ -79,7 +79,7 @@ export const HomeroomGrade: FunctionComponent<HomeroomGradeProps> = ({ schoolYea
     className: "slider variable-width",
     infinite: false,
     speed: 500,
-    slidesToShow: Math.min(5, students.filter(x => x.status.at(-1)?.status !== 2).length),
+    slidesToShow: 3,
     slidesToScroll: 1,
     nextArrow: <SampleNextArrow />,
     prevArrow: <SamplePrevArrow />,
@@ -147,12 +147,12 @@ export const HomeroomGrade: FunctionComponent<HomeroomGradeProps> = ({ schoolYea
         <Stack display='flex' justifyContent='flex-end' alignSelf='center' marginY={1} direction='row' spacing={2}>
           {students && students.length > 2 && (
             <Box sx={{
-              width: windowDimensions.width > 770 ? (Math.min(students.filter(x => x.status.at(-1)?.status !== 2).length, 5) * 60) + 'px'
-                : (windowDimensions.width > 710 ? (Math.min(students.filter(x => x.status.at(-1)?.status !== 2).length, 4) * 60) + 'px'
-                  : (windowDimensions.width > 650 ? (Math.min(students.filter(x => x.status.at(-1)?.status !== 2).length, 3) * 60) + 'px'
-                    // : (Math.min(students.filter(x => x.status.at(-1)?.status !== 2).length, 2) * 60) + 'px'
-                    : '85%'
-                  ))
+              // width: windowDimensions.width > 770 ? (Math.min(students.filter(x => x.status.at(-1)?.status !== 2).length, 5) * 60) + 'px'
+              //   : (windowDimensions.width > 710 ? (Math.min(students.filter(x => x.status.at(-1)?.status !== 2).length, 4) * 60) + 'px'
+              //     : (windowDimensions.width > 650 ? (Math.min(students.filter(x => x.status.at(-1)?.status !== 2).length, 3) * 60) + 'px'
+              //       : '85%'
+              //     ))
+              width: (Math.min(students.filter(x => x.status.at(-1)?.status !== 2).length, 3) * 60) + 'px'
               , mr: '20px'
             }}>
               <style dangerouslySetInnerHTML={{

@@ -1,18 +1,18 @@
 import { Box, Card, Grid } from '@mui/material'
 import React, { useContext, useEffect, useState } from 'react'
-import { useStyles } from './styles'
+import { mainClasses } from './styles'
 import { EventCalendar } from '../EventCalendar'
 import { HeaderComponent } from '../HeaderComponent'
-import { EventDetail } from '../EventDetail'
 import { UserContext } from '../../../../providers/UserContext/UserProvider'
 import { useQuery } from '@apollo/client'
-import { getEventsQuery, getEventTypesQuery } from '../services'
 import { CalendarEvent, EventResponseVM, EventTypeResponseVM, EventVM, MainComponentProps } from '../types'
 import { MultiSelectDropDownListType } from '../components/MultiSelectDropDown/MultiSelectDropDown'
 import moment from 'moment'
+import { hexToRgbA } from '../../../../utils/utils'
+import { getEventsQuery, getEventTypesQuery } from '../services'
+import { EventDetail } from '../EventDetail'
 
 const MainComponent = ({ selectedEventIndex, setSelectedEventIndex, setEvent }: MainComponentProps) => {
-  const classes = useStyles
   const [searchField, setSearchField] = useState<string | undefined>('')
   const { me } = useContext(UserContext)
   const [calendarEventList, setCalendarEventList] = useState<CalendarEvent[]>([])
@@ -35,19 +35,6 @@ const MainComponent = ({ selectedEventIndex, setSelectedEventIndex, setEvent }: 
     skip: me?.selectedRegionId ? false : true,
     fetchPolicy: 'network-only',
   })
-
-  const hexToRgbA = (hexColor: string) => {
-    let c: any
-    if (/^#([A-Fa-f0-9]{3}){1,2}$/.test(hexColor)) {
-      c = hexColor.substring(1).split('')
-      if (c.length == 3) {
-        c = [c[0], c[0], c[1], c[1], c[2], c[2]]
-      }
-      c = '0x' + c.join('')
-      return 'rgba(' + [(c >> 16) & 255, (c >> 8) & 255, c & 255].join(',') + ',0.2)'
-    }
-    throw new Error('Bad Hex')
-  }
 
   useEffect(() => {
     if (!loading && data?.eventsByRegionId) {
@@ -112,7 +99,7 @@ const MainComponent = ({ selectedEventIndex, setSelectedEventIndex, setEvent }: 
   }, [eventTypeData])
 
   return (
-    <Card sx={classes.cardBody}>
+    <Card sx={mainClasses.cardBody}>
       <HeaderComponent
         searchField={searchField}
         setSearchField={setSearchField}

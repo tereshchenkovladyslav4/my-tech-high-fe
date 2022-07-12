@@ -74,6 +74,12 @@ export const approveApplicationMutation = gql`
   }
 `
 
+export const updateApplicationSchoolYearByIds = gql`
+  mutation updateApplicationSchoolYearByIds($updateApplicationSchoolYearInput: UpdateSchoolYearIdsInput!) {
+    updateApplicationSchoolYearByIds(updateApplicationSchoolYearInput: $updateApplicationSchoolYearInput)
+  }
+`
+
 export const deleteApplicationMutation = gql`
   mutation DeleteApplication($deleteApplicationInput: DeleteApplicationInput!) {
     deleteApplication(deleteApplicationInput: $deleteApplicationInput) {

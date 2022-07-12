@@ -27,13 +27,12 @@ const useStyles = makeStyles(() => ({
   },
 }))
 
-export default function CountySelect({ county, setCounty, setCountyArray, setIsChanged }: CountySelectProps) {
+export default function CountySelect({ county, setCounty, setCountyArray, setIsChanged, setIsDelete, isDelete }: CountySelectProps) {
   const { me } = useContext(UserContext)
   const [open, setOpen] = useState<boolean>(false)
   const [customModalOpen, setCustomModalOpen] = useState<boolean>(false)
   const [replaceModalOpen, setReplaceModalOpen] = useState<boolean>(false)
-  const [countyInfoDelete, {}] = useMutation(removeCountyInfoByRegionId)
-  const [fileDelete, {}] = useMutation(removeFileByFileId)
+  
   const extensions =
     '.csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel, text/csv'
   const invalidMessage = 'Please only submit CSV or Excel File'
@@ -70,30 +69,20 @@ export default function CountySelect({ county, setCounty, setCountyArray, setIsC
     })
   }
 
-  const handleCountyInfoDelete = async () => {
-    const deleteResponse = await countyInfoDelete({
-      variables: {
-        regionId: me?.selectedRegionId,
-      },
-    })
+  
+
+  const handleConfirm = () => {
+    setCustomModalOpen(false)
+    setIsDelete({
+      ...isDelete,
+      county: true,
+    });
     setCounty({
       name: '',
       path: '',
       file: null,
     })
-
-    if (deleteResponse?.data?.removeCountyInfoByRegionId) {
-      await fileDelete({
-        variables: {
-          fileId: deleteResponse?.data?.removeCountyInfoByRegionId,
-        },
-      })
-    }
-  }
-
-  const handleConfirm = () => {
-    setCustomModalOpen(false)
-    handleCountyInfoDelete()
+    setIsChanged(true);
   }
 
   const handleReplaceConfirm = () => {

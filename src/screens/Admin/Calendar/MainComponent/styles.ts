@@ -1,6 +1,6 @@
 import { BLUE_GRDIENT } from '../../../../utils/constants'
 
-export const useStyles = {
+export const mainClasses = {
   cardBody: {
     paddingTop: '24px',
     marginBottom: '24px',
@@ -57,16 +57,24 @@ export const useStyles = {
     background: BLUE_GRDIENT,
     color: 'white',
     width: '140px',
-    marginRight: 2,
+    marginRight: 6,
     '&:hover': {
       background: '#4145FF',
       color: '#fff',
     },
   },
   clubButton: {
-    mt: 1.5,
     background: '#2b9db72b',
     width: 'auto',
+    marginRight: 1
+  },
+  iconButton: {
+    background: 'transparent',
+    minWidth: 'fit-content',
+    padding: .75
+  },
+  arrowIconButton: {
+    minWidth: 'fit-content',
   },
   arrowButton: {
     background: '#FAFAFA',
@@ -78,7 +86,9 @@ export const useStyles = {
       background: '#F5F5F5',
       color: '#000',
     },
-    marginRight: 4,
+    minWidth: 'fit-content',
+    padding: 1,
+    marginRight: 1,
   },
   leftArrowButton: {
     background: '#FAFAFA',
@@ -90,6 +100,7 @@ export const useStyles = {
       background: '#F5F5F5',
       color: '#000',
     },
+    minWidth: 'fit-content',
     marginRight: 4,
   },
   rightArrowButton: {

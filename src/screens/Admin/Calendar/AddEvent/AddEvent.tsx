@@ -141,7 +141,7 @@ const AddEvent = ({ selectedEvent }: AddEventProps) => {
             handleSaveClick={handleSaveClick}
           />
           <Box sx={{ width: '100%', padding: 3 }}>
-            <Grid container justifyContent='space-between'>
+            <Grid container justifyContent='center'>
               <Grid item xs={6} sx={{ textAlign: 'left', marginTop: 'auto', marginBottom: 'auto' }}>
                 <EditEventComponent
                   event={event}
@@ -152,7 +152,7 @@ const AddEvent = ({ selectedEvent }: AddEventProps) => {
                   handleAddRSVPClick={() => setShowRSVPForm(true)}
                 />
               </Grid>
-              <Grid item xs={6} sx={{ marginTop: '30px' }}>
+              <Grid item xs={5}>
                 <FilterComponent
                   grades={grades}
                   programYears={programYears}

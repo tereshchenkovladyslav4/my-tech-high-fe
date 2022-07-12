@@ -25,7 +25,7 @@ const Announcements: AnnouncementTemplateType = ({
   const { me, setMe } = useContext(UserContext)
   const [deleteAnnouncementById, {}] = useMutation(deleteUserAnnouncementById)
   const [deleteAnnouncementByUserId, {}] = useMutation(deleteUserAnnouncementByUserId)
-  const onDeleteById = async (id: number) => {
+  const onDeleteById = async (id: number = 0) => {
     const response = await deleteAnnouncementById({
       variables: {
         id: id,
@@ -62,7 +62,7 @@ const Announcements: AnnouncementTemplateType = ({
   return (
     <Box
       sx={
-        announcements?.length == 0 && {
+        (announcements?.length == 0 && {
           backgroundImage: `url(${BGSVG})`,
           backgroundRepeat: 'no-repeat',
           backgroundPosition: 'top',
@@ -72,7 +72,8 @@ const Announcements: AnnouncementTemplateType = ({
           minHeight: '60vh',
           justifyContent: 'center',
           textAlign: 'center',
-        }
+        }) ||
+        {}
       }
       paddingY={1.5}
       paddingX={3}

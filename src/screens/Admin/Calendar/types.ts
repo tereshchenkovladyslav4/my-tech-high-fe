@@ -69,6 +69,7 @@ export type EventCalendarProps = {
   events: EventVM[]
   setEventList?: (value: CalendarEvent[] | undefined) => void
   setSelectedEventIndex: (value: number) => void
+  setSelectedEventIds: (value: number[]) => void
 }
 
 export type EventTypeResponseVM = {

@@ -83,7 +83,7 @@ const PageAction = ({
         <Box sx={classes.content}>
           <Box sx={classes.buttonDiv}>
             <Button sx={classes.quickWithdrawalButton} onClick={onQuickWithdrawalClick}>
-              Quick Withdrawal
+              Quick Withdraw
             </Button>
           </Box>
         </Box>

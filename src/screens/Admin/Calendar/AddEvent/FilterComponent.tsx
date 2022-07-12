@@ -53,14 +53,14 @@ const FilterComponent = ({
         }}
       />
     ) : (
-      <ExpandMoreIcon
-        sx={{
-          color: MTHBLUE,
-          verticalAlign: 'bottom',
-          cursor: 'pointer',
-        }}
-      />
-    )
+        <ExpandMoreIcon
+          sx={{
+            color: MTHBLUE,
+            verticalAlign: 'bottom',
+            cursor: 'pointer',
+          }}
+        />
+      )
   const Filters = () => (
     <Grid container sx={{ textAlign: 'left', marginY: '12px' }}>
       <Grid item container xs={12}>
@@ -153,7 +153,7 @@ const FilterComponent = ({
   }, [grades])
 
   return (
-    <Card sx={{ marginTop: 2, padding: 2 }}>
+    <Card sx={classes.card} >
       <Box display='flex' flexDirection='row' onClick={() => setExpand(!expand)}>
         <Subtitle fontWeight='700' color={MTHBLUE} sx={{ cursor: 'pointer' }}>
           Filter

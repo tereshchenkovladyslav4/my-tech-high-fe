@@ -32,7 +32,7 @@ export const WarningModal: WarningModalTemplateType = ({
         </Box>
         <Box sx={classes.content as object}>
           {showIcon && <ErrorOutlineIcon style={classes.errorOutline} />}
-          <Paragraph size='large' color={SYSTEM_01}>
+          <Paragraph size='large' fontWeight='600' color={SYSTEM_01}>
             {subtitle}
           </Paragraph>
           <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', width: '100%' }}>

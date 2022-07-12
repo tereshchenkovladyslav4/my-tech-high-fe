@@ -14,6 +14,7 @@ import {
   moveNextYearPacketMutation,
   moveThisYearPacketMutation,
   packetCountQuery,
+  updateEnrollmentSchoolYearByIds,
 } from '../services'
 import { map } from 'lodash'
 import moment from 'moment'
@@ -28,6 +29,8 @@ import { EnrollmentPacketFilters } from '../EnrollmentPacketFilters/EnrollmentPa
 import { ProfileContext } from '../../../../providers/ProfileProvider/ProfileContext'
 import { ApplicationEmailModal } from '../../Applications/ApplicationModal/ApplicationEmailModal'
 import { ENROLLMENT_PACKET_HEADCELLS } from '../../../../utils/PageHeadCellsConstant'
+import { EditYearModal } from '../../../../components/EmailModal/EditYearModal'
+import { getSchoolYearsByRegionId } from '../../SiteManagement/services'
 
 export const EnrollmentPacketTable = () => {
   const { me } = useContext(UserContext)
@@ -52,6 +55,11 @@ export const EnrollmentPacketTable = () => {
   const [openEmailModal, setOpenEmailModal] = useState<boolean>(false)
   const [emailHistory, setEmailHistory] = useState([])
   const [openEmailShowModal, setOpenEmailShowModal] = useState<boolean>(false)
+
+  const [noStudnetAlert, setNoStudentAlert] = useState<boolean>(false)
+  const [editYearModal, setEditYearModal] = useState<boolean>(false)
+  const [clearAll, setClearAll] = useState<boolean>(false)
+  const [schoolYears, setSchoolYears] = useState<any[]>([])
 
   const [openWarningModal, setOpenWarningModal] = useState<boolean>(false)
   const [packetCount, setpacketCount] = useState({})
@@ -161,6 +169,34 @@ export const EnrollmentPacketTable = () => {
     setEnrollmentPacket(row)
     setIsShowModal(true)
   }
+
+  const { loading: schoolLoading, data: schoolYearData } = useQuery(getSchoolYearsByRegionId, {
+    variables: {
+      regionId: me?.selectedRegionId,
+    },
+    skip: me?.selectedRegionId ? false : true,
+    fetchPolicy: 'network-only',
+  });
+
+  useEffect(() => {
+    if (schoolYearData?.region?.SchoolYears) {
+      const { SchoolYears } = schoolYearData?.region;
+      let yearList = [];
+      SchoolYears.map((item: any) => {
+        yearList.push({
+          value: item.school_year_id,
+          label: moment(item.date_begin).format('YYYY') + ' - ' + moment(item.date_end).format('YY'),
+        });
+        if(item.midyear_application === 1){
+          yearList.push({
+            value: -1 * item.school_year_id+ '',
+            label: moment(item.date_begin).format('YYYY') + ' - ' + moment(item.date_end).format('YY') + ' Mid-year',
+          });
+        }
+      });
+      setSchoolYears(yearList)
+    }
+  }, [schoolYearData?.region?.SchoolYears]);
 
   useEffect(() => {
     if (emailTemplateData !== undefined) {
@@ -277,6 +313,34 @@ export const EnrollmentPacketTable = () => {
       refetch()
     } catch (error) {}
   }
+
+  const [updateBulkSchoolYear] = useMutation(updateEnrollmentSchoolYearByIds)
+
+  const handleChangeProgramYear = async () => {
+    if (packetIds.length === 0) {
+      setNoStudentAlert(true)
+      return
+    };
+    setEditYearModal(true);
+  }
+
+  const submitEditYear = async (form) => {
+    const {schoolYear} = form;
+    await updateBulkSchoolYear({
+      variables : {
+        updateEnrollmentSchoolYearByIdsInput : {
+          application_ids: packetIds,
+          school_year_id: parseInt(schoolYear) > 0 ? parseInt(schoolYear) : -1 * parseInt(schoolYear),
+          midyear_application : parseInt(schoolYear) > 0 ? 0 : 1
+        }
+      }
+    })
+    setPacketIds([])
+    setClearAll(!clearAll)
+    setEditYearModal(false);
+    refetch();
+  }
+
   const [moveNextYearPacket] = useMutation(moveNextYearPacketMutation)
 
   const handleMoveToNextYear = async () => {
@@ -372,7 +436,7 @@ export const EnrollmentPacketTable = () => {
           >
             Email
           </Button>
-          <Button
+          {/* <Button
             sx={{
               fontSize: 11,
               fontWeight: 700,
@@ -391,7 +455,7 @@ export const EnrollmentPacketTable = () => {
             onClick={handleMoveToThisYear}
           >
             Move Packets to 21-22 Year
-          </Button>
+          </Button> */}
           <Button
             sx={{
               fontSize: 11,
@@ -407,9 +471,9 @@ export const EnrollmentPacketTable = () => {
                 color: 'fff',
               },
             }}
-            onClick={handleMoveToNextYear}
+            onClick={handleChangeProgramYear}
           >
-            Move Packetss to 22-23 Year
+            Change Program Year
           </Button>
         </Box>
       </Box>
@@ -476,7 +540,7 @@ export const EnrollmentPacketTable = () => {
         rows={tableData}
         headCells={ENROLLMENT_PACKET_HEADCELLS}
         onCheck={setPacketIds}
-        clearAll={false}
+        clearAll={clearAll}
         onRowClick={handlePacketSelect}
         onParentClick={handleOpenProfile}
         onSortChange={sortChangeAction}
@@ -510,6 +574,25 @@ export const EnrollmentPacketTable = () => {
           handleModem={() => setOpenEmailShowModal(!openEmailShowModal)}
           handleSubmit={() => setOpenEmailShowModal(false)}
           data={emailHistory}
+        />
+      )}
+
+      {noStudnetAlert && (
+        <WarningModal
+          handleModem={() => setNoStudentAlert(!noStudnetAlert)}
+          title='Error'
+          subtitle='No student(s) selected'
+          btntitle='OK'
+          handleSubmit={() => setNoStudentAlert(!noStudnetAlert)}
+        />
+      )}
+
+      {editYearModal && (
+        <EditYearModal
+          title="Change Program Year"
+          schoolYears={schoolYears}
+          handleSubmit={submitEditYear}
+          handleClose={() => setEditYearModal(false)}
         />
       )}
     </Card>

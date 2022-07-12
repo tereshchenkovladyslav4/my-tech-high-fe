@@ -10,7 +10,7 @@ import { SchoolDistrictFileType } from './SchoolDistrictSelect/SchoolDistrictSel
 import { PageHeader } from '../components/PageHeader'
 import { PageContent } from './PageContent'
 import { SchoolYearSelect } from './SchoolYearSelect'
-import { updateSchoolYearMutation, updateStateNameMutation, uploadFile, uploadImage } from '../services'
+import { removeCountyInfoByRegionId, removeFileByFileId, removeSchoolDistrictInfoByRegionId, updateSchoolYearMutation, updateStateNameMutation, uploadFile, uploadImage } from '../services'
 
 const ProgramSetting: React.FC = () => {
   const classes = useStyles
@@ -30,6 +30,13 @@ const ProgramSetting: React.FC = () => {
   const [county, setCounty] = useState<CountyFileType | null>(null)
   const [schoolDistrict, setSchoolDistrict] = useState<SchoolDistrictFileType | null>(null)
   const [isChanged, setIsChanged] = useState<boolean>(false)
+  const [isStateChanged, setIsStateChanged] = useState<boolean>(false)
+
+  const [isDelete, setIsDelete] = useState({
+    county: false,
+    schoolDistrict: false
+  })
+
   const [stateInvalid, setStateInvalid] = useState<boolean>(false)
   const [selectedYearId, setSelectedYearId] = useState<string>('')
   const [stateLogoFile, setStateLogoFile] = useState<StateLogoFileType | null>(null)
@@ -49,6 +56,14 @@ const ProgramSetting: React.FC = () => {
     let countyFileLocation: string = ''
     if (county?.file && countyArray.length > 0) {
       countyFileLocation = await uploadFile(county.file, 'county', stateName)
+    }
+
+    if(isDelete.county){
+      handleCountyInfoDelete();
+    }
+
+    if(isDelete.schoolDistrict){
+      handleSchoolDistrictInfoDelete();
     }
 
     let schoolDistrictFileLocation: string = ''
@@ -113,6 +128,7 @@ const ProgramSetting: React.FC = () => {
       regionDetail: submitedResponse.data.updateRegion,
     }
     setIsChanged(false)
+    setIsStateChanged(false)
 
     setMe((prevMe) => {
       const updatedRegions = prevMe?.userRegion
@@ -143,13 +159,53 @@ const ProgramSetting: React.FC = () => {
     setStateLogo(selectedRegion?.regionDetail?.state_logo || '')
     setStateLogoFile(null)
     setIsChanged(false)
+    setIsStateChanged(false)
   }, [me?.selectedRegionId])
+
+  // county delete
+  const [countyInfoDelete, {}] = useMutation(removeCountyInfoByRegionId)
+  const [fileDelete, {}] = useMutation(removeFileByFileId)
+
+  const handleCountyInfoDelete = async () => {
+    const deleteResponse = await countyInfoDelete({
+      variables: {
+        regionId: me?.selectedRegionId,
+      },
+    })
+
+    if (deleteResponse?.data?.removeCountyInfoByRegionId) {
+      await fileDelete({
+        variables: {
+          fileId: deleteResponse?.data?.removeCountyInfoByRegionId,
+        },
+      })
+    }
+  }
+
+  const [schoolDistrictInfoDelete, {}] = useMutation(removeSchoolDistrictInfoByRegionId)
+
+  const handleSchoolDistrictInfoDelete = async () => {
+    const deleteResponse = await schoolDistrictInfoDelete({
+      variables: {
+        regionId: me?.selectedRegionId,
+      },
+    })
+    
+
+    if (deleteResponse?.data?.removeSchoolDistrictInfoByRegionId) {
+      await fileDelete({
+        variables: {
+          fileId: deleteResponse?.data?.removeSchoolDistrictInfoByRegionId,
+        },
+      })
+    }
+  }
 
   return (
     <Box sx={classes.base}>
-      <input type="hidden" value={isChanged ? '1' : '0'} className="program-set" />
+      <input type="hidden" value={isChanged || isStateChanged ? '1' : '0'} className="program-set" />
       <Prompt
-        when={isChanged ? true : false}
+        when={isChanged || isStateChanged ? true : false}
         message={JSON.stringify({
           header: 'Unsaved Changes',
           content: 'Are you sure you want to leave without saving changes?',
@@ -185,6 +241,9 @@ const ProgramSetting: React.FC = () => {
         specialEdItem={{ specialEd, setSpecialEd, specialEdOptions, setSpecialEdOptions }}
         enrollItem={{ enroll, setEnroll }}
         setIsChanged={setIsChanged}
+        setIsStateChanged={setIsStateChanged}
+        setIsDelete={setIsDelete}
+        isDelete={isDelete}
       />
     </Box>
   )

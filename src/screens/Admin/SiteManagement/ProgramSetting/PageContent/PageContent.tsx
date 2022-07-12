@@ -23,6 +23,9 @@ export default function PageContent({
   specialEdItem,
   enrollItem,
   setIsChanged,
+  setIsStateChanged,
+  setIsDelete,
+  isDelete,
 }: PageContentProps) {
   const programSettingList: CommonSelectType[] = [
     {
@@ -30,7 +33,7 @@ export default function PageContent({
       component: (
         <StateSelect
           stateName={stateSelectItem?.stateName}
-          setIsChanged={setIsChanged}
+          setIsChanged={setIsStateChanged}
           setIsInvalidStateName={stateSelectItem?.setIsInvalidStateName}
           stateInvalid={stateSelectItem?.stateInvalid}
           setStateInvalid={stateSelectItem?.setStateInvalid}
@@ -69,6 +72,8 @@ export default function PageContent({
           setCounty={countyItem?.setCounty}
           setCountyArray={countyItem?.setCountyArray}
           setIsChanged={setIsChanged}
+          setIsDelete={setIsDelete}
+          isDelete={isDelete}
         />
       ),
     },
@@ -80,6 +85,8 @@ export default function PageContent({
           setSchoolDistrict={schoolDistrictItem?.setSchoolDistrict}
           setSchoolDistrictArray={schoolDistrictItem?.setSchoolDistrictArray}
           setIsChanged={setIsChanged}
+          setIsDelete={setIsDelete}
+          isDelete={isDelete}
         />
       ),
     },

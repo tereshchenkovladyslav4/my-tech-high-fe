@@ -9,4 +9,6 @@ export type SchoolDistrictSelectProps = {
   setSchoolDistrict: (value: any) => void
   setSchoolDistrictArray: (value: any) => void
   setIsChanged: (value: boolean) => void
+  setIsDelete: (value: any) => void
+  isDelete: any
 }

@@ -22,7 +22,7 @@ export default function ActiveModal({
   backgroundColor?: string
 }) {
   const [activeOption, setActiveOption] = useState<number>(1) // 1: Notify Parent of Withdraw, 2: No Form / No Email, 3: Undeclared Form/Email, 4: Undeclared Form / No Email
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setActiveOption(parseInt(e.target.value))
   }
 
@@ -56,7 +56,7 @@ export default function ActiveModal({
             {title}
           </Typography>
           <InfoIcon sx={{ fontSize: 50, margin: '20px 0px' }} />
-          <Typography>{description}</Typography>
+          <Typography fontWeight={'bold'}>{description}</Typography>
           {subDescription && <Typography>{subDescription}</Typography>}
           <Box sx={{ marginTop: '30px' }}>
             <FormControl>

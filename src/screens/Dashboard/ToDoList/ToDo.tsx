@@ -33,14 +33,13 @@ const EmptyStateWrapper = (props) => (
 )
 
 const emptyStateHandler = (showEmpty: boolean, windowDimensions: number) => {
-  const widthPer = windowDimensions < 550 ? '100%' : '';
-  console.log(windowDimensions, widthPer)
+  const widthPer = windowDimensions < 550 ? '100%' : ''
   if (showEmpty) {
     return {
       backgroundImage: `url(${BGSVG})`,
       backgroundRepeat: 'no-repeat',
       backgroundPosition: 'bottom right',
-      backgroundSize: widthPer
+      backgroundSize: widthPer,
     }
   }
 
@@ -52,37 +51,38 @@ type TodoProps = {
 }
 
 function getWindowDimensions() {
-  const { outerWidth: width, outerHeight: height } = window;
+  const { outerWidth: width, outerHeight: height } = window
   return {
     width,
-    height
-  };
+    height,
+  }
 }
 
 export const ToDo: FunctionComponent<TodoProps> = ({ schoolYears }) => {
-  const cardRef = useRef(null);
-
+  const cardRef = useRef(null)
 
   const [showEmpty, setShowEmpty] = useState(false)
-  const [windowDimensions, setWindowDimensions] = useState(0);
-
+  const [windowDimensions, setWindowDimensions] = useState(0)
 
   useEffect(() => {
     function handleResize() {
-      setWindowDimensions(cardRef.current.offsetWidth);
+      setWindowDimensions(cardRef.current.offsetWidth)
     }
 
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
   }, [])
-
 
   const handleShowEmpty = (isEmpty: boolean) => {
     setShowEmpty(isEmpty)
   }
 
   return (
-    <Card style={{ borderRadius: 12, overflow: 'auto' }} sx={{backgroundColor: { xs: '#F8F8F8', sm: '#F8F8F8', md: '#FFFFFF' } }} ref={cardRef}>
+    <Card
+      style={{ borderRadius: 12, overflow: 'auto' }}
+      sx={{ backgroundColor: { xs: '#F8F8F8', sm: '#F8F8F8', md: '#FFFFFF' } }}
+      ref={cardRef}
+    >
       <Box
         flexDirection='row'
         textAlign='left'

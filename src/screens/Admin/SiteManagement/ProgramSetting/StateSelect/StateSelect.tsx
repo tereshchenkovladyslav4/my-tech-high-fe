@@ -134,8 +134,12 @@ export default function StateSelect({
         } else {
           setStateInvalid(false)
           setNewStateName(selectedRegionFullName)
-          setIsChanged(true)
           setIsInvalidStateName(false)
+          if(stateName !== selectedRegionFullName){
+            setIsChanged(true)
+          }else{
+            setIsChanged(false)
+          }
         }
       }
     }

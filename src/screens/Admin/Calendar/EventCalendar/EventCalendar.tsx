@@ -5,7 +5,7 @@ import moment from 'moment'
 import { Calendar, momentLocalizer } from 'react-big-calendar'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import { Box, Button } from '@mui/material'
-import { useStyles } from '../MainComponent/styles'
+import { mainClasses } from '../MainComponent/styles'
 import { CalendarEvent, EventCalendarProps } from '../types'
 
 moment.locale('ko', {
@@ -18,7 +18,6 @@ const localizer = momentLocalizer(moment)
 
 const EventCalendar = ({ eventList, events, setSelectedEventIndex }: EventCalendarProps) => {
   const [selectedDate, setSelectedDate] = useState(new Date())
-  const classes = useStyles
 
   const Event = ({ event }: any) => {
     return (
@@ -48,6 +47,8 @@ const EventCalendar = ({ eventList, events, setSelectedEventIndex }: EventCalend
     })
   }
 
+  const handleOnNaviate = () => {}
+  
   const CustomToolbar = () => {
     return (
       <Box className='toolbar-container'>
@@ -55,8 +56,7 @@ const EventCalendar = ({ eventList, events, setSelectedEventIndex }: EventCalend
           <Button
             disableElevation
             variant='contained'
-            sx={classes.leftArrowButton}
-            startIcon={<ArrowBackIosNewIcon />}
+            sx={mainClasses.leftArrowButton}
             onClick={() => {
               if (selectedDate.getMonth() == 0) {
                 setSelectedDate(new Date(selectedDate.getFullYear() - 1, 11, 1))
@@ -64,13 +64,12 @@ const EventCalendar = ({ eventList, events, setSelectedEventIndex }: EventCalend
                 setSelectedDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth() - 1, 1))
               }
             }}
-          ></Button>
+          ><ArrowBackIosNewIcon /></Button>
           <label style={{ marginBottom: 'auto', marginTop: 'auto' }}>{moment(selectedDate).format('MMMM YYYY')}</label>
           <Button
             disableElevation
             variant='contained'
-            sx={classes.rightArrowButton}
-            startIcon={<ArrowForwardIosIcon />}
+            sx={mainClasses.rightArrowButton}
             onClick={() => {
               if (selectedDate.getMonth() == 11) {
                 setSelectedDate(new Date(selectedDate.getFullYear() + 1, 0, 1))
@@ -78,7 +77,7 @@ const EventCalendar = ({ eventList, events, setSelectedEventIndex }: EventCalend
                 setSelectedDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 1))
               }
             }}
-          ></Button>
+          ><ArrowForwardIosIcon /></Button>
         </Box>
       </Box>
     )
@@ -96,6 +95,7 @@ const EventCalendar = ({ eventList, events, setSelectedEventIndex }: EventCalend
         date={selectedDate}
         formats={formats}
         onSelectEvent={handleSelectEvent}
+        onNavigate={handleOnNaviate}
         eventPropGetter={(event: any, start: any, end: any, isSelected: any) => ({
           event,
           start,

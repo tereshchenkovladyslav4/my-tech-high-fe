@@ -3,7 +3,7 @@ import React from 'react'
 import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
 import { CALENDAR } from '../../../../utils/constants'
 import { useHistory } from 'react-router-dom'
-import { useStyles } from '../MainComponent/styles'
+import { mainClasses } from '../MainComponent/styles'
 import ModeEditIcon from '@mui/icons-material/ModeEdit'
 import AddIcon from '@mui/icons-material/Add'
 import SearchIcon from '@mui/icons-material/Search'
@@ -24,13 +24,12 @@ const HeaderComponent = ({
   selectedEventTypes,
   setSelectedEventTypes,
 }: HeaderComponentProps) => {
-  const classes = useStyles
   const history = useHistory()
   return (
-    <Box sx={classes.pageTop}>
+    <Box sx={mainClasses.pageTop}>
       <Grid container justifyContent='space-between'>
         <Grid item xs={3} sx={{ textAlign: 'left', marginTop: 'auto', marginBottom: 'auto' }}>
-          <Box sx={classes.pageTitle}>
+          <Box sx={mainClasses.pageTitle}>
             <Subtitle size='medium' fontWeight='700'>
               Calendar
             </Subtitle>
@@ -38,11 +37,11 @@ const HeaderComponent = ({
         </Grid>
         <Grid item xs={1}></Grid>
         <Grid item xs={8}>
-          <Box sx={classes.pageTopRight}>
+          <Box sx={mainClasses.pageTopRight}>
             <Button
               disableElevation
               variant='contained'
-              sx={classes.editButton}
+              sx={mainClasses.editButton}
               startIcon={<ModeEditIcon />}
               onClick={() => history.push(`${CALENDAR}/editType`)}
             >
@@ -51,7 +50,7 @@ const HeaderComponent = ({
             <Button
               disableElevation
               variant='contained'
-              sx={classes.addButton}
+              sx={mainClasses.addButton}
               startIcon={<AddIcon />}
               onClick={() => history.push(`${CALENDAR}/addEvent`)}
             >
@@ -62,7 +61,7 @@ const HeaderComponent = ({
               selectedLists={selectedEventTypes}
               setSelectedLists={setSelectedEventTypes}
             />
-            <Box marginLeft={4} sx={classes.search}>
+            <Box marginLeft={4} sx={mainClasses.search}>
               <OutlinedInput
                 onFocus={(e) => (e.target.placeholder = '')}
                 onBlur={(e) => (e.target.placeholder = 'Search Event')}

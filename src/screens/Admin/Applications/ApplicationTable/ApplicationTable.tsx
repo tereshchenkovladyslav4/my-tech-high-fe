@@ -19,6 +19,7 @@ import {
   getSchoolYearQuery,
   updateApplicationMutation,
   toggleHideApplicationMutation,
+  updateApplicationSchoolYearByIds,
 } from '../services'
 import { getEmailTemplateQuery } from '../../../../graphql/queries/email-template'
 import { map, parseInt } from 'lodash'
@@ -28,7 +29,7 @@ import { ApplicationModal } from '../ApplicationModal/ApplicationModal'
 import { ApplicationEmailModal } from '../ApplicationModal/ApplicationEmailModal'
 import { APPLICATION_HEADCELLS } from '../../../../utils/PageHeadCellsConstant'
 import { ApplicationTableProps, EmailTemplateVM, SchoolYearVM } from '../type'
-import { getActiveSchoolYearsByRegionId } from '../../../Enrollment/Question'
+import { EditYearModal } from '../../../../components/EmailModal/EditYearModal'
 import { getSchoolYearsByRegionId } from '../../SiteManagement/services'
 
 export const ApplicationTable = ({ filter }: ApplicationTableProps) => {
@@ -38,6 +39,9 @@ export const ApplicationTable = ({ filter }: ApplicationTableProps) => {
   const [seachField, setSearchField] = useState<string>('')
   const [open, setOpen] = useState<boolean>(false)
   const [openAlert, setOpenAlert] = useState<boolean>(false)
+  const [noStudnetAlert, setNoStudentAlert] = useState<boolean>(false)
+  const [editYearModal, setEditYearModal] = useState<boolean>(false)
+  const [clearAll, setClearAll] = useState<boolean>(false)
   const [paginatinLimit, setPaginatinLimit] = useState<number>(Number(localStorage.getItem('pageLimit')) || 25)
   const [sort, setSort] = useState<string>('status|ASC')
   const [skip, setSkip] = useState<number>(0)
@@ -46,7 +50,7 @@ export const ApplicationTable = ({ filter }: ApplicationTableProps) => {
   const [applicationIds, setApplicationIds] = useState<Array<string>>([])
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [openEditModal, setOpenEditModal] = useState<boolean>(false)
-  const [schoolYears, setSchoolYears] = useState<SchoolYearVM[]>([])
+  const [schoolYears, setSchoolYears] = useState<any[]>([])
   const [editData, setEditData] = useState<any>()
   const [openEmailModal, setOpenEmailModal] = useState<boolean>(false)
   const [emailHistory, setEmailHistory] = useState([])
@@ -59,8 +63,10 @@ export const ApplicationTable = ({ filter }: ApplicationTableProps) => {
         <Box>
           {application.midyear_application ? (
             <>
-              {`${moment(new Date(application.school_year.midyear_application_open)).format('YYYY')} -
-              ${moment(new Date(application.school_year.midyear_application_close)).format('YY')}`}
+              {/* {`${moment(new Date(application.school_year.midyear_application_open)).format('YYYY')} -
+              ${moment(new Date(application.school_year.midyear_application_close)).format('YY')}`} */}
+               {`${moment(new Date(application.school_year.date_begin)).format('YYYY')} -
+              ${moment(new Date(application.school_year.date_end)).format('YY')}`}
               <br /> Mid-Year
             </>
           ) : (
@@ -195,20 +201,19 @@ export const ApplicationTable = ({ filter }: ApplicationTableProps) => {
       let yearList = [];
       SchoolYears.map((item: any) => {
         yearList.push({
-          school_year_id: item.school_year_id,
+          value: item.school_year_id,
           label: moment(item.date_begin).format('YYYY') + ' - ' + moment(item.date_end).format('YY'),
         });
         if(item.midyear_application === 1){
           yearList.push({
-            school_year_id: -1 * item.school_year_id,
-            label: moment(item.date_begin).format('YYYY') + ' - ' + moment(item.date_end).format('YY') + ' Mid-Year',
+            value: -1 * item.school_year_id+ '',
+            label: moment(item.date_begin).format('YYYY') + ' - ' + moment(item.date_end).format('YY') + ' Mid-year',
           });
         }
       });
       setSchoolYears(yearList)
     }
   }, [schoolYearData?.region?.SchoolYears]);
-
   // useEffect(() => {
   //   setSchoolYears(schoolYearData?.schoolYears)
   // }, [schoolLoading])
@@ -319,7 +324,7 @@ export const ApplicationTable = ({ filter }: ApplicationTableProps) => {
       refetchEmailTemplate()
       refetch()
       setOpen(false)
-    } catch (error) {}
+    } catch (error) { }
   }
   const handleEmailSend = (from: string, subject: string, body: string) => {
     if (applicationIds.length === 0) {
@@ -351,7 +356,7 @@ export const ApplicationTable = ({ filter }: ApplicationTableProps) => {
         },
       })
       refetch()
-    } catch (error) {}
+    } catch (error) { }
   }
   const [moveNextYearApplication] = useMutation(moveNextYearApplicationMutation)
 
@@ -368,6 +373,33 @@ export const ApplicationTable = ({ filter }: ApplicationTableProps) => {
       },
     })
     refetch()
+  }
+
+  const [updateMiltiSchoolYears] = useMutation(updateApplicationSchoolYearByIds);
+
+  const handleChangeProgramYear = async () => {
+    if (applicationIds.length === 0) {
+      setNoStudentAlert(true)
+      return
+    };
+    setEditYearModal(true);
+  }
+
+  const submitEditYear = async (form) => {
+    const {schoolYear} = form;
+    await updateMiltiSchoolYears({
+      variables : {
+        updateApplicationSchoolYearInput : {
+          application_ids: applicationIds,
+          school_year_id: parseInt(schoolYear) > 0 ? parseInt(schoolYear) : -1 * parseInt(schoolYear),
+          midyear_application : parseInt(schoolYear) > 0 ? 0 : 1
+        }
+      }
+    })
+    setApplicationIds([])
+    setClearAll(!clearAll)
+    setEditYearModal(false);
+    refetch();
   }
 
   const handleEditApplication = (data) => {
@@ -504,26 +536,6 @@ export const ApplicationTable = ({ filter }: ApplicationTableProps) => {
               borderRadius: 2,
               textTransform: 'none',
               height: '33px',
-              background: YELLOW_GRADIENT,
-              color: 'white',
-              width: '195px',
-              marginRight: 2,
-              '&:hover': {
-                background: '#FFD626',
-                color: '#fff',
-              },
-            }}
-            onClick={handleMoveToThisYear}
-          >
-            Move Application to This Year
-          </Button>
-          <Button
-            sx={{
-              fontSize: 11,
-              fontWeight: 700,
-              borderRadius: 2,
-              textTransform: 'none',
-              height: '33px',
               background: GREEN_GRADIENT,
               color: 'white',
               width: '195px',
@@ -532,9 +544,9 @@ export const ApplicationTable = ({ filter }: ApplicationTableProps) => {
                 color: 'fff',
               },
             }}
-            onClick={handleMoveToNextYear}
+            onClick={handleChangeProgramYear}
           >
-            Move Applications to Next Year
+            Change Program Year
           </Button>
         </Box>
       </Box>
@@ -623,6 +635,7 @@ export const ApplicationTable = ({ filter }: ApplicationTableProps) => {
         headCells={APPLICATION_HEADCELLS}
         onCheck={setApplicationIds}
         onSortChange={sortChangeAction}
+        clearAll={clearAll}
       />
       {open && (
         <EmailModal
@@ -639,6 +652,23 @@ export const ApplicationTable = ({ filter }: ApplicationTableProps) => {
           subtitle='Please select applications'
           btntitle='Close'
           handleSubmit={() => setOpenAlert(!openAlert)}
+        />
+      )}
+      {noStudnetAlert && (
+        <WarningModal
+          handleModem={() => setNoStudentAlert(!noStudnetAlert)}
+          title='Error'
+          subtitle='No student(s) selected'
+          btntitle='OK'
+          handleSubmit={() => setNoStudentAlert(!noStudnetAlert)}
+        />
+      )}
+      {editYearModal && (
+        <EditYearModal
+          title="Change Program Year"
+          schoolYears={schoolYears}
+          handleSubmit={submitEditYear}
+          handleClose={() => setEditYearModal(false)}
         />
       )}
       {openEditModal && (

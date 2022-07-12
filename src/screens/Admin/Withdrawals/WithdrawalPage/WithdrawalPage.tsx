@@ -275,7 +275,7 @@ const WithdrawalPage = () => {
         updateWithdrawalInput: {
           withdrawal_id: Number(effective?.withdrawId),
           value: acceptDate?.toString(),
-          field: "date_effective",
+          field: 'date_effective',
         },
       },
     })
@@ -424,8 +424,8 @@ const WithdrawalPage = () => {
       {errorReinstateModal && (
         <WarningModal
           title='Error'
-          subtitle="You may only select multiple student's with the same status."
-          btntitle='OK'
+          subtitle='You may only select multiple students with the same status.'
+          btntitle='Ok'
           handleModem={() => setErrorReinstateModal(false)}
           handleSubmit={() => setErrorReinstateModal(false)}
         />

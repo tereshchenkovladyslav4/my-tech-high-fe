@@ -76,6 +76,7 @@ export const SECONDARY_MEDIUM_MOUSEOVER = SYSTEM_02
 export const SECONDARY_MEDIUM_DISABLED = SYSTEM_08
 
 export const STATES = ['Arizona', 'Colorado', 'Idaho', 'Indiana', 'Wyoming']
+export const WEEKDAYS = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su']
 
 export const FEATURES = [
   'Announcements',
@@ -1505,4 +1506,4 @@ export const monthlyIncome = [
 ]
 
 //  Withdrawal
-export const WITHDRAWAL_STATUS_LABEL = ['Requested', 'Notified', 'Withdrawn'];
+export const WITHDRAWAL_STATUS_LABEL = ['Requested', 'Notified', 'Withdrawn']

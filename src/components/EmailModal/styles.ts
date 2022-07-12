@@ -1,4 +1,5 @@
-import { BLACK } from '../../utils/constants'
+import { BLACK, SYSTEM_07 } from '../../utils/constants'
+import { outlinedInputClasses, inputLabelClasses } from "@mui/material";
 export const useStyles = {
   modalCard: {
     position: 'absolute' as 'absolute',
@@ -65,5 +66,48 @@ export const useStyles = {
   'ul.sub-bullet': {
     listStyleType: 'square',
     marginLeft: '-2em',
+  },
+  dropdown:{
+    [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
+      borderColor: SYSTEM_07,
+      borderWidth: '2px'
+    },    
+    [`& .${outlinedInputClasses.notchedOutline}`]: {
+      borderColor: SYSTEM_07,
+      borderWidth: '2px'
+    },
+    [`& .${inputLabelClasses.root}.${inputLabelClasses.focused}`]: {
+      transform: 'translate(14px, -11px) scale(1)'
+    },
+    [`& .${inputLabelClasses.root}.${inputLabelClasses.shrink}`]: {
+      transform: 'translate(14px, -11px) scale(1)'
+    },
+    [`& .${outlinedInputClasses.root} .${outlinedInputClasses.notchedOutline} span`]: {
+      fontSize: 16
+    },
+    marginTop: '40px',
+    marginBottom: '50px',
+    width: '100%',
+  },
+  content: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: '100%',
+  },
+  textFieldError:{
+    [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
+      borderColor: '#BD0043',
+    },
+    marginY: 2,
+    width: '100%',
+    [`& .${inputLabelClasses.root}.${inputLabelClasses.focused}`]: {
+      transform: 'translate(14px, -11px) scale(1)'
+    },
+    [`& .${outlinedInputClasses.root} .${outlinedInputClasses.notchedOutline} span`]: {
+      fontSize: 16
+    },
+    marginTop: '40px',
+    marginBottom: '50px',
   },
 }
