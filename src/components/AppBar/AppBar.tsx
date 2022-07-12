@@ -9,7 +9,7 @@ import AddCircleIcon from '@mui/icons-material/AddCircle';
 import BackupTableIcon from '@mui/icons-material/BackupTable'
 import {
   AppBar as MUIAppBar, Avatar, Box, Button, Divider, Grid, Toolbar, IconButton, Drawer, MenuItem, Menu, ListItemText
-  , ListItemIcon, Typography, Tooltip
+  , ListItemIcon,
 } from '@mui/material'
 import { filter, map } from 'lodash'
 import React, { FunctionComponent, useContext, useEffect, useRef, useState } from 'react'
@@ -40,6 +40,7 @@ import { getSchoolYearsByRegionId } from '../../screens/Admin/Dashboard/SchoolYe
 import ScheduleIcon from '@mui/icons-material/Schedule'
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline'
 import ScheduleIcon from '@mui/icons-material/Schedule'
+import { getWindowDimensions } from '../AdminAppBar/AdminAppBar';
 
 
 const drawerWidth = '100%';
@@ -64,6 +65,9 @@ export const AppBar: FunctionComponent = () => {
   const [activeStudents, setActiveStudents] = useState<StudentType[]>([])
 
   const location = useLocation()
+
+  const [windowDimensions] = useState(getWindowDimensions());
+
 
   const isActive = (id) => location.pathname.includes(`/${id}`)
 
@@ -236,13 +240,13 @@ export const AppBar: FunctionComponent = () => {
         }
       },
       {
-        breakpoint: 1368,
+        breakpoint: 1300,
         settings: {
           slidesToShow: 2
         }
       },
       {
-        breakpoint: 960,
+        breakpoint: 1200,
         settings: {
           slidesToShow: 1
         }
@@ -278,12 +282,19 @@ export const AppBar: FunctionComponent = () => {
               <Metadata
                 divider={true}
                 title={
-                  <Subtitle color={isActive(student.student_id) ? MTHBLUE : '#A1A1A1'}>
+                  <Subtitle 
+                    color={isActive(student.student_id) ? MTHBLUE : '#A1A1A1'}
+                    sx={classes.studentItemText}
+                  >
                     {student.person.preferred_first_name ?? student.person.first_name}
                   </Subtitle>
                 }
                 subtitle={
-                  <Paragraph color='#cccccc' size={'large'}>
+                  <Paragraph 
+                    color='#cccccc' 
+                    size={'large'}
+                    sx={classes.studentItemText}
+                  >
                     {gradeText(student)}
                   </Paragraph>
                 }
@@ -498,7 +509,8 @@ export const AppBar: FunctionComponent = () => {
           <Grid container justifyContent='flex' alignItems='center'>
             <Grid item xs={4} />
             <Grid item xs={8} display='flex' justifyContent={'flex-end'} alignItems='center'>
-              <Box width={'600px'} sx={{ marginRight: '50px' }}>
+              <Box width={windowDimensions.width > 639 ? 'calc(58vw - 200px)' : windowDimensions.width > 565 ? 'calc(58vw - 150px)' : windowDimensions.width > 505 ? 'calc(58vw - 105px)' :
+							windowDimensions.width > 400 ? 'calc(58vw - 60px)' : windowDimensions.width > 350 ? 'calc(58vw - 30px)' : windowDimensions.width > 295 ? '58vw' : windowDimensions.width > 230 ? '75vw' : windowDimensions.width > 175 ? '97vw' : '160vw' } sx={{ marginRight: '50px' }}>
                 {activeStudents.length > 3
                 ? <Slider {...settings} ref={sliderRef}>
                     {renderStudentHeader()}

@@ -43,7 +43,7 @@ export const getAllPersonInfoBySearchItem = gql`
 	}
 `
 
-function getWindowDimensions() {
+export function getWindowDimensions() {
 	const { outerWidth: width, outerHeight: height } = window;
 	return {
 		width,

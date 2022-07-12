@@ -22,6 +22,10 @@ export const ArchiveSchoolPartnerModal = ({
 		'Are you sure you want to archive this School Partner?' 
 		: 'Are you sure you want to unarchive this School Partner?'
 
+	const confirmText = toNumber(el.active) === 1 
+		? 'Archive'
+		: 'Unarchive'
+
 
 	const buttonText = toNumber(el.active) === 1  ? 'Archive' : 'Unarchive'
 	
@@ -39,7 +43,7 @@ export const ArchiveSchoolPartnerModal = ({
 		<CustomModal
 			title={text}
 			description={subtext}
-			confirmStr='Archive'
+			confirmStr={confirmText}
 			onClose={() => handleModem()}
 			onConfirm={handleArchive}
 			backgroundColor='white'

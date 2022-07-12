@@ -13,7 +13,6 @@ type HeaderComponentProps = {
   setAnnouncement: (value: Announcement | null) => void
   handleSaveClick: () => void
   handlePublishClick: () => void
-  isNew: boolean
 }
 
 const HeaderComponent = ({
@@ -21,11 +20,12 @@ const HeaderComponent = ({
   setAnnouncement,
   handleSaveClick,
   handlePublishClick,
-  isNew
+  
 }: HeaderComponentProps) => {
   const classes = useStyles
   const history = useHistory()
   const [showCancelModal, setShowCancelModal] = useState(false)
+  const [showUpdatePublishedModal, setShowUpdatePublishedModal] = useState(false)
 
   const handleBackClick = () => {
     if (announcement) setAnnouncement(null)
@@ -46,6 +46,26 @@ const HeaderComponent = ({
           backgroundColor='white'
         />
       }
+      {showUpdatePublishedModal && 
+        <CustomModal
+          title={'Update'}
+          description={
+            `This announcement has already been published. 
+            This message will appear as unread on user’s dashboard, 
+            but they will not receive a new email. 
+            If any recipients have changed, they will receive 
+            the new announcement via email.`
+          }
+          confirmStr='Update'
+          cancelStr='Cancel'
+          onClose={() => setShowUpdatePublishedModal(false)}
+          onConfirm={() => {
+            handlePublishClick()
+            setShowUpdatePublishedModal(false)
+          }}
+          backgroundColor='white'
+        />
+      }
       <Box sx={classes.pageTitle}>
         <IconButton
           onClick={handleBackClick}
@@ -57,7 +77,7 @@ const HeaderComponent = ({
         </IconButton>
         {announcement ? (
           <Subtitle size='medium' fontWeight='700'>
-            Edit Announcement
+            Edit { announcement.status } Announcement
           </Subtitle>
         ) : (
           <Subtitle size='medium' fontWeight='700'>
@@ -69,13 +89,22 @@ const HeaderComponent = ({
         <Button sx={classes.cancelBtn} onClick={() => setShowCancelModal(true)}>
           Cancel
         </Button>
-        { isNew && 
+        { announcement?.status === 'Draft' && 
           <Button sx={classes.saveBtn} onClick={() => handleSaveClick()}>
             Save
           </Button>
         }
-        <Button sx={classes.publishBtn} onClick={() => handlePublishClick()}>
-          Publish
+        <Button 
+          sx={classes.publishBtn} 
+          onClick={() => 
+              announcement?.status === undefined || announcement?.status === 'Draft' 
+              ? handlePublishClick() 
+              : announcement?.status === 'Published' 
+                ? setShowUpdatePublishedModal(true) 
+                : handleSaveClick()
+          }
+        >
+          {  announcement?.status === undefined ||  announcement?.status === 'Draft'  ? 'Publish' : 'Update' }
         </Button>
       </Box>
     </Box>

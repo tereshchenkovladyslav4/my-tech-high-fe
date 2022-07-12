@@ -5,7 +5,7 @@ import moment from 'moment'
 import { Calendar, momentLocalizer } from 'react-big-calendar'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import { Box, Button } from '@mui/material'
-import { useStyles } from '../../../Admin/Calendar/MainComponent/styles'
+import { mainClasses } from '../../../Admin/Calendar/MainComponent/styles'
 import { CalendarEvent, EventCalendarProps } from '../../../Admin/Calendar/types'
 
 moment.locale('ko', {
@@ -18,7 +18,6 @@ const localizer = momentLocalizer(moment)
 
 const EventCalendar = ({ eventList, events, setSelectedEventIndex, setSelectedEventIds }: EventCalendarProps) => {
   const [selectedDate, setSelectedDate] = useState(new Date())
-  const classes = useStyles
 
   const Event = ({ event }: any) => {
     return (
@@ -55,7 +54,7 @@ const EventCalendar = ({ eventList, events, setSelectedEventIndex, setSelectedEv
           <Button
             disableElevation
             variant='contained'
-            sx={classes.leftArrowButton}
+            sx={mainClasses.leftArrowButton}
             startIcon={<ArrowBackIosNewIcon />}
             onClick={() => {
               if (selectedDate.getMonth() == 0) {
@@ -69,7 +68,7 @@ const EventCalendar = ({ eventList, events, setSelectedEventIndex, setSelectedEv
           <Button
             disableElevation
             variant='contained'
-            sx={classes.rightArrowButton}
+            sx={mainClasses.rightArrowButton}
             startIcon={<ArrowForwardIosIcon />}
             onClick={() => {
               if (selectedDate.getMonth() == 11) {
