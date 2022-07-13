@@ -263,7 +263,8 @@ function Item({ question: q, setAdditionalQuestion }: { question: EnrollmentQues
             <DropDown
                 sx={{
                     margin: '0 !important',
-                    width: '100%',
+                    width: '99%',
+                    maxWidth: '99%',
                     [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
                         borderColor: SYSTEM_07,
                     },
@@ -280,7 +281,8 @@ function Item({ question: q, setAdditionalQuestion }: { question: EnrollmentQues
             <TextField
                 size='small'
                 sx={{
-                    maxWidth: '100%',
+                    maxWidth: '99%',
+                    width: '99%',
 
                     [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
                         borderColor: SYSTEM_07,
@@ -300,7 +302,7 @@ function Item({ question: q, setAdditionalQuestion }: { question: EnrollmentQues
                 required
                 component="fieldset"
                 variant="standard"
-                sx={{ width: '100%' }}
+                sx={{ width: '99%', maxWidth: '99%' }}
             >
                 <FormGroup style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
                     <Grid container>
@@ -341,7 +343,7 @@ function Item({ question: q, setAdditionalQuestion }: { question: EnrollmentQues
                 required
                 component="fieldset"
                 variant="standard"
-                sx={{ width: '100%' }}
+                sx={{ width: '99%', maxWidth: '99%' }}
             >
                 <FormGroup style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
                     <Grid container>
@@ -365,7 +367,8 @@ function Item({ question: q, setAdditionalQuestion }: { question: EnrollmentQues
             <TextField
                 size='small'
                 sx={{
-                    minWidth: '100%',
+                    width: '99%',
+                    minWidth: '99%',
 
                     [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
                         borderColor: SYSTEM_07,

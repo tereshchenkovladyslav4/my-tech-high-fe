@@ -19,7 +19,8 @@ const selectStyles = makeStyles({
     textAlign: 'center',
   },
   statusSelect: {
-    fontSize: '12px',
+    fontSize: '12px !important',
+    paddingLeft: '8px',
     borderRadius: '15px',
     minWidth: '80px',
     height: '29px',
@@ -113,7 +114,7 @@ export const ApplicationModal: ApplicationModalType = ({
                     Application
                     <Box sx={classes.labelAfter as object}></Box>
                   </Subtitle>
-                  <Subtitle sx={classes.formLabel as object} fontWeight='500'>
+                  <Subtitle sx={{...classes.formLabel as object, textAlign: 'center', paddingLeft: 0}} fontWeight='500'>
                     {data.date_submitted ? moment(data.date_submitted).format('MM/DD/yy') : null}
                   </Subtitle>
                 </Box>
@@ -131,7 +132,7 @@ export const ApplicationModal: ApplicationModalType = ({
                     value={values.school_year_id}
                   >
                     {schoolYears?.map((item) => (
-                      <MenuItem value={item.school_year_id}>{item.label}</MenuItem>
+                      <MenuItem value={item.value}>{item.label}</MenuItem>
                     ))}
                   </Select>
                 </Box>

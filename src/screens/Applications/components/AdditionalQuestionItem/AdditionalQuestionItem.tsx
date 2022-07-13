@@ -16,7 +16,7 @@ export function AdditionalQuestionItem({ question: q, field, meta, form }: { que
     const classes = useStyles
     const [options, setOptions] = useState(q?.options || [])
     const updateOptionsForDefaultQuestion = (updatedOptions) => {
-      setOptions(updatedOptions)
+      //setOptions(updatedOptions)
     }
     //	address_county_id
     const {loading: countyLoading, data: countyData } = useQuery(getCountiesByRegionId, {

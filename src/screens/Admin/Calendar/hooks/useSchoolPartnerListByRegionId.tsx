@@ -27,7 +27,7 @@ export const useSchoolPartnerListByRegionId = (regionId: number) => {
         schoolOfEnrollments?.getSchoolsOfEnrollmentByRegion
           ?.filter((item: any) => !!item.active)
           .map((schoolOfEnroll: any) => ({
-            label: schoolOfEnroll?.name,
+            label: schoolOfEnroll?.abbreviation,
             value: `${schoolOfEnroll?.school_partner_id}`,
           })),
       )

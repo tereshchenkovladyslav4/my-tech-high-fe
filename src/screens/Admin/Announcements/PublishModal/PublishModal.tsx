@@ -14,14 +14,16 @@ export default function PublishModal({
   onPublish,
   onSchedule,
   setCronJobTime,
+  scheduledTime,
 }: {
   onClose: () => void
   onPublish: () => void
   onSchedule: () => void
-  setCronJobTime: (value: Date) => void
+  setCronJobTime: (value: Date) => void,
+  scheduledTime?: Date,
 }) {
   const classes = useStyles
-  const [dateTime, setDateTime] = useState<Date>(new Date())
+  const [dateTime, setDateTime] = useState<Date>(scheduledTime ?? new Date())
   const [invalidTime, setInvalidTime] = useState<boolean>(false)
 
   const handleSchedule = () => {
@@ -83,7 +85,7 @@ export default function PublishModal({
                   label='Time'
                   type='time'
                   size='small'
-                  defaultValue={moment(new Date()).format('HH:mm')}
+                  defaultValue={ moment(scheduledTime).format('HH:mm') ?? moment(new Date()).format('HH:mm')}
                   InputLabelProps={{
                     shrink: true,
                   }}

@@ -141,7 +141,7 @@ export const defaultQuestions = [
         label: 'Parent Email Confirmation',
         type: 'Text Field',
         slug: 'parent_emailConfirm',
-        validation: 0
+        validation: 1
     },
     {
         label: 'Student Email',

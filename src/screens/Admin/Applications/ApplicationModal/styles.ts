@@ -63,9 +63,9 @@ export const useStyles = {
   },
   formLabel: {
     width: '155px',
-    textAlign: 'center',
     position: 'relative',
     color: '#000000',
+    paddingLeft: '12px'
   },
   formValue: {
     padding: '0 30px',

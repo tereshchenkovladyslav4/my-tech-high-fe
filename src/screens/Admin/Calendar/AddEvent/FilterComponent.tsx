@@ -53,14 +53,14 @@ const FilterComponent = ({
         }}
       />
     ) : (
-        <ExpandMoreIcon
-          sx={{
-            color: MTHBLUE,
-            verticalAlign: 'bottom',
-            cursor: 'pointer',
-          }}
-        />
-      )
+      <ExpandMoreIcon
+        sx={{
+          color: MTHBLUE,
+          verticalAlign: 'bottom',
+          cursor: 'pointer',
+        }}
+      />
+    )
   const Filters = () => (
     <Grid container sx={{ textAlign: 'left', marginY: '12px' }}>
       <Grid item container xs={12}>
@@ -106,7 +106,7 @@ const FilterComponent = ({
               haveSelectAll={false}
             />
             <CheckBoxList
-              title={'Shool of Enrollment'}
+              title={'School of Enrollment'}
               values={schoolofEnrollments}
               setValues={(value) => {
                 setSchoolofEnrollment(value)
@@ -153,7 +153,7 @@ const FilterComponent = ({
   }, [grades])
 
   return (
-    <Card sx={classes.card} >
+    <Card sx={classes.card}>
       <Box display='flex' flexDirection='row' onClick={() => setExpand(!expand)}>
         <Subtitle fontWeight='700' color={MTHBLUE} sx={{ cursor: 'pointer' }}>
           Filter

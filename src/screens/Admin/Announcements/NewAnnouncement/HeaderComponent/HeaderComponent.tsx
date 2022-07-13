@@ -89,7 +89,7 @@ const HeaderComponent = ({
         <Button sx={classes.cancelBtn} onClick={() => setShowCancelModal(true)}>
           Cancel
         </Button>
-        { announcement?.status === 'Draft' && 
+        { (announcement?.status === 'Draft' || announcement === null) &&
           <Button sx={classes.saveBtn} onClick={() => handleSaveClick()}>
             Save
           </Button>
@@ -97,11 +97,9 @@ const HeaderComponent = ({
         <Button 
           sx={classes.publishBtn} 
           onClick={() => 
-              announcement?.status === undefined || announcement?.status === 'Draft' 
+              announcement?.status === undefined || announcement?.status === 'Draft' || announcement.status === 'Scheduled'
               ? handlePublishClick() 
-              : announcement?.status === 'Published' 
-                ? setShowUpdatePublishedModal(true) 
-                : handleSaveClick()
+              : setShowUpdatePublishedModal(true) 
           }
         >
           {  announcement?.status === undefined ||  announcement?.status === 'Draft'  ? 'Publish' : 'Update' }

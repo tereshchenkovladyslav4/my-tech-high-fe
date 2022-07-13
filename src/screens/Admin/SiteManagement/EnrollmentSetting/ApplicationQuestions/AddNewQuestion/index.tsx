@@ -211,7 +211,7 @@ export default function AddNewQuestionModal({
             size='small'
           />
         </Box>
-        <Box mt='30px' width='100%' display='flex' flexDirection='column' maxHeight={'600px'} overflow='auto'>
+        <Box mt='30px' width='100%' display='flex' flexDirection='column' maxHeight={'calc(100vh - 353px);'} overflow='auto'>
           {type === 2 || type === 6 ? (
             <Box height='50px' />
           ) : (type === 7 || type === 4) ? (
@@ -264,7 +264,7 @@ export default function AddNewQuestionModal({
           }}
         >
           <Box sx={{display: 'flex', alignItems: 'center', visibility: type === 2 ? 'visible' : 'hidden'}}>
-            <Checkbox checked={validation} onClick={() => setValidation(!validation)} disabled={isDefaultQuestion}/>
+            <Checkbox checked={validation} onClick={() => setValidation(!validation)} disabled={isDefaultQuestion && editItem?.type != 2}/>
             <Subtitle size='small'>Validation</Subtitle>
           </Box>
           <Box sx={{display: 'flex', alignItems: 'center',}}>

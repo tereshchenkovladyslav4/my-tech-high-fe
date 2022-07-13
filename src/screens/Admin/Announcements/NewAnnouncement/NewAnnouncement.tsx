@@ -211,6 +211,7 @@ const NewAnnouncement = ({ announcement, setAnnouncement }: NewAnnouncementProps
             onPublish={() => handlePublish()}
             setCronJobTime={setCronJobTime}
             onSchedule={() => handleSetSchedule()}
+            scheduledTime={announcement?.scheduleTime}
           />
         )}
       </Box>

@@ -576,7 +576,7 @@ export default function AddNewQuestionModal({
                 size='small'
               />
             </Box>
-            <Box mt='30px' width='100%' display='flex' flexDirection='column' maxHeight={'400px'} overflow='auto'>
+            <Box mt='30px' width='100%' display='flex' flexDirection='column' maxHeight={'calc(100vh - 353px);'} overflow='auto'>
               {e.type === QUESTION_TYPE.TEXTFIELD || e.type === QUESTION_TYPE.CALENDAR ? 
               (<Box height='50px' />) :
               e.type === QUESTION_TYPE.INFORMATION || e.type === QUESTION_TYPE.AGREEMENT ?  
@@ -636,7 +636,7 @@ export default function AddNewQuestionModal({
               }}
             >
               <Box sx={{display: 'flex', alignItems: 'center', visibility: e.type === QUESTION_TYPE.TEXTFIELD ? 'visible' : 'hidden'}}>
-                <Checkbox checked={e.validation ? true : false} onClick={() => setQuestionValue(e.id, e.slug, 'validation', !e.validation)} disabled={e.default_question}/>
+                <Checkbox checked={e.validation ? true : false} onClick={() => setQuestionValue(e.id, e.slug, 'validation', !e.validation)} disabled={e.default_question && e.type !== QUESTION_TYPE.TEXTFIELD}/>
                 <Subtitle size='small'>Validation</Subtitle>
               </Box>
               {!e.additional_question && <Box sx={{display: 'flex', alignItems: 'center',}}>

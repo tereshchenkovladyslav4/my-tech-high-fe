@@ -206,8 +206,8 @@ export const ApplicationTable = ({ filter }: ApplicationTableProps) => {
         });
         if(item.midyear_application === 1){
           yearList.push({
-            value: -1 * item.school_year_id+ '',
-            label: moment(item.date_begin).format('YYYY') + ' - ' + moment(item.date_end).format('YY') + ' Mid-year',
+            value: -1 * item.school_year_id,
+            label: moment(item.date_begin).format('YYYY') + ' - ' + moment(item.date_end).format('YY') + ' Mid-Year',
           });
         }
       });
