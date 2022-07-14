@@ -1,125 +1,209 @@
-import React, { useState } from 'react'
-import { Box, Radio, TextField, Checkbox, IconButton, Button } from '@mui/material'
-import { OptionsType } from '../types'
-import { SYSTEM_07 } from '../../../../../../utils/constants'
-import CloseSharp from '@mui/icons-material/CloseSharp'
-import CustomModal from '../../components/CustomModal/CustomModals'
+import React, { useEffect, useState } from 'react'
+import { Box, Radio, TextField, Checkbox, IconButton, outlinedInputClasses } from '@mui/material'
+import CloseSharp from '@mui/icons-material/CloseSharp';
+import { SYSTEM_07 } from '../../../../../../utils/constants';
+import { QUESTION_TYPE } from '../../../../../../components/QuestionItem/QuestionItemProps';
+import { DropDown } from '../../../components/DropDown/DropDown';
+import CustomModal from '../../../../../../screens/Admin/SiteManagement/EnrollmentSetting/components/CustomModal/CustomModals';
+
+const actionTypes = [
+	{
+		value: 1,
+		label: 'Continue to next',
+	},
+	{
+		value: 2,
+		label: 'Ask an additional question',
+	},
+]
 
 export default function QuestionOptions({
-  options,
-  setOptions,
-  type,
-  isDefault,
-  setFocused,
-  setBlured,
+	options,
+	setOptions,
+	type,
+	setFocused,
+	setBlured,
+	isDefault
 }: {
-  options: OptionsType[]
-  setOptions: (options: OptionsType[]) => void
-  type: 1 | 2 | 3 | 4 | 5 | 6  
-  isDefault: boolean
-  setFocused: (event:Event) => void
-  setBlured: (event:Event) => void
+	options: Array<any>
+	setOptions: (options: Array<any>) => void
+	type: QUESTION_TYPE
+	setFocused?: (event:Event) => void
+	setBlured?: (event:Event) => void
+  	isDefault: boolean
 }) {
-  const [warningPopup, setWarningPopup] = useState(false);  
-  const [currentIndex, setCurrentIndex] = useState(0);
+	const [enableAction, setEnableAction] = useState(true)
+	const [warningPopup, setWarningPopup] = useState(false);  
+	const [currentIndex, setCurrentIndex] = useState(-1);
+	const [selectedValue, setValue] = useState(0);
+	const [warningType, setWarningType] = useState('');
 
-  const setCancelWarningPopup = () => {
-    setWarningPopup(false);
-  }
+	const setCancelWarningPopup = () => {				
+		setWarningPopup(false);				
+	}
 
-  const setConfirmWarningPopup = () => {
-    setOptions(
-      options.filter((o) => o.value !== currentIndex).map((v, i) => ({ value: i, label: v.label.trim() })),
-    )
-    setWarningPopup(false);
-  }
+	const setConfirmWarningPopup = () => {
+		if (warningType == 'DeleteOption') {
+			setOptions(
+				options.filter((o) => o.value !== currentIndex).map((v, i) => ({ value: i, label: v.label.trim(), action: v.action })),			
+			)
+		}
+		else if (warningType == 'ChangeOption') {
+			const newOps = options.map((o) => (o.value === currentIndex ? {...o, action: selectedValue} : o));
+			setOptions(newOps);
+		}
 
-  return (
-    <>
-    <Box display='flex' flexDirection='column' width='80%'>
-      {options.map((opt, i) => (
-        <Box
-          key={opt.value}
-          sx={{
-            display: 'flex',
-            py: '10px',
-            opacity: opt.label.trim() || i === 0 ? 1 : 0.3,
-          }}
-        >
-          {type === 3 ? <Checkbox /> : type === 5 ? <Radio /> : null}
-          <TextField
-            size='small'
-            sx={{
-              flex: 1,
-              pl: '10px',
-              '& .MuiInput-underline:after': {
-                borderWidth: '1px',
-                borderColor: SYSTEM_07,
-              },
-            }}
-            placeholder='Add Option'
-            variant='standard'
-            value={opt.label}
-            onFocus={(v) => setFocused(v)}
-            onBlur={(v) => setBlured(v)}
-            focused
-            // disabled={isDefault}
-            onChange={(e) => {
-              const val = e.currentTarget.value
-              const newOps = options.map((o) => (o.value === opt.value ? { ...o, label: val } : o))
-              if (i === options.length - 1) {
-                setOptions([...newOps, { value: options.length + 1, label: '' }])
-              } else {
-                setOptions(newOps)
-              }
-            }}
-          />
-          {options.length > 1 ? (
-            <IconButton
-              sx={{
-                color: '#fff',
-                bgcolor: '#000',
-                width: '30px',
-                height: '30px',
-                borderRadius: '5px',
-                cursor: 'pointer',
-                marginLeft: '10px',
-              }}
-              // disabled={isDefault}
-              onClick={() => {
-                if (isDefault) {
-                  setWarningPopup(true);
-                  setCurrentIndex(opt.value);
-                }
-                else {
-                  setOptions(
-                    options.filter((o) => o.value !== opt.value).map((v, i) => ({ value: i, label: v.label.trim() })),
-                  )
-                }
-              }}
-            >
-              <CloseSharp />
-            </IconButton>
-          ) : (
-            <Box width='40px' />
-          )}
-        </Box>
-      ))}
-    </Box>
-    {warningPopup && (
-      <CustomModal
-        title='Default Question'
-        description='You are attempting to edit a default question. You may customize the way the question is asked, but the default ask of question will remain the same in the application. Are you sure you want to edit?'
-        cancelStr='No'
-        confirmStr='Yes'
-        onClose={() => {
-          setCancelWarningPopup()
-        }}
-        onConfirm={() => {
-          setConfirmWarningPopup()
-        }}
-                  />
-    )}
-    </>
-  )
+		setWarningPopup(false);
+	}
+	useEffect(() => {
+		//if(options.filter((o) => o.action === 2).length > 0) {
+		//	setEnableAction(false)
+		//}
+		//else {
+		//	setEnableAction(true)
+		//}		
+	}, [options])
+
+	return (
+		<>
+		<Box display='flex' flexDirection='column' width='100%'>
+			{options.map((opt, i) => (
+				<Box display='flex' width='100%' 
+					sx={{
+						alignItems: 'center', 
+						justifyContent: 'space-around',
+						borderBottom: `2px solid ${SYSTEM_07}`, 
+						opacity: opt.label.trim() || i === 0 ? 1 : 0.3,
+					}}					
+					key={opt.value}
+				>
+					<Box
+						key={opt.value}
+						sx={{
+							display: 'flex',
+							py: '10px',
+							alignItems: 'center'
+						}}
+						width='50%'
+					>
+						{type === QUESTION_TYPE.CHECKBOX ? <Checkbox /> : type === QUESTION_TYPE.MULTIPLECHOICES ? <Radio /> : null}
+						<TextField
+							size='small'
+							sx={{
+								flex: 1,
+								p: '5px',
+								pl: '10px',
+								'& .MuiInput-underline:after': {
+									borderWidth: '0px',
+									borderColor: 'transparent',
+								},
+								'& .MuiInput-underline:before': {
+									borderWidth: '0px',
+									borderColor: 'transparent',
+								},
+								'& .MuiInput-root:hover:not(.Mui-disabled):before': {
+									borderWidth: '0px',
+									borderColor: 'transparent',
+								},
+								'& :hover': {
+									borderWidth: '0px',
+									borderColor: 'transparent',
+								},
+							}}
+							placeholder='Add Option'
+							variant='standard'
+							value={opt.label}
+							focused
+							// onFocus={(v) => setFocused(v)}
+							// onBlur={(v) => setBlured(v)}
+							onChange={(e) => {
+								const val = e.currentTarget.value;
+								const newOps = options.map((o) => (o.value === opt.value ? { ...o, label: val } : o));
+								if (i === options.length - 1) {
+									setOptions([...newOps, { value: options.length + 1, label: '', action: 1 }])
+								} else {
+									setOptions(newOps)
+								}
+							}}
+						/>
+						{opt.label.trim() ? (
+							<IconButton
+								sx={{
+									color: '#fff',
+									bgcolor: '#000',
+									width: '30px',
+									height: '30px',
+									borderRadius: '5px',
+									cursor: 'pointer',
+									marginLeft: '10px',
+								}}
+								onClick={() => {
+									if (isDefault) {
+										setWarningType('DeleteOption')
+										setWarningPopup(true);
+										setCurrentIndex(opt.value);
+									  }
+									  else {
+										setOptions(
+											options.filter((o) => o.value !== opt.value).map((v, i) => ({ value: i, label: v.label.trim(), action: v.action })),
+										)
+									}
+								}}
+							>
+								<CloseSharp />
+							</IconButton>
+						) : (
+							<Box width='40px' />
+						)}
+					</Box>
+					<Box width='30%'>
+						<DropDown
+							sx={{
+								minWidth: '200px',
+								[`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
+									{
+										borderColor: 'transparent'
+									}
+							}}
+							labelTop
+							dropDownItems={(opt.action !== 2 && !enableAction || opt.label.trim() == '') ? actionTypes.filter((a) => a.value === 1) : actionTypes}
+							defaultValue={opt.action || 1}							
+							setParentValue={(v) => {
+								const val = +v;
+								if (isDefault) {
+									setWarningType('ChangeOption')
+									setWarningPopup(true);		
+									setCurrentIndex(opt.value)
+									setValue(val)							
+								} 
+								else {
+									const newOps = options.map((o) => (o.value === opt.value ? {...o, action: val} : o));
+									setOptions(newOps);
+								}
+								
+							}}							
+							size='small'
+							auto={false}
+						/>
+					</Box>
+				</Box>
+			))}
+		</Box>
+		{warningPopup && (
+		<CustomModal
+			title='Default Question'
+			description='You are attempting to edit a default question. You may customize the way the question is asked, but the default ask of question will remain the same in the application. Are you sure you want to edit?'
+			cancelStr='No'
+			confirmStr='Yes'
+			onClose={() => {
+			setCancelWarningPopup()
+			}}
+			onConfirm={() => {
+			setConfirmWarningPopup()
+			}}
+					/>
+		)}
+		</>
+
+	)
 }

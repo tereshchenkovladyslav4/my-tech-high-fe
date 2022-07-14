@@ -13,6 +13,7 @@ type HeaderComponentProps = {
   setAnnouncement: (value: Announcement | null) => void
   handleSaveClick: () => void
   handlePublishClick: () => void
+  handleRepublish: () => void
 }
 
 const HeaderComponent = ({
@@ -20,7 +21,7 @@ const HeaderComponent = ({
   setAnnouncement,
   handleSaveClick,
   handlePublishClick,
-  
+  handleRepublish,
 }: HeaderComponentProps) => {
   const classes = useStyles
   const history = useHistory()
@@ -60,8 +61,7 @@ const HeaderComponent = ({
           cancelStr='Cancel'
           onClose={() => setShowUpdatePublishedModal(false)}
           onConfirm={() => {
-            handlePublishClick()
-            setShowUpdatePublishedModal(false)
+            handleRepublish()
           }}
           backgroundColor='white'
         />

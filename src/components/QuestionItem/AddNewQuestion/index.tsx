@@ -23,6 +23,7 @@ export default function QuestionModal({
 	questionTypes: any[],
 	additionalQuestionTypes: any[]
 }) {
+	console.log('withdraw questions', questions)
 	const validationTypes = [
 		{
 			label: 'Email',
@@ -305,7 +306,7 @@ export default function QuestionModal({
 						Save
 					</Button>
 				</Box>
-
+{console.log({editQuestions})}
 				{editQuestions.map((newQuestion, i) => (
 				<Box
 					key={i}>

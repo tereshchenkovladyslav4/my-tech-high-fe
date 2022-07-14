@@ -30,8 +30,9 @@ export default function QuestionOptions({
 	type: QUESTION_TYPE
 	setFocused?: (event:Event) => void
 	setBlured?: (event:Event) => void
-  isDefault: boolean
+  	isDefault: boolean
 }) {
+	console.log('lololo', {options}, {type})
 	const [enableAction, setEnableAction] = useState(true)
 	const [warningPopup, setWarningPopup] = useState(false);  
 	const [currentIndex, setCurrentIndex] = useState(-1);
@@ -169,6 +170,7 @@ export default function QuestionOptions({
 							dropDownItems={(opt.action !== 2 && !enableAction || opt.label.trim() == '') ? actionTypes.filter((a) => a.value === 1) : actionTypes}
 							defaultValue={opt.action || 1}							
 							setParentValue={(v) => {
+								console.log({v})
 								const val = +v;
 								if (isDefault) {
 									setWarningType('ChangeOption')

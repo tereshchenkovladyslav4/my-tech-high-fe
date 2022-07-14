@@ -14,6 +14,8 @@ import {
   WITHDRAWAL,
   ANNOUNCEMENTS,
   CALENDAR,
+  COMMUNICATION,
+  EMAIL_RECORDS
 } from '../utils/constants'
 import Enrollment from '../screens/Admin/Enrollment/Enrollment'
 import { Applications } from '../screens/Admin/Applications/Applications'
@@ -29,6 +31,8 @@ import { Withdrawals } from '../screens/Admin/Withdrawals'
 import { Announcements } from '../screens/Admin/Announcements'
 import { Calendar } from '../screens/Admin/Calendar'
 import { UserContext } from '../providers/UserContext/UserProvider'
+import Communication from '../screens/Admin/Communication/Communication'
+import { EmailRecords } from '../screens/Admin/EmailRecords/EmailRecords'
 
 export const AdminRoutes: FunctionComponent = () => {
   return (
@@ -38,6 +42,12 @@ export const AdminRoutes: FunctionComponent = () => {
       </Route>
       <Route exact path={ENROLLMENT}>
         <Enrollment />
+      </Route>
+      <Route exact path={COMMUNICATION}>
+        <Communication />
+      </Route>
+      <Route path={EMAIL_RECORDS}>
+        <EmailRecords />
       </Route>
       <Route exact path={ENROLLMENT_PACKETS}>
         <EnrollmentPackets />

@@ -32,7 +32,7 @@ export const QuestionTypes = [
   },
 ]
 
-export type OptionsType = { label: string; value: number }
+export type OptionsType = { label: string; value: number, action: number }
 
 export type ApplicationQuestion = {
   id?: number
@@ -46,7 +46,9 @@ export type ApplicationQuestion = {
   validation?: string
   student_question: boolean
   default_question: boolean
-  slug: string
+  slug: string,
+  additional_question: string,
+  main_question: number
 }
 
 export const initQuestions: ApplicationQuestion[] = [

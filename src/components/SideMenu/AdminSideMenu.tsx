@@ -21,6 +21,7 @@ import {
   RECORDS,
   USERS,
   SITEMANAGEMENT,
+  COMMUNICATION
 } from '../../utils/constants'
 import { UserContext } from '../../providers/UserContext/UserProvider'
 import { AuthContext } from '../../providers/AuthProvider/AuthContext'
@@ -37,6 +38,7 @@ import DescriptionIcon from '@mui/icons-material/Description'
 import MarkunreadMailboxOutlinedIcon from '@mui/icons-material/MarkunreadMailboxOutlined';
 import RecentActorsOutlinedIcon from '@mui/icons-material/RecentActorsOutlined';
 import PermIdentityOutlinedIcon from '@mui/icons-material/PermIdentityOutlined';
+
 
 export const AdminSideMenu: FunctionComponent = () => {
   const history = useHistory()
@@ -64,7 +66,7 @@ export const AdminSideMenu: FunctionComponent = () => {
     history.push(DASHBOARD)
   }
 
-  const unExactPages = [SITE_MANAGEMENT, ENROLLMENT, ANNOUNCEMENTS, CALENDAR]
+  const unExactPages = [SITE_MANAGEMENT, ENROLLMENT, ANNOUNCEMENTS, CALENDAR, COMMUNICATION]
 
   const navigationList = [
     {
@@ -86,6 +88,11 @@ export const AdminSideMenu: FunctionComponent = () => {
       to: HOMEROOM,
       label: 'Homeroom',
       icon: <PeopleAltOutlinedIcon style={classes.logos} />,
+    },
+    {
+      to: COMMUNICATION,
+      label: 'Communication',
+      icon: <MarkunreadMailboxOutlinedIcon style={classes.logos} />,
     },
     {
       to: ANNOUNCEMENTS,

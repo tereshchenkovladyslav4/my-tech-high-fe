@@ -73,6 +73,8 @@ const Withdrawal: React.FC<
 > = ({ quickLink, updateQuickLinks, action, handleChange, region }) => {
 	const classes = useStyles;
 
+	const signature = useRef(null);
+
 	const { me } = useContext(UserContext);
 	const isEditable = () => {
 		if (me?.level <= 2)
@@ -331,7 +333,12 @@ const Withdrawal: React.FC<
 											errors[val.id] = 'Please enter valid email address.';
 									}
 								}
+
+								if(val.slug == 'signature' && signature.current.isEmpty()){
+									errors[val.id] = 'Signature is required.';
+								}
 							});
+							
 							return errors;
 						}
 					}}
@@ -532,7 +539,8 @@ const Withdrawal: React.FC<
 											questions={[values[values.length - 1]]}
 											questionTypes={QuestionTypes}
 											additionalQuestionTypes={AdditionalQuestionTypes}
-											hasAction={isEditable()} />
+											hasAction={isEditable()}
+											signature={signature} />
 									</List>
 								</Stack>
 								{isEditable() && (
@@ -552,6 +560,7 @@ const Withdrawal: React.FC<
 									</Button>
 								</Box>
 							</Box>
+
 							{openAddQuestion === 'new' &&
 								<QuestionModal
 									onClose={(res) => {

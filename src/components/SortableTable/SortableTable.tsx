@@ -128,8 +128,10 @@ export const SortableTable: SortableTableTemplateType = ({
         }
 
       case 'emailed':
-        return '#4145FF'
+        return '#d4d5f8'
       case 'effective':
+        return '#4145FF'
+      case 'subject':
         return '#4145FF'
     }
   }
@@ -160,7 +162,7 @@ export const SortableTable: SortableTableTemplateType = ({
                   tabIndex={-1}
                   key={row.id}
                   selected={isItemSelected}
-                  sx={{ borderBottom: '1.5px solid #E7E7E7' }}
+                  sx={{ borderBottom: '1.5px solid #E7E7E7', height: '60px'}}
                 >
                   {
                     !hideCheck && 
@@ -169,6 +171,7 @@ export const SortableTable: SortableTableTemplateType = ({
                       onClick={(event) => {
                         handleClick(event, row.id)
                       }}
+                      sx={{minHeight: '60px'}}
                     >
                       <Checkbox
                         color='primary'

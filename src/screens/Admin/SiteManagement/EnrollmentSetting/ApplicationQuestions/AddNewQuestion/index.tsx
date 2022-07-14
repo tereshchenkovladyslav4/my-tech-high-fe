@@ -1,351 +1,475 @@
-import { Box, Button, Checkbox, Modal, outlinedInputClasses, TextField, Typography, FormGroup, FormControl, FormControlLabel, IconButton } from '@mui/material'
+import { Box, Button, Checkbox, Modal, outlinedInputClasses, TextField, Typography } from '@mui/material'
 import { useFormikContext } from 'formik'
-import React, { useState, useRef, useEffect } from 'react'
-import { DropDown } from '../../../../../../components/DropDown/DropDown'
+import React, { useState, useRef, useContext, useEffect } from 'react'
 import { Subtitle } from '../../../../../../components/Typography/Subtitle/Subtitle'
-import { SYSTEM_07 } from '../../../../../../utils/constants'
-import { ApplicationQuestion, OptionsType, QuestionTypes } from '../types'
 import QuestionOptions from './Options'
 import { EditorState, convertToRaw, ContentState } from 'draft-js'
 import Wysiwyg from 'react-draft-wysiwyg'
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
 import draftToHtml from 'draftjs-to-html'
-import { convertFromHTML } from 'draft-convert'
-import { validationTypes } from '../../constant/defaultQuestions'
-import { Paragraph } from '../../../../../../components/Typography/Paragraph/Paragraph'
-import EditLinkModal from '../../EnrollmentQuestions/components/EditLinkModal'
-import CustomModal from '../../components/CustomModal/CustomModals'
+import { Question, QUESTION_TYPE } from '../../../../../../components/QuestionItem/QuestionItemProps';
+import { SYSTEM_07 } from '../../../../../../utils/constants'
+import { DropDown } from '../../../components/DropDown/DropDown'
 import htmlToDraft from 'html-to-draftjs'
+import { ApplicationQuestion } from '../types'
 
 export default function AddNewQuestionModal({
-  onClose,
-  editItem,
-  newQuestion,
+	onClose,
+	questions,
+	questionTypes,
+	additionalQuestionTypes
 }: {
-  onClose: (e: boolean) => void
-  editItem?: ApplicationQuestion
-  newQuestion?: boolean
+	onClose: (res) => void,
+	questions?: ApplicationQuestion[],
+	questionTypes: any[],
+	additionalQuestionTypes: any[]
 }) {
-  const { values, setValues } = useFormikContext<ApplicationQuestion[]>()
-  const [question, setQuestion] = useState(editItem?.question || '')
-  const [type, setType] = useState(editItem?.type || 1)  
-  const [validationType, setValidationType] = useState(editItem?.validation || 1)
-  const [isDefaultQuestion, setIsDefaultQuestion] = useState(editItem?.default_question || false)
-  const [required, setRequired] = useState(editItem?.required || false)
-  const [addStudent, setAddStudent] = useState(editItem?.student_question || false)  
-  const [validation, setValidation] = useState(editItem?.validation ? true : false || false)
-  const [options, setOptions] = useState<OptionsType[]>([
-    ...(editItem?.options || [{ label: '', value: 1 }]),
-    { label: '', value: (editItem?.options?.length || 1) + 1 },
-  ])
+	const validationTypes = [
+		{
+			label: 'Email',
+			value: 1
+		},
+		{
+			label: 'Numbers',
+			value: 2
+		}
+	];
 
-  const [agreement, setAgreement] = useState({
-    text: editItem?.question || '', 
-    type: editItem?.options?.length > 0 && editItem?.options[0]?.label || 'web', 
-    link: editItem?.options?.length > 0 && editItem?.options[0]?.value || ''
-  })
-  const [openLinkModal, setOpenLinkModal] = useState(false)
+	//	Formik values context
+	const { values, setValues } = useFormikContext<ApplicationQuestion[]>();
 
-  const [error, setError] = useState('')
+	const [editQuestions, setEditQuestions] = useState(JSON.parse(JSON.stringify(questions)));
+	const [deleteIds, setDeleteIds] = useState([]);
 
-  const [clickedEvent, setClickedEvent] = useState({})  
-  const [warningPopup, setWarningPopup] = useState(false)
-  const [ableToEdit, setAbleToEdit] = useState(false)
+	const editQuestionsRef = useRef([]);
 
-  const setCancelWarningPopup = () => {
-    setWarningPopup(false);   
-    setAbleToEdit(false);
-  }
+	useEffect(() => {
+		if (editQuestions.length == 0) {
+			return;
+		}
 
-  const setConfirmWarningPopup = () => {
-    setWarningPopup(false);    
-    setAbleToEdit(true);
-  }
+		if (editQuestionsRef.current.length == 0 && editQuestions.length > 0) {
+			//	Set Editor Content
+			(editQuestions[0].type == QUESTION_TYPE.AGREEMENT || editQuestions[0].type == QUESTION_TYPE.INFORMATION)
+				&& draftToHtml(convertToRaw(editorState.getCurrentContent())) != editQuestions[0].question
+				&& setEditorState(EditorState.createWithContent(ContentState.createFromBlockArray(htmlToDraft(editQuestions[0].question).contentBlocks)));
+		}
 
-  useEffect(() => {
-    if (ableToEdit == true)
-      clickedEvent.target.focus()
-  }, [ableToEdit])
+		editQuestionsRef.current = editQuestions;
 
-  const setFocused = (event) => {    
-    console.log('focused');
-    if (!isDefaultQuestion)
-      return;
+		if (editQuestions[0].default_question)
+			return;
 
-    if (!ableToEdit || clickedEvent.target != event.target) {
-      event.preventDefault();
-      event.target.blur();
-      setClickedEvent(event)
-      setWarningPopup(true);
-    }
-  }
+		//	Detect Changes
+		let bHasChange = false;
+		const newQuestions = editQuestions.map(
+			question => {
+				if ([QUESTION_TYPE.MULTIPLECHOICES
+					, QUESTION_TYPE.CHECKBOX
+					, QUESTION_TYPE.DROPDOWN].find(x => x == question.type)) {
+					if (question.options.length == 0) {
+						bHasChange = true;
+						return {
+							...question,
+							options: [{
+								value: 1,
+								label: ''
+							}]
+						};
+					}
+					else if (question.options[question.options.length - 1].label.trim() != '') {
+						bHasChange = true;
+						return {
+							...question,
+							options: [
+								...question.options,
+								{
+									value: question.options.length + 1,
+									label: ''
+								}]
+						};
+					}
+					else {
+						return question;
+					}
+				}
+				else {
+					return question;
+				}
+			}
+		);
 
-  const setBlured = (event) => {
-    setAbleToEdit(false);
-  }
+		//	Handle additional questions
+		for (let i = 0; i < newQuestions.length; i++) {
+			let question = newQuestions[i];
+			if (question.options.find(o => o.action == 2)		//	If one option is set to Ask an additional question
+				&& i == newQuestions.length - 1)							//	And no additional question exists
+			{
+				//	Add One
+				newQuestions.push({
+					id: undefined,
+					region_id: newQuestions[0].region_id,
+					section: newQuestions[0].section,
+					type: QUESTION_TYPE.DROPDOWN,
+					sequence: newQuestions[0].sequence,
+					question: '',
+					default_question: false,
+					mainQuestion: false,
+					additional_question: question.slug,
+					validation: 0,
+					slug: `meta_${+new Date()}`,
+					options: [{
+						value: 1,
+						label: ''
+					}],
+					required: false,
+					response: ''
+				});
+				bHasChange = true;
+			}
+			else if (question.options.find(o => o.action == 2) == null	//	If no options is set to Ask an additional question
+				&& i < newQuestions.length - 1)								//	And this is the latest question
+			{
+				bHasChange = true;
+				//	Remove all following additional questions
+				for (let j = newQuestions.length - 1; j > i; j--) {
+					if (newQuestions[j].id != undefined) {
+						deleteIds.push(newQuestions[j].id);
+					}
+					newQuestions.pop();
+				}
+				setDeleteIds(deleteIds);
+			}
+		}
 
-  const [editorState, setEditorState] = useState(EditorState.createWithContent(ContentState.createFromBlockArray(htmlToDraft(editItem?.question || '').contentBlocks)))
-  const editorRef = useRef(null)
-  const [currentBlocks, setCurrentBlocks] = useState(0)
-  const handleEditorChange = (state) => {
-    try {
-      if (currentBlocks !== 0 && currentBlocks !== state.blocks.length) {
-        editorRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' })
-      }
-      setCurrentBlocks(state.blocks.length)
-    } catch {}
-  }
+		if (bHasChange)
+			setEditQuestions(
+				newQuestions
+			);
+	}, [editQuestions]);
 
-  function onSave() {
-    //if (type === 4 ) {
-    //  if(agreement.text.trim() === ''){
-    //    setError('Text is required')
-    //    return
-    //  }
-    //} 
-    //else 
-    if (question.trim() === '' && type !== 7 && type !== 4) {
-      setError('Question is required')
-      return
-    } else if ([1, 3, 5].includes(type) && options.length && options[0].label.trim() === '' && !isDefaultQuestion) {
-      setError('Options are required')
-      return
-    }
-    const item = {
-      id: editItem?.id,
-      order: editItem?.order || values.length + 1,
-      question: type === 7 || type === 4 ? draftToHtml(convertToRaw(editorState.getCurrentContent())) : question,
-      type,
-      options: options.filter((v) => v.label.trim()),
-      required,
-      default_question: isDefaultQuestion,
-      validation: validation ? validationType : 0,
-      student_question: addStudent,
-      slug: editItem?.slug || `meta_${+ new Date()}`
-    }
-    if (!newQuestion) {
-      setValues(values.map((v) => (v.question === editItem.question ? item : v)))
-    }
-    else {
-      setValues([...values, item])
-    }
+	//	The fields of editItem(Question)
+	const setQuestionValue = (id, slug, field, value) => {
+		const newQuestions = editQuestions.map(
+			question => {
+				if (question.id == id && question.slug == slug) {	//	We compare slug if id is undefined when adding new question
+					question[field] = value;
+					return question;
+				}
+				else {
+					return question;
+				}
+			}
+		);
 
-    onClose(false)
-  }
+		setEditQuestions(newQuestions);
+	};
 
-  return (
-    <>
-    <Modal open={true} aria-labelledby='child-modal-title' aria-describedby='child-modal-description'>
-      <Box
-        sx={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          width: '800px',
-          bgcolor: '#fff',
-          borderRadius: 8,
-          p: 4,
-        }}
-      >
-        <Box
-          sx={{
-            display: 'flex',
-            height: '40px',
-            width: '100%',
-            justifyContent: 'end',
-          }}
-        >
-          <Button sx={styles.cancelButton} onClick={() => onClose(true)}>
-            Cancel
-          </Button>
-          <Button sx={styles.actionButtons} onClick={() => onSave()}>
-            Save
-          </Button>
-        </Box>
+	//	Error State
+	const [error, setError] = useState('')
 
-        <Box
-          sx={{
-            width: '100%',
-            height: '40px',
-            mt: '40px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}
-        >
-          <TextField
-            size='small'
-            sx={{
-              visibility: (type === 7 || type === 4) ? 'hidden' : 'visible',
-              minWidth: '300px',
-              [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
-              {
-                borderColor: SYSTEM_07,
-              },
-            }}
-            label='Question'
-            variant='outlined'
-            value={question}
-            onChange={(v) => setQuestion(v.currentTarget.value)}
-            onFocus={(v) => setFocused(v)}
-            onBlur={(v) => setBlured(v)}
-            focused
-            // disabled={isDefaultQuestion}
-          />
-          <DropDown
-            sx={{
-              pointerEvents: isDefaultQuestion ? 'none' : 'unset',
-              minWidth: '200px',
-              [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
-              {
-                borderColor: SYSTEM_07,
-              },
-            }}
-            labelTop
-            dropDownItems={QuestionTypes}
-            placeholder='Type'
-            defaultValue={type}
-            // @ts-ignore
-            setParentValue={(v) => setType(+v)}
-            size='small'
-          />
-        </Box>
-        <Box mt='30px' width='100%' display='flex' flexDirection='column' maxHeight={'calc(100vh - 353px);'} overflow='auto'>
-          {type === 2 || type === 6 ? (
-            <Box height='50px' />
-          ) : (type === 7 || type === 4) ? (
-            <Box sx={{
-              border: '1px solid #d1d1d1',
-              borderRadius: 1,
-              'div.DraftEditor-editorContainer': {
-                minHeight: '200px',
-                maxHeight: '250px',
-                overflow: 'auto',
-                padding: 1,
-              },
-            }}>
-              <Wysiwyg.Editor
-                onContentStateChange={handleEditorChange}
-                editorRef={(ref) => (editorRef.current = ref)}
-                editorState={editorState}
-                onEditorStateChange={setEditorState}
-                handlePastedText={() => false}
-                onFocus={(v) => setFocused(v)}
-                onBlur={(v) => setBlured(v)}
-                toolbar={{
-                  options: [
-                    'inline', 
-                    'list',
-                    'link',
-                  ],
-                  inline: {
-                    options: ['bold', 'italic'],
-                  },
-                  list: {
-                    options: ['unordered', 'ordered'],
-                  }
-                }}
-              />
-            </Box>
-          ) : (
-          <QuestionOptions options={options} setOptions={setOptions} type={type} isDefault = {isDefaultQuestion} setFocused={setFocused} setBlured={setBlured}/>
-          )}
-        </Box>
+	//	Editor related states and functions
+	const [editorState, setEditorState] = useState(EditorState.createWithContent(ContentState.createFromBlockArray(htmlToDraft('').contentBlocks)));
+	const editorRef = useRef(null);
+	const [currentBlocks, setCurrentBlocks] = useState(0)
+	const handleEditorChange = (state) => {
+		try {
+			if (currentBlocks !== 0 && currentBlocks !== state.blocks.length) {
+				editorRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' })
+			}
+			setCurrentBlocks(state.blocks.length);
 
-        <Box
-          sx={{
-            width: '100%',
-            height: '40px',
-            mt: '40px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}
-        >
-          <Box sx={{display: 'flex', alignItems: 'center', visibility: type === 2 ? 'visible' : 'hidden'}}>
-            <Checkbox checked={validation} onClick={() => setValidation(!validation)} disabled={isDefaultQuestion && editItem?.type != 2}/>
-            <Subtitle size='small'>Validation</Subtitle>
-          </Box>
-          <Box sx={{display: 'flex', alignItems: 'center',}}>
-            {console.log({editItem})}
-            {editItem?.slug && 
-            ['packet_school_district', 'packet_secondary_contact_first', 'packet_secondary_contact_last', 'address_county_id', 'address_zip', 'address_city', 'address_street', 'program_year'].indexOf(editItem?.slug) !== -1 ? (
-              <Checkbox onClick={() => setAddStudent(!addStudent)} disabled />
-            ): (
-                <Checkbox checked={addStudent} onClick={() => setAddStudent(!addStudent)}  />
-            )}
-            <Subtitle size='small'>Add Student Question</Subtitle>
-          </Box>
-          <Box sx={{display: 'flex', alignItems: 'center',}}>
-            <Checkbox checked={required} onClick={() => setRequired(!required)} />
-            <Subtitle size='small'>Required</Subtitle>
-          </Box>
-        </Box>
-        <Box sx={{
-            width: '100%',
-            height: '40px',
-            mt: '40px',
-            alignItems: 'center',
-            justifyContent: 'start',
-            display: validation ? 'flex' : 'none',
-          }}
-        >
-          <DropDown
-            sx={{
-              pointerEvents: isDefaultQuestion ? 'none' : 'unset',
-              minWidth: '200px',
-              [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
-              {
-                borderColor: SYSTEM_07,
-              },
-            }}
-            labelTop
-            dropDownItems={validationTypes}
-            placeholder='Type'
-            defaultValue={validationType}
-            // @ts-ignore
-            setParentValue={(v) => setValidationType(+v)}
-            size='small'
-          />
-        </Box>
-        {error && <Typography color='red'>{error}</Typography>}
-        {openLinkModal && (<EditLinkModal onClose={() => setOpenLinkModal(false)} setOption={setAgreement} editItem={agreement}/>)}
-      </Box>
-    </Modal>
-    {warningPopup && (
-      <CustomModal
-        title='Default Question'
-        description='You are attempting to edit a default question. You may customize the way the question is asked, but the default ask of question will remain the same in the application. Are you sure you want to edit?'
-        cancelStr='No'
-        confirmStr='Yes'
-        onClose={() => {
-          setCancelWarningPopup()
-        }}
-        onConfirm={() => {
-          setConfirmWarningPopup()
-        }}
-                  />
-    )}
-    </>
-  )
+			setQuestionValue(questions[0].id, questions[0].slug, 'question', draftToHtml(convertToRaw(editorState.getCurrentContent())));
+		} catch { }
+	}
+
+	//	Save handler
+	function onSave() {
+		let newQuestions = editQuestions.filter(x => x.question.trim());
+
+
+		let newValues = values.map(v => v);
+
+		const min = Math.min.apply(null, values.map(value => value.id));
+		let newid = min - 1;
+		//	-9 ~ 0 is reserved
+		if (newid > -10) newid = -10;
+
+		for (let i = 0; i < newQuestions.length; i++) {
+			let newQuestion = newQuestions[i];
+			//	Validation check
+			if (newQuestion.question.trim() === '' && newQuestion.type !== QUESTION_TYPE.INFORMATION && newQuestion.type !== QUESTION_TYPE.AGREEMENT) {
+				setError('Question is required')
+				return
+			} else if ([QUESTION_TYPE.DROPDOWN
+				, QUESTION_TYPE.CHECKBOX
+				, QUESTION_TYPE.MULTIPLECHOICES].includes(newQuestion.type)
+				&& newQuestion.options.length && newQuestion.options[0].label.trim() === '' && !newQuestion.default_question) {
+				setError('Options are required')
+				return
+			}
+
+			let parent_index=-100;
+			newValues.map((i, index) => {
+				if(i.slug == newQuestion.additional_question){
+					parent_index = index;
+				}
+			});
+			
+			//	Generate new object from the edited information
+			const item: ApplicationQuestion = {
+				id: newQuestion.id,
+				order: newQuestion?.order || newValues.length + 1,
+				// order: newQuestion?.order || newValues.length + 1,
+				question: newQuestion.type === QUESTION_TYPE.INFORMATION
+					|| newQuestion.type === QUESTION_TYPE.AGREEMENT
+					? draftToHtml(convertToRaw(editorState.getCurrentContent()))
+					: newQuestion.question,
+				type: newQuestion.type,
+				options: newQuestion.options.filter((v) => v.label.trim()),
+				required: newQuestion.required,
+				default_question: newQuestion.default_question,
+				validation: newQuestion.validation,
+				student_question: newQuestion.student_question,
+				slug: newQuestion.slug || `meta_${+ new Date()}`,
+				additional_question: newQuestion.additional_question,
+				response: '',
+			};
+
+			let id = newQuestion.id;
+
+			if (id === undefined) {	//	Insert case
+				//	Generate new id
+				item.id = newid--;
+				if(parent_index != -100){
+					newValues.splice(parent_index + 1, 0, item);
+				}else{
+					newValues.push(item);
+				}
+			}
+			else {									//	Update case
+				newValues = newValues.map((v) => (v.id === newQuestion.id ? item : v));
+			}
+		}
+
+		newValues = newValues.filter((i) => deleteIds.find(x => x == i.id) == null);
+		setValues(newValues);
+		onClose(true);
+	}
+
+	return (
+		<Modal open={true} aria-labelledby='child-modal-title' aria-describedby='child-modal-description'>
+			<Box
+				sx={{
+					position: 'absolute',
+					top: '50%',
+					left: '50%',
+					transform: 'translate(-50%, -50%)',
+					width: '800px',
+					maxHeight: '97vh',
+					overflowY: 'auto',
+					bgcolor: '#fff',
+					borderRadius: 8,
+					p: 4,
+				}}
+			>
+				<Box
+					sx={{
+						display: 'flex',
+						height: '40px',
+						width: '100%',
+						justifyContent: 'end',
+					}}
+				>
+					<Button sx={styles.cancelButton} onClick={() => onClose(false)}>
+						Cancel
+					</Button>
+					<Button sx={styles.actionButtons} onClick={() => onSave()}>
+						Save
+					</Button>
+				</Box>
+				{editQuestions.map((newQuestion, i) => (
+					<Box
+						key={i}>
+						<Box
+							sx={{
+								width: '100%',
+								height: '40px',
+								mt: '40px',
+								display: 'flex',
+								alignItems: 'center',
+								justifyContent: 'space-between',
+							}}
+						>
+							<TextField
+								size='small'
+								sx={{
+									visibility: (newQuestion.type === QUESTION_TYPE.INFORMATION
+										|| newQuestion.type == QUESTION_TYPE.AGREEMENT)
+										? 'hidden' : 'visible',
+									minWidth: '400px',
+									[`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
+									{
+										borderColor: SYSTEM_07,
+									},
+								}}
+								label='Question'
+								variant='outlined'
+								value={newQuestion.question}
+								onChange={(v) => {
+									setQuestionValue(newQuestion.id, newQuestion.slug, 'question', v.currentTarget.value);
+								}}
+								focused
+								disabled={newQuestion.default_question}
+							/>
+							<DropDown
+								sx={{
+									pointerEvents: newQuestion.default_question ? 'none' : 'unset',
+									minWidth: '200px',
+									[`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
+									{
+										borderColor: SYSTEM_07,
+									},
+									marginRight: '50px'
+								}}
+								labelTop
+								dropDownItems={i == 0 ? questionTypes : additionalQuestionTypes}
+								placeholder='Type'
+								defaultValue={newQuestion.type}
+								// @ts-ignore
+								setParentValue={(v) => {
+									setQuestionValue(newQuestion.id, newQuestion.slug, 'type', +v);
+								}}
+								size='small'
+							/>
+						</Box>
+						<Box mt='30px' width='100%' display='flex' flexDirection='column'>
+							{newQuestion.type === QUESTION_TYPE.TEXTFIELD
+								|| newQuestion.type === QUESTION_TYPE.CALENDAR ? (
+								<Box height='50px' />
+							) : newQuestion.type === QUESTION_TYPE.INFORMATION || newQuestion.type === QUESTION_TYPE.AGREEMENT ? (
+								<Box sx={{
+									border: '1px solid #d1d1d1',
+									borderRadius: 1,
+									'div.DraftEditor-editorContainer': {
+										minHeight: '200px',
+										maxHeight: '250px',
+										overflow: 'auto',
+										padding: 1,
+									},
+								}}>
+									<Wysiwyg.Editor
+										onContentStateChange={handleEditorChange}
+										editorRef={(ref) => (editorRef.current = ref)}
+										editorState={editorState}
+										onEditorStateChange={setEditorState}
+										toolbar={{
+											options: [
+												'inline',
+												'list',
+												'link',
+											],
+											inline: {
+												options: ['bold', 'italic'],
+											},
+											list: {
+												options: ['unordered', 'ordered'],
+											}
+										}}
+									/>
+								</Box>
+							) :
+								!newQuestion.default_question && (
+									<QuestionOptions
+										options={newQuestion.options}
+										setOptions={(options) => setQuestionValue(newQuestion.id, newQuestion.slug, 'options', options)}
+										type={newQuestion.type} />
+								)}
+						</Box>
+
+						<Box
+							sx={{
+								width: '100%',
+								height: '40px',
+								mt: '40px',
+								display: 'flex',
+								alignItems: 'center',
+								justifyContent: 'space-between',
+							}}
+						>
+							<Box sx={{ display: 'flex', alignItems: 'center', visibility: newQuestion.type === QUESTION_TYPE.TEXTFIELD ? 'visible' : 'hidden' }}>
+								<Checkbox checked={newQuestion.validation ? true : false} onClick={() => {
+									setQuestionValue(newQuestion.id, newQuestion.slug, 'validation', newQuestion.validation ? 0 : 1);
+								}} disabled={newQuestion.default_question} />
+								<Subtitle size='small'>Validation</Subtitle>
+							</Box>
+							<Box sx={{ display: 'flex', alignItems: 'center', }}>
+								{newQuestion?.slug &&
+									['packet_school_district', 'packet_secondary_contact_first', 'packet_secondary_contact_last', 'address_county_id', 'address_zip', 'address_city', 'address_street'].indexOf(newQuestion.slug) !== -1 ? (
+									<Checkbox disabled />
+								) : (
+									<Checkbox checked={newQuestion.student_question} onClick={() => setQuestionValue(newQuestion.id, newQuestion.slug, 'student_question', newQuestion.student_question ? false : true)} />
+								)}
+								<Subtitle size='small'>Add Student Question</Subtitle>
+							</Box>
+							<Box sx={{ display: 'flex', alignItems: 'center', }}>
+								<Checkbox checked={newQuestion.required ? true : false} onClick={() => {
+									setQuestionValue(newQuestion.id, newQuestion.slug, 'required', newQuestion.required ? false : true);
+								}} />
+								<Subtitle size='small'>Required</Subtitle>
+							</Box>
+						</Box>
+						<Box sx={{
+							width: '100%',
+							height: '40px',
+							mt: '40px',
+							alignItems: 'center',
+							justifyContent: 'start',
+							display: newQuestion.validation ? 'flex' : 'none',
+						}}
+						>
+							<DropDown
+								sx={{
+									pointerEvents: newQuestion.default_question ? 'none' : 'unset',
+									minWidth: '200px',
+									[`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
+									{
+										borderColor: SYSTEM_07,
+									},
+								}}
+								labelTop
+								dropDownItems={validationTypes}
+								placeholder='Type'
+								defaultValue={newQuestion.validation}
+								// @ts-ignore
+								setParentValue={(v) => {
+									setQuestionValue(newQuestion.id, newQuestion.slug, 'validation', +v);
+								}}
+								size='small'
+							/>
+						</Box>
+					</Box>))}
+				{error && <Typography color='red'>{error}</Typography>}
+			</Box>
+		</Modal>
+	)
 }
 
 const styles = {
-  actionButtons: {
-    borderRadius: 4,
+	actionButtons: {
+		borderRadius: 4,
 
-    background: 'linear-gradient(90deg, #3E2783 0%, rgba(62, 39, 131, 0) 100%) #4145FF',
-    fontWeight: 'bold',
-    padding: '11px 60px',
-    color: 'white',
-  },
-  cancelButton: {
-    borderRadius: 4,
-    background: 'linear-gradient(90deg, #D23C33 0%, rgba(62, 39, 131, 0) 100%) #D23C33',
-    fontWeight: 'bold',
-    mr: 2,
-    color: 'white',
-    padding: '11px 60px',
-  },
+		background: 'linear-gradient(90deg, #3E2783 0%, rgba(62, 39, 131, 0) 100%) #4145FF',
+		fontWeight: 'bold',
+		padding: '11px 60px',
+		color: 'white',
+	},
+	cancelButton: {
+		borderRadius: 4,
+		background: 'linear-gradient(90deg, #D23C33 0%, rgba(62, 39, 131, 0) 100%) #D23C33',
+		fontWeight: 'bold',
+		mr: 2,
+		color: 'white',
+		padding: '11px 60px',
+	},
 }

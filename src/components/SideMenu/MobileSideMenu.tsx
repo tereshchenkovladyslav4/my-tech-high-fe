@@ -13,6 +13,7 @@ import { NavLink, useHistory, useLocation } from 'react-router-dom'
 import {
   ACTIVELINKBACKGROUND,
   ANNOUNCEMENTS,
+  COMMUNICATION,
   CALENDAR,
   CURRICULUM,
   DASHBOARD,
@@ -58,6 +59,11 @@ export const MobileSideMenu: FunctionComponent<Props> = ({ handleDrawerClose }) 
   }
 
   const navigationList = [
+    {
+      to: COMMUNICATION,
+      label: 'Communication',
+      access: [7, checkAdminAccessOnSidebar('Communication')],
+    },
     {
       to: ANNOUNCEMENTS,
       label: 'Announcements',

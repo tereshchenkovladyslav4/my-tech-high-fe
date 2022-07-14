@@ -15,12 +15,14 @@ export default function PublishModal({
   onSchedule,
   setCronJobTime,
   scheduledTime,
+  onRepublish,
 }: {
   onClose: () => void
   onPublish: () => void
+  onRepublish:() => void
   onSchedule: () => void
-  setCronJobTime: (value: Date) => void,
-  scheduledTime?: Date,
+  setCronJobTime: (value: Date) => void
+  scheduledTime?: Date
 }) {
   const classes = useStyles
   const [dateTime, setDateTime] = useState<Date>(scheduledTime ?? new Date())

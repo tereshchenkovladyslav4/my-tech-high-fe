@@ -1,4 +1,4 @@
-import { Box, Button, Checkbox, IconButton, MenuItem, outlinedInputClasses, inputLabelClasses, Radio, Select, TextField } from '@mui/material'
+import { Box, Button, Checkbox, IconButton, MenuItem, outlinedInputClasses, inputLabelClasses, Radio, Select, TextField, FormHelperText, Grid } from '@mui/material'
 import { useFormikContext } from 'formik'
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import { Subtitle } from '../Typography/Subtitle/Subtitle'
@@ -36,11 +36,13 @@ export default function QuestionItem({
 	questionTypes,
 	additionalQuestionTypes,
 	hasAction,	//	Admin => true, Parent => false
+	signature
 }: {
 	questions: Question[],
 	questionTypes: any[],
 	additionalQuestionTypes: any[],
-	hasAction: boolean
+	hasAction: boolean,
+	signature?: any
 }) {
 	const { me } = useContext(UserContext);
 	
@@ -188,11 +190,10 @@ export default function QuestionItem({
 
 	return (
 		<>
-			<Box display='flex' mt='20px' alignItems='center' justifyContent='left'>
+			<Box display='flex' mt={signature ? '0' : '20px'} alignItems='center' justifyContent='left'>
 				<Box flex='1' paddingTop='10px' maxWidth={hasAction ? '80%' : '100%'}>
-					<Item question={questions[0]} />
+					<Item question={questions[0]} signature={signature}  />
 				</Box>
-				{console.log({questions})}
 				{hasAction && !questions[0]?.mainQuestion && (
 					<Box display='inline-flex' paddingTop='10px' height='40px' alignItems='center' justifyContent='center'>
 						<IconButton onClick={() => setShowEditDialog(true)}>
@@ -222,8 +223,7 @@ export default function QuestionItem({
 		</>
 	)
 }
-function Item({ question: q }: { question: Question }) {
-	const signature = useRef(null);
+function Item({ question: q, signature}: { question: Question, signature?: any }) {
 
 	//	Formik values context
 	const { values, setValues, errors, touched } = useFormikContext<Question[]>();
@@ -261,6 +261,7 @@ function Item({ question: q }: { question: Question }) {
 				<DropDown
 					sx={{
 						marginTop: '5px',
+						marginBottom: '0',
 						maxWidth: '100%',
 						borderColor: errors[q.id] ? 'red' : '',
 						[`& .${outlinedInputClasses.root} .${outlinedInputClasses.notchedOutline}`]: {
@@ -492,7 +493,8 @@ function Item({ question: q }: { question: Question }) {
 			return (
 				<Paragraph size='large' sx={{
 					color: 'rgb(118, 118, 118)',
-					fontSize: '16px'
+					fontSize: '16px',
+					marginBottom: '0px'
 				}}>
 					<span dangerouslySetInnerHTML={{ __html: q.question }} ></span>
 				</Paragraph>
@@ -538,6 +540,15 @@ function Item({ question: q }: { question: Question }) {
 						ref={signature}
 					/>
 					<Box sx={{ height: 1, width: "100%", borderBottom: "1px solid #000", mb: 0.5 }} />
+					{Boolean(errors[q.id]) 
+							&&  <Grid 
+							item 
+							xs={12} 
+							sx={{display:'flex', justifyContent: 'center',}}
+							>
+							<FormHelperText style={{textAlign:'center',color: RED}}>Signature required</FormHelperText>
+							</Grid>
+						}
 					<Button onClick={function(e: any): void {if(signature.current) {signature.current.clear();}}}>
 						<Subtitle size={12} sx={{textDecoration: 'underline'}} >
 							Reset

@@ -72,14 +72,14 @@ export const NewParent = () => {
     if (!questionLoading && questionData?.getApplicationQuestions) {
       setQuestions(
         questionData.getApplicationQuestions
-          .map((v) => ({ ...v, options: v.options ? JSON.parse(v.options || '[]') : [] }))
+          .map((v) => ({ ...v, options: v.options ? JSON.parse(v.options || '[]') : [], response: ''  }))
           .sort((a, b) => a.order - b.order),
       )
     }
   }, [questionData, regionId, questionLoading])
 
   useEffect(() => {
-    if (questions.length > 0) {
+    if (questionSortList(questions).length > 0) {
       let empty: any = { ...emptyStudent }
       let valid_student: any = {}
       let valid_student_meta: any = {}
@@ -89,7 +89,7 @@ export const NewParent = () => {
       let valid_address: any = {}
       let valid_packet: any = {}
       let valid_meta: any = {}
-      questions.map((q) => {
+      questionSortList(questions).map((q) => {
         if (q.type !== QUESTION_TYPE.INFORMATION) {
           if (q.slug?.includes('student_')) {
             empty[`${q.slug?.replace('student_', '')}`] = ''
@@ -448,7 +448,6 @@ export const NewParent = () => {
         // packet: omit(s.packet, ['school_district'])
       }
     })
-    console.log({values})
     submitApplicationAction({
       variables: {
         createApplicationInput: {
@@ -517,6 +516,45 @@ export const NewParent = () => {
       }
     }
   }, [emailLoading, emailData])
+
+  // handle child component
+  const questionSortList = (values) => {
+    const sortList = values.filter(v =>
+    (!v.mainQuestion && (!v.additional_question
+      || (values.find(x => x.slug == v.additional_question)?.response != ''
+        && (values.find(x => x.slug == v.additional_question)?.options.find(
+          x => x.action == 2 && (x.value == values.find(y => y.slug == v.additional_question)?.response
+            || values.find(y => y.slug == v.additional_question)?.response.toString().indexOf(x.value) >= 0)) != null)))) 		// Parent
+    );
+    return sortList;
+  }
+
+  const handleAddQuestion = (value, q) => {
+		if(q.type == QUESTION_TYPE.CHECKBOX) {
+			if(q.response.indexOf(value) >= 0) {
+				q.response = q.response.replace(value, '');
+			}
+			else {
+				q.response += value;
+			}
+			value = q.response;
+		}
+		const newValues = questions.map((v) => (v.id == q.id ? {
+			...v,
+			response: value
+		} : v));
+		let current = q;
+		while(newValues.find(x => current.slug == x.additional_question)
+			&& (current.response == '' || current.options.find(x => x.value == current.response
+			|| current.response.toString().indexOf(x.value) >= 0).action != 2)) {
+			current = newValues.find(x => current.slug == x.additional_question);
+			current.response = '';
+		}
+
+		setQuestions(
+			newValues
+		);
+	};
 
   return !loading ? (
     <Card sx={{ paddingTop: 6, backgroundColor: '#EEF4F8' }}>
@@ -590,8 +628,8 @@ export const NewParent = () => {
                       </Field>
                     </Grid>
                     {!questionLoading &&
-                      questions.length > 0 &&
-                      questions.map((q) => {
+                      questionSortList(questions).length > 0 &&
+                      questionSortList(questions).map((q) => {
                         if (q.slug === 'program_year') {
                           return (
                             <Grid item xs={12} display='flex' justifyContent={'center'}>
@@ -758,14 +796,13 @@ export const NewParent = () => {
                               </Grid>
                             )
                           } else if (q.slug?.includes('student_')) {
-                            console.log(q.slug);
                             return (
                               <Grid item xs={12} display='flex' justifyContent={'center'}>
                                 <Box width={'451.53px'} display='flex' flexDirection='row' alignItems={'center'}>
                                   <Field name={`students[0].${q.slug?.replace('student_', '')}`} fullWidth focused>
                                     {({ field, form, meta }) => (
                                       <Box width={'100%'}>
-                                        <AdditionalQuestionItem question={q} field={field} form={form} meta={meta} />
+                                        <AdditionalQuestionItem question={q} field={field} form={form} meta={meta}  handleAddQuestion={handleAddQuestion} />
                                       </Box>
                                     )}
                                   </Field>
@@ -779,7 +816,7 @@ export const NewParent = () => {
                                   <Field name={`students[0].meta.${q.slug}`} fullWidth focused>
                                     {({ field, form, meta }) => (
                                       <Box width={'100%'}>
-                                        <AdditionalQuestionItem question={q} field={field} form={form} meta={meta} />
+                                        <AdditionalQuestionItem question={q} field={field} form={form} meta={meta} handleAddQuestion={handleAddQuestion}  />
                                       </Box>
                                     )}
                                   </Field>
@@ -810,6 +847,7 @@ export const NewParent = () => {
                                           field={field}
                                           form={form}
                                           meta={meta}
+                                          handleAddQuestion={handleAddQuestion} 
                                         />
                                       </Box>
                                     )}
@@ -825,7 +863,7 @@ export const NewParent = () => {
                               <Box width={'451.53px'}>
                                 <Field name={`meta.${q.slug}`} fullWidth focused>
                                   {({ field, form, meta }) => (
-                                    <AdditionalQuestionItem question={q} field={field} form={form} meta={meta} />
+                                    <AdditionalQuestionItem question={q} field={field} form={form} meta={meta} handleAddQuestion={handleAddQuestion}  />
                                   )}
                                 </Field>
                               </Box>
@@ -840,7 +878,7 @@ export const NewParent = () => {
                               <Box width={'451.53px'}>
                                 <Field name={`${parentFieldName}.${childFieldName}`} fullWidth focused>
                                   {({ field, form, meta }) => (
-                                    <AdditionalQuestionItem question={q} field={field} form={form} meta={meta} />
+                                    <AdditionalQuestionItem question={q} field={field} form={form} meta={meta} handleAddQuestion={handleAddQuestion}  />
                                   )}
                                 </Field>
                               </Box>
@@ -856,10 +894,10 @@ export const NewParent = () => {
                               {values.students.map((_, index) => (
                                 <>
                                   {!questionLoading &&
-                                    questions.length > 0 &&
+                                    questionSortList(questions).length > 0 &&
                                     index > 0 &&
-                                    questions.map((q, qIndex) => {
-                                      const firstQuestionSlug = questions.filter(
+                                    questionSortList(questions).map((q, qIndex) => {
+                                      const firstQuestionSlug = questionSortList(questions).filter(
                                         (qf) => qf.question.includes('student_') || qf.student_question,
                                       )[0].slug
                                       if (q.slug === 'student_grade_level') {
@@ -923,6 +961,7 @@ export const NewParent = () => {
                                                       field={field}
                                                       form={form}
                                                       meta={meta}
+                                                      handleAddQuestion={handleAddQuestion} 
                                                     />
                                                   </Box>
                                                 )}
@@ -954,6 +993,7 @@ export const NewParent = () => {
                                                       field={field}
                                                       form={form}
                                                       meta={meta}
+                                                      handleAddQuestion={handleAddQuestion} 
                                                     />
                                                   </Box>
                                                 )}
@@ -991,6 +1031,7 @@ export const NewParent = () => {
                                                       field={field}
                                                       form={form}
                                                       meta={meta}
+                                                      handleAddQuestion={handleAddQuestion} 
                                                     />
                                                   </Box>
                                                 )}
@@ -1018,7 +1059,7 @@ export const NewParent = () => {
                                   // color='secondary'
                                   // variant='contained'
                                   disabled={
-                                    regionId && questions.filter((q) => q.slug.includes('student_')).length > 0
+                                    regionId && questionSortList(questions).filter((q) => q.slug.includes('student_')).length > 0
                                       ? false
                                       : true
                                   }

@@ -39,7 +39,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({ title, subTitle, img, link, 
               {title}
             </Typography>
             <Stack direction="row" justifyContent="space-between" alignItems="center">
-              <Typography color='#A1A1A1' fontSize='16px' fontWeight='500' sx={{ visibility: subTitle ? "shown" : "hidden" }}>
+              <Typography color='#A1A1A1' fontSize='16px' fontWeight='700' sx={{ visibility: subTitle ? "shown" : "hidden" }}>
                 {subTitle || "N/A"} 
               </Typography>
               {action &&

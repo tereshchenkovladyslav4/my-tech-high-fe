@@ -59,6 +59,7 @@ export const getQuestionsGql = gql`
       validation
       region_id
       slug
+      additional_question
     }
   }
 `

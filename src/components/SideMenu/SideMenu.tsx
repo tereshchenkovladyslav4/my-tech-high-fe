@@ -12,6 +12,7 @@ import { NavLink, useHistory, useLocation } from 'react-router-dom'
 import {
   ACTIVELINKBACKGROUND,
   ANNOUNCEMENTS,
+  COMMUNICATION,
   CALENDAR,
   CURRICULUM,
   DASHBOARD,
@@ -32,6 +33,7 @@ import AllInboxOutlinedIcon from '@mui/icons-material/AllInboxOutlined'
 import DatRangeOutlinedIcon from '@mui/icons-material/DateRangeOutlined'
 import DescriptionIcon from '@mui/icons-material/Description'
 import { map, some } from 'lodash'
+
 const noSidebarUsers = [15, 14, 16, 11, 9, 10, 13, 12]
 
 export const SideMenu: FunctionComponent = () => {
@@ -53,6 +55,12 @@ export const SideMenu: FunctionComponent = () => {
   }
 
   const navigationList = [
+    {
+      to: COMMUNICATION,
+      label: 'Announcements',
+      icon: <AllInboxOutlinedIcon style={classes.logos} />,
+      access: [7, checkAdminAccessOnSidebar('Communication')],
+    },
     {
       to: ANNOUNCEMENTS,
       label: 'Announcements',

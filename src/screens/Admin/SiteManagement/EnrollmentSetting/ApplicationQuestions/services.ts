@@ -13,6 +13,8 @@ export const getQuestionsGql = gql`
       student_question
       default_question
       slug
+      main_question
+      additional_question
     }
   }
 `

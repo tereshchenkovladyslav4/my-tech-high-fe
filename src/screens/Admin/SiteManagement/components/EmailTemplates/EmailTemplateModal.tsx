@@ -697,7 +697,7 @@ export const EmailTemplateModal = ({
 										</Grid>
 									</Box>
 								))}
-								<Box sx={{ width: '100%', textAlign: 'right' }}>
+								<Box sx={{ width: '100%', textAlign: 'right', marginTop: reminders.length > 0 ? '0' : '16px' }}>
 									<Grid item xs={12}>
 										<Button className={classes.add} onClick={handleAddReminder}>
 											<Add />

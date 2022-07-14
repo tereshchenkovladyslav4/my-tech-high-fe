@@ -325,10 +325,10 @@ export const StudentProfile = () => {
                   </Button>
                 ) : status === 'Submitted' ? (
                   <Button
-                    sx={classes.enrollmentButton}
+                    sx={classes.pendingBtn}
                     variant='contained'
                   >
-                    Submitted
+                    Pending Approval
                   </Button>
                 ) : (
                   <Button

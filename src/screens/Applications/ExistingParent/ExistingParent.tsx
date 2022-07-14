@@ -103,21 +103,22 @@ export const ExistingParent = () => {
     if (!questionLoading && questionData?.getExistApplicationQuestions) {
       setQuestions(
         questionData.getExistApplicationQuestions
-          .map((v) => ({ ...v, options: v.options ? JSON.parse(v.options || '[]') : [] }))
+          .map((v) => ({ ...v, options: v.options ? JSON.parse(v.options || '[]') : [], response: '' }))
+          // .filter((v) => !v.additional_question)
           .sort((a, b) => a.order - b.order),
       )
     }
   }, [questionData, regionId])
 
   useEffect(() => {
-    if (questions.length > 0) {
+    if (questionSortList(questions).length > 0) {
       let empty = { ...emptyStudent }
       let valid_student = {}
       let valid_meta = {}
       let valid_student_meta = {}
       let valid_student_address: any = {}
       let valid_student_packet: any = {}
-      questions.map((q) => {
+      questionSortList(questions).map((q) => {
         if (q.type !== QUESTION_TYPE.INFORMATION) {
           if (q.slug?.includes('student_')) {
             empty[`${q.slug?.replace('student_', '')}`] = ''
@@ -498,6 +499,45 @@ export const ExistingParent = () => {
     parseGrades()
   }, [grades])
 
+  // handle child component
+  const questionSortList = (values) => {
+    const sortList = values.filter(v =>
+    (!v.mainQuestion && (!v.additional_question
+      || (values.find(x => x.slug == v.additional_question)?.response != ''
+        && (values.find(x => x.slug == v.additional_question)?.options.find(
+          x => x.action == 2 && (x.value == values.find(y => y.slug == v.additional_question)?.response
+            || values.find(y => y.slug == v.additional_question)?.response.toString().indexOf(x.value) >= 0)) != null)))) 		// Parent
+    );
+    return sortList;
+  }
+
+  const handleAddQuestion = (value, q) => {
+		if(q.type == QUESTION_TYPE.CHECKBOX) {
+			if(q.response.indexOf(value) >= 0) {
+				q.response = q.response.replace(value, '');
+			}
+			else {
+				q.response += value;
+			}
+			value = q.response;
+		}
+		const newValues = questions.map((v) => (v.id == q.id ? {
+			...v,
+			response: value
+		} : v));
+		let current = q;
+		while(newValues.find(x => current.slug == x.additional_question)
+			&& (current.response == '' || current.options.find(x => x.value == current.response
+			|| current.response.toString().indexOf(x.value) >= 0).action != 2)) {
+			current = newValues.find(x => current.slug == x.additional_question);
+			current.response = '';
+		}
+
+		setQuestions(
+			newValues
+		);
+	};
+
   return (
     <Card sx={{ paddingTop: 8, margin: 4 }}>
       <Formik
@@ -557,7 +597,8 @@ export const ExistingParent = () => {
                     </Field>
                   </Box>
                 </Grid>
-                {!questionLoading && questions.length > 0 && questions.map((q, index) => {
+                {!questionLoading && questionSortList(questions).length > 0 
+                && questionSortList(questions).map((q, index) => {
                   if (q.slug?.includes('student_') || q.student_question) {
                     if (q.slug === 'student_grade_level') {
                       return (
@@ -599,7 +640,7 @@ export const ExistingParent = () => {
                             <Field name={`students[0].${q.slug?.replace('student_', '')}`} fullWidth focused>
                               {({ field, form, meta }) => (
                                 <Box width={'100%'}>
-                                  <AdditionalQuestionItem question={q} field={field} form={form} meta={meta} />
+                                  <AdditionalQuestionItem question={q} field={field} form={form} meta={meta} handleAddQuestion={handleAddQuestion} />
                                 </Box>
                               )}
                             </Field>
@@ -613,7 +654,7 @@ export const ExistingParent = () => {
                             <Field name={`students[0].meta.${q.slug}`} fullWidth focused>
                               {({ field, form, meta }) => (
                                 <Box width={'100%'}>
-                                  <AdditionalQuestionItem question={q} field={field} form={form} meta={meta} />
+                                  <AdditionalQuestionItem question={q} field={field} form={form} meta={meta} handleAddQuestion={handleAddQuestion}  />
                                 </Box>
                               )}
                             </Field>
@@ -644,6 +685,7 @@ export const ExistingParent = () => {
                                     field={field}
                                     form={form}
                                     meta={meta}
+                                    handleAddQuestion={handleAddQuestion} 
                                   />
                                 </Box>
                               )}
@@ -663,10 +705,10 @@ export const ExistingParent = () => {
                           {values.students.map((_, index) => (
                             <>
                               {!questionLoading &&
-                                questions.length > 0 &&
+                                questionSortList(questions).length > 0 &&
                                 index > 0 &&
-                                questions.map((q) => {
-                                  const firstQuestionSlug = questions.filter((qf) => qf.question.includes('student_') || qf.student_question)[0].slug
+                                questionSortList(questions).map((q) => {
+                                  const firstQuestionSlug = questionSortList(questions).filter((qf) => qf.question.includes('student_') || qf.student_question)[0].slug
                                   if (q.slug === 'student_grade_level') {
                                     return (
                                       <Grid item xs={12}>
@@ -728,6 +770,7 @@ export const ExistingParent = () => {
                                                   field={field}
                                                   form={form}
                                                   meta={meta}
+                                                  handleAddQuestion={handleAddQuestion} 
                                                 />
                                               </Box>
                                             )}
@@ -764,6 +807,7 @@ export const ExistingParent = () => {
                                                   field={field}
                                                   form={form}
                                                   meta={meta}
+                                                  handleAddQuestion={handleAddQuestion} 
                                                 />
                                               </Box>
                                             )}
@@ -801,6 +845,7 @@ export const ExistingParent = () => {
                                                   field={field}
                                                   form={form}
                                                   meta={meta}
+                                                  handleAddQuestion={handleAddQuestion} 
                                                 />
                                               </Box>
                                             )}

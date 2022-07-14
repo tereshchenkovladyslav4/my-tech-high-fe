@@ -12,7 +12,7 @@ import {
 	getSchoolDistrictsByRegionId,
 } from '../../../Admin/SiteManagement/EnrollmentSetting/EnrollmentQuestions/services'
 import { QUESTION_TYPE } from '../../../../components/QuestionItem/QuestionItemProps'
-export function AdditionalQuestionItem({ question: q, field, meta, form }: { question: ApplicationQuestion, field: any, meta: any, form: any }) {
+export function AdditionalQuestionItem({ question: q, field, meta, form, handleAddQuestion }: { question: ApplicationQuestion, field: any, meta: any, form: any, handleAddQuestion?: (value: any, q: any) => void }) {
     const classes = useStyles
     const [options, setOptions] = useState(q?.options || [])
     const updateOptionsForDefaultQuestion = (updatedOptions) => {
@@ -41,20 +41,23 @@ export function AdditionalQuestionItem({ question: q, field, meta, form }: { que
       fetchPolicy: 'network-only',
     })
     useEffect(() => {
-      console.log('schoolDistrictsData', schoolDistrictsDataLoading,schoolDistrictsData)
       !schoolDistrictsDataLoading && schoolDistrictsData?.schoolDistrict.length > 0 &&
         updateOptionsForDefaultQuestion(
           schoolDistrictsData?.schoolDistrict.map((d) => {return {label: d.school_district_name, value: d.school_district_name}})
         )
     }, [schoolDistrictsData])
-    
     if (q.type === QUESTION_TYPE.DROPDOWN) {
       return (
         <DropDown
           labelTop
-          dropDownItems={options || []}
+          dropDownItems={q.options || []}
+          // dropDownItems={options || []}
           placeholder={q.question}
-          setParentValue={(id) => form.setFieldValue(field.name, id)}
+          defaultValue={q.response}
+          setParentValue={(id) => {
+            form.setFieldValue(field.name, id);
+            handleAddQuestion(id, q);
+          }}
           alternate={true}
           size='small'
           name={q.question.toLowerCase().replace(' ', '_')}
@@ -109,7 +112,7 @@ export function AdditionalQuestionItem({ question: q, field, meta, form }: { que
           >
             {q.question}
           </Subtitle>
-          {(options ?? []).map((o) => (
+          {(q.options ?? []).map((o) => (
             <Box
               key={o.value}
               display='flex'
@@ -120,6 +123,8 @@ export function AdditionalQuestionItem({ question: q, field, meta, form }: { que
               }}
             >
               <Checkbox name={q.question.toLowerCase().replace(' ', '_')} {...field} value={o.label}
+                onClick={() => handleAddQuestion(o.value, q)}
+                checked={q.response?.indexOf(o.value) >= 0}
                 sx={{
                   paddingLeft: 0,
                   color: '#4145FF',
@@ -141,6 +146,7 @@ export function AdditionalQuestionItem({ question: q, field, meta, form }: { que
       return (
         <Box display='flex' alignItems='center' sx={{marginTop: 2, marginBottom: 2, '& p': {margin: 0}}}>
           <Checkbox
+							checked={q.response === true}
             name={q.question.toLowerCase().replace(' ', '_')} {...field} value={true}
             sx={{
               paddingLeft: 0,
@@ -182,7 +188,7 @@ export function AdditionalQuestionItem({ question: q, field, meta, form }: { que
               name={q.question.toLowerCase().replace(' ', '_')}
               {...field}
             >
-              {options.map((o) => (
+              {q.options.map((o) => (
                 <Box
                   key={o.value}
                   display='flex'
@@ -193,12 +199,18 @@ export function AdditionalQuestionItem({ question: q, field, meta, form }: { que
                     paddingLeft: 0,
                   }}
                 >
-                  <FormControlLabel value={o.label} control={<Radio sx={{
-                      color: '#4145FF',
-                      '&.Mui-checked': {
-                        color: '#4145FF'
-                      }
-                    }} />} label={o.label} sx={{color: SYSTEM_05}}/>
+                  <FormControlLabel value={o.label} control={
+                    <Radio 
+                      checked={o.value == q.response}
+                      onChange={(e) => e.currentTarget.checked && handleAddQuestion(o.value, q)}
+                      sx={{
+                          color: '#4145FF',
+                          '&.Mui-checked': {
+                            color: '#4145FF'
+                          }
+                        }} />
+                      } label={o.label} sx={{color: SYSTEM_05}}
+                    />
                 </Box>
               ))}
             </RadioGroup>

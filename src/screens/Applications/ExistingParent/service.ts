@@ -60,6 +60,7 @@ export const getQuestionsGql = gql`
       default_question
       student_question
       slug
+      additional_question
     }
   }
 `

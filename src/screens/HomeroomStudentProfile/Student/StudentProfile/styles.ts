@@ -61,4 +61,13 @@ export const useStyles = {
   saveButton:{
 
   },
+  pendingBtn:{
+    height: '45px',
+    width: '100%',
+    borderRadius: 2,
+    background: '#2B9EB7',
+    '&:hover': {
+      background: '#2B9EB7',
+    },
+  }
 }

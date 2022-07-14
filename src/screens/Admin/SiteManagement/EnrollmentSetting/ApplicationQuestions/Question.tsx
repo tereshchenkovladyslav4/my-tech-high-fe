@@ -14,6 +14,7 @@ import { SYSTEM_05, SYSTEM_07 } from '../../../../../utils/constants'
 import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragraph'
 import { ProgramYearContext } from '../provider/ProgramYearProvider'
 import { QUESTION_TYPE } from '../../../../../components/QuestionItem/QuestionItemProps'
+import CustomConfirmModal from '../../../../../components/CustomConfirmModal/CustomConfirmModal'
 
 const DragHandle = SortableHandle(() => (
   <Tooltip title="Move">
@@ -24,11 +25,17 @@ const DragHandle = SortableHandle(() => (
 ))
 
 export default function ApplicationQuestionItem({
-  item,
+  questions,
   mainQuestion = false,
+  questionTypes,
+  additionalQuestionTypes,
+  hasAction
 }: {
-  item: ApplicationQuestion
-  mainQuestion?: boolean
+  questions: ApplicationQuestion[],
+  mainQuestion?: boolean,
+  questionTypes: any[],
+  additionalQuestionTypes: any[],
+  hasAction: boolean
 }) {
   const { values, setValues } = useFormikContext<ApplicationQuestion[]>()
   const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false)
@@ -38,9 +45,9 @@ export default function ApplicationQuestionItem({
     <>
       <Box display='flex' mt='20px' alignItems='center' justifyContent='center'>
         <Box flex='1' paddingTop='10px' maxWidth={'80%'}>
-          <Item question={item} />
+          <Item question={questions[0]} />
         </Box>
-        {!mainQuestion && (
+        {hasAction && !questions[0]?.main_question && (
           <Box display='inline-flex' paddingTop='10px' height='40px' alignItems='center' justifyContent='center'>
             <Tooltip title="Edit">
               <IconButton onClick={() => setShowEditDialog(true)}>
@@ -57,16 +64,16 @@ export default function ApplicationQuestionItem({
           </Box>
         )}
       </Box>
-      {showEditDialog && <AddNewQuestionModal onClose={() => setShowEditDialog(false)} editItem={item} />}
+      {showEditDialog && <AddNewQuestionModal onClose={() => setShowEditDialog(false)} questions={questions} questionTypes={questionTypes} additionalQuestionTypes={additionalQuestionTypes} />}
       {showDeleteDialog && (
-        <CustomModal
-          title='Delete Question'
-          description='Are you sure you want to delete this question?'
-          confirmStr='Delete'
-          onClose={() => setShowDeleteDialog(false)}
-          onConfirm={() => {
-            setShowDeleteDialog(false)
-            setValues(values.filter((i) => i.question !== item.question))
+        <CustomConfirmModal
+          header="Delete Question" 
+          content="Are you sure you want to delete this question?"
+          handleConfirmModalChange={(val: boolean, isOk: boolean) => {
+            setShowDeleteDialog(false);
+            if(isOk) {
+              setValues(values.filter((i) => i.id !== questions[0].id))
+            }
           }}
         />
       )}
@@ -74,16 +81,40 @@ export default function ApplicationQuestionItem({
   )
 }
 function Item({ question: q }: { question: ApplicationQuestion }) {
-  const { values, errors, touched } = useFormikContext<ApplicationQuestion[]>()
+  const { values, setValues, errors, touched } = useFormikContext<ApplicationQuestion[]>()
   const { setProgramYear } = useContext(ProgramYearContext)
-
   const index = values.find((i) => i.id === q.id)?.id
 
-  function onChange(value: string) {
+	//	Response
+	const onChange = (value) => {
     if(q.slug === 'program_year') {
       setProgramYear(value)
     }
-  }
+		if(q.type == QUESTION_TYPE.CHECKBOX) {
+			if(q.response.indexOf(value) >= 0) {
+				q.response = q.response.replace(value, '');
+			}
+			else {
+				q.response += value;
+			}
+			value = q.response;
+		}
+		const newValues = values.map((v) => (v.id == q.id ? {
+			...v,
+			response: value
+		} : v));
+		let current = q;
+		while(newValues.find(x => current.slug == x.additionalQuestion)
+			&& (current.response == '' || current.options.find(x => x.value == current.response
+			|| current.response.toString().indexOf(x.value) >= 0).action != 2)) {
+			current = newValues.find(x => current.slug == x.additionalQuestion);
+			current.response = '';
+		}
+		setValues(
+			newValues
+		);
+	};
+
   if (q.type === QUESTION_TYPE.DROPDOWN) {
     return (
       <DropDown
@@ -115,6 +146,7 @@ function Item({ question: q }: { question: ApplicationQuestion }) {
         placeholder={q.question}
         setParentValue={(v) => onChange(v as string)}
         alternate={true}
+        defaultValue={q.response}
         size='small'
         error={{
           error: !!touched[index] && !!errors[index],
@@ -180,7 +212,7 @@ function Item({ question: q }: { question: ApplicationQuestion }) {
               width: '100%',
             }}
           >
-            <Checkbox checked={o.value === +q.response} onClick={() => onChange(o.value + '')}
+            <Checkbox checked={q.response?.indexOf(o.value) >= 0} onClick={() => onChange(o.value)}
               sx={{
                 paddingLeft: 0,
                 color: '#4145FF',
@@ -196,7 +228,9 @@ function Item({ question: q }: { question: ApplicationQuestion }) {
   } else if (q.type === QUESTION_TYPE.AGREEMENT) {
     return (
       <Box display="flex" alignItems='center'>
-        <Checkbox checked={q.response == 'true'} onClick={() => {}}
+        <Checkbox 
+        checked={q.response === true}
+          onChange={(e) => onChange(e.currentTarget.checked)}
           sx={{
             paddingLeft: 0,
             color: '#4145FF',
@@ -237,7 +271,9 @@ function Item({ question: q }: { question: ApplicationQuestion }) {
               width: '100%',
             }}
           >
-            <Radio checked={false}
+            <Radio 
+              checked={o.value == q.response}
+              onChange={(e) => e.currentTarget.checked && onChange(o.value)}
               sx={{
                 paddingLeft: 0,
                 color: '#4145FF',

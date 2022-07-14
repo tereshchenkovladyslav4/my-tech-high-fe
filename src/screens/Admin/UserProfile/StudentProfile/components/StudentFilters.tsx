@@ -68,11 +68,11 @@ const selectStyles = makeStyles({
     '& > div': {
       paddingTop: 0,
       paddingBottom: 0,
-    },
+    }
   },
   selectIcon: {
     fill: '#F2F2F2',
-    color: '#F2F2F2',
+    color: '#F2F2F2'
   },
   selectRoot: {
     color: '#F2F2F2',
@@ -418,15 +418,16 @@ export const StudentFilters = ({
             <Subtitle fontWeight='700' sx={{ marginRight: '30px', marginBottom: '5px' }}>
               {applications?.[0]?.midyear_application
                 ? `${moment(applications[0].school_year.midyear_application_open).format('YYYY')} - ${moment(
-                    applications[0].school_year.midyear_application_close,
-                  ).format('YY')} Mid-year Status`
+                  applications[0].school_year.midyear_application_close,
+                ).format('YY')} Mid-year Status`
                 : applications?.[0]
-                ? `${moment(applications[0].school_year.date_begin).format('YYYY')} - ${moment(
+                  ? `${moment(applications[0].school_year.date_begin).format('YYYY')} - ${moment(
                     applications[0].school_year.date_end,
                   ).format('YY')} Status`
-                : ''}
+                  : ''}
             </Subtitle>
             <Box>
+              {console.log('lplp', studentStatusData.status, withdrawalStatus?.status)}
               <Select
                 className={
                   studentStatusData?.status != 2
@@ -445,6 +446,7 @@ export const StudentFilters = ({
                 onChange={(e) => {
                   handleChangeStudentStatus(e)
                 }}
+
               >
                 {status.map((item) => (
                   <MenuItem
@@ -501,8 +503,8 @@ export const StudentFilters = ({
               confirmBtnTitle='Delete'
               handleConfirmModalChange={(val: boolean, isOk: boolean) => {
                 if (isOk) {
-                  setWithdrawalStatus({})
-                  setStudentStatuData({ ...studentStatusData, ...{ activeOption: true } })
+                  setWithdrawalStatus({});
+                  setStudentStatuData({ ...studentStatusData, ...{ activeOption : true } })
                 }
                 setShowConfirmModal(false)
               }}
@@ -599,11 +601,11 @@ export const StudentFilters = ({
                   <Subtitle sx={classes.formLabel as object} fontWeight='500'>
                     {application.midyear_application
                       ? `${moment(application.school_year.midyear_application_open).format('YYYY')}-${moment(
-                          application.school_year.midyear_application_close,
-                        ).format('YY')} Mid-year`
+                        application.school_year.midyear_application_close,
+                      ).format('YY')} Mid-year`
                       : `${moment(application.school_year.date_begin).format('YYYY')}-${moment(
-                          application.school_year.date_end,
-                        ).format('YY')}`}
+                        application.school_year.date_end,
+                      ).format('YY')}`}
                     <Box sx={classes.labelAfter as object}></Box>
                   </Subtitle>
                   <Box sx={classes.formRow}>

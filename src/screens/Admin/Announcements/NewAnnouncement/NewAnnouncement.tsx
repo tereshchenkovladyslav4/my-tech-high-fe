@@ -53,6 +53,10 @@ const NewAnnouncement = ({ announcement, setAnnouncement }: NewAnnouncementProps
     handleSaveClick('Scheduled')
   }
 
+  const handleRepublish = () => {
+    handleSaveClick('Republished')
+  }
+
   const handleBackClick = () => {
     if (announcement) setAnnouncement(null)
     history.push(ANNOUNCEMENTS)
@@ -171,6 +175,8 @@ const NewAnnouncement = ({ announcement, setAnnouncement }: NewAnnouncementProps
         setAnnouncement={setAnnouncement}
         handleSaveClick={handleSaveClick}
         handlePublishClick={handlePublishClick}
+        handleRepublish={handleRepublish}
+        
       />
       <Box sx={{ width: '100%', padding: 3 }}>
         <Grid container justifyContent='space-between'>
@@ -212,6 +218,7 @@ const NewAnnouncement = ({ announcement, setAnnouncement }: NewAnnouncementProps
             setCronJobTime={setCronJobTime}
             onSchedule={() => handleSetSchedule()}
             scheduledTime={announcement?.scheduleTime}
+            onRepublish={() => handleRepublish()}
           />
         )}
       </Box>
