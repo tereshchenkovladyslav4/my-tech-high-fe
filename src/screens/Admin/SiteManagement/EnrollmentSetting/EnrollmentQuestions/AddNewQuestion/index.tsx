@@ -636,7 +636,7 @@ export default function AddNewQuestionModal({
               }}
             >
               <Box sx={{display: 'flex', alignItems: 'center', visibility: e.type === QUESTION_TYPE.TEXTFIELD ? 'visible' : 'hidden'}}>
-                <Checkbox checked={e.validation ? true : false} onClick={() => setQuestionValue(e.id, e.slug, 'validation', !e.validation)} disabled={e.default_question && e.type !== QUESTION_TYPE.TEXTFIELD}/>
+                <Checkbox checked={e.validation ? true : false} onClick={() => setQuestionValue(e.id, e.slug, 'validation', e.validation ? 0 : 1)} disabled={e.default_question && e.type !== QUESTION_TYPE.TEXTFIELD}/>
                 <Subtitle size='small'>Validation</Subtitle>
               </Box>
               {!e.additional_question && <Box sx={{display: 'flex', alignItems: 'center',}}>
@@ -661,7 +661,7 @@ export default function AddNewQuestionModal({
               <DropDown
                 sx={{
                   visibility: e.type === QUESTION_TYPE.TEXTFIELD && e.validation ? 'visible' : 'hidden',
-                  pointerEvents: e.default_question ? 'none' : 'unset',
+                  pointerEvents: e.default_question && e.type != QUESTION_TYPE.TEXTFIELD ? 'none' : 'unset',
                   width: '200px',
                   [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
                   {

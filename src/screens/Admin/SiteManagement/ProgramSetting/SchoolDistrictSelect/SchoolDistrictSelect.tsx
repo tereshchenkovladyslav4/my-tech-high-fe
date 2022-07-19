@@ -72,7 +72,10 @@ export default function SchoolDistrictSelect({
         if (schoolDistrictArray.length > 0) {
           setSchoolDistrictArray(schoolDistrictArray)
           setSchoolDistrict(data)
-          setIsChanged(true)
+          setIsChanged(isChanged => ({
+            ...isChanged,
+            schoolDistricts: true
+          }))
         } else {
           console.log('School Districts File Parsing Error')
         }
@@ -86,7 +89,10 @@ export default function SchoolDistrictSelect({
       ...isDelete,
       schoolDistrict: true
     });
-    setIsChanged(true);
+    setIsChanged(isChanged => ({
+      ...isChanged,
+      schoolDistricts: true
+    }))
     setSchoolDistrict({
       name: '',
       path: '',

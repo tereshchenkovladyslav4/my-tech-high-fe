@@ -9,21 +9,25 @@ import Wysiwyg from 'react-draft-wysiwyg'
 import { ContentState, convertToRaw, EditorState } from 'draft-js'
 import htmlToDraft from 'html-to-draftjs'
 import draftToHtml from 'draftjs-to-html'
+import { QUESTION_TYPE } from '../../../../../../components/QuestionItem/QuestionItemProps'
 
 export default function AddQuestionModal({
   onClose,
   editItem,
+  specialEd
 }: {
   onClose: () => void
   editItem?: EnrollmentQuestion
+  specialEd: any
 }) {
-  console.log('edit', editItem)
   const { values, setValues } = useFormikContext<EnrollmentQuestionTab[]>()
   const [uploadTitle, setUploadTitle ] = useState(editItem?.question || '')
   const [ fileName, setFileName ] = useState(editItem?.options[0]?.label || '')
   const [description, setDescription] = useState(editItem?.options[0]?.value || '')
 
   const [required, setRequired] = useState(editItem?.required || false)
+  const [specialUpload, setSpecialUpload] = useState(editItem?.options[1]?.value || false)
+  const [specialUploadList, setSpecialUploadList] = useState( editItem?.options[1]?.value ? JSON.parse(editItem?.options[1]?.value) : [])
   // const [removable, setRemovable] = useState(editItem?.removable || false)
   const [error, setError] = useState('')
 
@@ -38,15 +42,22 @@ export default function AddQuestionModal({
         setError('Title is required')
         return
     }
-    let newQuestions : EnrollmentQuestion[]
+    let newQuestions : EnrollmentQuestion[];
+
+    let options = [{label: fileName, value: description}];
+    if(specialUpload){
+      options.push({label: specialUpload, value: JSON.stringify(specialUploadList)});
+    }else{
+      options.push({label: specialUpload, value: ''});
+    }
+  
     if(editItem) {
-      console.log('update')
         const newQuestion : EnrollmentQuestion = {
           id: editItem?.id,
           type: 8,
           question: uploadTitle,
           order: editItem.order,
-          options: [{label: fileName, value: description}],
+          options: options,
           required,
           // removable,
           validation: 0,
@@ -55,14 +66,13 @@ export default function AddQuestionModal({
           slug: editItem?.slug || `meta_${+ new Date()}`
         }
         newQuestions = currentTabData.groups[0]?.questions.map((q) => q.slug === editItem.slug ? newQuestion : q)
-
     }
     else {
         const newQuestion : EnrollmentQuestion = {
             type: 8,
             question: uploadTitle,
             order: currentTabData.groups[0]?.questions?.length + 1 || 1,
-            options: [{label: fileName, value: description}],
+            options: options,
             required,
             // removable,
             validation: 0,
@@ -97,6 +107,17 @@ export default function AddQuestionModal({
       setDescription(draftToHtml(convertToRaw(editorState.getCurrentContent())));
 		} catch {}
 	}
+
+  const handleSpecialService = (e, ed) => {
+    const checked = e.target.checked;
+    if(checked){
+      const newSpecialList = specialUploadList.concat(ed);
+      setSpecialUploadList(newSpecialList);
+    }else{
+      const newSpecialList = specialUploadList.filter(i => i != ed);
+      setSpecialUploadList(newSpecialList);
+    }
+	};
 
   return (
     <Modal open={true} aria-labelledby='child-modal-title' aria-describedby='child-modal-description'>
@@ -203,15 +224,54 @@ export default function AddQuestionModal({
         <Box
           sx={{
             width: '100%',
-            height: '40px',
+            // height: '40px',
             mt: '40px',
             mb: '20px',
             display: 'flex',
-            // alignItems: 'center',
-            flexDirection: 'column',
-            alignItems: 'end',
+            alignItems: 'flex-start',
+            justifyContent: 'space-between'
           }}
         >
+          {specialEd?.specialEdStatus ? (
+            <Box>
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                }}
+              >
+                <Checkbox checked={specialUpload} onClick={() => setSpecialUpload(!specialUpload)} />
+                <Subtitle size='small'>Special Education Upload</Subtitle>
+              </Box>
+              {specialUpload && (
+                <>
+                  <Box
+                    sx={{
+                      paddingLeft: '13px'
+                    }}
+                  >
+                    <Subtitle size='small' sx={{fontSize: '13px'}}>Check the statuses that require a SPED upload</Subtitle>
+                  </Box>
+                  {
+                    specialEd?.specialEdList.map((ed, index) => (
+                    <Box
+                      key={index}
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                      }}
+                    >
+                      <Checkbox checked={specialUploadList?.indexOf(ed) !== -1} onClick={(e) => handleSpecialService(e, ed)} />
+                      <Subtitle size='small'>{ed}</Subtitle>
+                    </Box>
+                    ))
+                  }
+                </>
+              )}
+            </Box>
+          ) : (
+            <Box />
+          )}
           <Box>
             <Box
               sx={{

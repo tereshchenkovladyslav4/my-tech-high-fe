@@ -25,7 +25,8 @@ export default function PublishModal({
   scheduledTime?: Date
 }) {
   const classes = useStyles
-  const [dateTime, setDateTime] = useState<Date>(scheduledTime ?? new Date())
+  const [dateTime, setDateTime] = useState<Date>(new Date(scheduledTime as any) ?? new Date())
+  const [hours, setHours] = useState( scheduledTime ? moment(scheduledTime).format('HH:mm') : moment(new Date()).format('HH:mm'))
   const [invalidTime, setInvalidTime] = useState<boolean>(false)
 
   const handleSchedule = () => {
@@ -37,6 +38,7 @@ export default function PublishModal({
   }
 
   const handleTimeChange = (value: string) => {
+    setHours(value)
     const selectedDate = new Date(dateTime).setHours(Number(value.split(':')[0]), Number(value.split(':')[1]), 0, 0)
     setDateTime(new Date(selectedDate))
     setCronJobTime(new Date(selectedDate))
@@ -87,7 +89,7 @@ export default function PublishModal({
                   label='Time'
                   type='time'
                   size='small'
-                  defaultValue={ moment(scheduledTime).format('HH:mm') ?? moment(new Date()).format('HH:mm')}
+                  value={hours}
                   InputLabelProps={{
                     shrink: true,
                   }}

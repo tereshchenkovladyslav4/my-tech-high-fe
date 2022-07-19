@@ -354,13 +354,27 @@ export default function Documents({id, questions}) {
       return arr;
   })
   const questionsLists = questionsArr.filter((item) => !item[0].additional_question)
+
+  const specialEdStatus = (item) => {
+    const specialResponseMeta = formik?.values?.packet?.meta;
+    const specialResponse = specialResponseMeta ? JSON.parse(specialResponseMeta) : {};
+    const slug = item[0].options[0]?.label?.trim();
+    if(slug === 'sped'){
+      if( specialResponse && specialResponse.meta_special_education !== 'None' ){
+        return true;
+      }
+      return false;
+    }else{
+      return true;
+    }
+  }
   return (
     !dataLoading ? <form  onSubmit={(e) => !disabled ? formik.handleSubmit(e) : nextTab(e)}>
       
     <Grid container rowSpacing={3} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
       <Grid item xs={12}>
         <List>
-          {questionsLists.map((item, index) => (
+          {questionsLists.map((item, index) => specialEdStatus(item) && (
             <Grid item xs={12} marginTop={4} key={index}>
               <DocumentUpload
                 disabled={disabled}

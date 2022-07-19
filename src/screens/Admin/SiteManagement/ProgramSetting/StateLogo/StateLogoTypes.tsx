@@ -10,4 +10,5 @@ export type StateLogoProps = {
   stateLogoFile: StateLogoFileType | null
   setStateLogoFile: (value: StateLogoFileType) => void
   setIsChanged: (value: boolean) => void
+  isChanged: any
 }

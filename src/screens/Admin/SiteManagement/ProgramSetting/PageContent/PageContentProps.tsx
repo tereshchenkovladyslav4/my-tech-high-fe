@@ -13,6 +13,7 @@ export type PageContentProps = {
     setIsStateChanged: (value: boolean) => void
     setIsDelete: (value: any) => void
     isDelete: any
+    isChanged: any
   }
   stateLogoItem: {
     stateLogo: string

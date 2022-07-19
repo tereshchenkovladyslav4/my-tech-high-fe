@@ -26,7 +26,7 @@ const DragHandle = SortableHandle(() => (
   </Tooltip>
 ))
 
-export const DocumentUpload = ({ item } : {item : EnrollmentQuestion[]}) => {
+export const DocumentUpload = ({ item, specialEd } : {item : EnrollmentQuestion[], specialEd: any}) => {
   const classes = useStyles
 
   const  [open, setOpen] = useState(false)
@@ -95,7 +95,7 @@ export const DocumentUpload = ({ item } : {item : EnrollmentQuestion[]}) => {
             handleFile={handleFile}
           /> 
         }
-        {showEditDialog && <AddUploadModal onClose={() => setShowEditDialog(false)} editItem={item[0]} />}
+        {showEditDialog && <AddUploadModal onClose={() => setShowEditDialog(false)} editItem={item[0]} specialEd={specialEd} />}
         {showDeleteDialog && (
           <CustomModal
             title='Delete Question'

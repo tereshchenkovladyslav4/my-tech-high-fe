@@ -93,12 +93,7 @@ export const AdminSideMenu: FunctionComponent = () => {
       to: COMMUNICATION,
       label: 'Communication',
       icon: <MarkunreadMailboxOutlinedIcon style={classes.logos} />,
-    },
-    {
-      to: ANNOUNCEMENTS,
-      label: 'Announcements',
-      icon: <MarkunreadMailboxOutlinedIcon style={classes.logos} />,
-    },
+    },    
     {
       to: CALENDAR,
       label: 'Calendar',

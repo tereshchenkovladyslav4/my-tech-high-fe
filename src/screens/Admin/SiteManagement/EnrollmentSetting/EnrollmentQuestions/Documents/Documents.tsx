@@ -1,7 +1,5 @@
 import { Box, Grid } from '@mui/material'
-import React, { FunctionComponent, useContext } from 'react'
-import { Paragraph } from '../../../../../../components/Typography/Paragraph/Paragraph'
-import { Subtitle } from '../../../../../../components/Typography/Subtitle/Subtitle'
+import React, { FunctionComponent, useContext, useEffect, useState } from 'react'
 import { DocumentUpload } from './components/DocumentUpload/DocumentUpload'
 import { arrayMove, SortableContainer, SortableElement } from 'react-sortable-hoc'
 import { EnrollmentQuestionTab, EnrollmentQuestion } from '../types'
@@ -9,11 +7,13 @@ import {  useFormikContext } from 'formik'
 import { List } from '@mui/material'
 import { TabContext } from '../TabContextProvider'
 
-const DocumentItem = ({item}) => {
+
+const DocumentItem = ({item, specialEd}) => {
   return (
     <Grid item xs={12} marginTop={4}>
       <DocumentUpload
         item={item}
+        specialEd={specialEd}
       />
     </Grid>
   )
@@ -21,7 +21,7 @@ const DocumentItem = ({item}) => {
 
 const SortableItem = SortableElement(DocumentItem)
 
-const SortableListContainer = SortableContainer(({ items }: { items: EnrollmentQuestion[] }) => {
+const SortableListContainer = SortableContainer(({ items, specialEd }: { items: EnrollmentQuestion[], specialEd: any }) => {
   const questionsArr = items.map((q) => {
     let arr = [q], current = q, child;
       while(child = items.find(x => x.additional_question == current.slug)) {
@@ -34,13 +34,13 @@ const SortableListContainer = SortableContainer(({ items }: { items: EnrollmentQ
   return (
     <List>
       {questionsLists.map((item, index) => (
-        <SortableItem index={index} key={index} item={item} />
+        <SortableItem index={index} key={index} item={item} specialEd={specialEd} />
       ))}
     </List>
   )
-      })
+})
 
-export const Documents: FunctionComponent = () => {
+export const Documents: FunctionComponent = ({specialEd}) => {
   const tabName = useContext(TabContext)
   const { values, setValues } = useFormikContext<EnrollmentQuestionTab[]>()
   const uploadData = values.filter((v) => v.tab_name === tabName)[0].groups[0]?.questions || []
@@ -51,6 +51,7 @@ export const Documents: FunctionComponent = () => {
       <Grid item xs={12}>
         <SortableListContainer
           items={uploadData}
+          specialEd = {specialEd}
           useDragHandle={true}
           axis="xy"
           onSortEnd={({ oldIndex, newIndex }) => {

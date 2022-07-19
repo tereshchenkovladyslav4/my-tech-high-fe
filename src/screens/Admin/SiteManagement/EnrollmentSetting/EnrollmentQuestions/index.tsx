@@ -34,7 +34,7 @@ import {
   getActiveSchoolYearsByRegionId,
   getSchoolDistrictsByRegionId,
   getAllRegion,
-
+  getSpecialEdsByRegionId
 } from './services'
 import { useMutation, useQuery } from '@apollo/client'
 import _ from 'lodash'
@@ -56,6 +56,11 @@ export default function EnrollmentQuestions() {
   const [unsavedChanges, setUnsavedChanges] = useState(false)
   const [specialEd, setSpecialEd] = useState(false)
   const [specialEdOptions, setSpecialEdOptions]  = useState([])
+
+  const [specialEdStatus, setSpecialEdStatus] = useState<boolean>(false);
+  const [specialEdList, setSpecialEdList] = useState<any>([]);
+
+
   const classes = useStyles
   const history = useHistory()
   const [saveQuestionsMutation] = useMutation(saveQuestionsGql)
@@ -66,6 +71,29 @@ export default function EnrollmentQuestions() {
     variables: { input: { region_id: Number(me?.selectedRegionId) } },
     fetchPolicy: 'network-only',
   })
+
+  const {data: specialEdData, refetch: specialRefetch} = useQuery(getSpecialEdsByRegionId, {
+    variables: {
+      regionId: Number(me?.selectedRegionId),
+    },
+    fetchPolicy: 'network-only',
+  })
+
+  useEffect(() => {
+    setSpecialEdStatus(false);
+    const thisSchoolYear = specialEdData?.region?.SchoolYears.find(i => moment(i.date_begin).format('Y') == moment().format('Y') );
+    if(thisSchoolYear){
+      setSpecialEdStatus(thisSchoolYear.special_ed_options);
+      if(thisSchoolYear.special_ed_options && thisSchoolYear.special_ed_options){
+        const special_ed_options = thisSchoolYear.special_ed_options.split(',');
+        const specialList = special_ed_options.filter(ii => ii != 'None');
+        setSpecialEdList(specialList);
+    }
+      setSpecialEdStatus(thisSchoolYear.special_ed_options);
+    }else{
+      setSpecialEdStatus(false);
+    }
+  }, [specialEdData?.region?.SchoolYears])
   
   
 
@@ -476,7 +504,10 @@ export default function EnrollmentQuestions() {
                       ) : currentTab === 2 ? (
                         <Education />
                       ) : currentTab === 3 ? (
-                        <Documents />
+                        <Documents specialEd = {{
+                          'specialEdStatus' : specialEdStatus,
+                          'specialEdList' : specialEdList
+                        }}/>
                       ) : (
                         <Submission />
                       )}
@@ -486,7 +517,10 @@ export default function EnrollmentQuestions() {
                   {openAddQuestion === 'default' && <DefaultQuestionModal onClose={() => {setOpenAddQuestion(''); setOpenSelectQuestionType(true)}} onCreate={(e) => {onSelectDefaultQuestions(e)}} special_ed={specialEd}/>}
                   {openSelectQuestionType && <AddQuestionModal onClose={() => setOpenSelectQuestionType(false)} onCreate={(e) => {setOpenAddQuestion(e); setEditItem([]); setOpenSelectQuestionType(false)}}/>}
 
-                  {openAddUpload && <AddUploadModal onClose={() => setOpenAddUpload(false)}/>}
+                  {openAddUpload && <AddUploadModal onClose={() => setOpenAddUpload(false)}  specialEd = {{
+                    'specialEdStatus' : specialEdStatus,
+                    'specialEdList' : specialEdList
+                  }} />}
                   {currentTab === 3 && (
                     <Box sx={classes.buttonGroup}>
                       <Button sx={{ ...classes.submitButton, color: 'white'}} onClick={() => setOpenAddUpload(true)}>

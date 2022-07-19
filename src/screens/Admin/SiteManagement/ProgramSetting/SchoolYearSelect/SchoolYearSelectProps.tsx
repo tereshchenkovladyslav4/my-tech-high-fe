@@ -1,5 +1,6 @@
 import { CountyFileType } from '../CountySelect/CountySelectTypes'
 import { SchoolDistrictFileType } from '../SchoolDistrictSelect/SchoolDistrictSelectTypes'
+import { SchoolYears } from '../types'
 
 export type SchoolYearSelectProps = {
   setSelectedYearId: (value: string) => void
@@ -11,4 +12,6 @@ export type SchoolYearSelectProps = {
   selectedYearId: string
   setCounty: (value: CountyFileType) => void
   setSchoolDistrict: (value: SchoolDistrictFileType) => void
+  schoolYears: SchoolYears[]
+  setSchoolYears: (value: SchoolYears[]) => void
 }

@@ -27,7 +27,7 @@ const useStyles = makeStyles(() => ({
   },
 }))
 
-export default function CountySelect({ county, setCounty, setCountyArray, setIsChanged, setIsDelete, isDelete }: CountySelectProps) {
+export default function CountySelect({ county, setCounty, setCountyArray, setIsChanged, setIsDelete, isDelete, isChanged }: CountySelectProps) {
   const { me } = useContext(UserContext)
   const [open, setOpen] = useState<boolean>(false)
   const [customModalOpen, setCustomModalOpen] = useState<boolean>(false)
@@ -60,7 +60,10 @@ export default function CountySelect({ county, setCounty, setCountyArray, setIsC
             file: fileName[0],
           }
           setCounty(data)
-          setIsChanged(true)
+          setIsChanged({
+            ...isChanged,
+            counties: true
+          })
           setCountyArray(countyArray)
         } else {
           console.log('County File Parsing Error')
@@ -82,7 +85,10 @@ export default function CountySelect({ county, setCounty, setCountyArray, setIsC
       path: '',
       file: null,
     })
-    setIsChanged(true);
+    setIsChanged({
+      ...isChanged,
+      counties: true
+    })
   }
 
   const handleReplaceConfirm = () => {

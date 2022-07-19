@@ -65,8 +65,8 @@ export const useStyles = {
     borderRadius: 1,
     marginBottom: '24px',
     'div.DraftEditor-editorContainer': {
-      minHeight: '200px',
-      maxHeight: '250px',
+      minHeight: '300px',
+      maxHeight: '400px',
       overflow: 'scroll',
       padding: 1,
       '.public-DraftStyleDefault-block': {

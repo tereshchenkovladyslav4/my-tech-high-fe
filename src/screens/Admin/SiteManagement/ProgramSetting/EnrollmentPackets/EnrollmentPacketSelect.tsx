@@ -5,9 +5,10 @@ type EnrollPacketSelectProps = {
   enroll: boolean
   setEnroll: (value: boolean) => void
   setIsChanged: (value: boolean) => void
+  isChanged: any
 }
 
-export default function EnrollPacketSelect({ enroll, setEnroll, setIsChanged }: EnrollPacketSelectProps) {
+export default function EnrollPacketSelect({ enroll, setEnroll, setIsChanged, isChanged }: EnrollPacketSelectProps) {
   const items = [
     {
       label: 'Enabled',
@@ -20,7 +21,10 @@ export default function EnrollPacketSelect({ enroll, setEnroll, setIsChanged }: 
   ]
   const handleChange = (value: string) => {
     setEnroll(value == 'true' ? true : false)
-    setIsChanged(true)
+    setIsChanged({
+      ...isChanged,
+      enrollment: true
+    })
   }
 
   return (

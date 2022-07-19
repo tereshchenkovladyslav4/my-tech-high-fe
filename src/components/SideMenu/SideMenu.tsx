@@ -60,13 +60,7 @@ export const SideMenu: FunctionComponent = () => {
       label: 'Announcements',
       icon: <AllInboxOutlinedIcon style={classes.logos} />,
       access: [7, checkAdminAccessOnSidebar('Communication')],
-    },
-    {
-      to: ANNOUNCEMENTS,
-      label: 'Announcements',
-      icon: <AllInboxOutlinedIcon style={classes.logos} />,
-      access: [7, checkAdminAccessOnSidebar('Announcements')],
-    },
+    },    
     {
       to: CALENDAR,
       label: 'Calender',

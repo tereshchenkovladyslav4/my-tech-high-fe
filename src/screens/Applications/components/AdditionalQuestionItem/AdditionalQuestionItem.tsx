@@ -146,7 +146,8 @@ export function AdditionalQuestionItem({ question: q, field, meta, form, handleA
       return (
         <Box display='flex' alignItems='center' sx={{marginTop: 2, marginBottom: 2, '& p': {margin: 0}}}>
           <Checkbox
-							checked={q.response === true}
+            checked={q.response === true}
+            onClick={(e) => handleAddQuestion(e.target.checked, q)}
             name={q.question.toLowerCase().replace(' ', '_')} {...field} value={true}
             sx={{
               paddingLeft: 0,

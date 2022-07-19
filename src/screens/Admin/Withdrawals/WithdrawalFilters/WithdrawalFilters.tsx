@@ -34,8 +34,9 @@ const WithdrawalFilters = ({ filters, setFilters, withdrawCount }: WithdrawalFil
         marginY: 2,
       }}
     >
-      {WITHDRAWAL_STATUS_LABEL.map((label: string) => (
+      {WITHDRAWAL_STATUS_LABEL.map((label: string, index) => (
         <Button
+          key={index}
           variant={filters.includes(label) ? 'text' : 'outlined'}
           sx={{
             background: (filters.includes(label) && BUTTON_LINEAR_GRADIENT) || null,

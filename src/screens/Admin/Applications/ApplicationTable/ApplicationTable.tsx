@@ -505,8 +505,8 @@ export const ApplicationTable = ({ filter }: ApplicationTableProps) => {
             flexDirection: 'row',
             alignItems: 'center',
             width: '100%',
-            justifyContent: 'flex-end',
-            marginRight: '24px',
+            justifyContent: 'flex-start',
+            marginLeft: '24px',
           }}
         >
           <Button
@@ -517,13 +517,14 @@ export const ApplicationTable = ({ filter }: ApplicationTableProps) => {
               textTransform: 'none',
               background: RED_GRADIENT,
               color: 'white',
-              width: '157px',
+              width: '195px',
               marginRight: 2,
               height: '33px',
               '&:hover': {
                 background: '#D23C33',
                 color: '#fff',
               },
+              minWidth: '160px'
             }}
             onClick={handleOpenEmailModal}
           >

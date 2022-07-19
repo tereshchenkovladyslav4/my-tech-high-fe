@@ -11,6 +11,8 @@ import { PageHeader } from '../components/PageHeader'
 import { PageContent } from './PageContent'
 import { SchoolYearSelect } from './SchoolYearSelect'
 import { removeCountyInfoByRegionId, removeFileByFileId, removeSchoolDistrictInfoByRegionId, updateSchoolYearMutation, updateStateNameMutation, uploadFile, uploadImage } from '../services'
+import { SchoolYears } from './types'
+import moment from 'moment'
 
 const ProgramSetting: React.FC = () => {
   const classes = useStyles
@@ -29,8 +31,19 @@ const ProgramSetting: React.FC = () => {
   const [grades, setGrades] = useState<string>('')
   const [county, setCounty] = useState<CountyFileType | null>(null)
   const [schoolDistrict, setSchoolDistrict] = useState<SchoolDistrictFileType | null>(null)
-  const [isChanged, setIsChanged] = useState<boolean>(false)
-  const [isStateChanged, setIsStateChanged] = useState<boolean>(false)
+  // const [isChanged, setIsChanged] = useState<boolean>(false)
+  const [schoolYears, setSchoolYears] = useState<SchoolYears[]>([])
+  const [isChanged, setIsChanged] = useState<any>({
+    state: false,
+    stateLogo: false,
+    program: false,
+    counties: false,
+    schoolDistricts: false,
+    grades: false,
+    birth: false,
+    specialEd: false,
+    enrollment: false,
+  })
 
   const [isDelete, setIsDelete] = useState({
     county: false,
@@ -42,6 +55,54 @@ const ProgramSetting: React.FC = () => {
   const [stateLogoFile, setStateLogoFile] = useState<StateLogoFileType | null>(null)
   const [submitSave, {}] = useMutation(updateStateNameMutation)
   const [submitSchoolYearSave, {}] = useMutation(updateSchoolYearMutation)
+
+  const changeStatus = () => {
+    const selectedRegion = me?.userRegion?.find((region) => region.region_id === me?.selectedRegionId)
+
+    const currentSetting = schoolYears.find(i => i.schoolYearId == selectedYearId);
+
+    if(selectedRegion?.regionDetail){
+      if(newStateName && selectedRegion?.regionDetail?.name != newStateName){
+        return true;
+      }
+
+      if(selectedRegion?.regionDetail?.program != program){
+        return true;
+      }
+    }
+    
+    if(isChanged.stateLogo || isChanged.counties || isChanged.schoolDistricts){
+      return true;
+    }
+    
+    if(currentSetting){
+      if(currentSetting?.grades != grades){
+        return true;
+      }
+      if(moment(currentSetting?.birthDateCut).format('MM/DD/YYYY') != moment(birthDate).format('MM/DD/YYYY')){
+        return true;
+      }
+      if(currentSetting.specialEd != specialEd){
+        return true;
+      }
+      if(specialEd){
+        let specialEdOptionsStr = '';
+        specialEdOptions.map(i => {
+          if(i.option_value && i.option_value != ''){
+            specialEdOptionsStr += i.option_value + ',';
+          }
+        });
+        if(currentSetting.specialEdOptions != specialEdOptionsStr.slice(0, -1)){
+          return true;
+        }
+      }
+      if(currentSetting.enrollmentPacket != enroll){
+        return true;
+      }
+    }
+    
+    return false;
+  }
 
   const handleClickSave = async () => {
     if (isInvalidStateName) {
@@ -127,8 +188,17 @@ const ProgramSetting: React.FC = () => {
       region_id: me?.selectedRegionId,
       regionDetail: submitedResponse.data.updateRegion,
     }
-    setIsChanged(false)
-    setIsStateChanged(false)
+    setIsChanged({
+      state: false,
+      stateLogo: false,
+      program: false,
+      counties: false,
+      schoolDistricts: false,
+      grades: false,
+      birth: false,
+      specialEd: false,
+      enrollment: false,
+    })
 
     setMe((prevMe) => {
       const updatedRegions = prevMe?.userRegion
@@ -158,8 +228,17 @@ const ProgramSetting: React.FC = () => {
     setProgram(selectedRegion?.regionDetail?.program || '')
     setStateLogo(selectedRegion?.regionDetail?.state_logo || '')
     setStateLogoFile(null)
-    setIsChanged(false)
-    setIsStateChanged(false)
+    setIsChanged({
+      state: false,
+      stateLogo: false,
+      program: false,
+      counties: false,
+      schoolDistricts: false,
+      grades: false,
+      birth: false,
+      specialEd: false,
+      enrollment: false,
+    })
   }, [me?.selectedRegionId])
 
   // county delete
@@ -203,9 +282,9 @@ const ProgramSetting: React.FC = () => {
 
   return (
     <Box sx={classes.base}>
-      <input type="hidden" value={isChanged || isStateChanged ? '1' : '0'} className="program-set" />
+      <input type="hidden" value={changeStatus() ? '1' : '0'} className="program-set" />
       <Prompt
-        when={isChanged || isStateChanged ? true : false}
+        when={changeStatus() ? true : false}
         message={JSON.stringify({
           header: 'Unsaved Changes',
           content: 'Are you sure you want to leave without saving changes?',
@@ -222,6 +301,8 @@ const ProgramSetting: React.FC = () => {
         selectedYearId={selectedYearId}
         setCounty={setCounty}
         setSchoolDistrict={setSchoolDistrict}
+        schoolYears={schoolYears} 
+        setSchoolYears={setSchoolYears}
       />
       <PageContent
         stateSelectItem={{
@@ -240,8 +321,8 @@ const ProgramSetting: React.FC = () => {
         birthDayCutItem={{ birthDate, setBirthDate }}
         specialEdItem={{ specialEd, setSpecialEd, specialEdOptions, setSpecialEdOptions }}
         enrollItem={{ enroll, setEnroll }}
+        isChanged={isChanged}
         setIsChanged={setIsChanged}
-        setIsStateChanged={setIsStateChanged}
         setIsDelete={setIsDelete}
         isDelete={isDelete}
       />

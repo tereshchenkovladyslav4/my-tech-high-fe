@@ -1,6 +1,6 @@
 import { GREEN_GRADIENT, RED_GRADIENT, YELLOW_GRADIENT, BUTTON_LINEAR_GRADIENT } from '../../../../utils/constants'
 
-export const useStyles = {
+export const actionClassess = {
   card: {
     paddingTop: '24px',
     marginBottom: '24px',

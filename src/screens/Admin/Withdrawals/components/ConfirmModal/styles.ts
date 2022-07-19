@@ -1,4 +1,4 @@
-export const useStyles = {
+export const modalClassess = {
   body: {
     position: 'absolute',
     top: '50%',

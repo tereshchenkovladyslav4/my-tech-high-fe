@@ -1,18 +1,20 @@
-import { Table, TableBody, TableContainer, Box } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import { useQuery } from '@apollo/client'
+import { Table, TableBody, TableContainer, Box } from '@mui/material'
+import { forOwn, map, groupBy, values } from 'lodash'
+import moment from 'moment'
 import { getTodoList } from '../../service'
-import { forOwn, map } from 'lodash'
-import { ToDoListItem } from '../ToDoListItem/ToDoListItem'
-import { TodoListTemplateType } from './types'
 import { checkEnrollPacketStatus } from '../../../../../utils/utils'
+import { TodoListTemplateType } from './types'
+import { ToDoListItem } from '../ToDoListItem/ToDoListItem'
+import { ToDoCategory, ToDoItem } from '../ToDoListItem/types'
 
 export const TodoList: TodoListTemplateType = ({ handleShowEmpty, schoolYears }) => {
-  const [todoList, setTodoList] = useState<Array<any>>([])
-  const [paginatinLimit, setPaginatinLimit] = useState(25)
-  const [skip, setSkip] = useState()
+  const [todoList, setTodoList] = useState<ToDoItem[]>([])
+  const [paginatinLimit] = useState<number>(25)
+  const [skip] = useState<number>()
 
-  const { loading, error, data } = useQuery(getTodoList, {
+  const { loading, data } = useQuery(getTodoList, {
     variables: {
       skip: skip,
       sort: 'status|ASC',
@@ -24,23 +26,29 @@ export const TodoList: TodoListTemplateType = ({ handleShowEmpty, schoolYears })
     if (data !== undefined && schoolYears?.length > 0) {
       const { parent_todos } = data
       let todoListCount = 0
-      forOwn(parent_todos, (item, key) => {
+      forOwn(parent_todos, (item: ToDoItem, key) => {
         if (key !== '__typename') {
-          if (key === 'submit_enrollment_packet') {
-            const _students = item.students.reduce(function (r, a) {
-              r[a.current_school_year_status.application_date_accepted] =
-                r[a.current_school_year_status.application_date_accepted] || []
-              if (checkEnrollPacketStatus(schoolYears, a))
-                r[a.current_school_year_status.application_date_accepted].push(a)
-              return r
-            }, Object.create(null))
-            const _item = { ...item, ...{ parsed: _students } }
-            setTodoList((prev) => [...prev, _item])
+          if (item.category == ToDoCategory.SUBMIT_ENROLLMENT_PACKET) {
+            // Have to group by accepted date
+            const splitedItems = values(
+              groupBy(
+                item.students.filter((student) => checkEnrollPacketStatus(schoolYears, student)),
+                (student) => student.current_school_year_status.application_date_accepted,
+              ),
+            ).reduce((list: ToDoItem[], students) => list.concat([{ ...item, students: students }]), [])
+            setTodoList((prev) => [...prev, ...splitedItems])
+          } else if (item.category == ToDoCategory.SUBMIT_WITHDRAW) {
+            // If there are multiple students, they should each have their own to-do item
+            const splitedItems: ToDoItem[] = item.students.reduce(
+              (list: ToDoItem[], student) => list.concat([{ ...item, students: [student] }]),
+              [],
+            )
+            setTodoList((prev) => [...prev, ...splitedItems])
           } else {
             setTodoList((prev) => [...prev, item])
           }
 
-          if (item.students.length !== 0) {
+          if (item.students.length) {
             todoListCount++
           }
         }
@@ -52,66 +60,54 @@ export const TodoList: TodoListTemplateType = ({ handleShowEmpty, schoolYears })
     }
   }, [loading])
 
-  const renderTodoListByAcceptedApplication = (el: any) =>
-    Object.entries(el.parsed).map(([key, value]: any, i) => {
-      const deadline = value.at(-1)?.current_school_year_status.enrollment_packet_date_deadline || null
-      const item = {
-        button: 'Submit Now',
-        dashboard: 1,
-        homeroom: 1,
-        icon: '',
-        phrase: 'Submit Enrollment Packet',
-        students: value,
-        date_accepted: key,
-        date_deadline: deadline,
+  const calcCreateDate = (todoItem: ToDoItem): string => {
+    switch (todoItem.category) {
+      case ToDoCategory.SUBMIT_WITHDRAW: {
+        return moment(todoItem.students.at(-1)?.StudentWithdrawals.at(-1)?.date).format('MMM Do, YYYY')
       }
+      default: {
+        return todoItem.students.at(-1)?.current_school_year_status?.application_date_accepted || '-'
+      }
+    }
+  }
 
-      return <ToDoListItem key={`sep-${key}`} todoItem={item} idx={i} todoDate={key} todoDeadline={deadline} />
-    })
+  const calcDueDate = (todoItem: ToDoItem): string => {
+    switch (todoItem.category) {
+      case ToDoCategory.SUBMIT_WITHDRAW: {
+        return todoItem.students.at(-1)?.current_school_year_status?.school_year_date_end || '-'
+      }
+      default: {
+        return todoItem.students.at(-1)?.current_school_year_status?.enrollment_packet_date_deadline || '-'
+      }
+    }
+  }
 
   const renderTodoListItem = () => {
     return map(todoList, (el, idx) => {
-      if (el.parsed && Object.keys(el.parsed).length > 1) {
-        return renderTodoListByAcceptedApplication(el)
-      } else {
-        return (
-          el &&
-          el.students.filter((student: any) => !!checkEnrollPacketStatus(schoolYears, student)).length !== 0 && (
-            <ToDoListItem
-              key={idx}
-              todoItem={{
-                ...el,
-                students: el.students.filter((student: any) => checkEnrollPacketStatus(schoolYears, student)),
-              }}
-              todoDate={
-                el.students.filter((student: any) => checkEnrollPacketStatus(schoolYears, student)).at(-1)
-                  ?.current_school_year_status.application_date_accepted || null
-              }
-              todoDeadline={
-                el.students.filter((student: any) => checkEnrollPacketStatus(schoolYears, student)).at(-1)
-                  ?.current_school_year_status.enrollment_packet_date_deadline || null
-              }
-              idx={idx}
-            />
-          )
+      return (
+        el && (
+          <ToDoListItem
+            key={idx}
+            todoItem={el}
+            todoDate={calcCreateDate(el)}
+            todoDeadline={calcDueDate(el)}
+            idx={idx}
+          />
         )
-      }
+      )
     })
   }
 
   return (
     <>
       <Box sx={{ display: { xs: 'none', sm: 'none', md: 'block' } }}>
-        <TableContainer >
+        <TableContainer>
           <Table aria-label='simple table'>
             <TableBody>{renderTodoListItem()}</TableBody>
           </Table>
         </TableContainer>
       </Box>
-      <Box sx={{ display: { sm: 'block', md: 'none' } }}>
-        {renderTodoListItem()}
-      </Box>
+      <Box sx={{ display: { sm: 'block', md: 'none' } }}>{renderTodoListItem()}</Box>
     </>
-
   )
 }

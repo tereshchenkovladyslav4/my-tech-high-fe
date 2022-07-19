@@ -1,16 +1,22 @@
-import { TableRow, TableCell, Avatar, Button, AvatarGroup, Box, Grid } from '@mui/material'
 import React, { useState, useEffect } from 'react'
+import { Avatar, AvatarGroup, Box, Button, TableCell, TableRow } from '@mui/material'
+import SubjectIcon from '@mui/icons-material/Subject'
+import WarningAmberOutlinedIcon from '@mui/icons-material/WarningAmberOutlined'
+import { map } from 'lodash'
+import { useHistory } from 'react-router-dom'
+import { ToDoCategory, TodoListTemplateType } from './types'
 import { Metadata } from '../../../../../components/Metadata/Metadata'
 import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
-import { TodoListTemplateType } from './types'
-import SubjectIcon from '@mui/icons-material/Subject'
-import { HOMEROOM, ENROLLMENT, PRIMARY_MEDIUM_MOUSEOVER, MTHORANGE } from '../../../../../utils/constants'
-import { imageA } from '../../../Dashboard'
-import { useHistory } from 'react-router-dom'
-import { map } from 'lodash'
+import {
+  HOMEROOM,
+  ENROLLMENT,
+  PRIMARY_MEDIUM_MOUSEOVER,
+  MTHORANGE,
+  PARENT_LINK,
+  SUBMIT_WITHDRAWAL,
+} from '../../../../../utils/constants'
 import { Person } from '../../../../HomeroomStudentProfile/Student/types'
-import WarningAmberOutlinedIcon from '@mui/icons-material/WarningAmberOutlined'
 
 const Row = (props) => (
   <Box display='flex' flexDirection='row' alignItems='center' justifyContent={props.content || 'flex-start'}>
@@ -19,28 +25,24 @@ const Row = (props) => (
 )
 
 function getWindowDimensions() {
-  const { innerWidth: width, innerHeight: height } = window;
-  return {
-    width,
-    height
-  };
+  const { innerWidth: width, innerHeight: height } = window
+  return { width, height }
 }
 
 export const ToDoListItem: TodoListTemplateType = ({ todoItem, idx, todoDate, todoDeadline }) => {
   const history = useHistory()
   const { students } = todoItem
 
-  const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions());
+  const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions())
 
   useEffect(() => {
     function handleResize() {
-      setWindowDimensions(getWindowDimensions());
+      setWindowDimensions(getWindowDimensions())
     }
 
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   const getProfilePhoto = (person: Person) => {
     if (!person.photo) return 'image'
@@ -61,7 +63,17 @@ export const ToDoListItem: TodoListTemplateType = ({ todoItem, idx, todoDate, to
       </AvatarGroup>
     )
   }
-  const link = students.length > 1 ? HOMEROOM : `${HOMEROOM + ENROLLMENT}/${students.at(-1)?.student_id}`
+
+  let link: string
+  switch (todoItem.category) {
+    case ToDoCategory.SUBMIT_WITHDRAW: {
+      link = `${PARENT_LINK}${SUBMIT_WITHDRAWAL}/${students.at(-1)?.student_id}`
+      break
+    }
+    default: {
+      link = students.length > 1 ? HOMEROOM : `${HOMEROOM + ENROLLMENT}/${students.at(-1)?.student_id}`
+    }
+  }
 
   return (
     !!todoItem.students.length &&
@@ -78,10 +90,8 @@ export const ToDoListItem: TodoListTemplateType = ({ todoItem, idx, todoDate, to
             image={<SubjectIcon style={{ color: 'black', marginRight: 24 }} />}
           />
         </TableCell>
-        <TableCell component='th' scope='row' sx={{ paddingX: '8px' }} style={{ width: '40%' }} >
-          <Box>
-            {renderStudentAvatars()}
-          </Box>
+        <TableCell component='th' scope='row' sx={{ paddingX: '8px' }} style={{ width: '40%' }}>
+          <Box>{renderStudentAvatars()}</Box>
         </TableCell>
         {todoDeadline && (
           <TableCell component='th' scope='row' sx={{ paddingX: '8px' }} style={{ width: '10%' }}>
@@ -129,7 +139,7 @@ export const ToDoListItem: TodoListTemplateType = ({ todoItem, idx, todoDate, to
         </TableCell>
       </TableRow>
     ) : (
-      <Box sx={{ display: 'block', padding: '15px', backgroundColor: 'white', borderRadius: '6px', marginTop: '15px' }} >
+      <Box sx={{ display: 'block', padding: '15px', backgroundColor: 'white', borderRadius: '6px', marginTop: '15px' }}>
         <Box sx={{ width: '100%' }}>
           <Metadata
             title={<Subtitle fontWeight='500'>{todoItem.phrase}</Subtitle>}
@@ -138,9 +148,7 @@ export const ToDoListItem: TodoListTemplateType = ({ todoItem, idx, todoDate, to
           />
         </Box>
         <Box sx={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '12px' }}>
-          <Box sx={{ marginRight: '24px' }}>
-            {renderStudentAvatars()}
-          </Box>
+          <Box sx={{ marginRight: '24px' }}>{renderStudentAvatars()}</Box>
           {todoDeadline && (
             <Box
               sx={{
@@ -178,7 +186,7 @@ export const ToDoListItem: TodoListTemplateType = ({ todoItem, idx, todoDate, to
               background: PRIMARY_MEDIUM_MOUSEOVER,
               color: 'white',
             },
-            marginTop: '24px'
+            marginTop: '24px',
           }}
         >
           {todoItem.button}

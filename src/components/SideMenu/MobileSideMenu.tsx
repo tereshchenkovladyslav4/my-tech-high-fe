@@ -63,12 +63,7 @@ export const MobileSideMenu: FunctionComponent<Props> = ({ handleDrawerClose }) 
       to: COMMUNICATION,
       label: 'Communication',
       access: [7, checkAdminAccessOnSidebar('Communication')],
-    },
-    {
-      to: ANNOUNCEMENTS,
-      label: 'Announcements',
-      access: [7, checkAdminAccessOnSidebar('Announcements')],
-    },
+    },    
     {
       to: CALENDAR,
       label: 'Calender',

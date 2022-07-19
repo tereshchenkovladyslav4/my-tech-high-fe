@@ -21,9 +21,10 @@ export type GradesSelectProps = {
   grades: string
   setGrades: (value: string) => void
   setIsChanged: (value: boolean) => void
+  isChanged: any
 }
 
-export default function GradesSelect({ grades, setGrades, setIsChanged }: GradesSelectProps) {
+export default function GradesSelect({ grades, setGrades, setIsChanged, isChanged }: GradesSelectProps) {
   const classes = useStyles
   const [open, setOpen] = useState<boolean>(false)
   const [gradesArr, setGradesArr] = useState<string[]>([])
@@ -54,7 +55,10 @@ export default function GradesSelect({ grades, setGrades, setIsChanged }: Grades
       }
     })
     setGrades(gradesStr)
-    setIsChanged(true)
+    setIsChanged({
+      ...isChanged,
+      grades: true
+    })
   }
 
   const handleChangeGrades = (e) => {

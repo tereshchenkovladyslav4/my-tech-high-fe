@@ -7,14 +7,12 @@ import { Calendar } from '../../components/Calendar'
 type BirthDateCutOffSelectProps = {
   birthDate: string
   setBirthDate: (value: string) => void
-  setIsChanged: (value: boolean) => void
 }
 
-export default function BirthDateCutOffSelect({ birthDate, setBirthDate, setIsChanged }: BirthDateCutOffSelectProps) {
+export default function BirthDateCutOffSelect({ birthDate, setBirthDate }: BirthDateCutOffSelectProps) {
   const classes = useStyles
   const handleChange = (value: Date | null) => {
     setBirthDate(moment(value).format('MM/DD/YYYY'))
-    setIsChanged(true)
   }
   return (
     <Box component='form' sx={{ ...classes.gradeBox, maxWidth: '190px' }} noValidate autoComplete='off'>

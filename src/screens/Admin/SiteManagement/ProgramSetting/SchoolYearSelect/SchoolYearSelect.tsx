@@ -19,9 +19,11 @@ export default function SchoolYearSelect({
   selectedYearId,
   setCounty,
   setSchoolDistrict,
+  schoolYears,
+  setSchoolYears
 }: SchoolYearSelectProps) {
   const { me } = useContext(UserContext)
-  const [schoolYears, setSchoolYears] = useState<SchoolYears[]>([])
+  // const [schoolYears, setSchoolYears] = useState<SchoolYears[]>([])
   const [years, setYears] = useState<DropDownItem[]>([])
   const schoolYearData = useQuery(getSchoolYearsByRegionId, {
     variables: {

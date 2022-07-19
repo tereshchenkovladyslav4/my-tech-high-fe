@@ -23,7 +23,7 @@ export default function PageContent({
   specialEdItem,
   enrollItem,
   setIsChanged,
-  setIsStateChanged,
+  isChanged,
   setIsDelete,
   isDelete,
 }: PageContentProps) {
@@ -33,7 +33,8 @@ export default function PageContent({
       component: (
         <StateSelect
           stateName={stateSelectItem?.stateName}
-          setIsChanged={setIsStateChanged}
+          setIsChanged={setIsChanged}
+          isChanged={isChanged}
           setIsInvalidStateName={stateSelectItem?.setIsInvalidStateName}
           stateInvalid={stateSelectItem?.stateInvalid}
           setStateInvalid={stateSelectItem?.setStateInvalid}
@@ -49,6 +50,7 @@ export default function PageContent({
           stateLogo={stateLogoItem?.stateLogo}
           setStateLogo={stateLogoItem?.setStateLogo}
           setIsChanged={setIsChanged}
+          isChanged={isChanged}
           stateLogoFile={stateLogoItem?.stateLogoFile}
           setStateLogoFile={stateLogoItem?.setStateLogoFile}
         />
@@ -61,6 +63,7 @@ export default function PageContent({
           program={programItem?.program}
           setProgram={programItem?.setProgram}
           setIsChanged={setIsChanged}
+          isChanged={isChanged}
         />
       ),
     },
@@ -74,6 +77,7 @@ export default function PageContent({
           setIsChanged={setIsChanged}
           setIsDelete={setIsDelete}
           isDelete={isDelete}
+          isChanged={isChanged}
         />
       ),
     },
@@ -87,13 +91,14 @@ export default function PageContent({
           setIsChanged={setIsChanged}
           setIsDelete={setIsDelete}
           isDelete={isDelete}
+          isChanged={isChanged}
         />
       ),
     },
     {
       name: 'Grades',
       component: (
-        <GradesSelect grades={gradesItem?.grades} setGrades={gradesItem?.setGrades} setIsChanged={setIsChanged} />
+          <GradesSelect grades={gradesItem?.grades} setGrades={gradesItem?.setGrades} isChanged={isChanged} setIsChanged={setIsChanged} />
       ),
     },
     {
@@ -103,6 +108,7 @@ export default function PageContent({
           birthDate={birthDayCutItem?.birthDate}
           setBirthDate={birthDayCutItem?.setBirthDate}
           setIsChanged={setIsChanged}
+          isChanged={isChanged}
         />
       ),
     },
@@ -112,16 +118,17 @@ export default function PageContent({
         <SpecialEdSelect
           specialEd={specialEdItem?.specialEd}
           setSpecialEd={specialEdItem?.setSpecialEd}
-          specialEdOptions = {specialEdItem?.specialEdOptions}
-          setSpecialEdOptions = {specialEdItem?.setSpecialEdOptions}
+          specialEdOptions={specialEdItem?.specialEdOptions}
+          setSpecialEdOptions={specialEdItem?.setSpecialEdOptions}
           setIsChanged={setIsChanged}
+          isChanged={isChanged}
         />
       ),
     },
     {
       name: 'Enrollment Packets',
       component: (
-        <EnrollPacketSelect enroll={enrollItem?.enroll} setEnroll={enrollItem?.setEnroll} setIsChanged={setIsChanged} />
+        <EnrollPacketSelect enroll={enrollItem?.enroll} setEnroll={enrollItem?.setEnroll} isChanged={isChanged} setIsChanged={setIsChanged} />
       ),
     },
   ]
@@ -129,7 +136,7 @@ export default function PageContent({
   return (
     <>
       {programSettingList?.map((programSetting, index) => (
-        <CommonSelect index={index} selectItem={programSetting} />
+        <CommonSelect key={index} index={index} selectItem={programSetting} />
       ))}
     </>
   )

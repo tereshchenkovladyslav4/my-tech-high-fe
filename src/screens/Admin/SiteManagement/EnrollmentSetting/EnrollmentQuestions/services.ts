@@ -89,3 +89,16 @@ export const getAllRegion = gql`
     }
   }
 `
+
+export const getSpecialEdsByRegionId =  gql`
+  query Region($regionId: ID!) {
+    region(id: $regionId) {
+      SchoolYears {
+        school_year_id
+        special_ed
+        special_ed_options
+        date_begin
+      }
+    }
+  }
+`

@@ -115,8 +115,8 @@ export default function QuestionOptions({
 							variant='standard'
 							value={opt.label}
 							focused
-							// onFocus={(v) => setFocused(v)}
-							// onBlur={(v) => setBlured(v)}
+							onFocus={(v) => setFocused(v)}
+							onBlur={(v) => setBlured(v)}
 							onChange={(e) => {
 								const val = e.currentTarget.value;
 								const newOps = options.map((o) => (o.value === opt.value ? { ...o, label: val } : o));

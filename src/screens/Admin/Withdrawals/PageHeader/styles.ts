@@ -1,6 +1,6 @@
 import { GREEN_GRADIENT, RED_GRADIENT, YELLOW_GRADIENT } from '../../../../utils/constants'
 
-export const useStyles = {
+export const headerClassess = {
   pageHeader: {
     textAlign: 'left',
     display: 'flex',

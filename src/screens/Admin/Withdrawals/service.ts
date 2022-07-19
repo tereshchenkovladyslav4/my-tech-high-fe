@@ -19,8 +19,29 @@ export const quickWithdrawalMutation = gql`
     quickWithdrawal(quickWithdrawalInput: $quickWithdrawalInput)
   }
 `
+
 export const reinstateWithdrawalMutation = gql`
   mutation ReinstateWithdrawal($reinstateWithdrawalInput: ReinstateWithdrawalInput!) {
     reinstateWithdrawal(reinstateWithdrawalInput: $reinstateWithdrawalInput)
+  }
+`
+
+export const getStudentInfoByWithdrawalId = gql`
+  query GetStudentInfoByWithdrawalId($withdrawId: Int!) {
+    getStudentInfoByWithdrawalId(withdrawId: $withdrawId) {
+      first_name
+      grade
+      last_name
+      parent_id
+      school_of_enrollment
+      student_id
+      withdrawal_id
+    }
+  }
+`
+
+export const individualWithdrawalMutation = gql`
+  mutation IndividualWithdrawal($individualWithdrawalInput: IndividualWithdrawalInput!) {
+    individualWithdrawal(individualWithdrawalInput: $individualWithdrawalInput)
   }
 `

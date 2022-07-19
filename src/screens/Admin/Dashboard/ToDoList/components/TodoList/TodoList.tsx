@@ -1,73 +1,58 @@
+import React, { FunctionComponent, useEffect, useContext, useState } from 'react'
 import { gql, useQuery } from '@apollo/client'
-import { Box } from '@mui/system'
 import { map } from 'lodash'
-import React, { Fragment, FunctionComponent, useEffect, useContext, useState } from 'react'
+import { Card } from '@mui/material'
 import { UserContext } from '../../../../../../providers/UserContext/UserProvider'
 import { ToDoListItem } from '../ToDoListItem/ToDoListItem'
 import { WITHDRAWAL, ADMIN_APPLICATIONS, ENROLLMENT_PACKETS } from '../../../../../../utils/constants'
 import { Flexbox } from '../../../../../../components/Flexbox/Flexbox'
 import { Subtitle } from '../../../../../../components/Typography/Subtitle/Subtitle'
-import { Card } from '@mui/material'
 
-export const getSubmittedApplicationCount = gql`
-  query SubmittedApplicationCount($regionId: ID!) {
-    submittedApplicationCount(regionId: $regionId) {
+export const getTodoListItems = gql`
+  query GetTodoListItems($regionId: ID!) {
+    getTodoListItems(regionId: $regionId) {
       error
       message
       results
     }
   }
 `
-
-export const getPacketCount = gql`
-  query PacketCountByRegionId($regionId: ID!) {
-    packetCountByRegionId(region_id: $regionId) {
-      error
-      message
-      results
-    }
-  }
-`
+type ToDoListItem = {
+  id: number
+  title: string
+  link: string
+  date: Date
+  severity: number
+}
 
 export const TodoList: FunctionComponent = () => {
-  const { me, setMe } = useContext(UserContext)
-  const { loading: applcationCountLoading, data: submiteedApplicationCountResponse } = useQuery(
-    getSubmittedApplicationCount,
-    {
-      variables: {
-        regionId: me?.selectedRegionId,
-      },
-      skip: me?.selectedRegionId ? false : true,
-      fetchPolicy: 'network-only',
-    },
-  )
-  const { loading: countLoading, data: countGroup } = useQuery(getPacketCount, {
+  const { me } = useContext(UserContext)
+  const [todoList, setTodoList] = useState<Array<ToDoListItem>>([])
+  const { loading, data } = useQuery(getTodoListItems, {
     variables: {
       regionId: me?.selectedRegionId,
     },
+    skip: me?.selectedRegionId ? false : true,
     fetchPolicy: 'network-only',
   })
-  const [todoList, setTodoList] = useState<Array<any>>([])
 
   useEffect(() => {
-    if (!applcationCountLoading && !countLoading && submiteedApplicationCountResponse && countGroup) {
+    if (!loading && data?.getTodoListItems) {
+      const { application, packet, withdrawal } = data?.getTodoListItems?.results
       setTodoList([
         {
           id: 1,
           title: 'Applications',
           link: ADMIN_APPLICATIONS,
           date: new Date(),
-          severity: submiteedApplicationCountResponse?.submittedApplicationCount?.results?.Submitted,
+          severity: application,
         },
         {
           id: 2,
           title: 'Enrollment Packets',
           link: ENROLLMENT_PACKETS,
           date: new Date(),
-          severity:
-            countGroup?.packetCountByRegionId?.results['Age Issue'] +
-            countGroup?.packetCountByRegionId?.results['Resubmitted'] +
-            countGroup?.packetCountByRegionId?.results['Submitted'],
+          severity: packet,
         },
         {
           id: 3,
@@ -81,7 +66,7 @@ export const TodoList: FunctionComponent = () => {
           title: 'Withdrawals',
           link: WITHDRAWAL,
           date: new Date(),
-          severity: 50,
+          severity: withdrawal,
         },
         {
           id: 5,
@@ -106,7 +91,7 @@ export const TodoList: FunctionComponent = () => {
         },
       ])
     }
-  }, [submiteedApplicationCountResponse, countGroup])
+  }, [loading, data])
 
   const renderTodoListItem = () =>
     map(todoList, (el, idx) => {
@@ -116,9 +101,9 @@ export const TodoList: FunctionComponent = () => {
     })
 
   return (
-    <Card sx={{ mt: 1.5, backgroundColor: { xs: '#F8F8F8', sm: '#F8F8F8', md: '#FFFFFF', }, padding: 4 }}>
+    <Card sx={{ mt: 1.5, backgroundColor: { xs: '#F8F8F8', sm: '#F8F8F8', md: '#FFFFFF' }, padding: 4 }}>
       <Flexbox flexDirection='column' textAlign='left'>
-        <Subtitle size='large' fontWeight='bold' sx={{ marginBottom: 2}}>
+        <Subtitle size='large' fontWeight='bold' sx={{ marginBottom: 2 }}>
           To Do List
         </Subtitle>
         {renderTodoListItem()}

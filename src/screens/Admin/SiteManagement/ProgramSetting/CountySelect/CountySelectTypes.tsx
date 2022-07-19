@@ -11,4 +11,5 @@ export type CountySelectProps = {
   setIsChanged: (value: boolean) => void
   setIsDelete: (value: any) => void
   isDelete: any
+  isChanged: any
 }

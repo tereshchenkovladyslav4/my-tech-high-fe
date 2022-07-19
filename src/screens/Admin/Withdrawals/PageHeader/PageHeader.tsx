@@ -1,8 +1,8 @@
 import React from 'react'
+import SearchIcon from '@mui/icons-material/Search'
 import { Box, Button, InputAdornment, OutlinedInput } from '@mui/material'
 import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
-import SearchIcon from '@mui/icons-material/Search'
-import { useStyles } from './styles'
+import { headerClassess } from './styles'
 import { PageHeaderProps } from '../type'
 
 const PageHeader = ({
@@ -13,11 +13,9 @@ const PageHeader = ({
   onWithdrawClick,
   onReinstateClick,
 }: PageHeaderProps) => {
-  const classes = useStyles
-
   return (
-    <Box sx={classes.pageHeader}>
-      <Box sx={classes.pageHeaderContent}>
+    <Box sx={headerClassess.pageHeader}>
+      <Box sx={headerClassess.pageHeaderContent}>
         <Subtitle size='medium' fontWeight='700'>
           Withdraws
         </Subtitle>
@@ -41,14 +39,14 @@ const PageHeader = ({
           />
         </Box>
       </Box>
-      <Box sx={classes.pageHeaderButtonGroup}>
-        <Button sx={classes.emailButton} onClick={onEmailClick}>
+      <Box sx={headerClassess.pageHeaderButtonGroup}>
+        <Button sx={headerClassess.emailButton} onClick={onEmailClick}>
           Email
         </Button>
-        <Button sx={classes.withdrawalButton} onClick={onWithdrawClick}>
+        <Button sx={headerClassess.withdrawalButton} onClick={onWithdrawClick}>
           Withdraw
         </Button>
-        <Button sx={classes.reinstateButton} onClick={onReinstateClick}>
+        <Button sx={headerClassess.reinstateButton} onClick={onReinstateClick}>
           Reinstate
         </Button>
       </Box>

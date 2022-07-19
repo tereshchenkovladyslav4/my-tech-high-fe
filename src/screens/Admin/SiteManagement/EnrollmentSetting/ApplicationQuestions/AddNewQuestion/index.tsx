@@ -12,6 +12,7 @@ import { SYSTEM_07 } from '../../../../../../utils/constants'
 import { DropDown } from '../../../components/DropDown/DropDown'
 import htmlToDraft from 'html-to-draftjs'
 import { ApplicationQuestion } from '../types'
+import CustomModal from '../../components/CustomModal/CustomModals'
 
 export default function AddNewQuestionModal({
 	onClose,
@@ -40,6 +41,7 @@ export default function AddNewQuestionModal({
 
 	const [editQuestions, setEditQuestions] = useState(JSON.parse(JSON.stringify(questions)));
 	const [deleteIds, setDeleteIds] = useState([]);
+	const [isDefaultQuestion, setIsDefaultQuestion] = useState(questions[0]?.default_question || false)
 
 	const editQuestionsRef = useRef([]);
 
@@ -57,8 +59,8 @@ export default function AddNewQuestionModal({
 
 		editQuestionsRef.current = editQuestions;
 
-		if (editQuestions[0].default_question)
-			return;
+		// if (editQuestions[0].default_question)
+		// 	return;
 
 		//	Detect Changes
 		let bHasChange = false;
@@ -257,7 +259,44 @@ export default function AddNewQuestionModal({
 		onClose(true);
 	}
 
+	const [clickedEvent, setClickedEvent] = useState({})  
+  const [warningPopup, setWarningPopup] = useState(false)
+  const [ableToEdit, setAbleToEdit] = useState(false)
+
+  const setCancelWarningPopup = () => {
+    setWarningPopup(false);   
+    setAbleToEdit(false);
+  }
+
+  const setConfirmWarningPopup = () => {
+    setWarningPopup(false);    
+    setAbleToEdit(true);
+  }
+
+  useEffect(() => {
+    if (ableToEdit == true)
+      clickedEvent.target.focus()
+  }, [ableToEdit])
+
+  const setFocused = (event) => {    
+    console.log('focused');
+    if (!isDefaultQuestion)
+      return;
+
+    if (!ableToEdit || clickedEvent.target != event.target) {
+      event.preventDefault();
+      event.target.blur();
+      setClickedEvent(event)
+      setWarningPopup(true);
+    }
+  }
+
+  const setBlured = (event) => {
+    setAbleToEdit(false);
+  }
+
 	return (
+		<>
 		<Modal open={true} aria-labelledby='child-modal-title' aria-describedby='child-modal-description'>
 			<Box
 				sx={{
@@ -288,6 +327,14 @@ export default function AddNewQuestionModal({
 						Save
 					</Button>
 				</Box>
+				<Box
+					sx = {{
+						maxHeight: 'calc(100vh - 200px)',
+						overflowY: 'auto',
+						padding: '8px',
+						marginTop: '10px'						
+					}}
+				>
 				{editQuestions.map((newQuestion, i) => (
 					<Box
 						key={i}>
@@ -319,8 +366,16 @@ export default function AddNewQuestionModal({
 								onChange={(v) => {
 									setQuestionValue(newQuestion.id, newQuestion.slug, 'question', v.currentTarget.value);
 								}}
+								onFocus={(v) => {
+									if (i == 0)
+									  setFocused(v)
+								}}
+								onBlur={(v) => {
+								if (i == 0)
+									setBlured(v)
+								}}
 								focused
-								disabled={newQuestion.default_question}
+								// disabled={newQuestion.default_question}
 							/>
 							<DropDown
 								sx={{
@@ -379,11 +434,13 @@ export default function AddNewQuestionModal({
 									/>
 								</Box>
 							) :
-								!newQuestion.default_question && (
+								(
 									<QuestionOptions
 										options={newQuestion.options}
 										setOptions={(options) => setQuestionValue(newQuestion.id, newQuestion.slug, 'options', options)}
-										type={newQuestion.type} />
+										type={newQuestion.type} 
+										setFocused={i == 0 ? setFocused : setBlured} setBlured={setBlured} isDefault={i == 0 ? isDefaultQuestion : false}
+										/>
 								)}
 						</Box>
 
@@ -400,12 +457,12 @@ export default function AddNewQuestionModal({
 							<Box sx={{ display: 'flex', alignItems: 'center', visibility: newQuestion.type === QUESTION_TYPE.TEXTFIELD ? 'visible' : 'hidden' }}>
 								<Checkbox checked={newQuestion.validation ? true : false} onClick={() => {
 									setQuestionValue(newQuestion.id, newQuestion.slug, 'validation', newQuestion.validation ? 0 : 1);
-								}} disabled={newQuestion.default_question} />
+								}} disabled={newQuestion.default_question && newQuestion.type !== QUESTION_TYPE.TEXTFIELD} />
 								<Subtitle size='small'>Validation</Subtitle>
 							</Box>
 							<Box sx={{ display: 'flex', alignItems: 'center', }}>
 								{newQuestion?.slug &&
-									['packet_school_district', 'packet_secondary_contact_first', 'packet_secondary_contact_last', 'address_county_id', 'address_zip', 'address_city', 'address_street'].indexOf(newQuestion.slug) !== -1 ? (
+									['packet_school_district', 'packet_secondary_contact_first', 'packet_secondary_contact_last', 'address_county_id', 'address_zip', 'address_city', 'address_street', 'program_year'].indexOf(newQuestion.slug) !== -1 ? (
 									<Checkbox disabled />
 								) : (
 									<Checkbox checked={newQuestion.student_question} onClick={() => setQuestionValue(newQuestion.id, newQuestion.slug, 'student_question', newQuestion.student_question ? false : true)} />
@@ -430,7 +487,7 @@ export default function AddNewQuestionModal({
 						>
 							<DropDown
 								sx={{
-									pointerEvents: newQuestion.default_question ? 'none' : 'unset',
+									pointerEvents: newQuestion.default_question && newQuestion.type !== QUESTION_TYPE.TEXTFIELD ? 'none' : 'unset',
 									minWidth: '200px',
 									[`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
 									{
@@ -449,9 +506,25 @@ export default function AddNewQuestionModal({
 							/>
 						</Box>
 					</Box>))}
+				</Box>
 				{error && <Typography color='red'>{error}</Typography>}
 			</Box>
 		</Modal>
+		{warningPopup && (
+		<CustomModal
+			title='Default Question'
+			description='You are attempting to edit a default question. You may customize the way the question is asked, but the default ask of question will remain the same in the application. Are you sure you want to edit?'
+			cancelStr='No'
+			confirmStr='Yes'
+			onClose={() => {
+			setCancelWarningPopup()
+			}}
+			onConfirm={() => {
+			setConfirmWarningPopup()
+			}}
+		/>
+    )}
+	</>
 	)
 }
 

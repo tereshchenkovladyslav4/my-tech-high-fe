@@ -1,6 +1,7 @@
 import { find } from 'lodash'
 import React, { FunctionComponent, useContext, useEffect, useState } from 'react'
 import { Redirect, Route, Switch } from 'react-router-dom'
+import { QUICKLINK_TYPE } from '../components/QuickLink/QuickLinkCardProps'
 import { QuickLinks } from '../components/QuickLink/QuickLinks'
 import { UserContext, UserInfo } from '../providers/UserContext/UserProvider'
 import { AdminDashboard } from '../screens/Admin/Dashboard/AdminDashboard'
@@ -13,7 +14,15 @@ import { Homeroom } from '../screens/Homeroom/Homeroom'
 import { HomeroomStudentProfile } from '../screens/HomeroomStudentProfile/HomeroomStudentProfile'
 import { StudentType } from '../screens/HomeroomStudentProfile/Student/types'
 import { Settings } from '../screens/Settings/Settings'
-import { APPLICATIONS, DASHBOARD, ENROLLMENT, HOMEROOM, PARENT_LINK, SETTINGS, USERS } from '../utils/constants'
+import {
+  APPLICATIONS,
+  DASHBOARD,
+  ENROLLMENT,
+  HOMEROOM,
+  PARENT_LINK,
+  SETTINGS,
+  SUBMIT_WITHDRAWAL,
+} from '../utils/constants'
 
 export const Routes: FunctionComponent = () => {
   const { me } = useContext(UserContext)
@@ -38,7 +47,7 @@ export const Routes: FunctionComponent = () => {
           } else {
             return currStudent.applications.length > 0 && currStudent.applications.at(-1).status === 'Accepted' ? (
               packetAccepted ? (
-                <Enrollment id={match?.params.id} disabled={true}  />
+                <Enrollment id={match?.params.id} disabled={true} />
               ) : (
                 <Enrollment id={match?.params.id} disabled={false} />
               )
@@ -70,10 +79,16 @@ export const Routes: FunctionComponent = () => {
       <Route path={SETTINGS}>
         <Settings />
       </Route>
+      <Route
+        path={`${PARENT_LINK}${SUBMIT_WITHDRAWAL}/:id`}
+        children={({ match }) => {
+          return <QuickLinks initialLink={QUICKLINK_TYPE.WITHDRAWAL} studentId={match?.params.id} />
+        }}
+      />
       <Route path={PARENT_LINK}>
         <QuickLinks />
       </Route>
-      <Route render={() => <Redirect to={{pathname: "/"}} />} />
+      <Route render={() => <Redirect to={{ pathname: '/' }} />} />
     </Switch>
   )
 }

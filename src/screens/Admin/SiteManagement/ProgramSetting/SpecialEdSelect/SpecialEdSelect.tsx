@@ -25,9 +25,10 @@ type SpecialEdSelectProps = {
   specialEdOptions: Array<any>
   setSpecialEdOptions: (value: Array<any>) => void
   setIsChanged: (value: boolean) => void
+  isChanged: any
 }
 
-export default function SpecialEdSelect({ specialEd, setSpecialEd, specialEdOptions, setSpecialEdOptions, setIsChanged }: SpecialEdSelectProps) {
+export default function SpecialEdSelect({ specialEd, setSpecialEd, specialEdOptions, setSpecialEdOptions, setIsChanged, isChanged }: SpecialEdSelectProps) {
   const classes = useStyles
   const [open, setOpen] = useState<boolean>(false)
   const [options, setOptions] = useState<string>('');
@@ -47,7 +48,6 @@ export default function SpecialEdSelect({ specialEd, setSpecialEd, specialEdOpti
 
   useEffect(() => {    
     var optionString = '';
-    console.log(specialEdOptions);
     specialEdOptions.map((option) => {
       if (option.option_value != '')
         optionString += option.option_value + ', '
@@ -59,7 +59,10 @@ export default function SpecialEdSelect({ specialEd, setSpecialEd, specialEdOpti
   const handleChange = (value: string) => {
     setSpecialEd(value == 'true' ? true : false)    
     setSpecialEdOptions([]);      
-    setIsChanged(true)
+    setIsChanged({
+      ...isChanged,
+      specialEd: true
+    })
   }
 
   const handleClickOpen = () => {

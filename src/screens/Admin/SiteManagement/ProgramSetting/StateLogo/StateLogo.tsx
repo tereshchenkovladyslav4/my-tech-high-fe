@@ -12,6 +12,7 @@ export default function StateLogo({
   stateLogoFile,
   setStateLogoFile,
   setIsChanged,
+  isChanged
 }: StateLogoProps) {
   const classes = useStyles
   const [open, setOpen] = useState<boolean>(false)
@@ -68,6 +69,7 @@ export default function StateLogo({
           classes={classes}
           setStateLogoFile={setStateLogoFile}
           setIsChanged={setIsChanged}
+          isChanged={isChanged}
         />
       )}
     </Box>

@@ -317,10 +317,10 @@ export const StudentProfile = ({
             >
               {packets.length ? `${packets[0].status}` : ''}
               {packets.length && packets[0].status === 'Accepted'
-                ? ` ${moment(packets[0].date_accepted).format('MM/DD/YY')}`
+                ? ` ${moment(packets[0].deadline).format('MM/DD/YY')}`
                 : ''}
               {packets.length && packets[0].status === 'Submitted'
-                ? ` ${moment(packets[0].date_submitted).format('MM/DD/YY')}`
+                ? ` ${moment(packets[0].deadline).format('MM/DD/YY')}`
                 : ''}
               {packets.length && packets[0].status === 'Resubmitted'
                 ? ` ${moment(packets[0].deadline).format('MM/DD/YY')}`

@@ -1,46 +1,43 @@
 import React, { useState } from 'react'
-import { Button, Modal, Grid, Typography } from '@mui/material'
+import { Modal, Grid, Typography } from '@mui/material'
 import { Box } from '@mui/system'
-import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
-// import { ApplicationEmailModalType } from './types'
-import { useStyles } from './styles'
 import moment from 'moment'
-import { sortBy } from 'lodash'
-import { ArrowDropDown, ArrowDropUp, FormatAlignJustify } from '@mui/icons-material'
+import { ArrowDropDown, ArrowDropUp } from '@mui/icons-material'
 import CloseIcon from '@mui/icons-material/Close'
+import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
+import { mainClasses } from './styles'
+import { WithdrawalEmailResponseVM } from '../type'
 
-export const WithdrawalEmailModal: any = ({ handleClose, data }) => {
-  const classes = useStyles
-  const [dateSortDirection, setDateSortDirection] = useState('')
-  const [subjectSortDirection, setSubjectSortDirection] = useState('')
-  const [emailData, setEmailData] = useState(data)
-  const [emailViewData, setEmailViewData] = useState<any>({
+type WithdrawalEmailModalProps = {
+  handleClose: () => void
+  data: WithdrawalEmailResponseVM[]
+}
+
+export const WithdrawalEmailModal = ({ handleClose, data }: WithdrawalEmailModalProps) => {
+  const [dateSortDirection, setDateSortDirection] = useState<string>('')
+  const [subjectSortDirection, setSubjectSortDirection] = useState<string>('')
+  const [emailData, setEmailData] = useState<WithdrawalEmailResponseVM[]>(data)
+  const [emailViewData, setEmailViewData] = useState<WithdrawalEmailResponseVM>({
     from_email: '',
     subject: '',
     body: '',
+    created_at: '',
   })
-  const [emailView, setEmailView] = useState(false)
+  const [emailView, setEmailView] = useState<boolean>(false)
 
-  const handleEmailView = (email) => {
+  const handleEmailView = (email: WithdrawalEmailResponseVM) => {
     setEmailViewData(email)
     setEmailView(true)
   }
 
-  const createMarkup = (value) => {
-    return {
-      __html: value,
-    }
-  }
-
-  const handleSorting = (key) => {
+  const handleSorting = (key: string) => {
     const sortedData = [...emailData]
     if (key === 'date') {
       if (dateSortDirection === '' || dateSortDirection === 'DESC') {
-        // const sort = sortBy(sortedData, 'date')
         sortedData.sort((a, b) => {
           const dateA: Date = new Date(a.created_at)
           const dateB: Date = new Date(b.created_at)
-          return dateA - dateB
+          return dateA.getDate() - dateB.getDate()
         })
         setEmailData(sortedData)
         setDateSortDirection('ASC')
@@ -48,7 +45,7 @@ export const WithdrawalEmailModal: any = ({ handleClose, data }) => {
         sortedData.sort((a, b) => {
           const dateA: Date = new Date(a.created_at)
           const dateB: Date = new Date(b.created_at)
-          return dateB - dateA
+          return dateB.getDate() - dateA.getDate()
         })
         setEmailData(sortedData)
         setDateSortDirection('DESC')
@@ -56,29 +53,32 @@ export const WithdrawalEmailModal: any = ({ handleClose, data }) => {
     } else {
       if (subjectSortDirection === '' || subjectSortDirection === 'DESC') {
         sortedData.sort((a, b) => {
-          if (a.subject[0].toLowerCase() < b.subject[0].toLowerCase()) { return -1; }
-          if (a.subject[0].toLowerCase() > b.subject[0].toLowerCase()) { return 1; }
-          return 1;
+          if (a.subject[0].toLowerCase() < b.subject[0].toLowerCase()) {
+            return -1
+          }
+          if (a.subject[0].toLowerCase() > b.subject[0].toLowerCase()) {
+            return 1
+          }
+          return 1
         })
         setEmailData(sortedData)
-
-        // const sort = sortBy(sortedData, 'subject')
-        // setEmailData(sort)
         setSubjectSortDirection('ASC')
       } else {
         sortedData.sort((a, b) => {
-          if (a.subject[0].toLowerCase() > b.subject[0].toLowerCase()) { return -1; }
-          if (a.subject[0].toLowerCase() < b.subject[0].toLowerCase()) { return 1; }
-          return -1;
+          if (a.subject[0].toLowerCase() > b.subject[0].toLowerCase()) {
+            return -1
+          }
+          if (a.subject[0].toLowerCase() < b.subject[0].toLowerCase()) {
+            return 1
+          }
+          return -1
         })
         setEmailData(sortedData)
-
-        // const sort = sortBy(sortedData, 'subject').reverse()
-        // setEmailData(sort)
         setSubjectSortDirection('DESC')
       }
     }
   }
+
   return (
     <>
       <Modal
@@ -87,14 +87,13 @@ export const WithdrawalEmailModal: any = ({ handleClose, data }) => {
         aria-labelledby='modal-modal-title'
         aria-describedby='modal-modal-description'
       >
-
-        <Box sx={classes.modalEmailCard}>
+        <Box sx={mainClasses.modalEmailCard}>
           <Box display={'flex'} flexDirection={'row'} sx={{ marginRight: '10px' }} justifyContent={'end'}>
-            <CloseIcon style={classes.close} onClick={handleClose} />
+            <CloseIcon style={mainClasses.close} onClick={handleClose} />
           </Box>
-          <Box sx={{ ...classes.content, display: 'block' }}>
-            <Box sx={classes.emailRowHead}>
-              <Subtitle fontWeight='700' sx={classes.emailLabel}>
+          <Box sx={{ ...mainClasses.content, display: 'block' }}>
+            <Box sx={mainClasses.emailRowHead}>
+              <Subtitle fontWeight='700' sx={mainClasses.emailLabel}>
                 Sent Date
                 {dateSortDirection === '' || dateSortDirection === 'ASC' ? (
                   <ArrowDropDown
@@ -131,22 +130,23 @@ export const WithdrawalEmailModal: any = ({ handleClose, data }) => {
                 )}
               </Subtitle>
             </Box>
-            {emailData && emailData.slice(0, 5).map((item, index) => (
-              <Box sx={classes.emailRow} key={index} onClick={() => handleEmailView(item)}>
-                <Grid container rowSpacing={2}>
-                  <Grid item xs={4}>
-                    <Subtitle fontWeight='700' sx={classes.emailLabel}>
-                      {moment(item.created_at).format('MM/DD/yy')}
-                    </Subtitle>
+            {emailData &&
+              emailData.slice(0, 5).map((item, index) => (
+                <Box sx={mainClasses.emailRow} key={index} onClick={() => handleEmailView(item)}>
+                  <Grid container rowSpacing={2}>
+                    <Grid item xs={4}>
+                      <Subtitle fontWeight='700' sx={mainClasses.emailLabel}>
+                        {moment(item.created_at).format('MM/DD/yy')}
+                      </Subtitle>
+                    </Grid>
+                    <Grid item xs={8}>
+                      <Subtitle fontWeight='700' sx={{ textAlign: 'left', width: '50', paddingLeft: '10px' }}>
+                        {item.subject}
+                      </Subtitle>
+                    </Grid>
                   </Grid>
-                  <Grid item xs={8}>
-                    <Subtitle fontWeight='700' sx={{ textAlign: 'left', width: '50', paddingLeft: '10px' }}>
-                      {item.subject}
-                    </Subtitle>
-                  </Grid>
-                </Grid>
-              </Box>
-            ))}
+                </Box>
+              ))}
           </Box>
         </Box>
       </Modal>
@@ -156,24 +156,28 @@ export const WithdrawalEmailModal: any = ({ handleClose, data }) => {
         aria-labelledby='modal-modal-title'
         aria-describedby='modal-modal-description'
       >
-        <Box sx={classes.modalEmailViewCard}>
+        <Box sx={mainClasses.modalEmailViewCard}>
           <Box display={'flex'} flexDirection={'row'} sx={{ marginRight: '10px' }} justifyContent={'end'}>
-            <CloseIcon style={classes.close} onClick={() => setEmailView(false)} />
+            <CloseIcon style={mainClasses.close} onClick={() => setEmailView(false)} />
           </Box>
-          <Box sx={classes.emailViewContent}>
+          <Box sx={mainClasses.emailViewContent}>
             {emailViewData && (
               <Box sx={{ display: 'grid' }}>
                 <Box sx={{ display: 'flex' }}>
                   <Typography sx={{ fontWeight: 'bold' }}>From: </Typography>
                   <Typography sx={{ marginLeft: '10px' }}>{emailViewData?.from_email}</Typography>
                 </Box>
-                <Box sx={classes.subject}>
+                <Box sx={mainClasses.subject}>
                   <Subtitle fontWeight='700' sx={{ width: '100%' }}>
                     {emailViewData?.subject}
                   </Subtitle>
                 </Box>
-                <Box sx={classes.body}>
-                  <div dangerouslySetInnerHTML={createMarkup(emailViewData.body)} />
+                <Box sx={mainClasses.body}>
+                  <Typography
+                    component={'span'}
+                    variant={'body2'}
+                    dangerouslySetInnerHTML={{ __html: emailViewData.body }}
+                  />
                 </Box>
               </Box>
             )}

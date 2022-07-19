@@ -14,9 +14,10 @@ export type ImageCropperProps = {
   classes: any
   setStateLogoFile: (value: StateLogoFileType) => void
   setIsChanged: (value: boolean) => void
+  isChanged: any
 }
 
-export default function ImageCropper({ imageToCrop, classes, setStateLogoFile, setIsChanged }: ImageCropperProps) {
+export default function ImageCropper({ imageToCrop, classes, setStateLogoFile, setIsChanged, isChanged }: ImageCropperProps) {
   const [cropper, setCropper] = useState<any>()
   const [open, setOpen] = useState<boolean>(false)
 
@@ -45,7 +46,9 @@ export default function ImageCropper({ imageToCrop, classes, setStateLogoFile, s
           image: URL.createObjectURL(croppedImageFile),
           file: croppedImageFile,
         })
-        setIsChanged(true)
+        setIsChanged({
+          ...isChanged,
+          stateLogo: true})
       }, 'image/png')
     }
   }

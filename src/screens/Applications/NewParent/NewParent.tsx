@@ -641,7 +641,7 @@ export const NewParent = () => {
                                         name='programYear'
                                         labelTop
                                         placeholder={q.question}
-                                        dropDownItems={q.options}
+                                        dropDownItems={schoolYears}
                                         setParentValue={(id) => {
                                           if (id?.indexOf('mid') > 0) {
                                             id = id?.split('-')?.at(0)

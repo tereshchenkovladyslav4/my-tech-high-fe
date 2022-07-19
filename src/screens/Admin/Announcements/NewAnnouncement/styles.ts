@@ -42,6 +42,21 @@ export const useStyles = {
       color: '#fff',
     },
   },
+  cancelBtnAlt: {
+    fontSize: 11,
+    fontWeight: 700,
+    borderRadius: 2,
+    textTransform: 'none',
+    background: RED_GRADIENT,
+    color: 'white',
+    width: '125px',
+    marginRight: 2,
+    height: '33px',
+    '&:hover': {
+      background: '#D23C33',
+      color: '#fff',
+    },
+  },
   saveBtn: {
     fontSize: 11,
     fontWeight: 700,
@@ -66,6 +81,20 @@ export const useStyles = {
     background: GREEN_GRADIENT,
     color: 'white',
     width: '195px',
+    '&:hover': {
+      background: '#33FF7C',
+      color: 'fff',
+    },
+  },
+  publishBtnAlt: {
+    fontSize: 11,
+    fontWeight: 700,
+    borderRadius: 2,
+    textTransform: 'none',
+    height: '33px',
+    background: GREEN_GRADIENT,
+    color: 'white',
+    width: '125px',
     '&:hover': {
       background: '#33FF7C',
       color: 'fff',

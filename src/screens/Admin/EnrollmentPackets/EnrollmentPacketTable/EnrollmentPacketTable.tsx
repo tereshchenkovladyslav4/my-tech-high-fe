@@ -412,8 +412,8 @@ export const EnrollmentPacketTable = () => {
             flexDirection: 'row',
             alignItems: 'center',
             width: '100%',
-            justifyContent: 'flex-end',
-            marginRight: '24px',
+            justifyContent: 'flex-start',
+            marginLeft: '24px',
           }}
         >
           <Button
@@ -431,31 +431,12 @@ export const EnrollmentPacketTable = () => {
                 background: '#D23C33',
                 color: '#fff',
               },
+              minWidth: '195px'
             }}
             onClick={handleOpenEmailModal}
           >
             Email
           </Button>
-          {/* <Button
-            sx={{
-              fontSize: 11,
-              fontWeight: 700,
-              borderRadius: 2,
-              textTransform: 'none',
-              height: '33px',
-              background: YELLOW_GRADIENT,
-              color: 'white',
-              width: '195px',
-              marginRight: 2,
-              '&:hover': {
-                background: '#FFD626',
-                color: '#fff',
-              },
-            }}
-            onClick={handleMoveToThisYear}
-          >
-            Move Packets to 21-22 Year
-          </Button> */}
           <Button
             sx={{
               fontSize: 11,
@@ -470,6 +451,7 @@ export const EnrollmentPacketTable = () => {
                 background: '#33FF7C',
                 color: 'fff',
               },
+              minWidth: '195px'
             }}
             onClick={handleChangeProgramYear}
           >

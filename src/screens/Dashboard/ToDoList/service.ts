@@ -4,6 +4,7 @@ export const getTodoList = gql`
   query Parent_todos {
     parent_todos {
       submit_enrollment_packet {
+        category
         button
         dashboard
         homeroom
@@ -38,6 +39,7 @@ export const getTodoList = gql`
         }
       }
       resubmit_enrollment_packet {
+        category
         button
         dashboard
         homeroom
@@ -72,6 +74,7 @@ export const getTodoList = gql`
         }
       }
       submit_schedule {
+        category
         button
         dashboard
         homeroom
@@ -106,6 +109,7 @@ export const getTodoList = gql`
         }
       }
       resubmit_schedule {
+        category
         button
         dashboard
         homeroom
@@ -140,6 +144,7 @@ export const getTodoList = gql`
         }
       }
       resubmit_direct_order {
+        category
         button
         dashboard
         homeroom
@@ -174,6 +179,7 @@ export const getTodoList = gql`
         }
       }
       resubmit_reimbersement {
+        category
         button
         dashboard
         homeroom
@@ -208,6 +214,7 @@ export const getTodoList = gql`
         }
       }
       missing_learning_log {
+        category
         button
         dashboard
         homeroom
@@ -242,6 +249,7 @@ export const getTodoList = gql`
         }
       }
       resubmit_learning_log {
+        category
         button
         dashboard
         homeroom
@@ -276,6 +284,7 @@ export const getTodoList = gql`
         }
       }
       submit_testing_preference {
+        category
         button
         dashboard
         homeroom
@@ -310,6 +319,7 @@ export const getTodoList = gql`
         }
       }
       submit_intent_to_reenroll {
+        category
         button
         dashboard
         homeroom
@@ -344,6 +354,7 @@ export const getTodoList = gql`
         }
       }
       request_homeroom_resources {
+        category
         button
         dashboard
         homeroom
@@ -374,6 +385,45 @@ export const getTodoList = gql`
             application_deadline_num_days
             enrollment_packet_deadline_num_days
             enrollment_packet_date_deadline
+          }
+        }
+      }
+      submit_withdraws {
+        category
+        button
+        dashboard
+        homeroom
+        icon
+        phrase
+        students {
+          student_id
+          person {
+            first_name
+            last_name
+            person_id
+            photo
+            preferred_first_name
+            preferred_last_name
+          }
+          current_school_year_status {
+            student_id
+            school_year_id
+            application_id
+            application_status
+            packet_status
+            packet_id
+            application_school_year_id
+            grade_level
+            application_date_submitted
+            application_date_started
+            application_date_accepted
+            application_deadline_num_days
+            enrollment_packet_deadline_num_days
+            enrollment_packet_date_deadline
+            school_year_date_end
+          }
+          StudentWithdrawals {
+            date
           }
         }
       }

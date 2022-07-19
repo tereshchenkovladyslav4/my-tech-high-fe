@@ -15,7 +15,6 @@ type StateSelectProps = {
   newStateName: string
   stateInvalid: boolean
   setNewStateName: (value: string) => void
-  setIsChanged: (value: boolean) => void
   setIsInvalidStateName: (value: boolean) => void
   setStateInvalid: (value: boolean) => void
 }
@@ -25,7 +24,7 @@ export default function StateSelect({
   newStateName,
   stateInvalid,
   setNewStateName,
-  setIsChanged,
+
   setIsInvalidStateName,
   setStateInvalid,
 }: StateSelectProps) {
@@ -98,7 +97,6 @@ export default function StateSelect({
       } else {
         setStateInvalid(false)
         setNewStateName(event.target.value)
-        setIsChanged(true)
         setIsInvalidStateName(false)
       }
     } else {
@@ -117,7 +115,6 @@ export default function StateSelect({
         if (newStateName != '') {
           setStateInvalid(false)
           setNewStateName(newStateName)
-          setIsChanged(true)
           setIsInvalidStateName(false)
         } else {
           setStateInvalidMessage('Please enter a new name.')
@@ -135,11 +132,6 @@ export default function StateSelect({
           setStateInvalid(false)
           setNewStateName(selectedRegionFullName)
           setIsInvalidStateName(false)
-          if(stateName !== selectedRegionFullName){
-            setIsChanged(true)
-          }else{
-            setIsChanged(false)
-          }
         }
       }
     }
