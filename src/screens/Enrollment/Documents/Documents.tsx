@@ -106,8 +106,11 @@ export default function Documents({id, questions}) {
                   return isNumber.test(value)
                 })
               }
-              else if(q.type === QUESTION_TYPE.CHECKBOX || q.type === QUESTION_TYPE.AGREEMENT) {
+              else if(q.type === QUESTION_TYPE.CHECKBOX) {
                 valid_meta[`${q.slug}`] = yup.array().min(1).required(`${q.question} is required`).nullable()
+              }
+              else if(q.type === QUESTION_TYPE.AGREEMENT) {
+                valid_meta[`${q.slug}`] = yup.array().min(1).required(`${q.question.replace(/<[^>]+>/g, '')} is required`).nullable()
               }
               else {
                 valid_meta[`${q.slug}`] = yup.string().required(`${q.question} is required`).nullable()
@@ -334,7 +337,7 @@ export default function Documents({id, questions}) {
 
   const checkValidate = (item) => {
     if(item){
-      if(item.required) {
+      if(item.required && specialEdStatus(item)) {
         const exist = files?.filter((file) => file.name.includes(`${student.person.first_name.charAt(0).toUpperCase()}.${student.person.last_name}${item.options[0]?.label}`)).length > 0 ? true : false
         const upload = filesToUpload?.filter((file) => file.type === item.question).length > 0 ? true : false
         return exist || upload
@@ -358,7 +361,7 @@ export default function Documents({id, questions}) {
   const specialEdStatus = (item) => {
     const specialResponseMeta = formik?.values?.packet?.meta;
     const specialResponse = specialResponseMeta ? JSON.parse(specialResponseMeta) : {};
-    const slug = item[0].options[0]?.label?.trim();
+    const slug = item.options[0]?.label?.trim();
     if(slug === 'sped'){
       if( specialResponse && specialResponse.meta_special_education !== 'None' ){
         return true;
@@ -374,7 +377,7 @@ export default function Documents({id, questions}) {
     <Grid container rowSpacing={3} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
       <Grid item xs={12}>
         <List>
-          {questionsLists.map((item, index) => specialEdStatus(item) && (
+          {questionsLists.map((item, index) => specialEdStatus(item[0]) && (
             <Grid item xs={12} marginTop={4} key={index}>
               <DocumentUpload
                 disabled={disabled}

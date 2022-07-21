@@ -1,14 +1,14 @@
-import { Box, Button, Grid, InputAdornment, OutlinedInput } from '@mui/material'
 import React from 'react'
-import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
-import { CALENDAR } from '../../../../utils/constants'
 import { useHistory } from 'react-router-dom'
-import { mainClasses } from '../MainComponent/styles'
+import { Box, Button, Grid, InputAdornment, OutlinedInput } from '@mui/material'
 import ModeEditIcon from '@mui/icons-material/ModeEdit'
 import AddIcon from '@mui/icons-material/Add'
 import SearchIcon from '@mui/icons-material/Search'
+import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
+import { CALENDAR } from '../../../../utils/constants'
 import { MultiSelectDropDown } from '../components/MultiSelectDropDown'
 import { MultiSelectDropDownListType } from '../components/MultiSelectDropDown/MultiSelectDropDown'
+import { mainClasses } from '../MainComponent/styles'
 
 type HeaderComponentProps = {
   searchField: string | undefined

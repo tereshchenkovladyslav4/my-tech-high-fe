@@ -1,13 +1,13 @@
-import { Box, Button, TextField } from '@mui/material'
 import React, { useState, useContext } from 'react'
+import { Box, Button, TextField } from '@mui/material'
+import { useMutation } from '@apollo/client'
 import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
-import { useStyles } from '../styles'
 import { EventType } from '../../types'
 import { SYSTEM_05 } from '../../../../../utils/constants'
-import { useMutation } from '@apollo/client'
 import { UserContext } from '../../../../../providers/UserContext/UserProvider'
 import { createEventTypeMutation, updateEventTypeMutation } from '../../services'
 import { ColorPicker } from '../../components/ColorPicker'
+import { eventTypeClassess } from '../styles'
 
 type NewTypeProps = {
   eventType?: EventType | null
@@ -17,9 +17,8 @@ type NewTypeProps = {
 }
 
 const NewType = ({ eventType, eventTypeCount, onCancel, onSave }: NewTypeProps) => {
-  const classes = useStyles
   const { me } = useContext(UserContext)
-  const [eventTypeId, setEventTypeId] = useState<number>(Number(eventType?.id))
+  const [eventTypeId] = useState<number>(Number(eventType?.id))
   const [name, setName] = useState<string>(eventType?.name || '')
   const [color, setColor] = useState<string>(eventType?.color || '#000000')
   const [submitCreate, {}] = useMutation(createEventTypeMutation)
@@ -61,7 +60,7 @@ const NewType = ({ eventType, eventTypeCount, onCancel, onSave }: NewTypeProps) 
   }
 
   return (
-    <Box sx={classes.eventTypeBody}>
+    <Box sx={eventTypeClassess.eventTypeBody}>
       <Subtitle size='medium' textAlign='left' fontWeight='700'>
         {eventType ? 'Edit Type' : 'New Type'}
       </Subtitle>
@@ -75,17 +74,17 @@ const NewType = ({ eventType, eventTypeCount, onCancel, onSave }: NewTypeProps) 
         InputLabelProps={{
           style: { color: SYSTEM_05 },
         }}
-        sx={classes.textfield}
+        sx={eventTypeClassess.textfield}
         fullWidth
         value={name}
         onChange={(e) => setName(e.target.value)}
       />
       <ColorPicker color={color} setColor={setColor} />
       <Box sx={{ display: 'flex', justifyContent: 'space-evenly', paddingY: '25px' }}>
-        <Button sx={classes.cancelBtn} onClick={() => handleCancelClick()}>
+        <Button sx={eventTypeClassess.cancelBtn} onClick={() => handleCancelClick()}>
           Cancel
         </Button>
-        <Button sx={classes.saveBtn} onClick={() => handleSaveClick()}>
+        <Button sx={eventTypeClassess.saveBtn} onClick={() => handleSaveClick()}>
           Save
         </Button>
       </Box>

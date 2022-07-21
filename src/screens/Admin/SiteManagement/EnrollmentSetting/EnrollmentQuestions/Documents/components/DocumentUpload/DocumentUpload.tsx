@@ -110,10 +110,12 @@ export const DocumentUpload = ({ item, specialEd } : {item : EnrollmentQuestion[
                           item.order = index + 1
                           return item
                       })
-                      v.groups[0].questions = newQuestions
+                      // v.groups[0].questions = newQuestions;
+                      return {...v, groups: [{...v.groups[0], questions: newQuestions}]}
                   }
                   return v
               })
+
               setValues(newValues)
             }}
           />)

@@ -57,6 +57,7 @@ export type Question = {
   additionalQuestion: string //	The slug of parent question for Additional Question
 
   response: any //	Available for parents only
+  studentId?: number
 }
 
 export interface QuestionProps {

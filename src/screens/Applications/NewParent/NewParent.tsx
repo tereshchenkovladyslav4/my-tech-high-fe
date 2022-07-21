@@ -94,7 +94,7 @@ export const NewParent = () => {
           if (q.slug?.includes('student_')) {
             empty[`${q.slug?.replace('student_', '')}`] = ''
             if (q.required) {
-              if (q.slug?.toLocaleLowerCase().includes('emailconfrim')) {
+              if (q.slug?.toLocaleLowerCase().includes('emailconfirm')) {
                 valid_student[`${q.slug?.replace('student_', '')}`] = yup
                   .string()
                   .required('Email is required')
@@ -112,7 +112,7 @@ export const NewParent = () => {
                 valid_student[`${q.slug?.replace('student_', '')}`] = yup.string().required(`${q.question} is required`)
               }
             } else {
-              if (q.slug?.toLocaleLowerCase().includes('emailconfrim')) {
+              if (q.slug?.toLocaleLowerCase().includes('emailconfirm')) {
                 valid_student[`${q.slug?.replace('student_', '')}`] = yup
                   .string()
                   .oneOf([yup.ref('email')], 'Emails do not match')
@@ -441,9 +441,10 @@ export const NewParent = () => {
   }, [regionId, schoolYearData])
 
   const submitApplication = async (values) => {
+    console.log({values});
     const submitStudents = values.students?.map((s) => {
       return {
-        ...s, meta: JSON.stringify(s?.meta || {}),
+        ...omit(s, ['emailConfirm']), meta: JSON.stringify(s?.meta || {}),
         // address: { ...s.address, school_district: s.packet?.school_district },
         // packet: omit(s.packet, ['school_district'])
       }
@@ -458,7 +459,7 @@ export const NewParent = () => {
           students: submitStudents,
           midyear_application: midYearApplication,
           meta: JSON.stringify(values.meta),
-          address: { ...values.address, school_district: values.packet?.school_district, county_id: values.county?.county ? parseInt(values.county?.county) : null },
+          address: { ...values.address, school_district: values.packet?.school_district+'', county_id: values.county?.county ? parseInt(values.county?.county) : null },
           packet: omit(values.packet, ['school_district']),
         },
       },
@@ -641,7 +642,7 @@ export const NewParent = () => {
                                         name='programYear'
                                         labelTop
                                         placeholder={q.question}
-                                        dropDownItems={schoolYears}
+                                        dropDownItems={q.options}
                                         setParentValue={(id) => {
                                           if (id?.indexOf('mid') > 0) {
                                             id = id?.split('-')?.at(0)

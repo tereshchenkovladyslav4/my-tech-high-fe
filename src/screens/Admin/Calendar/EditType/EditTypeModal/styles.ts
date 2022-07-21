@@ -1,6 +1,6 @@
 import { BUTTON_LINEAR_GRADIENT } from '../../../../../utils/constants'
 
-export const useStyles = {
+export const editTypeClassess = {
   modalContainer: {
     position: 'absolute',
     top: '50%',

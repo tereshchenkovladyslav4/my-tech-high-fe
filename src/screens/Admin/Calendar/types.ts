@@ -6,33 +6,6 @@ export type EventType = {
   archived: boolean
 }
 
-export type EventInvalidOption = {
-  title: {
-    status: boolean
-    message: string
-  }
-  type: {
-    status: boolean
-    message: string
-  }
-  startDate: {
-    status: boolean
-    message: string
-  }
-  endDate: {
-    status: boolean
-    message: string
-  }
-  description: {
-    status: boolean
-    message: string
-  }
-  gradeFilter: {
-    status: boolean
-    message: string
-  }
-}
-
 export type EventVM = {
   eventId?: number
   title: string
@@ -66,10 +39,11 @@ export type CalendarEvent = {
 
 export type EventCalendarProps = {
   eventList: CalendarEvent[]
-  events: EventVM[]
+  selectedDate: Date | undefined
+  selectedEvent: EventVM | undefined
+  setSelectedEventId: (value: number) => void
   setEventList?: (value: CalendarEvent[] | undefined) => void
-  setSelectedEventIndex: (value: number) => void
-  setSelectedEventIds: (value: number[]) => void
+  setSelectedDate: (value: Date | undefined) => void
 }
 
 export type EventTypeResponseVM = {
@@ -102,11 +76,14 @@ export type EventResponseVM = {
 }
 
 export type EventDetailProps = {
+  selectedEvent: EventVM | undefined
   events: EventVM[]
-  refetch: () => void
-  setEvents: (value: EventVM[]) => void
-  setEvent: (value: EventVM) => void
+  selectedEventId: number
+  selectedDate: Date | undefined
   selectedEventIndex: number
+  refetch: () => void
+  setEvent: (value: EventVM) => void
+  setSelectedEvent: (value: EventVM | undefined) => void
   setSelectedEventIndex: (value: number) => void
 }
 
@@ -124,14 +101,20 @@ export type HeaderComponentProps = {
   title: string
   handleCancelClick: () => void
   setShowCancelModal: (value: boolean) => void
-  handleSaveClick: () => void
+}
+
+export interface EventFormData {
+  title: string
+  eventTypeId: number
+  startDate: Date
+  endDate: Date
+  time: string
+  allDay: boolean
+  description: string
+  grades: string[]
 }
 
 export type EventFormProps = {
-  event: EventVM
-  invalidOption: EventInvalidOption
-  setEvent: (value: EventVM) => void
-  setInvalidOption: (value: EventInvalidOption) => void
   setIsChanged: (value: boolean) => void
   handleAddRSVPClick: () => void
 }
@@ -143,8 +126,6 @@ export type FilterComponentProps = {
   schoolofEnrollments: string[]
   others: string[]
   providers: string[]
-  invalidOption: EventInvalidOption
-  setInvalidOption: (value: EventInvalidOption) => void
   setGrades: (value: string[]) => void
   setProgramYears: (value: string[]) => void
   setUsers: (value: string[]) => void
@@ -152,4 +133,14 @@ export type FilterComponentProps = {
   setOthers: (value: string[]) => void
   setProviders: (value: string[]) => void
   setIsChanged: (value: boolean) => void
+}
+
+export type EventTypeTableProps = {
+  eventTypes: EventType[]
+  handleEditClick: (value: EventType) => void
+  setSelectedEventType: (value: EventType) => void
+  setShowArchivedModal: (value: boolean) => void
+  setShowUnarchivedModal: (value: boolean) => void
+  handleUpdateEventTypes: (value: EventType[]) => void
+  setEventTypes: (value: EventType[]) => void
 }

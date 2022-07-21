@@ -1,6 +1,6 @@
 import { BLUE_GRDIENT } from '../../../../utils/constants'
 
-export const useStyles = {
+export const headerClasses = {
   cardBody: {
     paddingTop: '24px',
     marginBottom: '24px',

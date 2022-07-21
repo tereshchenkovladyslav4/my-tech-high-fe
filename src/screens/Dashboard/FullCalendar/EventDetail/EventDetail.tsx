@@ -1,77 +1,57 @@
+import React, { useContext, useEffect } from 'react'
 import { Avatar, AvatarGroup, Box, Button, Stack } from '@mui/material'
-import React, { useContext, useEffect, useState } from 'react'
-import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
-import { CALENDAR, GRADES, MTHGREEN, SYSTEM_02, SYSTEM_05, SYSTEM_06 } from '../../../../utils/constants'
 import { useHistory } from 'react-router-dom'
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew'
 import moment from 'moment'
-import { useStyles } from './styles'
+import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
+import { CALENDAR, SYSTEM_02, SYSTEM_05, SYSTEM_06 } from '../../../../utils/constants'
 import { EventDetailProps } from '../types'
-import { EventVM } from '../../../Admin/Calendar/types'
 import { UserContext } from '../../../../providers/UserContext/UserProvider'
 import { Person } from '../../../HomeroomStudentProfile/Student/types'
+import { extractContent, renderDate, renderFilter } from '../../../../utils/utils'
+import { eventDetailClassess } from './styles'
 
-const EventDetail = ({ selectedEventIndex, selectedEventIds, setSelectedEventIndex, events }: EventDetailProps) => {
-  const classes = useStyles
+const EventDetail = ({
+  events,
+  selectedEventIndex,
+  selectedDate,
+  selectedEventId,
+  selectedEvent,
+  setSelectedEventIndex,
+  setSelectedEvent,
+}: EventDetailProps) => {
   const history = useHistory()
   const { me } = useContext(UserContext)
   const students = me?.students
-  const [selectedEvent, setSelectedEvent] = useState<EventVM | undefined>()
 
   const handleRSVPClick = () => {
     history.push(`${CALENDAR}/rsvp`)
   }
 
-  const renderDate = (): string => {
-    return !selectedEvent?.allDay
-      ? moment(selectedEvent?.startDate).format('MMMM DD') == moment(selectedEvent?.endDate).format('MMMM DD')
-        ? `${moment(selectedEvent?.startDate).format('hh:mm A')}, ${moment(selectedEvent?.startDate).format('MMMM DD')}`
-        : `${moment(selectedEvent?.startDate).format('hh:mm A')}, ${moment(selectedEvent?.startDate).format(
-            'MMMM DD',
-          )} - ${moment(selectedEvent?.endDate).format('MMMM DD')}`
-      : moment(selectedEvent?.startDate).format('MMMM DD') == moment(selectedEvent?.endDate).format('MMMM DD')
-      ? `${moment(selectedEvent?.startDate).format('MMMM DD')}`
-      : `${moment(selectedEvent?.startDate).format('MMMM DD')} - ${moment(selectedEvent?.endDate).format('MMMM DD')}`
-  }
-
-  const renderFilter = (): string => {
-    let grades = ''
-    if (selectedEvent?.filters?.grades) {
-      grades = GRADES.map((item) => {
-        if (
-          JSON.parse(selectedEvent?.filters?.grades)
-            .filter((item: string) => item != 'all')
-            .includes(`${item}`)
-        ) {
-          return item
-        }
-      })
-        .filter((item) => item)
-        .join(',')
-    }
-    return grades
-  }
-  const innerHtml = (value: string) => {
-    return { __html: value }
-  }
-
-  const getFilteredEvents = () => {
-    return selectedEventIds.length > 0
-      ? [...events?.filter((event) => selectedEventIds.includes(Number(event.eventId)))]
-      : [...events]
+  const getFilteredEvents = (selectedDate: Date | undefined) => {
+    return !!selectedDate
+      ? events?.filter(
+          (event) =>
+            moment(event.startDate).format('YYYY-MM-DD') <= moment(selectedDate).format('YYYY-MM-DD') &&
+            moment(event.endDate).format('YYYY-MM-DD') >= moment(selectedDate).format('YYYY-MM-DD'),
+        )
+      : events
   }
 
   const handlePrevEventView = () => {
+    const filteredEvents = getFilteredEvents(selectedDate)
     if (selectedEventIndex - 1 >= 0) {
       setSelectedEventIndex(selectedEventIndex - 1)
+      setSelectedEvent(filteredEvents?.at(selectedEventIndex - 1))
     }
   }
 
   const handleNextEventView = () => {
-    let filteredEvents = getFilteredEvents()
+    const filteredEvents = getFilteredEvents(selectedDate)
     if (selectedEventIndex + 1 < filteredEvents?.length) {
       setSelectedEventIndex(selectedEventIndex + 1)
+      setSelectedEvent(filteredEvents?.at(selectedEventIndex + 1))
     }
   }
 
@@ -95,7 +75,11 @@ const EventDetail = ({ selectedEventIndex, selectedEventIds, setSelectedEventInd
               )
             ) {
               return (
-                <Avatar key={index} alt={student.person.preferred_first_name} src={getProfilePhoto(student.person)} />
+                <Avatar
+                  key={index}
+                  alt={student.person.first_name || student.person.preferred_first_name}
+                  src={getProfilePhoto(student.person)}
+                />
               )
             }
           })}
@@ -104,20 +88,20 @@ const EventDetail = ({ selectedEventIndex, selectedEventIds, setSelectedEventInd
   }
 
   useEffect(() => {
-    if (events.length > 0) {
-      const filteredEvents = getFilteredEvents()
-      if (filteredEvents?.length > 0) {
-        setSelectedEvent(filteredEvents[selectedEventIndex])
-      } else {
-        setSelectedEvent(undefined)
-      }
-    }
-  }, [events, selectedEventIndex])
+    const filteredEvents = getFilteredEvents(selectedDate)
+    setSelectedEventIndex(0)
+    setSelectedEvent(filteredEvents.at(0))
+  }, [events?.length, selectedDate])
 
   useEffect(() => {
-    setSelectedEventIndex(0)
-    setSelectedEvent(events?.filter((event) => selectedEventIds.includes(Number(event.eventId))).at(0))
-  }, [selectedEventIds])
+    const filteredEvents = getFilteredEvents(selectedDate)
+    filteredEvents.forEach((event, index) => {
+      if (event.eventId == selectedEventId) {
+        setSelectedEventIndex(index)
+        setSelectedEvent(filteredEvents.at(index))
+      }
+    })
+  }, [events?.length, selectedEventId])
 
   return (
     <Stack>
@@ -127,39 +111,41 @@ const EventDetail = ({ selectedEventIndex, selectedEventIds, setSelectedEventInd
             {selectedEvent?.filters?.grades && avatarGroup(selectedEvent?.filters?.grades)}
           </Box>
           <Box>
-            <Button sx={classes.clubButton}>
-              <Subtitle color={MTHGREEN} size={12} fontWeight='500'>
+            <Button sx={{ ...eventDetailClassess.clubButton, background: `${selectedEvent?.eventTypeColor}1A` }}>
+              <Subtitle color={selectedEvent?.eventTypeColor} size={12} fontWeight='500'>
                 {selectedEvent?.eventTypeName}
               </Subtitle>
             </Button>
           </Box>
-          <Subtitle size='medium' fontWeight='500' sx={{ my: 1.5 }} color={SYSTEM_02}>
+          <Subtitle fontWeight='600' sx={{ my: 1.5, fontSize: '16px' }} color={SYSTEM_02}>
             {selectedEvent?.title}
           </Subtitle>
-          <Subtitle size={12} fontWeight='bold' color={SYSTEM_06} sx={{ display: 'inline-block' }}>
-            {renderDate()}
+          <Subtitle fontWeight='bold' color={SYSTEM_06} sx={{ display: 'inline-block', fontSize: '12px' }}>
+            {renderDate(selectedEvent)}
           </Subtitle>
-          <Subtitle size={12} fontWeight='bold' color={SYSTEM_06} sx={{ marginTop: 1 }}>
-            {renderFilter()}
+          <Subtitle fontWeight='bold' color={SYSTEM_06} sx={{ marginTop: 1, fontSize: '12px' }}>
+            {renderFilter(selectedEvent)}
           </Subtitle>
-          <Subtitle size={12} fontWeight='500' color={SYSTEM_05} sx={{ mt: 2 }}>
-            <div dangerouslySetInnerHTML={innerHtml(selectedEvent?.description || '')}></div>
-          </Subtitle>
-          <Box sx={classes.arrowButtonGroup}>
-            <Button sx={classes.saveBtn} onClick={() => handleRSVPClick()}>
+          <Box sx={{ height: '100px' }}>
+            <Subtitle fontWeight='500' color={SYSTEM_05} sx={{ mt: 2, fontSize: '12px' }}>
+              {extractContent(selectedEvent?.description || '')}
+            </Subtitle>
+          </Box>
+          <Box sx={eventDetailClassess.arrowButtonGroup}>
+            <Button sx={eventDetailClassess.saveBtn} onClick={() => handleRSVPClick()}>
               RSVP
             </Button>
             <Button
               disableElevation
               variant='contained'
-              sx={classes.arrowButton}
+              sx={eventDetailClassess.arrowButton}
               startIcon={<ArrowBackIosNewIcon />}
               onClick={() => handlePrevEventView()}
             ></Button>
             <Button
               disableElevation
               variant='contained'
-              sx={classes.arrowButton}
+              sx={eventDetailClassess.arrowButton}
               startIcon={<ArrowForwardIosIcon />}
               onClick={() => handleNextEventView()}
             ></Button>

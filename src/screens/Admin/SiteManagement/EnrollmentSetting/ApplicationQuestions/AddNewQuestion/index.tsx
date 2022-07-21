@@ -462,7 +462,7 @@ export default function AddNewQuestionModal({
 							</Box>
 							<Box sx={{ display: 'flex', alignItems: 'center', }}>
 								{newQuestion?.slug &&
-									['packet_school_district', 'packet_secondary_contact_first', 'packet_secondary_contact_last', 'address_county_id', 'address_zip', 'address_city', 'address_street', 'program_year'].indexOf(newQuestion.slug) !== -1 ? (
+									['packet_school_district', 'packet_secondary_contact_first', 'packet_secondary_contact_last', 'address_county_id', 'address_zip', 'address_city', 'address_street'].indexOf(newQuestion.slug) !== -1 ? (
 									<Checkbox disabled />
 								) : (
 									<Checkbox checked={newQuestion.student_question} onClick={() => setQuestionValue(newQuestion.id, newQuestion.slug, 'student_question', newQuestion.student_question ? false : true)} />

@@ -99,8 +99,11 @@ export default function Personal({id, questions}) {
                   return isNumber.test(value)
                 })
               }
-              else if(q.type === QUESTION_TYPE.CHECKBOX || q.type === QUESTION_TYPE.AGREEMENT) {
+              else if(q.type === QUESTION_TYPE.CHECKBOX) {
                 valid_meta[`${q.slug}`] = yup.array().min(1).required(`${q.question} is required`).nullable()
+              }
+              else if(q.type === QUESTION_TYPE.AGREEMENT) {
+                valid_meta[`${q.slug}`] = yup.array().min(1).required(`${q.question.replace(/<[^>]+>/g, '')} is required`).nullable()
               }
               else {
                 valid_meta[`${q.slug}`] = yup.string().required(`${q.question} is required`).nullable()

@@ -1,29 +1,17 @@
 import React, { useState } from 'react'
+import { Box } from '@mui/material'
+import 'react-big-calendar/lib/css/react-big-calendar.css'
+import moment from 'moment'
 import leftArrowCalendar from '../../../../assets/leftArrowCalendar.svg'
 import rightArrowCalendar from '../../../../assets/rightArrowCalendar.svg'
 import { MultiSelectDropDown } from '../../../Admin/Calendar/components/MultiSelectDropDown'
 import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
-import { MultiSelectDropDownListType } from '../../../Admin/Calendar/components/MultiSelectDropDown/MultiSelectDropDown'
-import moment from 'moment'
-import 'react-big-calendar/lib/css/react-big-calendar.css'
-import './calendar.css'
-import { Box } from '@mui/material'
 import { CalendarDays } from './CalendarDay'
 import { WEEKDAYS } from '../../../../utils/constants'
-import { CalendarEvent, EventVM } from '../../../Admin/Calendar/types'
+import { DashboardCalendarTemplateType } from './types'
+import './calendar.css'
 
-type DashboardCalendarProps = {
-  selectedEvent: EventVM | undefined
-  calendarEventList: CalendarEvent[]
-  selectedEventTypes: string[]
-  selectedDate: Date | undefined
-  setSelectedDate: (value: Date | undefined) => void
-  eventTypeLists: MultiSelectDropDownListType[]
-  handleSelectedEvent: (value: CalendarEvent, date: Date) => void
-  setSelectedEventTypes: (value: string[]) => void
-}
-
-export const DashboardCalendar = ({
+export const DashboardCalendar: DashboardCalendarTemplateType = ({
   selectedEvent,
   calendarEventList,
   selectedEventTypes,
@@ -32,7 +20,7 @@ export const DashboardCalendar = ({
   setSelectedDate,
   handleSelectedEvent,
   setSelectedEventTypes,
-}: DashboardCalendarProps) => {
+}) => {
   const [currentDay, setCurrentDay] = useState<Date>(new Date())
 
   return (
@@ -53,7 +41,7 @@ export const DashboardCalendar = ({
               <img className='arrow' src={leftArrowCalendar} />
             </Box>
             <Subtitle textAlign='center' fontWeight='bold' className='label'>
-              {moment(currentDay).format('MMMM YYYY')}
+              {moment(currentDay).format('MMM YYYY')}
             </Subtitle>
             <Box
               className='calender-year'

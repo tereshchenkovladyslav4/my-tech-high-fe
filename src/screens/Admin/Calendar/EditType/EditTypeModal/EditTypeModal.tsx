@@ -1,8 +1,8 @@
 import React from 'react'
 import { Box, Modal } from '@mui/material'
-import { useStyles } from './styles'
 import { EventType } from '../../types'
 import { NewType } from '../NewType'
+import { editTypeClassess } from './styles'
 
 export default function EditTypeModal({
   onCancel,
@@ -13,8 +13,6 @@ export default function EditTypeModal({
   onSave: () => void
   eventType: EventType | null
 }) {
-  const classes = useStyles
-
   return (
     <Modal
       open={true}
@@ -22,8 +20,8 @@ export default function EditTypeModal({
       disableAutoFocus={true}
       aria-describedby='child-modal-description'
     >
-      <Box sx={classes.modalContainer}>
-        <Box sx={classes.modalBody}>
+      <Box sx={editTypeClassess.modalContainer}>
+        <Box sx={editTypeClassess.modalBody}>
           <NewType eventType={eventType} onCancel={onCancel} onSave={onSave} />
         </Box>
       </Box>

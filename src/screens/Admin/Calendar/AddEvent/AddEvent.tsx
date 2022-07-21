@@ -1,26 +1,27 @@
-import { Box, Card, Grid } from '@mui/material'
 import React, { useEffect, useState } from 'react'
-import { CALENDAR } from '../../../../utils/constants'
 import { Prompt, useHistory } from 'react-router-dom'
-import { useStyles } from './styles'
+import { Box, Card, Grid } from '@mui/material'
+import { useMutation } from '@apollo/client'
+import { Form, Formik } from 'formik'
+import moment from 'moment'
+import * as yup from 'yup'
+import { CALENDAR } from '../../../../utils/constants'
+import { addEventClassess } from './styles'
 import EditEventComponent from './EventForm'
 import FilterComponent from './FilterComponent'
-import { AddEventProps, EventInvalidOption, EventVM } from '../types'
+import { AddEventProps, EventFormData, EventVM } from '../types'
 import CustomModal from '../../SiteManagement/EnrollmentSetting/components/CustomModal/CustomModals'
-import { useMutation } from '@apollo/client'
 import { createOrUpdateEventMutation } from '../services'
 import { RSVPComponent } from '../RSVPComponent'
 import { convertDateToUTCDate } from '../../../../utils/utils'
-import { defaultEvent, defaultInvalidOption } from '../defaultValue'
+import { defaultEvent, defaultEventFormData } from '../defaultValue'
 import HeaderComponent from './HeaderComponent'
-import moment from 'moment'
 
 const AddEvent = ({ selectedEvent }: AddEventProps) => {
-  const classes = useStyles
   const history = useHistory()
   const [event, setEvent] = useState<EventVM>(defaultEvent)
   const [isChanged, setIsChanged] = useState<boolean>(false)
-  const [invalidOption, setInvalidOption] = useState<EventInvalidOption>(defaultInvalidOption)
+  const [initialValues, setInitialValues] = useState<EventFormData>(defaultEventFormData)
   const [grades, setGrades] = useState<string[]>([])
   const [showCancelModal, setShowCancelModal] = useState<boolean>(false)
   const [programYears, setProgramYears] = useState<string[]>([])
@@ -30,85 +31,61 @@ const AddEvent = ({ selectedEvent }: AddEventProps) => {
   const [providers, setProviders] = useState<string[]>([])
   const [showRSVPForm, setShowRSVPForm] = useState<boolean>(false)
   const [submitSave, {}] = useMutation(createOrUpdateEventMutation)
-  const validation = (): boolean => {
-    if (
-      event?.title?.length < 100 &&
-      event.eventTypeId &&
-      event.startDate &&
-      event.endDate &&
-      moment(event.startDate).format('yyyy-MM-DD') <= moment(event.endDate).format('yyyy-MM-DD') &&
-      event.description?.length > 9 &&
-      grades?.length > 0
-    ) {
-      return true
-    } else {
-      setInvalidOption({
-        title: {
-          status: event?.title?.length < 100 && event?.title?.length > 0 ? false : true,
-          message:
-            event?.title?.length < 100 && event?.title?.length > 0
-              ? ''
-              : event?.title
-              ? 'Invalid Title'
-              : 'Title Required',
-        },
-        type: {
-          status: event?.eventTypeId ? false : true,
-          message: event?.eventTypeId ? '' : 'Type Required',
-        },
-        startDate: {
-          status: event?.startDate ? false : true,
-          message: event?.startDate ? '' : 'Invalid Start Date',
-        },
-        endDate: {
-          status:
-            moment(event.startDate).format('yyyy-MM-DD') <= moment(event.endDate).format('yyyy-MM-DD') ? false : true,
-          message:
-            moment(event.startDate).format('yyyy-MM-DD') <= moment(event.endDate).format('yyyy-MM-DD')
-              ? ''
-              : 'Invalid End Date',
-        },
-        description: {
-          status: event?.description?.length > 9 ? false : true,
-          message: event?.description?.length > 9 ? '' : 'Description Required',
-        },
-        gradeFilter: {
-          status: grades?.length > 0 ? false : true,
-          message: grades?.length > 0 ? '' : 'At least one Grade Level must be selected',
-        },
-      })
-      return false
-    }
-  }
+
+  const validationSchema = yup.object({
+    title: yup.string().required('Title Required').max(100, 'Invalid Title').nullable(),
+    eventTypeId: yup.number().required('Type Required').min(1, 'Type Required').nullable(),
+    startDate: yup.date().required('Start Date Required').typeError('Invalid Start Date').nullable(),
+    endDate: yup
+      .date()
+      .required('End Date Required')
+      .typeError('Invalid End Date')
+      .min(yup.ref('startDate'), ({ min }) => moment(min).isValid() && 'Invalid End Date')
+      .nullable(),
+    description: yup.string().required('Description Required').min(9, 'Invalid Description').nullable(),
+    grades: yup.array().min(1, 'At least one Grade Level must be selected'),
+  })
+
   const handleCancelClick = () => {
     history.push(CALENDAR)
   }
 
-  const handleSaveClick = async () => {
-    if (validation()) {
-      await submitSave({
-        variables: {
-          createEventInput: {
-            event_id: Number(event?.eventId),
-            TypeId: Number(event?.eventTypeId),
-            description: event?.description,
-            end_date: convertDateToUTCDate(event?.endDate, event?.time),
-            start_date: convertDateToUTCDate(event?.startDate, event?.time),
-            title: event?.title,
-            filter_grades: JSON.stringify(grades.filter((grade) => grade)),
-            filter_other: JSON.stringify(others),
-            filter_program_year: JSON.stringify(programYears),
-            filter_provider: JSON.stringify(providers),
-            filter_school_of_enrollment: JSON.stringify(schoolofEnrollments),
-            filter_users: JSON.stringify(users),
-            all_day: event?.allDay,
-          },
+  const onSave = async (values: EventFormData) => {
+    await submitSave({
+      variables: {
+        createEventInput: {
+          event_id: Number(event?.eventId),
+          TypeId: Number(values?.eventTypeId),
+          description: values?.description,
+          end_date: convertDateToUTCDate(values?.endDate, values?.time),
+          start_date: convertDateToUTCDate(values?.startDate, values?.time),
+          all_day: values?.allDay,
+          title: values?.title,
+          filter_grades: JSON.stringify(values?.grades.filter((grade) => grade)),
+          filter_other: JSON.stringify(others),
+          filter_program_year: JSON.stringify(programYears),
+          filter_provider: JSON.stringify(providers),
+          filter_school_of_enrollment: JSON.stringify(schoolofEnrollments),
+          filter_users: JSON.stringify(users),
         },
-      })
-      setIsChanged(false)
-      history.push(CALENDAR)
-    }
+      },
+    })
+    setIsChanged(false)
+    history.push(CALENDAR)
   }
+
+  useEffect(() => {
+    setInitialValues({
+      title: event?.title,
+      eventTypeId: event?.eventTypeId,
+      startDate: event?.startDate || new Date(),
+      endDate: event?.endDate || new Date(),
+      time: event?.time || '00:00',
+      allDay: event?.allDay || true,
+      description: event?.description,
+      grades,
+    })
+  }, [event, grades])
 
   useEffect(() => {
     if (selectedEvent) {
@@ -124,7 +101,7 @@ const AddEvent = ({ selectedEvent }: AddEventProps) => {
   }, [selectedEvent])
 
   return (
-    <Card sx={classes.cardBody}>
+    <Card sx={addEventClassess.cardBody}>
       {!showRSVPForm ? (
         <>
           <Prompt
@@ -134,45 +111,44 @@ const AddEvent = ({ selectedEvent }: AddEventProps) => {
               content: 'Are you sure you want to leave without saving changes?',
             })}
           />
-          <HeaderComponent
-            title={selectedEvent?.eventId ? 'Edit Event' : 'Add Event'}
-            handleCancelClick={handleCancelClick}
-            setShowCancelModal={setShowCancelModal}
-            handleSaveClick={handleSaveClick}
-          />
-          <Box sx={{ width: '100%', padding: 3 }}>
-            <Grid container justifyContent='center'>
-              <Grid item xs={6} sx={{ textAlign: 'left', marginTop: 'auto', marginBottom: 'auto' }}>
-                <EditEventComponent
-                  event={event}
-                  setEvent={setEvent}
-                  setIsChanged={setIsChanged}
-                  invalidOption={invalidOption}
-                  setInvalidOption={setInvalidOption}
-                  handleAddRSVPClick={() => setShowRSVPForm(true)}
-                />
-              </Grid>
-              <Grid item xs={5}>
-                <FilterComponent
-                  grades={grades}
-                  programYears={programYears}
-                  users={users}
-                  schoolofEnrollments={schoolofEnrollments}
-                  others={others}
-                  providers={providers}
-                  setGrades={setGrades}
-                  setProgramYears={setProgramYears}
-                  setUsers={setUsers}
-                  setSchoolofEnrollment={setSchoolofEnrollment}
-                  setOthers={setOthers}
-                  setProviders={setProviders}
-                  invalidOption={invalidOption}
-                  setInvalidOption={setInvalidOption}
-                  setIsChanged={setIsChanged}
-                />
-              </Grid>
-            </Grid>
-          </Box>
+          <Formik
+            initialValues={initialValues}
+            enableReinitialize={true}
+            validationSchema={validationSchema}
+            onSubmit={onSave}
+          >
+            <Form>
+              <HeaderComponent
+                title={selectedEvent?.eventId ? 'Edit Event' : 'Add Event'}
+                handleCancelClick={handleCancelClick}
+                setShowCancelModal={setShowCancelModal}
+              />
+              <Box sx={{ width: '100%', padding: 3 }}>
+                <Grid container justifyContent='center'>
+                  <Grid item xs={6} sx={{ textAlign: 'left', marginTop: 'auto', marginBottom: 'auto' }}>
+                    <EditEventComponent setIsChanged={setIsChanged} handleAddRSVPClick={() => setShowRSVPForm(true)} />
+                  </Grid>
+                  <Grid item xs={5}>
+                    <FilterComponent
+                      grades={grades}
+                      programYears={programYears}
+                      users={users}
+                      schoolofEnrollments={schoolofEnrollments}
+                      others={others}
+                      providers={providers}
+                      setGrades={setGrades}
+                      setProgramYears={setProgramYears}
+                      setUsers={setUsers}
+                      setSchoolofEnrollment={setSchoolofEnrollment}
+                      setOthers={setOthers}
+                      setProviders={setProviders}
+                      setIsChanged={setIsChanged}
+                    />
+                  </Grid>
+                </Grid>
+              </Box>
+            </Form>
+          </Formik>
         </>
       ) : (
         <RSVPComponent setShowRSVPForm={setShowRSVPForm} />

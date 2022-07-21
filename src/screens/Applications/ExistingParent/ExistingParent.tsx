@@ -123,7 +123,7 @@ export const ExistingParent = () => {
           if (q.slug?.includes('student_')) {
             empty[`${q.slug?.replace('student_', '')}`] = ''
             if (q.required) {
-              if (q.slug?.toLocaleLowerCase().includes('emailconfrim')) {
+              if (q.slug?.toLocaleLowerCase().includes('emailconfirm')) {
                 valid_student[`${q.slug?.replace('student_', '')}`] = yup
                   .string()
                   .required('Email is required')
@@ -141,7 +141,7 @@ export const ExistingParent = () => {
                 valid_student[`${q.slug?.replace('student_', '')}`] = yup.string().required(`${q.question} is required`)
               }
             } else {
-              if (q.slug?.toLocaleLowerCase().includes('emailconfrim')) {
+              if (q.slug?.toLocaleLowerCase().includes('emailconfirm')) {
                 valid_student[`${q.slug?.replace('student_', '')}`] = yup
                   .string()
                   .oneOf([yup.ref('email')], 'Emails do not match')
@@ -377,7 +377,7 @@ export const ExistingParent = () => {
 
   const submitApplication = async (data) => {
     const submitStudents = data.students?.map((s) => {
-      return { ...s, 
+      return { ...omit(s, ['emailConfirm']), 
         meta: JSON.stringify(s?.meta || {}), 
       // address: { ...s.address, county_id: Number(s.address?.county_id) || -1,
       //    school_district: s.packet?.school_district }, packet: omit(s.packet, ['school_district']) 
@@ -567,38 +567,42 @@ export const ExistingParent = () => {
               }}
             >
               <Grid container rowSpacing={2}>
-                <Grid item xs={12} display='flex' justifyContent={'center'}>
-                  <Box width={'451.53px'}>
-                    <Field name='programYear' fullWidth focused>
-                      {({ field, form, meta }) => (
-                        <Box width={'100%'} display='block'>
-                          <DropDown
-                            name='programYear'
-                            labelTop
-                            placeholder='Program Year'
-                            dropDownItems={schoolYears}
-                            setParentValue={(id) => {
-                              if (id?.indexOf('mid') > 0) {
-                                id = id?.split('-')?.at(0)
-                              }
-                              form.setFieldValue(field.name, toNumber(id))
-                              setGradesAndBirthDateCut(id)
-                            }}
-                            alternate={true}
-                            size='small'
-                            sx={!!(meta.touched && meta.error) ? classes.textFieldError : classes.dropdown}
-                            error={{
-                              error: !!(meta.touched && meta.error),
-                              errorMsg: (meta.touched && meta.error) as string,
-                            }}
-                          />
-                        </Box>
-                      )}
-                    </Field>
-                  </Box>
-                </Grid>
                 {!questionLoading && questionSortList(questions).length > 0 
                 && questionSortList(questions).map((q, index) => {
+                  if (q.slug == 'program_year') {
+                    return (
+                        <Grid item xs={12} display='flex' justifyContent={'center'}>
+                          <Box width={'451.53px'}>
+                            <Field name='programYear' fullWidth focused>
+                              {({ field, form, meta }) => (
+                                <Box width={'100%'} display='block'>
+                                  <DropDown
+                                    name='programYear'
+                                    labelTop
+                                    placeholder={q.question}
+                                    dropDownItems={q.options}
+                                    setParentValue={(id) => {
+                                      if (id?.indexOf('mid') > 0) {
+                                        id = id?.split('-')?.at(0)
+                                      }
+                                      form.setFieldValue(field.name, toNumber(id))
+                                      setGradesAndBirthDateCut(id)
+                                    }}
+                                    alternate={true}
+                                    size='small'
+                                    sx={!!(meta.touched && meta.error) ? classes.textFieldError : classes.dropdown}
+                                    error={{
+                                      error: !!(meta.touched && meta.error),
+                                      errorMsg: (meta.touched && meta.error) as string,
+                                    }}
+                                  />
+                                </Box>
+                              )}
+                            </Field>
+                          </Box>
+                        </Grid>                      
+                    )
+                  }
                   if (q.slug?.includes('student_') || q.student_question) {
                     if (q.slug === 'student_grade_level') {
                       return (

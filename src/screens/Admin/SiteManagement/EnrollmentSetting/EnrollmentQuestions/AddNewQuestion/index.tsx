@@ -31,21 +31,13 @@ export default function AddNewQuestionModal({
   editItem?: EnrollmentQuestion[]
   group?: string
   isNewQuestion?: boolean
-}) {
+}) {  
   const tabName = useContext(TabContext)
   const [editorState, setEditorState] = useState(EditorState.createWithContent(ContentState.createFromBlockArray(htmlToDraft('').contentBlocks)));
   const editorRef = useRef(null)  
 	const [ deleteIds, setDeleteIds ] = useState([]);
   const [currentBlocks, setCurrentBlocks] = useState(0)
   const [isDefaultQuestion, setIsDefaultQuestion] = useState(editItem[0]?.default_question || false)
-  const handleEditorChange = (state) => {
-    try {
-      if (currentBlocks !== 0 && currentBlocks !== state.blocks.length) {
-        editorRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' })
-      }
-      setCurrentBlocks(state.blocks.length)
-    } catch {}
-  }
 
   const { values, setValues } = useFormikContext<EnrollmentQuestionTab[]>()
 
@@ -75,6 +67,17 @@ export default function AddNewQuestionModal({
   }
   const [editQuestions, setEditQuestions] = useState(editItem.length > 0 ? editItem : [templateQuestion])
 
+  const handleEditorChange = (state) => {
+    try {
+      if (currentBlocks !== 0 && currentBlocks !== state.blocks.length) {
+        editorRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' })
+      }
+      setCurrentBlocks(state.blocks.length);
+      
+			setQuestionValue(editQuestions[0].id, editQuestions[0].slug, 'question', draftToHtml(convertToRaw(editorState.getCurrentContent())));
+    } catch {}
+  }
+
   const setQuestionValue = (id, slug, field, value) => {
 		const newQuestions = editQuestions.map(
 			question => {
@@ -87,7 +90,7 @@ export default function AddNewQuestionModal({
 				}
 			}
 		)
-		setEditQuestions(newQuestions);
+    setEditQuestions(newQuestions);
 	};
   const editQuestionsRef = useRef([]);
   useEffect(() => {
@@ -161,7 +164,7 @@ export default function AddNewQuestionModal({
 					default_question: false,
 					additional_question: question.slug,
 					validation: 0,
-					slug: `meta_${+new Date()}`,
+					slug: `meta_${+ new Date()}`,
 					options: [{
 						value: 1,
 						label: '',
@@ -413,7 +416,6 @@ export default function AddNewQuestionModal({
   }, [ableToEdit])
 
   const setFocused = (event) => {    
-    console.log('focused');
     if (!isDefaultQuestion)
       return;
 

@@ -1,7 +1,7 @@
 import { outlinedInputClasses } from '@mui/material'
 import { BLUE_GRDIENT, RED_GRADIENT, SYSTEM_07 } from '../../../../utils/constants'
 
-export const useStyles = {
+export const eventTypeClassess = {
   cardBody: {
     paddingTop: '24px',
     marginBottom: '24px',

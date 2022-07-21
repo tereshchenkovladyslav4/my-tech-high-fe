@@ -1,25 +1,14 @@
-import React, { FunctionComponent, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Box, Card, Divider, Grid } from '@mui/material'
-import { useStyles } from './styles'
-import { DashboardCalendar } from './components/DashboardCalendar'
 import moment from 'moment'
 import { Subtitle } from '../../../components/Typography/Subtitle/Subtitle'
+import { DashboardCalendar } from './components/DashboardCalendar'
 import { CalendarEvent, EventVM } from '../../Admin/Calendar/types'
-import { MultiSelectDropDownListType } from '../../Admin/Calendar/components/MultiSelectDropDown/MultiSelectDropDown'
 import { ParentEventDetail } from './ParentEventDetail'
-type ParentCalendarProps = {
-  events: EventVM[]
-  calendarEventList: CalendarEvent[]
-  eventTypeLists: MultiSelectDropDownListType[]
-  setSectionName: (value: string) => void
-}
-const ParentCalendar: FunctionComponent<ParentCalendarProps> = ({
-  events,
-  calendarEventList,
-  eventTypeLists,
-  setSectionName,
-}) => {
-  const classes = useStyles
+import { ParentCalendarTemplateType } from './types'
+import { parentCalendarClasses } from './styles'
+
+const ParentCalendar: ParentCalendarTemplateType = ({ events, calendarEventList, eventTypeLists, setSectionName }) => {
   const [selectedEvent, setSelectedEvent] = useState<EventVM | undefined>()
   const [selectedEventTypes, setSelectedEventTypes] = useState<string[]>([])
   const [selectedDate, setSelectedDate] = useState<Date>()
@@ -34,7 +23,7 @@ const ParentCalendar: FunctionComponent<ParentCalendarProps> = ({
   }
 
   const handleNextEventView = () => {
-    let filteredEvents = getFilteredEvents(selectedDate)
+    const filteredEvents = getFilteredEvents(selectedDate)
     if (selectedEventIndex + 1 < filteredEvents?.length) {
       setSelectedEventIndex(selectedEventIndex + 1)
       setSelectedEvent(filteredEvents?.at(selectedEventIndex + 1))
@@ -95,9 +84,9 @@ const ParentCalendar: FunctionComponent<ParentCalendarProps> = ({
             )}
           </Grid>
           <Grid item xs={2}>
-            <Divider orientation='vertical' style={classes.divider} />
+            <Divider orientation='vertical' style={parentCalendarClasses.divider} />
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={6} sx={{ zIndex: 0 }}>
             <DashboardCalendar
               selectedEvent={selectedEvent}
               selectedDate={selectedDate}

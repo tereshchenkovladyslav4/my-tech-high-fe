@@ -1,13 +1,13 @@
 import React, { FunctionComponent, useContext, useEffect, useState } from 'react'
+import { Box } from '@mui/system'
+import { Card, Grid } from '@mui/material'
+import { useQuery } from '@apollo/client'
+import moment from 'moment'
+import { UserContext } from '../../providers/UserContext/UserProvider'
 import { HomeroomGrade } from './HomeroomGrade/HomeroomGrade'
 import { ParentCalendar } from './ParentCalendar'
 import { ToDo } from './ToDoList/ToDo'
 import { Announcements } from './Announcements'
-import { Box } from '@mui/system'
-import { Card, Grid } from '@mui/material'
-import { UserContext } from '../../providers/UserContext/UserProvider'
-import { useQuery } from '@apollo/client'
-import moment from 'moment'
 import { getUserAnnouncements } from './services'
 import { Announcement } from './Announcements/types'
 import { AnnouncementSection } from './AnnouncementSection'
@@ -15,10 +15,8 @@ import { ReadMoreSection } from './ReadMoreSection'
 import { getSchoolYearsByRegionId } from '../Admin/Dashboard/SchoolYear/SchoolYear'
 import { SchoolYearType } from '../../utils/utils.types'
 import { FullCalendar } from './FullCalendar'
-import { CalendarEvent, EventResponseVM, EventTypeResponseVM, EventVM } from '../Admin/Calendar/types'
-import { MultiSelectDropDownListType } from '../Admin/Calendar/components/MultiSelectDropDown/MultiSelectDropDown'
-import { getEventsQuery, getEventTypesQuery } from '../Admin/Calendar/services'
-import { hexToRgbA } from '../../utils/utils'
+import { useEventsByRegionIdAndFilterItem } from '../Admin/Calendar/hooks/useEventsByRegionIdAndFilterItem'
+import { useEventTypeListByRegionId } from '../Admin/Calendar/hooks/useEventTypeListByRegionId'
 
 export const imageA =
   'https://api.time.com/wp-content/uploads/2017/12/terry-crews-person-of-year-2017-time-magazine-facebook-1.jpg?quality=85'
@@ -29,36 +27,19 @@ export const imageC =
 
 export const Dashboard: FunctionComponent = () => {
   const { me } = useContext(UserContext)
-  const students = me?.students
   const region_id = me?.userRegion?.at(-1)?.region_id
   const [sectionName, setSectionName] = useState<string>('root')
   const [inProp, setInProp] = useState<boolean>(false)
   const [announcements, setAnnouncements] = useState<Announcement[]>([])
   const [selectedAnnouncement, setSelectedAnnouncement] = useState<Announcement>({})
   const [schoolYears, setSchoolYears] = useState<SchoolYearType[]>([])
-  const [calendarEventList, setCalendarEventList] = useState<CalendarEvent[]>([])
-  const [events, setEvents] = useState<EventVM[]>([])
-  const [eventTypeLists, setEventTypeLists] = useState<MultiSelectDropDownListType[]>([])
-
-  const { loading: eventTypeLoading, data: eventTypeData } = useQuery(getEventTypesQuery, {
-    variables: {
-      regionId: region_id,
-    },
-    skip: region_id ? false : true,
-    fetchPolicy: 'network-only',
-  })
-
-  const {
-    loading: eventsLoading,
-    data: eventsData,
-    refetch: refetchEvents,
-  } = useQuery(getEventsQuery, {
-    variables: {
-      regionId: region_id,
-    },
-    skip: region_id ? false : true,
-    fetchPolicy: 'network-only',
-  })
+  const [searchField, setSearchField] = useState<string>('')
+  const { calendarEventList, events } = useEventsByRegionIdAndFilterItem(
+    Number(region_id),
+    Number(me?.user_id),
+    searchField,
+  )
+  const { data: eventTypeLists } = useEventTypeListByRegionId(Number(region_id))
 
   const schoolYearData = useQuery(getSchoolYearsByRegionId, {
     variables: {
@@ -141,9 +122,10 @@ export const Dashboard: FunctionComponent = () => {
       case 'fullCalendar':
         return (
           <FullCalendar
+            searchField={searchField}
+            setSearchField={setSearchField}
             events={events}
             calendarEventList={calendarEventList}
-            setEvents={setEvents}
             eventTypeLists={eventTypeLists}
             setSectionName={setSectionName}
           />
@@ -151,22 +133,6 @@ export const Dashboard: FunctionComponent = () => {
       default:
         return <></>
     }
-  }
-
-  const isApplicate = (gradesFilter: string): boolean => {
-    let result = false
-    const grades = JSON.parse(gradesFilter)
-    students?.map((student) => {
-      if (
-        student?.grade_levels &&
-        grades.includes(
-          student?.grade_levels[0].grade_level == 'Kin' ? 'Kindergarten' : student?.grade_levels[0].grade_level,
-        )
-      ) {
-        result = true
-      }
-    })
-    return result
   }
 
   useEffect(() => {
@@ -203,58 +169,6 @@ export const Dashboard: FunctionComponent = () => {
       )
     }
   }, [me?.user_id, announcementData])
-
-  useEffect(() => {
-    if (!eventsLoading && eventsData?.eventsByRegionId) {
-      const eventLists = eventsData?.eventsByRegionId.filter((item: EventResponseVM) => isApplicate(item.filter_grades))
-      setCalendarEventList(
-        eventLists.map((event: EventResponseVM) => ({
-          id: event.event_id,
-          title: event.EventType.name,
-          start: moment(new Date(event.start_date)).format('yyyy-MM-DD'),
-          end: moment(new Date(event.end_date).setDate(new Date(event.end_date).getDate() + 1)).format('yyyy-MM-DD'),
-          color: event.EventType.color,
-          backgroundColor: hexToRgbA(event.EventType.color || ''),
-          allDay: true,
-        })),
-      )
-      setEvents(
-        eventLists.map((event: EventResponseVM) => ({
-          eventId: event.event_id,
-          title: event.title,
-          eventTypeId: event.TypeId,
-          eventTypeColor: event.EventType.color,
-          eventTypeName: event.EventType.name,
-          startDate: new Date(event.start_date),
-          endDate: new Date(event.end_date),
-          time: moment(new Date(event.start_date)).format('HH:mm'),
-          allDay: event.all_day,
-          description: event.description,
-          filters: {
-            grades: event.filter_grades,
-            other: event.filter_other,
-            programYear: event.filter_program_year,
-            provider: event.filter_provider,
-            schoolOfEnrollment: event.filter_school_of_enrollment,
-            users: event.filter_users,
-          },
-        })),
-      )
-    }
-  }, [eventsData])
-
-  useEffect(() => {
-    if (!eventTypeLoading && eventTypeData?.eventTypes) {
-      setEventTypeLists(
-        eventTypeData?.eventTypes
-          ?.filter((item: EventTypeResponseVM) => !item.archived)
-          ?.map((eventType: EventTypeResponseVM) => ({
-            name: eventType.name,
-            color: eventType.color,
-          })),
-      )
-    }
-  }, [eventTypeData])
 
   return renderPage()
 }

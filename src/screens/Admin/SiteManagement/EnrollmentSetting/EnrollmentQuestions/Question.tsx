@@ -91,7 +91,8 @@ export default function EnrollmentQuestionItem({
                                     component="fieldset"
                                     variant="standard"
                                 >
-                                    <FormGroup style={{ width: '50%' }}>
+                                    <FormGroup>
+                                    {/* <FormGroup style={{ width: '50%' }}> */}
                                         <FormControlLabel
                                             control={
                                                 <Checkbox />

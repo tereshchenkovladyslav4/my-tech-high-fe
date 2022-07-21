@@ -1,6 +1,6 @@
-import { GREEN_GRADIENT, RED_GRADIENT, BUTTON_LINEAR_GRADIENT, BLUE_GRDIENT } from '../../../../utils/constants'
+import { RED_GRADIENT, BLUE_GRDIENT, ERROR_RED } from '../../../../utils/constants'
 
-export const useStyles = {
+export const addEventClassess = {
   cardBody: {
     paddingTop: '24px',
     marginBottom: '24px',
@@ -73,6 +73,9 @@ export const useStyles = {
         margin: 0,
       },
     },
+  },
+  editorInvalid: {
+    borderColor: ERROR_RED,
   },
   arrowButton: {
     fontSize: '15px',

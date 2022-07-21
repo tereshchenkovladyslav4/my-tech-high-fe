@@ -1,6 +1,6 @@
 import { BLUE_GRDIENT } from '../../../utils/constants'
 
-export const useStyles = {
+export const parentCalendarClasses = {
   backButtonContainer: {
     backgroundColor: '#FAFAFA',
     paddingLeft: 8,

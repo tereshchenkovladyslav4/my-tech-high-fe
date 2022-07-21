@@ -1,8 +1,8 @@
 import React from 'react'
 import { Box, Checkbox, FormControlLabel } from '@mui/material'
-import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragraph'
 import { map } from 'lodash'
-import { useStyles } from './styles'
+import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragraph'
+import { checkBoxListClassess } from './styles'
 
 export type CheckBoxListVM = {
   label: string
@@ -17,7 +17,6 @@ type CheckBoxListProps = {
   haveSelectAll: boolean
 }
 const CheckBoxList = ({ title, checkboxLists, values, setValues, haveSelectAll }: CheckBoxListProps) => {
-  const classes = useStyles
   const handleChangeValues = (e: any) => {
     if (haveSelectAll) {
       if (values.includes(e.target.value)) {
@@ -68,7 +67,7 @@ const CheckBoxList = ({ title, checkboxLists, values, setValues, haveSelectAll }
     })
 
   return (
-    <Box sx={classes.container}>
+    <Box sx={checkBoxListClassess.container}>
       <Paragraph size='large' fontWeight='700'>
         {title}
       </Paragraph>

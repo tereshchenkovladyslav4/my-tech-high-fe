@@ -29,6 +29,7 @@ import { UserContext } from '../../../../../providers/UserContext/UserProvider'
 import { orderBy } from 'lodash'
 
 const insertDescriptions = {
+	user: "User's First Name",
 	parent: "Parent's First Name",
 	student: "Student's First Name",
 	year: 'School Year (2021-2022)',
@@ -400,6 +401,12 @@ export const EmailTemplateModal = ({
 					deadline: 'Deadline set in the Packet Reminders Template'
 				}) 
 			}
+			if (emailTemplate.category.category_name == 'Users') {
+				setAvailableInsertDescription({
+					...insertDescriptions,
+					link: "Link for user to access  verification or update"
+				})
+			}
 			if(emailTemplate.category.category_name === 'Withdraw') { 
 				setAvailableInsertDescription({
 					parent: "Parent's First Name",
@@ -459,7 +466,7 @@ export const EmailTemplateModal = ({
 				<>
 					<Grid item xs={12} sx={{ marginTop: '10px', marginBottom: '10px' }}>
 						<Subtitle fontWeight='700' size='large'>
-							Packet Deadline (Days)
+							Deadline (Days)
 						</Subtitle>
 						<Select
 							size='small'

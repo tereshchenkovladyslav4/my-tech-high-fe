@@ -1,31 +1,30 @@
 import React from 'react'
 import { Box, Button, Grid, TextField } from '@mui/material'
-import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
-import { DropDown } from '../../SiteManagement/components/DropDown/DropDown'
-import { useStyles } from './styles'
 import MenuIcon from '@mui/icons-material/Menu'
 import ModeEditIcon from '@mui/icons-material/ModeEdit'
 import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined'
+import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
+import { DropDown } from '../../SiteManagement/components/DropDown/DropDown'
+import { rsvpClassess } from './styles'
 
 type RSVPComponentProps = {
   setShowRSVPForm: (value: boolean) => void
 }
 
 const RSVPComponent = ({ setShowRSVPForm }: RSVPComponentProps) => {
-  const classes = useStyles
   return (
     <>
-      <Box sx={classes.pageTop}>
-        <Box sx={classes.pageTitle}>
+      <Box sx={rsvpClassess.pageTop}>
+        <Box sx={rsvpClassess.pageTitle}>
           <Subtitle size='medium' fontWeight='700'>
             RSVP Form
           </Subtitle>
         </Box>
-        <Box sx={classes.pageTopRight}>
-          <Button sx={classes.cancelBtn} onClick={() => setShowRSVPForm(false)}>
+        <Box sx={rsvpClassess.pageTopRight}>
+          <Button sx={rsvpClassess.cancelBtn} onClick={() => setShowRSVPForm(false)}>
             Cancel
           </Button>
-          <Button sx={classes.saveBtn} onClick={() => setShowRSVPForm(false)}>
+          <Button sx={rsvpClassess.saveBtn} onClick={() => setShowRSVPForm(false)}>
             Save
           </Button>
         </Box>
@@ -72,10 +71,10 @@ const RSVPComponent = ({ setShowRSVPForm }: RSVPComponentProps) => {
                     sx={{ my: 1, width: '65%', marginRight: 'auto', marginLeft: 'auto' }}
                   />
                   <Box sx={{ position: 'absolute', right: -20, top: 16 }}>
-                    <Box sx={classes.action}>
-                      <ModeEditIcon sx={classes.iconCursor} fontSize='medium' />
-                      <DeleteForeverOutlinedIcon sx={classes.iconCursor} fontSize='medium' />
-                      <MenuIcon sx={classes.iconCursor} fontSize='medium' />
+                    <Box sx={rsvpClassess.action}>
+                      <ModeEditIcon sx={rsvpClassess.iconCursor} fontSize='medium' />
+                      <DeleteForeverOutlinedIcon sx={rsvpClassess.iconCursor} fontSize='medium' />
+                      <MenuIcon sx={rsvpClassess.iconCursor} fontSize='medium' />
                     </Box>
                   </Box>
                 </Box>

@@ -16,8 +16,8 @@ export const getEventTypesQuery = gql`
 `
 
 export const getEventsQuery = gql`
-  query EventsByRegionId($regionId: Int!) {
-    eventsByRegionId(region_id: $regionId) {
+  query EventsByRegionId($findEventsByRegionIdSearch: FindEventsByRegionIdSearch!) {
+    eventsByRegionId(findEventsByRegionIdSearch: $findEventsByRegionIdSearch) {
       EventType {
         RegionId
         archived

@@ -35,22 +35,27 @@ export const CommunicationCard: CommunicationCardTemplateType = ({
 						</Typography>
 					</Box>
 				</Box>
-				<CardContent 					
-				>
+				<CardContent>
 					<Box sx={{
 						display: 'flex', 
 						flexDirection: 'row', 
 						justifyContent: 'space-between',
-						alignContent:'center'
+						alignItems:'center',
+						minHeight: '54px'
 					}}>
-						<Subtitle size='large' fontWeight='700'>{title}</Subtitle>									
-						<EastIcon/>					
-					</Box>
-					<Box sx={{textAlign:'left'}}>
-						<Typography color='#A1A1A1' fontSize='16px' fontWeight='600' sx={{ visibility: description ? "shown" : "hidden" }}>
-							{description || "N/A"}
-						</Typography>
-					</Box>
+						<Box>
+							<Subtitle size='large' fontWeight='700'>{title}</Subtitle>		
+							{description && (
+								<Typography color='#A1A1A1' fontSize='16px' fontWeight='600'>
+									{description || "N/A"}
+								</Typography>
+							)}
+							
+						</Box>
+						<Box sx={{paddingTop: '10px'}}>
+							<EastIcon/>
+						</Box>
+					</Box>					
 				</CardContent>
 			</Card>
 	)

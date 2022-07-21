@@ -19,7 +19,7 @@ export const useCurrentGradeAndProgramByRegionId = (
   const [programYearList, setProgramYearList] = useState<CheckBoxListVM[]>([])
 
   useEffect(() => {
-    if (schoolYearData?.schoolyear_getcurrent) {
+    if (!schoolYearLoading && schoolYearData?.schoolyear_getcurrent) {
       const availGrades = schoolYearData?.schoolyear_getcurrent?.grades?.split(',').map((item: any) => {
         if (item == 'Kindergarten')
           return {
@@ -72,7 +72,7 @@ export const useCurrentGradeAndProgramByRegionId = (
         ])
       }
     }
-  }, [schoolYearData])
+  }, [schoolYearLoading, schoolYearData])
 
   return {
     loading: schoolYearLoading,

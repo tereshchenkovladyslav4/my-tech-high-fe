@@ -4,11 +4,15 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
 import moment from 'moment'
 import { Calendar, momentLocalizer } from 'react-big-calendar'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
-import { Box, Button } from '@mui/material'
+import { Box, Button, Card, Fade, Popper } from '@mui/material'
+import CloseIcon from '@mui/icons-material/Close'
 import { mainClasses } from '../../../Admin/Calendar/MainComponent/styles'
 import { CalendarEvent, EventCalendarProps } from '../../../Admin/Calendar/types'
+import { calendarDayClassess } from '../../ParentCalendar/components/styles'
+import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
+import { BLACK, GRAY } from '../../../../utils/constants'
 
-moment.locale('ko', {
+moment.locale('en', {
   week: {
     dow: 1,
     doy: 1,
@@ -16,8 +20,17 @@ moment.locale('ko', {
 })
 const localizer = momentLocalizer(moment)
 
-const EventCalendar = ({ eventList, events, setSelectedEventIndex, setSelectedEventIds }: EventCalendarProps) => {
-  const [selectedDate, setSelectedDate] = useState(new Date())
+const EventCalendar = ({
+  eventList,
+  selectedDate,
+  selectedEvent,
+  setSelectedEventId,
+  setSelectedDate,
+}: EventCalendarProps) => {
+  const [currentDay, setCurrentDay] = useState(new Date())
+  const [showMore, setShowMore] = useState<boolean>(false)
+  const [selectedEvents, setSelectedEvents] = useState<CalendarEvent[]>([])
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
 
   const Event = ({ event }: any) => {
     return (
@@ -40,12 +53,36 @@ const EventCalendar = ({ eventList, events, setSelectedEventIndex, setSelectedEv
   }
 
   const handleSelectEvent = (event: CalendarEvent) => {
-    events.forEach((item, index) => {
-      if (item.eventId == event.id) {
-        setSelectedEventIndex(index)
+    eventList.forEach((item) => {
+      if (item.id == event.id) {
+        setSelectedDate(undefined)
+        setSelectedEventId(event.id)
       }
     })
   }
+
+  const renderEventList = (eventList: CalendarEvent[]) => {
+    return eventList?.map((event, index) => {
+      return (
+        <Box key={index} display={'grid'} alignItems={'center'}>
+          <Button
+            sx={{
+              mt: 1.5,
+              background: event.backgroundColor,
+              width: '100%',
+              border: event.id == selectedEvent?.eventId ? `1px solid ${event.color}` : 'none',
+            }}
+            onClick={() => setTimeout(() => setSelectedEventId(event.id), 100)}
+          >
+            <Subtitle color={event.color} fontWeight='600' sx={{ fontSize: '12px' }}>
+              {event.title}
+            </Subtitle>
+          </Button>
+        </Box>
+      )
+    })
+  }
+  const handleOnNaviate = () => {}
 
   const CustomToolbar = () => {
     return (
@@ -57,24 +94,24 @@ const EventCalendar = ({ eventList, events, setSelectedEventIndex, setSelectedEv
             sx={mainClasses.leftArrowButton}
             startIcon={<ArrowBackIosNewIcon />}
             onClick={() => {
-              if (selectedDate.getMonth() == 0) {
-                setSelectedDate(new Date(selectedDate.getFullYear() - 1, 11, 1))
+              if (currentDay.getMonth() == 0) {
+                setCurrentDay(new Date(currentDay.getFullYear() - 1, 11, 1))
               } else {
-                setSelectedDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth() - 1, 1))
+                setCurrentDay(new Date(currentDay.getFullYear(), currentDay.getMonth() - 1, 1))
               }
             }}
           ></Button>
-          <label style={{ marginBottom: 'auto', marginTop: 'auto' }}>{moment(selectedDate).format('MMMM YYYY')}</label>
+          <label style={{ marginBottom: 'auto', marginTop: 'auto' }}>{moment(currentDay).format('MMMM YYYY')}</label>
           <Button
             disableElevation
             variant='contained'
             sx={mainClasses.rightArrowButton}
             startIcon={<ArrowForwardIosIcon />}
             onClick={() => {
-              if (selectedDate.getMonth() == 11) {
-                setSelectedDate(new Date(selectedDate.getFullYear() + 1, 0, 1))
+              if (currentDay.getMonth() == 11) {
+                setCurrentDay(new Date(currentDay.getFullYear() + 1, 0, 1))
               } else {
-                setSelectedDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 1))
+                setCurrentDay(new Date(currentDay.getFullYear(), currentDay.getMonth() + 1, 1))
               }
             }}
           ></Button>
@@ -87,33 +124,55 @@ const EventCalendar = ({ eventList, events, setSelectedEventIndex, setSelectedEv
     <Box>
       <Calendar
         localizer={localizer}
+        views={{ month: true }}
         events={eventList}
         startAccessor='start'
         endAccessor='end'
         style={{ minHeight: 730 }}
-        defaultDate={selectedDate}
-        date={selectedDate}
+        defaultDate={currentDay}
+        date={currentDay}
         formats={formats}
         onSelectEvent={handleSelectEvent}
         selectable
+        popup={false}
+        onNavigate={handleOnNaviate}
+        messages={{
+          showMore: (target: number) => (
+            <span
+              className='ml-2'
+              role='presentation'
+              onClick={(e) => {
+                setShowMore(true)
+                setAnchorEl(e?.currentTarget)
+              }}
+            >
+              +{target} more
+            </span>
+          ),
+        }}
+        onShowMore={(events, date) => {
+          setSelectedEvents(events)
+          setSelectedDate(date)
+        }}
         onSelectSlot={(slotInfo) => {
           const { start } = slotInfo
-          setSelectedEventIds(
-            eventList
-              .filter(
-                (event) =>
-                  moment(event.start).format('YYYY-MM-DD') <= moment(start).format('YYYY-MM-DD') &&
-                  moment(event.end).format('YYYY-MM-DD') > moment(start).format('YYYY-MM-DD'),
-              )
-              .map((event) => Number(event.id)),
-          )
+          setSelectedDate(start)
+          setShowMore(false)
+          setAnchorEl(null)
         }}
         eventPropGetter={(event: any, start: any, end: any, isSelected: any) => ({
           event,
           start,
           end,
           isSelected,
-          style: { backgroundColor: event.backgroundColor, textAlign: 'left' },
+          style: {
+            backgroundColor: event.backgroundColor,
+            textAlign: 'left',
+            outline: 'none',
+            ...(isSelected && {
+              border: `1px solid ${event.color}`,
+            }),
+          },
         })}
         components={{
           event: Event,
@@ -121,6 +180,30 @@ const EventCalendar = ({ eventList, events, setSelectedEventIndex, setSelectedEv
           dateCellWrapper: ColoredDateCellWrapper,
         }}
       />
+      <Popper id={'simple-popper'} open={showMore} anchorEl={anchorEl} transition>
+        {({ TransitionProps }) => (
+          <Fade {...TransitionProps} timeout={350}>
+            <Card sx={calendarDayClassess.modal}>
+              <Box sx={calendarDayClassess.title}>
+                <Subtitle color={GRAY} sx={{ fontSize: '20px' }} fontWeight='500'>
+                  {moment(selectedDate).format('dddd')}
+                </Subtitle>
+                <CloseIcon
+                  sx={calendarDayClassess.closeBtn}
+                  onClick={() => {
+                    setAnchorEl(null)
+                    setShowMore(false)
+                  }}
+                />
+              </Box>
+              <Subtitle color={BLACK} sx={{ fontSize: '20px', textAlign: 'center' }} fontWeight='700'>
+                {moment(selectedDate).format('D')}
+              </Subtitle>
+              {renderEventList(selectedEvents)}
+            </Card>
+          </Fade>
+        )}
+      </Popper>
     </Box>
   )
 }

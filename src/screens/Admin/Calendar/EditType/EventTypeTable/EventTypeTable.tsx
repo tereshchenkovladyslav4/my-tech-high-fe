@@ -1,22 +1,12 @@
-import { Box, Typography } from '@mui/material'
 import React, { useState } from 'react'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
+import { Box, Tooltip, Typography } from '@mui/material'
 import MenuIcon from '@mui/icons-material/Menu'
 import ModeEditIcon from '@mui/icons-material/ModeEdit'
 import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt'
 import CallMissedOutgoingIcon from '@mui/icons-material/CallMissedOutgoing'
-import { useStyles } from '../styles'
-import { EventType } from '../../types'
-
-type EventTypeTableProps = {
-  eventTypes: EventType[]
-  handleEditClick: (value: EventType) => void
-  setSelectedEventType: (value: EventType) => void
-  setShowArchivedModal: (value: boolean) => void
-  setShowUnarchivedModal: (value: boolean) => void
-  handleUpdateEventTypes: (value: EventType[]) => void
-  setEventTypes: (value: EventType[]) => void
-}
+import { EventType, EventTypeTableProps } from '../../types'
+import { eventTypeClassess } from '../styles'
 
 const EventTypeTable = ({
   eventTypes,
@@ -27,27 +17,28 @@ const EventTypeTable = ({
   handleUpdateEventTypes,
   setEventTypes,
 }: EventTypeTableProps) => {
-  const classes = useStyles
   const [isDragDisable, setIsDragDisable] = useState<boolean>(true)
   const archivedTypes = () =>
     eventTypes
       ?.filter((type) => type.archived)
       .map((eventType, index) => (
-        <Box key={index} sx={{ ...classes.tableCotainer, color: '#A3A3A4' }}>
-          <Typography sx={classes.typeName}>{eventType.name}</Typography>
-          <Typography sx={classes.color}>{eventType.color.toLocaleUpperCase()}</Typography>
-          <Box sx={classes.circleBox}>
-            <Box sx={{ ...classes.circle, backgroundColor: eventType.color }}></Box>
+        <Box key={index} sx={{ ...eventTypeClassess.tableCotainer, color: '#A3A3A4' }}>
+          <Typography sx={eventTypeClassess.typeName}>{eventType.name}</Typography>
+          <Typography sx={eventTypeClassess.color}>{eventType.color.toLocaleUpperCase()}</Typography>
+          <Box sx={eventTypeClassess.circleBox}>
+            <Box sx={{ ...eventTypeClassess.circle, backgroundColor: eventType.color }}></Box>
           </Box>
-          <Box sx={classes.action}>
-            <CallMissedOutgoingIcon
-              sx={classes.iconCursor}
-              fontSize='medium'
-              onClick={() => {
-                setSelectedEventType(eventType)
-                setShowUnarchivedModal(true)
-              }}
-            />
+          <Box sx={eventTypeClassess.action}>
+            <Tooltip title='Unarchive' placement='top'>
+              <CallMissedOutgoingIcon
+                sx={eventTypeClassess.iconCursor}
+                fontSize='medium'
+                onClick={() => {
+                  setSelectedEventType(eventType)
+                  setShowUnarchivedModal(true)
+                }}
+              />
+            </Tooltip>
           </Box>
         </Box>
       ))
@@ -97,9 +88,9 @@ const EventTypeTable = ({
         position: 'relative',
       }}
     >
-      <Box sx={classes.tableCotainer}>
-        <Typography sx={{ ...classes.typeName, fontWeight: 'bold' }}>Type Name</Typography>
-        <Typography sx={{ ...classes.color, fontWeight: 'bold' }}>Color</Typography>
+      <Box sx={eventTypeClassess.tableCotainer}>
+        <Typography sx={{ ...eventTypeClassess.typeName, fontWeight: 'bold' }}>Type Name</Typography>
+        <Typography sx={{ ...eventTypeClassess.color, fontWeight: 'bold' }}>Color</Typography>
       </Box>
       <Box>
         <DragDropContext onDragEnd={onDragEnd}>
@@ -122,9 +113,9 @@ const EventTypeTable = ({
                           {...provided.dragHandleProps}
                           style={getItemStyle(snapshot.isDragging, provided.draggableProps.style)}
                         >
-                          <Box key={index} sx={classes.tableCotainer} draggable='false'>
+                          <Box key={index} sx={eventTypeClassess.tableCotainer} draggable='false'>
                             <Typography
-                              sx={classes.typeName}
+                              sx={eventTypeClassess.typeName}
                               onMouseOver={() => {
                                 setIsDragDisable(true)
                               }}
@@ -132,7 +123,7 @@ const EventTypeTable = ({
                               {item.name}
                             </Typography>
                             <Typography
-                              sx={classes.color}
+                              sx={eventTypeClassess.color}
                               onMouseOver={() => {
                                 setIsDragDisable(true)
                               }}
@@ -140,40 +131,46 @@ const EventTypeTable = ({
                               {item.color.toLocaleUpperCase()}
                             </Typography>
                             <Box
-                              sx={classes.circleBox}
+                              sx={eventTypeClassess.circleBox}
                               onMouseOver={() => {
                                 setIsDragDisable(true)
                               }}
                             >
-                              <Box sx={{ ...classes.circle, backgroundColor: item.color }}></Box>
+                              <Box sx={{ ...eventTypeClassess.circle, backgroundColor: item.color }}></Box>
                             </Box>
-                            <Box sx={classes.action}>
-                              <MenuIcon
-                                sx={classes.iconCursor}
-                                onMouseOver={() => {
-                                  setIsDragDisable(false)
-                                }}
-                                fontSize='medium'
-                              />
-                              <ModeEditIcon
-                                sx={classes.iconCursor}
-                                fontSize='medium'
-                                onClick={() => handleEditClick(item)}
-                                onMouseOver={() => {
-                                  setIsDragDisable(true)
-                                }}
-                              />
-                              <SystemUpdateAltIcon
-                                sx={classes.iconCursor}
-                                fontSize='medium'
-                                onClick={() => {
-                                  setSelectedEventType(item)
-                                  setShowArchivedModal(true)
-                                }}
-                                onMouseOver={() => {
-                                  setIsDragDisable(true)
-                                }}
-                              />
+                            <Box sx={eventTypeClassess.action}>
+                              <Tooltip title='Move' placement='top'>
+                                <MenuIcon
+                                  sx={eventTypeClassess.iconCursor}
+                                  onMouseOver={() => {
+                                    setIsDragDisable(false)
+                                  }}
+                                  fontSize='medium'
+                                />
+                              </Tooltip>
+                              <Tooltip title='Edit' placement='top'>
+                                <ModeEditIcon
+                                  sx={eventTypeClassess.iconCursor}
+                                  fontSize='medium'
+                                  onClick={() => handleEditClick(item)}
+                                  onMouseOver={() => {
+                                    setIsDragDisable(true)
+                                  }}
+                                />
+                              </Tooltip>
+                              <Tooltip title='Archive' placement='top'>
+                                <SystemUpdateAltIcon
+                                  sx={eventTypeClassess.iconCursor}
+                                  fontSize='medium'
+                                  onClick={() => {
+                                    setSelectedEventType(item)
+                                    setShowArchivedModal(true)
+                                  }}
+                                  onMouseOver={() => {
+                                    setIsDragDisable(true)
+                                  }}
+                                />
+                              </Tooltip>
                             </Box>
                           </Box>
                         </Box>

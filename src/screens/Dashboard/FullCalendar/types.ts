@@ -1,18 +1,33 @@
+import { FunctionComponent } from 'react'
 import { MultiSelectDropDownListType } from '../../Admin/Calendar/components/MultiSelectDropDown/MultiSelectDropDown'
 import { CalendarEvent, EventVM } from '../../Admin/Calendar/types'
 
 export type FullCalendarProps = {
+  searchField: string
   events: EventVM[]
   calendarEventList: CalendarEvent[]
   eventTypeLists: MultiSelectDropDownListType[]
-  setEvents: (value: EventVM[]) => void
+  setSearchField: (value: string) => void
   setSectionName: (value: string) => void
 }
 
 export type EventDetailProps = {
-  selectedEventIds: number[]
+  selectedDate: Date | undefined
+  selectedEventId: number
   events: EventVM[]
-  setEvents: (value: EventVM[]) => void
   selectedEventIndex: number
+  selectedEvent: EventVM | undefined,
+  setSelectedEvent: (value: EventVM | undefined) => void
   setSelectedEventIndex: (value: number) => void
 }
+
+type HeaderComponentProps = {
+  searchField: string
+  eventTypeLists: MultiSelectDropDownListType[]
+  selectedEventTypes: string[]
+  setSelectedEventTypes: (value: string[]) => void
+  setSearchField: (value: string) => void
+  setSectionName: (value: string) => void
+}
+
+export type HeaderTemplateType = FunctionComponent<HeaderComponentProps>

@@ -1,9 +1,9 @@
-import { Box, TextField } from '@mui/material'
 import React, { useState } from 'react'
+import { Box, TextField } from '@mui/material'
 import reactCSS from 'reactcss'
 import { SketchPicker } from 'react-color'
-import { useStyles } from '../../EditType/styles'
 import { SYSTEM_05 } from '../../../../../utils/constants'
+import { eventTypeClassess } from '../../EditType/styles'
 
 type ColorPickerProps = {
   color: string
@@ -11,7 +11,6 @@ type ColorPickerProps = {
 }
 
 const ColorPicker = ({ color, setColor }: ColorPickerProps) => {
-  const classes = useStyles
   const [displayColorPicker, setDisplayColorPicker] = useState<boolean>(false)
   const styles = reactCSS({
     default: {
@@ -67,7 +66,7 @@ const ColorPicker = ({ color, setColor }: ColorPickerProps) => {
         InputLabelProps={{
           style: { color: SYSTEM_05 },
         }}
-        sx={classes.textfield}
+        sx={eventTypeClassess.textfield}
         fullWidth
         value={color}
         onChange={(e) => setColor(e.target.value)}

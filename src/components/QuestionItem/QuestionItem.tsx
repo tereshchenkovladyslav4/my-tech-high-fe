@@ -313,7 +313,6 @@ function Item({ question: q, signature }: { question: Question; signature?: any 
     }
     setValues(newValues)
   }
-
   switch (q?.type) {
     case QUESTION_TYPE.DROPDOWN:
       return (
@@ -341,6 +340,7 @@ function Item({ question: q, signature }: { question: Question; signature?: any 
           labelTop
           dropDownItems={q.options || []}
           placeholder={q.question}
+          disabled={q.question === 'Student' && q.studentId ? true : false}
           setParentValue={(val) => {
             setQuestionResponse(val)
           }}

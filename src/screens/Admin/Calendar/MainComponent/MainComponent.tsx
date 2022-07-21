@@ -1,102 +1,40 @@
-import { Box, Card, Grid } from '@mui/material'
 import React, { useContext, useEffect, useState } from 'react'
-import { mainClasses } from './styles'
+import { Box, Card, Grid } from '@mui/material'
 import { EventCalendar } from '../EventCalendar'
 import { HeaderComponent } from '../HeaderComponent'
 import { UserContext } from '../../../../providers/UserContext/UserProvider'
-import { useQuery } from '@apollo/client'
-import { CalendarEvent, EventResponseVM, EventTypeResponseVM, EventVM, MainComponentProps } from '../types'
-import { MultiSelectDropDownListType } from '../components/MultiSelectDropDown/MultiSelectDropDown'
-import moment from 'moment'
-import { hexToRgbA } from '../../../../utils/utils'
-import { getEventsQuery, getEventTypesQuery } from '../services'
+import { CalendarEvent, EventVM, MainComponentProps } from '../types'
 import { EventDetail } from '../EventDetail'
+import { useEventTypeListByRegionId } from '../hooks/useEventTypeListByRegionId'
+import { useEventsByRegionIdAndFilterItem } from '../hooks/useEventsByRegionIdAndFilterItem'
+import { mainClasses } from './styles'
 
 const MainComponent = ({ selectedEventIndex, setSelectedEventIndex, setEvent }: MainComponentProps) => {
   const [searchField, setSearchField] = useState<string | undefined>('')
   const { me } = useContext(UserContext)
-  const [calendarEventList, setCalendarEventList] = useState<CalendarEvent[]>([])
-  const [events, setEvents] = useState<EventVM[]>([])
-  const [eventTypeLists, setEventTypeLists] = useState<MultiSelectDropDownListType[]>([])
+  const {
+    loading: EventsLoading,
+    calendarEventList,
+    events,
+    refetch,
+  } = useEventsByRegionIdAndFilterItem(Number(me?.selectedRegionId))
+  const { data: eventTypeLists, loading: eventTypeLoading } = useEventTypeListByRegionId(Number(me?.selectedRegionId))
   const [selectedEventTypes, setSelectedEventTypes] = useState<string[]>([])
-
-  const { loading: eventTypeLoading, data: eventTypeData } = useQuery(getEventTypesQuery, {
-    variables: {
-      regionId: me?.selectedRegionId,
-    },
-    skip: me?.selectedRegionId ? false : true,
-    fetchPolicy: 'network-only',
-  })
-
-  const { loading, data, refetch } = useQuery(getEventsQuery, {
-    variables: {
-      regionId: me?.selectedRegionId,
-    },
-    skip: me?.selectedRegionId ? false : true,
-    fetchPolicy: 'network-only',
-  })
+  const [selectedEventId, setSelectedEventId] = useState<number>(0)
+  const [selectedDate, setSelectedDate] = useState<Date>()
+  const [selectedEvent, setSelectedEvent] = useState<EventVM | undefined>()
 
   useEffect(() => {
-    if (!loading && data?.eventsByRegionId) {
-      const eventLists = data?.eventsByRegionId
-      setCalendarEventList(
-        eventLists.map((event: EventResponseVM) => ({
-          id: event.event_id,
-          title: event.EventType.name,
-          start: moment(new Date(event.start_date)).format('yyyy-MM-DD'),
-          end: moment(new Date(event.end_date).setDate(new Date(event.end_date).getDate() + 1)).format('yyyy-MM-DD'),
-          color: event.EventType.color,
-          backgroundColor: hexToRgbA(event.EventType.color || ''),
-          allDay: true,
-        })),
-      )
-      setEvents(
-        eventLists.map((event: EventResponseVM) => ({
-          eventId: event.event_id,
-          title: event.title,
-          eventTypeId: event.TypeId,
-          eventTypeColor: event.EventType.color,
-          eventTypeName: event.EventType.name,
-          startDate: new Date(event.start_date),
-          endDate: new Date(event.end_date),
-          time: moment(new Date(event.start_date)).format('HH:mm'),
-          allDay: event.all_day,
-          description: event.description,
-          filters: {
-            grades: event.filter_grades,
-            other: event.filter_other,
-            programYear: event.filter_program_year,
-            provider: event.filter_provider,
-            schoolOfEnrollment: event.filter_school_of_enrollment,
-            users: event.filter_users,
-          },
-        })),
-      )
-    } else {
-      setCalendarEventList([])
-      setEvents([])
+    if (!EventsLoading && calendarEventList.length === 0) {
       setEvent(undefined)
     }
-  }, [data])
+  }, [EventsLoading, calendarEventList])
 
   useEffect(() => {
-    if (!eventTypeLoading && eventTypeData?.eventTypes) {
-      setEventTypeLists(
-        eventTypeData?.eventTypes
-          ?.filter((item: EventTypeResponseVM) => !item.archived)
-          ?.map((eventType: EventTypeResponseVM) => ({
-            name: eventType.name,
-            color: eventType.color,
-          })),
-      )
-
-      setSelectedEventTypes(
-        eventTypeData?.eventTypes
-          .filter((item: EventTypeResponseVM) => !item.archived)
-          .map((eventType: EventTypeResponseVM) => eventType.name),
-      )
+    if (eventTypeLists && !eventTypeLoading) {
+      setSelectedEventTypes(eventTypeLists.map((eventType) => eventType.name))
     }
-  }, [eventTypeData])
+  }, [eventTypeLists, eventTypeLoading])
 
   return (
     <Card sx={mainClasses.cardBody}>
@@ -111,19 +49,24 @@ const MainComponent = ({ selectedEventIndex, setSelectedEventIndex, setEvent }: 
         <Grid container justifyContent='space-between'>
           <Grid item xs={3} sx={{ textAlign: 'left', marginTop: 'auto', marginBottom: 'auto' }}>
             <EventDetail
+              selectedEvent={selectedEvent}
+              selectedEventId={selectedEventId}
+              selectedDate={selectedDate}
               events={events?.filter((event: EventVM) => selectedEventTypes.includes(event?.eventTypeName || ''))}
-              setEvents={setEvents}
+              selectedEventIndex={selectedEventIndex}
+              setSelectedEvent={setSelectedEvent}
+              setSelectedEventIndex={setSelectedEventIndex}
               setEvent={setEvent}
               refetch={refetch}
-              selectedEventIndex={selectedEventIndex}
-              setSelectedEventIndex={setSelectedEventIndex}
             />
           </Grid>
           <Grid item xs={1}></Grid>
-          <Grid item xs={8}>
+          <Grid item xs={8} sx={{ zIndex: 0 }}>
             <EventCalendar
-              events={events?.filter((event: EventVM) => selectedEventTypes.includes(event?.eventTypeName || ''))}
-              setSelectedEventIndex={setSelectedEventIndex}
+              selectedDate={selectedDate}
+              selectedEvent={selectedEvent}
+              setSelectedDate={setSelectedDate}
+              setSelectedEventId={setSelectedEventId}
               eventList={calendarEventList?.filter((list: CalendarEvent) => selectedEventTypes.includes(list?.title))}
             />
           </Grid>

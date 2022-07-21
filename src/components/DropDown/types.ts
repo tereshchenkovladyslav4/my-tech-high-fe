@@ -1,6 +1,6 @@
 import { Theme } from '@emotion/react'
 import { SxProps } from '@mui/system'
-import { FunctionComponent, ReactNode } from 'react'
+import { FunctionComponent } from 'react'
 
 export type DropDownItem = {
   label: string | number
@@ -8,7 +8,7 @@ export type DropDownItem = {
 }
 
 type FormikCustomError = {
-  error: boolean,
+  error: boolean | undefined
   errorMsg: string
 }
 
@@ -27,7 +27,7 @@ type DropDownProps = {
   dropdownColor?: string
   isAddable?: boolean
   idx?: number
-  auto?:boolean
+  auto?: boolean
 }
 
 export type DropDownTemplateType = FunctionComponent<DropDownProps>

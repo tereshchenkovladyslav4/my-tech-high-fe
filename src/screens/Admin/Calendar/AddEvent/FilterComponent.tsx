@@ -1,16 +1,18 @@
+import React, { useContext, useState } from 'react'
 import { Box, Card, Grid } from '@mui/material'
-import React, { useContext, useEffect, useState } from 'react'
-import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
-import { MTHBLUE, RED } from '../../../../utils/constants'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
-import { FilterComponentProps } from '../types'
+import { useFormikContext } from 'formik'
+import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
+import { MTHBLUE } from '../../../../utils/constants'
+import { EventFormData, FilterComponentProps } from '../types'
 import { UserContext } from '../../../../providers/UserContext/UserProvider'
 import { CheckBoxList } from '../components/CheckBoxList'
-import { useStyles } from '../components/CheckBoxList/styles'
+import { checkBoxListClassess } from '../components/CheckBoxList/styles'
 import { defaultOtherList, defaultProviderList, defaultUserList } from '../defaultValue'
 import { useSchoolPartnerListByRegionId } from '../hooks/useSchoolPartnerListByRegionId'
 import { useCurrentGradeAndProgramByRegionId } from '../hooks/useCurrentGradeAndProgram'
+import { calendarClassess } from '../styles'
 
 const FilterComponent = ({
   grades,
@@ -19,8 +21,6 @@ const FilterComponent = ({
   schoolofEnrollments,
   others,
   providers,
-  invalidOption,
-  setInvalidOption,
   setGrades,
   setProgramYears,
   setUsers,
@@ -29,18 +29,14 @@ const FilterComponent = ({
   setProviders,
   setIsChanged,
 }: FilterComponentProps) => {
-  const classes = useStyles
   const { me } = useContext(UserContext)
-  const { loading, programYearList, gradeList } = useCurrentGradeAndProgramByRegionId(
+  const { errors, setFieldValue, touched, values } = useFormikContext<EventFormData>()
+  const { programYearList, gradeList } = useCurrentGradeAndProgramByRegionId(
     Number(me?.selectedRegionId),
     grades,
     setGrades,
   )
-  const {
-    loading: schoolOfEnrollmentLoading,
-    schoolOfEnrollmentList,
-    error: schoolOfEnrollmentError,
-  } = useSchoolPartnerListByRegionId(Number(me?.selectedRegionId))
+  const { schoolOfEnrollmentList } = useSchoolPartnerListByRegionId(Number(me?.selectedRegionId))
   const [expand, setExpand] = useState<boolean>(true)
 
   const chevron = () =>
@@ -65,22 +61,18 @@ const FilterComponent = ({
     <Grid container sx={{ textAlign: 'left', marginY: '12px' }}>
       <Grid item container xs={12}>
         <Grid item xs={6}>
-          <Box sx={classes.container}>
+          <Box sx={checkBoxListClassess.container}>
+            <Subtitle sx={calendarClassess.formError}>{touched.grades && errors.grades}</Subtitle>
             <CheckBoxList
               title={'Grade Level'}
-              values={grades}
+              values={values.grades}
               setValues={(value) => {
-                setGrades(value)
+                setFieldValue('grades', value)
                 setIsChanged(true)
               }}
               checkboxLists={gradeList}
               haveSelectAll={true}
             />
-            {invalidOption?.gradeFilter.status && (
-              <Subtitle size={'small'} sx={{ color: RED, width: '65%' }}>
-                {invalidOption?.gradeFilter.message}
-              </Subtitle>
-            )}
             <CheckBoxList
               title={'Program Year'}
               values={programYears}
@@ -94,7 +86,7 @@ const FilterComponent = ({
           </Box>
         </Grid>
         <Grid item xs={6}>
-          <Box sx={classes.container}>
+          <Box sx={checkBoxListClassess.container}>
             <CheckBoxList
               title={'Users'}
               values={users}
@@ -141,19 +133,8 @@ const FilterComponent = ({
     </Grid>
   )
 
-  useEffect(() => {
-    if (grades?.length > 0) {
-      setInvalidOption({ ...invalidOption, gradeFilter: { status: false, message: '' } })
-    } else {
-      setInvalidOption({
-        ...invalidOption,
-        gradeFilter: { status: true, message: 'At least one Grade Level must be selected' },
-      })
-    }
-  }, [grades])
-
   return (
-    <Card sx={classes.card}>
+    <Card sx={checkBoxListClassess.card}>
       <Box display='flex' flexDirection='row' onClick={() => setExpand(!expand)}>
         <Subtitle fontWeight='700' color={MTHBLUE} sx={{ cursor: 'pointer' }}>
           Filter

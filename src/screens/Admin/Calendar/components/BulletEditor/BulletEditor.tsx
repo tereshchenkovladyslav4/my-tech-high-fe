@@ -1,23 +1,27 @@
-import { ContentState, EditorState, convertToRaw } from 'draft-js'
-import React, { useRef, useState } from 'react'
-import Wysiwyg from 'react-draft-wysiwyg'
-import draftToHtml from 'draftjs-to-html'
-import { useStyles } from '../../AddEvent/styles'
+import React, { useEffect, useRef, useState } from 'react'
 import { Box } from '@mui/material'
+import draftToHtml from 'draftjs-to-html'
+import { ContentState, EditorState, convertToRaw } from 'draft-js'
 import htmlToDraft from 'html-to-draftjs'
+import Wysiwyg from 'react-draft-wysiwyg'
+import { addEventClassess } from '../../AddEvent/styles'
 
 type BulletEditorProps = {
   value?: string
   setValue: (value: string) => void
+  error?: boolean
 }
 
-const BulletEditor = ({ value, setValue }: BulletEditorProps) => {
-  const classes = useStyles
+const generateEditorState = (htmlContent: string): EditorState => {
+  const contentBlock = htmlToDraft(htmlContent || '')
+  const contentState = ContentState.createFromBlockArray(contentBlock.contentBlocks)
+  return EditorState.createWithContent(contentState)
+}
+
+const BulletEditor = ({ value, setValue, error }: BulletEditorProps) => {
   const [currentBlocks, setCurrentBlocks] = useState<number>(0)
   const editorRef = useRef<any>()
-  const contentBlock = htmlToDraft(value || '')
-  const contentState = ContentState.createFromBlockArray(contentBlock.contentBlocks)
-  const [editorState, setEditorState] = useState(EditorState.createWithContent(contentState))
+  const [editorState, setEditorState] = useState<EditorState>(generateEditorState(''))
 
   const handleEditorChange = (state: any) => {
     try {
@@ -33,8 +37,12 @@ const BulletEditor = ({ value, setValue }: BulletEditorProps) => {
     setValue(draftToHtml(convertToRaw(editorState.getCurrentContent())))
   }
 
+  useEffect(() => {
+    setEditorState(generateEditorState(value || ''))
+  }, [value])
+
   return (
-    <Box sx={classes.editor}>
+    <Box sx={{ ...addEventClassess.editor, ...(error && addEventClassess.editorInvalid) }}>
       <Wysiwyg.Editor
         onContentStateChange={handleEditorChange}
         placeholder='  Type here...'

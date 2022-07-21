@@ -71,7 +71,7 @@ const Withdrawal: React.FC<{
   const signature = useRef(null)
   const { me } = useContext(UserContext)
   const isEditable = (): boolean => {
-    if (me?.level <= 2) return true
+    if (me?.level && me?.level <= 2) return true
     return false
   }
 
@@ -197,6 +197,7 @@ const Withdrawal: React.FC<{
               required: true,
               additionalQuestion: '',
               response: studentId || '',
+              studentId: studentId,
             },
             {
               id: -2,
@@ -234,16 +235,25 @@ const Withdrawal: React.FC<{
           ])
       } else {
         setQuestions(
-          questionsData.questionsByRegion.map((v) => {
-            return {
-              ...v,
-              options: JSON.parse(v.options),
-              mainQuestion: v.mainQuestion == 1 ? true : false,
-              defaultQuestion: v.defaultQuestion == 1 ? true : false,
-              required: v.required == 1 ? true : false,
-              response: (v.question === 'Student' && studentId) || '',
-            }
-          }),
+          questionsData.questionsByRegion.map(
+            (v: {
+              options: string
+              mainQuestion: number
+              defaultQuestion: number
+              required: number
+              question: string
+            }) => {
+              return {
+                ...v,
+                options: JSON.parse(v.options),
+                mainQuestion: v.mainQuestion == 1 ? true : false,
+                defaultQuestion: v.defaultQuestion == 1 ? true : false,
+                required: v.required == 1 ? true : false,
+                response: (v.question === 'Student' && studentId) || '',
+                studentId: studentId,
+              }
+            },
+          ),
         )
       }
       setUnsavedChanges(false)
@@ -352,7 +362,7 @@ const Withdrawal: React.FC<{
                   }
                 }
 
-                if (val.slug == 'signature' && signature.current.isEmpty()) {
+                if (val.slug == 'signature' && signature?.current.isEmpty()) {
                   errors[val.id] = 'Signature is required.'
                 }
               })

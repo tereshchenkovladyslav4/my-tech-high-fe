@@ -1,4 +1,4 @@
-export const useStyles = {
+export const checkBoxListClassess = {
   container: {
     display: 'flex',
     flexDirection: 'column',
@@ -10,5 +10,5 @@ export const useStyles = {
     borderRadius: '10px',
     marginTop: 2,
     padding: 2,
-  }
+  },
 }

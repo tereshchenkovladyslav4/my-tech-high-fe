@@ -1,5 +1,5 @@
 import { CheckBoxListVM } from './components/CheckBoxList/CheckBoxList'
-import { EventInvalidOption, EventVM } from './types'
+import { EventFormData, EventVM } from './types'
 
 export const defaultEvent: EventVM = {
   title: '',
@@ -22,31 +22,15 @@ export const defaultEvent: EventVM = {
   },
 }
 
-export const defaultInvalidOption: EventInvalidOption = {
-  title: {
-    status: false,
-    message: '',
-  },
-  type: {
-    status: false,
-    message: '',
-  },
-  startDate: {
-    status: false,
-    message: '',
-  },
-  endDate: {
-    status: false,
-    message: '',
-  },
-  description: {
-    status: false,
-    message: '',
-  },
-  gradeFilter: {
-    status: false,
-    message: '',
-  },
+export const defaultEventFormData: EventFormData = {
+  title: '',
+  eventTypeId: 0,
+  startDate: new Date(),
+  endDate: new Date(),
+  time: '00:00',
+  allDay: true,
+  description: '',
+  grades: [],
 }
 
 export const defaultUserList: CheckBoxListVM[] = [

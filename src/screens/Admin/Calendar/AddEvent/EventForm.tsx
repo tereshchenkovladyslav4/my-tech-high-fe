@@ -1,30 +1,24 @@
-import { Box, Button, Checkbox, FormControlLabel, Stack, TextField } from '@mui/material'
 import React, { useContext, useEffect, useState } from 'react'
-import { DropDown } from '../../../../components/DropDown/DropDown'
-import { DropDownItem } from '../../../../components/DropDown/types'
-import { useQuery } from '@apollo/client'
-import { getEventTypesQuery } from '../services'
-import { UserContext } from '../../../../providers/UserContext/UserProvider'
+import { Box, Button, Checkbox, FormControlLabel, Stack, TextField } from '@mui/material'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
+import { useQuery } from '@apollo/client'
+import { useFormikContext } from 'formik'
+import { DropDown } from '../../../../components/DropDown/DropDown'
+import { DropDownItem } from '../../../../components/DropDown/types'
+import { getEventTypesQuery } from '../services'
+import { UserContext } from '../../../../providers/UserContext/UserProvider'
 import { BulletEditor } from '../components/BulletEditor'
 import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
-import { RED } from '../../../../utils/constants'
-import { EventFormProps } from '../types'
-import { useStyles } from './styles'
+import { EventFormData, EventFormProps } from '../types'
+import { addEventClassess } from './styles'
 import { Paragraph } from '../../../../components/Typography/Paragraph/Paragraph'
+import { calendarClassess } from '../styles'
 
-const EventForm = ({
-  event,
-  setEvent,
-  invalidOption,
-  setInvalidOption,
-  setIsChanged,
-  handleAddRSVPClick,
-}: EventFormProps) => {
+const EventForm = ({ setIsChanged, handleAddRSVPClick }: EventFormProps) => {
   const { me } = useContext(UserContext)
-  const classes = useStyles
+  const { errors, handleChange, setFieldValue, touched, values } = useFormikContext<EventFormData>()
   const [eventTypes, setEventTypes] = useState<DropDownItem[]>([])
   const { loading, data } = useQuery(getEventTypesQuery, {
     variables: {
@@ -46,165 +40,156 @@ const EventForm = ({
       )
     }
   }, [data])
+
   return (
     <Stack direction='column' justifyContent='center' alignItems='center' width={'100%'} marginTop={3}>
-      <TextField
-        name='title'
-        label='Title'
-        placeholder='Entry'
-        fullWidth
-        value={event?.title}
-        onChange={(e) => {
-          setEvent({ ...event, title: e.target.value })
-          setIsChanged(true)
-          setInvalidOption({ ...invalidOption, title: { status: false, message: '' } })
-        }}
-        sx={{ my: 1, width: '65%' }}
-      />
-      {invalidOption?.title.status && (
-        <Subtitle size={'small'} sx={{ color: RED, width: '65%' }}>
-          {invalidOption?.title.message}
-        </Subtitle>
-      )}
-      <Box sx={{ my: 1, width: '65%' }}>
-        <DropDown
-          dropDownItems={eventTypes}
-          placeholder='Type'
-          labelTop
-          setParentValue={(value) => {
-            setEvent({ ...event, eventTypeId: Number(value) })
+      <Box sx={{ width: '65%' }}>
+        <Subtitle sx={calendarClassess.formError}>{touched.title && errors.title}</Subtitle>
+        <TextField
+          name='title'
+          label='Title'
+          placeholder='Entry'
+          fullWidth
+          value={values?.title}
+          onChange={(e) => {
+            handleChange(e)
             setIsChanged(true)
-            setInvalidOption({ ...invalidOption, type: { status: false, message: '' } })
           }}
-          size='medium'
-          defaultValue={`${event?.eventTypeId}`}
+          sx={{ my: 1 }}
+          error={touched.title && Boolean(errors.title)}
         />
-        {invalidOption?.type.status && (
-          <Subtitle size={'small'} sx={{ color: RED, width: '65%' }}>
-            {invalidOption?.type.message}
-          </Subtitle>
-        )}
-      </Box>
-      <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <Box sx={{ display: 'flex', width: '65%', my: 1, justifyContent: 'space-between' }}>
-          <Box sx={{ display: 'grid' }}>
-            <DatePicker
-              label='Start Date'
-              inputFormat='MM/dd/yyyy'
-              value={event?.startDate}
-              onChange={(e) => {
-                setEvent({ ...event, startDate: e || new Date() })
-                setIsChanged(true)
-                setInvalidOption({ ...invalidOption, startDate: { status: false, message: '' } })
-              }}
-              renderInput={(params) => <TextField color='primary' size='small' {...params} />}
-            />
-            {invalidOption?.startDate.status && (
-              <Subtitle size={'small'} sx={{ color: RED, width: '65%' }}>
-                {invalidOption?.startDate.message}
-              </Subtitle>
-            )}
-          </Box>
-          <Box sx={{ display: 'grid' }}>
-            <DatePicker
-              label='End Date'
-              inputFormat='MM/dd/yyyy'
-              value={event?.endDate}
-              onChange={(e) => {
-                setEvent({ ...event, endDate: e || new Date() })
-                setIsChanged(true)
-                setInvalidOption({ ...invalidOption, endDate: { status: false, message: '' } })
-              }}
-              renderInput={(params) => <TextField color='primary' size='small' {...params} />}
-            />
-            {invalidOption?.endDate.status && (
-              <Subtitle size={'small'} sx={{ color: RED, width: '65%' }}>
-                {invalidOption?.endDate.message}
-              </Subtitle>
-            )}
-          </Box>
-        </Box>
-      </LocalizationProvider>
-      <Box sx={{ display: 'flex', width: '65%', my: 1, justifyContent: 'start' }}>
-        <Box sx={{ display: 'grid', width: '50%' }}>
-          <TextField
-            id='time'
-            label='Time'
-            type='time'
-            size='small'
-            disabled={event?.allDay}
-            defaultValue={'00:00'}
-            value={event?.time}
-            InputLabelProps={{
-              shrink: true,
-            }}
-            inputProps={{
-              step: 300,
-            }}
-            sx={{ width: '100%', my: 1 }}
-            onChange={(e) => {
-              setEvent({ ...event, time: e.target.value })
+        <Box sx={{ my: 1 }}>
+          <Subtitle sx={calendarClassess.formError}>{touched.eventTypeId && errors.eventTypeId}</Subtitle>
+          <DropDown
+            dropDownItems={eventTypes}
+            placeholder='Type'
+            labelTop
+            setParentValue={(value) => {
+              setFieldValue('eventTypeId', Number(value))
               setIsChanged(true)
             }}
+            size='medium'
+            defaultValue={values?.eventTypeId}
+            error={{ error: touched.eventTypeId && Boolean(errors.eventTypeId), errorMsg: '' }}
           />
         </Box>
-        <Box sx={{ display: 'grid', my: 1.5, mx: 1 }}>
-          <FormControlLabel
-            sx={{ height: 30 }}
-            control={
-              <Checkbox
-                checked={event?.allDay}
-                value={event?.allDay}
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <Box
+            sx={{
+              display: 'flex',
+              my: 1,
+              gap: '6px',
+              justifyContent: 'space-between',
+              alignItems: 'end',
+            }}
+          >
+            <Box sx={{ display: 'grid' }}>
+              <Subtitle sx={calendarClassess.formError}>{touched.startDate && errors.startDate}</Subtitle>
+              <DatePicker
+                label='Start Date'
+                inputFormat='MM/dd/yyyy'
+                value={values?.startDate}
                 onChange={(e) => {
-                  setEvent({ ...event, allDay: !event?.allDay })
+                  setFieldValue('startDate', e)
                   setIsChanged(true)
                 }}
+                renderInput={(params) => (
+                  <TextField
+                    color='primary'
+                    size='small'
+                    {...params}
+                    error={touched.startDate && Boolean(errors.startDate)}
+                  />
+                )}
               />
-            }
-            label={
-              <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
-                All Day
-              </Paragraph>
-            }
+            </Box>
+            <Box sx={{ display: 'grid' }}>
+              <Subtitle sx={calendarClassess.formError}>{touched.endDate && errors.endDate}</Subtitle>
+              <DatePicker
+                label='End Date'
+                inputFormat='MM/dd/yyyy'
+                value={values?.endDate}
+                onChange={(e) => {
+                  setFieldValue('endDate', e)
+                  setIsChanged(true)
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    color='primary'
+                    size='small'
+                    {...params}
+                    error={touched.endDate && Boolean(errors.endDate)}
+                  />
+                )}
+              />
+            </Box>
+          </Box>
+        </LocalizationProvider>
+        <Box sx={{ display: 'flex', my: 1, justifyContent: 'start' }}>
+          <Box sx={{ display: 'grid', width: '50%' }}>
+            <TextField
+              id='time'
+              label='Time'
+              type='time'
+              size='small'
+              disabled={values?.allDay}
+              value={values?.time}
+              InputLabelProps={{
+                shrink: true,
+              }}
+              inputProps={{
+                step: 300,
+              }}
+              sx={{ width: '100%', my: 1 }}
+              onChange={(e) => {
+                handleChange(e)
+                setIsChanged(true)
+              }}
+            />
+          </Box>
+          <Box sx={{ display: 'grid', my: 1.5, mx: 1 }}>
+            <FormControlLabel
+              sx={{ height: 30 }}
+              control={
+                <Checkbox
+                  checked={values?.allDay}
+                  value={values?.allDay}
+                  onChange={() => {
+                    setFieldValue('allDay', !values?.allDay)
+                    setIsChanged(true)
+                  }}
+                />
+              }
+              label={
+                <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
+                  All Day
+                </Paragraph>
+              }
+            />
+          </Box>
+        </Box>
+        <Button
+          variant={'outlined'}
+          sx={addEventClassess.addRSVPButton}
+          onClick={() => {
+            handleAddRSVPClick()
+          }}
+        >
+          Add RSVP Form
+        </Button>
+        <Subtitle sx={calendarClassess.formError}>{touched.description && errors.description}</Subtitle>
+        <Box sx={{ my: 1 }}>
+          <BulletEditor
+            value={values?.description}
+            setValue={(value) => {
+              console.log(value)
+              setFieldValue('description', value)
+              setIsChanged(true)
+            }}
+            error={touched.description && Boolean(errors.description)}
           />
         </Box>
       </Box>
-      <Button
-        variant={'outlined'}
-        sx={classes.addRSVPButton}
-        onClick={() => {
-          handleAddRSVPClick()
-        }}
-      >
-        Add RSVP Form
-      </Button>
-      <Box sx={{ my: 1, width: '65%' }}>
-        {!event?.eventId && (
-          <BulletEditor
-            value={event.description}
-            setValue={(value) => {
-              if (value.length > 8) setIsChanged(true)
-              setEvent({ ...event, description: value })
-              setInvalidOption({ ...invalidOption, description: { status: false, message: '' } })
-            }}
-          />
-        )}
-        {!!event?.eventId && event?.eventId > 0 && event?.description && (
-          <BulletEditor
-            value={event.description}
-            setValue={(value) => {
-              setEvent({ ...event, description: value })
-              if (event.description !== value) setIsChanged(true)
-              setInvalidOption({ ...invalidOption, description: { status: false, message: '' } })
-            }}
-          />
-        )}
-      </Box>
-      {invalidOption?.description.status && (
-        <Subtitle size={'small'} sx={{ color: RED, width: '65%' }}>
-          {invalidOption?.description.message}
-        </Subtitle>
-      )}
     </Stack>
   )
 }

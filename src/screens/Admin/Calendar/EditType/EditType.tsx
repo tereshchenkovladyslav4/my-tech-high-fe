@@ -1,21 +1,20 @@
-import { Box, Card, Grid, IconButton } from '@mui/material'
 import React, { useEffect, useState, useContext } from 'react'
-import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded'
-import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
-import { useStyles } from './styles'
-import { CALENDAR } from '../../../../utils/constants'
 import { useHistory } from 'react-router-dom'
+import { Box, Card, Grid, IconButton } from '@mui/material'
+import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded'
+import { useMutation, useQuery } from '@apollo/client'
+import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
+import { CALENDAR } from '../../../../utils/constants'
 import { EventType, EventTypeResponseVM } from '../types'
 import { NewType } from './NewType'
 import { EditTypeModal } from './EditTypeModal'
 import CustomModal from '../../SiteManagement/EnrollmentSetting/components/CustomModal/CustomModals'
-import { useMutation, useQuery } from '@apollo/client'
 import { getEventTypesQuery, updateEventTypeMutation, updateEventTypesMutation } from '../services'
 import { UserContext } from '../../../../providers/UserContext/UserProvider'
 import { EventTypeTable } from './EventTypeTable'
+import { eventTypeClassess } from './styles'
 
 const EditTypeComponent = () => {
-  const classes = useStyles
   const history = useHistory()
   const { me } = useContext(UserContext)
   const [showEditModal, setShowEditModal] = useState<boolean>(false)
@@ -86,12 +85,12 @@ const EditTypeComponent = () => {
         })),
       )
     }
-  }, [data])
+  }, [loading, data])
   return (
-    <Card sx={classes.cardBody}>
-      <Box sx={classes.pageTop}>
-        <Box sx={classes.pageTitle}>
-          <IconButton onClick={() => history.push(CALENDAR)} sx={classes.posi_rela}>
+    <Card sx={eventTypeClassess.cardBody}>
+      <Box sx={eventTypeClassess.pageTop}>
+        <Box sx={eventTypeClassess.pageTitle}>
+          <IconButton onClick={() => history.push(CALENDAR)} sx={eventTypeClassess.posi_rela}>
             <ArrowBackIosRoundedIcon sx={{ fontSize: '15px', stroke: 'black', strokeWidth: 2 }} />
           </IconButton>
           <Subtitle size='medium' fontWeight='700'>

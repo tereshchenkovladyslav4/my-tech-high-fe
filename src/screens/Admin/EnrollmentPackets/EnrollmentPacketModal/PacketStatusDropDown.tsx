@@ -1,4 +1,4 @@
-import * as React from 'react'
+import React, {useEffect,  useState} from 'react'
 import { styled } from '@mui/material/styles'
 import Button from '@mui/material/Button'
 import Menu, { MenuProps } from '@mui/material/Menu'
@@ -42,16 +42,22 @@ export default function EnrollmentPacketDropDownButton() {
   const open = Boolean(anchorEl)
 
   const [status, packetStatuses] = watch(['status', 'packetStatuses'])
+  const [pkStatues, setPkStatues] = useState([]);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget)
   }
-  const { data } = useQuery(getEnrollmentPacketStatusesQuery)
+  
+  const { data } = useQuery(getEnrollmentPacketStatusesQuery, {
+    fetchPolicy: 'network-only',
+  })
 
 
-  React.useEffect(() => {
+  useEffect(() => {
+    console.log(data?.packetStatuses?.results)
     if (data?.packetStatuses?.results) {
-      setValue('packetStatuses', data.packetStatuses.results)
+      setValue('packetStatuses', data?.packetStatuses?.results)    
+      setPkStatues(data?.packetStatuses?.results)  
     }
   }, [data])
 
@@ -133,7 +139,7 @@ export default function EnrollmentPacketDropDownButton() {
         open={open}
         onClose={handleClose}
       >
-        {packetStatuses?.map((x: any, index: number) => (
+        {pkStatues?.map((x: any, index: number) => (
           <MenuItem key={index} onClick={() => handlePacketStatus(x)} disableRipple>
             {x}
           </MenuItem>

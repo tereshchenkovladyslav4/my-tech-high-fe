@@ -1,6 +1,6 @@
 import { BLUE_GRDIENT } from '../../../../utils/constants'
 
-export const useStyles = {
+export const eventDetailClassess = {
   clubButton: {
     mt: 1.5,
     background: '#2b9db72b',

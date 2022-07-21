@@ -1,6 +1,6 @@
 import { MTHBLUE } from '../../utils/constants'
 
-export const useStyles = {
+export const dropdownClassess = {
   textfield: {
     width: '100%',
     margin: '16px 0',

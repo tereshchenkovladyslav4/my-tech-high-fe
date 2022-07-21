@@ -8,7 +8,7 @@ import emailRecordImg from '../../../assets/quick-link-orange.png'
 const communicationTiles = [
   {
     title: 'Announcements',
-    description: 'Draft, Edit & Publish',
+    description: 'Draft, Edit, & Publish',
     link: ANNOUNCEMENTS,
     image: announcementImg
   },
