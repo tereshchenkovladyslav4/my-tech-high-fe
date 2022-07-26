@@ -43,7 +43,8 @@ export const SortableTableHeader: SortableTableHeaders = ({
               <TableSortLabel
                 active={true}
                 // active={orderBy === headCell.id}
-                direction={orderBy === headCell.id ? order : 'asc'}
+                // direction={orderBy === headCell.id ? order : 'asc'}
+                direction={orderBy === headCell.id ? order : 'desc'}
                 onClick={createSortHandler(headCell.id)}
                 IconComponent={ArrowDropDown}
               >

@@ -10,7 +10,7 @@ export const calendarDayClassess = {
     position: 'relative',
   },
   modal: {
-    minWidth: '163px',
+    minWidth: '185px',
     padding: '5px',
   },
   title: {

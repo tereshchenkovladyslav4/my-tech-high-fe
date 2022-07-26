@@ -1,6 +1,6 @@
 import { Grid } from '@mui/material'
 import React from 'react'
-import { ADMIN_APPLICATIONS, ENROLLMENT_PACKETS, WITHDRAWAL } from '../../../utils/constants'
+import { ADMIN_APPLICATIONS, ENROLLMENT_PACKETS, WITHDRAWAL, SCHOOL_ENROLLMENT } from '../../../utils/constants'
 import { AdminEnrollmentCard } from './components/AdminEnrollmentCard/AdminEnrollmentCard'
 import applicationsImg from '../../../assets/applications.png'
 import enrollmentImg from '../../../assets/enrollment.png'
@@ -22,7 +22,7 @@ export default function Enrollment() {
         <AdminEnrollmentCard title='Schedules' link={'https://google.com'} img={schedules} />
       </Grid>
       <Grid item xs={4}>
-        <AdminEnrollmentCard title='School of Enrollment' link='https://google.com' img={schoolAssignmentsImg} />
+        <AdminEnrollmentCard title='School of Enrollment' link={SCHOOL_ENROLLMENT} img={schoolAssignmentsImg} />
       </Grid>
       <Grid item xs={4}>
         <AdminEnrollmentCard title='Withdrawals' link={WITHDRAWAL} img={withdrawlsImg} />

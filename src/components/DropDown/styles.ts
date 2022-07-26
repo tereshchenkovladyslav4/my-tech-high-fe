@@ -14,4 +14,11 @@ export const dropdownClassess = {
       justifyContent: 'center',
     },
   },
+  borderNone: {
+    color: 'blue',
+    border: 'none',
+    '& .MuiSvgIcon-root': {
+      color: 'blue',
+    },
+  },
 }

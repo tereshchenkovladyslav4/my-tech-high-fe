@@ -420,10 +420,11 @@ export const getTodoList = gql`
             application_deadline_num_days
             enrollment_packet_deadline_num_days
             enrollment_packet_date_deadline
-            school_year_date_end
+            withdraw_deadline_num_days
           }
           StudentWithdrawals {
             date
+            date_emailed
           }
         }
       }

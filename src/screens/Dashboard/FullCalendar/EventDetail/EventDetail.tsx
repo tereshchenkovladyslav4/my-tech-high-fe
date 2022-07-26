@@ -67,22 +67,24 @@ const EventDetail = ({
     return (
       <AvatarGroup max={5} spacing={0}>
         {students &&
-          students.map((student, index) => {
-            if (
-              student?.grade_levels &&
-              grades.includes(
-                student?.grade_levels[0].grade_level == 'Kin' ? 'Kindergarten' : student?.grade_levels[0].grade_level,
-              )
-            ) {
-              return (
-                <Avatar
-                  key={index}
-                  alt={student.person.first_name || student.person.preferred_first_name}
-                  src={getProfilePhoto(student.person)}
-                />
-              )
-            }
-          })}
+          students
+            .filter((student) => student?.status?.at(-1)?.status != 2)
+            .map((student, index) => {
+              if (
+                student?.grade_levels &&
+                grades.includes(
+                  student?.grade_levels[0].grade_level == 'Kin' ? 'Kindergarten' : student?.grade_levels[0].grade_level,
+                )
+              ) {
+                return (
+                  <Avatar
+                    key={index}
+                    alt={student.person.first_name || student.person.preferred_first_name}
+                    src={getProfilePhoto(student.person)}
+                  />
+                )
+              }
+            })}
       </AvatarGroup>
     )
   }
@@ -139,14 +141,14 @@ const EventDetail = ({
               disableElevation
               variant='contained'
               sx={eventDetailClassess.arrowButton}
-              startIcon={<ArrowBackIosNewIcon />}
+              startIcon={<ArrowBackIosNewIcon sx={{ padding: '2px', minWidth: 'fit-content' }} />}
               onClick={() => handlePrevEventView()}
             ></Button>
             <Button
               disableElevation
               variant='contained'
               sx={eventDetailClassess.arrowButton}
-              startIcon={<ArrowForwardIosIcon />}
+              startIcon={<ArrowForwardIosIcon sx={{ padding: '2px', minWidth: 'fit-content' }} />}
               onClick={() => handleNextEventView()}
             ></Button>
           </Box>

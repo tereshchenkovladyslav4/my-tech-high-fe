@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react'
-import { Box, Checkbox, FormControl, FormControlLabel, Radio, TextField, RadioGroup } from '@mui/material'
+import { Box, Checkbox, FormControl, FormControlLabel, Radio, TextField, RadioGroup, FormHelperText } from '@mui/material'
 import { ApplicationQuestion } from './types'
 import { DropDown } from '../../../../components/DropDown/DropDown'
 import { SYSTEM_05, SYSTEM_07 } from '../../../../utils/constants'
@@ -131,7 +131,9 @@ export function AdditionalQuestionItem({ question: q, field, meta, form, handleA
                   '&.Mui-checked': {
                     color: '#4145FF'
                   }
-                }} />
+                }} 
+                />
+                
               {/* <Field type="checkbox" name="additional_questions.checked" value={o.label}>
               {({ field, form, meta }) => (
                 <Checkbox />
@@ -140,27 +142,36 @@ export function AdditionalQuestionItem({ question: q, field, meta, form, handleA
               <Subtitle size='small' sx={{wordWrap: 'break-word',maxWidth: '90%',textAlign: 'start', color: SYSTEM_05}}>{o.label}</Subtitle>
             </Box>
           ))}
+          {meta.touched && meta.error && (
+            <FormHelperText sx={{ color: '#BD0043' }}>{meta.error}</FormHelperText>
+          )}
         </Box>
       )
     } else if (q.type === QUESTION_TYPE.AGREEMENT) {
       return (
-        <Box display='flex' alignItems='center' sx={{marginTop: 2, marginBottom: 2, '& p': {margin: 0}}}>
-          <Checkbox
-            checked={q.response === true}
-            onClick={(e) => handleAddQuestion(e.target.checked, q)}
-            name={q.question.toLowerCase().replace(' ', '_')} {...field} value={true}
-            sx={{
-              paddingLeft: 0,
-              paddingY: 0,
-              color: '#4145FF',
-              '&.Mui-checked': {
-                color: '#4145FF'
-              }
-            }}
-          />
-          <Paragraph size='medium' sx={{fontSize: 16, color: SYSTEM_05}}>
-            <p dangerouslySetInnerHTML={{ __html: q.question }}></p>
-          </Paragraph>
+        <Box>
+          <Box display='flex' alignItems='center' sx={{marginTop: 2, marginBottom: 2, '& p': {margin: 0}}}>
+            <Checkbox
+              checked={q.response === true}
+              onClick={(e) => handleAddQuestion(e.target.checked, q)}
+              name={q.question.toLowerCase().replace(' ', '_')} {...field} value={true}
+              sx={{
+                paddingLeft: 0,
+                paddingY: 0,
+                color: '#4145FF',
+                '&.Mui-checked': {
+                  color: '#4145FF'
+                }
+              }}
+            />
+            <Paragraph size='medium' sx={{fontSize: 16, color: SYSTEM_05}}>
+              <p dangerouslySetInnerHTML={{ __html: q.question }}></p>
+            </Paragraph>
+            
+          </Box>
+          {meta.touched && meta.error && (
+            <FormHelperText sx={{ color: '#BD0043' }}>{meta.error}</FormHelperText>
+        )}
         </Box>
       )
     } else if (q.type === QUESTION_TYPE.MULTIPLECHOICES) {
@@ -215,6 +226,9 @@ export function AdditionalQuestionItem({ question: q, field, meta, form, handleA
                 </Box>
               ))}
             </RadioGroup>
+            {meta.touched && meta.error && (
+            <FormHelperText sx={{ color: '#BD0043' }}>{meta.error}</FormHelperText>
+          )}
           </FormControl>
           
         </Box>

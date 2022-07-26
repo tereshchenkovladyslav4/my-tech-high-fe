@@ -19,7 +19,8 @@ export const eventDetailClassess = {
     background: BLUE_GRDIENT,
     color: 'white',
     width: '140px',
-    marginRight: 2,
+    minWidth: '140px',
+    marginRight: 4,
     '&:hover': {
       background: '#4145FF',
       color: '#fff',
@@ -35,6 +36,6 @@ export const eventDetailClassess = {
       background: '#F5F5F5',
       color: '#000',
     },
-    marginRight: 4,
+    marginRight: 1,
   },
 }

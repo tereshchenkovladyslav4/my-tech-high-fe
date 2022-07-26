@@ -22,6 +22,7 @@ const BulletEditor = ({ value, setValue, error }: BulletEditorProps) => {
   const [currentBlocks, setCurrentBlocks] = useState<number>(0)
   const editorRef = useRef<any>()
   const [editorState, setEditorState] = useState<EditorState>(generateEditorState(''))
+  const [isEdited, setIsEdited] = useState<boolean>(false)
 
   const handleEditorChange = (state: any) => {
     try {
@@ -33,12 +34,14 @@ const BulletEditor = ({ value, setValue, error }: BulletEditorProps) => {
   }
 
   const handleBodyChange = (e: EditorState) => {
+    setIsEdited(true)
     setEditorState(e)
     setValue(draftToHtml(convertToRaw(editorState.getCurrentContent())))
   }
 
   useEffect(() => {
-    setEditorState(generateEditorState(value || ''))
+    // Prevent get initial value once touched
+    if (!isEdited) setEditorState(generateEditorState(value || ''))
   }, [value])
 
   return (

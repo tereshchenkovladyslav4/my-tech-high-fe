@@ -166,7 +166,7 @@ export default function QuestionOptions({
 									}
 							}}
 							labelTop
-							dropDownItems={(opt.action !== 2 && !enableAction || opt.label.trim() == '') ? actionTypes.filter((a) => a.value === 1) : actionTypes}
+							dropDownItems={(opt.action !== 2 && !enableAction || opt.label.trim() == '' || options.filter(op => op.label.trim() !== '').length < 2 ) ? actionTypes.filter((a) => a.value === 1) : actionTypes}
 							defaultValue={opt.action || 1}							
 							setParentValue={(v) => {
 								const val = +v;

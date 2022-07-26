@@ -1,29 +1,27 @@
-import { Box } from '@mui/system'
 import React, { useContext, useEffect, useState } from 'react'
-import { Paragraph } from '../../../../components/Typography/Paragraph/Paragraph'
-import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
-import { MTHORANGE, HOMEROOM, ENROLLMENT } from '../../../../utils/constants'
-import { toOrdinalSuffix } from '../../../../utils/stringHelpers'
-import { StudentTemplateType } from './type'
-import { useHistory } from 'react-router-dom'
-import { CircleData } from '../../../Dashboard/HomeroomGrade/components/StudentGrade/types'
-import { Person } from '../../../HomeroomStudentProfile/Student/types'
-import { Avatar } from '@mui/material'
-import { Metadata } from '../../../../components/Metadata/Metadata'
-import { Title } from '../../../../components/Typography/Title/Title'
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline'
 import ScheduleIcon from '@mui/icons-material/Schedule'
-import { UserContext } from '../../../../providers/UserContext/UserProvider'
-import { useQuery } from '@apollo/client'
-import {} from '../../../Admin/Announcements/services'
-import { getSchoolYearsByRegionId } from '../../../Admin/Dashboard/SchoolYear/SchoolYear'
-import { checkEnrollPacketStatus } from '../../../../utils/utils'
+import { Avatar, Box } from '@mui/material'
+import { useHistory } from 'react-router-dom'
+import { Subtitle } from '@components/Typography/Subtitle/Subtitle'
+import { Metadata } from '@components/Metadata/Metadata'
+import { Paragraph } from '@components/Typography/Paragraph/Paragraph'
+import { Title } from '@components/Typography/Title/Title'
+import { ApplicantStatus, MthColor, MthRoute, PacketStatus, StudentStatus } from '@enums'
+import { UserContext, UserInfo } from '@providers/UserContext/UserProvider'
+import { CircleData } from '@screens/Dashboard/HomeroomGrade/components/StudentGrade/types'
+import { Person } from '@screens/HomeroomStudentProfile/Student/types'
+import { checkEnrollPacketStatus, toOrdinalSuffix } from '@utils'
+import { StudentTemplateType } from './type'
 
 export const Student: StudentTemplateType = ({ student, schoolYears }) => {
   const { me, setMe } = useContext(UserContext)
+  const history = useHistory()
 
-  const enrollmentLink = `${HOMEROOM + ENROLLMENT}/${student.student_id}`
-  const homeroomLink = `${HOMEROOM}/${student.student_id}`
+  const [circleData, setCircleData] = useState<CircleData>()
+  const [link, setLink] = useState<string>('')
+  const [showToolTip, setShowToolTip] = useState(true)
+  const [toolTipLink, setToolTipLink] = useState<string>('')
 
   const getProfilePhoto = (person: Person) => {
     if (!person.photo) return ''
@@ -32,123 +30,123 @@ export const Student: StudentTemplateType = ({ student, schoolYears }) => {
     return s3URL + person.photo
   }
 
-  const history = useHistory()
-  const [circleData, setCircleData] = useState<CircleData>()
-  const blue = '#2B9EB7'
-
-  const linkChecker = () => {
+  useEffect(() => {
     const { applications, packets } = student
-    const currApplication = applications.at(0)
+    const currApplication = applications?.at(0)
     const currPacket = packets?.at(0)
 
-    if (currApplication && currApplication?.status === 'Submitted') {
-      return HOMEROOM
+    const enrollmentLink = `${MthRoute.HOMEROOM + MthRoute.ENROLLMENT}/${student.student_id}`
+    const homeroomLink = `${MthRoute.HOMEROOM}/${student.student_id}`
+
+    if (currApplication && currApplication?.status === ApplicantStatus.SUBMITTED) {
+      setLink(MthRoute.HOMEROOM)
     } else if (
       currApplication &&
-      currApplication?.status === 'Accepted' &&
+      currApplication?.status === ApplicantStatus.ACCEPTED &&
       packets &&
-      currPacket?.status === 'Not Started'
+      currPacket?.status === PacketStatus.NOT_STARTED
     ) {
-      return enrollmentLink
+      setLink(enrollmentLink)
     } else if (
       currApplication &&
-      currApplication?.status === 'Accepted' &&
+      currApplication?.status === ApplicantStatus.ACCEPTED &&
       currPacket &&
-      currPacket?.status === 'Started'
+      currPacket?.status === PacketStatus.STARTED
     ) {
-      return enrollmentLink
+      setLink(enrollmentLink)
     } else if (
       currApplication &&
-      currApplication?.status === 'Accepted' &&
-      ((currPacket && currPacket?.status === 'Submitted') ||
-        currPacket?.status === 'Missing Info' ||
-        currPacket?.status === 'Accepted')
+      currApplication?.status === ApplicantStatus.ACCEPTED &&
+      ((currPacket && currPacket?.status === PacketStatus.SUBMITTED) ||
+        currPacket?.status === PacketStatus.MISSING_INFO ||
+        currPacket?.status === PacketStatus.ACCEPTED)
     ) {
-      return homeroomLink
+      setLink(homeroomLink)
     }
-  }
 
-  const toolTipLinkChecker = () => {
-    const { applications, packets } = student
-    const currApplication = applications.at(0)
-    const currPacket = packets?.at(0)
-
-    if (currApplication && currApplication?.status === 'Submitted') {
-      return HOMEROOM
+    if (currApplication && currApplication?.status === ApplicantStatus.SUBMITTED) {
+      setToolTipLink(MthRoute.HOMEROOM)
     } else if (
       currApplication &&
-      currApplication?.status === 'Accepted' &&
+      currApplication?.status === ApplicantStatus.ACCEPTED &&
       packets &&
-      currPacket?.status === 'Not Started'
+      currPacket?.status === PacketStatus.NOT_STARTED
     ) {
-      return enrollmentLink
+      setToolTipLink(enrollmentLink)
     } else if (
       currApplication &&
-      currApplication?.status === 'Accepted' &&
+      currApplication?.status === ApplicantStatus.ACCEPTED &&
       currPacket &&
-      currPacket?.status === 'Started'
+      currPacket?.status === PacketStatus.STARTED
     ) {
-      return enrollmentLink
+      setToolTipLink(enrollmentLink)
     } else if (
       currApplication &&
-      currApplication?.status === 'Accepted' &&
+      currApplication?.status === ApplicantStatus.ACCEPTED &&
       currPacket &&
-      currPacket?.status === 'Missing Info'
+      currPacket?.status === PacketStatus.MISSING_INFO
     ) {
-      return enrollmentLink
+      setToolTipLink(enrollmentLink)
     }
-  }
-
-  const [showToolTip, setShowToolTip] = useState(true)
-  const [link, setLink] = useState(linkChecker())
-  const [toolTipLink] = useState(toolTipLinkChecker())
+  }, [student])
 
   useEffect(() => {
     progress()
   }, [])
-  const progress = () => {
-    const { applications, packets } = student
-    const currApplication = applications.at(0)
-    const currPacket = packets?.at(0)
 
-    if (currApplication && currApplication?.status === 'Submitted') {
+  const progress = () => {
+    const { applications, packets, status } = student
+    const currApplication = applications?.at(0)
+    const currPacket = packets?.at(0)
+    const studentStatus = status?.at(0)?.status
+
+    if (studentStatus === StudentStatus.WITHDRAWN) {
       setCircleData({
-        color: blue,
+        color: MthColor.MTHORANGE,
+        progress: 0,
+        message: 'Re-apply',
+        icon: (
+          <ErrorOutlineIcon sx={{ color: MthColor.MTHORANGE, marginTop: 2, cursor: 'pointer' }} onClick={() => {}} />
+        ),
+      })
+    } else if (currApplication && currApplication?.status === ApplicantStatus.SUBMITTED) {
+      setCircleData({
+        color: MthColor.MTHGREEN,
         progress: 25,
         message: 'Application Pending Approval',
         icon: (
           <ScheduleIcon
-            sx={{ color: blue, marginTop: 2, cursor: 'pointer' }}
+            sx={{ color: MthColor.MTHGREEN, marginTop: 2, cursor: 'pointer' }}
             onClick={() => history.push(toolTipLink)}
           />
         ),
       })
     } else if (
       currApplication &&
-      currApplication?.status === 'Accepted' &&
+      currApplication?.status === ApplicantStatus.ACCEPTED &&
       packets &&
-      (currPacket?.status === 'Not Started' || currPacket?.status === 'Missing Info')
+      (currPacket?.status === PacketStatus.NOT_STARTED || currPacket?.status === PacketStatus.MISSING_INFO)
     ) {
-      if (currPacket?.status === 'Not Started') {
+      if (currPacket?.status === PacketStatus.NOT_STARTED) {
         setCircleData({
-          color: MTHORANGE,
+          color: MthColor.MTHORANGE,
           progress: 50,
           message: 'Please Submit an Enrollment Packet',
           icon: (
             <ErrorOutlineIcon
-              sx={{ color: MTHORANGE, marginTop: 2, cursor: 'pointer' }}
+              sx={{ color: MthColor.MTHORANGE, marginTop: 2, cursor: 'pointer' }}
               onClick={() => history.push(toolTipLink)}
             />
           ),
         })
       } else {
         setCircleData({
-          color: MTHORANGE,
+          color: MthColor.MTHORANGE,
           progress: 50,
           message: 'Please Resubmit Enrollment Packet',
           icon: (
             <ErrorOutlineIcon
-              sx={{ color: MTHORANGE, marginTop: 2, cursor: 'pointer' }}
+              sx={{ color: MthColor.MTHORANGE, marginTop: 2, cursor: 'pointer' }}
               onClick={() => history.push(toolTipLink)}
             />
           ),
@@ -156,34 +154,34 @@ export const Student: StudentTemplateType = ({ student, schoolYears }) => {
       }
     } else if (
       currApplication &&
-      currApplication?.status === 'Accepted' &&
+      currApplication?.status === ApplicantStatus.ACCEPTED &&
       currPacket &&
-      currPacket?.status === 'Started'
+      currPacket?.status === PacketStatus.STARTED
     ) {
       setCircleData({
-        color: MTHORANGE,
+        color: MthColor.MTHORANGE,
         progress: 50,
         message: 'Please Submit Enrollment Packet',
         icon: (
           <ErrorOutlineIcon
-            sx={{ color: MTHORANGE, marginTop: 2, cursor: 'pointer' }}
+            sx={{ color: MthColor.MTHORANGE, marginTop: 2, cursor: 'pointer' }}
             onClick={() => history.push(toolTipLink)}
           />
         ),
       })
     } else if (
       currApplication &&
-      currApplication?.status === 'Accepted' &&
+      currApplication?.status === ApplicantStatus.ACCEPTED &&
       currPacket &&
-      currPacket?.status === 'Submitted'
+      currPacket?.status === PacketStatus.SUBMITTED
     ) {
       setCircleData({
-        color: blue,
+        color: MthColor.MTHGREEN,
         progress: 50,
         message: 'Enrollment Packet Pending Approval',
         icon: (
           <ScheduleIcon
-            sx={{ color: blue, marginTop: 2, cursor: 'pointer' }}
+            sx={{ color: MthColor.MTHGREEN, marginTop: 2, cursor: 'pointer' }}
             onClick={() => history.push(toolTipLink)}
           />
         ),
@@ -228,11 +226,8 @@ export const Student: StudentTemplateType = ({ student, schoolYears }) => {
             src={getProfilePhoto(student.person)}
             onClick={() => {
               if (checkEnrollPacketStatus(schoolYears, student)) {
-                setMe({
-                  ...me,
-                  currentTab: 0,
-                })
-                history.push(link)
+                setMe({ ...me, currentTab: 0 } as UserInfo)
+                link && history.push(link)
               }
             }}
           />

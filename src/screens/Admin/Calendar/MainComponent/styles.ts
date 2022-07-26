@@ -57,6 +57,7 @@ export const mainClasses = {
     background: BLUE_GRDIENT,
     color: 'white',
     width: '140px',
+    minWidth: '140px',
     marginRight: 6,
     '&:hover': {
       background: '#4145FF',
@@ -66,15 +67,16 @@ export const mainClasses = {
   clubButton: {
     background: '#2b9db72b',
     width: 'auto',
-    marginRight: 1
+    marginRight: 1,
   },
   iconButton: {
     background: 'transparent',
     minWidth: 'fit-content',
-    padding: .75
+    padding: 0.75,
   },
   arrowIconButton: {
     minWidth: 'fit-content',
+    padding: '2px',
   },
   arrowButton: {
     background: '#FAFAFA',

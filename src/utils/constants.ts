@@ -21,6 +21,7 @@ export const SITEMANAGEMENT = '/site-management'
 export const RECORDS = '/records'
 export const USERS = '/users'
 export const ENROLLMENT_PACKETS = `/enrollment${ENROLLMENT}-packets`
+export const SCHOOL_ENROLLMENT = `/school-enrollment`
 export const SUBMIT_WITHDRAWAL = '/withdrawal'
 export const WITHDRAWAL = '/enrollment/withdrawal'
 export const EMAILTEMPLATES = `/email-templates`

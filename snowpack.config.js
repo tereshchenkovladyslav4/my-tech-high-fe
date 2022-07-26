@@ -5,9 +5,7 @@ require('dotenv').config()
 /** @type {import("snowpack").SnowpackUserConfig } */
 module.exports = {
   mount: {},
-  plugins: [
-    '@snowpack/plugin-dotenv'
-  ],
+  plugins: ['@snowpack/plugin-dotenv'],
   optimize: {
     bundle: true,
     minify: true,
@@ -27,4 +25,13 @@ module.exports = {
     { match: 'all', src: '/api/.*', dest: (req, res) => proxy.web(req, res) },
     { match: 'routes', src: '.*', dest: '/index.html' },
   ],
+  alias: {
+    '@components': './src/components',
+    '@constants': './src/core/constants',
+    '@enums': './src/core/enums',
+    '@models': './src/core/models',
+    '@providers': './src/providers',
+    '@screens': './src/screens',
+    '@utils': './src/core/utils',
+  },
 }

@@ -74,7 +74,14 @@ export const TodoList: TodoListTemplateType = ({ handleShowEmpty, schoolYears })
   const calcDueDate = (todoItem: ToDoItem): string => {
     switch (todoItem.category) {
       case ToDoCategory.SUBMIT_WITHDRAW: {
-        return todoItem.students.at(-1)?.current_school_year_status?.school_year_date_end || '-'
+        return (
+          moment(
+            todoItem.students.at(-1)?.StudentWithdrawals.at(-1)?.date_emailed ||
+              todoItem.students.at(-1)?.StudentWithdrawals.at(-1)?.date,
+          )
+            .add(todoItem.students.at(-1)?.current_school_year_status?.withdraw_deadline_num_days || 0, 'days')
+            .format('MM.DD') || '-'
+        )
       }
       default: {
         return todoItem.students.at(-1)?.current_school_year_status?.enrollment_packet_date_deadline || '-'

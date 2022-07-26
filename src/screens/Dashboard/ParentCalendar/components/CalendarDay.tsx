@@ -25,10 +25,11 @@ export const CalendarDays: CalendarDaysTemplateType = ({
   const getEventCountsAndColor = (eventList: CalendarEvent[], date: Date) => {
     let count = 0
     let color = ''
-    eventList?.forEach((event, index) => {
+    eventList?.forEach((event) => {
       if (
         moment(event.start).format('YYYY-MM-DD') <= moment(date).format('YYYY-MM-DD') &&
-        moment(event.end).format('YYYY-MM-DD') > moment(date).format('YYYY-MM-DD')
+        moment(event.end).format('YYYY-MM-DD') > moment(date).format('YYYY-MM-DD') &&
+        new Date(event.end).getDate() - new Date(event.start).getDate() == 1
       ) {
         count++
         color = event.color
@@ -69,17 +70,17 @@ export const CalendarDays: CalendarDaysTemplateType = ({
   }
 
   const getEventElement = (eventList: CalendarEvent[], date: Date = new Date()) => {
-    let i = 1
     const filteredList = eventList?.filter(
       (event) =>
         moment(event.start).format('YYYY-MM-DD') <= moment(date).format('YYYY-MM-DD') &&
         moment(event.end).format('YYYY-MM-DD') > moment(date).format('YYYY-MM-DD'),
     )
+    const eventCnt = filteredList?.length
+    const showLimit = 2
     return (
       <>
-        {filteredList.map((event, index) => {
-          if (i < 3) {
-            i++
+        {filteredList.slice(0, showLimit + 1).map((event, index) => {
+          if (index < showLimit) {
             return (
               <Subtitle
                 key={index}
@@ -94,18 +95,17 @@ export const CalendarDays: CalendarDaysTemplateType = ({
               </Subtitle>
             )
           } else {
-            i++
-            if (filteredList.length - 1 === index) {
-              const extraFields = i - 3
-              return (
-                <button className='event-more' onClick={(e: React.MouseEvent<HTMLElement>) => handleMoreDetail(e)}>
-                  <Subtitle key={index} className='event' sx={calendarDayClassess.eventMore}>
-                    {`+${extraFields}`}
-                  </Subtitle>
-                </button>
-              )
-            }
-            return <></>
+            return (
+              <button
+                key={index}
+                className='event-more'
+                onClick={(e: React.MouseEvent<HTMLElement>) => handleMoreDetail(e)}
+              >
+                <Subtitle className='event' sx={calendarDayClassess.eventMore}>
+                  {`+${eventCnt - showLimit}`}
+                </Subtitle>
+              </button>
+            )
           }
         })}
       </>
@@ -118,11 +118,15 @@ export const CalendarDays: CalendarDaysTemplateType = ({
     let weekdayOfFirstDay = firstDayOfMonth.getDay()
     for (let cell = 1; cell < 43; cell++) {
       if (cell === 1 && weekdayOfFirstDay === 0) {
-        firstDayOfMonth.setDate(firstDayOfMonth.getDate() - 7)
+        firstDayOfMonth.setDate(firstDayOfMonth.getDate() - 6)
       } else if (cell === 1) {
         firstDayOfMonth.setDate(firstDayOfMonth.getDate() + (cell - weekdayOfFirstDay))
       } else {
         firstDayOfMonth.setDate(firstDayOfMonth.getDate() + 1)
+      }
+      if (cell === 7 && !(firstDayOfMonth.getMonth() === day.getMonth())) {
+        calendarDays.splice(0)
+        continue
       }
       const { counts, color } = getEventCountsAndColor(eventList, new Date(firstDayOfMonth))
       const calendarDay: DayVM = {
@@ -166,7 +170,7 @@ export const CalendarDays: CalendarDaysTemplateType = ({
               <Subtitle
                 className='date'
                 color={currentDay.eventCount === 1 ? '#FFFFFF !important' : ''}
-                sx={{ fontSize: '12px' }}
+                sx={{ fontSize: '12px', paddingTop: '10px' }}
               >
                 {currentDay.number}
               </Subtitle>
@@ -193,7 +197,7 @@ export const CalendarDays: CalendarDaysTemplateType = ({
           <Subtitle color={BLACK} sx={{ fontSize: '20px', textAlign: 'center' }} fontWeight='700'>
             {moment(selectedDate).format('D')}
           </Subtitle>
-          {renderEventList(eventList, selectedDate)}
+          <Box sx={{ paddingX: 2, paddingBottom: 2 }}>{renderEventList(eventList, selectedDate)}</Box>
         </Card>
       </Popper>
     </Box>

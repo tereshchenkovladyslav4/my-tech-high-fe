@@ -54,14 +54,14 @@ export const ParentEventDetail: ParentEventDetailTemplateType = ({
           disableElevation
           variant='contained'
           sx={parentCalendarClasses.arrowButton}
-          startIcon={<ArrowBackIosNewIcon />}
+          startIcon={<ArrowBackIosNewIcon sx={{ padding: '2px', minWidth: 'fit-content' }} />}
           onClick={() => handlePrevEventView()}
         ></Button>
         <Button
           disableElevation
           variant='contained'
           sx={parentCalendarClasses.arrowButton}
-          startIcon={<ArrowForwardIosIcon />}
+          startIcon={<ArrowForwardIosIcon sx={{ padding: '2px', minWidth: 'fit-content' }} />}
           onClick={() => handleNextEventView()}
         ></Button>
       </Box>

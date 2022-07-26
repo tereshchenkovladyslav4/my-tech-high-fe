@@ -154,6 +154,51 @@ export const APPLICATION_HEADCELLS: HeadCell[] = [
   },
 ]
 
+export const ENROLLMENT_SCHOOL_HEADCELLS: HeadCell[] = [
+  // {
+  // 	id: 'id',
+  // 	numeric: false,
+  // 	disablePadding: true,
+  // 	label: 'ID'
+  // },
+  {
+    id: 'student',
+    numeric: false,
+    disablePadding: true,
+    label: 'Student',
+  },
+  {
+    id: 'year',
+    numeric: false,
+    disablePadding: true,
+    label: 'Grade',
+  },
+  {
+    id: 'student',
+    numeric: false,
+    disablePadding: true,
+    label: 'City',
+  },
+  {
+    id: 'grade',
+    numeric: false,
+    disablePadding: true,
+    label: 'Parent',
+  },
+  {
+    id: 'sped',
+    numeric: false,
+    disablePadding: true,
+    label: '2021-22 SoE',
+  },
+  {
+    id: 'parent',
+    numeric: false,
+    disablePadding: true,
+    label: '2020-21 SoE',
+  },
+]
+
 export const EMAIL_RECORDS_HEADCELLS: HeadCell[] = [
   {
     id: 'date',

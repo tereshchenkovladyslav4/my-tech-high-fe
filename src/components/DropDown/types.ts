@@ -28,6 +28,7 @@ type DropDownProps = {
   isAddable?: boolean
   idx?: number
   auto?: boolean
+  borderNone?: boolean
 }
 
 export type DropDownTemplateType = FunctionComponent<DropDownProps>

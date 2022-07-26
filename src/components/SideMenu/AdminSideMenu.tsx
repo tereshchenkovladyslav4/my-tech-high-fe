@@ -20,8 +20,7 @@ import {
   SITE_MANAGEMENT,
   RECORDS,
   USERS,
-  SITEMANAGEMENT,
-  COMMUNICATION
+  COMMUNICATION,
 } from '../../utils/constants'
 import { UserContext } from '../../providers/UserContext/UserProvider'
 import { AuthContext } from '../../providers/AuthProvider/AuthContext'
@@ -35,10 +34,9 @@ import DatRangeOutlinedIcon from '@mui/icons-material/DateRangeOutlined'
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined'
 import KeyIcon from '@mui/icons-material/VpnKey'
 import DescriptionIcon from '@mui/icons-material/Description'
-import MarkunreadMailboxOutlinedIcon from '@mui/icons-material/MarkunreadMailboxOutlined';
-import RecentActorsOutlinedIcon from '@mui/icons-material/RecentActorsOutlined';
-import PermIdentityOutlinedIcon from '@mui/icons-material/PermIdentityOutlined';
-
+import MarkunreadMailboxOutlinedIcon from '@mui/icons-material/MarkunreadMailboxOutlined'
+import RecentActorsOutlinedIcon from '@mui/icons-material/RecentActorsOutlined'
+import PermIdentityOutlinedIcon from '@mui/icons-material/PermIdentityOutlined'
 
 export const AdminSideMenu: FunctionComponent = () => {
   const history = useHistory()
@@ -93,7 +91,7 @@ export const AdminSideMenu: FunctionComponent = () => {
       to: COMMUNICATION,
       label: 'Communication',
       icon: <MarkunreadMailboxOutlinedIcon style={classes.logos} />,
-    },    
+    },
     {
       to: CALENDAR,
       label: 'Calendar',

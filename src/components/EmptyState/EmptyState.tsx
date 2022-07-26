@@ -17,8 +17,8 @@ export const EmptyState: EmptyStateTemplateType = ({ title, subtitle, image }) =
       }}
     >
       <img src={image} />
-      <Title>{title}</Title>
-      <Subtitle>{subtitle}</Subtitle>
+      {typeof title === 'string' ? <Title>{title}</Title> : title}
+      {typeof subtitle === 'string' ? <Subtitle>{subtitle}</Subtitle> : subtitle}
     </Box>
   </Container>
 )

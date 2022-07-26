@@ -199,7 +199,7 @@ const EventCalendar = ({
               <Subtitle color={BLACK} sx={{ fontSize: '20px', textAlign: 'center' }} fontWeight='700'>
                 {moment(selectedDate).format('D')}
               </Subtitle>
-              {renderEventList(selectedEvents)}
+              <Box sx={{ paddingX: 2, paddingBottom: 2 }}>{renderEventList(selectedEvents)}</Box>
             </Card>
           </Fade>
         )}

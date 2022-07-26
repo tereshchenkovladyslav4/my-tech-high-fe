@@ -1,46 +1,51 @@
 import React, { FunctionComponent, useContext, useEffect, useRef, useState } from 'react'
-import { StudentGrade } from './components/StudentGrade/StudentGrade'
+import { Card, Stack } from '@mui/material'
 import Box from '@mui/material/Box'
-import { Subtitle } from '../../../components/Typography/Subtitle/Subtitle'
-import { Avatar, Card, Stack } from '@mui/material'
-import { UserContext, UserInfo } from '../../../providers/UserContext/UserProvider'
-import { map } from 'lodash'
-import { SchoolYearType } from '../../../utils/utils.types'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
+import { map } from 'lodash'
 import Slider from 'react-slick'
+import { Subtitle } from '@components/Typography/Subtitle/Subtitle'
+import { StudentStatus } from '@enums'
+import { SchoolYearType } from '@models'
+import { UserContext, UserInfo } from '@providers/UserContext/UserProvider'
+import { StudentType } from '@screens/HomeroomStudentProfile/Student/types'
+import { StudentGrade } from './components/StudentGrade/StudentGrade'
 
 type HomeroomGradeProps = {
   schoolYears: SchoolYearType[]
 }
 
 function getWindowDimensions() {
-  const { innerWidth: width, innerHeight: height } = window;
+  const { innerWidth: width, innerHeight: height } = window
   return {
     width,
-    height
-  };
+    height,
+  }
 }
 
 export const HomeroomGrade: FunctionComponent<HomeroomGradeProps> = ({ schoolYears }) => {
-  const { me } = useContext(UserContext);
-  const { students } = me as UserInfo;
+  const { me } = useContext(UserContext)
+  const { students } = me as UserInfo
 
-  const sliderRef = useRef();
+  const [filteredStudents, setFilteredStudents] = useState<StudentType[]>([])
+  const [studentsCnt, setStudentsCnt] = useState<number>(0)
 
-  const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions());
+  const sliderRef = useRef()
+
+  const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions())
 
   useEffect(() => {
     function handleResize() {
-      setWindowDimensions(getWindowDimensions());
+      setWindowDimensions(getWindowDimensions())
     }
 
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   function SampleNextArrow(props) {
-    const { className, style } = props
+    const { style } = props
     return (
       <div
         style={{
@@ -75,42 +80,30 @@ export const HomeroomGrade: FunctionComponent<HomeroomGradeProps> = ({ schoolYea
     )
   }
 
-  const settings = {
-    className: "slider variable-width",
-    infinite: false,
+  const settings = () => ({
+    className: 'slider variable-width',
+    infinite: true,
     speed: 500,
-    slidesToShow: 3,
+    slidesToShow: 1,
     slidesToScroll: 1,
     nextArrow: <SampleNextArrow />,
     prevArrow: <SamplePrevArrow />,
     variableWidth: true,
     rows: 1,
-    responsive: [
-      {
-        breakpoint: 770,
-        settings: {
-          slidesToShow: Math.min(4, students.filter(x => x.status.at(-1)?.status !== 2).length),
-        }
-      },
-      {
-        breakpoint: 710,
-        settings: {
-          slidesToShow: Math.min(3, students.filter(x => x.status.at(-1)?.status !== 2).length),
-        }
-      },
-      {
-        breakpoint: 650,
-        settings: {
-          slidesToShow: Math.min(2, students.filter(x => x.status.at(-1)?.status !== 2).length),
-        }
-      },
-    ]
-  };
+  })
 
   const renderStudents = () =>
-    map(students, (student) => {
-      return student.status.at(-1)?.status !== 2 && <StudentGrade schoolYears={schoolYears} student={student} />
+    map(filteredStudents, (student, index) => {
+      return <StudentGrade schoolYears={schoolYears} student={student} key={index} />
     })
+
+  useEffect(() => {
+    setFilteredStudents((students || []).filter((x) => x.status.at(-1)?.status !== StudentStatus.WITHDRAWN))
+  }, [students])
+
+  useEffect(() => {
+    setStudentsCnt(filteredStudents.length)
+  }, [filteredStudents])
 
   return (
     <Card style={{ borderRadius: 12 }}>
@@ -121,57 +114,44 @@ export const HomeroomGrade: FunctionComponent<HomeroomGradeProps> = ({ schoolYea
         paddingX={3}
         justifyContent='space-between'
         sx={{
-          display: { xs: 'block', sm: 'flex' }
+          display: { xs: 'block', sm: 'flex' },
         }}
       >
         <Box display='flex' justifyContent='space-between' flexDirection='column'>
           <Subtitle size='large' fontWeight='bold'>
             Students
           </Subtitle>
-          {/*<Stack direction='column' spacing={1}>
-            <Box display='flex' flexDirection='row' alignItems='center'>
-              <Avatar sx={classes.legendBelow} variant='rounded'>
-                {' '}
-              </Avatar>
-              <Paragraph size='medium'>Below 80%</Paragraph>
-            </Box>
-            <Box display='flex' flexDirection='row' alignItems='center'>
-              <Avatar sx={classes.legendAbove} variant='rounded'>
-                {' '}
-              </Avatar>
-              <Paragraph size='medium'>Above 80%</Paragraph>
-            </Box>
-          </Stack>*/}
         </Box>
 
-        <Stack display='flex' justifyContent='flex-end' alignSelf='center' marginY={1} direction='row' spacing={2}>
-          {students && students.length > 2 && (
-            <Box sx={{
-              // width: windowDimensions.width > 770 ? (Math.min(students.filter(x => x.status.at(-1)?.status !== 2).length, 5) * 60) + 'px'
-              //   : (windowDimensions.width > 710 ? (Math.min(students.filter(x => x.status.at(-1)?.status !== 2).length, 4) * 60) + 'px'
-              //     : (windowDimensions.width > 650 ? (Math.min(students.filter(x => x.status.at(-1)?.status !== 2).length, 3) * 60) + 'px'
-              //       : '85%'
-              //     ))
-              width: (Math.min(students.filter(x => x.status.at(-1)?.status !== 2).length, 3) * 60) + 'px'
-              , mr: '20px'
-            }}>
-              <style dangerouslySetInnerHTML={{
-                __html: `
-              .slick-track {
-                display: flex;
-              }
-            `}} />
-              <Slider {...settings} ref={sliderRef}>
-                {renderStudents()}
-              </Slider>
-            </Box>
-          )}
-          {students && students.length <= 2 && (
-            <Box sx={{ width: '100%' }}>
-              {renderStudents()}
-            </Box>
-          )}
-        </Stack>
+        {studentsCnt > 0 && (
+          <Stack display='flex' justifyContent='flex-end' alignSelf='center' marginY={1} direction='row' spacing={2}>
+            {studentsCnt > 2 && (
+              <Box
+                sx={{
+                  width:
+                    windowDimensions.width >= 992
+                      ? Math.min(studentsCnt, 6) * 60 + 'px'
+                      : windowDimensions.width >= 576
+                      ? Math.min(studentsCnt, 3) * 60 + 'px'
+                      : '85%',
+                  mr: '20px',
+                }}
+              >
+                <style dangerouslySetInnerHTML={{ __html: `.slick-track {display: flex;}` }} />
+                {windowDimensions.width >= 992 ? (
+                  <Box className='d-none' display='flex' flexWrap='wrap'>
+                    {renderStudents()}
+                  </Box>
+                ) : (
+                  <Slider {...settings()} ref={sliderRef}>
+                    {renderStudents()}
+                  </Slider>
+                )}
+              </Box>
+            )}
+            {studentsCnt <= 2 && <Box sx={{ width: '100%' }}>{renderStudents()}</Box>}
+          </Stack>
+        )}
       </Box>
     </Card>
   )

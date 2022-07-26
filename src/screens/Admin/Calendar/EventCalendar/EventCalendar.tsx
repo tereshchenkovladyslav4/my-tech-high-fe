@@ -103,7 +103,7 @@ const EventCalendar = ({
           >
             <ArrowBackIosNewIcon />
           </Button>
-          <label style={{ marginBottom: 'auto', marginTop: 'auto' }}>{moment(selectedDate).format('MMMM YYYY')}</label>
+          <label style={{ marginBottom: 'auto', marginTop: 'auto' }}>{moment(currentDay).format('MMMM YYYY')}</label>
           <Button
             disableElevation
             variant='contained'
@@ -202,7 +202,7 @@ const EventCalendar = ({
               <Subtitle color={BLACK} sx={{ fontSize: '20px', textAlign: 'center' }} fontWeight='700'>
                 {moment(selectedDate).format('D')}
               </Subtitle>
-              {renderEventList(selectedEvents)}
+              <Box sx={{ paddingX: 2, paddingBottom: 2 }}>{renderEventList(selectedEvents)}</Box>
             </Card>
           </Fade>
         )}

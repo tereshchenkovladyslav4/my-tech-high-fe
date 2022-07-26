@@ -23,7 +23,17 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "esModuleInterop": true,
-    "jsxImportSource": "@emotion/react"
+    "jsxImportSource": "@emotion/react",
+    "baseUrl": ".",
+    "paths": {
+      "@components/*": ["src/components/*"],
+      "@constants": ["src/core/constants"],
+      "@enums": ["src/core/enums"],
+      "@models": ["src/core/models"],
+      "@providers/*": ["src/providers/*"],
+      "@screens/*": ["src/screens/*"],
+      "@utils": ["src/core/utils"]
+    }
   },
   "exclude": ["node_modules"],
   "include": ["./**/*"]

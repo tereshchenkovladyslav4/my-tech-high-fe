@@ -106,12 +106,12 @@ const PageModals = ({
     })
   }
   const handleAcceptDate = async (e: any) => {
-    const acceptDate = moment(e).format('YYYY-MM-DD')
+    const acceptDate = new Date(e || '').toISOString()
     await updateWithdrawal({
       variables: {
         updateWithdrawalInput: {
           withdrawal_id: Number(effective?.withdrawId),
-          value: acceptDate?.toString(),
+          value: acceptDate,
           field: 'date_effective',
         },
       },

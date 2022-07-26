@@ -52,7 +52,8 @@ export const parentCalendarClasses = {
     background: BLUE_GRDIENT,
     color: 'white',
     width: '140px',
-    marginRight: 2,
+    minWidth: '140px',
+    marginRight: 4,
     flex: 'auto',
     '&:hover': {
       background: '#4145FF',
@@ -69,12 +70,13 @@ export const parentCalendarClasses = {
     color: 'black',
     width: '45px',
     height: '45px',
+    minWidth: 'fit-content',
     alignItems: 'center',
     '&:hover': {
       background: '#F5F5F5',
       color: '#000',
     },
-    marginRight: 4,
+    marginRight: 1,
   },
   leftArrowButton: {
     background: '#323232',

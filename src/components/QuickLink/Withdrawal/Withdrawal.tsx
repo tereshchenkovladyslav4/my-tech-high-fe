@@ -381,13 +381,15 @@ const Withdrawal: React.FC<{
                 }
 
                 if (!isEditable()) {
+                  const offset = new Date().getTimezoneOffset();
+                  const date_effective = offset < 0 ? vals[1].response+'T00:00:00.000Z' : vals[1].response+'T24:00:00.000Z';
                   const { data } = await submitResponses({
                     variables: {
                       withdrawalInput: {
                         withdrawal: {
                           StudentId: parseInt(vals[0].response),
                           date: new Date().toISOString(),
-                          date_effective: vals[1].response,
+                          date_effective: new Date(date_effective || '').toISOString(),
                           response: JSON.stringify(vals.map((v) => v).splice(2)),
                           status: studentId ? WithdrawalStatus.WITHDRAWN : WithdrawalStatus.REQUESTED,
                         },
@@ -488,10 +490,10 @@ const Withdrawal: React.FC<{
           {({ values, setValues }) => (
             <Form name={'WithdrawalForm'}>
               <Box sx={useStyles.base}>
-                <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', width: '100%' }}>
+                <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: '100%' }}>
                   <Typography sx={{ fontWeight: 700, fontSize: 20, ml: 1 }}>Withdraw</Typography>
                   {isEditable() && (
-                    <>
+                    <Box>
                       <Button
                         variant='contained'
                         color='secondary'
@@ -507,7 +509,7 @@ const Withdrawal: React.FC<{
                       <Button variant='contained' disableElevation sx={useStyles.submitButton} type='submit'>
                         Save
                       </Button>
-                    </>
+                    </Box>
                   )}
                 </Box>
                 <CircleIcon />

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { FormControl, Select, MenuItem, TextField, FormHelperText, Divider } from '@mui/material'
 import { Box, styled } from '@mui/system'
 import { map } from 'lodash'
@@ -44,6 +45,7 @@ export const DropDown: DropDownTemplateType = ({
   isAddable,
   idx,
   auto = true,
+  borderNone = false,
 }) => {
   const [value, setValue] = useState(defaultValue)
   const handleChange = (val: string) => {
@@ -73,29 +75,48 @@ export const DropDown: DropDownTemplateType = ({
   return (
     <Box sx={{ minWidth: 120, ...sx }}>
       {!labelTop ? (
-        <FormControl fullWidth>
-          <Select
-            labelId='demo-simple-select-label'
-            id='demo-simple-select'
-            value={value}
-            onChange={(e) => handleChange(e.target?.value)}
-            displayEmpty
-            renderValue={value ? undefined : () => <span style={{ color: 'gray' }}>{placeholder}</span>}
-            sx={{
-              ...sx,
-              borderRadius: 2,
-              '& .MuiSelect-outlined': {
-                background: dropdownColor,
-              },
-            }}
-            size={size || 'medium'}
-            error={error?.error}
-            disabled={disabled || false}
-          >
-            {renderDropDownItem}
-          </Select>
-          <FormHelperText sx={{ color: '#BD0043' }}>{error?.errorMsg}</FormHelperText>
-        </FormControl>
+        <>
+          {borderNone ? (
+            <FormControl variant='standard' fullWidth>
+              <Select
+                size='small'
+                value={value}
+                IconComponent={ExpandMoreIcon}
+                disableUnderline
+                onChange={(e) => handleChange(e.target?.value)}
+                label='Select Year'
+                sx={{ ...dropdownClassess.borderNone }}
+              >
+                {renderDropDownItem}
+              </Select>
+              <FormHelperText sx={{ color: '#BD0043' }}>{error?.errorMsg}</FormHelperText>
+            </FormControl>
+          ) : (
+            <FormControl fullWidth>
+              <Select
+                labelId='demo-simple-select-label'
+                id='demo-simple-select'
+                value={value}
+                onChange={(e) => handleChange(e.target?.value)}
+                displayEmpty
+                renderValue={value ? undefined : () => <span style={{ color: 'gray' }}>{placeholder}</span>}
+                sx={{
+                  ...sx,
+                  borderRadius: 2,
+                  '& .MuiSelect-outlined': {
+                    background: dropdownColor,
+                  },
+                }}
+                size={size || 'medium'}
+                error={error?.error}
+                disabled={disabled || false}
+              >
+                {renderDropDownItem}
+              </Select>
+              <FormHelperText sx={{ color: '#BD0043' }}>{error?.errorMsg}</FormHelperText>
+            </FormControl>
+          )}
+        </>
       ) : (
         <Box>
           <CssTextField
