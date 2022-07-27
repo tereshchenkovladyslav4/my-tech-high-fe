@@ -1,5 +1,4 @@
-import { EmotionJSX } from '@emotion/react/types/jsx-namespace'
-import { FunctionComponent } from 'react'
+import { FunctionComponent, ReactNode } from 'react'
 import { MultiSelectDropDownListType } from '../../../Admin/Calendar/components/MultiSelectDropDown/MultiSelectDropDown'
 import { CalendarEvent, EventVM } from '../../../Admin/Calendar/types'
 
@@ -10,7 +9,7 @@ export type DayVM = {
   number: number
   selected: boolean
   year: number
-  eventElement: EmotionJSX.Element
+  eventElement: ReactNode
   eventCount: number
   eventColor?: string
 }

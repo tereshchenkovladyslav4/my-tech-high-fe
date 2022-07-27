@@ -1,12 +1,15 @@
 import { FunctionComponent } from 'react'
 import { HeadCell } from './SortableTableHeader/types'
 
-export type Order = 'asc' | 'desc'
+export enum Order {
+  ASC = 'asc',
+  DESC = 'desc',
+}
 
 type SortableTableProps = {
   rows?: any
   type?: string
-  headCells?: HeadCell[]
+  headCells: HeadCell[]
   onCheck?: any
   clearAll?: boolean
   updateStatus?: (id: number, status: string) => void

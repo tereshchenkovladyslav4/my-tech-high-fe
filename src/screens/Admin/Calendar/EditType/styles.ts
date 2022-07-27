@@ -8,6 +8,12 @@ export const eventTypeClassess = {
     paddingBottom: '12px',
     minHeight: '80vh',
   },
+  border: {
+    padding: '40px',
+    paddingBottom: '20px',
+    borderRight: '1px solid #E7E7E7',
+    position: 'relative',
+  },
   pageTop: {
     textAlign: 'left',
     display: 'flex',

@@ -137,10 +137,10 @@ export type FilterComponentProps = {
 
 export type EventTypeTableProps = {
   eventTypes: EventType[]
+  setIsChanged: (value: boolean) => void
   handleEditClick: (value: EventType) => void
   setSelectedEventType: (value: EventType) => void
   setShowArchivedModal: (value: boolean) => void
   setShowUnarchivedModal: (value: boolean) => void
   handleUpdateEventTypes: (value: EventType[]) => void
-  setEventTypes: (value: EventType[]) => void
 }

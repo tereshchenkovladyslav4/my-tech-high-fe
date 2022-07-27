@@ -123,7 +123,7 @@ export const HomeroomeResourceCard: React.FC<HomeroomeResourceProps> = ({ item, 
           </Typography>
         </Box>
         <Stack direction='row' justifyContent='space-between' alignItems='center' sx={{ height: 40 }}>
-          <Typography color='#A1A1A1' fontSize='16px' fontWeight='700px'>
+          <Typography color='#A1A1A1' fontSize='16px' fontWeight='700'>
             {item.id ? (item.show_cost ? `$${item.cost}` : 'Included') : 'Lorem ipsum'}
           </Typography>
           {!action && item.id != 0 && (

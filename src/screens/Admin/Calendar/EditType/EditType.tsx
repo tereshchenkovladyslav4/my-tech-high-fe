@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react'
-import { useHistory } from 'react-router-dom'
+import { Prompt, useHistory } from 'react-router-dom'
 import { Box, Card, Grid, IconButton } from '@mui/material'
 import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded'
 import { useMutation, useQuery } from '@apollo/client'
@@ -22,6 +22,7 @@ const EditTypeComponent = () => {
   const [showUnarchivedModal, setShowUnarchivedModal] = useState<boolean>(false)
   const [selectedEventType, setSelectedEventType] = useState<EventType | null>(null)
   const [eventTypes, setEventTypes] = useState<EventType[]>([])
+  const [isChanged, setIsChanged] = useState<boolean>(false)
   const [submitUpdate, {}] = useMutation(updateEventTypeMutation)
   const [submitUpdates, {}] = useMutation(updateEventTypesMutation)
   const { loading, data, refetch } = useQuery(getEventTypesQuery, {
@@ -88,6 +89,13 @@ const EditTypeComponent = () => {
   }, [loading, data])
   return (
     <Card sx={eventTypeClassess.cardBody}>
+      <Prompt
+        when={isChanged ? true : false}
+        message={JSON.stringify({
+          header: 'Unsaved Changes',
+          content: 'Are you sure you want to leave without saving changes?',
+        })}
+      />
       <Box sx={eventTypeClassess.pageTop}>
         <Box sx={eventTypeClassess.pageTitle}>
           <IconButton onClick={() => history.push(CALENDAR)} sx={eventTypeClassess.posi_rela}>
@@ -103,12 +111,12 @@ const EditTypeComponent = () => {
           <Grid item xs={6} sx={{ textAlign: 'left', marginTop: 'auto', marginBottom: 'auto' }}>
             <EventTypeTable
               eventTypes={eventTypes}
+              setIsChanged={setIsChanged}
               handleEditClick={handleEditClick}
               setSelectedEventType={setSelectedEventType}
               setShowArchivedModal={setShowArchivedModal}
               setShowUnarchivedModal={setShowUnarchivedModal}
               handleUpdateEventTypes={handleUpdateEventTypes}
-              setEventTypes={setEventTypes}
             />
           </Grid>
           <Grid item xs={6}>

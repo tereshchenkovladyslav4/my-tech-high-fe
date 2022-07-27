@@ -25,16 +25,19 @@ export const CalendarDays: CalendarDaysTemplateType = ({
   const getEventCountsAndColor = (eventList: CalendarEvent[], date: Date) => {
     let count = 0
     let color = ''
-    eventList?.forEach((event) => {
-      if (
+    const filteredEvents = eventList?.filter(
+      (event) =>
         moment(event.start).format('YYYY-MM-DD') <= moment(date).format('YYYY-MM-DD') &&
-        moment(event.end).format('YYYY-MM-DD') > moment(date).format('YYYY-MM-DD') &&
-        new Date(event.end).getDate() - new Date(event.start).getDate() == 1
-      ) {
-        count++
+        moment(event.end).format('YYYY-MM-DD') > moment(date).format('YYYY-MM-DD'),
+    )
+
+    if (filteredEvents.length == 1) {
+      const event = filteredEvents[0]
+      if (new Date(event.end).getDate() - new Date(event.start).getDate() == 1) {
+        count = 1
         color = event.color
       }
-    })
+    }
     return { counts: count, color: color }
   }
 
@@ -183,7 +186,7 @@ export const CalendarDays: CalendarDaysTemplateType = ({
       <Popper id={'simple-popper'} open={showEventLstPopup} anchorEl={anchorEl}>
         <Card sx={calendarDayClassess.modal}>
           <Box sx={calendarDayClassess.title}>
-            <Subtitle color={GRAY} sx={{ fontSize: '20px' }} fontWeight='500'>
+            <Subtitle color={GRAY} sx={{ fontSize: '20px' }} fontWeight='700'>
               {moment(selectedDate).format('dddd')}
             </Subtitle>
             <CloseIcon

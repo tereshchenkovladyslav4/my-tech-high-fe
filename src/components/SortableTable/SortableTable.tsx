@@ -1,8 +1,10 @@
+import React, { useEffect, useState } from 'react'
 import { TableContainer, Table, TableBody, TableRow, TableCell, Checkbox } from '@mui/material'
 import { Box } from '@mui/system'
-import React, { useEffect, useState } from 'react'
+import { MTHBLUE } from '../../utils/constants'
 import { SortableTableHeader } from './SortableTableHeader/SortableTableHeader'
 import { Order, SortableTableTemplateType } from './types'
+import { tableClasses } from './styles'
 
 export const SortableTable: SortableTableTemplateType = ({
   headCells,
@@ -12,16 +14,15 @@ export const SortableTable: SortableTableTemplateType = ({
   onRowClick,
   onSortChange,
   onParentClick,
-  hideCheck=false,
-  hover=true
+  hideCheck = false,
+  hover = true,
 }) => {
-  
-  const [order, setOrder] = useState<Order>('asc')
+  const [order, setOrder] = useState<Order>(Order.ASC)
   const [orderBy, setOrderBy] = useState<keyof any>('name')
   const [selected, setSelected] = useState<readonly string[]>([])
 
   useEffect(() => {
-    if(onCheck){
+    if (onCheck) {
       onCheck(selected)
     }
   }, [selected])
@@ -30,76 +31,23 @@ export const SortableTable: SortableTableTemplateType = ({
     setSelected([])
   }, [clearAll])
 
-  function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
-    if (orderBy === 'grade') {
-      const agrade = (a[orderBy] as any) || ''
-      const bgrade = (b[orderBy] as any) || ''
-      if (Number(bgrade.replace(/\D/g, '')) < Number(agrade.replace(/\D/g, ''))) {
-        return -1
-      }
-      if (Number(bgrade.replace(/\D/g, '')) > Number(agrade.replace(/\D/g, ''))) {
-        return 1
-      }
-      return 0
-    } else if (orderBy === 'emailed') {
-      return a[orderBy] === b[orderBy] ? 0 : a[orderBy] ? -1 : 1
-    } else {
-      if (b[orderBy] < a[orderBy]) {
-        return -1
-      }
-      if (b[orderBy] > a[orderBy]) {
-        return 1
-      }
-      return 0
-    }
-  }
-
-  type Order = 'asc' | 'desc'
-
-  function getComparator<Key extends keyof any>(
-    order: Order,
-    orderBy: Key,
-  ): (a: { [key in Key]: number | string }, b: { [key in Key]: number | string }) => number {
-    return order === 'desc'
-      ? (a, b) => descendingComparator(a, b, orderBy)
-      : (a, b) => -descendingComparator(a, b, orderBy)
-  }
-
-  // This method is created for cross-browser compatibility, if you don't
-  // need to support IE11, you can use Array.prototype.sort() directly
-  function stableSort<T>(array: readonly T[], comparator: (a: T, b: T) => number) {
-    const stabilizedThis = array.map((el, index) => [el, index] as [T, number])
-    stabilizedThis.sort((a, b) => {
-      const order = comparator(a[0], b[0])
-      if (order !== 0) {
-        return order
-      }
-      return a[1] - b[1]
-    })
-    return stabilizedThis.map((el) => el[0])
-  }
-
   const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof any) => {
-    const isAsc = orderBy === property && order === 'asc'
-    setOrder(isAsc ? 'desc' : 'asc')
+    const isAsc = orderBy === property && order === Order.ASC
+    setOrder(isAsc ? Order.DESC : Order.ASC)
     setOrderBy(property)
-    onSortChange(property, isAsc ? 'desc' : 'asc')
+    onSortChange && onSortChange(property, isAsc ? Order.DESC : Order.ASC)
   }
 
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
-      const newSelecteds = rows.map((n, idx) => n.id)
+      const newSelecteds = rows.map((n: any) => n.id)
       setSelected(newSelecteds)
       return
     }
     setSelected([])
   }
 
-  const handleClick = (event: any, id: string) => {
-    const classes = event.target.getAttribute('class')
-    if (classes && classes.includes('delete-row')) {
-      return false
-    }
+  const handleRowClick = (id: string): void => {
     const selectedIndex = selected.indexOf(id)
     let newSelected: readonly string[] = []
 
@@ -116,28 +64,42 @@ export const SortableTable: SortableTableTemplateType = ({
     setSelected(newSelected)
   }
 
-  const isSelected = (name: string) => selected.indexOf(name) !== -1
+  const isSelected = (name: string): boolean => selected.indexOf(name) !== -1
 
-  const getColor = (key, value) => {
+  const getColor = (key: string, value: string): string => {
     switch (key) {
       case 'studentStatus':
         if (value === 'New') {
           return '#00C12B'
         } else {
-          return '#4145FF'
+          return MTHBLUE
         }
-
       case 'emailed':
-        return '#d4d5f8'
+        return MTHBLUE
       case 'effective':
-        return '#4145FF'
+        return MTHBLUE
       case 'subject':
-        return '#4145FF'
+        return MTHBLUE
+      default:
+        return ''
+    }
+  }
+
+  const handleCellClick = (key: string, row: any) => {
+    switch (key) {
+      case 'student': {
+        onRowClick && onRowClick(row.id)
+        break
+      }
+      case 'parent': {
+        onParentClick && onParentClick(row.id)
+        break
+      }
     }
   }
 
   return (
-    <Box sx={{ width: '100%',overflow: 'hidden'}}>
+    <Box sx={{ width: '100%', overflow: 'hidden' }}>
       <TableContainer>
         <Table aria-labelledby='tableTitle' size='small'>
           <SortableTableHeader
@@ -151,7 +113,7 @@ export const SortableTable: SortableTableTemplateType = ({
             noCheckbox={hideCheck}
           />
           <TableBody>
-            {rows.map((row) => {
+            {rows.map((row: any) => {
               const isItemSelected = isSelected(row.id.toString())
               const labelId = `enhanced-table-checkbox-${row.id}`
               return (
@@ -162,16 +124,15 @@ export const SortableTable: SortableTableTemplateType = ({
                   tabIndex={-1}
                   key={row.id}
                   selected={isItemSelected}
-                  sx={{ borderBottom: '1.5px solid #E7E7E7', height: '60px'}}
+                  sx={{ borderBottom: '1.5px solid #E7E7E7', height: '60px' }}
                 >
-                  {
-                    !hideCheck && 
+                  {!hideCheck && (
                     <TableCell
                       padding='checkbox'
-                      onClick={(event) => {
-                        handleClick(event, row.id)
+                      onClick={() => {
+                        handleRowClick(row.id)
                       }}
-                      sx={{minHeight: '60px'}}
+                      sx={{ minHeight: '60px' }}
                     >
                       <Checkbox
                         color='primary'
@@ -181,58 +142,20 @@ export const SortableTable: SortableTableTemplateType = ({
                         }}
                       />
                     </TableCell>
-                  }
+                  )}
                   {Object.keys(row).map((key, idx) => {
-                    return key === 'student' ? (
-                      <TableCell
-                        key={idx}
-                        sx={{
-                          paddichngY: 1,
-                          paddingLeft: 0,
-                          textAlign: idx !== 0 && 'left',
-                          fontWeight: '700',
-                          cursor: 'pointer',
-                        }}
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          onRowClick && onRowClick(row.id)
-                        }}
-                      >
-                        {row[key] || ''}
-                      </TableCell>
-                    ) : key === 'parent' ? (
-                      <TableCell
-                        key={idx}
-                        sx={{
-                          paddichngY: 1,
-                          paddingLeft: 0,
-                          textAlign: idx !== 0 && 'left',
-                          fontWeight: '700',
-                          cursor: 'pointer',
-                        }}
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          onParentClick && onParentClick(row.id)
-                        }}
-                      >
-                        {row[key] || ''}
-                      </TableCell>
-                    ) : (
+                    return (
                       key !== 'id' && (
                         <TableCell
                           key={idx}
                           sx={{
-                            paddingY: 1,
-                            paddingLeft: 0,
-                            textAlign: idx !== 0 && 'left',
-                            fontWeight: '700',
-                            cursor: 'pointer',
+                            ...tableClasses.tableCell,
                             color: getColor(key, row[key]),
                           }}
-                          // onClick={(e) => {
-                          //   e.stopPropagation();
-                          //   onRowClick && onRowClick(row.id);
-                          // }}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            handleCellClick(key, row)
+                          }}
                         >
                           {row[key] || ''}
                         </TableCell>

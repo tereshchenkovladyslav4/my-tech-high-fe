@@ -185,7 +185,7 @@ const EventCalendar = ({
           <Fade {...TransitionProps} timeout={350}>
             <Card sx={calendarDayClassess.modal}>
               <Box sx={calendarDayClassess.title}>
-                <Subtitle color={GRAY} sx={{ fontSize: '20px' }} fontWeight='500'>
+                <Subtitle color={GRAY} sx={{ fontSize: '20px' }} fontWeight='700'>
                   {moment(selectedDate).format('dddd')}
                 </Subtitle>
                 <CloseIcon

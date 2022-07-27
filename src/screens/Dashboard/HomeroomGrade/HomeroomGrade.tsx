@@ -84,12 +84,20 @@ export const HomeroomGrade: FunctionComponent<HomeroomGradeProps> = ({ schoolYea
     className: 'slider variable-width',
     infinite: true,
     speed: 500,
-    slidesToShow: 1,
+    slidesToShow: 6,
     slidesToScroll: 1,
     nextArrow: <SampleNextArrow />,
     prevArrow: <SamplePrevArrow />,
     variableWidth: true,
     rows: 1,
+    responsive: [
+      {
+        breakpoint: 992,
+        settings: {
+          slidesToShow: 3,
+        },
+      },
+    ],
   })
 
   const renderStudents = () =>
@@ -138,15 +146,9 @@ export const HomeroomGrade: FunctionComponent<HomeroomGradeProps> = ({ schoolYea
                 }}
               >
                 <style dangerouslySetInnerHTML={{ __html: `.slick-track {display: flex;}` }} />
-                {windowDimensions.width >= 992 ? (
-                  <Box className='d-none' display='flex' flexWrap='wrap'>
-                    {renderStudents()}
-                  </Box>
-                ) : (
-                  <Slider {...settings()} ref={sliderRef}>
-                    {renderStudents()}
-                  </Slider>
-                )}
+                <Slider {...settings()} ref={sliderRef}>
+                  {renderStudents()}
+                </Slider>
               </Box>
             )}
             {studentsCnt <= 2 && <Box sx={{ width: '100%' }}>{renderStudents()}</Box>}
