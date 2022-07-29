@@ -44,7 +44,7 @@ const AnnouncementSection = ({ inProp, setSectionName, setSelectedAnnouncement }
             ) {
               return (
                 <Avatar
-                  alt={student.person.preferred_first_name ?? student.person.first_name}
+                  alt={student.person.preferred_first_name ? student.person.preferred_first_name : student.person.first_name}
                   src={getProfilePhoto(student.person)}
                 />
               )

@@ -417,8 +417,8 @@ export const StudentFilters = ({
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <Subtitle fontWeight='700' sx={{ marginRight: '30px', marginBottom: '5px' }}>
               {applications?.[0]?.midyear_application
-                ? `${moment(applications[0].school_year.midyear_application_open).format('YYYY')} - ${moment(
-                  applications[0].school_year.midyear_application_close,
+                ? `${moment(applications[0].school_year.date_begin).format('YYYY')} - ${moment(
+                  applications[0].school_year.date_end,
                 ).format('YY')} Mid-year Status`
                 : applications?.[0]
                   ? `${moment(applications[0].school_year.date_begin).format('YYYY')} - ${moment(

@@ -1,5 +1,5 @@
 import { Box, Checkbox, FormControlLabel, Grid } from '@mui/material'
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
 import { MTHBLUE, RED } from '../../../../../utils/constants'
 import { toOrdinalSuffix } from '../../../../../utils/stringHelpers'
@@ -11,6 +11,9 @@ import { CheckBoxList } from '../../../Calendar/components/CheckBoxList'
 import { defaultUserList } from '../../../Calendar/defaultValue'
 import { UserContext } from '../../../../../providers/UserContext/UserProvider'
 import { useCurrentGradeAndProgramByRegionId } from '../../../Calendar/hooks/useCurrentGradeAndProgram'
+import { getSchoolYearsByRegionId } from '@screens/Admin/Dashboard/SchoolYear/SchoolYear'
+import { useQuery } from '@apollo/client'
+import moment from 'moment'
 
 type FilterComponentProps = {
   grades: string[]
@@ -33,8 +36,9 @@ const FilterComponent = ({
   setGradesInvalid,
   setUsersInvalid,
 }: FilterComponentProps) => {
+
   const { me } = useContext(UserContext)
-  const { loading, gradeList } = useCurrentGradeAndProgramByRegionId(Number(me?.selectedRegionId), grades, setGrades)
+  const { loading, gradeList, programYearList } = useCurrentGradeAndProgramByRegionId(Number(me?.selectedRegionId), grades, setGrades)
   const [expand, setExpand] = useState<boolean>(true)
   const chevron = () =>
     !expand ? (
@@ -53,7 +57,7 @@ const FilterComponent = ({
           cursor: 'pointer',
         }}
       />
-    )
+  )
 
   const Filters = () => (
     <Grid container sx={{ textAlign: 'left', marginY: '12px' }}>
@@ -82,20 +86,36 @@ const FilterComponent = ({
             )}
           </Box>
         </Grid>
-        <Grid item xs={6}></Grid>
+        <Grid item xs={6}>
+          <CheckBoxList
+            title={'Users'}
+            values={users}
+            setValues={(value) => {
+              setUsers(value)
+              setUsersInvalid(false)
+            }}
+            checkboxLists={defaultUserList}
+            haveSelectAll={false}
+          />
+          {usersInvalid && (
+            <Subtitle size='small' color={RED} fontWeight='700'>
+              Please select one at least
+            </Subtitle>
+          )}
+        </Grid>
         <Grid item xs={6}>
           <Box sx={{ display: 'grid' }}>
             <CheckBoxList
-              title={'Users'}
-              values={users}
+              title={'Program Year'}
+              values={grades}
               setValues={(value) => {
-                setUsers(value)
-                setUsersInvalid(false)
+                setGrades(value)
+                setGradesInvalid(false)
               }}
-              checkboxLists={defaultUserList}
+              checkboxLists={programYearList}
               haveSelectAll={false}
             />
-            {usersInvalid && (
+            {gradesInvalid && (
               <Subtitle size='small' color={RED} fontWeight='700'>
                 Please select one at least
               </Subtitle>

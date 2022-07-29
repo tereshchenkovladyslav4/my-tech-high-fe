@@ -155,12 +155,12 @@ export const defaultQuestions = [
         slug: 'student_emailConfirm',
         validation: 0
     },
-    {
-        label: 'Program Year',
-        type: 'Drop Down',
-        slug: 'program_year',
-        validation: 0
-    }
+    // {
+    //     label: 'Program Year',
+    //     type: 'Drop Down',
+    //     slug: 'program_year',
+    //     validation: 0
+    // }
 ]
 
 export const validationTypes = [

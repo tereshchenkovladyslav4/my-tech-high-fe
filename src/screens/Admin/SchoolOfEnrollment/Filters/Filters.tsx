@@ -13,7 +13,7 @@ import { useQuery } from '@apollo/client'
 import { UserContext } from '../../../../providers/UserContext/UserProvider'
 import { getSchoolDistrictsByRegionId } from '../../SiteManagement/EnrollmentSetting/ApplicationQuestions/services'
 
-export const Filters = ({ filter, setFilter }: FiltersProps) => {
+export const Filters = ({ filter, setFilter, partnerList }: FiltersProps) => {
   const { me } = useContext(UserContext)
   const history = useHistory()
   const [expand, setExpand] = useState<boolean>(true)
@@ -271,13 +271,13 @@ export const Filters = ({ filter, setFilter }: FiltersProps) => {
             <Paragraph sx={{ marginTop: '12px' }} size='large' fontWeight='700'>
               School of enrollment
             </Paragraph>
-            {['Unassigned', 'GPA', 'Toolele'].map((item: string, index) => (
+            {partnerList.map((item: any, index) => (
               <FormControlLabel
                 sx={{ height: 30 }}
-                control={<Checkbox value={item} checked={schoolOfEnrollments.includes(item)} onChange={handleSchoolOfEnrollments} />}
+                control={<Checkbox value={item.value} checked={schoolOfEnrollments.includes(item.value)} onChange={handleSchoolOfEnrollments} />}
                 label={
                   <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
-                    {item}
+                    {item.label}
                   </Paragraph>
                 }
               />

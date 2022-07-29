@@ -26,6 +26,14 @@ export const deleteUserAnnouncementById = gql`
   }
 `
 
+export const markRead = gql`
+  mutation MarkRead($id: Int!) {
+    markRead(id: $id) {
+      id
+    }
+  }
+`
+
 export const deleteUserAnnouncementByUserId = gql`
   mutation DeleteUserAnnouncementsByUserId($userId: Int!) {
     deleteUserAnnouncementsByUserId(user_id: $userId) {

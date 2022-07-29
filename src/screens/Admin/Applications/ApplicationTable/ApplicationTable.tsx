@@ -63,8 +63,6 @@ export const ApplicationTable = ({ filter }: ApplicationTableProps) => {
         <Box>
           {application.midyear_application ? (
             <>
-              {/* {`${moment(new Date(application.school_year.midyear_application_open)).format('YYYY')} -
-              ${moment(new Date(application.school_year.midyear_application_close)).format('YY')}`} */}
                {`${moment(new Date(application.school_year.date_begin)).format('YYYY')} -
               ${moment(new Date(application.school_year.date_end)).format('YY')}`}
               <br /> Mid-Year
@@ -199,7 +197,7 @@ export const ApplicationTable = ({ filter }: ApplicationTableProps) => {
     if (schoolYearData?.region?.SchoolYears) {
       const { SchoolYears } = schoolYearData?.region;
       let yearList = [];
-      SchoolYears.map((item: any) => {
+      SchoolYears.sort((a, b) => a.date_begin > b.date_begin ? 1 : -1).map((item: any) => {
         yearList.push({
           value: item.school_year_id,
           label: moment(item.date_begin).format('YYYY') + ' - ' + moment(item.date_end).format('YY'),

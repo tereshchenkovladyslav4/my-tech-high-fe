@@ -39,7 +39,6 @@ import { SchoolYearType } from '../../utils/utils.types'
 import { getSchoolYearsByRegionId } from '../../screens/Admin/Dashboard/SchoolYear/SchoolYear';
 import ScheduleIcon from '@mui/icons-material/Schedule'
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline'
-import ScheduleIcon from '@mui/icons-material/Schedule'
 import { getWindowDimensions } from '../AdminAppBar/AdminAppBar';
 
 
@@ -286,7 +285,7 @@ export const AppBar: FunctionComponent = () => {
                     color={isActive(student.student_id) ? MTHBLUE : '#A1A1A1'}
                     sx={classes.studentItemText}
                   >
-                    {student.person.preferred_first_name ?? student.person.first_name}
+                    {student.person.preferred_first_name ? student.person.preferred_first_name : student.person.first_name}
                   </Subtitle>
                 }
                 subtitle={
@@ -346,7 +345,7 @@ export const AppBar: FunctionComponent = () => {
     if (getProfilePhoto(student.person) !== 'image') {
       return { type: 'img', 'link': getProfilePhoto(student.person) };
     }
-    return { type: 'avatar', 'link': student.person.preferred_first_name ?? student.person.first_name };
+    return { type: 'avatar', 'link': student.person.preferred_first_name ? student.person.preferred_first_name : student.person.first_name };
   }
 
   const mobileStudentHeader = (handleDrawerCloseAndTheIcon: any) => (
@@ -376,12 +375,12 @@ export const AppBar: FunctionComponent = () => {
                   <MenuItem onClick={() => handleDrawerCloseAndTheIcon(getAvatar(student)['type'], getAvatar(student)['link'])}>
                     <ListItemIcon>
                       <Avatar
-                        alt={student.person.preferred_first_name ?? student.person.first_name}
+                        alt={student.person.preferred_first_name ? student.person.preferred_first_name : student.person.first_name}
                         src={getProfilePhoto(student.person)}
                         style={{ marginRight: 8 }}
                       />
                     </ListItemIcon>
-                    <ListItemText sx={{ color: 'black', paddingX: '5px', minWidth: '100px' }}>{student.person.preferred_first_name ?? student.person.first_name}</ListItemText>
+                    <ListItemText sx={{ color: 'black', paddingX: '5px', minWidth: '100px' }}>{student.person.preferred_first_name ? student.person.preferred_first_name : student.person.first_name}</ListItemText>
                     <ListItemIcon sx={{ minWidth: '70px' }}>
                       {checkEnrollPacketStatus(schoolYears, student) && (
                         <IconButton>{circleData(student)?.icon}</IconButton>
@@ -393,12 +392,12 @@ export const AppBar: FunctionComponent = () => {
                 <MenuItem onClick={() => handleDrawerCloseAndTheIcon(getAvatar(student)['type'], getAvatar(student)['link'])}>
                   <ListItemIcon>
                     <Avatar
-                      alt={student.person.preferred_first_name ?? student.person.first_name}
+                      alt={student.person.preferred_first_name ? student.person.preferred_first_name : student.person.first_name}
                       src={getProfilePhoto(student.person)}
                       style={{ marginRight: 8 }}
                     />
                   </ListItemIcon>
-                  <ListItemText sx={{ color: 'black', paddingX: '5px', minWidth: '100px' }}>{student.person.preferred_first_name ?? student.person.first_name}</ListItemText>
+                  <ListItemText sx={{ color: 'black', paddingX: '5px', minWidth: '100px' }}>{student.person.preferred_first_name ? student.person.preferred_first_name : student.person.first_name}</ListItemText>
                   <ListItemIcon sx={{ minWidth: '70px' }}>
                     {checkEnrollPacketStatus(schoolYears, student) && (
                       <IconButton>{circleData(student)?.icon}</IconButton>

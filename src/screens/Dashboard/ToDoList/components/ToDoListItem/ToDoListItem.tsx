@@ -35,6 +35,8 @@ export const ToDoListItem: TodoListTemplateType = ({ todoItem, todoDate, todoDea
   const [link, setLink] = useState<string>('')
   const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions())
 
+  // console.log(students);
+
   const getProfilePhoto = (person: Person) => {
     if (!person.photo) return 'image'
 

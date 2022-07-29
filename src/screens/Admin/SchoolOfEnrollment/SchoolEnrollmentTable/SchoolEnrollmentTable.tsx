@@ -24,7 +24,7 @@ import { EditYearModal } from '../../../../components/EmailModal/EditYearModal'
 import { getSchoolYearsByRegionId } from '../../SiteManagement/services'
 import { DropDown } from '../../SiteManagement/components/DropDown/DropDown'
 
-export const EnrollmentSchoolTable = ({ filter, setFilter }: EnrollmentSchoolTableProps) => {
+export const EnrollmentSchoolTable = ({ filter, setFilter, partnerList }: EnrollmentSchoolTableProps) => {
   const { me } = useContext(UserContext)
   const [studentList, setStudentList] = useState([]);
 
@@ -44,7 +44,6 @@ export const EnrollmentSchoolTable = ({ filter, setFilter }: EnrollmentSchoolTab
   const [schoolYears, setSchoolYears] = useState<any[]>([])
   const [editData, setEditData] = useState<any>()
   const [selectedYear, setSelectedYear] = useState('')
-  const [partnerList, setPartnerList] = useState<Array<any>>([])
   const [schoolPartner, setSchoolPartner] = useState('')
 
   const status = ['New', 'Sibling', 'Returning', 'Hidden']
@@ -109,34 +108,6 @@ export const EnrollmentSchoolTable = ({ filter, setFilter }: EnrollmentSchoolTab
     fetchPolicy: 'network-only',
   })
 
-  const {
-    loading: partnerLoading,
-    data: schoolPartnerData,
-  } = useQuery(GetSchoolsPartner, {
-    variables: {
-      schoolPartnerArgs: {
-        region_id: me?.selectedRegionId,
-        sort: {
-          column: 'name',
-          direction: 'ASC'
-        }
-      }
-    },
-    fetchPolicy: 'network-only',
-  })
-
-
-  useEffect(() => {
-    const list = [];
-    sortBy(schoolPartnerData?.getSchoolsOfEnrollmentByRegion, (el) => el.active !== 1).map(item => {
-      list.push({
-        value: item.school_partner_id,
-        label: item.name,
-      })
-    })
-    setPartnerList(list);
-  }, [schoolPartnerData])
-
   // keep it for future ticket
   // const { data: studentsData, refetch: studentDataRefetch } = useQuery(getStudnets, {
   //   variables: {
@@ -182,7 +153,7 @@ export const EnrollmentSchoolTable = ({ filter, setFilter }: EnrollmentSchoolTab
     if (schoolYearData?.region?.SchoolYears) {
       const { SchoolYears } = schoolYearData?.region;
       let yearList = [];
-      SchoolYears.map((item: any) => {
+      SchoolYears.sort((a, b) => a.date_begin > b.date_begin ? 1 : -1).map((item: any) => {
         yearList.push({
           value: item.school_year_id,
           label: moment(item.date_begin).format('YYYY') + ' - ' + moment(item.date_end).format('YY'),
@@ -353,7 +324,6 @@ export const EnrollmentSchoolTable = ({ filter, setFilter }: EnrollmentSchoolTab
         }}
       >
         <Box display='flex' flexDirection='row' justifyContent='flex-end' sx={{ mr: 3 }} alignItems='center'>
-          {console.log('llolo', selectedYear, schoolYears)}
           <DropDown
             dropDownItems={schoolYears}
             placeholder={'Select Year'}
@@ -399,10 +369,11 @@ export const EnrollmentSchoolTable = ({ filter, setFilter }: EnrollmentSchoolTab
                 height: 29,
                 background: BUTTON_LINEAR_GRADIENT,
                 color: 'white',
-                marginRight: '12px',
                 width: '92px',
+                padding: '20px 55px',
+                marginBottom: '4px'
               }}
-              onClick={handleApplicationAccept}
+              // onClick={handleApplicationAccept}
             >
               Assign
             </Button>
@@ -414,7 +385,7 @@ export const EnrollmentSchoolTable = ({ filter, setFilter }: EnrollmentSchoolTab
               flexDirection: 'row',
               alignItems: 'left',
               justifyContent: 'flex-end',
-              marginLeft: '24px',
+              marginLeft: '24px'
             }}
           >
             <Button
@@ -429,8 +400,10 @@ export const EnrollmentSchoolTable = ({ filter, setFilter }: EnrollmentSchoolTab
                   background: '#D23C33',
                   color: '#fff',
                 },
+                padding: '20px 55px',
+                marginBottom: '4px'
               }}
-              onClick={handleDeleteSelected}
+              // onClick={handleDeleteSelected}
             >
               Transfer
             </Button>

@@ -9,7 +9,7 @@ import { CALENDAR, SYSTEM_02, SYSTEM_05, SYSTEM_06 } from '../../../../utils/con
 import { EventDetailProps } from '../types'
 import { UserContext } from '../../../../providers/UserContext/UserProvider'
 import { Person } from '../../../HomeroomStudentProfile/Student/types'
-import { extractContent, renderDate, renderFilter } from '../../../../utils/utils'
+import { extractContent, hexToRgbA, renderDate, renderFilter } from '../../../../utils/utils'
 import { eventDetailClassess } from './styles'
 
 const EventDetail = ({
@@ -113,8 +113,10 @@ const EventDetail = ({
             {selectedEvent?.filters?.grades && avatarGroup(selectedEvent?.filters?.grades)}
           </Box>
           <Box>
-            <Button sx={{ ...eventDetailClassess.clubButton, background: `${selectedEvent?.eventTypeColor}1A` }}>
-              <Subtitle color={selectedEvent?.eventTypeColor} size={12} fontWeight='500'>
+            <Button
+              sx={{ ...eventDetailClassess.clubButton, background: hexToRgbA(selectedEvent?.eventTypeColor || '') }}
+            >
+              <Subtitle color={selectedEvent?.eventTypeColor} sx={{ fontSize: '12px', fontWeight: '500' }}>
                 {selectedEvent?.eventTypeName}
               </Subtitle>
             </Button>

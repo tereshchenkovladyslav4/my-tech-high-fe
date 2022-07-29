@@ -53,7 +53,8 @@ export function AdditionalQuestionItem({ question: q, field, meta, form, handleA
           dropDownItems={q.options || []}
           // dropDownItems={options || []}
           placeholder={q.question}
-          defaultValue={q.response}
+          defaultValue={field.value}
+          // defaultValue={q.response}
           setParentValue={(id) => {
             form.setFieldValue(field.name, id);
             handleAddQuestion(id, q);
@@ -124,7 +125,8 @@ export function AdditionalQuestionItem({ question: q, field, meta, form, handleA
             >
               <Checkbox name={q.question.toLowerCase().replace(' ', '_')} {...field} value={o.label}
                 onClick={() => handleAddQuestion(o.value, q)}
-                checked={q.response?.indexOf(o.value) >= 0}
+                // checked={q.response?.indexOf(o.value) >= 0}
+                checked={field.value?.indexOf(o.label) >= 0}
                 sx={{
                   paddingLeft: 0,
                   color: '#4145FF',
@@ -152,7 +154,8 @@ export function AdditionalQuestionItem({ question: q, field, meta, form, handleA
         <Box>
           <Box display='flex' alignItems='center' sx={{marginTop: 2, marginBottom: 2, '& p': {margin: 0}}}>
             <Checkbox
-              checked={q.response === true}
+              // checked={q.response === true}
+            checked={field.value === true}
               onClick={(e) => handleAddQuestion(e.target.checked, q)}
               name={q.question.toLowerCase().replace(' ', '_')} {...field} value={true}
               sx={{
@@ -213,7 +216,8 @@ export function AdditionalQuestionItem({ question: q, field, meta, form, handleA
                 >
                   <FormControlLabel value={o.label} control={
                     <Radio 
-                      checked={o.value == q.response}
+                      // checked={o.value === q.response}
+                      checked={o.label === field.value}
                       onChange={(e) => e.currentTarget.checked && handleAddQuestion(o.value, q)}
                       sx={{
                           color: '#4145FF',

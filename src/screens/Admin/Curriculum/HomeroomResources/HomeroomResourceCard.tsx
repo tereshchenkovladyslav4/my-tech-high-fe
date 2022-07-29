@@ -69,44 +69,52 @@ export const HomeroomeResourceCard: React.FC<HomeroomeResourceProps> = ({ item, 
         ></Box>
       )}
       {!item.id && (
-        <img
-          onClick={(e) => {
-            actionHandler(EventType.ADD)
-            e.stopPropagation()
-          }}
-          src={AddNewIcon}
-          style={{ position: 'absolute', top: 15, right: 15 }}
-        />
+        <Tooltip title='Add'>
+          <img
+            onClick={(e) => {
+              actionHandler(EventType.ADD)
+              e.stopPropagation()
+            }}
+            src={AddNewIcon}
+            style={{ position: 'absolute', top: 15, right: 15 }}
+          />
+        </Tooltip>
       )}
       {item.hidden && (
-        <img
-          onClick={(e) => {
-            actionHandler(EventType.DELETE)
-            e.stopPropagation()
-          }}
-          src={DeleteIcon}
-          style={{ position: 'absolute', top: 15, right: 15 }}
-        />
+        <Tooltip title='Delete'>
+          <img
+            onClick={(e) => {
+              actionHandler(EventType.DELETE)
+              e.stopPropagation()
+            }}
+            src={DeleteIcon}
+            style={{ position: 'absolute', top: 15, right: 15 }}
+          />
+        </Tooltip>
       )}
       {Boolean(item.id && !item.hidden) && (
-        <img
-          onClick={(e) => {
-            actionHandler(EventType.ALLOWREQUEST)
-            e.stopPropagation()
-          }}
-          src={item.allow_request ? AllowingRequestIcon : ViewOnlyIcon}
-          style={{ position: 'absolute', top: 15, right: 15 }}
-        />
+        <Tooltip title={item.allow_request ? 'View Only' : 'Allow Request'}>
+          <img
+            onClick={(e) => {
+              actionHandler(EventType.ALLOWREQUEST)
+              e.stopPropagation()
+            }}
+            src={item.allow_request ? AllowingRequestIcon : ViewOnlyIcon}
+            style={{ position: 'absolute', top: 15, right: 15 }}
+          />
+        </Tooltip>
       )}
       {Boolean(item.id && !item.hidden) && (
-        <img
-          onClick={(e) => {
-            actionHandler(EventType.DUPLICATE)
-            e.stopPropagation()
-          }}
-          src={DuplicateIcon}
-          style={{ position: 'absolute', top: 77, right: 15 }}
-        />
+        <Tooltip title='Clone'>
+          <img
+            onClick={(e) => {
+              actionHandler(EventType.DUPLICATE)
+              e.stopPropagation()
+            }}
+            src={DuplicateIcon}
+            style={{ position: 'absolute', top: 77, right: 15 }}
+          />
+        </Tooltip>
       )}
       <CardContent sx={{ textAlign: 'left' }}>
         <Box

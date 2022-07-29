@@ -73,7 +73,7 @@ export const useCurrentGradeAndProgramByRegionId = (
       }
     }
   }, [schoolYearLoading, schoolYearData])
-
+  
   return {
     loading: schoolYearLoading,
     error: schoolYearError,

@@ -101,7 +101,7 @@ export const StudentGrade: StudentGradeTemplateType = ({ student, schoolYears })
       subtitle={
         <Box>
           <Paragraph fontWeight={'700'} color='black' size='medium'>
-            {student.person.preferred_first_name ?? student.person.first_name}
+            {student.person.preferred_first_name ? student.person.preferred_first_name : student.person.first_name}
           </Paragraph>
           {checkEnrollPacketStatus(schoolYears, student) && (
             <Tooltip title={circleData?.message || ''}>

@@ -99,7 +99,7 @@ export const DropDown: DropDownTemplateType = ({
                 value={value}
                 onChange={(e) => handleChange(e.target?.value)}
                 displayEmpty
-                renderValue={value ? undefined : () => <span style={{ color: 'gray' }}>{placeholder}</span>}
+                renderValue={(value || value == 0) ? undefined : () => <span style={{ color: 'gray' }}>{placeholder}</span>}
                 sx={{
                   ...sx,
                   borderRadius: 2,
@@ -122,7 +122,7 @@ export const DropDown: DropDownTemplateType = ({
           <CssTextField
             name={name}
             size={size || 'medium'}
-            value={value || ''}
+            value={value || value == 0 ? value : ''}
             onChange={(e) => handleChange(e.target.value)}
             InputLabelProps={{
               style: { color: alternate && SYSTEM_05 },

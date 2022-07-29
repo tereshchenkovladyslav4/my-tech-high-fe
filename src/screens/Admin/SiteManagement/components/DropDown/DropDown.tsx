@@ -86,7 +86,7 @@ export const DropDown: DropDownTemplateType = ({
       {!labelTop ? (
         <>
           {borderNone ? (
-            <FormControl variant='standard' fullWidth>
+            <FormControl variant='standard' fullWidth sx={{...sx}}>
               <Select
                 size='small'
                 value={value}
@@ -95,7 +95,7 @@ export const DropDown: DropDownTemplateType = ({
                 onChange={(e) => handleChange(e.target?.value)}
                 label='Select Year'
                 className={selectClasses.select}
-                sx={{ color: 'blue', border: 'none', width: '55%' }}
+                sx={{ color: 'blue', border: 'none', width: '55%', fontWeight: '600' }}
               >
                 {renderDropDownItem}
               </Select>

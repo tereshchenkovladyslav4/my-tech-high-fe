@@ -167,6 +167,8 @@ const EventCalendar = ({
           isSelected,
           style: {
             backgroundColor: event.backgroundColor,
+            fontSize: '12px',
+            fontWeight: '600',
             textAlign: 'left',
             outline: 'none',
             ...(isSelected && {

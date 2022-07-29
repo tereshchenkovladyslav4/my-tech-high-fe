@@ -182,7 +182,7 @@ export const EnrollmentPacketTable = () => {
     if (schoolYearData?.region?.SchoolYears) {
       const { SchoolYears } = schoolYearData?.region;
       let yearList = [];
-      SchoolYears.map((item: any) => {
+      SchoolYears.sort((a, b) => a.date_begin > b.date_begin ? 1 : -1).map((item: any) => {
         yearList.push({
           value: item.school_year_id,
           label: moment(item.date_begin).format('YYYY') + ' - ' + moment(item.date_end).format('YY'),

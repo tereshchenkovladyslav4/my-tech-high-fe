@@ -272,7 +272,7 @@ function Item({ question: q }: { question: ApplicationQuestion }) {
             }}
           >
             <Radio 
-              checked={o.value == q.response}
+              checked={o.value === q.response}
               onChange={(e) => e.currentTarget.checked && onChange(o.value)}
               sx={{
                 paddingLeft: 0,

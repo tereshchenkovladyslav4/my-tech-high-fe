@@ -10,8 +10,8 @@ import { map } from 'lodash'
 import { EmptyState } from '../../../components/EmptyState/EmptyState'
 import { SYSTEM_06 } from '../../../utils/constants'
 import { Title } from '../../../components/Typography/Title/Title'
-import { useMutation } from '@apollo/client'
-import { deleteUserAnnouncementById, deleteUserAnnouncementByUserId } from '../services'
+import { useMutation, useMutation } from '@apollo/client'
+import { deleteUserAnnouncementById, deleteUserAnnouncementByUserId, markRead } from '../services'
 import { UserContext } from '../../../providers/UserContext/UserProvider'
 import BGSVG from '../../../assets/AnnouncementBG.svg'
 
@@ -24,9 +24,10 @@ const Announcements: AnnouncementTemplateType = ({
   const classes = useStyles
   const { me, setMe } = useContext(UserContext)
   const [deleteAnnouncementById, {}] = useMutation(deleteUserAnnouncementById)
+  const [markReadById, {}] = useMutation(markRead)
   const [deleteAnnouncementByUserId, {}] = useMutation(deleteUserAnnouncementByUserId)
   const onDeleteById = async (id: number = 0) => {
-    const response = await deleteAnnouncementById({
+    const response = await markReadById({
       variables: {
         id: id,
       },

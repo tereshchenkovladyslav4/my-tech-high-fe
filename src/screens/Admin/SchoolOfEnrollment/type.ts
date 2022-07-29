@@ -10,11 +10,13 @@ export type FilterVM = {
 export type FiltersProps = {
   filter: FilterVM | undefined
   setFilter: (value: FilterVM | undefined) => void
+  partnerList: any
 }
 
 export type EnrollmentSchoolTableProps = {
   filter: FilterVM | undefined
   setFilter: (value: FilterVM | undefined) => void
+  partnerList: any
 }
 
 export type EmailTemplateVM = {

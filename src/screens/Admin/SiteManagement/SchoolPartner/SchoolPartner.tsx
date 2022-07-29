@@ -1,4 +1,4 @@
-import { IconButton, Typography, Button, Grid, TextField, Tooltip } from '@mui/material'
+import { IconButton, Typography, Button, Grid, TextField, Tooltip, Stack } from '@mui/material'
 import { Box } from '@mui/system'
 import React, { useEffect, useState } from 'react'
 import { useStyles } from '../styles'
@@ -16,11 +16,12 @@ import { Field, Form, Formik, useFormik } from 'formik'
 import * as yup from 'yup'
 import { useMutation, useQuery } from '@apollo/client'
 import { CreateNewSchoolPartnerMutation, GetSchoolsOfEnrollment } from './services'
-import { map, sortBy, upperCase } from 'lodash'
+import { map, sortBy, toNumber, upperCase } from 'lodash'
 import { ArchiveSchoolPartnerModal } from './ArchiveSchoolPartnerModal/ArchiveSchoolPartnerModal'
 import CallMissedOutgoingIcon from '@mui/icons-material/CallMissedOutgoing'
 import { SchoolPartnerType } from './types'
 import { SCHOOL_PARTNER_HEADCELLS } from '../../../../utils/PageHeadCellsConstant'
+import { SchoolYearDropDown } from './SchoolYearDropDown/SchoolYearDropDown'
 
 export type ValidateFileResponse = {
   status: boolean
@@ -37,6 +38,7 @@ export const SchoolPartner = () => {
     direction: 'ASC'
   })
   const [createNewSchoolPartner, { data, error, loading }] = useMutation(CreateNewSchoolPartnerMutation)
+  const [selectedYearId, setSelectedYearId] = useState<number>()
 
   const {
     loading: schoolLoading,
@@ -45,6 +47,7 @@ export const SchoolPartner = () => {
   } = useQuery(GetSchoolsOfEnrollment, {
     variables: { schoolPartnerArgs: {
       region_id: localStorageRegion,
+      school_year_id: toNumber(selectedYearId),
       sort
     } },
     fetchPolicy: 'network-only',
@@ -53,6 +56,11 @@ export const SchoolPartner = () => {
   const [selectedFiles, setSelectedFiles] = useState<File>()
   const [errorMessage, setErrorMessage] = useState('')
   const [isUploading, setIsUploading] = useState(false)
+
+  useEffect(() => {
+    console.log(selectedYearId);
+  },[selectedYearId])
+
   const initialValues = {
     partnerName: undefined,
     abbreviation: undefined,
@@ -231,6 +239,10 @@ export const SchoolPartner = () => {
             Edit School Partners
           </Typography>
         </Box>
+          <SchoolYearDropDown
+            setSelectedYearId={setSelectedYearId}
+            selectedYearId={selectedYearId}
+          />
       </Box>
       <Grid container columnSpacing={8}>
         <Grid item xs={6} sx={{ marginTop: 4, borderRight: '1px solid #E7E7E7' }} paddingX={2}>
@@ -255,7 +267,8 @@ export const SchoolPartner = () => {
                       name: values.partnerName,
                       abbreviation: values.abbreviation,
                       photo: resp,
-                      region_id: localStorageRegion
+                      region_id: localStorageRegion,
+                      school_year_id: toNumber(selectedYearId),
                     },
                   },
                 }).then(() => {

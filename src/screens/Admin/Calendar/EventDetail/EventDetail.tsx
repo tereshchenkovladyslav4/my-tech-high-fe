@@ -13,7 +13,7 @@ import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
 import { CALENDAR, SYSTEM_02, SYSTEM_05, SYSTEM_06 } from '../../../../utils/constants'
 import { deleteEventByIdMutation } from '../services'
 import CustomModal from '../../SiteManagement/EnrollmentSetting/components/CustomModal/CustomModals'
-import { renderDate, renderFilter } from '../../../../utils/utils'
+import { hexToRgbA, renderDate, renderFilter } from '../../../../utils/utils'
 import { mainClasses } from '../MainComponent/styles'
 
 const toolTipStyles = makeStyles(() => ({
@@ -107,8 +107,8 @@ const EventDetail = ({
       {selectedEvent && (
         <>
           <Box>
-            <Button sx={{ ...mainClasses.clubButton, background: `${selectedEvent?.eventTypeColor}1A` }}>
-              <Subtitle color={selectedEvent?.eventTypeColor} size={12} fontWeight='500'>
+            <Button sx={{ ...mainClasses.clubButton, background: hexToRgbA(selectedEvent?.eventTypeColor || '') }}>
+              <Subtitle color={selectedEvent?.eventTypeColor} sx={{ fontSize: '12px', fontWeight: '500' }}>
                 {selectedEvent?.eventTypeName}
               </Subtitle>
             </Button>

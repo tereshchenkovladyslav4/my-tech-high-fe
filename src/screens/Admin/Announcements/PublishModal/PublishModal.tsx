@@ -5,7 +5,7 @@ import { useStyles } from './styles'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
-import moment from 'moment'
+import moment, { Moment } from 'moment'
 import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
 import { RED } from '../../../../utils/constants'
 
@@ -25,7 +25,8 @@ export default function PublishModal({
   scheduledTime?: Date
 }) {
   const classes = useStyles
-  const [dateTime, setDateTime] = useState<Date>(new Date(scheduledTime as any) ?? new Date())
+
+  const [dateTime, setDateTime] = useState<Date | Moment>(scheduledTime ? moment(scheduledTime).local(): new Date())
   const [hours, setHours] = useState( scheduledTime ? moment(scheduledTime).format('HH:mm') : moment(new Date()).format('HH:mm'))
   const [invalidTime, setInvalidTime] = useState<boolean>(false)
 
@@ -39,7 +40,7 @@ export default function PublishModal({
 
   const handleTimeChange = (value: string) => {
     setHours(value)
-    const selectedDate = new Date(dateTime).setHours(Number(value.split(':')[0]), Number(value.split(':')[1]), 0, 0)
+    const selectedDate = new Date(dateTime as Date).setHours(Number(value.split(':')[0]), Number(value.split(':')[1]), 0, 0)
     setDateTime(new Date(selectedDate))
     setCronJobTime(new Date(selectedDate))
     setInvalidTime(false)

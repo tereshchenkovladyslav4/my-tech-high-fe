@@ -26,6 +26,7 @@ export const TodoList: TodoListTemplateType = ({ handleShowEmpty, schoolYears })
     if (data !== undefined && schoolYears?.length > 0) {
       const { parent_todos } = data
       let todoListCount = 0
+      setTodoList([])
       forOwn(parent_todos, (item: ToDoItem, key) => {
         if (key !== '__typename') {
           if (item.category == ToDoCategory.SUBMIT_ENROLLMENT_PACKET) {
@@ -37,6 +38,8 @@ export const TodoList: TodoListTemplateType = ({ handleShowEmpty, schoolYears })
               ),
             ).reduce((list: ToDoItem[], students) => list.concat([{ ...item, students: students }]), [])
             setTodoList((prev) => [...prev, ...splitedItems])
+            //setTodoList((prev) => [...prev, ...splitedItems])
+            // setTodoList([...splitedItems])
           } else if (item.category == ToDoCategory.SUBMIT_WITHDRAW) {
             // If there are multiple students, they should each have their own to-do item
             const splitedItems: ToDoItem[] = item.students.reduce(
@@ -47,6 +50,8 @@ export const TodoList: TodoListTemplateType = ({ handleShowEmpty, schoolYears })
           } else {
             setTodoList((prev) => [...prev, item])
           }
+
+          // setTodoList((prev) => [...prev, ...splitedItems])
 
           if (item.students.length) {
             todoListCount++

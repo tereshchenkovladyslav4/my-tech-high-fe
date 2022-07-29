@@ -409,7 +409,6 @@ export const NewParent = () => {
   }, [regionId, schoolYearData])
 
   const submitApplication = async (values) => {
-    console.log({values});
     const submitStudents = values.students?.map((s) => {
       return {
         ...omit(s, ['emailConfirm']), meta: JSON.stringify(s?.meta || {}),
@@ -489,8 +488,9 @@ export const NewParent = () => {
   // handle child component
   const questionSortList = (values) => {
     const sortList = values.filter(v =>
+    v.slug !== 'program_year' && 
     (!v.mainQuestion && (!v.additional_question
-      || (values.find(x => x.slug == v.additional_question)?.response != ''
+      || (values.find(x => x.slug == v.additional_question)?.response !== ''
         && (values.find(x => x.slug == v.additional_question)?.options.find(
           x => x.action == 2 && (x.value == values.find(y => y.slug == v.additional_question)?.response
             || values.find(y => y.slug == v.additional_question)?.response.toString().indexOf(x.value) >= 0)) != null)))) 		// Parent
@@ -598,46 +598,82 @@ export const NewParent = () => {
                         )}
                       </Field>
                     </Grid>
+
+                    <Grid item xs={12} display='flex' justifyContent={'center'}>
+                      <Box width={'451.53px'}>
+                        <Field name='programYear' fullWidth focused>
+                          {({ field, form, meta }) => (
+                            <Box width={'100%'}>
+                              <DropDown
+                                name='programYear'
+                                labelTop
+                                placeholder="Program Year"
+                                dropDownItems={schoolYears}
+                                setParentValue={(id) => {
+                                  if (id?.indexOf('mid') > 0) {
+                                    id = id?.split('-')?.at(0)
+                                    setMidYearApplication(true)
+                                  } else {
+                                    setMidYearApplication(false)
+                                  }
+                                  form.setFieldValue(field.name, toNumber(id))
+                                  setGradesAndBirthDateCut(id)
+                                }}
+                                alternate={true}
+                                size='small'
+                                sx={!!(meta.touched && meta.error) ? classes.textFieldError : classes.dropdown}
+                                error={{
+                                  error: !!(meta.touched && meta.error),
+                                  errorMsg: (meta.touched && meta.error) as string,
+                                }}
+                              />
+                            </Box>
+                          )}
+                        </Field>
+                      </Box>
+                    </Grid>  
+
                     { !questionLoading &&
                       questionSortList(questions).length > 0 &&
                       questionSortList(questions).map((q) => {
-                        if (q.slug === 'program_year') {
-                          return (
-                            <Grid item xs={12} display='flex' justifyContent={'center'}>
-                              <Box width={'451.53px'}>
-                                <Field name='programYear' fullWidth focused>
-                                  {({ field, form, meta }) => (
-                                    <Box width={'100%'}>
-                                      <DropDown
-                                        name='programYear'
-                                        labelTop
-                                        placeholder={q.question}
-                                        dropDownItems={q.options}
-                                        setParentValue={(id) => {
-                                          if (id?.indexOf('mid') > 0) {
-                                            id = id?.split('-')?.at(0)
-                                            setMidYearApplication(true)
-                                          } else {
-                                            setMidYearApplication(false)
-                                          }
-                                          form.setFieldValue(field.name, toNumber(id))
-                                          setGradesAndBirthDateCut(id)
-                                        }}
-                                        alternate={true}
-                                        size='small'
-                                        sx={!!(meta.touched && meta.error) ? classes.textFieldError : classes.dropdown}
-                                        error={{
-                                          error: !!(meta.touched && meta.error),
-                                          errorMsg: (meta.touched && meta.error) as string,
-                                        }}
-                                      />
-                                    </Box>
-                                  )}
-                                </Field>
-                              </Box>
-                            </Grid>
-                          )
-                        } else if (q.slug === 'parent_email') {
+                        // if (q.slug === 'program_year') {
+                        //   return (
+                        //     <Grid item xs={12} display='flex' justifyContent={'center'}>
+                        //       <Box width={'451.53px'}>
+                        //         <Field name='programYear' fullWidth focused>
+                        //           {({ field, form, meta }) => (
+                        //             <Box width={'100%'}>
+                        //               <DropDown
+                        //                 name='programYear'
+                        //                 labelTop
+                        //                 placeholder={q.question}
+                        //                 dropDownItems={q.options}
+                        //                 setParentValue={(id) => {
+                        //                   if (id?.indexOf('mid') > 0) {
+                        //                     id = id?.split('-')?.at(0)
+                        //                     setMidYearApplication(true)
+                        //                   } else {
+                        //                     setMidYearApplication(false)
+                        //                   }
+                        //                   form.setFieldValue(field.name, toNumber(id))
+                        //                   setGradesAndBirthDateCut(id)
+                        //                 }}
+                        //                 alternate={true}
+                        //                 size='small'
+                        //                 sx={!!(meta.touched && meta.error) ? classes.textFieldError : classes.dropdown}
+                        //                 error={{
+                        //                   error: !!(meta.touched && meta.error),
+                        //                   errorMsg: (meta.touched && meta.error) as string,
+                        //                 }}
+                        //               />
+                        //             </Box>
+                        //           )}
+                        //         </Field>
+                        //       </Box>
+                        //     </Grid>
+                        //   )
+                        // } else 
+                        if (q.slug === 'parent_email') {
                           return (
                             <Grid item xs={12} display='flex' justifyContent={'center'}>
                               <Box width={'451.53px'}>
@@ -874,7 +910,12 @@ export const NewParent = () => {
                                       )[0].slug
                                       if (q.slug === 'student_grade_level') {
                                         return (
-                                          <Grid item xs={12}>
+                                          <Grid item xs={12} 
+                                            width={'100%'}
+                                            display='flex'
+                                            flexDirection='row'
+                                            alignItems={'center'}
+                                          >
                                             <Field name={`students[${index}].grade_level`} fullWidth focused>
                                               {({ field, form, meta }) => (
                                                 <Box width={'100%'}>

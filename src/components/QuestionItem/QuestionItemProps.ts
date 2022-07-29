@@ -209,9 +209,9 @@ export const defaultQuestions: DefaultQuestion[] = [
     slug: 'student_emailConfirm',
     validation: 2,
   },
-  {
-    question: 'Program Year',
-    type: QUESTION_TYPE.DROPDOWN,
-    slug: 'program_year',
-  },
+  // {
+  //   question: 'Program Year',
+  //   type: QUESTION_TYPE.DROPDOWN,
+  //   slug: 'program_year',
+  // },
 ]

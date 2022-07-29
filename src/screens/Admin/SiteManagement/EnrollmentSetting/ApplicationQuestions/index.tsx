@@ -306,7 +306,7 @@ export default function ApplicationQuestions() {
   const questionSortList = (values) => {
     const sortList = values.filter(v =>
     (!v.mainQuestion && ((!v.additional_question || v.additional_question == '')
-      || (values.find(x => x.slug == v.additional_question)?.response != ''
+      || (values.find(x => x.slug == v.additional_question)?.response !== ''
         && (values.find(x => x.slug == v.additional_question)?.options.find(
           x => x.action == 2 && (x.value == values.find(y => y.slug == v.additional_question)?.response
             || values.find(y => y.slug == v.additional_question)?.response.toString().indexOf(x.value) >= 0)) != null)))) 		// Parent
@@ -317,7 +317,7 @@ export default function ApplicationQuestions() {
         current = child;
       }
       return arr;
-    })
+    });
     return sortList;
   }
 

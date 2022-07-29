@@ -371,7 +371,7 @@ export const ExistingParent = () => {
   // handle child component
   const questionSortList = (values) => {
     const sortList = values.filter(v =>
-    (!v.mainQuestion && (!v.additional_question
+      v.slug !== 'program_year' && (!v.mainQuestion && (!v.additional_question
       || (values.find(x => x.slug == v.additional_question)?.response != ''
         && (values.find(x => x.slug == v.additional_question)?.options.find(
           x => x.action == 2 && (x.value == values.find(y => y.slug == v.additional_question)?.response
@@ -421,6 +421,7 @@ export const ExistingParent = () => {
           await submitApplication(values)
         }}
       >
+        
         {({ values, errors, isSubmitting, isValid }) => (
           <Form>
             <Box
@@ -436,43 +437,75 @@ export const ExistingParent = () => {
                 flexDirection: 'column',
               }}
             >
+              <Grid item xs={12} display='flex' justifyContent={'center'}>
+                <Box width={'451.53px'}>
+                  <Field name='programYear' fullWidth focused>
+                    {({ field, form, meta }) => (
+                      <Box width={'100%'} display='block'>
+                        <DropDown
+                          name='programYear'
+                          labelTop
+                          placeholder="Program Year"
+                          dropDownItems={schoolYears}
+                          setParentValue={(originalId) => {
+                            let id = originalId.toString();
+                            if (id.toString()?.indexOf('mid') > 0) {
+                              id = id?.split('-')?.at(0)
+                            }
+                            form.setFieldValue(field.name, toNumber(id))
+                            setGradesAndBirthDateCut(id)
+                          }}
+                          alternate={true}
+                          size='small'
+                          sx={!!(meta.touched && meta.error) ? classes.textFieldError : classes.dropdown}
+                          error={{
+                            error: !!(meta.touched && meta.error),
+                            errorMsg: (meta.touched && meta.error) as string,
+                          }}
+                        />
+                      </Box>
+                    )}
+                  </Field>
+                </Box>
+              </Grid>  
               <Grid container rowSpacing={2}>
                 {!questionLoading && questionSortList(questions).length > 0 
                 && questionSortList(questions).map((q, index) => {
-                  if (q.slug == 'program_year') {
-                    return (
-                        <Grid item xs={12} display='flex' justifyContent={'center'}>
-                          <Box width={'451.53px'}>
-                            <Field name='programYear' fullWidth focused>
-                              {({ field, form, meta }) => (
-                                <Box width={'100%'} display='block'>
-                                  <DropDown
-                                    name='programYear'
-                                    labelTop
-                                    placeholder={q.question}
-                                    dropDownItems={q.options}
-                                    setParentValue={(id) => {
-                                      if (id?.indexOf('mid') > 0) {
-                                        id = id?.split('-')?.at(0)
-                                      }
-                                      form.setFieldValue(field.name, toNumber(id))
-                                      setGradesAndBirthDateCut(id)
-                                    }}
-                                    alternate={true}
-                                    size='small'
-                                    sx={!!(meta.touched && meta.error) ? classes.textFieldError : classes.dropdown}
-                                    error={{
-                                      error: !!(meta.touched && meta.error),
-                                      errorMsg: (meta.touched && meta.error) as string,
-                                    }}
-                                  />
-                                </Box>
-                              )}
-                            </Field>
-                          </Box>
-                        </Grid>                      
-                    )
-                  }
+                  // if (q.slug == 'program_year') {
+                  //   return (
+                  //       <Grid item xs={12} display='flex' justifyContent={'center'}>
+                  //         <Box width={'451.53px'}>
+                  //           <Field name='programYear' fullWidth focused>
+                  //             {({ field, form, meta }) => (
+                  //               <Box width={'100%'} display='block'>
+                  //                 <DropDown
+                  //                   name='programYear'
+                  //                   labelTop
+                  //                   placeholder={q.question}
+                  //                   dropDownItems={q.options}
+                  //                   setParentValue={(originalId) => {
+                  //                     const id = originalId.toString();
+                  //                     if (id.toString()?.indexOf('mid') > 0) {
+                  //                       id = id?.split('-')?.at(0)
+                  //                     }
+                  //                     form.setFieldValue(field.name, toNumber(id))
+                  //                     setGradesAndBirthDateCut(id)
+                  //                   }}
+                  //                   alternate={true}
+                  //                   size='small'
+                  //                   sx={!!(meta.touched && meta.error) ? classes.textFieldError : classes.dropdown}
+                  //                   error={{
+                  //                     error: !!(meta.touched && meta.error),
+                  //                     errorMsg: (meta.touched && meta.error) as string,
+                  //                   }}
+                  //                 />
+                  //               </Box>
+                  //             )}
+                  //           </Field>
+                  //         </Box>
+                  //       </Grid>                      
+                  //   )
+                  // }
                   if (q.slug?.includes('student_') || q.student_question) {
                     if (q.slug === 'student_grade_level') {
                       return (
@@ -585,7 +618,12 @@ export const ExistingParent = () => {
                                   const firstQuestionSlug = questionSortList(questions).filter((qf) => qf.question.includes('student_') || qf.student_question)[0].slug
                                   if (q.slug === 'student_grade_level') {
                                     return (
-                                      <Grid item xs={12}>
+                                      <Grid item xs={12} 
+                                        width={'100%'}
+                                        display='flex'
+                                        flexDirection='row'
+                                        alignItems={'center'}
+                                        >
                                         <Field name={`students[${index}].grade_level`} fullWidth focused>
                                           {({ field, form, meta }) => (
                                             <Box width={'100%'}>
