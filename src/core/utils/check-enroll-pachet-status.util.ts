@@ -1,4 +1,4 @@
-import { SchoolYearType } from '@models'
+import { SchoolYearType } from '@mth/models'
 
 /**
  * @param {schoolYears} SchoolYearType

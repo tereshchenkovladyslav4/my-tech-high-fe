@@ -1,5 +1,5 @@
 import { useQuery } from '@apollo/client'
-import { GetCurrentSchoolYearByRegionId } from '../../Announcements/services'
+import { GetCurrentSchoolYearByRegionId } from '@mth/screens/Admin/Announcements/services'
 
 export const useCurrentSchoolYearByRegionId = (regionId: number) => {
   const { loading, data, error } = useQuery(GetCurrentSchoolYearByRegionId, {

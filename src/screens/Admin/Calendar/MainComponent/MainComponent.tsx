@@ -1,12 +1,11 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { Box, Card, Grid } from '@mui/material'
+import { useEventsByRegionIdAndFilterItem, useEventTypeListByRegionId } from '@mth/hooks'
+import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { EventCalendar } from '../EventCalendar'
-import { HeaderComponent } from '../HeaderComponent'
-import { UserContext } from '../../../../providers/UserContext/UserProvider'
-import { CalendarEvent, EventVM, MainComponentProps } from '../types'
 import { EventDetail } from '../EventDetail'
-import { useEventTypeListByRegionId } from '../hooks/useEventTypeListByRegionId'
-import { useEventsByRegionIdAndFilterItem } from '../hooks/useEventsByRegionIdAndFilterItem'
+import { HeaderComponent } from '../HeaderComponent'
+import { CalendarEvent, EventVM, MainComponentProps } from '../types'
 import { mainClasses } from './styles'
 
 const MainComponent = ({ selectedEventIndex, setSelectedEventIndex, setEvent }: MainComponentProps) => {
@@ -23,6 +22,7 @@ const MainComponent = ({ selectedEventIndex, setSelectedEventIndex, setEvent }: 
   const [selectedEventId, setSelectedEventId] = useState<number>(0)
   const [selectedDate, setSelectedDate] = useState<Date>()
   const [selectedEvent, setSelectedEvent] = useState<EventVM | undefined>()
+  const [currentMonth, setCurrentMonth] = useState<Date>(new Date())
 
   useEffect(() => {
     if (!EventsLoading && calendarEventList.length === 0) {
@@ -49,6 +49,7 @@ const MainComponent = ({ selectedEventIndex, setSelectedEventIndex, setEvent }: 
         <Grid container justifyContent='space-between'>
           <Grid item xs={3} sx={{ textAlign: 'left', marginTop: 'auto', marginBottom: 'auto' }}>
             <EventDetail
+              currentMonth={currentMonth}
               selectedEvent={selectedEvent}
               selectedEventId={selectedEventId}
               selectedDate={selectedDate}
@@ -63,6 +64,8 @@ const MainComponent = ({ selectedEventIndex, setSelectedEventIndex, setEvent }: 
           <Grid item xs={1}></Grid>
           <Grid item xs={8} sx={{ zIndex: 0 }}>
             <EventCalendar
+              currentMonth={currentMonth}
+              setCurrentMonth={setCurrentMonth}
               selectedDate={selectedDate}
               selectedEvent={selectedEvent}
               setSelectedDate={setSelectedDate}

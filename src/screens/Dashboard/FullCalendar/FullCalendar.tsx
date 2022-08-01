@@ -19,6 +19,7 @@ const FullCalendar = ({
   const [selectedEventId, setSelectedEventId] = useState<number>(0)
   const [selectedDate, setSelectedDate] = useState<Date>()
   const [selectedEvent, setSelectedEvent] = useState<EventVM | undefined>()
+  const [currentMonth, setCurrentMonth] = useState<Date>(new Date())
 
   useEffect(() => {
     setSelectedEventTypes(eventTypeLists.map((eventType) => eventType.name))
@@ -46,6 +47,7 @@ const FullCalendar = ({
         <Grid container justifyContent='space-between'>
           <Grid item xs={3} sx={{ textAlign: 'left', marginTop: 'auto', marginBottom: 'auto' }}>
             <EventDetail
+              currentMonth={currentMonth}
               selectedEvent={selectedEvent}
               selectedEventId={selectedEventId}
               selectedDate={selectedDate}
@@ -58,6 +60,8 @@ const FullCalendar = ({
           <Grid item xs={1}></Grid>
           <Grid item xs={8} sx={{ zIndex: 0 }}>
             <EventCalendar
+              currentMonth={currentMonth}
+              setCurrentMonth={setCurrentMonth}
               selectedDate={selectedDate}
               setSelectedDate={setSelectedDate}
               setSelectedEventId={setSelectedEventId}

@@ -158,6 +158,14 @@ export const EnrollmentSchoolTable = ({ filter, setFilter, partnerList }: Enroll
           value: item.school_year_id,
           label: moment(item.date_begin).format('YYYY') + ' - ' + moment(item.date_end).format('YY'),
         });
+        if(moment(item.date_begin).format('YYYY') === moment().format('YYYY')){
+          setSelectedYear(item.school_year_id) // set init year
+          setFilter(prevState => ({
+            ...prevState,
+            schoolYearId: item.school_year_id,
+            schoolYearLabel: moment(item.date_begin).format('YYYY') + ' - ' + moment(item.date_end).format('YY')
+          }))
+        }
         if (item.midyear_application === 1) {
           yearList.push({
             value: -1 * item.school_year_id,
@@ -166,7 +174,6 @@ export const EnrollmentSchoolTable = ({ filter, setFilter, partnerList }: Enroll
         }
       });
       setSchoolYears(yearList)
-      setSelectedYear(yearList[0]?.value)
       setFilter(prev => ({
         ...prev,
         schoolYear: yearList[0]?.label
@@ -336,7 +343,8 @@ export const EnrollmentSchoolTable = ({ filter, setFilter, partnerList }: Enroll
               const yearLabel = schoolYears.find(item => item.value == val);
               setFilter(prevState => ({
                 ...prevState,
-                schoolYear: yearLabel?.label
+                schoolYearId: yearLabel?.value,
+                schoolYearLabel: yearLabel?.label
               }))
             }}
           />

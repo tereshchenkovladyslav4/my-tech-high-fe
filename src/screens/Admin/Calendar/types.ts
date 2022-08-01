@@ -41,6 +41,8 @@ export type EventCalendarProps = {
   eventList: CalendarEvent[]
   selectedDate: Date | undefined
   selectedEvent: EventVM | undefined
+  currentMonth: Date
+  setCurrentMonth: (value: Date) => void
   setSelectedEventId: (value: number) => void
   setEventList?: (value: CalendarEvent[] | undefined) => void
   setSelectedDate: (value: Date | undefined) => void
@@ -81,6 +83,7 @@ export type EventDetailProps = {
   selectedEventId: number
   selectedDate: Date | undefined
   selectedEventIndex: number
+  currentMonth: Date
   refetch: () => void
   setEvent: (value: EventVM) => void
   setSelectedEvent: (value: EventVM | undefined) => void

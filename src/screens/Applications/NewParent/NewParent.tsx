@@ -409,6 +409,7 @@ export const NewParent = () => {
   }, [regionId, schoolYearData])
 
   const submitApplication = async (values) => {
+    
     const submitStudents = values.students?.map((s) => {
       return {
         ...omit(s, ['emailConfirm']), meta: JSON.stringify(s?.meta || {}),
@@ -416,6 +417,7 @@ export const NewParent = () => {
         // packet: omit(s.packet, ['school_district'])
       }
     })
+
     submitApplicationAction({
       variables: {
         createApplicationInput: {

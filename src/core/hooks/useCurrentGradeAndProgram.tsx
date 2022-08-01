@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
-import { GRADES } from '../../../../utils/constants'
-import { toOrdinalSuffix } from '../../../../utils/stringHelpers'
-import { CheckBoxListVM } from '../components/CheckBoxList/CheckBoxList'
 import moment from 'moment'
-import { useCurrentSchoolYearByRegionId } from './useCurrentSchoolYearByRegionId'
+import { GRADES } from '@mth/constants'
+import { useCurrentSchoolYearByRegionId } from '@mth/hooks'
+import { CheckBoxListVM } from '@mth/screens/Admin/Calendar/components/CheckBoxList/CheckBoxList'
+import { toOrdinalSuffix } from '@mth/utils'
 
 export const useCurrentGradeAndProgramByRegionId = (
   regionId: number,

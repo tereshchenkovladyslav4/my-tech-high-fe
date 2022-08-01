@@ -8,5 +8,5 @@
   "prettier.singleQuote": true,
   "prettier.tabWidth": 2,
   "prettier.trailingComma": "none",
-  "eslint.enable": false
+  "eslint.enable": true
 }

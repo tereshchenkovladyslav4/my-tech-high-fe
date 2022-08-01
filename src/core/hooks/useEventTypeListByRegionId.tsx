@@ -1,8 +1,8 @@
-import { useQuery } from '@apollo/client'
 import { useEffect, useState } from 'react'
-import { MultiSelectDropDownListType } from '../components/MultiSelectDropDown/MultiSelectDropDown'
-import { getEventTypesQuery } from '../services'
-import { EventTypeResponseVM } from '../types'
+import { useQuery } from '@apollo/client'
+import { MultiSelectDropDownListType } from '@mth/screens/Admin/Calendar/components/MultiSelectDropDown/MultiSelectDropDown'
+import { getEventTypesQuery } from '@mth/screens/Admin/Calendar/services'
+import { EventTypeResponseVM } from '@mth/screens/Admin/Calendar/types'
 
 export const useEventTypeListByRegionId = (regionId: number) => {
   const [eventTypeLists, setEventTypeLists] = useState<MultiSelectDropDownListType[]>([])

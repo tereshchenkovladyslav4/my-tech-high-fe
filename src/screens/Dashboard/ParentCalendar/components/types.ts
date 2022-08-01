@@ -24,12 +24,14 @@ type CalendarDaysProps = {
 }
 
 type DashboardCalendarProps = {
+  currentMonth: Date
   selectedEvent: EventVM | undefined
   calendarEventList: CalendarEvent[]
   selectedEventTypes: string[]
   selectedDate: Date | undefined
-  setSelectedDate: (value: Date | undefined) => void
   eventTypeLists: MultiSelectDropDownListType[]
+  setCurrentMonth: (value: Date) => void
+  setSelectedDate: (value: Date | undefined) => void
   handleSelectedEvent: (value: CalendarEvent, date: Date) => void
   setSelectedEventTypes: (value: string[]) => void
 }

@@ -26,13 +26,16 @@
     "jsxImportSource": "@emotion/react",
     "baseUrl": ".",
     "paths": {
-      "@components/*": ["src/components/*"],
-      "@constants": ["src/core/constants"],
-      "@enums": ["src/core/enums"],
-      "@models": ["src/core/models"],
-      "@providers/*": ["src/providers/*"],
-      "@screens/*": ["src/screens/*"],
-      "@utils": ["src/core/utils"]
+      "@mth/assets/*": ["src/assets/*"],
+      "@mth/components/*": ["src/components/*"],
+      "@mth/constants": ["src/core/constants"],
+      "@mth/enums": ["src/core/enums"],
+      "@mth/graphql/*": ["src/graphql/*"],
+      "@mth/hooks": ["src/core/hooks"],
+      "@mth/models": ["src/core/models"],
+      "@mth/providers/*": ["src/providers/*"],
+      "@mth/screens/*": ["src/screens/*"],
+      "@mth/utils": ["src/core/utils"]
     }
   },
   "exclude": ["node_modules"],

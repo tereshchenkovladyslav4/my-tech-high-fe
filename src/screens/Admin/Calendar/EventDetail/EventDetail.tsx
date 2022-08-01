@@ -13,7 +13,7 @@ import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
 import { CALENDAR, SYSTEM_02, SYSTEM_05, SYSTEM_06 } from '../../../../utils/constants'
 import { deleteEventByIdMutation } from '../services'
 import CustomModal from '../../SiteManagement/EnrollmentSetting/components/CustomModal/CustomModals'
-import { hexToRgbA, renderDate, renderFilter } from '../../../../utils/utils'
+import { getFirstDayAndLastDayOfMonth, hexToRgbA, renderDate, renderFilter } from '../../../../utils/utils'
 import { mainClasses } from '../MainComponent/styles'
 
 const toolTipStyles = makeStyles(() => ({
@@ -34,6 +34,7 @@ const EventDetail = ({
   selectedDate,
   selectedEventId,
   selectedEvent,
+  currentMonth,
   setSelectedEvent,
   setSelectedEventIndex,
   setEvent,
@@ -43,6 +44,8 @@ const EventDetail = ({
   const history = useHistory()
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false)
   const [deleteEventById, {}] = useMutation(deleteEventByIdMutation)
+  const [firstDay, setFirstDay] = useState<Date>()
+  const [lastDay, setLastDay] = useState<Date>()
 
   const handleRSVPClick = () => {
     history.push(`${CALENDAR}/rsvp`)
@@ -55,7 +58,13 @@ const EventDetail = ({
             moment(event.startDate).format('YYYY-MM-DD') <= moment(selectedDate).format('YYYY-MM-DD') &&
             moment(event.endDate).format('YYYY-MM-DD') >= moment(selectedDate).format('YYYY-MM-DD'),
         )
-      : events
+      : events.filter(
+          (event) =>
+            (moment(firstDay).format('YYYY-MM-DD') <= moment(event.startDate).format('YYYY-MM-DD') &&
+              moment(lastDay).format('YYYY-MM-DD') >= moment(event.startDate).format('YYYY-MM-DD')) ||
+            (moment(firstDay).format('YYYY-MM-DD') <= moment(event.endDate).format('YYYY-MM-DD') &&
+              moment(lastDay).format('YYYY-MM-DD') >= moment(event.endDate).format('YYYY-MM-DD')),
+        )
   }
 
   const handleDelete = async () => {
@@ -90,7 +99,7 @@ const EventDetail = ({
     const filteredEvents = getFilteredEvents(selectedDate)
     setSelectedEventIndex(0)
     setSelectedEvent(filteredEvents.at(0))
-  }, [events?.length, selectedDate])
+  }, [events?.length, selectedDate, firstDay])
 
   useEffect(() => {
     const filteredEvents = getFilteredEvents(selectedDate)
@@ -101,6 +110,12 @@ const EventDetail = ({
       }
     })
   }, [events?.length, selectedEventId])
+
+  useEffect(() => {
+    const { firstDay: first, lastDay: last } = getFirstDayAndLastDayOfMonth(currentMonth)
+    setFirstDay(first)
+    setLastDay(last)
+  }, [currentMonth])
 
   return (
     <Stack>

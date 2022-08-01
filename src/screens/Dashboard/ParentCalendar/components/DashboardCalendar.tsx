@@ -17,12 +17,12 @@ export const DashboardCalendar: DashboardCalendarTemplateType = ({
   selectedEventTypes,
   eventTypeLists,
   selectedDate,
+  currentMonth,
+  setCurrentMonth,
   setSelectedDate,
   handleSelectedEvent,
   setSelectedEventTypes,
 }) => {
-  const [currentDay, setCurrentDay] = useState<Date>(new Date())
-
   return (
     <Box className='calendar-wrapper'>
       <Box style={{ fontSize: 14, width: '100%' }} className='calendar'>
@@ -31,25 +31,25 @@ export const DashboardCalendar: DashboardCalendarTemplateType = ({
             <Box
               className='calender-year'
               onClick={() => {
-                if (currentDay.getMonth() == 0) {
-                  setCurrentDay(new Date(currentDay.getFullYear() - 1, 11, 1))
+                if (currentMonth.getMonth() == 0) {
+                  setCurrentMonth(new Date(currentMonth.getFullYear() - 1, 11, 1))
                 } else {
-                  setCurrentDay(new Date(currentDay.getFullYear(), currentDay.getMonth() - 1, 1))
+                  setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1))
                 }
               }}
             >
               <img className='arrow' src={leftArrowCalendar} />
             </Box>
             <Subtitle textAlign='center' fontWeight='bold' className='label'>
-              {moment(currentDay).format('MMM YYYY')}
+              {moment(currentMonth).format('MMM YYYY')}
             </Subtitle>
             <Box
               className='calender-year'
               onClick={() => {
-                if (currentDay.getMonth() == 11) {
-                  setCurrentDay(new Date(currentDay.getFullYear() + 1, 0, 1))
+                if (currentMonth.getMonth() == 11) {
+                  setCurrentMonth(new Date(currentMonth.getFullYear() + 1, 0, 1))
                 } else {
-                  setCurrentDay(new Date(currentDay.getFullYear(), currentDay.getMonth() + 1, 1))
+                  setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1))
                 }
               }}
             >
@@ -78,7 +78,7 @@ export const DashboardCalendar: DashboardCalendarTemplateType = ({
             setSelectedDate={setSelectedDate}
             handleSelectedEvent={handleSelectedEvent}
             eventList={calendarEventList.filter((item) => selectedEventTypes.includes(item.title))}
-            day={currentDay}
+            day={currentMonth}
           />
         </Box>
       </Box>

@@ -1,19 +1,13 @@
-import { Box, Checkbox, FormControlLabel, Grid } from '@mui/material'
-import React, { useContext, useEffect, useState } from 'react'
-import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
-import { MTHBLUE, RED } from '../../../../../utils/constants'
-import { toOrdinalSuffix } from '../../../../../utils/stringHelpers'
+import React, { useContext, useState } from 'react'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
-import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragraph'
-import { map } from 'lodash'
+import { Box, Grid } from '@mui/material'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { MthColor } from '@mth/enums'
+import { useCurrentGradeAndProgramByRegionId } from '@mth/hooks'
+import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { CheckBoxList } from '../../../Calendar/components/CheckBoxList'
 import { defaultUserList } from '../../../Calendar/defaultValue'
-import { UserContext } from '../../../../../providers/UserContext/UserProvider'
-import { useCurrentGradeAndProgramByRegionId } from '../../../Calendar/hooks/useCurrentGradeAndProgram'
-import { getSchoolYearsByRegionId } from '@screens/Admin/Dashboard/SchoolYear/SchoolYear'
-import { useQuery } from '@apollo/client'
-import moment from 'moment'
 
 type FilterComponentProps = {
   grades: string[]
@@ -36,15 +30,18 @@ const FilterComponent = ({
   setGradesInvalid,
   setUsersInvalid,
 }: FilterComponentProps) => {
-
   const { me } = useContext(UserContext)
-  const { loading, gradeList, programYearList } = useCurrentGradeAndProgramByRegionId(Number(me?.selectedRegionId), grades, setGrades)
+  const { gradeList, programYearList } = useCurrentGradeAndProgramByRegionId(
+    Number(me?.selectedRegionId),
+    grades,
+    setGrades,
+  )
   const [expand, setExpand] = useState<boolean>(true)
   const chevron = () =>
     !expand ? (
       <ChevronRightIcon
         sx={{
-          color: MTHBLUE,
+          color: MthColor.MTHBLUE,
           verticalAlign: 'bottom',
           cursor: 'pointer',
         }}
@@ -52,12 +49,12 @@ const FilterComponent = ({
     ) : (
       <ExpandMoreIcon
         sx={{
-          color: MTHBLUE,
+          color: MthColor.MTHBLUE,
           verticalAlign: 'bottom',
           cursor: 'pointer',
         }}
       />
-  )
+    )
 
   const Filters = () => (
     <Grid container sx={{ textAlign: 'left', marginY: '12px' }}>
@@ -80,7 +77,7 @@ const FilterComponent = ({
               haveSelectAll={true}
             />
             {gradesInvalid && (
-              <Subtitle size='small' color={RED} fontWeight='700'>
+              <Subtitle size='small' color={MthColor.RED} fontWeight='700'>
                 Please select one at least
               </Subtitle>
             )}
@@ -98,7 +95,7 @@ const FilterComponent = ({
             haveSelectAll={false}
           />
           {usersInvalid && (
-            <Subtitle size='small' color={RED} fontWeight='700'>
+            <Subtitle size='small' color={MthColor.RED} fontWeight='700'>
               Please select one at least
             </Subtitle>
           )}
@@ -116,7 +113,7 @@ const FilterComponent = ({
               haveSelectAll={false}
             />
             {gradesInvalid && (
-              <Subtitle size='small' color={RED} fontWeight='700'>
+              <Subtitle size='small' color={MthColor.RED} fontWeight='700'>
                 Please select one at least
               </Subtitle>
             )}
@@ -129,7 +126,7 @@ const FilterComponent = ({
   return (
     <>
       <Box display='flex' flexDirection='row' onClick={() => setExpand(!expand)}>
-        <Subtitle fontWeight='700' color={MTHBLUE} sx={{ cursor: 'pointer' }}>
+        <Subtitle fontWeight='700' color={MthColor.MTHBLUE} sx={{ cursor: 'pointer' }}>
           Filter
         </Subtitle>
         {chevron()}

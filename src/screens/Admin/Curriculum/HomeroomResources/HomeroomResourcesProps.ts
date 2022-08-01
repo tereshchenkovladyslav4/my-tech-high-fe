@@ -1,13 +1,6 @@
-export enum HOMEROOME_RESOURCE_TYPE {
-  WITHDRAWAL = 0,
-  WEBSITE_LINK,
-  FORM,
-  PDF_TO_SIGN,
-}
-
 export enum EventType {
   ADD = 'add',
-  ALLOWREQUEST = 'allow_request',
+  ALLOW_REQUEST = 'allowRequest',
   ARCHIVE = 'archive',
   CLICK = 'click',
   DELETE = 'delete',
@@ -16,22 +9,27 @@ export enum EventType {
   RESTORE = 'restore',
 }
 
-export interface HomeroomeResource {
-  id: number
+export interface HomeroomResource {
+  resource_id: number
   region_id: number
+  school_year_id: number
   title: string
-  show_cost: boolean
-  cost: number
-  image_url: string
-  type: HOMEROOME_RESOURCE_TYPE
-  sequence: number
-  website: string
-  hidden: boolean
-  allow_request?: boolean
+  showCost?: boolean
+  cost?: number
+  image?: string
+  sequence?: number
+  website?: string
+  allowRequest?: boolean
+  hidden?: boolean
 }
 
-export interface HomeroomeResourceProps {
-  item: HomeroomeResource
+export interface HomeroomResourceProps {
+  backAction?: () => void
+}
+
+export interface HomeroomResourceCardProps {
+  item: HomeroomResource
   action: boolean
+  isPast: boolean
   onAction?: (evtType: EventType) => void
 }

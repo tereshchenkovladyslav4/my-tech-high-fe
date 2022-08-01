@@ -137,7 +137,8 @@ export const Filters = ({ filter, setFilter, partnerList }: FiltersProps) => {
       setSchoolDistrict([]),
       setCurriculumProvider([]),
       setFilter(prev => ({
-        schoolYear: prev.schoolYear
+        schoolYearId: prev.schoolYearId,
+        schoolYearLabel: prev.schoolYearLabel
       }))
     const state = {}
     history.replace({ ...history.location, state })
@@ -247,7 +248,7 @@ export const Filters = ({ filter, setFilter, partnerList }: FiltersProps) => {
             }}
           >
             <Paragraph size='large' fontWeight='700'>
-              For {filter?.schoolYear} Year
+              For {filter?.schoolYearLabel} Year
             </Paragraph>
             {['New', 'Returning', 'Transferred', 'Sibling'].map((item: string, index) => (
               <FormControlLabel
@@ -277,7 +278,7 @@ export const Filters = ({ filter, setFilter, partnerList }: FiltersProps) => {
                 control={<Checkbox value={item.value} checked={schoolOfEnrollments.includes(item.value)} onChange={handleSchoolOfEnrollments} />}
                 label={
                   <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
-                    {item.label}
+                    {item.abb}
                   </Paragraph>
                 }
               />

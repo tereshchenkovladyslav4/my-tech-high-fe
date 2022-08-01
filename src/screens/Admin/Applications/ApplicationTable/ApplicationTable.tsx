@@ -55,6 +55,7 @@ export const ApplicationTable = ({ filter }: ApplicationTableProps) => {
   const [openEmailModal, setOpenEmailModal] = useState<boolean>(false)
   const [emailHistory, setEmailHistory] = useState([])
   const status = ['New', 'Sibling', 'Returning', 'Hidden']
+
   const createData = (application: any) => {
     return {
       id: application.application_id,

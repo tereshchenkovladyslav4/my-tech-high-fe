@@ -1,106 +1,64 @@
-import React, { useContext, useState } from 'react'
-import { Box, ButtonBase, Grid, Typography } from '@mui/material'
+import React, { useContext, useEffect, useState } from 'react'
+import { useQuery } from '@apollo/client'
 import ArrowBackIosOutlinedIcon from '@mui/icons-material/ArrowBackIosOutlined'
+import { Box, ButtonBase, Grid, Typography } from '@mui/material'
+import moment from 'moment'
 import { arrayMove, SortableContainer, SortableElement } from 'react-sortable-hoc'
-import { EventType, HomeroomeResource, HomeroomeResourceProps, HOMEROOME_RESOURCE_TYPE } from './HomeroomResourcesProps'
-import { UserContext } from '../../../../providers/UserContext/UserProvider'
-import { HomeroomeResourceCard } from './HomeroomResourceCard'
-import { DropDownItem } from '../../../../components/DropDown/types'
-import { DropDown } from '../../../../components/DropDown/DropDown'
+import { DropDown } from '@mth/components/DropDown/DropDown'
+import { getResourcesQuery } from '@mth/graphql/queries/resource'
+import { useSchoolYearsByRegionId } from '@mth/hooks'
+import { UserContext } from '@mth/providers/UserContext/UserProvider'
+import { HomeroomResourceCard } from './HomeroomResourceCard'
+import { EventType, HomeroomResource, HomeroomResourceProps, HomeroomResourceCardProps } from './HomeroomResourcesProps'
 
-export const HomeroomResources: React.FC<any> = ({ backAction }) => {
+export const HomeroomResources: React.FC<HomeroomResourceProps> = ({ backAction }) => {
   const { me } = useContext(UserContext)
-  const [resources] = useState<HomeroomeResource[]>([
-    {
-      id: 1,
-      region_id: 1,
-      title: 'Lorem ipsum',
-      show_cost: true,
-      cost: 20,
-      image_url: './src/assets/email-template.png',
-      type: HOMEROOME_RESOURCE_TYPE.WEBSITE_LINK,
-      sequence: 1,
-      website: 'https://google.com',
-      hidden: false,
-    },
-    {
-      id: 2,
-      region_id: 2,
-      title: 'Lorem ipsum',
-      show_cost: true,
-      cost: 30,
-      image_url: './src/assets/immunizations.png',
-      type: HOMEROOME_RESOURCE_TYPE.WEBSITE_LINK,
-      sequence: 2,
-      website: 'https://google.com',
-      hidden: false,
-      allow_request: true,
-    },
-    {
-      id: 3,
-      region_id: 3,
-      title: 'Lorem ipsum',
-      show_cost: false,
-      cost: 20,
-      image_url: './src/assets/email-template.png',
-      type: HOMEROOME_RESOURCE_TYPE.WEBSITE_LINK,
-      sequence: 3,
-      website: 'https://google.com',
-      hidden: false,
-    },
-    {
-      id: 0,
-      region_id: 3,
-      title: 'Lorem ipsum',
-      show_cost: true,
-      cost: 20,
-      image_url: './src/assets/email-template.png',
-      type: HOMEROOME_RESOURCE_TYPE.WEBSITE_LINK,
-      sequence: 3,
-      website: 'https://google.com',
-      hidden: false,
-    },
-    {
-      id: 4,
-      region_id: 4,
-      title: 'Lorem ipsum',
-      show_cost: true,
-      cost: 30,
-      image_url: './src/assets/immunizations.png',
-      type: HOMEROOME_RESOURCE_TYPE.WEBSITE_LINK,
-      sequence: 4,
-      website: 'https://google.com',
-      hidden: true,
-    },
-  ])
-  const [schoolYears] = useState<Array<DropDownItem>>([
-    { label: '2020-21', value: '2020-2021' },
-    { label: '2021-22', value: '2021-2022' },
-  ])
-  const [selectedYear, setSelectedYear] = useState<string | number>('2020-2021')
 
-  const isEditable = () => {
-    return me && me.level && me.level <= 2
+  const addCard = {
+    id: me?.selectedRegionId,
+    title: 'Lorem ipsum',
+  }
+  const { dropdownItems: schoolYearDropdownItems, schoolYears: schoolYears } = useSchoolYearsByRegionId(
+    me?.selectedRegionId,
+  )
+  const [resources, setResources] = useState<HomeroomResource[]>([])
+  const [visibleResources, setVisibleResources] = useState<HomeroomResource[]>([])
+  const [selectedYear, setSelectedYear] = useState<string | number>('')
+
+  const { data: resourcesData } = useQuery(getResourcesQuery, {
+    variables: { schoolYearId: selectedYear },
+    skip: !selectedYear,
+    fetchPolicy: 'network-only',
+  })
+
+  const hasPermission = () => {
+    return me?.level && me.level <= 2
   }
 
-  const arrangeItems = (resources: HomeroomeResource[]) => {
-    console.log(resources)
+  const isPast = (): boolean => {
+    const selectedSchoolYear = schoolYears.find((item) => item.school_year_id === selectedYear)
+    return !!selectedSchoolYear && moment().isAfter(selectedSchoolYear.date_end)
   }
 
-  const SortableQuickLinkCard = SortableElement(({ item, action, onAction }: HomeroomeResourceProps) => (
+  const arrangeItems = (items: HomeroomResource[]) => {
+    console.log(items)
+  }
+
+  const SortableCard = SortableElement(({ item, action, isPast, onAction }: HomeroomResourceCardProps) => (
     <li style={{ listStyleType: 'none', display: 'inline-block', width: '33%' }}>
-      <HomeroomeResourceCard item={item} action={action} onAction={onAction} />
+      <HomeroomResourceCard item={item} action={action} isPast={isPast} onAction={onAction} />
     </li>
   ))
 
-  const SortableListContainer = SortableContainer(({ items }: { items: HomeroomeResource[] }) => (
+  const SortableListContainer = SortableContainer(({ items }: { items: HomeroomResource[] }) => (
     <ul style={{ textAlign: 'left' }}>
       {items.map((item, idx) => (
-        <SortableQuickLinkCard
+        <SortableCard
           index={idx}
           key={idx}
           item={item}
-          action={!isEditable() || item.id == 0 ? false : true}
+          action={!(!hasPermission() || item.resource_id == 0)}
+          isPast={isPast()}
           onAction={(evtType: EventType) => {
             console.log('Resource event:', evtType)
           }}
@@ -108,6 +66,23 @@ export const HomeroomResources: React.FC<any> = ({ backAction }) => {
       ))}
     </ul>
   ))
+
+  useEffect(() => {
+    const items = JSON.parse(JSON.stringify(resources))
+    if (!isPast()) items.splice(3, 0, addCard)
+    setVisibleResources(items)
+  }, [resources])
+
+  useEffect(() => {
+    if (resourcesData) {
+      const { resources } = resourcesData
+      setResources(resources || [])
+    }
+  }, [resourcesData])
+
+  useEffect(() => {
+    if (schoolYears?.length) setSelectedYear(schoolYears[0].school_year_id)
+  }, [schoolYears])
 
   return (
     <Box>
@@ -122,7 +97,7 @@ export const HomeroomResources: React.FC<any> = ({ backAction }) => {
         </Grid>
         <Box display='flex' flexDirection='row' justifyContent='flex-end' alignItems='center'>
           <DropDown
-            dropDownItems={schoolYears}
+            dropDownItems={schoolYearDropdownItems}
             placeholder={'Select Year'}
             defaultValue={selectedYear}
             borderNone={true}
@@ -134,10 +109,10 @@ export const HomeroomResources: React.FC<any> = ({ backAction }) => {
       </Box>
       <SortableListContainer
         axis='xy'
-        items={resources}
+        items={visibleResources}
         useDragHandle={true}
         onSortEnd={({ oldIndex, newIndex }) => {
-          const newResources = arrayMove(resources, oldIndex, newIndex)
+          const newResources = arrayMove(visibleResources, oldIndex, newIndex)
           arrangeItems(newResources)
         }}
       />

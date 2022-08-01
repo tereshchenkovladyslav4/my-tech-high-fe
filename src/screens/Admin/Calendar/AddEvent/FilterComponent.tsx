@@ -1,18 +1,17 @@
 import React, { useContext, useState } from 'react'
-import { Box, Card, Grid } from '@mui/material'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import { Box, Card, Grid } from '@mui/material'
 import { useFormikContext } from 'formik'
-import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { useCurrentGradeAndProgramByRegionId, useSchoolPartnerListByRegionId } from '@mth/hooks'
+import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { MTHBLUE } from '../../../../utils/constants'
-import { EventFormData, FilterComponentProps } from '../types'
-import { UserContext } from '../../../../providers/UserContext/UserProvider'
 import { CheckBoxList } from '../components/CheckBoxList'
 import { checkBoxListClassess } from '../components/CheckBoxList/styles'
 import { defaultOtherList, defaultProviderList, defaultUserList } from '../defaultValue'
-import { useSchoolPartnerListByRegionId } from '../hooks/useSchoolPartnerListByRegionId'
-import { useCurrentGradeAndProgramByRegionId } from '../hooks/useCurrentGradeAndProgram'
 import { calendarClassess } from '../styles'
+import { EventFormData, FilterComponentProps } from '../types'
 
 const FilterComponent = ({
   grades,

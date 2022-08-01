@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Avatar, AvatarGroup, Box, Button, Stack } from '@mui/material'
 import { useHistory } from 'react-router-dom'
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
@@ -9,7 +9,13 @@ import { CALENDAR, SYSTEM_02, SYSTEM_05, SYSTEM_06 } from '../../../../utils/con
 import { EventDetailProps } from '../types'
 import { UserContext } from '../../../../providers/UserContext/UserProvider'
 import { Person } from '../../../HomeroomStudentProfile/Student/types'
-import { extractContent, hexToRgbA, renderDate, renderFilter } from '../../../../utils/utils'
+import {
+  extractContent,
+  getFirstDayAndLastDayOfMonth,
+  hexToRgbA,
+  renderDate,
+  renderFilter,
+} from '../../../../utils/utils'
 import { eventDetailClassess } from './styles'
 
 const EventDetail = ({
@@ -18,12 +24,15 @@ const EventDetail = ({
   selectedDate,
   selectedEventId,
   selectedEvent,
+  currentMonth,
   setSelectedEventIndex,
   setSelectedEvent,
 }: EventDetailProps) => {
   const history = useHistory()
   const { me } = useContext(UserContext)
   const students = me?.students
+  const [firstDay, setFirstDay] = useState<Date>()
+  const [lastDay, setLastDay] = useState<Date>()
 
   const handleRSVPClick = () => {
     history.push(`${CALENDAR}/rsvp`)
@@ -36,7 +45,13 @@ const EventDetail = ({
             moment(event.startDate).format('YYYY-MM-DD') <= moment(selectedDate).format('YYYY-MM-DD') &&
             moment(event.endDate).format('YYYY-MM-DD') >= moment(selectedDate).format('YYYY-MM-DD'),
         )
-      : events
+      : events.filter(
+          (event) =>
+            (moment(firstDay).format('YYYY-MM-DD') <= moment(event.startDate).format('YYYY-MM-DD') &&
+              moment(lastDay).format('YYYY-MM-DD') >= moment(event.startDate).format('YYYY-MM-DD')) ||
+            (moment(firstDay).format('YYYY-MM-DD') <= moment(event.endDate).format('YYYY-MM-DD') &&
+              moment(lastDay).format('YYYY-MM-DD') >= moment(event.endDate).format('YYYY-MM-DD')),
+        )
   }
 
   const handlePrevEventView = () => {
@@ -93,7 +108,7 @@ const EventDetail = ({
     const filteredEvents = getFilteredEvents(selectedDate)
     setSelectedEventIndex(0)
     setSelectedEvent(filteredEvents.at(0))
-  }, [events?.length, selectedDate])
+  }, [events?.length, selectedDate, firstDay])
 
   useEffect(() => {
     const filteredEvents = getFilteredEvents(selectedDate)
@@ -104,6 +119,12 @@ const EventDetail = ({
       }
     })
   }, [events?.length, selectedEventId])
+
+  useEffect(() => {
+    const { firstDay: first, lastDay: last } = getFirstDayAndLastDayOfMonth(currentMonth)
+    setFirstDay(first)
+    setLastDay(last)
+  }, [currentMonth])
 
   return (
     <Stack>

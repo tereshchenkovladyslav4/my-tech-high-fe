@@ -3,8 +3,10 @@ export type FilterVM = {
   accountStatus: string[]
   status: string[]
   specialEd: string[]
-  schoolYear: string[]
+  // schoolYear: string[]
   visibility: string[]
+  schoolYearId : string
+  schoolYearLabel : string
 }
 
 export type FiltersProps = {

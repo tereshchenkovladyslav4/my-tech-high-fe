@@ -1,30 +1,29 @@
 import React from 'react'
-import { Box, Card, CardContent, CardMedia, IconButton, Stack, Tooltip, Typography } from '@mui/material'
-import EditIcon from '@mui/icons-material/Edit'
-import DehazeIcon from '@mui/icons-material/Dehaze'
 import CallMissedOutgoingIcon from '@mui/icons-material/CallMissedOutgoing'
-import EastIcon from '@mui/icons-material/East'
-import AddNewIcon from '../../../../assets/add-new.png'
-import DeleteIcon from '../../../../assets/delete.png'
-import ArchiveIcon from '../../../../assets/archive.png'
-import ViewOnlyIcon from '../../../../assets/plus-black-bg-white.png'
-import AllowingRequestIcon from '../../../../assets/check-white-bg-black.png'
-import DuplicateIcon from '../../../../assets/plus-black-bg-orange.png'
-import { SYSTEM_01 } from '../../../../utils/constants'
+import DehazeIcon from '@mui/icons-material/Dehaze'
+import EditIcon from '@mui/icons-material/Edit'
+import { Box, Card, CardContent, CardMedia, IconButton, Stack, Tooltip, Typography } from '@mui/material'
 import { SortableHandle } from 'react-sortable-hoc'
-import { EventType, HomeroomeResourceProps } from './HomeroomResourcesProps'
+import AddNewIcon from '@mth/assets/add-new.png'
+import ArchiveIcon from '@mth/assets/archive.png'
+import AllowingRequestIcon from '@mth/assets/check-white-bg-black.png'
+import DeleteIcon from '@mth/assets/delete.png'
+import DuplicateIcon from '@mth/assets/plus-black-bg-orange.png'
+import ViewOnlyIcon from '@mth/assets/plus-black-bg-white.png'
+import { MthColor } from '@mth/enums'
+import { EventType, HomeroomResourceCardProps } from './HomeroomResourcesProps'
 
-export const HomeroomeResourceCard: React.FC<HomeroomeResourceProps> = ({ item, action, onAction }) => {
+export const HomeroomResourceCard: React.FC<HomeroomResourceCardProps> = ({ item, action, isPast, onAction }) => {
   const DragHandle = SortableHandle(() => (
     <IconButton>
       <Tooltip title='Move'>
-        <DehazeIcon htmlColor={SYSTEM_01} />
+        <DehazeIcon htmlColor={MthColor.SYSTEM_01} />
       </Tooltip>
     </IconButton>
   ))
 
   const actionHandler = (eventType: EventType) => {
-    onAction && onAction(eventType)
+    if (onAction) onAction(eventType)
   }
 
   return (
@@ -42,10 +41,10 @@ export const HomeroomeResourceCard: React.FC<HomeroomeResourceProps> = ({ item, 
         actionHandler(EventType.CLICK)
       }}
     >
-      {Boolean(item.id) && (
+      {!!item.resource_id && (
         <>
-          <CardMedia component='img' sx={{ height: 240 }} src={item.image_url} />
-          {!item.image_url && (
+          <CardMedia component='img' sx={{ height: 240 }} src={item.image} />
+          {!item.image && (
             <Box
               sx={{ width: '100%', position: 'absolute', left: 0, textAlign: 'center', top: '100px', color: 'white' }}
             >
@@ -56,7 +55,7 @@ export const HomeroomeResourceCard: React.FC<HomeroomeResourceProps> = ({ item, 
           )}
         </>
       )}
-      {!item.id && (
+      {!item.resource_id && (
         <Box
           sx={{
             display: 'flex',
@@ -68,7 +67,7 @@ export const HomeroomeResourceCard: React.FC<HomeroomeResourceProps> = ({ item, 
           }}
         ></Box>
       )}
-      {!item.id && (
+      {!item.resource_id && (
         <Tooltip title='Add'>
           <img
             onClick={(e) => {
@@ -80,7 +79,7 @@ export const HomeroomeResourceCard: React.FC<HomeroomeResourceProps> = ({ item, 
           />
         </Tooltip>
       )}
-      {item.hidden && (
+      {action && !isPast && item.hidden && (
         <Tooltip title='Delete'>
           <img
             onClick={(e) => {
@@ -92,19 +91,19 @@ export const HomeroomeResourceCard: React.FC<HomeroomeResourceProps> = ({ item, 
           />
         </Tooltip>
       )}
-      {Boolean(item.id && !item.hidden) && (
-        <Tooltip title={item.allow_request ? 'View Only' : 'Allow Request'}>
+      {!!item.resource_id && !item.hidden && (
+        <Tooltip title={item.allowRequest ? 'View Only' : 'Allow Request'}>
           <img
             onClick={(e) => {
-              actionHandler(EventType.ALLOWREQUEST)
+              actionHandler(EventType.ALLOW_REQUEST)
               e.stopPropagation()
             }}
-            src={item.allow_request ? AllowingRequestIcon : ViewOnlyIcon}
+            src={item.allowRequest ? AllowingRequestIcon : ViewOnlyIcon}
             style={{ position: 'absolute', top: 15, right: 15 }}
           />
         </Tooltip>
       )}
-      {Boolean(item.id && !item.hidden) && (
+      {action && !!item.resource_id && !item.hidden && (
         <Tooltip title='Clone'>
           <img
             onClick={(e) => {
@@ -132,18 +131,13 @@ export const HomeroomeResourceCard: React.FC<HomeroomeResourceProps> = ({ item, 
         </Box>
         <Stack direction='row' justifyContent='space-between' alignItems='center' sx={{ height: 40 }}>
           <Typography color='#A1A1A1' fontSize='16px' fontWeight='700'>
-            {item.id ? (item.show_cost ? `$${item.cost}` : 'Included') : 'Lorem ipsum'}
+            {item.resource_id ? (item.showCost ? `$${item.cost}` : 'Included') : 'Lorem ipsum'}
           </Typography>
-          {!action && item.id != 0 && (
-            <Stack direction='row' spacing={1.5} alignItems='center'>
-              <EastIcon />
-            </Stack>
-          )}
-          {action && (
+          {action && !isPast && (
             <Stack direction='row' spacing={1.5} alignItems='center'>
               <Tooltip title='Edit'>
                 <EditIcon
-                  htmlColor={SYSTEM_01}
+                  htmlColor={MthColor.SYSTEM_01}
                   onClick={(e) => {
                     actionHandler(EventType.EDIT)
                     e.stopPropagation()
@@ -158,13 +152,14 @@ export const HomeroomeResourceCard: React.FC<HomeroomeResourceProps> = ({ item, 
                       e.stopPropagation()
                     }}
                     src={ArchiveIcon}
+                    alt='Archive'
                   />
                 </Tooltip>
               )}
               {item.hidden && (
                 <Tooltip title='Unarchive'>
                   <CallMissedOutgoingIcon
-                    htmlColor={SYSTEM_01}
+                    htmlColor={MthColor.SYSTEM_01}
                     onClick={(e) => {
                       actionHandler(EventType.RESTORE)
                       e.stopPropagation()

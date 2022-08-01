@@ -7,7 +7,7 @@ import moment from 'moment'
 import * as yup from 'yup'
 import { CALENDAR } from '../../../../utils/constants'
 import { addEventClassess } from './styles'
-import EditEventComponent from './EventForm'
+import EventForm from './EventForm'
 import FilterComponent from './FilterComponent'
 import { AddEventProps, EventFormData, EventVM } from '../types'
 import CustomModal from '../../SiteManagement/EnrollmentSetting/components/CustomModal/CustomModals'
@@ -57,8 +57,8 @@ const AddEvent = ({ selectedEvent }: AddEventProps) => {
           event_id: Number(event?.eventId),
           TypeId: Number(values?.eventTypeId),
           description: values?.description,
-          end_date: convertDateToUTCDate(values?.endDate, values?.time),
-          start_date: convertDateToUTCDate(values?.startDate, values?.time),
+          end_date: convertDateToUTCDate(values?.endDate, values?.allDay ? '00:00' : values?.time),
+          start_date: convertDateToUTCDate(values?.startDate, values?.allDay ? '00:00' : values?.time),
           all_day: values?.allDay,
           title: values?.title,
           filter_grades: JSON.stringify(values?.grades.filter((grade) => grade)),
@@ -81,7 +81,7 @@ const AddEvent = ({ selectedEvent }: AddEventProps) => {
       startDate: event?.startDate || new Date(),
       endDate: event?.endDate || new Date(),
       time: event?.time || '00:00',
-      allDay: event?.allDay || true,
+      allDay: !!event?.allDay,
       description: event?.description,
       grades,
     })
@@ -126,7 +126,7 @@ const AddEvent = ({ selectedEvent }: AddEventProps) => {
               <Box sx={{ width: '100%', padding: 3 }}>
                 <Grid container justifyContent='center'>
                   <Grid item xs={6} sx={{ textAlign: 'left', marginTop: 'auto', marginBottom: 'auto' }}>
-                    <EditEventComponent setIsChanged={setIsChanged} handleAddRSVPClick={() => setShowRSVPForm(true)} />
+                    <EventForm setIsChanged={setIsChanged} handleAddRSVPClick={() => setShowRSVPForm(true)} />
                   </Grid>
                   <Grid item xs={5}>
                     <FilterComponent

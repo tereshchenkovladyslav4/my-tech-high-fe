@@ -24,10 +24,11 @@ const EventCalendar = ({
   eventList,
   selectedDate,
   selectedEvent,
+  currentMonth,
+  setCurrentMonth,
   setSelectedDate,
   setSelectedEventId,
 }: EventCalendarProps) => {
-  const [currentDay, setCurrentDay] = useState(new Date())
   const [showMore, setShowMore] = useState<boolean>(false)
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const [selectedEvents, setSelectedEvents] = useState<CalendarEvent[]>([])
@@ -94,25 +95,25 @@ const EventCalendar = ({
             variant='contained'
             sx={mainClasses.leftArrowButton}
             onClick={() => {
-              if (currentDay.getMonth() == 0) {
-                setCurrentDay(new Date(currentDay.getFullYear() - 1, 11, 1))
+              if (currentMonth.getMonth() == 0) {
+                setCurrentMonth(new Date(currentMonth.getFullYear() - 1, 11, 1))
               } else {
-                setCurrentDay(new Date(currentDay.getFullYear(), currentDay.getMonth() - 1, 1))
+                setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1))
               }
             }}
           >
             <ArrowBackIosNewIcon />
           </Button>
-          <label style={{ marginBottom: 'auto', marginTop: 'auto' }}>{moment(currentDay).format('MMMM YYYY')}</label>
+          <label style={{ marginBottom: 'auto', marginTop: 'auto' }}>{moment(currentMonth).format('MMMM YYYY')}</label>
           <Button
             disableElevation
             variant='contained'
             sx={mainClasses.rightArrowButton}
             onClick={() => {
-              if (currentDay.getMonth() == 11) {
-                setCurrentDay(new Date(currentDay.getFullYear() + 1, 0, 1))
+              if (currentMonth.getMonth() == 11) {
+                setCurrentMonth(new Date(currentMonth.getFullYear() + 1, 0, 1))
               } else {
-                setCurrentDay(new Date(currentDay.getFullYear(), currentDay.getMonth() + 1, 1))
+                setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1))
               }
             }}
           >
@@ -132,8 +133,8 @@ const EventCalendar = ({
         startAccessor='start'
         endAccessor='end'
         style={{ minHeight: 730 }}
-        defaultDate={currentDay}
-        date={currentDay}
+        defaultDate={currentMonth}
+        date={currentMonth}
         formats={formats}
         selectable
         onSelectEvent={handleSelectEvent}
@@ -156,10 +157,12 @@ const EventCalendar = ({
         onShowMore={(events, date) => {
           setSelectedEvents(events)
           setSelectedDate(date)
+          setSelectedEventId(0)
         }}
         onSelectSlot={(slotInfo) => {
           const { start } = slotInfo
           setSelectedDate(start)
+          setSelectedEventId(0)
           setShowMore(false)
           setAnchorEl(null)
         }}

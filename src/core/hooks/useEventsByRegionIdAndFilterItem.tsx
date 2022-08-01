@@ -1,10 +1,10 @@
+import { useContext, useEffect, useState } from 'react'
 import { useQuery } from '@apollo/client'
 import moment from 'moment'
-import { useContext, useEffect, useState } from 'react'
-import { UserContext } from '../../../../providers/UserContext/UserProvider'
-import { hexToRgbA } from '../../../../utils/utils'
-import { getEventsQuery } from '../services'
-import { CalendarEvent, EventResponseVM, EventVM } from '../types'
+import { UserContext } from '@mth/providers/UserContext/UserProvider'
+import { getEventsQuery } from '@mth/screens/Admin/Calendar/services'
+import { CalendarEvent, EventResponseVM, EventVM } from '@mth/screens/Admin/Calendar/types'
+import { hexToRgbA } from '@mth/utils'
 
 export const useEventsByRegionIdAndFilterItem = (
   regionId: number = 0,

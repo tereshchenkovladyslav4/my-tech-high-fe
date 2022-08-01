@@ -7,12 +7,16 @@ import { CalendarEvent, EventVM } from '../../Admin/Calendar/types'
 import { ParentEventDetail } from './ParentEventDetail'
 import { ParentCalendarTemplateType } from './types'
 import { parentCalendarClasses } from './styles'
+import { getFirstDayAndLastDayOfMonth } from '../../../utils/utils'
 
 const ParentCalendar: ParentCalendarTemplateType = ({ events, calendarEventList, eventTypeLists, setSectionName }) => {
   const [selectedEvent, setSelectedEvent] = useState<EventVM | undefined>()
   const [selectedEventTypes, setSelectedEventTypes] = useState<string[]>([])
   const [selectedDate, setSelectedDate] = useState<Date>()
   const [selectedEventIndex, setSelectedEventIndex] = useState<number>(0)
+  const [currentMonth, setCurrentMonth] = useState<Date>(new Date())
+  const [firstDay, setFirstDay] = useState<Date>()
+  const [lastDay, setLastDay] = useState<Date>()
 
   const handlePrevEventView = () => {
     const filteredEvents = getFilteredEvents(selectedDate)
@@ -38,7 +42,14 @@ const ParentCalendar: ParentCalendarTemplateType = ({ events, calendarEventList,
             moment(event.endDate).format('YYYY-MM-DD') >= moment(selectedDate).format('YYYY-MM-DD') &&
             selectedEventTypes.includes(event.eventTypeName),
         )
-      : events.filter((event) => selectedEventTypes.includes(event.eventTypeName))
+      : events.filter(
+          (event) =>
+            (selectedEventTypes.includes(event.eventTypeName) &&
+              moment(firstDay).format('YYYY-MM-DD') <= moment(event.startDate).format('YYYY-MM-DD') &&
+              moment(lastDay).format('YYYY-MM-DD') >= moment(event.startDate).format('YYYY-MM-DD')) ||
+            (moment(firstDay).format('YYYY-MM-DD') <= moment(event.endDate).format('YYYY-MM-DD') &&
+              moment(lastDay).format('YYYY-MM-DD') >= moment(event.endDate).format('YYYY-MM-DD')),
+        )
   }
 
   const handleSelectedEvent = (slotInfo: CalendarEvent, date: Date) => {
@@ -58,7 +69,13 @@ const ParentCalendar: ParentCalendarTemplateType = ({ events, calendarEventList,
     const filteredEvents = getFilteredEvents(selectedDate)
     setSelectedEventIndex(0)
     setSelectedEvent(filteredEvents.at(0))
-  }, [selectedDate, selectedEventTypes, events])
+  }, [selectedDate, selectedEventTypes, events, firstDay, lastDay])
+
+  useEffect(() => {
+    const { firstDay: first, lastDay: last } = getFirstDayAndLastDayOfMonth(currentMonth)
+    setFirstDay(first)
+    setLastDay(last)
+  }, [currentMonth])
 
   return (
     <Card style={{ borderRadius: 12 }}>
@@ -88,12 +105,14 @@ const ParentCalendar: ParentCalendarTemplateType = ({ events, calendarEventList,
           </Grid>
           <Grid item xs={6} sx={{ zIndex: 0 }}>
             <DashboardCalendar
+              currentMonth={currentMonth}
               selectedEvent={selectedEvent}
               selectedDate={selectedDate}
-              setSelectedDate={setSelectedDate}
               calendarEventList={calendarEventList}
               selectedEventTypes={selectedEventTypes}
               eventTypeLists={eventTypeLists}
+              setSelectedDate={setSelectedDate}
+              setCurrentMonth={setCurrentMonth}
               setSelectedEventTypes={setSelectedEventTypes}
               handleSelectedEvent={handleSelectedEvent}
             />

@@ -16,7 +16,8 @@ export type EventDetailProps = {
   selectedEventId: number
   events: EventVM[]
   selectedEventIndex: number
-  selectedEvent: EventVM | undefined,
+  selectedEvent: EventVM | undefined
+  currentMonth: Date
   setSelectedEvent: (value: EventVM | undefined) => void
   setSelectedEventIndex: (value: number) => void
 }

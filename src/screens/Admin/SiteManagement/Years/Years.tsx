@@ -1,17 +1,16 @@
 import React, { useState, useContext } from 'react'
 import { useMutation } from '@apollo/client'
 import { Box } from '@mui/material'
-import { UserContext } from '../../../../providers/UserContext/UserProvider'
 import { Prompt } from 'react-router-dom'
-import { useStyles } from '../styles'
-import moment from 'moment'
-import { AddSchoolYearModal } from './AddSchoolYearModal'
-import { createSchoolYearMutation, updateSchoolYearMutation } from '../services'
-import { PageHeader } from '../components/PageHeader'
-import { SchoolYearItem, SchoolYearType } from './types'
-import { SchoolYearDropDown } from './SchoolYearDropDown'
+import { UserContext } from '../../../../providers/UserContext/UserProvider'
 import { DropDownItem } from '../components/DropDown/types'
+import { PageHeader } from '../components/PageHeader'
+import { createSchoolYearMutation, updateSchoolYearMutation } from '../services'
+import { useStyles } from '../styles'
+import { AddSchoolYearModal } from './AddSchoolYearModal'
 import { PageContent } from './PageContent'
+import { SchoolYearDropDown } from './SchoolYearDropDown'
+import { SchoolYearItem, SchoolYearType } from './types'
 
 const Years: React.FC = () => {
   const classes = useStyles
@@ -21,6 +20,7 @@ const Years: React.FC = () => {
   const [schoolYears, setSchoolYears] = useState<SchoolYearType[]>([])
   const [selectedYearId, setSelectedYearId] = useState<string>('')
   const [oldSelectedYearId, setOldSelectedYearId] = useState<string>('')
+  const [cloneSelectedYearId, setCloneSelectedYearId] = useState<number | undefined>(undefined)
   const [schoolYearItem, setSchoolYearItem] = useState<SchoolYearItem | undefined>(undefined)
   const [applicationItem, setApplicationItem] = useState<SchoolYearItem | undefined>(undefined)
   const [midYearItem, setMidYearItem] = useState<SchoolYearItem | undefined>(undefined)
@@ -61,6 +61,7 @@ const Years: React.FC = () => {
             midyear_application: midYearItem?.status ? 1 : 0,
             midyear_application_open: convertLocalDateToUTCDate(midYearItem?.open),
             midyear_application_close: convertLocalDateToUTCDate(midYearItem?.close),
+            cloneSchoolYearId: cloneSelectedYearId || null,
           },
         },
       })
@@ -77,12 +78,14 @@ const Years: React.FC = () => {
 
   const handleParentSave = (val: string) => {
     if (val && val == 'none') {
+      setCloneSelectedYearId(undefined)
       setSchoolYearItem(undefined)
       setApplicationItem(undefined)
       setMidYearItem(undefined)
     } else if (val) {
       schoolYears.map((schoolYear) => {
         if (schoolYear.schoolYearId == parseInt(val)) {
+          setCloneSelectedYearId(Number(schoolYear.schoolYearId))
           let open = new Date(schoolYear.schoolYearOpen)
           open.setFullYear(open.getFullYear() + 1)
           let close = new Date(schoolYear.schoolYearClose)

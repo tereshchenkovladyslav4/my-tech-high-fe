@@ -20,12 +20,14 @@ export const SchoolOfEnrollment = () => {
     variables: {
       schoolPartnerArgs: {
         region_id: me?.selectedRegionId,
+        school_year_id: parseInt(filter?.schoolYearId) < 0 ? Math.abs(parseInt(filter?.schoolYearId)) : parseInt(filter?.schoolYearId) ,
         sort: {
           column: 'name',
           direction: 'ASC'
         }
       }
     },
+    skip: !filter?.schoolYearId,
     fetchPolicy: 'network-only',
   })
 
@@ -35,6 +37,7 @@ export const SchoolOfEnrollment = () => {
       list.push({
         value: item.school_partner_id,
         label: item.name,
+        abb: item.abbreviation
       })
     })
     setPartnerList(list);
