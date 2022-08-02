@@ -99,44 +99,51 @@ export const ApplicationQuestionItem: FunctionComponent<ApplicationQuestionItemP
 }
 function Item({ question: q }: { question: ApplicationQuestion }) {
   const { values, setValues, errors, touched } = useFormikContext<ApplicationQuestion[]>()
-  const { setProgramYear } = useContext(ProgramYearContext)
+  const { setProgramYear, schoolYears, gradesDropDownItems } = useContext(ProgramYearContext)
   const index = values.find((i) => i.id === q.id)?.id
 
   //	Response
   const onChange = (value) => {
-    if (q.slug === 'program_year') {
+    if (q.question === 'Propgram Year') {
       setProgramYear(value)
-    }
-    if (q.type == QUESTION_TYPE.CHECKBOX) {
-      if (q.response.indexOf(value) >= 0) {
-        q.response = q.response.replace(value, '')
-      } else {
-        q.response += value
+    } else {
+      if (q.type == QUESTION_TYPE.CHECKBOX) {
+        if (q.response.indexOf(value) >= 0) {
+          q.response = q.response.replace(value, '')
+        } else {
+          q.response += value
+        }
+        value = q.response
       }
-      value = q.response
+      const newValues = values.map((v) =>
+        v.id == q.id
+          ? {
+              ...v,
+              response: value,
+            }
+          : v,
+      )
+      let current = q
+      while (
+        newValues.find((x) => current.slug == x.additionalQuestion) &&
+        (current.response == '' ||
+          current.options.find((x) => x.value == current.response || current.response.toString().indexOf(x.value) >= 0)
+            .action != 2)
+      ) {
+        current = newValues.find((x) => current.slug == x.additionalQuestion)
+        current.response = ''
+      }
+      setValues(newValues)
     }
-    const newValues = values.map((v) =>
-      v.id == q.id
-        ? {
-            ...v,
-            response: value,
-          }
-        : v,
-    )
-    let current = q
-    while (
-      newValues.find((x) => current.slug == x.additionalQuestion) &&
-      (current.response == '' ||
-        current.options.find((x) => x.value == current.response || current.response.toString().indexOf(x.value) >= 0)
-          .action != 2)
-    ) {
-      current = newValues.find((x) => current.slug == x.additionalQuestion)
-      current.response = ''
-    }
-    setValues(newValues)
   }
 
   if (q.type === QUESTION_TYPE.DROPDOWN) {
+    const dropItems =
+      q.question === 'Propgram Year'
+        ? schoolYears
+        : q.slug === 'student_grade_level'
+        ? gradesDropDownItems
+        : q.options || []
     return (
       <DropDown
         sx={{
@@ -163,7 +170,7 @@ function Item({ question: q }: { question: ApplicationQuestion }) {
           },
         }}
         labelTop
-        dropDownItems={q.options || []}
+        dropDownItems={dropItems}
         placeholder={q.question}
         setParentValue={(v) => onChange(v as string)}
         alternate={true}

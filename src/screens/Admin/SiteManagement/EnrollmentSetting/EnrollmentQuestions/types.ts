@@ -35,12 +35,28 @@ export const ActionQuestionTypes = [
     label: 'Drop Down',
   },
   {
+    value: 2,
+    label: 'Text Field',
+  },
+  {
     value: 3,
     label: 'Checkbox',
   },
   {
+    value: 4,
+    label: 'Agreement',
+  },
+  {
     value: 5,
     label: 'Multiple Choices',
+  },
+  {
+    value: 6,
+    label: 'Calendar',
+  },
+  {
+    value: 7,
+    label: 'Information',
   },
 ]
 

@@ -371,15 +371,15 @@ export const NewParent: FunctionComponent = () => {
             moment().isBefore(item?.midyear_application_close)
           ) {
             schoolYearsArray.push({
-              label: `${moment(item.midyear_application_open).format('YYYY')} - ${moment(
-                item.midyear_application_close,
-              ).format('YYYY')} Mid-year Program`,
+              label: `${moment(item.date_begin).format('YYYY')} - ${moment(item.date_end).format(
+                'YYYY',
+              )} Mid-year Program`,
               value: `${item.school_year_id}-mid`,
             })
           }
         },
       )
-      setSchoolYears(schoolYearsArray)
+      setSchoolYears(schoolYearsArray.sort((a, b) => (a.label > b.label ? 1 : -1)))
       setSchoolYearsData(schoolYearData.getSchoolYearsByRegionId)
     }
   }, [regionId, schoolYearData])

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext, useMemo, FunctionComponent } from 'react'
+import React, { useEffect, useState, useContext, FunctionComponent } from 'react'
 import { useMutation, useQuery } from '@apollo/client'
 import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded'
 import { Alert, Box, Button, Card, Grid, IconButton, List, Typography } from '@mui/material'
@@ -124,14 +124,26 @@ export const ApplicationQuestions: FunctionComponent = () => {
 
   useEffect(() => {
     if (!schoolLoading && schoolYearData.getSchoolYearsByRegionId) {
-      setSchoolYears(
-        schoolYearData.getSchoolYearsByRegionId.map((item) => {
-          return {
-            label: moment(item.date_begin).format('YYYY') + '-' + moment(item.date_end).format('YYYY'),
-            value: item.school_year_id,
-          }
-        }),
-      )
+      const schoolYearsArray = []
+      schoolYearData.getSchoolYearsByRegionId.map((item) => {
+        schoolYearsArray.push({
+          label: `${moment(item.date_begin).format('YYYY')} - ${moment(item.date_end).format('YYYY')}`,
+          value: item.school_year_id,
+          date_begin: item.date_begin,
+        })
+
+        if (item.midyear_application) {
+          schoolYearsArray.push({
+            label: `${moment(item.date_begin).format('YYYY')} - ${moment(item.date_end).format(
+              'YYYY',
+            )} Mid-year Program`,
+            value: `${item.school_year_id}-mid`,
+            date_begin: item.date_begin,
+          })
+        }
+      })
+
+      setSchoolYears(schoolYearsArray.sort((a, b) => (a.label > b.label ? 1 : -1)))
       setSchoolYearsData(schoolYearData.getSchoolYearsByRegionId)
       if (schoolYearData.getSchoolYearsByRegionId.length > 0) {
         setSpecialEd(schoolYearData.getSchoolYearsByRegionId[0].special_ed)
@@ -150,13 +162,21 @@ export const ApplicationQuestions: FunctionComponent = () => {
   }
 
   const [programYear, setProgramYear] = useState()
-  const programYearContext = useMemo(
-    () => ({
-      programYear,
-      setProgramYear,
-    }),
-    [],
-  )
+  // const programYearContext = useMemo(
+  //   () => ({
+  //     programYear,
+  //     setProgramYear,
+  //     schoolYears,
+  //     gradesDropDownItems
+  //   }),
+  //   []
+  // )
+  const programYearContext = {
+    programYear,
+    setProgramYear,
+    schoolYears,
+    gradesDropDownItems,
+  }
 
   useEffect(() => {
     if (programYear) {

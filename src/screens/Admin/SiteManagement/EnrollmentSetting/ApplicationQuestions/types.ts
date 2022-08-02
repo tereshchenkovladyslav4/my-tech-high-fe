@@ -63,30 +63,17 @@ export const initQuestions: ApplicationQuestion[] = [
     default_question: false,
     slug: 'state',
   },
-  // {
-  //   id: 2,
-  //   order: 2,
-  //   type: 1,
-  //   question: 'Propgram Year',
-  //   required: true,
-  //   options: [
-  //     {
-  //       label: '2021-2022',
-  //       value: 1,
-  //     },
-  //     {
-  //       label: '2023-2024',
-  //       value: 2,
-  //     },
-  //     {
-  //       label: '2024-2025',
-  //       value: 3,
-  //     },
-  //   ],
-  //   validation: '',
-  //   student_question: false,
-  //   default_question: false,
-  // },
+  {
+    id: 2,
+    order: 2,
+    type: 1,
+    question: 'Propgram Year',
+    required: true,
+    options: [],
+    validation: '',
+    student_question: false,
+    default_question: false,
+  },
   // {
   //   id: 3,
   //   order: 3,

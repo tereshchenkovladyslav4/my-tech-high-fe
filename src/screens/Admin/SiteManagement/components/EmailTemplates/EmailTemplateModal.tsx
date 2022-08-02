@@ -59,7 +59,7 @@ export const EmailTemplateModal: FunctionComponent<EmailTemplateModalProps> = ({
   const [deadline, setDeadline] = useState('')
   const [type, setType] = useState('standard')
   const [availableInserts, setAvailableInserts] = useState([])
-  const [setTemplateName] = useState('')
+
   const [availableInsertDescription, setAvailableInsertDescription] = useState({})
   const editorRef = useRef(null)
   const [currentBlocks, setCurrentBlocks] = useState(0)
@@ -317,7 +317,6 @@ export const EmailTemplateModal: FunctionComponent<EmailTemplateModalProps> = ({
       setSubject(emailTemplate.subject)
       setEmailBcc(emailTemplate.bcc)
       setEmailFrom(emailTemplate.from)
-      setTemplateName(emailTemplate.template_name)
       setResponses(
         emailTemplate.standard_responses && JSON.parse(emailTemplate.standard_responses).length > 0
           ? JSON.parse(emailTemplate.standard_responses)
