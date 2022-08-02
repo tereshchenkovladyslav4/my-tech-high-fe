@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { FunctionComponent, ReactElement } from 'react'
 import { Box, Checkbox, FormControlLabel } from '@mui/material'
 import { map } from 'lodash'
 import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragraph'
@@ -16,13 +16,19 @@ type CheckBoxListProps = {
   setValues: (value: string[]) => void
   haveSelectAll: boolean
 }
-const CheckBoxList = ({ title, checkboxLists, values, setValues, haveSelectAll }: CheckBoxListProps) => {
-  const handleChangeValues = (e: any) => {
+const CheckBoxList: FunctionComponent<CheckBoxListProps> = ({
+  title,
+  checkboxLists,
+  values,
+  setValues,
+  haveSelectAll,
+}) => {
+  const handleChangeValues = (e: unknown) => {
     if (haveSelectAll) {
       if (values.includes(e.target.value)) {
         setValues(values.filter((item) => item !== e.target.value).filter((item) => item !== 'all'))
       } else {
-        let temp = [...values, e.target.value].filter((item) => !!item)
+        const temp = [...values, e.target.value].filter((item) => !!item)
         if (temp.length == checkboxLists.length) {
           setValues(['all', ...values, e.target.value].filter((item) => !!item))
         } else {
@@ -38,7 +44,7 @@ const CheckBoxList = ({ title, checkboxLists, values, setValues, haveSelectAll }
     }
   }
 
-  const handleChangeAll = (e: any) => {
+  const handleChangeAll = (e: unknown) => {
     if (e.target.checked) {
       setValues([...['all'], ...checkboxLists.map((item) => item.value.toString())])
     } else {
@@ -47,7 +53,7 @@ const CheckBoxList = ({ title, checkboxLists, values, setValues, haveSelectAll }
   }
 
   const renderLists = () =>
-    map(checkboxLists, (list, index) => {
+    map(checkboxLists, (list, index): ReactElement | undefined => {
       if (typeof list !== 'string') {
         return (
           <FormControlLabel
@@ -63,6 +69,8 @@ const CheckBoxList = ({ title, checkboxLists, values, setValues, haveSelectAll }
             }
           />
         )
+      } else {
+        return undefined
       }
     })
 

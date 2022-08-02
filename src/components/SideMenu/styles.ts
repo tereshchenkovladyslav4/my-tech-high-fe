@@ -34,10 +34,10 @@ export const useStyles = {
     bgcolor: '#fff',
     height: '100vh',
   },
-  mobileNavText:{
+  mobileNavText: {
     lineHeight: '2',
     fontSize: '32px',
     fontWeight: '700',
-    color: '#0E0E0E'
-  }
+    color: '#0E0E0E',
+  },
 }

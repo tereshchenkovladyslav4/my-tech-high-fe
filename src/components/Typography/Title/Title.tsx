@@ -1,7 +1,6 @@
-import { Typography } from '@mui/material'
-import { fontWeight } from '@mui/system'
-
 import React from 'react'
+import { Typography } from '@mui/material'
+
 import { TypographyTemplateType } from '../types'
 
 export const Title: TypographyTemplateType = ({ sx, fontWeight, children, size, color, textAlign }) => {

@@ -1,17 +1,17 @@
-import { Box, Table, TableBody, TableCell, TableContainer, TableRow, Tooltip, Typography } from '@mui/material'
-import ModeEditIcon from '@mui/icons-material/ModeEdit'
-import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined'
-import React, { useState } from 'react'
-import { useHistory } from 'react-router-dom'
-import { useStyles } from '../styles'
-import { SortableTableHeader } from '../../../../../components/SortableTable/SortableTableHeader/SortableTableHeader'
-import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt'
-import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-import { ANNOUNCEMENTS } from '../../../../../utils/constants'
-import { toolTipStyles } from '../../types'
+import React, { FunctionComponent, useState } from 'react'
 import CallMissedOutgoingIcon from '@mui/icons-material/CallMissedOutgoing'
-import { Announcement } from '../../../../Dashboard/Announcements/types'
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
+import ModeEditIcon from '@mui/icons-material/ModeEdit'
+import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt'
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined'
+import { Box, Table, TableBody, TableCell, TableContainer, TableRow, Tooltip, Typography } from '@mui/material'
+import { useHistory } from 'react-router-dom'
+import { SortableTableHeader } from '../../../../../components/SortableTable/SortableTableHeader/SortableTableHeader'
+import { ANNOUNCEMENTS } from '../../../../../utils/constants'
 import { ANNOUNCEMENT_HEADCELLS } from '../../../../../utils/PageHeadCellsConstant'
+import { Announcement } from '../../../../Dashboard/Announcements/types'
+import { toolTipStyles } from '../../types'
+import { useStyles } from '../styles'
 
 type PageContentProps = {
   tableDatas: Announcement[]
@@ -23,21 +23,21 @@ type PageContentProps = {
 
 type Order = 'asc' | 'desc'
 
-const PageContent = ({
+const PageContent: FunctionComponent<PageContentProps> = ({
   tableDatas,
   showArchivedAnnouncement,
   setAnnouncement,
   handleArchiveChangeStatus,
-  handleDelete
-}: PageContentProps) => {
+  handleDelete,
+}) => {
   const classes = useStyles
   const toolTipClasses = toolTipStyles()
   const history = useHistory()
   const [order, setOrder] = useState<Order>('asc')
-  const [orderBy, setOrderBy] = useState<keyof any>('date')
-  const [selected, setSelected] = useState<readonly string[]>([])
-  const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {}
-  const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof any) => {
+  const [orderBy, setOrderBy] = useState<keyof string>('date')
+  const [selected] = useState<readonly string[]>([])
+  const handleSelectAllClick = () => {}
+  const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof string) => {
     const isAsc = orderBy === property && order === 'asc'
     setOrder(isAsc ? 'desc' : 'asc')
     setOrderBy(property)
@@ -134,11 +134,7 @@ const PageContent = ({
                           </Tooltip>
                         </TableCell>
                       ) : (
-                        <TableCell
-                          sx={classes.tableCell}
-                          key={`${index}-7`}
-                          onClick={() => handleDelete(row.id)}
-                        >
+                        <TableCell sx={classes.tableCell} key={`${index}-7`} onClick={() => handleDelete(row.id)}>
                           {console.log('rowrow', row)}
                           <Tooltip
                             title='Delete'

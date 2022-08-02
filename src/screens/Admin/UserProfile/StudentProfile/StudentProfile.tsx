@@ -1,22 +1,32 @@
+import React, { FunctionComponent, useEffect, useState } from 'react'
+import { useQuery } from '@apollo/client'
+import { makeStyles } from '@material-ui/styles'
+import { KeyboardArrowDown } from '@mui/icons-material'
 import { Avatar, Button, Checkbox, FormControlLabel, Grid, TextField, Select, MenuItem } from '@mui/material'
 import { Box } from '@mui/system'
-import React, { useEffect, useState } from 'react'
-import { useMutation, useQuery } from '@apollo/client'
+import moment from 'moment'
+import { StudentType } from '@mth/screens/HomeroomStudentProfile/Student/types'
 import { DropDown } from '../../../../components/DropDown/DropDown'
 import { DropDownItem } from '../../../../components/DropDown/types'
 import { Paragraph } from '../../../../components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
 import { Title } from '../../../../components/Typography/Title/Title'
-import { BUTTON_LINEAR_GRADIENT, MTHBLUE, RED } from '../../../../utils/constants'
-import { StudentFilters } from './components/StudentFilters'
-import { getStudentDetail } from '../services'
-import moment from 'moment'
 import { WarningModal } from '../../../../components/WarningModal/Warning'
-import { KeyboardArrowDown } from '@mui/icons-material'
-import { makeStyles } from '@material-ui/styles'
-import { STATES_WITH_ABBREVIATION } from '../../../../utils/states'
-import ProfilePacketModal from '../../EnrollmentPackets/EnrollmentPacketModal/ProfilePacketModal'
 import { getWithdrawalStatusQuery } from '../../../../graphql/queries/withdrawal'
+import { BUTTON_LINEAR_GRADIENT, MTHBLUE } from '../../../../utils/constants'
+import { STATES_WITH_ABBREVIATION } from '../../../../utils/states'
+import { ProfilePacketModal } from '../../EnrollmentPackets/EnrollmentPacketModal/ProfilePacketModal'
+import { getStudentDetail } from '../services'
+import { StudentFilters } from './components/StudentFilters'
+
+type StudentProfileProps = {
+  studentId: number
+  setStudentPerson: StudentType
+  setStudentStatus: (_: unknown) => void
+  studentStatus: unknown
+  applicationState: unknown
+  setIsChanged: (_: unknown) => void
+}
 
 const selectStyles = makeStyles({
   select: {
@@ -45,11 +55,11 @@ const selectStyles = makeStyles({
   },
 })
 const ordinal = (n) => {
-  var s = ['th', 'st', 'nd', 'rd']
-  var v = n % 100
+  const s = ['th', 'st', 'nd', 'rd']
+  const v = n % 100
   return n + (s[(v - 20) % 10] || s[v] || s[0])
 }
-export const StudentProfile = ({
+export const StudentProfile: FunctionComponent<StudentProfileProps> = ({
   studentId,
   setStudentPerson,
   setStudentStatus,
@@ -84,7 +94,7 @@ export const StudentProfile = ({
   }, [withdrawalStatusData])
   //
 
-  const [userInfo, setUserInfo] = useState<any>({})
+  const [userInfo, setUserInfo] = useState<unknown>({})
   const [preferedFirstName, setPreferredFirstName] = useState('')
   const [preferedLastName, setPreferredLastName] = useState('')
   const [hispanicOrLatino, setHispanicOrLatino] = useState('')
@@ -281,8 +291,10 @@ export const StudentProfile = ({
                 sx={{ color: '#cccccc', fontWeight: '700' }}
               >
                 <MenuItem value='Kindergarten'>Kindergarten</MenuItem>
-                {[...Array(12).keys()].map((item) => (
-                  <MenuItem value={item + 1}>{ordinal(item + 1)} Grade</MenuItem>
+                {[...Array(12).keys()].map((item, idx) => (
+                  <MenuItem key={idx} value={item + 1}>
+                    {ordinal(item + 1)} Grade
+                  </MenuItem>
                 ))}
               </Select>
               {/* <Subtitle textAlign='left'>Unassigned</Subtitle> */}

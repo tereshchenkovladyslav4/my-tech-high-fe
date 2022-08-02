@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { FunctionComponent } from 'react'
 import { Box, Stack } from '@mui/material'
 import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
 import { useStyles } from '../../styles'
@@ -9,7 +9,7 @@ type CommonSelectProps = {
   selectItem: CommonSelectType
 }
 
-export default function CommonSelect({ index, selectItem }: CommonSelectProps) {
+export const CommonSelect: FunctionComponent<CommonSelectProps> = ({ index, selectItem }) => {
   const classes = useStyles
   return (
     <Stack

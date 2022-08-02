@@ -1,15 +1,15 @@
-import React from 'react'
+import React, { FunctionComponent } from 'react'
 import { Box } from '@mui/material'
 import moment from 'moment'
-import { useStyles } from '../../styles'
 import { Calendar } from '../../components/Calendar'
+import { useStyles } from '../../styles'
 
 type BirthDateCutOffSelectProps = {
   birthDate: string
   setBirthDate: (value: string) => void
 }
 
-export default function BirthDateCutOffSelect({ birthDate, setBirthDate }: BirthDateCutOffSelectProps) {
+export const BirthDateCutOffSelect: FunctionComponent<BirthDateCutOffSelectProps> = ({ birthDate, setBirthDate }) => {
   const classes = useStyles
   const handleChange = (value: Date | null) => {
     setBirthDate(moment(value).format('MM/DD/YYYY'))

@@ -1,9 +1,9 @@
-import { Box, Button, IconButton, TextField, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material'
-import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded'
 import React from 'react'
+import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded'
+import { Box, Button, IconButton, TextField, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material'
 import { SxProps } from '@mui/system'
-import { useHistory } from 'react-router-dom'
 import { useFormikContext } from 'formik'
+import { useHistory } from 'react-router-dom'
 import { ImmunizationsData } from './Immunizations'
 
 export interface ImmunizationHeaderProps {
@@ -83,7 +83,7 @@ const Title: React.FC = () => {
       name='title'
       variant='standard'
       sx={{
-        textAlign: 'center'
+        textAlign: 'center',
       }}
       InputProps={{
         disableUnderline: true,

@@ -1,5 +1,3 @@
-import { PRIMARY_SMALL_DEFAULT } from '../../utils/constants'
-
 export const useStyles = {
   textField: {
     height: '45px',
@@ -7,8 +5,8 @@ export const useStyles = {
     width: '451.53px',
     marginBottom: 4,
     '& .MuiFormHelperText-root Mui-error': {
-      color: 'white'
-    }
+      color: 'white',
+    },
   },
   button: {
     marginTop: 3,

@@ -112,7 +112,7 @@ export const mainClasses = {
   },
 
   modalCard: {
-    position: 'absolute' as 'absolute',
+    position: 'absolute' as const,
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
@@ -180,7 +180,7 @@ export const mainClasses = {
     right: 0,
   },
   modalEmailCard: {
-    position: 'absolute' as 'absolute',
+    position: 'absolute' as const,
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
@@ -191,7 +191,7 @@ export const mainClasses = {
     borderRadius: 2,
   },
   modalEmailViewCard: {
-    position: 'absolute' as 'absolute',
+    position: 'absolute' as const,
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',

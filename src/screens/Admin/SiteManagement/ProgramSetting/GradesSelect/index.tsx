@@ -1,1 +1,1 @@
-export { default as GradesSelect } from './GradesSelect'
+export { GradesSelect } from './GradesSelect'

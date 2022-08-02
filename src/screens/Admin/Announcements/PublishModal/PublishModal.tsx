@@ -1,33 +1,35 @@
-import React, { useState } from 'react'
-import { Box, Button, Modal, TextField, Typography } from '@mui/material'
+import React, { FunctionComponent, useState } from 'react'
 import InfoIcon from '@mui/icons-material/InfoOutlined'
-import { useStyles } from './styles'
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
+import { Box, Button, Modal, TextField, Typography } from '@mui/material'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import moment, { Moment } from 'moment'
 import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
 import { RED } from '../../../../utils/constants'
+import { useStyles } from './styles'
 
-export default function PublishModal({
+type PublishModalProps = {
+  onClose: () => void
+  onPublish: () => void
+  onRepublish: () => void
+  onSchedule: () => void
+  setCronJobTime: (value: Date) => void
+  scheduledTime?: Date
+}
+export const PublishModal: FunctionComponent<PublishModalProps> = ({
   onClose,
   onPublish,
   onSchedule,
   setCronJobTime,
   scheduledTime,
-  onRepublish,
-}: {
-  onClose: () => void
-  onPublish: () => void
-  onRepublish:() => void
-  onSchedule: () => void
-  setCronJobTime: (value: Date) => void
-  scheduledTime?: Date
-}) {
+}) => {
   const classes = useStyles
 
-  const [dateTime, setDateTime] = useState<Date | Moment>(scheduledTime ? moment(scheduledTime).local(): new Date())
-  const [hours, setHours] = useState( scheduledTime ? moment(scheduledTime).format('HH:mm') : moment(new Date()).format('HH:mm'))
+  const [dateTime, setDateTime] = useState<Date | Moment>(scheduledTime ? moment(scheduledTime).local() : new Date())
+  const [hours, setHours] = useState(
+    scheduledTime ? moment(scheduledTime).format('HH:mm') : moment(new Date()).format('HH:mm'),
+  )
   const [invalidTime, setInvalidTime] = useState<boolean>(false)
 
   const handleSchedule = () => {
@@ -40,7 +42,12 @@ export default function PublishModal({
 
   const handleTimeChange = (value: string) => {
     setHours(value)
-    const selectedDate = new Date(dateTime as Date).setHours(Number(value.split(':')[0]), Number(value.split(':')[1]), 0, 0)
+    const selectedDate = new Date(dateTime as Date).setHours(
+      Number(value.split(':')[0]),
+      Number(value.split(':')[1]),
+      0,
+      0,
+    )
     setDateTime(new Date(selectedDate))
     setCronJobTime(new Date(selectedDate))
     setInvalidTime(false)

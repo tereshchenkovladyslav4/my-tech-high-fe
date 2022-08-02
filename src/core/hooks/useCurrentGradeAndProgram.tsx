@@ -1,15 +1,23 @@
 import { useEffect, useState } from 'react'
+import { ApolloError } from '@apollo/client'
 import moment from 'moment'
 import { GRADES } from '@mth/constants'
 import { useCurrentSchoolYearByRegionId } from '@mth/hooks'
 import { CheckBoxListVM } from '@mth/screens/Admin/Calendar/components/CheckBoxList/CheckBoxList'
 import { toOrdinalSuffix } from '@mth/utils'
 
+type CurrentGradeAndProgramByRegionId = {
+  loading: boolean
+  error: ApolloError | undefined
+  gradeList: CheckBoxListVM[]
+  programYearList: CheckBoxListVM[]
+}
+
 export const useCurrentGradeAndProgramByRegionId = (
   regionId: number,
   grades: string[],
   setGrades: (value: string[]) => void,
-) => {
+): CurrentGradeAndProgramByRegionId => {
   const {
     loading: schoolYearLoading,
     data: schoolYearData,
@@ -20,7 +28,7 @@ export const useCurrentGradeAndProgramByRegionId = (
 
   useEffect(() => {
     if (!schoolYearLoading && schoolYearData?.schoolyear_getcurrent) {
-      const availGrades = schoolYearData?.schoolyear_getcurrent?.grades?.split(',').map((item: any) => {
+      const availGrades = schoolYearData?.schoolyear_getcurrent?.grades?.split(',').map((item: string) => {
         if (item == 'Kindergarten')
           return {
             label: 'Kindergarten',
@@ -73,7 +81,7 @@ export const useCurrentGradeAndProgramByRegionId = (
       }
     }
   }, [schoolYearLoading, schoolYearData])
-  
+
   return {
     loading: schoolYearLoading,
     error: schoolYearError,

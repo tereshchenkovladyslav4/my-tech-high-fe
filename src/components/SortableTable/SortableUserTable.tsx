@@ -1,11 +1,11 @@
+import React, { useEffect, useState, useContext } from 'react'
 import { Checkbox, Table, TableBody, TableCell, TableContainer, TableRow, Tooltip, Typography } from '@mui/material'
 import { Box } from '@mui/system'
-import React, { useEffect, useState, useContext } from 'react'
+import { UserContext } from '../../providers/UserContext/UserProvider'
+import { UpdateUserModal } from '../../screens/Admin/Users/UpdateUserModal/UpdateUserModal'
 import { DropDown } from '../DropDown/DropDown'
 import { SortableTableHeader } from './SortableTableHeader/SortableTableHeader'
 import { SortableTableTemplateType } from './types'
-import { UpdateUserModal } from '../../screens/Admin/Users/UpdateUserModal/UpdateUserModal'
-import { UserContext } from '../../providers/UserContext/UserProvider'
 
 type Order = 'asc' | 'desc'
 
@@ -22,12 +22,12 @@ export const SortableUserTable: SortableTableTemplateType = ({
   canMasquerade,
 }) => {
   const [order, setOrder] = useState<Order>('asc')
-  const [orderBy, setOrderBy] = useState<keyof any>('status')
+  const [orderBy, setOrderBy] = useState<keyof string>('status')
   const [selected, setSelected] = useState<readonly string[]>([])
   const { me } = useContext(UserContext)
   const [currentUserID, setCurrentUserID] = useState(null)
   const [updateModal, setUpdateModal] = useState(false)
-  const [status, _] = useState([
+  const [status] = useState([
     {
       value: 0,
       label: 'Inactive',
@@ -50,7 +50,7 @@ export const SortableUserTable: SortableTableTemplateType = ({
     setSelected([])
   }, [clearAll])
 
-  const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof any) => {
+  const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof unknown) => {
     const isAsc = orderBy === property && order === 'asc'
     setOrder(isAsc ? 'desc' : 'asc')
     setOrderBy(property)
@@ -60,12 +60,11 @@ export const SortableUserTable: SortableTableTemplateType = ({
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
       const newSelecteds = rows.map((n, idx) => idx)
-      setSelected(newSelecteds) 
+      setSelected(newSelecteds)
       return
     }
     setSelected([])
   }
-
 
   const handleMasqueradeToggle = (id: number, masquerade: boolean) => {
     toggleMasquerade(id, masquerade)
@@ -95,7 +94,7 @@ export const SortableUserTable: SortableTableTemplateType = ({
             {rows.map((row, index) => {
               return (
                 <TableRow hover tabIndex={-1} key={index} sx={{ cursor: 'pointer', py: 2 }}>
-                  {Object.values(row).map((val: any, idx: number) => {
+                  {Object.values(row).map((val: unknown, idx: number) => {
                     return (
                       <TableCell
                         style={{
@@ -112,18 +111,17 @@ export const SortableUserTable: SortableTableTemplateType = ({
                             dropDownItems={status}
                             sx={{ width: 105, height: 24, fontSize: 12, fontWeight: 700 }}
                             defaultValue={status[val].value}
-                            setParentValue={(value: any) => {
+                            setParentValue={(value: string) => {
                               updateStatus(Number(row?.user_id), value)
                             }}
                             disabled={me?.level !== 1}
                           />
                         ) : type === 'core_user' && idx === 6 ? (
-                          (val || row.level === 'Administrator') ? (
-                            
-                            <Checkbox 
-                              sx={{ zIndex: 9999, paddingLeft: 0 }} 
-                              checked={val} 
-                              size='small'  
+                          val || row.level === 'Administrator' ? (
+                            <Checkbox
+                              sx={{ zIndex: 9999, paddingLeft: 0 }}
+                              checked={val}
+                              size='small'
                               onClick={() => {
                                 handleMasqueradeToggle(row?.user_id, !val)
                               }}
@@ -134,7 +132,7 @@ export const SortableUserTable: SortableTableTemplateType = ({
                         ) : (
                           <Box
                             onClick={() => {
-                              if(idx !== 0){
+                              if (idx !== 0) {
                                 if (me?.level === 1) {
                                   setUpdateModal(true)
                                   setCurrentUserID(row.user_id)
@@ -142,34 +140,55 @@ export const SortableUserTable: SortableTableTemplateType = ({
                               }
                             }}
                           >
-                            {(type === 'core_user' && idx === 3) 
-                              ? <Typography
-                                  sx={{ fontSize: 12, fontWeight: 700, color: '#4145FF', textDecoration: 'underline', zIndex: 9999 }}
+                            {type === 'core_user' && idx === 3 ? (
+                              <Typography
+                                sx={{
+                                  fontSize: 12,
+                                  fontWeight: 700,
+                                  color: '#4145FF',
+                                  textDecoration: 'underline',
+                                  zIndex: 9999,
+                                }}
                               >
                                 {val}
                               </Typography>
-                              : idx === 0
-                                ? canMasquerade
-                                ? <Tooltip title='Masquerade'>
+                            ) : idx === 0 ? (
+                              canMasquerade ? (
+                                <Tooltip title='Masquerade'>
                                   <Typography
-                                    sx={{ fontSize: 12, fontWeight: 700, color: '#4145FF', textDecoration: 'underline', zIndex: 9999 }}
+                                    sx={{
+                                      fontSize: 12,
+                                      fontWeight: 700,
+                                      color: '#4145FF',
+                                      textDecoration: 'underline',
+                                      zIndex: 9999,
+                                    }}
                                     onClick={() => idx === 0 && handleBecomeUser(row.user_id)}
-                                    >
+                                  >
                                     {val}
                                   </Typography>
                                 </Tooltip>
-                                : <Typography
-                                sx={{ fontSize: 12, fontWeight: 700, color: '#4145FF', textDecoration: 'underline', zIndex: 9999 }}
+                              ) : (
+                                <Typography
+                                  sx={{
+                                    fontSize: 12,
+                                    fontWeight: 700,
+                                    color: '#4145FF',
+                                    textDecoration: 'underline',
+                                    zIndex: 9999,
+                                  }}
                                 >
-                                {val}
-                              </Typography>
-                                : <Typography sx={{ fontSize: 12, fontWeight: 700 }}>{val}</Typography>
-                            }
+                                  {val}
+                                </Typography>
+                              )
+                            ) : (
+                              <Typography sx={{ fontSize: 12, fontWeight: 700 }}>{val}</Typography>
+                            )}
                           </Box>
                         )}
                       </TableCell>
-                    )}
-                  )}
+                    )
+                  })}
                 </TableRow>
               )
             })}

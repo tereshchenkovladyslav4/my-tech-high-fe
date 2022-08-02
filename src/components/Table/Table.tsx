@@ -1,6 +1,6 @@
+import React, { useState } from 'react'
 import { TableCell, TableContainer, TableHead, TableRow, Table as MUITable, TableBody } from '@mui/material'
 import { map } from 'lodash'
-import React, { useState } from 'react'
 import { TableTemplateType } from './types'
 
 export const Table: TableTemplateType = ({ tableHeaders, tableBody, isHover = false }) => {

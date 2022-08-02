@@ -1,11 +1,11 @@
-import React, { useState } from 'react'
-import OutlinedInput from '@mui/material/OutlinedInput'
-import InputLabel from '@mui/material/InputLabel'
-import MenuItem from '@mui/material/MenuItem'
-import FormControl from '@mui/material/FormControl'
-import ListItemText from '@mui/material/ListItemText'
-import Select, { SelectChangeEvent } from '@mui/material/Select'
+import React, { FunctionComponent, useState } from 'react'
 import Checkbox from '@mui/material/Checkbox'
+import FormControl from '@mui/material/FormControl'
+import InputLabel from '@mui/material/InputLabel'
+import ListItemText from '@mui/material/ListItemText'
+import MenuItem from '@mui/material/MenuItem'
+import OutlinedInput from '@mui/material/OutlinedInput'
+import Select, { SelectChangeEvent } from '@mui/material/Select'
 
 const ITEM_HEIGHT = 48
 const ITEM_PADDING_TOP = 0
@@ -29,7 +29,11 @@ type MultiSelectDropDownProps = {
   setSelectedLists: (value: string[]) => void
 }
 
-const MultiSelectDropDown = ({ checkBoxLists = [], selectedLists, setSelectedLists }: MultiSelectDropDownProps) => {
+const MultiSelectDropDown: FunctionComponent<MultiSelectDropDownProps> = ({
+  checkBoxLists = [],
+  selectedLists,
+  setSelectedLists,
+}) => {
   const [focus, setFocus] = useState<boolean>(false)
   const handleChange = (event: SelectChangeEvent<typeof selectedLists>) => {
     const {

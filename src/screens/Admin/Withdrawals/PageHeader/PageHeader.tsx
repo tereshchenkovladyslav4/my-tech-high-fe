@@ -1,18 +1,18 @@
-import React from 'react'
+import React, { FunctionComponent } from 'react'
 import SearchIcon from '@mui/icons-material/Search'
 import { Box, Button, InputAdornment, OutlinedInput } from '@mui/material'
 import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
-import { headerClassess } from './styles'
 import { PageHeaderProps } from '../type'
+import { headerClassess } from './styles'
 
-const PageHeader = ({
+const PageHeader: FunctionComponent<PageHeaderProps> = ({
   totalWithdrawals,
   searchField,
   setSearchField,
   onEmailClick,
   onWithdrawClick,
   onReinstateClick,
-}: PageHeaderProps) => {
+}) => {
   return (
     <Box sx={headerClassess.pageHeader}>
       <Box sx={headerClassess.pageHeaderContent}>

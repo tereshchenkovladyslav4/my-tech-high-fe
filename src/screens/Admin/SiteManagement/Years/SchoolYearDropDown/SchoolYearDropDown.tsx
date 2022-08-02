@@ -1,10 +1,11 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { Stack } from '@mui/material'
-import { DropDown } from '../../components/DropDown/DropDown'
-import { UserContext } from '../../../../../providers/UserContext/UserProvider'
-import { DropDownItem } from '../../components/DropDown/types'
-import moment from 'moment'
+import React, { FunctionComponent, useContext, useEffect, useState } from 'react'
 import { useQuery } from '@apollo/client'
+import { Stack } from '@mui/material'
+import moment from 'moment'
+import { SchoolYearVM } from '@mth/screens/Admin/SchoolOfEnrollment/type'
+import { UserContext } from '../../../../../providers/UserContext/UserProvider'
+import { DropDown } from '../../components/DropDown/DropDown'
+import { DropDownItem } from '../../components/DropDown/types'
 import { getSchoolYearsByRegionId } from '../../services'
 import { SchoolYearItem, SchoolYearType } from '../types'
 
@@ -21,7 +22,7 @@ type SchoolYearDropDownProps = {
   selectedYearId: string
 }
 
-export default function SchoolYearDropDown({
+export const SchoolYearDropDown: FunctionComponent<SchoolYearDropDownProps> = ({
   setSelectedYearId,
   setSchoolYearItem,
   setApplicationItem,
@@ -32,7 +33,7 @@ export default function SchoolYearDropDown({
   setSchoolYears,
   setAddSchoolYears,
   schoolYears,
-}: SchoolYearDropDownProps) {
+}) => {
   const { me } = useContext(UserContext)
   const [years, setYears] = useState<DropDownItem[]>([])
   const schoolYearData = useQuery(getSchoolYearsByRegionId, {
@@ -120,10 +121,10 @@ export default function SchoolYearDropDown({
 
   useEffect(() => {
     if (schoolYearData?.data?.region?.SchoolYears) {
-      let schoolYearsArr: SchoolYearType[] = []
+      const schoolYearsArr: SchoolYearType[] = []
       let cnt = 0
 
-      schoolYearData?.data?.region?.SchoolYears.forEach((schoolYear: any) => {
+      schoolYearData?.data?.region?.SchoolYears.forEach((schoolYear: SchoolYearVM) => {
         if (schoolYear.school_year_id == selectedYearId) {
           setSchoolYearItem({
             open: new Date(schoolYear.date_begin),

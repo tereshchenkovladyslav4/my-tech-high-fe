@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, FunctionComponent } from 'react'
 import {
   Box,
   Button,
@@ -12,19 +12,19 @@ import {
 } from '@mui/material'
 import { map } from 'lodash'
 import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragraph'
+import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
 import { GRADES, MTHBLUE } from '../../../../../utils/constants'
 import { toOrdinalSuffix } from '../../../../../utils/stringHelpers'
-import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
 import { useStyles } from '../../styles'
 
 export type GradesSelectProps = {
   grades: string
   setGrades: (value: string) => void
   setIsChanged: (value: boolean) => void
-  isChanged: any
+  isChanged: unknown
 }
 
-export default function GradesSelect({ grades, setGrades, setIsChanged, isChanged }: GradesSelectProps) {
+export const GradesSelect: FunctionComponent<GradesSelectProps> = ({ grades, setGrades, setIsChanged, isChanged }) => {
   const classes = useStyles
   const [open, setOpen] = useState<boolean>(false)
   const [gradesArr, setGradesArr] = useState<string[]>([])
@@ -57,7 +57,7 @@ export default function GradesSelect({ grades, setGrades, setIsChanged, isChange
     setGrades(gradesStr)
     setIsChanged({
       ...isChanged,
-      grades: true
+      grades: true,
     })
   }
 

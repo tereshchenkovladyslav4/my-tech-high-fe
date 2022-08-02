@@ -1,6 +1,6 @@
+import React, { FunctionComponent, useContext, useEffect, useState } from 'react'
 import { useQuery } from '@apollo/client'
 import { Grid } from '@mui/material'
-import React, { FunctionComponent, useContext, useEffect, useState } from 'react'
 import { UserContext } from '../../providers/UserContext/UserProvider'
 import { SchoolYearType } from '../../utils/utils.types'
 import { getSchoolYearsByRegionId } from '../Admin/Dashboard/SchoolYear/SchoolYear'

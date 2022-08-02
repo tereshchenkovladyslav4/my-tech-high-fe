@@ -1,15 +1,15 @@
+import React, { FunctionComponent } from 'react'
 import { Grid } from '@mui/material'
-import React from 'react'
-import { ADMIN_APPLICATIONS, ENROLLMENT_PACKETS, WITHDRAWAL, SCHOOL_ENROLLMENT } from '../../../utils/constants'
-import { AdminEnrollmentCard } from './components/AdminEnrollmentCard/AdminEnrollmentCard'
 import applicationsImg from '../../../assets/applications.png'
 import enrollmentImg from '../../../assets/enrollment.png'
 import schedules from '../../../assets/schedules.png'
 import schoolAssignmentsImg from '../../../assets/schoolAssignments.png'
 import testingPreferencesImg from '../../../assets/testingPreferences.png'
 import withdrawlsImg from '../../../assets/withdrawls.png'
+import { ADMIN_APPLICATIONS, ENROLLMENT_PACKETS, WITHDRAWAL, SCHOOL_ENROLLMENT } from '../../../utils/constants'
+import { AdminEnrollmentCard } from './components/AdminEnrollmentCard/AdminEnrollmentCard'
 
-export default function Enrollment() {
+export const Enrollment: FunctionComponent = () => {
   return (
     <Grid container rowSpacing={4} columnSpacing={0} sx={{ paddingX: 2, marginTop: 4 }}>
       <Grid item xs={4}>

@@ -1,5 +1,5 @@
-import { Box } from '@mui/system'
 import React from 'react'
+import { Box } from '@mui/system'
 import { DataRowTemplateType } from './types'
 
 export const DataRow: DataRowTemplateType = ({ label, value, backgroundColor }) => (

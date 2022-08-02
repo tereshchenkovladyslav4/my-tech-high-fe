@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from 'react'
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
-import { Box, Button, Tooltip, Typography } from '@mui/material'
+import React, { FunctionComponent, useEffect, useState } from 'react'
+import CallMissedOutgoingIcon from '@mui/icons-material/CallMissedOutgoing'
 import MenuIcon from '@mui/icons-material/Menu'
 import ModeEditIcon from '@mui/icons-material/ModeEdit'
 import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt'
-import CallMissedOutgoingIcon from '@mui/icons-material/CallMissedOutgoing'
+import { Box, Button, Tooltip, Typography } from '@mui/material'
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
 import { EventType, EventTypeTableProps } from '../../types'
 import { eventTypeClassess } from '../styles'
 
-const EventTypeTable = ({
+const EventTypeTable: FunctionComponent<EventTypeTableProps> = ({
   eventTypes,
   setIsChanged,
   handleEditClick,
@@ -16,7 +16,7 @@ const EventTypeTable = ({
   setShowArchivedModal,
   setShowUnarchivedModal,
   handleUpdateEventTypes,
-}: EventTypeTableProps) => {
+}) => {
   const [isDragDisable, setIsDragDisable] = useState<boolean>(true)
   const [dragableItems, setDragableItems] = useState<EventType[]>([])
   const archivedTypes = () =>
@@ -52,12 +52,12 @@ const EventTypeTable = ({
     return result
   }
 
-  const getListStyle = (isDraggingOver: any) => ({
+  const getListStyle = (isDraggingOver: boolean) => ({
     width: '100%',
     background: isDraggingOver ? 'lightgrey' : 'lightgrey',
   })
 
-  const getItemStyle = (isDragging: any, draggableStyle: any) => ({
+  const getItemStyle = (isDragging: boolean, draggableStyle: unknown) => ({
     // some basic styles to make the items look a bit nicer
     userSelect: 'none',
     background: isDragging ? 'white' : 'white',
@@ -75,7 +75,7 @@ const EventTypeTable = ({
     handleUpdateEventTypes(dragableItems)
   }
 
-  const onDragEnd = (result: any) => {
+  const onDragEnd = (result: unknown) => {
     if (!result.destination) {
       return
     }
@@ -102,7 +102,7 @@ const EventTypeTable = ({
       <Box>
         <DragDropContext onDragEnd={onDragEnd}>
           <Droppable droppableId='droppable'>
-            {(provided: any, snapshot: any) => (
+            {(provided: unknown, snapshot: unknown) => (
               <Box {...provided.droppableProps} ref={provided.innerRef} style={getListStyle(snapshot.isDraggingOver)}>
                 {dragableItems
                   .filter((eventType) => !eventType.archived)
@@ -113,7 +113,7 @@ const EventTypeTable = ({
                       index={index}
                       isDragDisabled={isDragDisable}
                     >
-                      {(provided: any, snapshot: any) => (
+                      {(provided: unknown, snapshot: unknown) => (
                         <Box
                           ref={provided.innerRef}
                           {...provided.draggableProps}

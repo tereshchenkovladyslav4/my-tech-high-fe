@@ -27,7 +27,7 @@ export const theme = createTheme({
     fontFamily: 'VisbyCF',
     htmlFontSize: 16,
     button: {
-      textTransform: 'none'
-    }
+      textTransform: 'none',
+    },
   },
 })

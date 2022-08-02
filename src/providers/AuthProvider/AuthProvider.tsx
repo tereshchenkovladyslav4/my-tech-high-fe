@@ -1,7 +1,7 @@
-import React, { useState } from 'react'
+import React, { FunctionComponent, useState } from 'react'
 import { AuthContext } from './AuthContext'
 
-export const AuthProvider = ({ children }) => {
+export const AuthProvider: FunctionComponent = ({ children }) => {
   const [credentials, setCredentials] = useState<string | undefined>()
 
   const authContext = React.useMemo(

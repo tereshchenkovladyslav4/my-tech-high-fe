@@ -1,7 +1,7 @@
-import { Divider, ListItem, ListItemText } from '@mui/material'
 import React from 'react'
-import { MetadataTemplateType } from './types'
+import { Divider, ListItem, ListItemText } from '@mui/material'
 import { Box } from '@mui/system'
+import { MetadataTemplateType } from './types'
 export const Metadata: MetadataTemplateType = ({
   image,
   title,
@@ -12,7 +12,7 @@ export const Metadata: MetadataTemplateType = ({
   divider,
 }) =>
   !verticle ? (
-    <ListItem sx={{px: 0}} secondaryAction={secondaryAction} disableGutters={disableGutters}>
+    <ListItem sx={{ px: 0 }} secondaryAction={secondaryAction} disableGutters={disableGutters}>
       {divider && (
         <Divider
           sx={{

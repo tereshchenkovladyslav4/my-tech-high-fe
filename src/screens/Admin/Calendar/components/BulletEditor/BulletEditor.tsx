@@ -1,7 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { FunctionComponent, useEffect, useRef, useState } from 'react'
 import { Box } from '@mui/material'
-import draftToHtml from 'draftjs-to-html'
 import { ContentState, EditorState, convertToRaw } from 'draft-js'
+import draftToHtml from 'draftjs-to-html'
 import htmlToDraft from 'html-to-draftjs'
 import Wysiwyg from 'react-draft-wysiwyg'
 import { addEventClassess } from '../../AddEvent/styles'
@@ -18,13 +18,13 @@ const generateEditorState = (htmlContent: string): EditorState => {
   return EditorState.createWithContent(contentState)
 }
 
-const BulletEditor = ({ value, setValue, error }: BulletEditorProps) => {
+const BulletEditor: FunctionComponent<BulletEditorProps> = ({ value, setValue, error }) => {
   const [currentBlocks, setCurrentBlocks] = useState<number>(0)
-  const editorRef = useRef<any>()
+  const editorRef = useRef<unknown>()
   const [editorState, setEditorState] = useState<EditorState>(generateEditorState(''))
   const [isEdited, setIsEdited] = useState<boolean>(false)
 
-  const handleEditorChange = (state: any) => {
+  const handleEditorChange = (state: unknown) => {
     try {
       if (currentBlocks !== 0 && currentBlocks !== state.blocks.length) {
         editorRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' })

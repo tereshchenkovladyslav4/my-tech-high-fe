@@ -1,12 +1,19 @@
+import React, { FunctionComponent } from 'react'
 import { Box, Card } from '@mui/material'
-import React from 'react'
 import { Table } from '../../../../components/Table/Table'
 import { Paragraph } from '../../../../components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
 import { MTHBLUE } from '../../../../utils/constants'
 
-export const StudentSchedule = () => {
-  const tableHeaders = [<Paragraph size='large'>Period</Paragraph>, <Paragraph size='large'>Course</Paragraph>]
+export const StudentSchedule: FunctionComponent = () => {
+  const tableHeaders = [
+    <Paragraph size='large' key='period'>
+      Period
+    </Paragraph>,
+    <Paragraph size='large' key='course'>
+      Course
+    </Paragraph>,
+  ]
   const data = [
     {
       period: (
@@ -17,7 +24,7 @@ export const StudentSchedule = () => {
       course: (
         <Paragraph size='large' color='#A1A1A1' sx={{ padding: 0.8 }}>
           Homeroom
-        </Paragraph>,
+        </Paragraph>
       ),
     },
     {
@@ -29,7 +36,7 @@ export const StudentSchedule = () => {
       course: (
         <Paragraph size='large' color='#A1A1A1' sx={{ padding: 0.8 }}>
           Middle School Math
-        </Paragraph>,
+        </Paragraph>
       ),
     },
     {
@@ -53,7 +60,7 @@ export const StudentSchedule = () => {
       course: (
         <Paragraph size='large' color='#A1A1A1' sx={{ padding: 0.8 }}>
           Middle School Science
-        </Paragraph>,
+        </Paragraph>
       ),
     },
     {
@@ -65,7 +72,7 @@ export const StudentSchedule = () => {
       course: (
         <Paragraph size='large' color='#A1A1A1' sx={{ padding: 0.8 }}>
           Exploring Technology
-        </Paragraph>,
+        </Paragraph>
       ),
     },
     {
@@ -77,7 +84,7 @@ export const StudentSchedule = () => {
       course: (
         <Paragraph size='large' color='#A1A1A1' sx={{ padding: 0.8 }}>
           Exploring Technology
-        </Paragraph>,
+        </Paragraph>
       ),
     },
   ]

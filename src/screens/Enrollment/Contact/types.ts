@@ -1,7 +1,8 @@
-import { FunctionComponent } from "react"
+import { FunctionComponent } from 'react'
 
 type ContactProps = {
-	id: number
+  id: number | string
+  questions: Record<string, unknown>
 }
 
 export type ContactTemplateType = FunctionComponent<ContactProps>

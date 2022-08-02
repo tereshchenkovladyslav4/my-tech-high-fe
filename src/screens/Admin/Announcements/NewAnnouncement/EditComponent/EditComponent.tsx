@@ -1,26 +1,26 @@
+import React, { FunctionComponent, useRef, useState } from 'react'
 import { Box, OutlinedInput } from '@mui/material'
-import React, { useRef, useState } from 'react'
-import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
-import { useStyles } from '../styles'
-import { RED } from '../../../../../utils/constants'
 import Wysiwyg from 'react-draft-wysiwyg'
+import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
+import { RED } from '../../../../../utils/constants'
+import { useStyles } from '../styles'
 
 type EditComponentProps = {
   emailFrom: string
   emailInvalid: boolean
   subject: string
   subjectInvalid: boolean
-  editorState: any
+  editorState: unknown
   bodyInvalid: boolean
   setBodyInvalid: (value: boolean) => void
-  setEditorState: (value: any) => void
+  setEditorState: (value: unknown) => void
   setEmailFrom: (value: string) => void
   setEmailInvalid: (value: boolean) => void
   setSubject: (value: string) => void
   setSubjectInvalid: (value: boolean) => void
 }
 
-const EditComponent = ({
+const EditComponent: FunctionComponent<EditComponentProps> = ({
   emailFrom,
   emailInvalid,
   subject,
@@ -33,7 +33,7 @@ const EditComponent = ({
   setBodyInvalid,
   setSubjectInvalid,
   setEditorState,
-}: EditComponentProps) => {
+}) => {
   const classes = useStyles
   const editorRef = useRef(null)
   const [currentBlocks, setCurrentBlocks] = useState<number>(0)

@@ -1,31 +1,29 @@
-/* eslint-disable no-unused-expressions */
+import React, { FunctionComponent } from 'react'
 import { Button, Modal } from '@mui/material'
 import { Box } from '@mui/system'
-import React, { useState } from 'react'
-import { useStyles } from './styles'
-import { useFormik } from 'formik';
-import * as Yup from 'yup';
 import { Field, Form, Formik } from 'formik'
-
-import { Title } from '../Typography/Title/Title'
+import * as Yup from 'yup'
 
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
 import { DropDown } from '../DropDown/DropDown'
+import { DropDownItem } from '../DropDown/types'
+import { Title } from '../Typography/Title/Title'
+import { useStyles } from './styles'
 
-export const EditYearModal = ({ title, schoolYears, handleSubmit, handleClose }) => {
+type EditYearModalProps = {
+  title: string
+  schoolYears: DropDownItem[]
+  handleSubmit: (values: unknown) => void
+  handleClose: () => void
+}
+
+export const EditYearModal: FunctionComponent<EditYearModalProps> = ({
+  title,
+  schoolYears,
+  handleSubmit,
+  handleClose,
+}) => {
   const classes = useStyles
-
-  const formik = useFormik({
-    validationSchema: Yup.object({
-      schoolYear: Yup.string()
-        .required('Required'),
-    }),
-    onSubmit: values => {
-      handleSubmit(values);
-    },
-  });
-
-
   return (
     <Modal
       open={true}
@@ -34,25 +32,26 @@ export const EditYearModal = ({ title, schoolYears, handleSubmit, handleClose })
       aria-describedby='modal-modal-description'
     >
       <Box sx={classes.modalCard}>
-        <Title fontWeight='700' textAlign='center'>{title}</Title>
+        <Title fontWeight='700' textAlign='center'>
+          {title}
+        </Title>
         <Formik
           initialValues={{
             schoolYear: undefined,
           }}
           validationSchema={Yup.object({
-            schoolYear: Yup.string()
-              .required('This field is Required'),
+            schoolYear: Yup.string().required('This field is Required'),
           })}
           onSubmit={async (values) => {
             await handleSubmit(values)
           }}
         >
-          {({ values, errors }) => {
+          {({ errors }) => {
             return (
               <Form>
                 <Box sx={{ ...classes.content, display: 'flex', alignItems: 'center', px: 5 }}>
                   <Box sx={{ width: '60%' }}>
-                    <Field name={`schoolYear`} fullWidth focused>
+                    <Field name={'schoolYear'} fullWidth focused>
                       {({ field, form, meta }) => (
                         <Box width={'451.53px'}>
                           <DropDown
@@ -94,9 +93,12 @@ export const EditYearModal = ({ title, schoolYears, handleSubmit, handleClose })
                     Cancel
                   </Button>
                   <Button
-                   variant='contained' disableElevation sx={classes.submitButton} type="submit"
-                   disabled={Boolean(Object.keys(errors).length > 0)}
-                   >
+                    variant='contained'
+                    disableElevation
+                    sx={classes.submitButton}
+                    type='submit'
+                    disabled={Boolean(Object.keys(errors).length > 0)}
+                  >
                     Change
                   </Button>
                 </Box>

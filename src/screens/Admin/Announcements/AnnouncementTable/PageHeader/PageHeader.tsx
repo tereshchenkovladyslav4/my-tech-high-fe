@@ -1,11 +1,11 @@
-import { Box, Button, InputAdornment, OutlinedInput } from '@mui/material'
+import React, { FunctionComponent } from 'react'
 import AddIcon from '@mui/icons-material/Add'
-import React from 'react'
+import SearchIcon from '@mui/icons-material/Search'
+import { Box, Button, InputAdornment, OutlinedInput } from '@mui/material'
 import { useHistory } from 'react-router-dom'
 import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
-import SearchIcon from '@mui/icons-material/Search'
-import { useStyles } from '../styles'
 import { ANNOUNCEMENTS } from '../../../../../utils/constants'
+import { useStyles } from '../styles'
 
 type PageHeaderProps = {
   totalAnnouncements: number
@@ -15,13 +15,13 @@ type PageHeaderProps = {
   setSearchField: (value: string) => void
 }
 
-const PageHeader = ({
+const PageHeader: FunctionComponent<PageHeaderProps> = ({
   totalAnnouncements,
   showArchivedAnnouncement,
   searchField,
   setSearchField,
   setShowArchivedAnnouncement,
-}: PageHeaderProps) => {
+}) => {
   const classes = useStyles
   const history = useHistory()
 
@@ -56,7 +56,7 @@ const PageHeader = ({
               fullWidth
               value={searchField}
               placeholder='Search title, message, or student'
-              onChange={(e) => setSearchField}
+              onChange={() => setSearchField}
               startAdornment={
                 <InputAdornment position='start'>
                   <SearchIcon style={{ color: 'black' }} />

@@ -3,9 +3,9 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { FormControl, Select, MenuItem, TextField, FormHelperText, Divider } from '@mui/material'
 import { Box, styled } from '@mui/system'
 import { map } from 'lodash'
-import { DropDownTemplateType } from './types'
-import { dropdownClassess } from './styles'
 import { ERROR_RED, SYSTEM_05 } from '../../utils/constants'
+import { dropdownClassess } from './styles'
+import { DropDownTemplateType } from './types'
 
 const CssTextField = styled(TextField, {
   shouldForwardProp: (props) => props !== 'focusColor',
@@ -99,7 +99,9 @@ export const DropDown: DropDownTemplateType = ({
                 value={value}
                 onChange={(e) => handleChange(e.target?.value)}
                 displayEmpty
-                renderValue={(value || value == 0) ? undefined : () => <span style={{ color: 'gray' }}>{placeholder}</span>}
+                renderValue={
+                  value || value == 0 ? undefined : () => <span style={{ color: 'gray' }}>{placeholder}</span>
+                }
                 sx={{
                   ...sx,
                   borderRadius: 2,

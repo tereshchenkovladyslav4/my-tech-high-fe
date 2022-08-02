@@ -5,20 +5,20 @@ export type FilterVM = {
   specialEd: string[]
   // schoolYear: string[]
   visibility: string[]
-  schoolYearId : string
-  schoolYearLabel : string
+  schoolYearId: string
+  schoolYearLabel: string
 }
 
 export type FiltersProps = {
   filter: FilterVM | undefined
   setFilter: (value: FilterVM | undefined) => void
-  partnerList: any
+  partnerList: unknown[]
 }
 
 export type EnrollmentSchoolTableProps = {
   filter: FilterVM | undefined
   setFilter: (value: FilterVM | undefined) => void
-  partnerList: any
+  partnerList: unknown[]
 }
 
 export type EmailTemplateVM = {
@@ -39,4 +39,6 @@ export type SchoolYearVM = {
   midyear_application: boolean
   midyear_application_open: string
   midyear_application_close: string
+  date_reg_open: string
+  date_reg_close: string
 }

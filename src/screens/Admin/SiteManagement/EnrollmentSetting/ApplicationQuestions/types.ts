@@ -1,4 +1,3 @@
-import { GRADES } from '../../../../../utils/constants'
 import { STATES_WITH_ID } from '../../../../../utils/states'
 
 export const QuestionTypes = [
@@ -32,7 +31,7 @@ export const QuestionTypes = [
   },
 ]
 
-export type OptionsType = { label: string; value: number, action: number }
+export type OptionsType = { label: string; value: number; action: number }
 
 export type ApplicationQuestion = {
   id?: number
@@ -46,8 +45,8 @@ export type ApplicationQuestion = {
   validation?: string
   student_question: boolean
   default_question: boolean
-  slug: string,
-  additional_question: string,
+  slug: string
+  additional_question: string
   main_question: number
 }
 

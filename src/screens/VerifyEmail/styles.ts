@@ -1,5 +1,5 @@
-import { PRIMARY_SMALL_DEFAULT } from '../../utils/constants'
 import { outlinedInputClasses } from '@mui/material'
+import { PRIMARY_SMALL_DEFAULT } from '../../utils/constants'
 import { SYSTEM_07 } from '../../utils/constants'
 
 export const useStyles = {

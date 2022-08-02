@@ -3,29 +3,29 @@ import { StudentType } from '../../screens/HomeroomStudentProfile/Student/types'
 import { UserInfo } from '../UserContext/UserProvider'
 
 export type EnrollmentPacketContextType = {
-  me?: UserInfo,
+  me?: UserInfo
   setMe?: React.Dispatch<React.SetStateAction<UserInfo | null>>
   currentTab: number
-  setCurrentTab: React.Dispatch<React.SetStateAction<number>>,
+  setCurrentTab: React.Dispatch<React.SetStateAction<number>>
   packetId: number
-  setPacketId: React.Dispatch<React.SetStateAction<number>>,
-  student:  StudentType,
-  disabled?: boolean,
-  visitedTabs?: Number[],
-  setVisitedTabs: React.Dispatch<React.SetStateAction<number[]>>,
+  setPacketId: React.Dispatch<React.SetStateAction<number>>
+  student?: StudentType
+  disabled?: boolean
+  visitedTabs?: number[]
+  setVisitedTabs: React.Dispatch<React.SetStateAction<number[]>>
 }
 
 const enrollmentContext: EnrollmentPacketContextType = {
   me: undefined,
-  setMe: (_) => {},
+  setMe: () => {},
   currentTab: 0,
-  setCurrentTab: (_) => {},
+  setCurrentTab: () => {},
   packetId: 0,
-  setPacketId: (_) => {},
+  setPacketId: () => {},
   student: undefined,
   disabled: false,
   visitedTabs: [],
-  setVisitedTabs: (_) => {},
+  setVisitedTabs: () => {},
 }
 
 export const EnrollmentContext = createContext(enrollmentContext)

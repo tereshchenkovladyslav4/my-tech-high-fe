@@ -154,7 +154,7 @@ export const Dashboard: FunctionComponent = () => {
     if (announcementData?.userAnnouncements) {
       const { userAnnouncements } = announcementData
       setAnnouncements(
-        userAnnouncements.map((announcement: any) => ({
+        userAnnouncements.map((announcement: Announcement) => ({
           id: announcement.id,
           subject: announcement.subject,
           body: announcement.body,

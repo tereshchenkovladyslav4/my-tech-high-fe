@@ -1,4 +1,4 @@
-import React, { FunctionComponent, ReactNode } from 'react'
+import { FunctionComponent, ReactNode } from 'react'
 
 export type SchoolYears = {
   schoolYearId: number
@@ -18,7 +18,7 @@ export type ProgramSettingType = {
 
 type ProgramSettingProps = {
   title: string
-  data?: any
+  data?: unknown
 }
 
 export type ProgramSettingTemplateType = FunctionComponent<ProgramSettingProps>

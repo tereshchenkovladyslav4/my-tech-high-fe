@@ -1,19 +1,19 @@
-import { Link, TextField } from '@mui/material';
+import React, { FunctionComponent } from 'react'
+import { Link, TextField } from '@mui/material'
 import { Box } from '@mui/system'
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
+import { DatePicker } from '@mui/x-date-pickers/DatePicker'
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { map } from 'lodash'
-import React from 'react'
 import { DataRow } from '../../../../components/DataRow/DataRow'
 import { Paragraph } from '../../../../components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
-import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 
-export const Homeroom = () => {
-  const [value, setValue] = React.useState<Date | null | "">(new Date());
+export const Homeroom: FunctionComponent = () => {
+  const [value, setValue] = React.useState<Date | null | ''>(new Date())
   const handleChange = (newValue: Date | null) => {
-    setValue(newValue);
-  };
+    setValue(newValue)
+  }
   const data = [
     {
       label: 'Unassigned Students',
@@ -67,15 +67,11 @@ export const Homeroom = () => {
       <Box sx={{ width: 220, px: 3, mt: 2 }}>
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <DatePicker
-            label="Due Date"
-            inputFormat="MM/dd/yyyy"
+            label='Due Date'
+            inputFormat='MM/dd/yyyy'
             value={value}
             onChange={handleChange}
-            renderInput={(params) => <TextField
-              color="primary"
-              size="small"
-              {...params}
-            />}
+            renderInput={(params) => <TextField color='primary' size='small' {...params} />}
           />
         </LocalizationProvider>
       </Box>

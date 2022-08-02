@@ -1,19 +1,23 @@
-import React, { useContext } from 'react'
+import React, { FunctionComponent, useContext } from 'react'
 import { Grid } from '@mui/material'
+import moment from 'moment'
 import { Paragraph } from '../../../../components/Typography/Paragraph/Paragraph'
 import { Title } from '../../../../components/Typography/Title/Title'
-import { MTHBLUE, SYSTEM_06 } from '../../../../utils/constants'
-import moment from 'moment'
-import { Packet } from '../../../HomeroomStudentProfile/Student/types'
-import { parseGradeLevel } from '../../../../utils/stringHelpers'
 import { ProfileContext } from '../../../../providers/ProfileProvider/ProfileContext'
+import { MTHBLUE, SYSTEM_06 } from '../../../../utils/constants'
+import { parseGradeLevel } from '../../../../utils/stringHelpers'
+import { Packet } from '../../../HomeroomStudentProfile/Student/types'
 
-export function EnrollmentJobsInfo({ packet, handleModem }: { packet: Packet, handleModem: () => void }) {
+type EnrollmentJobsInfoProps = {
+  packet: Packet
+  handleModem: () => void
+}
+export const EnrollmentJobsInfo: FunctionComponent<EnrollmentJobsInfoProps> = ({ packet, handleModem }) => {
   const { showModal } = useContext(ProfileContext)
 
   const profileClicked = (profileData) => {
-    showModal(profileData);
-    handleModem();
+    showModal(profileData)
+    handleModem()
   }
 
   const student = packet.student

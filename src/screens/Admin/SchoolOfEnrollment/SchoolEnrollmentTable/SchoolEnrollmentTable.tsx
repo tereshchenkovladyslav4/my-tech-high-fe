@@ -1,53 +1,50 @@
-import { Box, Button, Card, InputAdornment, OutlinedInput, Tooltip } from '@mui/material'
-import React, { useEffect, useState, useContext } from 'react'
-import { UserContext } from '../../../../providers/UserContext/UserProvider'
-import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
-import { BUTTON_LINEAR_GRADIENT, GREEN_GRADIENT, RED_GRADIENT, YELLOW_GRADIENT } from '../../../../utils/constants'
+import React, { useEffect, useState, useContext, FunctionComponent } from 'react'
+import { useQuery } from '@apollo/client'
 import SearchIcon from '@mui/icons-material/Search'
-import { Paragraph } from '../../../../components/Typography/Paragraph/Paragraph'
+import { Box, Button, Card, InputAdornment, OutlinedInput } from '@mui/material'
+import { map } from 'lodash'
+import moment from 'moment'
+
 import { Pagination } from '../../../../components/Pagination/Pagination'
 import { SortableTable } from '../../../../components/SortableTable/SortableTable'
-import { useQuery, useMutation } from '@apollo/client'
-import {
-  getApplicationsQuery,
-  approveApplicationMutation,
-  deleteApplicationMutation,
-  GetSchoolsPartner
-} from '../services'
-import { getEmailTemplateQuery } from '../../../../graphql/queries/email-template'
-import { map, parseInt, sortBy } from 'lodash'
-import moment from 'moment'
+
+import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
 import { WarningModal } from '../../../../components/WarningModal/Warning'
-import { APPLICATION_HEADCELLS, ENROLLMENT_SCHOOL_HEADCELLS } from '../../../../utils/PageHeadCellsConstant'
-import { EnrollmentSchoolTableProps, EmailTemplateVM, SchoolYearVM } from '../type'
-import { EditYearModal } from '../../../../components/EmailModal/EditYearModal'
-import { getSchoolYearsByRegionId } from '../../SiteManagement/services'
+import { getEmailTemplateQuery } from '../../../../graphql/queries/email-template'
+import { UserContext } from '../../../../providers/UserContext/UserProvider'
+import { BUTTON_LINEAR_GRADIENT, RED_GRADIENT } from '../../../../utils/constants'
+import { ENROLLMENT_SCHOOL_HEADCELLS } from '../../../../utils/PageHeadCellsConstant'
 import { DropDown } from '../../SiteManagement/components/DropDown/DropDown'
+import { getSchoolYearsByRegionId } from '../../SiteManagement/services'
+import { getApplicationsQuery } from '../services'
+import { EnrollmentSchoolTableProps, EmailTemplateVM } from '../type'
 
-export const EnrollmentSchoolTable = ({ filter, setFilter, partnerList }: EnrollmentSchoolTableProps) => {
+export const EnrollmentSchoolTable: FunctionComponent<EnrollmentSchoolTableProps> = ({
+  filter,
+  setFilter,
+  partnerList,
+}) => {
   const { me } = useContext(UserContext)
-  const [studentList, setStudentList] = useState([]);
 
-  const [emailTemplate, setEmailTemplate] = useState<EmailTemplateVM>()
+  const [, setEmailTemplate] = useState<EmailTemplateVM>()
   const [pageLoading, setPageLoading] = useState<boolean>(false)
   const [seachField, setSearchField] = useState<string>('')
   const [openAlert, setOpenAlert] = useState<boolean>(false)
   const [noStudnetAlert, setNoStudentAlert] = useState<boolean>(false)
-  const [clearAll, setClearAll] = useState<boolean>(false)
+  const [clearAll] = useState<boolean>(false)
   const [paginatinLimit, setPaginatinLimit] = useState<number>(Number(localStorage.getItem('pageLimit')) || 25)
   const [sort, setSort] = useState<string>('status|ASC')
   const [skip, setSkip] = useState<number>(0)
   const [totalApplications, setTotalApplications] = useState<number>()
-  const [tableData, setTableData] = useState<Array<any>>([])
-  const [applicationIds, setApplicationIds] = useState<Array<string>>([])
+  const [tableData, setTableData] = useState<Array<unknown>>([])
+  const [setApplicationIds] = useState<Array<string>>([])
   const [currentPage, setCurrentPage] = useState<number>(1)
-  const [schoolYears, setSchoolYears] = useState<any[]>([])
-  const [editData, setEditData] = useState<any>()
+  const [schoolYears, setSchoolYears] = useState<unknown[]>([])
+  const [editData, setEditData] = useState<unknown>()
   const [selectedYear, setSelectedYear] = useState('')
   const [schoolPartner, setSchoolPartner] = useState('')
 
-  const status = ['New', 'Sibling', 'Returning', 'Hidden']
-  const createData = (application: any) => {
+  const createData = (application: unknown) => {
     return {
       student: `${application.student.person?.last_name}, ${application.student.person?.first_name}`,
       grade:
@@ -56,7 +53,6 @@ export const EnrollmentSchoolTable = ({ filter, setFilter, partnerList }: Enroll
           ? 'K'
           : application.student.grade_levels[0].grade_level),
       parent: `${application.student.parent.person?.last_name}, ${application.student.parent.person?.first_name}`,
-
 
       id: application.application_id,
       submitted: application.date_submitted ? moment(application.date_submitted).format('MM/DD/YY') : null,
@@ -82,18 +78,17 @@ export const EnrollmentSchoolTable = ({ filter, setFilter, partnerList }: Enroll
       sped: application.student.special_ed ? 'Yes' : 'No',
 
       // status: application.status,
-
     }
   }
 
   // const { loading: schoolLoading, data: schoolYearData } = useQuery(getSchoolYearQuery)
-  const { loading: schoolLoading, data: schoolYearData } = useQuery(getSchoolYearsByRegionId, {
+  const { data: schoolYearData } = useQuery(getSchoolYearsByRegionId, {
     variables: {
       regionId: me?.selectedRegionId,
     },
     skip: me?.selectedRegionId ? false : true,
     fetchPolicy: 'network-only',
-  });
+  })
 
   const { data, refetch } = useQuery(getApplicationsQuery, {
     variables: {
@@ -123,7 +118,7 @@ export const EnrollmentSchoolTable = ({ filter, setFilter, partnerList }: Enroll
   //   fetchPolicy: 'network-only',
   // })
 
-  const { data: emailTemplateData, refetch: refetchEmailTemplate } = useQuery(getEmailTemplateQuery, {
+  const { data: emailTemplateData } = useQuery(getEmailTemplateQuery, {
     variables: {
       template: 'Application Page',
       regionId: me?.selectedRegionId,
@@ -148,38 +143,37 @@ export const EnrollmentSchoolTable = ({ filter, setFilter, partnerList }: Enroll
     }
   }, [emailTemplateData])
 
-
   useEffect(() => {
     if (schoolYearData?.region?.SchoolYears) {
-      const { SchoolYears } = schoolYearData?.region;
-      let yearList = [];
-      SchoolYears.sort((a, b) => a.date_begin > b.date_begin ? 1 : -1).map((item: any) => {
+      const { SchoolYears } = schoolYearData?.region
+      const yearList = []
+      SchoolYears.sort((a, b) => (a.date_begin > b.date_begin ? 1 : -1)).map((item: unknown) => {
         yearList.push({
           value: item.school_year_id,
           label: moment(item.date_begin).format('YYYY') + ' - ' + moment(item.date_end).format('YY'),
-        });
-        if(moment(item.date_begin).format('YYYY') === moment().format('YYYY')){
+        })
+        if (moment(item.date_begin).format('YYYY') === moment().format('YYYY')) {
           setSelectedYear(item.school_year_id) // set init year
-          setFilter(prevState => ({
+          setFilter((prevState) => ({
             ...prevState,
             schoolYearId: item.school_year_id,
-            schoolYearLabel: moment(item.date_begin).format('YYYY') + ' - ' + moment(item.date_end).format('YY')
+            schoolYearLabel: moment(item.date_begin).format('YYYY') + ' - ' + moment(item.date_end).format('YY'),
           }))
         }
         if (item.midyear_application === 1) {
           yearList.push({
             value: -1 * item.school_year_id,
             label: moment(item.date_begin).format('YYYY') + ' - ' + moment(item.date_end).format('YY') + ' Mid-Year',
-          });
+          })
         }
-      });
+      })
       setSchoolYears(yearList)
-      setFilter(prev => ({
+      setFilter((prev) => ({
         ...prev,
-        schoolYear: yearList[0]?.label
+        schoolYear: yearList[0]?.label,
       }))
     }
-  }, [schoolYearData?.region?.SchoolYears]);
+  }, [schoolYearData?.region?.SchoolYears])
   // useEffect(() => {
   //   setSchoolYears(schoolYearData?.schoolYears)
   // }, [schoolLoading])
@@ -222,44 +216,6 @@ export const EnrollmentSchoolTable = ({ filter, setFilter, partnerList }: Enroll
     }
   }, [])
 
-  const [deleteApplication] = useMutation(deleteApplicationMutation)
-
-  const handleDeleteSelected = async () => {
-    if (applicationIds.length === 0) {
-      setOpenAlert(true)
-      return
-    }
-    await deleteApplication({
-      variables: {
-        deleteApplicationInput: {
-          application_ids: applicationIds,
-        },
-      },
-    })
-    setApplicationIds([])
-    refetch()
-  }
-
-  const handleApplicationAccept = async () => {
-    if (applicationIds.length === 0) {
-      setOpenAlert(true)
-      return
-    }
-    await approveApplicationAction()
-  }
-  const [approveApplication] = useMutation(approveApplicationMutation)
-
-  const approveApplicationAction = async () => {
-    await approveApplication({
-      variables: {
-        acceptApplicationInput: {
-          application_ids: applicationIds,
-        },
-      },
-    })
-    refetch()
-  }
-
   const handleChangePageLimit = (value) => {
     localStorage.setItem('pageLimit', value)
     handlePageChange(1)
@@ -300,7 +256,7 @@ export const EnrollmentSchoolTable = ({ filter, setFilter, partnerList }: Enroll
           <Box marginLeft={4}>
             <OutlinedInput
               sx={{
-                width: '280px'
+                width: '280px',
               }}
               onFocus={(e) => (e.target.placeholder = '')}
               onBlur={(e) => (e.target.placeholder = 'Search...')}
@@ -309,7 +265,8 @@ export const EnrollmentSchoolTable = ({ filter, setFilter, partnerList }: Enroll
               value={seachField}
               placeholder='Search...'
               onChange={(e) => {
-                handlePageChange(1), setSearchField(e.target.value)
+                handlePageChange(1)
+                setSearchField(e.target.value)
               }}
               startAdornment={
                 <InputAdornment position='start'>
@@ -327,7 +284,7 @@ export const EnrollmentSchoolTable = ({ filter, setFilter, partnerList }: Enroll
           flexDirection: 'row',
           alignItems: 'left',
           marginTop: '50px',
-          justifyContent: 'space-between'
+          justifyContent: 'space-between',
         }}
       >
         <Box display='flex' flexDirection='row' justifyContent='flex-end' sx={{ mr: 3 }} alignItems='center'>
@@ -337,14 +294,14 @@ export const EnrollmentSchoolTable = ({ filter, setFilter, partnerList }: Enroll
             defaultValue={selectedYear}
             sx={{ width: '200px', marginLeft: '24px' }}
             borderNone={true}
-            size="small"
+            size='small'
             setParentValue={(val) => {
-              setSelectedYear(val);
-              const yearLabel = schoolYears.find(item => item.value == val);
-              setFilter(prevState => ({
+              setSelectedYear(val)
+              const yearLabel = schoolYears.find((item) => item.value == val)
+              setFilter((prevState) => ({
                 ...prevState,
                 schoolYearId: yearLabel?.value,
-                schoolYearLabel: yearLabel?.label
+                schoolYearLabel: yearLabel?.label,
               }))
             }}
           />
@@ -379,7 +336,7 @@ export const EnrollmentSchoolTable = ({ filter, setFilter, partnerList }: Enroll
                 color: 'white',
                 width: '92px',
                 padding: '20px 55px',
-                marginBottom: '4px'
+                marginBottom: '4px',
               }}
               // onClick={handleApplicationAccept}
             >
@@ -393,7 +350,7 @@ export const EnrollmentSchoolTable = ({ filter, setFilter, partnerList }: Enroll
               flexDirection: 'row',
               alignItems: 'left',
               justifyContent: 'flex-end',
-              marginLeft: '24px'
+              marginLeft: '24px',
             }}
           >
             <Button
@@ -409,7 +366,7 @@ export const EnrollmentSchoolTable = ({ filter, setFilter, partnerList }: Enroll
                   color: '#fff',
                 },
                 padding: '20px 55px',
-                marginBottom: '4px'
+                marginBottom: '4px',
               }}
               // onClick={handleDeleteSelected}
             >

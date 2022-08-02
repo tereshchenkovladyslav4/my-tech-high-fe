@@ -1,15 +1,15 @@
+import React, { FunctionComponent, useContext, useEffect, useState } from 'react'
+import { gql, useQuery } from '@apollo/client'
+import { makeStyles } from '@material-ui/styles'
+import ExpandLessIcon from '@mui/icons-material/ExpandLess'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { Card, Grid, IconButton, Select, MenuItem, FormControl } from '@mui/material'
 import { Box } from '@mui/system'
-import React, { useContext, useEffect, useState } from 'react'
-import { UserContext } from '../../../../providers/UserContext/UserProvider'
+import moment from 'moment'
+import { DropDownItem } from '../../../../components/DropDown/types'
 import { Paragraph } from '../../../../components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
-import { DropDownItem } from '../../../../components/DropDown/types'
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
-import ExpandLessIcon from '@mui/icons-material/ExpandLess'
-import { gql, useQuery } from '@apollo/client'
-import moment from 'moment'
-import { makeStyles } from '@material-ui/styles'
+import { UserContext } from '../../../../providers/UserContext/UserProvider'
 const selectStyles = makeStyles({
   select: {
     '& .MuiSvgIcon-root': {
@@ -128,9 +128,9 @@ const data = [
 
 const status = ['Pending', 'Active', 'Total', 'Withdrawn', 'Graduated']
 
-export const SchoolYear = () => {
+export const SchoolYear: FunctionComponent = () => {
   const [isExpanded, setIsExpanded] = useState(false)
-  const { me, setMe } = useContext(UserContext)
+  const { me } = useContext(UserContext)
   const [schoolYears, setSchoolYears] = useState<Array<DropDownItem>>([])
   const [selectedYear, setSelectedYear] = useState<string | number>()
   const [schoolYearDataCount, setSchoolYearDataCount] = useState(data)

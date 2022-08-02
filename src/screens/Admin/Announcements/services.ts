@@ -62,7 +62,7 @@ export const GetCurrentSchoolYearByRegionId = gql`
 
 export const deleteAnnouncementsById = gql`
   mutation deleteAnnouncementsById($id: Int!) {
-    deleteAnnouncementsById(id: $id){
+    deleteAnnouncementsById(id: $id) {
       error
       message
     }

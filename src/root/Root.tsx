@@ -1,7 +1,7 @@
+import React, { FunctionComponent, useContext, useEffect, useState } from 'react'
 import { useQuery } from '@apollo/client'
+import { makeStyles, Theme } from '@material-ui/core/styles'
 import { Box } from '@mui/material'
-import { makeStyles, Theme } from "@material-ui/core/styles";
-import React, { useContext, useEffect, useState } from 'react'
 import { AdminAppBar } from '../components/AdminAppBar/AdminAppBar'
 import { AppBar } from '../components/AppBar/AppBar'
 import { Flexbox } from '../components/Flexbox/Flexbox'
@@ -21,14 +21,14 @@ const useStyles = makeStyles((theme: Theme) => ({
       marginLeft: '0',
     },
     marginLeft: '260px',
-  }
-}));
+  },
+}))
 
-export const Root = () => {
-  const classes = useStyles();
+export const Root: FunctionComponent = () => {
+  const classes = useStyles()
   const { me, setMe } = useContext(UserContext)
   const { setTab, setVisitedTabs } = useContext(TabContext)
-  const { loading, error, data } = useQuery(getMeQuery, { skip: me ? true : false })
+  const { loading, data } = useQuery(getMeQuery, { skip: me ? true : false })
   const [isSuper, setIsSuper] = useState(null)
 
   useEffect(() => {
@@ -38,20 +38,19 @@ export const Root = () => {
       })
 
       //  Sort user regions by region name
-      let regions = [];
-      data.me.userRegion.forEach(region => {
-        let i;
+      const regions = []
+      data.me.userRegion.forEach((region) => {
+        let i
         for (i = 0; i < regions.length; i++) {
-          if (regions[i].regionDetail.name > region.regionDetail.name)
-            break;
+          if (regions[i].regionDetail.name > region.regionDetail.name) break
         }
-        regions.splice(i, 0, region);
-      });
+        regions.splice(i, 0, region)
+      })
       //  Replace userRegion array with the sorted one.
       setMe({
         ...data.me,
-        userRegion: regions
-      });
+        userRegion: regions,
+      })
       setVisitedTabs([])
       setIsSuper(Number(data.me?.level) === 1)
     }
@@ -63,7 +62,14 @@ export const Root = () => {
     !isSuper ? (
       <Box sx={{ height: '100%', flex: 1 }} alignItems={'center'}>
         <SideMenu />
-        <Box display='flex' flex={1} flexDirection={'column'} textAlign={'center'} justifyContent='space-between' height='100vh'>
+        <Box
+          display='flex'
+          flex={1}
+          flexDirection={'column'}
+          textAlign={'center'}
+          justifyContent='space-between'
+          height='100vh'
+        >
           <div className={classes.content}>
             {me?.level === 2 ? <AdminAppBar /> : <AppBar />}
             <Box sx={{ marginTop: { xs: '65px', sm: 0 }, marginBottom: { xs: '15px', sm: 0 } }}>

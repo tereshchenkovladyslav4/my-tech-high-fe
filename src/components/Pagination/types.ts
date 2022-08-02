@@ -1,11 +1,11 @@
 import { FunctionComponent } from 'react'
 
 type PaginationProps = {
-	defaultValue?: any,
-	setParentLimit?: any,
-	handlePageChange: any,
-	numPages: any,
-	currentPage: number
+  defaultValue?: unknown
+  setParentLimit?: () => void
+  handlePageChange: () => void
+  numPages: number
+  currentPage: number
 }
 
 export type PaginationTemplateType = FunctionComponent<PaginationProps>

@@ -1,23 +1,24 @@
-import React from 'react'
-import { Box, Button, Modal, Typography } from '@mui/material'
+import React, { FunctionComponent } from 'react'
 import InfoIcon from '@mui/icons-material/InfoOutlined'
+import { Box, Button, Modal, Typography } from '@mui/material'
 import { modalClassess } from './styles'
 
-export default function ConfirmModal({
-  title,
-  description,
-  onClose,
-  onConfirm,
-  confirmStr = 'Confirm',
-  cancelStr = 'Cancel',
-}: {
+type ConfirmModalProps = {
   title: string
   description: string
   onClose: () => void
   onConfirm: () => void
   confirmStr?: string
   cancelStr?: string
-}) {
+}
+export const ConfirmModal: FunctionComponent<ConfirmModalProps> = ({
+  title,
+  description,
+  onClose,
+  onConfirm,
+  confirmStr = 'Confirm',
+  cancelStr = 'Cancel',
+}) => {
   return (
     <Modal
       open={true}

@@ -1,9 +1,9 @@
 import React from 'react'
-import { Box, FormControl, MenuItem, Typography, Select, Divider, FormHelperText } from '@mui/material'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
-import { useStyles } from './style'
-import { ImmunizationsData } from '../../Immunizations'
+import { Box, FormControl, MenuItem, Typography, Select, Divider, FormHelperText } from '@mui/material'
 import { useFormikContext } from 'formik'
+import { ImmunizationsData } from '../../Immunizations'
+import { useStyles } from './style'
 
 const ImmunityAllowed: React.FC = () => {
   const styles = useStyles()

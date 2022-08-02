@@ -1,1 +1,1 @@
-export { default as WithdrawModal } from './WithdrawModal'
+export { WithdrawModal } from './WithdrawModal'

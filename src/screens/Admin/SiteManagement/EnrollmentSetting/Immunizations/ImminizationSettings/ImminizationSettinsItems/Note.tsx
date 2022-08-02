@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 import { Box, FormControl, Typography, Divider, TextField, Button, FormHelperText } from '@mui/material'
-import { useStyles } from './style'
-import { ImmunizationsData } from '../../Immunizations'
 import { useFormikContext } from 'formik'
+import { ImmunizationsData } from '../../Immunizations'
+import { useStyles } from './style'
 
 const MinimumGrade: React.FC = () => {
   const styles = useStyles()
@@ -30,13 +30,14 @@ const MinimumGrade: React.FC = () => {
       <FormControl sx={{ width: focused ? '80%' : undefined }} variant='outlined' classes={{ root: styles.formRoot }}>
         {!focused ? (
           values.tooltip === '' ? (
-            <Button onClick={() => setFocused(true)} sx={{ color: '#4145FF', padding: 0, marginLeft: '-11px', fontSize: '16px' }}>
+            <Button
+              onClick={() => setFocused(true)}
+              sx={{ color: '#4145FF', padding: 0, marginLeft: '-11px', fontSize: '16px' }}
+            >
               Select
             </Button>
           ) : (
-            <Typography onClick={() => setFocused(true)}>
-              {values.tooltip || ''}
-            </Typography>
+            <Typography onClick={() => setFocused(true)}>{values.tooltip || ''}</Typography>
           )
         ) : (
           <TextField
@@ -45,16 +46,16 @@ const MinimumGrade: React.FC = () => {
             onChange={handleChange}
             id='standard-basic'
             variant='standard'
-            InputProps={{ 
-              disableUnderline: true
+            InputProps={{
+              disableUnderline: true,
             }}
             // sx={{ width: '60vw' }}
-            fullWidth = {true}
+            fullWidth={true}
           />
         )}
       </FormControl>
       <FormHelperText error>{touched.tooltip && errors.tooltip}</FormHelperText>
-    </Box >
+    </Box>
   )
 }
 

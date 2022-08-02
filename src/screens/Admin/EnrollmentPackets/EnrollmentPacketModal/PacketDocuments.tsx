@@ -1,35 +1,38 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { FunctionComponent, ReactElement, useContext, useEffect, useState } from 'react'
+import { useMutation, useQuery } from '@apollo/client'
 import { Grid } from '@mui/material'
+import DeleteIcon from '../../../../assets/icons/icon-delete-small.svg'
+import { QUESTION_TYPE } from '../../../../components/QuestionItem/QuestionItemProps'
 import { Paragraph } from '../../../../components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
 import { SYSTEM_06, SYSTEM_01, PRIMARY_MEDIUM_MOUSEOVER } from '../../../../utils/constants'
-import { useMutation, useQuery } from '@apollo/client'
+import { CustomModal } from '../../SiteManagement/EnrollmentSetting/components/CustomModal/CustomModals'
 import { deletePacketDocumentFileMutation, getPacketFiles } from '../services'
-import { useStyles } from './styles'
-// @ts-ignore
-import DeleteIcon from '../../../../assets/icons/icon-delete-small.svg'
-import CustomModal from '../../SiteManagement/EnrollmentSetting/components/CustomModal/CustomModals'
 import { PacketModalQuestionsContext } from './providers'
-import { QUESTION_TYPE } from '../../../../components/QuestionItem/QuestionItemProps'
+import { useStyles } from './styles'
 
-export const EnrollmentPacketDocument = ({ packetData }) => {
+type EnrollmentPacketDocumentProps = {
+  packetData: unknown
+}
+
+export const EnrollmentPacketDocument: FunctionComponent<EnrollmentPacketDocumentProps> = ({ packetData }) => {
   const questions = useContext(PacketModalQuestionsContext)
   const classes = useStyles
-  const [files, setFiles] = useState<Array<any>>([])
+  const [files, setFiles] = useState<Array<File>>([])
   const [fileIds, setFileIds] = useState('')
   const [openConfirmModal, setOpenConfirmModal] = useState(false)
   const [selectedFileId, setSelectedFileId] = useState(null)
 
   const [deleteFile] = useMutation(deletePacketDocumentFileMutation)
 
-  const { loading, error, data, refetch } = useQuery(getPacketFiles, {
+  const { loading, data, refetch } = useQuery(getPacketFiles, {
     variables: {
       fileIds: fileIds,
     },
     fetchPolicy: 'network-only',
   })
 
-  const onDeletefile = (id: any) => {
+  const onDeletefile = (id: number) => {
     setOpenConfirmModal(true)
     setSelectedFileId(id)
   }
@@ -56,21 +59,21 @@ export const EnrollmentPacketDocument = ({ packetData }) => {
       if (packetData.files.length > 0) {
         for (const packetfile of packetData.files) {
           // if (packetfile.kind === 'bc' || packetfile.kind === 'ur' || packetfile.kind === 'im') {
-            for (const file of data.packetFiles.results) {
-              if (parseInt(packetfile.mth_file_id) === parseInt(file.file_id)) {
-                const tempFile = {
-                  file_id: file.file_id,
-                  kind: packetfile.kind,
-                  name:
-                    packetData.student?.person.first_name.substring(0, 1).toUpperCase() +
-                    '.' +
-                    packetData.student?.person.last_name +
-                    packetfile.kind.toUpperCase(),
-                  url: file.signedUrl,
-                }
-                filesData.push(tempFile)
+          for (const file of data.packetFiles.results) {
+            if (parseInt(packetfile.mth_file_id) === parseInt(file.file_id)) {
+              const tempFile = {
+                file_id: file.file_id,
+                kind: packetfile.kind,
+                name:
+                  packetData.student?.person.first_name.substring(0, 1).toUpperCase() +
+                  '.' +
+                  packetData.student?.person.last_name +
+                  packetfile.kind.toUpperCase(),
+                url: file.signedUrl,
               }
+              filesData.push(tempFile)
             }
+          }
           // }
         }
       }
@@ -87,7 +90,7 @@ export const EnrollmentPacketDocument = ({ packetData }) => {
         </Subtitle>
       </Grid>
 
-      <Grid container >
+      <Grid container>
         <Grid
           sx={{
             '&.MuiGrid-root': {
@@ -99,50 +102,60 @@ export const EnrollmentPacketDocument = ({ packetData }) => {
           sm={6}
           xs={12}
         >
-          {questions?.length > 0 && questions?.find((tab) => tab.tab_name === 'Documents')?.groups[0]?.questions?.map((q) => {
-            if(q.type === QUESTION_TYPE.UPLOAD) {
-              return (
-                <Paragraph color={SYSTEM_06} sx={{ fontSize: '14px' }} fontWeight='400'>
-                  {q.question}
-                </Paragraph>
-              )
-            }
-          })}
+          {questions?.length > 0 &&
+            questions
+              ?.find((tab) => tab.tab_name === 'Documents')
+              ?.groups[0]?.questions?.map((q): ReactElement | undefined => {
+                if (q.type === QUESTION_TYPE.UPLOAD) {
+                  return (
+                    <Paragraph color={SYSTEM_06} sx={{ fontSize: '14px' }} fontWeight='400'>
+                      {q.question}
+                    </Paragraph>
+                  )
+                } else {
+                  return undefined
+                }
+              })}
         </Grid>
         <Grid item md={6} sm={6} xs={12}>
-        {questions?.length > 0 && questions?.find((tab) => tab.tab_name === 'Documents')?.groups[0]?.questions?.map((q) => {
-            if(q.type === QUESTION_TYPE.UPLOAD) {
-              return (
-                <div>
-                  {files?.length > 0 && files?.find((e) => e.kind === q.question) ? (
-                    <Paragraph
-                      color={PRIMARY_MEDIUM_MOUSEOVER}
-                      fontWeight='400'
-                      sx={{ fontSize: '14px', display: 'flex', alignItems: 'center' }}
-                    >
-                      <a
-                        href={files?.find((e) => e.kind === q.question).url}
-                        target='_blank'
-                        style={{ cursor: 'pointer', textDecoration: 'unset' }}
-                        rel='noreferrer'
-                      >
-                        {files?.find((e) => e.kind === q.question).name}
-                      </a>
-                      <img
-                        src={DeleteIcon}
-                        style={classes.deleteIcon}
-                        onClick={() => onDeletefile(files?.find((e) => e.kind === q.question).file_id)}
-                      />
-                    </Paragraph>
-                  ) : (
-                    <Paragraph color={SYSTEM_06} sx={{ fontSize: '14px' }} fontWeight='400'>
-                      Not found
-                    </Paragraph>
-                  )}
-                </div>
-              )
-            }
-          })}
+          {questions?.length > 0 &&
+            questions
+              ?.find((tab) => tab.tab_name === 'Documents')
+              ?.groups[0]?.questions?.map((q): ReactElement | undefined => {
+                if (q.type === QUESTION_TYPE.UPLOAD) {
+                  return (
+                    <div>
+                      {files?.length > 0 && files?.find((e) => e.kind === q.question) ? (
+                        <Paragraph
+                          color={PRIMARY_MEDIUM_MOUSEOVER}
+                          fontWeight='400'
+                          sx={{ fontSize: '14px', display: 'flex', alignItems: 'center' }}
+                        >
+                          <a
+                            href={files?.find((e) => e.kind === q.question).url}
+                            target='_blank'
+                            style={{ cursor: 'pointer', textDecoration: 'unset' }}
+                            rel='noreferrer'
+                          >
+                            {files?.find((e) => e.kind === q.question).name}
+                          </a>
+                          <img
+                            src={DeleteIcon}
+                            style={classes.deleteIcon}
+                            onClick={() => onDeletefile(files?.find((e) => e.kind === q.question).file_id)}
+                          />
+                        </Paragraph>
+                      ) : (
+                        <Paragraph color={SYSTEM_06} sx={{ fontSize: '14px' }} fontWeight='400'>
+                          Not found
+                        </Paragraph>
+                      )}
+                    </div>
+                  )
+                } else {
+                  return undefined
+                }
+              })}
           {/* {files?.length > 0 ? (
             <div>
               {files?.find((e) => e.kind === 'bc') ? (

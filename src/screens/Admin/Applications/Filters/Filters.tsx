@@ -1,20 +1,20 @@
-import { Box, Button, Card, Checkbox, FormControlLabel, Grid } from '@mui/material'
-import React, { useContext, useEffect, useState } from 'react'
-import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
+import React, { FunctionComponent, useContext, useEffect, useState } from 'react'
+import { useQuery } from '@apollo/client'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
-import { BUTTON_LINEAR_GRADIENT, MTHBLUE, RED_GRADIENT, GRADES } from '../../../../utils/constants'
-import { Paragraph } from '../../../../components/Typography/Paragraph/Paragraph'
+import { Box, Button, Card, Checkbox, FormControlLabel, Grid } from '@mui/material'
 import { map } from 'lodash'
-import { toOrdinalSuffix } from '../../../../utils/stringHelpers'
-import { useHistory } from 'react-router-dom'
-import { FiltersProps, SchoolYearVM } from '../type'
-import { useQuery } from '@apollo/client'
-import { getActiveSchoolYearsByRegionId } from '../../../Applications/NewParent/service'
-import { UserContext } from '../../../../providers/UserContext/UserProvider'
 import moment from 'moment'
+import { useHistory } from 'react-router-dom'
+import { Paragraph } from '../../../../components/Typography/Paragraph/Paragraph'
+import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
+import { UserContext } from '../../../../providers/UserContext/UserProvider'
+import { BUTTON_LINEAR_GRADIENT, MTHBLUE, RED_GRADIENT, GRADES } from '../../../../utils/constants'
+import { toOrdinalSuffix } from '../../../../utils/stringHelpers'
+import { getActiveSchoolYearsByRegionId } from '../../../Applications/NewParent/service'
+import { FiltersProps, SchoolYearVM } from '../type'
 
-export const Filters = ({ filter, setFilter }: FiltersProps) => {
+export const Filters: FunctionComponent<FiltersProps> = ({ filter, setFilter }) => {
   const { me } = useContext(UserContext)
   const history = useHistory()
   const [expand, setExpand] = useState<boolean>(false)

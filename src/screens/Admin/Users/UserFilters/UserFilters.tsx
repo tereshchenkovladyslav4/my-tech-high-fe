@@ -1,6 +1,6 @@
+import React, { FunctionComponent } from 'react'
 import { Box, Button } from '@mui/material'
 import { map } from 'lodash'
-import React, { useState } from 'react'
 import { BUTTON_LINEAR_GRADIENT, MTHBLUE } from '../../../../utils/constants'
 
 type UserFiltersProps = {
@@ -8,7 +8,7 @@ type UserFiltersProps = {
   setFilters: (value: Array<string>) => void
 }
 
-export const UserFilters = ({ setFilters, filters }: UserFiltersProps) => {
+export const UserFilters: FunctionComponent<UserFiltersProps> = ({ setFilters, filters }) => {
   const roles = [
     {
       id: 1,

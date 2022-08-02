@@ -1,23 +1,23 @@
+import React, { useContext, useEffect, useState, useCallback, FunctionComponent } from 'react'
 import { useMutation, useQuery } from '@apollo/client'
 import SearchIcon from '@mui/icons-material/Search'
 import { Box, Button, Card, InputAdornment, OutlinedInput } from '@mui/material'
 import { map } from 'lodash'
+import debounce from 'lodash.debounce'
 import moment from 'moment'
-import React, { useContext, useEffect, useState, useCallback } from 'react'
+import { useHistory } from 'react-router-dom'
 import { Pagination } from '../../../components/Pagination/Pagination'
 import { SortableUserTable } from '../../../components/SortableTable/SortableUserTable'
 import { Subtitle } from '../../../components/Typography/Subtitle/Subtitle'
 import { WarningModal } from '../../../components/WarningModal/Warning'
-import { changeUserStatusMutation, toggleMasqueradeMutation, becomeUserMutation } from '../../../graphql/mutation/user'
+import { changeUserStatusMutation, becomeUserMutation } from '../../../graphql/mutation/user'
 import { getUsersByRegions } from '../../../graphql/queries/user'
 import { UserContext } from '../../../providers/UserContext/UserProvider'
 import { BUTTON_LINEAR_GRADIENT, DASHBOARD } from '../../../utils/constants'
-import { ApolloError, Region } from './interfaces'
+import { USERS_HEADCELLS } from '../../../utils/PageHeadCellsConstant'
+import { ApolloError } from './interfaces'
 import { NewUserModal } from './NewUserModal/NewUserModal'
 import { UserFilters } from './UserFilters/UserFilters'
-import debounce from 'lodash.debounce'
-import { useHistory } from 'react-router-dom'
-import { USERS_HEADCELLS } from '../../../utils/PageHeadCellsConstant'
 
 type UserInfo = {
   user_id: number
@@ -29,7 +29,7 @@ type UserInfo = {
   masquerade: boolean
 }
 
-export const Users = () => {
+export const Users: FunctionComponent = () => {
   const [rows, setRows] = useState<Array<UserInfo>>([])
   const [paginatinLimit, setPaginatinLimit] = useState<number>(25)
   const [currentPage, setCurrentPage] = useState<number>(1)
@@ -64,12 +64,7 @@ export const Users = () => {
   const [changeUserStatus, { data: responseData, loading: uploading, error: uploadingError }] =
     useMutation(changeUserStatusMutation)
 
-  const [toggleMasquerade, { data: masqueradeData, loading: masqueradeLoading, error: masqueradeError }] =
-    useMutation(toggleMasqueradeMutation)
-
-  const [becomeUserAction, { data: userData, loading: userLoading, error: userError }] = useMutation(becomeUserMutation)
-
-
+  const [becomeUserAction] = useMutation(becomeUserMutation)
 
   const becomeUser = (id) => {
     becomeUserAction({

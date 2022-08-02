@@ -1,8 +1,8 @@
-import { FunctionComponent } from "react"
+import { FunctionComponent } from 'react'
 
-type TodoListItemProps =  {
-	todoItem: any,
-	idx: number
+type TodoListItemProps = {
+  todoItem: unknown
+  idx: number
 }
 
 export type TodoListTemplateType = FunctionComponent<TodoListItemProps>

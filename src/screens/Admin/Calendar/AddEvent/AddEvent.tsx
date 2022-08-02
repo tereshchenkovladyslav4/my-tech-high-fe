@@ -1,23 +1,23 @@
-import React, { useEffect, useState } from 'react'
-import { Prompt, useHistory } from 'react-router-dom'
-import { Box, Card, Grid } from '@mui/material'
+import React, { FunctionComponent, useEffect, useState } from 'react'
 import { useMutation } from '@apollo/client'
+import { Box, Card, Grid } from '@mui/material'
 import { Form, Formik } from 'formik'
 import moment from 'moment'
+import { Prompt, useHistory } from 'react-router-dom'
 import * as yup from 'yup'
 import { CALENDAR } from '../../../../utils/constants'
-import { addEventClassess } from './styles'
+import { convertDateToUTCDate } from '../../../../utils/utils'
+import { CustomModal } from '../../SiteManagement/EnrollmentSetting/components/CustomModal/CustomModals'
+import { defaultEvent, defaultEventFormData } from '../defaultValue'
+import { RSVPComponent } from '../RSVPComponent'
+import { createOrUpdateEventMutation } from '../services'
+import { AddEventProps, EventFormData, EventVM } from '../types'
 import EventForm from './EventForm'
 import FilterComponent from './FilterComponent'
-import { AddEventProps, EventFormData, EventVM } from '../types'
-import CustomModal from '../../SiteManagement/EnrollmentSetting/components/CustomModal/CustomModals'
-import { createOrUpdateEventMutation } from '../services'
-import { RSVPComponent } from '../RSVPComponent'
-import { convertDateToUTCDate } from '../../../../utils/utils'
-import { defaultEvent, defaultEventFormData } from '../defaultValue'
 import HeaderComponent from './HeaderComponent'
+import { addEventClassess } from './styles'
 
-const AddEvent = ({ selectedEvent }: AddEventProps) => {
+const AddEvent: FunctionComponent<AddEventProps> = ({ selectedEvent }) => {
   const history = useHistory()
   const [event, setEvent] = useState<EventVM>(defaultEvent)
   const [isChanged, setIsChanged] = useState<boolean>(false)

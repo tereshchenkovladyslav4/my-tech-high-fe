@@ -1,60 +1,54 @@
-
-import React from 'react'
+import React, { FunctionComponent } from 'react'
 import { Grid, TextField } from '@mui/material'
 import { Box } from '@mui/system'
-import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
 import { Controller, useFormContext } from 'react-hook-form'
 import { DropDown } from '../../../../../components/DropDown/DropDown'
+import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
 import { monthlyIncome } from '../../../../../utils/constants'
 
-
-export default function VoluntaryIncomeInfo() {
-    const { control } = useFormContext()
-    return (
-        <Box sx={{ paddingTop: '15px' }}>
-            <Subtitle size='small' fontWeight='700'>
-                Voluntary Income Information
+export const VoluntaryIncomeInfo: FunctionComponent = () => {
+  const { control } = useFormContext()
+  return (
+    <Box sx={{ paddingTop: '15px' }}>
+      <Subtitle size='small' fontWeight='700'>
+        Voluntary Income Information
+      </Subtitle>
+      <Grid container spacing={2} sx={{ paddingTop: '15px' }}>
+        <Grid item lg={6} xs={12}>
+          <Box display='flex' flexDirection='column'>
+            <Subtitle size='small' fontWeight='500'>
+              Household Size
             </Subtitle>
-            <Grid container spacing={2} sx={{ paddingTop: '15px' }}>
-                <Grid item lg={6} xs={12} >
-                    <Box display='flex' flexDirection='column'>
-                        <Subtitle size='small' fontWeight='500'>
-                            Household Size
-                        </Subtitle>
-                        <Controller
-                            name="household_size"
-                            control={control}
-                            render={({ field }) =>
-                                <TextField
-                                    {...field}
-                                    placeholder='Household Size'
-                                    size='small'
-                                    variant='outlined'
-                                    fullWidth
-                                />}
-                        />
-                    </Box>
-                </Grid>
-                <Grid item lg={6} xs={12} >
-                    <Box display='flex' flexDirection='column' minWidth='250px' >
-                        <Subtitle size='small' fontWeight='500'>
-                            Household Gross Monthly Income
-                        </Subtitle>
-                        <Controller
-                            name="household_income"
-                            control={control}
-                            render={({ field }) => <DropDown
-                                dropDownItems={monthlyIncome}
-                                placeholder='Entry'
-                                defaultValue={field.value}
-                                setParentValue={(v) => field.onChange(v as string)}
-                                size='small'
-                            />}
-                        />
-                    </Box>
-                </Grid>
-            </Grid>
-        </Box>
-
-    )
+            <Controller
+              name='household_size'
+              control={control}
+              render={({ field }) => (
+                <TextField {...field} placeholder='Household Size' size='small' variant='outlined' fullWidth />
+              )}
+            />
+          </Box>
+        </Grid>
+        <Grid item lg={6} xs={12}>
+          <Box display='flex' flexDirection='column' minWidth='250px'>
+            <Subtitle size='small' fontWeight='500'>
+              Household Gross Monthly Income
+            </Subtitle>
+            <Controller
+              name='household_income'
+              control={control}
+              render={({ field }) => (
+                <DropDown
+                  dropDownItems={monthlyIncome}
+                  placeholder='Entry'
+                  defaultValue={field.value}
+                  setParentValue={(v) => field.onChange(v as string)}
+                  size='small'
+                />
+              )}
+            />
+          </Box>
+        </Grid>
+      </Grid>
+    </Box>
+  )
 }

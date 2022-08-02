@@ -1,1 +1,1 @@
-export { default as MidYearSelect } from './MidYearSelect'
+export { MidYearSelect } from './MidYearSelect'

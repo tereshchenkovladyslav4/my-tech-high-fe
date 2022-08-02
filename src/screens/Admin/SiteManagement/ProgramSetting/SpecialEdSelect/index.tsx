@@ -1,1 +1,1 @@
-export { default as SpecialEdSelect } from './SpecialEdSelect'
+export { SpecialEdSelect } from './SpecialEdSelect'

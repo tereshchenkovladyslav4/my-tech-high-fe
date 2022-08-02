@@ -22,17 +22,17 @@ export interface ToDoItem {
   icon: string
   dashboard: number
   homeroom: number
-  students: any[]
+  students: unknown[]
   date_accepted?: string
   date_deadline?: number
-  parsed?: any
+  parsed?: unknown
 }
 
 type TodoListItemProps = {
   todoItem: ToDoItem
   idx: number
-  todoDate?: any
-  todoDeadline?: any
+  todoDate?: unknown
+  todoDeadline?: unknown
 }
 
 export type TodoListTemplateType = FunctionComponent<TodoListItemProps>

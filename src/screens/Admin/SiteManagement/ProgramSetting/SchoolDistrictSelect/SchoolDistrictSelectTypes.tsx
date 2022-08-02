@@ -6,9 +6,9 @@ export type SchoolDistrictFileType = {
 
 export type SchoolDistrictSelectProps = {
   schoolDistrict: SchoolDistrictFileType | null
-  setSchoolDistrict: (value: any) => void
-  setSchoolDistrictArray: (value: any) => void
+  setSchoolDistrict: (value: unknown) => void
+  setSchoolDistrictArray: (value: unknown) => void
   setIsChanged: (value: boolean) => void
-  setIsDelete: (value: any) => void
-  isDelete: any
+  setIsDelete: (value: unknown) => void
+  isDelete: unknown
 }

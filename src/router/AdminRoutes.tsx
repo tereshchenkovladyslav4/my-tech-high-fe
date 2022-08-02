@@ -1,6 +1,20 @@
 import React, { FunctionComponent } from 'react'
 import { Route, Switch } from 'react-router-dom'
+import { Announcements } from '../screens/Admin/Announcements'
+import { Applications } from '../screens/Admin/Applications/Applications'
+import { Calendar } from '../screens/Admin/Calendar'
+import { Communication } from '../screens/Admin/Communication/Communication'
+import Curriculum from '../screens/Admin/Curriculum/Curriculum'
 import { AdminDashboard } from '../screens/Admin/Dashboard/AdminDashboard'
+import { EmailRecords } from '../screens/Admin/EmailRecords/EmailRecords'
+import { Enrollment } from '../screens/Admin/Enrollment/Enrollment'
+import { EnrollmentPackets } from '../screens/Admin/EnrollmentPackets/EnrollmentPackets'
+import { SchoolOfEnrollment } from '../screens/Admin/SchoolOfEnrollment/SchoolOfEnrollment'
+import AdminSettings from '../screens/Admin/Settings/AdminSettings'
+import { EmailTemplatePage } from '../screens/Admin/SiteManagement/components/EmailTemplates/EmailTemplatePage'
+import SiteManagement from '../screens/Admin/SiteManagement/SiteManagement'
+import { Users } from '../screens/Admin/Users/Users'
+import { Withdrawals } from '../screens/Admin/Withdrawals'
 import {
   ADMIN_APPLICATIONS,
   DASHBOARD,
@@ -18,20 +32,6 @@ import {
   SCHOOL_ENROLLMENT,
   CURRICULUM,
 } from '../utils/constants'
-import Enrollment from '../screens/Admin/Enrollment/Enrollment'
-import { Applications } from '../screens/Admin/Applications/Applications'
-import { EnrollmentPackets } from '../screens/Admin/EnrollmentPackets/EnrollmentPackets'
-import { Users } from '../screens/Admin/Users/Users'
-import AdminSettings from '../screens/Admin/Settings/AdminSettings'
-import { EmailTemplatePage } from '../screens/Admin/SiteManagement/components/EmailTemplates/EmailTemplatePage'
-import SiteManagement from '../screens/Admin/SiteManagement/SiteManagement'
-import { Withdrawals } from '../screens/Admin/Withdrawals'
-import { Announcements } from '../screens/Admin/Announcements'
-import { Calendar } from '../screens/Admin/Calendar'
-import Communication from '../screens/Admin/Communication/Communication'
-import { EmailRecords } from '../screens/Admin/EmailRecords/EmailRecords'
-import { SchoolOfEnrollment } from '../screens/Admin/SchoolOfEnrollment/SchoolOfEnrollment'
-import Curriculum from '../screens/Admin/Curriculum/Curriculum'
 
 export const AdminRoutes: FunctionComponent = () => {
   return (

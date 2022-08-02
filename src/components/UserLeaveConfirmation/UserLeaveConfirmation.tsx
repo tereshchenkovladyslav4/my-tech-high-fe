@@ -1,30 +1,36 @@
-import ReactDOM from 'react-dom'
 import React from 'react'
+import InfoIcon from '@mui/icons-material/InfoOutlined'
 import { Box, Button, Modal, Typography } from '@mui/material'
+import ReactDOM from 'react-dom'
 import { SYSTEM_01 } from '../../utils/constants'
 import { Paragraph } from '../Typography/Paragraph/Paragraph'
-import { Subtitle } from '../Typography/Subtitle/Subtitle'
 import { useStyles } from './styles'
-import InfoIcon from '@mui/icons-material/InfoOutlined'
+
+type MessageType = {
+  header: string
+  content: string
+  bgColor: string
+}
+type Callback = (_: unknown) => void
 
 export const UserLeaveConfirmation = (
-  message,
-  callback,
+  message: MessageType,
+  callback: Callback,
   // confirmOpen,
   // setConfirmOpen
-) => {
+): void => {
   const container = document.createElement('div')
   const classes = useStyles
 
   container.setAttribute('custom-confirm-view', '')
 
-  const handleConfirm = (callbackState) => {
+  const handleConfirm = (callbackState: unknown) => {
     ReactDOM.unmountComponentAtNode(container)
     callback(callbackState)
     // setConfirmOpen(false);
   }
 
-  const handleCancel = (callbackState) => {
+  const handleCancel = () => {
     ReactDOM.unmountComponentAtNode(container)
     callback()
     // setConfirmOpen(false);
@@ -35,12 +41,12 @@ export const UserLeaveConfirmation = (
   ReactDOM.render(
     <Modal open={true}>
       <Box sx={{ ...classes.modalCard, backgroundColor: bgColor }}>
-        <Box sx={classes.header as object}>
+        <Box sx={classes.header as Record<string, unknown>}>
           <Typography variant='h5' fontWeight={'bold'}>
             {header}
           </Typography>
         </Box>
-        <Box sx={classes.content as object}>
+        <Box sx={classes.content as Record<string, unknown>}>
           <InfoIcon sx={{ fontSize: 50, margin: '20px 0px' }} />
           <Paragraph size='large' color={SYSTEM_01}>
             {content}

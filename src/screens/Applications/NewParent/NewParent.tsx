@@ -1,34 +1,34 @@
+import React, { FunctionComponent, ReactElement, useEffect, useState } from 'react'
 import { useLazyQuery, useMutation, useQuery } from '@apollo/client'
+import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined'
 import { Box, Button, Card, Grid, TextField } from '@mui/material'
-import React, { useEffect, useState } from 'react'
+import { Field, FieldArray, Form, Formik } from 'formik'
+import { map, toNumber } from 'lodash'
+import { omit } from 'lodash'
+import moment from 'moment'
+import { Link } from 'react-router-dom'
+import * as yup from 'yup'
+import { object, string } from 'yup'
+import BGSVG from '../../../assets/ApplicationBG.svg'
 import { DropDown } from '../../../components/DropDown/DropDown'
 import { DropDownItem } from '../../../components/DropDown/types'
+import { NewApplicationFooter } from '../../../components/NewApplicationFooter/NewApplicationFooter'
+import { QUESTION_TYPE } from '../../../components/QuestionItem/QuestionItemProps'
 import { Paragraph } from '../../../components/Typography/Paragraph/Paragraph'
 import { Title } from '../../../components/Typography/Title/Title'
+import { getAllRegion } from '../../../graphql/queries/region'
+import { DASHBOARD, GRADES, MTHBLUE, RED, SYSTEM_05 } from '../../../utils/constants'
+import { toOrdinalSuffix, isNumber } from '../../../utils/stringHelpers'
+import { LoadingScreen } from '../../LoadingScreen/LoadingScreen'
+import { AdditionalQuestionItem } from '../components/AdditionalQuestionItem/AdditionalQuestionItem'
+import { ApplicationQuestion } from '../components/AdditionalQuestionItem/types'
+import { useStyles } from '../styles'
 import {
   checkEmailQuery,
   newParentApplicationMutation,
   getActiveSchoolYearsByRegionId,
   getQuestionsGql,
 } from './service'
-import { useStyles } from '../styles'
-import BGSVG from '../../../assets/ApplicationBG.svg'
-import { DASHBOARD, GRADES, MTHBLUE, RED, SYSTEM_05 } from '../../../utils/constants'
-import { NewApplicationFooter } from '../../../components/NewApplicationFooter/NewApplicationFooter'
-import { Field, FieldArray, Form, Formik } from 'formik'
-import * as yup from 'yup'
-import { Link } from 'react-router-dom'
-import { getAllRegion } from '../../../graphql/queries/region'
-import { LoadingScreen } from '../../LoadingScreen/LoadingScreen'
-import { map, toNumber } from 'lodash'
-import { toOrdinalSuffix, isNumber } from '../../../utils/stringHelpers'
-import moment from 'moment'
-import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined'
-import { object, string } from 'yup'
-import { ApplicationQuestion } from '../components/AdditionalQuestionItem/types'
-import { AdditionalQuestionItem } from '../components/AdditionalQuestionItem/AdditionalQuestionItem'
-import { omit } from 'lodash'
-import { QUESTION_TYPE } from '../../../components/QuestionItem/QuestionItemProps'
 
 export type StudentInput = {
   first_name: string
@@ -37,7 +37,7 @@ export type StudentInput = {
   grade_level: string
 }
 
-export const NewParent = () => {
+export const NewParent: FunctionComponent = () => {
   const classes = useStyles
   const [emptyStudent, setEmptyStudent] = useState({ meta: {} })
   const [emptyParent, setEmptyParent] = useState({})
@@ -76,7 +76,7 @@ export const NewParent = () => {
     if (!questionLoading && questionData?.getApplicationQuestions) {
       setQuestions(
         questionData.getApplicationQuestions
-          .map((v) => ({ ...v, options: v.options ? JSON.parse(v.options || '[]') : [], response: ''  }))
+          .map((v) => ({ ...v, options: v.options ? JSON.parse(v.options || '[]') : [], response: '' }))
           .sort((a, b) => a.order - b.order),
       )
     }
@@ -84,20 +84,21 @@ export const NewParent = () => {
 
   useEffect(() => {
     if (questionSortList(questions).length > 0) {
-      let empty: any = { ...emptyStudent }
-      let initParent: any = { ...emptyParent }
-      let initMeta: any = { ...emptyMeta }
-      let initAddress: any = { ...emptyAddress }
-      let initPacket: any = { ...emptyPacket }
+      const empty: unknown = { ...emptyStudent }
+      const initParent: unknown = { ...emptyParent }
+      const initMeta: unknown = { ...emptyMeta }
+      const initAddress: unknown = { ...emptyAddress }
+      const initPacket: unknown = { ...emptyPacket }
 
-      let valid_student: any = {}
-      let valid_student_meta: any = {}
-      let valid_student_address: any = {}
-      let valid_student_packet: any = {}
-      let valid_parent: any = {}
-      let valid_address: any = {}
-      let valid_packet: any = {}
-      let valid_meta: any = {}
+      const valid_student: unknown = {}
+      const valid_student_meta: unknown = {}
+
+      const valid_student_packet: unknown = {}
+      const valid_parent: unknown = {}
+      const valid_address: unknown = {}
+      const valid_packet: unknown = {}
+      const valid_meta: unknown = {}
+
       questionSortList(questions).map((q) => {
         if (q.type !== QUESTION_TYPE.INFORMATION) {
           if (q.slug?.includes('student_')) {
@@ -112,7 +113,7 @@ export const NewParent = () => {
                 valid_student[`${q.slug?.replace('student_', '')}`] = yup
                   .string()
                   .required(`${q.question} is required`)
-                  .test(`${q.question}-selected`, `${q.question} is invalid`, (value: any) => {
+                  .test(`${q.question}-selected`, `${q.question} is invalid`, (value: unknown) => {
                     return isNumber.test(value)
                   })
               } else if (q.slug?.toLocaleLowerCase().includes('emailconfirm')) {
@@ -128,14 +129,8 @@ export const NewParent = () => {
               } else if (q.type === QUESTION_TYPE.AGREEMENT) {
                 valid_student[`${q.slug?.replace('student_', '')}`] = yup
                   .bool()
-                  .test(
-                    q.slug,
-                    `${q.question.replace(/<[^>]+>/g, '')} is required`,
-                    value => value === true
-                  )
-                  .required(
-                    `${q.question.replace(/<[^>]+>/g, '')} is required`
-                  );
+                  .test(q.slug, `${q.question.replace(/<[^>]+>/g, '')} is required`, (value) => value === true)
+                  .required(`${q.question.replace(/<[^>]+>/g, '')} is required`)
               } else {
                 valid_student[`${q.slug?.replace('student_', '')}`] = yup.string().required(`${q.question} is required`)
               }
@@ -145,7 +140,7 @@ export const NewParent = () => {
                   .string()
                   .oneOf([yup.ref('email')], 'Emails do not match')
                   .nullable(true)
-              }else if (q.validation === 1) {
+              } else if (q.validation === 1) {
                 valid_student[`${q.slug?.replace('student_', '')}`] = yup
                   .string()
                   .email('Enter a valid email')
@@ -169,7 +164,7 @@ export const NewParent = () => {
                 valid_parent[`${q.slug?.replace('parent_', '')}`] = yup
                   .string()
                   .required(`${q.question} is required`)
-                  .test(`${q.question}-selected`, `${q.question} is invalid`, (value: any) => {
+                  .test(`${q.question}-selected`, `${q.question} is invalid`, (value: unknown) => {
                     return isNumber.test(value)
                   })
               } else if (q.type === QUESTION_TYPE.CHECKBOX) {
@@ -180,14 +175,8 @@ export const NewParent = () => {
               } else if (q.type === QUESTION_TYPE.AGREEMENT) {
                 valid_parent[`${q.slug?.replace('parent_', '')}`] = yup
                   .bool()
-                  .test(
-                    q.slug,
-                    `${q.question.replace(/<[^>]+>/g, '')} is required`,
-                    value => value === true
-                  )
-                  .required(
-                    `${q.question.replace(/<[^>]+>/g, '')} is required`
-                  );
+                  .test(q.slug, `${q.question.replace(/<[^>]+>/g, '')} is required`, (value) => value === true)
+                  .required(`${q.question.replace(/<[^>]+>/g, '')} is required`)
               } else {
                 valid_parent[`${q.slug?.replace('parent_', '')}`] = yup.string().required(`${q.question} is required`)
               }
@@ -205,7 +194,7 @@ export const NewParent = () => {
               } else if (q.validation === 2) {
                 valid_parent[`${q.slug?.replace('parent_', '')}`] = yup
                   .string()
-                  .test(`${q.question}-selected`, `${q.question} is invalid`, (value: any) => {
+                  .test(`${q.question}-selected`, `${q.question} is invalid`, (value: unknown) => {
                     return !value || isNumber.test(value)
                   })
                   .nullable(true)
@@ -224,7 +213,7 @@ export const NewParent = () => {
                   valid_student_meta[`${q.slug}`] = yup
                     .string()
                     .required(`${q.question} is required`)
-                    .test(`${q.question}-selected`, `${q.question} is invalid`, (value: any) => {
+                    .test(`${q.question}-selected`, `${q.question} is invalid`, (value: unknown) => {
                       return isNumber.test(value)
                     })
                 } else if (q.type === QUESTION_TYPE.CHECKBOX) {
@@ -235,15 +224,9 @@ export const NewParent = () => {
                     .nullable()
                 } else if (q.type === QUESTION_TYPE.AGREEMENT) {
                   valid_student_meta[q.slug] = yup
-                  .bool()
-                  .test(
-                    q.slug,
-                    `${q.question.replace(/<[^>]+>/g, '')} is required`,
-                    value => value === true
-                  )
-                  .required(
-                    `${q.question.replace(/<[^>]+>/g, '')} is required`
-                  );
+                    .bool()
+                    .test(q.slug, `${q.question.replace(/<[^>]+>/g, '')} is required`, (value) => value === true)
+                    .required(`${q.question.replace(/<[^>]+>/g, '')} is required`)
                 } else {
                   valid_student_meta[`${q.slug}`] = yup.string().required(`${q.question} is required`)
                 }
@@ -255,7 +238,7 @@ export const NewParent = () => {
                   valid_meta[`${q.slug}`] = yup
                     .string()
                     .required(`${q.question} is required`)
-                    .test(`${q.question}-selected`, `${q.question} is invalid`, (value: any) => {
+                    .test(`${q.question}-selected`, `${q.question} is invalid`, (value: unknown) => {
                       return isNumber.test(value)
                     })
                 } else if (q.type === QUESTION_TYPE.CHECKBOX) {
@@ -266,15 +249,9 @@ export const NewParent = () => {
                     .nullable()
                 } else if (q.type === QUESTION_TYPE.AGREEMENT) {
                   valid_meta[`${q.slug}`] = yup
-                  .bool()
-                  .test(
-                    q.slug,
-                    `${q.question.replace(/<[^>]+>/g, '')} is required`,
-                    value => value === true
-                  )
-                  .required(
-                    `${q.question.replace(/<[^>]+>/g, '')} is required`
-                  );
+                    .bool()
+                    .test(q.slug, `${q.question.replace(/<[^>]+>/g, '')} is required`, (value) => value === true)
+                    .required(`${q.question.replace(/<[^>]+>/g, '')} is required`)
                 } else {
                   valid_meta[`${q.slug}`] = yup.string().required(`${q.question} is required`)
                 }
@@ -283,14 +260,11 @@ export const NewParent = () => {
               if (q.student_question) {
                 empty['meta'][`${q.slug}`] = ''
                 if (q.validation === 1) {
-                  valid_student_meta[`${q.slug}`] = yup
-                    .string()
-                    .email('Enter a valid email')
-                    .nullable(true)
+                  valid_student_meta[`${q.slug}`] = yup.string().email('Enter a valid email').nullable(true)
                 } else if (q.validation === 2) {
                   valid_student_meta[`${q.slug}`] = yup
                     .string()
-                    .test(`${q.question}-selected`, `${q.question} is invalid`, (value: any) => {
+                    .test(`${q.question}-selected`, `${q.question} is invalid`, (value: unknown) => {
                       return !value || isNumber.test(value)
                     })
                     .nullable(true)
@@ -302,46 +276,44 @@ export const NewParent = () => {
                 } else if (q.validation === 2) {
                   valid_meta[`${q.slug}`] = yup
                     .string()
-                    .test(`${q.question}-selected`, `${q.question} is invalid`, (value: any) => {
+                    .test(`${q.question}-selected`, `${q.question} is invalid`, (value: unknown) => {
                       return !value || isNumber.test(value)
                     })
                     .nullable(true)
                 }
               }
             }
-          }
-          else if (q.slug?.includes('address_')) {
+          } else if (q.slug?.includes('address_')) {
             initAddress[`${q.slug?.replace('address_', '')}`] = ''
             if (q.required) {
               if (q.validation === 2) {
                 valid_address[`${q.slug?.replace('address_', '')}`] = yup
                   .string()
                   .required(`${q.question} is required`)
-                  .test(`${q.question}-selected`, `${q.question} is invalid`, (value: any) => {
+                  .test(`${q.question}-selected`, `${q.question} is invalid`, (value: unknown) => {
                     return isNumber.test(value)
                   })
-              }
-              else {
+              } else {
                 valid_address[`${q.slug?.replace('address_', '')}`] = yup.string().required(`${q.question} is required`)
               }
             } else {
               if (q.validation === 2) {
                 valid_address[`${q.slug?.replace('address_', '')}`] = yup
                   .string()
-                  .test(`${q.question}-selected`, `${q.question} is invalid`, (value: any) => {
+                  .test(`${q.question}-selected`, `${q.question} is invalid`, (value: unknown) => {
                     return !value || isNumber.test(value)
                   })
                   .nullable(true)
               }
             }
-          }
-          else if (q.slug?.includes('packet_') && q.required) {
+          } else if (q.slug?.includes('packet_') && q.required) {
             initPacket[`${q.slug?.replace('packet_', '')}`] = ''
             if (!q.student_question) {
               valid_packet[`${q.slug?.replace('packet_', '')}`] = yup.string().required(`${q.question} is required`)
-            }
-            else {
-              valid_student_packet[`${q.slug?.replace('packet_', '')}`] = yup.string().required(`${q.question} is required`)
+            } else {
+              valid_student_packet[`${q.slug?.replace('packet_', '')}`] = yup
+                .string()
+                .required(`${q.question} is required`)
             }
           }
         }
@@ -358,16 +330,16 @@ export const NewParent = () => {
         packet: yup.object(valid_packet),
         students: yup.array(yup.object({ ...valid_student, meta: yup.object(valid_student_meta) })),
         meta: yup.object(valid_meta),
-      });
+      })
     }
   }, [questions])
 
   const [submitApplicationAction] = useMutation(newParentApplicationMutation)
 
-  const { data: regionData, loading, error } = useQuery(getAllRegion)
+  const { data: regionData, loading } = useQuery(getAllRegion)
 
   useEffect(() => {
-    !loading &&
+    if (!loading)
       setAvailableRegions(
         map(regionData.regions, (region) => ({
           label: region.name,
@@ -378,7 +350,7 @@ export const NewParent = () => {
 
   useEffect(() => {
     if (!schoolLoading && schoolYearData.getSchoolYearsByRegionId) {
-      let schoolYearsArray: Array<DropDownItem> = []
+      const schoolYearsArray: Array<DropDownItem> = []
       schoolYearData.getSchoolYearsByRegionId.map(
         (item: {
           date_begin: string
@@ -387,13 +359,17 @@ export const NewParent = () => {
           midyear_application: number
           midyear_application_open: string
           midyear_application_close: string
-        }) => {
+        }): void => {
           schoolYearsArray.push({
             label: `${moment(item.date_begin).format('YYYY')} - ${moment(item.date_end).format('YYYY')}`,
             value: item.school_year_id,
           })
 
-          if (item && moment().isAfter(item?.midyear_application_open) && moment().isBefore(item?.midyear_application_close)) {
+          if (
+            item &&
+            moment().isAfter(item?.midyear_application_open) &&
+            moment().isBefore(item?.midyear_application_close)
+          ) {
             schoolYearsArray.push({
               label: `${moment(item.midyear_application_open).format('YYYY')} - ${moment(
                 item.midyear_application_close,
@@ -402,17 +378,17 @@ export const NewParent = () => {
             })
           }
         },
-      ),
-        setSchoolYears(schoolYearsArray)
+      )
+      setSchoolYears(schoolYearsArray)
       setSchoolYearsData(schoolYearData.getSchoolYearsByRegionId)
     }
   }, [regionId, schoolYearData])
 
   const submitApplication = async (values) => {
-    
     const submitStudents = values.students?.map((s) => {
       return {
-        ...omit(s, ['emailConfirm']), meta: JSON.stringify(s?.meta || {}),
+        ...omit(s, ['emailConfirm']),
+        meta: JSON.stringify(s?.meta || {}),
         // address: { ...s.address, school_district: s.packet?.school_district },
         // packet: omit(s.packet, ['school_district'])
       }
@@ -428,7 +404,11 @@ export const NewParent = () => {
           students: submitStudents,
           midyear_application: midYearApplication,
           meta: JSON.stringify(values.meta),
-          address: { ...values.address, school_district: values.packet?.school_district+'', county_id: values.county?.county ? parseInt(values.county?.county) : null },
+          address: {
+            ...values.address,
+            school_district: values.packet?.school_district + '',
+            county_id: values.county?.county ? parseInt(values.county?.county) : null,
+          },
           packet: omit(values.packet, ['school_district']),
         },
       },
@@ -438,7 +418,7 @@ export const NewParent = () => {
   }
 
   const parseGrades = () => {
-    let dropDownItems: DropDownItem[] = []
+    const dropDownItems: DropDownItem[] = []
     GRADES.forEach((grade: string | number) => {
       if (grades?.includes(grade?.toString())) {
         if (typeof grade !== 'string') {
@@ -489,43 +469,58 @@ export const NewParent = () => {
 
   // handle child component
   const questionSortList = (values) => {
-    const sortList = values.filter(v =>
-    v.slug !== 'program_year' && 
-    (!v.mainQuestion && (!v.additional_question
-      || (values.find(x => x.slug == v.additional_question)?.response !== ''
-        && (values.find(x => x.slug == v.additional_question)?.options.find(
-          x => x.action == 2 && (x.value == values.find(y => y.slug == v.additional_question)?.response
-            || values.find(y => y.slug == v.additional_question)?.response.toString().indexOf(x.value) >= 0)) != null)))) 		// Parent
-    );
-    return sortList;
+    const sortList = values.filter(
+      (v) =>
+        v.slug !== 'program_year' &&
+        !v.mainQuestion &&
+        (!v.additional_question ||
+          (values.find((x) => x.slug == v.additional_question)?.response !== '' &&
+            values
+              .find((x) => x.slug == v.additional_question)
+              ?.options.find(
+                (x) =>
+                  x.action == 2 &&
+                  (x.value == values.find((y) => y.slug == v.additional_question)?.response ||
+                    values
+                      .find((y) => y.slug == v.additional_question)
+                      ?.response.toString()
+                      .indexOf(x.value) >= 0),
+              ) != null)), // Parent
+    )
+    return sortList
   }
 
   const handleAddQuestion = (value, q) => {
-		if(q.type == QUESTION_TYPE.CHECKBOX) {
-			if(q.response.indexOf(value) >= 0) {
-				q.response = q.response.replace(value, '');
-			}
-			else {
-				q.response += value;
-			}
-			value = q.response;
-		}
-		const newValues = questions.map((v) => (v.id == q.id ? {
-			...v,
-			response: value
-		} : v));
-		let current = q;
-		while(newValues.find(x => current.slug == x.additional_question)
-			&& (current.response == '' || current.options.find(x => x.value == current.response
-			|| current.response.toString().indexOf(x.value) >= 0).action != 2)) {
-			current = newValues.find(x => current.slug == x.additional_question);
-			current.response = '';
-		}
+    let val = value
+    if (q.type == QUESTION_TYPE.CHECKBOX) {
+      if (q.response.indexOf(value) >= 0) {
+        q.response = q.response.replace(value, '')
+      } else {
+        q.response += val
+      }
+      val = q.response
+    }
+    const newValues = questions.map((v) =>
+      v.id == q.id
+        ? {
+            ...v,
+            response: value,
+          }
+        : v,
+    )
+    let current = q
+    while (
+      newValues.find((x) => current.slug == x.additional_question) &&
+      (current.response == '' ||
+        current.options.find((x) => x.value == current.response || current.response.toString().indexOf(x.value) >= 0)
+          .action != 2)
+    ) {
+      current = newValues.find((x) => current.slug == x.additional_question)
+      current.response = ''
+    }
 
-		setQuestions(
-			newValues
-		);
-	};
+    setQuestions(newValues)
+  }
 
   return !loading ? (
     <Card sx={{ paddingTop: 6, backgroundColor: '#EEF4F8' }}>
@@ -538,7 +533,7 @@ export const NewParent = () => {
             students: [emptyStudent],
             meta: emptyMeta,
             parent: emptyParent,
-           
+
             address: emptyAddress,
             packet: emptyPacket,
           }}
@@ -548,7 +543,7 @@ export const NewParent = () => {
             await submitApplication(values)
           }}
         >
-          {({ values, errors, touched  }) => {
+          {({ values, errors }) => {
             return (
               <Form>
                 <Box
@@ -576,7 +571,7 @@ export const NewParent = () => {
                       </Title>
                     </Grid>
                     <Grid item xs={12} display='flex' justifyContent={'center'}>
-                      <Field name={`state`} fullWidth focused>
+                      <Field name={'state'} fullWidth focused>
                         {({ field, form, meta }) => (
                           <Box width={'451.53px'}>
                             <DropDown
@@ -609,7 +604,7 @@ export const NewParent = () => {
                               <DropDown
                                 name='programYear'
                                 labelTop
-                                placeholder="Program Year"
+                                placeholder='Program Year'
                                 dropDownItems={schoolYears}
                                 setParentValue={(id) => {
                                   if (id?.indexOf('mid') > 0) {
@@ -633,53 +628,16 @@ export const NewParent = () => {
                           )}
                         </Field>
                       </Box>
-                    </Grid>  
+                    </Grid>
 
-                    { !questionLoading &&
+                    {!questionLoading &&
                       questionSortList(questions).length > 0 &&
-                      questionSortList(questions).map((q) => {
-                        // if (q.slug === 'program_year') {
-                        //   return (
-                        //     <Grid item xs={12} display='flex' justifyContent={'center'}>
-                        //       <Box width={'451.53px'}>
-                        //         <Field name='programYear' fullWidth focused>
-                        //           {({ field, form, meta }) => (
-                        //             <Box width={'100%'}>
-                        //               <DropDown
-                        //                 name='programYear'
-                        //                 labelTop
-                        //                 placeholder={q.question}
-                        //                 dropDownItems={q.options}
-                        //                 setParentValue={(id) => {
-                        //                   if (id?.indexOf('mid') > 0) {
-                        //                     id = id?.split('-')?.at(0)
-                        //                     setMidYearApplication(true)
-                        //                   } else {
-                        //                     setMidYearApplication(false)
-                        //                   }
-                        //                   form.setFieldValue(field.name, toNumber(id))
-                        //                   setGradesAndBirthDateCut(id)
-                        //                 }}
-                        //                 alternate={true}
-                        //                 size='small'
-                        //                 sx={!!(meta.touched && meta.error) ? classes.textFieldError : classes.dropdown}
-                        //                 error={{
-                        //                   error: !!(meta.touched && meta.error),
-                        //                   errorMsg: (meta.touched && meta.error) as string,
-                        //                 }}
-                        //               />
-                        //             </Box>
-                        //           )}
-                        //         </Field>
-                        //       </Box>
-                        //     </Grid>
-                        //   )
-                        // } else 
+                      questionSortList(questions).map((q: unknown): ReactElement | undefined => {
                         if (q.slug === 'parent_email') {
                           return (
                             <Grid item xs={12} display='flex' justifyContent={'center'}>
                               <Box width={'451.53px'}>
-                                <Field name={`parent.email`} fullWidth focused>
+                                <Field name={'parent.email'} fullWidth focused>
                                   {({ field, form, meta }) => {
                                     if (showEmailError) {
                                       form.setErrors({
@@ -744,7 +702,7 @@ export const NewParent = () => {
                           return (
                             <Grid item xs={12} display='flex' justifyContent={'center'}>
                               <Box width={'451.53px'}>
-                                <Field name={`parent.emailConfirm`} fullWidth focused>
+                                <Field name={'parent.emailConfirm'} fullWidth focused>
                                   {({ field, meta }) => (
                                     <Box width={'100%'}>
                                       <TextField
@@ -775,12 +733,11 @@ export const NewParent = () => {
                             return (
                               <Grid item xs={12} display='flex' justifyContent={'center'}>
                                 <Box width={'451.53px'}>
-                                  <Field name={`students[0].grade_level`} fullWidth focused>
+                                  <Field name={'students[0].grade_level'} fullWidth focused>
                                     {({ field, form, meta }) => (
-                                      
                                       <Box width={'100%'}>
                                         <DropDown
-                                          name={`students[0].grade_level`}
+                                          name={'students[0].grade_level'}
                                           labelTop
                                           placeholder={`${q.question} (age) as of ${moment(birthDateCut).format(
                                             'MMM Do YYYY',
@@ -812,7 +769,13 @@ export const NewParent = () => {
                                   <Field name={`students[0].${q.slug?.replace('student_', '')}`} fullWidth focused>
                                     {({ field, form, meta }) => (
                                       <Box width={'100%'}>
-                                        <AdditionalQuestionItem question={q} field={field} form={form} meta={meta}  handleAddQuestion={handleAddQuestion} />
+                                        <AdditionalQuestionItem
+                                          question={q}
+                                          field={field}
+                                          form={form}
+                                          meta={meta}
+                                          handleAddQuestion={handleAddQuestion}
+                                        />
                                       </Box>
                                     )}
                                   </Field>
@@ -826,38 +789,12 @@ export const NewParent = () => {
                                   <Field name={`students[0].meta.${q.slug}`} fullWidth focused>
                                     {({ field, form, meta }) => (
                                       <Box width={'100%'}>
-                                        <AdditionalQuestionItem question={q} field={field} form={form} meta={meta} handleAddQuestion={handleAddQuestion}  />
-                                      </Box>
-                                    )}
-                                  </Field>
-                                </Box>
-                              </Grid>
-                            )
-                          }
-                          else if (!q.slug?.includes('meta_') && q.student_question) {
-                            const parentFieldName = q.slug?.split('_')[0]
-                            const childFieldName = q.slug?.replace(parentFieldName + '_', '')
-                            return (
-                              <Grid item xs={12} display='flex' justifyContent={'center'}>
-                                <Box
-                                  width={'451.53px'}
-                                  display='flex'
-                                  flexDirection='row'
-                                  alignItems={'center'}
-                                >
-                                  <Field
-                                    name={`students[0].${parentFieldName}.${childFieldName}`}
-                                    fullWidth
-                                    focused
-                                  >
-                                    {({ field, form, meta }) => (
-                                      <Box width={'100%'}>
                                         <AdditionalQuestionItem
                                           question={q}
                                           field={field}
                                           form={form}
                                           meta={meta}
-                                          handleAddQuestion={handleAddQuestion} 
+                                          handleAddQuestion={handleAddQuestion}
                                         />
                                       </Box>
                                     )}
@@ -865,22 +802,50 @@ export const NewParent = () => {
                                 </Box>
                               </Grid>
                             )
+                          } else if (!q.slug?.includes('meta_') && q.student_question) {
+                            const parentFieldName = q.slug?.split('_')[0]
+                            const childFieldName = q.slug?.replace(parentFieldName + '_', '')
+                            return (
+                              <Grid item xs={12} display='flex' justifyContent={'center'}>
+                                <Box width={'451.53px'} display='flex' flexDirection='row' alignItems={'center'}>
+                                  <Field name={`students[0].${parentFieldName}.${childFieldName}`} fullWidth focused>
+                                    {({ field, form, meta }) => (
+                                      <Box width={'100%'}>
+                                        <AdditionalQuestionItem
+                                          question={q}
+                                          field={field}
+                                          form={form}
+                                          meta={meta}
+                                          handleAddQuestion={handleAddQuestion}
+                                        />
+                                      </Box>
+                                    )}
+                                  </Field>
+                                </Box>
+                              </Grid>
+                            )
+                          } else {
+                            return undefined
                           }
-                        }
-                        else if (q.slug?.includes('meta_')) {
+                        } else if (q.slug?.includes('meta_')) {
                           return (
                             <Grid item xs={12} display='flex' justifyContent={'center'}>
                               <Box width={'451.53px'}>
                                 <Field name={`meta.${q.slug}`} fullWidth focused>
                                   {({ field, form, meta }) => (
-                                    <AdditionalQuestionItem question={q} field={field} form={form} meta={meta} handleAddQuestion={handleAddQuestion}  />
+                                    <AdditionalQuestionItem
+                                      question={q}
+                                      field={field}
+                                      form={form}
+                                      meta={meta}
+                                      handleAddQuestion={handleAddQuestion}
+                                    />
                                   )}
                                 </Field>
                               </Box>
                             </Grid>
                           )
-                        }
-                        else {
+                        } else {
                           const parentFieldName = q.slug?.split('_')[0]
                           const childFieldName = q.slug?.replace(parentFieldName + '_', '')
                           return (
@@ -888,7 +853,13 @@ export const NewParent = () => {
                               <Box width={'451.53px'}>
                                 <Field name={`${parentFieldName}.${childFieldName}`} fullWidth focused>
                                   {({ field, form, meta }) => (
-                                    <AdditionalQuestionItem question={q} field={field} form={form} meta={meta} handleAddQuestion={handleAddQuestion} />
+                                    <AdditionalQuestionItem
+                                      question={q}
+                                      field={field}
+                                      form={form}
+                                      meta={meta}
+                                      handleAddQuestion={handleAddQuestion}
+                                    />
                                   )}
                                 </Field>
                               </Box>
@@ -906,13 +877,15 @@ export const NewParent = () => {
                                   {!questionLoading &&
                                     questionSortList(questions).length > 0 &&
                                     index > 0 &&
-                                    questionSortList(questions).map((q, qIndex) => {
+                                    questionSortList(questions).map((q): ReactElement | undefined => {
                                       const firstQuestionSlug = questionSortList(questions).filter(
                                         (qf) => qf.question.includes('student_') || qf.student_question,
                                       )[0].slug
                                       if (q.slug === 'student_grade_level') {
                                         return (
-                                          <Grid item xs={12} 
+                                          <Grid
+                                            item
+                                            xs={12}
                                             width={'100%'}
                                             display='flex'
                                             flexDirection='row'
@@ -976,7 +949,7 @@ export const NewParent = () => {
                                                       field={field}
                                                       form={form}
                                                       meta={meta}
-                                                      handleAddQuestion={handleAddQuestion} 
+                                                      handleAddQuestion={handleAddQuestion}
                                                     />
                                                   </Box>
                                                 )}
@@ -1008,7 +981,7 @@ export const NewParent = () => {
                                                       field={field}
                                                       form={form}
                                                       meta={meta}
-                                                      handleAddQuestion={handleAddQuestion} 
+                                                      handleAddQuestion={handleAddQuestion}
                                                     />
                                                   </Box>
                                                 )}
@@ -1022,8 +995,7 @@ export const NewParent = () => {
                                             </Box>
                                           </Grid>
                                         )
-                                      }
-                                      else if (!q.slug?.includes('meta_') && q.student_question) {
+                                      } else if (!q.slug?.includes('meta_') && q.student_question) {
                                         const parentFieldName = q.slug?.split('_')[0]
                                         const childFieldName = q.slug?.replace(parentFieldName + '_', '')
                                         return (
@@ -1046,7 +1018,7 @@ export const NewParent = () => {
                                                       field={field}
                                                       form={form}
                                                       meta={meta}
-                                                      handleAddQuestion={handleAddQuestion} 
+                                                      handleAddQuestion={handleAddQuestion}
                                                     />
                                                   </Box>
                                                 )}
@@ -1060,6 +1032,8 @@ export const NewParent = () => {
                                             </Box>
                                           </Grid>
                                         )
+                                      } else {
+                                        return undefined
                                       }
                                     })}
                                 </>
@@ -1074,7 +1048,8 @@ export const NewParent = () => {
                                   // color='secondary'
                                   // variant='contained'
                                   disabled={
-                                    regionId && questionSortList(questions).filter((q) => q.slug.includes('student_')).length > 0
+                                    regionId &&
+                                    questionSortList(questions).filter((q) => q.slug.includes('student_')).length > 0
                                       ? false
                                       : true
                                   }

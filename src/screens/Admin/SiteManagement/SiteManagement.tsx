@@ -1,27 +1,24 @@
+import React, { useState } from 'react'
 import ArrowBackIosOutlinedIcon from '@mui/icons-material/ArrowBackIosOutlined'
-import { Box, ButtonBase, Grid, List, Typography } from '@mui/material'
+import { Box, ButtonBase, Grid, Typography } from '@mui/material'
 import { map } from 'lodash'
-import React, { useContext, useEffect, useState } from 'react'
 import { Route, Switch, useRouteMatch } from 'react-router-dom'
-import DirectOrdersImage from '../../../assets/direct-orders.png'
 import EmailTemplateImage from '../../../assets/email-template.png'
 import EnrollmentImg from '../../../assets/enrollment.png'
-import HomeRoomImage from '../../../assets/homeroom.png'
-import QuickLinksImage from '../../../assets/quick-links.png'
-import ReEnrollLinkImage from '../../../assets/re-enroll.png'
 import ProgramSettingImage from '../../../assets/program-setting.png'
+import QuickLinksImage from '../../../assets/quick-links.png'
 import YearstImg from '../../../assets/schedules.png'
 import SchoolPartnerImage from '../../../assets/schoolAssignments.png'
 import { ItemCard } from '../../../components/ItemCard/ItemCard'
+import { QuickLinks } from '../../../components/QuickLink/QuickLinks'
+import { EmailTemplatePage } from './components/EmailTemplates/EmailTemplatePage'
 import EnrollmentSetting from './EnrollmentSetting/EnrollmentSetting'
 import { ProgramSetting } from './ProgramSetting'
-import { Years } from './Years'
-import { EmailTemplatePage } from './components/EmailTemplates/EmailTemplatePage'
-import { QuickLinks } from '../../../components/QuickLink/QuickLinks'
 import { SchoolPartner } from './SchoolPartner/SchoolPartner'
+import { Years } from './Years'
 
 const SiteManagement: React.FC = () => {
-  const { path, isExact } = useRouteMatch('/site-management')
+  const { isExact } = useRouteMatch('/site-management')
   const [currentView, setCurrentView] = useState('root')
   const [prevView, setPrevView] = useState([])
   const [selected, setSelected] = useState(null)
@@ -32,10 +29,10 @@ const SiteManagement: React.FC = () => {
     {
       id: 1,
       title: 'Years',
-      subtitle: currentYear + '-' + (currentYear - 1999) ,
+      subtitle: currentYear + '-' + (currentYear - 1999),
       img: YearstImg,
       isLink: true,
-      to: `years`,
+      to: 'years',
     },
     {
       id: 2,
@@ -43,7 +40,7 @@ const SiteManagement: React.FC = () => {
       subtitle: '',
       img: EmailTemplateImage,
       isLink: false,
-      to: `email-template`,
+      to: 'email-template',
     },
     // {
     //   id: 3,
@@ -59,7 +56,7 @@ const SiteManagement: React.FC = () => {
       subtitle: 'Add & Edit',
       isLink: true,
       img: SchoolPartnerImage,
-      to: `school-partner`,
+      to: 'school-partner',
     },
     {
       id: 5,
@@ -67,7 +64,7 @@ const SiteManagement: React.FC = () => {
       subtitle: 'Applications, Packets, & Immunizations',
       img: EnrollmentImg,
       isLink: true,
-      to: `enrollment`,
+      to: 'enrollment',
     },
     // {
     //   id: 6,
@@ -83,7 +80,7 @@ const SiteManagement: React.FC = () => {
       subtitle: '',
       isLink: true,
       img: ProgramSettingImage,
-      to: `program-setting`,
+      to: 'program-setting',
     },
     {
       id: 8,
@@ -91,7 +88,7 @@ const SiteManagement: React.FC = () => {
       subtitle: 'Add, Edit, & Archive',
       img: QuickLinksImage,
       isLink: false,
-      to: `quick-links`,
+      to: 'quick-links',
     },
     // {
     //   id: 9,
@@ -140,7 +137,7 @@ const SiteManagement: React.FC = () => {
     </Grid>
   )
 
-  const renderCardsHandler = (items: any) => (
+  const renderCardsHandler = (items: unknown) => (
     <Grid container rowSpacing={4} columnSpacing={0}>
       {map(items, (item, idx) => (
         <Grid item xs={4} key={idx}>
@@ -170,30 +167,28 @@ const SiteManagement: React.FC = () => {
         (currentView === 'root' ? (
           renderCardsHandler(items)
         ) : currentView === 'quick-links' ? (
-          <QuickLinks
-            backAction={onBackPress}
-          />
+          <QuickLinks backAction={onBackPress} />
         ) : currentView === 'years' ? (
           <Years />
         ) : currentView === 'school-partner' ? (
-          <SchoolPartner/>
-        ) :currentView === 'program-setting' ? (
+          <SchoolPartner />
+        ) : currentView === 'program-setting' ? (
           <ProgramSetting />
         ) : (
           currentView === 'email-template' && <EmailTemplatePage onBackPress={onBackPress} />
         ))}
 
       <Switch>
-        <Route path={`/site-management/enrollment`}>
+        <Route path={'/site-management/enrollment'}>
           <EnrollmentSetting />
         </Route>
-        <Route exact path={`/site-management/program-setting`}>
+        <Route exact path={'/site-management/program-setting'}>
           <ProgramSetting />
         </Route>
-        <Route exact path={`/site-management/years`}>
+        <Route exact path={'/site-management/years'}>
           <Years />
         </Route>
-        <Route exact path={`/site-management/school-partner`}>
+        <Route exact path={'/site-management/school-partner'}>
           <SchoolPartner />
         </Route>
       </Switch>

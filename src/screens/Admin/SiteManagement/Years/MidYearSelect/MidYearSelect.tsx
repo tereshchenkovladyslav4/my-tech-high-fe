@@ -1,10 +1,10 @@
-import React, { useState } from 'react'
-import { Box, Stack } from '@mui/material'
-import { SchoolYearItem } from '../types'
-import { DropDown } from '../../components/DropDown/DropDown'
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import React, { FunctionComponent, useState } from 'react'
 import ExpandLessIcon from '@mui/icons-material/ExpandLess'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import { Box, Stack } from '@mui/material'
 import { BLACK } from '../../../../../utils/constants'
+import { DropDown } from '../../components/DropDown/DropDown'
+import { SchoolYearItem } from '../types'
 
 type MideYearSelectProps = {
   midYearItem: SchoolYearItem | undefined
@@ -13,12 +13,12 @@ type MideYearSelectProps = {
   setMidYearExpend: (value: boolean) => void
 }
 
-export default function MidYearSelect({
+export const MidYearSelect: FunctionComponent<MideYearSelectProps> = ({
   midYearItem,
   setMidYearItem,
   setMidYearExpend,
   setIsChanged,
-}: MideYearSelectProps) {
+}) => {
   const statusHandleChange = (value: string) => {
     if (midYearItem) setMidYearItem({ ...midYearItem, status: value == 'true' ? true : false })
     setIsChanged(true)

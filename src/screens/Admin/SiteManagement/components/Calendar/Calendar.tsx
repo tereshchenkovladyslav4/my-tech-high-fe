@@ -1,11 +1,11 @@
-import React from 'react'
+import React, { FunctionComponent } from 'react'
 import { Stack, TextField } from '@mui/material'
-import { CalendarProps } from './CalendarProps'
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker'
+import { CalendarProps } from './CalendarProps'
 
-export default function Calendar({ date, label, handleChange }: CalendarProps) {
+export const Calendar: FunctionComponent<CalendarProps> = ({ date, label, handleChange }) => {
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <Stack spacing={3} marginRight={8}>

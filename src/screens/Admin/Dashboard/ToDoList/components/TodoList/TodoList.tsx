@@ -1,12 +1,12 @@
-import React, { FunctionComponent, useEffect, useContext, useState } from 'react'
+import React, { FunctionComponent, useEffect, useContext, useState, ReactElement } from 'react'
 import { gql, useQuery } from '@apollo/client'
-import { map } from 'lodash'
 import { Card } from '@mui/material'
-import { UserContext } from '../../../../../../providers/UserContext/UserProvider'
-import { ToDoListItem } from '../ToDoListItem/ToDoListItem'
-import { WITHDRAWAL, ADMIN_APPLICATIONS, ENROLLMENT_PACKETS } from '../../../../../../utils/constants'
+import { map } from 'lodash'
 import { Flexbox } from '../../../../../../components/Flexbox/Flexbox'
 import { Subtitle } from '../../../../../../components/Typography/Subtitle/Subtitle'
+import { UserContext } from '../../../../../../providers/UserContext/UserProvider'
+import { WITHDRAWAL, ADMIN_APPLICATIONS, ENROLLMENT_PACKETS } from '../../../../../../utils/constants'
+import { ToDoListItem } from '../ToDoListItem/ToDoListItem'
 
 export const getTodoListItems = gql`
   query GetTodoListItems($regionId: ID!) {
@@ -93,10 +93,15 @@ export const TodoList: FunctionComponent = () => {
     }
   }, [loading, data])
 
-  const renderTodoListItem = () =>
-    map(todoList, (el, idx) => {
+  const renderTodoListItem = (): (void | React.ReactElement<
+    unknown,
+    string | React.JSXElementConstructor<unknown>
+  >)[] =>
+    map(todoList, (el, idx): ReactElement | undefined => {
       if (el.severity > 0) {
         return <ToDoListItem key={idx} todoItem={el} idx={idx} />
+      } else {
+        return undefined
       }
     })
 

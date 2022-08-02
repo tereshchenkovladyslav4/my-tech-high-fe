@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react'
-import { Box, Button, Grid, InputAdornment, OutlinedInput } from '@mui/material'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import SearchIcon from '@mui/icons-material/Search'
+import { Box, Button, Grid, InputAdornment, OutlinedInput } from '@mui/material'
 import { debounce } from 'lodash'
 import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
 import MultiSelectDropDown from '../../../Admin/Calendar/components/MultiSelectDropDown/MultiSelectDropDown'
@@ -16,7 +16,7 @@ const HeaderComponent: HeaderTemplateType = ({
   setSectionName,
   setSearchField,
 }) => {
-  const changeHandler = (event: string = '') => {
+  const changeHandler = (event = '') => {
     setSearchField(event)
   }
   const debouncedChangeHandler = useCallback(debounce(changeHandler, 50), [])

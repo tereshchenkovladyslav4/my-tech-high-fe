@@ -1,15 +1,14 @@
+import React from 'react'
 import { Box } from '@mui/system'
-import React, { useContext } from 'react'
-import { BreadcrumbsTemplateType } from './types'
 import { map } from 'lodash'
 import { Breadcrumb } from './BreadCrumb/Breadcrumb'
-import { EnrollmentContext } from '../../providers/EnrollmentPacketPrivder/EnrollmentPacketProvider'
+import { BreadcrumbsTemplateType } from './types'
 
-export const Breadcrumbs: BreadcrumbsTemplateType = ({ 
-  steps,
-  handleClick
-}) => {
-  const renderBreadcrumbs = () => map(steps, (step, idx) => <Breadcrumb idx={idx} title={step.label} active={step.active} handleClick={handleClick} />)
+export const Breadcrumbs: BreadcrumbsTemplateType = ({ steps, handleClick }) => {
+  const renderBreadcrumbs = () =>
+    map(steps, (step, idx) => (
+      <Breadcrumb idx={idx} title={step.label} active={step.active} handleClick={handleClick} />
+    ))
 
   return (
     <Box display='flex' flexDirection='row'>

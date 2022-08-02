@@ -48,7 +48,7 @@ export type Question = {
   type: QUESTION_TYPE
   sequence: number
   question: string
-  options: Array<any> //	Format : [{label, value, additional_question_id}]
+  options: Array<unknown> //	Format : [{label, value, additional_question_id}]
   slug: string
   mainQuestion: boolean //	Shows if this question is from System or not, false => Admin created, true => Comes from system prototype
   defaultQuestion: boolean //	false => Custom Question, true => Default Question
@@ -56,7 +56,7 @@ export type Question = {
   required: boolean
   additionalQuestion: string //	The slug of parent question for Additional Question
 
-  response: any //	Available for parents only
+  response: unknown //	Available for parents only
   studentId?: number
 }
 

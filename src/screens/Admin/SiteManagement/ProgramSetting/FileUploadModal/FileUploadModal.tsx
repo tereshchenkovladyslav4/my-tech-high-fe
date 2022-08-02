@@ -1,8 +1,8 @@
-import { Box, Button, Modal } from '@mui/material'
 import React, { useEffect, useState } from 'react'
-import { FileUploadModalTemplateType } from './types'
-import { useStyles } from './styles'
 import CloseIcon from '@mui/icons-material/Close'
+import { Box, Button, Modal } from '@mui/material'
+import { filter, has, includes, map, pull } from 'lodash'
+import UploadFileIcon from '../../../../../assets/icons/file-upload.svg'
 import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragraph'
 import {
   RED,
@@ -10,9 +10,9 @@ import {
   SNOWPACK_PUBLIC_SCHOOL_DISTRICT_TEMPLATE,
   SYSTEM_06,
 } from '../../../../../utils/constants'
-import { filter, has, includes, map, pull } from 'lodash'
 import { FileListItem } from './FileListItem'
-import UploadFileIcon from '../../../../../assets/icons/file-upload.svg'
+import { useStyles } from './styles'
+import { FileUploadModalTemplateType } from './types'
 
 interface HTMLInputEvent extends Event {
   target: HTMLInputElement & EventTarget & File
@@ -35,7 +35,7 @@ export const FileUploadModal: FileUploadModalTemplateType = ({
   const template = type === 'county' ? SNOWPACK_PUBLIC_COUNTIES_TEMPLATE : SNOWPACK_PUBLIC_SCHOOL_DISTRICT_TEMPLATE
 
   useEffect(() => {
-    let filteredArr = selectedFiles.reduce((acc, current) => {
+    const filteredArr = selectedFiles.reduce((acc, current) => {
       const x = acc.find((item) => item?.name === current?.name)
       if (!x) {
         return acc.concat([current])
@@ -100,7 +100,7 @@ export const FileUploadModal: FileUploadModalTemplateType = ({
           resolve({})
         } else {
           setErrorMessage('Incorrect Format')
-          reject
+          reject()
         }
       }
     })
@@ -220,7 +220,7 @@ export const FileUploadModal: FileUploadModalTemplateType = ({
           )}
         </Box>
         <Box
-          display={validFiles.length >= limit ? `none` : `flex`}
+          display={validFiles.length >= limit ? 'none' : 'flex'}
           flexDirection='column'
           alignItems={'center'}
           onDragOver={dragOver}

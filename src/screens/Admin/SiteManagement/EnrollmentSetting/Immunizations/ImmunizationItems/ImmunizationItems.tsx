@@ -1,3 +1,9 @@
+import React, { useEffect, useState } from 'react'
+import { useMutation } from '@apollo/client'
+import { ErrorOutline } from '@mui/icons-material'
+import DehazeIcon from '@mui/icons-material/Dehaze'
+import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined'
+import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined'
 import {
   Typography,
   Box,
@@ -11,19 +17,16 @@ import {
   Button,
   Tooltip,
 } from '@mui/material'
-import React, { useEffect, useState } from 'react'
-import { ImmunizationsData } from '../Immunizations'
-import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined'
-import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined'
-import DehazeIcon from '@mui/icons-material/Dehaze'
-import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc'
 import { useHistory } from 'react-router-dom'
-import { useMutation } from '@apollo/client'
-import { deleteImmunizationSetting, updateImmunizationOrderMutation } from '../services'
+import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc'
 import { arrayMove } from 'react-sortable-hoc'
-import { ErrorOutline, WarningOutlined, WarningRounded } from '@mui/icons-material'
+import { ImmunizationsData } from '../Immunizations'
+import { deleteImmunizationSetting, updateImmunizationOrderMutation } from '../services'
 
-const ImminizationItemInformation: React.FC<{ itemData: ImmunizationsData, settingsEnabled: boolean }> = ({ itemData, settingsEnabled }) => {
+const ImminizationItemInformation: React.FC<{ itemData: ImmunizationsData; settingsEnabled: boolean }> = ({
+  itemData,
+  settingsEnabled,
+}) => {
   const history = useHistory()
 
   const enable = itemData.is_enabled && settingsEnabled
@@ -34,12 +37,10 @@ const ImminizationItemInformation: React.FC<{ itemData: ImmunizationsData, setti
           {itemData.title}
         </Typography>
         <Divider sx={{ borderColor: 'black' }} orientation='vertical' flexItem />
-        <Typography
-          display='inline-block'
-          minWidth='95px'
-          component='span'
-        >
-          {itemData.min_grade_level && itemData.max_grade_level && itemData.is_enabled ? `${itemData.min_grade_level || 'N/A'}-${itemData.max_grade_level || 'N/A'}` : 'N/A'}
+        <Typography display='inline-block' minWidth='95px' component='span'>
+          {itemData.min_grade_level && itemData.max_grade_level && itemData.is_enabled
+            ? `${itemData.min_grade_level || 'N/A'}-${itemData.max_grade_level || 'N/A'}`
+            : 'N/A'}
         </Typography>
         <Divider sx={{ borderColor: 'black' }} orientation='vertical' flexItem />
         <Typography display='inline-block' minWidth='110px' component='span'>
@@ -51,7 +52,7 @@ const ImminizationItemInformation: React.FC<{ itemData: ImmunizationsData, setti
         onClick={() => history.push(`/site-management/enrollment/immunizations/${itemData.id}`)}
         disabled={!settingsEnabled}
         sx={{
-          opacity: !settingsEnabled ? 0.38 : 1
+          opacity: !settingsEnabled ? 0.38 : 1,
         }}
       >
         <SettingsOutlinedIcon htmlColor={settingsEnabled ? '#4145FF' : 'black'} />
@@ -61,7 +62,7 @@ const ImminizationItemInformation: React.FC<{ itemData: ImmunizationsData, setti
 }
 
 const DragHandle = SortableHandle(({ disabled }: { disabled: boolean }) => (
-  <Tooltip title="Move">
+  <Tooltip title='Move'>
     <IconButton disabled={disabled}>
       <DehazeIcon />
     </IconButton>
@@ -95,27 +96,30 @@ const ImmunizationItem: React.FC<{
           textAlign: 'center',
           alignItems: 'center',
           display: 'flex',
-          flexDirection: 'column'
+          flexDirection: 'column',
         }}
       >
         <DialogTitle
           sx={{
             fontWeight: 'bold',
-            marginTop: '10px'
+            marginTop: '10px',
           }}
-        >{'Delete Immunization'}</DialogTitle>
-        <ErrorOutline sx={{
-          fontSize: 50,
-          marginBottom: 5,
-          marginX: 'auto'
-        }} />
+        >
+          {'Delete Immunization'}
+        </DialogTitle>
+        <ErrorOutline
+          sx={{
+            fontSize: 50,
+            marginBottom: 5,
+            marginX: 'auto',
+          }}
+        />
         <Typography
-          fontWeight="bold"
+          fontWeight='bold'
           sx={{
             marginBottom: 5,
-            paddingX: 10
+            paddingX: 10,
           }}
-
         >
           {`Are you sure you want to delete ${itemData.title}?`}
         </Typography>
@@ -130,9 +134,10 @@ const ImmunizationItem: React.FC<{
               borderRadius: 5,
               bgcolor: '#E7E7E7',
               paddingX: 5,
-              '&:hover': { color: 'black' }
+              '&:hover': { color: 'black' },
             }}
-            onClick={handleClose}>
+            onClick={handleClose}
+          >
             Cancel
           </Button>
           <Button
@@ -140,7 +145,7 @@ const ImmunizationItem: React.FC<{
             sx={{
               borderRadius: 5,
               paddingX: 5,
-              '&:hover': { color: 'black' }
+              '&:hover': { color: 'black' },
             }}
             onClick={async () => {
               await deleteImmunizationSettingMutation({ variables: { id: Number(itemData.id) } })
@@ -170,7 +175,7 @@ const ImmunizationItem: React.FC<{
       >
         <ImminizationItemInformation itemData={itemData} settingsEnabled={settingsEnabled} />
         <Box sx={{ opacity: enabled ? 1 : 0.38 }} display='inline-flex'>
-          <Tooltip title="Delete">
+          <Tooltip title='Delete'>
             <IconButton disabled={!enabled} onClick={handleClickOpen}>
               <DeleteForeverOutlinedIcon />
             </IconButton>
@@ -199,8 +204,6 @@ const ImmunizationItems: React.FC<{ data: ImmunizationsData[]; enabled: boolean;
   enabled,
   refetch,
 }) => {
-
-
   const [localData, setLocalData] = useState(
     [...data].sort((first, second) => {
       return first.order - second.order

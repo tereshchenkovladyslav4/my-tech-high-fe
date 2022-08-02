@@ -1,26 +1,26 @@
-import { Button, Divider, Grid, TextField } from '@mui/material'
+import React, { FunctionComponent, ReactElement, useContext, useEffect, useState } from 'react'
+import { useMutation } from '@apollo/client'
+import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline'
+import { Button, Grid, TextField } from '@mui/material'
+import { Typography } from '@mui/material'
 import { Box } from '@mui/system'
-import React, { useContext, useEffect, useState } from 'react'
+import { map } from 'lodash'
+import { Link } from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
+import { Metadata } from '../../components/Metadata/Metadata'
 import { Paragraph } from '../../components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '../../components/Typography/Subtitle/Subtitle'
+import { WarningModal } from '../../components/WarningModal/Warning'
+import { AuthContext } from '../../providers/AuthProvider/AuthContext'
 import { BUTTON_LINEAR_GRADIENT } from '../../utils/constants'
-import { Typography } from '@mui/material'
-import { map } from 'lodash'
-import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline'
-import { Metadata } from '../../components/Metadata/Metadata'
+import { CustomModal } from '../Admin/SiteManagement/EnrollmentSetting/components/CustomModal/CustomModals'
+import { ApolloError } from '../Admin/Users/interfaces'
 import { Contact } from './Contact/Contact'
 import { Footer } from './Footer/Footer'
+import { loginMutation, resendVerificationEmailMutation } from './service'
 import { useStyles } from './styles'
-import { loginMutation, resendVerificationEmailMutation } from './service';
-import { useMutation } from '@apollo/client';
-import { AuthContext } from '../../providers/AuthProvider/AuthContext';
-import { Link } from 'react-router-dom';
-import { ApolloError } from '../Admin/Users/interfaces';
-import { WarningModal } from '../../components/WarningModal/Warning';
-import { useHistory } from 'react-router-dom';
-import CustomModal from '../Admin/SiteManagement/EnrollmentSetting/components/CustomModal/CustomModals';
 
-export const Login = () => {
+export const Login: FunctionComponent = () => {
   const infocenterHelpLinks = [
     {
       title: 'Find answers in Parent Link',
@@ -72,7 +72,7 @@ export const Login = () => {
     flag: false,
   })
 
-  const renderInfocenterHelpLinks = (arr: Array<any>, canvas?: boolean) =>
+  const renderInfocenterHelpLinks = (arr: Array<unknown>, canvas?: boolean): ReactElement[] =>
     map(arr, (link, idx) => (
       <Grid item key={idx} xs={12} textAlign='left'>
         <Paragraph size='large' color={canvas ? 'black' : 'white'}>
@@ -84,9 +84,7 @@ export const Login = () => {
 
   const classes = useStyles
   const [login, { data, loading, error }] = useMutation(loginMutation)
-  const [resendEmail, { data: resendEmailResponse, loading: resending, error: resendError }] = useMutation(
-    resendVerificationEmailMutation,
-  )
+  const [resendEmail, { data: resendEmailResponse, loading: resending }] = useMutation(resendVerificationEmailMutation)
   const [username, setUsername] = useState<string>('')
   const [password, setPassword] = useState<string>('')
   const [unverified, setUnverified] = useState<boolean>(false)

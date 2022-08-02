@@ -1,19 +1,25 @@
 import React, { useState } from 'react'
-import { Button, Modal, Grid, Typography } from '@mui/material'
-import { Box } from '@mui/system'
-import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
-import { ApplicationEmailModalType } from './types'
-import { useStyles } from './styles'
-import moment from 'moment'
-import { sortBy } from 'lodash'
-import { ArrowDropDown, ArrowDropUp, FormatAlignJustify } from '@mui/icons-material'
+import { ArrowDropDown, ArrowDropUp } from '@mui/icons-material'
 import CloseIcon from '@mui/icons-material/Close'
+import { Modal, Grid, Typography } from '@mui/material'
+import { Box } from '@mui/system'
+import { sortBy } from 'lodash'
+import moment from 'moment'
+import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
+import { useStyles } from './styles'
+import { ApplicationEmailModalType } from './types'
+
+type emailDataType = {
+  from_email: string
+  subject: string
+  body: string
+}
 export const ApplicationEmailModal: ApplicationEmailModalType = ({ handleModem, data, handleSubmit }) => {
   const classes = useStyles
   const [dateSortDirection, setDateSortDirection] = useState('')
   const [subjectSortDirection, setSubjectSortDirection] = useState('')
   const [emailData, setEmailData] = useState(data)
-  const [emailViewData, setEmailViewData] = useState<any>({
+  const [emailViewData, setEmailViewData] = useState<emailDataType>({
     from_email: '',
     subject: '',
     body: '',

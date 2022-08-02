@@ -1,12 +1,12 @@
 import React from 'react'
-import { Box, Button } from '@mui/material'
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew'
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
+import { Box, Button } from '@mui/material'
 import { Subtitle } from '../../../components/Typography/Subtitle/Subtitle'
 import { SYSTEM_05, SYSTEM_02, SYSTEM_06 } from '../../../utils/constants'
 import { extractContent, hexToRgbA, renderDate, renderFilter } from '../../../utils/utils'
-import { ParentEventDetailTemplateType } from './types'
 import { parentCalendarClasses } from './styles'
+import { ParentEventDetailTemplateType } from './types'
 
 export const ParentEventDetail: ParentEventDetailTemplateType = ({
   selectedEvent,

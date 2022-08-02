@@ -1,25 +1,15 @@
-import React, { useEffect, useState, useContext } from 'react'
+import React, { useEffect, useState, useContext, FunctionComponent } from 'react'
 import { useQuery } from '@apollo/client'
-import { Box, Button, FormControl, MenuItem, Select } from '@mui/material'
-import { makeStyles } from '@material-ui/styles'
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import { Box, Button } from '@mui/material'
 import moment from 'moment'
 import { Pagination } from '../../../../components/Pagination/Pagination'
-import { WithdrawalFilters } from '../WithdrawalFilters'
 import { UserContext } from '../../../../providers/UserContext/UserProvider'
-import { actionClassess } from './styles'
-import { PageActionProps } from '../type'
 import { getSchoolYearsByRegionId } from '../../Dashboard/SchoolYear/SchoolYear'
 import { DropDown } from '../../SiteManagement/components/DropDown/DropDown'
 import { DropDownItem } from '../../SiteManagement/components/DropDown/types'
-
-const selectStyles = makeStyles({
-  select: {
-    '& .MuiSvgIcon-root': {
-      color: 'blue',
-    },
-  },
-})
+import { PageActionProps } from '../type'
+import { WithdrawalFilters } from '../WithdrawalFilters'
+import { actionClassess } from './styles'
 
 type SchoolYearType = {
   school_year_id: number
@@ -28,7 +18,7 @@ type SchoolYearType = {
   label?: string
 }
 
-const PageAction = ({
+const PageAction: FunctionComponent<PageActionProps> = ({
   totalWithdrawals,
   paginationLimit,
   selectedStatuses,
@@ -39,9 +29,9 @@ const PageAction = ({
   setPaginationLimit,
   selectedYear,
   setSelectedYear,
-}: PageActionProps) => {
+}) => {
   const { me } = useContext(UserContext)
-  const selectedClass = selectStyles()
+
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [schoolYears, setSchoolYears] = useState<DropDownItem[]>([])
   const schoolYearData = useQuery(getSchoolYearsByRegionId, {

@@ -1,18 +1,18 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { FunctionComponent, useContext, useEffect, useState } from 'react'
 import { Box, Button, Card, Divider } from '@mui/material'
 import { filter, map } from 'lodash'
 import { Paragraph } from '../../../components/Typography/Paragraph/Paragraph'
 import { Title } from '../../../components/Typography/Title/Title'
+import { StudentStatus } from '../../../core/enums'
 import { UserContext, UserInfo } from '../../../providers/UserContext/UserProvider'
 import { SchoolYearType } from '../../../utils/utils.types'
-import { Student } from './Student/Student'
-import { StudentStatus } from '../../../core/enums'
 import { StudentType } from '../../HomeroomStudentProfile/Student/types'
+import { Student } from './Student/Student'
 
 type StudentsProps = {
   schoolYears: SchoolYearType[]
 }
-export const Students = ({ schoolYears }: StudentsProps) => {
+export const Students: FunctionComponent<StudentsProps> = ({ schoolYears }) => {
   const { me } = useContext(UserContext)
   const { students } = me as UserInfo
 

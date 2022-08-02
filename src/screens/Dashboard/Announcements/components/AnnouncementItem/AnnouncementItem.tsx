@@ -1,8 +1,8 @@
-import { Box } from '@mui/system'
 import React, { useState } from 'react'
+import CloseIcon from '@mui/icons-material/Close'
+import { Box } from '@mui/system'
 import { Metadata } from '../../../../../components/Metadata/Metadata'
 import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragraph'
-import CloseIcon from '@mui/icons-material/Close'
 import { useStyles } from '../../styles'
 import { AnnouncmentTemplateType } from './types'
 
@@ -21,8 +21,8 @@ const AnnouncementItem: AnnouncmentTemplateType = ({
   return (
     <Box
       sx={classes.announcementItem}
-      onMouseEnter={(e) => setStyle({ display: 'block' })}
-      onMouseLeave={(e) => setStyle({ display: 'none' })}
+      onMouseEnter={() => setStyle({ display: 'block' })}
+      onMouseLeave={() => setStyle({ display: 'none' })}
     >
       <Metadata
         disableGutters
@@ -38,10 +38,13 @@ const AnnouncementItem: AnnouncmentTemplateType = ({
         }
         secondaryAction={
           <>
-            <Box position='absolute' sx={{ ...classes.closeIconContainer, display: { xs: 'none',md:'block' } }}>
+            <Box position='absolute' sx={{ ...classes.closeIconContainer, display: { xs: 'none', md: 'block' } }}>
               <CloseIcon sx={style} style={classes.closeIcon} onClick={() => onClose()} />
             </Box>
-            <Box position='absolute' sx={{ ...classes.closeIconContainer, right: '-33px', display: { xs: 'block', md:'none' } }}>
+            <Box
+              position='absolute'
+              sx={{ ...classes.closeIconContainer, right: '-33px', display: { xs: 'block', md: 'none' } }}
+            >
               <CloseIcon style={classes.closeIcon} onClick={() => onClose()} />
             </Box>
           </>

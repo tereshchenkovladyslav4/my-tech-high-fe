@@ -1,14 +1,28 @@
-import { Alert, Box, Button, Card, Grid, IconButton, List, outlinedInputClasses, Typography } from '@mui/material'
-import React, { useEffect, useState, useContext, useMemo } from 'react'
-// @ts-ignore
-import BGSVG from '../../../../../assets/ApplicationBG.svg'
-import { useStyles } from './styles'
-import { ApplicationQuestion, initQuestions } from './types'
-import ApplicationQuestionItem from './Question'
-import { Form, Formik } from 'formik'
-import { arrayMove, SortableContainer, SortableElement } from 'react-sortable-hoc'
-import AddNewQuestionModal from './AddNewQuestion/index'
+import React, { useEffect, useState, useContext, useMemo, FunctionComponent } from 'react'
 import { useMutation, useQuery } from '@apollo/client'
+import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded'
+import { Alert, Box, Button, Card, Grid, IconButton, List, Typography } from '@mui/material'
+import { Form, Formik } from 'formik'
+import _ from 'lodash'
+import moment from 'moment'
+import { useHistory } from 'react-router-dom'
+import { arrayMove, SortableContainer, SortableElement } from 'react-sortable-hoc'
+
+import BGSVG from '../../../../../assets/ApplicationBG.svg'
+import { DropDownItem } from '../../../../../components/DropDown/types'
+import { QUESTION_TYPE } from '../../../../../components/QuestionItem/QuestionItemProps'
+import { UserContext } from '../../../../../providers/UserContext/UserProvider'
+
+import { GRADES } from '../../../../../utils/constants'
+import { toOrdinalSuffix } from '../../../../../utils/stringHelpers'
+import { AddQuestionModal } from '../components/AddQuestionModal/AddQuestionModal'
+import { CustomModal } from '../components/CustomModal/CustomModals'
+import { DefaultQuestionModal } from '../components/DefaultQuestionModal/DefaultQuestionModal'
+import { defaultQuestions } from '../constant/defaultQuestions'
+import { ActionQuestionTypes, QuestionTypes } from '../EnrollmentQuestions/types'
+import { ProgramYearContext } from '../provider/ProgramYearProvider'
+import { AddNewQuestionModal } from './AddNewQuestion/index'
+import { ApplicationQuestionItem } from './Question'
 import {
   getQuestionsGql,
   saveQuestionsGql,
@@ -18,28 +32,11 @@ import {
   getSchoolDistrictsByRegionId,
   getAllRegion,
 } from './services'
-import CustomModal from '../components/CustomModal/CustomModals'
-import { useHistory } from 'react-router-dom'
-import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded'
-import { useRecoilValue } from 'recoil'
-import { userRegionState } from '../../../../../providers/UserContext/UserProvider'
-import _ from 'lodash'
-import AddQuestionModal from '../components/AddQuestionModal/AddQuestionModal'
-import DefaultQuestionModal from '../components/DefaultQuestionModal/DefaultQuestionModal'
-import { defaultQuestions } from '../constant/defaultQuestions'
-import { ActionQuestionTypes, QuestionTypes } from '../EnrollmentQuestions/types'
-import moment from 'moment'
-import { DropDownItem } from '../../../../../components/DropDown/types'
-import { ProgramYearContext } from '../provider/ProgramYearProvider'
-import { GRADES } from '../../../../../utils/constants'
-import { toOrdinalSuffix } from '../../../../../utils/stringHelpers'
-import { UserContext } from '../../../../../providers/UserContext/UserProvider'
-import { QUESTION_TYPE } from '../../../../../components/QuestionItem/QuestionItemProps'
+import { useStyles } from './styles'
+import { ApplicationQuestion, initQuestions } from './types'
 const SortableItem = SortableElement(ApplicationQuestionItem)
 
-
-
-export default function ApplicationQuestions() {
+export const ApplicationQuestions: FunctionComponent = () => {
   const [questions, setQuestions] = useState<ApplicationQuestion[]>([])
   const [openSelectQuestionType, setOpenSelectQuestionType] = useState(false)
   const [unSaveChangeModal, setUnSaveChangeModal] = useState(false)
@@ -62,27 +59,32 @@ export default function ApplicationQuestions() {
 
   const [counties, setCounties] = useState([])
 
-	const isEditable = () => {
-		if(me?.level <= 2)
-			return true;
-		return false;
-	}
+  const isEditable = () => {
+    if (me?.level <= 2) return true
+    return false
+  }
 
   const SortableListContainer = SortableContainer(({ items }: { items: ApplicationQuestion[] }) => (
-  
     <List>
       {items.map((item, index) => (
-        <SortableItem index={index} key={index} questionTypes={QuestionTypes} additionalQuestionTypes={ActionQuestionTypes} questions={item} hasAction={isEditable()}  />
+        <SortableItem
+          index={index}
+          key={index}
+          questionTypes={QuestionTypes}
+          additionalQuestionTypes={ActionQuestionTypes}
+          questions={item}
+          hasAction={isEditable()}
+        />
       ))}
     </List>
   ))
-  
 
   useEffect(() => {
     if (!countyLoading && countyData?.getCounties) {
       setCounties(
-        countyData.getCounties
-          .map((v) => { return { label: v.county_name, value: v.id } })
+        countyData.getCounties.map((v) => {
+          return { label: v.county_name, value: v.id }
+        }),
       )
       setUnsavedChanges(false)
     }
@@ -101,25 +103,24 @@ export default function ApplicationQuestions() {
   })
 
   const convertSpeicalEdOptions = (optionString) => {
-    var temp = []
+    const temp = []
     if (optionString != '' && optionString != null) {
-      const optionArray = optionString.split(',');
+      const optionArray = optionString.split(',')
       optionArray.map((option, index) => {
         temp.push({
           label: option.trim(),
-          value: index + 1
-        });
-      });
+          value: index + 1,
+        })
+      })
     }
-    return temp;
+    return temp
   }
-
 
   const [schoolYears, setSchoolYears] = useState<Array<DropDownItem>>([])
   const [schoolYearsData, setSchoolYearsData] = useState([])
   const [grades, setGrades] = useState([])
   const [gradesDropDownItems, setGradesDropDownItems] = useState<Array<DropDownItem>>([])
-  const [birthDateCut, setBirthDateCut] = useState<string>('')
+  const [, setBirthDateCut] = useState<string>('')
 
   useEffect(() => {
     if (!schoolLoading && schoolYearData.getSchoolYearsByRegionId) {
@@ -133,7 +134,7 @@ export default function ApplicationQuestions() {
       )
       setSchoolYearsData(schoolYearData.getSchoolYearsByRegionId)
       if (schoolYearData.getSchoolYearsByRegionId.length > 0) {
-        setSpecialEd(schoolYearData.getSchoolYearsByRegionId[0].special_ed);
+        setSpecialEd(schoolYearData.getSchoolYearsByRegionId[0].special_ed)
         setSpecialEdOptions(convertSpeicalEdOptions(schoolYearData.getSchoolYearsByRegionId[0].special_ed_options))
       }
     }
@@ -152,9 +153,9 @@ export default function ApplicationQuestions() {
   const programYearContext = useMemo(
     () => ({
       programYear,
-      setProgramYear
+      setProgramYear,
     }),
-    []
+    [],
   )
 
   useEffect(() => {
@@ -168,7 +169,7 @@ export default function ApplicationQuestions() {
   }, [grades])
 
   const parseGrades = () => {
-    let dropDownItems = []
+    const dropDownItems = []
     GRADES.forEach((grade) => {
       if (grades?.includes(grade.toString())) {
         if (typeof grade !== 'string') {
@@ -199,14 +200,18 @@ export default function ApplicationQuestions() {
 
   useEffect(() => {
     if (!schoolDistrictsDataLoading && schoolDistrictsData?.schoolDistrict.length > 0) {
-      setSchoolDistricts(schoolDistrictsData?.schoolDistrict.map((d) => { return { label: d.school_district_name, value: d.school_district_name } }))
+      setSchoolDistricts(
+        schoolDistrictsData?.schoolDistrict.map((d) => {
+          return { label: d.school_district_name, value: d.school_district_name }
+        }),
+      )
     }
   }, [schoolDistrictsDataLoading])
 
-  const { data: regionData, loading: regionDataLoading, error } = useQuery(getAllRegion)
+  const { data: regionData, loading: regionDataLoading } = useQuery(getAllRegion)
   const [availableRegions, setAvailableRegions] = useState([])
   useEffect(() => {
-    !regionDataLoading &&
+    if (!regionDataLoading)
       setAvailableRegions(
         regionData.regions?.map((region) => ({
           label: region.name,
@@ -214,7 +219,6 @@ export default function ApplicationQuestions() {
         })),
       )
   }, [regionDataLoading])
-
 
   const history = useHistory()
   useEffect(() => {
@@ -231,17 +235,16 @@ export default function ApplicationQuestions() {
   useEffect(() => {
     window.onbeforeunload = (e) => {
       if (!unsavedChanges) return
-      e?.preventDefault();
-      return 'Unsaved changes'; // Legacy method for cross browser support
-    };
+      e?.preventDefault()
+    }
     const unreg = history.block(() => {
       if (unsavedChanges) {
         return JSON.stringify({
           header: 'Unsaved Changes',
-          content: 'Are you sure you want to leave without saving changes?'
+          content: 'Are you sure you want to leave without saving changes?',
         })
       }
-      return
+      return undefined
     })
     return () => {
       unreg()
@@ -253,38 +256,33 @@ export default function ApplicationQuestions() {
     let options = []
     let selectedQuestion = {}
     if (selected == 'Special Education') {
-      options = specialEdOptions;
+      options = specialEdOptions
       selectedQuestion = {
-        label: 'Has this student ever been diagnosed with a learning disability or ever qualified for Special Education Services (including Speech Therapy)?',
+        label:
+          'Has this student ever been diagnosed with a learning disability or ever qualified for Special Education Services (including Speech Therapy)?',
         type: 'Multiple Choices',
         slug: 'meta_special_education',
-        validation: 0
+        validation: 0,
       }
-    }
-    else {
+    } else {
       selectedQuestion = defaultQuestions.filter((d) => d.label == selected)[0]
 
       if (selectedQuestion.slug === 'address_county_id') {
         options = counties
-      }
-      else if (selectedQuestion.slug === 'program_year') {
+      } else if (selectedQuestion.slug === 'program_year') {
         options = schoolYears
-      }
-      else if (selectedQuestion.slug === 'packet_school_district') {
+      } else if (selectedQuestion.slug === 'packet_school_district') {
         options = schoolDistricts
-      }
-      else if (selectedQuestion.slug === 'address_state') {
+      } else if (selectedQuestion.slug === 'address_state') {
         options = availableRegions
-      }
-      else if (selectedQuestion.slug === 'student_gender') {
+      } else if (selectedQuestion.slug === 'student_gender') {
         options = [
           { label: 'Male', value: 1 },
           { label: 'Female', value: 2 },
           //        {label: 'Non Binary', value: 3},
           //        {label: 'Undeclared', value: 4},
         ]
-      }
-      else if (selectedQuestion.slug === 'student_grade_level') {
+      } else if (selectedQuestion.slug === 'student_grade_level') {
         options = gradesDropDownItems
       }
     }
@@ -304,21 +302,36 @@ export default function ApplicationQuestions() {
   }
 
   const questionSortList = (values) => {
-    const sortList = values.filter(v =>
-    (!v.mainQuestion && ((!v.additional_question || v.additional_question == '')
-      || (values.find(x => x.slug == v.additional_question)?.response !== ''
-        && (values.find(x => x.slug == v.additional_question)?.options.find(
-          x => x.action == 2 && (x.value == values.find(y => y.slug == v.additional_question)?.response
-            || values.find(y => y.slug == v.additional_question)?.response.toString().indexOf(x.value) >= 0)) != null)))) 		// Parent
-    ).map(v => {
-      let arr = [v], current = v, child;
-      while (child = values.find(x => x.additional_question == current.slug)) {
-        arr.push(child);
-        current = child;
-      }
-      return arr;
-    });
-    return sortList;
+    const sortList = values
+      .filter(
+        (v) =>
+          !v.mainQuestion &&
+          (!v.additional_question ||
+            v.additional_question == '' ||
+            (values.find((x) => x.slug == v.additional_question)?.response !== '' &&
+              values
+                .find((x) => x.slug == v.additional_question)
+                ?.options.find(
+                  (x) =>
+                    x.action == 2 &&
+                    (x.value == values.find((y) => y.slug == v.additional_question)?.response ||
+                      values
+                        .find((y) => y.slug == v.additional_question)
+                        ?.response.toString()
+                        .indexOf(x.value) >= 0),
+                ) != null)), // Parent
+      )
+      .map((v) => {
+        const arr = [v]
+        let current = v,
+          child
+        while ((child = values.find((x) => x.additional_question == current.slug))) {
+          arr.push(child)
+          current = child
+        }
+        return arr
+      })
+    return sortList
   }
 
   return (
@@ -341,9 +354,9 @@ export default function ApplicationQuestions() {
               deleteQuestion({ variables: { id: q.id } })
             }
           })
-          for(let i = 0; i < vals.length; i++) {
-            if(vals[i].id < 0)	vals[i].id = 0;
-            vals[i].order = i + 1;
+          for (let i = 0; i < vals.length; i++) {
+            if (vals[i].id < 0) vals[i].id = 0
+            vals[i].order = i + 1
           }
 
           await saveQuestionsMutation({
@@ -362,7 +375,7 @@ export default function ApplicationQuestions() {
                 region_id: Number(me?.selectedRegionId),
                 slug: v.slug || '',
                 additional_question: v.additional_question,
-                main_question: v.main_question
+                main_question: v.main_question,
               })),
             },
           })
@@ -451,65 +464,97 @@ export default function ApplicationQuestions() {
                       useDragHandle={true}
                       onSortEnd={({ oldIndex, newIndex }) => {
                         //	Find indexs
-                        const groups = values.filter(v => ((v.additional_question == '' || !v.additional_question)&& v.main_question == 0)
-                        ).map(v => {
-                          let arr = [v], current = v, child;
-                          while(child = values.find(x => x.additional_question == current.slug)) {
-                            arr.push(child);
-                            current = child;
-                          }
-                          return arr;
-                        });
-                        const newData = arrayMove(groups, oldIndex, newIndex);
-  
-                        let newValues = [];
-                        newValues.push(values[0]);
-                        newValues.push(values[1]);
-                        newData.forEach(group => {
-                          group?.forEach(q => {
+                        const groups = values
+                          .filter(
+                            (v) => (v.additional_question == '' || !v.additional_question) && v.main_question == 0,
+                          )
+                          .map((v) => {
+                            const arr = [v]
+                            let current = v,
+                              child
+                            while ((child = values.find((x) => x.additional_question == current.slug))) {
+                              arr.push(child)
+                              current = child
+                            }
+                            return arr
+                          })
+                        const newData = arrayMove(groups, oldIndex, newIndex)
+
+                        const newValues = []
+                        newValues.push(values[0])
+                        newValues.push(values[1])
+                        newData.forEach((group) => {
+                          group?.forEach((q) => {
                             newValues.push({
                               ...q,
-                              sequence: newValues.length + 1
+                              sequence: newValues.length + 1,
                             })
                           })
-                        });
-                        newValues.push(values[values.length - 1]);
+                        })
+                        newValues.push(values[values.length - 1])
                         setValues(newValues)
                       }}
                     />
                   </Box>
                 </ProgramYearContext.Provider>
-                {openAddQuestion === 'new' && <AddNewQuestionModal onClose={(e) => { setOpenAddQuestion(''); setOpenSelectQuestionType(!e) }} questions={editItem} questionTypes={QuestionTypes} additionalQuestionTypes={ActionQuestionTypes} />}
-                {openAddQuestion === 'default' && <DefaultQuestionModal onClose={() => { setOpenAddQuestion(''); setOpenSelectQuestionType(true) }} onCreate={(e) => { onSelectDefaultQuestions(e) }} special_ed={specialEd} />}
-                {
-                  openSelectQuestionType &&
-                  <AddQuestionModal onClose={() => setOpenSelectQuestionType(false)} onCreate={(e) => {
-                    setOpenAddQuestion(e);
-                    if (e === 'new') {
-                      //	Prototype of a question
-                      setEditItem([{
-                        type: QUESTION_TYPE.TEXTFIELD,
-                        question: '',
-                        validation: 0,
-                        default_question: false,
-                        options: [],
-                        slug: `meta_${+new Date()}`,
-                        required: false,
-                        main_question: 0,
-                        additional_question: '',
-                        student_question: false
-                      }]);
-                    }
-                    // setEditItem([]); 
-                    setOpenSelectQuestionType(false)
-                  }} />
-                }
+                {openAddQuestion === 'new' && (
+                  <AddNewQuestionModal
+                    onClose={(e) => {
+                      setOpenAddQuestion('')
+                      setOpenSelectQuestionType(!e)
+                    }}
+                    questions={editItem}
+                    questionTypes={QuestionTypes}
+                    additionalQuestionTypes={ActionQuestionTypes}
+                  />
+                )}
+                {openAddQuestion === 'default' && (
+                  <DefaultQuestionModal
+                    onClose={() => {
+                      setOpenAddQuestion('')
+                      setOpenSelectQuestionType(true)
+                    }}
+                    onCreate={(e) => {
+                      onSelectDefaultQuestions(e)
+                    }}
+                    special_ed={specialEd}
+                  />
+                )}
+                {openSelectQuestionType && (
+                  <AddQuestionModal
+                    onClose={() => setOpenSelectQuestionType(false)}
+                    onCreate={(e) => {
+                      setOpenAddQuestion(e)
+                      if (e === 'new') {
+                        //	Prototype of a question
+                        setEditItem([
+                          {
+                            type: QUESTION_TYPE.TEXTFIELD,
+                            question: '',
+                            validation: 0,
+                            default_question: false,
+                            options: [],
+                            slug: `meta_${+new Date()}`,
+                            required: false,
+                            main_question: 0,
+                            additional_question: '',
+                            student_question: false,
+                          },
+                        ])
+                      }
+                      // setEditItem([]);
+                      setOpenSelectQuestionType(false)
+                    }}
+                  />
+                )}
 
-                <Button sx={{ ...useStyles.submitButton, color: 'white' }} onClick={() => setOpenSelectQuestionType(true)}>
+                <Button
+                  sx={{ ...useStyles.submitButton, color: 'white' }}
+                  onClick={() => setOpenSelectQuestionType(true)}
+                >
                   Add Question
                 </Button>
               </Box>
-
 
               <Box sx={{ marginBottom: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 <Button sx={{ ...useStyles.addStudentButton }}>Add Student</Button>

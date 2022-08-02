@@ -2,7 +2,7 @@ import { FunctionComponent } from 'react'
 
 export type BreadcrumbProps = {
   title: string
-  active?: boolean,
+  active?: boolean
   idx: number
   handleClick?: (_) => void
 }

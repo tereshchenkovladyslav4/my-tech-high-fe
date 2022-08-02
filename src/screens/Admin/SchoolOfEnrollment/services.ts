@@ -1,12 +1,7 @@
 import { gql } from '@apollo/client'
 
 export const getStudents = gql`
-  query students(
-    $skip: Int
-    $take: Int
-    $filter: StudentFilterArgs
-    $sort: String
-  ) {
+  query students($skip: Int, $take: Int, $filter: StudentFilterArgs, $sort: String) {
     students(skip: $skip, take: $take, filter: $filter, sort: $sort) {
       total
       results {
@@ -97,8 +92,8 @@ export const getApplicationsQuery = gql`
 `
 
 export const GetSchoolsPartner = gql`
-  query GetSchoolsOfEnrollmentByRegion($schoolPartnerArgs: SchoolPartnerArgs!){
-    getSchoolsOfEnrollmentByRegion(schoolPartnerArgs: $schoolPartnerArgs){
+  query GetSchoolsOfEnrollmentByRegion($schoolPartnerArgs: SchoolPartnerArgs!) {
+    getSchoolsOfEnrollmentByRegion(schoolPartnerArgs: $schoolPartnerArgs) {
       school_partner_id
       name
       abbreviation

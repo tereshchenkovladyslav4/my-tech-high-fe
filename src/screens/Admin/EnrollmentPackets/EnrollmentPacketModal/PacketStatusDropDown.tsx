@@ -1,14 +1,14 @@
-import React, {useEffect,  useState} from 'react'
-import { styled } from '@mui/material/styles'
+import React, { FunctionComponent, useEffect, useState } from 'react'
+import { useQuery } from '@apollo/client'
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import Button from '@mui/material/Button'
 import Menu, { MenuProps } from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
-import { BUTTON_LINEAR_GRADIENT } from '../../../../utils/constants'
-import { EnrollmentPacketFormType } from './types'
-import { useQuery } from '@apollo/client'
-import { getEnrollmentPacketStatusesQuery } from '../services'
+import { styled } from '@mui/material/styles'
 import { useFormContext } from 'react-hook-form'
+import { BUTTON_LINEAR_GRADIENT } from '../../../../utils/constants'
+import { getEnrollmentPacketStatusesQuery } from '../services'
+import { EnrollmentPacketFormType } from './types'
 
 const StyledMenu = styled((props: MenuProps) => (
   <Menu
@@ -36,32 +36,31 @@ const StyledMenu = styled((props: MenuProps) => (
   },
 }))
 
-export default function EnrollmentPacketDropDownButton() {
+export const EnrollmentPacketDropDownButton: FunctionComponent = () => {
   const { watch, setValue } = useFormContext<EnrollmentPacketFormType>()
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
 
-  const [status, packetStatuses] = watch(['status', 'packetStatuses'])
-  const [pkStatues, setPkStatues] = useState([]);
+  const [status] = watch(['status', 'packetStatuses'])
+  const [pkStatues, setPkStatues] = useState([])
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget)
   }
-  
+
   const { data } = useQuery(getEnrollmentPacketStatusesQuery, {
     fetchPolicy: 'network-only',
   })
 
-
   useEffect(() => {
     console.log(data?.packetStatuses?.results)
     if (data?.packetStatuses?.results) {
-      setValue('packetStatuses', data?.packetStatuses?.results)    
-      setPkStatues(data?.packetStatuses?.results)  
+      setValue('packetStatuses', data?.packetStatuses?.results)
+      setPkStatues(data?.packetStatuses?.results)
     }
   }, [data])
 
-  const handlePacketStatus = (name: any) => {
+  const handlePacketStatus = (name: unknown) => {
     setValue('status', name)
     setValue('preSaveStatus', name)
     setAnchorEl(null)
@@ -139,7 +138,7 @@ export default function EnrollmentPacketDropDownButton() {
         open={open}
         onClose={handleClose}
       >
-        {pkStatues?.map((x: any, index: number) => (
+        {pkStatues?.map((x: unknown, index: number) => (
           <MenuItem key={index} onClick={() => handlePacketStatus(x)} disableRipple>
             {x}
           </MenuItem>

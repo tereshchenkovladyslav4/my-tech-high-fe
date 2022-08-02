@@ -1,12 +1,21 @@
+import React, { FunctionComponent, useEffect, useState } from 'react'
 import { Button, Checkbox, FormControlLabel, Grid, TextField } from '@mui/material'
 import { Box } from '@mui/system'
-import React, { useEffect, useState } from 'react'
 import { Paragraph } from '../../../../components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
 import { BUTTON_LINEAR_GRADIENT } from '../../../../utils/constants'
 import { STATES_WITH_ABBREVIATION } from '../../../../utils/states'
 
-export const ParentProfile = ({
+type ParentProfileProps = {
+  userInfo: unknown
+  setUserInfo: (_: unknown) => void
+  phoneInfo: unknown
+  setPhoneInfo: (_: unknown) => void
+  notes: unknown
+  setNotes: (_: unknown) => void
+  applicationState: unknown
+}
+export const ParentProfile: FunctionComponent<ParentProfileProps> = ({
   userInfo,
   setUserInfo,
   phoneInfo,

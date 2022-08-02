@@ -1,9 +1,9 @@
+import React from 'react'
+import { ArrowDropDown } from '@mui/icons-material'
 import { TableHead, TableRow, TableCell, Checkbox, TableSortLabel } from '@mui/material'
 import { Box } from '@mui/system'
-import React from 'react'
-import { SortableTableHeaders } from './types'
 import { visuallyHidden } from '@mui/utils'
-import { ArrowDropDown } from '@mui/icons-material'
+import { SortableTableHeaders } from './types'
 export const SortableTableHeader: SortableTableHeaders = ({
   numSelected,
   onRequestSort,
@@ -14,7 +14,7 @@ export const SortableTableHeader: SortableTableHeaders = ({
   headCells,
   noCheckbox,
 }) => {
-  const createSortHandler = (property: keyof any) => (event: React.MouseEvent<unknown>) => {
+  const createSortHandler = (property: keyof unknown) => (event: React.MouseEvent<unknown>) => {
     onRequestSort(event, property)
   }
 

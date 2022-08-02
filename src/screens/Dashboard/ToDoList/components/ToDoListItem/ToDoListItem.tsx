@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import { Avatar, AvatarGroup, Box, Button, TableCell, TableRow } from '@mui/material'
 import SubjectIcon from '@mui/icons-material/Subject'
 import WarningAmberOutlinedIcon from '@mui/icons-material/WarningAmberOutlined'
+import { Avatar, AvatarGroup, Box, Button, TableCell, TableRow } from '@mui/material'
 import { map } from 'lodash'
 import { useHistory } from 'react-router-dom'
-import { ToDoCategory, TodoListTemplateType } from './types'
 import { Metadata } from '../../../../../components/Metadata/Metadata'
 import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
@@ -17,8 +16,9 @@ import {
   SUBMIT_WITHDRAWAL,
 } from '../../../../../utils/constants'
 import { Person } from '../../../../HomeroomStudentProfile/Student/types'
+import { ToDoCategory, TodoListTemplateType } from './types'
 
-const Row = (props: any) => (
+const Row = (props: unknown) => (
   <Box display='flex' flexDirection='row' alignItems='center' justifyContent={props.content || 'flex-start'}>
     {props.children}
   </Box>

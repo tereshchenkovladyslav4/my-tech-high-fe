@@ -1,9 +1,9 @@
 import React from 'react'
-import { Box, FormControl, MenuItem, Typography, Select, Divider, TextField, FormHelperText } from '@mui/material'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
-import { useStyles } from './style'
+import { Box, FormControl, MenuItem, Typography, Select, Divider, TextField, FormHelperText } from '@mui/material'
 import { useFormikContext } from 'formik'
 import { ImmunizationsData } from '../../Immunizations'
+import { useStyles } from './style'
 
 const MaximumSpacing: React.FC = () => {
   const styles = useStyles()
@@ -41,7 +41,7 @@ const MaximumSpacing: React.FC = () => {
             style: { padding: 0 },
             min: 1,
             inputMode: 'numeric',
-            pattern: '[1-9]*'
+            pattern: '[1-9]*',
           }}
           type='number'
           disabled={values.max_spacing_date < 1}
@@ -55,8 +55,8 @@ const MaximumSpacing: React.FC = () => {
           MenuProps={{ classes: { paper: styles.selectPaper } }}
           value={values.max_spacing_date || 0}
           onChange={(e) => {
-            if(!e.target.value) setFieldValue('max_spacing_interval', 0);
-            handleChange(e);
+            if (!e.target.value) setFieldValue('max_spacing_interval', 0)
+            handleChange(e)
           }}
         >
           {localValues.map((item, index) => (

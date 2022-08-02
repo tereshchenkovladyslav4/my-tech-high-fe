@@ -2,11 +2,18 @@ import React, { FunctionComponent } from 'react'
 import { Route, Switch } from 'react-router-dom'
 import { NewParent } from '../screens/Applications/NewParent/NewParent'
 import { CompleteAccount } from '../screens/CompleteAccount/CompleteAccount'
-import { Login } from '../screens/Login/Login'
-import { APPLICATIONS, CONFIRM_EMAIL, DASHBOARD, FORGOT_PASSWORD, RESET_PASSWORD, EMAIL_VERIFICATION } from '../utils/constants'
 import { ForgotPassword } from '../screens/ForgotPassword/ForgotPassword'
 import { ResetPassword } from '../screens/ForgotPassword/ResetPassword'
+import { Login } from '../screens/Login/Login'
 import { VerifyEmail } from '../screens/VerifyEmail/VerifyEmail'
+import {
+  APPLICATIONS,
+  CONFIRM_EMAIL,
+  DASHBOARD,
+  FORGOT_PASSWORD,
+  RESET_PASSWORD,
+  EMAIL_VERIFICATION,
+} from '../utils/constants'
 
 export const UnauthenticatedRoutes: FunctionComponent = () => (
   <Switch>

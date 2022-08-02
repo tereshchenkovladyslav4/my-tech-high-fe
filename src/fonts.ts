@@ -1,6 +1,6 @@
 // @ts-ignore
-import VisbyCFBold from '../assets/fonts/VisbyCF-Bold.ttf'
 import { createGlobalStyle } from 'styled-components'
+import VisbyCFBold from '../assets/fonts/VisbyCF-Bold.ttf'
 
 export default createGlobalStyle`
     @font-face {

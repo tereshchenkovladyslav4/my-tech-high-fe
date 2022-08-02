@@ -1,16 +1,16 @@
 import React, { FunctionComponent, useEffect, useState } from 'react'
-import ThemeProvider from '@mui/system/ThemeProvider'
-import { theme } from './utils/theme'
 import { CssBaseline } from '@mui/material'
+import ThemeProvider from '@mui/system/ThemeProvider'
 import { BrowserRouter as Router } from 'react-router-dom'
+import { RecoilRoot } from 'recoil'
 import WebFont from 'webfontloader'
-import { TabContext, TabInfo, UserContext, UserInfo } from './providers/UserContext/UserProvider'
-import { Root } from './root/Root'
+import { UserLeaveConfirmation } from './components/UserLeaveConfirmation/UserLeaveConfirmation'
 import { ApolloProvider } from './providers/ApolloProvider/ApolloProvider'
 import { AuthProvider } from './providers/AuthProvider/AuthProvider'
 import { ProfileProvider } from './providers/ProfileProvider/ProfileProvider'
-import { RecoilRoot } from 'recoil'
-import { UserLeaveConfirmation } from './components/UserLeaveConfirmation/UserLeaveConfirmation'
+import { TabContext, TabInfo, UserContext, UserInfo } from './providers/UserContext/UserProvider'
+import { Root } from './root/Root'
+import { theme } from './utils/theme'
 
 declare global {
   interface ImportMeta {
@@ -54,14 +54,15 @@ export const App: FunctionComponent = () => {
   }, [])
 
   return (
-    <Router getUserConfirmation={(message, callback) => {
-      return UserLeaveConfirmation(
-        message,
-        callback,
-        // confirmOpen,
-        // setConfirmOpen
-      )
-    }}
+    <Router
+      getUserConfirmation={(message, callback) => {
+        return UserLeaveConfirmation(
+          message,
+          callback,
+          // confirmOpen,
+          // setConfirmOpen
+        )
+      }}
     >
       <ThemeProvider theme={theme}>
         <AuthProvider>

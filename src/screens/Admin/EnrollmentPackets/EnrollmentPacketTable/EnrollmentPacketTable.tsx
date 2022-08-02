@@ -1,44 +1,42 @@
-import { Box, Button, Card, InputAdornment, OutlinedInput } from '@mui/material'
-import React, { useEffect, useState, useContext } from 'react'
-import { UserContext } from '../../../../providers/UserContext/UserProvider'
-import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
-import { GREEN_GRADIENT, RED_GRADIENT, YELLOW_GRADIENT } from '../../../../utils/constants'
+import React, { useEffect, useState, useContext, FunctionComponent } from 'react'
+import { useQuery, useMutation } from '@apollo/client'
 import SearchIcon from '@mui/icons-material/Search'
+import { Box, Button, Card, InputAdornment, OutlinedInput } from '@mui/material'
+import Tooltip from '@mui/material/Tooltip'
+import { map } from 'lodash'
+import moment from 'moment'
+import { ApplicationEmailModal as EmailModal } from '../../../../components/EmailModal/ApplicationEmailModal'
+import { EditYearModal } from '../../../../components/EmailModal/EditYearModal'
 import { Pagination } from '../../../../components/Pagination/Pagination'
 import { SortableTable } from '../../../../components/SortableTable/SortableTable'
-import { useQuery, useMutation } from '@apollo/client'
+import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
+import { WarningModal } from '../../../../components/WarningModal/Warning'
+import { getEmailTemplateQuery } from '../../../../graphql/queries/email-template'
+import { ProfileContext } from '../../../../providers/ProfileProvider/ProfileContext'
+import { UserContext } from '../../../../providers/UserContext/UserProvider'
+import { GREEN_GRADIENT, RED_GRADIENT } from '../../../../utils/constants'
+import { ENROLLMENT_PACKET_HEADCELLS } from '../../../../utils/PageHeadCellsConstant'
+import { toOrdinalSuffix } from '../../../../utils/stringHelpers'
+import { Packet } from '../../../HomeroomStudentProfile/Student/types'
+import { ApplicationEmailModal } from '../../Applications/ApplicationModal/ApplicationEmailModal'
+import { getSchoolYearsByRegionId } from '../../SiteManagement/services'
+import { EnrollmentPacketFilters } from '../EnrollmentPacketFilters/EnrollmentPacketFilters'
+import { EnrollmentPacketModal } from '../EnrollmentPacketModal'
 import {
   getEnrollmentPacketsQuery,
   emailPacketMutation,
   deletePacketMutation,
-  moveNextYearPacketMutation,
-  moveThisYearPacketMutation,
   packetCountQuery,
   updateEnrollmentSchoolYearByIds,
 } from '../services'
-import { map } from 'lodash'
-import moment from 'moment'
-import Tooltip from '@mui/material/Tooltip'
-import { toOrdinalSuffix } from '../../../../utils/stringHelpers'
-import { ApplicationEmailModal as EmailModal } from '../../../../components/EmailModal/ApplicationEmailModal'
-import EnrollmentPacketModal from '../EnrollmentPacketModal'
-import { WarningModal } from '../../../../components/WarningModal/Warning'
-import { Packet } from '../../../HomeroomStudentProfile/Student/types'
-import { getEmailTemplateQuery } from '../../../../graphql/queries/email-template'
-import { EnrollmentPacketFilters } from '../EnrollmentPacketFilters/EnrollmentPacketFilters'
-import { ProfileContext } from '../../../../providers/ProfileProvider/ProfileContext'
-import { ApplicationEmailModal } from '../../Applications/ApplicationModal/ApplicationEmailModal'
-import { ENROLLMENT_PACKET_HEADCELLS } from '../../../../utils/PageHeadCellsConstant'
-import { EditYearModal } from '../../../../components/EmailModal/EditYearModal'
-import { getSchoolYearsByRegionId } from '../../SiteManagement/services'
 
-export const EnrollmentPacketTable = () => {
+export const EnrollmentPacketTable: FunctionComponent = () => {
   const { me } = useContext(UserContext)
   const [filters, setFilters] = useState(['Submitted', 'Resubmitted'])
 
   const [emailTemplate, setEmailTemplate] = useState()
   const [searchField, setSearchField] = useState('')
-  const [tableData, setTableData] = useState<Array<any>>([])
+  const [tableData, setTableData] = useState<Array<unknown>>([])
 
   const [paginatinLimit, setPaginatinLimit] = useState(25)
   const [skip, setSkip] = useState<number>()
@@ -59,7 +57,7 @@ export const EnrollmentPacketTable = () => {
   const [noStudnetAlert, setNoStudentAlert] = useState<boolean>(false)
   const [editYearModal, setEditYearModal] = useState<boolean>(false)
   const [clearAll, setClearAll] = useState<boolean>(false)
-  const [schoolYears, setSchoolYears] = useState<any[]>([])
+  const [schoolYears, setSchoolYears] = useState<unknown[]>([])
 
   const [openWarningModal, setOpenWarningModal] = useState<boolean>(false)
   const [packetCount, setpacketCount] = useState({})
@@ -106,7 +104,7 @@ export const EnrollmentPacketTable = () => {
             justifyContent={'center'}
             alignItems={'center'}
             className='delete-row'
-            onClick={(event) => handleDelete(packet.packet_id)}
+            onClick={() => handleDelete(packet.packet_id)}
             sx={{
               borderRadius: 1,
               cursor: 'pointer',
@@ -164,39 +162,39 @@ export const EnrollmentPacketTable = () => {
     setOpenEmailShowModal(true)
   }
 
-  const handlePacketSelect = (rowId: any) => {
+  const handlePacketSelect = (rowId: unknown) => {
     const row = enrollmentPackets?.find((el) => el.packet_id === rowId)
     setEnrollmentPacket(row)
     setIsShowModal(true)
   }
 
-  const { loading: schoolLoading, data: schoolYearData } = useQuery(getSchoolYearsByRegionId, {
+  const { data: schoolYearData } = useQuery(getSchoolYearsByRegionId, {
     variables: {
       regionId: me?.selectedRegionId,
     },
     skip: me?.selectedRegionId ? false : true,
     fetchPolicy: 'network-only',
-  });
+  })
 
   useEffect(() => {
     if (schoolYearData?.region?.SchoolYears) {
-      const { SchoolYears } = schoolYearData?.region;
-      let yearList = [];
-      SchoolYears.sort((a, b) => a.date_begin > b.date_begin ? 1 : -1).map((item: any) => {
+      const { SchoolYears } = schoolYearData?.region
+      const yearList = []
+      SchoolYears.sort((a, b) => (a.date_begin > b.date_begin ? 1 : -1)).map((item: unknown) => {
         yearList.push({
           value: item.school_year_id,
           label: moment(item.date_begin).format('YYYY') + ' - ' + moment(item.date_end).format('YY'),
-        });
-        if(item.midyear_application === 1){
+        })
+        if (item.midyear_application === 1) {
           yearList.push({
-            value: -1 * item.school_year_id+ '',
+            value: -1 * item.school_year_id + '',
             label: moment(item.date_begin).format('YYYY') + ' - ' + moment(item.date_end).format('YY') + ' Mid-year',
-          });
+          })
         }
-      });
+      })
       setSchoolYears(yearList)
     }
-  }, [schoolYearData?.region?.SchoolYears]);
+  }, [schoolYearData?.region?.SchoolYears])
 
   useEffect(() => {
     if (emailTemplateData !== undefined) {
@@ -295,66 +293,30 @@ export const EnrollmentPacketTable = () => {
     refetch()
   }
 
-  const [moveThisYearPacket] = useMutation(moveThisYearPacketMutation)
-
-  const handleMoveToThisYear = async () => {
-    try {
-      if (packetIds.length === 0) {
-        setOpenWarningModal(true)
-        return
-      }
-      await moveThisYearPacket({
-        variables: {
-          deleteApplicationInput: {
-            application_ids: packetIds,
-          },
-        },
-      })
-      refetch()
-    } catch (error) {}
-  }
-
   const [updateBulkSchoolYear] = useMutation(updateEnrollmentSchoolYearByIds)
 
   const handleChangeProgramYear = async () => {
     if (packetIds.length === 0) {
       setNoStudentAlert(true)
       return
-    };
-    setEditYearModal(true);
+    }
+    setEditYearModal(true)
   }
 
   const submitEditYear = async (form) => {
-    const {schoolYear} = form;
+    const { schoolYear } = form
     await updateBulkSchoolYear({
-      variables : {
-        updateEnrollmentSchoolYearByIdsInput : {
+      variables: {
+        updateEnrollmentSchoolYearByIdsInput: {
           application_ids: packetIds,
           school_year_id: parseInt(schoolYear) > 0 ? parseInt(schoolYear) : -1 * parseInt(schoolYear),
-          midyear_application : parseInt(schoolYear) > 0 ? 0 : 1
-        }
-      }
-    })
-    setPacketIds([])
-    setClearAll(!clearAll)
-    setEditYearModal(false);
-    refetch();
-  }
-
-  const [moveNextYearPacket] = useMutation(moveNextYearPacketMutation)
-
-  const handleMoveToNextYear = async () => {
-    if (packetIds.length === 0) {
-      setOpenWarningModal(true)
-      return
-    }
-    await moveNextYearPacket({
-      variables: {
-        deleteApplicationInput: {
-          application_ids: packetIds,
+          midyear_application: parseInt(schoolYear) > 0 ? 0 : 1,
         },
       },
     })
+    setPacketIds([])
+    setClearAll(!clearAll)
+    setEditYearModal(false)
     refetch()
   }
 
@@ -431,7 +393,7 @@ export const EnrollmentPacketTable = () => {
                 background: '#D23C33',
                 color: '#fff',
               },
-              minWidth: '195px'
+              minWidth: '195px',
             }}
             onClick={handleOpenEmailModal}
           >
@@ -451,7 +413,7 @@ export const EnrollmentPacketTable = () => {
                 background: '#33FF7C',
                 color: 'fff',
               },
-              minWidth: '195px'
+              minWidth: '195px',
             }}
             onClick={handleChangeProgramYear}
           >
@@ -571,7 +533,7 @@ export const EnrollmentPacketTable = () => {
 
       {editYearModal && (
         <EditYearModal
-          title="Change Program Year"
+          title='Change Program Year'
           schoolYears={schoolYears}
           handleSubmit={submitEditYear}
           handleClose={() => setEditYearModal(false)}

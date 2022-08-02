@@ -1,17 +1,17 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { Box, Typography } from '@mui/material'
-import { StudentImmunizatiosnQuery } from '../../services'
+import React, { FunctionComponent, useContext, useEffect, useState } from 'react'
 import { useQuery } from '@apollo/client'
-import ImmunizationItem from './ImmunizationItem'
-import { EnrollmentPacketFormType } from '../types'
-import { StudentImmunization } from './types'
-import { getValidGrade } from '../helpers'
-import { MdArrowDropUp, MdArrowDropDown } from 'react-icons/md'
+import { Box, Typography } from '@mui/material'
 import { useFormContext } from 'react-hook-form'
-import VaccinesInfoHeader from './Header'
+import { MdArrowDropUp, MdArrowDropDown } from 'react-icons/md'
+import { StudentImmunizatiosnQuery } from '../../services'
+import { getValidGrade } from '../helpers'
 import { studentContext } from '../providers'
+import { EnrollmentPacketFormType } from '../types'
+import { VaccinesInfoHeader } from './Header'
+import ImmunizationItem from './ImmunizationItem'
+import { StudentImmunization } from './types'
 
-export default function EnrollmentPacketVaccineView() {
+export const EnrollmentPacketVaccineView: FunctionComponent = () => {
   const { setValue } = useFormContext()
   const student = useContext(studentContext)
 

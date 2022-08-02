@@ -1,5 +1,3 @@
-import { BUTTON_LINEAR_GRADIENT } from '../../utils/constants'
-
 export const useStyles = {
   signInButton: {
     height: '53px',

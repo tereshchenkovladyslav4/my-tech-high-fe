@@ -1,19 +1,19 @@
-import { Title } from '../../components/Typography/Title/Title'
-import { Box } from '@mui/system'
-import React, { useState } from 'react'
-import BGSVG from '../../assets/ApplicationBG.svg'
-import { MTHBLUE, SYSTEM_05 } from '../../utils/constants'
-import { Button, TextField } from '@mui/material'
-import { useStyles } from './styles'
-import { Paragraph } from '../../components/Typography/Paragraph/Paragraph'
-import { NewApplicationFooter } from '../../components/NewApplicationFooter/NewApplicationFooter'
+import React, { FunctionComponent, useState } from 'react'
 import { useMutation } from '@apollo/client'
-import { confirmAccount, sendApplicationEmail } from './service'
+import { Button, TextField } from '@mui/material'
+import { Box } from '@mui/system'
 import { useFormik } from 'formik'
 import * as yup from 'yup'
+import BGSVG from '../../assets/ApplicationBG.svg'
+import { NewApplicationFooter } from '../../components/NewApplicationFooter/NewApplicationFooter'
+import { Paragraph } from '../../components/Typography/Paragraph/Paragraph'
+import { Title } from '../../components/Typography/Title/Title'
+import { MTHBLUE, SYSTEM_05 } from '../../utils/constants'
 import { CompleteAccountSuccess } from '../CompleteAccountSuccess/CompleteAccountSuccess'
+import { confirmAccount, sendApplicationEmail } from './service'
+import { useStyles } from './styles'
 
-export const CompleteAccount = () => {
+export const CompleteAccount: FunctionComponent = () => {
   const token = window.location.href.split('=')[1]
 
   const [confirmEmail] = useMutation(confirmAccount)
@@ -24,12 +24,13 @@ export const CompleteAccount = () => {
 
   const validationSchema = yup.object({
     email: yup.string().email('Enter a valid email').required('Email is required'),
-    password: yup.string()
-    .matches(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/,
-      "Password must contain 8 characters, one uppercase, one lowercase, one number, and one special case character"
-    )
-    .required('Password is required'),
+    password: yup
+      .string()
+      .matches(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/,
+        'Password must contain 8 characters, one uppercase, one lowercase, one number, and one special case character',
+      )
+      .required('Password is required'),
     confirmPassword: yup
       .string()
       .required('Please enter your password again')
@@ -56,11 +57,10 @@ export const CompleteAccount = () => {
           password: formik.values.password,
         },
       },
-    }).then(
-      () => {
-        setShowSuccess(true)
-        sendApplicationReceiveEmail({ variables: { email: formik.values.email } })
-      })
+    }).then(() => {
+      setShowSuccess(true)
+      sendApplicationReceiveEmail({ variables: { email: formik.values.email } })
+    })
   }
 
   return !showSuccess ? (

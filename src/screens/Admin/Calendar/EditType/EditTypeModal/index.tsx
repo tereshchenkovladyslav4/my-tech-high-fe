@@ -1,1 +1,1 @@
-export { default as EditTypeModal } from './EditTypeModal'
+export { EditTypeModal } from './EditTypeModal'

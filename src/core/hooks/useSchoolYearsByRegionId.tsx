@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useQuery } from '@apollo/client'
+import { ApolloError, useQuery } from '@apollo/client'
 import moment from 'moment'
 import { DropDownItem } from '@mth/components/DropDown/types'
 import { getSchoolYearsByRegionId } from '@mth/screens/Admin/SiteManagement/services'
@@ -11,7 +11,14 @@ type SchoolYearType = {
   label?: string
 }
 
-export const useSchoolYearsByRegionId = (regionId: number | undefined) => {
+export const useSchoolYearsByRegionId = (
+  regionId: number | undefined,
+): {
+  loading: boolean
+  schoolYears: SchoolYearType[]
+  dropdownItems: DropDownItem[]
+  error: ApolloError | undefined
+} => {
   const [dropdownItems, setDropdownItems] = useState<Array<DropDownItem>>([])
   const [schoolYears, setSchoolYears] = useState<Array<SchoolYearType>>([])
 

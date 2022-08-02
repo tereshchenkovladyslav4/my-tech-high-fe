@@ -1,10 +1,10 @@
+import { FunctionComponent } from 'react'
 import { Theme } from '@emotion/react'
 import { SxProps } from '@mui/system'
-import { FunctionComponent } from 'react'
 
 export type DropDownItem = {
   label: string | number
-  value: string | number
+  value: string | number | null
 }
 
 type FormikCustomError = {
@@ -15,12 +15,12 @@ type FormikCustomError = {
 type DropDownProps = {
   dropDownItems: DropDownItem[]
   placeholder?: string
-  setParentValue: (value: any, val: any) => void
+  setParentValue: (value: unknown, val: unknown) => void
   labelTop?: boolean
   sx?: SxProps<Theme> | undefined
   alternate?: boolean
   size?: 'small' | 'medium'
-  defaultValue?: any
+  defaultValue?: unknown
   error?: FormikCustomError
   name?: string
   disabled?: boolean

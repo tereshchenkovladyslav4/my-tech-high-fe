@@ -1,9 +1,10 @@
-import { SchoolYearType } from './utils.types'
 import moment from 'moment'
+import { StudentType } from '@mth/screens/HomeroomStudentProfile/Student/types'
 import { EventVM } from '../screens/Admin/Calendar/types'
 import { GRADES } from './constants'
+import { SchoolYearType } from './utils.types'
 
-export const checkEnrollPacketStatus = (schoolYears: SchoolYearType[], student: any): boolean => {
+export const checkEnrollPacketStatus = (schoolYears: SchoolYearType[], student: StudentType): boolean => {
   if (student?.status && student?.status?.at(-1)?.status != 0) return true
   if (schoolYears.length > 0) {
     const studentSchoolYear: SchoolYearType[] = schoolYears?.filter(
@@ -16,14 +17,14 @@ export const checkEnrollPacketStatus = (schoolYears: SchoolYearType[], student: 
   }
 }
 
-export const convertDateToUTCDate = (date: Date | string | undefined, time: string = '00:00') => {
+export const convertDateToUTCDate = (date: Date | string | undefined, time = '00:00'): string => {
   return new Date(`${moment(new Date(date || '')).format('yyyy-MM-DD')} ${time}`).toISOString()
 }
 
-export const getFirstDayAndLastDayOfMonth = (date: Date = new Date()) => {
+export const getFirstDayAndLastDayOfMonth = (date: Date = new Date()): { firstDay?: Date; lastDay?: Date } => {
   const calendarDays: Date[] = []
-  let firstDayOfMonth = new Date(date.getFullYear(), date.getMonth(), 1)
-  let weekdayOfFirstDay = firstDayOfMonth.getDay()
+  const firstDayOfMonth = new Date(date.getFullYear(), date.getMonth(), 1)
+  const weekdayOfFirstDay = firstDayOfMonth.getDay()
   for (let cell = 1; cell < 43; cell++) {
     if (cell === 1 && weekdayOfFirstDay === 0) {
       firstDayOfMonth.setDate(firstDayOfMonth.getDate() - 6)
@@ -47,21 +48,29 @@ export const getFirstDayAndLastDayOfMonth = (date: Date = new Date()) => {
   return { firstDay: calendarDays?.at(0), lastDay: calendarDays?.at(-1) }
 }
 
-export const hexToRgbA = (hexColor: string) => {
-  let c: any
+export const hexToRgbA = (hexColor: string): string => {
+  let c: string[] | string | number
   if (/^#([A-Fa-f0-9]{3}){1,2}$/.test(hexColor)) {
     c = hexColor.substring(1).split('')
     if (c.length == 3) {
       c = [c[0], c[0], c[1], c[1], c[2], c[2]]
     }
     c = '0x' + c.join('')
-    return 'rgba(' + [(c >> 16) & 255, (c >> 8) & 255, c & 255].join(',') + ',0.4)'
+    return (
+      'rgba(' +
+      [
+        ((c as unknown as number) >> 16) & 255,
+        ((c as unknown as number) >> 8) & 255,
+        (c as unknown as number) & 255,
+      ].join(',') +
+      ',0.4)'
+    )
   }
   throw new Error('Bad Hex')
 }
 
-export const extractContent = (s: string) => {
-  let span = document.createElement('span')
+export const extractContent = (s: string): string | null => {
+  const span = document.createElement('span')
   span.innerHTML = s
   return span.textContent || span.innerText
 }
@@ -91,7 +100,7 @@ export const renderDate = (selectedEvent: EventVM | undefined): string => {
 export const renderFilter = (selectedEvent: EventVM | undefined): string => {
   let result = ''
   if (selectedEvent?.filters?.grades) {
-    let grades: any[] = []
+    let grades: (string | number | null)[] = []
     grades = GRADES.map((item) => {
       if (
         JSON.parse(selectedEvent?.filters?.grades)
@@ -102,7 +111,7 @@ export const renderFilter = (selectedEvent: EventVM | undefined): string => {
       } else return null
     }).filter((item) => item)
 
-    let kIndex = grades.indexOf('Kindergarten')
+    const kIndex = grades.indexOf('Kindergarten')
     if (~kIndex) grades[kIndex] = 0
 
     const res = grades
@@ -116,10 +125,10 @@ export const renderFilter = (selectedEvent: EventVM | undefined): string => {
         },
         [[]],
       )
-      .filter(({ length }: { length: any }) => length > 0)
+      .filter(({ length }: { length: number }) => length > 0)
 
     for (let i = 0; i < res.length; i++) {
-      let reverkIndex = res[i].indexOf(0)
+      const reverkIndex = res[i].indexOf(0)
       if (~reverkIndex) res[i][reverkIndex] = 'K'
 
       if (res[i].length > 2) {

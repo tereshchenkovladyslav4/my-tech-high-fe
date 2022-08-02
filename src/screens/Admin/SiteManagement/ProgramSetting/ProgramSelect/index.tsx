@@ -1,1 +1,1 @@
-export { default as ProgramSelect } from './ProgramSelect'
+export { ProgramSelect } from './ProgramSelect'

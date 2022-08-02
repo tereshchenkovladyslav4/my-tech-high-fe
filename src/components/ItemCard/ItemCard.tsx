@@ -1,13 +1,13 @@
-import { Box, Card, CardContent, CardMedia, Stack, Typography } from '@mui/material'
 import React from 'react'
-import EastIcon from '@mui/icons-material/East'
-import { useHistory } from 'react-router-dom'
-import { ItemCardProps } from './ItemCardProps'
-import AddNewIcon from '../../assets/add-new.png'
-import EditIcon from '@mui/icons-material/Edit'
 import DehazeIcon from '@mui/icons-material/Dehaze'
+import EastIcon from '@mui/icons-material/East'
+import EditIcon from '@mui/icons-material/Edit'
 import LoginIcon from '@mui/icons-material/Login'
+import { Box, Card, CardContent, CardMedia, Stack, Typography } from '@mui/material'
+import { useHistory } from 'react-router-dom'
+import AddNewIcon from '../../assets/add-new.png'
 import { SYSTEM_01 } from '../../utils/constants'
+import { ItemCardProps } from './ItemCardProps'
 
 export const ItemCard: React.FC<ItemCardProps> = ({
   title,
@@ -29,8 +29,14 @@ export const ItemCard: React.FC<ItemCardProps> = ({
         borderRadius: 2,
         marginX: 4,
       }}
-      onClick={(e) => {
-        isLink !== false ? history.push(link) : onClick()
+      onClick={() => {
+        if (isLink !== false) {
+          history.push(link)
+        } else {
+          if (onClick) {
+            onClick()
+          }
+        }
       }}
     >
       {hasTitle ? (

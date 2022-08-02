@@ -1,6 +1,4 @@
-import { BUTTON_LINEAR_GRADIENT } from '../../../../../utils/constants'
-
-export const useStyles = { 
+export const useStyles = {
   header: {
     display: 'flex',
     flexDirection: 'row' as const,
@@ -25,5 +23,5 @@ export const useStyles = {
     padding: '0px 50px',
     display: 'flex',
     justifyContent: 'space-between',
-  }
+  },
 }

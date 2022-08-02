@@ -1,13 +1,13 @@
 import React, { createContext, useEffect, useState } from 'react'
+import { useMutation, useQuery } from '@apollo/client'
+import AddIcon from '@mui/icons-material/Add'
 import { Box, Button } from '@mui/material'
+import { Route, Switch, useHistory, useRouteMatch } from 'react-router-dom'
+import { getSettingsQuery, updateSettingsMutation } from '../../../EnrollmentPackets/services'
+import ImminizationSettings from './ImminizationSettings/ImminizationSettings'
 import ImmunizationHeader from './ImmunizationHeader'
 import ImmunizationItems from './ImmunizationItems/ImmunizationItems'
-import { Route, Switch, useHistory, useRouteMatch } from 'react-router-dom'
-import ImminizationSettings from './ImminizationSettings/ImminizationSettings'
-import AddIcon from '@mui/icons-material/Add'
-import { useMutation, useQuery } from '@apollo/client'
 import { getImmunizationSettings, getSchoolYears } from './services'
-import { getSettingsQuery, updateSettingsMutation } from '../../../EnrollmentPackets/services'
 
 export interface ImmunizationsData {
   id?: number
@@ -45,19 +45,19 @@ export const DataContext = createContext(null)
 const Immunizations: React.FC = () => {
   const { path, isExact } = useRouteMatch('/site-management/enrollment/immunizations')
   const history = useHistory()
-  const { loading, error, data, refetch } =
-    useQuery<{ immunizationSettings: { results: ImmunizationsData[] } }>(
-      getImmunizationSettings, {
-      fetchPolicy: 'network-only'
-    })
+  const { loading, error, data, refetch } = useQuery<{ immunizationSettings: { results: ImmunizationsData[] } }>(
+    getImmunizationSettings,
+    {
+      fetchPolicy: 'network-only',
+    },
+  )
 
   const settingsQuery = useQuery(getSettingsQuery)
   const [enabled, setEnabled] = useState(true)
 
   useEffect(() => {
     setEnabled(settingsQuery.data?.settings?.enable_immunizations === 1)
-  }, [settingsQuery.data]
-  )
+  }, [settingsQuery.data])
 
   const [updateSettings] = useMutation(updateSettingsMutation)
 
@@ -85,9 +85,9 @@ const Immunizations: React.FC = () => {
       borderRadius='12px'
       sx={{
         display: 'flex',
-        flexDirection: 'column', alignContent: 'start',
+        flexDirection: 'column',
+        alignContent: 'start',
         paddingY: '30px',
-
       }}
     >
       {isExact && (
@@ -100,8 +100,8 @@ const Immunizations: React.FC = () => {
               setEnabled(v)
               await updateSettings({
                 variables: {
-                  input: { enable_immunizations: v ? 1 : 0 }
-                }
+                  input: { enable_immunizations: v ? 1 : 0 },
+                },
               })
               refetch()
             }}

@@ -1,15 +1,15 @@
-import React, { Fragment, useCallback, useContext, useEffect, useState } from 'react'
-import { useMutation, useQuery } from '@apollo/client'
+import React, { useState } from 'react'
+import { useMutation } from '@apollo/client'
 import CloseIcon from '@mui/icons-material/Close'
-import { Button, Checkbox, FormControlLabel, FormGroup, Grid, Modal, TextField } from '@mui/material'
+import { Button, Checkbox, FormControlLabel, Grid, Modal } from '@mui/material'
 import { Box } from '@mui/system'
 import { map } from 'lodash'
 import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
+import { WarningModal } from '../../../../../components/WarningModal/Warning'
 import { BUTTON_LINEAR_GRADIENT, RED_GRADIENT } from '../../../../../utils/constants'
+import { CreateObserMutation } from '../../services'
 import { useStyles } from './styles'
 import { NewModalTemplateType, ApolloError } from './types'
-import { WarningModal } from '../../../../../components/WarningModal/Warning'
-import { CreateObserMutation } from '../../services'
 export const StudentsModal: NewModalTemplateType = ({ handleModem, students = [], data }) => {
   const classes = useStyles
   const [apolloError, setApolloError] = useState<ApolloError>({
@@ -26,7 +26,7 @@ export const StudentsModal: NewModalTemplateType = ({ handleModem, students = []
     }
   }
 
-  const [createObser, { data: observerData }] = useMutation(CreateObserMutation)
+  const [createObser] = useMutation(CreateObserMutation)
 
   const handleSubmit = async () => {
     if (selected.length === 0) {

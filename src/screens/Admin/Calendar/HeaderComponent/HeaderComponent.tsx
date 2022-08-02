@@ -1,9 +1,9 @@
-import React from 'react'
-import { useHistory } from 'react-router-dom'
-import { Box, Button, Grid, InputAdornment, OutlinedInput } from '@mui/material'
-import ModeEditIcon from '@mui/icons-material/ModeEdit'
+import React, { FunctionComponent } from 'react'
 import AddIcon from '@mui/icons-material/Add'
+import ModeEditIcon from '@mui/icons-material/ModeEdit'
 import SearchIcon from '@mui/icons-material/Search'
+import { Box, Button, Grid, InputAdornment, OutlinedInput } from '@mui/material'
+import { useHistory } from 'react-router-dom'
 import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
 import { CALENDAR } from '../../../../utils/constants'
 import { MultiSelectDropDown } from '../components/MultiSelectDropDown'
@@ -18,12 +18,12 @@ type HeaderComponentProps = {
   setSearchField?: (value: string | undefined) => void
 }
 
-const HeaderComponent = ({
+const HeaderComponent: FunctionComponent<HeaderComponentProps> = ({
   searchField,
   eventTypeLists,
   selectedEventTypes,
   setSelectedEventTypes,
-}: HeaderComponentProps) => {
+}) => {
   const history = useHistory()
   return (
     <Box sx={mainClasses.pageTop}>
@@ -69,7 +69,7 @@ const HeaderComponent = ({
                 fullWidth
                 value={searchField ? searchField : ''}
                 placeholder='Search Event'
-                onChange={(e) => {}}
+                onChange={() => {}}
                 startAdornment={
                   <InputAdornment position='start'>
                     <SearchIcon style={{ color: 'black' }} />

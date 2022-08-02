@@ -1,9 +1,9 @@
 import React, { useContext, useState } from 'react'
-import { Box, FormControl, MenuItem, Typography, Select, Divider, FormHelperText } from '@mui/material'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
-import { useStyles } from './style'
-import { DataContext, ImmunizationsData } from '../../Immunizations'
+import { Box, FormControl, MenuItem, Typography, Select, Divider, FormHelperText } from '@mui/material'
 import { useFormikContext } from 'formik'
+import { DataContext, ImmunizationsData } from '../../Immunizations'
+import { useStyles } from './style'
 
 const ConsecutiveVaccine: React.FC = () => {
   const { values, setFieldValue, handleChange, errors, touched } = useFormikContext<ImmunizationsData>()

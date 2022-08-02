@@ -1,11 +1,23 @@
 import React, { useState } from 'react'
-import { Box, FormControl, MenuItem, Typography, Select, Divider, FormHelperText, ListItemText, Checkbox, IconButton, Button } from '@mui/material'
+import CloseSharp from '@mui/icons-material/CloseSharp'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
-import { useStyles } from './style'
-import { ImmunizationsData } from '../../Immunizations'
+import {
+  Box,
+  FormControl,
+  MenuItem,
+  Typography,
+  Select,
+  Divider,
+  FormHelperText,
+  ListItemText,
+  Checkbox,
+  IconButton,
+  Button,
+} from '@mui/material'
 import { useFormikContext } from 'formik'
 import { getValidGrade } from '../../../../../EnrollmentPackets/EnrollmentPacketModal/helpers'
-import CloseSharp from '@mui/icons-material/CloseSharp'
+import { ImmunizationsData } from '../../Immunizations'
+import { useStyles } from './style'
 
 const RequireUpdate: React.FC = () => {
   const styles = useStyles()
@@ -18,11 +30,11 @@ const RequireUpdate: React.FC = () => {
 
     const max = values.max_grade_level ? getValidGrade(values.max_grade_level) : -2
     const min = values.min_grade_level ? getValidGrade(values.min_grade_level) : -2
-    return all.filter((v) => (getValidGrade(v) <= max && getValidGrade(v) >= min))
+    return all.filter((v) => getValidGrade(v) <= max && getValidGrade(v) >= min)
   }
   const levelExempt = () => {
     try {
-      let val: any = levelExtempUpdateValue || []
+      let val: string | unknown[] = levelExtempUpdateValue || []
       val = typeof val === 'string' ? JSON.parse(val) : val
       if (!(val instanceof Array)) val = []
       const all = getAvailableGrades()
@@ -77,9 +89,7 @@ const RequireUpdate: React.FC = () => {
       </FormControl>
 
       {values.exempt_update === 1 && (
-        <FormControl variant='outlined' classes={{ root: styles.formRoot }}
-          disabled={!getAvailableGrades().length}
-        >
+        <FormControl variant='outlined' classes={{ root: styles.formRoot }} disabled={!getAvailableGrades().length}>
           <Select
             IconComponent={KeyboardArrowDownIcon}
             classes={{ root: styles.selectRoot, icon: styles.icon }}
@@ -96,19 +106,22 @@ const RequireUpdate: React.FC = () => {
             }}
             open={open}
             renderValue={() => {
-              let array: any = values.level_exempt_update || []
-              array = typeof array === 'string' ? array.split(':').length === 1 ? JSON.parse(array) : [] : array
+              let array: unknown[] = values.level_exempt_update || []
+              array = typeof array === 'string' ? (array.split(':').length === 1 ? JSON.parse(array) : []) : array
               if (!(array instanceof Array)) array = []
               if (array instanceof Array && array.length > 0) {
                 const sortArray = array.map((item) => {
                   return {
                     value: item,
-                    index: getAvailableGrades().indexOf(item)
+                    index: getAvailableGrades().indexOf(item),
                   }
                 })
-                return sortArray.sort((a, b) => {
-                  return a.index - b.index
-                }).map(e => e.value).join(', ');
+                return sortArray
+                  .sort((a, b) => {
+                    return a.index - b.index
+                  })
+                  .map((e) => e.value)
+                  .join(', ')
               }
               return '-- Select Grade --'
             }}
@@ -134,18 +147,18 @@ const RequireUpdate: React.FC = () => {
                 <CloseSharp />
               </IconButton>
             </Box>
-            {getAvailableGrades()
-            .map((g) => (
+            {getAvailableGrades().map((g) => (
               <MenuItem key={g} value={g}>
                 <Checkbox checked={levelExtempUpdateValue?.indexOf(g) > -1} />
                 <ListItemText primary={parseGrade(g)} />
               </MenuItem>
             ))}
-            <Box 
+            <Box
               sx={{
                 padding: '6px 16px',
-              }}>
-              <Button 
+              }}
+            >
+              <Button
                 variant='contained'
                 sx={{
                   background: 'linear-gradient(90deg, #3E2783 0%, rgba(62, 39, 131, 0) 100%), #4145FF',
@@ -166,14 +179,13 @@ const RequireUpdate: React.FC = () => {
                 Save
               </Button>
             </Box>
-            
           </Select>
         </FormControl>
       )}
-      <FormHelperText error>{
-        (touched.exempt_update && errors.exempt_update) ||
-        (values.exempt_update === 1 && touched.level_exempt_update && errors.level_exempt_update)
-      }</FormHelperText>
+      <FormHelperText error>
+        {(touched.exempt_update && errors.exempt_update) ||
+          (values.exempt_update === 1 && touched.level_exempt_update && errors.level_exempt_update)}
+      </FormHelperText>
     </Box>
   )
 }

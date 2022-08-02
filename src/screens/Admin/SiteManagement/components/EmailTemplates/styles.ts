@@ -82,7 +82,7 @@ export const useStyles = makeStyles({
     background: '#000 !important',
     color: 'white !important',
     marginRight: '12px !important',
-    width: '92px'
+    width: '92px',
   },
   add: {
     borderRadius: 8,
@@ -104,6 +104,6 @@ export const useStyles = makeStyles({
     width: '150px',
   },
   textarea: {
-    width: '100%'
-  }
+    width: '100%',
+  },
 })

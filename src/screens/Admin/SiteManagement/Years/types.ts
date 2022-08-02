@@ -2,7 +2,7 @@ import { FunctionComponent } from 'react'
 
 type YearNodeProps = {
   title: string
-  data?: any
+  data?: unknown
 }
 
 export type YearNodeTemplateType = FunctionComponent<YearNodeProps>

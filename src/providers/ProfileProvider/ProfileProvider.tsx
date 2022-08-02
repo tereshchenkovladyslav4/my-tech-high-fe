@@ -1,9 +1,9 @@
-import React, { useState } from 'react'
-import { ProfileContext } from './ProfileContext'
-import { Modal, Box, Button } from '@mui/material'
+import React, { FunctionComponent, useState } from 'react'
+import { Modal, Box } from '@mui/material'
+import { CustomModal } from '../../screens/Admin/SiteManagement/EnrollmentSetting/components/CustomModal/CustomModals'
 import { UserProfile } from '../../screens/Admin/UserProfile/UserProfile'
-import CustomModal from '../../screens/Admin/SiteManagement/EnrollmentSetting/components/CustomModal/CustomModals'
-export const ProfileProvider = ({ children }) => {
+import { ProfileContext } from './ProfileContext'
+export const ProfileProvider: FunctionComponent = ({ children }) => {
   const [store, setStore] = useState(false)
   const [open, setOpen] = useState(false)
   const [isChanged, setIsChanged] = useState(false)

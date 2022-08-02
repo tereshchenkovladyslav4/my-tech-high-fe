@@ -1,12 +1,12 @@
-import React, { useContext, useState } from 'react'
-import { Box, Button, Grid } from '@mui/material'
+import React, { FunctionComponent, useContext, useState } from 'react'
 import { useMutation } from '@apollo/client'
+import { Box, Button, Grid } from '@mui/material'
 import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
-import { withdrawalModalClasses } from './styles'
-import { BulletEditor } from '../../Calendar/components/BulletEditor'
-import { EmailTemplateResponseVM } from '../type'
 import { UserContext } from '../../../../providers/UserContext/UserProvider'
+import { BulletEditor } from '../../Calendar/components/BulletEditor'
 import { individualWithdrawalMutation } from '../service'
+import { EmailTemplateResponseVM } from '../type'
+import { withdrawalModalClasses } from './styles'
 
 type RightComponentProps = {
   withdrawalId: number
@@ -14,12 +14,16 @@ type RightComponentProps = {
   handleModem: () => void
 }
 
-export default function RightComponent({ withdrawalId, emailTemplate, handleModem }: RightComponentProps) {
+export const RightComponent: FunctionComponent<RightComponentProps> = ({
+  withdrawalId,
+  emailTemplate,
+  handleModem,
+}) => {
   const { me } = useContext(UserContext)
   const [individualWithdrawal] = useMutation(individualWithdrawalMutation)
   const [description, setDescription] = useState<string>(emailTemplate?.body ? emailTemplate?.body : '')
 
-  const handleIndividualWithdrawal = async (type: number = 0) => {
+  const handleIndividualWithdrawal = async (type = 0) => {
     // type  0 : Email Only, 1: Withdraw & Email
     await individualWithdrawal({
       variables: {

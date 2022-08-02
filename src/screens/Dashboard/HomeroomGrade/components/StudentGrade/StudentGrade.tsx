@@ -1,16 +1,16 @@
-import { Avatar, Box, CircularProgress, IconButton, Tooltip } from '@mui/material'
 import React, { useEffect, useState } from 'react'
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline'
+import ScheduleIcon from '@mui/icons-material/Schedule'
+import { Avatar, Box, CircularProgress, IconButton, Tooltip } from '@mui/material'
+import { useHistory } from 'react-router-dom'
 import { Metadata } from '../../../../../components/Metadata/Metadata'
 import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
-import { CircleData, StudentGradeTemplateType } from './types'
-import { useStyles } from './styles'
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline'
-import ScheduleIcon from '@mui/icons-material/Schedule'
-import { Person } from '../../../../HomeroomStudentProfile/Student/types'
-import { useHistory } from 'react-router-dom'
-import {} from '../../../../Admin/Announcements/services'
 import { checkEnrollPacketStatus } from '../../../../../utils/utils'
+import { Person } from '../../../../HomeroomStudentProfile/Student/types'
+import { useStyles } from './styles'
+import { CircleData, StudentGradeTemplateType } from './types'
+import {} from '../../../../Admin/Announcements/services'
 
 export const StudentGrade: StudentGradeTemplateType = ({ student, schoolYears }) => {
   const red = '#D23C33'
@@ -105,11 +105,15 @@ export const StudentGrade: StudentGradeTemplateType = ({ student, schoolYears })
           </Paragraph>
           {checkEnrollPacketStatus(schoolYears, student) && (
             <Tooltip title={circleData?.message || ''}>
-              <IconButton onClick={() => {
+              <IconButton
+                onClick={() => {
                   if (checkEnrollPacketStatus(schoolYears, student)) {
-                    redirect
+                    redirect()
                   }
-                }}>{circleData?.icon}</IconButton>
+                }}
+              >
+                {circleData?.icon}
+              </IconButton>
             </Tooltip>
           )}
         </Box>

@@ -1,19 +1,16 @@
-import React, { useContext, useState } from 'react'
-import { Box, Stack } from '@mui/material'
-import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined'
-import Papa from 'papaparse'
-import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
-import { MTHBLUE } from '../../../../../utils/constants'
-import { SchoolDistrictSelectProps } from './SchoolDistrictSelectTypes'
-import { FileUploadModal } from '../FileUploadModal/FileUploadModal'
-import { SchoolDistrictFileType } from './SchoolDistrictSelectTypes'
-import CustomModal from '../../EnrollmentSetting/components/CustomModal/CustomModals'
-import DownloadFileIcon from '../../../../../assets/icons/file-download.svg'
-import { useMutation } from '@apollo/client'
-import { UserContext } from '../../../../../providers/UserContext/UserProvider'
+import React, { FunctionComponent, useState } from 'react'
 import { Tooltip } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
-import { removeFileByFileId, removeSchoolDistrictInfoByRegionId } from '../../services'
+import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined'
+import { Box, Stack } from '@mui/material'
+import Papa from 'papaparse'
+import DownloadFileIcon from '../../../../../assets/icons/file-download.svg'
+import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
+import { MTHBLUE } from '../../../../../utils/constants'
+import { CustomModal } from '../../EnrollmentSetting/components/CustomModal/CustomModals'
+import { FileUploadModal } from '../FileUploadModal/FileUploadModal'
+import { SchoolDistrictSelectProps } from './SchoolDistrictSelectTypes'
+import { SchoolDistrictFileType } from './SchoolDistrictSelectTypes'
 
 const useStyles = makeStyles(() => ({
   customTooltip: {
@@ -27,27 +24,26 @@ const useStyles = makeStyles(() => ({
   },
 }))
 
-export default function SchoolDistrictSelect({
+export const SchoolDistrictSelect: FunctionComponent<SchoolDistrictSelectProps> = ({
   schoolDistrict,
   setSchoolDistrict,
   setSchoolDistrictArray,
   setIsChanged,
   setIsDelete,
-  isDelete
-}: SchoolDistrictSelectProps) {
+  isDelete,
+}) => {
   const classes = useStyles()
-  const { me } = useContext(UserContext)
+
   const [open, setOpen] = useState<boolean>(false)
   const [customModalOpen, setCustomModalOpen] = useState<boolean>(false)
   const [replaceModalOpen, setReplaceModalOpen] = useState<boolean>(false)
-  const [schoolDistrictInfoDelete, {}] = useMutation(removeSchoolDistrictInfoByRegionId)
-  const [fileDelete, {}] = useMutation(removeFileByFileId)
+
   const extensions =
     '.csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel, text/csv'
   const invalidMessage = 'Please only submit CSV or Excel File'
 
   const handleFile = (fileName: File[]) => {
-    const schoolDistrictArray: any[] = []
+    const schoolDistrictArray: unknown[] = []
     const data: SchoolDistrictFileType = {
       name: fileName ? fileName[0]?.name : '',
       path: '',
@@ -56,9 +52,9 @@ export default function SchoolDistrictSelect({
     Papa.parse(fileName[0], {
       header: true,
       skipEmptyLines: true,
-      complete: function (results: any) {
-        results?.data.forEach((ele: any) => {
-          let obj: any = {}
+      complete: function (results: unknown) {
+        results?.data.forEach((ele: unknown) => {
+          const obj: unknown = {}
           if (Object.keys(ele).includes('School District Name')) {
             obj.school_district_name = Object.values(ele)[0]
           }
@@ -72,9 +68,9 @@ export default function SchoolDistrictSelect({
         if (schoolDistrictArray.length > 0) {
           setSchoolDistrictArray(schoolDistrictArray)
           setSchoolDistrict(data)
-          setIsChanged(isChanged => ({
+          setIsChanged((isChanged) => ({
             ...isChanged,
-            schoolDistricts: true
+            schoolDistricts: true,
           }))
         } else {
           console.log('School Districts File Parsing Error')
@@ -87,11 +83,11 @@ export default function SchoolDistrictSelect({
     setCustomModalOpen(false)
     setIsDelete({
       ...isDelete,
-      schoolDistrict: true
-    });
-    setIsChanged(isChanged => ({
+      schoolDistrict: true,
+    })
+    setIsChanged((isChanged) => ({
       ...isChanged,
-      schoolDistricts: true
+      schoolDistricts: true,
     }))
     setSchoolDistrict({
       name: '',
@@ -99,8 +95,6 @@ export default function SchoolDistrictSelect({
       file: null,
     })
   }
-
-  
 
   const handleReplaceConfirm = () => {
     setReplaceModalOpen(false)

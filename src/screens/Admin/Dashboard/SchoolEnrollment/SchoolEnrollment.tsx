@@ -1,12 +1,12 @@
+import React, { FunctionComponent } from 'react'
 import { Link } from '@mui/material'
 import { Box } from '@mui/system'
 import { map } from 'lodash'
-import React from 'react'
 import { DataRow } from '../../../../components/DataRow/DataRow'
 import { Paragraph } from '../../../../components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
 
-export const SchoolEnrollment = () => {
+export const SchoolEnrollment: FunctionComponent = () => {
   const data = [
     {
       label: 'Unassigned',

@@ -1,1 +1,1 @@
-export { default as AddSchoolYearModal } from './AddSchoolYearModal'
+export { AddSchoolYearModal } from './AddSchoolYearModal'

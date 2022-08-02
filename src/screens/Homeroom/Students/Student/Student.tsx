@@ -227,7 +227,7 @@ export const Student: StudentTemplateType = ({ student, schoolYears }) => {
             onClick={() => {
               if (checkEnrollPacketStatus(schoolYears, student)) {
                 setMe({ ...me, currentTab: 0 } as UserInfo)
-                link && history.push(link)
+                if (link) history.push(link)
               }
             }}
           />

@@ -1,6 +1,6 @@
 export enum MthColor {
   ACTIVELINKBACKGROUND = 'rgba(65, 69, 255, 0.04)',
-  BUTTON_LINEAR_GRADIENT = `linear-gradient(90deg, #3E2783 0%, rgba(62, 39, 131, 0) 100%), linear-gradient(0deg, #4145FF, #4145FF)`,
+  BUTTON_LINEAR_GRADIENT = 'linear-gradient(90deg, #3E2783 0%, rgba(62, 39, 131, 0) 100%), linear-gradient(0deg, #4145FF, #4145FF)',
   RED_GRADIENT = 'linear-gradient(180deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0) 100%), #D23C33;',
   BLUE_GRDIENT = 'linear-gradient(180deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0) 100%), #4145FF;',
   YELLOW_GRADIENT = 'linear-gradient(90deg, rgba(0, 0, 0, 0.5) 0%, rgba(62, 39, 131, 0) 100%), #FFD626;',

@@ -1,18 +1,18 @@
 import React, { useRef, useState } from 'react'
-import { Box, FormControl, Typography, Button, Divider, Modal, OutlinedInput, Select, MenuItem, FormHelperText } from '@mui/material'
-import { useStyles } from '../../../../../../../components/EmailModal/styles'
-import { Title } from '../../../../../../../components/Typography/Title/Title'
 import FormatBoldIcon from '@mui/icons-material/FormatBold'
 import FormatItalicIcon from '@mui/icons-material/FormatItalic'
-import FormatUnderlinedIcon from '@mui/icons-material/FormatUnderlined'
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted'
 import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered'
-import { useFormikContext } from 'formik'
-import { ImmunizationsData } from '../../Immunizations'
-import { convertFromHTML } from 'draft-convert'
-import { useStyles as useImStyles } from './style'
+import FormatUnderlinedIcon from '@mui/icons-material/FormatUnderlined'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
+import { Box, FormControl, Typography, Button, Divider, Modal, Select, MenuItem, FormHelperText } from '@mui/material'
+import { convertFromHTML } from 'draft-convert'
 import { EditorState, RichUtils, Editor, convertToRaw } from 'draft-js'
+import { useFormikContext } from 'formik'
+import { useStyles } from '../../../../../../../components/EmailModal/styles'
+import { Title } from '../../../../../../../components/Typography/Title/Title'
+import { ImmunizationsData } from '../../Immunizations'
+import { useStyles as useImStyles } from './style'
 
 export interface EmailModalProps {
   title: string
@@ -85,9 +85,9 @@ const EmailModal: React.FC<EmailModalProps> = ({ title, handleSubmit, setIsEmail
                 sx={
                   boldActive
                     ? {
-                      ...classes.icon,
-                      ...classes.isActive,
-                    }
+                        ...classes.icon,
+                        ...classes.isActive,
+                      }
                     : classes.icon
                 }
               />
@@ -97,9 +97,9 @@ const EmailModal: React.FC<EmailModalProps> = ({ title, handleSubmit, setIsEmail
                 sx={
                   underlineActive
                     ? {
-                      ...classes.icon,
-                      ...classes.isActive,
-                    }
+                        ...classes.icon,
+                        ...classes.isActive,
+                      }
                     : classes.icon
                 }
               />
@@ -109,9 +109,9 @@ const EmailModal: React.FC<EmailModalProps> = ({ title, handleSubmit, setIsEmail
                 sx={
                   italicActive
                     ? {
-                      ...classes.icon,
-                      ...classes.isActive,
-                    }
+                        ...classes.icon,
+                        ...classes.isActive,
+                      }
                     : classes.icon
                 }
               />
@@ -121,9 +121,9 @@ const EmailModal: React.FC<EmailModalProps> = ({ title, handleSubmit, setIsEmail
                 sx={
                   ulListActive
                     ? {
-                      ...classes.icon,
-                      ...classes.isActive,
-                    }
+                        ...classes.icon,
+                        ...classes.isActive,
+                      }
                     : classes.icon
                 }
               />
@@ -133,9 +133,9 @@ const EmailModal: React.FC<EmailModalProps> = ({ title, handleSubmit, setIsEmail
                 sx={
                   olListActive
                     ? {
-                      ...classes.icon,
-                      ...classes.isActive,
-                    }
+                        ...classes.icon,
+                        ...classes.isActive,
+                      }
                     : classes.icon
                 }
               />
@@ -158,7 +158,7 @@ const EmailModal: React.FC<EmailModalProps> = ({ title, handleSubmit, setIsEmail
             sx={classes.cancelButton}
             onClick={() => {
               setIsEmailOpen(false)
-              onCancel && onCancel()
+              if (onCancel) onCancel()
             }}
           >
             Cancel
@@ -171,42 +171,32 @@ const EmailModal: React.FC<EmailModalProps> = ({ title, handleSubmit, setIsEmail
     </Modal>
   )
 }
-const EmailButton: React.FC<{ emailState: 'Select' | 'None' | 'Edit'; onClick: () => void }> = ({
-  emailState,
-  onClick,
-}) => {
-  return (
-    <Button onClick={onClick} sx={{ color: '#4145FF', padding: 0, fontSize: '16px' }}>
-      {emailState}
-    </Button>
-  )
-}
 
 const EmailResponse: React.FC = () => {
   const styles = useImStyles()
   const { values, setFieldValue, touched, errors } = useFormikContext<ImmunizationsData>()
 
   const [isEmailOpen, setIsEmailOpen] = useState<boolean>(false)
-  
+
   const emailState = values.email_update_template === '-1' ? 'None' : values.email_update_template ? 'Edit' : 'Select'
 
   const handleEmail = (email: string) => {
     setIsEmailOpen(false)
     const contentBlock = convertToRaw(EditorState.createWithContent(convertFromHTML(email || '')).getCurrentContent())
     const contentString = contentBlock.blocks[0].text.replace(/[^a-zA-Z0-9]/g, '')
-    if(contentString.length === 0) {
+    if (contentString.length === 0) {
       setFieldValue('email_update_template', '-1')
-    }
-    else {
+    } else {
       setFieldValue('email_update_template', email)
     }
-    
   }
   function onChange(val: string) {
     if (val === 'None') {
       setFieldValue('email_update_template', '-1')
     } else {
-      values.email_update_template === '-1' && setFieldValue('email_update_template', '')
+      if (values.email_update_template === '-1') {
+        setFieldValue('email_update_template', '')
+      }
       setIsEmailOpen(true)
     }
   }
@@ -241,25 +231,23 @@ const EmailResponse: React.FC = () => {
           MenuProps={{ classes: { paper: styles.selectPaper } }}
           renderValue={(s) => s || 'Select'}
         >
-          {emailState !== 'Edit' && <MenuItem
-            value='Add'
-            onClick={() => onChange('Add')}
-          >Add</MenuItem>
-          }
-          {emailState !== 'Edit' && <MenuItem
-            value='None'
-            onClick={() => onChange('None')}
-          >None</MenuItem>
-          }
+          {emailState !== 'Edit' && (
+            <MenuItem value='Add' onClick={() => onChange('Add')}>
+              Add
+            </MenuItem>
+          )}
+          {emailState !== 'Edit' && (
+            <MenuItem value='None' onClick={() => onChange('None')}>
+              None
+            </MenuItem>
+          )}
 
-          {emailState === 'Edit' && <MenuItem
-            value='Edit'
-            onClick={() => onChange('Edit')}
-          >Edit</MenuItem>
-          }
+          {emailState === 'Edit' && (
+            <MenuItem value='Edit' onClick={() => onChange('Edit')}>
+              Edit
+            </MenuItem>
+          )}
         </Select>
-
-
       </FormControl>
       <FormHelperText error>{touched.email_update_template && errors.email_update_template}</FormHelperText>
       {isEmailOpen && (

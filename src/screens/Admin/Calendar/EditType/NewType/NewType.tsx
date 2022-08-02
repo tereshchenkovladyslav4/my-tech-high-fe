@@ -1,12 +1,12 @@
-import React, { useState, useContext } from 'react'
-import { Box, Button, TextField } from '@mui/material'
+import React, { useState, useContext, FunctionComponent } from 'react'
 import { useMutation } from '@apollo/client'
+import { Box, Button, TextField } from '@mui/material'
 import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
-import { EventType } from '../../types'
-import { SYSTEM_05 } from '../../../../../utils/constants'
 import { UserContext } from '../../../../../providers/UserContext/UserProvider'
-import { createEventTypeMutation, updateEventTypeMutation } from '../../services'
+import { SYSTEM_05 } from '../../../../../utils/constants'
 import { ColorPicker } from '../../components/ColorPicker'
+import { createEventTypeMutation, updateEventTypeMutation } from '../../services'
+import { EventType } from '../../types'
 import { eventTypeClassess } from '../styles'
 
 type NewTypeProps = {
@@ -16,7 +16,7 @@ type NewTypeProps = {
   onSave: () => void
 }
 
-const NewType = ({ eventType, eventTypeCount, onCancel, onSave }: NewTypeProps) => {
+const NewType: FunctionComponent<NewTypeProps> = ({ eventType, eventTypeCount, onCancel, onSave }) => {
   const { me } = useContext(UserContext)
   const [eventTypeId] = useState<number>(Number(eventType?.id))
   const [name, setName] = useState<string>(eventType?.name || '')

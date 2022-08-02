@@ -11,9 +11,9 @@ export type PageContentProps = {
     newStateName: string
     setNewStateName: (value: string) => void
     setIsStateChanged: (value: boolean) => void
-    setIsDelete: (value: any) => void
-    isDelete: any
-    isChanged: any
+    setIsDelete: (value: boolean) => void
+    isDelete: boolean
+    isChanged: boolean
   }
   stateLogoItem: {
     stateLogo: string
@@ -28,12 +28,12 @@ export type PageContentProps = {
   countyItem: {
     county: CountyFileType | null
     setCounty: (value: CountyFileType) => void
-    setCountyArray: (value: Array<any>) => void
+    setCountyArray: (value: Array<CountyFileType>) => void
   }
   schoolDistrictItem: {
     schoolDistrict: SchoolDistrictFileType | null
     setSchoolDistrict: (value: SchoolDistrictFileType) => void
-    setSchoolDistrictArray: (value: Array<any>) => void
+    setSchoolDistrictArray: (value: Array<SchoolDistrictFileType>) => void
   }
   gradesItem: {
     grades: string
@@ -46,8 +46,8 @@ export type PageContentProps = {
   specialEdItem: {
     specialEd: boolean
     setSpecialEd: (value: boolean) => void
-    speicalEdOptions: Array<any>
-    setSpecialEdOptions: (value: Array<any>) => void
+    speicalEdOptions: Array<unknown>
+    setSpecialEdOptions: (value: Array<unknown>) => void
   }
   enrollItem: {
     enroll: boolean

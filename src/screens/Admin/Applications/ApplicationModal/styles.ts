@@ -2,7 +2,7 @@ import { BUTTON_LINEAR_GRADIENT, BLACK } from '../../../../utils/constants'
 
 export const useStyles = {
   modalCard: {
-    position: 'absolute' as 'absolute',
+    position: 'absolute' as const,
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
@@ -65,7 +65,7 @@ export const useStyles = {
     width: '155px',
     position: 'relative',
     color: '#000000',
-    paddingLeft: '12px'
+    paddingLeft: '12px',
   },
   formValue: {
     padding: '0 30px',
@@ -81,7 +81,7 @@ export const useStyles = {
     right: 0,
   },
   modalEmailCard: {
-    position: 'absolute' as 'absolute',
+    position: 'absolute' as const,
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
@@ -92,7 +92,7 @@ export const useStyles = {
     borderRadius: 2,
   },
   modalEmailViewCard: {
-    position: 'absolute' as 'absolute',
+    position: 'absolute' as const,
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',

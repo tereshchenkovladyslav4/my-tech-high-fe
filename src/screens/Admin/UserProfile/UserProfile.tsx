@@ -1,41 +1,41 @@
+import React, { useState, useEffect, useContext, FunctionComponent } from 'react'
 import { useMutation, useQuery } from '@apollo/client'
-import { Box, Button, Card } from '@mui/material'
-import React, { useState, useEffect, useContext } from 'react'
-import { BLACK, BUTTON_LINEAR_GRADIENT } from '../../../utils/constants'
 import CloseIcon from '@mui/icons-material/Close'
+import { Box, Button, Card } from '@mui/material'
+import { saveWithdrawalMutation } from '../../../graphql/mutation/withdrawal'
+import { UserContext } from '../../../providers/UserContext/UserProvider'
+import { BLACK, BUTTON_LINEAR_GRADIENT } from '../../../utils/constants'
 import { Header } from './components/Header/Header'
+import { NewUserModal } from './components/NewUserModal/NewUserModal'
 import { Students } from './components/Students/Students'
 import { ParentProfile } from './ParentProfile/ParentProfile'
-import { StudentProfile } from './StudentProfile/StudentProfile'
 import { DeleteWithdrawal, getParentDetail, updatePersonAddressMutation, UpdateStudentMutation } from './services'
-import { NewUserModal } from './components/NewUserModal/NewUserModal'
+import { StudentProfile } from './StudentProfile/StudentProfile'
 import { useStyles } from './styles'
-import { UserContext } from '../../../providers/UserContext/UserProvider'
-import { saveWithdrawalMutation } from '../../../graphql/mutation/withdrawal'
 
-export const UserProfile = ({ handleClose, data, setIsChanged }) => {
+type UserProfileProps = {
+  handleClose: () => void
+  data: unknown
+  setIsChanged: () => void
+}
+export const UserProfile: FunctionComponent<UserProfileProps> = ({ handleClose, data, setIsChanged }) => {
   const classes = useStyles
-  const [userInfo, setUserInfo] = useState<any>()
+  const [userInfo, setUserInfo] = useState<unknown>()
   const [phoneInfo, setPhoneInfo] = useState()
   const [parentEmail, setParentEmail] = useState()
   const [students, setStudents] = useState([])
   const [observers, setObservers] = useState([])
   const [notes, setNotes] = useState('')
-  const [studentPerson, setStudentPerson] = useState<any>()
+  const [studentPerson, setStudentPerson] = useState<unknown>()
   const [openObserverModal, setOpenObserverModal] = useState(false)
-  const [studentStatus, setStudentStatus] = useState<any>({})
+  const [studentStatus, setStudentStatus] = useState<unknown>({})
   const [selectedParent, setSelectedParent] = useState(0)
   const [selectedStudent, setSelectedStudent] = useState(parseInt(data.student_id))
   const [selectedParentType, setSelectedParentType] = useState('parent')
   const [applicationState, setApplicationState] = useState('')
   const [requesting, setRequesting] = useState<boolean>(false)
   const { me } = useContext(UserContext)
-  const {
-    loading: userLoading,
-    error: userError,
-    data: currentUserData,
-    refetch,
-  } = useQuery(getParentDetail, {
+  const { data: currentUserData, refetch } = useQuery(getParentDetail, {
     variables: {
       id: data.parent_id || data.parent.parent_id,
     },
@@ -46,15 +46,15 @@ export const UserProfile = ({ handleClose, data, setIsChanged }) => {
   const [createWithdrawal] = useMutation(saveWithdrawalMutation)
   const [deleteWithdrawal] = useMutation(DeleteWithdrawal)
 
-  const [updatePersonAddress, { data: updatedData }] = useMutation(updatePersonAddressMutation)
+  const [updatePersonAddress] = useMutation(updatePersonAddressMutation)
 
   const handleSavePerson = async () => {
     if (selectedParent) {
-      const person: any = Object.assign({}, userInfo)
+      const person: unknown = Object.assign({}, userInfo)
       delete person.address
       delete person.phone
       person.person_id = Number(person.person_id)
-      const phone: any = Object.assign({}, phoneInfo)
+      const phone: unknown = Object.assign({}, phoneInfo)
       phone.phone_id = Number(phone.phone_id)
       delete person.user
       const address = Object.assign({}, userInfo.address)
@@ -74,11 +74,11 @@ export const UserProfile = ({ handleClose, data, setIsChanged }) => {
       setRequesting(false)
       handleClose(true)
     } else {
-      const person: any = Object.assign({}, studentPerson)
+      const person: unknown = Object.assign({}, studentPerson)
       delete person.address
       delete person.phone
       person.person_id = Number(person.person_id)
-      const phone: any = Object.assign({}, studentPerson.phone)
+      const phone: unknown = Object.assign({}, studentPerson.phone)
       phone.phone_id = Number(phone.phone_id)
       const address = Object.assign({}, studentPerson.address)
       address.address_id = +address.address_id

@@ -1,5 +1,5 @@
-import { Box } from '@mui/material'
 import React from 'react'
+import { Box } from '@mui/material'
 import ConsectuiveVaccine from './ConsectuiveVaccine'
 import EmailResponse from './EmailResponse'
 import ImmunityAllowed from './ImmunityAllowed'
@@ -14,11 +14,13 @@ import RequireUpdate from './RequireUpdate'
 
 const ImminizationSettinsItems: React.FC = () => {
   return (
-    <Box sx={{
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'start'
-    }}>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'start',
+      }}
+    >
       <MinimumGrade />
       <MaximumGrade />
       {/* <MinimumSchoolYear /> */}

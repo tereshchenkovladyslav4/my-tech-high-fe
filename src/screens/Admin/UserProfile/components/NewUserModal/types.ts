@@ -11,8 +11,8 @@ export type WarningModalTemplateType = FunctionComponent<WarningModalProps>
 type NewModalProps = {
   visible: boolean
   handleModem: (status?: boolean) => void
-  students?: any[]
-  data?: any
+  students?: unknown[]
+  data?: unknown
   ParentEmailValue: string
 }
 

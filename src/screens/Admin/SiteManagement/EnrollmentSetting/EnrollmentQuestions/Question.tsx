@@ -1,389 +1,394 @@
-import { Box, Checkbox, IconButton, outlinedInputClasses, Radio, TextField, Grid, FormGroup, FormControl, FormControlLabel, Tooltip } from '@mui/material'
-import { useFormikContext } from 'formik'
-import React, { useState, useEffect, useContext } from 'react'
-import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragraph'
-import { DropDown } from '../../../../../components/DropDown/DropDown'
-import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
-import { AdditionalQuestionType, EnrollmentQuestion, EnrollmentQuestionTab } from './types'
+import React, { useState, useEffect, useContext, FunctionComponent, ReactElement } from 'react'
 import DehazeIcon from '@mui/icons-material/Dehaze'
 import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined'
 import EditIcon from '@mui/icons-material/Edit'
+import {
+  Box,
+  Checkbox,
+  IconButton,
+  outlinedInputClasses,
+  Radio,
+  TextField,
+  Grid,
+  FormGroup,
+  FormControl,
+  FormControlLabel,
+  Tooltip,
+} from '@mui/material'
+import { useFormikContext } from 'formik'
 import { SortableHandle } from 'react-sortable-hoc'
-import AddNewQuestionModal from './AddNewQuestion'
-import { ContentState, EditorState, convertToRaw } from 'draft-js'
-import { convertFromHTML } from 'draft-convert'
-import htmlToDraft from 'html-to-draftjs'
-import { useMutation } from '@apollo/client'
-// import { deleteQuestionGql } from './services'
-import CustomModal from '../components/CustomModal/CustomModals'
-import { SYSTEM_05, SYSTEM_07 } from '../../../../../utils/constants'
-import { TabContext } from './TabContextProvider'
-import { ProgramYearContext } from '../provider/ProgramYearProvider'
+import { v4 as uuidv4 } from 'uuid'
+import { DropDown } from '../../../../../components/DropDown/DropDown'
 import { QUESTION_TYPE } from '../../../../../components/QuestionItem/QuestionItemProps'
+import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragraph'
+import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
+import { SYSTEM_05, SYSTEM_07 } from '../../../../../utils/constants'
+import { CustomModal } from '../components/CustomModal/CustomModals'
+import { ProgramYearContext } from '../provider/ProgramYearProvider'
+import { AddNewQuestionModal } from './AddNewQuestion'
+import { TabContext } from './TabContextProvider'
+import { EnrollmentQuestion, EnrollmentQuestionTab } from './types'
+
+type EnrollmentQuestionItemProps = {
+  item: EnrollmentQuestion[]
+  group: string
+  mainQuestion?: boolean
+}
 
 const DragHandle = SortableHandle(() => (
-    <Tooltip title="Move">
-        <IconButton>
-            <DehazeIcon />
-        </IconButton>
-    </Tooltip>
+  <Tooltip title='Move'>
+    <IconButton>
+      <DehazeIcon />
+    </IconButton>
+  </Tooltip>
 ))
 
-export default function EnrollmentQuestionItem({
-    item,
-    group,
-    mainQuestion = false,
-}: {
-    item: EnrollmentQuestion[]
-    group: string
-    mainQuestion?: boolean
-}) {
-    const tabName = useContext(TabContext)
-    const { values, setValues } = useFormikContext<EnrollmentQuestionTab[]>()
-    const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false)
-    const [showEditDialog, setShowEditDialog] = useState(false)
-    const [questionItems, setQuestionItems] = useState<Array<any>>([<Grid></Grid>])
+export const EnrollmentQuestionItem: FunctionComponent<EnrollmentQuestionItemProps> = ({
+  item,
+  group,
+  mainQuestion = false,
+}) => {
+  const tabName = useContext(TabContext)
+  const { values, setValues } = useFormikContext<EnrollmentQuestionTab[]>()
+  const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false)
+  const [showEditDialog, setShowEditDialog] = useState(false)
+  const [questionItems, setQuestionItems] = useState<Array<unknown>>([<Grid key={uuidv4()}></Grid>])
 
-    useEffect(() => {
-        if(item) {
-            setQuestionItems(item.map((i) => { return {...i, isEnable: false}}))
-        }
-        else {
-            setQuestionItems([<Grid></Grid>])
-        }
-    }, [item])
-    
-    const handleAdditionalAction = (slug, value) => {
-        let index = 1000
-        const updateQuestionItems = questionItems.map((q) => {
-            if(q.additional_question === slug) {
-                index = q.order
-                return {...q, isEnable: value}
-            }
-            else {
-                if(value) {
-                    return q
-                }
-                else {
-                    if(q.order > index) {
-                        return {...q, isEnable: false}
-                    }
-                    else {
-                        return q
-                    }
-                    
-                }
-            }
-        })
-        setQuestionItems(updateQuestionItems)
+  useEffect(() => {
+    if (item) {
+      setQuestionItems(
+        item.map((i) => {
+          return { ...i, isEnable: false }
+        }),
+      )
+    } else {
+      setQuestionItems([<Grid key={uuidv4()}></Grid>])
     }
+  }, [item])
 
-    return (
-        <>
-            {questionItems.map((q) => {
-                if((q.additional_question && q.isEnable) || !q.additional_question) {
-                    if (q.type === QUESTION_TYPE.AGREEMENT) {
-                        return (
-                            <Grid item xs={questionItems.length > 1 ? 12 : 6}>
-                                <FormControl
-                                    required
-                                    name='acknowledge'
-                                    component="fieldset"
-                                    variant="standard"
-                                >
-                                    <FormGroup>
-                                    {/* <FormGroup style={{ width: '50%' }}> */}
-                                        <FormControlLabel
-                                            control={
-                                                <Checkbox />
-                                            }
-                                            label={
-                                                <Paragraph size='medium'>
-                                                    <p dangerouslySetInnerHTML={{ __html: q.question }}></p>
-                                                </Paragraph>
-                                            }
-                                        />
-                                    </FormGroup>
-                                </FormControl>
-                                {!q.additional_question && !mainQuestion && (
-                                    <Box display='inline-flex' height='40px'>
-                                        <Tooltip title="Edit">
-                                            <IconButton onClick={() => setShowEditDialog(true)}>
-                                                <EditIcon />
-                                            </IconButton>
-                                        </Tooltip>
-                
-                                        <Tooltip title="Delete">
-                                            <IconButton onClick={() => setShowDeleteDialog(true)}>
-                                                <DeleteForeverOutlinedIcon />
-                                            </IconButton>
-                                        </Tooltip>
-                
-                                        <DragHandle />
-                                    </Box>
-                                )}
-                            </Grid>
-                        )
-                    }
-                    else if (q.type === QUESTION_TYPE.INFORMATION) {
-                        return (
-                            <Grid item xs={questionItems.length > 1 ? 12 : 6}>
-                                <Box display='flex' alignItems='center' width={questionItems.length > 1 ? '50%' : '100%'}>
-                                    <Paragraph size='large'>
-                                        <p dangerouslySetInnerHTML={{ __html: q.question }}></p>
-                                    </Paragraph>
-                                    {!q.additional_question && !mainQuestion && (
-                                        <Box display='inline-flex' height='40px'>
-                                            <Tooltip title="Edit">
-                                                <IconButton onClick={() => setShowEditDialog(true)}>
-                                                    <EditIcon />
-                                                </IconButton>
-                                            </Tooltip>
-                
-                                            <Tooltip title="Delete">
-                                                <IconButton onClick={() => setShowDeleteDialog(true)}>
-                                                    <DeleteForeverOutlinedIcon />
-                                                </IconButton>
-                                            </Tooltip>
-                                            
-                                            <DragHandle />
-                                        </Box>
-                                    )}
-                                </Box>
-                            </Grid>
-                        )
-                    }
-                    else {
-                        return (
-                            <Grid item xs={questionItems.length > 1 ? 12 : 6}>
-                                <Box display='flex' alignItems='center' width={questionItems.length > 1 ? '50%' : '100%'}>
-                                    <Subtitle fontWeight='500'>{q.question}</Subtitle>
-                                    {!q.additional_question && !mainQuestion && (
-                                        <Box display='inline-flex' height='40px'>
-                                            <Tooltip title="Edit">
-                                                <IconButton onClick={() => setShowEditDialog(true)}>
-                                                    <EditIcon />
-                                                </IconButton>
-                                            </Tooltip>
-                
-                                            <Tooltip title="Delete">
-                                                <IconButton onClick={() => setShowDeleteDialog(true)}>
-                                                    <DeleteForeverOutlinedIcon />
-                                                </IconButton>
-                                            </Tooltip>
-                
-                                            <DragHandle />
-                
-                                        </Box>
-                                    )}
-                                </Box>
-                                <Box alignItems='center' width={questionItems.length > 1 ? '49%' : '100%'}>
-                                    <Item question={q} setAdditionalQuestion={(slug, value) => handleAdditionalAction(slug, value)} />
-                                </Box>
-                                
-                            </Grid>
-                        )
-                    }
-                }
-            })}
-            {showEditDialog && <AddNewQuestionModal onClose={() => setShowEditDialog(false)} editItem={item} group={group} isNewQuestion={false} />}
-            {showDeleteDialog && (
-                <CustomModal
-                    title='Delete Question'
-                    description='Are you sure you want to delete this question?'
-                    confirmStr='Delete'
-                    onClose={() => setShowDeleteDialog(false)}
-                    onConfirm={() => {
-                        setShowDeleteDialog(false)
-                        const newValues = values.map((v) => {
-                            if (v.tab_name === tabName) {
-                                const newGroups = v.groups.map((g) =>
-                                (g.group_name === group ?
-                                    { ...g, questions: g.questions.filter((q) => q.question !== item[0].question).sort((a, b) => a.order - b.order).map((item, index) => { return { ...item, order: index + 1 } }) }
-                                    :
-                                    g
-                                )
-                                )
-                                // v.groups = newGroups
-                                return { ...v, groups: newGroups }
-                            }
-                            return v
-                        })
-                        setValues(newValues)
-                        // deleteQuestion({ variables: { id: item.id } })
-                    }}
-                />
-            )}
-        </>
-    )
+  const handleAdditionalAction = (slug, value) => {
+    let index = 1000
+    const updateQuestionItems = questionItems.map((q) => {
+      if (q.additional_question === slug) {
+        index = q.order
+        return { ...q, isEnable: value }
+      } else {
+        if (value) {
+          return q
+        } else {
+          if (q.order > index) {
+            return { ...q, isEnable: false }
+          } else {
+            return q
+          }
+        }
+      }
+    })
+    setQuestionItems(updateQuestionItems)
+  }
+
+  return (
+    <>
+      {questionItems.map((q): ReactElement | undefined => {
+        if ((q.additional_question && q.isEnable) || !q.additional_question) {
+          if (q.type === QUESTION_TYPE.AGREEMENT) {
+            return (
+              <Grid item xs={questionItems.length > 1 ? 12 : 6}>
+                <FormControl required name='acknowledge' component='fieldset' variant='standard'>
+                  <FormGroup>
+                    {/* <FormGroup style={{ width: '50%' }}> */}
+                    <FormControlLabel
+                      control={<Checkbox />}
+                      label={
+                        <Paragraph size='medium'>
+                          <p dangerouslySetInnerHTML={{ __html: q.question }}></p>
+                        </Paragraph>
+                      }
+                    />
+                  </FormGroup>
+                </FormControl>
+                {!q.additional_question && !mainQuestion && (
+                  <Box display='inline-flex' height='40px'>
+                    <Tooltip title='Edit'>
+                      <IconButton onClick={() => setShowEditDialog(true)}>
+                        <EditIcon />
+                      </IconButton>
+                    </Tooltip>
+
+                    <Tooltip title='Delete'>
+                      <IconButton onClick={() => setShowDeleteDialog(true)}>
+                        <DeleteForeverOutlinedIcon />
+                      </IconButton>
+                    </Tooltip>
+
+                    <DragHandle />
+                  </Box>
+                )}
+              </Grid>
+            )
+          } else if (q.type === QUESTION_TYPE.INFORMATION) {
+            return (
+              <Grid item xs={questionItems.length > 1 ? 12 : 6}>
+                <Box display='flex' alignItems='center' width={questionItems.length > 1 ? '50%' : '100%'}>
+                  <Paragraph size='large'>
+                    <p dangerouslySetInnerHTML={{ __html: q.question }}></p>
+                  </Paragraph>
+                  {!q.additional_question && !mainQuestion && (
+                    <Box display='inline-flex' height='40px'>
+                      <Tooltip title='Edit'>
+                        <IconButton onClick={() => setShowEditDialog(true)}>
+                          <EditIcon />
+                        </IconButton>
+                      </Tooltip>
+
+                      <Tooltip title='Delete'>
+                        <IconButton onClick={() => setShowDeleteDialog(true)}>
+                          <DeleteForeverOutlinedIcon />
+                        </IconButton>
+                      </Tooltip>
+
+                      <DragHandle />
+                    </Box>
+                  )}
+                </Box>
+              </Grid>
+            )
+          } else {
+            return (
+              <Grid item xs={questionItems.length > 1 ? 12 : 6}>
+                <Box display='flex' alignItems='center' width={questionItems.length > 1 ? '50%' : '100%'}>
+                  <Subtitle fontWeight='500'>{q.question}</Subtitle>
+                  {!q.additional_question && !mainQuestion && (
+                    <Box display='inline-flex' height='40px'>
+                      <Tooltip title='Edit'>
+                        <IconButton onClick={() => setShowEditDialog(true)}>
+                          <EditIcon />
+                        </IconButton>
+                      </Tooltip>
+
+                      <Tooltip title='Delete'>
+                        <IconButton onClick={() => setShowDeleteDialog(true)}>
+                          <DeleteForeverOutlinedIcon />
+                        </IconButton>
+                      </Tooltip>
+
+                      <DragHandle />
+                    </Box>
+                  )}
+                </Box>
+                <Box alignItems='center' width={questionItems.length > 1 ? '49%' : '100%'}>
+                  <Item question={q} setAdditionalQuestion={(slug, value) => handleAdditionalAction(slug, value)} />
+                </Box>
+              </Grid>
+            )
+          }
+        } else {
+          return undefined
+        }
+      })}
+      {showEditDialog && (
+        <AddNewQuestionModal
+          onClose={() => setShowEditDialog(false)}
+          editItem={item}
+          group={group}
+          isNewQuestion={false}
+        />
+      )}
+      {showDeleteDialog && (
+        <CustomModal
+          title='Delete Question'
+          description='Are you sure you want to delete this question?'
+          confirmStr='Delete'
+          onClose={() => setShowDeleteDialog(false)}
+          onConfirm={() => {
+            setShowDeleteDialog(false)
+            const newValues = values.map((v) => {
+              if (v.tab_name === tabName) {
+                const newGroups = v.groups.map((g) =>
+                  g.group_name === group
+                    ? {
+                        ...g,
+                        questions: g.questions
+                          .filter((q) => q.question !== item[0].question)
+                          .sort((a, b) => a.order - b.order)
+                          .map((item, index) => {
+                            return { ...item, order: index + 1 }
+                          }),
+                      }
+                    : g,
+                )
+                // v.groups = newGroups
+                return { ...v, groups: newGroups }
+              }
+              return v
+            })
+            setValues(newValues)
+            // deleteQuestion({ variables: { id: item.id } })
+          }}
+        />
+      )}
+    </>
+  )
 }
-function Item({ question: q, setAdditionalQuestion }: { question: EnrollmentQuestion, setAdditionalQuestion: (slug:string, flag: boolean) => void }) {
-    const [selectedOption, setSelectedOption] = useState([])
-    const { setProgramYear } = useContext(ProgramYearContext)
-    useEffect(() => {
-        setSelectedOption([])
-    }, [q])
-    function onChange(value: string | number) {
-        if (q.type !== QUESTION_TYPE.TEXTFIELD) {
-            if (q.options[+value - 1]?.action === 2) {
-                if (q.type === QUESTION_TYPE.CHECKBOX) {
-                    if (selectedOption.indexOf(value) > -1) {
-                        setAdditionalQuestion(q.slug, false)
-                    }
-                    else {
-                        setAdditionalQuestion(q.slug, true)
-                    }
-                }
-                else {
-                    setAdditionalQuestion(q.slug, true)
-                }
-            }
-            else {
-                if (q.type !== QUESTION_TYPE.CHECKBOX) {
-                    setAdditionalQuestion(q.slug, false)
-                }
-            }
-            if (q.type === QUESTION_TYPE.CHECKBOX) {
-                if (selectedOption.indexOf(value) > -1) {
-                    setSelectedOption(selectedOption.filter(s => s !== value))
-                }
-                else {
-                    setSelectedOption([...selectedOption, value])
-                }
-            }
-            else {
-                setSelectedOption([value])
-            }
+function Item({
+  question: q,
+  setAdditionalQuestion,
+}: {
+  question: EnrollmentQuestion
+  setAdditionalQuestion: (slug: string, flag: boolean) => void
+}) {
+  const [selectedOption, setSelectedOption] = useState([])
+  const { setProgramYear } = useContext(ProgramYearContext)
+  useEffect(() => {
+    setSelectedOption([])
+  }, [q])
+  function onChange(value: string | number) {
+    if (q.type !== QUESTION_TYPE.TEXTFIELD) {
+      if (q.options[+value - 1]?.action === 2) {
+        if (q.type === QUESTION_TYPE.CHECKBOX) {
+          if (selectedOption.indexOf(value) > -1) {
+            setAdditionalQuestion(q.slug, false)
+          } else {
+            setAdditionalQuestion(q.slug, true)
+          }
+        } else {
+          setAdditionalQuestion(q.slug, true)
         }
-        if (q.slug === 'program_year') {
-            setProgramYear(value)
+      } else {
+        if (q.type !== QUESTION_TYPE.CHECKBOX) {
+          setAdditionalQuestion(q.slug, false)
         }
+      }
+      if (q.type === QUESTION_TYPE.CHECKBOX) {
+        if (selectedOption.indexOf(value) > -1) {
+          setSelectedOption(selectedOption.filter((s) => s !== value))
+        } else {
+          setSelectedOption([...selectedOption, value])
+        }
+      } else {
+        setSelectedOption([value])
+      }
     }
-    if (q.type === QUESTION_TYPE.DROPDOWN) {
-        return (
-            <DropDown
-                sx={{
-                    margin: '0 !important',
-                    width: '99%',
-                    maxWidth: '99%',
-                    [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
-                        borderColor: SYSTEM_07,
-                    },
-                }}
-                labelTop
-                defaultValue={selectedOption}
-                dropDownItems={q.options || []}
-                setParentValue={(v) => onChange(v as string)}
-                size='small'
-            />
-        )
-    } else if (q.type === QUESTION_TYPE.TEXTFIELD) {
-        return (
-            <TextField
-                size='small'
-                sx={{
-                    maxWidth: '99%',
-                    width: '99%',
-
-                    [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
-                        borderColor: SYSTEM_07,
-                    },
-                }}
-                InputLabelProps={{
-                    style: { color: SYSTEM_05 },
-                }}
-                variant='outlined'
-                fullWidth
-                focused
-            />
-        )
-    } else if (q.type === QUESTION_TYPE.CHECKBOX) {
-        return (
-            <FormControl
-                required
-                component="fieldset"
-                variant="standard"
-                sx={{ width: '99%', maxWidth: '99%' }}
-            >
-                <FormGroup style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
-                    <Grid container>
-                        {(q.options ?? []).map((o, index) => (
-                            <Grid item xs={q.options.length > 3 ? 6 : 12} key={index}>
-                                <FormControlLabel
-                                    control={
-                                        <Checkbox checked={selectedOption.indexOf(o.value) > -1 ? true : false} onClick={() => onChange(o.value)} />
-                                    }
-                                    label={o.label}
-                                />
-                                {o.label === 'Other' && (
-                                    <TextField
-                                        size='small'
-                                        sx={{
-                                            maxWidth: '50%',
-
-                                            [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
-                                                borderColor: SYSTEM_07,
-                                            },
-                                        }}
-                                        InputLabelProps={{
-                                            style: { color: SYSTEM_05 },
-                                        }}
-                                        variant='outlined'
-                                        fullWidth
-                                    />)
-                                }
-                            </Grid>
-                        ))}
-                    </Grid>
-                </FormGroup>
-            </FormControl>
-        )
-    } else if (q.type === QUESTION_TYPE.MULTIPLECHOICES) {
-        return (
-            <FormControl
-                required
-                component="fieldset"
-                variant="standard"
-                sx={{ width: '99%', maxWidth: '99%' }}
-            >
-                <FormGroup style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
-                    <Grid container>
-                        {(q.options ?? []).map((o, index) => (
-                            <Grid item xs={q.options.length > 3 ? 6 : 12} key={index}>
-                                <FormControlLabel
-                                    control={
-                                        <Radio checked={selectedOption[0] === o.value} onClick={() => onChange(o.value)} />
-                                    }
-                                    label={o.label}
-                                />
-                            </Grid>
-                        ))}
-                    </Grid>
-                </FormGroup>
-            </FormControl>
-        )
+    if (q.slug === 'program_year') {
+      setProgramYear(value)
     }
-    else if (q.type === QUESTION_TYPE.CALENDAR) {
-        return (
-            <TextField
-                size='small'
-                sx={{
-                    width: '99%',
-                    minWidth: '99%',
+  }
+  if (q.type === QUESTION_TYPE.DROPDOWN) {
+    return (
+      <DropDown
+        sx={{
+          margin: '0 !important',
+          width: '99%',
+          maxWidth: '99%',
+          [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
+            borderColor: SYSTEM_07,
+          },
+        }}
+        labelTop
+        defaultValue={selectedOption}
+        dropDownItems={q.options || []}
+        setParentValue={(v) => onChange(v as string)}
+        size='small'
+      />
+    )
+  } else if (q.type === QUESTION_TYPE.TEXTFIELD) {
+    return (
+      <TextField
+        size='small'
+        sx={{
+          maxWidth: '99%',
+          width: '99%',
 
-                    [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
-                        borderColor: SYSTEM_07,
-                    },
-                }}
-                InputLabelProps={{
-                    style: { color: SYSTEM_05 },
-                }}
-                variant='outlined'
-                onChange={(v) => { }}
-                focused
-                type="date"
-            />
-        )
-    }
-    return null
+          [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
+            borderColor: SYSTEM_07,
+          },
+        }}
+        InputLabelProps={{
+          style: { color: SYSTEM_05 },
+        }}
+        variant='outlined'
+        fullWidth
+        focused
+      />
+    )
+  } else if (q.type === QUESTION_TYPE.CHECKBOX) {
+    return (
+      <FormControl required component='fieldset' variant='standard' sx={{ width: '99%', maxWidth: '99%' }}>
+        <FormGroup style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
+          <Grid container>
+            {(q.options ?? []).map((o, index) => (
+              <Grid item xs={q.options.length > 3 ? 6 : 12} key={index}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={selectedOption.indexOf(o.value) > -1 ? true : false}
+                      onClick={() => onChange(o.value)}
+                    />
+                  }
+                  label={o.label}
+                />
+                {o.label === 'Other' && (
+                  <TextField
+                    size='small'
+                    sx={{
+                      maxWidth: '50%',
+
+                      [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
+                        {
+                          borderColor: SYSTEM_07,
+                        },
+                    }}
+                    InputLabelProps={{
+                      style: { color: SYSTEM_05 },
+                    }}
+                    variant='outlined'
+                    fullWidth
+                  />
+                )}
+              </Grid>
+            ))}
+          </Grid>
+        </FormGroup>
+      </FormControl>
+    )
+  } else if (q.type === QUESTION_TYPE.MULTIPLECHOICES) {
+    return (
+      <FormControl required component='fieldset' variant='standard' sx={{ width: '99%', maxWidth: '99%' }}>
+        <FormGroup style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
+          <Grid container>
+            {(q.options ?? []).map((o, index) => (
+              <Grid item xs={q.options.length > 3 ? 6 : 12} key={index}>
+                <FormControlLabel
+                  control={<Radio checked={selectedOption[0] === o.value} onClick={() => onChange(o.value)} />}
+                  label={o.label}
+                />
+              </Grid>
+            ))}
+          </Grid>
+        </FormGroup>
+      </FormControl>
+    )
+  } else if (q.type === QUESTION_TYPE.CALENDAR) {
+    return (
+      <TextField
+        size='small'
+        sx={{
+          width: '99%',
+          minWidth: '99%',
+
+          [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
+            borderColor: SYSTEM_07,
+          },
+        }}
+        InputLabelProps={{
+          style: { color: SYSTEM_05 },
+        }}
+        variant='outlined'
+        onChange={() => {}}
+        focused
+        type='date'
+      />
+    )
+  }
+  return null
 }

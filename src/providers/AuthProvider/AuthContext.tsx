@@ -1,14 +1,14 @@
 import { createContext } from 'react'
 export type AuthContextType = {
   credentials: string | undefined | null
-  signOut: any
+  signOut: () => void
   setCredentials: React.Dispatch<React.SetStateAction<string | undefined>>
 }
 
 const authContext: AuthContextType = {
   credentials: undefined,
   signOut: () => {},
-  setCredentials: (_) => {},
+  setCredentials: () => {},
 }
 
 export const AuthContext = createContext<AuthContextType>(authContext)

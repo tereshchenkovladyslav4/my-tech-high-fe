@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react'
-import { useQuery } from '@apollo/client'
+import { ApolloError, ApolloQueryResult, useQuery } from '@apollo/client'
 import moment from 'moment'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { getEventsQuery } from '@mth/screens/Admin/Calendar/services'
@@ -7,10 +7,26 @@ import { CalendarEvent, EventResponseVM, EventVM } from '@mth/screens/Admin/Cale
 import { hexToRgbA } from '@mth/utils'
 
 export const useEventsByRegionIdAndFilterItem = (
-  regionId: number = 0,
-  parent_id: number = 0,
-  searchField: string = '',
-) => {
+  regionId = 0,
+  parent_id = 0,
+  searchField = '',
+): {
+  loading: boolean
+  calendarEventList: CalendarEvent[]
+  events: EventVM[]
+  error: ApolloError | undefined
+  refetch: (
+    variables?:
+      | Partial<{
+          findEventsByRegionIdSearch: {
+            parent_id: number
+            region_id: number
+            search_field: string
+          }
+        }>
+      | undefined,
+  ) => Promise<ApolloQueryResult<unknown>>
+} => {
   const { me } = useContext(UserContext)
   const [calendarEventList, setCalendarEventList] = useState<CalendarEvent[]>([])
   const [events, setEvents] = useState<EventVM[]>([])

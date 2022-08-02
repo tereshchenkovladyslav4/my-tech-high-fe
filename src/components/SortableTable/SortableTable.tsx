@@ -3,8 +3,8 @@ import { TableContainer, Table, TableBody, TableRow, TableCell, Checkbox } from 
 import { Box } from '@mui/system'
 import { MTHBLUE } from '../../utils/constants'
 import { SortableTableHeader } from './SortableTableHeader/SortableTableHeader'
-import { Order, SortableTableTemplateType } from './types'
 import { tableClasses } from './styles'
+import { Order, SortableTableTemplateType } from './types'
 
 export const SortableTable: SortableTableTemplateType = ({
   headCells,
@@ -18,7 +18,7 @@ export const SortableTable: SortableTableTemplateType = ({
   hover = true,
 }) => {
   const [order, setOrder] = useState<Order>(Order.ASC)
-  const [orderBy, setOrderBy] = useState<keyof any>('name')
+  const [orderBy, setOrderBy] = useState<keyof unknown>('name')
   const [selected, setSelected] = useState<readonly string[]>([])
 
   useEffect(() => {
@@ -31,16 +31,16 @@ export const SortableTable: SortableTableTemplateType = ({
     setSelected([])
   }, [clearAll])
 
-  const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof any) => {
+  const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof unknown) => {
     const isAsc = orderBy === property && order === Order.ASC
     setOrder(isAsc ? Order.DESC : Order.ASC)
     setOrderBy(property)
-    onSortChange && onSortChange(property, isAsc ? Order.DESC : Order.ASC)
+    if (onSortChange) onSortChange(property, isAsc ? Order.DESC : Order.ASC)
   }
 
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
-      const newSelecteds = rows.map((n: any) => n.id)
+      const newSelecteds = rows.map((n: { id: number }) => n.id)
       setSelected(newSelecteds)
       return
     }
@@ -85,14 +85,14 @@ export const SortableTable: SortableTableTemplateType = ({
     }
   }
 
-  const handleCellClick = (key: string, row: any) => {
+  const handleCellClick = (key: string, row: { id: number }) => {
     switch (key) {
       case 'student': {
-        onRowClick && onRowClick(row.id)
+        if (onRowClick) onRowClick(row.id)
         break
       }
       case 'parent': {
-        onParentClick && onParentClick(row.id)
+        if (onParentClick) onParentClick(row.id)
         break
       }
     }
@@ -113,7 +113,7 @@ export const SortableTable: SortableTableTemplateType = ({
             noCheckbox={hideCheck}
           />
           <TableBody>
-            {rows.map((row: any) => {
+            {rows.map((row: unknown) => {
               const isItemSelected = isSelected(row.id.toString())
               const labelId = `enhanced-table-checkbox-${row.id}`
               return (

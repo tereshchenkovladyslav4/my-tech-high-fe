@@ -1,32 +1,22 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { Stack } from '@mui/material'
-import { DropDown } from '../../components/DropDown/DropDown'
-import { UserContext } from '../../../../../providers/UserContext/UserProvider'
-import { DropDownItem } from '../../components/DropDown/types'
-import moment from 'moment'
+import React, { FunctionComponent, useContext, useEffect, useState } from 'react'
 import { useQuery } from '@apollo/client'
+import { find, toNumber } from 'lodash'
+import moment from 'moment'
+import { SchoolYearVM } from '@mth/screens/Admin/Applications/type'
+import { UserContext } from '../../../../../providers/UserContext/UserProvider'
+import { DropDown } from '../../components/DropDown/DropDown'
+import { DropDownItem } from '../../components/DropDown/types'
 import { getSchoolYearsByRegionId } from '../../services'
-import { SchoolYearItem, SchoolYearType } from '../../Years/types'
-
 
 type SchoolYearDropDownProps = {
   setSelectedYearId: (_: number) => void
   selectedYearId?: number
-  //setSchoolYearItem: (value: SchoolYearItem | undefined) => void
-  //setApplicationItem: (value: SchoolYearItem | undefined) => void
-  //setMidYearItem: (value: SchoolYearItem | undefined) => void
-  //setSelectedYearId: (value: string) => void
-  //setOldSelectedYearId: (value: string) => void
-  //setAddSchoolYearDialogOpen: (value: boolean) => void
-  //schoolYears: SchoolYearType[]
-
-  //setAddSchoolYears: (value: DropDownItem[]) => void
-  //selectedYearId: string
 }
 
-export const SchoolYearDropDown = ({
+export const SchoolYearDropDown: FunctionComponent<SchoolYearDropDownProps> = ({
   selectedYearId,
-  setSelectedYearId
+  setSelectedYearId,
+  setDisableForm,
 }: SchoolYearDropDownProps) => {
   const { me } = useContext(UserContext)
   const [years, setYears] = useState<DropDownItem[]>([])
@@ -38,30 +28,55 @@ export const SchoolYearDropDown = ({
     fetchPolicy: 'network-only',
   })
 
+  const [selectedYear, setSelectedYear] = useState<number>()
+
   useEffect(() => {
     if (schoolYearData?.data?.region?.SchoolYears) {
-      let schoolYearsArr: DropDownItem[] = []
-      schoolYearData?.data?.region?.SchoolYears.forEach((schoolYear: any) => {
-        console.log(schoolYear)
-        schoolYearsArr.push(({
+      const schoolYearsArr: DropDownItem[] = []
+      schoolYearData?.data?.region?.SchoolYears.sort(
+        (d1, d2) => new Date(d1.date_begin).getTime() - new Date(d2.date_begin).getTime(),
+      )
+
+      let currYear = new Date().getFullYear()
+
+      schoolYearData?.data?.region?.SchoolYears.forEach((schoolYear: SchoolYearVM) => {
+        const dateBegin = new Date(schoolYear.date_begin),
+          dateEnd = new Date(schoolYear.date_end)
+
+        if (currYear >= dateBegin.getFullYear() && currYear < dateEnd.getFullYear()) {
+          currYear = schoolYear.school_year_id
+        }
+        schoolYearsArr.push({
           value: schoolYear.school_year_id,
-          label: moment(schoolYear.date_begin).format('YYYY') + '-' + moment(schoolYear.end).format('YY'),
-        }))
+          label: moment(dateBegin).format('YYYY') + '-' + moment(dateEnd).format('YY'),
+        })
+        //if( (toNumber((year?.label as string).split('-')[0])) < currentYear) setDisableForm(true)
       })
       setYears(schoolYearsArr)
-      setSelectedYearId(schoolYearsArr[0].value as number)
+      setSelectedYear(schoolYearsArr[0].value as number)
     }
   }, [me?.selectedRegionId, schoolYearData?.data?.region?.SchoolYears])
 
+  useEffect(() => {
+    if (selectedYear) {
+      setSelectedYearId(selectedYear)
+      const currentYear = new Date().getFullYear()
+      const year = find(years, { value: selectedYear })
+      setDisableForm(toNumber((year?.label as string).split('-')[0]) < currentYear)
+    }
+  }, [selectedYear])
+
+  console.log(schoolYearData?.data?.region?.SchoolYears)
+
   return (
-      <DropDown
-        dropDownItems={years}
-        defaultValue={selectedYearId || ''}
-        sx={{ minWidth: '250px', textAlign: 'center', alignItems: 'end' }}
-        borderNone={true}
-        setParentValue={(val) => {
-          setSelectedYearId(val)
-        }}
-      />
+    <DropDown
+      dropDownItems={years}
+      defaultValue={selectedYearId || ''}
+      sx={{ minWidth: '250px', textAlign: 'center', alignItems: 'end' }}
+      borderNone={true}
+      setParentValue={(value) => {
+        setSelectedYear(value)
+      }}
+    />
   )
 }

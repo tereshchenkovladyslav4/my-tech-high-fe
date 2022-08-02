@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react'
-import Cropper from 'react-cropper'
+import React, { useState, useEffect, FunctionComponent } from 'react'
 import { Box, Button, Stack, Dialog, DialogTitle, DialogActions } from '@mui/material'
+import Cropper from 'react-cropper'
 import 'cropperjs/dist/cropper.css'
 
 export type StateLogoFileType = {
@@ -10,22 +10,28 @@ export type StateLogoFileType = {
 }
 
 export type ImageCropperProps = {
-  imageToCrop: any
-  classes: any
+  imageToCrop: unknown
+  classes: unknown
   setStateLogoFile: (value: StateLogoFileType) => void
   setIsChanged: (value: boolean) => void
-  isChanged: any
+  isChanged: unknown
 }
 
-export default function ImageCropper({ imageToCrop, classes, setStateLogoFile, setIsChanged, isChanged }: ImageCropperProps) {
-  const [cropper, setCropper] = useState<any>()
+export const ImageCropper: FunctionComponent<ImageCropperProps> = ({
+  imageToCrop,
+  classes,
+  setStateLogoFile,
+  setIsChanged,
+  isChanged,
+}) => {
+  const [cropper, setCropper] = useState<unknown>()
   const [open, setOpen] = useState<boolean>(false)
 
   useEffect(() => {
     setOpen(true)
   }, [imageToCrop])
 
-  const blobToFile = (theBlob: Blob, fileName: string = 'CroppedImage'): File => {
+  const blobToFile = (theBlob: Blob): File => {
     const myFile = new File([theBlob], 'image.jpeg', {
       type: theBlob.type,
     })
@@ -48,7 +54,8 @@ export default function ImageCropper({ imageToCrop, classes, setStateLogoFile, s
         })
         setIsChanged({
           ...isChanged,
-          stateLogo: true})
+          stateLogo: true,
+        })
       }, 'image/png')
     }
   }

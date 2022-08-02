@@ -1,8 +1,17 @@
-import { Button, Card, Box } from '@mui/material'
-import React from 'react'
+import React, { FunctionComponent } from 'react'
+import { Button, Box } from '@mui/material'
 import { MTHBLUE, BUTTON_LINEAR_GRADIENT } from '../../../../utils/constants'
 
-export const EnrollmentPacketFilters = ({ filters, setFilters, packetCount }) => {
+type EnrollmentPacketFiltersProps = {
+  filters: unknown
+  setFilters: (_: unknown) => void
+  packetCount: number
+}
+export const EnrollmentPacketFilters: FunctionComponent<EnrollmentPacketFiltersProps> = ({
+  filters,
+  setFilters,
+  packetCount,
+}) => {
   const handleSelectFilter = (value) => {
     if (filters.includes(value)) {
       setFilters(filters.filter((item) => item !== value))

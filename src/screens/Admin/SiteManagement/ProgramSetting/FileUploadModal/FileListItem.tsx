@@ -1,10 +1,10 @@
-import { Box } from '@mui/system'
 import React, { useState } from 'react'
-import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragraph'
 import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined'
+import { Box } from '@mui/system'
+import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragraph'
+import { CustomModal } from '../../EnrollmentSetting/components/CustomModal/CustomModals'
 import { useStyles } from './styles'
 import { FileListItemTemplateType, S3FileType } from './types'
-import CustomModal from '../../EnrollmentSetting/components/CustomModal/CustomModals'
 
 export const FileListItem: FileListItemTemplateType = ({ file, closeAction }) => {
   const classes = useStyles

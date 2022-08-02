@@ -1,4 +1,3 @@
-import { StudentType } from '../../../HomeroomStudentProfile/Student/types'
 import { StudentImmunization } from './VaccineView/types'
 
 export type SaveButtonsType = 'Save' | 'Accepted' | 'Missing Info' | 'Age Issue' | 'Conditional'

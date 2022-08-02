@@ -1,1 +1,1 @@
-export { default as SchoolDistrictSelect } from './SchoolDistrictSelect'
+export { SchoolDistrictSelect } from './SchoolDistrictSelect'

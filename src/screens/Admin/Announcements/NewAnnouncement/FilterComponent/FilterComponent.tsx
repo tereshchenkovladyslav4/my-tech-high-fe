@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { FunctionComponent, useContext, useState } from 'react'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { Box, Grid } from '@mui/material'
@@ -20,7 +20,7 @@ type FilterComponentProps = {
   setUsersInvalid: (value: boolean) => void
 }
 
-const FilterComponent = ({
+const FilterComponent: FunctionComponent<FilterComponentProps> = ({
   grades,
   users,
   gradesInvalid,
@@ -29,7 +29,7 @@ const FilterComponent = ({
   setGrades,
   setGradesInvalid,
   setUsersInvalid,
-}: FilterComponentProps) => {
+}) => {
   const { me } = useContext(UserContext)
   const { gradeList, programYearList } = useCurrentGradeAndProgramByRegionId(
     Number(me?.selectedRegionId),

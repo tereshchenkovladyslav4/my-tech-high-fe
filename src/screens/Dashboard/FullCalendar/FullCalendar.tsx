@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { FunctionComponent, useEffect, useState } from 'react'
 import { Box, Card, Grid } from '@mui/material'
 import { CalendarEvent, EventVM } from '../../Admin/Calendar/types'
 import { EventCalendar } from './EventCalendar'
@@ -6,14 +6,14 @@ import { EventDetail } from './EventDetail'
 import { HeaderComponent } from './HeaderComponent'
 import { FullCalendarProps } from './types'
 
-const FullCalendar = ({
+const FullCalendar: FunctionComponent<FullCalendarProps> = ({
   searchField,
   events,
   calendarEventList,
   eventTypeLists,
   setSearchField,
   setSectionName,
-}: FullCalendarProps) => {
+}) => {
   const [selectedEventTypes, setSelectedEventTypes] = useState<string[]>([])
   const [selectedEventIndex, setSelectedEventIndex] = useState<number>(0)
   const [selectedEventId, setSelectedEventId] = useState<number>(0)

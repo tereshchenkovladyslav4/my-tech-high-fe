@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react'
-import { Box, TextField, Typography, Stack, FormControl, Select, MenuItem, SelectChangeEvent } from '@mui/material'
-import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
+import React, { useState, useEffect, FunctionComponent } from 'react'
+import { useQuery } from '@apollo/client'
+import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDownOutlined'
+import { Box, TextField, FormControl, Select, MenuItem, SelectChangeEvent } from '@mui/material'
+import { map } from 'lodash'
 import { DropDownItem } from '../../../../../components/DropDown/types'
+import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
+import { getAllRegion } from '../../../../../graphql/queries/region'
 import { RED } from '../../../../../utils/constants'
 import { usStates } from '../../../../../utils/states'
 import { useStyles } from '../../styles'
-import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDownOutlined'
-import { useQuery } from '@apollo/client'
-import { getAllRegion } from '../../../../../graphql/queries/region'
-import { map } from 'lodash'
 
 type StateSelectProps = {
   stateName: string
@@ -19,7 +19,7 @@ type StateSelectProps = {
   setStateInvalid: (value: boolean) => void
 }
 
-export default function StateSelect({
+export const StateSelect: FunctionComponent<StateSelectProps> = ({
   stateName,
   newStateName,
   stateInvalid,
@@ -27,7 +27,7 @@ export default function StateSelect({
 
   setIsInvalidStateName,
   setStateInvalid,
-}: StateSelectProps) {
+}) => {
   const classes = useStyles
   const [stateInvalidMessage, setStateInvalidMessage] = useState<string>('')
   const [selectedRegionName, setSelectedRegionName] = useState<string>('')
@@ -71,7 +71,7 @@ export default function StateSelect({
   }, [stateName])
 
   useEffect(() => {
-    !regionDataLoading &&
+    if (!regionDataLoading)
       setAllRegions(
         map(regionData.regions, (region) => ({
           label: region.name,

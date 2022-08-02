@@ -1,8 +1,8 @@
-import React from 'react'
-import { Box, Button, Grid, TextField } from '@mui/material'
+import React, { FunctionComponent } from 'react'
+import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined'
 import MenuIcon from '@mui/icons-material/Menu'
 import ModeEditIcon from '@mui/icons-material/ModeEdit'
-import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined'
+import { Box, Button, Grid, TextField } from '@mui/material'
 import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
 import { DropDown } from '../../SiteManagement/components/DropDown/DropDown'
 import { rsvpClassess } from './styles'
@@ -11,7 +11,7 @@ type RSVPComponentProps = {
   setShowRSVPForm: (value: boolean) => void
 }
 
-const RSVPComponent = ({ setShowRSVPForm }: RSVPComponentProps) => {
+const RSVPComponent: FunctionComponent<RSVPComponentProps> = ({ setShowRSVPForm }) => {
   return (
     <>
       <Box sx={rsvpClassess.pageTop}>
@@ -55,7 +55,7 @@ const RSVPComponent = ({ setShowRSVPForm }: RSVPComponentProps) => {
                   placeholder='Entry'
                   fullWidth
                   value={''}
-                  onChange={(e) => {}}
+                  onChange={() => {}}
                   size='small'
                   sx={{ my: 1, width: '65%', marginRight: 'auto', marginLeft: 'auto' }}
                 />
@@ -66,7 +66,7 @@ const RSVPComponent = ({ setShowRSVPForm }: RSVPComponentProps) => {
                     placeholder='Entry'
                     fullWidth
                     value={''}
-                    onChange={(e) => {}}
+                    onChange={() => {}}
                     size='small'
                     sx={{ my: 1, width: '65%', marginRight: 'auto', marginLeft: 'auto' }}
                   />

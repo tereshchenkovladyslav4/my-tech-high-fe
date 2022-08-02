@@ -22,9 +22,9 @@ export const useStyles = {
     backgroundColor: 'white',
     alignItems: 'flex-end',
   },
-  studentItemText : {
+  studentItemText: {
     whiteSpace: 'nowrap',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
-  }
+  },
 }

@@ -1,50 +1,47 @@
-import { Box, Typography, Card, Grid, IconButton, Button, Alert } from '@mui/material';
+import React, { FunctionComponent, useContext, useEffect, useMemo, useState } from 'react'
+import { useMutation, useQuery } from '@apollo/client'
 import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded'
-import React, { FunctionComponent, useContext, useEffect, useMemo, useState, createContext } from 'react';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
+import { Box, Typography, Card, Grid, IconButton, Button, Alert } from '@mui/material'
+import { Form, Formik } from 'formik'
+import { includes } from 'lodash'
+import _ from 'lodash'
+import moment from 'moment'
+import { useHistory } from 'react-router-dom'
+import { DropDownItem } from '../../../../../components/DropDown/types'
+import { UserContext } from '../../../../../providers/UserContext/UserProvider'
+import { GRADES } from '../../../../../utils/constants'
+import { toOrdinalSuffix } from '../../../../../utils/stringHelpers'
+import { AddQuestionModal } from '../components/AddQuestionModal/AddQuestionModal'
+import { CustomModal } from '../components/CustomModal/CustomModals'
+import { DefaultQuestionModal } from '../components/DefaultQuestionModal/DefaultQuestionModal'
+import { defaultQuestions } from '../constant/defaultQuestions'
+import { QuestionTypes } from '../EnrollmentQuestions/types'
+import { ProgramYearContext } from '../provider/ProgramYearProvider'
+import { AddNewQuestionModal } from './AddNewQuestion/index'
+import { AddUploadModal } from './AddUpload/index'
 import { Breadcrumbs } from './components/Breadcrumbs/Breadcrumbs'
 import { Step } from './components/Breadcrumbs/types'
-import { useStyles } from './styles'
-import { NavLink, useHistory } from 'react-router-dom'
-import { Form, Formik, useFormikContext } from 'formik'
-import { find, includes } from 'lodash'
-import { EnrollmentQuestionTab, initEnrollmentQuestions } from './types'
-import CustomModal from '../components/CustomModal/CustomModals'
-import AddNewQuestionModal from './AddNewQuestion/index'
-import AddUploadModal from './AddUpload/index'
 import Contact from './Contact/Contact'
-import Education from './Education/Education'
-import { Submission } from './Submission/Submission'
-import Personal  from './Personal/Personal'
 import { Documents } from './Documents/Documents'
-import { TabContext } from './TabContextProvider'
-import { useRecoilValue } from 'recoil'
-import moment from 'moment'
-import {ProgramYearContext} from '../provider/ProgramYearProvider'
-import {GRADES} from '../../../../../utils/constants'
-import {toOrdinalSuffix} from '../../../../../utils/stringHelpers'
-import { DropDownItem } from '../../../../../components/DropDown/types'
-import { userRegionState } from '../../../../../providers/UserContext/UserProvider'
-import { 
-  getQuestionsGql, 
-  saveQuestionsGql, 
-  deleteQuestionsGql, 
-  deleteQuestionGroupGql, 
+import Education from './Education/Education'
+import Personal from './Personal/Personal'
+import {
+  getQuestionsGql,
+  saveQuestionsGql,
+  deleteQuestionsGql,
+  deleteQuestionGroupGql,
   getCountiesByRegionId,
   getActiveSchoolYearsByRegionId,
   getSchoolDistrictsByRegionId,
   getAllRegion,
-  getSpecialEdsByRegionId
+  getSpecialEdsByRegionId,
 } from './services'
-import { useMutation, useQuery } from '@apollo/client'
-import _ from 'lodash'
-import { QuestionTypes } from '../EnrollmentQuestions/types'
-import { defaultQuestions } from '../constant/defaultQuestions'
-import DefaultQuestionModal from '../components/DefaultQuestionModal/DefaultQuestionModal'
-import AddQuestionModal from '../components/AddQuestionModal/AddQuestionModal'
-import { UserContext } from '../../../../../providers/UserContext/UserProvider';
+import { useStyles } from './styles'
+import { Submission } from './Submission/Submission'
+import { TabContext } from './TabContextProvider'
+import { EnrollmentQuestionTab, initEnrollmentQuestions } from './types'
 
-export default function EnrollmentQuestions() {
+export const EnrollmentQuestions: FunctionComponent = () => {
   const [questionsData, setQuestionsData] = useState<EnrollmentQuestionTab[]>(initEnrollmentQuestions)
   const [currentTab, setCurrentTab] = useState(0)
   const [sucessAlert, setSucessAlert] = useState(false)
@@ -55,11 +52,10 @@ export default function EnrollmentQuestions() {
   const [visitedTabs, setVisitedTabs] = useState([])
   const [unsavedChanges, setUnsavedChanges] = useState(false)
   const [specialEd, setSpecialEd] = useState(false)
-  const [specialEdOptions, setSpecialEdOptions]  = useState([])
+  const [specialEdOptions, setSpecialEdOptions] = useState([])
 
-  const [specialEdStatus, setSpecialEdStatus] = useState<boolean>(false);
-  const [specialEdList, setSpecialEdList] = useState<any>([]);
-
+  const [specialEdStatus, setSpecialEdStatus] = useState<boolean>(false)
+  const [specialEdList, setSpecialEdList] = useState<unknown>([])
 
   const classes = useStyles
   const history = useHistory()
@@ -72,7 +68,7 @@ export default function EnrollmentQuestions() {
     fetchPolicy: 'network-only',
   })
 
-  const {data: specialEdData, refetch: specialRefetch} = useQuery(getSpecialEdsByRegionId, {
+  const { data: specialEdData } = useQuery(getSpecialEdsByRegionId, {
     variables: {
       regionId: Number(me?.selectedRegionId),
     },
@@ -80,65 +76,67 @@ export default function EnrollmentQuestions() {
   })
 
   useEffect(() => {
-    setSpecialEdStatus(false);
-    const thisSchoolYear = specialEdData?.region?.SchoolYears.find(i => moment(i.date_begin).format('Y') == moment().format('Y') );
-    if(thisSchoolYear){
-      setSpecialEdStatus(thisSchoolYear.special_ed_options);
-      if(thisSchoolYear.special_ed_options && thisSchoolYear.special_ed_options){
-        const special_ed_options = thisSchoolYear.special_ed_options.split(',');
-        const specialList = special_ed_options.filter(ii => ii != 'None');
-        setSpecialEdList(specialList);
-    }
-      setSpecialEdStatus(thisSchoolYear.special_ed_options);
-    }else{
-      setSpecialEdStatus(false);
+    setSpecialEdStatus(false)
+    const thisSchoolYear = specialEdData?.region?.SchoolYears.find(
+      (i) => moment(i.date_begin).format('Y') == moment().format('Y'),
+    )
+    if (thisSchoolYear) {
+      setSpecialEdStatus(thisSchoolYear.special_ed_options)
+      if (thisSchoolYear.special_ed_options && thisSchoolYear.special_ed_options) {
+        const special_ed_options = thisSchoolYear.special_ed_options.split(',')
+        const specialList = special_ed_options.filter((ii) => ii != 'None')
+        setSpecialEdList(specialList)
+      }
+      setSpecialEdStatus(thisSchoolYear.special_ed_options)
+    } else {
+      setSpecialEdStatus(false)
     }
   }, [specialEdData?.region?.SchoolYears])
-  
-  
 
   const [editItem, setEditItem] = useState(null)
   const [openSelectQuestionType, setOpenSelectQuestionType] = useState(false)
 
-  const convertSpeicalEdOptions = (optionString) => {    
-    var temp = []
+  const convertSpeicalEdOptions = (optionString) => {
+    const temp = []
     if (optionString != '' && optionString != null) {
-      const optionArray = optionString.split(',');
+      const optionArray = optionString.split(',')
       optionArray.map((option, index) => {
         temp.push({
           label: option.trim(),
-          value: index + 1
-        });
-      });
+          value: index + 1,
+        })
+      })
     }
-    return temp;
+    return temp
   }
-
 
   useEffect(() => {
     if (data?.getEnrollmentQuestions.length > 0) {
       const jsonTabData = data?.getEnrollmentQuestions.map((t) => {
-        if(t.groups.length > 0) {
-          const jsonGroups = t.groups.map((g) => {
-            if(g.questions.length > 0) {
-              const jsonQuestions = g.questions.map((q) => {
-                return {
-                  ...q,
-                  options: JSON.parse(q.options) || []
-                }
-              }).sort((a, b) => a.order - b.order)
-              return {...g, questions: jsonQuestions}
-            }            
-            return g
-          }).sort((a, b) => a.order - b.order)
-          return {...t, groups: jsonGroups}
+        if (t.groups.length > 0) {
+          const jsonGroups = t.groups
+            .map((g) => {
+              if (g.questions.length > 0) {
+                const jsonQuestions = g.questions
+                  .map((q) => {
+                    return {
+                      ...q,
+                      options: JSON.parse(q.options) || [],
+                    }
+                  })
+                  .sort((a, b) => a.order - b.order)
+                return { ...g, questions: jsonQuestions }
+              }
+              return g
+            })
+            .sort((a, b) => a.order - b.order)
+          return { ...t, groups: jsonGroups }
         }
         return t
       })
       setQuestionsData(jsonTabData)
       setUnsavedChanges(false)
-    }
-    else {
+    } else {
       setQuestionsData(initEnrollmentQuestions)
     }
   }, [data])
@@ -146,17 +144,16 @@ export default function EnrollmentQuestions() {
   useEffect(() => {
     window.onbeforeunload = (e) => {
       if (!unsavedChanges) return
-      e?.preventDefault();
-      return 'Unsaved changes'; // Legacy method for cross browser support
-    };
+      e?.preventDefault()
+    }
     const unreg = history.block(() => {
       if (unsavedChanges) {
         return JSON.stringify({
           header: 'Unsaved Changes',
-          content: 'Are you sure you want to leave without saving changes?'
+          content: 'Are you sure you want to leave without saving changes?',
         })
       }
-      return
+      return undefined
     })
     return () => {
       unreg()
@@ -166,7 +163,7 @@ export default function EnrollmentQuestions() {
 
   useEffect(() => {
     setVisitedTabs([...visitedTabs, currentTab])
-  },[currentTab])
+  }, [currentTab])
 
   const breadCrumbData: Step[] = [
     {
@@ -191,15 +188,15 @@ export default function EnrollmentQuestions() {
     },
   ]
 
-  const disabled = true;
+  const disabled = true
   const handleBreadCrumbClicked = (idx) => {
-    if(includes(visitedTabs, idx) || disabled){
+    if (includes(visitedTabs, idx) || disabled) {
       setCurrentTab(idx)
     }
   }
 
-  const {loading: countyLoading, data: countyData } = useQuery(getCountiesByRegionId, {
-    variables: {regionId: Number(me?.selectedRegionId)},
+  const { loading: countyLoading, data: countyData } = useQuery(getCountiesByRegionId, {
+    variables: { regionId: Number(me?.selectedRegionId) },
     fetchPolicy: 'network-only',
   })
 
@@ -208,8 +205,9 @@ export default function EnrollmentQuestions() {
   useEffect(() => {
     if (!countyLoading && countyData?.getCounties) {
       setCounties(
-        countyData.getCounties
-          .map((v) => {return {label: v.county_name, value: Number(v.id)}})
+        countyData.getCounties.map((v) => {
+          return { label: v.county_name, value: Number(v.id) }
+        }),
       )
     }
   }, [countyData])
@@ -225,7 +223,7 @@ export default function EnrollmentQuestions() {
   const [schoolYearsData, setSchoolYearsData] = useState([])
   const [grades, setGrades] = useState([])
   const [gradesDropDownItems, setGradesDropDownItems] = useState<Array<DropDownItem>>([])
-  const [birthDateCut, setBirthDateCut] = useState<string>('')
+  const [, setBirthDateCut] = useState<string>('')
   useEffect(() => {
     if (!schoolLoading && schoolYearData.getSchoolYearsByRegionId) {
       setSchoolYears(
@@ -239,10 +237,9 @@ export default function EnrollmentQuestions() {
       setSchoolYearsData(schoolYearData.getSchoolYearsByRegionId)
 
       if (schoolYearData.getSchoolYearsByRegionId.length > 0) {
-        setSpecialEd(schoolYearData.getSchoolYearsByRegionId[0].special_ed);
+        setSpecialEd(schoolYearData.getSchoolYearsByRegionId[0].special_ed)
         setSpecialEdOptions(convertSpeicalEdOptions(schoolYearData.getSchoolYearsByRegionId[0].special_ed_options))
       }
-
     }
   }, [schoolYearData])
 
@@ -259,13 +256,13 @@ export default function EnrollmentQuestions() {
   const programYearContext = useMemo(
     () => ({
       programYear,
-      setProgramYear
+      setProgramYear,
     }),
-    []
+    [],
   )
 
   useEffect(() => {
-    if(programYear) {
+    if (programYear) {
       setGradesAndBirthDateCut(programYear)
     }
   }, [programYear])
@@ -275,7 +272,7 @@ export default function EnrollmentQuestions() {
   }, [grades])
 
   const parseGrades = () => {
-    let dropDownItems = []
+    const dropDownItems = []
     GRADES.forEach((grade) => {
       if (grades?.includes(grade.toString())) {
         if (typeof grade !== 'string') {
@@ -295,7 +292,7 @@ export default function EnrollmentQuestions() {
     setGradesDropDownItems(dropDownItems)
   }
 
-  const {loading: schoolDistrictsDataLoading, data: schoolDistrictsData} = useQuery(getSchoolDistrictsByRegionId, {
+  const { loading: schoolDistrictsDataLoading, data: schoolDistrictsData } = useQuery(getSchoolDistrictsByRegionId, {
     variables: {
       regionId: Number(me?.selectedRegionId),
     },
@@ -305,15 +302,19 @@ export default function EnrollmentQuestions() {
   const [schoolDistricts, setSchoolDistricts] = useState<Array<DropDownItem>>([])
 
   useEffect(() => {
-      if(!schoolDistrictsDataLoading && schoolDistrictsData?.schoolDistrict.length > 0) {
-          setSchoolDistricts(schoolDistrictsData?.schoolDistrict.map((d) => {return {label: d.school_district_name, value: d.school_district_name}}))
-      }
+    if (!schoolDistrictsDataLoading && schoolDistrictsData?.schoolDistrict.length > 0) {
+      setSchoolDistricts(
+        schoolDistrictsData?.schoolDistrict.map((d) => {
+          return { label: d.school_district_name, value: d.school_district_name }
+        }),
+      )
+    }
   }, [schoolDistrictsDataLoading])
 
-  const { data: regionData, loading: regionDataLoading, error } = useQuery(getAllRegion)
+  const { data: regionData, loading: regionDataLoading } = useQuery(getAllRegion)
   const [availableRegions, setAvailableRegions] = useState([])
   useEffect(() => {
-    !regionDataLoading &&
+    if (!regionDataLoading)
       setAvailableRegions(
         regionData.regions?.map((region) => ({
           label: region.name,
@@ -323,56 +324,50 @@ export default function EnrollmentQuestions() {
   }, [regionDataLoading])
 
   useEffect(() => {
-    window["setFormChanged"]('EnrollmentQuestionsForm', unsavedChanges);
-  }, [unsavedChanges]);
+    window['setFormChanged']('EnrollmentQuestionsForm', unsavedChanges)
+  }, [unsavedChanges])
 
   const onSelectDefaultQuestions = (selected) => {
     let options = []
     let selectedQuestion = {}
     if (selected == 'Special Education') {
-      options = specialEdOptions;
+      options = specialEdOptions
       selectedQuestion = {
-        label: 'Has this student ever been diagnosed with a learning disability or ever qualified for Special Education Services (including Speech Therapy)?',
+        label:
+          'Has this student ever been diagnosed with a learning disability or ever qualified for Special Education Services (including Speech Therapy)?',
         type: 'Multiple Choices',
         slug: 'meta_special_education',
-        validation: 0
+        validation: 0,
       }
-    }
-    else {
+    } else {
       selectedQuestion = defaultQuestions.filter((d) => d.label == selected)[0]
-      if(selectedQuestion.slug === 'address_county_id') {
+      if (selectedQuestion.slug === 'address_county_id') {
         options = counties
-      }
-      else if(selectedQuestion.slug === 'program_year') {
+      } else if (selectedQuestion.slug === 'program_year') {
         options = schoolYears
-      }
-      else if(selectedQuestion.slug === 'packet_school_district') {
+      } else if (selectedQuestion.slug === 'packet_school_district') {
         options = schoolDistricts
-      }
-      else if(selectedQuestion.slug === 'address_state') {
+      } else if (selectedQuestion.slug === 'address_state') {
         options = availableRegions
-      }
-      else if(selectedQuestion.slug === 'student_gender') {
+      } else if (selectedQuestion.slug === 'student_gender') {
         options = [
-          {label: 'Male', value: 1},
-          {label: 'Female', value: 2},
-  //        {label: 'Non Binary', value: 3},
-  //        {label: 'Undeclared', value: 4},
+          { label: 'Male', value: 1 },
+          { label: 'Female', value: 2 },
+          //        {label: 'Non Binary', value: 3},
+          //        {label: 'Undeclared', value: 4},
         ]
-      }
-      else if(selectedQuestion.slug === 'student_grade_level') {
+      } else if (selectedQuestion.slug === 'student_grade_level') {
         options = gradesDropDownItems
       }
     }
-    
-    
+
     const editItemTemp = {
       type: QuestionTypes.find((q) => q.label === selectedQuestion.type).value,
       question: selectedQuestion.label,
       validation: selectedQuestion.validation,
-      default_question: true,      
+      default_question: true,
       options: options,
-      slug: selectedQuestion.slug
+      slug: selectedQuestion.slug,
     }
     setEditItem([editItemTemp])
     setOpenAddQuestion('new')
@@ -394,26 +389,26 @@ export default function EnrollmentQuestions() {
         }}
         onSubmit={async (vals) => {
           const submitTabs = vals.map((v, vIndex) => {
-            const submitGroups = v.groups.map((g, gIndex) => { 
-              const submitQuestions = g.questions.map((q) => {                
+            const submitGroups = v.groups.map((g, gIndex) => {
+              const submitQuestions = g.questions.map((q) => {
                 return {
                   ...q,
-                  options: JSON.stringify(q?.options || [])
+                  options: JSON.stringify(q?.options || []),
                 }
               })
               questionsData[vIndex].groups[gIndex]?.questions.forEach((qD) => {
-                if(!submitQuestions.find((s) => s.id === qD.id)) {
-                  deleteQuestions({variables: {id: qD.id}})
+                if (!submitQuestions.find((s) => s.id === qD.id)) {
+                  deleteQuestions({ variables: { id: qD.id } })
                 }
-              })              
-              return {...g, questions: submitQuestions}              
+              })
+              return { ...g, questions: submitQuestions }
             })
             questionsData[vIndex].groups.forEach((gD) => {
-              if(!submitGroups.find((s) => s.id === gD.id)) {
-                deleteQuestionGroup({variables: {id: gD.id}})
+              if (!submitGroups.find((s) => s.id === gD.id)) {
+                deleteQuestionGroup({ variables: { id: gD.id } })
               }
             })
-            return {...v, groups: submitGroups}
+            return { ...v, groups: submitGroups }
           })
           const res = await saveQuestionsMutation({
             variables: {
@@ -426,15 +421,15 @@ export default function EnrollmentQuestions() {
               })),
             },
           })
-          if(res) {
+          if (res) {
             refetch()
             setSucessAlert(true)
             setTimeout(() => setSucessAlert(false), 5000)
-          }          
+          }
         }}
       >
-         {({ values, setValues, submitForm }) => (
-          <Form name="EnrollmentQuestionsForm">
+        {({ values }) => (
+          <Form name='EnrollmentQuestionsForm'>
             <Card sx={styles.card}>
               <Box
                 sx={{
@@ -460,159 +455,208 @@ export default function EnrollmentQuestions() {
                   Save
                 </Button>
               </Box>
-                <Box sx={classes.header}>                    
-                  <Box
+              <Box sx={classes.header}>
+                <Box
+                  sx={{
+                    textAlign: 'left',
+                    marginBottom: '12px',
+                  }}
+                >
+                  <IconButton
+                    onClick={() => {
+                      if (JSON.stringify(values) === JSON.stringify(questionsData)) {
+                        history.goBack()
+                      } else {
+                        setUnSaveChangeModal(true)
+                      }
+                    }}
                     sx={{
-                      textAlign: 'left',
-                      marginBottom: '12px',
+                      position: 'relative',
+                      bottom: '2px',
                     }}
                   >
-                    <IconButton
-                      onClick={() => {
-                        if (JSON.stringify(values) === JSON.stringify(questionsData)) {
-                          history.goBack()
-                        } else {
-                          setUnSaveChangeModal(true)
-                        }
-                      }}
+                    <ArrowBackIosRoundedIcon
                       sx={{
-                        position: 'relative',
-                        bottom: '2px',
+                        fontSize: '15px',
+                        stroke: 'black',
+                        strokeWidth: 2,
                       }}
-                    >
-                      <ArrowBackIosRoundedIcon
-                        sx={{
-                          fontSize: '15px',
-                          stroke: 'black',
-                          strokeWidth: 2,
+                    />
+                  </IconButton>
+                  <Typography paddingLeft='7px' fontSize='20px' fontWeight='700' component='span'>
+                    Enrollment Questions
+                  </Typography>
+                </Box>
+                <Breadcrumbs steps={breadCrumbData} handleClick={handleBreadCrumbClicked} />
+              </Box>
+              <TabContext.Provider value={breadCrumbData[currentTab]?.label}>
+                <ProgramYearContext.Provider value={programYearContext}>
+                  <Box sx={classes.breadcrumbs}>
+                    {currentTab === 0 ? (
+                      <Contact />
+                    ) : currentTab === 1 ? (
+                      <Personal />
+                    ) : currentTab === 2 ? (
+                      <Education />
+                    ) : currentTab === 3 ? (
+                      <Documents
+                        specialEd={{
+                          specialEdStatus: specialEdStatus,
+                          specialEdList: specialEdList,
                         }}
                       />
-                    </IconButton>
-                    <Typography paddingLeft='7px' fontSize='20px' fontWeight='700' component='span'>
-                      Enrollment Questions
-                    </Typography>
+                    ) : (
+                      <Submission />
+                    )}
                   </Box>
-                  <Breadcrumbs steps={breadCrumbData} handleClick={handleBreadCrumbClicked}/>
-                </Box>
-                <TabContext.Provider value={breadCrumbData[currentTab]?.label}>
-                  <ProgramYearContext.Provider value={programYearContext}>
-                    <Box sx={classes.breadcrumbs}>
-                      {currentTab === 0 ? (
-                        <Contact />
-                      ) : currentTab === 1 ? (
-                        <Personal />
-                      ) : currentTab === 2 ? (
-                        <Education />
-                      ) : currentTab === 3 ? (
-                        <Documents specialEd = {{
-                          'specialEdStatus' : specialEdStatus,
-                          'specialEdList' : specialEdList
-                        }}/>
-                      ) : (
-                        <Submission />
-                      )}
-                    </Box>
-                  </ProgramYearContext.Provider>
-                  {openAddQuestion === 'new' && <AddNewQuestionModal onClose={(e) => {setOpenAddQuestion(''); setOpenSelectQuestionType(e)}} editItem={editItem} isNewQuestion={true}/>}
-                  {openAddQuestion === 'default' && <DefaultQuestionModal onClose={() => {setOpenAddQuestion(''); setOpenSelectQuestionType(true)}} onCreate={(e) => {onSelectDefaultQuestions(e)}} special_ed={specialEd}/>}
-                  {openSelectQuestionType && <AddQuestionModal onClose={() => setOpenSelectQuestionType(false)} onCreate={(e) => {setOpenAddQuestion(e); setEditItem([]); setOpenSelectQuestionType(false)}}/>}
+                </ProgramYearContext.Provider>
+                {openAddQuestion === 'new' && (
+                  <AddNewQuestionModal
+                    onClose={(e) => {
+                      setOpenAddQuestion('')
+                      setOpenSelectQuestionType(e)
+                    }}
+                    editItem={editItem}
+                    isNewQuestion={true}
+                  />
+                )}
+                {openAddQuestion === 'default' && (
+                  <DefaultQuestionModal
+                    onClose={() => {
+                      setOpenAddQuestion('')
+                      setOpenSelectQuestionType(true)
+                    }}
+                    onCreate={(e) => {
+                      onSelectDefaultQuestions(e)
+                    }}
+                    special_ed={specialEd}
+                  />
+                )}
+                {openSelectQuestionType && (
+                  <AddQuestionModal
+                    onClose={() => setOpenSelectQuestionType(false)}
+                    onCreate={(e) => {
+                      setOpenAddQuestion(e)
+                      setEditItem([])
+                      setOpenSelectQuestionType(false)
+                    }}
+                  />
+                )}
 
-                  {openAddUpload && <AddUploadModal onClose={() => setOpenAddUpload(false)}  specialEd = {{
-                    'specialEdStatus' : specialEdStatus,
-                    'specialEdList' : specialEdList
-                  }} />}
-                  {currentTab === 3 && (
-                    <Box sx={classes.buttonGroup}>
-                      <Button sx={{ ...classes.submitButton, color: 'white'}} onClick={() => setOpenAddUpload(true)}>
-                        Add Upload
-                      </Button>
-                    </Box>
-                  )}
+                {openAddUpload && (
+                  <AddUploadModal
+                    onClose={() => setOpenAddUpload(false)}
+                    specialEd={{
+                      specialEdStatus: specialEdStatus,
+                      specialEdList: specialEdList,
+                    }}
+                  />
+                )}
+                {currentTab === 3 && (
                   <Box sx={classes.buttonGroup}>
-                    <Button sx={{ ...classes.submitButton, color: 'white', marginTop: currentTab === 3 ? 3 : 10}} onClick={() => setOpenSelectQuestionType(true)}>
-                      Add Question
+                    <Button sx={{ ...classes.submitButton, color: 'white' }} onClick={() => setOpenAddUpload(true)}>
+                      Add Upload
                     </Button>
-                    <Button sx={{ ...classes.submitButton, color: 'white', width: '150px', marginTop: currentTab === 3 ? 3 : 10 }} onClick={() => {currentTab < 4 && setCurrentTab(currentTab + 1)}}>
-                      Next
-                    </Button>
-                  </Box>      
-                </TabContext.Provider>      
-
-                {unSaveChangeModal && (
-                  <CustomModal
-                    title='Unsaved Changes'
-                    description='Are you sure you want to leave without saving changes?'
-                    onClose={() => {
-                      setUnSaveChangeModal(false)
-                    }}
-                    onConfirm={() => {
-                      setUnSaveChangeModal(false)
-                      setUnsavedChanges(false)
-                      history.goBack()
-                    }}
-                  />
+                  </Box>
                 )}
-                {cancelModal && (
-                  <CustomModal
-                    title='Cancel Changes'
-                    description='Are you sure you want to cancel changes made?'
-                    cancelStr='No'
-                    confirmStr='Yes'
-                    onClose={() => {
-                      setCancelModal(false)
-                    }}
-                    onConfirm={() => {
-                      setCancelModal(false)
-                      setUnsavedChanges(false)
-                      history.goBack()
-                    }}
-                  />
-                )}
-                {sucessAlert && (
-                  <Alert
-                    sx={{
-                      position: 'absolute',
-                      bottom: '25px',
-                      marginBottom: '15px',
-                      right: '0',
-                    }}
-                    onClose={() => setSucessAlert(false)}
-                    severity='success'
+                <Box sx={classes.buttonGroup}>
+                  <Button
+                    sx={{ ...classes.submitButton, color: 'white', marginTop: currentTab === 3 ? 3 : 10 }}
+                    onClick={() => setOpenSelectQuestionType(true)}
                   >
-                    Questions saved successfully
-                  </Alert>
-                )}
-              </Card>
+                    Add Question
+                  </Button>
+                  <Button
+                    sx={{
+                      ...classes.submitButton,
+                      color: 'white',
+                      width: '150px',
+                      marginTop: currentTab === 3 ? 3 : 10,
+                    }}
+                    onClick={() => {
+                      if (currentTab < 4) setCurrentTab(currentTab + 1)
+                    }}
+                  >
+                    Next
+                  </Button>
+                </Box>
+              </TabContext.Provider>
+
+              {unSaveChangeModal && (
+                <CustomModal
+                  title='Unsaved Changes'
+                  description='Are you sure you want to leave without saving changes?'
+                  onClose={() => {
+                    setUnSaveChangeModal(false)
+                  }}
+                  onConfirm={() => {
+                    setUnSaveChangeModal(false)
+                    setUnsavedChanges(false)
+                    history.goBack()
+                  }}
+                />
+              )}
+              {cancelModal && (
+                <CustomModal
+                  title='Cancel Changes'
+                  description='Are you sure you want to cancel changes made?'
+                  cancelStr='No'
+                  confirmStr='Yes'
+                  onClose={() => {
+                    setCancelModal(false)
+                  }}
+                  onConfirm={() => {
+                    setCancelModal(false)
+                    setUnsavedChanges(false)
+                    history.goBack()
+                  }}
+                />
+              )}
+              {sucessAlert && (
+                <Alert
+                  sx={{
+                    position: 'absolute',
+                    bottom: '25px',
+                    marginBottom: '15px',
+                    right: '0',
+                  }}
+                  onClose={() => setSucessAlert(false)}
+                  severity='success'
+                >
+                  Questions saved successfully
+                </Alert>
+              )}
+            </Card>
           </Form>
-         )}
+        )}
       </Formik>
     </Grid>
   )
 }
 
 const styles = {
-    card: {
-      padding: '40px 40px',
-      textAlign: 'start',
-    },
-    actionButtons: {
-      borderRadius: 10,
-      mr: '20px',
-      background: 'linear-gradient(90deg, #3E2783 0%, rgba(62, 39, 131, 0) 100%) #4145FF',
-      fontWeight: 'bold',
-      paddingX: '20px',
-      color: 'white',
-    },
-    cancelButton: {
-      borderRadius: 10,
-      mr: '20px',
-      background: 'linear-gradient(90deg, #D23C33 0%, rgba(62, 39, 131, 0) 100%) #D23C33',
-      fontWeight: 'bold',
-      paddingX: '20px',
-      color: 'white',
-    },
-    addButton: {
-      textAlign: 'center',
-      color: '#1A1A1A',
-    },
-  }
+  card: {
+    padding: '40px 40px',
+    textAlign: 'start',
+  },
+  actionButtons: {
+    borderRadius: 10,
+    mr: '20px',
+    background: 'linear-gradient(90deg, #3E2783 0%, rgba(62, 39, 131, 0) 100%) #4145FF',
+    fontWeight: 'bold',
+    paddingX: '20px',
+    color: 'white',
+  },
+  cancelButton: {
+    borderRadius: 10,
+    mr: '20px',
+    background: 'linear-gradient(90deg, #D23C33 0%, rgba(62, 39, 131, 0) 100%) #D23C33',
+    fontWeight: 'bold',
+    paddingX: '20px',
+    color: 'white',
+  },
+  addButton: {
+    textAlign: 'center',
+    color: '#1A1A1A',
+  },
+}

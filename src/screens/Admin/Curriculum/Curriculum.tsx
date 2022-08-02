@@ -5,8 +5,8 @@ import { useRouteMatch } from 'react-router-dom'
 import ItemBackground from '../../../assets/quick-link-blue.png'
 import { ItemCard } from '../../../components/ItemCard/ItemCard'
 import { CURRICULUM } from '../../../utils/constants'
-import { CurriculumItem, CurriculumType } from './types'
 import { HomeroomResources } from './HomeroomResources/HomeroomResources'
+import { CurriculumItem, CurriculumType } from './types'
 
 const Curriculum: React.FC = () => {
   const isExact = useRouteMatch(CURRICULUM)?.isExact

@@ -1,15 +1,19 @@
-import React, { useState } from 'react'
+import React, { FunctionComponent } from 'react'
 import { DropDown } from '../../components/DropDown/DropDown'
 
 type ProgramSelectProps = {
   program: string
   setProgram: (value: string) => void
   setIsChanged: (value: boolean) => void
-  isChanged: any
+  isChanged: unknown
 }
 
-export default function ProgramSelect({ program, setProgram, setIsChanged, isChanged }: ProgramSelectProps) {
-  const oldProgram = program;
+export const ProgramSelect: FunctionComponent<ProgramSelectProps> = ({
+  program,
+  setProgram,
+  setIsChanged,
+  isChanged,
+}) => {
   const items = [
     {
       label: <em>None</em>,
@@ -27,17 +31,17 @@ export default function ProgramSelect({ program, setProgram, setIsChanged, isCha
   const handleChange = (event: string) => {
     setProgram(event)
 
-    if(program != event ){
+    if (program != event) {
       setIsChanged({
         ...isChanged,
-        program: true
+        program: true,
       })
-    }else{
+    } else {
       setIsChanged({
         ...isChanged,
-        program: false
+        program: false,
       })
-    }    
+    }
   }
 
   return (

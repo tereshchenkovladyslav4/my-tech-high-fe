@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client'
 
 export const updateProfile = gql`
-mutation UpdateStudentProfile($updateStudentProfileInput: UpdateStudentProfileInput!) {
+  mutation UpdateStudentProfile($updateStudentProfileInput: UpdateStudentProfileInput!) {
     updateStudentProfile(updateStudentProfileInput: $updateStudentProfileInput) {
       student_id
       person {
@@ -15,7 +15,7 @@ mutation UpdateStudentProfile($updateStudentProfileInput: UpdateStudentProfileIn
 `
 
 export const removeProfilePhoto = gql`
-mutation RemoveStudentProfilePhoto($updateStudentProfileInput: UpdateStudentProfileInput!) {
+  mutation RemoveStudentProfilePhoto($updateStudentProfileInput: UpdateStudentProfileInput!) {
     removeStudentProfilePhoto(updateStudentProfileInput: $updateStudentProfileInput) {
       student_id
       person {

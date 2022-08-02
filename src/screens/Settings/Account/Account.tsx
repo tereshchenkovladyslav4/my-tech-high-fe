@@ -1,14 +1,15 @@
-import { Alert, AlertColor, Box, Button, Card, Grid, TextField } from '@mui/material'
 import React, { useContext, useState } from 'react'
+import { useMutation } from '@apollo/client'
+import { Alert, AlertColor, Box, Button, Card, Grid, TextField } from '@mui/material'
+import { useFormik } from 'formik'
+import * as yup from 'yup'
 import { Paragraph } from '../../../components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '../../../components/Typography/Subtitle/Subtitle'
 import { UserContext, UserInfo } from '../../../providers/UserContext/UserProvider'
 import { SYSTEM_08 } from '../../../utils/constants'
-import { useStyles } from '../styles'
 import { updatePassword } from '../service'
-import { useMutation } from '@apollo/client'
-import * as yup from 'yup'
-import { useFormik } from 'formik'
+import { useStyles } from '../styles'
+import { AccountTemplateType } from './types'
 
 type openAlertSaveType = {
   message: string
@@ -16,12 +17,12 @@ type openAlertSaveType = {
   open: boolean
 }
 
-export const Account = ({ handleIsFormChange }) => {
+export const Account: AccountTemplateType = ({ handleIsFormChange }) => {
   const classes = useStyles
   const { me } = useContext(UserContext)
   const { profile } = me as UserInfo
   const [updatePasswordMutation] = useMutation(updatePassword)
-  const [message, setMessage] = useState('')
+
   const [openSaveAlert, setOpenSaveAlert] = useState<openAlertSaveType>({
     message: '',
     status: 'success',
@@ -37,7 +38,7 @@ export const Account = ({ handleIsFormChange }) => {
         },
       },
     })
-      .then((res) => {
+      .then(() => {
         setOpenSaveAlert({ message: 'Password changed Successfully', status: 'success', open: true })
 
         setTimeout(() => {
@@ -62,7 +63,7 @@ export const Account = ({ handleIsFormChange }) => {
       .string()
       .matches(
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/,
-        "Must Contain 8 Characters, One Uppercase, One Lowercase, One Number and One Special Case Character"
+        'Must Contain 8 Characters, One Uppercase, One Lowercase, One Number and One Special Case Character',
       )
       .required('Password is required'),
     confirmPassword: yup

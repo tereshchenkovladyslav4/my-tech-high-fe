@@ -1,13 +1,11 @@
-import { useMutation } from '@apollo/client'
-import { Box, Button, Container, Grid, TextField, Typography } from '@mui/material'
-import React, { useState } from 'react'
-import BGSVG from '../../assets/ApplicationBG.svg'
-import { useFormik } from 'formik'
-import * as yup from 'yup'
+import React, { FunctionComponent } from 'react'
+import { Box, Container } from '@mui/material'
+
 import { Link } from 'react-router-dom'
-import { useStyles } from './styles'
-import { Title } from '../../components/Typography/Title/Title'
+
+import BGSVG from '../../assets/ApplicationBG.svg'
 import { NewApplicationFooter } from '../../components/NewApplicationFooter/NewApplicationFooter'
+import { Title } from '../../components/Typography/Title/Title'
 import { DASHBOARD, MTHBLUE } from '../../utils/constants'
 
 export type StudentInput = {
@@ -17,9 +15,7 @@ export type StudentInput = {
   grade_level: string
 }
 
-export const CompleteAccountSuccess = () => {
-  const classes = useStyles
-
+export const CompleteAccountSuccess: FunctionComponent = () => {
   return (
     <Box sx={{ bgcolor: '#EEF4F8' }}>
       <Container sx={{ bgcolor: '#EEF4F8' }}>

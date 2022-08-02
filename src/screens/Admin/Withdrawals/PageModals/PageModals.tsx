@@ -1,27 +1,26 @@
-import React, { useContext } from 'react'
-import { Stack, TextField } from '@mui/material'
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
-import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker'
+import React, { FunctionComponent, useContext } from 'react'
 import { useMutation, useQuery } from '@apollo/client'
-import moment from 'moment'
-import { WarningModal } from '../../../../components/WarningModal/Warning'
-import { ConfirmModal } from '../components/ConfirmModal'
-import { ActiveModal } from '../../UserProfile/StudentProfile/components/ActiveModal'
-import { PageModalsProps } from '../type'
+import { Stack, TextField } from '@mui/material'
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
+import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker'
 import { ApplicationEmailModal as EmailModal } from '../../../../components/EmailModal/ApplicationEmailModal'
-import { WithdrawalEmailModal } from '../WithdrawalPage/WithdrawalEmailModal'
+import { WarningModal } from '../../../../components/WarningModal/Warning'
+import { getEmailByWithdrawalId } from '../../../../graphql/queries/withdrawal'
+import { UserContext } from '../../../../providers/UserContext/UserProvider'
+import { ActiveModal } from '../../UserProfile/StudentProfile/components/ActiveModal'
+import { ConfirmModal } from '../components/ConfirmModal'
 import {
   emailWithdrawalMutation,
   quickWithdrawalMutation,
   reinstateWithdrawalMutation,
   updateWithdrawalMutation,
 } from '../service'
-import { UserContext } from '../../../../providers/UserContext/UserProvider'
-import { getEmailByWithdrawalId } from '../../../../graphql/queries/withdrawal'
+import { PageModalsProps } from '../type'
 import { WithdrawalModal } from '../WithdrawalModal'
+import { WithdrawalEmailModal } from '../WithdrawalPage/WithdrawalEmailModal'
 
-const PageModals = ({
+const PageModals: FunctionComponent<PageModalsProps> = ({
   showWithdrawalConfirmModal,
   showReinstateModal,
   reinstateModalType,
@@ -48,7 +47,7 @@ const PageModals = ({
   refetch,
   refetchWithdrawalsCount,
   refetchEmailTemplate,
-}: PageModalsProps) => {
+}) => {
   const { me } = useContext(UserContext)
   const [quickWithdrawal] = useMutation(quickWithdrawalMutation)
   const [reinstateWithdrawal] = useMutation(reinstateWithdrawalMutation)
@@ -80,7 +79,7 @@ const PageModals = ({
       refetchEmailTemplate()
     } catch (error) {}
   }
-  const onReinstateWithdrawal = async (reinstateType: number = 0) => {
+  const onReinstateWithdrawal = async (reinstateType = 0) => {
     if (checkedWithdrawalIds.length === 0) {
       return
     }
@@ -105,7 +104,7 @@ const PageModals = ({
       date: value?.toString() || '',
     })
   }
-  const handleAcceptDate = async (e: any) => {
+  const handleAcceptDate = async (e: unknown) => {
     const acceptDate = new Date(e || '').toISOString()
     await updateWithdrawal({
       variables: {

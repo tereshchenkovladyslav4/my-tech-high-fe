@@ -16,6 +16,7 @@ import { Box } from '@mui/system'
 import { map } from 'lodash'
 import { DropDown } from '../../../../components/DropDown/DropDown'
 import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
+import { WarningModal } from '../../../../components/WarningModal/Warning'
 import { createUserMutation } from '../../../../graphql/mutation/user'
 import { getAllAccess } from '../../../../graphql/queries/access'
 import { getAllRegion } from '../../../../graphql/queries/region'
@@ -23,12 +24,11 @@ import { getAllRoles } from '../../../../graphql/queries/role'
 import { getUsersByRegions, getParentDetailByEmail } from '../../../../graphql/queries/user'
 import { UserContext } from '../../../../providers/UserContext/UserProvider'
 import { BUTTON_LINEAR_GRADIENT, PROVIDERS, SOE, SOE_OPTIONS, SPED } from '../../../../utils/constants'
-import { useStyles } from './styles'
-import { NewModalTemplateType } from './types'
-import { WarningModal } from '../../../../components/WarningModal/Warning'
+import { StudentsModal } from '../../UserProfile/components/NewUserModal/StudentsModal'
 import { ApolloError, Region } from '../interfaces'
 import { AddedModal } from './AddedModal/AddedModal'
-import { StudentsModal } from '../../UserProfile/components/NewUserModal/StudentsModal'
+import { useStyles } from './styles'
+import { NewModalTemplateType } from './types'
 
 interface CheckBoxTemplate {
   value: number
@@ -50,12 +50,12 @@ export const NewUserModal: NewModalTemplateType = ({ handleModem, visible }) => 
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
   const [userLevel, setUserLevel] = useState('')
-  const [state, setState] = useState([])
+
   const [regionAll, setRegionAll] = useState(false)
   const [accessAll, setAccessAll] = useState(false)
-  const [counter, setCounter] = useState(0)
+  const [, setCounter] = useState(0)
   const [soe, setSoe] = useState('')
-  const [selectedState, setSelectedState] = useState<Number | null>(null)
+  const [selectedState, setSelectedState] = useState<number | null>(null)
   const [showStudentModal, setShowStudentModal] = useState(false)
   const [students, setStudents] = useState([])
   const [regions, setRegions] = useState([])
@@ -74,11 +74,7 @@ export const NewUserModal: NewModalTemplateType = ({ handleModem, visible }) => 
   const [createUser, { data: responseData, loading: uploading, error: uploadingError }] =
     useMutation(createUserMutation)
 
-  const {
-    loading: userLoading,
-    error: userError,
-    data: parentData,
-  } = useQuery(getParentDetailByEmail, {
+  const { loading: userLoading, data: parentData } = useQuery(getParentDetailByEmail, {
     variables: {
       email: parentEmail,
     },
@@ -181,7 +177,7 @@ export const NewUserModal: NewModalTemplateType = ({ handleModem, visible }) => 
     value: el,
   }))
 
-  const handleRoleChange = (value: any) => {
+  const handleRoleChange = (value: unknown) => {
     const data = rolesOption.filter((role) => role?.value == value)
     if (data.length > 0) {
       setUserLevel(data[0]?.label)
@@ -195,7 +191,7 @@ export const NewUserModal: NewModalTemplateType = ({ handleModem, visible }) => 
     setSoe('')
   }
 
-  const toggleCheckBoxes = (group: string, flag: boolean = false) => {
+  const toggleCheckBoxes = (group: string, flag = false) => {
     if (group === 'region') {
       if (flag) {
         const updatedRegion = map(regionOption, (region) => {

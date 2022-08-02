@@ -1,20 +1,20 @@
-import React, { useEffect, useState, useContext } from 'react'
-import { Card, Box } from '@mui/material'
+import React, { useEffect, useState, useContext, FunctionComponent } from 'react'
 import { useQuery } from '@apollo/client'
+import { Card, Box } from '@mui/material'
 import moment from 'moment'
-import { UserContext } from '../../../../providers/UserContext/UserProvider'
-import { mainClasses } from './styles'
-import { Withdrawal } from '../../../../graphql/models/withdrawal'
-import { PageHeader } from '../PageHeader'
-import PageAction from '../PageAction/PageAction'
-import { WITHDRAWAL_HEADCELLS } from '../../../../utils/PageHeadCellsConstant'
-import { WITHDRAWAL_STATUS_LABEL } from '../../../../utils/constants'
-import { EffectiveVM, WithdrawalPageProps, WithdrawalResponseVM } from '../type'
 import { SortableTable } from '../../../../components/SortableTable/SortableTable'
+import { Withdrawal } from '../../../../graphql/models/withdrawal'
 import { getWithdrawalsQuery } from '../../../../graphql/queries/withdrawal'
+import { UserContext } from '../../../../providers/UserContext/UserProvider'
+import { WITHDRAWAL_STATUS_LABEL } from '../../../../utils/constants'
+import { WITHDRAWAL_HEADCELLS } from '../../../../utils/PageHeadCellsConstant'
+import PageAction from '../PageAction/PageAction'
+import { PageHeader } from '../PageHeader'
 import { PageModals } from '../PageModals'
+import { EffectiveVM, WithdrawalPageProps, WithdrawalResponseVM } from '../type'
+import { mainClasses } from './styles'
 
-const WithdrawalPage = ({
+const WithdrawalPage: FunctionComponent<WithdrawalPageProps> = ({
   searchField,
   selectedYear,
   withdrawalCounts,
@@ -24,9 +24,9 @@ const WithdrawalPage = ({
   setSelectedYear,
   refetchWithdrawalsCount,
   refetchEmailTemplate,
-}: WithdrawalPageProps) => {
+}) => {
   const { me } = useContext(UserContext)
-  const [tableData, setTableData] = useState<Array<any>>([])
+  const [tableData, setTableData] = useState<Array<unknown>>([])
   const [skip, setSkip] = useState<number>(0)
   const [sort, setSort] = useState<string>('submitted|asc')
   const [paginationLimit, setPaginationLimit] = useState<number>(25)
@@ -83,7 +83,7 @@ const WithdrawalPage = ({
     setOpenEffectiveCalendar(true)
   }
 
-  const sortChangeAction = (property: keyof any, order: string) => {
+  const sortChangeAction = (property: keyof unknown, order: string) => {
     setSort(`${property.toString()}|${order}`)
     refetch()
   }

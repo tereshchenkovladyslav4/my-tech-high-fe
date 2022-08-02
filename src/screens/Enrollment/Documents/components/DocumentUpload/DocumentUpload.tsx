@@ -1,90 +1,84 @@
-import { Button, IconButton, Grid } from '@mui/material'
-import { Box } from '@mui/system'
 import React, { useEffect, useState } from 'react'
+import { Button, Grid } from '@mui/material'
+import { Box } from '@mui/system'
+import { filter, map } from 'lodash'
+import { QUESTION_TYPE } from '../../../../../components/QuestionItem/QuestionItemProps'
 import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
-import { useStyles } from './styles'
-import { DocumentUploadModal } from '../DocumentUploadModal/DocumentUploadModal'
+import { EnrollmentQuestionItem } from '../../../Question'
 import { DocumentListItem } from '../DocumentList/DocumentListItem'
-import { filter, map } from 'lodash'
-import {  useFormikContext } from 'formik'
-import EnrollmentQuestionItem from '../../../Question'
-import { QUESTION_TYPE } from '../../../../../components/QuestionItem/QuestionItemProps'
+import { DocumentUploadModal } from '../DocumentUploadModal/DocumentUploadModal'
+import { useStyles } from './styles'
+import { DocumentUploadTemplateType } from './types'
 
-export const DocumentUpload = ({item, formik, handleUpload, file, firstName, lastName, disabled}) => {
+export const DocumentUpload: DocumentUploadTemplateType = ({
+  item,
+  formik,
+  handleUpload,
+  file,
+  firstName,
+  lastName,
+  disabled,
+}) => {
   const classes = useStyles
 
-  const  [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(false)
   const [files, setFiles] = useState<undefined | File[]>()
-  const handleFile = (fileName: File[]) => {
 
-    const myRenamedFile = fileName.map((f, index) => {
+  const handleFile = (fileName: File[]) => {
+    const myRenamedFile = fileName.map((f) => {
       const fileType = f.name.split('.')[1]
-      return new File([f], `${firstName.charAt(0).toUpperCase()}.${lastName}${item[0].options[0].label}.${fileType}`, {type: f.type})
+      return new File([f], `${firstName.charAt(0).toUpperCase()}.${lastName}${item[0].options[0].label}.${fileType}`, {
+        type: f.type,
+      })
     })
     setFiles(myRenamedFile)
   }
-	const deleteFile = (currFile: File) => {
-		setFiles(filter(files, (validFile) => validFile !== currFile))
-	}
 
-  useEffect(() =>{
+  const deleteFile = (currFile: File) => {
+    setFiles(filter(files, (validFile) => validFile !== currFile))
+  }
+
+  useEffect(() => {
     handleUpload(item[0].question, files)
-  },[item[0], files])
+  }, [item[0], files])
 
   const renderFiles = (upload) => {
     return upload
-    ? map(files, (curr, index) => (
-        <DocumentListItem 
-          file={curr}
-          key={index}
-          closeAction={deleteFile}
-        />
-    ))
-    :
-    //  map(file, (curr, index) => (
-      file?.length > 0 && <DocumentListItem 
-        file={file?.at(-1)}
-        // key={index}
-      />
+      ? map(files, (curr, index) => <DocumentListItem file={curr} key={index} closeAction={deleteFile} />)
+      : //  map(file, (curr, index) => (
+        file?.length > 0 && (
+          <DocumentListItem
+            file={file?.at(-1)}
+            // key={index}
+          />
+        )
     // ))
   }
-  if(item[0].type !== QUESTION_TYPE.UPLOAD) {
+  if (item[0].type !== QUESTION_TYPE.UPLOAD) {
     return (
       <Grid container rowSpacing={2} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
-        <EnrollmentQuestionItem item={item} group={'root'} formik={formik}/>
+        <EnrollmentQuestionItem item={item} group={'root'} formik={formik} />
       </Grid>
     )
-  }
-  else {
+  } else {
     return (
       <Box sx={classes.container}>
         <Box display='flex' alignItems='center' justifyContent='start'>
-          <Subtitle fontWeight='700'>{`${item[0].question} ${item[0].required ? "(required)" : ""}`}</Subtitle>
+          <Subtitle fontWeight='700'>{`${item[0].question} ${item[0].required ? '(required)' : ''}`}</Subtitle>
         </Box>
         <Paragraph size='medium'>
           <p dangerouslySetInnerHTML={{ __html: item[0].options[0].value }}></p>
         </Paragraph>
-        { files ? renderFiles(true) :  renderFiles(false)}
+        {files ? renderFiles(true) : renderFiles(false)}
         <Box sx={classes.buttonContainer}>
           <Paragraph size='medium'>{'Allowed file types: pdf, png, jpg, jpeg, gif, bmp (Less than 25MB)'}</Paragraph>
-          <Button 
-            disabled={disabled}
-            style={classes.button}
-            onClick={() => setOpen(true)}
-          >
+          <Button disabled={disabled} style={classes.button} onClick={() => setOpen(true)}>
             <Paragraph size='medium'>Upload</Paragraph>
           </Button>
         </Box>
-        { open 
-          && <DocumentUploadModal
-            handleModem={() => setOpen(!open)}
-            handleFile={handleFile}
-            limit = {1}
-          /> 
-        }
+        {open && <DocumentUploadModal handleModem={() => setOpen(!open)} handleFile={handleFile} limit={1} />}
       </Box>
     )
   }
-  
 }

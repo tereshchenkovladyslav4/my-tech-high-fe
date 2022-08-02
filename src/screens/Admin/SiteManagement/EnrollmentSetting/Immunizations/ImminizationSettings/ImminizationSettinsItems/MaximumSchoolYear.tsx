@@ -1,9 +1,9 @@
 import React, { useContext } from 'react'
-import { Box, FormControl, MenuItem, Typography, Select, Divider, FormHelperText } from '@mui/material'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
-import { useStyles } from './style'
-import { ImmunizationsData, SchoolYears, YearsContext } from '../../Immunizations'
+import { Box, FormControl, MenuItem, Typography, Select, Divider, FormHelperText } from '@mui/material'
 import { useFormikContext } from 'formik'
+import { ImmunizationsData, SchoolYears, YearsContext } from '../../Immunizations'
+import { useStyles } from './style'
 
 const MaximumSchoolYear: React.FC = () => {
   const styles = useStyles()

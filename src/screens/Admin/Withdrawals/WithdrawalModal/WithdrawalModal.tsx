@@ -1,19 +1,23 @@
-import React, { useEffect, useState } from 'react'
-import { Box, Grid, Modal } from '@mui/material'
+import React, { FunctionComponent, useEffect, useState } from 'react'
 import { useQuery } from '@apollo/client'
-import { EmailTemplateResponseVM, StudentInfo, WithdrawalResponseVM } from '../type'
-import { withdrawalModalClasses } from './styles'
+import { Box, Grid, Modal } from '@mui/material'
 import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
-import LeftComponent from './LeftComponent'
-import RightComponent from './RightComponent'
 import { getStudentInfoByWithdrawalId } from '../service'
+import { EmailTemplateResponseVM, StudentInfo, WithdrawalResponseVM } from '../type'
+import { LeftComponent } from './LeftComponent'
+import { RightComponent } from './RightComponent'
+import { withdrawalModalClasses } from './styles'
 
 type WithdrawalModalProps = {
   withdrawal: WithdrawalResponseVM
   emailTemplate: EmailTemplateResponseVM | undefined
   handleModem: () => void
 }
-export default function WithdrawalModal({ handleModem, emailTemplate, withdrawal }: WithdrawalModalProps) {
+export const WithdrawalModal: FunctionComponent<WithdrawalModalProps> = ({
+  handleModem,
+  emailTemplate,
+  withdrawal,
+}) => {
   const { withdrawal_id } = withdrawal
   const [studentInfo, setStudentInfo] = useState<StudentInfo>()
   const { loading, data } = useQuery(getStudentInfoByWithdrawalId, {

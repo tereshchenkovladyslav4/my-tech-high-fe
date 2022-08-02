@@ -1,126 +1,156 @@
 import React, { useContext, useEffect, useState } from 'react'
+import { useMutation } from '@apollo/client'
 import { Grid, Box, Button } from '@mui/material'
-import { TabContext, UserContext, UserInfo } from '../../../providers/UserContext/UserProvider'
-import GroupItem from '../Group'
-import { Paragraph } from '../../../components/Typography/Paragraph/Paragraph'
-import { useStyles } from '../styles'
-import { isPhoneNumber, isNumber } from '../../../utils/stringHelpers'
-import * as yup from 'yup';
-import { useMutation, useQuery } from '@apollo/client'
-import { omit } from 'lodash';
-import { EnrollmentContext } from '../../../providers/EnrollmentPacketPrivder/EnrollmentPacketProvider'
-import { enrollmentContactMutation, getSchoolDistrictsByRegionId } from './service'
 import { useFormik } from 'formik'
+import { omit } from 'lodash'
+import * as yup from 'yup'
 import { QUESTION_TYPE } from '../../../components/QuestionItem/QuestionItemProps'
+import { Paragraph } from '../../../components/Typography/Paragraph/Paragraph'
+import { EnrollmentContext } from '../../../providers/EnrollmentPacketPrivder/EnrollmentPacketProvider'
+import { TabContext, UserContext, UserInfo } from '../../../providers/UserContext/UserProvider'
+import { isNumber } from '../../../utils/stringHelpers'
+import { GroupItem } from '../Group'
+import { useStyles } from '../styles'
+import { enrollmentContactMutation } from './service'
+import { EducationTemplateType } from './types'
 
-export default function Education({id, questions}) {
-    const { tab, setTab, visitedTabs, setVisitedTabs } = useContext(TabContext)
-    const classes = useStyles
+export const Education: EducationTemplateType = ({ id, questions }) => {
+  const { tab, setTab, setVisitedTabs } = useContext(TabContext)
+  const classes = useStyles
 
-    const { me, setMe } = useContext(UserContext)
+  const { me, setMe } = useContext(UserContext)
   const { setPacketId, disabled } = useContext(EnrollmentContext)
   const { profile, students } = me as UserInfo
 
   const student = students.find((s) => s.student_id === id)
   const [validationSchema, setValidationSchema] = useState(yup.object({}))
-  const [submitEducationMutation, { data }] = useMutation(enrollmentContactMutation)
+  const [submitEducationMutation] = useMutation(enrollmentContactMutation)
 
-  const { setCurrentTab, packetId, student: enStudnet, disabled:disabledField } = useContext(EnrollmentContext)
-    
   useEffect(() => {
-    if(questions?.groups?.length > 0) {
-      let valid_student = {}
-      let valid_parent = {}
-      let valid_meta = {}
-      let valid_address = {}
-      let valid_packet = {}
+    if (questions?.groups?.length > 0) {
+      const valid_student = {}
+      const valid_parent = {}
+      const valid_meta = {}
+      const valid_address = {}
+      const valid_packet = {}
       questions.groups.map((g) => {
         g.questions.map((q) => {
-          if(q.type !== QUESTION_TYPE.UPLOAD && q.type !== QUESTION_TYPE.INFORMATION) {
-            if(q.slug?.includes('student_')) {
-              if(q.required) {
-                if(q.slug?.toLocaleLowerCase().includes('emailconfirm')) {
+          if (q.type !== QUESTION_TYPE.UPLOAD && q.type !== QUESTION_TYPE.INFORMATION) {
+            if (q.slug?.includes('student_')) {
+              if (q.required) {
+                if (q.slug?.toLocaleLowerCase().includes('emailconfirm')) {
                   valid_student[`${q.slug?.replace('student_', '')}`] = yup
-                      .string()
-                      .required('Email is required')
-                      .oneOf([yup.ref('email')], 'Emails do not match')
-                }
-                else if(q.validation === 1) {
-                  valid_student[`${q.slug?.replace('student_', '')}`] = yup.string().email('Enter a valid email').required('Email is required').nullable()
-                }
-                else if(q.validation === 2) {
-                  valid_student[`${q.slug?.replace('student_', '')}`] = yup.string()
-                  .required(`${q.question} is required`)
-                  .test(`${q.question}-selected`, `${q.question} is invalid`, (value) => {
-                    return isNumber.test(value)
-                  })
-                }
-                else if(q.type === QUESTION_TYPE.CHECKBOX || q.type === QUESTION_TYPE.AGREEMENT) {
-                  valid_student[`${q.slug?.replace('student_', '')}`] = yup.array().min(1).required(`${q.question} is required`).nullable()
-                }
-                else {
-                  valid_student[`${q.slug?.replace('student_', '')}`] = yup.string().required(`${q.question} is required`).nullable()
+                    .string()
+                    .required('Email is required')
+                    .oneOf([yup.ref('email')], 'Emails do not match')
+                } else if (q.validation === 1) {
+                  valid_student[`${q.slug?.replace('student_', '')}`] = yup
+                    .string()
+                    .email('Enter a valid email')
+                    .required('Email is required')
+                    .nullable()
+                } else if (q.validation === 2) {
+                  valid_student[`${q.slug?.replace('student_', '')}`] = yup
+                    .string()
+                    .required(`${q.question} is required`)
+                    .test(`${q.question}-selected`, `${q.question} is invalid`, (value) => {
+                      return isNumber.test(value)
+                    })
+                } else if (q.type === QUESTION_TYPE.CHECKBOX || q.type === QUESTION_TYPE.AGREEMENT) {
+                  valid_student[`${q.slug?.replace('student_', '')}`] = yup
+                    .array()
+                    .min(1)
+                    .required(`${q.question} is required`)
+                    .nullable()
+                } else {
+                  valid_student[`${q.slug?.replace('student_', '')}`] = yup
+                    .string()
+                    .required(`${q.question} is required`)
+                    .nullable()
                 }
               }
-            }
-            else if(q.slug?.includes('parent_')) {
-              if(q.required) {
-                if(q.slug?.toLocaleLowerCase().includes('emailconfirm')) {
+            } else if (q.slug?.includes('parent_')) {
+              if (q.required) {
+                if (q.slug?.toLocaleLowerCase().includes('emailconfirm')) {
                   valid_parent[`${q.slug?.replace('parent_', '')}`] = yup
-                      .string()
-                      .required('Email is required')
-                      .oneOf([yup.ref('email')], 'Emails do not match')
+                    .string()
+                    .required('Email is required')
+                    .oneOf([yup.ref('email')], 'Emails do not match')
+                } else if (q.validation === 1) {
+                  valid_parent[`${q.slug?.replace('parent_', '')}`] = yup
+                    .string()
+                    .email('Enter a valid email')
+                    .required('Email is required')
+                    .nullable()
+                } else if (q.validation === 2) {
+                  valid_parent[`${q.slug?.replace('parent_', '')}`] = yup
+                    .string()
+                    .required(`${q.question} is required`)
+                    .test(`${q.question}-selected`, `${q.question} is invalid`, (value) => {
+                      return isNumber.test(value)
+                    })
+                } else if (q.type === QUESTION_TYPE.CHECKBOX || q.type === QUESTION_TYPE.AGREEMENT) {
+                  valid_parent[`${q.slug?.replace('parent_', '')}`] = yup
+                    .array()
+                    .min(1)
+                    .required(`${q.question} is required`)
+                    .nullable()
+                } else {
+                  valid_parent[`${q.slug?.replace('parent_', '')}`] = yup
+                    .string()
+                    .required(`${q.question} is required`)
+                    .nullable()
                 }
-                else if(q.validation === 1) {
-                  valid_parent[`${q.slug?.replace('parent_', '')}`] = yup.string().email('Enter a valid email').required('Email is required').nullable()
-                }
-                else if(q.validation === 2) {
-                  valid_parent[`${q.slug?.replace('parent_', '')}`] = yup.string()
+              }
+            } else if (q.slug?.includes('meta_') && q.required && !q.additional_question) {
+              if (q.validation === 1) {
+                valid_meta[`${q.slug}`] = yup
+                  .string()
+                  .email('Enter a valid email')
+                  .required('Email is required')
+                  .nullable()
+              } else if (q.validation === 2) {
+                valid_meta[`${q.slug}`] = yup
+                  .string()
                   .required(`${q.question} is required`)
                   .test(`${q.question}-selected`, `${q.question} is invalid`, (value) => {
                     return isNumber.test(value)
                   })
-                }
-                else if(q.type === QUESTION_TYPE.CHECKBOX || q.type === QUESTION_TYPE.AGREEMENT) {
-                  valid_parent[`${q.slug?.replace('parent_', '')}`] = yup.array().min(1).required(`${q.question} is required`).nullable()
-                }
-                else {
-                  valid_parent[`${q.slug?.replace('parent_', '')}`] = yup.string().required(`${q.question} is required`).nullable()
-                }
-              }
-            }
-            else if(q.slug?.includes('meta_') && q.required && !q.additional_question) {
-              if(q.validation === 1) {
-                valid_meta[`${q.slug}`] = yup.string().email('Enter a valid email').required('Email is required').nullable()
-              }
-              else if(q.validation === 2) {
-                valid_meta[`${q.slug}`] = yup.string()
-                .required(`${q.question} is required`)
-                .test(`${q.question}-selected`, `${q.question} is invalid`, (value) => {
-                  return isNumber.test(value)
-                })
-              }
-              else if(q.type === QUESTION_TYPE.CHECKBOX) {
+              } else if (q.type === QUESTION_TYPE.CHECKBOX) {
                 valid_meta[`${q.slug}`] = yup.array().min(1).required(`${q.question} is required`).nullable()
-              }
-              else if(q.type === QUESTION_TYPE.AGREEMENT) {
-                valid_meta[`${q.slug}`] = yup.array().min(1).required(`${q.question.replace(/<[^>]+>/g, '')} is required`).nullable()
-              }
-              else {
+              } else if (q.type === QUESTION_TYPE.AGREEMENT) {
+                valid_meta[`${q.slug}`] = yup
+                  .array()
+                  .min(1)
+                  .required(`${q.question.replace(/<[^>]+>/g, '')} is required`)
+                  .nullable()
+              } else {
                 valid_meta[`${q.slug}`] = yup.string().required(`${q.question} is required`).nullable()
               }
-            }
-            else if(q.slug?.includes('address_') && q.required) {
-              valid_address[`${q.slug?.replace('address_', '')}`] = yup.string().required(`${q.question} is required`).nullable()
-            }
-            else if(q.slug?.includes('packet_') && q.required) {
-              valid_packet[`${q.slug?.replace('packet_', '')}`] = yup.string().required(`${q.question} is required`).nullable()
+            } else if (q.slug?.includes('address_') && q.required) {
+              valid_address[`${q.slug?.replace('address_', '')}`] = yup
+                .string()
+                .required(`${q.question} is required`)
+                .nullable()
+            } else if (q.slug?.includes('packet_') && q.required) {
+              valid_packet[`${q.slug?.replace('packet_', '')}`] = yup
+                .string()
+                .required(`${q.question} is required`)
+                .nullable()
             }
           }
         })
       })
-      
-      setValidationSchema(yup.object({parent: yup.object(valid_parent), student: yup.object(valid_student), meta: yup.object(valid_meta), address: yup.object(valid_address), packet: yup.object(valid_packet)}))
+
+      setValidationSchema(
+        yup.object({
+          parent: yup.object(valid_parent),
+          student: yup.object(valid_student),
+          meta: yup.object(valid_meta),
+          address: yup.object(valid_address),
+          packet: yup.object(valid_packet),
+        }),
+      )
     }
   }, [questions])
 
@@ -128,11 +158,17 @@ export default function Education({id, questions}) {
 
   useEffect(() => {
     setInitFormikValues({
-      parent: {...profile, phone_number: profile.phone.number, emailConfirm: profile.email},
-      student: {...student.person, phone_number: student.person.phone.number, grade_levels: student.grade_levels, grade_level: student.current_school_year_status.grade_level, emailConfirm: student.person.email},
-      packet: {...student.packets.at(-1)},
-      meta: student.packets.at(-1)?.meta && JSON.parse(student.packets.at(-1)?.meta) || {},
-      address: {...student.person.address},
+      parent: { ...profile, phone_number: profile.phone.number, emailConfirm: profile.email },
+      student: {
+        ...student.person,
+        phone_number: student.person.phone.number,
+        grade_levels: student.grade_levels,
+        grade_level: student.current_school_year_status.grade_level,
+        emailConfirm: student.person.email,
+      },
+      packet: { ...student.packets.at(-1) },
+      meta: (student.packets.at(-1)?.meta && JSON.parse(student.packets.at(-1)?.meta)) || {},
+      address: { ...student.person.address },
       school_year_id: student.current_school_year_status.school_year_id,
     })
   }, [profile, student])
@@ -144,25 +180,26 @@ export default function Education({id, questions}) {
       goNext()
     },
   })
-  
+
   const submitEducation = async () => {
     submitEducationMutation({
       variables: {
         enrollmentPacketContactInput: {
           student_id: parseInt(id as unknown as string),
-            parent: omit(formik.values.parent, ['address', 'person_id', 'phone', 'emailConfirm']),
-            packet: {
-              secondary_contact_first: formik.values.packet?.secondary_contact_first || '', 
-              secondary_contact_last: formik.values.packet?.secondary_contact_last || '', 
-              school_district: formik.values.packet?.school_district || '',
-              meta: JSON.stringify(formik.values.meta)},
-            student: {
-              ...omit(formik.values.student, ['person_id', 'photo', 'phone', 'grade_levels', 'emailConfirm']),
-              address: formik.values.address,
-            },
-            school_year_id: student.current_school_year_status.school_year_id,
-        }
-      }
+          parent: omit(formik.values.parent, ['address', 'person_id', 'phone', 'emailConfirm']),
+          packet: {
+            secondary_contact_first: formik.values.packet?.secondary_contact_first || '',
+            secondary_contact_last: formik.values.packet?.secondary_contact_last || '',
+            school_district: formik.values.packet?.school_district || '',
+            meta: JSON.stringify(formik.values.meta),
+          },
+          student: {
+            ...omit(formik.values.student, ['person_id', 'photo', 'phone', 'grade_levels', 'emailConfirm']),
+            address: formik.values.address,
+          },
+          school_year_id: student.current_school_year_status.school_year_id,
+        },
+      },
     }).then((data) => {
       setPacketId(data.data.saveEnrollmentPacketContact.packet.packet_id)
       setMe((prev) => {
@@ -178,7 +215,7 @@ export default function Education({id, questions}) {
         }
       })
       setTab({
-        currentTab: tab.currentTab + 1
+        currentTab: tab.currentTab + 1,
       })
       setVisitedTabs(Array.from(Array(tab.currentTab + 1).keys()))
       window.scrollTo(0, 0)
@@ -191,29 +228,25 @@ export default function Education({id, questions}) {
   const nextTab = (e) => {
     e.preventDefault()
     setTab({
-      currentTab: tab.currentTab + 1
+      currentTab: tab.currentTab + 1,
     })
     window.scrollTo(0, 0)
   }
 
-
   return (
-    <form onSubmit={(e) => !disabled ? formik.handleSubmit(e) : nextTab(e)}>
+    <form onSubmit={(e) => (!disabled ? formik.handleSubmit(e) : nextTab(e))}>
       <Grid container rowSpacing={2} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
         {questions?.groups?.map((item, index) => (
-          <GroupItem key={index} group={item} formik={formik}/>
+          <GroupItem key={index} group={item} formik={formik} />
         ))}
         <Box sx={classes.buttonContainer}>
-          <Button
-            sx={classes.button}
-            type='submit'
-          >
+          <Button sx={classes.button} type='submit'>
             <Paragraph fontWeight='700' size='medium'>
               {disabled ? 'Next' : 'Save & Continue'}
             </Paragraph>
           </Button>
         </Box>
       </Grid>
-    </form>        
+    </form>
   )
 }

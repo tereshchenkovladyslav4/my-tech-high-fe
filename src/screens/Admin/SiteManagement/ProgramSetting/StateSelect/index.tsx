@@ -1,1 +1,1 @@
-export { default as StateSelect } from './StateSelect'
+export { StateSelect } from './StateSelect'

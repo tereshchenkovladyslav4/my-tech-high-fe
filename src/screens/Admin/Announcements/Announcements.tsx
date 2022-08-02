@@ -1,13 +1,13 @@
+import React, { FunctionComponent, useState } from 'react'
 import { Box, Grid } from '@mui/material'
-import React, { useState } from 'react'
 import { Route, Switch, useHistory, useRouteMatch } from 'react-router-dom'
+import { ANNOUNCEMENTS } from '../../../utils/constants'
+import { Announcement } from '../../Dashboard/Announcements/types'
+import { ReadMoreSection } from '../../Dashboard/ReadMoreSection'
 import { AnnouncementTable } from './AnnouncementTable'
 import { NewAnnouncement } from './NewAnnouncement'
-import { ANNOUNCEMENTS } from '../../../utils/constants'
-import { ReadMoreSection } from '../../Dashboard/ReadMoreSection'
-import { Announcement } from '../../Dashboard/Announcements/types'
 
-const Announcemnets = () => {
+const Announcemnets: FunctionComponent = () => {
   const { isExact } = useRouteMatch(ANNOUNCEMENTS)
   const history = useHistory()
   const [announcement, setAnnouncement] = useState<Announcement | null>(null)

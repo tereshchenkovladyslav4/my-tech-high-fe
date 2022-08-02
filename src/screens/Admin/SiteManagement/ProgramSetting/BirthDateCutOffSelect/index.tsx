@@ -1,1 +1,1 @@
-export { default as BirthDateCutOffSelect } from './BirthDateCutOffSelect'
+export { BirthDateCutOffSelect } from './BirthDateCutOffSelect'

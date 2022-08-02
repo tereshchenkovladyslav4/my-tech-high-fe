@@ -1,18 +1,16 @@
-import { Box, Button, Card } from '@mui/material'
-import React, { Fragment } from 'react'
-import { useHistory } from 'react-router-dom'
-import { MTHORANGE, PRIMARY_MEDIUM_MOUSEOVER, SYSTEM_06 } from '../../../../../../utils/constants'
-import { TodoListTemplateType } from './types'
-import { Subtitle } from '../../../../../../components/Typography/Subtitle/Subtitle'
+import React from 'react'
 
-import FeedOutlinedIcon from '@mui/icons-material/FeedOutlined'
-import SubjectOutlinedIcon from '@mui/icons-material/SubjectOutlined'
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import CreditCardOutlinedIcon from '@mui/icons-material/CreditCardOutlined'
+import FeedOutlinedIcon from '@mui/icons-material/FeedOutlined'
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import MarkunreadMailboxOutlinedIcon from '@mui/icons-material/MarkunreadMailboxOutlined'
+import SubjectOutlinedIcon from '@mui/icons-material/SubjectOutlined'
 import WarningAmberOutlinedIcon from '@mui/icons-material/WarningAmberOutlined'
-
-import moment from 'moment'
+import { Box, Button } from '@mui/material'
+import { useHistory } from 'react-router-dom'
+import { Subtitle } from '../../../../../../components/Typography/Subtitle/Subtitle'
+import { MTHORANGE, PRIMARY_MEDIUM_MOUSEOVER } from '../../../../../../utils/constants'
+import { TodoListTemplateType } from './types'
 
 const Row = (props) => (
   <Box display='flex' flexDirection='row' alignItems='center' justifyContent={props.content || 'flex-start'}>

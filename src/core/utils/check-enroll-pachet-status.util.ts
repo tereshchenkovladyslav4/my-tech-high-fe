@@ -1,13 +1,14 @@
 import { SchoolYearType } from '@mth/models'
+import { StudentType } from '@mth/screens/HomeroomStudentProfile/Student/types'
 
 /**
  * @param {schoolYears} SchoolYearType
- * @param {student} any
+ * @param {student} StudentType
  * @description check enrollment packet is submitted or not
  * @logic if enrollment packet is submitted, return true else return false
  * @return boolean
  */
-export const checkEnrollPacketStatus = (schoolYears: SchoolYearType[], student: any): boolean => {
+export const checkEnrollPacketStatus = (schoolYears: SchoolYearType[], student: StudentType): boolean => {
   if (student?.status && student?.status?.at(-1)?.status != 0) return true
   if (schoolYears.length > 0) {
     const studentSchoolYear: SchoolYearType[] = schoolYears?.filter(

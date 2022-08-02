@@ -1,8 +1,8 @@
 import React, { FunctionComponent } from 'react'
 import { AppBar, Tabs } from '@mui/material'
+import { Paragraph } from '../Typography/Paragraph/Paragraph'
 import { LinkTab } from './SegmentControlTab/SegmentControlTab'
 import { useStyles } from './styles'
-import { Paragraph } from '../Typography/Paragraph/Paragraph'
 
 export const SegmentedControl: FunctionComponent = () => {
   const [value, setValue] = React.useState(0)

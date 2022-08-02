@@ -2,7 +2,7 @@ import { BLACK } from '../../../../../utils/constants'
 
 export const useStyles = {
   modalCard: {
-    position: 'absolute' as 'absolute',
+    position: 'absolute' as const,
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
@@ -14,7 +14,7 @@ export const useStyles = {
   },
 
   modalStudentCard: {
-    position: 'absolute' as 'absolute',
+    position: 'absolute' as const,
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
@@ -23,7 +23,7 @@ export const useStyles = {
     boxShadow: 24,
     p: 4,
     borderRadius: 2,
-	minHeight:'200px'
+    minHeight: '200px',
   },
   header: {
     display: 'flex',

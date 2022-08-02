@@ -1,10 +1,9 @@
+import React from 'react'
 import { Grid } from '@mui/material'
 import { Box } from '@mui/system'
-import React, { useState } from 'react'
-import { EnrollmentPacketFilters } from './EnrollmentPacketFilters/EnrollmentPacketFilters'
 import { EnrollmentPacketTable } from './EnrollmentPacketTable/EnrollmentPacketTable'
 
-export const EnrollmentPackets = () => {
+export const EnrollmentPackets: FunctionComponent = () => {
   return (
     <Box sx={{ marginX: 4 }}>
       <Grid container rowSpacing={2}>

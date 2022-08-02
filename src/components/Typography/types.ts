@@ -1,9 +1,9 @@
+import { FunctionComponent, ReactNode } from 'react'
 import { Theme } from '@emotion/react'
 import { SxProps } from '@mui/system'
-import { FunctionComponent, ReactNode } from 'react'
 
 export type TypographyProps = {
-  size?: 'small' | 'medium' | 'large' | number;
+  size?: 'small' | 'medium' | 'large' | number
   children: ReactNode
   color?: string
   fontWeight?: string

@@ -1,22 +1,22 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { FunctionComponent, useContext, useEffect, useState } from 'react'
+import { useQuery } from '@apollo/client'
 import { Box, Button, Checkbox, FormControlLabel, Stack, TextField } from '@mui/material'
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
-import { useQuery } from '@apollo/client'
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { useFormikContext } from 'formik'
 import { DropDown } from '../../../../components/DropDown/DropDown'
 import { DropDownItem } from '../../../../components/DropDown/types'
-import { getEventTypesQuery } from '../services'
+import { Paragraph } from '../../../../components/Typography/Paragraph/Paragraph'
+import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
 import { UserContext } from '../../../../providers/UserContext/UserProvider'
 import { BulletEditor } from '../components/BulletEditor'
-import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
+import { getEventTypesQuery } from '../services'
+import { calendarClassess } from '../styles'
 import { EventFormData, EventFormProps } from '../types'
 import { addEventClassess } from './styles'
-import { Paragraph } from '../../../../components/Typography/Paragraph/Paragraph'
-import { calendarClassess } from '../styles'
 
-const EventForm = ({ setIsChanged, handleAddRSVPClick }: EventFormProps) => {
+const EventForm: FunctionComponent<EventFormProps> = ({ setIsChanged, handleAddRSVPClick }) => {
   const { me } = useContext(UserContext)
   const { errors, handleChange, setFieldValue, touched, values } = useFormikContext<EventFormData>()
   const [eventTypes, setEventTypes] = useState<DropDownItem[]>([])
@@ -32,8 +32,8 @@ const EventForm = ({ setIsChanged, handleAddRSVPClick }: EventFormProps) => {
     if (!loading && data?.eventTypes) {
       setEventTypes(
         data?.eventTypes
-          .filter((item: any) => !item.archived)
-          .map((eventType: any) => ({
+          .filter((item: unknown) => !item.archived)
+          .map((eventType: unknown) => ({
             label: eventType.name,
             value: `${eventType.event_type_id}`,
           })),

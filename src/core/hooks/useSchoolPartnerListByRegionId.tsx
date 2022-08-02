@@ -1,9 +1,15 @@
 import { useEffect, useState } from 'react'
-import { useQuery } from '@apollo/client'
+import { ApolloError, useQuery } from '@apollo/client'
 import { CheckBoxListVM } from '@mth/screens/Admin/Calendar/components/CheckBoxList/CheckBoxList'
 import { GetSchoolsOfEnrollment } from '@mth/screens/Admin/SiteManagement/SchoolPartner/services'
 
-export const useSchoolPartnerListByRegionId = (regionId: number) => {
+export const useSchoolPartnerListByRegionId = (
+  regionId: number,
+): {
+  loading: boolean
+  schoolOfEnrollmentList: unknown[]
+  error: ApolloError | undefined
+} => {
   const {
     loading,
     data: schoolOfEnrollments,
@@ -25,8 +31,8 @@ export const useSchoolPartnerListByRegionId = (regionId: number) => {
     if (schoolOfEnrollments?.getSchoolsOfEnrollmentByRegion) {
       setSchoolOfEnrollmentList(
         schoolOfEnrollments?.getSchoolsOfEnrollmentByRegion
-          ?.filter((item: any) => !!item.active)
-          .map((schoolOfEnroll: any) => ({
+          ?.filter((item: unknown) => !!item.active)
+          .map((schoolOfEnroll: unknown) => ({
             label: schoolOfEnroll?.abbreviation,
             value: `${schoolOfEnroll?.school_partner_id}`,
           })),

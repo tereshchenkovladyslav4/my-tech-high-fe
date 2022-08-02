@@ -1,26 +1,26 @@
-import { Box, Card, Grid } from '@mui/material'
-import React, { useEffect, useState, useContext } from 'react'
-import { useStyles } from './styles'
-import { ANNOUNCEMENTS } from '../../../../utils/constants'
-import { useHistory } from 'react-router-dom'
-import { ContentState, EditorState, convertToRaw } from 'draft-js'
+import React, { useEffect, useState, useContext, FunctionComponent } from 'react'
 import { useMutation } from '@apollo/client'
+import { Box, Card, Grid } from '@mui/material'
+import { ContentState, EditorState, convertToRaw } from 'draft-js'
 import draftToHtml from 'draftjs-to-html'
 import htmlToDraft from 'html-to-draftjs'
+import { useHistory } from 'react-router-dom'
 import { UserContext } from '../../../../providers/UserContext/UserProvider'
-import { CreateAnnouncementMutation, UpdateAnnouncementMutation } from '../services'
+import { ANNOUNCEMENTS } from '../../../../utils/constants'
+import { Announcement } from '../../../Dashboard/Announcements/types'
 import { PublishModal } from '../PublishModal'
-import { HeaderComponent } from './HeaderComponent'
+import { CreateAnnouncementMutation, UpdateAnnouncementMutation } from '../services'
 import { EditComponent } from './EditComponent'
 import { FilterComponent } from './FilterComponent'
-import { Announcement } from '../../../Dashboard/Announcements/types'
+import { HeaderComponent } from './HeaderComponent'
+import { useStyles } from './styles'
 
 type NewAnnouncementProps = {
   announcement: Announcement | null
   setAnnouncement: (value: Announcement | null) => void
 }
 
-const NewAnnouncement = ({ announcement, setAnnouncement }: NewAnnouncementProps) => {
+const NewAnnouncement: FunctionComponent<NewAnnouncementProps> = ({ announcement, setAnnouncement }) => {
   const classes = useStyles
   const history = useHistory()
   const { me } = useContext(UserContext)
@@ -90,7 +90,7 @@ const NewAnnouncement = ({ announcement, setAnnouncement }: NewAnnouncementProps
     setBodyInvalid(false)
   }
 
-  const handleSaveClick = async (status: string = 'Draft') => {
+  const handleSaveClick = async (status = 'Draft') => {
     if (validation() && announcementId > 0) {
       const submitSaveResponse = await submitSave({
         variables: {
@@ -176,7 +176,6 @@ const NewAnnouncement = ({ announcement, setAnnouncement }: NewAnnouncementProps
         handleSaveClick={handleSaveClick}
         handlePublishClick={handlePublishClick}
         handleRepublish={handleRepublish}
-        
       />
       <Box sx={{ width: '100%', padding: 3 }}>
         <Grid container justifyContent='space-between'>

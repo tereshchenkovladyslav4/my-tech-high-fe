@@ -5,9 +5,9 @@ type ApplicationModalProps = {
   subtitle?: string
   btntitle?: string
   handleModem: () => void
-  handleSubmit: (data: any) => void
-  data: any
-  schoolYears?: any[]
+  handleSubmit: (data: unknown) => void
+  data: unknown
+  schoolYears?: unknown[]
   handleRefetch: () => void
 }
 
@@ -15,7 +15,7 @@ export type ApplicationModalType = FunctionComponent<ApplicationModalProps>
 
 type ApplicationEmailModalProps = {
   handleModem: () => void
-  data: any[]
+  data: unknown[]
   handleSubmit: () => void
 }
 

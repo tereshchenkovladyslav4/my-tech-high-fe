@@ -1,1 +1,1 @@
-export { default as StateLogo } from './StateLogo'
+export { StateLogo } from './StateLogo'

@@ -1,16 +1,8 @@
-import React, { useState } from 'react'
-import { Box, Button, FormControl, FormControlLabel, Modal, Radio, RadioGroup, Typography } from '@mui/material'
+import React, { FunctionComponent, useState } from 'react'
 import InfoIcon from '@mui/icons-material/InfoOutlined'
+import { Box, Button, FormControl, FormControlLabel, Modal, Radio, RadioGroup, Typography } from '@mui/material'
 
-export default function WithdrawModal({
-  title,
-  description,
-  subDescription,
-  onClose,
-  onWithdraw,
-  confirmStr = 'Confirm',
-  cancelStr = 'Cancel',
-}: {
+type WithdrawModalProps = {
   title: string
   description: string
   subDescription?: string
@@ -18,7 +10,16 @@ export default function WithdrawModal({
   onWithdraw: (value: number) => void
   confirmStr?: string
   cancelStr?: string
-}) {
+}
+export const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
+  title,
+  description,
+  subDescription,
+  onClose,
+  onWithdraw,
+  confirmStr = 'Confirm',
+  cancelStr = 'Cancel',
+}) => {
   const [withdrawOption, setWithdrawOption] = useState<number>(1) // 1: Notify Parent of Withdraw, 2: No Form / No Email, 3: Undeclared Form/Email, 4: Undeclared Form / No Email
   const handleChange = (e) => {
     setWithdrawOption(parseInt(e.target.value))

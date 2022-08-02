@@ -1,42 +1,52 @@
-import { Box, Checkbox, IconButton, outlinedInputClasses, Radio, TextField, FormGroup, FormControl, FormControlLabel, Tooltip, inputLabelClasses } from '@mui/material'
-import { useFormikContext } from 'formik'
-import React, { useState, useContext } from 'react'
-import { DropDown } from '../../../../../components/DropDown/DropDown'
-import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
-import { ApplicationQuestion } from './types'
+import React, { useState, useContext, FunctionComponent } from 'react'
 import DehazeIcon from '@mui/icons-material/Dehaze'
 import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined'
 import EditIcon from '@mui/icons-material/Edit'
+import {
+  Box,
+  Checkbox,
+  IconButton,
+  outlinedInputClasses,
+  Radio,
+  TextField,
+  Tooltip,
+  inputLabelClasses,
+} from '@mui/material'
+import { useFormikContext } from 'formik'
 import { SortableHandle } from 'react-sortable-hoc'
-import AddNewQuestionModal from './AddNewQuestion'
-import CustomModal from '../components/CustomModal/CustomModals'
-import { SYSTEM_05, SYSTEM_07 } from '../../../../../utils/constants'
-import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragraph'
-import { ProgramYearContext } from '../provider/ProgramYearProvider'
+import { CustomConfirmModal } from '../../../../../components/CustomConfirmModal/CustomConfirmModal'
+import { DropDown } from '../../../../../components/DropDown/DropDown'
 import { QUESTION_TYPE } from '../../../../../components/QuestionItem/QuestionItemProps'
-import CustomConfirmModal from '../../../../../components/CustomConfirmModal/CustomConfirmModal'
+import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragraph'
+import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
+import { SYSTEM_05, SYSTEM_07 } from '../../../../../utils/constants'
+
+import { ProgramYearContext } from '../provider/ProgramYearProvider'
+import { AddNewQuestionModal } from './AddNewQuestion'
+import { ApplicationQuestion } from './types'
+
+type ApplicationQuestionItemProps = {
+  questions: ApplicationQuestion[]
+  mainQuestion?: boolean
+  questionTypes: unknown[]
+  additionalQuestionTypes: unknown[]
+  hasAction: boolean
+}
 
 const DragHandle = SortableHandle(() => (
-  <Tooltip title="Move">
+  <Tooltip title='Move'>
     <IconButton>
       <DehazeIcon />
     </IconButton>
   </Tooltip>
 ))
 
-export default function ApplicationQuestionItem({
+export const ApplicationQuestionItem: FunctionComponent<ApplicationQuestionItemProps> = ({
   questions,
-  mainQuestion = false,
   questionTypes,
   additionalQuestionTypes,
-  hasAction
-}: {
-  questions: ApplicationQuestion[],
-  mainQuestion?: boolean,
-  questionTypes: any[],
-  additionalQuestionTypes: any[],
-  hasAction: boolean
-}) {
+  hasAction,
+}) => {
   const { values, setValues } = useFormikContext<ApplicationQuestion[]>()
   const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false)
   const [showEditDialog, setShowEditDialog] = useState(false)
@@ -49,13 +59,13 @@ export default function ApplicationQuestionItem({
         </Box>
         {hasAction && !questions[0]?.main_question && (
           <Box display='inline-flex' paddingTop='10px' height='40px' alignItems='center' justifyContent='center'>
-            <Tooltip title="Edit">
+            <Tooltip title='Edit'>
               <IconButton onClick={() => setShowEditDialog(true)}>
                 <EditIcon />
               </IconButton>
             </Tooltip>
 
-            <Tooltip title="Delete">
+            <Tooltip title='Delete'>
               <IconButton onClick={() => setShowDeleteDialog(true)}>
                 <DeleteForeverOutlinedIcon />
               </IconButton>
@@ -64,14 +74,21 @@ export default function ApplicationQuestionItem({
           </Box>
         )}
       </Box>
-      {showEditDialog && <AddNewQuestionModal onClose={() => setShowEditDialog(false)} questions={questions} questionTypes={questionTypes} additionalQuestionTypes={additionalQuestionTypes} />}
+      {showEditDialog && (
+        <AddNewQuestionModal
+          onClose={() => setShowEditDialog(false)}
+          questions={questions}
+          questionTypes={questionTypes}
+          additionalQuestionTypes={additionalQuestionTypes}
+        />
+      )}
       {showDeleteDialog && (
         <CustomConfirmModal
-          header="Delete Question" 
-          content="Are you sure you want to delete this question?"
+          header='Delete Question'
+          content='Are you sure you want to delete this question?'
           handleConfirmModalChange={(val: boolean, isOk: boolean) => {
-            setShowDeleteDialog(false);
-            if(isOk) {
+            setShowDeleteDialog(false)
+            if (isOk) {
               setValues(values.filter((i) => i.id !== questions[0].id))
             }
           }}
@@ -85,35 +102,39 @@ function Item({ question: q }: { question: ApplicationQuestion }) {
   const { setProgramYear } = useContext(ProgramYearContext)
   const index = values.find((i) => i.id === q.id)?.id
 
-	//	Response
-	const onChange = (value) => {
-    if(q.slug === 'program_year') {
+  //	Response
+  const onChange = (value) => {
+    if (q.slug === 'program_year') {
       setProgramYear(value)
     }
-		if(q.type == QUESTION_TYPE.CHECKBOX) {
-			if(q.response.indexOf(value) >= 0) {
-				q.response = q.response.replace(value, '');
-			}
-			else {
-				q.response += value;
-			}
-			value = q.response;
-		}
-		const newValues = values.map((v) => (v.id == q.id ? {
-			...v,
-			response: value
-		} : v));
-		let current = q;
-		while(newValues.find(x => current.slug == x.additionalQuestion)
-			&& (current.response == '' || current.options.find(x => x.value == current.response
-			|| current.response.toString().indexOf(x.value) >= 0).action != 2)) {
-			current = newValues.find(x => current.slug == x.additionalQuestion);
-			current.response = '';
-		}
-		setValues(
-			newValues
-		);
-	};
+    if (q.type == QUESTION_TYPE.CHECKBOX) {
+      if (q.response.indexOf(value) >= 0) {
+        q.response = q.response.replace(value, '')
+      } else {
+        q.response += value
+      }
+      value = q.response
+    }
+    const newValues = values.map((v) =>
+      v.id == q.id
+        ? {
+            ...v,
+            response: value,
+          }
+        : v,
+    )
+    let current = q
+    while (
+      newValues.find((x) => current.slug == x.additionalQuestion) &&
+      (current.response == '' ||
+        current.options.find((x) => x.value == current.response || current.response.toString().indexOf(x.value) >= 0)
+          .action != 2)
+    ) {
+      current = newValues.find((x) => current.slug == x.additionalQuestion)
+      current.response = ''
+    }
+    setValues(newValues)
+  }
 
   if (q.type === QUESTION_TYPE.DROPDOWN) {
     return (
@@ -125,21 +146,21 @@ function Item({ question: q }: { question: ApplicationQuestion }) {
           borderColor: errors[index] ? 'red' : '',
           [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
             borderColor: SYSTEM_07,
-            borderWidth: '2px'
+            borderWidth: '2px',
           },
           [`& .${inputLabelClasses.root}.${inputLabelClasses.focused}`]: {
-            transform: 'translate(14px, -11px) scale(1)'
+            transform: 'translate(14px, -11px) scale(1)',
           },
           [`& .${outlinedInputClasses.notchedOutline}`]: {
             borderColor: SYSTEM_07,
-            borderWidth: '2px'
+            borderWidth: '2px',
           },
           [`& .${inputLabelClasses.root}.${inputLabelClasses.shrink}`]: {
-            transform: 'translate(14px, -11px) scale(1)'
+            transform: 'translate(14px, -11px) scale(1)',
           },
           [`& .${outlinedInputClasses.root} .${outlinedInputClasses.notchedOutline} span`]: {
-            fontSize: 16
-          }
+            fontSize: 16,
+          },
         }}
         labelTop
         dropDownItems={q.options || []}
@@ -166,11 +187,11 @@ function Item({ question: q }: { question: ApplicationQuestion }) {
             borderColor: SYSTEM_07,
           },
           [`& .${inputLabelClasses.root}.${inputLabelClasses.focused}`]: {
-            transform: 'translate(14px, -11px) scale(1)'
+            transform: 'translate(14px, -11px) scale(1)',
           },
           [`& .${outlinedInputClasses.root} .${outlinedInputClasses.notchedOutline} span`]: {
-            fontSize: 16
-          }
+            fontSize: 16,
+          },
         }}
         InputLabelProps={{
           style: { color: SYSTEM_05 },
@@ -212,34 +233,43 @@ function Item({ question: q }: { question: ApplicationQuestion }) {
               width: '100%',
             }}
           >
-            <Checkbox checked={q.response?.indexOf(o.value) >= 0} onClick={() => onChange(o.value)}
+            <Checkbox
+              checked={q.response?.indexOf(o.value) >= 0}
+              onClick={() => onChange(o.value)}
               sx={{
                 paddingLeft: 0,
                 color: '#4145FF',
                 '&.Mui-checked': {
-                  color: '#4145FF'
-                }
-              }} />
-            <Subtitle size='small' sx={{wordWrap: 'break-word',maxWidth: '90%',textAlign: 'start', color: SYSTEM_05}}>{o.label}</Subtitle>
+                  color: '#4145FF',
+                },
+              }}
+            />
+            <Subtitle
+              size='small'
+              sx={{ wordWrap: 'break-word', maxWidth: '90%', textAlign: 'start', color: SYSTEM_05 }}
+            >
+              {o.label}
+            </Subtitle>
           </Box>
         ))}
       </Box>
     )
   } else if (q.type === QUESTION_TYPE.AGREEMENT) {
     return (
-      <Box display="flex" alignItems='center'>
-        <Checkbox 
-        checked={q.response === true}
+      <Box display='flex' alignItems='center'>
+        <Checkbox
+          checked={q.response === true}
           onChange={(e) => onChange(e.currentTarget.checked)}
           sx={{
             paddingLeft: 0,
             color: '#4145FF',
             '&.Mui-checked': {
-              color: '#4145FF'
-            }
-          }} />
-        <Paragraph size='large' sx={{fontSize: 16, color: SYSTEM_05}}>
-            <p dangerouslySetInnerHTML={{ __html: q.question }}></p>
+              color: '#4145FF',
+            },
+          }}
+        />
+        <Paragraph size='large' sx={{ fontSize: 16, color: SYSTEM_05 }}>
+          <p dangerouslySetInnerHTML={{ __html: q.question }}></p>
         </Paragraph>
       </Box>
     )
@@ -271,23 +301,28 @@ function Item({ question: q }: { question: ApplicationQuestion }) {
               width: '100%',
             }}
           >
-            <Radio 
+            <Radio
               checked={o.value === q.response}
               onChange={(e) => e.currentTarget.checked && onChange(o.value)}
               sx={{
                 paddingLeft: 0,
                 color: '#4145FF',
                 '&.Mui-checked': {
-                  color: '#4145FF'
-                }
-              }} />
-            <Subtitle size='small' sx={{wordWrap: 'break-word',maxWidth: '90%',textAlign: 'start', color: SYSTEM_05}}>{o.label}</Subtitle>
+                  color: '#4145FF',
+                },
+              }}
+            />
+            <Subtitle
+              size='small'
+              sx={{ wordWrap: 'break-word', maxWidth: '90%', textAlign: 'start', color: SYSTEM_05 }}
+            >
+              {o.label}
+            </Subtitle>
           </Box>
         ))}
       </Box>
     )
-  }
-  else if (q.type === QUESTION_TYPE.CALENDAR) {
+  } else if (q.type === QUESTION_TYPE.CALENDAR) {
     return (
       <TextField
         size='small'
@@ -298,11 +333,11 @@ function Item({ question: q }: { question: ApplicationQuestion }) {
             borderColor: SYSTEM_07,
           },
           [`& .${inputLabelClasses.root}.${inputLabelClasses.focused}`]: {
-            transform: 'translate(14px, -11px) scale(1)'
+            transform: 'translate(14px, -11px) scale(1)',
           },
           [`& .${outlinedInputClasses.root} .${outlinedInputClasses.notchedOutline} span`]: {
-            fontSize: 16
-          }
+            fontSize: 16,
+          },
         }}
         InputLabelProps={{
           style: { color: SYSTEM_05 },
@@ -312,16 +347,15 @@ function Item({ question: q }: { question: ApplicationQuestion }) {
         value={q.response}
         onChange={(v) => onChange(v.currentTarget.value)}
         focused
-        type="date"
+        type='date'
         error={!!touched[index] && !!errors[index]}
         helperText={errors[index]}
       />
     )
-  }
-  else if (q.type === QUESTION_TYPE.INFORMATION) {
+  } else if (q.type === QUESTION_TYPE.INFORMATION) {
     return (
-      <Paragraph size='large' sx={{fontSize: 16}}>
-          <p dangerouslySetInnerHTML={{ __html: q.question }}></p>
+      <Paragraph size='large' sx={{ fontSize: 16 }}>
+        <p dangerouslySetInnerHTML={{ __html: q.question }}></p>
       </Paragraph>
     )
   }

@@ -7,21 +7,23 @@ module.exports = {
     project: 'tsconfig.json',
   },
   plugins: ['@typescript-eslint', 'import', 'prettier'],
-  // extends: [
-  //   // Uses the recommended rules from the @typescript-eslint/eslint-plugin
-  //   'plugin:@typescript-eslint/recommended',
-  //   // Enables eslint-plugin-prettier and eslint-config-prettier. This will display prettier errors as ESLint errors. Make sure this is always the last configuration in the extends array.
-  //   //'plugin:prettier/recommended',
-  //   'plugin:react/recommended',
-  // ],
+  extends: [
+     // Uses the recommended rules from the @typescript-eslint/eslint-pluginno-param-reassign
+    'plugin:@typescript-eslint/recommended',
+     // Enables eslint-plugin-prettier and eslint-config-prettier. This will display prettier errors as ESLint errors. Make sure this is always the last configuration in the extends array.
+    'plugin:prettier/recommended',
+    'plugin:react/recommended',
+  ],
   rules: {
     'react/prop-types': 'off',
+    '@typescript-eslint/no-explicit-any': 2,
     '@typescript-eslint/ban-ts-comment': 'off',
     '@typescript-eslint/no-non-null-assertion': 'off',
     '@typescript-eslint/no-empty-function': 'off',
     'react/display-name': 'off',
     'comma-dangle': [2, 'always-multiline'],
     'arrow-parens': 1,
+    '@typescript-eslint/no-unused-vars': 2,
     semi: 0,
     'max-len': 0,
     'no-unused-expressions': 1,
@@ -46,12 +48,7 @@ module.exports = {
     'new-cap': 0,
     strict: 0,
     'object-curly-newline': 'off',
-    'no-param-reassign': [
-      'error',
-      {
-        props: false,
-      },
-    ],
+    'no-param-reassign': 0,
     'no-underscore-dangle': 0,
     'no-use-before-define': 0,
     'eol-last': 0,

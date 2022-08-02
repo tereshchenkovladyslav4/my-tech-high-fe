@@ -1,14 +1,19 @@
-import React from 'react'
+import React, { FunctionComponent } from 'react'
 import { DropDown } from '../../components/DropDown/DropDown'
 
 type EnrollPacketSelectProps = {
   enroll: boolean
   setEnroll: (value: boolean) => void
   setIsChanged: (value: boolean) => void
-  isChanged: any
+  isChanged: unknown
 }
 
-export default function EnrollPacketSelect({ enroll, setEnroll, setIsChanged, isChanged }: EnrollPacketSelectProps) {
+export const EnrollPacketSelect: FunctionComponent<EnrollPacketSelectProps> = ({
+  enroll,
+  setEnroll,
+  setIsChanged,
+  isChanged,
+}) => {
   const items = [
     {
       label: 'Enabled',
@@ -23,7 +28,7 @@ export default function EnrollPacketSelect({ enroll, setEnroll, setIsChanged, is
     setEnroll(value == 'true' ? true : false)
     setIsChanged({
       ...isChanged,
-      enrollment: true
+      enrollment: true,
     })
   }
 

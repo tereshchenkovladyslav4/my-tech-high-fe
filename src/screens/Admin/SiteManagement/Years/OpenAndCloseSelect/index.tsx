@@ -1,1 +1,1 @@
-export { default as OpenAndCloseSelect } from './OpenAndCloseSelect'
+export { OpenAndCloseSelect } from './OpenAndCloseSelect'

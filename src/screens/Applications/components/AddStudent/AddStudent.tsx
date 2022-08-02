@@ -1,15 +1,13 @@
-import { Box, Divider, Grid, TextField } from '@mui/material'
-import { first, map } from 'lodash'
 import React, { useEffect, useState } from 'react'
+import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined'
+import { Box, Divider, TextField } from '@mui/material'
+import { useFormik } from 'formik'
+import { map } from 'lodash'
+import * as yup from 'yup'
 import { DropDown } from '../../../../components/DropDown/DropDown'
-import { DropDownItem } from '../../../../components/DropDown/types'
-import { GRADES, SYSTEM_05, SYSTEM_07 } from '../../../../utils/constants'
+import { GRADES, SYSTEM_05 } from '../../../../utils/constants'
 import { useStyles } from './styles'
 import { AddStudentTemplate } from './types'
-import { outlinedInputClasses } from '@mui/material'
-import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined'
-import { useFormik } from 'formik';
-import * as yup from 'yup';
 
 export const AddStudent: AddStudentTemplate = ({ idx, onFieldChange, handleRemoveStudent, yearLabel }) => {
   const classes = useStyles
@@ -27,24 +25,17 @@ export const AddStudent: AddStudentTemplate = ({ idx, onFieldChange, handleRemov
     formik.handleChange(e)
     setLastName(e.target.value)
   }
-  
+
   const setFormikGradeLevel = (id) => {
     formik.values.gradeLevel = id
     setGradeLevel(formik.values.gradeLevel)
-  } 
-
+  }
 
   const validationSchema = yup.object({
-      gradeLevel: yup
-      .string()
-      .required('Program Year is required'),
-    firstName: yup
-      .string()
-      .required('First Name is required'),
-    lastName: yup
-      .string()
-      .required('Last Name is required'),
-  });
+    gradeLevel: yup.string().required('Program Year is required'),
+    firstName: yup.string().required('First Name is required'),
+    lastName: yup.string().required('Last Name is required'),
+  })
 
   const formik = useFormik({
     initialValues: {
@@ -53,10 +44,8 @@ export const AddStudent: AddStudentTemplate = ({ idx, onFieldChange, handleRemov
       lastName: undefined,
     },
     validationSchema,
-    onSubmit: () => {
-      
-    }
-  });
+    onSubmit: () => {},
+  })
 
   useEffect(() => {
     if (firstName !== '') {
@@ -76,62 +65,59 @@ export const AddStudent: AddStudentTemplate = ({ idx, onFieldChange, handleRemov
     }
   }, [lastName])
 
-
   const parseGrades = map(GRADES, (grade) => {
     return {
       label: grade,
-      value: grade.toString()
+      value: grade.toString(),
     }
   })
 
-  
   document.addEventListener('checkStudents', () => {
     formik.handleSubmit()
     let response: CustomEvent
-    if(JSON.stringify(formik.errors) === JSON.stringify({})){
-      response = new CustomEvent('studentResponse',  { detail: {error: true} })
-    }else{
-      response = new CustomEvent('studentResponse',  { detail: {error: false} })
+    if (JSON.stringify(formik.errors) === JSON.stringify({})) {
+      response = new CustomEvent('studentResponse', { detail: { error: true } })
+    } else {
+      response = new CustomEvent('studentResponse', { detail: { error: false } })
     }
     document.dispatchEvent(response)
   })
-  
+
   document.addEventListener('yearChanged', (e) => setYear(e.detail.yearLabel))
-  
+
   return (
     <form>
-    <Box  display={'flex'} flexDirection='column'>
-      <Box width={idx === 0 ? '100%' : '103.9%'} display='flex' flexDirection='row' alignItems={'center'}>
-        <TextField
-          size='small'
-          name='firstName'
-          label='Student First Name'
-          focused
-          variant='outlined'
-          sx={
-            !!(formik.touched.firstName && Boolean(formik.errors.firstName))
-              ? classes.textFieldError
-              : classes.textfield
-          }
-          inputProps={{
-            style: { color: 'black' },
-          }}
-          value={formik.values.firstName}
-          onChange={setFormikFirstName}
-          InputLabelProps={{
-            style: { color: SYSTEM_05 },
-          }}
-          error={formik.touched.firstName && Boolean(formik.errors.firstName)}
-          helperText={formik.touched.firstName && formik.errors.firstName}
-        />
-        { 
-          idx !== 0 
-          && <DeleteForeverOutlinedIcon 
-            sx={{left: 12, position: 'relative', color: 'darkgray'}}
-            onClick={() => handleRemoveStudent(idx)}
+      <Box display={'flex'} flexDirection='column'>
+        <Box width={idx === 0 ? '100%' : '103.9%'} display='flex' flexDirection='row' alignItems={'center'}>
+          <TextField
+            size='small'
+            name='firstName'
+            label='Student First Name'
+            focused
+            variant='outlined'
+            sx={
+              !!(formik.touched.firstName && Boolean(formik.errors.firstName))
+                ? classes.textFieldError
+                : classes.textfield
+            }
+            inputProps={{
+              style: { color: 'black' },
+            }}
+            value={formik.values.firstName}
+            onChange={setFormikFirstName}
+            InputLabelProps={{
+              style: { color: SYSTEM_05 },
+            }}
+            error={formik.touched.firstName && Boolean(formik.errors.firstName)}
+            helperText={formik.touched.firstName && formik.errors.firstName}
           />
-        }
-      </Box>
+          {idx !== 0 && (
+            <DeleteForeverOutlinedIcon
+              sx={{ left: 12, position: 'relative', color: 'darkgray' }}
+              onClick={() => handleRemoveStudent(idx)}
+            />
+          )}
+        </Box>
         <TextField
           size='small'
           name='lastName'
@@ -139,9 +125,7 @@ export const AddStudent: AddStudentTemplate = ({ idx, onFieldChange, handleRemov
           focused
           variant='outlined'
           sx={
-            !!(formik.touched.lastName && Boolean(formik.errors.lastName))
-              ? classes.textFieldError
-              : classes.textfield
+            !!(formik.touched.lastName && Boolean(formik.errors.lastName)) ? classes.textFieldError : classes.textfield
           }
           inputProps={{
             style: { color: 'black' },
@@ -172,22 +156,18 @@ export const AddStudent: AddStudentTemplate = ({ idx, onFieldChange, handleRemov
             errorMsg: (formik.touched.gradeLevel && formik.errors.gradeLevel) as string,
           }}
         />
-        <Box
-          display={'flex'}
-          justifyContent={'center'}
-        >
-          {
-            idx !== 0
-            && <Divider
-              sx={{ 
+        <Box display={'flex'} justifyContent={'center'}>
+          {idx !== 0 && (
+            <Divider
+              sx={{
                 marginY: 1,
-                width: '80%', 
-                alignSelf: 'center' 
-                }} 
+                width: '80%',
+                alignSelf: 'center',
+              }}
             />
-          }
+          )}
         </Box>
-    </Box>
+      </Box>
     </form>
   )
 }

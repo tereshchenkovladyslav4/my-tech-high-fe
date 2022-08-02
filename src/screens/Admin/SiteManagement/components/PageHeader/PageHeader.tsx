@@ -1,11 +1,11 @@
-import React from 'react'
-import { Box, Button, Typography, IconButton } from '@mui/material'
+import React, { FunctionComponent } from 'react'
 import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded'
-import { useStyles } from '../../styles'
+import { Box, Button, Typography, IconButton } from '@mui/material'
 import { useHistory } from 'react-router-dom'
+import { useStyles } from '../../styles'
 import { PageHeaderProps } from './PageHeaderProps'
 
-export default function PageHeader({ title, handleClickSave }: PageHeaderProps) {
+export const PageHeader: FunctionComponent<PageHeaderProps> = ({ title, handleClickSave }) => {
   const history = useHistory()
   const classes = useStyles
   const handleBackClick = () => {

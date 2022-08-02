@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from 'react'
-import { SYSTEM_01 } from '../../../../../utils/constants'
-import { Box, Checkbox, Typography } from '@mui/material'
-import CustomDateInput from './CustomDateInput'
-import { EnrollmentPacketFormType } from '../types'
-import { isValidDate } from '../helpers'
-import { Controller, useFormContext } from 'react-hook-form'
+import React, { FunctionComponent, useEffect, useState } from 'react'
+import { Checkbox, Typography } from '@mui/material'
 import { Grid } from '@mui/material'
+import { Controller, useFormContext } from 'react-hook-form'
+import { SYSTEM_01 } from '../../../../../utils/constants'
+import { isValidDate } from '../helpers'
+import { EnrollmentPacketFormType } from '../types'
+import { CustomDateInput } from './CustomDateInput'
 
-export default function VaccinesInfoHeader() {
+export const VaccinesInfoHeader: FunctionComponent = () => {
   const { watch, setValue, control } = useFormContext<EnrollmentPacketFormType>()
   const [immunizations, enableExemptionDate] = watch(['immunizations', 'enableExemptionDate'])
   const [fullExempt, setFullExempt] = useState(false)

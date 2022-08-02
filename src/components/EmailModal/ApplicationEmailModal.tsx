@@ -1,22 +1,21 @@
+import React, { useEffect, useRef, useState } from 'react'
 import { Button, Modal, OutlinedInput } from '@mui/material'
 import { Box } from '@mui/system'
-import React, { useEffect, useRef, useState } from 'react'
-import { EmailModalTemplateType } from './types'
-import { useStyles } from './styles'
 import { EditorState, convertToRaw, ContentState } from 'draft-js'
-import { StandardResponses } from './StandardReponses/StandardResponses'
-import { Title } from '../Typography/Title/Title'
 
-import Wysiwyg from 'react-draft-wysiwyg'
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
 import draftToHtml from 'draftjs-to-html'
 import htmlToDraft from 'html-to-draftjs'
+import Wysiwyg from 'react-draft-wysiwyg'
+
+import { Title } from '../Typography/Title/Title'
+import { useStyles } from './styles'
+import { EmailModalTemplateType } from './types'
 
 export const ApplicationEmailModal: EmailModalTemplateType = ({
   handleSubmit,
   handleModem,
   title,
-  options,
   editFrom,
   template,
 }) => {
@@ -42,7 +41,7 @@ export const ApplicationEmailModal: EmailModalTemplateType = ({
 
   useEffect(() => {
     if (template) {
-      const { id, title, subject, from, bcc, body } = template
+      const { subject, from, body } = template
       setSubject(subject)
       setEmailFrom(from)
       if (body) {

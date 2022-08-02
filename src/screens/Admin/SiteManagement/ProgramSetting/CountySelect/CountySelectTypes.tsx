@@ -6,10 +6,10 @@ export type CountyFileType = {
 
 export type CountySelectProps = {
   county: CountyFileType | null
-  setCounty: (value: any) => void
-  setCountyArray: (value: any) => void
+  setCounty: (value: unknown) => void
+  setCountyArray: (value: unknown) => void
   setIsChanged: (value: boolean) => void
-  setIsDelete: (value: any) => void
-  isDelete: any
-  isChanged: any
+  setIsDelete: (value: unknown) => void
+  isDelete: unknown
+  isChanged: unknown
 }

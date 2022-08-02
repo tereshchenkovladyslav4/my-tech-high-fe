@@ -1,7 +1,7 @@
 import React, { createContext } from 'react'
+import { atom } from 'recoil'
 import { Person, StudentType } from '../../screens/HomeroomStudentProfile/Student/types'
 import { AccessType, RegionType, RoleType } from './types'
-import { atom } from 'recoil'
 
 export type UserInfo = {
   user_id?: number
@@ -29,7 +29,7 @@ export type UserContextType = {
 
 const userContext: UserContextType = {
   me: null,
-  setMe: (_) => {},
+  setMe: () => {},
 }
 
 export type TabInfo = {
@@ -44,9 +44,9 @@ export type TabContextType = {
 
 const tabContext: TabContextType = {
   tab: null,
-  setTab: (_) => {},
+  setTab: () => {},
   visitedTabs: [],
-  setVisitedTabs: (_) => {},
+  setVisitedTabs: () => {},
 }
 
 export const UserContext = createContext(userContext)

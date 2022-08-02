@@ -1,25 +1,32 @@
-import { Grid, Select, MenuItem } from '@mui/material'
-import { Box } from '@mui/system'
-import React, { useEffect, useState } from 'react'
-import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragraph'
-import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
-import { Title } from '../../../../../components/Typography/Title/Title'
-import { MTHBLUE, BLACK, BUTTON_LINEAR_GRADIENT, RED_GRADIENT, YELLOW_GRADIENT } from '../../../../../utils/constants'
-import moment from 'moment'
-import { DropDown } from '../../../../../components/DropDown/DropDown'
-import { DropDownItem } from '../../../../../components/DropDown/types'
+import React, { FunctionComponent, useEffect, useState } from 'react'
 import { makeStyles } from '@material-ui/styles'
 import { KeyboardArrowDown } from '@mui/icons-material'
-import { WithdrawModal } from './WithdrawModal'
-import { ActiveModal } from './ActiveModal'
+import { Grid, Select, MenuItem } from '@mui/material'
+import { Box } from '@mui/system'
+import moment from 'moment'
+import { CustomConfirmModal } from '../../../../../components/CustomConfirmModal/CustomConfirmModal'
+import { DropDownItem } from '../../../../../components/DropDown/types'
+import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragraph'
+import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
+import { MTHBLUE, BLACK, BUTTON_LINEAR_GRADIENT, RED_GRADIENT, YELLOW_GRADIENT } from '../../../../../utils/constants'
 import {
   STUDENT_STATUS_ACTIVE,
   STUDENT_STATUS_APPLIED,
   STUDENT_STATUS_PENDING,
   STUDENT_STATUS_WITHDRAWAL,
 } from '../../../../../utils/StudentStatusConstants'
-import CustomConfirmModal from '../../../../../components/CustomConfirmModal/CustomConfirmModal'
+import { ActiveModal } from './ActiveModal'
+import { WithdrawModal } from './WithdrawModal'
 
+type StudentFiltersProps = {
+  currentUserData: unknown
+  setStudentStatuData: () => void
+  originStudentStatus: unknown
+  studentStatusData: unknown
+  withdrawalStatus: unknown
+  setWithdrawalStatus: () => void
+  setIsChanged: () => void
+}
 const selectStyles = makeStyles({
   backgroundSelect: {
     fontSize: '12px',
@@ -68,11 +75,11 @@ const selectStyles = makeStyles({
     '& > div': {
       paddingTop: 0,
       paddingBottom: 0,
-    }
+    },
   },
   selectIcon: {
     fill: '#F2F2F2',
-    color: '#F2F2F2'
+    color: '#F2F2F2',
   },
   selectRoot: {
     color: '#F2F2F2',
@@ -80,7 +87,7 @@ const selectStyles = makeStyles({
 })
 const useStyles = {
   modalCard: {
-    position: 'absolute' as 'absolute',
+    position: 'absolute' as const,
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
@@ -154,7 +161,7 @@ const useStyles = {
     right: 0,
   },
   modalEmailCard: {
-    position: 'absolute' as 'absolute',
+    position: 'absolute' as const,
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
@@ -187,11 +194,11 @@ const useStyles = {
   },
 }
 const ordinal = (n) => {
-  var s = ['th', 'st', 'nd', 'rd']
-  var v = n % 100
+  const s = ['th', 'st', 'nd', 'rd']
+  const v = n % 100
   return n + (s[(v - 20) % 10] || s[v] || s[0])
 }
-export const StudentFilters = ({
+export const StudentFilters: FunctionComponent<StudentFiltersProps> = ({
   currentUserData,
   setStudentStatuData,
   originStudentStatus,
@@ -203,13 +210,13 @@ export const StudentFilters = ({
   const classes = useStyles
   const selectClasses = selectStyles()
   const [showDetails, setShowDetails] = useState<boolean>(false)
-  const [applications, setApplications] = useState<any[]>([])
-  const [studentStatus, setStudentStatus] = useState<any>()
-  const [specialEd, setSpecialEd] = useState<any>()
+  const [applications, setApplications] = useState<unknown[]>([])
+  const [studentStatus, setStudentStatus] = useState<unknown>()
+  const [, setSpecialEd] = useState<unknown>()
   const [showWithdrawalModal, setShowWithdrawalModal] = useState<boolean>(false)
   const [showActiveModal, setShowActiveModal] = useState<boolean>(false)
   const [showConfirmModal, setShowConfirmModal] = useState<boolean>(false)
-  const [diplomaSeeking, setDiplomaSeeking] = useState<any>('')
+  const [diplomaSeeking, setDiplomaSeeking] = useState<unknown>('')
   const [status, setStatus] = useState<DropDownItem[]>([
     {
       label: ' ',
@@ -393,7 +400,7 @@ export const StudentFilters = ({
           value: STUDENT_STATUS_ACTIVE,
         },
         {
-          label: `Withdrawn`,
+          label: 'Withdrawn',
           value: STUDENT_STATUS_WITHDRAWAL,
         },
       ])
@@ -418,13 +425,13 @@ export const StudentFilters = ({
             <Subtitle fontWeight='700' sx={{ marginRight: '30px', marginBottom: '5px' }}>
               {applications?.[0]?.midyear_application
                 ? `${moment(applications[0].school_year.date_begin).format('YYYY')} - ${moment(
-                  applications[0].school_year.date_end,
-                ).format('YY')} Mid-year Status`
+                    applications[0].school_year.date_end,
+                  ).format('YY')} Mid-year Status`
                 : applications?.[0]
-                  ? `${moment(applications[0].school_year.date_begin).format('YYYY')} - ${moment(
+                ? `${moment(applications[0].school_year.date_begin).format('YYYY')} - ${moment(
                     applications[0].school_year.date_end,
                   ).format('YY')} Status`
-                  : ''}
+                : ''}
             </Subtitle>
             <Box>
               {console.log('lplp', studentStatusData.status, withdrawalStatus?.status)}
@@ -446,7 +453,6 @@ export const StudentFilters = ({
                 onChange={(e) => {
                   handleChangeStudentStatus(e)
                 }}
-
               >
                 {status.map((item) => (
                   <MenuItem
@@ -503,8 +509,8 @@ export const StudentFilters = ({
               confirmBtnTitle='Delete'
               handleConfirmModalChange={(val: boolean, isOk: boolean) => {
                 if (isOk) {
-                  setWithdrawalStatus({});
-                  setStudentStatuData({ ...studentStatusData, ...{ activeOption : true } })
+                  setWithdrawalStatus({})
+                  setStudentStatuData({ ...studentStatusData, ...{ activeOption: true } })
                 }
                 setShowConfirmModal(false)
               }}
@@ -573,11 +579,11 @@ export const StudentFilters = ({
           <Grid item xs={12}>
             <Box sx={classes.content}>
               <Box sx={classes.formRow}>
-                <Subtitle sx={classes.formLabel as object} fontWeight='500'>
+                <Subtitle sx={classes.formLabel as Record<string, unknown>} fontWeight='500'>
                   Application
-                  <Box sx={classes.labelAfter as object}></Box>
+                  <Box sx={classes.labelAfter as Record<string, unknown>}></Box>
                 </Subtitle>
-                <Subtitle sx={{ ...(classes.formValue as object) }} fontWeight='500'>
+                <Subtitle sx={{ ...(classes.formValue as Record<string, unknown>) }} fontWeight='500'>
                   {applications[0].status}{' '}
                   {applications[0].date_submitted
                     ? moment(applications[0].date_submitted).format('l')
@@ -585,37 +591,37 @@ export const StudentFilters = ({
                 </Subtitle>
               </Box>
               <Box sx={classes.formRow}>
-                <Subtitle sx={classes.formLabel as object} fontWeight='500'>
+                <Subtitle sx={classes.formLabel as Record<string, unknown>} fontWeight='500'>
                   Date of Birth
-                  <Box sx={classes.labelAfter as object}></Box>
+                  <Box sx={classes.labelAfter as Record<string, unknown>}></Box>
                 </Subtitle>
-                <Subtitle sx={classes.formValue as object} fontWeight='500'>
+                <Subtitle sx={classes.formValue as Record<string, unknown>} fontWeight='500'>
                   {currentUserData.student.person.date_of_birth &&
                     moment(currentUserData.student.person.date_of_birth).format('l')}
                   {currentUserData.student.person.date_of_birth &&
                     `(${moment().diff(currentUserData.student.person.date_of_birth, 'years')})`}
                 </Subtitle>
               </Box>
-              {applications.map((application) => (
-                <Box sx={classes.formRow}>
-                  <Subtitle sx={classes.formLabel as object} fontWeight='500'>
+              {applications.map((application, idx) => (
+                <Box sx={classes.formRow} key={idx}>
+                  <Subtitle sx={classes.formLabel as Record<string, unknown>} fontWeight='500'>
                     {application.midyear_application
                       ? `${moment(application.school_year.midyear_application_open).format('YYYY')}-${moment(
-                        application.school_year.midyear_application_close,
-                      ).format('YY')} Mid-year`
+                          application.school_year.midyear_application_close,
+                        ).format('YY')} Mid-year`
                       : `${moment(application.school_year.date_begin).format('YYYY')}-${moment(
-                        application.school_year.date_end,
-                      ).format('YY')}`}
-                    <Box sx={classes.labelAfter as object}></Box>
+                          application.school_year.date_end,
+                        ).format('YY')}`}
+                    <Box sx={classes.labelAfter as Record<string, unknown>}></Box>
                   </Subtitle>
                   <Box sx={classes.formRow}>
-                    <Subtitle sx={classes.formValue as object} fontWeight='500'>
+                    <Subtitle sx={classes.formValue as Record<string, unknown>} fontWeight='500'>
                       {currentUserData.student.grade_levels &&
                         ordinal(currentUserData.student.grade_levels[0].grade_level)}{' '}
                       Grade
-                      <Box sx={classes.labelAfter as object}></Box>
+                      <Box sx={classes.labelAfter as Record<string, unknown>}></Box>
                     </Subtitle>
-                    {/* <Subtitle sx={classes.formValue as object} fontWeight='500'></Subtitle> */}
+                    {/* <Subtitle sx={classes.formValue as Record<string, unknown>} fontWeight='500'></Subtitle> */}
                   </Box>
                 </Box>
               ))}

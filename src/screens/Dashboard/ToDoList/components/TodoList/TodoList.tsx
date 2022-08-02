@@ -3,11 +3,11 @@ import { useQuery } from '@apollo/client'
 import { Table, TableBody, TableContainer, Box } from '@mui/material'
 import { forOwn, map, groupBy, values } from 'lodash'
 import moment from 'moment'
-import { getTodoList } from '../../service'
 import { checkEnrollPacketStatus } from '../../../../../utils/utils'
-import { TodoListTemplateType } from './types'
+import { getTodoList } from '../../service'
 import { ToDoListItem } from '../ToDoListItem/ToDoListItem'
 import { ToDoCategory, ToDoItem } from '../ToDoListItem/types'
+import { TodoListTemplateType } from './types'
 
 export const TodoList: TodoListTemplateType = ({ handleShowEmpty, schoolYears }) => {
   const [todoList, setTodoList] = useState<ToDoItem[]>([])

@@ -5,20 +5,20 @@ import { Formik, Form } from 'formik'
 import _ from 'lodash'
 import { Prompt } from 'react-router-dom'
 import { arrayMove, SortableContainer, SortableElement } from 'react-sortable-hoc'
-import { useStyles } from '../../../screens/Admin/SiteManagement/styles'
-import { Subtitle } from '../../Typography/Subtitle/Subtitle'
-import { defaultQuestions, Question, QUESTION_TYPE } from '../../QuestionItem/QuestionItemProps'
+import { WithdrawalStatus } from '../../../core/enums'
 import { saveQuestionsMutation, deleteQuestionMutation } from '../../../graphql/mutation/question'
+import { saveWithdrawalMutation } from '../../../graphql/mutation/withdrawal'
 import { getQuestionsByRegionQuery } from '../../../graphql/queries/question'
 import { UserContext } from '../../../providers/UserContext/UserProvider'
-import { saveWithdrawalMutation } from '../../../graphql/mutation/withdrawal'
-import { WithdrawalStatus } from '../../../core/enums'
+import { useStyles } from '../../../screens/Admin/SiteManagement/styles'
+import { CustomConfirmModal } from '../../CustomConfirmModal/CustomConfirmModal'
+import { QuestionModal } from '../../QuestionItem/AddNewQuestion'
+import { DefaultQuestionModal } from '../../QuestionItem/AddNewQuestion/DefaultQuestionModal'
+import { SelectDefaultCustomQuestionModal } from '../../QuestionItem/AddNewQuestion/SelectDefaultCustomQuestionModal'
+import { QuestionItem } from '../../QuestionItem/QuestionItem'
+import { defaultQuestions, Question, QUESTION_TYPE } from '../../QuestionItem/QuestionItemProps'
+import { Subtitle } from '../../Typography/Subtitle/Subtitle'
 import CircleIcon from './CircleIcon'
-import QuestionModal from '../../QuestionItem/AddNewQuestion'
-import CustomConfirmModal from '../../CustomConfirmModal/CustomConfirmModal'
-import QuestionItem from '../../QuestionItem/QuestionItem'
-import SelectDefaultCustomQuestionModal from '../../QuestionItem/AddNewQuestion/SelectDefaultCustomQuestionModal'
-import DefaultQuestionModal from '../../QuestionItem/AddNewQuestion/DefaultQuestionModal'
 
 //	Possible Question Types List
 const QuestionTypes = [
@@ -180,7 +180,7 @@ const Withdrawal: React.FC<{
     if (questionsData?.questionsByRegion) {
       if (questionsData.questionsByRegion.length == 0) {
         //  Initial questions for admin
-        isEditable() &&
+        if (isEditable()) {
           setQuestions([
             {
               id: -1,
@@ -233,6 +233,7 @@ const Withdrawal: React.FC<{
               response: '',
             },
           ])
+        }
       } else {
         setQuestions(
           questionsData.questionsByRegion.map(
@@ -312,7 +313,7 @@ const Withdrawal: React.FC<{
         <Formik
           initialValues={questions}
           enableReinitialize={true}
-          validate={(values: Question[]) => {
+          validate={(values: Question[]): { [key: string]: string } | undefined | void => {
             let isEqual = true
             if (isEditable()) {
               isEqual = _.isEqual(values, questions)
@@ -369,6 +370,7 @@ const Withdrawal: React.FC<{
 
               return errors
             }
+            return undefined
           }}
           onSubmit={async (vals, formikBag) => {
             setIsSubmitting(true)
@@ -381,8 +383,9 @@ const Withdrawal: React.FC<{
                 }
 
                 if (!isEditable()) {
-                  const offset = new Date().getTimezoneOffset();
-                  const date_effective = offset < 0 ? vals[1].response+'T00:00:00.000Z' : vals[1].response+'T24:00:00.000Z';
+                  const offset = new Date().getTimezoneOffset()
+                  const date_effective =
+                    offset < 0 ? vals[1].response + 'T00:00:00.000Z' : vals[1].response + 'T24:00:00.000Z'
                   const { data } = await submitResponses({
                     variables: {
                       withdrawalInput: {
@@ -406,7 +409,7 @@ const Withdrawal: React.FC<{
 
                   return
                 }
-                const newquestions: Array<any> = [] // = vals.map((v) => v);
+                const newquestions: Array<unknown> = [] // = vals.map((v) => v);
                 //	Move additional questions behind the parent question
                 for (let i = 0; i < vals.length; i++) {
                   if (vals[i].additionalQuestion === '') {
@@ -483,6 +486,7 @@ const Withdrawal: React.FC<{
                 }
               })
               .catch((err) => {
+                console.error(err)
                 //setIsSubmitting(false);
               })
           }}

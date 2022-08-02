@@ -1,16 +1,16 @@
-import React, { Children, useState } from 'react'
+import React, { Children, FunctionComponent, useState } from 'react'
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew'
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
+import CloseIcon from '@mui/icons-material/Close'
+import { Box, Button, Card, Fade, Popper } from '@mui/material'
 import moment from 'moment'
 import { Calendar, momentLocalizer } from 'react-big-calendar'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
-import { Box, Button, Card, Fade, Popper } from '@mui/material'
-import CloseIcon from '@mui/icons-material/Close'
-import { CalendarEvent, EventCalendarProps } from '../types'
-import { mainClasses } from '../MainComponent/styles'
 import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
-import { calendarDayClassess } from '../../../Dashboard/ParentCalendar/components/styles'
 import { BLACK, GRAY } from '../../../../utils/constants'
+import { calendarDayClassess } from '../../../Dashboard/ParentCalendar/components/styles'
+import { mainClasses } from '../MainComponent/styles'
+import { CalendarEvent, EventCalendarProps } from '../types'
 
 moment.locale('en', {
   week: {
@@ -20,7 +20,7 @@ moment.locale('en', {
 })
 const localizer = momentLocalizer(moment)
 
-const EventCalendar = ({
+const EventCalendar: FunctionComponent<EventCalendarProps> = ({
   eventList,
   selectedDate,
   selectedEvent,
@@ -28,12 +28,12 @@ const EventCalendar = ({
   setCurrentMonth,
   setSelectedDate,
   setSelectedEventId,
-}: EventCalendarProps) => {
+}) => {
   const [showMore, setShowMore] = useState<boolean>(false)
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const [selectedEvents, setSelectedEvents] = useState<CalendarEvent[]>([])
 
-  const Event = ({ event }: any) => {
+  const Event = ({ event }: unknown) => {
     return (
       <span style={{ color: event.color }}>
         <strong>{event.title}</strong>
@@ -41,7 +41,7 @@ const EventCalendar = ({
     )
   }
 
-  const ColoredDateCellWrapper = ({ children, value }: any) =>
+  const ColoredDateCellWrapper = ({ children, value }: unknown) =>
     React.cloneElement(Children.only(children), {
       style: {
         ...children.style,
@@ -50,7 +50,7 @@ const EventCalendar = ({
     })
 
   const formats = {
-    weekdayFormat: (date: any, culture: any, localizer: any) => localizer.format(date, 'dd', culture),
+    weekdayFormat: (date: unknown, culture: unknown, localizer: unknown) => localizer.format(date, 'dd', culture),
   }
 
   const handleSelectEvent = (event: CalendarEvent) => {
@@ -166,7 +166,7 @@ const EventCalendar = ({
           setShowMore(false)
           setAnchorEl(null)
         }}
-        eventPropGetter={(event: any, start: any, end: any, isSelected: any) => ({
+        eventPropGetter={(event: unknown, start: unknown, end: unknown, isSelected: boolean) => ({
           event,
           start,
           end,

@@ -1,20 +1,20 @@
-import React, { useEffect, useState, useContext } from 'react'
-import { Prompt, useHistory } from 'react-router-dom'
-import { Box, Card, Grid, IconButton } from '@mui/material'
-import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded'
+import React, { useEffect, useState, useContext, FunctionComponent } from 'react'
 import { useMutation, useQuery } from '@apollo/client'
+import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded'
+import { Box, Card, Grid, IconButton } from '@mui/material'
+import { Prompt, useHistory } from 'react-router-dom'
 import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
-import { CALENDAR } from '../../../../utils/constants'
-import { EventType, EventTypeResponseVM } from '../types'
-import { NewType } from './NewType'
-import { EditTypeModal } from './EditTypeModal'
-import CustomModal from '../../SiteManagement/EnrollmentSetting/components/CustomModal/CustomModals'
-import { getEventTypesQuery, updateEventTypeMutation, updateEventTypesMutation } from '../services'
 import { UserContext } from '../../../../providers/UserContext/UserProvider'
+import { CALENDAR } from '../../../../utils/constants'
+import { CustomModal } from '../../SiteManagement/EnrollmentSetting/components/CustomModal/CustomModals'
+import { getEventTypesQuery, updateEventTypeMutation, updateEventTypesMutation } from '../services'
+import { EventType, EventTypeResponseVM } from '../types'
+import { EditTypeModal } from './EditTypeModal'
 import { EventTypeTable } from './EventTypeTable'
+import { NewType } from './NewType'
 import { eventTypeClassess } from './styles'
 
-const EditTypeComponent = () => {
+const EditTypeComponent: FunctionComponent = () => {
   const history = useHistory()
   const { me } = useContext(UserContext)
   const [showEditModal, setShowEditModal] = useState<boolean>(false)
@@ -32,7 +32,7 @@ const EditTypeComponent = () => {
     skip: me?.selectedRegionId ? false : true,
     fetchPolicy: 'network-only',
   })
-  const handleEditClick = (item: any) => {
+  const handleEditClick = (item: EventType) => {
     setSelectedEventType(item)
     setShowEditModal(true)
   }

@@ -1,15 +1,15 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { Stack } from '@mui/material'
-import { SchoolYearSelectProps } from './SchoolYearSelectProps'
-import { DropDown } from '../../components/DropDown/DropDown'
-import { UserContext } from '../../../../../providers/UserContext/UserProvider'
-import { SchoolYears } from '../types'
-import { DropDownItem } from '../../components/DropDown/types'
-import moment from 'moment'
+import React, { FunctionComponent, useContext, useEffect, useState } from 'react'
 import { useQuery } from '@apollo/client'
+import { Stack } from '@mui/material'
+import moment from 'moment'
+import { UserContext } from '../../../../../providers/UserContext/UserProvider'
+import { DropDown } from '../../components/DropDown/DropDown'
+import { DropDownItem } from '../../components/DropDown/types'
 import { getSchoolYearsByRegionId } from '../../services'
+import { SchoolYears } from '../types'
+import { SchoolYearSelectProps } from './SchoolYearSelectProps'
 
-export default function SchoolYearSelect({
+export const SchoolYearSelect: FunctionComponent<SchoolYearSelectProps> = ({
   setSelectedYearId,
   setSpecialEd,
   setSpecialEdOptions,
@@ -20,8 +20,8 @@ export default function SchoolYearSelect({
   setCounty,
   setSchoolDistrict,
   schoolYears,
-  setSchoolYears
-}: SchoolYearSelectProps) {
+  setSchoolYears,
+}) => {
   const { me } = useContext(UserContext)
   // const [schoolYears, setSchoolYears] = useState<SchoolYears[]>([])
   const [years, setYears] = useState<DropDownItem[]>([])
@@ -33,20 +33,20 @@ export default function SchoolYearSelect({
     fetchPolicy: 'network-only',
   })
 
-  const convertSpeicalEdOptions = (optionString) => {    
-    var temp = []
+  const convertSpeicalEdOptions = (optionString) => {
+    const temp = []
     if (optionString != '' && optionString != null) {
-      const optionArray = optionString.split(',');
+      const optionArray = optionString.split(',')
       optionArray.map((option) => {
         temp.push({
-          option_value: option.trim()
-        });
-      });
+          option_value: option.trim(),
+        })
+      })
     }
-    return temp;
+    return temp
   }
 
-  const handleSelectYear = (val: string = '') => {
+  const handleSelectYear = (val = '') => {
     setSelectedYearId(val)
     if (schoolYears && schoolYears.length > 0) {
       schoolYears.forEach((schoolYear) => {
@@ -62,7 +62,7 @@ export default function SchoolYearSelect({
   }
 
   const setDropYears = (schoolYearsArr: SchoolYears[]) => {
-    let dropYears: DropDownItem[] = []
+    const dropYears: DropDownItem[] = []
     if (schoolYearsArr && schoolYearsArr.length > 0) {
       schoolYearsArr.forEach((schoolYear) => {
         if (
@@ -103,7 +103,7 @@ export default function SchoolYearSelect({
       let cnt = 0
       const { SchoolYears } = schoolYearData?.data?.region
       setSchoolYears(
-        SchoolYears?.map((schoolYear: any) => {
+        SchoolYears?.map((schoolYear: unknown) => {
           if (selectedYearId == schoolYear.school_year_id) {
             setSpecialEd(schoolYear.special_ed)
             setSpecialEdOptions(convertSpeicalEdOptions(schoolYear.special_ed_options))
@@ -131,7 +131,7 @@ export default function SchoolYearSelect({
       if (cnt == 0) {
         setSelectedYearId('')
         setSpecialEd(false)
-        setSpecialEdOptions([]);
+        setSpecialEdOptions([])
         setEnroll(false)
         setBirthDate('')
         setGrades('')

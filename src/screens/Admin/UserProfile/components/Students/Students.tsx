@@ -1,32 +1,41 @@
+import React, { useState, useRef, FunctionComponent } from 'react'
+import { useMutation } from '@apollo/client'
+import AccountBoxOutlinedIcon from '@mui/icons-material/AccountBoxOutlined'
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
+import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import { FormControlLabel, Checkbox, Avatar, Grid, Tooltip } from '@mui/material'
 import { Box } from '@mui/system'
-import React, { useState, useRef } from 'react'
+import moment from 'moment'
+import { useHistory } from 'react-router-dom'
+import Slider from 'react-slick'
+import { UserInfo } from '@mth/providers/UserContext/UserProvider'
+import { StudentType } from '@mth/screens/HomeroomStudentProfile/Student/types'
 import { Metadata } from '../../../../../components/Metadata/Metadata'
 import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
-import Slider from 'react-slick'
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
-import ChevronRightIcon from '@mui/icons-material/ChevronRight'
-import moment from 'moment'
-import AccountBoxOutlinedIcon from '@mui/icons-material/AccountBoxOutlined';
 import { becomeUserMutation } from '../../../../../graphql/mutation/user'
-import { useMutation, useQuery } from '@apollo/client'
 import { DASHBOARD } from '../../../../../utils/constants'
-import { useHistory } from 'react-router-dom'
+
+type StudentsProps = {
+  students: StudentType[]
+  selectedStudent: StudentType
+  handleChangeStudent: () => void
+  me: UserInfo
+}
 
 const ordinal = (n) => {
-  var s = ['th', 'st', 'nd', 'rd']
-  var v = n % 100
+  const s = ['th', 'st', 'nd', 'rd']
+  const v = n % 100
   return n + (s[(v - 20) % 10] || s[v] || s[0])
 }
-export const Students = ({ students, selectedStudent, handleChangeStudent, me }) => {
+export const Students: FunctionComponent<StudentsProps> = ({ students, selectedStudent, handleChangeStudent, me }) => {
   const history = useHistory()
   const sliderRef = useRef(null)
   const [showAll, setShowAll] = useState(false)
-  const status = ['Pending', 'Active', 'Withdrawn', 'Graduated', ''];
+  const status = ['Pending', 'Active', 'Withdrawn', 'Graduated', '']
 
   function SampleNextArrow(props) {
-    const { className, style, onClick } = props
+    const { style } = props
     return (
       <div
         style={{
@@ -50,7 +59,7 @@ export const Students = ({ students, selectedStudent, handleChangeStudent, me })
   }
 
   function SamplePrevArrow(props) {
-    const { className, style, onClick } = props
+    const { className, style } = props
     return (
       <ChevronLeftIcon
         className={className}
@@ -68,24 +77,23 @@ export const Students = ({ students, selectedStudent, handleChangeStudent, me })
     nextArrow: <SampleNextArrow />,
     prevArrow: <SamplePrevArrow />,
   }
-  
-  const [becomeUserAction, { data, loading: userLoading, error: userError }] =
-  useMutation(becomeUserMutation)
+
+  const [becomeUserAction] = useMutation(becomeUserMutation)
 
   const becomeUser = (id) => {
     becomeUserAction({
       variables: {
-        userId:  Number(id)
-      }
+        userId: Number(id),
+      },
     })
-    .then((resp) => {
-      localStorage.setItem('masquerade' ,resp.data.masqueradeUser.jwt)
-      localStorage.setItem('previousPage',location.href.replace(import.meta.env.SNOWPACK_PUBLIC_WEB_URL, ''))
-    })
-    .then(() => {
-      history.push(DASHBOARD)
-      location.reload()
-    })
+      .then((resp) => {
+        localStorage.setItem('masquerade', resp.data.masqueradeUser.jwt)
+        localStorage.setItem('previousPage', location.href.replace(import.meta.env.SNOWPACK_PUBLIC_WEB_URL, ''))
+      })
+      .then(() => {
+        history.push(DASHBOARD)
+        location.reload()
+      })
   }
 
   return (
@@ -125,54 +133,69 @@ export const Students = ({ students, selectedStudent, handleChangeStudent, me })
       >
         <Grid container>
           <Grid xs={10}>
-            <Slider {...settings} ref={sliderRef} >
+            <Slider {...settings} ref={sliderRef}>
               {students
-                .filter(
-                  (item) =>
-                    item.status.length === 0 || (item.status.length && Number(item.status[0].status) < 2)
-                )
-                .map((item) => (
-                  <Box sx={{ cursor: 'pointer' }} onClick={() => handleChangeStudent(item)}>
+                .filter((item) => item.status.length === 0 || (item.status.length && Number(item.status[0].status) < 2))
+                .map((item, idx) => (
+                  <Box sx={{ cursor: 'pointer' }} onClick={() => handleChangeStudent(item)} key={idx}>
                     <Metadata
                       title={
-                        <Subtitle fontWeight='700' color={selectedStudent === parseInt(item.student_id) ? '#4145FF' : '#cccccc'}>
+                        <Subtitle
+                          fontWeight='700'
+                          color={selectedStudent === parseInt(item.student_id) ? '#4145FF' : '#cccccc'}
+                        >
                           {item.person.first_name}
                         </Subtitle>
                       }
                       subtitle={
                         <Box display={'flex'} flexDirection='row' alignItems={'center'} alignContent='center'>
                           <Paragraph color='#cccccc' size={'large'}>
-                            {(item.grade_levels.length && item.grade_levels[0].grade_level && item.grade_levels[0].grade_level.includes('K'))
+                            {item.grade_levels.length &&
+                            item.grade_levels[0].grade_level &&
+                            item.grade_levels[0].grade_level.includes('K')
                               ? 'Kindergarten'
-                              : ordinal(item.grade_level || (item.grade_levels.length && item.grade_levels[0].grade_level)) +
-                                ' Grade'}
+                              : ordinal(
+                                  item.grade_level || (item.grade_levels.length && item.grade_levels[0].grade_level),
+                                ) + ' Grade'}
                           </Paragraph>
-                          {
-                            selectedStudent === parseInt(item.student_id) && Boolean(me.masquerade)
-                              && <Tooltip title='Masquerade'>
-                              <AccountBoxOutlinedIcon 
-                                sx={{color: '#4145FF', height: 15, width: 15}}
+                          {selectedStudent === parseInt(item.student_id) && Boolean(me.masquerade) && (
+                            <Tooltip title='Masquerade'>
+                              <AccountBoxOutlinedIcon
+                                sx={{ color: '#4145FF', height: 15, width: 15 }}
                                 onClick={() => becomeUser(item.person.user.user_id)}
                               />
                             </Tooltip>
-                          }
+                          )}
                         </Box>
                       }
-                      image={<Avatar alt={item.person.preferred_first_name ?? item.person.first_name} src="image" variant='rounded' style={{ marginRight: 8 }} />}
+                      image={
+                        <Avatar
+                          alt={item.person.preferred_first_name ?? item.person.first_name}
+                          src='image'
+                          variant='rounded'
+                          style={{ marginRight: 8 }}
+                        />
+                      }
                     />
                   </Box>
                 ))}
-                {students
+              {students
                 .filter(
                   (item) =>
-                  item.status.length > 0 && 
-                    ((Number(item.status[0].status) === 2) && (!item.person.date_of_birth || item.person.date_of_birth && moment(item.person.date_of_birth) > moment().subtract('years', 19))),
+                    item.status.length > 0 &&
+                    Number(item.status[0].status) === 2 &&
+                    (!item.person.date_of_birth ||
+                      (item.person.date_of_birth &&
+                        moment(item.person.date_of_birth) > moment().subtract('years', 19))),
                 )
-                .map((item) => (
-                  <Box sx={{ cursor: 'pointer' }} onClick={() => handleChangeStudent(item)}>
+                .map((item, idx) => (
+                  <Box sx={{ cursor: 'pointer' }} onClick={() => handleChangeStudent(item)} key={idx}>
                     <Metadata
                       title={
-                        <Subtitle fontWeight='700' color={selectedStudent === parseInt(item.student_id) ? '#4145FF' : '#cccccc'}>
+                        <Subtitle
+                          fontWeight='700'
+                          color={selectedStudent === parseInt(item.student_id) ? '#4145FF' : '#cccccc'}
+                        >
                           {item.person.first_name}
                         </Subtitle>
                       }
@@ -181,7 +204,14 @@ export const Students = ({ students, selectedStudent, handleChangeStudent, me })
                           {status[item.status[0].status]}
                         </Paragraph>
                       }
-                      image={<Avatar alt={item.person.preferred_first_name ?? item.person.first_name} src="image" variant='rounded' style={{ marginRight: 8 }} />}
+                      image={
+                        <Avatar
+                          alt={item.person.preferred_first_name ?? item.person.first_name}
+                          src='image'
+                          variant='rounded'
+                          style={{ marginRight: 8 }}
+                        />
+                      }
                     />
                   </Box>
                 ))}
@@ -189,15 +219,24 @@ export const Students = ({ students, selectedStudent, handleChangeStudent, me })
               {students
                 .filter(
                   (item) =>
-                    showAll && ((item.status.length && Number(item.status[0].status) > 1) &&
-                    (item.status.length && Number(item.status[0].status) === 3 ) ||
-                    (item.status.length && Number(item.status[0].status) === 2  && (item.person.date_of_birth && moment(item.person.date_of_birth) < moment().subtract('years', 19)))) ,
+                    showAll &&
+                    ((item.status.length &&
+                      Number(item.status[0].status) > 1 &&
+                      item.status.length &&
+                      Number(item.status[0].status) === 3) ||
+                      (item.status.length &&
+                        Number(item.status[0].status) === 2 &&
+                        item.person.date_of_birth &&
+                        moment(item.person.date_of_birth) < moment().subtract('years', 19))),
                 )
-                .map((item) => (
-                  <Box sx={{ cursor: 'pointer' }} onClick={() => handleChangeStudent(item)}>
+                .map((item, idx) => (
+                  <Box sx={{ cursor: 'pointer' }} onClick={() => handleChangeStudent(item)} key={idx}>
                     <Metadata
                       title={
-                        <Subtitle fontWeight='700' color={selectedStudent === parseInt(item.student_id) ? '#4145FF' : '#cccccc'}>
+                        <Subtitle
+                          fontWeight='700'
+                          color={selectedStudent === parseInt(item.student_id) ? '#4145FF' : '#cccccc'}
+                        >
                           {item.person.first_name}
                         </Subtitle>
                       }
@@ -206,7 +245,14 @@ export const Students = ({ students, selectedStudent, handleChangeStudent, me })
                           {status[item.status[0].status]}
                         </Paragraph>
                       }
-                      image={<Avatar alt={item.person.preferred_first_name ?? item.person.first_name} src="image" variant='rounded' style={{ marginRight: 8 }} />}
+                      image={
+                        <Avatar
+                          alt={item.person.preferred_first_name ?? item.person.first_name}
+                          src='image'
+                          variant='rounded'
+                          style={{ marginRight: 8 }}
+                        />
+                      }
                     />
                   </Box>
                 ))}

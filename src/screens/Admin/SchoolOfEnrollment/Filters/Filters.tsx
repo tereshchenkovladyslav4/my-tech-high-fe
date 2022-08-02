@@ -1,19 +1,19 @@
-import { Box, Button, Card, Checkbox, FormControlLabel, Grid } from '@mui/material'
-import React, { useContext, useEffect, useState } from 'react'
-import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
+import React, { FunctionComponent, useContext, useEffect, useState } from 'react'
+import { useQuery } from '@apollo/client'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
-import { BUTTON_LINEAR_GRADIENT, MTHBLUE, RED_GRADIENT, GRADES } from '../../../../utils/constants'
-import { Paragraph } from '../../../../components/Typography/Paragraph/Paragraph'
+import { Box, Button, Card, Checkbox, FormControlLabel, Grid } from '@mui/material'
 import { map } from 'lodash'
-import { toOrdinalSuffix } from '../../../../utils/stringHelpers'
 import { useHistory } from 'react-router-dom'
-import { FiltersProps } from '../type'
-import { useQuery } from '@apollo/client'
+import { Paragraph } from '../../../../components/Typography/Paragraph/Paragraph'
+import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
 import { UserContext } from '../../../../providers/UserContext/UserProvider'
+import { BUTTON_LINEAR_GRADIENT, MTHBLUE, RED_GRADIENT, GRADES } from '../../../../utils/constants'
+import { toOrdinalSuffix } from '../../../../utils/stringHelpers'
 import { getSchoolDistrictsByRegionId } from '../../SiteManagement/EnrollmentSetting/ApplicationQuestions/services'
+import { FiltersProps } from '../type'
 
-export const Filters = ({ filter, setFilter, partnerList }: FiltersProps) => {
+export const Filters: FunctionComponent<FiltersProps> = ({ filter, setFilter, partnerList }) => {
   const { me } = useContext(UserContext)
   const history = useHistory()
   const [expand, setExpand] = useState<boolean>(true)
@@ -28,7 +28,7 @@ export const Filters = ({ filter, setFilter, partnerList }: FiltersProps) => {
     variables: {
       regionId: me?.selectedRegionId,
     },
-    fetchPolicy: 'network-only'
+    fetchPolicy: 'network-only',
   })
 
   const chevron = () =>
@@ -68,7 +68,7 @@ export const Filters = ({ filter, setFilter, partnerList }: FiltersProps) => {
 
   const handleYearStatus = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (yearStatus.includes(e.target.value)) {
-      setYearStatus(yearStatus.filter(i => i !== e.target.value))
+      setYearStatus(yearStatus.filter((i) => i !== e.target.value))
     } else {
       setYearStatus([...yearStatus, e.target.value])
     }
@@ -76,7 +76,7 @@ export const Filters = ({ filter, setFilter, partnerList }: FiltersProps) => {
 
   const handleSchoolOfEnrollments = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (schoolOfEnrollments.includes(e.target.value)) {
-      setSchoolOfEnrollments(schoolOfEnrollments.filter(i => i !== e.target.value))
+      setSchoolOfEnrollments(schoolOfEnrollments.filter((i) => i !== e.target.value))
     } else {
       setSchoolOfEnrollments([...schoolOfEnrollments, e.target.value])
     }
@@ -85,22 +85,22 @@ export const Filters = ({ filter, setFilter, partnerList }: FiltersProps) => {
   const handleSchoolDistrict = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.value === 'all') {
       if (e.target.checked) {
-        setSchoolDistrict(['all', ...schoolDistrictsData?.schoolDistrict?.map(item => item.id.toString())]);
+        setSchoolDistrict(['all', ...schoolDistrictsData?.schoolDistrict?.map((item) => item.id.toString())])
       } else {
-        setSchoolDistrict([]);
+        setSchoolDistrict([])
       }
     } else {
       if (e.target.checked) {
-        setSchoolDistrict([...schoolDistrict, e.target.value]);
+        setSchoolDistrict([...schoolDistrict, e.target.value])
       } else {
-        setSchoolDistrict(schoolDistrict.filter(item => ![e.target.value, 'all'].includes(item)));
+        setSchoolDistrict(schoolDistrict.filter((item) => ![e.target.value, 'all'].includes(item)))
       }
     }
   }
 
   const handleCurriculumProvider = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (curriculumProvider.includes(e.target.value)) {
-      setCurriculumProvider(curriculumProvider.filter(i => i !== e.target.value))
+      setCurriculumProvider(curriculumProvider.filter((i) => i !== e.target.value))
     } else {
       setCurriculumProvider([...curriculumProvider, e.target.value])
     }
@@ -132,14 +132,14 @@ export const Filters = ({ filter, setFilter, partnerList }: FiltersProps) => {
   }
   const handleClear = () => {
     setGrades([])
-    setYearStatus([]),
-      setSchoolOfEnrollments([]),
-      setSchoolDistrict([]),
-      setCurriculumProvider([]),
-      setFilter(prev => ({
-        schoolYearId: prev.schoolYearId,
-        schoolYearLabel: prev.schoolYearLabel
-      }))
+    setYearStatus([])
+    setSchoolOfEnrollments([])
+    setSchoolDistrict([])
+    setCurriculumProvider([])
+    setFilter((prev) => ({
+      schoolYearId: prev.schoolYearId,
+      schoolYearLabel: prev.schoolYearLabel,
+    }))
     const state = {}
     history.replace({ ...history.location, state })
   }
@@ -254,13 +254,7 @@ export const Filters = ({ filter, setFilter, partnerList }: FiltersProps) => {
               <FormControlLabel
                 key={index}
                 sx={{ height: 30 }}
-                control={
-                  <Checkbox
-                    value={item}
-                    checked={yearStatus.includes(item)}
-                    onChange={handleYearStatus}
-                  />
-                }
+                control={<Checkbox value={item} checked={yearStatus.includes(item)} onChange={handleYearStatus} />}
                 label={
                   <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
                     {item}
@@ -272,10 +266,17 @@ export const Filters = ({ filter, setFilter, partnerList }: FiltersProps) => {
             <Paragraph sx={{ marginTop: '12px' }} size='large' fontWeight='700'>
               School of enrollment
             </Paragraph>
-            {partnerList.map((item: any, index) => (
+            {partnerList.map((item: unknown, index: number) => (
               <FormControlLabel
+                key={index}
                 sx={{ height: 30 }}
-                control={<Checkbox value={item.value} checked={schoolOfEnrollments.includes(item.value)} onChange={handleSchoolOfEnrollments} />}
+                control={
+                  <Checkbox
+                    value={item.value}
+                    checked={schoolOfEnrollments.includes(item.value)}
+                    onChange={handleSchoolOfEnrollments}
+                  />
+                }
                 label={
                   <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
                     {item.abb}
@@ -300,17 +301,13 @@ export const Filters = ({ filter, setFilter, partnerList }: FiltersProps) => {
                 display: 'flex',
                 flexDirection: 'column',
                 overflowY: 'scroll',
-                height: '423px'
+                height: '423px',
               }}
             >
               <FormControlLabel
                 sx={{ height: 30 }}
                 control={
-                  <Checkbox
-                    value='all'
-                    checked={schoolDistrict.includes('all')}
-                    onChange={handleSchoolDistrict}
-                  />
+                  <Checkbox value='all' checked={schoolDistrict.includes('all')} onChange={handleSchoolDistrict} />
                 }
                 label={
                   <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
@@ -348,14 +345,14 @@ export const Filters = ({ filter, setFilter, partnerList }: FiltersProps) => {
             height: '100%',
             alignItems: 'end',
             flexDirection: 'column',
-            paddingLeft: '30px'
+            paddingLeft: '30px',
           }}
         >
           <Box
             sx={{
               display: 'flex',
               flexDirection: 'column',
-              alignSelf: 'flex-start'
+              alignSelf: 'flex-start',
             }}
           >
             <Paragraph size='large' fontWeight='700'>
@@ -365,7 +362,13 @@ export const Filters = ({ filter, setFilter, partnerList }: FiltersProps) => {
               <FormControlLabel
                 sx={{ height: 30 }}
                 key={index}
-                control={<Checkbox value={item} checked={curriculumProvider.includes(item)} onChange={handleCurriculumProvider} />}
+                control={
+                  <Checkbox
+                    value={item}
+                    checked={curriculumProvider.includes(item)}
+                    onChange={handleCurriculumProvider}
+                  />
+                }
                 label={
                   <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
                     {item}
@@ -410,7 +413,6 @@ export const Filters = ({ filter, setFilter, partnerList }: FiltersProps) => {
               Clear All
             </Button>
           </Box>
-
         </Box>
       </Grid>
     </Grid>

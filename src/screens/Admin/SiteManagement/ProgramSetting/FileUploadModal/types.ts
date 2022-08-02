@@ -5,7 +5,7 @@ type SubmissionModal = {
   document?: 'birth' | 'immunization' | 'residency'
   multi?: boolean
   extensions?: string
-  handleFile: any
+  handleFile: () => void
   limit?: number
   invalidMessage?: string
   type?: 'county' | 'schoolDistrict'
@@ -26,13 +26,13 @@ export type S3FileType = {
 export type FileUploadModalTemplateType = FunctionComponent<SubmissionModal>
 
 type FilesProps = {
-  files: Array<any>
+  files: Array<File>
 }
 
 export type FilesTemplateType = FunctionComponent<FilesProps>
 
 type FileListItemProp = {
-  closeAction?: any
+  closeAction?: () => void
   file: File | S3FileType
 }
 export type FileListItemTemplateType = FunctionComponent<FileListItemProp>

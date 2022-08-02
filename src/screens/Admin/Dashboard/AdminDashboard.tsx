@@ -1,30 +1,30 @@
-import { Avatar, AvatarGroup, Box, Button, Card, Divider, Grid, IconButton, TextField } from '@mui/material'
 import React, { FunctionComponent, useContext, useEffect, useState } from 'react'
-import { SchoolEnrollment } from './SchoolEnrollment/SchoolEnrollment'
-import { Homeroom } from './Homeroom/Homeroom'
-import { SchoolYear } from './SchoolYear/SchoolYear'
-import { SegmentedControl } from '../../../components/SegmentedControl/SegmentedControl'
-import { Subtitle } from '../../../components/Typography/Subtitle/Subtitle'
-import { Metadata } from '../../../components/Metadata/Metadata'
-import { Paragraph } from '../../../components/Typography/Paragraph/Paragraph'
-import { imageA, imageB, imageC } from '../../Dashboard/Dashboard'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import SearchIcon from '@mui/icons-material/Search'
+import { Avatar, AvatarGroup, Box, Card, Divider, Grid, IconButton, TextField } from '@mui/material'
+import { Metadata } from '../../../components/Metadata/Metadata'
+import { SegmentedControl } from '../../../components/SegmentedControl/SegmentedControl'
 import { Table } from '../../../components/Table/Table'
+import { Paragraph } from '../../../components/Typography/Paragraph/Paragraph'
+import { Subtitle } from '../../../components/Typography/Subtitle/Subtitle'
 import { UserContext } from '../../../providers/UserContext/UserProvider'
+import { imageA, imageB, imageC } from '../../Dashboard/Dashboard'
+import { Homeroom } from './Homeroom/Homeroom'
+import { SchoolEnrollment } from './SchoolEnrollment/SchoolEnrollment'
+import { SchoolYear } from './SchoolYear/SchoolYear'
 import { ToDo } from './ToDoList/ToDo'
 
 export const AdminDashboard: FunctionComponent = () => {
-  const { me } = useContext(UserContext);
-  const [showAnnouncements, setShowAnnouncements] = useState(false);
-  const [isSuper, setIsSuper] = useState(null);
+  const { me } = useContext(UserContext)
+  const [showAnnouncements, setShowAnnouncements] = useState(false)
+  const [, setIsSuper] = useState(null)
 
   useEffect(() => {
     if (me) {
-      setIsSuper(Number(me?.role?.level) === 1);
+      setIsSuper(Number(me?.role?.level) === 1)
       setShowAnnouncements(Number(me?.role?.level) === 1)
     }
-  }, [me]);
+  }, [me])
 
   const avatarGroup = (
     <AvatarGroup max={4} spacing={1}>
@@ -71,7 +71,12 @@ export const AdminDashboard: FunctionComponent = () => {
   ]
 
   return showAnnouncements ? (
-    <Grid container justifyContent='center' spacing={{xs: 2}} sx={{margin: '0 !important', width: 'calc(100% - 16px) !important'}} >
+    <Grid
+      container
+      justifyContent='center'
+      spacing={{ xs: 2 }}
+      sx={{ margin: '0 !important', width: 'calc(100% - 16px) !important' }}
+    >
       <Grid item xs={12} lg={8}>
         <Box marginBottom={5}>
           <SchoolYear />
@@ -125,7 +130,7 @@ export const AdminDashboard: FunctionComponent = () => {
                 </Box>
               </Box>
               <TextField
-                inputMode="search"
+                inputMode='search'
                 size='small'
                 InputProps={{
                   startAdornment: <SearchIcon />,

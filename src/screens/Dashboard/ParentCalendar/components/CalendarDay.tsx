@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from 'react'
-import { Box, Button, Card, Popper } from '@mui/material'
+import React, { ReactElement, useEffect, useState } from 'react'
 import CloseIcon from '@mui/icons-material/Close'
+import { Box, Button, Card, Popper } from '@mui/material'
 import moment from 'moment'
 import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
-import { hexToRgbA } from '../../../../utils/utils'
-import { CalendarDaysTemplateType, DayVM } from './types'
-import { CalendarEvent } from '../../../Admin/Calendar/types'
 import { BLACK, GRAY } from '../../../../utils/constants'
+import { hexToRgbA } from '../../../../utils/utils'
+import { CalendarEvent } from '../../../Admin/Calendar/types'
 import { calendarDayClassess } from './styles'
+import { CalendarDaysTemplateType, DayVM } from './types'
 
 export const CalendarDays: CalendarDaysTemplateType = ({
   selectedEvent,
@@ -47,7 +47,7 @@ export const CalendarDays: CalendarDaysTemplateType = ({
   }
 
   const renderEventList = (eventList: CalendarEvent[], date: Date = new Date()) => {
-    return eventList?.map((event, index) => {
+    return eventList?.map((event, index): ReactElement | undefined => {
       if (
         moment(event.start).format('YYYY-MM-DD') <= moment(date).format('YYYY-MM-DD') &&
         moment(event.end).format('YYYY-MM-DD') > moment(date).format('YYYY-MM-DD')
@@ -68,7 +68,7 @@ export const CalendarDays: CalendarDaysTemplateType = ({
             </Button>
           </Box>
         )
-      }
+      } else return undefined
     })
   }
 
@@ -117,8 +117,8 @@ export const CalendarDays: CalendarDaysTemplateType = ({
 
   useEffect(() => {
     const calendarDays: DayVM[] = []
-    let firstDayOfMonth = new Date(day.getFullYear(), day.getMonth(), 1)
-    let weekdayOfFirstDay = firstDayOfMonth.getDay()
+    const firstDayOfMonth = new Date(day.getFullYear(), day.getMonth(), 1)
+    const weekdayOfFirstDay = firstDayOfMonth.getDay()
     for (let cell = 1; cell < 43; cell++) {
       if (cell === 1 && weekdayOfFirstDay === 0) {
         firstDayOfMonth.setDate(firstDayOfMonth.getDate() - 6)

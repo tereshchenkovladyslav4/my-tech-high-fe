@@ -2,7 +2,7 @@ import { FunctionComponent, ReactElement } from 'react'
 import { SchoolYearType } from '../../../../../utils/utils.types'
 
 export type StudentGradeProps = {
-  student: any
+  student: unknown
   schoolYears: SchoolYearType[]
 }
 
@@ -12,5 +12,5 @@ export type CircleData = {
   color?: string
   progress: number
   message: string
-  icon?: ReactElement<any, any>
+  icon?: ReactElement<unknown, string>
 }

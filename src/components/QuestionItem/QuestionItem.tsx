@@ -1,3 +1,8 @@
+import React, { FunctionComponent, useContext, useEffect, useState } from 'react'
+import { useQuery } from '@apollo/client'
+import DehazeIcon from '@mui/icons-material/Dehaze'
+import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined'
+import EditIcon from '@mui/icons-material/Edit'
 import {
   Box,
   Button,
@@ -11,50 +16,46 @@ import {
   Grid,
 } from '@mui/material'
 import { useFormikContext } from 'formik'
-import React, { useContext, useEffect, useRef, useState } from 'react'
-import { Subtitle } from '../Typography/Subtitle/Subtitle'
-import DehazeIcon from '@mui/icons-material/Dehaze'
-import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined'
-import EditIcon from '@mui/icons-material/Edit'
-import { SortableHandle } from 'react-sortable-hoc'
-import { Question, QUESTION_TYPE } from './QuestionItemProps'
-import QuestionModal from './AddNewQuestion'
-import { SYSTEM_05, SYSTEM_07, GRADES, RED } from '../../utils/constants'
-import { DropDown } from '../DropDown/DropDown'
-import { Paragraph } from '../Typography/Paragraph/Paragraph'
+import _ from 'lodash'
+import moment from 'moment'
 import SignaturePad from 'react-signature-pad-wrapper'
-import CustomConfirmModal from '../CustomConfirmModal/CustomConfirmModal'
-import { useQuery } from '@apollo/client'
+import { SortableHandle } from 'react-sortable-hoc'
+import { UserContext } from '../../providers/UserContext/UserProvider'
 import {
   getActiveSchoolYearsByRegionId,
   getCountiesByRegionId,
   getSchoolDistrictsByRegionId,
   getAllRegion,
 } from '../../screens/Admin/SiteManagement/EnrollmentSetting/EnrollmentQuestions/services'
-import moment from 'moment'
-import { UserContext } from '../../providers/UserContext/UserProvider'
-import _ from 'lodash'
+import { SYSTEM_05, SYSTEM_07, GRADES, RED } from '../../utils/constants'
 import { toOrdinalSuffix } from '../../utils/stringHelpers'
+import { CustomConfirmModal } from '../CustomConfirmModal/CustomConfirmModal'
+import { DropDown } from '../DropDown/DropDown'
+import { Paragraph } from '../Typography/Paragraph/Paragraph'
+import { Subtitle } from '../Typography/Subtitle/Subtitle'
+import { QuestionModal } from './AddNewQuestion'
+import { Question, QUESTION_TYPE } from './QuestionItemProps'
 
+type QuestionItemProps = {
+  questions: Question[]
+  questionTypes: unknown[]
+  additionalQuestionTypes: unknown[]
+  hasAction: boolean
+  signature?: unknown
+}
 const DragHandle = SortableHandle(() => (
   <IconButton>
     <DehazeIcon />
   </IconButton>
 ))
 
-export default function QuestionItem({
+export const QuestionItem: FunctionComponent<QuestionItemProps> = ({
   questions,
   questionTypes,
   additionalQuestionTypes,
   hasAction, //	Admin => true, Parent => false
   signature,
-}: {
-  questions: Question[]
-  questionTypes: any[]
-  additionalQuestionTypes: any[]
-  hasAction: boolean
-  signature?: any
-}) {
+}) => {
   const { me } = useContext(UserContext)
 
   //	Formik values context
@@ -112,7 +113,7 @@ export default function QuestionItem({
     if (schoolYearData && schoolYearData.getSchoolYearsByRegionId && questions[0]?.slug == 'student_grade_level') {
       const program_year = values.find((x) => x.slug == 'program_year')
       if (program_year != null && program_year.response != '') {
-        let newGrades = schoolYearData.getSchoolYearsByRegionId
+        const newGrades = schoolYearData.getSchoolYearsByRegionId
           .find((element) => program_year.response == element.school_year_id)
           .grades?.split(',')
         if (!_.isEqual(grades, newGrades)) {
@@ -123,7 +124,7 @@ export default function QuestionItem({
     }
   }, [values, schoolYearData])
   const parseGrades = (newGrades) => {
-    let dropDownItems = []
+    const dropDownItems = []
     GRADES.forEach((grade) => {
       if (newGrades?.includes(grade.toString())) {
         if (typeof grade !== 'string') {
@@ -154,15 +155,15 @@ export default function QuestionItem({
     fetchPolicy: 'network-only',
   })
   useEffect(() => {
-    !countyLoading &&
-      countyData?.getCounties &&
+    if (!countyLoading && countyData?.getCounties) {
       updateOptionsForDefaultQuestion(
         countyData.getCounties.map((v) => {
           return { label: v.county_name, value: Number(v.id) }
         }),
       )
+    }
   }, [countyData])
-  //	packet_school_district
+
   const { loading: schoolDistrictsDataLoading, data: schoolDistrictsData } = useQuery(getSchoolDistrictsByRegionId, {
     variables: {
       regionId: questions[0]?.region_id,
@@ -175,15 +176,15 @@ export default function QuestionItem({
     fetchPolicy: 'network-only',
   })
   useEffect(() => {
-    !schoolDistrictsDataLoading &&
-      schoolDistrictsData?.schoolDistrict.length > 0 &&
+    if (!schoolDistrictsDataLoading && schoolDistrictsData?.schoolDistrict.length > 0) {
       updateOptionsForDefaultQuestion(
         schoolDistrictsData?.schoolDistrict.map((d) => {
           return { label: d.school_district_name, value: d.school_district_name }
         }),
       )
+    }
   }, [schoolDistrictsDataLoading])
-  //	address_state
+
   const { data: regionData, loading: regionDataLoading } = useQuery(getAllRegion, {
     skip:
       hasAction ||
@@ -192,29 +193,32 @@ export default function QuestionItem({
       questions[0]?.slug != 'address_state',
     fetchPolicy: 'network-only',
   })
+
   useEffect(() => {
-    !regionDataLoading &&
-      regionData &&
-      regionData.regions &&
+    if (!regionDataLoading && regionData && regionData.regions) {
       updateOptionsForDefaultQuestion(
         regionData.regions?.map((region) => ({
           label: region.name,
           value: region.id,
         })),
       )
+    }
   }, [regionData])
   //	student_gender
   useEffect(() => {
-    !hasAction &&
+    if (
+      !hasAction &&
       questions[0]?.defaultQuestion &&
       questions[0]?.options.length == 0 &&
-      questions[0]?.slug == 'student_gender' &&
+      questions[0]?.slug == 'student_gender'
+    ) {
       updateOptionsForDefaultQuestion([
         { label: 'Male', value: 1 },
         { label: 'Female', value: 2 },
         //				{label: 'Non Binary', value: 3},
         //				{label: 'Undeclared', value: 4},
       ])
+    }
   }, [])
 
   //	student
@@ -279,7 +283,7 @@ export default function QuestionItem({
   )
 }
 
-function Item({ question: q, signature }: { question: Question; signature?: any }) {
+function Item({ question: q, signature }: { question: Question; signature?: unknown }) {
   //	Formik values context
   const { values, setValues, errors, touched } = useFormikContext<Question[]>()
 
@@ -528,7 +532,7 @@ function Item({ question: q, signature }: { question: Question; signature?: any 
       )
       break
     case QUESTION_TYPE.CALENDAR:
-      let min: string = ''
+      let min = ''
       if (q.slug == 'effective_withdraw_date') {
         min = moment().format('YYYY-MM-DD')
       } else {
@@ -631,7 +635,7 @@ function Item({ question: q, signature }: { question: Question; signature?: any 
             </Grid>
           )}
           <Button
-            onClick={function (e: any): void {
+            onClick={function (): void {
               if (signature.current) {
                 signature.current.clear()
               }

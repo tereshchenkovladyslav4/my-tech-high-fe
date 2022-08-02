@@ -12,8 +12,8 @@ export const CreateNewSchoolPartnerMutation = gql`
 `
 
 export const GetSchoolsOfEnrollment = gql`
-  query GetSchoolsOfEnrollmentByRegion($schoolPartnerArgs: SchoolPartnerArgs!){
-    getSchoolsOfEnrollmentByRegion(schoolPartnerArgs: $schoolPartnerArgs){
+  query GetSchoolsOfEnrollmentByRegion($schoolPartnerArgs: SchoolPartnerArgs!) {
+    getSchoolsOfEnrollmentByRegion(schoolPartnerArgs: $schoolPartnerArgs) {
       school_partner_id
       name
       abbreviation

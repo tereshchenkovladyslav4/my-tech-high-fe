@@ -3,7 +3,7 @@
  * @description convert to ordinal number
  * @return converted string
  */
-export const toOrdinalSuffix = (number: number) => {
+export const toOrdinalSuffix = (number: number): string => {
   const digits = [number % 10, number % 100],
     ordinals = ['st', 'nd', 'rd', 'th'],
     oPattern = [1, 2, 3, 4],

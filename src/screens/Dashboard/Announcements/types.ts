@@ -16,6 +16,13 @@ export type Announcement = {
   filterGrades?: string
   filterUsers?: string
   scheduleTime?: Date
+  announcement_id?: Date
+  user_id?: number
+  filter_grades?: string
+  RegionId?: number
+  posted_by?: string
+  filter_users?: string
+  schedule_time?: Date
 }
 
 type AnnnouncementProps = {

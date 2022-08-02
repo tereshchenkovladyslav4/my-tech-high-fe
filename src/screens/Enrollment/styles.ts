@@ -36,7 +36,7 @@ export const useStyles = {
     flexDirection: 'row-reverse' as const,
     marginRight: '70px',
     marginY: '24px',
-    width: '100%'
+    width: '100%',
   },
   button: {
     background: BUTTON_LINEAR_GRADIENT,
@@ -53,6 +53,6 @@ export const useStyles = {
     maxWidth: '200px',
     height: '48px',
     marginLeft: '12px',
-    marginTop: 2
-  }
+    marginTop: 2,
+  },
 }

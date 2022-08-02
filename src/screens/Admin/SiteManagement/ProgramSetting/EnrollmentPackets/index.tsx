@@ -1,1 +1,1 @@
-export { default as SpecialEdSelect } from './EnrollmentPacketSelect'
+export { EnrollPacketSelect } from './EnrollmentPacketSelect'

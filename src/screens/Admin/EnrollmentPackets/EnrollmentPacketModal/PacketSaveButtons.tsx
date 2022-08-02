@@ -1,5 +1,5 @@
+import React, { FunctionComponent } from 'react'
 import { Button, Grid } from '@mui/material'
-import React from 'react'
 import { useFormContext } from 'react-hook-form'
 import {
   BLACK_GRADIENT,
@@ -11,7 +11,7 @@ import {
 import { checkImmmValueWithSpacing, isValidDate, isValidVaccInput } from './helpers'
 import { EnrollmentPacketFormType, SaveButtonsType } from './types'
 
-export default function PacketSaveButtons({ submitForm }: { submitForm: () => void }) {
+export const PacketSaveButtons: FunctionComponent<{ submitForm: () => void }> = ({ submitForm }) => {
   const { watch, getValues, setValue, setError } = useFormContext<EnrollmentPacketFormType>()
 
   const [status, exemptionDate, enableExemptionDate] = watch(['status', 'exemptionDate', 'enableExemptionDate'])

@@ -1,19 +1,19 @@
-import { Box, Button } from '@mui/material'
-import { Flexbox } from '../../../components/Flexbox/Flexbox'
 import React, { useContext } from 'react'
+import { useMutation, useMutation } from '@apollo/client'
+import { Box, Button } from '@mui/material'
+import { map } from 'lodash'
+import BGSVG from '../../../assets/AnnouncementBG.svg'
+import { EmptyState } from '../../../components/EmptyState/EmptyState'
+import { Flexbox } from '../../../components/Flexbox/Flexbox'
 import { Paragraph } from '../../../components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '../../../components/Typography/Subtitle/Subtitle'
+import { Title } from '../../../components/Typography/Title/Title'
+import { UserContext } from '../../../providers/UserContext/UserProvider'
+import { SYSTEM_06 } from '../../../utils/constants'
+import { deleteUserAnnouncementByUserId, markRead } from '../services'
+import { AnnouncementItem } from './components/AnnouncementItem'
 import { useStyles } from './styles'
 import { AnnouncementTemplateType } from './types'
-import { AnnouncementItem } from './components/AnnouncementItem'
-import { map } from 'lodash'
-import { EmptyState } from '../../../components/EmptyState/EmptyState'
-import { SYSTEM_06 } from '../../../utils/constants'
-import { Title } from '../../../components/Typography/Title/Title'
-import { useMutation, useMutation } from '@apollo/client'
-import { deleteUserAnnouncementById, deleteUserAnnouncementByUserId, markRead } from '../services'
-import { UserContext } from '../../../providers/UserContext/UserProvider'
-import BGSVG from '../../../assets/AnnouncementBG.svg'
 
 const Announcements: AnnouncementTemplateType = ({
   announcements,
@@ -22,17 +22,17 @@ const Announcements: AnnouncementTemplateType = ({
   setSectionName,
 }) => {
   const classes = useStyles
-  const { me, setMe } = useContext(UserContext)
-  const [deleteAnnouncementById, {}] = useMutation(deleteUserAnnouncementById)
+  const { me } = useContext(UserContext)
+
   const [markReadById, {}] = useMutation(markRead)
   const [deleteAnnouncementByUserId, {}] = useMutation(deleteUserAnnouncementByUserId)
-  const onDeleteById = async (id: number = 0) => {
+  const onDeleteById = async (id = 0) => {
     const response = await markReadById({
       variables: {
         id: id,
       },
     })
-    const { error, message } = response.data
+    const { error } = response.data
     if (!error) {
       setAnnouncements(announcements?.filter((announement) => announement.id !== id))
     }
@@ -43,7 +43,7 @@ const Announcements: AnnouncementTemplateType = ({
         userId: Number(me?.user_id),
       },
     })
-    const { error, message } = response.data
+    const { error } = response.data
     if (!error) {
       setAnnouncements([])
     }

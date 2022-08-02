@@ -1,16 +1,20 @@
-import { useMutation, useQuery } from '@apollo/client'
-import React, { useState, useEffect, useContext } from 'react'
+import React, { useState, useContext, FunctionComponent } from 'react'
+import { useMutation } from '@apollo/client'
+import { Alert } from '@mui/material'
+import { useFormContext } from 'react-hook-form'
 import { EmailModal } from '../../../../../components/EmailModal/EmailModal'
 import { StandardResponseOption } from '../../../../../components/EmailModal/StandardReponses/types'
 import { sendEmailMutation } from '../../services'
-import EnrollmentWarnSaveModal from './ConfirmSaveModal'
-import { EnrollmentPacketFormType } from '../types'
-import { Alert } from '@mui/material'
-import { getEmailTemplateQuery } from '../../../../../graphql/queries/email-template'
-import { useFormContext } from 'react-hook-form'
 import { studentContext } from '../providers'
+import { EnrollmentPacketFormType } from '../types'
+import EnrollmentWarnSaveModal from './ConfirmSaveModal'
 
-export default function PacketConfirmModals({ packet, refetch, submitForm }) {
+type PacketConfirmModalsProps = {
+  packet: unknown
+  refetch: () => void
+  submitForm: () => void
+}
+export const PacketConfirmModals: FunctionComponent<PacketConfirmModalsProps> = ({ packet, refetch, submitForm }) => {
   const student = useContext(studentContext)
   const { watch, setValue } = useFormContext<EnrollmentPacketFormType>()
   const [emailTemplate, setEmailTemplate] = useState(null)
@@ -44,13 +48,20 @@ export default function PacketConfirmModals({ packet, refetch, submitForm }) {
     const yearbegin = new Date(student.grade_levels[0].school_year.date_begin).getFullYear().toString()
     const yearend = new Date(student.grade_levels[0].school_year.date_end).getFullYear().toString()
 
-    let url = window.location.href;
-    url = url.substring(0, url.indexOf('/', url.indexOf('//') + 2));
-    const garde_level = student.grade_levels?.[0]?.grade_level.toLowerCase() === 'k' ? 'Kindergarten': student.grade_levels?.[0]?.grade_level
-    return body.toString()
+    let url = window.location.href
+    url = url.substring(0, url.indexOf('/', url.indexOf('//') + 2))
+    const garde_level =
+      student.grade_levels?.[0]?.grade_level.toLowerCase() === 'k'
+        ? 'Kindergarten'
+        : student.grade_levels?.[0]?.grade_level
+    return body
+      .toString()
       .replace(/\[STUDENT_ID\]/g, student.student_id + '')
       .replace(/\[FILES\]/g, packet.missing_files)
-      .replace(/\[LINK\]/g, `<a href="${url}/homeroom/enrollment/${student.student_id}">${url}/homeroom/enrollment/${student.student_id}</a>`) //adding host detail from backend
+      .replace(
+        /\[LINK\]/g,
+        `<a href="${url}/homeroom/enrollment/${student.student_id}">${url}/homeroom/enrollment/${student.student_id}</a>`,
+      ) //adding host detail from backend
       .replace(/\[STUDENT\]/g, student.person.first_name)
       .replace(/\[PARENT\]/g, student.parent.person.first_name)
       .replace(/\[STUDENT_GRADE_LEVEL\]/g, garde_level || ' ')

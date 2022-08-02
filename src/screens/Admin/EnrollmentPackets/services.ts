@@ -226,7 +226,7 @@ export const getEnrollmentPacketQuery = gql`
       files {
         kind
         mth_file_id
-      }      
+      }
     }
   }
 `

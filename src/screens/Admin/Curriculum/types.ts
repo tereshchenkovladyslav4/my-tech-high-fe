@@ -1,5 +1,3 @@
-import { ReactNode } from 'react'
-
 export enum CurriculumType {
   NONE = 'none',
   HOMEROOM_RESOURCES = 'homeroom-resources',

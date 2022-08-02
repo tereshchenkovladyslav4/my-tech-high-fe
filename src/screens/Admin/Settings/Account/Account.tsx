@@ -1,24 +1,23 @@
+import React, { FunctionComponent, useContext, useState } from 'react'
+import { useMutation } from '@apollo/client'
 import { Alert, AlertColor, Box, Button, Card, Grid, TextField } from '@mui/material'
-import React, { useContext, useState } from 'react'
+import { useFormik } from 'formik'
+
+import * as yup from 'yup'
 import { Paragraph } from '../../../../components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
-import { UserContext, UserInfo } from '../../../../providers/UserContext/UserProvider'
+import { UserContext } from '../../../../providers/UserContext/UserProvider'
 import { SYSTEM_08 } from '../../../../utils/constants'
-import { useStyles } from '../styles'
 import { updatePassword } from '../service'
-import { useMutation } from '@apollo/client'
-import { WarningModal } from '../../../../components/WarningModal/Warning'
-import * as yup from 'yup'
-import { useFormik } from 'formik'
-import { Prompt } from 'react-router-dom'
+import { useStyles } from '../styles'
 
 type openAlertSaveType = {
-  message: string,
-  status: AlertColor,
-  open: boolean,
+  message: string
+  status: AlertColor
+  open: boolean
 }
 
-export const Account = ({handleIsFormChange}) => {
+export const Account: FunctionComponent<{ handleIsFormChange: () => void }> = ({ handleIsFormChange }) => {
   const classes = useStyles
 
   const { me } = useContext(UserContext)
@@ -28,7 +27,7 @@ export const Account = ({handleIsFormChange}) => {
     open: false,
   })
 
-  const [updatePasswordMutation, { error, data }] = useMutation(updatePassword)
+  const [updatePasswordMutation] = useMutation(updatePassword)
 
   const onSave = async () => {
     updatePasswordMutation({
@@ -39,14 +38,14 @@ export const Account = ({handleIsFormChange}) => {
         },
       },
     })
-      .then((res) => {
+      .then(() => {
         setOpenSaveAlert({ message: 'New Password Saved', status: 'success', open: true })
 
         setTimeout(() => {
           setOpenSaveAlert({ message: '', status: 'success', open: false })
         }, 2000)
 
-        handleIsFormChange(false);
+        handleIsFormChange(false)
       })
       .catch((error) => {
         setOpenSaveAlert({ message: error?.message, status: 'error', open: true })
@@ -55,7 +54,7 @@ export const Account = ({handleIsFormChange}) => {
           setOpenSaveAlert({ message: '', status: 'success', open: false })
         }, 2000)
 
-        handleIsFormChange(false);
+        handleIsFormChange(false)
       })
   }
 
@@ -65,7 +64,7 @@ export const Account = ({handleIsFormChange}) => {
       .string()
       .matches(
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/,
-        "Must Contain 8 Characters, One Uppercase, One Lowercase, One Number and One Special Case Character"
+        'Must Contain 8 Characters, One Uppercase, One Lowercase, One Number and One Special Case Character',
       )
       .required('New Password is required'),
     confirmNewPassword: yup
@@ -85,8 +84,8 @@ export const Account = ({handleIsFormChange}) => {
       await onSave()
     },
     onChange: async () => {
-      handleIsFormChange(true);
-    }
+      handleIsFormChange(true)
+    },
   })
 
   return (
@@ -117,7 +116,14 @@ export const Account = ({handleIsFormChange}) => {
               </Box>
             </Grid>
             <Grid item xs={12}>
-              <hr style={{ borderTop: `solid 1px ${SYSTEM_08}`, width: '100%', borderBottom: '0', margin: '22px 0 16px 0' }} />
+              <hr
+                style={{
+                  borderTop: `solid 1px ${SYSTEM_08}`,
+                  width: '100%',
+                  borderBottom: '0',
+                  margin: '22px 0 16px 0',
+                }}
+              />
             </Grid>
             <Grid item xs={12}>
               <Paragraph size='large' fontWeight='700' textAlign='left'>
@@ -135,8 +141,8 @@ export const Account = ({handleIsFormChange}) => {
                   type='password'
                   value={formik.values.currentPassword}
                   onChange={(e) => {
-                    handleIsFormChange(true);
-                    formik.handleChange(e);
+                    handleIsFormChange(true)
+                    formik.handleChange(e)
                   }}
                   error={formik.touched.currentPassword && Boolean(formik.errors.currentPassword)}
                   helperText={formik.touched.currentPassword && formik.errors.currentPassword}
@@ -153,8 +159,8 @@ export const Account = ({handleIsFormChange}) => {
                   type='password'
                   value={formik.values.newPassword}
                   onChange={(e) => {
-                    handleIsFormChange(true);
-                    formik.handleChange(e);
+                    handleIsFormChange(true)
+                    formik.handleChange(e)
                   }}
                   error={formik.touched.newPassword && Boolean(formik.errors.newPassword)}
                   helperText={formik.touched.newPassword && formik.errors.newPassword}
@@ -171,8 +177,8 @@ export const Account = ({handleIsFormChange}) => {
                   type='password'
                   value={formik.values.confirmNewPassword}
                   onChange={(e) => {
-                    handleIsFormChange(true);
-                    formik.handleChange(e);
+                    handleIsFormChange(true)
+                    formik.handleChange(e)
                   }}
                   error={formik.touched.confirmNewPassword && Boolean(formik.errors.confirmNewPassword)}
                   helperText={formik.touched.confirmNewPassword && formik.errors.confirmNewPassword}
@@ -182,18 +188,20 @@ export const Account = ({handleIsFormChange}) => {
           </Grid>
         </Grid>
         <Grid>
-          {openSaveAlert.open && (<Alert
-            sx={{
-              position: 'relative',
-              bottom: '-83px',
-            }}
-            onClose={() => {
-              setOpenSaveAlert({ open: false, status: 'success', message: '' })
-            }}
-            severity={openSaveAlert.status}
-          >
-            {openSaveAlert.message}
-          </Alert>)}
+          {openSaveAlert.open && (
+            <Alert
+              sx={{
+                position: 'relative',
+                bottom: '-83px',
+              }}
+              onClose={() => {
+                setOpenSaveAlert({ open: false, status: 'success', message: '' })
+              }}
+              severity={openSaveAlert.status}
+            >
+              {openSaveAlert.message}
+            </Alert>
+          )}
         </Grid>
       </Card>
     </form>

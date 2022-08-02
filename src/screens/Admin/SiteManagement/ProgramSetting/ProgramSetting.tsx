@@ -1,18 +1,26 @@
 import React, { useState, useEffect, useContext } from 'react'
-import { Box } from '@mui/material'
-import { UserContext } from '../../../../providers/UserContext/UserProvider'
-import { useStyles } from '../styles'
 import { useMutation } from '@apollo/client'
-import { Prompt } from 'react-router-dom'
-import { StateLogoFileType } from './StateLogo/StateLogoTypes'
-import { CountyFileType } from './CountySelect/CountySelectTypes'
-import { SchoolDistrictFileType } from './SchoolDistrictSelect/SchoolDistrictSelectTypes'
-import { PageHeader } from '../components/PageHeader'
-import { PageContent } from './PageContent'
-import { SchoolYearSelect } from './SchoolYearSelect'
-import { removeCountyInfoByRegionId, removeFileByFileId, removeSchoolDistrictInfoByRegionId, updateSchoolYearMutation, updateStateNameMutation, uploadFile, uploadImage } from '../services'
-import { SchoolYears } from './types'
+import { Box } from '@mui/material'
 import moment from 'moment'
+import { Prompt } from 'react-router-dom'
+import { UserContext } from '../../../../providers/UserContext/UserProvider'
+import { PageHeader } from '../components/PageHeader'
+import {
+  removeCountyInfoByRegionId,
+  removeFileByFileId,
+  removeSchoolDistrictInfoByRegionId,
+  updateSchoolYearMutation,
+  updateStateNameMutation,
+  uploadFile,
+  uploadImage,
+} from '../services'
+import { useStyles } from '../styles'
+import { CountyFileType } from './CountySelect/CountySelectTypes'
+import { PageContent } from './PageContent'
+import { SchoolDistrictFileType } from './SchoolDistrictSelect/SchoolDistrictSelectTypes'
+import { SchoolYearSelect } from './SchoolYearSelect'
+import { StateLogoFileType } from './StateLogo/StateLogoTypes'
+import { SchoolYears } from './types'
 
 const ProgramSetting: React.FC = () => {
   const classes = useStyles
@@ -22,18 +30,18 @@ const ProgramSetting: React.FC = () => {
   const [program, setProgram] = useState<string>('')
   const [specialEd, setSpecialEd] = useState<boolean>(false)
   const [enroll, setEnroll] = useState<boolean>(false)
-  const [specialEdOptions, setSpecialEdOptions] = useState([]);
+  const [specialEdOptions, setSpecialEdOptions] = useState([])
   const [isInvalidStateName, setIsInvalidStateName] = useState<boolean>(false)
   const [birthDate, setBirthDate] = useState<string>('')
   const [stateLogo, setStateLogo] = useState<string>('')
-  const [countyArray, setCountyArray] = useState<Array<any>>([])
-  const [schoolDistrictArray, setSchoolDistrictArray] = useState<Array<any>>([])
+  const [countyArray, setCountyArray] = useState<Array<unknown>>([])
+  const [schoolDistrictArray, setSchoolDistrictArray] = useState<Array<unknown>>([])
   const [grades, setGrades] = useState<string>('')
   const [county, setCounty] = useState<CountyFileType | null>(null)
   const [schoolDistrict, setSchoolDistrict] = useState<SchoolDistrictFileType | null>(null)
   // const [isChanged, setIsChanged] = useState<boolean>(false)
   const [schoolYears, setSchoolYears] = useState<SchoolYears[]>([])
-  const [isChanged, setIsChanged] = useState<any>({
+  const [isChanged, setIsChanged] = useState<unknown>({
     state: false,
     stateLogo: false,
     program: false,
@@ -47,7 +55,7 @@ const ProgramSetting: React.FC = () => {
 
   const [isDelete, setIsDelete] = useState({
     county: false,
-    schoolDistrict: false
+    schoolDistrict: false,
   })
 
   const [stateInvalid, setStateInvalid] = useState<boolean>(false)
@@ -59,49 +67,49 @@ const ProgramSetting: React.FC = () => {
   const changeStatus = () => {
     const selectedRegion = me?.userRegion?.find((region) => region.region_id === me?.selectedRegionId)
 
-    const currentSetting = schoolYears.find(i => i.schoolYearId == selectedYearId);
+    const currentSetting = schoolYears.find((i) => i.schoolYearId == selectedYearId)
 
-    if(selectedRegion?.regionDetail){
-      if(newStateName && selectedRegion?.regionDetail?.name != newStateName){
-        return true;
+    if (selectedRegion?.regionDetail) {
+      if (newStateName && selectedRegion?.regionDetail?.name != newStateName) {
+        return true
       }
 
-      if(selectedRegion?.regionDetail?.program != program){
-        return true;
+      if (selectedRegion?.regionDetail?.program != program) {
+        return true
       }
     }
-    
-    if(isChanged.stateLogo || isChanged.counties || isChanged.schoolDistricts){
-      return true;
+
+    if (isChanged.stateLogo || isChanged.counties || isChanged.schoolDistricts) {
+      return true
     }
-    
-    if(currentSetting){
-      if(currentSetting?.grades != grades){
-        return true;
+
+    if (currentSetting) {
+      if (currentSetting?.grades != grades) {
+        return true
       }
-      if(moment(currentSetting?.birthDateCut).format('MM/DD/YYYY') != moment(birthDate).format('MM/DD/YYYY')){
-        return true;
+      if (moment(currentSetting?.birthDateCut).format('MM/DD/YYYY') != moment(birthDate).format('MM/DD/YYYY')) {
+        return true
       }
-      if(currentSetting.specialEd != specialEd){
-        return true;
+      if (currentSetting.specialEd != specialEd) {
+        return true
       }
-      if(specialEd){
-        let specialEdOptionsStr = '';
-        specialEdOptions.map(i => {
-          if(i.option_value && i.option_value != ''){
-            specialEdOptionsStr += i.option_value + ',';
+      if (specialEd) {
+        let specialEdOptionsStr = ''
+        specialEdOptions.map((i) => {
+          if (i.option_value && i.option_value != '') {
+            specialEdOptionsStr += i.option_value + ','
           }
-        });
-        if(currentSetting.specialEdOptions != specialEdOptionsStr.slice(0, -1)){
-          return true;
+        })
+        if (currentSetting.specialEdOptions != specialEdOptionsStr.slice(0, -1)) {
+          return true
         }
       }
-      if(currentSetting.enrollmentPacket != enroll){
-        return true;
+      if (currentSetting.enrollmentPacket != enroll) {
+        return true
       }
     }
-    
-    return false;
+
+    return false
   }
 
   const handleClickSave = async () => {
@@ -109,25 +117,25 @@ const ProgramSetting: React.FC = () => {
       setStateInvalid(true)
       return
     }
-    let imageLocation: string = ''
+    let imageLocation = ''
     if (stateLogoFile) {
       imageLocation = await uploadImage(stateLogoFile.file, stateName)
     }
 
-    let countyFileLocation: string = ''
+    let countyFileLocation = ''
     if (county?.file && countyArray.length > 0) {
       countyFileLocation = await uploadFile(county.file, 'county', stateName)
     }
 
-    if(isDelete.county){
-      handleCountyInfoDelete();
+    if (isDelete.county) {
+      handleCountyInfoDelete()
     }
 
-    if(isDelete.schoolDistrict){
-      handleSchoolDistrictInfoDelete();
+    if (isDelete.schoolDistrict) {
+      handleSchoolDistrictInfoDelete()
     }
 
-    let schoolDistrictFileLocation: string = ''
+    let schoolDistrictFileLocation = ''
     if (schoolDistrict?.file && schoolDistrictArray.length > 0) {
       schoolDistrictFileLocation = await uploadFile(schoolDistrict.file, 'schoolDistrict', stateName)
     }
@@ -163,13 +171,12 @@ const ProgramSetting: React.FC = () => {
       })
 
     if (selectedYearId && (grades || birthDate || specialEd)) {
-      var special_ed_options = '';
+      let special_ed_options = ''
       specialEdOptions.map((option) => {
-        if (option.option_value != '')
-        special_ed_options += option.option_value + ','
-      });
-      special_ed_options = special_ed_options.slice(0, -1);
-      
+        if (option.option_value != '') special_ed_options += option.option_value + ','
+      })
+      special_ed_options = special_ed_options.slice(0, -1)
+
       await submitSchoolYearSave({
         variables: {
           updateSchoolYearInput: {
@@ -269,7 +276,6 @@ const ProgramSetting: React.FC = () => {
         regionId: me?.selectedRegionId,
       },
     })
-    
 
     if (deleteResponse?.data?.removeSchoolDistrictInfoByRegionId) {
       await fileDelete({
@@ -282,7 +288,7 @@ const ProgramSetting: React.FC = () => {
 
   return (
     <Box sx={classes.base}>
-      <input type="hidden" value={changeStatus() ? '1' : '0'} className="program-set" />
+      <input type='hidden' value={changeStatus() ? '1' : '0'} className='program-set' />
       <Prompt
         when={changeStatus() ? true : false}
         message={JSON.stringify({
@@ -301,7 +307,7 @@ const ProgramSetting: React.FC = () => {
         selectedYearId={selectedYearId}
         setCounty={setCounty}
         setSchoolDistrict={setSchoolDistrict}
-        schoolYears={schoolYears} 
+        schoolYears={schoolYears}
         setSchoolYears={setSchoolYears}
       />
       <PageContent

@@ -68,13 +68,13 @@ export type Packet = {
   worked_in_agriculture: number
   secondary_contact_last: string
   is_age_issue?: boolean
-  packet_emails: Array<any>
+  packet_emails: Array<unknown>
   missing_files?: string[]
   meta?: string
 }
 
 export type Application = {
-  application_emails: Array<any>
+  application_emails: Array<unknown>
   application_id: number
   city_of_residence: string
   date_accepted: Date

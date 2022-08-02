@@ -1,16 +1,15 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { Box, Grid, Card, OutlinedInput, InputAdornment, Typography } from '@mui/material'
-import SearchIcon from '@mui/icons-material/Search'
-import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
-import { getEmailTemplatesByRegionQuery } from '../../../../../graphql/queries/email-template'
+import React, { FunctionComponent, useContext, useEffect, useState } from 'react'
+import { useMutation, useQuery } from '@apollo/client'
 import { makeStyles } from '@material-ui/core'
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew'
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
-import { EmailTemplateModal } from './EmailTemplateModal'
-import { useMutation, useQuery } from '@apollo/client'
-import { createEmailTemplateMutation, updateEmailTemplateMutation } from '../../../../../graphql/queries/email-template'
 import ArrowBackIosOutlinedIcon from '@mui/icons-material/ArrowBackIosOutlined'
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
+import SearchIcon from '@mui/icons-material/Search'
+import { Box, Grid, Card, OutlinedInput, InputAdornment, Typography } from '@mui/material'
+import { getEmailTemplatesByRegionQuery } from '../../../../../graphql/queries/email-template'
+import { createEmailTemplateMutation, updateEmailTemplateMutation } from '../../../../../graphql/queries/email-template'
 import { UserContext } from '../../../../../providers/UserContext/UserProvider'
+import { EmailTemplateModal } from './EmailTemplateModal'
 
 const useStyles = makeStyles({
   category: {
@@ -102,13 +101,12 @@ const useStyles = makeStyles({
     },
   },
 })
-export const EmailTemplatePage = ({ onBackPress }) => {
-  const { me, setMe } = useContext(UserContext)
+export const EmailTemplatePage: FunctionComponent<{ onBackPress: () => void }> = ({ onBackPress }) => {
+  const { me } = useContext(UserContext)
   const [searchField, setSearchField] = useState('')
   const [openEdit, setOpenEdit] = useState(false)
   const [currentTemplate, setCurrentTemplate] = useState(null)
   const [currentCategory, setCurrentCategory] = useState(null)
-  const classes = useStyles()
 
   const handleCloseEditModal = () => {
     setOpenEdit(false)
@@ -118,14 +116,14 @@ export const EmailTemplatePage = ({ onBackPress }) => {
     setCurrentTemplate(item)
     setCurrentCategory(category)
   }
-  const [createEmailTemplate, { data: createdData }] = useMutation(createEmailTemplateMutation)
-  const [updateEmailTemplate, { data: updatedData }] = useMutation(updateEmailTemplateMutation)
+  const [createEmailTemplate] = useMutation(createEmailTemplateMutation)
+  const [updateEmailTemplate] = useMutation(updateEmailTemplateMutation)
 
   const [emailTemplates, setEmailTemplates] = useState({})
 
-  const { called, loading, error, data: emailTemplatesData, refetch } = useQuery(getEmailTemplatesByRegionQuery, {
+  const { data: emailTemplatesData } = useQuery(getEmailTemplatesByRegionQuery, {
     variables: {
-      regionId: me?.selectedRegionId
+      regionId: me?.selectedRegionId,
     },
     fetchPolicy: 'network-only',
   })
@@ -154,15 +152,15 @@ export const EmailTemplatePage = ({ onBackPress }) => {
   }
 
   useEffect(() => {
-    if(emailTemplatesData != undefined) {
-      let templates = {};
-      emailTemplatesData.emailTemplatesByRegion.forEach(emailTemplate => {
-        let category = null, category_name = emailTemplate?.category?.category_name;
-        
-        if(!Object.keys(templates).find(x => x == category_name))
-        templates[category_name] = [];
+    if (emailTemplatesData != undefined) {
+      const templates = {}
+      emailTemplatesData.emailTemplatesByRegion.forEach((emailTemplate) => {
+        let category = null
+        const category_name = emailTemplate?.category?.category_name
 
-        category = templates[category_name];
+        if (!Object.keys(templates).find((x) => x == category_name)) templates[category_name] = []
+
+        category = templates[category_name]
         category.push({
           id: Number(emailTemplate.id),
           template_name: emailTemplate.template_name,
@@ -171,19 +169,20 @@ export const EmailTemplatePage = ({ onBackPress }) => {
           body: emailTemplate.body,
           from: emailTemplate.from,
           bcc: emailTemplate.bcc,
-          standard_responses: emailTemplate.standard_responses
-                    && JSON.parse(emailTemplate.standard_responses).length > 0
-                          ? JSON.parse(emailTemplate.standard_responses) : [],
+          standard_responses:
+            emailTemplate.standard_responses && JSON.parse(emailTemplate.standard_responses).length > 0
+              ? JSON.parse(emailTemplate.standard_responses)
+              : [],
           category_id: emailTemplate.category_id,
           category: emailTemplate.category,
           template: emailTemplate.template,
-          inserts: emailTemplate?.inserts?.split(","),
+          inserts: emailTemplate?.inserts?.split(','),
           region_id: emailTemplate.region_id,
         })
-      });
-      setEmailTemplates(templates);
+      })
+      setEmailTemplates(templates)
     }
-  }, [emailTemplatesData]);
+  }, [emailTemplatesData])
 
   return (
     <Box sx={{ marginX: 4 }}>
@@ -252,11 +251,7 @@ export const EmailTemplatePage = ({ onBackPress }) => {
         </Grid>
       </Grid>
       {openEdit && (
-        <EmailTemplateModal
-          handleModem={handleCloseEditModal}
-          onSave={handleSave}
-          template={currentTemplate}
-        />
+        <EmailTemplateModal handleModem={handleCloseEditModal} onSave={handleSave} template={currentTemplate} />
       )}
     </Box>
   )
@@ -265,7 +260,7 @@ export const EmailTemplatePage = ({ onBackPress }) => {
 const TemplatesCategories = ({ category, templates, handleOpenEdit }) => {
   const classes = useStyles()
   const [page, setPage] = useState(0)
-  const [total, setTotal] = useState(Math.ceil(templates.length / 4))
+  const [total] = useState(Math.ceil(templates.length / 4))
   const handlePrevPage = () => {
     if (page) {
       setPage(page - 1)
@@ -276,7 +271,7 @@ const TemplatesCategories = ({ category, templates, handleOpenEdit }) => {
       setPage(page + 1)
     }
   }
-  
+
   return (
     <Box className={classes.category}>
       <Typography className={classes.categoryTitle}>{category}</Typography>

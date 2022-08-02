@@ -1,23 +1,28 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react'
-import { Box } from '@mui/system'
-import { Avatar, AvatarGroup, Button, Card, Grid, InputAdornment, ListItemText, OutlinedInput } from '@mui/material'
-import { Table } from '../../../components/Table/Table'
+import React, { FunctionComponent, ReactElement, useCallback, useContext, useEffect, useState } from 'react'
+import { useQuery } from '@apollo/client'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import SearchIcon from '@mui/icons-material/Search'
-import { Subtitle } from '../../../components/Typography/Subtitle/Subtitle'
-import { CSSTransition, TransitionGroup } from 'react-transition-group'
-import { AnnouncementSectionProps } from './types'
-import { UserContext } from '../../../providers/UserContext/UserProvider'
-import { useQuery } from '@apollo/client'
-import { useStyles } from './styles'
-import { getUserAnnouncements } from '../services'
-import moment from 'moment'
-import { Paragraph } from '../../../components/Typography/Paragraph/Paragraph'
+import { Avatar, AvatarGroup, Button, Card, Grid, InputAdornment, OutlinedInput } from '@mui/material'
+import { Box } from '@mui/system'
 import { debounce } from 'lodash'
-import { Person } from '../../HomeroomStudentProfile/Student/types'
+import moment from 'moment'
+import { CSSTransition, TransitionGroup } from 'react-transition-group'
+import { Table } from '../../../components/Table/Table'
+import { Paragraph } from '../../../components/Typography/Paragraph/Paragraph'
+import { Subtitle } from '../../../components/Typography/Subtitle/Subtitle'
+import { UserContext } from '../../../providers/UserContext/UserProvider'
 import { extractContent } from '../../../utils/utils'
+import { Person } from '../../HomeroomStudentProfile/Student/types'
+import { Announcement } from '../Announcements/types'
+import { getUserAnnouncements } from '../services'
+import { useStyles } from './styles'
+import { AnnouncementSectionProps } from './types'
 
-const AnnouncementSection = ({ inProp, setSectionName, setSelectedAnnouncement }: AnnouncementSectionProps) => {
+const AnnouncementSection: FunctionComponent<AnnouncementSectionProps> = ({
+  inProp,
+  setSectionName,
+  setSelectedAnnouncement,
+}) => {
   const { me } = useContext(UserContext)
   const [limit, setLimit] = useState<number>(10)
   const [searchField, setSearchField] = useState<string>()
@@ -35,7 +40,7 @@ const AnnouncementSection = ({ inProp, setSectionName, setSelectedAnnouncement }
     return (
       <AvatarGroup max={5} sx={{ maxWidth: '300px', justifyContent: 'start' }} spacing={0}>
         {me?.students &&
-          me?.students.map((student) => {
+          me?.students.map((student): ReactElement | undefined => {
             if (
               student?.grade_levels &&
               grades.includes(
@@ -44,11 +49,15 @@ const AnnouncementSection = ({ inProp, setSectionName, setSelectedAnnouncement }
             ) {
               return (
                 <Avatar
-                  alt={student.person.preferred_first_name ? student.person.preferred_first_name : student.person.first_name}
+                  alt={
+                    student.person.preferred_first_name
+                      ? student.person.preferred_first_name
+                      : student.person.first_name
+                  }
                   src={getProfilePhoto(student.person)}
                 />
               )
-            }
+            } else return undefined
           })}
       </AvatarGroup>
     )
@@ -75,7 +84,7 @@ const AnnouncementSection = ({ inProp, setSectionName, setSelectedAnnouncement }
     if (announcementData?.userAnnouncements) {
       const { userAnnouncements } = announcementData
       setAnnouncementTableData(
-        userAnnouncements.map((announcement: any) => ({
+        userAnnouncements.map((announcement: Announcement) => ({
           date: (
             <Subtitle fontWeight='500' sx={{ fontSize: '12px', color: '#A1A1A1', maxWidth: '300px' }}>
               {moment(announcement.date).format('MMMM DD')}

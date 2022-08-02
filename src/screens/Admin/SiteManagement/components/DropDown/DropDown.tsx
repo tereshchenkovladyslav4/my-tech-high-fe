@@ -1,16 +1,16 @@
+import React, { useEffect, useState } from 'react'
+import { makeStyles } from '@material-ui/styles'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { FormControl, Select, MenuItem, TextField, FormHelperText, Divider } from '@mui/material'
 import { Box, styled } from '@mui/system'
 import { map } from 'lodash'
-import React, { useEffect, useState } from 'react'
-import { DropDownTemplateType } from './types'
-import { useStyles } from './styles'
 import { SYSTEM_05 } from '../../../../../utils/constants'
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
-import { makeStyles } from '@material-ui/styles'
+import { useStyles } from './styles'
+import { DropDownTemplateType } from './types'
 
 const CssTextField = styled(TextField, {
   shouldForwardProp: (props) => props !== 'focusColor',
-})((p) => ({
+})(() => ({
   // focused color for input with variant='standard'
   '& .MuiInput-underline:after': {
     borderBottomColor: '#ccc',
@@ -54,17 +54,16 @@ export const DropDown: DropDownTemplateType = ({
   isAddable,
   idx,
   borderNone = false,
-  auto = true
+  auto = true,
 }) => {
   const [value, setValue] = useState(defaultValue)
   const selectClasses = selectStyles()
   const handleChange = (val: string) => {
-    if (auto)
-      setValue(val)    
+    if (auto) setValue(val)
     setParentValue(val, idx)
   }
 
-  let renderDropDownItem = map(dropDownItems, (dropDownItem, index) => (
+  const renderDropDownItem = map(dropDownItems, (dropDownItem, index) => (
     <MenuItem key={index} value={dropDownItem.value}>
       {dropDownItem.label}
     </MenuItem>
@@ -86,7 +85,7 @@ export const DropDown: DropDownTemplateType = ({
       {!labelTop ? (
         <>
           {borderNone ? (
-            <FormControl variant='standard' fullWidth sx={{...sx}}>
+            <FormControl variant='standard' fullWidth sx={{ ...sx }}>
               <Select
                 size='small'
                 value={value}

@@ -1,11 +1,23 @@
-import { List, ListItem, Box, ListItemButton } from '@mui/material'
 import React, { FunctionComponent, useContext } from 'react'
-import { MTHLogo } from '../SVG/MTHLogo'
-import { Paragraph } from '../Typography/Paragraph/Paragraph'
-import { useStyles } from './styles'
-import { NavLink, useHistory, useLocation } from 'react-router-dom'
-import { map } from 'lodash'
 
+import AllInboxOutlinedIcon from '@mui/icons-material/AllInboxOutlined'
+import BackupTableIcon from '@mui/icons-material/BackupTable'
+import CallMadeRoundedIcon from '@mui/icons-material/CallMadeRounded'
+import CreditCardRoundedIcon from '@mui/icons-material/CreditCardRounded'
+import DatRangeOutlinedIcon from '@mui/icons-material/DateRangeOutlined'
+import DescriptionIcon from '@mui/icons-material/Description'
+import LogoutIcon from '@mui/icons-material/Logout'
+import MarkunreadMailboxOutlinedIcon from '@mui/icons-material/MarkunreadMailboxOutlined'
+import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined'
+import PermIdentityOutlinedIcon from '@mui/icons-material/PermIdentityOutlined'
+import RecentActorsOutlinedIcon from '@mui/icons-material/RecentActorsOutlined'
+import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined'
+import KeyIcon from '@mui/icons-material/VpnKey'
+import { List, ListItem, Box, ListItemButton } from '@mui/material'
+import { map } from 'lodash'
+import { NavLink, useHistory } from 'react-router-dom'
+import { AuthContext } from '../../providers/AuthProvider/AuthContext'
+import { UserContext } from '../../providers/UserContext/UserProvider'
 import {
   ACTIVELINKBACKGROUND,
   ANNOUNCEMENTS,
@@ -22,38 +34,13 @@ import {
   USERS,
   COMMUNICATION,
 } from '../../utils/constants'
-import { UserContext } from '../../providers/UserContext/UserProvider'
-import { AuthContext } from '../../providers/AuthProvider/AuthContext'
-import LogoutIcon from '@mui/icons-material/Logout'
-import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined'
-import CreditCardRoundedIcon from '@mui/icons-material/CreditCardRounded'
-import CallMadeRoundedIcon from '@mui/icons-material/CallMadeRounded'
-import BackupTableIcon from '@mui/icons-material/BackupTable'
-import AllInboxOutlinedIcon from '@mui/icons-material/AllInboxOutlined'
-import DatRangeOutlinedIcon from '@mui/icons-material/DateRangeOutlined'
-import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined'
-import KeyIcon from '@mui/icons-material/VpnKey'
-import DescriptionIcon from '@mui/icons-material/Description'
-import MarkunreadMailboxOutlinedIcon from '@mui/icons-material/MarkunreadMailboxOutlined'
-import RecentActorsOutlinedIcon from '@mui/icons-material/RecentActorsOutlined'
-import PermIdentityOutlinedIcon from '@mui/icons-material/PermIdentityOutlined'
+import { MTHLogo } from '../SVG/MTHLogo'
+import { Paragraph } from '../Typography/Paragraph/Paragraph'
+import { useStyles } from './styles'
 
 export const AdminSideMenu: FunctionComponent = () => {
   const history = useHistory()
   const classes = useStyles
-  const location = useLocation()
-  //this isActive function will be used temporarily with enrollment till its routes are imporved/refactored
-  const isActiveTemp = () =>
-    (location.pathname.includes('enrollment') || location.pathname.includes('applications')) &&
-    !location.pathname.includes('setting')
-      ? true
-      : false
-
-  const isActive = (basePath: string): boolean => {
-    const match = basePath.match(/^\/settings/)
-
-    return !!match
-  }
 
   const { setMe } = useContext(UserContext)
   const { signOut } = useContext(AuthContext)

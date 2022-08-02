@@ -1,20 +1,20 @@
-import React, { useEffect, useState } from 'react'
-import { useHistory } from 'react-router-dom'
-import { Box, Button, Stack, Tooltip, Typography } from '@mui/material'
-import ModeEditIcon from '@mui/icons-material/ModeEdit'
-import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined'
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
-import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew'
-import { makeStyles } from '@material-ui/styles'
+import React, { FunctionComponent, useEffect, useState } from 'react'
 import { useMutation } from '@apollo/client'
+import { makeStyles } from '@material-ui/styles'
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew'
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
+import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined'
+import ModeEditIcon from '@mui/icons-material/ModeEdit'
+import { Box, Button, Stack, Tooltip, Typography } from '@mui/material'
 import moment from 'moment'
-import { EventDetailProps } from '../types'
+import { useHistory } from 'react-router-dom'
 import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
 import { CALENDAR, SYSTEM_02, SYSTEM_05, SYSTEM_06 } from '../../../../utils/constants'
-import { deleteEventByIdMutation } from '../services'
-import CustomModal from '../../SiteManagement/EnrollmentSetting/components/CustomModal/CustomModals'
 import { getFirstDayAndLastDayOfMonth, hexToRgbA, renderDate, renderFilter } from '../../../../utils/utils'
+import { CustomModal } from '../../SiteManagement/EnrollmentSetting/components/CustomModal/CustomModals'
 import { mainClasses } from '../MainComponent/styles'
+import { deleteEventByIdMutation } from '../services'
+import { EventDetailProps } from '../types'
 
 const toolTipStyles = makeStyles(() => ({
   customTooltip: {
@@ -28,7 +28,7 @@ const toolTipStyles = makeStyles(() => ({
   },
 }))
 
-const EventDetail = ({
+const EventDetail: FunctionComponent<EventDetailProps> = ({
   events,
   selectedEventIndex,
   selectedDate,
@@ -39,7 +39,7 @@ const EventDetail = ({
   setSelectedEventIndex,
   setEvent,
   refetch,
-}: EventDetailProps) => {
+}) => {
   const toolTipClass = toolTipStyles()
   const history = useHistory()
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false)
@@ -131,7 +131,7 @@ const EventDetail = ({
               sx={mainClasses.iconButton}
               onClick={() => {
                 history.push(`${CALENDAR}/addEvent`)
-                selectedEvent && setEvent(selectedEvent)
+                if (selectedEvent) setEvent(selectedEvent)
               }}
             >
               <Tooltip

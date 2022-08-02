@@ -1,8 +1,14 @@
-import { Button, Card, Box } from '@mui/material'
-import React from 'react'
+import React, { FunctionComponent } from 'react'
+import { Button, Box } from '@mui/material'
 import { MTHBLUE, BUTTON_LINEAR_GRADIENT } from '../../../../utils/constants'
 
-export const EmailRecordsFilter = ({ filters, setFilters, recordCount }) => {
+type EmailRecordsFilter = {
+  filters: unknown[]
+  setFilters: (_) => void
+  recordCount: unknown
+}
+
+export const EmailRecordsFilter: FunctionComponent<EmailRecordsFilter> = ({ filters, setFilters, recordCount }) => {
   const handleSelectFilter = (value) => {
     if (filters.includes(value)) {
       setFilters(filters.filter((item) => item !== value))
@@ -50,7 +56,7 @@ export const EmailRecordsFilter = ({ filters, setFilters, recordCount }) => {
         onClick={() => handleSelectFilter('Sent')}
       >
         Sent ({recordCount && recordCount['Sent'] ? recordCount['Sent'] : 0})
-      </Button>      
+      </Button>
     </Box>
   )
 }

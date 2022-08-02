@@ -1,13 +1,11 @@
-import { Box, Card, Grid } from '@mui/material'
-import React, { useEffect, useState } from 'react'
+import React, { FunctionComponent } from 'react'
+import { Box, Grid } from '@mui/material'
 
-import { Announcements } from '../../Dashboard/Announcements/Announcements'
 import { ToDo } from '../../Dashboard/ToDoList/ToDo'
 import { StudentProfile } from './StudentProfile/StudentProfile'
 import { StudentSchedule } from './StudentSchedule/StudentSchedule'
-import { StudentComponentType } from './types'
 
-export const Student = () => {
+export const Student: FunctionComponent = () => {
   const builderActive = false
   return (
     <Box display='flex' flexDirection='row'>

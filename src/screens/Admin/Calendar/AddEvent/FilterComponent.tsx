@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { FunctionComponent, useContext, useState } from 'react'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { Box, Card, Grid } from '@mui/material'
@@ -13,7 +13,7 @@ import { defaultOtherList, defaultProviderList, defaultUserList } from '../defau
 import { calendarClassess } from '../styles'
 import { EventFormData, FilterComponentProps } from '../types'
 
-const FilterComponent = ({
+const FilterComponent: FunctionComponent<FilterComponentProps> = ({
   grades,
   programYears,
   users,
@@ -27,7 +27,7 @@ const FilterComponent = ({
   setOthers,
   setProviders,
   setIsChanged,
-}: FilterComponentProps) => {
+}) => {
   const { me } = useContext(UserContext)
   const { errors, setFieldValue, touched, values } = useFormikContext<EventFormData>()
   const { programYearList, gradeList } = useCurrentGradeAndProgramByRegionId(

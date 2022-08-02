@@ -1,32 +1,32 @@
-import { MTHBLUE } from "../../utils/constants";
+import { MTHBLUE } from '../../utils/constants'
 
-export const useStyles =  {
-	gridContainer:{
-		textAlign: 'left' as const,     
-		paddingX: 4,
+export const useStyles = {
+  gridContainer: {
+    textAlign: 'left' as const,
+    paddingX: 4,
     marginTop: 1,
-    marginBottom: 2
-	},
-	activeTab: {
+    marginBottom: 2,
+  },
+  activeTab: {
     backgroundColor: '#EEF4F8',
     color: 'red',
     '&.Mui-selected': {
       color: MTHBLUE,
     },
   },
-  saveButton:{
-    width: 200
+  saveButton: {
+    width: 200,
   },
-  avatar:{
+  avatar: {
     height: '164px',
     width: '164px',
-    borderRadius: 2
+    borderRadius: 2,
   },
   accountSaveChanges: {
     minWidth: '150px',
     maxWidth: '200px',
     borderRadius: '50px',
     marginLeft: '48px',
-    height: '48px'
-  }
+    height: '48px',
+  },
 }

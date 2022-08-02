@@ -1,17 +1,8 @@
-import React, { useState } from 'react'
-import { Box, Button, FormControl, FormControlLabel, Modal, Radio, RadioGroup, Typography } from '@mui/material'
+import React, { FunctionComponent, useState } from 'react'
 import InfoIcon from '@mui/icons-material/InfoOutlined'
+import { Box, Button, FormControl, FormControlLabel, Modal, Radio, RadioGroup, Typography } from '@mui/material'
 
-export default function ActiveModal({
-  title,
-  description,
-  subDescription,
-  onClose,
-  onActive,
-  confirmStr = 'Confirm',
-  cancelStr = 'Cancel',
-  backgroundColor = '#FFFFFF',
-}: {
+type ActiveModalProps = {
   title: string
   description: string
   subDescription?: string
@@ -20,7 +11,18 @@ export default function ActiveModal({
   confirmStr?: string
   cancelStr?: string
   backgroundColor?: string
-}) {
+}
+
+export const ActiveModal: FunctionComponent<ActiveModalProps> = ({
+  title,
+  description,
+  subDescription,
+  onClose,
+  onActive,
+  confirmStr = 'Confirm',
+  cancelStr = 'Cancel',
+  backgroundColor = '#FFFFFF',
+}) => {
   const [activeOption, setActiveOption] = useState<number>(1) // 1: Notify Parent of Withdraw, 2: No Form / No Email, 3: Undeclared Form/Email, 4: Undeclared Form / No Email
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setActiveOption(parseInt(e.target.value))

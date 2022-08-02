@@ -1,4 +1,4 @@
-import { SYSTEM_01, LIGHTGRAY, SECONDARY_MEDIUM_DEFAULT, SYSTEM_02, RED } from '../../../../utils/constants'
+import { SYSTEM_01, LIGHTGRAY, SYSTEM_02, RED } from '../../../../utils/constants'
 
 export const useStyles = {
   gridContainer: {
@@ -6,7 +6,7 @@ export const useStyles = {
     paddingX: 4,
     paddingY: 2,
     marginTop: 2,
-    marginBottom: 4
+    marginBottom: 4,
   },
   avatar: {
     height: '164px',
@@ -49,7 +49,7 @@ export const useStyles = {
       background: '#292626',
     },
   },
-  semesterText:{
+  semesterText: {
     fontSize: '16px',
     fontStyle: 'normal',
     fontWeight: '500',
@@ -58,10 +58,8 @@ export const useStyles = {
     textAlign: 'left',
     color: SYSTEM_02,
   },
-  saveButton:{
-
-  },
-  pendingBtn:{
+  saveButton: {},
+  pendingBtn: {
     height: '45px',
     width: '100%',
     borderRadius: 2,
@@ -69,5 +67,5 @@ export const useStyles = {
     '&:hover': {
       background: '#2B9EB7',
     },
-  }
+  },
 }

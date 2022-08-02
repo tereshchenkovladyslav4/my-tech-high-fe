@@ -84,13 +84,13 @@ export const getSchoolDistrictsByRegionId = gql`
 export const getAllRegion = gql`
   query Regions {
     regions {
-        id
-        name
+      id
+      name
     }
   }
 `
 
-export const getSpecialEdsByRegionId =  gql`
+export const getSpecialEdsByRegionId = gql`
   query Region($regionId: ID!) {
     region(id: $regionId) {
       SchoolYears {

@@ -1,5 +1,4 @@
 import { HeadCell } from '../components/SortableTable/SortableTableHeader/types'
-import { isNumber } from './stringHelpers';
 
 export const WITHDRAWAL_HEADCELLS: HeadCell[] = [
   {
@@ -204,38 +203,38 @@ export const EMAIL_RECORDS_HEADCELLS: HeadCell[] = [
     id: 'date',
     numeric: false,
     disablePadding: true,
-    label: 'Date'
+    label: 'Date',
   },
   {
     id: 'to',
     numeric: false,
     disablePadding: true,
-    label: 'To'
+    label: 'To',
   },
   {
     id: 'email_template',
     numeric: false,
     disablePadding: true,
-    label: 'Email Template'
+    label: 'Email Template',
   },
   {
     id: 'subject',
     numeric: false,
     disablePadding: true,
-    label: 'Subject'
+    label: 'Subject',
   },
   {
     id: 'from',
     numeric: false,
     disablePadding: true,
-    label: 'From'
+    label: 'From',
   },
   {
     id: 'status',
     numeric: false,
     disablePadding: true,
-    label: 'Status'
-  }
+    label: 'Status',
+  },
 ]
 
 export const ENROLLMENT_PACKET_HEADCELLS: HeadCell[] = [

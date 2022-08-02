@@ -1,19 +1,23 @@
-import React, { Fragment, useCallback, useContext, useEffect, useState } from 'react'
-import { useMutation, useQuery } from '@apollo/client'
+import React, { useState } from 'react'
 import CloseIcon from '@mui/icons-material/Close'
-import { Button, Checkbox, FormControlLabel, FormGroup, Grid, Modal, TextField } from '@mui/material'
+import { Button, Grid, Modal, TextField } from '@mui/material'
 import { Box } from '@mui/system'
-import { map } from 'lodash'
 import { DropDown } from '../../../../../components/DropDown/DropDown'
+import { DropDownItem } from '../../../../../components/DropDown/types'
 import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
-import { BUTTON_LINEAR_GRADIENT, PROVIDERS, SOE, SOE_OPTIONS, SPED } from '../../../../../utils/constants'
+import { WarningModal } from '../../../../../components/WarningModal/Warning'
+import { BUTTON_LINEAR_GRADIENT } from '../../../../../utils/constants'
+import { StudentsModal } from './StudentsModal'
 import { useStyles } from './styles'
 import { NewModalTemplateType, ApolloError } from './types'
-import { WarningModal } from '../../../../../components/WarningModal/Warning'
-import { DropDownItem } from '../../../../../components/DropDown/types'
-import { StudentsModal } from './StudentsModal'
 
-export const NewUserModal: NewModalTemplateType = ({ handleModem, visible = false, students = [], data, ParentEmailValue }) => {
+export const NewUserModal: NewModalTemplateType = ({
+  handleModem,
+  visible = false,
+  students = [],
+  data,
+  ParentEmailValue,
+}) => {
   // console.log('www', students, data, ParentEmailValue)
   const classes = useStyles
   const [apolloError, setApolloError] = useState<ApolloError>({
@@ -23,7 +27,7 @@ export const NewUserModal: NewModalTemplateType = ({ handleModem, visible = fals
   })
   const [email, setEmail] = useState('')
   // const [parentEmail, setParentEmail] = useState(data?.parent_id ? data?.person?.email : data?.parent?.person?.email)
-  const [parentEmail, setParentEmail] = useState(ParentEmailValue)
+  const [parentEmail] = useState(ParentEmailValue)
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
   const [region, setRegion] = useState('')
@@ -96,7 +100,7 @@ export const NewUserModal: NewModalTemplateType = ({ handleModem, visible = fals
     if (status) handleModem()
   }
 
-  console.log("visible: ", visible)
+  console.log('visible: ', visible)
 
   return (
     <Modal

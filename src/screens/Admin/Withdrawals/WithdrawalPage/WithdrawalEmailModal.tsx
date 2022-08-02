@@ -1,19 +1,19 @@
-import React, { useState } from 'react'
+import React, { FunctionComponent, useState } from 'react'
+import { ArrowDropDown, ArrowDropUp } from '@mui/icons-material'
+import CloseIcon from '@mui/icons-material/Close'
 import { Modal, Grid, Typography } from '@mui/material'
 import { Box } from '@mui/system'
 import moment from 'moment'
-import { ArrowDropDown, ArrowDropUp } from '@mui/icons-material'
-import CloseIcon from '@mui/icons-material/Close'
 import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
-import { mainClasses } from './styles'
 import { WithdrawalEmailResponseVM } from '../type'
+import { mainClasses } from './styles'
 
 type WithdrawalEmailModalProps = {
   handleClose: () => void
   data: WithdrawalEmailResponseVM[]
 }
 
-export const WithdrawalEmailModal = ({ handleClose, data }: WithdrawalEmailModalProps) => {
+export const WithdrawalEmailModal: FunctionComponent<WithdrawalEmailModalProps> = ({ handleClose, data }) => {
   const [dateSortDirection, setDateSortDirection] = useState<string>('')
   const [subjectSortDirection, setSubjectSortDirection] = useState<string>('')
   const [emailData, setEmailData] = useState<WithdrawalEmailResponseVM[]>(data)

@@ -1,20 +1,26 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { useMutation, useQuery } from '@apollo/client'
-import { Box, ButtonBase, Grid, Typography } from '@mui/material'
 import ArrowBackIosOutlinedIcon from '@mui/icons-material/ArrowBackIosOutlined'
+import { Box, ButtonBase, Grid, Typography } from '@mui/material'
 import { Prompt } from 'react-router-dom'
 import { arrayMove, SortableContainer, SortableElement } from 'react-sortable-hoc'
 import { updateQuickLinkMutation } from '../../graphql/mutation/quick-link'
 import { getQuickLinksByRegionQuery } from '../../graphql/queries/quick-link'
 import { UserContext } from '../../providers/UserContext/UserProvider'
+import { CustomConfirmModal } from '../CustomConfirmModal/CustomConfirmModal'
 import { QuickLinkCard } from './QuickLinkCard'
 import { QuickLink, QUICKLINK_TYPE } from './QuickLinkCardProps'
 import QuickLinkEdit from './QuickLinkEdit'
 import QuickLinkReservedEdit from './QuickLinkReservedEdit'
-import CustomConfirmModal from '../CustomConfirmModal/CustomConfirmModal'
 import Withdrawal from './Withdrawal/Withdrawal'
 
-export const QuickLinks: React.FC<any> = ({ backAction, initialLink, studentId }) => {
+type QuickLinkProps = {
+  backAction: () => void
+  initialLink: string
+  studentId: number
+}
+
+export const QuickLinks: React.FC<QuickLinkProps> = ({ backAction, initialLink, studentId }) => {
   const { me } = useContext(UserContext)
 
   //	Quick Links state which saves Quick Links array
@@ -109,7 +115,7 @@ export const QuickLinks: React.FC<any> = ({ backAction, initialLink, studentId }
   }, [quickLinksData])
 
   //	Update Quick Link mutation into the Database
-  const [updateQuickLink, { data: updateQuickLinkData }] = useMutation(updateQuickLinkMutation)
+  const [updateQuickLink] = useMutation(updateQuickLinkMutation)
 
   //	Update Quick Links array by replacing or inserting a quickLink
   const updateQuickLinks = (quickLink: QuickLink) => {
@@ -303,7 +309,7 @@ export const QuickLinks: React.FC<any> = ({ backAction, initialLink, studentId }
           items={quickLinks}
           useDragHandle={true}
           onSortEnd={({ oldIndex, newIndex }) => {
-            const newQuickLinks = arrayMove(quickLinks, oldIndex, newIndex).map((v, i) => ({
+            const newQuickLinks = arrayMove(quickLinks, oldIndex, newIndex).map((v) => ({
               ...v,
             }))
             arrangeQuickLinks(newQuickLinks)

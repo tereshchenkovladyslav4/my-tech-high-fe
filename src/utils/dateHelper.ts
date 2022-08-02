@@ -1,1 +1,1 @@
-export const datePicker = "YYYY-MM-DD"
+export const datePicker = 'YYYY-MM-DD'

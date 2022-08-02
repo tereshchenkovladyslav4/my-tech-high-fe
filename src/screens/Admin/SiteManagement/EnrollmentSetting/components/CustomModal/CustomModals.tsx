@@ -1,17 +1,8 @@
-import React from 'react'
-import { Box, Button, Modal, Typography } from '@mui/material'
+import React, { FunctionComponent } from 'react'
 import InfoIcon from '@mui/icons-material/InfoOutlined'
+import { Box, Button, Modal, Typography } from '@mui/material'
 
-export default function CustomModal({
-  title,
-  description,
-  subDescription,
-  onClose,
-  onConfirm,
-  confirmStr = 'Confirm',
-  cancelStr = 'Cancel',
-  backgroundColor = '#EEF4F8',
-}: {
+type CustomModalProps = {
   title: string
   description: string
   subDescription?: string
@@ -20,7 +11,18 @@ export default function CustomModal({
   confirmStr?: string
   cancelStr?: string
   backgroundColor?: string
-}) {
+}
+
+export const CustomModal: FunctionComponent<CustomModalProps> = ({
+  title,
+  description,
+  subDescription,
+  onClose,
+  onConfirm,
+  confirmStr = 'Confirm',
+  cancelStr = 'Cancel',
+  backgroundColor = '#EEF4F8',
+}) => {
   return (
     <Modal
       open={true}

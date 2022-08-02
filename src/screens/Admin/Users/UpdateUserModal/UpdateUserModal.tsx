@@ -1,3 +1,4 @@
+import React, { Fragment, useCallback, useContext, useEffect, useState } from 'react'
 import { useMutation, useQuery } from '@apollo/client'
 import CloseIcon from '@mui/icons-material/Close'
 import {
@@ -13,7 +14,6 @@ import {
 } from '@mui/material'
 import { Box } from '@mui/system'
 import { map } from 'lodash'
-import React, { Fragment, useCallback, useContext, useEffect, useState } from 'react'
 import { DropDown } from '../../../../components/DropDown/DropDown'
 import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
 import { WarningModal } from '../../../../components/WarningModal/Warning'
@@ -24,7 +24,6 @@ import { getAllRoles } from '../../../../graphql/queries/role'
 import { getUser, getUsersByRegions } from '../../../../graphql/queries/user'
 import { UserContext } from '../../../../providers/UserContext/UserProvider'
 import { BUTTON_LINEAR_GRADIENT, PROVIDERS, SOE, SOE_OPTIONS, SPED } from '../../../../utils/constants'
-import { LoadingScreen } from '../../../LoadingScreen/LoadingScreen'
 import { ApolloError, Region } from '../interfaces'
 import { useStyles } from './styles'
 import { UpdateModalTemplateType } from './types'
@@ -49,12 +48,12 @@ export const UpdateUserModal: UpdateModalTemplateType = ({ handleModem, userID, 
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
   const [userLevel, setUserLevel] = useState('')
-  const [state, setState] = useState([])
+
   const [regionAll, setRegionAll] = useState(false)
   const [accessAll, setAccessAll] = useState(false)
-  const [counter, setCounter] = useState(0)
+  const [, setCounter] = useState(0)
   const [soe, setSoe] = useState('')
-  const [selectedState, setSelectedState] = useState<Number | null>(null)
+  const [selectedState, setSelectedState] = useState<number | null>(null)
 
   const [regions, setRegions] = useState([])
   const [accesses, setAccesses] = useState([])
@@ -64,7 +63,7 @@ export const UpdateUserModal: UpdateModalTemplateType = ({ handleModem, userID, 
   const [regionOption, setRegionOption] = useState<CheckBoxTemplate[]>([])
   const [accessOption, setAccessOption] = useState<CheckBoxTemplate[]>([])
 
-  const { loading: load1, error: error1, data: data1 } = useQuery(getAllRegion)
+  const { loading: load1, data: data1 } = useQuery(getAllRegion)
   const { loading: load2, data: data2 } = useQuery(getAllRoles)
   const { loading: load3, data: data3 } = useQuery(getAllAccess)
 
@@ -220,7 +219,7 @@ export const UpdateUserModal: UpdateModalTemplateType = ({ handleModem, userID, 
     value: el,
   }))
 
-  const handleRoleChange = (value: any) => {
+  const handleRoleChange = (value: unknown) => {
     const data = rolesOption.filter((role) => role.value == value)
     if (data.length > 0) {
       setUserLevel(data[0].label)
@@ -233,7 +232,7 @@ export const UpdateUserModal: UpdateModalTemplateType = ({ handleModem, userID, 
     setParentEmail('')
   }
 
-  const toggleCheckBoxes = (group: string, flag: boolean = false) => {
+  const toggleCheckBoxes = (group: string, flag = false) => {
     if (group === 'region') {
       if (flag) {
         const updatedRegion = map(regionOption, (region) => {

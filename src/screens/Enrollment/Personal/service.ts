@@ -6,14 +6,14 @@ export const enrollmentPersonalMutation = gql`
       packet {
         packet_id
       }
-      student{
+      student {
         student_id
         hidden
-        status{
+        status {
           status
         }
-        packets{
-          files{
+        packets {
+          files {
             file_id
             kind
             mth_file_id
@@ -52,7 +52,7 @@ export const enrollmentPersonalMutation = gql`
           status
           meta
         }
-        applications{
+        applications {
           status
         }
         person {
@@ -72,7 +72,7 @@ export const enrollmentPersonalMutation = gql`
             name
             ext
           }
-          address{
+          address {
             city
             street
             street2
@@ -93,21 +93,20 @@ export const enrollmentPersonalMutation = gql`
   }
 `
 
-
 export const enrollmentContactMutation = gql`
   mutation SaveEnrollmentPacketContact($enrollmentPacketContactInput: EnrollmentPacketContactInput!) {
     saveEnrollmentPacketContact(enrollmentPacketContactInput: $enrollmentPacketContactInput) {
       packet {
         packet_id
       }
-      student{
+      student {
         student_id
         hidden
-        status{
+        status {
           status
         }
-        packets{
-          files{
+        packets {
+          files {
             file_id
             kind
             mth_file_id
@@ -146,7 +145,7 @@ export const enrollmentContactMutation = gql`
           status
           meta
         }
-        applications{
+        applications {
           status
         }
         person {
@@ -166,7 +165,7 @@ export const enrollmentContactMutation = gql`
             name
             ext
           }
-          address{
+          address {
             city
             street
             street2

@@ -1,1 +1,1 @@
-export { default as CountySelect } from './CountySelect'
+export { CountySelect } from './CountySelect'

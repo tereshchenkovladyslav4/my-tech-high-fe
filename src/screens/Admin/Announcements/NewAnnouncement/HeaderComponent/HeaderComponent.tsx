@@ -1,12 +1,12 @@
-import { Box, Button, IconButton } from '@mui/material'
-import React, { useState } from 'react'
+import React, { FunctionComponent, useState } from 'react'
 import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded'
-import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
-import { useStyles } from '../styles'
-import { ANNOUNCEMENTS } from '../../../../../utils/constants'
+import { Box, Button, IconButton } from '@mui/material'
 import { useHistory } from 'react-router-dom'
+import { CustomModal } from '../../../../../components/CustomModal/CustomModals'
+import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
+import { ANNOUNCEMENTS } from '../../../../../utils/constants'
 import { Announcement } from '../../../../Dashboard/Announcements/types'
-import CustomModal from '../../../../../components/CustomModal/CustomModals'
+import { useStyles } from '../styles'
 
 type HeaderComponentProps = {
   announcement: Announcement | null
@@ -16,13 +16,13 @@ type HeaderComponentProps = {
   handleRepublish: () => void
 }
 
-const HeaderComponent = ({
+const HeaderComponent: FunctionComponent<HeaderComponentProps> = ({
   announcement,
   setAnnouncement,
   handleSaveClick,
   handlePublishClick,
   handleRepublish,
-}: HeaderComponentProps) => {
+}) => {
   const classes = useStyles
   const history = useHistory()
   const [showCancelModal, setShowCancelModal] = useState(false)
@@ -33,10 +33,9 @@ const HeaderComponent = ({
     history.push(ANNOUNCEMENTS)
   }
 
-
   return (
     <Box sx={classes.pageTop}>
-      {showCancelModal && 
+      {showCancelModal && (
         <CustomModal
           title={'Cancel Changes'}
           description={'Are you sure you want to cancel changes?'}
@@ -46,17 +45,15 @@ const HeaderComponent = ({
           onConfirm={handleBackClick}
           backgroundColor='white'
         />
-      }
-      {showUpdatePublishedModal && 
+      )}
+      {showUpdatePublishedModal && (
         <CustomModal
           title={'Update'}
-          description={
-            `This announcement has already been published. 
+          description={`This announcement has already been published. 
             This message will appear as unread on user’s dashboard, 
             but they will not receive a new email. 
             If any recipients have changed, they will receive 
-            the new announcement via email.`
-          }
+            the new announcement via email.`}
           confirmStr='Update'
           cancelStr='Cancel'
           onClose={() => setShowUpdatePublishedModal(false)}
@@ -65,7 +62,7 @@ const HeaderComponent = ({
           }}
           backgroundColor='white'
         />
-      }
+      )}
       <Box sx={classes.pageTitle}>
         <IconButton
           onClick={handleBackClick}
@@ -77,7 +74,7 @@ const HeaderComponent = ({
         </IconButton>
         {announcement ? (
           <Subtitle size='medium' fontWeight='700'>
-            Edit { announcement.status } Announcement
+            Edit {announcement.status} Announcement
           </Subtitle>
         ) : (
           <Subtitle size='medium' fontWeight='700'>
@@ -86,23 +83,28 @@ const HeaderComponent = ({
         )}
       </Box>
       <Box sx={classes.pageTopRight}>
-        <Button sx={announcement?.status !== 'Published' ? classes.cancelBtn : classes.cancelBtnAlt} onClick={() => setShowCancelModal(true)}>
+        <Button
+          sx={announcement?.status !== 'Published' ? classes.cancelBtn : classes.cancelBtnAlt}
+          onClick={() => setShowCancelModal(true)}
+        >
           Cancel
         </Button>
-        { (announcement?.status === 'Draft' || announcement === null) &&
+        {(announcement?.status === 'Draft' || announcement === null) && (
           <Button sx={classes.saveBtn} onClick={() => handleSaveClick()}>
             Save
           </Button>
-        }
-        <Button 
-          sx={announcement?.status !== 'Published' ? classes.publishBtn : classes.publishBtnAlt} 
-          onClick={() => 
-              announcement?.status === undefined || announcement?.status === 'Draft' || announcement.status === 'Scheduled'
-              ? handlePublishClick() 
-              : setShowUpdatePublishedModal(true) 
+        )}
+        <Button
+          sx={announcement?.status !== 'Published' ? classes.publishBtn : classes.publishBtnAlt}
+          onClick={() =>
+            announcement?.status === undefined ||
+            announcement?.status === 'Draft' ||
+            announcement.status === 'Scheduled'
+              ? handlePublishClick()
+              : setShowUpdatePublishedModal(true)
           }
         >
-          {  announcement?.status === undefined ||  announcement?.status === 'Draft'  ? 'Publish' : 'Update' }
+          {announcement?.status === undefined || announcement?.status === 'Draft' ? 'Publish' : 'Update'}
         </Button>
       </Box>
     </Box>

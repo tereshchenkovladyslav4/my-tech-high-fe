@@ -1,8 +1,8 @@
-import { Box, Container } from '@mui/material'
 import React from 'react'
-import { EmptyStateTemplateType } from './types'
-import { Title } from '../Typography/Title/Title'
+import { Box, Container } from '@mui/material'
 import { Subtitle } from '../Typography/Subtitle/Subtitle'
+import { Title } from '../Typography/Title/Title'
+import { EmptyStateTemplateType } from './types'
 
 export const EmptyState: EmptyStateTemplateType = ({ title, subtitle, image }) => (
   <Container>

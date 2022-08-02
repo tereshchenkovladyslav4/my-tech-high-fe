@@ -1,11 +1,11 @@
-import React, { useState } from 'react'
-import { PageContentProps } from './PageContentProps'
-import { CommonSelectType } from '../../types'
+import React, { FunctionComponent, useState } from 'react'
 import { CommonSelect } from '../../components/CommonSelect'
+import { CommonSelectType } from '../../types'
 import { MidYearSelect } from '../MidYearSelect'
 import { OpenAndCloseSelect } from '../OpenAndCloseSelect'
+import { PageContentProps } from './PageContentProps'
 
-export default function PageContent({
+export const PageContent: FunctionComponent<PageContentProps> = ({
   schoolYearItem,
   setSchoolYearItem,
   applicationItem,
@@ -13,9 +13,9 @@ export default function PageContent({
   midYearItem,
   setMidYearItem,
   setIsChanged,
-}: PageContentProps) {
+}) => {
   const [midYearExpend, setMidYearExpend] = useState<boolean | undefined>(false)
-  let yearsSettingList: CommonSelectType[] = [
+  const yearsSettingList: CommonSelectType[] = [
     {
       name: 'School Year',
       component: <OpenAndCloseSelect item={schoolYearItem} setItem={setSchoolYearItem} setIsChanged={setIsChanged} />,

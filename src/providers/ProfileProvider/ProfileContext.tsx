@@ -1,13 +1,13 @@
 import { createContext } from 'react'
 export type ProfileContextType = {
-  showModal: React.Dispatch<React.SetStateAction<any>>
+  showModal: React.Dispatch<React.SetStateAction<boolean>>
   hideModal: React.Dispatch<React.SetStateAction<boolean>>
-  store: any
+  store: Record<string, unknown>
   setStore: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const profileContext: ProfileContextType = {
-  showModal: (data) => {},
+  showModal: () => {},
   hideModal: () => {},
   store: {},
   setStore: () => {},

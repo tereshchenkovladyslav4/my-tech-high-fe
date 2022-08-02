@@ -1,7 +1,11 @@
-import { Avatar, Box, Button, Card, Checkbox, FormControlLabel, FormHelperText, Grid, OutlinedInput } from '@mui/material'
+import React, { FunctionComponent, useContext, useEffect, useState } from 'react'
+import { useMutation } from '@apollo/client'
+import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt'
+import { Avatar, Box, Button, Card, FormHelperText, Grid, OutlinedInput } from '@mui/material'
+import { useFormik } from 'formik'
 import { find } from 'lodash'
-import React, { useContext, useEffect, useState } from 'react'
-import { Prompt, useHistory, useLocation } from 'react-router-dom'
+import { Prompt, useHistory } from 'react-router-dom'
+import * as yup from 'yup'
 import { DropDown } from '../../../../components/DropDown/DropDown'
 import { DropDownItem } from '../../../../components/DropDown/types'
 import { Paragraph } from '../../../../components/Typography/Paragraph/Paragraph'
@@ -9,32 +13,27 @@ import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
 import { Title } from '../../../../components/Typography/Title/Title'
 import { WarningModal } from '../../../../components/WarningModal/Warning'
 import { UserContext, UserInfo } from '../../../../providers/UserContext/UserProvider'
-import { ENROLLMENT, GRAY, HOMEROOM, LIGHTGRAY, MTHBLUE, RED, SYSTEM_02 } from '../../../../utils/constants'
+import { ENROLLMENT, GRAY, HOMEROOM, RED } from '../../../../utils/constants'
 import { toOrdinalSuffix } from '../../../../utils/stringHelpers'
-import { StudentComponentType, StudentType } from '../types'
-import { useStyles } from './styles'
-import * as yup from 'yup'
-import { useFormik } from 'formik'
-import { useMutation } from '@apollo/client'
-import { updateProfile, removeProfilePhoto } from './service'
 import { DocumentUploadModal } from '../../../Enrollment/Documents/components/DocumentUploadModal/DocumentUploadModal'
-import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt'
+import { StudentType } from '../types'
+import { updateProfile, removeProfilePhoto } from './service'
+import { useStyles } from './styles'
 
-export const StudentProfile = () => {
-
+export const StudentProfile: FunctionComponent = () => {
   const { me } = useContext(UserContext)
   const { students } = me as UserInfo
   const studentId = location.pathname.split('/').at(-1)
   const currStudent = find(students, { student_id: studentId })
-  const [student, setStudent] = useState<StudentType>(currStudent)
+  const [student] = useState<StudentType>(currStudent)
   const history = useHistory()
 
   const { person } = student
   const status = student?.packets?.at(-1)?.status
 
   const [warn, setWarn] = useState(false)
-  const [submitUpdate, { data }] = useMutation(updateProfile)
-  const [submitRemoveProfilePhoto, { data: userData }] = useMutation(removeProfilePhoto)
+  const [submitUpdate] = useMutation(updateProfile)
+  const [submitRemoveProfilePhoto] = useMutation(removeProfilePhoto)
   const [imageModalOpen, setImageModalOpen] = useState(false)
   const [warningModalOpen, setWarningModalOpen] = useState(false)
   const [avatar, setAvatar] = useState(null)
@@ -56,7 +55,7 @@ export const StudentProfile = () => {
       value: 'Opt Out',
     },
   ]
-  const setState = (id: any) => {
+  const setState = (id: number | string) => {
     formik.values.testingPref = id
     setWarn(true)
   }
@@ -71,9 +70,9 @@ export const StudentProfile = () => {
       .string()
       .matches(
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/,
-        "Must Contain 8 Characters, One Uppercase, One Lowercase, One Number and One Special Case Character"
+        'Must Contain 8 Characters, One Uppercase, One Lowercase, One Number and One Special Case Character',
       )
-      .nullable()
+      .nullable(),
   })
 
   const formik = useFormik({
@@ -92,7 +91,7 @@ export const StudentProfile = () => {
 
   const onSave = async () => {
     setWarn(false)
-    let variables = {
+    const variables = {
       student_id: parseFloat(studentId as unknown as string),
       preferred_first_name: formik.values.firstName,
       preferred_last_name: formik.values.lastName,
@@ -117,14 +116,14 @@ export const StudentProfile = () => {
       variables: {
         updateStudentProfileInput: variables,
       },
-    }).then((res) => {
+    }).then(() => {
       // set catch and then here, return snackbox for both success and fail
       location.reload()
     })
   }
 
   const uploadPhoto = async (file) => {
-    var bodyFormData = new FormData()
+    const bodyFormData = new FormData()
     bodyFormData.append('file', file[0])
     bodyFormData.append('region', 'UT')
     bodyFormData.append('year', '2022')
@@ -144,7 +143,7 @@ export const StudentProfile = () => {
       variables: {
         updateStudentProfileInput: { student_id: parseFloat(studentId as unknown as string) },
       },
-    }).then((res) => {
+    }).then(() => {
       setFile(undefined)
       setAvatar(null)
       location.reload()
@@ -156,11 +155,13 @@ export const StudentProfile = () => {
     return fileUrl
   }
 
-  const getProfilePhoto = () => {
-    if (!avatar) return
-
-    const s3URL = 'https://infocenter-v2-dev.s3.us-west-2.amazonaws.com/'
-    return s3URL + person.photo
+  const getProfilePhoto = (): string | undefined => {
+    if (avatar) {
+      const s3URL = 'https://infocenter-v2-dev.s3.us-west-2.amazonaws.com/'
+      return s3URL + person.photo
+    } else {
+      return undefined
+    }
   }
 
   const openImageModal = () => setImageModalOpen(true)
@@ -202,13 +203,12 @@ export const StudentProfile = () => {
   const classes = useStyles
   const grade = student.grade_levels.at(-1).grade_level
   const warnUser =
-    warn
-    || formik.values.firstName !== person.preferred_first_name 
-    || person.preferred_last_name !== formik.values.lastName 
-    || (status !== 'Missing Info' && (formik.values.email !== person.email || formik.values.password !== undefined))
-  
+    warn ||
+    formik.values.firstName !== person.preferred_first_name ||
+    person.preferred_last_name !== formik.values.lastName ||
+    (status !== 'Missing Info' && (formik.values.email !== person.email || formik.values.password !== undefined))
 
-        console.log(student.testing_preference)
+  console.log(student.testing_preference)
   useEffect(() => {
     if (person && person.photo) setAvatar(person.photo)
   }, [person])
@@ -309,7 +309,7 @@ export const StudentProfile = () => {
                     dropDownItems={testingPreferencesItems}
                     defaultValue={student.testing_preference}
                     setParentValue={setState}
-                    dropdownColor={`rgba(236, 89, 37, 0.1)`}
+                    dropdownColor={'rgba(236, 89, 37, 0.1)'}
                   />
                 </Box>
               )}
@@ -324,10 +324,7 @@ export const StudentProfile = () => {
                     Resubmit
                   </Button>
                 ) : status === 'Submitted' ? (
-                  <Button
-                    sx={classes.pendingBtn}
-                    variant='contained'
-                  >
+                  <Button sx={classes.pendingBtn} variant='contained'>
                     Pending Approval
                   </Button>
                 ) : (
@@ -384,7 +381,9 @@ export const StudentProfile = () => {
                     sx={classes.textField}
                     error={formik.touched.password && Boolean(formik.errors.password)}
                   />
-                  <FormHelperText sx={{color: RED}} >{formik.touched.password && formik.errors.password}</FormHelperText>
+                  <FormHelperText sx={{ color: RED }}>
+                    {formik.touched.password && formik.errors.password}
+                  </FormHelperText>
                 </Box>
               )}
             </Grid>

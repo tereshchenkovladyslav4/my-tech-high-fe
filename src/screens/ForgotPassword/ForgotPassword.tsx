@@ -1,14 +1,14 @@
-import { Box } from '@mui/system'
 import React, { useEffect, useState } from 'react'
-import { BUTTON_LINEAR_GRADIENT } from '../../utils/constants'
-import { Button, TextField, Typography } from '@mui/material'
-import { useStyles } from './styles'
 import { useMutation } from '@apollo/client'
-import { forgotPasswordMutation, resendVerificationEmailMutation } from './service'
-import { useFormik } from 'formik'
-import * as yup from 'yup'
 import { makeStyles } from '@material-ui/styles'
+import { Button, TextField, Typography } from '@mui/material'
+import { Box } from '@mui/system'
+import { useFormik } from 'formik'
 import { useHistory } from 'react-router-dom'
+import * as yup from 'yup'
+import { BUTTON_LINEAR_GRADIENT } from '../../utils/constants'
+import { forgotPasswordMutation, resendVerificationEmailMutation } from './service'
+import { useStyles } from './styles'
 
 const useHelperTextStyles = makeStyles(() => ({
   root: {
@@ -27,18 +27,16 @@ type Alert = {
   description?: string
 }
 
-export const ForgotPassword = () => {
+export const ForgotPassword: FunctionComponent = () => {
   const classes = useStyles
-  const token = window.location.href.split('=')[1]
+
   const history = useHistory()
   const helperTextStyles = useHelperTextStyles()
   const [alert, setAlert] = useState<Alert>(null)
   const [verifyStatus, setVerifyStatus] = useState<boolean>(true)
 
   const [forgotPassword] = useMutation(forgotPasswordMutation)
-  const [resendEmail, { data: resendEmailResponse, loading: resending, error: resendError }] = useMutation(
-    resendVerificationEmailMutation,
-  )
+  const [resendEmail, { data: resendEmailResponse, loading: resending }] = useMutation(resendVerificationEmailMutation)
   const validationSchema = yup.object({
     email: yup.string().email('Enter a valid email').required('Email is required'),
   })
@@ -136,10 +134,10 @@ export const ForgotPassword = () => {
       </Box>
       <Box>
         <Typography fontSize={17} marginTop={3} color='white'>
-          Please enter your email address below and press "Reset Password".
+          Please enter your email address below and press &ldquo; Reset Password &rdquo;.
         </Typography>
         <Typography fontSize={17} marginTop={1} color='white'>
-          You'll receive instructions on how to set a new password.
+          You&apos;ll receive instructions on how to set a new password.
         </Typography>
       </Box>
       <form

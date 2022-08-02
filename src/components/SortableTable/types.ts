@@ -7,15 +7,15 @@ export enum Order {
 }
 
 type SortableTableProps = {
-  rows?: any
+  rows?: unknown
   type?: string
   headCells: HeadCell[]
-  onCheck?: any
+  onCheck?: () => void
   clearAll?: boolean
   updateStatus?: (id: number, status: string) => void
-  onRowClick?: any
+  onRowClick?: (_: unknown) => void
   onParentClick?: (id: number) => void
-  onSortChange?: (property: keyof any, order: string) => void
+  onSortChange?: (property: keyof unknown, order: string) => void
   toggleMasquerade?: (id: number, masquerade: boolean) => void
   handleMasquerade?: (id: number) => void
   canMasquerade?: boolean

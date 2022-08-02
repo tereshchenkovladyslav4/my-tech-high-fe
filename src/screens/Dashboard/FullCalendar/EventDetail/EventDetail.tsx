@@ -1,14 +1,12 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { Avatar, AvatarGroup, Box, Button, Stack } from '@mui/material'
-import { useHistory } from 'react-router-dom'
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
+import React, { FunctionComponent, ReactElement, useContext, useEffect, useState } from 'react'
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew'
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
+import { Avatar, AvatarGroup, Box, Button, Stack } from '@mui/material'
 import moment from 'moment'
+import { useHistory } from 'react-router-dom'
 import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
-import { CALENDAR, SYSTEM_02, SYSTEM_05, SYSTEM_06 } from '../../../../utils/constants'
-import { EventDetailProps } from '../types'
 import { UserContext } from '../../../../providers/UserContext/UserProvider'
-import { Person } from '../../../HomeroomStudentProfile/Student/types'
+import { CALENDAR, SYSTEM_02, SYSTEM_05, SYSTEM_06 } from '../../../../utils/constants'
 import {
   extractContent,
   getFirstDayAndLastDayOfMonth,
@@ -16,9 +14,11 @@ import {
   renderDate,
   renderFilter,
 } from '../../../../utils/utils'
+import { Person } from '../../../HomeroomStudentProfile/Student/types'
+import { EventDetailProps } from '../types'
 import { eventDetailClassess } from './styles'
 
-const EventDetail = ({
+const EventDetail: FunctionComponent<EventDetailProps> = ({
   events,
   selectedEventIndex,
   selectedDate,
@@ -27,7 +27,7 @@ const EventDetail = ({
   currentMonth,
   setSelectedEventIndex,
   setSelectedEvent,
-}: EventDetailProps) => {
+}) => {
   const history = useHistory()
   const { me } = useContext(UserContext)
   const students = me?.students
@@ -84,7 +84,7 @@ const EventDetail = ({
         {students &&
           students
             .filter((student) => student?.status?.at(-1)?.status != 2)
-            .map((student, index) => {
+            .map((student, index): ReactElement | undefined => {
               if (
                 student?.grade_levels &&
                 grades.includes(
@@ -98,7 +98,7 @@ const EventDetail = ({
                     src={getProfilePhoto(student.person)}
                   />
                 )
-              }
+              } else return undefined
             })}
       </AvatarGroup>
     )

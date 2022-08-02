@@ -1,13 +1,13 @@
-import { Box, Card } from '@mui/material'
-import { Flexbox } from '../../../components/Flexbox/Flexbox'
-import { EmptyState } from '../../../components/EmptyState/EmptyState'
 import React, { FunctionComponent, useState, useEffect, useRef } from 'react'
-import { TodoList } from './components/TodoList/TodoList'
-import { Subtitle } from '../../../components/Typography/Subtitle/Subtitle'
+import { Box, Card } from '@mui/material'
 import BGSVG from '../../../assets/ToDoListBG.svg'
-import { SYSTEM_06 } from '../../../utils/constants'
+import { EmptyState } from '../../../components/EmptyState/EmptyState'
+import { Flexbox } from '../../../components/Flexbox/Flexbox'
+import { Subtitle } from '../../../components/Typography/Subtitle/Subtitle'
 import { Title } from '../../../components/Typography/Title/Title'
+import { SYSTEM_06 } from '../../../utils/constants'
 import { SchoolYearType } from '../HomeroomGrade/components/StudentGrade/types'
+import { TodoList } from './components/TodoList/TodoList'
 
 const EmptyStateWrapper = (props) => (
   <Box
@@ -48,14 +48,6 @@ const emptyStateHandler = (showEmpty: boolean, windowDimensions: number) => {
 
 type TodoProps = {
   schoolYears: SchoolYearType[]
-}
-
-function getWindowDimensions() {
-  const { outerWidth: width, outerHeight: height } = window
-  return {
-    width,
-    height,
-  }
 }
 
 export const ToDo: FunctionComponent<TodoProps> = ({ schoolYears }) => {

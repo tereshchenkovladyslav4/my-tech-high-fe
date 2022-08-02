@@ -1,52 +1,53 @@
-import { Box } from '@mui/system'
 import React, { useState, useContext, useEffect } from 'react'
-import { BUTTON_LINEAR_GRADIENT } from '../../utils/constants'
-import { Button, TextField } from '@mui/material'
-import { useStyles } from './styles'
 import { useMutation } from '@apollo/client'
-import { resetPasswordMutation } from './service'
-import { useFormik } from 'formik'
-import * as yup from 'yup'
-import { CompleteAccountSuccess } from '../CompleteAccountSuccess/CompleteAccountSuccess'
-import { Typography } from '@mui/material'
-import { AuthContext } from '../../providers/AuthProvider/AuthContext'
-import { useHistory } from 'react-router-dom'
 import { makeStyles } from '@material-ui/styles'
+import { Button, TextField } from '@mui/material'
+import { Typography } from '@mui/material'
+import { Box } from '@mui/system'
+import { useFormik } from 'formik'
+import { useHistory } from 'react-router-dom'
+import * as yup from 'yup'
+import { AuthContext } from '../../providers/AuthProvider/AuthContext'
+import { BUTTON_LINEAR_GRADIENT } from '../../utils/constants'
+import { CompleteAccountSuccess } from '../CompleteAccountSuccess/CompleteAccountSuccess'
+import { resetPasswordMutation } from './service'
+import { useStyles } from './styles'
 const useHelperTextStyles = makeStyles(() => ({
-	root: {
-		color: "white",
-	},
+  root: {
+    color: 'white',
+  },
   error: {
-    "&.MuiFormHelperText-root.Mui-error": {
-      color: 'white'
-    }
-  }
-}));
+    '&.MuiFormHelperText-root.Mui-error': {
+      color: 'white',
+    },
+  },
+}))
 
-export const ResetPassword = () => {
+export const ResetPassword: FunctionComponent = () => {
   const token = window.location.href.split('=')[1]
   const decodedToken = atob(token)
-  const [user_id, email] = decodedToken.split('-')
+  const [, email] = decodedToken.split('-')
   const [resetPassword] = useMutation(resetPasswordMutation)
-  const [showSuccess, setShowSuccess] = useState(false)
+  const [showSuccess] = useState(false)
   const { credentials, setCredentials } = useContext(AuthContext)
   const [alert, setAlert] = useState(null)
   const classes = useStyles
   const history = useHistory()
   const validationSchema = yup.object({
     email: yup.string().email('Enter a valid email').required('Email is required'),
-    password: yup.string()
-    .matches(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/,
-      "Must Contain 8 Characters, One Uppercase, One Lowercase, One Number and One Special Case Character"
-    )
-    .required('Password is required'),
+    password: yup
+      .string()
+      .matches(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/,
+        'Must Contain 8 Characters, One Uppercase, One Lowercase, One Number and One Special Case Character',
+      )
+      .required('Password is required'),
     confirmPassword: yup
       .string()
       .required('Please enter your password again')
       .oneOf([yup.ref('password')], 'Passwords do not match'),
   })
-  const helperTextStyles = useHelperTextStyles();
+  const helperTextStyles = useHelperTextStyles()
 
   const formik = useFormik({
     initialValues: {
@@ -88,13 +89,13 @@ export const ResetPassword = () => {
           message: error.message,
         })
       })
-    }
+  }
 
   useEffect(() => {
-    if(credentials){
+    if (credentials) {
       history.push('/')
     }
-  },[credentials])
+  }, [credentials])
 
   return !showSuccess ? (
     <Box
@@ -133,11 +134,11 @@ export const ResetPassword = () => {
           value={formik.values.email}
           error={formik.touched.email && Boolean(formik.errors.email)}
           FormHelperTextProps={{
-						classes:{
-							root:helperTextStyles.root,
+            classes: {
+              root: helperTextStyles.root,
               error: helperTextStyles.error,
-						}
-        }}
+            },
+          }}
           helperText={formik.touched.email && formik.errors.email}
         />
         <TextField
@@ -157,11 +158,11 @@ export const ResetPassword = () => {
             setAlert(null)
           }}
           FormHelperTextProps={{
-						classes:{
-							root:helperTextStyles.root,
+            classes: {
+              root: helperTextStyles.root,
               error: helperTextStyles.error,
-						}
-        }}
+            },
+          }}
           onBlur={formik.handleBlur}
           error={formik.touched.password && Boolean(formik.errors.password)}
           helperText={formik.touched.password && formik.errors.password}
@@ -178,11 +179,11 @@ export const ResetPassword = () => {
             style: { color: 'white' },
           }}
           FormHelperTextProps={{
-						classes:{
-							root:helperTextStyles.root,
-              error: helperTextStyles.error
-						}
-        }}
+            classes: {
+              root: helperTextStyles.root,
+              error: helperTextStyles.error,
+            },
+          }}
           value={formik.values.confirmPassword}
           onChange={(e) => {
             formik.handleChange(e)
@@ -191,7 +192,7 @@ export const ResetPassword = () => {
           error={formik.touched.confirmPassword && Boolean(formik.errors.confirmPassword)}
           helperText={formik.touched.confirmPassword && formik.errors.confirmPassword}
           style={{
-            marginTop: formik.touched.password && Boolean(formik.errors.password) ? '32px' : undefined
+            marginTop: formik.touched.password && Boolean(formik.errors.password) ? '32px' : undefined,
           }}
         />
         {alert && alert.message && (

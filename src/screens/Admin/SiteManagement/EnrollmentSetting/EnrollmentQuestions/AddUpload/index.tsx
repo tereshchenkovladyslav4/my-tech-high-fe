@@ -1,37 +1,34 @@
+import React, { useState, useRef, FunctionComponent } from 'react'
 import { Box, Button, Checkbox, Modal, outlinedInputClasses, TextField, Typography } from '@mui/material'
+import { ContentState, convertToRaw, EditorState } from 'draft-js'
+import draftToHtml from 'draftjs-to-html'
 import { useFormikContext } from 'formik'
-import React, { useEffect, useState, useRef } from 'react'
-import { DropDownItem } from '../../../../../../components/DropDown/types'
+import htmlToDraft from 'html-to-draftjs'
+import Wysiwyg from 'react-draft-wysiwyg'
 import { Subtitle } from '../../../../../../components/Typography/Subtitle/Subtitle'
 import { SYSTEM_07 } from '../../../../../../utils/constants'
-import { EnrollmentQuestion, EnrollmentQuestionGroup, EnrollmentQuestionTab, OptionsType, QuestionTypes } from '../types'
-import Wysiwyg from 'react-draft-wysiwyg'
-import { ContentState, convertToRaw, EditorState } from 'draft-js'
-import htmlToDraft from 'html-to-draftjs'
-import draftToHtml from 'draftjs-to-html'
-import { QUESTION_TYPE } from '../../../../../../components/QuestionItem/QuestionItemProps'
+import { EnrollmentQuestion, EnrollmentQuestionGroup, EnrollmentQuestionTab } from '../types'
 
-export default function AddQuestionModal({
-  onClose,
-  editItem,
-  specialEd
-}: {
+type AddUploadModal = {
   onClose: () => void
   editItem?: EnrollmentQuestion
-  specialEd: any
-}) {
+  specialEd: unknown
+}
+export const AddUploadModal: FunctionComponent<AddUploadModal> = ({ onClose, editItem, specialEd }) => {
   const { values, setValues } = useFormikContext<EnrollmentQuestionTab[]>()
-  const [uploadTitle, setUploadTitle ] = useState(editItem?.question || '')
-  const [ fileName, setFileName ] = useState(editItem?.options[0]?.label || '')
+  const [uploadTitle, setUploadTitle] = useState(editItem?.question || '')
+  const [fileName, setFileName] = useState(editItem?.options[0]?.label || '')
   const [description, setDescription] = useState(editItem?.options[0]?.value || '')
 
   const [required, setRequired] = useState(editItem?.required || false)
   const [specialUpload, setSpecialUpload] = useState(editItem?.options[1]?.value || false)
-  const [specialUploadList, setSpecialUploadList] = useState( editItem?.options[1]?.value ? JSON.parse(editItem?.options[1]?.value) : [])
+  const [specialUploadList, setSpecialUploadList] = useState(
+    editItem?.options[1]?.value ? JSON.parse(editItem?.options[1]?.value) : [],
+  )
   // const [removable, setRemovable] = useState(editItem?.removable || false)
   const [error, setError] = useState('')
 
-  const currentTabData = values.filter((v) => v.tab_name === "Documents")[0]
+  const currentTabData = values.filter((v) => v.tab_name === 'Documents')[0]
 
   function onSave() {
     if (fileName.trim() === '') {
@@ -39,85 +36,90 @@ export default function AddQuestionModal({
       return
     }
     if (uploadTitle.trim() === '') {
-        setError('Title is required')
-        return
+      setError('Title is required')
+      return
     }
-    let newQuestions : EnrollmentQuestion[];
+    let newQuestions: EnrollmentQuestion[]
 
-    let options = [{label: fileName, value: description}];
-    if(specialUpload){
-      options.push({label: specialUpload, value: JSON.stringify(specialUploadList)});
-    }else{
-      options.push({label: specialUpload, value: ''});
+    const options = [{ label: fileName, value: description }]
+    if (specialUpload) {
+      options.push({ label: specialUpload, value: JSON.stringify(specialUploadList) })
+    } else {
+      options.push({ label: specialUpload, value: '' })
     }
-  
-    if(editItem) {
-        const newQuestion : EnrollmentQuestion = {
-          id: editItem?.id,
-          type: 8,
-          question: uploadTitle,
-          order: editItem.order,
-          options: options,
-          required,
-          // removable,
-          validation: 0,
-          default_question: false,
-          display_admin: false,
-          slug: editItem?.slug || `meta_${+ new Date()}`
-        }
-        newQuestions = currentTabData.groups[0]?.questions.map((q) => q.slug === editItem.slug ? newQuestion : q)
+
+    if (editItem) {
+      const newQuestion: EnrollmentQuestion = {
+        id: editItem?.id,
+        type: 8,
+        question: uploadTitle,
+        order: editItem.order,
+        options: options,
+        required,
+        // removable,
+        validation: 0,
+        default_question: false,
+        display_admin: false,
+        slug: editItem?.slug || `meta_${+new Date()}`,
+      }
+      newQuestions = currentTabData.groups[0]?.questions.map((q) => (q.slug === editItem.slug ? newQuestion : q))
+    } else {
+      const newQuestion: EnrollmentQuestion = {
+        type: 8,
+        question: uploadTitle,
+        order: currentTabData.groups[0]?.questions?.length + 1 || 1,
+        options: options,
+        required,
+        // removable,
+        validation: 0,
+        display_admin: false,
+        default_question: false,
+        slug: editItem?.slug || `meta_${+new Date()}`,
+      }
+      newQuestions = currentTabData.groups[0]?.questions
+        ? [...currentTabData.groups[0]?.questions, newQuestion]
+        : [newQuestion]
     }
-    else {
-        const newQuestion : EnrollmentQuestion = {
-            type: 8,
-            question: uploadTitle,
-            order: currentTabData.groups[0]?.questions?.length + 1 || 1,
-            options: options,
-            required,
-            // removable,
-            validation: 0,
-            display_admin: false,
-            default_question: false,
-            slug: editItem?.slug || `meta_${+ new Date()}`
-        }
-        newQuestions = currentTabData.groups[0]?.questions ? [...currentTabData.groups[0]?.questions, newQuestion] : [newQuestion]
+    const newGroup: EnrollmentQuestionGroup = {
+      id: currentTabData.groups[0].id,
+      group_name: 'root',
+      order: 1,
+      questions: newQuestions,
     }
-    const newGroup : EnrollmentQuestionGroup = {
-        id: currentTabData.groups[0].id,
-        group_name: "root",
-        order: 1,
-        questions: newQuestions
-    }
-    const updatedTab = {...currentTabData, groups: [newGroup]}
+    const updatedTab = { ...currentTabData, groups: [newGroup] }
     setValues(values.map((v) => (v.tab_name === updatedTab.tab_name ? updatedTab : v)))
     onClose()
   }
 
   //	Editor related states and functions
-	const [editorState, setEditorState] = useState(EditorState.createWithContent(ContentState.createFromBlockArray(htmlToDraft(editItem?.options[0]?.value.toString() || '').contentBlocks)));
-	const editorRef = useRef(null);
-	const [currentBlocks, setCurrentBlocks] = useState(0)
-	const handleEditorChange = (state) => {
-		try {
-			if (currentBlocks !== 0 && currentBlocks !== state.blocks.length) {
-				editorRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' })
-			}
-			setCurrentBlocks(state.blocks.length);
+  const [editorState, setEditorState] = useState(
+    EditorState.createWithContent(
+      ContentState.createFromBlockArray(htmlToDraft(editItem?.options[0]?.value.toString() || '').contentBlocks),
+    ),
+  )
+  const editorRef = useRef(null)
+  const [currentBlocks, setCurrentBlocks] = useState(0)
+  const handleEditorChange = (state) => {
+    try {
+      if (currentBlocks !== 0 && currentBlocks !== state.blocks.length) {
+        editorRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' })
+      }
+      setCurrentBlocks(state.blocks.length)
 
-      setDescription(draftToHtml(convertToRaw(editorState.getCurrentContent())));
-		} catch {}
-	}
+      setDescription(draftToHtml(convertToRaw(editorState.getCurrentContent())))
+    } catch {}
+  }
 
   const handleSpecialService = (e, ed) => {
-    const checked = e.target.checked;
-    if(checked){
-      const newSpecialList = specialUploadList.concat(ed);
-      setSpecialUploadList(newSpecialList);
-    }else{
-      const newSpecialList = specialUploadList.filter(i => i != ed);
-      setSpecialUploadList(newSpecialList);
+    const checked = e.target.checked
+    if (checked) {
+      const newSpecialList = specialUploadList.concat(ed)
+      setSpecialUploadList(newSpecialList)
+    } else {
+      const newSpecialList = specialUploadList.filter((i) => i != ed)
+      setSpecialUploadList(newSpecialList)
     }
-	};
+  }
 
   return (
     <Modal open={true} aria-labelledby='child-modal-title' aria-describedby='child-modal-description'>
@@ -189,34 +191,32 @@ export default function AddQuestionModal({
             focused
           />
         </Box>
-        <Subtitle sx={{mt: '20px', mb: 1}}>Description</Subtitle>
-        <Box sx={{
-          border: '1px solid #d1d1d1',
-          borderRadius: 1,
-          'div.DraftEditor-editorContainer': {
-            minHeight: '200px',
-            maxHeight: '250px',
-            overflow: 'auto',
-            padding: 1,
-          },
-        }}>
+        <Subtitle sx={{ mt: '20px', mb: 1 }}>Description</Subtitle>
+        <Box
+          sx={{
+            border: '1px solid #d1d1d1',
+            borderRadius: 1,
+            'div.DraftEditor-editorContainer': {
+              minHeight: '200px',
+              maxHeight: '250px',
+              overflow: 'auto',
+              padding: 1,
+            },
+          }}
+        >
           <Wysiwyg.Editor
             onContentStateChange={handleEditorChange}
             editorRef={(ref) => (editorRef.current = ref)}
             editorState={editorState}
             onEditorStateChange={setEditorState}
             toolbar={{
-              options: [
-                'inline', 
-                'list',
-                'link',
-              ],
+              options: ['inline', 'list', 'link'],
               inline: {
                 options: ['bold', 'italic'],
               },
               list: {
                 options: ['unordered', 'ordered'],
-              }
+              },
             }}
           />
         </Box>
@@ -229,7 +229,7 @@ export default function AddQuestionModal({
             mb: '20px',
             display: 'flex',
             alignItems: 'flex-start',
-            justifyContent: 'space-between'
+            justifyContent: 'space-between',
           }}
         >
           {specialEd?.specialEdStatus ? (
@@ -247,13 +247,14 @@ export default function AddQuestionModal({
                 <>
                   <Box
                     sx={{
-                      paddingLeft: '13px'
+                      paddingLeft: '13px',
                     }}
                   >
-                    <Subtitle size='small' sx={{fontSize: '13px'}}>Check the statuses that require a SPED upload</Subtitle>
+                    <Subtitle size='small' sx={{ fontSize: '13px' }}>
+                      Check the statuses that require a SPED upload
+                    </Subtitle>
                   </Box>
-                  {
-                    specialEd?.specialEdList.map((ed, index) => (
+                  {specialEd?.specialEdList.map((ed, index) => (
                     <Box
                       key={index}
                       sx={{
@@ -261,11 +262,13 @@ export default function AddQuestionModal({
                         alignItems: 'center',
                       }}
                     >
-                      <Checkbox checked={specialUploadList?.indexOf(ed) !== -1} onClick={(e) => handleSpecialService(e, ed)} />
+                      <Checkbox
+                        checked={specialUploadList?.indexOf(ed) !== -1}
+                        onClick={(e) => handleSpecialService(e, ed)}
+                      />
                       <Subtitle size='small'>{ed}</Subtitle>
                     </Box>
-                    ))
-                  }
+                  ))}
                 </>
               )}
             </Box>
@@ -279,8 +282,8 @@ export default function AddQuestionModal({
                 alignItems: 'center',
               }}
             >
-                <Checkbox checked={required} onClick={() => setRequired(!required)} />
-                <Subtitle size='small'>Required</Subtitle>
+              <Checkbox checked={required} onClick={() => setRequired(!required)} />
+              <Subtitle size='small'>Required</Subtitle>
             </Box>
           </Box>
         </Box>

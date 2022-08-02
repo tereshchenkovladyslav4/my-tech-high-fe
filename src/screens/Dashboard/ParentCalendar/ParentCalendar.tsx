@@ -2,12 +2,12 @@ import React, { useEffect, useState } from 'react'
 import { Box, Card, Divider, Grid } from '@mui/material'
 import moment from 'moment'
 import { Subtitle } from '../../../components/Typography/Subtitle/Subtitle'
-import { DashboardCalendar } from './components/DashboardCalendar'
-import { CalendarEvent, EventVM } from '../../Admin/Calendar/types'
-import { ParentEventDetail } from './ParentEventDetail'
-import { ParentCalendarTemplateType } from './types'
-import { parentCalendarClasses } from './styles'
 import { getFirstDayAndLastDayOfMonth } from '../../../utils/utils'
+import { CalendarEvent, EventVM } from '../../Admin/Calendar/types'
+import { DashboardCalendar } from './components/DashboardCalendar'
+import { ParentEventDetail } from './ParentEventDetail'
+import { parentCalendarClasses } from './styles'
+import { ParentCalendarTemplateType } from './types'
 
 const ParentCalendar: ParentCalendarTemplateType = ({ events, calendarEventList, eventTypeLists, setSectionName }) => {
   const [selectedEvent, setSelectedEvent] = useState<EventVM | undefined>()

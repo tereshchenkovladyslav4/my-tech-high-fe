@@ -1,14 +1,14 @@
-import React, { useContext } from 'react'
-import { Box } from '@mui/system'
-import { Avatar, AvatarGroup, Button, Card, Grid, ListItemText } from '@mui/material'
+import React, { FunctionComponent, ReactElement, useContext } from 'react'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
+import { Avatar, AvatarGroup, Button, Card, Grid, ListItemText } from '@mui/material'
+import { Box } from '@mui/system'
 import { Subtitle } from '../../../components/Typography/Subtitle/Subtitle'
-import { ReadMoreSectionProps } from './types'
 import { UserContext } from '../../../providers/UserContext/UserProvider'
 import { Person } from '../../HomeroomStudentProfile/Student/types'
 import { useStyles } from '../Announcements/styles'
+import { ReadMoreSectionProps } from './types'
 
-const ReadMoreSection = ({ announcement, setSectionName }: ReadMoreSectionProps) => {
+const ReadMoreSection: FunctionComponent<ReadMoreSectionProps> = ({ announcement, setSectionName }) => {
   const classes = useStyles
   const { me } = useContext(UserContext)
   const students = me?.students
@@ -23,12 +23,12 @@ const ReadMoreSection = ({ announcement, setSectionName }: ReadMoreSectionProps)
     return { __html: value }
   }
 
-  const avatarGroup = (gradeFilter: string) => {
+  const avatarGroup = (gradeFilter: string): ReactElement => {
     const grades = JSON.parse(gradeFilter)
     return (
       <AvatarGroup max={5} spacing={0}>
         {students &&
-          students.map((student) => {
+          students.map((student): ReactElement | undefined => {
             if (
               student?.grade_levels &&
               grades.includes(
@@ -36,6 +36,8 @@ const ReadMoreSection = ({ announcement, setSectionName }: ReadMoreSectionProps)
               )
             ) {
               return <Avatar alt={student.person.preferred_first_name} src={getProfilePhoto(student.person)} />
+            } else {
+              return undefined
             }
           })}
       </AvatarGroup>

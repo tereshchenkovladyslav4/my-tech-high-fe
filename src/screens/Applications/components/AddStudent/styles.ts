@@ -10,7 +10,7 @@ export const useStyles = {
     marginY: 2,
     width: '100%',
   },
-  textFieldError:{
+  textFieldError: {
     [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
       borderColor: '#BD0043',
       borderWidth: '1px',
@@ -18,11 +18,11 @@ export const useStyles = {
     marginY: 2,
     width: '100%',
   },
-  dropdown:{
+  dropdown: {
     [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
       borderColor: SYSTEM_07,
     },
     marginY: 2,
     width: '100%',
-  }
+  },
 }

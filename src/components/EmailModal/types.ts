@@ -6,7 +6,7 @@ type EmailModalProps = {
   handleSubmit: (from: string, subject: string, body: string, options?: StandardResponseOption) => void
   title: string
   options?: StandardResponseOption
-  template?: any
+  template?: unknown
   editFrom?: boolean
 }
 

@@ -1,84 +1,97 @@
-import { IconButton, Typography, Button, Grid, TextField, Tooltip, Stack } from '@mui/material'
-import { Box } from '@mui/system'
-import React, { useEffect, useState } from 'react'
-import { useStyles } from '../styles'
-import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded'
-import { Prompt, useHistory } from 'react-router-dom'
-import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
-import SystemUpdateAltRoundedIcon from '@mui/icons-material/SystemUpdateAltRounded'
-import { Paragraph } from '../../../../components/Typography/Paragraph/Paragraph'
-import { BUTTON_LINEAR_GRADIENT, RED_GRADIENT } from '../../../../utils/constants'
-import { SortableTable } from '../../../../components/SortableTable/SortableTable'
-import CreateIcon from '@mui/icons-material/Create'
-import { SchoolPartnerEditModal } from './SchoolPartnerEditModal/SchoolPartnerEditModal'
-import CircularProgress from '@mui/material/CircularProgress'
-import { Field, Form, Formik, useFormik } from 'formik'
-import * as yup from 'yup'
+import React, { FunctionComponent, useEffect, useState } from 'react'
 import { useMutation, useQuery } from '@apollo/client'
-import { CreateNewSchoolPartnerMutation, GetSchoolsOfEnrollment } from './services'
-import { map, sortBy, toNumber, upperCase } from 'lodash'
-import { ArchiveSchoolPartnerModal } from './ArchiveSchoolPartnerModal/ArchiveSchoolPartnerModal'
+import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded'
 import CallMissedOutgoingIcon from '@mui/icons-material/CallMissedOutgoing'
-import { SchoolPartnerType } from './types'
+import CreateIcon from '@mui/icons-material/Create'
+import SystemUpdateAltRoundedIcon from '@mui/icons-material/SystemUpdateAltRounded'
+import { IconButton, Typography, Button, Grid, TextField, Tooltip } from '@mui/material'
+import CircularProgress from '@mui/material/CircularProgress'
+import { Box } from '@mui/system'
+import { Field, Form, Formik } from 'formik'
+import { map, sortBy, toNumber, upperCase } from 'lodash'
+import { Prompt, useHistory } from 'react-router-dom'
+import * as yup from 'yup'
+import { SortableTable } from '../../../../components/SortableTable/SortableTable'
+import { Paragraph } from '../../../../components/Typography/Paragraph/Paragraph'
+import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
+import { BUTTON_LINEAR_GRADIENT, RED_GRADIENT } from '../../../../utils/constants'
 import { SCHOOL_PARTNER_HEADCELLS } from '../../../../utils/PageHeadCellsConstant'
+import { useStyles } from '../styles'
+import { ArchiveSchoolPartnerModal } from './ArchiveSchoolPartnerModal/ArchiveSchoolPartnerModal'
+import { SchoolPartnerEditModal } from './SchoolPartnerEditModal/SchoolPartnerEditModal'
 import { SchoolYearDropDown } from './SchoolYearDropDown/SchoolYearDropDown'
+import { CreateNewSchoolPartnerMutation, GetSchoolsOfEnrollment } from './services'
+import { SchoolPartnerType } from './types'
 
 export type ValidateFileResponse = {
   status: boolean
   message?: string
 }
 
-export const SchoolPartner = () => {
+export const SchoolPartner: FunctionComponent = () => {
   const classes = useStyles
   const history = useHistory()
+
   const localStorageRegion = JSON.parse(localStorage.getItem('selectedRegion'))['region_id']
+
   const [unsavedChanges, setUnsavedChanges] = useState(false)
   const [sort, setSort] = useState({
     column: 'name',
-    direction: 'ASC'
+    direction: 'ASC',
   })
-  const [createNewSchoolPartner, { data, error, loading }] = useMutation(CreateNewSchoolPartnerMutation)
+  const [createNewSchoolPartner] = useMutation(CreateNewSchoolPartnerMutation)
   const [selectedYearId, setSelectedYearId] = useState<number>()
+  const [selectedFiles, setSelectedFiles] = useState<File>()
+  const [, setErrorMessage] = useState('')
+  const [isUploading, setIsUploading] = useState(false)
 
-  const {
-    loading: schoolLoading,
-    data: schoolsOfEnrollmentData,
-    refetch,
-  } = useQuery(GetSchoolsOfEnrollment, {
-    variables: { schoolPartnerArgs: {
-      region_id: localStorageRegion,
-      school_year_id: toNumber(selectedYearId),
-      sort
-    } },
+  const [openEditModal, setOpenEditModal] = useState<SchoolPartnerType>()
+  const [archiveModal, setArchiveModal] = useState<SchoolPartnerType>()
+
+  const [disabled, setDisabled] = useState(false)
+
+  const { data: schoolsOfEnrollmentData, refetch } = useQuery(GetSchoolsOfEnrollment, {
+    variables: {
+      schoolPartnerArgs: {
+        region_id: localStorageRegion,
+        school_year_id: toNumber(selectedYearId),
+        sort,
+      },
+    },
     fetchPolicy: 'network-only',
   })
 
-  const [selectedFiles, setSelectedFiles] = useState<File>()
-  const [errorMessage, setErrorMessage] = useState('')
-  const [isUploading, setIsUploading] = useState(false)
-
   useEffect(() => {
-    console.log(selectedYearId);
-  },[selectedYearId])
+    console.log(selectedYearId)
+  }, [selectedYearId])
 
   const initialValues = {
     partnerName: undefined,
     abbreviation: undefined,
   }
 
-  const [openEditModal, setOpenEditModal] = useState<SchoolPartnerType>()
-  const [archiveModal, setArchiveModal] = useState<SchoolPartnerType>()
-
   const validationSchema = {
     partnerName: yup.string().required('Partner Name is a required field'),
     abbreviation: yup.string().required('Abbreviation is a required field'),
   }
 
+  useEffect(() => {
+    if (!openEditModal) {
+      refetch()
+    }
+  }, [openEditModal])
+
+  useEffect(() => {
+    if (!archiveModal) {
+      refetch()
+    }
+  }, [archiveModal])
+
   const handleBackClick = () => {
     history.push('/site-management/')
   }
 
-  const filesSelected = (e: any) => {
+  const filesSelected = (e: unknown) => {
     handleFiles(e.target.files)
   }
 
@@ -113,7 +126,7 @@ export const SchoolPartner = () => {
     }
   }
 
-  const uploadPhoto = async () => {
+  const uploadPhoto = async (): Promise<unknown> => {
     if (selectedFiles) {
       const bodyFormData = new FormData()
       bodyFormData.append('file', selectedFiles)
@@ -126,6 +139,8 @@ export const SchoolPartner = () => {
       })
       const imageUrl = await response.json()
       return imageUrl.data.file.item1
+    } else {
+      return undefined
     }
   }
   const renderRows = () => {
@@ -149,10 +164,10 @@ export const SchoolPartner = () => {
             edit: (
               <Box display={'flex'} flexDirection='row'>
                 <Tooltip title='Edit'>
-                  <CreateIcon onClick={() => setOpenEditModal(el)} />
+                  <CreateIcon onClick={() => !disabled && setOpenEditModal(el)} />
                 </Tooltip>
                 <Tooltip title='Archive'>
-                  <SystemUpdateAltRoundedIcon sx={{ marginLeft: 2 }} onClick={() => setArchiveModal(el)} />
+                  <SystemUpdateAltRoundedIcon sx={{ marginLeft: 2 }} onClick={() => !disabled && setArchiveModal(el)} />
                 </Tooltip>
               </Box>
             ),
@@ -176,7 +191,7 @@ export const SchoolPartner = () => {
                 <Tooltip title='Unarchive'>
                   <CallMissedOutgoingIcon
                     sx={{ marginLeft: 5, color: '#A3A3A4' }}
-                    onClick={() => setArchiveModal(el)}
+                    onClick={() => !disabled && setArchiveModal(el)}
                   />
                 </Tooltip>
               </Box>
@@ -197,10 +212,10 @@ export const SchoolPartner = () => {
     }
   }, [archiveModal])
 
-  const sortChangeAction = (property: keyof any, order: string) => {
+  const sortChangeAction = (property: keyof unknown, order: string) => {
     setSort({
       column: property.toString(),
-      direction: upperCase(order)
+      direction: upperCase(order),
     })
   }
 
@@ -239,10 +254,11 @@ export const SchoolPartner = () => {
             Edit School Partners
           </Typography>
         </Box>
-          <SchoolYearDropDown
-            setSelectedYearId={setSelectedYearId}
-            selectedYearId={selectedYearId}
-          />
+        <SchoolYearDropDown
+          setSelectedYearId={setSelectedYearId}
+          selectedYearId={selectedYearId}
+          setDisableForm={setDisabled}
+        />
       </Box>
       <Grid container columnSpacing={8}>
         <Grid item xs={6} sx={{ marginTop: 4, borderRight: '1px solid #E7E7E7' }} paddingX={2}>
@@ -252,6 +268,7 @@ export const SchoolPartner = () => {
             hideCheck={true}
             hover={false}
             onSortChange={sortChangeAction}
+            disabled={disabled}
           />
         </Grid>
         <Grid item xs={6}>
@@ -281,7 +298,7 @@ export const SchoolPartner = () => {
               })
             }}
           >
-            {({ values, errors, resetForm }) => {
+            {({ values, resetForm }) => {
               return (
                 <Form>
                   <Box
@@ -301,9 +318,10 @@ export const SchoolPartner = () => {
                             flexDirection: 'column',
                           }}
                         >
-                          <Field name={`partnerName`} fullWidth focused >
-                            {({ field, form, meta }) => (
+                          <Field name={'partnerName'} fullWidth focused>
+                            {({ field, meta }) => (
                               <TextField
+                                disabled={disabled}
                                 name='partnerName'
                                 label='Partner Name'
                                 placeholder='Entry'
@@ -329,9 +347,10 @@ export const SchoolPartner = () => {
                               />
                             )}
                           </Field>
-                          <Field name={`abbreviation`} fullWidth focused>
-                            {({ field, form, meta }) => (
+                          <Field name={'abbreviation'} fullWidth focused>
+                            {({ field, meta }) => (
                               <TextField
+                                disabled={disabled}
                                 name='abbreviation'
                                 label='Abbreviation'
                                 placeholder='Entry'
@@ -382,6 +401,7 @@ export const SchoolPartner = () => {
                             }}
                           >
                             <input
+                              disabled={disabled}
                               type='file'
                               style={{ display: 'none' }}
                               onChange={filesSelected}
@@ -421,6 +441,7 @@ export const SchoolPartner = () => {
                             }}
                           >
                             <Button
+                              disabled={disabled}
                               sx={{
                                 fontSize: 11,
                                 fontWeight: 700,
@@ -441,6 +462,7 @@ export const SchoolPartner = () => {
                               Cancel
                             </Button>
                             <Button
+                              disabled={disabled}
                               type='submit'
                               sx={{
                                 fontSize: 11,

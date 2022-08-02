@@ -1,18 +1,12 @@
-import { List, ListItem, Box, ListItemButton, IconButton } from '@mui/material'
 import React, { FunctionComponent, useContext, useEffect, useState } from 'react'
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import CreditCardRoundedIcon from '@mui/icons-material/CreditCardRounded'
-import CallMadeRoundedIcon from '@mui/icons-material/CallMadeRounded'
-import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded'
-import { TTALogo } from '../SVG/TTALogo'
-import { MTHLogo } from '../SVG/MTHLogo'
-import { Paragraph } from '../Typography/Paragraph/Paragraph'
-import BackupTableIcon from '@mui/icons-material/BackupTable'
-import { useStyles } from './styles'
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
+import { List, ListItem, Box, ListItemButton, IconButton } from '@mui/material'
+import { map, some } from 'lodash'
 import { NavLink, useHistory, useLocation } from 'react-router-dom'
+import { AuthContext } from '../../providers/AuthProvider/AuthContext'
+import { UserContext } from '../../providers/UserContext/UserProvider'
 import {
   ACTIVELINKBACKGROUND,
-  ANNOUNCEMENTS,
   COMMUNICATION,
   CALENDAR,
   CURRICULUM,
@@ -26,14 +20,8 @@ import {
   SETTINGS,
   USERS,
 } from '../../utils/constants'
-import { UserContext } from '../../providers/UserContext/UserProvider'
-import { AuthContext } from '../../providers/AuthProvider/AuthContext'
-import LogoutIcon from '@mui/icons-material/Logout'
-import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined'
-import AllInboxOutlinedIcon from '@mui/icons-material/AllInboxOutlined'
-import DatRangeOutlinedIcon from '@mui/icons-material/DateRangeOutlined'
-import DescriptionIcon from '@mui/icons-material/Description'
-import { map, some } from 'lodash'
+import { Paragraph } from '../Typography/Paragraph/Paragraph'
+import { useStyles } from './styles'
 const noSidebarUsers = [15, 14, 16, 11, 9, 10, 13, 12]
 
 type Props = {
@@ -45,16 +33,15 @@ export const MobileSideMenu: FunctionComponent<Props> = ({ handleDrawerClose }) 
   const classes = useStyles
   const location = useLocation()
   const { me, setMe } = useContext(UserContext)
-  const userRegion = me?.userRegion?.at(-1)
   const isActive = () => location.pathname.includes('homeroom')
   const [authorizedList, setAuthorizedList] = useState([])
-  const checkAdminAccessOnSidebar = (label) => {
+  const checkAdminAccessOnSidebar = (label: string) => {
     const adminAccessArr = me.userAccess
-    const role = some(adminAccessArr, (access: any) => access?.accessDetail?.name === label)
+    const role = some(adminAccessArr, (access: unknown) => access?.accessDetail?.name === label)
     if (role) {
       return me.level
     } else {
-      ; -1
+      return -1
     }
   }
 
@@ -63,7 +50,7 @@ export const MobileSideMenu: FunctionComponent<Props> = ({ handleDrawerClose }) 
       to: COMMUNICATION,
       label: 'Communication',
       access: [7, checkAdminAccessOnSidebar('Communication')],
-    },    
+    },
     {
       to: CALENDAR,
       label: 'Calender',
@@ -121,7 +108,7 @@ export const MobileSideMenu: FunctionComponent<Props> = ({ handleDrawerClose }) 
   }, [])
 
   const { signOut } = useContext(AuthContext)
-  const [unauthorizedAtAll, setUnauthorizedAtAll] = useState(true)
+  const [, setUnauthorizedAtAll] = useState(true)
 
   useEffect(() => {
     const isUnauthorized = noSidebarUsers.some((level) => {
@@ -149,13 +136,18 @@ export const MobileSideMenu: FunctionComponent<Props> = ({ handleDrawerClose }) 
               color: '#4145FF',
             }}
           >
-            <ListItem disablePadding style={{ backgroundColor: 'inherit' }} onClick={() => handleDrawerClose('side', 'dashboard')}>
+            <ListItem
+              disablePadding
+              style={{ backgroundColor: 'inherit' }}
+              onClick={() => handleDrawerClose('side', 'dashboard')}
+            >
               <ListItemButton style={{ textDecoration: 'none', justifyContent: 'space-between' }}>
                 <Paragraph sx={classes.mobileNavText}>Dashboard</Paragraph>
                 <IconButton
                   sx={{
                     color: '#0E0E0E',
-                  }}>
+                  }}
+                >
                   <ArrowForwardIcon />
                 </IconButton>
               </ListItemButton>
@@ -173,13 +165,18 @@ export const MobileSideMenu: FunctionComponent<Props> = ({ handleDrawerClose }) 
                   color: '#4145FF',
                 }}
               >
-                <ListItem disablePadding style={{ backgroundColor: 'inherit' }} onClick={() => handleDrawerClose('side', item.label)}>
+                <ListItem
+                  disablePadding
+                  style={{ backgroundColor: 'inherit' }}
+                  onClick={() => handleDrawerClose('side', item.label)}
+                >
                   <ListItemButton style={{ textDecoration: 'none', justifyContent: 'space-between' }}>
                     <Paragraph sx={classes.mobileNavText}>{item.label}</Paragraph>
                     <IconButton
                       sx={{
                         color: '#0E0E0E',
-                      }}>
+                      }}
+                    >
                       <ArrowForwardIcon />
                     </IconButton>
                   </ListItemButton>
@@ -196,14 +193,19 @@ export const MobileSideMenu: FunctionComponent<Props> = ({ handleDrawerClose }) 
                   color: '#4145FF',
                 }}
               >
-                <ListItem disablePadding style={{ backgroundColor: 'inherit' }} onClick={() => handleDrawerClose('side', item.label)}>
+                <ListItem
+                  disablePadding
+                  style={{ backgroundColor: 'inherit' }}
+                  onClick={() => handleDrawerClose('side', item.label)}
+                >
                   <ListItemButton style={{ textDecoration: 'none', justifyContent: 'space-between' }}>
                     {item.icon}
                     <Paragraph sx={classes.mobileNavText}>{item.label}</Paragraph>
                     <IconButton
                       sx={{
                         color: '#0E0E0E',
-                      }}>
+                      }}
+                    >
                       <ArrowForwardIcon />
                     </IconButton>
                   </ListItemButton>
@@ -220,13 +222,18 @@ export const MobileSideMenu: FunctionComponent<Props> = ({ handleDrawerClose }) 
               color: '#4145FF',
             }}
           >
-            <ListItem disablePadding style={{ backgroundColor: 'inherit' }} onClick={() => handleDrawerClose('side', 'settings')}>
+            <ListItem
+              disablePadding
+              style={{ backgroundColor: 'inherit' }}
+              onClick={() => handleDrawerClose('side', 'settings')}
+            >
               <ListItemButton style={{ justifyContent: 'space-between' }}>
                 <Paragraph sx={classes.mobileNavText}>Settings</Paragraph>
                 <IconButton
                   sx={{
                     color: '#0E0E0E',
-                  }}>
+                  }}
+                >
                   <ArrowForwardIcon />
                 </IconButton>
               </ListItemButton>
@@ -242,7 +249,8 @@ export const MobileSideMenu: FunctionComponent<Props> = ({ handleDrawerClose }) 
               <IconButton
                 sx={{
                   color: '#0E0E0E',
-                }}>
+                }}
+              >
                 <ArrowForwardIcon />
               </IconButton>
             </ListItemButton>

@@ -1,10 +1,8 @@
-import { Card, CardMedia, CardContent, Box, Typography } from '@mui/material'
 import React from 'react'
-import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
-import { AdminSiteManagementCardTemplateType } from './types'
 import EastIcon from '@mui/icons-material/East'
-import { DASHBOARD } from '../../../../../utils/constants'
+import { Card, CardMedia, CardContent, Box, Typography } from '@mui/material'
 import { useHistory } from 'react-router-dom'
+import { AdminSiteManagementCardTemplateType } from './types'
 
 export const AdminSiteManagementCard: AdminSiteManagementCardTemplateType = ({ title, link, img, subTitle }) => {
   const history = useHistory()

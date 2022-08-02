@@ -1,15 +1,14 @@
-import React from 'react'
+import React, { FunctionComponent } from 'react'
 import { Stack } from '@mui/material'
-import moment from 'moment'
-import { SchoolYearItem } from '../types'
 import { Calendar } from '../../components/Calendar'
+import { SchoolYearItem } from '../types'
 type OpenAndCloseSelectProps = {
   item: SchoolYearItem | undefined
   setItem: (value: SchoolYearItem | undefined) => void
   setIsChanged: (value: boolean) => void
 }
 
-export default function OpenAndCloseSelect({ item, setItem, setIsChanged }: OpenAndCloseSelectProps) {
+export const OpenAndCloseSelect: FunctionComponent<OpenAndCloseSelectProps> = ({ item, setItem, setIsChanged }) => {
   const openHandleChange = (value: Date | null) => {
     if (value) {
       if (item) setItem({ ...item, open: value })

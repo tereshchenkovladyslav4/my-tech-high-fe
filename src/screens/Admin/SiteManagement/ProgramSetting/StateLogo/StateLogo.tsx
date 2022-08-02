@@ -1,19 +1,18 @@
-import React, { useState } from 'react'
-import { Box, Stack, DialogActions } from '@mui/material'
-import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
-import { ImageCropper } from '../ImageCropper'
+import React, { FunctionComponent, useState } from 'react'
 import SystemUpdateAltOutlinedIcon from '@mui/icons-material/SystemUpdateAltOutlined'
-import { StateLogoProps } from './StateLogoTypes'
+import { Box, Stack } from '@mui/material'
+import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
 import { useStyles } from '../../styles'
+import { ImageCropper } from '../ImageCropper'
+import { StateLogoProps } from './StateLogoTypes'
 
-export default function StateLogo({
+export const StateLogo: FunctionComponent<StateLogoProps> = ({
   stateLogo,
-  setStateLogo,
   stateLogoFile,
   setStateLogoFile,
   setIsChanged,
-  isChanged
-}: StateLogoProps) {
+  isChanged,
+}) => {
   const classes = useStyles
   const [open, setOpen] = useState<boolean>(false)
   const [imageToCrop, setImageToCrop] = useState(undefined)

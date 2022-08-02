@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, FunctionComponent } from 'react'
 import { Box, Button, Dialog, DialogTitle, DialogActions } from '@mui/material'
-import { useStyles } from '../../styles'
-import { DropDownItem } from '../../components/DropDown/types'
 import { DropDown } from '../../components/DropDown/DropDown'
+import { DropDownItem } from '../../components/DropDown/types'
+import { useStyles } from '../../styles'
 
 type AddSchoolYearModalProps = {
   addSchoolYears: DropDownItem[]
@@ -11,12 +11,12 @@ type AddSchoolYearModalProps = {
   handleParentSave: (value: string) => void
 }
 
-export default function AddSchoolYearModal({
+export const AddSchoolYearModal: FunctionComponent<AddSchoolYearModalProps> = ({
   addSchoolYears,
   addSchoolYearDialogOpen,
   handleParentClose,
   handleParentSave,
-}: AddSchoolYearModalProps) {
+}) => {
   const classes = useStyles
   const [open, setOpen] = useState<boolean>(false)
   const [selectedSchoolYearId, setSelectedSchoolYearId] = useState<string>('none')

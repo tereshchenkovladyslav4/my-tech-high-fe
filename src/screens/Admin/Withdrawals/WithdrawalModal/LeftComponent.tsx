@@ -1,19 +1,19 @@
-import React, { Fragment, useContext, useState } from 'react'
+import React, { Fragment, FunctionComponent, useContext, useState } from 'react'
 import { Avatar, Box, Grid, Typography } from '@mui/material'
-import { Title } from '../../../../components/Typography/Title/Title'
-import { MTHBLUE } from '../../../../utils/constants'
 import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
-import { withdrawalModalClasses } from './styles'
+import { Title } from '../../../../components/Typography/Title/Title'
+import { ProfileContext } from '../../../../providers/ProfileProvider/ProfileContext'
+import { MTHBLUE } from '../../../../utils/constants'
+import { toOrdinalSuffix } from '../../../../utils/stringHelpers'
 import { CheckBoxList } from '../../Calendar/components/CheckBoxList'
 import { StudentInfo } from '../type'
-import { toOrdinalSuffix } from '../../../../utils/stringHelpers'
-import { ProfileContext } from '../../../../providers/ProfileProvider/ProfileContext'
+import { withdrawalModalClasses } from './styles'
 
 type LeftComponentProps = {
   studentInfo: StudentInfo | undefined
 }
 
-export default function LeftComponent({ studentInfo }: LeftComponentProps) {
+export const LeftComponent: FunctionComponent<LeftComponentProps> = ({ studentInfo }) => {
   const { showModal, setStore } = useContext(ProfileContext)
   const schedules = [
     {
