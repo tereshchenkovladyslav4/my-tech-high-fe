@@ -111,7 +111,6 @@ const QuickLinkEdit: React.FC<{
   }
 
   const onSubmitFailed = (err) => {
-    console.log(err)
     setPageStatus({ status: 'error', message: err })
   }
 

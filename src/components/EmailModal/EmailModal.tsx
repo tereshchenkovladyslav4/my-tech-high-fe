@@ -126,7 +126,7 @@ export const EmailModal: FunctionComponent<EmailModalProps> = ({
       HtmlInput = HtmlInput.slice(0, index) + standardResponseExtraText + HtmlInput.slice(index)
     } else {
     }
-    console.log(HtmlInput)
+
     HtmlInput = setEmailBodyInfo(HtmlInput)
 
     const contentBlock = htmlToDraft(HtmlInput)

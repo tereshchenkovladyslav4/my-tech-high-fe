@@ -135,7 +135,6 @@ const PageContent: FunctionComponent<PageContentProps> = ({
                         </TableCell>
                       ) : (
                         <TableCell sx={classes.tableCell} key={`${index}-7`} onClick={() => handleDelete(row.id)}>
-                          {console.log('rowrow', row)}
                           <Tooltip
                             title='Delete'
                             placement='top'

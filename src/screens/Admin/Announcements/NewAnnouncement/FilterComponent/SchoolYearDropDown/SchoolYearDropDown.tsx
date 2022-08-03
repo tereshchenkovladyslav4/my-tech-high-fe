@@ -21,7 +21,6 @@ export const SchoolYearDropDown: FunctionComponent = () => {
     if (schoolYearData?.data?.region?.SchoolYears) {
       const schoolYearsArr: DropDownItem[] = []
       schoolYearData?.data?.region?.SchoolYears.forEach((schoolYear: unknown) => {
-        console.log(schoolYear)
         schoolYearsArr.push({
           value: schoolYear.school_year_id,
           label: moment(schoolYear.date_begin).format('YYYY') + '-' + moment(schoolYear.end).format('YY'),

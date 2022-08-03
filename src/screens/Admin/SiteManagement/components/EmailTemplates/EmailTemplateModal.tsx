@@ -99,7 +99,6 @@ export const EmailTemplateModal: FunctionComponent<EmailTemplateModalProps> = ({
 
   useEffect(() => {
     if (reminderData !== undefined) {
-      console.log('reminderData', reminderData)
       const reminderDetail = []
       reminderData?.remindersByTemplateId.forEach((remin) => {
         const { reminder_id, title, subject, body, reminder } = remin
@@ -353,8 +352,6 @@ export const EmailTemplateModal: FunctionComponent<EmailTemplateModalProps> = ({
         }
       } else if (emailTemplate.template == 'standard_response_groups') {
         const tmpArr = JSON.parse(emailTemplate.standard_responses)
-        console.log(emailTemplate.standard_responses)
-        console.log(standard_response_groups_default)
         for (let i = 0; i < tmpArr.length; i++) {
           if (standard_response_groups_default.find((x) => x.id == tmpArr[i].id) == null) {
             tmpArr.splice(i, 1)
@@ -388,7 +385,6 @@ export const EmailTemplateModal: FunctionComponent<EmailTemplateModalProps> = ({
       setAddResponse(emailTemplate.standard_responses)
       setAvailableInserts(emailTemplate?.inserts?.split(','))
       setType(emailTemplate.template)
-      console.log('emailTemplate.template_name', emailTemplate.template_name)
       if (emailTemplate.category.category_name != 'Withdraw') {
         setAvailableInsertDescription(insertDescriptions)
       }

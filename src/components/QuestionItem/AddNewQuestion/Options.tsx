@@ -183,7 +183,6 @@ export const QuestionOptions: FunctionComponent<QuestionOptions> = ({
                 }
                 defaultValue={opt.action || 1}
                 setParentValue={(v) => {
-                  console.log({ v })
                   const val = +v
                   if (isDefault) {
                     setWarningType('ChangeOption')

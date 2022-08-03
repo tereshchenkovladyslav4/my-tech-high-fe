@@ -326,7 +326,6 @@ export const QuestionModal: FunctionComponent<QuestionModalProps> = ({
             Save
           </Button>
         </Box>
-        {console.log({ editQuestions })}
         {editQuestions.map((newQuestion, i) => (
           <Box key={i}>
             <Box

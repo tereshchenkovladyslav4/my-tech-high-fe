@@ -208,7 +208,6 @@ export const StudentProfile: FunctionComponent = () => {
     person.preferred_last_name !== formik.values.lastName ||
     (status !== 'Missing Info' && (formik.values.email !== person.email || formik.values.password !== undefined))
 
-  console.log(student.testing_preference)
   useEffect(() => {
     if (person && person.photo) setAvatar(person.photo)
   }, [person])

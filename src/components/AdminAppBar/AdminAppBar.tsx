@@ -196,7 +196,6 @@ export const AdminAppBar: FunctionComponent = () => {
       setUnsavedChanges(region)
       return
     }
-    console.log(region)
 
     setRegion(region)
   }

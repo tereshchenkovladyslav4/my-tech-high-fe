@@ -61,7 +61,6 @@ export const EmailRecordsTable: FunctionComponent = () => {
   const [, setSkip] = useState<number>()
   const [, setSort] = useState('status|ASC')
   const [tableData, setTableData] = useState<Array<unknown>>([])
-  const [recordIds, setRecordIds] = useState<Array<string>>([])
 
   const createData = (emailRecord: EmailRecord) => {
     return {
@@ -82,10 +81,6 @@ export const EmailRecordsTable: FunctionComponent = () => {
       })
     })
   }, [])
-
-  useEffect(() => {
-    console.log(recordIds)
-  }, [recordIds])
 
   const handleResend = () => {
     setTotalEmails(10)
@@ -230,7 +225,7 @@ export const EmailRecordsTable: FunctionComponent = () => {
       <SortableTable
         rows={tableData}
         headCells={EMAIL_RECORDS_HEADCELLS}
-        onCheck={setRecordIds}
+        onCheck={() => {}}
         clearAll={false}
         onRowClick={handlePacketSelect}
         onParentClick={handleOpenProfile}

@@ -9,7 +9,7 @@ import { getResourcesQuery } from '@mth/graphql/queries/resource'
 import { useSchoolYearsByRegionId } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { HomeroomResourceCard } from './HomeroomResourceCard'
-import { EventType, HomeroomResource, HomeroomResourceProps, HomeroomResourceCardProps } from './HomeroomResourcesProps'
+import { HomeroomResource, HomeroomResourceProps, HomeroomResourceCardProps } from './HomeroomResourcesProps'
 
 export const HomeroomResources: React.FC<HomeroomResourceProps> = ({ backAction }) => {
   const { me } = useContext(UserContext)
@@ -40,9 +40,7 @@ export const HomeroomResources: React.FC<HomeroomResourceProps> = ({ backAction 
     return !!selectedSchoolYear && moment().isAfter(selectedSchoolYear.date_end)
   }
 
-  const arrangeItems = (items: HomeroomResource[]) => {
-    console.log(items)
-  }
+  const arrangeItems = () => {}
 
   const SortableCard = SortableElement(({ item, action, isPast, onAction }: HomeroomResourceCardProps) => (
     <li style={{ listStyleType: 'none', display: 'inline-block', width: '33%' }}>
@@ -59,9 +57,6 @@ export const HomeroomResources: React.FC<HomeroomResourceProps> = ({ backAction 
           item={item}
           action={!(!hasPermission() || item.resource_id == 0)}
           isPast={isPast()}
-          onAction={(evtType: EventType) => {
-            console.log('Resource event:', evtType)
-          }}
         />
       ))}
     </ul>

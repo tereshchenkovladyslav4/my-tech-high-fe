@@ -287,7 +287,6 @@ export const Documents: DocuementsTemplateType = ({ id, questions }) => {
 
       // }
     } else {
-      console.log('packet file store fail')
     }
   }, [data])
 

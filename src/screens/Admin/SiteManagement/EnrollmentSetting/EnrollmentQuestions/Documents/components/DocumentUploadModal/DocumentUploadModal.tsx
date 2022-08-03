@@ -116,10 +116,6 @@ export const DocumentUploadModal: DocumentUploadModalTemplateType = ({ handleMod
     setDeletedFiles((prev) => [...prev, file])
   }
 
-  useEffect(() => {
-    console.log(validFiles)
-  }, [validFiles])
-
   const renderFiles = () =>
     map(validFiles, (file) => (
       <Box>

@@ -81,16 +81,12 @@ export const ProfilePacketModal: FunctionComponent<ProfilePacketModalProps> = ({
   })
   const enableImmunization = settingsQuery.data?.settings?.enable_immunizations === 1
 
-  console.log(packet_id)
-
   const { loading: packetLoading, data: packetData } = useQuery(getEnrollmentPacketQuery, {
     variables: { packet_id: packet_id },
     fetchPolicy: 'network-only',
   })
 
   useEffect(() => {
-    console.log(packetData)
-    console.log(packetLoading)
     if (packetData?.packet) setPacket(packetData.packet)
   }, [packetData?.packet])
 
@@ -101,13 +97,7 @@ export const ProfilePacketModal: FunctionComponent<ProfilePacketModalProps> = ({
   })
 
   useEffect(() => {
-    console.log('Packet')
-
     if (packetLoading) return
-
-    console.log(typeof packet)
-    console.log(packet)
-
     const initValue = {
       immunizations: [],
       parent: packet.student?.parent?.person,

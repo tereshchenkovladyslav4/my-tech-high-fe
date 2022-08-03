@@ -47,7 +47,7 @@ export const StandardResponses: FunctionComponent<StandardResponses> = ({
 
   const checkGroupResponse = (group, title, evt) => {
     const responses = []
-    console.log(group, title, evt)
+
     if (evt.target.checked) {
       for (let i = 0; i < options.length; i++) {
         for (let j = 0; j < options[i].responses.length; j++) {

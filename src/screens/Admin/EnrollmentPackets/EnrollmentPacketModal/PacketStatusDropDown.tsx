@@ -53,7 +53,6 @@ export const EnrollmentPacketDropDownButton: FunctionComponent = () => {
   })
 
   useEffect(() => {
-    console.log(data?.packetStatuses?.results)
     if (data?.packetStatuses?.results) {
       setValue('packetStatuses', data?.packetStatuses?.results)
       setPkStatues(data?.packetStatuses?.results)

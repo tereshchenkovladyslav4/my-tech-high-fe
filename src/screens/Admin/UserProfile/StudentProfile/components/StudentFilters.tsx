@@ -434,7 +434,6 @@ export const StudentFilters: FunctionComponent<StudentFiltersProps> = ({
                 : ''}
             </Subtitle>
             <Box>
-              {console.log('lplp', studentStatusData.status, withdrawalStatus?.status)}
               <Select
                 className={
                   studentStatusData?.status != 2
@@ -606,8 +605,8 @@ export const StudentFilters: FunctionComponent<StudentFiltersProps> = ({
                 <Box sx={classes.formRow} key={idx}>
                   <Subtitle sx={classes.formLabel as Record<string, unknown>} fontWeight='500'>
                     {application.midyear_application
-                      ? `${moment(application.school_year.midyear_application_open).format('YYYY')}-${moment(
-                          application.school_year.midyear_application_close,
+                      ? `${moment(application.school_year.date_begin).format('YYYY')}-${moment(
+                          application.school_year.date_end,
                         ).format('YY')} Mid-year`
                       : `${moment(application.school_year.date_begin).format('YYYY')}-${moment(
                           application.school_year.date_end,

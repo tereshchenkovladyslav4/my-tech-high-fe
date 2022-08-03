@@ -70,7 +70,6 @@ export const CountySelect: FunctionComponent<CountySelectProps> = ({
           })
           setCountyArray(countyArray)
         } else {
-          console.log('County File Parsing Error')
         }
       },
     })

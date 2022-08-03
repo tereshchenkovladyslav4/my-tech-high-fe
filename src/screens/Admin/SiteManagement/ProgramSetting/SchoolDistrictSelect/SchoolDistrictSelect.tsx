@@ -73,7 +73,6 @@ export const SchoolDistrictSelect: FunctionComponent<SchoolDistrictSelectProps> 
             schoolDistricts: true,
           }))
         } else {
-          console.log('School Districts File Parsing Error')
         }
       },
     })

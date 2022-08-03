@@ -182,7 +182,6 @@ const EventForm: FunctionComponent<EventFormProps> = ({ setIsChanged, handleAddR
           <BulletEditor
             value={values?.description}
             setValue={(value) => {
-              console.log(value)
               setFieldValue('description', value)
               setIsChanged(true)
             }}

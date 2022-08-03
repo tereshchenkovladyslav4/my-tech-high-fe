@@ -66,8 +66,6 @@ export const SchoolYearDropDown: FunctionComponent<SchoolYearDropDownProps> = ({
     }
   }, [selectedYear])
 
-  console.log(schoolYearData?.data?.region?.SchoolYears)
-
   return (
     <DropDown
       dropDownItems={years}

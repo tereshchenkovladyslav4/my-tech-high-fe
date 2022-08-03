@@ -169,7 +169,6 @@ export const FileUploadModal: FileUploadModalTemplateType = ({
       }
     }
     if (validTypes.indexOf(file.type) === -1) {
-      console.log(extensions, file.type, 'fileType')
       return {
         status: false,
         message: invalidMessage,

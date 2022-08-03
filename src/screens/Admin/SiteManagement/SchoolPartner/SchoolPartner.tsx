@@ -61,10 +61,6 @@ export const SchoolPartner: FunctionComponent = () => {
     fetchPolicy: 'network-only',
   })
 
-  useEffect(() => {
-    console.log(selectedYearId)
-  }, [selectedYearId])
-
   const initialValues = {
     partnerName: undefined,
     abbreviation: undefined,

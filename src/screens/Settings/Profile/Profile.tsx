@@ -211,7 +211,6 @@ export const Profile: ProfileTemplateType = ({ handleIsFormChange }) => {
     },
     validationSchema: validationSchema,
     onSubmit: async () => {
-      console.log(me.email, formik.values.email)
       if (me.email != formik.values.email) {
         setWarningModalOpen({
           title: 'Change Email',

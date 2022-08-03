@@ -44,7 +44,7 @@ module.exports = {
       },
     ],
     'no-debugger': 0,
-    'no-console': 0,
+    'no-console': ["error", { allow: ["warn", "error"] }],
     'new-cap': 0,
     strict: 0,
     'object-curly-newline': 'off',

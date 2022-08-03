@@ -134,8 +134,6 @@ export const UserProfile: FunctionComponent<UserProfileProps> = ({ handleClose, 
     refetch()
   }
   const handleChangeParent = (parent) => {
-    console.log('parent: ', parent)
-
     setSelectedStudent(0)
     if (parent.observer_id) {
       setSelectedParent(parseInt(parent.observer_id))
@@ -152,7 +150,6 @@ export const UserProfile: FunctionComponent<UserProfileProps> = ({ handleClose, 
       setParentEmail(currentUserData.parentDetail.person.email)
       setStudents(currentUserData.parentDetail.students)
       setSelectedParentType('parent')
-      console.log('currentUserData.parentDetail.email: ', currentUserData.parentDetail.person.email)
     }
   }
 
@@ -183,8 +180,6 @@ export const UserProfile: FunctionComponent<UserProfileProps> = ({ handleClose, 
       }
     }
   }, [currentUserData])
-
-  // console.log("openObserverModal: ", openObserverModal);
 
   return (
     <Card sx={classes.content}>

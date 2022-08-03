@@ -67,7 +67,7 @@ export const NewUserModal: NewModalTemplateType = ({ handleModem, visible }) => 
   const [regionOption, setRegionOption] = useState<CheckBoxTemplate[]>([])
   const [accessOption, setAccessOption] = useState<CheckBoxTemplate[]>([])
 
-  const { loading: load1, error: error1, data: data1 } = useQuery(getAllRegion)
+  const { loading: load1, data: data1 } = useQuery(getAllRegion)
   const { loading: load2, data: data2 } = useQuery(getAllRoles)
   const { loading: load3, data: data3 } = useQuery(getAllAccess)
 
@@ -110,7 +110,6 @@ export const NewUserModal: NewModalTemplateType = ({ handleModem, visible }) => 
           flag: true,
         })
       }
-      // console.log(JSON.stringify(uploadingError,null, 2));
     }
   }, [uploading])
 
@@ -129,7 +128,6 @@ export const NewUserModal: NewModalTemplateType = ({ handleModem, visible }) => 
       })
       setRegionOption(sortedData)
     } else {
-      console.log(JSON.stringify(error1, null, 2))
     }
   }, [load1])
 
@@ -316,8 +314,6 @@ export const NewUserModal: NewModalTemplateType = ({ handleModem, visible }) => 
     }
     if (role) {
       const roleData = rolesOption.find((r) => Number(r.value) === role)
-      console.log('rolesOption', rolesOption, role)
-      console.log('roldata', roleData)
       if (roleData.label.toLowerCase() === 'admin' && (!accesses || accesses.length === 0)) {
         setApolloError({
           title: 'Need to select Access for Admin.',

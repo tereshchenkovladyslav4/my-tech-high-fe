@@ -30,9 +30,7 @@ const QuickLinkReservedEdit: React.FC<{
     action('')
   }
 
-  const onSubmitFailed = (err) => {
-    console.log(err)
-  }
+  const onSubmitFailed = () => {}
 
   const validationSchema = yup.object({
     reserved: yup

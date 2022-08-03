@@ -18,7 +18,6 @@ export const NewUserModal: NewModalTemplateType = ({
   data,
   ParentEmailValue,
 }) => {
-  // console.log('www', students, data, ParentEmailValue)
   const classes = useStyles
   const [apolloError, setApolloError] = useState<ApolloError>({
     title: '',
@@ -95,12 +94,9 @@ export const NewUserModal: NewModalTemplateType = ({
     setShowStudentModal(true)
   }
   const handleCloseStudentModal = (status) => {
-    console.log(status)
     setShowStudentModal(false)
     if (status) handleModem()
   }
-
-  console.log('visible: ', visible)
 
   return (
     <Modal
@@ -167,7 +163,6 @@ export const NewUserModal: NewModalTemplateType = ({
             <Grid item xs={12}>
               <DropDown
                 dropDownItems={rolesOption}
-                setParentValue={(e) => console.log(e)}
                 placeholder='User Type'
                 size='small'
                 sx={{ width: '50%' }}

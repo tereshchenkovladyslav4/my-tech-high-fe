@@ -298,7 +298,6 @@ export const AddNewQuestionModal: FunctionComponent<AddNewQuestionModalProps> = 
   }, [ableToEdit])
 
   const setFocused = (event) => {
-    console.log('focused')
     if (!isDefaultQuestion) return
 
     if (!ableToEdit || clickedEvent.target != event.target) {
