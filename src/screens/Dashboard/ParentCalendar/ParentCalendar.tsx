@@ -44,11 +44,11 @@ const ParentCalendar: ParentCalendarTemplateType = ({ events, calendarEventList,
         )
       : events.filter(
           (event) =>
-            (selectedEventTypes.includes(event.eventTypeName) &&
-              moment(firstDay).format('YYYY-MM-DD') <= moment(event.startDate).format('YYYY-MM-DD') &&
+            selectedEventTypes.includes(event.eventTypeName) &&
+            ((moment(firstDay).format('YYYY-MM-DD') <= moment(event.startDate).format('YYYY-MM-DD') &&
               moment(lastDay).format('YYYY-MM-DD') >= moment(event.startDate).format('YYYY-MM-DD')) ||
-            (moment(firstDay).format('YYYY-MM-DD') <= moment(event.endDate).format('YYYY-MM-DD') &&
-              moment(lastDay).format('YYYY-MM-DD') >= moment(event.endDate).format('YYYY-MM-DD')),
+              (moment(firstDay).format('YYYY-MM-DD') <= moment(event.endDate).format('YYYY-MM-DD') &&
+                moment(lastDay).format('YYYY-MM-DD') >= moment(event.endDate).format('YYYY-MM-DD'))),
         )
   }
 

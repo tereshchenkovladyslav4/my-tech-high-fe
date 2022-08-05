@@ -102,25 +102,24 @@ export const ExistingParent: FunctionComponent = () => {
   const [questions, setQuestions] = useState<ApplicationQuestion[]>([])
   useEffect(() => {
     if (!questionLoading && questionData?.getExistApplicationQuestions) {
-      setQuestions(
-        questionData.getExistApplicationQuestions
-          .map((v) => ({ ...v, options: v.options ? JSON.parse(v.options || '[]') : [], response: '' }))
-          // .filter((v) => !v.additional_question)
-          .sort((a, b) => a.order - b.order),
-      )
+      const questionList = questionData.getExistApplicationQuestions
+        .map((v) => ({ ...v, options: v.options ? JSON.parse(v.options || '[]') : [], response: '' }))
+        .sort((a, b) => a.order - b.order)
+
+      setQuestions(questionList)
+      generateValidation(questionList)
     }
   }, [questionData, regionId])
 
-  useEffect(() => {
-    if (questionSortList(questions).length > 0) {
+  const generateValidation = (questionList: ApplicationQuestion[]) => {
+    if (questionList.length > 0) {
       const empty = { ...emptyStudent }
       const valid_student = {}
-      const valid_meta = {}
       const valid_student_meta = {}
 
       const valid_student_packet: unknown = {}
-      questionSortList(questions).map((q) => {
-        if (q.type !== QUESTION_TYPE.INFORMATION) {
+      questionList.map((q) => {
+        if (q.type !== QUESTION_TYPE.INFORMATION && !q.additional_question) {
           if (q.slug?.includes('student_')) {
             empty[`${q.slug?.replace('student_', '')}`] = ''
             if (q.required) {
@@ -219,10 +218,9 @@ export const ExistingParent: FunctionComponent = () => {
       setValidationSchema({
         ...initSchema,
         students: yup.array(yup.object({ ...valid_student, meta: yup.object(valid_student_meta) })),
-        meta: yup.object(valid_meta),
       })
     }
-  }, [questions])
+  }
 
   const classes = useStyles
 
@@ -305,24 +303,10 @@ export const ExistingParent: FunctionComponent = () => {
     }
   }, [me?.user_id, regionData])
 
-  // useEffect(() => {
-  //   if (!schoolLoading && schoolYearData?.getSchoolYearsByRegionId) {
-  //     setSchoolYears(
-  //       schoolYearData?.getSchoolYearsByRegionId.map((item) => {
-  //         return {
-  //           label: moment(item.date_begin).format('YYYY') + '-' + moment(item.date_end).format('YYYY'),
-  //           value: item.school_year_id,
-  //         }
-  //       }),
-  //     )
-  //     setSchoolYearsData(schoolYearData?.getSchoolYearsByRegionId)
-  //   }
-  // }, [regionId, schoolYearData])
-
   useEffect(() => {
     if (!schoolLoading && schoolYearData?.getSchoolYearsByRegionId) {
       const schoolYearsArray: Array<DropDownItem> = []
-      schoolYearData?.getSchoolYearsByRegionId.map(
+      schoolYearData.getSchoolYearsByRegionId.map(
         (item: {
           date_begin: string
           date_end: string
@@ -330,7 +314,7 @@ export const ExistingParent: FunctionComponent = () => {
           midyear_application: number
           midyear_application_open: string
           midyear_application_close: string
-        }) => {
+        }): void => {
           schoolYearsArray.push({
             label: `${moment(item.date_begin).format('YYYY')} - ${moment(item.date_end).format('YYYY')}`,
             value: item.school_year_id,
@@ -342,15 +326,15 @@ export const ExistingParent: FunctionComponent = () => {
             moment().isBefore(item?.midyear_application_close)
           ) {
             schoolYearsArray.push({
-              label: `${moment(item.midyear_application_open).format('YYYY')} - ${moment(
-                item.midyear_application_close,
-              ).format('YYYY')} Mid-year Program`,
+              label: `${moment(item.date_begin).format('YYYY')} - ${moment(item.date_end).format(
+                'YYYY',
+              )} Mid-year Program`,
               value: `${item.school_year_id}-mid`,
             })
           }
         },
       )
-      setSchoolYears(schoolYearsArray)
+      setSchoolYears(schoolYearsArray.sort((a, b) => (a.label > b.label ? 1 : -1)))
       setSchoolYearsData(schoolYearData?.getSchoolYearsByRegionId)
     }
   }, [regionId, schoolYearData])
@@ -359,24 +343,42 @@ export const ExistingParent: FunctionComponent = () => {
     parseGrades()
   }, [grades])
 
-  // handle child component
-  const questionSortList = (values) => {
+  const questionStudentSortList = (values, field) => {
     const sortList = values.filter(
       (v) =>
         v.slug !== 'program_year' &&
         !v.mainQuestion &&
         (!v.additional_question ||
-          (values.find((x) => x.slug == v.additional_question)?.response != '' &&
-            values
+          (values.find((x) => x.slug == v.additional_question).type == QUESTION_TYPE.DROPDOWN &&
+            values // drop down addintion question
               .find((x) => x.slug == v.additional_question)
               ?.options.find(
                 (x) =>
                   x.action == 2 &&
-                  (x.value == values.find((y) => y.slug == v.additional_question)?.response ||
-                    values
-                      .find((y) => y.slug == v.additional_question)
-                      ?.response.toString()
-                      .indexOf(x.value) >= 0),
+                  x.value ==
+                    (field[values.find((y) => y.slug == v.additional_question)?.slug] ||
+                      field.meta?.[values.find((y) => y.slug == v.additional_question)?.slug]),
+              ) != null) ||
+          (values.find((x) => x.slug == v.additional_question).type == QUESTION_TYPE.MULTIPLECHOICES &&
+            values // multi item addintional question
+              .find((x) => x.slug == v.additional_question)
+              ?.options.find(
+                (x) =>
+                  x.action == 2 &&
+                  x.label ==
+                    (field[values.find((y) => y.slug == v.additional_question)?.slug] ||
+                      field.meta?.[values.find((y) => y.slug == v.additional_question)?.slug]),
+              ) != null) ||
+          (values.find((x) => x.slug == v.additional_question).type == QUESTION_TYPE.CHECKBOX &&
+            values // checkbox addintional question
+              .find((x) => x.slug == v.additional_question)
+              ?.options.find(
+                (x) =>
+                  x.action == 2 &&
+                  (
+                    field[values.find((y) => y.slug == v.additional_question)?.slug] ||
+                    field.meta?.[values.find((y) => y.slug == v.additional_question)?.slug]
+                  )?.indexOf(x.label) >= 0,
               ) != null)), // Parent
     )
     return sortList
@@ -409,8 +411,8 @@ export const ExistingParent: FunctionComponent = () => {
       current = newValues.find((x) => current.slug == x.additional_question)
       current.response = ''
     }
-
     setQuestions(newValues)
+    generateValidation(newValues)
   }
 
   return (
@@ -475,8 +477,8 @@ export const ExistingParent: FunctionComponent = () => {
               </Grid>
               <Grid container rowSpacing={2}>
                 {!questionLoading &&
-                  questionSortList(questions).length > 0 &&
-                  questionSortList(questions).map((q): unknown | undefined => {
+                  questionStudentSortList(questions, values?.students[0]).length > 0 &&
+                  questionStudentSortList(questions, values?.students[0]).map((q): unknown | undefined => {
                     if (q.slug?.includes('student_') || q.student_question) {
                       if (q.slug === 'student_grade_level') {
                         return (
@@ -586,10 +588,10 @@ export const ExistingParent: FunctionComponent = () => {
                           {values.students.map((_, index) => (
                             <>
                               {!questionLoading &&
-                                questionSortList(questions).length > 0 &&
+                                questionStudentSortList(questions, _).length > 0 &&
                                 index > 0 &&
-                                questionSortList(questions).map((q): ReactElement | undefined => {
-                                  const firstQuestionSlug = questionSortList(questions).filter(
+                                questionStudentSortList(questions, _).map((q): ReactElement | undefined => {
+                                  const firstQuestionSlug = questionStudentSortList(questions, _).filter(
                                     (qf) => qf.question.includes('student_') || qf.student_question,
                                   )[0].slug
                                   if (q.slug === 'student_grade_level') {
@@ -650,7 +652,7 @@ export const ExistingParent: FunctionComponent = () => {
                                             {({ field, form, meta }) => (
                                               <Box width={'100%'}>
                                                 <AdditionalQuestionItem
-                                                  question={q}
+                                                  question={{ ...q, indexing: index }}
                                                   key={index}
                                                   field={field}
                                                   form={form}
@@ -677,7 +679,7 @@ export const ExistingParent: FunctionComponent = () => {
                                             {({ field, form, meta }) => (
                                               <Box width={'100%'}>
                                                 <AdditionalQuestionItem
-                                                  question={q}
+                                                  question={{ ...q, indexing: index }}
                                                   key={index}
                                                   field={field}
                                                   form={form}
@@ -715,7 +717,7 @@ export const ExistingParent: FunctionComponent = () => {
                                             {({ field, form, meta }) => (
                                               <Box width={'100%'}>
                                                 <AdditionalQuestionItem
-                                                  question={q}
+                                                  question={{ ...q, indexing: index }}
                                                   field={field}
                                                   form={form}
                                                   meta={meta}

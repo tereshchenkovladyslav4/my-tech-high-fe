@@ -104,7 +104,7 @@ function Item({ question: q }: { question: ApplicationQuestion }) {
 
   //	Response
   const onChange = (value) => {
-    if (q.question === 'Propgram Year') {
+    if (q.question === 'Program Year') {
       setProgramYear(value)
     } else {
       if (q.type == QUESTION_TYPE.CHECKBOX) {
@@ -139,7 +139,7 @@ function Item({ question: q }: { question: ApplicationQuestion }) {
 
   if (q.type === QUESTION_TYPE.DROPDOWN) {
     const dropItems =
-      q.question === 'Propgram Year'
+      q.question === 'Program Year'
         ? schoolYears
         : q.slug === 'student_grade_level'
         ? gradesDropDownItems

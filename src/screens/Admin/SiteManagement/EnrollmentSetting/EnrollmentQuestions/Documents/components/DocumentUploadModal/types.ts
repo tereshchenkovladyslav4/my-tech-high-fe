@@ -3,7 +3,7 @@ import { FunctionComponent } from 'react'
 type SubmissionModal = {
   handleModem: () => void
   document?: 'birth' | 'immunization' | 'residency'
-  handleFile: () => void
+  handleFile: (files: File[]) => void
   limit?: number
 }
 

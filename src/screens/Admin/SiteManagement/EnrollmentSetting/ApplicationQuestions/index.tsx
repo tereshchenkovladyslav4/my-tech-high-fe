@@ -125,23 +125,34 @@ export const ApplicationQuestions: FunctionComponent = () => {
   useEffect(() => {
     if (!schoolLoading && schoolYearData.getSchoolYearsByRegionId) {
       const schoolYearsArray = []
-      schoolYearData.getSchoolYearsByRegionId.map((item) => {
-        schoolYearsArray.push({
-          label: `${moment(item.date_begin).format('YYYY')} - ${moment(item.date_end).format('YYYY')}`,
-          value: item.school_year_id,
-          date_begin: item.date_begin,
-        })
-
-        if (item.midyear_application) {
+      schoolYearData.getSchoolYearsByRegionId.map(
+        (item: {
+          date_begin: string
+          date_end: string
+          school_year_id: string
+          midyear_application: number
+          midyear_application_open: string
+          midyear_application_close: string
+        }): void => {
           schoolYearsArray.push({
-            label: `${moment(item.date_begin).format('YYYY')} - ${moment(item.date_end).format(
-              'YYYY',
-            )} Mid-year Program`,
-            value: `${item.school_year_id}-mid`,
-            date_begin: item.date_begin,
+            label: `${moment(item.date_begin).format('YYYY')} - ${moment(item.date_end).format('YYYY')}`,
+            value: item.school_year_id,
           })
-        }
-      })
+
+          if (
+            item &&
+            moment().isAfter(item?.midyear_application_open) &&
+            moment().isBefore(item?.midyear_application_close)
+          ) {
+            schoolYearsArray.push({
+              label: `${moment(item.date_begin).format('YYYY')} - ${moment(item.date_end).format(
+                'YYYY',
+              )} Mid-year Program`,
+              value: `${item.school_year_id}-mid`,
+            })
+          }
+        },
+      )
 
       setSchoolYears(schoolYearsArray.sort((a, b) => (a.label > b.label ? 1 : -1)))
       setSchoolYearsData(schoolYearData.getSchoolYearsByRegionId)
@@ -162,15 +173,6 @@ export const ApplicationQuestions: FunctionComponent = () => {
   }
 
   const [programYear, setProgramYear] = useState()
-  // const programYearContext = useMemo(
-  //   () => ({
-  //     programYear,
-  //     setProgramYear,
-  //     schoolYears,
-  //     gradesDropDownItems
-  //   }),
-  //   []
-  // )
   const programYearContext = {
     programYear,
     setProgramYear,

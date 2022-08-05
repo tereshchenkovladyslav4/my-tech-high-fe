@@ -6,13 +6,20 @@ export const getResourcesQuery = gql`
       resource_id
       SchoolYearId
       title
-      showCost
-      cost
       image
-      sequence
+      subtitle
+      price
       website
-      hidden
-      allowRequest
+      grades
+      std_user_name
+      std_password
+      detail
+      resource_limit
+      add_resource_level
+      resource_level
+      family_resource
+      priority
+      is_active
     }
   }
 `

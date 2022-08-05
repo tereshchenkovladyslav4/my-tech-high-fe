@@ -39,6 +39,7 @@ export type StudentInput = {
 
 export const NewParent: FunctionComponent = () => {
   const classes = useStyles
+  const [initStudentQuestions, setInitStudentQuestions] = useState({ meta: {} })
   const [emptyStudent, setEmptyStudent] = useState({ meta: {} })
   const [emptyParent, setEmptyParent] = useState({})
   const [emptyMeta, setEmptyMeta] = useState({})
@@ -79,6 +80,24 @@ export const NewParent: FunctionComponent = () => {
           .map((v) => ({ ...v, options: v.options ? JSON.parse(v.options || '[]') : [], response: '' }))
           .sort((a, b) => a.order - b.order),
       )
+
+      // add studnet list
+      const studentQuestions = { ...initStudentQuestions }
+      questionSortList(
+        questionData.getApplicationQuestions
+          .map((v) => ({ ...v, options: v.options ? JSON.parse(v.options || '[]') : [], response: '' }))
+          .sort((a, b) => a.order - b.order),
+      ).map((q: unknown) => {
+        if (q.type !== QUESTION_TYPE.INFORMATION) {
+          if (q.slug?.includes('student_')) {
+            studentQuestions[`${q.slug?.replace('student_', '')}`] = ''
+          } else if (q.slug?.includes('meta_') && q.student_question) {
+            studentQuestions['meta'][`${q.slug?.replace('student_', '')}`] = ''
+          }
+        }
+      })
+
+      setInitStudentQuestions(studentQuestions)
     }
   }, [questionData, regionId, questionLoading])
 
@@ -100,7 +119,7 @@ export const NewParent: FunctionComponent = () => {
       const valid_meta: unknown = {}
 
       questionSortList(questions).map((q) => {
-        if (q.type !== QUESTION_TYPE.INFORMATION) {
+        if (q.type !== QUESTION_TYPE.INFORMATION && !q.additional_question) {
           if (q.slug?.includes('student_')) {
             empty[`${q.slug?.replace('student_', '')}`] = ''
             if (q.required) {
@@ -490,6 +509,47 @@ export const NewParent: FunctionComponent = () => {
     return sortList
   }
 
+  const questionStudentSortList = (values, field) => {
+    const sortList = values.filter(
+      (v) =>
+        v.slug !== 'program_year' &&
+        !v.mainQuestion &&
+        (!v.additional_question ||
+          (values.find((x) => x.slug == v.additional_question).type == QUESTION_TYPE.DROPDOWN &&
+            values // drop down addintion question
+              .find((x) => x.slug == v.additional_question)
+              ?.options.find(
+                (x) =>
+                  x.action == 2 &&
+                  x.value ==
+                    (field[values.find((y) => y.slug == v.additional_question)?.slug] ||
+                      field.meta?.[values.find((y) => y.slug == v.additional_question)?.slug]),
+              ) != null) ||
+          (values.find((x) => x.slug == v.additional_question).type == QUESTION_TYPE.MULTIPLECHOICES &&
+            values // multi item addintional question
+              .find((x) => x.slug == v.additional_question)
+              ?.options.find(
+                (x) =>
+                  x.action == 2 &&
+                  x.label ==
+                    (field[values.find((y) => y.slug == v.additional_question)?.slug] ||
+                      field.meta?.[values.find((y) => y.slug == v.additional_question)?.slug]),
+              ) != null) ||
+          (values.find((x) => x.slug == v.additional_question).type == QUESTION_TYPE.CHECKBOX &&
+            values // checkbox addintional question
+              .find((x) => x.slug == v.additional_question)
+              ?.options.find(
+                (x) =>
+                  x.action == 2 &&
+                  (
+                    field[values.find((y) => y.slug == v.additional_question)?.slug] ||
+                    field.meta?.[values.find((y) => y.slug == v.additional_question)?.slug]
+                  )?.indexOf(x.label) >= 0,
+              ) != null)), // Parent
+    )
+    return sortList
+  }
+
   const handleAddQuestion = (value, q) => {
     let val = value
     if (q.type == QUESTION_TYPE.CHECKBOX) {
@@ -504,7 +564,7 @@ export const NewParent: FunctionComponent = () => {
       v.id == q.id
         ? {
             ...v,
-            response: value,
+            response: val.toString(),
           }
         : v,
     )
@@ -631,41 +691,85 @@ export const NewParent: FunctionComponent = () => {
                     </Grid>
 
                     {!questionLoading &&
-                      questionSortList(questions).length > 0 &&
-                      questionSortList(questions).map((q: unknown): ReactElement | undefined => {
-                        if (q.slug === 'parent_email') {
-                          return (
-                            <Grid item xs={12} display='flex' justifyContent={'center'}>
-                              <Box width={'451.53px'}>
-                                <Field name={'parent.email'} fullWidth focused>
-                                  {({ field, form, meta }) => {
-                                    if (showEmailError) {
-                                      form.setErrors({
-                                        parent: {
-                                          email: (
-                                            <Paragraph>
-                                              This email is already being used.&nbsp;&nbsp;
-                                              <Link
-                                                to={DASHBOARD}
-                                                style={{
-                                                  fontSize: '11.2px',
-                                                  fontWeight: 700,
-                                                  color: MTHBLUE,
-                                                  textDecoration: 'none',
-                                                }}
-                                              >
-                                                Please login{'\u00A0'}
-                                              </Link>
-                                              to complete an application
-                                            </Paragraph>
-                                          ),
-                                        },
-                                      })
-                                    }
-                                    return (
+                      questionStudentSortList(questions, values?.students[0]).length > 0 &&
+                      questionStudentSortList(questions, values?.students[0]).map(
+                        (q: unknown): ReactElement | undefined => {
+                          if (q.slug === 'parent_email') {
+                            return (
+                              <Grid item xs={12} display='flex' justifyContent={'center'}>
+                                <Box width={'451.53px'}>
+                                  <Field name={'parent.email'} fullWidth focused>
+                                    {({ field, form, meta }) => {
+                                      if (showEmailError) {
+                                        form.setErrors({
+                                          parent: {
+                                            email: (
+                                              <Paragraph>
+                                                This email is already being used.&nbsp;&nbsp;
+                                                <Link
+                                                  to={DASHBOARD}
+                                                  style={{
+                                                    fontSize: '11.2px',
+                                                    fontWeight: 700,
+                                                    color: MTHBLUE,
+                                                    textDecoration: 'none',
+                                                  }}
+                                                >
+                                                  Please login{'\u00A0'}
+                                                </Link>
+                                                to complete an application
+                                              </Paragraph>
+                                            ),
+                                          },
+                                        })
+                                      }
+                                      return (
+                                        <Box width={'100%'}>
+                                          <TextField
+                                            name='parent.email'
+                                            size='small'
+                                            label={q.question}
+                                            focused
+                                            variant='outlined'
+                                            inputProps={{
+                                              style: { color: 'black' },
+                                            }}
+                                            InputLabelProps={{
+                                              style: { color: SYSTEM_05 },
+                                            }}
+                                            sx={
+                                              !!(meta.touched && meta.error)
+                                                ? classes.textFieldError
+                                                : classes.textField
+                                            }
+                                            {...field}
+                                            error={meta.error || showEmailError}
+                                            helperText={meta.touched && meta.error}
+                                            onKeyUp={() => {
+                                              // TODO fix validation here
+                                              checkEmail({
+                                                variables: {
+                                                  email: field.value,
+                                                },
+                                              })
+                                            }}
+                                          />
+                                        </Box>
+                                      )
+                                    }}
+                                  </Field>
+                                </Box>
+                              </Grid>
+                            )
+                          } else if (q.slug === 'parent_emailConfirm') {
+                            return (
+                              <Grid item xs={12} display='flex' justifyContent={'center'}>
+                                <Box width={'451.53px'}>
+                                  <Field name={'parent.emailConfirm'} fullWidth focused>
+                                    {({ field, meta }) => (
                                       <Box width={'100%'}>
                                         <TextField
-                                          name='parent.email'
+                                          name='emailConfirm'
                                           size='small'
                                           label={q.question}
                                           focused
@@ -680,193 +784,155 @@ export const NewParent: FunctionComponent = () => {
                                             !!(meta.touched && meta.error) ? classes.textFieldError : classes.textField
                                           }
                                           {...field}
-                                          error={meta.error || showEmailError}
+                                          error={meta.touched && meta.error}
                                           helperText={meta.touched && meta.error}
-                                          onKeyUp={() => {
-                                            // TODO fix validation here
-                                            checkEmail({
-                                              variables: {
-                                                email: field.value,
-                                              },
-                                            })
-                                          }}
                                         />
                                       </Box>
-                                    )
-                                  }}
-                                </Field>
-                              </Box>
-                            </Grid>
-                          )
-                        } else if (q.slug === 'parent_emailConfirm') {
-                          return (
-                            <Grid item xs={12} display='flex' justifyContent={'center'}>
-                              <Box width={'451.53px'}>
-                                <Field name={'parent.emailConfirm'} fullWidth focused>
-                                  {({ field, meta }) => (
-                                    <Box width={'100%'}>
-                                      <TextField
-                                        name='emailConfirm'
-                                        size='small'
-                                        label={q.question}
-                                        focused
-                                        variant='outlined'
-                                        inputProps={{
-                                          style: { color: 'black' },
-                                        }}
-                                        InputLabelProps={{
-                                          style: { color: SYSTEM_05 },
-                                        }}
-                                        sx={!!(meta.touched && meta.error) ? classes.textFieldError : classes.textField}
-                                        {...field}
-                                        error={meta.touched && meta.error}
-                                        helperText={meta.touched && meta.error}
-                                      />
-                                    </Box>
-                                  )}
-                                </Field>
-                              </Box>
-                            </Grid>
-                          )
-                        } else if (q.slug?.includes('student_') || q.student_question) {
-                          if (q.slug === 'student_grade_level') {
+                                    )}
+                                  </Field>
+                                </Box>
+                              </Grid>
+                            )
+                          } else if (q.slug?.includes('student_') || q.student_question) {
+                            if (q.slug === 'student_grade_level') {
+                              return (
+                                <Grid item xs={12} display='flex' justifyContent={'center'}>
+                                  <Box width={'451.53px'}>
+                                    <Field name={'students[0].grade_level'} fullWidth focused>
+                                      {({ field, form, meta }) => (
+                                        <Box width={'100%'}>
+                                          <DropDown
+                                            name={'students[0].grade_level'}
+                                            labelTop
+                                            placeholder={`${q.question} (age) as of ${moment(birthDateCut).format(
+                                              'MMM Do YYYY',
+                                            )}`}
+                                            dropDownItems={gradesDropDownItems}
+                                            setParentValue={(id) => {
+                                              form.setFieldValue(field.name, id)
+                                            }}
+                                            alternate={true}
+                                            size='small'
+                                            sx={
+                                              !!(meta.touched && meta.error) ? classes.textFieldError : classes.dropdown
+                                            }
+                                            error={{
+                                              error: !!(meta.touched && meta.error),
+                                              errorMsg: (meta.touched && meta.error) as string,
+                                            }}
+                                          />
+                                        </Box>
+                                      )}
+                                    </Field>
+                                  </Box>
+                                </Grid>
+                              )
+                            } else if (q.slug?.includes('student_')) {
+                              return (
+                                <Grid item xs={12} display='flex' justifyContent={'center'}>
+                                  <Box width={'451.53px'} display='flex' flexDirection='row' alignItems={'center'}>
+                                    <Field name={`students[0].${q.slug?.replace('student_', '')}`} fullWidth focused>
+                                      {({ field, form, meta }) => (
+                                        <Box width={'100%'}>
+                                          <AdditionalQuestionItem
+                                            question={q}
+                                            field={field}
+                                            form={form}
+                                            meta={meta}
+                                            handleAddQuestion={handleAddQuestion}
+                                          />
+                                        </Box>
+                                      )}
+                                    </Field>
+                                  </Box>
+                                </Grid>
+                              )
+                            } else if (q.slug?.includes('meta_') && q.student_question) {
+                              return (
+                                <Grid item xs={12} display='flex' justifyContent={'center'}>
+                                  <Box width={'451.53px'} display='flex' flexDirection='row' alignItems={'center'}>
+                                    <Field name={`students[0].meta.${q.slug}`} fullWidth focused>
+                                      {({ field, form, meta }) => (
+                                        <Box width={'100%'}>
+                                          <AdditionalQuestionItem
+                                            question={q}
+                                            field={field}
+                                            form={form}
+                                            meta={meta}
+                                            handleAddQuestion={handleAddQuestion}
+                                          />
+                                        </Box>
+                                      )}
+                                    </Field>
+                                  </Box>
+                                </Grid>
+                              )
+                            } else if (!q.slug?.includes('meta_') && q.student_question) {
+                              const parentFieldName = q.slug?.split('_')[0]
+                              const childFieldName = q.slug?.replace(parentFieldName + '_', '')
+                              return (
+                                <Grid item xs={12} display='flex' justifyContent={'center'}>
+                                  <Box width={'451.53px'} display='flex' flexDirection='row' alignItems={'center'}>
+                                    <Field name={`students[0].${parentFieldName}.${childFieldName}`} fullWidth focused>
+                                      {({ field, form, meta }) => (
+                                        <Box width={'100%'}>
+                                          <AdditionalQuestionItem
+                                            question={q}
+                                            field={field}
+                                            form={form}
+                                            meta={meta}
+                                            handleAddQuestion={handleAddQuestion}
+                                          />
+                                        </Box>
+                                      )}
+                                    </Field>
+                                  </Box>
+                                </Grid>
+                              )
+                            } else {
+                              return undefined
+                            }
+                          } else if (q.slug?.includes('meta_')) {
                             return (
                               <Grid item xs={12} display='flex' justifyContent={'center'}>
                                 <Box width={'451.53px'}>
-                                  <Field name={'students[0].grade_level'} fullWidth focused>
+                                  <Field name={`meta.${q.slug}`} fullWidth focused>
                                     {({ field, form, meta }) => (
-                                      <Box width={'100%'}>
-                                        <DropDown
-                                          name={'students[0].grade_level'}
-                                          labelTop
-                                          placeholder={`${q.question} (age) as of ${moment(birthDateCut).format(
-                                            'MMM Do YYYY',
-                                          )}`}
-                                          dropDownItems={gradesDropDownItems}
-                                          setParentValue={(id) => {
-                                            form.setFieldValue(field.name, id)
-                                          }}
-                                          alternate={true}
-                                          size='small'
-                                          sx={
-                                            !!(meta.touched && meta.error) ? classes.textFieldError : classes.dropdown
-                                          }
-                                          error={{
-                                            error: !!(meta.touched && meta.error),
-                                            errorMsg: (meta.touched && meta.error) as string,
-                                          }}
-                                        />
-                                      </Box>
-                                    )}
-                                  </Field>
-                                </Box>
-                              </Grid>
-                            )
-                          } else if (q.slug?.includes('student_')) {
-                            return (
-                              <Grid item xs={12} display='flex' justifyContent={'center'}>
-                                <Box width={'451.53px'} display='flex' flexDirection='row' alignItems={'center'}>
-                                  <Field name={`students[0].${q.slug?.replace('student_', '')}`} fullWidth focused>
-                                    {({ field, form, meta }) => (
-                                      <Box width={'100%'}>
-                                        <AdditionalQuestionItem
-                                          question={q}
-                                          field={field}
-                                          form={form}
-                                          meta={meta}
-                                          handleAddQuestion={handleAddQuestion}
-                                        />
-                                      </Box>
-                                    )}
-                                  </Field>
-                                </Box>
-                              </Grid>
-                            )
-                          } else if (q.slug?.includes('meta_') && q.student_question) {
-                            return (
-                              <Grid item xs={12} display='flex' justifyContent={'center'}>
-                                <Box width={'451.53px'} display='flex' flexDirection='row' alignItems={'center'}>
-                                  <Field name={`students[0].meta.${q.slug}`} fullWidth focused>
-                                    {({ field, form, meta }) => (
-                                      <Box width={'100%'}>
-                                        <AdditionalQuestionItem
-                                          question={q}
-                                          field={field}
-                                          form={form}
-                                          meta={meta}
-                                          handleAddQuestion={handleAddQuestion}
-                                        />
-                                      </Box>
-                                    )}
-                                  </Field>
-                                </Box>
-                              </Grid>
-                            )
-                          } else if (!q.slug?.includes('meta_') && q.student_question) {
-                            const parentFieldName = q.slug?.split('_')[0]
-                            const childFieldName = q.slug?.replace(parentFieldName + '_', '')
-                            return (
-                              <Grid item xs={12} display='flex' justifyContent={'center'}>
-                                <Box width={'451.53px'} display='flex' flexDirection='row' alignItems={'center'}>
-                                  <Field name={`students[0].${parentFieldName}.${childFieldName}`} fullWidth focused>
-                                    {({ field, form, meta }) => (
-                                      <Box width={'100%'}>
-                                        <AdditionalQuestionItem
-                                          question={q}
-                                          field={field}
-                                          form={form}
-                                          meta={meta}
-                                          handleAddQuestion={handleAddQuestion}
-                                        />
-                                      </Box>
+                                      <AdditionalQuestionItem
+                                        question={q}
+                                        field={field}
+                                        form={form}
+                                        meta={meta}
+                                        handleAddQuestion={handleAddQuestion}
+                                      />
                                     )}
                                   </Field>
                                 </Box>
                               </Grid>
                             )
                           } else {
-                            return undefined
+                            const parentFieldName = q.slug?.split('_')[0]
+                            const childFieldName = q.slug?.replace(parentFieldName + '_', '')
+                            return (
+                              <Grid item xs={12} display='flex' justifyContent={'center'}>
+                                <Box width={'451.53px'}>
+                                  <Field name={`${parentFieldName}.${childFieldName}`} fullWidth focused>
+                                    {({ field, form, meta }) => (
+                                      <AdditionalQuestionItem
+                                        question={q}
+                                        field={field}
+                                        form={form}
+                                        meta={meta}
+                                        handleAddQuestion={handleAddQuestion}
+                                      />
+                                    )}
+                                  </Field>
+                                </Box>
+                              </Grid>
+                            )
                           }
-                        } else if (q.slug?.includes('meta_')) {
-                          return (
-                            <Grid item xs={12} display='flex' justifyContent={'center'}>
-                              <Box width={'451.53px'}>
-                                <Field name={`meta.${q.slug}`} fullWidth focused>
-                                  {({ field, form, meta }) => (
-                                    <AdditionalQuestionItem
-                                      question={q}
-                                      field={field}
-                                      form={form}
-                                      meta={meta}
-                                      handleAddQuestion={handleAddQuestion}
-                                    />
-                                  )}
-                                </Field>
-                              </Box>
-                            </Grid>
-                          )
-                        } else {
-                          const parentFieldName = q.slug?.split('_')[0]
-                          const childFieldName = q.slug?.replace(parentFieldName + '_', '')
-                          return (
-                            <Grid item xs={12} display='flex' justifyContent={'center'}>
-                              <Box width={'451.53px'}>
-                                <Field name={`${parentFieldName}.${childFieldName}`} fullWidth focused>
-                                  {({ field, form, meta }) => (
-                                    <AdditionalQuestionItem
-                                      question={q}
-                                      field={field}
-                                      form={form}
-                                      meta={meta}
-                                      handleAddQuestion={handleAddQuestion}
-                                    />
-                                  )}
-                                </Field>
-                              </Box>
-                            </Grid>
-                          )
-                        }
-                      })}
+                        },
+                      )}
                     <Grid item xs={12} display='flex' justifyContent={'center'}>
                       <Box width={'451.53px'}>
                         <FieldArray name='students'>
@@ -875,10 +941,10 @@ export const NewParent: FunctionComponent = () => {
                               {values.students.map((_, index) => (
                                 <>
                                   {!questionLoading &&
-                                    questionSortList(questions).length > 0 &&
+                                    questionStudentSortList(questions, _).length > 0 &&
                                     index > 0 &&
-                                    questionSortList(questions).map((q): ReactElement | undefined => {
-                                      const firstQuestionSlug = questionSortList(questions).filter(
+                                    questionStudentSortList(questions, _).map((q): ReactElement | undefined => {
+                                      const firstQuestionSlug = questionStudentSortList(questions, _).filter(
                                         (qf) => qf.question.includes('student_') || qf.student_question,
                                       )[0].slug
                                       if (q.slug === 'student_grade_level') {
@@ -1054,7 +1120,8 @@ export const NewParent: FunctionComponent = () => {
                                       : true
                                   }
                                   style={classes.addStudentButton}
-                                  onClick={() => push(emptyStudent)}
+                                  onClick={() => push(initStudentQuestions)}
+                                  // onClick={() => push(emptyStudent)}
                                 >
                                   Add Student
                                 </Button>

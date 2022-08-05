@@ -194,19 +194,34 @@ export const ApplicationTable: FunctionComponent<ApplicationTableProps> = ({ fil
     if (schoolYearData?.region?.SchoolYears) {
       const { SchoolYears } = schoolYearData?.region
       const yearList = []
-      SchoolYears.sort((a, b) => (a.date_begin > b.date_begin ? 1 : -1)).map((item: unknown) => {
-        yearList.push({
-          value: item.school_year_id,
-          label: moment(item.date_begin).format('YYYY') + ' - ' + moment(item.date_end).format('YY'),
-        })
-        if (item.midyear_application === 1) {
+      SchoolYears.sort((a, b) => (a.date_begin > b.date_begin ? 1 : -1)).map(
+        (item: {
+          date_begin: string
+          date_end: string
+          school_year_id: string
+          midyear_application: number
+          midyear_application_open: string
+          midyear_application_close: string
+        }): void => {
           yearList.push({
-            value: -1 * item.school_year_id,
-            label: moment(item.date_begin).format('YYYY') + ' - ' + moment(item.date_end).format('YY') + ' Mid-Year',
+            label: `${moment(item.date_begin).format('YYYY')} - ${moment(item.date_end).format('YYYY')}`,
+            value: item.school_year_id,
           })
-        }
-      })
-      setSchoolYears(yearList)
+          if (
+            item &&
+            moment().isAfter(item?.midyear_application_open) &&
+            moment().isBefore(item?.midyear_application_close)
+          ) {
+            yearList.push({
+              label: `${moment(item.date_begin).format('YYYY')} - ${moment(item.date_end).format(
+                'YYYY',
+              )} Mid-year Program`,
+              value: `${item.school_year_id}-mid`,
+            })
+          }
+        },
+      )
+      setSchoolYears(yearList.sort((a, b) => (a.label > b.label ? 1 : -1)))
     }
   }, [schoolYearData?.region?.SchoolYears])
   // useEffect(() => {

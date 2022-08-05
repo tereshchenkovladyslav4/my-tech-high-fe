@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react'
 import UploadFileIcon from '@mui/icons-material/UploadFile'
 import { Box, Button, Modal } from '@mui/material'
 import { filter, map } from 'lodash'
-import { Paragraph } from '../../../../../../../../components/Typography/Paragraph/Paragraph'
-import { RED, SYSTEM_06 } from '../../../../../../../../utils/constants'
+import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
+import { MthColor } from '@mth/enums'
 import { DocumentListItem } from '../DocumentList/DocumentListItem'
 import { useStyles } from './styles'
 import { DocumentUploadModalTemplateType } from './types'
@@ -20,11 +20,10 @@ type ValidateFileResponse = {
 export const DocumentUploadModal: DocumentUploadModalTemplateType = ({ handleModem, handleFile, limit }) => {
   const classes = useStyles
 
-  const [selectedFiles, setSelectedFiles] = useState([])
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([])
   const [validFiles, setValidFiles] = useState<File[]>([])
   const [errorMessage, setErrorMessage] = useState('')
-
-  const [deletedFiles, setDeletedFiles] = useState([])
+  const [deletedFiles, setDeletedFiles] = useState<File[]>([])
 
   useEffect(() => {
     const filteredArr = selectedFiles.reduce((acc, current) => {
@@ -34,7 +33,7 @@ export const DocumentUploadModal: DocumentUploadModalTemplateType = ({ handleMod
       } else {
         return acc
       }
-    }, [])
+    }, [] as File[])
     const filterDeletedFiles = filter(filteredArr, (file) => !deletedFiles.includes(file))
     setValidFiles([...filterDeletedFiles])
   }, [selectedFiles])
@@ -66,22 +65,23 @@ export const DocumentUploadModal: DocumentUploadModalTemplateType = ({ handleMod
     }
   }
 
-  const filesSelected = (e: unknown) => {
-    if (limit && selectedFiles.length + e.target.files.length > limit) {
+  const filesSelected = (e) => {
+    const files = e.target.files
+    if (limit && selectedFiles.length + files.length > limit) {
       setErrorMessage(`File submission limited to ${limit} files`)
     } else {
-      handleFiles(e.target.files)
+      handleFiles(files)
     }
   }
 
-  const handleFiles = (files: FileList[]) => {
+  const handleFiles = (files: File[]) => {
     for (let i = 0; i < files.length; i++) {
       const file = validateFile(files[i])
       if (file.status === true) {
         setSelectedFiles((prevArray) => [...prevArray, files[i]])
       } else {
         files[i]['invalid'] = true
-        setErrorMessage(file.message)
+        setErrorMessage(file.message || '')
       }
     }
   }
@@ -117,8 +117,8 @@ export const DocumentUploadModal: DocumentUploadModalTemplateType = ({ handleMod
   }
 
   const renderFiles = () =>
-    map(validFiles, (file) => (
-      <Box>
+    map(validFiles, (file, idx) => (
+      <Box key={idx}>
         <DocumentListItem file={file as File} closeAction={deleteFile} />
       </Box>
     ))
@@ -153,7 +153,7 @@ export const DocumentUploadModal: DocumentUploadModalTemplateType = ({ handleMod
           <Paragraph size='medium' fontWeight='700' sx={classes.dragAndDropText}>
             Drag &amp; Drop to Upload
           </Paragraph>
-          <Paragraph size='medium' color={SYSTEM_06}>
+          <Paragraph size='medium' color={MthColor.SYSTEM_06}>
             {' '}
             Or
           </Paragraph>
@@ -169,7 +169,7 @@ export const DocumentUploadModal: DocumentUploadModalTemplateType = ({ handleMod
               Browse Files
             </label>
           </Button>
-          <Paragraph size='medium' fontWeight='700' color={RED}>
+          <Paragraph size='medium' fontWeight='700' color={MthColor.RED}>
             {validFiles.length === 0 && errorMessage}
           </Paragraph>
         </Box>

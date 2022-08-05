@@ -4,7 +4,7 @@ import { SxProps } from '@mui/system'
 
 export type DropDownItem = {
   label: string | number
-  value: string | number | null
+  value: string | number
 }
 
 type FormikCustomError = {

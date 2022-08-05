@@ -2,8 +2,8 @@ import { gql } from '@apollo/client'
 import { SNOWPACK_PUBLIC_S3_URL } from '../../../utils/constants'
 
 export const createSchoolYearMutation = gql`
-  mutation CreateSchoolYear($createSchoolYearInput: CreateSchoolYearInput!) {
-    createSchoolYear(createSchoolYearInput: $createSchoolYearInput) {
+  mutation CreateSchoolYear($createSchoolYearInput: CreateSchoolYearInput!, $previousYearId: Float!) {
+    createSchoolYear(createSchoolYearInput: $createSchoolYearInput, previousYearId: $previousYearId) {
       school_year_id
     }
   }

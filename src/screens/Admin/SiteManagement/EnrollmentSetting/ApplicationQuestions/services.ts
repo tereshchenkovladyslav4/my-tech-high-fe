@@ -51,6 +51,8 @@ export const getActiveSchoolYearsByRegionId = gql`
       birth_date_cut
       school_year_id
       midyear_application
+      midyear_application_open
+      midyear_application_close
     }
   }
 `

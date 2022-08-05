@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react'
 import { useMutation } from '@apollo/client'
 import { Box } from '@mui/material'
+import { sortBy, toNumber } from 'lodash'
 import { Prompt } from 'react-router-dom'
 import { UserContext } from '../../../../providers/UserContext/UserProvider'
 import { DropDownItem } from '../components/DropDown/types'
@@ -63,6 +64,7 @@ const Years: React.FC = () => {
             midyear_application_close: convertLocalDateToUTCDate(midYearItem?.close),
             cloneSchoolYearId: cloneSelectedYearId || null,
           },
+          previousYearId: toNumber(sortBy(schoolYears, 'schoolYearClose').at(-1)?.schoolYearId),
         },
       })
       setSelectedYearId(submittedCreateResponse?.data?.createSchoolYear.school_year_id)

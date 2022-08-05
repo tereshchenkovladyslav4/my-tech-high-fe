@@ -1,6 +1,7 @@
 export * from './applicant-status.enum'
 export * from './color.enum'
 export * from './packet-status.enum'
+export * from './resource-subtitle.enum'
 export * from './route.enum'
 export * from './student-status.enum'
 export * from './withdrawal-status.enum'

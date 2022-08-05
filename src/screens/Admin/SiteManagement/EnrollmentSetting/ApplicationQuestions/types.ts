@@ -67,7 +67,7 @@ export const initQuestions: ApplicationQuestion[] = [
     id: 2,
     order: 2,
     type: 1,
-    question: 'Propgram Year',
+    question: 'Program Year',
     required: true,
     options: [],
     validation: '',

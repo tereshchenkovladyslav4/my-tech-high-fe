@@ -37,7 +37,6 @@ export const EnrollmentSchoolTable: FunctionComponent<EnrollmentSchoolTableProps
   const [skip, setSkip] = useState<number>(0)
   const [totalApplications, setTotalApplications] = useState<number>()
   const [tableData, setTableData] = useState<Array<unknown>>([])
-  const [setApplicationIds] = useState<Array<string>>([])
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [schoolYears, setSchoolYears] = useState<unknown[]>([])
   const [editData, setEditData] = useState<unknown>()
@@ -398,7 +397,6 @@ export const EnrollmentSchoolTable: FunctionComponent<EnrollmentSchoolTableProps
       <SortableTable
         rows={tableData}
         headCells={ENROLLMENT_SCHOOL_HEADCELLS}
-        onCheck={setApplicationIds}
         onSortChange={sortChangeAction}
         clearAll={clearAll}
       />
