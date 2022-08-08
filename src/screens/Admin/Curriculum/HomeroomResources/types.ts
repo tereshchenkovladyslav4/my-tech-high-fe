@@ -27,6 +27,7 @@ export type HomeroomResource = {
   family_resource: boolean
   priority: number
   is_active: boolean
+  allow_request: boolean
   // Temp field
   file?: File
   background?: string
@@ -42,6 +43,18 @@ export interface HomeroomResourceCardProps {
   isPast: boolean
   setPage: (value: string) => void
   onAction?: (evtType: EventType) => void
+}
+
+export interface HomeroomResourceModalProps {
+  showArchivedModal: boolean
+  showUnarchivedModal: boolean
+  showDeleteModal: boolean
+  showCloneModal: boolean
+  setShowArchivedModal: (value: boolean) => void
+  setShowUnarchivedModal: (value: boolean) => void
+  setShowDeleteModal: (value: boolean) => void
+  setShowCloneModal: (value: boolean) => void
+  handleChangeResourceStatus: (eventType: EventType) => void
 }
 
 export interface HomeroomResourceEditProps {

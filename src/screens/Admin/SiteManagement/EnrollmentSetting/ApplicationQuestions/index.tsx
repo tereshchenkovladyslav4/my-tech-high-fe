@@ -141,6 +141,7 @@ export const ApplicationQuestions: FunctionComponent = () => {
 
           if (
             item &&
+            item.midyear_application === 1 &&
             moment().isAfter(item?.midyear_application_open) &&
             moment().isBefore(item?.midyear_application_close)
           ) {

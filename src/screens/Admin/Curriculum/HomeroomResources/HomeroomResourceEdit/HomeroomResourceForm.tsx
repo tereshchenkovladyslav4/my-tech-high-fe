@@ -98,7 +98,6 @@ const HomeroomResourceForm: React.FC<HomeroomResourceFormProps> = ({ setIsChange
       <Grid container gap='24px'>
         <Grid item xs={3}>
           {Image()}
-
           <Subtitle sx={editHomeroomResourceClassess.formError}>{touched.subtitle && errors.subtitle}</Subtitle>
           <DropDown
             dropDownItems={subtitleOptions}

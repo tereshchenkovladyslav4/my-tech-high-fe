@@ -20,6 +20,7 @@ export const getResourcesQuery = gql`
       family_resource
       priority
       is_active
+      allow_request
     }
   }
 `

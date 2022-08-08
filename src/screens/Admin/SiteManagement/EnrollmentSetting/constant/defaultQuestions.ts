@@ -102,6 +102,12 @@ export const defaultQuestions = [
     validation: 0,
   },
   {
+    label: 'State',
+    type: 'Drop Down',
+    slug: 'address_state',
+    validation: 0,
+  },
+  {
     label: 'Zip Code',
     type: 'Text Field',
     slug: 'address_zip',

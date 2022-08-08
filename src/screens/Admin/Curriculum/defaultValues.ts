@@ -18,4 +18,5 @@ export const defaultHomeroomFormData: HomeroomResource = {
   family_resource: false,
   priority: 0,
   is_active: false,
+  allow_request: false,
 }

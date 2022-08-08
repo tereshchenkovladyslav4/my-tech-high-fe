@@ -7,3 +7,9 @@ export const createOrUpdateResourceMutation = gql`
     }
   }
 `
+
+export const deleteResourceMutation = gql`
+  mutation DeleteResource($resourceId: Float!) {
+    deleteResource(resource_id: $resourceId)
+  }
+`

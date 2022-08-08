@@ -9,9 +9,10 @@ import { getResourcesQuery } from '@mth/graphql/queries/resource'
 import { useSchoolYearsByRegionId } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { defaultHomeroomFormData } from '../defaultValues'
-import { createOrUpdateResourceMutation } from '../services'
+import { createOrUpdateResourceMutation, deleteResourceMutation } from '../services'
 import { HomeroomResourceCard } from './HomeroomResourceCard'
 import { HomeroomResourceEdit } from './HomeroomResourceEdit'
+import { HomeroomResourceModal } from './HomeroomResourceModal'
 import { EventType, HomeroomResource, HomeroomResourceProps, HomeroomResourceCardProps } from './types'
 
 export const HomeroomResources: React.FC<HomeroomResourceProps> = ({ backAction }) => {
@@ -26,6 +27,10 @@ export const HomeroomResources: React.FC<HomeroomResourceProps> = ({ backAction 
   const [selectedYear, setSelectedYear] = useState<string | number>('')
   const [page, setPage] = useState<string>('root')
   const [selectedHomeroomResource, setSelectedHomeroomResource] = useState<HomeroomResource>()
+  const [showArchivedModal, setShowArchivedModal] = useState<boolean>(false)
+  const [showUnarchivedModal, setShowUnarchivedModal] = useState<boolean>(false)
+  const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false)
+  const [showCloneModal, setShowCloneModal] = useState<boolean>(false)
 
   const {
     loading,
@@ -37,6 +42,7 @@ export const HomeroomResources: React.FC<HomeroomResourceProps> = ({ backAction 
     fetchPolicy: 'network-only',
   })
   const [updateResource, {}] = useMutation(createOrUpdateResourceMutation)
+  const [deleteResource, {}] = useMutation(deleteResourceMutation)
 
   const hasPermission = () => {
     return me?.level && me.level <= 2
@@ -45,6 +51,55 @@ export const HomeroomResources: React.FC<HomeroomResourceProps> = ({ backAction 
   const isPast = (): boolean => {
     const selectedSchoolYear = schoolYears.find((item) => item.school_year_id === selectedYear)
     return !!selectedSchoolYear && moment().isAfter(selectedSchoolYear.date_end)
+  }
+
+  const handleChangeResourceStatus = async (eventType: EventType) => {
+    if (selectedHomeroomResource) {
+      switch (eventType) {
+        case EventType.ARCHIVE:
+        case EventType.RESTORE:
+          await updateResource({
+            variables: {
+              createResourceInput: {
+                resource_id: Number(selectedHomeroomResource.resource_id),
+                is_active: !selectedHomeroomResource.is_active,
+                allow_request: false,
+              },
+            },
+          })
+          break
+        case EventType.DELETE:
+          await deleteResource({
+            variables: {
+              resourceId: Number(selectedHomeroomResource.resource_id),
+            },
+          })
+          break
+        case EventType.DUPLICATE:
+          await updateResource({
+            variables: {
+              createResourceInput: {
+                SchoolYearId: selectedHomeroomResource.SchoolYearId,
+                title: selectedHomeroomResource.title,
+                image: selectedHomeroomResource.image,
+                subtitle: selectedHomeroomResource.subtitle,
+                price: selectedHomeroomResource.price,
+                website: selectedHomeroomResource.website,
+                grades: selectedHomeroomResource.grades,
+                std_user_name: selectedHomeroomResource.std_user_name,
+                std_password: selectedHomeroomResource.std_password,
+                detail: selectedHomeroomResource.detail,
+                resource_limit: selectedHomeroomResource.resource_limit,
+                add_resource_level: selectedHomeroomResource.add_resource_level,
+                resource_level: selectedHomeroomResource.resource_level,
+                family_resource: selectedHomeroomResource.family_resource,
+                priority: selectedHomeroomResource.priority,
+              },
+            },
+          })
+      }
+      refetch()
+    }
   }
 
   const arrangeItems = async (items: HomeroomResource[]) => {
@@ -100,6 +155,22 @@ export const HomeroomResources: React.FC<HomeroomResourceProps> = ({ backAction 
               }
               case EventType.CLICK: {
                 if (item.website) window.open(item.website, '_blank')
+                break
+              }
+              case EventType.ARCHIVE: {
+                setShowArchivedModal(true)
+                break
+              }
+              case EventType.RESTORE: {
+                setShowUnarchivedModal(true)
+                break
+              }
+              case EventType.DELETE: {
+                setShowDeleteModal(true)
+                break
+              }
+              case EventType.DUPLICATE: {
+                setShowCloneModal(true)
               }
             }
           }}
@@ -181,6 +252,17 @@ export const HomeroomResources: React.FC<HomeroomResourceProps> = ({ backAction 
           refetch={refetch}
         />
       )}
+      <HomeroomResourceModal
+        showArchivedModal={showArchivedModal}
+        showUnarchivedModal={showUnarchivedModal}
+        showDeleteModal={showDeleteModal}
+        showCloneModal={showCloneModal}
+        setShowCloneModal={setShowCloneModal}
+        setShowArchivedModal={setShowArchivedModal}
+        setShowUnarchivedModal={setShowUnarchivedModal}
+        setShowDeleteModal={setShowDeleteModal}
+        handleChangeResourceStatus={handleChangeResourceStatus}
+      />
     </Box>
   )
 }

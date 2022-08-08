@@ -97,13 +97,13 @@ const HomeroomResourceCard: React.FC<HomeroomResourceCardProps> = ({ item, actio
         </Tooltip>
       )}
       {!!item.resource_id && item.is_active && (
-        <Tooltip title={item.family_resource ? 'View Only' : 'Allow Request'}>
+        <Tooltip title={item.allow_request ? 'View Only' : 'Allow Request'}>
           <img
             onClick={(e) => {
               actionHandler(EventType.ALLOW_REQUEST)
               e.stopPropagation()
             }}
-            src={item.family_resource ? AllowingRequestIcon : ViewOnlyIcon}
+            src={item.allow_request ? AllowingRequestIcon : ViewOnlyIcon}
             style={{ position: 'absolute', top: 15, right: 15 }}
           />
         </Tooltip>

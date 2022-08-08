@@ -1,11 +1,11 @@
-import React, { FunctionComponent } from 'react'
+import React, { FunctionComponent, ReactNode } from 'react'
 import InfoIcon from '@mui/icons-material/InfoOutlined'
 import { Box, Button, Modal, Typography } from '@mui/material'
 
 export type CustomModalType = {
   title: string
   description: string
-  subDescription?: string
+  subDescription?: string | ReactNode
   onClose: () => void
   onConfirm: () => void
   confirmStr?: string

@@ -195,6 +195,7 @@ export const EnrollmentPacketTable: FunctionComponent = () => {
           })
           if (
             item &&
+            item.midyear_application === 1 &&
             moment().isAfter(item?.midyear_application_open) &&
             moment().isBefore(item?.midyear_application_close)
           ) {
@@ -324,8 +325,8 @@ export const EnrollmentPacketTable: FunctionComponent = () => {
       variables: {
         updateEnrollmentSchoolYearByIdsInput: {
           application_ids: packetIds,
-          school_year_id: parseInt(schoolYear) > 0 ? parseInt(schoolYear) : -1 * parseInt(schoolYear),
-          midyear_application: parseInt(schoolYear) > 0 ? 0 : 1,
+          school_year_id: parseInt(schoolYear?.split('-')[0]),
+          midyear_application: schoolYear?.split('-')[1] === 'mid' ? 1 : 0,
         },
       },
     })
