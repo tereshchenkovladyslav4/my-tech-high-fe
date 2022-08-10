@@ -95,6 +95,10 @@ export const SortableTable: SortableTableTemplateType = ({
         if (onParentClick) onParentClick(row.id)
         break
       }
+      case 'subject': {
+        if (onRowClick) onRowClick(row.id)
+        break
+      }
     }
   }
 

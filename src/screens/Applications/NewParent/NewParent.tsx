@@ -565,7 +565,7 @@ export const NewParent: FunctionComponent = () => {
       v.id == q.id
         ? {
             ...v,
-            response: val.toString(),
+            response: String(val),
           }
         : v,
     )

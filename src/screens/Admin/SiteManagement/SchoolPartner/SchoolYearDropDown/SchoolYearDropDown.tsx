@@ -46,11 +46,31 @@ export const SchoolYearDropDown: FunctionComponent<SchoolYearDropDownProps> = ({
         if (currYear >= dateBegin.getFullYear() && currYear < dateEnd.getFullYear()) {
           currYear = schoolYear.school_year_id
         }
-        schoolYearsArr.push({
-          value: schoolYear.school_year_id,
-          label: moment(dateBegin).format('YYYY') + '-' + moment(dateEnd).format('YY'),
-        })
-        //if( (toNumber((year?.label as string).split('-')[0])) < currentYear) setDisableForm(true)
+
+        if (schoolYear.midyear_application) {
+          const currDateBegin = moment(schoolYear.date_begin?.substring(0, 10)).toISOString()
+          const currDateEnd = moment(schoolYear.date_end?.substring(0, 10)).toISOString()
+          const midYearApplicationOpen = moment(schoolYear.midyear_application_open?.substring(0, 10)).toISOString()
+          const midYearApplicationClose = moment(schoolYear?.midyear_application_close?.substring(0, 10)).toISOString()
+
+          schoolYearsArr.push(
+            {
+              value: schoolYear.school_year_id,
+              label: moment(currDateBegin).format('YYYY') + '-' + moment(currDateEnd).format('YY'),
+            },
+            {
+              label: `${moment(midYearApplicationOpen).format('YYYY')} - ${moment(midYearApplicationClose).format(
+                'YY',
+              )} Mid-year`,
+              value: `${schoolYear.school_year_id}-midyear`,
+            },
+          )
+        } else {
+          schoolYearsArr.push({
+            value: schoolYear.school_year_id,
+            label: moment(dateBegin).format('YYYY') + '-' + moment(dateEnd).format('YY'),
+          })
+        }
       })
       setYears(schoolYearsArr)
       setSelectedYear(schoolYearsArr[0].value as number)
@@ -59,7 +79,7 @@ export const SchoolYearDropDown: FunctionComponent<SchoolYearDropDownProps> = ({
 
   useEffect(() => {
     if (selectedYear) {
-      setSelectedYearId(selectedYear)
+      setSelectedYearId((selectedYear as unknown as string).split('-').at(0) as unknown as number)
       const currentYear = new Date().getFullYear()
       const year = find(years, { value: selectedYear })
       setDisableForm(toNumber((year?.label as string).split('-')[0]) < currentYear)

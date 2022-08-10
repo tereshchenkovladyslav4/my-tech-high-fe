@@ -35,5 +35,8 @@ export const UnauthenticatedRoutes: FunctionComponent = () => (
     <Route exact path={RESET_PASSWORD}>
       <ResetPassword />
     </Route>
+    <Route>
+      <Login />
+    </Route>
   </Switch>
 )

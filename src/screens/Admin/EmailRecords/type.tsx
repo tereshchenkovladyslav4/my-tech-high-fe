@@ -1,9 +1,12 @@
 export type EmailRecord = {
-  record_id: string
-  date: string
-  to: string
-  email_template: string
+  id: string
+  created_at: string
+  to_email: string
+  template_name: string
   subject: string
-  from: string
+  from_email: string
+  body: string
   status: string
+  bcc: string
+  region_id: number
 }

@@ -43,12 +43,33 @@ export const AddNewQuestionModal: FunctionComponent<AddNewQuestionModalProps> = 
   const [editQuestions, setEditQuestions] = useState(JSON.parse(JSON.stringify(questions)))
   const [deleteIds, setDeleteIds] = useState([])
   const [isDefaultQuestion] = useState(questions[0]?.default_question || false)
+  const [isAddStudent, setAddStudent] = useState(false)
 
   const editQuestionsRef = useRef([])
 
   useEffect(() => {
     if (editQuestions.length == 0) {
       return
+    }
+
+    const newQuestion = editQuestions[0]
+
+    if (
+      newQuestion?.slug &&
+      [
+        'packet_school_district',
+        'packet_secondary_contact_first',
+        'packet_secondary_contact_last',
+        'address_county_id',
+        'address_zip',
+        'address_city',
+        'address_street',
+        'program_year',
+      ].indexOf(newQuestion.slug) !== -1
+    ) {
+      setAddStudent(false)
+    } else {
+      setAddStudent(true)
     }
 
     if (editQuestionsRef.current.length == 0 && editQuestions.length > 0) {
@@ -484,17 +505,7 @@ export const AddNewQuestionModal: FunctionComponent<AddNewQuestionModalProps> = 
                     <Subtitle size='small'>Validation</Subtitle>
                   </Box>
                   <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    {newQuestion?.slug &&
-                    [
-                      'packet_school_district',
-                      'packet_secondary_contact_first',
-                      'packet_secondary_contact_last',
-                      'address_county_id',
-                      'address_zip',
-                      'address_city',
-                      'address_street',
-                      'program_year',
-                    ].indexOf(newQuestion.slug) !== -1 ? (
+                    {!isAddStudent ? (
                       <Checkbox disabled />
                     ) : (
                       <Checkbox

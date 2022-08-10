@@ -17,7 +17,13 @@ import { CustomModal } from '../../components/CustomModal/CustomModals'
 import { validationTypes } from '../../constant/defaultQuestions'
 
 import { TabContext } from '../TabContextProvider'
-import { EnrollmentQuestion, EnrollmentQuestionGroup, EnrollmentQuestionTab, QuestionTypes } from '../types'
+import {
+  EnrollmentQuestion,
+  EnrollmentQuestionGroup,
+  EnrollmentQuestionTab,
+  QuestionTypes,
+  ActionQuestionTypes,
+} from '../types'
 // import QuestionOptions from './Options'
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
 
@@ -554,11 +560,16 @@ export const AddNewQuestionModal: FunctionComponent<AddNewQuestionModalProps> = 
 
             {editQuestions.map((e, i) => (
               <>
+                {i != 0 && (
+                  <Box>
+                    <Subtitle>Additional Questions</Subtitle>
+                  </Box>
+                )}
                 <Box
                   sx={{
                     width: '100%',
                     height: '40px',
-                    mt: '40px',
+                    mt: '20px',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
@@ -600,7 +611,7 @@ export const AddNewQuestionModal: FunctionComponent<AddNewQuestionModalProps> = 
                         },
                     }}
                     labelTop
-                    dropDownItems={QuestionTypes}
+                    dropDownItems={i == 0 ? QuestionTypes : ActionQuestionTypes}
                     placeholder='Type'
                     defaultValue={e.type}
                     // @ts-ignore

@@ -31,7 +31,7 @@ const FilterComponent: FunctionComponent<FilterComponentProps> = ({
   setUsersInvalid,
 }) => {
   const { me } = useContext(UserContext)
-  const { gradeList, programYearList } = useCurrentGradeAndProgramByRegionId(
+  const { gradeList, programYearList, schoolPartnerList } = useCurrentGradeAndProgramByRegionId(
     Number(me?.selectedRegionId),
     grades,
     setGrades,
@@ -99,6 +99,16 @@ const FilterComponent: FunctionComponent<FilterComponentProps> = ({
               Please select one at least
             </Subtitle>
           )}
+          <CheckBoxList
+            title={'Schools of Enrollment'}
+            values={users}
+            setValues={(value) => {
+              setUsers(value)
+              setUsersInvalid(false)
+            }}
+            checkboxLists={schoolPartnerList}
+            haveSelectAll={false}
+          />
         </Grid>
         <Grid item xs={6}>
           <Box sx={{ display: 'grid' }}>

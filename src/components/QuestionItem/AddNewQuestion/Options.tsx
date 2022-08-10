@@ -177,7 +177,9 @@ export const QuestionOptions: FunctionComponent<QuestionOptions> = ({
                 }}
                 labelTop
                 dropDownItems={
-                  (opt.action !== 2 && !enableAction) || opt.label.trim() == ''
+                  (opt.action !== 2 && !enableAction) ||
+                  opt.label.trim() == '' ||
+                  options.filter((op) => op.label.trim() !== '').length < 2
                     ? actionTypes.filter((a) => a.value === 1)
                     : actionTypes
                 }

@@ -1,9 +1,9 @@
-name: Deploy To Demo
+name: Deploy To Staging
 
 on:
   push:
     tags:
-      - demo
+      - staging
 
 jobs:
 
@@ -31,10 +31,10 @@ jobs:
           cache: npm
 
       - name: Install Dependencies
-        run: npm install
+        run: npm install --legacy-peer-deps
 
       - name: Run Build
-        run: npm run build
+        run: npm run build-stag
         env:
           CI: false
 
@@ -67,7 +67,7 @@ jobs:
             --follow-symlinks \
             --delete
         env:
-          AWS_S3_BUCKET: ${{ secrets.DEMO_S3_BUCKET }}
+          AWS_S3_BUCKET: ${{ secrets.STAGING_S3_BUCKET }}
           SOURCE_DIR: 'build'
 
       - name: Invalidate Cloudfront
@@ -80,5 +80,5 @@ jobs:
               INVALIDATION_STATUS=$(aws cloudfront get-invalidation --distribution-id $DISTRIBUTION_ID --id "$INVALIDATION_ID" | jq -r '.Invalidation.Status')
           done
         env:
-          DISTRIBUTION_ID: ${{ secrets.DEMO_CLOUDFRONT_DISTRIBUTION }}
+          DISTRIBUTION_ID: ${{ secrets.STAGING_CLOUDFRONT_DISTRIBUTION }}
           PATHS: '/*'

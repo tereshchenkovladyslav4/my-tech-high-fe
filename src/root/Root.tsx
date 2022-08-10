@@ -55,7 +55,6 @@ export const Root: FunctionComponent = () => {
       setIsSuper(Number(data.me?.level) === 1)
     }
   }, [loading])
-
   return loading && !me ? (
     <LoadingScreen />
   ) : me !== null ? (

@@ -62,6 +62,12 @@ module.exports = {
     ],
     'implicit-arrow-linebreak': 'off',
     'import/prefer-default-export': 'off',
+    'prettier/prettier': [
+      'error',
+      {
+        'endOfLine': 'auto',
+      }
+    ],
     'import/order': [
       'error',
       {

@@ -1,4 +1,5 @@
-import React, { FunctionComponent, useEffect, useState } from 'react'
+import React, { FunctionComponent, useEffect, useState, useContext } from 'react'
+import { useQuery, useMutation } from '@apollo/client'
 import SearchIcon from '@mui/icons-material/Search'
 import { Box, Button, Card, InputAdornment, OutlinedInput } from '@mui/material'
 import { map } from 'lodash'
@@ -6,87 +7,149 @@ import moment from 'moment'
 import { Pagination } from '../../../../components/Pagination/Pagination'
 import { SortableTable } from '../../../../components/SortableTable/SortableTable'
 import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
+import { WarningModal } from '../../../../components/WarningModal/Warning'
+import { UserContext } from '../../../../providers/UserContext/UserProvider'
 import { BLUE_GRDIENT, RED_GRADIENT } from '../../../../utils/constants'
 import { EMAIL_RECORDS_HEADCELLS } from '../../../../utils/PageHeadCellsConstant'
+import { CustomModal } from '../../SiteManagement/EnrollmentSetting/components/CustomModal/CustomModals'
 import { EmailRecordsFilter } from '../EmailRecordsFilter/EmailRecordsFilter'
+import { EmailResendModal } from '../EmailResendModal/EmailResendModal'
+import {
+  getEmailRecordsQuery,
+  recordsCountQuery,
+  deleteRecordsMutation,
+  resendRecordsMutation,
+  resendEmailMutation,
+} from '../service'
 import { EmailRecord } from '../type'
 
-const emailRecordData = [
-  {
-    record_id: '1',
-    date: '2022-03-10T00:00:00.000Z',
-    to: 'sample@gamil.com',
-    email_template: 'Application Received',
-    subject: 'Thanks for Applying!',
-    from: 'admin@mytechhigh.com',
-    status: 'Error',
-  },
-  {
-    record_id: '2',
-    date: '2022-03-10T00:00:00.000Z',
-    to: 'sally@gamil.com',
-    email_template: 'Packet Accepted',
-    subject: 'You are Enrolled',
-    from: 'enrollment@mytechhigh.com',
-    status: 'Error',
-  },
-  {
-    record_id: '3',
-    date: '2022-03-10T00:00:00.000Z',
-    to: 'polly@gamil.com',
-    email_template: 'Missing Info',
-    subject: 'Please Update Your Enrollment Packet',
-    from: 'enrollment@mytechhigh.com',
-    status: 'Error',
-  },
-  {
-    record_id: '4',
-    date: '2022-03-10T00:00:00.000Z',
-    to: 'sam@gamil.com',
-    email_template: 'Nofity of Withdraw',
-    subject: 'Confirm Your Withdraw by 3/12/22',
-    from: 'enrollment@mytechhigh.com',
-    status: 'Error',
-  },
-]
-
 export const EmailRecordsTable: FunctionComponent = () => {
+  const { me } = useContext(UserContext)
+  const [deleteRecords] = useMutation(deleteRecordsMutation)
+  const [resendRecords] = useMutation(resendRecordsMutation)
+  const [resendEmail] = useMutation(resendEmailMutation)
   const [filters, setFilters] = useState(['Error'])
-  const [recordCount] = useState({ Error: 4, Sent: 1 })
+  const [recordCount, setRecordCount] = useState({ Error: 0, Sent: 0 })
+  const [selectedEmailRecord, setEmailRecord] = useState<EmailRecord>()
+  const [emailRecordData, setEmailRecordData] = useState<Array<EmailRecord>>([])
 
-  const [totalEmails, setTotalEmails] = useState(100)
+  const [totalEmails, setTotalEmails] = useState(0)
   const [searchField, setSearchField] = useState('')
   const [paginatinLimit, setPaginatinLimit] = useState(25)
   const [currentPage, setCurrentPage] = useState<number>(1)
-  const [, setSkip] = useState<number>()
-  const [, setSort] = useState('status|ASC')
+  const [skip, setSkip] = useState<number>()
+  const [sort, setSort] = useState('status|ASC')
   const [tableData, setTableData] = useState<Array<unknown>>([])
+  const [recordIds, setRecordIds] = useState<Array<string>>([])
+
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [showWarningAlert, setShowWarningAlert] = useState(false)
+  const [showEmailResendModal, setShowEmailResendModal] = useState(false)
+  const [showRemoveWarning, setShowRemoveWarning] = useState(false)
 
   const createData = (emailRecord: EmailRecord) => {
     return {
-      id: emailRecord.record_id,
-      date: moment(emailRecord.date).format('MM/DD/YY'),
-      to: emailRecord.to,
-      email_tempate: emailRecord.email_template,
+      id: emailRecord.id,
+      date: moment(emailRecord.created_at).format('MM/DD/YY'),
+      to: emailRecord.to_email,
+      email_tempate: emailRecord.template_name,
       subject: emailRecord.subject,
-      from: emailRecord.from,
+      from: emailRecord.from_email,
       status: emailRecord.status,
     }
   }
 
-  useEffect(() => {
-    setTableData(() => {
-      return map(emailRecordData, (record) => {
-        return createData(record)
-      })
-    })
-  }, [])
+  const { loading, data, refetch } = useQuery(getEmailRecordsQuery, {
+    variables: {
+      skip: skip,
+      sort: sort,
+      take: paginatinLimit,
+      search: searchField,
+      filters: filters,
+      regionId: me?.selectedRegionId,
+    },
+    skip: me?.selectedRegionId ? false : true,
+    fetchPolicy: 'network-only',
+  })
 
-  const handleResend = () => {
-    setTotalEmails(10)
+  const { data: countGroup, refetch: refetchRecordCount } = useQuery(recordsCountQuery, {
+    variables: {
+      regionId: me?.selectedRegionId,
+    },
+    fetchPolicy: 'network-only',
+  })
+
+  useEffect(() => {
+    if (data !== undefined) {
+      const { emailRecords } = data
+      const { results, total } = emailRecords
+      setEmailRecordData(() => {
+        return map(results, (record) => {
+          return record
+        })
+      })
+      setTotalEmails(total)
+      setTableData(() => {
+        return map(results, (application) => {
+          return createData(application)
+        })
+      })
+    }
+  }, [loading, data])
+
+  useEffect(() => {
+    setCurrentPage(0)
+  }, [me?.selectedRegionId])
+
+  useEffect(() => {
+    if (countGroup) {
+      setRecordCount(countGroup.emailRecordsCountByRegionId.results)
+    }
+  }, [countGroup])
+
+  useEffect(() => {
+    setSkip(() => {
+      return paginatinLimit ? paginatinLimit * (currentPage - 1) : 25
+    })
+  }, [currentPage])
+
+  const handleResendButton = async () => {
+    if (recordIds.length == 0) {
+      setShowWarningAlert(true)
+      return
+    }
+    await resendRecords({
+      variables: {
+        deleteRecordInput: {
+          record_ids: recordIds,
+        },
+      },
+    })
+    refetch()
+    refetchRecordCount()
   }
 
-  const handleRemove = () => {}
+  const handleRemove = () => {
+    if (recordIds.length == 0) {
+      setShowWarningAlert(true)
+      return
+    }
+
+    let bAbletoRemove = true
+
+    recordIds.map((id) => {
+      const record = emailRecordData?.find((el) => el.id === id)
+      if (record?.status == 'Sent') {
+        bAbletoRemove = false
+      }
+    })
+
+    if (bAbletoRemove == true) {
+      setShowDeleteModal(true)
+    } else {
+      setShowRemoveWarning(true)
+    }
+  }
 
   const handlePageChange = (page) => {
     setCurrentPage(page)
@@ -99,9 +162,45 @@ export const EmailRecordsTable: FunctionComponent = () => {
     setSort(`${property}|${order}`)
   }
 
-  const handleOpenProfile = () => {}
+  const handleRecordSelected = (rowID: string) => {
+    setShowEmailResendModal(true)
+    const row = emailRecordData?.find((el) => el.id === rowID)
+    setEmailRecord(row)
+  }
 
-  const handlePacketSelect = () => {}
+  const handleDeleteEmailRecords = async () => {
+    setShowDeleteModal(!showDeleteModal)
+    await deleteRecords({
+      variables: {
+        deleteRecordInput: {
+          record_ids: recordIds,
+        },
+      },
+    })
+    refetch()
+    refetchRecordCount()
+  }
+
+  const handleResendEmail = async (template: EmailRecord, body: string) => {
+    const param = { ...template, body: body }
+    await resendEmail({
+      variables: {
+        resendEmailInput: {
+          to_email: param.to_email,
+          from_email: param.from_email,
+          bcc: param.bcc,
+          subject: param.subject,
+          body: param.body,
+          template_name: param.template_name,
+          status: param.status,
+          region_id: param.region_id,
+        },
+      },
+    })
+    setShowEmailResendModal(false)
+    refetch()
+    refetchRecordCount()
+  }
 
   return (
     <Card sx={{ paddingTop: '24px', marginBottom: '24px', paddingBottom: '12px' }}>
@@ -173,7 +272,7 @@ export const EmailRecordsTable: FunctionComponent = () => {
                 color: '#fff',
               },
             }}
-            onClick={handleResend}
+            onClick={handleResendButton}
           >
             Resend
           </Button>
@@ -220,17 +319,60 @@ export const EmailRecordsTable: FunctionComponent = () => {
         />
       </Box>
       <Box>
-        <EmailRecordsFilter filters={filters} setFilters={setFilters} recordCount={recordCount} />
+        <EmailRecordsFilter
+          filters={filters}
+          setFilters={setFilters}
+          recordCount={recordCount}
+          setCurrentPage={setCurrentPage}
+        />
       </Box>
       <SortableTable
         rows={tableData}
         headCells={EMAIL_RECORDS_HEADCELLS}
-        onCheck={() => {}}
+        onCheck={setRecordIds}
         clearAll={false}
-        onRowClick={handlePacketSelect}
-        onParentClick={handleOpenProfile}
+        onParentClick={undefined}
+        onRowClick={handleRecordSelected}
         onSortChange={sortChangeAction}
       />
+      {showDeleteModal && (
+        <CustomModal
+          title='Delete'
+          description='This message has not been sent to the recipient.'
+          subDescription='Do you really want to delete this email?'
+          onClose={() => setShowDeleteModal(!showDeleteModal)}
+          onConfirm={handleDeleteEmailRecords}
+          confirmStr='Delete'
+        />
+      )}
+
+      {showWarningAlert && (
+        <WarningModal
+          title='Warning'
+          subtitle='Please select Email Records'
+          btntitle='Close'
+          handleModem={() => setShowWarningAlert(!showWarningAlert)}
+          handleSubmit={() => setShowWarningAlert(!showWarningAlert)}
+        />
+      )}
+
+      {showRemoveWarning && (
+        <WarningModal
+          title='Warning'
+          subtitle='Please select Only Email Errors'
+          btntitle='Close'
+          handleModem={() => setShowRemoveWarning(!showRemoveWarning)}
+          handleSubmit={() => setShowRemoveWarning(!showRemoveWarning)}
+        />
+      )}
+
+      {showEmailResendModal && (
+        <EmailResendModal
+          handleModem={() => setShowEmailResendModal(!showEmailResendModal)}
+          handleSubmit={handleResendEmail}
+          template={selectedEmailRecord}
+        />
+      )}
     </Card>
   )
 }

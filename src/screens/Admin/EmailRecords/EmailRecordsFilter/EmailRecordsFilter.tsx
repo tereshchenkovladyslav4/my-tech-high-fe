@@ -5,16 +5,23 @@ import { MTHBLUE, BUTTON_LINEAR_GRADIENT } from '../../../../utils/constants'
 type EmailRecordsFilter = {
   filters: unknown[]
   setFilters: (_) => void
+  setCurrentPage: (_) => void
   recordCount: unknown
 }
 
-export const EmailRecordsFilter: FunctionComponent<EmailRecordsFilter> = ({ filters, setFilters, recordCount }) => {
+export const EmailRecordsFilter: FunctionComponent<EmailRecordsFilter> = ({
+  filters,
+  setFilters,
+  recordCount,
+  setCurrentPage,
+}) => {
   const handleSelectFilter = (value) => {
     if (filters.includes(value)) {
       setFilters(filters.filter((item) => item !== value))
     } else {
       setFilters([...filters, ...[value]])
     }
+    setCurrentPage(1)
   }
   return (
     <Box

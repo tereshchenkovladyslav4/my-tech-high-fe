@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { ApolloError } from '@apollo/client'
+import { filter, map } from 'lodash'
 import moment from 'moment'
 import { GRADES } from '@mth/constants'
 import { useCurrentSchoolYearByRegionId } from '@mth/hooks'
@@ -11,6 +12,7 @@ type CurrentGradeAndProgramByRegionId = {
   error: ApolloError | undefined
   gradeList: CheckBoxListVM[]
   programYearList: CheckBoxListVM[]
+  schoolPartnerList: CheckBoxListVM[]
 }
 
 export const useCurrentGradeAndProgramByRegionId = (
@@ -25,7 +27,7 @@ export const useCurrentGradeAndProgramByRegionId = (
   } = useCurrentSchoolYearByRegionId(regionId)
   const [availableGrades, setAvailableGrades] = useState<CheckBoxListVM[]>([])
   const [programYearList, setProgramYearList] = useState<CheckBoxListVM[]>([])
-
+  const [schoolPartnerList, setSchoolPartnerList] = useState<CheckBoxListVM[]>([])
   useEffect(() => {
     if (!schoolYearLoading && schoolYearData?.schoolyear_getcurrent) {
       const availGrades = schoolYearData?.schoolyear_getcurrent?.grades?.split(',').map((item: string) => {
@@ -40,6 +42,15 @@ export const useCurrentGradeAndProgramByRegionId = (
             value: item.toString(),
           }
       })
+      const availSchoolPartners = map(
+        filter(schoolYearData.schoolyear_getcurrent.SchoolPartners, (el) => el.active === 1),
+        (el) => ({
+          label: el.name,
+          value: el.school_partner_id,
+        }),
+      )
+      setSchoolPartnerList(availSchoolPartners)
+
       setAvailableGrades(availGrades)
       if (grades.length == 0)
         setGrades([
@@ -66,7 +77,8 @@ export const useCurrentGradeAndProgramByRegionId = (
           schoolYearData?.schoolyear_getcurrent.midyear_application_close?.substring(0, 10),
         ).toISOString()
 
-        setProgramYearList([
+        setProgramYearList((prev) => [
+          ...prev,
           {
             label: `${moment(schoolYear_date_begin).format('YYYY')} - ${moment(schoolYear_date_end).format('YY')}`,
             value: 'schoolYear',
@@ -78,6 +90,21 @@ export const useCurrentGradeAndProgramByRegionId = (
             value: 'midYear',
           },
         ])
+      } else {
+        const schoolYear_date_begin = moment(
+          schoolYearData?.schoolyear_getcurrent.date_begin?.substring(0, 10),
+        ).toISOString()
+        const schoolYear_date_end = moment(
+          schoolYearData?.schoolyear_getcurrent.date_end?.substring(0, 10),
+        ).toISOString()
+
+        setProgramYearList((prev) => [
+          ...prev,
+          {
+            label: `${moment(schoolYear_date_begin).format('YYYY')} - ${moment(schoolYear_date_end).format('YY')}`,
+            value: 'schoolYear',
+          },
+        ])
       }
     }
   }, [schoolYearLoading, schoolYearData])
@@ -87,5 +114,6 @@ export const useCurrentGradeAndProgramByRegionId = (
     error: schoolYearError,
     gradeList: availableGrades,
     programYearList: programYearList,
+    schoolPartnerList: schoolPartnerList,
   }
 }

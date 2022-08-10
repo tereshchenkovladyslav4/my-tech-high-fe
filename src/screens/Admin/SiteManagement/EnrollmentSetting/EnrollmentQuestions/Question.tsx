@@ -89,47 +89,47 @@ export const EnrollmentQuestionItem: FunctionComponent<EnrollmentQuestionItemPro
 
   return (
     <>
-      {questionItems.map((q): ReactElement | undefined => {
-        if ((q.additional_question && q.isEnable) || !q.additional_question) {
-          if (q.type === QUESTION_TYPE.AGREEMENT) {
-            return (
-              <Grid item xs={questionItems.length > 1 ? 12 : 6}>
-                <FormControl required name='acknowledge' component='fieldset' variant='standard'>
-                  <FormGroup>
-                    {/* <FormGroup style={{ width: '50%' }}> */}
-                    <FormControlLabel
-                      control={<Checkbox />}
-                      label={
-                        <Paragraph size='medium'>
-                          <p dangerouslySetInnerHTML={{ __html: q.question }}></p>
-                        </Paragraph>
-                      }
-                    />
-                  </FormGroup>
-                </FormControl>
-                {!q.additional_question && !mainQuestion && (
-                  <Box display='inline-flex' height='40px'>
-                    <Tooltip title='Edit'>
-                      <IconButton onClick={() => setShowEditDialog(true)}>
-                        <EditIcon />
-                      </IconButton>
-                    </Tooltip>
+      <Grid item xs={6}>
+        {questionItems.map((q): ReactElement | undefined => {
+          if ((q.additional_question && q.isEnable) || !q.additional_question) {
+            if (q.type === QUESTION_TYPE.AGREEMENT) {
+              return (
+                <Grid>
+                  <FormControl required name='acknowledge' component='fieldset' variant='standard'>
+                    <FormGroup>
+                      {/* <FormGroup style={{ width: '50%' }}> */}
+                      <FormControlLabel
+                        control={<Checkbox />}
+                        label={
+                          <Paragraph size='medium'>
+                            <p dangerouslySetInnerHTML={{ __html: q.question }}></p>
+                          </Paragraph>
+                        }
+                      />
+                    </FormGroup>
+                  </FormControl>
+                  {!q.additional_question && !mainQuestion && (
+                    <Box display='inline-flex' height='40px'>
+                      <Tooltip title='Edit'>
+                        <IconButton onClick={() => setShowEditDialog(true)}>
+                          <EditIcon />
+                        </IconButton>
+                      </Tooltip>
 
-                    <Tooltip title='Delete'>
-                      <IconButton onClick={() => setShowDeleteDialog(true)}>
-                        <DeleteForeverOutlinedIcon />
-                      </IconButton>
-                    </Tooltip>
+                      <Tooltip title='Delete'>
+                        <IconButton onClick={() => setShowDeleteDialog(true)}>
+                          <DeleteForeverOutlinedIcon />
+                        </IconButton>
+                      </Tooltip>
 
-                    <DragHandle />
-                  </Box>
-                )}
-              </Grid>
-            )
-          } else if (q.type === QUESTION_TYPE.INFORMATION) {
-            return (
-              <Grid item xs={questionItems.length > 1 ? 12 : 6}>
-                <Box display='flex' alignItems='center' width={questionItems.length > 1 ? '50%' : '100%'}>
+                      <DragHandle />
+                    </Box>
+                  )}
+                </Grid>
+              )
+            } else if (q.type === QUESTION_TYPE.INFORMATION) {
+              return (
+                <Box display='flex' alignItems='center' width={'100%'}>
                   <Paragraph size='large'>
                     <p dangerouslySetInnerHTML={{ __html: q.question }}></p>
                   </Paragraph>
@@ -151,82 +151,87 @@ export const EnrollmentQuestionItem: FunctionComponent<EnrollmentQuestionItemPro
                     </Box>
                   )}
                 </Box>
-              </Grid>
-            )
+              )
+            } else {
+              return (
+                <Grid>
+                  <Box
+                    display='flex'
+                    alignItems='center'
+                    width={'100%'}
+                    marginTop={q.additional_question ? '20px' : '0px'}
+                  >
+                    <Subtitle fontWeight='500'>{q.question}</Subtitle>
+                    {!q.additional_question && !mainQuestion && (
+                      <Box display='inline-flex' height='40px'>
+                        <Tooltip title='Edit'>
+                          <IconButton onClick={() => setShowEditDialog(true)}>
+                            <EditIcon />
+                          </IconButton>
+                        </Tooltip>
+
+                        <Tooltip title='Delete'>
+                          <IconButton onClick={() => setShowDeleteDialog(true)}>
+                            <DeleteForeverOutlinedIcon />
+                          </IconButton>
+                        </Tooltip>
+
+                        <DragHandle />
+                      </Box>
+                    )}
+                  </Box>
+                  <Box alignItems='center' width={'100%'}>
+                    <Item question={q} setAdditionalQuestion={(slug, value) => handleAdditionalAction(slug, value)} />
+                  </Box>
+                </Grid>
+              )
+            }
           } else {
-            return (
-              <Grid item xs={questionItems.length > 1 ? 12 : 6}>
-                <Box display='flex' alignItems='center' width={questionItems.length > 1 ? '50%' : '100%'}>
-                  <Subtitle fontWeight='500'>{q.question}</Subtitle>
-                  {!q.additional_question && !mainQuestion && (
-                    <Box display='inline-flex' height='40px'>
-                      <Tooltip title='Edit'>
-                        <IconButton onClick={() => setShowEditDialog(true)}>
-                          <EditIcon />
-                        </IconButton>
-                      </Tooltip>
-
-                      <Tooltip title='Delete'>
-                        <IconButton onClick={() => setShowDeleteDialog(true)}>
-                          <DeleteForeverOutlinedIcon />
-                        </IconButton>
-                      </Tooltip>
-
-                      <DragHandle />
-                    </Box>
-                  )}
-                </Box>
-                <Box alignItems='center' width={questionItems.length > 1 ? '49%' : '100%'}>
-                  <Item question={q} setAdditionalQuestion={(slug, value) => handleAdditionalAction(slug, value)} />
-                </Box>
-              </Grid>
-            )
+            return undefined
           }
-        } else {
-          return undefined
-        }
-      })}
-      {showEditDialog && (
-        <AddNewQuestionModal
-          onClose={() => setShowEditDialog(false)}
-          editItem={item}
-          group={group}
-          isNewQuestion={false}
-        />
-      )}
-      {showDeleteDialog && (
-        <CustomModal
-          title='Delete Question'
-          description='Are you sure you want to delete this question?'
-          confirmStr='Delete'
-          onClose={() => setShowDeleteDialog(false)}
-          onConfirm={() => {
-            setShowDeleteDialog(false)
-            const newValues = values.map((v) => {
-              if (v.tab_name === tabName) {
-                const newGroups = v.groups.map((g) =>
-                  g.group_name === group
-                    ? {
-                        ...g,
-                        questions: g.questions
-                          .filter((q) => q.question !== item[0].question)
-                          .sort((a, b) => a.order - b.order)
-                          .map((item, index) => {
-                            return { ...item, order: index + 1 }
-                          }),
-                      }
-                    : g,
-                )
-                // v.groups = newGroups
-                return { ...v, groups: newGroups }
-              }
-              return v
-            })
-            setValues(newValues)
-            // deleteQuestion({ variables: { id: item.id } })
-          }}
-        />
-      )}
+        })}
+        {showEditDialog && (
+          <AddNewQuestionModal
+            onClose={() => setShowEditDialog(false)}
+            editItem={item}
+            group={group}
+            isNewQuestion={false}
+          />
+        )}
+        {showDeleteDialog && (
+          <CustomModal
+            title='Delete Question'
+            description='Are you sure you want to delete this question?'
+            confirmStr='Delete'
+            onClose={() => setShowDeleteDialog(false)}
+            onConfirm={() => {
+              setShowDeleteDialog(false)
+              const newValues = values.map((v) => {
+                if (v.tab_name === tabName) {
+                  const newGroups = v.groups.map((g) =>
+                    g.group_name === group
+                      ? {
+                          ...g,
+                          questions: g.questions
+                            .filter((q) => q.question !== item[0].question)
+                            .sort((a, b) => a.order - b.order)
+                            .map((item, index) => {
+                              return { ...item, order: index + 1 }
+                            }),
+                        }
+                      : g,
+                  )
+                  // v.groups = newGroups
+                  return { ...v, groups: newGroups }
+                }
+                return v
+              })
+              setValues(newValues)
+              // deleteQuestion({ variables: { id: item.id } })
+            }}
+          />
+        )}
+      </Grid>
     </>
   )
 }
@@ -244,7 +249,8 @@ function Item({
   }, [q])
   function onChange(value: string | number) {
     if (q.type !== QUESTION_TYPE.TEXTFIELD) {
-      if (q.options[+value - 1]?.action === 2) {
+      const selected_option = q.options.filter((option) => option.value == value)
+      if (selected_option.length > 0 && selected_option[0].action === 2) {
         if (q.type === QUESTION_TYPE.CHECKBOX) {
           if (selectedOption.indexOf(value) > -1) {
             setAdditionalQuestion(q.slug, false)

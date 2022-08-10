@@ -32,8 +32,8 @@ export const getSchoolYearsByRegionId = gql`
         date_reg_close
         date_reg_open
         midyear_application
-        midyear_application_open
         midyear_application_close
+        midyear_application_open
       }
       county_file_name
       county_file_path
