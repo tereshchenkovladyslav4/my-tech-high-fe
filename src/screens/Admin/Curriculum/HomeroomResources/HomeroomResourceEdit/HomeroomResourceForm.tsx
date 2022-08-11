@@ -65,12 +65,23 @@ const HomeroomResourceForm: React.FC<HomeroomResourceFormProps> = ({ setIsChange
     }
   }
   const Image = () => (
-    <Box display='flex' flexDirection='column' justifyContent={'center'} sx={{ height: 189, width: 225 }} marginTop={3}>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
       <Subtitle sx={editHomeroomResourceClassess.formError}>{touched.image && errors.image}</Subtitle>
       {values.image || imageUrl ? (
         <>
-          <Avatar src={imageUrl || `${s3URL}${values.image}`} variant='square' sx={{ height: '100%', width: '100%' }} />
-          <Box onClick={onRemovePhoto} sx={{ cursor: 'pointer' }}>
+          <Avatar
+            src={imageUrl || `${s3URL}${values.image}`}
+            variant='square'
+            sx={{ height: 189, width: 225, borderRadius: 1 }}
+          />
+          <Box onClick={onRemovePhoto} sx={{ cursor: 'pointer', marginTop: 1 }}>
             <Paragraph size='medium' fontWeight='500' textAlign='center' color='#4145FF'>
               Remove Image
             </Paragraph>
@@ -81,7 +92,7 @@ const HomeroomResourceForm: React.FC<HomeroomResourceFormProps> = ({ setIsChange
           display='flex'
           flexDirection='column'
           justifyContent={'center'}
-          sx={{ backgroundColor: '#FAFAFA', alignItems: 'center', cursor: 'pointer', height: '100%', width: '100%' }}
+          sx={{ backgroundColor: '#FAFAFA', alignItems: 'center', cursor: 'pointer', height: 189, width: 225 }}
           onClick={() => setImageModalOpen(true)}
         >
           <SystemUpdateAltIcon />
@@ -94,25 +105,37 @@ const HomeroomResourceForm: React.FC<HomeroomResourceFormProps> = ({ setIsChange
   )
 
   return (
-    <Box sx={{ width: '100%', px: 6, py: 4, textAlign: 'left' }}>
-      <Grid container gap='24px'>
-        <Grid item xs={3}>
+    <Box sx={{ width: '100%', px: 8, py: 8, textAlign: 'left' }}>
+      <Grid container sx={{ gap: 6 }}>
+        <Grid
+          item
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'start',
+          }}
+        >
           {Image()}
-          <Subtitle sx={editHomeroomResourceClassess.formError}>{touched.subtitle && errors.subtitle}</Subtitle>
-          <DropDown
-            dropDownItems={subtitleOptions}
-            placeholder='Subtitle'
-            labelTop
-            setParentValue={(value) => {
-              setFieldValue('subtitle', value)
-              setIsChanged(true)
-            }}
-            size='medium'
-            defaultValue={values?.subtitle}
-            error={{ error: touched.subtitle && !!errors.subtitle, errorMsg: '' }}
-          />
+          <Box sx={{ width: '100%', mt: 4, mb: 3 }}>
+            <Subtitle sx={editHomeroomResourceClassess.formError}>{touched.subtitle && errors.subtitle}</Subtitle>
+            <DropDown
+              dropDownItems={subtitleOptions}
+              placeholder='Subtitle'
+              labelTop
+              setParentValue={(value) => {
+                setFieldValue('price', '')
+                setFieldValue('subtitle', value)
+                setIsChanged(true)
+              }}
+              size='medium'
+              sx={{ m: 0 }}
+              defaultValue={values?.subtitle}
+              error={{ error: touched.subtitle && !!errors.subtitle, errorMsg: '' }}
+            />
+          </Box>
           {values?.subtitle === ResourceSubtitle.PRICE && (
-            <>
+            <Box sx={{ width: '100%' }}>
               <Subtitle sx={editHomeroomResourceClassess.formError}>{touched.price && errors.price}</Subtitle>
               <TextField
                 name='price'
@@ -120,193 +143,199 @@ const HomeroomResourceForm: React.FC<HomeroomResourceFormProps> = ({ setIsChange
                 placeholder='Entry'
                 type='number'
                 fullWidth
-                value={values?.price}
+                value={values?.price || ''}
                 onChange={(e) => {
-                  handleChange(e)
+                  setFieldValue('price', Number(e.target.value) || '')
                   setIsChanged(true)
                 }}
                 error={touched.price && !!errors.price}
               />
-            </>
+            </Box>
           )}
         </Grid>
-        <Grid item xs={5}>
-          <Box sx={{ width: '85%' }}>
-            <Box sx={{ my: 1 }}>
-              <Subtitle sx={editHomeroomResourceClassess.formError}>{touched.title && errors.title}</Subtitle>
-              <TextField
-                name='title'
-                label='Name'
-                placeholder='Entry'
-                fullWidth
-                value={values?.title}
-                onChange={(e) => {
-                  handleChange(e)
-                  setIsChanged(true)
-                }}
-                sx={{ my: 1 }}
-                error={touched.title && !!errors.title}
-              />
-            </Box>
-
-            <Box sx={{ my: 1 }}>
-              <Subtitle sx={editHomeroomResourceClassess.formError}>{touched.website && errors.website}</Subtitle>
-              <TextField
-                name='website'
-                label='Website'
-                placeholder='Entry'
-                fullWidth
-                value={values?.website}
-                onChange={(e) => {
-                  handleChange(e)
-                  setIsChanged(true)
-                }}
-                sx={{ my: 1 }}
-                error={touched.website && !!errors.website}
-              />
-            </Box>
-          </Box>
-
-          <Box
-            sx={{
-              display: 'flex',
-              my: 1,
-              gap: '24px',
-              justifyContent: 'space-between',
-              alignItems: 'end',
-            }}
-          >
-            <Box sx={{ flex: 1 }}>
-              <Subtitle sx={editHomeroomResourceClassess.formError}>{touched.grades && errors.grades}</Subtitle>
-              <MultiSelect
-                options={gradeOptions}
-                placeholder='Grades'
-                onChange={(value) => {
-                  setFieldValue('grades', value.join(','))
-                  setIsChanged(true)
-                }}
-                renderValue={renderGrades(values.grades)}
-                defaultValue={values?.grades?.length ? values.grades.split(',') : []}
-                error={{ error: touched.grades && !!errors.grades, errorMsg: '' }}
-              />
-            </Box>
-            <Box sx={{ flex: 1 }}>
-              <Subtitle sx={editHomeroomResourceClassess.formError}>
-                {touched.resource_limit && errors.resource_limit}
-              </Subtitle>
-              <TextField
-                name='resource_limit'
-                label='Limit'
-                placeholder='None'
-                type='number'
-                fullWidth
-                value={values?.resource_limit || ''}
-                onChange={(e) => {
-                  setFieldValue('resource_limit', Number(e.target.value) || '')
-                  setIsChanged(true)
-                }}
-                error={touched.resource_limit && !!errors.resource_limit}
-                disabled={!!values?.family_resource}
-              />
-            </Box>
-          </Box>
-          <Box
-            sx={{
-              display: 'flex',
-              my: 1,
-              gap: '24px',
-              justifyContent: 'space-between',
-              alignItems: 'end',
-            }}
-          >
-            <Box sx={{ flex: 1 }}>
-              <Subtitle sx={editHomeroomResourceClassess.formError}>
-                {touched.std_user_name && errors.std_user_name}
-              </Subtitle>
-              <TextField
-                name='std_user_name'
-                label='Username'
-                placeholder='Entry'
-                fullWidth
-                value={values?.std_user_name}
-                onChange={(e) => {
-                  handleChange(e)
-                  setIsChanged(true)
-                }}
-                error={touched.std_user_name && !!errors.std_user_name}
-              />
-            </Box>
-            <Box sx={{ flex: 1 }}>
-              <Subtitle sx={editHomeroomResourceClassess.formError}>
-                {touched.std_password && errors.std_password}
-              </Subtitle>
-              <TextField
-                name='std_password'
-                label='Password'
-                placeholder='Entry'
-                fullWidth
-                value={values?.std_password}
-                onChange={(e) => {
-                  handleChange(e)
-                  setIsChanged(true)
-                }}
-                error={touched.std_password && !!errors.std_password}
-              />
-            </Box>
-          </Box>
-        </Grid>
-        <Grid item xs={3}>
-          <Box textAlign='start' marginLeft='48px'>
-            <FormControlLabel
-              sx={{ height: 30, marginTop: '48px' }}
-              control={
-                <Checkbox
-                  checked={values?.add_resource_level}
-                  value={values?.add_resource_level}
-                  onChange={() => {
-                    setFieldValue('add_resource_level', !values?.add_resource_level)
-                    setIsChanged(true)
-                  }}
+        <Grid item flex='1'>
+          <Grid container>
+            <Grid item xs={8}>
+              <Box sx={{ width: '85%' }}>
+                <Box sx={{ mb: 3 }}>
+                  <Subtitle sx={editHomeroomResourceClassess.formError}>{touched.title && errors.title}</Subtitle>
+                  <TextField
+                    name='title'
+                    label='Name'
+                    placeholder='Entry'
+                    fullWidth
+                    value={values?.title}
+                    onChange={(e) => {
+                      handleChange(e)
+                      setIsChanged(true)
+                    }}
+                    error={touched.title && !!errors.title}
+                  />
+                </Box>
+                <Box sx={{ mb: 3 }}>
+                  <Subtitle sx={editHomeroomResourceClassess.formError}>{touched.website && errors.website}</Subtitle>
+                  <TextField
+                    name='website'
+                    label='Website'
+                    placeholder='Entry'
+                    fullWidth
+                    value={values?.website}
+                    onChange={(e) => {
+                      handleChange(e)
+                      setIsChanged(true)
+                    }}
+                    error={touched.website && !!errors.website}
+                  />
+                </Box>
+              </Box>
+            </Grid>
+            <Grid item xs={4}>
+              <Box sx={{ textAlign: 'start', marginLeft: 6 }}>
+                <FormControlLabel
+                  sx={{ height: 30, marginTop: 2 }}
+                  control={
+                    <Checkbox
+                      checked={values?.add_resource_level}
+                      value={values?.add_resource_level}
+                      onChange={() => {
+                        setFieldValue('add_resource_level', !values?.add_resource_level)
+                        setIsChanged(true)
+                      }}
+                    />
+                  }
+                  label={
+                    <Paragraph size='large' fontWeight='700' sx={{ marginLeft: '12px' }}>
+                      Add Resource Levels
+                    </Paragraph>
+                  }
+                  disabled={values?.family_resource}
                 />
-              }
-              label={
-                <Paragraph size='large' fontWeight='700' sx={{ marginLeft: '12px' }}>
-                  Add Resource Levels
-                </Paragraph>
-              }
-              disabled={values?.family_resource}
-            />
-            {values?.add_resource_level && (
-              <Subtitle
-                size={16}
-                color={MthColor.MTHBLUE}
-                fontWeight='700'
-                sx={{ cursor: 'pointer', marginTop: '8px', marginLeft: '44px' }}
-                onClick={() => {}}
+                {values?.add_resource_level && (
+                  <Subtitle
+                    size={16}
+                    color={MthColor.MTHBLUE}
+                    fontWeight='700'
+                    sx={{ cursor: 'pointer', marginTop: 1, marginLeft: '44px' }}
+                    onClick={() => {}}
+                  >
+                    Edit Levels
+                  </Subtitle>
+                )}
+              </Box>
+            </Grid>
+          </Grid>
+          <Grid container>
+            <Grid item xs={8}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  gap: '24px',
+                  justifyContent: 'space-between',
+                  alignItems: 'end',
+                }}
               >
-                Edit Levels
-              </Subtitle>
-            )}
-            <FormControlLabel
-              sx={{ height: 30, marginTop: '48px' }}
-              control={
-                <Checkbox
-                  checked={values?.family_resource}
-                  value={values?.family_resource}
-                  onChange={() => {
-                    setFieldValue('family_resource', !values?.family_resource)
-                    setIsChanged(true)
-                  }}
+                <Box sx={{ mb: 3, flex: 1 }}>
+                  <Subtitle sx={editHomeroomResourceClassess.formError}>{touched.grades && errors.grades}</Subtitle>
+                  <MultiSelect
+                    options={gradeOptions}
+                    label='Grades'
+                    onChange={(value) => {
+                      setFieldValue('grades', value.join(','))
+                      setIsChanged(true)
+                    }}
+                    renderValue={renderGrades(values.grades)}
+                    defaultValue={values?.grades?.length ? values.grades.split(',') : []}
+                    error={{ error: touched.grades && !!errors.grades, errorMsg: '' }}
+                  />
+                </Box>
+                <Box sx={{ mb: 3, flex: 1 }}>
+                  <Subtitle sx={editHomeroomResourceClassess.formError}>
+                    {touched.resource_limit && errors.resource_limit}
+                  </Subtitle>
+                  <TextField
+                    name='resource_limit'
+                    label='Limit'
+                    placeholder='None'
+                    type='number'
+                    fullWidth
+                    value={values?.resource_limit || ''}
+                    onChange={(e) => {
+                      setFieldValue('resource_limit', Number(e.target.value) || '')
+                      setIsChanged(true)
+                    }}
+                    error={touched.resource_limit && !!errors.resource_limit}
+                    disabled={!!values?.family_resource}
+                  />
+                </Box>
+              </Box>
+              <Box
+                sx={{
+                  display: 'flex',
+                  gap: '24px',
+                  justifyContent: 'space-between',
+                  alignItems: 'end',
+                }}
+              >
+                <Box sx={{ mb: 3, flex: 1 }}>
+                  <Subtitle sx={editHomeroomResourceClassess.formError}>
+                    {touched.std_user_name && errors.std_user_name}
+                  </Subtitle>
+                  <TextField
+                    name='std_user_name'
+                    label='Username'
+                    placeholder='Entry'
+                    fullWidth
+                    value={values?.std_user_name}
+                    onChange={(e) => {
+                      handleChange(e)
+                      setIsChanged(true)
+                    }}
+                    error={touched.std_user_name && !!errors.std_user_name}
+                  />
+                </Box>
+                <Box sx={{ mb: 3, flex: 1 }}>
+                  <Subtitle sx={editHomeroomResourceClassess.formError}>
+                    {touched.std_password && errors.std_password}
+                  </Subtitle>
+                  <TextField
+                    name='std_password'
+                    label='Password'
+                    placeholder='Entry'
+                    fullWidth
+                    value={values?.std_password}
+                    onChange={(e) => {
+                      handleChange(e)
+                      setIsChanged(true)
+                    }}
+                    error={touched.std_password && !!errors.std_password}
+                  />
+                </Box>
+              </Box>
+            </Grid>
+            <Grid item xs={4}>
+              <Box sx={{ marginLeft: 6 }}>
+                <FormControlLabel
+                  sx={{ height: 30, marginTop: 2 }}
+                  control={
+                    <Checkbox
+                      checked={values?.family_resource}
+                      value={values?.family_resource}
+                      onChange={() => {
+                        setFieldValue('family_resource', !values?.family_resource)
+                        setIsChanged(true)
+                      }}
+                    />
+                  }
+                  label={
+                    <Paragraph size='large' fontWeight='700' sx={{ marginLeft: '12px' }}>
+                      Family Resource
+                    </Paragraph>
+                  }
+                  disabled={!!values.resource_limit || values.add_resource_level}
                 />
-              }
-              label={
-                <Paragraph size='large' fontWeight='700' sx={{ marginLeft: '12px' }}>
-                  Family Resource
-                </Paragraph>
-              }
-              disabled={!!values.resource_limit || values.add_resource_level}
-            />
-          </Box>
+              </Box>
+            </Grid>
+          </Grid>
         </Grid>
         <Grid item xs={10}>
           <Subtitle size='medium' sx={{ fontSize: '27px' }} fontWeight='700'>

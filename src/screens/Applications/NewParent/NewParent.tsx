@@ -516,7 +516,7 @@ export const NewParent: FunctionComponent = () => {
         v.slug !== 'program_year' &&
         !v.mainQuestion &&
         (!v.additional_question ||
-          (values.find((x) => x.slug == v.additional_question).type == QUESTION_TYPE.DROPDOWN &&
+          (values.find((x) => x.slug == v.additional_question)?.type == QUESTION_TYPE.DROPDOWN &&
             values // drop down addintion question
               .find((x) => x.slug == v.additional_question)
               ?.options.find(
@@ -526,7 +526,7 @@ export const NewParent: FunctionComponent = () => {
                     (field[values.find((y) => y.slug == v.additional_question)?.slug] ||
                       field.meta?.[values.find((y) => y.slug == v.additional_question)?.slug]),
               ) != null) ||
-          (values.find((x) => x.slug == v.additional_question).type == QUESTION_TYPE.MULTIPLECHOICES &&
+          (values.find((x) => x.slug == v.additional_question)?.type == QUESTION_TYPE.MULTIPLECHOICES &&
             values // multi item addintional question
               .find((x) => x.slug == v.additional_question)
               ?.options.find(
@@ -536,7 +536,7 @@ export const NewParent: FunctionComponent = () => {
                     (field[values.find((y) => y.slug == v.additional_question)?.slug] ||
                       field.meta?.[values.find((y) => y.slug == v.additional_question)?.slug]),
               ) != null) ||
-          (values.find((x) => x.slug == v.additional_question).type == QUESTION_TYPE.CHECKBOX &&
+          (values.find((x) => x.slug == v.additional_question)?.type == QUESTION_TYPE.CHECKBOX &&
             values // checkbox addintional question
               .find((x) => x.slug == v.additional_question)
               ?.options.find(

@@ -14,10 +14,16 @@ type FilterComponentProps = {
   users: string[]
   gradesInvalid: boolean
   usersInvalid: boolean
+  schoolPartnersInvalid: boolean
+  programYearsInvalid: boolean
   setUsers: (value: string[]) => void
   setGrades: (value: string[]) => void
   setGradesInvalid: (value: boolean) => void
   setUsersInvalid: (value: boolean) => void
+  setProgramYears: (value: string[]) => void
+  setSchoolPartners: (value: string[]) => void
+  setProgramYearsInvalid: (value: boolean) => void
+  setSchoolPartnersInvalid: (value: boolean) => void
 }
 
 const FilterComponent: FunctionComponent<FilterComponentProps> = ({
@@ -25,10 +31,16 @@ const FilterComponent: FunctionComponent<FilterComponentProps> = ({
   users,
   gradesInvalid,
   usersInvalid,
+  schoolPartnersInvalid,
+  programYearsInvalid,
   setUsers,
   setGrades,
   setGradesInvalid,
   setUsersInvalid,
+  setProgramYears,
+  setProgramYearsInvalid,
+  setSchoolPartners,
+  setSchoolPartnersInvalid,
 }) => {
   const { me } = useContext(UserContext)
   const { gradeList, programYearList, schoolPartnerList } = useCurrentGradeAndProgramByRegionId(
@@ -100,15 +112,20 @@ const FilterComponent: FunctionComponent<FilterComponentProps> = ({
             </Subtitle>
           )}
           <CheckBoxList
-            title={'Schools of Enrollment'}
+            title={'School of Enrollment'}
             values={users}
             setValues={(value) => {
-              setUsers(value)
-              setUsersInvalid(false)
+              setSchoolPartners(value)
+              setSchoolPartnersInvalid(false)
             }}
             checkboxLists={schoolPartnerList}
             haveSelectAll={false}
           />
+          {schoolPartnersInvalid && (
+            <Subtitle size='small' color={MthColor.RED} fontWeight='700'>
+              Please select one at least
+            </Subtitle>
+          )}
         </Grid>
         <Grid item xs={6}>
           <Box sx={{ display: 'grid' }}>
@@ -116,13 +133,13 @@ const FilterComponent: FunctionComponent<FilterComponentProps> = ({
               title={'Program Year'}
               values={grades}
               setValues={(value) => {
-                setGrades(value)
-                setGradesInvalid(false)
+                setProgramYears(value)
+                setProgramYearsInvalid(false)
               }}
               checkboxLists={programYearList}
               haveSelectAll={false}
             />
-            {gradesInvalid && (
+            {programYearsInvalid && (
               <Subtitle size='small' color={MthColor.RED} fontWeight='700'>
                 Please select one at least
               </Subtitle>

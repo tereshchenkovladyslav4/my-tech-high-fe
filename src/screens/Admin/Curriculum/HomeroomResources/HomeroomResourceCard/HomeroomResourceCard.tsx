@@ -131,7 +131,7 @@ const HomeroomResourceCard: React.FC<HomeroomResourceCardProps> = ({ item, actio
           }}
         >
           <Typography fontSize='20px' component='div' fontWeight={900}>
-            {item.resource_id ? item.title : 'Add new'}
+            {item.resource_id ? item.title : 'Add New'}
           </Typography>
         </Box>
         <Stack direction='row' justifyContent='space-between' alignItems='center' sx={{ height: 40 }}>

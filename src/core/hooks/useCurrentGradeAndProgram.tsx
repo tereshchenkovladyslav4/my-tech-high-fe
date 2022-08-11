@@ -45,7 +45,7 @@ export const useCurrentGradeAndProgramByRegionId = (
       const availSchoolPartners = map(
         filter(schoolYearData.schoolyear_getcurrent.SchoolPartners, (el) => el.active === 1),
         (el) => ({
-          label: el.name,
+          label: el.abbreviation,
           value: el.school_partner_id,
         }),
       )

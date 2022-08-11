@@ -1,21 +1,31 @@
 import React, { useEffect, useState } from 'react'
-import { FormControl, Select, MenuItem, Checkbox, ListItemText } from '@mui/material'
+import { FormControl, Select, MenuItem, Checkbox, ListItemText, InputLabel, OutlinedInput } from '@mui/material'
 import { Box } from '@mui/system'
 import { map } from 'lodash'
-import { MultiSelectTemplateType } from './types'
+import { MultiSelectProps } from './types'
 
-export const MultiSelect: MultiSelectTemplateType = ({
+const ITEM_HEIGHT = 54
+const ITEM_PADDING_TOP = 8
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+    },
+  },
+}
+
+export const MultiSelect: React.FC<MultiSelectProps> = ({
   options,
+  label,
   renderValue,
-  placeholder,
   disabled,
   defaultValue,
   error,
   onChange,
 }) => {
-  const [value, setValue] = useState<unknown[]>(defaultValue || [])
+  const [value, setValue] = useState<(string | number)[]>(defaultValue || [])
 
-  const handleChange = (val: string | unknown[]) => {
+  const handleChange = (val: string | (string | number)[]) => {
     onChange(typeof val === 'string' ? [val] : val)
   }
 
@@ -42,14 +52,17 @@ export const MultiSelect: MultiSelectTemplateType = ({
 
   return (
     <Box sx={{ minWidth: 120 }}>
-      <FormControl fullWidth>
+      <FormControl fullWidth size='medium'>
+        <InputLabel id='multiple-checkbox-label'>{label}</InputLabel>
         <Select
+          labelId='multiple-checkbox-label'
+          id='multiple-checkbox'
           multiple={true}
           value={value}
           onChange={(e) => handleChange(e.target.value)}
-          displayEmpty
-          renderValue={value?.length ? renderSelectedItems : () => <span style={{ color: 'gray' }}>{placeholder}</span>}
-          size='medium'
+          input={<OutlinedInput label={label} />}
+          renderValue={renderSelectedItems}
+          MenuProps={MenuProps}
           error={error?.error}
           disabled={disabled || false}
         >

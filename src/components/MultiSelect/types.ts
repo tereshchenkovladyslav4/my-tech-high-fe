@@ -1,4 +1,3 @@
-import { FunctionComponent } from 'react'
 import { DropDownItem } from '../DropDown/types'
 
 type FormikCustomError = {
@@ -6,14 +5,12 @@ type FormikCustomError = {
   errorMsg: string
 }
 
-type MultiSelectProps = {
+export type MultiSelectProps = {
   options: DropDownItem[]
+  label?: string
   renderValue?: string
-  placeholder?: string
-  defaultValue?: unknown[]
+  defaultValue?: (string | number)[]
   error?: FormikCustomError
   disabled?: boolean
-  onChange: (value: unknown[]) => void
+  onChange: (value: (string | number)[]) => void
 }
-
-export type MultiSelectTemplateType = FunctionComponent<MultiSelectProps>

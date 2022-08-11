@@ -32,6 +32,8 @@ const NewAnnouncement: FunctionComponent<NewAnnouncementProps> = ({ announcement
   const [cronJobTime, setCronJobTime] = useState<Date | null | ''>(announcement?.scheduleTime || new Date())
   const [grades, setGrades] = useState<string[]>([])
   const [users, setUsers] = useState<string[]>([])
+  const [programYears, setProgramYears] = useState<string[]>([])
+  const [schoolPartners, setSchoolPartners] = useState<string[]>([])
   const defaultEmail = ''
   const [editorState, setEditorState] = useState(
     EditorState.createWithContent(ContentState.createFromText(defaultEmail)),
@@ -41,6 +43,8 @@ const NewAnnouncement: FunctionComponent<NewAnnouncementProps> = ({ announcement
   const [bodyInvalid, setBodyInvalid] = useState<boolean>(false)
   const [gradesInvalid, setGradesInvalid] = useState<boolean>(false)
   const [usersInvalid, setUsersInvalid] = useState<boolean>(false)
+  const [programYearsInvalid, setProgramYearsInvalid] = useState<boolean>(false)
+  const [schoolPartnersInvalid, setSchoolPartnersInvalid] = useState<boolean>(false)
   const [submitCreate, {}] = useMutation(CreateAnnouncementMutation)
   const [submitSave, {}] = useMutation(UpdateAnnouncementMutation)
 
@@ -75,6 +79,8 @@ const NewAnnouncement: FunctionComponent<NewAnnouncementProps> = ({ announcement
     } else {
       if (grades?.length == 0) setGradesInvalid(true)
       if (users?.length == 0) setUsersInvalid(true)
+      if (programYears?.length == 0) setProgramYearsInvalid(true)
+      if (schoolPartners?.length == 0) setSchoolPartnersInvalid(true)
       if (!emailFrom || !isEmail(emailFrom)) setEmailInvalid(true)
       if (!subject) setSubjectInvalid(true)
       if (draftToHtml(convertToRaw(editorState.getCurrentContent())).length <= 8) setBodyInvalid(true)
@@ -202,9 +208,15 @@ const NewAnnouncement: FunctionComponent<NewAnnouncementProps> = ({ announcement
                 users={users}
                 gradesInvalid={gradesInvalid}
                 usersInvalid={usersInvalid}
+                schoolPartnersInvalid={schoolPartnersInvalid}
+                programYearsInvalid={programYearsInvalid}
                 setUsers={setUsers}
                 setGrades={setGrades}
+                setSchoolPartners={setSchoolPartners}
+                setProgramYears={setProgramYears}
                 setGradesInvalid={setGradesInvalid}
+                setSchoolPartnersInvalid={setSchoolPartnersInvalid}
+                setProgramYearsInvalid={setProgramYearsInvalid}
                 setUsersInvalid={setUsersInvalid}
               />
             </Card>

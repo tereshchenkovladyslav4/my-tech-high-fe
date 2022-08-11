@@ -139,12 +139,7 @@ export const ApplicationQuestions: FunctionComponent = () => {
             value: item.school_year_id,
           })
 
-          if (
-            item &&
-            item.midyear_application === 1 &&
-            moment().isAfter(item?.midyear_application_open) &&
-            moment().isBefore(item?.midyear_application_close)
-          ) {
+          if (item && item.midyear_application) {
             schoolYearsArray.push({
               label: `${moment(item.date_begin).format('YYYY')} - ${moment(item.date_end).format(
                 'YYYY',

@@ -98,7 +98,7 @@ export const EmailRecordsTable: FunctionComponent = () => {
   }, [loading, data])
 
   useEffect(() => {
-    setCurrentPage(0)
+    setCurrentPage(1)
   }, [me?.selectedRegionId])
 
   useEffect(() => {

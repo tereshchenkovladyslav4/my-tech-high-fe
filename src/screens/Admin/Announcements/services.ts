@@ -57,7 +57,7 @@ export const GetCurrentSchoolYearByRegionId = gql`
       midyear_application_open
       midyear_application_close
       SchoolPartners {
-        name
+        abbreviation
         active
         school_partner_id
       }
