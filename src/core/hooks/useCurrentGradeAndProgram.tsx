@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import { ApolloError } from '@apollo/client'
 import { filter, map } from 'lodash'
 import moment from 'moment'
-import { GRADES } from '@mth/constants'
 import { useCurrentSchoolYearByRegionId } from '@mth/hooks'
 import { CheckBoxListVM } from '@mth/screens/Admin/Calendar/components/CheckBoxList/CheckBoxList'
 import { toOrdinalSuffix } from '@mth/utils'
@@ -19,6 +18,9 @@ export const useCurrentGradeAndProgramByRegionId = (
   regionId: number,
   grades: string[],
   setGrades: (value: string[]) => void,
+  setProgramYears: (value: string[]) => void,
+  setSchoolPartners: (value: string[]) => void,
+  selectAll?: boolean,
 ): CurrentGradeAndProgramByRegionId => {
   const {
     loading: schoolYearLoading,
@@ -28,6 +30,15 @@ export const useCurrentGradeAndProgramByRegionId = (
   const [availableGrades, setAvailableGrades] = useState<CheckBoxListVM[]>([])
   const [programYearList, setProgramYearList] = useState<CheckBoxListVM[]>([])
   const [schoolPartnerList, setSchoolPartnerList] = useState<CheckBoxListVM[]>([])
+
+  useEffect(() => {
+    if (selectAll && programYearList && schoolPartnerList && availableGrades) {
+      setProgramYears(map(programYearList, (el) => el.value))
+      setSchoolPartners(map(schoolPartnerList, (el) => el.value))
+      setGrades(['all', ...map(availableGrades, (el) => el.value)])
+    }
+  }, [selectAll])
+
   useEffect(() => {
     if (!schoolYearLoading && schoolYearData) {
       const availGrades = schoolYearData?.grades?.split(',').map((item: string) => {
@@ -52,17 +63,7 @@ export const useCurrentGradeAndProgramByRegionId = (
       setSchoolPartnerList(availSchoolPartners)
 
       setAvailableGrades(availGrades)
-      if (grades.length == 0)
-        setGrades([
-          ...['all'],
-          ...GRADES.map((item) => {
-            if (availGrades.filter((grade: CheckBoxListVM) => grade.value == item.toString())) {
-              return item.toString()
-            } else {
-              return ''
-            }
-          }).filter((item) => item),
-        ])
+
       if (schoolYearData?.midyear_application) {
         const schoolYear_date_begin = moment(schoolYearData?.date_begin?.substring(0, 10)).toISOString()
         const schoolYear_date_end = moment(schoolYearData?.date_end?.substring(0, 10)).toISOString()
@@ -86,6 +87,8 @@ export const useCurrentGradeAndProgramByRegionId = (
             value: 'midYear',
           },
         ])
+
+        //setProgramYears(['schoolYear', 'midYear'])
       } else {
         const schoolYear_date_begin = moment(schoolYearData?.date_begin?.substring(0, 10)).toISOString()
         const schoolYear_date_end = moment(schoolYearData?.date_end?.substring(0, 10)).toISOString()
@@ -100,6 +103,7 @@ export const useCurrentGradeAndProgramByRegionId = (
       }
     }
   }, [schoolYearLoading, schoolYearData])
+
   return {
     loading: schoolYearLoading,
     error: schoolYearError,

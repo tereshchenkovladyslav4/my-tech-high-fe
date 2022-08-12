@@ -1,7 +1,9 @@
-import React, { ReactElement } from 'react'
+import React, { ReactElement, ReactNode } from 'react'
 import { Box, Checkbox, FormControlLabel } from '@mui/material'
 import { map } from 'lodash'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { RED } from '../../../../../utils/constants'
 import { checkBoxListClassess } from './styles'
 
 export type CheckBoxListVM = {
@@ -15,8 +17,18 @@ type CheckBoxListProps = {
   values: string[]
   setValues: (value: string[]) => void
   haveSelectAll: boolean
+  error?: ReactNode
+  showError?: boolean
 }
-const CheckBoxList: React.FC<CheckBoxListProps> = ({ title, checkboxLists, values, setValues, haveSelectAll }) => {
+const CheckBoxList: React.FC<CheckBoxListProps> = ({
+  title,
+  checkboxLists,
+  values,
+  setValues,
+  haveSelectAll,
+  error,
+  showError,
+}) => {
   const handleChangeValues = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (haveSelectAll) {
       if (values.includes(e.target.value)) {
@@ -71,9 +83,16 @@ const CheckBoxList: React.FC<CheckBoxListProps> = ({ title, checkboxLists, value
   return (
     <Box sx={checkBoxListClassess.container}>
       {!!checkboxLists?.length && (
-        <Paragraph size='large' fontWeight='700'>
-          {title}
-        </Paragraph>
+        <Box>
+          <Paragraph size='large' fontWeight='700'>
+            {title}
+          </Paragraph>
+          {showError && (
+            <Subtitle size='small' color={RED} fontWeight='700'>
+              {error}
+            </Subtitle>
+          )}
+        </Box>
       )}
       {haveSelectAll && !!checkboxLists?.length && (
         <FormControlLabel

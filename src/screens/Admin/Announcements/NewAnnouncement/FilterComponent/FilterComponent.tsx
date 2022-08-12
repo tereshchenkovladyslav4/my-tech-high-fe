@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useContext, useState } from 'react'
+import React, { FunctionComponent, useContext, useEffect, useState } from 'react'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { Box, Grid } from '@mui/material'
@@ -12,6 +12,8 @@ import { defaultUserList } from '../../../Calendar/defaultValue'
 type FilterComponentProps = {
   grades: string[]
   users: string[]
+  programYears: string[]
+  schoolPartners: string[]
   gradesInvalid: boolean
   usersInvalid: boolean
   schoolPartnersInvalid: boolean
@@ -29,10 +31,10 @@ type FilterComponentProps = {
 const FilterComponent: FunctionComponent<FilterComponentProps> = ({
   grades,
   users,
+  programYears,
+  schoolPartners,
   gradesInvalid,
   usersInvalid,
-  schoolPartnersInvalid,
-  programYearsInvalid,
   setUsers,
   setGrades,
   setGradesInvalid,
@@ -43,12 +45,24 @@ const FilterComponent: FunctionComponent<FilterComponentProps> = ({
   setSchoolPartnersInvalid,
 }) => {
   const { me } = useContext(UserContext)
+
+  const [selectAll, setSelectAll] = useState(false)
+
+  useEffect(() => {
+    setSelectAll(users.includes('1') || users.includes('2'))
+  }, [users])
+
   const { gradeList, programYearList, schoolPartnerList } = useCurrentGradeAndProgramByRegionId(
     Number(me?.selectedRegionId),
     grades,
     setGrades,
+    setProgramYears,
+    setSchoolPartners,
+    selectAll,
   )
   const [expand, setExpand] = useState<boolean>(true)
+  const [showOtherFilters, setShowOtherFilters] = useState(false)
+
   const chevron = () =>
     !expand ? (
       <ChevronRightIcon
@@ -72,12 +86,20 @@ const FilterComponent: FunctionComponent<FilterComponentProps> = ({
     <Grid container sx={{ textAlign: 'left', marginY: '12px' }}>
       <Grid item container xs={12}>
         <Grid item xs={6}>
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
+          <CheckBoxList
+            title={'Users'}
+            values={users}
+            setValues={(value) => {
+              setShowOtherFilters(value.includes('1') || value.includes('2'))
+              setUsers(value)
+              setUsersInvalid(false)
             }}
-          >
+            checkboxLists={defaultUserList}
+            haveSelectAll={false}
+            showError={usersInvalid}
+            error='Users Required'
+          />
+          {showOtherFilters && (
             <CheckBoxList
               title={'Grades'}
               values={grades}
@@ -87,65 +109,39 @@ const FilterComponent: FunctionComponent<FilterComponentProps> = ({
               }}
               checkboxLists={gradeList}
               haveSelectAll={true}
+              showError={gradesInvalid}
+              error='Grades Required'
             />
-            {gradesInvalid && (
-              <Subtitle size='small' color={MthColor.RED} fontWeight='700'>
-                Please select one at least
-              </Subtitle>
-            )}
-          </Box>
-        </Grid>
-        <Grid item xs={6}>
-          <CheckBoxList
-            title={'Users'}
-            values={users}
-            setValues={(value) => {
-              setUsers(value)
-              setUsersInvalid(false)
-            }}
-            checkboxLists={defaultUserList}
-            haveSelectAll={false}
-          />
-          {usersInvalid && (
-            <Subtitle size='small' color={MthColor.RED} fontWeight='700'>
-              Please select one at least
-            </Subtitle>
-          )}
-          <CheckBoxList
-            title={'School of Enrollment'}
-            values={users}
-            setValues={(value) => {
-              setSchoolPartners(value)
-              setSchoolPartnersInvalid(false)
-            }}
-            checkboxLists={schoolPartnerList}
-            haveSelectAll={false}
-          />
-          {schoolPartnersInvalid && (
-            <Subtitle size='small' color={MthColor.RED} fontWeight='700'>
-              Please select one at least
-            </Subtitle>
           )}
         </Grid>
         <Grid item xs={6}>
-          <Box sx={{ display: 'grid' }}>
-            <CheckBoxList
-              title={'Program Year'}
-              values={grades}
-              setValues={(value) => {
-                setProgramYears(value)
-                setProgramYearsInvalid(false)
-              }}
-              checkboxLists={programYearList}
-              haveSelectAll={false}
-            />
-            {programYearsInvalid && (
-              <Subtitle size='small' color={MthColor.RED} fontWeight='700'>
-                Please select one at least
-              </Subtitle>
-            )}
-          </Box>
+          {showOtherFilters && (
+            <>
+              <CheckBoxList
+                title={'Program Year'}
+                values={programYears}
+                setValues={(value) => {
+                  setProgramYears(value)
+                  setProgramYearsInvalid(false)
+                }}
+                checkboxLists={programYearList}
+                haveSelectAll={false}
+              />
+
+              <CheckBoxList
+                title={'School of Enrollment'}
+                values={schoolPartners}
+                setValues={(value) => {
+                  setSchoolPartners(value)
+                  setSchoolPartnersInvalid(false)
+                }}
+                checkboxLists={schoolPartnerList}
+                haveSelectAll={false}
+              />
+            </>
+          )}
         </Grid>
+        <Grid item xs={6}></Grid>
       </Grid>
     </Grid>
   )

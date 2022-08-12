@@ -30,6 +30,7 @@ const NewAnnouncement: FunctionComponent<NewAnnouncementProps> = ({ announcement
   const [subject, setSubject] = useState<string>('')
   const [showPublishModal, setShowPublishModal] = useState<boolean>(false)
   const [cronJobTime, setCronJobTime] = useState<Date | null | ''>(announcement?.scheduleTime || new Date())
+
   const [grades, setGrades] = useState<string[]>([])
   const [users, setUsers] = useState<string[]>([])
   const [programYears, setProgramYears] = useState<string[]>([])
@@ -45,6 +46,7 @@ const NewAnnouncement: FunctionComponent<NewAnnouncementProps> = ({ announcement
   const [usersInvalid, setUsersInvalid] = useState<boolean>(false)
   const [programYearsInvalid, setProgramYearsInvalid] = useState<boolean>(false)
   const [schoolPartnersInvalid, setSchoolPartnersInvalid] = useState<boolean>(false)
+
   const [submitCreate, {}] = useMutation(CreateAnnouncementMutation)
   const [submitSave, {}] = useMutation(UpdateAnnouncementMutation)
 
@@ -67,16 +69,7 @@ const NewAnnouncement: FunctionComponent<NewAnnouncementProps> = ({ announcement
   }
 
   const validation = (): boolean => {
-    if (
-      grades?.length > 0 &&
-      users?.length > 0 &&
-      subject &&
-      emailFrom &&
-      isEmail(emailFrom) &&
-      draftToHtml(convertToRaw(editorState.getCurrentContent())).length > 8
-    ) {
-      return true
-    } else {
+    const isInvalid = () => {
       if (grades?.length == 0) setGradesInvalid(true)
       if (users?.length == 0) setUsersInvalid(true)
       if (programYears?.length == 0) setProgramYearsInvalid(true)
@@ -86,6 +79,36 @@ const NewAnnouncement: FunctionComponent<NewAnnouncementProps> = ({ announcement
       if (draftToHtml(convertToRaw(editorState.getCurrentContent())).length <= 8) setBodyInvalid(true)
       return false
     }
+
+    if (users.length > 0) {
+      if (users.includes('1') || users.includes('2')) {
+        if (
+          grades?.length > 0 &&
+          subject &&
+          emailFrom &&
+          isEmail(emailFrom) &&
+          draftToHtml(convertToRaw(editorState.getCurrentContent())).length > 8
+        ) {
+          return true
+        } else {
+          isInvalid()
+        }
+      } else {
+        if (
+          subject &&
+          emailFrom &&
+          isEmail(emailFrom) &&
+          draftToHtml(convertToRaw(editorState.getCurrentContent())).length > 8
+        ) {
+          return true
+        } else {
+          isInvalid()
+        }
+      }
+    } else {
+      isInvalid()
+    }
+    return false
   }
 
   const setFlagDefault = () => {
@@ -104,6 +127,8 @@ const NewAnnouncement: FunctionComponent<NewAnnouncementProps> = ({ announcement
             announcement_id: Number(announcementId),
             filter_grades: JSON.stringify(grades),
             filter_users: JSON.stringify(users),
+            //filter_program_years: JSON.stringify(programYears),
+            //filter_school_partners: JSON.stringify(schoolPartners),
             status: status,
             subject: subject,
             RegionId: me?.selectedRegionId,
@@ -124,6 +149,8 @@ const NewAnnouncement: FunctionComponent<NewAnnouncementProps> = ({ announcement
           createAnnoucementInput: {
             filter_grades: JSON.stringify(grades),
             filter_users: JSON.stringify(users),
+            //filter_program_years: JSON.stringify(programYears),
+            //filter_school_partners: JSON.stringify(schoolPartners),
             status: status,
             subject: subject,
             RegionId: me?.selectedRegionId,
@@ -204,6 +231,8 @@ const NewAnnouncement: FunctionComponent<NewAnnouncementProps> = ({ announcement
           <Grid item xs={6}>
             <Card sx={{ marginTop: 2, padding: 2 }}>
               <FilterComponent
+                programYears={programYears}
+                schoolPartners={schoolPartners}
                 grades={grades}
                 users={users}
                 gradesInvalid={gradesInvalid}
