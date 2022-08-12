@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react'
+import React from 'react'
 import InfoIcon from '@mui/icons-material/InfoOutlined'
 import { Box, Button, Modal, Typography } from '@mui/material'
 import { modalClassess } from './styles'
@@ -11,7 +11,7 @@ type ConfirmModalProps = {
   confirmStr?: string
   cancelStr?: string
 }
-export const ConfirmModal: FunctionComponent<ConfirmModalProps> = ({
+export const ConfirmModal: React.FC<ConfirmModalProps> = ({
   title,
   description,
   onClose,

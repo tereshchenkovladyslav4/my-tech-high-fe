@@ -34,7 +34,7 @@ export const Pagination: PaginationTemplateType = ({
     },
   ]
 
-  const [limit, setLimit] = useState()
+  const [limit, setLimit] = useState<number>(0)
 
   useEffect(() => {
     if (limit && setParentLimit) setParentLimit(limit)
@@ -60,7 +60,9 @@ export const Pagination: PaginationTemplateType = ({
         </Subtitle>
         <DropDown
           dropDownItems={dropdownOptions}
-          setParentValue={setLimit}
+          setParentValue={(value: unknown) => {
+            setLimit(Number(value))
+          }}
           alternate={true}
           size='small'
           defaultValue={defaultValue || dropdownOptions[0].value}

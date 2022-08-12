@@ -1,8 +1,8 @@
-import React, { FunctionComponent, useContext, useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { useMutation } from '@apollo/client'
 import { Box, Button, Grid } from '@mui/material'
-import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
-import { UserContext } from '../../../../providers/UserContext/UserProvider'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { BulletEditor } from '../../Calendar/components/BulletEditor'
 import { individualWithdrawalMutation } from '../service'
 import { EmailTemplateResponseVM } from '../type'
@@ -14,11 +14,7 @@ type RightComponentProps = {
   handleModem: () => void
 }
 
-export const RightComponent: FunctionComponent<RightComponentProps> = ({
-  withdrawalId,
-  emailTemplate,
-  handleModem,
-}) => {
+export const RightComponent: React.FC<RightComponentProps> = ({ withdrawalId, emailTemplate, handleModem }) => {
   const { me } = useContext(UserContext)
   const [individualWithdrawal] = useMutation(individualWithdrawalMutation)
   const [description, setDescription] = useState<string>(emailTemplate?.body ? emailTemplate?.body : '')

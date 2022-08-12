@@ -9,6 +9,9 @@ type SchoolYearType = {
   date_begin: Date
   date_end: Date
   label?: string
+  midyear_application: boolean
+  midyear_application_open: Date
+  midyear_application_close: Date
 }
 
 export const useSchoolYearsByRegionId = (

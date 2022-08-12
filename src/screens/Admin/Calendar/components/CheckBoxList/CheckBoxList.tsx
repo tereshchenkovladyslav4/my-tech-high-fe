@@ -1,7 +1,7 @@
-import React, { FunctionComponent, ReactElement } from 'react'
+import React, { ReactElement } from 'react'
 import { Box, Checkbox, FormControlLabel } from '@mui/material'
 import { map } from 'lodash'
-import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragraph'
+import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { checkBoxListClassess } from './styles'
 
 export type CheckBoxListVM = {
@@ -16,14 +16,8 @@ type CheckBoxListProps = {
   setValues: (value: string[]) => void
   haveSelectAll: boolean
 }
-const CheckBoxList: FunctionComponent<CheckBoxListProps> = ({
-  title,
-  checkboxLists,
-  values,
-  setValues,
-  haveSelectAll,
-}) => {
-  const handleChangeValues = (e: unknown) => {
+const CheckBoxList: React.FC<CheckBoxListProps> = ({ title, checkboxLists, values, setValues, haveSelectAll }) => {
+  const handleChangeValues = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (haveSelectAll) {
       if (values.includes(e.target.value)) {
         setValues(values.filter((item) => item !== e.target.value).filter((item) => item !== 'all'))
@@ -44,7 +38,7 @@ const CheckBoxList: FunctionComponent<CheckBoxListProps> = ({
     }
   }
 
-  const handleChangeAll = (e: unknown) => {
+  const handleChangeAll = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.checked) {
       setValues([...['all'], ...checkboxLists.map((item) => item.value.toString())])
     } else {
@@ -76,10 +70,12 @@ const CheckBoxList: FunctionComponent<CheckBoxListProps> = ({
 
   return (
     <Box sx={checkBoxListClassess.container}>
-      <Paragraph size='large' fontWeight='700'>
-        {title}
-      </Paragraph>
-      {haveSelectAll && (
+      {!!checkboxLists?.length && (
+        <Paragraph size='large' fontWeight='700'>
+          {title}
+        </Paragraph>
+      )}
+      {haveSelectAll && !!checkboxLists?.length && (
         <FormControlLabel
           sx={{ height: 30 }}
           control={<Checkbox value='all' checked={values.includes('all')} onChange={handleChangeAll} />}

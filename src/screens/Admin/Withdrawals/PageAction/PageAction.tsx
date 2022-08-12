@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext, FunctionComponent } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import { useQuery } from '@apollo/client'
 import { Box, Button } from '@mui/material'
 import moment from 'moment'
@@ -18,7 +18,7 @@ type SchoolYearType = {
   label?: string
 }
 
-const PageAction: FunctionComponent<PageActionProps> = ({
+const PageAction: React.FC<PageActionProps> = ({
   totalWithdrawals,
   paginationLimit,
   selectedStatuses,

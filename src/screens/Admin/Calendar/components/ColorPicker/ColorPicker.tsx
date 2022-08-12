@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useState } from 'react'
+import React, { useState } from 'react'
 import { Box, TextField } from '@mui/material'
 import { SketchPicker } from 'react-color'
 import reactCSS from 'reactcss'
@@ -10,7 +10,7 @@ type ColorPickerProps = {
   setColor: (value: string) => void
 }
 
-const ColorPicker: FunctionComponent<ColorPickerProps> = ({ color, setColor }) => {
+const ColorPicker: React.FC<ColorPickerProps> = ({ color, setColor }) => {
   const [displayColorPicker, setDisplayColorPicker] = useState<boolean>(false)
   const styles = reactCSS({
     default: {
@@ -51,7 +51,7 @@ const ColorPicker: FunctionComponent<ColorPickerProps> = ({ color, setColor }) =
   const handleClose = () => {
     setDisplayColorPicker(false)
   }
-  const handleChange = (value: unknown) => {
+  const handleChange = (value) => {
     setColor(value.hex.toLocaleUpperCase())
   }
   return (

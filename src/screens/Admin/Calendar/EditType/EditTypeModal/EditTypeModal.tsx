@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react'
+import React from 'react'
 import { Box, Modal } from '@mui/material'
 import { EventType } from '../../types'
 import { NewType } from '../NewType'
@@ -9,7 +9,7 @@ type EditModalProps = {
   onSave: () => void
   eventType: EventType | null
 }
-export const EditTypeModal: FunctionComponent<EditModalProps> = ({ onCancel, onSave, eventType }) => {
+export const EditTypeModal: React.FC<EditModalProps> = ({ onCancel, onSave, eventType }) => {
   return (
     <Modal
       open={true}

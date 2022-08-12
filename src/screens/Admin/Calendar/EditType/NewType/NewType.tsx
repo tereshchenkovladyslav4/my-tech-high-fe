@@ -1,8 +1,8 @@
-import React, { useState, useContext, FunctionComponent } from 'react'
+import React, { useState, useContext } from 'react'
 import { useMutation } from '@apollo/client'
 import { Box, Button, TextField } from '@mui/material'
-import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
-import { UserContext } from '../../../../../providers/UserContext/UserProvider'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { SYSTEM_05 } from '../../../../../utils/constants'
 import { ColorPicker } from '../../components/ColorPicker'
 import { createEventTypeMutation, updateEventTypeMutation } from '../../services'
@@ -16,7 +16,7 @@ type NewTypeProps = {
   onSave: () => void
 }
 
-const NewType: FunctionComponent<NewTypeProps> = ({ eventType, eventTypeCount, onCancel, onSave }) => {
+const NewType: React.FC<NewTypeProps> = ({ eventType, eventTypeCount, onCancel, onSave }) => {
   const { me } = useContext(UserContext)
   const [eventTypeId] = useState<number>(Number(eventType?.id))
   const [name, setName] = useState<string>(eventType?.name || '')

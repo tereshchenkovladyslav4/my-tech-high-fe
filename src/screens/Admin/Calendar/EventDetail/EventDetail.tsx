@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useMutation } from '@apollo/client'
 import { makeStyles } from '@material-ui/styles'
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew'
@@ -8,7 +8,7 @@ import ModeEditIcon from '@mui/icons-material/ModeEdit'
 import { Box, Button, Stack, Tooltip, Typography } from '@mui/material'
 import moment from 'moment'
 import { useHistory } from 'react-router-dom'
-import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { CALENDAR, SYSTEM_02, SYSTEM_05, SYSTEM_06 } from '../../../../utils/constants'
 import { getFirstDayAndLastDayOfMonth, hexToRgbA, renderDate, renderFilter } from '../../../../utils/utils'
 import { CustomModal } from '../../SiteManagement/EnrollmentSetting/components/CustomModal/CustomModals'
@@ -28,7 +28,7 @@ const toolTipStyles = makeStyles(() => ({
   },
 }))
 
-const EventDetail: FunctionComponent<EventDetailProps> = ({
+const EventDetail: React.FC<EventDetailProps> = ({
   events,
   selectedEventIndex,
   selectedDate,

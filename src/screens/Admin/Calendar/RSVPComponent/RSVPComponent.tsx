@@ -1,9 +1,9 @@
-import React, { FunctionComponent } from 'react'
+import React from 'react'
 import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined'
 import MenuIcon from '@mui/icons-material/Menu'
 import ModeEditIcon from '@mui/icons-material/ModeEdit'
 import { Box, Button, Grid, TextField } from '@mui/material'
-import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { DropDown } from '../../SiteManagement/components/DropDown/DropDown'
 import { rsvpClassess } from './styles'
 
@@ -11,7 +11,7 @@ type RSVPComponentProps = {
   setShowRSVPForm: (value: boolean) => void
 }
 
-const RSVPComponent: FunctionComponent<RSVPComponentProps> = ({ setShowRSVPForm }) => {
+const RSVPComponent: React.FC<RSVPComponentProps> = ({ setShowRSVPForm }) => {
   return (
     <>
       <Box sx={rsvpClassess.pageTop}>

@@ -1,4 +1,4 @@
-import { MTHBLUE } from '../../utils/constants'
+import { MthColor } from '@mth/enums'
 
 export const useStyles = {
   root: {
@@ -9,7 +9,7 @@ export const useStyles = {
     backgroundColor: '#EEF4F8',
     color: 'red',
     '&.Mui-selected': {
-      color: MTHBLUE,
+      color: MthColor.MTHBLUE,
     },
   },
 }

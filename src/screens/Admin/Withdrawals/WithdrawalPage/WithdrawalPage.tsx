@@ -1,11 +1,11 @@
-import React, { useEffect, useState, useContext, FunctionComponent } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import { useQuery } from '@apollo/client'
 import { Card, Box } from '@mui/material'
 import moment from 'moment'
-import { SortableTable } from '../../../../components/SortableTable/SortableTable'
-import { Withdrawal } from '../../../../graphql/models/withdrawal'
-import { getWithdrawalsQuery } from '../../../../graphql/queries/withdrawal'
-import { UserContext } from '../../../../providers/UserContext/UserProvider'
+import { SortableTable } from '@mth/components/SortableTable/SortableTable'
+import { Withdrawal } from '@mth/graphql/models/withdrawal'
+import { getWithdrawalsQuery } from '@mth/graphql/queries/withdrawal'
+import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { WITHDRAWAL_STATUS_LABEL } from '../../../../utils/constants'
 import { WITHDRAWAL_HEADCELLS } from '../../../../utils/PageHeadCellsConstant'
 import PageAction from '../PageAction/PageAction'
@@ -14,7 +14,7 @@ import { PageModals } from '../PageModals'
 import { EffectiveVM, WithdrawalPageProps, WithdrawalResponseVM } from '../type'
 import { mainClasses } from './styles'
 
-const WithdrawalPage: FunctionComponent<WithdrawalPageProps> = ({
+const WithdrawalPage: React.FC<WithdrawalPageProps> = ({
   searchField,
   selectedYear,
   withdrawalCounts,

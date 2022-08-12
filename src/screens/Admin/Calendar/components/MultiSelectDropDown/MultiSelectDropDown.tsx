@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useState } from 'react'
+import React, { useState } from 'react'
 import Checkbox from '@mui/material/Checkbox'
 import FormControl from '@mui/material/FormControl'
 import InputLabel from '@mui/material/InputLabel'
@@ -29,7 +29,7 @@ type MultiSelectDropDownProps = {
   setSelectedLists: (value: string[]) => void
 }
 
-const MultiSelectDropDown: FunctionComponent<MultiSelectDropDownProps> = ({
+const MultiSelectDropDown: React.FC<MultiSelectDropDownProps> = ({
   checkBoxLists = [],
   selectedLists,
   setSelectedLists,

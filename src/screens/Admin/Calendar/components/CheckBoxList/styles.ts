@@ -2,6 +2,7 @@ export const checkBoxListClassess = {
   container: {
     display: 'flex',
     flexDirection: 'column',
+    marginBottom: 3,
   },
 
   card: {

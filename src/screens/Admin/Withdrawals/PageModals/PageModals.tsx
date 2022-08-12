@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useContext } from 'react'
+import React, { useContext } from 'react'
 import { useMutation, useQuery } from '@apollo/client'
 import { Stack, TextField } from '@mui/material'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
@@ -20,7 +20,7 @@ import { PageModalsProps } from '../type'
 import { WithdrawalModal } from '../WithdrawalModal'
 import { WithdrawalEmailModal } from '../WithdrawalPage/WithdrawalEmailModal'
 
-const PageModals: FunctionComponent<PageModalsProps> = ({
+const PageModals: React.FC<PageModalsProps> = ({
   showWithdrawalConfirmModal,
   showReinstateModal,
   reinstateModalType,

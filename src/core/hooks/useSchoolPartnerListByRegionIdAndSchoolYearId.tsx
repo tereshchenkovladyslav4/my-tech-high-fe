@@ -3,11 +3,12 @@ import { ApolloError, useQuery } from '@apollo/client'
 import { CheckBoxListVM } from '@mth/screens/Admin/Calendar/components/CheckBoxList/CheckBoxList'
 import { GetSchoolsOfEnrollment } from '@mth/screens/Admin/SiteManagement/SchoolPartner/services'
 
-export const useSchoolPartnerListByRegionId = (
+export const useSchoolPartnerListByRegionIdAndSchoolYearId = (
   regionId: number,
+  school_year_id = 0,
 ): {
   loading: boolean
-  schoolOfEnrollmentList: unknown[]
+  schoolOfEnrollmentList: CheckBoxListVM[]
   error: ApolloError | undefined
 } => {
   const {
@@ -18,7 +19,8 @@ export const useSchoolPartnerListByRegionId = (
     variables: {
       schoolPartnerArgs: {
         region_id: regionId,
-        sort: null,
+        sort: school_year_id ? { column: 'name', direction: 'ASC' } : null,
+        school_year_id: school_year_id,
       },
     },
     skip: regionId ? false : true,
@@ -31,8 +33,8 @@ export const useSchoolPartnerListByRegionId = (
     if (schoolOfEnrollments?.getSchoolsOfEnrollmentByRegion) {
       setSchoolOfEnrollmentList(
         schoolOfEnrollments?.getSchoolsOfEnrollmentByRegion
-          ?.filter((item: unknown) => !!item.active)
-          .map((schoolOfEnroll: unknown) => ({
+          ?.filter((item: { active: boolean }) => !!item.active)
+          .map((schoolOfEnroll: { abbreviation: string; school_partner_id: number }) => ({
             label: schoolOfEnroll?.abbreviation,
             value: `${schoolOfEnroll?.school_partner_id}`,
           })),

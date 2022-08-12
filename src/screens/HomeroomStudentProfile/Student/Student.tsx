@@ -1,11 +1,11 @@
-import React, { FunctionComponent } from 'react'
+import React from 'react'
 import { Box, Grid } from '@mui/material'
 
 import { ToDo } from '../../Dashboard/ToDoList/ToDo'
 import { StudentProfile } from './StudentProfile/StudentProfile'
 import { StudentSchedule } from './StudentSchedule/StudentSchedule'
 
-export const Student: FunctionComponent = () => {
+export const Student: React.FC = () => {
   const builderActive = false
   return (
     <Box display='flex' flexDirection='row'>
@@ -23,3 +23,5 @@ export const Student: FunctionComponent = () => {
     </Box>
   )
 }
+
+export default Student

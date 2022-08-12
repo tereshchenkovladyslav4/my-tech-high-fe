@@ -1,7 +1,7 @@
-import React, { FunctionComponent, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useQuery } from '@apollo/client'
 import { Box, Grid, Modal } from '@mui/material'
-import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { getStudentInfoByWithdrawalId } from '../service'
 import { EmailTemplateResponseVM, StudentInfo, WithdrawalResponseVM } from '../type'
 import { LeftComponent } from './LeftComponent'
@@ -13,11 +13,7 @@ type WithdrawalModalProps = {
   emailTemplate: EmailTemplateResponseVM | undefined
   handleModem: () => void
 }
-export const WithdrawalModal: FunctionComponent<WithdrawalModalProps> = ({
-  handleModem,
-  emailTemplate,
-  withdrawal,
-}) => {
+export const WithdrawalModal: React.FC<WithdrawalModalProps> = ({ handleModem, emailTemplate, withdrawal }) => {
   const { withdrawal_id } = withdrawal
   const [studentInfo, setStudentInfo] = useState<StudentInfo>()
   const { loading, data } = useQuery(getStudentInfoByWithdrawalId, {

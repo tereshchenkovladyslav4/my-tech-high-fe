@@ -1,19 +1,19 @@
-import React, { FunctionComponent, useContext, useState } from 'react'
+import React, { useContext, useState } from 'react'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { Box, Card, Grid } from '@mui/material'
 import { useFormikContext } from 'formik'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
-import { useCurrentGradeAndProgramByRegionId, useSchoolPartnerListByRegionId } from '@mth/hooks'
+import { MthColor } from '@mth/enums'
+import { useCurrentGradeAndProgramByRegionId } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
-import { MTHBLUE } from '../../../../utils/constants'
 import { CheckBoxList } from '../components/CheckBoxList'
 import { checkBoxListClassess } from '../components/CheckBoxList/styles'
 import { defaultOtherList, defaultProviderList, defaultUserList } from '../defaultValue'
 import { calendarClassess } from '../styles'
 import { EventFormData, FilterComponentProps } from '../types'
 
-const FilterComponent: FunctionComponent<FilterComponentProps> = ({
+const FilterComponent: React.FC<FilterComponentProps> = ({
   grades,
   programYears,
   users,
@@ -30,19 +30,18 @@ const FilterComponent: FunctionComponent<FilterComponentProps> = ({
 }) => {
   const { me } = useContext(UserContext)
   const { errors, setFieldValue, touched, values } = useFormikContext<EventFormData>()
-  const { programYearList, gradeList } = useCurrentGradeAndProgramByRegionId(
+  const { programYearList, gradeList, schoolPartnerList } = useCurrentGradeAndProgramByRegionId(
     Number(me?.selectedRegionId),
     grades,
     setGrades,
   )
-  const { schoolOfEnrollmentList } = useSchoolPartnerListByRegionId(Number(me?.selectedRegionId))
   const [expand, setExpand] = useState<boolean>(true)
 
   const chevron = () =>
     !expand ? (
       <ChevronRightIcon
         sx={{
-          color: MTHBLUE,
+          color: MthColor.MTHBLUE,
           verticalAlign: 'bottom',
           cursor: 'pointer',
         }}
@@ -50,7 +49,7 @@ const FilterComponent: FunctionComponent<FilterComponentProps> = ({
     ) : (
       <ExpandMoreIcon
         sx={{
-          color: MTHBLUE,
+          color: MthColor.MTHBLUE,
           verticalAlign: 'bottom',
           cursor: 'pointer',
         }}
@@ -103,7 +102,7 @@ const FilterComponent: FunctionComponent<FilterComponentProps> = ({
                 setSchoolofEnrollment(value)
                 setIsChanged(true)
               }}
-              checkboxLists={schoolOfEnrollmentList}
+              checkboxLists={schoolPartnerList}
               haveSelectAll={false}
             />
             <CheckBoxList
@@ -135,7 +134,7 @@ const FilterComponent: FunctionComponent<FilterComponentProps> = ({
   return (
     <Card sx={checkBoxListClassess.card}>
       <Box display='flex' flexDirection='row' onClick={() => setExpand(!expand)}>
-        <Subtitle fontWeight='700' color={MTHBLUE} sx={{ cursor: 'pointer' }}>
+        <Subtitle fontWeight='700' color={MthColor.MTHBLUE} sx={{ cursor: 'pointer' }}>
           Filter
         </Subtitle>
         {chevron()}

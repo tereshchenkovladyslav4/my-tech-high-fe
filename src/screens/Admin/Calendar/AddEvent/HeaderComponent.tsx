@@ -1,11 +1,11 @@
-import React, { FunctionComponent } from 'react'
+import React from 'react'
 import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded'
 import { Box, Button, IconButton } from '@mui/material'
-import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { HeaderComponentProps } from '../types'
 import { addEventClassess } from './styles'
 
-const HeaderComponent: FunctionComponent<HeaderComponentProps> = ({ title, handleCancelClick, setShowCancelModal }) => {
+const HeaderComponent: React.FC<HeaderComponentProps> = ({ title, handleCancelClick, setShowCancelModal }) => {
   return (
     <Box sx={addEventClassess.pageTop}>
       <Box sx={addEventClassess.pageTitle}>

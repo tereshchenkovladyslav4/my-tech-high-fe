@@ -15,6 +15,7 @@ export enum MthColor {
   MTHPURPLE = '#3E2783',
   MTHORANGE = '#EC5925',
   MTHGREEN = '#2B9EB7',
+  LIGHTPURPLE = '#7B61FF',
 
   SYSTEM_01 = '#0E0E0E',
   SYSTEM_02 = '#313131',
@@ -27,4 +28,7 @@ export enum MthColor {
   SYSTEM_09 = '#EEF4F8',
   SYSTEM_10 = '#CCCCCC',
   SYSTEM_11 = '#898C8F',
+
+  PRIMARY_MEDIUM_MOUSEOVER = '#585CFF',
+  BLACK_MOUSEOVER = '#292626',
 }

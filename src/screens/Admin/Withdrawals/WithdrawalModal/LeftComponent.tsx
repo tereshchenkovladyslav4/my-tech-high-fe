@@ -1,8 +1,8 @@
-import React, { Fragment, FunctionComponent, useContext, useState } from 'react'
+import React, { Fragment, useContext, useState } from 'react'
 import { Avatar, Box, Grid, Typography } from '@mui/material'
-import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
-import { Title } from '../../../../components/Typography/Title/Title'
-import { ProfileContext } from '../../../../providers/ProfileProvider/ProfileContext'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { Title } from '@mth/components/Typography/Title/Title'
+import { ProfileContext } from '@mth/providers/ProfileProvider/ProfileContext'
 import { MTHBLUE } from '../../../../utils/constants'
 import { toOrdinalSuffix } from '../../../../utils/stringHelpers'
 import { CheckBoxList } from '../../Calendar/components/CheckBoxList'
@@ -13,7 +13,7 @@ type LeftComponentProps = {
   studentInfo: StudentInfo | undefined
 }
 
-export const LeftComponent: FunctionComponent<LeftComponentProps> = ({ studentInfo }) => {
+export const LeftComponent: React.FC<LeftComponentProps> = ({ studentInfo }) => {
   const { showModal, setStore } = useContext(ProfileContext)
   const schedules = [
     {

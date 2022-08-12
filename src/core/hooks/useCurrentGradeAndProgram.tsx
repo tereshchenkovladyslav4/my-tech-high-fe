@@ -29,8 +29,8 @@ export const useCurrentGradeAndProgramByRegionId = (
   const [programYearList, setProgramYearList] = useState<CheckBoxListVM[]>([])
   const [schoolPartnerList, setSchoolPartnerList] = useState<CheckBoxListVM[]>([])
   useEffect(() => {
-    if (!schoolYearLoading && schoolYearData?.schoolyear_getcurrent) {
-      const availGrades = schoolYearData?.schoolyear_getcurrent?.grades?.split(',').map((item: string) => {
+    if (!schoolYearLoading && schoolYearData) {
+      const availGrades = schoolYearData?.grades?.split(',').map((item: string) => {
         if (item == 'Kindergarten')
           return {
             label: 'Kindergarten',
@@ -43,10 +43,10 @@ export const useCurrentGradeAndProgramByRegionId = (
           }
       })
       const availSchoolPartners = map(
-        filter(schoolYearData.schoolyear_getcurrent.SchoolPartners, (el) => el.active === 1),
+        filter(schoolYearData?.SchoolPartners, (el) => el.active === 1),
         (el) => ({
           label: el.abbreviation,
-          value: el.school_partner_id,
+          value: `${el.school_partner_id}`,
         }),
       )
       setSchoolPartnerList(availSchoolPartners)
@@ -63,18 +63,14 @@ export const useCurrentGradeAndProgramByRegionId = (
             }
           }).filter((item) => item),
         ])
-      if (schoolYearData?.schoolyear_getcurrent?.midyear_application) {
-        const schoolYear_date_begin = moment(
-          schoolYearData?.schoolyear_getcurrent.date_begin?.substring(0, 10),
-        ).toISOString()
-        const schoolYear_date_end = moment(
-          schoolYearData?.schoolyear_getcurrent.date_end?.substring(0, 10),
-        ).toISOString()
+      if (schoolYearData?.midyear_application) {
+        const schoolYear_date_begin = moment(schoolYearData?.date_begin?.substring(0, 10)).toISOString()
+        const schoolYear_date_end = moment(schoolYearData?.date_end?.substring(0, 10)).toISOString()
         const schoolYear_midyear_application_open = moment(
-          schoolYearData?.schoolyear_getcurrent.midyear_application_open?.substring(0, 10),
+          schoolYearData?.midyear_application_open?.substring(0, 10),
         ).toISOString()
         const schoolYear_midyear_application_close = moment(
-          schoolYearData?.schoolyear_getcurrent.midyear_application_close?.substring(0, 10),
+          schoolYearData?.midyear_application_close?.substring(0, 10),
         ).toISOString()
 
         setProgramYearList((prev) => [
@@ -91,12 +87,8 @@ export const useCurrentGradeAndProgramByRegionId = (
           },
         ])
       } else {
-        const schoolYear_date_begin = moment(
-          schoolYearData?.schoolyear_getcurrent.date_begin?.substring(0, 10),
-        ).toISOString()
-        const schoolYear_date_end = moment(
-          schoolYearData?.schoolyear_getcurrent.date_end?.substring(0, 10),
-        ).toISOString()
+        const schoolYear_date_begin = moment(schoolYearData?.date_begin?.substring(0, 10)).toISOString()
+        const schoolYear_date_end = moment(schoolYearData?.date_end?.substring(0, 10)).toISOString()
 
         setProgramYearList((prev) => [
           ...prev,
@@ -108,7 +100,6 @@ export const useCurrentGradeAndProgramByRegionId = (
       }
     }
   }, [schoolYearLoading, schoolYearData])
-
   return {
     loading: schoolYearLoading,
     error: schoolYearError,

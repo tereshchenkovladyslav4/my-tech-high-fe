@@ -125,30 +125,35 @@ export const ApplicationQuestions: FunctionComponent = () => {
   useEffect(() => {
     if (!schoolLoading && schoolYearData.getSchoolYearsByRegionId) {
       const schoolYearsArray = []
-      schoolYearData.getSchoolYearsByRegionId.map(
-        (item: {
-          date_begin: string
-          date_end: string
-          school_year_id: string
-          midyear_application: number
-          midyear_application_open: string
-          midyear_application_close: string
-        }): void => {
-          schoolYearsArray.push({
-            label: `${moment(item.date_begin).format('YYYY')} - ${moment(item.date_end).format('YYYY')}`,
-            value: item.school_year_id,
-          })
-
-          if (item && item.midyear_application) {
+      schoolYearData.getSchoolYearsByRegionId
+        .filter((item) => moment(item.date_begin).format('YYYY') >= moment().format('YYYY'))
+        .map(
+          (item: {
+            date_begin: string
+            date_end: string
+            school_year_id: string
+            midyear_application: number
+            midyear_application_open: string
+            midyear_application_close: string
+          }): void => {
             schoolYearsArray.push({
-              label: `${moment(item.date_begin).format('YYYY')} - ${moment(item.date_end).format(
-                'YYYY',
-              )} Mid-year Program`,
-              value: `${item.school_year_id}-mid`,
+              label: `${moment(item.date_begin).format('YYYY')} - ${moment(item.date_end).format('YY')}`,
+              value: item.school_year_id,
             })
-          }
-        },
-      )
+
+            if (
+              item &&
+              item.midyear_application === 1 &&
+              moment().isAfter(item?.midyear_application_open) &&
+              moment().isBefore(item?.midyear_application_close)
+            ) {
+              schoolYearsArray.push({
+                label: `${moment(item.date_begin).format('YYYY')} - ${moment(item.date_end).format('YY')} Mid-year`,
+                value: `${item.school_year_id}-mid`,
+              })
+            }
+          },
+        )
 
       setSchoolYears(schoolYearsArray.sort((a, b) => (a.label > b.label ? 1 : -1)))
       setSchoolYearsData(schoolYearData.getSchoolYearsByRegionId)

@@ -1,10 +1,10 @@
-import React, { FunctionComponent } from 'react'
+import React from 'react'
 import AddIcon from '@mui/icons-material/Add'
 import ModeEditIcon from '@mui/icons-material/ModeEdit'
 import SearchIcon from '@mui/icons-material/Search'
 import { Box, Button, Grid, InputAdornment, OutlinedInput } from '@mui/material'
 import { useHistory } from 'react-router-dom'
-import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { CALENDAR } from '../../../../utils/constants'
 import { MultiSelectDropDown } from '../components/MultiSelectDropDown'
 import { MultiSelectDropDownListType } from '../components/MultiSelectDropDown/MultiSelectDropDown'
@@ -18,7 +18,7 @@ type HeaderComponentProps = {
   setSearchField?: (value: string | undefined) => void
 }
 
-const HeaderComponent: FunctionComponent<HeaderComponentProps> = ({
+const HeaderComponent: React.FC<HeaderComponentProps> = ({
   searchField,
   eventTypeLists,
   selectedEventTypes,

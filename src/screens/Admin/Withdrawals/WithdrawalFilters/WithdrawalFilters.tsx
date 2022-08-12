@@ -1,9 +1,9 @@
-import React, { FunctionComponent } from 'react'
+import React from 'react'
 import { Button, Box } from '@mui/material'
 import { MTHBLUE, BUTTON_LINEAR_GRADIENT, WITHDRAWAL_STATUS_LABEL } from '../../../../utils/constants'
 import { WithdrawalFiltersProps } from '../type'
 
-const WithdrawalFilters: FunctionComponent<WithdrawalFiltersProps> = ({ filters, setFilters, withdrawCount }) => {
+const WithdrawalFilters: React.FC<WithdrawalFiltersProps> = ({ filters, setFilters, withdrawCount }) => {
   const handleSelectFilter = (value: string) => {
     if (filters.includes(value)) {
       setFilters(filters.filter((item) => item !== value))

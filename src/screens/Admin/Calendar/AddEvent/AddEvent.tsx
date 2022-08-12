@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useMutation } from '@apollo/client'
 import { Box, Card, Grid } from '@mui/material'
 import { Form, Formik } from 'formik'
@@ -17,7 +17,7 @@ import FilterComponent from './FilterComponent'
 import HeaderComponent from './HeaderComponent'
 import { addEventClassess } from './styles'
 
-const AddEvent: FunctionComponent<AddEventProps> = ({ selectedEvent }) => {
+const AddEvent: React.FC<AddEventProps> = ({ selectedEvent }) => {
   const history = useHistory()
   const [event, setEvent] = useState<EventVM>(defaultEvent)
   const [isChanged, setIsChanged] = useState<boolean>(false)

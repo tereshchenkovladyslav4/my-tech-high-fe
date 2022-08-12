@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Box, Card, Grid } from '@mui/material'
 import { useEventsByRegionIdAndFilterItem, useEventTypeListByRegionId } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
@@ -8,11 +8,7 @@ import { HeaderComponent } from '../HeaderComponent'
 import { CalendarEvent, EventVM, MainComponentProps } from '../types'
 import { mainClasses } from './styles'
 
-const MainComponent: FunctionComponent<MainComponentProps> = ({
-  selectedEventIndex,
-  setSelectedEventIndex,
-  setEvent,
-}) => {
+const MainComponent: React.FC<MainComponentProps> = ({ selectedEventIndex, setSelectedEventIndex, setEvent }) => {
   const [searchField, setSearchField] = useState<string | undefined>('')
   const { me } = useContext(UserContext)
   const {

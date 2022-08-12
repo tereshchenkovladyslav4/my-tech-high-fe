@@ -1,22 +1,22 @@
-import React, { FunctionComponent, useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { useQuery } from '@apollo/client'
 import { Box, Button, Checkbox, FormControlLabel, Stack, TextField } from '@mui/material'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { useFormikContext } from 'formik'
-import { DropDown } from '../../../../components/DropDown/DropDown'
-import { DropDownItem } from '../../../../components/DropDown/types'
-import { Paragraph } from '../../../../components/Typography/Paragraph/Paragraph'
-import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
-import { UserContext } from '../../../../providers/UserContext/UserProvider'
+import { DropDown } from '@mth/components/DropDown/DropDown'
+import { DropDownItem } from '@mth/components/DropDown/types'
+import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { BulletEditor } from '../components/BulletEditor'
 import { getEventTypesQuery } from '../services'
 import { calendarClassess } from '../styles'
 import { EventFormData, EventFormProps } from '../types'
 import { addEventClassess } from './styles'
 
-const EventForm: FunctionComponent<EventFormProps> = ({ setIsChanged, handleAddRSVPClick }) => {
+const EventForm: React.FC<EventFormProps> = ({ setIsChanged, handleAddRSVPClick }) => {
   const { me } = useContext(UserContext)
   const { errors, handleChange, setFieldValue, touched, values } = useFormikContext<EventFormData>()
   const [eventTypes, setEventTypes] = useState<DropDownItem[]>([])
@@ -32,8 +32,8 @@ const EventForm: FunctionComponent<EventFormProps> = ({ setIsChanged, handleAddR
     if (!loading && data?.eventTypes) {
       setEventTypes(
         data?.eventTypes
-          .filter((item: unknown) => !item.archived)
-          .map((eventType: unknown) => ({
+          .filter((item: { archived: boolean }) => !item.archived)
+          .map((eventType: { name: string; event_type_id: number }) => ({
             label: eventType.name,
             value: `${eventType.event_type_id}`,
           })),

@@ -1,10 +1,10 @@
-import React, { useEffect, useState, useContext, FunctionComponent } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import { useMutation, useQuery } from '@apollo/client'
 import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded'
 import { Box, Card, Grid, IconButton } from '@mui/material'
 import { Prompt, useHistory } from 'react-router-dom'
-import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
-import { UserContext } from '../../../../providers/UserContext/UserProvider'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { CALENDAR } from '../../../../utils/constants'
 import { CustomModal } from '../../SiteManagement/EnrollmentSetting/components/CustomModal/CustomModals'
 import { getEventTypesQuery, updateEventTypeMutation, updateEventTypesMutation } from '../services'
@@ -14,7 +14,7 @@ import { EventTypeTable } from './EventTypeTable'
 import { NewType } from './NewType'
 import { eventTypeClassess } from './styles'
 
-const EditTypeComponent: FunctionComponent = () => {
+const EditTypeComponent: React.FC = () => {
   const history = useHistory()
   const { me } = useContext(UserContext)
   const [showEditModal, setShowEditModal] = useState<boolean>(false)

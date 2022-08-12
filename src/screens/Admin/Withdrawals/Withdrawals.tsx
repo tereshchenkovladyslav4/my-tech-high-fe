@@ -1,14 +1,14 @@
-import React, { FunctionComponent, useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { useQuery } from '@apollo/client'
 import { Grid } from '@mui/material'
 import { Box } from '@mui/system'
-import { getEmailTemplateQuery } from '../../../graphql/queries/email-template'
-import { getWithdrawalsCountByStatusQuery } from '../../../graphql/queries/withdrawal'
-import { UserContext } from '../../../providers/UserContext/UserProvider'
+import { getEmailTemplateQuery } from '@mth/graphql/queries/email-template'
+import { getWithdrawalsCountByStatusQuery } from '@mth/graphql/queries/withdrawal'
+import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { EmailTemplateResponseVM, WithdrawalCount } from './type'
 import { WithdrawalPage } from './WithdrawalPage'
 
-const Withdrawals: FunctionComponent = () => {
+const Withdrawals: React.FC = () => {
   const { me } = useContext(UserContext)
   const [searchField, setSearchField] = useState<string>('')
   const [selectedYear, setSelectedYear] = useState<string | number>('1')

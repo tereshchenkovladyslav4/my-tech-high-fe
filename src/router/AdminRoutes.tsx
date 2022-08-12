@@ -1,5 +1,6 @@
 import React, { FunctionComponent } from 'react'
 import { Route, Switch } from 'react-router-dom'
+import { Records } from '@mth/screens/Admin/Records'
 import { Announcements } from '../screens/Admin/Announcements'
 import { Applications } from '../screens/Admin/Applications/Applications'
 import { Calendar } from '../screens/Admin/Calendar'
@@ -31,6 +32,7 @@ import {
   EMAIL_RECORDS,
   SCHOOL_ENROLLMENT,
   CURRICULUM,
+  RECORDS,
 } from '../utils/constants'
 
 export const AdminRoutes: FunctionComponent = () => {
@@ -77,6 +79,9 @@ export const AdminRoutes: FunctionComponent = () => {
       </Route>
       <Route path={SETTINGS}>
         <AdminSettings />
+      </Route>
+      <Route path={RECORDS}>
+        <Records />
       </Route>
       {/* <Route path={SITEMANAGEMENT}>
         <SiteManagementPage />

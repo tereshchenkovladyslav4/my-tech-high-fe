@@ -1,11 +1,11 @@
-import React, { FunctionComponent } from 'react'
+import React from 'react'
 import SearchIcon from '@mui/icons-material/Search'
 import { Box, Button, InputAdornment, OutlinedInput } from '@mui/material'
 import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
 import { PageHeaderProps } from '../type'
 import { headerClassess } from './styles'
 
-const PageHeader: FunctionComponent<PageHeaderProps> = ({
+const PageHeader: React.FC<PageHeaderProps> = ({
   totalWithdrawals,
   searchField,
   setSearchField,

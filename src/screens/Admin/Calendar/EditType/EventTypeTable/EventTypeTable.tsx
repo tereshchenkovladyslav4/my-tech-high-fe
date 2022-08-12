@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import CallMissedOutgoingIcon from '@mui/icons-material/CallMissedOutgoing'
 import MenuIcon from '@mui/icons-material/Menu'
 import ModeEditIcon from '@mui/icons-material/ModeEdit'
@@ -8,7 +8,7 @@ import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
 import { EventType, EventTypeTableProps } from '../../types'
 import { eventTypeClassess } from '../styles'
 
-const EventTypeTable: FunctionComponent<EventTypeTableProps> = ({
+const EventTypeTable: React.FC<EventTypeTableProps> = ({
   eventTypes,
   setIsChanged,
   handleEditClick,

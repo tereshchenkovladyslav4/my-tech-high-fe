@@ -8,9 +8,9 @@ module.exports = {
   },
   plugins: ['@typescript-eslint', 'import', 'prettier'],
   extends: [
-     // Uses the recommended rules from the @typescript-eslint/eslint-pluginno-param-reassign
+    // Uses the recommended rules from the @typescript-eslint/eslint-pluginno-param-reassign
     'plugin:@typescript-eslint/recommended',
-     // Enables eslint-plugin-prettier and eslint-config-prettier. This will display prettier errors as ESLint errors. Make sure this is always the last configuration in the extends array.
+    // Enables eslint-plugin-prettier and eslint-config-prettier. This will display prettier errors as ESLint errors. Make sure this is always the last configuration in the extends array.
     'plugin:prettier/recommended',
     'plugin:react/recommended',
   ],
@@ -44,7 +44,7 @@ module.exports = {
       },
     ],
     'no-debugger': 0,
-    'no-console': ["error", { allow: ["warn", "error"] }],
+    'no-console': ['error', { allow: ['warn', 'error'] }],
     'new-cap': 0,
     strict: 0,
     'object-curly-newline': 'off',

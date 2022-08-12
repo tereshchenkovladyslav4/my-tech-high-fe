@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useState } from 'react'
+import React, { useState } from 'react'
 import { Box, Grid } from '@mui/material'
 import { Route, Switch, useRouteMatch } from 'react-router-dom'
 import { CALENDAR } from '../../../utils/constants'
@@ -7,7 +7,7 @@ import { EditType } from './EditType'
 import { MainComponent } from './MainComponent'
 import { EventVM } from './types'
 
-const Calendar: FunctionComponent = () => {
+const Calendar: React.FC = () => {
   const isExact = useRouteMatch(CALENDAR)?.isExact
   const [event, setEvent] = useState<EventVM>()
   const [selectedEventIndex, setSelectedEventIndex] = useState<number>(0)
