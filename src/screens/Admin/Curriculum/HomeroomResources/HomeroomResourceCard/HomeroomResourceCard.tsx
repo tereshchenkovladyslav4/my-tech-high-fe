@@ -1,18 +1,17 @@
 import React from 'react'
+import AddOutlinedIcon from '@mui/icons-material/AddOutlined'
 import CallMissedOutgoingIcon from '@mui/icons-material/CallMissedOutgoing'
+import CheckOutlinedIcon from '@mui/icons-material/CheckOutlined'
 import DehazeIcon from '@mui/icons-material/Dehaze'
+import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined'
 import EditIcon from '@mui/icons-material/Edit'
 import { Box, Card, CardContent, CardMedia, IconButton, Stack, Tooltip, Typography } from '@mui/material'
 import { SortableHandle } from 'react-sortable-hoc'
-import AddNewIcon from '@mth/assets/add-new.png'
 import ArchiveIcon from '@mth/assets/archive.png'
-import AllowingRequestIcon from '@mth/assets/check-white-bg-black.png'
-import DeleteIcon from '@mth/assets/delete.png'
-import DuplicateIcon from '@mth/assets/plus-black-bg-orange.png'
-import ViewOnlyIcon from '@mth/assets/plus-black-bg-white.png'
 import { s3URL } from '@mth/constants'
 import { MthColor, ResourceSubtitle } from '@mth/enums'
 import { EventType, HomeroomResourceCardProps } from '../types'
+import { homeroomResourcesCardClassess } from './styles'
 
 const HomeroomResourceCard: React.FC<HomeroomResourceCardProps> = ({ item, action, isPast, onAction }) => {
   const DragHandle = SortableHandle(() => (
@@ -74,50 +73,78 @@ const HomeroomResourceCard: React.FC<HomeroomResourceCardProps> = ({ item, actio
       )}
       {item.resource_id === 0 && (
         <Tooltip title='Add'>
-          <img
+          <Stack
             onClick={(e) => {
               actionHandler(EventType.ADD)
               e.stopPropagation()
             }}
-            src={AddNewIcon}
-            style={{ position: 'absolute', top: 15, right: 15 }}
-          />
+            sx={{
+              ...homeroomResourcesCardClassess.iconButton,
+              top: 15,
+              right: 15,
+              color: MthColor.SYSTEM_01,
+              background: MthColor.BUTTON_LINEAR_GRADIENT,
+            }}
+          >
+            <AddOutlinedIcon />
+          </Stack>
         </Tooltip>
       )}
       {action && !isPast && !item.is_active && (
         <Tooltip title='Delete'>
-          <img
+          <Stack
             onClick={(e) => {
               actionHandler(EventType.DELETE)
               e.stopPropagation()
             }}
-            src={DeleteIcon}
-            style={{ position: 'absolute', top: 15, right: 15 }}
-          />
+            sx={{
+              ...homeroomResourcesCardClassess.iconButton,
+              top: 15,
+              right: 15,
+              color: MthColor.SYSTEM_01,
+              background: MthColor.BUTTON_LINEAR_GRADIENT,
+            }}
+          >
+            <DeleteForeverOutlinedIcon />
+          </Stack>
         </Tooltip>
       )}
       {!!item.resource_id && item.is_active && (
         <Tooltip title={item.allow_request ? 'View Only' : 'Allow Request'}>
-          <img
+          <Stack
             onClick={(e) => {
               actionHandler(EventType.ALLOW_REQUEST)
               e.stopPropagation()
             }}
-            src={item.allow_request ? AllowingRequestIcon : ViewOnlyIcon}
-            style={{ position: 'absolute', top: 15, right: 15 }}
-          />
+            sx={{
+              ...homeroomResourcesCardClassess.iconButton,
+              top: 15,
+              right: 15,
+              color: item.allow_request ? MthColor.WHITE : MthColor.BLACK,
+              background: item.allow_request ? MthColor.SYSTEM_01 : MthColor.WHITE,
+            }}
+          >
+            {item.allow_request ? <CheckOutlinedIcon /> : <AddOutlinedIcon />}
+          </Stack>
         </Tooltip>
       )}
       {action && !!item.resource_id && item.is_active && (
         <Tooltip title='Clone'>
-          <img
+          <Stack
             onClick={(e) => {
               actionHandler(EventType.DUPLICATE)
               e.stopPropagation()
             }}
-            src={DuplicateIcon}
-            style={{ position: 'absolute', top: 77, right: 15 }}
-          />
+            sx={{
+              ...homeroomResourcesCardClassess.iconButton,
+              top: 77,
+              right: 15,
+              color: MthColor.BLACK,
+              background: MthColor.ORANGE_GRADIENT,
+            }}
+          >
+            <AddOutlinedIcon />
+          </Stack>
         </Tooltip>
       )}
       <CardContent sx={{ textAlign: 'left' }}>

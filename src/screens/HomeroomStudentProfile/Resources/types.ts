@@ -6,6 +6,11 @@ export enum EventType {
   CLICK = 'click',
 }
 
+export enum ResourcePage {
+  ROOT = 'root',
+  REQUEST = 'request',
+}
+
 export type Resource = {
   resource_id?: number
   SchoolYearId: number
@@ -25,7 +30,7 @@ export type Resource = {
   priority: number
   is_active: boolean
   allow_request: boolean
-  inCart: boolean
+  CartDate: Date
   HiddenByStudent: boolean
   requested: boolean
   accepted: boolean
@@ -36,11 +41,19 @@ export type Resource = {
 
 export interface ResourceCardProps {
   item: Resource
+  page?: ResourcePage
   onAction?: (evtType: EventType) => void
 }
 
 export interface ResourceCartBarProps {
   resourcesInCart: Resource[]
+  setPage: (value: ResourcePage) => void
+}
+
+export interface ResourceRequestProps {
+  resourcesInCart: Resource[]
+  setPage: (value: ResourcePage) => void
+  handleChangeResourceStatus: (resource: Resource, eventType: EventType) => void
 }
 
 export interface ResourceModalProps {

@@ -488,13 +488,11 @@ export const ApplicationQuestions: FunctionComponent = () => {
                       onSortEnd={({ oldIndex, newIndex }) => {
                         //	Find indexs
                         const groups = values
-                          .filter(
-                            (v) => (v.additional_question == '' || !v.additional_question) && v.main_question == 0,
-                          )
+                          .filter((v) => v.additional_question == '' || !v.additional_question)
                           .map((v) => {
                             const arr = [v]
-                            let current = v,
-                              child
+                            let current = v
+                            let child
                             while ((child = values.find((x) => x.additional_question == current.slug))) {
                               arr.push(child)
                               current = child
@@ -504,8 +502,6 @@ export const ApplicationQuestions: FunctionComponent = () => {
                         const newData = arrayMove(groups, oldIndex, newIndex)
 
                         const newValues = []
-                        newValues.push(values[0])
-                        newValues.push(values[1])
                         newData.forEach((group) => {
                           group?.forEach((q) => {
                             newValues.push({
@@ -514,7 +510,6 @@ export const ApplicationQuestions: FunctionComponent = () => {
                             })
                           })
                         })
-                        newValues.push(values[values.length - 1])
                         setValues(newValues)
                       }}
                     />

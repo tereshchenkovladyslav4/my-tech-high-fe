@@ -1,16 +1,17 @@
 import React from 'react'
+import AddOutlinedIcon from '@mui/icons-material/AddOutlined'
+import CheckOutlinedIcon from '@mui/icons-material/CheckOutlined'
+import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
 import EastIcon from '@mui/icons-material/East'
+import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined'
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined'
 import { Box, Button, Card, CardContent, CardMedia, Stack, Tooltip, Typography } from '@mui/material'
-import AllowingRequestIcon from '@mth/assets/check-white-bg-black.png'
-import UnHideIcon from '@mth/assets/eye-white-bg-black.png'
-import HideIcon from '@mth/assets/eye-white-bg-orange.png'
-import ViewOnlyIcon from '@mth/assets/plus-black-bg-white.png'
 import { s3URL } from '@mth/constants'
-import { ResourceSubtitle } from '@mth/enums'
-import { EventType, ResourceCardProps } from '../types'
+import { MthColor, ResourceSubtitle } from '@mth/enums'
+import { EventType, ResourceCardProps, ResourcePage } from '../types'
 import { resourceCardClasses } from './styles'
 
-const ResourceCard: React.FC<ResourceCardProps> = ({ item, onAction }) => {
+const ResourceCard: React.FC<ResourceCardProps> = ({ page, item, onAction }) => {
   const actionHandler = (e: React.MouseEvent<HTMLElement>, eventType?: EventType) => {
     e.stopPropagation()
     if (onAction && eventType) onAction(eventType)
@@ -43,25 +44,53 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ item, onAction }) => {
         </Box>
       )}
       {showRequestCta() && (
-        <Tooltip title={item.inCart ? 'Remove' : shouldWaitResource() ? 'Join Waitlist' : 'Request'}>
-          <img
+        <Tooltip title={item.CartDate ? 'Remove' : shouldWaitResource() ? 'Join Waitlist' : 'Request'}>
+          <Stack
             onClick={(e) => actionHandler(e, EventType.ADD_CART)}
-            src={item.inCart ? AllowingRequestIcon : ViewOnlyIcon}
-            style={{ position: 'absolute', top: 15, right: 15 }}
-          />
+            sx={{
+              ...resourceCardClasses.iconButton,
+              top: 15,
+              right: 15,
+              color: item.CartDate ? MthColor.WHITE : MthColor.SYSTEM_01,
+              background: item.CartDate
+                ? page !== ResourcePage.REQUEST
+                  ? MthColor.SYSTEM_01
+                  : MthColor.MTHORANGE
+                : MthColor.WHITE,
+            }}
+          >
+            {item.CartDate ? (
+              page !== ResourcePage.REQUEST ? (
+                <CheckOutlinedIcon />
+              ) : (
+                <CloseOutlinedIcon />
+              )
+            ) : (
+              <AddOutlinedIcon />
+            )}
+          </Stack>
         </Tooltip>
       )}
-      <Tooltip title={item.HiddenByStudent ? 'Unhide' : 'Hide'}>
-        <img
-          onClick={(e) => actionHandler(e, item.HiddenByStudent ? EventType.UNHIDE : EventType.HIDE)}
-          src={item.HiddenByStudent ? UnHideIcon : HideIcon}
-          style={{
-            position: 'absolute',
-            top: showRequestCta() ? 77 : 15,
-            right: 15,
-          }}
-        />
-      </Tooltip>
+      {page !== ResourcePage.REQUEST && (
+        <Tooltip title={item.HiddenByStudent ? 'Unhide' : 'Hide'}>
+          <Stack
+            onClick={(e) => actionHandler(e, item.HiddenByStudent ? EventType.UNHIDE : EventType.HIDE)}
+            sx={{
+              ...resourceCardClasses.iconButton,
+              top: showRequestCta() ? 77 : 15,
+              right: 15,
+              color: MthColor.WHITE,
+              background: item.HiddenByStudent ? MthColor.SYSTEM_01 : MthColor.MTHORANGE,
+            }}
+          >
+            {item.HiddenByStudent ? (
+              <VisibilityOffOutlinedIcon sx={{ transform: 'scaleX(-1)' }} />
+            ) : (
+              <VisibilityOutlinedIcon />
+            )}
+          </Stack>
+        </Tooltip>
+      )}
 
       {item.subtitle === ResourceSubtitle.INCLUDED && (
         <Button variant='contained' sx={resourceCardClasses.blackButton}>
@@ -73,12 +102,12 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ item, onAction }) => {
           Requested
         </Button>
       )}
-      {shouldWaitResource() && !item.inCart && !item.requested && (
+      {shouldWaitResource() && !item.CartDate && !item.requested && (
         <Button variant='contained' sx={resourceCardClasses.purpleButton}>
           Join Waitlist
         </Button>
       )}
-      {shouldWaitResource() && (item.inCart || item.requested) && (
+      {shouldWaitResource() && (item.CartDate || item.requested) && (
         <Button variant='contained' sx={resourceCardClasses.purpleButton}>
           Waitlist
         </Button>

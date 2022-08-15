@@ -1,3 +1,4 @@
+import { StudentRecordFileKind } from '@mth/enums'
 import { CheckBoxListVM } from '../Calendar/components/CheckBoxList/CheckBoxList'
 
 export const defaultStatusOptions: CheckBoxListVM[] = [
@@ -32,19 +33,19 @@ export const defaultSpecialEdOptions: CheckBoxListVM[] = [
 
 export const defaultOtherOptions: CheckBoxListVM[] = [
   {
-    label: 'Student Packet',
-    value: 'Student Packet',
+    label: StudentRecordFileKind.STUDENT_PACKET,
+    value: StudentRecordFileKind.STUDENT_PACKET,
   },
   {
-    label: 'Withdrawal Forms',
-    value: 'Withdrawal Forms',
+    label: StudentRecordFileKind.WITHDRAWAL_FORM,
+    value: StudentRecordFileKind.WITHDRAWAL_FORM,
   },
   {
-    label: 'Opt-out Forms',
-    value: 'Opt-out Forms',
+    label: StudentRecordFileKind.OPT_OUT_FORM,
+    value: StudentRecordFileKind.OPT_OUT_FORM,
   },
   {
-    label: 'USIRS',
-    value: 'USIRS',
+    label: StudentRecordFileKind.USIRS,
+    value: StudentRecordFileKind.USIRS,
   },
 ]

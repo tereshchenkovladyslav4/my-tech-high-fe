@@ -1,15 +1,19 @@
 import React, { useEffect, useState } from 'react'
 import { useMutation, useQuery } from '@apollo/client'
 import { Grid, Stack } from '@mui/material'
+import { sortBy } from 'lodash'
 import { ResourceSubtitle } from '@mth/enums'
 import { ResourceCard } from './ResourceCard'
 import { ResourceCartBar } from './ResourceCartBar'
 import { ResourceModal } from './ResourceModal'
-import { getStudentResourcesQuery, toggleHiddenResourceMutation } from './services'
-import { EventType, Resource } from './types'
+import { ResourceRequest } from './ResourceRequest'
+import { getStudentResourcesQuery, toggleHiddenResourceMutation, toggleResourceCartMutation } from './services'
+import { EventType, Resource, ResourcePage } from './types'
 
 export const Resources: React.FC = () => {
-  const currentStudentId = location.pathname.split('/').at(-1)
+  const currentStudentId = Number(location.pathname.split('/').at(-1))
+
+  const [page, setPage] = useState<ResourcePage>(ResourcePage.ROOT)
   const [resources, setResources] = useState<Resource[]>([])
   const [resourcesInCart, setResourcesInCart] = useState<Resource[]>([])
   const [selectedResource, setSelectedResource] = useState<Resource>()
@@ -25,18 +29,7 @@ export const Resources: React.FC = () => {
     fetchPolicy: 'network-only',
   })
   const [toggleHiddenResource, {}] = useMutation(toggleHiddenResourceMutation)
-
-  const checkCart = (resource: Resource) => {
-    const index = resourcesInCart.findIndex((item) => item.resource_id === resource.resource_id)
-    if (resource.inCart && index < 0) {
-      resourcesInCart.splice(0, 0, resource)
-      setResourcesInCart(resourcesInCart)
-    }
-    if (!resource.inCart && index > -1) {
-      resourcesInCart.splice(index, 1)
-      setResourcesInCart(resourcesInCart)
-    }
-  }
+  const [toggleResourceCart, {}] = useMutation(toggleResourceCartMutation)
 
   const handleChangeResourceStatus = async (resource: Resource | undefined, eventType: EventType) => {
     if (resource) {
@@ -46,9 +39,21 @@ export const Resources: React.FC = () => {
           await toggleHiddenResource({
             variables: {
               toggleHiddenResourceInput: {
-                student_id: 2839,
+                student_id: currentStudentId,
                 resource_id: Number(resource.resource_id),
                 hidden: !resource.HiddenByStudent,
+              },
+            },
+          })
+          break
+        }
+        case EventType.ADD_CART: {
+          await toggleResourceCart({
+            variables: {
+              toggleResourceCartInput: {
+                student_id: currentStudentId,
+                resource_id: Number(resource.resource_id),
+                inCart: !resource.CartDate,
               },
             },
           })
@@ -58,6 +63,16 @@ export const Resources: React.FC = () => {
       refetch()
     }
   }
+
+  useEffect(() => {
+    if (resources?.length) {
+      const items: Resource[] = sortBy(
+        resources.filter((item) => item.CartDate),
+        'CartDate',
+      ).reverse()
+      setResourcesInCart(items)
+    }
+  }, [resources])
 
   useEffect(() => {
     if (!loading && resourcesData) {
@@ -70,43 +85,56 @@ export const Resources: React.FC = () => {
 
   return (
     <Stack>
-      {!!resourcesInCart?.length && <ResourceCartBar resourcesInCart={resourcesInCart}></ResourceCartBar>}
+      {page === ResourcePage.ROOT && (
+        <>
+          {!!resourcesInCart?.length && (
+            <ResourceCartBar resourcesInCart={resourcesInCart} setPage={setPage}></ResourceCartBar>
+          )}
 
-      <Grid container padding={4} spacing={1}>
-        {resources.map((item, idx) => (
-          <Grid key={idx} item xs={4} paddingTop={4}>
-            <ResourceCard
-              item={item}
-              onAction={(evtType: EventType) => {
-                setSelectedResource(item)
-                switch (evtType) {
-                  case EventType.CLICK: {
-                    if (item.website) window.open(item.website, '_blank')
-                    break
-                  }
-                  case EventType.ADD_CART: {
-                    item.inCart = !item.inCart
-                    checkCart(item)
-                    break
-                  }
-                  case EventType.HIDE: {
-                    if ((item.accepted || item.requested) && item.subtitle === ResourceSubtitle.PRICE) {
-                      setShowHideModal(true)
-                    } else {
-                      handleChangeResourceStatus(item, EventType.HIDE)
+          <Grid container padding={4} spacing={1}>
+            {resources.map((item, idx) => (
+              <Grid key={idx} item xs={4} paddingTop={4}>
+                <ResourceCard
+                  item={item}
+                  onAction={(evtType: EventType) => {
+                    setSelectedResource(item)
+                    switch (evtType) {
+                      case EventType.CLICK: {
+                        if (item.website) window.open(item.website, '_blank')
+                        break
+                      }
+                      case EventType.ADD_CART: {
+                        handleChangeResourceStatus(item, EventType.ADD_CART)
+                        break
+                      }
+                      case EventType.HIDE: {
+                        if ((item.accepted || item.requested) && item.subtitle === ResourceSubtitle.PRICE) {
+                          setShowHideModal(true)
+                        } else {
+                          handleChangeResourceStatus(item, EventType.HIDE)
+                        }
+                        break
+                      }
+                      case EventType.UNHIDE: {
+                        handleChangeResourceStatus(item, EventType.UNHIDE)
+                        break
+                      }
                     }
-                    break
-                  }
-                  case EventType.UNHIDE: {
-                    handleChangeResourceStatus(item, EventType.UNHIDE)
-                    break
-                  }
-                }
-              }}
-            />
+                  }}
+                />
+              </Grid>
+            ))}
           </Grid>
-        ))}
-      </Grid>
+        </>
+      )}
+
+      {page === ResourcePage.REQUEST && (
+        <ResourceRequest
+          resourcesInCart={resourcesInCart}
+          setPage={setPage}
+          handleChangeResourceStatus={handleChangeResourceStatus}
+        ></ResourceRequest>
+      )}
 
       <ResourceModal
         showHideModal={showHideModal}

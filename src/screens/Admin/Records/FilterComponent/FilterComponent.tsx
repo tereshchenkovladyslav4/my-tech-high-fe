@@ -81,16 +81,24 @@ const FilterComponent: React.FC<FilterComponentProps> = ({ setFilter }) => {
         }}
       />
     )
+
+  const jsonStringify = (value: string[]) => {
+    if (value?.length > 0) {
+      return JSON.stringify(value)
+    } else {
+      return ''
+    }
+  }
   const handleFilter = () => {
     setFilter({
-      gradeLevel1: JSON.stringify(grades1),
-      gradeLevel2: JSON.stringify(grades2),
-      programYear: JSON.stringify(programYears),
-      status: JSON.stringify(status),
-      schoolOfEnrollment: JSON.stringify(schoolofEnrollment),
-      specialEd: JSON.stringify(speicalEd),
-      EnrollmentPacketDocuments: JSON.stringify(enrollmentPacketDocument),
-      other: JSON.stringify(other),
+      gradeLevel1: jsonStringify(grades1),
+      gradeLevel2: jsonStringify(grades2),
+      programYear: jsonStringify(programYears),
+      status: jsonStringify(status),
+      schoolOfEnrollment: jsonStringify(schoolofEnrollment),
+      specialEd: jsonStringify(speicalEd),
+      EnrollmentPacketDocuments: jsonStringify(enrollmentPacketDocument),
+      other: jsonStringify(other),
       dateRange: {
         startDate: startDate,
         endDate: endDate,

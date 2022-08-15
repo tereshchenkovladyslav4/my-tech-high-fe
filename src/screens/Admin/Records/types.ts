@@ -17,6 +17,12 @@ export type StudentFilesFolderProps = {
   filter: FilterVM | undefined
 }
 
+export type StudentFilesModalProps = {
+  record: StudentRecord | undefined
+  handleDownload: (value: StudentRecord[], isIndividualFile?: boolean) => void
+  handleModem: () => void
+}
+
 export type FilterComponentProps = {
   setFilter: (value: FilterVM | undefined) => void
 }
@@ -30,7 +36,23 @@ export type SchoolYearsVM = {
   midyear_application_close: Date
 }
 
+export type StudentRecordFile = {
+  fileId: number
+  fileName: string
+  filePath: string
+  fileKind: string
+}
+
 export type StudentRecord = {
+  recordId: number
+  studentId: number
   firstName: string
   lastName: string
+  files: StudentRecordFile[]
+}
+
+export type DownloadStudentRecordFilesVM = {
+  studentName: string
+  fileIds: number[]
+  isIndividualFile?: boolean
 }

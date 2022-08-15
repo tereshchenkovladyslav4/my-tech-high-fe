@@ -8,8 +8,8 @@ type YearNodeProps = {
 export type YearNodeTemplateType = FunctionComponent<YearNodeProps>
 
 export type SchoolYearItem = {
-  open: Date
-  close: Date
+  open: Date | undefined
+  close: Date | undefined
   status?: boolean
 }
 

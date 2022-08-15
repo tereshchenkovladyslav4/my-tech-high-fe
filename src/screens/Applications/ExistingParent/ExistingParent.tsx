@@ -1,4 +1,4 @@
-import React, { FunctionComponent, ReactElement, useContext, useEffect, useState } from 'react'
+import React, { ReactElement, useContext, useEffect, useState } from 'react'
 import { gql, useMutation, useQuery } from '@apollo/client'
 import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined'
 import { Box, Button, Card, Grid } from '@mui/material'
@@ -9,13 +9,14 @@ import moment from 'moment'
 import { useHistory } from 'react-router-dom'
 import { object, string } from 'yup'
 import * as yup from 'yup'
-import BGSVG from '../../../assets/AdminApplicationBG.svg'
-import { DropDown } from '../../../components/DropDown/DropDown'
-import { DropDownItem } from '../../../components/DropDown/types'
-import { QUESTION_TYPE } from '../../../components/QuestionItem/QuestionItemProps'
-import { Paragraph } from '../../../components/Typography/Paragraph/Paragraph'
-import { getAllRegion } from '../../../graphql/queries/region'
-import { UserContext } from '../../../providers/UserContext/UserProvider'
+import BGSVG from '@mth/assets/AdminApplicationBG.svg'
+import { DropDown } from '@mth/components/DropDown/DropDown'
+import { DropDownItem } from '@mth/components/DropDown/types'
+import { QUESTION_TYPE } from '@mth/components/QuestionItem/QuestionItemProps'
+import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
+import { getAllRegion } from '@mth/graphql/queries/region'
+import { getActiveSchoolYearsByRegionId } from '@mth/graphql/queries/school-year'
+import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { GRADES, RED } from '../../../utils/constants'
 import { toOrdinalSuffix, isNumber } from '../../../utils/stringHelpers'
 import { AdditionalQuestionItem } from '../components/AdditionalQuestionItem/AdditionalQuestionItem'
@@ -31,26 +32,7 @@ export const getRegionByUserId = gql`
   }
 `
 
-export const getActiveSchoolYearsByRegionId = gql`
-  query GetActiveSchoolYears($regionId: ID!) {
-    getSchoolYearsByRegionId(region_id: $regionId) {
-      date_begin
-      date_end
-      date_reg_close
-      date_reg_open
-      grades
-      birth_date_cut
-      special_ed
-      special_ed_options
-      school_year_id
-      midyear_application
-      midyear_application_open
-      midyear_application_close
-    }
-  }
-`
-
-export const ExistingParent: FunctionComponent = () => {
+export const ExistingParent: React.FC = () => {
   const [emptyStudent, setEmptyStudent] = useState({ meta: {} })
   const initSchema = {
     programYear: string().required('Program Year is required'),
@@ -304,9 +286,9 @@ export const ExistingParent: FunctionComponent = () => {
   }, [me?.user_id, regionData])
 
   useEffect(() => {
-    if (!schoolLoading && schoolYearData?.getSchoolYearsByRegionId) {
+    if (!schoolLoading && schoolYearData?.getActiveSchoolYears) {
       const schoolYearsArray: Array<DropDownItem> = []
-      schoolYearData.getSchoolYearsByRegionId
+      schoolYearData.getActiveSchoolYears
         .filter((item) => moment(item.date_begin).format('YYYY') >= moment().format('YYYY'))
         .map(
           (item: {
@@ -336,7 +318,7 @@ export const ExistingParent: FunctionComponent = () => {
           },
         )
       setSchoolYears(schoolYearsArray.sort((a, b) => (a.label > b.label ? 1 : -1)))
-      setSchoolYearsData(schoolYearData?.getSchoolYearsByRegionId)
+      setSchoolYearsData(schoolYearData?.getActiveSchoolYears)
     }
   }, [regionId, schoolYearData])
 
@@ -356,7 +338,7 @@ export const ExistingParent: FunctionComponent = () => {
               ?.options.find(
                 (x) =>
                   x.action == 2 &&
-                  x.value ==
+                  x.value ===
                     (field[values.find((y) => y.slug == v.additional_question)?.slug] ||
                       field.meta?.[values.find((y) => y.slug == v.additional_question)?.slug]),
               ) != null) ||
@@ -366,7 +348,7 @@ export const ExistingParent: FunctionComponent = () => {
               ?.options.find(
                 (x) =>
                   x.action == 2 &&
-                  x.label ==
+                  x.label ===
                     (field[values.find((y) => y.slug == v.additional_question)?.slug] ||
                       field.meta?.[values.find((y) => y.slug == v.additional_question)?.slug]),
               ) != null) ||

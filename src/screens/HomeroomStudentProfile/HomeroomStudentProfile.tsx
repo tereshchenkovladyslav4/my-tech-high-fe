@@ -6,7 +6,7 @@ import { StudentNav } from './StudentNav'
 import { StudentProfilePage } from './types'
 
 export const HomeroomStudentProfile: React.FC = () => {
-  const [nav, setNav] = useState<StudentProfilePage>(StudentProfilePage.RESOURCES)
+  const [nav, setNav] = useState<StudentProfilePage>(StudentProfilePage.STUDENT)
 
   return (
     <Box display='flex' flexDirection='column'>

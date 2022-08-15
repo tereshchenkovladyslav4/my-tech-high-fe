@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { useQuery } from '@apollo/client'
 import { Stack } from '@mui/material'
 import moment from 'moment'
@@ -22,7 +22,7 @@ type SchoolYearDropDownProps = {
   selectedYearId: string
 }
 
-export const SchoolYearDropDown: FunctionComponent<SchoolYearDropDownProps> = ({
+export const SchoolYearDropDown: React.FC<SchoolYearDropDownProps> = ({
   setSelectedYearId,
   setSchoolYearItem,
   setApplicationItem,
@@ -76,7 +76,11 @@ export const SchoolYearDropDown: FunctionComponent<SchoolYearDropDownProps> = ({
 
   const setAllDefault = () => {
     setSelectedYearId('')
-    setSchoolYearItem(undefined)
+    setSchoolYearItem({
+      open: undefined,
+      close: undefined,
+      status: false,
+    })
     setApplicationItem(undefined)
     setMidYearItem(undefined)
   }
