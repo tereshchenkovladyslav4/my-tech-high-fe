@@ -1,19 +1,28 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { useMutation, useQuery } from '@apollo/client'
 import ArrowBackIosOutlinedIcon from '@mui/icons-material/ArrowBackIosOutlined'
-import { Box, ButtonBase, Grid, Typography } from '@mui/material'
+import EditIcon from '@mui/icons-material/Edit'
+import { Box, ButtonBase, Grid, Stack, Typography } from '@mui/material'
 import moment from 'moment'
 import { arrayMove, SortableContainer, SortableElement } from 'react-sortable-hoc'
 import { DropDown } from '@mth/components/DropDown/DropDown'
+import { MthColor } from '@mth/enums'
 import { getResourcesQuery } from '@mth/graphql/queries/resource'
 import { useSchoolYearsByRegionId } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { defaultHomeroomFormData } from '../defaultValues'
 import { createOrUpdateResourceMutation, deleteResourceMutation } from '../services'
+import { ConfirmationDetails } from './ConfirmationDetails'
 import { HomeroomResourceCard } from './HomeroomResourceCard'
 import { HomeroomResourceEdit } from './HomeroomResourceEdit'
 import { HomeroomResourceModal } from './HomeroomResourceModal'
-import { EventType, HomeroomResource, HomeroomResourceProps, HomeroomResourceCardProps } from './types'
+import {
+  EventType,
+  HomeroomResource,
+  HomeroomResourceProps,
+  HomeroomResourceCardProps,
+  HomeroomResourcePage,
+} from './types'
 
 export const HomeroomResources: React.FC<HomeroomResourceProps> = ({ backAction }) => {
   const { me } = useContext(UserContext)
@@ -25,7 +34,7 @@ export const HomeroomResources: React.FC<HomeroomResourceProps> = ({ backAction 
   const [resources, setResources] = useState<HomeroomResource[]>([])
   const [visibleResources, setVisibleResources] = useState<HomeroomResource[]>([])
   const [selectedYear, setSelectedYear] = useState<string | number>('')
-  const [page, setPage] = useState<string>('root')
+  const [page, setPage] = useState<HomeroomResourcePage>(HomeroomResourcePage.ROOT)
   const [selectedHomeroomResource, setSelectedHomeroomResource] = useState<HomeroomResource>()
   const [showArchivedModal, setShowArchivedModal] = useState<boolean>(false)
   const [showUnarchivedModal, setShowUnarchivedModal] = useState<boolean>(false)
@@ -127,13 +136,13 @@ export const HomeroomResources: React.FC<HomeroomResourceProps> = ({ backAction 
   }
 
   const SortableCard = SortableElement(({ item, action, isPast, onAction }: HomeroomResourceCardProps) => (
-    <li style={{ listStyleType: 'none', display: 'inline-block', width: '33%' }}>
+    <Grid item xs={4}>
       <HomeroomResourceCard item={item} action={action} isPast={isPast} onAction={onAction} setPage={setPage} />
-    </li>
+    </Grid>
   ))
 
   const SortableListContainer = SortableContainer(({ items }: { items: HomeroomResource[] }) => (
-    <ul style={{ textAlign: 'left' }}>
+    <Grid container spacing={2} sx={{ textAlign: 'left' }}>
       {items.map((item, idx) => (
         <SortableCard
           index={idx}
@@ -146,11 +155,11 @@ export const HomeroomResources: React.FC<HomeroomResourceProps> = ({ backAction 
             setSelectedHomeroomResource(item)
             switch (evtType) {
               case EventType.ADD: {
-                setPage(EventType.ADD)
+                setPage(HomeroomResourcePage.EDIT)
                 break
               }
               case EventType.EDIT: {
-                setPage(EventType.EDIT)
+                setPage(HomeroomResourcePage.EDIT)
                 break
               }
               case EventType.CLICK: {
@@ -176,7 +185,7 @@ export const HomeroomResources: React.FC<HomeroomResourceProps> = ({ backAction 
           }}
         />
       ))}
-    </ul>
+    </Grid>
   ))
 
   useEffect(() => {
@@ -209,15 +218,24 @@ export const HomeroomResources: React.FC<HomeroomResourceProps> = ({ backAction 
   }, [me?.selectedRegionId])
 
   return (
-    <Box>
-      {page === 'root' ? (
+    <Box sx={{ px: 4 }}>
+      {page === HomeroomResourcePage.ROOT && (
         <>
-          <Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between' paddingX={4}>
-            <Grid container sx={{ p: 2, background: 'inherit' }}>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              pl: 3,
+              mb: 4,
+            }}
+          >
+            <Grid container sx={{ background: 'inherit' }}>
               <ButtonBase onClick={backAction} sx={{ p: 1 }} disableRipple>
                 <Grid container justifyContent='flex-start' alignItems='center'>
                   <ArrowBackIosOutlinedIcon />
-                  <Typography sx={{ fontWeight: 700, fontSize: 20, ml: 1 }}>Resources</Typography>
+                  <Typography sx={{ fontWeight: 700, fontSize: 20, ml: 2 }}>Resources</Typography>
                 </Grid>
               </ButtonBase>
             </Grid>
@@ -228,22 +246,38 @@ export const HomeroomResources: React.FC<HomeroomResourceProps> = ({ backAction 
                 defaultValue={selectedYear}
                 borderNone={true}
                 setParentValue={(val) => {
-                  setSelectedYear(Number(val))
+                  setSelectedYear(val)
                 }}
               />
             </Box>
           </Box>
-          <SortableListContainer
-            axis='xy'
-            items={visibleResources}
-            useDragHandle={true}
-            onSortEnd={({ oldIndex, newIndex }) => {
-              const newResources = arrayMove(visibleResources, oldIndex, newIndex)
-              arrangeItems(newResources)
-            }}
-          />
+          <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', mb: 3 }}>
+            <Typography sx={{ fontWeight: 700, fontSize: 20, mr: 2 }}>Confirmation Details</Typography>
+            <Stack
+              onClick={() => {
+                setPage(HomeroomResourcePage.CONFIRMATION_DETAILS)
+              }}
+              direction='row'
+              spacing={1.5}
+              sx={{ alignItems: 'center', cursor: 'pointer' }}
+            >
+              <EditIcon htmlColor={MthColor.MTHBLUE} />
+            </Stack>
+          </Box>
+          <Box>
+            <SortableListContainer
+              axis='xy'
+              items={visibleResources}
+              useDragHandle={true}
+              onSortEnd={({ oldIndex, newIndex }) => {
+                const newResources = arrayMove(visibleResources, oldIndex, newIndex)
+                arrangeItems(newResources)
+              }}
+            />
+          </Box>
         </>
-      ) : (
+      )}
+      {page === HomeroomResourcePage.EDIT && (
         <HomeroomResourceEdit
           schoolYearId={Number(selectedYear)}
           item={selectedHomeroomResource}
@@ -252,6 +286,7 @@ export const HomeroomResources: React.FC<HomeroomResourceProps> = ({ backAction 
           refetch={refetch}
         />
       )}
+      {page === HomeroomResourcePage.CONFIRMATION_DETAILS && <ConfirmationDetails setPage={setPage} />}
       <HomeroomResourceModal
         showArchivedModal={showArchivedModal}
         showUnarchivedModal={showUnarchivedModal}

@@ -9,6 +9,12 @@ export enum EventType {
   RESTORE = 'restore',
 }
 
+export enum HomeroomResourcePage {
+  ROOT = 'root',
+  EDIT = 'edit',
+  CONFIRMATION_DETAILS = 'confirmation-details',
+}
+
 export type HomeroomResource = {
   resource_id?: number
   SchoolYearId: number
@@ -33,6 +39,10 @@ export type HomeroomResource = {
   background?: string
 }
 
+export type ConfirmationDetails = {
+  details?: string
+}
+
 export interface HomeroomResourceProps {
   backAction?: () => void
 }
@@ -41,7 +51,7 @@ export interface HomeroomResourceCardProps {
   item: HomeroomResource
   action: boolean
   isPast: boolean
-  setPage: (value: string) => void
+  setPage: (value: HomeroomResourcePage) => void
   onAction?: (evtType: EventType) => void
 }
 
@@ -61,7 +71,7 @@ export interface HomeroomResourceEditProps {
   schoolYearId: number
   item: HomeroomResource | undefined
   stateName: string
-  setPage: (value: string) => void
+  setPage: (value: HomeroomResourcePage) => void
   refetch: () => void
 }
 
@@ -69,9 +79,17 @@ export type HeaderComponentProps = {
   title: string
   isSubmitted: boolean
   handleBack: () => void
-  setShowCancelModal: (value: boolean) => void
+  handleCancel: () => void
 }
 
 export type HomeroomResourceFormProps = {
+  setIsChanged: (value: boolean) => void
+}
+
+export type ConfirmationDetailsProps = {
+  setPage: (value: HomeroomResourcePage) => void
+}
+
+export type ConfirmationDetailsFormProps = {
   setIsChanged: (value: boolean) => void
 }

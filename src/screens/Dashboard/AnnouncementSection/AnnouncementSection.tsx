@@ -38,7 +38,7 @@ const AnnouncementSection: FunctionComponent<AnnouncementSectionProps> = ({
   const avatarGroup = (gradeFilter: string) => {
     const grades = JSON.parse(gradeFilter)
     return (
-      <AvatarGroup max={5} sx={{ maxWidth: '300px', justifyContent: 'start' }} spacing={0}>
+      <AvatarGroup max={5} sx={{ maxWidth: '300px', justifyContent: 'end' }} spacing={0}>
         {me?.students &&
           me?.students.map((student): ReactElement | undefined => {
             if (
@@ -71,7 +71,7 @@ const AnnouncementSection: FunctionComponent<AnnouncementSectionProps> = ({
       },
     },
     skip: me?.user_id ? false : true,
-    fetchPolicy: 'network-only',
+    fetchPolicy: 'cache-first',
   })
 
   const changeHandler = (event: string) => {
@@ -98,7 +98,7 @@ const AnnouncementSection: FunctionComponent<AnnouncementSectionProps> = ({
           avatars: avatarGroup(announcement.filter_grades),
           description: (
             <>
-              <Box sx={{ display: 'flex', paddingY: '25px', width: '350px' }}>
+              <Box sx={{ display: 'flex', paddingY: '25px', width: '350px', justifyContent: 'end' }}>
                 <Paragraph size='medium'>
                   {extractContent(announcement.body).slice(0, 100)}
                   <a

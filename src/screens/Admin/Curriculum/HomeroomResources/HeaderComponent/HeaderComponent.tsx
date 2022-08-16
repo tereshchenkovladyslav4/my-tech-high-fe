@@ -3,29 +3,29 @@ import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded'
 import { Box, Button, IconButton } from '@mui/material'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { HeaderComponentProps } from '../types'
-import { editHomeroomResourceClassess } from './styles'
+import { headerComponentClassess } from './styles'
 
-const HeaderComponent: React.FC<HeaderComponentProps> = ({ title, isSubmitted, handleBack, setShowCancelModal }) => {
+const HeaderComponent: React.FC<HeaderComponentProps> = ({ title, isSubmitted, handleBack, handleCancel }) => {
   return (
-    <Box sx={editHomeroomResourceClassess.pageTop}>
-      <Box sx={editHomeroomResourceClassess.pageTitle}>
+    <Box sx={headerComponentClassess.pageTop}>
+      <Box sx={headerComponentClassess.pageTitle}>
         <IconButton
           onClick={() => handleBack()}
           sx={{
             position: 'relative',
           }}
         >
-          <ArrowBackIosRoundedIcon sx={editHomeroomResourceClassess.arrowButton} />
+          <ArrowBackIosRoundedIcon sx={headerComponentClassess.arrowButton} />
         </IconButton>
         <Subtitle size='medium' sx={{ fontSize: '20px', marginLeft: '16px' }} fontWeight='700'>
           {title}
         </Subtitle>
       </Box>
-      <Box sx={editHomeroomResourceClassess.pageTopRight}>
-        <Button sx={editHomeroomResourceClassess.cancelBtn} onClick={() => setShowCancelModal(true)}>
+      <Box sx={headerComponentClassess.pageTopRight}>
+        <Button sx={headerComponentClassess.cancelBtn} onClick={() => handleCancel()}>
           Cancel
         </Button>
-        <Button sx={editHomeroomResourceClassess.saveBtn} type='submit' disabled={isSubmitted}>
+        <Button sx={headerComponentClassess.saveBtn} type='submit' disabled={isSubmitted}>
           Save
         </Button>
       </Box>

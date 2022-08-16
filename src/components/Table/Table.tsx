@@ -1,10 +1,14 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { TableCell, TableContainer, TableHead, TableRow, Table as MUITable, TableBody } from '@mui/material'
 import { map } from 'lodash'
 import { TableTemplateType } from './types'
 
 export const Table: TableTemplateType = ({ tableHeaders, tableBody, isHover = false }) => {
-  const [rows] = useState(tableBody)
+  const [rows, setRows] = useState<Record<string | number, React.ReactNode>[]>()
+
+  useEffect(() => {
+    setRows(tableBody)
+  }, [tableBody])
 
   const renderTableHeaders = () =>
     tableHeaders && (

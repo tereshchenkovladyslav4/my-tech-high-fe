@@ -21,6 +21,7 @@ export type RegionDetail = {
   state_logo: string
   special_ed: boolean
   birth_date: string
+  resource_confirm_details?: string
   SchoolDistricts: SchoolDistrict[]
 }
 

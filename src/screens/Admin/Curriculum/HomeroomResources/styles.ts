@@ -1,9 +1,9 @@
-import { MTHBLUE } from '../../../../utils/constants'
+import { MthColor } from '@mth/enums'
 
 export const homeroomResourcesClassess = {
   yearSelect: {
     '& .MuiSvgIcon-root': {
-      color: MTHBLUE,
+      color: MthColor.MTHBLUE,
     },
     '& .MuiSelect-select': {
       fontSize: '20px',
@@ -13,5 +13,12 @@ export const homeroomResourcesClassess = {
         backgroundColor: 'transparent',
       },
     },
+  },
+  formError: {
+    color: MthColor.ERROR_RED,
+    fontSize: '12px',
+    fontWeight: 600,
+    lineHeight: '20px',
+    marginBottom: '4px',
   },
 }

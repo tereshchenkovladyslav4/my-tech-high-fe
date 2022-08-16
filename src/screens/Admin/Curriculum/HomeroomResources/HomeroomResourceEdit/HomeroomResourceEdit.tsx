@@ -6,11 +6,11 @@ import { Prompt } from 'react-router-dom'
 import * as yup from 'yup'
 import { CustomModal } from '@mth/components/CustomModal/CustomModals'
 import { SNOWPACK_PUBLIC_S3_URL, urlRex } from '@mth/constants'
-import { ResourceSubtitle } from '@mth/enums'
+import { MthColor, ResourceSubtitle } from '@mth/enums'
 import { defaultHomeroomFormData } from '../../defaultValues'
 import { createOrUpdateResourceMutation } from '../../services'
-import { HomeroomResource, HomeroomResourceEditProps } from '../types'
-import HeaderComponent from './HeaderComponent'
+import { HeaderComponent } from '../HeaderComponent'
+import { HomeroomResource, HomeroomResourceEditProps, HomeroomResourcePage } from '../types'
 import HomeroomResourceForm from './HomeroomResourceForm'
 import { editHomeroomResourceClassess } from './styles'
 
@@ -24,14 +24,23 @@ const HomeroomResourceEdit: React.FC<HomeroomResourceEditProps> = ({
   const [isChanged, setIsChanged] = useState<boolean>(false)
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false)
   const [showCancelModal, setShowCancelModal] = useState<boolean>(false)
+  const [showLeaveModal, setShowLeaveModal] = useState<boolean>(false)
   const [initialValues, setInitialValues] = useState<HomeroomResource>(defaultHomeroomFormData)
   const [submitSave, {}] = useMutation(createOrUpdateResourceMutation)
 
   const handleBack = () => {
     if (isChanged) {
+      setShowLeaveModal(true)
+    } else {
+      setPage(HomeroomResourcePage.ROOT)
+    }
+  }
+
+  const handleCancel = () => {
+    if (isChanged) {
       setShowCancelModal(true)
     } else {
-      setPage('root')
+      setPage(HomeroomResourcePage.ROOT)
     }
   }
 
@@ -107,7 +116,7 @@ const HomeroomResourceEdit: React.FC<HomeroomResourceEditProps> = ({
         setIsSubmitted(false)
         setIsChanged(false)
         refetch()
-        setPage('root')
+        setPage(HomeroomResourcePage.ROOT)
       })
       .catch(() => {
         setIsSubmitted(false)
@@ -138,7 +147,7 @@ const HomeroomResourceEdit: React.FC<HomeroomResourceEditProps> = ({
             title={'Resources'}
             isSubmitted={isSubmitted}
             handleBack={handleBack}
-            setShowCancelModal={setShowCancelModal}
+            handleCancel={handleCancel}
           />
           <HomeroomResourceForm setIsChanged={setIsChanged} />
         </Form>
@@ -146,17 +155,34 @@ const HomeroomResourceEdit: React.FC<HomeroomResourceEditProps> = ({
       {showCancelModal && (
         <CustomModal
           title='Cancel Changes'
-          description='Are you sure you want to cancel changes?'
-          cancelStr='No'
+          description='Are you sure you want to cancel changes made?'
+          cancelStr='Cancel'
           confirmStr='Yes'
-          backgroundColor='#FFFFFF'
+          backgroundColor={MthColor.WHITE}
           onClose={() => {
             setShowCancelModal(false)
           }}
           onConfirm={() => {
             setShowCancelModal(false)
             setIsChanged(false)
-            setPage('root')
+            setPage(HomeroomResourcePage.ROOT)
+          }}
+        />
+      )}
+      {showLeaveModal && (
+        <CustomModal
+          title='Unsaved Changes'
+          description='Are you sure you want to leave without saving changes?'
+          cancelStr='Cancel'
+          confirmStr='Yes'
+          backgroundColor={MthColor.WHITE}
+          onClose={() => {
+            setShowLeaveModal(false)
+          }}
+          onConfirm={() => {
+            setShowLeaveModal(false)
+            setIsChanged(false)
+            setPage(HomeroomResourcePage.ROOT)
           }}
         />
       )}

@@ -2,6 +2,7 @@ import React, { FunctionComponent, useContext, useEffect, useState } from 'react
 import { useQuery } from '@apollo/client'
 import { Card, Grid } from '@mui/material'
 import { Box } from '@mui/system'
+import { filter } from 'lodash'
 import moment from 'moment'
 import { useEventsByRegionIdAndFilterItem, useEventTypeListByRegionId } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
@@ -98,7 +99,7 @@ export const Dashboard: FunctionComponent = () => {
                   }}
                 >
                   <Announcements
-                    announcements={announcements}
+                    announcements={filter(announcements, (announcement) => announcement.status !== 'Read')}
                     setAnnouncements={setAnnouncements}
                     setSectionName={setSectionName}
                     setSelectedAnnouncement={setSelectedAnnouncement}
@@ -164,6 +165,7 @@ export const Dashboard: FunctionComponent = () => {
           date: moment(announcement.date).format('MMMM DD'),
           grades: announcement.filter_grades,
           regionId: announcement.RegionId,
+          status: announcement.status,
         })),
       )
     }

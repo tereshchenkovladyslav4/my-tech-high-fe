@@ -12,8 +12,8 @@ import { MthColor, ResourceSubtitle } from '@mth/enums'
 import { BulletEditor } from '@mth/screens/Admin/Calendar/components/BulletEditor'
 import { DocumentUploadModal } from '@mth/screens/Admin/SiteManagement/EnrollmentSetting/EnrollmentQuestions/Documents/components/DocumentUploadModal/DocumentUploadModal'
 import { renderGrades, toOrdinalSuffix } from '@mth/utils'
+import { homeroomResourcesClassess } from '../styles'
 import { HomeroomResource, HomeroomResourceFormProps } from '../types'
-import { editHomeroomResourceClassess } from './styles'
 
 const HomeroomResourceForm: React.FC<HomeroomResourceFormProps> = ({ setIsChanged }) => {
   const { errors, handleChange, setFieldValue, touched, values } = useFormikContext<HomeroomResource>()
@@ -73,7 +73,7 @@ const HomeroomResourceForm: React.FC<HomeroomResourceFormProps> = ({ setIsChange
         justifyContent: 'center',
       }}
     >
-      <Subtitle sx={editHomeroomResourceClassess.formError}>{touched.image && errors.image}</Subtitle>
+      <Subtitle sx={homeroomResourcesClassess.formError}>{touched.image && errors.image}</Subtitle>
       {values.image || imageUrl ? (
         <>
           <Avatar
@@ -118,7 +118,7 @@ const HomeroomResourceForm: React.FC<HomeroomResourceFormProps> = ({ setIsChange
         >
           {Image()}
           <Box sx={{ width: '100%', mt: 4, mb: 3 }}>
-            <Subtitle sx={editHomeroomResourceClassess.formError}>{touched.subtitle && errors.subtitle}</Subtitle>
+            <Subtitle sx={homeroomResourcesClassess.formError}>{touched.subtitle && errors.subtitle}</Subtitle>
             <DropDown
               dropDownItems={subtitleOptions}
               placeholder='Subtitle'
@@ -136,7 +136,7 @@ const HomeroomResourceForm: React.FC<HomeroomResourceFormProps> = ({ setIsChange
           </Box>
           {values?.subtitle === ResourceSubtitle.PRICE && (
             <Box sx={{ width: '100%' }}>
-              <Subtitle sx={editHomeroomResourceClassess.formError}>{touched.price && errors.price}</Subtitle>
+              <Subtitle sx={homeroomResourcesClassess.formError}>{touched.price && errors.price}</Subtitle>
               <TextField
                 name='price'
                 label='Price'
@@ -158,7 +158,7 @@ const HomeroomResourceForm: React.FC<HomeroomResourceFormProps> = ({ setIsChange
             <Grid item xs={8}>
               <Box sx={{ width: '85%' }}>
                 <Box sx={{ mb: 3 }}>
-                  <Subtitle sx={editHomeroomResourceClassess.formError}>{touched.title && errors.title}</Subtitle>
+                  <Subtitle sx={homeroomResourcesClassess.formError}>{touched.title && errors.title}</Subtitle>
                   <TextField
                     name='title'
                     label='Name'
@@ -173,7 +173,7 @@ const HomeroomResourceForm: React.FC<HomeroomResourceFormProps> = ({ setIsChange
                   />
                 </Box>
                 <Box sx={{ mb: 3 }}>
-                  <Subtitle sx={editHomeroomResourceClassess.formError}>{touched.website && errors.website}</Subtitle>
+                  <Subtitle sx={homeroomResourcesClassess.formError}>{touched.website && errors.website}</Subtitle>
                   <TextField
                     name='website'
                     label='Website'
@@ -235,7 +235,7 @@ const HomeroomResourceForm: React.FC<HomeroomResourceFormProps> = ({ setIsChange
                 }}
               >
                 <Box sx={{ mb: 3, flex: 1 }}>
-                  <Subtitle sx={editHomeroomResourceClassess.formError}>{touched.grades && errors.grades}</Subtitle>
+                  <Subtitle sx={homeroomResourcesClassess.formError}>{touched.grades && errors.grades}</Subtitle>
                   <MultiSelect
                     options={gradeOptions}
                     label='Grades'
@@ -249,7 +249,7 @@ const HomeroomResourceForm: React.FC<HomeroomResourceFormProps> = ({ setIsChange
                   />
                 </Box>
                 <Box sx={{ mb: 3, flex: 1 }}>
-                  <Subtitle sx={editHomeroomResourceClassess.formError}>
+                  <Subtitle sx={homeroomResourcesClassess.formError}>
                     {touched.resource_limit && errors.resource_limit}
                   </Subtitle>
                   <TextField
@@ -277,7 +277,7 @@ const HomeroomResourceForm: React.FC<HomeroomResourceFormProps> = ({ setIsChange
                 }}
               >
                 <Box sx={{ mb: 3, flex: 1 }}>
-                  <Subtitle sx={editHomeroomResourceClassess.formError}>
+                  <Subtitle sx={homeroomResourcesClassess.formError}>
                     {touched.std_user_name && errors.std_user_name}
                   </Subtitle>
                   <TextField
@@ -294,7 +294,7 @@ const HomeroomResourceForm: React.FC<HomeroomResourceFormProps> = ({ setIsChange
                   />
                 </Box>
                 <Box sx={{ mb: 3, flex: 1 }}>
-                  <Subtitle sx={editHomeroomResourceClassess.formError}>
+                  <Subtitle sx={homeroomResourcesClassess.formError}>
                     {touched.std_password && errors.std_password}
                   </Subtitle>
                   <TextField
@@ -341,7 +341,7 @@ const HomeroomResourceForm: React.FC<HomeroomResourceFormProps> = ({ setIsChange
           <Subtitle size='medium' sx={{ fontSize: '27px' }} fontWeight='700'>
             Details
           </Subtitle>
-          <Subtitle sx={editHomeroomResourceClassess.formError}>{touched.detail && errors.detail}</Subtitle>
+          <Subtitle sx={homeroomResourcesClassess.formError}>{touched.detail && errors.detail}</Subtitle>
           <BulletEditor
             value={values?.detail}
             setValue={(value) => {

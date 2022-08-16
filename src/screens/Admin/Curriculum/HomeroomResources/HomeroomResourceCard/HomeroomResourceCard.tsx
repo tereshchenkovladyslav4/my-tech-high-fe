@@ -33,7 +33,6 @@ const HomeroomResourceCard: React.FC<HomeroomResourceCardProps> = ({ item, actio
         position: 'relative',
         cursor: 'pointer',
         borderRadius: 2,
-        margin: 1,
         opacity: item.resource_id && !item.is_active ? 0.5 : 1,
         minWidth: 300,
       }}
@@ -128,7 +127,7 @@ const HomeroomResourceCard: React.FC<HomeroomResourceCardProps> = ({ item, actio
           </Stack>
         </Tooltip>
       )}
-      {action && !!item.resource_id && item.is_active && (
+      {action && !isPast && !!item.resource_id && item.is_active && (
         <Tooltip title='Clone'>
           <Stack
             onClick={(e) => {
