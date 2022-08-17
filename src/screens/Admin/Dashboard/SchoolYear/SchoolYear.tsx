@@ -31,6 +31,7 @@ export const getSchoolYearsByRegionId = gql`
         midyear_application_open
         midyear_application_close
         enrollment_packet
+        special_ed
       }
     }
   }
@@ -128,12 +129,19 @@ const data = [
 
 const status = ['Pending', 'Active', 'Total', 'Withdrawn', 'Graduated']
 
+type SchoolYearSped = {
+  school_year_id: number
+  special_ed: boolean
+}
+
 export const SchoolYear: FunctionComponent = () => {
   const [isExpanded, setIsExpanded] = useState(false)
   const { me } = useContext(UserContext)
   const [schoolYears, setSchoolYears] = useState<Array<DropDownItem>>([])
   const [selectedYear, setSelectedYear] = useState<string | number>()
   const [schoolYearDataCount, setSchoolYearDataCount] = useState(data)
+  const [schoolYearSpedOptions, setSchoolYearSpedOptions] = useState<Array<SchoolYearSped>>([])
+  const [specialEdStatus, setSpecialEdStatus] = useState(true)
 
   const selectClasses = selectStyles()
   const { loading: schoolYearDataLoading, data: schoolYearData } = useQuery(getSchoolYearsByRegionId, {
@@ -165,6 +173,14 @@ export const SchoolYear: FunctionComponent = () => {
           }
         }),
       )
+      setSchoolYearSpedOptions(
+        schoolYearData?.region?.SchoolYears.map((item) => {
+          return {
+            school_year_id: item.school_year_id,
+            special_ed: item.special_ed,
+          }
+        }),
+      )
       setSelectedYear(schoolYearData?.region?.SchoolYears[0]?.school_year_id)
     }
   }, [me.selectedRegionId, schoolYearDataLoading, schoolYearData?.data?.region?.SchoolYears])
@@ -174,6 +190,12 @@ export const SchoolYear: FunctionComponent = () => {
       setSchoolYearDataCount(schoolYearDataCounts?.schoolYearsData)
     }
   }, [me.selectedRegionId, schoolYearDataCountsLoading, schoolYearDataCounts?.schoolYearsData])
+
+  useEffect(() => {
+    schoolYearSpedOptions.map((item) => {
+      if (item.school_year_id == selectedYear) setSpecialEdStatus(item.special_ed)
+    })
+  }, [selectedYear])
 
   return (
     <Card>
@@ -236,7 +258,7 @@ export const SchoolYear: FunctionComponent = () => {
               ))}
               <Grid item xs={2} sx={{ backgroundColor: '#FAFAFA' }}>
                 <Box padding={2}>
-                  <Paragraph size='large' sx={{ fontSize: 'lg' }} fontWeight='700'>
+                  <Paragraph size='large' sx={{ fontSize: 'lg', textAlign: 'left' }} fontWeight='700'>
                     Students
                   </Paragraph>
                 </Box>
@@ -248,7 +270,7 @@ export const SchoolYear: FunctionComponent = () => {
               ))}
               <Grid item xs={2}>
                 <Box padding={2}>
-                  <Paragraph size='large' sx={{ fontSize: 'lg' }} fontWeight='700'>
+                  <Paragraph size='large' sx={{ fontSize: 'lg', textAlign: 'left' }} fontWeight='700'>
                     Parents
                   </Paragraph>
                 </Box>
@@ -258,18 +280,22 @@ export const SchoolYear: FunctionComponent = () => {
                   <Paragraph size='medium'>{parent.count}</Paragraph>
                 </Grid>
               ))}
-              <Grid item xs={2} sx={{ backgroundColor: '#FAFAFA' }}>
-                <Box padding={2}>
-                  <Paragraph size='large' sx={{ fontSize: 'lg' }} fontWeight='700'>
-                    Sped
-                  </Paragraph>
-                </Box>
-              </Grid>
-              {schoolYearDataCount[0].special_ed.map((sped, i) => (
-                <Grid item key={i} xs={2} padding={2} sx={{ backgroundColor: '#FAFAFA' }}>
-                  <Paragraph size='medium'>{sped.count}</Paragraph>
+              {specialEdStatus && (
+                <Grid item xs={2} sx={{ backgroundColor: '#FAFAFA' }}>
+                  <Box padding={2}>
+                    <Paragraph size='large' sx={{ fontSize: 'lg', textAlign: 'left' }} fontWeight='700'>
+                      SPED
+                    </Paragraph>
+                  </Box>
                 </Grid>
-              ))}
+              )}
+              {specialEdStatus
+                ? schoolYearDataCount[0].special_ed.map((sped, i) => (
+                    <Grid item key={i} xs={2} padding={2} sx={{ backgroundColor: '#FAFAFA' }}>
+                      <Paragraph size='medium'>{sped.count}</Paragraph>
+                    </Grid>
+                  ))
+                : ''}
             </Grid>
           </Box>
         )}

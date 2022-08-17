@@ -43,6 +43,12 @@ export const getSchoolYearsByRegionId = gql`
   }
 `
 
+export const assignStudentToSOEGql = gql`
+  mutation AssignStudentToSOE($assignStudentToSoeInput: assignStudentToSOEInput!) {
+    assignStudentToSOE(assignStudentToSOEInput: $assignStudentToSoeInput)
+  }
+`
+
 export const updateStateNameMutation = gql`
   mutation UpdateRegion($updateRegionInput: UpdateRegionInput!) {
     updateRegion(updateRegionInput: $updateRegionInput) {

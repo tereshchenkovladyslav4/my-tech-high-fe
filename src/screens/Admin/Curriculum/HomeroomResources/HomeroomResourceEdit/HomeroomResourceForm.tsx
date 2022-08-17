@@ -2,20 +2,21 @@ import React, { useState } from 'react'
 import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt'
 import { Avatar, Box, Checkbox, FormControlLabel, Grid, TextField } from '@mui/material'
 import { useFormikContext } from 'formik'
+import { DocumentUploadModal } from '@mth/components/DocumentUploadModal/DocumentUploadModal'
 import { DropDown } from '@mth/components/DropDown/DropDown'
 import { DropDownItem } from '@mth/components/DropDown/types'
 import { MultiSelect } from '@mth/components/MultiSelect/MultiSelect'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
-import { GRADES, s3URL } from '@mth/constants'
+import { s3URL } from '@mth/constants'
 import { MthColor, ResourceSubtitle } from '@mth/enums'
+import { useProgramYearListBySchoolYearId } from '@mth/hooks'
 import { BulletEditor } from '@mth/screens/Admin/Calendar/components/BulletEditor'
-import { DocumentUploadModal } from '@mth/screens/Admin/SiteManagement/EnrollmentSetting/EnrollmentQuestions/Documents/components/DocumentUploadModal/DocumentUploadModal'
-import { renderGrades, toOrdinalSuffix } from '@mth/utils'
+import { renderGrades } from '@mth/utils'
 import { homeroomResourcesClassess } from '../styles'
 import { HomeroomResource, HomeroomResourceFormProps } from '../types'
 
-const HomeroomResourceForm: React.FC<HomeroomResourceFormProps> = ({ setIsChanged }) => {
+const HomeroomResourceForm: React.FC<HomeroomResourceFormProps> = ({ schoolYearId, setIsChanged }) => {
   const { errors, handleChange, setFieldValue, touched, values } = useFormikContext<HomeroomResource>()
   const [imageModalOpen, setImageModalOpen] = useState<boolean>(false)
   const [imageUrl, setImageUrl] = useState<string | undefined>(undefined)
@@ -34,19 +35,7 @@ const HomeroomResourceForm: React.FC<HomeroomResourceFormProps> = ({ setIsChange
     },
   ]
 
-  const gradeOptions: DropDownItem[] = GRADES.map((grade) => {
-    if (typeof grade !== 'string') {
-      return {
-        label: toOrdinalSuffix(grade) + ' Grade',
-        value: grade.toString(),
-      }
-    } else {
-      return {
-        label: grade,
-        value: grade,
-      }
-    }
-  })
+  const { gradeList: gradeOptions } = useProgramYearListBySchoolYearId(schoolYearId)
 
   const onRemovePhoto = () => {
     setFieldValue('image', null)
@@ -240,7 +229,10 @@ const HomeroomResourceForm: React.FC<HomeroomResourceFormProps> = ({ setIsChange
                     options={gradeOptions}
                     label='Grades'
                     onChange={(value) => {
-                      setFieldValue('grades', value.join(','))
+                      const filteredGrades = value.filter(
+                        (item) => gradeOptions.findIndex((option) => option.value === item) > -1,
+                      )
+                      setFieldValue('grades', filteredGrades.join(','))
                       setIsChanged(true)
                     }}
                     renderValue={renderGrades(values.grades)}

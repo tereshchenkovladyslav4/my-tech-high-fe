@@ -1,27 +1,40 @@
 import { gql } from '@apollo/client'
 
 export const getStudents = gql`
-  query students($skip: Int, $take: Int, $filter: StudentFilterArgs, $sort: String) {
-    students(skip: $skip, take: $take, filter: $filter, sort: $sort) {
-      total
+  query studentsForSOE($skip: Int, $take: Int, $filter: StudentFilters, $sort: String, $search: String) {
+    studentsForSOE(skip: $skip, take: $take, filter: $filter, sort: $sort, search: $search) {
       results {
-        student_id
-        person {
-          first_name
-          last_name
-          address {
-            city
-          }
+        grade_levels {
+          school_year_id
+          grade_level
         }
-        parent_id
-        grade_level
+        person {
+          last_name
+          first_name
+        }
+        student_id
         parent {
           person {
             first_name
             last_name
+            address {
+              city
+            }
+          }
+        }
+        currentSoe {
+          partner {
+            name
+          }
+        }
+        previousSoe {
+          partner {
+            name
           }
         }
       }
+      total
+      page_total
     }
   }
 `

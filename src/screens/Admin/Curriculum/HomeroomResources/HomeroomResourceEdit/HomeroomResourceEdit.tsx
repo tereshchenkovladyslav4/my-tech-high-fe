@@ -149,7 +149,7 @@ const HomeroomResourceEdit: React.FC<HomeroomResourceEditProps> = ({
             handleBack={handleBack}
             handleCancel={handleCancel}
           />
-          <HomeroomResourceForm setIsChanged={setIsChanged} />
+          <HomeroomResourceForm setIsChanged={setIsChanged} schoolYearId={schoolYearId} />
         </Form>
       </Formik>
       {showCancelModal && (

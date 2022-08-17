@@ -83,6 +83,7 @@ export type HeaderComponentProps = {
 }
 
 export type HomeroomResourceFormProps = {
+  schoolYearId: number
   setIsChanged: (value: boolean) => void
 }
 

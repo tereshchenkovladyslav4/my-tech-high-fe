@@ -1,6 +1,5 @@
 import React, { FunctionComponent, useContext, useEffect, useState } from 'react'
 import { useQuery } from '@apollo/client'
-import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { Box, Button, Card, Checkbox, FormControlLabel, Grid } from '@mui/material'
 import { map } from 'lodash'
@@ -11,9 +10,16 @@ import { UserContext } from '../../../../providers/UserContext/UserProvider'
 import { BUTTON_LINEAR_GRADIENT, MTHBLUE, RED_GRADIENT, GRADES } from '../../../../utils/constants'
 import { toOrdinalSuffix } from '../../../../utils/stringHelpers'
 import { getSchoolDistrictsByRegionId } from '../../SiteManagement/EnrollmentSetting/ApplicationQuestions/services'
-import { FiltersProps } from '../type'
+import { FiltersProps, PartnerItem } from '../type'
 
-export const Filters: FunctionComponent<FiltersProps> = ({ filter, setFilter, partnerList }) => {
+export const Filters: FunctionComponent<FiltersProps> = ({
+  filter,
+  setFilter,
+  partnerList,
+  previousPartnerList,
+  selectedYear,
+  gradesList,
+}) => {
   const { me } = useContext(UserContext)
   const history = useHistory()
   const [expand, setExpand] = useState<boolean>(true)
@@ -21,6 +27,7 @@ export const Filters: FunctionComponent<FiltersProps> = ({ filter, setFilter, pa
   const [grades, setGrades] = useState<string[]>([])
   const [yearStatus, setYearStatus] = useState<string[]>([])
   const [schoolOfEnrollments, setSchoolOfEnrollments] = useState<string[]>([])
+  const [previousSOE, setPreviousSOE] = useState<string[]>([])
   const [schoolDistrict, setSchoolDistrict] = useState<string[]>([])
   const [curriculumProvider, setCurriculumProvider] = useState<string[]>([])
 
@@ -33,11 +40,12 @@ export const Filters: FunctionComponent<FiltersProps> = ({ filter, setFilter, pa
 
   const chevron = () =>
     !expand ? (
-      <ChevronRightIcon
+      <ExpandMoreIcon
         sx={{
           color: MTHBLUE,
           verticalAlign: 'bottom',
           cursor: 'pointer',
+          transform: 'rotate(180deg)',
         }}
       />
     ) : (
@@ -79,6 +87,14 @@ export const Filters: FunctionComponent<FiltersProps> = ({ filter, setFilter, pa
       setSchoolOfEnrollments(schoolOfEnrollments.filter((i) => i !== e.target.value))
     } else {
       setSchoolOfEnrollments([...schoolOfEnrollments, e.target.value])
+    }
+  }
+
+  const handlePreviousSOE = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (previousSOE.includes(e.target.value)) {
+      setPreviousSOE(previousSOE.filter((i) => i !== e.target.value))
+    } else {
+      setPreviousSOE([...previousSOE, e.target.value])
     }
   }
 
@@ -143,9 +159,10 @@ export const Filters: FunctionComponent<FiltersProps> = ({ filter, setFilter, pa
     const state = {}
     history.replace({ ...history.location, state })
   }
+
   const renderGrades = () =>
-    map(GRADES, (grade, index) => {
-      if (typeof grade !== 'string') {
+    map(gradesList, (grade, index) => {
+      if (parseInt(grade) == grade) {
         return (
           <FormControlLabel
             key={index}
@@ -176,10 +193,14 @@ export const Filters: FunctionComponent<FiltersProps> = ({ filter, setFilter, pa
       }
     })
 
+  const columnWidth = () => {
+    return gradesList?.length === GRADES.length ? 3 : 4
+  }
+
   const Filters = () => (
     <Grid container sx={{ textAlign: 'left', marginY: '12px' }}>
       <Grid item container xs={9}>
-        <Grid item xs={3}>
+        <Grid item xs={columnWidth()}>
           <Box
             sx={{
               display: 'flex',
@@ -201,54 +222,60 @@ export const Filters: FunctionComponent<FiltersProps> = ({ filter, setFilter, pa
             {renderGrades()}
           </Box>
         </Grid>
-        <Grid item xs={3}>
+        {gradesList?.length === GRADES.length && (
+          <Grid item xs={columnWidth()}>
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
+              <Paragraph size='large' fontWeight='700'>
+                Grade Level
+              </Paragraph>
+              <FormControlLabel
+                sx={{ height: 30 }}
+                control={<Checkbox value='K' checked={grades.includes('K')} onChange={handleChangeGrades} />}
+                label={
+                  <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
+                    Kindergarten
+                  </Paragraph>
+                }
+              />
+              <FormControlLabel
+                sx={{ height: 30 }}
+                control={<Checkbox value='1-8' checked={grades.includes('1-8')} onChange={handleChangeGrades} />}
+                label={
+                  <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
+                    1-8
+                  </Paragraph>
+                }
+              />
+              <FormControlLabel
+                sx={{ height: 30 }}
+                control={<Checkbox value='9-12' checked={grades.includes('9-12')} onChange={handleChangeGrades} />}
+                label={
+                  <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
+                    9-12
+                  </Paragraph>
+                }
+              />
+            </Box>
+          </Grid>
+        )}
+
+        <Grid item xs={columnWidth()}>
           <Box
             sx={{
               display: 'flex',
               flexDirection: 'column',
+              overflowY: 'scroll',
+              height: '444px',
+              marginRight: '16px',
             }}
           >
             <Paragraph size='large' fontWeight='700'>
-              Grade Level
-            </Paragraph>
-            <FormControlLabel
-              sx={{ height: 30 }}
-              control={<Checkbox value='K' checked={grades.includes('K')} onChange={handleChangeGrades} />}
-              label={
-                <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
-                  Kindergarten
-                </Paragraph>
-              }
-            />
-            <FormControlLabel
-              sx={{ height: 30 }}
-              control={<Checkbox value='1-8' checked={grades.includes('1-8')} onChange={handleChangeGrades} />}
-              label={
-                <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
-                  1-8
-                </Paragraph>
-              }
-            />
-            <FormControlLabel
-              sx={{ height: 30 }}
-              control={<Checkbox value='9-12' checked={grades.includes('9-12')} onChange={handleChangeGrades} />}
-              label={
-                <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
-                  9-12
-                </Paragraph>
-              }
-            />
-          </Box>
-        </Grid>
-        <Grid item xs={3}>
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-            }}
-          >
-            <Paragraph size='large' fontWeight='700'>
-              For {filter?.schoolYearLabel} Year
+              For {selectedYear?.label} Year
             </Paragraph>
             {['New', 'Returning', 'Transferred', 'Sibling'].map((item: string, index) => (
               <FormControlLabel
@@ -264,9 +291,24 @@ export const Filters: FunctionComponent<FiltersProps> = ({ filter, setFilter, pa
             ))}
 
             <Paragraph sx={{ marginTop: '12px' }} size='large' fontWeight='700'>
-              School of enrollment
+              Current SOE
             </Paragraph>
-            {partnerList.map((item: unknown, index: number) => (
+            <FormControlLabel
+              sx={{ height: 30 }}
+              control={
+                <Checkbox
+                  value='unassigned'
+                  checked={schoolOfEnrollments.includes('unassigned')}
+                  onChange={handleSchoolOfEnrollments}
+                />
+              }
+              label={
+                <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
+                  Unassigned
+                </Paragraph>
+              }
+            />
+            {partnerList.map((item: PartnerItem, index: number) => (
               <FormControlLabel
                 key={index}
                 sx={{ height: 30 }}
@@ -284,9 +326,46 @@ export const Filters: FunctionComponent<FiltersProps> = ({ filter, setFilter, pa
                 }
               />
             ))}
+
+            <Paragraph sx={{ marginTop: '12px' }} size='large' fontWeight='700'>
+              Previous SOE
+            </Paragraph>
+            <FormControlLabel
+              sx={{ height: 30 }}
+              control={
+                <Checkbox
+                  value='unassigned'
+                  checked={previousSOE.includes('unassigned')}
+                  onChange={handlePreviousSOE}
+                />
+              }
+              label={
+                <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
+                  Unassigned
+                </Paragraph>
+              }
+            />
+            {previousPartnerList.map((item: PartnerItem, index) => (
+              <FormControlLabel
+                sx={{ height: 30 }}
+                key={index}
+                control={
+                  <Checkbox
+                    value={item.value}
+                    checked={previousSOE.includes(item.value)}
+                    onChange={handlePreviousSOE}
+                  />
+                }
+                label={
+                  <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
+                    {item.abb}
+                  </Paragraph>
+                }
+              />
+            ))}
           </Box>
         </Grid>
-        <Grid item xs={3}>
+        <Grid item xs={columnWidth()}>
           <Box
             sx={{
               display: 'flex',
