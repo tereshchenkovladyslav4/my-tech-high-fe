@@ -2,6 +2,7 @@ import React, { FunctionComponent, useContext, useEffect, useState } from 'react
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { Box, Grid } from '@mui/material'
+import { map } from 'lodash'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { MthColor } from '@mth/enums'
 import { useCurrentGradeAndProgramByRegionId } from '@mth/hooks'
@@ -52,13 +53,24 @@ const FilterComponent: FunctionComponent<FilterComponentProps> = ({
     setSelectAll(users.includes('1') || users.includes('2'))
   }, [users])
 
+  useEffect(() => {
+    if (selectAll && programYearList && schoolPartnerList && gradeList) {
+      setProgramYears(map(programYearList, (el) => el.value))
+      setSchoolPartners(map(schoolPartnerList, (el) => el.value))
+      if (grades.length === 0) setGrades(['all', ...map(gradeList, (el) => el.value)])
+    }
+  }, [selectAll])
+
+  useEffect(() => {
+    setShowOtherFilters(users.includes('1') || users.includes('2'))
+  }, [users])
+
+  useEffect(() => {
+    if (grades.length !== 0) setGradesInvalid(false)
+  }, [grades])
+
   const { gradeList, programYearList, schoolPartnerList } = useCurrentGradeAndProgramByRegionId(
     Number(me?.selectedRegionId),
-    grades,
-    setGrades,
-    setProgramYears,
-    setSchoolPartners,
-    selectAll,
   )
   const [expand, setExpand] = useState<boolean>(true)
   const [showOtherFilters, setShowOtherFilters] = useState(false)
@@ -90,7 +102,6 @@ const FilterComponent: FunctionComponent<FilterComponentProps> = ({
             title={'Users'}
             values={users}
             setValues={(value) => {
-              setShowOtherFilters(value.includes('1') || value.includes('2'))
               setUsers(value)
               setUsersInvalid(false)
             }}

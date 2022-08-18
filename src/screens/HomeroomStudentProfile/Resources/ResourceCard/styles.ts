@@ -20,7 +20,6 @@ export const resourceCardClasses = {
     position: 'relative',
     cursor: 'pointer',
     borderRadius: 2,
-    margin: 1,
     minWidth: 300,
   },
   button,

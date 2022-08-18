@@ -7,7 +7,7 @@ import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined'
 import { Box, Button, Card, CardContent, CardMedia, Stack, Tooltip, Typography } from '@mui/material'
 import { s3URL } from '@mth/constants'
-import { MthColor, ResourceSubtitle } from '@mth/enums'
+import { MthColor, ResourceRequestStatus, ResourceSubtitle } from '@mth/enums'
 import { EventType, ResourceCardProps, ResourcePage } from '../types'
 import { resourceCardClasses } from './styles'
 
@@ -18,7 +18,7 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ page, item, onAction }) => 
   }
 
   const showRequestCta = (): boolean => {
-    return !item.requested && !item.accepted && item.subtitle !== ResourceSubtitle.INCLUDED
+    return !item.RequestStatus && !item.accepted && item.subtitle !== ResourceSubtitle.INCLUDED
   }
 
   const shouldWaitResource = (): boolean => {
@@ -28,7 +28,11 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ page, item, onAction }) => 
   return (
     <Card
       id='item-card'
-      sx={{ ...resourceCardClasses.card, opacity: item.HiddenByStudent ? 0.5 : 1 }}
+      sx={{
+        ...resourceCardClasses.card,
+        opacity: item.HiddenByStudent ? 0.5 : 1,
+        boxShadow: page === ResourcePage.DETAILS ? 'none' : '',
+      }}
       onClick={(e) => actionHandler(e, EventType.CLICK)}
     >
       <CardMedia
@@ -97,17 +101,17 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ page, item, onAction }) => 
           Included
         </Button>
       )}
-      {item.requested && !item.accepted && (
+      {item.RequestStatus === ResourceRequestStatus.REQUESTED && !item.accepted && (
         <Button variant='contained' sx={resourceCardClasses.blackButton}>
           Requested
         </Button>
       )}
-      {shouldWaitResource() && !item.CartDate && !item.requested && (
+      {shouldWaitResource() && !item.CartDate && !item.RequestStatus && (
         <Button variant='contained' sx={resourceCardClasses.purpleButton}>
           Join Waitlist
         </Button>
       )}
-      {shouldWaitResource() && (item.CartDate || item.requested) && (
+      {shouldWaitResource() && (item.CartDate || item.RequestStatus) && (
         <Button variant='contained' sx={resourceCardClasses.purpleButton}>
           Waitlist
         </Button>
@@ -117,34 +121,46 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ page, item, onAction }) => 
           Login
         </Button>
       )}
-      <CardContent sx={{ textAlign: 'left' }}>
+      <CardContent sx={{ textAlign: 'left', pb: '20px !important', px: '20px' }}>
         <Box
           sx={{
             display: 'flex',
             flexDirection: 'row',
             justifyContent: 'space-between',
-            alignItems: 'center',
+            alignItems: 'start',
             alignContent: 'flex-start',
           }}
         >
-          <Typography fontSize='20px' component='div' fontWeight={900}>
-            {item.title}
-          </Typography>
+          <Box sx={{ height: 48 }}>
+            <Typography component='div' sx={{ fontSize: '20px', fontWeight: 700, lineHeight: 1.1 }}>
+              {item.title}
+            </Typography>
+            <Typography
+              sx={{ fontSize: '16px', fontWeight: 700, lineHeight: '22px', color: MthColor.SYSTEM_06, mt: '4px' }}
+            >
+              {item.subtitle == ResourceSubtitle.PRICE
+                ? `$${item.price}`
+                : item.subtitle == ResourceSubtitle.INCLUDED
+                ? 'Included'
+                : page === ResourcePage.REQUEST
+                ? 'Free'
+                : ''}
+            </Typography>
+          </Box>
+          {page !== ResourcePage.DETAILS && (
+            <Tooltip title={'Details'}>
+              <Stack
+                direction='row'
+                spacing={1.5}
+                alignItems='center'
+                sx={{ mt: '8px', mr: 2 }}
+                onClick={(e) => actionHandler(e, EventType.DETAILS)}
+              >
+                <EastIcon />
+              </Stack>
+            </Tooltip>
+          )}
         </Box>
-        <Stack direction='row' justifyContent='space-between' alignItems='center' sx={{ height: 40 }}>
-          <Typography color='#A1A1A1' fontSize='16px' fontWeight='700'>
-            {item.subtitle == ResourceSubtitle.PRICE
-              ? `$${item.price}`
-              : item.subtitle == ResourceSubtitle.INCLUDED
-              ? 'Included'
-              : ''}
-          </Typography>
-          <Tooltip title={'Details'}>
-            <Stack direction='row' spacing={1.5} alignItems='center' onClick={(e) => actionHandler(e, EventType.CLICK)}>
-              <EastIcon />
-            </Stack>
-          </Tooltip>
-        </Stack>
       </CardContent>
     </Card>
   )

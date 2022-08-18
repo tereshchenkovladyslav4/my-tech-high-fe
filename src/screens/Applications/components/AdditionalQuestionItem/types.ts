@@ -15,6 +15,8 @@ export type ApplicationQuestion = {
   student_question: boolean
   validation: number
   slug: string
+  additional_question: string
+  active: boolean
 }
 
 type ApplicationQuestionProps = {

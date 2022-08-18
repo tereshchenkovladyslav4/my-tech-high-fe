@@ -14,14 +14,7 @@ type CurrentGradeAndProgramByRegionId = {
   schoolPartnerList: CheckBoxListVM[]
 }
 
-export const useCurrentGradeAndProgramByRegionId = (
-  regionId: number,
-  grades: string[],
-  setGrades: (value: string[]) => void,
-  setProgramYears: (value: string[]) => void,
-  setSchoolPartners: (value: string[]) => void,
-  selectAll?: boolean,
-): CurrentGradeAndProgramByRegionId => {
+export const useCurrentGradeAndProgramByRegionId = (regionId: number): CurrentGradeAndProgramByRegionId => {
   const {
     loading: schoolYearLoading,
     data: schoolYearData,
@@ -30,14 +23,6 @@ export const useCurrentGradeAndProgramByRegionId = (
   const [availableGrades, setAvailableGrades] = useState<CheckBoxListVM[]>([])
   const [programYearList, setProgramYearList] = useState<CheckBoxListVM[]>([])
   const [schoolPartnerList, setSchoolPartnerList] = useState<CheckBoxListVM[]>([])
-
-  useEffect(() => {
-    if (selectAll && programYearList && schoolPartnerList && availableGrades) {
-      setProgramYears(map(programYearList, (el) => el.value))
-      setSchoolPartners(map(schoolPartnerList, (el) => el.value))
-      setGrades(['all', ...map(availableGrades, (el) => el.value)])
-    }
-  }, [selectAll])
 
   useEffect(() => {
     if (!schoolYearLoading && schoolYearData) {

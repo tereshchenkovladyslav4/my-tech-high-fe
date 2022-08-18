@@ -248,7 +248,12 @@ export const ApplicationQuestions: FunctionComponent = () => {
     if (data?.getApplicationQuestions) {
       setQuestions(
         data.getApplicationQuestions
-          .map((v) => ({ ...v, options: v.options ? JSON.parse(v.options || '[]') : [], response: '' }))
+          .map((v) => ({
+            ...v,
+            options: v.options ? JSON.parse(v.options || '[]') : [],
+            response: '',
+            active: !v.additional_question ? true : false,
+          }))
           .sort((a, b) => a.order - b.order),
       )
       setUnsavedChanges(false)
@@ -342,7 +347,8 @@ export const ApplicationQuestions: FunctionComponent = () => {
                         .find((y) => y.slug == v.additional_question)
                         ?.response.toString()
                         .indexOf(x.value) >= 0),
-                ) != null)), // Parent
+                ) != null &&
+              values.find((x) => x.slug == v.additional_question)?.active)), // Parent
       )
       .map((v) => {
         const arr = [v]

@@ -123,16 +123,41 @@ function Item({ question: q }: { question: ApplicationQuestion }) {
             }
           : v,
       )
-      let current = q
-      while (
-        newValues.find((x) => current.slug == x.additionalQuestion) &&
-        (current.response == '' ||
-          current.options.find((x) => x.value == current.response || current.response.toString().indexOf(x.value) >= 0)
-            .action != 2)
-      ) {
-        current = newValues.find((x) => current.slug == x.additionalQuestion)
-        current.response = ''
-      }
+      // let current = q
+      // while (
+      //   newValues.find((x) => current.slug == x.additionalQuestion) &&
+      //   (current.response == '' ||
+      //     current.options.find((x) => x.value == current.response || current.response.toString().indexOf(x.value) >= 0)
+      //       .action != 2)
+      // ) {
+      //   current = newValues.find((x) => current.slug == x.additionalQuestion)
+      //   current.response = ''
+      // }
+
+      newValues.forEach((item: ApplicationQuestion, index: number) => {
+        if (item.additional_question) {
+          const parent = newValues.find((x) => item.additional_question == x.slug)
+          if (
+            parent?.response &&
+            parent.options.find((x) => x.value == parent.response || parent.response.toString().indexOf(x.value) >= 0)
+              .action == 2 &&
+            parent?.active
+          ) {
+            newValues[index] = {
+              ...item,
+              active: true,
+            }
+          } else {
+            newValues[index] = {
+              ...item,
+              active: false,
+            }
+          }
+        } else {
+          newValues[index] = item
+        }
+      })
+
       setValues(newValues)
     }
   }

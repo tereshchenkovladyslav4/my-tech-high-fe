@@ -23,6 +23,7 @@ export const getStudentResourcesQuery = gql`
       allow_request
       HiddenByStudent
       CartDate
+      RequestStatus
     }
   }
 `
@@ -36,5 +37,11 @@ export const toggleHiddenResourceMutation = gql`
 export const toggleResourceCartMutation = gql`
   mutation ToggleResourceCart($toggleResourceCartInput: ToggleResourceCartInput!) {
     toggleResourceCart(toggleResourceCartInput: $toggleResourceCartInput)
+  }
+`
+
+export const requestResourcesMutation = gql`
+  mutation RequestResources($requestResourcesInput: RequestResourcesInput!) {
+    requestResources(requestResourcesInput: $requestResourcesInput)
   }
 `

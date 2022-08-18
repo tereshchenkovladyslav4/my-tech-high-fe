@@ -1,10 +1,24 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
+import { useMutation } from '@apollo/client'
 import ArrowBackIosOutlinedIcon from '@mui/icons-material/ArrowBackIosOutlined'
 import { Box, ButtonBase, Grid, Stack, Typography } from '@mui/material'
 import { ResourceCard } from '../ResourceCard'
+import { requestResourcesMutation } from '../services'
 import { ResourceRequestProps, ResourcePage, EventType, Resource } from '../types'
+import ResourceConfirm from './ResourceConfirm'
 
-const ResourceRequest: React.FC<ResourceRequestProps> = ({ resourcesInCart, handleChangeResourceStatus, setPage }) => {
+const ResourceRequest: React.FC<ResourceRequestProps> = ({
+  currentStudentId,
+  resourcesInCart,
+  handleChangeResourceStatus,
+  setPage,
+  refetch,
+  goToDetails,
+}) => {
+  const [totalPrice, setTotalPrice] = useState<number>(0)
+
+  const [requestResources, {}] = useMutation(requestResourcesMutation)
+
   const removeInCart = (resource: Resource) => {
     const index = resourcesInCart.findIndex((item) => item.resource_id === resource.resource_id)
     if (index > -1) {
@@ -15,16 +29,36 @@ const ResourceRequest: React.FC<ResourceRequestProps> = ({ resourcesInCart, hand
     }
   }
 
+  const handleConfirm = async () => {
+    const resourceIds: number[] = resourcesInCart.reduce((acc, current) => {
+      return acc.concat([Number(current.resource_id)])
+    }, [] as number[])
+    const result = await requestResources({
+      variables: {
+        requestResourcesInput: {
+          student_id: currentStudentId,
+          resourceIds: resourceIds,
+        },
+      },
+    })
+    refetch()
+    if (result) setPage(ResourcePage.ROOT)
+  }
+
   useEffect(() => {
     if (!resourcesInCart.length) {
       setPage(ResourcePage.ROOT)
     }
+    const totalPrice = resourcesInCart.reduce((acc, current) => {
+      return acc + (current.price || 0)
+    }, 0)
+    setTotalPrice(totalPrice)
   }, [resourcesInCart])
 
   return (
-    <Stack>
-      <Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between' paddingX={4}>
-        <Grid container sx={{ p: 2, background: 'inherit' }}>
+    <Stack sx={{ p: 4 }}>
+      <Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between'>
+        <Grid container sx={{ px: 2, background: 'inherit' }}>
           <ButtonBase onClick={() => setPage(ResourcePage.ROOT)} sx={{ p: 1 }} disableRipple>
             <Grid container justifyContent='flex-start' alignItems='center'>
               <ArrowBackIosOutlinedIcon />
@@ -34,9 +68,9 @@ const ResourceRequest: React.FC<ResourceRequestProps> = ({ resourcesInCart, hand
         </Grid>
       </Box>
 
-      <Grid container px={4} spacing={1}>
+      <Grid container spacing={4} sx={{ pt: 4 }}>
         {resourcesInCart.map((item, idx) => (
-          <Grid key={idx} item xs={4} paddingTop={4}>
+          <Grid key={idx} item xs={4}>
             <ResourceCard
               page={ResourcePage.REQUEST}
               item={item}
@@ -50,12 +84,28 @@ const ResourceRequest: React.FC<ResourceRequestProps> = ({ resourcesInCart, hand
                     removeInCart(item)
                     break
                   }
+                  case EventType.DETAILS: {
+                    goToDetails(item)
+                    break
+                  }
                 }
               }}
             />
           </Grid>
         ))}
       </Grid>
+
+      <Box sx={{ marginTop: 4 }}>
+        <ResourceConfirm
+          totalPrice={totalPrice}
+          onConfirm={() => {
+            handleConfirm()
+          }}
+          onCancel={() => {
+            setPage(ResourcePage.ROOT)
+          }}
+        />
+      </Box>
     </Stack>
   )
 }

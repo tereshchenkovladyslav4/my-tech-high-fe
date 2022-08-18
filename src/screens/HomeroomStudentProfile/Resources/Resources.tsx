@@ -5,6 +5,7 @@ import { sortBy } from 'lodash'
 import { ResourceSubtitle } from '@mth/enums'
 import { ResourceCard } from './ResourceCard'
 import { ResourceCartBar } from './ResourceCartBar'
+import { ResourceDetails } from './ResourceDetails'
 import { ResourceModal } from './ResourceModal'
 import { ResourceRequest } from './ResourceRequest'
 import { getStudentResourcesQuery, toggleHiddenResourceMutation, toggleResourceCartMutation } from './services'
@@ -14,6 +15,7 @@ export const Resources: React.FC = () => {
   const currentStudentId = Number(location.pathname.split('/').at(-1))
 
   const [page, setPage] = useState<ResourcePage>(ResourcePage.ROOT)
+  const [prePage, setPrePage] = useState<ResourcePage>(ResourcePage.ROOT)
   const [resources, setResources] = useState<Resource[]>([])
   const [resourcesInCart, setResourcesInCart] = useState<Resource[]>([])
   const [selectedResource, setSelectedResource] = useState<Resource>()
@@ -87,11 +89,9 @@ export const Resources: React.FC = () => {
     <Stack>
       {page === ResourcePage.ROOT && (
         <>
-          {!!resourcesInCart?.length && (
-            <ResourceCartBar resourcesInCart={resourcesInCart} setPage={setPage}></ResourceCartBar>
-          )}
+          {!!resourcesInCart?.length && <ResourceCartBar resourcesInCart={resourcesInCart} setPage={setPage} />}
 
-          <Grid container padding={4} spacing={1}>
+          <Grid container padding={4} spacing={4}>
             {resources.map((item, idx) => (
               <Grid key={idx} item xs={4} paddingTop={4}>
                 <ResourceCard
@@ -108,7 +108,7 @@ export const Resources: React.FC = () => {
                         break
                       }
                       case EventType.HIDE: {
-                        if ((item.accepted || item.requested) && item.subtitle === ResourceSubtitle.PRICE) {
+                        if (item.RequestStatus && item.subtitle === ResourceSubtitle.PRICE) {
                           setShowHideModal(true)
                         } else {
                           handleChangeResourceStatus(item, EventType.HIDE)
@@ -117,6 +117,11 @@ export const Resources: React.FC = () => {
                       }
                       case EventType.UNHIDE: {
                         handleChangeResourceStatus(item, EventType.UNHIDE)
+                        break
+                      }
+                      case EventType.DETAILS: {
+                        setPage(ResourcePage.DETAILS)
+                        setPrePage(ResourcePage.ROOT)
                         break
                       }
                     }
@@ -130,10 +135,21 @@ export const Resources: React.FC = () => {
 
       {page === ResourcePage.REQUEST && (
         <ResourceRequest
+          currentStudentId={currentStudentId}
           resourcesInCart={resourcesInCart}
           setPage={setPage}
           handleChangeResourceStatus={handleChangeResourceStatus}
-        ></ResourceRequest>
+          refetch={refetch}
+          goToDetails={(item: Resource) => {
+            setSelectedResource(item)
+            setPage(ResourcePage.DETAILS)
+            setPrePage(ResourcePage.REQUEST)
+          }}
+        />
+      )}
+
+      {page === ResourcePage.DETAILS && selectedResource && (
+        <ResourceDetails item={selectedResource} handleBack={() => setPage(prePage)} />
       )}
 
       <ResourceModal

@@ -85,7 +85,12 @@ export const ExistingParent: React.FC = () => {
   useEffect(() => {
     if (!questionLoading && questionData?.getExistApplicationQuestions) {
       const questionList = questionData.getExistApplicationQuestions
-        .map((v) => ({ ...v, options: v.options ? JSON.parse(v.options || '[]') : [], response: '' }))
+        .map((v) => ({
+          ...v,
+          options: v.options ? JSON.parse(v.options || '[]') : [],
+          response: '',
+          active: !v.additional_question ? true : false,
+        }))
         .sort((a, b) => a.order - b.order)
 
       setQuestions(questionList)
@@ -333,17 +338,18 @@ export const ExistingParent: React.FC = () => {
       (v) =>
         v.slug !== 'program_year' &&
         !v.mainQuestion &&
-        (!v.additional_question ||
+        (!v.additional_question || // main question
           (values.find((x) => x.slug == v.additional_question)?.type == QUESTION_TYPE.DROPDOWN &&
-            values // drop down addintion question
-              .find((x) => x.slug == v.additional_question)
+            values
+              .find((x) => x.slug == v.additional_question) // drop down addintion question
               ?.options.find(
                 (x) =>
                   x.action == 2 &&
                   x.value ===
                     (field[values.find((y) => y.slug == v.additional_question)?.slug] ||
                       field.meta?.[values.find((y) => y.slug == v.additional_question)?.slug]),
-              ) != null) ||
+              ) != null &&
+            values.find((x) => x.slug == v.additional_question)?.active) ||
           (values.find((x) => x.slug == v.additional_question)?.type == QUESTION_TYPE.MULTIPLECHOICES &&
             values // multi item addintional question
               .find((x) => x.slug == v.additional_question)
@@ -353,7 +359,8 @@ export const ExistingParent: React.FC = () => {
                   x.label ===
                     (field[values.find((y) => y.slug == v.additional_question)?.slug] ||
                       field.meta?.[values.find((y) => y.slug == v.additional_question)?.slug]),
-              ) != null) ||
+              ) != null &&
+            values.find((x) => x.slug == v.additional_question)?.active) ||
           (values.find((x) => x.slug == v.additional_question)?.type == QUESTION_TYPE.CHECKBOX &&
             values // checkbox addintional question
               .find((x) => x.slug == v.additional_question)
@@ -364,8 +371,10 @@ export const ExistingParent: React.FC = () => {
                     field[values.find((y) => y.slug == v.additional_question)?.slug] ||
                     field.meta?.[values.find((y) => y.slug == v.additional_question)?.slug]
                   )?.indexOf(x.label) >= 0,
-              ) != null)), // Parent
+              ) != null &&
+            values.find((x) => x.slug == v.additional_question)?.active)), // Parent
     )
+
     return sortList
   }
 
@@ -386,16 +395,31 @@ export const ExistingParent: React.FC = () => {
           }
         : v,
     )
-    let current = q
-    while (
-      newValues.find((x) => current.slug == x.additional_question) &&
-      (current.response == '' ||
-        current.options.find((x) => x.value == current.response || current.response.toString().indexOf(x.value) >= 0)
-          .action != 2)
-    ) {
-      current = newValues.find((x) => current.slug == x.additional_question)
-      current.response = ''
-    }
+
+    newValues.forEach((item: ApplicationQuestion, index: number) => {
+      if (item.additional_question) {
+        const parent = newValues.find((x) => item.additional_question == x.slug)
+        if (
+          parent?.response &&
+          parent.options.find((x) => x.value == parent.response || parent.response.toString().indexOf(x.value) >= 0)
+            .action == 2 &&
+          parent?.active
+        ) {
+          newValues[index] = {
+            ...item,
+            active: true,
+          }
+        } else {
+          newValues[index] = {
+            ...item,
+            active: false,
+          }
+        }
+      } else {
+        newValues[index] = item
+      }
+    })
+
     setQuestions(newValues)
     generateValidation(newValues)
   }
