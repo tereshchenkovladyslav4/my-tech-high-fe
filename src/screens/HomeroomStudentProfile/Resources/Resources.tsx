@@ -66,6 +66,37 @@ export const Resources: React.FC = () => {
     }
   }
 
+  const handleCardActions = (resource: Resource, evtType: EventType) => {
+    setSelectedResource(resource)
+    switch (evtType) {
+      case EventType.CLICK: {
+        if (resource.website) window.open(resource.website, '_blank')
+        break
+      }
+      case EventType.ADD_CART: {
+        handleChangeResourceStatus(resource, EventType.ADD_CART)
+        break
+      }
+      case EventType.HIDE: {
+        if (resource.RequestStatus && resource.subtitle === ResourceSubtitle.PRICE) {
+          setShowHideModal(true)
+        } else {
+          handleChangeResourceStatus(resource, EventType.HIDE)
+        }
+        break
+      }
+      case EventType.UNHIDE: {
+        handleChangeResourceStatus(resource, EventType.UNHIDE)
+        break
+      }
+      case EventType.DETAILS: {
+        setPage(ResourcePage.DETAILS)
+        setPrePage(ResourcePage.ROOT)
+        break
+      }
+    }
+  }
+
   useEffect(() => {
     if (resources?.length) {
       const items: Resource[] = sortBy(
@@ -73,6 +104,10 @@ export const Resources: React.FC = () => {
         'CartDate',
       ).reverse()
       setResourcesInCart(items)
+      if (selectedResource) {
+        const resource = resources.find((item) => item.resource_id === selectedResource.resource_id)
+        setSelectedResource(resource)
+      }
     }
   }, [resources])
 
@@ -94,39 +129,7 @@ export const Resources: React.FC = () => {
           <Grid container padding={4} spacing={4}>
             {resources.map((item, idx) => (
               <Grid key={idx} item xs={4} paddingTop={4}>
-                <ResourceCard
-                  item={item}
-                  onAction={(evtType: EventType) => {
-                    setSelectedResource(item)
-                    switch (evtType) {
-                      case EventType.CLICK: {
-                        if (item.website) window.open(item.website, '_blank')
-                        break
-                      }
-                      case EventType.ADD_CART: {
-                        handleChangeResourceStatus(item, EventType.ADD_CART)
-                        break
-                      }
-                      case EventType.HIDE: {
-                        if (item.RequestStatus && item.subtitle === ResourceSubtitle.PRICE) {
-                          setShowHideModal(true)
-                        } else {
-                          handleChangeResourceStatus(item, EventType.HIDE)
-                        }
-                        break
-                      }
-                      case EventType.UNHIDE: {
-                        handleChangeResourceStatus(item, EventType.UNHIDE)
-                        break
-                      }
-                      case EventType.DETAILS: {
-                        setPage(ResourcePage.DETAILS)
-                        setPrePage(ResourcePage.ROOT)
-                        break
-                      }
-                    }
-                  }}
-                />
+                <ResourceCard item={item} onAction={(evtType: EventType) => handleCardActions(item, evtType)} />
               </Grid>
             ))}
           </Grid>
@@ -149,7 +152,11 @@ export const Resources: React.FC = () => {
       )}
 
       {page === ResourcePage.DETAILS && selectedResource && (
-        <ResourceDetails item={selectedResource} handleBack={() => setPage(prePage)} />
+        <ResourceDetails
+          item={selectedResource}
+          handleBack={() => setPage(prePage)}
+          onCardAction={(evtType: EventType) => handleCardActions(selectedResource, evtType)}
+        />
       )}
 
       <ResourceModal

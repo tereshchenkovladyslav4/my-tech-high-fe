@@ -1,6 +1,6 @@
 import { BUTTON_LINEAR_GRADIENT, SYSTEM_08, BLACK } from '../../../../../utils/constants'
 
-export const useStyles = {
+export const fileUploadModalClassess = {
   modalCard: {
     position: 'absolute' as const,
     top: '50%',

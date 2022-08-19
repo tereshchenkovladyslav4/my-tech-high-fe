@@ -1,6 +1,6 @@
 import { FunctionComponent } from 'react'
 
-type SubmissionModal = {
+export type SubmissionModal = {
   handleModem: () => void
   document?: 'birth' | 'immunization' | 'residency'
   multi?: boolean
@@ -23,16 +23,14 @@ export type S3FileType = {
   year: number
 }
 
-export type FileUploadModalTemplateType = FunctionComponent<SubmissionModal>
-
 type FilesProps = {
   files: Array<File>
 }
 
 export type FilesTemplateType = FunctionComponent<FilesProps>
 
-type FileListItemProp = {
-  closeAction?: () => void
+export type FileListItemProps = {
+  deleteAction: (value: File | S3FileType) => void
+  hasDeleteAction: boolean
   file: File | S3FileType
 }
-export type FileListItemTemplateType = FunctionComponent<FileListItemProp>

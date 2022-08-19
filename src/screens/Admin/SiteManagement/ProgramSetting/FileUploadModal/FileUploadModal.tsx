@@ -2,23 +2,20 @@ import React, { useEffect, useState } from 'react'
 import CloseIcon from '@mui/icons-material/Close'
 import { Box, Button, Modal } from '@mui/material'
 import { filter, has, includes, map, pull } from 'lodash'
-import UploadFileIcon from '../../../../../assets/icons/file-upload.svg'
-import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragraph'
-import {
-  RED,
-  SNOWPACK_PUBLIC_COUNTIES_TEMPLATE,
-  SNOWPACK_PUBLIC_SCHOOL_DISTRICT_TEMPLATE,
-  SYSTEM_06,
-} from '../../../../../utils/constants'
+import UploadFileIcon from '@mth/assets/icons/file-upload.svg'
+import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
+import { SNOWPACK_PUBLIC_COUNTIES_TEMPLATE, SNOWPACK_PUBLIC_SCHOOL_DISTRICT_TEMPLATE } from '@mth/constants'
+import { MthColor } from '@mth/enums'
+import { S3FileType } from '@mth/screens/Enrollment/Documents/components/DocumentUploadModal/types'
 import { FileListItem } from './FileListItem'
-import { useStyles } from './styles'
-import { FileUploadModalTemplateType } from './types'
+import { fileUploadModalClassess } from './styles'
+import { SubmissionModal } from './types'
 
 interface HTMLInputEvent extends Event {
   target: HTMLInputElement & EventTarget & File
 }
 
-export const FileUploadModal: FileUploadModalTemplateType = ({
+export const FileUploadModal: React.FC<SubmissionModal> = ({
   handleModem,
   handleFile,
   multi,
@@ -27,25 +24,11 @@ export const FileUploadModal: FileUploadModalTemplateType = ({
   invalidMessage,
   type,
 }) => {
-  const classes = useStyles
-  const [selectedFiles, setSelectedFiles] = useState([])
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([])
   const [validFiles, setValidFiles] = useState<File[]>([])
-  const [errorMessage, setErrorMessage] = useState('')
-  const [deletedFiles, setDeletedFiles] = useState([])
+  const [errorMessage, setErrorMessage] = useState<string>('')
+  const [deletedFiles, setDeletedFiles] = useState<File[]>([])
   const template = type === 'county' ? SNOWPACK_PUBLIC_COUNTIES_TEMPLATE : SNOWPACK_PUBLIC_SCHOOL_DISTRICT_TEMPLATE
-
-  useEffect(() => {
-    const filteredArr = selectedFiles.reduce((acc, current) => {
-      const x = acc.find((item) => item?.name === current?.name)
-      if (!x) {
-        return acc.concat([current])
-      } else {
-        return acc
-      }
-    }, [])
-    const filterDeletedFiles = filter(filteredArr, (file) => !deletedFiles.includes(file))
-    setValidFiles([...filterDeletedFiles])
-  }, [selectedFiles])
 
   const preventDefault = (e: HTMLInputEvent) => {
     e.preventDefault()
@@ -76,9 +59,9 @@ export const FileUploadModal: FileUploadModalTemplateType = ({
 
   const filesSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
     setErrorMessage('')
-    const files = e.target.files as File[]
+    const files = e.target.files as unknown as File[]
     addDeletedFiles(files)
-    handleFiles(files as unknown as FileList[])
+    handleFiles(files as unknown as File[])
   }
 
   const readFile = (file: File) => {
@@ -118,7 +101,7 @@ export const FileUploadModal: FileUploadModalTemplateType = ({
     })
   }
 
-  const handleFiles = (files: FileList[]) => {
+  const handleFiles = (files: File[]) => {
     for (let i = 0; i < files.length; i++) {
       // readfile then validate file file
       readFile(files[i]).then(() => {
@@ -182,17 +165,30 @@ export const FileUploadModal: FileUploadModalTemplateType = ({
     handleModem()
   }
 
-  const deleteFile = (file: File) => {
+  const deleteFile = (file: File | S3FileType) => {
     setValidFiles(filter(validFiles, (validFile) => validFile !== file))
-    setDeletedFiles((prev) => [...prev, file])
+    if (deletedFiles) setDeletedFiles([...deletedFiles, file])
   }
 
   const renderFiles = () =>
     map(validFiles, (file) => (
       <Box sx={{ padding: '15px' }}>
-        <FileListItem file={file as File} closeAction={deleteFile} />
+        <FileListItem file={file as File} deleteAction={deleteFile} hasDeleteAction={true} />
       </Box>
     ))
+
+  useEffect(() => {
+    const filteredArr = selectedFiles.reduce((acc, current) => {
+      const x = acc.find((item) => item?.name && item?.name === current?.name)
+      if (!x) {
+        return acc.concat([current])
+      } else {
+        return acc
+      }
+    }, [])
+    const filterDeletedFiles = filter(filteredArr, (file) => !deletedFiles.includes(file))
+    setValidFiles([...filterDeletedFiles])
+  }, [selectedFiles])
 
   return (
     <Modal
@@ -202,10 +198,10 @@ export const FileUploadModal: FileUploadModalTemplateType = ({
       aria-describedby='modal-modal-description'
       disableAutoFocus={true}
     >
-      <Box sx={classes.modalCard}>
+      <Box sx={fileUploadModalClassess.modalCard}>
         {validFiles.length == 0 && (
           <Box display={'flex'} flexDirection={'row'} justifyContent={'end'}>
-            <CloseIcon style={classes.close} onClick={() => handleModem()} />
+            <CloseIcon style={fileUploadModalClassess.close} onClick={() => handleModem()} />
           </Box>
         )}
         <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'}>
@@ -219,7 +215,7 @@ export const FileUploadModal: FileUploadModalTemplateType = ({
           )}
         </Box>
         <Box
-          display={validFiles.length >= limit ? 'none' : 'flex'}
+          display={limit && validFiles.length >= limit ? 'none' : 'flex'}
           flexDirection='column'
           alignItems={'center'}
           onDragOver={dragOver}
@@ -231,22 +227,22 @@ export const FileUploadModal: FileUploadModalTemplateType = ({
           {!(validFiles?.length > 0) && (
             <>
               <img src={UploadFileIcon} alt='Upload Icon' />
-              <Paragraph size='medium' fontWeight='700' sx={classes.dragAndDropText}>
+              <Paragraph size='medium' fontWeight='700' sx={fileUploadModalClassess.dragAndDropText}>
                 Drag &amp; Drop to Upload
               </Paragraph>
               <Paragraph sx={{ cursor: 'pointer' }} color='blue' onClick={() => window.open(template)}>
                 Download Template
               </Paragraph>
-              <Paragraph size='medium' color={SYSTEM_06}>
+              <Paragraph size='medium' color={MthColor.SYSTEM_06}>
                 {' '}
                 Or
               </Paragraph>
-              <Button sx={classes.uploadButton} variant='contained'>
+              <Button sx={fileUploadModalClassess.uploadButton} variant='contained'>
                 {multi ? (
                   <label>
                     <input
                       type='file'
-                      style={classes.input}
+                      style={fileUploadModalClassess.input}
                       onChange={filesSelected}
                       multiple
                       accept={extensions}
@@ -260,7 +256,7 @@ export const FileUploadModal: FileUploadModalTemplateType = ({
                   <label>
                     <input
                       type='file'
-                      style={classes.input}
+                      style={fileUploadModalClassess.input}
                       onChange={filesSelected}
                       accept={extensions}
                       onClick={(event) => {
@@ -271,7 +267,7 @@ export const FileUploadModal: FileUploadModalTemplateType = ({
                   </label>
                 )}
               </Button>
-              <Paragraph size='medium' fontWeight='700' color={RED}>
+              <Paragraph size='medium' fontWeight='700' color={MthColor.RED}>
                 {errorMessage}
               </Paragraph>
             </>
@@ -279,10 +275,10 @@ export const FileUploadModal: FileUploadModalTemplateType = ({
         </Box>
         {validFiles.length > 0 && (
           <Box justifyContent={'space-evenly'} display='flex' flexDirection={'row'}>
-            <Button sx={classes.cancelButton} variant='contained' onClick={() => handleModem()}>
+            <Button sx={fileUploadModalClassess.cancelButton} variant='contained' onClick={() => handleModem()}>
               Cancel
             </Button>
-            <Button sx={classes.finishButton} variant='contained' onClick={() => submitAndClose()}>
+            <Button sx={fileUploadModalClassess.finishButton} variant='contained' onClick={() => submitAndClose()}>
               Finish
             </Button>
           </Box>

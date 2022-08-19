@@ -5,9 +5,11 @@ import { Grid } from '@mui/material'
 import { Box, IconButton, Typography } from '@mui/material'
 import { map } from 'lodash'
 import { Route, Switch, useRouteMatch, useHistory } from 'react-router-dom'
+import DiplomaSeeking from '../../../../assets/Diploma-seeking.png'
 import ImmunizationsImage from '../../../../assets/immunizations.png'
 import EnrollmentQuestionImage from '../../../../assets/q&a.png'
 import ApplicationQuestionImage from '../../../../assets/schedules.png'
+import TestingPreference from '../../../../assets/testing-preference.png'
 import { ItemCard } from '../../../../components/ItemCard/ItemCard'
 import { UserContext } from '../../../../providers/UserContext/UserProvider'
 import { GetCurrentSchoolYearByRegionId } from '../../Announcements/services'
@@ -60,6 +62,22 @@ const EnrollmentSetting: React.FC = () => {
       img: ImmunizationsImage,
       isLink: false,
       to: `${path}/immunizations`,
+    },
+    {
+      id: 4,
+      title: 'Testing Preference',
+      subtitle: '',
+      img: TestingPreference,
+      isLink: false,
+      to: `${path}/testing_preference`,
+    },
+    {
+      id: 5,
+      title: 'Diploma-seeking',
+      subtitle: '',
+      img: DiplomaSeeking,
+      isLink: false,
+      to: `${path}/diploma-seeking`,
     },
   ]
 

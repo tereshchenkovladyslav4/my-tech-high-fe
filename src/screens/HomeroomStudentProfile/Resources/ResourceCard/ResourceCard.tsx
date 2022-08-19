@@ -18,7 +18,7 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ page, item, onAction }) => 
   }
 
   const showRequestCta = (): boolean => {
-    return !item.RequestStatus && !item.accepted && item.subtitle !== ResourceSubtitle.INCLUDED
+    return !item.RequestStatus && item.subtitle !== ResourceSubtitle.INCLUDED
   }
 
   const shouldWaitResource = (): boolean => {
@@ -101,7 +101,7 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ page, item, onAction }) => 
           Included
         </Button>
       )}
-      {item.RequestStatus === ResourceRequestStatus.REQUESTED && !item.accepted && (
+      {item.RequestStatus === ResourceRequestStatus.REQUESTED && (
         <Button variant='contained' sx={resourceCardClasses.blackButton}>
           Requested
         </Button>
@@ -116,7 +116,7 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ page, item, onAction }) => 
           Waitlist
         </Button>
       )}
-      {(item.accepted || item.subtitle === ResourceSubtitle.INCLUDED) && (
+      {(item.RequestStatus === ResourceRequestStatus.ACCEPTED || item.subtitle === ResourceSubtitle.INCLUDED) && (
         <Button variant='contained' sx={resourceCardClasses.primaryButton}>
           Login
         </Button>

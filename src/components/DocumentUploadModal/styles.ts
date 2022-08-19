@@ -20,6 +20,19 @@ export const documentUploadModalClasses = {
     fontSize: '10px',
     marginLeft: '12px',
   },
+  delete: {
+    cursor: 'pointer',
+    color: MthColor.GRAY,
+    fontSize: '20px',
+    marginTop: '-5px',
+    marginLeft: '10px',
+  },
+  closeBtn: {
+    background: 'black',
+    borderRadius: 1,
+    color: 'white',
+    cursor: 'pointer',
+  },
   uploadButton: {
     borderRadius: 5,
     width: '152px',

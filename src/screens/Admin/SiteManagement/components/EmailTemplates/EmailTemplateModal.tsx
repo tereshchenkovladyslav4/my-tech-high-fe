@@ -57,6 +57,7 @@ export const EmailTemplateModal: FunctionComponent<EmailTemplateModalProps> = ({
   const [emailFrom, setEmailFrom] = useState('')
   const [emailBcc, setEmailBcc] = useState('')
   const [deadline, setDeadline] = useState('')
+  const [template_name, setTemplateName] = useState('')
   const [type, setType] = useState('standard')
   const [availableInserts, setAvailableInserts] = useState([])
 
@@ -313,6 +314,7 @@ export const EmailTemplateModal: FunctionComponent<EmailTemplateModalProps> = ({
     if (data != undefined && enrollmentQuestionsData != undefined) {
       const { emailTemplate } = data
       setEmailTitle(emailTemplate.title)
+      setTemplateName(emailTemplate.template_name)
       setSubject(emailTemplate.subject)
       setEmailBcc(emailTemplate.bcc)
       setEmailFrom(emailTemplate.from)
@@ -455,6 +457,42 @@ export const EmailTemplateModal: FunctionComponent<EmailTemplateModalProps> = ({
           </Box>
         </Box>
         <Typography fontWeight='700'></Typography>
+        {template_name == 'Notify of Withdraw' && (
+          <>
+            <OutlinedInput
+              value={subject}
+              size='small'
+              fullWidth
+              placeholder='Subject'
+              onChange={(e) => setSubject(e.target.value)}
+            />
+            <Box className={classes.editor}>
+              <Wysiwyg.Editor
+                onContentStateChange={handleEditorChange}
+                editorRef={(ref) => (editorRef.current = ref)}
+                editorState={editorState}
+                onEditorStateChange={setEditorState}
+                handlePastedText={() => false}
+                toolbar={{
+                  options: [
+                    'inline',
+                    'blockType',
+                    'fontSize',
+                    'fontFamily',
+                    'list',
+                    'textAlign',
+                    'colorPicker',
+                    'link',
+                    'embedded' /*, 'emoji'*/,
+                    'image',
+                    'remove',
+                    'history',
+                  ],
+                }}
+              />
+            </Box>
+          </>
+        )}
         {type === 'deadline' ? (
           <>
             <Grid item xs={12} sx={{ marginTop: '10px', marginBottom: '10px' }}>

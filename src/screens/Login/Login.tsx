@@ -1,22 +1,17 @@
 import React, { FunctionComponent, ReactElement, useContext, useEffect, useState } from 'react'
 import { useMutation } from '@apollo/client'
-import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline'
 import { Button, Grid, TextField } from '@mui/material'
 import { Typography } from '@mui/material'
 import { Box } from '@mui/system'
 import { map } from 'lodash'
 import { Link } from 'react-router-dom'
 import { useHistory } from 'react-router-dom'
-import { Metadata } from '../../components/Metadata/Metadata'
 import { Paragraph } from '../../components/Typography/Paragraph/Paragraph'
-import { Subtitle } from '../../components/Typography/Subtitle/Subtitle'
 import { WarningModal } from '../../components/WarningModal/Warning'
 import { AuthContext } from '../../providers/AuthProvider/AuthContext'
 import { BUTTON_LINEAR_GRADIENT } from '../../utils/constants'
 import { CustomModal } from '../Admin/SiteManagement/EnrollmentSetting/components/CustomModal/CustomModals'
 import { ApolloError } from '../Admin/Users/interfaces'
-import { Contact } from './Contact/Contact'
-import { Footer } from './Footer/Footer'
 import { loginMutation, resendVerificationEmailMutation } from './service'
 import { useStyles } from './styles'
 
@@ -50,7 +45,7 @@ export const Login: FunctionComponent = () => {
       title: 'Submit and track reimbursements',
     },
     {
-      title: 'Bookmark this website: infocenter.mytechhigh.com',
+      title: 'Bookmark this website: infocenter.tech',
     },
   ]
 
@@ -62,7 +57,7 @@ export const Login: FunctionComponent = () => {
       title: 'Request online support from a Tech Mentor',
     },
     {
-      title: 'Bookmark this website: mytechhigh.com/canvas',
+      title: 'Bookmark this website: tech.sparkeducation.com',
     },
   ]
 
@@ -148,7 +143,7 @@ export const Login: FunctionComponent = () => {
 
   return (
     <Box sx={{ backgroundColor: 'white' }}>
-      <Box sx={{ alignItems: 'center', marginBottom: 4 }}>
+      <Box sx={{ alignItems: 'center', paddingBottom: 4 }}>
         {apolloError.flag && (
           <WarningModal
             handleModem={() => setApolloError({ title: '', severity: '', flag: false })}
@@ -239,31 +234,33 @@ export const Login: FunctionComponent = () => {
               <Grid item container sx={{ marginY: 4 }}>
                 {renderInfocenterHelpLinks(infocenterHelpLinks)}
               </Grid>
-              <Grid item xs={12}>
-                <Metadata
-                  title={<Subtitle color='white'> Watch this two-minute InfoCenter overview.</Subtitle>}
-                  subtitle={<Paragraph color='white'>of navigation InfoCenter</Paragraph>}
-                  image={<PlayCircleOutlineIcon style={{ color: 'white', marginRight: 24 }} />}
-                />
-              </Grid>
             </Grid>
           </Grid>
           <Grid item container xs={6} sx={{ padding: 6, background: '#EEF4F8' }}>
             <Grid item xs={12}>
               <Box textAlign='left'>
                 <Typography fontSize={58} fontWeight={400} color='black'>
-                  Canvas
+                  Launchpad
                 </Typography>
                 <Typography fontSize={17} color='black'>
-                  Home of MTH Direct tech and entrepreneurship courses
+                  Home of MTH Direct DreamLink Learning and Accelerated Spark Online courses
                 </Typography>
               </Box>
             </Grid>
             <Grid item xs={12}>
               <Box sx={{ display: 'flex', justifyContent: 'flex-start', marginTop: -20 }}>
-                <Button variant='contained' sx={classes.canvasButton}>
-                  Sign In
-                </Button>
+                <a
+                  href={'https://tech.sparkeducation.com/login?redirectURI=%2F'}
+                  target='_blank'
+                  style={{
+                    textDecoration: 'none',
+                  }}
+                  rel='noreferrer'
+                >
+                  <Button variant='contained' sx={classes.canvasButton}>
+                    Sign In
+                  </Button>
+                </a>
               </Box>
             </Grid>
             <Box sx={{ marginTop: -30 }}>{renderInfocenterHelpLinks(canvasHelpLinks, true)}</Box>
@@ -286,8 +283,6 @@ export const Login: FunctionComponent = () => {
           </Link>
         </Box>
       </Box>
-      <Contact />
-      <Footer />
     </Box>
   )
 }

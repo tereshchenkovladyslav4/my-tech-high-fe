@@ -1,0 +1,84 @@
+name: Deploy To Prod
+
+on:
+  push:
+    tags:
+      - prod
+
+jobs:
+
+  generate-tag:
+    name: Generate Tag
+    runs-on: ubuntu-latest
+    outputs:
+      tag_name: ${{ steps.tag_name.outputs.tag_name }}
+    steps:
+      - name: Generate Tag Name
+        id: tag_name
+        run: echo "::set-output name=tag_name::$(date --rfc-3339=date)_${GITHUB_SHA::7}"
+
+  build:
+    name: Build React App
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: npm
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Run Build
+        run: npm run build-prod
+        env:
+          CI: false
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: build
+          path: build
+
+  deploy:
+    name: Deploy React Bundle to S3
+    runs-on: ubuntu-latest
+    needs: [generate-tag, build]
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: build
+          path: build
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-2
+
+      - name: Deploy
+        run: |
+          aws s3 sync ${SOURCE_DIR:-.} s3://${AWS_S3_BUCKET} \
+            --no-progress \
+            --follow-symlinks \
+            --delete
+        env:
+          AWS_S3_BUCKET: ${{ secrets.PROD_S3_BUCKET }}
+          SOURCE_DIR: 'build'
+
+      - name: Invalidate Cloudfront
+        run: |
+          INVALIDATION_ID=$(aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID --paths "$PATHS" $* | jq -r '.Invalidation.Id')
+          INVALIDATION_STATUS="InProgress"
+          while [ $INVALIDATION_STATUS = "InProgress" ]
+          do
+            sleep 5
+              INVALIDATION_STATUS=$(aws cloudfront get-invalidation --distribution-id $DISTRIBUTION_ID --id "$INVALIDATION_ID" | jq -r '.Invalidation.Status')
+          done
+        env:
+          DISTRIBUTION_ID: ${{ secrets.PROD_CLOUDFRONT_DISTRIBUTION }}
+          PATHS: '/*'

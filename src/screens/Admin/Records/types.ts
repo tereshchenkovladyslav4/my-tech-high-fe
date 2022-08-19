@@ -21,6 +21,7 @@ export type StudentFilesModalProps = {
   record: StudentRecord | undefined
   handleDownload: (value: StudentRecord[], isIndividualFile?: boolean) => void
   handleModem: () => void
+  refetch: () => void
 }
 
 export type FilterComponentProps = {

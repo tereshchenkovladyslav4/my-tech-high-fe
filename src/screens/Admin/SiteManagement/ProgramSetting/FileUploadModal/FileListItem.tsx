@@ -1,25 +1,29 @@
 import React, { useState } from 'react'
 import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined'
 import { Box } from '@mui/system'
-import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragraph'
+import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { CustomModal } from '../../EnrollmentSetting/components/CustomModal/CustomModals'
-import { useStyles } from './styles'
-import { FileListItemTemplateType, S3FileType } from './types'
+import { fileUploadModalClassess } from './styles'
+import { FileListItemProps, S3FileType } from './types'
 
-export const FileListItem: FileListItemTemplateType = ({ file, closeAction }) => {
-  const classes = useStyles
+export const FileListItem: React.FC<FileListItemProps> = ({ file, hasDeleteAction, deleteAction }) => {
   const [open, setOpen] = useState(false)
   const handleDelete = () => setOpen(true)
   const handleSave = () => {
-    closeAction(file)
+    deleteAction(file)
     setOpen(false)
   }
 
   return (
     <>
-      <Box onClick={() => !closeAction && window.open((file as S3FileType).signedUrl)} sx={classes.fileListItem}>
-        <Paragraph sx={classes.text}>{file.name}</Paragraph>
-        {closeAction && <DeleteForeverOutlinedIcon style={classes.delete} onClick={() => handleDelete()} />}
+      <Box
+        onClick={() => !deleteAction && window.open((file as S3FileType).signedUrl)}
+        sx={fileUploadModalClassess.fileListItem}
+      >
+        <Paragraph sx={fileUploadModalClassess.text}>{file.name}</Paragraph>
+        {hasDeleteAction && (
+          <DeleteForeverOutlinedIcon style={fileUploadModalClassess.delete} onClick={() => handleDelete()} />
+        )}
       </Box>
       {open && (
         <CustomModal

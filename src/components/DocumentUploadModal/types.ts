@@ -1,8 +1,12 @@
+import { ReactNode } from 'react'
+
 export type SubmissionModal = {
   handleModem: () => void
   document?: 'birth' | 'immunization' | 'residency'
   handleFile: (files: File[]) => void
   limit?: number
+  secondaryModal?: boolean
+  node?: ReactNode
 }
 
 export type S3FileType = {
@@ -19,5 +23,6 @@ export type S3FileType = {
 
 export type DocumentListItemProp = {
   closeAction?: () => void
+  secondaryModal?: boolean
   file: File | S3FileType
 }

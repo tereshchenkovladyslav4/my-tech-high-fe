@@ -37,7 +37,6 @@ export type Resource = {
   CartDate: Date
   HiddenByStudent: boolean
   RequestStatus: ResourceRequestStatus
-  accepted: boolean
   requestable: boolean
   // Temp field
   background?: string
@@ -78,4 +77,5 @@ export interface ResourceModalProps {
 export interface ResourceDetailsProps {
   item: Resource
   handleBack: () => void
+  onCardAction: (evtType: EventType) => void
 }

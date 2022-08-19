@@ -26,7 +26,7 @@ const StudentFilesFolder: React.FC<StudentFilesFolderProps> = ({ filter }) => {
   const [showStudentFilesModal, setShowStudentFilesModal] = useState<boolean>(false)
   const [selectedRecord, setSelectedRecord] = useState<StudentRecord>()
 
-  const { loading, data } = useQuery(GetStudentRecordFilesQuery, {
+  const { loading, data, refetch } = useQuery(GetStudentRecordFilesQuery, {
     variables: {
       filter: {
         region_id: Number(me?.selectedRegionId),
@@ -204,6 +204,7 @@ const StudentFilesFolder: React.FC<StudentFilesFolderProps> = ({ filter }) => {
           record={selectedRecord}
           handleModem={() => setShowStudentFilesModal(false)}
           handleDownload={handleDownload}
+          refetch={refetch}
         />
       )}
     </Card>
