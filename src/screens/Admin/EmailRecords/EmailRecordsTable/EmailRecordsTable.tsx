@@ -186,6 +186,7 @@ export const EmailRecordsTable: FunctionComponent = () => {
     await resendEmail({
       variables: {
         resendEmailInput: {
+          id: template.id,
           to_email: param.to_email,
           from_email: param.from_email,
           bcc: param.bcc,

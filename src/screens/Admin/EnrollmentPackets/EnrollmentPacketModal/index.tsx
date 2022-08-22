@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext, FunctionComponent } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import { useMutation, useQuery, gql } from '@apollo/client'
 import CloseIcon from '@mui/icons-material/Close'
 import { Grid, Modal } from '@mui/material'
@@ -6,10 +6,11 @@ import { Box } from '@mui/system'
 import { omit } from 'lodash'
 import moment from 'moment'
 import { FormProvider, useForm } from 'react-hook-form'
-import { QUESTION_TYPE } from '../../../../components/QuestionItem/QuestionItemProps'
-import { UserContext } from '../../../../providers/UserContext/UserProvider'
+import { QUESTION_TYPE } from '@mth/components/QuestionItem/QuestionItemProps'
+import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { SYSTEM_11 } from '../../../../utils/constants'
 import { Packet } from '../../../HomeroomStudentProfile/Student/types'
+import { CreateStudentRecordMutation } from '../../Records/services'
 import { EnrollmentQuestionTab } from '../../SiteManagement/EnrollmentSetting/EnrollmentQuestions/types'
 import {
   getSettingsQuery,
@@ -66,14 +67,11 @@ type EnrollmentPacketModalProps = {
   refetch: () => void
 }
 
-export const EnrollmentPacketModal: FunctionComponent<EnrollmentPacketModalProps> = ({
-  handleModem,
-  packet,
-  refetch,
-}) => {
+export const EnrollmentPacketModal: React.FC<EnrollmentPacketModalProps> = ({ handleModem, packet, refetch }) => {
   const classes = useStyles
   const [updateCreateStudentImm] = useMutation(updateCreateStudentImmunizationMutation)
   const [updateStudentStatus] = useMutation(updateStudentStatusMutation)
+  const [createStudentRecord] = useMutation(CreateStudentRecordMutation)
   const [savePacket] = useMutation(savePacketMutation)
   const settingsQuery = useQuery(getSettingsQuery, {
     fetchPolicy: 'network-only',
@@ -219,6 +217,12 @@ export const EnrollmentPacketModal: FunctionComponent<EnrollmentPacketModalProps
             school_year_id: packet.student.current_school_year_status.school_year_id,
             status: 1,
           },
+        },
+      })
+      createStudentRecord({
+        variables: {
+          regionId: Number(me?.selectedRegionId),
+          studentId: Number(packet.student.student_id),
         },
       })
     }

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext, FunctionComponent } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import { useMutation, useQuery, gql } from '@apollo/client'
 
 import CloseIcon from '@mui/icons-material/Close'
@@ -7,10 +7,11 @@ import { Box } from '@mui/system'
 import { omit } from 'lodash'
 import moment from 'moment'
 import { FormProvider, useForm } from 'react-hook-form'
-import { QUESTION_TYPE } from '../../../../components/QuestionItem/QuestionItemProps'
-import { UserContext } from '../../../../providers/UserContext/UserProvider'
+import { QUESTION_TYPE } from '@mth/components/QuestionItem/QuestionItemProps'
+import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { SYSTEM_11 } from '../../../../utils/constants'
 
+import { CreateStudentRecordMutation } from '../../Records/services'
 import { EnrollmentQuestionTab } from '../../SiteManagement/EnrollmentSetting/EnrollmentQuestions/types'
 import {
   getSettingsQuery,
@@ -67,10 +68,11 @@ export const getPacketQuestionsGql = gql`
   }
 `
 
-export const ProfilePacketModal: FunctionComponent<ProfilePacketModalProps> = ({ handleModem, packet_id, refetch }) => {
+export const ProfilePacketModal: React.FC<ProfilePacketModalProps> = ({ handleModem, packet_id, refetch }) => {
   const classes = useStyles
   const [updateCreateStudentImm] = useMutation(updateCreateStudentImmunizationMutation)
   const [updateStudentStatus] = useMutation(updateStudentStatusMutation)
+  const [createStudentRecord] = useMutation(CreateStudentRecordMutation)
   const [savePacket] = useMutation(savePacketMutation)
   const [initValues, setInitValues] = useState({})
   const [, setBirthday] = useState('')
@@ -244,6 +246,12 @@ export const ProfilePacketModal: FunctionComponent<ProfilePacketModalProps> = ({
             school_year_id: packet.student.current_school_year_status.school_year_id,
             status: 1,
           },
+        },
+      })
+      createStudentRecord({
+        variables: {
+          regionId: Number(me?.selectedRegionId),
+          studentId: Number(packet.student.student_id),
         },
       })
     }

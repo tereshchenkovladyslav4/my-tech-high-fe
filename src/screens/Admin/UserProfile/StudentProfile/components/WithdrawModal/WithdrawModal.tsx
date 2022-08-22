@@ -1,6 +1,7 @@
-import React, { FunctionComponent, useState } from 'react'
+import React, { useState } from 'react'
 import InfoIcon from '@mui/icons-material/InfoOutlined'
 import { Box, Button, FormControl, FormControlLabel, Modal, Radio, RadioGroup, Typography } from '@mui/material'
+import { WithdrawalOption } from '@mth/enums'
 
 type WithdrawModalProps = {
   title: string
@@ -11,7 +12,7 @@ type WithdrawModalProps = {
   confirmStr?: string
   cancelStr?: string
 }
-export const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
+export const WithdrawModal: React.FC<WithdrawModalProps> = ({
   title,
   description,
   subDescription,
@@ -65,10 +66,26 @@ export const WithdrawModal: FunctionComponent<WithdrawModalProps> = ({
                 value={withdrawOption}
                 onChange={handleChange}
               >
-                <FormControlLabel value={1} control={<Radio />} label='Notify Parent of Withdraw' />
-                <FormControlLabel value={2} control={<Radio />} label='No Form/No Email' />
-                <FormControlLabel value={3} control={<Radio />} label='Undeclared Form/Email' />
-                <FormControlLabel value={4} control={<Radio />} label='Undeclared Form/No Email' />
+                <FormControlLabel
+                  value={WithdrawalOption.NOTIFY_PARENT_OF_WITHDRAW}
+                  control={<Radio />}
+                  label='Notify Parent of Withdraw'
+                />
+                <FormControlLabel
+                  value={WithdrawalOption.NO_FORM_NO_EMAIL}
+                  control={<Radio />}
+                  label='No Form/No Email'
+                />
+                <FormControlLabel
+                  value={WithdrawalOption.UNDECLARED_FORM_EMAIL}
+                  control={<Radio />}
+                  label='Undeclared Form/Email'
+                />
+                <FormControlLabel
+                  value={WithdrawalOption.UNDECLARED_FORM_NO_EMAIL}
+                  control={<Radio />}
+                  label='Undeclared Form/No Email'
+                />
               </RadioGroup>
             </FormControl>
           </Box>

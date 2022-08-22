@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useContext, FunctionComponent } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { useMutation, useQuery } from '@apollo/client'
 import CloseIcon from '@mui/icons-material/Close'
 import { Box, Button, Card } from '@mui/material'
+import { WithdrawalOption, WithdrawalStatus } from '@mth/enums'
 import { saveWithdrawalMutation } from '../../../graphql/mutation/withdrawal'
 import { UserContext } from '../../../providers/UserContext/UserProvider'
 import { BLACK, BUTTON_LINEAR_GRADIENT } from '../../../utils/constants'
@@ -18,7 +19,7 @@ type UserProfileProps = {
   data: unknown
   setIsChanged: () => void
 }
-export const UserProfile: FunctionComponent<UserProfileProps> = ({ handleClose, data, setIsChanged }) => {
+export const UserProfile: React.FC<UserProfileProps> = ({ handleClose, data, setIsChanged }) => {
   const classes = useStyles
   const [userInfo, setUserInfo] = useState<unknown>()
   const [phoneInfo, setPhoneInfo] = useState()
@@ -111,8 +112,12 @@ export const UserProfile: FunctionComponent<UserProfileProps> = ({ handleClose, 
             withdrawalInput: {
               withdrawal: {
                 StudentId: studentStatus?.student_id,
-                status: studentStatus?.withdrawOption == 1 ? 'Notified' : 'Withdrawn',
+                status:
+                  studentStatus?.withdrawOption == WithdrawalOption.NOTIFY_PARENT_OF_WITHDRAW
+                    ? WithdrawalStatus.NOTIFIED
+                    : WithdrawalStatus.WITHDRAWN,
               },
+              withdrawalOption: studentStatus?.withdrawOption,
             },
           },
         })

@@ -45,7 +45,7 @@ export const resendRecordsMutation = gql`
 `
 
 export const resendEmailMutation = gql`
-  mutation ResendEmail($resendEmailInput: CreateEmailRecordInput!) {
+  mutation ResendEmail($resendEmailInput: UpdateEmailRecordInput!) {
     resendEmail(resendEmailInput: $resendEmailInput)
   }
 `
