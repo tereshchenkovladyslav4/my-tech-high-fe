@@ -318,7 +318,7 @@ export const ParentProfile: FunctionComponent<ParentProfileProps> = ({
             size='small'
             variant='outlined'
             fullWidth
-            value={notes}
+            value={notes || ''}
             onChange={(e) => {
               setNotes(e.target.value)
             }}

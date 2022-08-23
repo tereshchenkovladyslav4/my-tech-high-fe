@@ -4,6 +4,7 @@ import WarningAmberOutlinedIcon from '@mui/icons-material/WarningAmberOutlined'
 import { Avatar, AvatarGroup, Box, Button, TableCell, TableRow } from '@mui/material'
 import { map } from 'lodash'
 import { useHistory } from 'react-router-dom'
+import { getWindowDimension } from '@mth/utils'
 import { Metadata } from '../../../../../components/Metadata/Metadata'
 import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
@@ -24,16 +25,11 @@ const Row = (props: unknown) => (
   </Box>
 )
 
-function getWindowDimensions() {
-  const { innerWidth: width, innerHeight: height } = window
-  return { width, height }
-}
-
 export const ToDoListItem: TodoListTemplateType = ({ todoItem, todoDate, todoDeadline }) => {
   const history = useHistory()
   const { students } = todoItem
   const [link, setLink] = useState<string>('')
-  const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions())
+  const [windowDimensions, setWindowDimensions] = useState(getWindowDimension())
 
   // console.log(students);
 
@@ -59,7 +55,7 @@ export const ToDoListItem: TodoListTemplateType = ({ todoItem, todoDate, todoDea
 
   useEffect(() => {
     function handleResize() {
-      setWindowDimensions(getWindowDimensions())
+      setWindowDimensions(getWindowDimension())
     }
 
     window.addEventListener('resize', handleResize)

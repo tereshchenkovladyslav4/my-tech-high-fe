@@ -19,6 +19,7 @@ import debounce from 'lodash.debounce'
 import { useLocation } from 'react-router-dom'
 import Slider from 'react-slick'
 import { useRecoilState } from 'recoil'
+import { getWindowDimension } from '@mth/utils'
 import { ProfileContext } from '../../providers/ProfileProvider/ProfileContext'
 import { RegionType } from '../../providers/UserContext/types'
 import { UserContext, userRegionState } from '../../providers/UserContext/UserProvider'
@@ -42,14 +43,6 @@ export const getAllPersonInfoBySearchItem = gql`
   }
 `
 
-export function getWindowDimensions(): { width: number; height: number } {
-  const { outerWidth: width, outerHeight: height } = window
-  return {
-    width,
-    height,
-  }
-}
-
 export const AdminAppBar: FunctionComponent = () => {
   const classes = useStyles
   const { me, setMe } = useContext(UserContext)
@@ -72,7 +65,7 @@ export const AdminAppBar: FunctionComponent = () => {
     fetchPolicy: 'network-only',
   })
 
-  const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions())
+  const [windowDimensions, setWindowDimensions] = useState(getWindowDimension())
 
   const isActive = (id) => location.pathname.includes(`homeroom/${id}`)
   function SampleNextArrow(props) {
@@ -161,7 +154,7 @@ export const AdminAppBar: FunctionComponent = () => {
     }
 
     function handleResize() {
-      setWindowDimensions(getWindowDimensions())
+      setWindowDimensions(getWindowDimension())
     }
 
     window.addEventListener('resize', handleResize)
@@ -312,12 +305,10 @@ export const AdminAppBar: FunctionComponent = () => {
             {searchListView && personInfoList.length > 0 && (
               <Box sx={classes.searchList}>
                 <List arial-label='main mailbox folders'>
-                  {personInfoList.map((personInfo) => (
-                    <>
-                      <ListItemButton onClick={() => handleListItemClick(personInfo)}>
-                        <ListItemText primary={personInfo.name + ' ' + '(' + personInfo.role + ')'} />
-                      </ListItemButton>
-                    </>
+                  {personInfoList.map((personInfo, index) => (
+                    <ListItemButton key={index} onClick={() => handleListItemClick(personInfo)}>
+                      <ListItemText primary={personInfo.name + ' ' + '(' + personInfo.role + ')'} />
+                    </ListItemButton>
                   ))}
                 </List>
               </Box>

@@ -499,8 +499,8 @@ export const ExistingParent: React.FC = () => {
                                     <DropDown
                                       name={'students[0].grade_level'}
                                       labelTop
-                                      placeholder={`${q.question} (age) as of ${moment(birthDateCut).format(
-                                        'MMM Do YYYY',
+                                      placeholder={`${q.question} as of ${moment(birthDateCut).format(
+                                        'MMMM DD, YYYY',
                                       )}`}
                                       dropDownItems={gradesDropDownItems}
                                       setParentValue={(id) => {
@@ -619,8 +619,8 @@ export const ExistingParent: React.FC = () => {
                                               <DropDown
                                                 name={`students[${index}].grade_level`}
                                                 labelTop
-                                                placeholder={`${q.question} (age) as of ${moment(birthDateCut).format(
-                                                  'MMM Do YYYY',
+                                                placeholder={`${q.question} as of ${moment(birthDateCut).format(
+                                                  'MMMM DD, YYYY',
                                                 )}`}
                                                 dropDownItems={gradesDropDownItems}
                                                 setParentValue={(id) => {

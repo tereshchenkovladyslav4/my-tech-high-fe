@@ -36,6 +36,7 @@ import {
 import { filter, map } from 'lodash'
 import { NavLink, useLocation } from 'react-router-dom'
 import Slider from 'react-slick'
+import { getWindowDimension } from '@mth/utils'
 import { UserContext } from '../../providers/UserContext/UserProvider'
 import { getSchoolYearsByRegionId } from '../../screens/Admin/Dashboard/SchoolYear/SchoolYear'
 import { StudentType, Person } from '../../screens/HomeroomStudentProfile/Student/types'
@@ -43,7 +44,6 @@ import { APPLICATIONS, HOMEROOM, MTHBLUE } from '../../utils/constants'
 import { toOrdinalSuffix } from '../../utils/stringHelpers'
 import { checkEnrollPacketStatus } from '../../utils/utils'
 import { SchoolYearType } from '../../utils/utils.types'
-import { getWindowDimensions } from '../AdminAppBar/AdminAppBar'
 import { Metadata } from '../Metadata/Metadata'
 import { MobileSideMenu } from '../SideMenu/MobileSideMenu'
 import { Paragraph } from '../Typography/Paragraph/Paragraph'
@@ -75,7 +75,7 @@ export const AppBar: FunctionComponent = () => {
 
   const location = useLocation()
 
-  const [windowDimensions] = useState(getWindowDimensions())
+  const [windowDimensions] = useState(getWindowDimension())
 
   const isActive = (id) => location.pathname.includes(`/${id}`)
 

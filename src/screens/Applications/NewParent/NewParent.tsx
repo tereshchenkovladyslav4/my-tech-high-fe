@@ -3,7 +3,7 @@ import { useLazyQuery, useMutation, useQuery } from '@apollo/client'
 import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined'
 import { Box, Button, Card, Grid, TextField } from '@mui/material'
 import { Field, FieldArray, Form, Formik } from 'formik'
-import { map, toNumber } from 'lodash'
+import { map, sortBy, toNumber } from 'lodash'
 import { omit } from 'lodash'
 import moment from 'moment'
 import { Link } from 'react-router-dom'
@@ -18,6 +18,7 @@ import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Title } from '@mth/components/Typography/Title/Title'
 import { getAllRegion } from '@mth/graphql/queries/region'
 import { getActiveSchoolYearsByRegionId } from '@mth/graphql/queries/school-year'
+import { getWindowDimension } from '@mth/utils'
 import { DASHBOARD, GRADES, MTHBLUE, RED, SYSTEM_05 } from '../../../utils/constants'
 import { toOrdinalSuffix, isNumber } from '../../../utils/stringHelpers'
 import { LoadingScreen } from '../../LoadingScreen/LoadingScreen'
@@ -57,6 +58,7 @@ export const NewParent: React.FC = () => {
   const [birthDateCut, setBirthDateCut] = useState<string>('')
   const [showConfirmationText, setShowConfirmationText] = useState(false)
   const [questions, setQuestions] = useState<ApplicationQuestion[]>([])
+  const [windowDimensions, setWindowDimensions] = useState(getWindowDimension())
 
   const { loading: questionLoading, data: questionData } = useQuery(getQuestionsGql, {
     variables: { input: { region_id: Number(regionId) } },
@@ -603,6 +605,15 @@ export const NewParent: React.FC = () => {
     setQuestions(newValues)
   }
 
+  useEffect(() => {
+    function handleResize() {
+      setWindowDimensions(getWindowDimension())
+    }
+
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
   return !loading ? (
     <Card sx={{ paddingTop: 6, backgroundColor: '#EEF4F8' }}>
       {!showConfirmationText ? (
@@ -628,7 +639,7 @@ export const NewParent: React.FC = () => {
             return (
               <Form>
                 <Box
-                  // paddingX={36}
+                  paddingX={windowDimensions.width < 460 ? '20px' : ''}
                   paddingBottom={10}
                   sx={{
                     backgroundImage: `url(${BGSVG})`,
@@ -658,7 +669,7 @@ export const NewParent: React.FC = () => {
                             <DropDown
                               name='state'
                               labelTop
-                              dropDownItems={availableRegions}
+                              dropDownItems={sortBy(availableRegions, 'label')}
                               placeholder='State'
                               setParentValue={(id) => {
                                 form.setFieldValue(field.name, id)
@@ -825,8 +836,8 @@ export const NewParent: React.FC = () => {
                                           <DropDown
                                             name={'students[0].grade_level'}
                                             labelTop
-                                            placeholder={`${q.question} (age) as of ${moment(birthDateCut).format(
-                                              'MMM Do YYYY',
+                                            placeholder={`${q.question} as of ${moment(birthDateCut).format(
+                                              'MMMM DD, YYYY',
                                             )}`}
                                             dropDownItems={gradesDropDownItems}
                                             setParentValue={(id) => {
@@ -984,9 +995,9 @@ export const NewParent: React.FC = () => {
                                                   <DropDown
                                                     name={`students[${index}].grade_level`}
                                                     labelTop
-                                                    placeholder={`${q.question} (age) as of ${moment(
-                                                      birthDateCut,
-                                                    ).format('MMM Do YYYY')}`}
+                                                    placeholder={`${q.question} as of ${moment(birthDateCut).format(
+                                                      'MMMM DD, YYYY',
+                                                    )}`}
                                                     dropDownItems={gradesDropDownItems}
                                                     setParentValue={(id) => {
                                                       form.setFieldValue(field.name, id)
@@ -1177,8 +1188,7 @@ export const NewParent: React.FC = () => {
               backgroundPosition: 'top',
               display: 'flex',
               flexDirection: 'column',
-              minWidth: '1088px',
-              minHeight: '1300px',
+              minHeight: windowDimensions.width < 460 ? '850px' : '1300px',
             }}
           >
             <Box marginTop={12}>
@@ -1189,7 +1199,14 @@ export const NewParent: React.FC = () => {
             <Title fontWeight='500' textAlign='center'>
               Apply
             </Title>
-            <Box sx={{ width: '510px', marginLeft: 'auto', marginRight: 'auto', marginTop: '370px' }}>
+            <Box
+              sx={{
+                width: windowDimensions.width < 460 ? '100%' : '510px',
+                marginLeft: 'auto',
+                marginRight: 'auto',
+                marginTop: windowDimensions.width < 460 ? '200px' : '370px',
+              }}
+            >
               <Title size='medium' fontWeight='500' textAlign='center'>
                 Please check your email for a verification link to complete your account.
               </Title>

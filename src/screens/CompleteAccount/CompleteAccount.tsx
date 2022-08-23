@@ -1,9 +1,10 @@
-import React, { FunctionComponent, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useMutation } from '@apollo/client'
 import { Button, TextField } from '@mui/material'
 import { Box } from '@mui/system'
 import { useFormik } from 'formik'
 import * as yup from 'yup'
+import { getWindowDimension } from '@mth/utils'
 import BGSVG from '../../assets/ApplicationBG.svg'
 import { NewApplicationFooter } from '../../components/NewApplicationFooter/NewApplicationFooter'
 import { Paragraph } from '../../components/Typography/Paragraph/Paragraph'
@@ -13,12 +14,13 @@ import { CompleteAccountSuccess } from '../CompleteAccountSuccess/CompleteAccoun
 import { confirmAccount, sendApplicationEmail } from './service'
 import { useStyles } from './styles'
 
-export const CompleteAccount: FunctionComponent = () => {
+export const CompleteAccount: React.FC = () => {
   const token = window.location.href.split('=')[1]
 
   const [confirmEmail] = useMutation(confirmAccount)
   const [sendApplicationReceiveEmail] = useMutation(sendApplicationEmail)
   const [showSuccess, setShowSuccess] = useState(false)
+  const [windowDimensions, setWindowDimensions] = useState(getWindowDimension())
 
   const classes = useStyles
 
@@ -63,6 +65,15 @@ export const CompleteAccount: FunctionComponent = () => {
     })
   }
 
+  useEffect(() => {
+    function handleResize() {
+      setWindowDimensions(getWindowDimension())
+    }
+
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
   return !showSuccess ? (
     <Box paddingY={6} sx={{ bgcolor: '#EEF4F8' }}>
       <Box
@@ -76,7 +87,7 @@ export const CompleteAccount: FunctionComponent = () => {
         }}
       >
         <Box>
-          <Box paddingX={36}>
+          <Box paddingX={windowDimensions.width < 1000 ? 3 : 36}>
             <Box marginTop={12} marginBottom={3}>
               <Title color={MTHBLUE} textAlign='center'>
                 InfoCenter
@@ -99,7 +110,10 @@ export const CompleteAccount: FunctionComponent = () => {
               >
                 <TextField
                   name='email'
-                  sx={classes.textField}
+                  sx={{
+                    ...classes.textField,
+                    width: windowDimensions.width < 460 ? '100%' : '451.53px',
+                  }}
                   label='Account Email'
                   focused
                   variant='outlined'
@@ -119,7 +133,10 @@ export const CompleteAccount: FunctionComponent = () => {
                   name='password'
                   type='password'
                   size='small'
-                  sx={classes.textField}
+                  sx={{
+                    ...classes.textField,
+                    width: windowDimensions.width < 460 ? '100%' : '451.53px',
+                  }}
                   label='Password'
                   focused
                   variant='outlined'
@@ -139,7 +156,10 @@ export const CompleteAccount: FunctionComponent = () => {
                   name='confirmPassword'
                   type='password'
                   size='small'
-                  sx={classes.textField}
+                  sx={{
+                    ...classes.textField,
+                    width: windowDimensions.width < 460 ? '100%' : '451.53px',
+                  }}
                   label='Re-type Password'
                   focused
                   variant='outlined'
@@ -154,7 +174,11 @@ export const CompleteAccount: FunctionComponent = () => {
                   error={formik.touched.confirmPassword && Boolean(formik.errors.confirmPassword)}
                   helperText={formik.touched.confirmPassword && formik.errors.confirmPassword}
                 />
-                <Button variant='contained' style={classes.button} type='submit'>
+                <Button
+                  variant='contained'
+                  style={{ ...classes.button, width: windowDimensions.width < 460 ? '100%' : '451.53px' }}
+                  type='submit'
+                >
                   <Paragraph fontWeight='700' sx={{ fontSize: '11.2px' }}>
                     Create Account
                   </Paragraph>

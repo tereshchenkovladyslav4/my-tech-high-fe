@@ -1,4 +1,4 @@
-import React, { useState, useRef, FunctionComponent } from 'react'
+import React, { useState, useRef } from 'react'
 import { useMutation } from '@apollo/client'
 import AccountBoxOutlinedIcon from '@mui/icons-material/AccountBoxOutlined'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
@@ -8,13 +8,13 @@ import { Box } from '@mui/system'
 import moment from 'moment'
 import { useHistory } from 'react-router-dom'
 import Slider from 'react-slick'
+import { Metadata } from '@mth/components/Metadata/Metadata'
+import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { MthRoute, StudentStatus } from '@mth/enums'
+import { becomeUserMutation } from '@mth/graphql/mutation/user'
 import { UserInfo } from '@mth/providers/UserContext/UserProvider'
 import { StudentType } from '@mth/screens/HomeroomStudentProfile/Student/types'
-import { Metadata } from '../../../../../components/Metadata/Metadata'
-import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragraph'
-import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
-import { becomeUserMutation } from '../../../../../graphql/mutation/user'
-import { DASHBOARD } from '../../../../../utils/constants'
 
 type StudentsProps = {
   students: StudentType[]
@@ -28,7 +28,8 @@ const ordinal = (n) => {
   const v = n % 100
   return n + (s[(v - 20) % 10] || s[v] || s[0])
 }
-export const Students: FunctionComponent<StudentsProps> = ({ students, selectedStudent, handleChangeStudent, me }) => {
+
+export const Students: React.FC<StudentsProps> = ({ students, selectedStudent, handleChangeStudent, me }) => {
   const history = useHistory()
   const sliderRef = useRef(null)
   const [showAll, setShowAll] = useState(false)
@@ -91,7 +92,7 @@ export const Students: FunctionComponent<StudentsProps> = ({ students, selectedS
         localStorage.setItem('previousPage', location.href.replace(import.meta.env.SNOWPACK_PUBLIC_WEB_URL, ''))
       })
       .then(() => {
-        history.push(DASHBOARD)
+        history.push(MthRoute.DASHBOARD)
         location.reload()
       })
   }
@@ -132,10 +133,18 @@ export const Students: FunctionComponent<StudentsProps> = ({ students, selectedS
         }}
       >
         <Grid container>
-          <Grid xs={10}>
+          <Grid item xs={10}>
             <Slider {...settings} ref={sliderRef}>
               {students
-                .filter((item) => item.status.length === 0 || (item.status.length && Number(item.status[0].status) < 2))
+                .filter((item) => {
+                  const status: StudentStatus | undefined = Number(item.status?.[0]?.status) || undefined
+                  return (
+                    status === undefined ||
+                    status === StudentStatus.PENDING ||
+                    status === StudentStatus.ACTIVE ||
+                    status === StudentStatus.APPLIED
+                  )
+                })
                 .map((item, idx) => (
                   <Box sx={{ cursor: 'pointer' }} onClick={() => handleChangeStudent(item)} key={idx}>
                     <Metadata

@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useContext, useEffect, useRef, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import { Card, Stack } from '@mui/material'
@@ -10,21 +10,14 @@ import { StudentStatus } from '@mth/enums'
 import { SchoolYearType } from '@mth/models'
 import { UserContext, UserInfo } from '@mth/providers/UserContext/UserProvider'
 import { StudentType } from '@mth/screens/HomeroomStudentProfile/Student/types'
+import { getWindowDimension } from '@mth/utils'
 import { StudentGrade } from './components/StudentGrade/StudentGrade'
 
 type HomeroomGradeProps = {
   schoolYears: SchoolYearType[]
 }
 
-function getWindowDimensions() {
-  const { innerWidth: width, innerHeight: height } = window
-  return {
-    width,
-    height,
-  }
-}
-
-export const HomeroomGrade: FunctionComponent<HomeroomGradeProps> = ({ schoolYears }) => {
+export const HomeroomGrade: React.FC<HomeroomGradeProps> = ({ schoolYears }) => {
   const { me } = useContext(UserContext)
   const { students } = me as UserInfo
 
@@ -33,11 +26,11 @@ export const HomeroomGrade: FunctionComponent<HomeroomGradeProps> = ({ schoolYea
 
   const sliderRef = useRef()
 
-  const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions())
+  const [windowDimensions, setWindowDimensions] = useState(getWindowDimension())
 
   useEffect(() => {
     function handleResize() {
-      setWindowDimensions(getWindowDimensions())
+      setWindowDimensions(getWindowDimension())
     }
 
     window.addEventListener('resize', handleResize)

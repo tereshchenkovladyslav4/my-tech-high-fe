@@ -1,8 +1,7 @@
-import React, { FunctionComponent } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Box, Container } from '@mui/material'
-
 import { Link } from 'react-router-dom'
-
+import { getWindowDimension } from '@mth/utils'
 import BGSVG from '../../assets/ApplicationBG.svg'
 import { NewApplicationFooter } from '../../components/NewApplicationFooter/NewApplicationFooter'
 import { Title } from '../../components/Typography/Title/Title'
@@ -15,7 +14,18 @@ export type StudentInput = {
   grade_level: string
 }
 
-export const CompleteAccountSuccess: FunctionComponent = () => {
+export const CompleteAccountSuccess: React.FC = () => {
+  const [windowDimensions, setWindowDimensions] = useState(getWindowDimension())
+
+  useEffect(() => {
+    function handleResize() {
+      setWindowDimensions(getWindowDimension())
+    }
+
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
   return (
     <Box sx={{ bgcolor: '#EEF4F8' }}>
       <Container sx={{ bgcolor: '#EEF4F8' }}>
@@ -30,7 +40,7 @@ export const CompleteAccountSuccess: FunctionComponent = () => {
               minHeight: '1100px',
             }}
           >
-            <Box paddingX={36}>
+            <Box paddingX={windowDimensions.width < 1000 ? 3 : 36}>
               <Box marginTop={12}>
                 <Title color={MTHBLUE} textAlign='center'>
                   InfoCenter
@@ -40,7 +50,7 @@ export const CompleteAccountSuccess: FunctionComponent = () => {
                 Apply
               </Title>
               <Box marginTop={'50%'}>
-                <Title size='medium' fontWeight='500' textAlign='center'>
+                <Title size={windowDimensions.width < 460 ? 'small' : 'medium'} fontWeight='500' textAlign='center'>
                   You have successfully created your account. Please continue
                   <Link to={DASHBOARD} style={{ fontWeight: 700, color: MTHBLUE, textDecoration: 'none' }}>
                     {'\u00A0'}here{'\u00A0'}

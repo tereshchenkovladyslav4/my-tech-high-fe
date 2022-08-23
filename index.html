@@ -1,31 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Infocenter</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="mth_logo.png" />
 
-<head>
-	<meta charset="utf-8" />
-	<title>Infocenter</title>
-	<meta name="viewport" content="width=device-width, initial-scale=1" />
-	<link rel="icon" href="mth-logo.png" />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick.min.css"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick-theme.min.css"
+    />
+  </head>
 
-	<link rel="stylesheet" type="text/css"
-		href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick.min.css" />
-	<link rel="stylesheet" type="text/css"
-		href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick-theme.min.css" />
-</head>
-
-<body>
-	<div id="root"></div>
-	<script type="module" src="/index.js"></script>
-	<script>
-		window.setFormChanged = function(form_name, flag) {
-			const forms = document.getElementsByTagName('form');
-			for(let i = 0; i < forms.length; i++) {
-				if(forms[i].name == form_name) {	//	Change attribute of this form only
-					forms[i].setAttribute('changed', flag);
-				}
-			}
-		}
-	</script>
-</body>
-
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/index.js"></script>
+    <script>
+      window.setFormChanged = function (form_name, flag) {
+        const forms = document.getElementsByTagName('form')
+        for (let i = 0; i < forms.length; i++) {
+          if (forms[i].name == form_name) {
+            //	Change attribute of this form only
+            forms[i].setAttribute('changed', flag)
+          }
+        }
+      }
+    </script>
+  </body>
 </html>
