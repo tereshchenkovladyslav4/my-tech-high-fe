@@ -1196,15 +1196,12 @@ export const NewParent: React.FC = () => {
                 InfoCenter
               </Title>
             </Box>
-            <Title fontWeight='500' textAlign='center'>
-              Apply
-            </Title>
             <Box
               sx={{
                 width: windowDimensions.width < 460 ? '100%' : '510px',
                 marginLeft: 'auto',
                 marginRight: 'auto',
-                marginTop: windowDimensions.width < 460 ? '200px' : '370px',
+                marginTop: '100px',
               }}
             >
               <Title size='medium' fontWeight='500' textAlign='center'>

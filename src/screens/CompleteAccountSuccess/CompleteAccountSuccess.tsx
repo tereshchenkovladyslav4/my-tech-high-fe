@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { Box, Container } from '@mui/material'
 import { Link } from 'react-router-dom'
+import BGSVG from '@mth/assets/ApplicationBG.svg'
+import { NewApplicationFooter } from '@mth/components/NewApplicationFooter/NewApplicationFooter'
+import { Title } from '@mth/components/Typography/Title/Title'
+import { MthColor, MthRoute } from '@mth/enums'
 import { getWindowDimension } from '@mth/utils'
-import BGSVG from '../../assets/ApplicationBG.svg'
-import { NewApplicationFooter } from '../../components/NewApplicationFooter/NewApplicationFooter'
-import { Title } from '../../components/Typography/Title/Title'
-import { DASHBOARD, MTHBLUE } from '../../utils/constants'
 
 export type StudentInput = {
   first_name: string
@@ -42,20 +42,20 @@ export const CompleteAccountSuccess: React.FC = () => {
           >
             <Box paddingX={windowDimensions.width < 1000 ? 3 : 36}>
               <Box marginTop={12}>
-                <Title color={MTHBLUE} textAlign='center'>
+                <Title color={MthColor.MTHBLUE} textAlign='center'>
                   InfoCenter
                 </Title>
               </Box>
-              <Title fontWeight='500' textAlign='center'>
-                Apply
-              </Title>
-              <Box marginTop={'50%'}>
+              <Box marginTop={'100px'}>
                 <Title size={windowDimensions.width < 460 ? 'small' : 'medium'} fontWeight='500' textAlign='center'>
                   You have successfully created your account. Please continue
-                  <Link to={DASHBOARD} style={{ fontWeight: 700, color: MTHBLUE, textDecoration: 'none' }}>
+                  <Link
+                    to={MthRoute.DASHBOARD as string}
+                    style={{ fontWeight: 700, color: MthColor.MTHBLUE, textDecoration: 'none' }}
+                  >
                     {'\u00A0'}here{'\u00A0'}
                   </Link>
-                  and login.
+                  and Sign In.
                 </Title>
               </Box>
             </Box>

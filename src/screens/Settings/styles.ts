@@ -29,4 +29,11 @@ export const useStyles = {
     marginLeft: '48px',
     height: '48px',
   },
+  accountSaveChangesMobile: {
+    minWidth: '75px',
+    maxWidth: '100px',
+    borderRadius: '25px',
+    marginLeft: '52px',
+    height: '48px',
+  },
 }

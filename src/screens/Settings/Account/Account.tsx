@@ -84,16 +84,25 @@ export const Account: AccountTemplateType = ({ handleIsFormChange }) => {
   })
 
   return (
-    <form onSubmit={formik.handleSubmit} style={{ display: 'flex', height: '100%' }}>
-      <Card>
+    <form onSubmit={formik.handleSubmit} style={{ display: 'flex', minHeight: '75vh' }}>
+      <Card sx={{ width: '100%' }}>
         <Grid container paddingX={6} rowSpacing={2} marginTop={1}>
-          <Grid item xs={12} textAlign={'left'}>
+          <Grid item xs={12} textAlign={'left'} display='flex' flexDirection={'row'} alignItems='center'>
             <Subtitle fontWeight='700' size='large'>
               Account
             </Subtitle>
+            <Button
+              variant='contained'
+              sx={{ ...classes.accountSaveChangesMobile, display: { xs: 'block', sm: 'none' } }}
+              type='submit'
+            >
+              <Paragraph size='medium' fontWeight='700'>
+                Save Changes
+              </Paragraph>
+            </Button>
           </Grid>
-          <Grid item container xs={12} rowSpacing={5} paddingX={40}>
-            <Grid item xs={10}>
+          <Grid item container xs={12}>
+            <Grid item sm={10} xs={12}>
               <Box display='flex' flexDirection='column' width={'100%'}>
                 <Paragraph size='medium' fontWeight='500' textAlign='left'>
                   Username
@@ -101,14 +110,18 @@ export const Account: AccountTemplateType = ({ handleIsFormChange }) => {
                 <TextField disabled variant='filled' value={profile?.email} />
               </Box>
             </Grid>
-            <Grid item xs={2} sx={{ marginTop: '20px' }}>
-              <Button variant='contained' sx={classes.accountSaveChanges} type='submit'>
+            <Grid item sm={2} xs={0} sx={{ marginTop: '20px' }}>
+              <Button
+                variant='contained'
+                sx={{ ...classes.accountSaveChanges, display: { xs: 'none', sm: 'block' } }}
+                type='submit'
+              >
                 <Paragraph size='medium' fontWeight='700'>
                   Save Changes
                 </Paragraph>
               </Button>
             </Grid>
-            <Grid item xs={10}>
+            <Grid item sm={10} xs={12}>
               <hr
                 style={{
                   borderTop: `solid 1px ${SYSTEM_08}`,
@@ -118,7 +131,7 @@ export const Account: AccountTemplateType = ({ handleIsFormChange }) => {
                 }}
               />
             </Grid>
-            <Grid item xs={10} sx={{ marginTop: '-40px' }}>
+            <Grid item sm={10} xs={12} sx={{ marginTop: '-40px' }}>
               <Box display='flex' flexDirection='column' width={'100%'}>
                 <Paragraph size='medium' fontWeight='500' textAlign='left'>
                   New Password
@@ -137,8 +150,8 @@ export const Account: AccountTemplateType = ({ handleIsFormChange }) => {
                 />
               </Box>
             </Grid>
-            <Grid item xs={2} />
-            <Grid item xs={10}>
+            <Grid item sm={2} />
+            <Grid item sm={10} xs={12}>
               <Box display='flex' flexDirection='column' width={'100%'}>
                 <Paragraph size='medium' fontWeight='500' textAlign='left'>
                   Re-Enter Password
@@ -156,7 +169,7 @@ export const Account: AccountTemplateType = ({ handleIsFormChange }) => {
                 />
               </Box>
             </Grid>
-            <Grid item xs={10}>
+            <Grid item sm={10} xs={12}>
               <hr
                 style={{
                   borderTop: `solid 1px ${SYSTEM_08}`,
@@ -166,13 +179,13 @@ export const Account: AccountTemplateType = ({ handleIsFormChange }) => {
                 }}
               />
             </Grid>
-            <Grid item xs={2} />
-            <Grid item xs={12} textAlign={'left'} sx={{ marginTop: '-40px' }}>
+            <Grid item sm={2} xs={0} />
+            <Grid item sm={12} xs={12} textAlign={'left'} sx={{ marginTop: '-40px' }}>
               <Subtitle>Secondary Observer Account (Added by Admin)</Subtitle>
             </Grid>
-            <Grid item xs={5} sx={{ marginTop: '-20px' }}>
+            <Grid item sm={5} xs={12} sx={{ marginTop: { sm: '-20px', xs: 2 } }}>
               <Box width={'100%'} display={'flex'} justifyContent={'flex-end'}>
-                <Box display='flex' flexDirection='column' width={'100%'} marginRight={2}>
+                <Box display='flex' flexDirection='column' width={'100%'} marginRight={{ sm: 2, xs: 0 }}>
                   <Paragraph size='medium' fontWeight='500' textAlign='left'>
                     First Name
                   </Paragraph>
@@ -180,9 +193,9 @@ export const Account: AccountTemplateType = ({ handleIsFormChange }) => {
                 </Box>
               </Box>
             </Grid>
-            <Grid item xs={5} sx={{ marginTop: '-20px' }}>
+            <Grid item sm={5} xs={12} sx={{ marginTop: { sm: '-20px', xs: 2 } }}>
               <Box width={'100%'} display={'flex'} justifyContent={'flex-start'}>
-                <Box display='flex' flexDirection='column' width={'100%'} marginLeft={2}>
+                <Box display='flex' flexDirection='column' width={'100%'} marginLeft={{ sm: 2, xs: 0 }}>
                   <Paragraph size='medium' fontWeight='500' textAlign='left'>
                     Last Name
                   </Paragraph>
@@ -190,8 +203,8 @@ export const Account: AccountTemplateType = ({ handleIsFormChange }) => {
                 </Box>
               </Box>
             </Grid>
-            <Grid item xs={2} />
-            <Grid item xs={10}>
+            <Grid item sm={2} xs={0} />
+            <Grid item sm={10} xs={12}>
               <Box display='flex' flexDirection='column' width={'100%'}>
                 <Paragraph size='medium' fontWeight='500' textAlign='left'>
                   Username

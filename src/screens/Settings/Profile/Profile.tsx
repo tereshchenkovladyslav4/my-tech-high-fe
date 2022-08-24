@@ -296,274 +296,281 @@ export const Profile: ProfileTemplateType = ({ handleIsFormChange }) => {
   )
 
   return (
-    <form onSubmit={formik.handleSubmit} style={{ display: 'flex', height: '100%' }}>
-      <Card>
-        <Grid container rowSpacing={2} columnSpacing={{ xs: 1, sm: 2, md: 3 }} sx={classes.gridContainer}>
-          <Grid item xs={9}>
-            <Subtitle size='large' fontWeight='700'>
-              Profile
-            </Subtitle>
-          </Grid>
-          <Grid item xs={3}>
-            <Box display='flex' justifyContent='flex-end'>
-              <Button variant='contained' sx={classes.saveButton} type='submit'>
-                <Paragraph size='medium' fontWeight='700'>
-                  Save Changes
+    <Box>
+      <form onSubmit={formik.handleSubmit} style={{ display: 'flex', height: '100%' }}>
+        <Card>
+          <Grid container rowSpacing={2} columnSpacing={{ xs: 1, sm: 2, md: 3 }} sx={classes.gridContainer}>
+            <Grid item xs={9}>
+              <Subtitle size='large' fontWeight='700'>
+                Profile
+              </Subtitle>
+            </Grid>
+            <Grid item xs={3}>
+              <Box display='flex' justifyContent='flex-end'>
+                <Button variant='contained' sx={classes.saveButton} type='submit'>
+                  <Paragraph size='medium' fontWeight='700'>
+                    Save Changes
+                  </Paragraph>
+                </Button>
+              </Box>
+            </Grid>
+            <Grid item xs={12} sm={3}>
+              {Image()}
+            </Grid>
+            <Grid item xs={6} sm={3}>
+              <Box display='flex' flexDirection='column' height='100%' justifyContent='flex-end'>
+                <Paragraph size='medium' fontWeight='500'>
+                  Preferred First Name
                 </Paragraph>
-              </Button>
-            </Box>
+                <TextField
+                  name='preferredFName'
+                  value={formik.values.preferredFName}
+                  onChange={(e) => {
+                    handleIsFormChange(true)
+                    formik.handleChange(e)
+                  }}
+                  error={formik.touched.preferredFName && Boolean(formik.errors.preferredFName)}
+                  helperText={formik.touched.preferredFName && formik.errors.preferredFName}
+                />
+              </Box>
+            </Grid>
+            <Grid item xs={6} sm={6}>
+              <Box
+                display='flex'
+                flexDirection='column'
+                width={{ xs: '100%', sm: '50%' }}
+                height='100%'
+                justifyContent='flex-end'
+              >
+                <Paragraph size='medium' fontWeight='500'>
+                  Preferred Last Name
+                </Paragraph>
+                <TextField
+                  name='preferredLName'
+                  value={formik.values.preferredLName}
+                  onChange={(e) => {
+                    handleIsFormChange(true)
+                    formik.handleChange(e)
+                  }}
+                  error={formik.touched.preferredLName && Boolean(formik.errors.preferredLName)}
+                  helperText={formik.touched.preferredLName && formik.errors.preferredLName}
+                />
+              </Box>
+            </Grid>
+            <Grid item xs={6} sm={3}>
+              <Box display='flex' flexDirection='column'>
+                <Paragraph size='medium' fontWeight='500'>
+                  Legal First Name
+                </Paragraph>
+                <TextField
+                  name='legalFName'
+                  value={formik.values.legalFName}
+                  onChange={(e) => {
+                    handleIsFormChange(true)
+                    formik.handleChange(e)
+                  }}
+                  error={formik.touched.legalFName && Boolean(formik.errors.legalFName)}
+                  helperText={formik.touched.legalFName && formik.errors.legalFName}
+                />
+              </Box>
+            </Grid>
+            <Grid item xs={6} sm={3}>
+              <Box display='flex' flexDirection='column'>
+                <Paragraph size='medium' fontWeight='500'>
+                  Legal Middle Name
+                </Paragraph>
+                <TextField
+                  name='legalMName'
+                  value={formik.values.legalMName}
+                  onChange={(e) => {
+                    handleIsFormChange(true)
+                    formik.handleChange(e)
+                  }}
+                  error={formik.touched.legalMName && Boolean(formik.errors.legalMName)}
+                  helperText={formik.touched.legalMName && formik.errors.legalMName}
+                />
+              </Box>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Box display='flex' flexDirection='column' width={{ xs: '100%', sm: '50%' }}>
+                <Paragraph size='medium' fontWeight='500'>
+                  Legal Last Name
+                </Paragraph>
+                <TextField
+                  name='legalLName'
+                  value={formik.values.legalLName}
+                  onChange={(e) => {
+                    handleIsFormChange(true)
+                    formik.handleChange(e)
+                  }}
+                  error={formik.touched.legalLName && Boolean(formik.errors.legalLName)}
+                  helperText={formik.touched.legalLName && formik.errors.legalLName}
+                />
+              </Box>
+            </Grid>
+            <Grid item xs={12} sm={3}>
+              <Box display='flex' flexDirection='column'>
+                <Paragraph size='medium' fontWeight='500'>
+                  Phone
+                </Paragraph>
+                <TextField
+                  name='phoneNumber'
+                  type='number'
+                  value={formik.values.phoneNumber}
+                  onChange={(e) => {
+                    handleIsFormChange(true)
+                    formik.handleChange(e)
+                  }}
+                  error={formik.touched.phoneNumber && Boolean(formik.errors.phoneNumber)}
+                  helperText={formik.touched.phoneNumber && formik.errors.phoneNumber}
+                />
+                <FormControlLabel
+                  control={
+                    <Checkbox checked={recieveText} onClick={() => setRecieveText(!recieveText)} name='recieveText' />
+                  }
+                  label={<Paragraph size='medium'>I can receive text messages via this number</Paragraph>}
+                />
+              </Box>
+            </Grid>
+            <Grid item xs={12} sm={3}>
+              <Box display='flex' flexDirection='column'>
+                <Paragraph size='medium' fontWeight='500'>
+                  Email
+                </Paragraph>
+                <TextField
+                  name='email'
+                  value={formik.values.email}
+                  onChange={(e) => {
+                    handleIsFormChange(true)
+                    formik.handleChange(e)
+                  }}
+                  error={formik.touched.email && Boolean(formik.errors.email)}
+                  helperText={formik.touched.email && formik.errors.email}
+                />
+              </Box>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Box display='flex' flexDirection='column'>
+                <Paragraph size='medium' fontWeight='500'>
+                  City
+                </Paragraph>
+                <TextField
+                  name='city'
+                  value={formik.values.city}
+                  onChange={(e) => {
+                    handleIsFormChange(true)
+                    formik.handleChange(e)
+                  }}
+                  error={formik.touched.city && Boolean(formik.errors.city)}
+                  helperText={formik.touched.city && formik.errors.city}
+                />
+              </Box>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Box display='flex' flexDirection='column'>
+                <Paragraph size='medium' fontWeight='500'>
+                  Address Line 1
+                </Paragraph>
+                <TextField
+                  name='address1'
+                  value={formik.values.address1}
+                  onChange={(e) => {
+                    handleIsFormChange(true)
+                    formik.handleChange(e)
+                  }}
+                  error={formik.touched.address1 && Boolean(formik.errors.address1)}
+                  helperText={formik.touched.address1 && formik.errors.address1}
+                />
+              </Box>
+            </Grid>
+            <Grid item xs={12} sm={3}>
+              <Box display='flex' flexDirection='column'>
+                <Paragraph size='medium' fontWeight='500'>
+                  State
+                </Paragraph>
+                <DropDown
+                  dropDownItems={usStates}
+                  setParentValue={(val) => {
+                    formik.values.state = val
+                    handleIsFormChange(true)
+                  }}
+                  alternate={true}
+                  size='medium'
+                  defaultValue={formik.values.state || ''}
+                />
+              </Box>
+            </Grid>
+            <Grid item xs={6} sm={3}>
+              <Box display='flex' flexDirection='column'>
+                <Paragraph size='medium' fontWeight='500'>
+                  Zip
+                </Paragraph>
+                <TextField
+                  name='zipcode'
+                  type='number'
+                  value={formik.values.zipcode}
+                  onChange={(e) => {
+                    handleIsFormChange(true)
+                    formik.handleChange(e)
+                  }}
+                  error={formik.touched.zipcode && Boolean(formik.errors.zipcode)}
+                  helperText={formik.touched.zipcode && formik.errors.zipcode}
+                />
+              </Box>
+            </Grid>
+            <Grid item xs={6} sm={6}>
+              <Box display='flex' flexDirection='column'>
+                <Paragraph size='medium' fontWeight='500'>
+                  Address Line 2
+                </Paragraph>
+                <TextField
+                  name='address2'
+                  value={formik.values.address2}
+                  onChange={(e) => {
+                    handleIsFormChange(true)
+                    formik.handleChange(e)
+                  }}
+                  error={formik.touched.address2 && Boolean(formik.errors.address2)}
+                  helperText={formik.touched.address2 && formik.errors.address2}
+                />
+              </Box>
+            </Grid>
           </Grid>
-          <Grid item xs={3}>
-            {Image()}
-          </Grid>
-          <Grid item xs={3}>
-            <Box display='flex' flexDirection='column' height='100%' justifyContent='flex-end'>
-              <Paragraph size='medium' fontWeight='500'>
-                Preferred First Name
-              </Paragraph>
-              <TextField
-                name='preferredFName'
-                value={formik.values.preferredFName}
-                onChange={(e) => {
-                  handleIsFormChange(true)
-                  formik.handleChange(e)
+          <Grid>
+            {openSaveAlert.open && (
+              <Alert
+                sx={{
+                  position: 'relative',
+                  bottom: '-83px',
                 }}
-                error={formik.touched.preferredFName && Boolean(formik.errors.preferredFName)}
-                helperText={formik.touched.preferredFName && formik.errors.preferredFName}
-              />
-            </Box>
-          </Grid>
-          <Grid item xs={6}>
-            <Box display='flex' flexDirection='column' width={'50%'} height='100%' justifyContent='flex-end'>
-              <Paragraph size='medium' fontWeight='500'>
-                Preferred Last Name
-              </Paragraph>
-              <TextField
-                name='preferredLName'
-                value={formik.values.preferredLName}
-                onChange={(e) => {
-                  handleIsFormChange(true)
-                  formik.handleChange(e)
+                onClose={() => {
+                  setOpenSaveAlert({ open: false, status: 'success', message: '' })
                 }}
-                error={formik.touched.preferredLName && Boolean(formik.errors.preferredLName)}
-                helperText={formik.touched.preferredLName && formik.errors.preferredLName}
-              />
-            </Box>
+                severity={openSaveAlert.status}
+              >
+                {openSaveAlert.message}
+              </Alert>
+            )}
           </Grid>
-          <Grid item xs={3}>
-            <Box display='flex' flexDirection='column'>
-              <Paragraph size='medium' fontWeight='500'>
-                Legal First Name
-              </Paragraph>
-              <TextField
-                name='legalFName'
-                value={formik.values.legalFName}
-                onChange={(e) => {
-                  handleIsFormChange(true)
-                  formik.handleChange(e)
-                }}
-                error={formik.touched.legalFName && Boolean(formik.errors.legalFName)}
-                helperText={formik.touched.legalFName && formik.errors.legalFName}
-              />
-            </Box>
-          </Grid>
-          <Grid item xs={3}>
-            <Box display='flex' flexDirection='column'>
-              <Paragraph size='medium' fontWeight='500'>
-                Legal Middle Name
-              </Paragraph>
-              <TextField
-                name='legalMName'
-                value={formik.values.legalMName}
-                onChange={(e) => {
-                  handleIsFormChange(true)
-                  formik.handleChange(e)
-                }}
-                error={formik.touched.legalMName && Boolean(formik.errors.legalMName)}
-                helperText={formik.touched.legalMName && formik.errors.legalMName}
-              />
-            </Box>
-          </Grid>
-          <Grid item xs={6}>
-            <Box display='flex' flexDirection='column' width={'50%'}>
-              <Paragraph size='medium' fontWeight='500'>
-                Legal Last Name
-              </Paragraph>
-              <TextField
-                name='legalLName'
-                value={formik.values.legalLName}
-                onChange={(e) => {
-                  handleIsFormChange(true)
-                  formik.handleChange(e)
-                }}
-                error={formik.touched.legalLName && Boolean(formik.errors.legalLName)}
-                helperText={formik.touched.legalLName && formik.errors.legalLName}
-              />
-            </Box>
-          </Grid>
-          <Grid item xs={3}>
-            <Box display='flex' flexDirection='column'>
-              <Paragraph size='medium' fontWeight='500'>
-                Phone
-              </Paragraph>
-              <TextField
-                name='phoneNumber'
-                type='number'
-                value={formik.values.phoneNumber}
-                onChange={(e) => {
-                  handleIsFormChange(true)
-                  formik.handleChange(e)
-                }}
-                error={formik.touched.phoneNumber && Boolean(formik.errors.phoneNumber)}
-                helperText={formik.touched.phoneNumber && formik.errors.phoneNumber}
-              />
-              <FormControlLabel
-                control={
-                  <Checkbox checked={recieveText} onClick={() => setRecieveText(!recieveText)} name='recieveText' />
-                }
-                label={<Paragraph size='medium'>I can receive text messages via this number</Paragraph>}
-              />
-            </Box>
-          </Grid>
-          <Grid item xs={3}>
-            <Box display='flex' flexDirection='column'>
-              <Paragraph size='medium' fontWeight='500'>
-                Email
-              </Paragraph>
-              <TextField
-                name='email'
-                value={formik.values.email}
-                onChange={(e) => {
-                  handleIsFormChange(true)
-                  formik.handleChange(e)
-                }}
-                error={formik.touched.email && Boolean(formik.errors.email)}
-                helperText={formik.touched.email && formik.errors.email}
-              />
-            </Box>
-          </Grid>
-          <Grid item xs={6}>
-            <Box display='flex' flexDirection='column'>
-              <Paragraph size='medium' fontWeight='500'>
-                City
-              </Paragraph>
-              <TextField
-                name='city'
-                value={formik.values.city}
-                onChange={(e) => {
-                  handleIsFormChange(true)
-                  formik.handleChange(e)
-                }}
-                error={formik.touched.city && Boolean(formik.errors.city)}
-                helperText={formik.touched.city && formik.errors.city}
-              />
-            </Box>
-          </Grid>
-
-          <Grid item xs={6}>
-            <Box display='flex' flexDirection='column'>
-              <Paragraph size='medium' fontWeight='500'>
-                Address Line 1
-              </Paragraph>
-              <TextField
-                name='address1'
-                value={formik.values.address1}
-                onChange={(e) => {
-                  handleIsFormChange(true)
-                  formik.handleChange(e)
-                }}
-                error={formik.touched.address1 && Boolean(formik.errors.address1)}
-                helperText={formik.touched.address1 && formik.errors.address1}
-              />
-            </Box>
-          </Grid>
-          <Grid item xs={3}>
-            <Box display='flex' flexDirection='column'>
-              <Paragraph size='medium' fontWeight='500'>
-                State
-              </Paragraph>
-              <DropDown
-                dropDownItems={usStates}
-                setParentValue={(val) => {
-                  formik.values.state = val
-                  handleIsFormChange(true)
-                }}
-                alternate={true}
-                size='medium'
-                defaultValue={formik.values.state || ''}
-              />
-            </Box>
-          </Grid>
-          <Grid item xs={3}>
-            <Box display='flex' flexDirection='column'>
-              <Paragraph size='medium' fontWeight='500'>
-                Zip
-              </Paragraph>
-              <TextField
-                name='zipcode'
-                type='number'
-                value={formik.values.zipcode}
-                onChange={(e) => {
-                  handleIsFormChange(true)
-                  formik.handleChange(e)
-                }}
-                error={formik.touched.zipcode && Boolean(formik.errors.zipcode)}
-                helperText={formik.touched.zipcode && formik.errors.zipcode}
-              />
-            </Box>
-          </Grid>
-          <Grid item xs={6}>
-            <Box display='flex' flexDirection='column'>
-              <Paragraph size='medium' fontWeight='500'>
-                Address Line 2
-              </Paragraph>
-              <TextField
-                name='address2'
-                value={formik.values.address2}
-                onChange={(e) => {
-                  handleIsFormChange(true)
-                  formik.handleChange(e)
-                }}
-                error={formik.touched.address2 && Boolean(formik.errors.address2)}
-                helperText={formik.touched.address2 && formik.errors.address2}
-              />
-            </Box>
-          </Grid>
-        </Grid>
-        <Grid>
-          {openSaveAlert.open && (
-            <Alert
-              sx={{
-                position: 'relative',
-                bottom: '-83px',
-              }}
-              onClose={() => {
-                setOpenSaveAlert({ open: false, status: 'success', message: '' })
-              }}
-              severity={openSaveAlert.status}
-            >
-              {openSaveAlert.message}
-            </Alert>
+          {imageModalOpen && (
+            <DocumentUploadModal
+              handleModem={() => setImageModalOpen(!imageModalOpen)}
+              handleFile={handleFile}
+              limit={1}
+            />
           )}
-        </Grid>
-        {imageModalOpen && (
-          <DocumentUploadModal
-            handleModem={() => setImageModalOpen(!imageModalOpen)}
-            handleFile={handleFile}
-            limit={1}
-          />
-        )}
-        {warningModalOpen && warningModalOpen.title + warningModalOpen.subtitle != '' && (
-          <CustomConfirmModal
-            header={warningModalOpen.title}
-            content={warningModalOpen.subtitle}
-            handleConfirmModalChange={(val: boolean, isOk: boolean) => {
-              if (isOk && warningModalOpen.callback) warningModalOpen.callback()
-              setWarningModalOpen({ title: '', subtitle: '', callback: null })
-            }}
-          />
-        )}
-      </Card>
-    </form>
+          {warningModalOpen && warningModalOpen.title + warningModalOpen.subtitle != '' && (
+            <CustomConfirmModal
+              header={warningModalOpen.title}
+              content={warningModalOpen.subtitle}
+              handleConfirmModalChange={(val: boolean, isOk: boolean) => {
+                if (isOk && warningModalOpen.callback) warningModalOpen.callback()
+                setWarningModalOpen({ title: '', subtitle: '', callback: null })
+              }}
+            />
+          )}
+        </Card>
+      </form>
+    </Box>
   )
 }

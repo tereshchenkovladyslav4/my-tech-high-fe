@@ -13,7 +13,8 @@
     "build-dev": "cp -v .env.dev .env && snowpack build",
     "build-stag": "cp -v .env.staging .env && snowpack build",
     "build-demo": "cp -v .env.demo .env && snowpack build",
-    "build-prod": "cp -v .env.prod .env && snowpack build"
+    "build-prod": "cp -v .env.prod .env && snowpack build",
+    "format": "prettier-eslint --write \"src/**/*.ts\""
   },
   "devDependencies": {
     "@babel/core": "^7.15.8",
@@ -45,6 +46,7 @@
     "eslint-plugin-react": "^7.26.1",
     "eslint-plugin-react-hooks": "^4.2.0",
     "postcss-import": "^14.0.2",
+    "prettier-eslint-cli": "^7.0.1",
     "snowpack": "~3.0.13"
   },
   "dependencies": {
@@ -87,6 +89,7 @@
     "mui-rte": "^2.0.1",
     "papaparse": "^5.3.2",
     "prettier": "^2.4.1",
+    "prettier-eslint": "^15.0.1",
     "react": "^17.0.2",
     "react-beautiful-dnd": "^13.1.0",
     "react-big-calendar": "^0.40.8",
