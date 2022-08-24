@@ -56,9 +56,9 @@ export const EnrollmentSchoolTable: FunctionComponent<EnrollmentSchoolTableProps
       city: student.parent.person?.address?.city,
       parent: `${student.parent.person?.last_name}, ${student.parent.person?.first_name}`,
       currentSOE:
-        student.currentSoe && student.currentSoe.length > 0 ? student.currentSoe[0].partner?.name : 'unassign',
+        student.currentSoe && student.currentSoe.length > 0 ? student.currentSoe[0].partner?.name : 'Unassigned',
       previousSOE:
-        student.previousSoe && student.previousSoe.length > 0 ? student.previousSoe[0].partner?.name : 'unassign',
+        student.previousSoe && student.previousSoe.length > 0 ? student.previousSoe[0].partner?.name : 'Unassigned',
     }
     if (!previousYear) {
       delete result['previousSOE']

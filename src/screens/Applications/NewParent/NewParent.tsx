@@ -614,6 +614,10 @@ export const NewParent: React.FC = () => {
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [showConfirmationText])
+
   return !loading ? (
     <Card sx={{ paddingTop: 6, backgroundColor: '#EEF4F8' }}>
       {!showConfirmationText ? (
@@ -1170,7 +1174,7 @@ export const NewParent: React.FC = () => {
                         style={classes.submitButton}
                         // disabled={Boolean(Object.keys(errors).length) || showEmailError}
                       >
-                        {`Submit to ${availableRegions[Number(regionId) - 1]?.label || ''} School`}
+                        Submit Application
                       </Button>
                     </Grid>
                   </Grid>
@@ -1201,7 +1205,8 @@ export const NewParent: React.FC = () => {
                 width: windowDimensions.width < 460 ? '100%' : '510px',
                 marginLeft: 'auto',
                 marginRight: 'auto',
-                marginTop: '100px',
+                marginTop: windowDimensions.width < 460 ? '200px' : '370px',
+                paddingX: windowDimensions.width < 600 ? '30px' : '',
               }}
             >
               <Title size='medium' fontWeight='500' textAlign='center'>

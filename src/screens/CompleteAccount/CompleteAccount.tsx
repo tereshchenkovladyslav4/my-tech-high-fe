@@ -74,6 +74,10 @@ export const CompleteAccount: React.FC = () => {
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [showSuccess])
+
   return !showSuccess ? (
     <Box paddingY={6} sx={{ bgcolor: '#EEF4F8' }}>
       <Box
@@ -87,7 +91,7 @@ export const CompleteAccount: React.FC = () => {
         }}
       >
         <Box>
-          <Box paddingX={windowDimensions.width < 1000 ? 3 : 36}>
+          <Box paddingX={windowDimensions.width < 1000 ? 5 : 36}>
             <Box marginTop={12} marginBottom={3}>
               <Title color={MTHBLUE} textAlign='center'>
                 InfoCenter
@@ -97,7 +101,7 @@ export const CompleteAccount: React.FC = () => {
               Thanks for verifying your email.
             </Title>
             <Title fontWeight='500' textAlign='center' sx={{ marginTop: 2, marginBottom: 6 }}>
-              Please create a password to complete your account
+              Please create a password to complete your account.
             </Title>
             <Box sx={{ minHeight: '800px' }}>
               <form
@@ -112,7 +116,7 @@ export const CompleteAccount: React.FC = () => {
                   name='email'
                   sx={{
                     ...classes.textField,
-                    width: windowDimensions.width < 460 ? '100%' : '451.53px',
+                    width: windowDimensions.width < 500 ? '100%' : '451.53px',
                   }}
                   label='Account Email'
                   focused
@@ -135,7 +139,7 @@ export const CompleteAccount: React.FC = () => {
                   size='small'
                   sx={{
                     ...classes.textField,
-                    width: windowDimensions.width < 460 ? '100%' : '451.53px',
+                    width: windowDimensions.width < 500 ? '100%' : '451.53px',
                   }}
                   label='Password'
                   focused
@@ -158,7 +162,7 @@ export const CompleteAccount: React.FC = () => {
                   size='small'
                   sx={{
                     ...classes.textField,
-                    width: windowDimensions.width < 460 ? '100%' : '451.53px',
+                    width: windowDimensions.width < 500 ? '100%' : '451.53px',
                   }}
                   label='Re-type Password'
                   focused
@@ -176,7 +180,7 @@ export const CompleteAccount: React.FC = () => {
                 />
                 <Button
                   variant='contained'
-                  style={{ ...classes.button, width: windowDimensions.width < 460 ? '100%' : '451.53px' }}
+                  style={{ ...classes.button, width: windowDimensions.width < 500 ? '100%' : '451.53px' }}
                   type='submit'
                 >
                   <Paragraph fontWeight='700' sx={{ fontSize: '11.2px' }}>

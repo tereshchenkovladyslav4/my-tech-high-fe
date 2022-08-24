@@ -275,7 +275,7 @@ export const Filters: FunctionComponent<FiltersProps> = ({
             }}
           >
             <Paragraph size='large' fontWeight='700'>
-              For {selectedYear?.label} Year
+              For {selectedYear?.label?.split('Mid-year')[0]} Year
             </Paragraph>
             {['New', 'Returning', 'Transferred', 'Sibling'].map((item: string, index) => (
               <FormControlLabel

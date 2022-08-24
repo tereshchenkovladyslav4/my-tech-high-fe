@@ -191,6 +191,7 @@ export const getStudentDetail = gql`
           date_end
           midyear_application_open
           midyear_application_close
+          RegionId
         }
       }
     }

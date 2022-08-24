@@ -3,7 +3,7 @@ import { gql, useMutation, useQuery } from '@apollo/client'
 import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined'
 import { Box, Button, Card, Grid } from '@mui/material'
 import { Formik, FieldArray, Form, Field } from 'formik'
-import { map, toNumber } from 'lodash'
+import { toNumber } from 'lodash'
 import { omit } from 'lodash'
 import moment from 'moment'
 import { useHistory } from 'react-router-dom'
@@ -14,7 +14,6 @@ import { DropDown } from '@mth/components/DropDown/DropDown'
 import { DropDownItem } from '@mth/components/DropDown/types'
 import { QUESTION_TYPE } from '@mth/components/QuestionItem/QuestionItemProps'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
-import { getAllRegion } from '@mth/graphql/queries/region'
 import { getActiveSchoolYearsByRegionId } from '@mth/graphql/queries/school-year'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { GRADES, RED } from '../../../utils/constants'
@@ -67,19 +66,6 @@ export const ExistingParent: React.FC = () => {
     // skip: regionId ? false : true,
     fetchPolicy: 'network-only',
   })
-
-  const [availableRegions, setAvailableRegions] = useState([])
-  const { data: regionsData, loading: regionsDataLoading } = useQuery(getAllRegion)
-  useEffect(() => {
-    if (!regionsDataLoading) {
-      setAvailableRegions(
-        map(regionsData.regions, (region) => ({
-          label: region.name,
-          value: region.id,
-        })),
-      )
-    }
-  }, [regionsData])
 
   const [questions, setQuestions] = useState<ApplicationQuestion[]>([])
   useEffect(() => {
@@ -777,7 +763,7 @@ export const ExistingParent: React.FC = () => {
                     type='submit'
                     // disabled={Boolean(Object.keys(errors).length)}
                   >
-                    {`Submit to ${availableRegions[regionId - 1]?.label || ''} School`}
+                    Submit Application
                   </Button>
                 </Grid>
               </Grid>
