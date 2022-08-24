@@ -8,10 +8,18 @@ type WithdrawModalProps = {
   description: string
   subDescription?: string
   onClose: () => void
-  onWithdraw: (value: number) => void
+  onWithdraw: (value: WithdrawalOption) => void
   confirmStr?: string
   cancelStr?: string
 }
+
+export const WITHDRAWAL_OPTIONS = [
+  { value: WithdrawalOption.NOTIFY_PARENT_OF_WITHDRAW, label: 'Notify Parent of Withdraw' },
+  { value: WithdrawalOption.NO_FORM_NO_EMAIL, label: 'No Form/No Email' },
+  { value: WithdrawalOption.UNDECLARED_FORM_EMAIL, label: 'Undeclared Form/Email' },
+  { value: WithdrawalOption.UNDECLARED_FORM_NO_EMAIL, label: 'Undeclared Form/No Email' },
+]
+
 export const WithdrawModal: React.FC<WithdrawModalProps> = ({
   title,
   description,
@@ -21,9 +29,9 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
   confirmStr = 'Confirm',
   cancelStr = 'Cancel',
 }) => {
-  const [withdrawOption, setWithdrawOption] = useState<number>(1) // 1: Notify Parent of Withdraw, 2: No Form / No Email, 3: Undeclared Form/Email, 4: Undeclared Form / No Email
+  const [withdrawOption, setWithdrawOption] = useState<WithdrawalOption>(WithdrawalOption.NOTIFY_PARENT_OF_WITHDRAW)
   const handleChange = (e) => {
-    setWithdrawOption(parseInt(e.target.value))
+    setWithdrawOption(e.target.value)
   }
 
   const handleWithdraw = () => {
@@ -66,26 +74,9 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
                 value={withdrawOption}
                 onChange={handleChange}
               >
-                <FormControlLabel
-                  value={WithdrawalOption.NOTIFY_PARENT_OF_WITHDRAW}
-                  control={<Radio />}
-                  label='Notify Parent of Withdraw'
-                />
-                <FormControlLabel
-                  value={WithdrawalOption.NO_FORM_NO_EMAIL}
-                  control={<Radio />}
-                  label='No Form/No Email'
-                />
-                <FormControlLabel
-                  value={WithdrawalOption.UNDECLARED_FORM_EMAIL}
-                  control={<Radio />}
-                  label='Undeclared Form/Email'
-                />
-                <FormControlLabel
-                  value={WithdrawalOption.UNDECLARED_FORM_NO_EMAIL}
-                  control={<Radio />}
-                  label='Undeclared Form/No Email'
-                />
+                {WITHDRAWAL_OPTIONS.map((option, index) => (
+                  <FormControlLabel key={index} value={option.value} control={<Radio />} label={option.label} />
+                ))}
               </RadioGroup>
             </FormControl>
           </Box>

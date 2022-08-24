@@ -68,7 +68,7 @@ const Withdrawal: React.FC<{
   region: number
   studentId?: number
 }> = ({ action, handleChange, region, studentId }) => {
-  const signature = useRef(null)
+  const signature = useRef<SignaturePad | undefined>(undefined)
   const { me } = useContext(UserContext)
   const isEditable = (): boolean => {
     if (me?.level && me?.level <= 2) return true
@@ -386,6 +386,24 @@ const Withdrawal: React.FC<{
                   const offset = new Date().getTimezoneOffset()
                   const date_effective =
                     offset < 0 ? vals[1].response + 'T00:00:00.000Z' : vals[1].response + 'T24:00:00.000Z'
+
+                  const response = JSON.stringify(
+                    vals
+                      .map((item) => {
+                        if (item.type == QUESTION_TYPE.SIGNATURE) {
+                          return {
+                            ...item,
+                            response: {
+                              name: item.response,
+                              signature: signature?.current?.toDataURL(),
+                            },
+                          }
+                        } else {
+                          return item
+                        }
+                      })
+                      .splice(2),
+                  )
                   const { data } = await submitResponses({
                     variables: {
                       withdrawalInput: {
@@ -393,7 +411,7 @@ const Withdrawal: React.FC<{
                           StudentId: parseInt(vals[0].response),
                           date: new Date().toISOString(),
                           date_effective: new Date(date_effective || '').toISOString(),
-                          response: JSON.stringify(vals.map((v) => v).splice(2)),
+                          response: response,
                           status: studentId ? WithdrawalStatus.WITHDRAWN : WithdrawalStatus.REQUESTED,
                         },
                       },

@@ -53,12 +53,13 @@ export const AddNewQuestionModal: FunctionComponent<AddNewQuestionModalProps> = 
 
   const [error, setError] = useState('')
   const currentTabData = values.filter((v) => v.tab_name === tabName)[0]
-  const dropdownOptions: DropDownItem[] = currentTabData.groups.map((v) => {
-    return {
-      label: v.group_name,
-      value: v.group_name,
-    }
-  })
+  const dropdownOptions: DropDownItem[] =
+    currentTabData?.groups.map((v) => {
+      return {
+        label: v.group_name,
+        value: v.group_name,
+      }
+    }) || []
   const [groupName, setGroupName] = useState('')
   const [addGroup, setAddGroup] = useState(false)
   const [groupType, setGroupType] = useState(!isNewQuestion ? group : dropdownOptions[0]?.value || -1)
@@ -242,7 +243,7 @@ export const AddNewQuestionModal: FunctionComponent<AddNewQuestionModalProps> = 
       return
     }
 
-    const currentGroup = currentTabData.groups.filter(
+    const currentGroup = currentTabData?.groups.filter(
       (v) => v.group_name === groupName || v.group_name === groupType,
     )[0]
     if (addGroup && currentGroup) {
@@ -312,7 +313,7 @@ export const AddNewQuestionModal: FunctionComponent<AddNewQuestionModalProps> = 
       //edit a question
       if (group === groupType) {
         // no change group type
-        const updatedGroups = currentTabData.groups.map((v) => {
+        const updatedGroups = currentTabData?.groups.map((v) => {
           if (v.group_name === groupType) {
             const existQuestions = []
             v.questions = v.questions.map((q) => {
@@ -331,19 +332,19 @@ export const AddNewQuestionModal: FunctionComponent<AddNewQuestionModalProps> = 
           }
           return v
         })
-        const updatedTab = { ...currentTabData, groups: updatedGroups, id: currentTabData.id }
+        const updatedTab = { ...currentTabData, groups: updatedGroups, id: currentTabData?.id }
         setValues(values.map((v) => (v.tab_name === updatedTab.tab_name ? updatedTab : v)))
       } else {
         //  group: oldGroup
         //  groupName: newGroup
-        const groups = currentTabData.groups
+        const groups = currentTabData?.groups
         let newGroupName: string = groupName
         if (!currentGroup) {
           groups.push({
             id: undefined,
-            tab_id: currentTabData.id,
+            tab_id: currentTabData?.id,
             group_name: groupName,
-            order: currentTabData.groups.length + 1,
+            order: currentTabData?.groups.length + 1,
             questions: [],
           })
         } else {
@@ -414,18 +415,18 @@ export const AddNewQuestionModal: FunctionComponent<AddNewQuestionModalProps> = 
             return { ...q, order: index + 1 }
           }),
         }
-        const updatedGroups = currentTabData.groups.map((v) => (v.group_name === groupItem.group_name ? groupItem : v))
-        const updatedTab = { ...currentTabData, groups: updatedGroups, id: currentTabData.id }
+        const updatedGroups = currentTabData?.groups.map((v) => (v.group_name === groupItem.group_name ? groupItem : v))
+        const updatedTab = { ...currentTabData, groups: updatedGroups, id: currentTabData?.id }
         setValues(values.map((v) => (v.tab_name === updatedTab.tab_name ? updatedTab : v)))
       } else {
         groupItem = {
           id: editItem && editItem[0]?.group_id,
-          tab_id: currentTabData.id,
+          tab_id: currentTabData?.id,
           group_name: groupName,
-          order: editItem[0]?.order || currentTabData.groups.length + 1,
+          order: editItem[0]?.order || currentTabData?.groups.length + 1,
           questions: newQuestionsArr,
         }
-        const updatedTab = { ...currentTabData, groups: [...currentTabData.groups, groupItem], id: currentTabData.id }
+        const updatedTab = { ...currentTabData, groups: [...currentTabData?.groups, groupItem], id: currentTabData?.id }
         setValues(values.map((v) => (v.tab_name === updatedTab.tab_name ? updatedTab : v)))
       }
     }

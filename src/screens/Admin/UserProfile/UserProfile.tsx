@@ -106,7 +106,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ handleClose, data, set
           },
         },
       })
-      if (studentStatus?.withdrawOption && studentStatus?.withdrawOption > 0) {
+      if (studentStatus?.withdrawOption) {
         await createWithdrawal({
           variables: {
             withdrawalInput: {
@@ -117,7 +117,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ handleClose, data, set
                     ? WithdrawalStatus.NOTIFIED
                     : WithdrawalStatus.WITHDRAWN,
               },
-              withdrawalOption: studentStatus?.withdrawOption,
+              withdrawalOption: Number(studentStatus?.withdrawOption),
             },
           },
         })

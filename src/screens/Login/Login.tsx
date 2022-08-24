@@ -77,7 +77,7 @@ export const Login: FunctionComponent = () => {
       </Grid>
     ))
 
-  const classes = useStyles
+  const classes = useStyles()
   const [login, { data, loading, error }] = useMutation(loginMutation)
   const [resendEmail, { data: resendEmailResponse, loading: resending }] = useMutation(resendVerificationEmailMutation)
   const [username, setUsername] = useState<string>('')
@@ -168,16 +168,9 @@ export const Login: FunctionComponent = () => {
             }}
           />
         )}
-        <Grid
-          container
-          sx={{
-            position: 'relative',
-            paddingY: '48px',
-            paddingX: '93px',
-          }}
-        >
+        <Grid container className={classes.mainContent}>
           {/*Infocenter*/}
-          <Grid item container xs={6} sx={{ background: BUTTON_LINEAR_GRADIENT, padding: 6 }}>
+          <Grid item container xs={12} md={6} sx={{ background: BUTTON_LINEAR_GRADIENT, padding: 6 }}>
             <Grid item xs={12}>
               <Box textAlign='left'>
                 <Typography fontSize={58} fontWeight={400} color='white'>
@@ -189,7 +182,7 @@ export const Login: FunctionComponent = () => {
               </Box>
             </Grid>
             <Grid item container alignItems='center'>
-              <Grid item xs={8}>
+              <Grid item xs={12} md={8}>
                 <Box display='flex' flexDirection='column' width='100%'>
                   <TextField
                     label='Email'
@@ -203,7 +196,7 @@ export const Login: FunctionComponent = () => {
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                   />
-                  <Box sx={classes.passwordContainer}>
+                  <Box className={classes.passwordContainer}>
                     <TextField
                       color='secondary'
                       id='outlined-read-only-input'
@@ -218,15 +211,15 @@ export const Login: FunctionComponent = () => {
                       onChange={(e) => setPassword(e.target.value)}
                       sx={{ width: '100%' }}
                     />
-                    <Typography sx={classes.forgotPassword} onClick={handleForgotPassword}>
+                    <Typography className={classes.forgotPassword} onClick={handleForgotPassword}>
                       Forgot Password
                     </Typography>
                   </Box>
                 </Box>
               </Grid>
-              <Grid item xs={4}>
-                <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                  <Button variant='contained' onClick={() => loginAction()} sx={classes.signInButton}>
+              <Grid item xs={12} md={4}>
+                <Box className={classes.singInButtonBox}>
+                  <Button variant='contained' onClick={() => loginAction()} className={classes.signInButton}>
                     Sign In
                   </Button>
                 </Box>
@@ -236,7 +229,7 @@ export const Login: FunctionComponent = () => {
               </Grid>
             </Grid>
           </Grid>
-          <Grid item container xs={6} sx={{ padding: 6, background: '#EEF4F8' }}>
+          <Grid item container xs={12} md={6} sx={{ padding: 6, background: '#EEF4F8' }}>
             <Grid item xs={12}>
               <Box textAlign='left'>
                 <Typography fontSize={58} fontWeight={400} color='black'>
@@ -248,7 +241,7 @@ export const Login: FunctionComponent = () => {
               </Box>
             </Grid>
             <Grid item xs={12}>
-              <Box sx={{ display: 'flex', justifyContent: 'flex-start', marginTop: -20 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'flex-start' }} className={classes.launchSignInBox}>
                 <a
                   href={'https://tech.sparkeducation.com/login?redirectURI=%2F'}
                   target='_blank'
@@ -257,25 +250,30 @@ export const Login: FunctionComponent = () => {
                   }}
                   rel='noreferrer'
                 >
-                  <Button variant='contained' sx={classes.canvasButton}>
+                  <Button variant='contained' className={classes.canvasButton}>
                     Sign In
                   </Button>
                 </a>
               </Box>
             </Grid>
-            <Box sx={{ marginTop: -30 }}>{renderInfocenterHelpLinks(canvasHelpLinks, true)}</Box>
+            <Box className={classes.launchpadDesc}>{renderInfocenterHelpLinks(canvasHelpLinks, true)}</Box>
           </Grid>
         </Grid>
         <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-          <Link to={'applications'} target='_blank' rel='noopener noreferrer'>
+          <Link
+            to={'applications'}
+            target='_blank'
+            rel='noopener noreferrer'
+            style={{ maxWidth: '600px', width: '95%' }}
+          >
             <Button
               variant='contained'
               style={{
                 borderRadius: 8,
                 fontSize: 12,
                 background: BUTTON_LINEAR_GRADIENT,
-                width: 600,
                 height: 48,
+                width: '100%',
               }}
             >
               Apply Now

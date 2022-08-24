@@ -1,5 +1,6 @@
 import React, { ReactElement, useContext, useEffect, useState } from 'react'
 import { gql, useMutation, useQuery } from '@apollo/client'
+import { makeStyles, Theme } from '@material-ui/core/styles'
 import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined'
 import { Box, Button, Card, Grid } from '@mui/material'
 import { Formik, FieldArray, Form, Field } from 'formik'
@@ -22,6 +23,21 @@ import { AdditionalQuestionItem } from '../components/AdditionalQuestionItem/Add
 import { ApplicationQuestion } from '../components/AdditionalQuestionItem/types'
 import { useStyles } from '../styles'
 import { AddApplicationMutation, getQuestionsGql } from './service'
+
+const additionalStyles = makeStyles((theme: Theme) => ({
+  mainContent: {
+    [theme.breakpoints.down('xs')]: {
+      margin: '8px',
+    },
+    paddingTop: '64px',
+    margin: '32px',
+  },
+  studentsContent: {
+    '& .MuiGrid-item': {
+      width: '100%',
+    },
+  },
+}))
 
 export const getRegionByUserId = gql`
   query UserRegionByUserId($userId: ID!) {
@@ -196,6 +212,7 @@ export const ExistingParent: React.FC = () => {
   }
 
   const classes = useStyles
+  const extraClasses = additionalStyles()
 
   const [submitApplicationAction] = useMutation(AddApplicationMutation)
 
@@ -411,7 +428,7 @@ export const ExistingParent: React.FC = () => {
   }
 
   return (
-    <Card sx={{ paddingTop: 8, margin: 4 }}>
+    <Card className={extraClasses.mainContent}>
       <Formik
         initialValues={{
           programYear: undefined,
@@ -430,6 +447,7 @@ export const ExistingParent: React.FC = () => {
               // paddingX={36}
               paddingTop={18}
               paddingBottom={10}
+              paddingX={2}
               sx={{
                 backgroundImage: `url(${BGSVG})`,
                 backgroundRepeat: 'no-repeat',
@@ -579,7 +597,7 @@ export const ExistingParent: React.FC = () => {
                   <Box width={'451.53px'}>
                     <FieldArray name='students'>
                       {({ push, remove }) => (
-                        <Grid item container spacing={2} xs={12} sm='auto'>
+                        <Grid item container spacing={2} xs={12} sm='auto' className={extraClasses.studentsContent}>
                           {values.students.map((_, index) => (
                             <>
                               {!questionLoading &&

@@ -34,7 +34,10 @@ export const Submission: FunctionComponent = () => {
   const signatureRef = useRef()
   const tabName = useContext(TabContext)
   const { values, setValues } = useFormikContext<EnrollmentQuestionTab[]>()
-  const submissionData = values.filter((v) => v.tab_name === tabName)[0].groups[0]?.questions || []
+  const submissionData =
+    values.filter((v) => v.tab_name === tabName).length > 0
+      ? values.filter((v) => v.tab_name === tabName)[0]?.groups[0]?.questions || []
+      : []
 
   return (
     <form>
