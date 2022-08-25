@@ -1,4 +1,4 @@
-import React, { useEffect, useState, FunctionComponent, useContext } from 'react'
+import React, { useEffect, useState, FunctionComponent } from 'react'
 import { useQuery, useMutation } from '@apollo/client'
 import SearchIcon from '@mui/icons-material/Search'
 import { Box, Button, Card, InputAdornment, OutlinedInput } from '@mui/material'
@@ -9,7 +9,6 @@ import { SortableTable } from '../../../../components/SortableTable/SortableTabl
 
 import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
 import { WarningModal } from '../../../../components/WarningModal/Warning'
-import { UserContext } from '../../../../providers/UserContext/UserProvider'
 import { BUTTON_LINEAR_GRADIENT, RED_GRADIENT } from '../../../../utils/constants'
 import { ENROLLMENT_SCHOOL_HEADCELLS } from '../../../../utils/PageHeadCellsConstant'
 import { DropDown } from '../../SiteManagement/components/DropDown/DropDown'
@@ -25,8 +24,6 @@ export const EnrollmentSchoolTable: FunctionComponent<EnrollmentSchoolTableProps
   setSelectedYear,
   previousYear,
 }) => {
-  const { me } = useContext(UserContext)
-
   const [pageLoading, setPageLoading] = useState<boolean>(false)
   const [seachField, setSearchField] = useState<string>('')
   const [openAlert, setOpenAlert] = useState<boolean>(false)
@@ -42,10 +39,6 @@ export const EnrollmentSchoolTable: FunctionComponent<EnrollmentSchoolTableProps
   const [studentIds, setStudentIds] = useState<number[]>([])
 
   const [assignStudentToSOE] = useMutation(assignStudentToSOEGql)
-
-  useEffect(() => {
-    setSearchField('')
-  }, [me?.selectedRegionId, selectedYear])
 
   const createData = (student: StudentVM) => {
     const grade_level = student.grade_levels?.find((item) => item.school_year_id == selectedYear?.value)
@@ -73,6 +66,7 @@ export const EnrollmentSchoolTable: FunctionComponent<EnrollmentSchoolTableProps
       take: paginatinLimit,
       search: seachField,
       filter: {
+        ...filter,
         schoolYear: parseInt(selectedYear?.value),
       },
     },

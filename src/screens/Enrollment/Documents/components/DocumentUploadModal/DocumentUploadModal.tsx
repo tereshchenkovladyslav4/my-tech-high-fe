@@ -124,7 +124,7 @@ export const DocumentUploadModal: DocumentUploadModalTemplateType = ({ handleMod
       aria-labelledby='modal-modal-title'
       aria-describedby='modal-modal-description'
     >
-      <Box sx={classes.modalCard}>
+      <Box sx={{ ...classes.modalCard, width: { xs: '95%', sm: 628 } }}>
         <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'}>
           {validFiles.length > 0 && (
             <Box display='flex' flexDirection='column'>

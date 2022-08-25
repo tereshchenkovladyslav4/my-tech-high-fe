@@ -11,7 +11,8 @@ import { AuthContext } from '../../providers/AuthProvider/AuthContext'
 import { BUTTON_LINEAR_GRADIENT } from '../../utils/constants'
 import { CompleteAccountSuccess } from '../CompleteAccountSuccess/CompleteAccountSuccess'
 import { resetPasswordMutation } from './service'
-import { useStyles } from './styles'
+import { forgotPasswordClasses } from './styles'
+
 const useHelperTextStyles = makeStyles(() => ({
   root: {
     color: 'white',
@@ -23,7 +24,7 @@ const useHelperTextStyles = makeStyles(() => ({
   },
 }))
 
-export const ResetPassword: FunctionComponent = () => {
+export const ResetPassword: React.FC = () => {
   const token = window.location.href.split('=')[1]
   const decodedToken = atob(token)
   const [, email] = decodedToken.split('-')
@@ -31,7 +32,7 @@ export const ResetPassword: FunctionComponent = () => {
   const [showSuccess] = useState(false)
   const { credentials, setCredentials } = useContext(AuthContext)
   const [alert, setAlert] = useState(null)
-  const classes = useStyles
+
   const history = useHistory()
   const validationSchema = yup.object({
     email: yup.string().email('Enter a valid email').required('Email is required'),
@@ -124,7 +125,7 @@ export const ResetPassword: FunctionComponent = () => {
         <TextField
           color='secondary'
           name='email'
-          sx={classes.textField}
+          sx={forgotPasswordClasses.textField}
           label='Email'
           focused
           variant='outlined'
@@ -145,7 +146,7 @@ export const ResetPassword: FunctionComponent = () => {
           color='secondary'
           name='password'
           type='password'
-          sx={classes.textField}
+          sx={forgotPasswordClasses.textField}
           label='Password'
           focused
           variant='outlined'
@@ -171,7 +172,7 @@ export const ResetPassword: FunctionComponent = () => {
           color='secondary'
           name='confirmPassword'
           type='password'
-          sx={classes.textField}
+          sx={forgotPasswordClasses.textField}
           label='Re-type Password'
           focused
           variant='outlined'
@@ -200,7 +201,7 @@ export const ResetPassword: FunctionComponent = () => {
             {alert.message}
           </Typography>
         )}
-        <Button variant='contained' sx={classes.button} type='submit'>
+        <Button variant='contained' sx={forgotPasswordClasses.button} type='submit'>
           Update Password
         </Button>
       </form>

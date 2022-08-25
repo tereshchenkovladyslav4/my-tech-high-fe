@@ -1,4 +1,4 @@
-export const useStyles = {
+export const forgotPasswordClasses = {
   textField: {
     height: '45px',
     marginY: 2,

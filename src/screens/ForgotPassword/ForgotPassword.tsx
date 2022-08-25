@@ -4,42 +4,40 @@ import { makeStyles } from '@material-ui/styles'
 import { Button, TextField, Typography } from '@mui/material'
 import { Box } from '@mui/system'
 import { useFormik } from 'formik'
-import { useHistory } from 'react-router-dom'
 import * as yup from 'yup'
-import { BUTTON_LINEAR_GRADIENT } from '../../utils/constants'
+import { MthColor } from '@mth/enums'
 import { forgotPasswordMutation, resendVerificationEmailMutation } from './service'
-import { useStyles } from './styles'
+import { forgotPasswordClasses } from './styles'
 
 const useHelperTextStyles = makeStyles(() => ({
   root: {
-    color: 'white',
+    color: MthColor.WHITE,
   },
   error: {
     '&.MuiFormHelperText-root.Mui-error': {
-      color: 'white',
+      color: MthColor.WHITE,
     },
   },
 }))
 
 type Alert = {
+  type: 'success' | 'error'
   message: string
-  type: string
   description?: string
 }
 
-export const ForgotPassword: FunctionComponent = () => {
-  const classes = useStyles
-
-  const history = useHistory()
+export const ForgotPassword: React.FC = () => {
   const helperTextStyles = useHelperTextStyles()
-  const [alert, setAlert] = useState<Alert>(null)
+  const [alert, setAlert] = useState<Alert | null>(null)
   const [verifyStatus, setVerifyStatus] = useState<boolean>(true)
 
   const [forgotPassword] = useMutation(forgotPasswordMutation)
   const [resendEmail, { data: resendEmailResponse, loading: resending }] = useMutation(resendVerificationEmailMutation)
+
   const validationSchema = yup.object({
     email: yup.string().email('Enter a valid email').required('Email is required'),
   })
+
   const formik = useFormik({
     initialValues: {
       email: undefined,
@@ -63,7 +61,7 @@ export const ForgotPassword: FunctionComponent = () => {
           if (unverified) {
             setVerifyStatus(false)
             setAlert({
-              type: 'warning',
+              type: 'error',
               message: 'This account needs to be verified first.',
               description: 'Check your email for a verification link or have one resent below',
             })
@@ -102,15 +100,18 @@ export const ForgotPassword: FunctionComponent = () => {
 
   useEffect(() => {
     if (!resending && resendEmailResponse) {
-      if (!resendEmailResponse?.resendVerificationEmail) {
-        formik.setErrors({ email: ' ' })
+      formik.setErrors({ email: undefined })
+      if (resendEmailResponse?.resendVerificationEmail) {
         setAlert({
           type: 'error',
-          message: 'Faild resend verification email.',
+          message: 'Failed to resend verification email.',
         })
       } else {
+        setAlert({
+          type: 'success',
+          message: 'A new email with the verification link has been sent. Please verifiy your email within 24 hours.',
+        })
         setVerifyStatus(true)
-        history.push('/')
       }
     }
   }, [resending])
@@ -122,7 +123,7 @@ export const ForgotPassword: FunctionComponent = () => {
         flexDirection: 'column',
         alignItems: 'center',
         paddingTop: 12,
-        background: BUTTON_LINEAR_GRADIENT,
+        background: MthColor.BUTTON_LINEAR_GRADIENT,
         width: '100%',
         height: '100vh',
       }}
@@ -152,17 +153,18 @@ export const ForgotPassword: FunctionComponent = () => {
         <TextField
           color='secondary'
           name='email'
-          sx={classes.textField}
+          sx={forgotPasswordClasses.textField}
           label='Email'
           focused
           variant='outlined'
           inputProps={{
-            style: { color: 'white' },
+            style: { color: MthColor.WHITE },
           }}
           value={formik.values.email}
           onChange={(e) => {
             formik.handleChange(e)
             setAlert(null)
+            setVerifyStatus(true)
           }}
           error={formik.touched.email && Boolean(formik.errors.email)}
           helperText={formik.touched.email && formik.errors.email}
@@ -174,21 +176,21 @@ export const ForgotPassword: FunctionComponent = () => {
           }}
         />
         {alert?.message && (
-          <Typography fontSize={14} marginTop={3} color={alert.type === 'error' ? 'white' : 'white'}>
+          <Typography fontSize={14} marginTop={3} color={alert.type === 'error' ? MthColor.WHITE : MthColor.WHITE}>
             {alert.message}
           </Typography>
         )}
         {alert?.description && (
-          <Typography fontSize={14} marginTop={3} color={alert.type === 'error' ? 'white' : 'white'}>
+          <Typography fontSize={14} marginTop={2} color={alert.type === 'error' ? MthColor.WHITE : MthColor.WHITE}>
             {alert.description}
           </Typography>
         )}
         {verifyStatus ? (
-          <Button variant='contained' sx={classes.button} type='submit'>
+          <Button variant='contained' sx={forgotPasswordClasses.button} type='submit'>
             Reset Password
           </Button>
         ) : (
-          <Button variant='contained' sx={classes.button} onClick={() => handleResendVerificationEmail()}>
+          <Button variant='contained' sx={forgotPasswordClasses.button} onClick={() => handleResendVerificationEmail()}>
             Resend Verification Link
           </Button>
         )}

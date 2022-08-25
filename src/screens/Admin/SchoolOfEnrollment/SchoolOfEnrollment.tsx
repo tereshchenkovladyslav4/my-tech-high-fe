@@ -138,10 +138,9 @@ export const SchoolOfEnrollment: FunctionComponent = () => {
         },
       )
       setSchoolYears(yearList.sort((a, b) => (a.label > b.label ? 1 : -1)))
-      setFilter((prev) => ({
-        ...prev,
+      setFilter({
         schoolYear: yearList[0]?.label,
-      }))
+      })
     }
   }, [schoolYearData?.region?.SchoolYears])
 
@@ -156,6 +155,8 @@ export const SchoolOfEnrollment: FunctionComponent = () => {
     const previuosYear = parseInt(moment(yearItem?.date_begin).format('YYYY')) - 1
     const previousOb = schoolYearsData.find((item) => parseInt(moment(item.date_begin).format('YYYY')) === previuosYear)
     setPreviousYear(previousOb)
+
+    setFilter({})
   }, [selectedYear])
 
   return (

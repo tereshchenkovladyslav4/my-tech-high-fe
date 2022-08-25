@@ -10,7 +10,7 @@ import { UserContext } from '../../../../providers/UserContext/UserProvider'
 import { BUTTON_LINEAR_GRADIENT, MTHBLUE, RED_GRADIENT, GRADES } from '../../../../utils/constants'
 import { toOrdinalSuffix } from '../../../../utils/stringHelpers'
 import { getSchoolDistrictsByRegionId } from '../../SiteManagement/EnrollmentSetting/ApplicationQuestions/services'
-import { FiltersProps, PartnerItem } from '../type'
+import { FiltersProps, PartnerItem, YEAR_STATUS } from '../type'
 
 export const Filters: FunctionComponent<FiltersProps> = ({
   filter,
@@ -25,7 +25,7 @@ export const Filters: FunctionComponent<FiltersProps> = ({
   const [expand, setExpand] = useState<boolean>(true)
   // filter option management
   const [grades, setGrades] = useState<string[]>([])
-  const [yearStatus, setYearStatus] = useState<string[]>([])
+  const [yearStatus, setYearStatus] = useState<YEAR_STATUS[]>([])
   const [schoolOfEnrollments, setSchoolOfEnrollments] = useState<string[]>([])
   const [previousSOE, setPreviousSOE] = useState<string[]>([])
   const [schoolDistrict, setSchoolDistrict] = useState<string[]>([])
@@ -37,6 +37,14 @@ export const Filters: FunctionComponent<FiltersProps> = ({
     },
     fetchPolicy: 'network-only',
   })
+
+  useEffect(() => {
+    setGrades([])
+    setYearStatus([])
+    setSchoolOfEnrollments([])
+    setSchoolDistrict([])
+    setCurriculumProvider([])
+  }, [selectedYear])
 
   const chevron = () =>
     !expand ? (
@@ -125,26 +133,22 @@ export const Filters: FunctionComponent<FiltersProps> = ({
   const handleFilter = () => {
     setFilter({
       ...filter,
-      ...{
-        grades: grades,
-        yearStatus,
-        schoolOfEnrollments,
-        schoolDistrict,
-        curriculumProvider,
-      },
+      grades: grades,
+      previousSOE,
+      schoolOfEnrollments,
+      schoolDistrict,
+      yearStatus,
     })
     // setExpand(false)
-    const state = {
-      ...filter,
-      ...{
-        grades: grades,
-        yearStatus,
-        schoolOfEnrollments,
-        schoolDistrict,
-        curriculumProvider,
-      },
-    }
-    history.replace({ ...history.location, state })
+    // const state = {
+    //   ...filter,
+    //   ...{
+    //     grades: grades,
+    //     schoolOfEnrollments,
+    //     previousSOE,
+    //   },
+    // }
+    // history.replace({ ...history.location, state })
   }
   const handleClear = () => {
     setGrades([])
@@ -152,10 +156,7 @@ export const Filters: FunctionComponent<FiltersProps> = ({
     setSchoolOfEnrollments([])
     setSchoolDistrict([])
     setCurriculumProvider([])
-    setFilter((prev) => ({
-      schoolYearId: prev.schoolYearId,
-      schoolYearLabel: prev.schoolYearLabel,
-    }))
+    setPreviousSOE([])
     const state = {}
     history.replace({ ...history.location, state })
   }
@@ -277,14 +278,14 @@ export const Filters: FunctionComponent<FiltersProps> = ({
             <Paragraph size='large' fontWeight='700'>
               For {selectedYear?.label?.split('Mid-year')[0]} Year
             </Paragraph>
-            {['New', 'Returning', 'Transferred', 'Sibling'].map((item: string, index) => (
+            {Object.keys(YEAR_STATUS).map((item) => (
               <FormControlLabel
-                key={index}
+                key={item}
                 sx={{ height: 30 }}
                 control={<Checkbox value={item} checked={yearStatus.includes(item)} onChange={handleYearStatus} />}
                 label={
                   <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
-                    {item}
+                    {YEAR_STATUS[item]}
                   </Paragraph>
                 }
               />
@@ -394,14 +395,14 @@ export const Filters: FunctionComponent<FiltersProps> = ({
                   </Paragraph>
                 }
               />
-              {schoolDistrictsData?.schoolDistrict?.map((district, index) => (
+              {schoolDistrictsData?.schoolDistrict?.map((district) => (
                 <FormControlLabel
-                  key={index}
+                  key={district.id}
                   sx={{ height: 30 }}
                   control={
                     <Checkbox
-                      value={district.id}
-                      checked={schoolDistrict.includes(district.id) || schoolDistrict.includes('all')}
+                      value={district.school_district_name}
+                      checked={schoolDistrict.includes(district.school_district_name) || schoolDistrict.includes('all')}
                       onChange={handleSchoolDistrict}
                     />
                   }

@@ -1,14 +1,25 @@
 import { DropDownItem } from '../SiteManagement/components/DropDown/types'
 
+export enum YEAR_STATUS {
+  NEW = 'New',
+  RETURNING = 'Returning',
+  TRANSFERRED = 'Transferred',
+  SIBLING = 'Sibling',
+}
+
 export type FilterVM = {
-  grades: string[]
-  accountStatus: string[]
-  status: string[]
-  specialEd: string[]
-  // schoolYear: string[]
-  visibility: string[]
-  schoolYearId: string
-  schoolYearLabel: string
+  grades?: string[]
+  accountStatus?: string[]
+  status?: string[]
+  specialEd?: string[]
+  // schoolYear: number
+  visibility?: string[]
+  schoolYearId?: string
+  schoolYearLabel?: string
+  schoolOfEnrollments?: string[]
+  previousSOE?: string[]
+  schoolDistrict?: string[]
+  yearStatus?: YEAR_STATUS[]
 }
 
 export type PartnerItem = {

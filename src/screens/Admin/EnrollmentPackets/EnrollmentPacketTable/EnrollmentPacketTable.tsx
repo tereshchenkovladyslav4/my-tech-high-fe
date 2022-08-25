@@ -73,7 +73,7 @@ export const EnrollmentPacketTable: FunctionComponent = () => {
     const _sort = sort?.split('|')
     let grade_value = 0
     if (sort && _sort[0]?.toLowerCase() === 'grade' && _sort[1]?.toLowerCase() === 'desc') {
-      grade_value = packet?.student?.grade_levels?.length - 1
+      grade_value = packet?.student?.grade_levels?.length ? packet.student.grade_levels.length - 1 : 0
     }
     return {
       id: packet.packet_id,
@@ -83,8 +83,8 @@ export const EnrollmentPacketTable: FunctionComponent = () => {
       student: `${packet.student.person?.first_name} ${packet.student.person?.last_name}`,
       grade:
         packet.student.grade_levels?.length && packet.student.grade_levels[grade_value].grade_level
-          ? packet.student.grade_levels[grade_value].grade_level == 'K' ||
-            packet.student.grade_levels[grade_value].grade_level === 'Kin'
+          ? packet.student.grade_levels[grade_value].grade_level === 'K' ||
+            packet.student.grade_levels[grade_value].grade_level.includes('Kin')
             ? 'K'
             : `${toOrdinalSuffix(Number(packet.student.grade_levels[grade_value].grade_level))} Grade`
           : ' ',
