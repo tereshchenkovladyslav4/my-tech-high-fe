@@ -1205,12 +1205,12 @@ export const NewParent: React.FC = () => {
                 width: windowDimensions.width < 460 ? '100%' : '510px',
                 marginLeft: 'auto',
                 marginRight: 'auto',
-                marginTop: windowDimensions.width < 460 ? '200px' : '370px',
+                marginTop: '100px',
                 paddingX: windowDimensions.width < 600 ? '30px' : '',
               }}
             >
               <Title size='medium' fontWeight='500' textAlign='center'>
-                Please check your email for a verification link to complete your account.
+                Please check your email for a verification link to complete your account setup.
               </Title>
             </Box>
           </Box>

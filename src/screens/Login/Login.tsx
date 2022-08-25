@@ -73,7 +73,11 @@ export const Login: FunctionComponent = () => {
         <Paragraph size='large' color={canvas ? 'black' : 'white'}>
           {link.title}
         </Paragraph>
-        <hr style={{ borderTop: 'dotted 1px white', borderBottom: '0' }} />
+        {!canvas ? (
+          <hr style={{ borderTop: 'dotted 1px white', borderBottom: '0' }} />
+        ) : (
+          <hr style={{ borderTop: 'dotted 1px black', borderBottom: '0' }} />
+        )}
       </Grid>
     ))
 
@@ -170,13 +174,13 @@ export const Login: FunctionComponent = () => {
         )}
         <Grid container className={classes.mainContent}>
           {/*Infocenter*/}
-          <Grid item container xs={12} md={6} sx={{ background: BUTTON_LINEAR_GRADIENT, padding: 6 }}>
+          <Grid item container xs={12} md={6} className={classes.signInContent}>
             <Grid item xs={12}>
               <Box textAlign='left'>
-                <Typography fontSize={58} fontWeight={400} color='white'>
+                <Typography color='white' className={classes.mainHeader}>
                   InfoCenter
                 </Typography>
-                <Typography fontSize={17} color='white'>
+                <Typography color='white' className={classes.subHeader}>
                   Manage your My Tech High experience
                 </Typography>
               </Box>
@@ -229,13 +233,13 @@ export const Login: FunctionComponent = () => {
               </Grid>
             </Grid>
           </Grid>
-          <Grid item container xs={12} md={6} sx={{ padding: 6, background: '#EEF4F8' }}>
+          <Grid item container xs={12} md={6} className={classes.launchpadContent}>
             <Grid item xs={12}>
               <Box textAlign='left'>
-                <Typography fontSize={58} fontWeight={400} color='black'>
+                <Typography color='black' className={classes.mainHeader}>
                   Launchpad
                 </Typography>
-                <Typography fontSize={17} color='black'>
+                <Typography color='black' className={classes.subHeader}>
                   Home of MTH Direct DreamLink Learning and Accelerated Spark Online courses
                 </Typography>
               </Box>

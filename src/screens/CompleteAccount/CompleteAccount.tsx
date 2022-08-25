@@ -98,10 +98,10 @@ export const CompleteAccount: React.FC = () => {
               </Title>
             </Box>
             <Title fontWeight='500' textAlign='center'>
-              Thanks for verifying your email.
+              Thank you for verifying your email.
             </Title>
             <Title fontWeight='500' textAlign='center' sx={{ marginTop: 2, marginBottom: 6 }}>
-              Please create a password to complete your account.
+              Please create a password to complete your account setup.
             </Title>
             <Box sx={{ minHeight: '800px' }}>
               <form

@@ -491,11 +491,37 @@ export const EmailTemplateModal: FunctionComponent<EmailTemplateModalProps> = ({
                 }}
               />
             </Box>
+            <Grid container rowSpacing={2}>
+              <Grid item xs={12}>
+                <Subtitle fontWeight='700' size='large'>
+                  From
+                </Subtitle>
+                <TextField
+                  size='small'
+                  variant='outlined'
+                  fullWidth
+                  value={emailFrom}
+                  onChange={(e) => setEmailFrom(e.target.value)}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <Subtitle fontWeight='700' size='large'>
+                  Email BCC
+                </Subtitle>
+                <TextField
+                  size='small'
+                  variant='outlined'
+                  fullWidth
+                  value={emailBcc}
+                  onChange={(e) => setEmailBcc(e.target.value)}
+                />
+              </Grid>
+            </Grid>
           </>
         )}
         {type === 'deadline' ? (
           <>
-            <Grid item xs={12} sx={{ marginTop: '10px', marginBottom: '10px' }}>
+            <Grid item xs={12} sx={{ marginTop: '10px', marginBottom: '26px' }}>
               <Subtitle fontWeight='700' size='large'>
                 Deadline (Days)
               </Subtitle>
@@ -552,31 +578,34 @@ export const EmailTemplateModal: FunctionComponent<EmailTemplateModalProps> = ({
         )}
         <Box>
           <Grid container rowSpacing={2}>
-            <Grid item xs={12}>
-              <Subtitle fontWeight='700' size='large'>
-                From
-              </Subtitle>
-              <TextField
-                size='small'
-                variant='outlined'
-                fullWidth
-                value={emailFrom}
-                onChange={(e) => setEmailFrom(e.target.value)}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <Subtitle fontWeight='700' size='large'>
-                Email BCC
-              </Subtitle>
-              <TextField
-                size='small'
-                variant='outlined'
-                fullWidth
-                value={emailBcc}
-                onChange={(e) => setEmailBcc(e.target.value)}
-              />
-            </Grid>
-
+            {template_name != 'Notify of Withdraw' && (
+              <>
+                <Grid item xs={12}>
+                  <Subtitle fontWeight='700' size='large'>
+                    From
+                  </Subtitle>
+                  <TextField
+                    size='small'
+                    variant='outlined'
+                    fullWidth
+                    value={emailFrom}
+                    onChange={(e) => setEmailFrom(e.target.value)}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <Subtitle fontWeight='700' size='large'>
+                    Email BCC
+                  </Subtitle>
+                  <TextField
+                    size='small'
+                    variant='outlined'
+                    fullWidth
+                    value={emailBcc}
+                    onChange={(e) => setEmailBcc(e.target.value)}
+                  />
+                </Grid>
+              </>
+            )}
             {type === 'standard_response' && (
               <Grid container rowSpacing={2}>
                 {response.length > 0 &&

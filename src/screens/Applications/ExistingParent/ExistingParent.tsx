@@ -3,6 +3,8 @@ import { gql, useMutation, useQuery } from '@apollo/client'
 import { makeStyles, Theme } from '@material-ui/core/styles'
 import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined'
 import { Box, Button, Card, Grid } from '@mui/material'
+import { useTheme } from '@mui/material/styles'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import { Formik, FieldArray, Form, Field } from 'formik'
 import { toNumber } from 'lodash'
 import { omit } from 'lodash'
@@ -53,6 +55,8 @@ export const ExistingParent: React.FC = () => {
     programYear: string().required('Program Year is required'),
   }
   const [validationSchema, setValidationSchema] = useState()
+  const theme = useTheme()
+  const matches = useMediaQuery(theme.breakpoints.down('sm'))
 
   const { me, setMe } = useContext(UserContext)
   const [schoolYears, setSchoolYears] = useState<Array<DropDownItem>>([])
@@ -503,9 +507,11 @@ export const ExistingParent: React.FC = () => {
                                     <DropDown
                                       name={'students[0].grade_level'}
                                       labelTop
-                                      placeholder={`${q.question} as of ${moment(birthDateCut).format(
-                                        'MMMM DD, YYYY',
-                                      )}`}
+                                      placeholder={
+                                        !matches
+                                          ? `${q.question} as of ${moment(birthDateCut).format('MMMM DD, YYYY')}`
+                                          : `${moment(birthDateCut).format('MMMM DD, YYYY')}`
+                                      }
                                       dropDownItems={gradesDropDownItems}
                                       setParentValue={(id) => {
                                         form.setFieldValue(field.name, id)
@@ -623,9 +629,13 @@ export const ExistingParent: React.FC = () => {
                                               <DropDown
                                                 name={`students[${index}].grade_level`}
                                                 labelTop
-                                                placeholder={`${q.question} as of ${moment(birthDateCut).format(
-                                                  'MMMM DD, YYYY',
-                                                )}`}
+                                                placeholder={
+                                                  !matches
+                                                    ? `${q.question} as of ${moment(birthDateCut).format(
+                                                        'MMMM DD, YYYY',
+                                                      )}`
+                                                    : `${moment(birthDateCut).format('MMMM DD, YYYY')}`
+                                                }
                                                 dropDownItems={gradesDropDownItems}
                                                 setParentValue={(id) => {
                                                   form.setFieldValue(field.name, id)
