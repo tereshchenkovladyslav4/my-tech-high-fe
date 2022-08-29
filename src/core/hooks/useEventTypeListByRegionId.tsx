@@ -8,7 +8,7 @@ export const useEventTypeListByRegionId = (
   regionId: number,
 ): {
   loading: boolean
-  data: unknown
+  data: MultiSelectDropDownListType[]
   error: ApolloError | undefined
 } => {
   const [eventTypeLists, setEventTypeLists] = useState<MultiSelectDropDownListType[]>([])

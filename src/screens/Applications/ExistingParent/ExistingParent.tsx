@@ -508,9 +508,11 @@ export const ExistingParent: React.FC = () => {
                                       name={'students[0].grade_level'}
                                       labelTop
                                       placeholder={
-                                        !matches
-                                          ? `${q.question} as of ${moment(birthDateCut).format('MMMM DD, YYYY')}`
-                                          : `${moment(birthDateCut).format('MMMM DD, YYYY')}`
+                                        birthDateCut == ''
+                                          ? q.question
+                                          : `${q.question} as of ${moment(birthDateCut).format(
+                                              !matches ? 'MMMM DD, YYYY' : 'MMM DD, YYYY',
+                                            )}`
                                       }
                                       dropDownItems={gradesDropDownItems}
                                       setParentValue={(id) => {
@@ -630,11 +632,11 @@ export const ExistingParent: React.FC = () => {
                                                 name={`students[${index}].grade_level`}
                                                 labelTop
                                                 placeholder={
-                                                  !matches
-                                                    ? `${q.question} as of ${moment(birthDateCut).format(
-                                                        'MMMM DD, YYYY',
+                                                  birthDateCut == ''
+                                                    ? q.question
+                                                    : `${q.question} as of ${moment(birthDateCut).format(
+                                                        !matches ? 'MMMM DD, YYYY' : 'MMM DD, YYYY',
                                                       )}`
-                                                    : `${moment(birthDateCut).format('MMMM DD, YYYY')}`
                                                 }
                                                 dropDownItems={gradesDropDownItems}
                                                 setParentValue={(id) => {

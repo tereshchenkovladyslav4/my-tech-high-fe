@@ -75,6 +75,9 @@ export type EventResponseVM = {
   filter_provider: string
   filter_school_of_enrollment: string
   filter_users: string
+  position: number
+  startDateOnly: Date
+  endDateOnly: Date
 }
 
 export type EventDetailProps = {

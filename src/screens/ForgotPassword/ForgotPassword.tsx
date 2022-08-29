@@ -4,6 +4,7 @@ import { makeStyles } from '@material-ui/styles'
 import { Button, TextField, Typography } from '@mui/material'
 import { Box } from '@mui/system'
 import { useFormik } from 'formik'
+import { useHistory } from 'react-router-dom'
 import * as yup from 'yup'
 import { MthColor } from '@mth/enums'
 import { forgotPasswordMutation, resendVerificationEmailMutation } from './service'
@@ -27,6 +28,7 @@ type Alert = {
 }
 
 export const ForgotPassword: React.FC = () => {
+  const history = useHistory()
   const helperTextStyles = useHelperTextStyles()
   const [alert, setAlert] = useState<Alert | null>(null)
   const [verifyStatus, setVerifyStatus] = useState<boolean>(true)
@@ -112,6 +114,9 @@ export const ForgotPassword: React.FC = () => {
           message: 'A new email with the verification link has been sent. Please verifiy your email within 24 hours.',
         })
         setVerifyStatus(true)
+        setTimeout(() => {
+          history.push('/')
+        }, 1000)
       }
     }
   }, [resending])

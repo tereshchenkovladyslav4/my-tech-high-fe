@@ -1,7 +1,7 @@
 import React, { useEffect, useState, FunctionComponent } from 'react'
 import { useQuery, useMutation } from '@apollo/client'
 import SearchIcon from '@mui/icons-material/Search'
-import { Box, Button, Card, InputAdornment, OutlinedInput } from '@mui/material'
+import { Box, Button, Card, InputAdornment, OutlinedInput, Tooltip } from '@mui/material'
 import { map } from 'lodash'
 import moment from 'moment'
 import { Pagination } from '../../../../components/Pagination/Pagination'
@@ -27,6 +27,8 @@ export const EnrollmentSchoolTable: FunctionComponent<EnrollmentSchoolTableProps
   const [pageLoading, setPageLoading] = useState<boolean>(false)
   const [seachField, setSearchField] = useState<string>('')
   const [openAlert, setOpenAlert] = useState<boolean>(false)
+  const [open, setOpen] = useState<boolean>(false)
+  const [message, setMessage] = useState<string>('')
   const [noStudnetAlert, setNoStudentAlert] = useState<boolean>(false)
   const [clearAll, setClearAll] = useState<boolean>(false)
   const [paginatinLimit, setPaginatinLimit] = useState<number>(Number(localStorage.getItem('pageLimit')) || 25)
@@ -127,7 +129,22 @@ export const EnrollmentSchoolTable: FunctionComponent<EnrollmentSchoolTableProps
     setSort(`${property}|${order}`)
   }
 
+  const validAssignOrTransfer = () => {
+    let msg = ''
+    if (!studentIds.length) {
+      msg = 'No student(s) selected'
+    } else if (!schoolPartner) {
+      msg = 'No School of Enrollment selected'
+    }
+    if (msg) {
+      setMessage(msg)
+      setOpen(true)
+    }
+    return !msg
+  }
+
   const handleAssignStudentToSOE = async () => {
+    if (!validAssignOrTransfer()) return
     await assignStudentToSOE({
       variables: {
         assignStudentToSoeInput: {
@@ -140,6 +157,10 @@ export const EnrollmentSchoolTable: FunctionComponent<EnrollmentSchoolTableProps
     setClearAll(!clearAll)
     setSchoolPartner('')
     refetch()
+  }
+
+  const handleTransfer = () => {
+    if (!validAssignOrTransfer()) return
   }
 
   const headCells = (initialCells) => {
@@ -256,21 +277,23 @@ export const EnrollmentSchoolTable: FunctionComponent<EnrollmentSchoolTableProps
               alignItems: 'center',
             }}
           >
-            <Button
-              sx={{
-                borderRadius: 2,
-                textTransform: 'none',
-                height: 29,
-                background: BUTTON_LINEAR_GRADIENT,
-                color: 'white',
-                width: '92px',
-                padding: '20px 55px',
-                marginBottom: '4px',
-              }}
-              onClick={handleAssignStudentToSOE}
-            >
-              Assign
-            </Button>
+            <Tooltip title='Assign School of Enrollment' placement='top'>
+              <Button
+                sx={{
+                  borderRadius: 2,
+                  textTransform: 'none',
+                  height: 29,
+                  background: BUTTON_LINEAR_GRADIENT,
+                  color: 'white',
+                  width: '92px',
+                  padding: '20px 55px',
+                  marginBottom: '4px',
+                }}
+                onClick={handleAssignStudentToSOE}
+              >
+                Assign
+              </Button>
+            </Tooltip>
           </Box>
 
           <Box
@@ -282,25 +305,27 @@ export const EnrollmentSchoolTable: FunctionComponent<EnrollmentSchoolTableProps
               marginLeft: '24px',
             }}
           >
-            <Button
-              sx={{
-                borderRadius: 2,
-                textTransform: 'none',
-                height: 29,
-                color: 'white',
-                width: '92px',
-                background: RED_GRADIENT,
-                '&:hover': {
-                  background: '#D23C33',
-                  color: '#fff',
-                },
-                padding: '20px 55px',
-                marginBottom: '4px',
-              }}
-              // onClick={handleDeleteSelected}
-            >
-              Transfer
-            </Button>
+            <Tooltip title='Create withdraw form from previous SoE' placement='top'>
+              <Button
+                sx={{
+                  borderRadius: 2,
+                  textTransform: 'none',
+                  height: 29,
+                  color: 'white',
+                  width: '92px',
+                  background: RED_GRADIENT,
+                  '&:hover': {
+                    background: '#D23C33',
+                    color: '#fff',
+                  },
+                  padding: '20px 55px',
+                  marginBottom: '4px',
+                }}
+                onClick={handleTransfer}
+              >
+                Transfer
+              </Button>
+            </Tooltip>
           </Box>
         </Box>
         {/*  Pagination & Actions */}
@@ -347,6 +372,15 @@ export const EnrollmentSchoolTable: FunctionComponent<EnrollmentSchoolTableProps
           subtitle='No student(s) selected'
           btntitle='OK'
           handleSubmit={() => setNoStudentAlert(!noStudnetAlert)}
+        />
+      )}
+      {open && (
+        <WarningModal
+          handleModem={() => setOpen(!open)}
+          title='Error'
+          subtitle={message}
+          btntitle='Ok'
+          handleSubmit={() => setOpen(!open)}
         />
       )}
     </Card>
