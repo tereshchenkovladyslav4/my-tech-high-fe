@@ -71,7 +71,7 @@ export type EmailTemplateVM = {
 export type SchoolYearVM = {
   date_begin: string
   date_end: string
-  school_year_id: string
+  school_year_id: number
   midyear_application: boolean
   midyear_application_open: string
   midyear_application_close: string

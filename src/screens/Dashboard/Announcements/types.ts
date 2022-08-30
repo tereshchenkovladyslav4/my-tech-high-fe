@@ -1,5 +1,3 @@
-import { FunctionComponent } from 'react'
-
 export type Announcement = {
   id?: number
   subject?: string
@@ -16,7 +14,6 @@ export type Announcement = {
   filterGrades?: string
   filterUsers?: string
   scheduleTime?: Date
-  announcement_id?: Date
   user_id?: number
   filter_grades?: string
   RegionId?: number
@@ -25,10 +22,9 @@ export type Announcement = {
   schedule_time?: Date
 }
 
-type AnnnouncementProps = {
+export type AnnnouncementProps = {
   announcements: Announcement[]
   setAnnouncements: (value: Announcement[]) => void
   setSectionName: (value: React.SetStateAction<string>) => void
   setSelectedAnnouncement: (value: Announcement) => void
 }
-export type AnnouncementTemplateType = FunctionComponent<AnnnouncementProps>

@@ -58,11 +58,13 @@ const ResourceRequest: React.FC<ResourceRequestProps> = ({
   return (
     <Stack sx={{ p: 4 }}>
       <Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between'>
-        <Grid container sx={{ px: 2, background: 'inherit' }}>
-          <ButtonBase onClick={() => setPage(ResourcePage.ROOT)} sx={{ p: 1 }} disableRipple>
+        <Grid container sx={{ px: 5, background: 'inherit' }}>
+          <ButtonBase onClick={() => setPage(ResourcePage.ROOT)} disableRipple>
             <Grid container justifyContent='flex-start' alignItems='center'>
-              <ArrowBackIosOutlinedIcon />
-              <Typography sx={{ fontWeight: 700, fontSize: 20, ml: 1 }}>New Request</Typography>
+              <Stack sx={{ p: '4px' }}>
+                <ArrowBackIosOutlinedIcon />
+              </Stack>
+              <Typography sx={{ fontWeight: 700, fontSize: 20, ml: '20px' }}>New Request</Typography>
             </Grid>
           </ButtonBase>
         </Grid>

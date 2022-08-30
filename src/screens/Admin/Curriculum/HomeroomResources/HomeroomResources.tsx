@@ -4,6 +4,7 @@ import ArrowBackIosOutlinedIcon from '@mui/icons-material/ArrowBackIosOutlined'
 import EditIcon from '@mui/icons-material/Edit'
 import { Box, ButtonBase, Grid, Stack, Typography } from '@mui/material'
 import moment from 'moment'
+import { useHistory } from 'react-router-dom'
 import { arrayMove, SortableContainer, SortableElement } from 'react-sortable-hoc'
 import { DropDown } from '@mth/components/DropDown/DropDown'
 import { MthColor } from '@mth/enums'
@@ -16,16 +17,11 @@ import { ConfirmationDetails } from './ConfirmationDetails'
 import { HomeroomResourceCard } from './HomeroomResourceCard'
 import { HomeroomResourceEdit } from './HomeroomResourceEdit'
 import { HomeroomResourceModal } from './HomeroomResourceModal'
-import {
-  EventType,
-  HomeroomResource,
-  HomeroomResourceProps,
-  HomeroomResourceCardProps,
-  HomeroomResourcePage,
-} from './types'
+import { EventType, HomeroomResource, HomeroomResourceCardProps, HomeroomResourcePage } from './types'
 
-export const HomeroomResources: React.FC<HomeroomResourceProps> = ({ backAction }) => {
+export const HomeroomResources: React.FC = () => {
   const { me } = useContext(UserContext)
+  const history = useHistory()
 
   const { dropdownItems: schoolYearDropdownItems, schoolYears: schoolYears } = useSchoolYearsByRegionId(
     me?.selectedRegionId,
@@ -40,6 +36,10 @@ export const HomeroomResources: React.FC<HomeroomResourceProps> = ({ backAction 
   const [showUnarchivedModal, setShowUnarchivedModal] = useState<boolean>(false)
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false)
   const [showCloneModal, setShowCloneModal] = useState<boolean>(false)
+
+  const backAction = () => {
+    history.goBack()
+  }
 
   const {
     loading,

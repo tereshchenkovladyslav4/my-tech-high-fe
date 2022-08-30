@@ -15,33 +15,35 @@ export const WarningModal: WarningModalTemplateType = ({
   canceltitle = '',
   handleSubmit,
   showIcon = true,
+  children,
 }) => {
-  const classes = useStyles
+  const classes = useStyles()
   return (
     <Modal
       open={true}
-      onClose={() => handleModem()}
+      onClose={handleModem}
       aria-labelledby='modal-modal-title'
       aria-describedby='modal-modal-description'
     >
-      <Box sx={classes.modalCard}>
-        <Box sx={classes.header as Record<string, unknown>}>
+      <Box className={classes.modalCard}>
+        <Box className={classes.header}>
           <Typography variant='h5' fontSize={'20px'} fontWeight={'bold'}>
             {title}
           </Typography>
         </Box>
-        <Box sx={classes.content as Record<string, unknown>}>
-          {showIcon && <ErrorOutlineIcon style={classes.errorOutline} />}
+        <Box className={classes.content}>
+          {showIcon && <ErrorOutlineIcon className={classes.errorOutline} />}
           <Paragraph size='large' fontWeight='600' color={SYSTEM_01}>
             {subtitle}
           </Paragraph>
+          {children}
           <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', width: '100%' }}>
             {canceltitle != '' && (
-              <Button variant='contained' disableElevation sx={classes.button} onClick={handleModem}>
+              <Button variant='contained' disableElevation className={classes.button} onClick={handleModem}>
                 {canceltitle}
               </Button>
             )}
-            <Button variant='contained' disableElevation sx={classes.submit} onClick={handleSubmit}>
+            <Button variant='contained' disableElevation className={classes.submit} onClick={handleSubmit}>
               {btntitle}
             </Button>
           </Box>

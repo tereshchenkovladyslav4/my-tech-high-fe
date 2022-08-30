@@ -12,3 +12,9 @@ export const toOrdinalSuffix = (number: number): string => {
     ? number + ordinals[digits[0] - 1]
     : number + ordinals[3]
 }
+
+export const extractContent = (s: string): string | null => {
+  const span = document.createElement('span')
+  span.innerHTML = s
+  return span.textContent || span.innerText
+}

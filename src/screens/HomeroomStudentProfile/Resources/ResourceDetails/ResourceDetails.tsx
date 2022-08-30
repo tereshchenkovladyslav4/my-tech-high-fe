@@ -1,26 +1,28 @@
 import React from 'react'
 import ArrowBackIosOutlinedIcon from '@mui/icons-material/ArrowBackIosOutlined'
-import { Box, ButtonBase, Card, Grid, Link, TextField, Typography } from '@mui/material'
+import { Box, ButtonBase, Card, Grid, Link, Stack, TextField, Typography } from '@mui/material'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
-import { MthColor, ResourceRequestStatus } from '@mth/enums'
+import { MthColor, ResourceRequestStatus, ResourceSubtitle } from '@mth/enums'
 import { renderGrades } from '@mth/utils'
 import { ResourceCard } from '../ResourceCard'
 import { ResourceDetailsProps, ResourcePage } from '../types'
 
 const ResourceDetails: React.FC<ResourceDetailsProps> = ({ item, handleBack, onCardAction }) => {
   return (
-    <Card sx={{ p: 4, m: 4, textAlign: 'left' }}>
+    <Card sx={{ p: 4, m: 4, textAlign: 'left', borderRadius: '12px', boxShadow: 'none' }}>
       <Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between'>
         <Grid container sx={{ background: 'inherit' }}>
-          <ButtonBase onClick={handleBack} sx={{ p: 1 }} disableRipple>
+          <ButtonBase onClick={handleBack} disableRipple>
             <Grid container justifyContent='flex-start' alignItems='center'>
-              <ArrowBackIosOutlinedIcon />
-              <Typography sx={{ fontWeight: 700, fontSize: 20, ml: 1 }}>Resources</Typography>
+              <Stack sx={{ p: '4px' }}>
+                <ArrowBackIosOutlinedIcon />
+              </Stack>
+              <Typography sx={{ fontWeight: 700, fontSize: 20, ml: '20px' }}>Resources</Typography>
             </Grid>
           </ButtonBase>
         </Grid>
       </Box>
-      <Box sx={{ p: 5 }}>
+      <Box sx={{ px: 6, py: 5 }}>
         <Grid container spacing={4}>
           <Grid item xs={4}>
             <ResourceCard page={ResourcePage.DETAILS} item={item} onAction={onCardAction} />
@@ -38,34 +40,35 @@ const ResourceDetails: React.FC<ResourceDetailsProps> = ({ item, handleBack, onC
             >
               {item.website}
             </Link>
-            {item.RequestStatus === ResourceRequestStatus.ACCEPTED && (
-              <Box
-                sx={{
-                  display: 'flex',
-                  gap: '24px',
-                  justifyContent: 'space-between',
-                  alignItems: 'end',
-                  mt: 4,
-                }}
-              >
-                <Box sx={{ mb: 3, flex: 1 }}>
-                  <Subtitle sx={{ fontSize: 14, fontWeight: 600, mb: 1 }}>Username</Subtitle>
-                  <TextField
-                    fullWidth
-                    value={item.std_user_name}
-                    InputProps={{ style: { fontSize: 14, fontWeight: 700 } }}
-                  />
+            {item.RequestStatus === ResourceRequestStatus.ACCEPTED ||
+              (item.subtitle === ResourceSubtitle.INCLUDED && (
+                <Box
+                  sx={{
+                    display: 'flex',
+                    gap: '24px',
+                    justifyContent: 'space-between',
+                    alignItems: 'end',
+                    mt: 4,
+                  }}
+                >
+                  <Box sx={{ mb: 3, flex: 1 }}>
+                    <Subtitle sx={{ fontSize: 14, fontWeight: 600, mb: 1 }}>Username</Subtitle>
+                    <TextField
+                      fullWidth
+                      value={item.std_user_name}
+                      InputProps={{ style: { fontSize: 14, fontWeight: 700 } }}
+                    />
+                  </Box>
+                  <Box sx={{ mb: 3, flex: 1 }}>
+                    <Subtitle sx={{ fontSize: 14, fontWeight: 600, mb: 1 }}>Password</Subtitle>
+                    <TextField
+                      fullWidth
+                      value={item.std_password}
+                      InputProps={{ style: { fontSize: 14, fontWeight: 700 } }}
+                    />
+                  </Box>
                 </Box>
-                <Box sx={{ mb: 3, flex: 1 }}>
-                  <Subtitle sx={{ fontSize: 14, fontWeight: 600, mb: 1 }}>Password</Subtitle>
-                  <TextField
-                    fullWidth
-                    value={item.std_password}
-                    InputProps={{ style: { fontSize: 14, fontWeight: 700 } }}
-                  />
-                </Box>
-              </Box>
-            )}
+              ))}
           </Grid>
         </Grid>
         <Box sx={{ px: 6, py: 5 }}>

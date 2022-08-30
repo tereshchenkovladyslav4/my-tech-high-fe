@@ -17,7 +17,7 @@ import { QUESTION_TYPE } from '@mth/components/QuestionItem/QuestionItemProps'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Title } from '@mth/components/Typography/Title/Title'
 import { getAllRegion } from '@mth/graphql/queries/region'
-import { getActiveSchoolYearsByRegionId } from '@mth/graphql/queries/school-year'
+import { useActiveSchoolYearsByRegionId } from '@mth/hooks'
 import { getWindowDimension } from '@mth/utils'
 import { DASHBOARD, GRADES, MTHBLUE, RED, SYSTEM_05 } from '../../../utils/constants'
 import { toOrdinalSuffix, isNumber } from '../../../utils/stringHelpers'
@@ -49,9 +49,7 @@ export const NewParent: React.FC = () => {
   const [validationSchema, setValidationSchema] = useState()
   const [availableRegions, setAvailableRegions] = useState([])
   const [regionId, setRegionId] = useState('')
-  const [schoolYears, setSchoolYears] = useState<Array<DropDownItem>>([])
   const [showEmailError, setShowEmailError] = useState(false)
-  const [schoolYearsData, setSchoolYearsData] = useState([])
   const [midYearApplication, setMidYearApplication] = useState<boolean>(false)
   const [grades, setGrades] = useState<string[]>([])
   const [gradesDropDownItems, setGradesDropDownItems] = useState<Array<DropDownItem>>([])
@@ -60,14 +58,10 @@ export const NewParent: React.FC = () => {
   const [questions, setQuestions] = useState<ApplicationQuestion[]>([])
   const [windowDimensions, setWindowDimensions] = useState(getWindowDimension())
 
+  const { schoolYears: schoolYearsData, dropdownItems: schoolYears } = useActiveSchoolYearsByRegionId(+regionId)
+
   const { loading: questionLoading, data: questionData } = useQuery(getQuestionsGql, {
     variables: { input: { region_id: Number(regionId) } },
-    fetchPolicy: 'network-only',
-  })
-  const { loading: schoolLoading, data: schoolYearData } = useQuery(getActiveSchoolYearsByRegionId, {
-    variables: {
-      regionId: regionId,
-    },
     fetchPolicy: 'network-only',
   })
 
@@ -369,45 +363,6 @@ export const NewParent: React.FC = () => {
         })),
       )
   }, [regionData])
-
-  useEffect(() => {
-    if (!schoolLoading && schoolYearData.getActiveSchoolYears) {
-      const schoolYearsArray: Array<DropDownItem> = []
-      schoolYearData.getActiveSchoolYears
-        .filter((item) => moment(item.date_begin).format('YYYY') >= moment().format('YYYY'))
-        .map(
-          (item: {
-            date_begin: string
-            date_end: string
-            school_year_id: string
-            midyear_application: number
-            midyear_application_open: string
-            midyear_application_close: string
-          }): void => {
-            schoolYearsArray.push({
-              label: `${moment(item.date_begin).format('YYYY')} - ${moment(item.date_end).format('YY')}`,
-              value: item.school_year_id,
-            })
-
-            if (
-              item &&
-              item.midyear_application === 1 &&
-              moment().isAfter(item?.midyear_application_open) &&
-              moment().isBefore(item?.midyear_application_close)
-            ) {
-              schoolYearsArray.push({
-                label: `${moment(item.date_begin).format('YYYY')} - ${moment(item.date_end).format(
-                  'YY',
-                )} Mid-year Program`,
-                value: `${item.school_year_id}-mid`,
-              })
-            }
-          },
-        )
-      setSchoolYears(schoolYearsArray.sort((a, b) => (a.label > b.label ? 1 : -1)))
-      setSchoolYearsData(schoolYearData.getActiveSchoolYears)
-    }
-  }, [regionId, schoolYearData])
 
   const submitApplication = async (values) => {
     const submitStudents = values.students?.map((s) => {

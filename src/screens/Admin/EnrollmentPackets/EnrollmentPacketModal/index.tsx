@@ -172,6 +172,13 @@ export const EnrollmentPacketModal: React.FC<EnrollmentPacketModalProps> = ({ ha
                 if (q.type === QUESTION_TYPE.CALENDAR) {
                   temp[q.slug] = moment(packet.student.parent.person[fieldName]).format('YYYY-MM-DD')
                 }
+              } else if (q.slug.includes('meta_')) {
+                const fieldName = q.slug
+                const metaJSON = JSON.parse(packet.meta)
+                temp[q.slug] = (metaJSON && metaJSON[fieldName]) || ''
+                if (q.type === QUESTION_TYPE.CALENDAR) {
+                  temp[q.slug] = moment((metaJSON && metaJSON[fieldName]) || null).format('YYYY-MM-DD')
+                }
               }
             } else {
               const fieldName = q.slug

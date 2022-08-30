@@ -16,7 +16,11 @@ export const dropdownClassess = {
   },
   borderNone: {
     color: 'blue',
+    fontWeight: '600',
     border: 'none',
+    '& .MuiSelect-select': {
+      padding: '4px 28px 4px 16px',
+    },
     '& .MuiSvgIcon-root': {
       color: 'blue',
     },

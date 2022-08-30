@@ -35,6 +35,7 @@ export const Filters: FunctionComponent<FiltersProps> = ({
     variables: {
       regionId: me?.selectedRegionId,
     },
+    skip: !me?.selectedRegionId,
     fetchPolicy: 'network-only',
   })
 

@@ -1,4 +1,5 @@
 export interface ItemCardProps {
+  icon?: string
   title: string
   subTitle: string
   img: string

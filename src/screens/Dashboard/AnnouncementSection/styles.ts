@@ -1,4 +1,4 @@
-export const useStyles = {
+export const announcementSectionClassess = {
   cardBox: {
     display: 'flex',
     flexDirection: 'row',
@@ -7,12 +7,32 @@ export const useStyles = {
     justifyContent: 'space-between',
     marginX: 4,
   },
+  mobileCardBox: {
+    display: 'flex',
+    flexDirection: 'row',
+    textAlign: 'left',
+    marginTop: 2,
+    justifyContent: 'space-between',
+  },
+  mobileHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  mobileIconBtn: { width: '44px', minWidth: '44px', height: '44px' },
   cardAll: {
     display: 'flex',
     flexDirection: 'row',
     textAlign: 'left',
     paddingX: '20px',
     marginTop: 2,
+  },
+  mobileItem: {
+    display: 'flex',
+    flexDirection: 'column',
+    marginTop: '30px',
+    paddingTop: '30px',
+    borderTop: '1px solid #ccc',
   },
   cardItem: {
     display: 'flex',

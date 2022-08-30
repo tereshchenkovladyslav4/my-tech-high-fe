@@ -3,6 +3,7 @@ import { useMutation, useQuery } from '@apollo/client'
 import CloseIcon from '@mui/icons-material/Close'
 import { Box, Button, Card } from '@mui/material'
 import { WithdrawalOption, WithdrawalStatus } from '@mth/enums'
+import { assignStudentToSOEGql } from '@mth/screens/Admin/SiteManagement/services'
 import { saveWithdrawalMutation } from '../../../graphql/mutation/withdrawal'
 import { UserContext } from '../../../providers/UserContext/UserProvider'
 import { BLACK, BUTTON_LINEAR_GRADIENT } from '../../../utils/constants'
@@ -13,7 +14,6 @@ import { ParentProfile } from './ParentProfile/ParentProfile'
 import { DeleteWithdrawal, getParentDetail, updatePersonAddressMutation, UpdateStudentMutation } from './services'
 import { StudentProfile } from './StudentProfile/StudentProfile'
 import { useStyles } from './styles'
-
 type UserProfileProps = {
   handleClose: () => void
   data: unknown
@@ -29,7 +29,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ handleClose, data, set
   const [notes, setNotes] = useState('')
   const [studentPerson, setStudentPerson] = useState<unknown>()
   const [openObserverModal, setOpenObserverModal] = useState(false)
-  const [studentStatus, setStudentStatus] = useState<unknown>({})
+  const [studentStatus, setStudentStatus] = useState({})
   const [selectedParent, setSelectedParent] = useState(0)
   const [selectedStudent, setSelectedStudent] = useState(parseInt(data.student_id))
   const [selectedParentType, setSelectedParentType] = useState('parent')
@@ -42,7 +42,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ handleClose, data, set
     },
     fetchPolicy: 'cache-and-network',
   })
-
+  const [assignStudentToSOE] = useMutation(assignStudentToSOEGql)
   const [updateStudent] = useMutation(UpdateStudentMutation)
   const [createWithdrawal] = useMutation(saveWithdrawalMutation)
   const [deleteWithdrawal] = useMutation(DeleteWithdrawal)
@@ -75,9 +75,23 @@ export const UserProfile: React.FC<UserProfileProps> = ({ handleClose, data, set
       setRequesting(false)
       handleClose(true)
     } else {
+      if (studentStatus.school_partner_id_updated) {
+        await assignStudentToSOE({
+          variables: {
+            assignStudentToSoeInput: {
+              school_partner_id: parseInt(studentStatus.school_partner_id),
+              school_year_id: parseInt(studentStatus.school_year_id),
+              student_ids: [parseInt(studentStatus.student_id)],
+            },
+          },
+        })
+      }
+
       const person: unknown = Object.assign({}, studentPerson)
       delete person.address
       delete person.phone
+      delete person.school_partner_id_updated
+      delete person.school_partner_id
       person.person_id = Number(person.person_id)
       const phone: unknown = Object.assign({}, studentPerson.phone)
       phone.phone_id = Number(phone.phone_id)

@@ -16,6 +16,13 @@ export const EMAIL_VERIFICATION = '/email-verification'
 export const ANNOUNCEMENTS = '/communication/announcements'
 export const CALENDAR = '/calendar'
 export const CURRICULUM = '/curriculum'
+export const CURRICULUM_HOMEROOM_RESOURCES = '/curriculum/homeroom-resources'
+export const CURRICULUM_COURSE_CATALOG = '/curriculum/course-catalog'
+export const CURRICULUM_COURSE_CATALOG_SETTINGS = '/curriculum/course-catalog/settings'
+export const CURRICULUM_COURSE_CATALOG_PERIODS = '/curriculum/course-catalog/periods'
+export const CURRICULUM_COURSE_CATALOG_SUBJECTS = '/curriculum/course-catalog/subjects'
+export const CURRICULUM_COURSE_CATALOG_PROVIDERS = '/curriculum/course-catalog/providers'
+export const CURRICULUM_COURSE_CATALOG_STATE_CODES = '/curriculum/course-catalog/state-codes'
 export const REPORTS = '/reports'
 export const SITEMANAGEMENT = '/site-management'
 export const RECORDS = '/records'
@@ -100,6 +107,8 @@ export const PROVIDERS = ['Alex Math', 'BYU', 'IXL', 'MTH ']
 export const SPED = ['No', 'IEP', '504', 'Exit']
 
 export const GRADES = ['Kindergarten', 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+
+export const GRADE_GROUPS = ['K', '1-8', '9-12']
 
 export const MISSING_INFO_OPTIONS: StandardResponseOption = {
   type: 'MISSING_INFO',

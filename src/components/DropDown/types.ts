@@ -1,4 +1,3 @@
-import { FunctionComponent } from 'react'
 import { Theme } from '@emotion/react'
 import { SxProps } from '@mui/system'
 
@@ -12,7 +11,7 @@ type FormikCustomError = {
   errorMsg: string
 }
 
-type DropDownProps = {
+export type DropDownProps = {
   dropDownItems: DropDownItem[]
   placeholder?: string
   setParentValue: (value: string | number, val: unknown) => void
@@ -30,5 +29,3 @@ type DropDownProps = {
   auto?: boolean
   borderNone?: boolean
 }
-
-export type DropDownTemplateType = FunctionComponent<DropDownProps>

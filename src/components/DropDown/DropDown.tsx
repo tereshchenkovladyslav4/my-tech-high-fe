@@ -3,9 +3,9 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { FormControl, Select, MenuItem, TextField, FormHelperText, Divider } from '@mui/material'
 import { Box, styled } from '@mui/system'
 import { map } from 'lodash'
-import { ERROR_RED, SYSTEM_05 } from '../../utils/constants'
+import { MthColor } from '@mth/enums'
 import { dropdownClassess } from './styles'
-import { DropDownTemplateType } from './types'
+import { DropDownProps } from './types'
 
 const CssTextField = styled(TextField, {
   shouldForwardProp: (props) => props !== 'focusColor',
@@ -29,7 +29,7 @@ const CssTextField = styled(TextField, {
   },
 }))
 
-export const DropDown: DropDownTemplateType = ({
+export const DropDown: React.FC<DropDownProps> = ({
   dropDownItems,
   placeholder,
   setParentValue,
@@ -89,7 +89,7 @@ export const DropDown: DropDownTemplateType = ({
               >
                 {renderDropDownItem}
               </Select>
-              <FormHelperText sx={{ color: '#BD0043' }}>{error?.errorMsg}</FormHelperText>
+              <FormHelperText sx={{ color: MthColor.ERROR_RED }}>{error?.errorMsg}</FormHelperText>
             </FormControl>
           ) : (
             <FormControl fullWidth>
@@ -115,7 +115,7 @@ export const DropDown: DropDownTemplateType = ({
               >
                 {renderDropDownItem}
               </Select>
-              <FormHelperText sx={{ color: '#BD0043' }}>{error?.errorMsg}</FormHelperText>
+              <FormHelperText sx={{ color: MthColor.ERROR_RED }}>{error?.errorMsg}</FormHelperText>
             </FormControl>
           )}
         </>
@@ -127,10 +127,10 @@ export const DropDown: DropDownTemplateType = ({
             value={value || value == 0 ? value : ''}
             onChange={(e) => handleChange(e.target.value)}
             InputLabelProps={{
-              style: { color: alternate && SYSTEM_05 },
+              style: { color: alternate && MthColor.SYSTEM_05 },
             }}
             FormHelperTextProps={{
-              style: { color: ERROR_RED },
+              style: { color: MthColor.ERROR_RED },
             }}
             select // tell TextField to render select
             label={placeholder}

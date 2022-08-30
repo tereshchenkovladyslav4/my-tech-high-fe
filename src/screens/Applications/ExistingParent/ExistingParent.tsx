@@ -17,7 +17,7 @@ import { DropDown } from '@mth/components/DropDown/DropDown'
 import { DropDownItem } from '@mth/components/DropDown/types'
 import { QUESTION_TYPE } from '@mth/components/QuestionItem/QuestionItemProps'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
-import { getActiveSchoolYearsByRegionId } from '@mth/graphql/queries/school-year'
+import { useActiveSchoolYearsByRegionId } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { GRADES, RED } from '../../../utils/constants'
 import { toOrdinalSuffix, isNumber } from '../../../utils/stringHelpers'
@@ -59,12 +59,13 @@ export const ExistingParent: React.FC = () => {
   const matches = useMediaQuery(theme.breakpoints.down('sm'))
 
   const { me, setMe } = useContext(UserContext)
-  const [schoolYears, setSchoolYears] = useState<Array<DropDownItem>>([])
   const [regionId, setRegionId] = useState<string>('')
-  const [grades, setGrades] = useState([])
-  const [schoolYearsData, setSchoolYearsData] = useState([])
+  const [grades, setGrades] = useState<string[]>([])
   const [gradesDropDownItems, setGradesDropDownItems] = useState<Array<DropDownItem>>([])
   const [birthDateCut, setBirthDateCut] = useState<string>('')
+
+  const { schoolYears: schoolYearsData, dropdownItems: schoolYears } = useActiveSchoolYearsByRegionId(+regionId)
+
   const { loading: regionLoading, data: regionData } = useQuery(getRegionByUserId, {
     variables: {
       userId: me?.user_id,
@@ -73,21 +74,13 @@ export const ExistingParent: React.FC = () => {
     fetchPolicy: 'network-only',
   })
 
-  const { loading: schoolLoading, data: schoolYearData } = useQuery(getActiveSchoolYearsByRegionId, {
-    variables: {
-      regionId: regionId,
-    },
-    skip: regionId ? false : true,
-    fetchPolicy: 'network-only',
-  })
-
   const { loading: questionLoading, data: questionData } = useQuery(getQuestionsGql, {
     variables: { input: { region_id: Number(regionId) } },
-    // skip: regionId ? false : true,
     fetchPolicy: 'network-only',
   })
 
   const [questions, setQuestions] = useState<ApplicationQuestion[]>([])
+
   useEffect(() => {
     if (!questionLoading && questionData?.getExistApplicationQuestions) {
       const questionList = questionData.getExistApplicationQuestions
@@ -271,7 +264,7 @@ export const ExistingParent: React.FC = () => {
   }
 
   const parseGrades = () => {
-    const dropDownItems = []
+    const dropDownItems: DropDownItem[] = []
     GRADES.forEach((grade) => {
       if (grades?.includes(grade.toString())) {
         if (typeof grade !== 'string') {
@@ -296,45 +289,6 @@ export const ExistingParent: React.FC = () => {
       setRegionId(regionData?.userRegionByUserId[0]?.region_id)
     }
   }, [me?.user_id, regionData])
-
-  useEffect(() => {
-    if (!schoolLoading && schoolYearData?.getActiveSchoolYears) {
-      const schoolYearsArray: Array<DropDownItem> = []
-      schoolYearData.getActiveSchoolYears
-        .filter((item) => moment(item.date_begin).format('YYYY') >= moment().format('YYYY'))
-        .map(
-          (item: {
-            date_begin: string
-            date_end: string
-            school_year_id: string
-            midyear_application: number
-            midyear_application_open: string
-            midyear_application_close: string
-          }): void => {
-            schoolYearsArray.push({
-              label: `${moment(item.date_begin).format('YYYY')} - ${moment(item.date_end).format('YY')}`,
-              value: item.school_year_id,
-            })
-
-            if (
-              item &&
-              item.midyear_application === 1 &&
-              moment().isAfter(item?.midyear_application_open) &&
-              moment().isBefore(item?.midyear_application_close)
-            ) {
-              schoolYearsArray.push({
-                label: `${moment(item.date_begin).format('YYYY')} - ${moment(item.date_end).format(
-                  'YY',
-                )} Mid-year Program`,
-                value: `${item.school_year_id}-mid`,
-              })
-            }
-          },
-        )
-      setSchoolYears(schoolYearsArray.sort((a, b) => (a.label > b.label ? 1 : -1)))
-      setSchoolYearsData(schoolYearData?.getActiveSchoolYears)
-    }
-  }, [regionId, schoolYearData])
 
   useEffect(() => {
     parseGrades()

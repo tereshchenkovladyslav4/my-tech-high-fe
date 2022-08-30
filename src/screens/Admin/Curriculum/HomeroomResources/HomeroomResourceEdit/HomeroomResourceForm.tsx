@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt'
-import { Avatar, Box, Checkbox, FormControlLabel, Grid, TextField } from '@mui/material'
+import { Avatar, Box, Checkbox, FormControlLabel, Grid, TextField, Tooltip } from '@mui/material'
 import { useFormikContext } from 'formik'
 import { DocumentUploadModal } from '@mth/components/DocumentUploadModal/DocumentUploadModal'
 import { DropDown } from '@mth/components/DropDown/DropDown'
@@ -306,25 +306,37 @@ const HomeroomResourceForm: React.FC<HomeroomResourceFormProps> = ({ schoolYearI
             </Grid>
             <Grid item xs={4}>
               <Box sx={{ marginLeft: 6 }}>
-                <FormControlLabel
-                  sx={{ height: 30, marginTop: 2 }}
-                  control={
-                    <Checkbox
-                      checked={values?.family_resource}
-                      value={values?.family_resource}
-                      onChange={() => {
-                        setFieldValue('family_resource', !values?.family_resource)
-                        setIsChanged(true)
-                      }}
-                    />
+                <Tooltip
+                  title={
+                    values?.resource_limit && values.add_resource_level
+                      ? 'Remove general limit and resource levels to enable feature'
+                      : values.resource_limit
+                      ? 'Remove general limit to enable feature'
+                      : values?.add_resource_level
+                      ? 'Remove resource levels to enable feature'
+                      : ''
                   }
-                  label={
-                    <Paragraph size='large' fontWeight='700' sx={{ marginLeft: '12px' }}>
-                      Family Resource
-                    </Paragraph>
-                  }
-                  disabled={!!values.resource_limit || values.add_resource_level}
-                />
+                >
+                  <FormControlLabel
+                    sx={{ height: 30, marginTop: 2 }}
+                    control={
+                      <Checkbox
+                        checked={values?.family_resource}
+                        value={values?.family_resource}
+                        onChange={() => {
+                          setFieldValue('family_resource', !values?.family_resource)
+                          setIsChanged(true)
+                        }}
+                      />
+                    }
+                    label={
+                      <Paragraph size='large' fontWeight='700' sx={{ marginLeft: '12px' }}>
+                        Family Resource
+                      </Paragraph>
+                    }
+                    disabled={!!values.resource_limit || values.add_resource_level}
+                  />
+                </Tooltip>
               </Box>
             </Grid>
           </Grid>

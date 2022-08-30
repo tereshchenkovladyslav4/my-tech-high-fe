@@ -31,7 +31,6 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ page, item, onAction }) => 
       sx={{
         ...resourceCardClasses.card,
         opacity: item.HiddenByStudent ? 0.5 : 1,
-        boxShadow: page === ResourcePage.DETAILS ? 'none' : '',
       }}
       onClick={(e) => actionHandler(e, EventType.CLICK)}
     >
@@ -116,7 +115,7 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ page, item, onAction }) => 
           Waitlist
         </Button>
       )}
-      {(item.RequestStatus === ResourceRequestStatus.ACCEPTED || item.subtitle === ResourceSubtitle.INCLUDED) && (
+      {item.RequestStatus === ResourceRequestStatus.ACCEPTED && (
         <Button variant='contained' sx={resourceCardClasses.primaryButton}>
           Login
         </Button>

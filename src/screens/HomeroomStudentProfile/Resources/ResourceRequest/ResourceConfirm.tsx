@@ -12,14 +12,13 @@ const ResourceConfirm: React.FC<ResourceConfirmProps> = ({ totalPrice, onConfirm
   const { region } = useRegionByRegionId(me?.userRegion && me?.userRegion[0].region_id)
 
   return (
-    <Card sx={{ padding: 4 }}>
+    <Card sx={{ padding: 4, borderRadius: '16px', boxShadow: '0px 0px 48px rgba(0, 0, 0, 0.04)' }}>
       <Box>
         {region?.resource_confirm_details && region.resource_confirm_details.length > 8 && (
           <Subtitle
             sx={{
               textAlign: 'left',
               borderBottom: `solid 1px ${MthColor.LIGHTGRAY}`,
-              maxWidth: '70%',
               mt: 2,
               px: 4,
               pb: '48px',

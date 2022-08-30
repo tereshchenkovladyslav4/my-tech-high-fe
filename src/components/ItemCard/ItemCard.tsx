@@ -18,6 +18,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({
   onClick,
   action,
   hasTitle = false,
+  icon,
 }) => {
   const history = useHistory()
   return (
@@ -44,7 +45,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({
           <CardMedia component='img' src={img} sx={{ height: 240 }} />
           <Box sx={{ width: '100%', position: 'absolute', left: 0, textAlign: 'center', top: '100px', color: 'white' }}>
             <Typography fontSize='40px' component='div' fontWeight='600'>
-              {title}
+              {icon || title}
             </Typography>
           </Box>
         </Box>

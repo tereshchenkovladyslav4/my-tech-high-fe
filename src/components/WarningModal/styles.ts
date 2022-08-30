@@ -1,17 +1,22 @@
+import { makeStyles, Theme } from '@material-ui/core/styles'
 import { BLACK } from '../../utils/constants'
 
-export const useStyles = {
+export const useStyles = makeStyles((theme: Theme) => ({
   modalCard: {
     position: 'absolute' as const,
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: 470,
-    height: 275,
-    bgcolor: 'background.paper',
-    boxShadow: 24,
-    p: 4,
-    borderRadius: 2,
+    width: '470px',
+    [theme.breakpoints.down('xs')]: {
+      width: 'fit-content',
+    },
+    height: '275px',
+    minHeight: '275px',
+    background: 'white',
+    boxShadow: '24px',
+    padding: '32px',
+    borderRadius: '8px',
   },
   header: {
     display: 'flex',
@@ -29,12 +34,12 @@ export const useStyles = {
   },
   errorOutline: {
     background: '#FAFAFA',
-    borderRadius: 1,
+    borderRadius: '1px',
     color: BLACK,
-    marginBottom: 20,
-    marginTop: 30,
-    height: 42,
-    width: 42,
+    marginBottom: '20px',
+    marginTop: '30px',
+    height: '42px !important',
+    width: '42px !important',
   },
   content: {
     display: 'flex',
@@ -44,9 +49,10 @@ export const useStyles = {
     height: '100%',
   },
   button: {
-    borderRadius: 10,
+    borderRadius: '40px !important',
     width: '200px',
-    margin: 4,
+    margin: '32px !important',
+    marginBottom: '8px !important',
     background: '#E7E7E7',
     color: 'black',
     '&:hover': {
@@ -54,12 +60,13 @@ export const useStyles = {
     },
   },
   submit: {
-    borderRadius: 10,
+    borderRadius: '40px !important',
     width: '200px',
-    margin: 4,
+    margin: '32px !important',
+    marginBottom: '8px !important',
     background: 'black',
     '&:hover': {
       color: '#000',
     },
   },
-}
+}))

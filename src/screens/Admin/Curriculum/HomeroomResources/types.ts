@@ -42,11 +42,6 @@ export type HomeroomResource = {
 export type ConfirmationDetails = {
   details?: string
 }
-
-export interface HomeroomResourceProps {
-  backAction?: () => void
-}
-
 export interface HomeroomResourceCardProps {
   item: HomeroomResource
   action: boolean

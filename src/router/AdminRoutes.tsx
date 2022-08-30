@@ -1,5 +1,12 @@
 import React, { FunctionComponent } from 'react'
 import { Route, Switch } from 'react-router-dom'
+import CourseCatalog from '@mth/screens/Admin/Curriculum/CourseCatalog'
+import CourseCatalogPeriods from '@mth/screens/Admin/Curriculum/CourseCatalog/Periods'
+import CourseCatalogProviders from '@mth/screens/Admin/Curriculum/CourseCatalog/Providers'
+import CourseCatalogSettings from '@mth/screens/Admin/Curriculum/CourseCatalog/Settings'
+import CourseCatalogStateCodes from '@mth/screens/Admin/Curriculum/CourseCatalog/StateCodes'
+import CourseCatalogSubjects from '@mth/screens/Admin/Curriculum/CourseCatalog/Subjects'
+import { HomeroomResources } from '@mth/screens/Admin/Curriculum/HomeroomResources/HomeroomResources'
 import { Records } from '@mth/screens/Admin/Records'
 import { Announcements } from '../screens/Admin/Announcements'
 import { Applications } from '../screens/Admin/Applications/Applications'
@@ -32,7 +39,14 @@ import {
   EMAIL_RECORDS,
   SCHOOL_ENROLLMENT,
   CURRICULUM,
+  CURRICULUM_HOMEROOM_RESOURCES,
+  CURRICULUM_COURSE_CATALOG,
   RECORDS,
+  CURRICULUM_COURSE_CATALOG_SETTINGS,
+  CURRICULUM_COURSE_CATALOG_PERIODS,
+  CURRICULUM_COURSE_CATALOG_SUBJECTS,
+  CURRICULUM_COURSE_CATALOG_PROVIDERS,
+  CURRICULUM_COURSE_CATALOG_STATE_CODES,
 } from '../utils/constants'
 
 export const AdminRoutes: FunctionComponent = () => {
@@ -71,8 +85,29 @@ export const AdminRoutes: FunctionComponent = () => {
       <Route path={SITE_MANAGEMENT}>
         <SiteManagement />
       </Route>
-      <Route path={CURRICULUM}>
+      <Route exact path={CURRICULUM}>
         <Curriculum />
+      </Route>
+      <Route path={CURRICULUM_HOMEROOM_RESOURCES}>
+        <HomeroomResources />
+      </Route>
+      <Route exact path={CURRICULUM_COURSE_CATALOG}>
+        <CourseCatalog />
+      </Route>
+      <Route path={CURRICULUM_COURSE_CATALOG_SETTINGS}>
+        <CourseCatalogSettings />
+      </Route>
+      <Route path={CURRICULUM_COURSE_CATALOG_PERIODS}>
+        <CourseCatalogPeriods />
+      </Route>
+      <Route path={CURRICULUM_COURSE_CATALOG_SUBJECTS}>
+        <CourseCatalogSubjects />
+      </Route>
+      <Route path={CURRICULUM_COURSE_CATALOG_PROVIDERS}>
+        <CourseCatalogProviders />
+      </Route>
+      <Route path={CURRICULUM_COURSE_CATALOG_STATE_CODES}>
+        <CourseCatalogStateCodes />
       </Route>
       <Route path={USERS}>
         <Users />

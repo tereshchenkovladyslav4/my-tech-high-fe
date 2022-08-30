@@ -1,5 +1,5 @@
 import React, { useContext } from 'react'
-import { useMutation, useMutation } from '@apollo/client'
+import { useMutation } from '@apollo/client'
 import { Box, Button } from '@mui/material'
 import { map } from 'lodash'
 import BGSVG from '../../../assets/AnnouncementBG.svg'
@@ -12,16 +12,15 @@ import { UserContext } from '../../../providers/UserContext/UserProvider'
 import { SYSTEM_06 } from '../../../utils/constants'
 import { deleteUserAnnouncementByUserId, markRead } from '../services'
 import { AnnouncementItem } from './components/AnnouncementItem'
-import { useStyles } from './styles'
-import { AnnouncementTemplateType } from './types'
+import { announcementClassess } from './styles'
+import { AnnnouncementProps } from './types'
 
-const Announcements: AnnouncementTemplateType = ({
+const Announcements: React.FC<AnnnouncementProps> = ({
   announcements,
   setAnnouncements,
   setSelectedAnnouncement,
   setSectionName,
 }) => {
-  const classes = useStyles
   const { me } = useContext(UserContext)
 
   const [markReadById, {}] = useMutation(markRead)
@@ -97,7 +96,7 @@ const Announcements: AnnouncementTemplateType = ({
         {announcements?.length > 0 ? (
           <Box sx={{ position: 'relative' }}>
             {renderAnnouncements()}
-            <Box sx={classes.clearAll} onClick={() => onDeleteAll()}>
+            <Box sx={announcementClassess.clearAll} onClick={() => onDeleteAll()}>
               <Paragraph textAlign='center' size='medium' color={SYSTEM_06} sx={{ textDecoration: 'underline' }}>
                 Clear All
               </Paragraph>

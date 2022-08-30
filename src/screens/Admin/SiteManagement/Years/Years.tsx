@@ -2,9 +2,11 @@ import React, { useState, useContext } from 'react'
 import { useMutation } from '@apollo/client'
 import { Box } from '@mui/material'
 import { sortBy, toNumber } from 'lodash'
+import moment from 'moment'
 import { Prompt } from 'react-router-dom'
-import { UserContext } from '../../../../providers/UserContext/UserProvider'
-import { DropDownItem } from '../components/DropDown/types'
+import { DropDownItem } from '@mth/components/DropDown/types'
+import { MYSQL_DATE_FORMAT } from '@mth/constants'
+import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { PageHeader } from '../components/PageHeader'
 import { createSchoolYearMutation, updateSchoolYearMutation } from '../services'
 import { useStyles } from '../styles'
@@ -19,8 +21,8 @@ const Years: React.FC = () => {
   const [isChanged, setIsChanged] = useState<boolean>(false)
   const [addSchoolYearDialogOpen, setAddSchoolYearDialogOpen] = useState<boolean>(false)
   const [schoolYears, setSchoolYears] = useState<SchoolYearType[]>([])
-  const [selectedYearId, setSelectedYearId] = useState<string>('')
-  const [oldSelectedYearId, setOldSelectedYearId] = useState<string>('')
+  const [selectedYearId, setSelectedYearId] = useState<number>(0)
+  const [oldSelectedYearId, setOldSelectedYearId] = useState<number>(0)
   const [cloneSelectedYearId, setCloneSelectedYearId] = useState<number | undefined>(undefined)
   const [schoolYearItem, setSchoolYearItem] = useState<SchoolYearItem | undefined>(undefined)
   const [applicationItem, setApplicationItem] = useState<SchoolYearItem | undefined>(undefined)
@@ -29,45 +31,41 @@ const Years: React.FC = () => {
   const [submitSave] = useMutation(updateSchoolYearMutation)
   const [submitCreate, {}] = useMutation(createSchoolYearMutation)
 
-  const convertLocalDateToUTCDate = (date: Date | undefined) => {
-    return new Date(date || '').toISOString()
-  }
-
   const handleClickSave = async () => {
-    if (selectedYearId && selectedYearId != 'add') {
+    if (selectedYearId) {
       const submitedResponse = await submitSave({
         variables: {
           updateSchoolYearInput: {
-            school_year_id: parseInt(selectedYearId),
-            date_begin: convertLocalDateToUTCDate(schoolYearItem?.open),
-            date_end: convertLocalDateToUTCDate(schoolYearItem?.close),
-            date_reg_open: convertLocalDateToUTCDate(applicationItem?.open),
-            date_reg_close: convertLocalDateToUTCDate(applicationItem?.close),
+            school_year_id: selectedYearId,
+            date_begin: schoolYearItem?.open,
+            date_end: schoolYearItem?.close,
+            date_reg_open: applicationItem?.open,
+            date_reg_close: applicationItem?.close,
             midyear_application: midYearItem?.status ? 1 : 0,
-            midyear_application_open: convertLocalDateToUTCDate(midYearItem?.open),
-            midyear_application_close: convertLocalDateToUTCDate(midYearItem?.close),
+            midyear_application_open: midYearItem?.open,
+            midyear_application_close: midYearItem?.close,
           },
         },
       })
-      setSelectedYearId(submitedResponse?.data?.updateSchoolYear.school_year_id)
+      setSelectedYearId(+submitedResponse?.data?.updateSchoolYear.school_year_id)
     } else {
       const submittedCreateResponse = await submitCreate({
         variables: {
           createSchoolYearInput: {
             RegionId: me?.selectedRegionId,
-            date_begin: convertLocalDateToUTCDate(schoolYearItem?.open),
-            date_end: convertLocalDateToUTCDate(schoolYearItem?.close),
-            date_reg_open: convertLocalDateToUTCDate(applicationItem?.open),
-            date_reg_close: convertLocalDateToUTCDate(applicationItem?.close),
+            date_begin: schoolYearItem?.open,
+            date_end: schoolYearItem?.close,
+            date_reg_open: applicationItem?.open,
+            date_reg_close: applicationItem?.close,
             midyear_application: midYearItem?.status ? 1 : 0,
-            midyear_application_open: convertLocalDateToUTCDate(midYearItem?.open),
-            midyear_application_close: convertLocalDateToUTCDate(midYearItem?.close),
+            midyear_application_open: midYearItem?.open,
+            midyear_application_close: midYearItem?.close,
             cloneSchoolYearId: cloneSelectedYearId || null,
           },
           previousYearId: toNumber(sortBy(schoolYears, 'schoolYearClose').at(-1)?.schoolYearId),
         },
       })
-      setSelectedYearId(submittedCreateResponse?.data?.createSchoolYear.school_year_id)
+      setSelectedYearId(+submittedCreateResponse?.data?.createSchoolYear.school_year_id)
     }
     if (me) setMe({ ...me, selectedRegionId: me.selectedRegionId })
     setIsChanged(false)
@@ -88,29 +86,17 @@ const Years: React.FC = () => {
       schoolYears.map((schoolYear) => {
         if (schoolYear.schoolYearId == parseInt(val)) {
           setCloneSelectedYearId(Number(schoolYear.schoolYearId))
-          let open = new Date(schoolYear.schoolYearOpen)
-          open.setFullYear(open.getFullYear() + 1)
-          let close = new Date(schoolYear.schoolYearClose)
-          close.setFullYear(close.getFullYear() + 1)
           setSchoolYearItem({
-            open: open,
-            close: close,
+            open: moment(schoolYear.schoolYearOpen).add(1, 'years').format(MYSQL_DATE_FORMAT),
+            close: moment(schoolYear.schoolYearClose).add(1, 'years').format(MYSQL_DATE_FORMAT),
           })
-          open = new Date(schoolYear.applicationsOpen)
-          open.setFullYear(open.getFullYear() + 1)
-          close = new Date(schoolYear.applicationsClose)
-          close.setFullYear(close.getFullYear() + 1)
           setApplicationItem({
-            open: open,
-            close: close,
+            open: moment(schoolYear.applicationsOpen).add(1, 'years').format(MYSQL_DATE_FORMAT),
+            close: moment(schoolYear.applicationsClose).add(1, 'years').format(MYSQL_DATE_FORMAT),
           })
-          open = new Date(schoolYear.midYearOpen)
-          open.setFullYear(open.getFullYear() + 1)
-          close = new Date(schoolYear.midYearClose)
-          close.setFullYear(close.getFullYear() + 1)
           setMidYearItem({
-            open: open,
-            close: close,
+            open: moment(schoolYear.midYearOpen).add(1, 'years').format(MYSQL_DATE_FORMAT),
+            close: moment(schoolYear.midYearClose).add(1, 'years').format(MYSQL_DATE_FORMAT),
             status: schoolYear.midYearStatus,
           })
         }

@@ -9,7 +9,7 @@ import { useHistory } from 'react-router-dom'
 import { Paragraph } from '../../../../components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
 import { UserContext } from '../../../../providers/UserContext/UserProvider'
-import { BUTTON_LINEAR_GRADIENT, MTHBLUE, RED_GRADIENT, GRADES } from '../../../../utils/constants'
+import { BUTTON_LINEAR_GRADIENT, MTHBLUE, RED_GRADIENT, GRADES, GRADE_GROUPS } from '../../../../utils/constants'
 import { toOrdinalSuffix } from '../../../../utils/stringHelpers'
 import { getActiveSchoolYearsByRegionId } from '../../../Applications/NewParent/service'
 import { FiltersProps, SchoolYearVM } from '../type'
@@ -19,6 +19,8 @@ export const Filters: FunctionComponent<FiltersProps> = ({ filter, setFilter }) 
   const history = useHistory()
   const [expand, setExpand] = useState<boolean>(false)
   const [grades, setGrades] = useState<string[]>([])
+  const [availableGrades, setAvailableGrades] = useState<(string | number)[]>([])
+  const [availableGradeGroup, setAvailableGradeGroup] = useState<boolean>(true)
   const [schoolYear, setSchoolYear] = useState<string[]>([])
   const [schoolYears, setSchoolYears] = useState<SchoolYearVM[]>([])
   const [specialEd, setSpecialEd] = useState<string[]>([])
@@ -95,7 +97,8 @@ export const Filters: FunctionComponent<FiltersProps> = ({ filter, setFilter }) 
   }
   const handleChangeAll = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.checked) {
-      setGrades([...['all'], ...GRADES.map((item) => item.toString())])
+      if (schoolYear.length == 0) setGrades([...['all'], ...GRADES.map((item) => item.toString())])
+      else setGrades([...['all'], ...availableGrades.map((item) => item.toString())])
     } else {
       setGrades([])
     }
@@ -137,8 +140,49 @@ export const Filters: FunctionComponent<FiltersProps> = ({ filter, setFilter }) 
     const state = {}
     history.replace({ ...history.location, state })
   }
+
+  useEffect(() => {
+    const additionalGrades: (string | number)[] = []
+    schoolYears.map((item) => {
+      if (schoolYear.includes(item.school_year_id) || schoolYear.includes(item.school_year_id + '-midyear')) {
+        if (item.grades != null) {
+          const eachGrades = item.grades.split(',')
+          eachGrades.map((i) => {
+            if (isNaN(Number(i))) {
+              if (!additionalGrades.includes(i)) additionalGrades.push(i)
+            } else {
+              if (!additionalGrades.includes(Number(i))) additionalGrades.push(Number(i))
+            }
+          })
+        }
+      }
+    })
+    setAvailableGrades(
+      additionalGrades.sort((n1, n2) => {
+        if (typeof n1 == 'string') return -1
+        if (typeof n2 == 'string') return 1
+        return n1 - n2
+      }),
+    )
+  }, [schoolYear])
+
+  useEffect(() => {
+    if (!availableGrades.includes('Kindergarten')) {
+      setAvailableGradeGroup(false)
+      return
+    }
+
+    const checker = (arr: (number | string)[], target: number[]) => target.every((v) => arr.includes(v))
+
+    if (!checker(availableGrades, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])) {
+      setAvailableGradeGroup(false)
+      return
+    }
+    setAvailableGradeGroup(true)
+  }, [availableGrades])
+
   const renderGrades = () =>
-    map(GRADES, (grade, index) => {
+    map(schoolYear.length == 0 ? GRADES : availableGrades, (grade, index) => {
       if (typeof grade !== 'string') {
         return (
           <FormControlLabel
@@ -170,6 +214,43 @@ export const Filters: FunctionComponent<FiltersProps> = ({ filter, setFilter }) 
       }
     })
 
+  const renderEachGradeGroups = () =>
+    map(GRADE_GROUPS, (grade, index) => {
+      return (
+        <FormControlLabel
+          key={index}
+          sx={{ height: 30 }}
+          control={<Checkbox value={grade} checked={grades.includes(grade)} onChange={handleChangeGrades} />}
+          label={
+            <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
+              {grade == 'K' ? 'Kindergarten' : grade}
+            </Paragraph>
+          }
+        />
+      )
+    })
+
+  const renderGradeGroups = () => {
+    if (schoolYear.length != 0 && availableGradeGroup == false) {
+      return <></>
+    }
+    return (
+      <Grid item xs={3}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
+          <Paragraph size='large' fontWeight='700'>
+            Grade Level
+          </Paragraph>
+          {renderEachGradeGroups()}
+        </Box>
+      </Grid>
+    )
+  }
+
   const Filters = () => (
     <Grid container sx={{ textAlign: 'left', marginY: '12px' }}>
       <Grid item container xs={9}>
@@ -195,45 +276,7 @@ export const Filters: FunctionComponent<FiltersProps> = ({ filter, setFilter }) 
             {renderGrades()}
           </Box>
         </Grid>
-        <Grid item xs={3}>
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-            }}
-          >
-            <Paragraph size='large' fontWeight='700'>
-              Grade Level
-            </Paragraph>
-            <FormControlLabel
-              sx={{ height: 30 }}
-              control={<Checkbox value='K' checked={grades.includes('K')} onChange={handleChangeGrades} />}
-              label={
-                <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
-                  Kindergarten
-                </Paragraph>
-              }
-            />
-            <FormControlLabel
-              sx={{ height: 30 }}
-              control={<Checkbox value='1-8' checked={grades.includes('1-8')} onChange={handleChangeGrades} />}
-              label={
-                <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
-                  1-8
-                </Paragraph>
-              }
-            />
-            <FormControlLabel
-              sx={{ height: 30 }}
-              control={<Checkbox value='9-12' checked={grades.includes('9-12')} onChange={handleChangeGrades} />}
-              label={
-                <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
-                  9-12
-                </Paragraph>
-              }
-            />
-          </Box>
-        </Grid>
+        {renderGradeGroups()}
         <Grid item xs={3}>
           <Box
             sx={{
@@ -506,6 +549,7 @@ export const Filters: FunctionComponent<FiltersProps> = ({ filter, setFilter }) 
 
   useEffect(() => {
     if (!schoolYearLoading && schoolYearData.getSchoolYearsByRegionId) {
+      setSchoolYear([])
       setSchoolYears(schoolYearData.getSchoolYearsByRegionId)
     }
   }, [schoolYearData])

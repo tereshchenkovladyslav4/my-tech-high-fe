@@ -1,57 +1,49 @@
-import React, { FunctionComponent, ReactElement, useContext } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
-import { Avatar, AvatarGroup, Button, Card, Grid, ListItemText } from '@mui/material'
+import { Button, Card, Grid, ListItemText, Typography } from '@mui/material'
 import { Box } from '@mui/system'
-import { Subtitle } from '../../../components/Typography/Subtitle/Subtitle'
-import { UserContext } from '../../../providers/UserContext/UserProvider'
-import { Person } from '../../HomeroomStudentProfile/Student/types'
-import { useStyles } from '../Announcements/styles'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { UserContext } from '@mth/providers/UserContext/UserProvider'
+import { getWindowDimension } from '@mth/utils'
+import { announcementClassess } from '../Announcements/styles'
+import { avatarGroup } from '../AnnouncementSection/AnnouncementSection'
 import { ReadMoreSectionProps } from './types'
 
-const ReadMoreSection: FunctionComponent<ReadMoreSectionProps> = ({ announcement, setSectionName }) => {
-  const classes = useStyles
+const ReadMoreSection: React.FC<ReadMoreSectionProps> = ({ announcement, setSectionName }) => {
   const { me } = useContext(UserContext)
   const students = me?.students
-  const getProfilePhoto = (person: Person) => {
-    if (!person.photo) return 'image'
+  const [windowDimensions, setWindowDimensions] = useState<{ width: number; height: number }>(getWindowDimension())
 
-    const s3URL = 'https://infocenter-v2-dev.s3.us-west-2.amazonaws.com/'
-    return s3URL + person.photo
-  }
+  useEffect(() => {
+    function handleResize() {
+      setWindowDimensions(getWindowDimension())
+    }
 
-  const innerHtml = (value: string) => {
-    return { __html: value }
-  }
-
-  const avatarGroup = (gradeFilter: string): ReactElement => {
-    const grades = JSON.parse(gradeFilter)
-    return (
-      <AvatarGroup max={5} spacing={0}>
-        {students &&
-          students.map((student): ReactElement | undefined => {
-            if (
-              student?.grade_levels &&
-              grades.includes(
-                student?.grade_levels[0].grade_level == 'Kin' ? 'Kindergarten' : student?.grade_levels[0].grade_level,
-              )
-            ) {
-              return <Avatar alt={student.person.preferred_first_name} src={getProfilePhoto(student.person)} />
-            } else {
-              return undefined
-            }
-          })}
-      </AvatarGroup>
-    )
-  }
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   return (
-    <Box display='flex' flexDirection='row' textAlign='left' marginTop={2}>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'row',
+        textAlign: 'left',
+        marginTop: 2,
+        backgroundColor: windowDimensions.width > 600 ? '' : '#FAFAFA',
+        mt: windowDimensions.width > 600 ? '20px' : '-10px',
+      }}
+    >
       <Grid container spacing={2} justifyContent='center'>
         <Grid item xs={11}>
           <Box display='flex' flexDirection='row' textAlign='left' marginTop={2}></Box>
         </Grid>
         <Grid item xs={11}>
-          <Card>
+          <Card
+            sx={{
+              marginBottom: '60vh',
+            }}
+          >
             <Box
               display='flex'
               flexDirection='row'
@@ -71,12 +63,18 @@ const ReadMoreSection: FunctionComponent<ReadMoreSectionProps> = ({ announcement
                 </Box>
               </Box>
             </Box>
-            <Box sx={classes.readMoreSection}>
+            <Box sx={announcementClassess.readMoreSection}>
               <ListItemText secondary={announcement?.date} />
             </Box>
-            <Box sx={classes.readMoreSection}>{announcement?.grades && avatarGroup(announcement?.grades)}</Box>
-            <Box sx={classes.readMoreSection}>
-              <div dangerouslySetInnerHTML={innerHtml(announcement?.body || '')}></div>
+            <Box sx={announcementClassess.readMoreSection}>
+              {announcement?.grades && avatarGroup(announcement?.grades, students)}
+            </Box>
+            <Box sx={announcementClassess.readMoreSection}>
+              <Typography
+                component={'span'}
+                variant={'body2'}
+                dangerouslySetInnerHTML={{ __html: announcement?.body || '' }}
+              />
             </Box>
           </Card>
         </Grid>

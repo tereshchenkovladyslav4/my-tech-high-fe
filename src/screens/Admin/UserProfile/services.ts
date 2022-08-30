@@ -137,6 +137,10 @@ export const getStudentDetail = gql`
       grade_levels {
         grade_level
       }
+      currentSoe {
+        school_partner_id
+        school_year_id
+      }
       packets {
         student_id
         packet_id
@@ -214,5 +218,26 @@ export const UpdateStudentMutation = gql`
 export const DeleteWithdrawal = gql`
   mutation DeleteWithdrawal($studentId: Int!) {
     deleteWithdrawal(student_id: $studentId)
+  }
+`
+export const getSchoolYearsByRegionId = gql`
+  query Region($regionId: ID!) {
+    region(id: $regionId) {
+      SchoolYears {
+        school_year_id
+        date_begin
+        date_end
+        grades
+        birth_date_cut
+        special_ed
+        special_ed_options
+        enrollment_packet
+        date_reg_close
+        date_reg_open
+        midyear_application
+        midyear_application_close
+        midyear_application_open
+      }
+    }
   }
 `

@@ -1,8 +1,20 @@
-import React, { FunctionComponent, useEffect, useState } from 'react'
+import React, { FunctionComponent, useEffect, useState, useContext, useMemo } from 'react'
 import { useQuery } from '@apollo/client'
 import { makeStyles } from '@material-ui/styles'
 import { KeyboardArrowDown } from '@mui/icons-material'
-import { Avatar, Button, Checkbox, FormControlLabel, Grid, TextField, Select, MenuItem } from '@mui/material'
+import {
+  Avatar,
+  Button,
+  Checkbox,
+  FormControlLabel,
+  Grid,
+  TextField,
+  Select,
+  MenuItem,
+  RadioGroup,
+  Radio,
+  Typography,
+} from '@mui/material'
 import { Box } from '@mui/system'
 import moment from 'moment'
 import { StudentType } from '@mth/screens/HomeroomStudentProfile/Student/types'
@@ -13,10 +25,12 @@ import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
 import { Title } from '../../../../components/Typography/Title/Title'
 import { WarningModal } from '../../../../components/WarningModal/Warning'
 import { getWithdrawalStatusQuery } from '../../../../graphql/queries/withdrawal'
+import { UserContext } from '../../../../providers/UserContext/UserProvider'
 import { BUTTON_LINEAR_GRADIENT, MTHBLUE } from '../../../../utils/constants'
 import { STATES_WITH_ABBREVIATION } from '../../../../utils/states'
 import { ProfilePacketModal } from '../../EnrollmentPackets/EnrollmentPacketModal/ProfilePacketModal'
-import { getStudentDetail } from '../services'
+import { GetSchoolsPartner } from '../../SchoolOfEnrollment/services'
+import { getStudentDetail, getSchoolYearsByRegionId } from '../services'
 import { StudentFilters } from './components/StudentFilters'
 
 type StudentProfileProps = {
@@ -67,14 +81,53 @@ export const StudentProfile: FunctionComponent<StudentProfileProps> = ({
   applicationState,
   setIsChanged,
 }) => {
+  const { me } = useContext(UserContext)
   const classes = selectStyles()
   const [originStudentStatus, setOriginStudentStatus] = useState({})
+
   const { data: currentUserData, refetch } = useQuery(getStudentDetail, {
     variables: {
       student_id: studentId,
     },
     fetchPolicy: 'cache-and-network',
   })
+  const { data: regionData } = useQuery(getSchoolYearsByRegionId, {
+    variables: {
+      regionId: me?.selectedRegionId,
+    },
+    fetchPolicy: 'cache-and-network',
+  })
+
+  const selectedYearId = useMemo(() => {
+    return currentUserData?.student?.applications?.[0]?.school_year_id
+  }, [currentUserData])
+
+  const { data: schoolPartnerData } = useQuery(GetSchoolsPartner, {
+    variables: {
+      schoolPartnerArgs: {
+        region_id: me?.selectedRegionId,
+        school_year_id: selectedYearId,
+        sort: {
+          column: 'name',
+          direction: 'ASC',
+        },
+      },
+    },
+    skip: !selectedYearId,
+    fetchPolicy: 'network-only',
+  })
+
+  const SoEitems = useMemo(() => {
+    if (schoolPartnerData?.getSchoolsOfEnrollmentByRegion?.length) {
+      return schoolPartnerData.getSchoolsOfEnrollmentByRegion
+        .filter((el) => !!el.active)
+        .map((item) => ({
+          value: item.school_partner_id,
+          label: item.name,
+          abb: item.abbreviation,
+        }))
+    } else return []
+  }, [schoolPartnerData])
 
   const [withdrawalStatus, setWithdrawalStatus] = useState('')
   //  Load withdrawal status from database
@@ -117,6 +170,10 @@ export const StudentProfile: FunctionComponent<StudentProfileProps> = ({
   const [canMessage, setCanMessage] = useState(false)
   const [showPacketModal, setShowPacketModal] = useState(false)
   const [packetID, setPacketID] = useState(0)
+  const [tempSoE, setTempSoE] = useState('')
+  const [assignOrTransfer, setAssignOrTransfer] = useState('assign')
+  const [modalAssign, setModalAssign] = useState(false)
+  const [schoolPartnerId, setSchoolPartnerId] = useState('')
 
   const handlePacket = () => {
     if (packets.length <= 0) return
@@ -153,6 +210,7 @@ export const StudentProfile: FunctionComponent<StudentProfileProps> = ({
   useEffect(() => {
     setStudentPerson(userInfo)
   }, [userInfo])
+
   useEffect(() => {
     if (currentUserData) {
       const stateSelected = currentUserData.student.person.address.state || applicationState
@@ -188,6 +246,8 @@ export const StudentProfile: FunctionComponent<StudentProfileProps> = ({
         // grade_level: currentUserData.student.status.length && currentUserData.student.status[0].grade_level,
         school_year_id:
           currentUserData.student.applications.length && currentUserData.student.applications[0].school_year_id,
+        school_partner_id: currentUserData.student?.currentSoe?.[0]?.school_partner_id,
+        school_partner_id_updated: false,
       })
       setOriginStudentStatus({
         status: currentUserData?.student?.status?.length && currentUserData.student.status[0].status,
@@ -201,6 +261,59 @@ export const StudentProfile: FunctionComponent<StudentProfileProps> = ({
   useEffect(() => {
     refetch()
   }, [studentId])
+
+  const currentSoE = useMemo(() => {
+    let currentSoE = false
+    if (selectedYearId && currentUserData.student.currentSoe?.length) {
+      currentSoE = currentUserData.student.currentSoe.find((soe) => soe.school_year_id == selectedYearId)
+      if (currentSoE) setSchoolPartnerId(currentSoE.school_partner_id)
+    }
+    return currentSoE?.school_partner_id
+  }, [selectedYearId])
+
+  const previousYearId = useMemo(() => {
+    let yyyy = false
+    const shoolYears = regionData?.region?.SchoolYears || []
+    if (selectedYearId && shoolYears.length) {
+      const yIndex = shoolYears.findIndex((yy) => yy.school_year_id == selectedYearId)
+      if (yIndex > 0) yyyy = shoolYears[yIndex - 1]
+    }
+    return yyyy.school_year_id
+  }, [regionData, selectedYearId])
+
+  const previousSoE = useMemo(
+    () => currentUserData?.student?.currentSoe?.find((soe) => soe.school_year_id == previousYearId),
+    [currentUserData, previousYearId],
+  )
+
+  const setSOE = (school_partner_id) => {
+    setSchoolPartnerId(school_partner_id)
+    const school_partner = { school_partner_id, school_partner_id_updated: false }
+    if (school_partner_id != currentSoE) {
+      school_partner.school_partner_id_updated = true
+    }
+    setStudentStatus({
+      ...studentStatus,
+      ...school_partner,
+    })
+  }
+  const handleChangeSoE = (e) => {
+    if (!currentSoE) {
+      setSOE(e.target.value)
+    } else {
+      setTempSoE(e.target.value)
+      setModalAssign(true)
+    }
+  }
+  const handleAssignOrTransfer = async () => {
+    if (assignOrTransfer === 'assign' || !currentSoE) {
+      setSOE(tempSoE)
+      setModalAssign(false)
+    } else if (currentSoE && previousSoE) {
+      // create a transfer form with last year's SoE
+      setModalAssign(false)
+    }
+  }
   return (
     <Box
       sx={{
@@ -302,9 +415,14 @@ export const StudentProfile: FunctionComponent<StudentProfileProps> = ({
                 IconComponent={KeyboardArrowDown}
                 className={classes.select}
                 sx={{ color: '#cccccc', fontWeight: '700' }}
-                value={'Unassigned'}
+                value={schoolPartnerId}
+                onChange={handleChangeSoE}
               >
-                <MenuItem value='Unassigned'>Unassigned</MenuItem>
+                {SoEitems.map((el) => (
+                  <MenuItem value={el.value} key={el.value}>
+                    {el.label}
+                  </MenuItem>
+                ))}
               </Select>
             </Box>
           </Box>
@@ -665,6 +783,50 @@ export const StudentProfile: FunctionComponent<StudentProfileProps> = ({
           packet_id={packetID}
           refetch={() => refetch()}
         />
+      )}
+      {modalAssign && (
+        <WarningModal
+          handleModem={() => setModalAssign(false)}
+          title={'School of Enrollment'}
+          subtitle=''
+          btntitle='Assign'
+          canceltitle='Cancel'
+          handleSubmit={() => handleAssignOrTransfer()}
+        >
+          {currentSoE && previousSoE && (
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                width: '100%',
+              }}
+            >
+              <Typography sx={{ marginBottom: '10px' }}>How would you like to proceed with the SoE change?</Typography>
+              <RadioGroup
+                name='assignOrTransfer'
+                value={assignOrTransfer}
+                onChange={(e) => setAssignOrTransfer(e.target.value)}
+              >
+                <FormControlLabel value='assign' control={<Radio />} label=' Assign new SoE' />
+                <FormControlLabel
+                  value='transfer'
+                  control={<Radio />}
+                  label=' Create a transfer form from previous SoE'
+                />
+              </RadioGroup>
+            </Box>
+          )}
+          {!currentSoE && (
+            <Typography
+              sx={{
+                marginBottom: '10px',
+                width: '100%',
+              }}
+            >
+              Are you sure you want to assign this student to an SoE?
+            </Typography>
+          )}
+        </WarningModal>
       )}
     </Box>
   )

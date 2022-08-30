@@ -8,18 +8,18 @@ type YearNodeProps = {
 export type YearNodeTemplateType = FunctionComponent<YearNodeProps>
 
 export type SchoolYearItem = {
-  open: Date | undefined
-  close: Date | undefined
+  open: string | undefined
+  close: string | undefined
   status?: boolean
 }
 
 export type SchoolYearType = {
   schoolYearId: number
-  schoolYearOpen: Date
-  schoolYearClose: Date
-  applicationsOpen: Date
-  applicationsClose: Date
-  midYearOpen: Date
-  midYearClose: Date
+  schoolYearOpen: string
+  schoolYearClose: string
+  applicationsOpen: string
+  applicationsClose: string
+  midYearOpen: string
+  midYearClose: string
   midYearStatus: boolean
 }

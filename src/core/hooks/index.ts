@@ -1,3 +1,4 @@
+export * from './useActiveSchoolYearsByRegionId'
 export * from './useCurrentGradeAndProgram'
 export * from './useCurrentSchoolYearByRegionId'
 export * from './useEventsByRegionIdAndFilterItem'

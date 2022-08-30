@@ -6,6 +6,7 @@ export const useStyles = {
     minWidth: 260,
     bgcolor: '#fff',
     height: '100vh',
+    boxShadow: '0px 0px 36px rgba(0, 0, 0, 0.04)',
   },
   myTechHigh: {
     height: 75,

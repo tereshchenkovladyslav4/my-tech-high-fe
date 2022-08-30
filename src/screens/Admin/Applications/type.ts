@@ -34,4 +34,5 @@ export type SchoolYearVM = {
   midyear_application: boolean
   midyear_application_open: string
   midyear_application_close: string
+  grades: string
 }

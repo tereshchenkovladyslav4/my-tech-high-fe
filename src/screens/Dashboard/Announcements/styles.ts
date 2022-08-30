@@ -1,4 +1,4 @@
-export const useStyles = {
+export const announcementClassess = {
   card: {
     marginRight: 25,
     width: 400,

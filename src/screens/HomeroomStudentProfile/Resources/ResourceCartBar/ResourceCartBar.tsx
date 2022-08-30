@@ -10,10 +10,18 @@ const ResourceCartBar: React.FC<ResourceCartBarProps> = ({ resourcesInCart, setP
   const MAX_TITLE_LENGTH = 3
 
   return (
-    <Card sx={{ padding: 4, marginTop: 4, marginX: 4 }}>
+    <Card
+      sx={{
+        padding: 4,
+        marginTop: 4,
+        marginX: 4,
+        borderRadius: '16px',
+        boxShadow: '0px 0px 48px rgba(0, 0, 0, 0.04)',
+      }}
+    >
       <Box display='flex' alignItems='center' justifyContent='space-between'>
         <Subtitle sx={{ fontSize: '30px', fontWeight: 700 }}>New Request</Subtitle>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
           {resourcesInCart
             .slice(0, SHOW_CART_LIMIT)
             .reverse()
@@ -48,7 +56,7 @@ const ResourceCartBar: React.FC<ResourceCartBarProps> = ({ resourcesInCart, setP
           <Stack
             direction='row'
             spacing={1.5}
-            sx={{ marginLeft: 3, cursor: 'pointer' }}
+            sx={{ cursor: 'pointer' }}
             alignItems='center'
             onClick={() => setPage(ResourcePage.REQUEST)}
           >

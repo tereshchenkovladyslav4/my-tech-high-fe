@@ -19,8 +19,9 @@ export const resourceCardClasses = {
   card: {
     position: 'relative',
     cursor: 'pointer',
-    borderRadius: 2,
+    borderRadius: '16px',
     minWidth: 300,
+    boxShadow: 'none',
   },
   button,
   blackButton: {
