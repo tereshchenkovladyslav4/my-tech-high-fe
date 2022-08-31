@@ -11,6 +11,7 @@ export const Homeroom: FunctionComponent = () => {
   const { me } = useContext(UserContext)
   const region_id = me?.userRegion?.at(-1)?.region_id
   const [schoolYears, setSchoolYears] = useState<SchoolYearType[]>([])
+
   const schoolYearData = useQuery(getSchoolYearsByRegionId, {
     variables: {
       regionId: region_id,
@@ -30,6 +31,7 @@ export const Homeroom: FunctionComponent = () => {
       )
     }
   }, [region_id, schoolYearData?.data?.region?.SchoolYears])
+
   return (
     <Grid container padding={4} rowSpacing={4}>
       <Grid item xs={12}>

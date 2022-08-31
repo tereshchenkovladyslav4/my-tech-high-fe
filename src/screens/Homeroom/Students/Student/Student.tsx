@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline'
 import ScheduleIcon from '@mui/icons-material/Schedule'
-import { Avatar, Box } from '@mui/material'
+import { Avatar, Box, Button, Card } from '@mui/material'
 import { useHistory } from 'react-router-dom'
 import { Metadata } from '@mth/components/Metadata/Metadata'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
@@ -102,18 +102,22 @@ export const Student: StudentTemplateType = ({ student, schoolYears }) => {
 
     if (studentStatus === StudentStatus.WITHDRAWN) {
       setCircleData({
+        mobileColor: MthColor.BUTTON_LINEAR_GRADIENT,
+        mobileText: 'Re-apply',
         color: MthColor.MTHORANGE,
         progress: 0,
-        message: 'Re-apply',
+        type: 'Re-apply',
         icon: (
           <ErrorOutlineIcon sx={{ color: MthColor.MTHORANGE, marginTop: 2, cursor: 'pointer' }} onClick={() => {}} />
         ),
       })
     } else if (currApplication && currApplication?.status === ApplicantStatus.SUBMITTED) {
       setCircleData({
+        mobileColor: MthColor.MTHGREEN,
+        mobileText: 'Application Pending Approval',
         color: MthColor.MTHGREEN,
         progress: 25,
-        message: 'Application Pending Approval',
+        type: 'Application Pending Approval',
         icon: (
           <ScheduleIcon
             sx={{ color: MthColor.MTHGREEN, marginTop: 2, cursor: 'pointer' }}
@@ -129,9 +133,10 @@ export const Student: StudentTemplateType = ({ student, schoolYears }) => {
     ) {
       if (currPacket?.status === PacketStatus.NOT_STARTED) {
         setCircleData({
-          color: MthColor.MTHORANGE,
+          mobileColor: MthColor.BUTTON_LINEAR_GRADIENT,
+          mobileText: 'Submit Now',
           progress: 50,
-          message: 'Please Submit an Enrollment Packet',
+          type: 'Please Submit an Enrollment Packet',
           icon: (
             <ErrorOutlineIcon
               sx={{ color: MthColor.MTHORANGE, marginTop: 2, cursor: 'pointer' }}
@@ -141,9 +146,11 @@ export const Student: StudentTemplateType = ({ student, schoolYears }) => {
         })
       } else {
         setCircleData({
+          mobileColor: MthColor.BUTTON_LINEAR_GRADIENT,
+          mobileText: 'Resubmit Now',
           color: MthColor.MTHORANGE,
           progress: 50,
-          message: 'Please Resubmit Enrollment Packet',
+          type: 'Please Resubmit Enrollment Packet',
           icon: (
             <ErrorOutlineIcon
               sx={{ color: MthColor.MTHORANGE, marginTop: 2, cursor: 'pointer' }}
@@ -159,9 +166,11 @@ export const Student: StudentTemplateType = ({ student, schoolYears }) => {
       currPacket?.status === PacketStatus.STARTED
     ) {
       setCircleData({
+        mobileColor: MthColor.BUTTON_LINEAR_GRADIENT,
+        mobileText: 'Submit Now',
         color: MthColor.MTHORANGE,
         progress: 50,
-        message: 'Please Submit Enrollment Packet',
+        type: 'Please Submit Enrollment Packet',
         icon: (
           <ErrorOutlineIcon
             sx={{ color: MthColor.MTHORANGE, marginTop: 2, cursor: 'pointer' }}
@@ -176,9 +185,11 @@ export const Student: StudentTemplateType = ({ student, schoolYears }) => {
       currPacket?.status === PacketStatus.SUBMITTED
     ) {
       setCircleData({
+        mobileColor: MthColor.MTHGREEN,
+        mobileText: 'Enrollment Pending Approval',
         color: MthColor.MTHGREEN,
         progress: 50,
-        message: 'Enrollment Packet Pending Approval',
+        type: 'Enrollment Packet Pending Approval',
         icon: (
           <ScheduleIcon
             sx={{ color: MthColor.MTHGREEN, marginTop: 2, cursor: 'pointer' }}
@@ -197,44 +208,87 @@ export const Student: StudentTemplateType = ({ student, schoolYears }) => {
       : 'Kindergarten'
 
   return (
-    <Box sx={{ marginX: 2 }}>
-      <Metadata
-        title={<Title>{student.person.first_name}</Title>}
-        subtitle={
-          <Box>
-            <Subtitle size={'large'}>{gradeText}</Subtitle>
-            {showToolTip && checkEnrollPacketStatus(schoolYears, student) && (
-              <>
-                {circleData?.icon}
-                <Paragraph size='medium' color={circleData?.color}>
-                  {circleData?.message}
-                </Paragraph>
-              </>
-            )}
-          </Box>
-        }
-        image={
-          <Avatar
-            sx={{
-              height: 150,
-              width: 150,
-              borderRadius: 6,
-              cursor: 'pointer',
-            }}
-            alt='Remy Sharp'
-            variant='rounded'
-            src={getProfilePhoto(student.person)}
-            onClick={() => {
-              if (checkEnrollPacketStatus(schoolYears, student)) {
-                setMe({ ...me, currentTab: 0 } as UserInfo)
-                if (link) history.push(link)
-              }
-            }}
-          />
-        }
-        rounded
-        verticle
-      />
-    </Box>
+    <>
+      <Box sx={{ marginX: 2, display: { xs: 'none', sm: 'inline-block' } }}>
+        <Metadata
+          title={<Title>{student.person.first_name}</Title>}
+          subtitle={
+            <Box>
+              <Subtitle size={'large'}>{gradeText}</Subtitle>
+              {showToolTip && checkEnrollPacketStatus(schoolYears, student) && (
+                <>
+                  {circleData?.icon}
+                  <Paragraph size='medium' color={circleData?.color}>
+                    {circleData?.type}
+                  </Paragraph>
+                </>
+              )}
+            </Box>
+          }
+          image={
+            <Avatar
+              sx={{
+                height: 150,
+                width: 150,
+                borderRadius: 6,
+                cursor: 'pointer',
+              }}
+              alt={student.person.first_name}
+              variant='rounded'
+              src={getProfilePhoto(student.person)}
+              onClick={() => {
+                if (checkEnrollPacketStatus(schoolYears, student)) {
+                  setMe({ ...me, currentTab: 0 } as UserInfo)
+                  if (link) history.push(link)
+                }
+              }}
+            />
+          }
+          rounded
+          verticle
+        />
+      </Box>
+      <Card
+        elevation={2}
+        sx={{ display: { xs: 'flex', sm: 'none' }, borderRadius: 2, paddingX: 2, marginY: 1, flexDirection: 'column' }}
+      >
+        <Metadata
+          title={<Title>{student.person.first_name}</Title>}
+          subtitle={
+            <Box>
+              <Subtitle size={'large'}>{gradeText}</Subtitle>
+            </Box>
+          }
+          image={
+            <Avatar
+              sx={{ marginRight: 2 }}
+              alt={student.person.first_name}
+              src={getProfilePhoto(student.person)}
+              onClick={() => {
+                if (checkEnrollPacketStatus(schoolYears, student)) {
+                  setMe({ ...me, currentTab: 0 } as UserInfo)
+                  if (link) history.push(link)
+                }
+              }}
+            />
+          }
+        />
+        <Button
+          variant='contained'
+          onClick={() => {
+            if (checkEnrollPacketStatus(schoolYears, student)) {
+              setMe({ ...me, currentTab: 0 } as UserInfo)
+              if (link) history.push(toolTipLink)
+            }
+          }}
+          sx={{
+            marginBottom: 2,
+            background: circleData?.mobileColor,
+          }}
+        >
+          {circleData?.mobileText}
+        </Button>
+      </Card>
+    </>
   )
 }
