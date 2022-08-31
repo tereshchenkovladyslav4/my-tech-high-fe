@@ -461,13 +461,9 @@ export const ExistingParent: React.FC = () => {
                                     <DropDown
                                       name={'students[0].grade_level'}
                                       labelTop
-                                      placeholder={
-                                        birthDateCut == ''
-                                          ? q.question
-                                          : `${q.question} as of ${moment(birthDateCut).format(
-                                              !matches ? 'MMMM DD, YYYY' : 'MMM DD, YYYY',
-                                            )}`
-                                      }
+                                      placeholder={`${q.question} as of ${moment(birthDateCut).format(
+                                        !matches ? 'MMMM DD, YYYY' : 'MMM. DD, YYYY',
+                                      )}`}
                                       dropDownItems={gradesDropDownItems}
                                       setParentValue={(id) => {
                                         form.setFieldValue(field.name, id)
@@ -585,13 +581,9 @@ export const ExistingParent: React.FC = () => {
                                               <DropDown
                                                 name={`students[${index}].grade_level`}
                                                 labelTop
-                                                placeholder={
-                                                  birthDateCut == ''
-                                                    ? q.question
-                                                    : `${q.question} as of ${moment(birthDateCut).format(
-                                                        !matches ? 'MMMM DD, YYYY' : 'MMM DD, YYYY',
-                                                      )}`
-                                                }
+                                                placeholder={`${q.question} as of ${moment(birthDateCut).format(
+                                                  !matches ? 'MMMM DD, YYYY' : 'MMM. DD, YYYY',
+                                                )}`}
                                                 dropDownItems={gradesDropDownItems}
                                                 setParentValue={(id) => {
                                                   form.setFieldValue(field.name, id)

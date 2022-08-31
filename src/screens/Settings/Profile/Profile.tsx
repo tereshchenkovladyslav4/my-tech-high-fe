@@ -176,21 +176,17 @@ export const Profile: ProfileTemplateType = ({ handleIsFormChange }) => {
   const validationSchema = yup.object({
     preferredFName: yup.string().nullable(),
     preferredLName: yup.string().nullable(),
-    legalFName: yup.string().required('Legal First Name is required').nullable(),
+    legalFName: yup.string().required('Required').nullable(),
     legalMName: yup.string().nullable(),
-    legalLName: yup.string().required('Legal Last Name is required').nullable(),
-    phoneNumber: yup
-      .string()
-      .matches(phoneRegExp, 'Phone number is not valid')
-      .required('Phone number is required')
-      .nullable(),
-    email: yup.string().email('Please enter a valid email').nullable().required('Email is required'),
-    city: yup.string().nullable().required('City is required'),
+    legalLName: yup.string().required('Required').nullable(),
+    phoneNumber: yup.string().matches(phoneRegExp, 'Phone number is not valid').required('Required').nullable(),
+    email: yup.string().email('Please enter a valid email').nullable().required('Required'),
+    city: yup.string().nullable().required('Required'),
     recieveText: yup.boolean().nullable(),
-    address1: yup.string().nullable().required('Address line 1 is required'),
+    address1: yup.string().nullable().required('Required'),
     address2: yup.string().nullable(),
-    state: yup.string().required('State is required').nullable(),
-    zipcode: yup.string().required('Zipcode is required').nullable(),
+    state: yup.string().required('Required').nullable(),
+    zipcode: yup.string().required('Required').nullable(),
   })
 
   const formik = useFormik({
@@ -262,7 +258,7 @@ export const Profile: ProfileTemplateType = ({ handleIsFormChange }) => {
             onClick={() =>
               setWarningModalOpen({
                 title: 'Delete Image',
-                subtitle: 'Are you sure you	want to delete this image',
+                subtitle: 'Are you sure you want to delete this image?',
                 callback: () => {
                   submitRemoveProfilePhoto().then(() => {
                     setFile(undefined)

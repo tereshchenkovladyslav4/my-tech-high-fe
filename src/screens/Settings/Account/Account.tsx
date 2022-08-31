@@ -63,7 +63,7 @@ export const Account: AccountTemplateType = ({ handleIsFormChange }) => {
       .string()
       .matches(
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/,
-        'Must Contain 8 Characters, One Uppercase, One Lowercase, One Number and One Special Case Character',
+        'Passwords must contain 8 characters, 1 uppercase, 1 lowercase, 1 number, and 1 special character.',
       )
       .required('Password is required'),
     confirmPassword: yup

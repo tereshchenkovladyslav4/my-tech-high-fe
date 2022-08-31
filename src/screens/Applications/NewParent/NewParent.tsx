@@ -43,8 +43,8 @@ export const NewParent: React.FC = () => {
   const [emptyAddress, setEmptyAddress] = useState({})
   const [emptyPacket, setEmptyPacket] = useState({})
   const initSchema = {
-    state: string().required('State is required'),
-    programYear: string().required('Program Year is required'),
+    state: string().required('Required'),
+    programYear: string().required('Required'),
   }
   const [validationSchema, setValidationSchema] = useState()
   const [availableRegions, setAvailableRegions] = useState([])
@@ -124,31 +124,31 @@ export const NewParent: React.FC = () => {
                 valid_student[`${q.slug?.replace('student_', '')}`] = yup
                   .string()
                   .email('Enter a valid email')
-                  .required('Email is required')
+                  .required('Required')
               } else if (q.validation === 2) {
                 valid_student[`${q.slug?.replace('student_', '')}`] = yup
                   .string()
-                  .required(`${q.question} is required`)
+                  .required('Required')
                   .test(`${q.question}-selected`, `${q.question} is invalid`, (value: unknown) => {
                     return isNumber.test(value)
                   })
               } else if (q.slug?.toLocaleLowerCase().includes('emailconfirm')) {
                 valid_student[`${q.slug?.replace('student_', '')}`] = yup
                   .string()
-                  .required('Email is required')
+                  .required('Required')
                   .oneOf([yup.ref('email')], 'Emails do not match')
               } else if (q.type === QUESTION_TYPE.CHECKBOX) {
                 valid_student[`${q.slug?.replace('student_', '')}`] = yup
                   .array()
-                  .min(1, `${q.question} is required`)
-                  .required(`${q.question} is required`)
+                  .min(1, 'Required')
+                  .required('Required')
               } else if (q.type === QUESTION_TYPE.AGREEMENT) {
                 valid_student[`${q.slug?.replace('student_', '')}`] = yup
                   .bool()
-                  .test(q.slug, `${q.question.replace(/<[^>]+>/g, '')} is required`, (value) => value === true)
-                  .required(`${q.question.replace(/<[^>]+>/g, '')} is required`)
+                  .test(q.slug, 'Required', (value) => value === true)
+                  .required('Required')
               } else {
-                valid_student[`${q.slug?.replace('student_', '')}`] = yup.string().required(`${q.question} is required`)
+                valid_student[`${q.slug?.replace('student_', '')}`] = yup.string().required('Required')
               }
             } else {
               if (q.slug?.toLocaleLowerCase().includes('emailconfirm')) {
@@ -160,7 +160,7 @@ export const NewParent: React.FC = () => {
                 valid_student[`${q.slug?.replace('student_', '')}`] = yup
                   .string()
                   .email('Enter a valid email')
-                  .required('Email is required')
+                  .required('Required')
               }
             }
           } else if (q.slug?.includes('parent_')) {
@@ -169,32 +169,29 @@ export const NewParent: React.FC = () => {
               if (q.slug?.toLocaleLowerCase().includes('emailconfirm')) {
                 valid_parent[`${q.slug?.replace('parent_', '')}`] = yup
                   .string()
-                  .required('Email Confirm is required')
+                  .required('Required')
                   .oneOf([yup.ref('email')], 'Emails do not match')
               } else if (q.validation === 1) {
                 valid_parent[`${q.slug?.replace('parent_', '')}`] = yup
                   .string()
                   .email('Enter a valid email')
-                  .required('Email is required')
+                  .required('Required')
               } else if (q.validation === 2) {
                 valid_parent[`${q.slug?.replace('parent_', '')}`] = yup
                   .string()
-                  .required(`${q.question} is required`)
+                  .required('Required')
                   .test(`${q.question}-selected`, `${q.question} is invalid`, (value: unknown) => {
                     return isNumber.test(value)
                   })
               } else if (q.type === QUESTION_TYPE.CHECKBOX) {
-                valid_parent[`${q.slug?.replace('parent_', '')}`] = yup
-                  .array()
-                  .min(1, `${q.question} is required`)
-                  .required(`${q.question} is required`)
+                valid_parent[`${q.slug?.replace('parent_', '')}`] = yup.array().min(1, 'Required').required('Required')
               } else if (q.type === QUESTION_TYPE.AGREEMENT) {
                 valid_parent[`${q.slug?.replace('parent_', '')}`] = yup
                   .bool()
-                  .test(q.slug, `${q.question.replace(/<[^>]+>/g, '')} is required`, (value) => value === true)
-                  .required(`${q.question.replace(/<[^>]+>/g, '')} is required`)
+                  .test(q.slug, 'Required', (value) => value === true)
+                  .required('Required')
               } else {
-                valid_parent[`${q.slug?.replace('parent_', '')}`] = yup.string().required(`${q.question} is required`)
+                valid_parent[`${q.slug?.replace('parent_', '')}`] = yup.string().required('Required')
               }
             } else {
               if (q.slug?.toLocaleLowerCase().includes('emailconfirm')) {
@@ -221,55 +218,44 @@ export const NewParent: React.FC = () => {
               if (q.student_question) {
                 empty['meta'][`${q.slug}`] = ''
                 if (q.validation === 1) {
-                  valid_student_meta[`${q.slug}`] = yup
-                    .string()
-                    .email('Enter a valid email')
-                    .required('Email is required')
+                  valid_student_meta[`${q.slug}`] = yup.string().email('Enter a valid email').required('Required')
                 } else if (q.validation === 2) {
                   valid_student_meta[`${q.slug}`] = yup
                     .string()
-                    .required(`${q.question} is required`)
+                    .required('Required')
                     .test(`${q.question}-selected`, `${q.question} is invalid`, (value: unknown) => {
                       return isNumber.test(value)
                     })
                 } else if (q.type === QUESTION_TYPE.CHECKBOX) {
-                  valid_student_meta[`${q.slug}`] = yup
-                    .array()
-                    .min(1, `${q.question} is required`)
-                    .required(`${q.question} is required`)
-                    .nullable()
+                  valid_student_meta[`${q.slug}`] = yup.array().min(1, 'Required').required('Required').nullable()
                 } else if (q.type === QUESTION_TYPE.AGREEMENT) {
                   valid_student_meta[q.slug] = yup
                     .bool()
-                    .test(q.slug, `${q.question.replace(/<[^>]+>/g, '')} is required`, (value) => value === true)
-                    .required(`${q.question.replace(/<[^>]+>/g, '')} is required`)
+                    .test(q.slug, 'Required', (value) => value === true)
+                    .required('Required')
                 } else {
-                  valid_student_meta[`${q.slug}`] = yup.string().required(`${q.question} is required`)
+                  valid_student_meta[`${q.slug}`] = yup.string().required('Required')
                 }
               } else {
                 initMeta[`${q.slug}`] = ''
                 if (q.validation === 1) {
-                  valid_meta[`${q.slug}`] = yup.string().email('Enter a valid email').required('Email is required')
+                  valid_meta[`${q.slug}`] = yup.string().email('Enter a valid email').required('Required')
                 } else if (q.validation === 2) {
                   valid_meta[`${q.slug}`] = yup
                     .string()
-                    .required(`${q.question} is required`)
+                    .required('Required')
                     .test(`${q.question}-selected`, `${q.question} is invalid`, (value: unknown) => {
                       return isNumber.test(value)
                     })
                 } else if (q.type === QUESTION_TYPE.CHECKBOX) {
-                  valid_meta[`${q.slug}`] = yup
-                    .array()
-                    .min(1, `${q.question} is required`)
-                    .required(`${q.question} is required`)
-                    .nullable()
+                  valid_meta[`${q.slug}`] = yup.array().min(1, 'Required').required('Required').nullable()
                 } else if (q.type === QUESTION_TYPE.AGREEMENT) {
                   valid_meta[`${q.slug}`] = yup
                     .bool()
-                    .test(q.slug, `${q.question.replace(/<[^>]+>/g, '')} is required`, (value) => value === true)
-                    .required(`${q.question.replace(/<[^>]+>/g, '')} is required`)
+                    .test(q.slug, 'Required', (value) => value === true)
+                    .required('Required')
                 } else {
-                  valid_meta[`${q.slug}`] = yup.string().required(`${q.question} is required`)
+                  valid_meta[`${q.slug}`] = yup.string().required('Required')
                 }
               }
             } else {
@@ -305,12 +291,12 @@ export const NewParent: React.FC = () => {
               if (q.validation === 2) {
                 valid_address[`${q.slug?.replace('address_', '')}`] = yup
                   .string()
-                  .required(`${q.question} is required`)
+                  .required('Required')
                   .test(`${q.question}-selected`, `${q.question} is invalid`, (value: unknown) => {
                     return isNumber.test(value)
                   })
               } else {
-                valid_address[`${q.slug?.replace('address_', '')}`] = yup.string().required(`${q.question} is required`)
+                valid_address[`${q.slug?.replace('address_', '')}`] = yup.string().required('Required')
               }
             } else {
               if (q.validation === 2) {
@@ -325,11 +311,9 @@ export const NewParent: React.FC = () => {
           } else if (q.slug?.includes('packet_') && q.required) {
             initPacket[`${q.slug?.replace('packet_', '')}`] = ''
             if (!q.student_question) {
-              valid_packet[`${q.slug?.replace('packet_', '')}`] = yup.string().required(`${q.question} is required`)
+              valid_packet[`${q.slug?.replace('packet_', '')}`] = yup.string().required('Required')
             } else {
-              valid_student_packet[`${q.slug?.replace('packet_', '')}`] = yup
-                .string()
-                .required(`${q.question} is required`)
+              valid_student_packet[`${q.slug?.replace('packet_', '')}`] = yup.string().required('Required')
             }
           }
         }

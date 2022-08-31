@@ -65,7 +65,7 @@ export const ForgotPassword: React.FC = () => {
             setAlert({
               type: 'error',
               message: 'This account needs to be verified first.',
-              description: 'Check your email for a verification link or have one resent below',
+              description: 'Check your email for a verification link or have one resent below.',
             })
           } else {
             if (status) {
@@ -93,6 +93,7 @@ export const ForgotPassword: React.FC = () => {
   }
 
   const handleResendVerificationEmail = async () => {
+    setAlert(null)
     resendEmail({
       variables: {
         email: formik.values.email,
@@ -109,14 +110,7 @@ export const ForgotPassword: React.FC = () => {
           message: 'Failed to resend verification email.',
         })
       } else {
-        setAlert({
-          type: 'success',
-          message: 'A new email with the verification link has been sent. Please verifiy your email within 24 hours.',
-        })
-        setVerifyStatus(true)
-        setTimeout(() => {
-          history.push('/')
-        }, 1000)
+        history.push('/')
       }
     }
   }, [resending])
@@ -140,7 +134,7 @@ export const ForgotPassword: React.FC = () => {
       </Box>
       <Box>
         <Typography fontSize={17} marginTop={3} color='white'>
-          Please enter your email address below and press &ldquo; Reset Password &rdquo;.
+          Please enter your email address below and press &ldquo;Reset Password.&rdquo;
         </Typography>
         <Typography fontSize={17} marginTop={1} color='white'>
           You&apos;ll receive instructions on how to set a new password.

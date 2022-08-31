@@ -42,16 +42,14 @@ export const useActiveSchoolYearsByRegionId = (
         .map((item: SchoolYearType): void => {
           if (item.MainyearApplicatable) {
             schoolYearsArray.push({
-              label: `${moment(item.date_begin).format('YYYY')} - ${moment(item.date_end).format('YY')}`,
+              label: `${moment(item.date_begin).format('YYYY')}-${moment(item.date_end).format('YY')}`,
               value: item.school_year_id,
             })
           }
 
           if (item.MidyearApplicatable) {
             schoolYearsArray.push({
-              label: `${moment(item.date_begin).format('YYYY')} - ${moment(item.date_end).format(
-                'YY',
-              )} Mid-year Program`,
+              label: `${moment(item.date_begin).format('YYYY')}-${moment(item.date_end).format('YY')} Mid-year Program`,
               value: `${item.school_year_id}-mid`,
             })
           }
