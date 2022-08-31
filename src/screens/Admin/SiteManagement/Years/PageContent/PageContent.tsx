@@ -1,11 +1,12 @@
-import React, { FunctionComponent, useState } from 'react'
+import React, { useState } from 'react'
+import { MthTitle } from '@mth/enums'
 import { CommonSelect } from '../../components/CommonSelect'
 import { CommonSelectType } from '../../types'
 import { MidYearSelect } from '../MidYearSelect'
 import { OpenAndCloseSelect } from '../OpenAndCloseSelect'
 import { PageContentProps } from './PageContentProps'
 
-export const PageContent: FunctionComponent<PageContentProps> = ({
+export const PageContent: React.FC<PageContentProps> = ({
   schoolYearItem,
   setSchoolYearItem,
   applicationItem,
@@ -17,15 +18,15 @@ export const PageContent: FunctionComponent<PageContentProps> = ({
   const [midYearExpend, setMidYearExpend] = useState<boolean | undefined>(false)
   const yearsSettingList: CommonSelectType[] = [
     {
-      name: 'School Year',
+      name: MthTitle.SCHOOL_YEAR,
       component: <OpenAndCloseSelect item={schoolYearItem} setItem={setSchoolYearItem} setIsChanged={setIsChanged} />,
     },
     {
-      name: 'Applications',
+      name: MthTitle.APPLICATIONS,
       component: <OpenAndCloseSelect item={applicationItem} setItem={setApplicationItem} setIsChanged={setIsChanged} />,
     },
     {
-      name: 'Mid-Year',
+      name: MthTitle.MID_YEAR,
       component: (
         <MidYearSelect
           midYearItem={midYearItem}
@@ -39,7 +40,7 @@ export const PageContent: FunctionComponent<PageContentProps> = ({
 
   if (midYearItem?.status) {
     const setting: CommonSelectType = {
-      name: 'Mid-Year Application',
+      name: MthTitle.MID_YEAR_APPLICATION,
       component: <OpenAndCloseSelect item={midYearItem} setItem={setMidYearItem} setIsChanged={setIsChanged} />,
     }
     yearsSettingList.push(setting)

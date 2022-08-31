@@ -61,6 +61,7 @@ export const ExistingParent: React.FC = () => {
   const { me, setMe } = useContext(UserContext)
   const [regionId, setRegionId] = useState<string>('')
   const [grades, setGrades] = useState<string[]>([])
+  const [midYearApplication, setMidYearApplication] = useState<boolean>(false)
   const [gradesDropDownItems, setGradesDropDownItems] = useState<Array<DropDownItem>>([])
   const [birthDateCut, setBirthDateCut] = useState<string>('')
 
@@ -227,9 +228,10 @@ export const ExistingParent: React.FC = () => {
     submitApplicationAction({
       variables: {
         createApplicationInput: {
-          state: 'UT',
+          state: regionId,
           program_year: parseInt(data.programYear!),
           students: submitStudents,
+          midyear_application: midYearApplication,
           meta: JSON.stringify(data.meta),
           // address: { ...data.address, school_district: data.packet?.school_district, county_id: data.county?.county ? parseInt(data.county?.county) : null },
           // packet: omit(data.packet, ['school_district']),
@@ -429,6 +431,9 @@ export const ExistingParent: React.FC = () => {
                             let id = originalId.toString()
                             if (id.toString()?.indexOf('mid') > 0) {
                               id = id?.split('-')?.at(0)
+                              setMidYearApplication(true)
+                            } else {
+                              setMidYearApplication(false)
                             }
                             form.setFieldValue(field.name, toNumber(id))
                             setGradesAndBirthDateCut(id)

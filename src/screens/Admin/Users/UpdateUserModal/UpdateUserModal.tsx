@@ -14,15 +14,16 @@ import {
 } from '@mui/material'
 import { Box } from '@mui/system'
 import { map } from 'lodash'
-import { DropDown } from '../../../../components/DropDown/DropDown'
-import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
-import { WarningModal } from '../../../../components/WarningModal/Warning'
-import { updateUserMutation } from '../../../../graphql/mutation/user'
-import { getAllAccess } from '../../../../graphql/queries/access'
-import { getAllRegion } from '../../../../graphql/queries/region'
-import { getAllRoles } from '../../../../graphql/queries/role'
-import { getUser, getUsersByRegions } from '../../../../graphql/queries/user'
-import { UserContext } from '../../../../providers/UserContext/UserProvider'
+import { DropDown } from '@mth/components/DropDown/DropDown'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { WarningModal } from '@mth/components/WarningModal/Warning'
+import { RECEIVE_EMAIL_GIVING_LINK_TO_CREATE_PASSWORD } from '@mth/constants'
+import { updateUserMutation } from '@mth/graphql/mutation/user'
+import { getAllAccess } from '@mth/graphql/queries/access'
+import { getAllRegion } from '@mth/graphql/queries/region'
+import { getAllRoles } from '@mth/graphql/queries/role'
+import { getUser, getUsersByRegions } from '@mth/graphql/queries/user'
+import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { BUTTON_LINEAR_GRADIENT, PROVIDERS, SOE, SOE_OPTIONS, SPED } from '../../../../utils/constants'
 import { ApolloError, Region } from '../interfaces'
 import { useStyles } from './styles'
@@ -725,7 +726,7 @@ export const UpdateUserModal: UpdateModalTemplateType = ({ handleModem, userID, 
         ) : (
           <Fragment>
             <Box sx={classes.header}>
-              <Subtitle>This user will receive an email giving them a link to create a password</Subtitle>
+              <Subtitle>{RECEIVE_EMAIL_GIVING_LINK_TO_CREATE_PASSWORD}</Subtitle>
               <IconButton onClick={handleModem}>
                 <CloseIcon style={classes.close} />
               </IconButton>

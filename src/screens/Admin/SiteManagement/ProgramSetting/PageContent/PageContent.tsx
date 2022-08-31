@@ -1,4 +1,5 @@
-import React, { FunctionComponent } from 'react'
+import React from 'react'
+import { MthTitle } from '@mth/enums'
 import { CommonSelect } from '../../components/CommonSelect'
 import { CommonSelectType } from '../../types'
 import { BirthDateCutOffSelect } from '../BirthDateCutOffSelect'
@@ -12,7 +13,7 @@ import { StateLogo } from '../StateLogo'
 import { StateSelect } from '../StateSelect'
 import { PageContentProps } from './PageContentProps'
 
-export const PageContent: FunctionComponent<PageContentProps> = ({
+export const PageContent: React.FC<PageContentProps> = ({
   stateSelectItem,
   stateLogoItem,
   programItem,
@@ -29,12 +30,10 @@ export const PageContent: FunctionComponent<PageContentProps> = ({
 }) => {
   const programSettingList: CommonSelectType[] = [
     {
-      name: 'State',
+      name: MthTitle.STATE,
       component: (
         <StateSelect
           stateName={stateSelectItem?.stateName}
-          setIsChanged={setIsChanged}
-          isChanged={isChanged}
           setIsInvalidStateName={stateSelectItem?.setIsInvalidStateName}
           stateInvalid={stateSelectItem?.stateInvalid}
           setStateInvalid={stateSelectItem?.setStateInvalid}
@@ -44,7 +43,7 @@ export const PageContent: FunctionComponent<PageContentProps> = ({
       ),
     },
     {
-      name: 'State Logo',
+      name: MthTitle.STATE_LOGO,
       component: (
         <StateLogo
           stateLogo={stateLogoItem?.stateLogo}
@@ -57,7 +56,7 @@ export const PageContent: FunctionComponent<PageContentProps> = ({
       ),
     },
     {
-      name: 'Program',
+      name: MthTitle.PROGRAM,
       component: (
         <ProgramSelect
           program={programItem?.program}
@@ -68,7 +67,7 @@ export const PageContent: FunctionComponent<PageContentProps> = ({
       ),
     },
     {
-      name: 'Counties',
+      name: MthTitle.COUNTIES,
       component: (
         <CountySelect
           county={countyItem?.county}
@@ -82,7 +81,7 @@ export const PageContent: FunctionComponent<PageContentProps> = ({
       ),
     },
     {
-      name: 'School Districts',
+      name: MthTitle.SCHOOL_DISTRICTS,
       component: (
         <SchoolDistrictSelect
           schoolDistrict={schoolDistrictItem?.schoolDistrict}
@@ -91,12 +90,11 @@ export const PageContent: FunctionComponent<PageContentProps> = ({
           setIsChanged={setIsChanged}
           setIsDelete={setIsDelete}
           isDelete={isDelete}
-          isChanged={isChanged}
         />
       ),
     },
     {
-      name: 'Grades',
+      name: MthTitle.GRADES,
       component: (
         <GradesSelect
           grades={gradesItem?.grades}
@@ -107,18 +105,13 @@ export const PageContent: FunctionComponent<PageContentProps> = ({
       ),
     },
     {
-      name: 'Birthday Cut-off',
+      name: MthTitle.BIRTHDAY_CUT_OFF,
       component: (
-        <BirthDateCutOffSelect
-          birthDate={birthDayCutItem?.birthDate}
-          setBirthDate={birthDayCutItem?.setBirthDate}
-          setIsChanged={setIsChanged}
-          isChanged={isChanged}
-        />
+        <BirthDateCutOffSelect birthDate={birthDayCutItem?.birthDate} setBirthDate={birthDayCutItem?.setBirthDate} />
       ),
     },
     {
-      name: 'Special Ed',
+      name: MthTitle.SPECIAL_ED,
       component: (
         <SpecialEdSelect
           specialEd={specialEdItem?.specialEd}
@@ -131,7 +124,7 @@ export const PageContent: FunctionComponent<PageContentProps> = ({
       ),
     },
     {
-      name: 'Enrollment Packets',
+      name: MthTitle.ENROLLMENT_PACKETS,
       component: (
         <EnrollPacketSelect
           enroll={enrollItem?.enroll}

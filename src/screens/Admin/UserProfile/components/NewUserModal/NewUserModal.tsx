@@ -2,10 +2,11 @@ import React, { useState } from 'react'
 import CloseIcon from '@mui/icons-material/Close'
 import { Button, Grid, Modal, TextField } from '@mui/material'
 import { Box } from '@mui/system'
-import { DropDown } from '../../../../../components/DropDown/DropDown'
-import { DropDownItem } from '../../../../../components/DropDown/types'
-import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
-import { WarningModal } from '../../../../../components/WarningModal/Warning'
+import { DropDown } from '@mth/components/DropDown/DropDown'
+import { DropDownItem } from '@mth/components/DropDown/types'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { WarningModal } from '@mth/components/WarningModal/Warning'
+import { RECEIVE_EMAIL_GIVING_LINK_TO_CREATE_PASSWORD } from '@mth/constants'
 import { BUTTON_LINEAR_GRADIENT } from '../../../../../utils/constants'
 import { StudentsModal } from './StudentsModal'
 import { useStyles } from './styles'
@@ -119,7 +120,7 @@ export const NewUserModal: NewModalTemplateType = ({
           <StudentsModal visible={true} handleModem={handleCloseStudentModal} students={students} data={payloadData} />
         )}
         <Box sx={classes.header}>
-          <Subtitle>This user will receive an email giving them a link to create a password.</Subtitle>
+          <Subtitle>{RECEIVE_EMAIL_GIVING_LINK_TO_CREATE_PASSWORD}</Subtitle>
           <CloseIcon style={classes.close} onClick={handleModem} />
         </Box>
         <Grid container rowSpacing={2}>

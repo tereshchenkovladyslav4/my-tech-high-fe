@@ -2,9 +2,10 @@ import React, { FunctionComponent, useEffect, useContext, useState, ReactElement
 import { gql, useQuery } from '@apollo/client'
 import { Card } from '@mui/material'
 import { map } from 'lodash'
-import { Flexbox } from '../../../../../../components/Flexbox/Flexbox'
-import { Subtitle } from '../../../../../../components/Typography/Subtitle/Subtitle'
-import { UserContext } from '../../../../../../providers/UserContext/UserProvider'
+import { Flexbox } from '@mth/components/Flexbox/Flexbox'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { MthTitle } from '@mth/enums'
+import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { WITHDRAWAL, ADMIN_APPLICATIONS, ENROLLMENT_PACKETS } from '../../../../../../utils/constants'
 import { ToDoListItem } from '../ToDoListItem/ToDoListItem'
 
@@ -42,7 +43,7 @@ export const TodoList: FunctionComponent = () => {
       setTodoList([
         {
           id: 1,
-          title: 'Applications',
+          title: MthTitle.APPLICATIONS,
           link: ADMIN_APPLICATIONS,
           date: new Date(),
           severity: application,

@@ -6,6 +6,7 @@ import { Box, Button, Card, Checkbox, FormControlLabel, Grid } from '@mui/materi
 import { map } from 'lodash'
 import moment from 'moment'
 import { useHistory } from 'react-router-dom'
+import { MthTitle } from '@mth/enums'
 import { Paragraph } from '../../../../components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
 import { UserContext } from '../../../../providers/UserContext/UserProvider'
@@ -285,7 +286,7 @@ export const Filters: FunctionComponent<FiltersProps> = ({ filter, setFilter }) 
             }}
           >
             <Paragraph size='large' fontWeight='700'>
-              School Year
+              {MthTitle.SCHOOL_YEAR}
             </Paragraph>
             {schoolYears?.map((item) => {
               if (item.midyear_application) {

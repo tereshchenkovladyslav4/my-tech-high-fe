@@ -53,5 +53,8 @@ export type PageContentProps = {
     enroll: boolean
     setEnroll: (value: boolean) => void
   }
+  isChanged: boolean
   setIsChanged: (value: boolean) => void
+  isDelete: boolean
+  setIsDelete: (value: boolean) => void
 }

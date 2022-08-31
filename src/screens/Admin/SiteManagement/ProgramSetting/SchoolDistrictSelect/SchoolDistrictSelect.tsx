@@ -1,11 +1,11 @@
-import React, { FunctionComponent, useState } from 'react'
+import React, { useState } from 'react'
 import { Tooltip } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined'
 import { Box, Stack } from '@mui/material'
 import Papa from 'papaparse'
-import DownloadFileIcon from '../../../../../assets/icons/file-download.svg'
-import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
+import DownloadFileIcon from '@mth/assets/icons/file-download.svg'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { MTHBLUE } from '../../../../../utils/constants'
 import { CustomModal } from '../../EnrollmentSetting/components/CustomModal/CustomModals'
 import { FileUploadModal } from '../FileUploadModal/FileUploadModal'
@@ -24,7 +24,7 @@ const useStyles = makeStyles(() => ({
   },
 }))
 
-export const SchoolDistrictSelect: FunctionComponent<SchoolDistrictSelectProps> = ({
+export const SchoolDistrictSelect: React.FC<SchoolDistrictSelectProps> = ({
   schoolDistrict,
   setSchoolDistrict,
   setSchoolDistrictArray,

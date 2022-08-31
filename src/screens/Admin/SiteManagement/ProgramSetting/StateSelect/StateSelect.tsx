@@ -24,7 +24,6 @@ export const StateSelect: FunctionComponent<StateSelectProps> = ({
   newStateName,
   stateInvalid,
   setNewStateName,
-
   setIsInvalidStateName,
   setStateInvalid,
 }) => {
@@ -130,7 +129,7 @@ export const StateSelect: FunctionComponent<StateSelectProps> = ({
           setIsInvalidStateName(true)
         } else {
           setStateInvalid(false)
-          setNewStateName(selectedRegionFullName)
+          setNewStateName(selectedRegionFullName || '')
           setIsInvalidStateName(false)
         }
       }

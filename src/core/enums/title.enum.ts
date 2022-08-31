@@ -1,0 +1,15 @@
+export enum MthTitle {
+  SCHOOL_YEAR = 'School Year',
+  APPLICATIONS = 'Applications',
+  MID_YEAR = 'Mid-year',
+  MID_YEAR_APPLICATION = 'Mid-year Application',
+  ENROLLMENT_PACKETS = 'Enrollment Packets',
+  STATE = 'State',
+  STATE_LOGO = 'State Logo',
+  PROGRAM = 'Program',
+  COUNTIES = 'Counties',
+  SCHOOL_DISTRICTS = 'School Districts',
+  GRADES = 'Grades',
+  BIRTHDAY_CUT_OFF = 'Birthday Cut-off',
+  SPECIAL_ED = 'Special Ed',
+}
