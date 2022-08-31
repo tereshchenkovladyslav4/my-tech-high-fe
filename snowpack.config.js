@@ -1,6 +1,7 @@
 // Snowpack Configuration File
 // See all supported options: https://www.snowpack.dev/reference/configuration
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv').config()
 /** @type {import("snowpack").SnowpackUserConfig } */
 module.exports = {

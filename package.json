@@ -17,6 +17,17 @@
     "build-prod": "cp -v .env.prod .env && snowpack build",
     "format": "prettier-eslint --write \"src/**/*.tsx\""
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "**/*.{js,jsx,ts,tsx}": [
+      "eslint --ext .ts,.tsx,.js,.jsx .",
+      "prettier-eslint --write \"src/**/*.tsx\""
+    ]
+  },
   "devDependencies": {
     "@babel/core": "^7.15.8",
     "@snowpack/plugin-dotenv": "^2.2.0",
