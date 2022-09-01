@@ -124,17 +124,6 @@ export const SchoolOfEnrollment: FunctionComponent = () => {
           if (parseInt(moment(item.date_begin).format('YYYY')) === parseInt(moment().format('YYYY')) - 1) {
             setPreviousYear(item) // set previous year
           }
-
-          if (
-            item &&
-            moment().isAfter(item?.midyear_application_open) &&
-            moment().isBefore(item?.midyear_application_close)
-          ) {
-            yearList.push({
-              label: `${moment(item.date_begin).format('YYYY')} - ${moment(item.date_end).format('YY')} Mid-year`,
-              value: `${item.school_year_id}-mid`,
-            })
-          }
         },
       )
       setSchoolYears(yearList.sort((a, b) => (a.label > b.label ? 1 : -1)))

@@ -223,6 +223,7 @@ export const EnrollmentPacketModal: React.FC<EnrollmentPacketModalProps> = ({ ha
             student_id: Number(packet.student.student_id),
             school_year_id: packet.student.current_school_year_status.school_year_id,
             status: 1,
+            packet_id: Number(packet.packet_id),
           },
         },
       })

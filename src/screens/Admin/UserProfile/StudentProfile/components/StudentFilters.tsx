@@ -4,17 +4,12 @@ import { KeyboardArrowDown } from '@mui/icons-material'
 import { Grid, Select, MenuItem } from '@mui/material'
 import { Box } from '@mui/system'
 import moment from 'moment'
-import { CustomConfirmModal } from '../../../../../components/CustomConfirmModal/CustomConfirmModal'
-import { DropDownItem } from '../../../../../components/DropDown/types'
-import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragraph'
-import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
+import { CustomConfirmModal } from '@mth/components/CustomConfirmModal/CustomConfirmModal'
+import { DropDownItem } from '@mth/components/DropDown/types'
+import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { StudentStatus } from '@mth/enums'
 import { MTHBLUE, BLACK, BUTTON_LINEAR_GRADIENT, RED_GRADIENT, YELLOW_GRADIENT } from '../../../../../utils/constants'
-import {
-  STUDENT_STATUS_ACTIVE,
-  STUDENT_STATUS_APPLIED,
-  STUDENT_STATUS_PENDING,
-  STUDENT_STATUS_WITHDRAWAL,
-} from '../../../../../utils/StudentStatusConstants'
 import { ActiveModal } from './ActiveModal'
 import { WithdrawModal } from './WithdrawModal'
 
@@ -224,19 +219,19 @@ export const StudentFilters: FunctionComponent<StudentFiltersProps> = ({
     },
     {
       label: 'Applied',
-      value: STUDENT_STATUS_APPLIED,
+      value: StudentStatus.APPLIED,
     },
     {
       label: 'Pending',
-      value: STUDENT_STATUS_PENDING,
+      value: StudentStatus.PENDING,
     },
     {
       label: 'Active',
-      value: STUDENT_STATUS_ACTIVE,
+      value: StudentStatus.ACTIVE,
     },
     {
       label: 'Withdrawn',
-      value: STUDENT_STATUS_WITHDRAWAL,
+      value: StudentStatus.WITHDRAWN,
     },
   ])
   const specialEds: DropDownItem[] = [
@@ -330,28 +325,28 @@ export const StudentFilters: FunctionComponent<StudentFiltersProps> = ({
             studentStatusData?.status == 5
               ? `Applied (${moment(studentStatusData?.date).format('MM/DD/YYYY')})`
               : 'Applied',
-          value: STUDENT_STATUS_APPLIED,
+          value: StudentStatus.APPLIED,
         },
         {
           label:
             studentStatusData?.status == 0
               ? `Pending (${moment(studentStatusData?.date).format('MM/DD/YYYY')})`
               : 'Pending',
-          value: STUDENT_STATUS_PENDING,
+          value: StudentStatus.PENDING,
         },
         {
           label:
             studentStatusData?.status == 1
               ? `Active (${moment(studentStatusData?.date).format('MM/DD/YYYY')})`
               : 'Active',
-          value: STUDENT_STATUS_ACTIVE,
+          value: StudentStatus.ACTIVE,
         },
         {
           label:
             studentStatusData?.status == 2
               ? `Withdrawn (${moment(studentStatusData?.date).format('MM/DD/YYYY')})`
               : 'Withdrawn',
-          value: STUDENT_STATUS_WITHDRAWAL,
+          value: StudentStatus.WITHDRAWN,
         },
       ])
     }
@@ -364,19 +359,19 @@ export const StudentFilters: FunctionComponent<StudentFiltersProps> = ({
         },
         {
           label: 'Applied',
-          value: STUDENT_STATUS_APPLIED,
+          value: StudentStatus.APPLIED,
         },
         {
           label: 'Pending',
-          value: STUDENT_STATUS_PENDING,
+          value: StudentStatus.PENDING,
         },
         {
           label: 'Active',
-          value: STUDENT_STATUS_PENDING,
+          value: StudentStatus.ACTIVE,
         },
         {
           label: `Withdrawn (${moment().format('MM/DD/YYYY')})`,
-          value: STUDENT_STATUS_WITHDRAWAL,
+          value: StudentStatus.WITHDRAWN,
         },
       ])
     }
@@ -389,19 +384,19 @@ export const StudentFilters: FunctionComponent<StudentFiltersProps> = ({
         },
         {
           label: 'Applied',
-          value: STUDENT_STATUS_APPLIED,
+          value: StudentStatus.APPLIED,
         },
         {
           label: 'Pending',
-          value: STUDENT_STATUS_PENDING,
+          value: StudentStatus.PENDING,
         },
         {
           label: `Active (${moment().format('MM/DD/YYYY')})`,
-          value: STUDENT_STATUS_ACTIVE,
+          value: StudentStatus.ACTIVE,
         },
         {
           label: 'Withdrawn',
-          value: STUDENT_STATUS_WITHDRAWAL,
+          value: StudentStatus.WITHDRAWN,
         },
       ])
     }
