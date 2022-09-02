@@ -151,7 +151,7 @@ export const FileUploadModal: React.FC<SubmissionModal> = ({
         message: 'This file exceeds maximum allowed size of 25 MB',
       }
     }
-    if (validTypes.indexOf(file.type) === -1) {
+    if (validTypes?.indexOf(file.type) === -1) {
       return {
         status: false,
         message: invalidMessage,

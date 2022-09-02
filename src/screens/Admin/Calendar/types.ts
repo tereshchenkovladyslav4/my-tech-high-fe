@@ -25,6 +25,7 @@ export type EventVM = {
     schoolOfEnrollment: string
     users: string
   }
+  hasRSVP: boolean
 }
 
 export type CalendarEvent = {
@@ -35,6 +36,7 @@ export type CalendarEvent = {
   color: string
   backgroundColor: string
   allDay?: boolean
+  hasRSVP?: boolean
 }
 
 export type EventCalendarProps = {
@@ -78,6 +80,7 @@ export type EventResponseVM = {
   position: number
   startDateOnly: Date
   endDateOnly: Date
+  has_rsvp: boolean
 }
 
 export type EventDetailProps = {
@@ -118,6 +121,7 @@ export interface EventFormData {
   allDay: boolean
   description: string
   grades: string[]
+  hasRSVP: boolean
 }
 
 export type EventFormProps = {

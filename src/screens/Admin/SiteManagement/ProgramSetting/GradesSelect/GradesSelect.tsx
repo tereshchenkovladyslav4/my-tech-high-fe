@@ -1,4 +1,4 @@
-import React, { useState, useEffect, FunctionComponent } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   Box,
   Button,
@@ -11,20 +11,21 @@ import {
   DialogActions,
 } from '@mui/material'
 import { map } from 'lodash'
-import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragraph'
-import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
+import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { GRADES, MTHBLUE } from '../../../../../utils/constants'
 import { toOrdinalSuffix } from '../../../../../utils/stringHelpers'
 import { useStyles } from '../../styles'
+import { ProgramSettingChanged } from '../types'
 
 export type GradesSelectProps = {
   grades: string
   setGrades: (value: string) => void
-  setIsChanged: (value: boolean) => void
-  isChanged: unknown
+  setIsChanged: (value: ProgramSettingChanged) => void
+  isChanged: ProgramSettingChanged
 }
 
-export const GradesSelect: FunctionComponent<GradesSelectProps> = ({ grades, setGrades, setIsChanged, isChanged }) => {
+export const GradesSelect: React.FC<GradesSelectProps> = ({ grades, setGrades, setIsChanged, isChanged }) => {
   const classes = useStyles
   const [open, setOpen] = useState<boolean>(false)
   const [gradesArr, setGradesArr] = useState<string[]>([])
@@ -61,7 +62,7 @@ export const GradesSelect: FunctionComponent<GradesSelectProps> = ({ grades, set
     })
   }
 
-  const handleChangeGrades = (e) => {
+  const handleChangeGrades = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (gradesArr.includes(e.target.value)) {
       setGradesArr(gradesArr.filter((item) => item !== e.target.value).filter((item) => item !== 'all'))
     } else {

@@ -1,9 +1,10 @@
-import React, { FunctionComponent, useState } from 'react'
+import React, { useState } from 'react'
 import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded'
 import { Box, Button, IconButton } from '@mui/material'
 import { useHistory } from 'react-router-dom'
-import { CustomModal } from '../../../../../components/CustomModal/CustomModals'
-import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
+import { CustomModal } from '@mth/components/CustomModal/CustomModals'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { MthTitle } from '@mth/enums'
 import { ANNOUNCEMENTS } from '../../../../../utils/constants'
 import { Announcement } from '../../../../Dashboard/Announcements/types'
 import { useStyles } from '../styles'
@@ -16,7 +17,7 @@ type HeaderComponentProps = {
   handleRepublish: () => void
 }
 
-const HeaderComponent: FunctionComponent<HeaderComponentProps> = ({
+const HeaderComponent: React.FC<HeaderComponentProps> = ({
   announcement,
   setAnnouncement,
   handleSaveClick,
@@ -78,7 +79,7 @@ const HeaderComponent: FunctionComponent<HeaderComponentProps> = ({
           </Subtitle>
         ) : (
           <Subtitle size='medium' fontWeight='700'>
-            Add Announcement
+            {MthTitle.ADD_ANNOUNCEMENT}
           </Subtitle>
         )}
       </Box>

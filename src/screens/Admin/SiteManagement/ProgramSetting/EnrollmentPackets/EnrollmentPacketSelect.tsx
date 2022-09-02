@@ -1,14 +1,15 @@
-import React, { FunctionComponent } from 'react'
+import React from 'react'
 import { DropDown } from '../../components/DropDown/DropDown'
+import { ProgramSettingChanged } from '../types'
 
 type EnrollPacketSelectProps = {
   enroll: boolean
   setEnroll: (value: boolean) => void
-  setIsChanged: (value: boolean) => void
-  isChanged: unknown
+  setIsChanged: (value: ProgramSettingChanged) => void
+  isChanged: ProgramSettingChanged
 }
 
-export const EnrollPacketSelect: FunctionComponent<EnrollPacketSelectProps> = ({
+export const EnrollPacketSelect: React.FC<EnrollPacketSelectProps> = ({
   enroll,
   setEnroll,
   setIsChanged,

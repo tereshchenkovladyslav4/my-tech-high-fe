@@ -168,15 +168,6 @@ const EventForm: React.FC<EventFormProps> = ({ setIsChanged, handleAddRSVPClick 
             />
           </Box>
         </Box>
-        <Button
-          variant={'outlined'}
-          sx={addEventClassess.addRSVPButton}
-          onClick={() => {
-            handleAddRSVPClick()
-          }}
-        >
-          Add RSVP Form
-        </Button>
         <Subtitle sx={calendarClassess.formError}>{touched.description && errors.description}</Subtitle>
         <Box sx={{ my: 1 }}>
           <BulletEditor
@@ -187,6 +178,31 @@ const EventForm: React.FC<EventFormProps> = ({ setIsChanged, handleAddRSVPClick 
             }}
             error={touched.description && Boolean(errors.description)}
           />
+        </Box>
+        <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+          <FormControlLabel
+            sx={{ height: 30, width: '160px' }}
+            control={
+              <Checkbox
+                checked={values?.hasRSVP}
+                value={values?.hasRSVP}
+                onChange={() => {
+                  setFieldValue('hasRSVP', !values?.hasRSVP)
+                  setIsChanged(true)
+                }}
+              />
+            }
+            label={
+              <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
+                Add RSVP
+              </Paragraph>
+            }
+          />
+          {values?.hasRSVP && (
+            <Button sx={addEventClassess.RSVPBtn} onClick={handleAddRSVPClick}>
+              Edit RSVP
+            </Button>
+          )}
         </Box>
       </Box>
     </Stack>

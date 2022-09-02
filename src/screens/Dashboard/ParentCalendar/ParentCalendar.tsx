@@ -1,15 +1,20 @@
 import React, { useEffect, useState } from 'react'
 import { Box, Card, Divider, Grid } from '@mui/material'
 import moment from 'moment'
-import { Subtitle } from '../../../components/Typography/Subtitle/Subtitle'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { getFirstDayAndLastDayOfMonth } from '../../../utils/utils'
 import { CalendarEvent, EventVM } from '../../Admin/Calendar/types'
 import { DashboardCalendar } from './components/DashboardCalendar'
 import { ParentEventDetail } from './ParentEventDetail'
 import { parentCalendarClasses } from './styles'
-import { ParentCalendarTemplateType } from './types'
+import { ParentCalendarProps } from './types'
 
-const ParentCalendar: ParentCalendarTemplateType = ({ events, calendarEventList, eventTypeLists, setSectionName }) => {
+const ParentCalendar: React.FC<ParentCalendarProps> = ({
+  events,
+  calendarEventList,
+  eventTypeLists,
+  setSectionName,
+}) => {
   const [selectedEvent, setSelectedEvent] = useState<EventVM | undefined>()
   const [selectedEventTypes, setSelectedEventTypes] = useState<string[]>([])
   const [selectedDate, setSelectedDate] = useState<Date>()

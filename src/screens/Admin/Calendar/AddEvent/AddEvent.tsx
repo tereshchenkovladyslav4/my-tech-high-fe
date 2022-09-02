@@ -44,6 +44,8 @@ const AddEvent: React.FC<AddEventProps> = ({ selectedEvent }) => {
       .nullable(),
     description: yup.string().required('Description Required').min(9, 'Invalid Description').nullable(),
     grades: yup.array().min(1, 'At least one Grade Level must be selected'),
+    allDay: yup.boolean().nullable(),
+    hasRSVP: yup.boolean().nullable(),
   })
 
   const handleCancelClick = () => {
@@ -67,6 +69,7 @@ const AddEvent: React.FC<AddEventProps> = ({ selectedEvent }) => {
           filter_provider: JSON.stringify(providers),
           filter_school_of_enrollment: JSON.stringify(schoolofEnrollments),
           filter_users: JSON.stringify(users),
+          has_rsvp: values?.hasRSVP,
         },
       },
     })
@@ -83,7 +86,8 @@ const AddEvent: React.FC<AddEventProps> = ({ selectedEvent }) => {
       time: event?.time || '00:00',
       allDay: !!event?.allDay,
       description: event?.description,
-      grades,
+      grades: grades,
+      hasRSVP: !!event?.hasRSVP,
     })
   }, [event, grades])
 

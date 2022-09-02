@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
-import { Button, Card, Grid, ListItemText, Typography } from '@mui/material'
+import { Button, Card, Grid, Typography } from '@mui/material'
 import { Box } from '@mui/system'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
@@ -53,18 +53,20 @@ const ReadMoreSection: React.FC<ReadMoreSectionProps> = ({ announcement, setSect
               marginX={4}
             >
               <Box display='flex' flexDirection='row' alignItems='center' alignContent='center'>
-                <Button onClick={() => setSectionName('viewAll')}>
+                <Button sx={{ marginBottom: 'auto' }} onClick={() => setSectionName('viewAll')}>
                   <ChevronLeftIcon sx={{ marginRight: 0.5, marginLeft: -2.5 }} />
                 </Button>
                 <Box sx={{ marginRight: 10 }}>
-                  <Subtitle size='large' fontWeight='700'>
+                  <Subtitle size='large' sx={{ fontSize: '24px' }} fontWeight='700'>
                     {announcement?.subject}
                   </Subtitle>
                 </Box>
               </Box>
             </Box>
             <Box sx={announcementClassess.readMoreSection}>
-              <ListItemText secondary={announcement?.date} />
+              <Typography fontSize={'16px'} color={'#A1A1A1'} fontWeight={700}>
+                {announcement?.date}
+              </Typography>
             </Box>
             <Box sx={announcementClassess.readMoreSection}>
               {announcement?.grades && avatarGroup(announcement?.grades, students)}

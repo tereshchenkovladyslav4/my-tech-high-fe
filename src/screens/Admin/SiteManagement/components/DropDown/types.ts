@@ -15,7 +15,7 @@ type FormikCustomError = {
 type DropDownProps = {
   dropDownItems: DropDownItem[]
   placeholder?: string
-  setParentValue: (value: unknown, val: unknown) => void
+  setParentValue: (value: string, val: number) => void
   labelTop?: boolean
   sx?: SxProps<Theme> | undefined
   alternate?: boolean

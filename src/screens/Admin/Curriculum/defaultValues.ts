@@ -1,4 +1,4 @@
-import { HomeroomResource } from './HomeroomResources/types'
+import { HomeroomResource, ResourceLevel } from './HomeroomResources/types'
 
 export const defaultHomeroomFormData: HomeroomResource = {
   resource_id: 0,
@@ -14,9 +14,15 @@ export const defaultHomeroomFormData: HomeroomResource = {
   detail: '',
   resource_limit: null,
   add_resource_level: false,
-  resource_level: '',
+  ResourceLevels: [],
   family_resource: false,
   priority: 0,
   is_active: false,
   allow_request: false,
+}
+
+export const defaultResourceLevelFormData: ResourceLevel = {
+  resource_level_id: 0,
+  limit: null,
+  name: '',
 }

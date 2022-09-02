@@ -1,10 +1,12 @@
 import React from 'react'
+import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded'
 import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined'
 import MenuIcon from '@mui/icons-material/Menu'
 import ModeEditIcon from '@mui/icons-material/ModeEdit'
-import { Box, Button, Grid, TextField } from '@mui/material'
+import { Box, Button, Grid, IconButton, TextField } from '@mui/material'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { DropDown } from '../../SiteManagement/components/DropDown/DropDown'
+import { addEventClassess } from '../AddEvent/styles'
 import { rsvpClassess } from './styles'
 
 type RSVPComponentProps = {
@@ -16,6 +18,14 @@ const RSVPComponent: React.FC<RSVPComponentProps> = ({ setShowRSVPForm }) => {
     <>
       <Box sx={rsvpClassess.pageTop}>
         <Box sx={rsvpClassess.pageTitle}>
+          <IconButton
+            onClick={() => setShowRSVPForm(false)}
+            sx={{
+              position: 'relative',
+            }}
+          >
+            <ArrowBackIosRoundedIcon sx={addEventClassess.arrowButton} />
+          </IconButton>
           <Subtitle size='medium' fontWeight='700'>
             RSVP Form
           </Subtitle>

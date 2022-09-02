@@ -16,7 +16,11 @@ export const getResourcesQuery = gql`
       detail
       resource_limit
       add_resource_level
-      resource_level
+      ResourceLevels {
+        resource_level_id
+        name
+        limit
+      }
       family_resource
       priority
       is_active

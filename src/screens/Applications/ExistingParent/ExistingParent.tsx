@@ -228,7 +228,7 @@ export const ExistingParent: React.FC = () => {
     submitApplicationAction({
       variables: {
         createApplicationInput: {
-          state: regionId,
+          state: regionId.toString(),
           program_year: parseInt(data.programYear!),
           students: submitStudents,
           midyear_application: midYearApplication,

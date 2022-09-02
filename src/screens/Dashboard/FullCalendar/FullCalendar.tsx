@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Box, Card, Grid } from '@mui/material'
 import { CalendarEvent, EventVM } from '../../Admin/Calendar/types'
 import { EventCalendar } from './EventCalendar'
@@ -6,7 +6,7 @@ import { EventDetail } from './EventDetail'
 import { HeaderComponent } from './HeaderComponent'
 import { FullCalendarProps } from './types'
 
-const FullCalendar: FunctionComponent<FullCalendarProps> = ({
+const FullCalendar: React.FC<FullCalendarProps> = ({
   searchField,
   events,
   calendarEventList,

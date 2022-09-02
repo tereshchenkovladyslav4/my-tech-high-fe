@@ -1,8 +1,9 @@
-import React, { FunctionComponent } from 'react'
+import React from 'react'
 import AddIcon from '@mui/icons-material/Add'
 import SearchIcon from '@mui/icons-material/Search'
 import { Box, Button, InputAdornment, OutlinedInput } from '@mui/material'
 import { useHistory } from 'react-router-dom'
+import { MthTitle } from '@mth/enums'
 import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
 import { ANNOUNCEMENTS } from '../../../../../utils/constants'
 import { useStyles } from '../styles'
@@ -15,7 +16,7 @@ type PageHeaderProps = {
   setSearchField: (value: string) => void
 }
 
-const PageHeader: FunctionComponent<PageHeaderProps> = ({
+const PageHeader: React.FC<PageHeaderProps> = ({
   totalAnnouncements,
   showArchivedAnnouncement,
   searchField,
@@ -46,7 +47,7 @@ const PageHeader: FunctionComponent<PageHeaderProps> = ({
               history.push(`${ANNOUNCEMENTS}/new`)
             }}
           >
-            <Subtitle sx={{ whiteSpace: 'nowrap' }}>Add Announcement</Subtitle>
+            <Subtitle sx={{ whiteSpace: 'nowrap' }}>{MthTitle.ADD_ANNOUNCEMENT}</Subtitle>
           </Button>
           <Box marginLeft={4} sx={classes.search}>
             <OutlinedInput
@@ -73,7 +74,7 @@ const PageHeader: FunctionComponent<PageHeaderProps> = ({
           sx={showArchivedAnnouncement ? classes.activeButton : classes.inactiveButton}
           onClick={() => setShowArchivedAnnouncement(true)}
         >
-          Show Archived
+          {MthTitle.SHOW_ARCHIVED}
         </Button>
         <Button
           variant='contained'
@@ -81,7 +82,7 @@ const PageHeader: FunctionComponent<PageHeaderProps> = ({
           sx={showArchivedAnnouncement ? classes.inactiveButton : classes.activeButton}
           onClick={() => setShowArchivedAnnouncement(false)}
         >
-          Hide Archived
+          {MthTitle.HIDE_ARCHIVED}
         </Button>
       </Box>
     </>

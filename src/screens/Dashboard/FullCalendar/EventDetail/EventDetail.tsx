@@ -1,11 +1,11 @@
-import React, { FunctionComponent, ReactElement, useContext, useEffect, useState } from 'react'
+import React, { ReactElement, useContext, useEffect, useState } from 'react'
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew'
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
 import { Avatar, AvatarGroup, Box, Button, Stack } from '@mui/material'
 import moment from 'moment'
 import { useHistory } from 'react-router-dom'
-import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
-import { UserContext } from '../../../../providers/UserContext/UserProvider'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { CALENDAR, SYSTEM_02, SYSTEM_05, SYSTEM_06 } from '../../../../utils/constants'
 import {
   extractContent,
@@ -18,7 +18,7 @@ import { Person } from '../../../HomeroomStudentProfile/Student/types'
 import { EventDetailProps } from '../types'
 import { eventDetailClassess } from './styles'
 
-const EventDetail: FunctionComponent<EventDetailProps> = ({
+const EventDetail: React.FC<EventDetailProps> = ({
   events,
   selectedEventIndex,
   selectedDate,
@@ -157,9 +157,11 @@ const EventDetail: FunctionComponent<EventDetailProps> = ({
             </Subtitle>
           </Box>
           <Box sx={eventDetailClassess.arrowButtonGroup}>
-            <Button sx={eventDetailClassess.saveBtn} onClick={() => handleRSVPClick()}>
-              RSVP
-            </Button>
+            {selectedEvent?.hasRSVP && (
+              <Button sx={eventDetailClassess.saveBtn} onClick={() => handleRSVPClick()}>
+                RSVP
+              </Button>
+            )}
             <Button
               disableElevation
               variant='contained'

@@ -31,6 +31,7 @@ export const SchoolDistrictSelect: React.FC<SchoolDistrictSelectProps> = ({
   setIsChanged,
   setIsDelete,
   isDelete,
+  isChanged,
 }) => {
   const classes = useStyles()
 
@@ -43,7 +44,7 @@ export const SchoolDistrictSelect: React.FC<SchoolDistrictSelectProps> = ({
   const invalidMessage = 'Please only submit CSV or Excel File'
 
   const handleFile = (fileName: File[]) => {
-    const schoolDistrictArray: unknown[] = []
+    const schoolDistrictArray: { school_district_name: string; school_district_code: string }[] = []
     const data: SchoolDistrictFileType = {
       name: fileName ? fileName[0]?.name : '',
       path: '',
@@ -52,9 +53,12 @@ export const SchoolDistrictSelect: React.FC<SchoolDistrictSelectProps> = ({
     Papa.parse(fileName[0], {
       header: true,
       skipEmptyLines: true,
-      complete: function (results: unknown) {
-        results?.data.forEach((ele: unknown) => {
-          const obj: unknown = {}
+      complete: function (results: { data: string[] }) {
+        results?.data.forEach((ele: string) => {
+          const obj: { school_district_name: string; school_district_code: string } = {
+            school_district_name: '',
+            school_district_code: '',
+          }
           if (Object.keys(ele).includes('School District Name')) {
             obj.school_district_name = Object.values(ele)[0]
           }
@@ -68,10 +72,11 @@ export const SchoolDistrictSelect: React.FC<SchoolDistrictSelectProps> = ({
         if (schoolDistrictArray.length > 0) {
           setSchoolDistrictArray(schoolDistrictArray)
           setSchoolDistrict(data)
-          setIsChanged((isChanged) => ({
-            ...isChanged,
-            schoolDistricts: true,
-          }))
+          if (isChanged)
+            setIsChanged({
+              ...isChanged,
+              schoolDistricts: true,
+            })
         } else {
         }
       },
@@ -84,10 +89,11 @@ export const SchoolDistrictSelect: React.FC<SchoolDistrictSelectProps> = ({
       ...isDelete,
       schoolDistrict: true,
     })
-    setIsChanged((isChanged) => ({
-      ...isChanged,
-      schoolDistricts: true,
-    }))
+    if (isChanged)
+      setIsChanged({
+        ...isChanged,
+        schoolDistricts: true,
+      })
     setSchoolDistrict({
       name: '',
       path: '',

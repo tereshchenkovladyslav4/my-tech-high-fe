@@ -60,8 +60,19 @@ const HomeroomResourceEdit: React.FC<HomeroomResourceEditProps> = ({
     std_user_name: yup.string().required('Username Required').nullable(),
     std_password: yup.string().required('Password Required').nullable(),
     detail: yup.string().required('Description Required').min(9, 'Invalid Description').nullable(),
-    resource_level: yup.string().nullable(),
-    resource_limit: yup.number().min(1, 'Limit Required').positive('Limit Invaild').integer('Limit Invaild').nullable(),
+    resource_limit: yup.number().min(1, 'Limit Invalid').positive('Limit Invaild').integer('Limit Invaild').nullable(),
+    ResourceLevels: yup
+      .array()
+      .when('add_resource_level', {
+        is: true,
+        then: yup.array().of(
+          yup.object().shape({
+            limit: yup.number().min(1, 'Limit Invalid').integer('Limit Invaild').nullable(),
+            name: yup.string().required('Level Name Required').nullable(),
+          }),
+        ),
+      })
+      .nullable(),
     family_resource: yup.boolean().nullable(),
     is_active: yup.boolean().nullable(),
   })
@@ -107,7 +118,7 @@ const HomeroomResourceEdit: React.FC<HomeroomResourceEditProps> = ({
           detail: value.detail,
           resource_limit: value.resource_limit || null,
           add_resource_level: value.add_resource_level,
-          resource_level: value.resource_level,
+          resourceLevelsStr: JSON.stringify(value.ResourceLevels),
           family_resource: value.family_resource,
         },
       },

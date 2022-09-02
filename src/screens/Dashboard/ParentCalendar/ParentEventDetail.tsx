@@ -6,9 +6,9 @@ import { Subtitle } from '../../../components/Typography/Subtitle/Subtitle'
 import { SYSTEM_05, SYSTEM_02, SYSTEM_06 } from '../../../utils/constants'
 import { extractContent, hexToRgbA, renderDate, renderFilter } from '../../../utils/utils'
 import { parentCalendarClasses } from './styles'
-import { ParentEventDetailTemplateType } from './types'
+import { ParentEventDetailProps } from './types'
 
-export const ParentEventDetail: ParentEventDetailTemplateType = ({
+export const ParentEventDetail: React.FC<ParentEventDetailProps> = ({
   selectedEvent,
   setSectionName,
   handleRSVPClick,
@@ -35,7 +35,7 @@ export const ParentEventDetail: ParentEventDetailTemplateType = ({
       </Subtitle>
       <Box sx={{ height: '80px' }}>
         <Subtitle fontWeight='500' color={SYSTEM_05} sx={{ mt: 2, fontSize: '12px' }}>
-          {extractContent(selectedEvent?.description || '').substring(0, 150)}...
+          {extractContent(selectedEvent?.description || '')?.substring(0, 150)}...
           <a
             style={parentCalendarClasses.readMore}
             onClick={() => {
@@ -47,9 +47,11 @@ export const ParentEventDetail: ParentEventDetailTemplateType = ({
         </Subtitle>
       </Box>
       <Box sx={parentCalendarClasses.arrowButtonGroup} display={{ xs: 'none', sm: 'flex' }}>
-        <Button sx={parentCalendarClasses.saveBtn} onClick={() => handleRSVPClick()}>
-          RSVP
-        </Button>
+        {selectedEvent?.hasRSVP && (
+          <Button sx={parentCalendarClasses.saveBtn} onClick={() => handleRSVPClick()}>
+            RSVP
+          </Button>
+        )}
         <Button
           disableElevation
           variant='contained'

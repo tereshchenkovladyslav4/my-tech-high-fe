@@ -1,15 +1,15 @@
-import React, { FunctionComponent, useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { useQuery } from '@apollo/client'
 import { Stack } from '@mui/material'
 import moment from 'moment'
-import { UserContext } from '../../../../../providers/UserContext/UserProvider'
+import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { DropDown } from '../../components/DropDown/DropDown'
 import { DropDownItem } from '../../components/DropDown/types'
 import { getSchoolYearsByRegionId } from '../../services'
 import { SchoolYears } from '../types'
 import { SchoolYearSelectProps } from './SchoolYearSelectProps'
 
-export const SchoolYearSelect: FunctionComponent<SchoolYearSelectProps> = ({
+export const SchoolYearSelect: React.FC<SchoolYearSelectProps> = ({
   setSelectedYearId,
   setSpecialEd,
   setSpecialEdOptions,
@@ -33,8 +33,8 @@ export const SchoolYearSelect: FunctionComponent<SchoolYearSelectProps> = ({
     fetchPolicy: 'network-only',
   })
 
-  const convertSpeicalEdOptions = (optionString) => {
-    const temp = []
+  const convertSpeicalEdOptions = (optionString: string) => {
+    const temp: { option_value: string }[] = []
     if (optionString != '' && optionString != null) {
       const optionArray = optionString.split(',')
       optionArray.map((option) => {
@@ -103,26 +103,37 @@ export const SchoolYearSelect: FunctionComponent<SchoolYearSelectProps> = ({
       let cnt = 0
       const { SchoolYears } = schoolYearData?.data?.region
       setSchoolYears(
-        SchoolYears?.map((schoolYear: unknown) => {
-          if (selectedYearId == schoolYear.school_year_id) {
-            setSpecialEd(schoolYear.special_ed)
-            setSpecialEdOptions(convertSpeicalEdOptions(schoolYear.special_ed_options))
-            setEnroll(schoolYear.enrollment_packet)
-            setBirthDate(schoolYear.birth_date_cut)
-            setGrades(schoolYear.grades)
-            cnt++
-          }
-          return {
-            schoolYearId: schoolYear.school_year_id,
-            schoolYearOpen: schoolYear.date_begin,
-            schoolYearClose: schoolYear.date_end,
-            grades: schoolYear.grades,
-            birthDateCut: schoolYear.birth_date_cut,
-            specialEd: schoolYear.special_ed,
-            specialEdOptions: schoolYear.special_ed_options,
-            enrollmentPacket: schoolYear.enrollment_packet,
-          }
-        }).sort((a: SchoolYears, b: SchoolYears) => {
+        SchoolYears?.map(
+          (schoolYear: {
+            school_year_id: string
+            special_ed: boolean
+            special_ed_options: string
+            enrollment_packet: boolean
+            birth_date_cut: string
+            grades: string
+            date_begin: Date
+            date_end: Date
+          }) => {
+            if (selectedYearId == schoolYear?.school_year_id) {
+              setSpecialEd(schoolYear?.special_ed)
+              setSpecialEdOptions(convertSpeicalEdOptions(schoolYear.special_ed_options))
+              setEnroll(schoolYear.enrollment_packet)
+              setBirthDate(schoolYear.birth_date_cut)
+              setGrades(schoolYear.grades)
+              cnt++
+            }
+            return {
+              schoolYearId: schoolYear.school_year_id,
+              schoolYearOpen: schoolYear.date_begin,
+              schoolYearClose: schoolYear.date_end,
+              grades: schoolYear.grades,
+              birthDateCut: schoolYear.birth_date_cut,
+              specialEd: schoolYear.special_ed,
+              specialEdOptions: schoolYear.special_ed_options,
+              enrollmentPacket: schoolYear.enrollment_packet,
+            }
+          },
+        ).sort((a: SchoolYears, b: SchoolYears) => {
           if (new Date(a.schoolYearOpen) > new Date(b.schoolYearOpen)) return 1
           else if (new Date(a.schoolYearOpen) == new Date(b.schoolYearOpen)) return 0
           else return -1
@@ -151,7 +162,7 @@ export const SchoolYearSelect: FunctionComponent<SchoolYearSelectProps> = ({
         sx={{ width: '200px' }}
         borderNone={true}
         setParentValue={(val) => {
-          handleSelectYear(val)
+          handleSelectYear(`${val}`)
         }}
       />
     </Stack>

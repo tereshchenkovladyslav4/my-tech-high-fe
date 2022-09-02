@@ -9,10 +9,10 @@ import {
   Card,
   Grid,
   InputAdornment,
-  ListItemText,
   Menu,
   MenuItem,
   OutlinedInput,
+  Typography,
 } from '@mui/material'
 import { Box } from '@mui/system'
 import { debounce } from 'lodash'
@@ -287,7 +287,9 @@ const AnnouncementSection: React.FC<AnnouncementSectionProps> = ({
                             </Subtitle>
                           </Box>
                           <Box sx={{ paddingY: '10px' }}>
-                            <ListItemText secondary={moment(announcement?.date).format('MMMM DD')} />
+                            <Typography fontSize={'12px'} color={'#A1A1A1'} fontWeight={700}>
+                              {moment(announcement?.date).format('MMMM DD')}
+                            </Typography>
                           </Box>
                           <Box sx={{ paddingY: '10px' }}>
                             {announcement?.filter_grades &&

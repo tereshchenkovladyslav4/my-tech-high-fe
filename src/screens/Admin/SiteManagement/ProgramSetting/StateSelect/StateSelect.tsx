@@ -1,11 +1,11 @@
-import React, { useState, useEffect, FunctionComponent } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useQuery } from '@apollo/client'
 import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDownOutlined'
 import { Box, TextField, FormControl, Select, MenuItem, SelectChangeEvent } from '@mui/material'
 import { map } from 'lodash'
-import { DropDownItem } from '../../../../../components/DropDown/types'
-import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
-import { getAllRegion } from '../../../../../graphql/queries/region'
+import { DropDownItem } from '@mth/components/DropDown/types'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { getAllRegion } from '@mth/graphql/queries/region'
 import { RED } from '../../../../../utils/constants'
 import { usStates } from '../../../../../utils/states'
 import { useStyles } from '../../styles'
@@ -19,7 +19,7 @@ type StateSelectProps = {
   setStateInvalid: (value: boolean) => void
 }
 
-export const StateSelect: FunctionComponent<StateSelectProps> = ({
+export const StateSelect: React.FC<StateSelectProps> = ({
   stateName,
   newStateName,
   stateInvalid,

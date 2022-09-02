@@ -1,6 +1,7 @@
 export enum EventType {
   ADD = 'add',
   ALLOW_REQUEST = 'allowRequest',
+  DISALLOW_REQUEST = 'disallowRequest',
   ARCHIVE = 'archive',
   CLICK = 'click',
   DELETE = 'delete',
@@ -13,6 +14,12 @@ export enum HomeroomResourcePage {
   ROOT = 'root',
   EDIT = 'edit',
   CONFIRMATION_DETAILS = 'confirmation-details',
+}
+
+export type ResourceLevel = {
+  resource_level_id: number
+  limit: number | null
+  name: string
 }
 
 export type HomeroomResource = {
@@ -29,7 +36,7 @@ export type HomeroomResource = {
   std_password: string
   detail: string
   add_resource_level: boolean
-  resource_level: string
+  ResourceLevels: ResourceLevel[]
   family_resource: boolean
   priority: number
   is_active: boolean
@@ -53,10 +60,14 @@ export interface HomeroomResourceCardProps {
 export interface HomeroomResourceModalProps {
   showArchivedModal: boolean
   showUnarchivedModal: boolean
+  showAllowModal: boolean
+  showDisallowModal: boolean
   showDeleteModal: boolean
   showCloneModal: boolean
   setShowArchivedModal: (value: boolean) => void
   setShowUnarchivedModal: (value: boolean) => void
+  setShowAllowModal: (value: boolean) => void
+  setShowDisallowModal: (value: boolean) => void
   setShowDeleteModal: (value: boolean) => void
   setShowCloneModal: (value: boolean) => void
   handleChangeResourceStatus: (eventType: EventType) => void

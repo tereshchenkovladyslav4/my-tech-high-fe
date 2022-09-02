@@ -173,9 +173,11 @@ const EventDetail: React.FC<EventDetailProps> = ({
             />
           </Subtitle>
           <Box sx={mainClasses.arrowButtonGroup}>
-            <Button sx={mainClasses.saveBtn} onClick={() => handleRSVPClick()}>
-              RSVP
-            </Button>
+            {selectedEvent?.hasRSVP && (
+              <Button sx={mainClasses.saveBtn} onClick={() => handleRSVPClick()}>
+                RSVP
+              </Button>
+            )}
             <Button
               disableElevation
               variant='contained'

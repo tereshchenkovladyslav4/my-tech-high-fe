@@ -32,9 +32,10 @@ const HomeroomResourceCard: React.FC<HomeroomResourceCardProps> = ({ item, actio
       sx={{
         position: 'relative',
         cursor: 'pointer',
-        borderRadius: 2,
+        borderRadius: '16px',
         opacity: item.resource_id && !item.is_active ? 0.5 : 1,
         minWidth: 300,
+        boxShadow: 'none',
       }}
       onClick={() => {
         actionHandler(EventType.CLICK)
@@ -112,7 +113,7 @@ const HomeroomResourceCard: React.FC<HomeroomResourceCardProps> = ({ item, actio
         <Tooltip title={item.allow_request ? 'View Only' : 'Allow Request'}>
           <Stack
             onClick={(e) => {
-              actionHandler(EventType.ALLOW_REQUEST)
+              actionHandler(item.allow_request ? EventType.DISALLOW_REQUEST : EventType.ALLOW_REQUEST)
               e.stopPropagation()
             }}
             sx={{
@@ -156,12 +157,12 @@ const HomeroomResourceCard: React.FC<HomeroomResourceCardProps> = ({ item, actio
             alignContent: 'flex-start',
           }}
         >
-          <Typography fontSize='20px' component='div' fontWeight={900}>
+          <Typography component='div' sx={{ fontSize: '20px', fontWeight: 700, lineHeight: 1.1 }}>
             {item.resource_id ? item.title : 'Add New'}
           </Typography>
         </Box>
         <Stack direction='row' justifyContent='space-between' alignItems='center' sx={{ height: 40 }}>
-          <Typography color='#A1A1A1' fontSize='16px' fontWeight='700'>
+          <Typography sx={{ fontSize: '16px', fontWeight: 700, lineHeight: '22px', color: MthColor.SYSTEM_06 }}>
             {item.resource_id
               ? item.subtitle == ResourceSubtitle.PRICE
                 ? `$${item.price}`

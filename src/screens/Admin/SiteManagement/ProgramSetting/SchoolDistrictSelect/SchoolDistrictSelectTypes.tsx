@@ -1,14 +1,17 @@
+import { FileDeleted, ProgramSettingChanged } from '../types'
+
 export type SchoolDistrictFileType = {
   name: string
   path: string
-  file: File | undefined
+  file: File | undefined | null
 }
 
 export type SchoolDistrictSelectProps = {
   schoolDistrict: SchoolDistrictFileType | null
   setSchoolDistrict: (value: SchoolDistrictFileType) => void
-  setSchoolDistrictArray: (value: SchoolDistrictFileType[]) => void
-  setIsChanged: (value: boolean) => void
-  setIsDelete: (value: boolean) => void
-  isDelete: boolean
+  setSchoolDistrictArray: (value: { school_district_name: string; school_district_code: string }[]) => void
+  setIsChanged: (value: ProgramSettingChanged) => void
+  setIsDelete: (value: FileDeleted) => void
+  isDelete: FileDeleted
+  isChanged?: ProgramSettingChanged
 }

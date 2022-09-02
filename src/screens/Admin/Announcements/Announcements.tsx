@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useState } from 'react'
+import React, { useState } from 'react'
 import { Box, Grid } from '@mui/material'
 import { Route, Switch, useHistory, useRouteMatch } from 'react-router-dom'
 import { ANNOUNCEMENTS } from '../../../utils/constants'
@@ -7,8 +7,8 @@ import { ReadMoreSection } from '../../Dashboard/ReadMoreSection'
 import { AnnouncementTable } from './AnnouncementTable'
 import { NewAnnouncement } from './NewAnnouncement'
 
-const Announcemnets: FunctionComponent = () => {
-  const { isExact } = useRouteMatch(ANNOUNCEMENTS)
+const Announcemnets: React.FC = () => {
+  const isExact = useRouteMatch(ANNOUNCEMENTS)?.isExact
   const history = useHistory()
   const [announcement, setAnnouncement] = useState<Announcement | null>(null)
   return (

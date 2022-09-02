@@ -5,7 +5,7 @@ import { SchoolYears } from '../types'
 export type SchoolYearSelectProps = {
   setSelectedYearId: (value: string) => void
   setSpecialEd: (value: boolean) => void
-  setSpecialEdOptions: (value: Array<unknown>) => void
+  setSpecialEdOptions: (value: Array<{ option_value: string }>) => void
   setEnroll: (value: boolean) => void
   setBirthDate: (value: string) => void
   setGrades: (value: string) => void

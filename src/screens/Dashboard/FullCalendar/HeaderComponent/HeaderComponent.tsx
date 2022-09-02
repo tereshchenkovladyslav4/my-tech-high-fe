@@ -3,12 +3,12 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import SearchIcon from '@mui/icons-material/Search'
 import { Box, Button, Grid, InputAdornment, OutlinedInput } from '@mui/material'
 import { debounce } from 'lodash'
-import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import MultiSelectDropDown from '../../../Admin/Calendar/components/MultiSelectDropDown/MultiSelectDropDown'
-import { HeaderTemplateType } from '../types'
+import { HeaderComponentProps } from '../types'
 import { headerClasses } from './styles'
 
-const HeaderComponent: HeaderTemplateType = ({
+const HeaderComponent: React.FC<HeaderComponentProps> = ({
   searchField,
   eventTypeLists,
   selectedEventTypes,

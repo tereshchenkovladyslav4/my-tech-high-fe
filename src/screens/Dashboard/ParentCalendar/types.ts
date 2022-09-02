@@ -1,8 +1,7 @@
-import { FunctionComponent } from 'react'
 import { MultiSelectDropDownListType } from '../../Admin/Calendar/components/MultiSelectDropDown/MultiSelectDropDown'
 import { CalendarEvent, EventVM } from '../../Admin/Calendar/types'
 
-type ParentEventDetailProps = {
+export type ParentEventDetailProps = {
   selectedEvent: EventVM | undefined
   setSectionName: (value: string) => void
   handleRSVPClick: () => void
@@ -10,12 +9,9 @@ type ParentEventDetailProps = {
   handleNextEventView: () => void
 }
 
-type ParentCalendarProps = {
+export type ParentCalendarProps = {
   events: EventVM[]
   calendarEventList: CalendarEvent[]
   eventTypeLists: MultiSelectDropDownListType[]
   setSectionName: (value: string) => void
 }
-
-export type ParentEventDetailTemplateType = FunctionComponent<ParentEventDetailProps>
-export type ParentCalendarTemplateType = FunctionComponent<ParentCalendarProps>

@@ -20,6 +20,7 @@ export const defaultEvent: EventVM = {
     schoolOfEnrollment: '',
     users: '',
   },
+  hasRSVP: false,
 }
 
 export const defaultEventFormData: EventFormData = {
@@ -31,6 +32,7 @@ export const defaultEventFormData: EventFormData = {
   allDay: true,
   description: '',
   grades: [],
+  hasRSVP: false,
 }
 
 export const defaultUserList: CheckBoxListVM[] = [

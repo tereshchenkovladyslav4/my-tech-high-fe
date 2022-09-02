@@ -12,4 +12,8 @@ export enum MthTitle {
   GRADES = 'Grades',
   BIRTHDAY_CUT_OFF = 'Birthday Cut-off',
   SPECIAL_ED = 'Special Ed',
+  SHOW_ARCHIVED = 'Show Archived',
+  HIDE_ARCHIVED = 'Hide Archived',
+  ADD_ANNOUNCEMENT = 'Add Announcement',
+  ADD_ASSESSMENT = '+ Add Assessment',
 }

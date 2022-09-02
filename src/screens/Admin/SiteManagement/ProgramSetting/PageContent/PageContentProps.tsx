@@ -1,6 +1,7 @@
 import { CountyFileType } from '../CountySelect/CountySelectTypes'
 import { StateLogoFileType } from '../ImageCropper/ImageCropper'
 import { SchoolDistrictFileType } from '../SchoolDistrictSelect/SchoolDistrictSelectTypes'
+import { FileDeleted, ProgramSettingChanged } from '../types'
 
 export type PageContentProps = {
   stateSelectItem: {
@@ -10,10 +11,10 @@ export type PageContentProps = {
     setStateInvalid: (value: boolean) => void
     newStateName: string
     setNewStateName: (value: string) => void
-    setIsStateChanged: (value: boolean) => void
-    setIsDelete: (value: boolean) => void
-    isDelete: boolean
-    isChanged: boolean
+    setIsStateChanged?: (value: boolean) => void
+    setIsDelete?: (value: boolean) => void
+    isDelete?: boolean
+    isChanged?: boolean
   }
   stateLogoItem: {
     stateLogo: string
@@ -28,7 +29,7 @@ export type PageContentProps = {
   countyItem: {
     county: CountyFileType | null
     setCounty: (value: CountyFileType) => void
-    setCountyArray: (value: Array<CountyFileType>) => void
+    setCountyArray: (value: Array<{ county_name: string }>) => void
   }
   schoolDistrictItem: {
     schoolDistrict: SchoolDistrictFileType | null
@@ -46,15 +47,15 @@ export type PageContentProps = {
   specialEdItem: {
     specialEd: boolean
     setSpecialEd: (value: boolean) => void
-    speicalEdOptions: Array<unknown>
-    setSpecialEdOptions: (value: Array<unknown>) => void
+    specialEdOptions: Array<{ option_value: string }>
+    setSpecialEdOptions: (value: Array<{ option_value: string }>) => void
   }
   enrollItem: {
     enroll: boolean
     setEnroll: (value: boolean) => void
   }
-  isChanged: boolean
-  setIsChanged: (value: boolean) => void
-  isDelete: boolean
-  setIsDelete: (value: boolean) => void
+  isChanged: ProgramSettingChanged
+  setIsChanged: (value: ProgramSettingChanged) => void
+  isDelete: FileDeleted
+  setIsDelete: (value: FileDeleted) => void
 }

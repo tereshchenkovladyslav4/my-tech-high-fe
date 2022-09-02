@@ -1,11 +1,11 @@
-import React, { FunctionComponent, useState } from 'react'
+import React, { useState } from 'react'
 import { Tooltip } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined'
 import { Box, Stack } from '@mui/material'
 import Papa from 'papaparse'
-import DownloadFileIcon from '../../../../../assets/icons/file-download.svg'
-import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
+import DownloadFileIcon from '@mth/assets/icons/file-download.svg'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { MTHBLUE } from '../../../../../utils/constants'
 import { CustomModal } from '../../EnrollmentSetting/components/CustomModal/CustomModals'
 import { FileUploadModal } from '../FileUploadModal/FileUploadModal'
@@ -24,7 +24,7 @@ const useStyles = makeStyles(() => ({
   },
 }))
 
-export const CountySelect: FunctionComponent<CountySelectProps> = ({
+export const CountySelect: React.FC<CountySelectProps> = ({
   county,
   setCounty,
   setCountyArray,
@@ -43,13 +43,13 @@ export const CountySelect: FunctionComponent<CountySelectProps> = ({
 
   const classes = useStyles()
   const handleFile = (fileName: File[]) => {
-    const countyArray: unknown[] = []
+    const countyArray: { county_name: string }[] = []
     Papa.parse(fileName[0], {
       header: true,
       skipEmptyLines: true,
-      complete: function (results: unknown) {
-        results?.data.forEach((ele: unknown) => {
-          const obj: unknown = {}
+      complete: function (results: { data: string[] }) {
+        results?.data.forEach((ele: string) => {
+          const obj: { county_name: string } = { county_name: '' }
           if (Object.keys(ele).includes('County Name')) {
             obj.county_name = Object.values(ele)[0]
           }
@@ -64,10 +64,12 @@ export const CountySelect: FunctionComponent<CountySelectProps> = ({
             file: fileName[0],
           }
           setCounty(data)
-          setIsChanged({
-            ...isChanged,
-            counties: true,
-          })
+          if (isChanged) {
+            setIsChanged({
+              ...isChanged,
+              counties: true,
+            })
+          }
           setCountyArray(countyArray)
         } else {
         }

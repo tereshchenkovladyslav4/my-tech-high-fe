@@ -57,6 +57,21 @@ export const addEventClassess = {
       color: '#fff',
     },
   },
+  RSVPBtn: {
+    fontSize: 11,
+    fontWeight: 700,
+    borderRadius: 2,
+    textTransform: 'none',
+    height: '33px',
+    background: BLUE_GRDIENT,
+    color: 'white',
+    width: '160px',
+    marginRight: 2,
+    '&:hover': {
+      background: '#4145FF',
+      color: '#fff',
+    },
+  },
   subject: {
     marginTop: 2,
   },

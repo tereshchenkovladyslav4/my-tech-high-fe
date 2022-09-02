@@ -1,12 +1,12 @@
-import React, { FunctionComponent, useState } from 'react'
+import React, { useState } from 'react'
 import SystemUpdateAltOutlinedIcon from '@mui/icons-material/SystemUpdateAltOutlined'
 import { Box, Stack } from '@mui/material'
-import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { useStyles } from '../../styles'
 import { ImageCropper } from '../ImageCropper'
 import { StateLogoProps } from './StateLogoTypes'
 
-export const StateLogo: FunctionComponent<StateLogoProps> = ({
+export const StateLogo: React.FC<StateLogoProps> = ({
   stateLogo,
   stateLogoFile,
   setStateLogoFile,
@@ -15,7 +15,7 @@ export const StateLogo: FunctionComponent<StateLogoProps> = ({
 }) => {
   const classes = useStyles
   const [open, setOpen] = useState<boolean>(false)
-  const [imageToCrop, setImageToCrop] = useState(undefined)
+  const [imageToCrop, setImageToCrop] = useState<string | ArrayBuffer | null>('')
   const handleClickOpen = () => {
     setOpen(true)
   }

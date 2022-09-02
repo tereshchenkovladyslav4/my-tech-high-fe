@@ -5,21 +5,22 @@ import { Grid } from '@mui/material'
 import { Box, IconButton, Typography } from '@mui/material'
 import { map } from 'lodash'
 import { Route, Switch, useRouteMatch, useHistory } from 'react-router-dom'
-import DiplomaSeeking from '../../../../assets/Diploma-seeking.png'
-import ImmunizationsImage from '../../../../assets/immunizations.png'
-import EnrollmentQuestionImage from '../../../../assets/q&a.png'
-import ApplicationQuestionImage from '../../../../assets/schedules.png'
-import TestingPreference from '../../../../assets/testing-preference.png'
-import { ItemCard } from '../../../../components/ItemCard/ItemCard'
-import { UserContext } from '../../../../providers/UserContext/UserProvider'
+import DiplomaSeeking from '@mth/assets/Diploma-seeking.png'
+import ImmunizationsImage from '@mth/assets/immunizations.png'
+import EnrollmentQuestionImage from '@mth/assets/q&a.png'
+import ApplicationQuestionImage from '@mth/assets/schedules.png'
+import TestingPreferenceImage from '@mth/assets/testing-preference.png'
+import { ItemCard } from '@mth/components/ItemCard/ItemCard'
+import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { GetCurrentSchoolYearByRegionId } from '../../Announcements/services'
 import { ApplicationQuestions } from './ApplicationQuestions'
 import { EnrollmentQuestions } from './EnrollmentQuestions'
 import Immunizations from './Immunizations/Immunizations'
+import TestingPreference from './TestingPreference/TestingPreference'
 
 const EnrollmentSetting: React.FC = () => {
   const { me } = useContext(UserContext)
-  const { path, isExact } = useRouteMatch('/site-management/enrollment')
+  const { path, isExact } = useRouteMatch('/site-management/enrollment') || {}
   const [enrollmentPacketFlag, setEnrollmentPacketFlag] = useState<boolean>(false)
   const history = useHistory()
   const schoolYearData = useQuery(GetCurrentSchoolYearByRegionId, {
@@ -67,9 +68,9 @@ const EnrollmentSetting: React.FC = () => {
       id: 4,
       title: 'Testing Preference',
       subtitle: '',
-      img: TestingPreference,
+      img: TestingPreferenceImage,
       isLink: false,
-      to: `${path}/testing_preference`,
+      to: `${path}/testing-preference`,
     },
     {
       id: 5,
@@ -132,6 +133,9 @@ const EnrollmentSetting: React.FC = () => {
         </Route>
         <Route path={`${path}/enrollment-question`}>
           <EnrollmentQuestions />
+        </Route>
+        <Route path={`${path}/testing-preference`}>
+          <TestingPreference />
         </Route>
       </Switch>
     </>

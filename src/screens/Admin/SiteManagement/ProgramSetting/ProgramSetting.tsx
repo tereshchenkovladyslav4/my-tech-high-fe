@@ -3,7 +3,7 @@ import { useMutation } from '@apollo/client'
 import { Box } from '@mui/material'
 import moment from 'moment'
 import { Prompt } from 'react-router-dom'
-import { UserContext } from '../../../../providers/UserContext/UserProvider'
+import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { PageHeader } from '../components/PageHeader'
 import {
   removeCountyInfoByRegionId,
@@ -20,7 +20,7 @@ import { PageContent } from './PageContent'
 import { SchoolDistrictFileType } from './SchoolDistrictSelect/SchoolDistrictSelectTypes'
 import { SchoolYearSelect } from './SchoolYearSelect'
 import { StateLogoFileType } from './StateLogo/StateLogoTypes'
-import { SchoolYears } from './types'
+import { FileDeleted, ProgramSettingChanged, SchoolYears } from './types'
 
 const ProgramSetting: React.FC = () => {
   const classes = useStyles
@@ -30,7 +30,7 @@ const ProgramSetting: React.FC = () => {
   const [program, setProgram] = useState<string>('')
   const [specialEd, setSpecialEd] = useState<boolean>(false)
   const [enroll, setEnroll] = useState<boolean>(false)
-  const [specialEdOptions, setSpecialEdOptions] = useState([])
+  const [specialEdOptions, setSpecialEdOptions] = useState<{ option_value: string }[]>([])
   const [isInvalidStateName, setIsInvalidStateName] = useState<boolean>(false)
   const [birthDate, setBirthDate] = useState<string>('')
   const [stateLogo, setStateLogo] = useState<string>('')
@@ -39,9 +39,8 @@ const ProgramSetting: React.FC = () => {
   const [grades, setGrades] = useState<string>('')
   const [county, setCounty] = useState<CountyFileType | null>(null)
   const [schoolDistrict, setSchoolDistrict] = useState<SchoolDistrictFileType | null>(null)
-  // const [isChanged, setIsChanged] = useState<boolean>(false)
   const [schoolYears, setSchoolYears] = useState<SchoolYears[]>([])
-  const [isChanged, setIsChanged] = useState<unknown>({
+  const [isChanged, setIsChanged] = useState<ProgramSettingChanged>({
     state: false,
     stateLogo: false,
     program: false,
@@ -53,7 +52,7 @@ const ProgramSetting: React.FC = () => {
     enrollment: false,
   })
 
-  const [isDelete, setIsDelete] = useState({
+  const [isDelete, setIsDelete] = useState<FileDeleted>({
     county: false,
     schoolDistrict: false,
   })
@@ -67,7 +66,7 @@ const ProgramSetting: React.FC = () => {
   const changeStatus = () => {
     const selectedRegion = me?.userRegion?.find((region) => region.region_id === me?.selectedRegionId)
 
-    const currentSetting = schoolYears.find((i) => i.schoolYearId == selectedYearId)
+    const currentSetting = schoolYears.find((i) => i.schoolYearId == Number(selectedYearId))
 
     if (selectedRegion?.regionDetail) {
       if (newStateName && selectedRegion?.regionDetail?.name != newStateName) {
@@ -119,12 +118,12 @@ const ProgramSetting: React.FC = () => {
     }
     let imageLocation = ''
     if (stateLogoFile) {
-      imageLocation = await uploadImage(stateLogoFile.file, stateName)
+      imageLocation = await uploadImage(stateLogoFile?.file, stateName)
     }
 
     let countyFileLocation = ''
     if (county?.file && countyArray.length > 0) {
-      countyFileLocation = await uploadFile(county.file, 'county', stateName)
+      countyFileLocation = await uploadFile(county?.file, 'county', stateName)
     }
 
     if (isDelete.county) {
@@ -157,12 +156,11 @@ const ProgramSetting: React.FC = () => {
       },
     })
 
-    setCounty((prev) => {
-      return {
-        ...prev,
+    if (county)
+      setCounty({
+        ...county,
         path: countyFileLocation ? countyFileLocation : county?.path,
-      }
-    })
+      })
 
     if (schoolDistrict)
       setSchoolDistrict({

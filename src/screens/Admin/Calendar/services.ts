@@ -41,6 +41,7 @@ export const getEventsQuery = gql`
       filter_provider
       filter_school_of_enrollment
       filter_users
+      has_rsvp
     }
   }
 `

@@ -9,12 +9,13 @@ import { MultiSelect } from '@mth/components/MultiSelect/MultiSelect'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { s3URL } from '@mth/constants'
-import { MthColor, ResourceSubtitle } from '@mth/enums'
+import { ResourceSubtitle } from '@mth/enums'
 import { useProgramYearListBySchoolYearId } from '@mth/hooks'
 import { BulletEditor } from '@mth/screens/Admin/Calendar/components/BulletEditor'
 import { renderGrades } from '@mth/utils'
 import { homeroomResourcesClassess } from '../styles'
 import { HomeroomResource, HomeroomResourceFormProps } from '../types'
+import { ResourceLevels } from './ResourceLevels'
 
 const HomeroomResourceForm: React.FC<HomeroomResourceFormProps> = ({ schoolYearId, setIsChanged }) => {
   const { errors, handleChange, setFieldValue, touched, values } = useFormikContext<HomeroomResource>()
@@ -180,36 +181,7 @@ const HomeroomResourceForm: React.FC<HomeroomResourceFormProps> = ({ schoolYearI
             </Grid>
             <Grid item xs={4}>
               <Box sx={{ textAlign: 'start', marginLeft: 6 }}>
-                <FormControlLabel
-                  sx={{ height: 30, marginTop: 2 }}
-                  control={
-                    <Checkbox
-                      checked={values?.add_resource_level}
-                      value={values?.add_resource_level}
-                      onChange={() => {
-                        setFieldValue('add_resource_level', !values?.add_resource_level)
-                        setIsChanged(true)
-                      }}
-                    />
-                  }
-                  label={
-                    <Paragraph size='large' fontWeight='700' sx={{ marginLeft: '12px' }}>
-                      Add Resource Levels
-                    </Paragraph>
-                  }
-                  disabled={values?.family_resource}
-                />
-                {values?.add_resource_level && (
-                  <Subtitle
-                    size={16}
-                    color={MthColor.MTHBLUE}
-                    fontWeight='700'
-                    sx={{ cursor: 'pointer', marginTop: 1, marginLeft: '44px' }}
-                    onClick={() => {}}
-                  >
-                    Edit Levels
-                  </Subtitle>
-                )}
+                <ResourceLevels setIsChanged={setIsChanged}></ResourceLevels>
               </Box>
             </Grid>
           </Grid>
@@ -256,7 +228,9 @@ const HomeroomResourceForm: React.FC<HomeroomResourceFormProps> = ({ schoolYearI
                       setIsChanged(true)
                     }}
                     error={touched.resource_limit && !!errors.resource_limit}
-                    disabled={!!values?.family_resource}
+                    disabled={
+                      !!values?.family_resource || !!values.ResourceLevels?.filter((item) => item.limit)?.length
+                    }
                   />
                 </Box>
               </Box>

@@ -1,4 +1,3 @@
-import { FunctionComponent } from 'react'
 import { MultiSelectDropDownListType } from '../../Admin/Calendar/components/MultiSelectDropDown/MultiSelectDropDown'
 import { CalendarEvent, EventVM } from '../../Admin/Calendar/types'
 
@@ -22,7 +21,7 @@ export type EventDetailProps = {
   setSelectedEventIndex: (value: number) => void
 }
 
-type HeaderComponentProps = {
+export type HeaderComponentProps = {
   searchField: string
   eventTypeLists: MultiSelectDropDownListType[]
   selectedEventTypes: string[]
@@ -30,5 +29,3 @@ type HeaderComponentProps = {
   setSearchField: (value: string) => void
   setSectionName: (value: string) => void
 }
-
-export type HeaderTemplateType = FunctionComponent<HeaderComponentProps>

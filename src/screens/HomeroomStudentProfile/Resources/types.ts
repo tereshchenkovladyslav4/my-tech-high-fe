@@ -15,6 +15,12 @@ export enum ResourcePage {
   DETAILS = 'details',
 }
 
+export type ResourceLevel = {
+  resource_level_id: number
+  limit: number | null
+  name: string
+}
+
 export type Resource = {
   resource_id?: number
   SchoolYearId: number
@@ -29,7 +35,7 @@ export type Resource = {
   std_password: string
   detail: string
   add_resource_level: boolean
-  resource_level: string
+  ResourceLevels: ResouceLevel[]
   family_resource: boolean
   priority: number
   is_active: boolean

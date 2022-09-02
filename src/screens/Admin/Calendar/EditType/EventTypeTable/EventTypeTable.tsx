@@ -4,7 +4,18 @@ import MenuIcon from '@mui/icons-material/Menu'
 import ModeEditIcon from '@mui/icons-material/ModeEdit'
 import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt'
 import { Box, Button, Tooltip, Typography } from '@mui/material'
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
+import {
+  DragDropContext,
+  Droppable,
+  Draggable,
+  DroppableProvided,
+  DroppableStateSnapshot,
+  DraggableProvided,
+  DraggableStateSnapshot,
+  DraggingStyle,
+  NotDraggingStyle,
+  DropResult,
+} from 'react-beautiful-dnd'
 import { EventType, EventTypeTableProps } from '../../types'
 import { eventTypeClassess } from '../styles'
 
@@ -57,7 +68,7 @@ const EventTypeTable: React.FC<EventTypeTableProps> = ({
     background: isDraggingOver ? 'lightgrey' : 'lightgrey',
   })
 
-  const getItemStyle = (isDragging: boolean, draggableStyle: unknown) => ({
+  const getItemStyle = (isDragging: boolean, draggableStyle: DraggingStyle | NotDraggingStyle | undefined) => ({
     // some basic styles to make the items look a bit nicer
     userSelect: 'none',
     background: isDragging ? 'white' : 'white',
@@ -75,7 +86,7 @@ const EventTypeTable: React.FC<EventTypeTableProps> = ({
     handleUpdateEventTypes(dragableItems)
   }
 
-  const onDragEnd = (result: unknown) => {
+  const onDragEnd = (result: DropResult) => {
     if (!result.destination) {
       return
     }
@@ -102,7 +113,7 @@ const EventTypeTable: React.FC<EventTypeTableProps> = ({
       <Box>
         <DragDropContext onDragEnd={onDragEnd}>
           <Droppable droppableId='droppable'>
-            {(provided: unknown, snapshot: unknown) => (
+            {(provided: DroppableProvided, snapshot: DroppableStateSnapshot) => (
               <Box {...provided.droppableProps} ref={provided.innerRef} style={getListStyle(snapshot.isDraggingOver)}>
                 {dragableItems
                   .filter((eventType) => !eventType.archived)
@@ -113,12 +124,12 @@ const EventTypeTable: React.FC<EventTypeTableProps> = ({
                       index={index}
                       isDragDisabled={isDragDisable}
                     >
-                      {(provided: unknown, snapshot: unknown) => (
+                      {(provided: DraggableProvided, snapshot: DraggableStateSnapshot) => (
                         <Box
                           ref={provided.innerRef}
                           {...provided.draggableProps}
                           {...provided.dragHandleProps}
-                          style={getItemStyle(snapshot.isDragging, provided.draggableProps.style)}
+                          sx={getItemStyle(snapshot.isDragging, provided.draggableProps.style)}
                         >
                           <Box key={index} sx={eventTypeClassess.tableCotainer} draggable='false'>
                             <Typography

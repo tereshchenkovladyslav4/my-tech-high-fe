@@ -1,21 +1,22 @@
-import React, { useState, useEffect, FunctionComponent } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Box, Button, OutlinedInput, Stack, Dialog, DialogTitle, DialogActions, Tooltip } from '@mui/material'
-import { CustomConfirmModal } from '../../../../../components/CustomConfirmModal/CustomConfirmModal'
-import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
+import { CustomConfirmModal } from '@mth/components/CustomConfirmModal/CustomConfirmModal'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { MTHBLUE } from '../../../../../utils/constants'
 import { DropDown } from '../../components/DropDown/DropDown'
 import { useStyles } from '../../styles'
+import { ProgramSettingChanged } from '../types'
 
 type SpecialEdSelectProps = {
   specialEd: boolean
   setSpecialEd: (value: boolean) => void
-  specialEdOptions: Array<unknown>
-  setSpecialEdOptions: (value: Array<unknown>) => void
-  setIsChanged: (value: boolean) => void
-  isChanged: unknown
+  specialEdOptions: Array<{ option_value: string }>
+  setSpecialEdOptions: (value: Array<{ option_value: string }>) => void
+  setIsChanged: (value: ProgramSettingChanged) => void
+  isChanged: ProgramSettingChanged
 }
 
-export const SpecialEdSelect: FunctionComponent<SpecialEdSelectProps> = ({
+export const SpecialEdSelect: React.FC<SpecialEdSelectProps> = ({
   specialEd,
   setSpecialEd,
   specialEdOptions,
@@ -42,7 +43,7 @@ export const SpecialEdSelect: FunctionComponent<SpecialEdSelectProps> = ({
 
   useEffect(() => {
     let optionString = ''
-    specialEdOptions.map((option) => {
+    specialEdOptions?.map((option) => {
       if (option.option_value != '') optionString += option.option_value + ', '
     })
     optionString = optionString.slice(0, -2)
@@ -52,14 +53,15 @@ export const SpecialEdSelect: FunctionComponent<SpecialEdSelectProps> = ({
   const handleChange = (value: string) => {
     setSpecialEd(value == 'true' ? true : false)
     setSpecialEdOptions([])
-    setIsChanged({
-      ...isChanged,
-      specialEd: true,
-    })
+    if (isChanged)
+      setIsChanged({
+        ...isChanged,
+        specialEd: true,
+      })
   }
 
   const handleClickOpen = () => {
-    if (specialEdOptions.length == 0)
+    if (specialEdOptions?.length == 0)
       setTempOptions([
         {
           option_value: 'None',
@@ -78,13 +80,13 @@ export const SpecialEdSelect: FunctionComponent<SpecialEdSelectProps> = ({
     setOpen(false)
   }
 
-  const handleChangeOption = (value, i) => {
+  const handleChangeOption = (value: string, i: number) => {
     const temp = tempOptions.slice()
     temp[i]['option_value'] = value
     setTempOptions(temp)
   }
 
-  const handleDeleteOption = (i) => {
+  const handleDeleteOption = (i: number) => {
     setDeletingIndex(i)
     setShowDeleteDialog(true)
   }
@@ -128,7 +130,7 @@ export const SpecialEdSelect: FunctionComponent<SpecialEdSelectProps> = ({
       <Dialog open={open} onClose={handleClose} sx={classes.gradesDialog}>
         <DialogTitle sx={classes.dialogTitle}>{'Type of Speical Education Services'}</DialogTitle>
         <Box sx={{ padding: '26px' }}>
-          {tempOptions.map((options, i) => (
+          {tempOptions?.map((options, i) => (
             <Box key={i}>
               {options.option_value == 'None' && (
                 <Box sx={{ width: '100%', textAlign: 'left', marginBottom: '16px' }}>{'None'}</Box>

@@ -91,6 +91,7 @@ export const useEventsByRegionIdAndFilterItem = (
             color: event.EventType.color || '',
             backgroundColor: hexToRgbA(event.EventType.color || ''),
             allDay: true,
+            hasRSVP: event.has_rsvp,
           }),
         ),
       )
@@ -115,6 +116,7 @@ export const useEventsByRegionIdAndFilterItem = (
               schoolOfEnrollment: event.filter_school_of_enrollment,
               users: event.filter_users,
             },
+            hasRSVP: event.has_rsvp,
           }),
         ),
       )

@@ -1,4 +1,4 @@
-import React, { Children, FunctionComponent, useState } from 'react'
+import React, { Children, useState } from 'react'
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew'
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
 import CloseIcon from '@mui/icons-material/Close'
@@ -6,7 +6,7 @@ import { Box, Button, Card, Fade, Popper } from '@mui/material'
 import moment from 'moment'
 import { Calendar, momentLocalizer } from 'react-big-calendar'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
-import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { BLACK, GRAY } from '../../../../utils/constants'
 import { mainClasses } from '../../../Admin/Calendar/MainComponent/styles'
 import { CalendarEvent, EventCalendarProps } from '../../../Admin/Calendar/types'
@@ -20,7 +20,7 @@ moment.locale('en', {
 })
 const localizer = momentLocalizer(moment)
 
-const EventCalendar: FunctionComponent<EventCalendarProps> = ({
+const EventCalendar: React.FC<EventCalendarProps> = ({
   eventList,
   selectedDate,
   selectedEvent,

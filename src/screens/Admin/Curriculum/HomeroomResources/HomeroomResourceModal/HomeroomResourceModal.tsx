@@ -5,12 +5,16 @@ import { EventType, HomeroomResourceModalProps } from '../types'
 const HomeroomResourceModal: React.FC<HomeroomResourceModalProps> = ({
   showArchivedModal,
   showDeleteModal,
+  showAllowModal,
+  showDisallowModal,
   showUnarchivedModal,
   showCloneModal,
   setShowCloneModal,
   setShowArchivedModal,
   setShowDeleteModal,
   setShowUnarchivedModal,
+  setShowAllowModal,
+  setShowDisallowModal,
   handleChangeResourceStatus,
 }) => {
   return (
@@ -45,6 +49,38 @@ const HomeroomResourceModal: React.FC<HomeroomResourceModalProps> = ({
           onConfirm={() => {
             handleChangeResourceStatus(EventType.RESTORE)
             setShowUnarchivedModal(false)
+          }}
+        />
+      )}
+      {showAllowModal && (
+        <CustomModal
+          title='Allow Request'
+          description='Are you sure you want to Allow Request this Resourse?'
+          cancelStr='Cancel'
+          confirmStr='Allow Request'
+          backgroundColor='#FFFFFF'
+          onClose={() => {
+            setShowAllowModal(false)
+          }}
+          onConfirm={() => {
+            handleChangeResourceStatus(EventType.ALLOW_REQUEST)
+            setShowAllowModal(false)
+          }}
+        />
+      )}
+      {showDisallowModal && (
+        <CustomModal
+          title='View Only'
+          description='Are you sure you want to View Only this Resourse?'
+          cancelStr='Cancel'
+          confirmStr='View Only'
+          backgroundColor='#FFFFFF'
+          onClose={() => {
+            setShowDisallowModal(false)
+          }}
+          onConfirm={() => {
+            handleChangeResourceStatus(EventType.DISALLOW_REQUEST)
+            setShowDisallowModal(false)
           }}
         />
       )}

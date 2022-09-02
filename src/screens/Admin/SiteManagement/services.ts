@@ -82,7 +82,7 @@ export const removeSchoolDistrictInfoByRegionId = gql`
   }
 `
 
-export const uploadImage = async (file: File, stateName: string): Promise<unknown> => {
+export const uploadImage = async (file: File | undefined, stateName: string): Promise<string> => {
   const bodyFormData = new FormData()
   if (file) {
     bodyFormData.append('file', file)
@@ -101,11 +101,11 @@ export const uploadImage = async (file: File, stateName: string): Promise<unknow
     } = await response.json()
     return s3.Location
   } else {
-    return undefined
+    return ''
   }
 }
 
-export const uploadFile = async (file: File, type: string, stateName: string): Promise<unknown> => {
+export const uploadFile = async (file: File, type: string, stateName: string): Promise<string> => {
   const bodyFormData = new FormData()
   if (file) {
     bodyFormData.append('file', file)
@@ -124,6 +124,6 @@ export const uploadFile = async (file: File, type: string, stateName: string): P
     } = await response.json()
     return s3.Location
   } else {
-    return undefined
+    return ''
   }
 }

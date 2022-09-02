@@ -21,4 +21,21 @@ type ProgramSettingProps = {
   data?: unknown
 }
 
+export type ProgramSettingChanged = {
+  state: boolean
+  stateLogo: boolean
+  program: boolean
+  counties: boolean
+  schoolDistricts: boolean
+  grades: boolean
+  birth: boolean
+  specialEd: boolean
+  enrollment: boolean
+}
+
+export type FileDeleted = {
+  county: boolean
+  schoolDistrict: boolean
+}
+
 export type ProgramSettingTemplateType = FunctionComponent<ProgramSettingProps>

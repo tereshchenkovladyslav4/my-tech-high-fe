@@ -1,3 +1,5 @@
+import { ProgramSettingChanged } from '../types'
+
 export type StateLogoFileType = {
   name: string
   image: string
@@ -9,6 +11,6 @@ export type StateLogoProps = {
   setStateLogo: (value: string) => void
   stateLogoFile: StateLogoFileType | null
   setStateLogoFile: (value: StateLogoFileType) => void
-  setIsChanged: (value: boolean) => void
-  isChanged: unknown
+  setIsChanged: (value: ProgramSettingChanged) => void
+  isChanged: ProgramSettingChanged
 }

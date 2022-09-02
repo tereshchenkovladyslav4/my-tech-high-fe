@@ -1,11 +1,11 @@
-import React, { FunctionComponent, useState } from 'react'
+import React, { useState } from 'react'
 import CallMissedOutgoingIcon from '@mui/icons-material/CallMissedOutgoing'
 import ModeEditIcon from '@mui/icons-material/ModeEdit'
 import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt'
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined'
 import { Box, Table, TableBody, TableCell, TableContainer, TableRow, Tooltip, Typography } from '@mui/material'
 import { useHistory } from 'react-router-dom'
-import { SortableTableHeader } from '../../../../../components/SortableTable/SortableTableHeader/SortableTableHeader'
+import { SortableTableHeader } from '@mth/components/SortableTable/SortableTableHeader/SortableTableHeader'
 import { ANNOUNCEMENTS } from '../../../../../utils/constants'
 import { ANNOUNCEMENT_HEADCELLS } from '../../../../../utils/PageHeadCellsConstant'
 import { Announcement } from '../../../../Dashboard/Announcements/types'
@@ -22,7 +22,7 @@ type PageContentProps = {
 
 type Order = 'asc' | 'desc'
 
-const PageContent: FunctionComponent<PageContentProps> = ({
+const PageContent: React.FC<PageContentProps> = ({
   tableDatas,
   showArchivedAnnouncement,
   setAnnouncement,

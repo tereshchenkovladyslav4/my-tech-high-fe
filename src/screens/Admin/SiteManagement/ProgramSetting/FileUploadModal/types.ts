@@ -5,7 +5,7 @@ export type SubmissionModal = {
   document?: 'birth' | 'immunization' | 'residency'
   multi?: boolean
   extensions?: string
-  handleFile: () => void
+  handleFile: (value: File[]) => void
   limit?: number
   invalidMessage?: string
   type?: 'county' | 'schoolDistrict'

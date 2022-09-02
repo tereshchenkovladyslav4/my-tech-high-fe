@@ -34,6 +34,8 @@ export const HomeroomResources: React.FC = () => {
   const [selectedHomeroomResource, setSelectedHomeroomResource] = useState<HomeroomResource>()
   const [showArchivedModal, setShowArchivedModal] = useState<boolean>(false)
   const [showUnarchivedModal, setShowUnarchivedModal] = useState<boolean>(false)
+  const [showAllowModal, setShowAllowModal] = useState<boolean>(false)
+  const [showDisallowModal, setShowDisallowModal] = useState<boolean>(false)
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false)
   const [showCloneModal, setShowCloneModal] = useState<boolean>(false)
 
@@ -62,17 +64,28 @@ export const HomeroomResources: React.FC = () => {
     return !!selectedSchoolYear && moment().isAfter(selectedSchoolYear.date_end)
   }
 
-  const handleChangeResourceStatus = async (eventType: EventType) => {
-    if (selectedHomeroomResource) {
+  const handleChangeResourceStatus = async (resource: HomeroomResource | undefined, eventType: EventType) => {
+    if (resource) {
       switch (eventType) {
         case EventType.ARCHIVE:
         case EventType.RESTORE:
           await updateResource({
             variables: {
               createResourceInput: {
-                resource_id: Number(selectedHomeroomResource.resource_id),
-                is_active: !selectedHomeroomResource.is_active,
+                resource_id: Number(resource.resource_id),
+                is_active: !resource.is_active,
                 allow_request: false,
+              },
+            },
+          })
+          break
+        case EventType.ALLOW_REQUEST:
+        case EventType.DISALLOW_REQUEST:
+          await updateResource({
+            variables: {
+              createResourceInput: {
+                resource_id: Number(resource.resource_id),
+                allow_request: !resource.allow_request,
               },
             },
           })
@@ -80,7 +93,7 @@ export const HomeroomResources: React.FC = () => {
         case EventType.DELETE:
           await deleteResource({
             variables: {
-              resourceId: Number(selectedHomeroomResource.resource_id),
+              resourceId: Number(resource.resource_id),
             },
           })
           break
@@ -88,21 +101,28 @@ export const HomeroomResources: React.FC = () => {
           await updateResource({
             variables: {
               createResourceInput: {
-                SchoolYearId: selectedHomeroomResource.SchoolYearId,
-                title: selectedHomeroomResource.title,
-                image: selectedHomeroomResource.image,
-                subtitle: selectedHomeroomResource.subtitle,
-                price: selectedHomeroomResource.price,
-                website: selectedHomeroomResource.website,
-                grades: selectedHomeroomResource.grades,
-                std_user_name: selectedHomeroomResource.std_user_name,
-                std_password: selectedHomeroomResource.std_password,
-                detail: selectedHomeroomResource.detail,
-                resource_limit: selectedHomeroomResource.resource_limit,
-                add_resource_level: selectedHomeroomResource.add_resource_level,
-                resource_level: selectedHomeroomResource.resource_level,
-                family_resource: selectedHomeroomResource.family_resource,
-                priority: selectedHomeroomResource.priority,
+                SchoolYearId: resource.SchoolYearId,
+                title: resource.title,
+                image: resource.image,
+                subtitle: resource.subtitle,
+                price: resource.price,
+                website: resource.website,
+                grades: resource.grades,
+                std_user_name: resource.std_user_name,
+                std_password: resource.std_password,
+                detail: resource.detail,
+                resource_limit: resource.resource_limit,
+                add_resource_level: resource.add_resource_level,
+                resourceLevelsStr: JSON.stringify(
+                  resource.ResourceLevels.map((item) => {
+                    return {
+                      name: item.name,
+                      limit: item.limit,
+                    }
+                  }),
+                ),
+                family_resource: resource.family_resource,
+                priority: resource.priority,
               },
             },
           })
@@ -174,6 +194,14 @@ export const HomeroomResources: React.FC = () => {
                 setShowUnarchivedModal(true)
                 break
               }
+              case EventType.ALLOW_REQUEST: {
+                setShowAllowModal(true)
+                break
+              }
+              case EventType.DISALLOW_REQUEST: {
+                setShowDisallowModal(true)
+                break
+              }
               case EventType.DELETE: {
                 setShowDeleteModal(true)
                 break
@@ -218,7 +246,7 @@ export const HomeroomResources: React.FC = () => {
   }, [me?.selectedRegionId])
 
   return (
-    <Box sx={{ px: 4 }}>
+    <Box sx={{ px: 4, pt: '48px' }}>
       {page === HomeroomResourcePage.ROOT && (
         <>
           <Box
@@ -290,13 +318,17 @@ export const HomeroomResources: React.FC = () => {
       <HomeroomResourceModal
         showArchivedModal={showArchivedModal}
         showUnarchivedModal={showUnarchivedModal}
+        showAllowModal={showAllowModal}
+        showDisallowModal={showDisallowModal}
         showDeleteModal={showDeleteModal}
         showCloneModal={showCloneModal}
         setShowCloneModal={setShowCloneModal}
         setShowArchivedModal={setShowArchivedModal}
         setShowUnarchivedModal={setShowUnarchivedModal}
+        setShowAllowModal={setShowAllowModal}
+        setShowDisallowModal={setShowDisallowModal}
         setShowDeleteModal={setShowDeleteModal}
-        handleChangeResourceStatus={handleChangeResourceStatus}
+        handleChangeResourceStatus={(eventType) => handleChangeResourceStatus(selectedHomeroomResource, eventType)}
       />
     </Box>
   )
