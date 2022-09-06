@@ -2,9 +2,9 @@ import { ResourceRequestStatus } from '@mth/enums'
 
 export enum EventType {
   HIDE = 'hide',
-  UNHIDE = 'unhide',
+  UN_HIDE = 'unHide',
   ADD_CART = 'addCart',
-  LOGIN = 'unhide',
+  REMOVE_CART = 'removeCart',
   CLICK = 'click',
   DETAILS = 'details',
 }
@@ -35,7 +35,7 @@ export type Resource = {
   std_password: string
   detail: string
   add_resource_level: boolean
-  ResourceLevels: ResouceLevel[]
+  ResourceLevels: ResourceLevel[]
   family_resource: boolean
   priority: number
   is_active: boolean

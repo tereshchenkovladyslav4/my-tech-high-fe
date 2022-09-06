@@ -1,6 +1,6 @@
 import { SYSTEM_01, LIGHTGRAY, SYSTEM_02, RED } from '../../../../utils/constants'
 
-export const useStyles = {
+export const studentProfileClasses = {
   gridContainer: {
     textAlign: 'left' as const,
     paddingX: 4,
@@ -17,9 +17,12 @@ export const useStyles = {
     paddingX: 5,
     paddingY: 1.5,
   },
-  textField: {
+  formField: {
     borderRadius: 2,
-    height: '45px',
+    '& .MuiInputBase-input.MuiOutlinedInput-input ': {
+      paddingY: '11px',
+      borderRadius: 2,
+    },
   },
   button: {
     height: '45px',

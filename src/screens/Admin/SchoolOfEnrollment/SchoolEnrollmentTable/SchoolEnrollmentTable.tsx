@@ -1,4 +1,4 @@
-import React, { useEffect, useState, FunctionComponent } from 'react'
+import React, { useEffect, useState, useMemo, FunctionComponent } from 'react'
 import { useQuery, useMutation } from '@apollo/client'
 import SearchIcon from '@mui/icons-material/Search'
 import { Box, Button, Card, InputAdornment, OutlinedInput, Tooltip } from '@mui/material'
@@ -42,11 +42,27 @@ export const EnrollmentSchoolTable: FunctionComponent<EnrollmentSchoolTableProps
 
   const [assignStudentToSOE] = useMutation(assignStudentToSOEGql)
 
+  const groupGrades = useMemo(() => {
+    if (filter?.grades) {
+      return filter.grades.filter((el) => ['K', '1-8', '9-12'].includes(el))
+    } else return []
+  }, [filter])
+
   const createData = (student: StudentVM) => {
     const grade_level = student.grade_levels?.find((item) => item.school_year_id == selectedYear?.value)
+    let grade = grade_level && (grade_level.grade_level.includes('Kin') ? 'K' : grade_level.grade_level)
+    // group grade K, 1-8, 9-10
+    if (groupGrades.length) {
+      if (grade !== 'K') {
+        const gradeNumber = Number(grade)
+        if (gradeNumber > 0 && gradeNumber < 9) {
+          if (groupGrades.includes('1-8')) grade = '1-8'
+        } else if (groupGrades.includes('9-12')) grade = '9-12'
+      }
+    }
     const result = {
       student: `${student.person?.last_name}, ${student.person?.first_name}`,
-      grade: grade_level && (grade_level.grade_level.includes('Kin') ? 'K' : grade_level.grade_level),
+      grade,
       id: student.student_id,
       city: student.parent.person?.address?.city,
       parent: `${student.parent.person?.last_name}, ${student.parent.person?.first_name}`,

@@ -6,6 +6,7 @@ import { ResourceSubtitle } from '@mth/enums'
 import { ResourceCard } from './ResourceCard'
 import { ResourceCartBar } from './ResourceCartBar'
 import { ResourceDetails } from './ResourceDetails'
+import { ResourceLevelSelector } from './ResourceLevelSelector'
 import { ResourceModal } from './ResourceModal'
 import { ResourceRequest } from './ResourceRequest'
 import { getStudentResourcesQuery, toggleHiddenResourceMutation, toggleResourceCartMutation } from './services'
@@ -20,6 +21,7 @@ export const Resources: React.FC = () => {
   const [resourcesInCart, setResourcesInCart] = useState<Resource[]>([])
   const [selectedResource, setSelectedResource] = useState<Resource>()
   const [showHideModal, setShowHideModal] = useState<boolean>(false)
+  const [showResourceLevelModal, setShowResourceLevelModal] = useState<boolean>(false)
 
   const {
     loading,
@@ -33,11 +35,15 @@ export const Resources: React.FC = () => {
   const [toggleHiddenResource, {}] = useMutation(toggleHiddenResourceMutation)
   const [toggleResourceCart, {}] = useMutation(toggleResourceCartMutation)
 
-  const handleChangeResourceStatus = async (resource: Resource | undefined, eventType: EventType) => {
+  const handleChangeResourceStatus = async (
+    resource: Resource | undefined,
+    eventType: EventType,
+    resourceLevelId?: number,
+  ) => {
     if (resource) {
       switch (eventType) {
         case EventType.HIDE:
-        case EventType.UNHIDE: {
+        case EventType.UN_HIDE: {
           await toggleHiddenResource({
             variables: {
               toggleHiddenResourceInput: {
@@ -49,44 +55,51 @@ export const Resources: React.FC = () => {
           })
           break
         }
-        case EventType.ADD_CART: {
+        case EventType.ADD_CART:
+        case EventType.REMOVE_CART: {
           await toggleResourceCart({
             variables: {
               toggleResourceCartInput: {
                 student_id: currentStudentId,
                 resource_id: Number(resource.resource_id),
                 inCart: !resource.CartDate,
+                resource_level_id: resourceLevelId,
               },
             },
           })
           break
         }
       }
-      refetch()
+      await refetch()
     }
   }
 
-  const handleCardActions = (resource: Resource, evtType: EventType) => {
+  const handleCardActions = async (resource: Resource, evtType: EventType) => {
     setSelectedResource(resource)
     switch (evtType) {
       case EventType.CLICK: {
         if (resource.website) window.open(resource.website, '_blank')
         break
       }
-      case EventType.ADD_CART: {
-        handleChangeResourceStatus(resource, EventType.ADD_CART)
+      case EventType.ADD_CART:
+      case EventType.REMOVE_CART: {
+        if (resource.add_resource_level && resource.ResourceLevels?.length && evtType === EventType.ADD_CART) {
+          setShowResourceLevelModal(true)
+        } else {
+          await handleChangeResourceStatus(resource, evtType)
+        }
         break
       }
       case EventType.HIDE: {
         if (resource.RequestStatus && resource.subtitle === ResourceSubtitle.PRICE) {
           setShowHideModal(true)
         } else {
-          handleChangeResourceStatus(resource, EventType.HIDE)
+          await handleChangeResourceStatus(resource, EventType.HIDE)
         }
         break
       }
-      case EventType.UNHIDE: {
-        handleChangeResourceStatus(resource, EventType.UNHIDE)
+      case EventType.UN_HIDE: {
+        await handleChangeResourceStatus(resource, EventType.UN_HIDE)
         break
       }
       case EventType.DETAILS: {
@@ -159,10 +172,21 @@ export const Resources: React.FC = () => {
         />
       )}
 
+      {showResourceLevelModal && selectedResource && (
+        <ResourceLevelSelector
+          resource={selectedResource}
+          handleCancel={() => setShowResourceLevelModal(false)}
+          handleSelect={async (resourceLevelId: number) => {
+            setShowResourceLevelModal(false)
+            await handleChangeResourceStatus(selectedResource, EventType.ADD_CART, resourceLevelId)
+          }}
+        />
+      )}
+
       <ResourceModal
         showHideModal={showHideModal}
         setShowHideModal={setShowHideModal}
-        handleChangeResourceStatus={(eventType) => handleChangeResourceStatus(selectedResource, eventType)}
+        handleChangeResourceStatus={async (eventType) => await handleChangeResourceStatus(selectedResource, eventType)}
       />
     </Stack>
   )

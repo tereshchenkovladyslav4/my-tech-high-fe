@@ -3,7 +3,7 @@ import { Box, Grid } from '@mui/material'
 import { useFormikContext } from 'formik'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { BulletEditor } from '@mth/screens/Admin/Calendar/components/BulletEditor'
-import { homeroomResourcesClassess } from '../styles'
+import { homeroomResourcesClasses } from '../styles'
 import { ConfirmationDetails, ConfirmationDetailsFormProps } from '../types'
 
 const ConfirmationDetailsForm: React.FC<ConfirmationDetailsFormProps> = ({ setIsChanged }) => {
@@ -13,7 +13,7 @@ const ConfirmationDetailsForm: React.FC<ConfirmationDetailsFormProps> = ({ setIs
     <Box sx={{ width: '100%', px: 8, py: 16, textAlign: 'left' }}>
       <Grid container sx={{ alignItems: 'center', justifyContent: 'center' }}>
         <Grid item xs={10}>
-          <Subtitle sx={homeroomResourcesClassess.formError}>{touched.details && errors.details}</Subtitle>
+          <Subtitle sx={homeroomResourcesClasses.formError}>{touched.details && errors.details}</Subtitle>
           <BulletEditor
             value={values?.details}
             setValue={(value) => {

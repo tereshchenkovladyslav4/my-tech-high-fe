@@ -22,8 +22,8 @@ const AdminSetting: React.FC = () => {
     }
   }
 
-  const onChangeConfirmModal = (val: boolean, isOk: boolean) => {
-    if (isFormChange) setShowConfirmModalOpen(val)
+  const onChangeConfirmModal = (isOk: boolean) => {
+    if (isFormChange) setShowConfirmModalOpen(false)
     if (isOk) {
       setValue(value === 0 ? 1 : 0)
       setIsFormChange(false)

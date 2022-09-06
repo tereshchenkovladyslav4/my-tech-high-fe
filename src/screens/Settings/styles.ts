@@ -1,6 +1,6 @@
 import { MTHBLUE } from '../../utils/constants'
 
-export const useStyles = {
+export const settingClasses = {
   gridContainer: {
     textAlign: 'left' as const,
     paddingX: 4,

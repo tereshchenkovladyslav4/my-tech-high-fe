@@ -15,16 +15,17 @@ import {
 } from '@mui/material'
 import { useFormik } from 'formik'
 import * as yup from 'yup'
-import { CustomConfirmModal } from '../../../components/CustomConfirmModal/CustomConfirmModal'
-import { DropDown } from '../../../components/DropDown/DropDown'
-import { Paragraph } from '../../../components/Typography/Paragraph/Paragraph'
-import { Subtitle } from '../../../components/Typography/Subtitle/Subtitle'
-import { UserContext, UserInfo } from '../../../providers/UserContext/UserProvider'
+import { CustomConfirmModal } from '@mth/components/CustomConfirmModal/CustomConfirmModal'
+import { DocumentUploadModal } from '@mth/components/DocumentUploadModal/DocumentUploadModal'
+import { DropDown } from '@mth/components/DropDown/DropDown'
+import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { SNOWPACK_PUBLIC_S3_UPLOAD } from '@mth/constants'
+import { UserContext, UserInfo } from '@mth/providers/UserContext/UserProvider'
 import { usStates } from '../../../utils/states'
-import { DocumentUploadModal } from '../../Enrollment/Documents/components/DocumentUploadModal/DocumentUploadModal'
 import { updateProfile, removeProfilePhoto } from '../service'
-import { useStyles } from '../styles'
-import { ProfileTemplateType } from './types'
+import { settingClasses } from '../styles'
+import { ProfileProps } from './types'
 
 type openAlertSaveType = {
   message: string
@@ -32,15 +33,21 @@ type openAlertSaveType = {
   open: boolean
 }
 
-export const Profile: ProfileTemplateType = ({ handleIsFormChange }) => {
-  const classes = useStyles
+export const Profile: React.FC<ProfileProps> = ({ handleIsFormChange }) => {
   const { me, setMe } = useContext(UserContext)
   const { profile } = me as UserInfo
   const [imageModalOpen, setImageModalOpen] = useState(false)
-  const [warningModalOpen, setWarningModalOpen] = useState({ title: '', subtitle: '', callback: null })
+  const [warningModalOpen, setWarningModalOpen] = useState<{
+    title: string
+    subtitle: string
+    callback?: () => void
+  }>({
+    title: '',
+    subtitle: '',
+  })
   const [avatar, setAvatar] = useState<string | null>(null)
-  const [recieveText, setRecieveText] = useState(false)
-  const [file, setFile] = useState<undefined | File>()
+  const [receiveText, setReceiveText] = useState(false)
+  const [uploadedFile, setUploadedFile] = useState<File | undefined>()
 
   const [openSaveAlert, setOpenSaveAlert] = useState<openAlertSaveType>({
     message: '',
@@ -50,14 +57,14 @@ export const Profile: ProfileTemplateType = ({ handleIsFormChange }) => {
   const [submitUpdate] = useMutation(updateProfile)
   const [submitRemoveProfilePhoto] = useMutation(removeProfilePhoto)
 
-  const uploadPhoto = async (file) => {
+  const uploadPhoto = async (file: File) => {
     if (file) {
       const bodyFormData = new FormData()
-      bodyFormData.append('file', file[0])
+      bodyFormData.append('file', file)
       bodyFormData.append('region', 'UT')
       bodyFormData.append('year', '2022')
 
-      const response = await fetch(import.meta.env.SNOWPACK_PUBLIC_S3_UPLOAD, {
+      const response = await fetch(SNOWPACK_PUBLIC_S3_UPLOAD, {
         method: 'POST',
         body: bodyFormData,
         headers: {
@@ -79,7 +86,7 @@ export const Profile: ProfileTemplateType = ({ handleIsFormChange }) => {
           city: formik.values.city,
           email: formik.values.email,
           first_name: formik.values.legalFName,
-          recieve_text: recieveText ? 1 : 0,
+          recieve_text: receiveText ? 1 : 0,
           last_name: formik.values.legalLName,
           middle_name: formik.values.legalMName,
           phone_number: formik.values.phoneNumber + '',
@@ -93,18 +100,18 @@ export const Profile: ProfileTemplateType = ({ handleIsFormChange }) => {
       .then(async () => {
         // fire upload fetch
         let profileUrl = ''
-        if (file) {
-          profileUrl = await uploadPhoto(file)
+        if (uploadedFile) {
+          profileUrl = await uploadPhoto(uploadedFile)
           if (profileUrl) {
             setOpenSaveAlert({ message: 'Profile updated Successfully.', status: 'success', open: true })
 
             setTimeout(() => {
               setOpenSaveAlert({ message: '', status: 'success', open: false })
-              if (formik.values.email != profile.email) location.replace('/')
+              if (formik.values.email !== profile?.email) location.replace('/')
             }, 2000)
           } else {
             setOpenSaveAlert({
-              message: 'Unknown error occured while uploading profile photo.',
+              message: 'Unknown error occurred while uploading profile photo.',
               status: 'error',
               open: true,
             })
@@ -112,7 +119,7 @@ export const Profile: ProfileTemplateType = ({ handleIsFormChange }) => {
             setTimeout(() => {
               setOpenSaveAlert({ message: '', status: 'success', open: false })
 
-              if (formik.values.email != me.email) location.replace('/')
+              if (formik.values.email !== me?.email) location.replace('/')
             }, 2000)
           }
           handleIsFormChange(false)
@@ -122,18 +129,18 @@ export const Profile: ProfileTemplateType = ({ handleIsFormChange }) => {
           setTimeout(() => {
             setOpenSaveAlert({ message: '', status: 'success', open: false })
 
-            if (formik.values.email != me.email) location.replace('/')
+            if (formik.values.email !== me?.email) location.replace('/')
           }, 2000)
 
           handleIsFormChange(false)
 
-          if (formik.values.email != me.email) location.replace('/')
+          if (formik.values.email !== me?.email) location.replace('/')
         }
 
         setMe((prevMe) => {
           return {
             ...prevMe,
-            avatar_url: profileUrl,
+            avatar_url: profileUrl || prevMe?.avatar_url,
             profile: {
               preferred_first_name: formik.values.preferredFName,
               preferred_last_name: formik.values.preferredLName,
@@ -142,7 +149,7 @@ export const Profile: ProfileTemplateType = ({ handleIsFormChange }) => {
               last_name: formik.values.legalLName,
               phone: {
                 number: formik.values.phoneNumber + '',
-                recieve_text: recieveText ? 1 : 0,
+                recieve_text: receiveText ? 1 : 0,
               },
               email: formik.values.email,
               address: {
@@ -153,7 +160,7 @@ export const Profile: ProfileTemplateType = ({ handleIsFormChange }) => {
                 zip: formik.values.zipcode + '',
               },
             },
-          }
+          } as UserInfo
         })
       })
       .catch(() => {
@@ -182,7 +189,7 @@ export const Profile: ProfileTemplateType = ({ handleIsFormChange }) => {
     phoneNumber: yup.string().matches(phoneRegExp, 'Phone number is not valid').required('Required').nullable(),
     email: yup.string().email('Please enter a valid email').nullable().required('Required'),
     city: yup.string().nullable().required('Required'),
-    recieveText: yup.boolean().nullable(),
+    receiveText: yup.boolean().nullable(),
     address1: yup.string().nullable().required('Required'),
     address2: yup.string().nullable(),
     state: yup.string().required('Required').nullable(),
@@ -196,10 +203,10 @@ export const Profile: ProfileTemplateType = ({ handleIsFormChange }) => {
       legalFName: profile?.first_name || '',
       legalMName: profile?.middle_name || '',
       legalLName: profile?.last_name || '',
-      phoneNumber: profile?.phone.number || '',
-      email: me.email,
+      phoneNumber: profile?.phone?.number || '',
+      email: me?.email || '',
       city: profile?.address.city || '',
-      recieveText: Boolean(profile?.phone?.recieve_text || ''),
+      receiveText: Boolean(profile?.phone?.recieve_text || ''),
       address1: profile?.address?.street || '',
       address2: profile?.address?.street2 || '',
       state: profile?.address?.state || '',
@@ -207,7 +214,7 @@ export const Profile: ProfileTemplateType = ({ handleIsFormChange }) => {
     },
     validationSchema: validationSchema,
     onSubmit: async () => {
-      if (me.email != formik.values.email) {
+      if (me?.email !== formik.values.email) {
         setWarningModalOpen({
           title: 'Change Email',
           subtitle:
@@ -218,9 +225,8 @@ export const Profile: ProfileTemplateType = ({ handleIsFormChange }) => {
     },
   })
 
-  const convertToBlob = (file) => {
-    const fileUrl = URL.createObjectURL(file[0])
-    return fileUrl
+  const convertToBlob = (file: File) => {
+    return URL.createObjectURL(file)
   }
 
   const getProfilePhoto = (): string | undefined => {
@@ -234,22 +240,26 @@ export const Profile: ProfileTemplateType = ({ handleIsFormChange }) => {
 
   const openImageModal = () => setImageModalOpen(true)
 
-  const handleFile = (fileName: File) => setFile(fileName)
+  const handleFile = (files: File[]) => {
+    if (files?.length) {
+      setUploadedFile(files[0])
+    }
+  }
 
   useEffect(() => {
     if (me && me.avatar_url) setAvatar(me?.avatar_url)
   }, [me])
 
   useEffect(() => {
-    setRecieveText(Boolean(profile?.phone?.recieve_text))
+    setReceiveText(Boolean(profile?.phone?.recieve_text))
   }, [])
 
   const Image = () => (
     <Box display='flex' flexDirection='column' justifyContent={'center'} sx={{ height: 167, width: 167 }}>
-      {file || avatar ? (
+      {uploadedFile || avatar ? (
         <>
           <Avatar
-            src={file ? convertToBlob(file) : getProfilePhoto()}
+            src={uploadedFile ? convertToBlob(uploadedFile) : getProfilePhoto()}
             variant='rounded'
             sx={{ height: '100%', width: '100%' }}
           />
@@ -261,7 +271,7 @@ export const Profile: ProfileTemplateType = ({ handleIsFormChange }) => {
                 subtitle: 'Are you sure you want to delete this image?',
                 callback: () => {
                   submitRemoveProfilePhoto().then(() => {
-                    setFile(undefined)
+                    setUploadedFile(undefined)
                     setAvatar(null)
                   })
                 },
@@ -295,7 +305,7 @@ export const Profile: ProfileTemplateType = ({ handleIsFormChange }) => {
     <Box>
       <form onSubmit={formik.handleSubmit} style={{ display: 'flex', height: '100%' }}>
         <Card>
-          <Grid container rowSpacing={2} columnSpacing={{ xs: 1, sm: 2, md: 3 }} sx={classes.gridContainer}>
+          <Grid container rowSpacing={2} columnSpacing={{ xs: 1, sm: 2, md: 3 }} sx={settingClasses.gridContainer}>
             <Grid item xs={9}>
               <Subtitle size='large' fontWeight='700'>
                 Profile
@@ -303,7 +313,7 @@ export const Profile: ProfileTemplateType = ({ handleIsFormChange }) => {
             </Grid>
             <Grid item xs={3}>
               <Box display='flex' justifyContent='flex-end'>
-                <Button variant='contained' sx={classes.saveButton} type='submit'>
+                <Button variant='contained' sx={settingClasses.saveButton} type='submit'>
                   <Paragraph size='medium' fontWeight='700'>
                     Save Changes
                   </Paragraph>
@@ -422,7 +432,7 @@ export const Profile: ProfileTemplateType = ({ handleIsFormChange }) => {
                 />
                 <FormControlLabel
                   control={
-                    <Checkbox checked={recieveText} onClick={() => setRecieveText(!recieveText)} name='recieveText' />
+                    <Checkbox checked={receiveText} onClick={() => setReceiveText(!receiveText)} name='receiveText' />
                   }
                   label={<Paragraph size='medium'>I can receive text messages via this number</Paragraph>}
                 />
@@ -487,7 +497,7 @@ export const Profile: ProfileTemplateType = ({ handleIsFormChange }) => {
                 <DropDown
                   dropDownItems={usStates}
                   setParentValue={(val) => {
-                    formik.values.state = val
+                    formik.values.state = val?.toString()
                     handleIsFormChange(true)
                   }}
                   alternate={true}
@@ -559,9 +569,9 @@ export const Profile: ProfileTemplateType = ({ handleIsFormChange }) => {
             <CustomConfirmModal
               header={warningModalOpen.title}
               content={warningModalOpen.subtitle}
-              handleConfirmModalChange={(val: boolean, isOk: boolean) => {
+              handleConfirmModalChange={(isOk: boolean) => {
                 if (isOk && warningModalOpen.callback) warningModalOpen.callback()
-                setWarningModalOpen({ title: '', subtitle: '', callback: null })
+                setWarningModalOpen({ title: '', subtitle: '' })
               }}
             />
           )}

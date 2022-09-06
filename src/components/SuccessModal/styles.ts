@@ -1,4 +1,14 @@
+import { makeStyles, Theme } from '@material-ui/core/styles'
 import { BLACK } from '../../utils/constants'
+
+export const useClasses = makeStyles((theme: Theme) => ({
+  modalCard: {
+    width: '441px',
+    [theme.breakpoints.down('xs')]: {
+      width: '97% !important',
+    },
+  },
+}))
 
 export const useStyles = {
   modalCard: {

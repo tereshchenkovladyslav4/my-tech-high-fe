@@ -3,13 +3,13 @@ import { useMutation } from '@apollo/client'
 import { Alert, AlertColor, Box, Button, Card, Grid, TextField } from '@mui/material'
 import { useFormik } from 'formik'
 import * as yup from 'yup'
-import { Paragraph } from '../../../components/Typography/Paragraph/Paragraph'
-import { Subtitle } from '../../../components/Typography/Subtitle/Subtitle'
-import { UserContext, UserInfo } from '../../../providers/UserContext/UserProvider'
-import { SYSTEM_08 } from '../../../utils/constants'
+import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { MthColor } from '@mth/enums'
+import { UserContext, UserInfo } from '@mth/providers/UserContext/UserProvider'
 import { updatePassword } from '../service'
-import { useStyles } from '../styles'
-import { AccountTemplateType } from './types'
+import { settingClasses } from '../styles'
+import { AccountProps } from './types'
 
 type openAlertSaveType = {
   message: string
@@ -17,8 +17,7 @@ type openAlertSaveType = {
   open: boolean
 }
 
-export const Account: AccountTemplateType = ({ handleIsFormChange }) => {
-  const classes = useStyles
+export const Account: React.FC<AccountProps> = ({ handleIsFormChange }) => {
   const { me } = useContext(UserContext)
   const { profile } = me as UserInfo
   const [updatePasswordMutation] = useMutation(updatePassword)
@@ -74,8 +73,8 @@ export const Account: AccountTemplateType = ({ handleIsFormChange }) => {
 
   const formik = useFormik({
     initialValues: {
-      newPassword: undefined,
-      confirmPassword: undefined,
+      newPassword: '',
+      confirmPassword: '',
     },
     validationSchema: validationSchema,
     onSubmit: async () => {
@@ -86,6 +85,10 @@ export const Account: AccountTemplateType = ({ handleIsFormChange }) => {
   return (
     <form onSubmit={formik.handleSubmit} style={{ display: 'flex', minHeight: '75vh' }}>
       <Card sx={{ width: '100%' }}>
+        {/* Needed to prevent auto complete for the new password field */}
+        <Box sx={{ width: 0, height: 0, overflow: 'hidden' }}>
+          <TextField name='fakePassword' type='password' autoComplete='off' />
+        </Box>
         <Grid container paddingX={6} rowSpacing={2} marginTop={1}>
           <Grid item xs={12} textAlign={'left'} display='flex' flexDirection={'row'} alignItems='center'>
             <Subtitle fontWeight='700' size='large'>
@@ -93,7 +96,7 @@ export const Account: AccountTemplateType = ({ handleIsFormChange }) => {
             </Subtitle>
             <Button
               variant='contained'
-              sx={{ ...classes.accountSaveChangesMobile, display: { xs: 'block', sm: 'none' } }}
+              sx={{ ...settingClasses.accountSaveChangesMobile, display: { xs: 'block', sm: 'none' } }}
               type='submit'
             >
               <Paragraph size='medium' fontWeight='700'>
@@ -113,7 +116,7 @@ export const Account: AccountTemplateType = ({ handleIsFormChange }) => {
             <Grid item sm={2} xs={0} sx={{ marginTop: '20px' }}>
               <Button
                 variant='contained'
-                sx={{ ...classes.accountSaveChanges, display: { xs: 'none', sm: 'block' } }}
+                sx={{ ...settingClasses.accountSaveChanges, display: { xs: 'none', sm: 'block' } }}
                 type='submit'
               >
                 <Paragraph size='medium' fontWeight='700'>
@@ -124,14 +127,14 @@ export const Account: AccountTemplateType = ({ handleIsFormChange }) => {
             <Grid item sm={10} xs={12}>
               <hr
                 style={{
-                  borderTop: `solid 1px ${SYSTEM_08}`,
+                  borderTop: `solid 1px ${MthColor.SYSTEM_08}`,
                   width: '100%',
                   borderBottom: '0',
                   margin: '22px 0 16px 0',
                 }}
               />
             </Grid>
-            <Grid item sm={10} xs={12} sx={{ marginTop: '-40px' }}>
+            <Grid item sm={10} xs={12}>
               <Box display='flex' flexDirection='column' width={'100%'}>
                 <Paragraph size='medium' fontWeight='500' textAlign='left'>
                   New Password
@@ -172,7 +175,7 @@ export const Account: AccountTemplateType = ({ handleIsFormChange }) => {
             <Grid item sm={10} xs={12}>
               <hr
                 style={{
-                  borderTop: `solid 1px ${SYSTEM_08}`,
+                  borderTop: `solid 1px ${MthColor.SYSTEM_08}`,
                   width: '100%',
                   borderBottom: '0',
                   margin: '22px 0 16px 0',
@@ -180,10 +183,10 @@ export const Account: AccountTemplateType = ({ handleIsFormChange }) => {
               />
             </Grid>
             <Grid item sm={2} xs={0} />
-            <Grid item sm={12} xs={12} textAlign={'left'} sx={{ marginTop: '-40px' }}>
+            <Grid item sm={12} xs={12} textAlign={'left'}>
               <Subtitle>Secondary Observer Account (Added by Admin)</Subtitle>
             </Grid>
-            <Grid item sm={5} xs={12} sx={{ marginTop: { sm: '-20px', xs: 2 } }}>
+            <Grid item sm={5} xs={12} sx={{ marginTop: { sm: 0, xs: 2 } }}>
               <Box width={'100%'} display={'flex'} justifyContent={'flex-end'}>
                 <Box display='flex' flexDirection='column' width={'100%'} marginRight={{ sm: 2, xs: 0 }}>
                   <Paragraph size='medium' fontWeight='500' textAlign='left'>
@@ -193,7 +196,7 @@ export const Account: AccountTemplateType = ({ handleIsFormChange }) => {
                 </Box>
               </Box>
             </Grid>
-            <Grid item sm={5} xs={12} sx={{ marginTop: { sm: '-20px', xs: 2 } }}>
+            <Grid item sm={5} xs={12} sx={{ marginTop: { sm: 0, xs: 2 } }}>
               <Box width={'100%'} display={'flex'} justifyContent={'flex-start'}>
                 <Box display='flex' flexDirection='column' width={'100%'} marginLeft={{ sm: 2, xs: 0 }}>
                   <Paragraph size='medium' fontWeight='500' textAlign='left'>

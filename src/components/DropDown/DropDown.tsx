@@ -4,7 +4,7 @@ import { FormControl, Select, MenuItem, TextField, FormHelperText, Divider } fro
 import { Box, styled } from '@mui/system'
 import { map } from 'lodash'
 import { MthColor } from '@mth/enums'
-import { dropdownClassess } from './styles'
+import { dropdownClasses } from './styles'
 import { DropDownProps } from './types'
 
 const CssTextField = styled(TextField, {
@@ -47,7 +47,7 @@ export const DropDown: React.FC<DropDownProps> = ({
   auto = true,
   borderNone = false,
 }) => {
-  const [value, setValue] = useState(defaultValue)
+  const [value, setValue] = useState(defaultValue || '')
   const handleChange = (val: string) => {
     if (auto) setValue(val)
     setParentValue(val, idx)
@@ -69,7 +69,7 @@ export const DropDown: React.FC<DropDownProps> = ({
   }
 
   useEffect(() => {
-    setValue(defaultValue)
+    setValue(defaultValue || '')
   }, [defaultValue])
 
   return (
@@ -85,7 +85,7 @@ export const DropDown: React.FC<DropDownProps> = ({
                 disableUnderline
                 onChange={(e) => handleChange(e.target?.value)}
                 label='Select Year'
-                sx={{ ...dropdownClassess.borderNone }}
+                sx={{ ...dropdownClasses.borderNone }}
               >
                 {renderDropDownItem}
               </Select>
@@ -100,7 +100,7 @@ export const DropDown: React.FC<DropDownProps> = ({
                 onChange={(e) => handleChange(e.target?.value)}
                 displayEmpty
                 renderValue={
-                  value || value == 0 ? undefined : () => <span style={{ color: 'gray' }}>{placeholder}</span>
+                  !!value || value === 0 ? undefined : () => <span style={{ color: 'gray' }}>{placeholder}</span>
                 }
                 sx={{
                   ...sx,
@@ -134,7 +134,7 @@ export const DropDown: React.FC<DropDownProps> = ({
             }}
             select // tell TextField to render select
             label={placeholder}
-            sx={alternate ? { ...dropdownClassess.alternate, ...sx } : { ...dropdownClassess.textfield, ...sx }}
+            sx={alternate ? { ...dropdownClasses.alternate, ...sx } : { ...dropdownClasses.textField, ...sx }}
             error={error?.error}
             helperText={error?.errorMsg}
             disabled={disabled || false}

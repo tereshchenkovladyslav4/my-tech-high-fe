@@ -36,12 +36,11 @@ import {
 import { filter, map } from 'lodash'
 import { NavLink, useLocation } from 'react-router-dom'
 import Slider from 'react-slick'
-import { getWindowDimension } from '@mth/utils'
-import { UserContext } from '../../providers/UserContext/UserProvider'
-import { getSchoolYearsByRegionId } from '../../screens/Admin/Dashboard/SchoolYear/SchoolYear'
-import { StudentType, Person } from '../../screens/HomeroomStudentProfile/Student/types'
+import { UserContext } from '@mth/providers/UserContext/UserProvider'
+import { getSchoolYearsByRegionId } from '@mth/screens/Admin/Dashboard/SchoolYear/SchoolYear'
+import { StudentType, Person } from '@mth/screens/HomeroomStudentProfile/Student/types'
+import { getWindowDimension, gradeText } from '@mth/utils'
 import { APPLICATIONS, HOMEROOM, MTHBLUE } from '../../utils/constants'
-import { toOrdinalSuffix } from '../../utils/stringHelpers'
 import { checkEnrollPacketStatus } from '../../utils/utils'
 import { SchoolYearType } from '../../utils/utils.types'
 import { Metadata } from '../Metadata/Metadata'
@@ -49,8 +48,6 @@ import { MobileSideMenu } from '../SideMenu/MobileSideMenu'
 import { Paragraph } from '../Typography/Paragraph/Paragraph'
 import { Subtitle } from '../Typography/Subtitle/Subtitle'
 import { useStyles } from './styles'
-
-// import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded'
 
 const drawerWidth = '100%'
 
@@ -262,11 +259,6 @@ export const AppBar: FunctionComponent = () => {
       },
     ],
   }
-
-  const gradeText = (student: StudentType) =>
-    student.grade_levels.at(-1)?.grade_level !== 'Kin'
-      ? `${toOrdinalSuffix(student.grade_levels.at(-1)?.grade_level as number)} Grade`
-      : 'Kindergarten'
 
   const getProfilePhoto = (person: Person) => {
     if (!person.photo) return 'image'

@@ -16,7 +16,7 @@ import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { MthColor } from '@mth/enums'
 import { defaultResourceLevelFormData } from '../../../defaultValues'
-import { homeroomResourcesClassess } from '../../styles'
+import { homeroomResourcesClasses } from '../../styles'
 import { HomeroomResource, ResourceLevel } from '../../types'
 import { resourceLevelsClassess } from './styles'
 
@@ -142,7 +142,7 @@ export const ResourceLevels: React.FC<ResourceLevelsProps> = ({ setIsChanged }) 
             <Box key={index}>
               <Box sx={{ display: 'flex', alignItems: 'end', marginBottom: '12px', gap: '20px' }}>
                 <Box sx={{ flex: 1 }}>
-                  <Subtitle sx={homeroomResourcesClassess.formError}>
+                  <Subtitle sx={homeroomResourcesClasses.formError}>
                     {touched.ResourceLevels &&
                       (errors.ResourceLevels?.[index]?.limit || (limitError && !item.limit && 'Required'))}
                   </Subtitle>
@@ -163,7 +163,7 @@ export const ResourceLevels: React.FC<ResourceLevelsProps> = ({ setIsChanged }) 
                   </Tooltip>
                 </Box>
                 <Box sx={{ flex: 2 }}>
-                  <Subtitle sx={homeroomResourcesClassess.formError}>
+                  <Subtitle sx={homeroomResourcesClasses.formError}>
                     {touched.ResourceLevels && errors.ResourceLevels?.[index]?.name}
                   </Subtitle>
                   <OutlinedInput

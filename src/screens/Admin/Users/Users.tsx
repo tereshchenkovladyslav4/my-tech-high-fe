@@ -130,7 +130,7 @@ export const Users: FunctionComponent = () => {
       const { results, total } = usersByRegions
       const updatedRecord: Array<UserInfo> = []
       map(results, (user) => {
-        const level = user?.role?.name.toLowerCase() === 'admin' ? 'Administrator' : user?.role?.name
+        const level = user?.role?.name
         updatedRecord.push({
           user_id: user.user_id,
           name: `${user.first_name} ${user?.last_name}` || '',

@@ -347,7 +347,7 @@ export const AdminAppBar: FunctionComponent = () => {
           <CustomConfirmModal
             header='Unsaved Changes'
             content='Are you sure you want to leave without saving changes?'
-            handleConfirmModalChange={(val: boolean, isOk: boolean) => {
+            handleConfirmModalChange={(isOk: boolean) => {
               if (isOk) {
                 setRegion(unsavedChanges)
               }

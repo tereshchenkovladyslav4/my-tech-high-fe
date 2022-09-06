@@ -53,7 +53,21 @@ export const ApplicationTable: FunctionComponent<ApplicationTableProps> = ({ fil
   const [emailHistory, setEmailHistory] = useState([])
   const status = ['New', 'Sibling', 'Returning', 'Hidden']
 
+  const checker = (arr: string[], target: string[]) => target.every((v) => arr.includes(v))
+
   const createData = (application: unknown) => {
+    let grade_level =
+      application.student.grade_levels.length &&
+      (application.student.grade_levels[0].grade_level.includes('Kin')
+        ? 'K'
+        : application.student.grade_levels[0].grade_level)
+
+    if (checker(filter?.grades, ['K', '1-8', '9-12'])) {
+      if (grade_level == 'K') grade_level = 'K'
+      else if (Number(grade_level) >= 1 && Number(grade_level) <= 8) grade_level = '1-8'
+      else grade_level = '9-12'
+    }
+
     return {
       id: application.application_id,
       submitted: application.date_submitted ? moment(application.date_submitted).format('MM/DD/YY') : null,
@@ -63,22 +77,19 @@ export const ApplicationTable: FunctionComponent<ApplicationTableProps> = ({ fil
             <>
               {`${moment(new Date(application.school_year.date_begin)).format('YYYY')} -
               ${moment(new Date(application.school_year.date_end)).format('YY')}`}
-              <br /> Mid-Year
+              <br /> Mid-year
             </>
           ) : (
             <>
-              {`${moment(new Date(application.school_year.date_begin)).format('YYYY')} -
-              ${moment(new Date(application.school_year.date_end)).format('YY')}`}
+              {`${moment(new Date(application.school_year.date_begin)).format('YYYY')}-${moment(
+                new Date(application.school_year.date_end),
+              ).format('YY')}`}
             </>
           )}
         </Box>
       ),
       student: `${application.student.person?.last_name}, ${application.student.person?.first_name}`,
-      grade:
-        application.student.grade_levels.length &&
-        (application.student.grade_levels[0].grade_level.includes('Kin')
-          ? 'K'
-          : application.student.grade_levels[0].grade_level),
+      grade: grade_level,
       sped: application.student.special_ed ? 'Yes' : 'No',
       parent: `${application.student.parent.person?.last_name}, ${application.student.parent.person?.first_name}`,
       // status: application.status,

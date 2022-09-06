@@ -49,7 +49,7 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ page, item, onAction }) => 
       {showRequestCta() && (
         <Tooltip title={item.CartDate ? 'Remove' : shouldWaitResource() ? 'Join Waitlist' : 'Request'}>
           <Stack
-            onClick={(e) => actionHandler(e, EventType.ADD_CART)}
+            onClick={(e) => actionHandler(e, item.CartDate ? EventType.REMOVE_CART : EventType.ADD_CART)}
             sx={{
               ...resourceCardClasses.iconButton,
               top: 15,
@@ -77,7 +77,7 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ page, item, onAction }) => 
       {page !== ResourcePage.REQUEST && (
         <Tooltip title={item.HiddenByStudent ? 'Unhide' : 'Hide'}>
           <Stack
-            onClick={(e) => actionHandler(e, item.HiddenByStudent ? EventType.UNHIDE : EventType.HIDE)}
+            onClick={(e) => actionHandler(e, item.HiddenByStudent ? EventType.UN_HIDE : EventType.HIDE)}
             sx={{
               ...resourceCardClasses.iconButton,
               top: showRequestCta() ? 77 : 15,

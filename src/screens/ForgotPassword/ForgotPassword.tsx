@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useMutation } from '@apollo/client'
-import { makeStyles } from '@material-ui/styles'
+import { makeStyles } from '@material-ui/core/styles'
 import { Button, TextField, Typography } from '@mui/material'
 import { Box } from '@mui/system'
 import { useFormik } from 'formik'
@@ -8,7 +8,7 @@ import { useHistory } from 'react-router-dom'
 import * as yup from 'yup'
 import { MthColor } from '@mth/enums'
 import { forgotPasswordMutation, resendVerificationEmailMutation } from './service'
-import { forgotPasswordClasses } from './styles'
+import { forgotPasswordClasses, useClasses } from './styles'
 
 const useHelperTextStyles = makeStyles(() => ({
   root: {
@@ -30,6 +30,7 @@ type Alert = {
 export const ForgotPassword: React.FC = () => {
   const history = useHistory()
   const helperTextStyles = useHelperTextStyles()
+  const classes = useClasses()
   const [alert, setAlert] = useState<Alert | null>(null)
   const [verifyStatus, setVerifyStatus] = useState<boolean>(true)
 
@@ -126,13 +127,14 @@ export const ForgotPassword: React.FC = () => {
         width: '100%',
         height: '100vh',
       }}
+      className={classes.mainContent}
     >
-      <Box>
-        <Typography fontSize={58} fontWeight={400} color='white'>
+      <Box className={classes.descriptionContent}>
+        <Typography color='white' className={classes.mainHeader}>
           Reset Your Password
         </Typography>
       </Box>
-      <Box>
+      <Box className={classes.descriptionContent}>
         <Typography fontSize={17} marginTop={3} color='white'>
           Please enter your email address below and press &ldquo;Reset Password.&rdquo;
         </Typography>
@@ -141,6 +143,7 @@ export const ForgotPassword: React.FC = () => {
         </Typography>
       </Box>
       <form
+        className={classes.formContent}
         onSubmit={formik.handleSubmit}
         style={{
           display: 'flex',
@@ -152,6 +155,7 @@ export const ForgotPassword: React.FC = () => {
         <TextField
           color='secondary'
           name='email'
+          className={classes.forgotPasswordText}
           sx={forgotPasswordClasses.textField}
           label='Email'
           focused

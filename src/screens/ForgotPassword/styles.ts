@@ -1,3 +1,38 @@
+import { makeStyles, Theme } from '@material-ui/core/styles'
+
+export const useClasses = makeStyles((theme: Theme) => ({
+  mainContent: {
+    [theme.breakpoints.down('xs')]: {
+      alignItems: 'flex-start !important',
+    },
+  },
+  mainHeader: {
+    fontSize: '58px !important',
+    fontWeight: 400,
+    [theme.breakpoints.down('xs')]: {
+      fontSize: '38px !important',
+    },
+  },
+  descriptionContent: {
+    [theme.breakpoints.down('xs')]: {
+      paddingLeft: '16px',
+      paddingRight: '16px',
+    },
+  },
+  formContent: {
+    [theme.breakpoints.down('xs')]: {
+      width: '100%',
+      paddingLeft: '16px',
+      paddingRight: '16px',
+    },
+  },
+  forgotPasswordText: {
+    [theme.breakpoints.down('xs')]: {
+      width: '100% !important',
+    },
+  },
+}))
+
 export const forgotPasswordClasses = {
   textField: {
     height: '45px',

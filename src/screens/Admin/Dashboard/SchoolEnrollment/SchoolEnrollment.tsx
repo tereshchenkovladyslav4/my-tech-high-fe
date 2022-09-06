@@ -55,7 +55,7 @@ export const SchoolEnrollment: FunctionComponent = () => {
     <Box>
       <Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between' paddingX={3}>
         <Subtitle size='large' fontWeight='700'>
-          School Of Enrollment
+          School of Enrollment
         </Subtitle>
         <Link color='#4145FF' fontWeight={600} fontSize={12}>
           Assign

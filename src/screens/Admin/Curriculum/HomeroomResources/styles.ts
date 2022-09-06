@@ -1,6 +1,6 @@
 import { MthColor } from '@mth/enums'
 
-export const homeroomResourcesClassess = {
+export const homeroomResourcesClasses = {
   yearSelect: {
     '& .MuiSvgIcon-root': {
       color: MthColor.MTHBLUE,

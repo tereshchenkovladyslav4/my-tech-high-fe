@@ -1,7 +1,3 @@
-import { FunctionComponent } from 'react'
-
-type Profile = {
-  handleIsFormChange: () => void
+export type ProfileProps = {
+  handleIsFormChange: (value: boolean) => void
 }
-
-export type ProfileTemplateType = FunctionComponent<Profile>

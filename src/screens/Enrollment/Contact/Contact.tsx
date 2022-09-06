@@ -41,6 +41,7 @@ export const Contact: ContactTemplateType = ({ id, questions }) => {
                 if (q.slug?.toLocaleLowerCase().includes('emailconfirm')) {
                   valid_student[`${q.slug?.replace('student_', '')}`] = yup
                     .string()
+                    .nullable()
                     .required('Email is required')
                     .oneOf([yup.ref('email')], 'Emails do not match')
                 } else if (q.validation === 1) {
@@ -71,11 +72,11 @@ export const Contact: ContactTemplateType = ({ id, questions }) => {
               }
             } else if (q.slug?.includes('parent_')) {
               if (q.required) {
-                if (q.slug?.toLocaleLowerCase().includes('emailconfirm')) {
+                if (q.slug?.toLocaleLowerCase().includes('phone_number')) {
                   valid_parent[`${q.slug?.replace('parent_', '')}`] = yup
                     .string()
-                    .required('Email is required')
-                    .oneOf([yup.ref('email')], 'Emails do not match')
+                    .nullable()
+                    .required('Phone number is required')
                 } else if (q.validation === 1) {
                   valid_parent[`${q.slug?.replace('parent_', '')}`] = yup
                     .string()

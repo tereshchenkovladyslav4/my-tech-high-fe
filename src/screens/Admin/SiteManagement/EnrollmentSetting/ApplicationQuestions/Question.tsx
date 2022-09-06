@@ -86,7 +86,7 @@ export const ApplicationQuestionItem: FunctionComponent<ApplicationQuestionItemP
         <CustomConfirmModal
           header='Delete Question'
           content='Are you sure you want to delete this question?'
-          handleConfirmModalChange={(val: boolean, isOk: boolean) => {
+          handleConfirmModalChange={(isOk: boolean) => {
             setShowDeleteDialog(false)
             if (isOk) {
               setValues(values.filter((i) => i.id !== questions[0].id))

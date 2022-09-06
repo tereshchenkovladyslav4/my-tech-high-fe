@@ -1,7 +1,7 @@
-import { MTHBLUE } from '../../utils/constants'
+import { MthColor } from '@mth/enums'
 
-export const dropdownClassess = {
-  textfield: {
+export const dropdownClasses = {
+  textField: {
     width: '100%',
     margin: '16px 0',
   },
@@ -9,7 +9,7 @@ export const dropdownClassess = {
     width: '100%',
     margin: '16px 0',
     '& .MuiSvgIcon-root': {
-      color: MTHBLUE,
+      color: MthColor.MTHBLUE,
       alignSelf: 'center',
       justifyContent: 'center',
     },

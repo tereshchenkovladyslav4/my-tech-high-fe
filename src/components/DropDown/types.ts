@@ -14,12 +14,12 @@ type FormikCustomError = {
 export type DropDownProps = {
   dropDownItems: DropDownItem[]
   placeholder?: string
-  setParentValue: (value: string | number, val: unknown) => void
+  setParentValue: (value: string | number, val: string | number) => void
   labelTop?: boolean
   sx?: SxProps<Theme> | undefined
   alternate?: boolean
   size?: 'small' | 'medium'
-  defaultValue?: unknown
+  defaultValue?: string | number
   error?: FormikCustomError
   name?: string
   disabled?: boolean

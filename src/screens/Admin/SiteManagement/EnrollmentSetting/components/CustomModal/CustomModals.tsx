@@ -1,4 +1,5 @@
 import React, { FunctionComponent } from 'react'
+import { makeStyles, Theme } from '@material-ui/core/styles'
 import InfoIcon from '@mui/icons-material/InfoOutlined'
 import { Box, Button, Modal, Typography } from '@mui/material'
 
@@ -13,6 +14,15 @@ type CustomModalProps = {
   backgroundColor?: string
 }
 
+const useClasses = makeStyles((theme: Theme) => ({
+  modalCard: {
+    width: '441px',
+    [theme.breakpoints.down('xs')]: {
+      width: '97% !important',
+    },
+  },
+}))
+
 export const CustomModal: FunctionComponent<CustomModalProps> = ({
   title,
   description,
@@ -23,6 +33,8 @@ export const CustomModal: FunctionComponent<CustomModalProps> = ({
   cancelStr = 'Cancel',
   backgroundColor = '#EEF4F8',
 }) => {
+  const classes = useClasses()
+
   return (
     <Modal
       open={true}
@@ -31,6 +43,7 @@ export const CustomModal: FunctionComponent<CustomModalProps> = ({
       aria-describedby='child-modal-description'
     >
       <Box
+        className={classes.modalCard}
         sx={{
           position: 'absolute',
           top: '50%',

@@ -30,7 +30,7 @@ const selectStyles = makeStyles({
     height: '29px',
     textAlign: 'center',
     background: BUTTON_LINEAR_GRADIENT,
-    color: '#F2F2F2',
+    color: '#F2F2F2 !important',
     '&:before': {
       borderColor: BUTTON_LINEAR_GRADIENT,
     },
@@ -45,7 +45,7 @@ const selectStyles = makeStyles({
     height: '29px',
     textAlign: 'center',
     background: RED_GRADIENT,
-    color: '#F2F2F2',
+    color: '#F2F2F2 !important',
     '&:before': {
       borderColor: RED_GRADIENT,
     },
@@ -60,7 +60,7 @@ const selectStyles = makeStyles({
     height: '29px',
     textAlign: 'center',
     background: YELLOW_GRADIENT,
-    color: '#F2F2F2',
+    color: '#F2F2F2 !important',
     '&:before': {
       borderColor: YELLOW_GRADIENT,
     },
@@ -73,11 +73,11 @@ const selectStyles = makeStyles({
     },
   },
   selectIcon: {
-    fill: '#F2F2F2',
-    color: '#F2F2F2',
+    fill: '#F2F2F2 !important',
+    color: '#F2F2F2 !important',
   },
   selectRoot: {
-    color: '#F2F2F2',
+    color: '#F2F2F2 !imoportant',
   },
 })
 const useStyles = {
@@ -501,7 +501,7 @@ export const StudentFilters: FunctionComponent<StudentFiltersProps> = ({
               header='Remove Request'
               content='Are you sure you want to remove this Withdraw Request?'
               confirmBtnTitle='Delete'
-              handleConfirmModalChange={(val: boolean, isOk: boolean) => {
+              handleConfirmModalChange={(isOk: boolean) => {
                 if (isOk) {
                   setWithdrawalStatus({})
                   setStudentStatuData({ ...studentStatusData, ...{ activeOption: true } })

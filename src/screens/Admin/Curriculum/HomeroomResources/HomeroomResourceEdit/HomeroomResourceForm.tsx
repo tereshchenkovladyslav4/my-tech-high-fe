@@ -13,7 +13,7 @@ import { ResourceSubtitle } from '@mth/enums'
 import { useProgramYearListBySchoolYearId } from '@mth/hooks'
 import { BulletEditor } from '@mth/screens/Admin/Calendar/components/BulletEditor'
 import { renderGrades } from '@mth/utils'
-import { homeroomResourcesClassess } from '../styles'
+import { homeroomResourcesClasses } from '../styles'
 import { HomeroomResource, HomeroomResourceFormProps } from '../types'
 import { ResourceLevels } from './ResourceLevels'
 
@@ -63,7 +63,7 @@ const HomeroomResourceForm: React.FC<HomeroomResourceFormProps> = ({ schoolYearI
         justifyContent: 'center',
       }}
     >
-      <Subtitle sx={homeroomResourcesClassess.formError}>{touched.image && errors.image}</Subtitle>
+      <Subtitle sx={homeroomResourcesClasses.formError}>{touched.image && errors.image}</Subtitle>
       {values.image || imageUrl ? (
         <>
           <Avatar
@@ -108,7 +108,7 @@ const HomeroomResourceForm: React.FC<HomeroomResourceFormProps> = ({ schoolYearI
         >
           {Image()}
           <Box sx={{ width: '100%', mt: 4, mb: 3 }}>
-            <Subtitle sx={homeroomResourcesClassess.formError}>{touched.subtitle && errors.subtitle}</Subtitle>
+            <Subtitle sx={homeroomResourcesClasses.formError}>{touched.subtitle && errors.subtitle}</Subtitle>
             <DropDown
               dropDownItems={subtitleOptions}
               placeholder='Subtitle'
@@ -126,7 +126,7 @@ const HomeroomResourceForm: React.FC<HomeroomResourceFormProps> = ({ schoolYearI
           </Box>
           {values?.subtitle === ResourceSubtitle.PRICE && (
             <Box sx={{ width: '100%' }}>
-              <Subtitle sx={homeroomResourcesClassess.formError}>{touched.price && errors.price}</Subtitle>
+              <Subtitle sx={homeroomResourcesClasses.formError}>{touched.price && errors.price}</Subtitle>
               <TextField
                 name='price'
                 label='Price'
@@ -148,7 +148,7 @@ const HomeroomResourceForm: React.FC<HomeroomResourceFormProps> = ({ schoolYearI
             <Grid item xs={8}>
               <Box sx={{ width: '85%' }}>
                 <Box sx={{ mb: 3 }}>
-                  <Subtitle sx={homeroomResourcesClassess.formError}>{touched.title && errors.title}</Subtitle>
+                  <Subtitle sx={homeroomResourcesClasses.formError}>{touched.title && errors.title}</Subtitle>
                   <TextField
                     name='title'
                     label='Name'
@@ -163,7 +163,7 @@ const HomeroomResourceForm: React.FC<HomeroomResourceFormProps> = ({ schoolYearI
                   />
                 </Box>
                 <Box sx={{ mb: 3 }}>
-                  <Subtitle sx={homeroomResourcesClassess.formError}>{touched.website && errors.website}</Subtitle>
+                  <Subtitle sx={homeroomResourcesClasses.formError}>{touched.website && errors.website}</Subtitle>
                   <TextField
                     name='website'
                     label='Website'
@@ -196,7 +196,7 @@ const HomeroomResourceForm: React.FC<HomeroomResourceFormProps> = ({ schoolYearI
                 }}
               >
                 <Box sx={{ mb: 3, flex: 1 }}>
-                  <Subtitle sx={homeroomResourcesClassess.formError}>{touched.grades && errors.grades}</Subtitle>
+                  <Subtitle sx={homeroomResourcesClasses.formError}>{touched.grades && errors.grades}</Subtitle>
                   <MultiSelect
                     options={gradeOptions}
                     label='Grades'
@@ -213,7 +213,7 @@ const HomeroomResourceForm: React.FC<HomeroomResourceFormProps> = ({ schoolYearI
                   />
                 </Box>
                 <Box sx={{ mb: 3, flex: 1 }}>
-                  <Subtitle sx={homeroomResourcesClassess.formError}>
+                  <Subtitle sx={homeroomResourcesClasses.formError}>
                     {touched.resource_limit && errors.resource_limit}
                   </Subtitle>
                   <TextField
@@ -243,7 +243,7 @@ const HomeroomResourceForm: React.FC<HomeroomResourceFormProps> = ({ schoolYearI
                 }}
               >
                 <Box sx={{ mb: 3, flex: 1 }}>
-                  <Subtitle sx={homeroomResourcesClassess.formError}>
+                  <Subtitle sx={homeroomResourcesClasses.formError}>
                     {touched.std_user_name && errors.std_user_name}
                   </Subtitle>
                   <TextField
@@ -260,7 +260,7 @@ const HomeroomResourceForm: React.FC<HomeroomResourceFormProps> = ({ schoolYearI
                   />
                 </Box>
                 <Box sx={{ mb: 3, flex: 1 }}>
-                  <Subtitle sx={homeroomResourcesClassess.formError}>
+                  <Subtitle sx={homeroomResourcesClasses.formError}>
                     {touched.std_password && errors.std_password}
                   </Subtitle>
                   <TextField
@@ -319,7 +319,7 @@ const HomeroomResourceForm: React.FC<HomeroomResourceFormProps> = ({ schoolYearI
           <Subtitle size='medium' sx={{ fontSize: '27px' }} fontWeight='700'>
             Details
           </Subtitle>
-          <Subtitle sx={homeroomResourcesClassess.formError}>{touched.detail && errors.detail}</Subtitle>
+          <Subtitle sx={homeroomResourcesClasses.formError}>{touched.detail && errors.detail}</Subtitle>
           <BulletEditor
             value={values?.detail}
             setValue={(value) => {

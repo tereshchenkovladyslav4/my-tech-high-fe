@@ -339,7 +339,7 @@ export const QuickLinks: React.FC<QuickLinkProps> = ({ backAction, initialLink, 
         <CustomConfirmModal
           header='Delete Quick Link'
           content='Are you sure you want to delete this quick link?'
-          handleConfirmModalChange={(val: boolean, isOk: boolean) => {
+          handleConfirmModalChange={(isOk: boolean) => {
             if (isOk) {
               updateQuickLinks({
                 ...warningModalOpen,
@@ -359,7 +359,7 @@ export const QuickLinks: React.FC<QuickLinkProps> = ({ backAction, initialLink, 
         <CustomConfirmModal
           header='Unsaved Changes'
           content='Are you sure you want to leave without saving changes?'
-          handleConfirmModalChange={(val: boolean, isOk: boolean) => {
+          handleConfirmModalChange={(isOk: boolean) => {
             showLeavingConfirmModal(false)
             if (isOk) {
               setPage('')

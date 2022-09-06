@@ -9,7 +9,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
     transform: 'translate(-50%, -50%)',
     width: '470px',
     [theme.breakpoints.down('xs')]: {
-      width: 'fit-content',
+      width: '97%',
     },
     height: '275px',
     minHeight: '275px',

@@ -688,7 +688,7 @@ const Withdrawal: React.FC<{
                 <CustomConfirmModal
                   header='Cancel Changes'
                   content='Are you sure you want to cancel changes made?'
-                  handleConfirmModalChange={(val: boolean, isOk: boolean) => {
+                  handleConfirmModalChange={(isOk: boolean) => {
                     setCancelModal(false)
                     if (isOk) {
                       setUnsavedChanges(false)

@@ -9,8 +9,8 @@ import { useStyles } from './styles'
 type CustomConfirmModalType = {
   header: string
   content: string
-  confirmBtnTitle: string
-  handleConfirmModalChange: (val: boolean, isOk: boolean) => void
+  confirmBtnTitle?: string
+  handleConfirmModalChange: (isOk: boolean) => void
 }
 
 export const CustomConfirmModal: FunctionComponent<CustomConfirmModalType> = ({
@@ -22,11 +22,11 @@ export const CustomConfirmModal: FunctionComponent<CustomConfirmModalType> = ({
   const classes = useStyles
 
   const handleConfirm = () => {
-    handleConfirmModalChange(false, true)
+    handleConfirmModalChange(true)
   }
 
   const handleCancel = () => {
-    handleConfirmModalChange(false, false)
+    handleConfirmModalChange(false)
   }
 
   return (

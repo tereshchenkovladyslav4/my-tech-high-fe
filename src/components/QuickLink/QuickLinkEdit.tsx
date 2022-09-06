@@ -332,7 +332,7 @@ const QuickLinkEdit: React.FC<{
           <CustomConfirmModal
             header='Delete Image'
             content='Are you sure you want to delete this image?'
-            handleConfirmModalChange={(val: boolean, isOk: boolean) => {
+            handleConfirmModalChange={(isOk: boolean) => {
               showImageDeleteConfirmModal(false)
               if (isOk) {
                 setFile(undefined)

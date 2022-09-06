@@ -30,14 +30,10 @@ const ResourceRequest: React.FC<ResourceRequestProps> = ({
   }
 
   const handleConfirm = async () => {
-    const resourceIds: number[] = resourcesInCart.reduce((acc, current) => {
-      return acc.concat([Number(current.resource_id)])
-    }, [] as number[])
     const result = await requestResources({
       variables: {
         requestResourcesInput: {
           student_id: currentStudentId,
-          resourceIds: resourceIds,
         },
       },
     })
@@ -82,7 +78,7 @@ const ResourceRequest: React.FC<ResourceRequestProps> = ({
                     if (item.website) window.open(item.website, '_blank')
                     break
                   }
-                  case EventType.ADD_CART: {
+                  case EventType.REMOVE_CART: {
                     removeInCart(item)
                     break
                   }
@@ -100,9 +96,7 @@ const ResourceRequest: React.FC<ResourceRequestProps> = ({
       <Box sx={{ marginTop: 4 }}>
         <ResourceConfirm
           totalPrice={totalPrice}
-          onConfirm={() => {
-            handleConfirm()
-          }}
+          onConfirm={handleConfirm}
           onCancel={() => {
             setPage(ResourcePage.ROOT)
           }}

@@ -1,5 +1,5 @@
 import { FunctionComponent } from 'react'
-import { SchoolYearType } from '../../../utils/utils.types'
+import { SchoolYearType } from '@mth/models'
 
 export type GradeLevel = {
   grade_level: number | string
@@ -11,6 +11,7 @@ export type GQLFile = {
   mth_file_id: number
   packet_id: number
 }
+
 export type Packet = {
   admin_notes: string
   agrees_to_policy: number

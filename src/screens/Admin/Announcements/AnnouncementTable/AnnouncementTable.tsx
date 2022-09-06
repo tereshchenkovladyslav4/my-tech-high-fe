@@ -101,7 +101,7 @@ const AnnouncementTable: FunctionComponent<AnnouncementTableProps> = ({ setAnnou
           header='Delete Announcement'
           content='Are you sure you want to delete this Announcement?'
           confirmBtnTitle='Delete'
-          handleConfirmModalChange={(val: boolean, isOk: boolean) => {
+          handleConfirmModalChange={(isOk: boolean) => {
             if (isOk) {
               confirmDeleteAnnouncement(showConfirmModal)
             }

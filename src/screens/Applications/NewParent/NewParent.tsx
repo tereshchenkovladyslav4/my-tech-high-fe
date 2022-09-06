@@ -2,6 +2,8 @@ import React, { ReactElement, useEffect, useState } from 'react'
 import { useLazyQuery, useMutation, useQuery } from '@apollo/client'
 import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined'
 import { Box, Button, Card, Grid, TextField } from '@mui/material'
+import { useTheme } from '@mui/material/styles'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import { Field, FieldArray, Form, Formik } from 'formik'
 import { map, sortBy, toNumber } from 'lodash'
 import { omit } from 'lodash'
@@ -36,6 +38,8 @@ export type StudentInput = {
 
 export const NewParent: React.FC = () => {
   const classes = useStyles
+  const theme = useTheme()
+  const matches = useMediaQuery(theme.breakpoints.down('sm'))
   const [initStudentQuestions, setInitStudentQuestions] = useState({ meta: {} })
   const [emptyStudent, setEmptyStudent] = useState({ meta: {} })
   const [emptyParent, setEmptyParent] = useState({})
@@ -780,7 +784,7 @@ export const NewParent: React.FC = () => {
                                             name={'students[0].grade_level'}
                                             labelTop
                                             placeholder={`${q.question} as of ${moment(birthDateCut).format(
-                                              'MMMM DD, YYYY',
+                                              !matches ? 'MMMM DD, YYYY' : 'MMM. DD, YYYY',
                                             )}`}
                                             dropDownItems={gradesDropDownItems}
                                             setParentValue={(id) => {
@@ -939,7 +943,7 @@ export const NewParent: React.FC = () => {
                                                     name={`students[${index}].grade_level`}
                                                     labelTop
                                                     placeholder={`${q.question} as of ${moment(birthDateCut).format(
-                                                      'MMMM DD, YYYY',
+                                                      !matches ? 'MMMM DD, YYYY' : 'MMM. DD, YYYY',
                                                     )}`}
                                                     dropDownItems={gradesDropDownItems}
                                                     setParentValue={(id) => {

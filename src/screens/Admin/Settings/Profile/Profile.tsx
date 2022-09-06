@@ -359,7 +359,7 @@ export const Profile: FunctionComponent<{ handleIsFormChange: () => void }> = ({
           <CustomConfirmModal
             header={warningModalOpen.title}
             content={warningModalOpen.subtitle}
-            handleConfirmModalChange={(val: boolean, isOk: boolean) => {
+            handleConfirmModalChange={(isOk: boolean) => {
               if (isOk && warningModalOpen.callback) warningModalOpen.callback()
               setWarningModalOpen({ title: '', subtitle: '', callback: null })
             }}

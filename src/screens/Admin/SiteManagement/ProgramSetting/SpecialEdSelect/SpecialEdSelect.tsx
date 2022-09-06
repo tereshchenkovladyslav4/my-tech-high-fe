@@ -196,7 +196,7 @@ export const SpecialEdSelect: React.FC<SpecialEdSelectProps> = ({
           header='Delete Services'
           content='Deleting this option will remove it from any student who currently has this as a status.'
           confirmBtnTitle='Delete'
-          handleConfirmModalChange={(val: boolean, isOk: boolean) => {
+          handleConfirmModalChange={(isOk: boolean) => {
             setShowDeleteDialog(false)
             if (isOk) {
               deleteSpecialOption()
