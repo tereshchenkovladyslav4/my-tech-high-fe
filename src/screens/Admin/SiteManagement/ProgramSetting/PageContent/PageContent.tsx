@@ -139,7 +139,12 @@ export const PageContent: React.FC<PageContentProps> = ({
   return (
     <>
       {programSettingList?.map((programSetting, index) => (
-        <CommonSelect key={index} index={index} selectItem={programSetting} />
+        <CommonSelect
+          key={index}
+          index={index}
+          selectItem={programSetting}
+          verticalDividHeight={programSetting.name == MthTitle.STATE_LOGO ? '160px' : 'auto'}
+        />
       ))}
     </>
   )

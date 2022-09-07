@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { useMutation } from '@apollo/client'
 import { Box } from '@mui/material'
 import {
   DragDropContext,
@@ -12,11 +13,13 @@ import {
   NotDraggingStyle,
   DropResult,
 } from 'react-beautiful-dnd'
+import { updateAssessmentsMutation } from '@mth/graphql/mutation/assessment'
 import AssessmentItem from './AssessmentItem'
 import { AssessmentTableProps, AssessmentType } from './types'
 
-const AssessmentTable: React.FC<AssessmentTableProps> = ({ assessmentItems, setAssessmentItems }) => {
+const AssessmentTable: React.FC<AssessmentTableProps> = ({ assessmentItems, setSelectedAssessment, refetch }) => {
   const [isDragDisable, setIsDragDisable] = useState<boolean>(true)
+  const [submitUpdates, {}] = useMutation(updateAssessmentsMutation)
   const getListStyle = (isDraggingOver: boolean) => ({
     width: '100%',
     background: isDraggingOver ? 'lightgrey' : 'lightgrey',
@@ -38,17 +41,24 @@ const AssessmentTable: React.FC<AssessmentTableProps> = ({ assessmentItems, setA
     ...draggableStyle,
   })
 
-  const onDragEnd = (result: DropResult) => {
+  const onDragEnd = async (result: DropResult) => {
     if (!result.destination) {
       return
     }
 
     const items = reorder(
-      assessmentItems.filter((assessment) => !assessment.isArchived),
+      assessmentItems.filter((assessment) => !assessment.is_archived),
       result.source.index,
       result.destination.index,
     )
-    setAssessmentItems(items.concat(assessmentItems.filter((assessment) => assessment.isArchived)))
+    await submitUpdates({
+      variables: {
+        updateAssessmentsInputs: {
+          updateAssessments: items.map((item, index) => ({ ...item, priority: index })),
+        },
+      },
+    })
+    refetch()
   }
 
   return (
@@ -59,8 +69,8 @@ const AssessmentTable: React.FC<AssessmentTableProps> = ({ assessmentItems, setA
             <Box {...provided.droppableProps} ref={provided.innerRef} style={getListStyle(snapshot.isDraggingOver)}>
               {assessmentItems.map((item, index) => (
                 <Draggable
-                  key={item.id.toString()}
-                  draggableId={item.id.toString()}
+                  key={item.assessment_id.toString()}
+                  draggableId={item.assessment_id.toString()}
                   index={index}
                   isDragDisabled={isDragDisable}
                 >
@@ -71,7 +81,14 @@ const AssessmentTable: React.FC<AssessmentTableProps> = ({ assessmentItems, setA
                       {...provided.dragHandleProps}
                       sx={getItemStyle(snapshot.isDragging, provided.draggableProps.style)}
                     >
-                      <AssessmentItem key={index} index={index} item={item} setIsDragDisable={setIsDragDisable} />
+                      <AssessmentItem
+                        key={index}
+                        index={index}
+                        item={item}
+                        setIsDragDisable={setIsDragDisable}
+                        setSelectedAssessment={setSelectedAssessment}
+                        refetch={refetch}
+                      />
                     </Box>
                   )}
                 </Draggable>

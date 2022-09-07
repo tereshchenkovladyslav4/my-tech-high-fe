@@ -5,7 +5,7 @@ import SearchIcon from '@mui/icons-material/Search'
 import { Box, Button, Grid, InputAdornment, OutlinedInput } from '@mui/material'
 import { useHistory } from 'react-router-dom'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
-import { CALENDAR } from '../../../../utils/constants'
+import { MthRoute } from '@mth/enums'
 import { MultiSelectDropDown } from '../components/MultiSelectDropDown'
 import { MultiSelectDropDownListType } from '../components/MultiSelectDropDown/MultiSelectDropDown'
 import { mainClasses } from '../MainComponent/styles'
@@ -43,7 +43,7 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
               variant='contained'
               sx={mainClasses.editButton}
               startIcon={<ModeEditIcon />}
-              onClick={() => history.push(`${CALENDAR}/editType`)}
+              onClick={() => history.push(`${MthRoute.CALENDAR}/editType`)}
             >
               <Subtitle sx={{ whiteSpace: 'nowrap' }}>Edit Type</Subtitle>
             </Button>
@@ -52,7 +52,7 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
               variant='contained'
               sx={mainClasses.addButton}
               startIcon={<AddIcon />}
-              onClick={() => history.push(`${CALENDAR}/addEvent`)}
+              onClick={() => history.push(`${MthRoute.CALENDAR}/addEvent`)}
             >
               <Subtitle sx={{ whiteSpace: 'nowrap' }}>Add Event</Subtitle>
             </Button>

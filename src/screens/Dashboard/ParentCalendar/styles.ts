@@ -61,8 +61,8 @@ export const parentCalendarClasses = {
     },
   },
   clubButton: {
-    mt: 1.5,
     background: '#2b9db72b',
+    marginY: 'auto',
     width: 'auto',
   },
   arrowButton: {

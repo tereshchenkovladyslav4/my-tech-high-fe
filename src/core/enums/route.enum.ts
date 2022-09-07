@@ -28,4 +28,5 @@ export enum MthRoute {
   SUBMIT_WITHDRAWAL = '/withdrawal',
   USERS = '/users',
   WITHDRAWAL = '/enrollment/withdrawal',
+  TESTING_PREFERENCE_PATH = '/site-management/enrollment/testing-preference',
 }

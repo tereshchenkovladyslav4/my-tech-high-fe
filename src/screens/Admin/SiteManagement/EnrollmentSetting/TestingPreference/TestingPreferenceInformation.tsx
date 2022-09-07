@@ -1,14 +1,17 @@
-import React from 'react'
+import React, { useState } from 'react'
 import ModeEditIcon from '@mui/icons-material/ModeEdit'
 import { Box, IconButton, Tooltip, Typography } from '@mui/material'
 import { MthColor } from '@mth/enums'
+import { extractContent } from '@mth/utils'
+import CustomizableDetailModal from './CustomizableDetailModal'
 import { TestingPreferenceInformationProps } from './types'
 
-const TestingPreferenceInformation: React.FC<TestingPreferenceInformationProps> = ({ title, description }) => {
+const TestingPreferenceInformation: React.FC<TestingPreferenceInformationProps> = ({ information, refetch }) => {
+  const [showCustomizableModal, setShowCustomizableModal] = useState<boolean>(false)
   return (
     <Box>
       <Typography fontSize='16px' fontWeight={500} component='span'>
-        {title}
+        {information.title}
       </Typography>
       <Box
         sx={{
@@ -20,7 +23,7 @@ const TestingPreferenceInformation: React.FC<TestingPreferenceInformationProps> 
         }}
       >
         <Typography fontSize='12px' fontWeight={500} component='span'>
-          {description}
+          {extractContent(information.description)}
         </Typography>
         <Tooltip title='Edit' placement='top'>
           <IconButton
@@ -31,11 +34,19 @@ const TestingPreferenceInformation: React.FC<TestingPreferenceInformationProps> 
               height: '50px',
               marginY: 'auto',
             }}
+            onClick={() => setShowCustomizableModal(true)}
           >
             <ModeEditIcon sx={{ fontSize: '25px', fontWeight: 700, color: MthColor.MTHBLUE }} />
           </IconButton>
         </Tooltip>
       </Box>
+      {showCustomizableModal && (
+        <CustomizableDetailModal
+          information={information}
+          handleClose={() => setShowCustomizableModal(false)}
+          refetch={refetch}
+        />
+      )}
     </Box>
   )
 }

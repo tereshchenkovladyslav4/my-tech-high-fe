@@ -13,6 +13,11 @@ type SchoolYearType = {
   midyear_application: boolean
   midyear_application_open: Date
   midyear_application_close: Date
+  testing_preference_title: string
+  testing_preference_description: string
+  opt_out_form_title: string
+  opt_out_form_description: string
+  grades: string
 }
 
 export const useSchoolYearsByRegionId = (
@@ -22,11 +27,12 @@ export const useSchoolYearsByRegionId = (
   schoolYears: SchoolYearType[]
   dropdownItems: DropDownItem[]
   error: ApolloError | undefined
+  refetchSchoolYear: () => void
 } => {
   const [dropdownItems, setDropdownItems] = useState<Array<DropDownItem>>([])
   const [schoolYears, setSchoolYears] = useState<Array<SchoolYearType>>([])
 
-  const { loading, data, error } = useQuery(getSchoolYearsByRegionId, {
+  const { loading, data, error, refetch } = useQuery(getSchoolYearsByRegionId, {
     variables: {
       regionId: regionId,
     },
@@ -47,5 +53,11 @@ export const useSchoolYearsByRegionId = (
     }
   }, [loading, data])
 
-  return { loading: loading, schoolYears: schoolYears, dropdownItems: dropdownItems, error: error }
+  return {
+    loading: loading,
+    schoolYears: schoolYears,
+    dropdownItems: dropdownItems,
+    error: error,
+    refetchSchoolYear: refetch,
+  }
 }

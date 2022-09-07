@@ -9,8 +9,8 @@ import { Box, Button, Stack, Tooltip, Typography } from '@mui/material'
 import moment from 'moment'
 import { useHistory } from 'react-router-dom'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
-import { CALENDAR, SYSTEM_02, SYSTEM_05, SYSTEM_06 } from '../../../../utils/constants'
-import { getFirstDayAndLastDayOfMonth, hexToRgbA, renderDate, renderFilter } from '../../../../utils/utils'
+import { MthColor, MthRoute } from '@mth/enums'
+import { getFirstDayAndLastDayOfMonth, hexToRgbA, renderDate, renderFilter } from '@mth/utils'
 import { CustomModal } from '../../SiteManagement/EnrollmentSetting/components/CustomModal/CustomModals'
 import { mainClasses } from '../MainComponent/styles'
 import { deleteEventByIdMutation } from '../services'
@@ -48,7 +48,7 @@ const EventDetail: React.FC<EventDetailProps> = ({
   const [lastDay, setLastDay] = useState<Date>()
 
   const handleRSVPClick = () => {
-    history.push(`${CALENDAR}/rsvp`)
+    history.push(`${MthRoute.CALENDAR}/rsvp`)
   }
 
   const getFilteredEvents = (selectedDate: Date | undefined) => {
@@ -130,7 +130,7 @@ const EventDetail: React.FC<EventDetailProps> = ({
             <Button
               sx={mainClasses.iconButton}
               onClick={() => {
-                history.push(`${CALENDAR}/addEvent`)
+                history.push(`${MthRoute.CALENDAR}/addEvent`)
                 if (selectedEvent) setEvent(selectedEvent)
               }}
             >
@@ -156,16 +156,16 @@ const EventDetail: React.FC<EventDetailProps> = ({
               </Tooltip>
             </Button>
           </Box>
-          <Subtitle fontWeight='600' sx={{ my: 1.5, fontSize: '16px' }} color={SYSTEM_02}>
+          <Subtitle fontWeight='600' sx={{ my: 1.5, fontSize: '16px' }} color={MthColor.SYSTEM_02}>
             {selectedEvent?.title}
           </Subtitle>
-          <Subtitle fontWeight='bold' color={SYSTEM_06} sx={{ display: 'inline-block', fontSize: '12px' }}>
+          <Subtitle fontWeight='bold' color={MthColor.SYSTEM_06} sx={{ display: 'inline-block', fontSize: '12px' }}>
             {renderDate(selectedEvent)}
           </Subtitle>
-          <Subtitle fontWeight='bold' color={SYSTEM_06} sx={{ marginTop: 1, fontSize: '12px' }}>
+          <Subtitle fontWeight='bold' color={MthColor.SYSTEM_06} sx={{ marginTop: 1, fontSize: '12px' }}>
             {renderFilter(selectedEvent)}
           </Subtitle>
-          <Subtitle fontWeight='500' color={SYSTEM_05} sx={{ mt: 2, fontSize: '12px' }}>
+          <Subtitle fontWeight='500' color={MthColor.SYSTEM_05} sx={{ mt: 2, fontSize: '12px' }}>
             <Typography
               component={'span'}
               variant={'body2'}

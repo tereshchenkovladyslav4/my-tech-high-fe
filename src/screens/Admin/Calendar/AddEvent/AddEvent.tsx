@@ -5,8 +5,8 @@ import { Form, Formik } from 'formik'
 import moment from 'moment'
 import { Prompt, useHistory } from 'react-router-dom'
 import * as yup from 'yup'
-import { CALENDAR } from '../../../../utils/constants'
-import { convertDateToUTCDate } from '../../../../utils/utils'
+import { MthRoute } from '@mth/enums'
+import { convertDateToUTCDate } from '@mth/utils'
 import { CustomModal } from '../../SiteManagement/EnrollmentSetting/components/CustomModal/CustomModals'
 import { defaultEvent, defaultEventFormData } from '../defaultValue'
 import { RSVPComponent } from '../RSVPComponent'
@@ -49,7 +49,7 @@ const AddEvent: React.FC<AddEventProps> = ({ selectedEvent }) => {
   })
 
   const handleCancelClick = () => {
-    history.push(CALENDAR)
+    history.push(MthRoute.CALENDAR)
   }
 
   const onSave = async (values: EventFormData) => {
@@ -74,7 +74,7 @@ const AddEvent: React.FC<AddEventProps> = ({ selectedEvent }) => {
       },
     })
     setIsChanged(false)
-    history.push(CALENDAR)
+    history.push(MthRoute.CALENDAR)
   }
 
   useEffect(() => {
@@ -170,7 +170,7 @@ const AddEvent: React.FC<AddEventProps> = ({ selectedEvent }) => {
           onConfirm={() => {
             setShowCancelModal(false)
             setIsChanged(false)
-            setTimeout(() => history.push(CALENDAR), 300)
+            setTimeout(() => history.push(MthRoute.CALENDAR), 300)
           }}
         />
       )}

@@ -303,7 +303,7 @@ export const Filters: FunctionComponent<FiltersProps> = ({ filter, setFilter }) 
                       }
                       label={
                         <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
-                          {`${moment(item.date_begin).format('yyyy')}-${moment(item.date_end).format('yy')}`}
+                          {`${moment(item.date_begin).format('YYYY')}-${moment(item.date_end).format('YY')}`}
                         </Paragraph>
                       }
                     />
@@ -318,9 +318,9 @@ export const Filters: FunctionComponent<FiltersProps> = ({ filter, setFilter }) 
                       }
                       label={
                         <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
-                          {`${moment(item.midyear_application_open).format('yyyy')}-${moment(
+                          {`${moment(item.midyear_application_open).format('YYYY')}-${moment(
                             item.midyear_application_close,
-                          ).format('yy')} Mid-Year`}
+                          ).format('YY')} Mid-year`}
                         </Paragraph>
                       }
                     />
@@ -339,7 +339,7 @@ export const Filters: FunctionComponent<FiltersProps> = ({ filter, setFilter }) 
                     }
                     label={
                       <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
-                        {`${moment(item.date_begin).format('yyyy')}-${moment(item.date_end).format('yy')}`}
+                        {`${moment(item.date_begin).format('YYYY')}-${moment(item.date_end).format('YY')}`}
                       </Paragraph>
                     }
                   />
@@ -484,7 +484,7 @@ export const Filters: FunctionComponent<FiltersProps> = ({ filter, setFilter }) 
               control={<Checkbox value='0' checked={visibility.includes('0')} onChange={handleChangeVisibility} />}
               label={
                 <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
-                  Unhiden
+                  Unhidden
                 </Paragraph>
               }
             />

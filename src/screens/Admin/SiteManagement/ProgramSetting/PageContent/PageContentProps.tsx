@@ -34,7 +34,7 @@ export type PageContentProps = {
   schoolDistrictItem: {
     schoolDistrict: SchoolDistrictFileType | null
     setSchoolDistrict: (value: SchoolDistrictFileType) => void
-    setSchoolDistrictArray: (value: Array<SchoolDistrictFileType>) => void
+    setSchoolDistrictArray: (value: Array<{ school_district_name: string; school_district_code: string }>) => void
   }
   gradesItem: {
     grades: string

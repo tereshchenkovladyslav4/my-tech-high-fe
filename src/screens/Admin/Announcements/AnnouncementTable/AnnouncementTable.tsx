@@ -62,7 +62,7 @@ const AnnouncementTable: FunctionComponent<AnnouncementTableProps> = ({ setAnnou
       setTableDatas(
         data?.announcements.map(
           (announcement: Announcement): Announcement => ({
-            id: announcement.announcement_id,
+            id: announcement.announcementId,
             date: announcement.date ? moment(announcement.date).format('MMMM DD') : '',
             subject: announcement.subject,
             postedBy: announcement.posted_by,

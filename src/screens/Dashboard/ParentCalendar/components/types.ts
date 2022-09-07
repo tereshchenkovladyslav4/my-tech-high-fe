@@ -1,4 +1,4 @@
-import { FunctionComponent, ReactNode } from 'react'
+import { ReactNode } from 'react'
 import { MultiSelectDropDownListType } from '../../../Admin/Calendar/components/MultiSelectDropDown/MultiSelectDropDown'
 import { CalendarEvent, EventVM } from '../../../Admin/Calendar/types'
 
@@ -14,7 +14,7 @@ export type DayVM = {
   eventColor?: string
 }
 
-type CalendarDaysProps = {
+export type CalendarDaysProps = {
   selectedEvent: EventVM | undefined
   eventList: CalendarEvent[]
   day: Date
@@ -23,7 +23,7 @@ type CalendarDaysProps = {
   setSelectedDate: (value: Date | undefined) => void
 }
 
-type DashboardCalendarProps = {
+export type DashboardCalendarProps = {
   currentMonth: Date
   selectedEvent: EventVM | undefined
   calendarEventList: CalendarEvent[]
@@ -35,6 +35,3 @@ type DashboardCalendarProps = {
   handleSelectedEvent: (value: CalendarEvent, date: Date) => void
   setSelectedEventTypes: (value: string[]) => void
 }
-
-export type CalendarDaysTemplateType = FunctionComponent<CalendarDaysProps>
-export type DashboardCalendarTemplateType = FunctionComponent<DashboardCalendarProps>

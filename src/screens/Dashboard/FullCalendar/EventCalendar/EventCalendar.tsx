@@ -7,7 +7,7 @@ import moment from 'moment'
 import { Calendar, momentLocalizer } from 'react-big-calendar'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
-import { BLACK, GRAY } from '../../../../utils/constants'
+import { MthColor } from '@mth/enums'
 import { mainClasses } from '../../../Admin/Calendar/MainComponent/styles'
 import { CalendarEvent, EventCalendarProps } from '../../../Admin/Calendar/types'
 import { calendarDayClassess } from '../../ParentCalendar/components/styles'
@@ -190,7 +190,7 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
           <Fade {...TransitionProps} timeout={350}>
             <Card sx={calendarDayClassess.modal}>
               <Box sx={calendarDayClassess.title}>
-                <Subtitle color={GRAY} sx={{ fontSize: '20px' }} fontWeight='700'>
+                <Subtitle color={MthColor.GRAY} sx={{ fontSize: '20px' }} fontWeight='700'>
                   {moment(selectedDate).format('dddd')}
                 </Subtitle>
                 <CloseIcon
@@ -201,7 +201,7 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
                   }}
                 />
               </Box>
-              <Subtitle color={BLACK} sx={{ fontSize: '20px', textAlign: 'center' }} fontWeight='700'>
+              <Subtitle color={MthColor.BLACK} sx={{ fontSize: '20px', textAlign: 'center' }} fontWeight='700'>
                 {moment(selectedDate).format('D')}
               </Subtitle>
               <Box sx={{ paddingX: 2, paddingBottom: 2 }}>{renderEventList(selectedEvents)}</Box>

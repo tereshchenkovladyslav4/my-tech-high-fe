@@ -2,16 +2,16 @@ import React from 'react'
 import { Box } from '@mui/material'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import moment from 'moment'
-import leftArrowCalendar from '../../../../assets/leftArrowCalendar.svg'
-import rightArrowCalendar from '../../../../assets/rightArrowCalendar.svg'
-import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
-import { WEEKDAYS } from '../../../../utils/constants'
+import leftArrowCalendar from '@mth/assets/leftArrowCalendar.svg'
+import rightArrowCalendar from '@mth/assets/rightArrowCalendar.svg'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { WEEKDAYS } from '@mth/constants'
 import { MultiSelectDropDown } from '../../../Admin/Calendar/components/MultiSelectDropDown'
 import { CalendarDays } from './CalendarDay'
-import { DashboardCalendarTemplateType } from './types'
 import './calendar.css'
+import { DashboardCalendarProps } from './types'
 
-export const DashboardCalendar: DashboardCalendarTemplateType = ({
+export const DashboardCalendar: React.FC<DashboardCalendarProps> = ({
   selectedEvent,
   calendarEventList,
   selectedEventTypes,
@@ -55,11 +55,13 @@ export const DashboardCalendar: DashboardCalendarTemplateType = ({
             >
               <img className='arrow' src={rightArrowCalendar} />
             </Box>
-            <MultiSelectDropDown
-              checkBoxLists={eventTypeLists}
-              selectedLists={selectedEventTypes}
-              setSelectedLists={setSelectedEventTypes}
-            />
+            <Box display={{ xs: 'none', sm: 'none', md: 'block' }}>
+              <MultiSelectDropDown
+                checkBoxLists={eventTypeLists}
+                selectedLists={selectedEventTypes}
+                setSelectedLists={setSelectedEventTypes}
+              />
+            </Box>
           </Box>
         </Box>
         <Box className='calendar-box'>

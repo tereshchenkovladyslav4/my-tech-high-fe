@@ -13,31 +13,20 @@ import {
 import { map } from 'lodash'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
-import { renderGrades } from '@mth/utils'
-import { GRADES, MTHBLUE } from '../../../../../utils/constants'
-import { toOrdinalSuffix } from '../../../../../utils/stringHelpers'
-import { useStyles } from '../../styles'
-import { ProgramSettingChanged } from '../types'
+import { MthColor } from '@mth/enums'
+import { toOrdinalSuffix } from '@mth/utils'
+import { gradeSelectClassess } from './styles'
 
 export type GradesSelectProps = {
   grades: string
   setGrades: (value: string) => void
-  setIsChanged?: (value: ProgramSettingChanged) => void
-  isChanged?: ProgramSettingChanged
+  availGrades: (string | number)[]
+  setIsChanged: (value: boolean) => void
 }
 
-export const GradesSelect: React.FC<GradesSelectProps> = ({ grades, setGrades, setIsChanged, isChanged }) => {
-  const classes = useStyles
+export const GradesSelect: React.FC<GradesSelectProps> = ({ grades, availGrades, setGrades, setIsChanged }) => {
   const [open, setOpen] = useState<boolean>(false)
   const [gradesArr, setGradesArr] = useState<string[]>([])
-
-  useEffect(() => {
-    if (grades != undefined && grades != '') {
-      setGradesArr(grades.split(','))
-    } else {
-      setGradesArr([])
-    }
-  }, [grades])
   const handleClickOpen = () => {
     setOpen(true)
   }
@@ -57,11 +46,7 @@ export const GradesSelect: React.FC<GradesSelectProps> = ({ grades, setGrades, s
       }
     })
     setGrades(gradesStr)
-    if (setIsChanged && isChanged)
-      setIsChanged({
-        ...isChanged,
-        grades: true,
-      })
+    setIsChanged(true)
   }
 
   const handleChangeGrades = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -73,8 +58,8 @@ export const GradesSelect: React.FC<GradesSelectProps> = ({ grades, setGrades, s
   }
 
   const renderGradeList = () =>
-    map(GRADES, (grade, index) => {
-      if (typeof grade !== 'string') {
+    map(availGrades, (grade, index) => {
+      if (typeof grade == 'string' && !grade.includes('Kin')) {
         return (
           <FormControlLabel
             key={index}
@@ -84,12 +69,12 @@ export const GradesSelect: React.FC<GradesSelectProps> = ({ grades, setGrades, s
             }
             label={
               <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px', fontSize: '19.8627px' }}>
-                {`${toOrdinalSuffix(grade)} Grade`}
+                {`${toOrdinalSuffix(Number(grade))} Grade`}
               </Paragraph>
             }
           />
         )
-      } else {
+      } else if (typeof grade == 'string') {
         return (
           <FormControlLabel
             key={index}
@@ -105,25 +90,58 @@ export const GradesSelect: React.FC<GradesSelectProps> = ({ grades, setGrades, s
       }
     })
 
+  const orderGrades = (grades: string): string => {
+    let result = ''
+    if (grades) {
+      const tempArray = grades.split(',')
+      if (tempArray.includes('Kindergarten')) {
+        result = 'K,'
+      }
+      result += tempArray
+        .filter((item) => !item.includes('Kin'))
+        .sort((a: string, b: string) => {
+          if (Number(a) > Number(b)) {
+            return 1
+          } else if (Number(a) < Number(b)) {
+            return -1
+          }
+          return 0
+        })
+        .join(',')
+      return result
+    } else {
+      result = 'Select'
+    }
+    return result
+  }
+
+  useEffect(() => {
+    if (grades != undefined && grades != '') {
+      setGradesArr(grades.split(','))
+    } else {
+      setGradesArr([])
+    }
+  }, [grades])
+
   return (
     <>
-      <Box sx={classes.gradeBox}>
-        <Stack direction='row' sx={{ ml: 1.5, cursor: 'pointer' }} alignItems='center' onClick={handleClickOpen}>
-          <Subtitle size={12} color={MTHBLUE} fontWeight='500'>
-            {grades ? renderGrades(grades) : 'Select'}
+      <Box sx={gradeSelectClassess.gradeBox}>
+        <Stack direction='row' sx={{ cursor: 'pointer' }} alignItems='center' onClick={handleClickOpen}>
+          <Subtitle size={12} color={MthColor.MTHBLUE} fontWeight='500'>
+            {orderGrades(grades)}
           </Subtitle>
         </Stack>
       </Box>
-      <Dialog open={open} onClose={handleClose} sx={classes.gradesDialog}>
-        <DialogTitle sx={classes.dialogTitle}>{'Grades'}</DialogTitle>
+      <Dialog open={open} onClose={handleClose} sx={gradeSelectClassess.gradesDialog}>
+        <DialogTitle sx={gradeSelectClassess.dialogTitle}>{'Grades'}</DialogTitle>
         <Box>
-          <FormGroup sx={classes.formGroup}>{renderGradeList()}</FormGroup>
+          <FormGroup sx={gradeSelectClassess.formGroup}>{renderGradeList()}</FormGroup>
         </Box>
-        <DialogActions sx={classes.dialogAction}>
-          <Button variant='contained' sx={classes.cancelButton} onClick={handleClose}>
+        <DialogActions sx={gradeSelectClassess.dialogAction}>
+          <Button variant='contained' sx={gradeSelectClassess.cancelButton} onClick={handleClose}>
             Cancel
           </Button>
-          <Button variant='contained' sx={classes.submitButton} onClick={handleSave}>
+          <Button variant='contained' sx={gradeSelectClassess.submitButton} onClick={handleSave}>
             Save
           </Button>
         </DialogActions>

@@ -8,6 +8,7 @@ import { addEventClassess } from '../../AddEvent/styles'
 
 type BulletEditorProps = {
   value?: string
+  height?: string
   setValue: (value: string) => void
   error?: boolean
 }
@@ -18,7 +19,7 @@ const generateEditorState = (htmlContent: string): EditorState => {
   return EditorState.createWithContent(contentState)
 }
 
-const BulletEditor: React.FC<BulletEditorProps> = ({ value, setValue, error }) => {
+const BulletEditor: React.FC<BulletEditorProps> = ({ value, setValue, error, height }) => {
   const [currentBlocks, setCurrentBlocks] = useState<number>(0)
   const editorRef = useRef<unknown>()
   const [editorState, setEditorState] = useState<EditorState>(generateEditorState(''))
@@ -45,7 +46,14 @@ const BulletEditor: React.FC<BulletEditorProps> = ({ value, setValue, error }) =
   }, [value])
 
   return (
-    <Box sx={{ ...addEventClassess.editor, ...(error && addEventClassess.editorInvalid) }}>
+    <Box
+      sx={{
+        ...addEventClassess.editor,
+        ...(error && addEventClassess.editorInvalid),
+        'div.DraftEditor-editorContainer': { minHeight: height ? height : '300px' },
+        marginY: 'auto',
+      }}
+    >
       <Wysiwyg.Editor
         onContentStateChange={handleEditorChange}
         placeholder='  Type here...'

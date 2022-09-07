@@ -15,5 +15,10 @@ export enum MthTitle {
   SHOW_ARCHIVED = 'Show Archived',
   HIDE_ARCHIVED = 'Hide Archived',
   ADD_ANNOUNCEMENT = 'Add Announcement',
-  ADD_ASSESSMENT = '+ Add Assessment',
+  ADD_ASSESSMENT = 'Add Assessment',
+  NEW_ASSESSMENT = 'New Assessment',
+  TEST_NAME = 'Test Name',
+  INFORMATION = 'Information',
+  OPTION_1 = 'Option1',
+  ADD_OPTION = 'Add Option',
 }

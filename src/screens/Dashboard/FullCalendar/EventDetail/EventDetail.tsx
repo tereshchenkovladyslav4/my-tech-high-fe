@@ -5,16 +5,16 @@ import { Avatar, AvatarGroup, Box, Button, Stack } from '@mui/material'
 import moment from 'moment'
 import { useHistory } from 'react-router-dom'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { MthColor, MthRoute } from '@mth/enums'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
-import { CALENDAR, SYSTEM_02, SYSTEM_05, SYSTEM_06 } from '../../../../utils/constants'
 import {
   extractContent,
   getFirstDayAndLastDayOfMonth,
+  getProfilePhoto,
   hexToRgbA,
   renderDate,
   renderFilter,
-} from '../../../../utils/utils'
-import { Person } from '../../../HomeroomStudentProfile/Student/types'
+} from '@mth/utils'
 import { EventDetailProps } from '../types'
 import { eventDetailClassess } from './styles'
 
@@ -35,7 +35,7 @@ const EventDetail: React.FC<EventDetailProps> = ({
   const [lastDay, setLastDay] = useState<Date>()
 
   const handleRSVPClick = () => {
-    history.push(`${CALENDAR}/rsvp`)
+    history.push(`${MthRoute.CALENDAR}/rsvp`)
   }
 
   const getFilteredEvents = (selectedDate: Date | undefined) => {
@@ -68,13 +68,6 @@ const EventDetail: React.FC<EventDetailProps> = ({
       setSelectedEventIndex(selectedEventIndex + 1)
       setSelectedEvent(filteredEvents?.at(selectedEventIndex + 1))
     }
-  }
-
-  const getProfilePhoto = (person: Person) => {
-    if (!person.photo) return 'image'
-
-    const s3URL = 'https://infocenter-v2-dev.s3.us-west-2.amazonaws.com/'
-    return s3URL + person.photo
   }
 
   const avatarGroup = (gradeFilter: string) => {
@@ -142,17 +135,17 @@ const EventDetail: React.FC<EventDetailProps> = ({
               </Subtitle>
             </Button>
           </Box>
-          <Subtitle fontWeight='600' sx={{ my: 1.5, fontSize: '16px' }} color={SYSTEM_02}>
+          <Subtitle fontWeight='600' sx={{ my: 1.5, fontSize: '16px' }} color={MthColor.SYSTEM_02}>
             {selectedEvent?.title}
           </Subtitle>
-          <Subtitle fontWeight='bold' color={SYSTEM_06} sx={{ display: 'inline-block', fontSize: '12px' }}>
+          <Subtitle fontWeight='bold' color={MthColor.SYSTEM_06} sx={{ display: 'inline-block', fontSize: '12px' }}>
             {renderDate(selectedEvent)}
           </Subtitle>
-          <Subtitle fontWeight='bold' color={SYSTEM_06} sx={{ marginTop: 1, fontSize: '12px' }}>
+          <Subtitle fontWeight='bold' color={MthColor.SYSTEM_06} sx={{ marginTop: 1, fontSize: '12px' }}>
             {renderFilter(selectedEvent)}
           </Subtitle>
           <Box sx={{ height: '100px' }}>
-            <Subtitle fontWeight='500' color={SYSTEM_05} sx={{ mt: 2, fontSize: '12px' }}>
+            <Subtitle fontWeight='500' color={MthColor.SYSTEM_05} sx={{ mt: 2, fontSize: '12px' }}>
               {extractContent(selectedEvent?.description || '')}
             </Subtitle>
           </Box>

@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline'
 import ScheduleIcon from '@mui/icons-material/Schedule'
-import { Avatar, Box, Button, Card } from '@mui/material'
+import { Avatar, Box, Card } from '@mui/material'
 import { useHistory } from 'react-router-dom'
 import { Metadata } from '@mth/components/Metadata/Metadata'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
@@ -273,21 +273,14 @@ export const Student: StudentTemplateType = ({ student, schoolYears }) => {
             />
           }
         />
-        <Button
-          variant='contained'
-          onClick={() => {
-            if (checkEnrollPacketStatus(schoolYears, student)) {
-              setMe({ ...me, currentTab: 0 } as UserInfo)
-              if (link) history.push(toolTipLink)
-            }
-          }}
-          sx={{
-            marginBottom: 2,
-            background: circleData?.mobileColor,
-          }}
-        >
-          {circleData?.mobileText}
-        </Button>
+        {showToolTip && checkEnrollPacketStatus(schoolYears, student) && (
+          <Box sx={{ alignItems: 'center', marginBottom: 2 }}>
+            {circleData?.icon}
+            <Paragraph size='medium' color={circleData?.color}>
+              {circleData?.type}
+            </Paragraph>
+          </Box>
+        )}
       </Card>
     </>
   )

@@ -1,3 +1,5 @@
+import moment from 'moment'
+import { EventVM } from '@mth/screens/Admin/Calendar/types'
 /**
  * @param {number} number
  * @description convert to ordinal number
@@ -17,4 +19,18 @@ export const extractContent = (s: string): string | null => {
   const span = document.createElement('span')
   span.innerHTML = s
   return span.textContent || span.innerText
+}
+
+export const renderDate = (selectedEvent: EventVM | undefined): string => {
+  const startTime = moment(selectedEvent?.startDate).format('hh:mm A')
+  const startDate = moment(selectedEvent?.startDate).format('MMMM DD')
+  const endDate = moment(selectedEvent?.endDate).format('MMMM DD')
+
+  if (!selectedEvent?.allDay) {
+    if (startDate === endDate) return `${startTime}, ${startDate}`
+    else return `${startTime}, ${startDate} - ${endDate}`
+  } else {
+    if (startDate === endDate) return `${endDate}`
+    else return `${startDate} - ${endDate}`
+  }
 }

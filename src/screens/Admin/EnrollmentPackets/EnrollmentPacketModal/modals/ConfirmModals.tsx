@@ -102,7 +102,8 @@ export const PacketConfirmModals: FunctionComponent<PacketConfirmModalsProps> = 
         setValue('preSaveStatus', 'Missing Info')
         setValue(
           'missing_files',
-          options.values.filter((v) => v.checked).map((v) => v.abbr),
+          // options.values.filter((v) => v.checked).map((v) => v.abbr),
+          options.values.map((v) => v.title),
         )
         onSubmit('Missing Info')
       }

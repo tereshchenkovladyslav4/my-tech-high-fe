@@ -4,8 +4,8 @@ import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded'
 import { Box, Card, Grid, IconButton } from '@mui/material'
 import { Prompt, useHistory } from 'react-router-dom'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { MthRoute } from '@mth/enums'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
-import { CALENDAR } from '../../../../utils/constants'
 import { CustomModal } from '../../SiteManagement/EnrollmentSetting/components/CustomModal/CustomModals'
 import { getEventTypesQuery, updateEventTypeMutation, updateEventTypesMutation } from '../services'
 import { EventType, EventTypeResponseVM } from '../types'
@@ -98,7 +98,7 @@ const EditTypeComponent: React.FC = () => {
       />
       <Box sx={eventTypeClassess.pageTop}>
         <Box sx={eventTypeClassess.pageTitle}>
-          <IconButton onClick={() => history.push(CALENDAR)} sx={eventTypeClassess.posi_rela}>
+          <IconButton onClick={() => history.push(MthRoute.CALENDAR)} sx={eventTypeClassess.posi_rela}>
             <ArrowBackIosRoundedIcon sx={{ fontSize: '15px', stroke: 'black', strokeWidth: 2 }} />
           </IconButton>
           <Subtitle size='medium' fontWeight='700'>

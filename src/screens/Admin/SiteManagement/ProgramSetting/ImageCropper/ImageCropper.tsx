@@ -1,7 +1,8 @@
-import React, { useState, useEffect, FunctionComponent } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Box, Button, Stack, Dialog, DialogTitle, DialogActions } from '@mui/material'
 import Cropper from 'react-cropper'
 import 'cropperjs/dist/cropper.css'
+import { ProgramSettingChanged } from '../types'
 
 export type StateLogoFileType = {
   name: string
@@ -13,18 +14,18 @@ export type ImageCropperProps = {
   imageToCrop: unknown
   classes: unknown
   setStateLogoFile: (value: StateLogoFileType) => void
-  setIsChanged: (value: boolean) => void
-  isChanged: unknown
+  setIsChanged: (value: ProgramSettingChanged) => void
+  isChanged: ProgramSettingChanged
 }
 
-export const ImageCropper: FunctionComponent<ImageCropperProps> = ({
+export const ImageCropper: React.FC<ImageCropperProps> = ({
   imageToCrop,
   classes,
   setStateLogoFile,
   setIsChanged,
   isChanged,
 }) => {
-  const [cropper, setCropper] = useState<unknown>()
+  const [cropper, setCropper] = useState<Cropper>()
   const [open, setOpen] = useState<boolean>(false)
 
   useEffect(() => {
@@ -64,7 +65,7 @@ export const ImageCropper: FunctionComponent<ImageCropperProps> = ({
     <>
       {imageToCrop && (
         <Dialog open={open} onClose={handleClose} fullWidth={true} maxWidth={'xl'} sx={classes.imageCropper}>
-          <DialogTitle sx={classes.imageCropperDialogTitle}>{'Image Cropper'}</DialogTitle>
+          <DialogTitle sx={classes?.imageCropperDialogTitle}>{'Image Cropper'}</DialogTitle>
           <Box sx={{ maxWidth: '50vw', minWidth: '400px', overflow: 'hidden' }}>
             <Stack>
               <Box>

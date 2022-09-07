@@ -14,7 +14,6 @@ import { calendarClassess } from '../styles'
 import { EventFormData, FilterComponentProps } from '../types'
 
 const FilterComponent: React.FC<FilterComponentProps> = ({
-  grades,
   programYears,
   users,
   schoolofEnrollments,
@@ -32,7 +31,6 @@ const FilterComponent: React.FC<FilterComponentProps> = ({
   const { errors, setFieldValue, touched, values } = useFormikContext<EventFormData>()
   const { programYearList, gradeList, schoolPartnerList } = useCurrentGradeAndProgramByRegionId(
     Number(me?.selectedRegionId),
-    grades,
     setGrades,
   )
   const [expand, setExpand] = useState<boolean>(true)

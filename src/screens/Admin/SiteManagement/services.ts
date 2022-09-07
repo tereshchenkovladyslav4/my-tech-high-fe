@@ -34,6 +34,11 @@ export const getSchoolYearsByRegionId = gql`
         midyear_application
         midyear_application_close
         midyear_application_open
+        testing_preference_title
+        testing_preference_description
+        opt_out_form_title
+        opt_out_form_description
+        grades
       }
       county_file_name
       county_file_path

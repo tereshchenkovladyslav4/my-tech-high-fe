@@ -2,14 +2,14 @@ import React, { ReactElement, useEffect, useState } from 'react'
 import CloseIcon from '@mui/icons-material/Close'
 import { Box, Button, Card, Popper } from '@mui/material'
 import moment from 'moment'
-import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
-import { BLACK, GRAY } from '../../../../utils/constants'
-import { hexToRgbA } from '../../../../utils/utils'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { MthColor } from '@mth/enums'
+import { hexToRgbA } from '@mth/utils'
 import { CalendarEvent } from '../../../Admin/Calendar/types'
 import { calendarDayClassess } from './styles'
-import { CalendarDaysTemplateType, DayVM } from './types'
+import { CalendarDaysProps, DayVM } from './types'
 
-export const CalendarDays: CalendarDaysTemplateType = ({
+export const CalendarDays: React.FC<CalendarDaysProps> = ({
   selectedEvent,
   eventList,
   day,
@@ -186,7 +186,7 @@ export const CalendarDays: CalendarDaysTemplateType = ({
       <Popper id={'simple-popper'} open={showEventLstPopup} anchorEl={anchorEl}>
         <Card sx={calendarDayClassess.modal}>
           <Box sx={calendarDayClassess.title}>
-            <Subtitle color={GRAY} sx={{ fontSize: '20px' }} fontWeight='700'>
+            <Subtitle color={MthColor.GRAY} sx={{ fontSize: '20px' }} fontWeight='700'>
               {moment(selectedDate).format('dddd')}
             </Subtitle>
             <CloseIcon
@@ -197,7 +197,7 @@ export const CalendarDays: CalendarDaysTemplateType = ({
               }}
             />
           </Box>
-          <Subtitle color={BLACK} sx={{ fontSize: '20px', textAlign: 'center' }} fontWeight='700'>
+          <Subtitle color={MthColor.BLACK} sx={{ fontSize: '20px', textAlign: 'center' }} fontWeight='700'>
             {moment(selectedDate).format('D')}
           </Subtitle>
           <Box sx={{ paddingX: 2, paddingBottom: 2 }}>{renderEventList(eventList, selectedDate)}</Box>

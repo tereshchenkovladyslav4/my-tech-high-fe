@@ -1,9 +1,11 @@
-import React, { FunctionComponent, useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { useQuery } from '@apollo/client'
-import { Card, Grid } from '@mui/material'
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
+import { Button, Card, Grid } from '@mui/material'
 import { Box } from '@mui/system'
 import { filter } from 'lodash'
 import moment from 'moment'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { useEventsByRegionIdAndFilterItem, useEventTypeListByRegionId } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { SchoolYearType } from '../../utils/utils.types'
@@ -25,7 +27,7 @@ export const imageB =
 export const imageC =
   'https://www.bentbusinessmarketing.com/wp-content/uploads/2013/02/35844588650_3ebd4096b1_b-1024x683.jpg'
 
-export const Dashboard: FunctionComponent = () => {
+export const Dashboard: React.FC = () => {
   const { me } = useContext(UserContext)
   const region_id = me?.userRegion?.at(-1)?.region_id
   const [sectionName, setSectionName] = useState<string>('root')
@@ -121,14 +123,39 @@ export const Dashboard: FunctionComponent = () => {
         return <ReadMoreSection inProp={inProp} setSectionName={setSectionName} announcement={selectedAnnouncement} />
       case 'fullCalendar':
         return (
-          <FullCalendar
-            searchField={searchField}
-            setSearchField={setSearchField}
-            events={events}
-            calendarEventList={calendarEventList}
-            eventTypeLists={eventTypeLists}
-            setSectionName={setSectionName}
-          />
+          <>
+            <Box display={{ xs: 'none', sm: 'none', md: 'block' }}>
+              <FullCalendar
+                searchField={searchField}
+                setSearchField={setSearchField}
+                events={events}
+                calendarEventList={calendarEventList}
+                eventTypeLists={eventTypeLists}
+                setSectionName={setSectionName}
+              />
+            </Box>
+            <Box sx={{ display: { sm: 'block', xs: 'block', md: 'none' }, paddingX: 3 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'start', width: '100%', marginTop: 12, marginBottom: 5 }}>
+                <Button
+                  sx={{ width: '44px', minWidth: '44px', height: '44px', backgroundColor: 'white' }}
+                  onClick={() => setSectionName('root')}
+                >
+                  <ChevronLeftIcon />
+                </Button>
+                <Box sx={{ marginY: 'auto', marginX: 5 }}>
+                  <Subtitle size='large' fontWeight='700' sx={{ fontSize: '24px' }}>
+                    Events
+                  </Subtitle>
+                </Box>
+              </Box>
+              <ParentCalendar
+                events={events}
+                calendarEventList={calendarEventList}
+                eventTypeLists={eventTypeLists}
+                setSectionName={setSectionName}
+              />
+            </Box>
+          </>
         )
       default:
         return <></>
@@ -160,7 +187,7 @@ export const Dashboard: FunctionComponent = () => {
           subject: announcement.subject,
           body: announcement.body,
           sender: announcement.sender,
-          announcementId: announcement.announcement_id,
+          announcementId: announcement.announcementId,
           userId: announcement.user_id,
           date: moment(announcement.date).format('MMMM DD'),
           grades: announcement.filter_grades,
