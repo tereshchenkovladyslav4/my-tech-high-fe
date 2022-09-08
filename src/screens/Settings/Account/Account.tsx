@@ -38,7 +38,11 @@ export const Account: React.FC<AccountProps> = ({ handleIsFormChange }) => {
       },
     })
       .then(() => {
-        setOpenSaveAlert({ message: 'Password changed Successfully', status: 'success', open: true })
+        setOpenSaveAlert({ message: 'New Password Saved', status: 'success', open: true })
+        window.scroll({
+          top: 100,
+          behavior: 'smooth',
+        })
 
         setTimeout(() => {
           setOpenSaveAlert({ message: '', status: 'success', open: false })
@@ -48,7 +52,10 @@ export const Account: React.FC<AccountProps> = ({ handleIsFormChange }) => {
       })
       .catch((err) => {
         setOpenSaveAlert({ message: err?.message, status: 'error', open: true })
-
+        window.scroll({
+          top: 100,
+          behavior: 'smooth',
+        })
         setTimeout(() => {
           setOpenSaveAlert({ message: '', status: 'success', open: false })
         }, 2000)
@@ -89,7 +96,7 @@ export const Account: React.FC<AccountProps> = ({ handleIsFormChange }) => {
         <Box sx={{ width: 0, height: 0, overflow: 'hidden' }}>
           <TextField name='fakePassword' type='password' autoComplete='off' />
         </Box>
-        <Grid container paddingX={6} rowSpacing={2} marginTop={1}>
+        <Grid container paddingX={6} rowSpacing={2} marginTop={1} sx={settingClasses.gridContainer}>
           <Grid item xs={12} textAlign={'left'} display='flex' flexDirection={'row'} alignItems='center'>
             <Subtitle fontWeight='700' size='large'>
               Account
@@ -217,13 +224,10 @@ export const Account: React.FC<AccountProps> = ({ handleIsFormChange }) => {
             </Grid>
           </Grid>
         </Grid>
-        <Grid>
+        <Grid xs={12}>
           {openSaveAlert.open && (
             <Alert
-              sx={{
-                position: 'relative',
-                bottom: '-83px',
-              }}
+              sx={{}}
               onClose={() => {
                 setOpenSaveAlert({ open: false, status: 'success', message: '' })
               }}

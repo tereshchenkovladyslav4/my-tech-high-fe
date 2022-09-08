@@ -11,7 +11,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
     [theme.breakpoints.down('xs')]: {
       width: '97%',
     },
-    height: '275px',
+    height: 'max-content',
     minHeight: '275px',
     background: 'white',
     boxShadow: '24px',
@@ -25,6 +25,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
     textAlign: 'center',
     marginLeft: 'auto',
     marginRight: 'auto',
+    textTransform: 'capitalize',
   },
   close: {
     background: 'black',

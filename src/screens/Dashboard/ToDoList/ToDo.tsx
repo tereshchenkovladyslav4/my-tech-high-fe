@@ -86,7 +86,7 @@ export const ToDo: FunctionComponent<TodoProps> = ({ schoolYears }) => {
       >
         <Flexbox flexDirection='column' textAlign='left'>
           <Subtitle size='large' fontWeight='bold'>
-            To Do List
+            To-do List
           </Subtitle>
           {!showEmpty ? (
             <TodoList schoolYears={schoolYears} handleShowEmpty={handleShowEmpty} />

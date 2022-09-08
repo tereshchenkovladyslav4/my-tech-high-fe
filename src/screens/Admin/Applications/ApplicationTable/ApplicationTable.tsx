@@ -50,6 +50,7 @@ export const ApplicationTable: FunctionComponent<ApplicationTableProps> = ({ fil
   const [schoolYears, setSchoolYears] = useState<unknown[]>([])
   const [editData, setEditData] = useState<unknown>()
   const [openEmailModal, setOpenEmailModal] = useState<boolean>(false)
+  const [specialEdOptions, setSpecialEdOptions] = useState<string[]>([])
   const [emailHistory, setEmailHistory] = useState([])
   const status = ['New', 'Sibling', 'Returning', 'Hidden']
 
@@ -62,7 +63,7 @@ export const ApplicationTable: FunctionComponent<ApplicationTableProps> = ({ fil
         ? 'K'
         : application.student.grade_levels[0].grade_level)
 
-    if (checker(filter?.grades, ['K', '1-8', '9-12'])) {
+    if (filter?.grades != undefined && checker(filter?.grades, ['K', '1-8', '9-12'])) {
       if (grade_level == 'K') grade_level = 'K'
       else if (Number(grade_level) >= 1 && Number(grade_level) <= 8) grade_level = '1-8'
       else grade_level = '9-12'
@@ -75,8 +76,9 @@ export const ApplicationTable: FunctionComponent<ApplicationTableProps> = ({ fil
         <Box>
           {application.midyear_application ? (
             <>
-              {`${moment(new Date(application.school_year.date_begin)).format('YYYY')} -
-              ${moment(new Date(application.school_year.date_end)).format('YY')}`}
+              {`${moment(new Date(application.school_year.date_begin)).format('YYYY')}-${moment(
+                new Date(application.school_year.date_end),
+              ).format('YY')}`}
               <br /> Mid-year
             </>
           ) : (
@@ -90,7 +92,12 @@ export const ApplicationTable: FunctionComponent<ApplicationTableProps> = ({ fil
       ),
       student: `${application.student.person?.last_name}, ${application.student.person?.first_name}`,
       grade: grade_level,
-      sped: application.student.special_ed ? 'Yes' : 'No',
+      sped:
+        specialEdOptions.length == 0
+          ? application.student.special_ed
+            ? 'Yes'
+            : 'No'
+          : specialEdOptions[application.student.special_ed],
       parent: `${application.student.parent.person?.last_name}, ${application.student.parent.person?.first_name}`,
       // status: application.status,
       relation: application.relation_status ? status[application.relation_status] : 'New',
@@ -205,6 +212,7 @@ export const ApplicationTable: FunctionComponent<ApplicationTableProps> = ({ fil
     if (schoolYearData?.region?.SchoolYears) {
       const { SchoolYears } = schoolYearData?.region
       const yearList = []
+      let special_ed_options = ''
       SchoolYears.sort((a, b) => (a.date_begin > b.date_begin ? 1 : -1))
         .filter((item) => moment(item.date_begin).format('YYYY') >= moment().format('YYYY'))
         .map(
@@ -215,6 +223,7 @@ export const ApplicationTable: FunctionComponent<ApplicationTableProps> = ({ fil
             midyear_application: number
             midyear_application_open: string
             midyear_application_close: string
+            special_ed_options: string
           }): void => {
             yearList.push({
               label: `${moment(item.date_begin).format('YYYY')} - ${moment(item.date_end).format('YY')}`,
@@ -228,9 +237,13 @@ export const ApplicationTable: FunctionComponent<ApplicationTableProps> = ({ fil
                 value: `${item.school_year_id}-mid`,
               })
             }
+            if (item.special_ed_options != '' && item.special_ed_options != null)
+              special_ed_options = item.special_ed_options
           },
         )
       setSchoolYears(yearList.sort((a, b) => (a.label > b.label ? 1 : -1)))
+      if (special_ed_options == '') setSpecialEdOptions([])
+      else setSpecialEdOptions(special_ed_options.split(','))
     }
   }, [schoolYearData?.region?.SchoolYears])
   // useEffect(() => {

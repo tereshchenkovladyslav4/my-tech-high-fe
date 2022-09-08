@@ -10,7 +10,7 @@ export const useClasses = makeStyles((theme: Theme) => ({
     fontSize: '58px !important',
     fontWeight: 400,
     [theme.breakpoints.down('xs')]: {
-      fontSize: '38px !important',
+      fontSize: '36px !important',
     },
   },
   descriptionContent: {

@@ -110,7 +110,7 @@ export const TodoList: FunctionComponent = () => {
     <Card sx={{ mt: 1.5, backgroundColor: { xs: '#F8F8F8', sm: '#F8F8F8', md: '#FFFFFF' }, padding: 4 }}>
       <Flexbox flexDirection='column' textAlign='left'>
         <Subtitle size='large' fontWeight='bold' sx={{ marginBottom: 2 }}>
-          To Do List
+          To-do List
         </Subtitle>
         {renderTodoListItem()}
       </Flexbox>

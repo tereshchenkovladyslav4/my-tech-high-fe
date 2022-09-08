@@ -11,6 +11,7 @@ import { getSchoolYearsByRegionId } from '../../services'
 type SchoolYearDropDownProps = {
   setSelectedYearId: (_: number) => void
   selectedYearId?: number
+  setDisableForm?: () => void
 }
 
 export const SchoolYearDropDown: FunctionComponent<SchoolYearDropDownProps> = ({
@@ -60,9 +61,11 @@ export const SchoolYearDropDown: FunctionComponent<SchoolYearDropDownProps> = ({
   useEffect(() => {
     if (selectedYear) {
       setSelectedYearId(selectedYear)
-      const currentYear = new Date().getFullYear()
-      const year = find(years, { value: selectedYear })
-      setDisableForm(toNumber((year?.label as string).split('-')[0]) < currentYear)
+      if (setDisableForm) {
+        const currentYear = new Date().getFullYear()
+        const year = find(years, { value: selectedYear })
+        setDisableForm(toNumber((year?.label as string).split('-')[0]) < currentYear)
+      }
     }
   }, [selectedYear])
 

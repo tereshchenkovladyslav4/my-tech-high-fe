@@ -11,7 +11,7 @@ import { AuthContext } from '../../providers/AuthProvider/AuthContext'
 import { BUTTON_LINEAR_GRADIENT } from '../../utils/constants'
 import { CompleteAccountSuccess } from '../CompleteAccountSuccess/CompleteAccountSuccess'
 import { resetPasswordMutation } from './service'
-import { forgotPasswordClasses } from './styles'
+import { forgotPasswordClasses, useClasses } from './styles'
 
 const useHelperTextStyles = makeStyles(() => ({
   root: {
@@ -27,6 +27,7 @@ const useHelperTextStyles = makeStyles(() => ({
 export const ResetPassword: React.FC = () => {
   const token = window.location.href.split('=')[1]
   const decodedToken = atob(token)
+  const classes = useClasses()
   const [, email] = decodedToken.split('-')
   const [resetPassword] = useMutation(resetPasswordMutation)
   const [showSuccess] = useState(false)
@@ -108,23 +109,27 @@ export const ResetPassword: React.FC = () => {
         paddingTop: 12,
         minHeight: '100vh',
       }}
+      className={classes.mainContent}
     >
-      <Box>
-        <Typography fontSize={58} fontWeight={400} color='white' marginBottom={5}>
+      <Box className={classes.descriptionContent}>
+        <Typography color='white' className={classes.mainHeader}>
           Update Your Password
         </Typography>
       </Box>
       <form
+        className={classes.formContent}
         onSubmit={formik.handleSubmit}
         style={{
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
+          marginTop: 24,
         }}
       >
         <TextField
           color='secondary'
           name='email'
+          className={classes.forgotPasswordText}
           sx={forgotPasswordClasses.textField}
           label='Email'
           focused
@@ -146,6 +151,7 @@ export const ResetPassword: React.FC = () => {
           color='secondary'
           name='password'
           type='password'
+          className={classes.forgotPasswordText}
           sx={forgotPasswordClasses.textField}
           label='Password'
           focused
@@ -172,6 +178,7 @@ export const ResetPassword: React.FC = () => {
           color='secondary'
           name='confirmPassword'
           type='password'
+          className={classes.forgotPasswordText}
           sx={forgotPasswordClasses.textField}
           label='Re-type Password'
           focused
