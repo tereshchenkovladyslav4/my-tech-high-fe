@@ -7,7 +7,7 @@ import { useHistory } from 'react-router-dom'
 import { Paragraph } from '../../../../components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
 import { UserContext } from '../../../../providers/UserContext/UserProvider'
-import { BUTTON_LINEAR_GRADIENT, MTHBLUE, RED_GRADIENT, GRADES } from '../../../../utils/constants'
+import { BUTTON_LINEAR_GRADIENT, MTHBLUE, RED_GRADIENT, GRADES, GRADE_GROUPS } from '../../../../utils/constants'
 import { toOrdinalSuffix } from '../../../../utils/stringHelpers'
 import { getSchoolDistrictsByRegionId } from '../../SiteManagement/EnrollmentSetting/ApplicationQuestions/services'
 import { FiltersProps, PartnerItem, YEAR_STATUS } from '../type'
@@ -68,11 +68,37 @@ export const Filters: FunctionComponent<FiltersProps> = ({
     )
 
   const handleChangeGrades = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (grades.includes(e.target.value)) {
-      setGrades(grades.filter((item) => item !== e.target.value).filter((item) => item !== 'all'))
+    let newGrades = [...grades]
+    if (newGrades.includes(e.target.value)) {
+      newGrades = grades.filter((item) => item !== e.target.value).filter((item) => item !== 'all')
     } else {
-      setGrades([...grades, e.target.value])
+      newGrades.push(e.target.value)
     }
+    // handle individual checkbox by group grade K, 1-8, 9-12
+    if (GRADE_GROUPS.includes(e.target.value)) {
+      const groupsGrades: string[] = []
+      const groupItems = {
+        [GRADE_GROUPS[0]]: ['Kindergarten'],
+        [GRADE_GROUPS[1]]: ['1', '2', '3', '4', '5', '6', '7', '8'],
+        [GRADE_GROUPS[2]]: ['9', '10', '11', '12'],
+      }
+      let selectedGroupCount = 0
+      GRADE_GROUPS.forEach((el) => {
+        if (newGrades.includes(el)) {
+          selectedGroupCount++
+          groupsGrades.push(...groupItems[el], el)
+        }
+      })
+      if (selectedGroupCount < GRADE_GROUPS.length) newGrades = [...groupsGrades]
+      else newGrades = [...GRADE_GROUPS]
+    } else {
+      // All select/deselect by individual checkbox
+      if (newGrades.filter((el) => ![...GRADE_GROUPS, 'all'].includes(el)).length === gradesList.length)
+        newGrades.push('all')
+      else newGrades = newGrades.filter((el) => el !== 'el')
+    }
+
+    setGrades([...new Set(newGrades)])
   }
 
   const handleChangeAll = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -224,6 +250,7 @@ export const Filters: FunctionComponent<FiltersProps> = ({
             {renderGrades()}
           </Box>
         </Grid>
+        {/* Group grade */}
         {gradesList?.length === GRADES.length && (
           <Grid item xs={columnWidth()}>
             <Box
@@ -235,33 +262,18 @@ export const Filters: FunctionComponent<FiltersProps> = ({
               <Paragraph size='large' fontWeight='700'>
                 Grade Level
               </Paragraph>
-              <FormControlLabel
-                sx={{ height: 30 }}
-                control={<Checkbox value='K' checked={grades.includes('K')} onChange={handleChangeGrades} />}
-                label={
-                  <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
-                    Kindergarten
-                  </Paragraph>
-                }
-              />
-              <FormControlLabel
-                sx={{ height: 30 }}
-                control={<Checkbox value='1-8' checked={grades.includes('1-8')} onChange={handleChangeGrades} />}
-                label={
-                  <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
-                    1-8
-                  </Paragraph>
-                }
-              />
-              <FormControlLabel
-                sx={{ height: 30 }}
-                control={<Checkbox value='9-12' checked={grades.includes('9-12')} onChange={handleChangeGrades} />}
-                label={
-                  <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
-                    9-12
-                  </Paragraph>
-                }
-              />
+              {GRADE_GROUPS.map((grade) => (
+                <FormControlLabel
+                  key={grade}
+                  sx={{ height: 30 }}
+                  control={<Checkbox value={grade} checked={grades.includes(grade)} onChange={handleChangeGrades} />}
+                  label={
+                    <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
+                      {grade === 'K' ? 'Kindergarten' : grade}
+                    </Paragraph>
+                  }
+                />
+              ))}
             </Box>
           </Grid>
         )}

@@ -3,6 +3,7 @@ import { Box, Button, Card, Divider, Grid } from '@mui/material'
 import moment from 'moment'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { MthColor } from '@mth/enums'
 import { getFirstDayAndLastDayOfMonth } from '@mth/utils'
 import { CalendarEvent, EventVM } from '../../Admin/Calendar/types'
 import { DashboardCalendar } from './components/DashboardCalendar'
@@ -99,7 +100,12 @@ const ParentCalendar: React.FC<ParentCalendarProps> = ({
               </Subtitle>
               <Box display={{ xs: 'block', sm: 'block', md: 'none' }}>
                 <Button>
-                  <Paragraph size='medium' sx={{ textDecoration: 'underline' }} color='#4145FF'>
+                  <Paragraph
+                    size='medium'
+                    sx={{ textDecoration: 'underline' }}
+                    color={MthColor.MTHBLUE}
+                    onClick={() => setSectionName('fullCalendar')}
+                  >
                     View All
                   </Paragraph>
                 </Button>

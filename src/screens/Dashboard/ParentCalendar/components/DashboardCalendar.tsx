@@ -40,7 +40,7 @@ export const DashboardCalendar: React.FC<DashboardCalendarProps> = ({
             >
               <img className='arrow' src={leftArrowCalendar} />
             </Box>
-            <Subtitle textAlign='center' fontWeight='bold' className='label'>
+            <Subtitle textAlign='center' fontWeight='bold' className='label' sx={{ mx: { xs: '40px', md: 0 } }}>
               {moment(currentMonth).format('MMM YYYY')}
             </Subtitle>
             <Box

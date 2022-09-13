@@ -1,7 +1,8 @@
 import React, { useContext, useEffect, useState } from 'react'
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline'
 import ScheduleIcon from '@mui/icons-material/Schedule'
-import { Avatar, Box, Card } from '@mui/material'
+import WarningAmberIcon from '@mui/icons-material/WarningAmber'
+import { Avatar, Box, Button, Card } from '@mui/material'
 import { useHistory } from 'react-router-dom'
 import { Metadata } from '@mth/components/Metadata/Metadata'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
@@ -14,7 +15,7 @@ import { Person } from '@mth/screens/HomeroomStudentProfile/Student/types'
 import { checkEnrollPacketStatus, toOrdinalSuffix } from '@mth/utils'
 import { StudentTemplateType } from './type'
 
-export const Student: StudentTemplateType = ({ student, schoolYears }) => {
+export const Student: StudentTemplateType = ({ student, schoolYears, showNotification, withdrawn }) => {
   const { me, setMe } = useContext(UserContext)
   const history = useHistory()
 
@@ -24,12 +25,11 @@ export const Student: StudentTemplateType = ({ student, schoolYears }) => {
   const [toolTipLink, setToolTipLink] = useState<string>('')
 
   const getProfilePhoto = (person: Person) => {
-    if (!person.photo) return ''
+    if (!person.photo) return undefined
 
     const s3URL = 'https://infocenter-v2-dev.s3.us-west-2.amazonaws.com/'
     return s3URL + person.photo
   }
-
   useEffect(() => {
     const { applications, packets } = student
     const currApplication = applications?.at(0)
@@ -203,9 +203,9 @@ export const Student: StudentTemplateType = ({ student, schoolYears }) => {
   }
 
   const gradeText =
-    student?.grade_levels?.at(-1)?.grade_level !== 'Kin'
+    student?.grade_levels?.at(-1)?.grade_level !== 'Kindergarten'
       ? `${toOrdinalSuffix(student?.grade_levels?.at(-1)?.grade_level as number)} Grade`
-      : 'Kindergarten'
+      : student?.grade_levels?.at(-1)?.grade_level
 
   return (
     <>
@@ -252,34 +252,86 @@ export const Student: StudentTemplateType = ({ student, schoolYears }) => {
         elevation={2}
         sx={{ display: { xs: 'flex', sm: 'none' }, borderRadius: 2, paddingX: 2, marginY: 1, flexDirection: 'column' }}
       >
-        <Metadata
-          title={<Title>{student.person.first_name}</Title>}
-          subtitle={
-            <Box>
-              <Subtitle size={'large'}>{gradeText}</Subtitle>
-            </Box>
-          }
-          image={
-            <Avatar
-              sx={{ marginRight: 2 }}
-              alt={student.person.first_name}
-              src={getProfilePhoto(student.person)}
-              onClick={() => {
-                if (checkEnrollPacketStatus(schoolYears, student)) {
-                  setMe({ ...me, currentTab: 0 } as UserInfo)
-                  if (link) history.push(link)
-                }
-              }}
+        <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+          <Box sx={{ opacity: withdrawn ? 0.35 : 1 }}>
+            <Metadata
+              title={<Subtitle>{student.person.first_name}</Subtitle>}
+              subtitle={
+                <Box>
+                  <Paragraph size={'medium'} color={MthColor.SYSTEM_06}>
+                    {gradeText}
+                  </Paragraph>
+                </Box>
+              }
+              image={
+                <Avatar
+                  sx={{ marginRight: 2 }}
+                  alt={student.person.first_name}
+                  src={'/'}
+                  onClick={() => {
+                    if (checkEnrollPacketStatus(schoolYears, student)) {
+                      setMe({ ...me, currentTab: 0 } as UserInfo)
+                      if (link) history.push(link)
+                    }
+                  }}
+                />
+              }
             />
-          }
-        />
-        {showToolTip && checkEnrollPacketStatus(schoolYears, student) && (
-          <Box sx={{ alignItems: 'center', marginBottom: 2 }}>
-            {circleData?.icon}
-            <Paragraph size='medium' color={circleData?.color}>
-              {circleData?.type}
-            </Paragraph>
           </Box>
+          {showNotification && (
+            <Box>
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  background: 'rgba(236, 89, 37, 0.1)',
+                  alignItems: 'center',
+                  marginTop: 2,
+                  padding: 1,
+                  borderRadius: 1,
+                }}
+              >
+                <WarningAmberIcon sx={{ height: 18, color: '#EC5925', fontWeight: 600 }} />
+                <Paragraph color='#EC5925' fontWeight='600'>
+                  Notification
+                </Paragraph>
+              </Box>
+            </Box>
+          )}
+        </Box>
+        {showToolTip && checkEnrollPacketStatus(schoolYears, student) && (
+          <>
+            {circleData?.type !== 'Re-apply' ? (
+              <Box sx={{ alignItems: 'center', marginBottom: 2 }}>
+                {circleData?.icon}
+                <Paragraph size='medium' color={circleData?.color}>
+                  {circleData?.type}
+                </Paragraph>
+              </Box>
+            ) : (
+              <Button
+                variant='contained'
+                fullWidth
+                sx={{ background: MthColor.RED_GRADIENT, color: MthColor.WHITE, marginBottom: 2 }}
+              >
+                Re-apply
+              </Button>
+            )}
+          </>
+        )}
+        {!showToolTip && (
+          <Button
+            variant='contained'
+            sx={{ background: MthColor.BUTTON_LINEAR_GRADIENT, color: MthColor.WHITE, marginBottom: 2 }}
+            onClick={() => {
+              if (checkEnrollPacketStatus(schoolYears, student)) {
+                setMe({ ...me, currentTab: 0 } as UserInfo)
+                if (link) history.push(link)
+              }
+            }}
+          >
+            Select
+          </Button>
         )}
       </Card>
     </>

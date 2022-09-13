@@ -5,12 +5,12 @@ import { useHistory } from 'react-router-dom'
 import { PageHeaderProps } from './PageHeaderProps'
 import { useStyles } from './styles'
 
-const PageHeader: FunctionComponent<PageHeaderProps> = ({ title, url, onBack, children }) => {
+const PageHeader: FunctionComponent<PageHeaderProps> = ({ title, to, onBack, children }) => {
   const history = useHistory()
   const classes = useStyles
   const handleBackClick = () => {
-    if (url) {
-      history.push(url)
+    if (to) {
+      history.push(to)
     } else {
       history.goBack()
     }

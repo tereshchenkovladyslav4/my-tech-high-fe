@@ -70,26 +70,28 @@ export const ToDo: FunctionComponent<TodoProps> = ({ schoolYears }) => {
   }
 
   return (
-    <Card
-      style={{ borderRadius: 12, overflow: 'auto' }}
-      sx={{ backgroundColor: { xs: '#F8F8F8', sm: '#F8F8F8', md: '#FFFFFF' } }}
-      ref={cardRef}
-    >
+    <Card sx={{ paddingY: { xs: 0, sm: 4 }, paddingX: { xs: 0, sm: 8 } }} ref={cardRef}>
       <Box
         flexDirection='row'
         textAlign='left'
-        paddingY={1.5}
-        paddingX={3}
         display='block'
         justifyContent='space-between'
         sx={emptyStateHandler(showEmpty, windowDimensions)}
       >
         <Flexbox flexDirection='column' textAlign='left'>
-          <Subtitle size='large' fontWeight='bold'>
+          <Title textAlign='left' sx={{ marginLeft: { xs: 2, sm: 0 }, marginTop: { xs: 2, sm: 0 } }}>
             To-do List
-          </Subtitle>
+          </Title>
           {!showEmpty ? (
-            <TodoList schoolYears={schoolYears} handleShowEmpty={handleShowEmpty} />
+            <Box
+              flexDirection='column'
+              textAlign='left'
+              sx={{
+                paddingX: { xs: 2, md: 0 },
+              }}
+            >
+              <TodoList schoolYears={schoolYears} handleShowEmpty={handleShowEmpty} />
+            </Box>
           ) : (
             <EmptyStateWrapper title='Congrats!' subtitle='You are all caught up.' />
           )}

@@ -1,4 +1,4 @@
-import { BLUE_GRDIENT } from '../../../utils/constants'
+import { MthColor } from '@mth/enums'
 
 export const parentCalendarClasses = {
   backButtonContainer: {
@@ -49,7 +49,7 @@ export const parentCalendarClasses = {
     borderRadius: 2,
     textTransform: 'none',
     height: '48px',
-    background: BLUE_GRDIENT,
+    background: MthColor.BLUE_GRDIENT,
     color: 'white',
     width: '140px',
     minWidth: '140px',
@@ -108,5 +108,11 @@ export const parentCalendarClasses = {
     fontSize: '14px',
     textDecoration: 'underline',
     paddingLeft: '5px',
+  },
+  avatarGroup: {
+    '&.MuiAvatarGroup-root .MuiAvatar-root': {
+      marginLeft: '-20px',
+      background: MthColor.WHITE,
+    },
   },
 }

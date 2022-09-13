@@ -28,7 +28,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({
         position: 'relative',
         cursor: 'pointer',
         borderRadius: 2,
-        marginX: 4,
+        marginX: 0,
       }}
       onClick={() => {
         if (isLink !== false) {

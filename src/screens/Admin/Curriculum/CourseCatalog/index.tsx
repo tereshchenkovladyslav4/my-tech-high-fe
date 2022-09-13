@@ -1,8 +1,9 @@
 import React, { FunctionComponent } from 'react'
-import { Grid } from '@mui/material'
+import { Grid, Box } from '@mui/material'
 import BgBlue from '@mth/assets/quick-link-blue.png'
 import BgOrange from '@mth/assets/quick-link-orange.png'
 import { ItemCard } from '@mth/components/ItemCard/ItemCard'
+import PageHeader from '@mth/components/PageHeader'
 import {
   CURRICULUM_COURSE_CATALOG_SETTINGS,
   CURRICULUM_COURSE_CATALOG_PERIODS,
@@ -42,21 +43,26 @@ const CourseCatalog: FunctionComponent = () => {
     },
   ]
   return (
-    <Grid container rowSpacing={4} columnSpacing={0} sx={{ marginTop: 2 }} columns={{ xs: 4, md: 12 }}>
-      {items.map((item, idx) => (
-        <Grid item key={idx}>
-          <ItemCard
-            icon={item.icon}
-            title={item.title}
-            subTitle={item.subtitle}
-            img={idx % 2 ? BgOrange : BgBlue}
-            isLink={true}
-            link={item.link}
-            hasTitle={true}
-          />
-        </Grid>
-      ))}
-    </Grid>
+    <Box sx={{ marginTop: 4, px: 4 }}>
+      <Box mb={2}>
+        <PageHeader title='Course Catalog' to='/curriculum'></PageHeader>
+      </Box>
+      <Grid container rowSpacing={4} columnSpacing={4}>
+        {items.map((item, idx) => (
+          <Grid item key={idx} sm={12} md={6} lg={4}>
+            <ItemCard
+              icon={item.icon}
+              title={item.title}
+              subTitle={item.subtitle}
+              img={idx % 2 ? BgOrange : BgBlue}
+              isLink={true}
+              link={item.link}
+              hasTitle={true}
+            />
+          </Grid>
+        ))}
+      </Grid>
+    </Box>
   )
 }
 

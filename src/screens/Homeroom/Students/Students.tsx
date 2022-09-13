@@ -1,6 +1,9 @@
 import React, { FunctionComponent, useContext, useEffect, useState } from 'react'
+import { useQuery } from '@apollo/client'
 import { Box, Button, Card, Divider } from '@mui/material'
 import { filter, map } from 'lodash'
+import { ToDoItem } from '@mth/screens/Dashboard/ToDoList/components/ToDoListItem/types'
+import { getTodoList } from '@mth/screens/Dashboard/ToDoList/service'
 import { Paragraph } from '../../../components/Typography/Paragraph/Paragraph'
 import { Title } from '../../../components/Typography/Title/Title'
 import { MthColor, StudentStatus } from '../../../core/enums'
@@ -20,15 +23,43 @@ export const Students: FunctionComponent<StudentsProps> = ({ schoolYears }) => {
   const [showInactiveStudents, setShowInactiveStudents] = useState(false)
   const [availableStudents, setAvailableStudents] = useState<StudentType[]>([])
   const [inactiveStudents, setInactiveStudents] = useState<StudentType[]>([])
+  const [toDoList, setToDoList] = useState<ToDoItem[]>()
+
+  const findStudent = (studentId: number) => {
+    return map(toDoList, (todoListItem) => {
+      if (todoListItem.students.some((student) => student.student_id === studentId)) {
+        return true
+      } else {
+        return false
+      }
+    })
+  }
 
   const renderStudents = () =>
     map(availableStudents, (student) => {
-      return <Student schoolYears={schoolYears} student={student} key={student?.student_id} />
+      const showNotification = findStudent(student.student_id).includes(true)
+      return (
+        <Student
+          schoolYears={schoolYears}
+          student={student}
+          key={student?.student_id}
+          showNotification={showNotification}
+        />
+      )
     })
 
   const renderInactiveStudents = () =>
     map(inactiveStudents, (student) => {
-      return <Student schoolYears={schoolYears} student={student} key={student?.student_id} />
+      const showNotification = findStudent(student.student_id).includes(true)
+      return (
+        <Student
+          withdrawn={true}
+          schoolYears={schoolYears}
+          student={student}
+          key={student?.student_id}
+          showNotification={showNotification}
+        />
+      )
     })
 
   useEffect(() => {
@@ -38,6 +69,20 @@ export const Students: FunctionComponent<StudentsProps> = ({ schoolYears }) => {
     setInactiveStudents(inactiveStudents)
     setShowInactiveButton(Boolean(inactiveStudents?.length))
   }, [students])
+
+  const { loading, data } = useQuery(getTodoList, {
+    variables: {
+      sort: 'status|ASC',
+      take: 25,
+    },
+    fetchPolicy: 'cache-only',
+  })
+
+  useEffect(() => {
+    if (data?.parent_todos) {
+      setToDoList(data?.parent_todos)
+    }
+  }, [loading, data])
 
   return (
     <>
@@ -51,8 +96,8 @@ export const Students: FunctionComponent<StudentsProps> = ({ schoolYears }) => {
             flexDirection={{ xs: 'column', md: 'row' }}
             justifyContent='center'
             sx={{
-              paddingY: { xs: 4, md: 10 },
-              paddingX: { xs: 4, md: 8 },
+              paddingY: { xs: 2, md: 10 },
+              paddingX: { xs: 2, md: 8 },
             }}
             flexWrap='wrap'
           >
@@ -88,7 +133,7 @@ export const Students: FunctionComponent<StudentsProps> = ({ schoolYears }) => {
           <Divider />
           <Button onClick={() => setShowInactiveStudents(!showInactiveStudents)}>
             <Paragraph size='medium' sx={{ textDecoration: 'underline', color: MthColor.MTHBLUE }}>
-              {showInactiveStudents ? 'Hide Inactive Students' : 'Show Inactive Students'}
+              {showInactiveStudents ? 'Hide Inactive Students' : 'Show / Hide Inactive Students'}
             </Paragraph>
           </Button>
         </Box>

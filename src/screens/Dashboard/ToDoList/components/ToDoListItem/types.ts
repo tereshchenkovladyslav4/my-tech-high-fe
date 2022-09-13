@@ -1,4 +1,5 @@
 import { FunctionComponent } from 'react'
+import { StudentType } from '@mth/screens/HomeroomStudentProfile/Student/types'
 
 export enum ToDoCategory {
   SUBMIT_ENROLLMENT_PACKET = 'SUBMIT_ENROLLMENT_PACKET',
@@ -19,10 +20,10 @@ export interface ToDoItem {
   category: ToDoCategory
   phrase: string
   button: string
+  students: StudentType[]
   icon: string
   dashboard: number
   homeroom: number
-  students: unknown[]
   date_accepted?: string
   date_deadline?: number
   parsed?: unknown

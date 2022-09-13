@@ -3,7 +3,7 @@ import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew'
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
 import { Avatar, AvatarGroup, Box, Button } from '@mui/material'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
-import { MthColor } from '@mth/enums'
+import { MthColor, StudentStatus } from '@mth/enums'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { extractContent, getProfilePhoto, hexToRgbA, renderDate, renderFilter } from '@mth/utils'
 import { parentCalendarClasses } from './styles'
@@ -21,10 +21,10 @@ export const ParentEventDetail: React.FC<ParentEventDetailProps> = ({
   const avatarGroup = (gradeFilter: string) => {
     const grades = JSON.parse(gradeFilter)
     return (
-      <AvatarGroup max={3} spacing={0}>
+      <AvatarGroup max={3} sx={parentCalendarClasses.avatarGroup}>
         {students &&
           students
-            .filter((student) => student?.status?.at(-1)?.status != 2)
+            .filter((student) => student?.status?.at(-1)?.status != StudentStatus.WITHDRAWN)
             .map((student, index): ReactElement | undefined => {
               if (
                 student?.grade_levels &&

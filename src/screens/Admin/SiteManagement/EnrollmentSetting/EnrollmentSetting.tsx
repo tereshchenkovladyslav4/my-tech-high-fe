@@ -5,7 +5,7 @@ import { Grid } from '@mui/material'
 import { Box, IconButton, Typography } from '@mui/material'
 import { map } from 'lodash'
 import { Route, Switch, useRouteMatch, useHistory } from 'react-router-dom'
-import DiplomaSeeking from '@mth/assets/Diploma-seeking.png'
+import DiplomaSeekingImg from '@mth/assets/Diploma-seeking.png'
 import ImmunizationsImage from '@mth/assets/immunizations.png'
 import EnrollmentQuestionImage from '@mth/assets/q&a.png'
 import ApplicationQuestionImage from '@mth/assets/schedules.png'
@@ -14,6 +14,7 @@ import { ItemCard } from '@mth/components/ItemCard/ItemCard'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { GetCurrentSchoolYearByRegionId } from '../../Announcements/services'
 import { ApplicationQuestions } from './ApplicationQuestions'
+import DiplomaSeeking from './DiplomaSeeking/DiplomaSeeking'
 import { EnrollmentQuestions } from './EnrollmentQuestions'
 import Immunizations from './Immunizations/Immunizations'
 import TestingPreference from './TestingPreference/TestingPreference'
@@ -76,7 +77,7 @@ const EnrollmentSetting: React.FC = () => {
       id: 5,
       title: 'Diploma-seeking',
       subtitle: '',
-      img: DiplomaSeeking,
+      img: DiplomaSeekingImg,
       isLink: false,
       to: `${path}/diploma-seeking`,
     },
@@ -136,6 +137,9 @@ const EnrollmentSetting: React.FC = () => {
         </Route>
         <Route path={`${path}/testing-preference`}>
           <TestingPreference />
+        </Route>
+        <Route path={`${path}/diploma-seeking`}>
+          <DiplomaSeeking />
         </Route>
       </Switch>
     </>

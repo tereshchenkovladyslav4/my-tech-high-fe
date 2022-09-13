@@ -88,7 +88,7 @@ export const GradesSelect: React.FC<GradesSelectProps> = ({ grades, availGrades,
           />
         )
       } else {
-        return
+        return undefined
       }
     })
 

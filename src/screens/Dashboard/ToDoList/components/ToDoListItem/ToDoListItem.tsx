@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import SubjectIcon from '@mui/icons-material/Subject'
 import WarningAmberOutlinedIcon from '@mui/icons-material/WarningAmberOutlined'
-import { Avatar, AvatarGroup, Box, Button, TableCell, TableRow } from '@mui/material'
+import { Avatar, AvatarGroup, Box, Button, Card, TableCell, TableRow } from '@mui/material'
 import { map } from 'lodash'
 import { useHistory } from 'react-router-dom'
+import { MthColor } from '@mth/enums'
 import { getWindowDimension } from '@mth/utils'
 import { Metadata } from '../../../../../components/Metadata/Metadata'
 import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragraph'
@@ -30,8 +31,6 @@ export const ToDoListItem: TodoListTemplateType = ({ todoItem, todoDate, todoDea
   const { students } = todoItem
   const [link, setLink] = useState<string>('')
   const [windowDimensions, setWindowDimensions] = useState(getWindowDimension())
-
-  // console.log(students);
 
   const getProfilePhoto = (person: Person) => {
     if (!person.photo) return 'image'
@@ -138,63 +137,148 @@ export const ToDoListItem: TodoListTemplateType = ({ todoItem, todoDate, todoDea
           </TableCell>
         </TableRow>
       ) : (
-        <Box
-          sx={{ display: 'block', padding: '15px', backgroundColor: 'white', borderRadius: '6px', marginTop: '15px' }}
-        >
-          <Box sx={{ width: '100%' }}>
-            <Metadata
-              title={<Subtitle fontWeight='500'>{todoItem.phrase}</Subtitle>}
-              subtitle={todoDate && <Paragraph size='medium'>{todoDate}</Paragraph>}
-              image={<SubjectIcon style={{ color: 'black', marginRight: 24 }} />}
-            />
-          </Box>
+        <>
           <Box
-            sx={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '12px' }}
-          >
-            <Box sx={{ marginRight: '24px' }}>{renderStudentAvatars()}</Box>
-            {todoDeadline && (
-              <Box
-                sx={{
-                  borderRadius: 1,
-                  background: 'rgba(236, 89, 37, 0.1)',
-                  width: 72,
-                  height: 28,
-                  display: 'flex',
-                  justifyContent: 'center',
-                  mr: 4,
-                  padding: 0.4,
-                }}
-              >
-                <Row>
-                  <WarningAmberOutlinedIcon fontSize='small' htmlColor={MTHORANGE} />
-                  <Subtitle size={12} color={MTHORANGE} sx={{ ml: 1 }}>
-                    {todoDeadline}
-                  </Subtitle>
-                </Row>
-              </Box>
-            )}
-          </Box>
-          <Button
-            onClick={() => history.push(link)}
-            variant='contained'
             sx={{
-              borderRadius: 2,
-              fontSize: 12,
-              background: 'linear-gradient(90deg, #3E2783 0%, rgba(62, 39, 131, 0) 100%) #4145FF',
-              width: '100%',
-              height: 48,
-              fontWeight: 700,
-              textTransform: 'none',
-              '&:hover': {
-                background: PRIMARY_MEDIUM_MOUSEOVER,
-                color: 'white',
-              },
-              marginTop: '24px',
+              display: { xs: 'none', sm: 'block' },
+              padding: '15px',
+              backgroundColor: 'white',
+              borderRadius: '6px',
+              marginTop: '15px',
             }}
           >
-            {todoItem.button}
-          </Button>
-        </Box>
+            <Box sx={{ width: '100%' }}>
+              <Metadata
+                title={<Subtitle fontWeight='500'>{todoItem.phrase}</Subtitle>}
+                subtitle={
+                  todoDate && (
+                    <Paragraph size='medium' color={MthColor.SYSTEM_06}>
+                      {todoDate}
+                    </Paragraph>
+                  )
+                }
+                image={<SubjectIcon style={{ color: 'black', marginRight: 24 }} />}
+              />
+            </Box>
+            <Box
+              sx={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '12px' }}
+            >
+              <Box sx={{ marginRight: '24px' }}>{renderStudentAvatars()}</Box>
+              {todoDeadline && (
+                <Box
+                  sx={{
+                    borderRadius: 1,
+                    background: 'rgba(236, 89, 37, 0.1)',
+                    width: 72,
+                    height: 28,
+                    display: 'flex',
+                    justifyContent: 'center',
+                    mr: 4,
+                    padding: 0.4,
+                  }}
+                >
+                  <Row>
+                    <WarningAmberOutlinedIcon fontSize='small' htmlColor={MTHORANGE} />
+                    <Subtitle size={12} color={MTHORANGE} sx={{ ml: 1 }}>
+                      {todoDeadline}
+                    </Subtitle>
+                  </Row>
+                </Box>
+              )}
+            </Box>
+            <Button
+              onClick={() => history.push(link)}
+              variant='contained'
+              sx={{
+                borderRadius: 2,
+                fontSize: 12,
+                background: 'linear-gradient(90deg, #3E2783 0%, rgba(62, 39, 131, 0) 100%) #4145FF',
+                width: '100%',
+                height: 48,
+                fontWeight: 700,
+                textTransform: 'none',
+                '&:hover': {
+                  background: PRIMARY_MEDIUM_MOUSEOVER,
+                  color: 'white',
+                },
+                marginTop: '24px',
+              }}
+            >
+              {todoItem.button}
+            </Button>
+          </Box>
+          <Card
+            elevation={2}
+            sx={{
+              display: { xs: 'flex', sm: 'none' },
+              borderRadius: 2,
+              paddingX: 2,
+              marginY: 1,
+              flexDirection: 'column',
+            }}
+          >
+            <Box sx={{ width: '100%' }}>
+              <Metadata
+                title={<Subtitle fontWeight='500'>{todoItem.phrase}</Subtitle>}
+                subtitle={
+                  todoDate && (
+                    <Paragraph size='medium' color={MthColor.SYSTEM_06}>
+                      {todoDate}
+                    </Paragraph>
+                  )
+                }
+                image={<SubjectIcon style={{ color: 'black', marginRight: 24 }} />}
+              />
+            </Box>
+            <Box
+              sx={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '12px' }}
+            >
+              <Box sx={{ marginRight: '24px' }}>{renderStudentAvatars()}</Box>
+              {todoDeadline && (
+                <Box
+                  sx={{
+                    borderRadius: 1,
+                    background: 'rgba(236, 89, 37, 0.1)',
+                    width: 72,
+                    height: 28,
+                    display: 'flex',
+                    justifyContent: 'center',
+                    mr: 4,
+                    padding: 0.4,
+                  }}
+                >
+                  <Row>
+                    <WarningAmberOutlinedIcon fontSize='small' htmlColor={MTHORANGE} />
+                    <Subtitle size={12} color={MTHORANGE} sx={{ ml: 1 }}>
+                      {todoDeadline}
+                    </Subtitle>
+                  </Row>
+                </Box>
+              )}
+            </Box>
+            <Button
+              onClick={() => history.push(link)}
+              variant='contained'
+              sx={{
+                borderRadius: 2,
+                fontSize: 12,
+                background: 'linear-gradient(90deg, #3E2783 0%, rgba(62, 39, 131, 0) 100%) #4145FF',
+                width: '100%',
+                height: 48,
+                fontWeight: 700,
+                textTransform: 'none',
+                '&:hover': {
+                  background: PRIMARY_MEDIUM_MOUSEOVER,
+                  color: 'white',
+                },
+                marginTop: '12px',
+                marginBottom: { xs: '12px', sm: '0px' },
+              }}
+            >
+              {todoItem.button}
+            </Button>
+          </Card>
+        </>
       ))) || <></>
   )
 }

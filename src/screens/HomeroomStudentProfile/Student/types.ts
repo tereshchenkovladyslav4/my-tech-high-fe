@@ -168,5 +168,7 @@ export type Person = {
 export type StudentProps = {
   student: StudentType
   schoolYears: SchoolYearType[]
+  showNotification?: boolean
+  withdrawn?: boolean
 }
 export type StudentComponentType = FunctionComponent<StudentProps>

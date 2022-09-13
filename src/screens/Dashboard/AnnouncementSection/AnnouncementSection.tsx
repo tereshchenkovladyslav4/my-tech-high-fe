@@ -9,11 +9,11 @@ import {
   Card,
   Grid,
   InputAdornment,
-  ListItemText,
   Menu,
   MenuItem,
   OutlinedInput,
   Tooltip,
+  Typography,
 } from '@mui/material'
 import { Box } from '@mui/system'
 import { debounce } from 'lodash'
@@ -22,6 +22,7 @@ import { CSSTransition, TransitionGroup } from 'react-transition-group'
 import { Table } from '@mth/components/Table/Table'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { MthColor } from '@mth/enums'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { extractContent, getWindowDimension } from '@mth/utils'
 import { Person, StudentType } from '../../HomeroomStudentProfile/Student/types'
@@ -93,7 +94,7 @@ const AnnouncementSection: React.FC<AnnouncementSectionProps> = ({
         user_id: Number(me?.user_id),
       },
     },
-    skip: me?.user_id ? false : true,
+    skip: !me?.user_id,
     fetchPolicy: 'cache-first',
   })
 
@@ -163,7 +164,7 @@ const AnnouncementSection: React.FC<AnnouncementSectionProps> = ({
       setAnnouncementTableData(
         userAnnouncements.map((announcement: Announcement) => ({
           date: (
-            <Subtitle fontWeight='500' sx={{ fontSize: '12px', color: '#A1A1A1', maxWidth: '300px' }}>
+            <Subtitle fontWeight='500' sx={{ fontSize: '12px', color: MthColor.SYSTEM_06, maxWidth: '300px' }}>
               {moment(announcement.date).format('MMMM DD')}
             </Subtitle>
           ),
@@ -296,7 +297,9 @@ const AnnouncementSection: React.FC<AnnouncementSectionProps> = ({
                             </Subtitle>
                           </Box>
                           <Box sx={{ paddingY: '10px' }}>
-                            <ListItemText secondary={moment(announcement?.date).format('MMMM DD')} />
+                            <Typography sx={{ fontSize: '12px', color: MthColor.SYSTEM_06, fontWeight: '600' }}>
+                              {moment(announcement.date).format('MMMM DD')}
+                            </Typography>
                           </Box>
                           <Box sx={{ paddingY: '10px' }}>
                             {announcement?.filter_grades &&

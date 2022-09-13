@@ -14,6 +14,8 @@ const ReadMoreSection: React.FC<ReadMoreSectionProps> = ({ announcement, setSect
   const students = me?.students
   const [windowDimensions, setWindowDimensions] = useState<{ width: number; height: number }>(getWindowDimension())
 
+  window.scrollTo(0, 0)
+
   useEffect(() => {
     function handleResize() {
       setWindowDimensions(getWindowDimension())

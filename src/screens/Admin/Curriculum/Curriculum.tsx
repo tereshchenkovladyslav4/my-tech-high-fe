@@ -27,9 +27,9 @@ const Curriculum: React.FC = () => {
     },
   ]
   return (
-    <Grid container rowSpacing={4} columnSpacing={0} sx={{ marginTop: 2 }} columns={{ xs: 4, md: 12 }}>
+    <Grid container rowSpacing={4} columnSpacing={4} sx={{ marginTop: 2, px: 4 }}>
       {map(items, (item, idx) => (
-        <Grid item key={idx}>
+        <Grid item key={idx} sm={12} md={6} lg={4}>
           <ItemCard
             icon={item.icon}
             title={item.title}

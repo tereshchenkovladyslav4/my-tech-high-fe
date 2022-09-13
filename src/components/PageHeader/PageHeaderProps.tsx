@@ -1,5 +1,5 @@
 export type PageHeaderProps = {
   title: string
-  url?: string
+  to?: string
   onBack?: () => void
 }
