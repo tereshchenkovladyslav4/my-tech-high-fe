@@ -12,12 +12,14 @@ type SchoolYearDropDownProps = {
   setSelectedYearId: (_: number) => void
   selectedYearId?: number
   setDisableForm?: () => void
+  align?: 'start' | 'end'
 }
 
 export const SchoolYearDropDown: FunctionComponent<SchoolYearDropDownProps> = ({
   selectedYearId,
   setSelectedYearId,
   setDisableForm,
+  align = 'end',
 }: SchoolYearDropDownProps) => {
   const { me } = useContext(UserContext)
   const [years, setYears] = useState<DropDownItem[]>([])
@@ -73,7 +75,7 @@ export const SchoolYearDropDown: FunctionComponent<SchoolYearDropDownProps> = ({
     <DropDown
       dropDownItems={years}
       defaultValue={selectedYearId || ''}
-      sx={{ minWidth: '250px', textAlign: 'center', alignItems: 'end' }}
+      sx={{ minWidth: '250px', textAlign: 'center', alignItems: align }}
       borderNone={true}
       setParentValue={(value) => {
         setSelectedYear(value)

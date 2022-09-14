@@ -32,18 +32,21 @@ const MinimumGrade: React.FC = () => {
           values.tooltip === '' ? (
             <Button
               onClick={() => setFocused(true)}
-              sx={{ color: '#4145FF', padding: 0, marginLeft: '-11px', fontSize: '16px' }}
+              sx={{ color: '#4145FF', padding: 0, marginTop: '12px', fontSize: '16px' }}
             >
               Select
             </Button>
           ) : (
-            <Typography onClick={() => setFocused(true)}>{values.tooltip || ''}</Typography>
+            <Typography sx={{ marginTop: '15px', marginLeft: '12px' }} onClick={() => setFocused(true)}>
+              {values.tooltip || ''}
+            </Typography>
           )
         ) : (
           <TextField
             name='tooltip'
             value={values.tooltip || ''}
             onChange={handleChange}
+            sx={{ marginTop: '12px', marginLeft: '12px' }}
             id='standard-basic'
             variant='standard'
             InputProps={{

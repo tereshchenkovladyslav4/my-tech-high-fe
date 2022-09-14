@@ -2,7 +2,8 @@ import { makeStyles } from '@material-ui/core/styles'
 
 export const useStyles = makeStyles(() => ({
   formRoot: {
-    marginLeft: '25px',
+    marginLeft: '25px !important',
+    marginTop: '-15px !important',
     '& .MuiOutlinedInput-notchedOutline': {
       border: 0,
     },
@@ -12,7 +13,7 @@ export const useStyles = makeStyles(() => ({
   },
   selectRoot: {
     '& .MuiInputBase-input': {
-      padding: 0,
+      padding: '0px !important',
     },
     color: '#4145FF',
   },

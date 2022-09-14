@@ -1,13 +1,17 @@
-import React, { FunctionComponent, useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { useQuery } from '@apollo/client'
-import { Grid } from '@mui/material'
+import { Box, Grid } from '@mui/material'
+import { Route, Switch, useRouteMatch } from 'react-router-dom'
+import { MthRoute } from '@mth/enums'
 import { UserContext } from '../../providers/UserContext/UserProvider'
 import { SchoolYearType } from '../../utils/utils.types'
 import { getSchoolYearsByRegionId } from '../Admin/Dashboard/SchoolYear/SchoolYear'
 import { ToDo } from '../Dashboard/ToDoList/ToDo'
+import { Schedule } from './Schedule'
 import { Students } from './Students/Students'
 
-export const Homeroom: FunctionComponent = () => {
+export const Homeroom: React.FC = () => {
+  const isExact = useRouteMatch(MthRoute.HOMEROOM)?.isExact
   const { me } = useContext(UserContext)
   const region_id = me?.userRegion?.at(-1)?.region_id
   const [schoolYears, setSchoolYears] = useState<SchoolYearType[]>([])
@@ -33,13 +37,22 @@ export const Homeroom: FunctionComponent = () => {
   }, [region_id, schoolYearData?.data?.region?.SchoolYears])
 
   return (
-    <Grid container padding={4} rowSpacing={4}>
-      <Grid item xs={12}>
-        <Students schoolYears={schoolYears} />
-      </Grid>
-      <Grid item xs={12}>
-        {schoolYears.length > 0 && <ToDo schoolYears={schoolYears} />}
-      </Grid>
-    </Grid>
+    <Box>
+      {isExact && (
+        <Grid container padding={4} rowSpacing={4}>
+          <Grid item xs={12}>
+            <Students schoolYears={schoolYears} />
+          </Grid>
+          <Grid item xs={12}>
+            {schoolYears.length > 0 && <ToDo schoolYears={schoolYears} />}
+          </Grid>
+        </Grid>
+      )}
+      <Switch>
+        <Route path={`${MthRoute.HOMEROOM}${MthRoute.SUBMIT_SCHEDULE}`}>
+          <Schedule />
+        </Route>
+      </Switch>
+    </Box>
   )
 }

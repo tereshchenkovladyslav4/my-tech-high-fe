@@ -4,19 +4,13 @@ import WarningAmberOutlinedIcon from '@mui/icons-material/WarningAmberOutlined'
 import { Avatar, AvatarGroup, Box, Button, Card, TableCell, TableRow } from '@mui/material'
 import { map } from 'lodash'
 import { useHistory } from 'react-router-dom'
+import { Metadata } from '@mth/components/Metadata/Metadata'
+import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { MthRoute } from '@mth/enums'
 import { MthColor } from '@mth/enums'
 import { getWindowDimension } from '@mth/utils'
-import { Metadata } from '../../../../../components/Metadata/Metadata'
-import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragraph'
-import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
-import {
-  HOMEROOM,
-  ENROLLMENT,
-  PRIMARY_MEDIUM_MOUSEOVER,
-  MTHORANGE,
-  PARENT_LINK,
-  SUBMIT_WITHDRAWAL,
-} from '../../../../../utils/constants'
+import { PRIMARY_MEDIUM_MOUSEOVER, MTHORANGE } from '../../../../../utils/constants'
 import { Person } from '../../../../HomeroomStudentProfile/Student/types'
 import { ToDoCategory, TodoListTemplateType } from './types'
 
@@ -64,11 +58,19 @@ export const ToDoListItem: TodoListTemplateType = ({ todoItem, todoDate, todoDea
   useEffect(() => {
     switch (todoItem.category) {
       case ToDoCategory.SUBMIT_WITHDRAW: {
-        setLink(`${PARENT_LINK}${SUBMIT_WITHDRAWAL}/${students.at(-1)?.student_id}`)
+        setLink(`${MthRoute.PARENT_LINK}${MthRoute.SUBMIT_WITHDRAWAL}/${students.at(-1)?.student_id}`)
+        break
+      }
+      case ToDoCategory.SUBMIT_SCHEDULE: {
+        setLink(`${MthRoute.HOMEROOM}${MthRoute.SUBMIT_SCHEDULE}`)
         break
       }
       default: {
-        setLink(students.length > 1 ? HOMEROOM : `${HOMEROOM + ENROLLMENT}/${students.at(-1)?.student_id}`)
+        setLink(
+          students.length > 1
+            ? MthRoute.HOMEROOM
+            : `${MthRoute.HOMEROOM + MthRoute.ENROLLMENT}/${students.at(-1)?.student_id}`,
+        )
       }
     }
   }, [todoItem, students])

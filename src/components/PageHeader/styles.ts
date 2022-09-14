@@ -3,6 +3,7 @@ export const useStyles = {
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
+    width: '100%',
   },
   arrowIcon: {
     fontSize: '15px',

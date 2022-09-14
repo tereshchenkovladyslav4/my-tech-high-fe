@@ -8,6 +8,12 @@ export const CreateStudentRecordMutation = gql`
   }
 `
 
+export const GenerateStudentPacketPDF = gql`
+  mutation GenerateStudentPacketPDF($generatePacketPdfInput: StudentPacketPDFInput!) {
+    generateStudentPacketPDF(generatePacketPdfInput: $generatePacketPdfInput)
+  }
+`
+
 export const GetStudentRecordFilesQuery = gql`
   query StudentRecords($filter: StudentRecordFilterInput, $pagination: PaginationInput, $searchKey: String) {
     studentRecords(filter: $filter, pagination: $pagination, search_key: $searchKey) {

@@ -3,7 +3,7 @@ import { SxProps } from '@mui/system'
 
 export type DropDownItem = {
   label: string | number
-  value: string | number
+  value: string | number | boolean
 }
 
 type FormikCustomError = {
@@ -14,12 +14,12 @@ type FormikCustomError = {
 export type DropDownProps = {
   dropDownItems: DropDownItem[]
   placeholder?: string
-  setParentValue: (value: string | number, val: string | number) => void
+  setParentValue: (value: string | number | boolean, val: string | number | boolean) => void
   labelTop?: boolean
   sx?: SxProps<Theme> | undefined
   alternate?: boolean
   size?: 'small' | 'medium'
-  defaultValue?: string | number
+  defaultValue?: string | number | boolean
   error?: FormikCustomError
   name?: string
   disabled?: boolean

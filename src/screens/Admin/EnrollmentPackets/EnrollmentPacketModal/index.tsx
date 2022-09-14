@@ -10,7 +10,7 @@ import { QUESTION_TYPE } from '@mth/components/QuestionItem/QuestionItemProps'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { SYSTEM_11 } from '../../../../utils/constants'
 import { Packet } from '../../../HomeroomStudentProfile/Student/types'
-import { CreateStudentRecordMutation } from '../../Records/services'
+import { GenerateStudentPacketPDF } from '../../Records/services'
 import { EnrollmentQuestionTab } from '../../SiteManagement/EnrollmentSetting/EnrollmentQuestions/types'
 import {
   getSettingsQuery,
@@ -71,7 +71,7 @@ export const EnrollmentPacketModal: React.FC<EnrollmentPacketModalProps> = ({ ha
   const classes = useStyles
   const [updateCreateStudentImm] = useMutation(updateCreateStudentImmunizationMutation)
   const [updateStudentStatus] = useMutation(updateStudentStatusMutation)
-  const [createStudentRecord] = useMutation(CreateStudentRecordMutation)
+  const [generateStudentPacketPDF] = useMutation(GenerateStudentPacketPDF)
   const [savePacket] = useMutation(savePacketMutation)
   const settingsQuery = useQuery(getSettingsQuery, {
     fetchPolicy: 'network-only',
@@ -208,32 +208,6 @@ export const EnrollmentPacketModal: React.FC<EnrollmentPacketModalProps> = ({ ha
 
   async function onSubmit(vals: EnrollmentPacketFormType) {
     const status = vals.preSaveStatus
-
-    if (status === 'Accepted') {
-      methods.setValue('saveAlert', 'The packet has been accepted')
-      setTimeout(() => methods.setValue('saveAlert', ''), 5000)
-    } else if (!['Age Issue', 'Missing Info'].includes(status)) {
-      methods.setValue('saveAlert', 'Packet Saved')
-      setTimeout(() => methods.setValue('saveAlert', ''), 5000)
-    }
-    if (['Accepted', 'Conditional'].includes(status)) {
-      updateStudentStatus({
-        variables: {
-          input: {
-            student_id: Number(packet.student.student_id),
-            school_year_id: packet.student.current_school_year_status.school_year_id,
-            status: 1,
-            packet_id: Number(packet.packet_id),
-          },
-        },
-      })
-      createStudentRecord({
-        variables: {
-          regionId: Number(me?.selectedRegionId),
-          studentId: Number(packet.student.student_id),
-        },
-      })
-    }
     const temp = {
       packet: {},
       student: {
@@ -297,7 +271,7 @@ export const EnrollmentPacketModal: React.FC<EnrollmentPacketModalProps> = ({ ha
       },
     })
 
-    updateCreateStudentImm({
+    await updateCreateStudentImm({
       variables: {
         input: vals.immunizations.map((v) => ({
           student_id: v.student_id,
@@ -306,7 +280,34 @@ export const EnrollmentPacketModal: React.FC<EnrollmentPacketModalProps> = ({ ha
         })),
       },
     })
+    if (['Accepted', 'Conditional'].includes(status)) {
+      await updateStudentStatus({
+        variables: {
+          input: {
+            student_id: Number(packet.student.student_id),
+            school_year_id: packet.student.current_school_year_status.school_year_id,
+            status: 1,
+            packet_id: Number(packet.packet_id),
+          },
+        },
+      })
+      await generateStudentPacketPDF({
+        variables: {
+          generatePacketPdfInput: {
+            region_id: Number(me?.selectedRegionId),
+            student_id: Number(packet?.student.student_id),
+          },
+        },
+      })
+    }
     refetch()
+    if (status === 'Accepted') {
+      methods.setValue('saveAlert', 'The packet has been accepted')
+      setTimeout(() => methods.setValue('saveAlert', ''), 5000)
+    } else if (!['Age Issue', 'Missing Info'].includes(status)) {
+      methods.setValue('saveAlert', 'Packet Saved')
+      setTimeout(() => methods.setValue('saveAlert', ''), 5000)
+    }
   }
 
   const tempFunction = () => {}

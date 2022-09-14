@@ -61,6 +61,15 @@ export const GetCurrentSchoolYearByRegionId = gql`
         active
         school_partner_id
       }
+      ScheduleBuilder {
+        id
+        max_num_periods
+        custom_built
+        split_enrollment
+        always_unlock
+        parent_tooltip
+        school_year_id
+      }
     }
   }
 `

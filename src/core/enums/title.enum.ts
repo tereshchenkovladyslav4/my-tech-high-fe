@@ -21,4 +21,7 @@ export enum MthTitle {
   INFORMATION = 'Information',
   OPTION_1 = 'Option1',
   ADD_OPTION = 'Add Option',
+  SCHEDULE = 'Schedule',
+  STEP_TESTING_PREFERENCE = 'Testing',
+  STEP_DIPLOMA_SEEKING = 'Diploma',
 }

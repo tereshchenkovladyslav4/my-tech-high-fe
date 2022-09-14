@@ -36,7 +36,7 @@ const MaximumSpacing: React.FC = () => {
           name='max_spacing_interval'
           value={values.max_spacing_interval || ''}
           onChange={handleChange}
-          sx={{ width: '50px' }}
+          sx={{ width: '50px', marginTop: '15px', marginLeft: '12px' }}
           inputProps={{
             style: { padding: 0 },
             min: 1,

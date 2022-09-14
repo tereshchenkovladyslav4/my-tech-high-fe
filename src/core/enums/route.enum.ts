@@ -26,6 +26,7 @@ export enum MthRoute {
   SNOWPACK_PUBLIC_S3_URL = import.meta.env.SNOWPACK_PUBLIC_S3_URL,
   SNOWPACK_PUBLIC_SCHOOL_DISTRICT_TEMPLATE = import.meta.env.SNOWPACK_PUBLIC_SCHOOL_DISTRICT_TEMPLATE,
   SUBMIT_WITHDRAWAL = '/withdrawal',
+  SUBMIT_SCHEDULE = '/schedule',
   USERS = '/users',
   WITHDRAWAL = '/enrollment/withdrawal',
   TESTING_PREFERENCE_PATH = '/site-management/enrollment/testing-preference',

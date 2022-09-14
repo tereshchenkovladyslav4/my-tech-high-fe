@@ -15,7 +15,7 @@
     "build-stag": "cp -v .env.staging .env && snowpack build",
     "build-demo": "cp -v .env.demo .env && snowpack build",
     "build-prod": "cp -v .env.prod .env && snowpack build",
-    "format": "prettier-eslint --write \"src/**/*.tsx\""
+    "format": "prettier-eslint --write \"src/**/*.tsx\" \"src/**/*.ts\""
   },
   "husky": {
     "hooks": {
@@ -25,7 +25,7 @@
   "lint-staged": {
     "**/*.{js,jsx,ts,tsx}": [
       "eslint --ext .ts,.tsx,.js,.jsx .",
-      "prettier-eslint --write \"src/**/*.tsx\""
+      "prettier-eslint \"src/**/*.tsx\" \"src/**/*.ts\""
     ]
   },
   "devDependencies": {

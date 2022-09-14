@@ -51,6 +51,44 @@ export const TodoList: TodoListTemplateType = ({ handleShowEmpty, schoolYears })
             setTodoList((prev) => [...prev, item])
           }
 
+          ////////////////////////////////////////////FOR TEST////////////////////////////////////////////
+          // Currently, the function to add the schedule builder for the student in the admin side is not implemented.
+          // Therefore, this function was created for testing purpose to check the current parent schedule page.
+          // This feature will be completed in the future.
+          // student is for test.
+          if (item.category == ToDoCategory.SUBMIT_SCHEDULE) {
+            const student = {
+              student_id: '2771',
+              person: {
+                first_name: '3demo',
+                last_name: 'demo',
+                person_id: '3119',
+                photo: null,
+                preferred_first_name: null,
+                preferred_last_name: null,
+              },
+              current_school_year_status: {
+                student_id: '2771',
+                school_year_id: 21,
+                application_id: 2770,
+                application_status: 'Accepted',
+                packet_status: 'Not Started',
+                packet_id: 731,
+                application_school_year_id: 21,
+                grade_level: '2',
+                application_date_submitted: '2022-07-13T22:23:07.000Z',
+                application_date_started: '2022-07-13T22:23:08.000Z',
+                application_date_accepted: 'Aug 24th, 2022',
+                application_deadline_num_days: 0,
+                enrollment_packet_deadline_num_days: 2,
+                enrollment_packet_date_deadline: '08.24',
+              },
+            }
+            setTodoList((prev) => [...prev, { ...item, students: [student] }])
+            todoListCount++
+          }
+          ////////////////////////////////////////////////~FOR TEST///////////////////////////////////////////////////////////
+
           // setTodoList((prev) => [...prev, ...splitedItems])
 
           if (item.students.length) {

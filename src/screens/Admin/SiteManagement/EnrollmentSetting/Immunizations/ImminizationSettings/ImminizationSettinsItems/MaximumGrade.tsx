@@ -12,13 +12,13 @@ const MaximumGrade: React.FC = () => {
   const values: Array<string> = ['K', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']
   const parseValue = (value: string) => {
     // if (value === 'OR-K') return 'OR - Kindergarten (5)'
-    if (value === 'K') return 'Kindergarten (5)'
+    if (value === 'K') return 'Kindergarten'
     const numberValue = parseInt(value)
-    if (numberValue === 1) return '1st grade (6)'
-    if (numberValue === 2) return '2nd grade (7)'
-    if (numberValue === 3) return '3rd grade (8)'
+    if (numberValue === 1) return '1st Grade'
+    if (numberValue === 2) return '2nd Grade'
+    if (numberValue === 3) return '3rd Grade'
 
-    return `${value}th grade (${value !== '12' ? numberValue + 5 : `${numberValue + 5}/${numberValue + 6}`})`
+    return `${value}th Grade`
   }
 
   return (

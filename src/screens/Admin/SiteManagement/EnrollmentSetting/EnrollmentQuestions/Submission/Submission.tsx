@@ -66,7 +66,7 @@ export const Submission: FunctionComponent = () => {
           <Box display='flex' flexDirection='column' alignItems='center' justifyContent={'center'} width='100%'>
             <Box sx={{ width: '35%', display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
               <FormHelperText style={{ textAlign: 'center' }}>
-                Type full legal parent name and provide a Digital Signature below. Signature (use the mouse to sign)
+                Type full legal parent name and provide a Digital Signature below (use the mouse to sign).
               </FormHelperText>
             </Box>
           </Box>

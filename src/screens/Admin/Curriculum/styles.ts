@@ -25,4 +25,15 @@ export const useStyles = {
     px: 4,
     borderRadius: 2,
   },
+  baseSettings: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'baseline',
+    px: 3,
+    py: 4,
+    margin: 3,
+    background: '#fff',
+    minHeight: '100%',
+    borderRadius: '4px',
+  },
 }
