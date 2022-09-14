@@ -1,13 +1,25 @@
-import React from 'react'
+import React, { useState } from 'react'
 import EastIcon from '@mui/icons-material/East'
 import { Box, Card, CardMedia, Stack, Typography } from '@mui/material'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { s3URL } from '@mth/constants'
-import { ResourceCartBarProps, ResourcePage } from '../types'
+import { shouldConfirmWaitlist } from '../services'
+import { Resource, ResourceCartBarProps, ResourcePage } from '../types'
+import { WaitListModal } from '../WaitListModal'
 
-const ResourceCartBar: React.FC<ResourceCartBarProps> = ({ resourcesInCart, setPage }) => {
+const ResourceCartBar: React.FC<ResourceCartBarProps> = ({ resourcesInCart, handleChangeResourceStatus, setPage }) => {
   const SHOW_CART_LIMIT = 5
   const MAX_TITLE_LENGTH = 3
+  const [joinWaitlistResources, setJoinWaitlistResources] = useState<Resource[]>([])
+
+  const checkWaitList = () => {
+    const filteredResources = resourcesInCart.filter((item) => shouldConfirmWaitlist(item))
+    if (filteredResources?.length) {
+      setJoinWaitlistResources(filteredResources)
+    } else {
+      setPage(ResourcePage.REQUEST)
+    }
+  }
 
   return (
     <Card
@@ -58,12 +70,24 @@ const ResourceCartBar: React.FC<ResourceCartBarProps> = ({ resourcesInCart, setP
             spacing={1.5}
             sx={{ cursor: 'pointer' }}
             alignItems='center'
-            onClick={() => setPage(ResourcePage.REQUEST)}
+            onClick={() => checkWaitList()}
           >
             <EastIcon sx={{ fontSize: '36px' }} />
           </Stack>
         </Box>
       </Box>
+
+      {!!joinWaitlistResources?.length && (
+        <WaitListModal
+          joinWaitlistResources={joinWaitlistResources}
+          handleChangeResourceStatus={(resource, eventType) => {
+            handleChangeResourceStatus(resource, eventType)
+          }}
+          isAllDone={() => {
+            setPage(ResourcePage.REQUEST)
+          }}
+        />
+      )}
     </Card>
   )
 }

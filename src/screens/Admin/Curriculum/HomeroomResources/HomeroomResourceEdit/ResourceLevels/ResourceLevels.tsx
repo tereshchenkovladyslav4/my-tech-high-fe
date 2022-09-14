@@ -14,6 +14,7 @@ import {
 import { useFormikContext } from 'formik'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { REMOVE_FAMILY_RESOURCE } from '@mth/constants'
 import { MthColor } from '@mth/enums'
 import { defaultResourceLevelFormData } from '../../../defaultValues'
 import { homeroomResourcesClasses } from '../../styles'
@@ -94,7 +95,7 @@ export const ResourceLevels: React.FC<ResourceLevelsProps> = ({ setIsChanged }) 
 
   return (
     <>
-      <Tooltip title={values?.family_resource ? 'Remove family resource to enable feature' : ''}>
+      <Tooltip title={values?.family_resource ? REMOVE_FAMILY_RESOURCE : ''}>
         <FormControlLabel
           sx={{ height: 30, marginTop: 2 }}
           control={

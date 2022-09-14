@@ -12,7 +12,7 @@ import { createOrUpdateResourceMutation } from '../../services'
 import { HeaderComponent } from '../HeaderComponent'
 import { HomeroomResource, HomeroomResourceEditProps, HomeroomResourcePage } from '../types'
 import HomeroomResourceForm from './HomeroomResourceForm'
-import { editHomeroomResourceClassess } from './styles'
+import { editHomeroomResourceClasses } from './styles'
 
 const HomeroomResourceEdit: React.FC<HomeroomResourceEditProps> = ({
   schoolYearId,
@@ -102,6 +102,9 @@ const HomeroomResourceEdit: React.FC<HomeroomResourceEditProps> = ({
     setIsSubmitted(true)
     const imageUrl = await uploadPhoto(value.file, stateName)
 
+    const resourceLevels = value.ResourceLevels
+    resourceLevels.map((item) => (item.resource_level_id = +item.resource_level_id))
+
     await submitSave({
       variables: {
         createResourceInput: {
@@ -118,7 +121,7 @@ const HomeroomResourceEdit: React.FC<HomeroomResourceEditProps> = ({
           detail: value.detail,
           resource_limit: value.resource_limit || null,
           add_resource_level: value.add_resource_level,
-          resourceLevelsStr: JSON.stringify(value.ResourceLevels),
+          resourceLevelsStr: JSON.stringify(resourceLevels),
           family_resource: value.family_resource,
         },
       },
@@ -139,9 +142,9 @@ const HomeroomResourceEdit: React.FC<HomeroomResourceEditProps> = ({
   }, [item])
 
   return (
-    <Card sx={editHomeroomResourceClassess.cardBody}>
+    <Card sx={editHomeroomResourceClasses.cardBody}>
       <Prompt
-        when={isChanged ? true : false}
+        when={isChanged}
         message={JSON.stringify({
           header: 'Unsaved Changes',
           content: 'Are you sure you want to leave without saving changes?',

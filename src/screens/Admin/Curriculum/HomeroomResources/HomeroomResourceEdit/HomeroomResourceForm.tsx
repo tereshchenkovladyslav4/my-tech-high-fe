@@ -8,7 +8,7 @@ import { DropDownItem } from '@mth/components/DropDown/types'
 import { MultiSelect } from '@mth/components/MultiSelect/MultiSelect'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
-import { s3URL } from '@mth/constants'
+import { REMOVE_FAMILY_RESOURCE, s3URL } from '@mth/constants'
 import { ResourceSubtitle } from '@mth/enums'
 import { useProgramYearListBySchoolYearId } from '@mth/hooks'
 import { BulletEditor } from '@mth/screens/Admin/Calendar/components/BulletEditor'
@@ -216,22 +216,32 @@ const HomeroomResourceForm: React.FC<HomeroomResourceFormProps> = ({ schoolYearI
                   <Subtitle sx={homeroomResourcesClasses.formError}>
                     {touched.resource_limit && errors.resource_limit}
                   </Subtitle>
-                  <TextField
-                    name='resource_limit'
-                    label='Limit'
-                    placeholder='None'
-                    type='number'
-                    fullWidth
-                    value={values?.resource_limit || ''}
-                    onChange={(e) => {
-                      setFieldValue('resource_limit', Number(e.target.value) || '')
-                      setIsChanged(true)
-                    }}
-                    error={touched.resource_limit && !!errors.resource_limit}
-                    disabled={
-                      !!values?.family_resource || !!values.ResourceLevels?.filter((item) => item.limit)?.length
+                  <Tooltip
+                    title={
+                      values?.family_resource
+                        ? REMOVE_FAMILY_RESOURCE
+                        : !!values.ResourceLevels?.filter((item) => item.limit)?.length
+                        ? 'Remove resource level limit to enable feature'
+                        : ''
                     }
-                  />
+                  >
+                    <TextField
+                      name='resource_limit'
+                      label='Limit'
+                      placeholder='None'
+                      type='number'
+                      fullWidth
+                      value={values?.resource_limit || ''}
+                      onChange={(e) => {
+                        setFieldValue('resource_limit', Number(e.target.value) || '')
+                        setIsChanged(true)
+                      }}
+                      error={touched.resource_limit && !!errors.resource_limit}
+                      disabled={
+                        !!values?.family_resource || !!values.ResourceLevels?.filter((item) => item.limit)?.length
+                      }
+                    />
+                  </Tooltip>
                 </Box>
               </Box>
               <Box

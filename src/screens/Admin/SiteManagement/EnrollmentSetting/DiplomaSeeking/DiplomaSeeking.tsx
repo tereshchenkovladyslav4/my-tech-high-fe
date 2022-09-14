@@ -1,33 +1,25 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { useQuery } from '@apollo/client'
+import { useQuery, useMutation } from '@apollo/client'
 import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded'
 import ModeEditIcon from '@mui/icons-material/ModeEdit'
 import { Box, Button, Checkbox, FormControlLabel, Grid, IconButton, Radio, Tooltip, Typography } from '@mui/material'
 import { map } from 'lodash'
 import moment from 'moment'
-import { useHistory } from 'react-router-dom'
+import { Prompt, useHistory } from 'react-router-dom'
 import { DropDown } from '@mth/components/DropDown/DropDown'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { DEFUALT_DIPLOMA_QUESTION_DESCRIPTION, DEFUALT_DIPLOMA_QUESTION_TITLE } from '@mth/constants'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
-import { toOrdinalSuffix } from '@mth/utils'
-import { getSchoolYearsByRegionId } from '../../services'
+import { toOrdinalSuffix, extractContent } from '@mth/utils'
+import {
+  diplomaQuestionDataBySchoolYearGql,
+  getSchoolYearsByRegionId,
+  diplomaQuestionGradeSaveGql,
+} from '../../services'
+import DiplomaQuestionEditModal from './DiplomaQuestionEditModal'
 import { diplomaSeekingClassess } from './styles'
-
-type SchoolYear = {
-  label: string
-  value: number | string
-}
-
-type SchoolYearItem = {
-  date_begin: string
-  date_end: string
-  school_year_id: string
-  midyear_application: number
-  midyear_application_open: string
-  midyear_application_close: string
-  grades: string
-}
+import { SchoolYear, SchoolYearItem, DiplomaQuestionType } from './types'
 
 const DiplomaSeeking: React.FC = () => {
   const { me } = useContext(UserContext)
@@ -38,6 +30,28 @@ const DiplomaSeeking: React.FC = () => {
   const [grades, setGrades] = useState<string[]>([])
   const [selectGrades, setSelectGrades] = useState<string[]>([])
   const [diplomaStatus, setDiplomaStatus] = useState<number>(-1)
+  const [openEditModal, setOpenEditModal] = useState<boolean>(false)
+  const [diplomaQuestion, setDiplomaQuestion] = useState<DiplomaQuestionType>({
+    id: '',
+    schoolYearId: '',
+    title: '',
+    description: '',
+    grades: '',
+  })
+
+  const {
+    loading,
+    data: diplomaQuestionData,
+    refetch,
+  } = useQuery(diplomaQuestionDataBySchoolYearGql, {
+    variables: {
+      diplomaQuestionInput: {
+        schoolYearId: +selectedSchoolYear,
+      },
+    },
+    skip: !selectedSchoolYear,
+    fetchPolicy: 'network-only',
+  })
 
   const { data: schoolYearData } = useQuery(getSchoolYearsByRegionId, {
     variables: {
@@ -89,12 +103,47 @@ const DiplomaSeeking: React.FC = () => {
     setDiplomaStatus(-1)
   }, [selectedSchoolYear])
 
+  useEffect(() => {
+    if (!loading && diplomaQuestionData) {
+      if (diplomaQuestionData?.getDiplomaQuestion) {
+        const deplomaGrades = diplomaQuestionData?.getDiplomaQuestion?.grades
+        setSelectGrades(deplomaGrades?.split(',') || [])
+        setDiplomaQuestion(diplomaQuestionData?.getDiplomaQuestion)
+      } else {
+        setSelectGrades([])
+        setDiplomaQuestion({
+          id: '',
+          schoolYearId: '',
+          title: DEFUALT_DIPLOMA_QUESTION_TITLE,
+          description: DEFUALT_DIPLOMA_QUESTION_DESCRIPTION,
+          grades: '',
+        })
+      }
+    }
+  }, [diplomaQuestionData, loading])
+
   const handleChangeGrades = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.checked) {
       setSelectGrades([...selectGrades, e.target.value])
     } else {
       setSelectGrades(selectGrades.filter((item: string) => item !== e.target.value))
     }
+  }
+
+  const [saveDiplomaQuestionGrades] = useMutation(diplomaQuestionGradeSaveGql)
+  const handleDiplomaGradeSave = async () => {
+    const grades = selectGrades.join(',')
+    await saveDiplomaQuestionGrades({
+      variables: {
+        diplomaQuestionInput: {
+          schoolYearId: +selectedSchoolYear,
+          title: diplomaQuestion.title,
+          description: diplomaQuestion.description,
+          grades: grades,
+        },
+      },
+    })
+    refetch()
   }
 
   const kinderGardernGrade = () => {
@@ -140,118 +189,138 @@ const DiplomaSeeking: React.FC = () => {
       },
     )
 
+  const isChanged = () => {
+    const initGrades =
+      diplomaQuestion.grades
+        ?.split(',')
+        .sort()
+        .filter((i) => i) || []
+    return JSON.stringify(selectGrades.sort().filter((i) => i)) !== JSON.stringify(initGrades)
+  }
+
   return (
     <Box sx={diplomaSeekingClassess.container}>
-      <>
-        <Box paddingY='13px' paddingX='20px' display='flex' justifyContent='space-between'>
-          <Box>
-            <IconButton
-              onClick={() => history.push('/site-management/enrollment/')}
-              sx={diplomaSeekingClassess.btnIcon}
-            >
-              <ArrowBackIosRoundedIcon sx={diplomaSeekingClassess.iconArrow} />
-            </IconButton>
-            <Typography paddingLeft='20px' fontSize='20px' fontWeight={700} component='span'>
-              Diploma-seeking Path
-            </Typography>
-          </Box>
-          <Box display='flex' flexDirection='row' justifyContent='flex-end' alignItems='center'>
-            <DropDown
-              dropDownItems={schoolYears}
-              placeholder={'Select Year'}
-              defaultValue={selectedSchoolYear}
-              borderNone={true}
-              setParentValue={(val) => {
-                setSelectedSchoolYear(val.toString())
-              }}
-            />
-          </Box>
+      <Prompt
+        when={isChanged() ? true : false}
+        message={JSON.stringify({
+          header: 'Unsaved Changes',
+          content: 'Are you sure you want to leave without saving changes?',
+        })}
+      />
+      <Box paddingY='13px' paddingX='20px' display='flex' justifyContent='space-between'>
+        <Box>
+          <IconButton onClick={() => history.push('/site-management/enrollment/')} sx={diplomaSeekingClassess.btnIcon}>
+            <ArrowBackIosRoundedIcon sx={diplomaSeekingClassess.iconArrow} />
+          </IconButton>
+          <Typography paddingLeft='20px' fontSize='20px' fontWeight={700} component='span'>
+            Diploma-seeking Path
+          </Typography>
         </Box>
-        <Box sx={{ paddingX: 8, marginTop: 5 }}>
-          <Grid container sx={{ textAlign: 'left' }}>
-            <Grid item xs={6}>
-              <Box>
-                <Typography fontSize='16px' fontWeight={500} component='span'>
-                  Select Grades That Require a Diploma-seeking Question
-                </Typography>
-                <Box sx={diplomaSeekingClassess.gradeGroup}>
-                  {kinderGardernGrade()}
-                  {renderGrades()}
-                </Box>
+        <Box display='flex' flexDirection='row' justifyContent='flex-end' alignItems='center'>
+          <DropDown
+            dropDownItems={schoolYears}
+            placeholder={'Select Year'}
+            defaultValue={selectedSchoolYear}
+            borderNone={true}
+            setParentValue={(val) => {
+              setSelectedSchoolYear(val.toString())
+            }}
+          />
+        </Box>
+      </Box>
+      <Box sx={{ paddingX: 8, marginTop: 5 }}>
+        <Grid container sx={{ textAlign: 'left' }}>
+          <Grid item xs={6}>
+            <Box>
+              <Typography fontSize='16px' fontWeight={500} component='span'>
+                Select Grades That Require a Diploma-seeking Question
+              </Typography>
+              <Box sx={diplomaSeekingClassess.gradeGroup}>
+                {kinderGardernGrade()}
+                {renderGrades()}
               </Box>
-            </Grid>
-            <Grid item xs={6}>
-              <Box>
-                <Typography fontSize='16px' fontWeight={500} component='span'>
-                  Diploma-seeking Path
-                </Typography>
-                <Box
-                  sx={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    marginTop: 3,
-                  }}
-                >
-                  <Typography fontSize='14px' fontWeight={500} component='span'>
-                    Does this student plan to complete the requirements to earn a Utah high school diploma (schedule
-                    flexibility is limited)?
-                  </Typography>
-                  <Tooltip title='Edit' placement='top'>
-                    <IconButton sx={diplomaSeekingClassess.diplomaQuestion}>
-                      <ModeEditIcon sx={diplomaSeekingClassess.editIcon} />
-                    </IconButton>
-                  </Tooltip>
-                </Box>
-              </Box>
-              <Box>
-                <Box
-                  display='flex'
-                  alignItems='center'
-                  sx={{
-                    marginTop: '10px',
-                    width: '100%',
-                  }}
-                >
-                  <Radio
-                    sx={{
-                      paddingLeft: 0,
-                    }}
-                    checked={diplomaStatus === 1}
-                    onClick={() => setDiplomaStatus(1)}
-                  />
-                  <Subtitle size='small' sx={diplomaSeekingClassess.btnRadio}>
-                    Yes
-                  </Subtitle>
-                </Box>
-
-                <Box
-                  display='flex'
-                  alignItems='center'
-                  sx={{
-                    marginTop: '5px',
-                    width: '100%',
-                  }}
-                >
-                  <Radio
-                    sx={{
-                      paddingLeft: 0,
-                    }}
-                    checked={diplomaStatus === 0}
-                    onClick={() => setDiplomaStatus(0)}
-                  />
-                  <Subtitle size='small' sx={diplomaSeekingClassess.btnRadio}>
-                    No
-                  </Subtitle>
-                </Box>
-              </Box>
-            </Grid>
+            </Box>
           </Grid>
-        </Box>
-        <Box sx={diplomaSeekingClassess.boxSave}>
-          <Button sx={diplomaSeekingClassess.saveBtn}>Save</Button>
-        </Box>
-      </>
+          <Grid item xs={6}>
+            <Box>
+              <Typography fontSize='16px' fontWeight={500} component='span'>
+                {diplomaQuestion.title}
+              </Typography>
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  marginTop: 3,
+                }}
+              >
+                <Typography fontSize='14px' fontWeight={500} component='span'>
+                  {extractContent(diplomaQuestion.description)}
+                </Typography>
+                <Tooltip title='Edit' placement='top'>
+                  <IconButton sx={diplomaSeekingClassess.diplomaQuestion} onClick={() => setOpenEditModal(true)}>
+                    <ModeEditIcon sx={diplomaSeekingClassess.editIcon} />
+                  </IconButton>
+                </Tooltip>
+              </Box>
+            </Box>
+            <Box>
+              <Box
+                display='flex'
+                alignItems='center'
+                sx={{
+                  marginTop: '10px',
+                  width: '100%',
+                }}
+              >
+                <Radio
+                  sx={{
+                    paddingLeft: 0,
+                  }}
+                  checked={diplomaStatus === 1}
+                  onClick={() => setDiplomaStatus(1)}
+                />
+                <Subtitle size='small' sx={diplomaSeekingClassess.btnRadio}>
+                  Yes
+                </Subtitle>
+              </Box>
+
+              <Box
+                display='flex'
+                alignItems='center'
+                sx={{
+                  marginTop: '5px',
+                  width: '100%',
+                }}
+              >
+                <Radio
+                  sx={{
+                    paddingLeft: 0,
+                  }}
+                  checked={diplomaStatus === 0}
+                  onClick={() => setDiplomaStatus(0)}
+                />
+                <Subtitle size='small' sx={diplomaSeekingClassess.btnRadio}>
+                  No
+                </Subtitle>
+              </Box>
+            </Box>
+          </Grid>
+        </Grid>
+      </Box>
+      <Box sx={diplomaSeekingClassess.boxSave}>
+        <Button sx={diplomaSeekingClassess.saveBtn} onClick={handleDiplomaGradeSave}>
+          Save
+        </Button>
+      </Box>
+      {openEditModal && (
+        <DiplomaQuestionEditModal
+          information={diplomaQuestion}
+          onClose={() => setOpenEditModal(false)}
+          refetch={refetch}
+          selectedSchoolYear={selectedSchoolYear}
+        />
+      )}
     </Box>
   )
 }

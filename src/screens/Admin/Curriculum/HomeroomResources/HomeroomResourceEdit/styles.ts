@@ -1,4 +1,4 @@
-export const editHomeroomResourceClassess = {
+export const editHomeroomResourceClasses = {
   cardBody: {
     paddingTop: '24px',
     marginBottom: '24px',

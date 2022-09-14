@@ -3,8 +3,9 @@ import { useMutation } from '@apollo/client'
 import ArrowBackIosOutlinedIcon from '@mui/icons-material/ArrowBackIosOutlined'
 import { Box, ButtonBase, Grid, Stack, Typography } from '@mui/material'
 import { ResourceCard } from '../ResourceCard'
-import { requestResourcesMutation } from '../services'
+import { shouldConfirmWaitlist, requestResourcesMutation } from '../services'
 import { ResourceRequestProps, ResourcePage, EventType, Resource } from '../types'
+import { WaitListModal } from '../WaitListModal'
 import ResourceConfirm from './ResourceConfirm'
 
 const ResourceRequest: React.FC<ResourceRequestProps> = ({
@@ -16,13 +17,24 @@ const ResourceRequest: React.FC<ResourceRequestProps> = ({
   goToDetails,
 }) => {
   const [totalPrice, setTotalPrice] = useState<number>(0)
+  const [waitingRefetch, setWaitingRefetch] = useState<boolean>(false)
+  const [joinWaitlistResources, setJoinWaitlistResources] = useState<Resource[]>([])
 
   const [requestResources, {}] = useMutation(requestResourcesMutation)
+
+  const checkWaitList = async () => {
+    const filteredResources = resourcesInCart.filter((item) => shouldConfirmWaitlist(item))
+    if (filteredResources?.length) {
+      setJoinWaitlistResources(filteredResources)
+    } else {
+      await handleConfirm()
+    }
+  }
 
   const removeInCart = (resource: Resource) => {
     const index = resourcesInCart.findIndex((item) => item.resource_id === resource.resource_id)
     if (index > -1) {
-      handleChangeResourceStatus(resource, EventType.ADD_CART)
+      handleChangeResourceStatus(resource, EventType.REMOVE_CART)
     }
     if (!resourcesInCart.length) {
       setPage(ResourcePage.ROOT)
@@ -30,6 +42,7 @@ const ResourceRequest: React.FC<ResourceRequestProps> = ({
   }
 
   const handleConfirm = async () => {
+    setJoinWaitlistResources([])
     const result = await requestResources({
       variables: {
         requestResourcesInput: {
@@ -38,7 +51,13 @@ const ResourceRequest: React.FC<ResourceRequestProps> = ({
       },
     })
     refetch()
-    if (result) setPage(ResourcePage.ROOT)
+    if (result?.data?.requestResources) {
+      setPage(ResourcePage.ROOT)
+    } else {
+      // Failed to request. Have to check waitlist again.
+      setWaitingRefetch(true)
+      refetch()
+    }
   }
 
   useEffect(() => {
@@ -49,6 +68,11 @@ const ResourceRequest: React.FC<ResourceRequestProps> = ({
       return acc + (current.price || 0)
     }, 0)
     setTotalPrice(totalPrice)
+
+    if (waitingRefetch) {
+      setWaitingRefetch(false)
+      checkWaitList()
+    }
   }, [resourcesInCart])
 
   return (
@@ -96,12 +120,22 @@ const ResourceRequest: React.FC<ResourceRequestProps> = ({
       <Box sx={{ marginTop: 4 }}>
         <ResourceConfirm
           totalPrice={totalPrice}
-          onConfirm={handleConfirm}
+          onConfirm={checkWaitList}
           onCancel={() => {
             setPage(ResourcePage.ROOT)
           }}
         />
       </Box>
+
+      {!!joinWaitlistResources?.length && (
+        <WaitListModal
+          joinWaitlistResources={joinWaitlistResources}
+          handleChangeResourceStatus={(resource, eventType) => {
+            handleChangeResourceStatus(resource, eventType)
+          }}
+          isAllDone={handleConfirm}
+        />
+      )}
     </Stack>
   )
 }

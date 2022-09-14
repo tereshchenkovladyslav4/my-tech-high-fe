@@ -124,7 +124,6 @@ export const UserProfile: React.FC<UserProfileProps> = ({ handleClose, data, set
         await createWithdrawal({
           variables: {
             withdrawalInput: {
-              withdrawOption: studentStatus?.withdrawOption,
               withdrawal: {
                 StudentId: studentStatus?.student_id,
                 status:

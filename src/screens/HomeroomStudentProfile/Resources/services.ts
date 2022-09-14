@@ -1,4 +1,5 @@
 import { gql } from '@apollo/client'
+import { Resource } from '@mth/screens/HomeroomStudentProfile/Resources/types'
 
 export const getStudentResourcesQuery = gql`
   query StudentResources($studentId: ID!) {
@@ -20,6 +21,7 @@ export const getStudentResourcesQuery = gql`
         resource_level_id
         name
         limit
+        TotalRequests
       }
       family_resource
       priority
@@ -27,7 +29,10 @@ export const getStudentResourcesQuery = gql`
       allow_request
       HiddenByStudent
       CartDate
+      WaitListConfirmed
+      ResourceLevelId
       RequestStatus
+      TotalRequests
     }
   }
 `
@@ -49,3 +54,19 @@ export const requestResourcesMutation = gql`
     requestResources(requestResourcesInput: $requestResourcesInput)
   }
 `
+
+export const isFullResource = (resource: Resource): boolean => {
+  const resourceLevel = resource.ResourceLevels?.find(
+    (resourceLevel) => resourceLevel.resource_level_id == resource.ResourceLevelId,
+  )
+  const limitSum = resource.ResourceLevels?.reduce((acc, cur) => (acc += cur?.limit || 0), 0)
+  return (
+    (!!resource.resource_limit && resource.resource_limit <= resource.TotalRequests) ||
+    (!!limitSum && limitSum <= resource.TotalRequests) ||
+    (!!resourceLevel?.limit && resourceLevel?.limit <= resourceLevel?.TotalRequests)
+  )
+}
+
+export const shouldConfirmWaitlist = (resource: Resource): boolean => {
+  return !resource.WaitListConfirmed && isFullResource(resource)
+}

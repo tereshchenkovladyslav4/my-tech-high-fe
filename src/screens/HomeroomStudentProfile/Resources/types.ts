@@ -19,6 +19,7 @@ export type ResourceLevel = {
   resource_level_id: number
   limit: number | null
   name: string
+  TotalRequests: number
 }
 
 export type Resource = {
@@ -41,6 +42,9 @@ export type Resource = {
   is_active: boolean
   allow_request: boolean
   CartDate: Date
+  TotalRequests: number
+  WaitListConfirmed: boolean
+  ResourceLevelId?: number
   HiddenByStudent: boolean
   RequestStatus: ResourceRequestStatus
   requestable: boolean
@@ -56,6 +60,7 @@ export interface ResourceCardProps {
 
 export interface ResourceCartBarProps {
   resourcesInCart: Resource[]
+  handleChangeResourceStatus: (resource: Resource, eventType: EventType) => void
   setPage: (value: ResourcePage) => void
 }
 
@@ -78,6 +83,12 @@ export interface ResourceModalProps {
   showHideModal: boolean
   setShowHideModal: (value: boolean) => void
   handleChangeResourceStatus: (eventType: EventType) => void
+}
+
+export interface WaitListModalProps {
+  joinWaitlistResources: Resource[]
+  handleChangeResourceStatus: (resource: Resource, eventType: EventType) => void
+  isAllDone: () => void
 }
 
 export interface ResourceDetailsProps {

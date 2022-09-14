@@ -9,8 +9,14 @@ import { ResourceDetails } from './ResourceDetails'
 import { ResourceLevelSelector } from './ResourceLevelSelector'
 import { ResourceModal } from './ResourceModal'
 import { ResourceRequest } from './ResourceRequest'
-import { getStudentResourcesQuery, toggleHiddenResourceMutation, toggleResourceCartMutation } from './services'
-import { EventType, Resource, ResourcePage } from './types'
+import {
+  getStudentResourcesQuery,
+  shouldConfirmWaitlist,
+  toggleHiddenResourceMutation,
+  toggleResourceCartMutation,
+} from './services'
+import { EventType, Resource, ResourceLevel, ResourcePage } from './types'
+import { WaitListModal } from './WaitListModal'
 
 export const Resources: React.FC = () => {
   const currentStudentId = Number(location.pathname.split('/').at(-1))
@@ -19,7 +25,9 @@ export const Resources: React.FC = () => {
   const [prePage, setPrePage] = useState<ResourcePage>(ResourcePage.ROOT)
   const [resources, setResources] = useState<Resource[]>([])
   const [resourcesInCart, setResourcesInCart] = useState<Resource[]>([])
+  const [joinWaitlistResources, setJoinWaitlistResources] = useState<Resource[]>([])
   const [selectedResource, setSelectedResource] = useState<Resource>()
+  const [selectedResourceLevel, setSelectedResourceLevel] = useState<ResourceLevel>()
   const [showHideModal, setShowHideModal] = useState<boolean>(false)
   const [showResourceLevelModal, setShowResourceLevelModal] = useState<boolean>(false)
 
@@ -39,6 +47,7 @@ export const Resources: React.FC = () => {
     resource: Resource | undefined,
     eventType: EventType,
     resourceLevelId?: number,
+    waitlist_confirmed?: boolean,
   ) => {
     if (resource) {
       switch (eventType) {
@@ -62,8 +71,9 @@ export const Resources: React.FC = () => {
               toggleResourceCartInput: {
                 student_id: currentStudentId,
                 resource_id: Number(resource.resource_id),
-                inCart: !resource.CartDate,
-                resource_level_id: resourceLevelId,
+                inCart: eventType == EventType.ADD_CART,
+                resource_level_id: Number(resourceLevelId),
+                waitlist_confirmed,
               },
             },
           })
@@ -81,13 +91,18 @@ export const Resources: React.FC = () => {
         if (resource.website) window.open(resource.website, '_blank')
         break
       }
-      case EventType.ADD_CART:
-      case EventType.REMOVE_CART: {
-        if (resource.add_resource_level && resource.ResourceLevels?.length && evtType === EventType.ADD_CART) {
+      case EventType.ADD_CART: {
+        if (resource.add_resource_level && resource.ResourceLevels?.length) {
           setShowResourceLevelModal(true)
+        } else if (shouldConfirmWaitlist(resource)) {
+          setJoinWaitlistResources([resource])
         } else {
           await handleChangeResourceStatus(resource, evtType)
         }
+        break
+      }
+      case EventType.REMOVE_CART: {
+        await handleChangeResourceStatus(resource, evtType)
         break
       }
       case EventType.HIDE: {
@@ -137,7 +152,15 @@ export const Resources: React.FC = () => {
     <Stack>
       {page === ResourcePage.ROOT && (
         <>
-          {!!resourcesInCart?.length && <ResourceCartBar resourcesInCart={resourcesInCart} setPage={setPage} />}
+          {!!resourcesInCart?.length && (
+            <ResourceCartBar
+              resourcesInCart={resourcesInCart}
+              handleChangeResourceStatus={(resource, eventType) =>
+                handleChangeResourceStatus(resource, eventType, resource.ResourceLevelId, true)
+              }
+              setPage={setPage}
+            />
+          )}
 
           <Grid container padding={4} spacing={4}>
             {resources.map((item, idx) => (
@@ -154,7 +177,9 @@ export const Resources: React.FC = () => {
           currentStudentId={currentStudentId}
           resourcesInCart={resourcesInCart}
           setPage={setPage}
-          handleChangeResourceStatus={handleChangeResourceStatus}
+          handleChangeResourceStatus={(resource, eventType) =>
+            handleChangeResourceStatus(resource, eventType, resource.ResourceLevelId, true)
+          }
           refetch={refetch}
           goToDetails={(item: Resource) => {
             setSelectedResource(item)
@@ -178,7 +203,27 @@ export const Resources: React.FC = () => {
           handleCancel={() => setShowResourceLevelModal(false)}
           handleSelect={async (resourceLevelId: number) => {
             setShowResourceLevelModal(false)
-            await handleChangeResourceStatus(selectedResource, EventType.ADD_CART, resourceLevelId)
+            const resourceLevel = selectedResource.ResourceLevels?.find(
+              (item) => item.resource_level_id == resourceLevelId,
+            )
+            setSelectedResourceLevel(resourceLevel)
+            if (shouldConfirmWaitlist({ ...selectedResource, ResourceLevelId: resourceLevelId })) {
+              setJoinWaitlistResources([selectedResource])
+            } else {
+              await handleChangeResourceStatus(selectedResource, EventType.ADD_CART, resourceLevelId)
+            }
+          }}
+        />
+      )}
+
+      {!!joinWaitlistResources?.length && (
+        <WaitListModal
+          joinWaitlistResources={joinWaitlistResources}
+          handleChangeResourceStatus={async (resource, eventType) => {
+            await handleChangeResourceStatus(resource, eventType, selectedResourceLevel?.resource_level_id, true)
+          }}
+          isAllDone={() => {
+            setJoinWaitlistResources([])
           }}
         />
       )}

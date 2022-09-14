@@ -87,6 +87,36 @@ export const removeSchoolDistrictInfoByRegionId = gql`
   }
 `
 
+export const diplomaQuestionDataBySchoolYearGql = gql`
+  query GetDiplomaQuestion($diplomaQuestionInput: DiplomaQuestionInput!) {
+    getDiplomaQuestion(diplomaQuestionInput: $diplomaQuestionInput) {
+      school_year_id
+      id
+      grades
+      description
+      title
+    }
+  }
+`
+
+export const diplomaQuestionSaveGql = gql`
+  mutation SaveDiplomaQuestion($diplomaQuestionInput: DiplomaQuestionInput!) {
+    saveDiplomaQuestion(diplomaQuestionInput: $diplomaQuestionInput) {
+      school_year_id
+      title
+      description
+      grades
+      id
+    }
+  }
+`
+
+export const diplomaQuestionGradeSaveGql = gql`
+  mutation SaveDiplomaQuestionGrade($diplomaQuestionInput: DiplomaQuestionInput!) {
+    saveDiplomaQuestionGrade(diplomaQuestionInput: $diplomaQuestionInput)
+  }
+`
+
 export const uploadImage = async (file: File | undefined, stateName: string): Promise<string> => {
   const bodyFormData = new FormData()
   if (file) {

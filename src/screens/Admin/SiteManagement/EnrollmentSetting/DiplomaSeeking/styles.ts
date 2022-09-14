@@ -92,6 +92,43 @@ export const diplomaSeekingClassess = {
     paddingLeft: '18px',
     borderRadius: 2,
   },
+  content: {
+    marginTop: '10px',
+    paddingBottom: '20px',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 'calc(100% - 60px)',
+    overflow: 'auto',
+    overflowX: 'hidden',
+    '&::-webkit-scrollbar': {
+      width: '5px',
+    },
+    '&::-webkit-scrollbar-track': {
+      background: '#ffffff',
+    },
+
+    '&::-webkit-scrollbar-thumb': {
+      background: '#888',
+    },
+
+    '&::-webkit-scrollbar-thumb:hover': {
+      background: '#555',
+    },
+  },
+  btnGroup: {
+    display: 'flex',
+    justifyContent: 'space-around',
+    marginTop: '60px',
+    gap: '20px',
+  },
+  cancelBtn: {
+    width: '200px',
+    height: '48px',
+    fontSize: '12px',
+    background: '#E7E7E7',
+    borderRadius: '50px',
+  },
   saveBtn: {
     background: 'linear-gradient(90deg, #3E2783 0%, rgba(62, 39, 131, 0) 100%), #4145FF',
     color: 'white',
@@ -142,5 +179,13 @@ export const diplomaSeekingClassess = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'end',
+  },
+  modalSaveBtn: {
+    width: '200px',
+    height: '48px',
+    background: '#000000',
+    borderRadius: '50px',
+    fontSize: '12px',
+    color: 'white',
   },
 }

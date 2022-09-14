@@ -8,6 +8,7 @@ import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined'
 import { Box, Button, Card, CardContent, CardMedia, Stack, Tooltip, Typography } from '@mui/material'
 import { s3URL } from '@mth/constants'
 import { MthColor, ResourceRequestStatus, ResourceSubtitle } from '@mth/enums'
+import { isFullResource } from '../services'
 import { EventType, ResourceCardProps, ResourcePage } from '../types'
 import { resourceCardClasses } from './styles'
 
@@ -19,10 +20,6 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ page, item, onAction }) => 
 
   const showRequestCta = (): boolean => {
     return !item.RequestStatus && item.subtitle !== ResourceSubtitle.INCLUDED
-  }
-
-  const shouldWaitResource = (): boolean => {
-    return !!item?.resource_limit
   }
 
   return (
@@ -47,7 +44,7 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ page, item, onAction }) => 
         </Box>
       )}
       {showRequestCta() && (
-        <Tooltip title={item.CartDate ? 'Remove' : shouldWaitResource() ? 'Join Waitlist' : 'Request'}>
+        <Tooltip title={item.CartDate ? 'Remove' : isFullResource(item) ? 'Join Waitlist' : 'Request'}>
           <Stack
             onClick={(e) => actionHandler(e, item.CartDate ? EventType.REMOVE_CART : EventType.ADD_CART)}
             sx={{
@@ -105,12 +102,12 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ page, item, onAction }) => 
           Requested
         </Button>
       )}
-      {shouldWaitResource() && !item.CartDate && !item.RequestStatus && (
+      {isFullResource(item) && !item.CartDate && !item.RequestStatus && (
         <Button variant='contained' sx={resourceCardClasses.purpleButton}>
           Join Waitlist
         </Button>
       )}
-      {shouldWaitResource() && (item.CartDate || item.RequestStatus) && (
+      {isFullResource(item) && (item.CartDate || item.RequestStatus) && (
         <Button variant='contained' sx={resourceCardClasses.purpleButton}>
           Waitlist
         </Button>

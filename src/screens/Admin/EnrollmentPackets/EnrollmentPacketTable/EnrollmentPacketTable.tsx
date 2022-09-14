@@ -69,6 +69,11 @@ export const EnrollmentPacketTable: FunctionComponent = () => {
     setStore(true)
   }
 
+  useEffect(() => {
+    setPacketIds([])
+    setClearAll(!clearAll)
+  }, [me?.selectedRegionId])
+
   const createData = (packet: Packet) => {
     const _sort = sort?.split('|')
     let grade_value = 0
@@ -80,7 +85,7 @@ export const EnrollmentPacketTable: FunctionComponent = () => {
       submitted: moment(packet.deadline).format('MM/DD/YY'),
       status: packet.status + (packet.is_age_issue ? ' (Age Issue)' : ''),
       deadline: moment(packet.deadline).format('MM/DD/YY'),
-      student: `${packet.student.person?.first_name} ${packet.student.person?.last_name}`,
+      student: `${packet.student.person?.last_name}, ${packet.student.person?.first_name}`,
       grade:
         packet.student.grade_levels?.length && packet.student.grade_levels[grade_value].grade_level
           ? packet.student.grade_levels[grade_value].grade_level === 'K' ||
@@ -88,7 +93,7 @@ export const EnrollmentPacketTable: FunctionComponent = () => {
             ? 'K'
             : `${toOrdinalSuffix(Number(packet.student.grade_levels[grade_value].grade_level))} Grade`
           : ' ',
-      parent: `${packet.student.parent.person?.first_name} ${packet.student.parent.person?.last_name}`,
+      parent: `${packet.student.parent.person?.last_name}, ${packet.student.parent.person?.first_name}`,
       studentStatus: packet.student?.reenrolled > 0 ? 'Update' : 'New',
       emailed:
         packet.packet_emails.length > 0 ? (

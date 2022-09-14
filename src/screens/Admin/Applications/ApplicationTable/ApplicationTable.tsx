@@ -200,6 +200,11 @@ export const ApplicationTable: FunctionComponent<ApplicationTableProps> = ({ fil
   }
 
   useEffect(() => {
+    setApplicationIds([])
+    setClearAll(!clearAll)
+  }, [me?.selectedRegionId])
+
+  useEffect(() => {
     if (emailTemplateData !== undefined) {
       const { emailTemplateName } = emailTemplateData
       if (emailTemplateName) {
@@ -402,7 +407,7 @@ export const ApplicationTable: FunctionComponent<ApplicationTableProps> = ({ fil
   const handleEditApplication = (data) => {
     setEditData({
       ...data,
-      school_year_id: data.midyear_application ? -1 * data.school_year_id : data.school_year_id,
+      school_year_id: data.midyear_application ? data.school_year_id + '-mid' : data.school_year_id,
     })
     setOpenEditModal(true)
   }
@@ -412,9 +417,9 @@ export const ApplicationTable: FunctionComponent<ApplicationTableProps> = ({ fil
       variables: {
         updateApplicationInput: {
           application_id: Number(data.application_id),
-          school_year_id: Math.abs(Number(data.school_year_id)),
           status: data.status,
-          midyear_application: data.school_year_id < 0 ? true : false,
+          school_year_id: parseInt(data.school_year_id?.split('-')[0]),
+          midyear_application: data.school_year_id?.split('-')[1] === 'mid' ? true : false,
         },
       },
     })

@@ -1,5 +1,6 @@
 export const RECEIVE_EMAIL_GIVING_LINK_TO_CREATE_PASSWORD =
   'This user will receive an email giving them a link to create a password.'
+export const REMOVE_FAMILY_RESOURCE = 'Remove family resource to enable feature'
 
 export const DEFAULT_TESTING_PREFERENCE_TITLE = 'Testing Preference'
 export const DEFAULT_TESTING_PREFERENCE_DESCRIPTION =
@@ -11,3 +12,7 @@ export const TESTING_PREFERENCE = 'testing_preference'
 export const OPT_OUT = 'opt_out'
 export const IF_SELECT_MARK_TESTING_PREFERENCE = 'If selected, mark testing preference'
 export const REQUIRE_REASON_ON_OPT_OUT = 'Require Reason on Opt-out'
+
+export const DEFUALT_DIPLOMA_QUESTION_TITLE = 'Diploma-seeking Path'
+export const DEFUALT_DIPLOMA_QUESTION_DESCRIPTION =
+  'Does this student plan to complete the requirements to earn a Utah high school diploma (schedule flexibility is limited)?'

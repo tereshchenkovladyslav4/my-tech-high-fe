@@ -71,11 +71,11 @@ export const useCurrentGradeAndProgramByRegionId = (
         setProgramYearList((prev) => [
           ...prev,
           {
-            label: `${moment(schoolYear_date_begin).format('YYYY')} - ${moment(schoolYear_date_end).format('YY')}`,
+            label: `${moment(schoolYear_date_begin).format('YYYY')}-${moment(schoolYear_date_end).format('YY')}`,
             value: 'schoolYear',
           },
           {
-            label: `${moment(schoolYear_midyear_application_open).format('YYYY')} - ${moment(
+            label: `${moment(schoolYear_midyear_application_open).format('YYYY')}-${moment(
               schoolYear_midyear_application_close,
             ).format('YY')} Mid-year`,
             value: 'midYear',

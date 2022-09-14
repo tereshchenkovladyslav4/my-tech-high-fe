@@ -164,9 +164,7 @@ export const QuickLinks: React.FC<QuickLinkProps> = ({ backAction, initialLink, 
   }
 
   const SortableQuickLinkCard = SortableElement(({ item, action, onAction, background }) => (
-    <li style={{ listStyleType: 'none', display: 'inline-block', width: '33%' }}>
-      <QuickLinkCard item={item} action={action} onAction={onAction} background={background} />
-    </li>
+    <QuickLinkCard item={item} action={action} onAction={onAction} background={background} />
   ))
 
   const getColor = (items: QuickLink[], idx: number) => {
@@ -178,59 +176,61 @@ export const QuickLinks: React.FC<QuickLinkProps> = ({ backAction, initialLink, 
   }
 
   const SortableQuickLinkListContainer = SortableContainer(({ items }: { items: QuickLink[] }) => (
-    <ul style={{ textAlign: 'left' }}>
+    <Grid container spacing={2}>
       {items.map((item, idx) => (
-        <SortableQuickLinkCard
-          index={idx}
-          key={idx}
-          item={item}
-          action={!isEditable() || item.id == 0 ? false : true}
-          background={getColor(items, idx)}
-          onAction={(evtType: string) => {
-            switch (evtType) {
-              case 'click':
-                if (!isEditable()) {
-                  switch (item.type) {
-                    case QUICKLINK_TYPE.WEBSITE_LINK:
-                      window.open(item.reserved, '_blank')
-                      break
-                    case QUICKLINK_TYPE.WITHDRAWAL:
-                      selectQuickLink(item)
-                      break
-                    default:
-                      console.error('Not implemented yet.', item)
-                      break
+        <Grid item xs={12} sm={6} md={4} key={item.id}>
+          <SortableQuickLinkCard
+            index={idx}
+            key={idx}
+            item={item}
+            action={!isEditable() || item.id == 0 ? false : true}
+            background={getColor(items, idx)}
+            onAction={(evtType: string) => {
+              switch (evtType) {
+                case 'click':
+                  if (!isEditable()) {
+                    switch (item.type) {
+                      case QUICKLINK_TYPE.WEBSITE_LINK:
+                        window.open(item.reserved, '_blank')
+                        break
+                      case QUICKLINK_TYPE.WITHDRAWAL:
+                        selectQuickLink(item)
+                        break
+                      default:
+                        console.error('Not implemented yet.', item)
+                        break
+                    }
                   }
-                }
-                break
-              case 'edit':
-                selectQuickLink(item)
-                break
-              case 'add':
-                selectQuickLink(item)
-                break
-              case 'archive':
-                updateQuickLinks({
-                  ...item,
-                  flag: 1,
-                })
-                break
-              case 'restore':
-                updateQuickLinks({
-                  ...item,
-                  flag: 0,
-                })
-                break
-              case 'delete':
-                setWarningModalOpen(item)
-                break
-              default:
-                break
-            }
-          }}
-        />
+                  break
+                case 'edit':
+                  selectQuickLink(item)
+                  break
+                case 'add':
+                  selectQuickLink(item)
+                  break
+                case 'archive':
+                  updateQuickLinks({
+                    ...item,
+                    flag: 1,
+                  })
+                  break
+                case 'restore':
+                  updateQuickLinks({
+                    ...item,
+                    flag: 0,
+                  })
+                  break
+                case 'delete':
+                  setWarningModalOpen(item)
+                  break
+                default:
+                  break
+              }
+            }}
+          />
+        </Grid>
       ))}
-    </ul>
+    </Grid>
   ))
 
   const arrangeQuickLinks = (quickLinks: QuickLink[]) => {
