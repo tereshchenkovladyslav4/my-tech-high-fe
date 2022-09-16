@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { makeStyles } from '@material-ui/styles'
 import { KeyboardArrowDown } from '@mui/icons-material'
 import { Grid, Select, MenuItem } from '@mui/material'
@@ -53,7 +53,7 @@ const selectStyles = makeStyles({
       borderColor: RED_GRADIENT,
     },
   },
-  yelloBackgroundSelect: {
+  yellowBackgroundSelect: {
     fontSize: '12px',
     borderRadius: '8px',
     minWidth: '135px',
@@ -77,7 +77,7 @@ const selectStyles = makeStyles({
     color: '#F2F2F2 !important',
   },
   selectRoot: {
-    color: '#F2F2F2 !imoportant',
+    color: '#F2F2F2 !important',
   },
 })
 const useStyles = {
@@ -193,7 +193,7 @@ const ordinal = (n) => {
   const v = n % 100
   return n + (s[(v - 20) % 10] || s[v] || s[0])
 }
-export const StudentFilters: FunctionComponent<StudentFiltersProps> = ({
+export const StudentFilters: React.FC<StudentFiltersProps> = ({
   currentUserData,
   setStudentStatuData,
   originStudentStatus,
@@ -264,14 +264,14 @@ export const StudentFilters: FunctionComponent<StudentFiltersProps> = ({
   ]
 
   const handleChangeStudentStatus = (e) => {
-    if (e.target.value == 1 || e.target.value == 0) {
-      if (originStudentStatus?.status == 2) {
+    if (e.target.value == StudentStatus.ACTIVE || e.target.value == StudentStatus.PENDING) {
+      if (originStudentStatus?.status == StudentStatus.WITHDRAWN) {
         setShowActiveModal(true)
       }
       setStudentStatus(studentStatusData.status)
       setStudentStatuData({ ...studentStatusData, ...{ status: e.target.value } })
-    } else if (e.target.value == 2) {
-      if (originStudentStatus?.status == 1 || originStudentStatus?.status == 0) {
+    } else if (e.target.value == StudentStatus.WITHDRAWN) {
+      if (originStudentStatus?.status == StudentStatus.ACTIVE || originStudentStatus?.status == StudentStatus.PENDING) {
         setShowWithdrawalModal(true)
       }
       setStudentStatus(studentStatusData.status)
@@ -433,7 +433,7 @@ export const StudentFilters: FunctionComponent<StudentFiltersProps> = ({
                 className={
                   studentStatusData?.status != 2
                     ? withdrawalStatus?.status == 'Requested'
-                      ? selectClasses.yelloBackgroundSelect
+                      ? selectClasses.yellowBackgroundSelect
                       : selectClasses.backgroundSelect
                     : selectClasses.withdrawBackgroundSelect
                 }

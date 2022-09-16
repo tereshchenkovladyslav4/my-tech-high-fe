@@ -13,7 +13,7 @@ import { QuestionOptions } from './Options'
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
 
 type QuestionModalProps = {
-  onClose: () => void
+  onClose: (result: boolean) => void
   questions?: Question[]
   questionTypes: unknown[]
   additionalQuestionTypes: unknown[]

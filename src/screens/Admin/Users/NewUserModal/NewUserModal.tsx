@@ -24,6 +24,7 @@ import { getAllRegion } from '@mth/graphql/queries/region'
 import { getAllRoles } from '@mth/graphql/queries/role'
 import { getUsersByRegions, getParentDetailByEmail } from '@mth/graphql/queries/user'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
+import { sortRegions } from '@mth/utils'
 import { BUTTON_LINEAR_GRADIENT, PROVIDERS, SOE, SOE_OPTIONS, SPED } from '../../../../utils/constants'
 import { StudentsModal } from '../../UserProfile/components/NewUserModal/StudentsModal'
 import { ApolloError, Region } from '../interfaces'
@@ -116,16 +117,12 @@ export const NewUserModal: NewModalTemplateType = ({ handleModem, visible }) => 
 
   useEffect(() => {
     if (!load1 && data1 !== undefined) {
-      const sortedRegion = ['Colorado', 'Utah', 'Idaho', 'Tennessee', 'Indiana', 'Wyoming', 'Arizona']
-      const updatedRegions = map(data1?.regions, (region) => {
+      const sortedData = map(sortRegions(data1?.regions || []), (region) => {
         return {
           value: region.id,
           label: region.name,
           selected: false,
         }
-      })
-      const sortedData = updatedRegions.sort((a, b) => {
-        return sortedRegion.indexOf(a.label) - sortedRegion.indexOf(b.label)
       })
       setRegionOption(sortedData)
     } else {

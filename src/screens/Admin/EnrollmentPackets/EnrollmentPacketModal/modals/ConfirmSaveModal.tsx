@@ -25,7 +25,7 @@ const EnrollmentWarnSaveModal: React.FC<{
         <h2 id='child-modal-title'>Missing Vaccine</h2>
         <div id='child-modal-description'>
           <Typography sx={{ width: '300px', textAlign: 'center', padding: '10px 0 20px 0' }}>
-            Data is missing for immunizatoins. Do you wish to save the packet?
+            Data is missing for immunizations. Do you wish to save the packet?
           </Typography>
         </div>
         <Box

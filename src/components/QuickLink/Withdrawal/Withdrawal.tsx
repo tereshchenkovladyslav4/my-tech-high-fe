@@ -1,23 +1,30 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import { useMutation, useQuery } from '@apollo/client'
 import { Alert, Box, Button, Grid, List, Stack, Typography } from '@mui/material'
-import { Formik, Form } from 'formik'
+import { Form, Formik } from 'formik'
 import _ from 'lodash'
 import { Prompt } from 'react-router-dom'
 import { arrayMove, SortableContainer, SortableElement } from 'react-sortable-hoc'
-import { MthTitle, WithdrawalStatus } from '../../../core/enums'
-import { saveQuestionsMutation, deleteQuestionMutation } from '../../../graphql/mutation/question'
-import { saveWithdrawalMutation } from '../../../graphql/mutation/withdrawal'
-import { getQuestionsByRegionQuery } from '../../../graphql/queries/question'
-import { UserContext } from '../../../providers/UserContext/UserProvider'
-import { siteManagementClassess } from '../../../screens/Admin/SiteManagement/styles'
-import { CustomConfirmModal } from '../../CustomConfirmModal/CustomConfirmModal'
-import { QuestionModal } from '../../QuestionItem/AddNewQuestion'
-import { DefaultQuestionModal } from '../../QuestionItem/AddNewQuestion/DefaultQuestionModal'
-import { SelectDefaultCustomQuestionModal } from '../../QuestionItem/AddNewQuestion/SelectDefaultCustomQuestionModal'
-import { QuestionItem } from '../../QuestionItem/QuestionItem'
-import { defaultQuestions, Question, QUESTION_TYPE } from '../../QuestionItem/QuestionItemProps'
-import { Subtitle } from '../../Typography/Subtitle/Subtitle'
+import { CustomConfirmModal } from '@mth/components/CustomConfirmModal/CustomConfirmModal'
+import { QuestionModal } from '@mth/components/QuestionItem/AddNewQuestion'
+import { DefaultQuestionModal } from '@mth/components/QuestionItem/AddNewQuestion/DefaultQuestionModal'
+import { SelectDefaultCustomQuestionModal } from '@mth/components/QuestionItem/AddNewQuestion/SelectDefaultCustomQuestionModal'
+import { QuestionItem } from '@mth/components/QuestionItem/QuestionItem'
+import {
+  defaultQuestions,
+  HasAdditionalQuestion,
+  Question,
+  QUESTION_TYPE,
+  ValidationType,
+} from '@mth/components/QuestionItem/QuestionItemProps'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { isEmail, isNumber } from '@mth/constants'
+import { MthTitle, WithdrawalStatus } from '@mth/enums'
+import { deleteQuestionMutation, saveQuestionsMutation } from '@mth/graphql/mutation/question'
+import { saveWithdrawalMutation } from '@mth/graphql/mutation/withdrawal'
+import { getQuestionsByRegionQuery } from '@mth/graphql/queries/question'
+import { UserContext } from '@mth/providers/UserContext/UserProvider'
+import { siteManagementClassess } from '@mth/screens/Admin/SiteManagement/styles'
 import CircleIcon from './CircleIcon'
 
 //	Possible Question Types List
@@ -47,6 +54,7 @@ const QuestionTypes = [
     label: 'Information',
   },
 ]
+
 const AdditionalQuestionTypes = [
   {
     value: QUESTION_TYPE.DROPDOWN,
@@ -71,61 +79,39 @@ const Withdrawal: React.FC<{
   const signature = useRef<SignaturePad | undefined>(undefined)
   const { me } = useContext(UserContext)
   const isEditable = (): boolean => {
-    if (me?.level && me?.level <= 2) return true
-    return false
+    return !!me?.level && me.level <= 2
   }
 
   const SortableItem = SortableElement(QuestionItem)
 
-  const questionSortList = (values: Question[]) => {
-    const sortList = values
-      .filter(
-        (v) =>
-          // isEditable() ? (v.additionalQuestion == '' && v.mainQuestion == false)	//	Admin  (ask additional question)
-          // 	:
-          !v.mainQuestion &&
-          (v.additionalQuestion == '' ||
-            (values.find((x) => x.slug == v.additionalQuestion)?.response != '' &&
-              values
-                .find((x) => x.slug == v.additionalQuestion)
-                ?.options.find(
-                  (x) =>
-                    x.action == 2 &&
-                    (x.value == values.find((y) => y.slug == v.additionalQuestion)?.response ||
-                      values
-                        .find((y) => y.slug == v.additionalQuestion)
-                        ?.response.toString()
-                        .indexOf(x.value) >= 0),
-                ) != null)), // Parent
+  const filterAdditionalQuestions = (items: Question[]) => {
+    return items.filter((item) => {
+      if (!item.additionalQuestion) return true
+      const parentQuestion = items.find((x) => x.slug == item.additionalQuestion)
+      if (!parentQuestion?.response) return false
+      return !!parentQuestion.options?.find(
+        (option) =>
+          option.action == HasAdditionalQuestion.YES &&
+          (option.value == parentQuestion.response || parentQuestion.response.toString().indexOf(option.value) > -1),
       )
-      .map((v) => {
-        const arr = [v]
-        let current = v
-        let child
-        while ((child = values.find((x) => x.additionalQuestion == current.slug))) {
-          arr.push(child)
-          current = child
-        }
-        return arr
-      })
-    return sortList
+    })
+  }
 
-    // let newValues = [];
-    // sortList.forEach(group => {
-    // 	group.forEach(q => {
-    // 		const parent = values.find(x => x.slug == q.additionalQuestion);
-    // 		// const isSel = parent?.options.find()
-    // 		if((q.additionalQuestion == '' || (parent?.response != '' )) &&
-    // 			!newValues.find(f => f.find(ff => ff.id === q.id))){
-    // 			newValues.push([{
-    // 				...q,
-    // 				sequence: newValues.length + 1
-    // 			}])
-    // 		}
-    // 	})
-    // });
-    // console.log({newValues})
-    // return newValues;
+  const filterCustomQuestions = (items: Question[]) => {
+    return filterAdditionalQuestions(items.filter((item) => !item.mainQuestion))
+  }
+
+  const questionSortList = (values: Question[]) => {
+    return filterCustomQuestions(values).map((v) => {
+      const arr = [v]
+      let current = v
+      let child
+      while ((child = values.find((x) => x.additionalQuestion == current.slug))) {
+        arr.push(child)
+        current = child
+      }
+      return arr
+    })
   }
 
   const SortableListContainer = SortableContainer(({ questionsList }: { questionsList: Question[][] }) => {
@@ -154,10 +140,7 @@ const Withdrawal: React.FC<{
   //	Flag State which indicates Questions saved Success Message
   const [successAlert, setSuccessAlert] = useState(false)
   //	Flag State which indicates if the Form has values changed. true => Form has values changed. false => No
-  const [unsavedChanges, setUnsavedChanges] = useState(false)
-  useEffect(() => {
-    window['setFormChanged']('WithdrawalForm', unsavedChanges)
-  }, [unsavedChanges])
+  const [unsavedChanges, setUnsavedChanges] = useState<boolean>(false)
 
   //	Select Questions Query from the Database
   const { data: questionsData, refetch: refetchQuestionData } = useQuery(getQuestionsByRegionQuery, {
@@ -175,10 +158,157 @@ const Withdrawal: React.FC<{
   //	Submit withdrawal responses mutation into the database
   const [submitResponses] = useMutation(saveWithdrawalMutation)
 
+  //	This state helps for the validation check run when submit only
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const onSelectDefaultQuestions = (selected: string) => {
+    const question = defaultQuestions.find((x) => x.question == selected)
+    if (!question) return
+
+    const newDefaultQuestion: Question = {
+      id: -1,
+      region_id: region,
+      section: 'quick-link-withdrawal',
+      type: question.type,
+      sequence: 3,
+      question: question.question,
+      defaultQuestion: true,
+      additionalQuestion: '',
+      mainQuestion: false,
+      validation: question.validation || 0,
+      slug: question.slug,
+      options: [],
+      required: false,
+      response: '',
+    }
+    setCurrentQuestions([newDefaultQuestion])
+    setOpenAddQuestion('new')
+  }
+
+  const onChangeHandler = (flag: boolean): void => {
+    if (handleChange) handleChange(flag)
+  }
+
+  const onActionHandler = (page: string): void => {
+    if (action) action(page)
+  }
+
+  // Submit withdrawal form data for the parent
+  const submitWithdrawalForm = async (values: Question[]) => {
+    const offset = new Date().getTimezoneOffset()
+    const date_effective = offset < 0 ? values[1].response + 'T00:00:00.000Z' : values[1].response + 'T24:00:00.000Z'
+    const signatureQuestion = values[values?.length - 1]
+
+    const response = JSON.stringify(
+      filterCustomQuestions(values).concat([
+        {
+          ...signatureQuestion,
+          response: {
+            name: values[values?.length - 1].response,
+            signature: signature?.current?.toDataURL(),
+          },
+        },
+      ]),
+    )
+
+    const { data } = await submitResponses({
+      variables: {
+        withdrawalInput: {
+          withdrawal: {
+            StudentId: +values[0].response,
+            date: new Date().toISOString(),
+            date_effective: new Date(date_effective || '').toISOString(),
+            response,
+            status: studentId ? WithdrawalStatus.WITHDRAWN : WithdrawalStatus.REQUESTED,
+          },
+        },
+      },
+    })
+    if (data && data.saveWithdrawal) {
+      //	TODO : Redirect to the previous page, show error message if error returns.
+    }
+
+    setUnsavedChanges(false)
+    onChangeHandler(false)
+    onActionHandler('')
+  }
+
+  // Submit withdrawal questions for the admin
+  const saveWithdrawalQuestions = async (values: Question[]) => {
+    const newQuestions: Question[] = []
+    //	Move additional questions behind the parent question
+    for (let i = 0; i < values.length; i++) {
+      if (values[i].additionalQuestion === '') {
+        newQuestions.push(values[i])
+        values.splice(i, 1)
+        i--
+      }
+    }
+    let length = newQuestions.length
+    while (true) {
+      for (let i = 0; i < values.length; i++) {
+        const parentIndex = newQuestions.findIndex((q) => q.slug === values[i].additionalQuestion)
+        if (parentIndex >= 0) {
+          newQuestions.splice(parentIndex + 1, 0, values[i])
+          values.splice(i, 1)
+          i--
+        }
+      }
+      if (length == newQuestions.length) break
+      length = newQuestions.length
+    }
+
+    questions
+      .filter((x) => !x.mainQuestion)
+      .forEach((q) => {
+        if (!newQuestions.find((v) => v.id === q.id)) {
+          deleteQuestion({ variables: { questionId: q.id } })
+        }
+      })
+
+    for (let i = 0; i < newQuestions.length; i++) {
+      if (newQuestions[i].id < 0) newQuestions[i].id = 0
+      newQuestions[i].sequence = i + 1
+    }
+
+    const { data } = await saveQuestions({
+      variables: {
+        questionsInput: newQuestions.map((v) => {
+          return {
+            question: {
+              id: Number(v.id),
+              region_id: v.region_id,
+              section: v.section,
+              sequence: v.sequence,
+              slug: v.slug,
+              type: v.type,
+              question: v.question,
+              validation: v.validation,
+              mainQuestion: v.mainQuestion ? 1 : 0,
+              defaultQuestion: v.defaultQuestion ? 1 : 0,
+              options: JSON.stringify(v.options),
+              required: v.required ? 1 : 0,
+              additionalQuestion: v.additionalQuestion,
+            },
+          }
+        }),
+      },
+    })
+
+    if (data.saveQuestions) {
+      await refetchQuestionData()
+      setSuccessAlert(true)
+      setUnsavedChanges(false)
+      onChangeHandler(false)
+    } else {
+      console.error(data)
+    }
+  }
+
   //	Read existing questions from the database and show, Initialize Unsaved flag state to false
   useEffect(() => {
     if (questionsData?.questionsByRegion) {
-      if (questionsData.questionsByRegion.length == 0) {
+      if (!questionsData.questionsByRegion.length) {
         //  Initial questions for admin
         if (isEditable()) {
           setQuestions([
@@ -246,9 +376,9 @@ const Withdrawal: React.FC<{
               return {
                 ...v,
                 options: JSON.parse(v.options),
-                mainQuestion: v.mainQuestion == 1 ? true : false,
-                defaultQuestion: v.defaultQuestion == 1 ? true : false,
-                required: v.required == 1 ? true : false,
+                mainQuestion: v.mainQuestion == 1,
+                defaultQuestion: v.defaultQuestion == 1,
+                required: v.required == 1,
                 response: (v.question === 'Student' && studentId) || '',
                 studentId: studentId,
               }
@@ -260,47 +390,12 @@ const Withdrawal: React.FC<{
     }
   }, [questionsData])
 
-  //	This state helps for the validation check run when submit only
-  const [isSubmitting, setIsSubmitting] = useState(false)
-
   //	Remove Success Message after 5 seconds when showed
   useEffect(() => {
     if (successAlert) {
       setTimeout(() => setSuccessAlert(false), 5000)
     }
   }, [successAlert])
-
-  const onSelectDefaultQuestions = (selected: string) => {
-    const question = defaultQuestions.find((x) => x.question == selected)
-    if (!question) return
-
-    const newDefaultQuestion: Question = {
-      id: -1,
-      region_id: region,
-      section: 'quick-link-withdrawal',
-      type: question.type,
-      sequence: 3,
-      question: question.question,
-      defaultQuestion: true,
-      additionalQuestion: '',
-      mainQuestion: false,
-      validation: question.validation || 0,
-      slug: question.slug,
-      options: [],
-      required: false,
-      response: '',
-    }
-    setCurrentQuestions([newDefaultQuestion])
-    setOpenAddQuestion('new')
-  }
-
-  const onChangeHandler = (flag: boolean): void => {
-    if (handleChange) handleChange(flag)
-  }
-
-  const onActionHandler = (page: string): void => {
-    if (action) action(page)
-  }
 
   return (
     <Grid
@@ -313,7 +408,7 @@ const Withdrawal: React.FC<{
           initialValues={questions}
           enableReinitialize={true}
           validate={(values: Question[]): { [key: string]: string } | undefined | void => {
-            let isEqual = true
+            let isEqual
             if (isEditable()) {
               isEqual = _.isEqual(values, questions)
             } else {
@@ -329,40 +424,18 @@ const Withdrawal: React.FC<{
             if (!isEditable() && isSubmitting) {
               //	Check validation on parent side only
               const errors: { [key: string]: string } = {}
-              values.forEach((val) => {
-                if (val.required && val.response === '') {
-                  //	Check Additional questions
-                  if (val.additionalQuestion != '') {
-                    const parent = values.find((v) => v.slug == val.additionalQuestion)
-                    if (parent?.response) {
-                      let bExist = false
-                      for (let i = 0; i < parent.response.length; i++) {
-                        if (parent.options.find((o) => o.value == parent.response.substr(i, 1)).action == 2) {
-                          bExist = true
-                          break
-                        }
-                      }
-                      if (bExist) {
-                        errors[val.id] = val.question + ' is required.'
-                      }
-                    }
-                  } else errors[val.id] = val.question + ' is required.'
-                } else if (val.validation > 0 && val.response !== '') {
-                  if (val.validation == 1) {
-                    //	Check numbers
-                    if (!new RegExp(/^[0-9]+$/).test(val.response)) errors[val.id] = 'Please enter numbers only.'
-                  } else {
-                    //	Check email
-                    if (
-                      !new RegExp(
-                        /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/,
-                      ).test(val.response)
-                    )
-                      errors[val.id] = 'Please enter valid email address.'
+              filterAdditionalQuestions(values).forEach((val) => {
+                if (val.required && !val.response) {
+                  errors[val.id] = val.question + ' is required.'
+                } else if (val.validation && !!val.response) {
+                  if (val.validation == ValidationType.NUMBER) {
+                    if (!isNumber.test(val.response.toString())) errors[val.id] = 'Please enter numbers only.'
+                  } else if (val.validation == ValidationType.EMAIL) {
+                    if (!isEmail.test(val.response.toString())) errors[val.id] = 'Please enter valid email address.'
                   }
                 }
 
-                if (val.slug == 'signature' && signature?.current.isEmpty()) {
+                if (val.slug == 'signature' && signature?.current?.isEmpty()) {
                   errors[val.id] = 'Signature is required.'
                 }
               })
@@ -371,140 +444,25 @@ const Withdrawal: React.FC<{
             }
             return undefined
           }}
-          onSubmit={async (vals, formikBag) => {
+          onSubmit={async (values, formikBag) => {
             setIsSubmitting(true)
             formikBag
               .validateForm()
               .then(async (res) => {
-                //setIsSubmitting(false);
                 if (Object.keys(res).length > 0) {
                   return
                 }
 
                 if (!isEditable()) {
-                  const offset = new Date().getTimezoneOffset()
-                  const date_effective =
-                    offset < 0 ? vals[1].response + 'T00:00:00.000Z' : vals[1].response + 'T24:00:00.000Z'
-
-                  const response = JSON.stringify(
-                    vals
-                      .map((item) => {
-                        if (item.type == QUESTION_TYPE.SIGNATURE) {
-                          return {
-                            ...item,
-                            response: {
-                              name: item.response,
-                              signature: signature?.current?.toDataURL(),
-                            },
-                          }
-                        } else {
-                          return item
-                        }
-                      })
-                      .splice(2),
-                  )
-                  const { data } = await submitResponses({
-                    variables: {
-                      withdrawalInput: {
-                        withdrawal: {
-                          StudentId: parseInt(vals[0].response),
-                          date: new Date().toISOString(),
-                          date_effective: new Date(date_effective || '').toISOString(),
-                          response: response,
-                          status: studentId ? WithdrawalStatus.WITHDRAWN : WithdrawalStatus.REQUESTED,
-                        },
-                      },
-                    },
-                  })
-                  if (data && data.saveWithdrawal) {
-                    //	TODO : Redirect to the previous page, show error message if error returns.
-                  }
-
-                  setUnsavedChanges(false)
-                  onChangeHandler(false)
-                  onActionHandler('')
-
-                  return
-                }
-                const newquestions: Array<unknown> = [] // = vals.map((v) => v);
-                //	Move additional questions behind the parent question
-                for (let i = 0; i < vals.length; i++) {
-                  if (vals[i].additionalQuestion === '') {
-                    newquestions.push(vals[i])
-                    vals.splice(i, 1)
-                    i--
-                  }
-                }
-                let length = newquestions.length
-                while (true) {
-                  for (let i = 0; i < vals.length; i++) {
-                    const parentIndex = newquestions.findIndex((q) => q.slug === vals[i].additionalQuestion)
-                    if (parentIndex >= 0) {
-                      newquestions.splice(parentIndex + 1, 0, vals[i])
-                      vals.splice(i, 1)
-                      i--
-                    }
-                  }
-                  if (length == newquestions.length) break
-                  length = newquestions.length
-                }
-
-                //	Remove unncessary additional questions if exists
-                //while(true) {
-                //	newquestions = newquestions.filter(q => q.additionalQuestion == '' || newquestions.find(x => x.slug == q.additionalQuestion) != null);
-                //	if(length == newquestions.length)
-                //		break;
-                //	length = newquestions.length;
-                //}
-
-                questions
-                  .filter((x) => !x.mainQuestion)
-                  .forEach((q) => {
-                    if (!newquestions.find((v) => v.id === q.id)) {
-                      deleteQuestion({ variables: { questionId: q.id } })
-                    }
-                  })
-
-                for (let i = 0; i < newquestions.length; i++) {
-                  if (newquestions[i].id < 0) newquestions[i].id = 0
-                  newquestions[i].sequence = i + 1
-                }
-
-                const { data } = await saveQuestions({
-                  variables: {
-                    questionsInput: newquestions.map((v) => {
-                      return {
-                        question: {
-                          id: Number(v.id),
-                          region_id: v.region_id,
-                          section: v.section,
-                          sequence: v.sequence,
-                          slug: v.slug,
-                          type: v.type,
-                          question: v.question,
-                          validation: v.validation,
-                          mainQuestion: v.mainQuestion ? 1 : 0,
-                          defaultQuestion: v.defaultQuestion ? 1 : 0,
-                          options: JSON.stringify(v.options),
-                          required: v.required ? 1 : 0,
-                          additionalQuestion: v.additionalQuestion,
-                        },
-                      }
-                    }),
-                  },
-                })
-                if (data.saveQuestions) {
-                  refetchQuestionData()
-                  setSuccessAlert(true)
-                  setUnsavedChanges(false)
-                  onChangeHandler(false)
+                  // Parent
+                  await submitWithdrawalForm(values)
                 } else {
-                  console.error(data)
+                  // Admin
+                  await saveWithdrawalQuestions(values)
                 }
               })
               .catch((err) => {
                 console.error(err)
-                //setIsSubmitting(false);
               })
           }}
         >
@@ -563,7 +521,6 @@ const Withdrawal: React.FC<{
                     questionsList={questionSortList(values)}
                     useDragHandle={true}
                     onSortEnd={({ oldIndex, newIndex }) => {
-                      //	Find indexs
                       const groups = values
                         .filter((v) => v.additionalQuestion == '' && v.mainQuestion == false)
                         .map((v) => {
@@ -589,13 +546,6 @@ const Withdrawal: React.FC<{
                         })
                       })
                       newValues.push(values[values.length - 1])
-                      //oldIndex = values.findIndex(x => x.id == groups[oldIndex].id);
-                      //newIndex = values.findIndex(x => x.id == groups[newIndex].id);
-
-                      //const newData = arrayMove(values, oldIndex, newIndex).map((v, i) => ({
-                      //	...v,
-                      //	sequence: i + 1,
-                      //}));
                       setValues(newValues)
                     }}
                   />
@@ -682,7 +632,7 @@ const Withdrawal: React.FC<{
                 />
               )}
               <Prompt
-                when={unsavedChanges ? true : false}
+                when={unsavedChanges}
                 message={JSON.stringify({
                   header: MthTitle.UNSAVED_TITLE,
                   content: MthTitle.UNSAVED_DESCRIPTION,

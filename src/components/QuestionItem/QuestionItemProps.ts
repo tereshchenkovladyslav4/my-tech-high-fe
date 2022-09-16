@@ -41,6 +41,23 @@ export const QuestionTypes = [
   },
 ]
 
+export enum HasAdditionalQuestion {
+  YES = 2,
+  NO = 1,
+}
+
+export enum ValidationType {
+  NONE = 0,
+  NUMBER = 1,
+  EMAIL = 2,
+}
+
+export type QuestionOption = {
+  label: string
+  value: string
+  action: HasAdditionalQuestion
+}
+
 export type Question = {
   id: number
   region_id: number
@@ -48,15 +65,15 @@ export type Question = {
   type: QUESTION_TYPE
   sequence: number
   question: string
-  options: Array<unknown> //	Format : [{label, value, additional_question_id}]
+  options: QuestionOption[]
   slug: string
   mainQuestion: boolean //	Shows if this question is from System or not, false => Admin created, true => Comes from system prototype
   defaultQuestion: boolean //	false => Custom Question, true => Default Question
-  validation: number //	0 => None, 1 => Numbers, 2 => Email
+  validation: ValidationType
   required: boolean
   additionalQuestion: string //	The slug of parent question for Additional Question
 
-  response: unknown //	Available for parents only
+  response: string | number | boolean //	Available for parents only
   studentId?: number
 }
 

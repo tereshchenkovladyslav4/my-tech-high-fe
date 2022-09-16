@@ -24,6 +24,7 @@ import { getAllRegion } from '@mth/graphql/queries/region'
 import { getAllRoles } from '@mth/graphql/queries/role'
 import { getUser, getUsersByRegions } from '@mth/graphql/queries/user'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
+import { sortRegions } from '@mth/utils'
 import { BUTTON_LINEAR_GRADIENT, PROVIDERS, SOE, SOE_OPTIONS, SPED } from '../../../../utils/constants'
 import { ApolloError, Region } from '../interfaces'
 import { useStyles } from './styles'
@@ -177,7 +178,7 @@ export const UpdateUserModal: UpdateModalTemplateType = ({ handleModem, userID, 
 
   useEffect(() => {
     if (!load1 && data1 !== undefined) {
-      const updatedRegions = map(data1?.regions, (region) => {
+      const updatedRegions = map(sortRegions(data1?.regions || []), (region) => {
         return {
           value: region.id,
           label: region.name,

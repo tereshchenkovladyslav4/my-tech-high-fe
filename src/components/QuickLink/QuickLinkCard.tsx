@@ -73,14 +73,18 @@ export const QuickLinkCard: React.FC<QuickLinkCardProps> = ({ item, action, onAc
       )}
       {item.id == 0 && (
         <img
-          onClick={() => onAction && onAction('add')}
+          onClick={() => {
+            if (onAction) onAction('add')
+          }}
           src={AddNewIcon}
           style={{ position: 'absolute', top: 15, right: 15 }}
         />
       )}
       {item.flag == 1 && item.type != QUICKLINK_TYPE.WITHDRAWAL && (
         <img
-          onClick={() => onAction && onAction('delete')}
+          onClick={() => {
+            if (onAction) onAction('delete')
+          }}
           src={DeleteIcon}
           style={{ position: 'absolute', top: 15, right: 15 }}
         />
@@ -121,8 +125,8 @@ export const QuickLinkCard: React.FC<QuickLinkCardProps> = ({ item, action, onAc
               <Tooltip title='Edit'>
                 <EditIcon
                   htmlColor={SYSTEM_01}
-                  onClick={() => {
-                    onAction('edit')
+                  onClick={(e) => {
+                    if (onAction) onAction('edit')
                     e.stopPropagation()
                   }}
                 />
@@ -130,8 +134,8 @@ export const QuickLinkCard: React.FC<QuickLinkCardProps> = ({ item, action, onAc
               {item.flag == 0 && (
                 <Tooltip title='Archive'>
                   <img
-                    onClick={() => {
-                      onAction('archive')
+                    onClick={(e) => {
+                      if (onAction) onAction('archive')
                       e.stopPropagation()
                     }}
                     src={ArchiveIcon}
@@ -143,7 +147,7 @@ export const QuickLinkCard: React.FC<QuickLinkCardProps> = ({ item, action, onAc
                   <CallMissedOutgoingIcon
                     htmlColor={SYSTEM_01}
                     onClick={(e) => {
-                      onAction('restore')
+                      if (onAction) onAction('restore')
                       e.stopPropagation()
                     }}
                   />
