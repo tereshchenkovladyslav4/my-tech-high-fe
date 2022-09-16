@@ -2,7 +2,7 @@ import React, { useState, useEffect, FunctionComponent } from 'react'
 import { Box, Button, Dialog, DialogTitle, DialogActions } from '@mui/material'
 import { DropDown } from '../../components/DropDown/DropDown'
 import { DropDownItem } from '../../components/DropDown/types'
-import { useStyles } from '../../styles'
+import { siteManagementClassess } from '../../styles'
 
 type AddSchoolYearModalProps = {
   addSchoolYears: DropDownItem[]
@@ -17,7 +17,6 @@ export const AddSchoolYearModal: FunctionComponent<AddSchoolYearModalProps> = ({
   handleParentClose,
   handleParentSave,
 }) => {
-  const classes = useStyles
   const [open, setOpen] = useState<boolean>(false)
   const [selectedSchoolYearId, setSelectedSchoolYearId] = useState<string>('none')
 
@@ -81,10 +80,10 @@ export const AddSchoolYearModal: FunctionComponent<AddSchoolYearModalProps> = ({
           marginBottom: 2,
         }}
       >
-        <Button variant='contained' sx={classes.cancelButton} onClick={handleClose}>
+        <Button variant='contained' sx={siteManagementClassess.cancelButton} onClick={handleClose}>
           Cancel
         </Button>
-        <Button variant='contained' sx={classes.submitButton} onClick={handleSave}>
+        <Button variant='contained' sx={siteManagementClassess.submitButton} onClick={handleSave}>
           Save
         </Button>
       </DialogActions>

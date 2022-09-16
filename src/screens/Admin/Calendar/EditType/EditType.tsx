@@ -4,7 +4,7 @@ import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded'
 import { Box, Card, Grid, IconButton } from '@mui/material'
 import { Prompt, useHistory } from 'react-router-dom'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
-import { MthRoute } from '@mth/enums'
+import { MthRoute, MthTitle } from '@mth/enums'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { CustomModal } from '../../SiteManagement/EnrollmentSetting/components/CustomModal/CustomModals'
 import { getEventTypesQuery, updateEventTypeMutation, updateEventTypesMutation } from '../services'
@@ -92,8 +92,8 @@ const EditTypeComponent: React.FC = () => {
       <Prompt
         when={isChanged ? true : false}
         message={JSON.stringify({
-          header: 'Unsaved Changes',
-          content: 'Are you sure you want to leave without saving changes?',
+          header: MthTitle.UNSAVED_TITLE,
+          content: MthTitle.UNSAVED_DESCRIPTION,
         })}
       />
       <Box sx={eventTypeClassess.pageTop}>

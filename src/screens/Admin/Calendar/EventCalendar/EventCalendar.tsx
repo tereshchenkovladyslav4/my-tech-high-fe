@@ -8,7 +8,7 @@ import { Calendar, momentLocalizer } from 'react-big-calendar'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { MthColor } from '@mth/enums'
-import { calendarDayClassess } from '../../../Dashboard/ParentCalendar/components/styles'
+import { calendarDayClasses } from '../../../Dashboard/ParentCalendar/components/styles'
 import { mainClasses } from '../MainComponent/styles'
 import { CalendarEvent, EventCalendarProps } from '../types'
 
@@ -191,13 +191,13 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
       <Popper id={'simple-popper'} open={showMore} anchorEl={anchorEl} transition>
         {({ TransitionProps }) => (
           <Fade {...TransitionProps} timeout={350}>
-            <Card sx={calendarDayClassess.modal}>
-              <Box sx={calendarDayClassess.title}>
+            <Card sx={calendarDayClasses.modal}>
+              <Box sx={calendarDayClasses.title}>
                 <Subtitle color={MthColor.GRAY} sx={{ fontSize: '20px' }} fontWeight='700'>
                   {moment(selectedDate).format('dddd')}
                 </Subtitle>
                 <CloseIcon
-                  sx={calendarDayClassess.closeBtn}
+                  sx={calendarDayClasses.closeBtn}
                   onClick={() => {
                     setAnchorEl(null)
                     setShowMore(false)

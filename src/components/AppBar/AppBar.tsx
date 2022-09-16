@@ -36,6 +36,7 @@ import {
 import { filter, map } from 'lodash'
 import { NavLink, useLocation } from 'react-router-dom'
 import Slider from 'react-slick'
+import { PacketStatus } from '@mth/enums'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { getSchoolYearsByRegionId } from '@mth/screens/Admin/Dashboard/SchoolYear/SchoolYear'
 import { StudentType, Person } from '@mth/screens/HomeroomStudentProfile/Student/types'
@@ -152,7 +153,7 @@ export const AppBar: FunctionComponent = () => {
       currApplication &&
       currApplication?.status === 'Accepted' &&
       currPacket &&
-      currPacket?.status === 'Submitted'
+      (currPacket?.status === 'Submitted' || currPacket?.status === PacketStatus.RESUBMITTED)
     ) {
       return {
         progress: 50,

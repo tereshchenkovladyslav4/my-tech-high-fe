@@ -19,6 +19,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({
   action,
   hasTitle = false,
   icon,
+  disabled,
 }) => {
   const history = useHistory()
   return (
@@ -29,13 +30,16 @@ export const ItemCard: React.FC<ItemCardProps> = ({
         cursor: 'pointer',
         borderRadius: 2,
         marginX: 0,
+        opacity: disabled ? 0.5 : 1,
       }}
       onClick={() => {
-        if (isLink !== false) {
-          history.push(link)
-        } else {
-          if (onClick) {
-            onClick()
+        if (!disabled) {
+          if (isLink !== false) {
+            history.push(link)
+          } else {
+            if (onClick) {
+              onClick()
+            }
           }
         }
       }}

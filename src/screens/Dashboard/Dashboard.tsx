@@ -19,6 +19,7 @@ import { ParentCalendar } from './ParentCalendar'
 import { ReadMoreSection } from './ReadMoreSection'
 import { getUserAnnouncements } from './services'
 import { ToDo } from './ToDoList/ToDo'
+import { DashboardSection } from './types'
 
 export const imageA =
   'https://api.time.com/wp-content/uploads/2017/12/terry-crews-person-of-year-2017-time-magazine-facebook-1.jpg?quality=85'
@@ -30,7 +31,7 @@ export const imageC =
 export const Dashboard: React.FC = () => {
   const { me } = useContext(UserContext)
   const region_id = me?.userRegion?.at(-1)?.region_id
-  const [sectionName, setSectionName] = useState<string>('root')
+  const [sectionName, setSectionName] = useState<DashboardSection>(DashboardSection.ROOT)
   const [inProp, setInProp] = useState<boolean>(false)
   const [announcements, setAnnouncements] = useState<Announcement[]>([])
   const [selectedAnnouncement, setSelectedAnnouncement] = useState<Announcement>({})
@@ -47,7 +48,7 @@ export const Dashboard: React.FC = () => {
     variables: {
       regionId: region_id,
     },
-    skip: region_id ? false : true,
+    skip: !region_id,
     fetchPolicy: 'network-only',
   })
 
@@ -59,13 +60,13 @@ export const Dashboard: React.FC = () => {
         user_id: Number(me?.user_id),
       },
     },
-    skip: me?.user_id ? false : true,
+    skip: !me?.user_id,
     fetchPolicy: 'network-only',
   })
 
   const renderPage = () => {
     switch (sectionName) {
-      case 'root':
+      case DashboardSection.ROOT:
         return (
           <Box>
             <Grid
@@ -84,6 +85,7 @@ export const Dashboard: React.FC = () => {
                       events={events}
                       calendarEventList={calendarEventList}
                       eventTypeLists={eventTypeLists}
+                      sectionName={sectionName}
                       setSectionName={setSectionName}
                     />
                   </Grid>
@@ -111,7 +113,7 @@ export const Dashboard: React.FC = () => {
             </Grid>
           </Box>
         )
-      case 'viewAll':
+      case DashboardSection.VIEW_ALL:
         return (
           <AnnouncementSection
             inProp={inProp}
@@ -119,9 +121,9 @@ export const Dashboard: React.FC = () => {
             setSelectedAnnouncement={setSelectedAnnouncement}
           />
         )
-      case 'readMore':
+      case DashboardSection.READ_MORE:
         return <ReadMoreSection inProp={inProp} setSectionName={setSectionName} announcement={selectedAnnouncement} />
-      case 'fullCalendar':
+      case DashboardSection.FULL_CALENDAR:
         return (
           <>
             <Box display={{ xs: 'none', sm: 'none', md: 'block' }}>
@@ -138,7 +140,7 @@ export const Dashboard: React.FC = () => {
               <Box sx={{ display: 'flex', justifyContent: 'start', width: '100%', marginTop: 12, marginBottom: 5 }}>
                 <Button
                   sx={{ width: '44px', minWidth: '44px', height: '44px', backgroundColor: 'white' }}
-                  onClick={() => setSectionName('root')}
+                  onClick={() => setSectionName(DashboardSection.ROOT)}
                 >
                   <ChevronLeftIcon />
                 </Button>
@@ -152,6 +154,7 @@ export const Dashboard: React.FC = () => {
                 events={events}
                 calendarEventList={calendarEventList}
                 eventTypeLists={eventTypeLists}
+                sectionName={sectionName}
                 setSectionName={setSectionName}
               />
             </Box>

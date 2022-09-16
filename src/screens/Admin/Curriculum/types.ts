@@ -6,4 +6,5 @@ export type CurriculumItem = {
   img: string
   link: string
   action?: boolean
+  disabled?: boolean
 }

@@ -3,10 +3,11 @@ import CloseIcon from '@mui/icons-material/Close'
 import { Box } from '@mui/system'
 import { Metadata } from '@mth/components/Metadata/Metadata'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
-import { announcementClassess } from '../../styles'
-import { AnnouncmentItemProps } from './types'
+import { DashboardSection } from '../../../types'
+import { announcementClasses } from '../../styles'
+import { AnnouncementItemProps } from './types'
 
-const AnnouncementItem: React.FC<AnnouncmentItemProps> = ({
+const AnnouncementItem: React.FC<AnnouncementItemProps> = ({
   announcement,
   onClose,
   setSectionName,
@@ -15,11 +16,11 @@ const AnnouncementItem: React.FC<AnnouncmentItemProps> = ({
   const [style, setStyle] = useState({ display: 'none' })
   const handleReadMore = () => {
     setSelectedAnnouncement(announcement)
-    setSectionName('readMore')
+    setSectionName(DashboardSection.READ_MORE)
   }
   return (
     <Box
-      sx={announcementClassess.announcementItem}
+      sx={announcementClasses.announcementItem}
       onMouseEnter={() => setStyle({ display: 'block' })}
       onMouseLeave={() => setStyle({ display: 'none' })}
     >
@@ -39,15 +40,15 @@ const AnnouncementItem: React.FC<AnnouncmentItemProps> = ({
           <>
             <Box
               position='absolute'
-              sx={{ ...announcementClassess.closeIconContainer, display: { xs: 'none', md: 'block' } }}
+              sx={{ ...announcementClasses.closeIconContainer, display: { xs: 'none', md: 'block' } }}
             >
-              <CloseIcon sx={style} style={announcementClassess.closeIcon} onClick={() => onClose()} />
+              <CloseIcon sx={style} style={announcementClasses.closeIcon} onClick={() => onClose()} />
             </Box>
             <Box
               position='absolute'
-              sx={{ ...announcementClassess.closeIconContainer, right: '-33px', display: { xs: 'block', md: 'none' } }}
+              sx={{ ...announcementClasses.closeIconContainer, right: '-33px', display: { xs: 'block', md: 'none' } }}
             >
-              <CloseIcon style={announcementClassess.closeIcon} onClick={() => onClose()} />
+              <CloseIcon style={announcementClasses.closeIcon} onClick={() => onClose()} />
             </Box>
           </>
         }

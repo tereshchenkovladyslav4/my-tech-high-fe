@@ -9,6 +9,9 @@ export type SchoolYears = {
   specialEd: boolean
   specialEdOptions: string
   enrollmentPacket: boolean
+  schedule: boolean
+  diplomaSeeking: boolean
+  testingPreference: boolean
 }
 
 export type ProgramSettingType = {
@@ -31,6 +34,9 @@ export type ProgramSettingChanged = {
   birth: boolean
   specialEd: boolean
   enrollment: boolean
+  schedule?: boolean
+  diplomaSeeking?: boolean
+  testingPreference?: boolean
 }
 
 export type FileDeleted = {

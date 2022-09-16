@@ -6,16 +6,17 @@ export const useStyles = {
     width: '100%',
   },
   arrowIcon: {
-    fontSize: '15px',
+    fontSize: '18px',
+    fill: 'black',
     stroke: 'black',
-    strokeWidth: 2,
+    strokeWidth: 1,
   },
   iconButton: {
     position: 'relative',
     bottom: '2px',
   },
   title: {
-    paddingLeft: '7px',
+    paddingLeft: '30px',
     fontSize: '20px',
     fontWeight: '700',
   },

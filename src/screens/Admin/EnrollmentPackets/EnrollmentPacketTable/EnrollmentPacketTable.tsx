@@ -517,7 +517,7 @@ export const EnrollmentPacketTable: FunctionComponent = () => {
       {openEmailModal && (
         <EmailModal
           handleModem={() => setOpenEmailModal(false)}
-          title={packetIds.length + ' Recipients'}
+          title={packetIds.length + ' Recipient' + (packetIds.length > 1 ? 's' : '')}
           handleSubmit={handleEmailSend}
           template={emailTemplate}
         />

@@ -644,7 +644,7 @@ export const ApplicationTable: FunctionComponent<ApplicationTableProps> = ({ fil
       {open && (
         <EmailModal
           handleModem={() => setOpen(!open)}
-          title={applicationIds.length + ' Recipients'}
+          title={applicationIds.length + ' Recipient' + (applicationIds.length > 1 ? 's' : '')}
           handleSubmit={handleEmailSend}
           template={emailTemplate}
         />

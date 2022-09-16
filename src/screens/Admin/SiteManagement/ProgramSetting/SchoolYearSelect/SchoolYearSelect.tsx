@@ -21,6 +21,9 @@ export const SchoolYearSelect: React.FC<SchoolYearSelectProps> = ({
   setSchoolDistrict,
   schoolYears,
   setSchoolYears,
+  setSchedule,
+  setDiplomaSeeking,
+  setTestingPreference,
 }) => {
   const { me } = useContext(UserContext)
   // const [schoolYears, setSchoolYears] = useState<SchoolYears[]>([])
@@ -56,6 +59,9 @@ export const SchoolYearSelect: React.FC<SchoolYearSelectProps> = ({
           setBirthDate(schoolYear.birthDateCut)
           setGrades(schoolYear.grades)
           setSpecialEdOptions(convertSpeicalEdOptions(schoolYear.specialEdOptions))
+          setSchedule(schoolYear.schedule)
+          setDiplomaSeeking(schoolYear.diplomaSeeking)
+          setTestingPreference(schoolYear.testingPreference)
         }
       })
     }
@@ -76,10 +82,13 @@ export const SchoolYearSelect: React.FC<SchoolYearSelectProps> = ({
           setEnroll(schoolYear.enrollmentPacket)
           setBirthDate(schoolYear.birthDateCut)
           setGrades(schoolYear.grades)
+          setSchedule(schoolYear.schedule)
+          setDiplomaSeeking(schoolYear.diplomaSeeking)
+          setTestingPreference(schoolYear.testingPreference)
         }
         dropYears.push({
           value: `${schoolYear.schoolYearId}`,
-          label: `${moment(schoolYear.schoolYearOpen).format('YY')} - ${moment(schoolYear.schoolYearClose).format(
+          label: `${moment(schoolYear.schoolYearOpen).format('YYYY')} - ${moment(schoolYear.schoolYearClose).format(
             'YY',
           )}`,
         })
@@ -113,6 +122,9 @@ export const SchoolYearSelect: React.FC<SchoolYearSelectProps> = ({
             grades: string
             date_begin: Date
             date_end: Date
+            schedule: boolean
+            diploma_seeking: boolean
+            testing_preference: boolean
           }) => {
             if (selectedYearId == schoolYear?.school_year_id) {
               setSpecialEd(schoolYear?.special_ed)
@@ -120,6 +132,9 @@ export const SchoolYearSelect: React.FC<SchoolYearSelectProps> = ({
               setEnroll(schoolYear.enrollment_packet)
               setBirthDate(schoolYear.birth_date_cut)
               setGrades(schoolYear.grades)
+              setSchedule(schoolYear.schedule)
+              setDiplomaSeeking(schoolYear.diploma_seeking)
+              setTestingPreference(schoolYear.testing_preference)
               cnt++
             }
             return {
@@ -131,6 +146,9 @@ export const SchoolYearSelect: React.FC<SchoolYearSelectProps> = ({
               specialEd: schoolYear.special_ed,
               specialEdOptions: schoolYear.special_ed_options,
               enrollmentPacket: schoolYear.enrollment_packet,
+              schedule: schoolYear.schedule,
+              diplomaSeeking: schoolYear.diploma_seeking,
+              testingPreference: schoolYear.testing_preference,
             }
           },
         ).sort((a: SchoolYears, b: SchoolYears) => {
@@ -146,6 +164,9 @@ export const SchoolYearSelect: React.FC<SchoolYearSelectProps> = ({
         setEnroll(false)
         setBirthDate('')
         setGrades('')
+        setDiplomaSeeking(false)
+        setSchedule(false)
+        setTestingPreference(false)
       }
     }
   }, [me?.selectedRegionId, schoolYearData?.data?.region])
@@ -159,7 +180,7 @@ export const SchoolYearSelect: React.FC<SchoolYearSelectProps> = ({
         dropDownItems={years}
         placeholder={'Select Year'}
         defaultValue={selectedYearId}
-        sx={{ width: '200px' }}
+        sx={{ width: '200px', marginLeft: '10px' }}
         borderNone={true}
         setParentValue={(val) => {
           handleSelectYear(`${val}`)

@@ -6,7 +6,7 @@ import { Prompt } from 'react-router-dom'
 import * as yup from 'yup'
 import { CustomModal } from '@mth/components/CustomModal/CustomModals'
 import { SNOWPACK_PUBLIC_S3_URL, urlRex } from '@mth/constants'
-import { MthColor, ResourceSubtitle } from '@mth/enums'
+import { MthColor, MthTitle, ResourceSubtitle } from '@mth/enums'
 import { defaultHomeroomFormData } from '../../defaultValues'
 import { createOrUpdateResourceMutation } from '../../services'
 import { HeaderComponent } from '../HeaderComponent'
@@ -146,8 +146,8 @@ const HomeroomResourceEdit: React.FC<HomeroomResourceEditProps> = ({
       <Prompt
         when={isChanged}
         message={JSON.stringify({
-          header: 'Unsaved Changes',
-          content: 'Are you sure you want to leave without saving changes?',
+          header: MthTitle.UNSAVED_TITLE,
+          content: MthTitle.UNSAVED_DESCRIPTION,
         })}
       />
       <Formik
@@ -185,8 +185,8 @@ const HomeroomResourceEdit: React.FC<HomeroomResourceEditProps> = ({
       )}
       {showLeaveModal && (
         <CustomModal
-          title='Unsaved Changes'
-          description='Are you sure you want to leave without saving changes?'
+          title={MthTitle.UNSAVED_TITLE}
+          description={MthTitle.UNSAVED_DESCRIPTION}
           cancelStr='Cancel'
           confirmStr='Yes'
           backgroundColor={MthColor.WHITE}

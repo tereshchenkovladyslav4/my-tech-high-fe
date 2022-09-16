@@ -7,5 +7,6 @@ export interface ItemCardProps {
   isLink?: boolean
   action?: boolean
   hasTitle?: boolean
+  disabled?: boolean
   onClick?: () => void
 }

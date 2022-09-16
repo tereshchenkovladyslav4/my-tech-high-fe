@@ -22,4 +22,11 @@ export type SchoolYearType = {
   midYearOpen: string
   midYearClose: string
   midYearStatus: boolean
+  midYearScheduleOpen: string
+  midYearScheduleClose: string
+  scheduleBuilderOpen: string
+  scheduleBuilderClose: string
+  secondSemesterOpen: string
+  secondSemesterClose: string
+  schedule: boolean
 }

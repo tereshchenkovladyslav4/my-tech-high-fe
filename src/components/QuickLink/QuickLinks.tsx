@@ -4,6 +4,7 @@ import ArrowBackIosOutlinedIcon from '@mui/icons-material/ArrowBackIosOutlined'
 import { Box, ButtonBase, Grid, Typography } from '@mui/material'
 import { Prompt } from 'react-router-dom'
 import { arrayMove, SortableContainer, SortableElement } from 'react-sortable-hoc'
+import { MthTitle } from '@mth/enums'
 import { updateQuickLinkMutation } from '../../graphql/mutation/quick-link'
 import { getQuickLinksByRegionQuery } from '../../graphql/queries/quick-link'
 import { UserContext } from '../../providers/UserContext/UserProvider'
@@ -357,8 +358,8 @@ export const QuickLinks: React.FC<QuickLinkProps> = ({ backAction, initialLink, 
       )}
       {leavingConfirmModal && (
         <CustomConfirmModal
-          header='Unsaved Changes'
-          content='Are you sure you want to leave without saving changes?'
+          header={MthTitle.UNSAVED_TITLE}
+          content={MthTitle.UNSAVED_DESCRIPTION}
           handleConfirmModalChange={(isOk: boolean) => {
             showLeavingConfirmModal(false)
             if (isOk) {
@@ -375,8 +376,8 @@ export const QuickLinks: React.FC<QuickLinkProps> = ({ backAction, initialLink, 
       <Prompt
         when={hasChange ? true : false}
         message={JSON.stringify({
-          header: 'Unsaved Changes',
-          content: 'Are you sure you want to leave without saving changes?',
+          header: MthTitle.UNSAVED_TITLE,
+          content: MthTitle.UNSAVED_DESCRIPTION,
         })}
       />
     </Box>

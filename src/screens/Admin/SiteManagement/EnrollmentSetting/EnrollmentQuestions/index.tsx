@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useContext, useEffect, useMemo, useState } from 'react'
+import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { useMutation, useQuery } from '@apollo/client'
 import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded'
 import { Box, Typography, Card, Grid, IconButton, Button, Alert } from '@mui/material'
@@ -7,8 +7,9 @@ import { includes } from 'lodash'
 import _ from 'lodash'
 import moment from 'moment'
 import { useHistory } from 'react-router-dom'
-import { DropDownItem } from '../../../../../components/DropDown/types'
-import { UserContext } from '../../../../../providers/UserContext/UserProvider'
+import { DropDownItem } from '@mth/components/DropDown/types'
+import { MthTitle } from '@mth/enums'
+import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { GRADES } from '../../../../../utils/constants'
 import { toOrdinalSuffix } from '../../../../../utils/stringHelpers'
 import { AddQuestionModal } from '../components/AddQuestionModal/AddQuestionModal'
@@ -41,7 +42,7 @@ import { Submission } from './Submission/Submission'
 import { TabContext } from './TabContextProvider'
 import { EnrollmentQuestionTab, initEnrollmentQuestions } from './types'
 
-export const EnrollmentQuestions: FunctionComponent = () => {
+export const EnrollmentQuestions: React.FC = () => {
   const [questionsData, setQuestionsData] = useState<EnrollmentQuestionTab[]>(initEnrollmentQuestions)
   const [currentTab, setCurrentTab] = useState(0)
   const [sucessAlert, setSucessAlert] = useState(false)
@@ -149,8 +150,8 @@ export const EnrollmentQuestions: FunctionComponent = () => {
     const unreg = history.block(() => {
       if (unsavedChanges) {
         return JSON.stringify({
-          header: 'Unsaved Changes',
-          content: 'Are you sure you want to leave without saving changes?',
+          header: MthTitle.UNSAVED_TITLE,
+          content: MthTitle.UNSAVED_DESCRIPTION,
         })
       }
       return undefined
@@ -584,8 +585,8 @@ export const EnrollmentQuestions: FunctionComponent = () => {
 
               {unSaveChangeModal && (
                 <CustomModal
-                  title='Unsaved Changes'
-                  description='Are you sure you want to leave without saving changes?'
+                  title={MthTitle.UNSAVED_TITLE}
+                  description={MthTitle.UNSAVED_DESCRIPTION}
                   onClose={() => {
                     setUnSaveChangeModal(false)
                   }}

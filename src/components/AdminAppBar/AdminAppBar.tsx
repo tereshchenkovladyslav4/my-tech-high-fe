@@ -19,6 +19,7 @@ import debounce from 'lodash.debounce'
 import { useLocation } from 'react-router-dom'
 import Slider from 'react-slick'
 import { useRecoilState } from 'recoil'
+import { MthTitle } from '@mth/enums'
 import { getWindowDimension } from '@mth/utils'
 import { ProfileContext } from '../../providers/ProfileProvider/ProfileContext'
 import { RegionType } from '../../providers/UserContext/types'
@@ -345,8 +346,8 @@ export const AdminAppBar: FunctionComponent = () => {
         </Grid>
         {unsavedChanges !== 0 && (
           <CustomConfirmModal
-            header='Unsaved Changes'
-            content='Are you sure you want to leave without saving changes?'
+            header={MthTitle.UNSAVED_TITLE}
+            content={MthTitle.UNSAVED_DESCRIPTION}
             handleConfirmModalChange={(isOk: boolean) => {
               if (isOk) {
                 setRegion(unsavedChanges)

@@ -1,4 +1,4 @@
-export const calendarDayClassess = {
+export const calendarDayClasses = {
   eventMore: {
     display: 'flex',
     fontSize: '11px',

@@ -1,13 +1,11 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { useQuery } from '@apollo/client'
 import { Stack } from '@mui/material'
 import { sortBy } from 'lodash'
 import moment from 'moment'
 import { DropDown } from '@mth/components/DropDown/DropDown'
 import { DropDownItem } from '@mth/components/DropDown/types'
+import { SchoolYearRespnoseType, useSchoolYearsByRegionId } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
-import { SchoolYearVM } from '@mth/screens/Admin/SchoolOfEnrollment/type'
-import { getSchoolYearsByRegionId } from '../../services'
 import { SchoolYearItem, SchoolYearType } from '../types'
 
 type SchoolYearDropDownProps = {
@@ -16,7 +14,11 @@ type SchoolYearDropDownProps = {
   setMidYearItem: (value: SchoolYearItem | undefined) => void
   setSelectedYearId: (value: number) => void
   setOldSelectedYearId: (value: number) => void
+  setEnableSchedule: (value: boolean) => void
   setAddSchoolYearDialogOpen: (value: boolean) => void
+  setScheduleBuilderItem: (value: SchoolYearItem | undefined) => void
+  setSecondSemesterItem: (value: SchoolYearItem | undefined) => void
+  setMidYearScheduleItem: (value: SchoolYearItem | undefined) => void
   schoolYears: SchoolYearType[]
   setSchoolYears: (value: SchoolYearType[]) => void
   setAddSchoolYears: (value: DropDownItem[]) => void
@@ -30,6 +32,10 @@ export const SchoolYearDropDown: React.FC<SchoolYearDropDownProps> = ({
   setMidYearItem,
   setOldSelectedYearId,
   setAddSchoolYearDialogOpen,
+  setScheduleBuilderItem,
+  setSecondSemesterItem,
+  setMidYearScheduleItem,
+  setEnableSchedule,
   selectedYearId,
   setSchoolYears,
   setAddSchoolYears,
@@ -37,14 +43,10 @@ export const SchoolYearDropDown: React.FC<SchoolYearDropDownProps> = ({
 }) => {
   const { me } = useContext(UserContext)
   const [years, setYears] = useState<DropDownItem[]>([])
-  const schoolYearData = useQuery(getSchoolYearsByRegionId, {
-    variables: {
-      regionId: me?.selectedRegionId,
-    },
-    skip: me?.selectedRegionId ? false : true,
-    fetchPolicy: 'network-only',
-  })
+  const { schoolYears: schoolYearData } = useSchoolYearsByRegionId(Number(me?.selectedRegionId))
+
   const setAllBySchoolYear = (schoolYear: SchoolYearType) => {
+    setEnableSchedule(schoolYear.schedule)
     setSchoolYearItem({
       open: schoolYear.schoolYearOpen,
       close: schoolYear.schoolYearClose,
@@ -58,12 +60,26 @@ export const SchoolYearDropDown: React.FC<SchoolYearDropDownProps> = ({
       close: schoolYear.midYearClose,
       status: schoolYear.midYearStatus,
     })
+    setMidYearScheduleItem({
+      open: schoolYear.midYearScheduleOpen,
+      close: schoolYear.midYearScheduleClose,
+    })
+    setSecondSemesterItem({
+      open: schoolYear.secondSemesterOpen,
+      close: schoolYear.secondSemesterClose,
+    })
+    setScheduleBuilderItem({
+      open: schoolYear.scheduleBuilderOpen,
+      close: schoolYear.scheduleBuilderClose,
+    })
   }
+
   const handleSelectYear = (val: number) => {
     setOldSelectedYearId(selectedYearId)
     setSelectedYearId(val)
     if (!val) {
       setAddSchoolYearDialogOpen(true)
+      setEnableSchedule(false)
       return
     }
     if (schoolYears && schoolYears.length > 0) {
@@ -84,6 +100,9 @@ export const SchoolYearDropDown: React.FC<SchoolYearDropDownProps> = ({
     })
     setApplicationItem(undefined)
     setMidYearItem(undefined)
+    setMidYearScheduleItem(undefined)
+    setSecondSemesterItem(undefined)
+    setScheduleBuilderItem(undefined)
   }
 
   const setDropYears = (schoolYearsArr: SchoolYearType[]) => {
@@ -97,6 +116,7 @@ export const SchoolYearDropDown: React.FC<SchoolYearDropDownProps> = ({
           parseInt(moment(schoolYear.schoolYearClose).format('YYYY')) <= parseInt(moment().format('YYYY')) + 1
         ) {
           setSelectedYearId(schoolYear.schoolYearId)
+          setEnableSchedule(schoolYear.schedule)
           setAllBySchoolYear(schoolYear)
         }
         dropYears.push({
@@ -125,13 +145,14 @@ export const SchoolYearDropDown: React.FC<SchoolYearDropDownProps> = ({
   }
 
   useEffect(() => {
-    if (schoolYearData?.data?.region?.SchoolYears) {
+    if (schoolYearData) {
       const schoolYearsArr: SchoolYearType[] = []
       let cnt = 0
 
-      schoolYearData?.data?.region?.SchoolYears.forEach((schoolYear: SchoolYearVM) => {
+      schoolYearData?.forEach((schoolYear: SchoolYearRespnoseType) => {
         const schoolYearId = +schoolYear.school_year_id
         if (schoolYearId == selectedYearId) {
+          setEnableSchedule(schoolYear.schedule)
           setSchoolYearItem({
             open: schoolYear.date_begin,
             close: schoolYear.date_end,
@@ -145,6 +166,18 @@ export const SchoolYearDropDown: React.FC<SchoolYearDropDownProps> = ({
             close: schoolYear.midyear_application_close,
             status: schoolYear.midyear_application,
           })
+          setMidYearScheduleItem({
+            open: schoolYear.midyear_schedule_open,
+            close: schoolYear.midyear_schedule_close,
+          })
+          setSecondSemesterItem({
+            open: schoolYear.second_semester_open,
+            close: schoolYear.second_semester_close,
+          })
+          setScheduleBuilderItem({
+            open: schoolYear.schedule_builder_open,
+            close: schoolYear.schedule_builder_close,
+          })
           cnt++
         }
         schoolYearsArr.push({
@@ -156,6 +189,13 @@ export const SchoolYearDropDown: React.FC<SchoolYearDropDownProps> = ({
           midYearOpen: schoolYear.midyear_application_open,
           midYearClose: schoolYear.midyear_application_close,
           midYearStatus: schoolYear.midyear_application,
+          midYearScheduleOpen: schoolYear.midyear_schedule_open,
+          midYearScheduleClose: schoolYear.midyear_schedule_close,
+          scheduleBuilderOpen: schoolYear.schedule_builder_open,
+          scheduleBuilderClose: schoolYear.schedule_builder_close,
+          secondSemesterOpen: schoolYear.second_semester_open,
+          secondSemesterClose: schoolYear.second_semester_close,
+          schedule: schoolYear.schedule,
         })
       })
       if (cnt == 0) {
@@ -164,7 +204,7 @@ export const SchoolYearDropDown: React.FC<SchoolYearDropDownProps> = ({
 
       setSchoolYears(sortBy(schoolYearsArr, 'schoolYearOpen'))
     }
-  }, [me?.selectedRegionId, schoolYearData?.data?.region?.SchoolYears])
+  }, [me?.selectedRegionId, schoolYearData])
 
   useEffect(() => {
     setDropYears(schoolYears)

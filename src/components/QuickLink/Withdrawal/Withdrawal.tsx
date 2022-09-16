@@ -5,12 +5,12 @@ import { Formik, Form } from 'formik'
 import _ from 'lodash'
 import { Prompt } from 'react-router-dom'
 import { arrayMove, SortableContainer, SortableElement } from 'react-sortable-hoc'
-import { WithdrawalStatus } from '../../../core/enums'
+import { MthTitle, WithdrawalStatus } from '../../../core/enums'
 import { saveQuestionsMutation, deleteQuestionMutation } from '../../../graphql/mutation/question'
 import { saveWithdrawalMutation } from '../../../graphql/mutation/withdrawal'
 import { getQuestionsByRegionQuery } from '../../../graphql/queries/question'
 import { UserContext } from '../../../providers/UserContext/UserProvider'
-import { useStyles } from '../../../screens/Admin/SiteManagement/styles'
+import { siteManagementClassess } from '../../../screens/Admin/SiteManagement/styles'
 import { CustomConfirmModal } from '../../CustomConfirmModal/CustomConfirmModal'
 import { QuestionModal } from '../../QuestionItem/AddNewQuestion'
 import { DefaultQuestionModal } from '../../QuestionItem/AddNewQuestion/DefaultQuestionModal'
@@ -221,8 +221,7 @@ const Withdrawal: React.FC<{
               section: 'quick-link-withdrawal',
               type: QUESTION_TYPE.SIGNATURE,
               sequence: 3,
-              question:
-                'Type full legal parent name and provide a Digital Signature below. Signature (use the mouse to sign)',
+              question: 'Type full legal parent name and provide a Digital Signature below (use the mouse to sign).',
               options: [],
               mainQuestion: true,
               defaultQuestion: false,
@@ -511,7 +510,7 @@ const Withdrawal: React.FC<{
         >
           {({ values, setValues }) => (
             <Form name={'WithdrawalForm'}>
-              <Box sx={useStyles.base}>
+              <Box sx={siteManagementClassess.base}>
                 <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: '100%' }}>
                   <Typography sx={{ fontWeight: 700, fontSize: 20, ml: 1 }}>Withdraw</Typography>
                   {isEditable() && (
@@ -520,7 +519,7 @@ const Withdrawal: React.FC<{
                         variant='contained'
                         color='secondary'
                         disableElevation
-                        sx={useStyles.cancelButton}
+                        sx={siteManagementClassess.cancelButton}
                         onClick={() => {
                           if (unsavedChanges) setCancelModal(true)
                           else onActionHandler('')
@@ -528,7 +527,12 @@ const Withdrawal: React.FC<{
                       >
                         Cancel
                       </Button>
-                      <Button variant='contained' disableElevation sx={useStyles.submitButton} type='submit'>
+                      <Button
+                        variant='contained'
+                        disableElevation
+                        sx={siteManagementClassess.submitButton}
+                        type='submit'
+                      >
                         Save
                       </Button>
                     </Box>
@@ -609,7 +613,7 @@ const Withdrawal: React.FC<{
                   <Box sx={{ width: '40%', margin: 'auto', mt: 2, ml: 'calc(25% + 60px)' }}>
                     <Button
                       variant='contained'
-                      sx={{ ...useStyles.button, width: '100%' }}
+                      sx={{ ...siteManagementClassess.button, width: '100%' }}
                       onClick={() => setOpenSelectQuestionType(true)}
                     >
                       <Subtitle size={12}>Add Question</Subtitle>
@@ -619,7 +623,7 @@ const Withdrawal: React.FC<{
                 <Box sx={{ width: '40%', margin: 'auto', mt: 2, ml: 'calc(25% + 60px)' }}>
                   <Button
                     variant='contained'
-                    sx={{ ...useStyles.button, width: '100%' }}
+                    sx={{ ...siteManagementClassess.button, width: '100%' }}
                     type={isEditable() ? 'button' : 'submit'}
                   >
                     <Subtitle size={12}>Submit Withdrawal Request</Subtitle>
@@ -680,8 +684,8 @@ const Withdrawal: React.FC<{
               <Prompt
                 when={unsavedChanges ? true : false}
                 message={JSON.stringify({
-                  header: 'Unsaved Changes',
-                  content: 'Are you sure you want to leave without saving changes?',
+                  header: MthTitle.UNSAVED_TITLE,
+                  content: MthTitle.UNSAVED_DESCRIPTION,
                 })}
               />
               {cancelModal && (

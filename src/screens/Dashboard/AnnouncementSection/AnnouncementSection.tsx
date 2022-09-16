@@ -28,7 +28,8 @@ import { extractContent, getWindowDimension } from '@mth/utils'
 import { Person, StudentType } from '../../HomeroomStudentProfile/Student/types'
 import { Announcement } from '../Announcements/types'
 import { getUserAnnouncements } from '../services'
-import { announcementSectionClassess } from './styles'
+import { DashboardSection } from '../types'
+import { announcementSectionClasses } from './styles'
 import { AnnouncementSectionProps } from './types'
 
 const getProfilePhoto = (person: Person) => {
@@ -144,7 +145,7 @@ const AnnouncementSection: React.FC<AnnouncementSectionProps> = ({
   )
 
   const LoadMore = () => (
-    <Box sx={announcementSectionClassess.button}>
+    <Box sx={announcementSectionClasses.button}>
       <Button
         onClick={() => {
           setLimit(limit + 10)
@@ -180,7 +181,7 @@ const AnnouncementSection: React.FC<AnnouncementSectionProps> = ({
                 <Paragraph size='medium'>
                   {extractContent(announcement.body || '')?.slice(0, 100)}
                   <a
-                    style={announcementSectionClassess.readMore}
+                    style={announcementSectionClasses.readMore}
                     onClick={() => {
                       setSelectedAnnouncement({
                         id: announcement.id,
@@ -193,7 +194,7 @@ const AnnouncementSection: React.FC<AnnouncementSectionProps> = ({
                         grades: announcement.filter_grades,
                         regionId: announcement.RegionId,
                       })
-                      setSectionName('readMore')
+                      setSectionName(DashboardSection.READ_MORE)
                     }}
                   >
                     Read More
@@ -224,7 +225,7 @@ const AnnouncementSection: React.FC<AnnouncementSectionProps> = ({
       <CSSTransition in={inProp} timeout={1000} classNames='my-node'>
         <Box
           sx={{
-            ...announcementSectionClassess.cardAll,
+            ...announcementSectionClasses.cardAll,
             backgroundColor: windowDimensions.width > 600 ? '' : '#FAFAFA',
             marginTop: windowDimensions.width > 600 ? '20px' : '-10px',
           }}
@@ -233,9 +234,9 @@ const AnnouncementSection: React.FC<AnnouncementSectionProps> = ({
             <Grid item xs={12}>
               {windowDimensions.width > 600 ? (
                 <Card>
-                  <Box sx={announcementSectionClassess.cardBox}>
-                    <Box sx={announcementSectionClassess.cardItem}>
-                      <Button onClick={() => setSectionName('root')}>
+                  <Box sx={announcementSectionClasses.cardBox}>
+                    <Box sx={announcementSectionClasses.cardItem}>
+                      <Button onClick={() => setSectionName(DashboardSection.ROOT)}>
                         <ChevronLeftIcon sx={{ marginRight: 0.5, marginLeft: -2.5 }} />
                       </Button>
                       <Box sx={{ marginRight: 10 }}>
@@ -268,11 +269,11 @@ const AnnouncementSection: React.FC<AnnouncementSectionProps> = ({
                 </Card>
               ) : (
                 <Box>
-                  <Box sx={announcementSectionClassess.mobileCardBox}>
-                    <Box sx={announcementSectionClassess.mobileHeader}>
+                  <Box sx={announcementSectionClasses.mobileCardBox}>
+                    <Box sx={announcementSectionClasses.mobileHeader}>
                       <Button
-                        sx={{ ...announcementSectionClassess.mobileIconBtn, backgroundColor: 'white' }}
-                        onClick={() => setSectionName('root')}
+                        sx={{ ...announcementSectionClasses.mobileIconBtn, backgroundColor: 'white' }}
+                        onClick={() => setSectionName(DashboardSection.ROOT)}
                       >
                         <ChevronLeftIcon />
                       </Button>
@@ -281,7 +282,7 @@ const AnnouncementSection: React.FC<AnnouncementSectionProps> = ({
                           Announcements
                         </Subtitle>
                       </Box>
-                      <Button sx={announcementSectionClassess.mobileIconBtn} onClick={handleAnchorClick}>
+                      <Button sx={announcementSectionClasses.mobileIconBtn} onClick={handleAnchorClick}>
                         <SearchIcon style={{ color: 'black' }} />
                       </Button>
                       {mobileSearchField()}
@@ -290,7 +291,7 @@ const AnnouncementSection: React.FC<AnnouncementSectionProps> = ({
                   {!!announcements?.length &&
                     announcements.map((announcement, index) => {
                       return (
-                        <Box key={index} sx={announcementSectionClassess.mobileItem}>
+                        <Box key={index} sx={announcementSectionClasses.mobileItem}>
                           <Box sx={{ marginRight: 10, paddingY: '10px' }}>
                             <Subtitle size='large' fontWeight='700'>
                               {announcement?.subject}
@@ -309,7 +310,7 @@ const AnnouncementSection: React.FC<AnnouncementSectionProps> = ({
                             <Paragraph size='medium'>
                               {extractContent(announcement.body || '')?.slice(0, 100)}
                               <a
-                                style={announcementSectionClassess.readMore}
+                                style={announcementSectionClasses.readMore}
                                 onClick={() => {
                                   setSelectedAnnouncement({
                                     id: announcement.id,
@@ -322,7 +323,7 @@ const AnnouncementSection: React.FC<AnnouncementSectionProps> = ({
                                     grades: announcement.filter_grades,
                                     regionId: announcement.RegionId,
                                   })
-                                  setSectionName('readMore')
+                                  setSectionName(DashboardSection.READ_MORE)
                                 }}
                               >
                                 Read More

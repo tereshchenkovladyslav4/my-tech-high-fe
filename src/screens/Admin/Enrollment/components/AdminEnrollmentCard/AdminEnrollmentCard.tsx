@@ -2,10 +2,10 @@ import React from 'react'
 import EastIcon from '@mui/icons-material/East'
 import { Card, CardMedia, CardContent } from '@mui/material'
 import { useHistory } from 'react-router-dom'
-import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
-import { AdminEnrollmentCardTemplateType } from './types'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { AdminEnrolmentCardProps } from './types'
 
-export const AdminEnrollmentCard: AdminEnrollmentCardTemplateType = ({ title, link, img }) => {
+export const AdminEnrollmentCard: React.FC<AdminEnrolmentCardProps> = ({ title, disabled, link, img }) => {
   const history = useHistory()
 
   return (
@@ -14,8 +14,11 @@ export const AdminEnrollmentCard: AdminEnrollmentCardTemplateType = ({ title, li
         cursor: 'pointer',
         borderRadius: 2,
         marginX: 4,
+        opacity: disabled ? 0.5 : 1,
       }}
-      onClick={() => history.push(link)}
+      onClick={() => {
+        if (!disabled) history.push(link)
+      }}
     >
       <CardMedia component='img' src={img} />
       <CardContent

@@ -5,7 +5,7 @@ import { Form, Formik } from 'formik'
 import { Prompt } from 'react-router-dom'
 import * as yup from 'yup'
 import { CustomModal } from '@mth/components/CustomModal/CustomModals'
-import { MthColor } from '@mth/enums'
+import { MthColor, MthTitle } from '@mth/enums'
 import { updateRegionMutation } from '@mth/graphql/mutation/region'
 import { useRegionByRegionId } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
@@ -78,8 +78,8 @@ const ConfirmationDetails: React.FC<ConfirmationDetailsProps> = ({ setPage }) =>
       <Prompt
         when={isChanged ? true : false}
         message={JSON.stringify({
-          header: 'Unsaved Changes',
-          content: 'Are you sure you want to leave without saving changes?',
+          header: MthTitle.UNSAVED_TITLE,
+          content: MthTitle.UNSAVED_DESCRIPTION,
         })}
       />
       <Formik
@@ -117,8 +117,8 @@ const ConfirmationDetails: React.FC<ConfirmationDetailsProps> = ({ setPage }) =>
       )}
       {showLeaveModal && (
         <CustomModal
-          title='Unsaved Changes'
-          description='Are you sure you want to leave without saving changes?'
+          title={MthTitle.UNSAVED_TITLE}
+          description={MthTitle.UNSAVED_DESCRIPTION}
           cancelStr='Cancel'
           confirmStr='Yes'
           backgroundColor={MthColor.WHITE}

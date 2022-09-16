@@ -1,8 +1,9 @@
+import { DashboardSection } from '@mth/screens/Dashboard/types'
 import { Announcement } from '../../types'
 
-export type AnnouncmentItemProps = {
+export type AnnouncementItemProps = {
   announcement: Announcement
   onClose: () => void
-  setSectionName: (value: React.SetStateAction<string>) => void
+  setSectionName: (value: DashboardSection) => void
   setSelectedAnnouncement: (value: Announcement) => void
 }

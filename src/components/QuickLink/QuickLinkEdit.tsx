@@ -5,9 +5,9 @@ import { Alert, Avatar, Button, Stack, TextField, Typography } from '@mui/materi
 import { Box } from '@mui/system'
 import { useFormik } from 'formik'
 import * as yup from 'yup'
+import { siteManagementClassess } from '@mth/screens/Admin/SiteManagement/styles'
 import { createQuickLinkMutation, updateQuickLinkMutation } from '../../graphql/mutation/quick-link'
 import { DocumentUploadModal } from '../../screens/Admin/SiteManagement/EnrollmentSetting/EnrollmentQuestions/Documents/components/DocumentUploadModal/DocumentUploadModal'
-import { useStyles } from '../../screens/Admin/SiteManagement/styles'
 import { CustomConfirmModal } from '../CustomConfirmModal/CustomConfirmModal'
 import { DropDown } from '../DropDown/DropDown'
 import { Paragraph } from '../Typography/Paragraph/Paragraph'
@@ -19,8 +19,6 @@ const QuickLinkEdit: React.FC<{
   action: (page: string) => void
   handleChange: (flag: boolean) => void
 }> = ({ quickLink, updateQuickLinks, action, handleChange }) => {
-  const classes = useStyles
-
   const typeArr = [
     {
       label: 'Website Link',
@@ -232,7 +230,7 @@ const QuickLinkEdit: React.FC<{
 
   return (
     <form name='QuickLinkEditForm' onSubmit={formik.handleSubmit} style={{ height: '100%' }}>
-      <Stack direction='column' justifyContent='center' alignItems='center' flex={1} sx={classes.base}>
+      <Stack direction='column' justifyContent='center' alignItems='center' flex={1} sx={siteManagementClassess.base}>
         <Box
           display='flex'
           flexDirection='row'
@@ -296,12 +294,12 @@ const QuickLinkEdit: React.FC<{
             variant='contained'
             color='secondary'
             disableElevation
-            sx={classes.cancelButton}
+            sx={siteManagementClassess.cancelButton}
             onClick={() => action('')}
           >
             Cancel
           </Button>
-          <Button variant='contained' disableElevation sx={classes.submitButton} type='submit'>
+          <Button variant='contained' disableElevation sx={siteManagementClassess.submitButton} type='submit'>
             Save
           </Button>
         </Stack>

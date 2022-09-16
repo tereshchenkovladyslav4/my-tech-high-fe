@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { useQuery } from '@apollo/client'
 import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded'
 import { Grid } from '@mui/material'
 import { Box, IconButton, Typography } from '@mui/material'
@@ -11,8 +10,10 @@ import EnrollmentQuestionImage from '@mth/assets/q&a.png'
 import ApplicationQuestionImage from '@mth/assets/schedules.png'
 import TestingPreferenceImage from '@mth/assets/testing-preference.png'
 import { ItemCard } from '@mth/components/ItemCard/ItemCard'
+import { ItemCardProps } from '@mth/components/ItemCard/ItemCardProps'
+import { MthTitle } from '@mth/enums'
+import { useCurrentSchoolYearByRegionId } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
-import { GetCurrentSchoolYearByRegionId } from '../../Announcements/services'
 import { ApplicationQuestions } from './ApplicationQuestions'
 import DiplomaSeeking from './DiplomaSeeking/DiplomaSeeking'
 import { EnrollmentQuestions } from './EnrollmentQuestions'
@@ -22,66 +23,93 @@ import TestingPreference from './TestingPreference/TestingPreference'
 const EnrollmentSetting: React.FC = () => {
   const { me } = useContext(UserContext)
   const { path, isExact } = useRouteMatch('/site-management/enrollment') || {}
+  const [scheduleFlag, setScheduleFlag] = useState<boolean>(false)
   const [enrollmentPacketFlag, setEnrollmentPacketFlag] = useState<boolean>(false)
+  const [testingPreferenceFlag, setTestingPreferenceFlag] = useState<boolean>(false)
+  const [diplomaSeekingFlag, setDiplomaSeeking] = useState<boolean>(false)
   const history = useHistory()
-  const schoolYearData = useQuery(GetCurrentSchoolYearByRegionId, {
-    variables: {
-      regionId: me?.selectedRegionId,
-    },
-    skip: me?.selectedRegionId ? false : true,
-    fetchPolicy: 'network-only',
-  })
-
-  useEffect(() => {
-    if (schoolYearData?.data?.schoolyear_getcurrent) {
-      setEnrollmentPacketFlag(schoolYearData?.data?.schoolyear_getcurrent?.enrollment_packet)
-    } else {
-      setEnrollmentPacketFlag(false)
-    }
-  }, [me?.selectedRegionId, schoolYearData])
-
-  const items = [
+  const { data: schoolYear } = useCurrentSchoolYearByRegionId(Number(me?.selectedRegionId))
+  const items: ItemCardProps[] = [
     {
-      id: 1,
-      title: 'Application Questions',
-      subtitle: '',
+      title: MthTitle.APPLICATION_QUESTIONS,
+      subTitle: '',
       img: ApplicationQuestionImage,
       isLink: false,
-      to: `${path}/application-question`,
+      link: `${path}/application-question`,
     },
     {
-      id: 2,
-      title: 'Enrollment Questions',
-      subtitle: '',
+      title: MthTitle.ENROLLMENT_QUESSTONS,
+      subTitle: '',
       img: EnrollmentQuestionImage,
       isLink: false,
-      to: `${path}/enrollment-question`,
+      link: `${path}/enrollment-question`,
     },
     {
-      id: 3,
-      title: 'Immunizations',
-      subtitle: '',
+      title: MthTitle.IMMUNIZATIONS,
+      subTitle: '',
       img: ImmunizationsImage,
       isLink: false,
-      to: `${path}/immunizations`,
+      link: `${path}/immunizations`,
     },
     {
-      id: 4,
-      title: 'Testing Preference',
-      subtitle: '',
+      title: MthTitle.TESTING_PREFERENCE,
+      subTitle: '',
       img: TestingPreferenceImage,
       isLink: false,
-      to: `${path}/testing-preference`,
+      link: `${path}/testing-preference`,
     },
     {
-      id: 5,
-      title: 'Diploma-seeking',
-      subtitle: '',
+      title: MthTitle.DIPLOMA_SEEKING,
+      subTitle: '',
       img: DiplomaSeekingImg,
       isLink: false,
-      to: `${path}/diploma-seeking`,
+      link: `${path}/diploma-seeking`,
     },
   ]
+
+  const isAvailable = (item: ItemCardProps) => {
+    if (item.title == MthTitle.ENROLLMENT_QUESSTONS && !enrollmentPacketFlag) return false
+    if (item.title == MthTitle.TESTING_PREFERENCE && scheduleFlag && !testingPreferenceFlag) return false
+    if (item.title == MthTitle.DIPLOMA_SEEKING && scheduleFlag && !diplomaSeekingFlag) return false
+    return true
+  }
+
+  const renderTile = () => {
+    return map(items, (item, idx) => {
+      if (isAvailable(item)) {
+        return (
+          <Grid item xs={4} key={idx}>
+            <ItemCard
+              title={item.title}
+              subTitle={item.subTitle}
+              img={item.img}
+              link={item.link}
+              disabled={
+                (!scheduleFlag && item.title == MthTitle.TESTING_PREFERENCE) ||
+                (!scheduleFlag && item.title == MthTitle.DIPLOMA_SEEKING)
+              }
+            />
+          </Grid>
+        )
+      } else {
+        return <></>
+      }
+    })
+  }
+
+  useEffect(() => {
+    if (schoolYear) {
+      setEnrollmentPacketFlag(schoolYear?.enrollment_packet)
+      setTestingPreferenceFlag(schoolYear?.testing_preference)
+      setDiplomaSeeking(schoolYear?.diploma_seeking)
+      setScheduleFlag(schoolYear?.schedule)
+    } else {
+      setEnrollmentPacketFlag(false)
+      setTestingPreferenceFlag(false)
+      setDiplomaSeeking(false)
+      setScheduleFlag(false)
+    }
+  }, [me?.selectedRegionId, schoolYear])
 
   return (
     <>
@@ -114,14 +142,7 @@ const EnrollmentSetting: React.FC = () => {
             </Typography>
           </Box>
           <Grid container rowSpacing={4} columnSpacing={0}>
-            {map(
-              items.filter((item) => enrollmentPacketFlag || (!enrollmentPacketFlag && item.id != 2)),
-              (item, idx) => (
-                <Grid item xs={4} key={idx}>
-                  <ItemCard title={item.title} subTitle={item.subtitle} img={item.img} link={item.to} />
-                </Grid>
-              ),
-            )}
+            {renderTile()}
           </Grid>
         </>
       )}

@@ -7,6 +7,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { useFormikContext } from 'formik'
 import { DropDown } from '@mth/components/DropDown/DropDown'
 import { DropDownItem } from '@mth/components/DropDown/types'
+import { SingleCheckbox } from '@mth/components/SingleCheckbox'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
@@ -147,26 +148,14 @@ const EventForm: React.FC<EventFormProps> = ({ setIsChanged, handleAddRSVPClick 
               }}
             />
           </Box>
-          <Box sx={{ display: 'grid', my: 1.5, mx: 1 }}>
-            <FormControlLabel
-              sx={{ height: 30 }}
-              control={
-                <Checkbox
-                  checked={values?.allDay}
-                  value={values?.allDay}
-                  onChange={() => {
-                    setFieldValue('allDay', !values?.allDay)
-                    setIsChanged(true)
-                  }}
-                />
-              }
-              label={
-                <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
-                  All Day
-                </Paragraph>
-              }
-            />
-          </Box>
+          <SingleCheckbox
+            title={'All Day'}
+            defaultValue={values?.allDay}
+            handleChangeValue={() => {
+              setFieldValue('allDay', !values?.allDay)
+              setIsChanged(true)
+            }}
+          />
         </Box>
         <Subtitle sx={calendarClassess.formError}>{touched.description && errors.description}</Subtitle>
         <Box sx={{ my: 1 }}>

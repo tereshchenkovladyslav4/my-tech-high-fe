@@ -4,8 +4,8 @@ import { Button, Stack, TextField, Typography } from '@mui/material'
 import { Box } from '@mui/system'
 import { useFormik } from 'formik'
 import * as yup from 'yup'
+import { siteManagementClassess } from '@mth/screens/Admin/SiteManagement/styles'
 import { updateQuickLinkMutation } from '../../graphql/mutation/quick-link'
-import { useStyles } from '../../screens/Admin/SiteManagement/styles'
 import { QuickLinkCard } from './QuickLinkCard'
 import { QuickLink, QUICKLINK_TYPE } from './QuickLinkCardProps'
 
@@ -15,8 +15,6 @@ const QuickLinkReservedEdit: React.FC<{
   action: (page: string) => void
   handleChange: (flag: boolean) => void
 }> = ({ quickLink, updateQuickLinks, action, handleChange }) => {
-  const classes = useStyles
-
   const [submitUpdate] = useMutation(updateQuickLinkMutation)
 
   const onSubmitSuccess = () => {
@@ -81,7 +79,7 @@ const QuickLinkReservedEdit: React.FC<{
   return (
     <form name='QuickLinkReservedEditForm' onSubmit={formik.handleSubmit} style={{ height: '100%' }}>
       {quickLink.type == QUICKLINK_TYPE.WEBSITE_LINK && (
-        <Stack direction='column' justifyContent='center' alignItems='center' flex={1} sx={classes.base}>
+        <Stack direction='column' justifyContent='center' alignItems='center' flex={1} sx={siteManagementClassess.base}>
           <Box
             display='flex'
             flexDirection='row'
@@ -106,7 +104,7 @@ const QuickLinkReservedEdit: React.FC<{
                 handleChange(true)
                 window['setFormChanged']('QuickLinkReservedEditForm', true)
               }}
-              style={classes.input}
+              style={siteManagementClassess.input}
               sx={{ my: 2, width: '65%' }}
               error={formik.touched.reserved && Boolean(formik.errors.reserved)}
               helperText={formik.touched.reserved && formik.errors.reserved}
@@ -117,12 +115,12 @@ const QuickLinkReservedEdit: React.FC<{
               variant='contained'
               color='secondary'
               disableElevation
-              sx={classes.cancelButton}
+              sx={siteManagementClassess.cancelButton}
               onClick={() => action('edit')}
             >
               Cancel
             </Button>
-            <Button variant='contained' disableElevation sx={classes.submitButton} type='submit'>
+            <Button variant='contained' disableElevation sx={siteManagementClassess.submitButton} type='submit'>
               Save
             </Button>
           </Stack>

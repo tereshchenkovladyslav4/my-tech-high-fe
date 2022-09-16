@@ -8,7 +8,7 @@ import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { getAllRegion } from '@mth/graphql/queries/region'
 import { RED } from '../../../../../utils/constants'
 import { usStates } from '../../../../../utils/states'
-import { useStyles } from '../../styles'
+import { siteManagementClassess } from '../../styles'
 
 type StateSelectProps = {
   stateName: string
@@ -27,7 +27,6 @@ export const StateSelect: React.FC<StateSelectProps> = ({
   setIsInvalidStateName,
   setStateInvalid,
 }) => {
-  const classes = useStyles
   const [stateInvalidMessage, setStateInvalidMessage] = useState<string>('')
   const [selectedRegionName, setSelectedRegionName] = useState<string>('')
   const [showNewRegionName, setShowNewRegionName] = useState<boolean>(false)
@@ -137,7 +136,7 @@ export const StateSelect: React.FC<StateSelectProps> = ({
   }
 
   return (
-    <Box component='form' sx={{ ...classes.gradeBox, minWidth: '600px' }} noValidate autoComplete='off'>
+    <Box component='form' sx={{ ...siteManagementClassess.gradeBox, minWidth: '600px' }} noValidate autoComplete='off'>
       <Box sx={{ display: 'flex', justifyContent: 'start', padding: 0 }}>
         <FormControl sx={{ m: 1, minWidth: 165 }}>
           <Select

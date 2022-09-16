@@ -6,6 +6,7 @@ import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { MthColor } from '@mth/enums'
 import { getFirstDayAndLastDayOfMonth } from '@mth/utils'
 import { CalendarEvent, EventVM } from '../../Admin/Calendar/types'
+import { DashboardSection } from '../types'
 import { DashboardCalendar } from './components/DashboardCalendar'
 import { ParentEventDetail } from './ParentEventDetail'
 import { parentCalendarClasses } from './styles'
@@ -15,6 +16,7 @@ const ParentCalendar: React.FC<ParentCalendarProps> = ({
   events,
   calendarEventList,
   eventTypeLists,
+  sectionName,
   setSectionName,
 }) => {
   const [selectedEvent, setSelectedEvent] = useState<EventVM | undefined>()
@@ -94,22 +96,24 @@ const ParentCalendar: React.FC<ParentCalendarProps> = ({
                 size='large'
                 fontWeight='bold'
                 sx={{ cursor: 'pointer' }}
-                onClick={() => setSectionName('fullCalendar')}
+                onClick={() => setSectionName(DashboardSection.FULL_CALENDAR)}
               >
                 Calendar
               </Subtitle>
-              <Box display={{ xs: 'block', sm: 'block', md: 'none' }}>
-                <Button>
-                  <Paragraph
-                    size='medium'
-                    sx={{ textDecoration: 'underline' }}
-                    color={MthColor.MTHBLUE}
-                    onClick={() => setSectionName('fullCalendar')}
-                  >
-                    View All
-                  </Paragraph>
-                </Button>
-              </Box>
+              {sectionName !== DashboardSection.FULL_CALENDAR && (
+                <Box display={{ xs: 'block', sm: 'block', md: 'none' }}>
+                  <Button>
+                    <Paragraph
+                      size='medium'
+                      sx={{ textDecoration: 'underline' }}
+                      color={MthColor.MTHBLUE}
+                      onClick={() => setSectionName(DashboardSection.FULL_CALENDAR)}
+                    >
+                      View All
+                    </Paragraph>
+                  </Button>
+                </Box>
+              )}
             </Box>
           </Grid>
           <Grid item xs={12} lg={4} order={{ xs: 3, lg: 1 }} sx={{ marginTop: 3 }}>

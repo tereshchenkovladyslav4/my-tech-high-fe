@@ -48,12 +48,12 @@ const RequireUpdate: React.FC = () => {
 
   const parseGrade = (value: string) => {
     // if (value === 'OR-K') return 'OR - Kindergarten (5)'
-    if (value === 'K') return 'Kindergarten (5)'
+    if (value === 'K') return 'Kindergarten'
     const numberValue = parseInt(value)
-    if (numberValue === 1) return '1st grade (6)'
-    if (numberValue === 2) return '2nd grade (7)'
-    if (numberValue === 3) return '3rd grade (8)'
-    return `${value}th grade (${value !== '12' ? numberValue + 5 : `${numberValue + 5}/${numberValue + 6}`})`
+    if (numberValue === 1) return '1st Grade'
+    if (numberValue === 2) return '2nd Grade'
+    if (numberValue === 3) return '3rd Grade'
+    return `${value}th Grade`
   }
 
   return (

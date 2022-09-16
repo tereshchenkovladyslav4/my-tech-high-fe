@@ -3,7 +3,7 @@ import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined
 import { Box, Stack, Tooltip } from '@mui/material'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { MthColor } from '@mth/enums'
-import { useStyles } from '../../styles'
+import { siteManagementClassess } from '../../styles'
 import { CommonSelectType } from '../../types'
 
 type CommonSelectProps = {
@@ -21,13 +21,12 @@ export const CommonSelect: React.FC<CommonSelectProps> = ({
   hasDeleteIcon,
   handleDeleteAction,
 }) => {
-  const classes = useStyles
   return (
     <Stack
       key={index}
       direction='row'
       spacing={1}
-      sx={{ ...classes.selectBox, background: index % 2 == 0 ? '#FAFAFA' : '' }}
+      sx={{ ...siteManagementClassess.selectBox, background: index % 2 == 0 ? '#FAFAFA' : '' }}
     >
       <Subtitle size={16} fontWeight='600' textAlign='left' sx={{ minWidth: hasDeleteIcon ? 150 : 200 }}>
         {selectItem?.name}
@@ -45,7 +44,7 @@ export const CommonSelect: React.FC<CommonSelectProps> = ({
       {!selectItem?.name.includes('Option') && (
         <Box
           sx={{
-            ...classes.verticalLine,
+            ...siteManagementClassess.verticalLine,
             height: verticalDividHeight ? verticalDividHeight : 'auto',
           }}
         ></Box>

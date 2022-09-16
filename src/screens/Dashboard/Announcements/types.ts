@@ -1,3 +1,5 @@
+import { DashboardSection } from '../types'
+
 export type Announcement = {
   id?: number
   subject?: string
@@ -25,6 +27,6 @@ export type Announcement = {
 export type AnnnouncementProps = {
   announcements: Announcement[]
   setAnnouncements: (value: Announcement[]) => void
-  setSectionName: (value: React.SetStateAction<string>) => void
+  setSectionName: (value: DashboardSection) => void
   setSelectedAnnouncement: (value: Announcement) => void
 }

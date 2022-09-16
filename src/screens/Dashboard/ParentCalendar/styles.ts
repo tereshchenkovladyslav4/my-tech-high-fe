@@ -112,7 +112,6 @@ export const parentCalendarClasses = {
   avatarGroup: {
     '&.MuiAvatarGroup-root .MuiAvatar-root': {
       marginLeft: '-20px',
-      background: MthColor.WHITE,
     },
   },
 }

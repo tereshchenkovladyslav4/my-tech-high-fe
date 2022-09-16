@@ -19,6 +19,9 @@ export const useCurrentSchoolYearByRegionId = (
     midyear_application: boolean
     midyear_application_open: string
     midyear_application_close: string
+    schedule: boolean
+    diploma_seeking: boolean
+    testing_preference: boolean
   }
   error: ApolloError | undefined
 } => {

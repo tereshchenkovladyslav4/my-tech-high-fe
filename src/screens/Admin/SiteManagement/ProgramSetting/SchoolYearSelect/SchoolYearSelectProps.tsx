@@ -14,4 +14,7 @@ export type SchoolYearSelectProps = {
   setSchoolDistrict: (value: SchoolDistrictFileType) => void
   schoolYears: SchoolYears[]
   setSchoolYears: (value: SchoolYears[]) => void
+  setSchedule: (value: boolean) => void
+  setDiplomaSeeking: (value: boolean) => void
+  setTestingPreference: (value: boolean) => void
 }

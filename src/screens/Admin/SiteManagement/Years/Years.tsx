@@ -6,27 +6,31 @@ import moment from 'moment'
 import { Prompt } from 'react-router-dom'
 import { DropDownItem } from '@mth/components/DropDown/types'
 import { MYSQL_DATE_FORMAT } from '@mth/constants'
+import { MthTitle } from '@mth/enums'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { PageHeader } from '../components/PageHeader'
 import { createSchoolYearMutation, updateSchoolYearMutation } from '../services'
-import { useStyles } from '../styles'
+import { siteManagementClassess } from '../styles'
 import { AddSchoolYearModal } from './AddSchoolYearModal'
 import { PageContent } from './PageContent'
 import { SchoolYearDropDown } from './SchoolYearDropDown'
 import { SchoolYearItem, SchoolYearType } from './types'
 
 const Years: React.FC = () => {
-  const classes = useStyles
   const { me, setMe } = useContext(UserContext)
   const [isChanged, setIsChanged] = useState<boolean>(false)
   const [addSchoolYearDialogOpen, setAddSchoolYearDialogOpen] = useState<boolean>(false)
   const [schoolYears, setSchoolYears] = useState<SchoolYearType[]>([])
   const [selectedYearId, setSelectedYearId] = useState<number>(0)
+  const [enableSchedule, setEnableSchedule] = useState<boolean>(false)
   const [oldSelectedYearId, setOldSelectedYearId] = useState<number>(0)
   const [cloneSelectedYearId, setCloneSelectedYearId] = useState<number | undefined>(undefined)
   const [schoolYearItem, setSchoolYearItem] = useState<SchoolYearItem | undefined>(undefined)
   const [applicationItem, setApplicationItem] = useState<SchoolYearItem | undefined>(undefined)
   const [midYearItem, setMidYearItem] = useState<SchoolYearItem | undefined>(undefined)
+  const [midYearScheduleItem, setMidYearScheduleItem] = useState<SchoolYearItem | undefined>(undefined)
+  const [scheduleBuilderItem, setScheduleBuilderItem] = useState<SchoolYearItem | undefined>(undefined)
+  const [secondSemesterItem, setSecondSemesterItem] = useState<SchoolYearItem | undefined>(undefined)
   const [addSchoolYears, setAddSchoolYears] = useState<DropDownItem[]>([])
   const [submitSave] = useMutation(updateSchoolYearMutation)
   const [submitCreate, {}] = useMutation(createSchoolYearMutation)
@@ -44,6 +48,12 @@ const Years: React.FC = () => {
             midyear_application: midYearItem?.status ? 1 : 0,
             midyear_application_open: midYearItem?.open,
             midyear_application_close: midYearItem?.close,
+            schedule_builder_open: scheduleBuilderItem?.open,
+            schedule_builder_close: scheduleBuilderItem?.close,
+            second_semester_open: secondSemesterItem?.open,
+            second_semester_close: secondSemesterItem?.close,
+            midyear_schedule_open: midYearScheduleItem?.open,
+            midyear_schedule_close: midYearScheduleItem?.close,
           },
         },
       })
@@ -82,6 +92,9 @@ const Years: React.FC = () => {
       setSchoolYearItem(undefined)
       setApplicationItem(undefined)
       setMidYearItem(undefined)
+      setMidYearScheduleItem(undefined)
+      setScheduleBuilderItem(undefined)
+      setSecondSemesterItem(undefined)
     } else if (val) {
       schoolYears.map((schoolYear) => {
         if (schoolYear.schoolYearId == parseInt(val)) {
@@ -99,6 +112,18 @@ const Years: React.FC = () => {
             close: moment(schoolYear.midYearClose).add(1, 'years').format(MYSQL_DATE_FORMAT),
             status: schoolYear.midYearStatus,
           })
+          setMidYearScheduleItem({
+            open: moment(schoolYear.midYearScheduleOpen).add(1, 'years').format(MYSQL_DATE_FORMAT),
+            close: moment(schoolYear.midYearScheduleClose).add(1, 'years').format(MYSQL_DATE_FORMAT),
+          })
+          setScheduleBuilderItem({
+            open: moment(schoolYear.scheduleBuilderOpen).add(1, 'years').format(MYSQL_DATE_FORMAT),
+            close: moment(schoolYear.scheduleBuilderClose).add(1, 'years').format(MYSQL_DATE_FORMAT),
+          })
+          setSecondSemesterItem({
+            open: moment(schoolYear.secondSemesterOpen).add(1, 'years').format(MYSQL_DATE_FORMAT),
+            close: moment(schoolYear.secondSemesterClose).add(1, 'years').format(MYSQL_DATE_FORMAT),
+          })
         }
       })
     }
@@ -106,34 +131,45 @@ const Years: React.FC = () => {
   }
 
   return (
-    <Box sx={classes.base}>
+    <Box sx={siteManagementClassess.base}>
       <Prompt
         when={isChanged ? true : false}
         message={JSON.stringify({
-          header: 'Unsaved Changes',
-          content: 'Are you sure you want to leave without saving changes?',
+          header: MthTitle.UNSAVED_TITLE,
+          content: MthTitle.UNSAVED_DESCRIPTION,
         })}
       />
       <PageHeader title='Years' handleClickSave={handleClickSave} />
       <SchoolYearDropDown
+        selectedYearId={selectedYearId}
+        schoolYears={schoolYears}
         setSelectedYearId={setSelectedYearId}
+        setEnableSchedule={setEnableSchedule}
         setSchoolYearItem={setSchoolYearItem}
         setApplicationItem={setApplicationItem}
+        setScheduleBuilderItem={setScheduleBuilderItem}
+        setSecondSemesterItem={setSecondSemesterItem}
+        setMidYearScheduleItem={setMidYearScheduleItem}
         setMidYearItem={setMidYearItem}
         setOldSelectedYearId={setOldSelectedYearId}
         setAddSchoolYearDialogOpen={setAddSchoolYearDialogOpen}
-        selectedYearId={selectedYearId}
         setSchoolYears={setSchoolYears}
         setAddSchoolYears={setAddSchoolYears}
-        schoolYears={schoolYears}
       />
       <PageContent
+        enableSchedule={enableSchedule}
         schoolYearItem={schoolYearItem}
-        setSchoolYearItem={setSchoolYearItem}
         applicationItem={applicationItem}
-        setApplicationItem={setApplicationItem}
         midYearItem={midYearItem}
+        scheduleBuilderItem={scheduleBuilderItem}
+        secondSemesterItem={secondSemesterItem}
+        midYearScheduleItem={midYearScheduleItem}
         setMidYearItem={setMidYearItem}
+        setApplicationItem={setApplicationItem}
+        setSchoolYearItem={setSchoolYearItem}
+        setScheduleBuilderItem={setScheduleBuilderItem}
+        setSecondSemesterItem={setSecondSemesterItem}
+        setMidYearScheduleItem={setMidYearScheduleItem}
         setIsChanged={setIsChanged}
       />
       <AddSchoolYearModal

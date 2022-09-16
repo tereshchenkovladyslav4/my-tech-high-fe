@@ -16,6 +16,14 @@ export type PageContentProps = {
     isDelete?: boolean
     isChanged?: boolean
   }
+  scheduleItem: {
+    schedule: boolean
+    diplomaSeeking: boolean
+    testingPreference: boolean
+    setSchedule: (value: boolean) => void
+    setDiplomaSeeking: (value: boolean) => void
+    setTestingPreference: (value: boolean) => void
+  }
   stateLogoItem: {
     stateLogo: string
     setStateLogo: (value: string) => void

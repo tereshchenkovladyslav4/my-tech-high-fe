@@ -5,7 +5,7 @@ import { Form, Formik } from 'formik'
 import moment from 'moment'
 import { Prompt, useHistory } from 'react-router-dom'
 import * as yup from 'yup'
-import { MthRoute } from '@mth/enums'
+import { MthRoute, MthTitle } from '@mth/enums'
 import { convertDateToUTCDate } from '@mth/utils'
 import { CustomModal } from '../../SiteManagement/EnrollmentSetting/components/CustomModal/CustomModals'
 import { defaultEvent, defaultEventFormData } from '../defaultValue'
@@ -111,8 +111,8 @@ const AddEvent: React.FC<AddEventProps> = ({ selectedEvent }) => {
           <Prompt
             when={isChanged ? true : false}
             message={JSON.stringify({
-              header: 'Unsaved Changes',
-              content: 'Are you sure you want to leave without saving changes?',
+              header: MthTitle.UNSAVED_TITLE,
+              content: MthTitle.UNSAVED_DESCRIPTION,
             })}
           />
           <Formik

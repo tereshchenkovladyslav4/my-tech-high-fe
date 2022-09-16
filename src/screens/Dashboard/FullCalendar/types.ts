@@ -1,5 +1,6 @@
 import { MultiSelectDropDownListType } from '../../Admin/Calendar/components/MultiSelectDropDown/MultiSelectDropDown'
 import { CalendarEvent, EventVM } from '../../Admin/Calendar/types'
+import { DashboardSection } from '../types'
 
 export type FullCalendarProps = {
   searchField: string
@@ -7,7 +8,7 @@ export type FullCalendarProps = {
   calendarEventList: CalendarEvent[]
   eventTypeLists: MultiSelectDropDownListType[]
   setSearchField: (value: string) => void
-  setSectionName: (value: string) => void
+  setSectionName: (value: DashboardSection) => void
 }
 
 export type EventDetailProps = {

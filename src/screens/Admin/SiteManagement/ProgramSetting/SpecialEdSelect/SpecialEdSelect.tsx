@@ -4,7 +4,7 @@ import { CustomConfirmModal } from '@mth/components/CustomConfirmModal/CustomCon
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { MTHBLUE } from '../../../../../utils/constants'
 import { DropDown } from '../../components/DropDown/DropDown'
-import { useStyles } from '../../styles'
+import { siteManagementClassess } from '../../styles'
 import { ProgramSettingChanged } from '../types'
 
 type SpecialEdSelectProps = {
@@ -24,7 +24,6 @@ export const SpecialEdSelect: React.FC<SpecialEdSelectProps> = ({
   setIsChanged,
   isChanged,
 }) => {
-  const classes = useStyles
   const [open, setOpen] = useState<boolean>(false)
   const [options, setOptions] = useState<string>('')
   const [tempOptions, setTempOptions] = useState(specialEdOptions)
@@ -119,7 +118,7 @@ export const SpecialEdSelect: React.FC<SpecialEdSelectProps> = ({
         setParentValue={handleChange}
       />
       {specialEd && (
-        <Box sx={classes.gradeBox}>
+        <Box sx={siteManagementClassess.gradeBox}>
           <Stack direction='row' sx={{ ml: 1.5, cursor: 'pointer' }} alignItems='center' onClick={handleClickOpen}>
             <Subtitle size={12} color={MTHBLUE} fontWeight='500'>
               {options != '' ? options : 'Select'}
@@ -127,8 +126,8 @@ export const SpecialEdSelect: React.FC<SpecialEdSelectProps> = ({
           </Stack>
         </Box>
       )}
-      <Dialog open={open} onClose={handleClose} sx={classes.gradesDialog}>
-        <DialogTitle sx={classes.dialogTitle}>{'Type of Speical Education Services'}</DialogTitle>
+      <Dialog open={open} onClose={handleClose} sx={siteManagementClassess.gradesDialog}>
+        <DialogTitle sx={siteManagementClassess.dialogTitle}>{'Type of Speical Education Services'}</DialogTitle>
         <Box sx={{ padding: '26px' }}>
           {tempOptions?.map((options, i) => (
             <Box key={i}>
@@ -181,11 +180,11 @@ export const SpecialEdSelect: React.FC<SpecialEdSelectProps> = ({
             </Subtitle>
           </Box>
         </Box>
-        <DialogActions sx={classes.dialogAction}>
-          <Button variant='contained' sx={classes.cancelButton} onClick={handleClose}>
+        <DialogActions sx={siteManagementClassess.dialogAction}>
+          <Button variant='contained' sx={siteManagementClassess.cancelButton} onClick={handleClose}>
             Cancel
           </Button>
-          <Button variant='contained' sx={classes.submitButton} onClick={handleSave}>
+          <Button variant='contained' sx={siteManagementClassess.submitButton} onClick={handleSave}>
             Save
           </Button>
         </DialogActions>

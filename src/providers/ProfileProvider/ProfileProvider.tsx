@@ -1,5 +1,6 @@
 import React, { FunctionComponent, useState } from 'react'
 import { Modal, Box } from '@mui/material'
+import { MthTitle } from '@mth/enums'
 import { CustomModal } from '../../screens/Admin/SiteManagement/EnrollmentSetting/components/CustomModal/CustomModals'
 import { UserProfile } from '../../screens/Admin/UserProfile/UserProfile'
 import { ProfileContext } from './ProfileContext'
@@ -50,8 +51,8 @@ export const ProfileProvider: FunctionComponent = ({ children }) => {
       )}
       {showConfirmModal && (
         <CustomModal
-          title='Unsaved Changes'
-          description='Are you sure you want to leave without saving changes?'
+          title={MthTitle.UNSAVED_TITLE}
+          description={MthTitle.UNSAVED_DESCRIPTION}
           onClose={() => {
             setShowConfirmModal(false)
           }}

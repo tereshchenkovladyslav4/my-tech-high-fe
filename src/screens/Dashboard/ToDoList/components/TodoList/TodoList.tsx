@@ -48,48 +48,12 @@ export const TodoList: TodoListTemplateType = ({ handleShowEmpty, schoolYears })
             )
             setTodoList((prev) => [...prev, ...splitedItems])
           } else {
-            setTodoList((prev) => [...prev, item])
+            const splitedItems: ToDoItem[] = item.students.reduce(
+              (list: ToDoItem[], student) => list.concat([{ ...item, students: [student] }]),
+              [],
+            )
+            setTodoList((prev) => [...prev, ...splitedItems])
           }
-
-          ////////////////////////////////////////////FOR TEST////////////////////////////////////////////
-          // Currently, the function to add the schedule builder for the student in the admin side is not implemented.
-          // Therefore, this function was created for testing purpose to check the current parent schedule page.
-          // This feature will be completed in the future.
-          // student is for test.
-          if (item.category == ToDoCategory.SUBMIT_SCHEDULE) {
-            const student = {
-              student_id: '2771',
-              person: {
-                first_name: '3demo',
-                last_name: 'demo',
-                person_id: '3119',
-                photo: null,
-                preferred_first_name: null,
-                preferred_last_name: null,
-              },
-              current_school_year_status: {
-                student_id: '2771',
-                school_year_id: 21,
-                application_id: 2770,
-                application_status: 'Accepted',
-                packet_status: 'Not Started',
-                packet_id: 731,
-                application_school_year_id: 21,
-                grade_level: '2',
-                application_date_submitted: '2022-07-13T22:23:07.000Z',
-                application_date_started: '2022-07-13T22:23:08.000Z',
-                application_date_accepted: 'Aug 24th, 2022',
-                application_deadline_num_days: 0,
-                enrollment_packet_deadline_num_days: 2,
-                enrollment_packet_date_deadline: '08.24',
-              },
-            }
-            setTodoList((prev) => [...prev, { ...item, students: [student] }])
-            todoListCount++
-          }
-          ////////////////////////////////////////////////~FOR TEST///////////////////////////////////////////////////////////
-
-          // setTodoList((prev) => [...prev, ...splitedItems])
 
           if (item.students.length) {
             todoListCount++
@@ -108,6 +72,16 @@ export const TodoList: TodoListTemplateType = ({ handleShowEmpty, schoolYears })
       case ToDoCategory.SUBMIT_WITHDRAW: {
         return moment(todoItem.students.at(-1)?.StudentWithdrawals.at(-1)?.date).format('MMM Do, YYYY')
       }
+      case ToDoCategory.SUBMIT_SCHEDULE: {
+        if (todoItem.students.at(-1)?.current_school_year_status?.midyear_application)
+          return moment(todoItem.students.at(-1)?.current_school_year_status?.midyear_schedule_open).format(
+            'MMM Do, YYYY',
+          )
+        else
+          return moment(todoItem.students.at(-1)?.current_school_year_status?.schedule_builder_open).format(
+            'MMM Do, YYYY',
+          )
+      }
       default: {
         return todoItem.students.at(-1)?.current_school_year_status?.application_date_accepted || '-'
       }
@@ -125,6 +99,11 @@ export const TodoList: TodoListTemplateType = ({ handleShowEmpty, schoolYears })
             .add(todoItem.students.at(-1)?.current_school_year_status?.withdraw_deadline_num_days || 0, 'days')
             .format('MM.DD') || '-'
         )
+      }
+      case ToDoCategory.SUBMIT_SCHEDULE: {
+        if (todoItem.students.at(-1)?.current_school_year_status?.midyear_application)
+          return moment(todoItem.students.at(-1)?.current_school_year_status?.midyear_schedule_close).format('MM.DD')
+        else return moment(todoItem.students.at(-1)?.current_school_year_status?.schedule_builder_close).format('MM.DD')
       }
       default: {
         return todoItem.students.at(-1)?.current_school_year_status?.enrollment_packet_date_deadline || '-'

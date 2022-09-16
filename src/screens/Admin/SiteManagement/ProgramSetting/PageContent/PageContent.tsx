@@ -7,6 +7,7 @@ import { CountySelect } from '../CountySelect'
 import { EnrollPacketSelect } from '../EnrollmentPackets/EnrollmentPacketSelect'
 import { GradesSelect } from '../GradesSelect'
 import { ProgramSelect } from '../ProgramSelect'
+import { Schedules } from '../Schedules'
 import { SchoolDistrictSelect } from '../SchoolDistrictSelect'
 import { SpecialEdSelect } from '../SpecialEdSelect'
 import { StateLogo } from '../StateLogo'
@@ -27,6 +28,7 @@ export const PageContent: React.FC<PageContentProps> = ({
   isChanged,
   setIsDelete,
   isDelete,
+  scheduleItem,
 }) => {
   const programSettingList: CommonSelectType[] = [
     {
@@ -130,6 +132,21 @@ export const PageContent: React.FC<PageContentProps> = ({
           enroll={enrollItem?.enroll}
           setEnroll={enrollItem?.setEnroll}
           isChanged={isChanged}
+          setIsChanged={setIsChanged}
+        />
+      ),
+    },
+    {
+      name: MthTitle.SCHEDULES,
+      component: (
+        <Schedules
+          schedule={scheduleItem.schedule}
+          diplomaSeeking={scheduleItem.diplomaSeeking}
+          testingPreference={scheduleItem.testingPreference}
+          isChanged={isChanged}
+          setSchedule={scheduleItem.setSchedule}
+          setDiplomaSeeking={scheduleItem.setDiplomaSeeking}
+          setTestingPreference={scheduleItem.setTestingPreference}
           setIsChanged={setIsChanged}
         />
       ),

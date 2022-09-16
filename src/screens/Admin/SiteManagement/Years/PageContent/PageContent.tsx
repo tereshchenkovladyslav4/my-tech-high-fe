@@ -7,12 +7,19 @@ import { OpenAndCloseSelect } from '../OpenAndCloseSelect'
 import { PageContentProps } from './PageContentProps'
 
 export const PageContent: React.FC<PageContentProps> = ({
+  enableSchedule,
   schoolYearItem,
   setSchoolYearItem,
   applicationItem,
   setApplicationItem,
   midYearItem,
   setMidYearItem,
+  scheduleBuilderItem,
+  setScheduleBuilderItem,
+  secondSemesterItem,
+  setSecondSemesterItem,
+  midYearScheduleItem,
+  setMidYearScheduleItem,
   setIsChanged,
 }) => {
   const [midYearExpend, setMidYearExpend] = useState<boolean | undefined>(false)
@@ -39,19 +46,54 @@ export const PageContent: React.FC<PageContentProps> = ({
   ]
 
   if (midYearItem?.status) {
-    const setting: CommonSelectType = {
+    yearsSettingList.push({
       name: MthTitle.MID_YEAR_APPLICATION,
       component: <OpenAndCloseSelect item={midYearItem} setItem={setMidYearItem} setIsChanged={setIsChanged} />,
-    }
-    yearsSettingList.push(setting)
+    })
+    if (enableSchedule)
+      yearsSettingList.push({
+        name: MthTitle.MID_YEAR_SCHEDULES,
+        component: (
+          <OpenAndCloseSelect item={midYearScheduleItem} setItem={setMidYearScheduleItem} setIsChanged={setIsChanged} />
+        ),
+      })
+  }
+  if (enableSchedule) {
+    yearsSettingList.push({
+      name: MthTitle.SCHEUDLE_BUILDER,
+      component: (
+        <OpenAndCloseSelect item={scheduleBuilderItem} setItem={setScheduleBuilderItem} setIsChanged={setIsChanged} />
+      ),
+    })
+
+    yearsSettingList.push({
+      name: MthTitle.SECOND_SEMESTER,
+      component: (
+        <OpenAndCloseSelect item={secondSemesterItem} setItem={setSecondSemesterItem} setIsChanged={setIsChanged} />
+      ),
+    })
   }
 
   return (
     <>
       {yearsSettingList
-        ?.filter((list) => !midYearExpend || (midYearExpend && list.name != 'Mid-Year Application'))
+        ?.filter(
+          (list) =>
+            !midYearExpend ||
+            (midYearExpend && list.name != MthTitle.MID_YEAR_APPLICATION && list.name != MthTitle.MID_YEAR_SCHEDULES),
+        )
         .map((yearsSetting, index) => (
-          <CommonSelect key={index} index={index > 2 ? index + 1 : index} selectItem={yearsSetting} />
+          <CommonSelect
+            key={index}
+            index={
+              yearsSetting.name == MthTitle.MID_YEAR_APPLICATION || yearsSetting.name == MthTitle.SECOND_SEMESTER
+                ? index + 1
+                : yearsSetting.name == MthTitle.MID_YEAR_SCHEDULES
+                ? index + 2
+                : index
+            }
+            selectItem={yearsSetting}
+          />
         ))}
     </>
   )

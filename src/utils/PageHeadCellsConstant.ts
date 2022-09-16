@@ -284,7 +284,7 @@ export const ENROLLMENT_PACKET_HEADCELLS: HeadCell[] = [
     id: 'studentStatus',
     numeric: false,
     disablePadding: true,
-    label: 'Student',
+    label: 'Packet',
   },
   {
     id: 'emailed',

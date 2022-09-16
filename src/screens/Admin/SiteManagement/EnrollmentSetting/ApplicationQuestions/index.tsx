@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext, FunctionComponent } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import { useMutation, useQuery } from '@apollo/client'
 import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded'
 import { Alert, Box, Button, Card, Grid, IconButton, List, Typography } from '@mui/material'
@@ -7,12 +7,11 @@ import _ from 'lodash'
 import moment from 'moment'
 import { useHistory } from 'react-router-dom'
 import { arrayMove, SortableContainer, SortableElement } from 'react-sortable-hoc'
-
-import BGSVG from '../../../../../assets/ApplicationBG.svg'
-import { DropDownItem } from '../../../../../components/DropDown/types'
-import { QUESTION_TYPE } from '../../../../../components/QuestionItem/QuestionItemProps'
-import { UserContext } from '../../../../../providers/UserContext/UserProvider'
-
+import BGSVG from '@mth/assets/ApplicationBG.svg'
+import { DropDownItem } from '@mth/components/DropDown/types'
+import { QUESTION_TYPE } from '@mth/components/QuestionItem/QuestionItemProps'
+import { MthTitle } from '@mth/enums'
+import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { GRADES } from '../../../../../utils/constants'
 import { toOrdinalSuffix } from '../../../../../utils/stringHelpers'
 import { AddQuestionModal } from '../components/AddQuestionModal/AddQuestionModal'
@@ -36,7 +35,7 @@ import { useStyles } from './styles'
 import { ApplicationQuestion, initQuestions } from './types'
 const SortableItem = SortableElement(ApplicationQuestionItem)
 
-export const ApplicationQuestions: FunctionComponent = () => {
+export const ApplicationQuestions: React.FC = () => {
   const [questions, setQuestions] = useState<ApplicationQuestion[]>([])
   const [openSelectQuestionType, setOpenSelectQuestionType] = useState(false)
   const [unSaveChangeModal, setUnSaveChangeModal] = useState(false)
@@ -268,8 +267,8 @@ export const ApplicationQuestions: FunctionComponent = () => {
     const unreg = history.block(() => {
       if (unsavedChanges) {
         return JSON.stringify({
-          header: 'Unsaved Changes',
-          content: 'Are you sure you want to leave without saving changes?',
+          header: MthTitle.UNSAVED_TITLE,
+          content: MthTitle.UNSAVED_DESCRIPTION,
         })
       }
       return undefined
@@ -587,8 +586,8 @@ export const ApplicationQuestions: FunctionComponent = () => {
 
               {unSaveChangeModal && (
                 <CustomModal
-                  title='Unsaved Changes'
-                  description='Are you sure you want to leave without saving changes?'
+                  title={MthTitle.UNSAVED_TITLE}
+                  description={MthTitle.UNSAVED_DESCRIPTION}
                   onClose={() => {
                     setUnSaveChangeModal(false)
                   }}

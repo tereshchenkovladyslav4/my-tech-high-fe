@@ -1,9 +1,6 @@
-import { FunctionComponent } from 'react'
-
-type AdminEnrolmentCardProps = {
+export type AdminEnrolmentCardProps = {
   title: string
   link: string
   img: string
+  disabled?: boolean
 }
-
-export type AdminEnrollmentCardTemplateType = FunctionComponent<AdminEnrolmentCardProps>

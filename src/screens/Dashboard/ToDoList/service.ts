@@ -105,6 +105,13 @@ export const getTodoList = gql`
             application_deadline_num_days
             enrollment_packet_deadline_num_days
             enrollment_packet_date_deadline
+            midyear_application
+            schedule_builder_close
+            schedule_builder_open
+            midyear_schedule_close
+            midyear_schedule_open
+            second_semester_open
+            second_semester_close
           }
         }
       }

@@ -16,7 +16,7 @@ import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { renderGrades } from '@mth/utils'
 import { GRADES, MTHBLUE } from '../../../../../utils/constants'
 import { toOrdinalSuffix } from '../../../../../utils/stringHelpers'
-import { useStyles } from '../../styles'
+import { siteManagementClassess } from '../../styles'
 import { ProgramSettingChanged } from '../types'
 
 export type GradesSelectProps = {
@@ -27,7 +27,6 @@ export type GradesSelectProps = {
 }
 
 export const GradesSelect: React.FC<GradesSelectProps> = ({ grades, setGrades, setIsChanged, isChanged }) => {
-  const classes = useStyles
   const [open, setOpen] = useState<boolean>(false)
   const [gradesArr, setGradesArr] = useState<string[]>([])
 
@@ -107,23 +106,23 @@ export const GradesSelect: React.FC<GradesSelectProps> = ({ grades, setGrades, s
 
   return (
     <>
-      <Box sx={classes.gradeBox}>
+      <Box sx={siteManagementClassess.gradeBox}>
         <Stack direction='row' sx={{ ml: 1.5, cursor: 'pointer' }} alignItems='center' onClick={handleClickOpen}>
           <Subtitle size={12} color={MTHBLUE} fontWeight='500'>
             {grades ? renderGrades(grades) : 'Select'}
           </Subtitle>
         </Stack>
       </Box>
-      <Dialog open={open} onClose={handleClose} sx={classes.gradesDialog}>
-        <DialogTitle sx={classes.dialogTitle}>{'Grades'}</DialogTitle>
+      <Dialog open={open} onClose={handleClose} sx={siteManagementClassess.gradesDialog}>
+        <DialogTitle sx={siteManagementClassess.dialogTitle}>{'Grades'}</DialogTitle>
         <Box>
-          <FormGroup sx={classes.formGroup}>{renderGradeList()}</FormGroup>
+          <FormGroup sx={siteManagementClassess.formGroup}>{renderGradeList()}</FormGroup>
         </Box>
-        <DialogActions sx={classes.dialogAction}>
-          <Button variant='contained' sx={classes.cancelButton} onClick={handleClose}>
+        <DialogActions sx={siteManagementClassess.dialogAction}>
+          <Button variant='contained' sx={siteManagementClassess.cancelButton} onClick={handleClose}>
             Cancel
           </Button>
-          <Button variant='contained' sx={classes.submitButton} onClick={handleSave}>
+          <Button variant='contained' sx={siteManagementClassess.submitButton} onClick={handleSave}>
             Save
           </Button>
         </DialogActions>

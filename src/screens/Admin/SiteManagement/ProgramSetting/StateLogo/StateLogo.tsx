@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import SystemUpdateAltOutlinedIcon from '@mui/icons-material/SystemUpdateAltOutlined'
 import { Box, Stack } from '@mui/material'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
-import { useStyles } from '../../styles'
+import { siteManagementClassess } from '../../styles'
 import { ImageCropper } from '../ImageCropper'
 import { StateLogoProps } from './StateLogoTypes'
 
@@ -13,7 +13,6 @@ export const StateLogo: React.FC<StateLogoProps> = ({
   setIsChanged,
   isChanged,
 }) => {
-  const classes = useStyles
   const [open, setOpen] = useState<boolean>(false)
   const [imageToCrop, setImageToCrop] = useState<string | ArrayBuffer | null>('')
   const handleClickOpen = () => {
@@ -65,7 +64,7 @@ export const StateLogo: React.FC<StateLogoProps> = ({
       {open && (
         <ImageCropper
           imageToCrop={imageToCrop}
-          classes={classes}
+          classes={siteManagementClassess}
           setStateLogoFile={setStateLogoFile}
           setIsChanged={setIsChanged}
           isChanged={isChanged}

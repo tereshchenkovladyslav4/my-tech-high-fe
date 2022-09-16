@@ -1,5 +1,5 @@
 import { PRIMARY_MEDIUM_MOUSEOVER, BUTTON_LINEAR_GRADIENT, RED_GRADIENT } from '../../../utils/constants'
-export const useStyles = {
+export const siteManagementClassess = {
   base: {
     position: 'relative',
     px: 4,

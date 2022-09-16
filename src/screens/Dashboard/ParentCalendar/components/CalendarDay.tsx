@@ -6,7 +6,7 @@ import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { MthColor } from '@mth/enums'
 import { hexToRgbA } from '@mth/utils'
 import { CalendarEvent } from '../../../Admin/Calendar/types'
-import { calendarDayClassess } from './styles'
+import { calendarDayClasses } from './styles'
 import { CalendarDaysProps, DayVM } from './types'
 
 export const CalendarDays: React.FC<CalendarDaysProps> = ({
@@ -104,7 +104,7 @@ export const CalendarDays: React.FC<CalendarDaysProps> = ({
                 className='event-more'
                 onClick={(e: React.MouseEvent<HTMLElement>) => handleMoreDetail(e)}
               >
-                <Subtitle className='event' sx={calendarDayClassess.eventMore}>
+                <Subtitle className='event' sx={calendarDayClasses.eventMore}>
                   {`+${eventCnt - showLimit}`}
                 </Subtitle>
               </button>
@@ -154,10 +154,10 @@ export const CalendarDays: React.FC<CalendarDaysProps> = ({
   }, [day, selectedDate, eventList])
 
   return (
-    <Box className='table-content' sx={calendarDayClassess.relative}>
+    <Box className='table-content' sx={calendarDayClasses.relative}>
       {currentDays.map((currentDay, index) => {
         return (
-          <Box key={index} sx={calendarDayClassess.relative}>
+          <Box key={index} sx={calendarDayClasses.relative}>
             <Box
               className={
                 'calendarDay' + (currentDay.currentMonth ? ' current' : '') + (currentDay.selected ? ' selected' : '')
@@ -183,14 +183,14 @@ export const CalendarDays: React.FC<CalendarDaysProps> = ({
         )
       })}
 
-      <Popper id={'simple-popper'} open={showEventLstPopup} anchorEl={anchorEl}>
-        <Card sx={calendarDayClassess.modal}>
-          <Box sx={calendarDayClassess.title}>
+      <Popper id={'simple-popper'} open={showEventLstPopup} anchorEl={anchorEl} sx={{ zIndex: 101 }}>
+        <Card sx={calendarDayClasses.modal}>
+          <Box sx={calendarDayClasses.title}>
             <Subtitle color={MthColor.GRAY} sx={{ fontSize: '20px' }} fontWeight='700'>
               {moment(selectedDate).format('dddd')}
             </Subtitle>
             <CloseIcon
-              sx={calendarDayClassess.closeBtn}
+              sx={calendarDayClasses.closeBtn}
               onClick={() => {
                 setAnchorEl(null)
                 setShowEventLstPopup(false)

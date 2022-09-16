@@ -2,17 +2,18 @@ import React, { useContext } from 'react'
 import { useMutation } from '@apollo/client'
 import { Box, Button } from '@mui/material'
 import { map } from 'lodash'
-import BGSVG from '../../../assets/AnnouncementBG.svg'
-import { EmptyState } from '../../../components/EmptyState/EmptyState'
-import { Flexbox } from '../../../components/Flexbox/Flexbox'
-import { Paragraph } from '../../../components/Typography/Paragraph/Paragraph'
-import { Subtitle } from '../../../components/Typography/Subtitle/Subtitle'
-import { Title } from '../../../components/Typography/Title/Title'
-import { UserContext } from '../../../providers/UserContext/UserProvider'
-import { SYSTEM_06 } from '../../../utils/constants'
+import BGSVG from '@mth/assets/AnnouncementBG.svg'
+import { EmptyState } from '@mth/components/EmptyState/EmptyState'
+import { Flexbox } from '@mth/components/Flexbox/Flexbox'
+import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { Title } from '@mth/components/Typography/Title/Title'
+import { MthColor } from '@mth/enums'
+import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { deleteUserAnnouncementByUserId, markRead } from '../services'
+import { DashboardSection } from '../types'
 import { AnnouncementItem } from './components/AnnouncementItem'
-import { announcementClassess } from './styles'
+import { announcementClasses } from './styles'
 import { AnnnouncementProps } from './types'
 
 const Announcements: React.FC<AnnnouncementProps> = ({
@@ -87,7 +88,7 @@ const Announcements: React.FC<AnnnouncementProps> = ({
           alignItems='center'
         >
           <Paragraph sx={{ fontSize: '20px', fontWeight: '700' }}>Announcements</Paragraph>
-          <Button onClick={() => setSectionName('viewAll')}>
+          <Button onClick={() => setSectionName(DashboardSection.VIEW_ALL)}>
             <Paragraph size='medium' sx={{ textDecoration: 'underline' }} color='#4145FF'>
               View All
             </Paragraph>
@@ -96,8 +97,13 @@ const Announcements: React.FC<AnnnouncementProps> = ({
         {announcements?.length > 0 ? (
           <Box sx={{ position: 'relative' }}>
             {renderAnnouncements()}
-            <Box sx={announcementClassess.clearAll} onClick={() => onDeleteAll()}>
-              <Paragraph textAlign='center' size='medium' color={SYSTEM_06} sx={{ textDecoration: 'underline' }}>
+            <Box sx={announcementClasses.clearAll} onClick={() => onDeleteAll()}>
+              <Paragraph
+                textAlign='center'
+                size='medium'
+                color={MthColor.SYSTEM_06}
+                sx={{ textDecoration: 'underline' }}
+              >
                 Clear All
               </Paragraph>
             </Box>
@@ -106,7 +112,7 @@ const Announcements: React.FC<AnnnouncementProps> = ({
           <EmptyState
             title={<Title sx={{ fontSize: '12.85px' }}>Congrats!</Title>}
             subtitle={
-              <Subtitle color={SYSTEM_06} sx={{ fontSize: '12.85px' }} fontWeight='500'>
+              <Subtitle color={MthColor.SYSTEM_06} sx={{ fontSize: '12.85px' }} fontWeight='500'>
                 You are all caught up.
               </Subtitle>
             }

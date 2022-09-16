@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useMutation, useQuery } from '@apollo/client'
 import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded'
 import CallMissedOutgoingIcon from '@mui/icons-material/CallMissedOutgoing'
@@ -11,12 +11,13 @@ import { Field, Form, Formik } from 'formik'
 import { map, sortBy, toNumber, upperCase } from 'lodash'
 import { Prompt, useHistory } from 'react-router-dom'
 import * as yup from 'yup'
-import { SortableTable } from '../../../../components/SortableTable/SortableTable'
-import { Paragraph } from '../../../../components/Typography/Paragraph/Paragraph'
-import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
+import { SortableTable } from '@mth/components/SortableTable/SortableTable'
+import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { MthTitle } from '@mth/enums'
 import { BUTTON_LINEAR_GRADIENT, RED_GRADIENT } from '../../../../utils/constants'
 import { SCHOOL_PARTNER_HEADCELLS } from '../../../../utils/PageHeadCellsConstant'
-import { useStyles } from '../styles'
+import { siteManagementClassess } from '../styles'
 import { ArchiveSchoolPartnerModal } from './ArchiveSchoolPartnerModal/ArchiveSchoolPartnerModal'
 import { SchoolPartnerEditModal } from './SchoolPartnerEditModal/SchoolPartnerEditModal'
 import { SchoolYearDropDown } from './SchoolYearDropDown/SchoolYearDropDown'
@@ -28,8 +29,7 @@ export type ValidateFileResponse = {
   message?: string
 }
 
-export const SchoolPartner: FunctionComponent = () => {
-  const classes = useStyles
+export const SchoolPartner: React.FC = () => {
   const history = useHistory()
 
   const localStorageRegion = JSON.parse(localStorage.getItem('selectedRegion'))['region_id']
@@ -216,14 +216,14 @@ export const SchoolPartner: FunctionComponent = () => {
   }
 
   return (
-    <Box sx={classes.base}>
+    <Box sx={siteManagementClassess.base}>
       {openEditModal && <SchoolPartnerEditModal handleModem={() => setOpenEditModal(undefined)} el={openEditModal} />}
       {archiveModal && <ArchiveSchoolPartnerModal handleModem={() => setArchiveModal(undefined)} el={archiveModal} />}
       <Prompt
         when={unsavedChanges ? true : false}
         message={JSON.stringify({
-          header: 'Unsaved Changes',
-          content: 'Are you sure you want to leave without saving changes?',
+          header: MthTitle.UNSAVED_TITLE,
+          content: MthTitle.UNSAVED_DESCRIPTION,
         })}
       />
       <Box

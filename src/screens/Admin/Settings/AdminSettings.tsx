@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Box, Tab, Tabs } from '@mui/material'
 import { Prompt } from 'react-router-dom'
+import { MthTitle } from '@mth/enums'
 import { CustomConfirmModal } from '../../../components/CustomConfirmModal/CustomConfirmModal'
 import { Subtitle } from '../../../components/Typography/Subtitle/Subtitle'
 import { MTHBLUE } from '../../../utils/constants'
@@ -36,16 +37,16 @@ const AdminSetting: React.FC = () => {
     <Box display='flex' flexDirection='column' height={'100%'}>
       {showConfirmModalOpen && (
         <CustomConfirmModal
-          header='Unsaved Changes'
-          content='Are you sure you want to leave without saving changes?'
+          header={MthTitle.UNSAVED_TITLE}
+          content={MthTitle.UNSAVED_DESCRIPTION}
           handleConfirmModalChange={onChangeConfirmModal}
         />
       )}
       <Prompt
         when={isFormChange ? true : false}
         message={JSON.stringify({
-          header: 'Unsaved Changes',
-          content: 'Are you sure you want to leave without saving changes?',
+          header: MthTitle.UNSAVED_TITLE,
+          content: MthTitle.UNSAVED_DESCRIPTION,
         })}
       />
       <Tabs

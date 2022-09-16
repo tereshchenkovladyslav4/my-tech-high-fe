@@ -3,6 +3,7 @@ import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline'
 import ScheduleIcon from '@mui/icons-material/Schedule'
 import { Avatar, Box, CircularProgress, IconButton, Tooltip } from '@mui/material'
 import { useHistory } from 'react-router-dom'
+import { PacketStatus } from '@mth/enums'
 import { Metadata } from '../../../../../components/Metadata/Metadata'
 import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
@@ -78,7 +79,7 @@ export const StudentGrade: StudentGradeTemplateType = ({ student, schoolYears })
       currApplication &&
       currApplication?.status === 'Accepted' &&
       currPacket &&
-      currPacket?.status === 'Submitted'
+      (currPacket?.status === 'Submitted' || currPacket?.status === PacketStatus.RESUBMITTED)
     ) {
       setCircleData({
         progress: 50,

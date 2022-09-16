@@ -5,8 +5,9 @@ import { Box } from '@mui/system'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { getWindowDimension } from '@mth/utils'
-import { announcementClassess } from '../Announcements/styles'
+import { announcementClasses } from '../Announcements/styles'
 import { avatarGroup } from '../AnnouncementSection/AnnouncementSection'
+import { DashboardSection } from '../types'
 import { ReadMoreSectionProps } from './types'
 
 const ReadMoreSection: React.FC<ReadMoreSectionProps> = ({ announcement, setSectionName }) => {
@@ -55,7 +56,7 @@ const ReadMoreSection: React.FC<ReadMoreSectionProps> = ({ announcement, setSect
               marginX={4}
             >
               <Box display='flex' flexDirection='row' alignItems='center' alignContent='center'>
-                <Button sx={{ marginBottom: 'auto' }} onClick={() => setSectionName('viewAll')}>
+                <Button sx={{ marginBottom: 'auto' }} onClick={() => setSectionName(DashboardSection.VIEW_ALL)}>
                   <ChevronLeftIcon sx={{ marginRight: 0.5, marginLeft: -2.5 }} />
                 </Button>
                 <Box sx={{ marginRight: 10 }}>
@@ -65,15 +66,15 @@ const ReadMoreSection: React.FC<ReadMoreSectionProps> = ({ announcement, setSect
                 </Box>
               </Box>
             </Box>
-            <Box sx={announcementClassess.readMoreSection}>
+            <Box sx={announcementClasses.readMoreSection}>
               <Typography fontSize={'16px'} color={'#A1A1A1'} fontWeight={700}>
                 {announcement?.date}
               </Typography>
             </Box>
-            <Box sx={announcementClassess.readMoreSection}>
+            <Box sx={announcementClasses.readMoreSection}>
               {announcement?.grades && avatarGroup(announcement?.grades, students)}
             </Box>
-            <Box sx={announcementClassess.readMoreSection}>
+            <Box sx={announcementClasses.readMoreSection}>
               <Typography
                 component={'span'}
                 variant={'body2'}

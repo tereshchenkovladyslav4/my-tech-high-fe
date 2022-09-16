@@ -13,7 +13,7 @@ import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { Title } from '@mth/components/Typography/Title/Title'
 import { WarningModal } from '@mth/components/WarningModal/Warning'
 import { s3URL, SNOWPACK_PUBLIC_S3_URL } from '@mth/constants'
-import { MthColor, MthRoute, PacketStatus } from '@mth/enums'
+import { MthColor, MthRoute, MthTitle, PacketStatus } from '@mth/enums'
 import { UserContext, UserInfo } from '@mth/providers/UserContext/UserProvider'
 import { gradeText } from '@mth/utils'
 import { Person, StudentType } from '../types'
@@ -233,8 +233,8 @@ export const StudentProfile: React.FC = () => {
           <Prompt
             when={isFormChanged}
             message={JSON.stringify({
-              header: 'Unsaved Changes',
-              content: 'Are you sure you want to leave without saving changes?',
+              header: MthTitle.UNSAVED_TITLE,
+              content: MthTitle.UNSAVED_DESCRIPTION,
             })}
           />
           {/* Needed to prevent auto complete for the new password field */}

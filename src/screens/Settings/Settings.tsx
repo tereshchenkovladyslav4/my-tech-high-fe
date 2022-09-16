@@ -3,7 +3,7 @@ import { Box, Tab, Tabs } from '@mui/material'
 import { Prompt } from 'react-router-dom'
 import { CustomConfirmModal } from '@mth/components/CustomConfirmModal/CustomConfirmModal'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
-import { MthColor } from '@mth/enums'
+import { MthColor, MthTitle } from '@mth/enums'
 import { settingClasses } from '@mth/screens/Settings/styles'
 import { Account } from './Account/Account'
 import { Profile } from './Profile/Profile'
@@ -35,16 +35,16 @@ export const Settings: React.FC = () => {
     <Box display='flex' flexDirection='column' height={'100%'}>
       {showConfirmModalOpen && (
         <CustomConfirmModal
-          header='Unsaved Changes'
-          content='Are you sure you want to leave without saving changes?'
+          header={MthTitle.UNSAVED_TITLE}
+          content={MthTitle.UNSAVED_DESCRIPTION}
           handleConfirmModalChange={onChangeConfirmModal}
         />
       )}
       <Prompt
         when={isFormChange}
         message={JSON.stringify({
-          header: 'Unsaved Changes',
-          content: 'Are you sure you want to leave without saving changes?',
+          header: MthTitle.UNSAVED_TITLE,
+          content: MthTitle.UNSAVED_DESCRIPTION,
         })}
       />
       <Tabs

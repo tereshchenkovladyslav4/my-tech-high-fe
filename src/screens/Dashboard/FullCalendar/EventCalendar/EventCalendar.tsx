@@ -10,7 +10,7 @@ import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { MthColor } from '@mth/enums'
 import { mainClasses } from '../../../Admin/Calendar/MainComponent/styles'
 import { CalendarEvent, EventCalendarProps } from '../../../Admin/Calendar/types'
-import { calendarDayClassess } from '../../ParentCalendar/components/styles'
+import { calendarDayClasses } from '../../ParentCalendar/components/styles'
 
 moment.locale('en', {
   week: {
@@ -188,13 +188,13 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
       <Popper id={'simple-popper'} open={showMore} anchorEl={anchorEl} transition>
         {({ TransitionProps }) => (
           <Fade {...TransitionProps} timeout={350}>
-            <Card sx={calendarDayClassess.modal}>
-              <Box sx={calendarDayClassess.title}>
+            <Card sx={calendarDayClasses.modal}>
+              <Box sx={calendarDayClasses.title}>
                 <Subtitle color={MthColor.GRAY} sx={{ fontSize: '20px' }} fontWeight='700'>
                   {moment(selectedDate).format('dddd')}
                 </Subtitle>
                 <CloseIcon
-                  sx={calendarDayClassess.closeBtn}
+                  sx={calendarDayClasses.closeBtn}
                   onClick={() => {
                     setAnchorEl(null)
                     setShowMore(false)

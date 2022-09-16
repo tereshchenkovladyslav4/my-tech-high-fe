@@ -136,6 +136,7 @@ export const Student: StudentTemplateType = ({ student, schoolYears, showNotific
           mobileColor: MthColor.BUTTON_LINEAR_GRADIENT,
           mobileText: 'Submit Now',
           progress: 50,
+          color: MthColor.MTHORANGE,
           type: 'Please Submit an Enrollment Packet',
           icon: (
             <ErrorOutlineIcon
@@ -182,7 +183,7 @@ export const Student: StudentTemplateType = ({ student, schoolYears, showNotific
       currApplication &&
       currApplication?.status === ApplicantStatus.ACCEPTED &&
       currPacket &&
-      currPacket?.status === PacketStatus.SUBMITTED
+      (currPacket?.status === PacketStatus.SUBMITTED || currPacket?.status === PacketStatus.RESUBMITTED)
     ) {
       setCircleData({
         mobileColor: MthColor.MTHGREEN,

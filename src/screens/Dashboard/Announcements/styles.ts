@@ -1,4 +1,4 @@
-export const announcementClassess = {
+export const announcementClasses = {
   card: {
     marginRight: 25,
     width: 400,

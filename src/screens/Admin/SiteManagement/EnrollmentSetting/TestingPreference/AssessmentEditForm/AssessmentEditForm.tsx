@@ -198,8 +198,8 @@ const AssessmentEditForm: React.FC<AssessmentEditFormProps> = ({ assessment, sel
       <Prompt
         when={isChanged ? true : false}
         message={JSON.stringify({
-          header: 'Unsaved Changes',
-          content: 'Are you sure you want to leave without saving changes?',
+          header: MthTitle.UNSAVED_TITLE,
+          content: MthTitle.UNSAVED_DESCRIPTION,
         })}
       />
       <PageHeader

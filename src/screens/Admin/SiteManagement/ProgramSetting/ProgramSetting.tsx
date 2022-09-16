@@ -3,6 +3,7 @@ import { useMutation } from '@apollo/client'
 import { Box } from '@mui/material'
 import moment from 'moment'
 import { Prompt } from 'react-router-dom'
+import { MthTitle } from '@mth/enums'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { PageHeader } from '../components/PageHeader'
 import {
@@ -14,7 +15,7 @@ import {
   uploadFile,
   uploadImage,
 } from '../services'
-import { useStyles } from '../styles'
+import { siteManagementClassess } from '../styles'
 import { CountyFileType } from './CountySelect/CountySelectTypes'
 import { PageContent } from './PageContent'
 import { SchoolDistrictFileType } from './SchoolDistrictSelect/SchoolDistrictSelectTypes'
@@ -23,7 +24,6 @@ import { StateLogoFileType } from './StateLogo/StateLogoTypes'
 import { FileDeleted, ProgramSettingChanged, SchoolYears } from './types'
 
 const ProgramSetting: React.FC = () => {
-  const classes = useStyles
   const { me, setMe } = useContext(UserContext)
   const [stateName, setStateName] = useState<string>('')
   const [newStateName, setNewStateName] = useState<string>('')
@@ -40,6 +40,9 @@ const ProgramSetting: React.FC = () => {
   const [county, setCounty] = useState<CountyFileType | null>(null)
   const [schoolDistrict, setSchoolDistrict] = useState<SchoolDistrictFileType | null>(null)
   const [schoolYears, setSchoolYears] = useState<SchoolYears[]>([])
+  const [schedule, setSchedule] = useState<boolean>(false)
+  const [diplomaSeeking, setDiplomaSeeking] = useState<boolean>(false)
+  const [testingPreference, setTestingPreference] = useState<boolean>(false)
   const [isChanged, setIsChanged] = useState<ProgramSettingChanged>({
     state: false,
     stateLogo: false,
@@ -78,7 +81,14 @@ const ProgramSetting: React.FC = () => {
       }
     }
 
-    if (isChanged.stateLogo || isChanged.counties || isChanged.schoolDistricts) {
+    if (
+      isChanged.stateLogo ||
+      isChanged.counties ||
+      isChanged.schoolDistricts ||
+      isChanged.schedule ||
+      isChanged.diplomaSeeking ||
+      isChanged.testingPreference
+    ) {
       return true
     }
 
@@ -184,6 +194,9 @@ const ProgramSetting: React.FC = () => {
             special_ed: specialEd,
             special_ed_options: special_ed_options,
             enrollment_packet: enroll,
+            schedule: schedule,
+            diploma_seeking: diplomaSeeking,
+            testing_preference: testingPreference,
           },
         },
       })
@@ -203,6 +216,9 @@ const ProgramSetting: React.FC = () => {
       birth: false,
       specialEd: false,
       enrollment: false,
+      schedule: false,
+      diplomaSeeking: false,
+      testingPreference: false,
     })
 
     setMe((prevMe) => {
@@ -285,16 +301,16 @@ const ProgramSetting: React.FC = () => {
   }
 
   return (
-    <Box sx={classes.base}>
+    <Box sx={siteManagementClassess.base}>
       <input type='hidden' value={changeStatus() ? '1' : '0'} className='program-set' />
       <Prompt
         when={changeStatus() ? true : false}
         message={JSON.stringify({
-          header: 'Unsaved Changes',
-          content: 'Are you sure you want to leave without saving changes?',
+          header: MthTitle.UNSAVED_TITLE,
+          content: MthTitle.UNSAVED_DESCRIPTION,
         })}
       />
-      <PageHeader title='Program Settings' handleClickSave={handleClickSave} />
+      <PageHeader title={MthTitle.PROGRAM_SETTINGS} handleClickSave={handleClickSave} />
       <SchoolYearSelect
         setSelectedYearId={setSelectedYearId}
         setSpecialEd={setSpecialEd}
@@ -307,6 +323,9 @@ const ProgramSetting: React.FC = () => {
         setSchoolDistrict={setSchoolDistrict}
         schoolYears={schoolYears}
         setSchoolYears={setSchoolYears}
+        setSchedule={setSchedule}
+        setDiplomaSeeking={setDiplomaSeeking}
+        setTestingPreference={setTestingPreference}
       />
       <PageContent
         stateSelectItem={{
@@ -316,6 +335,14 @@ const ProgramSetting: React.FC = () => {
           setStateInvalid,
           newStateName,
           setNewStateName,
+        }}
+        scheduleItem={{
+          schedule,
+          diplomaSeeking,
+          testingPreference,
+          setSchedule,
+          setDiplomaSeeking,
+          setTestingPreference,
         }}
         stateLogoItem={{ stateLogo, setStateLogo, stateLogoFile, setStateLogoFile }}
         programItem={{ program, setProgram }}

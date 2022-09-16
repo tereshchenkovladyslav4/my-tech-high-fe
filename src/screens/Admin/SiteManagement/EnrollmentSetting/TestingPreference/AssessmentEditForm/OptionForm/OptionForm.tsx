@@ -1,6 +1,6 @@
 import React from 'react'
-import { Box, Checkbox, FormControlLabel, TextField, Typography } from '@mui/material'
-import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
+import { Box, TextField, Typography } from '@mui/material'
+import { SingleCheckbox } from '@mth/components/SingleCheckbox'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { IF_SELECT_MARK_TESTING_PREFERENCE, REQUIRE_REASON_ON_OPT_OUT } from '@mth/constants'
 import { OPT_TYPE } from '@mth/enums'
@@ -69,23 +69,13 @@ const OptionForm: React.FC<OptionFormProps> = ({ option, setOption, invalidation
       {option?.optType == OPT_TYPE.OPT_OUT && (
         <>
           <Box>
-            <FormControlLabel
-              sx={{ height: 30 }}
-              control={
-                <Checkbox
-                  checked={option?.requireReason}
-                  value={option?.requireReason}
-                  onChange={() => {
-                    setOption({ ...option, requireReason: !option?.requireReason })
-                    setIsChanged(true)
-                  }}
-                />
-              }
-              label={
-                <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
-                  {REQUIRE_REASON_ON_OPT_OUT}
-                </Paragraph>
-              }
+            <SingleCheckbox
+              title={REQUIRE_REASON_ON_OPT_OUT}
+              defaultValue={option?.requireReason}
+              handleChangeValue={() => {
+                setOption({ ...option, requireReason: !option?.requireReason })
+                setIsChanged(true)
+              }}
             />
           </Box>
           {option?.requireReason && (

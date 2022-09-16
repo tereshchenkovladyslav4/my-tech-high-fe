@@ -70,6 +70,9 @@ export const GetCurrentSchoolYearByRegionId = gql`
         parent_tooltip
         school_year_id
       }
+      schedule
+      diploma_seeking
+      testing_preference
     }
   }
 `

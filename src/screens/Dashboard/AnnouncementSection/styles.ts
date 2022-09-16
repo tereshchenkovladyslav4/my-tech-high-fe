@@ -1,4 +1,4 @@
-export const announcementSectionClassess = {
+export const announcementSectionClasses = {
   cardBox: {
     display: 'flex',
     flexDirection: 'row',

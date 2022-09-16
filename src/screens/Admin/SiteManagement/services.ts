@@ -39,6 +39,15 @@ export const getSchoolYearsByRegionId = gql`
         opt_out_form_title
         opt_out_form_description
         grades
+        schedule
+        diploma_seeking
+        testing_preference
+        schedule_builder_open
+        schedule_builder_close
+        second_semester_open
+        second_semester_close
+        midyear_schedule_open
+        midyear_schedule_close
       }
       county_file_name
       county_file_path
