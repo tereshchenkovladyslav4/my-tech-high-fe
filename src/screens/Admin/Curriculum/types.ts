@@ -8,3 +8,14 @@ export type CurriculumItem = {
   action?: boolean
   disabled?: boolean
 }
+
+export type StateCodeType = {
+  id?: number
+  title_id: string | number
+  title: string
+  grade: string
+  teacher_id?: number
+  teacher_name: string
+  state_code: string | number
+  subject: string
+}

@@ -33,7 +33,7 @@ const Periods: FunctionComponent<FilterProps> = ({ query, setValue }) => {
             <SearchIcon style={{ color: 'black' }} />
           </InputAdornment>
         }
-        sx={{ maxWidth: '400px' }}
+        sx={{ maxWidth: '280px' }}
       />
       <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: '20px' }}>
         <Button
