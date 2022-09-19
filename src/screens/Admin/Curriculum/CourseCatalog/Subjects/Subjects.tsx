@@ -2,104 +2,131 @@ import React, { useEffect, useState } from 'react'
 import { DeleteForeverOutlined } from '@mui/icons-material'
 import CallMissedOutgoingIcon from '@mui/icons-material/CallMissedOutgoing'
 import CreateIcon from '@mui/icons-material/Create'
+import DehazeIcon from '@mui/icons-material/Dehaze'
 import ExpandMoreOutlinedIcon from '@mui/icons-material/ExpandMoreOutlined'
 import SystemUpdateAltRoundedIcon from '@mui/icons-material/SystemUpdateAltRounded'
 import { Box, Button, Card, IconButton, Tooltip } from '@mui/material'
+import { SortableHandle } from 'react-sortable-hoc'
 import { MthTable } from '@mth/components/MthTable'
 import { MthTableField, MthTableRowItem } from '@mth/components/MthTable/types'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { MthColor } from '@mth/enums'
-import Courses from '@mth/screens/Admin/Curriculum/CourseCatalog/Providers/Courses'
-import { Provider } from '@mth/screens/Admin/Curriculum/CourseCatalog/Providers/types'
+import Titles from '@mth/screens/Admin/Curriculum/CourseCatalog/Subjects/Titles'
+import { Subject } from '@mth/screens/Admin/Curriculum/CourseCatalog/Subjects/types'
 import CourseCatalogHeader from '../Components/CourseCatalogHeader/CourseCatalogHeader'
 
-const Providers: React.FC = () => {
-  const providersData: Provider[] = [
+const Subjects: React.FC = () => {
+  // TODO Titles of the archived subject must be archived.
+  const subjectsData: Subject[] = [
     {
       id: 1,
-      title: 'Accelerated Spark Online Elementary',
-      reducesFunds: false,
-      multiplePeriods: false,
-      active: true,
-    },
-    {
-      id: 2,
-      title: 'ALEKS Math',
-      reducesFunds: undefined,
-      multiplePeriods: false,
-      active: true,
-      courses: [
+      name: 'Math',
+      periods: 'Period 2 - Math, Period 4 - Elective, Period 6 - Core,  Period 7 - Optional Core',
+      active: false,
+      priority: 1,
+      titles: [
         {
-          name: 'Algebra 1',
+          name: 'Accounting',
           grades: '9-12',
           diplomaSeeking: false,
-          reducesFunds: false,
+          customBuilt: true,
+          thirdParty: true,
+          splitEnrollment: true,
           semesterOnly: false,
-          limit: 0,
-          subjects: 'Algebra 1, High School Math',
-          active: true,
-        },
-        {
-          name: 'Algebra 2',
-          grades: '9-12',
-          diplomaSeeking: false,
-          reducesFunds: true,
-          semesterOnly: false,
-          limit: 200,
-          subjects: 'Algebra 2, High School Math',
           active: false,
         },
         {
-          name: 'Algebra 3',
-          grades: '9-12',
+          name: 'Algebra I',
+          grades: '7-12',
           diplomaSeeking: false,
-          reducesFunds: true,
+          customBuilt: true,
+          thirdParty: true,
+          splitEnrollment: false,
           semesterOnly: false,
-          limit: 150,
-          subjects: 'Algebra 3, High School Math',
           active: false,
         },
       ],
     },
     {
+      id: 2,
+      name: 'Language Arts',
+      periods: 'Period 3 - Language Arts, Period 6 - Core, Period 6 - Semester Core, Period 7 - Optional Core',
+      active: true,
+      priority: 2,
+    },
+    {
       id: 3,
-      title: 'APEX Learning',
-      reducesFunds: false,
-      multiplePeriods: false,
-      active: false,
+      name: 'Science',
+      periods: 'Period 4 - Science, Period 4 - Elective, Period 6 - Core, Period 7 - Optional Core',
+      active: true,
+      priority: 3,
     },
     {
       id: 4,
-      title: 'Beast Academy Online',
-      reducesFunds: false,
-      multiplePeriods: false,
+      name: 'P.E. / Health',
+      periods: 'Period 6 - Elective, Period 6 - Elective, Period 6 - Semester Elective, Period 7 - Optional Elective',
       active: true,
+      priority: 4,
+      titles: [
+        {
+          name: 'Fitness for Life',
+          grades: '9-12',
+          diplomaSeeking: false,
+          customBuilt: true,
+          thirdParty: true,
+          splitEnrollment: true,
+          semesterOnly: false,
+          active: true,
+        },
+        {
+          name: 'Health',
+          grades: 'K-12',
+          diplomaSeeking: false,
+          customBuilt: true,
+          thirdParty: true,
+          splitEnrollment: true,
+          semesterOnly: false,
+          active: false,
+        },
+        {
+          name: 'P.E. ',
+          grades: 'K-12',
+          diplomaSeeking: true,
+          customBuilt: true,
+          thirdParty: true,
+          splitEnrollment: true,
+          semesterOnly: true,
+          active: true,
+        },
+      ],
     },
   ]
+
+  const DragHandle = SortableHandle(() => (
+    <Tooltip title='Move'>
+      <IconButton className='actionButton' color='primary'>
+        <DehazeIcon />
+      </IconButton>
+    </Tooltip>
+  ))
 
   const [loading] = useState(false)
   const [selectedYear, setSelectedYear] = useState<number>(0)
   const [searchField, setSearchField] = useState<string>('')
   const [showArchived, setShowArchived] = useState<boolean>(false)
-  const [providers] = useState<Provider[]>(providersData)
-  const [tableData, setTableData] = useState<MthTableRowItem<Provider>[]>([])
+  const [subjects] = useState<Subject[]>(subjectsData)
+  const [tableData, setTableData] = useState<MthTableRowItem<Subject>[]>([])
 
-  const fields: MthTableField<Provider>[] = [
+  const fields: MthTableField<Subject>[] = [
     {
-      key: 'title',
-      label: 'Provider',
+      key: 'name',
+      label: 'Subject',
       sortable: false,
       tdClass: '',
     },
     {
-      key: 'reducesFunds',
-      label: 'Reduces Funds',
-      sortable: false,
-      tdClass: '',
-    },
-    {
-      key: 'multiplePeriods',
-      label: 'Multiple Periods',
+      key: 'periods',
+      label: 'Periods',
       sortable: false,
       tdClass: '',
     },
@@ -108,7 +135,7 @@ const Providers: React.FC = () => {
       label: '',
       sortable: false,
       tdClass: '',
-      formatter: (item: MthTableRowItem<Provider>) => {
+      formatter: (item: MthTableRowItem<Subject>) => {
         return (
           <Box display={'flex'} flexDirection='row' justifyContent={'flex-end'}>
             <Tooltip title={item.rawData.active ? 'Edit' : ''}>
@@ -128,55 +155,53 @@ const Providers: React.FC = () => {
                 </IconButton>
               </Tooltip>
             )}
-            {item.rawData.active && (
-              <IconButton
-                onClick={() => {
-                  if (item.toggleExpand) item.toggleExpand()
-                }}
-                className='actionButton expandButton'
-                color='primary'
-              >
-                <ExpandMoreOutlinedIcon />
-              </IconButton>
-            )}
+            {item.rawData.active && <DragHandle />}
+            <IconButton
+              onClick={() => {
+                if (item.toggleExpand) item.toggleExpand()
+              }}
+              className='actionButton expandButton'
+              color='primary'
+            >
+              <ExpandMoreOutlinedIcon />
+            </IconButton>
           </Box>
         )
       },
     },
   ]
 
-  const createData = (provider: Provider): MthTableRowItem<Provider> => {
+  const createData = (subject: Subject): MthTableRowItem<Subject> => {
     return {
       columns: {
-        title: provider.title,
-        reducesFunds: provider.reducesFunds === undefined ? 'N/A' : provider.reducesFunds ? 'Yes' : 'No',
-        multiplePeriods: provider.multiplePeriods === undefined ? 'N/A' : provider.multiplePeriods ? 'Yes' : 'No',
+        name: subject.name,
+        periods: subject.periods,
       },
-      selectable: provider.active,
-      rawData: provider,
-      expandNode: <Courses courses={provider.courses} />,
+      selectable: subject.active,
+      rawData: subject,
+      expandNode: <Titles titles={subject.titles} />,
     }
   }
 
   useEffect(() => {
-    if (providers?.length) {
+    if (subjects?.length) {
       setTableData(
-        providers
+        subjects
           .map((item) => {
-            return { ...item, courses: item.courses?.filter((x) => showArchived || x.active) }
+            return { ...item, titles: item.titles?.filter((x) => showArchived || x.active) }
           })
           .map((item) => {
             return createData(item)
           }),
       )
     }
-  }, [providers, showArchived])
+  }, [subjects, showArchived])
 
   return (
     <Box sx={{ p: 4, textAlign: 'left' }}>
       <Card sx={{ p: 4, borderRadius: '12px', boxShadow: '0px 0px 35px rgba(0, 0, 0, 0.05)' }}>
         <CourseCatalogHeader
-          title='Providers'
+          title='Subjects'
           selectedYear={selectedYear}
           setSelectedYear={setSelectedYear}
           searchField={searchField}
@@ -212,7 +237,7 @@ const Providers: React.FC = () => {
               },
             }}
           >
-            <Subtitle sx={{ fontSize: '14px', fontWeight: '700' }}>+ Add Provider</Subtitle>
+            <Subtitle sx={{ fontSize: '14px', fontWeight: '700' }}>+ Add Subject</Subtitle>
           </Button>
         </Box>
       </Card>
@@ -220,4 +245,4 @@ const Providers: React.FC = () => {
   )
 }
 
-export default Providers
+export default Subjects

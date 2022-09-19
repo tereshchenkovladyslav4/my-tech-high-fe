@@ -28,7 +28,7 @@ const MthTable = <T extends unknown>({
   const [rowCount, setRowCount] = useState<number>(0)
   const [expandedIdx, setExpandedIdx] = useState<number | undefined>(undefined)
 
-  const handleToggleCheck = (item: MthTableRowItem<unknown>) => {
+  const handleToggleCheck = (item: MthTableRowItem<T>) => {
     item.isSelected = !item.isSelected
     checkSelectedItems()
   }

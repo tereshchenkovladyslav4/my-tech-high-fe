@@ -1,28 +1,28 @@
-import React, { FunctionComponent } from 'react'
+import React from 'react'
 import { Route, Switch } from 'react-router-dom'
+import { Announcements } from '@mth/screens/Admin/Announcements'
+import { Applications } from '@mth/screens/Admin/Applications/Applications'
+import { Calendar } from '@mth/screens/Admin/Calendar'
+import { Communication } from '@mth/screens/Admin/Communication/Communication'
 import CourseCatalog from '@mth/screens/Admin/Curriculum/CourseCatalog'
 import CourseCatalogPeriods from '@mth/screens/Admin/Curriculum/CourseCatalog/Periods'
 import { CourseCatalogProviders } from '@mth/screens/Admin/Curriculum/CourseCatalog/Providers'
 import CourseCatalogSettings from '@mth/screens/Admin/Curriculum/CourseCatalog/Settings'
 import CourseCatalogStateCodes from '@mth/screens/Admin/Curriculum/CourseCatalog/StateCodes'
-import CourseCatalogSubjects from '@mth/screens/Admin/Curriculum/CourseCatalog/Subjects'
+import { CourseCatalogSubjects } from '@mth/screens/Admin/Curriculum/CourseCatalog/Subjects'
+import Curriculum from '@mth/screens/Admin/Curriculum/Curriculum'
 import { HomeroomResources } from '@mth/screens/Admin/Curriculum/HomeroomResources/HomeroomResources'
+import { AdminDashboard } from '@mth/screens/Admin/Dashboard/AdminDashboard'
+import { EmailRecords } from '@mth/screens/Admin/EmailRecords/EmailRecords'
+import { Enrollment } from '@mth/screens/Admin/Enrollment/Enrollment'
+import { EnrollmentPackets } from '@mth/screens/Admin/EnrollmentPackets/EnrollmentPackets'
 import { Records } from '@mth/screens/Admin/Records'
-import { Announcements } from '../screens/Admin/Announcements'
-import { Applications } from '../screens/Admin/Applications/Applications'
-import { Calendar } from '../screens/Admin/Calendar'
-import { Communication } from '../screens/Admin/Communication/Communication'
-import Curriculum from '../screens/Admin/Curriculum/Curriculum'
-import { AdminDashboard } from '../screens/Admin/Dashboard/AdminDashboard'
-import { EmailRecords } from '../screens/Admin/EmailRecords/EmailRecords'
-import { Enrollment } from '../screens/Admin/Enrollment/Enrollment'
-import { EnrollmentPackets } from '../screens/Admin/EnrollmentPackets/EnrollmentPackets'
-import { SchoolOfEnrollment } from '../screens/Admin/SchoolOfEnrollment/SchoolOfEnrollment'
-import AdminSettings from '../screens/Admin/Settings/AdminSettings'
-import { EmailTemplatePage } from '../screens/Admin/SiteManagement/components/EmailTemplates/EmailTemplatePage'
-import SiteManagement from '../screens/Admin/SiteManagement/SiteManagement'
-import { Users } from '../screens/Admin/Users/Users'
-import { Withdrawals } from '../screens/Admin/Withdrawals'
+import { SchoolOfEnrollment } from '@mth/screens/Admin/SchoolOfEnrollment/SchoolOfEnrollment'
+import AdminSettings from '@mth/screens/Admin/Settings/AdminSettings'
+import { EmailTemplatePage } from '@mth/screens/Admin/SiteManagement/components/EmailTemplates/EmailTemplatePage'
+import SiteManagement from '@mth/screens/Admin/SiteManagement/SiteManagement'
+import { Users } from '@mth/screens/Admin/Users/Users'
+import { Withdrawals } from '@mth/screens/Admin/Withdrawals'
 import {
   ADMIN_APPLICATIONS,
   DASHBOARD,
@@ -49,7 +49,7 @@ import {
   CURRICULUM_COURSE_CATALOG_STATE_CODES,
 } from '../utils/constants'
 
-export const AdminRoutes: FunctionComponent = () => {
+export const AdminRoutes: React.FC = () => {
   return (
     <Switch>
       <Route exact path={DASHBOARD}>
@@ -118,9 +118,6 @@ export const AdminRoutes: FunctionComponent = () => {
       <Route path={RECORDS}>
         <Records />
       </Route>
-      {/* <Route path={SITEMANAGEMENT}>
-        <SiteManagementPage />
-      </Route> */}
       <Route path={EMAILTEMPLATES}>
         <EmailTemplatePage />
       </Route>

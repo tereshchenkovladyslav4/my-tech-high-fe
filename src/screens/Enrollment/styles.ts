@@ -34,7 +34,8 @@ export const useStyles = {
   buttonContainer: {
     display: 'flex',
     flexDirection: 'row-reverse' as const,
-    marginRight: '70px',
+    marginRight: { xs: 0, sm: '70px' },
+    justifyContent: { xs: 'center', sm: 'space-between' },
     marginY: '24px',
     width: '100%',
   },
@@ -54,5 +55,18 @@ export const useStyles = {
     height: '48px',
     marginLeft: '12px',
     marginTop: 2,
+  },
+  pageNumber: {
+    fontSize: '20.62px',
+    fontWeight: '700',
+    marginX: '40px',
+  },
+  pageArrow: {
+    display: 'block',
+    color: '#323232',
+    background: '#FAFAFA',
+    cursor: 'pointer',
+    width: '40px',
+    height: '40px',
   },
 }

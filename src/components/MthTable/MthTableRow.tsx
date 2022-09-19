@@ -31,12 +31,7 @@ const MthTableRow = <T extends unknown>({
     <>
       <StyledTableRow className={expanded ? 'expanded' : ''}>
         {selectable && (
-          <TableCell
-            onClick={() => {
-              handleToggleCheck(item)
-            }}
-            className='checkWrap'
-          >
+          <TableCell className='checkWrap'>
             <Checkbox
               color='primary'
               size={size}
@@ -46,6 +41,7 @@ const MthTableRow = <T extends unknown>({
                 '& .MuiSvgIcon-root': { color: checkBoxColor },
                 visibility: `${item.selectable === false ? 'hidden' : ''}`,
               }}
+              onChange={() => handleToggleCheck(item)}
             />
           </TableCell>
         )}

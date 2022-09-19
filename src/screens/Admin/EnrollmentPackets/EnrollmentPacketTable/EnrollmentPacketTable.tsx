@@ -72,6 +72,8 @@ export const EnrollmentPacketTable: FunctionComponent = () => {
   useEffect(() => {
     setPacketIds([])
     setClearAll(!clearAll)
+    setCurrentPage(1)
+    setSkip(0)
   }, [me?.selectedRegionId])
 
   const createData = (packet: Packet) => {

@@ -3,6 +3,7 @@ import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded'
 import { Box, IconButton, Typography } from '@mui/material'
 import { useHistory } from 'react-router-dom'
 import { DropDown } from '@mth/components/DropDown/DropDown'
+import { MthColor } from '@mth/enums'
 import { HeaderComponentProps } from './types'
 
 const HeaderComponent: React.FC<HeaderComponentProps> = ({
@@ -22,7 +23,7 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
             bottom: '2px',
           }}
         >
-          <ArrowBackIosRoundedIcon sx={{ fontSize: '20px', fontWeight: 700 }} />
+          <ArrowBackIosRoundedIcon sx={{ fontSize: '20px', fontWeight: 700, color: MthColor.BLACK }} />
         </IconButton>
         <Typography paddingLeft='20px' fontSize='20px' fontWeight={700} component='span'>
           Testing Preference

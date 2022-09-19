@@ -46,10 +46,18 @@ const TestingPreference: React.FC = () => {
   } = useSchoolYearsByRegionId(me?.selectedRegionId)
 
   useEffect(() => {
+    if (schoolYears?.length) {
+      const schoolYear = schoolYears.filter((item) => item.school_year_id == selectedSchoolYear)
+      if (!schoolYear.length) {
+        setSelectedSchoolYear(Number(schoolYears[0].school_year_id))
+      }
+    }
+  }, [schoolYears, me?.selectedRegionId])
+
+  useEffect(() => {
     if (schoolYears?.length && selectedSchoolYear == 0) {
       setSelectedSchoolYear(Number(schoolYears[0].school_year_id))
-    }
-    if (selectedSchoolYear > 0) {
+    } else if (schoolYears?.length && selectedSchoolYear > 0) {
       const infoArray: Information[] = []
       schoolYears
         .filter((schoolYear) => Number(schoolYear.school_year_id) == selectedSchoolYear)
@@ -69,6 +77,8 @@ const TestingPreference: React.FC = () => {
           })
         })
       setInformations(infoArray)
+    } else {
+      setInformations([])
     }
   }, [schoolYears, selectedSchoolYear])
 
@@ -76,6 +86,8 @@ const TestingPreference: React.FC = () => {
     if (!loading && data?.getAssessmentsBySchoolYearId) {
       const items = data?.getAssessmentsBySchoolYearId
       setAssessmentItems(items.map((item: AssessmentType) => ({ ...item, assessment_id: Number(item.assessment_id) })))
+    } else {
+      setAssessmentItems([])
     }
   }, [data, loading])
 

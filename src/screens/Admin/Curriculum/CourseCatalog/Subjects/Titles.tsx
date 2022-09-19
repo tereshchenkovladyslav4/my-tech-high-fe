@@ -4,20 +4,20 @@ import CallMissedOutgoingIcon from '@mui/icons-material/CallMissedOutgoing'
 import ContentCopyOutlinedIcon from '@mui/icons-material/ContentCopyOutlined'
 import CreateIcon from '@mui/icons-material/Create'
 import SystemUpdateAltRoundedIcon from '@mui/icons-material/SystemUpdateAltRounded'
-import { Box, Button, IconButton, Tooltip } from '@mui/material'
+import { Box, Button, IconButton, Tooltip, Typography } from '@mui/material'
 import { MthTable } from '@mth/components/MthTable'
 import { MthTableField, MthTableRowItem } from '@mth/components/MthTable/types'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { MthColor } from '@mth/enums'
-import { Course, CoursesProps } from '@mth/screens/Admin/Curriculum/CourseCatalog/Providers/types'
+import { Title, TitlesProps } from '@mth/screens/Admin/Curriculum/CourseCatalog/Subjects/types'
 
-const Courses: React.FC<CoursesProps> = ({ courses }) => {
+const Titles: React.FC<TitlesProps> = ({ titles }) => {
   const [loading] = useState(false)
 
-  const fields: MthTableField<Course>[] = [
+  const fields: MthTableField<Title>[] = [
     {
       key: 'name',
-      label: 'Course',
+      label: 'Title',
       sortable: false,
       tdClass: '',
     },
@@ -34,8 +34,20 @@ const Courses: React.FC<CoursesProps> = ({ courses }) => {
       tdClass: '',
     },
     {
-      key: 'reducesFunds',
-      label: 'Reduces Funds',
+      key: 'customBuilt',
+      label: 'Custom-built',
+      sortable: false,
+      tdClass: '',
+    },
+    {
+      key: 'thirdParty',
+      label: '3rd Party',
+      sortable: false,
+      tdClass: '',
+    },
+    {
+      key: 'splitEnrollment',
+      label: 'Split Enrollment',
       sortable: false,
       tdClass: '',
     },
@@ -46,23 +58,11 @@ const Courses: React.FC<CoursesProps> = ({ courses }) => {
       tdClass: '',
     },
     {
-      key: 'limit',
-      label: 'Limits',
-      sortable: false,
-      tdClass: '',
-    },
-    {
-      key: 'subjects',
-      label: 'Subjects',
-      sortable: false,
-      tdClass: '',
-    },
-    {
       key: 'action',
       label: '',
       sortable: false,
       tdClass: '',
-      formatter: (item: MthTableRowItem<Course>) => {
+      formatter: (item: MthTableRowItem<Title>) => {
         return (
           <Box display={'flex'} flexDirection='row' justifyContent={'flex-end'}>
             <Tooltip title={item.rawData.active ? 'Edit' : ''}>
@@ -95,36 +95,36 @@ const Courses: React.FC<CoursesProps> = ({ courses }) => {
     },
   ]
 
-  const [tableData, setTableData] = useState<MthTableRowItem<Course>[]>([])
+  const [tableData, setTableData] = useState<MthTableRowItem<Title>[]>([])
 
-  const createData = (course: Course): MthTableRowItem<Course> => {
+  const createData = (title: Title): MthTableRowItem<Title> => {
     return {
       columns: {
-        name: course.name,
-        grades: course.grades,
-        diplomaSeeking: course.diplomaSeeking === undefined ? 'N/A' : course.diplomaSeeking ? 'Yes' : 'No',
-        reducesFunds: course.reducesFunds === undefined ? 'N/A' : course.reducesFunds ? 'Yes' : 'No',
-        semesterOnly: course.semesterOnly === undefined ? 'N/A' : course.semesterOnly ? 'Yes' : 'No',
-        limit: course.limit || 0,
-        subjects: course.subjects,
+        name: <Typography sx={{ color: MthColor.MTHBLUE, fontSize: 'inherit' }}>{title.name}</Typography>,
+        grades: title.grades,
+        diplomaSeeking: title.diplomaSeeking === undefined ? 'N/A' : title.diplomaSeeking ? 'Yes' : 'No',
+        customBuilt: title.customBuilt === undefined ? 'N/A' : title.customBuilt ? 'Yes' : 'No',
+        thirdParty: title.thirdParty === undefined ? 'N/A' : title.thirdParty ? 'Yes' : 'No',
+        splitEnrollment: title.splitEnrollment === undefined ? 'N/A' : title.splitEnrollment ? 'Yes' : 'No',
+        semesterOnly: title.semesterOnly === undefined ? 'N/A' : title.semesterOnly ? 'Yes' : 'No',
       },
-      rawData: course,
+      rawData: title,
     }
   }
 
   useEffect(() => {
-    if (courses?.length) {
+    if (titles?.length) {
       setTableData(
-        courses.map((item) => {
+        titles.map((item) => {
           return createData(item)
         }),
       )
     }
-  }, [courses])
+  }, [titles])
 
   return (
-    <Box sx={{ pb: 3, textAlign: 'left', borderTop: `solid 1px ${MthColor.SYSTEM_09}` }}>
-      {!!courses?.length && (
+    <Box sx={{ pb: 3, textAlign: 'left' }}>
+      {!!titles?.length && (
         <Box sx={{ borderTop: `solid 1px ${MthColor.SYSTEM_09}` }}>
           <MthTable items={tableData} loading={loading} fields={fields} selectable={true} size='small' oddBg={false} />
         </Box>
@@ -147,11 +147,11 @@ const Courses: React.FC<CoursesProps> = ({ courses }) => {
             },
           }}
         >
-          <Subtitle sx={{ fontSize: '14px', fontWeight: '700' }}>+ Add Course</Subtitle>
+          <Subtitle sx={{ fontSize: '14px', fontWeight: '700' }}>+ Add Title</Subtitle>
         </Button>
       </Box>
     </Box>
   )
 }
 
-export default Courses
+export default Titles

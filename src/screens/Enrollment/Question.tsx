@@ -96,7 +96,7 @@ export const EnrollmentQuestionItem: EnrollmentQuestionTemplateType = ({ item, f
         if ((q.additional_question && q.isEnable) || !q.additional_question) {
           if (q.type === QUESTION_TYPE.INFORMATION) {
             return (
-              <Grid item xs={6}>
+              <Grid item xs={12} sm={6}>
                 <Box display='flex' alignItems='center'>
                   <Paragraph size='large'>
                     <p dangerouslySetInnerHTML={{ __html: q.question }}></p>
@@ -106,13 +106,17 @@ export const EnrollmentQuestionItem: EnrollmentQuestionTemplateType = ({ item, f
             )
           } else {
             return (
-              <Grid item xs={questionItems.length > 1 ? 12 : 6}>
+              <Grid item xs={12} sm={questionItems.length > 1 ? 12 : 6}>
                 {q.type !== QUESTION_TYPE.AGREEMENT && (
-                  <Box display='flex' alignItems='center' width={questionItems.length > 1 ? '50%' : '100%'}>
+                  <Box
+                    display='flex'
+                    alignItems='center'
+                    width={{ xs: '100%', sm: questionItems.length > 1 ? '50%' : '100%' }}
+                  >
                     <Subtitle fontWeight='500'>{q.question}</Subtitle>
                   </Box>
                 )}
-                <Box alignItems='center' width={questionItems.length > 1 ? '49%' : '100%'}>
+                <Box alignItems='center' width={{ xs: '100%', sm: questionItems.length > 1 ? '49%' : '100%' }}>
                   <Item
                     question={q}
                     setAdditionalQuestion={(slug, value) => handleAdditionalAction(slug, value)}

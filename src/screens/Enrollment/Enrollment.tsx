@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { useQuery } from '@apollo/client'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
+import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import { Box, Card, Container } from '@mui/material'
 import { find, includes } from 'lodash'
 import { useHistory } from 'react-router-dom'
@@ -174,14 +175,28 @@ export const Enrollment: EnrollmentTemplateType = ({ id, disabled }: { id: numbe
     setCurrentTabName(currentName)
   }, [currentTab, breadCrumb])
 
+  const changeTabNumber = (tabIdx) => {
+    if (includes(visitedTabs, tabIdx) || disabled) {
+      setTab({
+        currentTab: tabIdx,
+      })
+    }
+  }
+
   return (
     <EnrollmentContext.Provider value={enrollmentPacketContext}>
       <Container sx={classes.container}>
+        <Box sx={{ display: { xs: 'flex', sm: 'none' }, marginBottom: 5, marginTop: 10, marginX: 3 }}>
+          <ChevronLeftIcon sx={classes.chevronIcon} onClick={() => history.push(HOMEROOM)} />
+          <Subtitle size='large' fontWeight='700'>
+            Enrollment Packet
+          </Subtitle>
+        </Box>
         <Card>
           <Box sx={classes.header}>
             <Box
               sx={{
-                display: 'flex',
+                display: { xs: 'none', sm: 'flex' },
                 flexDirection: 'row',
               }}
             >
@@ -204,6 +219,20 @@ export const Enrollment: EnrollmentTemplateType = ({ id, disabled }: { id: numbe
             ) : (
               <Submission id={id} questions={questionsData.filter((q) => q.tab_name === currentTabName)[0]} />
             )}
+          </Box>
+
+          <Box
+            sx={{ display: { xs: 'flex', sm: 'none' } }}
+            justifyContent={'center'}
+            marginTop={10}
+            marginBottom={5}
+            alignItems={'center'}
+          >
+            <ChevronLeftIcon sx={classes.pageArrow} onClick={() => changeTabNumber(currentTab - 1)} />
+            <Box sx={classes.pageNumber}>
+              {currentTab + 1}/{breadCrumb.length}
+            </Box>
+            <ChevronRightIcon sx={classes.pageArrow} onClick={() => changeTabNumber(currentTab + 1)} />
           </Box>
         </Card>
       </Container>

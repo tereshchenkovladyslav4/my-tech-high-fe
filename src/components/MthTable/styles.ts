@@ -50,6 +50,9 @@ export const mthTableClasses = {
         borderBottom: 'none',
       },
     },
+    '& > .MuiTableBody-root > .MuiTableRow-root > .MuiTableCell-root': {
+      borderBottom: 'none',
+    },
     '& .expandButton': {
       transition: 'transform 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms',
     },

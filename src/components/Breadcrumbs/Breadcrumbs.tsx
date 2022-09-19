@@ -11,7 +11,7 @@ export const Breadcrumbs: BreadcrumbsTemplateType = ({ steps, handleClick }) => 
     ))
 
   return (
-    <Box display='flex' flexDirection='row'>
+    <Box sx={{ display: { xs: 'none', sm: 'flex' } }} flexDirection='row'>
       {renderBreadcrumbs()}
     </Box>
   )

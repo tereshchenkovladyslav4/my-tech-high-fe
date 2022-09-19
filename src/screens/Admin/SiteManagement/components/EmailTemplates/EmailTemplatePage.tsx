@@ -101,7 +101,7 @@ const useStyles = makeStyles({
     },
   },
 })
-export const EmailTemplatePage: FunctionComponent<{ onBackPress: () => void }> = ({ onBackPress }) => {
+export const EmailTemplatePage: FunctionComponent<{ onBackPress?: () => void }> = ({ onBackPress }) => {
   const { me } = useContext(UserContext)
   const [searchField, setSearchField] = useState('')
   const [openEdit, setOpenEdit] = useState(false)

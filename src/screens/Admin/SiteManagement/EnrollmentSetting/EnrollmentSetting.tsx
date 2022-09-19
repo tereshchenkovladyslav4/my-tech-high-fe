@@ -75,26 +75,23 @@ const EnrollmentSetting: React.FC = () => {
   }
 
   const renderTile = () => {
-    return map(items, (item, idx) => {
-      if (isAvailable(item)) {
-        return (
-          <Grid item xs={4} key={idx}>
-            <ItemCard
-              title={item.title}
-              subTitle={item.subTitle}
-              img={item.img}
-              link={item.link}
-              disabled={
-                (!scheduleFlag && item.title == MthTitle.TESTING_PREFERENCE) ||
-                (!scheduleFlag && item.title == MthTitle.DIPLOMA_SEEKING)
-              }
-            />
-          </Grid>
-        )
-      } else {
-        return <></>
-      }
-    })
+    return map(
+      items?.filter((item) => isAvailable(item)),
+      (item, idx) => (
+        <Grid item xs={4} key={idx}>
+          <ItemCard
+            title={item.title}
+            subTitle={item.subTitle}
+            img={item.img}
+            link={item.link}
+            disabled={
+              (!scheduleFlag && item.title == MthTitle.TESTING_PREFERENCE) ||
+              (!scheduleFlag && item.title == MthTitle.DIPLOMA_SEEKING)
+            }
+          />
+        </Grid>
+      ),
+    )
   }
 
   useEffect(() => {

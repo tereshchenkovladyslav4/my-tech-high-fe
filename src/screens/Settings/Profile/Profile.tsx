@@ -503,6 +503,10 @@ export const Profile: React.FC<ProfileProps> = ({ handleIsFormChange }) => {
                   alternate={true}
                   size='medium'
                   defaultValue={formik.values.state || ''}
+                  error={{
+                    error: formik.touched.state && Boolean(formik.errors.state),
+                    errorMsg: formik.touched.state && Boolean(formik.errors.state) ? 'Required' : '',
+                  }}
                 />
               </Box>
             </Grid>

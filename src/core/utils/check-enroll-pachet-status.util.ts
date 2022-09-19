@@ -14,7 +14,6 @@ export const checkEnrollPacketStatus = (schoolYears: SchoolYearType[], student: 
     const studentSchoolYear: SchoolYearType[] = schoolYears?.filter(
       (item) => item.school_year_id == student?.current_school_year_status?.school_year_id,
     )
-
     return (studentSchoolYear?.length > 0 && studentSchoolYear?.at(-1)?.enrollment_packet) || false
   } else {
     return false
