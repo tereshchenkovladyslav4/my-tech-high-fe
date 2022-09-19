@@ -59,7 +59,8 @@ export const Student: StudentTemplateType = ({ student, schoolYears, showNotific
       currApplication?.status === ApplicantStatus.ACCEPTED &&
       ((currPacket && currPacket?.status === PacketStatus.SUBMITTED) ||
         currPacket?.status === PacketStatus.MISSING_INFO ||
-        currPacket?.status === PacketStatus.ACCEPTED)
+        currPacket?.status === PacketStatus.ACCEPTED ||
+        currPacket?.status === PacketStatus.RESUBMITTED)
     ) {
       setLink(homeroomLink)
     }
