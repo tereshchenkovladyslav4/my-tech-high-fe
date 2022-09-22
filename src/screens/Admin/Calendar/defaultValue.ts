@@ -1,4 +1,4 @@
-import { CheckBoxListVM } from './components/CheckBoxList/CheckBoxList'
+import { CheckBoxListVM } from '@mth/components/MthCheckBoxList/MthCheckboxList'
 import { EventFormData, EventVM } from './types'
 
 export const defaultEvent: EventVM = {

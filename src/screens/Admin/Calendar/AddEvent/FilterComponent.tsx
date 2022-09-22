@@ -3,15 +3,15 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { Box, Card, Grid } from '@mui/material'
 import { useFormikContext } from 'formik'
+import { MthCheckboxList } from '@mth/components/MthCheckboxList'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { MthColor } from '@mth/enums'
 import { useCurrentGradeAndProgramByRegionId } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
-import { CheckBoxList } from '../components/CheckBoxList'
-import { checkBoxListClassess } from '../components/CheckBoxList/styles'
 import { defaultOtherList, defaultProviderList, defaultUserList } from '../defaultValue'
 import { calendarClassess } from '../styles'
 import { EventFormData, FilterComponentProps } from '../types'
+import { addEventClassess } from './styles'
 
 const FilterComponent: React.FC<FilterComponentProps> = ({
   programYears,
@@ -57,9 +57,9 @@ const FilterComponent: React.FC<FilterComponentProps> = ({
     <Grid container sx={{ textAlign: 'left', marginY: '12px' }}>
       <Grid item container xs={12}>
         <Grid item xs={6}>
-          <Box sx={checkBoxListClassess.container}>
+          <Box sx={addEventClassess.container}>
             <Subtitle sx={calendarClassess.formError}>{touched.grades && errors.grades}</Subtitle>
-            <CheckBoxList
+            <MthCheckboxList
               title={'Grade Level'}
               values={values.grades}
               setValues={(value) => {
@@ -69,7 +69,7 @@ const FilterComponent: React.FC<FilterComponentProps> = ({
               checkboxLists={gradeList}
               haveSelectAll={true}
             />
-            <CheckBoxList
+            <MthCheckboxList
               title={'Program Year'}
               values={programYears}
               setValues={(value) => {
@@ -82,8 +82,8 @@ const FilterComponent: React.FC<FilterComponentProps> = ({
           </Box>
         </Grid>
         <Grid item xs={6}>
-          <Box sx={checkBoxListClassess.container}>
-            <CheckBoxList
+          <Box sx={addEventClassess.container}>
+            <MthCheckboxList
               title={'Users'}
               values={users}
               setValues={(value) => {
@@ -93,7 +93,7 @@ const FilterComponent: React.FC<FilterComponentProps> = ({
               checkboxLists={defaultUserList}
               haveSelectAll={false}
             />
-            <CheckBoxList
+            <MthCheckboxList
               title={'School of Enrollment'}
               values={schoolofEnrollments}
               setValues={(value) => {
@@ -103,7 +103,7 @@ const FilterComponent: React.FC<FilterComponentProps> = ({
               checkboxLists={schoolPartnerList}
               haveSelectAll={false}
             />
-            <CheckBoxList
+            <MthCheckboxList
               title={'Other'}
               values={others}
               setValues={(value) => {
@@ -113,7 +113,7 @@ const FilterComponent: React.FC<FilterComponentProps> = ({
               checkboxLists={defaultOtherList}
               haveSelectAll={false}
             />
-            <CheckBoxList
+            <MthCheckboxList
               title={'Providers'}
               values={providers}
               setValues={(value) => {
@@ -130,7 +130,7 @@ const FilterComponent: React.FC<FilterComponentProps> = ({
   )
 
   return (
-    <Card sx={checkBoxListClassess.card}>
+    <Card sx={addEventClassess.card}>
       <Box display='flex' flexDirection='row' onClick={() => setExpand(!expand)}>
         <Subtitle fontWeight='700' color={MthColor.MTHBLUE} sx={{ cursor: 'pointer' }}>
           Filter

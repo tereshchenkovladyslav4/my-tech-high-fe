@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from 'react'
+import { Theme } from '@emotion/react'
 import { Box, Checkbox, FormControlLabel } from '@mui/material'
+import { SxProps } from '@mui/system'
 import { Paragraph } from '../Typography/Paragraph/Paragraph'
 
-type SingleCheckboxProps = {
+type MthCheckboxProps = {
   title: string
   defaultValue: boolean
   titleBold?: boolean
-  handleChangeValue: () => void
+  sx?: SxProps<Theme> | undefined
+  handleChangeValue: (e: React.ChangeEvent<HTMLInputElement>) => void
 }
 
-const SingleCheckbox: React.FC<SingleCheckboxProps> = ({ title, titleBold, defaultValue, handleChangeValue }) => {
+const MthCheckbox: React.FC<MthCheckboxProps> = ({ title, titleBold, defaultValue, sx, handleChangeValue }) => {
   const [value, setValue] = useState<boolean>(defaultValue)
 
   useEffect(() => {
@@ -22,7 +25,10 @@ const SingleCheckbox: React.FC<SingleCheckboxProps> = ({ title, titleBold, defau
         sx={{ height: 30 }}
         control={<Checkbox checked={value} value={value} onChange={handleChangeValue} />}
         label={
-          <Paragraph size='large' sx={{ marginLeft: '12px', fontSize: '16px', fontWeight: titleBold ? '700' : '500' }}>
+          <Paragraph
+            size='large'
+            sx={sx ? sx : { marginLeft: '12px', fontSize: '16px', fontWeight: titleBold ? '700' : '500' }}
+          >
             {title}
           </Paragraph>
         }
@@ -31,4 +37,4 @@ const SingleCheckbox: React.FC<SingleCheckboxProps> = ({ title, titleBold, defau
   )
 }
 
-export default SingleCheckbox
+export default MthCheckbox

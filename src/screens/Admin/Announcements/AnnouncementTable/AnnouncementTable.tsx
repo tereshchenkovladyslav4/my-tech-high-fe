@@ -45,7 +45,7 @@ const AnnouncementTable: FunctionComponent<AnnouncementTableProps> = ({ setAnnou
 
   const [deleteAnnouncementById, {}] = useMutation(deleteAnnouncementsById)
   const handleDelete = (id: number) => {
-    setShowConfirmModal(parseInt(id))
+    setShowConfirmModal(Number(id))
   }
 
   const confirmDeleteAnnouncement = async (id: number) => {

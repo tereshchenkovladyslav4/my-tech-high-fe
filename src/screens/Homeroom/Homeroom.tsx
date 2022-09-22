@@ -1,13 +1,12 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { useQuery } from '@apollo/client'
 import { Box, Grid } from '@mui/material'
-import { Route, Switch, useRouteMatch } from 'react-router-dom'
+import { useRouteMatch } from 'react-router-dom'
 import { MthRoute } from '@mth/enums'
 import { UserContext } from '../../providers/UserContext/UserProvider'
 import { SchoolYearType } from '../../utils/utils.types'
 import { getSchoolYearsByRegionId } from '../Admin/Dashboard/SchoolYear/SchoolYear'
 import { ToDo } from '../Dashboard/ToDoList/ToDo'
-import { Schedule } from './Schedule'
 import { Students } from './Students/Students'
 
 export const Homeroom: React.FC = () => {
@@ -48,11 +47,6 @@ export const Homeroom: React.FC = () => {
           </Grid>
         </Grid>
       )}
-      <Switch>
-        <Route path={`${MthRoute.HOMEROOM}${MthRoute.SUBMIT_SCHEDULE}`}>
-          <Schedule />
-        </Route>
-      </Switch>
     </Box>
   )
 }

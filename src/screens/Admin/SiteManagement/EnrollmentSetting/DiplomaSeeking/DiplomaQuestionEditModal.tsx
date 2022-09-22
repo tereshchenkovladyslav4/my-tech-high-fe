@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useMutation } from '@apollo/client'
 import { Box, Button, Modal, TextField } from '@mui/material'
-import { BulletEditor } from '../../../Calendar/components/BulletEditor'
+import { MthBulletEditor } from '@mth/components/MthBulletEditor'
 import { diplomaQuestionSaveGql } from '../../services'
 import { diplomaSeekingClassess } from './styles'
 import { DiplomaQuestionEditModalProps } from './types'
@@ -51,7 +51,7 @@ const DiplomaQuestionEditModal: React.FC<DiplomaQuestionEditModalProps> = ({
             onChange={(e) => setInformationTitle(e.target.value)}
             sx={{ my: 1, maxWidth: '50%' }}
           />
-          <BulletEditor value={informationDescription} setValue={(value) => setInformationDescription(value)} />
+          <MthBulletEditor value={informationDescription} setValue={(value) => setInformationDescription(value)} />
         </Box>
         <Box sx={diplomaSeekingClassess.btnGroup}>
           <Button sx={diplomaSeekingClassess.cancelBtn} onClick={onClose}>

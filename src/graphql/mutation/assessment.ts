@@ -13,10 +13,23 @@ export const deleteAssessmentMutation = gql`
     deleteAssessment(assessment_id: $assessmentId)
   }
 `
+
 export const updateAssessmentsMutation = gql`
   mutation UpdateAssessments($updateAssessmentsInputs: UpdateAssessmentInputs!) {
     updateAssessments(updateAssessmentsInputs: $updateAssessmentsInputs) {
       assessment_id
+    }
+  }
+`
+
+export const updateStudentAssessmentMutation = gql`
+  mutation CreateOrUpdateStudentAssessment($studentAssessmentInput: CreateOrUpdateStudentAssessmentInput!) {
+    createOrUpdateStudentAssessment(studentAssessmentInput: $studentAssessmentInput) {
+      assessment_option_id
+      AssessmentId
+      StudentId
+      OptionId
+      out_text
     }
   }
 `

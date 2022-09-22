@@ -1,17 +1,15 @@
 import React from 'react'
 import { Box, TextField, Typography } from '@mui/material'
-import { SingleCheckbox } from '@mth/components/SingleCheckbox'
+import { MthBulletEditor } from '@mth/components/MthBulletEditor'
+import { MthCheckbox } from '@mth/components/MthCheckbox'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
-import { IF_SELECT_MARK_TESTING_PREFERENCE, REQUIRE_REASON_ON_OPT_OUT } from '@mth/constants'
+import { DEFAULT_REASON, IF_SELECT_MARK_TESTING_PREFERENCE, REQUIRE_REASON_ON_OPT_OUT } from '@mth/constants'
 import { OPT_TYPE } from '@mth/enums'
-import { BulletEditor } from '@mth/screens/Admin/Calendar/components/BulletEditor'
 import { DropDown } from '../../../../components/DropDown/DropDown'
 import { testingPreferenceClassess } from '../../styles'
 import { OptionFormProps } from '../types'
 
 const OptionForm: React.FC<OptionFormProps> = ({ option, setOption, invalidation, setIsChanged }) => {
-  const defaultReason =
-    'Because the assessment does not allow for students to opt-out, please indicate your reason for refusing to test'
   const items = [
     {
       label: OPT_TYPE.NONE,
@@ -34,17 +32,17 @@ const OptionForm: React.FC<OptionFormProps> = ({ option, setOption, invalidation
           <TextField
             name='title'
             placeholder='Entry'
-            value={option?.description}
+            value={option?.label}
             size='small'
             onChange={(e) => {
-              setOption({ ...option, description: e.target.value })
+              if (option) setOption({ ...option, label: e.target.value })
               setIsChanged(true)
             }}
             sx={{ my: 1 }}
-            error={invalidation && option?.description == ''}
+            error={invalidation && option?.label == ''}
           />
           <Subtitle sx={testingPreferenceClassess.formError}>
-            {invalidation && option?.description == '' && 'Required'}
+            {invalidation && option?.label == '' && 'Required'}
           </Subtitle>
         </Box>
         <Typography sx={{ paddingX: 2, marginY: 'auto' }}>{IF_SELECT_MARK_TESTING_PREFERENCE}</Typography>
@@ -52,37 +50,37 @@ const OptionForm: React.FC<OptionFormProps> = ({ option, setOption, invalidation
           <DropDown
             dropDownItems={items}
             placeholder={'Select'}
-            defaultValue={option?.optType ? option?.optType : ''}
+            defaultValue={option?.method ? option?.method : ''}
             sx={{ width: '160px' }}
             borderNone={false}
             setParentValue={(value) => {
-              setOption({ ...option, optType: value })
+              if (option) setOption({ ...option, method: value })
               setIsChanged(true)
             }}
-            error={{ error: invalidation && option?.optType == '', errorMsg: '' }}
+            error={{ error: invalidation && option?.method == '', errorMsg: '' }}
           />
           <Subtitle sx={testingPreferenceClassess.formError}>
-            {invalidation && option?.optType == '' && 'Required'}
+            {invalidation && option?.method == '' && 'Required'}
           </Subtitle>
         </Box>
       </Box>
-      {option?.optType == OPT_TYPE.OPT_OUT && (
+      {option?.method == OPT_TYPE.OPT_OUT && (
         <>
           <Box>
-            <SingleCheckbox
+            <MthCheckbox
               title={REQUIRE_REASON_ON_OPT_OUT}
-              defaultValue={option?.requireReason}
+              defaultValue={option?.require_reason}
               handleChangeValue={() => {
-                setOption({ ...option, requireReason: !option?.requireReason })
+                setOption({ ...option, require_reason: !option?.require_reason })
                 setIsChanged(true)
               }}
             />
           </Box>
-          {option?.requireReason && (
+          {option?.require_reason && (
             <Box sx={{ width: '90%' }}>
-              <BulletEditor
+              <MthBulletEditor
                 height='100px'
-                value={option?.reason || defaultReason}
+                value={option?.reason || DEFAULT_REASON}
                 setValue={(value) => {
                   setOption({ ...option, reason: value })
                   setIsChanged(true)

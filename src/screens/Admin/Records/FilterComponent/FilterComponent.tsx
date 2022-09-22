@@ -7,6 +7,8 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import moment from 'moment'
 import { DropDown } from '@mth/components/DropDown/DropDown'
+import { MthCheckboxList } from '@mth/components/MthCheckboxList'
+import { CheckBoxListVM } from '@mth/components/MthCheckboxList/MthCheckboxList'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { MthColor, StudentRecordFileKind } from '@mth/enums'
@@ -17,12 +19,10 @@ import {
   useSchoolYearsByRegionId,
 } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
-import { CheckBoxList } from '../../Calendar/components/CheckBoxList'
-import { CheckBoxListVM } from '../../Calendar/components/CheckBoxList/CheckBoxList'
-import { checkBoxListClassess } from '../../Calendar/components/CheckBoxList/styles'
 import { defaultOtherOptions, defaultStatusOptions } from '../defaultValues'
 import { recordClassess } from '../styles'
 import { FilterComponentProps } from '../types'
+import { filterComponentClassess } from './styles'
 
 const FilterComponent: React.FC<FilterComponentProps> = ({ setFilter }) => {
   const { me } = useContext(UserContext)
@@ -161,8 +161,8 @@ const FilterComponent: React.FC<FilterComponentProps> = ({ setFilter }) => {
           <Grid container sx={{ textAlign: 'left' }}>
             <Grid item container xs={12} lg={12}>
               <Grid item xs={12} lg={2}>
-                <Box sx={checkBoxListClassess.container}>
-                  <CheckBoxList
+                <Box sx={filterComponentClassess.container}>
+                  <MthCheckboxList
                     title={'Grade Level'}
                     values={grades1}
                     setValues={(value) => {
@@ -174,8 +174,8 @@ const FilterComponent: React.FC<FilterComponentProps> = ({ setFilter }) => {
                 </Box>
               </Grid>
               <Grid item xs={12} lg={2}>
-                <Box sx={checkBoxListClassess.container}>
-                  <CheckBoxList
+                <Box sx={filterComponentClassess.container}>
+                  <MthCheckboxList
                     title={'Grade Level'}
                     values={grades2}
                     setValues={(value) => {
@@ -184,7 +184,7 @@ const FilterComponent: React.FC<FilterComponentProps> = ({ setFilter }) => {
                     checkboxLists={grade2Options}
                     haveSelectAll={false}
                   />
-                  <CheckBoxList
+                  <MthCheckboxList
                     title={'Program Year'}
                     values={programYears}
                     setValues={(value) => {
@@ -193,7 +193,7 @@ const FilterComponent: React.FC<FilterComponentProps> = ({ setFilter }) => {
                     checkboxLists={programYearList}
                     haveSelectAll={false}
                   />
-                  <CheckBoxList
+                  <MthCheckboxList
                     title={'Status'}
                     values={status}
                     setValues={(value) => {
@@ -205,8 +205,8 @@ const FilterComponent: React.FC<FilterComponentProps> = ({ setFilter }) => {
                 </Box>
               </Grid>
               <Grid item xs={12} lg={2}>
-                <Box sx={checkBoxListClassess.container}>
-                  <CheckBoxList
+                <Box sx={filterComponentClassess.container}>
+                  <MthCheckboxList
                     title={'School of Enrollment'}
                     values={schoolofEnrollment}
                     setValues={(value) => {
@@ -215,7 +215,7 @@ const FilterComponent: React.FC<FilterComponentProps> = ({ setFilter }) => {
                     checkboxLists={schoolOfEnrollmentList}
                     haveSelectAll={false}
                   />
-                  <CheckBoxList
+                  <MthCheckboxList
                     title={'Special Ed'}
                     values={speicalEd}
                     setValues={(value) => {
@@ -227,11 +227,11 @@ const FilterComponent: React.FC<FilterComponentProps> = ({ setFilter }) => {
                 </Box>
               </Grid>
               <Grid item xs={12} lg={3}>
-                <Box sx={checkBoxListClassess.container}>
+                <Box sx={filterComponentClassess.container}>
                   <Paragraph size='large' fontWeight='700'>
                     {'Files'}
                   </Paragraph>
-                  <CheckBoxList
+                  <MthCheckboxList
                     title={'Enrollment Packet Documents'}
                     values={enrollmentPacketDocument}
                     setValues={(value) => {
@@ -240,7 +240,7 @@ const FilterComponent: React.FC<FilterComponentProps> = ({ setFilter }) => {
                     checkboxLists={enrollmentPacketDocumentList}
                     haveSelectAll={false}
                   />
-                  <CheckBoxList
+                  <MthCheckboxList
                     title={'Other'}
                     values={other}
                     setValues={(value) => {

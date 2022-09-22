@@ -62,7 +62,7 @@ export const ToDoListItem: TodoListTemplateType = ({ todoItem, todoDate, todoDea
         break
       }
       case ToDoCategory.SUBMIT_SCHEDULE: {
-        setLink(`${MthRoute.HOMEROOM}${MthRoute.SUBMIT_SCHEDULE}`)
+        setLink(`${MthRoute.HOMEROOM}${MthRoute.SUBMIT_SCHEDULE}/${students.at(-1)?.student_id}`)
         break
       }
       default: {

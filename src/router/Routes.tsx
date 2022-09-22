@@ -4,6 +4,7 @@ import React, { useContext } from 'react'
 import { find } from 'lodash'
 import { Redirect, Route, Switch } from 'react-router-dom'
 import { MthRoute } from '@mth/enums'
+import { Schedule } from '@mth/screens/Homeroom/Schedule'
 import { QUICKLINK_TYPE } from '../components/QuickLink/QuickLinkCardProps'
 import { QuickLinks } from '../components/QuickLink/QuickLinks'
 import { UserContext, UserInfo } from '../providers/UserContext/UserProvider'
@@ -70,6 +71,12 @@ export const Routes: React.FC = () => {
         path={`${MthRoute.PARENT_LINK}${MthRoute.SUBMIT_WITHDRAWAL}/:id`}
         children={({ match }) => {
           return <QuickLinks initialLink={QUICKLINK_TYPE.WITHDRAWAL} studentId={match?.params.id} />
+        }}
+      />
+      <Route
+        path={`${MthRoute.HOMEROOM}${MthRoute.SUBMIT_SCHEDULE}/:id`}
+        children={({ match }) => {
+          return <Schedule studentId={Number(match?.params?.id)} />
         }}
       />
       <Route path={MthRoute.PARENT_LINK}>

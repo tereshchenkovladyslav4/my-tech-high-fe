@@ -7,15 +7,26 @@ export type HeaderComponentProps = {
 }
 
 export type Information = {
-  schoolYear: number
-  type: string
+  schoolYear?: number
+  type?: string
   title: string
   description: string
 }
 
 export type TestingPreferenceInformationProps = {
   information: Information
-  refetch: () => void
+  editable?: boolean
+  refetch?: () => void
+}
+
+export type AssessmentOptionType = {
+  index?: number
+  option_id?: number
+  AssessmentId?: number
+  label: string
+  method: string
+  require_reason: boolean
+  reason: string
 }
 
 export type AssessmentType = {
@@ -26,8 +37,7 @@ export type AssessmentType = {
   information: string
   priority: number
   is_archived: boolean
-  option1: string
-  option_list?: string
+  Options: AssessmentOptionType[]
 }
 
 export type AssessmentTableProps = {
@@ -47,6 +57,6 @@ export type AssessmentItemProps = {
 
 export type CustomizableDetailModalProps = {
   information: Information
-  refetch: () => void
+  refetch?: () => void
   handleClose: () => void
 }

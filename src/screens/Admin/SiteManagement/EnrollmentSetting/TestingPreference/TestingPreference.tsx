@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { useQuery } from '@apollo/client'
 import AddIcon from '@mui/icons-material/Add'
 import { Box, Button, Grid } from '@mui/material'
 import { Route, Switch, useHistory, useRouteMatch } from 'react-router-dom'
@@ -12,8 +11,7 @@ import {
   TESTING_PREFERENCE,
 } from '@mth/constants'
 import { MthRoute, MthTitle } from '@mth/enums'
-import { getAssessmentsBySchoolYearId } from '@mth/graphql/queries/assessment'
-import { useSchoolYearsByRegionId } from '@mth/hooks'
+import { useAssessmentsBySchoolYearId, useSchoolYearsByRegionId } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { AssessmentEditForm } from './AssessmentEditForm'
 import AssessmentTable from './AssessmentTable'
@@ -31,14 +29,8 @@ const TestingPreference: React.FC = () => {
   const [informations, setInformations] = useState<Information[]>([])
   const [availGrades, setAvailableGrades] = useState<(string | number)[]>([])
   const [assessmentItems, setAssessmentItems] = useState<AssessmentType[]>([])
+  const { assessments, loading, refetch } = useAssessmentsBySchoolYearId(selectedSchoolYear)
   const [selectedAssessment, setSelectedAssessment] = useState<AssessmentType>()
-  const { data, loading, refetch } = useQuery(getAssessmentsBySchoolYearId, {
-    variables: {
-      schoolYearId: selectedSchoolYear,
-    },
-    skip: selectedSchoolYear ? false : true,
-    fetchPolicy: 'network-only',
-  })
   const {
     dropdownItems: schoolYearDropdownItems,
     schoolYears: schoolYears,
@@ -83,13 +75,13 @@ const TestingPreference: React.FC = () => {
   }, [schoolYears, selectedSchoolYear])
 
   useEffect(() => {
-    if (!loading && data?.getAssessmentsBySchoolYearId) {
-      const items = data?.getAssessmentsBySchoolYearId
+    if (!loading && assessments) {
+      const items = assessments
       setAssessmentItems(items.map((item: AssessmentType) => ({ ...item, assessment_id: Number(item.assessment_id) })))
     } else {
       setAssessmentItems([])
     }
-  }, [data, loading])
+  }, [loading, assessments])
 
   return (
     <Box sx={testingPreferenceClassess.container}>
@@ -104,7 +96,7 @@ const TestingPreference: React.FC = () => {
             <Grid container sx={{ textAlign: 'left' }}>
               {informations?.map((information, index) => (
                 <Grid key={index} item xs={6}>
-                  <TestingPreferenceInformation information={information} refetch={refetchSchoolYear} />
+                  <TestingPreferenceInformation information={information} refetch={refetchSchoolYear} editable={true} />
                 </Grid>
               ))}
             </Grid>

@@ -71,6 +71,7 @@ export const addEventClassess = {
       background: '#4145FF',
       color: '#fff',
     },
+    marginY: 1,
   },
   subject: {
     marginTop: 2,
@@ -107,5 +108,17 @@ export const addEventClassess = {
     whiteSpace: 'nowrap',
     my: 1,
     width: '65%',
+  },
+  container: {
+    display: 'flex',
+    flexDirection: 'column',
+    marginBottom: 3,
+  },
+  card: {
+    boxShadow: 'none',
+    border: '1px solid #bfbdbd',
+    borderRadius: '10px',
+    marginTop: 2,
+    padding: 2,
   },
 }

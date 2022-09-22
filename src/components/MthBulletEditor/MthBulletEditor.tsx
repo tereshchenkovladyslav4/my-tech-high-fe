@@ -4,9 +4,9 @@ import { ContentState, EditorState, convertToRaw } from 'draft-js'
 import draftToHtml from 'draftjs-to-html'
 import htmlToDraft from 'html-to-draftjs'
 import Wysiwyg from 'react-draft-wysiwyg'
-import { addEventClassess } from '../../AddEvent/styles'
+import { bulletEditorClassess } from './styles'
 
-type BulletEditorProps = {
+type MthBulletEditorProps = {
   value?: string
   height?: string
   setValue: (value: string) => void
@@ -19,7 +19,7 @@ const generateEditorState = (htmlContent: string): EditorState => {
   return EditorState.createWithContent(contentState)
 }
 
-const BulletEditor: React.FC<BulletEditorProps> = ({ value, setValue, error, height }) => {
+const MthBulletEditor: React.FC<MthBulletEditorProps> = ({ value, setValue, error, height }) => {
   const [currentBlocks, setCurrentBlocks] = useState<number>(0)
   const editorRef = useRef<unknown>()
   const [editorState, setEditorState] = useState<EditorState>(generateEditorState(''))
@@ -27,10 +27,10 @@ const BulletEditor: React.FC<BulletEditorProps> = ({ value, setValue, error, hei
 
   const handleEditorChange = (state: unknown) => {
     try {
-      if (currentBlocks !== 0 && currentBlocks !== state.blocks.length) {
-        editorRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' })
+      if (currentBlocks !== 0 && currentBlocks !== state?.blocks?.length) {
+        editorRef?.current.scrollIntoView({ behavior: 'smooth', block: 'end' })
       }
-      setCurrentBlocks(state.blocks.length)
+      setCurrentBlocks(state?.blocks?.length)
     } catch {}
   }
 
@@ -48,8 +48,8 @@ const BulletEditor: React.FC<BulletEditorProps> = ({ value, setValue, error, hei
   return (
     <Box
       sx={{
-        ...addEventClassess.editor,
-        ...(error && addEventClassess.editorInvalid),
+        ...bulletEditorClassess.editor,
+        ...(error && bulletEditorClassess.editorInvalid),
         'div.DraftEditor-editorContainer': { minHeight: height ? height : '300px' },
         marginY: 'auto',
       }}
@@ -83,4 +83,4 @@ const BulletEditor: React.FC<BulletEditorProps> = ({ value, setValue, error, hei
   )
 }
 
-export default BulletEditor
+export default MthBulletEditor

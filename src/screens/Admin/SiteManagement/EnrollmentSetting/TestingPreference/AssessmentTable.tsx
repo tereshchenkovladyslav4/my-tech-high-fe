@@ -54,7 +54,15 @@ const AssessmentTable: React.FC<AssessmentTableProps> = ({ assessmentItems, setS
     await submitUpdates({
       variables: {
         updateAssessmentsInputs: {
-          updateAssessments: items.map((item, index) => ({ ...item, priority: index })),
+          updateAssessments: items.map((item, index) => ({
+            SchoolYearId: item?.SchoolYearId,
+            assessment_id: item?.assessment_id,
+            grades: item?.grades,
+            information: item?.information,
+            priority: index,
+            test_name: item?.test_name,
+            is_archived: item.is_archived,
+          })),
         },
       },
     })

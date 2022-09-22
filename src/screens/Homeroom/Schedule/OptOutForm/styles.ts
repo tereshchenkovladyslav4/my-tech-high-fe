@@ -1,8 +1,7 @@
 import { MthColor } from '@mth/enums'
 
-export const testingPrefrenceClassess = {
+export const optOutFormClassess = {
   main: {
-    minHeight: 500,
     textAlign: 'left',
     maxWidth: 500,
     marginX: 'auto',
@@ -12,5 +11,11 @@ export const testingPrefrenceClassess = {
     fontSize: '12px',
     fontWeight: 600,
     lineHeight: '20px',
+  },
+  signBox: {
+    textAlign: 'left',
+    minWidth: 550,
+    marginX: 'auto',
+    paddingY: 5,
   },
 }

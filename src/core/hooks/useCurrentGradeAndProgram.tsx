@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react'
 import { ApolloError } from '@apollo/client'
 import { filter, map } from 'lodash'
 import moment from 'moment'
+import { CheckBoxListVM } from '@mth/components/MthCheckBoxList/MthCheckboxList'
 import { useCurrentSchoolYearByRegionId } from '@mth/hooks'
-import { CheckBoxListVM } from '@mth/screens/Admin/Calendar/components/CheckBoxList/CheckBoxList'
 import { toOrdinalSuffix } from '@mth/utils'
 
 type CurrentGradeAndProgramByRegionId = {

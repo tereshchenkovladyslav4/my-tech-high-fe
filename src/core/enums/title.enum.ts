@@ -35,5 +35,6 @@ export enum MthTitle {
   SECOND_SEMESTER = '2nd Semester',
   SCHEDULE = 'Schedule',
   STEP_TESTING_PREFERENCE = 'Testing',
+  STEP_OPT_OUT_FORM = 'Opt',
   STEP_DIPLOMA_SEEKING = 'Diploma',
 }

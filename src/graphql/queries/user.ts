@@ -195,3 +195,11 @@ export const getUser = gql`
     }
   }
 `
+export const getSignatureInfoByStudentId = gql`
+  query Student($studentId: ID!) {
+    student(student_id: $studentId) {
+      opt_out_form_signature_file_id
+      opt_out_form_signature_name
+    }
+  }
+`

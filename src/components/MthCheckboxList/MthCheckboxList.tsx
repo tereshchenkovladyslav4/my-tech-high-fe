@@ -3,15 +3,14 @@ import { Box, Checkbox, FormControlLabel } from '@mui/material'
 import { map } from 'lodash'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
-import { RED } from '../../../../../utils/constants'
-import { checkBoxListClassess } from './styles'
+import { MthColor } from '@mth/enums'
 
 export type CheckBoxListVM = {
   label: string
   value: string
 }
 
-type CheckBoxListProps = {
+type MthCheckboxListProps = {
   title: string
   checkboxLists: CheckBoxListVM[]
   values: string[]
@@ -20,7 +19,7 @@ type CheckBoxListProps = {
   error?: ReactNode
   showError?: boolean
 }
-const CheckBoxList: React.FC<CheckBoxListProps> = ({
+const MthCheckboxList: React.FC<MthCheckboxListProps> = ({
   title,
   checkboxLists,
   values,
@@ -81,14 +80,20 @@ const CheckBoxList: React.FC<CheckBoxListProps> = ({
     })
 
   return (
-    <Box sx={checkBoxListClassess.container}>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        marginBottom: 3,
+      }}
+    >
       {!!checkboxLists?.length && (
         <Box>
           <Paragraph size='large' fontWeight='700'>
             {title}
           </Paragraph>
           {showError && (
-            <Subtitle size='small' color={RED} fontWeight='700'>
+            <Subtitle size='small' color={MthColor.RED} fontWeight='700'>
               {error}
             </Subtitle>
           )}
@@ -110,4 +115,4 @@ const CheckBoxList: React.FC<CheckBoxListProps> = ({
   )
 }
 
-export default CheckBoxList
+export default MthCheckboxList

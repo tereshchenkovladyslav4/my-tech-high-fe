@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { ApolloError, useQuery } from '@apollo/client'
+import { CheckBoxListVM } from '@mth/components/MthCheckBoxList/MthCheckboxList'
 import { getEnrollmentQuestionsGql } from '@mth/graphql/queries/enrollment-question'
-import { CheckBoxListVM } from '@mth/screens/Admin/Calendar/components/CheckBoxList/CheckBoxList'
 
 export const useEnrollmentPacketDocumentListByRegionId = (
   regionId: number,

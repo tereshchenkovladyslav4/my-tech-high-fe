@@ -5,13 +5,13 @@ import { useFormikContext } from 'formik'
 import { DocumentUploadModal } from '@mth/components/DocumentUploadModal/DocumentUploadModal'
 import { DropDown } from '@mth/components/DropDown/DropDown'
 import { DropDownItem } from '@mth/components/DropDown/types'
+import { MthBulletEditor } from '@mth/components/MthBulletEditor'
 import { MultiSelect } from '@mth/components/MultiSelect/MultiSelect'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { REMOVE_FAMILY_RESOURCE, s3URL } from '@mth/constants'
 import { ResourceSubtitle } from '@mth/enums'
 import { useProgramYearListBySchoolYearId } from '@mth/hooks'
-import { BulletEditor } from '@mth/screens/Admin/Calendar/components/BulletEditor'
 import { renderGrades } from '@mth/utils'
 import { homeroomResourcesClasses } from '../styles'
 import { HomeroomResource, HomeroomResourceFormProps } from '../types'
@@ -330,7 +330,7 @@ const HomeroomResourceForm: React.FC<HomeroomResourceFormProps> = ({ schoolYearI
             Details
           </Subtitle>
           <Subtitle sx={homeroomResourcesClasses.formError}>{touched.detail && errors.detail}</Subtitle>
-          <BulletEditor
+          <MthBulletEditor
             value={values?.detail}
             setValue={(value) => {
               setFieldValue('detail', value)

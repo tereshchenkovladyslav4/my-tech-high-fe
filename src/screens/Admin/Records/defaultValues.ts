@@ -1,5 +1,5 @@
+import { CheckBoxListVM } from '@mth/components/MthCheckBoxList/MthCheckboxList'
 import { StudentRecordFileKind } from '@mth/enums'
-import { CheckBoxListVM } from '../Calendar/components/CheckBoxList/CheckBoxList'
 
 export const defaultStatusOptions: CheckBoxListVM[] = [
   {

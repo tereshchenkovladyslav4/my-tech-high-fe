@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { ApolloError, useQuery } from '@apollo/client'
-import { CheckBoxListVM } from '@mth/screens/Admin/Calendar/components/CheckBoxList/CheckBoxList'
+import { CheckBoxListVM } from '@mth/components/MthCheckBoxList/MthCheckboxList'
 import { GetSchoolsOfEnrollment } from '@mth/screens/Admin/SiteManagement/SchoolPartner/services'
 
 export const useSchoolPartnerListByRegionIdAndSchoolYearId = (

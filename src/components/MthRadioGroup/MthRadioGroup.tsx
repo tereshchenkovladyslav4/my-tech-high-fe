@@ -1,0 +1,68 @@
+import React from 'react'
+import { Box, FormControlLabel, Radio, RadioGroup } from '@mui/material'
+import { Paragraph } from '../Typography/Paragraph/Paragraph'
+import { Subtitle } from '../Typography/Subtitle/Subtitle'
+import { RadioGroupOption } from './types'
+
+type MthRadioGroupProps = {
+  ariaLabel: string
+  title?: string
+  description?: string | null
+  options: RadioGroupOption[]
+  handleChangeOption: (value: RadioGroupOption[]) => void
+}
+
+const MthRadioGroup: React.FC<MthRadioGroupProps> = ({
+  ariaLabel,
+  title,
+  description,
+  options,
+  handleChangeOption,
+}) => {
+  return (
+    <Box>
+      {title && (
+        <Subtitle sx={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: 700 }}>
+          {title}
+        </Subtitle>
+      )}
+      {description && (
+        <Paragraph size={'large'} color={'#ccc'} sx={{ paddingY: 1 }}>
+          {description}
+        </Paragraph>
+      )}
+      <RadioGroup aria-label={ariaLabel} name='radio-buttons-group'>
+        {options?.map((option, index) => (
+          <FormControlLabel
+            value={option.label}
+            key={index}
+            control={
+              <Radio
+                checked={option.value}
+                onChange={(e) => {
+                  handleChangeOption(
+                    options?.map((item) => {
+                      if (item.option_id == option.option_id) {
+                        return { ...item, value: e.target.checked }
+                      } else {
+                        return { ...item, value: false }
+                      }
+                    }),
+                  )
+                }}
+              />
+            }
+            label={
+              <Paragraph size='large' color={option?.color}>
+                {option.label}
+              </Paragraph>
+            }
+            style={{ fontSize: '12px' }}
+          />
+        ))}
+      </RadioGroup>
+    </Box>
+  )
+}
+
+export default MthRadioGroup

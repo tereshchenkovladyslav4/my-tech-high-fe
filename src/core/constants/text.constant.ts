@@ -16,3 +16,6 @@ export const REQUIRE_REASON_ON_OPT_OUT = 'Require Reason on Opt-out'
 export const DEFUALT_DIPLOMA_QUESTION_TITLE = 'Diploma-seeking Path'
 export const DEFUALT_DIPLOMA_QUESTION_DESCRIPTION =
   'Does this student plan to complete the requirements to earn a Utah high school diploma (schedule flexibility is limited)?'
+
+export const DEFAULT_REASON =
+  'Because the assessment does not allow for students to opt-out, please indicate your reason for refusing to test.'

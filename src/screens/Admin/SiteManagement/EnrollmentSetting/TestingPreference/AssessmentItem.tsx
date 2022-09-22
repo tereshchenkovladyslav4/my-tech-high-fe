@@ -30,7 +30,17 @@ const AssessmentItem: React.FC<AssessmentItemProps> = ({
   const handleArchiveOrUnArchiveAssessment = async () => {
     await submitSave({
       variables: {
-        assessmentInput: { ...item, is_archived: !item.is_archived },
+        assessmentInput: {
+          assessment: {
+            SchoolYearId: item?.SchoolYearId,
+            assessment_id: item?.assessment_id,
+            grades: item?.grades,
+            information: item?.information,
+            priority: item?.priority,
+            test_name: item?.test_name,
+            is_archived: !item.is_archived,
+          },
+        },
       },
     })
     refetch()

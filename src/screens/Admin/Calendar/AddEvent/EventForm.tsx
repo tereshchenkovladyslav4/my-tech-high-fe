@@ -1,17 +1,16 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { useQuery } from '@apollo/client'
-import { Box, Button, Checkbox, FormControlLabel, Stack, TextField } from '@mui/material'
+import { Box, Button, Stack, TextField } from '@mui/material'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { useFormikContext } from 'formik'
 import { DropDown } from '@mth/components/DropDown/DropDown'
 import { DropDownItem } from '@mth/components/DropDown/types'
-import { SingleCheckbox } from '@mth/components/SingleCheckbox'
-import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
+import { MthBulletEditor } from '@mth/components/MthBulletEditor'
+import { MthCheckbox } from '@mth/components/MthCheckbox'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
-import { BulletEditor } from '../components/BulletEditor'
 import { getEventTypesQuery } from '../services'
 import { calendarClassess } from '../styles'
 import { EventFormData, EventFormProps } from '../types'
@@ -148,7 +147,7 @@ const EventForm: React.FC<EventFormProps> = ({ setIsChanged, handleAddRSVPClick 
               }}
             />
           </Box>
-          <SingleCheckbox
+          <MthCheckbox
             title={'All Day'}
             defaultValue={values?.allDay}
             handleChangeValue={() => {
@@ -159,7 +158,7 @@ const EventForm: React.FC<EventFormProps> = ({ setIsChanged, handleAddRSVPClick 
         </Box>
         <Subtitle sx={calendarClassess.formError}>{touched.description && errors.description}</Subtitle>
         <Box sx={{ my: 1 }}>
-          <BulletEditor
+          <MthBulletEditor
             value={values?.description}
             setValue={(value) => {
               setFieldValue('description', value)
@@ -169,23 +168,13 @@ const EventForm: React.FC<EventFormProps> = ({ setIsChanged, handleAddRSVPClick 
           />
         </Box>
         <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-          <FormControlLabel
-            sx={{ height: 30, width: '160px' }}
-            control={
-              <Checkbox
-                checked={values?.hasRSVP}
-                value={values?.hasRSVP}
-                onChange={() => {
-                  setFieldValue('hasRSVP', !values?.hasRSVP)
-                  setIsChanged(true)
-                }}
-              />
-            }
-            label={
-              <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
-                Add RSVP
-              </Paragraph>
-            }
+          <MthCheckbox
+            title={'Add RSVP'}
+            defaultValue={values?.hasRSVP}
+            handleChangeValue={() => {
+              setFieldValue('hasRSVP', !values?.hasRSVP)
+              setIsChanged(true)
+            }}
           />
           {values?.hasRSVP && (
             <Button sx={addEventClassess.RSVPBtn} onClick={handleAddRSVPClick}>

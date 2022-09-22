@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 import { useMutation } from '@apollo/client'
 import { Box, Button, Modal, TextField } from '@mui/material'
+import { MthBulletEditor } from '@mth/components/MthBulletEditor'
 import { TESTING_PREFERENCE } from '@mth/constants'
-import { BulletEditor } from '../../../Calendar/components/BulletEditor'
 import { updateSchoolYearMutation } from '../../services'
 import { testingPreferenceClassess } from './styles'
 import { CustomizableDetailModalProps } from './types'
@@ -31,7 +31,7 @@ const CustomizableDetailModal: React.FC<CustomizableDetailModalProps> = ({ infor
       })
 
       if (submitedResponse) {
-        refetch()
+        if (refetch) refetch()
         handleClose()
       }
     }
@@ -56,7 +56,7 @@ const CustomizableDetailModal: React.FC<CustomizableDetailModalProps> = ({ infor
             }}
             sx={{ my: 1, maxWidth: '50%' }}
           />
-          <BulletEditor
+          <MthBulletEditor
             value={informationDescription}
             setValue={(value) => {
               setInformationDescription(value)

@@ -3,17 +3,26 @@ import { useMutation } from '@apollo/client'
 import AddIcon from '@mui/icons-material/Add'
 import { Box, Button, TextField } from '@mui/material'
 import { Prompt, useHistory } from 'react-router-dom'
+import { MthBulletEditor } from '@mth/components/MthBulletEditor'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { MthRoute, MthTitle, OPT_TYPE } from '@mth/enums'
 import { saveAssessmentMutation } from '@mth/graphql/mutation/assessment'
-import { BulletEditor } from '@mth/screens/Admin/Calendar/components/BulletEditor'
 import { CommonSelect } from '../../../components/CommonSelect'
 import { PageHeader } from '../../../components/PageHeader'
 import { CommonSelectType } from '../../../types'
 import { testingPreferenceClassess } from '../styles'
+import { AssessmentOptionType } from '../types'
 import { GradesSelect } from './GradesSelect'
 import { OptionForm } from './OptionForm'
-import { AssessmentEditFormProps, Option } from './types'
+import { AssessmentEditFormProps } from './types'
+
+const defaultOption = {
+  option_id: 0,
+  label: '',
+  require_reason: false,
+  method: '',
+  reason: '',
+}
 
 const AssessmentEditForm: React.FC<AssessmentEditFormProps> = ({ assessment, selectedYear, availGrades, refetch }) => {
   const history = useHistory()
@@ -22,16 +31,10 @@ const AssessmentEditForm: React.FC<AssessmentEditFormProps> = ({ assessment, sel
   const [grades, setGrades] = useState<string>('')
   const [information, setInformation] = useState<string>('')
   const [invalidation, setInvalidation] = useState<boolean>(false)
-  const [option1, setOption1] = useState<Option>({
-    index: 0,
-    description: '',
-    reason: '',
-    requireReason: false,
-    optType: '',
-  })
-  const [optionList, setOptionList] = useState<Option[]>([])
-  const [addItem, setAddItem] = useState<Option>()
-  const [deleteItem, setDeleteItem] = useState<Option>()
+  const [option1, setOption1] = useState<AssessmentOptionType>(defaultOption)
+  const [optionList, setOptionList] = useState<AssessmentOptionType[]>([])
+  const [addItem, setAddItem] = useState<AssessmentOptionType>()
+  const [deleteItem, setDeleteItem] = useState<AssessmentOptionType>()
   const [submitSave, {}] = useMutation(saveAssessmentMutation)
   const pageContents: CommonSelectType[] = [
     {
@@ -67,7 +70,7 @@ const AssessmentEditForm: React.FC<AssessmentEditFormProps> = ({ assessment, sel
       name: MthTitle.INFORMATION,
       component: (
         <Box sx={{ width: '70%', paddingLeft: 3 }}>
-          <BulletEditor
+          <MthBulletEditor
             height='100px'
             value={information}
             setValue={(value) => {
@@ -88,22 +91,22 @@ const AssessmentEditForm: React.FC<AssessmentEditFormProps> = ({ assessment, sel
 
   const getOption1Height = () => {
     if (option1) {
-      if (option1?.optType == OPT_TYPE.OPT_OUT && option1?.requireReason) {
+      if (option1?.method == OPT_TYPE.OPT_OUT && option1?.require_reason) {
         return '300px'
-      } else if (option1?.optType == OPT_TYPE.OPT_OUT && !option1?.requireReason) {
+      } else if (option1?.method == OPT_TYPE.OPT_OUT && !option1?.require_reason) {
         return '70px'
       }
     }
     return 'auto'
   }
   const validation = (): boolean => {
-    if (!testName || !grades || !option1.description || !option1.optType) {
+    if (!testName || !grades || !option1?.label || !option1?.method) {
       setInvalidation(true)
       return false
     }
 
     for (let i = 0; i < optionList.length; i++) {
-      if (!optionList[i].description || !optionList[i].optType) {
+      if (!optionList[i].label || !optionList[i].method) {
         setInvalidation(true)
         return false
       }
@@ -117,26 +120,32 @@ const AssessmentEditForm: React.FC<AssessmentEditFormProps> = ({ assessment, sel
     }
     await submitSave({
       variables: {
-        assessmentInput: assessment?.assessment_id
-          ? {
-              SchoolYearId: selectedYear,
-              assessment_id: Number(assessment?.assessment_id),
-              grades: grades,
-              is_archived: assessment?.is_archived,
-              information: information,
-              option1: JSON.stringify(option1),
-              option_list: JSON.stringify(optionList),
-              test_name: testName,
-            }
-          : {
-              SchoolYearId: selectedYear,
-              grades: grades,
-              is_archived: false,
-              information: information,
-              option1: JSON.stringify(option1),
-              option_list: JSON.stringify(optionList),
-              test_name: testName,
-            },
+        assessmentInput: {
+          assessment: assessment?.assessment_id
+            ? {
+                SchoolYearId: selectedYear,
+                assessment_id: Number(assessment?.assessment_id),
+                grades: grades,
+                is_archived: assessment?.is_archived,
+                information: information,
+                test_name: testName,
+              }
+            : {
+                SchoolYearId: selectedYear,
+                grades: grades,
+                is_archived: false,
+                information: information,
+                test_name: testName,
+              },
+          options: [option1].concat(optionList)?.map((option) => ({
+            option_id: Number(option?.option_id),
+            AssessmentId: Number(option?.AssessmentId),
+            reason: option?.reason,
+            require_reason: option?.require_reason,
+            label: option?.label,
+            method: option?.method,
+          })),
+        },
       },
     })
     setIsChanged(false)
@@ -145,12 +154,12 @@ const AssessmentEditForm: React.FC<AssessmentEditFormProps> = ({ assessment, sel
   }
 
   const handleAddOption = () => {
-    const newOption: Option = {
+    const newOption: AssessmentOptionType = {
       index: optionList.length + 1,
-      description: '',
-      requireReason: false,
+      label: '',
+      require_reason: false,
       reason: '',
-      optType: '',
+      method: '',
     }
     setOptionList(optionList.concat(newOption))
     setIsChanged(true)
@@ -161,11 +170,12 @@ const AssessmentEditForm: React.FC<AssessmentEditFormProps> = ({ assessment, sel
       setTestName(assessment.test_name)
       setGrades(assessment.grades)
       setInformation(assessment.information)
-      setOption1(
-        JSON.parse(assessment.option1 || '{"index":0,"description":"","optType":"","requireReason":false,"reason":""}'),
-      )
-      if (assessment.option_list) {
-        const optionList1: Option[] = JSON.parse(assessment.option_list)
+      if (assessment.Options?.length > 0) {
+        const option = assessment.Options?.sort((a, b) => Number(a.option_id) - Number(b.option_id)).at(0)
+        setOption1(option || defaultOption)
+        const optionList1: AssessmentOptionType[] = assessment.Options.filter(
+          (item) => item.option_id != option?.option_id,
+        ).map((item, index) => ({ ...item, index: index }))
         setOptionList(optionList1)
       }
     }
@@ -188,7 +198,7 @@ const AssessmentEditForm: React.FC<AssessmentEditFormProps> = ({ assessment, sel
 
   useEffect(() => {
     if (deleteItem) {
-      const tempArray = [...optionList.filter((item) => item.index != deleteItem.index)]
+      const tempArray = [...optionList.filter((item) => item.option_id != deleteItem.option_id)]
       setOptionList(tempArray)
     }
   }, [deleteItem])

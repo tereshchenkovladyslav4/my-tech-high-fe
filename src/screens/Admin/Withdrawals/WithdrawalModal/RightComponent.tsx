@@ -1,9 +1,9 @@
 import React, { useContext, useState } from 'react'
 import { useMutation } from '@apollo/client'
 import { Box, Button, Grid } from '@mui/material'
+import { MthBulletEditor } from '@mth/components/MthBulletEditor'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
-import { BulletEditor } from '../../Calendar/components/BulletEditor'
 import { individualWithdrawalMutation } from '../service'
 import { EmailTemplateResponseVM } from '../type'
 import { withdrawalModalClasses } from './styles'
@@ -50,7 +50,7 @@ export const RightComponent: React.FC<RightComponentProps> = ({ withdrawalId, em
         </Grid>
       </Grid>
       <Box sx={{ paddingX: '100px' }}>
-        <BulletEditor
+        <MthBulletEditor
           value={description}
           setValue={(value) => {
             setDescription(value)

@@ -1,4 +1,4 @@
-import { AssessmentType } from '../types'
+import { AssessmentOptionType, AssessmentType } from '../types'
 
 export type AssessmentEditFormProps = {
   assessment: AssessmentType | undefined
@@ -8,16 +8,8 @@ export type AssessmentEditFormProps = {
 }
 
 export type OptionFormProps = {
-  option: Option
+  option: AssessmentOptionType | undefined
   invalidation: boolean
-  setOption: (value: Option) => void
+  setOption: (value: AssessmentOptionType) => void
   setIsChanged: (value: boolean) => void
-}
-
-export type Option = {
-  index: number
-  description: string
-  optType: string
-  requireReason: boolean
-  reason: string
 }

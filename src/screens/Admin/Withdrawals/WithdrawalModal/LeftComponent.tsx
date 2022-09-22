@@ -1,11 +1,11 @@
 import React, { Fragment, useContext, useState } from 'react'
 import { Avatar, Box, Grid, Typography } from '@mui/material'
+import { MthCheckboxList } from '@mth/components/MthCheckboxList'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { Title } from '@mth/components/Typography/Title/Title'
 import { ProfileContext } from '@mth/providers/ProfileProvider/ProfileContext'
 import { MTHBLUE } from '../../../../utils/constants'
 import { toOrdinalSuffix } from '../../../../utils/stringHelpers'
-import { CheckBoxList } from '../../Calendar/components/CheckBoxList'
 import { StudentInfo } from '../type'
 import { withdrawalModalClasses } from './styles'
 
@@ -139,7 +139,7 @@ export const LeftComponent: React.FC<LeftComponentProps> = ({ studentInfo }) => 
               Standard Responses
             </Title>
           </Box>
-          <CheckBoxList
+          <MthCheckboxList
             title={''}
             values={standardResponse}
             setValues={(value) => {

@@ -1,13 +1,13 @@
-import React, { FunctionComponent, useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { Box, Grid } from '@mui/material'
 import { map } from 'lodash'
+import { MthCheckboxList } from '@mth/components/MthCheckboxList'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { MthColor } from '@mth/enums'
 import { useCurrentGradeAndProgramByRegionId } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
-import { CheckBoxList } from '../../../Calendar/components/CheckBoxList'
 import { defaultUserList } from '../../../Calendar/defaultValue'
 
 type FilterComponentProps = {
@@ -29,7 +29,7 @@ type FilterComponentProps = {
   setSchoolPartnersInvalid: (value: boolean) => void
 }
 
-const FilterComponent: FunctionComponent<FilterComponentProps> = ({
+const FilterComponent: React.FC<FilterComponentProps> = ({
   grades,
   users,
   programYears,
@@ -98,7 +98,7 @@ const FilterComponent: FunctionComponent<FilterComponentProps> = ({
     <Grid container sx={{ textAlign: 'left', marginY: '12px' }}>
       <Grid item container xs={12}>
         <Grid item xs={6}>
-          <CheckBoxList
+          <MthCheckboxList
             title={'Users'}
             values={users}
             setValues={(value) => {
@@ -111,7 +111,7 @@ const FilterComponent: FunctionComponent<FilterComponentProps> = ({
             error='Users Required'
           />
           {showOtherFilters && (
-            <CheckBoxList
+            <MthCheckboxList
               title={'Grades'}
               values={grades}
               setValues={(value) => {
@@ -128,7 +128,7 @@ const FilterComponent: FunctionComponent<FilterComponentProps> = ({
         <Grid item xs={6}>
           {showOtherFilters && (
             <>
-              <CheckBoxList
+              <MthCheckboxList
                 title={'Program Year'}
                 values={programYears}
                 setValues={(value) => {
@@ -139,7 +139,7 @@ const FilterComponent: FunctionComponent<FilterComponentProps> = ({
                 haveSelectAll={false}
               />
 
-              <CheckBoxList
+              <MthCheckboxList
                 title={'School of Enrollment'}
                 values={schoolPartners}
                 setValues={(value) => {
