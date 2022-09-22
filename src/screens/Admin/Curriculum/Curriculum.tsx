@@ -19,6 +19,12 @@ const Curriculum: React.FC = () => {
       setItems([
         {
           id: 1,
+          icon: (
+            <>
+              <Box>Homeroom</Box>
+              <Box>Resources</Box>
+            </>
+          ),
           title: 'Homeroom Resources',
           subtitle: 'Add, Edit, & Archive',
           img: BgOrange,
@@ -27,7 +33,12 @@ const Curriculum: React.FC = () => {
         },
         {
           id: 2,
-          icon: 'Course Catalog',
+          icon: (
+            <>
+              <Box>Course</Box>
+              <Box>Catalog</Box>
+            </>
+          ),
           title: 'Subjects, Providers, & Settings',
           subtitle: 'Add, Edit, & Archive',
           img: BgBlue,

@@ -1,5 +1,6 @@
+import { ReactNode } from 'react'
 export interface ItemCardProps {
-  icon?: string
+  icon?: string | ReactNode
   title: string
   subTitle: string
   img: string

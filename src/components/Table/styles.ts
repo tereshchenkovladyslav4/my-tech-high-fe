@@ -12,8 +12,14 @@ export const useStyles = {
       fontSize: 15,
       padding: '2px 2px 9px 14px',
     },
-    '&.striped tbody tr:nth-of-type(odd)': {
+    '&.striped tbody tr:nth-of-type(odd) td': {
       backgroundColor: 'rgba(0, 0, 0, 0.02)',
+    },
+    'tbody tr td:first-of-type': {
+      borderRadius: '8px 0 0 8px;',
+    },
+    'tbody tr td:last-of-type': {
+      borderRadius: '0 8px 8px 0;',
     },
     '&.bordered-l .cell-item.border-l': {
       borderLeft: '1px solid black',

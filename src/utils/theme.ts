@@ -38,6 +38,18 @@ export const theme = createTheme({
           '& .fw-700': {
             fontWeight: 700,
           },
+          '& .w-28': {
+            width: '112px',
+          },
+          '& .w-31': {
+            width: '124px',
+          },
+          '& .w-37': {
+            width: '148px',
+          },
+          '& .w-75': {
+            width: '300px',
+          },
         },
       },
     },

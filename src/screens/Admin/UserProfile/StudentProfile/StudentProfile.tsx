@@ -816,7 +816,7 @@ export const StudentProfile: FunctionComponent<StudentProfileProps> = ({
               </RadioGroup>
             </Box>
           )}
-          {!currentSoE && (
+          {!previousSoE && (
             <Typography
               sx={{
                 marginBottom: '10px',

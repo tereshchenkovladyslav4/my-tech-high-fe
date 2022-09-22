@@ -171,7 +171,7 @@ const CustomTable = <T extends Record<string, unknown>>({
               </TableCell>
             )}
             {fields.map((field) => (
-              <StyledTableCell key={field.key}>
+              <StyledTableCell key={field.key} className={field.thClass}>
                 {field.sortable ? (
                   <div className={orderBy === field.key ? 'sort-active' : ''}>
                     <TableSortLabel
@@ -290,7 +290,7 @@ const CustomTable = <T extends Record<string, unknown>>({
           {!loading && !items.length && (
             <StyledTableRow>
               <td colSpan={fields.length + (checkable ? 1 : 0)}>
-                <Box className='no-data' sx={{ opacity: 0.1, py: 1 }}>
+                <Box className='no-data' sx={{ opacity: 0.1, py: 2, textAlign: 'center' }}>
                   Not found
                 </Box>
               </td>

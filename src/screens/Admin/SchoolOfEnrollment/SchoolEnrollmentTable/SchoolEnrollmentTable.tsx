@@ -25,12 +25,12 @@ export const EnrollmentSchoolTable: FunctionComponent<EnrollmentSchoolTableProps
   previousYear,
 }) => {
   const [pageLoading, setPageLoading] = useState<boolean>(false)
-  const [seachField, setSearchField] = useState<string>('')
+  const [searchField, setSearchField] = useState<string>('')
   const [openAlert, setOpenAlert] = useState<boolean>(false)
   const [open, setOpen] = useState<boolean>(false)
   const [message, setMessage] = useState<string>('')
-  const [noStudnetAlert, setNoStudentAlert] = useState<boolean>(false)
-  const [paginatinLimit, setPaginatinLimit] = useState<number>(Number(localStorage.getItem('pageLimit')) || 25)
+  const [noStudentAlert, setNoStudentAlert] = useState<boolean>(false)
+  const [paginationLimit, setPaginationLimit] = useState<number>(Number(localStorage.getItem('pageLimit')) || 25)
   const [sortField, setSortField] = useState<string>('student')
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
   const [skip, setSkip] = useState<number>(0)
@@ -52,8 +52,8 @@ export const EnrollmentSchoolTable: FunctionComponent<EnrollmentSchoolTableProps
     variables: {
       skip,
       sort: `${sortField}|${sortOrder}`,
-      take: paginatinLimit,
-      search: seachField,
+      take: paginationLimit,
+      search: searchField,
       filter: {
         ...filter,
         schoolYear: parseInt(selectedYear?.value),
@@ -67,7 +67,7 @@ export const EnrollmentSchoolTable: FunctionComponent<EnrollmentSchoolTableProps
     localStorage.setItem('currentPage', page.toString())
     setCurrentPage(page)
     setSkip(() => {
-      return paginatinLimit ? paginatinLimit * (page - 1) : 25
+      return paginationLimit ? paginationLimit * (page - 1) : 25
     })
   }
 
@@ -93,7 +93,7 @@ export const EnrollmentSchoolTable: FunctionComponent<EnrollmentSchoolTableProps
       handlePageChange(Number(localStorage.getItem('currentPage')))
     }
     if (localStorage.getItem('pageLimit')) {
-      setPaginatinLimit(Number(localStorage.getItem('pageLimit')))
+      setPaginationLimit(Number(localStorage.getItem('pageLimit')))
     }
     return () => {
       localStorage.removeItem('currentPage')
@@ -104,7 +104,7 @@ export const EnrollmentSchoolTable: FunctionComponent<EnrollmentSchoolTableProps
   const handleChangePageLimit = (value) => {
     localStorage.setItem('pageLimit', value)
     handlePageChange(1)
-    setPaginatinLimit(value)
+    setPaginationLimit(value)
   }
 
   const sortChangeAction = (property: string, order: 'desc' | 'asc') => {
@@ -169,7 +169,7 @@ export const EnrollmentSchoolTable: FunctionComponent<EnrollmentSchoolTableProps
           const grade_level = student.grade_levels?.find((item) => item.school_year_id == selectedYear?.value)
           let grade = grade_level && (grade_level.grade_level?.includes('Kin') ? 'K' : grade_level.grade_level)
           // group grade K, 1-8, 9-10
-          if (groupGrades.length) {
+          if (groupGrades.length === 3) {
             if (grade !== 'K') {
               const gradeNumber = Number(grade)
               if (gradeNumber > 0 && gradeNumber < 9) {
@@ -263,7 +263,7 @@ export const EnrollmentSchoolTable: FunctionComponent<EnrollmentSchoolTableProps
               onBlur={(e) => (e.target.placeholder = 'Search...')}
               size='small'
               fullWidth
-              value={seachField}
+              value={searchField}
               placeholder='Search...'
               onChange={(e) => {
                 handlePageChange(1)
@@ -388,8 +388,8 @@ export const EnrollmentSchoolTable: FunctionComponent<EnrollmentSchoolTableProps
           <Pagination
             setParentLimit={handleChangePageLimit}
             handlePageChange={handlePageChange}
-            defaultValue={paginatinLimit || 25}
-            numPages={Math.ceil((totalApplications as number) / paginatinLimit) || 0}
+            defaultValue={paginationLimit || 25}
+            numPages={Math.ceil((totalApplications as number) / paginationLimit) || 0}
             currentPage={currentPage}
           />
         </Box>
@@ -420,13 +420,13 @@ export const EnrollmentSchoolTable: FunctionComponent<EnrollmentSchoolTableProps
           handleSubmit={() => setOpenAlert(!openAlert)}
         />
       )}
-      {noStudnetAlert && (
+      {noStudentAlert && (
         <WarningModal
-          handleModem={() => setNoStudentAlert(!noStudnetAlert)}
+          handleModem={() => setNoStudentAlert(!noStudentAlert)}
           title='Error'
           subtitle='No student(s) selected'
           btntitle='OK'
-          handleSubmit={() => setNoStudentAlert(!noStudnetAlert)}
+          handleSubmit={() => setNoStudentAlert(!noStudentAlert)}
         />
       )}
       {open && (

@@ -251,7 +251,7 @@ export const AddUploadModal: FunctionComponent<AddUploadModal> = ({ onClose, edi
                     }}
                   >
                     <Subtitle size='small' sx={{ fontSize: '13px' }}>
-                      Check the statuses that require a SPED upload
+                      Check the statuses that require a SPED upload:
                     </Subtitle>
                   </Box>
                   {specialEd?.specialEdList.map((ed, index) => (

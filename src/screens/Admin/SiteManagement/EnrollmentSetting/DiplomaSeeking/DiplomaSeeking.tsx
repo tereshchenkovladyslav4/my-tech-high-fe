@@ -69,7 +69,7 @@ const DiplomaSeeking: React.FC = () => {
       const yearList: SchoolYear[] = []
       SchoolYears.map((item: SchoolYearItem): void => {
         yearList.push({
-          label: `${moment(item.date_begin).format('YYYY')} - ${moment(item.date_end).format('YY')}`,
+          label: `${moment(item.date_begin).format('YYYY')}-${moment(item.date_end).format('YY')}`,
           value: item.school_year_id,
         })
         if (moment(item.date_begin).format('YYYY') === moment().format('YYYY')) {

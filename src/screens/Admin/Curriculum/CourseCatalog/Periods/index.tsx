@@ -104,49 +104,53 @@ const Periods: FunctionComponent = () => {
       key: 'id',
       label: 'Period',
       sortable: false,
-      tdClass: '',
+      thClass: 'w-28',
     },
     {
       key: 'grade',
       label: 'Grades',
       sortable: false,
-      tdClass: '',
+      thClass: 'w-31',
     },
     {
       key: 'category',
       label: 'Category',
       sortable: false,
-      tdClass: '',
+      thClass: 'w-37',
     },
     {
       key: 'secondSemester',
       label: '2nd Semester',
       sortable: false,
-      tdClass: '',
+      thClass: '',
     },
     {
       key: 'action',
       label: '',
       sortable: false,
-      tdClass: '',
+      thClass: 'w-31',
       formatter: (_: ValueOf<PeriodItem>, item: TableItem<PeriodItem>) => {
         return (
           <Box display={'flex'} flexDirection='row' justifyContent={'flex-end'}>
-            <Tooltip title='Edit' color='primary'>
-              <span>
-                <IconButton onClick={() => handleCreateOrEditModal()} disabled={item.archived}>
+            {item.archived ? (
+              <IconButton disabled>
+                <CreateIcon />
+              </IconButton>
+            ) : (
+              <Tooltip title='Edit' color='primary' placement='top'>
+                <IconButton onClick={() => handleCreateOrEditModal()}>
                   <CreateIcon />
                 </IconButton>
-              </span>
-            </Tooltip>
-            <Tooltip title={item.archived ? 'Unarchive' : 'Archive'}>
+              </Tooltip>
+            )}
+            <Tooltip title={item.archived ? 'Unarchive' : 'Archive'} placement='top'>
               <IconButton onClick={() => handleArchiveModal(item)} color='primary' sx={{ mr: item.archived ? 0 : 5 }}>
                 {item.archived ? <CallMissedOutgoingIcon sx={{ color: '#A3A3A4' }} /> : <SystemUpdateAltRoundedIcon />}
               </IconButton>
             </Tooltip>
 
             {item.archived && (
-              <Tooltip title='Delete' color='primary'>
+              <Tooltip title='Delete' color='primary' placement='top'>
                 <IconButton onClick={() => handleDelete(item)}>
                   <DeleteForeverOutlined />
                 </IconButton>

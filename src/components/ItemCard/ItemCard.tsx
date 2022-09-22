@@ -8,6 +8,7 @@ import { useHistory } from 'react-router-dom'
 import AddNewIcon from '../../assets/add-new.png'
 import { SYSTEM_01 } from '../../utils/constants'
 import { ItemCardProps } from './ItemCardProps'
+import { useStyles } from './styles'
 
 export const ItemCard: React.FC<ItemCardProps> = ({
   title,
@@ -45,10 +46,10 @@ export const ItemCard: React.FC<ItemCardProps> = ({
       }}
     >
       {hasTitle ? (
-        <Box sx={{ position: 'relative' }}>
+        <Box sx={useStyles.cardHeader}>
           <CardMedia component='img' src={img} sx={{ height: 240 }} />
-          <Box sx={{ width: '100%', position: 'absolute', left: 0, textAlign: 'center', top: '100px', color: 'white' }}>
-            <Typography fontSize='40px' component='div' fontWeight='600'>
+          <Box className='card-title'>
+            <Typography fontSize='45px' component='div' fontWeight='600'>
               {icon || title}
             </Typography>
           </Box>

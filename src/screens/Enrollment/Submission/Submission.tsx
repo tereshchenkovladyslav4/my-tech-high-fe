@@ -6,6 +6,7 @@ import { capitalize, omit } from 'lodash'
 import { useHistory } from 'react-router-dom'
 import SignatureCanvas from 'react-signature-canvas'
 import * as yup from 'yup'
+import { getWindowDimension } from '@mth/utils'
 import { QUESTION_TYPE } from '../../../components/QuestionItem/QuestionItemProps'
 import { SuccessModal } from '../../../components/SuccessModal/SuccessModal'
 import { Paragraph } from '../../../components/Typography/Paragraph/Paragraph'
@@ -29,6 +30,7 @@ export const Submission: SubmissionTemplateType = ({ id, questions }) => {
 
   const [showSuccess, setShowSuccess] = useState(false)
   const [submitEnrollment] = useMutation(enrollmentContactMutation)
+  const [windowDimensions, setWindowDimensions] = useState(getWindowDimension())
 
   const dataUrlToFile = async (dataUrl: string, fileName: string): Promise<File> => {
     const res: Response = await fetch(dataUrl)
@@ -44,6 +46,15 @@ export const Submission: SubmissionTemplateType = ({ id, questions }) => {
   const student = students.find((s) => s.student_id === id)
 
   const [validationSchema, setValidationSchema] = useState(yup.object({}))
+
+  useEffect(() => {
+    function handleResize() {
+      setWindowDimensions(getWindowDimension())
+    }
+
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   useEffect(() => {
     if (disabled == true) signatureRef.current.off()
@@ -345,7 +356,15 @@ export const Submission: SubmissionTemplateType = ({ id, questions }) => {
       <Grid container rowSpacing={3} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
         <Grid item xs={12}>
           <Box display='flex' flexDirection='column' alignItems='center' justifyContent={'center'} width='100%'>
-            <Box sx={{ width: '35%', display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+            <Box
+              sx={{
+                width: { xs: '100%', sm: '35%' },
+                marginTop: { xs: '40px', sm: '0px' },
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'center',
+              }}
+            >
               <FormHelperText style={{ textAlign: 'center' }}>
                 Type full legal parent name and provide a Digital Signature below (use the mouse to sign).
               </FormHelperText>
@@ -353,8 +372,11 @@ export const Submission: SubmissionTemplateType = ({ id, questions }) => {
           </Box>
         </Grid>
         <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'center' }}>
-          <Box sx={{ borderBottom: '1px solid', width: 500 }}>
-            <SignatureCanvas canvasProps={{ width: 500, height: 100 }} ref={signatureRef} />
+          <Box sx={{ borderBottom: '1px solid', width: { sm: 500, xs: 300 } }}>
+            <SignatureCanvas
+              canvasProps={{ width: windowDimensions.width > 600 ? 500 : 300, height: 100 }}
+              ref={signatureRef}
+            />
           </Box>
         </Grid>
         {signatureInvalid && (

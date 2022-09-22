@@ -35,7 +35,7 @@ const Periods: FunctionComponent<FilterProps> = ({ query, setValue }) => {
         }
         sx={{ maxWidth: '280px' }}
       />
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: '20px' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
         <Button
           sx={classes.filterButton}
           color={query.hideArchived ? 'secondary' : 'primary'}

@@ -1,6 +1,8 @@
+import { ReactNode } from 'react'
+
 export type CurriculumItem = {
   id: number
-  icon?: string
+  icon?: string | ReactNode
   title: string
   subtitle: string
   img: string

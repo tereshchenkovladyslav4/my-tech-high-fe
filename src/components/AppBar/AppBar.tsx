@@ -468,11 +468,13 @@ export const AppBar: FunctionComponent = () => {
   }
 
   const getTheIcon = () => {
+    if (location.pathname.indexOf('homeroom/enrollment') !== -1) {
+      return <PeopleAltOutlinedIcon />
+    }
     if (theIcon.type === 'side') {
       switch (theIcon.name) {
         case 'dashboard':
           return <DescriptionIcon />
-
         case 'settings':
           return <SettingsIcon />
         case 'Announcements':

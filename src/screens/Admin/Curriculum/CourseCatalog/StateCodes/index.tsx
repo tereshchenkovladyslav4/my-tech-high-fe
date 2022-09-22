@@ -107,7 +107,7 @@ const StateCodes: FunctionComponent = () => {
       formatter: () => {
         return (
           <Box display={'flex'} flexDirection='row' justifyContent={'flex-end'}>
-            <Tooltip title='Edit' color='primary'>
+            <Tooltip title='Edit' color='primary' placement='top'>
               <IconButton onClick={() => handleCreateOrEditModal()}>
                 <CreateIcon />
               </IconButton>

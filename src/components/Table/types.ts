@@ -18,6 +18,7 @@ export type Field<T> = {
   sortable?: boolean
   formatter?: (value: ValueOf<T>, item: TableItem<T>, idx?: number) => string | number | ReactNode
   tdClass?: string
+  thClass?: string
 }
 
 export type CustomTableProps<T> = {
