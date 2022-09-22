@@ -2,7 +2,7 @@ import React, { FunctionComponent, useContext, useEffect, useState } from 'react
 import { useQuery } from '@apollo/client'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { Box, Button, Card, Checkbox, FormControlLabel, Grid } from '@mui/material'
-import { map } from 'lodash'
+import { map, capitalize } from 'lodash'
 import { useHistory } from 'react-router-dom'
 import { Paragraph } from '../../../../components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
@@ -18,7 +18,7 @@ export const Filters: FunctionComponent<FiltersProps> = ({
   partnerList,
   previousPartnerList,
   selectedYear,
-  gradesList,
+  gradesList = [],
 }) => {
   const { me } = useContext(UserContext)
   const history = useHistory()
@@ -110,10 +110,11 @@ export const Filters: FunctionComponent<FiltersProps> = ({
   }
 
   const handleYearStatus = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (yearStatus.includes(e.target.value)) {
-      setYearStatus(yearStatus.filter((i) => i !== e.target.value))
+    const value = e.target.value as YEAR_STATUS
+    if (yearStatus.includes(value)) {
+      setYearStatus(yearStatus.filter((i) => i !== value))
     } else {
-      setYearStatus([...yearStatus, e.target.value])
+      setYearStatus([...yearStatus, value])
     }
   }
 
@@ -189,37 +190,40 @@ export const Filters: FunctionComponent<FiltersProps> = ({
   }
 
   const renderGrades = () =>
-    map(gradesList, (grade, index) => {
-      if (parseInt(grade) == grade) {
-        return (
-          <FormControlLabel
-            key={index}
-            sx={{ height: 30 }}
-            control={
-              <Checkbox checked={grades.includes(grade.toString())} value={grade} onChange={handleChangeGrades} />
-            }
-            label={
-              <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>{`${toOrdinalSuffix(
-                grade,
-              )} Grade`}</Paragraph>
-            }
-          />
-        )
-      } else {
-        return (
-          <FormControlLabel
-            key={index}
-            sx={{ height: 30 }}
-            control={<Checkbox checked={grades.includes(grade)} value={grade} onChange={handleChangeGrades} />}
-            label={
-              <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
-                {grade}
-              </Paragraph>
-            }
-          />
-        )
-      }
-    })
+    map(
+      gradesList.sort((a) => (a === 'Kindergarten' ? -1 : 0)),
+      (grade, index) => {
+        if (parseInt(grade) == grade) {
+          return (
+            <FormControlLabel
+              key={index}
+              sx={{ height: 30 }}
+              control={
+                <Checkbox checked={grades.includes(grade.toString())} value={grade} onChange={handleChangeGrades} />
+              }
+              label={
+                <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>{`${toOrdinalSuffix(
+                  grade,
+                )} Grade`}</Paragraph>
+              }
+            />
+          )
+        } else {
+          return (
+            <FormControlLabel
+              key={index}
+              sx={{ height: 30 }}
+              control={<Checkbox checked={grades.includes(grade)} value={grade} onChange={handleChangeGrades} />}
+              label={
+                <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
+                  {grade}
+                </Paragraph>
+              }
+            />
+          )
+        }
+      },
+    )
 
   const columnWidth = () => {
     return gradesList?.length === GRADES.length ? 3 : 4
@@ -291,14 +295,20 @@ export const Filters: FunctionComponent<FiltersProps> = ({
             <Paragraph size='large' fontWeight='700'>
               For {selectedYear?.label?.split('Mid-year')[0]} Year
             </Paragraph>
-            {Object.keys(YEAR_STATUS).map((item) => (
+            {(Object.keys(YEAR_STATUS) as Array<keyof typeof YEAR_STATUS>).map((item) => (
               <FormControlLabel
                 key={item}
                 sx={{ height: 30 }}
-                control={<Checkbox value={item} checked={yearStatus.includes(item)} onChange={handleYearStatus} />}
+                control={
+                  <Checkbox
+                    value={YEAR_STATUS[item]}
+                    checked={yearStatus.includes(YEAR_STATUS[item])}
+                    onChange={handleYearStatus}
+                  />
+                }
                 label={
                   <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
-                    {YEAR_STATUS[item]}
+                    {capitalize(item.toLocaleLowerCase())}
                   </Paragraph>
                 }
               />

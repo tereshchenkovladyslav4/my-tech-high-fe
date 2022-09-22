@@ -13,6 +13,7 @@ export const getStudents = gql`
           first_name
         }
         student_id
+        parent_id
         parent {
           person {
             first_name

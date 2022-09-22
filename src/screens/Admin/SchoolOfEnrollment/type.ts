@@ -1,10 +1,10 @@
 import { DropDownItem } from '../SiteManagement/components/DropDown/types'
 
 export enum YEAR_STATUS {
-  NEW = 'New',
-  RETURNING = 'Returning',
-  TRANSFERRED = 'Transferred',
-  SIBLING = 'Sibling',
+  NEW = 'NEW',
+  RETURNING = 'RETURNING',
+  TRANSFERRED = 'TRANSFERRED',
+  SIBLING = 'SIBLING',
 }
 
 export type FilterVM = {
@@ -80,7 +80,7 @@ export type SchoolYearVM = {
 }
 
 export type GradeLevel = {
-  grade_level?: string | number
+  grade_level?: string
   school_year_id: string | number
 }
 
@@ -88,11 +88,16 @@ export type Address = {
   city?: string
 }
 
+export type Partner = {
+  name: string
+}
+
 export type Person = {
   first_name?: string
   last_name?: string
   name: string
   address: Address
+  partner?: Partner
 }
 
 export type Parent = {

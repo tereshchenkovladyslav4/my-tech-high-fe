@@ -5,13 +5,13 @@ import CheckOutlinedIcon from '@mui/icons-material/CheckOutlined'
 import DehazeIcon from '@mui/icons-material/Dehaze'
 import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined'
 import EditIcon from '@mui/icons-material/Edit'
+import SystemUpdateAltRoundedIcon from '@mui/icons-material/SystemUpdateAltRounded'
 import { Box, Card, CardContent, CardMedia, IconButton, Stack, Tooltip, Typography } from '@mui/material'
 import { SortableHandle } from 'react-sortable-hoc'
-import ArchiveIcon from '@mth/assets/archive.png'
 import { s3URL } from '@mth/constants'
 import { MthColor, ResourceSubtitle } from '@mth/enums'
 import { EventType, HomeroomResourceCardProps } from '../types'
-import { homeroomResourcesCardClassess } from './styles'
+import { homeroomResourcesCardClasses } from './styles'
 
 const HomeroomResourceCard: React.FC<HomeroomResourceCardProps> = ({ item, action, isPast, onAction }) => {
   const DragHandle = SortableHandle(() => (
@@ -79,7 +79,7 @@ const HomeroomResourceCard: React.FC<HomeroomResourceCardProps> = ({ item, actio
               e.stopPropagation()
             }}
             sx={{
-              ...homeroomResourcesCardClassess.iconButton,
+              ...homeroomResourcesCardClasses.iconButton,
               top: 15,
               right: 15,
               color: MthColor.SYSTEM_01,
@@ -98,7 +98,7 @@ const HomeroomResourceCard: React.FC<HomeroomResourceCardProps> = ({ item, actio
               e.stopPropagation()
             }}
             sx={{
-              ...homeroomResourcesCardClassess.iconButton,
+              ...homeroomResourcesCardClasses.iconButton,
               top: 15,
               right: 15,
               color: MthColor.SYSTEM_01,
@@ -117,7 +117,7 @@ const HomeroomResourceCard: React.FC<HomeroomResourceCardProps> = ({ item, actio
               e.stopPropagation()
             }}
             sx={{
-              ...homeroomResourcesCardClassess.iconButton,
+              ...homeroomResourcesCardClasses.iconButton,
               top: 15,
               right: 15,
               color: item.allow_request ? MthColor.WHITE : MthColor.BLACK,
@@ -136,7 +136,7 @@ const HomeroomResourceCard: React.FC<HomeroomResourceCardProps> = ({ item, actio
               e.stopPropagation()
             }}
             sx={{
-              ...homeroomResourcesCardClassess.iconButton,
+              ...homeroomResourcesCardClasses.iconButton,
               top: 77,
               right: 15,
               color: MthColor.BLACK,
@@ -172,37 +172,43 @@ const HomeroomResourceCard: React.FC<HomeroomResourceCardProps> = ({ item, actio
               : 'Subtitle'}
           </Typography>
           {item.resource_id != 0 && action && !isPast && (
-            <Stack direction='row' spacing={1.5} alignItems='center'>
+            <Stack direction='row' spacing={0.5} alignItems='center'>
               <Tooltip title='Edit'>
-                <EditIcon
-                  htmlColor={MthColor.SYSTEM_01}
+                <IconButton
+                  sx={homeroomResourcesCardClasses.actionButton}
                   onClick={(e) => {
                     actionHandler(EventType.EDIT)
                     e.stopPropagation()
                   }}
-                />
+                  disabled={!item.is_active}
+                >
+                  <EditIcon />
+                </IconButton>
               </Tooltip>
               {item.is_active && (
                 <Tooltip title='Archive'>
-                  <img
+                  <IconButton
+                    sx={homeroomResourcesCardClasses.actionButton}
                     onClick={(e) => {
                       actionHandler(EventType.ARCHIVE)
                       e.stopPropagation()
                     }}
-                    src={ArchiveIcon}
-                    alt='Archive'
-                  />
+                  >
+                    <SystemUpdateAltRoundedIcon />
+                  </IconButton>
                 </Tooltip>
               )}
               {!item.is_active && (
                 <Tooltip title='Unarchive'>
-                  <CallMissedOutgoingIcon
-                    htmlColor={MthColor.SYSTEM_01}
+                  <IconButton
+                    sx={homeroomResourcesCardClasses.actionButton}
                     onClick={(e) => {
                       actionHandler(EventType.RESTORE)
                       e.stopPropagation()
                     }}
-                  />
+                  >
+                    <CallMissedOutgoingIcon />
+                  </IconButton>
                 </Tooltip>
               )}
               <DragHandle />

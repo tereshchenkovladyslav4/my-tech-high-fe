@@ -108,6 +108,7 @@ const Titles: React.FC<TitlesProps> = ({ titles }) => {
         splitEnrollment: title.splitEnrollment === undefined ? 'N/A' : title.splitEnrollment ? 'Yes' : 'No',
         semesterOnly: title.semesterOnly === undefined ? 'N/A' : title.semesterOnly ? 'Yes' : 'No',
       },
+      selectable: title.active,
       rawData: title,
     }
   }

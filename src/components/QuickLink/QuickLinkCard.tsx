@@ -1,21 +1,22 @@
 import React from 'react'
+import AddOutlinedIcon from '@mui/icons-material/AddOutlined'
 import CallMissedOutgoingIcon from '@mui/icons-material/CallMissedOutgoing'
 import DehazeIcon from '@mui/icons-material/Dehaze'
+import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined'
 import EastIcon from '@mui/icons-material/East'
 import EditIcon from '@mui/icons-material/Edit'
+import SystemUpdateAltRoundedIcon from '@mui/icons-material/SystemUpdateAltRounded'
 import { Box, Card, CardContent, CardMedia, IconButton, Stack, Tooltip, Typography } from '@mui/material'
 import { SortableHandle } from 'react-sortable-hoc'
-import AddNewIcon from '../../assets/add-new.png'
-import ArchiveIcon from '../../assets/archive.png'
-import DeleteIcon from '../../assets/delete.png'
-import { SYSTEM_01 } from '../../utils/constants'
+import { quickLinkCardClasses } from '@mth/components/QuickLink/styles'
+import { MthColor } from '@mth/enums'
 import { QuickLinkCardProps, QUICKLINK_TYPE } from './QuickLinkCardProps'
 
 export const QuickLinkCard: React.FC<QuickLinkCardProps> = ({ item, action, onAction, background }) => {
   const DragHandle = SortableHandle(() => (
     <IconButton>
       <Tooltip title='Move'>
-        <DehazeIcon htmlColor={SYSTEM_01} />
+        <DehazeIcon htmlColor={MthColor.SYSTEM_01} />
       </Tooltip>
     </IconButton>
   ))
@@ -72,22 +73,42 @@ export const QuickLinkCard: React.FC<QuickLinkCardProps> = ({ item, action, onAc
         ></Box>
       )}
       {item.id == 0 && (
-        <img
-          onClick={() => {
-            if (onAction) onAction('add')
-          }}
-          src={AddNewIcon}
-          style={{ position: 'absolute', top: 15, right: 15 }}
-        />
+        <Tooltip title='Add'>
+          <Stack
+            onClick={(e) => {
+              if (onAction) onAction('add')
+              e.stopPropagation()
+            }}
+            sx={{
+              ...quickLinkCardClasses.iconButton,
+              top: 15,
+              right: 15,
+              color: MthColor.SYSTEM_01,
+              background: MthColor.BUTTON_LINEAR_GRADIENT,
+            }}
+          >
+            <AddOutlinedIcon />
+          </Stack>
+        </Tooltip>
       )}
       {item.flag == 1 && item.type != QUICKLINK_TYPE.WITHDRAWAL && (
-        <img
-          onClick={() => {
-            if (onAction) onAction('delete')
-          }}
-          src={DeleteIcon}
-          style={{ position: 'absolute', top: 15, right: 15 }}
-        />
+        <Tooltip title='Delete'>
+          <Stack
+            onClick={(e) => {
+              if (onAction) onAction('delete')
+              e.stopPropagation()
+            }}
+            sx={{
+              ...quickLinkCardClasses.iconButton,
+              top: 15,
+              right: 15,
+              color: MthColor.SYSTEM_01,
+              background: MthColor.BUTTON_LINEAR_GRADIENT,
+            }}
+          >
+            <DeleteForeverOutlinedIcon />
+          </Stack>
+        </Tooltip>
       )}
       <CardContent sx={{ textAlign: 'left' }}>
         <Box
@@ -121,36 +142,43 @@ export const QuickLinkCard: React.FC<QuickLinkCardProps> = ({ item, action, onAc
             </Stack>
           )}
           {action && (
-            <Stack direction='row' spacing={1.5} alignItems='center'>
+            <Stack direction='row' spacing={0.5} alignItems='center'>
               <Tooltip title='Edit'>
-                <EditIcon
-                  htmlColor={SYSTEM_01}
+                <IconButton
+                  sx={quickLinkCardClasses.actionButton}
                   onClick={(e) => {
                     if (onAction) onAction('edit')
                     e.stopPropagation()
                   }}
-                />
+                  disabled={!!item.flag}
+                >
+                  <EditIcon />
+                </IconButton>
               </Tooltip>
               {item.flag == 0 && (
                 <Tooltip title='Archive'>
-                  <img
+                  <IconButton
+                    sx={quickLinkCardClasses.actionButton}
                     onClick={(e) => {
                       if (onAction) onAction('archive')
                       e.stopPropagation()
                     }}
-                    src={ArchiveIcon}
-                  />
+                  >
+                    <SystemUpdateAltRoundedIcon />
+                  </IconButton>
                 </Tooltip>
               )}
               {item.flag == 1 && (
                 <Tooltip title='Unarchive'>
-                  <CallMissedOutgoingIcon
-                    htmlColor={SYSTEM_01}
+                  <IconButton
+                    sx={quickLinkCardClasses.actionButton}
                     onClick={(e) => {
                       if (onAction) onAction('restore')
                       e.stopPropagation()
                     }}
-                  />
+                  >
+                    <CallMissedOutgoingIcon />
+                  </IconButton>
                 </Tooltip>
               )}
               <DragHandle />

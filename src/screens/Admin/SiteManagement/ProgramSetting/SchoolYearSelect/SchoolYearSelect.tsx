@@ -88,7 +88,7 @@ export const SchoolYearSelect: React.FC<SchoolYearSelectProps> = ({
         }
         dropYears.push({
           value: `${schoolYear.schoolYearId}`,
-          label: `${moment(schoolYear.schoolYearOpen).format('YYYY')} - ${moment(schoolYear.schoolYearClose).format(
+          label: `${moment(schoolYear.schoolYearOpen).format('YYYY')}-${moment(schoolYear.schoolYearClose).format(
             'YY',
           )}`,
         })

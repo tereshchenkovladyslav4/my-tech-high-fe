@@ -38,10 +38,10 @@ const MthTableRow = <T extends unknown>({
               checked={item.isSelected || false}
               sx={{
                 '&.Mui-checked, &.MuiCheckbox-indeterminate': { color: checkBoxColor },
-                '& .MuiSvgIcon-root': { color: checkBoxColor },
-                visibility: `${item.selectable === false ? 'hidden' : ''}`,
+                '&:not(.Mui-disabled) .MuiSvgIcon-root': { color: checkBoxColor },
               }}
               onChange={() => handleToggleCheck(item)}
+              disabled={item.selectable === false}
             />
           </TableCell>
         )}

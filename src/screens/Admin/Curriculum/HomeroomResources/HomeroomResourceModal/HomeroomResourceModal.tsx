@@ -22,8 +22,8 @@ const HomeroomResourceModal: React.FC<HomeroomResourceModalProps> = ({
       {showArchivedModal && (
         <CustomModal
           title='Archive'
-          description='If there was a Direct Deducation associated with this Resource, it will not be removed.'
-          subDescription='Are you sure you want to Archive this Resourse?'
+          description='All students with an approved request will still be able to access this Resource. Any Direct Deductions for this Resource will remain on the student’s account.'
+          subDescription='Are you sure you want to Archive this Resource?'
           cancelStr='Cancel'
           confirmStr='Archive'
           backgroundColor='#FFFFFF'
@@ -40,6 +40,7 @@ const HomeroomResourceModal: React.FC<HomeroomResourceModalProps> = ({
         <CustomModal
           title='Unarchive'
           description='Are you sure you want to unarchive this Resource?'
+          subDescription='This resource will show again for users.'
           cancelStr='Cancel'
           confirmStr='Unarchive'
           backgroundColor='#FFFFFF'

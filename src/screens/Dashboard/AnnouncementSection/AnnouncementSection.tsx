@@ -44,7 +44,7 @@ export const avatarGroup = (gradeFilter: string, students: StudentType[] | undef
   return (
     <AvatarGroup max={5} sx={{ maxWidth: '300px', justifyContent: 'start' }} spacing={0}>
       {students &&
-        students.map((student): ReactElement | undefined => {
+        students.map((student, index): ReactElement | undefined => {
           if (
             student?.grade_levels &&
             grades.includes(
@@ -53,6 +53,7 @@ export const avatarGroup = (gradeFilter: string, students: StudentType[] | undef
           ) {
             return (
               <Tooltip
+                key={index}
                 title={
                   student.person.preferred_first_name ? student.person.preferred_first_name : student.person.first_name
                 }

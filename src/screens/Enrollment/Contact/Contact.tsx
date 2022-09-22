@@ -76,7 +76,7 @@ export const Contact: ContactTemplateType = ({ id, questions }) => {
                   valid_parent[`${q.slug?.replace('parent_', '')}`] = yup
                     .string()
                     .nullable()
-                    .required('Phone number is required')
+                    .required('Phone Number is required')
                 } else if (q.validation === 1) {
                   valid_parent[`${q.slug?.replace('parent_', '')}`] = yup
                     .string()

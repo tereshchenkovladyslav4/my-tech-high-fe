@@ -2,19 +2,19 @@ import React, { useEffect, useState, useMemo, FunctionComponent } from 'react'
 import { useQuery, useMutation } from '@apollo/client'
 import SearchIcon from '@mui/icons-material/Search'
 import { Box, Button, Card, InputAdornment, OutlinedInput, Tooltip } from '@mui/material'
-import { map } from 'lodash'
+import { toString } from 'lodash'
 import moment from 'moment'
+import CustomTable from '@mth/components/Table/CustomTable'
+import { Field, ValueOf } from '@mth/components/Table/types'
 import { Pagination } from '../../../../components/Pagination/Pagination'
-import { SortableTable } from '../../../../components/SortableTable/SortableTable'
 
 import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
 import { WarningModal } from '../../../../components/WarningModal/Warning'
 import { BUTTON_LINEAR_GRADIENT, RED_GRADIENT } from '../../../../utils/constants'
-import { ENROLLMENT_SCHOOL_HEADCELLS } from '../../../../utils/PageHeadCellsConstant'
 import { DropDown } from '../../SiteManagement/components/DropDown/DropDown'
 import { assignStudentToSOEGql } from '../../SiteManagement/services'
 import { getStudents } from '../services'
-import { EnrollmentSchoolTableProps, StudentVM } from '../type'
+import { EnrollmentSchoolTableProps, YEAR_STATUS, StudentVM, Person, Parent } from '../type'
 
 export const EnrollmentSchoolTable: FunctionComponent<EnrollmentSchoolTableProps> = ({
   filter,
@@ -30,15 +30,15 @@ export const EnrollmentSchoolTable: FunctionComponent<EnrollmentSchoolTableProps
   const [open, setOpen] = useState<boolean>(false)
   const [message, setMessage] = useState<string>('')
   const [noStudnetAlert, setNoStudentAlert] = useState<boolean>(false)
-  const [clearAll, setClearAll] = useState<boolean>(false)
   const [paginatinLimit, setPaginatinLimit] = useState<number>(Number(localStorage.getItem('pageLimit')) || 25)
-  const [sort, setSort] = useState<string>('student|ASC')
+  const [sortField, setSortField] = useState<string>('student')
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
   const [skip, setSkip] = useState<number>(0)
   const [totalApplications, setTotalApplications] = useState<number>()
-  const [tableData, setTableData] = useState<Array<StudentVM>>([])
+  const [items, setItems] = useState<Array<StudentVM>>([])
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [schoolPartner, setSchoolPartner] = useState('')
-  const [studentIds, setStudentIds] = useState<number[]>([])
+  const [studentIds, setStudentIds] = useState<Array<ValueOf<StudentVM>>>([])
 
   const [assignStudentToSOE] = useMutation(assignStudentToSOEGql)
 
@@ -48,39 +48,10 @@ export const EnrollmentSchoolTable: FunctionComponent<EnrollmentSchoolTableProps
     } else return []
   }, [filter])
 
-  const createData = (student: StudentVM) => {
-    const grade_level = student.grade_levels?.find((item) => item.school_year_id == selectedYear?.value)
-    let grade = grade_level && (grade_level.grade_level.includes('Kin') ? 'K' : grade_level.grade_level)
-    // group grade K, 1-8, 9-10
-    if (groupGrades.length) {
-      if (grade !== 'K') {
-        const gradeNumber = Number(grade)
-        if (gradeNumber > 0 && gradeNumber < 9) {
-          if (groupGrades.includes('1-8')) grade = '1-8'
-        } else if (groupGrades.includes('9-12')) grade = '9-12'
-      }
-    }
-    const result = {
-      student: `${student.person?.last_name}, ${student.person?.first_name}`,
-      grade,
-      id: student.student_id,
-      city: student.parent.person?.address?.city,
-      parent: `${student.parent.person?.last_name}, ${student.parent.person?.first_name}`,
-      currentSOE:
-        student.currentSoe && student.currentSoe.length > 0 ? student.currentSoe[0].partner?.name : 'Unassigned',
-      previousSOE:
-        student.previousSoe && student.previousSoe.length > 0 ? student.previousSoe[0].partner?.name : 'Unassigned',
-    }
-    if (!previousYear) {
-      delete result['previousSOE']
-    }
-    return result
-  }
-
-  const { data, refetch } = useQuery(getStudents, {
+  const { data, refetch, loading } = useQuery(getStudents, {
     variables: {
-      skip: skip,
-      sort: sort,
+      skip,
+      sort: `${sortField}|${sortOrder}`,
       take: paginatinLimit,
       search: seachField,
       filter: {
@@ -112,12 +83,7 @@ export const EnrollmentSchoolTable: FunctionComponent<EnrollmentSchoolTableProps
       setPageLoading(true)
       const { studentsForSOE } = data
       const { results, total } = studentsForSOE
-
-      setTableData(() => {
-        return map(results, (student) => {
-          return createData(student)
-        })
-      })
+      setItems(results)
       setTotalApplications(total)
     }
   }, [data])
@@ -141,8 +107,9 @@ export const EnrollmentSchoolTable: FunctionComponent<EnrollmentSchoolTableProps
     setPaginatinLimit(value)
   }
 
-  const sortChangeAction = (property, order) => {
-    setSort(`${property}|${order}`)
+  const sortChangeAction = (property: string, order: 'desc' | 'asc') => {
+    setSortField(property)
+    setSortOrder(order)
   }
 
   const validAssignOrTransfer = () => {
@@ -170,7 +137,6 @@ export const EnrollmentSchoolTable: FunctionComponent<EnrollmentSchoolTableProps
         },
       },
     })
-    setClearAll(!clearAll)
     setSchoolPartner('')
     refetch()
   }
@@ -179,27 +145,92 @@ export const EnrollmentSchoolTable: FunctionComponent<EnrollmentSchoolTableProps
     if (!validAssignOrTransfer()) return
   }
 
-  const headCells = (initialCells) => {
-    initialCells.map((item) => {
-      if (item.id === 'currentSOE') {
-        item.label = selectedYear?.label?.split('Mid-year')[0] + ' SoE'
-      }
-    })
-    if (previousYear) {
-      initialCells.map((item) => {
-        if (item.id === 'previousSOE') {
-          item.label =
-            moment(previousYear.date_begin).format('YYYY') + ' - ' + moment(previousYear.date_end).format('YY') + ' SoE'
-        }
+  const fields: Field<StudentVM>[] = useMemo(() => {
+    const currentSOE_Label = selectedYear?.label ? toString(selectedYear.label).split('Mid-year')[0] + ' SoE' : ''
+    const previousSOE_Label = previousYear
+      ? moment(previousYear.date_begin).format('YYYY') + ' - ' + moment(previousYear.date_end).format('YY') + ' SoE'
+      : null
+    const fieldItems: Field<StudentVM>[] = [
+      {
+        key: 'student',
+        label: 'Student',
+        sortable: true,
+        tdClass: 'fw-700',
+        formatter: (_: ValueOf<StudentVM>, student: StudentVM) => {
+          return `${student.person?.last_name}, ${student.person?.first_name}`
+        },
+      },
+      {
+        key: 'grade',
+        label: 'Grade',
+        sortable: true,
+        tdClass: 'fw-700',
+        formatter: (_: ValueOf<StudentVM>, student: StudentVM) => {
+          const grade_level = student.grade_levels?.find((item) => item.school_year_id == selectedYear?.value)
+          let grade = grade_level && (grade_level.grade_level?.includes('Kin') ? 'K' : grade_level.grade_level)
+          // group grade K, 1-8, 9-10
+          if (groupGrades.length) {
+            if (grade !== 'K') {
+              const gradeNumber = Number(grade)
+              if (gradeNumber > 0 && gradeNumber < 9) {
+                if (groupGrades.includes('1-8')) grade = '1-8'
+              } else if (groupGrades.includes('9-12')) grade = '9-12'
+            }
+          }
+          return grade
+        },
+      },
+      {
+        key: 'city',
+        label: 'City',
+        sortable: true,
+        tdClass: 'fw-700',
+        formatter: (_: ValueOf<StudentVM>, student: StudentVM) => {
+          return student.parent?.person?.address?.city
+        },
+      },
+      {
+        key: 'parent',
+        label: 'Parent',
+        sortable: true,
+        tdClass: 'fw-700',
+        formatter: (parent: ValueOf<StudentVM>) => {
+          parent = parent as Parent
+          return `${parent?.person?.last_name}, ${parent?.person?.first_name}`
+        },
+      },
+      {
+        key: 'currentSoe',
+        label: currentSOE_Label,
+        sortable: true,
+        tdClass: 'fw-700',
+        formatter: (currentSoe: ValueOf<StudentVM>) => {
+          currentSoe = currentSoe as Person[]
+          return currentSoe?.[0]?.partner?.name || 'Unassigned'
+        },
+      },
+    ]
+    if (previousSOE_Label) {
+      fieldItems.push({
+        key: 'previousSoe',
+        label: previousSOE_Label,
+        sortable: true,
+        tdClass: 'fw-700',
+        formatter: (previousSoe: ValueOf<StudentVM>) => {
+          previousSoe = previousSoe as Person[]
+          return previousSoe?.[0]?.partner?.name || 'Unassigned'
+        },
       })
-    } else {
-      return initialCells.filter((item) => item.id !== 'previousSOE')
     }
-    return initialCells
-  }
+    return fieldItems
+  }, [groupGrades, previousYear])
+
+  const rowGroupBy: keyof StudentVM | undefined = useMemo(() => {
+    return filter?.yearStatus?.includes(YEAR_STATUS.SIBLING) ? ('parent_id' as keyof StudentVM) : undefined
+  }, [filter?.yearStatus])
 
   return (
-    <Card sx={{ paddingTop: '24px', marginBottom: '24px', paddingBottom: '12px' }}>
+    <Card sx={{ paddingTop: '24px', marginBottom: '24px', paddingBottom: 5, px: 3 }}>
       {/*  Headers */}
       <Box
         sx={{
@@ -214,7 +245,6 @@ export const EnrollmentSchoolTable: FunctionComponent<EnrollmentSchoolTableProps
             textAlign: 'left',
             display: 'flex',
             flexDirection: 'row',
-            marginLeft: '24px',
             alignItems: 'center',
           }}
         >
@@ -263,7 +293,7 @@ export const EnrollmentSchoolTable: FunctionComponent<EnrollmentSchoolTableProps
             dropDownItems={schoolYears}
             placeholder={'Select Year'}
             defaultValue={selectedYear?.value || ''}
-            sx={{ width: '200px', marginLeft: '24px' }}
+            sx={{ width: '200px' }}
             borderNone={true}
             size='small'
             setParentValue={(val) => {
@@ -364,14 +394,23 @@ export const EnrollmentSchoolTable: FunctionComponent<EnrollmentSchoolTableProps
           />
         </Box>
       </Box>
-
-      <SortableTable
-        rows={tableData}
-        headCells={headCells(ENROLLMENT_SCHOOL_HEADCELLS)}
-        onSortChange={sortChangeAction}
-        clearAll={clearAll}
-        onCheck={setStudentIds}
-      />
+      <Box sx={{ mx: '-14px' }}>
+        <CustomTable
+          items={items}
+          fields={fields}
+          orderBy={sortField}
+          order={sortOrder}
+          checkable
+          onSort={sortChangeAction}
+          checkKey='student_id'
+          checked={studentIds}
+          handleCheck={(ids) => setStudentIds(ids)}
+          rowGroupBy={rowGroupBy}
+          loading={loading}
+          borderedBottom
+          size='sm'
+        />
+      </Box>
       {openAlert && (
         <WarningModal
           handleModem={() => setOpenAlert(!openAlert)}

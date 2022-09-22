@@ -68,36 +68,31 @@ const StateCodes: FunctionComponent = () => {
     })
   }
 
-  const fields: Array<Field> = [
+  const fields: Array<Field<StateCodeType>> = [
     {
       key: 'title_id',
       label: 'Title ID',
       sortable: false,
-      tdClass: '',
     },
     {
       key: 'grade',
       label: 'Grade',
       sortable: false,
-      tdClass: '',
     },
     {
       key: 'state_code',
       label: 'State Code',
       sortable: false,
-      tdClass: '',
     },
     {
       key: 'teacher_name',
       label: 'Teacher',
       sortable: false,
-      tdClass: '',
     },
     {
       key: 'subject',
       label: 'Subject',
       sortable: false,
-      tdClass: '',
     },
     {
       key: 'title',
@@ -109,7 +104,6 @@ const StateCodes: FunctionComponent = () => {
       key: 'action',
       label: '',
       sortable: false,
-      tdClass: '',
       formatter: () => {
         return (
           <Box display={'flex'} flexDirection='row' justifyContent={'flex-end'}>
@@ -156,7 +150,7 @@ const StateCodes: FunctionComponent = () => {
       </Box>
 
       <Box>
-        <CustomTable items={items} loading={loading} fields={fields} />
+        <CustomTable items={items} loading={loading} fields={fields} size='lg' borderedLeft striped />
       </Box>
     </Box>
   )

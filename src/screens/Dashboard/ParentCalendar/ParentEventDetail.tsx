@@ -6,6 +6,7 @@ import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { MthColor, StudentStatus } from '@mth/enums'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { extractContent, getProfilePhoto, hexToRgbA, renderDate, renderFilter } from '@mth/utils'
+import { DashboardSection } from '../types'
 import { parentCalendarClasses } from './styles'
 import { ParentEventDetailProps } from './types'
 
@@ -73,7 +74,7 @@ export const ParentEventDetail: React.FC<ParentEventDetailProps> = ({
           <a
             style={parentCalendarClasses.readMore}
             onClick={() => {
-              setSectionName('fullCalendar')
+              setSectionName(DashboardSection.FULL_CALENDAR)
             }}
           >
             Read More

@@ -5,6 +5,7 @@ import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { CheckBoxListVM } from '@mth/screens/Admin/Calendar/components/CheckBoxList/CheckBoxList'
 import { getSchoolYearsByRegionId } from '@mth/screens/Admin/SiteManagement/services'
 import { toOrdinalSuffix } from '../../utils/stringHelpers'
+import { sortGrades } from '../utils'
 
 type SchoolYearType = {
   school_year_id: number
@@ -25,7 +26,7 @@ export const useProgramYearListBySchoolYearId = (
   loading: boolean
   programYearList: CheckBoxListVM[]
   gradeList: CheckBoxListVM[]
-  speicalEdList: CheckBoxListVM[]
+  specialEdList: CheckBoxListVM[]
   error: ApolloError | undefined
 } => {
   const { me } = useContext(UserContext)
@@ -42,28 +43,33 @@ export const useProgramYearListBySchoolYearId = (
   })
 
   useEffect(() => {
-    if (data?.region?.SchoolYears) {
+    if (!loading && data?.region?.SchoolYears) {
       const { SchoolYears } = data?.region
       SchoolYears?.map((schoolYear: SchoolYearType) => {
         if (schoolYear?.school_year_id == Number(school_year_id)) {
-          const availGrades = schoolYear?.grades?.split(',').map((item: string) => {
-            if (item == 'Kindergarten')
-              return {
-                label: 'Kindergarten',
-                value: 'Kindergarten',
-              }
-            else
-              return {
-                label: `${toOrdinalSuffix(Number(item))} Grade`,
-                value: item.toString(),
-              }
-          })
-          setAvailableGrades(availGrades)
+          if (schoolYear?.grades) {
+            const sortedGrades = sortGrades(schoolYear?.grades)
+            const availGrades = sortedGrades?.split(',').map((item: string) => {
+              if (item.includes('K'))
+                return {
+                  label: 'Kindergarten',
+                  value: 'Kindergarten',
+                }
+              else
+                return {
+                  label: `${toOrdinalSuffix(Number(item))} Grade`,
+                  value: item.toString(),
+                }
+            })
+            setAvailableGrades(availGrades)
+          } else {
+            setAvailableGrades([])
+          }
           if (schoolYear?.special_ed) {
-            const specialEds = schoolYear?.special_ed_options?.split(',').map((item: string) => {
+            const specialEds = schoolYear?.special_ed_options?.split(',').map((item: string, index) => {
               return {
                 label: item,
-                value: item,
+                value: `${index}`,
               }
             })
             setSpecialEdOptions(specialEds || [])
@@ -102,7 +108,7 @@ export const useProgramYearListBySchoolYearId = (
     loading: loading,
     programYearList: programYearList,
     gradeList: availableGrades,
-    speicalEdList: specialEdOptions,
+    specialEdList: specialEdOptions,
     error: error,
   }
 }

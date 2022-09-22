@@ -1,6 +1,6 @@
 import { MthColor } from '@mth/enums'
 
-export const homeroomResourcesCardClasses = {
+export const quickLinkCardClasses = {
   iconButton: {
     display: 'flex',
     alignItems: 'center',

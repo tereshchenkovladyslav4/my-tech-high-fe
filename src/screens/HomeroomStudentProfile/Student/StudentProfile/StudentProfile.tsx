@@ -215,7 +215,7 @@ export const StudentProfile: React.FC = () => {
     setStudent(currStudent)
     const { person: currPerson } = currStudent
     setPerson(currStudent?.person)
-    setStatus(student?.packets?.at(-1)?.status)
+    setStatus(currStudent?.packets?.at(-1)?.status)
 
     formik.setValues({
       firstName: currPerson?.preferred_first_name || '',
@@ -357,7 +357,7 @@ export const StudentProfile: React.FC = () => {
                     >
                       Resubmit
                     </Button>
-                  ) : status === 'Submitted' ? (
+                  ) : status === 'Submitted' || status === PacketStatus.RESUBMITTED ? (
                     <Button sx={studentProfileClasses.pendingBtn} variant='contained'>
                       Pending Approval
                     </Button>

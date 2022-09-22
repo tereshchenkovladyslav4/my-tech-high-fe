@@ -14,7 +14,7 @@ import { map } from 'lodash'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { MthColor } from '@mth/enums'
-import { toOrdinalSuffix } from '@mth/utils'
+import { sortGrades, toOrdinalSuffix } from '@mth/utils'
 import { gradeSelectClassess } from './styles'
 
 export type GradesSelectProps = {
@@ -92,31 +92,6 @@ export const GradesSelect: React.FC<GradesSelectProps> = ({ grades, availGrades,
       }
     })
 
-  const orderGrades = (grades: string): string => {
-    let result = ''
-    if (grades) {
-      const tempArray = grades.split(',')
-      if (tempArray.includes('Kindergarten')) {
-        result = 'K,'
-      }
-      result += tempArray
-        .filter((item) => !item.includes('Kin'))
-        .sort((a: string, b: string) => {
-          if (Number(a) > Number(b)) {
-            return 1
-          } else if (Number(a) < Number(b)) {
-            return -1
-          }
-          return 0
-        })
-        .join(',')
-      return result
-    } else {
-      result = 'Select'
-    }
-    return result
-  }
-
   useEffect(() => {
     if (grades != undefined && grades != '') {
       setGradesArr(grades.split(','))
@@ -130,7 +105,7 @@ export const GradesSelect: React.FC<GradesSelectProps> = ({ grades, availGrades,
       <Box sx={gradeSelectClassess.gradeBox}>
         <Stack direction='row' sx={{ cursor: 'pointer' }} alignItems='center' onClick={handleClickOpen}>
           <Subtitle size={12} color={MthColor.MTHBLUE} fontWeight='500'>
-            {orderGrades(grades)}
+            {sortGrades(grades)}
           </Subtitle>
         </Stack>
       </Box>

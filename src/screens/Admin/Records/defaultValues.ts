@@ -44,8 +44,4 @@ export const defaultOtherOptions: CheckBoxListVM[] = [
     label: StudentRecordFileKind.OPT_OUT_FORM,
     value: StudentRecordFileKind.OPT_OUT_FORM,
   },
-  {
-    label: StudentRecordFileKind.USIRS,
-    value: StudentRecordFileKind.USIRS,
-  },
 ]

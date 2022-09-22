@@ -9,7 +9,7 @@ import moment from 'moment'
 import { DropDown } from '@mth/components/DropDown/DropDown'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
-import { MthColor } from '@mth/enums'
+import { MthColor, StudentRecordFileKind } from '@mth/enums'
 import {
   useEnrollmentPacketDocumentListByRegionId,
   useProgramYearListBySchoolYearId,
@@ -26,6 +26,7 @@ import { FilterComponentProps } from '../types'
 
 const FilterComponent: React.FC<FilterComponentProps> = ({ setFilter }) => {
   const { me } = useContext(UserContext)
+  const region = me?.userRegion?.filter((item) => item.region_id == me?.selectedRegionId)?.at(-1)
   const [expand, setExpand] = useState<boolean>(true)
   const [grades1, setGrades1] = useState<string[]>([])
   const [grades2, setGrades2] = useState<string[]>([])
@@ -38,7 +39,7 @@ const FilterComponent: React.FC<FilterComponentProps> = ({ setFilter }) => {
   const [other, setOther] = useState<string[]>([])
   const [startDate, setStartDate] = useState<Date | undefined | null>(null)
   const [endDate, setEndDate] = useState<Date | undefined | null>(null)
-  const { programYearList, gradeList, speicalEdList } = useProgramYearListBySchoolYearId(Number(selectedYear))
+  const { programYearList, gradeList, specialEdList } = useProgramYearListBySchoolYearId(Number(selectedYear))
   const { dropdownItems: schoolYearDropdownItems, schoolYears: schoolYears } = useSchoolYearsByRegionId(
     me?.selectedRegionId,
   )
@@ -220,7 +221,7 @@ const FilterComponent: React.FC<FilterComponentProps> = ({ setFilter }) => {
                     setValues={(value) => {
                       setSpecialEd(value)
                     }}
-                    checkboxLists={speicalEdList}
+                    checkboxLists={specialEdList}
                     haveSelectAll={false}
                   />
                 </Box>
@@ -245,7 +246,17 @@ const FilterComponent: React.FC<FilterComponentProps> = ({ setFilter }) => {
                     setValues={(value) => {
                       setOther(value)
                     }}
-                    checkboxLists={defaultOtherOptions}
+                    checkboxLists={
+                      region?.regionDetail?.name == 'Utah'
+                        ? [
+                            ...defaultOtherOptions,
+                            {
+                              label: StudentRecordFileKind.USIRS,
+                              value: StudentRecordFileKind.USIRS,
+                            },
+                          ]
+                        : defaultOtherOptions
+                    }
                     haveSelectAll={false}
                   />
                 </Box>

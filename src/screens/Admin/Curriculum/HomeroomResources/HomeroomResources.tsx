@@ -127,12 +127,12 @@ export const HomeroomResources: React.FC = () => {
             },
           })
       }
-      refetch()
+      await refetch()
     }
   }
 
-  const arrangeItems = async (items: HomeroomResource[]) => {
-    await items
+  const arrangeItems = (items: HomeroomResource[]) => {
+    items
       .filter((item) => !!item.resource_id)
       .map(async (item, index) => {
         const correctPriority = index + 1
@@ -274,7 +274,7 @@ export const HomeroomResources: React.FC = () => {
                 defaultValue={selectedYear}
                 borderNone={true}
                 setParentValue={(val) => {
-                  setSelectedYear(val)
+                  setSelectedYear(+val)
                 }}
               />
             </Box>

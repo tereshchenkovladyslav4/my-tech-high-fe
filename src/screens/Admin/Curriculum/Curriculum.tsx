@@ -51,6 +51,7 @@ const Curriculum: React.FC = () => {
               link={item.link}
               action={item.action}
               hasTitle={true}
+              disabled={item.disabled}
             />
           </Grid>
         ))}

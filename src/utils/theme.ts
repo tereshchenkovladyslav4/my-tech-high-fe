@@ -32,6 +32,15 @@ export const theme = createTheme({
   },
   components: {
     // https://github.com/mui/material-ui/issues/30789
+    MuiCssBaseline: {
+      styleOverrides: {
+        body: {
+          '& .fw-700': {
+            fontWeight: 700,
+          },
+        },
+      },
+    },
     MuiAvatarGroup: {
       styleOverrides: {
         root: ({ ownerState: { max } }) => ({
@@ -45,6 +54,13 @@ export const theme = createTheme({
             {},
           ),
         }),
+      },
+    },
+    MuiTableCell: {
+      styleOverrides: {
+        root: {
+          padding: '0 0 0 1px',
+        },
       },
     },
   },

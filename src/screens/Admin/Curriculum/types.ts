@@ -9,6 +9,14 @@ export type CurriculumItem = {
   disabled?: boolean
 }
 
+export type PeriodItem = {
+  id?: number
+  category: string
+  grade: string
+  secondSemester: string
+  archived?: boolean
+}
+
 export type StateCodeType = {
   id?: number
   title_id: string | number
