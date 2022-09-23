@@ -5,6 +5,7 @@ export const mthTableClasses = {
     '& th': {
       fontSize: '18px',
       fontWeight: '700',
+      padding: '11px 16px',
     },
     '& td': {
       fontSize: '14px',
@@ -39,7 +40,7 @@ export const mthTableClasses = {
       width: '48px',
       textAlign: 'center',
     },
-    '&.noOddBg .MuiTableRow-root': {
+    '&.noOddBg .MuiTableRow-root .MuiTableCell-root': {
       background: 'none !important',
     },
     '& .MuiTableCell-root': {
@@ -50,7 +51,7 @@ export const mthTableClasses = {
         borderBottom: 'none',
       },
     },
-    '& > .MuiTableBody-root > .MuiTableRow-root > .MuiTableCell-root': {
+    '& > .MuiTableBody-root > .MuiTableRow-root:last-child > .MuiTableCell-root': {
       borderBottom: 'none',
     },
     '& .expandButton': {

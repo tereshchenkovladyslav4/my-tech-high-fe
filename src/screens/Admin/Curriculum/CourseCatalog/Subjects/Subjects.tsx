@@ -103,7 +103,7 @@ const Subjects: React.FC = () => {
   ]
 
   const DragHandle = SortableHandle(() => (
-    <Tooltip title='Move'>
+    <Tooltip title='Move' placement='top'>
       <IconButton className='actionButton' color='primary'>
         <DehazeIcon />
       </IconButton>
@@ -138,18 +138,18 @@ const Subjects: React.FC = () => {
       formatter: (item: MthTableRowItem<Subject>) => {
         return (
           <Box display={'flex'} flexDirection='row' justifyContent={'flex-end'}>
-            <Tooltip title={item.rawData.active ? 'Edit' : ''}>
+            <Tooltip title={item.rawData.active ? 'Edit' : ''} placement='top'>
               <IconButton color='primary' disabled={!item.rawData.active} className='actionButton'>
                 <CreateIcon />
               </IconButton>
             </Tooltip>
-            <Tooltip title={item.rawData.active ? 'Archive' : 'Unarchive'}>
+            <Tooltip title={item.rawData.active ? 'Archive' : 'Unarchive'} placement='top'>
               <IconButton className='actionButton' color='primary'>
                 {item.rawData.active ? <SystemUpdateAltRoundedIcon /> : <CallMissedOutgoingIcon />}
               </IconButton>
             </Tooltip>
             {!item.rawData.active && (
-              <Tooltip title='Delete'>
+              <Tooltip title='Delete' placement='top'>
                 <IconButton className='actionButton' color='primary'>
                   <DeleteForeverOutlined />
                 </IconButton>
@@ -211,13 +211,7 @@ const Subjects: React.FC = () => {
         />
 
         <Box>
-          <MthTable
-            items={tableData}
-            loading={loading}
-            fields={fields}
-            selectable={true}
-            checkBoxColor={MthColor.MTHBLUE}
-          />
+          <MthTable items={tableData} loading={loading} fields={fields} selectable={true} checkBoxColor='secondary' />
         </Box>
 
         <Box sx={{ mt: '100px' }}>

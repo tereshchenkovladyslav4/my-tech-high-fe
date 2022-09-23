@@ -1,11 +1,11 @@
-import React, { FunctionComponent } from 'react'
+import React from 'react'
 import ArrowBackIosOutlinedIcon from '@mui/icons-material/ArrowBackIosOutlined'
 import { Box, Typography, IconButton } from '@mui/material'
 import { useHistory } from 'react-router-dom'
 import { PageHeaderProps } from './PageHeaderProps'
 import { useStyles } from './styles'
 
-const PageHeader: FunctionComponent<PageHeaderProps> = ({ title, to, onBack, children }) => {
+const PageHeader: React.FC<PageHeaderProps> = ({ title, to, onBack, children }) => {
   const history = useHistory()
   const classes = useStyles
   const handleBackClick = () => {
@@ -18,8 +18,8 @@ const PageHeader: FunctionComponent<PageHeaderProps> = ({ title, to, onBack, chi
   }
   return (
     <Box sx={classes.pageHeader}>
-      <Box>
-        <IconButton sx={classes.iconButton} onClick={handleBackClick}>
+      <Box sx={classes.backTitle}>
+        <IconButton onClick={handleBackClick}>
           <ArrowBackIosOutlinedIcon sx={classes.arrowIcon} />
         </IconButton>
         <Typography sx={classes.title} component='span'>

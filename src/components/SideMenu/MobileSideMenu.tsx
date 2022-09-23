@@ -72,11 +72,6 @@ export const MobileSideMenu: FunctionComponent<Props> = ({ handleDrawerClose }) 
       access: [5, 15, checkAdminAccessOnSidebar('Homeroom Resources')],
     },
     {
-      to: PARENT_LINK,
-      label: 'Quick Links',
-      access: [15, checkAdminAccessOnSidebar('Parent Link')],
-    },
-    {
       to: RECORDS,
       label: 'Records',
       access: [4, 6, 8, checkAdminAccessOnSidebar('Records')],
@@ -85,6 +80,11 @@ export const MobileSideMenu: FunctionComponent<Props> = ({ handleDrawerClose }) 
       to: REIMBURSMENTS,
       label: 'Reimbursements & Direct Orders',
       access: [3, 15, checkAdminAccessOnSidebar('Reimbursements & Direct Orders')],
+    },
+    {
+      to: PARENT_LINK,
+      label: 'Quick Links',
+      access: [15, checkAdminAccessOnSidebar('Parent Link')],
     },
     {
       to: REPORTS,

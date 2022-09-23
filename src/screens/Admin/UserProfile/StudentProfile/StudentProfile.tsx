@@ -28,6 +28,7 @@ import { getWithdrawalStatusQuery } from '../../../../graphql/queries/withdrawal
 import { UserContext } from '../../../../providers/UserContext/UserProvider'
 import { BUTTON_LINEAR_GRADIENT, MTHBLUE } from '../../../../utils/constants'
 import { STATES_WITH_ABBREVIATION } from '../../../../utils/states'
+import { getPreviousSchoolYearId } from '../../../../utils/utils'
 import { ProfilePacketModal } from '../../EnrollmentPackets/EnrollmentPacketModal/ProfilePacketModal'
 import { GetSchoolsPartner } from '../../SchoolOfEnrollment/services'
 import { getStudentDetail, getSchoolYearsByRegionId } from '../services'
@@ -272,13 +273,8 @@ export const StudentProfile: FunctionComponent<StudentProfileProps> = ({
   }, [selectedYearId])
 
   const previousYearId = useMemo(() => {
-    let yyyy = false
     const shoolYears = regionData?.region?.SchoolYears || []
-    if (selectedYearId && shoolYears.length) {
-      const yIndex = shoolYears.findIndex((yy) => yy.school_year_id == selectedYearId)
-      if (yIndex > 0) yyyy = shoolYears[yIndex - 1]
-    }
-    return yyyy.school_year_id
+    return getPreviousSchoolYearId(selectedYearId, shoolYears)
   }, [regionData, selectedYearId])
 
   const previousSoE = useMemo(
@@ -300,7 +296,7 @@ export const StudentProfile: FunctionComponent<StudentProfileProps> = ({
   const handleChangeSoE = (e) => {
     if (!currentSoE) {
       setSOE(e.target.value)
-    } else {
+    } else if (e.target.value != currentSoE) {
       setTempSoE(e.target.value)
       setModalAssign(true)
     }

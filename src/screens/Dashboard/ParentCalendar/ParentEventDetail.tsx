@@ -1,10 +1,11 @@
-import React, { useContext, ReactElement } from 'react'
+import React, { ReactElement, useContext } from 'react'
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew'
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
 import { Avatar, AvatarGroup, Box, Button } from '@mui/material'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { MthColor, StudentStatus } from '@mth/enums'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
+import { DashboardSection } from '@mth/screens/Dashboard/types'
 import { extractContent, getProfilePhoto, hexToRgbA, renderDate, renderFilter } from '@mth/utils'
 import { DashboardSection } from '../types'
 import { parentCalendarClasses } from './styles'
@@ -22,7 +23,7 @@ export const ParentEventDetail: React.FC<ParentEventDetailProps> = ({
   const avatarGroup = (gradeFilter: string) => {
     const grades = JSON.parse(gradeFilter)
     return (
-      <AvatarGroup max={3} sx={parentCalendarClasses.avatarGroup}>
+      <AvatarGroup max={5} sx={parentCalendarClasses.avatarGroup}>
         {students &&
           students
             .filter((student) => student?.status?.at(-1)?.status != StudentStatus.WITHDRAWN)
@@ -55,7 +56,7 @@ export const ParentEventDetail: React.FC<ParentEventDetailProps> = ({
             {selectedEvent?.eventTypeName}
           </Subtitle>
         </Button>
-        <Box sx={{ display: { md: 'none', sm: 'flex', xs: 'flex' }, paddingX: 5 }}>
+        <Box sx={{ display: { md: 'none', sm: 'flex', xs: 'flex' }, pl: 2 }}>
           {selectedEvent?.filters?.grades && avatarGroup(selectedEvent?.filters?.grades)}
         </Box>
       </Box>

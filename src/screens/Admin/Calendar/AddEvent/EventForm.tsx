@@ -148,9 +148,9 @@ const EventForm: React.FC<EventFormProps> = ({ setIsChanged, handleAddRSVPClick 
             />
           </Box>
           <MthCheckbox
-            title={'All Day'}
-            defaultValue={values?.allDay}
-            handleChangeValue={() => {
+            label='All Day'
+            checked={values?.allDay}
+            onChange={() => {
               setFieldValue('allDay', !values?.allDay)
               setIsChanged(true)
             }}
@@ -169,9 +169,9 @@ const EventForm: React.FC<EventFormProps> = ({ setIsChanged, handleAddRSVPClick 
         </Box>
         <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
           <MthCheckbox
-            title={'Add RSVP'}
-            defaultValue={values?.hasRSVP}
-            handleChangeValue={() => {
+            label='Add RSVP'
+            checked={values?.hasRSVP}
+            onChange={() => {
               setFieldValue('hasRSVP', !values?.hasRSVP)
               setIsChanged(true)
             }}

@@ -30,7 +30,8 @@ export const QuickLinkCard: React.FC<QuickLinkCardProps> = ({ item, action, onAc
         borderRadius: 2,
         margin: 1,
         opacity: item.flag == 1 ? 0.5 : 1,
-        minWidth: 300,
+        minWidth: { xs: 0, sm: 300 },
+        marginX: { xs: 3, sm: 0 },
       }}
       onClick={() => {
         if (onAction) onAction('click')

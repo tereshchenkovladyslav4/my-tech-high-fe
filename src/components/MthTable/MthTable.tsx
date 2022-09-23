@@ -20,7 +20,7 @@ const MthTable = <T extends unknown>({
   loading,
   selectable = false,
   size = 'medium',
-  checkBoxColor,
+  checkBoxColor = 'primary',
   oddBg = true,
   borderBottom = true,
 }: MthTableProps<T>): React.ReactElement => {

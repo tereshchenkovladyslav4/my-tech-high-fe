@@ -65,25 +65,25 @@ const Courses: React.FC<CoursesProps> = ({ courses }) => {
       formatter: (item: MthTableRowItem<Course>) => {
         return (
           <Box display={'flex'} flexDirection='row' justifyContent={'flex-end'}>
-            <Tooltip title={item.rawData.active ? 'Edit' : ''}>
+            <Tooltip title={item.rawData.active ? 'Edit' : ''} placement='top'>
               <IconButton className='actionButton' color='primary' disabled={!item.rawData.active}>
                 <CreateIcon />
               </IconButton>
             </Tooltip>
-            <Tooltip title={item.rawData.active ? 'Archive' : 'Unarchive'}>
+            <Tooltip title={item.rawData.active ? 'Archive' : 'Unarchive'} placement='top'>
               <IconButton className='actionButton' color='primary'>
                 {item.rawData.active ? <SystemUpdateAltRoundedIcon /> : <CallMissedOutgoingIcon />}
               </IconButton>
             </Tooltip>
             {!item.rawData.active && (
-              <Tooltip title='Delete'>
+              <Tooltip title='Delete' placement='top'>
                 <IconButton className='actionButton' color='primary'>
                   <DeleteForeverOutlined />
                 </IconButton>
               </Tooltip>
             )}
             {item.rawData.active && (
-              <Tooltip title='Clone'>
+              <Tooltip title='Clone' placement='top'>
                 <IconButton className='actionButton expandButton' color='primary'>
                   <ContentCopyOutlinedIcon />
                 </IconButton>

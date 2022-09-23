@@ -1,10 +1,19 @@
 import React from 'react'
-import { TableCell, TableRow, styled, Checkbox, Collapse, Typography } from '@mui/material'
+import { TableCell, TableRow, styled, Collapse, Typography } from '@mui/material'
+import { MthCheckbox } from '@mth/components/MthCheckbox'
 import { MthTableRowProps } from './types'
 
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  '&:nth-of-type(odd)': {
-    backgroundColor: theme.palette.action.hover,
+const StyledTableRow = styled(TableRow)(({}) => ({
+  '&:nth-of-type(odd) .MuiTableCell-root': {
+    backgroundColor: '#FAFAFA',
+    '&:first-child': {
+      borderTopLeftRadius: '8px',
+      borderBottomLeftRadius: '8px',
+    },
+    '&:last-child': {
+      borderTopRightRadius: '8px',
+      borderBottomRightRadius: '8px',
+    },
   },
   td: {
     padding: '2px 4px 2px 0',
@@ -32,14 +41,10 @@ const MthTableRow = <T extends unknown>({
       <StyledTableRow className={expanded ? 'expanded' : ''}>
         {selectable && (
           <TableCell className='checkWrap'>
-            <Checkbox
-              color='primary'
+            <MthCheckbox
+              color={checkBoxColor}
               size={size}
               checked={item.isSelected || false}
-              sx={{
-                '&.Mui-checked, &.MuiCheckbox-indeterminate': { color: checkBoxColor },
-                '&:not(.Mui-disabled) .MuiSvgIcon-root': { color: checkBoxColor },
-              }}
               onChange={() => handleToggleCheck(item)}
               disabled={item.selectable === false}
             />

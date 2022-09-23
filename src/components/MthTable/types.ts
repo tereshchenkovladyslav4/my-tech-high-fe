@@ -1,5 +1,4 @@
 import { ReactNode } from 'react'
-import { MthColor } from '@mth/enums'
 
 export type MthTableField<T> = {
   key: string
@@ -25,7 +24,7 @@ export type MthTableProps<T> = {
   loading?: boolean
   selectable?: boolean
   size?: 'medium' | 'small'
-  checkBoxColor?: MthColor
+  checkBoxColor?: 'primary' | 'secondary'
   oddBg?: boolean
   borderBottom?: boolean
 }
@@ -36,6 +35,6 @@ export type MthTableRowProps<T> = {
   expanded: boolean
   selectable?: boolean
   size?: 'medium' | 'small'
-  checkBoxColor?: MthColor
+  checkBoxColor?: 'primary' | 'secondary'
   handleToggleCheck: (item: MthTableRowItem<T>) => void
 }

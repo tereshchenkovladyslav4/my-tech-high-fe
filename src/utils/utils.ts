@@ -141,3 +141,21 @@ export const renderFilter = (selectedEvent: EventVM | undefined): string => {
   }
   return ''
 }
+
+export const getPreviousSchoolYearId = (
+  currentYearId: string | number,
+  schoolYears: SchoolYearType[],
+): string | number | undefined => {
+  const currentShoolYear = schoolYears.find((year: SchoolYearType) => year.school_year_id == currentYearId)
+  let previousYearId
+  if (currentShoolYear) {
+    const year = currentShoolYear.date_begin?.split('-')?.[0]
+    if (year) {
+      const previousYear = parseInt(year) - 1
+      previousYearId = schoolYears.find((year: SchoolYearType) =>
+        year.date_begin?.includes(`${previousYear}-`),
+      )?.school_year_id
+    }
+  }
+  return previousYearId
+}

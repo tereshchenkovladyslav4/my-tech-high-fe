@@ -1,6 +1,16 @@
 import { MthColor } from '@mth/enums'
 
 export const courseCatalogHeaderClasses = {
+  iconButton: {
+    position: 'relative',
+    bottom: '2px',
+  },
+  arrowIcon: {
+    fontSize: '18px',
+    fill: 'black',
+    stroke: 'black',
+    strokeWidth: 1,
+  },
   toggleButtonGroup: {
     '& .MuiToggleButton-root': {
       padding: '8px 24px',

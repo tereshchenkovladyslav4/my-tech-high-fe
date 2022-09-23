@@ -1,19 +1,9 @@
 import React, { useCallback, useContext, useEffect } from 'react'
-import ArrowBackIosOutlinedIcon from '@mui/icons-material/ArrowBackIosOutlined'
 import SearchIcon from '@mui/icons-material/Search'
-import {
-  Box,
-  ButtonBase,
-  Grid,
-  InputAdornment,
-  OutlinedInput,
-  ToggleButton,
-  ToggleButtonGroup,
-  Typography,
-} from '@mui/material'
+import { Box, InputAdornment, OutlinedInput, ToggleButton, ToggleButtonGroup } from '@mui/material'
 import { debounce } from 'lodash'
-import { useHistory } from 'react-router-dom'
 import { DropDown } from '@mth/components/DropDown/DropDown'
+import PageHeader from '@mth/components/PageHeader'
 import { useSchoolYearsByRegionId } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { courseCatalogHeaderClasses } from '@mth/screens/Admin/Curriculum/CourseCatalog/Components/CourseCatalogHeader/styles'
@@ -29,15 +19,10 @@ const CourseCatalogHeader: React.FC<CourseCatalogHeaderProps> = ({
   setSearchField,
 }) => {
   const { me } = useContext(UserContext)
-  const history = useHistory()
 
   const { dropdownItems: schoolYearDropdownItems, schoolYears: schoolYears } = useSchoolYearsByRegionId(
     me?.selectedRegionId,
   )
-
-  const backAction = () => {
-    history.goBack()
-  }
 
   const changeHandler = (event = '') => {
     setSearchField(event)
@@ -50,24 +35,8 @@ const CourseCatalogHeader: React.FC<CourseCatalogHeaderProps> = ({
 
   return (
     <>
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          mb: 4,
-        }}
-      >
-        <Grid container sx={{ background: 'inherit' }}>
-          <ButtonBase onClick={backAction} disableRipple>
-            <Grid container justifyContent='flex-start' alignItems='center'>
-              <ArrowBackIosOutlinedIcon />
-              <Typography sx={{ fontWeight: 700, fontSize: 20, ml: 4 }}>{title}</Typography>
-            </Grid>
-          </ButtonBase>
-        </Grid>
-        <Box display='flex' flexDirection='row' justifyContent='flex-end' alignItems='center'>
+      <Box sx={{ mb: 4 }}>
+        <PageHeader title={title} to='/curriculum/course-catalog'>
           <DropDown
             dropDownItems={schoolYearDropdownItems}
             placeholder={'Select Year'}
@@ -77,7 +46,7 @@ const CourseCatalogHeader: React.FC<CourseCatalogHeaderProps> = ({
               setSelectedYear(+val)
             }}
           />
-        </Box>
+        </PageHeader>
       </Box>
 
       <Box

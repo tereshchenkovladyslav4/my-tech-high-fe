@@ -1,8 +1,8 @@
 import React from 'react'
 import { Box } from '@mui/material'
+import { DropDown } from '@mth/components/DropDown/DropDown'
 import { MthCheckbox } from '@mth/components/MthCheckbox'
 import { MthTitle } from '@mth/enums'
-import { DropDown } from '../../components/DropDown/DropDown'
 import { ProgramSettingChanged } from '../types'
 
 type SchedulesProps = {
@@ -61,19 +61,19 @@ const Schedules: React.FC<SchedulesProps> = ({
       {schedule && (
         <>
           <MthCheckbox
-            title={MthTitle.DIPLOMA_SEEKING}
-            defaultValue={diplomaSeeking}
-            titleBold={true}
-            handleChangeValue={() => {
+            label={MthTitle.DIPLOMA_SEEKING}
+            labelSx={{ fontWeight: 700 }}
+            checked={diplomaSeeking}
+            onChange={() => {
               setDiplomaSeeking(!diplomaSeeking)
               setIsChanged({ ...isChanged, diplomaSeeking: true })
             }}
           />
           <MthCheckbox
-            title={MthTitle.TESTING_PREFERENCE}
-            defaultValue={testingPreference}
-            titleBold={true}
-            handleChangeValue={() => {
+            label={MthTitle.TESTING_PREFERENCE}
+            labelSx={{ fontWeight: 700 }}
+            checked={testingPreference}
+            onChange={() => {
               setTestingPreference(!testingPreference)
               setIsChanged({ ...isChanged, testingPreference: true })
             }}

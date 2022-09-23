@@ -110,7 +110,7 @@ export const parentCalendarClasses = {
     paddingLeft: '5px',
   },
   avatarGroup: {
-    '&.MuiAvatarGroup-root .MuiAvatar-root': {
+    '&.MuiAvatarGroup-root .MuiAvatar-root:not(:last-child)': {
       marginLeft: '-20px',
     },
   },
