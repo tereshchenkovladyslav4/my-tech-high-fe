@@ -60,7 +60,7 @@ const NewAnnouncement: FunctionComponent<NewAnnouncementProps> = ({ announcement
   }
 
   const handleRepublish = () => {
-    handleSaveClick('Republished')
+    handleSaveClick('Published')
   }
 
   const handleBackClick = () => {

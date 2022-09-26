@@ -7,6 +7,7 @@ import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { MthTitle } from '@mth/enums'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { WITHDRAWAL, ADMIN_APPLICATIONS, ENROLLMENT_PACKETS } from '../../../../../../utils/constants'
+import { getEmailRecordsQuery } from '../../service'
 import { ToDoListItem } from '../ToDoListItem/ToDoListItem'
 
 export const getTodoListItems = gql`
@@ -24,6 +25,7 @@ type ToDoListItem = {
   link: string
   date: Date
   severity: number
+  buttonTitle?: string
 }
 
 export const TodoList: FunctionComponent = () => {
@@ -31,6 +33,15 @@ export const TodoList: FunctionComponent = () => {
   const [todoList, setTodoList] = useState<Array<ToDoListItem>>([])
   const { loading, data } = useQuery(getTodoListItems, {
     variables: {
+      regionId: me?.selectedRegionId,
+    },
+    skip: me?.selectedRegionId ? false : true,
+    fetchPolicy: 'network-only',
+  })
+
+  const { data: emailErrorCount } = useQuery(getEmailRecordsQuery, {
+    variables: {
+      filters: ['Error'],
       regionId: me?.selectedRegionId,
     },
     skip: me?.selectedRegionId ? false : true,
@@ -86,13 +97,14 @@ export const TodoList: FunctionComponent = () => {
         {
           id: 7,
           title: 'Email Errors',
-          link: 'email-errors',
+          link: 'communication/email-records',
           date: new Date(),
-          severity: 5,
+          severity: emailErrorCount?.emailRecords.total,
+          buttonTitle: 'View Now',
         },
       ])
     }
-  }, [loading, data])
+  }, [loading, data, emailErrorCount])
 
   const renderTodoListItem = (): (void | React.ReactElement<
     unknown,

@@ -54,7 +54,7 @@ export const useCurrentGradeAndProgramByRegionId = (
           value: `${el.school_partner_id}`,
         }),
       )
-      setSchoolPartnerList(availSchoolPartners)
+      setSchoolPartnerList([...availSchoolPartners, { label: 'Unassigned', value: 'Unassigned' }])
 
       setAvailableGrades(availGrades)
 

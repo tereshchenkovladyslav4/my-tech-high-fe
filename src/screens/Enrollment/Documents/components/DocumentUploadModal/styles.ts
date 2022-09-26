@@ -42,6 +42,7 @@ export const useStyles = {
     width: '152px',
     marginTop: '14px',
     marginBottom: '14px',
+    marginRight: { xs: '2px', sm: '0px' },
   },
   dragAndDropText: {
     marginTop: '14px',

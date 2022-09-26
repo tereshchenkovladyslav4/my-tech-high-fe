@@ -22,7 +22,6 @@ const AnnouncementTable: FunctionComponent<AnnouncementTableProps> = ({ setAnnou
   const [totalAnnouncements, setTotalAnnouncements] = useState<number>(0)
   const [showArchivedAnnouncement, setShowArchivedAnnouncement] = useState<boolean>(false)
   const [showConfirmModal, setShowConfirmModal] = useState<number>(0)
-
   const { loading, data, refetch } = useQuery(getAnnouncementsQuery, {
     variables: {
       regionId: me?.selectedRegionId,
@@ -62,7 +61,7 @@ const AnnouncementTable: FunctionComponent<AnnouncementTableProps> = ({ setAnnou
       setTableDatas(
         data?.announcements.map(
           (announcement: Announcement): Announcement => ({
-            id: announcement.announcementId,
+            id: announcement.announcement_id,
             date: announcement.date ? moment(announcement.date).format('MMMM DD') : '',
             subject: announcement.subject,
             postedBy: announcement.posted_by,

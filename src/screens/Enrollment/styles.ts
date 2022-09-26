@@ -29,7 +29,7 @@ export const useStyles = {
   },
   breadcrumbs: {
     marginTop: '35px',
-    marginX: '70px',
+    marginX: { xs: '30px', sm: '70px' },
   },
   buttonContainer: {
     display: 'flex',

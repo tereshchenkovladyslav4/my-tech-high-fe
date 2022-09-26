@@ -168,7 +168,7 @@ export const DocumentUploadModal: DocumentUploadModalTemplateType = ({ handleMod
             {validFiles.length === 0 && errorMessage}
           </Paragraph>
         </Box>
-        <Box justifyContent={'space-between'} display='flex' flexDirection={'row'}>
+        <Box sx={{ justifyContent: { xs: 'center', sm: 'space-between' } }} display='flex' flexDirection={'row'}>
           <Button sx={classes.cancelButton} variant='contained' onClick={() => handleModem()}>
             Cancel
           </Button>

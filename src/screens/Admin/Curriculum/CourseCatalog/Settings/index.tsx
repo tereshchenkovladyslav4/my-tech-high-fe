@@ -17,7 +17,7 @@ import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { MthColor, ScheduleBuilder } from '@mth/enums'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { SchoolYearDropDown } from '@mth/screens/Admin/SiteManagement/SchoolPartner/SchoolYearDropDown/SchoolYearDropDown'
-import { createOrUpdateScheduleBuilder, getScheduleBuilder } from '../../services'
+import { createOrUpdateScheduleBuilder, getSchoolYear } from '../../services'
 import { useStyles } from '../../styles'
 
 type openAlertSaveType = {
@@ -63,18 +63,17 @@ const Settings: FunctionComponent = () => {
     setIsValid(e.getCurrentContent().hasText())
     setEditorState(e)
   }
-
-  const { data } = useQuery(getScheduleBuilder, {
+  const { data } = useQuery(getSchoolYear, {
     variables: {
-      regionId: me?.selectedRegionId,
+      school_year_id: selectedYearId,
     },
     skip: me?.selectedRegionId ? false : true,
     fetchPolicy: 'cache-and-network',
   })
 
   useEffect(() => {
-    if (data) {
-      if (data.schoolyear_getcurrent.ScheduleBuilder !== null) {
+    if (selectedYearId && data) {
+      if (data.getSchoolYear.ScheduleBuilder !== null) {
         const {
           max_num_periods,
           custom_built,
@@ -83,7 +82,7 @@ const Settings: FunctionComponent = () => {
           parent_tooltip,
           third_party_provider,
           id,
-        } = data?.schoolyear_getcurrent.ScheduleBuilder
+        } = data?.getSchoolYear.ScheduleBuilder
 
         const contentBlock = htmlToDraft(parent_tooltip)
         const contentState = ContentState.createFromBlockArray(contentBlock.contentBlocks)
@@ -96,8 +95,17 @@ const Settings: FunctionComponent = () => {
         setThirdParty(Boolean(third_party_provider) ? 'Enabled' : 'Disabled')
         setScheduleBuilderId(id)
       }
+    } else {
+      setMaxPeriods(undefined)
+      setCustomBuilt(undefined)
+      setSplitEnrollment(undefined)
+      setAlwaysUnlock(undefined)
+      setEditorState(EditorState.createWithContent(ContentState.createFromText('')))
+      setThirdParty(undefined)
+      setScheduleBuilderId(undefined)
     }
-  }, [data])
+  }, [me?.selectedRegionId, selectedYearId, data])
+
   const handleEditorChange = (state: Draft.DraftModel.Encoding.RawDraftContentState) => {
     try {
       if (currentBlocks !== 0 && currentBlocks !== state.blocks.length) {
@@ -363,11 +371,10 @@ const Settings: FunctionComponent = () => {
         })
     }
   }
-
   return (
     <form onSubmit={formik.handleSubmit} style={{ height: '100%' }}>
       <Box sx={classes.baseSettings}>
-        <PageHeader title='Schedule Builder'>
+        <PageHeader title='Schedule Builder Settings'>
           <Button
             variant='contained'
             type='submit'

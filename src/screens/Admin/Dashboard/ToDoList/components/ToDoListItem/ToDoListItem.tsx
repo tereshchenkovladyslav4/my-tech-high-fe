@@ -84,7 +84,7 @@ export const ToDoListItem: TodoListTemplateType = ({ todoItem, idx }) => {
                 }}
                 onClick={() => history.push(todoItem.link)}
               >
-                <Subtitle size={12}>Process Now</Subtitle>
+                <Subtitle size={12}>{todoItem.buttonTitle || 'Process Now'}</Subtitle>
               </Button>
             </Row>
           </Box>

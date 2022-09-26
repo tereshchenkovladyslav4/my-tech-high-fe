@@ -22,7 +22,6 @@ export const Student: StudentTemplateType = ({ student, schoolYears, showNotific
   const [circleData, setCircleData] = useState<CircleData>()
   const [link, setLink] = useState<string>('')
   const [showToolTip, setShowToolTip] = useState(true)
-  const [toolTipLink, setToolTipLink] = useState<string>('')
 
   const getProfilePhoto = (person: Person) => {
     if (!person.photo) return undefined
@@ -64,36 +63,8 @@ export const Student: StudentTemplateType = ({ student, schoolYears, showNotific
     ) {
       setLink(homeroomLink)
     }
-
-    if (currApplication && currApplication?.status === ApplicantStatus.SUBMITTED) {
-      setToolTipLink(MthRoute.HOMEROOM)
-    } else if (
-      currApplication &&
-      currApplication?.status === ApplicantStatus.ACCEPTED &&
-      packets &&
-      currPacket?.status === PacketStatus.NOT_STARTED
-    ) {
-      setToolTipLink(enrollmentLink)
-    } else if (
-      currApplication &&
-      currApplication?.status === ApplicantStatus.ACCEPTED &&
-      currPacket &&
-      currPacket?.status === PacketStatus.STARTED
-    ) {
-      setToolTipLink(enrollmentLink)
-    } else if (
-      currApplication &&
-      currApplication?.status === ApplicantStatus.ACCEPTED &&
-      currPacket &&
-      currPacket?.status === PacketStatus.MISSING_INFO
-    ) {
-      setToolTipLink(enrollmentLink)
-    }
-  }, [student])
-
-  useEffect(() => {
     progress()
-  }, [])
+  }, [student])
 
   const progress = () => {
     const { applications, packets, status } = student
@@ -122,7 +93,12 @@ export const Student: StudentTemplateType = ({ student, schoolYears, showNotific
         icon: (
           <ScheduleIcon
             sx={{ color: MthColor.MTHGREEN, marginTop: 2, cursor: 'pointer' }}
-            onClick={() => history.push(toolTipLink)}
+            onClick={() => {
+              if (checkEnrollPacketStatus(schoolYears, student)) {
+                setMe({ ...me, currentTab: 0 } as UserInfo)
+                if (link) history.push(link)
+              }
+            }}
           />
         ),
       })
@@ -139,12 +115,7 @@ export const Student: StudentTemplateType = ({ student, schoolYears, showNotific
           progress: 50,
           color: MthColor.MTHORANGE,
           type: 'Please Submit an Enrollment Packet',
-          icon: (
-            <ErrorOutlineIcon
-              sx={{ color: MthColor.MTHORANGE, marginTop: 2, cursor: 'pointer' }}
-              onClick={() => history.push(toolTipLink)}
-            />
-          ),
+          icon: <ErrorOutlineIcon sx={{ color: MthColor.MTHORANGE, marginTop: 2, cursor: 'pointer' }} />,
         })
       } else {
         setCircleData({
@@ -153,12 +124,7 @@ export const Student: StudentTemplateType = ({ student, schoolYears, showNotific
           color: MthColor.MTHORANGE,
           progress: 50,
           type: 'Please Resubmit Enrollment Packet',
-          icon: (
-            <ErrorOutlineIcon
-              sx={{ color: MthColor.MTHORANGE, marginTop: 2, cursor: 'pointer' }}
-              onClick={() => history.push(toolTipLink)}
-            />
-          ),
+          icon: <ErrorOutlineIcon sx={{ color: MthColor.MTHORANGE, marginTop: 2, cursor: 'pointer' }} />,
         })
       }
     } else if (
@@ -173,12 +139,7 @@ export const Student: StudentTemplateType = ({ student, schoolYears, showNotific
         color: MthColor.MTHORANGE,
         progress: 50,
         type: 'Please Submit Enrollment Packet',
-        icon: (
-          <ErrorOutlineIcon
-            sx={{ color: MthColor.MTHORANGE, marginTop: 2, cursor: 'pointer' }}
-            onClick={() => history.push(toolTipLink)}
-          />
-        ),
+        icon: <ErrorOutlineIcon sx={{ color: MthColor.MTHORANGE, marginTop: 2, cursor: 'pointer' }} />,
       })
     } else if (
       currApplication &&
@@ -192,12 +153,7 @@ export const Student: StudentTemplateType = ({ student, schoolYears, showNotific
         color: MthColor.MTHGREEN,
         progress: 50,
         type: 'Enrollment Packet Pending Approval',
-        icon: (
-          <ScheduleIcon
-            sx={{ color: MthColor.MTHGREEN, marginTop: 2, cursor: 'pointer' }}
-            onClick={() => history.push(toolTipLink)}
-          />
-        ),
+        icon: <ScheduleIcon sx={{ color: MthColor.MTHGREEN, marginTop: 2, cursor: 'pointer' }} />,
       })
     } else {
       setShowToolTip(false)
@@ -218,12 +174,19 @@ export const Student: StudentTemplateType = ({ student, schoolYears, showNotific
             <Box>
               <Subtitle size={'large'}>{gradeText}</Subtitle>
               {showToolTip && checkEnrollPacketStatus(schoolYears, student) && (
-                <>
+                <Box
+                  onClick={() => {
+                    if (checkEnrollPacketStatus(schoolYears, student)) {
+                      setMe({ ...me, currentTab: 0 } as UserInfo)
+                      if (link) history.push(link)
+                    }
+                  }}
+                >
                   {circleData?.icon}
                   <Paragraph size='medium' color={circleData?.color}>
                     {circleData?.type}
                   </Paragraph>
-                </>
+                </Box>
               )}
             </Box>
           }

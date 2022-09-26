@@ -1,4 +1,5 @@
-import { BUTTON_LINEAR_GRADIENT } from '../../../utils/constants'
+import { BUTTON_LINEAR_GRADIENT, ERROR_RED } from '../../../utils/constants'
+
 export const useStyles = {
   base: {
     position: 'relative',
@@ -35,5 +36,13 @@ export const useStyles = {
     background: '#fff',
     minHeight: '100%',
     borderRadius: '4px',
+  },
+  form: {
+    '& .MuiInputBase-root': {
+      height: '46px',
+    },
+    '& .Mui-error': {
+      color: ERROR_RED,
+    },
   },
 }

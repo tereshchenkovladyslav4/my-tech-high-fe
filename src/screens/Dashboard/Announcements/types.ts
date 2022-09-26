@@ -6,6 +6,7 @@ export type Announcement = {
   body?: string
   sender?: string
   announcementId?: number
+  announcement_id?: number
   userId?: number
   date?: string
   grades?: string

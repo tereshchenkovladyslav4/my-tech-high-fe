@@ -409,7 +409,7 @@ export const Documents: DocuementsTemplateType = ({ id, questions }) => {
     const specialResponse = specialResponseMeta ? JSON.parse(specialResponseMeta) : {}
     const slug = item.options[0]?.label?.trim()
     if (slug === 'sped') {
-      if (specialResponse && specialResponse.meta_special_education !== 'None') {
+      if (specialResponse && (specialResponse.meta_special_education || 'None') !== 'None') {
         return true
       }
       return false

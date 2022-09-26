@@ -97,7 +97,13 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
         )}
         <Button
           sx={announcement?.status !== 'Published' ? classes.publishBtn : classes.publishBtnAlt}
-          onClick={() => handlePublishClick()}
+          onClick={() =>
+            announcement?.status === undefined ||
+            announcement?.status === 'Draft' ||
+            announcement.status === 'Scheduled'
+              ? handlePublishClick()
+              : setShowUpdatePublishedModal(true)
+          }
         >
           {announcement?.status === undefined || announcement?.status === 'Draft' ? 'Publish' : 'Update'}
         </Button>

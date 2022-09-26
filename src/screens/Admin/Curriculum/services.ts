@@ -45,3 +45,32 @@ export const getScheduleBuilder = gql`
     }
   }
 `
+
+export const getSchoolYear = gql`
+  query GetSchoolYear($school_year_id: ID!) {
+    getSchoolYear(school_year_id: $school_year_id) {
+      school_year_id
+      ScheduleBuilder {
+        id
+        max_num_periods
+        custom_built
+        split_enrollment
+        always_unlock
+        parent_tooltip
+        school_year_id
+        third_party_provider
+      }
+    }
+  }
+`
+export const getSchoolYearByYearIdForPeriod = gql`
+  query GetSchoolYear($school_year_id: ID!) {
+    getSchoolYear(school_year_id: $school_year_id) {
+      grades
+      ScheduleBuilder {
+        id
+        max_num_periods
+      }
+    }
+  }
+`
