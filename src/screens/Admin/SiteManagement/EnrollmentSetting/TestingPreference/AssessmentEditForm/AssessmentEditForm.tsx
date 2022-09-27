@@ -243,7 +243,7 @@ const AssessmentEditForm: React.FC<AssessmentEditFormProps> = ({ assessment, sel
               setIsChanged(true)
             }}
             selectItem={{
-              name: `Option${index + 2}`,
+              name: `Option ${index + 2}`,
               component: (
                 <OptionForm
                   option={list}

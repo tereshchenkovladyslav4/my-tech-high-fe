@@ -1,6 +1,4 @@
-import { FunctionComponent } from 'react'
-
-type WarningModalProps = {
+export type WarningModalProps = {
   title: string
   subtitle: string
   handleModem?: () => void
@@ -8,6 +6,5 @@ type WarningModalProps = {
   canceltitle?: string
   handleSubmit?: () => void
   showIcon?: boolean
+  textCenter?: boolean
 }
-
-export type WarningModalTemplateType = FunctionComponent<WarningModalProps>

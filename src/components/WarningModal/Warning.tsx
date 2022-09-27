@@ -5,9 +5,9 @@ import { Box } from '@mui/system'
 import { SYSTEM_01 } from '../../utils/constants'
 import { Paragraph } from '../Typography/Paragraph/Paragraph'
 import { useStyles } from './styles'
-import { WarningModalTemplateType } from './types'
+import { WarningModalProps } from './types'
 
-export const WarningModal: WarningModalTemplateType = ({
+export const WarningModal: React.FC<WarningModalProps> = ({
   handleModem,
   title,
   subtitle,
@@ -16,6 +16,7 @@ export const WarningModal: WarningModalTemplateType = ({
   handleSubmit,
   showIcon = true,
   children,
+  textCenter,
 }) => {
   const classes = useStyles()
   return (
@@ -33,7 +34,7 @@ export const WarningModal: WarningModalTemplateType = ({
         </Box>
         <Box className={classes.content}>
           {showIcon && <ErrorOutlineIcon className={classes.errorOutline} />}
-          <Paragraph size='large' fontWeight='600' color={SYSTEM_01}>
+          <Paragraph size='large' fontWeight='600' color={SYSTEM_01} sx={{ textAlign: textCenter ? 'center' : 'left' }}>
             {subtitle}
           </Paragraph>
           {children}

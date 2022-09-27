@@ -11,6 +11,7 @@ export type CustomModalType = {
   cancelStr?: string
   backgroundColor?: string
   noCloseOnBackdrop?: boolean
+  width?: number
 }
 
 export const MthModal: FunctionComponent<CustomModalType> = ({
@@ -23,6 +24,7 @@ export const MthModal: FunctionComponent<CustomModalType> = ({
   cancelStr = 'Cancel',
   children,
   noCloseOnBackdrop = false,
+  width,
 }) => {
   const onBackdropClick = () => {
     if (!noCloseOnBackdrop) onClose()
@@ -45,6 +47,10 @@ export const MthModal: FunctionComponent<CustomModalType> = ({
           borderRadius: 2,
           bgcolor: 'white',
           p: 4,
+          maxHeight: 'calc(100vh - 20px)',
+          width: width ? 'calc(100% - 20px)' : 'auto',
+          maxWidth: width ? `${width}px` : 'calc(100% - 20px)',
+          overflow: 'auto',
         }}
       >
         <Box sx={{ textAlign: center ? 'center' : 'left' }}>

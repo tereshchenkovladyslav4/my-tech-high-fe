@@ -52,12 +52,17 @@ export type OptOutFormProps = {
 }
 
 export type DiplomaSeekingProps = {
-  title: string
-  description: string
+  diplomaQuestion: DiplomaQuestionType
   options: RadioGroupOption[]
   setOptions: (value: RadioGroupOption[]) => void
+  isError: boolean
 }
 
 export type ScheduleProps = {
   studentId: number
+}
+
+export type DiplomaQuestionType = {
+  title: string
+  description: string
 }

@@ -50,7 +50,7 @@ const MthBulletEditor: React.FC<MthBulletEditorProps> = ({ value, setValue, erro
       sx={{
         ...bulletEditorClassess.editor,
         ...(error && bulletEditorClassess.editorInvalid),
-        'div.DraftEditor-editorContainer': { minHeight: height ? height : '300px' },
+        'div.DraftEditor-editorContainer': { minHeight: height ? height : '300px', marginX: '10px' },
         marginY: 'auto',
       }}
     >

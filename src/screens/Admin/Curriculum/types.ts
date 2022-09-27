@@ -35,13 +35,14 @@ export type CurriculumItem = {
 
 export type PeriodItem = {
   id?: number
-  period?: number
+  period: number
   category: string
   grade?: string
   semester: SEMESTER_TYPE
   grade_level_min: string
   grade_level_max: string
-  message?: string
+  message_period?: string
+  message_semester?: string
   reduce_funds?: REDUCE_FUNDS_TYPE
   price?: string | number
   archived?: boolean

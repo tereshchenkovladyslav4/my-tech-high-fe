@@ -111,11 +111,12 @@ const DiplomaSeeking: React.FC = () => {
         setDiplomaQuestion(diplomaQuestionData?.getDiplomaQuestion)
       } else {
         setSelectGrades([])
+        const regionName = me?.userRegion.find((region) => region.region_id === me?.selectedRegionId)
         setDiplomaQuestion({
           id: '',
           schoolYearId: '',
           title: DEFUALT_DIPLOMA_QUESTION_TITLE,
-          description: DEFUALT_DIPLOMA_QUESTION_DESCRIPTION,
+          description: DEFUALT_DIPLOMA_QUESTION_DESCRIPTION.replace('%REGION_NAME%', regionName?.regionDetail?.name),
           grades: '',
         })
       }
@@ -233,7 +234,7 @@ const DiplomaSeeking: React.FC = () => {
           <Grid item xs={6}>
             <Box>
               <Typography fontSize='16px' fontWeight={500} component='span'>
-                Select Grades That Require a Diploma-seeking Question
+                Select the grade levels that require a Diploma-seeking Path when creating a schedule:
               </Typography>
               <Box sx={diplomaSeekingClassess.gradeGroup}>
                 {kinderGardernGrade()}

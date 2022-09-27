@@ -6,7 +6,7 @@ import { MthTableRowProps } from './types'
 const StyledTableRow = styled(TableRow)(({}) => ({
   '&:nth-of-type(odd) .MuiTableCell-root': {
     backgroundColor: '#FAFAFA',
-    '&:first-child': {
+    '&:first-of-type': {
       borderTopLeftRadius: '8px',
       borderBottomLeftRadius: '8px',
     },

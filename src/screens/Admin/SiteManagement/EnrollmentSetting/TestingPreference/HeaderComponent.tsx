@@ -14,7 +14,7 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
   const history = useHistory()
 
   return (
-    <Box paddingY='13px' paddingX='20px' display='flex' justifyContent='space-between'>
+    <Box paddingY='13px' paddingX='40px' display='flex' justifyContent='space-between'>
       <Box>
         <IconButton
           onClick={() => history.push('/site-management/enrollment/')}

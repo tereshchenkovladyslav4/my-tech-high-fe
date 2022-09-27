@@ -1,23 +1,97 @@
+import { DropDownItem } from '@mth/components/DropDown/types'
+import { CheckBoxListVM } from '@mth/components/MthCheckboxList/MthCheckboxList'
+import { DiplomaSeekingPath, ReduceFunds } from '@mth/enums'
+import { SchoolYearRespnoseType } from '@mth/hooks'
+
 export type Subject = {
-  id: number
+  subject_id: number
   name: string
-  periods: string
-  active: boolean
+  is_active: boolean
   priority: number
-  titles?: Title[]
+  Periods: Period[]
+  Titles?: Title[]
+  // Temp fields
+  PeriodIds?: string[]
+}
+
+export type Period = {
+  period_id: number
+  name: string
+}
+
+export type StateCourseCord = {
+  gradeIndex: number
+  stateCode: string
+  teacher: string
 }
 
 export type Title = {
+  title_id: number
+  subject_id: number
   name: string
-  grades: string
-  diplomaSeeking: boolean
-  customBuilt: boolean
-  thirdParty: boolean
-  splitEnrollment: boolean
-  semesterOnly: boolean
-  active: boolean
+  min_grade: string
+  max_grade: string
+  min_alt_grade: string
+  max_alt_grade: string
+  diploma_seeking_path?: DiplomaSeekingPath
+  reduce_funds: ReduceFunds
+  price: number
+  always_unlock: boolean
+  custom_built: boolean
+  third_party_provider: boolean
+  split_enrollment: boolean
+  software_reimbursement: boolean
+  display_notification: boolean
+  launchpad_course: boolean
+  course_id?: string
+  reduce_funds_notification?: string
+  custom_built_description?: string
+  subject_notification?: string
+  state_course_codes: string
+  is_active: boolean
+
+  //  Temp fields
+  diploma_seeking?: boolean
+  stateCourseCords?: StateCourseCord[]
+}
+
+export type ScheduleBuilder = {
+  custom_built: boolean
+  split_enrollment: boolean
+  always_unlock: boolean
+  third_party_provider: boolean
 }
 
 export type TitlesProps = {
+  schoolYearId: number
+  schoolYearData?: SchoolYearRespnoseType
   titles: Title[] | undefined
+  refetch: () => void
+}
+
+export interface SubjectEditProps {
+  schoolYearId: number
+  item?: Subject
+  refetch: () => void
+  setShowEditModal: (value: boolean) => void
+}
+
+export type SubjectFormProps = {
+  setIsChanged: (value: boolean) => void
+  periodsItems: CheckBoxListVM[]
+}
+
+export interface TitleEditProps {
+  schoolYearId: number
+  schoolYearData?: SchoolYearRespnoseType
+  item?: Title
+  refetch: () => void
+  setShowEditModal: (value: boolean) => void
+}
+
+export type TitleFormProps = {
+  schoolYearData?: SchoolYearRespnoseType
+  subjectsItems: DropDownItem[]
+  gradeOptions: DropDownItem[]
+  scheduleBuilder?: ScheduleBuilder
 }

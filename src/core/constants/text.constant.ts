@@ -10,12 +10,12 @@ export const DEFAULT_OPT_OUT_FORM_DESCRIPTION =
   'All State tests are administered by Tooele - Blue Peak Online, Nebo - ALC, Iron County - SEA or Gateway Preparatory Academy. Also, as required by State Law, an opt-out form for each School of Enrollment'
 export const TESTING_PREFERENCE = 'testing_preference'
 export const OPT_OUT = 'opt_out'
-export const IF_SELECT_MARK_TESTING_PREFERENCE = 'If selected, mark testing preference'
+export const IF_SELECT_MARK_TESTING_PREFERENCE = 'If selected, mark testing preference as'
 export const REQUIRE_REASON_ON_OPT_OUT = 'Require Reason on Opt-out'
 
 export const DEFUALT_DIPLOMA_QUESTION_TITLE = 'Diploma-seeking Path'
 export const DEFUALT_DIPLOMA_QUESTION_DESCRIPTION =
-  'Does this student plan to complete the requirements to earn a Utah high school diploma (schedule flexibility is limited)?'
+  'Does this student plan to complete the requirements to earn a %REGION_NAME% high school diploma (schedule flexibility is limited)?'
 
 export const DEFAULT_REASON =
   'Because the assessment does not allow for students to opt-out, please indicate your reason for refusing to test.'

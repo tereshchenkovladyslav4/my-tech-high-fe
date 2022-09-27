@@ -30,7 +30,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({
         position: 'relative',
         cursor: 'pointer',
         borderRadius: 2,
-        marginX: 0,
+        marginX: 4,
         opacity: disabled ? 0.5 : 1,
       }}
       onClick={() => {

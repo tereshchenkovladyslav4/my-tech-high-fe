@@ -19,7 +19,7 @@ export const testingPreferenceClassess = {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-end',
-    marginRight: 4,
+    marginRight: '40px',
   },
   activeButton: {
     textTransform: 'none',

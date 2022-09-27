@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { useMutation, useQuery } from '@apollo/client'
 import { DeleteForeverOutlined } from '@mui/icons-material'
 import CallMissedOutgoingIcon from '@mui/icons-material/CallMissedOutgoing'
 import CreateIcon from '@mui/icons-material/Create'
@@ -11,96 +12,19 @@ import { MthTable } from '@mth/components/MthTable'
 import { MthTableField, MthTableRowItem } from '@mth/components/MthTable/types'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { MthColor } from '@mth/enums'
+import { SchoolYearRespnoseType } from '@mth/hooks'
+import {
+  createOrUpdateSubjectMutation,
+  deleteSubjectMutation,
+  getSubjectsQuery,
+} from '@mth/screens/Admin/Curriculum/CourseCatalog/services'
+import { SubjectEdit } from '@mth/screens/Admin/Curriculum/CourseCatalog/Subjects/SubjectEdit'
 import Titles from '@mth/screens/Admin/Curriculum/CourseCatalog/Subjects/Titles'
 import { Subject } from '@mth/screens/Admin/Curriculum/CourseCatalog/Subjects/types'
 import CourseCatalogHeader from '../Components/CourseCatalogHeader/CourseCatalogHeader'
 
 const Subjects: React.FC = () => {
   // TODO Titles of the archived subject must be archived.
-  const subjectsData: Subject[] = [
-    {
-      id: 1,
-      name: 'Math',
-      periods: 'Period 2 - Math, Period 4 - Elective, Period 6 - Core,  Period 7 - Optional Core',
-      active: false,
-      priority: 1,
-      titles: [
-        {
-          name: 'Accounting',
-          grades: '9-12',
-          diplomaSeeking: false,
-          customBuilt: true,
-          thirdParty: true,
-          splitEnrollment: true,
-          semesterOnly: false,
-          active: false,
-        },
-        {
-          name: 'Algebra I',
-          grades: '7-12',
-          diplomaSeeking: false,
-          customBuilt: true,
-          thirdParty: true,
-          splitEnrollment: false,
-          semesterOnly: false,
-          active: false,
-        },
-      ],
-    },
-    {
-      id: 2,
-      name: 'Language Arts',
-      periods: 'Period 3 - Language Arts, Period 6 - Core, Period 6 - Semester Core, Period 7 - Optional Core',
-      active: true,
-      priority: 2,
-    },
-    {
-      id: 3,
-      name: 'Science',
-      periods: 'Period 4 - Science, Period 4 - Elective, Period 6 - Core, Period 7 - Optional Core',
-      active: true,
-      priority: 3,
-    },
-    {
-      id: 4,
-      name: 'P.E. / Health',
-      periods: 'Period 6 - Elective, Period 6 - Elective, Period 6 - Semester Elective, Period 7 - Optional Elective',
-      active: true,
-      priority: 4,
-      titles: [
-        {
-          name: 'Fitness for Life',
-          grades: '9-12',
-          diplomaSeeking: false,
-          customBuilt: true,
-          thirdParty: true,
-          splitEnrollment: true,
-          semesterOnly: false,
-          active: true,
-        },
-        {
-          name: 'Health',
-          grades: 'K-12',
-          diplomaSeeking: false,
-          customBuilt: true,
-          thirdParty: true,
-          splitEnrollment: true,
-          semesterOnly: false,
-          active: false,
-        },
-        {
-          name: 'P.E. ',
-          grades: 'K-12',
-          diplomaSeeking: true,
-          customBuilt: true,
-          thirdParty: true,
-          splitEnrollment: true,
-          semesterOnly: true,
-          active: true,
-        },
-      ],
-    },
-  ]
 
   const DragHandle = SortableHandle(() => (
     <Tooltip title='Move' placement='top'>
@@ -110,12 +34,26 @@ const Subjects: React.FC = () => {
     </Tooltip>
   ))
 
-  const [loading] = useState(false)
   const [selectedYear, setSelectedYear] = useState<number>(0)
+  const [selectedYearData, setSelectedYearData] = useState<SchoolYearRespnoseType | undefined>()
   const [searchField, setSearchField] = useState<string>('')
   const [showArchived, setShowArchived] = useState<boolean>(false)
-  const [subjects] = useState<Subject[]>(subjectsData)
+  const [subjects, setSubjects] = useState<Subject[]>([])
   const [tableData, setTableData] = useState<MthTableRowItem<Subject>[]>([])
+  const [selectedSubject, setSelectedSubject] = useState<Subject | undefined>()
+  const [showEditModal, setShowEditModal] = useState<boolean>(false)
+
+  const {
+    loading,
+    data: subjectsData,
+    refetch,
+  } = useQuery(getSubjectsQuery, {
+    variables: { schoolYearId: selectedYear },
+    skip: !selectedYear,
+    fetchPolicy: 'network-only',
+  })
+  const [updateSubject, {}] = useMutation(createOrUpdateSubjectMutation)
+  const [deleteSubject, {}] = useMutation(deleteSubjectMutation)
 
   const fields: MthTableField<Subject>[] = [
     {
@@ -138,24 +76,32 @@ const Subjects: React.FC = () => {
       formatter: (item: MthTableRowItem<Subject>) => {
         return (
           <Box display={'flex'} flexDirection='row' justifyContent={'flex-end'}>
-            <Tooltip title={item.rawData.active ? 'Edit' : ''} placement='top'>
-              <IconButton color='primary' disabled={!item.rawData.active} className='actionButton'>
+            <Tooltip title={item.rawData.is_active ? 'Edit' : ''} placement='top'>
+              <IconButton
+                color='primary'
+                disabled={!item.rawData.is_active}
+                className='actionButton'
+                onClick={() => {
+                  setSelectedSubject(item.rawData)
+                  setShowEditModal(true)
+                }}
+              >
                 <CreateIcon />
               </IconButton>
             </Tooltip>
-            <Tooltip title={item.rawData.active ? 'Archive' : 'Unarchive'} placement='top'>
-              <IconButton className='actionButton' color='primary'>
-                {item.rawData.active ? <SystemUpdateAltRoundedIcon /> : <CallMissedOutgoingIcon />}
+            <Tooltip title={item.rawData.is_active ? 'Archive' : 'Unarchive'} placement='top'>
+              <IconButton className='actionButton' color='primary' onClick={() => handleToggleActive(item.rawData)}>
+                {item.rawData.is_active ? <SystemUpdateAltRoundedIcon /> : <CallMissedOutgoingIcon />}
               </IconButton>
             </Tooltip>
-            {!item.rawData.active && (
+            {!item.rawData.is_active && (
               <Tooltip title='Delete' placement='top'>
-                <IconButton className='actionButton' color='primary'>
+                <IconButton className='actionButton' color='primary' onClick={() => handleDelete(item.rawData)}>
                   <DeleteForeverOutlined />
                 </IconButton>
               </Tooltip>
             )}
-            {item.rawData.active && <DragHandle />}
+            {item.rawData.is_active && <DragHandle />}
             <IconButton
               onClick={() => {
                 if (item.toggleExpand) item.toggleExpand()
@@ -175,27 +121,70 @@ const Subjects: React.FC = () => {
     return {
       columns: {
         name: subject.name,
-        periods: subject.periods,
+        periods:
+          subject.Periods?.map((item) => {
+            return item.name
+          }).join(', ') || 'NA',
       },
-      selectable: subject.active,
+      selectable: subject.is_active,
       rawData: subject,
-      expandNode: <Titles titles={subject.titles} />,
+      expandNode: (
+        <Titles
+          schoolYearId={selectedYear}
+          schoolYearData={selectedYearData}
+          titles={subject.Titles}
+          refetch={refetch}
+        />
+      ),
     }
   }
 
+  const handleToggleActive = async (subject: Subject) => {
+    await updateSubject({
+      variables: {
+        createSubjectInput: {
+          subject_id: Number(subject.subject_id),
+          is_active: !subject.is_active,
+        },
+      },
+    })
+    await refetch()
+  }
+
+  const handleDelete = async (subject: Subject) => {
+    await deleteSubject({
+      variables: {
+        subjectId: Number(subject.subject_id),
+      },
+    })
+    await refetch()
+  }
+
   useEffect(() => {
-    if (subjects?.length) {
-      setTableData(
-        subjects
-          .map((item) => {
-            return { ...item, titles: item.titles?.filter((x) => showArchived || x.active) }
-          })
-          .map((item) => {
-            return createData(item)
-          }),
-      )
-    }
+    setTableData(
+      (subjects || [])
+        .map((item) => {
+          return { ...item, titles: item.Titles?.filter((x) => showArchived || x.is_active) }
+        })
+        .map((item) => {
+          return createData(item)
+        }),
+    )
   }, [subjects, showArchived])
+
+  useEffect(() => {
+    if (!loading && subjectsData) {
+      const { subjects } = subjectsData
+      setSubjects(subjects || [])
+    }
+  }, [selectedYear])
+
+  useEffect(() => {
+    if (!loading && subjectsData) {
+      const { subjects } = subjectsData
+      setSubjects(subjects || [])
+    }
+  }, [loading, subjectsData])
 
   return (
     <Box sx={{ p: 4, textAlign: 'left' }}>
@@ -204,6 +193,7 @@ const Subjects: React.FC = () => {
           title='Subjects'
           selectedYear={selectedYear}
           setSelectedYear={setSelectedYear}
+          setSelectedYearData={setSelectedYearData}
           searchField={searchField}
           setSearchField={setSearchField}
           showArchived={showArchived}
@@ -230,11 +220,24 @@ const Subjects: React.FC = () => {
                 color: 'white',
               },
             }}
+            onClick={() => {
+              setSelectedSubject(undefined)
+              setShowEditModal(true)
+            }}
           >
             <Subtitle sx={{ fontSize: '14px', fontWeight: '700' }}>+ Add Subject</Subtitle>
           </Button>
         </Box>
       </Card>
+
+      {showEditModal && (
+        <SubjectEdit
+          schoolYearId={selectedYear}
+          item={selectedSubject}
+          refetch={refetch}
+          setShowEditModal={setShowEditModal}
+        />
+      )}
     </Box>
   )
 }

@@ -12,16 +12,16 @@ import { OptionFormProps } from '../types'
 const OptionForm: React.FC<OptionFormProps> = ({ option, setOption, invalidation, setIsChanged }) => {
   const items = [
     {
-      label: OPT_TYPE.NONE,
-      value: '',
+      label: OPT_TYPE.OPT_IN,
+      value: OPT_TYPE.OPT_IN,
     },
     {
       label: OPT_TYPE.OPT_OUT,
       value: OPT_TYPE.OPT_OUT,
     },
     {
-      label: OPT_TYPE.OPT_IN,
-      value: OPT_TYPE.OPT_IN,
+      label: OPT_TYPE.NONE,
+      value: OPT_TYPE.NONE,
     },
   ]
 
@@ -66,7 +66,7 @@ const OptionForm: React.FC<OptionFormProps> = ({ option, setOption, invalidation
       </Box>
       {option?.method == OPT_TYPE.OPT_OUT && (
         <>
-          <Box>
+          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
             <MthCheckbox
               label={REQUIRE_REASON_ON_OPT_OUT}
               checked={option?.require_reason}

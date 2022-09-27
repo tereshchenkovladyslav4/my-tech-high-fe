@@ -70,7 +70,7 @@ const AssessmentTable: React.FC<AssessmentTableProps> = ({ assessmentItems, setS
   }
 
   return (
-    <Box sx={{ padding: 5 }}>
+    <Box sx={{ padding: 5, paddingLeft: 7 }}>
       <DragDropContext onDragEnd={onDragEnd}>
         <Droppable droppableId='droppable'>
           {(provided: DroppableProvided, snapshot: DroppableStateSnapshot) => (

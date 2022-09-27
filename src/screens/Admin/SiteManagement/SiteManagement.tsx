@@ -138,7 +138,7 @@ const SiteManagement: React.FC = () => {
   )
 
   const renderCardsHandler = (items: unknown) => (
-    <Grid container rowSpacing={4} columnSpacing={0}>
+    <Grid container rowSpacing={4} columnSpacing={0} sx={{ paddingX: 2, marginTop: 4 }}>
       {map(items, (item, idx) => (
         <Grid item xs={4} key={idx}>
           <ItemCard

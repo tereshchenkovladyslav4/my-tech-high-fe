@@ -51,7 +51,7 @@ export const TodoList: FunctionComponent = () => {
   useEffect(() => {
     if (!loading && data?.getTodoListItems) {
       const { application, packet, withdrawal } = data?.getTodoListItems?.results
-      setTodoList([
+      const currTodoList: ToDoListItem[] = [
         {
           id: 1,
           title: MthTitle.APPLICATIONS,
@@ -94,15 +94,18 @@ export const TodoList: FunctionComponent = () => {
           date: new Date(),
           severity: 300,
         },
-        {
+      ]
+      if (emailErrorCount?.emailRecords.total > 0) {
+        currTodoList.push({
           id: 7,
           title: 'Email Errors',
           link: 'communication/email-records',
           date: new Date(),
           severity: emailErrorCount?.emailRecords.total,
           buttonTitle: 'View Now',
-        },
-      ])
+        })
+      }
+      setTodoList(currTodoList)
     }
   }, [loading, data, emailErrorCount])
 

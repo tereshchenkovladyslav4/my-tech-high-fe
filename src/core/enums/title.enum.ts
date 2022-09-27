@@ -19,7 +19,7 @@ export enum MthTitle {
   NEW_ASSESSMENT = 'New Assessment',
   TEST_NAME = 'Test Name',
   INFORMATION = 'Information',
-  OPTION_1 = 'Option1',
+  OPTION_1 = 'Option 1',
   ADD_OPTION = 'Add Option',
   UNSAVED_TITLE = 'Unsaved Changes',
   UNSAVED_DESCRIPTION = 'Are you sure you want to leave without saving changes?',

@@ -50,6 +50,14 @@ export const theme = createTheme({
           '& .w-75': {
             width: '300px',
           },
+          '& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button': {
+            '-webkit-appearance': 'none',
+            margin: 0,
+          },
+          '& input[type=number]': {
+            '-moz-appearance': 'none',
+            margin: 0,
+          },
         },
       },
     },

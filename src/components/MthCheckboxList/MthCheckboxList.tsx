@@ -11,7 +11,7 @@ export type CheckBoxListVM = {
 }
 
 type MthCheckboxListProps = {
-  title: string
+  title?: string
   checkboxLists: CheckBoxListVM[]
   values: string[]
   setValues: (value: string[]) => void
@@ -89,9 +89,11 @@ const MthCheckboxList: React.FC<MthCheckboxListProps> = ({
     >
       {!!checkboxLists?.length && (
         <Box>
-          <Paragraph size='large' fontWeight='700'>
-            {title}
-          </Paragraph>
+          {!!title && (
+            <Paragraph size='large' fontWeight='700'>
+              {title}
+            </Paragraph>
+          )}
           {showError && (
             <Subtitle size='small' color={MthColor.RED} fontWeight='700'>
               {error}

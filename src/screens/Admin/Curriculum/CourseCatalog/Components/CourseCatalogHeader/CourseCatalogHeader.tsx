@@ -13,6 +13,7 @@ const CourseCatalogHeader: React.FC<CourseCatalogHeaderProps> = ({
   title,
   selectedYear,
   setSelectedYear,
+  setSelectedYearData,
   showArchived,
   setShowArchived,
   searchField,
@@ -28,6 +29,13 @@ const CourseCatalogHeader: React.FC<CourseCatalogHeaderProps> = ({
     setSearchField(event)
   }
   const debouncedChangeHandler = useCallback(debounce(changeHandler, 300), [])
+
+  useEffect(() => {
+    if (selectedYear && schoolYears) {
+      const schoolYearData = schoolYears.find((item) => item.school_year_id == selectedYear)
+      if (schoolYearData && setSelectedYearData) setSelectedYearData(schoolYearData)
+    }
+  }, [selectedYear])
 
   useEffect(() => {
     if (schoolYears?.length) setSelectedYear(schoolYears[0].school_year_id)

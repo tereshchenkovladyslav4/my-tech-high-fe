@@ -11,23 +11,26 @@ import {
   DEFAULT_OPT_OUT_FORM_TITLE,
   DEFAULT_TESTING_PREFERENCE_DESCRIPTION,
   DEFAULT_TESTING_PREFERENCE_TITLE,
+  DEFUALT_DIPLOMA_QUESTION_DESCRIPTION,
+  DEFUALT_DIPLOMA_QUESTION_TITLE,
   SNOWPACK_PUBLIC_S3_URL,
 } from '@mth/constants'
 import { MthRoute, MthTitle, OPT_TYPE } from '@mth/enums'
+import { diplomaAnswerGql, diplomaQuestionForStudent, submitDiplomaAnswerGql } from '@mth/graphql/queries/diploma'
 import { getSignatureInfoByStudentId } from '@mth/graphql/queries/user'
 import { useAssessmentsBySchoolYearId } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { getSignatureFile } from '@mth/screens/Admin/EnrollmentPackets/services'
 import { AssessmentType } from '@mth/screens/Admin/SiteManagement/EnrollmentSetting/TestingPreference/types'
 import { UpdateStudentMutation } from '@mth/screens/Admin/UserProfile/services'
-import { gradeText } from '@mth/utils'
+import { extractContent, gradeNum, gradeText } from '@mth/utils'
 import { DiplomaSeeking } from './DiplomaSeeking'
 import { HeaderComponent } from './HeaderComponent'
 import { OptOutForm } from './OptOutForm'
 import { StudentInfo } from './StudentInfo'
 import { scheduleClassess } from './styles'
 import { TestingPreference } from './TestingPreference'
-import { ScheduleProps, StudentAssessment, StudentScheduleInfo } from './types'
+import { ScheduleProps, StudentAssessment, StudentScheduleInfo, DiplomaQuestionType } from './types'
 
 const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
   const { me } = useContext(UserContext)
@@ -50,9 +53,11 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
   const [signatureFileUrl, setSignatureFileUrl] = useState<string>('')
   const [activeTestingPreference, setActiveTestingPreference] = useState<boolean>(false)
   const [activeDiplomaSeeking, setActiveDiplomaSeeking] = useState<boolean>(false)
-  const diplomaTitle = 'Diploma-seeking'
-  const diplomaDescription =
-    'Does this student plan to complete the requirements to earn a Utah high school diploma(schedule flexibility is limited)?'
+  const [diplomaQuestion, setDiplomaQuestion] = useState<DiplomaQuestionType>({
+    title: '',
+    description: '',
+  })
+  const [isDiplomaError, setIsDiplomaError] = useState<boolean>(false)
 
   const [diplomaOptions, setDiplomaOptions] = useState<RadioGroupOption[]>([
     {
@@ -66,6 +71,87 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
       value: false,
     },
   ])
+
+  const { loading: diplomaLoading, data: diplomaData } = useQuery(diplomaQuestionForStudent, {
+    variables: {
+      diplomaQuestionInput: {
+        schoolYearId: Number(student?.current_school_year_status?.school_year_id),
+        grades: gradeNum(student),
+      },
+    },
+    skip: !student || !studentId || step !== MthTitle.STEP_DIPLOMA_SEEKING,
+    fetchPolicy: 'network-only',
+  })
+
+  const {
+    loading: diplomaAnswerLoading,
+    data: diplomaAnswerData,
+    refetch: diplomaAnswerRefetch,
+  } = useQuery(diplomaAnswerGql, {
+    variables: {
+      diplomaAnswerInput: {
+        schoolYearId: Number(student?.current_school_year_status?.school_year_id),
+        studentId: studentId,
+      },
+    },
+    skip: !student || !studentId || step !== MthTitle.STEP_DIPLOMA_SEEKING,
+    fetchPolicy: 'network-only',
+  })
+
+  useEffect(() => {
+    if (!diplomaLoading) {
+      if (diplomaData && diplomaData.getDiplomaQuestionForStudent) {
+        setDiplomaQuestion({
+          title: diplomaData.getDiplomaQuestionForStudent.title,
+          description: extractContent(diplomaData.getDiplomaQuestionForStudent.description),
+        })
+      } else {
+        setDiplomaQuestion({
+          title: DEFUALT_DIPLOMA_QUESTION_TITLE,
+          description: DEFUALT_DIPLOMA_QUESTION_DESCRIPTION.replace(
+            '%REGION_NAME%',
+            me?.userRegion?.at(-1)?.regionDetail?.name,
+          ),
+        })
+      }
+    }
+  }, [diplomaLoading, diplomaData])
+
+  useEffect(() => {
+    if (!diplomaAnswerLoading) {
+      if (diplomaAnswerData && diplomaAnswerData.getDiplomaAnswer) {
+        setDiplomaOptions([
+          {
+            option_id: 1,
+            label: 'Yes',
+            value: 1 === diplomaAnswerData.getDiplomaAnswer.answer,
+          },
+          {
+            option_id: 2,
+            label: 'No',
+            value: 0 === diplomaAnswerData.getDiplomaAnswer.answer,
+          },
+        ])
+      }
+    }
+  }, [diplomaAnswerLoading, diplomaAnswerData])
+
+  const [saveDiplomaAnswer] = useMutation(submitDiplomaAnswerGql)
+
+  const submitDiplomaAnswer = async (options: RadioGroupOption[]) => {
+    const answerOption = options.find((item: RadioGroupOption) => item.value === true)
+    const answer = answerOption?.option_id === 1 ? 1 : 0
+    await saveDiplomaAnswer({
+      variables: {
+        saveDiplomaAnswerInput: {
+          answer: answer,
+          studentId: studentId,
+          schoolYearId: Number(student?.current_school_year_status?.school_year_id),
+        },
+      },
+    })
+    diplomaAnswerRefetch()
+  }
 
   const { assessments, loading, schoolYear } = useAssessmentsBySchoolYearId(
     Number(student?.current_school_year_status?.school_year_id),
@@ -138,6 +224,12 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
           setInvalidationOF(true)
         })
         return invalid
+      case MthTitle.DIPLOMA_SEEKING:
+        const answerOb = diplomaOptions.find((item: RadioGroupOption) => item.value === true)
+        if (!answerOb) {
+          invalid = true
+        }
+        return invalid
       default:
         return true
     }
@@ -199,6 +291,13 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
         }
         break
       case MthTitle.STEP_DIPLOMA_SEEKING:
+        if (!isInvalid) {
+          // next schedule step
+          setStep(MthTitle.SCHEDULE)
+          setIsDiplomaError(false)
+        } else {
+          setIsDiplomaError(true)
+        }
         break
     }
   }
@@ -321,10 +420,10 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
         )}
         {step == MthTitle.STEP_DIPLOMA_SEEKING && (
           <DiplomaSeeking
-            title={diplomaTitle}
-            description={diplomaDescription}
+            diplomaQuestion={diplomaQuestion}
             options={diplomaOptions}
-            setOptions={setDiplomaOptions}
+            setOptions={submitDiplomaAnswer}
+            isError={isDiplomaError}
           />
         )}
         <Box sx={{ display: 'flex', justifyContent: 'end' }}>

@@ -44,5 +44,11 @@ export const useStyles = {
     '& .Mui-error': {
       color: ERROR_RED,
     },
+    '& .MuiFormControlLabel-root': {
+      'align-items': 'flex-start',
+      '.MuiFormControlLabel-label': {
+        paddingTop: '8px',
+      },
+    },
   },
 }

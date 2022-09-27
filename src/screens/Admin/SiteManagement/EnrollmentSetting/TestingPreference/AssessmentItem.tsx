@@ -62,6 +62,7 @@ const AssessmentItem: React.FC<AssessmentItemProps> = ({
         color: item.is_archived ? '#A3A3A4' : '#000',
         background: index % 2 == 0 ? '#FAFAFA' : '',
         textAlign: 'left',
+        borderRadius: '8px',
       }}
       draggable='false'
     >

@@ -27,6 +27,7 @@ export type SchoolYearRespnoseType = {
   midyear_schedule_open: string
   midyear_schedule_close: string
   schedule: boolean
+  diploma_seeking: boolean
 }
 
 export const useSchoolYearsByRegionId = (
