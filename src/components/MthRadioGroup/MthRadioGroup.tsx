@@ -1,5 +1,6 @@
 import React from 'react'
 import { Box, FormControlLabel, Radio, RadioGroup } from '@mui/material'
+import { MthColor } from '@mth/enums'
 import { Paragraph } from '../Typography/Paragraph/Paragraph'
 import { Subtitle } from '../Typography/Subtitle/Subtitle'
 import { RadioGroupOption } from './types'
@@ -10,6 +11,7 @@ type MthRadioGroupProps = {
   description?: string | null
   options: RadioGroupOption[]
   handleChangeOption: (value: RadioGroupOption[]) => void
+  isError?: boolean
 }
 
 const MthRadioGroup: React.FC<MthRadioGroupProps> = ({
@@ -18,6 +20,7 @@ const MthRadioGroup: React.FC<MthRadioGroupProps> = ({
   description,
   options,
   handleChangeOption,
+  isError,
 }) => {
   return (
     <Box>
@@ -30,6 +33,11 @@ const MthRadioGroup: React.FC<MthRadioGroupProps> = ({
         <Paragraph size={'large'} color={'#ccc'} sx={{ paddingY: 1 }}>
           {description}
         </Paragraph>
+      )}
+      {isError && (
+        <Subtitle sx={{ color: MthColor.ERROR_RED, fontSize: '12px', fontWeight: 600, lineHeight: '20px' }}>
+          Required
+        </Subtitle>
       )}
       <RadioGroup aria-label={ariaLabel} name='radio-buttons-group'>
         {options?.map((option, index) => (

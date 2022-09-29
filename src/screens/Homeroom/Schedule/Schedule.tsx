@@ -99,6 +99,7 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
   })
 
   useEffect(() => {
+    setIsDiplomaError(false)
     if (!diplomaLoading) {
       if (diplomaData && diplomaData.getDiplomaQuestionForStudent) {
         setDiplomaQuestion({
@@ -224,7 +225,7 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
           setInvalidationOF(true)
         })
         return invalid
-      case MthTitle.DIPLOMA_SEEKING:
+      case MthTitle.STEP_DIPLOMA_SEEKING:
         const answerOb = diplomaOptions.find((item: RadioGroupOption) => item.value === true)
         if (!answerOb) {
           invalid = true
@@ -291,7 +292,7 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
         }
         break
       case MthTitle.STEP_DIPLOMA_SEEKING:
-        if (!isInvalid) {
+        if (!isInvalid()) {
           // next schedule step
           setStep(MthTitle.SCHEDULE)
           setIsDiplomaError(false)
@@ -319,8 +320,11 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
         if (activeTestingPreference) setStep(MthTitle.STEP_TESTING_PREFERENCE)
         else history.push(MthRoute.DASHBOARD)
         break
-      default:
+      case MthTitle.SCHEDULE:
         setStep(MthTitle.STEP_DIPLOMA_SEEKING)
+        break
+      default:
+        setStep(MthTitle.STEP_TESTING_PREFERENCE)
     }
   }
 

@@ -90,7 +90,7 @@ export const useCurrentGradeAndProgramByRegionId = (
         setProgramYearList((prev) => [
           ...prev,
           {
-            label: `${moment(schoolYear_date_begin).format('YYYY')} - ${moment(schoolYear_date_end).format('YY')}`,
+            label: `${moment(schoolYear_date_begin).format('YYYY')}-${moment(schoolYear_date_end).format('YY')}`,
             value: 'schoolYear',
           },
         ])

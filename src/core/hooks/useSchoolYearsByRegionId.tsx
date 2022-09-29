@@ -56,7 +56,7 @@ export const useSchoolYearsByRegionId = (
       setDropdownItems(
         sortBy(SchoolYears, 'date_begin').map((item: SchoolYearRespnoseType) => ({
           value: item.school_year_id,
-          label: `${moment(item.date_begin).format('YYYY')} - ${moment(item.date_end).format('YY')}`,
+          label: `${moment(item.date_begin).format('YYYY')}-${moment(item.date_end).format('YY')}`,
         })),
       )
       setSchoolYears(SchoolYears)

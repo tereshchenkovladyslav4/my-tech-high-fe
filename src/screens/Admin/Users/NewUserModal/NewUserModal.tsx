@@ -386,7 +386,7 @@ export const NewUserModal: NewModalTemplateType = ({ handleModem, visible }) => 
         form = (
           <Grid item>
             <Subtitle fontWeight='700' size='large'>
-              Regions
+              State
             </Subtitle>
             <FormGroup>
               {map(regionOption, (region, index) => (
@@ -425,7 +425,7 @@ export const NewUserModal: NewModalTemplateType = ({ handleModem, visible }) => 
           <Grid item container xs={12}>
             <Grid item xs={6}>
               <Subtitle fontWeight='700' size='large'>
-                Regions
+                State
               </Subtitle>
               <FormGroup>
                 {map(regionOption, (region, index) => (

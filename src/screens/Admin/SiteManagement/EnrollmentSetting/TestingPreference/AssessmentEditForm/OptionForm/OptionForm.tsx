@@ -4,7 +4,7 @@ import { DropDown } from '@mth/components/DropDown/DropDown'
 import { MthBulletEditor } from '@mth/components/MthBulletEditor'
 import { MthCheckbox } from '@mth/components/MthCheckbox'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
-import { DEFAULT_REASON, IF_SELECT_MARK_TESTING_PREFERENCE, REQUIRE_REASON_ON_OPT_OUT } from '@mth/constants'
+import { DEFAULT_REASON, IF_SELECT_MARK_TESTING_PREFERENCE, REQUIRE_REASON_TO_OPT_OUT } from '@mth/constants'
 import { OPT_TYPE } from '@mth/enums'
 import { testingPreferenceClassess } from '../../styles'
 import { OptionFormProps } from '../types'
@@ -54,7 +54,7 @@ const OptionForm: React.FC<OptionFormProps> = ({ option, setOption, invalidation
             sx={{ width: '160px' }}
             borderNone={false}
             setParentValue={(value) => {
-              if (option) setOption({ ...option, method: value })
+              if (option) setOption({ ...option, method: `${value}` })
               setIsChanged(true)
             }}
             error={{ error: invalidation && option?.method == '', errorMsg: '' }}
@@ -68,7 +68,7 @@ const OptionForm: React.FC<OptionFormProps> = ({ option, setOption, invalidation
         <>
           <Box sx={{ display: 'flex', justifyContent: 'center' }}>
             <MthCheckbox
-              label={REQUIRE_REASON_ON_OPT_OUT}
+              label={REQUIRE_REASON_TO_OPT_OUT}
               checked={option?.require_reason}
               onChange={() => {
                 setOption({ ...option, require_reason: !option?.require_reason })

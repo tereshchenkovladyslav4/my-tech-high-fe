@@ -11,7 +11,7 @@ export const DEFAULT_OPT_OUT_FORM_DESCRIPTION =
 export const TESTING_PREFERENCE = 'testing_preference'
 export const OPT_OUT = 'opt_out'
 export const IF_SELECT_MARK_TESTING_PREFERENCE = 'If selected, mark testing preference as'
-export const REQUIRE_REASON_ON_OPT_OUT = 'Require Reason on Opt-out'
+export const REQUIRE_REASON_TO_OPT_OUT = 'Require Reason to Opt-out'
 
 export const DEFUALT_DIPLOMA_QUESTION_TITLE = 'Diploma-seeking Path'
 export const DEFUALT_DIPLOMA_QUESTION_DESCRIPTION =

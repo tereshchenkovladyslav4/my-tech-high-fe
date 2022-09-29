@@ -340,7 +340,7 @@ export const EmailRecordsTable: FunctionComponent = () => {
         <CustomModal
           title='Delete'
           description='This message has not been sent to the recipient.'
-          subDescription='Do you really want to delete this email?'
+          subDescription='Are you sure you want to delete this email?'
           onClose={() => setShowDeleteModal(!showDeleteModal)}
           onConfirm={handleDeleteEmailRecords}
           confirmStr='Delete'
