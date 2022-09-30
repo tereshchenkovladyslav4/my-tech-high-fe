@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import CloseIcon from '@mui/icons-material/Close'
 import UploadFileIcon from '@mui/icons-material/UploadFile'
 import { Box, Button, Modal } from '@mui/material'
 import { filter, map } from 'lodash'
@@ -125,16 +126,20 @@ export const DocumentUploadModal: DocumentUploadModalTemplateType = ({ handleMod
       aria-describedby='modal-modal-description'
     >
       <Box sx={{ ...classes.modalCard, width: { xs: '95%', sm: 628 } }}>
-        <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'}>
-          {validFiles.length > 0 && (
+        {validFiles.length > 0 ? (
+          <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'}>
             <Box display='flex' flexDirection='column'>
               <Paragraph size='medium' fontWeight='700'>
                 Uploaded
               </Paragraph>
               {renderFiles()}
             </Box>
-          )}
-        </Box>
+          </Box>
+        ) : (
+          <Box display={'flex'} flexDirection={'row'} justifyContent={'end'} minHeight='39px'>
+            <CloseIcon sx={classes.close} onClick={() => handleModem()} />
+          </Box>
+        )}
         <Box
           display='flex'
           flexDirection='column'
@@ -168,14 +173,20 @@ export const DocumentUploadModal: DocumentUploadModalTemplateType = ({ handleMod
             {validFiles.length === 0 && errorMessage}
           </Paragraph>
         </Box>
-        <Box sx={{ justifyContent: { xs: 'center', sm: 'space-between' } }} display='flex' flexDirection={'row'}>
-          <Button sx={classes.cancelButton} variant='contained' onClick={() => handleModem()}>
-            Cancel
-          </Button>
+        <Box
+          sx={{ justifyContent: { xs: 'center', sm: 'space-around' }, minHeight: '64.5px' }}
+          display='flex'
+          flexDirection={'row'}
+        >
           {validFiles.length > 0 && (
-            <Button sx={classes.finishButton} variant='contained' onClick={() => submitAndClose()}>
-              Finish
-            </Button>
+            <>
+              <Button sx={classes.cancelButton} variant='contained' onClick={() => handleModem()}>
+                Cancel
+              </Button>
+              <Button sx={classes.finishButton} variant='contained' onClick={() => submitAndClose()}>
+                Finish
+              </Button>
+            </>
           )}
         </Box>
       </Box>

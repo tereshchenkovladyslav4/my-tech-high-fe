@@ -10,4 +10,8 @@ export const useStyles = {
   text: {
     cursor: 'pointer',
   },
+  deleteIcon: {
+    padding: 0,
+    minWidth: '30px',
+  },
 }
