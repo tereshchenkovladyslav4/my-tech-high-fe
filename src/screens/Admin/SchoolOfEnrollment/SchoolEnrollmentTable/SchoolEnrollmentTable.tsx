@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo, FunctionComponent } from 'react'
+import React, { useEffect, useState, useMemo } from 'react'
 import { useQuery, useMutation } from '@apollo/client'
 import SearchIcon from '@mui/icons-material/Search'
 import { Box, Button, Card, InputAdornment, OutlinedInput, Tooltip } from '@mui/material'
@@ -14,9 +14,9 @@ import { BUTTON_LINEAR_GRADIENT, RED_GRADIENT } from '../../../../utils/constant
 import { DropDown } from '../../SiteManagement/components/DropDown/DropDown'
 import { assignStudentToSOEGql } from '../../SiteManagement/services'
 import { getStudents } from '../services'
-import { EnrollmentSchoolTableProps, YEAR_STATUS, StudentVM, Person, Parent } from '../type'
+import { EnrollmentSchoolTableProps, YEAR_STATUS, StudentVM } from '../type'
 
-export const EnrollmentSchoolTable: FunctionComponent<EnrollmentSchoolTableProps> = ({
+export const EnrollmentSchoolTable: React.FC<EnrollmentSchoolTableProps> = ({
   filter,
   partnerList,
   schoolYears,
@@ -56,7 +56,7 @@ export const EnrollmentSchoolTable: FunctionComponent<EnrollmentSchoolTableProps
       search: searchField,
       filter: {
         ...filter,
-        schoolYear: parseInt(selectedYear?.value),
+        schoolYear: parseInt(selectedYear?.value as string),
       },
     },
     skip: selectedYear ? false : true,
@@ -101,8 +101,8 @@ export const EnrollmentSchoolTable: FunctionComponent<EnrollmentSchoolTableProps
     }
   }, [])
 
-  const handleChangePageLimit = (value) => {
-    localStorage.setItem('pageLimit', value)
+  const handleChangePageLimit = (value: number) => {
+    localStorage.setItem('pageLimit', `${value}`)
     handlePageChange(1)
     setPaginationLimit(value)
   }
@@ -132,12 +132,13 @@ export const EnrollmentSchoolTable: FunctionComponent<EnrollmentSchoolTableProps
       variables: {
         assignStudentToSoeInput: {
           school_partner_id: parseInt(schoolPartner),
-          school_year_id: parseInt(selectedYear?.value),
-          student_ids: studentIds.map((item) => parseInt(item)),
+          school_year_id: parseInt(selectedYear?.value as string),
+          student_ids: studentIds.map((item) => parseInt(item as string)),
         },
       },
     })
     setSchoolPartner('')
+    setItems([])
     refetch()
   }
 
@@ -156,7 +157,7 @@ export const EnrollmentSchoolTable: FunctionComponent<EnrollmentSchoolTableProps
         label: 'Student',
         sortable: true,
         tdClass: 'fw-700',
-        formatter: (_: ValueOf<StudentVM>, student: StudentVM) => {
+        formatter: (student) => {
           return `${student.person?.last_name}, ${student.person?.first_name}`
         },
       },
@@ -165,7 +166,7 @@ export const EnrollmentSchoolTable: FunctionComponent<EnrollmentSchoolTableProps
         label: 'Grade',
         sortable: true,
         tdClass: 'fw-700',
-        formatter: (_: ValueOf<StudentVM>, student: StudentVM) => {
+        formatter: (student) => {
           const grade_level = student.grade_levels?.find((item) => item.school_year_id == selectedYear?.value)
           let grade = grade_level && (grade_level.grade_level?.includes('Kin') ? 'K' : grade_level.grade_level)
           // group grade K, 1-8, 9-10
@@ -185,7 +186,7 @@ export const EnrollmentSchoolTable: FunctionComponent<EnrollmentSchoolTableProps
         label: 'City',
         sortable: true,
         tdClass: 'fw-700',
-        formatter: (_: ValueOf<StudentVM>, student: StudentVM) => {
+        formatter: (student) => {
           return student.parent?.person?.address?.city
         },
       },
@@ -194,8 +195,7 @@ export const EnrollmentSchoolTable: FunctionComponent<EnrollmentSchoolTableProps
         label: 'Parent',
         sortable: true,
         tdClass: 'fw-700',
-        formatter: (parent: ValueOf<StudentVM>) => {
-          parent = parent as Parent
+        formatter: (parent) => {
           return `${parent?.person?.last_name}, ${parent?.person?.first_name}`
         },
       },
@@ -204,9 +204,8 @@ export const EnrollmentSchoolTable: FunctionComponent<EnrollmentSchoolTableProps
         label: currentSOE_Label,
         sortable: true,
         tdClass: 'fw-700',
-        formatter: (currentSoe: ValueOf<StudentVM>) => {
-          currentSoe = currentSoe as Person[]
-          return currentSoe?.[0]?.partner?.name || 'Unassigned'
+        formatter: (item) => {
+          return item.currentSoe?.[0]?.partner?.name || 'Unassigned'
         },
       },
     ]
@@ -216,9 +215,8 @@ export const EnrollmentSchoolTable: FunctionComponent<EnrollmentSchoolTableProps
         label: previousSOE_Label,
         sortable: true,
         tdClass: 'fw-700',
-        formatter: (previousSoe: ValueOf<StudentVM>) => {
-          previousSoe = previousSoe as Person[]
-          return previousSoe?.[0]?.partner?.name || 'Unassigned'
+        formatter: (student) => {
+          return student.previousSoe?.[0]?.partner?.name || 'Unassigned'
         },
       })
     }
@@ -298,7 +296,7 @@ export const EnrollmentSchoolTable: FunctionComponent<EnrollmentSchoolTableProps
             size='small'
             setParentValue={(val) => {
               const selYear = schoolYears.find((item) => item.value == val)
-              setSelectedYear(selYear)
+              if (selYear) setSelectedYear(selYear)
             }}
           />
 

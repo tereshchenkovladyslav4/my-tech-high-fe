@@ -1,6 +1,7 @@
-import React, { FunctionComponent } from 'react'
+import React from 'react'
+import { Close } from '@mui/icons-material'
 import { Box, Button, Modal, Typography } from '@mui/material'
-
+import { useStyles } from './styles'
 export type CustomModalType = {
   open: boolean
   title?: string
@@ -8,13 +9,17 @@ export type CustomModalType = {
   onClose: () => void
   onConfirm: () => void
   confirmStr?: string
+  confirmBtnClass?: string
   cancelStr?: string
   backgroundColor?: string
   noCloseOnBackdrop?: boolean
   width?: number
+  showBtnClose?: boolean
+  showBtnConfirm?: boolean
+  showBtnCancel?: boolean
 }
 
-export const MthModal: FunctionComponent<CustomModalType> = ({
+export const MthModal: React.FC<CustomModalType> = ({
   open,
   title,
   center = false,
@@ -25,6 +30,10 @@ export const MthModal: FunctionComponent<CustomModalType> = ({
   children,
   noCloseOnBackdrop = false,
   width,
+  confirmBtnClass,
+  showBtnClose = false,
+  showBtnConfirm = true,
+  showBtnCancel = true,
 }) => {
   const onBackdropClick = () => {
     if (!noCloseOnBackdrop) onClose()
@@ -39,20 +48,17 @@ export const MthModal: FunctionComponent<CustomModalType> = ({
     >
       <Box
         sx={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          height: 'auto',
-          borderRadius: 2,
-          bgcolor: 'white',
-          p: 4,
-          maxHeight: 'calc(100vh - 20px)',
           width: width ? 'calc(100% - 20px)' : 'auto',
           maxWidth: width ? `${width}px` : 'calc(100% - 20px)',
-          overflow: 'auto',
+          ...useStyles.modal,
         }}
       >
+        {showBtnClose && (
+          <Button className='modal-btn-close' onClick={onClose}>
+            <Close color='inherit' />
+          </Button>
+        )}
+
         <Box sx={{ textAlign: center ? 'center' : 'left' }}>
           {!!title && (
             <Typography variant='h5' fontWeight={'bold'}>
@@ -60,28 +66,35 @@ export const MthModal: FunctionComponent<CustomModalType> = ({
             </Typography>
           )}
           {children}
-          <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '30px', gap: '40px' }}>
-            <Button
-              sx={{ width: '160px', height: '36px', borderRadius: '50px' }}
-              variant='contained'
-              color='secondary'
-              onClick={onClose}
-            >
-              {cancelStr}
-            </Button>
-            <Button
-              sx={{
-                width: '160px',
-                height: '36px',
-                borderRadius: '50px',
-              }}
-              color='primary'
-              variant='contained'
-              onClick={onConfirm}
-            >
-              {confirmStr}
-            </Button>
-          </Box>
+          {(showBtnCancel || showBtnConfirm) && (
+            <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '30px', gap: '40px' }}>
+              {showBtnCancel && (
+                <Button
+                  sx={{ width: '160px', height: '36px', borderRadius: '50px' }}
+                  variant='contained'
+                  color='secondary'
+                  onClick={onClose}
+                >
+                  {cancelStr}
+                </Button>
+              )}
+              {showBtnConfirm && (
+                <Button
+                  sx={{
+                    width: '160px',
+                    height: '36px',
+                    borderRadius: '50px',
+                  }}
+                  color='primary'
+                  variant='contained'
+                  onClick={onConfirm}
+                  className={confirmBtnClass || ''}
+                >
+                  {confirmStr}
+                </Button>
+              )}
+            </Box>
+          )}
         </Box>
       </Box>
     </Modal>

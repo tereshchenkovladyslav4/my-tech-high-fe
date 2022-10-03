@@ -7,6 +7,7 @@ import { useCurrentSchoolYearByRegionId } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { ItemCard } from '../../../components/ItemCard/ItemCard'
 import { CURRICULUM_HOMEROOM_RESOURCES, CURRICULUM_COURSE_CATALOG } from '../../../utils/constants'
+import { useStyles } from './styles'
 import { CurriculumItem } from './types'
 
 const Curriculum: React.FC = () => {
@@ -49,7 +50,7 @@ const Curriculum: React.FC = () => {
     }
   }, [schoolYear])
   return (
-    <Box sx={{ marginTop: '33px', px: '29px' }}>
+    <Box sx={{ marginTop: '33px', px: '29px', ...useStyles.cardBox }}>
       <Grid container rowSpacing={4} columnSpacing={'35px'}>
         {map(items, (item, idx) => (
           <Grid item key={idx} sm={12} md={6} lg={4}>

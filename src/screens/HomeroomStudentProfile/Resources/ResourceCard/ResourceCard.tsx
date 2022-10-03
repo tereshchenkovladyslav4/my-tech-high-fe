@@ -19,7 +19,7 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ page, item, onAction }) => 
   }
 
   const showRequestCta = (): boolean => {
-    return !item.RequestStatus && item.subtitle !== ResourceSubtitle.INCLUDED
+    return !item.RequestStatus && item.subtitle !== ResourceSubtitle.INCLUDED && (item.allow_request || item.CartDate)
   }
 
   return (

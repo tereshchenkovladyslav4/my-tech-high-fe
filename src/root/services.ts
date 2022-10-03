@@ -65,6 +65,7 @@ export const getMeQuery = gql`
       students {
         testing_preference
         student_id
+        special_ed
         hidden
         status {
           status
@@ -108,6 +109,7 @@ export const getMeQuery = gql`
           secondary_phone
           status
           meta
+          special_ed
         }
         applications {
           status

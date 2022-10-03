@@ -16,34 +16,35 @@ export type Field<T> = {
   key: string
   label?: string
   sortable?: boolean
-  formatter?: (value: ValueOf<T>, item: TableItem<T>, idx?: number) => string | number | ReactNode
+  formatter?: (item: T, idx?: number) => string | number | ReactNode
   tdClass?: string
   thClass?: string
 }
 
 export type CustomTableProps<T> = {
   fields: Field<T>[]
-  items: TableItem<T>[]
+  items: T[]
   loading?: boolean
   orderBy?: ValueOf<T>
   order?: 'desc' | 'asc'
   onSort?: (field: string, order: 'asc' | 'desc') => void
-  rowGroupBy?: keyof TableItem<T>
+  rowGroupBy?: keyof T
   checkable?: boolean
   checked?: ValueOf<T>[]
-  checkKey?: keyof TableItem<T>
+  checkKey?: keyof T
   handleCheck?: (checked: ValueOf<T>[]) => void
   striped?: boolean
   outlined?: boolean
   borderedLeft?: boolean
   borderedBottom?: boolean
   size?: 'sm' | 'lg'
+  error?: string
 }
 
 export type GroupItem<T> = {
   id: ValueOf<T>
   childrenIds: ValueOf<T>[]
-  children: TableItem<T>[]
+  children: T[]
 }
 
 export type TableTemplateType = FunctionComponent<TableProps>

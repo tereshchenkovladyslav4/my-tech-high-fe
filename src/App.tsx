@@ -4,6 +4,7 @@ import ThemeProvider from '@mui/system/ThemeProvider'
 import { BrowserRouter as Router } from 'react-router-dom'
 import { RecoilRoot } from 'recoil'
 import WebFont from 'webfontloader'
+import { MthLoading } from './components/MthLoading/MthLoading'
 import { UserLeaveConfirmation } from './components/UserLeaveConfirmation/UserLeaveConfirmation'
 import { ApolloProvider } from './providers/ApolloProvider/ApolloProvider'
 import { AuthProvider } from './providers/AuthProvider/AuthProvider'
@@ -73,6 +74,7 @@ export const App: FunctionComponent = () => {
                   <CssBaseline />
                   <RecoilRoot>
                     <Root />
+                    <MthLoading />
                   </RecoilRoot>
                 </ProfileProvider>
               </TabContext.Provider>

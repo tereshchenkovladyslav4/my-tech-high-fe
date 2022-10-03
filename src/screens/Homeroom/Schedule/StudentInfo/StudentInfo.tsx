@@ -13,7 +13,7 @@ const StudentInfo: React.FC<StudentInfoProps> = ({ studentInfo }) => {
         <Paragraph size={'large'} sx={{ ...studentInfoClassess.text, paddingY: 1 }}>
           {studentInfo?.grade}
         </Paragraph>
-        {studentInfo?.specialEd && (
+        {studentInfo?.specialEd && studentInfo?.specialEd !== 'No' && (
           <Paragraph size={'large'} sx={{ ...studentInfoClassess.text, paddingY: 1, marginLeft: 13 }}>
             {`Special Education: ${studentInfo?.specialEd}`}
           </Paragraph>

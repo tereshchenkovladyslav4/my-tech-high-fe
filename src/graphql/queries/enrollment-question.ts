@@ -30,3 +30,20 @@ export const getEnrollmentQuestionsGql = gql`
     }
   }
 `
+export const getEnrollmentQuestionsBySlugAndRegionGql = gql`
+  query getEnrollmentQuestionsBySlugAndRegion($regionId: ID!, $slug: String!) {
+    getEnrollmentQuestionsBySlugAndRegion(regionId: $regionId, slug: $slug) {
+      id
+      question
+      group_id
+      order
+      options
+      required
+      type
+      slug
+      default_question
+      display_admin
+      validation
+    }
+  }
+`

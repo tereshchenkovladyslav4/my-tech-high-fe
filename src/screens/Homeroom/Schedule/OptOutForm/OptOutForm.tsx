@@ -145,10 +145,11 @@ const OptOutForm: React.FC<OptOutFormProps> = ({
                 : `1px solid ${MthColor.BLACK}`,
             mx: 'auto',
             width: 500,
+            textAlign: 'center',
           }}
         >
           {signatureFileUrl ? (
-            <img src={signatureFileUrl} alt='signature' style={{ width: '100%', height: 100 }} />
+            <img src={signatureFileUrl} alt='signature' style={{ width: 'auto' }} />
           ) : (
             <SignatureCanvas
               canvasProps={{ width: 500, height: 100 }}

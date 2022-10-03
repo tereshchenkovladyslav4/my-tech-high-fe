@@ -16,7 +16,7 @@ import {
 } from '@mui/material'
 import { isEqual } from 'lodash'
 import { useStyles } from './styles'
-import { CustomTableProps, GroupItem, TableItem, ValueOf } from './types'
+import { CustomTableProps, GroupItem, ValueOf } from './types'
 
 const StyledTableRow = styled(TableRow)(() => ({
   '&.hover-active': {
@@ -89,7 +89,7 @@ const CustomTable = <T extends Record<string, unknown>>({
   const itemsByGroup = useMemo(() => {
     if (!!rowGroupBy) {
       const groupItems: GroupItem<T>[] = []
-      items.forEach((item: TableItem<T>) => {
+      items.forEach((item: T) => {
         const existIndex = groupItems.findIndex((el) => el.id == item[rowGroupBy])
         if (existIndex == -1) {
           groupItems.push({
@@ -226,9 +226,7 @@ const CustomTable = <T extends Record<string, unknown>>({
                               >
                                 {indexCol === 0 && itemGroup.childrenIds.length > 1 ? (
                                   <FormControlLabel
-                                    label={
-                                      field.formatter ? field.formatter(item[field.key], item, idx) : item[field.key]
-                                    }
+                                    label={field.formatter ? field.formatter(item, idx) : item[field.key]}
                                     control={
                                       <Checkbox
                                         color='primary'
@@ -239,9 +237,7 @@ const CustomTable = <T extends Record<string, unknown>>({
                                     }
                                   />
                                 ) : (
-                                  <span>
-                                    {field.formatter ? field.formatter(item[field.key], item, idx) : item[field.key]}
-                                  </span>
+                                  <span>{field.formatter ? field.formatter(item, idx) : item[field.key]}</span>
                                 )}
                               </div>
                             </td>
@@ -270,7 +266,7 @@ const CustomTable = <T extends Record<string, unknown>>({
                                 : 'cell-item'
                             }
                           >
-                            {field.formatter ? field.formatter(item[field.key], item, idx) : item[field.key]}
+                            {field.formatter ? field.formatter(item, idx) : item[field.key]}
                           </div>
                         </td>
                       ))}

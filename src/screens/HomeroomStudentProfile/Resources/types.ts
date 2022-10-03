@@ -47,7 +47,6 @@ export type Resource = {
   ResourceLevelId?: number
   HiddenByStudent: boolean
   RequestStatus: ResourceRequestStatus
-  requestable: boolean
   // Temp field
   background?: string
 }

@@ -1,5 +1,5 @@
-import React, { FunctionComponent, useState, useMemo, useCallback } from 'react'
-import { useQuery } from '@apollo/client'
+import React, { FunctionComponent, useState, useMemo, useCallback, useEffect } from 'react'
+import { useQuery, useMutation } from '@apollo/client'
 import { DeleteForeverOutlined } from '@mui/icons-material'
 import CallMissedOutgoingIcon from '@mui/icons-material/CallMissedOutgoing'
 import CreateIcon from '@mui/icons-material/Create'
@@ -21,15 +21,23 @@ import { ContentState, EditorState, convertToRaw } from 'draft-js'
 import draftToHtml from 'draftjs-to-html'
 import { useFormik } from 'formik'
 import htmlToDraft from 'html-to-draftjs'
+import { capitalize } from 'lodash'
 import Wysiwyg from 'react-draft-wysiwyg'
+import { useSetRecoilState } from 'recoil'
 import * as Yup from 'yup'
 import { MthModal } from '@mth/components/MthModal/MthModal'
 import PageHeader from '@mth/components/PageHeader'
 import CustomTable from '@mth/components/Table/CustomTable'
-import { Field, ValueOf } from '@mth/components/Table/types'
-import { TableItem } from '@mth/components/Table/types'
+import { Field } from '@mth/components/Table/types'
 import { WarningModal } from '@mth/components/WarningModal/Warning'
-import { getSchoolYearByYearIdForPeriod } from '@mth/screens/Admin/Curriculum/services'
+import { loadingState } from '@mth/providers/Store/State'
+import {
+  getSchoolYearByYearIdForPeriod,
+  getPeriods,
+  upsertPeriod,
+  periodArchive,
+  deletePeriodsByIds,
+} from '@mth/screens/Admin/Curriculum/services'
 import { SchoolYearDropDown } from '@mth/screens/Admin/SiteManagement/SchoolPartner/SchoolYearDropDown/SchoolYearDropDown'
 import { ordinalSuffixOf } from '@mth/utils'
 import { useStyles } from '../../styles'
@@ -42,79 +50,38 @@ Yup.setLocale({
     required: 'Required',
   },
 })
+const initialEditorState = EditorState.createWithContent(ContentState.createFromText(''))
 
 const Periods: FunctionComponent = () => {
   const classes = useStyles
+  const setLoading = useSetRecoilState(loadingState)
   const [selectedYearId, setSelectedYearId] = useState<number | undefined>()
   // Modal for Archive, Unarchive, Delete
   const [modalWarning, setModalWarning] = useState<'delete' | 'unarchive' | 'archive' | ''>('')
   const [modalErrorGradeValidation, setModalErrorGradeValidation] = useState<boolean>(false)
   const [temp, setTemp] = useState<PeriodItem>()
-  const [loading] = useState(false)
-  const [open, setOpen] = useState<boolean>(true)
-  const [editorStatePeriod, setEditorStatePeriod] = useState(
-    EditorState.createWithContent(ContentState.createFromText('')),
-  )
-  const [editorStateSemester, setEditorStateSemester] = useState(
-    EditorState.createWithContent(ContentState.createFromText('')),
-  )
+  // Create / Update
+  const [open, setOpen] = useState<boolean>(false)
+  // Html Editor
+  const [editorStatePeriod, setEditorStatePeriod] = useState(initialEditorState)
+  const [editorStateSemester, setEditorStateSemester] = useState(initialEditorState)
 
-  const [items, setItems] = useState<Array<PeriodItem>>([
-    {
-      id: 1,
-      period: 1,
-      grade: 'K-12',
-      category: 'Homeroom',
-      grade_level_min: '1',
-      grade_level_max: '2',
-      semester: SEMESTER_TYPE.NONE,
-      reduce_funds: REDUCE_FUNDS_TYPE.TECHNOLOGY,
-      price: 11,
-      archived: true,
-      notify_semester: true,
-      notify_period: false,
-      message_semester: '<p>11message_semester<p>',
-      message_period: '<p>1111<p>',
-    },
-    {
-      id: 2,
-      period: 2,
-      grade: 'K',
-      category: 'Math',
-      grade_level_min: '3',
-      grade_level_max: '4',
-      semester: SEMESTER_TYPE.SUBJECT,
-      reduce_funds: REDUCE_FUNDS_TYPE.TECHNOLOGY,
-      price: 12,
-      archived: false,
-      notify_semester: true,
-      notify_period: false,
-      message_semester: '<p>22message_semester<p>',
-      message_period: '<p>2222<p>',
-    },
-    {
-      id: 3,
-      period: 3,
-      grade: 'K-12',
-      category: 'Language Arts',
-      grade_level_min: '3',
-      grade_level_max: '6',
-      semester: SEMESTER_TYPE.PERIOD,
-      reduce_funds: REDUCE_FUNDS_TYPE.SUPPLEMENTAL,
-      price: 13,
-      archived: false,
-      notify_semester: true,
-      notify_period: false,
-      message_semester: '<p>333 message_semester<p>',
-      message_period: '<p>3333<p>',
-    },
-  ])
-
+  const [items, setItems] = useState<Array<PeriodItem>>([])
+  const [savedPeriodIndexes, setSavedPeriodIndexes] = useState<number[]>([])
+  // Filter Box
   const [query, setQuery] = useState({
     keyword: '',
     hideArchived: true,
   })
 
+  const setFilter = (field: string, value: string | boolean) => {
+    setQuery({
+      ...query,
+      [field]: value,
+    })
+  }
+
+  // query for getting max_num_periods
   const { data: schoolYearData } = useQuery(getSchoolYearByYearIdForPeriod, {
     variables: {
       school_year_id: selectedYearId,
@@ -122,7 +89,30 @@ const Periods: FunctionComponent = () => {
     skip: !selectedYearId,
     fetchPolicy: 'network-only',
   })
-  const savedPeriods: number[] = useMemo(() => items.map((item: PeriodItem) => item.period), [items])
+
+  // --------------------------------------------- mutations periods
+  const [apiUpsertPeriod] = useMutation(upsertPeriod)
+  const [apiPeriodArchive] = useMutation(periodArchive)
+  const [apiDeletePeriodsByIds] = useMutation(deletePeriodsByIds)
+  // --------------------------------------------- query periods
+  const {
+    loading,
+    data: periods,
+    refetch: refetchPeriod,
+  } = useQuery(getPeriods, {
+    variables: {
+      school_year_id: selectedYearId ? +selectedYearId : 0,
+      keyword: query.keyword,
+      hide_archived: query.hideArchived,
+    },
+    skip: !selectedYearId,
+    fetchPolicy: 'network-only',
+  })
+
+  useEffect(() => {
+    setItems(periods?.periods || [])
+    setSavedPeriodIndexes(periods?.periodIds || [])
+  }, [periods])
 
   const grades: string[] = useMemo(() => {
     return (
@@ -144,63 +134,102 @@ const Periods: FunctionComponent = () => {
     [grades],
   )
 
+  // count of Max period
   const maxPeriodCount: number = useMemo(() => {
     return schoolYearData?.getSchoolYear?.ScheduleBuilder?.max_num_periods || 0
   }, [schoolYearData])
 
+  // open modals
   const handleArchiveModal = (item: PeriodItem) => {
     setTemp(item)
     setModalWarning(item.archived ? 'unarchive' : 'archive')
   }
-  const handleArchiveOrDelete = () => {
+
+  const handleDeleteModal = (item: PeriodItem) => {
+    setTemp(item)
+    setModalWarning('delete')
+  }
+  // toggle archived, delete item
+  const handleArchiveOrDelete = async () => {
     if (!temp) return
     else {
+      setLoading(true)
       if (modalWarning === 'delete') {
-        // TODO: Mutation Delete
-        // MOCK
-        setItems(items.filter((el) => el.id !== temp.id))
-        // MOCK end
-      } else {
-        // TODO: Mutation Toggle
-        // MOCK
-        const updatedItems = items.map((el) => {
-          if (el.id === temp.id) {
-            return {
-              ...el,
-              archived: !el.archived,
-            }
-          } else return el
+        await apiDeletePeriodsByIds({
+          variables: {
+            ids: [temp.id],
+          },
         })
-        setItems(updatedItems)
-        // MOCK end
+          .then(({ data }) => {
+            setLoading(false)
+            if (data?.periodDeleteByIds?.affected && data.periodDeleteByIds.affected > 0) {
+              setItems(items.filter((el) => el.id !== temp.id))
+            }
+          })
+          .catch(() => {
+            setLoading(false)
+          })
+      } else {
+        // toggle archived
+        await apiPeriodArchive({
+          variables: {
+            id: temp.id,
+            archived: !temp.archived,
+          },
+        })
+          .then(() => {
+            setLoading(false)
+            const updatedItems = items.map((el) => {
+              if (el.id === temp.id) {
+                return {
+                  ...el,
+                  archived: !el.archived,
+                }
+              } else return el
+            })
+            setItems(updatedItems)
+          })
+          .catch(() => {
+            setLoading(false)
+          })
       }
     }
     setModalWarning('')
   }
 
-  const handleDelete = (item: PeriodItem) => {
-    // Remove this localStorage line after the delete functionality is implemented
-    // I added this code to fix a lint issue
-    setTemp(item)
-    setModalWarning('delete')
-  }
-
-  const setFilter = (field: string, value: string | boolean) => {
-    setQuery({
-      ...query,
-      [field]: value,
-    })
-  }
-
-  const handleSubmit = useCallback(() => {
-    // const message_period = draftToHtml(convertToRaw(editorStatePeriod.getCurrentContent()))
-    // const message_semester = draftToHtml(convertToRaw(editorStateSemester.getCurrentContent()))
-    // console.log({ ...values, message_semester, message_period }, 'values')
-    setOpen(false)
-  }, [editorStatePeriod, editorStateSemester])
+  // create / update
+  const handleSubmit = useCallback(
+    (values) => {
+      if (selectedYearId) {
+        const variables = { school_year_id: +selectedYearId, ...values }
+        if (values.notify_period) {
+          variables.message_period = draftToHtml(convertToRaw(editorStatePeriod.getCurrentContent()))
+        }
+        if (values.notify_semester && values.semester !== SEMESTER_TYPE.NONE) {
+          variables.message_semester = draftToHtml(convertToRaw(editorStateSemester.getCurrentContent()))
+        }
+        if (temp?.id) variables.id = temp.id
+        if (variables.price === '') delete variables.price
+        setLoading(true)
+        apiUpsertPeriod({
+          variables: {
+            PeriodInput: variables,
+          },
+        })
+          .then(() => {
+            setOpen(false)
+            refetchPeriod()
+          })
+          .finally(() => {
+            setLoading(false)
+          })
+      }
+    },
+    [editorStatePeriod, editorStateSemester, selectedYearId, temp],
+  )
 
   const initialValues: PeriodItem = {
-    period: 1,
+    period: 0,
     category: '',
     grade_level_min: '',
     grade_level_max: '',
@@ -215,7 +244,7 @@ const Periods: FunctionComponent = () => {
   const formik = useFormik({
     initialValues,
     validationSchema: Yup.object({
-      period: Yup.number().required(),
+      period: Yup.number().required().min(1, 'Required'),
       category: Yup.string().required(),
       grade_level_max: Yup.string().required(),
       grade_level_min: Yup.string().required(),
@@ -234,20 +263,23 @@ const Periods: FunctionComponent = () => {
           .test('html_content', 'Required', () => editorStateSemester.getCurrentContent().hasText()),
       }),
       price: Yup.number().when(['reduce_funds'], {
-        is: (reduce_funds: REDUCE_FUNDS_TYPE) => !!reduce_funds,
+        is: (reduce_funds: REDUCE_FUNDS_TYPE) => reduce_funds !== REDUCE_FUNDS_TYPE.NONE,
         then: Yup.number().typeError('Must be a `number` type').required().min(0),
       }),
     }),
-    onSubmit: async () => {
-      handleSubmit()
+    onSubmit: async (values) => {
+      handleSubmit(values)
     },
   })
 
-  const handleAdd = () => {
+  const handleCreateModal = () => {
     setTemp(undefined)
+    setEditorStatePeriod(initialEditorState)
+    setEditorStateSemester(initialEditorState)
     formik.resetForm()
     setOpen(true)
   }
+
   const handleEditModal = (item: PeriodItem) => {
     setTemp(item)
     formik.setValues({
@@ -257,12 +289,13 @@ const Periods: FunctionComponent = () => {
       grade_level_max: item.grade_level_max,
       reduce_funds: item.reduce_funds,
       semester: item.semester,
-      price: item.price,
+      price: item.price || '',
       message_period: item.message_period,
       message_semester: item.message_semester,
       notify_semester: item.notify_semester,
       notify_period: item.notify_period,
     })
+
     if (item.message_period) {
       const contentBlock = htmlToDraft(item.message_period)
       if (contentBlock) {
@@ -270,6 +303,8 @@ const Periods: FunctionComponent = () => {
         const editorState = EditorState.createWithContent(contentState)
         setEditorStatePeriod(editorState)
       }
+    } else {
+      setEditorStatePeriod(initialEditorState)
     }
     if (item.message_semester) {
       const contentBlock = htmlToDraft(item.message_semester)
@@ -278,6 +313,8 @@ const Periods: FunctionComponent = () => {
         const editorState = EditorState.createWithContent(contentState)
         setEditorStateSemester(editorState)
       }
+    } else {
+      setEditorStateSemester(initialEditorState)
     }
     setOpen(true)
   }
@@ -347,6 +384,7 @@ const Periods: FunctionComponent = () => {
       label: 'Grades',
       sortable: false,
       thClass: 'w-31',
+      formatter: (item) => `${item.grade_level_min} - ${item.grade_level_max}`,
     },
     {
       key: 'category',
@@ -359,14 +397,14 @@ const Periods: FunctionComponent = () => {
       label: '2nd Semester',
       sortable: false,
       thClass: '',
-      formatter: (value: ValueOf<PeriodItem>) => SEMESTER_MESSAGE[value as SEMESTER_TYPE],
+      formatter: (item) => SEMESTER_MESSAGE[item.semester],
     },
     {
       key: 'action',
       label: '',
       sortable: false,
       thClass: 'w-31',
-      formatter: (_: ValueOf<PeriodItem>, item: TableItem<PeriodItem>) => {
+      formatter: (item) => {
         return (
           <Box display={'flex'} flexDirection='row' justifyContent={'flex-end'}>
             {item.archived ? (
@@ -388,7 +426,7 @@ const Periods: FunctionComponent = () => {
 
             {item.archived && (
               <Tooltip title='Delete' color='primary' placement='top'>
-                <IconButton onClick={() => handleDelete(item)}>
+                <IconButton onClick={() => handleDeleteModal(item)}>
                   <DeleteForeverOutlined />
                 </IconButton>
               </Tooltip>
@@ -414,7 +452,7 @@ const Periods: FunctionComponent = () => {
       </Box>
 
       <Box sx={{ mt: 4, textAlign: 'left' }}>
-        <Button variant='contained' onClick={handleAdd} disableElevation sx={classes.addButton} size='large'>
+        <Button variant='contained' onClick={handleCreateModal} disableElevation sx={classes.addButton} size='large'>
           + Add Period
         </Button>
       </Box>
@@ -446,7 +484,7 @@ const Periods: FunctionComponent = () => {
               defaultValue=''
             >
               {[...Array(maxPeriodCount)].map((vv, ii) => (
-                <MenuItem key={`${ii}_${vv}`} value={ii + 1} disabled={savedPeriods.includes(ii + 1)}>
+                <MenuItem key={`${ii}_${vv}`} value={ii + 1} disabled={savedPeriodIndexes.includes(ii + 1)}>
                   {ii + 1}
                 </MenuItem>
               ))}
@@ -532,7 +570,7 @@ const Periods: FunctionComponent = () => {
               select
             >
               {[
-                { label: 'None', value: '' },
+                { label: 'None', value: REDUCE_FUNDS_TYPE.NONE },
                 { label: 'Supplemental Learning Funds', value: REDUCE_FUNDS_TYPE.SUPPLEMENTAL },
                 { label: 'Technology Allowance', value: REDUCE_FUNDS_TYPE.TECHNOLOGY },
               ].map((option) => (
@@ -556,7 +594,7 @@ const Periods: FunctionComponent = () => {
               error={formik.touched.price && !!formik.errors.price}
               helperText={formik.touched.price && formik.errors.price}
               InputLabelProps={{ shrink: true }}
-              disabled={!formik.values.reduce_funds}
+              disabled={formik.values.reduce_funds === REDUCE_FUNDS_TYPE.NONE}
             />
           </Grid>
           <Grid item xs={12}>
@@ -727,7 +765,7 @@ const Periods: FunctionComponent = () => {
         <WarningModal
           handleModem={() => setModalWarning('')}
           title={modalWarning}
-          btntitle={<span style={{ textTransform: 'capitalize' }}>{modalWarning}</span>}
+          btntitle={capitalize(modalWarning)}
           subtitle={`Are you sure want to ${modalWarning} this Period?`}
           handleSubmit={handleArchiveOrDelete}
           canceltitle='Cancel'

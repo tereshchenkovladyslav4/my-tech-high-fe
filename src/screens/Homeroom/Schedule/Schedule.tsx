@@ -18,7 +18,7 @@ import {
 import { MthRoute, MthTitle, OPT_TYPE } from '@mth/enums'
 import { diplomaAnswerGql, diplomaQuestionForStudent, submitDiplomaAnswerGql } from '@mth/graphql/queries/diploma'
 import { getSignatureInfoByStudentId } from '@mth/graphql/queries/user'
-import { useAssessmentsBySchoolYearId } from '@mth/hooks'
+import { useAssessmentsBySchoolYearId, useDecideSpecialEdu } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { getSignatureFile } from '@mth/screens/Admin/EnrollmentPackets/services'
 import { AssessmentType } from '@mth/screens/Admin/SiteManagement/EnrollmentSetting/TestingPreference/types'
@@ -97,6 +97,14 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
     skip: !student || !studentId || step !== MthTitle.STEP_DIPLOMA_SEEKING,
     fetchPolicy: 'network-only',
   })
+
+  const { decideSpecialEduData, loadedDecideSpecialEdu } = useDecideSpecialEdu(studentId, 'meta_special_education')
+
+  useEffect(() => {
+    if (loadedDecideSpecialEdu) {
+      setStudentInfo({ ...studentInfo, specialEd: decideSpecialEduData.label })
+    }
+  }, [loadedDecideSpecialEdu, decideSpecialEduData])
 
   useEffect(() => {
     setIsDiplomaError(false)

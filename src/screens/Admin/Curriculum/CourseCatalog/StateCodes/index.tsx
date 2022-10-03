@@ -2,6 +2,8 @@ import React, { FunctionComponent, useState } from 'react'
 import CreateIcon from '@mui/icons-material/Create'
 import { Box, Button, IconButton, Tooltip } from '@mui/material'
 import DownloadFileIcon from '@mth/assets/icons/file-download.svg'
+import MthUpload from '@mth/components/MthUpload/MthUpload'
+import { RefUploaderHandle } from '@mth/components/MthUpload/types'
 import PageHeader from '@mth/components/PageHeader'
 import CustomTable from '@mth/components/Table/CustomTable'
 import { Field } from '@mth/components/Table/types'
@@ -12,6 +14,7 @@ import Filter from './Filter'
 
 const StateCodes: FunctionComponent = () => {
   const classes = useStyles
+  const uploaderRef = React.createRef<RefUploaderHandle>()
   const [selectedYearId, setSelectedYearId] = useState<number>()
   const [loading] = useState(false)
   const [query, setQuery] = useState({
@@ -53,7 +56,7 @@ const StateCodes: FunctionComponent = () => {
       title_id: '2020_1',
       grade: '3',
       state_code: '25020000010',
-      teacher_name: 'Erin Sublette',
+      teacher_name: 'Erin xes',
       title: 'Homeroom',
       subject: 'Elementary Math',
     },
@@ -118,8 +121,10 @@ const StateCodes: FunctionComponent = () => {
     },
   ]
 
-  const handleImportModal = () => {}
-  const handleDownloadModal = () => {}
+  // const handleImportModal = () => {}
+  const handleDownloadModal = () => {
+    // uploaderRef.current?.uploadPhoto()
+  }
   return (
     <Box sx={classes.base}>
       <PageHeader title='State Codes'>
@@ -127,17 +132,20 @@ const StateCodes: FunctionComponent = () => {
       </PageHeader>
 
       <Box sx={{ mt: 3, mb: 2 }} display='flex' justifyContent='flex-end' gap={3} alignItems='center'>
-        <Tooltip title='Import' placement='top'>
-          <Button
-            variant='contained'
-            onClick={handleImportModal}
-            disableElevation
-            sx={{ ...classes.addButton, px: 6 }}
-            size='large'
-          >
-            Import
-          </Button>
-        </Tooltip>
+        <MthUpload ref={uploaderRef} maxCount={5} multiple>
+          <Tooltip title='Import' placement='top'>
+            <Button
+              variant='contained'
+              disableElevation
+              sx={{ ...classes.addButton, px: 6 }}
+              className='btn-gradient'
+              size='large'
+            >
+              Import
+            </Button>
+          </Tooltip>
+        </MthUpload>
+
         <Tooltip title='Download' placement='top'>
           <IconButton onClick={handleDownloadModal} size='large'>
             <img src={DownloadFileIcon} alt='Download Icon' width={27} />

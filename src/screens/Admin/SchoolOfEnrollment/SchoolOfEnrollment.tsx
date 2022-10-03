@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect, FunctionComponent } from 'react'
+import React, { useState, useContext, useEffect } from 'react'
 import { useQuery } from '@apollo/client'
 import { Box, Grid } from '@mui/material'
 import moment from 'moment'
@@ -8,14 +8,20 @@ import { getSchoolYearsByRegionId } from '../SiteManagement/services'
 import { Filters } from './Filters/Filters'
 import { EnrollmentSchoolTable } from './SchoolEnrollmentTable/SchoolEnrollmentTable'
 import { GetSchoolsPartner } from './services'
-import { FilterVM, PartnerItem, schoolYearDataType } from './type'
+import { FilterVM, PartnerItem, schoolYearDataType, PartnerEnrollmentType } from './type'
 
 type SchoolPartner = {
-  value: number
+  value: string
   label: string
   abb: string
 }
-export const SchoolOfEnrollment: FunctionComponent = () => {
+
+type OptionType = {
+  value: number | string
+  label: string
+}
+
+export const SchoolOfEnrollment: React.FC = () => {
   const [filter, setFilter] = useState<FilterVM>()
   const { me } = useContext(UserContext)
   const [partnerList, setPartnerList] = useState<Array<PartnerItem>>([])
@@ -23,15 +29,15 @@ export const SchoolOfEnrollment: FunctionComponent = () => {
 
   const [schoolYears, setSchoolYears] = useState<DropDownItem[]>([])
   const [selectedYear, setSelectedYear] = useState<DropDownItem>()
-  const [grades, setGrades] = useState<string[] | number[]>([])
+  const [grades, setGrades] = useState<string[]>([])
   const [schoolYearsData, setSchoolYearsData] = useState<schoolYearDataType[]>([])
-  const [previousYear, setPreviousYear] = useState<schoolYearDataType>({})
+  const [previousYear, setPreviousYear] = useState<schoolYearDataType>()
 
   const { data: schoolPartnerData } = useQuery(GetSchoolsPartner, {
     variables: {
       schoolPartnerArgs: {
         region_id: me?.selectedRegionId,
-        school_year_id: selectedYear?.value.split('-')[0],
+        school_year_id: selectedYear?.value ? (selectedYear.value as string).split('-')[0] : null,
         sort: {
           column: 'name',
           direction: 'ASC',
@@ -60,8 +66,8 @@ export const SchoolOfEnrollment: FunctionComponent = () => {
   useEffect(() => {
     const list: SchoolPartner[] = []
     schoolPartnerData?.getSchoolsOfEnrollmentByRegion
-      ?.filter((el) => el.active === 1)
-      .map((item) => {
+      ?.filter((el: PartnerEnrollmentType) => el.active === 1)
+      .map((item: PartnerEnrollmentType) => {
         list.push({
           value: item.school_partner_id,
           label: item.name,
@@ -74,8 +80,8 @@ export const SchoolOfEnrollment: FunctionComponent = () => {
   useEffect(() => {
     const list: SchoolPartner[] = []
     previousSchoolPartnerData?.getSchoolsOfEnrollmentByRegion
-      ?.filter((el) => el.active === 1)
-      .map((item) => {
+      ?.filter((el: PartnerEnrollmentType) => el.active === 1)
+      .map((item: PartnerEnrollmentType) => {
         list.push({
           value: item.school_partner_id,
           label: item.name,
@@ -97,7 +103,7 @@ export const SchoolOfEnrollment: FunctionComponent = () => {
     if (schoolYearData?.region?.SchoolYears) {
       const { SchoolYears } = schoolYearData?.region
       setSchoolYearsData(SchoolYears)
-      const yearList = []
+      const yearList: OptionType[] = []
       SchoolYears.map(
         (item: {
           date_begin: string
@@ -127,22 +133,20 @@ export const SchoolOfEnrollment: FunctionComponent = () => {
         },
       )
       setSchoolYears(yearList.sort((a, b) => (a.label > b.label ? 1 : -1)))
-      setFilter({
-        schoolYear: yearList[0]?.label,
-      })
     }
   }, [schoolYearData?.region?.SchoolYears])
 
   useEffect(() => {
     const yearItem = schoolYearsData.find(
-      (item: { school_year_id: string }) => item.school_year_id == selectedYear?.value?.split('-')[0],
+      (item: { school_year_id: string }) =>
+        item.school_year_id == (selectedYear?.value ? (selectedYear.value as string).split('-')[0] : null),
     )
-    const newGrades = yearItem?.grades?.split(',')
-    setGrades(newGrades?.sort((a, b) => (parseInt(a) > parseInt(b) ? 1 : -1)))
+    const newGrades = yearItem?.grades?.split(',') || []
+    setGrades(newGrades.sort((a, b) => (parseInt(a) > parseInt(b) ? 1 : -1)))
 
     // set previous year
-    const previuosYear = parseInt(moment(yearItem?.date_begin).format('YYYY')) - 1
-    const previousOb = schoolYearsData.find((item) => parseInt(moment(item.date_begin).format('YYYY')) === previuosYear)
+    const previousYear = parseInt(moment(yearItem?.date_begin).format('YYYY')) - 1
+    const previousOb = schoolYearsData.find((item) => parseInt(moment(item.date_begin).format('YYYY')) === previousYear)
     setPreviousYear(previousOb)
 
     setFilter({})
@@ -157,7 +161,6 @@ export const SchoolOfEnrollment: FunctionComponent = () => {
             setFilter={setFilter}
             partnerList={partnerList}
             previousPartnerList={previousPartnerList}
-            schoolYears={schoolYears}
             selectedYear={selectedYear}
             gradesList={grades}
           />

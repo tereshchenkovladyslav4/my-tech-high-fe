@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react'
+import React from 'react'
 import SearchIcon from '@mui/icons-material/Search'
 import { Box, OutlinedInput, InputAdornment, Button } from '@mui/material'
 import { useStyles } from '../../styles'
@@ -11,7 +11,7 @@ type FilterProps = {
   setValue: (field: string, value: string | boolean) => void
 }
 
-const Periods: FunctionComponent<FilterProps> = ({ query, setValue }) => {
+const Periods: React.FC<FilterProps> = ({ query, setValue }) => {
   const classes = useStyles
 
   const setHideArchived = (vv: boolean) => {

@@ -15,7 +15,6 @@ export type FilterVM = {
   // schoolYear: number
   visibility?: string[]
   schoolYearId?: string
-  schoolYearLabel?: string
   schoolOfEnrollments?: string[]
   previousSOE?: string[]
   schoolDistrict?: string[]
@@ -23,9 +22,16 @@ export type FilterVM = {
 }
 
 export type PartnerItem = {
-  value: number | string
+  value: string
   label: string
   abb: string
+}
+
+export type PartnerEnrollmentType = {
+  school_partner_id: string
+  name: string
+  abbreviation: string
+  active: number
 }
 
 export type schoolYearDataType = {
@@ -43,8 +49,8 @@ export type FiltersProps = {
   setFilter: (value: FilterVM | undefined) => void
   partnerList: PartnerItem[]
   previousPartnerList: PartnerItem[]
-  selectedYear: DropDownItem
-  gradesList: string[] | number[]
+  selectedYear?: DropDownItem
+  gradesList: string[]
 }
 
 export type EnrollmentSchoolTableProps = {
@@ -52,9 +58,9 @@ export type EnrollmentSchoolTableProps = {
   setFilter: (value: FilterVM | undefined) => void
   partnerList: PartnerItem[]
   schoolYears: DropDownItem[]
-  selectedYear: DropDownItem
+  selectedYear?: DropDownItem
   setSelectedYear: (value: DropDownItem) => void
-  previousYear: schoolYearDataType
+  previousYear?: schoolYearDataType
 }
 
 export type EmailTemplateVM = {
@@ -111,4 +117,9 @@ export type StudentVM = {
   person: Person
   previousSoe: Person[]
   student_id: string | number
+}
+
+export type SchoolDistrictType = {
+  id: string
+  school_district_name: string
 }

@@ -1,4 +1,4 @@
-import { BUTTON_LINEAR_GRADIENT, ERROR_RED } from '../../../utils/constants'
+import { ERROR_RED } from '../../../utils/constants'
 
 export const useStyles = {
   base: {
@@ -17,11 +17,12 @@ export const useStyles = {
     gap: '20px',
   },
   filterButton: {
-    width: '160px',
+    padding: '8px 24px',
     borderRadius: '50px',
+    fontSize: '11px',
+    height: '31px',
   },
   addButton: {
-    background: BUTTON_LINEAR_GRADIENT,
     color: 'white',
     px: 4,
     borderRadius: 2,
@@ -45,10 +46,16 @@ export const useStyles = {
       color: ERROR_RED,
     },
     '& .MuiFormControlLabel-root': {
-      'align-items': 'flex-start',
+      alignItems: 'flex-start',
       '.MuiFormControlLabel-label': {
         paddingTop: '8px',
       },
+    },
+  },
+  cardBox: {
+    '& .MuiCard-root': {
+      marginLeft: '0 !important',
+      marginRight: '0 !important',
     },
   },
 }

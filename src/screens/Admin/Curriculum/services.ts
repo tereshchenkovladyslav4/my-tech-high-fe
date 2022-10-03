@@ -63,6 +63,9 @@ export const getSchoolYear = gql`
     }
   }
 `
+// =============================================================
+//                  Period
+// =============================================================
 export const getSchoolYearByYearIdForPeriod = gql`
   query GetSchoolYear($school_year_id: ID!) {
     getSchoolYear(school_year_id: $school_year_id) {
@@ -71,6 +74,60 @@ export const getSchoolYearByYearIdForPeriod = gql`
         id
         max_num_periods
       }
+    }
+  }
+`
+export const getPeriods = gql`
+  query Periods($school_year_id: ID!, $hide_archived: Boolean, $keyword: String) {
+    periods(school_year_id: $school_year_id, hide_archived: $hide_archived, keyword: $keyword) {
+      id
+      period
+      reduce_funds
+      price
+      grade_level_min
+      grade_level_max
+      notify_period
+      notify_semester
+      message_period
+      message_semester
+      semester
+      category
+      archived
+    }
+    periodIds(school_year_id: $school_year_id)
+  }
+`
+export const upsertPeriod = gql`
+  mutation periodUpsert($PeriodInput: PeriodInput!) {
+    periodUpsert(PeriodInput: $PeriodInput) {
+      id
+      period
+      reduce_funds
+      price
+      grade_level_min
+      grade_level_max
+      notify_period
+      notify_semester
+      message_period
+      message_semester
+      semester
+      category
+      archived
+    }
+  }
+`
+export const periodArchive = gql`
+  mutation periodArchive($id: Int!, $archived: Boolean!) {
+    periodArchive(id: $id, archived: $archived) {
+      id
+      archived
+    }
+  }
+`
+export const deletePeriodsByIds = gql`
+  mutation periodDeleteByIds($ids: [ID!]!) {
+    periodDeleteByIds(ids: $ids) {
+      affected
     }
   }
 `

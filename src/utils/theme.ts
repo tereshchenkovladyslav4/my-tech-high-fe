@@ -1,4 +1,5 @@
 import { createTheme } from '@mui/material/styles'
+import { BUTTON_LINEAR_GRADIENT } from './constants'
 
 export const theme = createTheme({
   palette: {
@@ -51,12 +52,15 @@ export const theme = createTheme({
             width: '300px',
           },
           '& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button': {
-            '-webkit-appearance': 'none',
+            WebkitAppearance: 'none',
             margin: 0,
           },
           '& input[type=number]': {
-            '-moz-appearance': 'none',
+            MozAppearance: 'none',
             margin: 0,
+          },
+          '& .btn-gradient': {
+            background: BUTTON_LINEAR_GRADIENT,
           },
         },
       },

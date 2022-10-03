@@ -11,6 +11,7 @@ import {
   CURRICULUM_COURSE_CATALOG_PROVIDERS,
   CURRICULUM_COURSE_CATALOG_STATE_CODES,
 } from '../../../../utils/constants'
+import { useStyles } from '../styles'
 
 const CourseCatalog: FunctionComponent = () => {
   const items = [
@@ -43,7 +44,7 @@ const CourseCatalog: FunctionComponent = () => {
     },
   ]
   return (
-    <Box sx={{ marginTop: '29px', px: 3 }}>
+    <Box sx={{ marginTop: '29px', px: 3, ...useStyles.cardBox }}>
       <Box mb={2}>
         <PageHeader title='Course Catalog' to='/curriculum'></PageHeader>
       </Box>

@@ -10,7 +10,7 @@ import { UserContext } from '../../../../providers/UserContext/UserProvider'
 import { BUTTON_LINEAR_GRADIENT, MTHBLUE, RED_GRADIENT, GRADES, GRADE_GROUPS } from '../../../../utils/constants'
 import { toOrdinalSuffix } from '../../../../utils/stringHelpers'
 import { getSchoolDistrictsByRegionId } from '../../SiteManagement/EnrollmentSetting/ApplicationQuestions/services'
-import { FiltersProps, PartnerItem, YEAR_STATUS } from '../type'
+import { FiltersProps, PartnerItem, YEAR_STATUS, SchoolDistrictType, FilterVM } from '../type'
 
 export const Filters: FunctionComponent<FiltersProps> = ({
   filter,
@@ -137,7 +137,10 @@ export const Filters: FunctionComponent<FiltersProps> = ({
   const handleSchoolDistrict = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.value === 'all') {
       if (e.target.checked) {
-        setSchoolDistrict(['all', ...schoolDistrictsData?.schoolDistrict?.map((item) => item.id.toString())])
+        setSchoolDistrict([
+          'all',
+          ...schoolDistrictsData?.schoolDistrict?.map((item: SchoolDistrictType) => item.id.toString()),
+        ])
       } else {
         setSchoolDistrict([])
       }
@@ -192,37 +195,18 @@ export const Filters: FunctionComponent<FiltersProps> = ({
   const renderGrades = () =>
     map(
       gradesList.sort((a) => (a === 'Kindergarten' ? -1 : 0)),
-      (grade, index) => {
-        if (parseInt(grade) == grade) {
-          return (
-            <FormControlLabel
-              key={index}
-              sx={{ height: 30 }}
-              control={
-                <Checkbox checked={grades.includes(grade.toString())} value={grade} onChange={handleChangeGrades} />
-              }
-              label={
-                <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>{`${toOrdinalSuffix(
-                  grade,
-                )} Grade`}</Paragraph>
-              }
-            />
-          )
-        } else {
-          return (
-            <FormControlLabel
-              key={index}
-              sx={{ height: 30 }}
-              control={<Checkbox checked={grades.includes(grade)} value={grade} onChange={handleChangeGrades} />}
-              label={
-                <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
-                  {grade}
-                </Paragraph>
-              }
-            />
-          )
-        }
-      },
+      (grade, index) => (
+        <FormControlLabel
+          key={index}
+          sx={{ height: 30 }}
+          control={<Checkbox checked={grades.includes(grade)} value={grade} onChange={handleChangeGrades} />}
+          label={
+            <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
+              {grade === 'Kindergarten' ? grade : `${toOrdinalSuffix(parseInt(grade))} Grade`}
+            </Paragraph>
+          }
+        />
+      ),
     )
 
   const columnWidth = () => {
@@ -293,7 +277,7 @@ export const Filters: FunctionComponent<FiltersProps> = ({
             }}
           >
             <Paragraph size='large' fontWeight='700'>
-              For {selectedYear?.label?.split('Mid-year')[0]} Year
+              {selectedYear?.label ? `For ${(selectedYear.label as string).split('Mid-year')[0]} Year` : ''}
             </Paragraph>
             {(Object.keys(YEAR_STATUS) as Array<keyof typeof YEAR_STATUS>).map((item) => (
               <FormControlLabel
@@ -418,7 +402,7 @@ export const Filters: FunctionComponent<FiltersProps> = ({
                   </Paragraph>
                 }
               />
-              {schoolDistrictsData?.schoolDistrict?.map((district) => (
+              {schoolDistrictsData?.schoolDistrict?.map((district: SchoolDistrictType) => (
                 <FormControlLabel
                   key={district.id}
                   sx={{ height: 30 }}
@@ -523,7 +507,7 @@ export const Filters: FunctionComponent<FiltersProps> = ({
 
   useEffect(() => {
     if (history.location && history.location.state) {
-      const state = { ...history.location.state }
+      const state: FilterVM = { ...history.location.state }
       setGrades(state.grades || [])
       setFilter(state)
     }

@@ -1,9 +1,9 @@
 import { ReactNode } from 'react'
 
 export enum SEMESTER_TYPE {
-  NONE = 0,
-  PERIOD,
-  SUBJECT,
+  NONE = 'NONE',
+  PERIOD = 'PERIOD',
+  SUBJECT = 'SUBJECT',
 }
 export const SEMESTER_MESSAGE = {
   [SEMESTER_TYPE.NONE]: 'None',
@@ -12,9 +12,9 @@ export const SEMESTER_MESSAGE = {
 }
 
 export enum REDUCE_FUNDS_TYPE {
-  NONE = '',
-  SUPPLEMENTAL = 1,
-  TECHNOLOGY,
+  NONE = 'NONE',
+  SUPPLEMENTAL = 'SUPPLEMENTAL',
+  TECHNOLOGY = 'TECHNOLOGY',
 }
 
 export type OptionType = {
@@ -37,7 +37,6 @@ export type PeriodItem = {
   id?: number
   period: number
   category: string
-  grade?: string
   semester: SEMESTER_TYPE
   grade_level_min: string
   grade_level_max: string
