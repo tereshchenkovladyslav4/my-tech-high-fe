@@ -20,31 +20,31 @@ import { useStyles } from './styles'
 export const Login: React.FC = () => {
   const infocenterHelpLinks = [
     {
-      title: 'Find answers in Parent Link',
+      title: 'Review program details in Parent Link',
     },
     {
-      title: 'Submit applications and enrollment packets',
+      title: 'Submit Enrollment Packets and additional applications',
     },
     {
-      title: 'Read announcements',
+      title: 'Read Announcements',
     },
     {
-      title: 'View the calendar',
+      title: 'View the InfoCenter Calendar',
+    },
+    {
+      title: 'Design and manage schedules',
     },
     {
       title: 'Submit Weekly Learning Logs',
     },
     {
-      title: 'Check student grades',
+      title: 'Check student progress',
+    },
+    {
+      title: 'Submit and track Requests for Reimbursement and Direct Orders',
     },
     {
       title: 'Update student and family information',
-    },
-    {
-      title: 'Manage schedules',
-    },
-    {
-      title: 'Submit and track reimbursements',
     },
     {
       title: 'Bookmark this website: infocenter.tech',
