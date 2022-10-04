@@ -170,7 +170,8 @@ const Providers: React.FC = () => {
           }),
       )
     }
-  }, [providers, showArchived])
+    // TODO Have to remove searchField here
+  }, [providers, showArchived, searchField])
 
   return (
     <Box sx={{ p: 4, textAlign: 'left' }}>
@@ -179,7 +180,6 @@ const Providers: React.FC = () => {
           title='Providers'
           selectedYear={selectedYear}
           setSelectedYear={setSelectedYear}
-          searchField={searchField}
           setSearchField={setSearchField}
           showArchived={showArchived}
           setShowArchived={setShowArchived}

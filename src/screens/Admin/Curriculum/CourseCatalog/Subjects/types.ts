@@ -3,6 +3,13 @@ import { CheckBoxListVM } from '@mth/components/MthCheckboxList/MthCheckboxList'
 import { DiplomaSeekingPath, ReduceFunds } from '@mth/enums'
 import { SchoolYearRespnoseType } from '@mth/hooks'
 
+export enum EventType {
+  ARCHIVE = 'archive',
+  UNARCHIVE = 'unarchive',
+  DELETE = 'delete',
+  DUPLICATE = 'duplicate',
+}
+
 export type Subject = {
   subject_id: number
   name: string
@@ -15,8 +22,9 @@ export type Subject = {
 }
 
 export type Period = {
-  period_id: number
-  name: string
+  id: number
+  period: number
+  category: string
 }
 
 export type StateCourseCord = {
@@ -65,7 +73,7 @@ export type ScheduleBuilder = {
 export type TitlesProps = {
   schoolYearId: number
   schoolYearData?: SchoolYearRespnoseType
-  titles: Title[] | undefined
+  subject: Subject
   refetch: () => void
 }
 
@@ -94,4 +102,26 @@ export type TitleFormProps = {
   subjectsItems: DropDownItem[]
   gradeOptions: DropDownItem[]
   scheduleBuilder?: ScheduleBuilder
+}
+
+export interface SubjectConfirmModalProps {
+  showArchivedModal: boolean
+  setShowArchivedModal: (value: boolean) => void
+  showUnarchivedModal: boolean
+  setShowUnarchivedModal: (value: boolean) => void
+  showDeleteModal: boolean
+  setShowDeleteModal: (value: boolean) => void
+  handleChangeSubjectStatus: (eventType: EventType) => void
+}
+
+export interface TitleConfirmModalProps {
+  showArchivedModal: boolean
+  setShowArchivedModal: (value: boolean) => void
+  showUnarchivedModal: boolean
+  setShowUnarchivedModal: (value: boolean) => void
+  showCloneModal: boolean
+  setShowCloneModal: (value: boolean) => void
+  showDeleteModal: boolean
+  setShowDeleteModal: (value: boolean) => void
+  handleChangeTitleStatus: (eventType: EventType) => void
 }

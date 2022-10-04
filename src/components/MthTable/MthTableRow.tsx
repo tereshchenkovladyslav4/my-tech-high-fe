@@ -1,9 +1,14 @@
 import React from 'react'
 import { TableCell, TableRow, styled, Collapse, Typography } from '@mui/material'
+import { Draggable, DraggableProvided } from 'react-beautiful-dnd'
 import { MthCheckbox } from '@mth/components/MthCheckbox'
+import { MthColor } from '@mth/enums'
 import { MthTableRowProps } from './types'
 
 const StyledTableRow = styled(TableRow)(({}) => ({
+  '& .MuiTableCell-root': {
+    backgroundColor: MthColor.WHITE,
+  },
   '&:nth-of-type(odd) .MuiTableCell-root': {
     backgroundColor: '#FAFAFA',
     '&:first-of-type': {
@@ -29,35 +34,41 @@ const StyledTableRow = styled(TableRow)(({}) => ({
 
 const MthTableRow = <T extends unknown>({
   fields,
+  index,
   item,
   expanded,
   selectable,
+  isDraggable,
   size,
   checkBoxColor,
   handleToggleCheck,
 }: MthTableRowProps<T>): React.ReactElement => {
   return (
     <>
-      <StyledTableRow className={expanded ? 'expanded' : ''}>
-        {selectable && (
-          <TableCell className='checkWrap'>
-            <MthCheckbox
-              color={checkBoxColor}
-              size={size}
-              checked={item.isSelected || false}
-              onChange={() => handleToggleCheck(item)}
-              disabled={item.selectable === false}
-            />
-          </TableCell>
+      <Draggable key={index.toString()} draggableId={index.toString()} index={index} isDragDisabled={!isDraggable}>
+        {(provided: DraggableProvided) => (
+          <StyledTableRow className={expanded ? 'expanded' : ''} ref={provided.innerRef} {...provided.draggableProps}>
+            {selectable && (
+              <TableCell className='checkWrap'>
+                <MthCheckbox
+                  color={checkBoxColor}
+                  size={size}
+                  checked={item.isSelected || false}
+                  onChange={() => handleToggleCheck(item)}
+                  disabled={item.selectable === false}
+                />
+              </TableCell>
+            )}
+            {fields.map((field, indexCol) => (
+              <TableCell key={indexCol} width={field.width}>
+                <div className={indexCol > 0 && indexCol + 1 !== fields.length ? 'border-l cell-item' : 'cell-item'}>
+                  {field.formatter ? field.formatter(item, provided.dragHandleProps) : item.columns[field.key]}
+                </div>
+              </TableCell>
+            ))}
+          </StyledTableRow>
         )}
-        {fields.map((field, indexCol) => (
-          <TableCell key={indexCol}>
-            <div className={indexCol > 0 && indexCol + 1 !== fields.length ? 'border-l cell-item' : 'cell-item'}>
-              {field.formatter ? field.formatter(item) : item.columns[field.key]}
-            </div>
-          </TableCell>
-        ))}
-      </StyledTableRow>
+      </Draggable>
       {!!item.expandNode && (
         <>
           <TableRow />

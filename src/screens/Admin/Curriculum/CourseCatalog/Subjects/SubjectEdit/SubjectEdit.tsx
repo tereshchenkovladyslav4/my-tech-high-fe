@@ -7,9 +7,10 @@ import * as yup from 'yup'
 import { CustomModal } from '@mth/components/CustomModal/CustomModals'
 import { CheckBoxListVM } from '@mth/components/MthCheckboxList/MthCheckboxList'
 import { MthColor, MthTitle } from '@mth/enums'
-import { createOrUpdateSubjectMutation, getPeriodsQuery } from '@mth/screens/Admin/Curriculum/CourseCatalog/services'
+import { createOrUpdateSubjectMutation } from '@mth/screens/Admin/Curriculum/CourseCatalog/services'
 import { defaultSubjectFormData } from '@mth/screens/Admin/Curriculum/CourseCatalog/Subjects/defaultValues'
 import SubjectForm from '@mth/screens/Admin/Curriculum/CourseCatalog/Subjects/SubjectEdit/SubjectForm'
+import { getPeriods } from '@mth/screens/Admin/Curriculum/services'
 import SaveCancelComponent from '../../Components/SaveCancelComponent/SaveCancelComponent'
 import { Period, Subject, SubjectEditProps } from '../types'
 
@@ -22,8 +23,8 @@ const SubjectEdit: React.FC<SubjectEditProps> = ({ schoolYearId, item, refetch, 
   const [initialValues, setInitialValues] = useState<Subject>(defaultSubjectFormData)
   const [submitSave, {}] = useMutation(createOrUpdateSubjectMutation)
 
-  const { loading, data: periodsData } = useQuery(getPeriodsQuery, {
-    variables: { schoolYearId: schoolYearId },
+  const { loading, data: periodsData } = useQuery(getPeriods, {
+    variables: { school_year_id: +schoolYearId, hide_archived: true },
     skip: !schoolYearId,
     fetchPolicy: 'network-only',
   })
@@ -68,10 +69,10 @@ const SubjectEdit: React.FC<SubjectEditProps> = ({ schoolYearId, item, refetch, 
     if (!loading && periodsData) {
       const { periods } = periodsData
       setPeriodsItems(
-        (periods || []).map((item: Period) => {
+        (periods || []).map((item: Period): CheckBoxListVM => {
           return {
-            label: item.name,
-            value: item.period_id,
+            label: `Period ${item.period} - ${item.category}`,
+            value: item.id.toString(),
           }
         }),
       )
@@ -79,7 +80,7 @@ const SubjectEdit: React.FC<SubjectEditProps> = ({ schoolYearId, item, refetch, 
   }, [loading, periodsData])
 
   useEffect(() => {
-    if (item?.subject_id) setInitialValues({ ...item, PeriodIds: item.Periods.map((x) => x.period_id.toString()) })
+    if (item?.subject_id) setInitialValues({ ...item, PeriodIds: item.Periods.map((x) => x.id.toString()) })
   }, [item])
 
   return (

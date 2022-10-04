@@ -6,10 +6,11 @@ import {
   TableRow,
   Table,
   TableBody,
+  Checkbox,
   CircularProgress,
   Box,
-  Checkbox,
 } from '@mui/material'
+import { DragDropContext, Droppable, DroppableProvided, DropResult } from 'react-beautiful-dnd'
 import MthTableRow from '@mth/components/MthTable/MthTableRow'
 import { mthTableClasses } from '@mth/components/MthTable/styles'
 import { MthTableProps, MthTableRowItem } from './types'
@@ -23,6 +24,8 @@ const MthTable = <T extends unknown>({
   checkBoxColor = 'primary',
   oddBg = true,
   borderBottom = true,
+  isDraggable = false,
+  onArrange,
 }: MthTableProps<T>): React.ReactElement => {
   const [numSelected, setNumSelected] = useState<number>(0)
   const [rowCount, setRowCount] = useState<number>(0)
@@ -44,6 +47,25 @@ const MthTable = <T extends unknown>({
 
   const handleToggleExpand = (index: number) => {
     setExpandedIdx((pre) => (index === pre ? undefined : index))
+  }
+
+  const reorder = (list: MthTableRowItem<T>[], startIndex: number, endIndex: number) => {
+    const result = Array.from(list)
+    const [removed] = result.splice(startIndex, 1)
+    result.splice(endIndex, 0, removed)
+
+    return result
+  }
+
+  const onDragEnd = async (result: DropResult) => {
+    if (!result.destination) {
+      return
+    }
+
+    if (onArrange) {
+      const newItems = reorder(items, result.source.index, result.destination.index)
+      onArrange(newItems)
+    }
   }
 
   useEffect(() => {
@@ -78,36 +100,45 @@ const MthTable = <T extends unknown>({
             ))}
           </TableRow>
         </TableHead>
-        <TableBody>
-          {items.map((item, idx) => (
-            <MthTableRow
-              key={idx}
-              fields={fields}
-              item={item}
-              expanded={expandedIdx === idx}
-              selectable={selectable}
-              size={size}
-              checkBoxColor={checkBoxColor}
-              handleToggleCheck={handleToggleCheck}
-            />
-          ))}
-          {!items.length && (
-            <TableRow>
-              <td colSpan={fields.length}>
-                {loading && (
-                  <Box display={'flex'} justifyContent='center' py={1}>
-                    <CircularProgress />
-                  </Box>
-                )}
-                {!loading && (
-                  <Box className='no-data' sx={{ opacity: 0.1, py: 1 }}>
-                    Not found
-                  </Box>
-                )}
-              </td>
-            </TableRow>
-          )}
-        </TableBody>
+        <DragDropContext onDragEnd={onDragEnd}>
+          <Droppable droppableId='droppable'>
+            {(provided: DroppableProvided) => (
+              <TableBody {...provided.droppableProps} ref={provided.innerRef}>
+                {items.map((item, index) => (
+                  <MthTableRow
+                    key={index}
+                    index={index}
+                    fields={fields}
+                    item={item}
+                    expanded={expandedIdx === index}
+                    selectable={selectable}
+                    isDraggable={isDraggable}
+                    size={size}
+                    checkBoxColor={checkBoxColor}
+                    handleToggleCheck={handleToggleCheck}
+                  />
+                ))}
+                {provided.placeholder}
+              </TableBody>
+            )}
+          </Droppable>
+        </DragDropContext>
+        {!items.length && (
+          <TableRow>
+            <td colSpan={fields.length}>
+              {loading && (
+                <Box display={'flex'} justifyContent='center' py={1}>
+                  <CircularProgress />
+                </Box>
+              )}
+              {!loading && (
+                <Box className='no-data' sx={{ opacity: 0.1, py: 1 }}>
+                  Not found
+                </Box>
+              )}
+            </td>
+          </TableRow>
+        )}
       </Table>
     </TableContainer>
   )

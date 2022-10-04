@@ -1,11 +1,16 @@
 import { ReactNode } from 'react'
+import { DraggableProvidedDragHandleProps } from 'react-beautiful-dnd'
 
 export type MthTableField<T> = {
   key: string
   label?: string
   sortable?: boolean
-  formatter?: (item: MthTableRowItem<T>) => string | number | ReactNode
+  formatter?: (
+    item: MthTableRowItem<T>,
+    dragHandleProps?: DraggableProvidedDragHandleProps,
+  ) => string | number | ReactNode
   tdClass?: string
+  width?: string | number
 }
 
 export type MthTableRowItem<T> = {
@@ -27,13 +32,17 @@ export type MthTableProps<T> = {
   checkBoxColor?: 'primary' | 'secondary'
   oddBg?: boolean
   borderBottom?: boolean
+  isDraggable?: boolean
+  onArrange?: (arrangedItems: MthTableRowItem<T>[]) => void
 }
 
 export type MthTableRowProps<T> = {
   fields: MthTableField<T>[]
+  index: number
   item: MthTableRowItem<T>
   expanded: boolean
   selectable?: boolean
+  isDraggable?: boolean
   size?: 'medium' | 'small'
   checkBoxColor?: 'primary' | 'secondary'
   handleToggleCheck: (item: MthTableRowItem<T>) => void

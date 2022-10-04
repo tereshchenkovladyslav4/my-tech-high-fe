@@ -11,14 +11,20 @@ import { MthTableField, MthTableRowItem } from '@mth/components/MthTable/types'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { DIPLOMA_SEEKING_PATH_ITEMS } from '@mth/constants'
 import { MthColor } from '@mth/enums'
-import { createOrUpdateTitleMutation, deleteTitleMutation } from '@mth/screens/Admin/Curriculum/CourseCatalog/services'
+import {
+  cloneTitleMutation,
+  createOrUpdateTitleMutation,
+  deleteTitleMutation,
+} from '@mth/screens/Admin/Curriculum/CourseCatalog/services'
+import TitleConfirmModal from '@mth/screens/Admin/Curriculum/CourseCatalog/Subjects/TitleConfirmModl/TitleConfirmModal'
 import { TitleEdit } from '@mth/screens/Admin/Curriculum/CourseCatalog/Subjects/TitleEdit'
-import { Title, TitlesProps } from '@mth/screens/Admin/Curriculum/CourseCatalog/Subjects/types'
+import { EventType, Title, TitlesProps } from '@mth/screens/Admin/Curriculum/CourseCatalog/Subjects/types'
 
-const Titles: React.FC<TitlesProps> = ({ schoolYearId, schoolYearData, titles, refetch }) => {
+const Titles: React.FC<TitlesProps> = ({ schoolYearId, schoolYearData, subject, refetch }) => {
   const [loading] = useState(false)
   const [updateTitle, {}] = useMutation(createOrUpdateTitleMutation)
   const [deleteTitle, {}] = useMutation(deleteTitleMutation)
+  const [cloneTitle, {}] = useMutation(cloneTitleMutation)
 
   const fields: MthTableField<Title>[] = [
     {
@@ -85,20 +91,45 @@ const Titles: React.FC<TitlesProps> = ({ schoolYearId, schoolYearData, titles, r
               </IconButton>
             </Tooltip>
             <Tooltip title={item.rawData.is_active ? 'Archive' : 'Unarchive'} placement='top'>
-              <IconButton className='actionButton' color='primary' onClick={() => handleToggleActive(item.rawData)}>
+              <IconButton
+                className='actionButton'
+                color='primary'
+                onClick={() => {
+                  setSelectedTitle(item.rawData)
+                  if (item.rawData.is_active) {
+                    setShowArchivedModal(true)
+                  } else {
+                    setShowUnarchivedModal(true)
+                  }
+                }}
+              >
                 {item.rawData.is_active ? <SystemUpdateAltRoundedIcon /> : <CallMissedOutgoingIcon />}
               </IconButton>
             </Tooltip>
             {!item.rawData.is_active && (
               <Tooltip title='Delete' placement='top'>
-                <IconButton className='actionButton' color='primary' onClick={() => handleDelete(item.rawData)}>
+                <IconButton
+                  className='actionButton'
+                  color='primary'
+                  onClick={() => {
+                    setSelectedTitle(item.rawData)
+                    setShowDeleteModal(true)
+                  }}
+                >
                   <DeleteForeverOutlined />
                 </IconButton>
               </Tooltip>
             )}
             {item.rawData.is_active && (
               <Tooltip title='Clone' placement='top'>
-                <IconButton className='actionButton expandButton' color='primary'>
+                <IconButton
+                  className='actionButton expandButton'
+                  color='primary'
+                  onClick={() => {
+                    setSelectedTitle(item.rawData)
+                    setShowCloneModal(true)
+                  }}
+                >
                   <ContentCopyOutlinedIcon />
                 </IconButton>
               </Tooltip>
@@ -112,6 +143,10 @@ const Titles: React.FC<TitlesProps> = ({ schoolYearId, schoolYearData, titles, r
   const [tableData, setTableData] = useState<MthTableRowItem<Title>[]>([])
   const [selectedTitle, setSelectedTitle] = useState<Title | undefined>()
   const [showEditModal, setShowEditModal] = useState<boolean>(false)
+  const [showArchivedModal, setShowArchivedModal] = useState<boolean>(false)
+  const [showUnarchivedModal, setShowUnarchivedModal] = useState<boolean>(false)
+  const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false)
+  const [showCloneModal, setShowCloneModal] = useState<boolean>(false)
 
   const createData = (title: Title): MthTableRowItem<Title> => {
     return {
@@ -150,48 +185,59 @@ const Titles: React.FC<TitlesProps> = ({ schoolYearId, schoolYearData, titles, r
     refetch()
   }
 
+  const handleClone = async (title: Title) => {
+    await cloneTitle({
+      variables: {
+        titleId: Number(title.title_id),
+      },
+    })
+    refetch()
+  }
+
   useEffect(() => {
-    if (titles?.length) {
+    if (subject.Titles?.length) {
       setTableData(
-        titles.map((item) => {
+        subject.Titles.map((item) => {
           return createData(item)
         }),
       )
     }
-  }, [titles])
+  }, [subject.Titles])
 
   return (
     <Box sx={{ pb: 3, textAlign: 'left' }}>
-      {!!titles?.length && (
+      {!!subject.Titles?.length && (
         <Box sx={{ borderTop: `solid 1px ${MthColor.SYSTEM_09}` }}>
           <MthTable items={tableData} loading={loading} fields={fields} selectable={true} size='small' oddBg={false} />
         </Box>
       )}
 
-      <Box sx={{ mt: '56px' }}>
-        <Button
-          variant='contained'
-          sx={{
-            borderRadius: 2,
-            fontSize: 12,
-            background: 'linear-gradient(90deg, #3E2783 0%, rgba(62, 39, 131, 0) 100%) #4145FF',
-            width: 160,
-            height: 37,
-            fontWeight: 700,
-            textTransform: 'none',
-            '&:hover': {
-              background: MthColor.PRIMARY_MEDIUM_MOUSEOVER,
-              color: 'white',
-            },
-          }}
-          onClick={() => {
-            setSelectedTitle(undefined)
-            setShowEditModal(true)
-          }}
-        >
-          <Subtitle sx={{ fontSize: '14px', fontWeight: '700' }}>+ Add Title</Subtitle>
-        </Button>
-      </Box>
+      {subject.is_active && (
+        <Box sx={{ mt: '56px' }}>
+          <Button
+            variant='contained'
+            sx={{
+              borderRadius: 2,
+              fontSize: 12,
+              background: 'linear-gradient(90deg, #3E2783 0%, rgba(62, 39, 131, 0) 100%) #4145FF',
+              width: 160,
+              height: 37,
+              fontWeight: 700,
+              textTransform: 'none',
+              '&:hover': {
+                background: MthColor.PRIMARY_MEDIUM_MOUSEOVER,
+                color: 'white',
+              },
+            }}
+            onClick={() => {
+              setSelectedTitle(undefined)
+              setShowEditModal(true)
+            }}
+          >
+            <Subtitle sx={{ fontSize: '14px', fontWeight: '700' }}>+ Add Title</Subtitle>
+          </Button>
+        </Box>
+      )}
 
       {showEditModal && (
         <TitleEdit
@@ -200,6 +246,43 @@ const Titles: React.FC<TitlesProps> = ({ schoolYearId, schoolYearData, titles, r
           item={selectedTitle}
           refetch={refetch}
           setShowEditModal={setShowEditModal}
+        />
+      )}
+
+      {!!selectedTitle && (
+        <TitleConfirmModal
+          showArchivedModal={showArchivedModal}
+          setShowArchivedModal={setShowArchivedModal}
+          showUnarchivedModal={showUnarchivedModal}
+          setShowUnarchivedModal={setShowUnarchivedModal}
+          showCloneModal={showCloneModal}
+          setShowCloneModal={setShowCloneModal}
+          showDeleteModal={showDeleteModal}
+          setShowDeleteModal={setShowDeleteModal}
+          handleChangeTitleStatus={async (eventType) => {
+            switch (eventType) {
+              case EventType.ARCHIVE: {
+                setShowArchivedModal(false)
+                await handleToggleActive(selectedTitle)
+                break
+              }
+              case EventType.UNARCHIVE: {
+                setShowUnarchivedModal(false)
+                await handleToggleActive(selectedTitle)
+                break
+              }
+              case EventType.DELETE: {
+                setShowDeleteModal(false)
+                await handleDelete(selectedTitle)
+                break
+              }
+              case EventType.DUPLICATE: {
+                setShowCloneModal(false)
+                await handleClone(selectedTitle)
+                break
+              }
+            }
+          }}
         />
       )}
     </Box>

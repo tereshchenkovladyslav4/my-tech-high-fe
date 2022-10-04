@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect } from 'react'
+import React, { useCallback, useContext, useEffect, useState } from 'react'
 import SearchIcon from '@mui/icons-material/Search'
 import { Box, InputAdornment, OutlinedInput, ToggleButton, ToggleButtonGroup } from '@mui/material'
 import { debounce } from 'lodash'
@@ -16,10 +16,10 @@ const CourseCatalogHeader: React.FC<CourseCatalogHeaderProps> = ({
   setSelectedYearData,
   showArchived,
   setShowArchived,
-  searchField,
   setSearchField,
 }) => {
   const { me } = useContext(UserContext)
+  const [localSearchField, setLocalSearchField] = useState<string>('')
 
   const { dropdownItems: schoolYearDropdownItems, schoolYears: schoolYears } = useSchoolYearsByRegionId(
     me?.selectedRegionId,
@@ -29,6 +29,11 @@ const CourseCatalogHeader: React.FC<CourseCatalogHeaderProps> = ({
     setSearchField(event)
   }
   const debouncedChangeHandler = useCallback(debounce(changeHandler, 300), [])
+
+  useEffect(() => {
+    setLocalSearchField(localSearchField)
+    debouncedChangeHandler(localSearchField)
+  }, [localSearchField])
 
   useEffect(() => {
     if (selectedYear && schoolYears) {
@@ -72,9 +77,9 @@ const CourseCatalogHeader: React.FC<CourseCatalogHeaderProps> = ({
             onBlur={(e) => (e.target.placeholder = 'Search...')}
             size='small'
             fullWidth
-            value={searchField ? searchField : ''}
+            value={localSearchField || ''}
             placeholder='Search...'
-            onChange={(e) => debouncedChangeHandler(e.target.value)}
+            onChange={(e) => setLocalSearchField(e.target.value)}
             startAdornment={
               <InputAdornment position='start'>
                 <SearchIcon style={{ color: 'black' }} />

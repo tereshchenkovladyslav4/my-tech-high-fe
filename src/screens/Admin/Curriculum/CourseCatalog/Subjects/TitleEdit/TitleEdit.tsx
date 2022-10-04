@@ -28,7 +28,7 @@ const TitleEdit: React.FC<TitleEditProps> = ({ schoolYearId, schoolYearData, ite
   const [submitSave, {}] = useMutation(createOrUpdateTitleMutation)
 
   const { loading, data: subjectsData } = useQuery(getSubjectsQuery, {
-    variables: { schoolYearId: schoolYearId },
+    variables: { findSubjectsInput: { schoolYearId: +schoolYearId, isActive: true } },
     skip: !schoolYearId,
     fetchPolicy: 'network-only',
   })

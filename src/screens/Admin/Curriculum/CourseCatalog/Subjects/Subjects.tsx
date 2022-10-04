@@ -7,7 +7,6 @@ import DehazeIcon from '@mui/icons-material/Dehaze'
 import ExpandMoreOutlinedIcon from '@mui/icons-material/ExpandMoreOutlined'
 import SystemUpdateAltRoundedIcon from '@mui/icons-material/SystemUpdateAltRounded'
 import { Box, Button, Card, IconButton, Tooltip } from '@mui/material'
-import { SortableHandle } from 'react-sortable-hoc'
 import { MthTable } from '@mth/components/MthTable'
 import { MthTableField, MthTableRowItem } from '@mth/components/MthTable/types'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
@@ -18,22 +17,13 @@ import {
   deleteSubjectMutation,
   getSubjectsQuery,
 } from '@mth/screens/Admin/Curriculum/CourseCatalog/services'
+import { SubjectConfirmModal } from '@mth/screens/Admin/Curriculum/CourseCatalog/Subjects/SubjectConfirmModal'
 import { SubjectEdit } from '@mth/screens/Admin/Curriculum/CourseCatalog/Subjects/SubjectEdit'
 import Titles from '@mth/screens/Admin/Curriculum/CourseCatalog/Subjects/Titles'
-import { Subject } from '@mth/screens/Admin/Curriculum/CourseCatalog/Subjects/types'
+import { EventType, Subject } from '@mth/screens/Admin/Curriculum/CourseCatalog/Subjects/types'
 import CourseCatalogHeader from '../Components/CourseCatalogHeader/CourseCatalogHeader'
 
 const Subjects: React.FC = () => {
-  // TODO Titles of the archived subject must be archived.
-
-  const DragHandle = SortableHandle(() => (
-    <Tooltip title='Move' placement='top'>
-      <IconButton className='actionButton' color='primary'>
-        <DehazeIcon />
-      </IconButton>
-    </Tooltip>
-  ))
-
   const [selectedYear, setSelectedYear] = useState<number>(0)
   const [selectedYearData, setSelectedYearData] = useState<SchoolYearRespnoseType | undefined>()
   const [searchField, setSearchField] = useState<string>('')
@@ -42,13 +32,18 @@ const Subjects: React.FC = () => {
   const [tableData, setTableData] = useState<MthTableRowItem<Subject>[]>([])
   const [selectedSubject, setSelectedSubject] = useState<Subject | undefined>()
   const [showEditModal, setShowEditModal] = useState<boolean>(false)
+  const [showArchivedModal, setShowArchivedModal] = useState<boolean>(false)
+  const [showUnarchivedModal, setShowUnarchivedModal] = useState<boolean>(false)
+  const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false)
 
   const {
     loading,
     data: subjectsData,
     refetch,
   } = useQuery(getSubjectsQuery, {
-    variables: { schoolYearId: selectedYear },
+    variables: {
+      findSubjectsInput: { schoolYearId: +selectedYear, searchField: searchField, isActive: !showArchived },
+    },
     skip: !selectedYear,
     fetchPolicy: 'network-only',
   })
@@ -61,19 +56,22 @@ const Subjects: React.FC = () => {
       label: 'Subject',
       sortable: false,
       tdClass: '',
+      width: '25%',
     },
     {
       key: 'periods',
       label: 'Periods',
       sortable: false,
       tdClass: '',
+      width: '50%',
     },
     {
       key: 'action',
       label: '',
       sortable: false,
       tdClass: '',
-      formatter: (item: MthTableRowItem<Subject>) => {
+      width: '25%',
+      formatter: (item: MthTableRowItem<Subject>, dragHandleProps) => {
         return (
           <Box display={'flex'} flexDirection='row' justifyContent={'flex-end'}>
             <Tooltip title={item.rawData.is_active ? 'Edit' : ''} placement='top'>
@@ -90,18 +88,42 @@ const Subjects: React.FC = () => {
               </IconButton>
             </Tooltip>
             <Tooltip title={item.rawData.is_active ? 'Archive' : 'Unarchive'} placement='top'>
-              <IconButton className='actionButton' color='primary' onClick={() => handleToggleActive(item.rawData)}>
+              <IconButton
+                className='actionButton'
+                color='primary'
+                onClick={() => {
+                  setSelectedSubject(item.rawData)
+                  if (item.rawData.is_active) {
+                    setShowArchivedModal(true)
+                  } else {
+                    setShowUnarchivedModal(true)
+                  }
+                }}
+              >
                 {item.rawData.is_active ? <SystemUpdateAltRoundedIcon /> : <CallMissedOutgoingIcon />}
               </IconButton>
             </Tooltip>
             {!item.rawData.is_active && (
               <Tooltip title='Delete' placement='top'>
-                <IconButton className='actionButton' color='primary' onClick={() => handleDelete(item.rawData)}>
+                <IconButton
+                  className='actionButton'
+                  color='primary'
+                  onClick={() => {
+                    setSelectedSubject(item.rawData)
+                    setShowDeleteModal(true)
+                  }}
+                >
                   <DeleteForeverOutlined />
                 </IconButton>
               </Tooltip>
             )}
-            {item.rawData.is_active && <DragHandle />}
+            {item.rawData.is_active && (
+              <Tooltip title='Move' placement='top'>
+                <IconButton className='actionButton' color='primary' {...dragHandleProps}>
+                  <DehazeIcon />
+                </IconButton>
+              </Tooltip>
+            )}
             <IconButton
               onClick={() => {
                 if (item.toggleExpand) item.toggleExpand()
@@ -123,18 +145,13 @@ const Subjects: React.FC = () => {
         name: subject.name,
         periods:
           subject.Periods?.map((item) => {
-            return item.name
+            return `Period ${item.period} - ${item.category}`
           }).join(', ') || 'NA',
       },
       selectable: subject.is_active,
       rawData: subject,
       expandNode: (
-        <Titles
-          schoolYearId={selectedYear}
-          schoolYearData={selectedYearData}
-          titles={subject.Titles}
-          refetch={refetch}
-        />
+        <Titles schoolYearId={selectedYear} schoolYearData={selectedYearData} subject={subject} refetch={refetch} />
       ),
     }
   }
@@ -160,15 +177,32 @@ const Subjects: React.FC = () => {
     await refetch()
   }
 
+  const handleArrange = async (arrangedItems: MthTableRowItem<Subject>[]) => {
+    arrangedItems
+      .filter((item) => !!item.rawData.subject_id && item.rawData.is_active)
+      .map(async (item, index) => {
+        const correctPriority = index + 1
+        if (item.rawData.priority != correctPriority) {
+          item.rawData.priority = correctPriority
+          await updateSubject({
+            variables: {
+              createSubjectInput: {
+                subject_id: Number(item.rawData.subject_id),
+                priority: correctPriority,
+              },
+            },
+          })
+        }
+      })
+
+    setTableData(arrangedItems)
+  }
+
   useEffect(() => {
     setTableData(
-      (subjects || [])
-        .map((item) => {
-          return { ...item, titles: item.Titles?.filter((x) => showArchived || x.is_active) }
-        })
-        .map((item) => {
-          return createData(item)
-        }),
+      (subjects || []).map((item) => {
+        return createData(item)
+      }),
     )
   }, [subjects, showArchived])
 
@@ -194,14 +228,21 @@ const Subjects: React.FC = () => {
           selectedYear={selectedYear}
           setSelectedYear={setSelectedYear}
           setSelectedYearData={setSelectedYearData}
-          searchField={searchField}
           setSearchField={setSearchField}
           showArchived={showArchived}
           setShowArchived={setShowArchived}
         />
 
         <Box>
-          <MthTable items={tableData} loading={loading} fields={fields} selectable={true} checkBoxColor='secondary' />
+          <MthTable
+            items={tableData}
+            loading={loading}
+            fields={fields}
+            selectable={true}
+            isDraggable={true}
+            checkBoxColor='secondary'
+            onArrange={handleArrange}
+          />
         </Box>
 
         <Box sx={{ mt: '100px' }}>
@@ -236,6 +277,36 @@ const Subjects: React.FC = () => {
           item={selectedSubject}
           refetch={refetch}
           setShowEditModal={setShowEditModal}
+        />
+      )}
+
+      {!!selectedSubject && (
+        <SubjectConfirmModal
+          showArchivedModal={showArchivedModal}
+          setShowArchivedModal={setShowArchivedModal}
+          showUnarchivedModal={showUnarchivedModal}
+          setShowUnarchivedModal={setShowUnarchivedModal}
+          showDeleteModal={showDeleteModal}
+          setShowDeleteModal={setShowDeleteModal}
+          handleChangeSubjectStatus={async (eventType) => {
+            switch (eventType) {
+              case EventType.ARCHIVE: {
+                setShowArchivedModal(false)
+                await handleToggleActive(selectedSubject)
+                break
+              }
+              case EventType.UNARCHIVE: {
+                setShowUnarchivedModal(false)
+                await handleToggleActive(selectedSubject)
+                break
+              }
+              case EventType.DELETE: {
+                setShowDeleteModal(false)
+                await handleDelete(selectedSubject)
+                break
+              }
+            }
+          }}
         />
       )}
     </Box>

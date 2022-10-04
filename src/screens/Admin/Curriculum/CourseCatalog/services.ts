@@ -1,16 +1,17 @@
 import { gql } from '@apollo/client'
 
 export const getSubjectsQuery = gql`
-  query Subjects($schoolYearId: ID!) {
-    subjects(schoolYearId: $schoolYearId) {
+  query Subjects($findSubjectsInput: FindSubjectsInput!) {
+    subjects(findSubjectsInput: $findSubjectsInput) {
       subject_id
       SchoolYearId
       name
       is_active
       priority
       Periods {
-        period_id
-        name
+        id
+        period
+        category
       }
       Titles {
         title_id
@@ -69,12 +70,8 @@ export const deleteTitleMutation = gql`
   }
 `
 
-export const getPeriodsQuery = gql`
-  query Periods($schoolYearId: ID!) {
-    periods(schoolYearId: $schoolYearId) {
-      period_id
-      SchoolYearId
-      name
-    }
+export const cloneTitleMutation = gql`
+  mutation CloneTitle($titleId: Float!) {
+    cloneTitle(titleId: $titleId)
   }
 `

@@ -7,6 +7,5 @@ export type CourseCatalogHeaderProps = {
   setSelectedYearData?: (value?: SchoolYearRespnoseType) => void
   showArchived: boolean
   setShowArchived: (value: boolean) => void
-  searchField: string
   setSearchField: (value: string) => void
 }
