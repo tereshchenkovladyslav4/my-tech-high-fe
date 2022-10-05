@@ -38,7 +38,7 @@ const extractSpecialEduFromQues = (arr: Array<QuestionType>, slug: string) => {
   return returnVal
 }
 
-export const useDecideSpecialEdu = (
+export const useQuestionBySlugAndRegion = (
   studentId: number,
   slug: string,
 ): {

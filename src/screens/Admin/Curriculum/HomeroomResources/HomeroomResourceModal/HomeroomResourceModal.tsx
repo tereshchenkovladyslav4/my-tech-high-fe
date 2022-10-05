@@ -56,7 +56,7 @@ const HomeroomResourceModal: React.FC<HomeroomResourceModalProps> = ({
       {showAllowModal && (
         <CustomModal
           title='Allow Request'
-          description='Are you sure you want to Allow Request this Resourse?'
+          description='Are you sure you want to Allow Request this Resource?'
           cancelStr='Cancel'
           confirmStr='Allow Request'
           backgroundColor='#FFFFFF'
@@ -72,7 +72,7 @@ const HomeroomResourceModal: React.FC<HomeroomResourceModalProps> = ({
       {showDisallowModal && (
         <CustomModal
           title='View Only'
-          description='Are you sure you want to View Only this Resourse?'
+          description='Are you sure you want to View Only this Resource?'
           cancelStr='Cancel'
           confirmStr='View Only'
           backgroundColor='#FFFFFF'
@@ -88,7 +88,7 @@ const HomeroomResourceModal: React.FC<HomeroomResourceModalProps> = ({
       {showDeleteModal && (
         <CustomModal
           title='Delete'
-          description='If there was a Direct Deducation associated with this Resource, &nbsp;&nbsp;&nbsp;&nbsp;it will be removed.'
+          description='If there was a Direct Deduction associated with this Resource, &nbsp;&nbsp;&nbsp;&nbsp;it will be removed.'
           subDescription={
             <>
               Once deleted, it cannot be restored.

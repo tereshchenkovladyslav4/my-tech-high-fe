@@ -4,18 +4,18 @@ import SearchIcon from '@mui/icons-material/Search'
 import { Box, Button, Card, InputAdornment, OutlinedInput, Tooltip } from '@mui/material'
 import { toString } from 'lodash'
 import moment from 'moment'
+import { DropDown } from '@mth/components/DropDown/DropDown'
+import { Pagination } from '@mth/components/Pagination/Pagination'
 import CustomTable from '@mth/components/Table/CustomTable'
 import { Field, ValueOf } from '@mth/components/Table/types'
-import { Pagination } from '../../../../components/Pagination/Pagination'
 
 import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
 import { WarningModal } from '../../../../components/WarningModal/Warning'
-import { BUTTON_LINEAR_GRADIENT, RED_GRADIENT } from '../../../../utils/constants'
-import { DropDown } from '../../SiteManagement/components/DropDown/DropDown'
+import { RED_GRADIENT } from '../../../../utils/constants'
 import { assignStudentToSOEGql } from '../../SiteManagement/services'
 import { getStudents } from '../services'
+import { useStyles } from '../styles'
 import { EnrollmentSchoolTableProps, YEAR_STATUS, StudentVM } from '../type'
-
 export const EnrollmentSchoolTable: React.FC<EnrollmentSchoolTableProps> = ({
   filter,
   partnerList,
@@ -149,7 +149,7 @@ export const EnrollmentSchoolTable: React.FC<EnrollmentSchoolTableProps> = ({
   const fields: Field<StudentVM>[] = useMemo(() => {
     const currentSOE_Label = selectedYear?.label ? toString(selectedYear.label).split('Mid-year')[0] + ' SoE' : ''
     const previousSOE_Label = previousYear
-      ? moment(previousYear.date_begin).format('YYYY') + ' - ' + moment(previousYear.date_end).format('YY') + ' SoE'
+      ? moment(previousYear.date_begin).format('YYYY') + '-' + moment(previousYear.date_end).format('YY') + ' SoE'
       : null
     const fieldItems: Field<StudentVM>[] = [
       {
@@ -205,7 +205,7 @@ export const EnrollmentSchoolTable: React.FC<EnrollmentSchoolTableProps> = ({
         sortable: true,
         tdClass: 'fw-700',
         formatter: (item) => {
-          return item.currentSoe?.[0]?.partner?.name || 'Unassigned'
+          return item.currentSoe?.[0]?.partner?.abbreviation || 'Unassigned'
         },
       },
     ]
@@ -216,7 +216,7 @@ export const EnrollmentSchoolTable: React.FC<EnrollmentSchoolTableProps> = ({
         sortable: true,
         tdClass: 'fw-700',
         formatter: (student) => {
-          return student.previousSoe?.[0]?.partner?.name || 'Unassigned'
+          return student.previousSoe?.[0]?.partner?.abbreviation || 'Unassigned'
         },
       })
     }
@@ -227,6 +227,7 @@ export const EnrollmentSchoolTable: React.FC<EnrollmentSchoolTableProps> = ({
     return filter?.yearStatus?.includes(YEAR_STATUS.SIBLING) ? ('parent_id' as keyof StudentVM) : undefined
   }, [filter?.yearStatus])
 
+  const classes = useStyles()
   return (
     <Card sx={{ paddingTop: '24px', marginBottom: '24px', paddingBottom: 5, px: 3 }}>
       {/*  Headers */}
@@ -279,20 +280,17 @@ export const EnrollmentSchoolTable: React.FC<EnrollmentSchoolTableProps> = ({
       <Box
         sx={{
           textAlign: 'left',
-          display: 'flex',
-          flexDirection: 'row',
-          alignItems: 'left',
           marginTop: '50px',
-          justifyContent: 'space-between',
+          marginBottom: 4,
         }}
       >
-        <Box display='flex' flexDirection='row' justifyContent='flex-end' sx={{ mr: 3 }} alignItems='center'>
+        <Box className={classes.root} sx={{ marginLeft: '-16px' }}>
           <DropDown
             dropDownItems={schoolYears}
             placeholder={'Select Year'}
             defaultValue={selectedYear?.value || ''}
-            sx={{ width: '200px' }}
             borderNone={true}
+            sx={{ width: '200px' }}
             size='small'
             setParentValue={(val) => {
               const selYear = schoolYears.find((item) => item.value == val)
@@ -305,91 +303,66 @@ export const EnrollmentSchoolTable: React.FC<EnrollmentSchoolTableProps> = ({
             alternate={true}
             placeholder={'Select'}
             defaultValue={schoolPartner}
-            sx={{ widtH: '200px' }}
+            sx={{ width: '100%' }}
             size='small'
             setParentValue={(val) => {
-              setSchoolPartner(val)
+              setSchoolPartner(val as string)
             }}
           />
 
+          <Tooltip title='Assign School of Enrollment' placement='top'>
+            <Button
+              sx={{
+                borderRadius: 2,
+                textTransform: 'none',
+                height: 29,
+                color: 'white',
+              }}
+              onClick={handleAssignStudentToSOE}
+              className='btn-action btn-gradient'
+            >
+              Assign
+            </Button>
+          </Tooltip>
+
+          <Tooltip title='Create withdraw form from previous SoE' placement='top'>
+            <Button
+              sx={{
+                borderRadius: 2,
+                textTransform: 'none',
+                height: 29,
+                color: 'white',
+                background: RED_GRADIENT,
+                '&:hover': {
+                  background: '#D23C33',
+                  color: '#fff',
+                },
+              }}
+              className='btn-action'
+              onClick={handleTransfer}
+            >
+              Transfer
+            </Button>
+          </Tooltip>
+
+          {/*  Pagination & Actions */}
           <Box
             sx={{
               textAlign: 'left',
               display: 'flex',
               flexDirection: 'row',
-              marginLeft: '24px',
               alignItems: 'center',
+              justifyContent: 'space-between',
             }}
           >
-            <Tooltip title='Assign School of Enrollment' placement='top'>
-              <Button
-                sx={{
-                  borderRadius: 2,
-                  textTransform: 'none',
-                  height: 29,
-                  background: BUTTON_LINEAR_GRADIENT,
-                  color: 'white',
-                  width: '92px',
-                  padding: '20px 55px',
-                  marginBottom: '4px',
-                }}
-                onClick={handleAssignStudentToSOE}
-              >
-                Assign
-              </Button>
-            </Tooltip>
+            <Pagination
+              setParentLimit={handleChangePageLimit}
+              handlePageChange={handlePageChange}
+              defaultValue={paginationLimit || 25}
+              numPages={Math.ceil((totalApplications as number) / paginationLimit) || 1}
+              currentPage={currentPage}
+            />
           </Box>
-
-          <Box
-            style={{
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'left',
-              justifyContent: 'flex-end',
-              marginLeft: '24px',
-            }}
-          >
-            <Tooltip title='Create withdraw form from previous SoE' placement='top'>
-              <Button
-                sx={{
-                  borderRadius: 2,
-                  textTransform: 'none',
-                  height: 29,
-                  color: 'white',
-                  width: '92px',
-                  background: RED_GRADIENT,
-                  '&:hover': {
-                    background: '#D23C33',
-                    color: '#fff',
-                  },
-                  padding: '20px 55px',
-                  marginBottom: '4px',
-                }}
-                onClick={handleTransfer}
-              >
-                Transfer
-              </Button>
-            </Tooltip>
-          </Box>
-        </Box>
-        {/*  Pagination & Actions */}
-        <Box
-          sx={{
-            textAlign: 'left',
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            marginY: '12px',
-          }}
-        >
-          <Pagination
-            setParentLimit={handleChangePageLimit}
-            handlePageChange={handlePageChange}
-            defaultValue={paginationLimit || 25}
-            numPages={Math.ceil((totalApplications as number) / paginationLimit) || 0}
-            currentPage={currentPage}
-          />
         </Box>
       </Box>
       <Box sx={{ mx: '-14px' }}>

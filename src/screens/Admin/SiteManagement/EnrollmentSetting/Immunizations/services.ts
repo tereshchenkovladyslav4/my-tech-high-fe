@@ -11,11 +11,12 @@ export const getSchoolYears = gql`
 `
 
 export const getImmunizationSettings = gql`
-  query ImmunizationSettings {
-    immunizationSettings {
+  query ImmunizationSettings($where: FindImmunizationSettingsInput) {
+    immunizationSettings(where: $where) {
       results {
         id
         title
+        region_id
         min_grade_level
         max_grade_level
         min_school_year_required

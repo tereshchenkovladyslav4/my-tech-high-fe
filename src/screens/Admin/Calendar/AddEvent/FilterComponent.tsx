@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { Box, Card, Grid } from '@mui/material'
@@ -34,6 +34,11 @@ const FilterComponent: React.FC<FilterComponentProps> = ({
     setGrades,
   )
   const [expand, setExpand] = useState<boolean>(true)
+  const [showOtherFilters, setShowOtherFilters] = useState(false)
+
+  useEffect(() => {
+    setShowOtherFilters(users.includes('1') || users.includes('2'))
+  }, [users])
 
   const chevron = () =>
     !expand ? (
@@ -58,6 +63,16 @@ const FilterComponent: React.FC<FilterComponentProps> = ({
       <Grid item container xs={12}>
         <Grid item xs={6}>
           <Box sx={addEventClassess.container}>
+            <MthCheckboxList
+              title={'Users'}
+              values={users}
+              setValues={(value) => {
+                setUsers(value)
+                setIsChanged(true)
+              }}
+              checkboxLists={defaultUserList}
+              haveSelectAll={false}
+            />
             <Subtitle sx={calendarClassess.formError}>{touched.grades && errors.grades}</Subtitle>
             <MthCheckboxList
               title={'Grade Level'}
@@ -69,61 +84,53 @@ const FilterComponent: React.FC<FilterComponentProps> = ({
               checkboxLists={gradeList}
               haveSelectAll={true}
             />
-            <MthCheckboxList
-              title={'Program Year'}
-              values={programYears}
-              setValues={(value) => {
-                setProgramYears(value)
-                setIsChanged(true)
-              }}
-              checkboxLists={programYearList}
-              haveSelectAll={false}
-            />
           </Box>
         </Grid>
         <Grid item xs={6}>
-          <Box sx={addEventClassess.container}>
-            <MthCheckboxList
-              title={'Users'}
-              values={users}
-              setValues={(value) => {
-                setUsers(value)
-                setIsChanged(true)
-              }}
-              checkboxLists={defaultUserList}
-              haveSelectAll={false}
-            />
-            <MthCheckboxList
-              title={'School of Enrollment'}
-              values={schoolofEnrollments}
-              setValues={(value) => {
-                setSchoolofEnrollment(value)
-                setIsChanged(true)
-              }}
-              checkboxLists={schoolPartnerList}
-              haveSelectAll={false}
-            />
-            <MthCheckboxList
-              title={'Other'}
-              values={others}
-              setValues={(value) => {
-                setOthers(value)
-                setIsChanged(true)
-              }}
-              checkboxLists={defaultOtherList}
-              haveSelectAll={false}
-            />
-            <MthCheckboxList
-              title={'Providers'}
-              values={providers}
-              setValues={(value) => {
-                setProviders(value)
-                setIsChanged(true)
-              }}
-              checkboxLists={defaultProviderList}
-              haveSelectAll={false}
-            />
-          </Box>
+          {showOtherFilters && (
+            <Box sx={addEventClassess.container}>
+              <MthCheckboxList
+                title={'Program Year'}
+                values={programYears}
+                setValues={(value) => {
+                  setProgramYears(value)
+                  setIsChanged(true)
+                }}
+                checkboxLists={programYearList}
+                haveSelectAll={false}
+              />
+              <MthCheckboxList
+                title={'School of Enrollment'}
+                values={schoolofEnrollments}
+                setValues={(value) => {
+                  setSchoolofEnrollment(value)
+                  setIsChanged(true)
+                }}
+                checkboxLists={schoolPartnerList}
+                haveSelectAll={false}
+              />
+              <MthCheckboxList
+                title={'Other'}
+                values={others}
+                setValues={(value) => {
+                  setOthers(value)
+                  setIsChanged(true)
+                }}
+                checkboxLists={defaultOtherList}
+                haveSelectAll={false}
+              />
+              <MthCheckboxList
+                title={'Providers'}
+                values={providers}
+                setValues={(value) => {
+                  setProviders(value)
+                  setIsChanged(true)
+                }}
+                checkboxLists={defaultProviderList}
+                haveSelectAll={false}
+              />
+            </Box>
+          )}
         </Grid>
       </Grid>
     </Grid>

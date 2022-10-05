@@ -1,4 +1,4 @@
-import { DropDownItem } from '../SiteManagement/components/DropDown/types'
+import { DropDownItem } from '@mth/components/DropDown/types'
 
 export enum YEAR_STATUS {
   NEW = 'NEW',
@@ -21,10 +21,15 @@ export type FilterVM = {
   yearStatus?: YEAR_STATUS[]
 }
 
-export type PartnerItem = {
+export type SchoolPartner = {
   value: string
   label: string
   abb: string
+}
+
+export type OptionType = {
+  value: number | string
+  label: string
 }
 
 export type PartnerEnrollmentType = {
@@ -47,8 +52,8 @@ export type schoolYearDataType = {
 export type FiltersProps = {
   filter: FilterVM | undefined
   setFilter: (value: FilterVM | undefined) => void
-  partnerList: PartnerItem[]
-  previousPartnerList: PartnerItem[]
+  partnerList: OptionType[]
+  previousPartnerList: SchoolPartner[]
   selectedYear?: DropDownItem
   gradesList: string[]
 }
@@ -56,7 +61,7 @@ export type FiltersProps = {
 export type EnrollmentSchoolTableProps = {
   filter: FilterVM | undefined
   setFilter: (value: FilterVM | undefined) => void
-  partnerList: PartnerItem[]
+  partnerList: OptionType[]
   schoolYears: DropDownItem[]
   selectedYear?: DropDownItem
   setSelectedYear: (value: DropDownItem) => void
@@ -95,7 +100,8 @@ export type Address = {
 }
 
 export type Partner = {
-  name: string
+  name?: string
+  abbreviation?: string
 }
 
 export type Person = {

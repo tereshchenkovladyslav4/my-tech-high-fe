@@ -18,7 +18,7 @@ import {
 import { MthRoute, MthTitle, OPT_TYPE } from '@mth/enums'
 import { diplomaAnswerGql, diplomaQuestionForStudent, submitDiplomaAnswerGql } from '@mth/graphql/queries/diploma'
 import { getSignatureInfoByStudentId } from '@mth/graphql/queries/user'
-import { useAssessmentsBySchoolYearId, useDecideSpecialEdu } from '@mth/hooks'
+import { useAssessmentsBySchoolYearId, useQuestionBySlugAndRegion } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { getSignatureFile } from '@mth/screens/Admin/EnrollmentPackets/services'
 import { AssessmentType } from '@mth/screens/Admin/SiteManagement/EnrollmentSetting/TestingPreference/types'
@@ -98,52 +98,10 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
     fetchPolicy: 'network-only',
   })
 
-  const { decideSpecialEduData, loadedDecideSpecialEdu } = useDecideSpecialEdu(studentId, 'meta_special_education')
-
-  useEffect(() => {
-    if (loadedDecideSpecialEdu) {
-      setStudentInfo({ ...studentInfo, specialEd: decideSpecialEduData.label })
-    }
-  }, [loadedDecideSpecialEdu, decideSpecialEduData])
-
-  useEffect(() => {
-    setIsDiplomaError(false)
-    if (!diplomaLoading) {
-      if (diplomaData && diplomaData.getDiplomaQuestionForStudent) {
-        setDiplomaQuestion({
-          title: diplomaData.getDiplomaQuestionForStudent.title,
-          description: extractContent(diplomaData.getDiplomaQuestionForStudent.description),
-        })
-      } else {
-        setDiplomaQuestion({
-          title: DEFUALT_DIPLOMA_QUESTION_TITLE,
-          description: DEFUALT_DIPLOMA_QUESTION_DESCRIPTION.replace(
-            '%REGION_NAME%',
-            me?.userRegion?.at(-1)?.regionDetail?.name,
-          ),
-        })
-      }
-    }
-  }, [diplomaLoading, diplomaData])
-
-  useEffect(() => {
-    if (!diplomaAnswerLoading) {
-      if (diplomaAnswerData && diplomaAnswerData.getDiplomaAnswer) {
-        setDiplomaOptions([
-          {
-            option_id: 1,
-            label: 'Yes',
-            value: 1 === diplomaAnswerData.getDiplomaAnswer.answer,
-          },
-          {
-            option_id: 2,
-            label: 'No',
-            value: 0 === diplomaAnswerData.getDiplomaAnswer.answer,
-          },
-        ])
-      }
-    }
-  }, [diplomaAnswerLoading, diplomaAnswerData])
+  const { decideSpecialEduData, loadedDecideSpecialEdu } = useQuestionBySlugAndRegion(
+    studentId,
+    'meta_special_education',
+  )
 
   const [saveDiplomaAnswer] = useMutation(submitDiplomaAnswerGql)
 
@@ -396,6 +354,51 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
       setSignatureFileUrl(signatureFileData?.signatureFile?.signedUrl)
     }
   }, [signatureFileUrlLoading, signatureFileData])
+
+  useEffect(() => {
+    if (loadedDecideSpecialEdu) {
+      if (studentInfo) setStudentInfo({ ...studentInfo, specialEd: decideSpecialEduData.label || '' })
+    }
+  }, [loadedDecideSpecialEdu, decideSpecialEduData])
+
+  useEffect(() => {
+    setIsDiplomaError(false)
+    if (!diplomaLoading) {
+      if (diplomaData && diplomaData.getDiplomaQuestionForStudent) {
+        setDiplomaQuestion({
+          title: diplomaData.getDiplomaQuestionForStudent.title,
+          description: extractContent(diplomaData.getDiplomaQuestionForStudent.description),
+        })
+      } else {
+        setDiplomaQuestion({
+          title: DEFUALT_DIPLOMA_QUESTION_TITLE,
+          description: DEFUALT_DIPLOMA_QUESTION_DESCRIPTION.replace(
+            '%REGION_NAME%',
+            me?.userRegion?.at(-1)?.regionDetail?.name || '',
+          ),
+        })
+      }
+    }
+  }, [diplomaLoading, diplomaData])
+
+  useEffect(() => {
+    if (!diplomaAnswerLoading) {
+      if (diplomaAnswerData && diplomaAnswerData.getDiplomaAnswer) {
+        setDiplomaOptions([
+          {
+            option_id: 1,
+            label: 'Yes',
+            value: 1 === diplomaAnswerData.getDiplomaAnswer.answer,
+          },
+          {
+            option_id: 2,
+            label: 'No',
+            value: 0 === diplomaAnswerData.getDiplomaAnswer.answer,
+          },
+        ])
+      }
+    }
+  }, [diplomaAnswerLoading, diplomaAnswerData])
 
   return (
     <Card sx={{ margin: 4, padding: 4 }}>

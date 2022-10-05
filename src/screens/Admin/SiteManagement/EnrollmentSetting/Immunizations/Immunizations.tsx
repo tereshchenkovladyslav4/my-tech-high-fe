@@ -1,10 +1,11 @@
-import React, { createContext, useEffect, useState } from 'react'
+import React, { createContext, useContext, useEffect, useState } from 'react'
 import { useMutation, useQuery } from '@apollo/client'
 import AddIcon from '@mui/icons-material/Add'
 import { Box, Button } from '@mui/material'
 import { Route, Switch, useHistory, useRouteMatch } from 'react-router-dom'
+import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { getSettingsQuery, updateSettingsMutation } from '../../../EnrollmentPackets/services'
-import ImminizationSettings from './ImminizationSettings/ImminizationSettings'
+import ImmunizationSettings from './ImminizationSettings/ImminizationSettings'
 import ImmunizationHeader from './ImmunizationHeader'
 import ImmunizationItems from './ImmunizationItems/ImmunizationItems'
 import { getImmunizationSettings, getSchoolYears } from './services'
@@ -12,6 +13,7 @@ import { getImmunizationSettings, getSchoolYears } from './services'
 export interface ImmunizationsData {
   id?: number
   title?: string
+  region_id: number
   min_grade_level?: string
   max_grade_level?: string
   min_school_year_required?: number
@@ -45,10 +47,17 @@ export const DataContext = createContext(null)
 const Immunizations: React.FC = () => {
   const { path, isExact } = useRouteMatch('/site-management/enrollment/immunizations')
   const history = useHistory()
+  const { me } = useContext(UserContext)
   const { loading, error, data, refetch } = useQuery<{ immunizationSettings: { results: ImmunizationsData[] } }>(
     getImmunizationSettings,
     {
+      variables: {
+        where: {
+          region_id: me?.selectedRegionId,
+        },
+      },
       fetchPolicy: 'network-only',
+      skip: !me?.selectedRegionId,
     },
   )
 
@@ -131,7 +140,7 @@ const Immunizations: React.FC = () => {
         <Route path={`${path}/:id`}>
           <YearsContext.Provider value={yearsData.schoolYears}>
             <DataContext.Provider value={results}>
-              <ImminizationSettings data={results} refetch={refetch} />
+              <ImmunizationSettings data={results} refetch={refetch} />
             </DataContext.Provider>
           </YearsContext.Provider>
         </Route>

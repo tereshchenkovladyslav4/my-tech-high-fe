@@ -10,7 +10,7 @@ import { UserContext } from '../../../../providers/UserContext/UserProvider'
 import { BUTTON_LINEAR_GRADIENT, MTHBLUE, RED_GRADIENT, GRADES, GRADE_GROUPS } from '../../../../utils/constants'
 import { toOrdinalSuffix } from '../../../../utils/stringHelpers'
 import { getSchoolDistrictsByRegionId } from '../../SiteManagement/EnrollmentSetting/ApplicationQuestions/services'
-import { FiltersProps, PartnerItem, YEAR_STATUS, SchoolDistrictType, FilterVM } from '../type'
+import { FiltersProps, SchoolPartner, YEAR_STATUS, SchoolDistrictType, FilterVM, OptionType } from '../type'
 
 export const Filters: FunctionComponent<FiltersProps> = ({
   filter,
@@ -299,7 +299,7 @@ export const Filters: FunctionComponent<FiltersProps> = ({
             ))}
 
             <Paragraph sx={{ marginTop: '12px' }} size='large' fontWeight='700'>
-              Current SOE
+              Current SoE
             </Paragraph>
             <FormControlLabel
               sx={{ height: 30 }}
@@ -316,27 +316,27 @@ export const Filters: FunctionComponent<FiltersProps> = ({
                 </Paragraph>
               }
             />
-            {partnerList.map((item: PartnerItem, index: number) => (
+            {partnerList.map((item: OptionType, index: number) => (
               <FormControlLabel
                 key={index}
                 sx={{ height: 30 }}
                 control={
                   <Checkbox
                     value={item.value}
-                    checked={schoolOfEnrollments.includes(item.value)}
+                    checked={schoolOfEnrollments.includes(item.value as string)}
                     onChange={handleSchoolOfEnrollments}
                   />
                 }
                 label={
                   <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
-                    {item.abb}
+                    {item.label}
                   </Paragraph>
                 }
               />
             ))}
 
             <Paragraph sx={{ marginTop: '12px' }} size='large' fontWeight='700'>
-              Previous SOE
+              Previous SoE
             </Paragraph>
             <FormControlLabel
               sx={{ height: 30 }}
@@ -353,7 +353,7 @@ export const Filters: FunctionComponent<FiltersProps> = ({
                 </Paragraph>
               }
             />
-            {previousPartnerList.map((item: PartnerItem, index) => (
+            {previousPartnerList.map((item: SchoolPartner, index) => (
               <FormControlLabel
                 sx={{ height: 30 }}
                 key={index}

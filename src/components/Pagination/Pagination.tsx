@@ -74,6 +74,7 @@ export const Pagination: PaginationTemplateType = ({
         sx={classes.pageNumber}
         onChange={(e, pageNum) => handlePageChange && handlePageChange(pageNum)}
         page={currentPage}
+        disabled={numPages < 2}
       />
     </Box>
   )

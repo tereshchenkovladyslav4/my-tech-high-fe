@@ -26,11 +26,13 @@ export const getStudents = gql`
         currentSoe {
           partner {
             name
+            abbreviation
           }
         }
         previousSoe {
           partner {
             name
+            abbreviation
           }
         }
       }

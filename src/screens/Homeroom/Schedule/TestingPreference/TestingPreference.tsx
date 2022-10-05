@@ -87,7 +87,7 @@ const TestingPreference: React.FC<TestingPreferenceProps> = ({
       {assessmentItems?.map((assessmentItem, index) => (
         <Box key={index} sx={{ marginTop: 4 }}>
           <Subtitle sx={testingPrefrenceClassess.formError}>
-            {invalidationTP?.length > 0 && invalidationTP.includes(assessmentItem.assessment_id) && 'Reason Required'}
+            {invalidationTP?.length > 0 && invalidationTP.includes(assessmentItem.assessment_id) && 'Response Required'}
           </Subtitle>
           <MthRadioGroup
             ariaLabel={`testing_preference_${index}`}

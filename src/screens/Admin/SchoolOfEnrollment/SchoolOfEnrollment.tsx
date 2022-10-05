@@ -2,30 +2,19 @@ import React, { useState, useContext, useEffect } from 'react'
 import { useQuery } from '@apollo/client'
 import { Box, Grid } from '@mui/material'
 import moment from 'moment'
+import { DropDownItem } from '@mth/components/DropDown/types'
 import { UserContext } from '../../../providers/UserContext/UserProvider'
-import { DropDownItem } from '../SiteManagement/components/DropDown/types'
 import { getSchoolYearsByRegionId } from '../SiteManagement/services'
 import { Filters } from './Filters/Filters'
 import { EnrollmentSchoolTable } from './SchoolEnrollmentTable/SchoolEnrollmentTable'
 import { GetSchoolsPartner } from './services'
-import { FilterVM, PartnerItem, schoolYearDataType, PartnerEnrollmentType } from './type'
-
-type SchoolPartner = {
-  value: string
-  label: string
-  abb: string
-}
-
-type OptionType = {
-  value: number | string
-  label: string
-}
+import { FilterVM, schoolYearDataType, PartnerEnrollmentType, OptionType, SchoolPartner } from './type'
 
 export const SchoolOfEnrollment: React.FC = () => {
   const [filter, setFilter] = useState<FilterVM>()
   const { me } = useContext(UserContext)
-  const [partnerList, setPartnerList] = useState<Array<PartnerItem>>([])
-  const [previousPartnerList, setPreviousPartnerList] = useState<Array<PartnerItem>>([])
+  const [partnerList, setPartnerList] = useState<OptionType[]>([])
+  const [previousPartnerList, setPreviousPartnerList] = useState<Array<SchoolPartner>>([])
 
   const [schoolYears, setSchoolYears] = useState<DropDownItem[]>([])
   const [selectedYear, setSelectedYear] = useState<DropDownItem>()
@@ -64,14 +53,13 @@ export const SchoolOfEnrollment: React.FC = () => {
   })
 
   useEffect(() => {
-    const list: SchoolPartner[] = []
+    const list: OptionType[] = []
     schoolPartnerData?.getSchoolsOfEnrollmentByRegion
       ?.filter((el: PartnerEnrollmentType) => el.active === 1)
       .map((item: PartnerEnrollmentType) => {
         list.push({
           value: item.school_partner_id,
-          label: item.name,
-          abb: item.abbreviation,
+          label: item.abbreviation,
         })
       })
     setPartnerList(list)
@@ -115,13 +103,13 @@ export const SchoolOfEnrollment: React.FC = () => {
           grades: string
         }): void => {
           yearList.push({
-            label: `${moment(item.date_begin).format('YYYY')} - ${moment(item.date_end).format('YY')}`,
+            label: `${moment(item.date_begin).format('YYYY')}-${moment(item.date_end).format('YY')}`,
             value: item.school_year_id,
           })
 
           if (moment(item.date_begin).format('YYYY') === moment().format('YYYY')) {
             setSelectedYear({
-              label: `${moment(item.date_begin).format('YYYY')} - ${moment(item.date_end).format('YY')}`,
+              label: `${moment(item.date_begin).format('YYYY')}-${moment(item.date_end).format('YY')}`,
               value: item.school_year_id,
             }) // set init year
             // setGrades(item.grades.split(','))

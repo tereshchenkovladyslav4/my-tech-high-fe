@@ -26,10 +26,10 @@ export const ordinalSuffixOf = (num: number | string): string => {
   return i + 'th'
 }
 
-export const extractContent = (s: string): string | null => {
+export const extractContent = (s: string): string => {
   const span = document.createElement('span')
   span.innerHTML = s
-  return span.textContent || span.innerText
+  return span.textContent || span.innerText || ''
 }
 
 export const renderDate = (selectedEvent: EventVM | undefined): string => {

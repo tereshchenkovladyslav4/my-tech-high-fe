@@ -1,13 +1,14 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { useMutation } from '@apollo/client'
 import { Form, Formik } from 'formik'
 import { useHistory, useRouteMatch } from 'react-router-dom'
 import * as Yup from 'yup'
+import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { getDuration } from '../../../../EnrollmentPackets/EnrollmentPacketModal/helpers'
 import ImmunizationHeader from '../ImmunizationHeader'
 import { ImmunizationsData } from '../Immunizations'
 import { saveImmunizationSettings } from '../services'
-import ImminizationSettinsItems from './ImminizationSettinsItems'
+import ImmunizationSettingItems from './ImminizationSettinsItems'
 
 const validationSchema = Yup.object().shape({
   min_grade_level: Yup.string().required('This field is required!').notOneOf(['N/A'], 'This field is required!'),
@@ -51,7 +52,8 @@ const validationSchema = Yup.object().shape({
   tooltip: Yup.string(),
 })
 
-const NewImminization: React.FC<{ refetch: () => void; order: number }> = ({ refetch, order }) => {
+const NewImmunization: React.FC<{ refetch: () => void; order: number }> = ({ refetch, order }) => {
+  const { me } = useContext(UserContext)
   const [itemData, setItemData] = useState<ImmunizationsData>({
     is_enabled: true,
     min_grade_level: undefined,
@@ -69,6 +71,7 @@ const NewImminization: React.FC<{ refetch: () => void; order: number }> = ({ ref
     exempt_update: undefined,
     level_exempt_update: undefined,
     email_update_template: undefined,
+    region_id: 1,
   })
   const [saveImmunizationSettingsMutation] = useMutation(saveImmunizationSettings)
   const history = useHistory()
@@ -84,6 +87,7 @@ const NewImminization: React.FC<{ refetch: () => void; order: number }> = ({ ref
           max_school_year_required: 0,
           order: order,
           min_spacing_date: values.min_spacing_date + 1,
+          region_id: me?.selectedRegionId,
         },
       },
     })
@@ -101,13 +105,13 @@ const NewImminization: React.FC<{ refetch: () => void; order: number }> = ({ ref
           onEnabledChange={SetStatus}
           backUrl='/site-management/enrollment/immunizations'
         />
-        <ImminizationSettinsItems />
+        <ImmunizationSettingItems />
       </Form>
     </Formik>
   )
 }
 
-const ImminizationItem: React.FC<{ data: ImmunizationsData; refetch: () => void }> = ({ data, refetch }) => {
+const ImmunizationItem: React.FC<{ data: ImmunizationsData; refetch: () => void }> = ({ data, refetch }) => {
   const [itemData, setItemData] = useState<ImmunizationsData>({ ...data, min_spacing_date: data.min_spacing_date - 1 })
   const [saveImmunizationSettingsMutation] = useMutation(saveImmunizationSettings)
   useEffect(() => {
@@ -138,13 +142,13 @@ const ImminizationItem: React.FC<{ data: ImmunizationsData; refetch: () => void 
           onEnabledChange={SetStatus}
           backUrl='/site-management/enrollment/immunizations'
         />
-        <ImminizationSettinsItems />
+        <ImmunizationSettingItems />
       </Form>
     </Formik>
   )
 }
 
-const ImminizationSettings: React.FC<{ data: ImmunizationsData[]; refetch: () => void }> = ({ data, refetch }) => {
+const ImmunizationSettings: React.FC<{ data: ImmunizationsData[]; refetch: () => void }> = ({ data, refetch }) => {
   const {
     params: { id },
   } = useRouteMatch<{ id: string }>('/site-management/enrollment/immunizations/:id')
@@ -155,14 +159,14 @@ const ImminizationSettings: React.FC<{ data: ImmunizationsData[]; refetch: () =>
     if (item.order > bigestOrder) bigestOrder = item.order
   })
 
-  if (id === 'add') return <NewImminization order={bigestOrder + 1} refetch={refetch} />
+  if (id === 'add') return <NewImmunization order={bigestOrder + 1} refetch={refetch} />
   const itemData = data.find((item) => item.id.toString() === id)
 
   if (!itemData) {
     history.push('/site-management/enrollment/immunizations')
     return null
   }
-  return <ImminizationItem data={itemData} refetch={refetch} />
+  return <ImmunizationItem data={itemData} refetch={refetch} />
 }
 
-export { ImminizationSettings as default }
+export { ImmunizationSettings as default }
