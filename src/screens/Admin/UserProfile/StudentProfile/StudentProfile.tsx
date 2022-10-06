@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useState, useContext, useMemo } from 'react'
+import React, { useEffect, useState, useContext, useMemo } from 'react'
 import { useQuery } from '@apollo/client'
 import { makeStyles } from '@material-ui/styles'
 import { KeyboardArrowDown } from '@mui/icons-material'
@@ -17,15 +17,15 @@ import {
 } from '@mui/material'
 import { Box } from '@mui/system'
 import moment from 'moment'
+import { DropDown } from '@mth/components/DropDown/DropDown'
+import { DropDownItem } from '@mth/components/DropDown/types'
+import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { Title } from '@mth/components/Typography/Title/Title'
+import { WarningModal } from '@mth/components/WarningModal/Warning'
+import { getWithdrawalStatusQuery } from '@mth/graphql/queries/withdrawal'
+import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { StudentType } from '@mth/screens/HomeroomStudentProfile/Student/types'
-import { DropDown } from '../../../../components/DropDown/DropDown'
-import { DropDownItem } from '../../../../components/DropDown/types'
-import { Paragraph } from '../../../../components/Typography/Paragraph/Paragraph'
-import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
-import { Title } from '../../../../components/Typography/Title/Title'
-import { WarningModal } from '../../../../components/WarningModal/Warning'
-import { getWithdrawalStatusQuery } from '../../../../graphql/queries/withdrawal'
-import { UserContext } from '../../../../providers/UserContext/UserProvider'
 import { BUTTON_LINEAR_GRADIENT, MTHBLUE } from '../../../../utils/constants'
 import { STATES_WITH_ABBREVIATION } from '../../../../utils/states'
 import { getPreviousSchoolYearId } from '../../../../utils/utils'
@@ -74,7 +74,7 @@ const ordinal = (n) => {
   const v = n % 100
   return n + (s[(v - 20) % 10] || s[v] || s[0])
 }
-export const StudentProfile: FunctionComponent<StudentProfileProps> = ({
+export const StudentProfile: React.FC<StudentProfileProps> = ({
   studentId,
   setStudentPerson,
   setStudentStatus,

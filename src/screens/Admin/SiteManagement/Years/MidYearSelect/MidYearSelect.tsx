@@ -1,9 +1,9 @@
-import React, { FunctionComponent, useState } from 'react'
+import React, { useState } from 'react'
 import ExpandLessIcon from '@mui/icons-material/ExpandLess'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { Box, Stack } from '@mui/material'
+import { DropDown } from '@mth/components/DropDown/DropDown'
 import { BLACK } from '../../../../../utils/constants'
-import { DropDown } from '../../components/DropDown/DropDown'
 import { SchoolYearItem } from '../types'
 
 type MideYearSelectProps = {
@@ -13,13 +13,13 @@ type MideYearSelectProps = {
   setMidYearExpend: (value: boolean) => void
 }
 
-export const MidYearSelect: FunctionComponent<MideYearSelectProps> = ({
+export const MidYearSelect: React.FC<MideYearSelectProps> = ({
   midYearItem,
   setMidYearItem,
   setMidYearExpend,
   setIsChanged,
 }) => {
-  const statusHandleChange = (value: string) => {
+  const statusHandleChange = (value: string | number | boolean) => {
     if (midYearItem) setMidYearItem({ ...midYearItem, status: value == 'true' ? true : false })
     setIsChanged(true)
   }

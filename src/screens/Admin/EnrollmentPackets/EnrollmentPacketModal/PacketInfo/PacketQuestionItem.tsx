@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useCallback, FunctionComponent, ReactElement } from 'react'
+import React, { useState, useEffect, useContext, useCallback, ReactElement } from 'react'
 import { gql, useQuery } from '@apollo/client'
 import {
   Box,
@@ -13,12 +13,12 @@ import {
 } from '@mui/material'
 import { Controller, useFormContext } from 'react-hook-form'
 import { v4 as uuidv4 } from 'uuid'
-import { DropDown } from '../../../../../components/DropDown/DropDown'
-import { DropDownItem } from '../../../../../components/DropDown/types'
-import { QUESTION_TYPE } from '../../../../../components/QuestionItem/QuestionItemProps'
-import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragraph'
-import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
-import { UserContext } from '../../../../../providers/UserContext/UserProvider'
+import { DropDown } from '@mth/components/DropDown/DropDown'
+import { DropDownItem } from '@mth/components/DropDown/types'
+import { QUESTION_TYPE } from '@mth/components/QuestionItem/QuestionItemProps'
+import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { SYSTEM_05, SYSTEM_07, GRADES } from '../../../../../utils/constants'
 import { toOrdinalSuffix } from '../../../../../utils/stringHelpers'
 import { EnrollmentQuestion } from '../../../SiteManagement/EnrollmentSetting/EnrollmentQuestions/types'
@@ -32,7 +32,7 @@ export const getActiveSchoolYearsByRegionId = gql`
   }
 `
 
-export const PacketQuestionItem: FunctionComponent<{ item: EnrollmentQuestion[] }> = ({ item }) => {
+export const PacketQuestionItem: React.FC<{ item: EnrollmentQuestion[] }> = ({ item }) => {
   const [questionItems, setQuestionItems] = useState<Array<unknown>>([<Grid key={uuidv4()}></Grid>])
   const { getValues } = useFormContext()
   const values = getValues()

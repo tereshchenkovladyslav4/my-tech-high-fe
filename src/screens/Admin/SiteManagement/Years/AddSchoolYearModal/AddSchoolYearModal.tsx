@@ -1,7 +1,7 @@
-import React, { useState, useEffect, FunctionComponent } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Box, Button, Dialog, DialogTitle, DialogActions } from '@mui/material'
-import { DropDown } from '../../components/DropDown/DropDown'
-import { DropDownItem } from '../../components/DropDown/types'
+import { DropDown } from '@mth/components/DropDown/DropDown'
+import { DropDownItem } from '@mth/components/DropDown/types'
 import { siteManagementClassess } from '../../styles'
 
 type AddSchoolYearModalProps = {
@@ -11,7 +11,7 @@ type AddSchoolYearModalProps = {
   handleParentSave: (value: string) => void
 }
 
-export const AddSchoolYearModal: FunctionComponent<AddSchoolYearModalProps> = ({
+export const AddSchoolYearModal: React.FC<AddSchoolYearModalProps> = ({
   addSchoolYears,
   addSchoolYearDialogOpen,
   handleParentClose,
@@ -70,7 +70,7 @@ export const AddSchoolYearModal: FunctionComponent<AddSchoolYearModalProps> = ({
           defaultValue={'none'}
           placeholder={'Clone from'}
           setParentValue={(val) => {
-            setSelectedSchoolYearId(val)
+            setSelectedSchoolYearId(`${val}`)
           }}
         />
       </Box>

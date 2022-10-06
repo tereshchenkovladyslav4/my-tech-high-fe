@@ -26,6 +26,8 @@ export type SchoolYearRespnoseType = {
   second_semester_close: string
   midyear_schedule_open: string
   midyear_schedule_close: string
+  homeroom_resource_open: string
+  homeroom_resource_close: string
   schedule: boolean
   diploma_seeking: boolean
 }

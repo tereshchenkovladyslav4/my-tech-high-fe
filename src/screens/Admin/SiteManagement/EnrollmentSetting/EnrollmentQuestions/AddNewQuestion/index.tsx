@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useContext, FunctionComponent } from 'react'
+import React, { useEffect, useState, useRef, useContext } from 'react'
 import { Box, Button, Checkbox, Modal, outlinedInputClasses, TextField, Typography } from '@mui/material'
 
 import { EditorState, convertToRaw, ContentState } from 'draft-js'
@@ -6,12 +6,12 @@ import draftToHtml from 'draftjs-to-html'
 import { useFormikContext } from 'formik'
 import htmlToDraft from 'html-to-draftjs'
 import Wysiwyg from 'react-draft-wysiwyg'
-import { DropDown } from '../../../../../../components/DropDown/DropDown'
-import { DropDownItem } from '../../../../../../components/DropDown/types'
-import { QuestionOptions } from '../../../../../../components/QuestionItem/AddNewQuestion/Options'
-import { QUESTION_TYPE } from '../../../../../../components/QuestionItem/QuestionItemProps'
+import { DropDown } from '@mth/components/DropDown/DropDown'
+import { DropDownItem } from '@mth/components/DropDown/types'
+import { QuestionOptions } from '@mth/components/QuestionItem/AddNewQuestion/Options'
+import { QUESTION_TYPE } from '@mth/components/QuestionItem/QuestionItemProps'
 
-import { Subtitle } from '../../../../../../components/Typography/Subtitle/Subtitle'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { SYSTEM_07 } from '../../../../../../utils/constants'
 import { CustomModal } from '../../components/CustomModal/CustomModals'
 import { validationTypes } from '../../constant/defaultQuestions'
@@ -34,7 +34,7 @@ type AddNewQuestionModalProps = {
   isNewQuestion?: boolean
 }
 
-export const AddNewQuestionModal: FunctionComponent<AddNewQuestionModalProps> = ({
+export const AddNewQuestionModal: React.FC<AddNewQuestionModalProps> = ({
   onClose,
   editItem,
   group,

@@ -36,7 +36,7 @@ const Schedules: React.FC<SchedulesProps> = ({
       value: 'false',
     },
   ]
-  const handleScheduleChange = (value: string) => {
+  const handleScheduleChange = (value: string | number | boolean) => {
     setSchedule(value == 'true' ? true : false)
     setTestingPreference(value == 'true' ? true : false)
     setDiplomaSeeking(value == 'true' ? true : false)

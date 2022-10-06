@@ -14,5 +14,7 @@ export type PageContentProps = {
   setSecondSemesterItem: (value: SchoolYearItem | undefined) => void
   midYearScheduleItem: SchoolYearItem | undefined
   setMidYearScheduleItem: (value: SchoolYearItem | undefined) => void
+  homeroomResourceItem: SchoolYearItem | undefined
+  setHomeroomResourceItem: (value: SchoolYearItem | undefined) => void
   setIsChanged: (value: boolean) => void
 }

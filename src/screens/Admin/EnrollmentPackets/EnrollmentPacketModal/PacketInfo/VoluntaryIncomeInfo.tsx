@@ -1,12 +1,12 @@
-import React, { FunctionComponent } from 'react'
+import React from 'react'
 import { Grid, TextField } from '@mui/material'
 import { Box } from '@mui/system'
 import { Controller, useFormContext } from 'react-hook-form'
-import { DropDown } from '../../../../../components/DropDown/DropDown'
-import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
+import { DropDown } from '@mth/components/DropDown/DropDown'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { monthlyIncome } from '../../../../../utils/constants'
 
-export const VoluntaryIncomeInfo: FunctionComponent = () => {
+export const VoluntaryIncomeInfo: React.FC = () => {
   const { control } = useFormContext()
   return (
     <Box sx={{ paddingTop: '15px' }}>

@@ -10,10 +10,10 @@ import {
   RadioGroup,
   FormHelperText,
 } from '@mui/material'
-import { DropDown } from '../../../../components/DropDown/DropDown'
-import { QUESTION_TYPE } from '../../../../components/QuestionItem/QuestionItemProps'
-import { Paragraph } from '../../../../components/Typography/Paragraph/Paragraph'
-import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
+import { DropDown } from '@mth/components/DropDown/DropDown'
+import { QUESTION_TYPE } from '@mth/components/QuestionItem/QuestionItemProps'
+import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { SYSTEM_05, SYSTEM_07 } from '../../../../utils/constants'
 import {
   getCountiesByRegionId,

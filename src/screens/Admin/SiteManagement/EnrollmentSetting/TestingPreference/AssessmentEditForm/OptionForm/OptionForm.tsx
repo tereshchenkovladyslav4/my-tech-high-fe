@@ -26,7 +26,7 @@ const OptionForm: React.FC<OptionFormProps> = ({ option, setOption, invalidation
   ]
 
   return (
-    <Box sx={{ borderLeft: '1px solid #000', paddingX: 4 }}>
+    <Box sx={{ borderLeft: '1px solid #000', paddingX: 4, width: '100%' }}>
       <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
         <Box sx={{ display: 'flex', flexDirection: 'column', textAlign: 'left' }}>
           <TextField

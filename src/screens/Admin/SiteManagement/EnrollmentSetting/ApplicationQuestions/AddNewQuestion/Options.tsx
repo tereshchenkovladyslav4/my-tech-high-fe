@@ -1,10 +1,10 @@
-import React, { FunctionComponent, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import CloseSharp from '@mui/icons-material/CloseSharp'
 import { Box, Radio, TextField, Checkbox, IconButton, outlinedInputClasses } from '@mui/material'
-import { QUESTION_TYPE } from '../../../../../../components/QuestionItem/QuestionItemProps'
+import { DropDown } from '@mth/components/DropDown/DropDown'
+import { QUESTION_TYPE } from '@mth/components/QuestionItem/QuestionItemProps'
 import { CustomModal } from '../../../../../../screens/Admin/SiteManagement/EnrollmentSetting/components/CustomModal/CustomModals'
 import { SYSTEM_07 } from '../../../../../../utils/constants'
-import { DropDown } from '../../../components/DropDown/DropDown'
 
 type QuestionOptionProps = {
   options: Array<unknown>
@@ -25,7 +25,7 @@ const actionTypes = [
   },
 ]
 
-export const QuestionOptions: FunctionComponent<QuestionOptionProps> = ({
+export const QuestionOptions: React.FC<QuestionOptionProps> = ({
   options,
   setOptions,
   type,

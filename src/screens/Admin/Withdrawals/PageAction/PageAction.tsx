@@ -2,11 +2,11 @@ import React, { useEffect, useState, useContext } from 'react'
 import { useQuery } from '@apollo/client'
 import { Box, Button } from '@mui/material'
 import moment from 'moment'
-import { Pagination } from '../../../../components/Pagination/Pagination'
-import { UserContext } from '../../../../providers/UserContext/UserProvider'
+import { DropDown } from '@mth/components/DropDown/DropDown'
+import { DropDownItem } from '@mth/components/DropDown/types'
+import { Pagination } from '@mth/components/Pagination/Pagination'
+import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { getSchoolYearsByRegionId } from '../../Dashboard/SchoolYear/SchoolYear'
-import { DropDown } from '../../SiteManagement/components/DropDown/DropDown'
-import { DropDownItem } from '../../SiteManagement/components/DropDown/types'
 import { PageActionProps } from '../type'
 import { WithdrawalFilters } from '../WithdrawalFilters'
 import { actionClassess } from './styles'
@@ -96,10 +96,9 @@ const PageAction: React.FC<PageActionProps> = ({
           dropDownItems={schoolYears}
           placeholder={'Select Year'}
           defaultValue={selectedYear}
-          sx={{ width: '200px' }}
           borderNone={true}
           setParentValue={(val) => {
-            setSelectedYear(val)
+            setSelectedYear(Number(val))
           }}
         />
       </Box>

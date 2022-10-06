@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { Box, Button, OutlinedInput, Stack, Dialog, DialogTitle, DialogActions, Tooltip } from '@mui/material'
 import { CustomConfirmModal } from '@mth/components/CustomConfirmModal/CustomConfirmModal'
+import { DropDown } from '@mth/components/DropDown/DropDown'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { MTHBLUE } from '../../../../../utils/constants'
-import { DropDown } from '../../components/DropDown/DropDown'
 import { siteManagementClassess } from '../../styles'
 import { ProgramSettingChanged } from '../types'
 

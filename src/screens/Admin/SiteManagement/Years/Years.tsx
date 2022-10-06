@@ -30,6 +30,7 @@ const Years: React.FC = () => {
   const [midYearItem, setMidYearItem] = useState<SchoolYearItem | undefined>(undefined)
   const [midYearScheduleItem, setMidYearScheduleItem] = useState<SchoolYearItem | undefined>(undefined)
   const [scheduleBuilderItem, setScheduleBuilderItem] = useState<SchoolYearItem | undefined>(undefined)
+  const [homeroomResourceItem, setHomeroomResourceItem] = useState<SchoolYearItem | undefined>(undefined)
   const [secondSemesterItem, setSecondSemesterItem] = useState<SchoolYearItem | undefined>(undefined)
   const [addSchoolYears, setAddSchoolYears] = useState<DropDownItem[]>([])
   const [submitSave] = useMutation(updateSchoolYearMutation)
@@ -54,6 +55,8 @@ const Years: React.FC = () => {
             second_semester_close: secondSemesterItem?.close,
             midyear_schedule_open: midYearScheduleItem?.open,
             midyear_schedule_close: midYearScheduleItem?.close,
+            homeroom_resource_open: homeroomResourceItem?.open,
+            homeroom_resource_close: homeroomResourceItem?.close,
           },
         },
       })
@@ -70,6 +73,8 @@ const Years: React.FC = () => {
             midyear_application: midYearItem?.status ? 1 : 0,
             midyear_application_open: midYearItem?.open,
             midyear_application_close: midYearItem?.close,
+            homeroom_resource_open: homeroomResourceItem?.open,
+            homeroom_resource_close: homeroomResourceItem?.close,
             cloneSchoolYearId: cloneSelectedYearId || null,
           },
           previousYearId: toNumber(sortBy(schoolYears, 'schoolYearClose').at(-1)?.schoolYearId),
@@ -95,6 +100,7 @@ const Years: React.FC = () => {
       setMidYearScheduleItem(undefined)
       setScheduleBuilderItem(undefined)
       setSecondSemesterItem(undefined)
+      setHomeroomResourceItem(undefined)
     } else if (val) {
       schoolYears.map((schoolYear) => {
         if (schoolYear.schoolYearId == parseInt(val)) {
@@ -123,6 +129,10 @@ const Years: React.FC = () => {
           setSecondSemesterItem({
             open: moment(schoolYear.secondSemesterOpen).add(1, 'years').format(MYSQL_DATE_FORMAT),
             close: moment(schoolYear.secondSemesterClose).add(1, 'years').format(MYSQL_DATE_FORMAT),
+          })
+          setHomeroomResourceItem({
+            open: moment(schoolYear.homeroomResourceOpen).add(1, 'years').format(MYSQL_DATE_FORMAT),
+            close: moment(schoolYear.homeroomResourceClose).add(1, 'years').format(MYSQL_DATE_FORMAT),
           })
         }
       })
@@ -153,6 +163,7 @@ const Years: React.FC = () => {
         setMidYearItem={setMidYearItem}
         setOldSelectedYearId={setOldSelectedYearId}
         setAddSchoolYearDialogOpen={setAddSchoolYearDialogOpen}
+        setHomeroomResourceItem={setHomeroomResourceItem}
         setSchoolYears={setSchoolYears}
         setAddSchoolYears={setAddSchoolYears}
       />
@@ -164,12 +175,14 @@ const Years: React.FC = () => {
         scheduleBuilderItem={scheduleBuilderItem}
         secondSemesterItem={secondSemesterItem}
         midYearScheduleItem={midYearScheduleItem}
+        homeroomResourceItem={homeroomResourceItem}
         setMidYearItem={setMidYearItem}
         setApplicationItem={setApplicationItem}
         setSchoolYearItem={setSchoolYearItem}
         setScheduleBuilderItem={setScheduleBuilderItem}
         setSecondSemesterItem={setSecondSemesterItem}
         setMidYearScheduleItem={setMidYearScheduleItem}
+        setHomeroomResourceItem={setHomeroomResourceItem}
         setIsChanged={setIsChanged}
       />
       <AddSchoolYearModal

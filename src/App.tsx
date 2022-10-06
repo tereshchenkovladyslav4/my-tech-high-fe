@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { CssBaseline } from '@mui/material'
 import ThemeProvider from '@mui/system/ThemeProvider'
 import { BrowserRouter as Router } from 'react-router-dom'
@@ -22,7 +22,7 @@ declare global {
   }
 }
 
-export const App: FunctionComponent = () => {
+export const App: React.FC = () => {
   const [me, setMe] = useState<UserInfo | null>(null)
   const [tab, setTab] = useState<TabInfo | null>(null)
   const [visitedTabs, setVisitedTabs] = useState<number[] | null>([])

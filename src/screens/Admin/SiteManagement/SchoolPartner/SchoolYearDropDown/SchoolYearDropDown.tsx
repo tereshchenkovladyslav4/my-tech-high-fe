@@ -1,11 +1,11 @@
-import React, { FunctionComponent, useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { useQuery } from '@apollo/client'
 import { find, toNumber } from 'lodash'
 import moment from 'moment'
+import { DropDown } from '@mth/components/DropDown/DropDown'
+import { DropDownItem } from '@mth/components/DropDown/types'
 import { SchoolYearVM } from '@mth/screens/Admin/Applications/type'
 import { UserContext } from '../../../../../providers/UserContext/UserProvider'
-import { DropDown } from '../../components/DropDown/DropDown'
-import { DropDownItem } from '../../components/DropDown/types'
 import { getSchoolYearsByRegionId } from '../../services'
 
 type SchoolYearDropDownProps = {
@@ -15,7 +15,7 @@ type SchoolYearDropDownProps = {
   align?: 'start' | 'end'
 }
 
-export const SchoolYearDropDown: FunctionComponent<SchoolYearDropDownProps> = ({
+export const SchoolYearDropDown: React.FC<SchoolYearDropDownProps> = ({
   selectedYearId,
   setSelectedYearId,
   setDisableForm,

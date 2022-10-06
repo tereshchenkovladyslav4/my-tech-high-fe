@@ -1,5 +1,5 @@
 import React from 'react'
-import { DropDown } from '../../components/DropDown/DropDown'
+import { DropDown } from '@mth/components/DropDown/DropDown'
 import { ProgramSettingChanged } from '../types'
 
 type EnrollPacketSelectProps = {
@@ -25,7 +25,7 @@ export const EnrollPacketSelect: React.FC<EnrollPacketSelectProps> = ({
       value: 'false',
     },
   ]
-  const handleChange = (value: string) => {
+  const handleChange = (value: string | number | boolean) => {
     setEnroll(value == 'true' ? true : false)
     setIsChanged({
       ...isChanged,

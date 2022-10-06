@@ -28,5 +28,7 @@ export type SchoolYearType = {
   scheduleBuilderClose: string
   secondSemesterOpen: string
   secondSemesterClose: string
+  homeroomResourceOpen: string
+  homeroomResourceClose: string
   schedule: boolean
 }

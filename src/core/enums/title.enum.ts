@@ -33,6 +33,7 @@ export enum MthTitle {
   MID_YEAR_SCHEDULES = 'Mid-year Schedules',
   SCHEUDLE_BUILDER = 'Schedule Builder',
   SECOND_SEMESTER = '2nd Semester',
+  HOMEROOM_RESOURCES = 'Homeroom Resources',
   SCHEDULE = 'Schedule',
   STEP_TESTING_PREFERENCE = 'Testing',
   STEP_OPT_OUT_FORM = 'Opt',

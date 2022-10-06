@@ -19,6 +19,7 @@ type SchoolYearDropDownProps = {
   setScheduleBuilderItem: (value: SchoolYearItem | undefined) => void
   setSecondSemesterItem: (value: SchoolYearItem | undefined) => void
   setMidYearScheduleItem: (value: SchoolYearItem | undefined) => void
+  setHomeroomResourceItem: (value: SchoolYearItem | undefined) => void
   schoolYears: SchoolYearType[]
   setSchoolYears: (value: SchoolYearType[]) => void
   setAddSchoolYears: (value: DropDownItem[]) => void
@@ -36,6 +37,7 @@ export const SchoolYearDropDown: React.FC<SchoolYearDropDownProps> = ({
   setSecondSemesterItem,
   setMidYearScheduleItem,
   setEnableSchedule,
+  setHomeroomResourceItem,
   selectedYearId,
   setSchoolYears,
   setAddSchoolYears,
@@ -72,6 +74,10 @@ export const SchoolYearDropDown: React.FC<SchoolYearDropDownProps> = ({
       open: schoolYear.scheduleBuilderOpen,
       close: schoolYear.scheduleBuilderClose,
     })
+    setHomeroomResourceItem({
+      open: schoolYear.homeroomResourceOpen,
+      close: schoolYear.homeroomResourceClose,
+    })
   }
 
   const handleSelectYear = (val: number) => {
@@ -103,6 +109,7 @@ export const SchoolYearDropDown: React.FC<SchoolYearDropDownProps> = ({
     setMidYearScheduleItem(undefined)
     setSecondSemesterItem(undefined)
     setScheduleBuilderItem(undefined)
+    setHomeroomResourceItem(undefined)
   }
 
   const setDropYears = (schoolYearsArr: SchoolYearType[]) => {
@@ -178,6 +185,10 @@ export const SchoolYearDropDown: React.FC<SchoolYearDropDownProps> = ({
             open: schoolYear.schedule_builder_open,
             close: schoolYear.schedule_builder_close,
           })
+          setHomeroomResourceItem({
+            open: schoolYear.homeroom_resource_open,
+            close: schoolYear.homeroom_resource_close,
+          })
           cnt++
         }
         schoolYearsArr.push({
@@ -196,6 +207,8 @@ export const SchoolYearDropDown: React.FC<SchoolYearDropDownProps> = ({
           secondSemesterOpen: schoolYear.second_semester_open,
           secondSemesterClose: schoolYear.second_semester_close,
           schedule: schoolYear.schedule,
+          homeroomResourceOpen: schoolYear.homeroom_resource_open,
+          homeroomResourceClose: schoolYear.homeroom_resource_close,
         })
       })
       if (cnt == 0) {

@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { gql, useQuery } from '@apollo/client'
 import { makeStyles } from '@material-ui/styles'
 import ExpandLessIcon from '@mui/icons-material/ExpandLess'
@@ -6,10 +6,10 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { Card, Grid, IconButton, Select, MenuItem, FormControl } from '@mui/material'
 import { Box } from '@mui/system'
 import moment from 'moment'
-import { DropDownItem } from '../../../../components/DropDown/types'
-import { Paragraph } from '../../../../components/Typography/Paragraph/Paragraph'
-import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
-import { UserContext } from '../../../../providers/UserContext/UserProvider'
+import { DropDownItem } from '@mth/components/DropDown/types'
+import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { UserContext } from '@mth/providers/UserContext/UserProvider'
 const selectStyles = makeStyles({
   select: {
     '& .MuiSvgIcon-root': {
@@ -134,7 +134,7 @@ type SchoolYearSped = {
   special_ed: boolean
 }
 
-export const SchoolYear: FunctionComponent = () => {
+export const SchoolYear: React.FC = () => {
   const [isExpanded, setIsExpanded] = useState(false)
   const { me } = useContext(UserContext)
   const [schoolYears, setSchoolYears] = useState<Array<DropDownItem>>([])
@@ -166,15 +166,17 @@ export const SchoolYear: FunctionComponent = () => {
   useEffect(() => {
     if (!schoolYearDataLoading && schoolYearData?.region?.SchoolYears) {
       setSchoolYears(
-        schoolYearData?.region?.SchoolYears.map((item) => {
-          return {
-            label: moment(item.date_begin).format('YY') + '-' + moment(item.date_end).format('YY'),
-            value: item.school_year_id,
-          }
-        }),
+        schoolYearData?.region?.SchoolYears.map(
+          (item: { date_begin: string; date_end: string; school_year_id: number }) => {
+            return {
+              label: moment(item.date_begin).format('YY') + '-' + moment(item.date_end).format('YY'),
+              value: item.school_year_id,
+            }
+          },
+        ),
       )
       setSchoolYearSpedOptions(
-        schoolYearData?.region?.SchoolYears.map((item) => {
+        schoolYearData?.region?.SchoolYears.map((item: { school_year_id: number; special_ed: number }) => {
           return {
             school_year_id: item.school_year_id,
             special_ed: item.special_ed,
@@ -183,13 +185,13 @@ export const SchoolYear: FunctionComponent = () => {
       )
       setSelectedYear(schoolYearData?.region?.SchoolYears[0]?.school_year_id)
     }
-  }, [me.selectedRegionId, schoolYearDataLoading, schoolYearData?.data?.region?.SchoolYears])
+  }, [me?.selectedRegionId, schoolYearDataLoading, schoolYearData?.data?.region?.SchoolYears])
 
   useEffect(() => {
     if (!schoolYearDataCountsLoading && schoolYearDataCounts?.schoolYearsData) {
       setSchoolYearDataCount(schoolYearDataCounts?.schoolYearsData)
     }
-  }, [me.selectedRegionId, schoolYearDataCountsLoading, schoolYearDataCounts?.schoolYearsData])
+  }, [me?.selectedRegionId, schoolYearDataCountsLoading, schoolYearDataCounts?.schoolYearsData])
 
   useEffect(() => {
     schoolYearSpedOptions.map((item) => {

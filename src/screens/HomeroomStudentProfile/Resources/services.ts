@@ -23,6 +23,13 @@ export const getStudentResourcesQuery = gql`
         limit
         TotalRequests
       }
+      SchoolYear {
+        date_begin
+        date_end
+        school_year_id
+        homeroom_resource_open
+        homeroom_resource_close
+      }
       family_resource
       priority
       is_active

@@ -1,13 +1,13 @@
-import React, { FunctionComponent, useState } from 'react'
+import React, { useState } from 'react'
 import { Checkbox, Grid, TextField } from '@mui/material'
 import { Box } from '@mui/system'
 import { Controller, useFormContext } from 'react-hook-form'
-import { DropDown } from '../../../../../components/DropDown/DropDown'
-import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
+import { DropDown } from '@mth/components/DropDown/DropDown'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { schoolDistricts } from '../../../../../utils/constants'
 import { EnrollmentPacketFormType } from '../types'
 
-export const SchoolInfo: FunctionComponent = () => {
+export const SchoolInfo: React.FC = () => {
   const { watch, control } = useFormContext<EnrollmentPacketFormType>()
 
   // @ts-ignore

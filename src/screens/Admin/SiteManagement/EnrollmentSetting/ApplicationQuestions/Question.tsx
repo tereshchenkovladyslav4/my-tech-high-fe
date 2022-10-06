@@ -1,4 +1,4 @@
-import React, { useState, useContext, FunctionComponent } from 'react'
+import React, { useState, useContext } from 'react'
 import DehazeIcon from '@mui/icons-material/Dehaze'
 import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined'
 import EditIcon from '@mui/icons-material/Edit'
@@ -14,11 +14,11 @@ import {
 } from '@mui/material'
 import { useFormikContext } from 'formik'
 import { SortableHandle } from 'react-sortable-hoc'
-import { CustomConfirmModal } from '../../../../../components/CustomConfirmModal/CustomConfirmModal'
-import { DropDown } from '../../../../../components/DropDown/DropDown'
-import { QUESTION_TYPE } from '../../../../../components/QuestionItem/QuestionItemProps'
-import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragraph'
-import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
+import { CustomConfirmModal } from '@mth/components/CustomConfirmModal/CustomConfirmModal'
+import { DropDown } from '@mth/components/DropDown/DropDown'
+import { QUESTION_TYPE } from '@mth/components/QuestionItem/QuestionItemProps'
+import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { SYSTEM_05, SYSTEM_07 } from '../../../../../utils/constants'
 
 import { ProgramYearContext } from '../provider/ProgramYearProvider'
@@ -41,7 +41,7 @@ const DragHandle = SortableHandle(() => (
   </Tooltip>
 ))
 
-export const ApplicationQuestionItem: FunctionComponent<ApplicationQuestionItemProps> = ({
+export const ApplicationQuestionItem: React.FC<ApplicationQuestionItemProps> = ({
   questions,
   questionTypes,
   additionalQuestionTypes,

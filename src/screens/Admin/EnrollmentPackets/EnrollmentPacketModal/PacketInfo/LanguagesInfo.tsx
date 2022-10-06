@@ -1,11 +1,11 @@
-import React, { FunctionComponent } from 'react'
+import React from 'react'
 import { Grid } from '@mui/material'
 import { Controller, useFormContext } from 'react-hook-form'
-import { DropDown } from '../../../../../components/DropDown/DropDown'
-import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
+import { DropDown } from '@mth/components/DropDown/DropDown'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { languages } from '../../../../../utils/languages'
 
-export const LanguagesInfo: FunctionComponent = () => {
+export const LanguagesInfo: React.FC = () => {
   const { control } = useFormContext()
 
   return (

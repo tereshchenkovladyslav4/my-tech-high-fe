@@ -1,5 +1,6 @@
 import React from 'react'
-import { DropDown } from '../../components/DropDown/DropDown'
+import { DropDown } from '@mth/components/DropDown/DropDown'
+import { DropDownItem } from '@mth/components/DropDown/types'
 import { ProgramSettingChanged } from '../types'
 
 type ProgramSelectProps = {
@@ -10,9 +11,9 @@ type ProgramSelectProps = {
 }
 
 export const ProgramSelect: React.FC<ProgramSelectProps> = ({ program, setProgram, setIsChanged, isChanged }) => {
-  const items = [
+  const items: DropDownItem[] = [
     {
-      label: <em>None</em>,
+      label: `${(<em>None</em>)}`,
       value: '',
     },
     {
@@ -24,8 +25,8 @@ export const ProgramSelect: React.FC<ProgramSelectProps> = ({ program, setProgra
       value: 'TTA',
     },
   ]
-  const handleChange = (event: string) => {
-    setProgram(event)
+  const handleChange = (event: string | number | boolean) => {
+    setProgram(`${event}`)
 
     if (program != event) {
       setIsChanged({

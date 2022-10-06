@@ -111,12 +111,15 @@ const DiplomaSeeking: React.FC = () => {
         setDiplomaQuestion(diplomaQuestionData?.getDiplomaQuestion)
       } else {
         setSelectGrades([])
-        const regionName = me?.userRegion.find((region) => region.region_id === me?.selectedRegionId)
+        const regionName = me?.userRegion?.find((region) => region.region_id === me?.selectedRegionId)
         setDiplomaQuestion({
           id: '',
           schoolYearId: '',
           title: DEFUALT_DIPLOMA_QUESTION_TITLE,
-          description: DEFUALT_DIPLOMA_QUESTION_DESCRIPTION.replace('%REGION_NAME%', regionName?.regionDetail?.name),
+          description: DEFUALT_DIPLOMA_QUESTION_DESCRIPTION.replace(
+            '%REGION_NAME%',
+            regionName?.regionDetail?.name || '',
+          ),
           grades: '',
         })
       }

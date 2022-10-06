@@ -1,6 +1,6 @@
 import React from 'react'
+import { CommonSelect } from '@mth/components/CommonSelect'
 import { MthTitle } from '@mth/enums'
-import { CommonSelect } from '../../components/CommonSelect'
 import { CommonSelectType } from '../../types'
 import { BirthDateCutOffSelect } from '../BirthDateCutOffSelect'
 import { CountySelect } from '../CountySelect'

@@ -2,9 +2,9 @@ import React, { useContext, useEffect, useState } from 'react'
 import { useQuery } from '@apollo/client'
 import { Stack } from '@mui/material'
 import moment from 'moment'
+import { DropDown } from '@mth/components/DropDown/DropDown'
+import { DropDownItem } from '@mth/components/DropDown/types'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
-import { DropDown } from '../../components/DropDown/DropDown'
-import { DropDownItem } from '../../components/DropDown/types'
 import { getSchoolYearsByRegionId } from '../../services'
 import { SchoolYears } from '../types'
 import { SchoolYearSelectProps } from './SchoolYearSelectProps'
@@ -180,7 +180,6 @@ export const SchoolYearSelect: React.FC<SchoolYearSelectProps> = ({
         dropDownItems={years}
         placeholder={'Select Year'}
         defaultValue={selectedYearId}
-        sx={{ width: '200px', marginLeft: '10px' }}
         borderNone={true}
         setParentValue={(val) => {
           handleSelectYear(`${val}`)

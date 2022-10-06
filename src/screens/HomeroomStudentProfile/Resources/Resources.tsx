@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { useMutation, useQuery } from '@apollo/client'
-import { Grid, Stack } from '@mui/material'
+import { Box, Grid, Stack } from '@mui/material'
 import { sortBy } from 'lodash'
+import moment from 'moment'
+import { DropDown } from '@mth/components/DropDown/DropDown'
+import { DropDownItem } from '@mth/components/DropDown/types'
 import { ResourceSubtitle } from '@mth/enums'
 import { ResourceCard } from './ResourceCard'
 import { ResourceCartBar } from './ResourceCartBar'
@@ -30,7 +33,8 @@ export const Resources: React.FC = () => {
   const [selectedResourceLevel, setSelectedResourceLevel] = useState<ResourceLevel>()
   const [showHideModal, setShowHideModal] = useState<boolean>(false)
   const [showResourceLevelModal, setShowResourceLevelModal] = useState<boolean>(false)
-
+  const [selectedYear, setSelectedYear] = useState<number>(0)
+  const [schoolYears, setSchoolYears] = useState<DropDownItem[]>([])
   const {
     loading,
     data: resourcesData,
@@ -144,6 +148,27 @@ export const Resources: React.FC = () => {
       const colors = ['blue', 'orange']
       const { studentResources: resources }: { studentResources: Resource[] } = resourcesData
       resources?.filter((item) => !item.image).map((item, index) => (item.background = colors[index % 2]))
+      const schoolYearArray: DropDownItem[] = []
+      resources?.map((resource) => {
+        const schoolYear = schoolYearArray?.filter((item) => item?.value == resource?.SchoolYearId)
+        if (schoolYear.length == 0) {
+          schoolYearArray.push({
+            label: `${moment(resource?.SchoolYear?.date_begin).format('YYYY')}-${moment(
+              resource?.SchoolYear?.date_end,
+            ).format('YY')}`,
+            value: resource?.SchoolYearId,
+          })
+        }
+      })
+      if (schoolYearArray.length > 0) {
+        const sortedSchoolYears = schoolYearArray.sort((a, b) => {
+          if (a.label > b.label) return 1
+          if (a.label < b.label) return -1
+          return 0
+        })
+        setSelectedYear(Number(sortedSchoolYears.at(0)?.value))
+        setSchoolYears(sortedSchoolYears)
+      }
       setResources(resources || [])
     }
   }, [loading, resourcesData])
@@ -161,13 +186,27 @@ export const Resources: React.FC = () => {
               setPage={setPage}
             />
           )}
-
+          {schoolYears?.length > 1 && (
+            <Box display='flex' flexDirection='row' justifyContent='flex-end' sx={{ mr: 3, mt: 3 }} alignItems='center'>
+              <DropDown
+                dropDownItems={schoolYears}
+                placeholder={'Select Year'}
+                defaultValue={selectedYear}
+                borderNone={true}
+                setParentValue={(val) => {
+                  setSelectedYear(Number(val))
+                }}
+              />
+            </Box>
+          )}
           <Grid container padding={4} spacing={4}>
-            {resources.map((item, idx) => (
-              <Grid key={idx} item xs={4} paddingTop={4}>
-                <ResourceCard item={item} onAction={(evtType: EventType) => handleCardActions(item, evtType)} />
-              </Grid>
-            ))}
+            {resources
+              .filter((resource) => resource?.SchoolYearId == selectedYear)
+              .map((item, idx) => (
+                <Grid key={idx} item xs={4} paddingTop={4}>
+                  <ResourceCard item={item} onAction={(evtType: EventType) => handleCardActions(item, evtType)} />
+                </Grid>
+              ))}
           </Grid>
         </>
       )}

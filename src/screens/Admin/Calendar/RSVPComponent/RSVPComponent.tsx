@@ -4,8 +4,8 @@ import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined
 import MenuIcon from '@mui/icons-material/Menu'
 import ModeEditIcon from '@mui/icons-material/ModeEdit'
 import { Box, Button, Grid, IconButton, TextField } from '@mui/material'
+import { DropDown } from '@mth/components/DropDown/DropDown'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
-import { DropDown } from '../../SiteManagement/components/DropDown/DropDown'
 import { addEventClassess } from '../AddEvent/styles'
 import { rsvpClassess } from './styles'
 

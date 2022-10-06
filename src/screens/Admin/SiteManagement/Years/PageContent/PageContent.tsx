@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
+import { CommonSelect } from '@mth/components/CommonSelect'
 import { MthTitle } from '@mth/enums'
-import { CommonSelect } from '../../components/CommonSelect'
 import { CommonSelectType } from '../../types'
 import { MidYearSelect } from '../MidYearSelect'
 import { OpenAndCloseSelect } from '../OpenAndCloseSelect'
@@ -20,6 +20,8 @@ export const PageContent: React.FC<PageContentProps> = ({
   setSecondSemesterItem,
   midYearScheduleItem,
   setMidYearScheduleItem,
+  homeroomResourceItem,
+  setHomeroomResourceItem,
   setIsChanged,
 }) => {
   const [midYearExpend, setMidYearExpend] = useState<boolean | undefined>(false)
@@ -74,6 +76,13 @@ export const PageContent: React.FC<PageContentProps> = ({
     })
   }
 
+  yearsSettingList.push({
+    name: MthTitle.HOMEROOM_RESOURCES,
+    component: (
+      <OpenAndCloseSelect item={homeroomResourceItem} setItem={setHomeroomResourceItem} setIsChanged={setIsChanged} />
+    ),
+  })
+
   return (
     <>
       {yearsSettingList
@@ -90,6 +99,8 @@ export const PageContent: React.FC<PageContentProps> = ({
                 ? index + 1
                 : yearsSetting.name == MthTitle.MID_YEAR_SCHEDULES
                 ? index + 2
+                : yearsSetting.name == MthTitle.HOMEROOM_RESOURCES
+                ? index + 1
                 : index
             }
             selectItem={yearsSetting}
