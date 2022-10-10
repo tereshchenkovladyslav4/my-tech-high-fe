@@ -13,6 +13,7 @@ export const DocumentListItem: DocumentListItemTemplateType = ({ file, closeActi
       onClick={() => !closeAction && window.open((file as S3FileType).signedUrl)}
       display='flex'
       flexDirection='row'
+      alignItems='flex-end'
       color='#7B61FF'
       marginTop='6px'
     >

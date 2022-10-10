@@ -85,7 +85,7 @@ export type Application = {
   midyear_application: boolean
   referred_by: string
   relation_status: number
-  school_year: number
+  school_year: SchoolYearType
   school_year_id: number
   status: string
   student: StudentType

@@ -67,6 +67,12 @@ export const getEnrollmentPacketsQuery = gql`
           current_school_year_status {
             school_year_id
           }
+          applications {
+            school_year {
+              school_year_id
+              schedule
+            }
+          }
           parent {
             parent_id
             person {

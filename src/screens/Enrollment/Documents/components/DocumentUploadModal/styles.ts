@@ -1,4 +1,4 @@
-import { BUTTON_LINEAR_GRADIENT } from '../../../../../utils/constants'
+import { BUTTON_LINEAR_GRADIENT, SYSTEM_01, SYSTEM_08 } from '../../../../../utils/constants'
 
 export const useStyles = {
   modalCard: {
@@ -9,20 +9,20 @@ export const useStyles = {
     width: 628,
     bgcolor: 'background.paper',
     boxShadow: 24,
-    p: 4,
+    p: 3,
     borderRadius: 2,
   },
   close: {
-    background: 'black',
-    borderRadius: 1,
-    color: 'white',
-    cursor: 'pointer',
+    padding: 0,
+    minWidth: '30px',
   },
   uploadButton: {
     borderRadius: 5,
     width: '152px',
-    marginTop: '14px',
+    marginTop: '5px',
     marginBottom: '14px',
+    padding: '12px',
+    fontSize: '10px',
   },
   finishButtonContainer: {
     display: 'flex',
@@ -37,12 +37,14 @@ export const useStyles = {
     marginBottom: '14px',
   },
   cancelButton: {
-    background: BUTTON_LINEAR_GRADIENT,
+    background: SYSTEM_08,
     borderRadius: 5,
     width: '152px',
     marginTop: '14px',
     marginBottom: '14px',
     marginRight: { xs: '2px', sm: '0px' },
+    color: SYSTEM_01,
+    fontWeight: 700,
   },
   dragAndDropText: {
     marginTop: '14px',

@@ -281,16 +281,18 @@ export const EnrollmentPacketModal: React.FC<EnrollmentPacketModalProps> = ({ ha
       },
     })
     if (['Accepted', 'Conditional'].includes(status)) {
-      await updateStudentStatus({
-        variables: {
-          input: {
-            student_id: Number(packet.student.student_id),
-            school_year_id: packet.student.current_school_year_status.school_year_id,
-            status: 1,
-            packet_id: Number(packet.packet_id),
+      if (packet.student.applications?.at(-1)?.school_year.schedule == false) {
+        await updateStudentStatus({
+          variables: {
+            input: {
+              student_id: Number(packet.student.student_id),
+              school_year_id: packet.student.current_school_year_status.school_year_id,
+              status: 1,
+              packet_id: Number(packet.packet_id),
+            },
           },
-        },
-      })
+        })
+      }
       await generateStudentPacketPDF({
         variables: {
           generatePacketPdfInput: {

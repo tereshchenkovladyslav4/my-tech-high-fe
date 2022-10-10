@@ -99,10 +99,12 @@ export const EnrollmentPacketTable: FunctionComponent = () => {
       studentStatus: packet.student?.reenrolled > 0 ? 'Update' : 'New',
       emailed:
         packet.packet_emails.length > 0 ? (
-          <Box sx={{ cursor: 'pointer' }} onClick={() => handleOpenEmailHistory(packet)}>
+          <Box sx={{ cursor: 'pointer', width: '70px' }} onClick={() => handleOpenEmailHistory(packet)}>
             {moment(packet?.packet_emails?.at(-1)?.created_at).format('MM/DD/YY')}
           </Box>
-        ) : null,
+        ) : (
+          <Box sx={{ width: '70px' }}> </Box>
+        ),
       delete: (
         <Tooltip title='Delete' arrow>
           <Box
@@ -116,7 +118,7 @@ export const EnrollmentPacketTable: FunctionComponent = () => {
               borderRadius: 1,
               cursor: 'pointer',
               minHeight: '40px',
-              minWidth: '40px',
+              marginRight: '40px',
             }}
           >
             <svg width='14' height='18' viewBox='0 0 14 18' fill='none' xmlns='http://www.w3.org/2000/svg'>

@@ -19,6 +19,7 @@ import { ContentState, EditorState, convertToRaw } from 'draft-js'
 import draftToHtml from 'draftjs-to-html'
 import htmlToDraft from 'html-to-draftjs'
 import Wysiwyg from 'react-draft-wysiwyg'
+import { MthColor } from '@mth/enums'
 import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
 import { getEmailTemplateByIdQuery, getEmailRemindersQuery } from '../../../../../graphql/queries/email-template'
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
@@ -680,7 +681,11 @@ export const EmailTemplateModal: FunctionComponent<EmailTemplateModalProps> = ({
                         ))}
                     </Grid>
                     <Grid item xs={12} sx={{ marginTop: '25px' }}>
-                      <Button className={classes.add} onClick={() => handleGroupResponse(index)}>
+                      <Button
+                        className={classes.add}
+                        onClick={() => handleGroupResponse(index)}
+                        style={{ color: MthColor.WHITE }}
+                      >
                         <Add />
                         Add Response
                       </Button>
@@ -767,7 +772,7 @@ export const EmailTemplateModal: FunctionComponent<EmailTemplateModalProps> = ({
                 ))}
                 <Box sx={{ width: '100%', textAlign: 'right', marginTop: reminders.length > 0 ? '0' : '16px' }}>
                   <Grid item xs={12}>
-                    <Button className={classes.add} onClick={handleAddReminder}>
+                    <Button className={classes.add} onClick={handleAddReminder} style={{ color: MthColor.WHITE }}>
                       <Add />
                       Add Reminder
                     </Button>

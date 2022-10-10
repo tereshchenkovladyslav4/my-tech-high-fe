@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import CloseIcon from '@mui/icons-material/Close'
-import UploadFileIcon from '@mui/icons-material/UploadFile'
+import SystemUpdateAltRoundedIcon from '@mui/icons-material/SystemUpdateAltRounded'
 import { Box, Button, Modal } from '@mui/material'
 import { filter, map } from 'lodash'
 import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragraph'
@@ -137,7 +136,15 @@ export const DocumentUploadModal: DocumentUploadModalTemplateType = ({ handleMod
           </Box>
         ) : (
           <Box display={'flex'} flexDirection={'row'} justifyContent={'end'} minHeight='39px'>
-            <CloseIcon sx={classes.close} onClick={() => handleModem()} />
+            <Button sx={classes.close} onClick={() => handleModem()}>
+              <svg width='32' height='32' viewBox='0 0 32 32' fill='none' xmlns='http://www.w3.org/2000/svg'>
+                <rect width='32' height='32' rx='4' fill='#0E0E0E' />
+                <path
+                  d='M21 12.0071L19.9929 11L16 14.9929L12.0071 11L11 12.0071L14.9929 16L11 19.9929L12.0071 21L16 17.0071L19.9929 21L21 19.9929L17.0071 16L21 12.0071Z'
+                  fill='white'
+                />
+              </svg>
+            </Button>
           </Box>
         )}
         <Box
@@ -149,12 +156,11 @@ export const DocumentUploadModal: DocumentUploadModalTemplateType = ({ handleMod
           onDragLeave={dragLeave}
           onDrop={fileDrop}
         >
-          <UploadFileIcon />
+          <SystemUpdateAltRoundedIcon sx={{ transform: 'rotate(-180deg)', fontSize: '35px' }} />
           <Paragraph size='medium' fontWeight='700' sx={classes.dragAndDropText}>
             Drag &amp; Drop to Upload
           </Paragraph>
-          <Paragraph size='medium' color={SYSTEM_06}>
-            {' '}
+          <Paragraph size='medium' color={SYSTEM_06} sx={{ marginY: 1, marginBottom: 0 }}>
             Or
           </Paragraph>
           <Button sx={classes.uploadButton} variant='contained'>

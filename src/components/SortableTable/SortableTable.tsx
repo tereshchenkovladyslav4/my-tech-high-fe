@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { TableContainer, Table, TableBody, TableRow, TableCell, Checkbox } from '@mui/material'
 import { Box } from '@mui/system'
+import { MthColor } from '@mth/enums'
 import { MTHBLUE } from '../../utils/constants'
 import { SortableTableHeader } from './SortableTableHeader/SortableTableHeader'
 import { tableClasses } from './styles'
@@ -72,9 +73,9 @@ export const SortableTable: SortableTableTemplateType = ({
         if (value === 'New') {
           return '#00C12B'
         } else if (value === 'Requested') {
-          return '#4145FF'
+          return MthColor.MTHBLUE
         } else {
-          return MTHBLUE
+          return MthColor.BLACK
         }
       case 'emailed':
         return MTHBLUE
