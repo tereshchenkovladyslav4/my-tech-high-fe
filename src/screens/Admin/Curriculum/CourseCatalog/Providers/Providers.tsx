@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { useMutation } from '@apollo/client'
 import { DeleteForeverOutlined } from '@mui/icons-material'
 import CallMissedOutgoingIcon from '@mui/icons-material/CallMissedOutgoing'
 import CreateIcon from '@mui/icons-material/Create'
@@ -8,85 +9,40 @@ import { Box, Button, Card, IconButton, Tooltip } from '@mui/material'
 import { MthTable } from '@mth/components/MthTable'
 import { MthTableField, MthTableRowItem } from '@mth/components/MthTable/types'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { REDUCE_FUNDS_ITEMS } from '@mth/constants'
 import { MthColor } from '@mth/enums'
+import { SchoolYearRespnoseType, useProviders } from '@mth/hooks'
 import Courses from '@mth/screens/Admin/Curriculum/CourseCatalog/Providers/Courses'
+import ProviderConfirmModal from '@mth/screens/Admin/Curriculum/CourseCatalog/Providers/ProviderConfirmModal/ProviderConfirmModal'
+import { ProviderEdit } from '@mth/screens/Admin/Curriculum/CourseCatalog/Providers/ProviderEdit'
 import { Provider } from '@mth/screens/Admin/Curriculum/CourseCatalog/Providers/types'
+import {
+  createOrUpdateProviderMutation,
+  deleteProviderMutation,
+} from '@mth/screens/Admin/Curriculum/CourseCatalog/services'
+import { EventType } from '@mth/screens/Admin/Curriculum/CourseCatalog/Subjects/types'
 import CourseCatalogHeader from '../Components/CourseCatalogHeader/CourseCatalogHeader'
 
 const Providers: React.FC = () => {
-  const providersData: Provider[] = [
-    {
-      id: 1,
-      title: 'Accelerated Spark Online Elementary',
-      reducesFunds: false,
-      multiplePeriods: false,
-      active: true,
-    },
-    {
-      id: 2,
-      title: 'ALEKS Math',
-      reducesFunds: undefined,
-      multiplePeriods: false,
-      active: true,
-      courses: [
-        {
-          name: 'Algebra 1',
-          grades: '9-12',
-          diplomaSeeking: false,
-          reducesFunds: false,
-          semesterOnly: false,
-          limit: 0,
-          subjects: 'Algebra 1, High School Math',
-          active: true,
-        },
-        {
-          name: 'Algebra 2',
-          grades: '9-12',
-          diplomaSeeking: false,
-          reducesFunds: true,
-          semesterOnly: false,
-          limit: 200,
-          subjects: 'Algebra 2, High School Math',
-          active: false,
-        },
-        {
-          name: 'Algebra 3',
-          grades: '9-12',
-          diplomaSeeking: false,
-          reducesFunds: true,
-          semesterOnly: false,
-          limit: 150,
-          subjects: 'Algebra 3, High School Math',
-          active: false,
-        },
-      ],
-    },
-    {
-      id: 3,
-      title: 'APEX Learning',
-      reducesFunds: false,
-      multiplePeriods: false,
-      active: false,
-    },
-    {
-      id: 4,
-      title: 'Beast Academy Online',
-      reducesFunds: false,
-      multiplePeriods: false,
-      active: true,
-    },
-  ]
-
-  const [loading] = useState(false)
   const [selectedYear, setSelectedYear] = useState<number>(0)
+  const [selectedYearData, setSelectedYearData] = useState<SchoolYearRespnoseType | undefined>()
   const [searchField, setSearchField] = useState<string>('')
   const [showArchived, setShowArchived] = useState<boolean>(false)
-  const [providers] = useState<Provider[]>(providersData)
   const [tableData, setTableData] = useState<MthTableRowItem<Provider>[]>([])
+  const [selectedProvider, setSelectedProvider] = useState<Provider | undefined>()
+  const [showEditModal, setShowEditModal] = useState<boolean>(false)
+  const [showArchivedModal, setShowArchivedModal] = useState<boolean>(false)
+  const [showUnarchivedModal, setShowUnarchivedModal] = useState<boolean>(false)
+  const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false)
+
+  const { loading, providers, refetch } = useProviders(selectedYear, searchField, !showArchived)
+
+  const [updateProvider, {}] = useMutation(createOrUpdateProviderMutation)
+  const [deleteProvider, {}] = useMutation(deleteProviderMutation)
 
   const fields: MthTableField<Provider>[] = [
     {
-      key: 'title',
+      key: 'name',
       label: 'Provider',
       sortable: false,
       tdClass: '',
@@ -111,24 +67,50 @@ const Providers: React.FC = () => {
       formatter: (item: MthTableRowItem<Provider>) => {
         return (
           <Box display={'flex'} flexDirection='row' justifyContent={'flex-end'}>
-            <Tooltip title={item.rawData.active ? 'Edit' : ''} placement='top'>
-              <IconButton color='primary' disabled={!item.rawData.active} className='actionButton'>
+            <Tooltip title={item.rawData.is_active ? 'Edit' : ''} placement='top'>
+              <IconButton
+                color='primary'
+                disabled={!item.rawData.is_active}
+                className='actionButton'
+                onClick={() => {
+                  setSelectedProvider(item.rawData)
+                  setShowEditModal(true)
+                }}
+              >
                 <CreateIcon />
               </IconButton>
             </Tooltip>
-            <Tooltip title={item.rawData.active ? 'Archive' : 'Unarchive'} placement='top'>
-              <IconButton className='actionButton' color='primary'>
-                {item.rawData.active ? <SystemUpdateAltRoundedIcon /> : <CallMissedOutgoingIcon />}
+            <Tooltip title={item.rawData.is_active ? 'Archive' : 'Unarchive'} placement='top'>
+              <IconButton
+                className='actionButton'
+                color='primary'
+                onClick={() => {
+                  setSelectedProvider(item.rawData)
+                  if (item.rawData.is_active) {
+                    setShowArchivedModal(true)
+                  } else {
+                    setShowUnarchivedModal(true)
+                  }
+                }}
+              >
+                {item.rawData.is_active ? <SystemUpdateAltRoundedIcon /> : <CallMissedOutgoingIcon />}
               </IconButton>
             </Tooltip>
-            {!item.rawData.active && (
+            {!item.rawData.is_active && (
               <Tooltip title='Delete' placement='top'>
-                <IconButton className='actionButton' color='primary'>
+                <IconButton
+                  className='actionButton'
+                  color='primary'
+                  onClick={() => {
+                    setSelectedProvider(item.rawData)
+                    setShowDeleteModal(true)
+                  }}
+                >
                   <DeleteForeverOutlined />
                 </IconButton>
               </Tooltip>
             )}
-            {item.rawData.active && (
+            {item.rawData.is_active && (
               <IconButton
                 onClick={() => {
                   if (item.toggleExpand) item.toggleExpand()
@@ -148,30 +130,46 @@ const Providers: React.FC = () => {
   const createData = (provider: Provider): MthTableRowItem<Provider> => {
     return {
       columns: {
-        title: provider.title,
-        reducesFunds: provider.reducesFunds === undefined ? 'N/A' : provider.reducesFunds ? 'Yes' : 'No',
-        multiplePeriods: provider.multiplePeriods === undefined ? 'N/A' : provider.multiplePeriods ? 'Yes' : 'No',
+        name: provider.name,
+        reducesFunds: REDUCE_FUNDS_ITEMS.find((x) => x.value == provider.reduce_funds)?.label || 'NA',
+        multiplePeriods: provider.multiple_periods === undefined ? 'N/A' : provider.multiple_periods ? 'Yes' : 'No',
       },
-      selectable: provider.active,
+      selectable: provider.is_active,
       rawData: provider,
-      expandNode: <Courses courses={provider.courses} />,
+      expandNode: (
+        <Courses schoolYearId={selectedYear} schoolYearData={selectedYearData} provider={provider} refetch={refetch} />
+      ),
     }
   }
 
+  const handleToggleActive = async (provider: Provider) => {
+    await updateProvider({
+      variables: {
+        createProviderInput: {
+          id: Number(provider.id),
+          is_active: !provider.is_active,
+        },
+      },
+    })
+    await refetch()
+  }
+
+  const handleDelete = async (provider: Provider) => {
+    await deleteProvider({
+      variables: {
+        providerId: Number(provider.id),
+      },
+    })
+    await refetch()
+  }
+
   useEffect(() => {
-    if (providers?.length) {
-      setTableData(
-        providers
-          .map((item) => {
-            return { ...item, courses: item.courses?.filter((x) => showArchived || x.active) }
-          })
-          .map((item) => {
-            return createData(item)
-          }),
-      )
-    }
-    // TODO Have to remove searchField here
-  }, [providers, showArchived, searchField])
+    setTableData(
+      (providers || []).map((item) => {
+        return createData(item)
+      }),
+    )
+  }, [providers, showArchived])
 
   return (
     <Box sx={{ p: 4, textAlign: 'left' }}>
@@ -180,6 +178,7 @@ const Providers: React.FC = () => {
           title='Providers'
           selectedYear={selectedYear}
           setSelectedYear={setSelectedYear}
+          setSelectedYearData={setSelectedYearData}
           setSearchField={setSearchField}
           showArchived={showArchived}
           setShowArchived={setShowArchived}
@@ -205,11 +204,51 @@ const Providers: React.FC = () => {
                 color: 'white',
               },
             }}
+            onClick={() => {
+              setSelectedProvider(undefined)
+              setShowEditModal(true)
+            }}
           >
             <Subtitle sx={{ fontSize: '14px', fontWeight: '700' }}>+ Add Provider</Subtitle>
           </Button>
         </Box>
       </Card>
+
+      {showEditModal && (
+        <ProviderEdit
+          schoolYearId={selectedYear}
+          item={selectedProvider}
+          refetch={refetch}
+          setShowEditModal={setShowEditModal}
+        />
+      )}
+
+      {!!selectedProvider && (
+        <ProviderConfirmModal
+          showArchivedModal={showArchivedModal}
+          setShowArchivedModal={setShowArchivedModal}
+          showUnarchivedModal={showUnarchivedModal}
+          setShowUnarchivedModal={setShowUnarchivedModal}
+          showDeleteModal={showDeleteModal}
+          setShowDeleteModal={setShowDeleteModal}
+          onConfirm={async (eventType) => {
+            switch (eventType) {
+              case EventType.ARCHIVE: {
+                await handleToggleActive(selectedProvider)
+                break
+              }
+              case EventType.UNARCHIVE: {
+                await handleToggleActive(selectedProvider)
+                break
+              }
+              case EventType.DELETE: {
+                await handleDelete(selectedProvider)
+                break
+              }
+            }
+          }}
+        />
+      )}
     </Box>
   )
 }

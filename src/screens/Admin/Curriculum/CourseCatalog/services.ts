@@ -75,3 +75,87 @@ export const cloneTitleMutation = gql`
     cloneTitle(titleId: $titleId)
   }
 `
+
+export const createOrUpdateProviderMutation = gql`
+  mutation CreateOrUpdateSubject($createProviderInput: CreateOrUpdateProviderInput!) {
+    createOrUpdateProvider(createProviderInput: $createProviderInput) {
+      id
+    }
+  }
+`
+
+export const getProvidersQuery = gql`
+  query Providers($findProvidersInput: FindProvidersInput!) {
+    providers(findProvidersInput: $findProvidersInput) {
+      id
+      school_year_id
+      name
+      is_display
+      reduce_funds
+      price
+      reduce_funds_notification
+      multiple_periods
+      multi_periods_notification
+      is_active
+      Periods {
+        id
+        period
+        category
+      }
+      Courses {
+        id
+        provider_id
+        name
+        min_grade
+        max_grade
+        min_alt_grade
+        max_alt_grade
+        always_unlock
+        software_reimbursement
+        display_notification
+        course_notification
+        launchpad_course
+        course_id
+        website
+        diploma_seeking_path
+        limit
+        reduce_funds
+        price
+        reduce_funds_notification
+        subject_id
+        Titles {
+          title_id
+          subject_id
+          name
+        }
+        is_active
+      }
+    }
+  }
+`
+
+export const deleteProviderMutation = gql`
+  mutation DeleteProvider($providerId: Float!) {
+    deleteProvider(providerId: $providerId)
+  }
+`
+
+export const createOrUpdateCourseMutation = gql`
+  mutation CreateOrUpdateCourse($createCourseInput: CreateOrUpdateCourseInput!) {
+    createOrUpdateCourse(createCourseInput: $createCourseInput) {
+      id
+    }
+  }
+`
+
+export const deleteCourseMutation = gql`
+  mutation DeleteCourse($courseId: Float!) {
+    deleteCourse(courseId: $courseId)
+  }
+`
+
+export const cloneCourseMutation = gql`
+  mutation CloneCourse($courseId: Float!) {
+    cloneCourse(courseId: $courseId)
+  }
+`

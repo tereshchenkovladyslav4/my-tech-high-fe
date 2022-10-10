@@ -1,10 +1,14 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useContext, useMemo } from 'react'
 import { ApolloError, useQuery } from '@apollo/client'
 import { sortBy } from 'lodash'
 import moment from 'moment'
 import { DropDownItem } from '@mth/components/DropDown/types'
+import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { getSchoolYearsByRegionId } from '@mth/screens/Admin/SiteManagement/services'
 
+export type ScheduleBuilder = {
+  max_num_periods: number
+}
 export type SchoolYearRespnoseType = {
   school_year_id: number
   date_begin: string
@@ -30,25 +34,32 @@ export type SchoolYearRespnoseType = {
   homeroom_resource_close: string
   schedule: boolean
   diploma_seeking: boolean
+  ScheduleBuilder?: ScheduleBuilder
 }
 
 export const useSchoolYearsByRegionId = (
-  regionId: number | undefined,
+  regionId?: number | undefined,
 ): {
   loading: boolean
   schoolYears: SchoolYearRespnoseType[]
   dropdownItems: DropDownItem[]
   error: ApolloError | undefined
   refetchSchoolYear: () => void
+  selectedYearId: number | undefined
+  setSelectedYearId: (_?: number) => void
+  selectedYear: SchoolYearRespnoseType | undefined
 } => {
+  const { me } = useContext(UserContext)
+  const selectedRegionId = regionId || me?.selectedRegionId
   const [dropdownItems, setDropdownItems] = useState<Array<DropDownItem>>([])
   const [schoolYears, setSchoolYears] = useState<Array<SchoolYearRespnoseType>>([])
+  const [selectedYearId, setSelectedYearId] = useState<number | undefined>()
 
   const { loading, data, error, refetch } = useQuery(getSchoolYearsByRegionId, {
     variables: {
-      regionId: regionId,
+      regionId: selectedRegionId,
     },
-    skip: !regionId,
+    skip: !selectedRegionId,
     fetchPolicy: 'network-only',
   })
 
@@ -65,11 +76,24 @@ export const useSchoolYearsByRegionId = (
     }
   }, [loading, data])
 
+  useEffect(() => {
+    if (schoolYears?.length) setSelectedYearId(schoolYears[0].school_year_id)
+  }, [schoolYears])
+
+  const selectedYear = useMemo(() => {
+    if (selectedYearId && schoolYears.length) {
+      return schoolYears.find((item) => item.school_year_id == selectedYearId)
+    } else return undefined
+  }, [selectedYearId, schoolYears])
+
   return {
     loading: loading,
     schoolYears: schoolYears,
-    dropdownItems: dropdownItems,
+    dropdownItems,
     error: error,
     refetchSchoolYear: refetch,
+    selectedYearId,
+    setSelectedYearId,
+    selectedYear,
   }
 }

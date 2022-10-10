@@ -146,7 +146,7 @@ const MthUpload: React.ForwardRefRenderFunction<RefUploaderHandle, FileUploadTyp
         onClose={() => setOpen(false)}
         onConfirm={handleConfirm}
         confirmStr='Finish'
-        confirmBtnClass='btn-gradient'
+        classNameBtnOk='bg-gradient'
         showBtnClose={uploadedFiles.length === 0}
         showBtnCancel={uploadedFiles.length > 0}
         showBtnConfirm={uploadedFiles.length > 0}

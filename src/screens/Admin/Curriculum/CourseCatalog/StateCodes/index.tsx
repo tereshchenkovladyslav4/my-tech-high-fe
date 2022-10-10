@@ -138,7 +138,7 @@ const StateCodes: FunctionComponent = () => {
               variant='contained'
               disableElevation
               sx={{ ...classes.addButton, px: 6 }}
-              className='btn-gradient'
+              className='bg-gradient'
               size='large'
             >
               Import

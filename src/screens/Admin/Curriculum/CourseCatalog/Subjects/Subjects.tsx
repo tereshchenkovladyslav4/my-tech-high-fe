@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useMutation, useQuery } from '@apollo/client'
+import { useMutation } from '@apollo/client'
 import { DeleteForeverOutlined } from '@mui/icons-material'
 import CallMissedOutgoingIcon from '@mui/icons-material/CallMissedOutgoing'
 import CreateIcon from '@mui/icons-material/Create'
@@ -11,11 +11,10 @@ import { MthTable } from '@mth/components/MthTable'
 import { MthTableField, MthTableRowItem } from '@mth/components/MthTable/types'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { MthColor } from '@mth/enums'
-import { SchoolYearRespnoseType } from '@mth/hooks'
+import { SchoolYearRespnoseType, useSubjects } from '@mth/hooks'
 import {
   createOrUpdateSubjectMutation,
   deleteSubjectMutation,
-  getSubjectsQuery,
 } from '@mth/screens/Admin/Curriculum/CourseCatalog/services'
 import { SubjectConfirmModal } from '@mth/screens/Admin/Curriculum/CourseCatalog/Subjects/SubjectConfirmModal'
 import { SubjectEdit } from '@mth/screens/Admin/Curriculum/CourseCatalog/Subjects/SubjectEdit'
@@ -28,7 +27,6 @@ const Subjects: React.FC = () => {
   const [selectedYearData, setSelectedYearData] = useState<SchoolYearRespnoseType | undefined>()
   const [searchField, setSearchField] = useState<string>('')
   const [showArchived, setShowArchived] = useState<boolean>(false)
-  const [subjects, setSubjects] = useState<Subject[]>([])
   const [tableData, setTableData] = useState<MthTableRowItem<Subject>[]>([])
   const [selectedSubject, setSelectedSubject] = useState<Subject | undefined>()
   const [showEditModal, setShowEditModal] = useState<boolean>(false)
@@ -36,17 +34,8 @@ const Subjects: React.FC = () => {
   const [showUnarchivedModal, setShowUnarchivedModal] = useState<boolean>(false)
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false)
 
-  const {
-    loading,
-    data: subjectsData,
-    refetch,
-  } = useQuery(getSubjectsQuery, {
-    variables: {
-      findSubjectsInput: { schoolYearId: +selectedYear, searchField: searchField, isActive: !showArchived },
-    },
-    skip: !selectedYear,
-    fetchPolicy: 'network-only',
-  })
+  const { loading, subjects, refetch } = useSubjects(selectedYear, searchField, !showArchived)
+
   const [updateSubject, {}] = useMutation(createOrUpdateSubjectMutation)
   const [deleteSubject, {}] = useMutation(deleteSubjectMutation)
 
@@ -205,20 +194,6 @@ const Subjects: React.FC = () => {
       }),
     )
   }, [subjects, showArchived])
-
-  useEffect(() => {
-    if (!loading && subjectsData) {
-      const { subjects } = subjectsData
-      setSubjects(subjects || [])
-    }
-  }, [selectedYear])
-
-  useEffect(() => {
-    if (!loading && subjectsData) {
-      const { subjects } = subjectsData
-      setSubjects(subjects || [])
-    }
-  }, [loading, subjectsData])
 
   return (
     <Box sx={{ p: 4, textAlign: 'left' }}>

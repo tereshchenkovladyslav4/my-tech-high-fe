@@ -71,6 +71,8 @@ export const SortableTable: SortableTableTemplateType = ({
       case 'studentStatus':
         if (value === 'New') {
           return '#00C12B'
+        } else if (value === 'Requested') {
+          return '#4145FF'
         } else {
           return MTHBLUE
         }
@@ -101,7 +103,6 @@ export const SortableTable: SortableTableTemplateType = ({
       }
     }
   }
-
   return (
     <Box sx={{ width: '100%', overflow: 'hidden' }}>
       <TableContainer>

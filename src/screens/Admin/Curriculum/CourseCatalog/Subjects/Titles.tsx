@@ -241,6 +241,7 @@ const Titles: React.FC<TitlesProps> = ({ schoolYearId, schoolYearData, subject, 
 
       {showEditModal && (
         <TitleEdit
+          subjectId={subject.subject_id}
           schoolYearId={schoolYearId}
           schoolYearData={schoolYearData}
           item={selectedTitle}

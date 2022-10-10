@@ -4,18 +4,18 @@ import { Box, Modal } from '@mui/material'
 import { Form, Formik } from 'formik'
 import * as yup from 'yup'
 import { WarningModal } from '@mth/components/WarningModal/Warning'
-import { GRADES } from '@mth/constants'
 import { MthColor, ReduceFunds } from '@mth/enums'
-import { useProgramYearListBySchoolYearId, useScheduleBuilder, useSubjects } from '@mth/hooks'
+import { useProgramYearListBySchoolYearId, useProviders, useScheduleBuilder } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
-import { createOrUpdateTitleMutation } from '@mth/screens/Admin/Curriculum/CourseCatalog/services'
-import { defaultTitleFormData } from '@mth/screens/Admin/Curriculum/CourseCatalog/Subjects/defaultValues'
-import TitleForm from '@mth/screens/Admin/Curriculum/CourseCatalog/Subjects/TitleEdit/TitleForm'
+import CourseForm from '@mth/screens/Admin/Curriculum/CourseCatalog/Providers/CourseEdit/CourseForm'
+import { defaultCourseFormData } from '@mth/screens/Admin/Curriculum/CourseCatalog/Providers/defaultValues'
+import { createOrUpdateCourseMutation } from '@mth/screens/Admin/Curriculum/CourseCatalog/services'
+import { Title } from '@mth/screens/Admin/Curriculum/CourseCatalog/Subjects/types'
 import SaveCancelComponent from '../../Components/SaveCancelComponent/SaveCancelComponent'
-import { StateCourseCord, Title, TitleEditProps } from '../types'
+import { Course, CourseEditProps } from '../types'
 
-const TitleEdit: React.FC<TitleEditProps> = ({
-  subjectId,
+const CourseEdit: React.FC<CourseEditProps> = ({
+  providerId,
   schoolYearId,
   schoolYearData,
   item,
@@ -25,12 +25,12 @@ const TitleEdit: React.FC<TitleEditProps> = ({
   const { me } = useContext(UserContext)
 
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false)
-  const [initialValues, setInitialValues] = useState<Title>({ ...defaultTitleFormData, subject_id: subjectId })
+  const [initialValues, setInitialValues] = useState<Course>({ ...defaultCourseFormData, provider_id: providerId })
   const [showGradeError, setShowGradeError] = useState<boolean>(false)
   const [showAltGradeError, setShowAltGradeError] = useState<boolean>(false)
-  const [submitSave, {}] = useMutation(createOrUpdateTitleMutation)
+  const [submitSave, {}] = useMutation(createOrUpdateCourseMutation)
 
-  const { checkBoxItems: subjectsItems } = useSubjects(schoolYearId)
+  const { checkBoxItems: providerItems } = useProviders(schoolYearId)
   const { gradeList: gradeOptions } = useProgramYearListBySchoolYearId(schoolYearId)
   const { scheduleBuilder } = useScheduleBuilder(me?.selectedRegionId)
 
@@ -39,14 +39,15 @@ const TitleEdit: React.FC<TitleEditProps> = ({
   }
 
   const validationSchema = yup.object({
-    subject_id: yup.number().required('Required').moreThan(0, 'Required').nullable(),
+    provider_id: yup.number().required('Required').moreThan(0, 'Required').nullable(),
     name: yup.string().required('Required').nullable(),
     min_grade: yup.string().required('Required').nullable(),
     max_grade: yup.string().required('Required').nullable(),
+    reduce_funds: yup.string().required('Required').nullable(),
     diploma_seeking_path: schoolYearData?.diploma_seeking
       ? yup.string().required('Required').nullable()
       : yup.string().nullable(),
-    reduce_funds: yup.string().required('Required').nullable(),
+    limit: yup.number().min(1, 'Limit Invalid').positive('Limit Invaild').integer('Limit Invaild').nullable(),
     price: yup
       .number()
       .when('reduce_funds', {
@@ -63,14 +64,7 @@ const TitleEdit: React.FC<TitleEditProps> = ({
         then: yup.string().required('Required').min(9, 'Invalid').nullable(),
       })
       .nullable(),
-    custom_built_description: yup
-      .string()
-      .when('custom_built', {
-        is: true,
-        then: yup.string().required('Required').min(9, 'Invalid').nullable(),
-      })
-      .nullable(),
-    subject_notification: yup
+    course_notification: yup
       .string()
       .when('display_notification', {
         is: true,
@@ -84,9 +78,10 @@ const TitleEdit: React.FC<TitleEditProps> = ({
         then: yup.string().required('Required').nullable(),
       })
       .nullable(),
+    TitleIds: yup.array().min(1).required('Required'),
   })
 
-  const onSave = async (value: Title) => {
+  const onSave = async (value: Course) => {
     const grades = [
       value?.min_grade,
       value?.max_grade,
@@ -108,29 +103,28 @@ const TitleEdit: React.FC<TitleEditProps> = ({
 
     await submitSave({
       variables: {
-        createTitleInput: {
-          title_id: Number(value.title_id),
-          subject_id: Number(value.subject_id),
+        createCourseInput: {
+          id: Number(value.id),
+          provider_id: Number(value.provider_id),
           name: value.name,
           min_grade: value.min_grade,
           max_grade: value.max_grade,
           min_alt_grade: value.min_alt_grade,
           max_alt_grade: value.max_alt_grade,
-          diploma_seeking_path: value.diploma_seeking_path,
-          reduce_funds: value.reduce_funds,
-          price: value.price,
           always_unlock: value.always_unlock,
-          custom_built: value.custom_built,
-          third_party_provider: value.third_party_provider,
-          split_enrollment: value.split_enrollment,
           software_reimbursement: value.software_reimbursement,
           display_notification: value.display_notification,
           launchpad_course: value.launchpad_course,
           course_id: value.course_id,
+          course_notification: value.course_notification,
           reduce_funds_notification: value.reduce_funds_notification,
-          custom_built_description: value.custom_built_description,
-          subject_notification: value.subject_notification,
-          state_course_codes: JSON.stringify(value.stateCourseCords),
+          website: value.website,
+          diploma_seeking_path: value.diploma_seeking_path,
+          limit: value.limit,
+          reduce_funds: value.reduce_funds,
+          price: value.price,
+          subject_id: Number(value.subject_id),
+          titles: value.TitleIds?.join(','),
         },
       },
     })
@@ -145,17 +139,11 @@ const TitleEdit: React.FC<TitleEditProps> = ({
   }
 
   useEffect(() => {
-    if (item?.title_id) {
-      const originalCords: StateCourseCord[] = item.state_course_codes ? JSON.parse(item.state_course_codes) : []
-      const stateCourseCords: StateCourseCord[] = GRADES.map((_item, index) => {
-        const stateCourseCord = originalCords.find((x) => x?.gradeIndex == index)
-        return {
-          gradeIndex: index,
-          stateCode: stateCourseCord?.stateCode || '',
-          teacher: stateCourseCord?.teacher || '',
-        }
+    if (item?.id) {
+      setInitialValues({
+        ...item,
+        TitleIds: (item.Titles || []).map((x: Title) => x.title_id.toString()),
       })
-      setInitialValues({ ...item, stateCourseCords, diploma_seeking: schoolYearData?.diploma_seeking })
     }
   }, [item])
 
@@ -193,9 +181,10 @@ const TitleEdit: React.FC<TitleEditProps> = ({
             onSubmit={onSave}
           >
             <Form>
-              <TitleForm
+              <CourseForm
+                schoolYearId={schoolYearId}
                 schoolYearData={schoolYearData}
-                subjectsItems={subjectsItems}
+                providerItems={providerItems}
                 gradeOptions={gradeOptions}
                 scheduleBuilder={scheduleBuilder}
               />
@@ -229,4 +218,4 @@ const TitleEdit: React.FC<TitleEditProps> = ({
   )
 }
 
-export default TitleEdit
+export default CourseEdit

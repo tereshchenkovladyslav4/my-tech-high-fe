@@ -9,7 +9,7 @@ export type CustomModalType = {
   onClose: () => void
   onConfirm: () => void
   confirmStr?: string
-  confirmBtnClass?: string
+  classNameBtnOk?: string
   cancelStr?: string
   backgroundColor?: string
   noCloseOnBackdrop?: boolean
@@ -30,7 +30,7 @@ export const MthModal: React.FC<CustomModalType> = ({
   children,
   noCloseOnBackdrop = false,
   width,
-  confirmBtnClass,
+  classNameBtnOk = 'bg-gradient-dark',
   showBtnClose = false,
   showBtnConfirm = true,
   showBtnCancel = true,
@@ -70,9 +70,9 @@ export const MthModal: React.FC<CustomModalType> = ({
             <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '30px', gap: '40px' }}>
               {showBtnCancel && (
                 <Button
-                  sx={{ width: '160px', height: '36px', borderRadius: '50px' }}
+                  sx={{ ...useStyles.button, fontSize: '12px' }}
                   variant='contained'
-                  color='secondary'
+                  color='warning'
                   onClick={onClose}
                 >
                   {cancelStr}
@@ -80,15 +80,11 @@ export const MthModal: React.FC<CustomModalType> = ({
               )}
               {showBtnConfirm && (
                 <Button
-                  sx={{
-                    width: '160px',
-                    height: '36px',
-                    borderRadius: '50px',
-                  }}
+                  sx={{ ...useStyles.button, fontSize: '10px' }}
                   color='primary'
                   variant='contained'
                   onClick={onConfirm}
-                  className={confirmBtnClass || ''}
+                  className={classNameBtnOk || ''}
                 >
                   {confirmStr}
                 </Button>

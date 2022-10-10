@@ -2,6 +2,7 @@ import React from 'react'
 import AddOutlinedIcon from '@mui/icons-material/AddOutlined'
 import CallMissedOutgoingIcon from '@mui/icons-material/CallMissedOutgoing'
 import CheckOutlinedIcon from '@mui/icons-material/CheckOutlined'
+import ContentCopyOutlinedIcon from '@mui/icons-material/ContentCopyOutlined'
 import DehazeIcon from '@mui/icons-material/Dehaze'
 import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined'
 import EditIcon from '@mui/icons-material/Edit'
@@ -143,7 +144,7 @@ const HomeroomResourceCard: React.FC<HomeroomResourceCardProps> = ({ item, actio
               background: MthColor.ORANGE_GRADIENT,
             }}
           >
-            <AddOutlinedIcon />
+            <ContentCopyOutlinedIcon />
           </Stack>
         </Tooltip>
       )}

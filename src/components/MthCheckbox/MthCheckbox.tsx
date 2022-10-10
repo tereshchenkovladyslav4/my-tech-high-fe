@@ -28,9 +28,14 @@ const MthCheckbox = (props: MthCheckboxProps): React.ReactElement => {
           '&:before': {
             content: '""',
             position: 'absolute',
-            width: props.size == 'medium' ? 14 : 12,
-            height: props.size == 'medium' ? 14 : 12,
+            width: props.size == 'medium' ? 18 : 16,
+            height: props.size == 'medium' ? 18 : 16,
+            borderRadius: '2px',
+            border: 'solid 2px #A3A3A4',
             backgroundColor: MthColor.SYSTEM_07,
+          },
+          '& svg': {
+            opacity: 0,
           },
         },
         ...props.sx,
@@ -44,7 +49,10 @@ const MthCheckbox = (props: MthCheckboxProps): React.ReactElement => {
         <FormControlLabel
           control={renderCheckbox()}
           label={
-            <Paragraph size='large' sx={{ marginLeft: '12px', fontSize: '16px', fontWeight: '500', ...props.labelSx }}>
+            <Paragraph
+              size='large'
+              sx={{ marginLeft: '12px', fontSize: '16px', fontWeight: '500', lineHeight: 1, ...props.labelSx }}
+            >
               {props.label}
             </Paragraph>
           }

@@ -23,4 +23,9 @@ export const useStyles = {
       padding: 0,
     },
   },
+  button: {
+    width: '160px',
+    height: '36px',
+    borderRadius: '50px',
+  },
 }

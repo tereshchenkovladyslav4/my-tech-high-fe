@@ -1,5 +1,5 @@
 import { makeStyles, Theme } from '@material-ui/core/styles'
-import { BLACK } from '../../utils/constants'
+import { BLACK, BUTTON_LINEAR_GRADIENT_DARK } from '../../utils/constants'
 
 export const useStyles = makeStyles((theme: Theme) => ({
   modalCard: {
@@ -54,8 +54,10 @@ export const useStyles = makeStyles((theme: Theme) => ({
     width: '200px',
     margin: '32px !important',
     marginBottom: '8px !important',
-    background: '#E7E7E7',
-    color: 'black',
+    background: '#E7E7E7 !important',
+    color: 'black !important',
+    height: '36px',
+    fontSize: '12px !important',
     '&:hover': {
       color: '#fff',
     },
@@ -65,7 +67,9 @@ export const useStyles = makeStyles((theme: Theme) => ({
     width: '200px',
     margin: '32px !important',
     marginBottom: '8px !important',
-    background: 'black',
+    background: BUTTON_LINEAR_GRADIENT_DARK,
+    height: '36px',
+    fontSize: '10px !important',
     '&:hover': {
       color: '#000',
     },

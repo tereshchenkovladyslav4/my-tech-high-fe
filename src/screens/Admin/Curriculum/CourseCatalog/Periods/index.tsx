@@ -25,20 +25,15 @@ import { capitalize } from 'lodash'
 import Wysiwyg from 'react-draft-wysiwyg'
 import { useSetRecoilState } from 'recoil'
 import * as Yup from 'yup'
+import { DropDown } from '@mth/components/DropDown/DropDown'
 import { MthModal } from '@mth/components/MthModal/MthModal'
 import PageHeader from '@mth/components/PageHeader'
 import CustomTable from '@mth/components/Table/CustomTable'
 import { Field } from '@mth/components/Table/types'
 import { WarningModal } from '@mth/components/WarningModal/Warning'
+import { useSchoolYearsByRegionId } from '@mth/hooks'
 import { loadingState } from '@mth/providers/Store/State'
-import {
-  getSchoolYearByYearIdForPeriod,
-  getPeriods,
-  upsertPeriod,
-  periodArchive,
-  deletePeriodsByIds,
-} from '@mth/screens/Admin/Curriculum/services'
-import { SchoolYearDropDown } from '@mth/screens/Admin/SiteManagement/SchoolPartner/SchoolYearDropDown/SchoolYearDropDown'
+import { getPeriods, upsertPeriod, periodArchive, deletePeriodsByIds } from '@mth/screens/Admin/Curriculum/services'
 import { ordinalSuffixOf } from '@mth/utils'
 import { useStyles } from '../../styles'
 import { PeriodItem, SEMESTER_TYPE, REDUCE_FUNDS_TYPE, OptionType, SEMESTER_MESSAGE } from '../../types'
@@ -55,7 +50,13 @@ const initialEditorState = EditorState.createWithContent(ContentState.createFrom
 const Periods: FunctionComponent = () => {
   const classes = useStyles
   const setLoading = useSetRecoilState(loadingState)
-  const [selectedYearId, setSelectedYearId] = useState<number | undefined>()
+  const {
+    loading: yearLoading,
+    selectedYearId,
+    setSelectedYearId,
+    selectedYear: schoolYearData,
+    dropdownItems: schoolYearDropdownItems,
+  } = useSchoolYearsByRegionId()
   // Modal for Archive, Unarchive, Delete
   const [modalWarning, setModalWarning] = useState<'delete' | 'unarchive' | 'archive' | ''>('')
   const [modalErrorGradeValidation, setModalErrorGradeValidation] = useState<boolean>(false)
@@ -71,7 +72,7 @@ const Periods: FunctionComponent = () => {
   // Filter Box
   const [query, setQuery] = useState({
     keyword: '',
-    hideArchived: true,
+    archived: false,
   })
 
   const setFilter = (field: string, value: string | boolean) => {
@@ -80,16 +81,6 @@ const Periods: FunctionComponent = () => {
       [field]: value,
     })
   }
-
-  // query for getting max_num_periods
-  const { data: schoolYearData } = useQuery(getSchoolYearByYearIdForPeriod, {
-    variables: {
-      school_year_id: selectedYearId,
-    },
-    skip: !selectedYearId,
-    fetchPolicy: 'network-only',
-  })
-
   // --------------------------------------------- mutations periods
   const [apiUpsertPeriod] = useMutation(upsertPeriod)
   const [apiPeriodArchive] = useMutation(periodArchive)
@@ -103,7 +94,7 @@ const Periods: FunctionComponent = () => {
     variables: {
       school_year_id: selectedYearId ? +selectedYearId : 0,
       keyword: query.keyword,
-      hide_archived: query.hideArchived,
+      archived: query.archived,
     },
     skip: !selectedYearId,
     fetchPolicy: 'network-only',
@@ -116,7 +107,7 @@ const Periods: FunctionComponent = () => {
 
   const grades: string[] = useMemo(() => {
     return (
-      schoolYearData?.getSchoolYear?.grades
+      schoolYearData?.grades
         ?.split(',')
         .sort((a: string, b: string) => (parseInt(a) > parseInt(b) ? 1 : -1))
         .sort((a: string) => (a === 'Kindergarten' ? -1 : 0)) || []
@@ -136,7 +127,7 @@ const Periods: FunctionComponent = () => {
 
   // count of Max period
   const maxPeriodCount: number = useMemo(() => {
-    return schoolYearData?.getSchoolYear?.ScheduleBuilder?.max_num_periods || 0
+    return schoolYearData?.ScheduleBuilder?.max_num_periods || 0
   }, [schoolYearData])
 
   // open modals
@@ -179,15 +170,7 @@ const Periods: FunctionComponent = () => {
         })
           .then(() => {
             setLoading(false)
-            const updatedItems = items.map((el) => {
-              if (el.id === temp.id) {
-                return {
-                  ...el,
-                  archived: !el.archived,
-                }
-              } else return el
-            })
-            setItems(updatedItems)
+            setItems(items.filter((el) => el.id !== temp.id))
           })
           .catch(() => {
             setLoading(false)
@@ -219,6 +202,7 @@ const Periods: FunctionComponent = () => {
           .then(() => {
             setOpen(false)
             refetchPeriod()
+            setFilter('archived', false)
           })
           .finally(() => {
             setLoading(false)
@@ -384,7 +368,8 @@ const Periods: FunctionComponent = () => {
       label: 'Grades',
       sortable: false,
       thClass: 'w-31',
-      formatter: (item) => `${item.grade_level_min} - ${item.grade_level_max}`,
+      formatter: (item) =>
+        `${item.grade_level_min === 'Kindergarten' ? 'K' : item.grade_level_min} - ${item.grade_level_max}`,
     },
     {
       key: 'category',
@@ -412,24 +397,24 @@ const Periods: FunctionComponent = () => {
                 <CreateIcon />
               </IconButton>
             ) : (
-              <Tooltip title='Edit' color='primary' placement='top'>
-                <IconButton onClick={() => handleEditModal(item)}>
+              <IconButton onClick={() => handleEditModal(item)}>
+                <Tooltip title='Edit' color='primary' placement='top'>
                   <CreateIcon />
-                </IconButton>
-              </Tooltip>
-            )}
-            <Tooltip title={item.archived ? 'Unarchive' : 'Archive'} placement='top'>
-              <IconButton onClick={() => handleArchiveModal(item)} color='primary' sx={{ mr: item.archived ? 0 : 5 }}>
-                {item.archived ? <CallMissedOutgoingIcon sx={{ color: '#A3A3A4' }} /> : <SystemUpdateAltRoundedIcon />}
+                </Tooltip>
               </IconButton>
-            </Tooltip>
+            )}
+            <IconButton onClick={() => handleArchiveModal(item)} color='primary' sx={{ mr: item.archived ? 0 : 5 }}>
+              <Tooltip title={item.archived ? 'Unarchive' : 'Archive'} placement='top'>
+                {item.archived ? <CallMissedOutgoingIcon sx={{ color: '#A3A3A4' }} /> : <SystemUpdateAltRoundedIcon />}
+              </Tooltip>
+            </IconButton>
 
             {item.archived && (
-              <Tooltip title='Delete' color='primary' placement='top'>
-                <IconButton onClick={() => handleDeleteModal(item)}>
+              <IconButton onClick={() => handleDeleteModal(item)}>
+                <Tooltip title='Delete' color='primary' placement='top'>
                   <DeleteForeverOutlined />
-                </IconButton>
-              </Tooltip>
+                </Tooltip>
+              </IconButton>
             )}
           </Box>
         )
@@ -440,7 +425,13 @@ const Periods: FunctionComponent = () => {
   return (
     <Box sx={classes.base}>
       <PageHeader title='Periods'>
-        <SchoolYearDropDown setSelectedYearId={setSelectedYearId} selectedYearId={selectedYearId} />
+        <DropDown
+          dropDownItems={schoolYearDropdownItems}
+          placeholder={'Select Year'}
+          defaultValue={selectedYearId}
+          borderNone={true}
+          setParentValue={(val) => setSelectedYearId(Number(val))}
+        />
       </PageHeader>
 
       <Box sx={{ my: 2 }}>
@@ -448,11 +439,18 @@ const Periods: FunctionComponent = () => {
       </Box>
 
       <Box>
-        <CustomTable items={items} loading={loading} fields={fields} striped size='lg' borderedLeft />
+        <CustomTable items={items} loading={loading || yearLoading} fields={fields} striped size='lg' borderedLeft />
       </Box>
 
       <Box sx={{ mt: 4, textAlign: 'left' }}>
-        <Button variant='contained' onClick={handleCreateModal} disableElevation sx={classes.addButton} size='large'>
+        <Button
+          variant='contained'
+          onClick={handleCreateModal}
+          disableElevation
+          sx={classes.addButton}
+          size='large'
+          className='bg-gradient'
+        >
           + Add Period
         </Button>
       </Box>
@@ -638,7 +636,7 @@ const Periods: FunctionComponent = () => {
                         onChange={formik.handleChange}
                       />
                     }
-                    label='Display a notification when the subject is not changed at 2nd Semester'
+                    label={`Display a notification when the ${formik.values.semester.toLocaleLowerCase()} is not changed at 2nd Semester`}
                   />
                   {formik.values.notify_semester && (
                     <>
@@ -766,12 +764,19 @@ const Periods: FunctionComponent = () => {
           handleModem={() => setModalWarning('')}
           title={modalWarning}
           btntitle={capitalize(modalWarning)}
-          subtitle={`Are you sure want to ${modalWarning} this Period?`}
+          subtitle={`Are you sure you want to ${modalWarning} this Period?`}
           handleSubmit={handleArchiveOrDelete}
           canceltitle='Cancel'
+          classNameBtnOk='bg-gradient-dark'
+          className='custom-modal'
         >
           {modalWarning === 'delete' && (
-            <Typography fontWeight='600' fontSize={14} align='center'>
+            <Typography
+              fontWeight='600'
+              fontSize={14}
+              align='center'
+              sx={{ marginLeft: '-10px', marginRight: '-10px' }}
+            >
               Doing so will remove it from any student&lsquo;s schedule for this year.
             </Typography>
           )}

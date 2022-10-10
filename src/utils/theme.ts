@@ -1,5 +1,5 @@
 import { createTheme } from '@mui/material/styles'
-import { BUTTON_LINEAR_GRADIENT } from './constants'
+import { BUTTON_LINEAR_GRADIENT, BUTTON_LINEAR_GRADIENT_DARK } from './constants'
 
 export const theme = createTheme({
   palette: {
@@ -11,6 +11,11 @@ export const theme = createTheme({
     secondary: {
       main: '#FFFFFF',
       dark: '#fff',
+      contrastText: '#000',
+    },
+    warning: {
+      main: '#F2F2F2',
+      dark: '#E7E7E7',
       contrastText: '#000',
     },
     error: {
@@ -59,8 +64,14 @@ export const theme = createTheme({
             MozAppearance: 'none',
             margin: 0,
           },
-          '& .btn-gradient': {
+          '& .bg-gradient': {
             background: BUTTON_LINEAR_GRADIENT,
+          },
+          '& .bg-gradient-dark': {
+            background: BUTTON_LINEAR_GRADIENT_DARK,
+          },
+          '& .rounded-full': {
+            borderRadius: '999px',
           },
         },
       },

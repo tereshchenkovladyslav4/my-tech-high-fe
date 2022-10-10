@@ -38,7 +38,9 @@ export const getSchoolYearsByRegionId = gql`
         testing_preference_description
         opt_out_form_title
         opt_out_form_description
-        grades
+        ScheduleBuilder {
+          max_num_periods
+        }
         schedule
         diploma_seeking
         testing_preference

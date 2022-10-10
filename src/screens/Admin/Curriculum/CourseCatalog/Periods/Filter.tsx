@@ -6,7 +6,7 @@ import { useStyles } from '../../styles'
 type FilterProps = {
   query: {
     keyword?: string
-    hideArchived?: boolean
+    archived?: boolean
   }
   setValue: (field: string, value: string | boolean) => void
 }
@@ -14,9 +14,9 @@ type FilterProps = {
 const Periods: React.FC<FilterProps> = ({ query, setValue }) => {
   const classes = useStyles
 
-  const setHideArchived = (vv: boolean) => {
-    if (vv !== query.hideArchived) {
-      setValue('hideArchived', vv)
+  const setArchived = (vv: boolean) => {
+    if (vv !== query.archived) {
+      setValue('archived', vv)
     }
   }
 
@@ -38,17 +38,17 @@ const Periods: React.FC<FilterProps> = ({ query, setValue }) => {
       <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
         <Button
           sx={classes.filterButton}
-          color={query.hideArchived ? 'secondary' : 'primary'}
+          color={query.archived ? 'primary' : 'warning'}
           variant='contained'
-          onClick={() => setHideArchived(false)}
+          onClick={() => setArchived(true)}
         >
           Show Archived
         </Button>
         <Button
           sx={classes.filterButton}
-          color={query.hideArchived ? 'primary' : 'secondary'}
+          color={query.archived ? 'warning' : 'primary'}
           variant='contained'
-          onClick={() => setHideArchived(true)}
+          onClick={() => setArchived(false)}
         >
           Hide Archived
         </Button>

@@ -66,20 +66,10 @@ export const getSchoolYear = gql`
 // =============================================================
 //                  Period
 // =============================================================
-export const getSchoolYearByYearIdForPeriod = gql`
-  query GetSchoolYear($school_year_id: ID!) {
-    getSchoolYear(school_year_id: $school_year_id) {
-      grades
-      ScheduleBuilder {
-        id
-        max_num_periods
-      }
-    }
-  }
-`
+
 export const getPeriods = gql`
-  query Periods($school_year_id: ID!, $hide_archived: Boolean, $keyword: String) {
-    periods(school_year_id: $school_year_id, hide_archived: $hide_archived, keyword: $keyword) {
+  query Periods($school_year_id: ID!, $archived: Boolean, $keyword: String) {
+    periods(school_year_id: $school_year_id, archived: $archived, keyword: $keyword) {
       id
       period
       reduce_funds
