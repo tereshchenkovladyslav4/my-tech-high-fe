@@ -27,6 +27,7 @@ import { extractContent, gradeNum, gradeText } from '@mth/utils'
 import { DiplomaSeeking } from './DiplomaSeeking'
 import { HeaderComponent } from './HeaderComponent'
 import { OptOutForm } from './OptOutForm'
+import { ScheduleBuilder } from './ScheduleBuilder'
 import { StudentInfo } from './StudentInfo'
 import { scheduleClassess } from './styles'
 import { TestingPreference } from './TestingPreference'
@@ -441,6 +442,8 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
             isError={isDiplomaError}
           />
         )}
+        {step == MthTitle.STEP_SCHEDULE_BUILDER && <ScheduleBuilder studentId={Number(studentId)} />}
+
         <Box sx={{ display: 'flex', justifyContent: 'end' }}>
           <Button onClick={() => handleNextStep()} variant='contained' sx={scheduleClassess.button}>
             {'Next'}

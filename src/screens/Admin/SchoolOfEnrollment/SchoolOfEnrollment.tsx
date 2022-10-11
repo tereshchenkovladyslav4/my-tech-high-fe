@@ -26,14 +26,14 @@ export const SchoolOfEnrollment: React.FC = () => {
     variables: {
       schoolPartnerArgs: {
         region_id: me?.selectedRegionId,
-        school_year_id: selectedYear?.value ? (selectedYear.value as string).split('-')[0] : null,
+        school_year_id: selectedYear?.value ? selectedYear.value.toString().split('-')[0] : null,
         sort: {
           column: 'name',
           direction: 'ASC',
         },
       },
     },
-    skip: !selectedYear,
+    skip: !selectedYear || !selectedYear.value,
     fetchPolicy: 'network-only',
   })
 
@@ -90,6 +90,7 @@ export const SchoolOfEnrollment: React.FC = () => {
   useEffect(() => {
     if (schoolYearData?.region?.SchoolYears) {
       const { SchoolYears } = schoolYearData?.region
+
       setSchoolYearsData(SchoolYears)
       const yearList: OptionType[] = []
       SchoolYears.map(
@@ -120,6 +121,7 @@ export const SchoolOfEnrollment: React.FC = () => {
           }
         },
       )
+
       setSchoolYears(yearList.sort((a, b) => (a.label > b.label ? 1 : -1)))
     }
   }, [schoolYearData?.region?.SchoolYears])
@@ -127,7 +129,7 @@ export const SchoolOfEnrollment: React.FC = () => {
   useEffect(() => {
     const yearItem = schoolYearsData.find(
       (item: { school_year_id: string }) =>
-        item.school_year_id == (selectedYear?.value ? (selectedYear.value as string).split('-')[0] : null),
+        item.school_year_id == (selectedYear?.value ? selectedYear.value.toString().split('-')[0] : null),
     )
     const newGrades = yearItem?.grades?.split(',') || []
     setGrades(newGrades.sort((a, b) => (parseInt(a) > parseInt(b) ? 1 : -1)))

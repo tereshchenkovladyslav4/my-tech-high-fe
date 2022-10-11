@@ -220,10 +220,11 @@ const HomeroomResourceForm: React.FC<HomeroomResourceFormProps> = ({ schoolYearI
                     title={
                       values?.family_resource
                         ? REMOVE_FAMILY_RESOURCE
-                        : !!values.ResourceLevels?.filter((item) => item.limit)?.length
+                        : values.add_resource_level && !!values.ResourceLevels?.filter((item) => item.limit)?.length
                         ? 'Remove resource level limit to enable feature'
                         : ''
                     }
+                    placement='top'
                   >
                     <TextField
                       name='resource_limit'
@@ -238,7 +239,8 @@ const HomeroomResourceForm: React.FC<HomeroomResourceFormProps> = ({ schoolYearI
                       }}
                       error={touched.resource_limit && !!errors.resource_limit}
                       disabled={
-                        !!values?.family_resource || !!values.ResourceLevels?.filter((item) => item.limit)?.length
+                        !!values?.family_resource ||
+                        (values.add_resource_level && !!values.ResourceLevels?.filter((item) => item.limit)?.length)
                       }
                     />
                   </Tooltip>
@@ -300,6 +302,7 @@ const HomeroomResourceForm: React.FC<HomeroomResourceFormProps> = ({ schoolYearI
                       ? 'Remove resource levels to enable feature'
                       : ''
                   }
+                  placement='top'
                 >
                   <FormControlLabel
                     sx={{ height: 30, marginTop: 2 }}

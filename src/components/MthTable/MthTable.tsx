@@ -26,6 +26,7 @@ const MthTable = <T extends unknown>({
   borderBottom = true,
   isDraggable = false,
   onArrange,
+  sx = [],
 }: MthTableProps<T>): React.ReactElement => {
   const [numSelected, setNumSelected] = useState<number>(0)
   const [rowCount, setRowCount] = useState<number>(0)
@@ -79,7 +80,7 @@ const MthTable = <T extends unknown>({
   return (
     <TableContainer>
       <Table
-        sx={mthTableClasses.table}
+        sx={[mthTableClasses.table, ...(Array.isArray(sx) ? sx : [sx])]}
         className={`${size} ${oddBg ? '' : 'noOddBg'} ${borderBottom && !oddBg ? '' : 'noBorderBottom'}`}
       >
         <TableHead>

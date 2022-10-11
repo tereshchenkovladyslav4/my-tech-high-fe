@@ -58,4 +58,8 @@ export const useStyles = {
       marginRight: '0 !important',
     },
   },
+  textLabel: {
+    color: '#333333',
+    fontWeight: 600,
+  },
 }

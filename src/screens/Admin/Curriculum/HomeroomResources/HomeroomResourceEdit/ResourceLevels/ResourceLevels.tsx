@@ -95,7 +95,7 @@ export const ResourceLevels: React.FC<ResourceLevelsProps> = ({ setIsChanged }) 
 
   return (
     <>
-      <Tooltip title={values?.family_resource ? REMOVE_FAMILY_RESOURCE : ''}>
+      <Tooltip title={values?.family_resource ? REMOVE_FAMILY_RESOURCE : ''} placement='top'>
         <FormControlLabel
           sx={{ height: 30, marginTop: 2 }}
           control={
@@ -147,7 +147,10 @@ export const ResourceLevels: React.FC<ResourceLevelsProps> = ({ setIsChanged }) 
                     {touched.ResourceLevels &&
                       (errors.ResourceLevels?.[index]?.limit || (limitError && !item.limit && 'Required'))}
                   </Subtitle>
-                  <Tooltip title={!!values.resource_limit ? 'Remove general limit to enable feature' : ''}>
+                  <Tooltip
+                    title={!!values.resource_limit ? 'Remove general limit to enable feature' : ''}
+                    placement='top'
+                  >
                     <OutlinedInput
                       size='small'
                       fullWidth

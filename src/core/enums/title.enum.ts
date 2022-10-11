@@ -38,4 +38,5 @@ export enum MthTitle {
   STEP_TESTING_PREFERENCE = 'Testing',
   STEP_OPT_OUT_FORM = 'Opt',
   STEP_DIPLOMA_SEEKING = 'Diploma',
+  STEP_SCHEDULE_BUILDER = 'Schedule',
 }

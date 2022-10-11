@@ -1,5 +1,6 @@
 import React, { FunctionComponent, useState, useMemo, useCallback, useEffect } from 'react'
 import { useQuery, useMutation } from '@apollo/client'
+import { withStyles } from '@material-ui/core/styles'
 import { DeleteForeverOutlined } from '@mui/icons-material'
 import CallMissedOutgoingIcon from '@mui/icons-material/CallMissedOutgoing'
 import CreateIcon from '@mui/icons-material/Create'
@@ -16,6 +17,7 @@ import {
   TextField,
   MenuItem,
   FormHelperText,
+  Card,
 } from '@mui/material'
 import { ContentState, EditorState, convertToRaw } from 'draft-js'
 import draftToHtml from 'draftjs-to-html'
@@ -46,6 +48,16 @@ Yup.setLocale({
   },
 })
 const initialEditorState = EditorState.createWithContent(ContentState.createFromText(''))
+
+const CssTextField = withStyles({
+  root: {
+    '& .MuiOutlinedInput-root': {
+      '& fieldset': {
+        borderColor: 'black',
+      },
+    },
+  },
+})(TextField)
 
 const Periods: FunctionComponent = () => {
   const classes = useStyles
@@ -423,37 +435,39 @@ const Periods: FunctionComponent = () => {
   ]
 
   return (
-    <Box sx={classes.base}>
-      <PageHeader title='Periods'>
-        <DropDown
-          dropDownItems={schoolYearDropdownItems}
-          placeholder={'Select Year'}
-          defaultValue={selectedYearId}
-          borderNone={true}
-          setParentValue={(val) => setSelectedYearId(Number(val))}
-        />
-      </PageHeader>
+    <Box sx={{ p: 4, textAlign: 'left' }}>
+      <Card sx={{ p: 4, borderRadius: '12px', boxShadow: '0px 0px 35px rgba(0, 0, 0, 0.05)' }}>
+        <Box sx={{ mb: 4 }}>
+          <PageHeader title='Periods' to='/curriculum/course-catalog'>
+            <DropDown
+              dropDownItems={schoolYearDropdownItems}
+              placeholder={'Select Year'}
+              defaultValue={selectedYearId}
+              borderNone={true}
+              setParentValue={(val) => setSelectedYearId(Number(val))}
+            />
+          </PageHeader>
+        </Box>
 
-      <Box sx={{ my: 2 }}>
         <Filter query={query} setValue={setFilter} />
-      </Box>
 
-      <Box>
-        <CustomTable items={items} loading={loading || yearLoading} fields={fields} striped size='lg' borderedLeft />
-      </Box>
+        <Box>
+          <CustomTable items={items} loading={loading || yearLoading} fields={fields} striped size='lg' borderedLeft />
+        </Box>
 
-      <Box sx={{ mt: 4, textAlign: 'left' }}>
-        <Button
-          variant='contained'
-          onClick={handleCreateModal}
-          disableElevation
-          sx={classes.addButton}
-          size='large'
-          className='bg-gradient'
-        >
-          + Add Period
-        </Button>
-      </Box>
+        <Box sx={{ mt: 4, textAlign: 'left' }}>
+          <Button
+            variant='contained'
+            onClick={handleCreateModal}
+            disableElevation
+            sx={classes.addButton}
+            size='large'
+            className='bg-gradient'
+          >
+            + Add Period
+          </Button>
+        </Box>
+      </Card>
 
       <MthModal
         open={open}
@@ -465,7 +479,7 @@ const Periods: FunctionComponent = () => {
       >
         <Grid container rowSpacing={3} columnSpacing={4} sx={classes.form}>
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CssTextField
               name='period'
               label='Period'
               placeholder='Period'
@@ -476,7 +490,7 @@ const Periods: FunctionComponent = () => {
               }}
               error={formik.touched.period && !!formik.errors.period}
               helperText={formik.touched.period && formik.errors.period}
-              InputLabelProps={{ shrink: true }}
+              InputLabelProps={{ shrink: true, sx: classes.textLabel }}
               select
               disabled={!!temp?.id}
               defaultValue=''
@@ -491,10 +505,10 @@ const Periods: FunctionComponent = () => {
                   None
                 </MenuItem>
               )}
-            </TextField>
+            </CssTextField>
           </Grid>
           <Grid item xs={12}>
-            <TextField
+            <CssTextField
               name='category'
               label='Category'
               placeholder='Category'
@@ -505,11 +519,11 @@ const Periods: FunctionComponent = () => {
               }}
               error={formik.touched.category && !!formik.errors.category}
               helperText={formik.touched.category && formik.errors.category}
-              InputLabelProps={{ shrink: true }}
+              InputLabelProps={{ shrink: true, sx: classes.textLabel }}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CssTextField
               name='grade_level_min'
               label='Minimum Grade Level'
               placeholder='Minimum Grade Level'
@@ -518,7 +532,7 @@ const Periods: FunctionComponent = () => {
               onChange={handleGradeLevelMin}
               error={formik.touched.grade_level_min && !!formik.errors.grade_level_min}
               helperText={formik.touched.grade_level_min && formik.errors.grade_level_min}
-              InputLabelProps={{ shrink: true }}
+              InputLabelProps={{ shrink: true, sx: classes.textLabel }}
               SelectProps={{ displayEmpty: true }}
               select
             >
@@ -527,10 +541,10 @@ const Periods: FunctionComponent = () => {
                   {option.label}
                 </MenuItem>
               ))}
-            </TextField>
+            </CssTextField>
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CssTextField
               name='grade_level_max'
               label='Maximum Grade Level'
               placeholder='Maximum Grade Level'
@@ -540,7 +554,7 @@ const Periods: FunctionComponent = () => {
               onBlur={formik.handleBlur}
               error={formik.touched.grade_level_max && !!formik.errors.grade_level_max}
               helperText={formik.touched.grade_level_max && formik.errors.grade_level_max}
-              InputLabelProps={{ shrink: true }}
+              InputLabelProps={{ shrink: true, sx: classes.textLabel }}
               SelectProps={{ displayEmpty: true }}
               select
             >
@@ -549,13 +563,13 @@ const Periods: FunctionComponent = () => {
                   {option.label}
                 </MenuItem>
               ))}
-            </TextField>
+            </CssTextField>
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CssTextField
               name='reduce_funds'
               label='Reduce Funds'
-              placeholder='Category'
+              placeholder='Reduce Funds'
               fullWidth
               value={formik.values.reduce_funds}
               onChange={(e) => {
@@ -563,7 +577,7 @@ const Periods: FunctionComponent = () => {
               }}
               error={formik.touched.reduce_funds && !!formik.errors.reduce_funds}
               helperText={formik.touched.reduce_funds && formik.errors.reduce_funds}
-              InputLabelProps={{ shrink: true }}
+              InputLabelProps={{ shrink: true, sx: classes.textLabel }}
               SelectProps={{ displayEmpty: true }}
               select
             >
@@ -576,13 +590,13 @@ const Periods: FunctionComponent = () => {
                   {option.label}
                 </MenuItem>
               ))}
-            </TextField>
+            </CssTextField>
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField
+            <CssTextField
               name='price'
               label='Price'
-              placeholder='Period'
+              placeholder='Price'
               fullWidth
               value={formik.values.price}
               type='number'
@@ -591,15 +605,15 @@ const Periods: FunctionComponent = () => {
               }}
               error={formik.touched.price && !!formik.errors.price}
               helperText={formik.touched.price && formik.errors.price}
-              InputLabelProps={{ shrink: true }}
+              InputLabelProps={{ shrink: true, sx: classes.textLabel }}
               disabled={formik.values.reduce_funds === REDUCE_FUNDS_TYPE.NONE}
             />
           </Grid>
           <Grid item xs={12}>
-            <TextField
+            <CssTextField
               name='semester'
               label='2nd Semester Changes'
-              placeholder='Category'
+              placeholder='2nd Semester Changes'
               fullWidth
               value={formik.values.semester}
               onChange={(e) => {
@@ -607,7 +621,7 @@ const Periods: FunctionComponent = () => {
               }}
               error={formik.touched.semester && !!formik.errors.semester}
               helperText={formik.touched.semester && formik.errors.semester}
-              InputLabelProps={{ shrink: true }}
+              InputLabelProps={{ shrink: true, sx: classes.textLabel }}
               SelectProps={{ displayEmpty: true }}
               select
             >
@@ -620,7 +634,7 @@ const Periods: FunctionComponent = () => {
                   {option.label}
                 </MenuItem>
               ))}
-            </TextField>
+            </CssTextField>
           </Grid>
 
           <Grid item xs={12}>

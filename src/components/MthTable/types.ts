@@ -1,6 +1,6 @@
 import { ReactNode } from 'react'
+import { SxProps, Theme } from '@mui/material/styles'
 import { DraggableProvidedDragHandleProps } from 'react-beautiful-dnd'
-
 export type MthTableField<T> = {
   key: string
   label?: string
@@ -34,6 +34,7 @@ export type MthTableProps<T> = {
   borderBottom?: boolean
   isDraggable?: boolean
   onArrange?: (arrangedItems: MthTableRowItem<T>[]) => void
+  sx?: SxProps<Theme>
 }
 
 export type MthTableRowProps<T> = {

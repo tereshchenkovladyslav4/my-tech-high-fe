@@ -51,6 +51,10 @@ export type OptOutFormProps = {
   setStudentAssessments: (value: StudentAssessment[]) => void
 }
 
+export type ScheduleBuilderProps = {
+  studentId: number
+}
+
 export type DiplomaSeekingProps = {
   diplomaQuestion: DiplomaQuestionType
   options: RadioGroupOption[]
