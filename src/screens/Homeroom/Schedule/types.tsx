@@ -1,6 +1,7 @@
 import SignatureCanvas from 'react-signature-canvas'
 import { RadioGroupOption } from '@mth/components/MthRadioGroup/types'
 import { AssessmentType } from '@mth/screens/Admin/SiteManagement/EnrollmentSetting/TestingPreference/types'
+import { ScheduleType } from './ScheduleBuilder/types'
 
 export type HeaderComponentProps = {
   title: string
@@ -52,7 +53,11 @@ export type OptOutFormProps = {
 }
 
 export type ScheduleBuilderProps = {
-  studentId: number
+  defaultData: Array<ScheduleType>
+  isDraftSaved: boolean
+  isWithoutSaved: boolean
+  onWithoutSaved: (isYes: boolean) => void
+  confirmSubmitted: () => void
 }
 
 export type DiplomaSeekingProps = {

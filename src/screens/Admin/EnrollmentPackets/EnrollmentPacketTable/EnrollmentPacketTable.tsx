@@ -84,7 +84,10 @@ export const EnrollmentPacketTable: FunctionComponent = () => {
     }
     return {
       id: packet.packet_id,
-      submitted: moment(packet.deadline).format('MM/DD/YY'),
+      submitted:
+        packet.status == 'Submitted' || packet.status == 'Resubmitted'
+          ? moment(packet.deadline).format('MM/DD/YY')
+          : '',
       status: packet.status + (packet.is_age_issue ? ' (Age Issue)' : ''),
       deadline: moment(packet.deadline).format('MM/DD/YY'),
       student: `${packet.student.person?.last_name}, ${packet.student.person?.first_name}`,

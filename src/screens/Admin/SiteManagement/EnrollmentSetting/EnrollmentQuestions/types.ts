@@ -34,10 +34,6 @@ export const ActionQuestionTypes = [
     value: 1,
     label: 'Drop Down',
   },
-  // {
-  //   value: 2,
-  //   label: 'Text Field',
-  // },
 
   {
     value: 3,
@@ -51,6 +47,11 @@ export const ActionQuestionTypes = [
     value: 5,
     label: 'Multiple Choices',
   },
+  {
+    value: 2,
+    label: 'Text Field',
+  },
+
   // {
   //   value: 6,
   //   label: 'Calendar',

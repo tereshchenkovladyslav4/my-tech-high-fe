@@ -366,7 +366,7 @@ export const NewParent: React.FC = () => {
       variables: {
         createApplicationInput: {
           referred_by: values.refferedBy,
-          state: values.state,
+          state: values.state.toString(),
           program_year: parseInt(values.programYear!),
           parent: omit(values.parent, ['emailConfirm']),
           students: submitStudents,
@@ -646,14 +646,15 @@ export const NewParent: React.FC = () => {
                                 placeholder='Program Year'
                                 dropDownItems={schoolYears}
                                 setParentValue={(id) => {
-                                  if (id?.indexOf('mid') > 0) {
-                                    id = id?.split('-')?.at(0)
+                                  let yearId = id.toString()
+                                  if (yearId?.indexOf('mid') > 0) {
+                                    yearId = yearId?.split('-')?.at(0)
                                     setMidYearApplication(true)
                                   } else {
                                     setMidYearApplication(false)
                                   }
-                                  form.setFieldValue(field.name, toNumber(id))
-                                  setGradesAndBirthDateCut(id)
+                                  form.setFieldValue(field.name, toNumber(yearId))
+                                  setGradesAndBirthDateCut(yearId)
                                 }}
                                 alternate={true}
                                 size='small'

@@ -2,14 +2,25 @@ import React, { useEffect, useState } from 'react'
 import QuestionMarkIcon from '@mui/icons-material/QuestionMark'
 import { IconButton, Typography, Grid } from '@mui/material'
 import { Box } from '@mui/system'
+import { Prompt } from 'react-router-dom'
+import { CustomModal } from '@mth/components/CustomModal/CustomModals'
 import { DropDown } from '@mth/components/DropDown/DropDown'
 import { DropDownItem } from '@mth/components/DropDown/types'
 import { MthTable } from '@mth/components/MthTable'
 import { MthTableField, MthTableRowItem } from '@mth/components/MthTable/types'
+import { SuccessModal } from '@mth/components/SuccessModal/SuccessModal'
+import { MthColor, MthTitle } from '@mth/enums'
 import { ScheduleBuilderProps } from '../types'
 import { scheduleBuilderClassess } from './styles'
 import { ScheduleType } from './types'
-const ScheduleBuilder: React.FC<ScheduleBuilderProps> = () => {
+
+const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
+  defaultData,
+  isDraftSaved = false,
+  isWithoutSaved = false,
+  onWithoutSaved,
+  confirmSubmitted,
+}) => {
   const [tableData, setTableData] = useState<MthTableRowItem<ScheduleType>[]>([])
   const dropdownOptions: DropDownItem[] = [
     {
@@ -136,23 +147,6 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = () => {
     },
   ]
 
-  const schedules: ScheduleType[] = [
-    {
-      Period: '01',
-      Subject: 'Homeroom',
-      Type: 'My Tech High Direct',
-      Description: 'Weekly Learning Logs and Homeroom Resources',
-      Text: 'Homeroom',
-    },
-    {
-      Period: '02',
-      Subject: 'Homeroom',
-      Type: 'My Tech High Direct',
-      Description: 'Weekly Learning Logs and Homeroom Resources',
-      Text: null,
-    },
-  ]
-
   const createData = (schedule: ScheduleType): MthTableRowItem<ScheduleType> => {
     return {
       columns: {
@@ -164,11 +158,20 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = () => {
       rawData: schedule,
     }
   }
+  const handleCancelUnsavedModal = () => {
+    onWithoutSaved(false)
+  }
+  const handleConfirmUnsavedModal = () => {
+    onWithoutSaved(true)
+  }
+  const handleConfirmSavedModal = () => {
+    confirmSubmitted()
+  }
 
   useEffect(() => {
-    if (schedules?.length) {
+    if (defaultData?.length) {
       setTableData(
-        schedules.map((item: ScheduleType) => {
+        defaultData.map((item: ScheduleType) => {
           return createData(item)
         }),
       )
@@ -182,25 +185,54 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = () => {
   }
 
   return (
-    <Box sx={scheduleBuilderClassess.main}>
-      <MthTable
-        items={tableData}
-        fields={fields}
-        isDraggable={true}
-        checkBoxColor='secondary'
-        onArrange={handleArrange}
-        sx={scheduleBuilderClassess.customTable}
+    <>
+      <Box sx={scheduleBuilderClassess.main}>
+        <MthTable
+          items={tableData}
+          fields={fields}
+          isDraggable={false}
+          checkBoxColor='secondary'
+          onArrange={handleArrange}
+          sx={scheduleBuilderClassess.customTable}
+        />
+        <IconButton
+          size='large'
+          edge='start'
+          aria-label='open drawer'
+          onClick={questionClick}
+          sx={[{ mr: 2 }, scheduleBuilderClassess.questionButton]}
+        >
+          <QuestionMarkIcon />
+        </IconButton>
+      </Box>
+      {isWithoutSaved && (
+        <CustomModal
+          title={MthTitle.UNSAVED_TITLE}
+          description={MthTitle.UNSAVED_DESCRIPTION}
+          cancelStr='Cancel'
+          confirmStr='Yes'
+          backgroundColor={MthColor.WHITE}
+          onClose={() => handleCancelUnsavedModal()}
+          onConfirm={() => handleConfirmUnsavedModal()}
+        />
+      )}
+      {isDraftSaved && (
+        <SuccessModal
+          title='Saved'
+          subtitle={
+            "Your student's schedule has been saved. Please return to to submit the schedule before the deadline."
+          }
+          btntitle='Ok'
+          handleSubmit={handleConfirmSavedModal}
+        />
+      )}
+      <Prompt
+        message={JSON.stringify({
+          header: MthTitle.UNSAVED_TITLE,
+          content: MthTitle.UNSAVED_DESCRIPTION,
+        })}
       />
-      <IconButton
-        size='large'
-        edge='start'
-        aria-label='open drawer'
-        onClick={questionClick}
-        sx={[{ mr: 2 }, scheduleBuilderClassess.questionButton]}
-      >
-        <QuestionMarkIcon />
-      </IconButton>
-    </Box>
+    </>
   )
 }
 

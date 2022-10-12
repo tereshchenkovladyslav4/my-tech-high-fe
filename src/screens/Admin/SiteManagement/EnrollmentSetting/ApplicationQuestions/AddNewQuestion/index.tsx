@@ -14,11 +14,16 @@ import { CustomModal } from '../../components/CustomModal/CustomModals'
 import { ApplicationQuestion } from '../types'
 import { QuestionOptions } from './Options'
 
+type DropItem = {
+  value: number
+  label: string
+}
+
 type AddNewQuestionModalProps = {
   onClose: (res) => void
   questions?: ApplicationQuestion[]
-  questionTypes: unknown[]
-  additionalQuestionTypes: unknown[]
+  questionTypes: DropItem[]
+  additionalQuestionTypes: DropItem[]
 }
 export const AddNewQuestionModal: React.FC<AddNewQuestionModalProps> = ({
   onClose,

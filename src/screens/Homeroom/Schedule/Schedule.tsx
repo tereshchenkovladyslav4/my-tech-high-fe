@@ -5,6 +5,8 @@ import { Box } from '@mui/system'
 import moment from 'moment'
 import { useHistory } from 'react-router-dom'
 import SignatureCanvas from 'react-signature-canvas'
+import { DropDown } from '@mth/components/DropDown/DropDown'
+import { DropDownItem } from '@mth/components/DropDown/types'
 import { RadioGroupOption } from '@mth/components/MthRadioGroup/types'
 import {
   DEFAULT_OPT_OUT_FORM_DESCRIPTION,
@@ -28,12 +30,39 @@ import { DiplomaSeeking } from './DiplomaSeeking'
 import { HeaderComponent } from './HeaderComponent'
 import { OptOutForm } from './OptOutForm'
 import { ScheduleBuilder } from './ScheduleBuilder'
+import { ScheduleType } from './ScheduleBuilder/types'
 import { StudentInfo } from './StudentInfo'
 import { scheduleClassess } from './styles'
 import { TestingPreference } from './TestingPreference'
 import { ScheduleProps, StudentAssessment, StudentScheduleInfo, DiplomaQuestionType } from './types'
 
 const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
+  const defaultScheduleBuilderData: Array<ScheduleType> = [
+    {
+      Period: '01',
+      Subject: 'Homeroom',
+      Type: 'My Tech High Direct',
+      Description: 'Weekly Learning Logs and Homeroom Resources',
+      Text: 'Homeroom',
+    },
+    {
+      Period: '02',
+      Subject: 'Homeroom',
+      Type: 'My Tech High Direct',
+      Description: 'Weekly Learning Logs and Homeroom Resources',
+      Text: null,
+    },
+  ]
+  const defaultSchoolYear = [
+    {
+      label: '2019-20',
+      value: 1,
+    },
+    {
+      label: '2020-21',
+      value: 2,
+    },
+  ]
   const { me } = useContext(UserContext)
   const history = useHistory()
   const students = me?.students
@@ -59,7 +88,6 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
     description: '',
   })
   const [isDiplomaError, setIsDiplomaError] = useState<boolean>(false)
-
   const [diplomaOptions, setDiplomaOptions] = useState<RadioGroupOption[]>([
     {
       option_id: 1,
@@ -72,6 +100,12 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
       value: false,
     },
   ])
+
+  const [isDraftSaved, setIsDraftSaved] = useState<boolean>(false)
+  const [isWithoutSaved, setIsWithoutSaved] = useState<boolean>(false)
+  const [scheduleBuilderData] = useState<Array<ScheduleType>>(defaultScheduleBuilderData)
+  const [schoolYearDropdownItems] = useState<Array<DropDownItem>>(defaultSchoolYear)
+  const [selectedYear, setSelectedYear] = useState<string | number>(defaultSchoolYear[0].value)
 
   const { loading: diplomaLoading, data: diplomaData } = useQuery(diplomaQuestionForStudent, {
     variables: {
@@ -242,6 +276,14 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
     }
   }
 
+  const handleWithoutSaved = (isYes: boolean) => {
+    if (isYes) {
+      if (activeDiplomaSeeking) setStep(MthTitle.STEP_DIPLOMA_SEEKING)
+      else setStep(MthTitle.STEP_OPT_OUT_FORM)
+    }
+    setIsWithoutSaved(false)
+  }
+
   const handleNextStep = () => {
     switch (step) {
       case MthTitle.STEP_TESTING_PREFERENCE:
@@ -267,6 +309,8 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
           setIsDiplomaError(true)
         }
         break
+      case MthTitle.SCHEDULE:
+        setIsDraftSaved(true)
     }
   }
 
@@ -288,7 +332,12 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
         else history.push(MthRoute.DASHBOARD)
         break
       case MthTitle.SCHEDULE:
-        setStep(MthTitle.STEP_DIPLOMA_SEEKING)
+        if (defaultScheduleBuilderData !== scheduleBuilderData) {
+          setIsWithoutSaved(true)
+        } else {
+          if (activeDiplomaSeeking) setStep(MthTitle.STEP_DIPLOMA_SEEKING)
+          else setStep(MthTitle.STEP_OPT_OUT_FORM)
+        }
         break
       default:
         setStep(MthTitle.STEP_TESTING_PREFERENCE)
@@ -404,7 +453,20 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
   return (
     <Card sx={{ margin: 4, padding: 4 }}>
       <Box sx={scheduleClassess.container}>
-        <HeaderComponent title={MthTitle.SCHEDULE} handleBack={handleBack} />
+        <Box display='flex' flexDirection='row' justifyContent='space-between' alignItems='center'>
+          <HeaderComponent title={MthTitle.SCHEDULE} handleBack={handleBack} />
+          {step == MthTitle.STEP_SCHEDULE_BUILDER && (
+            <DropDown
+              dropDownItems={schoolYearDropdownItems}
+              placeholder={'Select Year'}
+              defaultValue={selectedYear}
+              borderNone={true}
+              setParentValue={(val) => {
+                setSelectedYear(Number(val))
+              }}
+            />
+          )}
+        </Box>
         <StudentInfo studentInfo={studentInfo} />
         {step == MthTitle.STEP_TESTING_PREFERENCE && (
           <TestingPreference
@@ -442,11 +504,19 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
             isError={isDiplomaError}
           />
         )}
-        {step == MthTitle.STEP_SCHEDULE_BUILDER && <ScheduleBuilder studentId={Number(studentId)} />}
+        {step == MthTitle.STEP_SCHEDULE_BUILDER && (
+          <ScheduleBuilder
+            defaultData={defaultScheduleBuilderData}
+            isDraftSaved={isDraftSaved}
+            isWithoutSaved={isWithoutSaved}
+            onWithoutSaved={handleWithoutSaved}
+            confirmSubmitted={() => setIsDraftSaved(false)}
+          />
+        )}
 
         <Box sx={{ display: 'flex', justifyContent: 'end' }}>
           <Button onClick={() => handleNextStep()} variant='contained' sx={scheduleClassess.button}>
-            {'Next'}
+            {step === MthTitle.SCHEDULE ? 'Save Draft' : 'Next'}
           </Button>
         </Box>
       </Box>
