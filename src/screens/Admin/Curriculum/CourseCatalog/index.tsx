@@ -48,7 +48,7 @@ const CourseCatalog: FunctionComponent = () => {
       <Box mb={2}>
         <PageHeader title='Course Catalog' to='/curriculum'></PageHeader>
       </Box>
-      <Grid container rowSpacing={'22px'} columnSpacing={'35px'}>
+      <Grid container rowSpacing={4} columnSpacing={8} padding={4}>
         {items.map((item, idx) => (
           <Grid item key={idx} sm={12} md={6} lg={4}>
             <ItemCard

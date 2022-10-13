@@ -10,6 +10,7 @@ import { DropDown } from '@mth/components/DropDown/DropDown'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { DEFUALT_DIPLOMA_QUESTION_DESCRIPTION, DEFUALT_DIPLOMA_QUESTION_TITLE } from '@mth/constants'
+import { useCurrentSchoolYearByRegionId } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { toOrdinalSuffix, extractContent } from '@mth/utils'
 import {
@@ -38,6 +39,15 @@ const DiplomaSeeking: React.FC = () => {
     description: '',
     grades: '',
   })
+  const { data: schoolYearList } = useCurrentSchoolYearByRegionId(Number(me?.selectedRegionId))
+
+  useEffect(() => {
+    if (schoolYearList) {
+      if (!schoolYearList.schedule || !schoolYearList.diploma_seeking) {
+        history.push('/site-management/enrollment/')
+      }
+    }
+  }, [me?.selectedRegionId, schoolYearList])
 
   const {
     loading,

@@ -177,7 +177,7 @@ export const QuickLinks: React.FC<QuickLinkProps> = ({ backAction, initialLink, 
   }
 
   const SortableQuickLinkListContainer = SortableContainer(({ items }: { items: QuickLink[] }) => (
-    <Grid container spacing={2}>
+    <Grid container columnSpacing={8} rowSpacing={4} marginY={2} paddingX={6} paddingBottom={6}>
       {items.map((item, idx) => (
         <Grid item xs={12} sm={6} md={4} key={item.id}>
           <SortableQuickLinkCard

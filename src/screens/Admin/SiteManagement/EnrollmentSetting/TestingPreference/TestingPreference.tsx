@@ -11,7 +11,7 @@ import {
   TESTING_PREFERENCE,
 } from '@mth/constants'
 import { MthRoute, MthTitle } from '@mth/enums'
-import { useAssessmentsBySchoolYearId, useSchoolYearsByRegionId } from '@mth/hooks'
+import { useAssessmentsBySchoolYearId, useCurrentSchoolYearByRegionId, useSchoolYearsByRegionId } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { AssessmentEditForm } from './AssessmentEditForm'
 import AssessmentTable from './AssessmentTable'
@@ -36,6 +36,16 @@ const TestingPreference: React.FC = () => {
     schoolYears: schoolYears,
     refetchSchoolYear,
   } = useSchoolYearsByRegionId(me?.selectedRegionId)
+
+  const { data: schoolYearList } = useCurrentSchoolYearByRegionId(Number(me?.selectedRegionId))
+
+  useEffect(() => {
+    if (schoolYearList) {
+      if (!schoolYearList.schedule || !schoolYearList.testing_preference) {
+        history.push('/site-management/enrollment/')
+      }
+    }
+  }, [me?.selectedRegionId, schoolYearList])
 
   useEffect(() => {
     if (schoolYears?.length) {

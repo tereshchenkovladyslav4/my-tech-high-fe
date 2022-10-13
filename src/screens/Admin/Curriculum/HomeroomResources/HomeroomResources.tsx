@@ -162,7 +162,7 @@ export const HomeroomResources: React.FC = () => {
   ))
 
   const SortableListContainer = SortableContainer(({ items }: { items: HomeroomResource[] }) => (
-    <Grid container spacing={2} sx={{ textAlign: 'left' }}>
+    <Grid container columnSpacing={8} rowSpacing={4} sx={{ textAlign: 'left' }}>
       {items.map((item, idx) => (
         <SortableCard
           index={idx}
@@ -292,7 +292,7 @@ export const HomeroomResources: React.FC = () => {
               <EditIcon htmlColor={MthColor.MTHBLUE} />
             </Stack>
           </Box>
-          <Box>
+          <Box padding={3}>
             <SortableListContainer
               axis='xy'
               items={visibleResources}

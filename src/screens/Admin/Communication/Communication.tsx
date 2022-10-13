@@ -21,7 +21,7 @@ const communicationTiles = [
 ]
 export const Communication: FunctionComponent = () => {
   return (
-    <Grid container rowSpacing={4} columnSpacing={0} sx={{ paddingX: 2, marginTop: 4 }}>
+    <Grid container rowSpacing={4} columnSpacing={0} sx={{ paddingX: 3, marginTop: 4 }}>
       {communicationTiles.map((tile, idx) => (
         <Grid item xs={4} key={idx}>
           <CommunicationCard title={tile.title} link={tile.link} img={tile.image} description={tile.description} />

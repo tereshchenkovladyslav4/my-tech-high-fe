@@ -50,8 +50,8 @@ const Curriculum: React.FC = () => {
     }
   }, [schoolYear])
   return (
-    <Box sx={{ marginTop: '33px', px: '29px', ...useStyles.cardBox }}>
-      <Grid container rowSpacing={4} columnSpacing={'35px'}>
+    <Box sx={{ marginTop: '64px', px: '56px', ...useStyles.cardBox }}>
+      <Grid container rowSpacing={4} columnSpacing={8}>
         {map(items, (item, idx) => (
           <Grid item key={idx} sm={12} md={6} lg={4}>
             <ItemCard

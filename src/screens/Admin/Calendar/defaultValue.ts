@@ -56,11 +56,11 @@ export const defaultUserList: CheckBoxListVM[] = [
 
 export const defaultOtherList: CheckBoxListVM[] = [
   {
-    label: 'Diploma Seeking',
+    label: 'Diploma-seeking',
     value: 'diploma-seeking',
   },
   {
-    label: 'Non-diploma Seeking',
+    label: 'Non Diploma-seeking',
     value: 'non-diploma-seeking',
   },
   {

@@ -35,7 +35,7 @@ const HomeroomResourceCard: React.FC<HomeroomResourceCardProps> = ({ item, actio
         cursor: 'pointer',
         borderRadius: '16px',
         opacity: item.resource_id && !item.is_active ? 0.5 : 1,
-        minWidth: 300,
+        // minWidth: 300,
         boxShadow: 'none',
       }}
       onClick={() => {
