@@ -1,12 +1,13 @@
 import React from 'react'
 import { Box, Grid, TextField, Typography } from '@mui/material'
+import CurrencyTextField from '@unicef/material-ui-currency-textfield'
 import { useFormikContext } from 'formik'
 import { DropDown } from '@mth/components/DropDown/DropDown'
 import { MthBulletEditor } from '@mth/components/MthBulletEditor'
 import { MthCheckbox } from '@mth/components/MthCheckbox'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { DIPLOMA_SEEKING_PATH_ITEMS, REDUCE_FUNDS_ITEMS } from '@mth/constants'
-import { ReduceFunds } from '@mth/enums'
+import { MthColor, ReduceFunds } from '@mth/enums'
 import { StateCourseCords } from '@mth/screens/Admin/Curriculum/CourseCatalog/Subjects/TitleEdit/StateCourseCodes'
 import { editTitleClasses } from '@mth/screens/Admin/Curriculum/CourseCatalog/Subjects/TitleEdit/styles'
 import { Title, TitleFormProps } from '../types'
@@ -40,10 +41,12 @@ const TitleForm: React.FC<TitleFormProps> = ({ schoolYearData, subjectsItems, gr
                 label='Title'
                 placeholder='Entry'
                 fullWidth
+                focused
                 value={values?.name}
                 onChange={(e) => {
                   handleChange(e)
                 }}
+                sx={editTitleClasses.focusBorderColor}
                 error={touched.name && !!errors.name}
               />
               <Subtitle sx={editTitleClasses.formError}>{touched.name && errors.name}</Subtitle>
@@ -138,23 +141,26 @@ const TitleForm: React.FC<TitleFormProps> = ({ schoolYearData, subjectsItems, gr
               />
               <Subtitle sx={editTitleClasses.formError}>{touched.reduce_funds && errors.reduce_funds}</Subtitle>
             </Grid>
-            <Grid item xs={6} />
-            <Grid item xs={6}>
-              <TextField
-                name='price'
-                label='Price'
-                placeholder='Entry'
-                type='number'
-                fullWidth
-                value={values?.price || ''}
-                onChange={(e) => {
-                  setFieldValue('price', Number(e.target.value) || '')
-                }}
-                error={touched.price && !!errors.price}
-                disabled={values?.reduce_funds === ReduceFunds.NONE}
-              />
-              <Subtitle sx={editTitleClasses.formError}>{touched.price && errors.price}</Subtitle>
-            </Grid>
+            {values?.reduce_funds !== ReduceFunds.NONE && (
+              <>
+                <Grid item xs={6} />
+                <Grid item xs={6}>
+                  <CurrencyTextField
+                    label='Price'
+                    variant='outlined'
+                    value={values?.price || ''}
+                    currencySymbol='$'
+                    outputFormat='string'
+                    onChange={(event: { target: { value: string } }) => {
+                      setFieldValue('price', Number(event?.target?.value) || '')
+                    }}
+                    textAlign='left'
+                    error={touched.price && !!errors.price}
+                  />
+                  <Subtitle sx={editTitleClasses.formError}>{touched.price && errors.price}</Subtitle>
+                </Grid>
+              </>
+            )}
             <Grid item xs={12}>
               {!!scheduleBuilder?.always_unlock && (
                 <MthCheckbox
@@ -220,10 +226,12 @@ const TitleForm: React.FC<TitleFormProps> = ({ schoolYearData, subjectsItems, gr
                     label='Course ID'
                     placeholder='Entry'
                     fullWidth
+                    focused
                     value={values?.course_id}
                     onChange={(e) => {
                       setFieldValue('course_id', e.target.value)
                     }}
+                    sx={editTitleClasses.focusBorderColor}
                     error={touched.course_id && !!errors.course_id}
                   />
                   <Subtitle sx={editTitleClasses.formError}>{touched.course_id && errors.course_id}</Subtitle>
@@ -237,7 +245,17 @@ const TitleForm: React.FC<TitleFormProps> = ({ schoolYearData, subjectsItems, gr
           <Grid container columnSpacing={4} rowSpacing={3}>
             {!!values?.custom_built && (
               <Grid item xs={12}>
-                <Typography sx={{ fontSize: '18px', fontWeight: '700', mb: 1 }}>Custom-built Description</Typography>
+                <Typography
+                  sx={{
+                    fontSize: '18px',
+                    fontWeight: '700',
+                    mb: 1,
+                    color:
+                      touched.custom_built_description && errors.custom_built_description ? MthColor.ERROR_RED : '',
+                  }}
+                >
+                  Custom-built Description
+                </Typography>
                 <MthBulletEditor
                   value={values?.custom_built_description}
                   setValue={(value) => {
@@ -252,7 +270,17 @@ const TitleForm: React.FC<TitleFormProps> = ({ schoolYearData, subjectsItems, gr
             )}
             {values?.reduce_funds != ReduceFunds.NONE && (
               <Grid item xs={12}>
-                <Typography sx={{ fontSize: '18px', fontWeight: '700', mb: 1 }}>Reduce Funds Notification</Typography>
+                <Typography
+                  sx={{
+                    fontSize: '18px',
+                    fontWeight: '700',
+                    mb: 1,
+                    color:
+                      touched.reduce_funds_notification && errors.reduce_funds_notification ? MthColor.ERROR_RED : '',
+                  }}
+                >
+                  Reduce Funds Notification
+                </Typography>
                 <MthBulletEditor
                   value={values?.reduce_funds_notification}
                   setValue={(value) => {
@@ -267,7 +295,16 @@ const TitleForm: React.FC<TitleFormProps> = ({ schoolYearData, subjectsItems, gr
             )}
             {!!values?.display_notification && (
               <Grid item xs={12}>
-                <Typography sx={{ fontSize: '18px', fontWeight: '700', mb: 1 }}>Subject Notification</Typography>
+                <Typography
+                  sx={{
+                    fontSize: '18px',
+                    fontWeight: '700',
+                    mb: 1,
+                    color: touched.subject_notification && errors.subject_notification ? MthColor.ERROR_RED : '',
+                  }}
+                >
+                  Subject Notification
+                </Typography>
                 <MthBulletEditor
                   value={values?.subject_notification}
                   setValue={(value) => {

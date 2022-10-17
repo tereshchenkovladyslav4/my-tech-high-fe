@@ -27,4 +27,11 @@ export const editTitleClasses = {
       },
     },
   },
+  focusBorderColor: {
+    '& .MuiOutlinedInput-root': {
+      '&.Mui-focused fieldset': {
+        borderWidth: '1px',
+      },
+    },
+  },
 }

@@ -59,7 +59,7 @@ export const useStyles = {
     },
   },
   textLabel: {
-    color: '#333333',
+    color: '#333333 !important',
     fontWeight: 600,
   },
 }

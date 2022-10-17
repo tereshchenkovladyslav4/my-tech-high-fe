@@ -3,5 +3,5 @@ export type AdminEnrolmentCardProps = {
   link: string
   img: string
   disabled?: boolean
-  color: string
+  showTitle?: boolean
 }

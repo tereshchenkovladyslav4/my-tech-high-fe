@@ -53,6 +53,7 @@ const CssTextField = withStyles({
   root: {
     '& .MuiOutlinedInput-root': {
       '& fieldset': {
+        borderWidth: '1px !important',
         borderColor: 'black',
       },
     },
@@ -196,7 +197,7 @@ const Periods: FunctionComponent = () => {
   const handleSubmit = useCallback(
     (values) => {
       if (selectedYearId) {
-        const variables = { school_year_id: +selectedYearId, ...values }
+        const variables = { school_year_id: +selectedYearId, ...values, price: parseFloat(values.price.substring(1)) }
         if (values.notify_period) {
           variables.message_period = draftToHtml(convertToRaw(editorStatePeriod.getCurrentContent()))
         }
@@ -258,9 +259,9 @@ const Periods: FunctionComponent = () => {
           .required()
           .test('html_content', 'Required', () => editorStateSemester.getCurrentContent().hasText()),
       }),
-      price: Yup.number().when(['reduce_funds'], {
+      price: Yup.string().when(['reduce_funds'], {
         is: (reduce_funds: REDUCE_FUNDS_TYPE) => reduce_funds !== REDUCE_FUNDS_TYPE.NONE,
-        then: Yup.number().typeError('Must be a `number` type').required().min(0),
+        then: Yup.string().required(),
       }),
     }),
     onSubmit: async (values) => {
@@ -285,7 +286,7 @@ const Periods: FunctionComponent = () => {
       grade_level_max: item.grade_level_max,
       reduce_funds: item.reduce_funds,
       semester: item.semester,
-      price: item.price || '',
+      price: item.price ? '$' + item.price.toString() : '',
       message_period: item.message_period,
       message_semester: item.message_semester,
       notify_semester: item.notify_semester,
@@ -573,6 +574,7 @@ const Periods: FunctionComponent = () => {
               fullWidth
               value={formik.values.reduce_funds}
               onChange={(e) => {
+                if (e.target.value === REDUCE_FUNDS_TYPE.NONE) formik.setFieldValue('price', '')
                 formik.handleChange(e)
               }}
               error={formik.touched.reduce_funds && !!formik.errors.reduce_funds}
@@ -599,9 +601,9 @@ const Periods: FunctionComponent = () => {
               placeholder='Price'
               fullWidth
               value={formik.values.price}
-              type='number'
               onChange={(e) => {
-                formik.handleChange(e)
+                const val = e.target.value
+                formik.setFieldValue('price', val[0] !== '$' ? '$' + val : val)
               }}
               error={formik.touched.price && !!formik.errors.price}
               helperText={formik.touched.price && formik.errors.price}

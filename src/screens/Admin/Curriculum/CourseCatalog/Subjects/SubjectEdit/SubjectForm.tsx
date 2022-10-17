@@ -11,13 +11,15 @@ const SubjectForm: React.FC<SubjectFormProps> = ({ setIsChanged, periodsItems })
 
   return (
     <Box sx={{ width: '100%', textAlign: 'left', mb: '70px' }}>
-      <Box sx={{ mb: 5 }}>
+      <Box sx={{ mb: 5, maxWidth: '400px' }}>
         <TextField
           name='name'
           label='Subject'
           placeholder='Entry'
           fullWidth
+          focused
           value={values?.name}
+          sx={editSubjectClasses.focusBorderColor}
           onChange={(e) => {
             handleChange(e)
             setIsChanged(true)

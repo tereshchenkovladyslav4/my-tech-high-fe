@@ -1,20 +1,21 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { useMutation } from '@apollo/client'
+import { useMutation, useQuery } from '@apollo/client'
 import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt'
 import { Avatar, Box, Button, Card, FormHelperText, Grid, OutlinedInput, TextField } from '@mui/material'
 import { useFormik } from 'formik'
 import { Prompt, useHistory } from 'react-router-dom'
 import * as yup from 'yup'
 import { DocumentUploadModal } from '@mth/components/DocumentUploadModal/DocumentUploadModal'
-import { DropDown } from '@mth/components/DropDown/DropDown'
-import { DropDownItem } from '@mth/components/DropDown/types'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { Title } from '@mth/components/Typography/Title/Title'
 import { WarningModal } from '@mth/components/WarningModal/Warning'
 import { s3URL, SNOWPACK_PUBLIC_S3_URL } from '@mth/constants'
 import { MthColor, MthRoute, MthTitle, PacketStatus } from '@mth/enums'
+import { getAssessmentsBySchoolYearId, getStudentAssessmentsByStudentId } from '@mth/graphql/queries/assessment'
 import { UserContext, UserInfo } from '@mth/providers/UserContext/UserProvider'
+import { AssessmentType } from '@mth/screens/Admin/SiteManagement/EnrollmentSetting/TestingPreference/types'
+import { StudentAssessment } from '@mth/screens/Homeroom/Schedule/types'
 import { gradeText } from '@mth/utils'
 import { Person, StudentType } from '../types'
 import { updateProfile, removeProfilePhoto } from './service'
@@ -38,27 +39,55 @@ export const StudentProfile: React.FC = () => {
   const [avatar, setAvatar] = useState<string | undefined>()
   const [file, setFile] = useState<undefined | File>()
 
+  const [studentAssessments, setStudentAssessments] = useState<StudentAssessment[]>([])
+  const [assessmentItems, setAssessmentItems] = useState<AssessmentType[]>([])
+
   const enrollmentLink = `${MthRoute.HOMEROOM + MthRoute.ENROLLMENT}/${student?.student_id}`
 
-  const testingPreferencesItems: DropDownItem[] = [
-    {
-      label: 'Select',
-      value: '',
-    },
-    {
-      label: 'Opt In',
-      value: 'Opt In',
-    },
-    {
-      label: 'Opt Out',
-      value: 'Opt Out',
-    },
-  ]
-  const setState = (id: number | string) => {
-    formik.values.testingPref = id?.toString()
-  }
-
   const uploadLimit = 1
+
+  const { data: assessmentListData, loading: assessmentLoading } = useQuery(getAssessmentsBySchoolYearId, {
+    variables: {
+      schoolYearId: student?.current_school_year_status.school_year_id,
+    },
+    skip: student?.current_school_year_status.school_year_id ? false : true,
+    fetchPolicy: 'network-only',
+  })
+
+  useEffect(() => {
+    if (!assessmentLoading && assessmentListData?.getAssessmentsBySchoolYearId) {
+      const items = assessmentListData?.getAssessmentsBySchoolYearId
+      setAssessmentItems(items.map((item: AssessmentType) => ({ ...item, assessment_id: Number(item.assessment_id) })))
+    } else {
+      setAssessmentItems([])
+    }
+  }, [assessmentListData, assessmentLoading])
+
+  const { loading: studentAssessmentLoading, data: studentAssessmentsData } = useQuery(
+    getStudentAssessmentsByStudentId,
+    {
+      variables: {
+        studentId: Number(studentId),
+      },
+      skip: Number(studentId) ? false : true,
+      fetchPolicy: 'network-only',
+    },
+  )
+
+  useEffect(() => {
+    if (!studentAssessmentLoading && studentAssessmentsData?.getStudentAssessmentsByStudentId) {
+      setStudentAssessments(
+        studentAssessmentsData?.getStudentAssessmentsByStudentId?.map(
+          (assessment: { AssessmentId: number; assessment_option_id: number; OptionId: number; out_text: string }) => ({
+            assessmentId: assessment?.AssessmentId,
+            assessmentOptionId: assessment?.assessment_option_id,
+            optionId: assessment?.OptionId,
+            assessmentOptionOutText: assessment?.out_text,
+          }),
+        ),
+      )
+    }
+  }, [studentAssessmentLoading, studentAssessmentsData])
 
   const validationSchema = yup.object({
     firstName: yup.string().nullable(),
@@ -331,16 +360,32 @@ export const StudentProfile: React.FC = () => {
                     <Paragraph size='medium' fontWeight='500'>
                       Testing Preference
                     </Paragraph>
-                    <DropDown
-                      dropDownItems={testingPreferencesItems}
-                      defaultValue={student.testing_preference}
-                      setParentValue={(value) => {
-                        setState(value)
-                        setIsFormChanged(true)
-                      }}
-                      dropdownColor={'rgba(236, 89, 37, 0.1)'}
-                      sx={studentProfileClasses.formField}
-                    />
+                    {assessmentItems.map((assessment: AssessmentType) => {
+                      const asseessmentAnswer = studentAssessments.find(
+                        (studnetAnswer: StudentAssessment) => studnetAnswer.assessmentId === assessment.assessment_id,
+                      )
+                      let testingResult = ''
+                      if (asseessmentAnswer) {
+                        const testingOption = assessment.Options.find(
+                          (option) => option.option_id === asseessmentAnswer.optionId,
+                        )
+                        testingResult = testingOption ? testingOption.label : ''
+                      }
+                      return (
+                        <Grid container key={assessment.assessment_id} sx={{ marginTop: '6px' }}>
+                          <Grid item md={6}>
+                            <Paragraph size='medium' fontWeight='700'>
+                              {assessment.test_name}
+                            </Paragraph>
+                          </Grid>
+                          <Grid item md={6}>
+                            <Paragraph size='medium' fontWeight='700'>
+                              {testingResult}
+                            </Paragraph>
+                          </Grid>
+                        </Grid>
+                      )
+                    })}
                   </Box>
                 )}
               </Grid>

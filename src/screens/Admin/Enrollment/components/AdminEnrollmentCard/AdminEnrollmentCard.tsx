@@ -1,11 +1,11 @@
 import React from 'react'
 import EastIcon from '@mui/icons-material/East'
-import { Card, CardMedia, CardContent } from '@mui/material'
+import { Card, CardMedia, CardContent, Box, Typography } from '@mui/material'
 import { useHistory } from 'react-router-dom'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { AdminEnrolmentCardProps } from './types'
 
-export const AdminEnrollmentCard: React.FC<AdminEnrolmentCardProps> = ({ title, disabled, link, img, color }) => {
+export const AdminEnrollmentCard: React.FC<AdminEnrolmentCardProps> = ({ title, disabled, link, img, showTitle }) => {
   const history = useHistory()
 
   return (
@@ -20,7 +20,16 @@ export const AdminEnrollmentCard: React.FC<AdminEnrolmentCardProps> = ({ title, 
         if (!disabled) history.push(link)
       }}
     >
-      <CardMedia component='img' src={img} />
+      <Box sx={{ position: 'relative' }}>
+        <CardMedia component='img' src={img} />
+        {showTitle && (
+          <Box sx={{ width: '100%', position: 'absolute', left: 0, textAlign: 'center', top: '40%', color: 'white' }}>
+            <Typography fontSize='40px' component='div' fontWeight='600'>
+              {title}
+            </Typography>
+          </Box>
+        )}
+      </Box>
       <CardContent
         sx={{
           display: 'flex',
@@ -29,7 +38,7 @@ export const AdminEnrollmentCard: React.FC<AdminEnrolmentCardProps> = ({ title, 
           alignContent: 'center',
         }}
       >
-        <Subtitle size='large' fontWeight='700' color={color}>
+        <Subtitle size='large' fontWeight='700'>
           {title}
         </Subtitle>
         <EastIcon />

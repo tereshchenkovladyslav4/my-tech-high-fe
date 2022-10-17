@@ -23,8 +23,10 @@ import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { Title } from '@mth/components/Typography/Title/Title'
 import { WarningModal } from '@mth/components/WarningModal/Warning'
+import { getAssessmentsBySchoolYearId, getStudentAssessmentsByStudentId } from '@mth/graphql/queries/assessment'
 import { getWithdrawalStatusQuery } from '@mth/graphql/queries/withdrawal'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
+import { AssessmentType } from '@mth/screens/Admin/SiteManagement/EnrollmentSetting/TestingPreference/types'
 import { StudentType } from '@mth/screens/HomeroomStudentProfile/Student/types'
 import { BUTTON_LINEAR_GRADIENT, MTHBLUE } from '../../../../utils/constants'
 import { STATES_WITH_ABBREVIATION } from '../../../../utils/states'
@@ -41,6 +43,13 @@ type StudentProfileProps = {
   studentStatus: unknown
   applicationState: unknown
   setIsChanged: (_: unknown) => void
+}
+
+type StudentAssessment = {
+  assessmentId: number
+  assessmentOptionId?: number | undefined
+  optionId: number | undefined
+  assessmentOptionOutText: string
 }
 
 const selectStyles = makeStyles({
@@ -85,6 +94,8 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
   const { me } = useContext(UserContext)
   const classes = selectStyles()
   const [originStudentStatus, setOriginStudentStatus] = useState({})
+  const [studentAssessments, setStudentAssessments] = useState<StudentAssessment[]>([])
+  const [assessmentItems, setAssessmentItems] = useState<AssessmentType[]>([])
 
   const { data: currentUserData, refetch } = useQuery(getStudentDetail, {
     variables: {
@@ -117,6 +128,49 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
     skip: !selectedYearId,
     fetchPolicy: 'network-only',
   })
+
+  const { data: assessments, loading: assessmentsLoading } = useQuery(getAssessmentsBySchoolYearId, {
+    variables: {
+      schoolYearId: selectedYearId,
+    },
+    skip: !selectedYearId,
+    fetchPolicy: 'network-only',
+  })
+
+  useEffect(() => {
+    if (!assessmentsLoading && assessments?.getAssessmentsBySchoolYearId) {
+      const items = assessments?.getAssessmentsBySchoolYearId
+      setAssessmentItems(items.map((item: AssessmentType) => ({ ...item, assessment_id: Number(item.assessment_id) })))
+    } else {
+      setAssessmentItems([])
+    }
+  }, [assessments, assessmentsLoading])
+
+  const { loading: studentAssessmentLoading, data: studentAssessmentsData } = useQuery(
+    getStudentAssessmentsByStudentId,
+    {
+      variables: {
+        studentId: Number(studentId),
+      },
+      skip: Number(studentId) ? false : true,
+      fetchPolicy: 'network-only',
+    },
+  )
+
+  useEffect(() => {
+    if (!studentAssessmentLoading && studentAssessmentsData?.getStudentAssessmentsByStudentId) {
+      setStudentAssessments(
+        studentAssessmentsData?.getStudentAssessmentsByStudentId?.map(
+          (assessment: { AssessmentId: number; assessment_option_id: number; OptionId: number; out_text: string }) => ({
+            assessmentId: assessment?.AssessmentId,
+            assessmentOptionId: assessment?.assessment_option_id,
+            optionId: assessment?.OptionId,
+            assessmentOptionOutText: assessment?.out_text,
+          }),
+        ),
+      )
+    }
+  }, [studentAssessmentLoading, studentAssessmentsData])
 
   const SoEitems = useMemo(() => {
     if (schoolPartnerData?.getSchoolsOfEnrollmentByRegion?.length) {
@@ -151,7 +205,7 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
   const [userInfo, setUserInfo] = useState<unknown>({})
   const [preferedFirstName, setPreferredFirstName] = useState('')
   const [preferedLastName, setPreferredLastName] = useState('')
-  const [hispanicOrLatino, setHispanicOrLatino] = useState('')
+  const [hispanicOrLatino, setHispanicOrLatino] = useState('Opt-in')
 
   const [legalFirstName, setLegalFirstName] = useState('')
   const [legalMiddleName, setLegalMiddleName] = useState('')
@@ -191,10 +245,6 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
     {
       label: 'Opt-out',
       value: 'Opt-out',
-    },
-    {
-      label: 'Prefer not to say',
-      value: 'Prefer not to say',
     },
   ]
 
@@ -566,7 +616,40 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
           <Paragraph size='medium' textAlign='left'>
             Testing Preference
           </Paragraph>
-          <Select
+          {assessmentItems.map((assess: AssessmentType) => (
+            <Grid item container key={assess.assessment_id}>
+              <Grid item xs={3} sx={{ alignItems: 'center', display: 'flex', fontWeight: '700' }}>
+                <Subtitle sx={{ fontWeight: '700', fontSize: '12px', color: '#0E0E0E' }}>{assess.test_name}</Subtitle>
+              </Grid>
+              <Grid item xs={9} sx={{ alignItems: 'center', display: 'flex' }}>
+                <Select
+                  value={hispanicOrLatino}
+                  IconComponent={KeyboardArrowDown}
+                  className={classes.select}
+                  sx={{ fontWeight: '700', fontSize: '12px', color: '#0E0E0E' }}
+                  onChange={(e) => {
+                    setHispanicOrLatino(e.target.value)
+                    setStudentStatus({ ...studentStatus, ...{ testing_preference: e.target.value } })
+                  }}
+                >
+                  {hispanicOrLatinoItems.map((item) => (
+                    <MenuItem key={item.value} value={item.value}>
+                      {item.label}
+                    </MenuItem>
+                  ))}
+                  {false &&
+                    studentAssessments &&
+                    assess.Options.map((el) => (
+                      <MenuItem value={el.option_id} key={el.option_id}>
+                        {el.label}
+                      </MenuItem>
+                    ))}
+                </Select>
+              </Grid>
+            </Grid>
+          ))}
+
+          {/* <Select
             value={hispanicOrLatino}
             onChange={(e) => {
               setHispanicOrLatino(e.target.value)
@@ -587,7 +670,7 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
                 {item.label}
               </MenuItem>
             ))}
-          </Select>
+          </Select> */}
         </Grid>
         <Grid item xs={3}>
           <Paragraph size='medium' textAlign='left'>

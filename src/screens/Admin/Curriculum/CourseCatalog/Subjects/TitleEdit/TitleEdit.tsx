@@ -52,7 +52,7 @@ const TitleEdit: React.FC<TitleEditProps> = ({
       .when('reduce_funds', {
         is: (reduce_funds: ReduceFunds) =>
           reduce_funds == ReduceFunds.TECHNOLOGY_ALLOWANCE || reduce_funds == ReduceFunds.SUPPLEMENTAL_LEARNING_FUNDS,
-        then: yup.number().required('Price Required').moreThan(0, 'Should be greater than 0').positive('Price Invaild'),
+        then: yup.number().required('Price Required').positive('Should be greater than 0'),
       })
       .nullable(),
     reduce_funds_notification: yup
@@ -60,21 +60,14 @@ const TitleEdit: React.FC<TitleEditProps> = ({
       .when('reduce_funds', {
         is: (reduce_funds: ReduceFunds) =>
           reduce_funds == ReduceFunds.TECHNOLOGY_ALLOWANCE || reduce_funds == ReduceFunds.SUPPLEMENTAL_LEARNING_FUNDS,
-        then: yup.string().required('Required').min(9, 'Invalid').nullable(),
-      })
-      .nullable(),
-    custom_built_description: yup
-      .string()
-      .when('custom_built', {
-        is: true,
-        then: yup.string().required('Required').min(9, 'Invalid').nullable(),
+        then: yup.string().required('Required').min(9, 'Required').nullable(),
       })
       .nullable(),
     subject_notification: yup
       .string()
       .when('display_notification', {
         is: true,
-        then: yup.string().required('Required').min(9, 'Invalid').nullable(),
+        then: yup.string().required('Required').min(9, 'Required').nullable(),
       })
       .nullable(),
     course_id: yup
@@ -118,7 +111,7 @@ const TitleEdit: React.FC<TitleEditProps> = ({
           max_alt_grade: value.max_alt_grade,
           diploma_seeking_path: value.diploma_seeking_path,
           reduce_funds: value.reduce_funds,
-          price: value.price,
+          price: value.price || 0,
           always_unlock: value.always_unlock,
           custom_built: value.custom_built,
           third_party_provider: value.third_party_provider,
@@ -181,7 +174,7 @@ const TitleEdit: React.FC<TitleEditProps> = ({
       >
         <Box
           sx={{
-            maxHeight: '90vh',
+            maxHeight: '80vh',
             overflow: 'auto',
             p: 1,
           }}

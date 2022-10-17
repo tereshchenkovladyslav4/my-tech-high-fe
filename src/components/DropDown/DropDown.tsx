@@ -128,13 +128,37 @@ export const DropDown: React.FC<DropDownProps> = ({
             onChange={(e) => handleChange(e.target.value)}
             InputLabelProps={{
               style: { color: alternate && MthColor.SYSTEM_05 },
+              shrink: true,
             }}
             FormHelperTextProps={{
               style: { color: MthColor.ERROR_RED },
             }}
+            focused
             select // tell TextField to render select
             label={placeholder}
-            sx={alternate ? { ...dropdownClasses.alternate, ...sx } : { ...dropdownClasses.textField, ...sx }}
+            sx={
+              alternate
+                ? {
+                    ...dropdownClasses.alternate,
+                    ...sx,
+                    '& .MuiOutlinedInput-root': {
+                      '&.Mui-focused fieldset': {
+                        borderColor: error?.error ? MthColor.ERROR_RED : '',
+                        borderWidth: '1px',
+                      },
+                    },
+                  }
+                : {
+                    ...dropdownClasses.textField,
+                    ...sx,
+                    '& .MuiOutlinedInput-root': {
+                      '&.Mui-focused fieldset': {
+                        borderColor: error?.error ? MthColor.ERROR_RED : '',
+                        borderWidth: '1px',
+                      },
+                    },
+                  }
+            }
             error={error?.error}
             helperText={error?.errorMsg}
             disabled={disabled || false}
