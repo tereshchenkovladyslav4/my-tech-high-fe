@@ -1,5 +1,6 @@
 import { FunctionComponent } from 'react'
 import { SchoolYearType } from '@mth/models'
+import { ToDoItem } from '@mth/screens/Dashboard/ToDoList/components/ToDoListItem/types'
 
 export type GradeLevel = {
   grade_level: number | string
@@ -168,7 +169,7 @@ export type Person = {
 export type StudentProps = {
   student: StudentType
   schoolYears: SchoolYearType[]
-  showNotification?: boolean
+  showNotification?: ToDoItem | undefined
   withdrawn?: boolean
 }
 export type StudentComponentType = FunctionComponent<StudentProps>

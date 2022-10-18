@@ -69,19 +69,13 @@ export const SortableTable: SortableTableTemplateType = ({
 
   const getColor = (key: string, value: string): string => {
     switch (key) {
-      case 'studentStatus':
-        if (value === 'New') {
-          return '#00C12B'
-        } else if (value === 'Requested') {
-          return MthColor.MTHBLUE
-        } else {
+      case 'status':
+        if (value === 'Not Submitted') {
           return MthColor.BLACK
+        } else {
+          return MTHBLUE
         }
       case 'emailed':
-        return MTHBLUE
-      case 'effective':
-        return MTHBLUE
-      case 'subject':
         return MTHBLUE
       default:
         return ''

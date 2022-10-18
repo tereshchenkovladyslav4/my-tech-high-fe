@@ -37,6 +37,7 @@ export const Student: StudentTemplateType = ({ student, schoolYears, showNotific
 
     const enrollmentLink = `${MthRoute.HOMEROOM + MthRoute.ENROLLMENT}/${student.student_id}`
     const homeroomLink = `${MthRoute.HOMEROOM}/${student.student_id}`
+    const scheduleBuilderLink = `${MthRoute.HOMEROOM + MthRoute.SUBMIT_SCHEDULE}/${student.student_id}`
 
     if (currApplication && currApplication?.status === ApplicantStatus.SUBMITTED) {
       setLink(MthRoute.HOMEROOM)
@@ -55,6 +56,7 @@ export const Student: StudentTemplateType = ({ student, schoolYears, showNotific
     ) {
       setLink(enrollmentLink)
     } else if (
+      !showNotification &&
       currApplication &&
       currApplication?.status === ApplicantStatus.ACCEPTED &&
       ((currPacket && currPacket?.status === PacketStatus.SUBMITTED) ||
@@ -63,9 +65,11 @@ export const Student: StudentTemplateType = ({ student, schoolYears, showNotific
         currPacket?.status === PacketStatus.RESUBMITTED)
     ) {
       setLink(homeroomLink)
+    } else if (showNotification?.phrase === 'Submit Schedule') {
+      setLink(scheduleBuilderLink)
     }
     progress()
-  }, [student])
+  }, [student, showNotification])
 
   const progress = () => {
     const { applications, packets, status } = student
@@ -156,6 +160,15 @@ export const Student: StudentTemplateType = ({ student, schoolYears, showNotific
         type: 'Enrollment Packet Pending Approval',
         icon: <ScheduleIcon sx={{ color: MthColor.MTHGREEN, marginTop: 2, cursor: 'pointer' }} />,
       })
+    } else if (showNotification) {
+      setCircleData({
+        mobileColor: MthColor.MTHORANGE,
+        mobileText: showNotification.phrase,
+        color: MthColor.MTHORANGE,
+        progress: 50,
+        type: showNotification.phrase,
+        icon: <ErrorOutlineIcon sx={{ color: MthColor.MTHORANGE, marginTop: 2, cursor: 'pointer' }} />,
+      })
     } else {
       setShowToolTip(false)
     }
@@ -174,7 +187,7 @@ export const Student: StudentTemplateType = ({ student, schoolYears, showNotific
           subtitle={
             <Box>
               <Subtitle size={'large'}>{gradeText}</Subtitle>
-              {showToolTip && checkEnrollPacketStatus(schoolYears, student) && (
+              {showToolTip && (checkEnrollPacketStatus(schoolYears, student) || showNotification) && (
                 <Box
                   onClick={() => {
                     if (checkEnrollPacketStatus(schoolYears, student)) {

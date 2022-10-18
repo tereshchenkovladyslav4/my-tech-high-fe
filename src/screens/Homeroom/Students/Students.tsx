@@ -28,7 +28,7 @@ export const Students: FunctionComponent<StudentsProps> = ({ schoolYears }) => {
   const findStudent = (studentId: number) => {
     return map(toDoList, (todoListItem) => {
       if (todoListItem.students.some((student) => student.student_id === studentId)) {
-        return true
+        return todoListItem
       } else {
         return false
       }
@@ -37,7 +37,9 @@ export const Students: FunctionComponent<StudentsProps> = ({ schoolYears }) => {
 
   const renderStudents = () =>
     map(availableStudents, (student) => {
-      const showNotification = findStudent(student.student_id).includes(true)
+      const showNotification = findStudent(student.student_id)
+        .filter((item) => item !== false)
+        .at(0) as ToDoItem
       return (
         <Student
           schoolYears={schoolYears}

@@ -9,7 +9,13 @@ import testingPreferencesImg from '@mth/assets/testingPreferences.png'
 import { MthTitle } from '@mth/enums'
 import { useCurrentSchoolYearByRegionId } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
-import { ADMIN_APPLICATIONS, ENROLLMENT_PACKETS, WITHDRAWAL, SCHOOL_ENROLLMENT } from '../../../utils/constants'
+import {
+  ADMIN_APPLICATIONS,
+  ENROLLMENT_PACKETS,
+  WITHDRAWAL,
+  SCHOOL_ENROLLMENT,
+  ENROLLMENT_SCHEDULE,
+} from '../../../utils/constants'
 import { AdminEnrollmentCard } from './components/AdminEnrollmentCard/AdminEnrollmentCard'
 
 export const Enrollment: React.FC = () => {
@@ -36,7 +42,7 @@ export const Enrollment: React.FC = () => {
         <AdminEnrollmentCard
           title='Schedules'
           disabled={enableSchedule ? false : true}
-          link={'https://google.com'}
+          link={ENROLLMENT_SCHEDULE}
           img={schedules}
         />
       </Grid>

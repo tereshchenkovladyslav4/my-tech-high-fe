@@ -16,6 +16,7 @@ import { AdminDashboard } from '@mth/screens/Admin/Dashboard/AdminDashboard'
 import { EmailRecords } from '@mth/screens/Admin/EmailRecords/EmailRecords'
 import { Enrollment } from '@mth/screens/Admin/Enrollment/Enrollment'
 import { EnrollmentPackets } from '@mth/screens/Admin/EnrollmentPackets/EnrollmentPackets'
+import { EnrollmentSchedule } from '@mth/screens/Admin/EnrollmentSchedule/EnrollmentSchedule'
 import { Records } from '@mth/screens/Admin/Records'
 import { SchoolOfEnrollment } from '@mth/screens/Admin/SchoolOfEnrollment/SchoolOfEnrollment'
 import AdminSettings from '@mth/screens/Admin/Settings/AdminSettings'
@@ -28,6 +29,7 @@ import {
   DASHBOARD,
   ENROLLMENT,
   ENROLLMENT_PACKETS,
+  ENROLLMENT_SCHEDULE,
   SETTINGS,
   USERS,
   EMAILTEMPLATES,
@@ -66,6 +68,9 @@ export const AdminRoutes: React.FC = () => {
       </Route>
       <Route exact path={ENROLLMENT_PACKETS}>
         <EnrollmentPackets />
+      </Route>
+      <Route exact path={ENROLLMENT_SCHEDULE}>
+        <EnrollmentSchedule />
       </Route>
       <Route exact path={WITHDRAWAL}>
         <Withdrawals />

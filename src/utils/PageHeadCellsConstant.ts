@@ -79,12 +79,6 @@ export const ANNOUNCEMENT_HEADCELLS: HeadCell[] = [
 ]
 
 export const APPLICATION_HEADCELLS: HeadCell[] = [
-  // {
-  // 	id: 'id',
-  // 	numeric: false,
-  // 	disablePadding: true,
-  // 	label: 'ID'
-  // },
   {
     id: 'submitted',
     numeric: false,
@@ -121,12 +115,6 @@ export const APPLICATION_HEADCELLS: HeadCell[] = [
     disablePadding: true,
     label: 'Parent',
   },
-  // {
-  //   id: 'status',
-  //   numeric: false,
-  //   disablePadding: true,
-  //   label: 'Status',
-  // },
   {
     id: 'relation',
     numeric: false,
@@ -153,13 +141,52 @@ export const APPLICATION_HEADCELLS: HeadCell[] = [
   },
 ]
 
+export const ENROLLMENT_SCHEDULE_HEADCELLS: HeadCell[] = [
+  {
+    id: 'date',
+    numeric: false,
+    disablePadding: true,
+    label: 'Date',
+  },
+  {
+    id: 'status',
+    numeric: false,
+    disablePadding: true,
+    label: 'Status',
+  },
+  {
+    id: 'student',
+    numeric: false,
+    disablePadding: true,
+    label: 'Student',
+  },
+  {
+    id: 'grade',
+    numeric: false,
+    disablePadding: true,
+    label: 'Grade',
+  },
+  {
+    id: 'parent',
+    numeric: false,
+    disablePadding: true,
+    label: 'Parent',
+  },
+  {
+    id: 'diploma',
+    numeric: false,
+    disablePadding: true,
+    label: 'Diploma',
+  },
+  {
+    id: 'emailed',
+    numeric: false,
+    disablePadding: true,
+    label: 'Emailed',
+  },
+]
+
 export const ENROLLMENT_SCHOOL_HEADCELLS: HeadCell[] = [
-  // {
-  // 	id: 'id',
-  // 	numeric: false,
-  // 	disablePadding: true,
-  // 	label: 'ID'
-  // },
   {
     id: 'student',
     numeric: false,
@@ -238,12 +265,6 @@ export const EMAIL_RECORDS_HEADCELLS: HeadCell[] = [
 ]
 
 export const ENROLLMENT_PACKET_HEADCELLS: HeadCell[] = [
-  // {
-  //   id: 'id',
-  //   numeric: false,
-  //   disablePadding: true,
-  //   label: 'ID',
-  // },
   {
     id: 'submitted',
     numeric: false,
