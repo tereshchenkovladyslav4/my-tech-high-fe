@@ -86,12 +86,18 @@ export type Course = {
   min_alt_grade: string
   max_alt_grade: string
   website: string
+  display_notification: boolean
+  course_notification: string
+  reduce_funds: ReduceFunds
+  reduce_funds_notification: string
   Provider: Provider
 }
 
 export type Provider = {
   id: number
   name: string
+  reduce_funds: ReduceFunds
+  reduce_funds_notification: string
   Courses: Course[]
   AltCourses?: Course[]
 }
@@ -140,6 +146,7 @@ export type ScheduleData = {
   Title?: Title
   CourseType?: CourseType
   Course?: Course
+  CustomBuiltDescription?: string
 
   // TODO Should remove below fields
   Type?: string

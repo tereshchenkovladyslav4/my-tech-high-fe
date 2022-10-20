@@ -20,7 +20,7 @@ export const defaultTitleFormData: Title = {
   max_alt_grade: '',
   diploma_seeking_path: undefined,
   reduce_funds: ReduceFunds.NONE,
-  price: undefined,
+  price: null,
   reduce_funds_notification: '',
   custom_built_description: '',
   always_unlock: false,

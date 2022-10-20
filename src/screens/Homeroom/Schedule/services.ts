@@ -28,9 +28,15 @@ export const getStudentPeriodsQuery = gql`
             min_alt_grade
             max_alt_grade
             website
+            reduce_funds
+            reduce_funds_notification
+            display_notification
+            course_notification
             Provider {
               id
               name
+              reduce_funds
+              reduce_funds_notification
             }
           }
           AltCourses {
@@ -40,9 +46,15 @@ export const getStudentPeriodsQuery = gql`
             min_alt_grade
             max_alt_grade
             website
+            reduce_funds
+            reduce_funds_notification
+            display_notification
+            course_notification
             Provider {
               id
               name
+              reduce_funds
+              reduce_funds_notification
             }
           }
         }
@@ -65,9 +77,15 @@ export const getStudentPeriodsQuery = gql`
             min_alt_grade
             max_alt_grade
             website
+            reduce_funds
+            reduce_funds_notification
+            display_notification
+            course_notification
             Provider {
               id
               name
+              reduce_funds
+              reduce_funds_notification
             }
           }
           AltCourses {
@@ -77,9 +95,15 @@ export const getStudentPeriodsQuery = gql`
             min_alt_grade
             max_alt_grade
             website
+            reduce_funds
+            reduce_funds_notification
+            display_notification
+            course_notification
             Provider {
               id
               name
+              reduce_funds
+              reduce_funds_notification
             }
           }
         }

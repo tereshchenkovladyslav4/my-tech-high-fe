@@ -24,7 +24,7 @@ const SubjectEdit: React.FC<SubjectEditProps> = ({ schoolYearId, item, refetch, 
   const [submitSave, {}] = useMutation(createOrUpdateSubjectMutation)
 
   const { loading, data: periodsData } = useQuery(getPeriods, {
-    variables: { school_year_id: +schoolYearId, hide_archived: true },
+    variables: { school_year_id: +schoolYearId, archived: false },
     skip: !schoolYearId,
     fetchPolicy: 'network-only',
   })

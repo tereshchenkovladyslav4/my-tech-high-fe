@@ -44,7 +44,7 @@ export type Title = {
   max_alt_grade: string
   diploma_seeking_path?: DiplomaSeekingPath
   reduce_funds: ReduceFunds
-  price: number | undefined
+  price: number | null
   always_unlock: boolean
   custom_built: boolean
   third_party_provider: boolean

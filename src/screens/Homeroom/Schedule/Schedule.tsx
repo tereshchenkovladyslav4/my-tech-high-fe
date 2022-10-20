@@ -406,6 +406,19 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
   }, [diplomaLoading, diplomaData])
 
   useEffect(() => {
+    if (!currentSchoolYearLoading && currentSchoolYear) {
+      setSchoolYearItems([
+        {
+          value: currentSchoolYear.school_year_id,
+          label: `${moment(currentSchoolYear.date_begin).format('YYYY')}-${moment(currentSchoolYear.date_end).format(
+            'YY',
+          )}`,
+        },
+      ])
+    }
+  }, [currentSchoolYear, currentSchoolYearLoading])
+
+  useEffect(() => {
     if (!diplomaAnswerLoading) {
       if (diplomaAnswerData && diplomaAnswerData.getDiplomaAnswer) {
         setDiplomaOptions([
@@ -423,19 +436,6 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
       }
     }
   }, [diplomaAnswerLoading, diplomaAnswerData])
-
-  useEffect(() => {
-    if (!currentSchoolYearLoading && currentSchoolYear) {
-      setSchoolYearItems([
-        {
-          value: currentSchoolYear.school_year_id,
-          label: `${moment(currentSchoolYear.date_begin).format('YYYY')}-${moment(currentSchoolYear.date_end).format(
-            'YY',
-          )}`,
-        },
-      ])
-    }
-  }, [currentSchoolYear, currentSchoolYearLoading])
 
   return (
     <Card sx={{ margin: 4, padding: 4 }}>

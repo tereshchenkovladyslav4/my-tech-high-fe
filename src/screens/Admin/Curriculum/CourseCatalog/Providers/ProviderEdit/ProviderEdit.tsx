@@ -24,7 +24,7 @@ const ProviderEdit: React.FC<ProviderEditProps> = ({ schoolYearId, item, refetch
   const [submitSave, {}] = useMutation(createOrUpdateProviderMutation)
 
   const { loading, data: periodsData } = useQuery(getPeriods, {
-    variables: { school_year_id: +schoolYearId, hide_archived: true },
+    variables: { school_year_id: +schoolYearId, archived: false },
     skip: !schoolYearId,
     fetchPolicy: 'network-only',
   })
@@ -45,7 +45,7 @@ const ProviderEdit: React.FC<ProviderEditProps> = ({ schoolYearId, item, refetch
       .when('reduce_funds', {
         is: (reduce_funds: ReduceFunds) =>
           reduce_funds == ReduceFunds.TECHNOLOGY_ALLOWANCE || reduce_funds == ReduceFunds.SUPPLEMENTAL_LEARNING_FUNDS,
-        then: yup.number().required('Price Required').moreThan(0, 'Should be greater than 0').positive('Price Invaild'),
+        then: yup.number().required('Price Required').positive('Should be greater than 0').nullable(),
       })
       .nullable(),
     PeriodIds: yup
@@ -68,7 +68,7 @@ const ProviderEdit: React.FC<ProviderEditProps> = ({ schoolYearId, item, refetch
           name: value.name,
           is_display: value.is_display,
           reduce_funds: value.reduce_funds,
-          price: value.price,
+          price: value.price || null,
           reduce_funds_notification: value.reduce_funds_notification,
           multiple_periods: value.multiple_periods,
           multi_periods_notification: value.multi_periods_notification,
@@ -102,7 +102,12 @@ const ProviderEdit: React.FC<ProviderEditProps> = ({ schoolYearId, item, refetch
   }, [loading, periodsData])
 
   useEffect(() => {
-    if (item?.id) setInitialValues({ ...item, PeriodIds: item.Periods.map((x: Period) => x.id.toString()) })
+    if (item?.id)
+      setInitialValues({
+        ...item,
+        PeriodIds: item.Periods.map((x: Period) => x.id.toString()),
+        price: item.price || null,
+      })
   }, [item])
 
   return (

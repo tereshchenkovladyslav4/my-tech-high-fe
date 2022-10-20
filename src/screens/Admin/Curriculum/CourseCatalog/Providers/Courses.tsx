@@ -154,7 +154,7 @@ const Courses: React.FC<CoursesProps> = ({ schoolYearId, schoolYearData, provide
         name: <Typography sx={{ color: MthColor.MTHBLUE, fontSize: 'inherit' }}>{course.name}</Typography>,
         grades: `${course.min_grade?.startsWith('K') ? 'K' : course.min_grade} - ${course.max_grade}`,
         diplomaSeeking: DIPLOMA_SEEKING_PATH_ITEMS.find((x) => x.value == course.diploma_seeking_path)?.label || 'NA',
-        reducesFunds: REDUCE_FUNDS_ITEMS.find((x) => x.value == course.diploma_seeking_path)?.label || 'NA',
+        reducesFunds: REDUCE_FUNDS_ITEMS.find((x) => x.value == course.reduce_funds)?.label || 'NA',
         semesterOnly: course.always_unlock === undefined ? 'N/A' : course.always_unlock ? 'Yes' : 'No',
         limit: course.limit || 'NA',
         subjects: (course.Titles || []).map((item) => item.name).join(', '),

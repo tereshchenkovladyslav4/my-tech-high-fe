@@ -1,5 +1,5 @@
 import React from 'react'
-import { Box, Grid, TextField, Typography } from '@mui/material'
+import { Box, Grid, InputAdornment, TextField, Typography } from '@mui/material'
 import { useFormikContext } from 'formik'
 import { DropDown } from '@mth/components/DropDown/DropDown'
 import { MthBulletEditor } from '@mth/components/MthBulletEditor'
@@ -12,7 +12,7 @@ import { editProviderClasses } from '@mth/screens/Admin/Curriculum/CourseCatalog
 import { Provider, ProviderFormProps } from '@mth/screens/Admin/Curriculum/CourseCatalog/Providers/types'
 
 const ProviderForm: React.FC<ProviderFormProps> = ({ setIsChanged, periodsItems }) => {
-  const { errors, handleChange, setFieldValue, touched, values } = useFormikContext<Provider>()
+  const { errors, handleChange, setFieldValue, touched, values, setFieldTouched } = useFormikContext<Provider>()
 
   return (
     <Box sx={{ width: '100%', textAlign: 'left', mb: '70px' }}>
@@ -51,6 +51,12 @@ const ProviderForm: React.FC<ProviderFormProps> = ({ setIsChanged, periodsItems 
                 placeholder='Reduce Funds'
                 labelTop
                 setParentValue={(value) => {
+                  if (value === ReduceFunds.NONE) {
+                    setFieldValue('price', null)
+                  } else if (values.reduce_funds === ReduceFunds.NONE) {
+                    setFieldTouched('price', false)
+                    setFieldTouched('reduce_funds_notification', false)
+                  }
                   setFieldValue('reduce_funds', value)
                 }}
                 sx={{ m: 0 }}
@@ -64,6 +70,7 @@ const ProviderForm: React.FC<ProviderFormProps> = ({ setIsChanged, periodsItems 
                 name='price'
                 label='Price'
                 placeholder='Entry'
+                InputProps={{ startAdornment: <InputAdornment position='start'>$</InputAdornment> }}
                 type='number'
                 fullWidth
                 value={values?.price || ''}

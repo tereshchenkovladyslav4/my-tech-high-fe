@@ -1,12 +1,13 @@
-import React from 'react'
-import { Box, Grid, TextField, Typography } from '@mui/material'
+import React, { useState } from 'react'
+import { Box, Grid, InputAdornment, TextField, Typography } from '@mui/material'
 import { useFormikContext } from 'formik'
 import { DropDown } from '@mth/components/DropDown/DropDown'
 import { MthBulletEditor } from '@mth/components/MthBulletEditor'
 import { MthCheckbox } from '@mth/components/MthCheckbox'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { WarningModal } from '@mth/components/WarningModal/Warning'
 import { DIPLOMA_SEEKING_PATH_ITEMS, REDUCE_FUNDS_ITEMS } from '@mth/constants'
-import { ReduceFunds } from '@mth/enums'
+import { MthColor, ReduceFunds } from '@mth/enums'
 import { CourseTitles } from '@mth/screens/Admin/Curriculum/CourseCatalog/Providers/CourseEdit/CourseTitles'
 import { editCourseClasses } from '@mth/screens/Admin/Curriculum/CourseCatalog/Providers/CourseEdit/styles'
 import { Course, CourseFormProps } from '@mth/screens/Admin/Curriculum/CourseCatalog/Providers/types'
@@ -18,7 +19,31 @@ const CourseForm: React.FC<CourseFormProps> = ({
   providerItems,
   gradeOptions,
 }) => {
-  const { errors, handleChange, setFieldValue, touched, values } = useFormikContext<Course>()
+  const { errors, handleChange, setFieldValue, touched, values, setFieldTouched } = useFormikContext<Course>()
+  const [showGradeError, setShowGradeError] = useState<boolean>(false)
+  const [showAltGradeError, setShowAltGradeError] = useState<boolean>(false)
+
+  const validateGrades = (field: string, newValue: string) => {
+    const newValues = { ...values, [field]: newValue }
+    const grades = [
+      newValues?.min_grade,
+      newValues?.max_grade,
+      newValues?.min_alt_grade || Number.NEGATIVE_INFINITY.toString(),
+      newValues?.max_alt_grade || Number.POSITIVE_INFINITY.toString(),
+    ].map((item) => (item?.startsWith('K') ? 0 : +item))
+
+    // Check grades
+    if (grades[0] >= grades[1]) {
+      setShowGradeError(true)
+      return
+    }
+    // Check alternative grades
+    if (grades[2] >= grades[3]) {
+      setShowAltGradeError(true)
+      return
+    }
+    setFieldValue(field, newValue)
+  }
 
   return (
     <Box sx={{ width: '100%', textAlign: 'left', mb: '70px' }}>
@@ -58,8 +83,9 @@ const CourseForm: React.FC<CourseFormProps> = ({
                 dropDownItems={gradeOptions}
                 placeholder='Minimum Grade Level'
                 labelTop
+                auto={false}
                 setParentValue={(value) => {
-                  setFieldValue('min_grade', value)
+                  validateGrades('min_grade', value.toString())
                 }}
                 sx={{ m: 0 }}
                 defaultValue={values?.min_grade}
@@ -72,8 +98,9 @@ const CourseForm: React.FC<CourseFormProps> = ({
                 dropDownItems={gradeOptions}
                 placeholder='Maximum Grade Level'
                 labelTop
+                auto={false}
                 setParentValue={(value) => {
-                  setFieldValue('max_grade', value)
+                  validateGrades('max_grade', value.toString())
                 }}
                 sx={{ m: 0 }}
                 defaultValue={values?.max_grade}
@@ -86,8 +113,9 @@ const CourseForm: React.FC<CourseFormProps> = ({
                 dropDownItems={gradeOptions}
                 placeholder='Alternative Minimum'
                 labelTop
+                auto={false}
                 setParentValue={(value) => {
-                  setFieldValue('min_alt_grade', value)
+                  validateGrades('min_alt_grade', value.toString())
                 }}
                 sx={{ m: 0 }}
                 defaultValue={values?.min_alt_grade}
@@ -100,8 +128,9 @@ const CourseForm: React.FC<CourseFormProps> = ({
                 dropDownItems={gradeOptions}
                 placeholder='Alternative Maximum'
                 labelTop
+                auto={false}
                 setParentValue={(value) => {
-                  setFieldValue('max_alt_grade', value)
+                  validateGrades('max_alt_grade', value.toString())
                 }}
                 sx={{ m: 0 }}
                 defaultValue={values?.max_alt_grade}
@@ -159,7 +188,19 @@ const CourseForm: React.FC<CourseFormProps> = ({
             </Grid>
             {!!values?.display_notification && (
               <Grid item xs={12}>
-                <Typography sx={{ fontSize: '18px', fontWeight: '700', mb: 1 }}>Course Notification</Typography>
+                <Typography
+                  sx={{
+                    fontSize: '18px',
+                    fontWeight: '700',
+                    mb: 1,
+                    color:
+                      touched.course_notification && errors.course_notification
+                        ? MthColor.ERROR_RED
+                        : MthColor.SYSTEM_01,
+                  }}
+                >
+                  Course Notification
+                </Typography>
                 <MthBulletEditor
                   value={values?.course_notification}
                   setValue={(value) => {
@@ -244,6 +285,12 @@ const CourseForm: React.FC<CourseFormProps> = ({
                 placeholder='Reduce Funds'
                 labelTop
                 setParentValue={(value) => {
+                  if (value === ReduceFunds.NONE) {
+                    setFieldValue('price', null)
+                  } else if (values.reduce_funds === ReduceFunds.NONE) {
+                    setFieldTouched('price', false)
+                    setFieldTouched('reduce_funds_notification', false)
+                  }
                   setFieldValue('reduce_funds', value)
                 }}
                 sx={{ m: 0 }}
@@ -257,6 +304,7 @@ const CourseForm: React.FC<CourseFormProps> = ({
                 name='price'
                 label='Price'
                 placeholder='Entry'
+                InputProps={{ startAdornment: <InputAdornment position='start'>$</InputAdornment> }}
                 type='number'
                 fullWidth
                 value={values?.price || ''}
@@ -274,6 +322,26 @@ const CourseForm: React.FC<CourseFormProps> = ({
           </Grid>
         </Grid>
       </Grid>
+      {showGradeError && (
+        <WarningModal
+          title='Error'
+          subtitle='The Minimum Grade Level must be less than the Maximum Grade Level.'
+          btntitle='Ok'
+          handleModem={() => setShowGradeError(false)}
+          handleSubmit={() => setShowGradeError(false)}
+          textCenter={true}
+        />
+      )}
+      {showAltGradeError && (
+        <WarningModal
+          title='Error'
+          subtitle='The Minimum Alternative Grade Level must be less than the Maximum Alternative Grade Level.'
+          btntitle='Ok'
+          handleModem={() => setShowAltGradeError(false)}
+          handleSubmit={() => setShowAltGradeError(false)}
+          textCenter={true}
+        />
+      )}
     </Box>
   )
 }

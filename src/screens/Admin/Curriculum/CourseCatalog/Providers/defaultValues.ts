@@ -6,7 +6,7 @@ export const defaultProviderFormData: Provider = {
   name: '',
   is_display: false,
   reduce_funds: ReduceFunds.NONE,
-  price: 0,
+  price: null,
   reduce_funds_notification: '',
   multiple_periods: false,
   multi_periods_notification: '',
@@ -14,6 +14,7 @@ export const defaultProviderFormData: Provider = {
   is_active: false,
   Periods: [],
   Courses: [],
+  PeriodIds: [],
 }
 
 export const defaultCourseFormData: Course = {
@@ -35,7 +36,7 @@ export const defaultCourseFormData: Course = {
   diploma_seeking_path: undefined,
   limit: null,
   reduce_funds: ReduceFunds.NONE,
-  price: 0,
+  price: null,
   subject_id: 0,
   Titles: [],
   allow_request: false,

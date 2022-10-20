@@ -3,7 +3,6 @@ import { useMutation } from '@apollo/client'
 import { Box, Modal } from '@mui/material'
 import { Form, Formik } from 'formik'
 import * as yup from 'yup'
-import { WarningModal } from '@mth/components/WarningModal/Warning'
 import { MthColor, ReduceFunds } from '@mth/enums'
 import { useProgramYearListBySchoolYearId, useProviders, useScheduleBuilder } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
@@ -26,8 +25,6 @@ const CourseEdit: React.FC<CourseEditProps> = ({
 
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false)
   const [initialValues, setInitialValues] = useState<Course>({ ...defaultCourseFormData, provider_id: providerId })
-  const [showGradeError, setShowGradeError] = useState<boolean>(false)
-  const [showAltGradeError, setShowAltGradeError] = useState<boolean>(false)
   const [submitSave, {}] = useMutation(createOrUpdateCourseMutation)
 
   const { checkBoxItems: providerItems } = useProviders(schoolYearId)
@@ -53,7 +50,7 @@ const CourseEdit: React.FC<CourseEditProps> = ({
       .when('reduce_funds', {
         is: (reduce_funds: ReduceFunds) =>
           reduce_funds == ReduceFunds.TECHNOLOGY_ALLOWANCE || reduce_funds == ReduceFunds.SUPPLEMENTAL_LEARNING_FUNDS,
-        then: yup.number().required('Price Required').moreThan(0, 'Should be greater than 0').positive('Price Invaild'),
+        then: yup.number().required('Price Required').positive('Should be greater than 0').nullable(),
       })
       .nullable(),
     reduce_funds_notification: yup
@@ -78,27 +75,10 @@ const CourseEdit: React.FC<CourseEditProps> = ({
         then: yup.string().required('Required').nullable(),
       })
       .nullable(),
-    TitleIds: yup.array().min(1).required('Required'),
+    TitleIds: yup.array().min(1, 'Required').required('Required'),
   })
 
   const onSave = async (value: Course) => {
-    const grades = [
-      value?.min_grade,
-      value?.max_grade,
-      value?.min_alt_grade || Number.NEGATIVE_INFINITY.toString(),
-      value?.max_alt_grade || Number.POSITIVE_INFINITY.toString(),
-    ].map((item) => (item?.startsWith('K') ? 0 : +item))
-
-    // Check grades
-    if (grades[0] >= grades[1]) {
-      setShowGradeError(true)
-      return
-    }
-    // Check alternative grades
-    if (grades[2] >= grades[3]) {
-      setShowAltGradeError(true)
-      return
-    }
     setIsSubmitted(true)
 
     await submitSave({
@@ -122,7 +102,7 @@ const CourseEdit: React.FC<CourseEditProps> = ({
           diploma_seeking_path: value.diploma_seeking_path,
           limit: value.limit,
           reduce_funds: value.reduce_funds,
-          price: value.price,
+          price: value.price || null,
           subject_id: Number(value.subject_id),
           titles: value.TitleIds?.join(','),
         },
@@ -143,6 +123,7 @@ const CourseEdit: React.FC<CourseEditProps> = ({
       setInitialValues({
         ...item,
         TitleIds: (item.Titles || []).map((x: Title) => x.title_id.toString()),
+        price: item.price || null,
       })
     }
   }, [item])
@@ -193,26 +174,6 @@ const CourseEdit: React.FC<CourseEditProps> = ({
             </Form>
           </Formik>
         </Box>
-        {showGradeError && (
-          <WarningModal
-            title='Error'
-            subtitle='The Minimum Grade Level must be less than the Maximum Grade Level.'
-            btntitle='Ok'
-            handleModem={() => setShowGradeError(false)}
-            handleSubmit={() => setShowGradeError(false)}
-            textCenter={true}
-          />
-        )}
-        {showAltGradeError && (
-          <WarningModal
-            title='Error'
-            subtitle='The Minimum Alternative Grade Level must be less than the Maximum Alternative Grade Level.'
-            btntitle='Ok'
-            handleModem={() => setShowAltGradeError(false)}
-            handleSubmit={() => setShowAltGradeError(false)}
-            textCenter={true}
-          />
-        )}
       </Box>
     </Modal>
   )

@@ -3,6 +3,8 @@ import { ChevronRight } from '@mui/icons-material'
 import { Typography } from '@mui/material'
 import Menu, { MenuProps } from '@mui/material/Menu'
 import { MenuItemProps } from '@mui/material/MenuItem'
+import { CustomModal, CustomModalType } from '@mth/components/CustomModal/CustomModals'
+import { MthColor } from '@mth/enums'
 import { IconMenuItem } from './IconMenuItem'
 
 export interface NestedMenuItemProps extends Omit<MenuItemProps, 'button'> {
@@ -18,6 +20,7 @@ export interface NestedMenuItemProps extends Omit<MenuItemProps, 'button'> {
   ContainerProps?: React.HTMLAttributes<HTMLElement> & React.RefAttributes<HTMLElement | null>
   MenuProps?: Partial<Omit<MenuProps, 'children'>>
   button?: true | undefined
+  customModalProps?: Partial<CustomModalType>
 }
 
 const NestedMenuItem = React.forwardRef<HTMLLIElement | null, NestedMenuItemProps>(function NestedMenuItem(props, ref) {
@@ -31,23 +34,28 @@ const NestedMenuItem = React.forwardRef<HTMLLIElement | null, NestedMenuItemProp
     tabIndex: tabIndexProp,
     ContainerProps: ContainerPropsProp = {},
     MenuProps,
+    customModalProps,
     ...MenuItemProps
   } = props
 
   const { ref: containerRefProp, ...ContainerProps } = ContainerPropsProp
 
-  const menuItemRef = useRef(null)
+  const menuItemRef = useRef()
   useImperativeHandle(ref, () => menuItemRef?.current)
 
-  const containerRef = useRef(null)
+  const containerRef = useRef()
   useImperativeHandle(containerRefProp, () => containerRef.current)
 
-  const menuContainerRef = useRef(null)
+  const menuContainerRef = useRef()
 
   const [isSubMenuOpen, setIsSubMenuOpen] = useState(false)
   const [isHover, setIsHover] = useState(false)
+  const [showAlert, setShowAlert] = useState(false)
 
   const handleClick = () => {
+    if (!isSubMenuOpen && customModalProps) {
+      setShowAlert(true)
+    }
     setIsSubMenuOpen(!isSubMenuOpen)
   }
   const handleMouseEnter = (e: React.MouseEvent<HTMLElement>) => {
@@ -163,6 +171,20 @@ const NestedMenuItem = React.forwardRef<HTMLLIElement | null, NestedMenuItemProp
           {children}
         </div>
       </Menu>
+
+      {showAlert && !!customModalProps && (
+        <CustomModal
+          title=''
+          description=''
+          confirmStr='Ok'
+          showIcon={false}
+          showCancel={false}
+          backgroundColor={MthColor.WHITE}
+          {...customModalProps}
+          onClose={() => setShowAlert(false)}
+          onConfirm={() => setShowAlert(false)}
+        />
+      )}
     </div>
   )
 })

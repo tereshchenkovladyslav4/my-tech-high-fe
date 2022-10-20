@@ -14,6 +14,7 @@ import { SuccessModal } from '@mth/components/SuccessModal/SuccessModal'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { COURSE_TYPE_ITEMS } from '@mth/constants'
 import { CourseType, MthColor, MthTitle, ReduceFunds } from '@mth/enums'
+import { CustomBuiltDescriptionEdit } from '@mth/screens/Homeroom/Schedule/ScheduleBuilder/CustomBuiltDescription'
 import { getStudentPeriodsQuery } from '@mth/screens/Homeroom/Schedule/services'
 import { extractContent } from '@mth/utils'
 import { Course, Period, ScheduleBuilderProps, ScheduleData, Subject, Title } from '../types'
@@ -31,8 +32,12 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
   const [tableData, setTableData] = useState<MthTableRowItem<ScheduleData>[]>([])
   const [scheduleData, setScheduleData] = useState<ScheduleData[]>([])
   const [periodNotification, setPeriodNotification] = useState<string | undefined>()
+  const [selectedSchedule, setSelectedSchedule] = useState<ScheduleData | undefined>()
   const [subjectNotification, setSubjectNotification] = useState<string | undefined>()
   const [subjectReduceFundsNotification, setSubjectReduceFundsNotification] = useState<string | undefined>()
+  const [courseNotification, setCourseNotification] = useState<string | undefined>()
+  const [courseReduceFundsNotification, setCourseReduceFundsNotification] = useState<string | undefined>()
+  const [showCustomBuilt, setShowCustomBuilt] = useState<boolean>(false)
 
   const { loading, data: periodsData } = useQuery(getStudentPeriodsQuery, {
     variables: { studentId: studentId, schoolYearId: selectedYear },
@@ -126,6 +131,17 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
         label: provider.name,
         items: [],
       }
+      // This is need to prevent the cascading menu from closing when open modal.
+      if (provider.reduce_funds !== ReduceFunds.NONE && provider.reduce_funds_notification?.length > 8) {
+        subMenu.customModalProps = {
+          title: MthTitle.REDUCES_FUNDS,
+          description: extractContent(provider.reduce_funds_notification),
+          confirmStr: 'Ok',
+          showIcon: false,
+          showCancel: false,
+          backgroundColor: MthColor.WHITE,
+        }
+      }
       provider.Courses?.forEach((course) => {
         subMenu.items?.push({
           label: course.name,
@@ -204,9 +220,25 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
     const scheduleIdx = scheduleData.findIndex((item) => item.period === schedule.period)
     if (scheduleIdx > -1) {
       if (schedule.CourseType === courseType) return
-      schedule.CourseType = courseType
-      delete schedule.Course
-      scheduleData[scheduleIdx] = schedule
+      if (courseType === CourseType.CUSTOM_BUILT) {
+        setSelectedSchedule(schedule)
+        setShowCustomBuilt(true)
+      } else {
+        schedule.CourseType = courseType
+        delete schedule.Course
+        scheduleData[scheduleIdx] = schedule
+        setScheduleData(JSON.parse(JSON.stringify(scheduleData)))
+      }
+    }
+  }
+
+  const handleSaveCustomBuiltDescription = (description: string) => {
+    if (selectedSchedule) {
+      const scheduleIdx = scheduleData.findIndex((item) => item.period === selectedSchedule.period)
+      selectedSchedule.CourseType = CourseType.CUSTOM_BUILT
+      selectedSchedule.CustomBuiltDescription = description
+      delete selectedSchedule.Course
+      scheduleData[scheduleIdx] = selectedSchedule
       setScheduleData(JSON.parse(JSON.stringify(scheduleData)))
     }
   }
@@ -218,6 +250,12 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
       schedule.Course = course
       scheduleData[scheduleIdx] = schedule
       setScheduleData(JSON.parse(JSON.stringify(scheduleData)))
+      if (course.display_notification) {
+        setCourseNotification(course.course_notification)
+      }
+      if (course.reduce_funds !== ReduceFunds.NONE) {
+        setCourseReduceFundsNotification(course.reduce_funds_notification)
+      }
     }
   }
 
@@ -335,10 +373,16 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
                   }}
                 />
               ) : (
-                <Typography sx={scheduleBuilderClasses.tableContent}>
-                  {item.rawData.Course?.name || item.rawData.Course?.name}
-                </Typography>
+                <Typography sx={scheduleBuilderClasses.tableContent}>{item.rawData.Course?.name}</Typography>
               ))}
+            {item.rawData.CourseType === CourseType.CUSTOM_BUILT && !!item.rawData.CustomBuiltDescription && (
+              <Typography
+                sx={scheduleBuilderClasses.tableContent}
+                component={'span'}
+                variant={'body2'}
+                dangerouslySetInnerHTML={{ __html: item.rawData.CustomBuiltDescription }}
+              />
+            )}
           </Box>
         )
       },
@@ -414,6 +458,8 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
                 title.Providers.push({
                   id: +key,
                   name: providersData[key]?.[0].Provider?.name,
+                  reduce_funds: providersData[key]?.[0].Provider?.reduce_funds,
+                  reduce_funds_notification: providersData[key]?.[0].Provider?.reduce_funds_notification,
                   Courses: providersData[key],
                 })
               }
@@ -426,6 +472,8 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
                   title.Providers.push({
                     id: +key,
                     name: altProvidersData[key]?.[0].Provider?.name,
+                    reduce_funds: providersData[key]?.[0].Provider?.reduce_funds,
+                    reduce_funds_notification: providersData[key]?.[0].Provider?.reduce_funds_notification,
                     Courses: [],
                     AltCourses: altProvidersData[key],
                   })
@@ -530,6 +578,37 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
           backgroundColor={MthColor.WHITE}
           onClose={() => setSubjectReduceFundsNotification(undefined)}
           onConfirm={() => setSubjectReduceFundsNotification(undefined)}
+        />
+      )}
+      {!!courseNotification && (
+        <CustomModal
+          title={MthTitle.NOTIFICATION}
+          description={extractContent(courseNotification || '')}
+          confirmStr='Ok'
+          showIcon={false}
+          showCancel={false}
+          backgroundColor={MthColor.WHITE}
+          onClose={() => setCourseNotification(undefined)}
+          onConfirm={() => setCourseNotification(undefined)}
+        />
+      )}
+      {!courseNotification && !!courseReduceFundsNotification && (
+        <CustomModal
+          title={MthTitle.REDUCES_FUNDS}
+          description={extractContent(courseReduceFundsNotification || '')}
+          confirmStr='Ok'
+          showIcon={false}
+          showCancel={false}
+          backgroundColor={MthColor.WHITE}
+          onClose={() => setCourseReduceFundsNotification(undefined)}
+          onConfirm={() => setCourseReduceFundsNotification(undefined)}
+        />
+      )}
+      {showCustomBuilt && !!selectedSchedule && (
+        <CustomBuiltDescriptionEdit
+          setShowEditModal={setShowCustomBuilt}
+          customBuiltDescription={selectedSchedule?.Title?.custom_built_description}
+          onSave={handleSaveCustomBuiltDescription}
         />
       )}
       <Prompt

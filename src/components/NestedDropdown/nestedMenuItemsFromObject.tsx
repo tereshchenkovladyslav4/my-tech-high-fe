@@ -18,7 +18,8 @@ export function nestedMenuItemsFromObject({
   handleClose,
 }: nestedMenuItemsFromObjectProps): React.ReactElement[] {
   return items.map((item, index) => {
-    const { leftIcon, rightIcon, label, items, moreItems, showMoreLabel, showLessLabel, callback } = item
+    const { leftIcon, rightIcon, label, items, moreItems, showMoreLabel, showLessLabel, callback, customModalProps } =
+      item
     const [showMore, setShowMore] = useState<boolean>(false)
 
     if (items && items.length > 0) {
@@ -30,9 +31,7 @@ export function nestedMenuItemsFromObject({
           rightIcon={rightIcon}
           label={label}
           parentMenuOpen={isOpen}
-          onClick={() => {
-            if (callback) callback()
-          }}
+          customModalProps={customModalProps}
         >
           {/* Call this function to nest more items */}
           {nestedMenuItemsFromObject({

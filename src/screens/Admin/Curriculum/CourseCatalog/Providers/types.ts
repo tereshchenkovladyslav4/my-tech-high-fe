@@ -16,7 +16,7 @@ export type Provider = {
   name: string
   is_display: boolean
   reduce_funds: ReduceFunds
-  price: number
+  price: number | null
   reduce_funds_notification?: string
   multiple_periods: boolean | undefined
   multi_periods_notification?: string
@@ -25,7 +25,7 @@ export type Provider = {
   Periods: Period[]
   Courses?: Course[]
   // Temp fields
-  PeriodIds?: string[]
+  PeriodIds: string[]
 }
 
 export type Course = {
@@ -46,7 +46,7 @@ export type Course = {
   diploma_seeking_path?: DiplomaSeekingPath
   limit?: number | null
   reduce_funds: ReduceFunds
-  price: number
+  price: number | null
   reduce_funds_notification?: string
   subject_id: number
   Titles: Title[]
