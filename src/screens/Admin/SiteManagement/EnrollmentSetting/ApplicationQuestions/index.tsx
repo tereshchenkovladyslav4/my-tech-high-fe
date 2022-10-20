@@ -14,6 +14,7 @@ import { MthTitle } from '@mth/enums'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { GRADES } from '../../../../../utils/constants'
 import { countries } from '../../../../../utils/countries'
+import { usStates } from '../../../../../utils/states'
 import { toOrdinalSuffix } from '../../../../../utils/stringHelpers'
 import { AddQuestionModal } from '../components/AddQuestionModal/AddQuestionModal'
 import { CustomModal } from '../components/CustomModal/CustomModals'
@@ -30,7 +31,6 @@ import {
   getCountiesByRegionId,
   getActiveSchoolYearsByRegionId,
   getSchoolDistrictsByRegionId,
-  getAllRegion,
 } from './services'
 import { useStyles } from './styles'
 import { ApplicationQuestion, initQuestions } from './types'
@@ -231,18 +231,6 @@ export const ApplicationQuestions: React.FC = () => {
     }
   }, [schoolDistrictsDataLoading])
 
-  const { data: regionData, loading: regionDataLoading } = useQuery(getAllRegion)
-  const [availableRegions, setAvailableRegions] = useState([])
-  useEffect(() => {
-    if (!regionDataLoading)
-      setAvailableRegions(
-        regionData.regions?.map((region) => ({
-          label: region.name,
-          value: region.id,
-        })),
-      )
-  }, [regionDataLoading])
-
   const history = useHistory()
   useEffect(() => {
     if (data?.getApplicationQuestions) {
@@ -294,7 +282,6 @@ export const ApplicationQuestions: React.FC = () => {
       }
     } else {
       selectedQuestion = defaultQuestions.filter((d) => d.label == selected)[0]
-
       if (selectedQuestion.slug === 'address_county_id') {
         options = counties
       } else if (selectedQuestion.slug === 'address_country_id') {
@@ -304,7 +291,7 @@ export const ApplicationQuestions: React.FC = () => {
       } else if (selectedQuestion.slug === 'packet_school_district') {
         options = schoolDistricts
       } else if (selectedQuestion.slug === 'address_state') {
-        options = availableRegions
+        options = usStates
       } else if (selectedQuestion.slug === 'student_gender') {
         options = [
           { label: 'Male', value: 1 },

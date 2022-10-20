@@ -617,7 +617,7 @@ export const NewParent: React.FC = () => {
                               name='state'
                               labelTop
                               dropDownItems={sortBy(availableRegions, 'label')}
-                              placeholder='State'
+                              placeholder='Program State'
                               setParentValue={(id) => {
                                 form.setFieldValue(field.name, id)
                                 setRegionId(id)

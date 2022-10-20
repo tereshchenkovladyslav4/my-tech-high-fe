@@ -62,6 +62,7 @@ export const AddNewQuestionModal: React.FC<AddNewQuestionModalProps> = ({
     if (
       newQuestion?.slug &&
       [
+        'address_state',
         'packet_school_district',
         'packet_secondary_contact_first',
         'packet_secondary_contact_last',

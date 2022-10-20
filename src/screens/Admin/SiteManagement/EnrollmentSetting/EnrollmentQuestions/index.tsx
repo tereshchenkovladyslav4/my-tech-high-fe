@@ -12,6 +12,7 @@ import { MthTitle } from '@mth/enums'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { GRADES } from '../../../../../utils/constants'
 import { countries } from '../../../../../utils/countries'
+import { usStates } from '../../../../../utils/states'
 import { toOrdinalSuffix } from '../../../../../utils/stringHelpers'
 import { AddQuestionModal } from '../components/AddQuestionModal/AddQuestionModal'
 import { CustomModal } from '../components/CustomModal/CustomModals'
@@ -35,7 +36,6 @@ import {
   getCountiesByRegionId,
   getActiveSchoolYearsByRegionId,
   getSchoolDistrictsByRegionId,
-  getAllRegion,
   getSpecialEdsByRegionId,
 } from './services'
 import { useStyles } from './styles'
@@ -313,18 +313,6 @@ export const EnrollmentQuestions: React.FC = () => {
     }
   }, [schoolDistrictsDataLoading])
 
-  const { data: regionData, loading: regionDataLoading } = useQuery(getAllRegion)
-  const [availableRegions, setAvailableRegions] = useState([])
-  useEffect(() => {
-    if (!regionDataLoading)
-      setAvailableRegions(
-        regionData.regions?.map((region) => ({
-          label: region.name,
-          value: region.id,
-        })),
-      )
-  }, [regionDataLoading])
-
   useEffect(() => {
     window['setFormChanged']('EnrollmentQuestionsForm', unsavedChanges)
   }, [unsavedChanges])
@@ -352,7 +340,7 @@ export const EnrollmentQuestions: React.FC = () => {
       } else if (selectedQuestion.slug === 'packet_school_district') {
         options = schoolDistricts
       } else if (selectedQuestion.slug === 'address_state') {
-        options = availableRegions
+        options = usStates
       } else if (selectedQuestion.slug === 'student_gender') {
         options = [
           { label: 'Male', value: 1 },
