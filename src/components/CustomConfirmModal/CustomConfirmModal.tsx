@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react'
+import React from 'react'
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline'
 import { Box, Button, Modal } from '@mui/material'
 import { SYSTEM_01 } from '../../utils/constants'
@@ -13,7 +13,7 @@ type CustomConfirmModalType = {
   handleConfirmModalChange: (isOk: boolean) => void
 }
 
-export const CustomConfirmModal: FunctionComponent<CustomConfirmModalType> = ({
+export const CustomConfirmModal: React.FC<CustomConfirmModalType> = ({
   header,
   content,
   confirmBtnTitle = 'Yes',

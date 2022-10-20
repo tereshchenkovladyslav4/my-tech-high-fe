@@ -1,4 +1,5 @@
 import { makeStyles, Theme } from '@material-ui/core/styles'
+import { MthColor } from '@mth/enums'
 import { BLACK } from '../../utils/constants'
 
 export const useClasses = makeStyles((theme: Theme) => ({
@@ -52,9 +53,10 @@ export const useStyles = {
   submitButton: {
     borderRadius: 10,
     width: '200px',
+    background: MthColor.BLACK_GRADIENT,
     marginTop: 4,
     '&:hover': {
-      color: '#000',
+      color: MthColor.BLACK,
     },
   },
 }

@@ -1,18 +1,11 @@
-import React, { useEffect, useState } from 'react'
-import {
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Table,
-  TableBody,
-  Checkbox,
-  CircularProgress,
-  Box,
-} from '@mui/material'
+import React, { useEffect, useRef, useState } from 'react'
+import { TableCell, TableContainer, TableHead, TableRow, Table, TableBody, CircularProgress, Box } from '@mui/material'
 import { DragDropContext, Droppable, DroppableProvided, DropResult } from 'react-beautiful-dnd'
+import { v4 as uuidv4 } from 'uuid'
+import { MthCheckbox } from '@mth/components/MthCheckbox'
 import MthTableRow from '@mth/components/MthTable/MthTableRow'
 import { mthTableClasses } from '@mth/components/MthTable/styles'
+import { convertWidth } from '@mth/utils'
 import { MthTableProps, MthTableRowItem } from './types'
 
 const MthTable = <T extends unknown>({
@@ -20,30 +13,41 @@ const MthTable = <T extends unknown>({
   items,
   loading,
   selectable = false,
+  showSelectAll = true,
+  disableSelectAll = false,
   size = 'medium',
   checkBoxColor = 'primary',
   oddBg = true,
   borderBottom = true,
   isDraggable = false,
   onArrange,
+  onSelectionChange,
   sx = [],
 }: MthTableProps<T>): React.ReactElement => {
   const [numSelected, setNumSelected] = useState<number>(0)
   const [rowCount, setRowCount] = useState<number>(0)
   const [expandedIdx, setExpandedIdx] = useState<number | undefined>(undefined)
+  const [tableWidth, setTableWidth] = useState<number>(0)
+  const tableRef = useRef<HTMLDivElement>(null)
 
   const handleToggleCheck = (item: MthTableRowItem<T>) => {
     item.isSelected = !item.isSelected
     checkSelectedItems()
+    handleSelectionChange()
   }
   const handleToggleCheckAll = (checked: boolean) => {
     items.map((item) => (item.isSelected = checked && item.selectable !== false))
     checkSelectedItems()
+    handleSelectionChange()
   }
 
   const checkSelectedItems = () => {
     setRowCount(items?.filter((item) => item.selectable !== false).length || 0)
     setNumSelected(items?.filter((item) => item.isSelected)?.length || 0)
+  }
+
+  const handleSelectionChange = () => {
+    if (onSelectionChange) onSelectionChange(items)
   }
 
   const handleToggleExpand = (index: number) => {
@@ -52,6 +56,9 @@ const MthTable = <T extends unknown>({
 
   const reorder = (list: MthTableRowItem<T>[], startIndex: number, endIndex: number) => {
     const result = Array.from(list)
+    if (startIndex === expandedIdx) {
+      setExpandedIdx(endIndex)
+    }
     const [removed] = result.splice(startIndex, 1)
     result.splice(endIndex, 0, removed)
 
@@ -62,86 +69,97 @@ const MthTable = <T extends unknown>({
     if (!result.destination) {
       return
     }
-
     if (onArrange) {
       const newItems = reorder(items, result.source.index, result.destination.index)
       onArrange(newItems)
     }
   }
-
   useEffect(() => {
     items.map((item, idx) => {
       item.toggleExpand = () => {
         handleToggleExpand(idx)
       }
     })
+    checkSelectedItems()
   }, [items])
 
+  useEffect(() => {
+    const handleWindowResize = () => {
+      setTableWidth(tableRef.current?.clientWidth || 0)
+    }
+    handleWindowResize()
+    window.addEventListener('resize', handleWindowResize)
+
+    return () => window.removeEventListener('resize', handleWindowResize)
+  }, [])
+
   return (
-    <TableContainer>
-      <Table
-        sx={[mthTableClasses.table, ...(Array.isArray(sx) ? sx : [sx])]}
-        className={`${size} ${oddBg ? '' : 'noOddBg'} ${borderBottom && !oddBg ? '' : 'noBorderBottom'}`}
-      >
-        <TableHead>
-          <TableRow>
-            {selectable && (
-              <TableCell className='checkWrap'>
-                <Checkbox
-                  color='primary'
-                  size={size}
-                  indeterminate={numSelected > 0 && numSelected < rowCount}
-                  checked={rowCount > 0 && numSelected === rowCount}
-                  onChange={(_e, checked) => handleToggleCheckAll(checked)}
-                />
-              </TableCell>
-            )}
-            {fields.map((field) => (
-              <TableCell key={field.key}>{field.label}</TableCell>
-            ))}
-          </TableRow>
-        </TableHead>
-        <DragDropContext onDragEnd={onDragEnd}>
-          <Droppable droppableId='droppable'>
-            {(provided: DroppableProvided) => (
-              <TableBody {...provided.droppableProps} ref={provided.innerRef}>
-                {items.map((item, index) => (
-                  <MthTableRow
-                    key={index}
-                    index={index}
-                    fields={fields}
-                    item={item}
-                    expanded={expandedIdx === index}
-                    selectable={selectable}
-                    isDraggable={isDraggable}
+    <div ref={tableRef}>
+      <TableContainer>
+        <Table
+          sx={[mthTableClasses.table, ...(Array.isArray(sx) ? sx : [sx])]}
+          className={`${size} ${oddBg ? '' : 'noOddBg'} ${borderBottom && !oddBg ? '' : 'noBorderBottom'}`}
+        >
+          <TableHead>
+            <TableRow>
+              {selectable && (
+                <TableCell className='checkWrap'>
+                  <MthCheckbox
+                    color='primary'
                     size={size}
-                    checkBoxColor={checkBoxColor}
-                    handleToggleCheck={handleToggleCheck}
+                    indeterminate={numSelected > 0 && numSelected < rowCount}
+                    checked={rowCount > 0 && numSelected === rowCount}
+                    onChange={(_e, checked) => handleToggleCheckAll(checked)}
+                    sx={{ visibility: !showSelectAll ? 'hidden' : 'unset' }}
+                    disabled={disableSelectAll}
                   />
-                ))}
-                {provided.placeholder}
-              </TableBody>
-            )}
-          </Droppable>
-        </DragDropContext>
-        {!items.length && (
-          <TableRow>
-            <td colSpan={fields.length}>
-              {loading && (
-                <Box display={'flex'} justifyContent='center' py={1}>
-                  <CircularProgress />
-                </Box>
+                </TableCell>
               )}
-              {!loading && (
-                <Box className='no-data' sx={{ opacity: 0.1, py: 1 }}>
-                  Not found
-                </Box>
+              {fields.map((field) => (
+                <TableCell key={field.key} width={convertWidth(field.width || 0, tableRef.current?.clientWidth || 0)}>
+                  {field.label}
+                </TableCell>
+              ))}
+            </TableRow>
+          </TableHead>
+          <DragDropContext onDragEnd={onDragEnd}>
+            <Droppable droppableId='droppable'>
+              {(provided: DroppableProvided) => (
+                <TableBody {...provided.droppableProps} ref={provided.innerRef}>
+                  {items.map((item, index) => (
+                    <MthTableRow
+                      key={`${uuidv4()}`}
+                      tableWidth={tableWidth}
+                      index={index}
+                      fields={fields}
+                      item={item}
+                      expanded={expandedIdx === index}
+                      selectable={selectable}
+                      isDraggable={isDraggable}
+                      size={size}
+                      checkBoxColor={checkBoxColor}
+                      handleToggleCheck={handleToggleCheck}
+                    />
+                  ))}
+                  {provided.placeholder}
+                </TableBody>
               )}
-            </td>
-          </TableRow>
-        )}
-      </Table>
-    </TableContainer>
+            </Droppable>
+          </DragDropContext>
+          {!items.length && !!tableWidth && (
+            <TableRow>
+              <td colSpan={fields.length}>
+                {loading && (
+                  <Box display={'flex'} justifyContent='center' py={1}>
+                    <CircularProgress />
+                  </Box>
+                )}
+              </td>
+            </TableRow>
+          )}
+        </Table>
+      </TableContainer>
+    </div>
   )
 }
 export default MthTable

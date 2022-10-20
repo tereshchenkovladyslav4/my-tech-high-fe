@@ -45,73 +45,78 @@ const Subjects: React.FC = () => {
       label: 'Subject',
       sortable: false,
       tdClass: '',
-      width: '25%',
+      width: '20%',
     },
     {
       key: 'periods',
       label: 'Periods',
       sortable: false,
       tdClass: '',
-      width: '50%',
+      width: '55%',
     },
     {
       key: 'action',
       label: '',
       sortable: false,
       tdClass: '',
-      width: '25%',
+      // 48px is for checkbox
+      width: 'calc(25% - 48px)',
       formatter: (item: MthTableRowItem<Subject>, dragHandleProps) => {
         return (
-          <Box display={'flex'} flexDirection='row' justifyContent={'flex-end'}>
-            <Tooltip title={item.rawData.is_active ? 'Edit' : ''} placement='top'>
-              <IconButton
-                color='primary'
-                disabled={!item.rawData.is_active}
-                className='actionButton'
-                onClick={() => {
-                  setSelectedSubject(item.rawData)
-                  setShowEditModal(true)
-                }}
-              >
-                <CreateIcon />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title={item.rawData.is_active ? 'Archive' : 'Unarchive'} placement='top'>
-              <IconButton
-                className='actionButton'
-                color='primary'
-                onClick={() => {
-                  setSelectedSubject(item.rawData)
-                  if (item.rawData.is_active) {
-                    setShowArchivedModal(true)
-                  } else {
-                    setShowUnarchivedModal(true)
-                  }
-                }}
-              >
-                {item.rawData.is_active ? <SystemUpdateAltRoundedIcon /> : <CallMissedOutgoingIcon />}
-              </IconButton>
-            </Tooltip>
-            {!item.rawData.is_active && (
-              <Tooltip title='Delete' placement='top'>
-                <IconButton
-                  className='actionButton'
-                  color='primary'
-                  onClick={() => {
-                    setSelectedSubject(item.rawData)
-                    setShowDeleteModal(true)
-                  }}
-                >
-                  <DeleteForeverOutlined />
-                </IconButton>
-              </Tooltip>
-            )}
-            {item.rawData.is_active && (
-              <Tooltip title='Move' placement='top'>
-                <IconButton className='actionButton' color='primary' {...dragHandleProps}>
-                  <DehazeIcon />
-                </IconButton>
-              </Tooltip>
+          <Box display={'flex'} flexDirection='row' justifyContent={'flex-end'} flexWrap={'wrap'}>
+            {!(showArchived && item.rawData.is_active) && (
+              <>
+                <Tooltip title={item.rawData.is_active ? 'Edit' : ''} placement='top'>
+                  <IconButton
+                    color='primary'
+                    disabled={!item.rawData.is_active}
+                    className='actionButton'
+                    onClick={() => {
+                      setSelectedSubject(item.rawData)
+                      setShowEditModal(true)
+                    }}
+                  >
+                    <CreateIcon />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title={item.rawData.is_active ? 'Archive' : 'Unarchive'} placement='top'>
+                  <IconButton
+                    className='actionButton'
+                    color='primary'
+                    onClick={() => {
+                      setSelectedSubject(item.rawData)
+                      if (item.rawData.is_active) {
+                        setShowArchivedModal(true)
+                      } else {
+                        setShowUnarchivedModal(true)
+                      }
+                    }}
+                  >
+                    {item.rawData.is_active ? <SystemUpdateAltRoundedIcon /> : <CallMissedOutgoingIcon />}
+                  </IconButton>
+                </Tooltip>
+                {!item.rawData.is_active && (
+                  <Tooltip title='Delete' placement='top'>
+                    <IconButton
+                      className='actionButton'
+                      color='primary'
+                      onClick={() => {
+                        setSelectedSubject(item.rawData)
+                        setShowDeleteModal(true)
+                      }}
+                    >
+                      <DeleteForeverOutlined />
+                    </IconButton>
+                  </Tooltip>
+                )}
+                {item.rawData.is_active && (
+                  <Tooltip title='Move' placement='top'>
+                    <IconButton className='actionButton' color='primary' {...dragHandleProps}>
+                      <DehazeIcon />
+                    </IconButton>
+                  </Tooltip>
+                )}
+              </>
             )}
             <IconButton
               onClick={() => {
@@ -137,7 +142,8 @@ const Subjects: React.FC = () => {
             return `Period ${item.period} - ${item.category}`
           }).join(', ') || 'NA',
       },
-      selectable: subject.is_active,
+      selectable: !showArchived && subject.is_active,
+      isSelected: subject.allow_request,
       rawData: subject,
       expandNode: (
         <Titles schoolYearId={selectedYear} schoolYearData={selectedYearData} subject={subject} refetch={refetch} />
@@ -167,24 +173,41 @@ const Subjects: React.FC = () => {
   }
 
   const handleArrange = async (arrangedItems: MthTableRowItem<Subject>[]) => {
-    arrangedItems
-      .filter((item) => !!item.rawData.subject_id && item.rawData.is_active)
-      .map(async (item, index) => {
-        const correctPriority = index + 1
-        if (item.rawData.priority != correctPriority) {
-          item.rawData.priority = correctPriority
-          await updateSubject({
-            variables: {
-              createSubjectInput: {
-                subject_id: Number(item.rawData.subject_id),
-                priority: correctPriority,
-              },
+    arrangedItems.map(async (item, index) => {
+      const correctPriority = index + 1
+      if (item.rawData.priority != correctPriority) {
+        item.rawData = { ...item.rawData, priority: correctPriority }
+        await updateSubject({
+          variables: {
+            createSubjectInput: {
+              subject_id: Number(item.rawData.subject_id),
+              priority: correctPriority,
             },
-          })
-        }
-      })
+          },
+        })
+      }
+    })
 
     setTableData(arrangedItems)
+  }
+
+  const handleAllowRequestChange = async (newItems: MthTableRowItem<Subject>[]) => {
+    newItems.map(async (item) => {
+      const allowRequest = !!item.isSelected
+      if (item.rawData.allow_request != allowRequest) {
+        item.rawData = { ...item.rawData, allow_request: allowRequest }
+        await updateSubject({
+          variables: {
+            createSubjectInput: {
+              subject_id: Number(item.rawData.subject_id),
+              allow_request: !!item.isSelected,
+            },
+          },
+        })
+      }
+    })
+
+    setTableData(newItems)
   }
 
   useEffect(() => {
@@ -214,9 +237,11 @@ const Subjects: React.FC = () => {
             loading={loading}
             fields={fields}
             selectable={true}
+            disableSelectAll={showArchived}
             isDraggable={true}
             checkBoxColor='secondary'
             onArrange={handleArrange}
+            onSelectionChange={handleAllowRequestChange}
           />
         </Box>
 

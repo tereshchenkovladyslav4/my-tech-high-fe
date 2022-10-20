@@ -1,7 +1,8 @@
 import SignatureCanvas from 'react-signature-canvas'
+import { DropDownItem } from '@mth/components/DropDown/types'
 import { RadioGroupOption } from '@mth/components/MthRadioGroup/types'
+import { CourseType, ReduceFunds } from '@mth/enums'
 import { AssessmentType } from '@mth/screens/Admin/SiteManagement/EnrollmentSetting/TestingPreference/types'
-import { ScheduleType } from './ScheduleBuilder/types'
 
 export type HeaderComponentProps = {
   title: string
@@ -53,9 +54,11 @@ export type OptOutFormProps = {
 }
 
 export type ScheduleBuilderProps = {
-  defaultData: Array<ScheduleType>
+  studentId: number
+  selectedYear: number
   isDraftSaved: boolean
-  isWithoutSaved: boolean
+  showUnsavedModal: boolean
+  setIsChanged: (value: boolean) => void
   onWithoutSaved: (isYes: boolean) => void
   confirmSubmitted: () => void
 }
@@ -74,4 +77,72 @@ export type ScheduleProps = {
 export type DiplomaQuestionType = {
   title: string
   description: string
+}
+
+export type Course = {
+  id: number
+  provider_id: number
+  name: string
+  min_alt_grade: string
+  max_alt_grade: string
+  website: string
+  Provider: Provider
+}
+
+export type Provider = {
+  id: number
+  name: string
+  Courses: Course[]
+  AltCourses?: Course[]
+}
+
+export type Title = {
+  title_id: number
+  name: string
+  display_notification: boolean
+  subject_notification: string
+  reduce_funds: ReduceFunds
+  reduce_funds_notification: string
+  min_alt_grade: string
+  max_alt_grade: string
+  custom_built: boolean
+  custom_built_description: string
+  third_party_provider: boolean
+  CourseTypes: DropDownItem[]
+  Providers: Provider[]
+  Courses: Course[]
+  AltCourses: Course[]
+}
+
+export type Subject = {
+  subject_id: number
+  name: string
+  Titles: Title[]
+  AltTitles: Title[]
+}
+
+export type Period = {
+  id: number
+  period: string
+  message_period: string
+  notify_period: boolean
+  category: string
+  Subjects: Subject[]
+}
+
+export type ScheduleData = {
+  period: number
+  Periods: Period[]
+
+  // Selected values
+  Period?: Period
+  Subject?: Subject
+  Title?: Title
+  CourseType?: CourseType
+  Course?: Course
+
+  // TODO Should remove below fields
+  Type?: string
+  Text?: string
+  Description?: string
 }

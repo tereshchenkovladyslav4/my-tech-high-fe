@@ -49,7 +49,7 @@ export const CustomModal: FunctionComponent<CustomModalProps> = ({
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
-          width: subDescription ? '550px' : '450px',
+          width: subDescription ? '550px' : '500px',
           height: 'auto',
           bgcolor: backgroundColor,
           borderRadius: 2,

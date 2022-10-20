@@ -67,48 +67,52 @@ const Providers: React.FC = () => {
       formatter: (item: MthTableRowItem<Provider>) => {
         return (
           <Box display={'flex'} flexDirection='row' justifyContent={'flex-end'}>
-            <Tooltip title={item.rawData.is_active ? 'Edit' : ''} placement='top'>
-              <IconButton
-                color='primary'
-                disabled={!item.rawData.is_active}
-                className='actionButton'
-                onClick={() => {
-                  setSelectedProvider(item.rawData)
-                  setShowEditModal(true)
-                }}
-              >
-                <CreateIcon />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title={item.rawData.is_active ? 'Archive' : 'Unarchive'} placement='top'>
-              <IconButton
-                className='actionButton'
-                color='primary'
-                onClick={() => {
-                  setSelectedProvider(item.rawData)
-                  if (item.rawData.is_active) {
-                    setShowArchivedModal(true)
-                  } else {
-                    setShowUnarchivedModal(true)
-                  }
-                }}
-              >
-                {item.rawData.is_active ? <SystemUpdateAltRoundedIcon /> : <CallMissedOutgoingIcon />}
-              </IconButton>
-            </Tooltip>
-            {!item.rawData.is_active && (
-              <Tooltip title='Delete' placement='top'>
-                <IconButton
-                  className='actionButton'
-                  color='primary'
-                  onClick={() => {
-                    setSelectedProvider(item.rawData)
-                    setShowDeleteModal(true)
-                  }}
-                >
-                  <DeleteForeverOutlined />
-                </IconButton>
-              </Tooltip>
+            {!(showArchived && item.rawData.is_active) && (
+              <>
+                <Tooltip title={item.rawData.is_active ? 'Edit' : ''} placement='top'>
+                  <IconButton
+                    color='primary'
+                    disabled={!item.rawData.is_active}
+                    className='actionButton'
+                    onClick={() => {
+                      setSelectedProvider(item.rawData)
+                      setShowEditModal(true)
+                    }}
+                  >
+                    <CreateIcon />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title={item.rawData.is_active ? 'Archive' : 'Unarchive'} placement='top'>
+                  <IconButton
+                    className='actionButton'
+                    color='primary'
+                    onClick={() => {
+                      setSelectedProvider(item.rawData)
+                      if (item.rawData.is_active) {
+                        setShowArchivedModal(true)
+                      } else {
+                        setShowUnarchivedModal(true)
+                      }
+                    }}
+                  >
+                    {item.rawData.is_active ? <SystemUpdateAltRoundedIcon /> : <CallMissedOutgoingIcon />}
+                  </IconButton>
+                </Tooltip>
+                {!item.rawData.is_active && (
+                  <Tooltip title='Delete' placement='top'>
+                    <IconButton
+                      className='actionButton'
+                      color='primary'
+                      onClick={() => {
+                        setSelectedProvider(item.rawData)
+                        setShowDeleteModal(true)
+                      }}
+                    >
+                      <DeleteForeverOutlined />
+                    </IconButton>
+                  </Tooltip>
+                )}
+              </>
             )}
             {item.rawData.is_active && (
               <IconButton
@@ -134,7 +138,8 @@ const Providers: React.FC = () => {
         reducesFunds: REDUCE_FUNDS_ITEMS.find((x) => x.value == provider.reduce_funds)?.label || 'NA',
         multiplePeriods: provider.multiple_periods === undefined ? 'N/A' : provider.multiple_periods ? 'Yes' : 'No',
       },
-      selectable: provider.is_active,
+      selectable: !showArchived && provider.is_active,
+      isSelected: provider.allow_request,
       rawData: provider,
       expandNode: (
         <Courses schoolYearId={selectedYear} schoolYearData={selectedYearData} provider={provider} refetch={refetch} />
@@ -163,6 +168,25 @@ const Providers: React.FC = () => {
     await refetch()
   }
 
+  const handleAllowRequestChange = async (newItems: MthTableRowItem<Provider>[]) => {
+    newItems.map(async (item) => {
+      const allowRequest = !!item.isSelected
+      if (item.rawData.allow_request != allowRequest) {
+        item.rawData = { ...item.rawData, allow_request: allowRequest }
+        await updateProvider({
+          variables: {
+            createProviderInput: {
+              id: Number(item.rawData.id),
+              allow_request: !!item.isSelected,
+            },
+          },
+        })
+      }
+    })
+
+    setTableData(newItems)
+  }
+
   useEffect(() => {
     setTableData(
       (providers || []).map((item) => {
@@ -185,7 +209,15 @@ const Providers: React.FC = () => {
         />
 
         <Box>
-          <MthTable items={tableData} loading={loading} fields={fields} selectable={true} checkBoxColor='secondary' />
+          <MthTable
+            items={tableData}
+            loading={loading}
+            fields={fields}
+            selectable={true}
+            disableSelectAll={showArchived}
+            checkBoxColor='secondary'
+            onSelectionChange={handleAllowRequestChange}
+          />
         </Box>
 
         <Box sx={{ mt: '100px' }}>

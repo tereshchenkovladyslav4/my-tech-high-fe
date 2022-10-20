@@ -160,6 +160,7 @@ const Courses: React.FC<CoursesProps> = ({ schoolYearId, schoolYearData, provide
         subjects: (course.Titles || []).map((item) => item.name).join(', '),
       },
       selectable: course.is_active,
+      isSelected: course.allow_request,
       rawData: course,
     }
   }
@@ -194,6 +195,25 @@ const Courses: React.FC<CoursesProps> = ({ schoolYearId, schoolYearData, provide
     refetch()
   }
 
+  const handleAllowRequestChange = async (newItems: MthTableRowItem<Course>[]) => {
+    newItems.map(async (item) => {
+      const allowRequest = !!item.isSelected
+      if (item.rawData.allow_request != allowRequest) {
+        item.rawData = { ...item.rawData, allow_request: allowRequest }
+        await updateCourse({
+          variables: {
+            createCourseInput: {
+              id: Number(item.rawData.id),
+              allow_request: !!item.isSelected,
+            },
+          },
+        })
+      }
+    })
+
+    setTableData(newItems)
+  }
+
   useEffect(() => {
     if (provider.Courses?.length) {
       setTableData(
@@ -207,8 +227,17 @@ const Courses: React.FC<CoursesProps> = ({ schoolYearId, schoolYearData, provide
   return (
     <Box sx={{ pb: 3, textAlign: 'left', borderTop: `solid 1px ${MthColor.SYSTEM_09}` }}>
       {!!provider.Courses?.length && (
-        <Box sx={{ borderTop: `solid 1px ${MthColor.SYSTEM_09}` }}>
-          <MthTable items={tableData} loading={loading} fields={fields} selectable={true} size='small' oddBg={false} />
+        <Box>
+          <MthTable
+            items={tableData}
+            loading={loading}
+            fields={fields}
+            selectable={true}
+            showSelectAll={false}
+            size='small'
+            oddBg={false}
+            onSelectionChange={handleAllowRequestChange}
+          />
         </Box>
       )}
 

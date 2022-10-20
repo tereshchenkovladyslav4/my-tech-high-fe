@@ -57,6 +57,12 @@ const CssTextField = withStyles({
         borderColor: 'black',
       },
     },
+    '& .MuiInputLabel-root': {
+      color: '#333333',
+    },
+    '& .MuiInputLabel-root.Mui-focused': {
+      color: '#333333',
+    },
   },
 })(TextField)
 
@@ -661,6 +667,7 @@ const Periods: FunctionComponent = () => {
                         sx={{
                           mb: 1,
                           fontWeight: '700',
+                          fontSize: '1rem',
                         }}
                         className={
                           formik.touched.message_semester && !!formik.errors.message_semester ? 'Mui-error' : ''
@@ -725,6 +732,7 @@ const Periods: FunctionComponent = () => {
                     sx={{
                       mb: 1,
                       fontWeight: '700',
+                      fontSize: '1rem',
                     }}
                     className={formik.touched.message_period && !!formik.errors.message_period ? 'Mui-error' : ''}
                   >
@@ -807,6 +815,7 @@ const Periods: FunctionComponent = () => {
           subtitle='The Minimum Grade Level must be less than the Maximum Grade Level.'
           handleSubmit={() => setModalErrorGradeValidation(false)}
           canceltitle=''
+          textCenter={true}
         >
           {modalWarning === 'delete' && (
             <Typography fontWeight='600' fontSize={14} align='center'>

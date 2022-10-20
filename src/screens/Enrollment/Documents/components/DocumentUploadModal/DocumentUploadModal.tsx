@@ -70,6 +70,13 @@ export const DocumentUploadModal: DocumentUploadModalTemplateType = ({ handleMod
   }
 
   const handleFiles = (files: FileList[]) => {
+    const lastElement = files[files.length - 1]
+    const indexToDelete = deletedFiles.findIndex((object) => {
+      return object.name === lastElement.name
+    })
+    if (indexToDelete !== -1) {
+      deletedFiles.splice(indexToDelete, 1)
+    }
     for (let i = 0; i < files.length; i++) {
       const file = validateFile(files[i])
       if (file.status === true) {
@@ -171,6 +178,7 @@ export const DocumentUploadModal: DocumentUploadModalTemplateType = ({ handleMod
                 onChange={filesSelected}
                 multiple
                 accept='application/pdf, image/png, image/jpeg'
+                value={''}
               />
               Browse Files
             </label>

@@ -137,10 +137,11 @@ export const UserProfile: React.FC<UserProfileProps> = ({ handleClose, data, set
         })
       }
 
-      if (studentStatus?.activeOption && studentStatus?.activeOption == 1) {
+      if (studentStatus?.activeOption) {
         await deleteWithdrawal({
           variables: {
             studentId: studentStatus?.student_id,
+            activeOption: studentStatus?.activeOption,
           },
         })
       }

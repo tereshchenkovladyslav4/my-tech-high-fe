@@ -6,6 +6,7 @@ export const getSubjectsQuery = gql`
       subject_id
       SchoolYearId
       name
+      allow_request
       is_active
       priority
       Periods {
@@ -36,6 +37,8 @@ export const getSubjectsQuery = gql`
         custom_built_description
         subject_notification
         state_course_codes
+        allow_request
+        is_active
         is_active
       }
     }
@@ -96,6 +99,7 @@ export const getProvidersQuery = gql`
       reduce_funds_notification
       multiple_periods
       multi_periods_notification
+      allow_request
       is_active
       Periods {
         id
@@ -128,6 +132,7 @@ export const getProvidersQuery = gql`
           subject_id
           name
         }
+        allow_request
         is_active
       }
     }

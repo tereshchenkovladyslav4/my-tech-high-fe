@@ -34,7 +34,12 @@ export const WarningModal: React.FC<WarningModalProps> = ({
         </Box>
         <Box className={classes.content}>
           {showIcon && <ErrorOutlineIcon className={classes.errorOutline} />}
-          <Paragraph size='large' fontWeight='600' color={SYSTEM_01} sx={{ textAlign: textCenter ? 'center' : 'left' }}>
+          <Paragraph
+            size='large'
+            fontWeight='600'
+            color={SYSTEM_01}
+            sx={{ textAlign: textCenter ? 'center' : 'left', mt: '56px' }}
+          >
             {subtitle}
           </Paragraph>
           {children}

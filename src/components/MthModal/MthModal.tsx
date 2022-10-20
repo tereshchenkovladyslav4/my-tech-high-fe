@@ -80,7 +80,7 @@ export const MthModal: React.FC<CustomModalType> = ({
               )}
               {showBtnConfirm && (
                 <Button
-                  sx={{ ...useStyles.button, fontSize: '10px' }}
+                  sx={{ ...useStyles.button, fontSize: '12px' }}
                   color='primary'
                   variant='contained'
                   onClick={onConfirm}

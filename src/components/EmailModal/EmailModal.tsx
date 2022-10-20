@@ -84,7 +84,7 @@ export const EmailModal: FunctionComponent<EmailModalProps> = ({
   useEffect(() => {
     if (template) {
       const { subject, from, body } = template
-      setSubject(subject)
+      setSubject(setEmailBodyInfo(subject))
       setEmailFrom(from)
       if (body) {
         // console.log(body.replace(/\[PARENT\]/g, 'test'))
@@ -197,7 +197,7 @@ export const EmailModal: FunctionComponent<EmailModalProps> = ({
             fullWidth
             placeholder='Subject'
             sx={classes.subject}
-            onChange={(e) => setSubject(e.target.value)}
+            onChange={(e) => setSubject(setEmailBodyInfo(e.target.value))}
           />
           <Box sx={classes.editor}>
             <Wysiwyg.Editor

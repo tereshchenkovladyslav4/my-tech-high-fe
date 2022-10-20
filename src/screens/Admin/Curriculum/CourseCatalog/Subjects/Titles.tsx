@@ -32,51 +32,60 @@ const Titles: React.FC<TitlesProps> = ({ schoolYearId, schoolYearData, subject, 
       label: 'Title',
       sortable: false,
       tdClass: '',
+      width: '20%',
     },
     {
       key: 'grades',
       label: 'Grades',
       sortable: false,
       tdClass: '',
+      width: '8%',
     },
     {
       key: 'diplomaSeeking',
       label: 'Diploma-seeking',
       sortable: false,
       tdClass: '',
+      width: '12%',
     },
     {
       key: 'customBuilt',
       label: 'Custom-built',
       sortable: false,
       tdClass: '',
+      width: '10%',
     },
     {
       key: 'thirdParty',
       label: '3rd Party',
       sortable: false,
       tdClass: '',
+      width: '9%',
     },
     {
       key: 'splitEnrollment',
       label: 'Split Enrollment',
       sortable: false,
       tdClass: '',
+      width: '11%',
     },
     {
       key: 'semesterOnly',
       label: 'Semester Only',
       sortable: false,
       tdClass: '',
+      width: '11%',
     },
     {
       key: 'action',
       label: '',
       sortable: false,
       tdClass: '',
+      // 48px is for checkbox
+      width: 'calc(19% - 48px)',
       formatter: (item: MthTableRowItem<Title>) => {
         return (
-          <Box display={'flex'} flexDirection='row' justifyContent={'flex-end'}>
+          <Box display={'flex'} flexDirection='row' justifyContent={'flex-end'} flexWrap={'wrap'}>
             <Tooltip title={item.rawData.is_active ? 'Edit' : ''} placement='top'>
               <IconButton
                 className='actionButton'
@@ -160,6 +169,7 @@ const Titles: React.FC<TitlesProps> = ({ schoolYearId, schoolYearData, subject, 
         semesterOnly: title.software_reimbursement === undefined ? 'N/A' : title.software_reimbursement ? 'Yes' : 'No',
       },
       selectable: title.is_active,
+      isSelected: title.allow_request,
       rawData: title,
     }
   }
@@ -194,6 +204,25 @@ const Titles: React.FC<TitlesProps> = ({ schoolYearId, schoolYearData, subject, 
     refetch()
   }
 
+  const handleAllowRequestChange = async (newItems: MthTableRowItem<Title>[]) => {
+    newItems.map(async (item) => {
+      const allowRequest = !!item.isSelected
+      if (item.rawData.allow_request != allowRequest) {
+        item.rawData = { ...item.rawData, allow_request: allowRequest }
+        await updateTitle({
+          variables: {
+            createTitleInput: {
+              title_id: Number(item.rawData.title_id),
+              allow_request: !!item.isSelected,
+            },
+          },
+        })
+      }
+    })
+
+    setTableData(newItems)
+  }
+
   useEffect(() => {
     if (subject.Titles?.length) {
       setTableData(
@@ -208,7 +237,16 @@ const Titles: React.FC<TitlesProps> = ({ schoolYearId, schoolYearData, subject, 
     <Box sx={{ pb: 3, textAlign: 'left' }}>
       {!!subject.Titles?.length && (
         <Box sx={{ borderTop: `solid 1px ${MthColor.SYSTEM_09}` }}>
-          <MthTable items={tableData} loading={loading} fields={fields} selectable={true} size='small' oddBg={false} />
+          <MthTable
+            items={tableData}
+            loading={loading}
+            fields={fields}
+            selectable={true}
+            showSelectAll={false}
+            size='small'
+            oddBg={false}
+            onSelectionChange={handleAllowRequestChange}
+          />
         </Box>
       )}
 

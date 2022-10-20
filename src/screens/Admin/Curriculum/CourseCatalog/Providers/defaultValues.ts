@@ -10,6 +10,7 @@ export const defaultProviderFormData: Provider = {
   reduce_funds_notification: '',
   multiple_periods: false,
   multi_periods_notification: '',
+  allow_request: false,
   is_active: false,
   Periods: [],
   Courses: [],
@@ -37,6 +38,7 @@ export const defaultCourseFormData: Course = {
   price: 0,
   subject_id: 0,
   Titles: [],
+  allow_request: false,
   is_active: true,
   TitleIds: [],
 }

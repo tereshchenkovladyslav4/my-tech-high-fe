@@ -11,6 +11,7 @@ import { DropDownItem } from '@mth/components/DropDown/types'
 import { MthTitle } from '@mth/enums'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { GRADES } from '../../../../../utils/constants'
+import { countries } from '../../../../../utils/countries'
 import { toOrdinalSuffix } from '../../../../../utils/stringHelpers'
 import { AddQuestionModal } from '../components/AddQuestionModal/AddQuestionModal'
 import { CustomModal } from '../components/CustomModal/CustomModals'
@@ -344,6 +345,8 @@ export const EnrollmentQuestions: React.FC = () => {
       selectedQuestion = defaultQuestions.filter((d) => d.label == selected)[0]
       if (selectedQuestion.slug === 'address_county_id') {
         options = counties
+      } else if (selectedQuestion.slug === 'address_country_id') {
+        options = countries
       } else if (selectedQuestion.slug === 'program_year') {
         options = schoolYears
       } else if (selectedQuestion.slug === 'packet_school_district') {

@@ -4,6 +4,7 @@ import { Subject, Title } from '@mth/screens/Admin/Curriculum/CourseCatalog/Subj
 export const defaultSubjectFormData: Subject = {
   subject_id: 0,
   name: '',
+  allow_request: false,
   is_active: true,
   priority: 0,
   Periods: [],
@@ -32,5 +33,6 @@ export const defaultTitleFormData: Title = {
   subject_notification: '',
   state_course_codes: '',
   course_id: '',
+  allow_request: false,
   is_active: true,
 }

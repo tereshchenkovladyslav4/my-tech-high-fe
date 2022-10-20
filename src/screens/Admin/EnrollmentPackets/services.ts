@@ -68,9 +68,12 @@ export const getEnrollmentPacketsQuery = gql`
             school_year_id
           }
           applications {
+            midyear_application
             school_year {
               school_year_id
               schedule
+              date_begin
+              date_end
             }
           }
           parent {

@@ -19,7 +19,6 @@ export const Contact: ContactTemplateType = ({ id, questions }) => {
   const { tab, setTab, setVisitedTabs } = useContext(TabContext)
   const { setPacketId, disabled } = useContext(EnrollmentContext)
   const { profile, students } = me as UserInfo
-
   const student = students.find((s) => s.student_id === id)
 
   const classes = useStyles

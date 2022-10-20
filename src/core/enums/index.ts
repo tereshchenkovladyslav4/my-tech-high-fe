@@ -1,5 +1,6 @@
 export * from './applicant-status.enum'
 export * from './color.enum'
+export * from './course-type.enum'
 export * from './diploma-seeking-path.enum'
 export * from './packet-status.enum'
 export * from './reduce-funds.enum'

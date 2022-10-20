@@ -148,9 +148,10 @@ const TitleForm: React.FC<TitleFormProps> = ({ schoolYearData, subjectsItems, gr
                   <CurrencyTextField
                     label='Price'
                     variant='outlined'
-                    value={values?.price || ''}
+                    value={`${values?.price || ''}`}
                     currencySymbol='$'
                     outputFormat='string'
+                    digitGroupSeparator={''}
                     onChange={(event: { target: { value: string } }) => {
                       setFieldValue('price', Number(event?.target?.value) || '')
                     }}

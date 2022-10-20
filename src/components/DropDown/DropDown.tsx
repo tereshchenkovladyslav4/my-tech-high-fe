@@ -84,7 +84,12 @@ export const DropDown: React.FC<DropDownProps> = ({
                 IconComponent={ExpandMoreIcon}
                 disableUnderline
                 onChange={(e) => handleChange(e.target?.value)}
-                label='Select Year'
+                displayEmpty
+                renderValue={
+                  !!value || value === 0
+                    ? undefined
+                    : () => <span style={{ color: MthColor.BLUE_GRDIENT }}>{placeholder}</span>
+                }
                 sx={{ ...dropdownClasses.borderNone }}
               >
                 {renderDropDownItem}

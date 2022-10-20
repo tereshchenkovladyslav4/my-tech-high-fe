@@ -10,6 +10,10 @@ export const mthTableClasses = {
     '& td': {
       fontSize: '14px',
       fontWeight: '600',
+      border: 'none',
+    },
+    '& > tbody > tr:nth-child(2n + 0) td': {
+      backgroundColor: 'white !important',
     },
     '& .actionButton': {
       width: '32px',
@@ -42,10 +46,11 @@ export const mthTableClasses = {
     },
     '&.noOddBg .MuiTableRow-root .MuiTableCell-root': {
       background: 'none !important',
+      borderBottom: `1px solid ${MthColor.SYSTEM_09}`,
     },
-    '& .MuiTableCell-root': {
-      borderBottomColor: MthColor.SYSTEM_09,
-    },
+    // '& .MuiTableCell-root': {
+    //   borderBottomColor: MthColor.SYSTEM_09,
+    // },
     '&.noBorderBottom > .MuiTableBody-root, &.noBorderBottom > .MuiTableHead-root': {
       '& > .MuiTableRow-root > .MuiTableCell-root': {
         borderBottom: 'none',

@@ -222,6 +222,10 @@ export const StudentFilters: React.FC<StudentFiltersProps> = ({
       value: StudentStatus.APPLIED,
     },
     {
+      label: 'Accepted',
+      value: StudentStatus.ACCEPTED,
+    },
+    {
       label: 'Pending',
       value: StudentStatus.PENDING,
     },
@@ -329,6 +333,13 @@ export const StudentFilters: React.FC<StudentFiltersProps> = ({
         },
         {
           label:
+            studentStatusData?.status == 6
+              ? `Accepted (${moment(studentStatusData?.date).format('MM/DD/YYYY')})`
+              : 'Accepted',
+          value: StudentStatus.ACCEPTED,
+        },
+        {
+          label:
             studentStatusData?.status == 0
               ? `Pending (${moment(studentStatusData?.date).format('MM/DD/YYYY')})`
               : 'Pending',
@@ -362,6 +373,10 @@ export const StudentFilters: React.FC<StudentFiltersProps> = ({
           value: StudentStatus.APPLIED,
         },
         {
+          label: 'Accepted',
+          value: StudentStatus.ACCEPTED,
+        },
+        {
           label: 'Pending',
           value: StudentStatus.PENDING,
         },
@@ -385,6 +400,10 @@ export const StudentFilters: React.FC<StudentFiltersProps> = ({
         {
           label: 'Applied',
           value: StudentStatus.APPLIED,
+        },
+        {
+          label: 'Accepted',
+          value: StudentStatus.ACCEPTED,
         },
         {
           label: 'Pending',

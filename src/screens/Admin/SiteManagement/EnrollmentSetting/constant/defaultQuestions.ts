@@ -138,6 +138,12 @@ export const defaultQuestions = [
     validation: 0,
   },
   {
+    label: 'Country',
+    type: 'Drop Down',
+    slug: 'address_country_id',
+    validation: 0,
+  },
+  {
     label: 'Parent Email Confirmation',
     type: 'Text Field',
     slug: 'parent_emailConfirm',

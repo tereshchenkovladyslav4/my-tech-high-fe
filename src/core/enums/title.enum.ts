@@ -22,6 +22,7 @@ export enum MthTitle {
   OPTION_1 = 'Option 1',
   ADD_OPTION = 'Add Option',
   UNSAVED_TITLE = 'Unsaved Changes',
+  NOTIFICATION = 'Notification',
   UNSAVED_DESCRIPTION = 'Are you sure you want to leave without saving changes?',
   PROGRAM_SETTINGS = 'Program Settings',
   SCHEDULES = 'Schedules',
@@ -39,4 +40,5 @@ export enum MthTitle {
   STEP_OPT_OUT_FORM = 'Opt',
   STEP_DIPLOMA_SEEKING = 'Diploma',
   STEP_SCHEDULE_BUILDER = 'Schedule',
+  REDUCES_FUNDS = 'Reduces Funds',
 }

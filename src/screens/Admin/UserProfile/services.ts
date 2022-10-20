@@ -217,8 +217,8 @@ export const UpdateStudentMutation = gql`
 `
 
 export const DeleteWithdrawal = gql`
-  mutation DeleteWithdrawal($studentId: Int!) {
-    deleteWithdrawal(student_id: $studentId)
+  mutation DeleteWithdrawal($activeOption: Int!, $studentId: Int!) {
+    deleteWithdrawal(active_option: $activeOption, student_id: $studentId)
   }
 `
 export const getSchoolYearsByRegionId = gql`

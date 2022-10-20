@@ -1,8 +1,8 @@
 import { DropDownItem } from '@mth/components/DropDown/types'
 import { CheckBoxListVM } from '@mth/components/MthCheckboxList/MthCheckboxList'
 import { DiplomaSeekingPath, ReduceFunds } from '@mth/enums'
-import { SchoolYearRespnoseType } from '@mth/hooks'
-import { ScheduleBuilder, Title } from '@mth/screens/Admin/Curriculum/CourseCatalog/Subjects/types'
+import { ScheduleBuilder, SchoolYearRespnoseType } from '@mth/hooks'
+import { Title } from '@mth/screens/Admin/Curriculum/CourseCatalog/Subjects/types'
 
 export enum EventType {
   ARCHIVE = 'archive',
@@ -20,6 +20,7 @@ export type Provider = {
   reduce_funds_notification?: string
   multiple_periods: boolean | undefined
   multi_periods_notification?: string
+  allow_request: boolean
   is_active: boolean
   Periods: Period[]
   Courses?: Course[]
@@ -49,6 +50,7 @@ export type Course = {
   reduce_funds_notification?: string
   subject_id: number
   Titles: Title[]
+  allow_request: boolean
   is_active: boolean
   // Temp fields
   TitleIds?: string[]

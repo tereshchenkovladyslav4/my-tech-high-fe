@@ -1,8 +1,8 @@
-import { FunctionComponent } from 'react'
+import { FunctionComponent, ReactNode } from 'react'
 
 type WarningModalProps = {
   title: string
-  subtitle: string
+  subtitle: string | ReactNode
   btntitle?: string
   handleSubmit: () => void
   showIcon?: boolean

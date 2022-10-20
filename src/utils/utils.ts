@@ -159,3 +159,9 @@ export const getPreviousSchoolYearId = (
   }
   return previousYearId
 }
+
+export const extractAllNumFromStr = (str: string): Array<number> => {
+  const nums = str.match(/\d+/g)
+  if (nums) return nums.map(Number)
+  else return []
+}

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { CssBaseline } from '@mui/material'
 import ThemeProvider from '@mui/system/ThemeProvider'
+import moment from 'moment-timezone'
 import { BrowserRouter as Router } from 'react-router-dom'
 import { RecoilRoot } from 'recoil'
 import WebFont from 'webfontloader'
@@ -12,6 +13,7 @@ import { ProfileProvider } from './providers/ProfileProvider/ProfileProvider'
 import { TabContext, TabInfo, UserContext, UserInfo } from './providers/UserContext/UserProvider'
 import { Root } from './root/Root'
 import { theme } from './utils/theme'
+moment.tz.setDefault('MST')
 
 declare global {
   interface ImportMeta {

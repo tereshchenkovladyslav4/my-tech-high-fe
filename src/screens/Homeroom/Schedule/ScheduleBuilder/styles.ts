@@ -1,10 +1,12 @@
-export const scheduleBuilderClassess = {
+import { MthColor } from '@mth/enums'
+
+export const scheduleBuilderClasses = {
   main: {
+    position: 'relative',
     width: '100%',
     '& .MuiSelect-select': {
       color: '#4145FF !important',
     },
-    display: 'flex',
     paddingLeft: 2,
   },
   customTable: {
@@ -12,6 +14,9 @@ export const scheduleBuilderClassess = {
     '& thead th': {
       fontWeight: 'bold',
       fontSize: '16px',
+    },
+    '& tbody tr': {
+      paddingBottom: '24px',
     },
     '& tbody tr td': {
       backgroundColor: '#FFFFFF !important',
@@ -42,11 +47,19 @@ export const scheduleBuilderClassess = {
     margin: 0,
     justifyContent: 'center',
     fontWeight: 'bold',
+    position: 'absolute',
+    top: '0',
+    right: '0',
   },
   labelColor: {
     color: '#4145FF !important',
   },
-  selectStyle: {
-    borderBottom: 'none',
+  nestedDropdownButton: {
+    border: 'none',
+    display: 'flex',
+    justifyContent: 'space-between',
+    width: '100%',
+    padding: '4px 4px 4px 0px',
+    '&:hover': { border: 'none', background: MthColor.WHITE },
   },
 }

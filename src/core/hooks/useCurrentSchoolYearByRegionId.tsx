@@ -22,6 +22,7 @@ export const useCurrentSchoolYearByRegionId = (
     schedule: boolean
     diploma_seeking: boolean
     testing_preference: boolean
+    school_year_id: number
   }
   error: ApolloError | undefined
 } => {

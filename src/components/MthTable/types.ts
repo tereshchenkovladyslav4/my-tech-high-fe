@@ -1,6 +1,7 @@
 import { ReactNode } from 'react'
 import { SxProps, Theme } from '@mui/material/styles'
 import { DraggableProvidedDragHandleProps } from 'react-beautiful-dnd'
+
 export type MthTableField<T> = {
   key: string
   label?: string
@@ -18,7 +19,6 @@ export type MthTableRowItem<T> = {
   rawData: T
   selectable?: boolean
   isSelected?: boolean
-  isExpanded?: boolean
   toggleExpand?: () => void
   expandNode?: string | number | ReactNode
 }
@@ -28,16 +28,20 @@ export type MthTableProps<T> = {
   items: MthTableRowItem<T>[]
   loading?: boolean
   selectable?: boolean
+  showSelectAll?: boolean
+  disableSelectAll?: boolean
   size?: 'medium' | 'small'
   checkBoxColor?: 'primary' | 'secondary'
   oddBg?: boolean
   borderBottom?: boolean
   isDraggable?: boolean
   onArrange?: (arrangedItems: MthTableRowItem<T>[]) => void
+  onSelectionChange?: (arrangedItems: MthTableRowItem<T>[]) => void
   sx?: SxProps<Theme>
 }
 
 export type MthTableRowProps<T> = {
+  tableWidth: number
   fields: MthTableField<T>[]
   index: number
   item: MthTableRowItem<T>

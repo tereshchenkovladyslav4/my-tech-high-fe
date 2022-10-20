@@ -20,7 +20,7 @@ import {
 import { MthRoute, MthTitle, OPT_TYPE } from '@mth/enums'
 import { diplomaAnswerGql, diplomaQuestionForStudent, submitDiplomaAnswerGql } from '@mth/graphql/queries/diploma'
 import { getSignatureInfoByStudentId } from '@mth/graphql/queries/user'
-import { useAssessmentsBySchoolYearId, useQuestionBySlugAndRegion } from '@mth/hooks'
+import { useAssessmentsBySchoolYearId, useCurrentSchoolYearByRegionId, useQuestionBySlugAndRegion } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { getSignatureFile } from '@mth/screens/Admin/EnrollmentPackets/services'
 import { AssessmentType } from '@mth/screens/Admin/SiteManagement/EnrollmentSetting/TestingPreference/types'
@@ -30,43 +30,15 @@ import { DiplomaSeeking } from './DiplomaSeeking'
 import { HeaderComponent } from './HeaderComponent'
 import { OptOutForm } from './OptOutForm'
 import { ScheduleBuilder } from './ScheduleBuilder'
-import { ScheduleType } from './ScheduleBuilder/types'
 import { StudentInfo } from './StudentInfo'
 import { scheduleClassess } from './styles'
 import { TestingPreference } from './TestingPreference'
 import { ScheduleProps, StudentAssessment, StudentScheduleInfo, DiplomaQuestionType } from './types'
 
 const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
-  const defaultScheduleBuilderData: Array<ScheduleType> = [
-    {
-      Period: '01',
-      Subject: 'Homeroom',
-      Type: 'My Tech High Direct',
-      Description: 'Weekly Learning Logs and Homeroom Resources',
-      Text: 'Homeroom',
-    },
-    {
-      Period: '02',
-      Subject: 'Homeroom',
-      Type: 'My Tech High Direct',
-      Description: 'Weekly Learning Logs and Homeroom Resources',
-      Text: null,
-    },
-  ]
-  const defaultSchoolYear = [
-    {
-      label: '2019-20',
-      value: 1,
-    },
-    {
-      label: '2020-21',
-      value: 2,
-    },
-  ]
   const { me } = useContext(UserContext)
   const history = useHistory()
-  const students = me?.students
-  const student = students?.filter((item) => Number(item.student_id) == Number(studentId))?.at(0)
+  const student = me?.students?.filter((item) => Number(item.student_id) == Number(studentId))?.at(0)
   const [studentInfo, setStudentInfo] = useState<StudentScheduleInfo>()
   const [step, setStep] = useState<string>(MthTitle.STEP_TESTING_PREFERENCE)
   const [availableAssessments, setAvailableAssessments] = useState<AssessmentType[]>([])
@@ -83,6 +55,7 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
   const [signatureFileUrl, setSignatureFileUrl] = useState<string>('')
   const [activeTestingPreference, setActiveTestingPreference] = useState<boolean>(false)
   const [activeDiplomaSeeking, setActiveDiplomaSeeking] = useState<boolean>(false)
+  const [schoolYearItems, setSchoolYearItems] = useState<DropDownItem[]>([])
   const [diplomaQuestion, setDiplomaQuestion] = useState<DiplomaQuestionType>({
     title: '',
     description: '',
@@ -100,12 +73,13 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
       value: false,
     },
   ])
-
   const [isDraftSaved, setIsDraftSaved] = useState<boolean>(false)
-  const [isWithoutSaved, setIsWithoutSaved] = useState<boolean>(false)
-  const [scheduleBuilderData] = useState<Array<ScheduleType>>(defaultScheduleBuilderData)
-  const [schoolYearDropdownItems] = useState<Array<DropDownItem>>(defaultSchoolYear)
-  const [selectedYear, setSelectedYear] = useState<string | number>(defaultSchoolYear[0].value)
+  const [isChanged, setIsChanged] = useState<boolean>(false)
+  const [showUnsavedModal, setShowUnsavedModal] = useState<boolean>(false)
+  const [selectedYear, setSelectedYear] = useState<number>(student?.current_school_year_status?.school_year_id || 0)
+  const { data: currentSchoolYear, loading: currentSchoolYearLoading } = useCurrentSchoolYearByRegionId(
+    me?.userRegion?.at(-1)?.region_id || 0,
+  )
 
   const { loading: diplomaLoading, data: diplomaData } = useQuery(diplomaQuestionForStudent, {
     variables: {
@@ -281,7 +255,7 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
       if (activeDiplomaSeeking) setStep(MthTitle.STEP_DIPLOMA_SEEKING)
       else setStep(MthTitle.STEP_OPT_OUT_FORM)
     }
-    setIsWithoutSaved(false)
+    setShowUnsavedModal(false)
   }
 
   const handleNextStep = () => {
@@ -332,8 +306,8 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
         else history.push(MthRoute.DASHBOARD)
         break
       case MthTitle.SCHEDULE:
-        if (defaultScheduleBuilderData !== scheduleBuilderData) {
-          setIsWithoutSaved(true)
+        if (isChanged) {
+          setShowUnsavedModal(true)
         } else {
           if (activeDiplomaSeeking) setStep(MthTitle.STEP_DIPLOMA_SEEKING)
           else setStep(MthTitle.STEP_OPT_OUT_FORM)
@@ -450,6 +424,19 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
     }
   }, [diplomaAnswerLoading, diplomaAnswerData])
 
+  useEffect(() => {
+    if (!currentSchoolYearLoading && currentSchoolYear) {
+      setSchoolYearItems([
+        {
+          value: currentSchoolYear.school_year_id,
+          label: `${moment(currentSchoolYear.date_begin).format('YYYY')}-${moment(currentSchoolYear.date_end).format(
+            'YY',
+          )}`,
+        },
+      ])
+    }
+  }, [currentSchoolYear, currentSchoolYearLoading])
+
   return (
     <Card sx={{ margin: 4, padding: 4 }}>
       <Box sx={scheduleClassess.container}>
@@ -457,7 +444,7 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
           <HeaderComponent title={MthTitle.SCHEDULE} handleBack={handleBack} />
           {step == MthTitle.STEP_SCHEDULE_BUILDER && (
             <DropDown
-              dropDownItems={schoolYearDropdownItems}
+              dropDownItems={schoolYearItems}
               placeholder={'Select Year'}
               defaultValue={selectedYear}
               borderNone={true}
@@ -506,9 +493,11 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
         )}
         {step == MthTitle.STEP_SCHEDULE_BUILDER && (
           <ScheduleBuilder
-            defaultData={defaultScheduleBuilderData}
+            studentId={studentId}
+            selectedYear={selectedYear}
             isDraftSaved={isDraftSaved}
-            isWithoutSaved={isWithoutSaved}
+            showUnsavedModal={showUnsavedModal}
+            setIsChanged={setIsChanged}
             onWithoutSaved={handleWithoutSaved}
             confirmSubmitted={() => setIsDraftSaved(false)}
           />

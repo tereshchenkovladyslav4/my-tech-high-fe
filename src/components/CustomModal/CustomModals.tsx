@@ -1,4 +1,4 @@
-import React, { FunctionComponent, ReactNode } from 'react'
+import React, { ReactNode } from 'react'
 import InfoIcon from '@mui/icons-material/InfoOutlined'
 import { Box, Button, Modal, Typography } from '@mui/material'
 
@@ -11,9 +11,11 @@ export type CustomModalType = {
   confirmStr?: string
   cancelStr?: string
   backgroundColor?: string
+  showIcon?: boolean
+  showCancel?: boolean
 }
 
-export const CustomModal: FunctionComponent<CustomModalType> = ({
+export const CustomModal: React.FC<CustomModalType> = ({
   title,
   description,
   subDescription,
@@ -22,6 +24,8 @@ export const CustomModal: FunctionComponent<CustomModalType> = ({
   confirmStr = 'Confirm',
   cancelStr = 'Cancel',
   backgroundColor = '#EEF4F8',
+  showIcon = true,
+  showCancel = true,
 }) => {
   return (
     <Modal
@@ -49,16 +53,25 @@ export const CustomModal: FunctionComponent<CustomModalType> = ({
           <Typography variant='h5' fontWeight={'bold'}>
             {title}
           </Typography>
-          <InfoIcon sx={{ fontSize: 50, margin: '20px 0px' }} />
-          <Typography>{description}</Typography>
+          {showIcon && <InfoIcon sx={{ fontSize: 50, margin: '20px 0px' }} />}
+          {showIcon ? <Typography>{description}</Typography> : <Typography marginTop={4}>{description}</Typography>}
           {subDescription && <Typography>{subDescription}</Typography>}
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: '30px', gap: '20px' }}>
-            <Button
-              sx={{ width: '160px', height: '36px', background: '#E7E7E7', borderRadius: '50px' }}
-              onClick={onClose}
-            >
-              {cancelStr}
-            </Button>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: showCancel ? 'space-between' : 'center',
+              marginTop: '30px',
+              gap: '20px',
+            }}
+          >
+            {showCancel && (
+              <Button
+                sx={{ width: '160px', height: '36px', background: '#E7E7E7', borderRadius: '50px' }}
+                onClick={onClose}
+              >
+                {cancelStr}
+              </Button>
+            )}
             <Button
               sx={{
                 width: '160px',

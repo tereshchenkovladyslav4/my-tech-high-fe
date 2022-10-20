@@ -66,6 +66,7 @@ export const AddNewQuestionModal: React.FC<AddNewQuestionModalProps> = ({
         'packet_secondary_contact_first',
         'packet_secondary_contact_last',
         'address_county_id',
+        'address_country_id',
         'address_zip',
         'address_city',
         'address_street',

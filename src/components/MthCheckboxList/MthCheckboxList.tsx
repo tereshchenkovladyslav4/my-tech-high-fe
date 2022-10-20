@@ -63,7 +63,7 @@ const MthCheckboxList: React.FC<MthCheckboxListProps> = ({
         return (
           <FormControlLabel
             key={index}
-            sx={{ height: 30 }}
+            sx={{ height: 30, width: 'max-content' }}
             control={
               <Checkbox checked={values.includes(list.value)} value={list.value} onChange={handleChangeValues} />
             }
@@ -103,7 +103,7 @@ const MthCheckboxList: React.FC<MthCheckboxListProps> = ({
       )}
       {haveSelectAll && !!checkboxLists?.length && (
         <FormControlLabel
-          sx={{ height: 30 }}
+          sx={{ height: 30, width: 'max-content' }}
           control={<Checkbox value='all' checked={values.includes('all')} onChange={handleChangeAll} />}
           label={
             <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>

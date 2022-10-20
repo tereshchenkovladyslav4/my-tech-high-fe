@@ -139,6 +139,7 @@ export const getMeQuery = gql`
             zip
             state
             county_id
+            country_id
           }
         }
         grade_levels {

@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useState } from 'react'
 import { Modal, Box } from '@mui/material'
-import { MthTitle } from '@mth/enums'
+import { MthColor, MthTitle } from '@mth/enums'
 import { CustomModal } from '../../screens/Admin/SiteManagement/EnrollmentSetting/components/CustomModal/CustomModals'
 import { UserProfile } from '../../screens/Admin/UserProfile/UserProfile'
 import { ProfileContext } from './ProfileContext'
@@ -53,6 +53,9 @@ export const ProfileProvider: FunctionComponent = ({ children }) => {
         <CustomModal
           title={MthTitle.UNSAVED_TITLE}
           description={MthTitle.UNSAVED_DESCRIPTION}
+          cancelStr='Cancel'
+          confirmStr='Yes'
+          backgroundColor={MthColor.WHITE}
           onClose={() => {
             setShowConfirmModal(false)
           }}

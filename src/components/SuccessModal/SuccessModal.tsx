@@ -25,9 +25,13 @@ export const SuccessModal: WarningModalTemplateType = ({
         </Box>
         <Box sx={classes.content as Record<string, unknown>}>
           {showIcon && <CheckCircleOutlineIcon style={classes.errorOutline} />}
-          <Paragraph size='large' color={SYSTEM_01} textAlign='center'>
-            {subtitle}
-          </Paragraph>
+          {subtitle && typeof subtitle == 'string' ? (
+            <Paragraph size='large' color={SYSTEM_01} textAlign='center'>
+              {subtitle}
+            </Paragraph>
+          ) : (
+            <>{subtitle}</>
+          )}
           <Button variant='contained' disableElevation sx={classes.submitButton} onClick={handleSubmit}>
             {btntitle}
           </Button>

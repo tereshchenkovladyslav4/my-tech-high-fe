@@ -23,7 +23,7 @@ const MthCheckbox = (props: MthCheckboxProps): React.ReactElement => {
         '&:not(.Mui-disabled) .MuiSvgIcon-root': {
           color: props.color == 'secondary' ? MthColor.MTHBLUE : MthColor.SYSTEM_01,
         },
-        '&.Mui-disabled': {
+        '&.Mui-disabled:not(.Mui-checked)': {
           position: 'relative',
           '&:before': {
             content: '""',
@@ -36,6 +36,11 @@ const MthCheckbox = (props: MthCheckboxProps): React.ReactElement => {
           },
           '& svg': {
             opacity: 0,
+          },
+        },
+        '&.Mui-checked.Mui-disabled': {
+          '& svg': {
+            opacity: 0.5,
           },
         },
         ...props.sx,

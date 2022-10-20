@@ -13,6 +13,7 @@ export enum EventType {
 export type Subject = {
   subject_id: number
   name: string
+  allow_request: boolean
   is_active: boolean
   priority: number
   Periods: Period[]
@@ -56,6 +57,7 @@ export type Title = {
   custom_built_description?: string
   subject_notification?: string
   state_course_codes: string
+  allow_request: boolean
   is_active: boolean
 
   //  Temp fields

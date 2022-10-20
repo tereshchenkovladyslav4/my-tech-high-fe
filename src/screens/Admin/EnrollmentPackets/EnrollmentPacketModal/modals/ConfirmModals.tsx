@@ -2,6 +2,7 @@ import React, { useState, useContext, FunctionComponent } from 'react'
 import { useMutation } from '@apollo/client'
 import { Alert } from '@mui/material'
 import { useFormContext } from 'react-hook-form'
+import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { EmailModal } from '../../../../../components/EmailModal/EmailModal'
 import { StandardResponseOption } from '../../../../../components/EmailModal/StandardReponses/types'
 import { sendEmailMutation } from '../../services'
@@ -16,6 +17,7 @@ type PacketConfirmModalsProps = {
 }
 export const PacketConfirmModals: FunctionComponent<PacketConfirmModalsProps> = ({ packet, refetch, submitForm }) => {
   const student = useContext(studentContext)
+  const { me } = useContext(UserContext)
   const { watch, setValue } = useFormContext<EnrollmentPacketFormType>()
   const [emailTemplate, setEmailTemplate] = useState(null)
   const [sendPacketEmail] = useMutation(sendEmailMutation)
@@ -45,8 +47,12 @@ export const PacketConfirmModals: FunctionComponent<PacketConfirmModalsProps> = 
   }
 
   const setEmailBodyInfo = (body: string) => {
-    const yearbegin = new Date(student.grade_levels[0].school_year.date_begin).getFullYear().toString()
-    const yearend = new Date(student.grade_levels[0].school_year.date_end).getFullYear().toString()
+    const yearbegin = new Date(student.applications[0].school_year.date_begin).getFullYear().toString()
+    const yearend = new Date(student.applications[0].school_year.date_end).getFullYear().toString()
+
+    const yearText = student?.applications[0].midyear_application
+      ? `${yearbegin}-${yearend.substring(2, 4)}` + ' Mid-year'
+      : `${yearbegin}-${yearend.substring(2, 4)}`
 
     let url = window.location.href
     url = url.substring(0, url.indexOf('/', url.indexOf('//') + 2))
@@ -65,8 +71,8 @@ export const PacketConfirmModals: FunctionComponent<PacketConfirmModalsProps> = 
       .replace(/\[STUDENT\]/g, student.person.first_name)
       .replace(/\[PARENT\]/g, student.parent.person.first_name)
       .replace(/\[STUDENT_GRADE_LEVEL\]/g, garde_level || ' ')
-      .replace(/\[YEAR\]/g, `${yearbegin}-${yearend.substring(2, 4)}`)
-      .replace(/\[APPLICATION_YEAR\]/g, `${yearbegin}-${yearend.substring(2, 4)}`)
+      .replace(/\[YEAR\]/g, yearText)
+      .replace(/\[APPLICATION_YEAR\]/g, yearText)
   }
 
   const handleEmailSend = (subject: string, body: string, options: StandardResponseOption) => {
@@ -86,6 +92,8 @@ export const PacketConfirmModals: FunctionComponent<PacketConfirmModalsProps> = 
                 ? emailTemplate?.from
                 : null,
             bcc: emailTemplate && emailTemplate?.bcc ? emailTemplate?.bcc : null,
+            template_name: options.type === 'AGE_ISSUE' ? 'Age Issue' : 'Missing Information',
+            region_id: me?.selectedRegionId,
           },
         },
       })
