@@ -1,6 +1,6 @@
 export const useStyles = {
   appBar: {
-    backgroundColor: 'white',
+    backgroundColor: '#ececff',
     height: 83,
     paddingX: 5,
   },

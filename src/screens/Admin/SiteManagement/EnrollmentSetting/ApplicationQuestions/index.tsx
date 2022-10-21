@@ -11,6 +11,7 @@ import BGSVG from '@mth/assets/ApplicationBG.svg'
 import { DropDownItem } from '@mth/components/DropDown/types'
 import { QUESTION_TYPE } from '@mth/components/QuestionItem/QuestionItemProps'
 import { MthTitle } from '@mth/enums'
+import { getSchoolDistrictsByRegionId } from '@mth/graphql/queries/school-district'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { GRADES } from '../../../../../utils/constants'
 import { countries } from '../../../../../utils/countries'
@@ -30,7 +31,6 @@ import {
   deleteQuestionGql,
   getCountiesByRegionId,
   getActiveSchoolYearsByRegionId,
-  getSchoolDistrictsByRegionId,
 } from './services'
 import { useStyles } from './styles'
 import { ApplicationQuestion, initQuestions } from './types'

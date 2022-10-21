@@ -94,6 +94,7 @@ export type CourseFormProps = {
   schoolYearId: number
   schoolYearData?: SchoolYearRespnoseType
   providerItems: DropDownItem[]
+  providers: Provider[]
   gradeOptions: DropDownItem[]
   scheduleBuilder?: ScheduleBuilder
 }

@@ -48,9 +48,10 @@ const emptyStateHandler = (showEmpty: boolean, windowDimensions: number) => {
 
 type TodoProps = {
   schoolYears: SchoolYearType[]
+  setIsLoading: (isLoading: boolean) => void
 }
 
-export const ToDo: FunctionComponent<TodoProps> = ({ schoolYears }) => {
+export const ToDo: FunctionComponent<TodoProps> = ({ schoolYears, setIsLoading }) => {
   const cardRef = useRef(null)
 
   const [showEmpty, setShowEmpty] = useState(false)
@@ -90,7 +91,7 @@ export const ToDo: FunctionComponent<TodoProps> = ({ schoolYears }) => {
                 paddingX: { xs: 2, md: 0 },
               }}
             >
-              <TodoList schoolYears={schoolYears} handleShowEmpty={handleShowEmpty} />
+              <TodoList schoolYears={schoolYears} handleShowEmpty={handleShowEmpty} setIsLoading={setIsLoading} />
             </Box>
           ) : (
             <EmptyStateWrapper title='Congrats!' subtitle='You are all caught up.' />

@@ -122,6 +122,7 @@ export interface EventFormData {
   description: string
   grades: string[]
   hasRSVP: boolean
+  users: string[]
 }
 
 export type EventFormProps = {

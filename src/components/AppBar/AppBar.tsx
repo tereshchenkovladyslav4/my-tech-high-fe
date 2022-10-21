@@ -56,15 +56,15 @@ export const AppBar: FunctionComponent = () => {
   const classes = useStyles
   const sliderRef = useRef()
 
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
-  const [theIcon, setTheIcon] = React.useState({
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+  const [theIcon, setTheIcon] = useState({
     type: '',
     name: '',
   })
   const openStudentList = Boolean(anchorEl)
 
   const { me } = useContext(UserContext)
-  const [openMobileSide, setOpenMobileSide] = React.useState(false)
+  const [openMobileSide, setOpenMobileSide] = useState(false)
 
   //const { students } = me
   const [, setStudents] = useState<StudentType[]>([])
@@ -467,6 +467,23 @@ export const AppBar: FunctionComponent = () => {
     })
   }
 
+  useEffect(() => {
+    window.onpopstate = () => {
+      const endpoint = window.location.pathname
+      if (endpoint === '') {
+        setTheIcon({
+          type: 'side',
+          name: 'dashboard',
+        })
+      } else {
+        setTheIcon({
+          type: 'side',
+          name: endpoint.substring(1),
+        })
+      }
+    }
+  })
+
   const getTheIcon = () => {
     if (location.pathname.indexOf('homeroom/enrollment') !== -1) {
       return <PeopleAltOutlinedIcon />
@@ -607,16 +624,8 @@ export const AppBar: FunctionComponent = () => {
                 borderRadius: 'unset',
                 borderBottom: 'solid 1.5px blue',
               }}
-              // size="large"
-              // edge="end"
-              // aria-label="account of current user"
-              // aria-controls={menuId}
-              // aria-haspopup="true"
-              // onClick={handleProfileMenuOpen}
-              // color="inherit"
             >
               {getTheIcon()}
-              {/* <BackupTableIcon /> */}
             </IconButton>
           </Box>
         </Toolbar>

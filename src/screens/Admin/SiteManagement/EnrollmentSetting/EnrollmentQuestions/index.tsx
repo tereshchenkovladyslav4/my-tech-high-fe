@@ -9,6 +9,7 @@ import moment from 'moment'
 import { useHistory } from 'react-router-dom'
 import { DropDownItem } from '@mth/components/DropDown/types'
 import { MthTitle } from '@mth/enums'
+import { getSchoolDistrictsByRegionId } from '@mth/graphql/queries/school-district'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { GRADES } from '../../../../../utils/constants'
 import { countries } from '../../../../../utils/countries'
@@ -35,7 +36,6 @@ import {
   deleteQuestionGroupGql,
   getCountiesByRegionId,
   getActiveSchoolYearsByRegionId,
-  getSchoolDistrictsByRegionId,
   getSpecialEdsByRegionId,
 } from './services'
 import { useStyles } from './styles'

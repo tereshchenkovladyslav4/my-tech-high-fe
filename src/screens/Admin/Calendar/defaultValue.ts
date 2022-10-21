@@ -33,6 +33,7 @@ export const defaultEventFormData: EventFormData = {
   description: '',
   grades: [],
   hasRSVP: false,
+  users: [],
 }
 
 export const defaultUserList: CheckBoxListVM[] = [

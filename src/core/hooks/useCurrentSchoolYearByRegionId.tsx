@@ -23,6 +23,11 @@ export const useCurrentSchoolYearByRegionId = (
     diploma_seeking: boolean
     testing_preference: boolean
     school_year_id: number
+    ScheduleBuilder: {
+      split_enrollment: boolean
+      always_unlock: boolean
+      max_num_periods: number
+    }
   }
   error: ApolloError | undefined
 } => {

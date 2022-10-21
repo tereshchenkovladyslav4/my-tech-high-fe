@@ -4,12 +4,12 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { Box, Button, Card, Checkbox, FormControlLabel, Grid } from '@mui/material'
 import { map, capitalize } from 'lodash'
 import { useHistory } from 'react-router-dom'
+import { getSchoolDistrictsByRegionId } from '@mth/graphql/queries/school-district'
 import { Paragraph } from '../../../../components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
 import { UserContext } from '../../../../providers/UserContext/UserProvider'
 import { BUTTON_LINEAR_GRADIENT, MTHBLUE, RED_GRADIENT, GRADES, GRADE_GROUPS } from '../../../../utils/constants'
 import { toOrdinalSuffix } from '../../../../utils/stringHelpers'
-import { getSchoolDistrictsByRegionId } from '../../SiteManagement/EnrollmentSetting/ApplicationQuestions/services'
 import { FiltersProps, SchoolPartner, YEAR_STATUS, SchoolDistrictType, FilterVM, OptionType } from '../type'
 
 export const Filters: FunctionComponent<FiltersProps> = ({

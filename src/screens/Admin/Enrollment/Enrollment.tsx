@@ -50,7 +50,7 @@ export const Enrollment: React.FC = () => {
         <AdminEnrollmentCard title='School of Enrollment' link={SCHOOL_ENROLLMENT} img={schoolAssignmentsImg} />
       </Grid>
       <Grid item xs={4}>
-        <AdminEnrollmentCard title='Withdraws' link={WITHDRAWAL} img={withdrawlsImg} showTitle={true} />
+        <AdminEnrollmentCard title='Withdrawals' link={WITHDRAWAL} img={withdrawlsImg} showTitle={true} />
       </Grid>
       <Grid item xs={4}>
         <AdminEnrollmentCard

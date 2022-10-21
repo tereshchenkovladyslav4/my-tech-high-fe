@@ -71,16 +71,6 @@ export const getActiveSchoolYearsByRegionId = gql`
   }
 `
 
-export const getSchoolDistrictsByRegionId = gql`
-  query SchoolDistrict($regionId: ID!) {
-    schoolDistrict(id: $regionId) {
-      id
-      school_district_name
-      Region_id
-    }
-  }
-`
-
 export const getAllRegion = gql`
   query Regions {
     regions {

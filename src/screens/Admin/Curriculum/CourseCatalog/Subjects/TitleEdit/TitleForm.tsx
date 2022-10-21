@@ -20,8 +20,8 @@ const TitleForm: React.FC<TitleFormProps> = ({ schoolYearData, subjectsItems, gr
   const validateGrades = (field: string, newValue: string) => {
     const newValues = { ...values, [field]: newValue }
     const grades = [
-      newValues?.min_grade,
-      newValues?.max_grade,
+      newValues?.min_grade || Number.NEGATIVE_INFINITY.toString(),
+      newValues?.max_grade || Number.POSITIVE_INFINITY.toString(),
       newValues?.min_alt_grade || Number.NEGATIVE_INFINITY.toString(),
       newValues?.max_alt_grade || Number.POSITIVE_INFINITY.toString(),
     ].map((item) => (item?.startsWith('K') ? 0 : +item))

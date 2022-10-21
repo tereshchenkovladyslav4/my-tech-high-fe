@@ -1,8 +1,8 @@
 import { gql } from '@apollo/client'
 
 export const getStudentPeriodsQuery = gql`
-  query StudentPeriods($studentId: ID!, $schoolYearId: ID!) {
-    studentPeriods(studentId: $studentId, schoolYearId: $schoolYearId) {
+  query StudentPeriods($studentId: ID!, $schoolYearId: ID!, $diplomaSeekingPath: String) {
+    studentPeriods(studentId: $studentId, schoolYearId: $schoolYearId, diplomaSeekingPath: $diplomaSeekingPath) {
       id
       period
       category

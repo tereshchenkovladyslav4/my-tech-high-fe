@@ -31,52 +31,23 @@ export const Student: StudentTemplateType = ({ student, schoolYears, showNotific
     return s3URL + person.photo
   }
   useEffect(() => {
-    const { applications, packets } = student
-    const currApplication = applications?.at(0)
-    const currPacket = packets?.at(0)
-
-    const enrollmentLink = `${MthRoute.HOMEROOM + MthRoute.ENROLLMENT}/${student.student_id}`
-    const homeroomLink = `${MthRoute.HOMEROOM}/${student.student_id}`
-    const scheduleBuilderLink = `${MthRoute.HOMEROOM + MthRoute.SUBMIT_SCHEDULE}/${student.student_id}`
-
-    if (currApplication && currApplication?.status === ApplicantStatus.SUBMITTED) {
-      setLink(MthRoute.HOMEROOM)
-    } else if (
-      currApplication &&
-      currApplication?.status === ApplicantStatus.ACCEPTED &&
-      packets &&
-      currPacket?.status === PacketStatus.NOT_STARTED
-    ) {
-      setLink(enrollmentLink)
-    } else if (
-      currApplication &&
-      currApplication?.status === ApplicantStatus.ACCEPTED &&
-      currPacket &&
-      currPacket?.status === PacketStatus.STARTED
-    ) {
-      setLink(enrollmentLink)
-    } else if (
-      !showNotification &&
-      currApplication &&
-      currApplication?.status === ApplicantStatus.ACCEPTED &&
-      ((currPacket && currPacket?.status === PacketStatus.SUBMITTED) ||
-        currPacket?.status === PacketStatus.MISSING_INFO ||
-        currPacket?.status === PacketStatus.ACCEPTED ||
-        currPacket?.status === PacketStatus.RESUBMITTED)
-    ) {
-      setLink(homeroomLink)
-    } else if (showNotification?.phrase === 'Submit Schedule') {
-      setLink(scheduleBuilderLink)
-    }
-    progress()
-  }, [student, showNotification])
-
-  const progress = () => {
     const { applications, packets, status } = student
     const currApplication = applications?.at(0)
     const currPacket = packets?.at(0)
     const studentStatus = status?.at(0)?.status
 
+    const enrollmentLink = `${MthRoute.HOMEROOM + MthRoute.ENROLLMENT}/${student.student_id}`
+    const homeroomLink = `${MthRoute.HOMEROOM}/${student.student_id}`
+    const scheduleBuilderLink = `${MthRoute.HOMEROOM + MthRoute.SUBMIT_SCHEDULE}/${student.student_id}`
+    //  setCircleData({
+    //    mobileColor: MthColor.BUTTON_LINEAR_GRADIENT,
+    //    mobileText: 'Resubmit Now',
+    //    color: MthColor.MTHORANGE,
+    //    progress: 50,
+    //    type: 'Please Resubmit Enrollment Packet',
+    //    icon: <ErrorOutlineIcon sx={{ color: MthColor.MTHORANGE, marginTop: 2, cursor: 'pointer' }} />,
+    //  })
+    //}
     if (studentStatus === StudentStatus.WITHDRAWN) {
       setCircleData({
         mobileColor: MthColor.BUTTON_LINEAR_GRADIENT,
@@ -89,6 +60,7 @@ export const Student: StudentTemplateType = ({ student, schoolYears, showNotific
         ),
       })
     } else if (currApplication && currApplication?.status === ApplicantStatus.SUBMITTED) {
+      setLink(MthRoute.HOMEROOM)
       setCircleData({
         mobileColor: MthColor.MTHGREEN,
         mobileText: 'Application Pending Approval',
@@ -111,47 +83,42 @@ export const Student: StudentTemplateType = ({ student, schoolYears, showNotific
       currApplication &&
       currApplication?.status === ApplicantStatus.ACCEPTED &&
       packets &&
-      (currPacket?.status === PacketStatus.NOT_STARTED || currPacket?.status === PacketStatus.MISSING_INFO)
+      currPacket?.status === PacketStatus.NOT_STARTED
     ) {
-      if (currPacket?.status === PacketStatus.NOT_STARTED) {
-        setCircleData({
-          mobileColor: MthColor.BUTTON_LINEAR_GRADIENT,
-          mobileText: 'Submit Now',
-          progress: 50,
-          color: MthColor.MTHORANGE,
-          type: 'Please Submit an Enrollment Packet',
-          icon: <ErrorOutlineIcon sx={{ color: MthColor.MTHORANGE, marginTop: 2, cursor: 'pointer' }} />,
-        })
-      } else {
-        setCircleData({
-          mobileColor: MthColor.BUTTON_LINEAR_GRADIENT,
-          mobileText: 'Resubmit Now',
-          color: MthColor.MTHORANGE,
-          progress: 50,
-          type: 'Please Resubmit Enrollment Packet',
-          icon: <ErrorOutlineIcon sx={{ color: MthColor.MTHORANGE, marginTop: 2, cursor: 'pointer' }} />,
-        })
-      }
-    } else if (
-      currApplication &&
-      currApplication?.status === ApplicantStatus.ACCEPTED &&
-      currPacket &&
-      currPacket?.status === PacketStatus.STARTED
-    ) {
+      setLink(enrollmentLink)
       setCircleData({
         mobileColor: MthColor.BUTTON_LINEAR_GRADIENT,
         mobileText: 'Submit Now',
-        color: MthColor.MTHORANGE,
         progress: 50,
-        type: 'Please Submit Enrollment Packet',
+        color: MthColor.MTHORANGE,
+        type: 'Please Submit an Enrollment Packet',
         icon: <ErrorOutlineIcon sx={{ color: MthColor.MTHORANGE, marginTop: 2, cursor: 'pointer' }} />,
       })
     } else if (
       currApplication &&
       currApplication?.status === ApplicantStatus.ACCEPTED &&
       currPacket &&
-      (currPacket?.status === PacketStatus.SUBMITTED || currPacket?.status === PacketStatus.RESUBMITTED)
+      currPacket?.status === PacketStatus.STARTED
     ) {
+      setLink(enrollmentLink)
+      setCircleData({
+        mobileColor: MthColor.BUTTON_LINEAR_GRADIENT,
+        mobileText: 'Submit Now',
+        progress: 50,
+        color: MthColor.MTHORANGE,
+        type: 'Please Submit an Enrollment Packet',
+        icon: <ErrorOutlineIcon sx={{ color: MthColor.MTHORANGE, marginTop: 2, cursor: 'pointer' }} />,
+      })
+    } else if (
+      !showNotification &&
+      currApplication &&
+      currApplication?.status === ApplicantStatus.ACCEPTED &&
+      ((currPacket && currPacket?.status === PacketStatus.SUBMITTED) ||
+        currPacket?.status === PacketStatus.MISSING_INFO ||
+        currPacket?.status === PacketStatus.ACCEPTED ||
+        currPacket?.status === PacketStatus.RESUBMITTED)
+    ) {
+      setLink(homeroomLink)
       setCircleData({
         mobileColor: MthColor.MTHGREEN,
         mobileText: 'Enrollment Pending Approval',
@@ -160,7 +127,8 @@ export const Student: StudentTemplateType = ({ student, schoolYears, showNotific
         type: 'Enrollment Packet Pending Approval',
         icon: <ScheduleIcon sx={{ color: MthColor.MTHGREEN, marginTop: 2, cursor: 'pointer' }} />,
       })
-    } else if (showNotification) {
+    } else if (showNotification?.phrase === 'Submit Schedule') {
+      setLink(scheduleBuilderLink)
       setCircleData({
         mobileColor: MthColor.MTHORANGE,
         mobileText: showNotification.phrase,
@@ -172,7 +140,7 @@ export const Student: StudentTemplateType = ({ student, schoolYears, showNotific
     } else {
       setShowToolTip(false)
     }
-  }
+  }, [student, showNotification])
 
   const gradeText =
     student?.grade_levels?.at(-1)?.grade_level !== 'Kindergarten'

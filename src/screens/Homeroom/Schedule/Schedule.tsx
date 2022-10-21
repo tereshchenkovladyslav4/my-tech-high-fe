@@ -17,7 +17,7 @@ import {
   DEFUALT_DIPLOMA_QUESTION_TITLE,
   SNOWPACK_PUBLIC_S3_URL,
 } from '@mth/constants'
-import { MthRoute, MthTitle, OPT_TYPE } from '@mth/enums'
+import { DiplomaSeekingPath, MthRoute, MthTitle, OPT_TYPE } from '@mth/enums'
 import { diplomaAnswerGql, diplomaQuestionForStudent, submitDiplomaAnswerGql } from '@mth/graphql/queries/diploma'
 import { getSignatureInfoByStudentId } from '@mth/graphql/queries/user'
 import { useAssessmentsBySchoolYearId, useCurrentSchoolYearByRegionId, useQuestionBySlugAndRegion } from '@mth/hooks'
@@ -56,6 +56,7 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
   const [activeTestingPreference, setActiveTestingPreference] = useState<boolean>(false)
   const [activeDiplomaSeeking, setActiveDiplomaSeeking] = useState<boolean>(false)
   const [schoolYearItems, setSchoolYearItems] = useState<DropDownItem[]>([])
+  const [splitEnrollment, setSplitEnrollment] = useState<boolean>(false)
   const [diplomaQuestion, setDiplomaQuestion] = useState<DiplomaQuestionType>({
     title: '',
     description: '',
@@ -73,6 +74,7 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
       value: false,
     },
   ])
+  const [diplomaSeekingPathStatus, setDiplomaSeekingPathStatus] = useState<DiplomaSeekingPath>(DiplomaSeekingPath.BOTH)
   const [isDraftSaved, setIsDraftSaved] = useState<boolean>(false)
   const [isChanged, setIsChanged] = useState<boolean>(false)
   const [showUnsavedModal, setShowUnsavedModal] = useState<boolean>(false)
@@ -264,14 +266,14 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
         if (!isInvalid()) {
           if (hasReasonRequired()) setStep(MthTitle.STEP_OPT_OUT_FORM)
           else if (activeDiplomaSeeking) setStep(MthTitle.STEP_DIPLOMA_SEEKING)
-          else setStep('')
+          else setStep(MthTitle.STEP_SCHEDULE_BUILDER)
         }
         break
       case MthTitle.STEP_OPT_OUT_FORM:
         handleSaveSignatureFile()
         if (!isInvalid()) {
           if (activeDiplomaSeeking) setStep(MthTitle.STEP_DIPLOMA_SEEKING)
-          else setStep('')
+          else setStep(MthTitle.STEP_SCHEDULE_BUILDER)
         }
         break
       case MthTitle.STEP_DIPLOMA_SEEKING:
@@ -437,6 +439,25 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
     }
   }, [diplomaAnswerLoading, diplomaAnswerData])
 
+  useEffect(() => {
+    if (!currentSchoolYearLoading && currentSchoolYear) {
+      setSchoolYearItems([
+        {
+          value: currentSchoolYear.school_year_id,
+          label: `${moment(currentSchoolYear.date_begin).format('YYYY')}-${moment(currentSchoolYear.date_end).format(
+            'YY',
+          )}`,
+        },
+      ])
+      setSplitEnrollment(currentSchoolYear?.ScheduleBuilder?.split_enrollment)
+    }
+  }, [currentSchoolYear, currentSchoolYearLoading])
+
+  useEffect(() => {
+    if (diplomaOptions[0].value) setDiplomaSeekingPathStatus(DiplomaSeekingPath.DIPLOMA_SEEKING)
+    if (diplomaOptions[1].value) setDiplomaSeekingPathStatus(DiplomaSeekingPath.NON_DIPLOMA_SEEKING)
+  }, [diplomaOptions])
+
   return (
     <Card sx={{ margin: 4, padding: 4 }}>
       <Box sx={scheduleClassess.container}>
@@ -496,7 +517,9 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
             studentId={studentId}
             selectedYear={selectedYear}
             isDraftSaved={isDraftSaved}
+            splitEnrollment={splitEnrollment}
             showUnsavedModal={showUnsavedModal}
+            diplomaSeekingPath={diplomaSeekingPathStatus}
             setIsChanged={setIsChanged}
             onWithoutSaved={handleWithoutSaved}
             confirmSubmitted={() => setIsDraftSaved(false)}

@@ -46,6 +46,7 @@ const AddEvent: React.FC<AddEventProps> = ({ selectedEvent }) => {
     grades: yup.array().min(1, 'At least one Grade Level must be selected'),
     allDay: yup.boolean().nullable(),
     hasRSVP: yup.boolean().nullable(),
+    users: yup.array().min(1, 'At least one User must be selected'),
   })
 
   const handleCancelClick = () => {
@@ -68,7 +69,7 @@ const AddEvent: React.FC<AddEventProps> = ({ selectedEvent }) => {
           filter_program_year: JSON.stringify(programYears),
           filter_provider: JSON.stringify(providers),
           filter_school_of_enrollment: JSON.stringify(schoolofEnrollments),
-          filter_users: JSON.stringify(users),
+          filter_users: JSON.stringify(values.users),
           has_rsvp: values?.hasRSVP,
         },
       },
@@ -76,7 +77,6 @@ const AddEvent: React.FC<AddEventProps> = ({ selectedEvent }) => {
     setIsChanged(false)
     history.push(MthRoute.CALENDAR)
   }
-
   useEffect(() => {
     setInitialValues({
       title: event?.title,
@@ -88,6 +88,7 @@ const AddEvent: React.FC<AddEventProps> = ({ selectedEvent }) => {
       description: event?.description,
       grades: grades,
       hasRSVP: !!event?.hasRSVP,
+      users: users,
     })
   }, [event, grades])
 

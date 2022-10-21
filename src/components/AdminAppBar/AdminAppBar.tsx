@@ -19,7 +19,7 @@ import debounce from 'lodash.debounce'
 import { useLocation } from 'react-router-dom'
 import Slider from 'react-slick'
 import { useRecoilState } from 'recoil'
-import { MthTitle } from '@mth/enums'
+import { MthColor, MthTitle } from '@mth/enums'
 import { getWindowDimension } from '@mth/utils'
 import { ProfileContext } from '../../providers/ProfileProvider/ProfileContext'
 import { RegionType } from '../../providers/UserContext/types'
@@ -283,7 +283,7 @@ export const AdminAppBar: FunctionComponent = () => {
           <Grid item xs={3} sx={{ position: 'relative' }}>
             <OutlinedInput
               size='small'
-              style={{ fontSize: 12 }}
+              style={{ fontSize: 12, background: MthColor.WHITE }}
               fullWidth
               placeholder='Search Person, Email, or Phone Number'
               onBlur={() => {

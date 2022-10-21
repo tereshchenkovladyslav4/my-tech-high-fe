@@ -14,6 +14,12 @@ export const editSubjectClasses = {
     '& .MuiOutlinedInput-root': {
       '&.Mui-focused fieldset': {
         borderWidth: '1px',
+        borderColor: MthColor.SYSTEM_06,
+      },
+      '&.Mui-error': {
+        '&.Mui-focused fieldset': {
+          borderColor: MthColor.ERROR_RED,
+        },
       },
     },
   },

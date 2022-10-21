@@ -424,7 +424,7 @@ const Periods: FunctionComponent = () => {
             )}
             <IconButton onClick={() => handleArchiveModal(item)} color='primary' sx={{ mr: item.archived ? 0 : 5 }}>
               <Tooltip title={item.archived ? 'Unarchive' : 'Archive'} placement='top'>
-                {item.archived ? <CallMissedOutgoingIcon sx={{ color: '#A3A3A4' }} /> : <SystemUpdateAltRoundedIcon />}
+                {item.archived ? <CallMissedOutgoingIcon /> : <SystemUpdateAltRoundedIcon />}
               </Tooltip>
             </IconButton>
 
@@ -443,7 +443,14 @@ const Periods: FunctionComponent = () => {
 
   return (
     <Box sx={{ p: 4, textAlign: 'left' }}>
-      <Card sx={{ p: 4, borderRadius: '12px', boxShadow: '0px 0px 35px rgba(0, 0, 0, 0.05)' }}>
+      <Card
+        sx={{
+          p: 4,
+          borderRadius: '12px',
+          boxShadow: '0px 0px 35px rgba(0, 0, 0, 0.05)',
+          minHeight: 'calc(100vh - 195px)',
+        }}
+      >
         <Box sx={{ mb: 4 }}>
           <PageHeader title='Periods' to='/curriculum/course-catalog'>
             <DropDown
@@ -459,7 +466,15 @@ const Periods: FunctionComponent = () => {
         <Filter query={query} setValue={setFilter} />
 
         <Box>
-          <CustomTable items={items} loading={loading || yearLoading} fields={fields} striped size='lg' borderedLeft />
+          <CustomTable
+            items={items}
+            loading={loading || yearLoading}
+            fields={fields}
+            striped
+            size='lg'
+            isEmptyText={false}
+            borderedLeft
+          />
         </Box>
 
         <Box sx={{ mt: 4, textAlign: 'left' }}>

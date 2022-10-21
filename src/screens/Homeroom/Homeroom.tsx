@@ -14,6 +14,7 @@ export const Homeroom: React.FC = () => {
   const { me } = useContext(UserContext)
   const region_id = me?.userRegion?.at(-1)?.region_id
   const [schoolYears, setSchoolYears] = useState<SchoolYearType[]>([])
+  const [isLoading, setIsLoading] = useState<boolean>(true)
 
   const schoolYearData = useQuery(getSchoolYearsByRegionId, {
     variables: {
@@ -40,10 +41,10 @@ export const Homeroom: React.FC = () => {
       {isExact && (
         <Grid container padding={4} rowSpacing={4}>
           <Grid item xs={12}>
-            <Students schoolYears={schoolYears} />
+            <Students isLoading={isLoading} schoolYears={schoolYears} />
           </Grid>
           <Grid item xs={12}>
-            {schoolYears.length > 0 && <ToDo schoolYears={schoolYears} />}
+            {schoolYears.length > 0 && <ToDo schoolYears={schoolYears} setIsLoading={setIsLoading} />}
           </Grid>
         </Grid>
       )}

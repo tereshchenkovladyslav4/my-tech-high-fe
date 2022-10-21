@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useContext, useEffect, useState } from 'react'
 import { useQuery } from '@apollo/client'
-import { Box, Button, Card, Divider } from '@mui/material'
+import { Box, Button, Card, CircularProgress, Divider } from '@mui/material'
 import { filter, map } from 'lodash'
 import { ToDoItem } from '@mth/screens/Dashboard/ToDoList/components/ToDoListItem/types'
 import { getTodoList } from '@mth/screens/Dashboard/ToDoList/service'
@@ -14,8 +14,9 @@ import { Student } from './Student/Student'
 
 type StudentsProps = {
   schoolYears: SchoolYearType[]
+  isLoading: boolean
 }
-export const Students: FunctionComponent<StudentsProps> = ({ schoolYears }) => {
+export const Students: FunctionComponent<StudentsProps> = ({ schoolYears, isLoading }) => {
   const { me } = useContext(UserContext)
   const { students } = me as UserInfo
 
@@ -52,7 +53,9 @@ export const Students: FunctionComponent<StudentsProps> = ({ schoolYears }) => {
 
   const renderInactiveStudents = () =>
     map(inactiveStudents, (student) => {
-      const showNotification = findStudent(student.student_id).includes(true)
+      const showNotification = findStudent(student.student_id)
+        .filter((item) => item !== false)
+        .at(0) as ToDoItem
       return (
         <Student
           withdrawn={true}
@@ -86,7 +89,7 @@ export const Students: FunctionComponent<StudentsProps> = ({ schoolYears }) => {
     }
   }, [loading, data])
 
-  return (
+  return !isLoading ? (
     <>
       <Card sx={{ paddingY: { xs: 0, sm: 4 }, paddingX: { xs: 0, sm: 8 } }}>
         <Box display='flex' flexDirection='column'>
@@ -169,5 +172,25 @@ export const Students: FunctionComponent<StudentsProps> = ({ schoolYears }) => {
         </Box>
       )}
     </>
+  ) : (
+    <Card sx={{ paddingY: { xs: 0, sm: 4 }, paddingX: { xs: 0, sm: 8 } }}>
+      <Box display='flex' flexDirection='column'>
+        <Title textAlign='left' sx={{ marginLeft: { xs: 2, sm: 0 }, marginTop: { xs: 2, sm: 0 } }}>
+          Students
+        </Title>
+        <Box
+          display='flex'
+          flexDirection={{ xs: 'column', md: 'row' }}
+          justifyContent='center'
+          sx={{
+            paddingY: { xs: 2, md: 10 },
+            paddingX: { xs: 2, md: 8 },
+          }}
+          flexWrap='wrap'
+        >
+          <CircularProgress color='inherit' />
+        </Box>
+      </Box>
+    </Card>
   )
 }

@@ -28,9 +28,6 @@ export const scheduleBuilderClasses = {
       color: 'rgba(0, 0, 0, 0.87)',
       fontWeight: 'normal',
     },
-    '& svg': {
-      color: '#4145FF !important',
-    },
   },
   tableContent: {
     fontSize: '14px',

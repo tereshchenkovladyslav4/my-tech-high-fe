@@ -9,7 +9,7 @@ import { ToDoListItem } from '../ToDoListItem/ToDoListItem'
 import { ToDoCategory, ToDoItem } from '../ToDoListItem/types'
 import { TodoListTemplateType } from './types'
 
-export const TodoList: TodoListTemplateType = ({ handleShowEmpty, schoolYears }) => {
+export const TodoList: TodoListTemplateType = ({ handleShowEmpty, schoolYears, setIsLoading }) => {
   const [todoList, setTodoList] = useState<ToDoItem[]>([])
   const [paginatinLimit] = useState<number>(25)
   const [skip] = useState<number>()
@@ -60,10 +60,12 @@ export const TodoList: TodoListTemplateType = ({ handleShowEmpty, schoolYears })
           }
         }
       })
-
       if (todoListCount == 0) {
         handleShowEmpty(true)
       }
+    }
+    if (!loading) {
+      setIsLoading && setIsLoading(false)
     }
   }, [loading])
 

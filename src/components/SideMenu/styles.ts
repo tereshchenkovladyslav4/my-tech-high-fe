@@ -4,7 +4,7 @@ export const useStyles = {
     width: '100%',
     maxWidth: 260,
     minWidth: 260,
-    bgcolor: '#fff',
+    bgcolor: '#ececff',
     height: '100vh',
     boxShadow: '0px 0px 36px rgba(0, 0, 0, 0.04)',
   },

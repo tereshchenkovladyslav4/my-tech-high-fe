@@ -20,11 +20,11 @@ import _ from 'lodash'
 import moment from 'moment'
 import SignaturePad from 'react-signature-pad-wrapper'
 import { SortableHandle } from 'react-sortable-hoc'
+import { getSchoolDistrictsByRegionId } from '@mth/graphql/queries/school-district'
 import { UserContext } from '../../providers/UserContext/UserProvider'
 import {
   getActiveSchoolYearsByRegionId,
   getCountiesByRegionId,
-  getSchoolDistrictsByRegionId,
   getAllRegion,
 } from '../../screens/Admin/SiteManagement/EnrollmentSetting/EnrollmentQuestions/services'
 import { SYSTEM_05, SYSTEM_07, GRADES, RED } from '../../utils/constants'

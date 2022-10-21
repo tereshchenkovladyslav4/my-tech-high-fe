@@ -4,6 +4,7 @@ import { SchoolYearType } from '../../../../../utils/utils.types'
 type TodoListProps = {
   handleShowEmpty: (isEmpty: boolean) => void
   schoolYears: SchoolYearType[]
+  setIsLoading?: (isLoading: boolean) => void
 }
 
 export type TodoListTemplateType = FunctionComponent<TodoListProps>

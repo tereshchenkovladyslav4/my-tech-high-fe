@@ -67,15 +67,14 @@ const ProviderForm: React.FC<ProviderFormProps> = ({ setIsChanged, periodsItems 
             </Grid>
             <Grid item xs={6}>
               <TextField
-                name='price'
                 label='Price'
                 placeholder='Entry'
                 InputProps={{ startAdornment: <InputAdornment position='start'>$</InputAdornment> }}
                 type='number'
                 fullWidth
                 value={values?.price || ''}
-                onChange={(e) => {
-                  setFieldValue('price', Number(e.target.value) || '')
+                onChange={(event: { target: { value: string } }) => {
+                  setFieldValue('price', Number(event?.target?.value) || '')
                 }}
                 error={touched.price && !!errors.price}
                 disabled={values?.reduce_funds === ReduceFunds.NONE}

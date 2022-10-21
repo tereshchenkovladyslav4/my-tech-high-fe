@@ -27,7 +27,7 @@ const CourseEdit: React.FC<CourseEditProps> = ({
   const [initialValues, setInitialValues] = useState<Course>({ ...defaultCourseFormData, provider_id: providerId })
   const [submitSave, {}] = useMutation(createOrUpdateCourseMutation)
 
-  const { checkBoxItems: providerItems } = useProviders(schoolYearId)
+  const { checkBoxItems: providerItems, providers } = useProviders(schoolYearId)
   const { gradeList: gradeOptions } = useProgramYearListBySchoolYearId(schoolYearId)
   const { scheduleBuilder } = useScheduleBuilder(me?.selectedRegionId)
 
@@ -166,6 +166,7 @@ const CourseEdit: React.FC<CourseEditProps> = ({
                 schoolYearId={schoolYearId}
                 schoolYearData={schoolYearData}
                 providerItems={providerItems}
+                providers={providers}
                 gradeOptions={gradeOptions}
                 scheduleBuilder={scheduleBuilder}
               />

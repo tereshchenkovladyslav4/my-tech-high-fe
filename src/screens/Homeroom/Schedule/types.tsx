@@ -1,8 +1,10 @@
 import SignatureCanvas from 'react-signature-canvas'
 import { DropDownItem } from '@mth/components/DropDown/types'
 import { RadioGroupOption } from '@mth/components/MthRadioGroup/types'
-import { CourseType, ReduceFunds } from '@mth/enums'
+import { CourseType, DiplomaSeekingPath, ReduceFunds } from '@mth/enums'
 import { AssessmentType } from '@mth/screens/Admin/SiteManagement/EnrollmentSetting/TestingPreference/types'
+import { OnSiteSplitEnrollment } from './ScheduleBuilder/OnSiteSplitEnrollmentEdit/types'
+import { ThirdPartyProvider } from './ScheduleBuilder/ThirdPartyProviderEdit/types'
 
 export type HeaderComponentProps = {
   title: string
@@ -58,6 +60,8 @@ export type ScheduleBuilderProps = {
   selectedYear: number
   isDraftSaved: boolean
   showUnsavedModal: boolean
+  splitEnrollment: boolean
+  diplomaSeekingPath: DiplomaSeekingPath
   setIsChanged: (value: boolean) => void
   onWithoutSaved: (isYes: boolean) => void
   confirmSubmitted: () => void
@@ -146,6 +150,8 @@ export type ScheduleData = {
   Title?: Title
   CourseType?: CourseType
   Course?: Course
+  ThirdParty?: ThirdPartyProvider
+  OnSiteSplitEnrollment?: OnSiteSplitEnrollment
   CustomBuiltDescription?: string
 
   // TODO Should remove below fields

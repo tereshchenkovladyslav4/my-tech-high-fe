@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { useQuery } from '@apollo/client'
+import ModeEditIcon from '@mui/icons-material/ModeEdit'
 import QuestionMarkIcon from '@mui/icons-material/QuestionMark'
-import { Grid, IconButton, Typography } from '@mui/material'
+import { Grid, IconButton, Tooltip, Typography } from '@mui/material'
 import { Box } from '@mui/system'
 import { groupBy } from 'lodash'
 import { Prompt } from 'react-router-dom'
@@ -18,13 +19,19 @@ import { CustomBuiltDescriptionEdit } from '@mth/screens/Homeroom/Schedule/Sched
 import { getStudentPeriodsQuery } from '@mth/screens/Homeroom/Schedule/services'
 import { extractContent } from '@mth/utils'
 import { Course, Period, ScheduleBuilderProps, ScheduleData, Subject, Title } from '../types'
+import { OnSiteSplitEnrollmentEdit } from './OnSiteSplitEnrollmentEdit'
+import { OnSiteSplitEnrollment } from './OnSiteSplitEnrollmentEdit/types'
 import { scheduleBuilderClasses } from './styles'
+import { ThirdPartyProviderEdit } from './ThirdPartyProviderEdit'
+import { ThirdPartyProvider } from './ThirdPartyProviderEdit/types'
 
 const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
   studentId,
   selectedYear,
   isDraftSaved = false,
   showUnsavedModal = false,
+  splitEnrollment = false,
+  diplomaSeekingPath,
   setIsChanged,
   onWithoutSaved,
   confirmSubmitted,
@@ -32,15 +39,20 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
   const [tableData, setTableData] = useState<MthTableRowItem<ScheduleData>[]>([])
   const [scheduleData, setScheduleData] = useState<ScheduleData[]>([])
   const [periodNotification, setPeriodNotification] = useState<string | undefined>()
-  const [selectedSchedule, setSelectedSchedule] = useState<ScheduleData | undefined>()
   const [subjectNotification, setSubjectNotification] = useState<string | undefined>()
   const [subjectReduceFundsNotification, setSubjectReduceFundsNotification] = useState<string | undefined>()
   const [courseNotification, setCourseNotification] = useState<string | undefined>()
   const [courseReduceFundsNotification, setCourseReduceFundsNotification] = useState<string | undefined>()
+  const [showThirdPartyProviderModal, setShowThirdPartyProviderModal] = useState<boolean>(false)
+  const [selectedSchedule, setSelectedSchedule] = useState<ScheduleData>()
+  const [selectedCourseType, setSelectedCourseType] = useState<CourseType>()
+  const [selectedThridPartyProvider, setSelectedThridPartyProvider] = useState<ThirdPartyProvider>()
+  const [showOnSiteSplitEnrollmentModal, setShowOnSiteSplitEnrollmentModal] = useState<boolean>(false)
+  const [selectedOnSiteSplitEnrollemnt, setSelectedOnSiteSplitEnrollment] = useState<OnSiteSplitEnrollment>()
   const [showCustomBuilt, setShowCustomBuilt] = useState<boolean>(false)
 
   const { loading, data: periodsData } = useQuery(getStudentPeriodsQuery, {
-    variables: { studentId: studentId, schoolYearId: selectedYear },
+    variables: { studentId: studentId, schoolYearId: selectedYear, diplomaSeekingPath: diplomaSeekingPath },
     skip: !studentId && !selectedYear,
     fetchPolicy: 'network-only',
   })
@@ -162,6 +174,15 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
       }
 
       menuItemsData.items?.push(subMenu)
+      if (splitEnrollment) {
+        menuItemsData.items?.push({
+          label: MthTitle.ON_SITE_SPLIT_ENROLLMENT,
+          callback: () => {
+            setShowOnSiteSplitEnrollmentModal(true)
+            setSelectedSchedule(schedule)
+          },
+        })
+      }
     })
     return menuItemsData
   }
@@ -220,16 +241,68 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
     const scheduleIdx = scheduleData.findIndex((item) => item.period === schedule.period)
     if (scheduleIdx > -1) {
       if (schedule.CourseType === courseType) return
-      if (courseType === CourseType.CUSTOM_BUILT) {
-        setSelectedSchedule(schedule)
-        setShowCustomBuilt(true)
-      } else {
-        schedule.CourseType = courseType
-        delete schedule.Course
-        scheduleData[scheduleIdx] = schedule
-        setScheduleData(JSON.parse(JSON.stringify(scheduleData)))
+      switch (courseType) {
+        case CourseType.THIRD_PARTY_PROVIDER:
+          setShowThirdPartyProviderModal(true)
+          setSelectedSchedule(schedule)
+          setSelectedCourseType(courseType)
+          break
+        case CourseType.CUSTOM_BUILT:
+          setSelectedSchedule(schedule)
+          setShowCustomBuilt(true)
+          break
+        case CourseType.MTH_DIRECT:
+          schedule.CourseType = courseType
+          delete schedule.Course
+          delete schedule.OnSiteSplitEnrollment
+          scheduleData[scheduleIdx] = schedule
+          setScheduleData(JSON.parse(JSON.stringify(scheduleData)))
+          break
       }
     }
+  }
+
+  const handleCancelThirdPartyModal = () => {
+    setSelectedSchedule(undefined)
+    setSelectedCourseType(undefined)
+    setShowThirdPartyProviderModal(false)
+    setSelectedThridPartyProvider(undefined)
+  }
+
+  const handleSaveThirdPartyModal = (item: ThirdPartyProvider) => {
+    setShowThirdPartyProviderModal(false)
+    if (selectedSchedule) {
+      const schedule = { ...selectedSchedule }
+      const scheduleIdx = scheduleData.findIndex((item) => item.period === schedule?.period)
+      schedule.CourseType = selectedCourseType
+      schedule.ThirdParty = item
+      delete schedule.OnSiteSplitEnrollment
+      delete schedule.Course
+      scheduleData[scheduleIdx] = schedule
+      setScheduleData(JSON.parse(JSON.stringify(scheduleData)))
+    }
+    setSelectedSchedule(undefined)
+    setSelectedCourseType(undefined)
+    setSelectedThridPartyProvider(undefined)
+  }
+
+  const handleCancelOnSplitEnrollmentModal = () => {
+    setSelectedSchedule(undefined)
+    setShowOnSiteSplitEnrollmentModal(false)
+    setSelectedOnSiteSplitEnrollment(undefined)
+  }
+
+  const handleSaveOnSplitEnrollmentModal = (item: OnSiteSplitEnrollment) => {
+    if (selectedSchedule) {
+      const schedule = { ...selectedSchedule }
+      const scheduleIdx = scheduleData.findIndex((item) => item.period === schedule?.period)
+      schedule.OnSiteSplitEnrollment = item
+      scheduleData[scheduleIdx] = schedule
+      setScheduleData(JSON.parse(JSON.stringify(scheduleData)))
+    }
+    setSelectedSchedule(undefined)
+    setShowOnSiteSplitEnrollmentModal(false)
+    setSelectedOnSiteSplitEnrollment(undefined)
   }
 
   const handleSaveCustomBuiltDescription = (description: string) => {
@@ -361,6 +434,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
         return (
           <Box>
             {item.rawData.CourseType === CourseType.MTH_DIRECT &&
+              !item.rawData.OnSiteSplitEnrollment &&
               !!item.rawData.Title &&
               (item.rawData.Title.Providers?.length > 1 ||
               (item.rawData.Title.Providers?.length === 1 && item.rawData.Title.Providers?.[0]?.Courses?.length > 1) ? (
@@ -373,8 +447,105 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
                   }}
                 />
               ) : (
-                <Typography sx={scheduleBuilderClasses.tableContent}>{item.rawData.Course?.name}</Typography>
+                <Typography sx={scheduleBuilderClasses.tableContent}>
+                  {item.rawData.Course?.name || item.rawData.Course?.name}
+                </Typography>
               ))}
+            {item.rawData.CourseType === CourseType.MTH_DIRECT && item.rawData.OnSiteSplitEnrollment && (
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  paddingRight: 10,
+                  marginTop: 3,
+                }}
+              >
+                <Box>
+                  <Typography sx={scheduleBuilderClasses.tableContent}>
+                    {item.rawData.OnSiteSplitEnrollment.districtSchool}
+                  </Typography>
+                  <Typography sx={scheduleBuilderClasses.tableContent}>
+                    {item.rawData.OnSiteSplitEnrollment.schoolDistrictName}
+                  </Typography>
+                  <Typography sx={scheduleBuilderClasses.tableContent}>
+                    {item.rawData.OnSiteSplitEnrollment.courseName}
+                  </Typography>
+                </Box>
+                <Box>
+                  <Tooltip title='Edit' placement='top'>
+                    <IconButton
+                      sx={{
+                        position: 'relative',
+                        bottom: '2px',
+                        width: '50px',
+                        height: '50px',
+                        marginY: 'auto',
+                      }}
+                      onClick={() => {
+                        setShowOnSiteSplitEnrollmentModal(true)
+                        setSelectedOnSiteSplitEnrollment(item.rawData.OnSiteSplitEnrollment)
+                        setSelectedSchedule(item.rawData)
+                      }}
+                    >
+                      <ModeEditIcon sx={{ fontSize: '25px', fontWeight: 700, color: MthColor.SYSTEM_06 }} />
+                    </IconButton>
+                  </Tooltip>
+                </Box>
+              </Box>
+            )}
+            {item.rawData.CourseType === CourseType.THIRD_PARTY_PROVIDER && item.rawData.ThirdParty && (
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  paddingRight: 10,
+                  marginTop: 3,
+                }}
+              >
+                <Box>
+                  <Typography sx={scheduleBuilderClasses.tableContent}>
+                    {item.rawData.ThirdParty?.providerName}
+                  </Typography>
+                  <Typography sx={scheduleBuilderClasses.tableContent}>
+                    {item.rawData.ThirdParty?.courseName}
+                  </Typography>
+                  <Typography sx={scheduleBuilderClasses.tableContent}>
+                    {item.rawData.ThirdParty?.phoneNumber}
+                  </Typography>
+                  <Typography sx={scheduleBuilderClasses.tableContent}>
+                    {item.rawData.ThirdParty?.specificCourseWebsite}
+                  </Typography>
+                  {item.rawData.ThirdParty?.additionalWebsite?.map((item, index) => (
+                    <Typography key={index} sx={scheduleBuilderClasses.tableContent}>
+                      {item.value}
+                    </Typography>
+                  ))}
+                </Box>
+                <Box>
+                  <Tooltip title='Edit' placement='top'>
+                    <IconButton
+                      sx={{
+                        position: 'relative',
+                        bottom: '2px',
+                        width: '50px',
+                        height: '50px',
+                        marginY: 'auto',
+                      }}
+                      onClick={() => {
+                        setShowThirdPartyProviderModal(true)
+                        setSelectedThridPartyProvider(item.rawData.ThirdParty)
+                        setSelectedSchedule(item.rawData)
+                        setSelectedCourseType(item.rawData?.CourseType)
+                      }}
+                    >
+                      <ModeEditIcon sx={{ fontSize: '25px', fontWeight: 700, color: MthColor.SYSTEM_06 }} />
+                    </IconButton>
+                  </Tooltip>
+                </Box>
+              </Box>
+            )}
             {item.rawData.CourseType === CourseType.CUSTOM_BUILT && !!item.rawData.CustomBuiltDescription && (
               <Typography
                 sx={scheduleBuilderClasses.tableContent}
@@ -602,6 +773,20 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
           backgroundColor={MthColor.WHITE}
           onClose={() => setCourseReduceFundsNotification(undefined)}
           onConfirm={() => setCourseReduceFundsNotification(undefined)}
+        />
+      )}
+      {showThirdPartyProviderModal && (
+        <ThirdPartyProviderEdit
+          thirdPartyProvider={selectedThridPartyProvider}
+          handleSaveAction={handleSaveThirdPartyModal}
+          handleCancelAction={handleCancelThirdPartyModal}
+        />
+      )}
+      {showOnSiteSplitEnrollmentModal && (
+        <OnSiteSplitEnrollmentEdit
+          onSiteSplitEnrollment={selectedOnSiteSplitEnrollemnt}
+          handleCancelAction={handleCancelOnSplitEnrollmentModal}
+          handleSaveAction={handleSaveOnSplitEnrollmentModal}
         />
       )}
       {showCustomBuilt && !!selectedSchedule && (

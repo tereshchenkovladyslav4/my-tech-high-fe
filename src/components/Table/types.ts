@@ -39,6 +39,7 @@ export type CustomTableProps<T> = {
   borderedBottom?: boolean
   size?: 'sm' | 'lg'
   error?: string
+  isEmptyText?: boolean
 }
 
 export type GroupItem<T> = {

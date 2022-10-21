@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Box, Grid, InputAdornment, TextField, Typography } from '@mui/material'
 import { useFormikContext } from 'formik'
 import { DropDown } from '@mth/components/DropDown/DropDown'
@@ -10,24 +10,26 @@ import { DIPLOMA_SEEKING_PATH_ITEMS, REDUCE_FUNDS_ITEMS } from '@mth/constants'
 import { MthColor, ReduceFunds } from '@mth/enums'
 import { CourseTitles } from '@mth/screens/Admin/Curriculum/CourseCatalog/Providers/CourseEdit/CourseTitles'
 import { editCourseClasses } from '@mth/screens/Admin/Curriculum/CourseCatalog/Providers/CourseEdit/styles'
-import { Course, CourseFormProps } from '@mth/screens/Admin/Curriculum/CourseCatalog/Providers/types'
+import { Course, CourseFormProps, Provider } from '@mth/screens/Admin/Curriculum/CourseCatalog/Providers/types'
 
 const CourseForm: React.FC<CourseFormProps> = ({
   schoolYearId,
   schoolYearData,
   scheduleBuilder,
   providerItems,
+  providers,
   gradeOptions,
 }) => {
   const { errors, handleChange, setFieldValue, touched, values, setFieldTouched } = useFormikContext<Course>()
   const [showGradeError, setShowGradeError] = useState<boolean>(false)
   const [showAltGradeError, setShowAltGradeError] = useState<boolean>(false)
+  const [provider, setProvider] = useState<Provider | undefined>()
 
   const validateGrades = (field: string, newValue: string) => {
     const newValues = { ...values, [field]: newValue }
     const grades = [
-      newValues?.min_grade,
-      newValues?.max_grade,
+      newValues?.min_grade || Number.NEGATIVE_INFINITY.toString(),
+      newValues?.max_grade || Number.POSITIVE_INFINITY.toString(),
       newValues?.min_alt_grade || Number.NEGATIVE_INFINITY.toString(),
       newValues?.max_alt_grade || Number.POSITIVE_INFINITY.toString(),
     ].map((item) => (item?.startsWith('K') ? 0 : +item))
@@ -44,6 +46,16 @@ const CourseForm: React.FC<CourseFormProps> = ({
     }
     setFieldValue(field, newValue)
   }
+
+  useEffect(() => {
+    if (values.provider_id) {
+      const provider = providers?.find((item) => +item.id === +values.provider_id)
+      setProvider(provider)
+      if (provider?.multiple_periods) {
+        setFieldValue('limit', null)
+      }
+    }
+  }, [values.provider_id])
 
   return (
     <Box sx={{ width: '100%', textAlign: 'left', mb: '70px' }}>
@@ -276,6 +288,7 @@ const CourseForm: React.FC<CourseFormProps> = ({
                   setFieldValue('limit', Number(e.target.value) || '')
                 }}
                 error={touched.limit && !!errors.limit}
+                disabled={provider?.multiple_periods}
               />
               <Subtitle sx={editCourseClasses.formError}>{touched.limit && errors.limit}</Subtitle>
             </Grid>
@@ -301,15 +314,14 @@ const CourseForm: React.FC<CourseFormProps> = ({
             </Grid>
             <Grid item xs={6}>
               <TextField
-                name='price'
                 label='Price'
                 placeholder='Entry'
                 InputProps={{ startAdornment: <InputAdornment position='start'>$</InputAdornment> }}
                 type='number'
                 fullWidth
                 value={values?.price || ''}
-                onChange={(e) => {
-                  setFieldValue('price', Number(e.target.value) || '')
+                onChange={(event: { target: { value: string } }) => {
+                  setFieldValue('price', Number(event?.target?.value) || '')
                 }}
                 error={touched.price && !!errors.price}
                 disabled={values?.reduce_funds === ReduceFunds.NONE}

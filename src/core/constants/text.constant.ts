@@ -14,8 +14,7 @@ export const IF_SELECT_MARK_TESTING_PREFERENCE = 'If selected, mark testing pref
 export const REQUIRE_REASON_TO_OPT_OUT = 'Require Reason to Opt-out'
 
 export const DEFUALT_DIPLOMA_QUESTION_TITLE = 'Diploma-seeking Path'
-export const DEFUALT_DIPLOMA_QUESTION_DESCRIPTION =
-  'Does this student plan to complete the requirements to earn a %REGION_NAME% high school diploma (schedule flexibility is limited)?'
+export const DEFUALT_DIPLOMA_QUESTION_DESCRIPTION = 'Sample text'
 
 export const DEFAULT_REASON =
   'Because the assessment does not allow for students to opt-out, please indicate your reason for refusing to test.'

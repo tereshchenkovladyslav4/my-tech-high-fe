@@ -38,7 +38,7 @@ export const WarningModal: React.FC<WarningModalProps> = ({
             size='large'
             fontWeight='600'
             color={SYSTEM_01}
-            sx={{ textAlign: textCenter ? 'center' : 'left', mt: '56px' }}
+            sx={{ textAlign: textCenter ? 'center' : 'left', mt: showIcon ? '0' : '56px' }}
           >
             {subtitle}
           </Paragraph>

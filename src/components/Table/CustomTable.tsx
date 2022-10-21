@@ -56,6 +56,7 @@ const CustomTable = <T extends Record<string, unknown>>({
   borderedLeft = false,
   borderedBottom = false,
   size,
+  isEmptyText = true,
 }: CustomTableProps<T>): React.ReactElement => {
   const [checkedIds, setCheckedIds] = useState<ValueOf<T>[]>(checked)
   const [hoverGroup, setHoverGroup] = useState<unknown>('')
@@ -287,7 +288,7 @@ const CustomTable = <T extends Record<string, unknown>>({
             <StyledTableRow>
               <td colSpan={fields.length + (checkable ? 1 : 0)}>
                 <Box className='no-data' sx={{ opacity: 0.1, py: 2, textAlign: 'center' }}>
-                  Not found
+                  {isEmptyText ? 'Not found' : ''}
                 </Box>
               </td>
             </StyledTableRow>

@@ -12,6 +12,7 @@ type CurrentGradeAndProgramByRegionId = {
   gradeList: CheckBoxListVM[]
   programYearList: CheckBoxListVM[]
   schoolPartnerList: CheckBoxListVM[]
+  testPreference: boolean
 }
 
 export const useCurrentGradeAndProgramByRegionId = (
@@ -26,6 +27,7 @@ export const useCurrentGradeAndProgramByRegionId = (
   const [availableGrades, setAvailableGrades] = useState<CheckBoxListVM[]>([])
   const [programYearList, setProgramYearList] = useState<CheckBoxListVM[]>([])
   const [schoolPartnerList, setSchoolPartnerList] = useState<CheckBoxListVM[]>([])
+  const [testPreference, setTestPreference] = useState<boolean>(false)
 
   useEffect(() => {
     if (programYearList && schoolPartnerList && availableGrades) {
@@ -33,6 +35,7 @@ export const useCurrentGradeAndProgramByRegionId = (
     }
   }, [availableGrades])
 
+  // we may need to check for change in user region because wqe use the spread operator,and values may add on
   useEffect(() => {
     if (!schoolYearLoading && schoolYearData) {
       const availGrades = schoolYearData?.grades?.split(',').map((item: string) => {
@@ -68,8 +71,7 @@ export const useCurrentGradeAndProgramByRegionId = (
           schoolYearData?.midyear_application_close?.substring(0, 10),
         ).toISOString()
 
-        setProgramYearList((prev) => [
-          ...prev,
+        setProgramYearList(() => [
           {
             label: `${moment(schoolYear_date_begin).format('YYYY')}-${moment(schoolYear_date_end).format('YY')}`,
             value: 'schoolYear',
@@ -81,19 +83,23 @@ export const useCurrentGradeAndProgramByRegionId = (
             value: 'midYear',
           },
         ])
-
-        //setProgramYears(['schoolYear', 'midYear'])
       } else {
         const schoolYear_date_begin = moment(schoolYearData?.date_begin?.substring(0, 10)).toISOString()
         const schoolYear_date_end = moment(schoolYearData?.date_end?.substring(0, 10)).toISOString()
 
-        setProgramYearList((prev) => [
-          ...prev,
+        setProgramYearList(() => [
           {
             label: `${moment(schoolYear_date_begin).format('YYYY')}-${moment(schoolYear_date_end).format('YY')}`,
             value: 'schoolYear',
           },
         ])
+      }
+
+      // testing preference
+      if (schoolYearData.testing_preference) {
+        setTestPreference(true)
+      } else {
+        setTestPreference(false)
       }
     }
   }, [schoolYearLoading, schoolYearData])
@@ -104,5 +110,6 @@ export const useCurrentGradeAndProgramByRegionId = (
     gradeList: availableGrades,
     programYearList: programYearList,
     schoolPartnerList: schoolPartnerList,
+    testPreference: testPreference,
   }
 }

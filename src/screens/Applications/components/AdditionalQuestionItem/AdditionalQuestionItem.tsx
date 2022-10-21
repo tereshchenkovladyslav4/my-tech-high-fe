@@ -14,11 +14,9 @@ import { DropDown } from '@mth/components/DropDown/DropDown'
 import { QUESTION_TYPE } from '@mth/components/QuestionItem/QuestionItemProps'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { getSchoolDistrictsByRegionId } from '@mth/graphql/queries/school-district'
 import { SYSTEM_05, SYSTEM_07 } from '../../../../utils/constants'
-import {
-  getCountiesByRegionId,
-  getSchoolDistrictsByRegionId,
-} from '../../../Admin/SiteManagement/EnrollmentSetting/EnrollmentQuestions/services'
+import { getCountiesByRegionId } from '../../../Admin/SiteManagement/EnrollmentSetting/EnrollmentQuestions/services'
 import { useStyles } from '../../styles'
 import { ApplicationQuestionTemplateType } from './types'
 export const AdditionalQuestionItem: ApplicationQuestionTemplateType = ({
