@@ -86,6 +86,7 @@ export const Root: FunctionComponent = () => {
             <AdminAppBar />
             <AdminRoutes />
           </div>
+          {localStorage.getItem('masquerade') !== null && <MasqueradeFooter me={me} />}
         </Flexbox>
       </Flexbox>
     )

@@ -10,7 +10,7 @@ import { Pagination } from '../../../components/Pagination/Pagination'
 import { SortableUserTable } from '../../../components/SortableTable/SortableUserTable'
 import { Subtitle } from '../../../components/Typography/Subtitle/Subtitle'
 import { WarningModal } from '../../../components/WarningModal/Warning'
-import { changeUserStatusMutation, becomeUserMutation } from '../../../graphql/mutation/user'
+import { changeUserStatusMutation, becomeUserMutation, toggleMasqueradeMutation } from '../../../graphql/mutation/user'
 import { getUsersByRegions } from '../../../graphql/queries/user'
 import { UserContext } from '../../../providers/UserContext/UserProvider'
 import { BUTTON_LINEAR_GRADIENT, DASHBOARD } from '../../../utils/constants'
@@ -63,6 +63,8 @@ export const Users: FunctionComponent = () => {
 
   const [changeUserStatus, { data: responseData, loading: uploading, error: uploadingError }] =
     useMutation(changeUserStatusMutation)
+
+  const [toggleMasquerade] = useMutation(toggleMasqueradeMutation)
 
   const [becomeUserAction] = useMutation(becomeUserMutation)
 
