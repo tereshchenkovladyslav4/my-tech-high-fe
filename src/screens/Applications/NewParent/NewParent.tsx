@@ -673,10 +673,10 @@ export const NewParent: React.FC = () => {
                     {!questionLoading &&
                       questionStudentSortList(questions, values?.students[0]).length > 0 &&
                       questionStudentSortList(questions, values?.students[0]).map(
-                        (q: unknown): ReactElement | undefined => {
+                        (q: unknown, index: number): ReactElement | undefined => {
                           if (q.slug === 'parent_email') {
                             return (
-                              <Grid item xs={12} display='flex' justifyContent={'center'}>
+                              <Grid key={index} item xs={12} display='flex' justifyContent={'center'}>
                                 <Box width={'451.53px'}>
                                   <Field name={'parent.email'} fullWidth focused>
                                     {({ field, form, meta }) => {
@@ -743,7 +743,7 @@ export const NewParent: React.FC = () => {
                             )
                           } else if (q.slug === 'parent_emailConfirm') {
                             return (
-                              <Grid item xs={12} display='flex' justifyContent={'center'}>
+                              <Grid key={index} item xs={12} display='flex' justifyContent={'center'}>
                                 <Box width={'451.53px'}>
                                   <Field name={'parent.emailConfirm'} fullWidth focused>
                                     {({ field, meta }) => (
@@ -776,7 +776,7 @@ export const NewParent: React.FC = () => {
                           } else if (q.slug?.includes('student_') || q.student_question) {
                             if (q.slug === 'student_grade_level') {
                               return (
-                                <Grid item xs={12} display='flex' justifyContent={'center'}>
+                                <Grid key={index} item xs={12} display='flex' justifyContent={'center'}>
                                   <Box width={'451.53px'}>
                                     <Field name={'students[0].grade_level'} fullWidth focused>
                                       {({ field, form, meta }) => (
@@ -809,7 +809,7 @@ export const NewParent: React.FC = () => {
                               )
                             } else if (q.slug?.includes('student_')) {
                               return (
-                                <Grid item xs={12} display='flex' justifyContent={'center'}>
+                                <Grid key={index} item xs={12} display='flex' justifyContent={'center'}>
                                   <Box width={'451.53px'} display='flex' flexDirection='row' alignItems={'center'}>
                                     <Field name={`students[0].${q.slug?.replace('student_', '')}`} fullWidth focused>
                                       {({ field, form, meta }) => (
@@ -829,7 +829,7 @@ export const NewParent: React.FC = () => {
                               )
                             } else if (q.slug?.includes('meta_') && q.student_question) {
                               return (
-                                <Grid item xs={12} display='flex' justifyContent={'center'}>
+                                <Grid key={index} item xs={12} display='flex' justifyContent={'center'}>
                                   <Box width={'451.53px'} display='flex' flexDirection='row' alignItems={'center'}>
                                     <Field name={`students[0].meta.${q.slug}`} fullWidth focused>
                                       {({ field, form, meta }) => (
@@ -851,7 +851,7 @@ export const NewParent: React.FC = () => {
                               const parentFieldName = q.slug?.split('_')[0]
                               const childFieldName = q.slug?.replace(parentFieldName + '_', '')
                               return (
-                                <Grid item xs={12} display='flex' justifyContent={'center'}>
+                                <Grid key={index} item xs={12} display='flex' justifyContent={'center'}>
                                   <Box width={'451.53px'} display='flex' flexDirection='row' alignItems={'center'}>
                                     <Field name={`students[0].${parentFieldName}.${childFieldName}`} fullWidth focused>
                                       {({ field, form, meta }) => (
@@ -874,7 +874,7 @@ export const NewParent: React.FC = () => {
                             }
                           } else if (q.slug?.includes('meta_')) {
                             return (
-                              <Grid item xs={12} display='flex' justifyContent={'center'}>
+                              <Grid key={index} item xs={12} display='flex' justifyContent={'center'}>
                                 <Box width={'451.53px'}>
                                   <Field name={`meta.${q.slug}`} fullWidth focused>
                                     {({ field, form, meta }) => (
@@ -894,7 +894,7 @@ export const NewParent: React.FC = () => {
                             const parentFieldName = q.slug?.split('_')[0]
                             const childFieldName = q.slug?.replace(parentFieldName + '_', '')
                             return (
-                              <Grid item xs={12} display='flex' justifyContent={'center'}>
+                              <Grid key={index} item xs={12} display='flex' justifyContent={'center'}>
                                 <Box width={'451.53px'}>
                                   <Field name={`${parentFieldName}.${childFieldName}`} fullWidth focused>
                                     {({ field, form, meta }) => (
@@ -931,6 +931,7 @@ export const NewParent: React.FC = () => {
                                         return (
                                           <Grid
                                             item
+                                            key={index}
                                             xs={12}
                                             width={'100%'}
                                             display='flex'
@@ -975,7 +976,7 @@ export const NewParent: React.FC = () => {
                                         )
                                       } else if (q.slug?.includes('student_')) {
                                         return (
-                                          <Grid item xs={12}>
+                                          <Grid key={index} item xs={12}>
                                             <Box
                                               width={'100%'}
                                               display='flex'
@@ -1011,7 +1012,7 @@ export const NewParent: React.FC = () => {
                                         )
                                       } else if (q.slug?.includes('meta_') && q.student_question) {
                                         return (
-                                          <Grid item xs={12}>
+                                          <Grid key={index} item xs={12}>
                                             <Box
                                               width={'100%'}
                                               display='flex'
@@ -1045,7 +1046,7 @@ export const NewParent: React.FC = () => {
                                         const parentFieldName = q.slug?.split('_')[0]
                                         const childFieldName = q.slug?.replace(parentFieldName + '_', '')
                                         return (
-                                          <Grid item xs={12} display='flex' justifyContent={'center'}>
+                                          <Grid key={index} item xs={12} display='flex' justifyContent={'center'}>
                                             <Box
                                               width={'451.53px'}
                                               display='flex'

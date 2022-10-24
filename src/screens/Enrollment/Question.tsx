@@ -92,11 +92,11 @@ export const EnrollmentQuestionItem: EnrollmentQuestionTemplateType = ({ item, f
 
   return (
     <>
-      {questionItems.map((q): ReactElement | undefined => {
+      {questionItems.map((q, index): ReactElement | undefined => {
         if ((q.additional_question && q.isEnable) || !q.additional_question) {
           if (q.type === QUESTION_TYPE.INFORMATION) {
             return (
-              <Grid item xs={12} sm={6}>
+              <Grid key={index} item xs={12} sm={6}>
                 <Box display='flex' alignItems='center'>
                   <Paragraph size='large'>
                     <p dangerouslySetInnerHTML={{ __html: q.question }}></p>
@@ -106,7 +106,7 @@ export const EnrollmentQuestionItem: EnrollmentQuestionTemplateType = ({ item, f
             )
           } else {
             return (
-              <Grid item xs={12} sm={questionItems.length > 1 ? 12 : 6}>
+              <Grid key={index} item xs={12} sm={questionItems.length > 1 ? 12 : 6}>
                 {q.type !== QUESTION_TYPE.AGREEMENT && (
                   <Box
                     display='flex'

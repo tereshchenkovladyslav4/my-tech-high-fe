@@ -90,11 +90,11 @@ export const EnrollmentQuestionItem: FunctionComponent<EnrollmentQuestionItemPro
   return (
     <>
       <Grid item xs={6}>
-        {questionItems.map((q): ReactElement | undefined => {
+        {questionItems.map((q, index): ReactElement | undefined => {
           if ((q.additional_question && q.isEnable) || !q.additional_question) {
             if (q.type === QUESTION_TYPE.AGREEMENT) {
               return (
-                <Grid>
+                <Grid key={index}>
                   <FormControl required name='acknowledge' component='fieldset' variant='standard'>
                     <FormGroup>
                       {/* <FormGroup style={{ width: '50%' }}> */}
@@ -129,7 +129,7 @@ export const EnrollmentQuestionItem: FunctionComponent<EnrollmentQuestionItemPro
               )
             } else if (q.type === QUESTION_TYPE.INFORMATION) {
               return (
-                <Box display='flex' alignItems='center' width={'100%'}>
+                <Box key={index} display='flex' alignItems='center' width={'100%'}>
                   <Paragraph size='large'>
                     <p dangerouslySetInnerHTML={{ __html: q.question }}></p>
                   </Paragraph>
@@ -154,7 +154,7 @@ export const EnrollmentQuestionItem: FunctionComponent<EnrollmentQuestionItemPro
               )
             } else {
               return (
-                <Grid>
+                <Grid key={index}>
                   <Box
                     display='flex'
                     alignItems='center'

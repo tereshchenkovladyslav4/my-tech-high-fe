@@ -105,10 +105,10 @@ export const EnrollmentPacketDocument: FunctionComponent<EnrollmentPacketDocumen
           {questions?.length > 0 &&
             questions
               ?.find((tab) => tab.tab_name === 'Documents')
-              ?.groups[0]?.questions?.map((q): ReactElement | undefined => {
+              ?.groups[0]?.questions?.map((q, index): ReactElement | undefined => {
                 if (q.type === QUESTION_TYPE.UPLOAD) {
                   return (
-                    <Paragraph color={SYSTEM_06} sx={{ fontSize: '14px' }} fontWeight='400'>
+                    <Paragraph key={index} color={SYSTEM_06} sx={{ fontSize: '14px' }} fontWeight='400'>
                       {q.question}
                     </Paragraph>
                   )
@@ -121,10 +121,10 @@ export const EnrollmentPacketDocument: FunctionComponent<EnrollmentPacketDocumen
           {questions?.length > 0 &&
             questions
               ?.find((tab) => tab.tab_name === 'Documents')
-              ?.groups[0]?.questions?.map((q): ReactElement | undefined => {
+              ?.groups[0]?.questions?.map((q, index): ReactElement | undefined => {
                 if (q.type === QUESTION_TYPE.UPLOAD) {
                   return (
-                    <div>
+                    <div key={index}>
                       {files?.length > 0 && files?.find((e) => e.kind === q.question) ? (
                         <Paragraph
                           color={PRIMARY_MEDIUM_MOUSEOVER}

@@ -18,6 +18,7 @@ import {
   MenuItem,
   FormHelperText,
   Card,
+  InputAdornment,
 } from '@mui/material'
 import { ContentState, EditorState, convertToRaw } from 'draft-js'
 import draftToHtml from 'draftjs-to-html'
@@ -87,7 +88,6 @@ const Periods: FunctionComponent = () => {
   const [editorStateSemester, setEditorStateSemester] = useState(initialEditorState)
 
   const [items, setItems] = useState<Array<PeriodItem>>([])
-  const [savedPeriodIndexes, setSavedPeriodIndexes] = useState<number[]>([])
   // Filter Box
   const [query, setQuery] = useState({
     keyword: '',
@@ -121,7 +121,6 @@ const Periods: FunctionComponent = () => {
 
   useEffect(() => {
     setItems(periods?.periods || [])
-    setSavedPeriodIndexes(periods?.periodIds || [])
   }, [periods])
 
   const grades: string[] = useMemo(() => {
@@ -203,7 +202,10 @@ const Periods: FunctionComponent = () => {
   const handleSubmit = useCallback(
     (values) => {
       if (selectedYearId) {
-        const variables = { school_year_id: +selectedYearId, ...values, price: parseFloat(values.price.substring(1)) }
+        const variables = { school_year_id: +selectedYearId, ...values }
+        if (variables.reduce_funds === REDUCE_FUNDS_TYPE.NONE) {
+          variables.price = 0
+        }
         if (values.notify_period) {
           variables.message_period = draftToHtml(convertToRaw(editorStatePeriod.getCurrentContent()))
         }
@@ -265,9 +267,9 @@ const Periods: FunctionComponent = () => {
           .required()
           .test('html_content', 'Required', () => editorStateSemester.getCurrentContent().hasText()),
       }),
-      price: Yup.string().when(['reduce_funds'], {
+      price: Yup.number().when(['reduce_funds'], {
         is: (reduce_funds: REDUCE_FUNDS_TYPE) => reduce_funds !== REDUCE_FUNDS_TYPE.NONE,
-        then: Yup.string().required(),
+        then: Yup.number().typeError('Must be a `number` type').required().min(0),
       }),
     }),
     onSubmit: async (values) => {
@@ -292,7 +294,7 @@ const Periods: FunctionComponent = () => {
       grade_level_max: item.grade_level_max,
       reduce_funds: item.reduce_funds,
       semester: item.semester,
-      price: item.price ? '$' + item.price.toString() : '',
+      price: item.price || '',
       message_period: item.message_period,
       message_semester: item.message_semester,
       notify_semester: item.notify_semester,
@@ -518,7 +520,7 @@ const Periods: FunctionComponent = () => {
               defaultValue=''
             >
               {[...Array(maxPeriodCount)].map((vv, ii) => (
-                <MenuItem key={`${ii}_${vv}`} value={ii + 1} disabled={savedPeriodIndexes.includes(ii + 1)}>
+                <MenuItem key={`${ii}_${vv}`} value={ii + 1}>
                   {ii + 1}
                 </MenuItem>
               ))}
@@ -622,9 +624,10 @@ const Periods: FunctionComponent = () => {
               placeholder='Price'
               fullWidth
               value={formik.values.price}
+              type='number'
+              InputProps={{ startAdornment: <InputAdornment position='start'>$</InputAdornment> }}
               onChange={(e) => {
-                const val = e.target.value
-                formik.setFieldValue('price', val[0] !== '$' ? '$' + val : val)
+                formik.handleChange(e)
               }}
               error={formik.touched.price && !!formik.errors.price}
               helperText={formik.touched.price && formik.errors.price}

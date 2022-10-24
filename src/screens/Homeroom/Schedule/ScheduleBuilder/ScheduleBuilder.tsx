@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react'
 import { useQuery } from '@apollo/client'
 import ModeEditIcon from '@mui/icons-material/ModeEdit'
 import QuestionMarkIcon from '@mui/icons-material/QuestionMark'
-import { Grid, IconButton, Tooltip, Typography } from '@mui/material'
-import { Box } from '@mui/system'
+import { ClickAwayListener, Grid, IconButton, Tooltip, Typography } from '@mui/material'
+import { Box, styled } from '@mui/system'
+import parse from 'html-react-parser'
 import { groupBy } from 'lodash'
 import { Prompt } from 'react-router-dom'
 import { CustomModal } from '@mth/components/CustomModal/CustomModals'
@@ -15,6 +16,7 @@ import { SuccessModal } from '@mth/components/SuccessModal/SuccessModal'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { COURSE_TYPE_ITEMS } from '@mth/constants'
 import { CourseType, MthColor, MthTitle, ReduceFunds } from '@mth/enums'
+import { getAllScheduleBuilderQuery } from '@mth/graphql/queries/schedule-builder'
 import { CustomBuiltDescriptionEdit } from '@mth/screens/Homeroom/Schedule/ScheduleBuilder/CustomBuiltDescription'
 import { getStudentPeriodsQuery } from '@mth/screens/Homeroom/Schedule/services'
 import { extractContent } from '@mth/utils'
@@ -24,6 +26,24 @@ import { OnSiteSplitEnrollment } from './OnSiteSplitEnrollmentEdit/types'
 import { scheduleBuilderClasses } from './styles'
 import { ThirdPartyProviderEdit } from './ThirdPartyProviderEdit'
 import { ThirdPartyProvider } from './ThirdPartyProviderEdit/types'
+
+const StyledTooltipBgDiv = styled('div')(({}) => ({
+  '&': {
+    backgroundColor: MthColor.LIGHTGRAY,
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    width: '100vw',
+    height: '100vh',
+    zIndex: 10,
+    opacity: 0.5,
+  },
+}))
+const StyledTooltip = styled(Tooltip)(({}) => ({
+  '& .MuiTooltip-tooltip a': {
+    color: `${MthColor.BLUE_GRDIENT} !important`,
+  },
+}))
 
 const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
   studentId,
@@ -50,12 +70,20 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
   const [showOnSiteSplitEnrollmentModal, setShowOnSiteSplitEnrollmentModal] = useState<boolean>(false)
   const [selectedOnSiteSplitEnrollemnt, setSelectedOnSiteSplitEnrollment] = useState<OnSiteSplitEnrollment>()
   const [showCustomBuilt, setShowCustomBuilt] = useState<boolean>(false)
+  const [enableQuestionTooltip, setEnableQuestionTooltip] = useState<boolean>(false)
 
   const { loading, data: periodsData } = useQuery(getStudentPeriodsQuery, {
     variables: { studentId: studentId, schoolYearId: selectedYear, diplomaSeekingPath: diplomaSeekingPath },
     skip: !studentId && !selectedYear,
     fetchPolicy: 'network-only',
   })
+  const { loading: scheduleBuilderSettingLoading, data: scheduleBuilderSettingData } = useQuery(
+    getAllScheduleBuilderQuery,
+    {
+      variables: { schoolYearId: selectedYear },
+      fetchPolicy: 'network-only',
+    },
+  )
 
   const createPeriodMenuItems = (schedule: ScheduleData): MenuItemData => {
     const menuItemsData: MenuItemData = {
@@ -599,6 +627,13 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
     confirmSubmitted()
   }
 
+  const showQuestionTooltip = () => {
+    setEnableQuestionTooltip(true)
+  }
+  const closeQuestionTooltip = () => {
+    setEnableQuestionTooltip(false)
+  }
+
   useEffect(() => {
     if (scheduleData?.length) {
       setTableData(
@@ -668,8 +703,6 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
     }
   }, [loading, periodsData])
 
-  const questionClick = () => {}
-
   return (
     <>
       <Box sx={scheduleBuilderClasses.main}>
@@ -680,15 +713,29 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
           checkBoxColor='secondary'
           sx={scheduleBuilderClasses.customTable}
         />
-        <IconButton
-          size='large'
-          edge='start'
-          aria-label='open drawer'
-          onClick={questionClick}
-          sx={[{ mr: 2 }, scheduleBuilderClasses.questionButton]}
-        >
-          <QuestionMarkIcon sx={{ fontSize: '15px', color: MthColor.BLACK }} />
-        </IconButton>
+        {!scheduleBuilderSettingLoading && (
+          <ClickAwayListener onClickAway={closeQuestionTooltip}>
+            <StyledTooltip
+              title={parse(scheduleBuilderSettingData.getScheduleBuilder.parent_tooltip)}
+              open={enableQuestionTooltip}
+              onClose={closeQuestionTooltip}
+              disableFocusListener
+              disableHoverListener
+              disableTouchListener
+            >
+              <IconButton
+                size='large'
+                edge='start'
+                aria-label='open drawer'
+                sx={[{ mr: 2 }, scheduleBuilderClasses.questionButton]}
+                onClick={showQuestionTooltip}
+              >
+                <QuestionMarkIcon />
+              </IconButton>
+            </StyledTooltip>
+          </ClickAwayListener>
+        )}
+        {enableQuestionTooltip && <StyledTooltipBgDiv />}
       </Box>
       {showUnsavedModal && (
         <CustomModal

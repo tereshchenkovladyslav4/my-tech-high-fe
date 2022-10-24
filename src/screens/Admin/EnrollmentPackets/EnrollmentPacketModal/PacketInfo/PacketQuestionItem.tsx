@@ -99,11 +99,11 @@ export const PacketQuestionItem: React.FC<{ item: EnrollmentQuestion[] }> = ({ i
 
   return (
     <>
-      {questionItems.map((q): ReactElement | undefined => {
+      {questionItems.map((q, index): ReactElement | undefined => {
         if ((q.additional_question && q.isEnable) || !q.additional_question) {
           if (q.type === QUESTION_TYPE.INFORMATION) {
             return (
-              <Grid item xs={6}>
+              <Grid key={index} item xs={6}>
                 <Box display='flex' alignItems='center'>
                   <Paragraph size='large'>
                     <p dangerouslySetInnerHTML={{ __html: q.question }}></p>
@@ -113,7 +113,7 @@ export const PacketQuestionItem: React.FC<{ item: EnrollmentQuestion[] }> = ({ i
             )
           } else {
             return (
-              <Grid item xs={questionItems.length > 1 ? 12 : 6}>
+              <Grid key={index} item xs={questionItems.length > 1 ? 12 : 6}>
                 {q.type !== QUESTION_TYPE.AGREEMENT && (
                   <Box display='flex' alignItems='center' width={questionItems.length > 1 ? '50%' : '100%'}>
                     <Subtitle fontWeight='500'>{q.question}</Subtitle>

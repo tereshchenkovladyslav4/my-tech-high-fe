@@ -331,7 +331,7 @@ export const Submission: SubmissionTemplateType = ({ id, questions }) => {
     }
     return arr
   })
-  const questionsLists = questionsArr.filter((item) => !item[0].additional_question)
+  const questionsLists = questionsArr ? questionsArr.filter((item) => !item[0].additional_question) : []
 
   return (
     <form onSubmit={(e) => (!disabled ? handleSubmit(e) : nextTab(e))}>

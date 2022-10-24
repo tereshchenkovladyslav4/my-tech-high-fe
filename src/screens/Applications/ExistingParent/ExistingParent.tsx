@@ -454,11 +454,11 @@ export const ExistingParent: React.FC = () => {
               <Grid container rowSpacing={2}>
                 {!questionLoading &&
                   questionStudentSortList(questions, values?.students[0]).length > 0 &&
-                  questionStudentSortList(questions, values?.students[0]).map((q): unknown | undefined => {
+                  questionStudentSortList(questions, values?.students[0]).map((q, idx): unknown | undefined => {
                     if (q.slug?.includes('student_') || q.student_question) {
                       if (q.slug === 'student_grade_level') {
                         return (
-                          <Grid item xs={12} display='flex' justifyContent={'center'}>
+                          <Grid key={idx} item xs={12} display='flex' justifyContent={'center'}>
                             <Box width={'451.53px'}>
                               <Field name={'students[0].grade_level'} fullWidth focused>
                                 {({ field, form, meta }) => (
@@ -489,7 +489,7 @@ export const ExistingParent: React.FC = () => {
                         )
                       } else if (q.slug?.includes('student_')) {
                         return (
-                          <Grid item xs={12} display='flex' justifyContent={'center'}>
+                          <Grid key={idx} item xs={12} display='flex' justifyContent={'center'}>
                             <Box width={'451.53px'} display='flex' flexDirection='row' alignItems={'center'}>
                               <Field name={`students[0].${q.slug?.replace('student_', '')}`} fullWidth focused>
                                 {({ field, form, meta }) => (
@@ -509,7 +509,7 @@ export const ExistingParent: React.FC = () => {
                         )
                       } else if (q.slug?.includes('meta_') && q.student_question) {
                         return (
-                          <Grid item xs={12} display='flex' justifyContent={'center'}>
+                          <Grid key={idx} item xs={12} display='flex' justifyContent={'center'}>
                             <Box width={'451.53px'} display='flex' flexDirection='row' alignItems={'center'}>
                               <Field name={`students[0].meta.${q.slug}`} fullWidth focused>
                                 {({ field, form, meta }) => (
@@ -531,7 +531,7 @@ export const ExistingParent: React.FC = () => {
                         const parentFieldName = q.slug?.split('_')[0]
                         const childFieldName = q.slug?.replace(parentFieldName + '_', '')
                         return (
-                          <Grid item xs={12} display='flex' justifyContent={'center'}>
+                          <Grid key={idx} item xs={12} display='flex' justifyContent={'center'}>
                             <Box width={'451.53px'} display='flex' flexDirection='row' alignItems={'center'}>
                               <Field name={`students[0].${parentFieldName}.${childFieldName}`} fullWidth focused>
                                 {({ field, form, meta }) => (
@@ -566,7 +566,7 @@ export const ExistingParent: React.FC = () => {
                               {!questionLoading &&
                                 questionStudentSortList(questions, _).length > 0 &&
                                 index > 0 &&
-                                questionStudentSortList(questions, _).map((q): ReactElement | undefined => {
+                                questionStudentSortList(questions, _).map((q, idx): ReactElement | undefined => {
                                   const firstQuestionSlug = questionStudentSortList(questions, _).filter(
                                     (qf) => qf.question.includes('student_') || qf.student_question,
                                   )[0].slug
@@ -574,6 +574,7 @@ export const ExistingParent: React.FC = () => {
                                     return (
                                       <Grid
                                         item
+                                        key={idx}
                                         xs={12}
                                         width={'100%'}
                                         display='flex'
@@ -618,7 +619,7 @@ export const ExistingParent: React.FC = () => {
                                     )
                                   } else if (q.slug.includes('student_')) {
                                     return (
-                                      <Grid item xs={12}>
+                                      <Grid key={idx} item xs={12}>
                                         <Box width={'100%'} display='flex' flexDirection='row' alignItems={'center'}>
                                           <Field
                                             name={`students[${index}].${q.slug.replace('student_', '')}`}
@@ -649,7 +650,7 @@ export const ExistingParent: React.FC = () => {
                                     )
                                   } else if (q.slug?.includes('meta_') && q.student_question) {
                                     return (
-                                      <Grid item xs={12}>
+                                      <Grid key={idx} item xs={12}>
                                         <Box width={'100%'} display='flex' flexDirection='row' alignItems={'center'}>
                                           <Field name={`students[${index}].meta.${q.slug}`} fullWidth focused>
                                             {({ field, form, meta }) => (
@@ -678,7 +679,7 @@ export const ExistingParent: React.FC = () => {
                                     const parentFieldName = q.slug?.split('_')[0]
                                     const childFieldName = q.slug?.replace(parentFieldName + '_', '')
                                     return (
-                                      <Grid item xs={12} display='flex' justifyContent={'center'}>
+                                      <Grid key={idx} item xs={12} display='flex' justifyContent={'center'}>
                                         <Box
                                           width={'451.53px'}
                                           display='flex'

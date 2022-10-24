@@ -288,7 +288,7 @@ export const Filters: FunctionComponent<FiltersProps> = ({ filter, setFilter }) 
             <Paragraph size='large' fontWeight='700'>
               {MthTitle.SCHOOL_YEAR}
             </Paragraph>
-            {schoolYears?.map((item) => {
+            {schoolYears?.map((item, index) => {
               if (item.midyear_application) {
                 return (
                   <>
@@ -330,6 +330,7 @@ export const Filters: FunctionComponent<FiltersProps> = ({ filter, setFilter }) 
                 return (
                   <FormControlLabel
                     sx={{ height: 30 }}
+                    key={index}
                     control={
                       <Checkbox
                         value={`${item.school_year_id}`}

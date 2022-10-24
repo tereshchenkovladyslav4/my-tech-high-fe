@@ -63,7 +63,7 @@ const FilterComponent: React.FC<FilterComponentProps> = ({
   useEffect(() => {
     let newList = []
     if (gradeList.length > 0) {
-      newList = sortBy(gradeList, (a) => (parseFloat(a.value) !== NaN ? parseFloat(a.value) : 0))
+      newList = sortBy(gradeList, (a) => (parseFloat(a.value) ? parseFloat(a.value) : 0))
       newList.splice(0, 0, newList.pop())
       setSortedGradeList(newList)
     }
