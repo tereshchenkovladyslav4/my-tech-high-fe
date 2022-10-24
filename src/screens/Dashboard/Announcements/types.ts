@@ -16,6 +16,7 @@ export type Announcement = {
   status?: string
   filterGrades?: string
   filterUsers?: string
+  filterOthers?: string
   scheduleTime?: Date
   user_id?: number
   filter_grades?: string

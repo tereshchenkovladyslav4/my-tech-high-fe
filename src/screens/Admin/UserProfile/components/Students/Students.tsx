@@ -142,7 +142,9 @@ export const Students: React.FC<StudentsProps> = ({ students, selectedStudent, h
                     status === undefined ||
                     status === StudentStatus.PENDING ||
                     status === StudentStatus.ACTIVE ||
-                    status === StudentStatus.APPLIED
+                    status === StudentStatus.APPLIED ||
+                    status === StudentStatus.ACCEPTED ||
+                    status === StudentStatus.WITHDRAWN
                   )
                 })
                 .map((item, idx) => (

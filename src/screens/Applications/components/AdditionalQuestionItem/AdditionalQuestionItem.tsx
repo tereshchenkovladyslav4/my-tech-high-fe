@@ -227,11 +227,11 @@ export const AdditionalQuestionItem: ApplicationQuestionTemplateType = ({
                 }}
               >
                 <FormControlLabel
-                  value={o.label}
+                  value={q.slug == 'meta_special_education' ? o.value : o.label}
                   control={
                     <Radio
                       // checked={o.value === q.response}
-                      checked={o.label === field.value}
+                      checked={(q.slug == 'meta_special_education' ? o.value : o.label).toString() === field.value}
                       onChange={(e) => e.currentTarget.checked && handleAddQuestion(o.value, q)}
                       sx={{
                         color: '#4145FF',

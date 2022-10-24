@@ -8,6 +8,9 @@ type EmailModalProps = {
   options?: StandardResponseOption
   template?: unknown
   editFrom?: boolean
+  isNonSelected: boolean
+  filters: Array<string>
+  handleSchedulesByStatus: (status: string) => void
 }
 
 export type EmailModalTemplateType = FunctionComponent<EmailModalProps>

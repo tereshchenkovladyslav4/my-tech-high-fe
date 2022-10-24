@@ -99,7 +99,7 @@ export const SortableTable: SortableTableTemplateType = ({
     }
   }
   return (
-    <Box sx={{ width: '100%', overflow: 'hidden' }}>
+    <Box sx={{ width: '100%', overflow: 'hidden', paddingX: '24px' }}>
       <TableContainer>
         <Table aria-labelledby='tableTitle' size='small'>
           <SortableTableHeader

@@ -1,6 +1,5 @@
 import React, { FunctionComponent, useState } from 'react'
-import { Grid } from '@mui/material'
-import { Box } from '@mui/system'
+import { Box, Grid } from '@mui/material'
 import { Filters } from './Filters/Filters'
 import { ScheduleTable } from './ScheduleTable/ScheduleTable'
 import { FilterVM } from './type'

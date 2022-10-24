@@ -110,6 +110,8 @@ export const SPED = ['No', 'IEP', '504', 'Exit']
 
 export const GRADES = ['Kindergarten', 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 
+export const CURRICULUM_PROVIDERS = ['SNHU', 'Spark', 'Snow']
+
 export const GRADE_GROUPS = ['K', '1-8', '9-12']
 
 export const MISSING_INFO_OPTIONS: StandardResponseOption = {

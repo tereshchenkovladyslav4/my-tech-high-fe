@@ -65,7 +65,9 @@ export const TodoList: TodoListTemplateType = ({ handleShowEmpty, schoolYears, s
       }
     }
     if (!loading) {
-      setIsLoading && setIsLoading(false)
+      if (setIsLoading) {
+        setIsLoading(false)
+      }
     }
   }, [loading])
 

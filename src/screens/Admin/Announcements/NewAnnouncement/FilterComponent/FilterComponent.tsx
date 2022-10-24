@@ -10,15 +10,22 @@ import { useCurrentGradeAndProgramByRegionId } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { defaultUserList } from '../../../Calendar/defaultValue'
 
+type OtherType = {
+  label: string
+  value: string
+}
+
 type FilterComponentProps = {
   grades: string[]
   users: string[]
   programYears: string[]
   schoolPartners: string[]
+  others: string[]
   gradesInvalid: boolean
   usersInvalid: boolean
   schoolPartnersInvalid: boolean
   programYearsInvalid: boolean
+  setOthers: (value: string[]) => void
   setUsers: (value: string[]) => void
   setGrades: (value: string[]) => void
   setGradesInvalid: (value: boolean) => void
@@ -36,6 +43,8 @@ const FilterComponent: React.FC<FilterComponentProps> = ({
   schoolPartners,
   gradesInvalid,
   usersInvalid,
+  others,
+  setOthers,
   setUsers,
   setGrades,
   setGradesInvalid,
@@ -69,11 +78,38 @@ const FilterComponent: React.FC<FilterComponentProps> = ({
     if (grades.length !== 0) setGradesInvalid(false)
   }, [grades])
 
-  const { gradeList, programYearList, schoolPartnerList } = useCurrentGradeAndProgramByRegionId(
+  const { gradeList, programYearList, schoolPartnerList, testPreference } = useCurrentGradeAndProgramByRegionId(
     Number(me?.selectedRegionId),
   )
   const [expand, setExpand] = useState<boolean>(true)
   const [showOtherFilters, setShowOtherFilters] = useState(false)
+  const [otherList, setOtherList] = useState<OtherType[]>([])
+
+  useEffect(() => {
+    const defaultList = [
+      {
+        label: 'Diploma-seeking',
+        value: 'diploma-seeking',
+      },
+      {
+        label: 'Non Diploma-seeking',
+        value: 'non-diploma-seeking',
+      },
+    ]
+    if (testPreference) {
+      defaultList.push(
+        {
+          label: 'Testing Opt-in',
+          value: 'testing-opt-in',
+        },
+        {
+          label: 'Testing Opt-out',
+          value: 'testing-opt-out',
+        },
+      )
+    }
+    setOtherList(defaultList)
+  }, [testPreference, me?.selectedRegionId])
 
   const chevron = () =>
     !expand ? (
@@ -147,6 +183,16 @@ const FilterComponent: React.FC<FilterComponentProps> = ({
                   setSchoolPartnersInvalid(false)
                 }}
                 checkboxLists={schoolPartnerList}
+                haveSelectAll={false}
+              />
+
+              <MthCheckboxList
+                title={'Other'}
+                values={others}
+                setValues={(value) => {
+                  setOthers(value)
+                }}
+                checkboxLists={otherList}
                 haveSelectAll={false}
               />
             </>

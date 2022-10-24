@@ -68,6 +68,7 @@ const AnnouncementTable: FunctionComponent<AnnouncementTableProps> = ({ setAnnou
             status: announcement.status,
             filterGrades: announcement.filter_grades,
             filterUsers: announcement.filter_users,
+            filterOthers: announcement.filter_others,
             regionId: announcement.RegionId,
             body: announcement.body,
             scheduleTime: announcement.schedule_time,

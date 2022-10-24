@@ -13,7 +13,7 @@ import { Title } from '../Typography/Title/Title'
 import { useStyles } from './styles'
 import { EmailModalTemplateType } from './types'
 
-export const ApplicationEmailModal: EmailModalTemplateType = ({
+export const EnrollmentEmailModal: EmailModalTemplateType = ({
   handleSubmit,
   handleModem,
   title,

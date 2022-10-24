@@ -33,6 +33,7 @@ export const ScheduleTableFilters: FunctionComponent<EnrollmentScheduleProps> = 
         justifyContent: 'space-between',
         marginTop: '27px',
         marginBottom: '30px',
+        paddingX: '50px',
         paddingY: 3,
       }}
     >

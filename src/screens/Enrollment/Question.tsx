@@ -230,7 +230,13 @@ function Item({
   )
 
   useEffect(() => {
-    if (q.type !== QUESTION_TYPE.TEXTFIELD && q.type !== QUESTION_TYPE.CALENDAR && fieldData && keyName && fieldName) {
+    if (
+      q.type !== QUESTION_TYPE.TEXTFIELD &&
+      q.type !== QUESTION_TYPE.CALENDAR &&
+      keyName &&
+      fieldName &&
+      fieldData != undefined
+    ) {
       formik.values[`${keyName}`][`${fieldName}`] = fieldData
     }
   }, [fieldData, q, keyName, fieldName])
@@ -457,7 +463,11 @@ function Item({
                 <Grid item xs={q.options.length > 3 ? 6 : 12} key={index}>
                   <FormControlLabel
                     control={
-                      <Radio checked={fieldData === o.label} onClick={() => onChange(o.label)} disabled={disabled} />
+                      <Radio
+                        checked={fieldData === (q.slug == 'meta_special_education' ? o.value : o.label)}
+                        onClick={() => onChange(q.slug == 'meta_special_education' ? o.value : o.label)}
+                        disabled={disabled}
+                      />
                     }
                     label={o.label}
                   />

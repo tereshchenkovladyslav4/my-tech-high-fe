@@ -172,7 +172,7 @@ function Item({
   }, [q])
 
   useEffect(() => {
-    if (q.type !== QUESTION_TYPE.TEXTFIELD && q.type !== QUESTION_TYPE.CALENDAR && fieldData) {
+    if (q.type !== QUESTION_TYPE.TEXTFIELD && q.type !== QUESTION_TYPE.CALENDAR && fieldData != undefined) {
       setValue(q.slug, fieldData)
     }
   }, [fieldData, q])
@@ -448,7 +448,12 @@ function Item({
                 {q.options.map((o, index) => (
                   <Grid item xs={q.options.length > 3 ? 6 : 12} key={index}>
                     <FormControlLabel
-                      control={<Radio checked={field.value === o.label} onClick={() => onHandleChange(o.label)} />}
+                      control={
+                        <Radio
+                          checked={field.value === (q.slug == 'meta_special_education' ? o.value : o.label)}
+                          onClick={() => onHandleChange(q.slug == 'mega_special_education' ? o.value : o.label)}
+                        />
+                      }
                       label={o.label}
                     />
                   </Grid>

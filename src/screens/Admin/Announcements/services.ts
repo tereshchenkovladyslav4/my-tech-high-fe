@@ -8,6 +8,7 @@ export const getAnnouncementsQuery = gql`
       date
       filter_grades
       filter_users
+      filter_others
       posted_by
       schedule_time
       status

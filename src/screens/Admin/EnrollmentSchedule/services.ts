@@ -65,25 +65,6 @@ export const getApplicationsQuery = gql`
   }
 `
 
-export const getApplicationQuestionsGql = gql`
-  query getApplicationQuestions($input: ApplicatinQuestionsInput) {
-    getApplicationQuestions(input: $input) {
-      id
-      type
-      order
-      question
-      options
-      required
-      default_question
-      student_question
-      validation
-      region_id
-      slug
-      additional_question
-    }
-  }
-`
-
 export const approveApplicationMutation = gql`
   mutation AcceptApplication($acceptApplicationInput: AcceptApplicationInput!) {
     acceptApplication(acceptApplicationInput: $acceptApplicationInput) {

@@ -7,13 +7,12 @@ import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
 import draftToHtml from 'draftjs-to-html'
 import htmlToDraft from 'html-to-draftjs'
 import Wysiwyg from 'react-draft-wysiwyg'
-
-import { Paragraph } from '../Typography/Paragraph/Paragraph'
-import { Title } from '../Typography/Title/Title'
+import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
+import { Title } from '@mth/components/Typography/Title/Title'
 import { useStyles } from './styles'
 import { EmailModalTemplateType } from './types'
 
-export const ApplicationEmailModal: EmailModalTemplateType = ({
+export const EmailModal: EmailModalTemplateType = ({
   handleSubmit,
   handleModem,
   title,
@@ -92,7 +91,6 @@ export const ApplicationEmailModal: EmailModalTemplateType = ({
           </Box>
         )}
         <Title fontWeight='700'>{title}</Title>
-        {/* {options && <StandardResponses options={options} />} */}
         {editFrom && (
           <OutlinedInput
             value={emailFrom}
@@ -128,7 +126,7 @@ export const ApplicationEmailModal: EmailModalTemplateType = ({
                 'textAlign',
                 'colorPicker',
                 'link',
-                'embedded' /*, 'emoji'*/,
+                'embedded',
                 'image',
                 'remove',
                 'history',
