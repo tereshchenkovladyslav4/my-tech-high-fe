@@ -32,10 +32,10 @@ export type Course = {
   id: number
   provider_id: number
   name: string
-  min_grade: string
-  max_grade: string
-  min_alt_grade: string
-  max_alt_grade: string
+  min_grade: number | null
+  max_grade: number | null
+  min_alt_grade: number | null
+  max_alt_grade: number | null
   always_unlock: boolean
   software_reimbursement: boolean
   display_notification: false
@@ -66,6 +66,7 @@ export type CoursesProps = {
   schoolYearId: number
   schoolYearData?: SchoolYearRespnoseType
   provider: Provider
+  showArchived: boolean
   refetch: () => void
 }
 

@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from 'react'
 import { ApolloError, useQuery } from '@apollo/client'
 import moment from 'moment'
+import { DropDownItem } from '@mth/components/DropDown/types'
 import { CheckBoxListVM } from '@mth/components/MthCheckBoxList/MthCheckboxList'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { getSchoolYearsByRegionId } from '@mth/screens/Admin/SiteManagement/services'
@@ -26,12 +27,14 @@ export const useProgramYearListBySchoolYearId = (
   loading: boolean
   programYearList: CheckBoxListVM[]
   gradeList: CheckBoxListVM[]
+  numericGradeList: DropDownItem[]
   specialEdList: CheckBoxListVM[]
   error: ApolloError | undefined
 } => {
   const { me } = useContext(UserContext)
   const [programYearList, setProgramYearList] = useState<CheckBoxListVM[]>([])
   const [availableGrades, setAvailableGrades] = useState<CheckBoxListVM[]>([])
+  const [numericGrades, setNumericGrades] = useState<DropDownItem[]>([])
   const [specialEdOptions, setSpecialEdOptions] = useState<CheckBoxListVM[]>([])
 
   const { loading, data, error } = useQuery(getSchoolYearsByRegionId, {
@@ -62,6 +65,20 @@ export const useProgramYearListBySchoolYearId = (
                 }
             })
             setAvailableGrades(availGrades)
+
+            const numericGrades = sortedGrades?.split(',').map((item: string) => {
+              if (item.includes('K'))
+                return {
+                  label: 'Kindergarten',
+                  value: -1,
+                }
+              else
+                return {
+                  label: `${toOrdinalSuffix(Number(item))} Grade`,
+                  value: +item,
+                }
+            })
+            setNumericGrades(numericGrades)
           } else {
             setAvailableGrades([])
           }
@@ -108,6 +125,7 @@ export const useProgramYearListBySchoolYearId = (
     loading: loading,
     programYearList: programYearList,
     gradeList: availableGrades,
+    numericGradeList: numericGrades,
     specialEdList: specialEdOptions,
     error: error,
   }

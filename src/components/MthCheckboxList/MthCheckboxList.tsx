@@ -8,6 +8,7 @@ import { MthColor } from '@mth/enums'
 export type CheckBoxListVM = {
   label: string
   value: string
+  disabled?: boolean
 }
 
 type MthCheckboxListProps = {
@@ -65,7 +66,12 @@ const MthCheckboxList: React.FC<MthCheckboxListProps> = ({
             key={index}
             sx={{ height: 30, width: 'max-content' }}
             control={
-              <Checkbox checked={values.includes(list.value)} value={list.value} onChange={handleChangeValues} />
+              <Checkbox
+                checked={values.includes(list.value)}
+                value={list.value}
+                onChange={handleChangeValues}
+                disabled={list.disabled === true}
+              />
             }
             label={
               <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>

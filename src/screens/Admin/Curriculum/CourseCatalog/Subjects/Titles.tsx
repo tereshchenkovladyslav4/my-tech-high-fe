@@ -19,8 +19,9 @@ import {
 import TitleConfirmModal from '@mth/screens/Admin/Curriculum/CourseCatalog/Subjects/TitleConfirmModl/TitleConfirmModal'
 import { TitleEdit } from '@mth/screens/Admin/Curriculum/CourseCatalog/Subjects/TitleEdit'
 import { EventType, Title, TitlesProps } from '@mth/screens/Admin/Curriculum/CourseCatalog/Subjects/types'
+import { gradeShortText } from '@mth/utils'
 
-const Titles: React.FC<TitlesProps> = ({ schoolYearId, schoolYearData, subject, refetch }) => {
+const Titles: React.FC<TitlesProps> = ({ schoolYearId, schoolYearData, subject, showArchived = false, refetch }) => {
   const [loading] = useState(false)
   const [updateTitle, {}] = useMutation(createOrUpdateTitleMutation)
   const [deleteTitle, {}] = useMutation(deleteTitleMutation)
@@ -161,7 +162,7 @@ const Titles: React.FC<TitlesProps> = ({ schoolYearId, schoolYearData, subject, 
     return {
       columns: {
         name: <Typography sx={{ color: MthColor.MTHBLUE, fontSize: 'inherit' }}>{title.name}</Typography>,
-        grades: `${title.min_grade?.startsWith('K') ? 'K' : title.min_grade} - ${title.max_grade}`,
+        grades: `${gradeShortText(title.min_grade)} - ${gradeShortText(title.max_grade)}`,
         diplomaSeeking: DIPLOMA_SEEKING_PATH_ITEMS.find((x) => x.value == title.diploma_seeking_path)?.label || 'NA',
         customBuilt: title.custom_built === undefined ? 'N/A' : title.custom_built ? 'Yes' : 'No',
         thirdParty: title.third_party_provider === undefined ? 'N/A' : title.third_party_provider ? 'Yes' : 'No',
@@ -250,7 +251,7 @@ const Titles: React.FC<TitlesProps> = ({ schoolYearId, schoolYearData, subject, 
         </Box>
       )}
 
-      {subject.is_active && (
+      {!showArchived && (
         <Box sx={{ mt: '56px' }}>
           <Button
             variant='contained'

@@ -450,7 +450,7 @@ const Periods: FunctionComponent = () => {
           p: 4,
           borderRadius: '12px',
           boxShadow: '0px 0px 35px rgba(0, 0, 0, 0.05)',
-          minHeight: 'calc(100vh - 195px)',
+          minHeight: 'calc(100vh - 150px)',
         }}
       >
         <Box sx={{ mb: 4 }}>
@@ -479,18 +479,20 @@ const Periods: FunctionComponent = () => {
           />
         </Box>
 
-        <Box sx={{ mt: 4, textAlign: 'left' }}>
-          <Button
-            variant='contained'
-            onClick={handleCreateModal}
-            disableElevation
-            sx={classes.addButton}
-            size='large'
-            className='bg-gradient'
-          >
-            + Add Period
-          </Button>
-        </Box>
+        {!query.archived && (
+          <Box sx={{ mt: 4, textAlign: 'left' }}>
+            <Button
+              variant='contained'
+              onClick={handleCreateModal}
+              disableElevation
+              sx={classes.addButton}
+              size='large'
+              className='bg-gradient'
+            >
+              + Add Period
+            </Button>
+          </Box>
+        )}
       </Card>
 
       <MthModal

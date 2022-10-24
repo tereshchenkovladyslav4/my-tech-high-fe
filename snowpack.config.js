@@ -37,5 +37,6 @@ module.exports = {
     '@mth/providers': './src/providers',
     '@mth/screens': './src/screens',
     '@mth/utils': './src/core/utils',
+    '@mth/styles': './src/styles',
   },
 }

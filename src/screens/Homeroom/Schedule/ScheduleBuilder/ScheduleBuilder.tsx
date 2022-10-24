@@ -19,7 +19,7 @@ import { CourseType, MthColor, MthTitle, ReduceFunds } from '@mth/enums'
 import { getAllScheduleBuilderQuery } from '@mth/graphql/queries/schedule-builder'
 import { CustomBuiltDescriptionEdit } from '@mth/screens/Homeroom/Schedule/ScheduleBuilder/CustomBuiltDescription'
 import { getStudentPeriodsQuery } from '@mth/screens/Homeroom/Schedule/services'
-import { extractContent } from '@mth/utils'
+import { extractContent, gradeShortText } from '@mth/utils'
 import { Course, Period, ScheduleBuilderProps, ScheduleData, Subject, Title } from '../types'
 import { OnSiteSplitEnrollmentEdit } from './OnSiteSplitEnrollmentEdit'
 import { OnSiteSplitEnrollment } from './OnSiteSplitEnrollmentEdit/types'
@@ -127,7 +127,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
         subMenu.showLessLabel = 'Hide options for other grades'
         subject.AltTitles?.forEach((title) => {
           subMenu.moreItems?.push({
-            label: `${title.name} (${title.min_alt_grade}-${title.max_alt_grade})`,
+            label: `${title.name} (${gradeShortText(title.min_alt_grade)}-${gradeShortText(title.max_alt_grade)})`,
             callback: () => handleSelectTitle(schedule, title),
           })
         })
@@ -195,7 +195,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
         subMenu.showLessLabel = 'Hide options for other grades'
         provider.AltCourses?.forEach((course) => {
           subMenu.moreItems?.push({
-            label: `${course.name} (${course.min_alt_grade}-${course.max_alt_grade})`,
+            label: `${title.name} (${gradeShortText(course.min_alt_grade)}-${gradeShortText(course.max_alt_grade)})`,
             callback: () => handleSelectCourse(schedule, course),
           })
         })
@@ -480,15 +480,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
                 </Typography>
               ))}
             {item.rawData.CourseType === CourseType.MTH_DIRECT && item.rawData.OnSiteSplitEnrollment && (
-              <Box
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  paddingRight: 10,
-                  marginTop: 3,
-                }}
-              >
+              <Box sx={scheduleBuilderClasses.descriptionWrap}>
                 <Box>
                   <Typography sx={scheduleBuilderClasses.tableContent}>
                     {item.rawData.OnSiteSplitEnrollment.districtSchool}
@@ -503,35 +495,21 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
                 <Box>
                   <Tooltip title='Edit' placement='top'>
                     <IconButton
-                      sx={{
-                        position: 'relative',
-                        bottom: '2px',
-                        width: '50px',
-                        height: '50px',
-                        marginY: 'auto',
-                      }}
+                      sx={scheduleBuilderClasses.editButton}
                       onClick={() => {
                         setShowOnSiteSplitEnrollmentModal(true)
                         setSelectedOnSiteSplitEnrollment(item.rawData.OnSiteSplitEnrollment)
                         setSelectedSchedule(item.rawData)
                       }}
                     >
-                      <ModeEditIcon sx={{ fontSize: '25px', fontWeight: 700, color: MthColor.SYSTEM_06 }} />
+                      <ModeEditIcon sx={scheduleBuilderClasses.editIcon} />
                     </IconButton>
                   </Tooltip>
                 </Box>
               </Box>
             )}
             {item.rawData.CourseType === CourseType.THIRD_PARTY_PROVIDER && item.rawData.ThirdParty && (
-              <Box
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  paddingRight: 10,
-                  marginTop: 3,
-                }}
-              >
+              <Box sx={scheduleBuilderClasses.descriptionWrap}>
                 <Box>
                   <Typography sx={scheduleBuilderClasses.tableContent}>
                     {item.rawData.ThirdParty?.providerName}
@@ -554,13 +532,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
                 <Box>
                   <Tooltip title='Edit' placement='top'>
                     <IconButton
-                      sx={{
-                        position: 'relative',
-                        bottom: '2px',
-                        width: '50px',
-                        height: '50px',
-                        marginY: 'auto',
-                      }}
+                      sx={scheduleBuilderClasses.editButton}
                       onClick={() => {
                         setShowThirdPartyProviderModal(true)
                         setSelectedThridPartyProvider(item.rawData.ThirdParty)
@@ -568,19 +540,32 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
                         setSelectedCourseType(item.rawData?.CourseType)
                       }}
                     >
-                      <ModeEditIcon sx={{ fontSize: '25px', fontWeight: 700, color: MthColor.SYSTEM_06 }} />
+                      <ModeEditIcon sx={scheduleBuilderClasses.editIcon} />
                     </IconButton>
                   </Tooltip>
                 </Box>
               </Box>
             )}
             {item.rawData.CourseType === CourseType.CUSTOM_BUILT && !!item.rawData.CustomBuiltDescription && (
-              <Typography
-                sx={scheduleBuilderClasses.tableContent}
-                component={'span'}
-                variant={'body2'}
-                dangerouslySetInnerHTML={{ __html: item.rawData.CustomBuiltDescription }}
-              />
+              <Box sx={scheduleBuilderClasses.descriptionWrap}>
+                <Typography
+                  sx={scheduleBuilderClasses.tableContent}
+                  component={'span'}
+                  variant={'body2'}
+                  dangerouslySetInnerHTML={{ __html: item.rawData.CustomBuiltDescription }}
+                />
+                <Tooltip title='Edit' placement='top'>
+                  <IconButton
+                    sx={scheduleBuilderClasses.editButton}
+                    onClick={() => {
+                      setSelectedSchedule(item.rawData)
+                      setShowCustomBuilt(true)
+                    }}
+                  >
+                    <ModeEditIcon sx={scheduleBuilderClasses.editIcon} />
+                  </IconButton>
+                </Tooltip>
+              </Box>
             )}
           </Box>
         )
@@ -839,7 +824,9 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
       {showCustomBuilt && !!selectedSchedule && (
         <CustomBuiltDescriptionEdit
           setShowEditModal={setShowCustomBuilt}
-          customBuiltDescription={selectedSchedule?.Title?.custom_built_description}
+          customBuiltDescription={
+            selectedSchedule?.CustomBuiltDescription || selectedSchedule?.Title?.custom_built_description
+          }
           onSave={handleSaveCustomBuiltDescription}
         />
       )}

@@ -38,10 +38,10 @@ export type Title = {
   title_id: number
   subject_id: number
   name: string
-  min_grade: string
-  max_grade: string
-  min_alt_grade: string
-  max_alt_grade: string
+  min_grade: number | null
+  max_grade: number | null
+  min_alt_grade: number | null
+  max_alt_grade: number | null
   diploma_seeking_path?: DiplomaSeekingPath
   reduce_funds: ReduceFunds
   price: number | null
@@ -69,6 +69,7 @@ export type TitlesProps = {
   schoolYearId: number
   schoolYearData?: SchoolYearRespnoseType
   subject: Subject
+  showArchived: boolean
   refetch: () => void
 }
 

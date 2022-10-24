@@ -1,21 +1,19 @@
 import React, { useEffect, useState } from 'react'
-import { useMutation, useQuery } from '@apollo/client'
+import { useMutation } from '@apollo/client'
 import { Box, Modal } from '@mui/material'
 import { Form, Formik } from 'formik'
 import { Prompt } from 'react-router-dom'
 import * as yup from 'yup'
 import { CustomModal } from '@mth/components/CustomModal/CustomModals'
-import { CheckBoxListVM } from '@mth/components/MthCheckboxList/MthCheckboxList'
 import { MthColor, MthTitle, ReduceFunds } from '@mth/enums'
+import { usePeriods } from '@mth/hooks'
 import { defaultProviderFormData } from '@mth/screens/Admin/Curriculum/CourseCatalog/Providers/defaultValues'
 import ProviderForm from '@mth/screens/Admin/Curriculum/CourseCatalog/Providers/ProviderEdit/ProviderForm'
 import { createOrUpdateProviderMutation } from '@mth/screens/Admin/Curriculum/CourseCatalog/services'
-import { getPeriods } from '@mth/screens/Admin/Curriculum/services'
 import SaveCancelComponent from '../../Components/SaveCancelComponent/SaveCancelComponent'
 import { Period, ProviderEditProps, Provider } from '../types'
 
 const ProviderEdit: React.FC<ProviderEditProps> = ({ schoolYearId, item, refetch, setShowEditModal }) => {
-  const [periodsItems, setPeriodsItems] = useState<CheckBoxListVM[]>([])
   const [isChanged, setIsChanged] = useState<boolean>(false)
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false)
   const [showCancelModal, setShowCancelModal] = useState<boolean>(false)
@@ -23,11 +21,12 @@ const ProviderEdit: React.FC<ProviderEditProps> = ({ schoolYearId, item, refetch
   const [initialValues, setInitialValues] = useState<Provider>(defaultProviderFormData)
   const [submitSave, {}] = useMutation(createOrUpdateProviderMutation)
 
-  const { loading, data: periodsData } = useQuery(getPeriods, {
-    variables: { school_year_id: +schoolYearId, archived: false },
-    skip: !schoolYearId,
-    fetchPolicy: 'network-only',
-  })
+  const { checkBoxItems: periodsItems } = usePeriods(
+    +schoolYearId,
+    undefined,
+    undefined,
+    (item?.Periods || []).reduce((acc: number[], cur: Period) => acc.concat([cur.id]), []),
+  )
 
   const handleCancel = () => {
     if (isChanged) {
@@ -88,18 +87,13 @@ const ProviderEdit: React.FC<ProviderEditProps> = ({ schoolYearId, item, refetch
   }
 
   useEffect(() => {
-    if (!loading && periodsData) {
-      const { periods } = periodsData
-      setPeriodsItems(
-        (periods || []).map((item: Period): CheckBoxListVM => {
-          return {
-            label: `Period ${item.period} - ${item.category}`,
-            value: item.id.toString(),
-          }
-        }),
-      )
-    }
-  }, [loading, periodsData])
+    if (item?.id)
+      setInitialValues({
+        ...item,
+        PeriodIds: item.Periods.map((x: Period) => x.id.toString()),
+        price: item.price || null,
+      })
+  }, [item])
 
   useEffect(() => {
     if (item?.id)

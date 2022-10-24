@@ -28,7 +28,7 @@ const CourseEdit: React.FC<CourseEditProps> = ({
   const [submitSave, {}] = useMutation(createOrUpdateCourseMutation)
 
   const { checkBoxItems: providerItems, providers } = useProviders(schoolYearId)
-  const { gradeList: gradeOptions } = useProgramYearListBySchoolYearId(schoolYearId)
+  const { numericGradeList: gradeOptions } = useProgramYearListBySchoolYearId(schoolYearId)
   const { scheduleBuilder } = useScheduleBuilder(me?.selectedRegionId)
 
   const handleCancel = () => {

@@ -87,8 +87,8 @@ export type Course = {
   id: number
   provider_id: number
   name: string
-  min_alt_grade: string
-  max_alt_grade: string
+  min_alt_grade: number
+  max_alt_grade: number
   website: string
   display_notification: boolean
   course_notification: string
@@ -113,8 +113,8 @@ export type Title = {
   subject_notification: string
   reduce_funds: ReduceFunds
   reduce_funds_notification: string
-  min_alt_grade: string
-  max_alt_grade: string
+  min_alt_grade: number
+  max_alt_grade: number
   custom_built: boolean
   custom_built_description: string
   third_party_provider: boolean

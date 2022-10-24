@@ -20,6 +20,7 @@ import { SubjectConfirmModal } from '@mth/screens/Admin/Curriculum/CourseCatalog
 import { SubjectEdit } from '@mth/screens/Admin/Curriculum/CourseCatalog/Subjects/SubjectEdit'
 import Titles from '@mth/screens/Admin/Curriculum/CourseCatalog/Subjects/Titles'
 import { EventType, Subject } from '@mth/screens/Admin/Curriculum/CourseCatalog/Subjects/types'
+import { commonClasses } from '@mth/styles/common.style'
 import CourseCatalogHeader from '../Components/CourseCatalogHeader/CourseCatalogHeader'
 
 const Subjects: React.FC = () => {
@@ -146,7 +147,13 @@ const Subjects: React.FC = () => {
       isSelected: subject.allow_request,
       rawData: subject,
       expandNode: (
-        <Titles schoolYearId={selectedYear} schoolYearData={selectedYearData} subject={subject} refetch={refetch} />
+        <Titles
+          schoolYearId={selectedYear}
+          schoolYearData={selectedYearData}
+          subject={subject}
+          showArchived={showArchived}
+          refetch={refetch}
+        />
       ),
     }
   }
@@ -219,8 +226,8 @@ const Subjects: React.FC = () => {
   }, [subjects, showArchived])
 
   return (
-    <Box sx={{ p: 4, textAlign: 'left' }}>
-      <Card sx={{ p: 4, borderRadius: '12px', boxShadow: '0px 0px 35px rgba(0, 0, 0, 0.05)' }}>
+    <Box sx={commonClasses.mainLayout}>
+      <Card sx={{ ...commonClasses.mainBlock, ...commonClasses.fitScreen }}>
         <CourseCatalogHeader
           title='Subjects'
           selectedYear={selectedYear}
@@ -240,35 +247,38 @@ const Subjects: React.FC = () => {
             disableSelectAll={showArchived}
             isDraggable={true}
             checkBoxColor='secondary'
+            isMultiRowExpandable={true}
             onArrange={handleArrange}
             onSelectionChange={handleAllowRequestChange}
           />
         </Box>
 
-        <Box sx={{ mt: '100px' }}>
-          <Button
-            variant='contained'
-            sx={{
-              borderRadius: 2,
-              fontSize: 12,
-              background: 'linear-gradient(90deg, #3E2783 0%, rgba(62, 39, 131, 0) 100%) #4145FF',
-              width: 140,
-              height: 48,
-              fontWeight: 700,
-              textTransform: 'none',
-              '&:hover': {
-                background: MthColor.PRIMARY_MEDIUM_MOUSEOVER,
-                color: 'white',
-              },
-            }}
-            onClick={() => {
-              setSelectedSubject(undefined)
-              setShowEditModal(true)
-            }}
-          >
-            <Subtitle sx={{ fontSize: '14px', fontWeight: '700' }}>+ Add Subject</Subtitle>
-          </Button>
-        </Box>
+        {!showArchived && (
+          <Box sx={{ mt: '100px' }}>
+            <Button
+              variant='contained'
+              sx={{
+                borderRadius: 2,
+                fontSize: 12,
+                background: 'linear-gradient(90deg, #3E2783 0%, rgba(62, 39, 131, 0) 100%) #4145FF',
+                width: 140,
+                height: 48,
+                fontWeight: 700,
+                textTransform: 'none',
+                '&:hover': {
+                  background: MthColor.PRIMARY_MEDIUM_MOUSEOVER,
+                  color: 'white',
+                },
+              }}
+              onClick={() => {
+                setSelectedSubject(undefined)
+                setShowEditModal(true)
+              }}
+            >
+              <Subtitle sx={{ fontSize: '14px', fontWeight: '700' }}>+ Add Subject</Subtitle>
+            </Button>
+          </Box>
+        )}
       </Card>
 
       {showEditModal && (

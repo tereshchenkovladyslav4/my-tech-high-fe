@@ -20,13 +20,14 @@ const MthTable = <T extends unknown>({
   oddBg = true,
   borderBottom = true,
   isDraggable = false,
+  isMultiRowExpandable = false,
   onArrange,
   onSelectionChange,
   sx = [],
 }: MthTableProps<T>): React.ReactElement => {
   const [numSelected, setNumSelected] = useState<number>(0)
   const [rowCount, setRowCount] = useState<number>(0)
-  const [expandedIdx, setExpandedIdx] = useState<number | undefined>(undefined)
+  const [expandedIdx, setExpandedIdx] = useState<Array<number>>([])
   const [tableWidth, setTableWidth] = useState<number>(0)
   const tableRef = useRef<HTMLDivElement>(null)
 
@@ -51,13 +52,24 @@ const MthTable = <T extends unknown>({
   }
 
   const handleToggleExpand = (index: number) => {
-    setExpandedIdx((pre) => (index === pre ? undefined : index))
+    if (!expandedIdx.includes(index)) {
+      if (isMultiRowExpandable) {
+        setExpandedIdx((prev) => [...prev, index])
+      } else {
+        setExpandedIdx([index])
+      }
+    } else {
+      setExpandedIdx((prev) => prev.filter((item) => item !== index))
+    }
   }
 
   const reorder = (list: MthTableRowItem<T>[], startIndex: number, endIndex: number) => {
     const result = Array.from(list)
-    if (startIndex === expandedIdx) {
-      setExpandedIdx(endIndex)
+    if (expandedIdx.includes(startIndex)) {
+      let temp = [...expandedIdx]
+      temp = temp.filter((item) => item !== startIndex)
+      temp.push(endIndex)
+      setExpandedIdx(temp)
     }
     const [removed] = result.splice(startIndex, 1)
     result.splice(endIndex, 0, removed)
@@ -81,7 +93,7 @@ const MthTable = <T extends unknown>({
       }
     })
     checkSelectedItems()
-  }, [items])
+  }, [items, expandedIdx])
 
   useEffect(() => {
     const handleWindowResize = () => {
@@ -133,7 +145,7 @@ const MthTable = <T extends unknown>({
                       index={index}
                       fields={fields}
                       item={item}
-                      expanded={expandedIdx === index}
+                      expanded={expandedIdx.includes(index)}
                       selectable={selectable}
                       isDraggable={isDraggable}
                       size={size}

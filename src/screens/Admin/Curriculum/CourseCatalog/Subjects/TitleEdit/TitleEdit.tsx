@@ -28,7 +28,7 @@ const TitleEdit: React.FC<TitleEditProps> = ({
   const [submitSave, {}] = useMutation(createOrUpdateTitleMutation)
 
   const { checkBoxItems: subjectsItems } = useSubjects(schoolYearId)
-  const { gradeList: gradeOptions } = useProgramYearListBySchoolYearId(schoolYearId)
+  const { numericGradeList: gradeOptions } = useProgramYearListBySchoolYearId(schoolYearId)
   const { scheduleBuilder } = useScheduleBuilder(me?.selectedRegionId)
 
   const handleCancel = () => {

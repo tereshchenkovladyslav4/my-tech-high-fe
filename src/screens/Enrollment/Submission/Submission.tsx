@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import { useMutation } from '@apollo/client'
-import { Box, Button, Grid, FormHelperText } from '@mui/material'
+import { Box, Button, Grid, FormHelperText, TextField, outlinedInputClasses } from '@mui/material'
 import { useFormik } from 'formik'
 import { capitalize, omit } from 'lodash'
 import { useHistory } from 'react-router-dom'
@@ -12,7 +12,7 @@ import { SuccessModal } from '../../../components/SuccessModal/SuccessModal'
 import { Paragraph } from '../../../components/Typography/Paragraph/Paragraph'
 import { EnrollmentContext } from '../../../providers/EnrollmentPacketPrivder/EnrollmentPacketProvider'
 import { UserContext, UserInfo } from '../../../providers/UserContext/UserProvider'
-import { HOMEROOM, RED } from '../../../utils/constants'
+import { HOMEROOM, RED, SYSTEM_05, SYSTEM_07 } from '../../../utils/constants'
 import { isNumber } from '../../../utils/stringHelpers'
 import { EnrollmentQuestionItem } from '../Question'
 import { useStyles } from '../styles'
@@ -45,7 +45,13 @@ export const Submission: SubmissionTemplateType = ({ id, questions }) => {
 
   const student = students.find((s) => s.student_id === id)
 
-  const [validationSchema, setValidationSchema] = useState(yup.object({}))
+  const [validationSchema, setValidationSchema] = useState(
+    yup.object({
+      meta: yup.object({
+        meta_parentlegalname: yup.string().required('Parent legal name is required').nullable(),
+      }),
+    }),
+  )
 
   useEffect(() => {
     function handleResize() {
@@ -68,6 +74,7 @@ export const Submission: SubmissionTemplateType = ({ id, questions }) => {
       const valid_meta = {}
       const valid_address = {}
       const valid_packet = {}
+      valid_meta['meta_parentlegalname'] = yup.string().required('Parent legal name is required').nullable()
       questions.groups.map((g) => {
         g.questions.map((q) => {
           if (q.type !== QUESTION_TYPE.UPLOAD && q.type !== QUESTION_TYPE.INFORMATION) {
@@ -192,6 +199,11 @@ export const Submission: SubmissionTemplateType = ({ id, questions }) => {
   const [initFormikValues, setInitFormikValues] = useState({})
 
   useEffect(() => {
+    const metaData = student.packets.at(-1)?.meta && JSON.parse(student.packets.at(-1)?.meta)
+    if (!metaData.meta_parentlegalname) {
+      metaData.meta_parentlegalname = ''
+    }
+
     setInitFormikValues({
       parent: { ...profile, phone_number: profile.phone.number, emailConfirm: profile.email },
       student: {
@@ -202,11 +214,12 @@ export const Submission: SubmissionTemplateType = ({ id, questions }) => {
         emailConfirm: student.person.email,
       },
       packet: { ...student.packets.at(-1) },
-      meta: (student.packets.at(-1)?.meta && JSON.parse(student.packets.at(-1)?.meta)) || {},
+      meta: metaData || {},
       address: { ...student.person.address },
       school_year_id: student.current_school_year_status.school_year_id,
     })
   }, [profile, student])
+
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: initFormikValues,
@@ -366,8 +379,51 @@ export const Submission: SubmissionTemplateType = ({ id, questions }) => {
               }}
             >
               <FormHelperText style={{ textAlign: 'center' }}>
-                Type full legal parent name and provide a Digital Signature below (use the mouse to sign).
+                Type full legal parent name and provide a Digital Signature below.
               </FormHelperText>
+            </Box>
+          </Box>
+        </Grid>
+        <Grid item xs={12}>
+          <Box display='flex' flexDirection='column' alignItems='center' justifyContent={'center'} width='100%'>
+            <Box sx={{ width: '35%', display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+              <TextField
+                sx={{
+                  maxWidth: '99%',
+                  width: '99%',
+                  [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
+                    {
+                      borderColor: SYSTEM_07,
+                    },
+                }}
+                name={'meta.meta_parentlegalname'}
+                InputLabelProps={{
+                  style: { color: SYSTEM_05 },
+                }}
+                variant='outlined'
+                fullWidth
+                focused
+                placeholder='Entry'
+                error={formik.errors['meta'] && Boolean(formik.errors['meta']['meta_parentlegalname'])}
+                helperText={formik.errors['meta'] && formik.errors['meta']['meta_parentlegalname']}
+                onChange={formik.handleChange}
+                value={formik.values['meta'] ? formik.values['meta']['meta_parentlegalname'] : ''}
+              />
+            </Box>
+          </Box>
+        </Grid>
+        <Grid item xs={12}>
+          <Box display='flex' flexDirection='column' alignItems='center' justifyContent={'center'} width='100%'>
+            <Box
+              sx={{
+                width: { xs: '100%', sm: '35%' },
+                marginTop: { xs: '40px', sm: '0px' },
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'center',
+              }}
+            >
+              <FormHelperText style={{ textAlign: 'center' }}>Signature (use the mouse to sign)</FormHelperText>
             </Box>
           </Box>
         </Grid>

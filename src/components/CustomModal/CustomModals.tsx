@@ -1,6 +1,7 @@
 import React, { ReactNode } from 'react'
 import InfoIcon from '@mui/icons-material/InfoOutlined'
 import { Box, Button, Modal, Typography } from '@mui/material'
+import { customModalClasses } from '@mth/components/CustomModal/styles'
 
 export type CustomModalType = {
   title: string
@@ -59,29 +60,17 @@ export const CustomModal: React.FC<CustomModalType> = ({
           <Box
             sx={{
               display: 'flex',
-              justifyContent: showCancel ? 'space-between' : 'center',
+              justifyContent: 'center',
               marginTop: '30px',
-              gap: '20px',
+              gap: '40px',
             }}
           >
             {showCancel && (
-              <Button
-                sx={{ width: '160px', height: '36px', background: '#E7E7E7', borderRadius: '50px' }}
-                onClick={onClose}
-              >
+              <Button sx={customModalClasses.cancelBtn} onClick={onClose}>
                 {cancelStr}
               </Button>
             )}
-            <Button
-              sx={{
-                width: '160px',
-                height: '36px',
-                background: '#000000',
-                borderRadius: '50px',
-                color: 'white',
-              }}
-              onClick={onConfirm}
-            >
+            <Button sx={customModalClasses.confirmBtn} onClick={onConfirm}>
               {confirmStr}
             </Button>
           </Box>

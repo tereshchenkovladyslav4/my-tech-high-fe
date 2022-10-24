@@ -9,8 +9,8 @@ import { Box, Button, IconButton, Tooltip, Typography } from '@mui/material'
 import { MthTable } from '@mth/components/MthTable'
 import { MthTableField, MthTableRowItem } from '@mth/components/MthTable/types'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
-import { DIPLOMA_SEEKING_PATH_ITEMS, REDUCE_FUNDS_ITEMS } from '@mth/constants'
-import { MthColor } from '@mth/enums'
+import { DIPLOMA_SEEKING_PATH_ITEMS } from '@mth/constants'
+import { MthColor, ReduceFunds } from '@mth/enums'
 import { CourseConfirmModal } from '@mth/screens/Admin/Curriculum/CourseCatalog/Providers/CourseConfirmModl'
 import { CourseEdit } from '@mth/screens/Admin/Curriculum/CourseCatalog/Providers/CourseEdit'
 import { Course, CoursesProps, EventType } from '@mth/screens/Admin/Curriculum/CourseCatalog/Providers/types'
@@ -19,8 +19,9 @@ import {
   createOrUpdateCourseMutation,
   deleteCourseMutation,
 } from '@mth/screens/Admin/Curriculum/CourseCatalog/services'
+import { gradeShortText } from '@mth/utils'
 
-const Courses: React.FC<CoursesProps> = ({ schoolYearId, schoolYearData, provider, refetch }) => {
+const Courses: React.FC<CoursesProps> = ({ schoolYearId, schoolYearData, provider, showArchived = false, refetch }) => {
   const [loading] = useState(false)
   const [updateCourse, {}] = useMutation(createOrUpdateCourseMutation)
   const [deleteCourse, {}] = useMutation(deleteCourseMutation)
@@ -59,7 +60,7 @@ const Courses: React.FC<CoursesProps> = ({ schoolYearId, schoolYearData, provide
     },
     {
       key: 'limit',
-      label: 'Limits',
+      label: 'Limit',
       sortable: false,
       tdClass: '',
     },
@@ -152,9 +153,9 @@ const Courses: React.FC<CoursesProps> = ({ schoolYearId, schoolYearData, provide
     return {
       columns: {
         name: <Typography sx={{ color: MthColor.MTHBLUE, fontSize: 'inherit' }}>{course.name}</Typography>,
-        grades: `${course.min_grade?.startsWith('K') ? 'K' : course.min_grade} - ${course.max_grade}`,
+        grades: `${gradeShortText(course.min_grade)} - ${gradeShortText(course.max_grade)}`,
         diplomaSeeking: DIPLOMA_SEEKING_PATH_ITEMS.find((x) => x.value == course.diploma_seeking_path)?.label || 'NA',
-        reducesFunds: REDUCE_FUNDS_ITEMS.find((x) => x.value == course.reduce_funds)?.label || 'NA',
+        reducesFunds: course.reduce_funds === ReduceFunds.NONE ? 'No' : 'Yes',
         semesterOnly: course.always_unlock === undefined ? 'N/A' : course.always_unlock ? 'Yes' : 'No',
         limit: course.limit || 'NA',
         subjects: (course.Titles || []).map((item) => item.name).join(', '),
@@ -241,30 +242,32 @@ const Courses: React.FC<CoursesProps> = ({ schoolYearId, schoolYearData, provide
         </Box>
       )}
 
-      <Box sx={{ mt: '56px' }}>
-        <Button
-          variant='contained'
-          sx={{
-            borderRadius: 2,
-            fontSize: 12,
-            background: 'linear-gradient(90deg, #3E2783 0%, rgba(62, 39, 131, 0) 100%) #4145FF',
-            width: 160,
-            height: 37,
-            fontWeight: 700,
-            textTransform: 'none',
-            '&:hover': {
-              background: MthColor.PRIMARY_MEDIUM_MOUSEOVER,
-              color: 'white',
-            },
-          }}
-          onClick={() => {
-            setSelectedCourse(undefined)
-            setShowEditModal(true)
-          }}
-        >
-          <Subtitle sx={{ fontSize: '14px', fontWeight: '700' }}>+ Add Course</Subtitle>
-        </Button>
-      </Box>
+      {!showArchived && (
+        <Box sx={{ mt: '56px' }}>
+          <Button
+            variant='contained'
+            sx={{
+              borderRadius: 2,
+              fontSize: 12,
+              background: 'linear-gradient(90deg, #3E2783 0%, rgba(62, 39, 131, 0) 100%) #4145FF',
+              width: 160,
+              height: 37,
+              fontWeight: 700,
+              textTransform: 'none',
+              '&:hover': {
+                background: MthColor.PRIMARY_MEDIUM_MOUSEOVER,
+                color: 'white',
+              },
+            }}
+            onClick={() => {
+              setSelectedCourse(undefined)
+              setShowEditModal(true)
+            }}
+          >
+            <Subtitle sx={{ fontSize: '14px', fontWeight: '700' }}>+ Add Course</Subtitle>
+          </Button>
+        </Box>
+      )}
 
       {showEditModal && (
         <CourseEdit

@@ -35,6 +35,7 @@ export type MthTableProps<T> = {
   oddBg?: boolean
   borderBottom?: boolean
   isDraggable?: boolean
+  isMultiRowExpandable?: boolean
   onArrange?: (arrangedItems: MthTableRowItem<T>[]) => void
   onSelectionChange?: (arrangedItems: MthTableRowItem<T>[]) => void
   sx?: SxProps<Theme>

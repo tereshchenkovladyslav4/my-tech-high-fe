@@ -1,12 +1,14 @@
 import React, { FunctionComponent, useRef, useContext } from 'react'
-import { Box, Grid, FormHelperText } from '@mui/material'
+import { Box, Grid, FormHelperText, TextField, outlinedInputClasses } from '@mui/material'
 import { useFormikContext } from 'formik'
 import SignatureCanvas from 'react-signature-canvas'
 import { arrayMove, SortableContainer, SortableElement } from 'react-sortable-hoc'
 import { Paragraph } from '../../../../../../components/Typography/Paragraph/Paragraph'
+import { SYSTEM_05, SYSTEM_07 } from '../../../../../../utils/constants'
 import { EnrollmentQuestionItem } from '../Question'
 import { TabContext } from '../TabContextProvider'
 import { EnrollmentQuestionTab, EnrollmentQuestion } from '../types'
+
 const SortableItem = SortableElement(EnrollmentQuestionItem)
 
 const SortableListContainer = SortableContainer(({ items }: { items: EnrollmentQuestion[] }) => {
@@ -68,6 +70,29 @@ export const Submission: FunctionComponent = () => {
               <FormHelperText style={{ textAlign: 'center' }}>
                 Type full legal parent name and provide a Digital Signature below (use the mouse to sign).
               </FormHelperText>
+            </Box>
+          </Box>
+        </Grid>
+        <Grid item xs={12}>
+          <Box display='flex' flexDirection='column' alignItems='center' justifyContent={'center'} width='100%'>
+            <Box sx={{ width: '35%', display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+              <TextField
+                sx={{
+                  maxWidth: '99%',
+                  width: '99%',
+                  [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
+                    {
+                      borderColor: SYSTEM_07,
+                    },
+                }}
+                InputLabelProps={{
+                  style: { color: SYSTEM_05 },
+                }}
+                variant='outlined'
+                fullWidth
+                focused
+                placeholder='Entry'
+              />
             </Box>
           </Box>
         </Grid>

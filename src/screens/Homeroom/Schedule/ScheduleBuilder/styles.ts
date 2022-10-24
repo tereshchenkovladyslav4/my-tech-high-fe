@@ -59,4 +59,17 @@ export const scheduleBuilderClasses = {
     padding: '4px 4px 4px 0px',
     '&:hover': { border: 'none', background: MthColor.WHITE },
   },
+  descriptionWrap: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  editButton: {
+    position: 'relative',
+    bottom: '2px',
+    width: '32px',
+    height: '32px',
+    marginY: 'auto',
+  },
+  editIcon: { fontSize: '22px', fontWeight: 700, color: MthColor.SYSTEM_06 },
 }

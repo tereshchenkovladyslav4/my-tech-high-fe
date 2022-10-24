@@ -9,8 +9,7 @@ import { Box, Button, Card, IconButton, Tooltip } from '@mui/material'
 import { MthTable } from '@mth/components/MthTable'
 import { MthTableField, MthTableRowItem } from '@mth/components/MthTable/types'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
-import { REDUCE_FUNDS_ITEMS } from '@mth/constants'
-import { MthColor } from '@mth/enums'
+import { MthColor, ReduceFunds } from '@mth/enums'
 import { SchoolYearRespnoseType, useProviders } from '@mth/hooks'
 import Courses from '@mth/screens/Admin/Curriculum/CourseCatalog/Providers/Courses'
 import ProviderConfirmModal from '@mth/screens/Admin/Curriculum/CourseCatalog/Providers/ProviderConfirmModal/ProviderConfirmModal'
@@ -21,6 +20,7 @@ import {
   deleteProviderMutation,
 } from '@mth/screens/Admin/Curriculum/CourseCatalog/services'
 import { EventType } from '@mth/screens/Admin/Curriculum/CourseCatalog/Subjects/types'
+import { commonClasses } from '@mth/styles/common.style'
 import CourseCatalogHeader from '../Components/CourseCatalogHeader/CourseCatalogHeader'
 
 const Providers: React.FC = () => {
@@ -114,17 +114,15 @@ const Providers: React.FC = () => {
                 )}
               </>
             )}
-            {item.rawData.is_active && (
-              <IconButton
-                onClick={() => {
-                  if (item.toggleExpand) item.toggleExpand()
-                }}
-                className='actionButton expandButton'
-                color='primary'
-              >
-                <ExpandMoreOutlinedIcon />
-              </IconButton>
-            )}
+            <IconButton
+              onClick={() => {
+                if (item.toggleExpand) item.toggleExpand()
+              }}
+              className='actionButton expandButton'
+              color='primary'
+            >
+              <ExpandMoreOutlinedIcon />
+            </IconButton>
           </Box>
         )
       },
@@ -135,14 +133,20 @@ const Providers: React.FC = () => {
     return {
       columns: {
         name: provider.name,
-        reducesFunds: REDUCE_FUNDS_ITEMS.find((x) => x.value == provider.reduce_funds)?.label || 'NA',
+        reducesFunds: provider.reduce_funds === ReduceFunds.NONE ? 'No' : 'Yes',
         multiplePeriods: provider.multiple_periods === undefined ? 'N/A' : provider.multiple_periods ? 'Yes' : 'No',
       },
       selectable: !showArchived && provider.is_active,
       isSelected: provider.allow_request,
       rawData: provider,
       expandNode: (
-        <Courses schoolYearId={selectedYear} schoolYearData={selectedYearData} provider={provider} refetch={refetch} />
+        <Courses
+          schoolYearId={selectedYear}
+          schoolYearData={selectedYearData}
+          provider={provider}
+          showArchived={showArchived}
+          refetch={refetch}
+        />
       ),
     }
   }
@@ -196,8 +200,8 @@ const Providers: React.FC = () => {
   }, [providers, showArchived])
 
   return (
-    <Box sx={{ p: 4, textAlign: 'left' }}>
-      <Card sx={{ p: 4, borderRadius: '12px', boxShadow: '0px 0px 35px rgba(0, 0, 0, 0.05)' }}>
+    <Box sx={commonClasses.mainLayout}>
+      <Card sx={{ ...commonClasses.mainBlock, ...commonClasses.fitScreen }}>
         <CourseCatalogHeader
           title='Providers'
           selectedYear={selectedYear}
@@ -216,34 +220,37 @@ const Providers: React.FC = () => {
             selectable={true}
             disableSelectAll={showArchived}
             checkBoxColor='secondary'
+            isMultiRowExpandable={true}
             onSelectionChange={handleAllowRequestChange}
           />
         </Box>
 
-        <Box sx={{ mt: '100px' }}>
-          <Button
-            variant='contained'
-            sx={{
-              borderRadius: 2,
-              fontSize: 12,
-              background: 'linear-gradient(90deg, #3E2783 0%, rgba(62, 39, 131, 0) 100%) #4145FF',
-              width: 140,
-              height: 48,
-              fontWeight: 700,
-              textTransform: 'none',
-              '&:hover': {
-                background: MthColor.PRIMARY_MEDIUM_MOUSEOVER,
-                color: 'white',
-              },
-            }}
-            onClick={() => {
-              setSelectedProvider(undefined)
-              setShowEditModal(true)
-            }}
-          >
-            <Subtitle sx={{ fontSize: '14px', fontWeight: '700' }}>+ Add Provider</Subtitle>
-          </Button>
-        </Box>
+        {!showArchived && (
+          <Box sx={{ mt: '100px' }}>
+            <Button
+              variant='contained'
+              sx={{
+                borderRadius: 2,
+                fontSize: 12,
+                background: 'linear-gradient(90deg, #3E2783 0%, rgba(62, 39, 131, 0) 100%) #4145FF',
+                width: 140,
+                height: 48,
+                fontWeight: 700,
+                textTransform: 'none',
+                '&:hover': {
+                  background: MthColor.PRIMARY_MEDIUM_MOUSEOVER,
+                  color: 'white',
+                },
+              }}
+              onClick={() => {
+                setSelectedProvider(undefined)
+                setShowEditModal(true)
+              }}
+            >
+              <Subtitle sx={{ fontSize: '14px', fontWeight: '700' }}>+ Add Provider</Subtitle>
+            </Button>
+          </Box>
+        )}
       </Card>
 
       {showEditModal && (

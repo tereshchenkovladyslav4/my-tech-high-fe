@@ -24,9 +24,9 @@ export const StateCourseCords: React.FC = () => {
   }
 
   useEffect(() => {
-    const grades = [values?.min_grade, values.min_alt_grade, values?.max_grade, values.max_alt_grade]
-      .filter((item) => item != undefined && item != '')
-      .map((item) => (item?.startsWith('K') ? 0 : +item))
+    const grades: number[] = [values.min_grade, values.min_alt_grade, values.max_grade, values.max_alt_grade].filter(
+      (item) => !!item,
+    ) as number[]
     setMinGrade(Math.min(...grades, Number.POSITIVE_INFINITY))
     setMaxGrade(Math.max(...grades, Number.NEGATIVE_INFINITY))
   }, [values.min_grade, values.max_grade, values.min_alt_grade, values.max_alt_grade])

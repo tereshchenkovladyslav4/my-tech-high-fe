@@ -17,14 +17,14 @@ const TitleForm: React.FC<TitleFormProps> = ({ schoolYearData, subjectsItems, gr
   const [showGradeError, setShowGradeError] = useState<boolean>(false)
   const [showAltGradeError, setShowAltGradeError] = useState<boolean>(false)
 
-  const validateGrades = (field: string, newValue: string) => {
+  const validateGrades = (field: string, newValue: number) => {
     const newValues = { ...values, [field]: newValue }
     const grades = [
-      newValues?.min_grade || Number.NEGATIVE_INFINITY.toString(),
-      newValues?.max_grade || Number.POSITIVE_INFINITY.toString(),
-      newValues?.min_alt_grade || Number.NEGATIVE_INFINITY.toString(),
-      newValues?.max_alt_grade || Number.POSITIVE_INFINITY.toString(),
-    ].map((item) => (item?.startsWith('K') ? 0 : +item))
+      newValues?.min_grade || Number.NEGATIVE_INFINITY,
+      newValues?.max_grade || Number.POSITIVE_INFINITY,
+      newValues?.min_alt_grade || Number.NEGATIVE_INFINITY,
+      newValues?.max_alt_grade || Number.POSITIVE_INFINITY,
+    ]
 
     // Check grades
     if (grades[0] >= grades[1]) {
@@ -82,10 +82,10 @@ const TitleForm: React.FC<TitleFormProps> = ({ schoolYearData, subjectsItems, gr
                 labelTop
                 auto={false}
                 setParentValue={(value) => {
-                  validateGrades('min_grade', value.toString())
+                  validateGrades('min_grade', +value)
                 }}
                 sx={{ m: 0 }}
-                defaultValue={values?.min_grade}
+                defaultValue={values?.min_grade || undefined}
                 error={{ error: touched.min_grade && !!errors.min_grade, errorMsg: '' }}
               />
               <Subtitle sx={editTitleClasses.formError}>{touched.min_grade && errors.min_grade}</Subtitle>
@@ -97,10 +97,10 @@ const TitleForm: React.FC<TitleFormProps> = ({ schoolYearData, subjectsItems, gr
                 labelTop
                 auto={false}
                 setParentValue={(value) => {
-                  validateGrades('max_grade', value.toString())
+                  validateGrades('max_grade', +value)
                 }}
                 sx={{ m: 0 }}
-                defaultValue={values?.max_grade}
+                defaultValue={values?.max_grade || undefined}
                 error={{ error: touched.max_grade && !!errors.max_grade, errorMsg: '' }}
               />
               <Subtitle sx={editTitleClasses.formError}>{touched.max_grade && errors.max_grade}</Subtitle>
@@ -112,10 +112,10 @@ const TitleForm: React.FC<TitleFormProps> = ({ schoolYearData, subjectsItems, gr
                 labelTop
                 auto={false}
                 setParentValue={(value) => {
-                  validateGrades('min_alt_grade', value.toString())
+                  validateGrades('min_alt_grade', +value)
                 }}
                 sx={{ m: 0 }}
-                defaultValue={values?.min_alt_grade}
+                defaultValue={values?.min_alt_grade || undefined}
                 error={{ error: touched.min_alt_grade && !!errors.min_alt_grade, errorMsg: '' }}
               />
               <Subtitle sx={editTitleClasses.formError}>{touched.min_alt_grade && errors.min_alt_grade}</Subtitle>
@@ -127,10 +127,10 @@ const TitleForm: React.FC<TitleFormProps> = ({ schoolYearData, subjectsItems, gr
                 labelTop
                 auto={false}
                 setParentValue={(value) => {
-                  validateGrades('max_alt_grade', value.toString())
+                  validateGrades('max_alt_grade', +value)
                 }}
                 sx={{ m: 0 }}
-                defaultValue={values?.max_alt_grade}
+                defaultValue={values?.max_alt_grade || undefined}
                 error={{ error: touched.max_alt_grade && !!errors.max_alt_grade, errorMsg: '' }}
               />
               <Subtitle sx={editTitleClasses.formError}>{touched.max_alt_grade && errors.max_alt_grade}</Subtitle>
