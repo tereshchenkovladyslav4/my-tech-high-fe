@@ -154,32 +154,34 @@ export const EmailTemplatePage: FunctionComponent<{ onBackPress?: () => void }> 
   useEffect(() => {
     if (emailTemplatesData != undefined) {
       const templates = {}
-      emailTemplatesData.emailTemplatesByRegion.forEach((emailTemplate) => {
-        let category = null
-        const category_name = emailTemplate?.category?.category_name
+      emailTemplatesData.emailTemplatesByRegion
+        .sort((a, b) => (a.category_id * 1000 + parseInt(a.id) > b.category_id * 1000 + parseInt(b.id) ? 1 : -1))
+        .forEach((emailTemplate) => {
+          let category = null
+          const category_name = emailTemplate?.category?.category_name
 
-        if (!Object.keys(templates).find((x) => x == category_name)) templates[category_name] = []
+          if (!Object.keys(templates).find((x) => x == category_name)) templates[category_name] = []
 
-        category = templates[category_name]
-        category.push({
-          id: Number(emailTemplate.id),
-          template_name: emailTemplate.template_name,
-          title: emailTemplate.title,
-          subject: emailTemplate.subject,
-          body: emailTemplate.body,
-          from: emailTemplate.from,
-          bcc: emailTemplate.bcc,
-          standard_responses:
-            emailTemplate.standard_responses && JSON.parse(emailTemplate.standard_responses).length > 0
-              ? JSON.parse(emailTemplate.standard_responses)
-              : [],
-          category_id: emailTemplate.category_id,
-          category: emailTemplate.category,
-          template: emailTemplate.template,
-          inserts: emailTemplate?.inserts?.split(','),
-          region_id: emailTemplate.region_id,
+          category = templates[category_name]
+          category.push({
+            id: Number(emailTemplate.id),
+            template_name: emailTemplate.template_name,
+            title: emailTemplate.title,
+            subject: emailTemplate.subject,
+            body: emailTemplate.body,
+            from: emailTemplate.from,
+            bcc: emailTemplate.bcc,
+            standard_responses:
+              emailTemplate.standard_responses && JSON.parse(emailTemplate.standard_responses).length > 0
+                ? JSON.parse(emailTemplate.standard_responses)
+                : [],
+            category_id: emailTemplate.category_id,
+            category: emailTemplate.category,
+            template: emailTemplate.template,
+            inserts: emailTemplate?.inserts?.split(','),
+            region_id: emailTemplate.region_id,
+          })
         })
-      })
       setEmailTemplates(templates)
     }
   }, [emailTemplatesData])

@@ -673,10 +673,10 @@ export const NewParent: React.FC = () => {
                     {!questionLoading &&
                       questionStudentSortList(questions, values?.students[0]).length > 0 &&
                       questionStudentSortList(questions, values?.students[0]).map(
-                        (q: unknown, index: number): ReactElement | undefined => {
+                        (q: unknown, idx: number): ReactElement | undefined => {
                           if (q.slug === 'parent_email') {
                             return (
-                              <Grid key={index} item xs={12} display='flex' justifyContent={'center'}>
+                              <Grid key={idx} item xs={12} display='flex' justifyContent={'center'}>
                                 <Box width={'451.53px'}>
                                   <Field name={'parent.email'} fullWidth focused>
                                     {({ field, form, meta }) => {
@@ -743,7 +743,7 @@ export const NewParent: React.FC = () => {
                             )
                           } else if (q.slug === 'parent_emailConfirm') {
                             return (
-                              <Grid key={index} item xs={12} display='flex' justifyContent={'center'}>
+                              <Grid key={idx} item xs={12} display='flex' justifyContent={'center'}>
                                 <Box width={'451.53px'}>
                                   <Field name={'parent.emailConfirm'} fullWidth focused>
                                     {({ field, meta }) => (
@@ -776,7 +776,7 @@ export const NewParent: React.FC = () => {
                           } else if (q.slug?.includes('student_') || q.student_question) {
                             if (q.slug === 'student_grade_level') {
                               return (
-                                <Grid key={index} item xs={12} display='flex' justifyContent={'center'}>
+                                <Grid key={idx} item xs={12} display='flex' justifyContent={'center'}>
                                   <Box width={'451.53px'}>
                                     <Field name={'students[0].grade_level'} fullWidth focused>
                                       {({ field, form, meta }) => (
@@ -809,7 +809,7 @@ export const NewParent: React.FC = () => {
                               )
                             } else if (q.slug?.includes('student_')) {
                               return (
-                                <Grid key={index} item xs={12} display='flex' justifyContent={'center'}>
+                                <Grid key={idx} item xs={12} display='flex' justifyContent={'center'}>
                                   <Box width={'451.53px'} display='flex' flexDirection='row' alignItems={'center'}>
                                     <Field name={`students[0].${q.slug?.replace('student_', '')}`} fullWidth focused>
                                       {({ field, form, meta }) => (
@@ -829,7 +829,7 @@ export const NewParent: React.FC = () => {
                               )
                             } else if (q.slug?.includes('meta_') && q.student_question) {
                               return (
-                                <Grid key={index} item xs={12} display='flex' justifyContent={'center'}>
+                                <Grid key={idx} item xs={12} display='flex' justifyContent={'center'}>
                                   <Box width={'451.53px'} display='flex' flexDirection='row' alignItems={'center'}>
                                     <Field name={`students[0].meta.${q.slug}`} fullWidth focused>
                                       {({ field, form, meta }) => (
@@ -851,7 +851,7 @@ export const NewParent: React.FC = () => {
                               const parentFieldName = q.slug?.split('_')[0]
                               const childFieldName = q.slug?.replace(parentFieldName + '_', '')
                               return (
-                                <Grid key={index} item xs={12} display='flex' justifyContent={'center'}>
+                                <Grid key={idx} item xs={12} display='flex' justifyContent={'center'}>
                                   <Box width={'451.53px'} display='flex' flexDirection='row' alignItems={'center'}>
                                     <Field name={`students[0].${parentFieldName}.${childFieldName}`} fullWidth focused>
                                       {({ field, form, meta }) => (
@@ -874,7 +874,7 @@ export const NewParent: React.FC = () => {
                             }
                           } else if (q.slug?.includes('meta_')) {
                             return (
-                              <Grid key={index} item xs={12} display='flex' justifyContent={'center'}>
+                              <Grid key={idx} item xs={12} display='flex' justifyContent={'center'}>
                                 <Box width={'451.53px'}>
                                   <Field name={`meta.${q.slug}`} fullWidth focused>
                                     {({ field, form, meta }) => (
@@ -894,7 +894,7 @@ export const NewParent: React.FC = () => {
                             const parentFieldName = q.slug?.split('_')[0]
                             const childFieldName = q.slug?.replace(parentFieldName + '_', '')
                             return (
-                              <Grid key={index} item xs={12} display='flex' justifyContent={'center'}>
+                              <Grid key={idx} item xs={12} display='flex' justifyContent={'center'}>
                                 <Box width={'451.53px'}>
                                   <Field name={`${parentFieldName}.${childFieldName}`} fullWidth focused>
                                     {({ field, form, meta }) => (
@@ -923,166 +923,168 @@ export const NewParent: React.FC = () => {
                                   {!questionLoading &&
                                     questionStudentSortList(questions, _).length > 0 &&
                                     index > 0 &&
-                                    questionStudentSortList(questions, _).map((q): ReactElement | undefined => {
-                                      const firstQuestionSlug = questionStudentSortList(questions, _).filter(
-                                        (qf) => qf.question.includes('student_') || qf.student_question,
-                                      )[0].slug
-                                      if (q.slug === 'student_grade_level') {
-                                        return (
-                                          <Grid
-                                            item
-                                            key={index}
-                                            xs={12}
-                                            width={'100%'}
-                                            display='flex'
-                                            flexDirection='row'
-                                            alignItems={'center'}
-                                          >
-                                            <Field name={`students[${index}].grade_level`} fullWidth focused>
-                                              {({ field, form, meta }) => (
-                                                <Box width={'100%'}>
-                                                  <DropDown
-                                                    name={`students[${index}].grade_level`}
-                                                    labelTop
-                                                    placeholder={`${q.question} as of ${moment(birthDateCut).format(
-                                                      !matches ? 'MMMM DD, YYYY' : 'MMM. DD, YYYY',
-                                                    )}`}
-                                                    dropDownItems={gradesDropDownItems}
-                                                    setParentValue={(id) => {
-                                                      form.setFieldValue(field.name, id)
-                                                    }}
-                                                    alternate={true}
-                                                    size='small'
-                                                    sx={
-                                                      !!(meta.touched && meta.error)
-                                                        ? classes.textFieldError
-                                                        : classes.dropdown
-                                                    }
-                                                    error={{
-                                                      error: !!(meta.touched && meta.error),
-                                                      errorMsg: (meta.touched && meta.error) as string,
-                                                    }}
+                                    questionStudentSortList(questions, _).map(
+                                      (q, idx: number): ReactElement | undefined => {
+                                        const firstQuestionSlug = questionStudentSortList(questions, _).filter(
+                                          (qf) => qf.question.includes('student_') || qf.student_question,
+                                        )[0].slug
+                                        if (q.slug === 'student_grade_level') {
+                                          return (
+                                            <Grid
+                                              item
+                                              key={idx}
+                                              xs={12}
+                                              width={'100%'}
+                                              display='flex'
+                                              flexDirection='row'
+                                              alignItems={'center'}
+                                            >
+                                              <Field name={`students[${index}].grade_level`} fullWidth focused>
+                                                {({ field, form, meta }) => (
+                                                  <Box width={'100%'}>
+                                                    <DropDown
+                                                      name={`students[${index}].grade_level`}
+                                                      labelTop
+                                                      placeholder={`${q.question} as of ${moment(birthDateCut).format(
+                                                        !matches ? 'MMMM DD, YYYY' : 'MMM. DD, YYYY',
+                                                      )}`}
+                                                      dropDownItems={gradesDropDownItems}
+                                                      setParentValue={(id) => {
+                                                        form.setFieldValue(field.name, id)
+                                                      }}
+                                                      alternate={true}
+                                                      size='small'
+                                                      sx={
+                                                        !!(meta.touched && meta.error)
+                                                          ? classes.textFieldError
+                                                          : classes.dropdown
+                                                      }
+                                                      error={{
+                                                        error: !!(meta.touched && meta.error),
+                                                        errorMsg: (meta.touched && meta.error) as string,
+                                                      }}
+                                                    />
+                                                  </Box>
+                                                )}
+                                              </Field>
+                                              {index !== 0 && q.slug === firstQuestionSlug ? (
+                                                <DeleteForeverOutlinedIcon
+                                                  sx={{ left: 12, position: 'relative', color: 'darkgray' }}
+                                                  onClick={() => remove(index)}
+                                                />
+                                              ) : null}
+                                            </Grid>
+                                          )
+                                        } else if (q.slug?.includes('student_')) {
+                                          return (
+                                            <Grid key={idx} item xs={12}>
+                                              <Box
+                                                width={'100%'}
+                                                display='flex'
+                                                flexDirection='row'
+                                                alignItems={'center'}
+                                              >
+                                                <Field
+                                                  name={`students[${index}].${q.slug?.replace('student_', '')}`}
+                                                  fullWidth
+                                                  focused
+                                                >
+                                                  {({ field, form, meta }) => (
+                                                    <Box width={'100%'}>
+                                                      <AdditionalQuestionItem
+                                                        question={q}
+                                                        key={index}
+                                                        field={field}
+                                                        form={form}
+                                                        meta={meta}
+                                                        handleAddQuestion={handleAddQuestion}
+                                                      />
+                                                    </Box>
+                                                  )}
+                                                </Field>
+                                                {index !== 0 && q.slug === firstQuestionSlug ? (
+                                                  <DeleteForeverOutlinedIcon
+                                                    sx={{ left: 12, position: 'relative', color: 'darkgray' }}
+                                                    onClick={() => remove(index)}
                                                   />
-                                                </Box>
-                                              )}
-                                            </Field>
-                                            {index !== 0 && q.slug === firstQuestionSlug ? (
-                                              <DeleteForeverOutlinedIcon
-                                                sx={{ left: 12, position: 'relative', color: 'darkgray' }}
-                                                onClick={() => remove(index)}
-                                              />
-                                            ) : null}
-                                          </Grid>
-                                        )
-                                      } else if (q.slug?.includes('student_')) {
-                                        return (
-                                          <Grid key={index} item xs={12}>
-                                            <Box
-                                              width={'100%'}
-                                              display='flex'
-                                              flexDirection='row'
-                                              alignItems={'center'}
-                                            >
-                                              <Field
-                                                name={`students[${index}].${q.slug?.replace('student_', '')}`}
-                                                fullWidth
-                                                focused
+                                                ) : null}
+                                              </Box>
+                                            </Grid>
+                                          )
+                                        } else if (q.slug?.includes('meta_') && q.student_question) {
+                                          return (
+                                            <Grid key={idx} item xs={12}>
+                                              <Box
+                                                width={'100%'}
+                                                display='flex'
+                                                flexDirection='row'
+                                                alignItems={'center'}
                                               >
-                                                {({ field, form, meta }) => (
-                                                  <Box width={'100%'}>
-                                                    <AdditionalQuestionItem
-                                                      question={q}
-                                                      key={index}
-                                                      field={field}
-                                                      form={form}
-                                                      meta={meta}
-                                                      handleAddQuestion={handleAddQuestion}
-                                                    />
-                                                  </Box>
-                                                )}
-                                              </Field>
-                                              {index !== 0 && q.slug === firstQuestionSlug ? (
-                                                <DeleteForeverOutlinedIcon
-                                                  sx={{ left: 12, position: 'relative', color: 'darkgray' }}
-                                                  onClick={() => remove(index)}
-                                                />
-                                              ) : null}
-                                            </Box>
-                                          </Grid>
-                                        )
-                                      } else if (q.slug?.includes('meta_') && q.student_question) {
-                                        return (
-                                          <Grid key={index} item xs={12}>
-                                            <Box
-                                              width={'100%'}
-                                              display='flex'
-                                              flexDirection='row'
-                                              alignItems={'center'}
-                                            >
-                                              <Field name={`students[${index}].meta.${q.slug}`} fullWidth focused>
-                                                {({ field, form, meta }) => (
-                                                  <Box width={'100%'}>
-                                                    <AdditionalQuestionItem
-                                                      question={q}
-                                                      key={index}
-                                                      field={field}
-                                                      form={form}
-                                                      meta={meta}
-                                                      handleAddQuestion={handleAddQuestion}
-                                                    />
-                                                  </Box>
-                                                )}
-                                              </Field>
-                                              {index !== 0 && q.slug === firstQuestionSlug ? (
-                                                <DeleteForeverOutlinedIcon
-                                                  sx={{ left: 12, position: 'relative', color: 'darkgray' }}
-                                                  onClick={() => remove(index)}
-                                                />
-                                              ) : null}
-                                            </Box>
-                                          </Grid>
-                                        )
-                                      } else if (!q.slug?.includes('meta_') && q.student_question) {
-                                        const parentFieldName = q.slug?.split('_')[0]
-                                        const childFieldName = q.slug?.replace(parentFieldName + '_', '')
-                                        return (
-                                          <Grid key={index} item xs={12} display='flex' justifyContent={'center'}>
-                                            <Box
-                                              width={'451.53px'}
-                                              display='flex'
-                                              flexDirection='row'
-                                              alignItems={'center'}
-                                            >
-                                              <Field
-                                                name={`students[${index}].${parentFieldName}.${childFieldName}`}
-                                                fullWidth
-                                                focused
+                                                <Field name={`students[${index}].meta.${q.slug}`} fullWidth focused>
+                                                  {({ field, form, meta }) => (
+                                                    <Box width={'100%'}>
+                                                      <AdditionalQuestionItem
+                                                        question={q}
+                                                        key={index}
+                                                        field={field}
+                                                        form={form}
+                                                        meta={meta}
+                                                        handleAddQuestion={handleAddQuestion}
+                                                      />
+                                                    </Box>
+                                                  )}
+                                                </Field>
+                                                {index !== 0 && q.slug === firstQuestionSlug ? (
+                                                  <DeleteForeverOutlinedIcon
+                                                    sx={{ left: 12, position: 'relative', color: 'darkgray' }}
+                                                    onClick={() => remove(index)}
+                                                  />
+                                                ) : null}
+                                              </Box>
+                                            </Grid>
+                                          )
+                                        } else if (!q.slug?.includes('meta_') && q.student_question) {
+                                          const parentFieldName = q.slug?.split('_')[0]
+                                          const childFieldName = q.slug?.replace(parentFieldName + '_', '')
+                                          return (
+                                            <Grid key={idx} item xs={12} display='flex' justifyContent={'center'}>
+                                              <Box
+                                                width={'451.53px'}
+                                                display='flex'
+                                                flexDirection='row'
+                                                alignItems={'center'}
                                               >
-                                                {({ field, form, meta }) => (
-                                                  <Box width={'100%'}>
-                                                    <AdditionalQuestionItem
-                                                      question={q}
-                                                      field={field}
-                                                      form={form}
-                                                      meta={meta}
-                                                      handleAddQuestion={handleAddQuestion}
-                                                    />
-                                                  </Box>
-                                                )}
-                                              </Field>
-                                              {index !== 0 && q.slug === firstQuestionSlug ? (
-                                                <DeleteForeverOutlinedIcon
-                                                  sx={{ left: 12, position: 'relative', color: 'darkgray' }}
-                                                  onClick={() => remove(index)}
-                                                />
-                                              ) : null}
-                                            </Box>
-                                          </Grid>
-                                        )
-                                      } else {
-                                        return undefined
-                                      }
-                                    })}
+                                                <Field
+                                                  name={`students[${index}].${parentFieldName}.${childFieldName}`}
+                                                  fullWidth
+                                                  focused
+                                                >
+                                                  {({ field, form, meta }) => (
+                                                    <Box width={'100%'}>
+                                                      <AdditionalQuestionItem
+                                                        question={q}
+                                                        field={field}
+                                                        form={form}
+                                                        meta={meta}
+                                                        handleAddQuestion={handleAddQuestion}
+                                                      />
+                                                    </Box>
+                                                  )}
+                                                </Field>
+                                                {index !== 0 && q.slug === firstQuestionSlug ? (
+                                                  <DeleteForeverOutlinedIcon
+                                                    sx={{ left: 12, position: 'relative', color: 'darkgray' }}
+                                                    onClick={() => remove(index)}
+                                                  />
+                                                ) : null}
+                                              </Box>
+                                            </Grid>
+                                          )
+                                        } else {
+                                          return undefined
+                                        }
+                                      },
+                                    )}
                                 </>
                               ))}
                               <Grid item>
