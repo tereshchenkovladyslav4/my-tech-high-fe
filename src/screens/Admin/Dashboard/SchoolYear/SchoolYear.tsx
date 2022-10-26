@@ -134,11 +134,15 @@ type SchoolYearSped = {
   special_ed: boolean
 }
 
-export const SchoolYear: React.FC = () => {
+type SchoolYearProps = {
+  selectedYear: string | number
+  setSelectedYear: (selectedYear: string | number) => void
+}
+
+export const SchoolYear: React.FC<SchoolYearProps> = ({ selectedYear, setSelectedYear }) => {
   const [isExpanded, setIsExpanded] = useState(false)
   const { me } = useContext(UserContext)
   const [schoolYears, setSchoolYears] = useState<Array<DropDownItem>>([])
-  const [selectedYear, setSelectedYear] = useState<string | number>()
   const [schoolYearDataCount, setSchoolYearDataCount] = useState(data)
   const [schoolYearSpedOptions, setSchoolYearSpedOptions] = useState<Array<SchoolYearSped>>([])
   const [specialEdStatus, setSpecialEdStatus] = useState(true)

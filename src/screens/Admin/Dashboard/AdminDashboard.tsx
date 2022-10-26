@@ -18,6 +18,7 @@ export const AdminDashboard: FunctionComponent = () => {
   const { me } = useContext(UserContext)
   const [showAnnouncements, setShowAnnouncements] = useState(false)
   const [, setIsSuper] = useState(null)
+  const [selectedYear, setSelectedYear] = useState<string | number>('')
 
   useEffect(() => {
     if (me) {
@@ -79,7 +80,7 @@ export const AdminDashboard: FunctionComponent = () => {
     >
       <Grid item xs={12} lg={8}>
         <Box marginBottom={5}>
-          <SchoolYear />
+          <SchoolYear selectedYear={selectedYear} setSelectedYear={setSelectedYear} />
         </Box>
         <ToDo />
       </Grid>
@@ -93,7 +94,7 @@ export const AdminDashboard: FunctionComponent = () => {
           }}
         >
           <>
-            <SchoolEnrollment />
+            <SchoolEnrollment selectedYear={selectedYear} regionId={me?.selectedRegionId} />
             <Divider sx={{ marginY: '12px' }} />
             <Homeroom />
           </>

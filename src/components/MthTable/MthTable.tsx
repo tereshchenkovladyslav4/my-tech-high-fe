@@ -144,30 +144,50 @@ const MthTable = <T extends unknown>({
               ))}
             </TableRow>
           </TableHead>
-          <DragDropContext onDragEnd={onDragEnd}>
-            <Droppable droppableId='droppable'>
-              {(provided: DroppableProvided) => (
-                <TableBody {...provided.droppableProps} ref={provided.innerRef}>
-                  {items.map((item, index) => (
-                    <MthTableRow
-                      key={`${uuidv4()}`}
-                      tableWidth={tableWidth}
-                      index={index}
-                      fields={fields}
-                      item={item}
-                      expanded={expandedIdx.includes(index)}
-                      selectable={selectable}
-                      isDraggable={isDraggable}
-                      size={size}
-                      checkBoxColor={checkBoxColor}
-                      handleToggleCheck={handleToggleCheck}
-                    />
-                  ))}
-                  {provided.placeholder}
-                </TableBody>
-              )}
-            </Droppable>
-          </DragDropContext>
+          {!!isDraggable ? (
+            <DragDropContext onDragEnd={onDragEnd}>
+              <Droppable droppableId='droppable'>
+                {(provided: DroppableProvided) => (
+                  <TableBody {...provided.droppableProps} ref={provided.innerRef}>
+                    {items.map((item, index) => (
+                      <MthTableRow
+                        key={`${uuidv4()}`}
+                        tableWidth={tableWidth}
+                        index={index}
+                        fields={fields}
+                        item={item}
+                        expanded={expandedIdx.includes(index)}
+                        selectable={selectable}
+                        isDraggable={isDraggable}
+                        size={size}
+                        checkBoxColor={checkBoxColor}
+                        handleToggleCheck={handleToggleCheck}
+                      />
+                    ))}
+                    {provided.placeholder}
+                  </TableBody>
+                )}
+              </Droppable>
+            </DragDropContext>
+          ) : (
+            <TableBody>
+              {items.map((item, index) => (
+                <MthTableRow
+                  key={`${uuidv4()}`}
+                  tableWidth={tableWidth}
+                  index={index}
+                  fields={fields}
+                  item={item}
+                  expanded={expandedIdx.includes(index)}
+                  selectable={selectable}
+                  isDraggable={isDraggable}
+                  size={size}
+                  checkBoxColor={checkBoxColor}
+                  handleToggleCheck={handleToggleCheck}
+                />
+              ))}
+            </TableBody>
+          )}
           {!items.length && !!tableWidth && (
             <TableFooter>
               <TableRow>

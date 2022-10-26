@@ -23,4 +23,17 @@ export const scheduleClassess = {
       color: 'white',
     },
   },
+  submitBtn: {
+    borderRadius: 2,
+    fontSize: 12,
+    background: MthColor.BLACK_GRADIENT,
+    width: 140,
+    height: 48,
+    fontWeight: 700,
+    textTransform: 'none',
+    '&:hover': {
+      background: MthColor.BLACK_MOUSEOVER,
+      color: 'white',
+    },
+  },
 }

@@ -75,7 +75,6 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
     },
   ])
   const [diplomaSeekingPathStatus, setDiplomaSeekingPathStatus] = useState<DiplomaSeekingPath>(DiplomaSeekingPath.BOTH)
-  const [isDraftSaved, setIsDraftSaved] = useState<boolean>(false)
   const [isChanged, setIsChanged] = useState<boolean>(false)
   const [showUnsavedModal, setShowUnsavedModal] = useState<boolean>(false)
   const [selectedYear, setSelectedYear] = useState<number>(student?.current_school_year_status?.school_year_id || 0)
@@ -285,8 +284,6 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
           setIsDiplomaError(true)
         }
         break
-      case MthTitle.SCHEDULE:
-        setIsDraftSaved(true)
     }
   }
 
@@ -515,22 +512,22 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
         {step == MthTitle.STEP_SCHEDULE_BUILDER && (
           <ScheduleBuilder
             studentId={studentId}
+            studentName={student?.person?.first_name || ''}
             selectedYear={selectedYear}
-            isDraftSaved={isDraftSaved}
             splitEnrollment={splitEnrollment}
             showUnsavedModal={showUnsavedModal}
             diplomaSeekingPath={diplomaSeekingPathStatus}
             setIsChanged={setIsChanged}
             onWithoutSaved={handleWithoutSaved}
-            confirmSubmitted={() => setIsDraftSaved(false)}
           />
         )}
-
-        <Box sx={{ display: 'flex', justifyContent: 'end' }}>
-          <Button onClick={() => handleNextStep()} variant='contained' sx={scheduleClassess.button}>
-            {step === MthTitle.SCHEDULE ? 'Save Draft' : 'Next'}
-          </Button>
-        </Box>
+        {step !== MthTitle.SCHEDULE && (
+          <Box sx={{ display: 'flex', justifyContent: 'end' }}>
+            <Button onClick={() => handleNextStep()} variant='contained' sx={scheduleClassess.button}>
+              {'Next'}
+            </Button>
+          </Box>
+        )}
       </Box>
     </Card>
   )

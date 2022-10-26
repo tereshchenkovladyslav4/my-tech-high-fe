@@ -57,14 +57,13 @@ export type OptOutFormProps = {
 
 export type ScheduleBuilderProps = {
   studentId: number
+  studentName: string
   selectedYear: number
-  isDraftSaved: boolean
   showUnsavedModal: boolean
   splitEnrollment: boolean
   diplomaSeekingPath: DiplomaSeekingPath
   setIsChanged: (value: boolean) => void
   onWithoutSaved: (isYes: boolean) => void
-  confirmSubmitted: () => void
 }
 
 export type DiplomaSeekingProps = {
@@ -145,6 +144,7 @@ export type ScheduleData = {
   Periods: Period[]
 
   // Selected values
+  schedulePeriodId?: number
   Period?: Period
   Subject?: Subject
   Title?: Title

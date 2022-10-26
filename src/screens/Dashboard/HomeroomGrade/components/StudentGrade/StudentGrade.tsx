@@ -3,7 +3,7 @@ import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline'
 import ScheduleIcon from '@mui/icons-material/Schedule'
 import { Avatar, Box, CircularProgress, IconButton, Tooltip } from '@mui/material'
 import { useHistory } from 'react-router-dom'
-import { MthColor, MthRoute, PacketStatus } from '@mth/enums'
+import { ApplicantStatus, MthColor, MthRoute, PacketStatus } from '@mth/enums'
 import { Metadata } from '../../../../../components/Metadata/Metadata'
 import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
@@ -19,12 +19,17 @@ export const StudentGrade: StudentGradeTemplateType = ({ student, schoolYears, n
   const [circleData, setCircleData] = useState<CircleData>()
   const history = useHistory()
   const redirect = () => {
+    const { applications, packets } = student
+    const currApplication = applications?.at(0)
+    const currPacket = packets?.at(0)
     if (notification?.phrase === 'Submit Schedule') {
       const scheduleBuilderLink = `${MthRoute.HOMEROOM + MthRoute.SUBMIT_SCHEDULE}/${student.student_id}`
       history.push(scheduleBuilderLink)
       return
     }
-    history.push('/homeroom/enrollment/' + student.student_id)
+    currApplication?.status !== ApplicantStatus.ACCEPTED &&
+      currPacket?.status !== PacketStatus.ACCEPTED &&
+      history.push('/homeroom/enrollment/' + student.student_id)
   }
 
   const getProfilePhoto = (person: Person) => {
@@ -38,6 +43,7 @@ export const StudentGrade: StudentGradeTemplateType = ({ student, schoolYears, n
     const { applications, packets } = student
     const currApplication = applications?.at(0)
     const currPacket = packets?.at(0)
+
     if (currApplication && currApplication?.status === 'Submitted') {
       setCircleData({
         progress: 25,
@@ -89,6 +95,13 @@ export const StudentGrade: StudentGradeTemplateType = ({ student, schoolYears, n
         color: blue,
         message: 'Enrollment Packet Pending Approval',
         icon: <ScheduleIcon sx={{ color: blue, cursor: 'pointer' }} />,
+      })
+    } else if (currPacket?.status === PacketStatus.ACCEPTED && currApplication?.status === ApplicantStatus.ACCEPTED) {
+      setCircleData({
+        color: blue,
+        progress: 75,
+        message: 'Waiting for Schedule Builder to Open',
+        icon: <ErrorOutlineIcon sx={{ color: blue, cursor: 'pointer' }} />,
       })
     } else if (notification?.phrase === 'Submit Schedule') {
       setCircleData({

@@ -42,4 +42,5 @@ export enum MthTitle {
   STEP_SCHEDULE_BUILDER = 'Schedule',
   REDUCES_FUNDS = 'Reduces Funds',
   ON_SITE_SPLIT_ENROLLMENT = 'On-site Splite Enrollment',
+  SAVE_DRAFT = 'Save Draft',
 }

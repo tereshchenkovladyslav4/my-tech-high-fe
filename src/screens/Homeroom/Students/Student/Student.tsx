@@ -133,7 +133,6 @@ export const Student: StudentTemplateType = ({
       currApplication?.status === ApplicantStatus.ACCEPTED &&
       ((currPacket && currPacket?.status === PacketStatus.SUBMITTED) ||
         currPacket?.status === PacketStatus.MISSING_INFO ||
-        currPacket?.status === PacketStatus.ACCEPTED ||
         currPacket?.status === PacketStatus.RESUBMITTED)
     ) {
       setLink(homeroomLink)
@@ -143,6 +142,20 @@ export const Student: StudentTemplateType = ({
         color: MthColor.MTHGREEN,
         progress: 50,
         type: 'Enrollment Packet Pending Approval',
+        icon: <ScheduleIcon sx={{ color: MthColor.MTHGREEN, marginTop: 2, cursor: 'pointer' }} />,
+      })
+    } else if (
+      !showNotification &&
+      currApplication?.status === ApplicantStatus.ACCEPTED &&
+      currPacket?.status === PacketStatus.ACCEPTED
+    ) {
+      setLink(homeroomLink)
+      setCircleData({
+        mobileColor: MthColor.MTHGREEN,
+        mobileText: 'Waiting for Schedule Builder to Open',
+        color: MthColor.MTHGREEN,
+        progress: 50,
+        type: 'Waiting for Schedule Builder to Open',
         icon: <ScheduleIcon sx={{ color: MthColor.MTHGREEN, marginTop: 2, cursor: 'pointer' }} />,
       })
     } else if (showNotification?.phrase === 'Submit Schedule') {

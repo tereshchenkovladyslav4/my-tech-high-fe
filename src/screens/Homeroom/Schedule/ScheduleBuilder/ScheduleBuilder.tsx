@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import { useQuery } from '@apollo/client'
+import { useMutation, useQuery } from '@apollo/client'
 import ModeEditIcon from '@mui/icons-material/ModeEdit'
 import QuestionMarkIcon from '@mui/icons-material/QuestionMark'
-import { ClickAwayListener, Grid, IconButton, Tooltip, Typography } from '@mui/material'
+import { Button, ClickAwayListener, Grid, IconButton, Tooltip, Typography } from '@mui/material'
 import { Box, styled } from '@mui/system'
 import parse from 'html-react-parser'
 import { groupBy } from 'lodash'
@@ -15,11 +15,16 @@ import { MenuItemData } from '@mth/components/NestedDropdown/types'
 import { SuccessModal } from '@mth/components/SuccessModal/SuccessModal'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { COURSE_TYPE_ITEMS } from '@mth/constants'
-import { CourseType, MthColor, MthTitle, ReduceFunds } from '@mth/enums'
+import { CourseType, MthColor, MthTitle, ReduceFunds, ScheduleStatus } from '@mth/enums'
+import { SchedulePeriod } from '@mth/graphql/models/schedule-period'
+import { saveScheduleMutation } from '@mth/graphql/mutation/schedule'
+import { saveSchedulePeriodMutation } from '@mth/graphql/mutation/schedule-period'
 import { getAllScheduleBuilderQuery } from '@mth/graphql/queries/schedule-builder'
+import { getStudentSchedulePeriodsQuery } from '@mth/graphql/queries/schedule-period'
 import { CustomBuiltDescriptionEdit } from '@mth/screens/Homeroom/Schedule/ScheduleBuilder/CustomBuiltDescription'
 import { getStudentPeriodsQuery } from '@mth/screens/Homeroom/Schedule/services'
 import { extractContent, gradeShortText } from '@mth/utils'
+import { scheduleClassess } from '../styles'
 import { Course, Period, ScheduleBuilderProps, ScheduleData, Subject, Title } from '../types'
 import { OnSiteSplitEnrollmentEdit } from './OnSiteSplitEnrollmentEdit'
 import { OnSiteSplitEnrollment } from './OnSiteSplitEnrollmentEdit/types'
@@ -47,14 +52,13 @@ const StyledTooltip = styled(Tooltip)(({}) => ({
 
 const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
   studentId,
+  studentName,
   selectedYear,
-  isDraftSaved = false,
   showUnsavedModal = false,
   splitEnrollment = false,
   diplomaSeekingPath,
   setIsChanged,
   onWithoutSaved,
-  confirmSubmitted,
 }) => {
   const [tableData, setTableData] = useState<MthTableRowItem<ScheduleData>[]>([])
   const [scheduleData, setScheduleData] = useState<ScheduleData[]>([])
@@ -71,12 +75,17 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
   const [selectedOnSiteSplitEnrollemnt, setSelectedOnSiteSplitEnrollment] = useState<OnSiteSplitEnrollment>()
   const [showCustomBuilt, setShowCustomBuilt] = useState<boolean>(false)
   const [enableQuestionTooltip, setEnableQuestionTooltip] = useState<boolean>(false)
+  const [isDraftSaved, setIsDraftSaved] = useState<boolean>(false)
+  const [showSubmitBtn, setShowSubmitBtn] = useState<boolean>(false)
+  const [showSubmitSuccessModal, setShowSubmitSuccessModal] = useState<boolean>(false)
+  const [studentScheduleId, setStudentScheduleId] = useState<number>(0)
 
   const { loading, data: periodsData } = useQuery(getStudentPeriodsQuery, {
     variables: { studentId: studentId, schoolYearId: selectedYear, diplomaSeekingPath: diplomaSeekingPath },
     skip: !studentId && !selectedYear,
     fetchPolicy: 'network-only',
   })
+
   const { loading: scheduleBuilderSettingLoading, data: scheduleBuilderSettingData } = useQuery(
     getAllScheduleBuilderQuery,
     {
@@ -84,6 +93,21 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
       fetchPolicy: 'network-only',
     },
   )
+
+  const { loading: studentSchedulePeriodsLoading, data: studentSchedulePeriodsData } = useQuery(
+    getStudentSchedulePeriodsQuery,
+    {
+      variables: {
+        schoolYearId: selectedYear,
+        studentId: studentId,
+      },
+      skip: !studentId || !selectedYear,
+      fetchPolicy: 'network-only',
+    },
+  )
+
+  const [submitScheduleBuilder] = useMutation(saveScheduleMutation)
+  const [saveDraft] = useMutation(saveSchedulePeriodMutation)
 
   const createPeriodMenuItems = (schedule: ScheduleData): MenuItemData => {
     const menuItemsData: MenuItemData = {
@@ -202,16 +226,16 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
       }
 
       menuItemsData.items?.push(subMenu)
-      if (splitEnrollment) {
-        menuItemsData.items?.push({
-          label: MthTitle.ON_SITE_SPLIT_ENROLLMENT,
-          callback: () => {
-            setShowOnSiteSplitEnrollmentModal(true)
-            setSelectedSchedule(schedule)
-          },
-        })
-      }
     })
+    if (splitEnrollment) {
+      menuItemsData.items?.push({
+        label: MthTitle.ON_SITE_SPLIT_ENROLLMENT,
+        callback: () => {
+          setShowOnSiteSplitEnrollmentModal(true)
+          setSelectedSchedule(schedule)
+        },
+      })
+    }
     return menuItemsData
   }
 
@@ -229,6 +253,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
       if (period.notify_period) {
         setPeriodNotification(period.message_period)
       }
+      setIsChanged(true)
     }
   }
 
@@ -262,6 +287,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
       if (title.reduce_funds !== ReduceFunds.NONE) {
         setSubjectReduceFundsNotification(title.reduce_funds_notification)
       }
+      setIsChanged(true)
     }
   }
 
@@ -283,10 +309,13 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
           schedule.CourseType = courseType
           delete schedule.Course
           delete schedule.OnSiteSplitEnrollment
+          delete schedule.CustomBuiltDescription
+          delete schedule.ThirdParty
           scheduleData[scheduleIdx] = schedule
           setScheduleData(JSON.parse(JSON.stringify(scheduleData)))
           break
       }
+      setIsChanged(true)
     }
   }
 
@@ -306,8 +335,10 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
       schedule.ThirdParty = item
       delete schedule.OnSiteSplitEnrollment
       delete schedule.Course
+      delete schedule.CustomBuiltDescription
       scheduleData[scheduleIdx] = schedule
       setScheduleData(JSON.parse(JSON.stringify(scheduleData)))
+      setIsChanged(true)
     }
     setSelectedSchedule(undefined)
     setSelectedCourseType(undefined)
@@ -325,12 +356,16 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
       const schedule = { ...selectedSchedule }
       const scheduleIdx = scheduleData.findIndex((item) => item.period === schedule?.period)
       schedule.OnSiteSplitEnrollment = item
+      delete schedule.Course
+      delete schedule.CustomBuiltDescription
+      delete schedule.ThirdParty
       scheduleData[scheduleIdx] = schedule
       setScheduleData(JSON.parse(JSON.stringify(scheduleData)))
     }
     setSelectedSchedule(undefined)
     setShowOnSiteSplitEnrollmentModal(false)
     setSelectedOnSiteSplitEnrollment(undefined)
+    setIsChanged(true)
   }
 
   const handleSaveCustomBuiltDescription = (description: string) => {
@@ -341,6 +376,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
       delete selectedSchedule.Course
       scheduleData[scheduleIdx] = selectedSchedule
       setScheduleData(JSON.parse(JSON.stringify(scheduleData)))
+      setIsChanged(true)
     }
   }
 
@@ -349,6 +385,9 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
     if (scheduleIdx > -1) {
       if (schedule.Course?.id === course.id) return
       schedule.Course = course
+      delete schedule.OnSiteSplitEnrollment
+      delete schedule.CustomBuiltDescription
+      delete schedule.ThirdParty
       scheduleData[scheduleIdx] = schedule
       setScheduleData(JSON.parse(JSON.stringify(scheduleData)))
       if (course.display_notification) {
@@ -357,6 +396,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
       if (course.reduce_funds !== ReduceFunds.NONE) {
         setCourseReduceFundsNotification(course.reduce_funds_notification)
       }
+      setIsChanged(true)
     }
   }
 
@@ -574,14 +614,14 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
   ]
 
   const preSelect = (schedule: ScheduleData): ScheduleData => {
-    if (schedule.Periods?.length === 1) {
+    if (schedule.Periods?.length === 1 && !schedule.Period) {
       schedule.Period = schedule.Periods[0]
     }
     if (schedule.Period?.Subjects?.length === 1) {
       const subject = schedule.Period.Subjects[0]
-      if (!subject.Titles?.length) {
+      if (!subject.Titles?.length && !schedule.Subject) {
         schedule.Subject = subject
-      } else if (subject.Titles?.length === 1) {
+      } else if (subject.Titles?.length === 1 && !schedule.Title) {
         schedule.Title = subject.Titles[0]
       }
     }
@@ -611,6 +651,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
       rawData: schedule,
     }
   }
+
   const handleCancelUnsavedModal = () => {
     onWithoutSaved(false)
   }
@@ -618,7 +659,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
     onWithoutSaved(true)
   }
   const handleConfirmSavedModal = () => {
-    confirmSubmitted()
+    setIsDraftSaved(false)
   }
 
   const showQuestionTooltip = () => {
@@ -626,6 +667,65 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
   }
   const closeQuestionTooltip = () => {
     setEnableQuestionTooltip(false)
+  }
+
+  const handleSave = async (kind: ScheduleStatus) => {
+    if (scheduleData?.length) {
+      const submitResponse = await submitScheduleBuilder({
+        variables: {
+          createScheduleInput: {
+            SchoolYearId: Number(selectedYear),
+            StudentId: Number(studentId),
+            status: kind,
+            schedule_id: studentScheduleId,
+          },
+        },
+      })
+      if (submitResponse) {
+        const scheduleId = submitResponse.data?.createOrUpdateSchedule?.schedule_id
+        setStudentScheduleId(scheduleId)
+        const response = await saveDraft({
+          variables: {
+            createSchedulePeriodInput: {
+              param: scheduleData?.map((item) => ({
+                CourseId: item?.Course?.id,
+                PeriodId: item?.Period?.id,
+                ProviderId: item?.Course?.Provider?.id,
+                ScheduleId: scheduleId,
+                SubjectId: item?.Subject?.subject_id,
+                TitleId: item?.Title?.title_id,
+                course_type: item?.CourseType,
+                custom_build_description: item?.CustomBuiltDescription,
+                osse_coures_name: item?.OnSiteSplitEnrollment?.courseName,
+                osse_district_school: item?.OnSiteSplitEnrollment?.districtSchool,
+                osse_school_district_name: item?.OnSiteSplitEnrollment?.schoolDistrictName,
+                schedule_period_id: item?.schedulePeriodId,
+                tp_addtional_specific_course_website: item?.ThirdParty?.additionalWebsite
+                  ? JSON.stringify(item.ThirdParty.additionalWebsite)
+                  : '',
+                tp_course_name: item?.ThirdParty?.courseName,
+                tp_phone_number: item?.ThirdParty?.phoneNumber,
+                tp_provider_name: item?.ThirdParty?.providerName,
+                tp_specific_course_website: item?.ThirdParty?.specificCourseWebsite,
+              })),
+            },
+          },
+        })
+
+        if (response) {
+          switch (kind) {
+            case ScheduleStatus.DRAFT:
+              setIsDraftSaved(true)
+              setIsChanged(false)
+              break
+            case ScheduleStatus.SUBMITTED:
+              setShowSubmitSuccessModal(true)
+              setIsChanged(false)
+              break
+          }
+        }
+      }
+    }
   }
 
   useEffect(() => {
@@ -639,63 +739,134 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
   }, [scheduleData])
 
   useEffect(() => {
-    if (!loading) {
-      if (periodsData?.studentPeriods) {
-        const { studentPeriods } = periodsData
-        studentPeriods.map((period: Period) => {
-          period.Subjects.map((subject) => {
-            subject.Titles.concat(subject.AltTitles || []).map((title) => {
-              title.CourseTypes = COURSE_TYPE_ITEMS.filter(
-                (item) =>
-                  (item.value === CourseType.CUSTOM_BUILT && title.custom_built) ||
-                  item.value === CourseType.MTH_DIRECT ||
-                  (item.value === CourseType.THIRD_PARTY_PROVIDER && title.third_party_provider),
-              )
+    if (!loading && periodsData?.studentPeriods) {
+      const { studentPeriods } = periodsData
+      studentPeriods.map((period: Period) => {
+        period.Subjects.map((subject) => {
+          subject.Titles.concat(subject.AltTitles || []).map((title) => {
+            title.CourseTypes = COURSE_TYPE_ITEMS.filter(
+              (item) =>
+                (item.value === CourseType.CUSTOM_BUILT && title.custom_built) ||
+                item.value === CourseType.MTH_DIRECT ||
+                (item.value === CourseType.THIRD_PARTY_PROVIDER && title.third_party_provider),
+            )
 
-              title.Providers = []
-              const providersData = groupBy(title.Courses, 'provider_id')
-              for (const key in providersData) {
+            title.Providers = []
+            const providersData = groupBy(title.Courses, 'provider_id')
+            for (const key in providersData) {
+              title.Providers.push({
+                id: +key,
+                name: providersData[key]?.[0].Provider?.name,
+                reduce_funds: providersData[key]?.[0].Provider?.reduce_funds,
+                reduce_funds_notification: providersData[key]?.[0].Provider?.reduce_funds_notification,
+                Courses: providersData[key],
+              })
+            }
+            const altProvidersData = groupBy(title.AltCourses, 'provider_id')
+            for (const key in altProvidersData) {
+              const index = title.Providers.findIndex((item) => item.id === +key)
+              if (index > -1) {
+                title.Providers[index].AltCourses = altProvidersData[key]
+              } else {
                 title.Providers.push({
                   id: +key,
-                  name: providersData[key]?.[0].Provider?.name,
+                  name: altProvidersData[key]?.[0].Provider?.name,
                   reduce_funds: providersData[key]?.[0].Provider?.reduce_funds,
                   reduce_funds_notification: providersData[key]?.[0].Provider?.reduce_funds_notification,
-                  Courses: providersData[key],
+                  Courses: [],
+                  AltCourses: altProvidersData[key],
                 })
               }
-              const altProvidersData = groupBy(title.AltCourses, 'provider_id')
-              for (const key in altProvidersData) {
-                const index = title.Providers.findIndex((item) => item.id === +key)
-                if (index > -1) {
-                  title.Providers[index].AltCourses = altProvidersData[key]
-                } else {
-                  title.Providers.push({
-                    id: +key,
-                    name: altProvidersData[key]?.[0].Provider?.name,
-                    reduce_funds: providersData[key]?.[0].Provider?.reduce_funds,
-                    reduce_funds_notification: providersData[key]?.[0].Provider?.reduce_funds_notification,
-                    Courses: [],
-                    AltCourses: altProvidersData[key],
-                  })
-                }
-              }
-            })
+            }
           })
         })
+      })
 
-        const scheduleData = groupBy(studentPeriods, 'period')
-        const scheduleDataArray: ScheduleData[] = []
-        for (const key in scheduleData) {
-          scheduleDataArray.push({
-            period: +key,
-            Periods: scheduleData[key],
-          })
-        }
-
-        setScheduleData(scheduleDataArray)
+      const scheduleData = groupBy(studentPeriods, 'period')
+      const scheduleDataArray: ScheduleData[] = []
+      for (const key in scheduleData) {
+        scheduleDataArray.push({
+          period: +key,
+          Periods: scheduleData[key],
+        })
       }
+
+      if (!studentSchedulePeriodsLoading && studentSchedulePeriodsData?.schedulePeriods) {
+        const { schedulePeriods } = studentSchedulePeriodsData
+        schedulePeriods.map((schedulePeriod: SchedulePeriod) => {
+          scheduleDataArray.map((item) => {
+            const period = item?.Periods?.find((periodItem) => periodItem?.id === schedulePeriod?.PeriodId)
+            if (period) {
+              item.Period = period
+              item.schedulePeriodId = schedulePeriod.schedule_period_id
+              if (schedulePeriod.SubjectId)
+                item.Subject = period.Subjects?.find((subject) => subject?.subject_id === schedulePeriod.SubjectId)
+              if (schedulePeriod.TitleId)
+                period.Subjects?.map((subject) => {
+                  subject.Titles?.map((title) => {
+                    if (title.title_id === schedulePeriod.TitleId) item.Title = title
+                  })
+                })
+              if (schedulePeriod.CourseId)
+                period.Subjects?.map((subject) => {
+                  subject.Titles?.map((title) => {
+                    title.Courses?.map((course) => {
+                      if (course.id === schedulePeriod.CourseId) item.Course = course
+                    })
+                  })
+                })
+              if (schedulePeriod.course_type) item.CourseType = schedulePeriod.course_type as CourseType
+              if (schedulePeriod.course_type === CourseType.CUSTOM_BUILT)
+                item.CustomBuiltDescription = schedulePeriod.custom_build_description
+              if (schedulePeriod.course_type === CourseType.MTH_DIRECT && schedulePeriod.osse_coures_name)
+                item.OnSiteSplitEnrollment = {
+                  courseName: schedulePeriod.osse_coures_name,
+                  districtSchool: schedulePeriod.osse_district_school,
+                  schoolDistrictName: schedulePeriod.osse_school_district_name,
+                }
+              if (schedulePeriod.course_type === CourseType.THIRD_PARTY_PROVIDER)
+                item.ThirdParty = {
+                  providerName: schedulePeriod.tp_provider_name,
+                  courseName: schedulePeriod.tp_course_name,
+                  phoneNumber: schedulePeriod.tp_phone_number,
+                  specificCourseWebsite: schedulePeriod.tp_specific_course_website,
+                  additionalWebsite: schedulePeriod.tp_addtional_specific_course_website
+                    ? JSON.parse(schedulePeriod.tp_addtional_specific_course_website)
+                    : '',
+                }
+            }
+          })
+        })
+        setStudentScheduleId(schedulePeriods[0]?.ScheduleId)
+      }
+
+      setScheduleData(scheduleDataArray)
     }
-  }, [loading, periodsData])
+  }, [loading, periodsData, studentSchedulePeriodsLoading, studentSchedulePeriodsData])
+
+  useEffect(() => {
+    if (scheduleData?.length) {
+      let isInvalid = false
+      scheduleData.map((item) => {
+        if (item?.CourseType) {
+          switch (item.CourseType) {
+            case CourseType.CUSTOM_BUILT:
+              if (!item.CustomBuiltDescription) isInvalid = true
+              break
+            case CourseType.MTH_DIRECT:
+              if (!item.OnSiteSplitEnrollment && !item.Course) isInvalid = true
+              break
+            case CourseType.THIRD_PARTY_PROVIDER:
+              if (!item.ThirdParty) isInvalid = true
+              break
+          }
+        } else {
+          isInvalid = true
+        }
+      })
+      setShowSubmitBtn(!isInvalid)
+    }
+  }, [scheduleData])
 
   return (
     <>
@@ -754,6 +925,18 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
           }
           btntitle='Ok'
           handleSubmit={handleConfirmSavedModal}
+        />
+      )}
+      {showSubmitSuccessModal && (
+        <SuccessModal
+          title='Success'
+          subtitle={
+            <Paragraph size='large' color={MthColor.SYSTEM_01} textAlign='center'>
+              {`${studentName}'s schedule has been submitted successfully and is pending approval.`}
+            </Paragraph>
+          }
+          btntitle='Done'
+          handleSubmit={() => setShowSubmitSuccessModal(false)}
         />
       )}
       {!!periodNotification && (
@@ -846,6 +1029,26 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
           content: MthTitle.UNSAVED_DESCRIPTION,
         })}
       />
+      {showSubmitBtn ? (
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', paddingX: 6 }}>
+          <Button onClick={() => handleSave(ScheduleStatus.DRAFT)} variant='contained' sx={scheduleClassess.button}>
+            {MthTitle.SAVE_DRAFT}
+          </Button>
+          <Button
+            onClick={() => handleSave(ScheduleStatus.SUBMITTED)}
+            variant='contained'
+            sx={scheduleClassess.submitBtn}
+          >
+            {'Submit'}
+          </Button>
+        </Box>
+      ) : (
+        <Box sx={{ display: 'flex', justifyContent: 'end', paddingX: 6 }}>
+          <Button onClick={() => handleSave(ScheduleStatus.DRAFT)} variant='contained' sx={scheduleClassess.button}>
+            {MthTitle.SAVE_DRAFT}
+          </Button>
+        </Box>
+      )}
     </>
   )
 }
