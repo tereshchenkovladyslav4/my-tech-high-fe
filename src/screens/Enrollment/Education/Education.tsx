@@ -41,18 +41,18 @@ export const Education: EducationTemplateType = ({ id, questions }) => {
                 if (q.slug?.toLocaleLowerCase().includes('emailconfirm')) {
                   valid_student[`${q.slug?.replace('student_', '')}`] = yup
                     .string()
-                    .required('Email is required')
+                    .required('Required')
                     .oneOf([yup.ref('email')], 'Emails do not match')
                 } else if (q.validation === 1) {
                   valid_student[`${q.slug?.replace('student_', '')}`] = yup
                     .string()
                     .email('Enter a valid email')
-                    .required('Email is required')
+                    .required('Required')
                     .nullable()
                 } else if (q.validation === 2) {
                   valid_student[`${q.slug?.replace('student_', '')}`] = yup
                     .string()
-                    .required(`${q.question} is required`)
+                    .required('Required')
                     .test(`${q.question}-selected`, `${q.question} is invalid`, (value) => {
                       return isNumber.test(value)
                     })
@@ -60,13 +60,10 @@ export const Education: EducationTemplateType = ({ id, questions }) => {
                   valid_student[`${q.slug?.replace('student_', '')}`] = yup
                     .array()
                     .min(1)
-                    .required(`${q.question} is required`)
+                    .required('Required')
                     .nullable()
                 } else {
-                  valid_student[`${q.slug?.replace('student_', '')}`] = yup
-                    .string()
-                    .required(`${q.question} is required`)
-                    .nullable()
+                  valid_student[`${q.slug?.replace('student_', '')}`] = yup.string().required('Required').nullable()
                 }
               }
             } else if (q.slug?.includes('parent_')) {
@@ -74,69 +71,48 @@ export const Education: EducationTemplateType = ({ id, questions }) => {
                 if (q.slug?.toLocaleLowerCase().includes('emailconfirm')) {
                   valid_parent[`${q.slug?.replace('parent_', '')}`] = yup
                     .string()
-                    .required('Email is required')
+                    .required('Required')
                     .oneOf([yup.ref('email')], 'Emails do not match')
                 } else if (q.validation === 1) {
                   valid_parent[`${q.slug?.replace('parent_', '')}`] = yup
                     .string()
                     .email('Enter a valid email')
-                    .required('Email is required')
+                    .required('Required')
                     .nullable()
                 } else if (q.validation === 2) {
                   valid_parent[`${q.slug?.replace('parent_', '')}`] = yup
                     .string()
-                    .required(`${q.question} is required`)
+                    .required('Required')
                     .test(`${q.question}-selected`, `${q.question} is invalid`, (value) => {
                       return isNumber.test(value)
                     })
                 } else if (q.type === QUESTION_TYPE.CHECKBOX || q.type === QUESTION_TYPE.AGREEMENT) {
-                  valid_parent[`${q.slug?.replace('parent_', '')}`] = yup
-                    .array()
-                    .min(1)
-                    .required(`${q.question} is required`)
-                    .nullable()
+                  valid_parent[`${q.slug?.replace('parent_', '')}`] = yup.array().min(1).required('Required').nullable()
                 } else {
-                  valid_parent[`${q.slug?.replace('parent_', '')}`] = yup
-                    .string()
-                    .required(`${q.question} is required`)
-                    .nullable()
+                  valid_parent[`${q.slug?.replace('parent_', '')}`] = yup.string().required('Required').nullable()
                 }
               }
             } else if (q.slug?.includes('meta_') && q.required && !q.additional_question) {
               if (q.validation === 1) {
-                valid_meta[`${q.slug}`] = yup
-                  .string()
-                  .email('Enter a valid email')
-                  .required('Email is required')
-                  .nullable()
+                valid_meta[`${q.slug}`] = yup.string().email('Enter a valid email').required('Required').nullable()
               } else if (q.validation === 2) {
                 valid_meta[`${q.slug}`] = yup
                   .string()
-                  .required(`${q.question} is required`)
+                  .required('Required')
                   .test(`${q.question}-selected`, `${q.question} is invalid`, (value) => {
                     return isNumber.test(value)
                   })
               } else if (q.type === QUESTION_TYPE.CHECKBOX) {
-                valid_meta[`${q.slug}`] = yup.array().min(1).required(`${q.question} is required`).nullable()
+                valid_meta[`${q.slug}`] = yup.array().min(1).required('Required').nullable()
               } else if (q.type === QUESTION_TYPE.AGREEMENT) {
-                valid_meta[`${q.slug}`] = yup
-                  .array()
-                  .min(1)
-                  .required(`${q.question.replace(/<[^>]+>/g, '')} is required`)
-                  .nullable()
+                valid_meta[`${q.slug}`] = yup.array().min(1).required('Required').nullable()
               } else {
-                valid_meta[`${q.slug}`] = yup.string().required(`${q.question} is required`).nullable()
+                valid_meta[`${q.slug}`] = yup.string().required('Required').nullable()
               }
             } else if (q.slug?.includes('address_') && q.required) {
-              valid_address[`${q.slug?.replace('address_', '')}`] = yup
-                .string()
-                .required(`${q.question} is required`)
-                .nullable()
+              valid_address[`${q.slug?.replace('address_', '')}`] = yup.string().required('Required').nullable()
             } else if (q.slug?.includes('packet_') && q.required) {
-              valid_packet[`${q.slug?.replace('packet_', '')}`] = yup
-                .string()
-                .required(`${q.question} is required`)
-                .nullable()
+              valid_packet[`${q.slug?.replace('packet_', '')}`] = yup.string().required('Required').nullable()
             }
           }
         })
