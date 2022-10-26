@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect, useContext, FunctionComponent } fro
 import { useQuery } from '@apollo/client'
 import { Add } from '@mui/icons-material'
 import CloseIcon from '@mui/icons-material/Close'
+import EditIcon from '@mui/icons-material/Edit'
 import {
   Button,
   Modal,
@@ -13,7 +14,9 @@ import {
   Select,
   MenuItem,
   Tooltip,
+  IconButton,
 } from '@mui/material'
+
 import { ContentState, EditorState, convertToRaw } from 'draft-js'
 
 import draftToHtml from 'draftjs-to-html'
@@ -690,6 +693,23 @@ export const EmailTemplateModal: FunctionComponent<EmailTemplateModalProps> = ({
                         Add Response
                       </Button>
                     </Grid>
+                  </Box>
+                ))}
+              </Grid>
+            )}
+            {type === 'standard_modal' && (
+              <Grid item xs={12}>
+                <Subtitle fontWeight='700' size='large'>
+                  Standard Responses
+                  <IconButton>
+                    <EditIcon style={{ color: '#4145FF', marginLeft: '5px' }} />
+                  </IconButton>
+                </Subtitle>
+                {Object.keys(response).map((index: number) => (
+                  <Box key={index} className={classes['availbe-row']}>
+                    <Subtitle fontWeight='600' color='#A3A3A4' sx={{ fontSize: '18px', marginLeft: '8px' }}>
+                      {response[index].title}
+                    </Subtitle>
                   </Box>
                 ))}
               </Grid>

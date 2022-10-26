@@ -80,7 +80,7 @@ export const cloneTitleMutation = gql`
 `
 
 export const createOrUpdateProviderMutation = gql`
-  mutation CreateOrUpdateSubject($createProviderInput: CreateOrUpdateProviderInput!) {
+  mutation CreateOrUpdateProvider($createProviderInput: CreateOrUpdateProviderInput!) {
     createOrUpdateProvider(createProviderInput: $createProviderInput) {
       id
     }

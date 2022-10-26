@@ -6,6 +6,7 @@ import moment from 'moment'
 import { DropDown } from '@mth/components/DropDown/DropDown'
 import { DropDownItem } from '@mth/components/DropDown/types'
 import { ResourceSubtitle } from '@mth/enums'
+import { SchoolYearRespnoseType } from '@mth/hooks'
 import { ResourceCard } from './ResourceCard'
 import { ResourceCartBar } from './ResourceCartBar'
 import { ResourceDetails } from './ResourceDetails'
@@ -13,6 +14,7 @@ import { ResourceLevelSelector } from './ResourceLevelSelector'
 import { ResourceModal } from './ResourceModal'
 import { ResourceRequest } from './ResourceRequest'
 import {
+  getActiveHomeroomResourceSchoolYearsQuery,
   getStudentResourcesQuery,
   shouldConfirmWaitlist,
   toggleHiddenResourceMutation,
@@ -35,13 +37,21 @@ export const Resources: React.FC = () => {
   const [showResourceLevelModal, setShowResourceLevelModal] = useState<boolean>(false)
   const [selectedYear, setSelectedYear] = useState<number>(0)
   const [schoolYears, setSchoolYears] = useState<DropDownItem[]>([])
+  const { loading: schoolYearsLoading, data: schoolYearsData } = useQuery(getActiveHomeroomResourceSchoolYearsQuery, {
+    variables: {
+      studentId: currentStudentId,
+    },
+    skip: !currentStudentId,
+    fetchPolicy: 'network-only',
+  })
+
   const {
     loading,
     data: resourcesData,
     refetch,
   } = useQuery(getStudentResourcesQuery, {
-    variables: { studentId: currentStudentId },
-    skip: !currentStudentId,
+    variables: { studentId: currentStudentId, schoolYearId: +selectedYear },
+    skip: !currentStudentId || !selectedYear,
     fetchPolicy: 'network-only',
   })
   const [toggleHiddenResource, {}] = useMutation(toggleHiddenResourceMutation)
@@ -148,30 +158,21 @@ export const Resources: React.FC = () => {
       const colors = ['blue', 'orange']
       const { studentResources: resources }: { studentResources: Resource[] } = resourcesData
       resources?.filter((item) => !item.image).map((item, index) => (item.background = colors[index % 2]))
-      const schoolYearArray: DropDownItem[] = []
-      resources?.map((resource) => {
-        const schoolYear = schoolYearArray?.filter((item) => item?.value == resource?.SchoolYearId)
-        if (schoolYear.length == 0) {
-          schoolYearArray.push({
-            label: `${moment(resource?.SchoolYear?.date_begin).format('YYYY')}-${moment(
-              resource?.SchoolYear?.date_end,
-            ).format('YY')}`,
-            value: resource?.SchoolYearId,
-          })
-        }
-      })
-      if (schoolYearArray.length > 0) {
-        const sortedSchoolYears = schoolYearArray.sort((a, b) => {
-          if (a.label > b.label) return 1
-          if (a.label < b.label) return -1
-          return 0
-        })
-        setSelectedYear(Number(sortedSchoolYears.at(0)?.value))
-        setSchoolYears(sortedSchoolYears)
-      }
       setResources(resources || [])
     }
   }, [loading, resourcesData])
+
+  useEffect(() => {
+    if (schoolYearsData?.activeHomeroomResourceSchoolYears?.length) {
+      const { activeHomeroomResourceSchoolYears: schoolYears } = schoolYearsData
+      const sortedSchoolYears = sortBy(schoolYears, 'date_begin').map((item: SchoolYearRespnoseType) => ({
+        value: item.school_year_id,
+        label: `${moment(item.date_begin).format('YYYY')}-${moment(item.date_end).format('YY')}`,
+      }))
+      setSelectedYear(Number(sortedSchoolYears.at(0)?.value))
+      setSchoolYears(sortedSchoolYears)
+    }
+  }, [schoolYearsLoading, schoolYearsData])
 
   return (
     <Stack>
@@ -200,13 +201,11 @@ export const Resources: React.FC = () => {
             </Box>
           )}
           <Grid container padding={4} spacing={4}>
-            {resources
-              .filter((resource) => resource?.SchoolYearId == selectedYear)
-              .map((item, idx) => (
-                <Grid key={idx} item xs={4} paddingTop={4}>
-                  <ResourceCard item={item} onAction={(evtType: EventType) => handleCardActions(item, evtType)} />
-                </Grid>
-              ))}
+            {resources.map((item, idx) => (
+              <Grid key={idx} item xs={4} paddingTop={4}>
+                <ResourceCard item={item} onAction={(evtType: EventType) => handleCardActions(item, evtType)} />
+              </Grid>
+            ))}
           </Grid>
         </>
       )}

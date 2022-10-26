@@ -174,7 +174,7 @@ const HomeroomResourceCard: React.FC<HomeroomResourceCardProps> = ({ item, actio
           </Typography>
           {item.resource_id != 0 && action && !isPast && (
             <Stack direction='row' spacing={0.5} alignItems='center'>
-              <Tooltip title='Edit'>
+              <Tooltip title={item.is_active ? 'Edit' : ''}>
                 <IconButton
                   sx={homeroomResourcesCardClasses.actionButton}
                   onClick={(e) => {

@@ -26,7 +26,6 @@ import {
   updateApplicationMutation,
   toggleHideApplicationMutation,
   updateApplicationSchoolYearByIds,
-  getApplicationQuestionsGql,
 } from '../services'
 import { ApplicationTableProps, EmailTemplateVM } from '../type'
 
@@ -56,12 +55,6 @@ export const ApplicationTable: FunctionComponent<ApplicationTableProps> = ({ fil
   const status = ['New', 'Sibling', 'Returning', 'Hidden']
 
   const checker = (arr: string[], target: string[]) => target.every((v) => arr.includes(v))
-
-  const getSpecialEdOptions = (sped_op: number) => {
-    const selected_options = specialEdOptions.filter((item) => item.value == sped_op)
-    if (selected_options.length == 0) return 'None'
-    else return selected_options[0].label
-  }
 
   const createData = (application: unknown) => {
     let grade_level =
@@ -104,7 +97,7 @@ export const ApplicationTable: FunctionComponent<ApplicationTableProps> = ({ fil
           ? application.student.special_ed
             ? 'Yes'
             : 'No'
-          : getSpecialEdOptions(application.student.special_ed),
+          : specialEdOptions[application.student.special_ed],
       parent: `${application.student.parent.person?.last_name}, ${application.student.parent.person?.first_name}`,
       // status: application.status,
       relation: application.relation_status ? status[application.relation_status] : 'New',
@@ -178,16 +171,6 @@ export const ApplicationTable: FunctionComponent<ApplicationTableProps> = ({ fil
     fetchPolicy: 'network-only',
   })
 
-  const { loading: questionLoading, data: applicationQuestionsData } = useQuery(getApplicationQuestionsGql, {
-    variables: {
-      input: {
-        region_id: me?.selectedRegionId,
-      },
-    },
-    skip: me?.selectedRegionId ? false : true,
-    fetchPolicy: 'network-only',
-  })
-
   const { data, refetch } = useQuery(getApplicationsQuery, {
     variables: {
       filter: filter,
@@ -236,6 +219,7 @@ export const ApplicationTable: FunctionComponent<ApplicationTableProps> = ({ fil
     if (schoolYearData?.region?.SchoolYears) {
       const { SchoolYears } = schoolYearData?.region
       const yearList = []
+      let special_ed_options = ''
       SchoolYears.sort((a, b) => (a.date_begin > b.date_begin ? 1 : -1))
         .filter((item) => moment(item.date_begin).format('YYYY') >= moment().format('YYYY'))
         .map(
@@ -260,29 +244,18 @@ export const ApplicationTable: FunctionComponent<ApplicationTableProps> = ({ fil
                 value: `${item.school_year_id}-mid`,
               })
             }
+            if (item.special_ed_options != '' && item.special_ed_options != null)
+              special_ed_options = item.special_ed_options
           },
         )
       setSchoolYears(yearList.sort((a, b) => (a.label > b.label ? 1 : -1)))
+      if (special_ed_options == '') setSpecialEdOptions([])
+      else setSpecialEdOptions(special_ed_options.split(','))
     }
   }, [schoolYearData?.region?.SchoolYears])
   // useEffect(() => {
   //   setSchoolYears(schoolYearData?.schoolYears)
   // }, [schoolLoading])
-
-  useEffect(() => {
-    if (!questionLoading && applicationQuestionsData?.getApplicationQuestions) {
-      const questionLists = applicationQuestionsData.getApplicationQuestions.filter(
-        (v) => v.slug == 'meta_special_education',
-      )
-
-      if (questionLists.length == 0) {
-        setSpecialEdOptions([])
-        return
-      }
-      const options = JSON.parse(questionLists[0].options)
-      setSpecialEdOptions(options)
-    }
-  }, [applicationQuestionsData])
 
   useEffect(() => {
     if (pageLoading) {

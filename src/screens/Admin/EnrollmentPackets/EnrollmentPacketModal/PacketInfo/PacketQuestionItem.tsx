@@ -441,8 +441,8 @@ function Item({
                     <FormControlLabel
                       control={
                         <Radio
-                          checked={field.value === (q.slug == 'meta_special_education' ? o.value : o.label)}
-                          onClick={() => onHandleChange(q.slug == 'mega_special_education' ? o.value : o.label)}
+                          checked={field.value == (q.slug == 'meta_special_education' ? o.value : o.label)}
+                          onClick={() => onHandleChange(q.slug == 'meta_special_education' ? o.value : o.label)}
                         />
                       }
                       label={o.label}

@@ -105,7 +105,7 @@ export const EnrollmentQuestions: React.FC = () => {
       optionArray.map((option, index) => {
         temp.push({
           label: option.trim(),
-          value: index + 1,
+          value: index,
         })
       })
     }
@@ -334,7 +334,13 @@ export const EnrollmentQuestions: React.FC = () => {
       if (selectedQuestion.slug === 'address_county_id') {
         options = counties
       } else if (selectedQuestion.slug === 'address_country_id') {
-        options = countries
+        options = [
+          {
+            label: 'United States',
+            value: 'United States',
+          },
+          ...countries.filter((item) => item.value !== 'United States'),
+        ]
       } else if (selectedQuestion.slug === 'program_year') {
         options = schoolYears
       } else if (selectedQuestion.slug === 'packet_school_district') {

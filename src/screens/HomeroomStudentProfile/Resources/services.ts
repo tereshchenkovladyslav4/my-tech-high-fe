@@ -1,9 +1,19 @@
 import { gql } from '@apollo/client'
 import { Resource } from '@mth/screens/HomeroomStudentProfile/Resources/types'
 
+export const getActiveHomeroomResourceSchoolYearsQuery = gql`
+  query ActiveHomeroomResourceSchoolYears($studentId: Int!) {
+    activeHomeroomResourceSchoolYears(studentId: $studentId) {
+      school_year_id
+      date_begin
+      date_end
+    }
+  }
+`
+
 export const getStudentResourcesQuery = gql`
-  query StudentResources($studentId: ID!) {
-    studentResources(studentId: $studentId) {
+  query StudentResources($studentId: Int!, $schoolYearId: Int!) {
+    studentResources(studentId: $studentId, schoolYearId: $schoolYearId) {
       resource_id
       SchoolYearId
       title
@@ -22,13 +32,6 @@ export const getStudentResourcesQuery = gql`
         name
         limit
         TotalRequests
-      }
-      SchoolYear {
-        date_begin
-        date_end
-        school_year_id
-        homeroom_resource_open
-        homeroom_resource_close
       }
       family_resource
       priority

@@ -49,13 +49,6 @@ export type Resource = {
   RequestStatus: ResourceRequestStatus
   // Temp field
   background?: string
-  SchoolYear: {
-    date_begin: string
-    date_end: string
-    homeroom_resource_open: string
-    homeroom_resource_close: string
-    school_year_id: string
-  }
 }
 
 export interface ResourceCardProps {
