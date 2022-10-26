@@ -11,13 +11,15 @@ import { SchoolYearType } from '@mth/models'
 import { UserContext, UserInfo } from '@mth/providers/UserContext/UserProvider'
 import { StudentType } from '@mth/screens/HomeroomStudentProfile/Student/types'
 import { getWindowDimension } from '@mth/utils'
+import { ToDoItem } from '../ToDoList/components/ToDoListItem/types'
 import { StudentGrade } from './components/StudentGrade/StudentGrade'
 
 type HomeroomGradeProps = {
   schoolYears: SchoolYearType[]
+  mainTodoList: ToDoItem[]
 }
 
-export const HomeroomGrade: React.FC<HomeroomGradeProps> = ({ schoolYears }) => {
+export const HomeroomGrade: React.FC<HomeroomGradeProps> = ({ schoolYears, mainTodoList }) => {
   const { me } = useContext(UserContext)
   const { students } = me as UserInfo
 
@@ -36,6 +38,16 @@ export const HomeroomGrade: React.FC<HomeroomGradeProps> = ({ schoolYears }) => 
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
   }, [])
+
+  const findStudent = (studentId: number) => {
+    return map(mainTodoList, (todoListItem) => {
+      if (todoListItem.students.some((student) => student.student_id === studentId)) {
+        return todoListItem
+      } else {
+        return false
+      }
+    })
+  }
 
   function SampleNextArrow(props) {
     const { style } = props
@@ -107,7 +119,10 @@ export const HomeroomGrade: React.FC<HomeroomGradeProps> = ({ schoolYears }) => 
 
   const renderStudents = () =>
     map(filteredStudents, (student, index) => {
-      return <StudentGrade schoolYears={schoolYears} student={student} key={index} />
+      const notification = findStudent(student.student_id)
+        .filter((item) => item !== false)
+        .at(0) as ToDoItem
+      return <StudentGrade schoolYears={schoolYears} student={student} key={index} notification={notification} />
     })
 
   useEffect(() => {

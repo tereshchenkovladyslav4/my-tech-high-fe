@@ -113,6 +113,7 @@ export const getMeQuery = gql`
         }
         applications {
           status
+          application_id
         }
         person {
           email

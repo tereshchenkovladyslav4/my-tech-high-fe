@@ -195,7 +195,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
         subMenu.showLessLabel = 'Hide options for other grades'
         provider.AltCourses?.forEach((course) => {
           subMenu.moreItems?.push({
-            label: `${title.name} (${gradeShortText(course.min_alt_grade)}-${gradeShortText(course.max_alt_grade)})`,
+            label: `${course.name} (${gradeShortText(course.min_alt_grade)}-${gradeShortText(course.max_alt_grade)})`,
             callback: () => handleSelectCourse(schedule, course),
           })
         })
@@ -588,6 +588,15 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
 
     if (schedule.Title?.CourseTypes?.length === 1) {
       schedule.CourseType = schedule.Title.CourseTypes[0].value as CourseType
+    }
+
+    if (schedule.CourseType === CourseType.MTH_DIRECT) {
+      if (schedule.Title?.Providers?.length === 1) {
+        const provider = schedule.Title?.Providers[0]
+        if (provider.Courses?.length === 1) {
+          schedule.Course = provider.Courses[0]
+        }
+      }
     }
     return schedule
   }

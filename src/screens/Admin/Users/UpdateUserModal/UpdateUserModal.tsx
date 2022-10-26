@@ -187,7 +187,6 @@ export const UpdateUserModal: UpdateModalTemplateType = ({ handleModem, userID, 
       })
       setRegionOption(updatedRegions)
     } else {
-      // console.log(JSON.stringify(error1, null, 2));
     }
   }, [load1])
 

@@ -598,9 +598,9 @@ export const StudentFilters: React.FC<StudentFiltersProps> = ({
                 </Subtitle>
                 <Subtitle sx={{ ...(classes.formValue as Record<string, unknown>) }} fontWeight='500'>
                   {applications[0].status}{' '}
-                  {applications[0].date_submitted
-                    ? moment(applications[0].date_submitted).format('l')
-                    : moment(applications[0].date_accepted).format('l')}
+                  {applications[0].date_accepted
+                    ? moment(applications[0].date_accepted).format('l')
+                    : moment(applications[0].date_submitted).format('l')}
                 </Subtitle>
               </Box>
               <Box sx={classes.formRow}>

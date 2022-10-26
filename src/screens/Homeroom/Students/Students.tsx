@@ -4,6 +4,7 @@ import { Box, Button, Card, CircularProgress, Divider } from '@mui/material'
 import { filter, map } from 'lodash'
 import { ToDoItem } from '@mth/screens/Dashboard/ToDoList/components/ToDoListItem/types'
 import { getTodoList } from '@mth/screens/Dashboard/ToDoList/service'
+import { DropDownItem } from '../../../components/DropDown/types'
 import { Paragraph } from '../../../components/Typography/Paragraph/Paragraph'
 import { Title } from '../../../components/Typography/Title/Title'
 import { MthColor, StudentStatus } from '../../../core/enums'
@@ -15,8 +16,9 @@ import { Student } from './Student/Student'
 type StudentsProps = {
   schoolYears: SchoolYearType[]
   isLoading: boolean
+  schoolYearsDropdown: DropDownItem[]
 }
-export const Students: FunctionComponent<StudentsProps> = ({ schoolYears, isLoading }) => {
+export const Students: FunctionComponent<StudentsProps> = ({ schoolYears, isLoading, schoolYearsDropdown }) => {
   const { me } = useContext(UserContext)
   const { students } = me as UserInfo
 
@@ -46,6 +48,7 @@ export const Students: FunctionComponent<StudentsProps> = ({ schoolYears, isLoad
           schoolYears={schoolYears}
           student={student}
           key={student?.student_id}
+          schoolYearsDropdown={schoolYearsDropdown}
           showNotification={showNotification}
         />
       )
@@ -60,6 +63,7 @@ export const Students: FunctionComponent<StudentsProps> = ({ schoolYears, isLoad
         <Student
           withdrawn={true}
           schoolYears={schoolYears}
+          schoolYearsDropdown={schoolYearsDropdown}
           student={student}
           key={student?.student_id}
           showNotification={showNotification}

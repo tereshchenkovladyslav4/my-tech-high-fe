@@ -1,5 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { TableCell, TableContainer, TableHead, TableRow, Table, TableBody, CircularProgress, Box } from '@mui/material'
+import {
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Table,
+  TableBody,
+  CircularProgress,
+  Box,
+  TableFooter,
+} from '@mui/material'
 import { DragDropContext, Droppable, DroppableProvided, DropResult } from 'react-beautiful-dnd'
 import { v4 as uuidv4 } from 'uuid'
 import { MthCheckbox } from '@mth/components/MthCheckbox'
@@ -159,15 +169,17 @@ const MthTable = <T extends unknown>({
             </Droppable>
           </DragDropContext>
           {!items.length && !!tableWidth && (
-            <TableRow>
-              <td colSpan={fields.length}>
-                {loading && (
-                  <Box display={'flex'} justifyContent='center' py={1}>
-                    <CircularProgress />
-                  </Box>
-                )}
-              </td>
-            </TableRow>
+            <TableFooter>
+              <TableRow>
+                <td colSpan={fields.length}>
+                  {loading && (
+                    <Box display={'flex'} justifyContent='center' py={1}>
+                      <CircularProgress />
+                    </Box>
+                  )}
+                </td>
+              </TableRow>
+            </TableFooter>
           )}
         </Table>
       </TableContainer>

@@ -57,7 +57,11 @@ const MthTableRow = <T extends unknown>({
     )
   }
 
-  const renderGeneralTableRow = (isSelectable: boolean, provided: DraggableProvided, item: MthTableRowItem<T>) => {
+  const renderGeneralTableRow = (
+    isSelectable: boolean,
+    provided: DraggableProvided | undefined,
+    item: MthTableRowItem<T>,
+  ) => {
     return (
       <>
         <StyledTableRow className={expanded ? 'expanded' : ''}>
@@ -75,7 +79,7 @@ const MthTableRow = <T extends unknown>({
           {fields.map((field, indexCol) => (
             <TableCell key={indexCol} width={convertWidth(field.width || 0, tableWidth)}>
               <div className={indexCol > 0 && indexCol + 1 !== fields.length ? 'border-l cell-item' : 'cell-item'}>
-                {field.formatter ? field.formatter(item, provided.dragHandleProps) : item.columns[field.key]}
+                {field.formatter ? field.formatter(item, provided?.dragHandleProps) : item.columns[field.key]}
               </div>
             </TableCell>
           ))}
@@ -100,14 +104,13 @@ const MthTableRow = <T extends unknown>({
 
   return (
     <>
-      <Draggable key={index.toString()} draggableId={index.toString()} index={index} isDragDisabled={!isDraggable}>
-        {(provided: DraggableProvided) => (
-          <>
-            {isDraggable && renderDraggableTableRow(selectable, provided, item)}
-            {!isDraggable && renderGeneralTableRow(selectable, provided, item)}
-          </>
-        )}
-      </Draggable>
+      {isDraggable ? (
+        <Draggable key={index.toString()} draggableId={index.toString()} index={index} isDragDisabled={!isDraggable}>
+          {(provided: DraggableProvided) => renderDraggableTableRow(selectable, provided, item)}
+        </Draggable>
+      ) : (
+        renderGeneralTableRow(selectable, undefined, item)
+      )}
     </>
   )
 }

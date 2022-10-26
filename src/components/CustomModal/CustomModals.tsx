@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react'
-import InfoIcon from '@mui/icons-material/InfoOutlined'
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline'
 import { Box, Button, Modal, Typography } from '@mui/material'
 import { customModalClasses } from '@mth/components/CustomModal/styles'
 
@@ -54,7 +54,7 @@ export const CustomModal: React.FC<CustomModalType> = ({
           <Typography variant='h5' fontWeight={'bold'}>
             {title}
           </Typography>
-          {showIcon && <InfoIcon sx={{ fontSize: 50, margin: '20px 0px' }} />}
+          {showIcon && <ErrorOutlineIcon sx={{ fontSize: 50, margin: '20px 0px' }} />}
           {showIcon ? <Typography>{description}</Typography> : <Typography marginTop={4}>{description}</Typography>}
           {subDescription && <Typography>{subDescription}</Typography>}
           <Box

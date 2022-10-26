@@ -1,28 +1,43 @@
 import React, { useContext, useEffect, useState } from 'react'
+import { useMutation } from '@apollo/client'
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline'
 import ScheduleIcon from '@mui/icons-material/Schedule'
 import WarningAmberIcon from '@mui/icons-material/WarningAmber'
 import { Avatar, Box, Button, Card } from '@mui/material'
 import { useHistory } from 'react-router-dom'
+import { EditYearModal } from '@mth/components/EmailModal/EditYearModal'
 import { Metadata } from '@mth/components/Metadata/Metadata'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { Title } from '@mth/components/Typography/Title/Title'
 
-import { ApplicantStatus, MthColor, MthRoute, PacketStatus, StudentStatus } from '@mth/enums'
+import { ApplicantStatus, MthColor, MthRoute, PacketStatus, StudentStatus, RelationStatus } from '@mth/enums'
 import { UserContext, UserInfo } from '@mth/providers/UserContext/UserProvider'
 import { CircleData } from '@mth/screens/Dashboard/HomeroomGrade/components/StudentGrade/types'
 import { Person } from '@mth/screens/HomeroomStudentProfile/Student/types'
 import { checkEnrollPacketStatus, toOrdinalSuffix } from '@mth/utils'
+import { WarningModal } from '../../../../components/WarningModal/Warning'
+import { updateApplicationMutation, UpdateStudentMutation } from './service'
 import { StudentTemplateType } from './type'
 
-export const Student: StudentTemplateType = ({ student, schoolYears, showNotification, withdrawn }) => {
+export const Student: StudentTemplateType = ({
+  student,
+  schoolYears,
+  showNotification,
+  withdrawn,
+  schoolYearsDropdown,
+}) => {
   const { me, setMe } = useContext(UserContext)
   const history = useHistory()
 
   const [circleData, setCircleData] = useState<CircleData>()
   const [link, setLink] = useState<string>('')
   const [showToolTip, setShowToolTip] = useState(true)
+  const [showComingBack, setShowComingBack] = useState(false)
+  const [editYearModal, setEditYearModal] = useState(false)
+
+  const [updateApplication] = useMutation(updateApplicationMutation)
+  const [updateStudent] = useMutation(UpdateStudentMutation)
 
   const getProfilePhoto = (person: Person) => {
     if (!person.photo) return undefined
@@ -32,9 +47,9 @@ export const Student: StudentTemplateType = ({ student, schoolYears, showNotific
   }
   useEffect(() => {
     const { applications, packets, status } = student
-    const currApplication = applications?.at(0)
-    const currPacket = packets?.at(0)
-    const studentStatus = status?.at(0)?.status
+    const currApplication = applications?.at(-1)
+    const currPacket = packets?.at(-1)
+    const studentStatus = status?.at(-1)?.status
 
     const enrollmentLink = `${MthRoute.HOMEROOM + MthRoute.ENROLLMENT}/${student.student_id}`
     const homeroomLink = `${MthRoute.HOMEROOM}/${student.student_id}`
@@ -56,7 +71,10 @@ export const Student: StudentTemplateType = ({ student, schoolYears, showNotific
         progress: 0,
         type: 'Re-apply',
         icon: (
-          <ErrorOutlineIcon sx={{ color: MthColor.MTHORANGE, marginTop: 2, cursor: 'pointer' }} onClick={() => {}} />
+          <ErrorOutlineIcon
+            sx={{ color: MthColor.MTHORANGE, marginTop: 2, cursor: 'pointer' }}
+            onClick={handleWithrawanStudent}
+          />
         ),
       })
     } else if (currApplication && currApplication?.status === ApplicantStatus.SUBMITTED) {
@@ -142,6 +160,42 @@ export const Student: StudentTemplateType = ({ student, schoolYears, showNotific
     }
   }, [student, showNotification])
 
+  const submitEditYear = async (form) => {
+    const { schoolYear } = form
+    const { applications } = student
+    const currApplication = applications?.at(-1)
+
+    await updateApplication({
+      variables: {
+        updateApplicationInput: {
+          application_id: Number(currApplication?.application_id),
+          status: ApplicantStatus.SUBMITTED,
+          relation_status: RelationStatus.RETURNING,
+          school_year_id: parseInt(String(schoolYear)?.split('-')[0]),
+          midyear_application: String(schoolYear)?.split('-')[1] === 'mid' ? true : false,
+        },
+      },
+    })
+
+    await updateStudent({
+      variables: {
+        updateStudentInput: {
+          student_id: Number(student?.student_id),
+          status: StudentStatus.APPLIED,
+          school_year_id: parseInt(String(schoolYear)?.split('-')[0]),
+        },
+      },
+    })
+
+    setEditYearModal(false)
+    window.location.reload()
+  }
+
+  const handleWithrawanStudent = () => {
+    if (schoolYearsDropdown?.length == 0) setShowComingBack(true)
+    else setEditYearModal(true)
+  }
+
   const gradeText =
     student?.grade_levels?.at(-1)?.grade_level !== 'Kindergarten'
       ? `${toOrdinalSuffix(student?.grade_levels?.at(-1)?.grade_level as number)} Grade`
@@ -187,6 +241,9 @@ export const Student: StudentTemplateType = ({ student, schoolYears, showNotific
                 if (checkEnrollPacketStatus(schoolYears, student)) {
                   setMe({ ...me, currentTab: 0 } as UserInfo)
                   if (link) history.push(link)
+                  else {
+                    if (circleData?.type == 'Re-apply') handleWithrawanStudent()
+                  }
                 }
               }}
             />
@@ -281,6 +338,24 @@ export const Student: StudentTemplateType = ({ student, schoolYears, showNotific
           </Button>
         )}
       </Card>
+      {showComingBack && (
+        <WarningModal
+          title='Check Back Soon!'
+          subtitle='We will be taking applications soon. Please re-apply then.'
+          handleSubmit={() => setShowComingBack(false)}
+          handleModem={() => setShowComingBack(false)}
+          btntitle='Ok'
+          showIcon={false}
+        />
+      )}
+      {editYearModal && (
+        <EditYearModal
+          title={`Select the Program Year ${student.person.first_name} is applying for:`}
+          schoolYears={schoolYearsDropdown}
+          handleSubmit={submitEditYear}
+          handleClose={() => setEditYearModal(false)}
+        />
+      )}
     </>
   )
 }

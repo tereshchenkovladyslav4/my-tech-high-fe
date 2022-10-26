@@ -8,6 +8,7 @@ import { Title } from '../../../components/Typography/Title/Title'
 import { SYSTEM_06 } from '../../../utils/constants'
 import { SchoolYearType } from '../HomeroomGrade/components/StudentGrade/types'
 import { TodoList } from './components/TodoList/TodoList'
+import { ToDoItem } from './components/ToDoListItem/types'
 
 const EmptyStateWrapper = (props) => (
   <Box
@@ -48,10 +49,11 @@ const emptyStateHandler = (showEmpty: boolean, windowDimensions: number) => {
 
 type TodoProps = {
   schoolYears: SchoolYearType[]
-  setIsLoading: (isLoading: boolean) => void
+  setIsLoading?: (isLoading: boolean) => void
+  setMainTodoList?: (todoList: ToDoItem[]) => void
 }
 
-export const ToDo: FunctionComponent<TodoProps> = ({ schoolYears, setIsLoading }) => {
+export const ToDo: FunctionComponent<TodoProps> = ({ schoolYears, setIsLoading, setMainTodoList }) => {
   const cardRef = useRef(null)
 
   const [showEmpty, setShowEmpty] = useState(false)
@@ -91,7 +93,12 @@ export const ToDo: FunctionComponent<TodoProps> = ({ schoolYears, setIsLoading }
                 paddingX: { xs: 2, md: 0 },
               }}
             >
-              <TodoList schoolYears={schoolYears} handleShowEmpty={handleShowEmpty} setIsLoading={setIsLoading} />
+              <TodoList
+                schoolYears={schoolYears}
+                handleShowEmpty={handleShowEmpty}
+                setIsLoading={setIsLoading}
+                setMainTodoList={setMainTodoList}
+              />
             </Box>
           ) : (
             <EmptyStateWrapper title='Congrats!' subtitle='You are all caught up.' />

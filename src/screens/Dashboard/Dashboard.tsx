@@ -18,6 +18,7 @@ import { HomeroomGrade } from './HomeroomGrade/HomeroomGrade'
 import { ParentCalendar } from './ParentCalendar'
 import { ReadMoreSection } from './ReadMoreSection'
 import { getUserAnnouncements } from './services'
+import { ToDoItem } from './ToDoList/components/ToDoListItem/types'
 import { ToDo } from './ToDoList/ToDo'
 import { DashboardSection } from './types'
 
@@ -43,6 +44,7 @@ export const Dashboard: React.FC = () => {
     searchField,
   )
   const { data: eventTypeLists } = useEventTypeListByRegionId(Number(region_id))
+  const [mainTodoList, setMainTodoList] = useState<ToDoItem[]>()
 
   const schoolYearData = useQuery(getSchoolYearsByRegionId, {
     variables: {
@@ -78,7 +80,7 @@ export const Dashboard: React.FC = () => {
               <Grid item xs={12} lg={8}>
                 <Grid container spacing={2}>
                   <Grid item xs={12}>
-                    <HomeroomGrade schoolYears={schoolYears} />
+                    <HomeroomGrade schoolYears={schoolYears} mainTodoList={mainTodoList} />
                   </Grid>
                   <Grid item xs={12} order={{ xs: 3, lg: 2 }}>
                     <ParentCalendar
@@ -90,7 +92,7 @@ export const Dashboard: React.FC = () => {
                     />
                   </Grid>
                   <Grid item xs={12} order={{ xs: 2, lg: 3 }}>
-                    {schoolYears.length > 0 && <ToDo schoolYears={schoolYears} />}
+                    {schoolYears.length > 0 && <ToDo schoolYears={schoolYears} setMainTodoList={setMainTodoList} />}
                   </Grid>
                 </Grid>
               </Grid>

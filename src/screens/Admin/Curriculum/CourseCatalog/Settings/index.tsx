@@ -263,7 +263,6 @@ const Settings: FunctionComponent = () => {
             sx={{
               border: '1px solid #d1d1d1',
               borderRadius: 1,
-              marginBottom: '24px',
               'div.DraftEditor-editorContainer': {
                 minHeight: '200px',
                 maxHeight: '250px',
@@ -396,7 +395,12 @@ const Settings: FunctionComponent = () => {
         </Box>
         {map(scheduleBuilderItems, (item, index) => (
           <Box sx={{ width: '100%' }}>
-            <CommonSelect key={index} index={index > 2 ? index + 1 : index} selectItem={item} />
+            <CommonSelect
+              key={index}
+              index={index > 2 ? index + 1 : index}
+              selectItem={item}
+              verticalDividHeight={item.name == ScheduleBuilder.TOOLTIP ? '250px' : '50px'}
+            />
           </Box>
         ))}
         {openSaveAlert.open && (

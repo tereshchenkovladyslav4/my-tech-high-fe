@@ -87,7 +87,6 @@ export const EmailModal: FunctionComponent<EmailModalProps> = ({
       setSubject(setEmailBodyInfo(subject))
       setEmailFrom(from)
       if (body) {
-        // console.log(body.replace(/\[PARENT\]/g, 'test'))
         setBody(body)
         const contentBlock = htmlToDraft(setEmailBodyInfo(body))
         if (contentBlock) {

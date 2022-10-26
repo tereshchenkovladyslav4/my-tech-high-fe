@@ -3,7 +3,7 @@ import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline'
 import ScheduleIcon from '@mui/icons-material/Schedule'
 import { Avatar, Box, CircularProgress, IconButton, Tooltip } from '@mui/material'
 import { useHistory } from 'react-router-dom'
-import { PacketStatus } from '@mth/enums'
+import { MthColor, MthRoute, PacketStatus } from '@mth/enums'
 import { Metadata } from '../../../../../components/Metadata/Metadata'
 import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
@@ -11,16 +11,19 @@ import { checkEnrollPacketStatus } from '../../../../../utils/utils'
 import { Person } from '../../../../HomeroomStudentProfile/Student/types'
 import { useStyles } from './styles'
 import { CircleData, StudentGradeTemplateType } from './types'
-import {} from '../../../../Admin/Announcements/services'
 
-export const StudentGrade: StudentGradeTemplateType = ({ student, schoolYears }) => {
+export const StudentGrade: StudentGradeTemplateType = ({ student, schoolYears, notification }) => {
   const red = '#D23C33'
   const blue = '#2B9EB7'
   const classes = useStyles
   const [circleData, setCircleData] = useState<CircleData>()
-
   const history = useHistory()
   const redirect = () => {
+    if (notification?.phrase === 'Submit Schedule') {
+      const scheduleBuilderLink = `${MthRoute.HOMEROOM + MthRoute.SUBMIT_SCHEDULE}/${student.student_id}`
+      history.push(scheduleBuilderLink)
+      return
+    }
     history.push('/homeroom/enrollment/' + student.student_id)
   }
 
@@ -33,14 +36,14 @@ export const StudentGrade: StudentGradeTemplateType = ({ student, schoolYears })
 
   const progress = () => {
     const { applications, packets } = student
-    const currApplication = applications.at(0)
-    const currPacket = packets.at(0)
+    const currApplication = applications?.at(0)
+    const currPacket = packets?.at(0)
     if (currApplication && currApplication?.status === 'Submitted') {
       setCircleData({
         progress: 25,
         color: blue,
         message: 'Application Pending Approval',
-        icon: <ScheduleIcon sx={{ color: blue, marginTop: 2, cursor: 'pointer' }} />,
+        icon: <ScheduleIcon sx={{ color: blue, cursor: 'pointer' }} />,
       })
     } else if (
       currApplication &&
@@ -53,14 +56,14 @@ export const StudentGrade: StudentGradeTemplateType = ({ student, schoolYears })
           progress: 50,
           color: red,
           message: 'Please Submit an Enrollment Packet',
-          icon: <ErrorOutlineIcon sx={{ color: red, marginTop: 2, cursor: 'pointer' }} />,
+          icon: <ErrorOutlineIcon sx={{ color: red, cursor: 'pointer' }} />,
         })
       } else {
         setCircleData({
           progress: 50,
           color: red,
           message: 'Please Resubmit Enrollment Packet',
-          icon: <ErrorOutlineIcon sx={{ color: red, marginTop: 2, cursor: 'pointer' }} />,
+          icon: <ErrorOutlineIcon sx={{ color: red, cursor: 'pointer' }} />,
         })
       }
     } else if (
@@ -73,7 +76,7 @@ export const StudentGrade: StudentGradeTemplateType = ({ student, schoolYears })
         progress: 50,
         color: red,
         message: 'Please Submit Enrollment Packet',
-        icon: <ErrorOutlineIcon sx={{ color: red, marginTop: 2, cursor: 'pointer' }} />,
+        icon: <ErrorOutlineIcon sx={{ color: red, cursor: 'pointer' }} />,
       })
     } else if (
       currApplication &&
@@ -85,13 +88,21 @@ export const StudentGrade: StudentGradeTemplateType = ({ student, schoolYears })
         progress: 50,
         color: blue,
         message: 'Enrollment Packet Pending Approval',
-        icon: <ScheduleIcon sx={{ color: blue, marginTop: 2, cursor: 'pointer' }} />,
+        icon: <ScheduleIcon sx={{ color: blue, cursor: 'pointer' }} />,
+      })
+    } else if (notification?.phrase === 'Submit Schedule') {
+      setCircleData({
+        color: MthColor.MTHORANGE,
+        progress: 75,
+        message: 'Please Submit a Schedule',
+        icon: <ErrorOutlineIcon sx={{ color: MthColor.MTHORANGE, cursor: 'pointer' }} />,
       })
     }
   }
   useEffect(() => {
     progress()
-  }, [])
+  }, [notification])
+
   return (
     <Metadata
       title={

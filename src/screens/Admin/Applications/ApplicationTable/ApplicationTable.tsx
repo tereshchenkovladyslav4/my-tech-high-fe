@@ -277,6 +277,7 @@ export const ApplicationTable: FunctionComponent<ApplicationTableProps> = ({ fil
 
       if (questionLists.length == 0) {
         setSpecialEdOptions([])
+        return
       }
       const options = JSON.parse(questionLists[0].options)
       setSpecialEdOptions(options)

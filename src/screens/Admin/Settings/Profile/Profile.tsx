@@ -174,7 +174,7 @@ export const Profile: FunctionComponent<{ handleIsFormChange: () => void }> = ({
     bodyFormData.append('region', 'UT')
     bodyFormData.append('year', '2022')
 
-    fetch(import.meta.env.SNOWPACK_PUBLIC_S3_UPLOAD, {
+    return fetch(import.meta.env.SNOWPACK_PUBLIC_S3_UPLOAD, {
       method: 'POST',
       body: bodyFormData,
       headers: {

@@ -44,11 +44,9 @@ export function checkImmmValueWithSpacing(item: StudentImmunization, all: Studen
 
   const minDur = getDuration(item.immunization.min_spacing_interval, item.immunization.min_spacing_date)
   const maxDur = getDuration(item.immunization.max_spacing_interval, item.immunization.max_spacing_date)
-  // console.log('MinDur', item.immunization.min_spacing_interval, item.immunization.min_spacing_date, '==>', minDur.asDays());
-  // console.log('maxDur', item.immunization.max_spacing_interval, item.immunization.max_spacing_date, '==>', maxDur.asDays());
   if (!minDur || !maxDur) return true
 
   const dur = moment.duration(itemDate.diff(conDate))
-  // console.log('dur', dur.asDays());
+
   return dur.asDays() >= minDur.asDays() && dur.asDays() <= maxDur.asDays()
 }

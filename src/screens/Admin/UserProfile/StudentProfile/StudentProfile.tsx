@@ -292,8 +292,8 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
         special_ed: currentUserData.student.special_ed,
         diploma_seeking: currentUserData.student.diploma_seeking,
         testing_preference: currentUserData.student.testing_preference,
-        status: currentUserData?.student?.status?.length && currentUserData.student.status[0].status,
-        date: currentUserData?.student?.status?.length > 0 ? currentUserData.student.status[0].date_updated : '',
+        status: currentUserData?.student?.status?.length && currentUserData.student.status.at(-1).status,
+        date: currentUserData?.student?.status?.length > 0 ? currentUserData.student.status.at(-1).date_updated : '',
         // grade_level: currentUserData.student.status.length && currentUserData.student.status[0].grade_level,
         school_year_id:
           currentUserData.student.applications.length && currentUserData.student.applications[0].school_year_id,
@@ -301,7 +301,7 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
         school_partner_id_updated: false,
       })
       setOriginStudentStatus({
-        status: currentUserData?.student?.status?.length && currentUserData.student.status[0].status,
+        status: currentUserData?.student?.status?.length && currentUserData.student.status.at(-1).status,
       })
       if (currentUserData.student.testing_preference) {
         setHispanicOrLatino(currentUserData.student.testing_preference)

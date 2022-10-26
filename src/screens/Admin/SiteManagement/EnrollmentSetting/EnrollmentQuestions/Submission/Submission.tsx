@@ -75,11 +75,9 @@ export const Submission: FunctionComponent = () => {
         </Grid>
         <Grid item xs={12}>
           <Box display='flex' flexDirection='column' alignItems='center' justifyContent={'center'} width='100%'>
-            <Box sx={{ width: '35%', display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+            <Box sx={{ width: '500px', display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
               <TextField
                 sx={{
-                  maxWidth: '99%',
-                  width: '99%',
                   [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
                     {
                       borderColor: SYSTEM_07,

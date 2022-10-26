@@ -75,15 +75,6 @@ export const PacketQuestionItem: React.FC<{ item: EnrollmentQuestion[] }> = ({ i
         return { ...q, isEnable: value }
       } else {
         if (value) {
-          // if(q.order > index) {
-          //     console.log('childe', q, values[`${q.slug}`])
-          //     const actionOption = q.options.find((qo) => qo.action == 2)
-          //     const enableShow = values[`${q.slug}`].length > 0 ? values[`${q.slug}`].find((v) => v.label == actionOption.label) : values[`${q.slug}`] == actionOption.label || actionOption.value == values[`${q.slug}`]
-          //     return {...q, isEnable: enableShow}
-          // }
-          // else {
-          //     return q
-          // }
           return q
         } else {
           if (q.order > index) {

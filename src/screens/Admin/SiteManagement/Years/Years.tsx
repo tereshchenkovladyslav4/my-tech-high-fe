@@ -75,7 +75,7 @@ const Years: React.FC = () => {
             midyear_application_close: midYearItem?.close,
             homeroom_resource_open: homeroomResourceItem?.open,
             homeroom_resource_close: homeroomResourceItem?.close,
-            cloneSchoolYearId: cloneSelectedYearId || null,
+            cloneSchoolYearId: cloneSelectedYearId || 0,
           },
           previousYearId: toNumber(sortBy(schoolYears, 'schoolYearClose').at(-1)?.schoolYearId),
         },

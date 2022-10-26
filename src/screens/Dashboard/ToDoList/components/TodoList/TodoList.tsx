@@ -9,7 +9,7 @@ import { ToDoListItem } from '../ToDoListItem/ToDoListItem'
 import { ToDoCategory, ToDoItem } from '../ToDoListItem/types'
 import { TodoListTemplateType } from './types'
 
-export const TodoList: TodoListTemplateType = ({ handleShowEmpty, schoolYears, setIsLoading }) => {
+export const TodoList: TodoListTemplateType = ({ handleShowEmpty, schoolYears, setIsLoading, setMainTodoList }) => {
   const [todoList, setTodoList] = useState<ToDoItem[]>([])
   const [paginatinLimit] = useState<number>(25)
   const [skip] = useState<number>()
@@ -38,8 +38,6 @@ export const TodoList: TodoListTemplateType = ({ handleShowEmpty, schoolYears, s
               ),
             ).reduce((list: ToDoItem[], students) => list.concat([{ ...item, students: students }]), [])
             setTodoList((prev) => [...prev, ...splitedItems])
-            //setTodoList((prev) => [...prev, ...splitedItems])
-            // setTodoList([...splitedItems])
           } else if (item.category == ToDoCategory.SUBMIT_WITHDRAW) {
             // If there are multiple students, they should each have their own to-do item
             const splitedItems: ToDoItem[] = item.students.reduce(
@@ -71,23 +69,31 @@ export const TodoList: TodoListTemplateType = ({ handleShowEmpty, schoolYears, s
     }
   }, [loading])
 
+  useEffect(() => {
+    setMainTodoList && setMainTodoList(todoList)
+  }, [todoList])
+
   const calcCreateDate = (todoItem: ToDoItem): string => {
     switch (todoItem.category) {
       case ToDoCategory.SUBMIT_WITHDRAW: {
-        return moment(todoItem.students.at(-1)?.StudentWithdrawals.at(-1)?.date).format('MMM Do, YYYY')
+        return moment(todoItem.students.at(-1)?.StudentWithdrawals.at(-1)?.date).format('MMMM Do, YYYY')
       }
       case ToDoCategory.SUBMIT_SCHEDULE: {
         if (todoItem.students.at(-1)?.current_school_year_status?.midyear_application)
           return moment(todoItem.students.at(-1)?.current_school_year_status?.midyear_schedule_open).format(
-            'MMM Do, YYYY',
+            'MMMM Do, YYYY',
           )
         else
           return moment(todoItem.students.at(-1)?.current_school_year_status?.schedule_builder_open).format(
-            'MMM Do, YYYY',
+            'MMMM Do, YYYY',
           )
       }
       default: {
-        return todoItem.students.at(-1)?.current_school_year_status?.application_date_accepted || '-'
+        return (
+          moment(todoItem.students.at(-1)?.current_school_year_status?.application_date_submitted).format(
+            'MMMM Do, YYYY',
+          ) || '-'
+        )
       }
     }
   }
