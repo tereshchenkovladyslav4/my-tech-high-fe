@@ -19,6 +19,7 @@ import {
   FormHelperText,
   Card,
   InputAdornment,
+  Modal,
 } from '@mui/material'
 import { ContentState, EditorState, convertToRaw } from 'draft-js'
 import draftToHtml from 'draftjs-to-html'
@@ -29,7 +30,6 @@ import Wysiwyg from 'react-draft-wysiwyg'
 import { useSetRecoilState } from 'recoil'
 import * as Yup from 'yup'
 import { DropDown } from '@mth/components/DropDown/DropDown'
-import { MthModal } from '@mth/components/MthModal/MthModal'
 import PageHeader from '@mth/components/PageHeader'
 import CustomTable from '@mth/components/Table/CustomTable'
 import { Field } from '@mth/components/Table/types'
@@ -40,6 +40,7 @@ import { getPeriods, upsertPeriod, periodArchive, deletePeriodsByIds } from '@mt
 import { ordinalSuffixOf } from '@mth/utils'
 import { useStyles } from '../../styles'
 import { PeriodItem, SEMESTER_TYPE, REDUCE_FUNDS_TYPE, OptionType, SEMESTER_MESSAGE } from '../../types'
+import { SaveCancelComponent } from '../Components/SaveCancelComponent'
 import Filter from './Filter'
 
 // validation message
@@ -495,192 +496,273 @@ const Periods: FunctionComponent = () => {
         )}
       </Card>
 
-      <MthModal
+      <Modal
         open={open}
-        onClose={() => setOpen(false)}
-        confirmStr='Save'
-        onConfirm={formik.handleSubmit}
-        noCloseOnBackdrop
-        width={620}
+        aria-labelledby='child-modal-title'
+        disableAutoFocus={true}
+        aria-describedby='child-modal-description'
       >
-        <Grid container rowSpacing={3} columnSpacing={4} sx={classes.form}>
-          <Grid item xs={12} sm={6}>
-            <CssTextField
-              name='period'
-              label='Period'
-              placeholder='Period'
-              fullWidth
-              value={formik.values.period}
-              onChange={(e) => {
-                formik.handleChange(e)
-              }}
-              error={formik.touched.period && !!formik.errors.period}
-              helperText={formik.touched.period && formik.errors.period}
-              InputLabelProps={{ shrink: true, sx: classes.textLabel }}
-              select
-              disabled={!!temp?.id}
-              defaultValue=''
-            >
-              {[...Array(maxPeriodCount)].map((vv, ii) => (
-                <MenuItem key={`${ii}_${vv}`} value={ii + 1}>
-                  {ii + 1}
-                </MenuItem>
-              ))}
-              {!maxPeriodCount && (
-                <MenuItem key='none' value='' disabled>
-                  None
-                </MenuItem>
-              )}
-            </CssTextField>
-          </Grid>
-          <Grid item xs={12}>
-            <CssTextField
-              name='category'
-              label='Category'
-              placeholder='Category'
-              fullWidth
-              value={formik.values.category}
-              onChange={(e) => {
-                formik.handleChange(e)
-              }}
-              error={formik.touched.category && !!formik.errors.category}
-              helperText={formik.touched.category && formik.errors.category}
-              InputLabelProps={{ shrink: true, sx: classes.textLabel }}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <CssTextField
-              name='grade_level_min'
-              label='Minimum Grade Level'
-              placeholder='Minimum Grade Level'
-              fullWidth
-              value={formik.values.grade_level_min}
-              onChange={handleGradeLevelMin}
-              error={formik.touched.grade_level_min && !!formik.errors.grade_level_min}
-              helperText={formik.touched.grade_level_min && formik.errors.grade_level_min}
-              InputLabelProps={{ shrink: true, sx: classes.textLabel }}
-              SelectProps={{ displayEmpty: true }}
-              select
-            >
-              {gradeList.map((option) => (
-                <MenuItem key={`min_${option.value}`} value={option.value}>
-                  {option.label}
-                </MenuItem>
-              ))}
-            </CssTextField>
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <CssTextField
-              name='grade_level_max'
-              label='Maximum Grade Level'
-              placeholder='Maximum Grade Level'
-              fullWidth
-              value={formik.values.grade_level_max}
-              onChange={handleGradeLevelMax}
-              onBlur={formik.handleBlur}
-              error={formik.touched.grade_level_max && !!formik.errors.grade_level_max}
-              helperText={formik.touched.grade_level_max && formik.errors.grade_level_max}
-              InputLabelProps={{ shrink: true, sx: classes.textLabel }}
-              SelectProps={{ displayEmpty: true }}
-              select
-            >
-              {gradeList.map((option) => (
-                <MenuItem key={`max_${option.value}`} value={option.value}>
-                  {option.label}
-                </MenuItem>
-              ))}
-            </CssTextField>
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <CssTextField
-              name='reduce_funds'
-              label='Reduce Funds'
-              placeholder='Reduce Funds'
-              fullWidth
-              value={formik.values.reduce_funds}
-              onChange={(e) => {
-                if (e.target.value === REDUCE_FUNDS_TYPE.NONE) formik.setFieldValue('price', '')
-                formik.handleChange(e)
-              }}
-              error={formik.touched.reduce_funds && !!formik.errors.reduce_funds}
-              helperText={formik.touched.reduce_funds && formik.errors.reduce_funds}
-              InputLabelProps={{ shrink: true, sx: classes.textLabel }}
-              SelectProps={{ displayEmpty: true }}
-              select
-            >
-              {[
-                { label: 'None', value: REDUCE_FUNDS_TYPE.NONE },
-                { label: 'Supplemental Learning Funds', value: REDUCE_FUNDS_TYPE.SUPPLEMENTAL },
-                { label: 'Technology Allowance', value: REDUCE_FUNDS_TYPE.TECHNOLOGY },
-              ].map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
-                </MenuItem>
-              ))}
-            </CssTextField>
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <CssTextField
-              name='price'
-              label='Price'
-              placeholder='Price'
-              fullWidth
-              value={formik.values.price}
-              type='number'
-              InputProps={{ startAdornment: <InputAdornment position='start'>$</InputAdornment> }}
-              onChange={(e) => {
-                formik.handleChange(e)
-              }}
-              error={formik.touched.price && !!formik.errors.price}
-              helperText={formik.touched.price && formik.errors.price}
-              InputLabelProps={{ shrink: true, sx: classes.textLabel }}
-              disabled={formik.values.reduce_funds === REDUCE_FUNDS_TYPE.NONE}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <CssTextField
-              name='semester'
-              label='2nd Semester Changes'
-              placeholder='2nd Semester Changes'
-              fullWidth
-              value={formik.values.semester}
-              onChange={(e) => {
-                formik.handleChange(e)
-              }}
-              error={formik.touched.semester && !!formik.errors.semester}
-              helperText={formik.touched.semester && formik.errors.semester}
-              InputLabelProps={{ shrink: true, sx: classes.textLabel }}
-              SelectProps={{ displayEmpty: true }}
-              select
-            >
-              {[
-                { label: SEMESTER_MESSAGE[SEMESTER_TYPE.NONE], value: SEMESTER_TYPE.NONE },
-                { label: SEMESTER_MESSAGE[SEMESTER_TYPE.PERIOD], value: SEMESTER_TYPE.PERIOD },
-                { label: SEMESTER_MESSAGE[SEMESTER_TYPE.SUBJECT], value: SEMESTER_TYPE.SUBJECT },
-              ].map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
-                </MenuItem>
-              ))}
-            </CssTextField>
-          </Grid>
+        <form onReset={formik.handleReset} onSubmit={formik.handleSubmit}>
+          <Box
+            sx={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: '630px',
+              height: 'auto',
+              bgcolor: 'white',
+              borderRadius: 2,
+              p: 6,
+            }}
+          >
+            <Grid container rowSpacing={3} columnSpacing={4} sx={classes.form}>
+              <Grid item xs={12} sm={6}>
+                <CssTextField
+                  name='period'
+                  label='Period'
+                  placeholder='Period'
+                  fullWidth
+                  value={formik.values.period}
+                  onChange={(e) => {
+                    formik.handleChange(e)
+                  }}
+                  error={formik.touched.period && !!formik.errors.period}
+                  helperText={formik.touched.period && formik.errors.period}
+                  InputLabelProps={{ shrink: true, sx: classes.textLabel }}
+                  select
+                  disabled={!!temp?.id}
+                  defaultValue=''
+                >
+                  {[...Array(maxPeriodCount)].map((vv, ii) => (
+                    <MenuItem key={`${ii}_${vv}`} value={ii + 1}>
+                      {ii + 1}
+                    </MenuItem>
+                  ))}
+                  {!maxPeriodCount && (
+                    <MenuItem key='none' value='' disabled>
+                      None
+                    </MenuItem>
+                  )}
+                </CssTextField>
+              </Grid>
+              <Grid item xs={12}>
+                <CssTextField
+                  name='category'
+                  label='Category'
+                  placeholder='Category'
+                  fullWidth
+                  value={formik.values.category}
+                  onChange={(e) => {
+                    formik.handleChange(e)
+                  }}
+                  error={formik.touched.category && !!formik.errors.category}
+                  helperText={formik.touched.category && formik.errors.category}
+                  InputLabelProps={{ shrink: true, sx: classes.textLabel }}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <CssTextField
+                  name='grade_level_min'
+                  label='Minimum Grade Level'
+                  placeholder='Minimum Grade Level'
+                  fullWidth
+                  value={formik.values.grade_level_min}
+                  onChange={handleGradeLevelMin}
+                  error={formik.touched.grade_level_min && !!formik.errors.grade_level_min}
+                  helperText={formik.touched.grade_level_min && formik.errors.grade_level_min}
+                  InputLabelProps={{ shrink: true, sx: classes.textLabel }}
+                  SelectProps={{ displayEmpty: true }}
+                  select
+                >
+                  {gradeList.map((option) => (
+                    <MenuItem key={`min_${option.value}`} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </CssTextField>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <CssTextField
+                  name='grade_level_max'
+                  label='Maximum Grade Level'
+                  placeholder='Maximum Grade Level'
+                  fullWidth
+                  value={formik.values.grade_level_max}
+                  onChange={handleGradeLevelMax}
+                  onBlur={formik.handleBlur}
+                  error={formik.touched.grade_level_max && !!formik.errors.grade_level_max}
+                  helperText={formik.touched.grade_level_max && formik.errors.grade_level_max}
+                  InputLabelProps={{ shrink: true, sx: classes.textLabel }}
+                  SelectProps={{ displayEmpty: true }}
+                  select
+                >
+                  {gradeList.map((option) => (
+                    <MenuItem key={`max_${option.value}`} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </CssTextField>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <CssTextField
+                  name='reduce_funds'
+                  label='Reduce Funds'
+                  placeholder='Reduce Funds'
+                  fullWidth
+                  value={formik.values.reduce_funds}
+                  onChange={(e) => {
+                    if (e.target.value === REDUCE_FUNDS_TYPE.NONE) formik.setFieldValue('price', '')
+                    formik.handleChange(e)
+                  }}
+                  error={formik.touched.reduce_funds && !!formik.errors.reduce_funds}
+                  helperText={formik.touched.reduce_funds && formik.errors.reduce_funds}
+                  InputLabelProps={{ shrink: true, sx: classes.textLabel }}
+                  SelectProps={{ displayEmpty: true }}
+                  select
+                >
+                  {[
+                    { label: 'None', value: REDUCE_FUNDS_TYPE.NONE },
+                    { label: 'Supplemental Learning Funds', value: REDUCE_FUNDS_TYPE.SUPPLEMENTAL },
+                    { label: 'Technology Allowance', value: REDUCE_FUNDS_TYPE.TECHNOLOGY },
+                  ].map((option) => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </CssTextField>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <CssTextField
+                  name='price'
+                  label='Price'
+                  placeholder='Price'
+                  fullWidth
+                  value={formik.values.price}
+                  type='number'
+                  InputProps={{ startAdornment: <InputAdornment position='start'>$</InputAdornment> }}
+                  onChange={(e) => {
+                    formik.handleChange(e)
+                  }}
+                  error={formik.touched.price && !!formik.errors.price}
+                  helperText={formik.touched.price && formik.errors.price}
+                  InputLabelProps={{ shrink: true, sx: classes.textLabel }}
+                  disabled={formik.values.reduce_funds === REDUCE_FUNDS_TYPE.NONE}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <CssTextField
+                  name='semester'
+                  label='2nd Semester Changes'
+                  placeholder='2nd Semester Changes'
+                  fullWidth
+                  value={formik.values.semester}
+                  onChange={(e) => {
+                    formik.handleChange(e)
+                  }}
+                  error={formik.touched.semester && !!formik.errors.semester}
+                  helperText={formik.touched.semester && formik.errors.semester}
+                  InputLabelProps={{ shrink: true, sx: classes.textLabel }}
+                  SelectProps={{ displayEmpty: true }}
+                  select
+                >
+                  {[
+                    { label: SEMESTER_MESSAGE[SEMESTER_TYPE.NONE], value: SEMESTER_TYPE.NONE },
+                    { label: SEMESTER_MESSAGE[SEMESTER_TYPE.PERIOD], value: SEMESTER_TYPE.PERIOD },
+                    { label: SEMESTER_MESSAGE[SEMESTER_TYPE.SUBJECT], value: SEMESTER_TYPE.SUBJECT },
+                  ].map((option) => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </CssTextField>
+              </Grid>
 
-          <Grid item xs={12}>
-            <Box>
-              {formik.values.semester !== SEMESTER_TYPE.NONE && (
-                <>
+              <Grid item xs={12}>
+                <Box>
+                  {formik.values.semester !== SEMESTER_TYPE.NONE && (
+                    <>
+                      <FormControlLabel
+                        sx={{ pb: 1 }}
+                        control={
+                          <Checkbox
+                            checked={formik.values.notify_semester}
+                            name='notify_semester'
+                            onChange={formik.handleChange}
+                          />
+                        }
+                        label={`Display a notification when the ${formik.values.semester.toLocaleLowerCase()} is not changed at 2nd Semester`}
+                      />
+                      {formik.values.notify_semester && (
+                        <>
+                          <Typography
+                            variant='h6'
+                            sx={{
+                              mb: 1,
+                              fontWeight: '700',
+                              fontSize: '1rem',
+                            }}
+                            className={
+                              formik.touched.message_semester && !!formik.errors.message_semester ? 'Mui-error' : ''
+                            }
+                          >
+                            Notification Message
+                          </Typography>
+                          <Box sx={{ mb: 2 }}>
+                            <Box
+                              sx={{
+                                border: '1px solid #d1d1d1',
+                                borderRadius: 1,
+                                marginBottom: '6px',
+                                'div.DraftEditor-editorContainer': {
+                                  minHeight: '100px',
+                                  maxHeight: '200px',
+                                  overflow: 'scroll',
+                                  padding: 1,
+                                  '.public-DraftStyleDefault-block': {
+                                    margin: 0,
+                                  },
+                                },
+                              }}
+                            >
+                              <Wysiwyg.Editor
+                                onEditorStateChange={handleEditorChangeSemester}
+                                placeholder='  Type here...'
+                                editorState={editorStateSemester}
+                                toolbar={{
+                                  options: ['inline', 'list', 'link'],
+                                  inline: {
+                                    options: ['bold', 'italic'],
+                                  },
+                                  list: {
+                                    options: ['unordered', 'ordered'],
+                                  },
+                                }}
+                              />
+                            </Box>
+                            {formik.touched.message_semester && !!formik.errors.message_semester && (
+                              <FormHelperText error sx={{ pl: 2 }}>
+                                {formik.errors.message_semester}
+                              </FormHelperText>
+                            )}
+                          </Box>
+                        </>
+                      )}
+                    </>
+                  )}
+                </Box>
+                <Box>
                   <FormControlLabel
-                    sx={{ pb: 1 }}
                     control={
                       <Checkbox
-                        checked={formik.values.notify_semester}
-                        name='notify_semester'
+                        checked={formik.values.notify_period}
+                        name='notify_period'
                         onChange={formik.handleChange}
                       />
                     }
-                    label={`Display a notification when the ${formik.values.semester.toLocaleLowerCase()} is not changed at 2nd Semester`}
+                    label='Display a notification when this period is selected'
                   />
-                  {formik.values.notify_semester && (
+                  {formik.values.notify_period && (
                     <>
                       <Typography
                         variant='h6'
@@ -689,13 +771,11 @@ const Periods: FunctionComponent = () => {
                           fontWeight: '700',
                           fontSize: '1rem',
                         }}
-                        className={
-                          formik.touched.message_semester && !!formik.errors.message_semester ? 'Mui-error' : ''
-                        }
+                        className={formik.touched.message_period && !!formik.errors.message_period ? 'Mui-error' : ''}
                       >
                         Notification Message
                       </Typography>
-                      <Box sx={{ mb: 2 }}>
+                      <Box>
                         <Box
                           sx={{
                             border: '1px solid #d1d1d1',
@@ -713,9 +793,9 @@ const Periods: FunctionComponent = () => {
                           }}
                         >
                           <Wysiwyg.Editor
-                            onEditorStateChange={handleEditorChangeSemester}
+                            onEditorStateChange={handleEditorChangePeriod}
                             placeholder='  Type here...'
-                            editorState={editorStateSemester}
+                            editorState={editorStatePeriod}
                             toolbar={{
                               options: ['inline', 'list', 'link'],
                               inline: {
@@ -727,81 +807,21 @@ const Periods: FunctionComponent = () => {
                             }}
                           />
                         </Box>
-                        {formik.touched.message_semester && !!formik.errors.message_semester && (
+                        {formik.touched.message_period && !!formik.errors.message_period && (
                           <FormHelperText error sx={{ pl: 2 }}>
-                            {formik.errors.message_semester}
+                            {formik.errors.message_period}
                           </FormHelperText>
                         )}
                       </Box>
                     </>
                   )}
-                </>
-              )}
-            </Box>
-            <Box>
-              <FormControlLabel
-                control={
-                  <Checkbox checked={formik.values.notify_period} name='notify_period' onChange={formik.handleChange} />
-                }
-                label='Display a notification when this period is selected'
-              />
-              {formik.values.notify_period && (
-                <>
-                  <Typography
-                    variant='h6'
-                    sx={{
-                      mb: 1,
-                      fontWeight: '700',
-                      fontSize: '1rem',
-                    }}
-                    className={formik.touched.message_period && !!formik.errors.message_period ? 'Mui-error' : ''}
-                  >
-                    Notification Message
-                  </Typography>
-                  <Box>
-                    <Box
-                      sx={{
-                        border: '1px solid #d1d1d1',
-                        borderRadius: 1,
-                        marginBottom: '6px',
-                        'div.DraftEditor-editorContainer': {
-                          minHeight: '100px',
-                          maxHeight: '200px',
-                          overflow: 'scroll',
-                          padding: 1,
-                          '.public-DraftStyleDefault-block': {
-                            margin: 0,
-                          },
-                        },
-                      }}
-                    >
-                      <Wysiwyg.Editor
-                        onEditorStateChange={handleEditorChangePeriod}
-                        placeholder='  Type here...'
-                        editorState={editorStatePeriod}
-                        toolbar={{
-                          options: ['inline', 'list', 'link'],
-                          inline: {
-                            options: ['bold', 'italic'],
-                          },
-                          list: {
-                            options: ['unordered', 'ordered'],
-                          },
-                        }}
-                      />
-                    </Box>
-                    {formik.touched.message_period && !!formik.errors.message_period && (
-                      <FormHelperText error sx={{ pl: 2 }}>
-                        {formik.errors.message_period}
-                      </FormHelperText>
-                    )}
-                  </Box>
-                </>
-              )}
-            </Box>
-          </Grid>
-        </Grid>
-      </MthModal>
+                </Box>
+              </Grid>
+            </Grid>
+            <SaveCancelComponent isSubmitted={false} handleCancel={() => setOpen(false)} />
+          </Box>
+        </form>
+      </Modal>
 
       {!!modalWarning && (
         <WarningModal

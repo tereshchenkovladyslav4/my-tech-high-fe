@@ -22,7 +22,7 @@ export const StudentGrade: StudentGradeTemplateType = ({ student, schoolYears, n
     const { applications, packets } = student
     const currApplication = applications?.at(0)
     const currPacket = packets?.at(0)
-    if (notification?.phrase === 'Submit Schedule') {
+    if (notification.at(0)?.phrase === 'Submit Schedule') {
       const scheduleBuilderLink = `${MthRoute.HOMEROOM + MthRoute.SUBMIT_SCHEDULE}/${student.student_id}`
       history.push(scheduleBuilderLink)
       return
@@ -96,14 +96,18 @@ export const StudentGrade: StudentGradeTemplateType = ({ student, schoolYears, n
         message: 'Enrollment Packet Pending Approval',
         icon: <ScheduleIcon sx={{ color: blue, cursor: 'pointer' }} />,
       })
-    } else if (currPacket?.status === PacketStatus.ACCEPTED && currApplication?.status === ApplicantStatus.ACCEPTED) {
+    } else if (
+      notification.at(0)?.phrase !== 'Submit Schedule' &&
+      currPacket?.status === PacketStatus.ACCEPTED &&
+      currApplication?.status === ApplicantStatus.ACCEPTED
+    ) {
       setCircleData({
         color: blue,
         progress: 75,
         message: 'Waiting for Schedule Builder to Open',
         icon: <ErrorOutlineIcon sx={{ color: blue, cursor: 'pointer' }} />,
       })
-    } else if (notification?.phrase === 'Submit Schedule') {
+    } else if (notification.at(0)?.phrase === 'Submit Schedule') {
       setCircleData({
         color: MthColor.MTHORANGE,
         progress: 75,

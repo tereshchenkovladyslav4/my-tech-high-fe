@@ -488,8 +488,8 @@ export const countries = [
     value: 'Myanmar (Burma)',
   },
   {
-    label: 'Nambia',
-    value: 'Nambia',
+    label: 'Namibia',
+    value: 'Namibia',
   },
   {
     label: 'Nauru',

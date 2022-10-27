@@ -420,8 +420,8 @@ export const ApplicationTable: FunctionComponent<ApplicationTableProps> = ({ fil
         updateApplicationInput: {
           application_id: Number(data.application_id),
           status: data.status,
-          school_year_id: parseInt(data.school_year_id?.split('-')[0]),
-          midyear_application: data.school_year_id?.split('-')[1] === 'mid' ? true : false,
+          school_year_id: parseInt(String(data.school_year_id)?.split('-')[0]),
+          midyear_application: String(data.school_year_id)?.split('-')[1] === 'mid' ? true : false,
         },
       },
     })

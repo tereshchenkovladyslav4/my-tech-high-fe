@@ -3,7 +3,7 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import { Card, Stack } from '@mui/material'
 import Box from '@mui/material/Box'
-import { map } from 'lodash'
+import { find, forEach, map } from 'lodash'
 import Slider from 'react-slick'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { StudentStatus } from '@mth/enums'
@@ -25,6 +25,7 @@ export const HomeroomGrade: React.FC<HomeroomGradeProps> = ({ schoolYears, mainT
 
   const [filteredStudents, setFilteredStudents] = useState<StudentType[]>([])
   const [studentsCnt, setStudentsCnt] = useState<number>(0)
+  const [mappedTodoList, setMappedTodoList] = useState()
 
   const sliderRef = useRef()
 
@@ -39,14 +40,19 @@ export const HomeroomGrade: React.FC<HomeroomGradeProps> = ({ schoolYears, mainT
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
-  const findStudent = (studentId: number) => {
-    return map(mainTodoList, (todoListItem) => {
-      if (todoListItem.students.some((student) => student.student_id === studentId)) {
-        return todoListItem
-      } else {
-        return false
+  const mapStudentsToTodoList = () => {
+    const mappedStudents = new Map()
+    forEach(filteredStudents, (student) => {
+      if (!mappedStudents.has(student.student_id)) {
+        mappedStudents.set(student.student_id, [])
+        forEach(mainTodoList, (todoListItem) => {
+          if (find(todoListItem.students, { student_id: student.student_id }) !== undefined) {
+            mappedStudents.get(student.student_id).push(todoListItem)
+          }
+        })
       }
     })
+    setMappedTodoList(mappedStudents)
   }
 
   function SampleNextArrow(props) {
@@ -119,10 +125,14 @@ export const HomeroomGrade: React.FC<HomeroomGradeProps> = ({ schoolYears, mainT
 
   const renderStudents = () =>
     map(filteredStudents, (student, index) => {
-      const notification = findStudent(student.student_id)
-        .filter((item) => item !== false)
-        .at(0) as ToDoItem
-      return <StudentGrade schoolYears={schoolYears} student={student} key={index} notification={notification} />
+      return (
+        <StudentGrade
+          schoolYears={schoolYears}
+          student={student}
+          key={index}
+          notification={mappedTodoList.get(student.student_id)}
+        />
+      )
     })
 
   useEffect(() => {
@@ -132,6 +142,10 @@ export const HomeroomGrade: React.FC<HomeroomGradeProps> = ({ schoolYears, mainT
   useEffect(() => {
     setStudentsCnt(filteredStudents.length)
   }, [filteredStudents])
+
+  useEffect(() => {
+    filteredStudents.length > 0 && mapStudentsToTodoList()
+  }, [filteredStudents, mainTodoList])
 
   return (
     <Card style={{ borderRadius: 12 }}>

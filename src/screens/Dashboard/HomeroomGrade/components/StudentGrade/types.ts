@@ -6,7 +6,7 @@ import { SchoolYearType } from '../../../../../utils/utils.types'
 export type StudentGradeProps = {
   student: StudentType
   schoolYears: SchoolYearType[]
-  notification: ToDoItem
+  notification: ToDoItem[]
 }
 
 export type StudentGradeTemplateType = FunctionComponent<StudentGradeProps>
