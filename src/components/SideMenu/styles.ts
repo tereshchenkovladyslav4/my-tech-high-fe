@@ -1,10 +1,15 @@
+import { MthColor } from '@mth/enums'
+
+const IS_STAGING = import.meta.env.SNOWPACK_PUBLIC_APP_STAGE === 'staging'
+const IS_DEMO = import.meta.env.SNOWPACK_PUBLIC_APP_STAGE === 'demo'
+
 export const useStyles = {
   container: {
     position: 'fixed',
     width: '100%',
     maxWidth: 260,
     minWidth: 260,
-    bgcolor: '#ececff',
+    bgcolor: IS_STAGING ? MthColor.LIGHTBLUE : IS_DEMO ? MthColor.LIGHTRED : MthColor.WHITE,
     height: '100vh',
     boxShadow: '0px 0px 36px rgba(0, 0, 0, 0.04)',
   },

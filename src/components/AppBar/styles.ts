@@ -1,6 +1,11 @@
+import { MthColor } from '@mth/enums'
+
+const IS_STAGING = import.meta.env.SNOWPACK_PUBLIC_APP_STAGE === 'staging'
+const IS_DEMO = import.meta.env.SNOWPACK_PUBLIC_APP_STAGE === 'demo'
+
 export const useStyles = {
   appBar: {
-    backgroundColor: '#ececff',
+    backgroundColor: IS_STAGING ? MthColor.LIGHTBLUE : IS_DEMO ? MthColor.LIGHTRED : MthColor.WHITE,
     height: 85,
     paddingX: 3,
     alignItems: 'flex-end',

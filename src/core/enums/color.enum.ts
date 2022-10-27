@@ -19,6 +19,8 @@ export enum MthColor {
   MTHORANGE = '#EC5925',
   MTHGREEN = '#2B9EB7',
   LIGHTPURPLE = '#7B61FF',
+  LIGHTRED = '#fdeee9',
+  LIGHTBLUE = '#ececff',
   WHITE = '#FFFFFF',
 
   SYSTEM_01 = '#0E0E0E',
