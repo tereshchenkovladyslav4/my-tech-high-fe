@@ -9,7 +9,7 @@ export const useStyles = {
     width: '100%',
     maxWidth: 260,
     minWidth: 260,
-    bgcolor: IS_STAGING ? MthColor.LIGHTBLUE : IS_DEMO ? MthColor.LIGHTRED : MthColor.WHITE,
+    backgroundColor: IS_STAGING ? MthColor.LIGHTRED : IS_DEMO ? MthColor.LIGHTBLUE : MthColor.WHITE,
     height: '100vh',
     boxShadow: '0px 0px 36px rgba(0, 0, 0, 0.04)',
   },

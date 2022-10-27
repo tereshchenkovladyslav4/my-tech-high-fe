@@ -5,7 +5,7 @@ const IS_DEMO = import.meta.env.SNOWPACK_PUBLIC_APP_STAGE === 'demo'
 
 export const useStyles = {
   appBar: {
-    backgroundColor: IS_STAGING ? MthColor.LIGHTBLUE : IS_DEMO ? MthColor.LIGHTRED : MthColor.WHITE,
+    backgroundColor: IS_STAGING ? MthColor.LIGHTRED : IS_DEMO ? MthColor.LIGHTBLUE : MthColor.WHITE,
     height: 85,
     paddingX: 3,
     alignItems: 'flex-end',
