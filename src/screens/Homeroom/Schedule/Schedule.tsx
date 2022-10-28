@@ -335,7 +335,7 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
         name: `${student.person?.first_name} ${student.person?.last_name}`,
         grade: gradeText(student),
         schoolDistrict: student?.packets?.at(-1)?.school_district || '',
-        specialEd: '',
+        specialEd: `${student?.special_ed}`,
       })
     }
   }, [student])

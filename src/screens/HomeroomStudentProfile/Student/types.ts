@@ -114,6 +114,7 @@ export type StudentType = {
   status: Status[]
   reenrollment_status: ReenrollmentStatus[]
   testing_preference: string
+  special_ed?: number
 }
 
 export type ReenrollmentStatus = {

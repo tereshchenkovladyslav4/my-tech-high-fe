@@ -153,6 +153,7 @@ export type ScheduleData = {
   ThirdParty?: ThirdPartyProvider
   OnSiteSplitEnrollment?: OnSiteSplitEnrollment
   CustomBuiltDescription?: string
+  IsChangedCustomBuiltDescription?: boolean
 
   // TODO Should remove below fields
   Type?: string

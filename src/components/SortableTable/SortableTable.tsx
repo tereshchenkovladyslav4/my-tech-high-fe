@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { TableContainer, Table, TableBody, TableRow, TableCell, Checkbox } from '@mui/material'
 import { Box } from '@mui/system'
+import { useHistory } from 'react-router-dom'
 import { MthColor } from '@mth/enums'
 import { MTHBLUE } from '../../utils/constants'
 import { SortableTableHeader } from './SortableTableHeader/SortableTableHeader'
@@ -21,6 +22,7 @@ export const SortableTable: SortableTableTemplateType = ({
   const [order, setOrder] = useState<Order>(Order.ASC)
   const [orderBy, setOrderBy] = useState<keyof unknown>('name')
   const [selected, setSelected] = useState<readonly string[]>([])
+  const history = useHistory()
 
   useEffect(() => {
     if (onCheck) {
@@ -96,6 +98,12 @@ export const SortableTable: SortableTableTemplateType = ({
         if (onRowClick) onRowClick(row.id)
         break
       }
+      //////////////////////////////////////////////////////////////////////////////
+      // TODO: This code is for Testing 1042 and 1070. It will be deleted by Ritesh
+      case 'status':
+        history.push('/enrollment/enrollment-schedule/3059')
+        break
+      ////////////////////////////////////////////////////////////////////////////
     }
   }
   return (

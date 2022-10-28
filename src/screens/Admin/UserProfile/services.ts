@@ -150,6 +150,7 @@ export const getStudentDetail = gql`
         date_accepted
         date_last_submitted
         special_ed
+        school_district
       }
       status {
         student_id

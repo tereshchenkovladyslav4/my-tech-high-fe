@@ -1,5 +1,7 @@
+/* eslint-disable react/no-children-prop */
 import React from 'react'
 import { Route, Switch } from 'react-router-dom'
+import { MthRoute } from '@mth/enums'
 import { Announcements } from '@mth/screens/Admin/Announcements'
 import { Applications } from '@mth/screens/Admin/Applications/Applications'
 import { Calendar } from '@mth/screens/Admin/Calendar'
@@ -17,6 +19,7 @@ import { EmailRecords } from '@mth/screens/Admin/EmailRecords/EmailRecords'
 import { Enrollment } from '@mth/screens/Admin/Enrollment/Enrollment'
 import { EnrollmentPackets } from '@mth/screens/Admin/EnrollmentPackets/EnrollmentPackets'
 import { EnrollmentSchedule } from '@mth/screens/Admin/EnrollmentSchedule/EnrollmentSchedule'
+import { ScheduleBuilder } from '@mth/screens/Admin/EnrollmentSchedule/ScheduleBuilder'
 import { Records } from '@mth/screens/Admin/Records'
 import { SchoolOfEnrollment } from '@mth/screens/Admin/SchoolOfEnrollment/SchoolOfEnrollment'
 import AdminSettings from '@mth/screens/Admin/Settings/AdminSettings'
@@ -72,6 +75,12 @@ export const AdminRoutes: React.FC = () => {
       <Route exact path={ENROLLMENT_SCHEDULE}>
         <EnrollmentSchedule />
       </Route>
+      <Route
+        path={`${MthRoute.ENROLLMENT_SCHEDULE}/:id`}
+        children={({ match }) => {
+          return <ScheduleBuilder studentId={Number(match?.params?.id)} />
+        }}
+      />
       <Route exact path={WITHDRAWAL}>
         <Withdrawals />
       </Route>

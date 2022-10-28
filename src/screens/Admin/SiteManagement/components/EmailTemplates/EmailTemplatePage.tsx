@@ -9,7 +9,10 @@ import { Box, Grid, Card, OutlinedInput, InputAdornment, Typography } from '@mui
 import { getEmailTemplatesByRegionQuery } from '../../../../../graphql/queries/email-template'
 import { createEmailTemplateMutation, updateEmailTemplateMutation } from '../../../../../graphql/queries/email-template'
 import { UserContext } from '../../../../../providers/UserContext/UserProvider'
+import { EditStandardResponse } from './EditStandardResponse'
+import { EmailStandardResponse } from './EmailStandardResponse'
 import { EmailTemplateModal } from './EmailTemplateModal'
+import { StandardRes } from './types'
 
 const useStyles = makeStyles({
   category: {
@@ -101,12 +104,21 @@ const useStyles = makeStyles({
     },
   },
 })
+
 export const EmailTemplatePage: FunctionComponent<{ onBackPress?: () => void }> = ({ onBackPress }) => {
   const { me } = useContext(UserContext)
   const [searchField, setSearchField] = useState('')
   const [openEdit, setOpenEdit] = useState(false)
   const [currentTemplate, setCurrentTemplate] = useState(null)
   const [currentCategory, setCurrentCategory] = useState(null)
+  const [responseEdit, setResponseEdit] = useState<boolean>(false)
+  const [standardRes, setStandardRes] = useState<StandardRes[]>([])
+  const [editReponseModal, setEditReponseModal] = useState<boolean>(false)
+  const [selResponse, setSelResponse] = useState<StandardRes>({
+    title: '',
+    text: '',
+  })
+  const [selResponseIdx, setSelResponseIdx] = useState<number>()
 
   const handleCloseEditModal = () => {
     setOpenEdit(false)
@@ -121,7 +133,7 @@ export const EmailTemplatePage: FunctionComponent<{ onBackPress?: () => void }> 
 
   const [emailTemplates, setEmailTemplates] = useState({})
 
-  const { data: emailTemplatesData } = useQuery(getEmailTemplatesByRegionQuery, {
+  const { data: emailTemplatesData, refetch } = useQuery(getEmailTemplatesByRegionQuery, {
     variables: {
       regionId: me?.selectedRegionId,
     },
@@ -149,6 +161,7 @@ export const EmailTemplatePage: FunctionComponent<{ onBackPress?: () => void }> 
       })
     }
     setOpenEdit(false)
+    refetch()
   }
 
   useEffect(() => {
@@ -185,6 +198,67 @@ export const EmailTemplatePage: FunctionComponent<{ onBackPress?: () => void }> 
       setEmailTemplates(templates)
     }
   }, [emailTemplatesData])
+
+  // standard response modal
+  const openResponseModal = (response: StandardRes[]) => {
+    setOpenEdit(false)
+    setStandardRes(response)
+    setResponseEdit(true)
+  }
+
+  const onSaveRes = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setCurrentTemplate({
+      ...currentTemplate,
+      standard_responses: standardRes,
+    })
+
+    setResponseEdit(false)
+    setOpenEdit(true)
+  }
+
+  const openEditRes = (selResId: number) => {
+    let selRes
+    if (selResId !== -1) {
+      selRes = standardRes[selResId]
+    } else {
+      selRes = {
+        title: '',
+        text: '',
+      }
+    }
+    setSelResponseIdx(selResId)
+    setSelResponse(selRes)
+    setResponseEdit(false)
+    setEditReponseModal(true)
+  }
+
+  const deleteResItem = (idx: number) => {
+    const cloneRes = [...standardRes]
+    cloneRes.splice(idx, 1)
+    setStandardRes(cloneRes)
+  }
+
+  const editSave = (selIndex: number, title: string, text: string) => {
+    let newStandardRes
+    if (selIndex !== -1) {
+      newStandardRes = standardRes.map((res, index) => {
+        if (index === selIndex) {
+          return {
+            title,
+            text,
+          }
+        } else {
+          return res
+        }
+      })
+    } else {
+      newStandardRes = [...standardRes, { title, text }]
+    }
+    setStandardRes(newStandardRes)
+    setEditReponseModal(false)
+    setResponseEdit(true)
+  }
 
   return (
     <Box sx={{ marginX: 4 }}>
@@ -253,7 +327,38 @@ export const EmailTemplatePage: FunctionComponent<{ onBackPress?: () => void }> 
         </Grid>
       </Grid>
       {openEdit && (
-        <EmailTemplateModal handleModem={handleCloseEditModal} onSave={handleSave} template={currentTemplate} />
+        <EmailTemplateModal
+          handleModem={handleCloseEditModal}
+          onSave={handleSave}
+          template={currentTemplate}
+          openResponseModal={openResponseModal}
+        />
+      )}
+
+      {responseEdit && (
+        <EmailStandardResponse
+          standardRes={standardRes}
+          onSaveRes={onSaveRes}
+          modalClose={() => {
+            setResponseEdit(false)
+            setOpenEdit(true)
+          }}
+          setStandardRes={setStandardRes}
+          openEditRes={openEditRes}
+          deleteResItem={deleteResItem}
+        />
+      )}
+
+      {editReponseModal && (
+        <EditStandardResponse
+          response={selResponse}
+          onSave={editSave}
+          onClose={() => {
+            setEditReponseModal(false)
+            setResponseEdit(true)
+          }}
+          selResponseIdx={selResponseIdx}
+        />
       )}
     </Box>
   )

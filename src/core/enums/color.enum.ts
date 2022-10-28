@@ -5,7 +5,7 @@ export enum MthColor {
   RED_GRADIENT = 'linear-gradient(180deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0) 100%), #D23C33;',
   BLUE_GRDIENT = 'linear-gradient(180deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0) 100%), #4145FF;',
   YELLOW_GRADIENT = 'linear-gradient(90deg, rgba(0, 0, 0, 0.5) 0%, rgba(62, 39, 131, 0) 100%), #FFD626;',
-  GREEN_GRADIENT = 'linear-gradient(90deg, rgba(0, 0, 0, 0.5) 0%, rgba(62, 39, 131, 0) 100%), #33FF7C;',
+  GREEN_GRADIENT = 'linear-gradient(90deg, rgba(0, 0, 0, 0.5) 0%, rgba(62, 39, 131, 0) 100%), #38892B;',
   BLACK_GRADIENT = 'linear-gradient(90deg, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.5) 100%), #fff;',
   ORANGE_GRADIENT = 'linear-gradient(90deg, #8E2C09 0%, #EC5925 100%), #fff;',
 
@@ -18,6 +18,8 @@ export enum MthColor {
   MTHPURPLE = '#3E2783',
   MTHORANGE = '#EC5925',
   MTHGREEN = '#2B9EB7',
+  GREEN = '#38892B',
+  LIGHTGREEN = 'rgba(50, 200, 23, 0.3)',
   LIGHTPURPLE = '#7B61FF',
   LIGHTRED = '#fdeee9',
   LIGHTBLUE = '#ececff',
@@ -34,6 +36,7 @@ export enum MthColor {
   SYSTEM_09 = '#EEF4F8',
   SYSTEM_10 = '#CCCCCC',
   SYSTEM_11 = '#898C8F',
+  SYSTEM_12 = '#A3A3A4',
 
   PRIMARY_MEDIUM_MOUSEOVER = '#585CFF',
   BLACK_MOUSEOVER = '#292626',

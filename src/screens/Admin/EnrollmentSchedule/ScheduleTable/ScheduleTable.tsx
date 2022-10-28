@@ -1,14 +1,14 @@
-import React, { useEffect, useState, useContext, FunctionComponent } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import { useQuery, useMutation } from '@apollo/client'
 import SearchIcon from '@mui/icons-material/Search'
 import { Box, Button, Card, InputAdornment, OutlinedInput } from '@mui/material'
 import { map, parseInt } from 'lodash'
 import moment from 'moment'
-import { Pagination } from '../../../../components/Pagination/Pagination'
-import { SortableTable } from '../../../../components/SortableTable/SortableTable'
-import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
-import { getEmailTemplateQuery } from '../../../../graphql/queries/email-template'
-import { UserContext } from '../../../../providers/UserContext/UserProvider'
+import { Pagination } from '@mth/components/Pagination/Pagination'
+import { SortableTable } from '@mth/components/SortableTable/SortableTable'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { getEmailTemplateQuery } from '@mth/graphql/queries/email-template'
+import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { RED_GRADIENT } from '../../../../utils/constants'
 import { ENROLLMENT_SCHEDULE_HEADCELLS } from '../../../../utils/PageHeadCellsConstant'
 import { EmailModal } from '../ScheduleModal/ScheduleEmailModal'
@@ -17,7 +17,7 @@ import { SchoolYearDropDown } from '../SchoolYearDropDown/SchoolYearDropDown'
 import { getApplicationsQuery, emailApplicationMutation } from '../services'
 import { ApplicationTableProps, EmailTemplateVM } from '../type'
 
-export const ScheduleTable: FunctionComponent<ApplicationTableProps> = ({ filter }) => {
+export const ScheduleTable: React.FC<ApplicationTableProps> = ({ filter }) => {
   const { me } = useContext(UserContext)
   const [emailTemplate, setEmailTemplate] = useState<EmailTemplateVM>()
   const [pageLoading, setPageLoading] = useState<boolean>(false)

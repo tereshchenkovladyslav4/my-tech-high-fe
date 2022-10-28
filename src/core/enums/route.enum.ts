@@ -30,4 +30,5 @@ export enum MthRoute {
   USERS = '/users',
   WITHDRAWAL = '/enrollment/withdrawal',
   TESTING_PREFERENCE_PATH = '/site-management/enrollment/testing-preference',
+  ENROLLMENT_SCHEDULE = '/enrollment/enrollment-schedule',
 }

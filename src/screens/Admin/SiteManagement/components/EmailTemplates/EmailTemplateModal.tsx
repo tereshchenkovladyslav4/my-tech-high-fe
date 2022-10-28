@@ -29,11 +29,13 @@ import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
 import { getEnrollmentQuestionsGql } from '../../../../../graphql/queries/enrollment-question'
 import { UserContext } from '../../../../../providers/UserContext/UserProvider'
 import { useStyles } from './styles'
+import { StandardRes } from './types'
 
 type EmailTemplateModalProps = {
   handleModem: () => void
   template: unknown
   onSave: (_) => void
+  openResponseModal: (value: StandardRes[]) => void
 }
 
 const insertDescriptions = {
@@ -50,7 +52,12 @@ const insertDescriptions = {
   application_year: 'School Year (2021-2022)',
   student_grade_level: 'Current grade level (6) (Kindergarten)',
 }
-export const EmailTemplateModal: FunctionComponent<EmailTemplateModalProps> = ({ handleModem, template, onSave }) => {
+export const EmailTemplateModal: FunctionComponent<EmailTemplateModalProps> = ({
+  handleModem,
+  template,
+  onSave,
+  openResponseModal,
+}) => {
   const classes = useStyles()
   const { me } = useContext(UserContext)
   const [titleReadOnly, setTitleReadOnly] = useState(true)
@@ -273,6 +280,21 @@ export const EmailTemplateModal: FunctionComponent<EmailTemplateModalProps> = ({
           region_id: template.region_id,
         })
         break
+      case 'standard_modal':
+        onSave({
+          id: template.id,
+          subject,
+          title: emailTitle,
+          from: emailFrom,
+          bcc: emailBcc,
+          template_name: emailTitle,
+          body: draftToHtml(convertToRaw(editorState.getCurrentContent())),
+          standard_responses: JSON.stringify(template?.standard_responses),
+          template: template.template,
+          inserts: template.inserts.join(','),
+          region_id: template.region_id,
+        })
+        break
       case 'deadline':
         onSave({
           id: template.id,
@@ -431,6 +453,7 @@ export const EmailTemplateModal: FunctionComponent<EmailTemplateModalProps> = ({
     const newReminder = reminders.filter((item, index) => index !== i)
     setReminders(newReminder)
   }
+
   return (
     <Modal
       open={true}
@@ -701,17 +724,18 @@ export const EmailTemplateModal: FunctionComponent<EmailTemplateModalProps> = ({
               <Grid item xs={12}>
                 <Subtitle fontWeight='700' size='large'>
                   Standard Responses
-                  <IconButton>
+                  <IconButton onClick={() => openResponseModal(template?.standard_responses)}>
                     <EditIcon style={{ color: '#4145FF', marginLeft: '5px' }} />
                   </IconButton>
                 </Subtitle>
-                {Object.keys(response).map((index: number) => (
-                  <Box key={index} className={classes['availbe-row']}>
-                    <Subtitle fontWeight='600' color='#A3A3A4' sx={{ fontSize: '18px', marginLeft: '8px' }}>
-                      {response[index].title}
-                    </Subtitle>
-                  </Box>
-                ))}
+                {template?.standard_responses &&
+                  Object.keys(template?.standard_responses).map((index: number) => (
+                    <Box key={index} className={classes['availbe-row']}>
+                      <Subtitle fontWeight='600' color='#A3A3A4' sx={{ fontSize: '18px', marginLeft: '8px' }}>
+                        {template?.standard_responses[index].title}
+                      </Subtitle>
+                    </Box>
+                  ))}
               </Grid>
             )}
             {type === 'deadline' && (
@@ -816,21 +840,6 @@ export const EmailTemplateModal: FunctionComponent<EmailTemplateModalProps> = ({
                 </Grid>
               </>
             )}
-
-            {/* <Grid item xs={12}>
-							<Subtitle fontWeight='700' size='large'>
-								Notes
-							</Subtitle>
-							<TextField
-								size='small'
-								variant='outlined'
-								fullWidth
-								multiline
-								rows={4}
-								value={notes}
-								onChange={(e) => setNotes(e.target.value)}
-							/>
-						</Grid> */}
             {availableInserts && (
               <Grid item xs={12}>
                 <Subtitle fontWeight='700' size='large'>

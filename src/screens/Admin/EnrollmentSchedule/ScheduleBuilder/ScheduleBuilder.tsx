@@ -1,62 +1,49 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { useMutation, useQuery } from '@apollo/client'
+import { Close, Check } from '@mui/icons-material'
 import ModeEditIcon from '@mui/icons-material/ModeEdit'
-import QuestionMarkIcon from '@mui/icons-material/QuestionMark'
-import { Button, ClickAwayListener, Grid, IconButton, Tooltip, Typography } from '@mui/material'
-import { Box, styled } from '@mui/system'
-import parse from 'html-react-parser'
-import { Prompt } from 'react-router-dom'
+import VpnKeyOutlinedIcon from '@mui/icons-material/VpnKeyOutlined'
+import { Button, Card, Grid, IconButton, Tooltip, Typography } from '@mui/material'
+import { Box } from '@mui/system'
+import moment from 'moment'
 import { CustomModal } from '@mth/components/CustomModal/CustomModals'
+import { DropDownItem } from '@mth/components/DropDown/types'
 import { MthTable } from '@mth/components/MthTable'
 import { MthTableField, MthTableRowItem } from '@mth/components/MthTable/types'
 import { NestedDropdown } from '@mth/components/NestedDropdown'
 import { MenuItemData } from '@mth/components/NestedDropdown/types'
 import { SuccessModal } from '@mth/components/SuccessModal/SuccessModal'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
-import { COURSE_TYPE_ITEMS } from '@mth/constants'
+import { COURSE_TYPE_ITEMS, SCHEDULE_STATUS_OPTIONS } from '@mth/constants'
 import { CourseType, MthColor, MthTitle, ReduceFunds, ScheduleStatus } from '@mth/enums'
 import { saveScheduleMutation } from '@mth/graphql/mutation/schedule'
 import { saveSchedulePeriodMutation } from '@mth/graphql/mutation/schedule-period'
-import { getAllScheduleBuilderQuery } from '@mth/graphql/queries/schedule-builder'
-import { useStudentSchedulePeriods } from '@mth/hooks'
+import { useCurrentSchoolYearByRegionId, useStudentSchedulePeriods } from '@mth/hooks'
+import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { CustomBuiltDescriptionEdit } from '@mth/screens/Homeroom/Schedule/ScheduleBuilder/CustomBuiltDescription'
-import { extractContent, gradeShortText } from '@mth/utils'
-import { scheduleClassess } from '../styles'
-import { Course, Period, ScheduleBuilderProps, ScheduleData, Subject, Title } from '../types'
-import { OnSiteSplitEnrollmentEdit } from './OnSiteSplitEnrollmentEdit'
-import { OnSiteSplitEnrollment } from './OnSiteSplitEnrollmentEdit/types'
-import { scheduleBuilderClasses } from './styles'
-import { ThirdPartyProviderEdit } from './ThirdPartyProviderEdit'
-import { ThirdPartyProvider } from './ThirdPartyProviderEdit/types'
+import { OnSiteSplitEnrollmentEdit } from '@mth/screens/Homeroom/Schedule/ScheduleBuilder/OnSiteSplitEnrollmentEdit'
+import { OnSiteSplitEnrollment } from '@mth/screens/Homeroom/Schedule/ScheduleBuilder/OnSiteSplitEnrollmentEdit/types'
+import { scheduleBuilderClasses } from '@mth/screens/Homeroom/Schedule/ScheduleBuilder/styles'
+import { ThirdPartyProviderEdit } from '@mth/screens/Homeroom/Schedule/ScheduleBuilder/ThirdPartyProviderEdit'
+import { ThirdPartyProvider } from '@mth/screens/Homeroom/Schedule/ScheduleBuilder/ThirdPartyProviderEdit/types'
+import { Course, Period, ScheduleData, StudentScheduleInfo, Subject, Title } from '@mth/screens/Homeroom/Schedule/types'
+import { StudentType } from '@mth/screens/HomeroomStudentProfile/Student/types'
+import { extractContent, gradeShortText, gradeText } from '@mth/utils'
+import { getStudentDetail } from '../../UserProfile/services'
+import Header from './Header/Header'
+import StudentInfo from './StudentInfo/StudentInfo'
+import { scheduleBuilderClass } from './styles'
 
-const StyledTooltipBgDiv = styled('div')(({}) => ({
-  '&': {
-    backgroundColor: MthColor.LIGHTGRAY,
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    width: '100vw',
-    height: '100vh',
-    zIndex: 10,
-    opacity: 0.5,
-  },
-}))
-const StyledTooltip = styled(Tooltip)(({}) => ({
-  '& .MuiTooltip-tooltip a': {
-    color: `${MthColor.BLUE_GRDIENT} !important`,
-  },
-}))
+type ScheduleBuilderProps = {
+  studentId: number
+}
 
-const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
-  studentId,
-  studentName,
-  selectedYear,
-  showUnsavedModal = false,
-  splitEnrollment = false,
-  diplomaSeekingPath,
-  setIsChanged,
-  onWithoutSaved,
-}) => {
+const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
+  const { me } = useContext(UserContext)
+  const [studentInfo, setStudentInfo] = useState<StudentScheduleInfo>()
+  const [schoolYearItems, setSchoolYearItems] = useState<DropDownItem[]>([])
+  const [selectedYear, setSelectedYear] = useState<number>(0)
+  const [scheduleStatus, setScheduleStatus] = useState<DropDownItem>()
   const [tableData, setTableData] = useState<MthTableRowItem<ScheduleData>[]>([])
   const [periodNotification, setPeriodNotification] = useState<string | undefined>()
   const [subjectNotification, setSubjectNotification] = useState<string | undefined>()
@@ -70,23 +57,23 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
   const [showOnSiteSplitEnrollmentModal, setShowOnSiteSplitEnrollmentModal] = useState<boolean>(false)
   const [selectedOnSiteSplitEnrollemnt, setSelectedOnSiteSplitEnrollment] = useState<OnSiteSplitEnrollment>()
   const [showCustomBuilt, setShowCustomBuilt] = useState<boolean>(false)
-  const [enableQuestionTooltip, setEnableQuestionTooltip] = useState<boolean>(false)
   const [isDraftSaved, setIsDraftSaved] = useState<boolean>(false)
-  const [showSubmitBtn, setShowSubmitBtn] = useState<boolean>(false)
   const [showSubmitSuccessModal, setShowSubmitSuccessModal] = useState<boolean>(false)
-  const { scheduleData, studentScheduleId, setScheduleData, setStudentScheduleId } = useStudentSchedulePeriods(
-    studentId,
-    selectedYear,
-    diplomaSeekingPath,
+  const [splitEnrollment, setSplitEnrollment] = useState<boolean>(false)
+
+  const { loading: studentInfoLoading, data: studentInfoData } = useQuery(getStudentDetail, {
+    variables: {
+      student_id: studentId,
+    },
+    fetchPolicy: 'network-only',
+  })
+
+  const { data: currentSchoolYear, loading: currentSchoolYearLoading } = useCurrentSchoolYearByRegionId(
+    me?.selectedRegionId || 0,
   )
 
-  const { loading: scheduleBuilderSettingLoading, data: scheduleBuilderSettingData } = useQuery(
-    getAllScheduleBuilderQuery,
-    {
-      variables: { schoolYearId: selectedYear },
-      fetchPolicy: 'network-only',
-    },
-  )
+  const { scheduleData, studentScheduleId, studentScheduleStatus, setScheduleData, setStudentScheduleId } =
+    useStudentSchedulePeriods(studentId, selectedYear)
 
   const [submitScheduleBuilder] = useMutation(saveScheduleMutation)
   const [saveDraft] = useMutation(saveSchedulePeriodMutation)
@@ -221,167 +208,6 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
     return menuItemsData
   }
 
-  const handleSelectPeriod = (schedule: ScheduleData, period: Period) => {
-    const scheduleIdx = scheduleData.findIndex((item) => item.period === schedule.period)
-    if (scheduleIdx > -1) {
-      if (schedule.Period?.id === period.id) return
-      schedule.Period = period
-      delete schedule.Subject
-      delete schedule.Title
-      delete schedule.CourseType
-      delete schedule.Course
-      scheduleData[scheduleIdx] = schedule
-      setScheduleData(JSON.parse(JSON.stringify(scheduleData)))
-      if (period.notify_period) {
-        setPeriodNotification(period.message_period)
-      }
-      setIsChanged(true)
-    }
-  }
-
-  const handleSelectSubject = (schedule: ScheduleData, subject: Subject) => {
-    const scheduleIdx = scheduleData.findIndex((item) => item.period === schedule.period)
-    if (scheduleIdx > -1) {
-      if (schedule.Subject?.subject_id === subject.subject_id) return
-      schedule.Subject = subject
-      delete schedule.Title
-      delete schedule.CourseType
-      delete schedule.Course
-      scheduleData[scheduleIdx] = schedule
-      setScheduleData(JSON.parse(JSON.stringify(scheduleData)))
-    }
-    setIsChanged(true)
-  }
-
-  const handleSelectTitle = (schedule: ScheduleData, title: Title) => {
-    const scheduleIdx = scheduleData.findIndex((item) => item.period === schedule.period)
-    if (scheduleIdx > -1) {
-      if (schedule.Title?.title_id === title.title_id) return
-      schedule.Title = title
-      delete schedule.Subject
-      delete schedule.CourseType
-      delete schedule.Course
-      scheduleData[scheduleIdx] = schedule
-      setScheduleData(JSON.parse(JSON.stringify(scheduleData)))
-      if (title.display_notification) {
-        setSubjectNotification(title.subject_notification)
-      }
-      if (title.reduce_funds !== ReduceFunds.NONE) {
-        setSubjectReduceFundsNotification(title.reduce_funds_notification)
-      }
-      setIsChanged(true)
-    }
-  }
-
-  const handleSelectCourseType = (schedule: ScheduleData, courseType: CourseType) => {
-    const scheduleIdx = scheduleData.findIndex((item) => item.period === schedule.period)
-    if (scheduleIdx > -1) {
-      if (schedule.CourseType === courseType) return
-      switch (courseType) {
-        case CourseType.THIRD_PARTY_PROVIDER:
-          setShowThirdPartyProviderModal(true)
-          setSelectedSchedule(schedule)
-          setSelectedCourseType(courseType)
-          break
-        case CourseType.CUSTOM_BUILT:
-          setSelectedSchedule(schedule)
-          setShowCustomBuilt(true)
-          break
-        case CourseType.MTH_DIRECT:
-          schedule.CourseType = courseType
-          delete schedule.Course
-          delete schedule.OnSiteSplitEnrollment
-          delete schedule.CustomBuiltDescription
-          delete schedule.ThirdParty
-          scheduleData[scheduleIdx] = schedule
-          setScheduleData(JSON.parse(JSON.stringify(scheduleData)))
-          break
-      }
-      setIsChanged(true)
-    }
-  }
-
-  const handleCancelThirdPartyModal = () => {
-    setSelectedSchedule(undefined)
-    setSelectedCourseType(undefined)
-    setShowThirdPartyProviderModal(false)
-    setSelectedThridPartyProvider(undefined)
-  }
-
-  const handleSaveThirdPartyModal = (item: ThirdPartyProvider) => {
-    setShowThirdPartyProviderModal(false)
-    if (selectedSchedule) {
-      const schedule = { ...selectedSchedule }
-      const scheduleIdx = scheduleData.findIndex((item) => item.period === schedule?.period)
-      schedule.CourseType = selectedCourseType
-      schedule.ThirdParty = item
-      delete schedule.OnSiteSplitEnrollment
-      delete schedule.Course
-      delete schedule.CustomBuiltDescription
-      scheduleData[scheduleIdx] = schedule
-      setScheduleData(JSON.parse(JSON.stringify(scheduleData)))
-      setIsChanged(true)
-    }
-    setSelectedSchedule(undefined)
-    setSelectedCourseType(undefined)
-    setSelectedThridPartyProvider(undefined)
-  }
-
-  const handleCancelOnSplitEnrollmentModal = () => {
-    setSelectedSchedule(undefined)
-    setShowOnSiteSplitEnrollmentModal(false)
-    setSelectedOnSiteSplitEnrollment(undefined)
-  }
-
-  const handleSaveOnSplitEnrollmentModal = (item: OnSiteSplitEnrollment) => {
-    if (selectedSchedule) {
-      const schedule = { ...selectedSchedule }
-      const scheduleIdx = scheduleData.findIndex((item) => item.period === schedule?.period)
-      schedule.OnSiteSplitEnrollment = item
-      delete schedule.Course
-      delete schedule.CustomBuiltDescription
-      delete schedule.ThirdParty
-      scheduleData[scheduleIdx] = schedule
-      setScheduleData(JSON.parse(JSON.stringify(scheduleData)))
-    }
-    setSelectedSchedule(undefined)
-    setShowOnSiteSplitEnrollmentModal(false)
-    setSelectedOnSiteSplitEnrollment(undefined)
-    setIsChanged(true)
-  }
-
-  const handleSaveCustomBuiltDescription = (description: string) => {
-    if (selectedSchedule) {
-      const scheduleIdx = scheduleData.findIndex((item) => item.period === selectedSchedule.period)
-      selectedSchedule.CourseType = CourseType.CUSTOM_BUILT
-      selectedSchedule.CustomBuiltDescription = description
-      delete selectedSchedule.Course
-      scheduleData[scheduleIdx] = selectedSchedule
-      setScheduleData(JSON.parse(JSON.stringify(scheduleData)))
-      setIsChanged(true)
-    }
-  }
-
-  const handleSelectCourse = (schedule: ScheduleData, course: Course) => {
-    const scheduleIdx = scheduleData.findIndex((item) => item.period === schedule.period)
-    if (scheduleIdx > -1) {
-      if (schedule.Course?.id === course.id) return
-      schedule.Course = course
-      delete schedule.OnSiteSplitEnrollment
-      delete schedule.CustomBuiltDescription
-      delete schedule.ThirdParty
-      scheduleData[scheduleIdx] = schedule
-      setScheduleData(JSON.parse(JSON.stringify(scheduleData)))
-      if (course.display_notification) {
-        setCourseNotification(course.course_notification)
-      }
-      if (course.reduce_funds !== ReduceFunds.NONE) {
-        setCourseReduceFundsNotification(course.reduce_funds_notification)
-      }
-      setIsChanged(true)
-    }
-  }
-
   const fields: MthTableField<ScheduleData>[] = [
     {
       key: 'Period',
@@ -514,7 +340,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
                     {item.rawData.OnSiteSplitEnrollment.courseName}
                   </Typography>
                 </Box>
-                <Box>
+                <Box sx={{ marginTop: 'auto', marginBottom: 'auto' }}>
                   <Tooltip title='Edit' placement='top'>
                     <IconButton
                       sx={scheduleBuilderClasses.editButton}
@@ -551,7 +377,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
                     </Typography>
                   ))}
                 </Box>
-                <Box>
+                <Box sx={{ marginTop: 'auto', marginBottom: 'auto' }}>
                   <Tooltip title='Edit' placement='top'>
                     <IconButton
                       sx={scheduleBuilderClasses.editButton}
@@ -571,7 +397,11 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
             {item.rawData.CourseType === CourseType.CUSTOM_BUILT && !!item.rawData.CustomBuiltDescription && (
               <Box sx={scheduleBuilderClasses.descriptionWrap}>
                 <Typography
-                  sx={scheduleBuilderClasses.tableContent}
+                  sx={{
+                    ...scheduleBuilderClasses.tableContent,
+                    width: '100%',
+                    backgroundColor: item.rawData.IsChangedCustomBuiltDescription ? MthColor.LIGHTGREEN : '',
+                  }}
                   component={'span'}
                   variant={'body2'}
                   dangerouslySetInnerHTML={{ __html: item.rawData.CustomBuiltDescription }}
@@ -593,7 +423,183 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
         )
       },
     },
+    {
+      key: 'CloseIcon',
+      label: '',
+      sortable: false,
+      tdClass: '',
+      formatter: () => {
+        return (
+          <Box sx={{ display: 'flex' }}>
+            {studentScheduleStatus == ScheduleStatus.SUBMITTED && (
+              <IconButton sx={{ color: MthColor.MTHORANGE, fontSize: '18px' }}>
+                <Close />
+              </IconButton>
+            )}
+            {studentScheduleStatus == ScheduleStatus.ACCEPTED && (
+              <IconButton sx={{ color: MthColor.GREEN, fontSize: '18px' }}>
+                <Check />
+              </IconButton>
+            )}
+          </Box>
+        )
+      },
+    },
   ]
+
+  const handleSelectPeriod = (schedule: ScheduleData, period: Period) => {
+    const scheduleIdx = scheduleData.findIndex((item) => item.period === schedule.period)
+    if (scheduleIdx > -1) {
+      if (schedule.Period?.id === period.id) return
+      schedule.Period = period
+      delete schedule.Subject
+      delete schedule.Title
+      delete schedule.CourseType
+      delete schedule.Course
+      scheduleData[scheduleIdx] = schedule
+      setScheduleData(JSON.parse(JSON.stringify(scheduleData)))
+      if (period.notify_period) {
+        setPeriodNotification(period.message_period)
+      }
+    }
+  }
+
+  const handleSelectSubject = (schedule: ScheduleData, subject: Subject) => {
+    const scheduleIdx = scheduleData.findIndex((item) => item.period === schedule.period)
+    if (scheduleIdx > -1) {
+      if (schedule.Subject?.subject_id === subject.subject_id) return
+      schedule.Subject = subject
+      delete schedule.Title
+      delete schedule.CourseType
+      delete schedule.Course
+      scheduleData[scheduleIdx] = schedule
+      setScheduleData(JSON.parse(JSON.stringify(scheduleData)))
+    }
+  }
+
+  const handleSelectTitle = (schedule: ScheduleData, title: Title) => {
+    const scheduleIdx = scheduleData.findIndex((item) => item.period === schedule.period)
+    if (scheduleIdx > -1) {
+      if (schedule.Title?.title_id === title.title_id) return
+      schedule.Title = title
+      delete schedule.Subject
+      delete schedule.CourseType
+      delete schedule.Course
+      scheduleData[scheduleIdx] = schedule
+      setScheduleData(JSON.parse(JSON.stringify(scheduleData)))
+      if (title.display_notification) {
+        setSubjectNotification(title.subject_notification)
+      }
+      if (title.reduce_funds !== ReduceFunds.NONE) {
+        setSubjectReduceFundsNotification(title.reduce_funds_notification)
+      }
+    }
+  }
+
+  const handleSelectCourseType = (schedule: ScheduleData, courseType: CourseType) => {
+    const scheduleIdx = scheduleData.findIndex((item) => item.period === schedule.period)
+    if (scheduleIdx > -1) {
+      if (schedule.CourseType === courseType) return
+      switch (courseType) {
+        case CourseType.THIRD_PARTY_PROVIDER:
+          setShowThirdPartyProviderModal(true)
+          setSelectedSchedule(schedule)
+          setSelectedCourseType(courseType)
+          break
+        case CourseType.CUSTOM_BUILT:
+          setSelectedSchedule(schedule)
+          setShowCustomBuilt(true)
+          break
+        case CourseType.MTH_DIRECT:
+          schedule.CourseType = courseType
+          delete schedule.Course
+          delete schedule.OnSiteSplitEnrollment
+          delete schedule.CustomBuiltDescription
+          delete schedule.ThirdParty
+          scheduleData[scheduleIdx] = schedule
+          setScheduleData(JSON.parse(JSON.stringify(scheduleData)))
+          break
+      }
+    }
+  }
+
+  const handleCancelThirdPartyModal = () => {
+    setSelectedSchedule(undefined)
+    setSelectedCourseType(undefined)
+    setShowThirdPartyProviderModal(false)
+    setSelectedThridPartyProvider(undefined)
+  }
+
+  const handleSaveThirdPartyModal = (item: ThirdPartyProvider) => {
+    setShowThirdPartyProviderModal(false)
+    if (selectedSchedule) {
+      const schedule = { ...selectedSchedule }
+      const scheduleIdx = scheduleData.findIndex((item) => item.period === schedule?.period)
+      schedule.CourseType = selectedCourseType
+      schedule.ThirdParty = item
+      delete schedule.OnSiteSplitEnrollment
+      delete schedule.Course
+      delete schedule.CustomBuiltDescription
+      scheduleData[scheduleIdx] = schedule
+      setScheduleData(JSON.parse(JSON.stringify(scheduleData)))
+    }
+    setSelectedSchedule(undefined)
+    setSelectedCourseType(undefined)
+    setSelectedThridPartyProvider(undefined)
+  }
+
+  const handleCancelOnSplitEnrollmentModal = () => {
+    setSelectedSchedule(undefined)
+    setShowOnSiteSplitEnrollmentModal(false)
+    setSelectedOnSiteSplitEnrollment(undefined)
+  }
+
+  const handleSaveOnSplitEnrollmentModal = (item: OnSiteSplitEnrollment) => {
+    if (selectedSchedule) {
+      const schedule = { ...selectedSchedule }
+      const scheduleIdx = scheduleData.findIndex((item) => item.period === schedule?.period)
+      schedule.OnSiteSplitEnrollment = item
+      delete schedule.Course
+      delete schedule.CustomBuiltDescription
+      delete schedule.ThirdParty
+      scheduleData[scheduleIdx] = schedule
+      setScheduleData(JSON.parse(JSON.stringify(scheduleData)))
+    }
+    setSelectedSchedule(undefined)
+    setShowOnSiteSplitEnrollmentModal(false)
+    setSelectedOnSiteSplitEnrollment(undefined)
+  }
+
+  const handleSaveCustomBuiltDescription = (description: string) => {
+    if (selectedSchedule) {
+      const scheduleIdx = scheduleData.findIndex((item) => item.period === selectedSchedule.period)
+      selectedSchedule.CourseType = CourseType.CUSTOM_BUILT
+      selectedSchedule.CustomBuiltDescription = description
+      selectedSchedule.IsChangedCustomBuiltDescription = true
+      delete selectedSchedule.Course
+      scheduleData[scheduleIdx] = selectedSchedule
+      setScheduleData(JSON.parse(JSON.stringify(scheduleData)))
+    }
+  }
+
+  const handleSelectCourse = (schedule: ScheduleData, course: Course) => {
+    const scheduleIdx = scheduleData.findIndex((item) => item.period === schedule.period)
+    if (scheduleIdx > -1) {
+      if (schedule.Course?.id === course.id) return
+      schedule.Course = course
+      delete schedule.OnSiteSplitEnrollment
+      delete schedule.CustomBuiltDescription
+      delete schedule.ThirdParty
+      scheduleData[scheduleIdx] = schedule
+      setScheduleData(JSON.parse(JSON.stringify(scheduleData)))
+      if (course.display_notification) {
+        setCourseNotification(course.course_notification)
+      }
+      if (course.reduce_funds !== ReduceFunds.NONE) {
+        setCourseReduceFundsNotification(course.reduce_funds_notification)
+      }
+    }
+  }
 
   const preSelect = (schedule: ScheduleData): ScheduleData => {
     if (schedule.Periods?.length === 1 && !schedule.Period) {
@@ -681,11 +687,9 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
           switch (kind) {
             case ScheduleStatus.DRAFT:
               setIsDraftSaved(true)
-              setIsChanged(false)
               break
             case ScheduleStatus.SUBMITTED:
               setShowSubmitSuccessModal(true)
-              setIsChanged(false)
               break
           }
         }
@@ -693,27 +697,58 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
     }
   }
 
+  const handleYearDropDown = (year: number) => {
+    setSelectedYear(year)
+  }
+
+  const updateScheduleStatus = (num: string) => {
+    const newStatus = SCHEDULE_STATUS_OPTIONS.find((item) => item.value === num) as DropDownItem
+    setScheduleStatus(newStatus)
+  }
+
+  const handleBack = () => {}
+
+  const handleSchedule = (status: ScheduleStatus) => {
+    if (status === ScheduleStatus.ACCEPTED) {
+      handleSave(ScheduleStatus.UPDATES_REQUIRED)
+    } else if (status === ScheduleStatus.SUBMITTED) {
+      handleSave(ScheduleStatus.ACCEPTED)
+    }
+  }
+
+  const handleSaveChanges = () => {}
+
+  const handleResetSchedule = () => {}
+
+  useEffect(() => {
+    if (!studentInfoLoading && studentInfoData) {
+      const student: StudentType = studentInfoData?.student
+      setStudentInfo({
+        name: `${student?.person?.first_name} ${student?.person?.last_name}`,
+        grade: gradeText(student),
+        schoolDistrict: student?.packets?.at(-1)?.school_district || '',
+        specialEd: `${student?.special_ed}`,
+      })
+    }
+  }, [studentInfoLoading, studentInfoData])
+
+  useEffect(() => {
+    if (!currentSchoolYearLoading && currentSchoolYear) {
+      setSchoolYearItems([
+        {
+          value: currentSchoolYear.school_year_id,
+          label: `${moment(currentSchoolYear.date_begin).format('YYYY')}-${moment(currentSchoolYear.date_end).format(
+            'YY',
+          )}`,
+        },
+      ])
+      setSelectedYear(currentSchoolYear.school_year_id)
+      setSplitEnrollment(currentSchoolYear?.ScheduleBuilder?.split_enrollment)
+    }
+  }, [currentSchoolYear, currentSchoolYearLoading])
+
   useEffect(() => {
     if (scheduleData?.length) {
-      let isInvalid = false
-      scheduleData.map((item) => {
-        if (item?.CourseType) {
-          switch (item.CourseType) {
-            case CourseType.CUSTOM_BUILT:
-              if (!item.CustomBuiltDescription) isInvalid = true
-              break
-            case CourseType.MTH_DIRECT:
-              if (!item.OnSiteSplitEnrollment && !item.Course) isInvalid = true
-              break
-            case CourseType.THIRD_PARTY_PROVIDER:
-              if (!item.ThirdParty) isInvalid = true
-              break
-          }
-        } else {
-          isInvalid = true
-        }
-      })
-      setShowSubmitBtn(!isInvalid)
       setTableData(
         scheduleData.map((item) => {
           return createData(item)
@@ -722,51 +757,52 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
     }
   }, [scheduleData])
 
+  useEffect(() => {
+    if (studentScheduleStatus) {
+      setScheduleStatus(SCHEDULE_STATUS_OPTIONS.find((item) => item.value === studentScheduleStatus) as DropDownItem)
+    }
+  }, [studentScheduleStatus])
+
   return (
-    <>
-      <Box sx={scheduleBuilderClasses.main}>
-        <MthTable
-          items={tableData}
-          fields={fields}
-          isDraggable={false}
-          checkBoxColor='secondary'
-          sx={scheduleBuilderClasses.customTable}
-        />
-        {!scheduleBuilderSettingLoading && (
-          <ClickAwayListener onClickAway={() => setEnableQuestionTooltip(false)}>
-            <StyledTooltip
-              title={parse(scheduleBuilderSettingData.getScheduleBuilder.parent_tooltip)}
-              open={enableQuestionTooltip}
-              onClose={() => setEnableQuestionTooltip(false)}
-              disableFocusListener
-              disableHoverListener
-              disableTouchListener
-            >
-              <IconButton
-                size='large'
-                edge='start'
-                aria-label='open drawer'
-                sx={[{ mr: 2 }, scheduleBuilderClasses.questionButton]}
-                onClick={() => setEnableQuestionTooltip(true)}
-              >
-                <QuestionMarkIcon sx={{ fontSize: '20px', color: MthColor.BLACK }} />
-              </IconButton>
-            </StyledTooltip>
-          </ClickAwayListener>
-        )}
-        {enableQuestionTooltip && <StyledTooltipBgDiv />}
+    <Card sx={scheduleBuilderClass.main}>
+      <Header
+        title={MthTitle.SCHEDULE}
+        schoolYearItems={schoolYearItems}
+        selectedYear={selectedYear}
+        scheduleStatus={scheduleStatus}
+        onSelectYear={handleYearDropDown}
+        handleBack={handleBack}
+      />
+      <StudentInfo
+        studentInfo={studentInfo}
+        scheduleStatus={scheduleStatus}
+        onUpdateScheduleStatus={updateScheduleStatus}
+      />
+      <Box sx={scheduleBuilderClass.table}>
+        <MthTable items={tableData} fields={fields} isDraggable={false} checkBoxColor='secondary' />
+        <IconButton sx={{ backgroundColor: MthColor.LIGHTGRAY }}>
+          <VpnKeyOutlinedIcon sx={{ fontSize: '20px' }} />
+        </IconButton>
       </Box>
-      {showUnsavedModal && (
-        <CustomModal
-          title={MthTitle.UNSAVED_TITLE}
-          description={MthTitle.UNSAVED_DESCRIPTION}
-          cancelStr='Cancel'
-          confirmStr='Yes'
-          backgroundColor={MthColor.WHITE}
-          onClose={() => onWithoutSaved(false)}
-          onConfirm={() => onWithoutSaved(true)}
-        />
-      )}
+      <Box sx={scheduleBuilderClass.submit}>
+        <Button
+          variant='contained'
+          sx={{
+            background: `${
+              scheduleStatus?.value == ScheduleStatus.ACCEPTED ? MthColor.ORANGE_GRADIENT : MthColor.GREEN_GRADIENT
+            }`,
+          }}
+          onClick={() => handleSchedule(scheduleStatus?.value as ScheduleStatus)}
+        >
+          {scheduleStatus?.value == ScheduleStatus.ACCEPTED ? 'Require Updates' : MthTitle.ACCEPT}
+        </Button>
+        <Button variant='contained' sx={{ backgroundColor: MthColor.LIGHTGRAY }} onClick={() => handleSaveChanges()}>
+          {MthTitle.SAVE_CHANGES}
+        </Button>
+        <Button variant='text' sx={{ fontWeight: 700, fontSize: '14px' }} onClick={() => handleResetSchedule()}>
+          Reset Schedule
+        </Button>
+      </Box>
       {isDraftSaved && (
         <SuccessModal
           title='Saved'
@@ -786,7 +822,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
           title='Success'
           subtitle={
             <Paragraph size='large' color={MthColor.SYSTEM_01} textAlign='center'>
-              {`${studentName}'s schedule has been submitted successfully and is pending approval.`}
+              {`${studentInfo?.name}'s schedule has been submitted successfully and is pending approval.`}
             </Paragraph>
           }
           btntitle='Done'
@@ -876,34 +912,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
           onSave={handleSaveCustomBuiltDescription}
         />
       )}
-      <Prompt
-        when={showUnsavedModal}
-        message={JSON.stringify({
-          header: MthTitle.UNSAVED_TITLE,
-          content: MthTitle.UNSAVED_DESCRIPTION,
-        })}
-      />
-      {showSubmitBtn ? (
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', paddingX: 6 }}>
-          <Button onClick={() => handleSave(ScheduleStatus.DRAFT)} variant='contained' sx={scheduleClassess.button}>
-            {MthTitle.SAVE_DRAFT}
-          </Button>
-          <Button
-            onClick={() => handleSave(ScheduleStatus.SUBMITTED)}
-            variant='contained'
-            sx={scheduleClassess.submitBtn}
-          >
-            {'Submit'}
-          </Button>
-        </Box>
-      ) : (
-        <Box sx={{ display: 'flex', justifyContent: 'end', paddingX: 6 }}>
-          <Button onClick={() => handleSave(ScheduleStatus.DRAFT)} variant='contained' sx={scheduleClassess.button}>
-            {MthTitle.SAVE_DRAFT}
-          </Button>
-        </Box>
-      )}
-    </>
+    </Card>
   )
 }
 

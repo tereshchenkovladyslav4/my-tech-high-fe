@@ -6,9 +6,10 @@ import { DropDownItem } from '@mth/components/DropDown/types'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { getSchoolYearsByRegionId } from '@mth/screens/Admin/SiteManagement/services'
 
-export type ScheduleBuilder = {
+type ScheduleBuilder = {
   max_num_periods: number
 }
+
 export type SchoolYearRespnoseType = {
   school_year_id: number
   date_begin: string

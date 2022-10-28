@@ -1,3 +1,5 @@
+import { DropDownItem } from '@mth/components/DropDown/types'
+
 export type FilterVM = {
   grades: string[]
   diplomaSeeking: boolean
