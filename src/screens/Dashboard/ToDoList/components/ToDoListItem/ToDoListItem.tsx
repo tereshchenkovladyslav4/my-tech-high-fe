@@ -86,7 +86,13 @@ export const ToDoListItem: TodoListTemplateType = ({ todoItem, todoDate, todoDea
           <TableCell style={{ width: '40%' }} sx={{ paddingX: '8px' }} component='th' scope='row'>
             <Metadata
               title={<Subtitle fontWeight='500'>{todoItem.phrase}</Subtitle>}
-              subtitle={todoDate && <Paragraph size='medium'>{todoDate}</Paragraph>}
+              subtitle={
+                todoDate && (
+                  <Paragraph size='medium' color={MthColor.SYSTEM_06}>
+                    {todoDate}
+                  </Paragraph>
+                )
+              }
               image={<SubjectIcon style={{ color: 'black', marginRight: 24 }} />}
             />
           </TableCell>
