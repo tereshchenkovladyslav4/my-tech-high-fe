@@ -9,18 +9,4 @@ export const editSubjectClasses = {
     marginLeft: '12px',
     marginTop: '4px',
   },
-  focusBorderColor: {
-    // focused color for input with variant='outlined'
-    '& .MuiOutlinedInput-root': {
-      '&.Mui-focused fieldset': {
-        borderWidth: '1px',
-        borderColor: MthColor.SYSTEM_06,
-      },
-      '&.Mui-error': {
-        '&.Mui-focused fieldset': {
-          borderColor: MthColor.ERROR_RED,
-        },
-      },
-    },
-  },
 }

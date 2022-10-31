@@ -20,13 +20,6 @@ const CssTextField = styled(TextField, {
     borderBottomColor: '#ccc',
     borderWidth: '1px',
   },
-  // focused color for input with variant='outlined'
-  '& .MuiOutlinedInput-root': {
-    '&.Mui-focused fieldset': {
-      borderColor: '#ccc',
-      borderWidth: '1px',
-    },
-  },
 }))
 
 export const DropDown: React.FC<DropDownProps> = ({
@@ -131,14 +124,11 @@ export const DropDown: React.FC<DropDownProps> = ({
             size={size || 'medium'}
             value={value || value == 0 ? value : ''}
             onChange={(e) => handleChange(e.target.value)}
-            InputLabelProps={{
-              style: { color: alternate && MthColor.SYSTEM_05 },
-              shrink: true,
-            }}
+            InputLabelProps={{ shrink: true }}
+            className='MthFormField'
             FormHelperTextProps={{
               style: { color: MthColor.ERROR_RED },
             }}
-            focused
             select // tell TextField to render select
             label={placeholder}
             sx={

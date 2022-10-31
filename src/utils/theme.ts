@@ -98,5 +98,24 @@ export const theme = createTheme({
         },
       },
     },
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          '&.MthFormField': {
+            '& .MuiInputLabel-root:not(.Mui-error)': {
+              color: '#333333',
+            },
+            '& .MuiOutlinedInput-root': {
+              '& fieldset, &.Mui-focused fieldset': {
+                borderWidth: '1px',
+              },
+              '&:not(.Mui-error) fieldset, &.Mui-focused:not(.Mui-error) fieldset': {
+                borderColor: '#333333',
+              },
+            },
+          },
+        },
+      },
+    },
   },
 })

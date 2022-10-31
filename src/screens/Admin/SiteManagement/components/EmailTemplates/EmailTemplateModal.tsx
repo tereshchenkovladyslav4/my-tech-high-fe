@@ -22,6 +22,7 @@ import { ContentState, EditorState, convertToRaw } from 'draft-js'
 import draftToHtml from 'draftjs-to-html'
 import htmlToDraft from 'html-to-draftjs'
 import Wysiwyg from 'react-draft-wysiwyg'
+import { MthBulletEditor } from '@mth/components/MthBulletEditor'
 import { MthColor } from '@mth/enums'
 import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
 import { getEmailTemplateByIdQuery, getEmailRemindersQuery } from '../../../../../graphql/queries/email-template'
@@ -696,11 +697,10 @@ export const EmailTemplateModal: FunctionComponent<EmailTemplateModalProps> = ({
                             </Grid>
 
                             <Grid item xs={12} sx={{ marginTop: '25px' }}>
-                              <textarea
+                              <MthBulletEditor
                                 value={response[index].responses[i].extraText}
-                                onChange={(e) => handleChangeGroupResponse(e.target.value, index, i, 'extraText')}
-                                rows={4}
-                                className={classes.textarea}
+                                setValue={(value) => handleChangeGroupResponse(value, index, i, 'extraText')}
+                                height='150px'
                               />
                             </Grid>
                           </Box>

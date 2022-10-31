@@ -1,10 +1,11 @@
 import React from 'react'
-import { Box, Grid, InputAdornment, TextField, Typography } from '@mui/material'
+import { Box, Grid, TextField, Typography } from '@mui/material'
 import { useFormikContext } from 'formik'
 import { DropDown } from '@mth/components/DropDown/DropDown'
 import { MthBulletEditor } from '@mth/components/MthBulletEditor'
 import { MthCheckbox } from '@mth/components/MthCheckbox'
 import { MthCheckboxList } from '@mth/components/MthCheckboxList'
+import { MthNumberInput } from '@mth/components/MthNumberInput'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { REDUCE_FUNDS_ITEMS } from '@mth/constants'
 import { MthColor, ReduceFunds } from '@mth/enums'
@@ -23,6 +24,8 @@ const ProviderForm: React.FC<ProviderFormProps> = ({ setIsChanged, periodsItems 
             label='Provider'
             placeholder='Entry'
             fullWidth
+            InputLabelProps={{ shrink: true }}
+            className='MthFormField'
             value={values?.name}
             onChange={(e) => {
               handleChange(e)
@@ -66,15 +69,16 @@ const ProviderForm: React.FC<ProviderFormProps> = ({ setIsChanged, periodsItems 
               <Subtitle sx={editProviderClasses.formError}>{touched.reduce_funds && errors.reduce_funds}</Subtitle>
             </Grid>
             <Grid item xs={6}>
-              <TextField
+              <MthNumberInput
+                numberType='price'
                 label='Price'
                 placeholder='Entry'
-                InputProps={{ startAdornment: <InputAdornment position='start'>$</InputAdornment> }}
-                type='number'
                 fullWidth
-                value={values?.price || ''}
-                onChange={(event: { target: { value: string } }) => {
-                  setFieldValue('price', Number(event?.target?.value) || '')
+                InputLabelProps={{ shrink: true }}
+                className='MthFormField'
+                value={values?.price}
+                onChangeValue={(value: number | null) => {
+                  setFieldValue('price', value)
                 }}
                 error={touched.price && !!errors.price}
                 disabled={values?.reduce_funds === ReduceFunds.NONE}

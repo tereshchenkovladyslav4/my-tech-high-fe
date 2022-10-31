@@ -46,9 +46,9 @@ const OnSiteSplitEnrollmentForm: React.FC<OnSiteSplitEnrollmentFormProps> = () =
           label='District School'
           placeholder='Entry'
           fullWidth
-          focused
+          InputLabelProps={{ shrink: true }}
+          className='MthFormField'
           value={values?.districtSchool}
-          sx={editSubjectClasses.focusBorderColor}
           onChange={(e) => {
             setFieldValue('districtSchool', e?.target?.value)
           }}
@@ -76,9 +76,9 @@ const OnSiteSplitEnrollmentForm: React.FC<OnSiteSplitEnrollmentFormProps> = () =
           label='Name of Course'
           placeholder='Entry'
           fullWidth
-          focused
+          InputLabelProps={{ shrink: true }}
+          className='MthFormField'
           value={values?.courseName}
-          sx={editSubjectClasses.focusBorderColor}
           onChange={(e) => {
             setFieldValue('courseName', e?.target?.value)
           }}

@@ -56,6 +56,8 @@ export const StateCourseCords: React.FC = () => {
                           label='State Code'
                           placeholder='Entry'
                           fullWidth
+                          InputLabelProps={{ shrink: true }}
+                          className='MthFormField'
                           value={values?.stateCourseCords?.[index]?.stateCode || ''}
                           onChange={(e) => handleChangeOption(index, 'stateCode', e.target.value || null)}
                         />
@@ -66,6 +68,8 @@ export const StateCourseCords: React.FC = () => {
                           label='Teacher'
                           placeholder='Entry'
                           fullWidth
+                          InputLabelProps={{ shrink: true }}
+                          className='MthFormField'
                           value={values?.stateCourseCords?.[index]?.teacher || ''}
                           onChange={(e) => handleChangeOption(index, 'teacher', e.target.value || null)}
                         />

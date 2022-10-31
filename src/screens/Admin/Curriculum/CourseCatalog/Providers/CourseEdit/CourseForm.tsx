@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from 'react'
-import { Box, Grid, InputAdornment, TextField, Typography } from '@mui/material'
+import { Box, Grid, TextField, Typography } from '@mui/material'
 import { useFormikContext } from 'formik'
 import { DropDown } from '@mth/components/DropDown/DropDown'
 import { MthBulletEditor } from '@mth/components/MthBulletEditor'
 import { MthCheckbox } from '@mth/components/MthCheckbox'
+import { MthNumberInput } from '@mth/components/MthNumberInput'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
-import { WarningModal } from '@mth/components/WarningModal/Warning'
 import { DIPLOMA_SEEKING_PATH_ITEMS, REDUCE_FUNDS_ITEMS } from '@mth/constants'
 import { MthColor, ReduceFunds } from '@mth/enums'
 import { CourseTitles } from '@mth/screens/Admin/Curriculum/CourseCatalog/Providers/CourseEdit/CourseTitles'
 import { editCourseClasses } from '@mth/screens/Admin/Curriculum/CourseCatalog/Providers/CourseEdit/styles'
 import { Course, CourseFormProps, Provider } from '@mth/screens/Admin/Curriculum/CourseCatalog/Providers/types'
+import ValidGradesSelector from '../../Components/ValidateGrades/ValidGradesSelector'
 
 const CourseForm: React.FC<CourseFormProps> = ({
   schoolYearId,
@@ -21,31 +22,7 @@ const CourseForm: React.FC<CourseFormProps> = ({
   gradeOptions,
 }) => {
   const { errors, handleChange, setFieldValue, touched, values, setFieldTouched } = useFormikContext<Course>()
-  const [showGradeError, setShowGradeError] = useState<boolean>(false)
-  const [showAltGradeError, setShowAltGradeError] = useState<boolean>(false)
   const [provider, setProvider] = useState<Provider | undefined>()
-
-  const validateGrades = (field: string, newValue: number) => {
-    const newValues = { ...values, [field]: newValue }
-    const grades = [
-      newValues?.min_grade || Number.NEGATIVE_INFINITY,
-      newValues?.max_grade || Number.POSITIVE_INFINITY,
-      newValues?.min_alt_grade || Number.NEGATIVE_INFINITY,
-      newValues?.max_alt_grade || Number.POSITIVE_INFINITY,
-    ]
-
-    // Check grades
-    if (grades[0] >= grades[1]) {
-      setShowGradeError(true)
-      return
-    }
-    // Check alternative grades
-    if (grades[2] >= grades[3]) {
-      setShowAltGradeError(true)
-      return
-    }
-    setFieldValue(field, newValue)
-  }
 
   useEffect(() => {
     if (values.provider_id) {
@@ -82,6 +59,8 @@ const CourseForm: React.FC<CourseFormProps> = ({
                 label='Title'
                 placeholder='Entry'
                 fullWidth
+                InputLabelProps={{ shrink: true }}
+                className='MthFormField'
                 value={values?.name}
                 onChange={(e) => {
                   handleChange(e)
@@ -90,66 +69,7 @@ const CourseForm: React.FC<CourseFormProps> = ({
               />
               <Subtitle sx={editCourseClasses.formError}>{touched.name && errors.name}</Subtitle>
             </Grid>
-            <Grid item xs={6}>
-              <DropDown
-                dropDownItems={gradeOptions}
-                placeholder='Minimum Grade Level'
-                labelTop
-                auto={false}
-                setParentValue={(value) => {
-                  validateGrades('min_grade', +value)
-                }}
-                sx={{ m: 0 }}
-                defaultValue={values?.min_grade || undefined}
-                error={{ error: touched.min_grade && !!errors.min_grade, errorMsg: '' }}
-              />
-              <Subtitle sx={editCourseClasses.formError}>{touched.min_grade && errors.min_grade}</Subtitle>
-            </Grid>
-            <Grid item xs={6}>
-              <DropDown
-                dropDownItems={gradeOptions}
-                placeholder='Maximum Grade Level'
-                labelTop
-                auto={false}
-                setParentValue={(value) => {
-                  validateGrades('max_grade', +value)
-                }}
-                sx={{ m: 0 }}
-                defaultValue={values?.max_grade || undefined}
-                error={{ error: touched.max_grade && !!errors.max_grade, errorMsg: '' }}
-              />
-              <Subtitle sx={editCourseClasses.formError}>{touched.max_grade && errors.max_grade}</Subtitle>
-            </Grid>
-            <Grid item xs={6}>
-              <DropDown
-                dropDownItems={gradeOptions}
-                placeholder='Alternative Minimum'
-                labelTop
-                auto={false}
-                setParentValue={(value) => {
-                  validateGrades('min_alt_grade', +value)
-                }}
-                sx={{ m: 0 }}
-                defaultValue={values?.min_alt_grade || undefined}
-                error={{ error: touched.min_alt_grade && !!errors.min_alt_grade, errorMsg: '' }}
-              />
-              <Subtitle sx={editCourseClasses.formError}>{touched.min_alt_grade && errors.min_alt_grade}</Subtitle>
-            </Grid>
-            <Grid item xs={6}>
-              <DropDown
-                dropDownItems={gradeOptions}
-                placeholder='Alternative Maximum'
-                labelTop
-                auto={false}
-                setParentValue={(value) => {
-                  validateGrades('max_alt_grade', +value)
-                }}
-                sx={{ m: 0 }}
-                defaultValue={values?.max_alt_grade || undefined}
-                error={{ error: touched.max_alt_grade && !!errors.max_alt_grade, errorMsg: '' }}
-              />
-              <Subtitle sx={editCourseClasses.formError}>{touched.max_alt_grade && errors.max_alt_grade}</Subtitle>
-            </Grid>
+            <ValidGradesSelector gradeOptions={gradeOptions} />
             <Grid item xs={12}>
               {!!scheduleBuilder?.always_unlock && (
                 <MthCheckbox
@@ -188,6 +108,8 @@ const CourseForm: React.FC<CourseFormProps> = ({
                     label='Course ID'
                     placeholder='Entry'
                     fullWidth
+                    InputLabelProps={{ shrink: true }}
+                    className='MthFormField'
                     value={values?.course_id}
                     onChange={(e) => {
                       setFieldValue('course_id', e.target.value)
@@ -251,6 +173,8 @@ const CourseForm: React.FC<CourseFormProps> = ({
                 label='Website'
                 placeholder='Entry'
                 fullWidth
+                InputLabelProps={{ shrink: true }}
+                className='MthFormField'
                 value={values?.website}
                 onChange={(e) => {
                   handleChange(e)
@@ -277,15 +201,17 @@ const CourseForm: React.FC<CourseFormProps> = ({
               </Subtitle>
             </Grid>
             <Grid item xs={6}>
-              <TextField
+              <MthNumberInput
+                numberType='numeric'
                 name='limit'
                 label='Limit'
                 placeholder='Entry'
-                type='number'
                 fullWidth
-                value={values?.limit || ''}
-                onChange={(e) => {
-                  setFieldValue('limit', Number(e.target.value) || '')
+                InputLabelProps={{ shrink: true }}
+                className='MthFormField'
+                value={values?.limit}
+                onChangeValue={(value) => {
+                  setFieldValue('limit', value)
                 }}
                 error={touched.limit && !!errors.limit}
                 disabled={provider?.multiple_periods}
@@ -313,15 +239,16 @@ const CourseForm: React.FC<CourseFormProps> = ({
               <Subtitle sx={editCourseClasses.formError}>{touched.reduce_funds && errors.reduce_funds}</Subtitle>
             </Grid>
             <Grid item xs={6}>
-              <TextField
+              <MthNumberInput
+                numberType='price'
                 label='Price'
                 placeholder='Entry'
-                InputProps={{ startAdornment: <InputAdornment position='start'>$</InputAdornment> }}
-                type='number'
                 fullWidth
-                value={values?.price || ''}
-                onChange={(event: { target: { value: string } }) => {
-                  setFieldValue('price', Number(event?.target?.value) || '')
+                InputLabelProps={{ shrink: true }}
+                className='MthFormField'
+                value={values?.price}
+                onChangeValue={(value: number | null) => {
+                  setFieldValue('price', value)
                 }}
                 error={touched.price && !!errors.price}
                 disabled={values?.reduce_funds === ReduceFunds.NONE}
@@ -334,26 +261,6 @@ const CourseForm: React.FC<CourseFormProps> = ({
           </Grid>
         </Grid>
       </Grid>
-      {showGradeError && (
-        <WarningModal
-          title='Error'
-          subtitle='The Minimum Grade Level must be less than the Maximum Grade Level.'
-          btntitle='Ok'
-          handleModem={() => setShowGradeError(false)}
-          handleSubmit={() => setShowGradeError(false)}
-          textCenter={true}
-        />
-      )}
-      {showAltGradeError && (
-        <WarningModal
-          title='Error'
-          subtitle='The Minimum Alternative Grade Level must be less than the Maximum Alternative Grade Level.'
-          btntitle='Ok'
-          handleModem={() => setShowAltGradeError(false)}
-          handleSubmit={() => setShowAltGradeError(false)}
-          textCenter={true}
-        />
-      )}
     </Box>
   )
 }

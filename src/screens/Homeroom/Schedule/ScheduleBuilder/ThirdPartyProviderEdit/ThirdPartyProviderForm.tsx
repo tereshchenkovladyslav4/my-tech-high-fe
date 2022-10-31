@@ -34,9 +34,9 @@ const ThirdPartyProviderForm: React.FC<ThirdPartyProviderFormProps> = () => {
           label='Name of Provider'
           placeholder='Entry'
           fullWidth
-          focused
+          InputLabelProps={{ shrink: true }}
+          className='MthFormField'
           value={values?.providerName}
-          sx={editSubjectClasses.focusBorderColor}
           onChange={(e) => {
             setFieldValue('providerName', e?.target?.value)
           }}
@@ -50,9 +50,9 @@ const ThirdPartyProviderForm: React.FC<ThirdPartyProviderFormProps> = () => {
           label='Name of Course'
           placeholder='Entry'
           fullWidth
-          focused
+          InputLabelProps={{ shrink: true }}
+          className='MthFormField'
           value={values?.courseName}
-          sx={editSubjectClasses.focusBorderColor}
           onChange={(e) => {
             setFieldValue('courseName', e?.target?.value)
           }}
@@ -66,9 +66,9 @@ const ThirdPartyProviderForm: React.FC<ThirdPartyProviderFormProps> = () => {
           label='Phone Number'
           placeholder='Entry'
           fullWidth
-          focused
+          InputLabelProps={{ shrink: true }}
+          className='MthFormField'
           value={values?.phoneNumber}
-          sx={editSubjectClasses.focusBorderColor}
           onChange={(e) => {
             setFieldValue('phoneNumber', e?.target?.value)
           }}
@@ -82,9 +82,9 @@ const ThirdPartyProviderForm: React.FC<ThirdPartyProviderFormProps> = () => {
           label='Website for Specific Course'
           placeholder='Entry'
           fullWidth
-          focused
+          InputLabelProps={{ shrink: true }}
+          className='MthFormField'
           value={values?.specificCourseWebsite}
-          sx={editSubjectClasses.focusBorderColor}
           onChange={(e) => {
             setFieldValue('specificCourseWebsite', e?.target?.value)
           }}
@@ -103,9 +103,9 @@ const ThirdPartyProviderForm: React.FC<ThirdPartyProviderFormProps> = () => {
               label='Website for Specific Course'
               placeholder='Entry'
               fullWidth
-              focused
+              InputLabelProps={{ shrink: true }}
+              className='MthFormField'
               value={item?.value}
-              sx={editSubjectClasses.focusBorderColor}
               onChange={(e) => handleChangeValue(item?.index, e?.target?.value)}
             />
             <Box

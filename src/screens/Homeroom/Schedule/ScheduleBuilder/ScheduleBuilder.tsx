@@ -487,7 +487,9 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
               !item.rawData.OnSiteSplitEnrollment &&
               !!item.rawData.Title &&
               (item.rawData.Title.Providers?.length > 1 ||
-              (item.rawData.Title.Providers?.length === 1 && item.rawData.Title.Providers?.[0]?.Courses?.length > 1) ? (
+              (item.rawData.Title.Providers?.length === 1 &&
+                (item.rawData.Title.Providers?.[0]?.Courses?.length > 1 ||
+                  !!item.rawData.Title.Providers?.[0]?.AltCourses?.length)) ? (
                 <NestedDropdown
                   menuItemsData={createDescriptionMenuItems(item.rawData)}
                   MenuProps={{ elevation: 3 }}
@@ -615,7 +617,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
     if (schedule.CourseType === CourseType.MTH_DIRECT) {
       if (schedule.Title?.Providers?.length === 1) {
         const provider = schedule.Title?.Providers[0]
-        if (provider.Courses?.length === 1) {
+        if (provider.Courses?.length === 1 && !provider.AltCourses?.length) {
           schedule.Course = provider.Courses[0]
         }
       }

@@ -53,23 +53,22 @@ export const CourseTitles: React.FC<CourseTitlesProps> = ({ schoolYearId }) => {
     <Grid container columnSpacing={4}>
       <Grid item xs={12}>
         <Typography sx={{ fontSize: '18px', fontWeight: '700', mb: 1 }}>Mapped Subjects</Typography>
-        {(selectedItems || []).map((item) => (
-          <>
-            <Button
-              variant='text'
-              sx={{
-                background: MthColor.BUTTON_LINEAR_GRADIENT,
-                color: MthColor.WHITE,
-                borderRadius: 2,
-                textTransform: 'none',
-                height: 25,
-                whiteSpace: 'nowrap',
-                mr: 2,
-              }}
-            >
-              {item.label}
-            </Button>
-          </>
+        {(selectedItems || []).map((item, index) => (
+          <Button
+            key={index}
+            variant='text'
+            sx={{
+              background: MthColor.BUTTON_LINEAR_GRADIENT,
+              color: MthColor.WHITE,
+              borderRadius: 2,
+              textTransform: 'none',
+              height: 25,
+              whiteSpace: 'nowrap',
+              mr: 2,
+            }}
+          >
+            {item.label}
+          </Button>
         ))}
         <Subtitle sx={editCourseClasses.formError}>{touched.TitleIds && errors.TitleIds}</Subtitle>
       </Grid>

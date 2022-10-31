@@ -17,9 +17,9 @@ const SubjectForm: React.FC<SubjectFormProps> = ({ setIsChanged, periodsItems })
           label='Subject'
           placeholder='Entry'
           fullWidth
-          focused
+          InputLabelProps={{ shrink: true }}
+          className='MthFormField'
           value={values?.name}
-          sx={editSubjectClasses.focusBorderColor}
           onChange={(e) => {
             handleChange(e)
             setIsChanged(true)

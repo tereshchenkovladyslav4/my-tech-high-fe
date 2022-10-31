@@ -27,17 +27,4 @@ export const editTitleClasses = {
       },
     },
   },
-  focusBorderColor: {
-    '& .MuiOutlinedInput-root': {
-      '&.Mui-focused fieldset': {
-        borderWidth: '1px',
-        borderColor: MthColor.SYSTEM_05,
-      },
-      '&.Mui-error': {
-        '&.Mui-focused fieldset': {
-          borderColor: MthColor.ERROR_RED,
-        },
-      },
-    },
-  },
 }

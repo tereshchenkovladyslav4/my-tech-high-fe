@@ -31,6 +31,7 @@ const MthBulletEditor: React.FC<MthBulletEditorProps> = ({ value, setValue, erro
         editorRef?.current.scrollIntoView({ behavior: 'smooth', block: 'end' })
       }
       setCurrentBlocks(state?.blocks?.length)
+      setValue(draftToHtml(convertToRaw(editorState.getCurrentContent())))
     } catch {}
   }
 
