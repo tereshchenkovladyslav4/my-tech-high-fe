@@ -10,7 +10,7 @@ import CustomTable from '@mth/components/Table/CustomTable'
 import { Field, ValueOf } from '@mth/components/Table/types'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { WarningModal } from '@mth/components/WarningModal/Warning'
-import { RED_GRADIENT } from '../../../../utils/constants'
+import { BLUE_GRDIENT, RED_GRADIENT } from '../../../../utils/constants'
 import { assignStudentToSOEGql } from '../../SiteManagement/services'
 import { getStudents } from '../services'
 import { useStyles } from '../styles'
@@ -316,9 +316,13 @@ export const EnrollmentSchoolTable: React.FC<EnrollmentSchoolTableProps> = ({
                 textTransform: 'none',
                 height: 29,
                 color: 'white',
+                background: BLUE_GRDIENT,
+                '&:hover': {
+                  background: BLUE_GRDIENT,
+                },
               }}
               onClick={handleAssignStudentToSOE}
-              className='btn-action btn-gradient'
+              className='btn-action'
             >
               Assign
             </Button>

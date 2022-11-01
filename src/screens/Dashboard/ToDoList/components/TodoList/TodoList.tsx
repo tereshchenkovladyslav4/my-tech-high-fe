@@ -70,7 +70,9 @@ export const TodoList: TodoListTemplateType = ({ handleShowEmpty, schoolYears, s
   }, [loading])
 
   useEffect(() => {
-    setMainTodoList && setMainTodoList(todoList)
+    if (setMainTodoList) {
+      setMainTodoList(todoList)
+    }
   }, [todoList])
 
   const calcCreateDate = (todoItem: ToDoItem): string => {

@@ -14,7 +14,7 @@ import { ENROLLMENT_SCHEDULE_HEADCELLS } from '../../../../utils/PageHeadCellsCo
 import { EmailModal } from '../ScheduleModal/ScheduleEmailModal'
 import { ScheduleTableFilters } from '../ScheduleTableFilters/ScheduleTableFilters'
 import { SchoolYearDropDown } from '../SchoolYearDropDown/SchoolYearDropDown'
-import { getApplicationsQuery, emailApplicationMutation } from '../services'
+import { emailScheduleMutation, getSchedulesQuery } from '../services'
 import { ApplicationTableProps, EmailTemplateVM } from '../type'
 
 export const ScheduleTable: React.FC<ApplicationTableProps> = ({ filter }) => {
@@ -29,7 +29,7 @@ export const ScheduleTable: React.FC<ApplicationTableProps> = ({ filter }) => {
   const [skip, setSkip] = useState<number>(0)
   const [totalApplications, setTotalApplications] = useState<number>()
   const [tableData, setTableData] = useState<Array<unknown>>([])
-  const [applicationIds, setApplicationIds] = useState<Array<string>>([])
+  const [scheduleIds, setscheduleIds] = useState<Array<string>>([])
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [selectedYearId, setSelectedYearId] = useState<number>(0)
   const [filters, setFilters] = useState<Array<string>>([])
@@ -43,41 +43,25 @@ export const ScheduleTable: React.FC<ApplicationTableProps> = ({ filter }) => {
   ]
   const [scheduleCount, setScheduleCount] = useState({})
 
-  const checker = (arr: string[], target: string[]) => target.every((v) => arr.includes(v))
-
-  const createData = (application: unknown) => {
-    let grade_level =
-      application.student.grade_levels.length &&
-      (application.student.grade_levels[0].grade_level.includes('Kin')
-        ? 'K'
-        : application.student.grade_levels[0].grade_level)
-
-    if (filter?.grades != undefined && checker(filter?.grades, ['K', '1-8', '9-12'])) {
-      if (grade_level == 'K') grade_level = 'K'
-      else if (Number(grade_level) >= 1 && Number(grade_level) <= 8) grade_level = '1-8'
-      else grade_level = '9-12'
-    }
-
+  const createData = (schedule: unknown) => {
     return {
-      id: application.application_id,
-      submitted: application.date_submitted ? moment(application.date_submitted).format('MM/DD/YY') : null,
-      status: application.status,
-      student: `${application.student.person?.last_name}, ${application.student.person?.first_name}`,
-      grade: grade_level,
-      parent: `${application.student.parent.person?.last_name}, ${application.student.parent.person?.first_name}`,
-      verified: application?.student?.parent?.person?.email_verifier?.verified ? 'Yes' : 'No',
+      id: schedule.schedule_id,
+      date: schedule.date_submitted ? moment(schedule.date_submitted).format('MM/DD/YY') : null,
+      status: schedule.status,
+      student: `${schedule.ScheduleStudent.person?.last_name}, ${schedule.ScheduleStudent.person?.first_name}`,
+      grade: schedule.ScheduleStudent.grade_level,
+      parent: `${schedule.ScheduleStudent.parent.person?.last_name}, ${schedule.ScheduleStudent.parent.person?.first_name}`,
+      diploma: schedule.ScheduleStudent.diploma_seeking,
       emailed:
-        application.application_emails.length > 0 ? (
-          <Box sx={{ cursor: 'pointer' }} onClick={() => handleOpenEmailHistory(application)}>
-            {moment(application.application_emails[application.application_emails.length - 1].created_at).format(
-              'MM/DD/YY',
-            )}
+        schedule.ScheduleEmails?.length > 0 ? (
+          <Box sx={{ cursor: 'pointer' }}>
+            {moment(schedule.ScheduleEmails[schedule.ScheduleEmails.length - 1].created_at).format('MM/DD/YY')}
           </Box>
         ) : null,
     }
   }
 
-  const { data, refetch } = useQuery(getApplicationsQuery, {
+  const { data, refetch } = useQuery(getSchedulesQuery, {
     variables: {
       filter: filter,
       skip: skip,
@@ -89,6 +73,7 @@ export const ScheduleTable: React.FC<ApplicationTableProps> = ({ filter }) => {
     skip: me?.selectedRegionId ? false : true,
     fetchPolicy: 'network-only',
   })
+
   const { data: emailTemplateData, refetch: refetchEmailTemplate } = useQuery(getEmailTemplateQuery, {
     variables: {
       template: 'Application Page',
@@ -106,7 +91,7 @@ export const ScheduleTable: React.FC<ApplicationTableProps> = ({ filter }) => {
   }
 
   useEffect(() => {
-    setApplicationIds([])
+    setscheduleIds([])
     setClearAll(!clearAll)
     setCurrentPage(1)
     setSkip(0)
@@ -131,12 +116,12 @@ export const ScheduleTable: React.FC<ApplicationTableProps> = ({ filter }) => {
   useEffect(() => {
     if (data !== undefined) {
       setPageLoading(true)
-      const { applications } = data
-      const { results, total } = applications
+      const { schedules } = data
+      const { results, total } = schedules
 
       setTableData(() => {
-        return map(results, (application) => {
-          return createData(application)
+        return map(results, (schedule) => {
+          return createData(schedule)
         })
       })
       setTotalApplications(total)
@@ -201,19 +186,17 @@ export const ScheduleTable: React.FC<ApplicationTableProps> = ({ filter }) => {
     return array
   }
 
-  const [emailApplication] = useMutation(emailApplicationMutation)
+  const [emailApplication] = useMutation(emailScheduleMutation)
 
   const onSendEmail = async (from: string, subject: string, body: string) => {
-    if (applicationIds.length === 0 && modalScheduleIds.length === 0) {
+    if (scheduleIds.length === 0 && modalScheduleIds.length === 0) {
       return
     }
     try {
       await emailApplication({
         variables: {
-          emailApplicationInput: {
-            application_ids: (applicationIds.length > 0 ? applicationIds : modalScheduleIds).map((item) =>
-              parseInt(item),
-            ),
+          emailScheduleInput: {
+            schedule_ids: (scheduleIds.length > 0 ? scheduleIds : modalScheduleIds).map((item) => parseInt(item)),
             from: from,
             subject: subject,
             body: body,
@@ -228,7 +211,7 @@ export const ScheduleTable: React.FC<ApplicationTableProps> = ({ filter }) => {
     } catch (error) {}
   }
   const handleEmailSend = (from: string, subject: string, body: string) => {
-    if (applicationIds.length === 0 && modalScheduleIds.length === 0) {
+    if (scheduleIds.length === 0 && modalScheduleIds.length === 0) {
       return
     }
     onSendEmail(from, subject, body)
@@ -369,7 +352,7 @@ export const ScheduleTable: React.FC<ApplicationTableProps> = ({ filter }) => {
       <SortableTable
         rows={tableData}
         headCells={ENROLLMENT_SCHEDULE_HEADCELLS}
-        onCheck={setApplicationIds}
+        onCheck={setscheduleIds}
         onSortChange={sortChangeAction}
         clearAll={clearAll}
       />
@@ -377,14 +360,14 @@ export const ScheduleTable: React.FC<ApplicationTableProps> = ({ filter }) => {
         <EmailModal
           handleModem={handleModem}
           title={
-            (applicationIds.length > 0 ? applicationIds.length : modalScheduleIds.length) +
+            (scheduleIds.length > 0 ? scheduleIds.length : modalScheduleIds.length) +
             ' Recipient' +
-            (applicationIds.length + modalScheduleIds.length > 1 ? 's' : '')
+            (scheduleIds.length + modalScheduleIds.length > 1 ? 's' : '')
           }
           handleSubmit={handleEmailSend}
           template={emailTemplate}
           editFrom={true}
-          isNonSelected={applicationIds.length === 0}
+          isNonSelected={scheduleIds.length === 0}
           filters={filters.length === 0 ? initialFilters : filters}
           handleSchedulesByStatus={handleSchedulesByStatus}
         />

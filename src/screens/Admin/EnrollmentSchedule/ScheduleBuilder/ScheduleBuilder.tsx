@@ -14,7 +14,7 @@ import { NestedDropdown } from '@mth/components/NestedDropdown'
 import { MenuItemData } from '@mth/components/NestedDropdown/types'
 import { SuccessModal } from '@mth/components/SuccessModal/SuccessModal'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
-import { COURSE_TYPE_ITEMS, SCHEDULE_STATUS_OPTIONS } from '@mth/constants'
+import { COURSE_TYPE_ITEMS, SCHEDULE_STATUS_OPTIONS, SPECIAL_EDUCATIONS } from '@mth/constants'
 import { CourseType, MthColor, MthTitle, ReduceFunds, ScheduleStatus } from '@mth/enums'
 import { saveScheduleMutation } from '@mth/graphql/mutation/schedule'
 import { saveSchedulePeriodMutation } from '@mth/graphql/mutation/schedule-period'
@@ -727,7 +727,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
         name: `${student?.person?.first_name} ${student?.person?.last_name}`,
         grade: gradeText(student),
         schoolDistrict: student?.packets?.at(-1)?.school_district || '',
-        specialEd: `${student?.special_ed}`,
+        specialEd: `${SPECIAL_EDUCATIONS.find((item) => item.value == student?.special_ed)?.label}`,
       })
     }
   }, [studentInfoLoading, studentInfoData])

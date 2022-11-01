@@ -1,27 +1,94 @@
-import React, { FunctionComponent, useEffect, useState } from 'react'
+import React, { FunctionComponent, useContext, useEffect, useState } from 'react'
+import { useLazyQuery, useQuery } from '@apollo/client'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { Box, Button, Card, Checkbox, FormControlLabel, Grid } from '@mui/material'
 import { map } from 'lodash'
 import { useHistory } from 'react-router-dom'
+import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { Paragraph } from '../../../../components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
-import {
-  BUTTON_LINEAR_GRADIENT,
-  MTHBLUE,
-  RED_GRADIENT,
-  GRADES,
-  CURRICULUM_PROVIDERS,
-} from '../../../../utils/constants'
+import { BUTTON_LINEAR_GRADIENT, MTHBLUE, RED_GRADIENT, CURRICULUM_PROVIDERS } from '../../../../utils/constants'
 import { toOrdinalSuffix } from '../../../../utils/stringHelpers'
+import { getSchoolYear } from '../../Curriculum/services'
+import { getSchoolYearsByRegionId } from '../../SiteManagement/services'
+import { SchoolYearDropDown } from '../SchoolYearDropDown/SchoolYearDropDown'
 import { FiltersProps, COURSE_TYPE, FilterVM } from '../type'
 
 export const Filters: FunctionComponent<FiltersProps> = ({ filter, setFilter }) => {
   const history = useHistory()
   const [expand, setExpand] = useState<boolean>(true)
   const [grades, setGrades] = useState<string[]>([])
-  const [diploma, setDiploma] = useState<boolean>(false)
+  const [diploma, setDiploma] = useState<number>()
   const [courseType, setCourseType] = useState<COURSE_TYPE[]>([])
   const [curriculumProviders, setCurriculumProviders] = useState<string[]>([])
+  const [selectedYearId, setSelectedYearId] = useState<number>()
+  const [schoolYears, setSchoolYears] = useState([])
+  const [gradeLevels, setGradeLevels] = useState([])
+  const [showDiplomaSeeking, setShowDiplomaSeeking] = useState(false)
+  const [showCustomBuilt, setShowCustomBuilt] = useState<number>(0)
+  const [showThirdParty, setShowThirdParty] = useState<number>(0)
+
+  const { me } = useContext(UserContext)
+
+  const schoolYearData = useQuery(getSchoolYearsByRegionId, {
+    variables: {
+      regionId: me?.selectedRegionId,
+    },
+    skip: me?.selectedRegionId ? false : true,
+    fetchPolicy: 'network-only',
+  })
+
+  useEffect(() => {
+    setSchoolYears(schoolYearData?.data?.region?.SchoolYears)
+  }, [schoolYearData?.data?.region?.SchoolYears])
+
+  useEffect(() => {
+    if (schoolYears?.length > 0 && selectedYearId > 0) {
+      const tempSchoolyears = schoolYears
+      const schoolYear = tempSchoolyears.filter((year) => year.school_year_id === selectedYearId)
+      if (schoolYear.length > 0) {
+        setGradeLevels(
+          schoolYear[0]?.grades?.split(',').sort((n1: string, n2: string) => {
+            if (n1 === 'Kindergarten') return -1
+            if (parseInt(n1) < parseInt(n2)) return -1
+            return 1
+          }),
+        )
+        setShowDiplomaSeeking(schoolYear[0]?.diploma_seeking)
+      }
+    }
+  }, [schoolYears, selectedYearId])
+
+  const [getSchoolYearData, responseData] = useLazyQuery(getSchoolYear, {
+    fetchPolicy: 'cache-and-network',
+  })
+
+  useEffect(() => {
+    getSchoolYearData({
+      skip: me?.selectedRegionId ? false : true,
+      variables: {
+        school_year_id: selectedYearId,
+      },
+    })
+  }, [selectedYearId])
+
+  useEffect(() => {
+    if (responseData?.data?.getSchoolYear?.ScheduleBuilder) {
+      if (responseData?.data?.getSchoolYear?.ScheduleBuilder?.custom_built === 1) {
+        setShowCustomBuilt(1)
+      } else {
+        setShowCustomBuilt(0)
+      }
+      if (responseData?.data?.getSchoolYear?.ScheduleBuilder?.third_party_provider === 1) {
+        setShowThirdParty(1)
+      } else {
+        setShowThirdParty(0)
+      }
+    } else {
+      setShowCustomBuilt(0)
+      setShowThirdParty(0)
+    }
+  }, [responseData?.data])
 
   const chevron = () =>
     !expand ? (
@@ -73,7 +140,7 @@ export const Filters: FunctionComponent<FiltersProps> = ({ filter, setFilter }) 
     } else {
       newGrades.push(e.target.value)
     }
-    if (newGrades.length === GRADES.length) {
+    if (newGrades.length === gradeLevels.length) {
       newGrades.push('all')
     }
     setGrades([...newGrades])
@@ -81,7 +148,7 @@ export const Filters: FunctionComponent<FiltersProps> = ({ filter, setFilter }) 
 
   const handleChangeAll = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.checked) {
-      setGrades([...['all'], ...GRADES.map((item) => item.toString())])
+      setGrades([...['all'], ...gradeLevels.map((item) => item.toString())])
     } else {
       setGrades([])
     }
@@ -103,11 +170,16 @@ export const Filters: FunctionComponent<FiltersProps> = ({ filter, setFilter }) 
       diplomaSeeking: diploma,
       courseType: courseType,
       curriculumProviders: curriculumProviders,
+      selectedYearId: selectedYearId,
     })
   }
   const handleClear = () => {
+    const emptyFilter = {}
+    setFilter({
+      ...emptyFilter,
+    })
     setGrades([])
-    setDiploma(false)
+    setDiploma(null)
     setCourseType([])
     setCurriculumProviders([])
     const state = {}
@@ -115,7 +187,7 @@ export const Filters: FunctionComponent<FiltersProps> = ({ filter, setFilter }) 
   }
 
   const renderGrades = () =>
-    map(GRADES, (grade, index) => (
+    map(gradeLevels, (grade, index) => (
       <FormControlLabel
         key={index}
         sx={{ height: 30 }}
@@ -129,12 +201,25 @@ export const Filters: FunctionComponent<FiltersProps> = ({ filter, setFilter }) 
     ))
 
   const columnWidth = () => {
-    return 3
+    return courseType.includes('MTH Direct') && showDiplomaSeeking ? 2 : 3
   }
 
   const Filters = () => (
     <Grid container sx={{ textAlign: 'left', marginY: '12px' }}>
-      <Grid item container xs={9}>
+      <Grid item container xs={10}>
+        <Grid item xs={columnWidth()}>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+            }}
+          >
+            <Paragraph size='large' fontWeight='700'>
+              School Years
+            </Paragraph>
+            <SchoolYearDropDown selectedYearId={selectedYearId} setSelectedYearId={setSelectedYearId} />
+          </Box>
+        </Grid>
         <Grid item xs={columnWidth()}>
           <Box
             sx={{
@@ -145,40 +230,44 @@ export const Filters: FunctionComponent<FiltersProps> = ({ filter, setFilter }) 
             <Paragraph size='large' fontWeight='700'>
               Grade Level
             </Paragraph>
-            <FormControlLabel
-              sx={{ height: 30 }}
-              control={<Checkbox value='all' checked={grades.includes('all')} onChange={handleChangeAll} />}
-              label={
-                <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
-                  Select All
-                </Paragraph>
-              }
-            />
+            {gradeLevels?.length > 0 && (
+              <FormControlLabel
+                sx={{ height: 30 }}
+                control={<Checkbox value='all' checked={grades.includes('all')} onChange={handleChangeAll} />}
+                label={
+                  <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
+                    Select All
+                  </Paragraph>
+                }
+              />
+            )}
             {renderGrades()}
           </Box>
         </Grid>
 
-        <Grid item xs={columnWidth()}>
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-            }}
-          >
-            <Paragraph size='large' fontWeight='700'>
-              Diploma-seeking
-            </Paragraph>
-            <FormControlLabel
-              sx={{ height: 30 }}
-              control={<Checkbox checked={diploma} onChange={() => setDiploma((prevState) => !prevState)} />}
-              label={
-                <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
-                  Yes
-                </Paragraph>
-              }
-            />
-          </Box>
-        </Grid>
+        {showDiplomaSeeking && (
+          <Grid item xs={columnWidth()}>
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
+              <Paragraph size='large' fontWeight='700'>
+                Diploma-seeking
+              </Paragraph>
+              <FormControlLabel
+                sx={{ height: 30 }}
+                control={<Checkbox checked={diploma === 1} onChange={() => setDiploma(diploma === 1 ? 0 : 1)} />}
+                label={
+                  <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
+                    Yes
+                  </Paragraph>
+                }
+              />
+            </Box>
+          </Grid>
+        )}
 
         <Grid item xs={columnWidth()}>
           <Box
@@ -192,78 +281,86 @@ export const Filters: FunctionComponent<FiltersProps> = ({ filter, setFilter }) 
             <Paragraph size='large' fontWeight='700'>
               Course Type
             </Paragraph>
-            {(Object.keys(COURSE_TYPE) as Array<keyof typeof COURSE_TYPE>).map((item) => (
-              <FormControlLabel
-                key={item}
-                sx={{ height: 30 }}
-                control={
-                  <Checkbox
-                    value={COURSE_TYPE[item]}
-                    checked={courseType.includes(COURSE_TYPE[item])}
-                    onChange={handlesetCourseType}
+            {(Object.keys(COURSE_TYPE) as Array<keyof typeof COURSE_TYPE>).map(
+              (item) =>
+                !(
+                  (COURSE_TYPE[item] === '3rd Party' && showThirdParty === 0) ||
+                  (COURSE_TYPE[item] === 'Custom-built' && showCustomBuilt === 0)
+                ) && (
+                  <FormControlLabel
+                    key={item}
+                    sx={{ height: 30 }}
+                    control={
+                      <Checkbox
+                        value={COURSE_TYPE[item]}
+                        checked={courseType.includes(COURSE_TYPE[item])}
+                        onChange={handlesetCourseType}
+                      />
+                    }
+                    label={
+                      <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
+                        {COURSE_TYPE[item]}
+                      </Paragraph>
+                    }
                   />
-                }
-                label={
-                  <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
-                    {COURSE_TYPE[item]}
-                  </Paragraph>
-                }
-              />
-            ))}
+                ),
+            )}
           </Box>
         </Grid>
-        <Grid item xs={columnWidth()}>
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-            }}
-          >
-            <Paragraph size='large' fontWeight='700'>
-              Curriculum Providers
-            </Paragraph>
+        {courseType.includes('MTH Direct') && (
+          <Grid item xs={columnWidth()}>
             <Box
               sx={{
                 display: 'flex',
                 flexDirection: 'column',
-                overflow: 'auto',
-                height: '423px',
               }}
             >
-              <FormControlLabel
-                sx={{ height: 30 }}
-                control={
-                  <Checkbox value='all' checked={curriculumProviders.includes('all')} onChange={handleChangeAllCP} />
-                }
-                label={
-                  <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
-                    All providers
-                  </Paragraph>
-                }
-              />
-              {CURRICULUM_PROVIDERS.map((provider: string) => (
+              <Paragraph size='large' fontWeight='700'>
+                Curriculum Providers
+              </Paragraph>
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  overflow: 'auto',
+                  height: '423px',
+                }}
+              >
                 <FormControlLabel
-                  key={provider}
                   sx={{ height: 30 }}
                   control={
-                    <Checkbox
-                      onChange={handleCurriculumProviders}
-                      checked={curriculumProviders.includes(provider)}
-                      value={provider}
-                    />
+                    <Checkbox value='all' checked={curriculumProviders.includes('all')} onChange={handleChangeAllCP} />
                   }
                   label={
                     <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
-                      {provider}
+                      All providers
                     </Paragraph>
                   }
                 />
-              ))}
+                {CURRICULUM_PROVIDERS.map((provider: string) => (
+                  <FormControlLabel
+                    key={provider}
+                    sx={{ height: 30 }}
+                    control={
+                      <Checkbox
+                        onChange={handleCurriculumProviders}
+                        checked={curriculumProviders.includes(provider)}
+                        value={provider}
+                      />
+                    }
+                    label={
+                      <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
+                        {provider}
+                      </Paragraph>
+                    }
+                  />
+                ))}
+              </Box>
             </Box>
-          </Box>
-        </Grid>
+          </Grid>
+        )}
       </Grid>
-      <Grid item xs={3}>
+      <Grid item xs={2}>
         <Box
           sx={{
             justifyContent: 'space-between',

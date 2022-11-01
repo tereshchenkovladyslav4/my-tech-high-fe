@@ -5,6 +5,7 @@ export type FilterVM = {
   diplomaSeeking: boolean
   courseType: string[]
   curriculumProviders: string[]
+  selectedYearId: number
 }
 
 export type FiltersProps = {

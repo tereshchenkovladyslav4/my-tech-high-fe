@@ -27,9 +27,9 @@ export const StudentGrade: StudentGradeTemplateType = ({ student, schoolYears, n
       history.push(scheduleBuilderLink)
       return
     }
-    currApplication?.status !== ApplicantStatus.ACCEPTED &&
-      currPacket?.status !== PacketStatus.ACCEPTED &&
+    if (currApplication?.status !== ApplicantStatus.ACCEPTED && currPacket?.status !== PacketStatus.ACCEPTED) {
       history.push('/homeroom/enrollment/' + student.student_id)
+    }
   }
 
   const getProfilePhoto = (person: Person) => {
@@ -113,6 +113,15 @@ export const StudentGrade: StudentGradeTemplateType = ({ student, schoolYears, n
         progress: 75,
         message: 'Please Submit a Schedule',
         icon: <ErrorOutlineIcon sx={{ color: MthColor.MTHORANGE, cursor: 'pointer' }} />,
+      })
+    } else if (notification?.phrase === 'Submit Schedule') {
+      setCircleData({
+        mobileColor: MthColor.MTHORANGE,
+        mobileText: notification?.phrase,
+        color: MthColor.MTHORANGE,
+        progress: 50,
+        type: notification?.phrase,
+        icon: <ErrorOutlineIcon sx={{ color: MthColor.MTHORANGE, marginTop: 2, cursor: 'pointer' }} />,
       })
     }
   }

@@ -167,7 +167,7 @@ export const Profile: FunctionComponent<{ handleIsFormChange: () => void }> = ({
   }
 
   const uploadPhoto = async (file: File[]) => {
-    if (!file) return
+    if (!file) return false
 
     const bodyFormData = new FormData()
     bodyFormData.append('file', file[0])
@@ -180,11 +180,20 @@ export const Profile: FunctionComponent<{ handleIsFormChange: () => void }> = ({
       headers: {
         Authorization: `Bearer ${localStorage.getItem('JWT')}`,
       },
-    }).then(async (res) => {
-      return res.json().then(({ data }) => {
-        return data
-      })
     })
+      .then(async (res) => {
+        return res
+          .json()
+          .then(({ data }) => {
+            return data
+          })
+          .catch(() => {
+            return false
+          })
+      })
+      .catch(() => {
+        return false
+      })
   }
 
   const openImageModal = () => setImageModalOpen(true)

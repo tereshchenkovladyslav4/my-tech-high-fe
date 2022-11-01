@@ -144,7 +144,9 @@ export const HomeroomGrade: React.FC<HomeroomGradeProps> = ({ schoolYears, mainT
   }, [filteredStudents])
 
   useEffect(() => {
-    filteredStudents.length > 0 && mapStudentsToTodoList()
+    if (filteredStudents.length > 0) {
+      mapStudentsToTodoList()
+    }
   }, [filteredStudents, mainTodoList])
 
   return (

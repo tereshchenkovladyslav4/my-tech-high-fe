@@ -67,7 +67,7 @@ export const SortableTable: SortableTableTemplateType = ({
     setSelected(newSelected)
   }
 
-  const isSelected = (name: string): boolean => selected.indexOf(name) !== -1
+  const isSelected = (name: number): boolean => selected.indexOf(name) !== -1
 
   const getColor = (key: string, value: string): string => {
     switch (key) {
@@ -122,7 +122,7 @@ export const SortableTable: SortableTableTemplateType = ({
           />
           <TableBody>
             {rows.map((row: unknown) => {
-              const isItemSelected = isSelected(row.id.toString())
+              const isItemSelected = isSelected(row.id)
               const labelId = `enhanced-table-checkbox-${row.id}`
               return (
                 <TableRow

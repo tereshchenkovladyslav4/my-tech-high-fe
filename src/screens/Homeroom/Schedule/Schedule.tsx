@@ -16,11 +16,12 @@ import {
   DEFUALT_DIPLOMA_QUESTION_DESCRIPTION,
   DEFUALT_DIPLOMA_QUESTION_TITLE,
   SNOWPACK_PUBLIC_S3_URL,
+  SPECIAL_EDUCATIONS,
 } from '@mth/constants'
 import { DiplomaSeekingPath, MthRoute, MthTitle, OPT_TYPE } from '@mth/enums'
 import { diplomaAnswerGql, diplomaQuestionForStudent, submitDiplomaAnswerGql } from '@mth/graphql/queries/diploma'
 import { getSignatureInfoByStudentId } from '@mth/graphql/queries/user'
-import { useAssessmentsBySchoolYearId, useCurrentSchoolYearByRegionId, useQuestionBySlugAndRegion } from '@mth/hooks'
+import { useAssessmentsBySchoolYearId, useCurrentSchoolYearByRegionId } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { getSignatureFile } from '@mth/screens/Admin/EnrollmentPackets/services'
 import { AssessmentType } from '@mth/screens/Admin/SiteManagement/EnrollmentSetting/TestingPreference/types'
@@ -107,11 +108,6 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
     skip: !student || !studentId || step !== MthTitle.STEP_DIPLOMA_SEEKING,
     fetchPolicy: 'network-only',
   })
-
-  const { decideSpecialEduData, loadedDecideSpecialEdu } = useQuestionBySlugAndRegion(
-    studentId,
-    'meta_special_education',
-  )
 
   const [saveDiplomaAnswer] = useMutation(submitDiplomaAnswerGql)
 
@@ -335,7 +331,7 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
         name: `${student.person?.first_name} ${student.person?.last_name}`,
         grade: gradeText(student),
         schoolDistrict: student?.packets?.at(-1)?.school_district || '',
-        specialEd: `${student?.special_ed}`,
+        specialEd: `${SPECIAL_EDUCATIONS.find((item) => item.value == student?.special_ed)?.label}`,
       })
     }
   }, [student])
@@ -377,12 +373,6 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
       setSignatureFileUrl(signatureFileData?.signatureFile?.signedUrl)
     }
   }, [signatureFileUrlLoading, signatureFileData])
-
-  useEffect(() => {
-    if (loadedDecideSpecialEdu) {
-      if (studentInfo) setStudentInfo({ ...studentInfo, specialEd: decideSpecialEduData.label || '' })
-    }
-  }, [loadedDecideSpecialEdu, decideSpecialEduData])
 
   useEffect(() => {
     setIsDiplomaError(false)
