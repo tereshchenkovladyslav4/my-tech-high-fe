@@ -33,6 +33,21 @@ const StyledTableRow = styled(TableRow)(({}) => ({
   },
 }))
 
+const getColor = (key: string, value: string): string => {
+  switch (key) {
+    case 'status':
+      if (value === 'Not Submitted') {
+        return MthColor.BLACK
+      } else {
+        return MthColor.MTHBLUE
+      }
+    case 'emailed':
+      return MthColor.MTHBLUE
+    default:
+      return ''
+  }
+}
+
 const MthTableRow = <T extends unknown>({
   tableWidth,
   fields,
@@ -77,7 +92,11 @@ const MthTableRow = <T extends unknown>({
             </TableCell>
           )}
           {fields.map((field, indexCol) => (
-            <TableCell key={indexCol} width={convertWidth(field.width || 0, tableWidth)}>
+            <TableCell
+              key={indexCol}
+              width={convertWidth(field.width || 0, tableWidth)}
+              sx={{ color: getColor(field.key, item.columns[field.key])?.toString() }}
+            >
               <div className={indexCol > 0 && indexCol + 1 !== fields.length ? 'border-l cell-item' : 'cell-item'}>
                 {field.formatter ? field.formatter(item, provided?.dragHandleProps) : item.columns[field.key]}
               </div>

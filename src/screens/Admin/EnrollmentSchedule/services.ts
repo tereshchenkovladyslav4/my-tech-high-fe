@@ -9,7 +9,7 @@ export const emailApplicationMutation = gql`
 `
 
 export const emailScheduleMutation = gql`
-  mutation EmailApplication($emailScheduleInput: EmailScheduleInput!) {
+  mutation EmailSchedule($emailScheduleInput: EmailScheduleInput!) {
     emailSchedule(emailScheduleInput: $emailScheduleInput) {
       schedule_id
     }

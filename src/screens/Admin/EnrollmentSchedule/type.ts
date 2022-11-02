@@ -1,5 +1,35 @@
 import { DropDownItem } from '@mth/components/DropDown/types'
 
+export type TableData = {
+  columns: {
+    id: number
+    date_submitted: string
+    status: string
+    student: string
+    grade: number
+    parent: string
+    diploma: number
+    emailed: string
+  }
+}
+
+export type ScheduleCount = {
+  Submitted: number
+  Resubmitted: number
+  Accepted: number
+  'Updates Requested': number
+  'Updates Required': number
+  'Not Submitted': number
+}
+
+export type Field = {
+  key: string
+  label: string
+  sortable: boolean
+  tdClass: string
+  width: string
+}
+
 export type FilterVM = {
   grades: string[]
   diplomaSeeking: boolean
