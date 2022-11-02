@@ -1,3 +1,4 @@
+export * from './useActiveScheduleSchoolYears'
 export * from './useActiveSchoolYearsByRegionId'
 export * from './useAssessmentsBySchoolYearId'
 export * from './useCurrentGradeAndProgram'

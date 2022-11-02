@@ -10,7 +10,7 @@ import { MthTable } from '@mth/components/MthTable'
 import { MthTableField, MthTableRowItem } from '@mth/components/MthTable/types'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { MthColor, ReduceFunds } from '@mth/enums'
-import { SchoolYearRespnoseType, useProviders } from '@mth/hooks'
+import { SchoolYearResponseType, useProviders } from '@mth/hooks'
 import Courses from '@mth/screens/Admin/Curriculum/CourseCatalog/Providers/Courses'
 import ProviderConfirmModal from '@mth/screens/Admin/Curriculum/CourseCatalog/Providers/ProviderConfirmModal/ProviderConfirmModal'
 import { ProviderEdit } from '@mth/screens/Admin/Curriculum/CourseCatalog/Providers/ProviderEdit'
@@ -25,7 +25,7 @@ import CourseCatalogHeader from '../Components/CourseCatalogHeader/CourseCatalog
 
 const Providers: React.FC = () => {
   const [selectedYear, setSelectedYear] = useState<number>(0)
-  const [selectedYearData, setSelectedYearData] = useState<SchoolYearRespnoseType | undefined>()
+  const [selectedYearData, setSelectedYearData] = useState<SchoolYearResponseType | undefined>()
   const [searchField, setSearchField] = useState<string>('')
   const [showArchived, setShowArchived] = useState<boolean>(false)
   const [tableData, setTableData] = useState<MthTableRowItem<Provider>[]>([])

@@ -4,7 +4,7 @@ import { sortBy } from 'lodash'
 import moment from 'moment'
 import { DropDown } from '@mth/components/DropDown/DropDown'
 import { DropDownItem } from '@mth/components/DropDown/types'
-import { SchoolYearRespnoseType, useSchoolYearsByRegionId } from '@mth/hooks'
+import { SchoolYearResponseType, useSchoolYearsByRegionId } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { SchoolYearItem, SchoolYearType } from '../types'
 
@@ -156,7 +156,7 @@ export const SchoolYearDropDown: React.FC<SchoolYearDropDownProps> = ({
       const schoolYearsArr: SchoolYearType[] = []
       let cnt = 0
 
-      schoolYearData?.forEach((schoolYear: SchoolYearRespnoseType) => {
+      schoolYearData?.forEach((schoolYear: SchoolYearResponseType) => {
         const schoolYearId = +schoolYear.school_year_id
         if (schoolYearId == selectedYearId) {
           setEnableSchedule(schoolYear.schedule)

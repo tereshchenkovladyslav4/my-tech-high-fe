@@ -101,7 +101,7 @@ export const SortableTable: SortableTableTemplateType = ({
       //////////////////////////////////////////////////////////////////////////////
       // TODO: This code is for Testing 1042 and 1070. It will be deleted by Ritesh
       case 'status':
-        history.push('/enrollment/enrollment-schedule/3059')
+        history.push(`/enrollment/enrollment-schedule/${row.id}`)
         break
       ////////////////////////////////////////////////////////////////////////////
     }

@@ -12,7 +12,7 @@ import { ScheduleStatus } from '../enums/schedule-status.enums'
 
 export const useStudentSchedulePeriods = (
   student_id: number,
-  school_year_id: number,
+  school_year_id: number | undefined,
   diplomaSeekingPath: DiplomaSeekingPath | null = null,
 ): {
   scheduleData: ScheduleData[]
@@ -27,7 +27,7 @@ export const useStudentSchedulePeriods = (
 
   const { loading, data: periodsData } = useQuery(getStudentPeriodsQuery, {
     variables: { studentId: student_id, schoolYearId: school_year_id, diplomaSeekingPath: diplomaSeekingPath },
-    skip: !student_id && !school_year_id,
+    skip: !student_id || !school_year_id,
     fetchPolicy: 'network-only',
   })
 

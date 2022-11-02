@@ -1,109 +1,106 @@
-import React, { FunctionComponent } from 'react'
-import { Box, Card } from '@mui/material'
-import { Table } from '../../../../components/Table/Table'
-import { Paragraph } from '../../../../components/Typography/Paragraph/Paragraph'
-import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
-import { MTHBLUE } from '../../../../utils/constants'
+import React, { useEffect, useState } from 'react'
+import { Box, Card, Typography } from '@mui/material'
+import { useHistory } from 'react-router-dom'
+import { MthTable } from '@mth/components/MthTable'
+import { MthTableField, MthTableRowItem } from '@mth/components/MthTable/types'
+import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { MthColor, MthRoute } from '@mth/enums'
+import { useActiveScheduleSchoolYears, useStudentSchedulePeriods } from '@mth/hooks'
+import { ScheduleData } from '@mth/screens/Homeroom/Schedule/types'
+import { studentScheduleClasses } from '@mth/screens/HomeroomStudentProfile/Student/StudentSchedule/styles'
 
-export const StudentSchedule: FunctionComponent = () => {
-  const tableHeaders = [
-    <Paragraph size='large' key='period'>
-      Period
-    </Paragraph>,
-    <Paragraph size='large' key='course'>
-      Course
-    </Paragraph>,
-  ]
-  const data = [
+export const StudentSchedule: React.FC = () => {
+  const currentStudentId = Number(location.pathname.split('/').at(-1))
+  const history = useHistory()
+
+  const fields: MthTableField<ScheduleData>[] = [
     {
-      period: (
-        <Paragraph size='large' color='#A1A1A1' sx={{ padding: 0.8 }}>
-          01
-        </Paragraph>
-      ),
-      course: (
-        <Paragraph size='large' color='#A1A1A1' sx={{ padding: 0.8 }}>
-          Homeroom
-        </Paragraph>
-      ),
+      key: 'Period',
+      label: 'Period',
+      width: '30%',
+      formatter: (item: MthTableRowItem<ScheduleData>) => {
+        return (
+          <Box>
+            <Typography sx={{ py: '4px', fontSize: '13px', fontWeight: '700', color: MthColor.SYSTEM_06 }}>
+              {('0' + item.rawData.period).slice(-2)}
+            </Typography>
+          </Box>
+        )
+      },
     },
     {
-      period: (
-        <Paragraph size='large' color='#A1A1A1' sx={{ padding: 0.8 }}>
-          02
-        </Paragraph>
-      ),
-      course: (
-        <Paragraph size='large' color='#A1A1A1' sx={{ padding: 0.8 }}>
-          Middle School Math
-        </Paragraph>
-      ),
-    },
-    {
-      period: (
-        <Paragraph size='large' color='#A1A1A1' sx={{ padding: 0.8 }}>
-          03
-        </Paragraph>
-      ),
-      course: (
-        <Paragraph size='large' color='#A1A1A1' sx={{ padding: 0.8 }}>
-          Middle School Language
-        </Paragraph>
-      ),
-    },
-    {
-      period: (
-        <Paragraph size='large' color='#A1A1A1' sx={{ padding: 0.8 }}>
-          04
-        </Paragraph>
-      ),
-      course: (
-        <Paragraph size='large' color='#A1A1A1' sx={{ padding: 0.8 }}>
-          Middle School Science
-        </Paragraph>
-      ),
-    },
-    {
-      period: (
-        <Paragraph size='large' color='#A1A1A1' sx={{ padding: 0.8 }}>
-          05
-        </Paragraph>
-      ),
-      course: (
-        <Paragraph size='large' color='#A1A1A1' sx={{ padding: 0.8 }}>
-          Exploring Technology
-        </Paragraph>
-      ),
-    },
-    {
-      period: (
-        <Paragraph size='large' color='#A1A1A1' sx={{ padding: 0.8 }}>
-          06
-        </Paragraph>
-      ),
-      course: (
-        <Paragraph size='large' color='#A1A1A1' sx={{ padding: 0.8 }}>
-          Exploring Technology
-        </Paragraph>
-      ),
+      key: 'Subject',
+      label: 'Subject',
+      width: '70%',
+      formatter: (item: MthTableRowItem<ScheduleData>) => {
+        return (
+          <Box>
+            <Typography sx={{ fontSize: '13px', fontWeight: '500', color: MthColor.SYSTEM_06 }}>
+              {item.rawData.Subject?.name || item.rawData.Title?.name}
+            </Typography>
+          </Box>
+        )
+      },
     },
   ]
+
+  const [tableData, setTableData] = useState<MthTableRowItem<ScheduleData>[]>([])
+
+  const { selectedYearId } = useActiveScheduleSchoolYears(currentStudentId)
+  const { scheduleData } = useStudentSchedulePeriods(currentStudentId, selectedYearId)
+
+  const createData = (schedule: ScheduleData): MthTableRowItem<ScheduleData> => {
+    return {
+      columns: {},
+      rawData: schedule,
+    }
+  }
+
+  useEffect(() => {
+    if (scheduleData?.length) {
+      setTableData(
+        scheduleData.map((item) => {
+          return createData(item)
+        }),
+      )
+    }
+  }, [scheduleData])
+
   return (
-    <Card sx={{ borderRadius: 4, alignSelf: 'center', width: '95%', paddingY: 2, paddingX: 4, marginLeft: 2 }}>
-      <Box
-        display='flex'
-        flexDirection='row'
-        alignItems='center'
-        justifyContent='space-between'
-        marginTop={2}
-        marginBottom={1}
-      >
-        <Subtitle fontWeight='700'>Schedule</Subtitle>
-        <Paragraph sx={{ textDecoration: 'underline' }} color={MTHBLUE}>
-          Edit/View All
-        </Paragraph>
-      </Box>
-      <Table tableHeaders={tableHeaders} tableBody={data} />
-    </Card>
+    <>
+      {!!selectedYearId && !!scheduleData?.length && (
+        <Card
+          sx={{
+            borderRadius: 4,
+            alignSelf: 'center',
+            width: '95%',
+            paddingY: 2,
+            paddingX: 4,
+            marginLeft: 2,
+            boxShadow: '0px 0px 28.951px rgba(0, 0, 0, 0.04)',
+          }}
+        >
+          <Box
+            display='flex'
+            flexDirection='row'
+            alignItems='center'
+            justifyContent='space-between'
+            marginTop={2}
+            marginBottom={1}
+          >
+            <Subtitle fontWeight='700'>Schedule</Subtitle>
+            <Paragraph
+              sx={{ textDecoration: 'underline', cursor: 'pointer' }}
+              color={MthColor.MTHBLUE}
+              onClick={() => history.push(`${MthRoute.HOMEROOM}${MthRoute.SUBMIT_SCHEDULE}/${currentStudentId}`)}
+            >
+              Edit/View All
+            </Paragraph>
+          </Box>
+          <MthTable items={tableData} fields={fields} oddBg={false} sx={studentScheduleClasses.customTable} />
+        </Card>
+      )}
+    </>
   )
 }

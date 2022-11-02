@@ -6,7 +6,7 @@ import moment from 'moment'
 import { DropDown } from '@mth/components/DropDown/DropDown'
 import { DropDownItem } from '@mth/components/DropDown/types'
 import { ResourceSubtitle } from '@mth/enums'
-import { SchoolYearRespnoseType } from '@mth/hooks'
+import { SchoolYearResponseType } from '@mth/hooks'
 import { ResourceCard } from './ResourceCard'
 import { ResourceCartBar } from './ResourceCartBar'
 import { ResourceDetails } from './ResourceDetails'
@@ -165,7 +165,7 @@ export const Resources: React.FC = () => {
   useEffect(() => {
     if (schoolYearsData?.activeHomeroomResourceSchoolYears?.length) {
       const { activeHomeroomResourceSchoolYears: schoolYears } = schoolYearsData
-      const sortedSchoolYears = sortBy(schoolYears, 'date_begin').map((item: SchoolYearRespnoseType) => ({
+      const sortedSchoolYears = sortBy(schoolYears, 'date_begin').map((item: SchoolYearResponseType) => ({
         value: item.school_year_id,
         label: `${moment(item.date_begin).format('YYYY')}-${moment(item.date_end).format('YY')}`,
       }))

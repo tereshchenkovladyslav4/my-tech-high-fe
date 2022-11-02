@@ -1,5 +1,15 @@
 import { gql } from '@apollo/client'
 
+export const getActiveScheduleSchoolYearsQuery = gql`
+  query ActiveScheduleSchoolYears($studentId: Int!) {
+    activeScheduleSchoolYears(studentId: $studentId) {
+      school_year_id
+      date_begin
+      date_end
+    }
+  }
+`
+
 export const getStudentPeriodsQuery = gql`
   query StudentPeriods($studentId: ID!, $schoolYearId: ID!, $diplomaSeekingPath: String) {
     studentPeriods(studentId: $studentId, schoolYearId: $schoolYearId, diplomaSeekingPath: $diplomaSeekingPath) {
