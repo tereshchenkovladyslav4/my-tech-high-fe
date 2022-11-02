@@ -18,7 +18,6 @@ import {
   MenuItem,
   FormHelperText,
   Card,
-  InputAdornment,
   Modal,
 } from '@mui/material'
 import { ContentState, EditorState, convertToRaw } from 'draft-js'
@@ -30,10 +29,13 @@ import Wysiwyg from 'react-draft-wysiwyg'
 import { useSetRecoilState } from 'recoil'
 import * as Yup from 'yup'
 import { DropDown } from '@mth/components/DropDown/DropDown'
+import { MthNumberInput } from '@mth/components/MthNumberInput'
 import PageHeader from '@mth/components/PageHeader'
 import CustomTable from '@mth/components/Table/CustomTable'
 import { Field } from '@mth/components/Table/types'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { WarningModal } from '@mth/components/WarningModal/Warning'
+import { MthColor } from '@mth/enums'
 import { useSchoolYearsByRegionId } from '@mth/hooks'
 import { loadingState } from '@mth/providers/Store/State'
 import { getPeriods, upsertPeriod, periodArchive, deletePeriodsByIds } from '@mth/screens/Admin/Curriculum/services'
@@ -268,10 +270,12 @@ const Periods: FunctionComponent = () => {
           .required()
           .test('html_content', 'Required', () => editorStateSemester.getCurrentContent().hasText()),
       }),
-      price: Yup.number().when(['reduce_funds'], {
-        is: (reduce_funds: REDUCE_FUNDS_TYPE) => reduce_funds !== REDUCE_FUNDS_TYPE.NONE,
-        then: Yup.number().typeError('Must be a `number` type').required().min(0),
-      }),
+      price: Yup.number()
+        .when(['reduce_funds'], {
+          is: (reduce_funds: REDUCE_FUNDS_TYPE) => reduce_funds !== REDUCE_FUNDS_TYPE.NONE,
+          then: Yup.number().required('Required').positive('Should be greater than 0').nullable(),
+        })
+        .nullable(),
     }),
     onSubmit: async (values) => {
       handleSubmit(values)
@@ -287,6 +291,7 @@ const Periods: FunctionComponent = () => {
   }
 
   const handleEditModal = (item: PeriodItem) => {
+    formik.resetForm()
     setTemp(item)
     formik.setValues({
       period: item.period,
@@ -514,6 +519,8 @@ const Periods: FunctionComponent = () => {
               bgcolor: 'white',
               borderRadius: 2,
               p: 6,
+              maxHeight: '90vh',
+              overflow: 'auto',
             }}
           >
             <Grid container rowSpacing={3} columnSpacing={4} sx={classes.form}>
@@ -633,22 +640,32 @@ const Periods: FunctionComponent = () => {
                 </CssTextField>
               </Grid>
               <Grid item xs={12} sm={6}>
-                <CssTextField
-                  name='price'
+                <MthNumberInput
+                  numberType='price'
                   label='Price'
-                  placeholder='Price'
+                  placeholder='Entry'
                   fullWidth
-                  value={formik.values.price}
-                  type='number'
-                  InputProps={{ startAdornment: <InputAdornment position='start'>$</InputAdornment> }}
-                  onChange={(e) => {
-                    formik.handleChange(e)
+                  InputLabelProps={{ shrink: true }}
+                  className='MthFormField'
+                  value={formik.values?.price}
+                  onChangeValue={(value: number | null) => {
+                    formik.setFieldValue('price', value)
                   }}
                   error={formik.touched.price && !!formik.errors.price}
-                  helperText={formik.touched.price && formik.errors.price}
-                  InputLabelProps={{ shrink: true, sx: classes.textLabel }}
-                  disabled={formik.values.reduce_funds === REDUCE_FUNDS_TYPE.NONE}
+                  disabled={formik.values?.reduce_funds === REDUCE_FUNDS_TYPE.NONE}
                 />
+                <Subtitle
+                  sx={{
+                    color: MthColor.ERROR_RED,
+                    fontSize: '12px',
+                    fontWeight: 400,
+                    lineHeight: '20px',
+                    marginLeft: '12px',
+                    marginTop: '4px',
+                  }}
+                >
+                  {formik.touched.price && formik.errors.price}
+                </Subtitle>
               </Grid>
               <Grid item xs={12}>
                 <CssTextField
