@@ -102,16 +102,17 @@ export const theme = createTheme({
       styleOverrides: {
         root: {
           '&.MthFormField': {
-            '& .MuiInputLabel-root:not(.Mui-error)': {
+            '& .MuiInputLabel-root:not(.Mui-error):not(.Mui-disabled)': {
               color: '#333333',
             },
             '& .MuiOutlinedInput-root': {
               '& fieldset, &.Mui-focused fieldset': {
                 borderWidth: '1px',
               },
-              '&:not(.Mui-error) fieldset, &.Mui-focused:not(.Mui-error) fieldset': {
-                borderColor: '#333333',
-              },
+              '&:not(.Mui-error):not(.Mui-disabled) fieldset, &.Mui-focused:not(.Mui-error):not(.Mui-disabled) fieldset':
+                {
+                  borderColor: '#333333',
+                },
             },
           },
         },

@@ -49,3 +49,10 @@ export const getSchoolYearQuery = gql`
     }
   }
 `
+export const GetCurrentSchoolYearByRegionId = gql`
+  query Schoolyear_getcurrent($regionId: Int!) {
+    schoolyear_getcurrent(region_id: $regionId) {
+      schedule
+    }
+  }
+`

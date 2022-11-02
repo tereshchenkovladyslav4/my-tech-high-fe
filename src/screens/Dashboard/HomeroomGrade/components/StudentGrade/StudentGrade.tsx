@@ -4,6 +4,7 @@ import ScheduleIcon from '@mui/icons-material/Schedule'
 import { Avatar, Box, CircularProgress, IconButton, Tooltip } from '@mui/material'
 import { useHistory } from 'react-router-dom'
 import { ApplicantStatus, MthColor, MthRoute, PacketStatus } from '@mth/enums'
+import { SchoolYearType } from '@mth/models'
 import { Metadata } from '../../../../../components/Metadata/Metadata'
 import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
@@ -43,6 +44,10 @@ export const StudentGrade: StudentGradeTemplateType = ({ student, schoolYears, n
     const { applications, packets } = student
     const currApplication = applications?.at(0)
     const currPacket = packets?.at(0)
+
+    const studentSchoolYear = schoolYears
+      ?.filter((item) => item.school_year_id == student?.current_school_year_status?.school_year_id)
+      .at(-1) as SchoolYearType
 
     if (currApplication && currApplication?.status === 'Submitted') {
       setCircleData({
@@ -97,6 +102,7 @@ export const StudentGrade: StudentGradeTemplateType = ({ student, schoolYears, n
         icon: <ScheduleIcon sx={{ color: blue, cursor: 'pointer' }} />,
       })
     } else if (
+      studentSchoolYear?.schedule &&
       notification.at(0)?.phrase !== 'Submit Schedule' &&
       currPacket?.status === PacketStatus.ACCEPTED &&
       currApplication?.status === ApplicantStatus.ACCEPTED
@@ -121,7 +127,7 @@ export const StudentGrade: StudentGradeTemplateType = ({ student, schoolYears, n
         color: MthColor.MTHORANGE,
         progress: 50,
         type: notification?.phrase,
-        icon: <ErrorOutlineIcon sx={{ color: MthColor.MTHORANGE, marginTop: 2, cursor: 'pointer' }} />,
+        icon: <ScheduleIcon sx={{ color: MthColor.MTHORANGE, marginTop: 2, cursor: 'pointer' }} />,
       })
     }
   }

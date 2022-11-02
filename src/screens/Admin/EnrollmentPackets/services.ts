@@ -57,6 +57,7 @@ export const getEnrollmentPacketsQuery = gql`
           reenrolled
           grade_level
           student_id
+          special_ed
           grade_levels {
             grade_level
             school_year {

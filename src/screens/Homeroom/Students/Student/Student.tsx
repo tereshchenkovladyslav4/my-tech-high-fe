@@ -12,6 +12,7 @@ import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { Title } from '@mth/components/Typography/Title/Title'
 
 import { ApplicantStatus, MthColor, MthRoute, PacketStatus, StudentStatus, RelationStatus } from '@mth/enums'
+import { SchoolYearType } from '@mth/models'
 import { UserContext, UserInfo } from '@mth/providers/UserContext/UserProvider'
 import { CircleData } from '@mth/screens/Dashboard/HomeroomGrade/components/StudentGrade/types'
 import { Person } from '@mth/screens/HomeroomStudentProfile/Student/types'
@@ -54,6 +55,9 @@ export const Student: StudentTemplateType = ({
     const enrollmentLink = `${MthRoute.HOMEROOM + MthRoute.ENROLLMENT}/${student.student_id}`
     const homeroomLink = `${MthRoute.HOMEROOM}/${student.student_id}`
     const scheduleBuilderLink = `${MthRoute.HOMEROOM + MthRoute.SUBMIT_SCHEDULE}/${student.student_id}`
+    const studentSchoolYear = schoolYears
+      ?.filter((item) => item.school_year_id == student?.current_school_year_status?.school_year_id)
+      .at(-1) as SchoolYearType
     //  setCircleData({
     //    mobileColor: MthColor.BUTTON_LINEAR_GRADIENT,
     //    mobileText: 'Resubmit Now',
@@ -158,7 +162,7 @@ export const Student: StudentTemplateType = ({
         type: 'Waiting for Schedule Builder to Open',
         icon: <ScheduleIcon sx={{ color: MthColor.MTHGREEN, marginTop: 2, cursor: 'pointer' }} />,
       })
-    } else if (showNotification?.phrase === 'Submit Schedule') {
+    } else if (studentSchoolYear.schedule && showNotification?.phrase === 'Submit Schedule') {
       setLink(scheduleBuilderLink)
       setCircleData({
         mobileColor: MthColor.MTHORANGE,

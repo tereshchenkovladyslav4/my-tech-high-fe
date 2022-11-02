@@ -32,14 +32,14 @@ export const EnrollmentJobsInfo: FunctionComponent<EnrollmentJobsInfoProps> = ({
   const street2 = student.parent.person.address.street2
 
   function studentSPED() {
-    switch (packet.special_ed) {
-      case '0':
+    switch (student.special_ed) {
+      case 0:
         return 'No'
-      case '1':
+      case 1:
         return 'IEP'
-      case '2':
+      case 2:
         return '504'
-      case '3':
+      case 3:
         return 'EXIT'
       default:
         return ''

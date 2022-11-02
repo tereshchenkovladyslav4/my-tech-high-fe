@@ -32,6 +32,7 @@ export const getSchoolYearsByRegionId = gql`
         midyear_application_close
         enrollment_packet
         special_ed
+        schedule
       }
     }
   }

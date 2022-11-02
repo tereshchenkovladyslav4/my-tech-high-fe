@@ -178,6 +178,7 @@ export const Dashboard: React.FC = () => {
         SchoolYears.map((item: SchoolYearType) => ({
           school_year_id: item.school_year_id,
           enrollment_packet: item.enrollment_packet,
+          schedule: item.schedule,
         })),
       )
     }
