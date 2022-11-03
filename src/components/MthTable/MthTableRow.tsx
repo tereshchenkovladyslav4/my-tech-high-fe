@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { TableCell, TableRow, styled, Collapse, Typography, TableBody, Table } from '@mui/material'
 import { Draggable, DraggableProvided } from 'react-beautiful-dnd'
 import { MthCheckbox } from '@mth/components/MthCheckbox'
@@ -53,13 +53,14 @@ const MthTableRow = <T extends unknown>({
   fields,
   index,
   item,
-  expanded,
   selectable = false,
   isDraggable,
   size,
   checkBoxColor,
   handleToggleCheck,
 }: MthTableRowProps<T>): React.ReactElement => {
+  const [isExpanded, setIsExpanded] = useState<boolean>(false)
+
   const renderDraggableTableRow = (isSelectable: boolean, provided: DraggableProvided, item: MthTableRowItem<T>) => {
     return (
       <TableRow ref={provided.innerRef} {...provided.draggableProps}>
@@ -79,7 +80,7 @@ const MthTableRow = <T extends unknown>({
   ) => {
     return (
       <>
-        <StyledTableRow className={expanded ? 'expanded' : ''}>
+        <StyledTableRow className={isExpanded ? 'expanded' : ''}>
           {isSelectable && (
             <TableCell className='checkWrap'>
               <MthCheckbox
@@ -108,7 +109,7 @@ const MthTableRow = <T extends unknown>({
             <TableRow />
             <TableRow>
               <TableCell sx={{ p: 0 }} colSpan={12}>
-                <Collapse in={expanded} timeout='auto' unmountOnExit>
+                <Collapse in={isExpanded} timeout='auto' unmountOnExit>
                   <Typography variant='h6' gutterBottom component='div' border={'none'}>
                     {item.expandNode}
                   </Typography>
@@ -120,6 +121,12 @@ const MthTableRow = <T extends unknown>({
       </>
     )
   }
+
+  useEffect(() => {
+    item.toggleExpand = () => {
+      setIsExpanded((pre) => !pre)
+    }
+  }, [item])
 
   return (
     <>

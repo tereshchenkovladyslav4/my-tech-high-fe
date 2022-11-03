@@ -628,6 +628,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
   const createData = (schedule: ScheduleData): MthTableRowItem<ScheduleData> => {
     schedule = preSelect(schedule)
     return {
+      key: `schedule-${schedule.period}`,
       columns: {
         Type: 'Lorem',
         Description: 'Lorem',

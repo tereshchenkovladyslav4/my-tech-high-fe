@@ -64,7 +64,7 @@ export const ScheduleTable: React.FC<ApplicationTableProps> = ({ filter }) => {
 
   const { data, refetch } = useQuery(getSchedulesQuery, {
     variables: {
-      filter: filter,
+      filter: { ...filter, status: filters },
       skip: skip,
       sort: sort,
       take: paginatinLimit,

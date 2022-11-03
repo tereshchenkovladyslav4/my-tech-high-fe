@@ -26,7 +26,7 @@ export const useSubjects = (
       findSubjectsInput: { schoolYearId, searchField, isActive },
     },
     skip: !schoolYearId,
-    fetchPolicy: 'cache-and-network',
+    fetchPolicy: 'network-only',
   })
 
   useEffect(() => {

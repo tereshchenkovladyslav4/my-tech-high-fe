@@ -275,7 +275,13 @@ export const AddNewQuestionModal: React.FC<AddNewQuestionModalProps> = ({
             ? draftToHtml(convertToRaw(editorState.getCurrentContent()))
             : newQuestion.question,
         type: newQuestion.type,
-        options: newQuestion.options.filter((v) => v.label.trim()),
+        options: newQuestion.options.filter((v) => {
+          v.label = v.label.trim()
+          if (newQuestion.slug === 'address_country_id') {
+            v.value = v.value + ''
+          }
+          return v
+        }),
         required: newQuestion.required,
         default_question: newQuestion.default_question,
         validation: newQuestion.validation,

@@ -251,6 +251,10 @@ export const EnrollmentPacketModal: React.FC<EnrollmentPacketModalProps> = ({ ha
                 if (fieldName !== 'parent_emailConfirm') {
                   temp.parent[fieldName] = vals[q.slug]
                 }
+              } else if (q.slug == 'meta_special_education') {
+                temp.meta[q.slug] = Number(vals[q.slug])
+              } else {
+                temp.meta[q.slug] = vals[q.slug]
               }
             } else {
               temp.meta[q.slug] = vals[q.slug]

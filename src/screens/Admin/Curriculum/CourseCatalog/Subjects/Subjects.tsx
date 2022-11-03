@@ -136,6 +136,7 @@ const Subjects: React.FC = () => {
 
   const createData = (subject: Subject): MthTableRowItem<Subject> => {
     return {
+      key: `subject-${showArchived}-${subject.subject_id}`,
       columns: {
         name: subject.name,
         periods:
@@ -198,23 +199,38 @@ const Subjects: React.FC = () => {
     setTableData(arrangedItems)
   }
 
-  const handleAllowRequestChange = async (newItems: MthTableRowItem<Subject>[]) => {
+  const handleAllowRequestChange = async (newItems: MthTableRowItem<Subject>[], isAll: boolean) => {
+    const promises: Promise<void>[] = []
     newItems.map(async (item) => {
       const allowRequest = !!item.isSelected
-      if (item.rawData.allow_request != allowRequest) {
-        item.rawData = { ...item.rawData, allow_request: allowRequest }
-        await updateSubject({
-          variables: {
-            createSubjectInput: {
-              subject_id: Number(item.rawData.subject_id),
-              allow_request: !!item.isSelected,
-            },
-          },
-        })
+      if (isAll || item.rawData.allow_request != allowRequest) {
+        if (isAll) {
+          // Update allow_request of all titles immediately
+          item.rawData = { ...item.rawData, allow_request: allowRequest }
+          item.rawData.Titles?.map((x) => (x.allow_request = allowRequest))
+        }
+        promises.push(
+          new Promise<void>(async (resolve) => {
+            await updateSubject({
+              variables: {
+                createSubjectInput: {
+                  subject_id: Number(item.rawData.subject_id),
+                  allow_request: !!item.isSelected,
+                  changeTitlesAllowing: isAll,
+                },
+              },
+            })
+            resolve()
+          }),
+        )
       }
     })
 
-    setTableData(newItems)
+    // Update allow_request of all titles immediately
+    if (isAll) setTableData(newItems)
+    Promise.all(promises).then(() => {
+      refetch()
+    })
   }
 
   useEffect(() => {
@@ -223,7 +239,7 @@ const Subjects: React.FC = () => {
         return createData(item)
       }),
     )
-  }, [subjects, showArchived])
+  }, [subjects])
 
   return (
     <Box sx={commonClasses.mainLayout}>
@@ -247,7 +263,6 @@ const Subjects: React.FC = () => {
             disableSelectAll={showArchived}
             isDraggable={true}
             checkBoxColor='secondary'
-            isMultiRowExpandable={true}
             onArrange={handleArrange}
             onSelectionChange={handleAllowRequestChange}
           />

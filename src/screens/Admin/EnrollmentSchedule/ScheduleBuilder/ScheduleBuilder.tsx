@@ -1,11 +1,12 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { useMutation, useQuery } from '@apollo/client'
-import { Close, Check } from '@mui/icons-material'
+import { Close, Check, Edit } from '@mui/icons-material'
 import ModeEditIcon from '@mui/icons-material/ModeEdit'
 import VpnKeyOutlinedIcon from '@mui/icons-material/VpnKeyOutlined'
 import { Button, Card, Grid, IconButton, Tooltip, Typography } from '@mui/material'
 import { Box } from '@mui/system'
 import moment from 'moment'
+import { Prompt, useHistory } from 'react-router-dom'
 import { CustomModal } from '@mth/components/CustomModal/CustomModals'
 import { DropDownItem } from '@mth/components/DropDown/types'
 import { MthTable } from '@mth/components/MthTable'
@@ -29,6 +30,7 @@ import { ThirdPartyProvider } from '@mth/screens/Homeroom/Schedule/ScheduleBuild
 import { Course, Period, ScheduleData, StudentScheduleInfo, Subject, Title } from '@mth/screens/Homeroom/Schedule/types'
 import { StudentType } from '@mth/screens/HomeroomStudentProfile/Student/types'
 import { extractContent, gradeShortText, gradeText } from '@mth/utils'
+import { ENROLLMENT_SCHEDULE } from '../../../../utils/constants'
 import { getStudentDetail } from '../../UserProfile/services'
 import Header from './Header/Header'
 import StudentInfo from './StudentInfo/StudentInfo'
@@ -40,6 +42,7 @@ type ScheduleBuilderProps = {
 
 const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
   const { me } = useContext(UserContext)
+  const history = useHistory()
   const [studentInfo, setStudentInfo] = useState<StudentScheduleInfo>()
   const [schoolYearItems, setSchoolYearItems] = useState<DropDownItem[]>([])
   const [selectedYear, setSelectedYear] = useState<number>(0)
@@ -60,6 +63,10 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
   const [isDraftSaved, setIsDraftSaved] = useState<boolean>(false)
   const [showSubmitSuccessModal, setShowSubmitSuccessModal] = useState<boolean>(false)
   const [splitEnrollment, setSplitEnrollment] = useState<boolean>(false)
+  const [isChanged, setChanged] = useState(false)
+  const [initScheduleStatus, setInitScheduleStatus] = useState<string>()
+  const [lockedIcon, setLockedIcon] = useState(true)
+  const [showReset, setShowReset] = useState(false)
 
   const { loading: studentInfoLoading, data: studentInfoData } = useQuery(getStudentDetail, {
     variables: {
@@ -424,6 +431,23 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
       },
     },
     {
+      key: 'EditIcon',
+      label: '',
+      sortable: false,
+      tdClass: '',
+      formatter: () => {
+        return (
+          <Box sx={{ display: 'flex' }}>
+            {studentScheduleStatus == ScheduleStatus.ACCEPTED && (
+              <IconButton sx={{ color: MthColor.GREEN, fontSize: '18px' }}>
+                <Edit />
+              </IconButton>
+            )}
+          </Box>
+        )
+      },
+    },
+    {
       key: 'CloseIcon',
       label: '',
       sortable: false,
@@ -632,6 +656,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
   const createData = (schedule: ScheduleData): MthTableRowItem<ScheduleData> => {
     schedule = preSelect(schedule)
     return {
+      key: `schedule-${schedule.period}`,
       columns: {
         Type: 'Lorem',
         Description: 'Lorem',
@@ -704,9 +729,16 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
   const updateScheduleStatus = (num: string) => {
     const newStatus = SCHEDULE_STATUS_OPTIONS.find((item) => item.value === num) as DropDownItem
     setScheduleStatus(newStatus)
+    if (num?.toLowerCase() !== initScheduleStatus?.toLowerCase()) {
+      setChanged(true)
+    } else {
+      setChanged(false)
+    }
   }
 
-  const handleBack = () => {}
+  const handleBack = () => {
+    history.push(ENROLLMENT_SCHEDULE)
+  }
 
   const handleSchedule = (status: ScheduleStatus) => {
     if (status === ScheduleStatus.ACCEPTED) {
@@ -718,7 +750,9 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
 
   const handleSaveChanges = () => {}
 
-  const handleResetSchedule = () => {}
+  const handleResetSchedule = () => {
+    setShowReset(true)
+  }
 
   useEffect(() => {
     if (!studentInfoLoading && studentInfoData) {
@@ -760,11 +794,19 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
   useEffect(() => {
     if (studentScheduleStatus) {
       setScheduleStatus(SCHEDULE_STATUS_OPTIONS.find((item) => item.value === studentScheduleStatus) as DropDownItem)
+      setInitScheduleStatus(studentScheduleStatus)
     }
   }, [studentScheduleStatus])
 
   return (
     <Card sx={scheduleBuilderClass.main}>
+      <Prompt
+        when={isChanged}
+        message={JSON.stringify({
+          header: 'Unsaved Changes',
+          content: 'Are you sure you want to leave without saving changes?',
+        })}
+      />
       <Header
         title={MthTitle.SCHEDULE}
         schoolYearItems={schoolYearItems}
@@ -780,8 +822,8 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
       />
       <Box sx={scheduleBuilderClass.table}>
         <MthTable items={tableData} fields={fields} isDraggable={false} checkBoxColor='secondary' />
-        <IconButton sx={{ backgroundColor: MthColor.LIGHTGRAY }}>
-          <VpnKeyOutlinedIcon sx={{ fontSize: '20px' }} />
+        <IconButton sx={{ backgroundColor: MthColor.LIGHTGRAY }} onClick={() => setLockedIcon(!lockedIcon)}>
+          <VpnKeyOutlinedIcon sx={{ fontSize: '20px', color: lockedIcon ? MthColor.RED : MthColor.MTHBLUE }} />
         </IconButton>
       </Box>
       <Box sx={scheduleBuilderClass.submit}>
@@ -817,6 +859,24 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
           handleSubmit={() => setIsDraftSaved(false)}
         />
       )}
+
+      {showReset && (
+        <CustomModal
+          title={'Reset Schedule'}
+          description={'Are you sure you want to reset this schedule?'}
+          confirmStr='Reset'
+          cancelStr='Cancel'
+          onClose={() => {
+            setShowReset(false)
+          }}
+          onConfirm={() => {
+            setShowReset(false)
+            handleSave(ScheduleStatus.NOT_SUBMITTED)
+          }}
+          backgroundColor='white'
+        />
+      )}
+
       {showSubmitSuccessModal && (
         <SuccessModal
           title='Success'

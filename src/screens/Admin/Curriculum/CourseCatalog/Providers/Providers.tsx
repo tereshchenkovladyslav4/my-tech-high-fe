@@ -131,6 +131,7 @@ const Providers: React.FC = () => {
 
   const createData = (provider: Provider): MthTableRowItem<Provider> => {
     return {
+      key: `provider-${showArchived}-${provider.id}`,
       columns: {
         name: provider.name,
         reducesFunds: provider.reduce_funds === ReduceFunds.NONE ? 'No' : 'Yes',
@@ -197,7 +198,7 @@ const Providers: React.FC = () => {
         return createData(item)
       }),
     )
-  }, [providers, showArchived])
+  }, [providers])
 
   return (
     <Box sx={commonClasses.mainLayout}>
@@ -220,7 +221,6 @@ const Providers: React.FC = () => {
             selectable={true}
             disableSelectAll={showArchived}
             checkBoxColor='secondary'
-            isMultiRowExpandable={true}
             onSelectionChange={handleAllowRequestChange}
           />
         </Box>

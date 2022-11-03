@@ -71,6 +71,7 @@ const PageModals: React.FC<PageModalsProps> = ({
         variables: {
           quickWithdrawalInput: {
             withdrawal_ids: checkedWithdrawalIds.map((id) => Number(id)),
+            region_id: me?.selectedRegionId,
           },
         },
       })

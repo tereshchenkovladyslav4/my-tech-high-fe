@@ -15,6 +15,10 @@ export type MthTableField<T> = {
 }
 
 export type MthTableRowItem<T> = {
+  /**
+   * Unique key should be provided.
+   */
+  key: string
   columns: Record<string | number, string | number | ReactNode>
   rawData: T
   selectable?: boolean
@@ -35,9 +39,8 @@ export type MthTableProps<T> = {
   oddBg?: boolean
   borderBottom?: boolean
   isDraggable?: boolean
-  isMultiRowExpandable?: boolean
   onArrange?: (arrangedItems: MthTableRowItem<T>[]) => void
-  onSelectionChange?: (arrangedItems: MthTableRowItem<T>[]) => void
+  onSelectionChange?: (arrangedItems: MthTableRowItem<T>[], isAll: boolean) => void
   sx?: SxProps<Theme>
 }
 
@@ -46,7 +49,6 @@ export type MthTableRowProps<T> = {
   fields: MthTableField<T>[]
   index: number
   item: MthTableRowItem<T>
-  expanded: boolean
   selectable?: boolean
   isDraggable?: boolean
   size?: 'medium' | 'small'

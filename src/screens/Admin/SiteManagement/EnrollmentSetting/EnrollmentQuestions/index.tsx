@@ -389,6 +389,9 @@ export const EnrollmentQuestions: React.FC = () => {
           const submitTabs = vals.map((v, vIndex) => {
             const submitGroups = v.groups.map((g, gIndex) => {
               const submitQuestions = g.questions.map((q) => {
+                if (q.slug === 'address_country_id') {
+                  q.options.filter((v) => (v.value = v.value + ''))
+                }
                 return {
                   ...q,
                   options: JSON.stringify(q?.options || []),

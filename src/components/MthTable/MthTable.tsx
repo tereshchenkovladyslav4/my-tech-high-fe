@@ -11,7 +11,6 @@ import {
   TableFooter,
 } from '@mui/material'
 import { DragDropContext, Droppable, DroppableProvided, DropResult } from 'react-beautiful-dnd'
-import { v4 as uuidv4 } from 'uuid'
 import { MthCheckbox } from '@mth/components/MthCheckbox'
 import MthTableRow from '@mth/components/MthTable/MthTableRow'
 import { mthTableClasses } from '@mth/components/MthTable/styles'
@@ -30,26 +29,24 @@ const MthTable = <T extends unknown>({
   oddBg = true,
   borderBottom = true,
   isDraggable = false,
-  isMultiRowExpandable = false,
   onArrange,
   onSelectionChange,
   sx = [],
 }: MthTableProps<T>): React.ReactElement => {
   const [numSelected, setNumSelected] = useState<number>(0)
   const [rowCount, setRowCount] = useState<number>(0)
-  const [expandedIdx, setExpandedIdx] = useState<Array<number>>([])
   const [tableWidth, setTableWidth] = useState<number>(0)
   const tableRef = useRef<HTMLDivElement>(null)
 
   const handleToggleCheck = (item: MthTableRowItem<T>) => {
     item.isSelected = !item.isSelected
     checkSelectedItems()
-    handleSelectionChange()
+    handleSelectionChange(false)
   }
   const handleToggleCheckAll = (checked: boolean) => {
     items.map((item) => (item.isSelected = checked && item.selectable !== false))
     checkSelectedItems()
-    handleSelectionChange()
+    handleSelectionChange(true)
   }
 
   const checkSelectedItems = () => {
@@ -57,30 +54,12 @@ const MthTable = <T extends unknown>({
     setNumSelected(items?.filter((item) => item.isSelected)?.length || 0)
   }
 
-  const handleSelectionChange = () => {
-    if (onSelectionChange) onSelectionChange(items)
-  }
-
-  const handleToggleExpand = (index: number) => {
-    if (!expandedIdx.includes(index)) {
-      if (isMultiRowExpandable) {
-        setExpandedIdx((prev) => [...prev, index])
-      } else {
-        setExpandedIdx([index])
-      }
-    } else {
-      setExpandedIdx((prev) => prev.filter((item) => item !== index))
-    }
+  const handleSelectionChange = (isAll: boolean) => {
+    if (onSelectionChange) onSelectionChange(items, isAll)
   }
 
   const reorder = (list: MthTableRowItem<T>[], startIndex: number, endIndex: number) => {
     const result = Array.from(list)
-    if (expandedIdx.includes(startIndex)) {
-      let temp = [...expandedIdx]
-      temp = temp.filter((item) => item !== startIndex)
-      temp.push(endIndex)
-      setExpandedIdx(temp)
-    }
     const [removed] = result.splice(startIndex, 1)
     result.splice(endIndex, 0, removed)
 
@@ -97,13 +76,8 @@ const MthTable = <T extends unknown>({
     }
   }
   useEffect(() => {
-    items.map((item, idx) => {
-      item.toggleExpand = () => {
-        handleToggleExpand(idx)
-      }
-    })
     checkSelectedItems()
-  }, [items, expandedIdx])
+  }, [items])
 
   useEffect(() => {
     const handleWindowResize = () => {
@@ -151,12 +125,11 @@ const MthTable = <T extends unknown>({
                   <TableBody {...provided.droppableProps} ref={provided.innerRef}>
                     {items.map((item, index) => (
                       <MthTableRow
-                        key={`${uuidv4()}`}
+                        key={`${item.key}`}
                         tableWidth={tableWidth}
                         index={index}
                         fields={fields}
                         item={item}
-                        expanded={expandedIdx.includes(index)}
                         selectable={selectable}
                         isDraggable={isDraggable}
                         size={size}
@@ -173,12 +146,11 @@ const MthTable = <T extends unknown>({
             <TableBody>
               {items.map((item, index) => (
                 <MthTableRow
-                  key={`${uuidv4()}`}
+                  key={`${item.key}`}
                   tableWidth={tableWidth}
                   index={index}
                   fields={fields}
                   item={item}
-                  expanded={expandedIdx.includes(index)}
                   selectable={selectable}
                   isDraggable={isDraggable}
                   size={size}

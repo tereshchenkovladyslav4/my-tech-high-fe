@@ -36,6 +36,7 @@ export type FilterVM = {
   courseType: string[]
   curriculumProviders: string[]
   selectedYearId: number
+  status: string[]
 }
 
 export type FiltersProps = {

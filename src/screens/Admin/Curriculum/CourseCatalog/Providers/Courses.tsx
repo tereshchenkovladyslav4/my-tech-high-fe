@@ -22,7 +22,6 @@ import {
 import { gradeShortText } from '@mth/utils'
 
 const Courses: React.FC<CoursesProps> = ({ schoolYearId, schoolYearData, provider, showArchived = false, refetch }) => {
-  const [loading] = useState(false)
   const [updateCourse, {}] = useMutation(createOrUpdateCourseMutation)
   const [deleteCourse, {}] = useMutation(deleteCourseMutation)
   const [cloneCourse, {}] = useMutation(cloneCourseMutation)
@@ -151,6 +150,7 @@ const Courses: React.FC<CoursesProps> = ({ schoolYearId, schoolYearData, provide
 
   const createData = (course: Course): MthTableRowItem<Course> => {
     return {
+      key: `course-${showArchived}-${course.id}`,
       columns: {
         name: <Typography sx={{ color: MthColor.MTHBLUE, fontSize: 'inherit' }}>{course.name}</Typography>,
         grades: `${gradeShortText(course.min_grade)} - ${gradeShortText(course.max_grade)}`,
@@ -197,22 +197,30 @@ const Courses: React.FC<CoursesProps> = ({ schoolYearId, schoolYearData, provide
   }
 
   const handleAllowRequestChange = async (newItems: MthTableRowItem<Course>[]) => {
+    const promises: Promise<void>[] = []
     newItems.map(async (item) => {
       const allowRequest = !!item.isSelected
       if (item.rawData.allow_request != allowRequest) {
         item.rawData = { ...item.rawData, allow_request: allowRequest }
-        await updateCourse({
-          variables: {
-            createCourseInput: {
-              id: Number(item.rawData.id),
-              allow_request: !!item.isSelected,
-            },
-          },
-        })
+        promises.push(
+          new Promise<void>(async (resolve) => {
+            await updateCourse({
+              variables: {
+                createCourseInput: {
+                  id: Number(item.rawData.id),
+                  allow_request: !!item.isSelected,
+                },
+              },
+            })
+            resolve()
+          }),
+        )
       }
     })
 
-    setTableData(newItems)
+    Promise.all(promises).then(() => {
+      refetch()
+    })
   }
 
   useEffect(() => {
@@ -231,7 +239,6 @@ const Courses: React.FC<CoursesProps> = ({ schoolYearId, schoolYearData, provide
         <Box>
           <MthTable
             items={tableData}
-            loading={loading}
             fields={fields}
             selectable={true}
             showSelectAll={false}

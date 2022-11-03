@@ -22,7 +22,6 @@ import { EventType, Title, TitlesProps } from '@mth/screens/Admin/Curriculum/Cou
 import { gradeShortText } from '@mth/utils'
 
 const Titles: React.FC<TitlesProps> = ({ schoolYearId, schoolYearData, subject, showArchived = false, refetch }) => {
-  const [loading] = useState(false)
   const [updateTitle, {}] = useMutation(createOrUpdateTitleMutation)
   const [deleteTitle, {}] = useMutation(deleteTitleMutation)
   const [cloneTitle, {}] = useMutation(cloneTitleMutation)
@@ -160,6 +159,7 @@ const Titles: React.FC<TitlesProps> = ({ schoolYearId, schoolYearData, subject, 
 
   const createData = (title: Title): MthTableRowItem<Title> => {
     return {
+      key: `title-${showArchived}-${title.title_id}`,
       columns: {
         name: <Typography sx={{ color: MthColor.MTHBLUE, fontSize: 'inherit' }}>{title.name}</Typography>,
         grades: `${gradeShortText(title.min_grade)} - ${gradeShortText(title.max_grade)}`,
@@ -206,22 +206,29 @@ const Titles: React.FC<TitlesProps> = ({ schoolYearId, schoolYearData, subject, 
   }
 
   const handleAllowRequestChange = async (newItems: MthTableRowItem<Title>[]) => {
+    const promises: Promise<void>[] = []
     newItems.map(async (item) => {
       const allowRequest = !!item.isSelected
       if (item.rawData.allow_request != allowRequest) {
-        item.rawData = { ...item.rawData, allow_request: allowRequest }
-        await updateTitle({
-          variables: {
-            createTitleInput: {
-              title_id: Number(item.rawData.title_id),
-              allow_request: !!item.isSelected,
-            },
-          },
-        })
+        promises.push(
+          new Promise<void>(async (resolve) => {
+            await updateTitle({
+              variables: {
+                createTitleInput: {
+                  title_id: Number(item.rawData.title_id),
+                  allow_request: !!item.isSelected,
+                },
+              },
+            })
+            resolve()
+          }),
+        )
       }
     })
 
-    setTableData(newItems)
+    Promise.all(promises).then(() => {
+      refetch()
+    })
   }
 
   useEffect(() => {
@@ -240,7 +247,6 @@ const Titles: React.FC<TitlesProps> = ({ schoolYearId, schoolYearData, subject, 
         <Box sx={{ borderTop: `solid 1px ${MthColor.SYSTEM_09}` }}>
           <MthTable
             items={tableData}
-            loading={loading}
             fields={fields}
             selectable={true}
             showSelectAll={false}
