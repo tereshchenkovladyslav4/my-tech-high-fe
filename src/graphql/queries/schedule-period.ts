@@ -20,6 +20,7 @@ export const getStudentSchedulePeriodsQuery = gql`
       tp_phone_number
       tp_provider_name
       tp_specific_course_website
+      update_required
       Schedule {
         status
       }

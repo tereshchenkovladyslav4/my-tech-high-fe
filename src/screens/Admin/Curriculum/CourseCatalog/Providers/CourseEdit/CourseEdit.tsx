@@ -44,13 +44,13 @@ const CourseEdit: React.FC<CourseEditProps> = ({
     diploma_seeking_path: schoolYearData?.diploma_seeking
       ? yup.string().required('Required').nullable()
       : yup.string().nullable(),
-    limit: yup.number().min(1, 'Limit Invalid').positive('Limit Invaild').integer('Limit Invaild').nullable(),
+    limit: yup.number().min(1, 'Limit Invalid').positive('Limit Invalid').integer('Limit Invalid').nullable(),
     price: yup
       .number()
       .when('reduce_funds', {
         is: (reduce_funds: ReduceFunds) =>
           reduce_funds == ReduceFunds.TECHNOLOGY_ALLOWANCE || reduce_funds == ReduceFunds.SUPPLEMENTAL_LEARNING_FUNDS,
-        then: yup.number().required('Price Required').positive('Should be greater than 0').nullable(),
+        then: yup.number().required('Required').positive('Should be greater than 0').nullable(),
       })
       .nullable(),
     reduce_funds_notification: yup
@@ -58,14 +58,14 @@ const CourseEdit: React.FC<CourseEditProps> = ({
       .when('reduce_funds', {
         is: (reduce_funds: ReduceFunds) =>
           reduce_funds == ReduceFunds.TECHNOLOGY_ALLOWANCE || reduce_funds == ReduceFunds.SUPPLEMENTAL_LEARNING_FUNDS,
-        then: yup.string().required('Required').min(9, 'Invalid').nullable(),
+        then: yup.string().required('Required').min(9, 'Required').nullable(),
       })
       .nullable(),
     course_notification: yup
       .string()
       .when('display_notification', {
         is: true,
-        then: yup.string().required('Required').min(9, 'Invalid').nullable(),
+        then: yup.string().required('Required').min(9, 'Required').nullable(),
       })
       .nullable(),
     course_id: yup
@@ -143,7 +143,7 @@ const CourseEdit: React.FC<CourseEditProps> = ({
           transform: 'translate(-50%, -50%)',
           width: '1180px',
           height: 'auto',
-          bgcolor: MthColor.WHITE,
+          backgroundColor: MthColor.WHITE,
           borderRadius: 2,
           p: 6,
         }}

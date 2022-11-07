@@ -23,6 +23,7 @@ export const getMeQuery = gql`
           street2
           zip
           county_id
+          country_id
         }
         phone {
           phone_id

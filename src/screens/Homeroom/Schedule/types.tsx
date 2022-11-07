@@ -154,6 +154,7 @@ export type ScheduleData = {
   OnSiteSplitEnrollment?: OnSiteSplitEnrollment
   CustomBuiltDescription?: string
   IsChangedCustomBuiltDescription?: boolean
+  updateRequired?: boolean
 
   // TODO Should remove below fields
   Type?: string

@@ -66,13 +66,9 @@ export const scheduleBuilderClass = {
     paddingRight: '46px',
     '& button': {
       height: '48px',
-      width: '140px',
+      width: '160px',
       fontSize: '14px',
       borderRadius: '8px',
-      '&:nth-child(2)': {
-        background: MthColor.LIGHTGRAY,
-        color: MthColor.BLACK,
-      },
       '&:last-child': {
         marginLeft: 'auto',
         background: 'transparent',

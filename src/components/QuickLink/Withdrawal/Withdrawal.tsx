@@ -1,5 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import { useMutation, useQuery } from '@apollo/client'
+import { makeStyles, Theme } from '@material-ui/core/styles'
+import ArrowBackIosOutlinedIcon from '@mui/icons-material/ArrowBackIosOutlined'
 import { Alert, Box, Button, Grid, List, Stack, Typography } from '@mui/material'
 import { Form, Formik } from 'formik'
 import _ from 'lodash'
@@ -26,6 +28,63 @@ import { getQuestionsByRegionQuery } from '@mth/graphql/queries/question'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { siteManagementClassess } from '@mth/screens/Admin/SiteManagement/styles'
 import CircleIcon from './CircleIcon'
+
+const additionalStyles = makeStyles((theme: Theme) => ({
+  mainContent: {
+    [theme.breakpoints.down('xs')]: {
+      padding: '1rem 0.5rem',
+    },
+    padding: '1rem 2.5rem',
+  },
+  mainStackContent: {
+    [theme.breakpoints.down('xs')]: {
+      width: '100%',
+    },
+    width: '50%',
+    margin: 'auto',
+  },
+  submitButton: {
+    [theme.breakpoints.down('xs')]: {
+      width: '100%',
+      marginLeft: '0px',
+    },
+    width: '40%',
+    margin: 'auto',
+    marginTop: '16px',
+    maginLeft: 'calc(25% + 60px)',
+  },
+  header: {
+    [theme.breakpoints.down('xs')]: {
+      flexDirection: 'column',
+    },
+    display: 'flex',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    width: '100%',
+    flexDirection: 'row',
+  },
+  titleBox: {
+    [theme.breakpoints.down('xs')]: {
+      marginBottom: '24px',
+    },
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    width: '100%',
+  },
+  actionButtons: {
+    [theme.breakpoints.down('xs')]: {
+      float: 'none',
+      marginBottom: '8px',
+      width: '100%',
+    },
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    float: 'right',
+  },
+}))
 
 //	Possible Question Types List
 const QuestionTypes = [
@@ -75,12 +134,14 @@ const Withdrawal: React.FC<{
   handleChange?: (flag: boolean) => void
   region: number
   studentId?: number
-}> = ({ action, handleChange, region, studentId }) => {
+  onBackPress: () => void
+}> = ({ action, handleChange, region, studentId, onBackPress }) => {
   const signature = useRef<SignaturePad | undefined>(undefined)
   const { me } = useContext(UserContext)
   const isEditable = (): boolean => {
     return !!me?.level && me.level <= 2
   }
+  const classes = additionalStyles()
 
   const SortableItem = SortableElement(QuestionItem)
 
@@ -351,7 +412,7 @@ const Withdrawal: React.FC<{
               section: 'quick-link-withdrawal',
               type: QUESTION_TYPE.SIGNATURE,
               sequence: 3,
-              question: 'Type full legal parent name and provide a Digital Signature below (use the mouse to sign).',
+              question: 'Type full legal parent name and provide a digital signature below. Signature(touch to sign).',
               options: [],
               mainQuestion: true,
               defaultQuestion: false,
@@ -398,11 +459,7 @@ const Withdrawal: React.FC<{
   }, [successAlert])
 
   return (
-    <Grid
-      sx={{
-        padding: '1rem 2.5rem',
-      }}
-    >
+    <Grid className={classes.mainContent}>
       {questions.length > 0 && (
         <Formik
           initialValues={questions}
@@ -426,7 +483,7 @@ const Withdrawal: React.FC<{
               const errors: { [key: string]: string } = {}
               filterAdditionalQuestions(values).forEach((val) => {
                 if (val.required && !val.response) {
-                  errors[val.id] = val.question + ' is required.'
+                  errors[val.id] = 'Required'
                 } else if (val.validation && !!val.response) {
                   if (val.validation == ValidationType.NUMBER) {
                     if (!isNumber.test(val.response.toString())) errors[val.id] = 'Please enter numbers only.'
@@ -436,7 +493,7 @@ const Withdrawal: React.FC<{
                 }
 
                 if (val.slug == 'signature' && signature?.current?.isEmpty()) {
-                  errors[val.id] = 'Signature is required.'
+                  errors[val.id] = 'Rrequired.'
                 }
               })
 
@@ -469,10 +526,13 @@ const Withdrawal: React.FC<{
           {({ values, setValues }) => (
             <Form name={'WithdrawalForm'}>
               <Box sx={siteManagementClassess.base}>
-                <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: '100%' }}>
-                  <Typography sx={{ fontWeight: 700, fontSize: 20, ml: 1 }}>Withdraw</Typography>
+                <Box className={classes.header}>
+                  <Box className={classes.titleBox}>
+                    <ArrowBackIosOutlinedIcon onClick={onBackPress} sx={{ cursor: 'pointer' }} />
+                    <Typography sx={{ fontWeight: 700, fontSize: 20, ml: 1 }}>Withdraw</Typography>
+                  </Box>
                   {isEditable() && (
-                    <Box>
+                    <Box className={classes.actionButtons}>
                       <Button
                         variant='contained'
                         color='secondary'
@@ -501,7 +561,8 @@ const Withdrawal: React.FC<{
                   justifyContent='center'
                   alignItems={'center'}
                   direction='column'
-                  sx={{ width: '50%', margin: 'auto', mt: 2, ml: isEditable() ? 'calc(25% + 60px)' : 'auto' }}
+                  className={classes.mainStackContent}
+                  sx={{ mt: 2, ml: isEditable() ? 'calc(25% + 60px)' : 'auto' }}
                 >
                   <List sx={{ width: '100%', py: 0 }}>
                     <QuestionItem
@@ -560,7 +621,7 @@ const Withdrawal: React.FC<{
                   </List>
                 </Stack>
                 {isEditable() && (
-                  <Box sx={{ width: '40%', margin: 'auto', mt: 2, ml: 'calc(25% + 60px)' }}>
+                  <Box className={classes.submitButton}>
                     <Button
                       variant='contained'
                       sx={{ ...siteManagementClassess.button, width: '100%' }}
@@ -570,7 +631,7 @@ const Withdrawal: React.FC<{
                     </Button>
                   </Box>
                 )}
-                <Box sx={{ width: '40%', margin: 'auto', mt: 2, ml: 'calc(25% + 60px)' }}>
+                <Box className={classes.submitButton}>
                   <Button
                     variant='contained'
                     sx={{ ...siteManagementClassess.button, width: '100%' }}

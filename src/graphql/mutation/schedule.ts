@@ -7,3 +7,9 @@ export const saveScheduleMutation = gql`
     }
   }
 `
+
+export const sendEmailUpdateRequired = gql`
+  mutation UpdateRequiredEmail($updateRequiredEmail: EmailUpdateRequiredInput!) {
+    updateRequiredEmail(updateRequiredEmail: $updateRequiredEmail)
+  }
+`

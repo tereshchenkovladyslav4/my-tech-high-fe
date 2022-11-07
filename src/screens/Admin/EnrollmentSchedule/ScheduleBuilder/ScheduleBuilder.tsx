@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { useMutation, useQuery } from '@apollo/client'
-import { Close, Check, Edit } from '@mui/icons-material'
+import { Close, Check } from '@mui/icons-material'
 import ModeEditIcon from '@mui/icons-material/ModeEdit'
 import VpnKeyOutlinedIcon from '@mui/icons-material/VpnKeyOutlined'
 import { Button, Card, Grid, IconButton, Tooltip, Typography } from '@mui/material'
@@ -9,15 +9,17 @@ import moment from 'moment'
 import { Prompt, useHistory } from 'react-router-dom'
 import { CustomModal } from '@mth/components/CustomModal/CustomModals'
 import { DropDownItem } from '@mth/components/DropDown/types'
+import { CheckBoxListVM } from '@mth/components/MthCheckboxList/MthCheckboxList'
 import { MthTable } from '@mth/components/MthTable'
 import { MthTableField, MthTableRowItem } from '@mth/components/MthTable/types'
 import { NestedDropdown } from '@mth/components/NestedDropdown'
 import { MenuItemData } from '@mth/components/NestedDropdown/types'
 import { SuccessModal } from '@mth/components/SuccessModal/SuccessModal'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { COURSE_TYPE_ITEMS, SCHEDULE_STATUS_OPTIONS, SPECIAL_EDUCATIONS } from '@mth/constants'
 import { CourseType, MthColor, MthTitle, ReduceFunds, ScheduleStatus } from '@mth/enums'
-import { saveScheduleMutation } from '@mth/graphql/mutation/schedule'
+import { saveScheduleMutation, sendEmailUpdateRequired } from '@mth/graphql/mutation/schedule'
 import { saveSchedulePeriodMutation } from '@mth/graphql/mutation/schedule-period'
 import { useCurrentSchoolYearByRegionId, useStudentSchedulePeriods } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
@@ -33,8 +35,11 @@ import { extractContent, gradeShortText, gradeText } from '@mth/utils'
 import { ENROLLMENT_SCHEDULE } from '../../../../utils/constants'
 import { getStudentDetail } from '../../UserProfile/services'
 import Header from './Header/Header'
+import { RequireUpdateModal } from './RequireUpdateModal'
+import { ScheduleUpdatesRequiredEmail } from './ScheduleUpdatesRequriedEmail'
 import StudentInfo from './StudentInfo/StudentInfo'
 import { scheduleBuilderClass } from './styles'
+import { UpdateRequiredPeriods } from './UpdateRequiredPeroids'
 
 type ScheduleBuilderProps = {
   studentId: number
@@ -62,6 +67,9 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
   const [showCustomBuilt, setShowCustomBuilt] = useState<boolean>(false)
   const [isDraftSaved, setIsDraftSaved] = useState<boolean>(false)
   const [showSubmitSuccessModal, setShowSubmitSuccessModal] = useState<boolean>(false)
+  const [showRequireUpdateModal, setShowRequireUpdateModal] = useState<boolean>(false)
+  const [periodItems, setPeriodItems] = useState<CheckBoxListVM[]>([])
+  const [requireUpdatePeriods, setRequireUpdatePeriods] = useState<string[]>([])
   const [splitEnrollment, setSplitEnrollment] = useState<boolean>(false)
   const [isChanged, setChanged] = useState(false)
   const [initScheduleStatus, setInitScheduleStatus] = useState<string>()
@@ -84,6 +92,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
 
   const [submitScheduleBuilder] = useMutation(saveScheduleMutation)
   const [saveDraft] = useMutation(saveSchedulePeriodMutation)
+  const [sendEmail] = useMutation(sendEmailUpdateRequired)
 
   const createPeriodMenuItems = (schedule: ScheduleData): MenuItemData => {
     const menuItemsData: MenuItemData = {
@@ -431,37 +440,27 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
       },
     },
     {
-      key: 'EditIcon',
-      label: '',
-      sortable: false,
-      tdClass: '',
-      formatter: () => {
-        return (
-          <Box sx={{ display: 'flex' }}>
-            {studentScheduleStatus == ScheduleStatus.ACCEPTED && (
-              <IconButton sx={{ color: MthColor.GREEN, fontSize: '18px' }}>
-                <Edit />
-              </IconButton>
-            )}
-          </Box>
-        )
-      },
-    },
-    {
       key: 'CloseIcon',
       label: '',
       sortable: false,
       tdClass: '',
-      formatter: () => {
+      formatter: (item: MthTableRowItem<ScheduleData>) => {
         return (
           <Box sx={{ display: 'flex' }}>
-            {studentScheduleStatus == ScheduleStatus.SUBMITTED && (
+            {(studentScheduleStatus == ScheduleStatus.SUBMITTED ||
+              (studentScheduleStatus == ScheduleStatus.ACCEPTED && item?.rawData?.updateRequired) ||
+              (studentScheduleStatus == ScheduleStatus.RESUBMITTED && item?.rawData?.updateRequired)) && (
               <IconButton sx={{ color: MthColor.MTHORANGE, fontSize: '18px' }}>
                 <Close />
               </IconButton>
             )}
-            {studentScheduleStatus == ScheduleStatus.ACCEPTED && (
-              <IconButton sx={{ color: MthColor.GREEN, fontSize: '18px' }}>
+            {((studentScheduleStatus == ScheduleStatus.ACCEPTED && !item?.rawData?.updateRequired) ||
+              (studentScheduleStatus == ScheduleStatus.RESUBMITTED && !item?.rawData?.updateRequired) ||
+              studentScheduleStatus == ScheduleStatus.UPDATES_REQUESTED) && (
+              <IconButton
+                sx={{ color: MthColor.GREEN, fontSize: '18px' }}
+                onClick={() => handlePeriodUpdateRequired(`${item?.rawData?.Period?.id}`)}
+              >
                 <Check />
               </IconButton>
             )}
@@ -662,17 +661,36 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
         Description: 'Lorem',
       },
       rawData: schedule,
+      sx: schedule?.updateRequired
+        ? (studentScheduleStatus === ScheduleStatus.ACCEPTED ||
+            scheduleStatus?.value === ScheduleStatus.UPDATES_REQUIRED) &&
+          requireUpdatePeriods.length
+          ? { '& .MuiTableCell-root': { background: 'rgba(236, 89, 37, 0.1) !important' } }
+          : studentScheduleStatus === ScheduleStatus.RESUBMITTED
+          ? {
+              '& .MuiTableCell-root': { background: '#FFFFFF !important' },
+            }
+          : studentScheduleStatus === ScheduleStatus.UPDATES_REQUESTED
+          ? {
+              '& .MuiTableCell-root': { background: 'rgba(65, 69, 255, 0.2) !important' },
+            }
+          : {}
+        : (studentScheduleStatus === ScheduleStatus.RESUBMITTED &&
+            scheduleStatus?.value != ScheduleStatus.UPDATES_REQUIRED) ||
+          studentScheduleStatus === ScheduleStatus.UPDATES_REQUESTED
+        ? { '& .MuiTableCell-root': { background: '#F2F2F2 !important' } }
+        : {},
     }
   }
 
-  const handleSave = async (kind: ScheduleStatus) => {
+  const handleSave = async (status: ScheduleStatus) => {
     if (scheduleData?.length) {
       const submitResponse = await submitScheduleBuilder({
         variables: {
           createScheduleInput: {
             SchoolYearId: Number(selectedYear),
             StudentId: Number(studentId),
-            status: kind,
+            status: status,
             schedule_id: studentScheduleId,
           },
         },
@@ -703,13 +721,14 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
                 tp_phone_number: item?.ThirdParty?.phoneNumber,
                 tp_provider_name: item?.ThirdParty?.providerName,
                 tp_specific_course_website: item?.ThirdParty?.specificCourseWebsite,
+                update_required: item?.updateRequired,
               })),
             },
           },
         })
 
         if (response) {
-          switch (kind) {
+          switch (status) {
             case ScheduleStatus.DRAFT:
               setIsDraftSaved(true)
               break
@@ -719,6 +738,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
           }
         }
       }
+      handleBack()
     }
   }
 
@@ -728,6 +748,9 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
 
   const updateScheduleStatus = (num: string) => {
     const newStatus = SCHEDULE_STATUS_OPTIONS.find((item) => item.value === num) as DropDownItem
+    if (newStatus?.value === ScheduleStatus.UPDATES_REQUIRED) {
+      setShowRequireUpdateModal(true)
+    }
     setScheduleStatus(newStatus)
     if (num?.toLowerCase() !== initScheduleStatus?.toLowerCase()) {
       setChanged(true)
@@ -742,16 +765,63 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
 
   const handleSchedule = (status: ScheduleStatus) => {
     if (status === ScheduleStatus.ACCEPTED) {
-      handleSave(ScheduleStatus.UPDATES_REQUIRED)
-    } else if (status === ScheduleStatus.SUBMITTED) {
+      setShowRequireUpdateModal(true)
+    } else if (status === ScheduleStatus.SUBMITTED || status === ScheduleStatus.RESUBMITTED) {
       handleSave(ScheduleStatus.ACCEPTED)
+    } else if (status === ScheduleStatus.UPDATES_REQUESTED) {
+      handleSave(ScheduleStatus.UPDATES_REQUIRED)
     }
   }
 
   const handleSaveChanges = () => {}
 
+  const handleCancelUpdates = () => {
+    setScheduleData(
+      scheduleData?.map((item) => ({
+        ...item,
+        updateRequired: false,
+      })),
+    )
+    setScheduleStatus(SCHEDULE_STATUS_OPTIONS.find((item) => item.value === studentScheduleStatus) as DropDownItem)
+    setRequireUpdatePeriods([])
+  }
+
   const handleResetSchedule = () => {
     setShowReset(true)
+  }
+
+  const handleRequireUpdate = (periods: string[]) => {
+    setRequireUpdatePeriods(periods)
+    setShowRequireUpdateModal(false)
+  }
+
+  const handlePeriodUpdateRequired = (periodId: string) => {
+    setRequireUpdatePeriods([
+      ...scheduleData
+        ?.filter((item) => item?.updateRequired)
+        ?.map((item) => {
+          return `${item?.Period?.id}`
+        }),
+      periodId,
+    ])
+    setScheduleStatus(
+      SCHEDULE_STATUS_OPTIONS.find((item) => item.value === ScheduleStatus.UPDATES_REQUIRED) as DropDownItem,
+    )
+  }
+
+  const handleEmailSend = async (from: string, subject: string, body: string) => {
+    await sendEmail({
+      variables: {
+        updateRequiredEmail: {
+          body: body,
+          from: from,
+          subject: subject,
+          student_id: studentId,
+          region_id: Number(me?.selectedRegionId),
+        },
+      },
+    })
+    handleSave(ScheduleStatus.UPDATES_REQUIRED)
   }
 
   useEffect(() => {
@@ -782,7 +852,22 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
   }, [currentSchoolYear, currentSchoolYearLoading])
 
   useEffect(() => {
+    if (studentScheduleStatus) {
+      setScheduleStatus(SCHEDULE_STATUS_OPTIONS.find((item) => item.value === studentScheduleStatus) as DropDownItem)
+      setInitScheduleStatus(studentScheduleStatus)
+    }
+  }, [studentScheduleStatus])
+
+  useEffect(() => {
     if (scheduleData?.length) {
+      setPeriodItems(
+        scheduleData.map((item) => ({
+          label: `Period ${item?.period} - ${item?.Title?.name} - ${
+            item?.Title?.CourseTypes?.find((courseType) => courseType?.value === item?.CourseType)?.label
+          }`,
+          value: `${item?.Period?.id}`,
+        })),
+      )
       setTableData(
         scheduleData.map((item) => {
           return createData(item)
@@ -792,187 +877,266 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
   }, [scheduleData])
 
   useEffect(() => {
-    if (studentScheduleStatus) {
-      setScheduleStatus(SCHEDULE_STATUS_OPTIONS.find((item) => item.value === studentScheduleStatus) as DropDownItem)
-      setInitScheduleStatus(studentScheduleStatus)
+    if (requireUpdatePeriods) {
+      setScheduleData(
+        scheduleData.map((item) => ({
+          ...item,
+          updateRequired: requireUpdatePeriods.includes(`${item?.Period?.id}`) ? true : false,
+        })),
+      )
+      if (requireUpdatePeriods.length == 0)
+        setScheduleStatus(SCHEDULE_STATUS_OPTIONS.find((item) => item.value === studentScheduleStatus) as DropDownItem)
     }
-  }, [studentScheduleStatus])
+  }, [requireUpdatePeriods])
 
   return (
-    <Card sx={scheduleBuilderClass.main}>
-      <Prompt
-        when={isChanged}
-        message={JSON.stringify({
-          header: 'Unsaved Changes',
-          content: 'Are you sure you want to leave without saving changes?',
-        })}
-      />
-      <Header
-        title={MthTitle.SCHEDULE}
-        schoolYearItems={schoolYearItems}
-        selectedYear={selectedYear}
-        scheduleStatus={scheduleStatus}
-        onSelectYear={handleYearDropDown}
-        handleBack={handleBack}
-      />
-      <StudentInfo
-        studentInfo={studentInfo}
-        scheduleStatus={scheduleStatus}
-        onUpdateScheduleStatus={updateScheduleStatus}
-      />
-      <Box sx={scheduleBuilderClass.table}>
-        <MthTable items={tableData} fields={fields} isDraggable={false} checkBoxColor='secondary' />
-        <IconButton sx={{ backgroundColor: MthColor.LIGHTGRAY }} onClick={() => setLockedIcon(!lockedIcon)}>
-          <VpnKeyOutlinedIcon sx={{ fontSize: '20px', color: lockedIcon ? MthColor.RED : MthColor.MTHBLUE }} />
-        </IconButton>
-      </Box>
-      <Box sx={scheduleBuilderClass.submit}>
-        <Button
-          variant='contained'
-          sx={{
-            background: `${
-              scheduleStatus?.value == ScheduleStatus.ACCEPTED ? MthColor.ORANGE_GRADIENT : MthColor.GREEN_GRADIENT
-            }`,
-          }}
-          onClick={() => handleSchedule(scheduleStatus?.value as ScheduleStatus)}
-        >
-          {scheduleStatus?.value == ScheduleStatus.ACCEPTED ? 'Require Updates' : MthTitle.ACCEPT}
-        </Button>
-        <Button variant='contained' sx={{ backgroundColor: MthColor.LIGHTGRAY }} onClick={() => handleSaveChanges()}>
-          {MthTitle.SAVE_CHANGES}
-        </Button>
-        <Button variant='text' sx={{ fontWeight: 700, fontSize: '14px' }} onClick={() => handleResetSchedule()}>
-          Reset Schedule
-        </Button>
-      </Box>
-      {isDraftSaved && (
-        <SuccessModal
-          title='Saved'
-          subtitle={
-            <Paragraph size='large' color={MthColor.SYSTEM_01} textAlign='center'>
-              {' '}
-              Great start! <br /> Your student&apos;s schedule has been saved. <br /> Please return to submit the
-              schedule before the deadline.
-            </Paragraph>
-          }
-          btntitle='Ok'
-          handleSubmit={() => setIsDraftSaved(false)}
+    <>
+      <Card sx={scheduleBuilderClass.main}>
+        <Prompt
+          when={isChanged}
+          message={JSON.stringify({
+            header: 'Unsaved Changes',
+            content: 'Are you sure you want to leave without saving changes?',
+          })}
         />
-      )}
+        <Header
+          title={MthTitle.SCHEDULE}
+          schoolYearItems={schoolYearItems}
+          selectedYear={selectedYear}
+          scheduleStatus={scheduleStatus}
+          onSelectYear={handleYearDropDown}
+          handleBack={handleBack}
+        />
+        <StudentInfo
+          studentInfo={studentInfo}
+          scheduleStatus={scheduleStatus}
+          onUpdateScheduleStatus={updateScheduleStatus}
+        />
+        <Box sx={scheduleBuilderClass.table}>
+          <MthTable items={tableData} fields={fields} isDraggable={false} checkBoxColor='secondary' />
+          <IconButton sx={{ backgroundColor: MthColor.LIGHTGRAY }} onClick={() => setLockedIcon(!lockedIcon)}>
+            <VpnKeyOutlinedIcon sx={{ fontSize: '20px', color: lockedIcon ? MthColor.RED : MthColor.MTHBLUE }} />
+          </IconButton>
+        </Box>
+        <Box sx={scheduleBuilderClass.submit}>
+          {!requireUpdatePeriods.length ? (
+            <>
+              <Button
+                variant='contained'
+                sx={{
+                  background: `${
+                    scheduleStatus?.value == ScheduleStatus.ACCEPTED
+                      ? MthColor.ORANGE_GRADIENT
+                      : MthColor.GREEN_GRADIENT
+                  }`,
+                }}
+                onClick={() => handleSchedule(scheduleStatus?.value as ScheduleStatus)}
+              >
+                {scheduleStatus?.value == ScheduleStatus.ACCEPTED
+                  ? 'Require Updates'
+                  : scheduleStatus?.value == ScheduleStatus.UPDATES_REQUESTED
+                  ? 'Allow Updates'
+                  : MthTitle.ACCEPT}
+              </Button>
+              <Button
+                variant='contained'
+                sx={{
+                  background:
+                    scheduleStatus?.value == ScheduleStatus.UPDATES_REQUESTED
+                      ? MthColor.BLACK_GRADIENT
+                      : MthColor.BLACK_GRADIENT,
+                }}
+                onClick={() => {
+                  if (scheduleStatus?.value == ScheduleStatus.UPDATES_REQUESTED) handleSave(ScheduleStatus.ACCEPTED)
+                  else handleSaveChanges()
+                }}
+              >
+                {scheduleStatus?.value == ScheduleStatus.UPDATES_REQUESTED
+                  ? 'Revert to Accepted'
+                  : MthTitle.SAVE_CHANGES}
+              </Button>
+            </>
+          ) : (
+            scheduleStatus?.value === ScheduleStatus.ACCEPTED && (
+              <Button
+                variant='contained'
+                sx={{ background: MthColor.BLACK_GRADIENT }}
+                onClick={() => handleCancelUpdates()}
+              >
+                Cancel Updates
+              </Button>
+            )
+          )}
 
-      {showReset && (
-        <CustomModal
-          title={'Reset Schedule'}
-          description={'Are you sure you want to reset this schedule?'}
-          confirmStr='Reset'
-          cancelStr='Cancel'
-          onClose={() => {
-            setShowReset(false)
-          }}
-          onConfirm={() => {
-            setShowReset(false)
-            handleSave(ScheduleStatus.NOT_SUBMITTED)
-          }}
-          backgroundColor='white'
-        />
-      )}
+          <Button variant='text' sx={{ fontWeight: 700, fontSize: '14px' }} onClick={() => handleResetSchedule()}>
+            Reset Schedule
+          </Button>
+        </Box>
+        {showRequireUpdateModal && (
+          <RequireUpdateModal
+            periodItems={periodItems}
+            handleCancelAction={() => {
+              setShowRequireUpdateModal(false)
+              setScheduleStatus(
+                SCHEDULE_STATUS_OPTIONS.find((item) => item.value === studentScheduleStatus) as DropDownItem,
+              )
+            }}
+            handleRequireUpdates={handleRequireUpdate}
+          />
+        )}
+        {isDraftSaved && (
+          <SuccessModal
+            title='Saved'
+            subtitle={
+              <Paragraph size='large' color={MthColor.SYSTEM_01} textAlign='center'>
+                {' '}
+                Great start! <br /> Your student&apos;s schedule has been saved. <br /> Please return to submit the
+                schedule before the deadline.
+              </Paragraph>
+            }
+            btntitle='Ok'
+            handleSubmit={() => setIsDraftSaved(false)}
+          />
+        )}
 
-      {showSubmitSuccessModal && (
-        <SuccessModal
-          title='Success'
-          subtitle={
-            <Paragraph size='large' color={MthColor.SYSTEM_01} textAlign='center'>
-              {`${studentInfo?.name}'s schedule has been submitted successfully and is pending approval.`}
-            </Paragraph>
-          }
-          btntitle='Done'
-          handleSubmit={() => setShowSubmitSuccessModal(false)}
-        />
+        {showReset && (
+          <CustomModal
+            title={'Reset Schedule'}
+            description={'Are you sure you want to reset this schedule?'}
+            confirmStr='Reset'
+            cancelStr='Cancel'
+            onClose={() => {
+              setShowReset(false)
+            }}
+            onConfirm={() => {
+              setShowReset(false)
+              handleSave(ScheduleStatus.NOT_SUBMITTED)
+            }}
+            backgroundColor='white'
+          />
+        )}
+
+        {showSubmitSuccessModal && (
+          <SuccessModal
+            title='Success'
+            subtitle={
+              <Paragraph size='large' color={MthColor.SYSTEM_01} textAlign='center'>
+                {`${studentInfo?.name}'s schedule has been submitted successfully and is pending approval.`}
+              </Paragraph>
+            }
+            btntitle='Done'
+            handleSubmit={() => setShowSubmitSuccessModal(false)}
+          />
+        )}
+        {!!periodNotification && (
+          <CustomModal
+            title={MthTitle.NOTIFICATION}
+            description={extractContent(periodNotification || '')}
+            confirmStr='Ok'
+            showIcon={false}
+            showCancel={false}
+            backgroundColor={MthColor.WHITE}
+            onClose={() => setPeriodNotification(undefined)}
+            onConfirm={() => setPeriodNotification(undefined)}
+          />
+        )}
+        {!!subjectNotification && (
+          <CustomModal
+            title={MthTitle.NOTIFICATION}
+            description={extractContent(subjectNotification || '')}
+            confirmStr='Ok'
+            showIcon={false}
+            showCancel={false}
+            backgroundColor={MthColor.WHITE}
+            onClose={() => setSubjectNotification(undefined)}
+            onConfirm={() => setSubjectNotification(undefined)}
+          />
+        )}
+        {!subjectNotification && !!subjectReduceFundsNotification && (
+          <CustomModal
+            title={MthTitle.REDUCES_FUNDS}
+            description={extractContent(subjectReduceFundsNotification || '')}
+            confirmStr='Ok'
+            showIcon={false}
+            showCancel={false}
+            backgroundColor={MthColor.WHITE}
+            onClose={() => setSubjectReduceFundsNotification(undefined)}
+            onConfirm={() => setSubjectReduceFundsNotification(undefined)}
+          />
+        )}
+        {!!courseNotification && (
+          <CustomModal
+            title={MthTitle.NOTIFICATION}
+            description={extractContent(courseNotification || '')}
+            confirmStr='Ok'
+            showIcon={false}
+            showCancel={false}
+            backgroundColor={MthColor.WHITE}
+            onClose={() => setCourseNotification(undefined)}
+            onConfirm={() => setCourseNotification(undefined)}
+          />
+        )}
+        {!courseNotification && !!courseReduceFundsNotification && (
+          <CustomModal
+            title={MthTitle.REDUCES_FUNDS}
+            description={extractContent(courseReduceFundsNotification || '')}
+            confirmStr='Ok'
+            showIcon={false}
+            showCancel={false}
+            backgroundColor={MthColor.WHITE}
+            onClose={() => setCourseReduceFundsNotification(undefined)}
+            onConfirm={() => setCourseReduceFundsNotification(undefined)}
+          />
+        )}
+        {showThirdPartyProviderModal && (
+          <ThirdPartyProviderEdit
+            thirdPartyProvider={selectedThridPartyProvider}
+            handleSaveAction={handleSaveThirdPartyModal}
+            handleCancelAction={handleCancelThirdPartyModal}
+          />
+        )}
+        {showOnSiteSplitEnrollmentModal && (
+          <OnSiteSplitEnrollmentEdit
+            onSiteSplitEnrollment={selectedOnSiteSplitEnrollemnt}
+            handleCancelAction={handleCancelOnSplitEnrollmentModal}
+            handleSaveAction={handleSaveOnSplitEnrollmentModal}
+          />
+        )}
+        {showCustomBuilt && !!selectedSchedule && (
+          <CustomBuiltDescriptionEdit
+            setShowEditModal={setShowCustomBuilt}
+            customBuiltDescription={
+              selectedSchedule?.CustomBuiltDescription || selectedSchedule?.Title?.custom_built_description
+            }
+            onSave={handleSaveCustomBuiltDescription}
+          />
+        )}
+      </Card>
+      {!!requireUpdatePeriods?.length && (
+        <Card sx={scheduleBuilderClass.main}>
+          <Subtitle size='medium' textAlign='left' fontWeight='700'>
+            Update Required
+          </Subtitle>
+          <Box sx={{ width: '100%' }}>
+            <Grid container justifyContent='start'>
+              <Grid item xs={7} sx={{ textAlign: 'left', marginTop: 'auto', marginBottom: 'auto' }}>
+                <ScheduleUpdatesRequiredEmail
+                  handleCancelAction={handleCancelUpdates}
+                  handleSendAction={handleEmailSend}
+                />
+              </Grid>
+              <Grid item xs={5}>
+                <UpdateRequiredPeriods
+                  scheduleData={scheduleData}
+                  requireUpdatePeriods={requireUpdatePeriods}
+                  setRequiredUpdatePeriods={setRequireUpdatePeriods}
+                />
+              </Grid>
+            </Grid>
+          </Box>
+        </Card>
       )}
-      {!!periodNotification && (
-        <CustomModal
-          title={MthTitle.NOTIFICATION}
-          description={extractContent(periodNotification || '')}
-          confirmStr='Ok'
-          showIcon={false}
-          showCancel={false}
-          backgroundColor={MthColor.WHITE}
-          onClose={() => setPeriodNotification(undefined)}
-          onConfirm={() => setPeriodNotification(undefined)}
-        />
-      )}
-      {!!subjectNotification && (
-        <CustomModal
-          title={MthTitle.NOTIFICATION}
-          description={extractContent(subjectNotification || '')}
-          confirmStr='Ok'
-          showIcon={false}
-          showCancel={false}
-          backgroundColor={MthColor.WHITE}
-          onClose={() => setSubjectNotification(undefined)}
-          onConfirm={() => setSubjectNotification(undefined)}
-        />
-      )}
-      {!subjectNotification && !!subjectReduceFundsNotification && (
-        <CustomModal
-          title={MthTitle.REDUCES_FUNDS}
-          description={extractContent(subjectReduceFundsNotification || '')}
-          confirmStr='Ok'
-          showIcon={false}
-          showCancel={false}
-          backgroundColor={MthColor.WHITE}
-          onClose={() => setSubjectReduceFundsNotification(undefined)}
-          onConfirm={() => setSubjectReduceFundsNotification(undefined)}
-        />
-      )}
-      {!!courseNotification && (
-        <CustomModal
-          title={MthTitle.NOTIFICATION}
-          description={extractContent(courseNotification || '')}
-          confirmStr='Ok'
-          showIcon={false}
-          showCancel={false}
-          backgroundColor={MthColor.WHITE}
-          onClose={() => setCourseNotification(undefined)}
-          onConfirm={() => setCourseNotification(undefined)}
-        />
-      )}
-      {!courseNotification && !!courseReduceFundsNotification && (
-        <CustomModal
-          title={MthTitle.REDUCES_FUNDS}
-          description={extractContent(courseReduceFundsNotification || '')}
-          confirmStr='Ok'
-          showIcon={false}
-          showCancel={false}
-          backgroundColor={MthColor.WHITE}
-          onClose={() => setCourseReduceFundsNotification(undefined)}
-          onConfirm={() => setCourseReduceFundsNotification(undefined)}
-        />
-      )}
-      {showThirdPartyProviderModal && (
-        <ThirdPartyProviderEdit
-          thirdPartyProvider={selectedThridPartyProvider}
-          handleSaveAction={handleSaveThirdPartyModal}
-          handleCancelAction={handleCancelThirdPartyModal}
-        />
-      )}
-      {showOnSiteSplitEnrollmentModal && (
-        <OnSiteSplitEnrollmentEdit
-          onSiteSplitEnrollment={selectedOnSiteSplitEnrollemnt}
-          handleCancelAction={handleCancelOnSplitEnrollmentModal}
-          handleSaveAction={handleSaveOnSplitEnrollmentModal}
-        />
-      )}
-      {showCustomBuilt && !!selectedSchedule && (
-        <CustomBuiltDescriptionEdit
-          setShowEditModal={setShowCustomBuilt}
-          customBuiltDescription={
-            selectedSchedule?.CustomBuiltDescription || selectedSchedule?.Title?.custom_built_description
-          }
-          onSave={handleSaveCustomBuiltDescription}
-        />
-      )}
-    </Card>
+    </>
   )
 }
 

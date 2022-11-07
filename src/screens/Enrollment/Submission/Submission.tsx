@@ -191,7 +191,7 @@ export const Submission: SubmissionTemplateType = ({ id, questions }) => {
       },
       packet: { ...student.packets.at(-1) },
       meta: metaData || {},
-      address: { ...student.person.address },
+      address: { ...profile.address },
       school_year_id: student.current_school_year_status.school_year_id,
     })
   }, [profile, student])
@@ -249,20 +249,16 @@ export const Submission: SubmissionTemplateType = ({ id, questions }) => {
 
   useEffect(() => {
     if (fileId) {
-      //   submitEnrollment({
-      //     variables: {
-      //       enrollmentPacketDocumentInput: {
-      //         ferpa_agreement: formik.values.ferpa,
-      //         photo_permission: formik.values.studentPhoto,
-      //         dir_permission: formik.values.schoolDistrict,
-      //         signature_name: formik.values.printName,
-      //         signature_file_id: fileId,
-      //         agrees_to_policy: formik.values.understand ? 1 : 0,
-      //         approves_enrollment: formik.values.approve ? 1 : 0,
-      //         packet_id: parseFloat(packetId as unknown as string),
-      //       }
-      //     }
-      //   })
+      const address = { ...formik.values.address }
+      if (address.address_id) {
+        address.address_id = parseInt(address.address_id)
+      }
+      if (address.state) {
+        address.state = address.state + ''
+      }
+      if (address.country_id) {
+        address.country_id = address.country_id + ''
+      }
       submitEnrollment({
         variables: {
           enrollmentPacketContactInput: {
@@ -276,7 +272,7 @@ export const Submission: SubmissionTemplateType = ({ id, questions }) => {
             },
             student: {
               ...omit(formik.values.student, ['person_id', 'photo', 'phone', 'grade_levels', 'emailConfirm']),
-              address: formik.values.address,
+              address: address,
             },
             signature_file_id: fileId,
             packet_id: parseFloat(packetId as unknown as string),
@@ -288,6 +284,10 @@ export const Submission: SubmissionTemplateType = ({ id, questions }) => {
         setMe((prev) => {
           return {
             ...prev,
+            profile: {
+              ...prev.profile,
+              address: address,
+            },
             students: prev?.students.map((student) => {
               const returnValue = { ...student }
               if (student.student_id === data.data.saveEnrollmentPacketSubmit.student.student_id) {

@@ -126,16 +126,15 @@ export const EnrollmentJobsInfo: FunctionComponent<EnrollmentJobsInfoProps> = ({
           {student.parent.phone.number ? phoneFormat(student.parent.phone.number) : 'Not found'}
         </Paragraph>
         <Paragraph color={SYSTEM_06} sx={{ fontSize: '14px', marginY: '4px' }} fontWeight='400'>
-          {street ? `${street} ${street2 ? street2 : ''}` : 'Not found'}
+          {street ? `${street} ${street2 ? ', ' + street2 : ''}` : 'Not found'}
         </Paragraph>
         <Paragraph color={SYSTEM_06} sx={{ fontSize: '14px', marginY: '4px' }} fontWeight='400'>
           {!student.parent.person.address.city &&
           !student.parent.person.address.state &&
           !student.parent.person.address.zip
             ? 'Not found'
-            : `${student.parent.person.address.city + ',' || ''} ${student.parent.person.address.state || ''}
+            : `${student.parent.person.address.city + ',' || ''} ${student.parent.person.address.state + ',' || ''}
             ${student.parent.person.address.zip || ''}`}
-          .
         </Paragraph>
       </Grid>
     </Grid>

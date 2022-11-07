@@ -22,5 +22,5 @@ export function parseGradeLevel(value?: string | number): string {
   if (numberValue === 1) return '1st Grade (6)'
   if (numberValue === 2) return '2nd Grade (7)'
   if (numberValue === 3) return '3rd Grade (8)'
-  return `${value}th Grade (${value !== '12' ? numberValue + 5 : `${numberValue + 5}/${numberValue + 6}`}`
+  return `${value}th Grade (${value !== '12' ? numberValue + 5 : `${numberValue + 5}/${numberValue + 6}`})`
 }

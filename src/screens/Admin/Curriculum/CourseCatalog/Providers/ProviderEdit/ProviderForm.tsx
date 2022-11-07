@@ -89,7 +89,19 @@ const ProviderForm: React.FC<ProviderFormProps> = ({ setIsChanged, periodsItems 
         </Grid>
         {values?.reduce_funds != ReduceFunds.NONE && (
           <Grid item xs={10}>
-            <Typography sx={{ fontSize: '18px', fontWeight: '700', mb: 1 }}>Reduce Funds Notification</Typography>
+            <Typography
+              sx={{
+                fontSize: '18px',
+                fontWeight: '700',
+                mb: 1,
+                color:
+                  touched.reduce_funds_notification && errors.reduce_funds_notification
+                    ? MthColor.ERROR_RED
+                    : MthColor.SYSTEM_01,
+              }}
+            >
+              Reduce Funds Notification
+            </Typography>
             <MthBulletEditor
               value={values?.reduce_funds_notification}
               setValue={(value) => {
@@ -97,6 +109,9 @@ const ProviderForm: React.FC<ProviderFormProps> = ({ setIsChanged, periodsItems 
               }}
               error={touched.reduce_funds_notification && Boolean(errors.reduce_funds_notification)}
             />
+            <Subtitle sx={editProviderClasses.formError}>
+              {touched.reduce_funds_notification && errors.reduce_funds_notification}
+            </Subtitle>
           </Grid>
         )}
 

@@ -89,6 +89,7 @@ export const getEnrollmentPacketsQuery = gql`
               email
               address {
                 street
+                street2
                 city
                 zip
                 state

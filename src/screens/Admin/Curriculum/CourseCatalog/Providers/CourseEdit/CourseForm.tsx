@@ -32,7 +32,7 @@ const CourseForm: React.FC<CourseFormProps> = ({
         setFieldValue('limit', null)
       }
     }
-  }, [values.provider_id])
+  }, [values.provider_id, providers])
 
   return (
     <Box sx={{ width: '100%', textAlign: 'left', mb: '70px' }}>
@@ -149,7 +149,19 @@ const CourseForm: React.FC<CourseFormProps> = ({
             )}
             {values?.reduce_funds != ReduceFunds.NONE && (
               <Grid item xs={12}>
-                <Typography sx={{ fontSize: '18px', fontWeight: '700', mb: 1 }}>Reduce Funds Notification</Typography>
+                <Typography
+                  sx={{
+                    fontSize: '18px',
+                    fontWeight: '700',
+                    mb: 1,
+                    color:
+                      touched.reduce_funds_notification && errors.reduce_funds_notification
+                        ? MthColor.ERROR_RED
+                        : MthColor.SYSTEM_01,
+                  }}
+                >
+                  Reduce Funds Notification
+                </Typography>
                 <MthBulletEditor
                   value={values?.reduce_funds_notification}
                   setValue={(value) => {

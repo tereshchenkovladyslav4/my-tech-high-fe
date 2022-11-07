@@ -38,6 +38,10 @@ export const QuickLinks: React.FC<QuickLinkProps> = ({ backAction, initialLink, 
   //	Flag state which indicate to show the leaving confirmation modal
   const [leavingConfirmModal, showLeavingConfirmModal] = useState(false)
 
+  const onBackPress = () => {
+    selectQuickLink(null)
+  }
+
   //	Detect profile change
   useEffect(() => {
     if (me) {
@@ -326,7 +330,13 @@ export const QuickLinks: React.FC<QuickLinkProps> = ({ backAction, initialLink, 
         />
       )}
       {selectedQuickLink && page == 'edit' && selectedQuickLink.type == QUICKLINK_TYPE.WITHDRAWAL && (
-        <Withdrawal action={setPage} handleChange={setChanged} region={region} studentId={studentId} />
+        <Withdrawal
+          action={setPage}
+          handleChange={setChanged}
+          region={region}
+          studentId={studentId}
+          onBackPress={onBackPress}
+        />
       )}
       {selectedQuickLink && page == 'reserved' && (
         <QuickLinkReservedEdit

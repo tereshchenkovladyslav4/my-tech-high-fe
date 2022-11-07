@@ -4,12 +4,7 @@ import { sortBy } from 'lodash'
 import moment from 'moment'
 import { DropDownItem } from '@mth/components/DropDown/types'
 import { getActiveScheduleSchoolYearsQuery } from '@mth/screens/Homeroom/Schedule/services'
-
-export type SchoolYearResponseType = {
-  school_year_id: number
-  date_begin: string
-  date_end: string
-}
+import { SchoolYearResponseType } from './useSchoolYearsByRegionId'
 
 export const useActiveScheduleSchoolYears = (
   studentId?: number | undefined,

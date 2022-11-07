@@ -23,6 +23,7 @@ import { useActiveSchoolYearsByRegionId } from '@mth/hooks'
 import { getWindowDimension } from '@mth/utils'
 import { DASHBOARD, GRADES, MTHBLUE, RED, SYSTEM_05 } from '../../../utils/constants'
 import { toOrdinalSuffix, isNumber } from '../../../utils/stringHelpers'
+import { phoneFormat } from '../../../utils/utils'
 import { LoadingScreen } from '../../LoadingScreen/LoadingScreen'
 import { AdditionalQuestionItem } from '../components/AdditionalQuestionItem/AdditionalQuestionItem'
 import { ApplicationQuestion } from '../components/AdditionalQuestionItem/types'
@@ -362,13 +363,18 @@ export const NewParent: React.FC = () => {
       }
     })
 
+    const parentInfo = omit(values.parent, ['emailConfirm'])
+    if (parentInfo.phone_number) {
+      parentInfo.phone_number = phoneFormat(parentInfo.phone_number)
+    }
+
     submitApplicationAction({
       variables: {
         createApplicationInput: {
           referred_by: values.refferedBy,
           state: values.state.toString(),
           program_year: parseInt(values.programYear!),
-          parent: omit(values.parent, ['emailConfirm']),
+          parent: parentInfo,
           students: submitStudents,
           midyear_application: midYearApplication,
           meta: JSON.stringify(values.meta),

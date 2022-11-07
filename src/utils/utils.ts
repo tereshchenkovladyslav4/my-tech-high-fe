@@ -165,3 +165,8 @@ export const extractAllNumFromStr = (str: string): Array<number> => {
   if (nums) return nums.map(Number)
   else return []
 }
+
+export const phoneFormat = (phone: string): string => {
+  phone = phone.replaceAll('-', '')
+  return `${phone.substring(0, 3)}-${phone.substring(3, 6)}-${phone.substring(6, 10)}`
+}

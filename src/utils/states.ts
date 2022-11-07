@@ -27,10 +27,6 @@ export const usStates = [
     value: 'AK',
   },
   {
-    label: 'American Samoa',
-    value: 'AS',
-  },
-  {
     label: 'Arizona',
     value: 'AZ',
   },
@@ -59,20 +55,12 @@ export const usStates = [
     value: 'DC',
   },
   {
-    label: 'Federated States Of Micronesia',
-    value: 'FM',
-  },
-  {
     label: 'Florida',
     value: 'FL',
   },
   {
     label: 'Georgia',
     value: 'GA',
-  },
-  {
-    label: 'Guam',
-    value: 'GU',
   },
   {
     label: 'Hawaii',
@@ -109,10 +97,6 @@ export const usStates = [
   {
     label: 'Maine',
     value: 'ME',
-  },
-  {
-    label: 'Marshall Islands',
-    value: 'MH',
   },
   {
     label: 'Maryland',
@@ -175,10 +159,6 @@ export const usStates = [
     value: 'ND',
   },
   {
-    label: 'Northern Mariana Islands',
-    value: 'MP',
-  },
-  {
     label: 'Ohio',
     value: 'OH',
   },
@@ -191,16 +171,8 @@ export const usStates = [
     value: 'OR',
   },
   {
-    label: 'Palau',
-    value: 'PW',
-  },
-  {
     label: 'Pennsylvania',
     value: 'PA',
-  },
-  {
-    label: 'Puerto Rico',
-    value: 'PR',
   },
   {
     label: 'Rhode Island',
@@ -231,10 +203,6 @@ export const usStates = [
     value: 'VT',
   },
   {
-    label: 'Virgin Islands',
-    value: 'VI',
-  },
-  {
     label: 'Virginia',
     value: 'VA',
   },
@@ -253,5 +221,9 @@ export const usStates = [
   {
     label: 'Wyoming',
     value: 'WY',
+  },
+  {
+    label: 'Other',
+    value: 'Other',
   },
 ]

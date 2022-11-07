@@ -52,7 +52,7 @@ const HomeroomResourceEdit: React.FC<HomeroomResourceEditProps> = ({
       .number()
       .when('subtitle', {
         is: ResourceSubtitle.PRICE,
-        then: yup.number().required('Price Required').moreThan(0, 'Should be greater than 0').positive('Price Invaild'),
+        then: yup.number().required('Price Required').moreThan(0, 'Should be greater than 0').positive('Price Invalid'),
       })
       .nullable(),
     website: yup.string().required('Website Required').matches(urlRex, 'Invalid URL').nullable(),
@@ -60,14 +60,14 @@ const HomeroomResourceEdit: React.FC<HomeroomResourceEditProps> = ({
     std_user_name: yup.string().required('Username Required').nullable(),
     std_password: yup.string().required('Password Required').nullable(),
     detail: yup.string().required('Description Required').min(9, 'Invalid Description').nullable(),
-    resource_limit: yup.number().min(1, 'Limit Invalid').positive('Limit Invaild').integer('Limit Invaild').nullable(),
+    resource_limit: yup.number().min(1, 'Limit Invalid').positive('Limit Invalid').integer('Limit Invalid').nullable(),
     ResourceLevels: yup
       .array()
       .when('add_resource_level', {
         is: true,
         then: yup.array().of(
           yup.object().shape({
-            limit: yup.number().min(1, 'Limit Invalid').integer('Limit Invaild').nullable(),
+            limit: yup.number().min(1, 'Limit Invalid').integer('Limit Invalid').nullable(),
             name: yup.string().required('Level Name Required').nullable(),
           }),
         ),

@@ -25,6 +25,7 @@ export type MthTableRowItem<T> = {
   isSelected?: boolean
   toggleExpand?: () => void
   expandNode?: string | number | ReactNode
+  sx?: SxProps<Theme>
 }
 
 export type MthTableProps<T> = {

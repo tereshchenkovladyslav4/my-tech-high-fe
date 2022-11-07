@@ -104,6 +104,7 @@ export const useStudentSchedulePeriods = (
             if (period) {
               item.Period = period
               item.schedulePeriodId = schedulePeriod.schedule_period_id
+              item.updateRequired = schedulePeriod.update_required
               if (schedulePeriod.SubjectId)
                 item.Subject = period.Subjects?.find((subject) => subject?.subject_id === schedulePeriod.SubjectId)
               if (schedulePeriod.TitleId)

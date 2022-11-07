@@ -551,7 +551,6 @@ export const Profile: React.FC<ProfileProps> = ({ handleIsFormChange }) => {
               <Alert
                 sx={{
                   position: 'relative',
-                  bottom: '-83px',
                 }}
                 onClose={() => {
                   setOpenSaveAlert({ open: false, status: 'success', message: '' })

@@ -617,7 +617,7 @@ function Item({ question: q, signature }: { question: Question; signature?: unkn
               },
             }}
             error={!!touched[q.id] && !!errors[q.id]}
-            helperText={errors[q.id] ? 'Parent Name is required.' : ''}
+            helperText={errors[q.id] ? 'Required' : ''}
           />
           <Subtitle
             size={12}
@@ -630,8 +630,8 @@ function Item({ question: q, signature }: { question: Question; signature?: unkn
           <SignaturePad options={{ minWidth: 1, maxWidth: 1 }} width={500} height={100} ref={signature} />
           <Box sx={{ height: 1, width: '100%', borderBottom: '1px solid #000', mb: 0.5 }} />
           {Boolean(errors[q.id]) && (
-            <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'center' }}>
-              <FormHelperText style={{ textAlign: 'center', color: RED }}>Signature required</FormHelperText>
+            <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'flex-start' }}>
+              <FormHelperText style={{ textAlign: 'left', color: RED, marginLeft: '14px' }}>Required</FormHelperText>
             </Grid>
           )}
           <Button

@@ -10,7 +10,7 @@ type ScheduleBuilder = {
   max_num_periods: number
 }
 
-export type SchoolYearRespnoseType = {
+export type SchoolYearResponseType = {
   school_year_id: number
   date_begin: string
   date_end: string
@@ -42,18 +42,18 @@ export const useSchoolYearsByRegionId = (
   regionId?: number | undefined,
 ): {
   loading: boolean
-  schoolYears: SchoolYearRespnoseType[]
+  schoolYears: SchoolYearResponseType[]
   dropdownItems: DropDownItem[]
   error: ApolloError | undefined
   refetchSchoolYear: () => void
   selectedYearId: number | undefined
   setSelectedYearId: (_?: number) => void
-  selectedYear: SchoolYearRespnoseType | undefined
+  selectedYear: SchoolYearResponseType | undefined
 } => {
   const { me } = useContext(UserContext)
   const selectedRegionId = regionId || me?.selectedRegionId
   const [dropdownItems, setDropdownItems] = useState<Array<DropDownItem>>([])
-  const [schoolYears, setSchoolYears] = useState<Array<SchoolYearRespnoseType>>([])
+  const [schoolYears, setSchoolYears] = useState<Array<SchoolYearResponseType>>([])
   const [selectedYearId, setSelectedYearId] = useState<number | undefined>()
 
   const { loading, data, error, refetch } = useQuery(getSchoolYearsByRegionId, {
@@ -68,7 +68,7 @@ export const useSchoolYearsByRegionId = (
     if (data?.region?.SchoolYears) {
       const { SchoolYears } = data?.region
       setDropdownItems(
-        sortBy(SchoolYears, 'date_begin').map((item: SchoolYearRespnoseType) => ({
+        sortBy(SchoolYears, 'date_begin').map((item: SchoolYearResponseType) => ({
           value: item.school_year_id,
           label: `${moment(item.date_begin).format('YYYY')}-${moment(item.date_end).format('YY')}`,
         })),

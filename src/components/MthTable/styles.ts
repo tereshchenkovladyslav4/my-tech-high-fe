@@ -12,9 +12,6 @@ export const mthTableClasses = {
       fontWeight: '600',
       border: 'none',
     },
-    '& > tbody > tr:nth-of-type(2n + 0) td': {
-      backgroundColor: 'white !important',
-    },
     '& .actionButton': {
       width: '32px',
       height: '32px',

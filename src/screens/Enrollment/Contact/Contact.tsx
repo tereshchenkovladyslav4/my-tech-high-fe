@@ -126,7 +126,6 @@ export const Contact: ContactTemplateType = ({ id, questions }) => {
       )
     }
   }, [questions])
-
   const [submitContactMutation] = useMutation(enrollmentContactMutation)
   const formik = useFormik({
     initialValues: {
@@ -140,7 +139,7 @@ export const Contact: ContactTemplateType = ({ id, questions }) => {
       },
       packet: { ...student.packets.at(-1) },
       meta: (student.packets.at(-1)?.meta && JSON.parse(student.packets.at(-1)?.meta)) || {},
-      address: { ...student.person.address },
+      address: { ...profile.address },
       school_year_id: student.current_school_year_status.school_year_id,
     },
     validationSchema: validationSchema,
@@ -150,6 +149,16 @@ export const Contact: ContactTemplateType = ({ id, questions }) => {
   })
 
   const submitContact = async () => {
+    const address = { ...formik.values.address }
+    if (address.address_id) {
+      address.address_id = parseInt(address.address_id)
+    }
+    if (address.state) {
+      address.state = address.state + ''
+    }
+    if (address.country_id) {
+      address.country_id = address.country_id + ''
+    }
     submitContactMutation({
       variables: {
         enrollmentPacketContactInput: {
@@ -163,7 +172,7 @@ export const Contact: ContactTemplateType = ({ id, questions }) => {
           },
           student: {
             ...omit(formik.values.student, ['person_id', 'photo', 'phone', 'grade_levels', 'emailConfirm']),
-            address: formik.values.address,
+            address: address,
           },
           school_year_id: student.current_school_year_status.school_year_id,
         },
@@ -179,6 +188,7 @@ export const Contact: ContactTemplateType = ({ id, questions }) => {
             phone: {
               number: formik.values.parent.phone_number,
             },
+            address: address,
           },
           students: prev?.students.map((student) => {
             const returnValue = { ...student }

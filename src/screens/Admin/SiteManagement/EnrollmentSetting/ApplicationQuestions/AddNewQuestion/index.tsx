@@ -277,7 +277,7 @@ export const AddNewQuestionModal: React.FC<AddNewQuestionModalProps> = ({
         type: newQuestion.type,
         options: newQuestion.options.filter((v) => {
           v.label = v.label.trim()
-          if (newQuestion.slug === 'address_country_id') {
+          if (newQuestion.slug === 'address_country_id' || newQuestion.slug === 'address_state') {
             v.value = v.value + ''
           }
           return v

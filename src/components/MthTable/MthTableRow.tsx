@@ -63,7 +63,16 @@ const MthTableRow = <T extends unknown>({
 
   const renderDraggableTableRow = (isSelectable: boolean, provided: DraggableProvided, item: MthTableRowItem<T>) => {
     return (
-      <TableRow ref={provided.innerRef} {...provided.draggableProps}>
+      <TableRow
+        ref={provided.innerRef}
+        {...provided.draggableProps}
+        sx={{
+          '&:nth-of-type(2n+0) td': {
+            backgroundColor: 'white !important',
+          },
+          ...item.sx,
+        }}
+      >
         <TableCell colSpan={12}>
           <Table>
             <TableBody>{renderGeneralTableRow(isSelectable, provided, item)}</TableBody>
@@ -80,7 +89,7 @@ const MthTableRow = <T extends unknown>({
   ) => {
     return (
       <>
-        <StyledTableRow className={isExpanded ? 'expanded' : ''}>
+        <StyledTableRow className={isExpanded ? 'expanded' : ''} sx={item.sx}>
           {isSelectable && (
             <TableCell className='checkWrap'>
               <MthCheckbox

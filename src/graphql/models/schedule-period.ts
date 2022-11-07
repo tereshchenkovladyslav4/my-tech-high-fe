@@ -16,4 +16,5 @@ export type SchedulePeriod = {
   tp_phone_number: string
   tp_provider_name: string
   tp_specific_course_website: string
+  update_required: boolean
 }
