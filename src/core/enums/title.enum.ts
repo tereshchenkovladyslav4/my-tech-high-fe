@@ -45,4 +45,7 @@ export enum MthTitle {
   SAVE_CHANGES = 'Save Changes',
   ACCEPT = 'Accept',
   SAVE_DRAFT = 'Save Draft',
+  REQUEST_UPDATES = 'Request Updates',
+  SUBMIT = 'Submit',
+  SUBMIT_UPDATES = 'Submit Updates',
 }

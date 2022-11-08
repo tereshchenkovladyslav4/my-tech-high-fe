@@ -20,11 +20,12 @@ import { saveSchedulePeriodMutation } from '@mth/graphql/mutation/schedule-perio
 import { getAllScheduleBuilderQuery } from '@mth/graphql/queries/schedule-builder'
 import { useStudentSchedulePeriods } from '@mth/hooks'
 import { CustomBuiltDescriptionEdit } from '@mth/screens/Homeroom/Schedule/ScheduleBuilder/CustomBuiltDescription'
+import { mthButtonClasses } from '@mth/styles/button.style'
 import { extractContent, gradeShortText } from '@mth/utils'
-import { scheduleClassess } from '../styles'
 import { Course, Period, ScheduleBuilderProps, ScheduleData, Subject, Title } from '../types'
 import { OnSiteSplitEnrollmentEdit } from './OnSiteSplitEnrollmentEdit'
 import { OnSiteSplitEnrollment } from './OnSiteSplitEnrollmentEdit/types'
+import { RequestUpdatesModal } from './RequestUpdatesModal'
 import { scheduleBuilderClasses } from './styles'
 import { ThirdPartyProviderEdit } from './ThirdPartyProviderEdit'
 import { ThirdPartyProvider } from './ThirdPartyProviderEdit/types'
@@ -74,11 +75,11 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
   const [isDraftSaved, setIsDraftSaved] = useState<boolean>(false)
   const [showSubmitBtn, setShowSubmitBtn] = useState<boolean>(false)
   const [showSubmitSuccessModal, setShowSubmitSuccessModal] = useState<boolean>(false)
-  const { scheduleData, studentScheduleId, setScheduleData, setStudentScheduleId } = useStudentSchedulePeriods(
-    studentId,
-    selectedYear,
-    diplomaSeekingPath,
-  )
+  const [showRequestUpdatesModal, setShowRequestUpdatesModal] = useState<boolean>(false)
+  const [isEditMode, setIsEditMode] = useState<boolean>(false)
+
+  const { scheduleData, studentScheduleId, studentScheduleStatus, setScheduleData, setStudentScheduleId, refetch } =
+    useStudentSchedulePeriods(studentId, selectedYear, diplomaSeekingPath)
 
   const { loading: scheduleBuilderSettingLoading, data: scheduleBuilderSettingData } = useQuery(
     getAllScheduleBuilderQuery,
@@ -400,7 +401,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
                 {('0' + item.rawData.period).slice(-2)}
               </Typography>
               <Box sx={{ marginLeft: '20px' }}>
-                {item.rawData.Periods?.length > 1 ? (
+                {editable(item.rawData) && item.rawData.Periods?.length > 1 ? (
                   <NestedDropdown
                     menuItemsData={createPeriodMenuItems(item.rawData)}
                     MenuProps={{ elevation: 3 }}
@@ -428,8 +429,10 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
         return (
           <Box>
             {!!item.rawData.Period &&
+              (editable(item.rawData) &&
               (item.rawData.Period.Subjects?.length > 1 ||
-              (item.rawData.Period.Subjects?.length === 1 && item.rawData.Period.Subjects?.[0]?.Titles?.length > 1) ? (
+                (item.rawData.Period.Subjects?.length === 1 &&
+                  item.rawData.Period.Subjects?.[0]?.Titles?.length > 1)) ? (
                 <NestedDropdown
                   menuItemsData={createSubjectMenuItems(item.rawData)}
                   MenuProps={{ elevation: 3 }}
@@ -456,7 +459,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
       formatter: (item: MthTableRowItem<ScheduleData>) => {
         return (
           <Box>
-            {!!item.rawData.Title && item.rawData.Title.CourseTypes?.length > 1 ? (
+            {editable(item.rawData) && !!item.rawData.Title && item.rawData.Title.CourseTypes?.length > 1 ? (
               <NestedDropdown
                 menuItemsData={createCourseTypeMenuItems(item.rawData)}
                 MenuProps={{ elevation: 3 }}
@@ -487,7 +490,8 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
               !item.rawData.OnSiteSplitEnrollment &&
               !!item.rawData.Title &&
               (item.rawData.Title.Providers?.length > 1 ||
-              (item.rawData.Title.Providers?.length === 1 &&
+              (editable(item.rawData) &&
+                item.rawData.Title.Providers?.length === 1 &&
                 (item.rawData.Title.Providers?.[0]?.Courses?.length > 1 ||
                   !!item.rawData.Title.Providers?.[0]?.AltCourses?.length)) ? (
                 <NestedDropdown
@@ -516,20 +520,22 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
                     {item.rawData.OnSiteSplitEnrollment.courseName}
                   </Typography>
                 </Box>
-                <Box>
-                  <Tooltip title='Edit' placement='top'>
-                    <IconButton
-                      sx={scheduleBuilderClasses.editButton}
-                      onClick={() => {
-                        setShowOnSiteSplitEnrollmentModal(true)
-                        setSelectedOnSiteSplitEnrollment(item.rawData.OnSiteSplitEnrollment)
-                        setSelectedSchedule(item.rawData)
-                      }}
-                    >
-                      <ModeEditIcon sx={scheduleBuilderClasses.editIcon} />
-                    </IconButton>
-                  </Tooltip>
-                </Box>
+                {editable(item.rawData) && (
+                  <Box>
+                    <Tooltip title='Edit' placement='top'>
+                      <IconButton
+                        sx={scheduleBuilderClasses.editButton}
+                        onClick={() => {
+                          setShowOnSiteSplitEnrollmentModal(true)
+                          setSelectedOnSiteSplitEnrollment(item.rawData.OnSiteSplitEnrollment)
+                          setSelectedSchedule(item.rawData)
+                        }}
+                      >
+                        <ModeEditIcon sx={scheduleBuilderClasses.editIcon} />
+                      </IconButton>
+                    </Tooltip>
+                  </Box>
+                )}
               </Box>
             )}
             {item.rawData.CourseType === CourseType.THIRD_PARTY_PROVIDER && item.rawData.ThirdParty && (
@@ -553,21 +559,23 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
                     </Typography>
                   ))}
                 </Box>
-                <Box>
-                  <Tooltip title='Edit' placement='top'>
-                    <IconButton
-                      sx={scheduleBuilderClasses.editButton}
-                      onClick={() => {
-                        setShowThirdPartyProviderModal(true)
-                        setSelectedThridPartyProvider(item.rawData.ThirdParty)
-                        setSelectedSchedule(item.rawData)
-                        setSelectedCourseType(item.rawData?.CourseType)
-                      }}
-                    >
-                      <ModeEditIcon sx={scheduleBuilderClasses.editIcon} />
-                    </IconButton>
-                  </Tooltip>
-                </Box>
+                {editable(item.rawData) && (
+                  <Box>
+                    <Tooltip title='Edit' placement='top'>
+                      <IconButton
+                        sx={scheduleBuilderClasses.editButton}
+                        onClick={() => {
+                          setShowThirdPartyProviderModal(true)
+                          setSelectedThridPartyProvider(item.rawData.ThirdParty)
+                          setSelectedSchedule(item.rawData)
+                          setSelectedCourseType(item.rawData?.CourseType)
+                        }}
+                      >
+                        <ModeEditIcon sx={scheduleBuilderClasses.editIcon} />
+                      </IconButton>
+                    </Tooltip>
+                  </Box>
+                )}
               </Box>
             )}
             {item.rawData.CourseType === CourseType.CUSTOM_BUILT && !!item.rawData.CustomBuiltDescription && (
@@ -578,17 +586,19 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
                   variant={'body2'}
                   dangerouslySetInnerHTML={{ __html: item.rawData.CustomBuiltDescription }}
                 />
-                <Tooltip title='Edit' placement='top'>
-                  <IconButton
-                    sx={scheduleBuilderClasses.editButton}
-                    onClick={() => {
-                      setSelectedSchedule(item.rawData)
-                      setShowCustomBuilt(true)
-                    }}
-                  >
-                    <ModeEditIcon sx={scheduleBuilderClasses.editIcon} />
-                  </IconButton>
-                </Tooltip>
+                {editable(item.rawData) && (
+                  <Tooltip title='Edit' placement='top'>
+                    <IconButton
+                      sx={scheduleBuilderClasses.editButton}
+                      onClick={() => {
+                        setSelectedSchedule(item.rawData)
+                        setShowCustomBuilt(true)
+                      }}
+                    >
+                      <ModeEditIcon sx={scheduleBuilderClasses.editIcon} />
+                    </IconButton>
+                  </Tooltip>
+                )}
               </Box>
             )}
           </Box>
@@ -634,7 +644,15 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
         Description: 'Lorem',
       },
       rawData: schedule,
+      sx:
+        isEditMode && schedule.editable
+          ? { '& .MuiTableCell-root': { background: 'rgba(236, 89, 37, 0.1) !important' } }
+          : {},
     }
+  }
+
+  const editable = (schedule: ScheduleData) => {
+    return !studentScheduleStatus || studentScheduleStatus === ScheduleStatus.DRAFT || schedule.editable
   }
 
   const handleSave = async (kind: ScheduleStatus) => {
@@ -685,15 +703,29 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
             case ScheduleStatus.DRAFT:
               setIsDraftSaved(true)
               setIsChanged(false)
+              setIsEditMode(false)
+              scheduleData.map((x) => (x.editable = false))
+              setScheduleData(JSON.parse(JSON.stringify(scheduleData)))
+              refetch()
               break
             case ScheduleStatus.SUBMITTED:
               setShowSubmitSuccessModal(true)
               setIsChanged(false)
+              setIsEditMode(false)
+              scheduleData.map((x) => (x.editable = false))
+              setScheduleData(JSON.parse(JSON.stringify(scheduleData)))
+              refetch()
               break
           }
         }
       }
     }
+  }
+
+  const startEdit = (periodIds: number[]) => {
+    setIsEditMode(true)
+    scheduleData.map((item) => (item.editable = periodIds.includes(item.period)))
+    setScheduleData(JSON.parse(JSON.stringify(scheduleData)))
   }
 
   useEffect(() => {
@@ -879,6 +911,13 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
           onSave={handleSaveCustomBuiltDescription}
         />
       )}
+      {showRequestUpdatesModal && (
+        <RequestUpdatesModal
+          scheduleData={scheduleData}
+          setShowEditModal={setShowRequestUpdatesModal}
+          onSave={startEdit}
+        />
+      )}
       <Prompt
         when={showUnsavedModal}
         message={JSON.stringify({
@@ -886,26 +925,32 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
           content: MthTitle.UNSAVED_DESCRIPTION,
         })}
       />
-      {showSubmitBtn ? (
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', paddingX: 6 }}>
-          <Button onClick={() => handleSave(ScheduleStatus.DRAFT)} variant='contained' sx={scheduleClassess.button}>
-            {MthTitle.SAVE_DRAFT}
-          </Button>
-          <Button
-            onClick={() => handleSave(ScheduleStatus.SUBMITTED)}
-            variant='contained'
-            sx={scheduleClassess.submitBtn}
-          >
-            {'Submit'}
-          </Button>
-        </Box>
-      ) : (
-        <Box sx={{ display: 'flex', justifyContent: 'end', paddingX: 6 }}>
-          <Button onClick={() => handleSave(ScheduleStatus.DRAFT)} variant='contained' sx={scheduleClassess.button}>
-            {MthTitle.SAVE_DRAFT}
-          </Button>
-        </Box>
-      )}
+      <Box sx={{ mt: 3 }}>
+        {(isEditMode || !studentScheduleStatus || studentScheduleStatus === ScheduleStatus.DRAFT) &&
+          (showSubmitBtn ? (
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', paddingX: 6 }}>
+              <Button onClick={() => handleSave(ScheduleStatus.DRAFT)} sx={mthButtonClasses.primary}>
+                {MthTitle.SAVE_DRAFT}
+              </Button>
+              <Button onClick={() => handleSave(ScheduleStatus.SUBMITTED)} sx={mthButtonClasses.dark}>
+                {isEditMode ? MthTitle.SUBMIT_UPDATES : MthTitle.SUBMIT}
+              </Button>
+            </Box>
+          ) : (
+            <Box sx={{ display: 'flex', justifyContent: 'end', paddingX: 6 }}>
+              <Button onClick={() => handleSave(ScheduleStatus.DRAFT)} sx={mthButtonClasses.primary}>
+                {MthTitle.SAVE_DRAFT}
+              </Button>
+            </Box>
+          ))}
+        {studentScheduleStatus === ScheduleStatus.SUBMITTED && !isEditMode && (
+          <Box sx={{ display: 'flex', justifyContent: 'end', paddingX: 6 }}>
+            <Button onClick={() => setShowRequestUpdatesModal(true)} sx={mthButtonClasses.red}>
+              {MthTitle.REQUEST_UPDATES}
+            </Button>
+          </Box>
+        )}
+      </Box>
     </>
   )
 }

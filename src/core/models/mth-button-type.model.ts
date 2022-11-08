@@ -1,0 +1,13 @@
+export type MthButtonType =
+  | 'primary'
+  | 'roundPrimary'
+  | 'smallPrimary'
+  | 'roundSmallPrimary'
+  | 'dark'
+  | 'roundDark'
+  | 'smallDark'
+  | 'roundSmallDark'
+  | 'gray'
+  | 'roundGray'
+  | 'smallGray'
+  | 'roundSmallGray'

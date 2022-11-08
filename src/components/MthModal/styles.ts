@@ -1,4 +1,5 @@
 import { SYSTEM_01 } from '../../utils/constants'
+
 export const useStyles = {
   modal: {
     position: 'absolute',
@@ -6,7 +7,7 @@ export const useStyles = {
     left: '50%',
     transform: 'translate(-50%, -50%)',
     height: 'auto',
-    borderRadius: 2,
+    borderRadius: 4,
     backgroundColor: 'white',
     p: 4,
     overflow: 'auto',
@@ -25,7 +26,5 @@ export const useStyles = {
   },
   button: {
     width: '160px',
-    height: '36px',
-    borderRadius: '50px',
   },
 }

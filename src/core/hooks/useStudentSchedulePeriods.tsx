@@ -20,6 +20,7 @@ export const useStudentSchedulePeriods = (
   studentScheduleStatus: ScheduleStatus
   setScheduleData: (value: ScheduleData[]) => void
   setStudentScheduleId: (value: number) => void
+  refetch: () => void
 } => {
   const [scheduleData, setScheduleData] = useState<ScheduleData[]>([])
   const [studentScheduleId, setStudentScheduleId] = useState<number>(0)
@@ -31,17 +32,18 @@ export const useStudentSchedulePeriods = (
     fetchPolicy: 'network-only',
   })
 
-  const { loading: studentSchedulePeriodsLoading, data: studentSchedulePeriodsData } = useQuery(
-    getStudentSchedulePeriodsQuery,
-    {
-      variables: {
-        schoolYearId: school_year_id,
-        studentId: student_id,
-      },
-      skip: !student_id || !school_year_id,
-      fetchPolicy: 'network-only',
+  const {
+    loading: studentSchedulePeriodsLoading,
+    data: studentSchedulePeriodsData,
+    refetch,
+  } = useQuery(getStudentSchedulePeriodsQuery, {
+    variables: {
+      schoolYearId: school_year_id,
+      studentId: student_id,
     },
-  )
+    skip: !student_id || !school_year_id,
+    fetchPolicy: 'network-only',
+  })
 
   useEffect(() => {
     if (!loading && periodsData?.studentPeriods) {
@@ -157,5 +159,6 @@ export const useStudentSchedulePeriods = (
     studentScheduleStatus: studentScheduleStatus,
     setScheduleData: setScheduleData,
     setStudentScheduleId: setStudentScheduleId,
+    refetch,
   }
 }

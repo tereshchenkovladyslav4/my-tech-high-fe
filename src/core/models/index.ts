@@ -1,3 +1,4 @@
+export * from './mth-button-type.model'
 export * from './region.model'
 export * from './schedule-builder.model'
 export * from './school-year-type.model'

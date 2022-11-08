@@ -17,10 +17,12 @@ export const scheduleBuilderClasses = {
     },
     '& tbody tr': {
       paddingBottom: '24px',
+      borderBottom: '1px solid #E7E7E7',
     },
     '& tbody tr td': {
       backgroundColor: '#FFFFFF !important',
       fontSize: '14px',
+      borderRadius: '0 !important',
     },
     '& tbody tr td div': {
       borderLeft: 'none !important',
