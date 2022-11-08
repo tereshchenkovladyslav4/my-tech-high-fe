@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext, FunctionComponent } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import { useMutation, useQuery } from '@apollo/client'
 import { Card } from '@mui/material'
 import moment from 'moment'
@@ -14,7 +14,7 @@ type AnnouncementTableProps = {
   setAnnouncement: (value: Announcement) => void
 }
 
-const AnnouncementTable: FunctionComponent<AnnouncementTableProps> = ({ setAnnouncement }) => {
+const AnnouncementTable: React.FC<AnnouncementTableProps> = ({ setAnnouncement }) => {
   const classes = useStyles
   const { me } = useContext(UserContext)
   const [searchField, setSearchField] = useState<string>('')

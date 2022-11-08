@@ -4,6 +4,8 @@ import { SxProps } from '@mui/system'
 export type DropDownItem = {
   label: string | number
   value: string | number | boolean
+  hasDeleteIcon?: boolean
+  handleDeleteItem?: (value: string | number | boolean) => void
 }
 
 type FormikCustomError = {

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
+import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
-import { FormControl, Select, MenuItem, TextField, FormHelperText, Divider } from '@mui/material'
+import { FormControl, Select, MenuItem, TextField, FormHelperText, Divider, IconButton, Tooltip } from '@mui/material'
 import { Box, styled } from '@mui/system'
 import { map } from 'lodash'
 import { MthColor } from '@mth/enums'
@@ -47,8 +48,15 @@ export const DropDown: React.FC<DropDownProps> = ({
   }
 
   const renderDropDownItem = map(dropDownItems, (dropDownItem, index) => (
-    <MenuItem key={index} value={dropDownItem.value}>
+    <MenuItem key={index} sx={{ display: 'flex', justifyContent: 'space-between' }} value={dropDownItem.value}>
       {dropDownItem.label}
+      {dropDownItem.hasDeleteIcon && (
+        <Tooltip title='Delete' placement='top'>
+          <IconButton onClick={() => dropDownItem.handleDeleteItem(dropDownItem.value)}>
+            <DeleteForeverOutlinedIcon sx={{ cursor: 'pointer', width: '25px', height: '25px' }} fontSize='medium' />
+          </IconButton>
+        </Tooltip>
+      )}
     </MenuItem>
   ))
 
@@ -80,7 +88,7 @@ export const DropDown: React.FC<DropDownProps> = ({
                 displayEmpty
                 renderValue={
                   !!value || value === 0
-                    ? undefined
+                    ? () => <span>{dropDownItems?.find((item) => item.value == value)?.label}</span>
                     : () => <span style={{ color: MthColor.BLUE_GRDIENT }}>{placeholder}</span>
                 }
                 sx={{ ...dropdownClasses.borderNone }}
@@ -98,7 +106,9 @@ export const DropDown: React.FC<DropDownProps> = ({
                 onChange={(e) => handleChange(e.target?.value)}
                 displayEmpty
                 renderValue={
-                  !!value || value === 0 ? undefined : () => <span style={{ color: 'gray' }}>{placeholder}</span>
+                  !!value || value === 0
+                    ? () => <span>{dropDownItems?.find((item) => item.value == value)?.label}</span>
+                    : () => <span style={{ color: 'gray' }}>{placeholder}</span>
                 }
                 sx={{
                   ...sx,
