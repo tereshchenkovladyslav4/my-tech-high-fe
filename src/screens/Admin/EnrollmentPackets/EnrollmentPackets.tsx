@@ -3,7 +3,7 @@ import { Grid } from '@mui/material'
 import { Box } from '@mui/system'
 import { EnrollmentPacketTable } from './EnrollmentPacketTable/EnrollmentPacketTable'
 
-export const EnrollmentPackets: FunctionComponent = () => {
+export const EnrollmentPackets: React.FC = () => {
   return (
     <Box sx={{ marginX: 4 }}>
       <Grid container rowSpacing={2}>

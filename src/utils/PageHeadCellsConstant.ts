@@ -269,7 +269,7 @@ export const ENROLLMENT_PACKET_HEADCELLS: HeadCell[] = [
     id: 'submitted',
     numeric: false,
     disablePadding: true,
-    label: 'Submitted',
+    label: 'Date',
   },
   {
     id: 'status',
