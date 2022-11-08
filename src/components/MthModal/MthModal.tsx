@@ -1,6 +1,8 @@
 import React from 'react'
 import { Close } from '@mui/icons-material'
 import { Box, Button, Modal, Typography } from '@mui/material'
+import { MthButtonType } from '@mth/models'
+import { mthButtonClasses } from '@mth/styles/button.style'
 import { useStyles } from './styles'
 export type CustomModalType = {
   open: boolean
@@ -9,8 +11,9 @@ export type CustomModalType = {
   onClose: () => void
   onConfirm: () => void
   confirmStr?: string
-  classNameBtnOk?: string
+  confirmBtnType?: MthButtonType
   cancelStr?: string
+  cancelBtnType?: MthButtonType
   backgroundColor?: string
   noCloseOnBackdrop?: boolean
   width?: number
@@ -30,7 +33,8 @@ export const MthModal: React.FC<CustomModalType> = ({
   children,
   noCloseOnBackdrop = false,
   width,
-  classNameBtnOk = 'bg-gradient-dark',
+  confirmBtnType = 'roundSmallDark',
+  cancelBtnType = 'roundSmallGray',
   showBtnClose = false,
   showBtnConfirm = true,
   showBtnCancel = true,
@@ -69,23 +73,12 @@ export const MthModal: React.FC<CustomModalType> = ({
           {(showBtnCancel || showBtnConfirm) && (
             <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '30px', gap: '40px' }}>
               {showBtnCancel && (
-                <Button
-                  sx={{ ...useStyles.button, fontSize: '12px' }}
-                  variant='contained'
-                  color='warning'
-                  onClick={onClose}
-                >
+                <Button sx={{ ...useStyles.button, ...mthButtonClasses[cancelBtnType] }} onClick={onClose}>
                   {cancelStr}
                 </Button>
               )}
               {showBtnConfirm && (
-                <Button
-                  sx={{ ...useStyles.button, fontSize: '12px' }}
-                  color='primary'
-                  variant='contained'
-                  onClick={onConfirm}
-                  className={classNameBtnOk || ''}
-                >
+                <Button sx={{ ...useStyles.button, ...mthButtonClasses[confirmBtnType] }} onClick={onConfirm}>
                   {confirmStr}
                 </Button>
               )}

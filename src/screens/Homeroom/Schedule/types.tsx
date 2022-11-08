@@ -156,6 +156,9 @@ export type ScheduleData = {
   IsChangedCustomBuiltDescription?: boolean
   updateRequired?: boolean
 
+  // Temp fields
+  editable?: boolean
+
   // TODO Should remove below fields
   Type?: string
   Text?: string

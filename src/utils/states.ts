@@ -222,8 +222,4 @@ export const usStates = [
     label: 'Wyoming',
     value: 'WY',
   },
-  {
-    label: 'Other',
-    value: 'Other',
-  },
 ]
