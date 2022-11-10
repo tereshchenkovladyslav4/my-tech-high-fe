@@ -358,7 +358,7 @@ const Periods: FunctionComponent = () => {
   const validateGrade = (gradeMin: string, gradeMax: string) => {
     const indexMin = grades.findIndex((el) => el === gradeMin)
     const indexMax = grades.findIndex((el) => el === gradeMax)
-    if (indexMin < indexMax || indexMax === -1) {
+    if (indexMin <= indexMax || indexMax === -1) {
       setModalErrorGradeValidation(false)
       return true
     } else {

@@ -70,7 +70,7 @@ export const useStyles = {
     paddingLeft: '12px',
     whiteSpace: 'nowrap',
     textOverflow: 'ellipsis',
-    maxWidth: '78%',
+    maxWidth: '70%',
     overflow: 'hidden',
   },
   formValue: {

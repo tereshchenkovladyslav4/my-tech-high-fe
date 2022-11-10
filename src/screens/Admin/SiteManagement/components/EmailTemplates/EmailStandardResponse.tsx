@@ -3,7 +3,7 @@ import { Add } from '@mui/icons-material'
 import DehazeIcon from '@mui/icons-material/Dehaze'
 import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined'
 import EditIcon from '@mui/icons-material/Edit'
-import { Modal, List, ListItem, IconButton, Button, Grid } from '@mui/material'
+import { Modal, List, ListItem, IconButton, Button, Grid, Tooltip } from '@mui/material'
 import { Box } from '@mui/system'
 
 import { arrayMove, SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc'
@@ -18,7 +18,9 @@ const classes = useStyles
 
 const DragHandle = SortableHandle(() => (
   <IconButton sx={{ color: '#0E0E0E' }}>
-    <DehazeIcon />
+    <Tooltip title='Move' color='primary' placement='bottom'>
+      <DehazeIcon />
+    </Tooltip>
   </IconButton>
 ))
 
@@ -62,10 +64,14 @@ const StandardResponse: React.FC<{
         <StandardResponseInfo item={itemData} />
         <Box display='inline-flex'>
           <IconButton sx={{ color: '#0E0E0E' }} onClick={() => editResponse(index)}>
-            <EditIcon />
+            <Tooltip title='Edit' color='primary' placement='bottom'>
+              <EditIcon />
+            </Tooltip>
           </IconButton>
           <IconButton sx={{ color: '#0E0E0E' }} onClick={() => deleteResItem(index)}>
-            <DeleteForeverOutlinedIcon />
+            <Tooltip title='Delete' color='primary' placement='bottom'>
+              <DeleteForeverOutlinedIcon />
+            </Tooltip>
           </IconButton>
           <DragHandle />
         </Box>

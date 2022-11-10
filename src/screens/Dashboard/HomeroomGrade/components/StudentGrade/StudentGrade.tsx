@@ -102,7 +102,7 @@ export const StudentGrade: StudentGradeTemplateType = ({ student, schoolYears, n
         icon: <ScheduleIcon sx={{ color: blue, cursor: 'pointer' }} />,
       })
     } else if (
-      studentSchoolYear?.schedule &&
+      studentSchoolYear?.schedule === true &&
       notification.at(0)?.phrase !== 'Submit Schedule' &&
       currPacket?.status === PacketStatus.ACCEPTED &&
       currApplication?.status === ApplicantStatus.ACCEPTED
@@ -111,7 +111,7 @@ export const StudentGrade: StudentGradeTemplateType = ({ student, schoolYears, n
         color: blue,
         progress: 75,
         message: 'Waiting for Schedule Builder to Open',
-        icon: <ErrorOutlineIcon sx={{ color: blue, cursor: 'pointer' }} />,
+        icon: <ScheduleIcon sx={{ color: blue, cursor: 'pointer' }} />,
       })
     } else if (notification.at(0)?.phrase === 'Submit Schedule') {
       setCircleData({

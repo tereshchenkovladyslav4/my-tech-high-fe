@@ -43,10 +43,10 @@ const AddEvent: React.FC<AddEventProps> = ({ selectedEvent }) => {
       .min(yup.ref('startDate'), ({ min }) => moment(min).isValid() && 'Invalid End Date')
       .nullable(),
     description: yup.string().required('Description Required').min(9, 'Invalid Description').nullable(),
-    grades: yup.array().min(1, 'At least one Grade Level must be selected'),
+    grades: yup.array().min(1, 'Grade Required'),
     allDay: yup.boolean().nullable(),
     hasRSVP: yup.boolean().nullable(),
-    users: yup.array().min(1, 'At least one User must be selected'),
+    users: yup.array().min(1, 'User Required'),
   })
 
   const handleCancelClick = () => {

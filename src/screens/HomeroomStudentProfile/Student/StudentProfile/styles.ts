@@ -2,11 +2,15 @@ import { SYSTEM_01, LIGHTGRAY, SYSTEM_02, RED } from '../../../../utils/constant
 
 export const studentProfileClasses = {
   gridContainer: {
+    display: { xs: 'none', sm: 'block' },
     textAlign: 'left' as const,
     paddingX: 4,
     paddingY: 2,
     marginTop: 2,
     marginBottom: 4,
+  },
+  mobileGridContainer: {
+    display: { xs: 'block', sm: 'none' },
   },
   avatar: {
     height: '164px',
@@ -61,7 +65,6 @@ export const studentProfileClasses = {
     textAlign: 'left',
     color: SYSTEM_02,
   },
-  saveButton: {},
   pendingBtn: {
     height: '45px',
     width: '100%',

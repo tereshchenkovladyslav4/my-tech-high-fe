@@ -44,11 +44,13 @@ export const ScheduleTable: React.FC<ApplicationTableProps> = ({ filter }) => {
 
   const createData = (schedule: unknown) => {
     return {
+      key: schedule.schedule_id.toString(),
       columns: {
         id: schedule.schedule_id,
         date: schedule.date_submitted ? moment(schedule.date_submitted).format('MM/DD/YY') : null,
         status: schedule.status,
         student: `${schedule.ScheduleStudent.person?.last_name}, ${schedule.ScheduleStudent.person?.first_name}`,
+        studentId: +schedule.ScheduleStudent.student_id,
         grade: schedule.ScheduleStudent.grade_level,
         parent: `${schedule.ScheduleStudent.parent.person?.last_name}, ${schedule.ScheduleStudent.parent.person?.first_name}`,
         diploma: schedule.ScheduleStudent.diploma_seeking === 1 ? 1 : 0,

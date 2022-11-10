@@ -1,24 +1,27 @@
-import React from 'react'
-import { Box, Grid } from '@mui/material'
+import React, { FunctionComponent } from 'react'
+import { Grid } from '@mui/material'
 import { ToDo } from '../../Dashboard/ToDoList/ToDo'
 import { StudentProfile } from './StudentProfile/StudentProfile'
 import { StudentSchedule } from './StudentSchedule/StudentSchedule'
+import { StudentType } from './types'
 
-export const Student: React.FC = () => {
+type StudentProps = {
+  student?: StudentType | undefined
+}
+
+export const Student: FunctionComponent<StudentProps> = () => {
   return (
-    <Box display='flex' flexDirection='row'>
-      <Grid container padding={4} rowSpacing={4}>
-        <Grid item xs={9}>
-          <StudentProfile />
-        </Grid>
-        <Grid item xs={3}>
-          <StudentSchedule />
-        </Grid>
-        <Grid item xs={9}>
-          <ToDo />
-        </Grid>
+    <Grid container padding={4} rowSpacing={4}>
+      <Grid item xs={12} sm={9}>
+        <StudentProfile />
       </Grid>
-    </Box>
+      <Grid item xs={12} sm={3}>
+        <StudentSchedule />
+      </Grid>
+      <Grid item xs={12} sm={9}>
+        <ToDo />
+      </Grid>
+    </Grid>
   )
 }
 

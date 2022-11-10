@@ -50,3 +50,12 @@ export const getSchedulesQuery = gql`
     }
   }
 `
+
+export const updateScheduleMutation = gql`
+  mutation CreateOrUpdateSchedule($createScheduleInput: CreateOrUpdateScheduleInput!) {
+    createOrUpdateSchedule(createScheduleInput: $createScheduleInput) {
+      schedule_id
+      status
+    }
+  }
+`

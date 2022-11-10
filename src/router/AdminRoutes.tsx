@@ -20,6 +20,7 @@ import { Enrollment } from '@mth/screens/Admin/Enrollment/Enrollment'
 import { EnrollmentPackets } from '@mth/screens/Admin/EnrollmentPackets/EnrollmentPackets'
 import { EnrollmentSchedule } from '@mth/screens/Admin/EnrollmentSchedule/EnrollmentSchedule'
 import { ScheduleBuilder } from '@mth/screens/Admin/EnrollmentSchedule/ScheduleBuilder'
+import { HomeRoom } from '@mth/screens/Admin/HomeRoom/HomeRoom'
 import { Records } from '@mth/screens/Admin/Records'
 import { SchoolOfEnrollment } from '@mth/screens/Admin/SchoolOfEnrollment/SchoolOfEnrollment'
 import AdminSettings from '@mth/screens/Admin/Settings/AdminSettings'
@@ -52,6 +53,7 @@ import {
   CURRICULUM_COURSE_CATALOG_SUBJECTS,
   CURRICULUM_COURSE_CATALOG_PROVIDERS,
   CURRICULUM_COURSE_CATALOG_STATE_CODES,
+  HOMEROOM,
 } from '../utils/constants'
 
 export const AdminRoutes: React.FC = () => {
@@ -134,6 +136,9 @@ export const AdminRoutes: React.FC = () => {
       </Route>
       <Route path={EMAILTEMPLATES}>
         <EmailTemplatePage />
+      </Route>
+      <Route exact path={HOMEROOM}>
+        <HomeRoom />
       </Route>
     </Switch>
   )

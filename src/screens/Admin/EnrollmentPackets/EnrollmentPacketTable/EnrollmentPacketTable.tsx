@@ -1,19 +1,20 @@
-import React, { useEffect, useState, useContext, FunctionComponent } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import { useQuery, useMutation } from '@apollo/client'
 import SearchIcon from '@mui/icons-material/Search'
 import { Box, Button, Card, InputAdornment, OutlinedInput } from '@mui/material'
 import Tooltip from '@mui/material/Tooltip'
 import { map } from 'lodash'
 import moment from 'moment'
-import { ApplicationEmailModal as EmailModal } from '../../../../components/EmailModal/ApplicationEmailModal'
-import { EditYearModal } from '../../../../components/EmailModal/EditYearModal'
-import { Pagination } from '../../../../components/Pagination/Pagination'
-import { SortableTable } from '../../../../components/SortableTable/SortableTable'
-import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
-import { WarningModal } from '../../../../components/WarningModal/Warning'
-import { getEmailTemplateQuery } from '../../../../graphql/queries/email-template'
-import { ProfileContext } from '../../../../providers/ProfileProvider/ProfileContext'
-import { UserContext } from '../../../../providers/UserContext/UserProvider'
+import { ApplicationEmailModal as EmailModal } from '@mth/components/EmailModal/ApplicationEmailModal'
+import { EditYearModal } from '@mth/components/EmailModal/EditYearModal'
+import { Pagination } from '@mth/components/Pagination/Pagination'
+import { SortableTable } from '@mth/components/SortableTable/SortableTable'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { WarningModal } from '@mth/components/WarningModal/Warning'
+import { PacketStatus } from '@mth/enums'
+import { getEmailTemplateQuery } from '@mth/graphql/queries/email-template'
+import { ProfileContext } from '@mth/providers/ProfileProvider/ProfileContext'
+import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { GREEN_GRADIENT, RED_GRADIENT } from '../../../../utils/constants'
 import { ENROLLMENT_PACKET_HEADCELLS } from '../../../../utils/PageHeadCellsConstant'
 import { toOrdinalSuffix } from '../../../../utils/stringHelpers'
@@ -30,7 +31,7 @@ import {
   updateEnrollmentSchoolYearByIds,
 } from '../services'
 
-export const EnrollmentPacketTable: FunctionComponent = () => {
+export const EnrollmentPacketTable: React.FC = () => {
   const { me } = useContext(UserContext)
   const [filters, setFilters] = useState(['Submitted', 'Resubmitted'])
 
@@ -85,7 +86,9 @@ export const EnrollmentPacketTable: FunctionComponent = () => {
     return {
       id: packet.packet_id,
       submitted:
-        packet.status == 'Submitted' || packet.status == 'Resubmitted'
+        packet.status === PacketStatus.SUBMITTED ||
+        packet.status == PacketStatus.RESUBMITTED ||
+        packet.status == PacketStatus.MISSING_INFO
           ? moment(packet.deadline).format('MM/DD/YY')
           : '',
       status: packet.status + (packet.is_age_issue ? ' (Age Issue)' : ''),
@@ -98,7 +101,7 @@ export const EnrollmentPacketTable: FunctionComponent = () => {
             ? 'K'
             : `${toOrdinalSuffix(Number(packet.student.grade_levels[grade_value].grade_level))} Grade`
           : ' ',
-      parent: `${packet.student.parent.person?.last_name}, ${packet.student.parent.person?.first_name}`,
+      parent: `${packet?.student?.parent?.person?.last_name}, ${packet?.student?.parent?.person?.first_name}`,
       studentStatus: packet.student?.reenrolled > 0 ? 'Update' : 'New',
       emailed:
         packet.packet_emails.length > 0 ? (

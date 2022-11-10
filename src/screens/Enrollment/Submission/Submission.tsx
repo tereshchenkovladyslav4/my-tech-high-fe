@@ -418,7 +418,7 @@ export const Submission: SubmissionTemplateType = ({ id, questions }) => {
         </Grid>
         {signatureInvalid && (
           <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'center' }}>
-            <FormHelperText style={{ textAlign: 'center', color: RED }}>Signature required</FormHelperText>
+            <FormHelperText style={{ textAlign: 'center', color: RED }}>Required</FormHelperText>
           </Grid>
         )}
         <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'center' }}>

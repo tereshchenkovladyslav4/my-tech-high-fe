@@ -5,8 +5,7 @@ import ModeEditIcon from '@mui/icons-material/ModeEdit'
 import VpnKeyOutlinedIcon from '@mui/icons-material/VpnKeyOutlined'
 import { Button, Card, Grid, IconButton, Tooltip, Typography } from '@mui/material'
 import { Box } from '@mui/system'
-import moment from 'moment'
-import { Prompt, useHistory } from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
 import { CustomModal } from '@mth/components/CustomModal/CustomModals'
 import { DropDownItem } from '@mth/components/DropDown/types'
 import { CheckBoxListVM } from '@mth/components/MthCheckboxList/MthCheckboxList'
@@ -34,6 +33,7 @@ import { StudentType } from '@mth/screens/HomeroomStudentProfile/Student/types'
 import { extractContent, gradeShortText, gradeText } from '@mth/utils'
 import { ENROLLMENT_SCHEDULE } from '../../../../utils/constants'
 import { getStudentDetail } from '../../UserProfile/services'
+import { updateScheduleMutation } from '../services'
 import Header from './Header/Header'
 import { RequireUpdateModal } from './RequireUpdateModal'
 import { ScheduleUpdatesRequiredEmail } from './ScheduleUpdatesRequriedEmail'
@@ -49,7 +49,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
   const { me } = useContext(UserContext)
   const history = useHistory()
   const [studentInfo, setStudentInfo] = useState<StudentScheduleInfo>()
-  const [schoolYearItems, setSchoolYearItems] = useState<DropDownItem[]>([])
+  // const [schoolYearItems, setSchoolYearItems] = useState<DropDownItem[]>([])
   const [selectedYear, setSelectedYear] = useState<number>(0)
   const [scheduleStatus, setScheduleStatus] = useState<DropDownItem>()
   const [tableData, setTableData] = useState<MthTableRowItem<ScheduleData>[]>([])
@@ -72,9 +72,10 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
   const [requireUpdatePeriods, setRequireUpdatePeriods] = useState<string[]>([])
   const [splitEnrollment, setSplitEnrollment] = useState<boolean>(false)
   const [isChanged, setChanged] = useState(false)
-  const [initScheduleStatus, setInitScheduleStatus] = useState<string>()
+
   const [lockedIcon, setLockedIcon] = useState(true)
   const [showReset, setShowReset] = useState(false)
+  const [selectedSubject, setSelectedSubject] = useState<Subject | undefined>()
 
   const { loading: studentInfoLoading, data: studentInfoData } = useQuery(getStudentDetail, {
     variables: {
@@ -91,6 +92,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
     useStudentSchedulePeriods(studentId, selectedYear)
 
   const [submitScheduleBuilder] = useMutation(saveScheduleMutation)
+  const [updateScheduleStatusById] = useMutation(updateScheduleMutation)
   const [saveDraft] = useMutation(saveSchedulePeriodMutation)
   const [sendEmail] = useMutation(sendEmailUpdateRequired)
 
@@ -148,6 +150,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
 
       menuItemsData.items?.push(subMenu)
     })
+
     return menuItemsData
   }
 
@@ -298,7 +301,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
       formatter: (item: MthTableRowItem<ScheduleData>) => {
         return (
           <Box>
-            {!!item.rawData.Title && item.rawData.Title.CourseTypes?.length > 1 ? (
+            {!!item.rawData.Title && item.rawData.Title.CourseTypes?.length > 1 && !lockedIcon ? (
               <NestedDropdown
                 menuItemsData={createCourseTypeMenuItems(item.rawData)}
                 MenuProps={{ elevation: 3 }}
@@ -447,13 +450,6 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
       formatter: (item: MthTableRowItem<ScheduleData>) => {
         return (
           <Box sx={{ display: 'flex' }}>
-            {(studentScheduleStatus == ScheduleStatus.SUBMITTED ||
-              (studentScheduleStatus == ScheduleStatus.ACCEPTED && item?.rawData?.updateRequired) ||
-              (studentScheduleStatus == ScheduleStatus.RESUBMITTED && item?.rawData?.updateRequired)) && (
-              <IconButton sx={{ color: MthColor.MTHORANGE, fontSize: '18px' }}>
-                <Close />
-              </IconButton>
-            )}
             {((studentScheduleStatus == ScheduleStatus.ACCEPTED && !item?.rawData?.updateRequired) ||
               (studentScheduleStatus == ScheduleStatus.RESUBMITTED && !item?.rawData?.updateRequired) ||
               studentScheduleStatus == ScheduleStatus.UPDATES_REQUESTED) && (
@@ -464,6 +460,16 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
                 <Check />
               </IconButton>
             )}
+            <IconButton
+              sx={{ color: MthColor.MTHORANGE, fontSize: '18px' }}
+              onClick={() => {
+                if (item?.rawData?.Period?.id) {
+                  handlePeriodUpdateEmail(`${item?.rawData?.Period?.id}`)
+                }
+              }}
+            >
+              <Close />
+            </IconButton>
           </Box>
         )
       },
@@ -497,6 +503,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
       delete schedule.Course
       scheduleData[scheduleIdx] = schedule
       setScheduleData(JSON.parse(JSON.stringify(scheduleData)))
+      setSelectedSubject(subject)
     }
   }
 
@@ -695,13 +702,22 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
           },
         },
       })
+
       if (submitResponse) {
+        let scheduleDataToSave = scheduleData
+        if (status === ScheduleStatus.NOT_SUBMITTED) {
+          scheduleDataToSave = scheduleData.map(
+            ({ period, Periods, Period, schedulePeriodId, updateRequired }: ScheduleData) => {
+              return { Period, Periods, period, schedulePeriodId, updateRequired }
+            },
+          )
+        }
         const scheduleId = submitResponse.data?.createOrUpdateSchedule?.schedule_id
         setStudentScheduleId(scheduleId)
         const response = await saveDraft({
           variables: {
             createSchedulePeriodInput: {
-              param: scheduleData?.map((item) => ({
+              param: scheduleDataToSave?.map((item) => ({
                 CourseId: Number(item?.Course?.id),
                 PeriodId: Number(item?.Period?.id),
                 ProviderId: Number(item?.Course?.Provider?.id),
@@ -738,7 +754,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
           }
         }
       }
-      handleBack()
+      history.push(ENROLLMENT_SCHEDULE)
     }
   }
 
@@ -746,21 +762,28 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
     setSelectedYear(year)
   }
 
-  const updateScheduleStatus = (num: string) => {
+  const updateScheduleStatus = async (num: string) => {
     const newStatus = SCHEDULE_STATUS_OPTIONS.find((item) => item.value === num) as DropDownItem
     if (newStatus?.value === ScheduleStatus.UPDATES_REQUIRED) {
       setShowRequireUpdateModal(true)
     }
     setScheduleStatus(newStatus)
-    if (num?.toLowerCase() !== initScheduleStatus?.toLowerCase()) {
-      setChanged(true)
-    } else {
-      setChanged(false)
-    }
+    await updateScheduleStatusById({
+      variables: {
+        createScheduleInput: {
+          status: num,
+          schedule_id: studentScheduleId,
+        },
+      },
+    })
   }
 
   const handleBack = () => {
-    history.push(ENROLLMENT_SCHEDULE)
+    if (selectedSubject || selectedCourseType || selectedSchedule || selectedThridPartyProvider) {
+      setChanged(true)
+    } else {
+      history.push(ENROLLMENT_SCHEDULE)
+    }
   }
 
   const handleSchedule = (status: ScheduleStatus) => {
@@ -773,7 +796,11 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
     }
   }
 
-  const handleSaveChanges = () => {}
+  const handleSaveChanges = () => {
+    if (selectedSubject || selectedCourseType || selectedSchedule || selectedThridPartyProvider) {
+      setChanged(true)
+    }
+  }
 
   const handleCancelUpdates = () => {
     setScheduleData(
@@ -809,6 +836,17 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
     )
   }
 
+  const handlePeriodUpdateEmail = (periodId: string) => {
+    if (requireUpdatePeriods.some((pid) => pid === periodId)) {
+      handleCancelUpdates()
+    } else {
+      setRequireUpdatePeriods([periodId])
+      setScheduleStatus(
+        SCHEDULE_STATUS_OPTIONS.find((item) => item.value === ScheduleStatus.UPDATES_REQUIRED) as DropDownItem,
+      )
+    }
+  }
+
   const handleEmailSend = async (from: string, subject: string, body: string) => {
     await sendEmail({
       variables: {
@@ -838,14 +876,6 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
 
   useEffect(() => {
     if (!currentSchoolYearLoading && currentSchoolYear) {
-      setSchoolYearItems([
-        {
-          value: currentSchoolYear.school_year_id,
-          label: `${moment(currentSchoolYear.date_begin).format('YYYY')}-${moment(currentSchoolYear.date_end).format(
-            'YY',
-          )}`,
-        },
-      ])
       setSelectedYear(currentSchoolYear.school_year_id)
       setSplitEnrollment(currentSchoolYear?.ScheduleBuilder?.split_enrollment)
     }
@@ -854,7 +884,6 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
   useEffect(() => {
     if (studentScheduleStatus) {
       setScheduleStatus(SCHEDULE_STATUS_OPTIONS.find((item) => item.value === studentScheduleStatus) as DropDownItem)
-      setInitScheduleStatus(studentScheduleStatus)
     }
   }, [studentScheduleStatus])
 
@@ -892,16 +921,8 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
   return (
     <>
       <Card sx={scheduleBuilderClass.main}>
-        <Prompt
-          when={isChanged}
-          message={JSON.stringify({
-            header: 'Unsaved Changes',
-            content: 'Are you sure you want to leave without saving changes?',
-          })}
-        />
         <Header
           title={MthTitle.SCHEDULE}
-          schoolYearItems={schoolYearItems}
           selectedYear={selectedYear}
           scheduleStatus={scheduleStatus}
           onSelectYear={handleYearDropDown}
@@ -1011,6 +1032,23 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
             onConfirm={() => {
               setShowReset(false)
               handleSave(ScheduleStatus.NOT_SUBMITTED)
+            }}
+            backgroundColor='white'
+          />
+        )}
+
+        {isChanged && (
+          <CustomModal
+            title={'Unsaved Changes'}
+            description={'Are you sure you want to leave without saving changes?'}
+            confirmStr='Yes'
+            cancelStr='Cancel'
+            onClose={() => {
+              setChanged(false)
+            }}
+            onConfirm={() => {
+              setChanged(false)
+              history.push(ENROLLMENT_SCHEDULE)
             }}
             backgroundColor='white'
           />

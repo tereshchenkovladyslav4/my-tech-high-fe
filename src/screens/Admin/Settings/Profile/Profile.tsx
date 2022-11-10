@@ -55,7 +55,7 @@ export const Profile: FunctionComponent<{ handleIsFormChange: () => void }> = ({
         if (file) {
           const upload = await uploadPhoto(file)
           if (upload) {
-            onSubmitSuccess()
+            onSubmitSuccess(upload.key)
           } else {
             setOpenSaveAlert({
               message: 'Unknown error occured while uploading profile photo.',
@@ -86,13 +86,14 @@ export const Profile: FunctionComponent<{ handleIsFormChange: () => void }> = ({
       })
   }
 
-  const onSubmitSuccess = () => {
+  const onSubmitSuccess = (avatarUrl?: string) => {
     setOpenSaveAlert({ message: 'Profile Updated Successfully', status: 'success', open: true })
 
     setMe((prev) => {
       return {
         ...prev,
         email: formik.values.email,
+        avatar_url: avatarUrl || prev?.avatar_url,
         profile: {
           ...prev.profile,
           first_name: formik.values.first_name,

@@ -1,3 +1,5 @@
+import { StudentType } from './Student/types'
+
 export enum StudentProfilePage {
   STUDENT = 'student',
   HOMEROOM = 'homeroom',
@@ -12,4 +14,6 @@ export type StudentProfileItem = {
 export type StudentNavProps = {
   nav: StudentProfilePage
   setNav: (value: StudentProfilePage) => void
+  student: StudentType | undefined
+  avatar: string | undefined
 }

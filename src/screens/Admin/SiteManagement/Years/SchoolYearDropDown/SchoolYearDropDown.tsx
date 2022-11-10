@@ -1,9 +1,12 @@
 import React, { useContext, useEffect, useState } from 'react'
+import { useMutation } from '@apollo/client'
 import { Stack } from '@mui/material'
 import { sortBy } from 'lodash'
 import moment from 'moment'
+import { CustomModal } from '@mth/components/CustomModal/CustomModals'
 import { DropDown } from '@mth/components/DropDown/DropDown'
 import { DropDownItem } from '@mth/components/DropDown/types'
+import { deleteSchoolYearByIdMutation } from '@mth/graphql/mutation/schoolYear'
 import { SchoolYearResponseType, useSchoolYearsByRegionId } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { SchoolYearItem, SchoolYearType } from '../types'
@@ -45,7 +48,11 @@ export const SchoolYearDropDown: React.FC<SchoolYearDropDownProps> = ({
 }) => {
   const { me } = useContext(UserContext)
   const [years, setYears] = useState<DropDownItem[]>([])
-  const { schoolYears: schoolYearData } = useSchoolYearsByRegionId(Number(me?.selectedRegionId))
+  const [selectedSchoolYearId, setSelectedSchoolYearId] = useState<number>(0)
+  const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false)
+  const { schoolYears: schoolYearData, refetchSchoolYear } = useSchoolYearsByRegionId(Number(me?.selectedRegionId))
+
+  const [deleteAction] = useMutation(deleteSchoolYearByIdMutation)
 
   const setAllBySchoolYear = (schoolYear: SchoolYearType) => {
     setEnableSchedule(schoolYear.schedule)
@@ -112,6 +119,20 @@ export const SchoolYearDropDown: React.FC<SchoolYearDropDownProps> = ({
     setHomeroomResourceItem(undefined)
   }
 
+  const handleDeleteItem = (value: string | number | boolean) => {
+    setSelectedSchoolYearId(Number(value))
+    setShowDeleteModal(true)
+  }
+
+  const handleDeleteAction = async () => {
+    await deleteAction({
+      variables: {
+        schoolYearId: selectedSchoolYearId,
+      },
+    })
+    refetchSchoolYear()
+  }
+
   const setDropYears = (schoolYearsArr: SchoolYearType[]) => {
     const dropYears: DropDownItem[] = []
     const newSchoolYears: DropDownItem[] = [{ value: 'none', label: 'None' }]
@@ -130,6 +151,11 @@ export const SchoolYearDropDown: React.FC<SchoolYearDropDownProps> = ({
           value: schoolYear.schoolYearId + '',
           label:
             moment(schoolYear.schoolYearOpen).format('YYYY') + '-' + moment(schoolYear.schoolYearClose).format('YY'),
+          hasDeleteIcon:
+            parseInt(moment(schoolYear.schoolYearOpen).format('YYYY')) > parseInt(moment().format('YYYY'))
+              ? true
+              : false,
+          handleDeleteItem: handleDeleteItem,
         })
         newSchoolYears.push({
           value: schoolYear.schoolYearId + '',
@@ -233,6 +259,22 @@ export const SchoolYearDropDown: React.FC<SchoolYearDropDownProps> = ({
           borderNone={true}
           setParentValue={(val) => {
             handleSelectYear(+val)
+          }}
+        />
+      )}
+      {showDeleteModal && (
+        <CustomModal
+          title='Delete'
+          description='Are you sure you want to delete this year?'
+          cancelStr='Cancel'
+          confirmStr='Delete'
+          backgroundColor='#FFFFFF'
+          onClose={() => {
+            setShowDeleteModal(false)
+          }}
+          onConfirm={() => {
+            handleDeleteAction()
+            setShowDeleteModal(false)
           }}
         />
       )}

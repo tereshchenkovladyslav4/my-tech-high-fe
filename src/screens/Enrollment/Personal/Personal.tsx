@@ -26,7 +26,6 @@ export const Personal: PersonalTemplateType = ({ id, questions }) => {
 
   const [validationSchema, setValidationSchema] = useState(yup.object({}))
   const [submitPersonalMutation] = useMutation(enrollmentContactMutation)
-
   useEffect(() => {
     if (questions?.groups?.length > 0) {
       const valid_student = {}
@@ -103,6 +102,8 @@ export const Personal: PersonalTemplateType = ({ id, questions }) => {
                   .test(`${q.question}-selected`, `${q.question} is invalid`, (value) => {
                     return isNumber.test(value)
                   })
+              } else if (q.type === 3) {
+                valid_meta[`${q.slug}`] = yup.array().min(1, 'Required').required('Required').nullable()
               } else if (q.type === QUESTION_TYPE.CHECKBOX) {
                 valid_meta[`${q.slug}`] = yup.array().min(1).required('Required').nullable()
               } else if (q.type === QUESTION_TYPE.AGREEMENT) {
