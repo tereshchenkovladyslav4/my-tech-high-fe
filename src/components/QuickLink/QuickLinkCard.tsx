@@ -1,4 +1,5 @@
 import React from 'react'
+import { makeStyles, Theme } from '@material-ui/core/styles'
 import AddOutlinedIcon from '@mui/icons-material/AddOutlined'
 import CallMissedOutgoingIcon from '@mui/icons-material/CallMissedOutgoing'
 import DehazeIcon from '@mui/icons-material/Dehaze'
@@ -12,6 +13,32 @@ import { quickLinkCardClasses } from '@mth/components/QuickLink/styles'
 import { MthColor } from '@mth/enums'
 import { QuickLinkCardProps, QUICKLINK_TYPE } from './QuickLinkCardProps'
 
+const additionalStyles = makeStyles((theme: Theme) => ({
+  cardMedia: {
+    [theme.breakpoints.down('xs')]: {
+      height: '200px',
+    },
+    height: '240px',
+  },
+  imageUrl: {
+    [theme.breakpoints.down('xs')]: {
+      top: '80px',
+    },
+    width: '100%',
+    position: 'absolute',
+    left: 0,
+    textAlign: 'center',
+    top: '100px',
+    color: 'white',
+  },
+  itemTitle: {
+    [theme.breakpoints.down('xs')]: {
+      fontSize: '32px!important',
+    },
+    fontSize: '40px!important',
+  },
+}))
+
 export const QuickLinkCard: React.FC<QuickLinkCardProps> = ({ item, action, onAction, background }) => {
   const DragHandle = SortableHandle(() => (
     <IconButton>
@@ -20,6 +47,8 @@ export const QuickLinkCard: React.FC<QuickLinkCardProps> = ({ item, action, onAc
       </Tooltip>
     </IconButton>
   ))
+
+  const classes = additionalStyles()
 
   return (
     <Card
@@ -40,7 +69,7 @@ export const QuickLinkCard: React.FC<QuickLinkCardProps> = ({ item, action, onAc
         <>
           <CardMedia
             component='img'
-            sx={{ height: 240 }}
+            className={classes.cardMedia}
             src={
               item.image_url
                 ? 'https://infocenter-v2-dev.s3.us-west-2.amazonaws.com/' + item.image_url
@@ -50,10 +79,8 @@ export const QuickLinkCard: React.FC<QuickLinkCardProps> = ({ item, action, onAc
             }
           />
           {!item.image_url && (
-            <Box
-              sx={{ width: '100%', position: 'absolute', left: 0, textAlign: 'center', top: '100px', color: 'white' }}
-            >
-              <Typography fontSize='40px' component='div'>
+            <Box className={classes.imageUrl}>
+              <Typography component='div' className={classes.itemTitle}>
                 {item.title}
               </Typography>
             </Box>

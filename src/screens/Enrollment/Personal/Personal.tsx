@@ -26,6 +26,7 @@ export const Personal: PersonalTemplateType = ({ id, questions }) => {
 
   const [validationSchema, setValidationSchema] = useState(yup.object({}))
   const [submitPersonalMutation] = useMutation(enrollmentContactMutation)
+
   useEffect(() => {
     if (questions?.groups?.length > 0) {
       const valid_student = {}

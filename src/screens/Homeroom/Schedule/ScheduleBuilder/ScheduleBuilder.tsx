@@ -18,7 +18,7 @@ import { CourseType, MthColor, MthTitle, ReduceFunds, ScheduleStatus } from '@mt
 import { saveScheduleMutation } from '@mth/graphql/mutation/schedule'
 import { saveSchedulePeriodMutation } from '@mth/graphql/mutation/schedule-period'
 import { getAllScheduleBuilderQuery } from '@mth/graphql/queries/schedule-builder'
-import { useStudentSchedulePeriods } from '@mth/hooks'
+import { makeProviderData, useStudentSchedulePeriods } from '@mth/hooks'
 import { CustomBuiltDescriptionEdit } from '@mth/screens/Homeroom/Schedule/ScheduleBuilder/CustomBuiltDescription'
 import { mthButtonClasses } from '@mth/styles/button.style'
 import { extractContent, gradeShortText } from '@mth/utils'
@@ -67,9 +67,9 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
   const [showThirdPartyProviderModal, setShowThirdPartyProviderModal] = useState<boolean>(false)
   const [selectedSchedule, setSelectedSchedule] = useState<ScheduleData>()
   const [selectedCourseType, setSelectedCourseType] = useState<CourseType>()
-  const [selectedThridPartyProvider, setSelectedThridPartyProvider] = useState<ThirdPartyProvider>()
+  const [selectedThirdPartyProvider, setSelectedThirdPartyProvider] = useState<ThirdPartyProvider>()
   const [showOnSiteSplitEnrollmentModal, setShowOnSiteSplitEnrollmentModal] = useState<boolean>(false)
-  const [selectedOnSiteSplitEnrollemnt, setSelectedOnSiteSplitEnrollment] = useState<OnSiteSplitEnrollment>()
+  const [selectedOnSiteSplitEnrollment, setSelectedOnSiteSplitEnrollment] = useState<OnSiteSplitEnrollment>()
   const [showCustomBuilt, setShowCustomBuilt] = useState<boolean>(false)
   const [enableQuestionTooltip, setEnableQuestionTooltip] = useState<boolean>(false)
   const [isDraftSaved, setIsDraftSaved] = useState<boolean>(false)
@@ -77,6 +77,8 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
   const [showSubmitSuccessModal, setShowSubmitSuccessModal] = useState<boolean>(false)
   const [showRequestUpdatesModal, setShowRequestUpdatesModal] = useState<boolean>(false)
   const [isEditMode, setIsEditMode] = useState<boolean>(false)
+  const [multiPeriodsNotification, setMultiPeriodsNotification] = useState<string | undefined>()
+  const [selectedCourse, setSelectedCourse] = useState<Course | undefined>()
 
   const { scheduleData, studentScheduleId, studentScheduleStatus, setScheduleData, setStudentScheduleId, refetch } =
     useStudentSchedulePeriods(studentId, selectedYear, diplomaSeekingPath)
@@ -99,7 +101,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
       ),
       items: [],
     }
-    schedule.Periods?.forEach((period) => {
+    schedule.filteredPeriods?.forEach((period) => {
       const subMenu: MenuItemData = {
         label: period.category,
         callback: () => handleSelectPeriod(schedule, period),
@@ -173,7 +175,8 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
       ),
       items: [],
     }
-    schedule.Title?.Providers?.forEach((provider) => {
+    const providers = schedule.Title?.Providers || schedule.Subject?.Providers
+    providers?.forEach((provider) => {
       const subMenu: MenuItemData = {
         label: provider.name,
         items: [],
@@ -210,7 +213,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
 
       menuItemsData.items?.push(subMenu)
     })
-    if (splitEnrollment) {
+    if (splitEnrollment && !schedule.Provider?.multiple_periods) {
       menuItemsData.items?.push({
         label: MthTitle.ON_SITE_SPLIT_ENROLLMENT,
         callback: () => {
@@ -306,7 +309,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
     setSelectedSchedule(undefined)
     setSelectedCourseType(undefined)
     setShowThirdPartyProviderModal(false)
-    setSelectedThridPartyProvider(undefined)
+    setSelectedThirdPartyProvider(undefined)
   }
 
   const handleSaveThirdPartyModal = (item: ThirdPartyProvider) => {
@@ -325,7 +328,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
     }
     setSelectedSchedule(undefined)
     setSelectedCourseType(undefined)
-    setSelectedThridPartyProvider(undefined)
+    setSelectedThirdPartyProvider(undefined)
   }
 
   const handleCancelOnSplitEnrollmentModal = () => {
@@ -363,23 +366,32 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
     }
   }
 
-  const handleSelectCourse = (schedule: ScheduleData, course: Course) => {
+  const handleSelectCourse = (schedule: ScheduleData, course: Course, multiPeriodsConfirmed?: boolean) => {
     const scheduleIdx = scheduleData.findIndex((item) => item.period === schedule.period)
     if (scheduleIdx > -1) {
       if (schedule.Course?.id === course.id) return
-      schedule.Course = course
-      delete schedule.OnSiteSplitEnrollment
-      delete schedule.CustomBuiltDescription
-      delete schedule.ThirdParty
-      scheduleData[scheduleIdx] = schedule
-      setScheduleData(JSON.parse(JSON.stringify(scheduleData)))
-      if (course.display_notification) {
-        setCourseNotification(course.course_notification)
+      if (course.Provider?.multiple_periods && !multiPeriodsConfirmed) {
+        // The multiple periods notification should show on the parent end
+        // when they select a provider that requires multiple periods for the first time
+        setSelectedSchedule(schedule)
+        setSelectedCourse(course)
+        setMultiPeriodsNotification(course.Provider.multi_periods_notification)
+      } else {
+        schedule.Course = course
+        delete schedule.OnSiteSplitEnrollment
+        delete schedule.CustomBuiltDescription
+        delete schedule.ThirdParty
+        scheduleData[scheduleIdx] = schedule
+        if (course.display_notification) {
+          setCourseNotification(course.course_notification)
+        }
+        if (course.reduce_funds !== ReduceFunds.NONE) {
+          setCourseReduceFundsNotification(course.reduce_funds_notification)
+        }
+
+        setScheduleData(JSON.parse(JSON.stringify(scheduleData)))
+        setIsChanged(true)
       }
-      if (course.reduce_funds !== ReduceFunds.NONE) {
-        setCourseReduceFundsNotification(course.reduce_funds_notification)
-      }
-      setIsChanged(true)
     }
   }
 
@@ -389,7 +401,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
       label: 'Period',
       sortable: false,
       tdClass: '',
-      width: '25%',
+      width: '20%',
       formatter: (item: MthTableRowItem<ScheduleData>) => {
         return (
           <Box>
@@ -401,7 +413,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
                 {('0' + item.rawData.period).slice(-2)}
               </Typography>
               <Box sx={{ marginLeft: '20px' }}>
-                {editable(item.rawData) && item.rawData.Periods?.length > 1 ? (
+                {editable(item.rawData) && item.rawData.filteredPeriods?.length > 1 ? (
                   <NestedDropdown
                     menuItemsData={createPeriodMenuItems(item.rawData)}
                     MenuProps={{ elevation: 3 }}
@@ -424,7 +436,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
       label: 'Subject',
       sortable: false,
       tdClass: '',
-      width: '25%',
+      width: '20%',
       formatter: (item: MthTableRowItem<ScheduleData>) => {
         return (
           <Box>
@@ -455,11 +467,14 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
       label: 'Course Type',
       sortable: false,
       tdClass: '',
-      width: '25%',
+      width: '20%',
       formatter: (item: MthTableRowItem<ScheduleData>) => {
         return (
           <Box>
-            {editable(item.rawData) && !!item.rawData.Title && item.rawData.Title.CourseTypes?.length > 1 ? (
+            {editable(item.rawData) &&
+            !item.rawData.Provider?.multiple_periods &&
+            !!item.rawData.Title &&
+            item.rawData.Title.CourseTypes?.length > 1 ? (
               <NestedDropdown
                 menuItemsData={createCourseTypeMenuItems(item.rawData)}
                 MenuProps={{ elevation: 3 }}
@@ -482,31 +497,84 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
       label: 'Description',
       sortable: false,
       tdClass: '',
-      width: '25%',
+      width: '40%',
       formatter: (item: MthTableRowItem<ScheduleData>) => {
         return (
           <Box>
-            {item.rawData.CourseType === CourseType.MTH_DIRECT &&
-              !item.rawData.OnSiteSplitEnrollment &&
-              !!item.rawData.Title &&
-              (item.rawData.Title.Providers?.length > 1 ||
-              (editable(item.rawData) &&
-                item.rawData.Title.Providers?.length === 1 &&
-                (item.rawData.Title.Providers?.[0]?.Courses?.length > 1 ||
-                  !!item.rawData.Title.Providers?.[0]?.AltCourses?.length)) ? (
-                <NestedDropdown
-                  menuItemsData={createDescriptionMenuItems(item.rawData)}
-                  MenuProps={{ elevation: 3 }}
-                  ButtonProps={{
-                    variant: 'outlined',
-                    sx: scheduleBuilderClasses.nestedDropdownButton,
-                  }}
-                />
-              ) : (
-                <Typography sx={scheduleBuilderClasses.tableContent}>
-                  {item.rawData.Course?.name || item.rawData.Course?.name}
-                </Typography>
-              ))}
+            {item.rawData.CourseType === CourseType.MTH_DIRECT && !item.rawData.OnSiteSplitEnrollment && (
+              <>
+                {!!item.rawData.Title && (
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                    {item.rawData.Title.Providers?.length > 1 ||
+                    (editable(item.rawData) &&
+                      item.rawData.Title.Providers?.length === 1 &&
+                      (item.rawData.Title.Providers?.[0]?.Courses?.length > 1 ||
+                        !!item.rawData.Title.Providers?.[0]?.AltCourses?.length)) ? (
+                      <NestedDropdown
+                        menuItemsData={createDescriptionMenuItems(item.rawData)}
+                        MenuProps={{ elevation: 3 }}
+                        ButtonProps={{
+                          variant: 'outlined',
+                          sx: scheduleBuilderClasses.nestedDropdownButton,
+                        }}
+                      />
+                    ) : (
+                      <Typography sx={scheduleBuilderClasses.tableContent}>
+                        {item.rawData.Course?.name || item.rawData.Course?.name}
+                      </Typography>
+                    )}
+                    {item.rawData.Provider?.multiple_periods && (
+                      <Typography
+                        sx={{
+                          ...scheduleBuilderClasses.tableContent,
+                          color: MthColor.MTHBLUE,
+                          cursor: 'pointer',
+                          mt: 'auto',
+                        }}
+                        onClick={() => resetMultiPeriods(item.rawData)}
+                      >
+                        Reset Course Options
+                      </Typography>
+                    )}
+                  </Box>
+                )}
+                {!!item.rawData.Subject && (
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                    {item.rawData.Subject.Providers?.length > 1 ||
+                    (editable(item.rawData) &&
+                      item.rawData.Subject.Providers?.length === 1 &&
+                      (item.rawData.Subject.Providers?.[0]?.Courses?.length > 1 ||
+                        !!item.rawData.Subject.Providers?.[0]?.AltCourses?.length)) ? (
+                      <NestedDropdown
+                        menuItemsData={createDescriptionMenuItems(item.rawData)}
+                        MenuProps={{ elevation: 3 }}
+                        ButtonProps={{
+                          variant: 'outlined',
+                          sx: scheduleBuilderClasses.nestedDropdownButton,
+                        }}
+                      />
+                    ) : (
+                      <Typography sx={scheduleBuilderClasses.tableContent}>
+                        {item.rawData.Course?.name || item.rawData.Course?.name}
+                      </Typography>
+                    )}
+                    {item.rawData.Provider?.multiple_periods && (
+                      <Typography
+                        sx={{
+                          ...scheduleBuilderClasses.tableContent,
+                          color: MthColor.MTHBLUE,
+                          cursor: 'pointer',
+                          mt: 'auto',
+                        }}
+                        onClick={() => resetMultiPeriods(item.rawData)}
+                      >
+                        Reset Course Options
+                      </Typography>
+                    )}
+                  </Box>
+                )}
+              </>
+            )}
             {item.rawData.CourseType === CourseType.MTH_DIRECT && item.rawData.OnSiteSplitEnrollment && (
               <Box sx={scheduleBuilderClasses.descriptionWrap}>
                 <Box>
@@ -566,7 +634,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
                         sx={scheduleBuilderClasses.editButton}
                         onClick={() => {
                           setShowThirdPartyProviderModal(true)
-                          setSelectedThridPartyProvider(item.rawData.ThirdParty)
+                          setSelectedThirdPartyProvider(item.rawData.ThirdParty)
                           setSelectedSchedule(item.rawData)
                           setSelectedCourseType(item.rawData?.CourseType)
                         }}
@@ -607,36 +675,150 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
     },
   ]
 
-  const preSelect = (schedule: ScheduleData): ScheduleData => {
-    if (schedule.Periods?.length === 1 && !schedule.Period) {
-      schedule.Period = schedule.Periods[0]
+  const setMultiPeriods = (schedules: ScheduleData[]): ScheduleData[] => {
+    schedules.forEach((schedule) => {
+      if (schedule.Course?.Provider?.multiple_periods) {
+        const multiProvider = schedule.Course?.Provider
+        const multiPeriods = schedule.Course?.Provider?.Periods.reduce((acc: number[], cur) => {
+          return acc.concat([cur.period])
+        }, [])
+        schedules.map((item) => {
+          if (item.Provider?.id !== multiProvider.id && multiPeriods.findIndex((x) => x === item.period) > -1) {
+            item.Provider = multiProvider
+          }
+        })
+      }
+    })
+    return schedules
+  }
+
+  const resetMultiPeriods = (schedule: ScheduleData) => {
+    const multiPeriods = (schedule.Provider?.Periods || []).reduce((acc: number[], cur) => {
+      return acc.concat([cur.period])
+    }, [])
+    scheduleData.map((item) => {
+      if (multiPeriods.findIndex((x) => x === item.period) > -1) {
+        delete item.Provider
+        delete item.Course
+      }
+    })
+    setScheduleData(JSON.parse(JSON.stringify(scheduleData)))
+  }
+
+  const processScheduleData = (schedule: ScheduleData): ScheduleData => {
+    // Have to filter options when multi periods provider is selected
+    const multiProvider = schedule.Provider?.multiple_periods ? schedule.Provider : undefined
+
+    schedule.filteredPeriods = (schedule.Periods || []).filter((item) =>
+      multiProvider ? multiProvider.Periods.findIndex((x) => x.id === item.id) > -1 : true,
+    )
+
+    if (schedule.filteredPeriods?.length === 1) {
+      schedule.Period = schedule.filteredPeriods[0]
+    } else if (!schedule.filteredPeriods?.length) {
+      delete schedule.Period
     }
+
+    if (schedule.Period) {
+      // Update Period with original data
+      schedule.Period = JSON.parse(
+        JSON.stringify(schedule.filteredPeriods?.find((item) => item.id === schedule.Period?.id)),
+      )
+    }
+
+    if (multiProvider && schedule.Period) {
+      schedule.Period.Subjects = schedule.Period.Subjects.filter(
+        (subject) =>
+          (subject.Titles || subject.AltTitles).filter(
+            (title) =>
+              title.Courses.concat(title.AltCourses).findIndex((course) => course.provider_id === multiProvider.id) >
+              -1,
+          ).length > 0,
+      )
+      schedule.Period.Subjects.map((subject) => {
+        subject.Titles = subject.Titles.filter(
+          (title) =>
+            title.Courses.concat(title.AltCourses).findIndex((course) => course.provider_id === multiProvider.id) > -1,
+        )
+        subject.AltTitles = subject.AltTitles.filter(
+          (title) =>
+            title.Courses.concat(title.AltCourses).findIndex((course) => course.provider_id === multiProvider.id) > -1,
+        )
+        subject.Titles.concat(subject.AltTitles).map((title) => {
+          title.Courses = title.Courses.filter((course) => course.provider_id === multiProvider.id)
+          title.AltCourses = title.AltCourses.filter((course) => course.provider_id === multiProvider.id)
+        })
+        subject.Courses = subject.Courses.filter((course) => course.provider_id === multiProvider.id)
+        subject.AltCourses = subject.AltCourses.filter((course) => course.provider_id === multiProvider.id)
+      })
+    }
+
+    let newSubject: Subject | undefined = undefined
+    let newTitle: Title | undefined = undefined
+    let newCourse: Course | undefined = undefined
+    schedule.Period?.Subjects.map((subject) => {
+      subject.Providers = makeProviderData(subject.Courses, subject.AltCourses)
+      if (subject.subject_id === schedule.Subject?.subject_id) {
+        newSubject = subject
+      }
+      subject.Courses.concat(subject.AltCourses).map((course) => {
+        if (course.id === schedule.Course?.id) {
+          schedule.Course = course
+        }
+      })
+      subject.Titles.concat(subject.AltTitles).map((title) => {
+        title.Providers = makeProviderData(title.Courses, title.AltCourses)
+        if (title.title_id === schedule.Title?.title_id) {
+          newTitle = title
+        }
+        title.Courses.concat(title.AltCourses).map((course) => {
+          if (course.id === schedule.Course?.id) {
+            newCourse = course
+          }
+        })
+      })
+    })
+    schedule.Subject = newSubject
+    schedule.Title = newTitle
+    schedule.Course = newCourse
+
     if (schedule.Period?.Subjects?.length === 1) {
       const subject = schedule.Period.Subjects[0]
-      if (!subject.Titles?.length && !schedule.Subject) {
+      if (!(subject.Titles || subject.AltTitles)?.length && !schedule.Subject) {
         schedule.Subject = subject
+        delete schedule.Title
       } else if (subject.Titles?.length === 1 && !schedule.Title) {
         schedule.Title = subject.Titles[0]
+        delete schedule.Subject
       }
+    } else if (!schedule.Period?.Subjects?.length) {
+      delete schedule.Subject
+      delete schedule.Title
     }
 
     if (schedule.Title?.CourseTypes?.length === 1) {
       schedule.CourseType = schedule.Title.CourseTypes[0].value as CourseType
     }
 
+    if ((schedule.Subject || schedule.Title) && multiProvider) {
+      schedule.CourseType = CourseType.MTH_DIRECT
+    }
+
     if (schedule.CourseType === CourseType.MTH_DIRECT) {
-      if (schedule.Title?.Providers?.length === 1) {
-        const provider = schedule.Title?.Providers[0]
+      const providers = schedule.Title?.Providers || schedule.Subject?.Providers
+      if (providers?.length === 1) {
+        const provider = providers[0]
         if (provider.Courses?.length === 1 && !provider.AltCourses?.length) {
           schedule.Course = provider.Courses[0]
         }
       }
     }
+
     return schedule
   }
 
   const createData = (schedule: ScheduleData): MthTableRowItem<ScheduleData> => {
-    schedule = preSelect(schedule)
+    schedule = processScheduleData(schedule)
     return {
       key: `schedule-${schedule.period}`,
       columns: {
@@ -750,7 +932,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
       })
       setShowSubmitBtn(!isInvalid)
       setTableData(
-        scheduleData.map((item) => {
+        setMultiPeriods(scheduleData).map((item) => {
           return createData(item)
         }),
       )
@@ -888,16 +1070,30 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
           onConfirm={() => setCourseReduceFundsNotification(undefined)}
         />
       )}
+      {!!selectedSchedule && !!selectedCourse && !!multiPeriodsNotification && (
+        <CustomModal
+          title='Multiple Periods Required'
+          description={extractContent(multiPeriodsNotification || '')}
+          confirmStr='Ok'
+          showIcon={false}
+          backgroundColor={MthColor.WHITE}
+          onClose={() => setMultiPeriodsNotification(undefined)}
+          onConfirm={() => {
+            setMultiPeriodsNotification(undefined)
+            handleSelectCourse(selectedSchedule, selectedCourse, true)
+          }}
+        />
+      )}
       {showThirdPartyProviderModal && (
         <ThirdPartyProviderEdit
-          thirdPartyProvider={selectedThridPartyProvider}
+          thirdPartyProvider={selectedThirdPartyProvider}
           handleSaveAction={handleSaveThirdPartyModal}
           handleCancelAction={handleCancelThirdPartyModal}
         />
       )}
       {showOnSiteSplitEnrollmentModal && (
         <OnSiteSplitEnrollmentEdit
-          onSiteSplitEnrollment={selectedOnSiteSplitEnrollemnt}
+          onSiteSplitEnrollment={selectedOnSiteSplitEnrollment}
           handleCancelAction={handleCancelOnSplitEnrollmentModal}
           handleSaveAction={handleSaveOnSplitEnrollmentModal}
         />

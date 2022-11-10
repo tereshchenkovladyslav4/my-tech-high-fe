@@ -101,8 +101,11 @@ export type Provider = {
   name: string
   reduce_funds: ReduceFunds
   reduce_funds_notification: string
+  multiple_periods: boolean
+  multi_periods_notification: string
   Courses: Course[]
   AltCourses?: Course[]
+  Periods: Period[]
 }
 
 export type Title = {
@@ -128,11 +131,14 @@ export type Subject = {
   name: string
   Titles: Title[]
   AltTitles: Title[]
+  Providers: Provider[]
+  Courses: Course[]
+  AltCourses: Course[]
 }
 
 export type Period = {
   id: number
-  period: string
+  period: number
   message_period: string
   notify_period: boolean
   category: string
@@ -142,6 +148,7 @@ export type Period = {
 export type ScheduleData = {
   period: number
   Periods: Period[]
+  filteredPeriods: Period[]
 
   // Selected values
   schedulePeriodId?: number
@@ -149,6 +156,7 @@ export type ScheduleData = {
   Subject?: Subject
   Title?: Title
   CourseType?: CourseType
+  Provider?: Provider
   Course?: Course
   ThirdParty?: ThirdPartyProvider
   OnSiteSplitEnrollment?: OnSiteSplitEnrollment

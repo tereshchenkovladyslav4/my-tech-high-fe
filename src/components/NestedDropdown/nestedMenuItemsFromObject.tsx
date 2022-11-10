@@ -1,8 +1,5 @@
-import React, { useState } from 'react'
-import ExpandMoreOutlinedIcon from '@mui/icons-material/ExpandMoreOutlined'
-import { Collapse, Typography } from '@mui/material'
+import React from 'react'
 import { MenuItemData } from '@mth/components/NestedDropdown/types'
-import { MthColor } from '@mth/enums'
 import { IconMenuItem } from './IconMenuItem'
 import { NestedMenuItem } from './NestedMenuItem'
 
@@ -18,9 +15,7 @@ export function nestedMenuItemsFromObject({
   handleClose,
 }: nestedMenuItemsFromObjectProps): React.ReactElement[] {
   return items.map((item, index) => {
-    const { leftIcon, rightIcon, label, items, moreItems, showMoreLabel, showLessLabel, callback, customModalProps } =
-      item
-    const [showMore, setShowMore] = useState<boolean>(false)
+    const { leftIcon, rightIcon, label, items, callback, customModalProps } = item
 
     if (items && items.length > 0) {
       // Recurse deeper
@@ -32,6 +27,7 @@ export function nestedMenuItemsFromObject({
           label={label}
           parentMenuOpen={isOpen}
           customModalProps={customModalProps}
+          menuItemsData={item}
         >
           {/* Call this function to nest more items */}
           {nestedMenuItemsFromObject({
@@ -39,38 +35,6 @@ export function nestedMenuItemsFromObject({
             isOpen,
             handleClose,
           })}
-          {!!moreItems?.length && (
-            <Collapse in={showMore} timeout='auto' unmountOnExit>
-              {nestedMenuItemsFromObject({
-                menuItemsData: moreItems,
-                isOpen,
-                handleClose,
-              })}
-            </Collapse>
-          )}
-          {!!moreItems?.length && (
-            <IconMenuItem
-              label={
-                <Typography sx={{ color: MthColor.MTHBLUE }} component={'span'}>
-                  {showMore
-                    ? showLessLabel || 'Hide options for other grades'
-                    : showMoreLabel || 'Show options for other grades'}
-                </Typography>
-              }
-              rightIcon={
-                <ExpandMoreOutlinedIcon
-                  sx={{
-                    color: MthColor.MTHBLUE,
-                    transition: 'transform 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms',
-                    transform: showMore ? 'rotate(180deg)' : '',
-                  }}
-                />
-              }
-              onClick={() => {
-                setShowMore(!showMore)
-              }}
-            />
-          )}
         </NestedMenuItem>
       )
     } else {
