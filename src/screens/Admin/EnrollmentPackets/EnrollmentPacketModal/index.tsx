@@ -9,6 +9,7 @@ import { FormProvider, useForm } from 'react-hook-form'
 import { QUESTION_TYPE } from '@mth/components/QuestionItem/QuestionItemProps'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { SYSTEM_11 } from '../../../../utils/constants'
+import { phoneFormat } from '../../../../utils/utils'
 import { Packet } from '../../../HomeroomStudentProfile/Student/types'
 import { GenerateStudentPacketPDF } from '../../Records/services'
 import { EnrollmentQuestionTab } from '../../SiteManagement/EnrollmentSetting/EnrollmentQuestions/types'
@@ -163,11 +164,11 @@ export const EnrollmentPacketModal: React.FC<EnrollmentPacketModalProps> = ({ ha
                 }
               } else if (q.slug.includes('address_')) {
                 const fieldName = q.slug.split('address_')[1]
-                temp[q.slug] = packet.student.person.address[fieldName]
+                temp[q.slug] = packet.student.parent.person.address[fieldName]
               } else if (q.slug.includes('parent_')) {
                 const fieldName = q.slug.split('parent_')[1]
                 temp[q.slug] = packet.student.parent.person[fieldName]
-                temp['parent_phone_number'] = packet.student.parent.phone.number
+                temp['parent_phone_number'] = phoneFormat(packet.student.parent.phone.number)
                 temp['parent_emailConfirm'] = packet.student.parent.person.email
                 if (q.type === QUESTION_TYPE.CALENDAR) {
                   temp[q.slug] = moment(packet.student.parent.person[fieldName]).format('YYYY-MM-DD')

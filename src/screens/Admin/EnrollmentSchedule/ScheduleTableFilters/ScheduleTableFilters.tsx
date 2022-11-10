@@ -1,17 +1,12 @@
 import React, { FunctionComponent } from 'react'
 import { Button, Box } from '@mui/material'
 import { BUTTON_LINEAR_GRADIENT, BLACK } from '../../../../utils/constants'
+import { ScheduleFilterVM, ScheduleCount } from '../type'
 
 type EnrollmentScheduleProps = {
-  filters: string[]
-  setFilters: (_: string[]) => void
-  scheduleCount: {
-    Submitted: number
-    Resubmitted: number
-    'Updates Requested': number
-    'Updates Required': number
-    'Not Submitted': number
-  }
+  filters?: ScheduleFilterVM
+  setFilters: (_: ScheduleFilterVM) => void
+  scheduleCount?: ScheduleCount
 }
 export const ScheduleTableFilters: FunctionComponent<EnrollmentScheduleProps> = ({
   filters,
@@ -19,10 +14,10 @@ export const ScheduleTableFilters: FunctionComponent<EnrollmentScheduleProps> = 
   scheduleCount,
 }) => {
   const handleSelectFilter = (value: string) => {
-    if (filters.includes(value)) {
-      setFilters(filters.filter((item) => item !== value))
+    if (filters?.status?.includes(value)) {
+      setFilters({ ...filters, status: filters.status.filter((item) => item !== value) })
     } else {
-      setFilters([...filters, ...[value]])
+      setFilters({ ...filters, status: [...(filters?.status ? filters?.status : []), value] })
     }
   }
   return (
@@ -38,10 +33,10 @@ export const ScheduleTableFilters: FunctionComponent<EnrollmentScheduleProps> = 
       }}
     >
       <Button
-        variant={filters.includes('Submitted') ? 'text' : 'outlined'}
+        variant={filters?.status?.includes('Submitted') ? 'text' : 'outlined'}
         sx={{
-          background: filters.includes('Submitted') && BUTTON_LINEAR_GRADIENT,
-          color: filters.includes('Submitted') ? 'white' : BLACK,
+          background: filters?.status?.includes('Submitted') ? BUTTON_LINEAR_GRADIENT : '',
+          color: filters?.status?.includes('Submitted') ? 'white' : BLACK,
           borderRadius: 2,
           textTransform: 'none',
           height: 25,
@@ -49,27 +44,27 @@ export const ScheduleTableFilters: FunctionComponent<EnrollmentScheduleProps> = 
         }}
         onClick={() => handleSelectFilter('Submitted')}
       >
-        Submitted ({scheduleCount['Submitted'] || 0})
+        Submitted ({(scheduleCount && scheduleCount['Submitted']) || 0})
       </Button>
       <Button
-        variant={filters.includes('Resubmitted') ? 'text' : 'outlined'}
+        variant={filters?.status?.includes('Resubmitted') ? 'text' : 'outlined'}
         sx={{
           borderRadius: 2,
           textTransform: 'none',
           height: 25,
-          background: filters.includes('Resubmitted') && BUTTON_LINEAR_GRADIENT,
-          color: filters.includes('Resubmitted') ? 'white' : BLACK,
+          background: filters?.status?.includes('Resubmitted') ? BUTTON_LINEAR_GRADIENT : '',
+          color: filters?.status?.includes('Resubmitted') ? 'white' : BLACK,
           whiteSpace: 'nowrap',
         }}
         onClick={() => handleSelectFilter('Resubmitted')}
       >
-        Resubmitted ({scheduleCount['Resubmitted'] || 0})
+        Resubmitted ({(scheduleCount && scheduleCount['Resubmitted']) || 0})
       </Button>
       <Button
-        variant={filters.includes('Updates Requested') ? 'text' : 'outlined'}
+        variant={filters?.status?.includes('Updates Requested') ? 'text' : 'outlined'}
         sx={{
-          background: filters.includes('Updates Requested') && BUTTON_LINEAR_GRADIENT,
-          color: filters.includes('Updates Requested') ? 'white' : BLACK,
+          background: filters?.status?.includes('Updates Requested') ? BUTTON_LINEAR_GRADIENT : '',
+          color: filters?.status?.includes('Updates Requested') ? 'white' : BLACK,
           borderRadius: 2,
           textTransform: 'none',
           height: 25,
@@ -77,13 +72,13 @@ export const ScheduleTableFilters: FunctionComponent<EnrollmentScheduleProps> = 
         }}
         onClick={() => handleSelectFilter('Updates Requested')}
       >
-        Updates Requested ({scheduleCount['Updates Requested'] || 0})
+        Updates Requested ({(scheduleCount && scheduleCount['Updates Requested']) || 0})
       </Button>
       <Button
-        variant={filters.includes('Updates Required') ? 'text' : 'outlined'}
+        variant={filters?.status?.includes('Updates Required') ? 'text' : 'outlined'}
         sx={{
-          background: filters.includes('Updates Required') && BUTTON_LINEAR_GRADIENT,
-          color: filters.includes('Updates Required') ? 'white' : BLACK,
+          background: filters?.status?.includes('Updates Required') ? BUTTON_LINEAR_GRADIENT : '',
+          color: filters?.status?.includes('Updates Required') ? 'white' : BLACK,
           borderRadius: 2,
           textTransform: 'none',
           height: 25,
@@ -91,35 +86,35 @@ export const ScheduleTableFilters: FunctionComponent<EnrollmentScheduleProps> = 
         }}
         onClick={() => handleSelectFilter('Updates Required')}
       >
-        Updates Required ({scheduleCount['Updates Required'] || 0})
+        Updates Required ({(scheduleCount && scheduleCount['Updates Required']) || 0})
       </Button>
       <Button
-        variant={filters.includes('Not Submitted') ? 'text' : 'outlined'}
+        variant={filters?.status?.includes('Not Submitted') ? 'text' : 'outlined'}
         sx={{
           borderRadius: 2,
           textTransform: 'none',
           height: 25,
-          background: filters.includes('Not Submitted') && BUTTON_LINEAR_GRADIENT,
-          color: filters.includes('Not Submitted') ? 'white' : BLACK,
+          background: filters?.status?.includes('Not Submitted') ? BUTTON_LINEAR_GRADIENT : '',
+          color: filters?.status?.includes('Not Submitted') ? 'white' : BLACK,
           whiteSpace: 'nowrap',
         }}
         onClick={() => handleSelectFilter('Not Submitted')}
       >
-        Not Submitted ({scheduleCount['Not Submitted'] || 0})
+        Not Submitted ({(scheduleCount && scheduleCount['Not Submitted']) || 0})
       </Button>
       <Button
-        variant={filters.includes('Accepted') ? 'text' : 'outlined'}
+        variant={filters?.status?.includes('Accepted') ? 'text' : 'outlined'}
         sx={{
           borderRadius: 2,
           textTransform: 'none',
           height: 25,
-          background: filters.includes('Accepted') && BUTTON_LINEAR_GRADIENT,
-          color: filters.includes('Accepted') ? 'white' : BLACK,
+          background: filters?.status?.includes('Accepted') ? BUTTON_LINEAR_GRADIENT : '',
+          color: filters?.status?.includes('Accepted') ? 'white' : BLACK,
           whiteSpace: 'nowrap',
         }}
         onClick={() => handleSelectFilter('Accepted')}
       >
-        Accepted ({scheduleCount['Accepted'] || 0})
+        Accepted ({(scheduleCount && scheduleCount['Accepted']) || 0})
       </Button>
     </Box>
   )

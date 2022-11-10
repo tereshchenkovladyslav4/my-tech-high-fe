@@ -39,6 +39,11 @@ export type FilterVM = {
   status: string[]
 }
 
+export type ScheduleFilterVM = {
+  selectedYearId?: number
+  status?: string[]
+}
+
 export type FiltersProps = {
   filter: FilterVM | undefined
   setFilter: (value: FilterVM | undefined) => void

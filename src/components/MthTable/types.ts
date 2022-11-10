@@ -42,6 +42,7 @@ export type MthTableProps<T> = {
   isDraggable?: boolean
   onArrange?: (arrangedItems: MthTableRowItem<T>[]) => void
   onSelectionChange?: (arrangedItems: MthTableRowItem<T>[], isAll: boolean) => void
+  onSortChange?: (property: string, order: string) => void
   sx?: SxProps<Theme>
 }
 

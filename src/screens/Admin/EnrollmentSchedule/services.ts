@@ -59,3 +59,23 @@ export const updateScheduleMutation = gql`
     }
   }
 `
+
+export const scheduleCountQuery = gql`
+  query ScheduleCountByRegionId($regionId: ID!) {
+    scheduleCountByRegionId(region_id: $regionId) {
+      error
+      message
+      results
+    }
+  }
+`
+
+export const scheduleCountGroupQuery = gql`
+  query ScheduleCountGroup {
+    scheduleCount {
+      error
+      message
+      results
+    }
+  }
+`

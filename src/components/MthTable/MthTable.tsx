@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
+import { ArrowDropDown } from '@mui/icons-material'
 import {
   TableCell,
   TableContainer,
@@ -9,12 +10,15 @@ import {
   CircularProgress,
   Box,
   TableFooter,
+  TableSortLabel,
 } from '@mui/material'
+import { visuallyHidden } from '@mui/utils'
 import { DragDropContext, Droppable, DroppableProvided, DropResult } from 'react-beautiful-dnd'
 import { MthCheckbox } from '@mth/components/MthCheckbox'
 import MthTableRow from '@mth/components/MthTable/MthTableRow'
 import { mthTableClasses } from '@mth/components/MthTable/styles'
 import { convertWidth } from '@mth/utils'
+import { Order } from '../SortableTable/types'
 import { MthTableProps, MthTableRowItem } from './types'
 
 const MthTable = <T extends unknown>({
@@ -31,12 +35,22 @@ const MthTable = <T extends unknown>({
   isDraggable = false,
   onArrange,
   onSelectionChange,
+  onSortChange,
   sx = [],
 }: MthTableProps<T>): React.ReactElement => {
   const [numSelected, setNumSelected] = useState<number>(0)
   const [rowCount, setRowCount] = useState<number>(0)
   const [tableWidth, setTableWidth] = useState<number>(0)
   const tableRef = useRef<HTMLDivElement>(null)
+  const [order, setOrder] = useState<Order>(Order.ASC)
+  const [orderBy, setOrderBy] = useState<string>('name')
+
+  const handleRequestSort = (fieldKey: string) => {
+    const isAsc = orderBy === fieldKey && order === Order.ASC
+    setOrder(isAsc ? Order.DESC : Order.ASC)
+    setOrderBy(fieldKey)
+    if (onSortChange) onSortChange(fieldKey, isAsc ? Order.DESC : Order.ASC)
+  }
 
   const handleToggleCheck = (item: MthTableRowItem<T>) => {
     item.isSelected = !item.isSelected
@@ -113,7 +127,25 @@ const MthTable = <T extends unknown>({
               )}
               {fields.map((field) => (
                 <TableCell key={field.key} width={convertWidth(field.width || 0, tableRef.current?.clientWidth || 0)}>
-                  {field.label}
+                  {field.sortable ? (
+                    <TableSortLabel
+                      active={true}
+                      // active={orderBy === headCell.id}
+                      // direction={orderBy === headCell.id ? order : 'asc'}
+                      direction={orderBy === field.key ? order : 'desc'}
+                      onClick={() => handleRequestSort(field.key)}
+                      IconComponent={ArrowDropDown}
+                    >
+                      {field.label}
+                      {orderBy === field.key ? (
+                        <Box component='span' sx={visuallyHidden}>
+                          {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                        </Box>
+                      ) : null}
+                    </TableSortLabel>
+                  ) : (
+                    field.label
+                  )}
                 </TableCell>
               ))}
             </TableRow>
