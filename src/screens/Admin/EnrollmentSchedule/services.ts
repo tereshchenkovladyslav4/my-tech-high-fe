@@ -50,3 +50,32 @@ export const getSchedulesQuery = gql`
     }
   }
 `
+
+export const updateScheduleMutation = gql`
+  mutation CreateOrUpdateSchedule($createScheduleInput: CreateOrUpdateScheduleInput!) {
+    createOrUpdateSchedule(createScheduleInput: $createScheduleInput) {
+      schedule_id
+      status
+    }
+  }
+`
+
+export const scheduleCountQuery = gql`
+  query ScheduleCountByRegionId($regionId: ID!) {
+    scheduleCountByRegionId(region_id: $regionId) {
+      error
+      message
+      results
+    }
+  }
+`
+
+export const scheduleCountGroupQuery = gql`
+  query ScheduleCountGroup {
+    scheduleCount {
+      error
+      message
+      results
+    }
+  }
+`

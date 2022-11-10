@@ -439,6 +439,12 @@ export const EmailTemplateModal: FunctionComponent<EmailTemplateModalProps> = ({
           link: 'Link to Withdraw Form to sign',
         })
       }
+      if (emailTemplate.category.category_name == 'Schedules') {
+        setAvailableInsertDescription({
+          ...insertDescriptions,
+          year: 'School Year the schedule is for (2022-2023)',
+        })
+      }
       if (emailTemplate.body) {
         const contentBlock = htmlToDraft(emailTemplate.body)
         if (contentBlock) {

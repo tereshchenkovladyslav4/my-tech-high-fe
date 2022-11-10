@@ -51,7 +51,7 @@ export const AdminSideMenu: FunctionComponent = () => {
     history.push(DASHBOARD)
   }
 
-  const unExactPages = [SITE_MANAGEMENT, ENROLLMENT, ANNOUNCEMENTS, CALENDAR, COMMUNICATION, CURRICULUM]
+  const unExactPages = [SITE_MANAGEMENT, ENROLLMENT, ANNOUNCEMENTS, CALENDAR, COMMUNICATION, CURRICULUM, HOMEROOM]
 
   const navigationList = [
     {

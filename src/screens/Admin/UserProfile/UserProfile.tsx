@@ -93,15 +93,15 @@ export const UserProfile: React.FC<UserProfileProps> = ({ handleClose, data, set
       delete person.school_partner_id_updated
       delete person.school_partner_id
       person.person_id = Number(person.person_id)
-      const phone: unknown = Object.assign({}, studentPerson.phone)
-      phone.phone_id = Number(phone.phone_id)
+      phoneInfo.phone_id = Number(phoneInfo.phone_id)
       const address = Object.assign({}, studentPerson.address)
       address.address_id = +address.address_id
+
       await updatePersonAddress({
         variables: {
           updatePersonAddressInput: {
             address: address,
-            phone: phone,
+            phone: phoneInfo,
             person: person,
           },
         },
@@ -279,6 +279,8 @@ export const UserProfile: React.FC<UserProfileProps> = ({ handleClose, data, set
           studentStatus={studentStatus}
           applicationState={applicationState}
           setIsChanged={setIsChanged}
+          phoneInfo={phoneInfo}
+          setPhoneInfo={setPhoneInfo}
         />
       ) : (
         <></>

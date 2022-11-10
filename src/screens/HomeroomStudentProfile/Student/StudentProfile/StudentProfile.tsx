@@ -44,6 +44,8 @@ export const StudentProfile: React.FC = () => {
 
   const enrollmentLink = `${MthRoute.HOMEROOM + MthRoute.ENROLLMENT}/${student?.student_id}`
 
+  const [isEditingMobile, setIsEditingMobile] = useState(false)
+
   const uploadLimit = 1
 
   const { data: assessmentListData, loading: assessmentLoading } = useQuery(getAssessmentsBySchoolYearId, {
@@ -195,16 +197,22 @@ export const StudentProfile: React.FC = () => {
   }
 
   const Image = () => (
-    <Box display='flex' flexDirection='column' justifyContent={'center'} sx={{}}>
+    <Box display='flex' flexDirection='column' justifyContent={'center'}>
       {file || avatar ? (
         <>
           <Avatar
             src={file ? convertToBlob(file) : getProfilePhoto()}
             variant='rounded'
-            sx={{ height: 167, width: 167, borderRadius: 1 }}
+            sx={{ height: { xs: 100, sm: 167 }, width: { xs: 100, sm: 167 }, borderRadius: 1 }}
           />
           <Box component='a' onClick={() => setWarningModalOpen(true)} sx={{ cursor: 'pointer', p: 1 }}>
-            <Paragraph size='medium' color='#7B61FF' fontWeight='500' textAlign='center'>
+            <Paragraph
+              size='medium'
+              color='#7B61FF'
+              fontWeight='500'
+              textAlign='center'
+              sx={{ display: { xs: isEditingMobile ? 'block' : 'none', sm: 'block' } }}
+            >
               Remove Profile Picture
             </Paragraph>
           </Box>
@@ -215,7 +223,7 @@ export const StudentProfile: React.FC = () => {
           flexDirection='column'
           justifyContent={'center'}
           sx={{ backgroundColor: '#FAFAFA', alignItems: 'center', cursor: 'pointer', height: '100%', width: '100%' }}
-          onClick={() => openImageModal()}
+          onClick={() => isEditingMobile && openImageModal()}
         >
           <SystemUpdateAltIcon />
           <Paragraph size='medium' fontWeight='500'>
@@ -479,11 +487,254 @@ export const StudentProfile: React.FC = () => {
                   <Paragraph size='medium' fontWeight='500'>
                     &nbsp;
                   </Paragraph>
-                  <Button variant='contained' sx={studentProfileClasses.saveButton} type='submit'>
+                  <Button variant='contained' type='submit'>
                     Save Changes
                   </Button>
                 </Box>
               </Grid>
+            </Grid>
+          </Grid>
+          <Grid
+            container
+            rowSpacing={2}
+            columnSpacing={{ xs: 1 }}
+            display={{ sx: 'block', sm: 'none' }}
+            alignItems='center'
+            paddingX={2}
+            paddingY={2.5}
+          >
+            <Grid item xs={6}>
+              <Subtitle textAlign='left'>Student</Subtitle>
+            </Grid>
+            <Grid item xs={6}>
+              {!isEditingMobile ? (
+                <Button
+                  variant='contained'
+                  sx={{
+                    background: MthColor.LIGHTGRAY,
+                    borderRadius: 5,
+                    color: MthColor.BLACK,
+                  }}
+                  onClick={(e) => {
+                    e.preventDefault()
+                    setIsEditingMobile(true)
+                  }}
+                  type='button'
+                >
+                  Edit
+                </Button>
+              ) : (
+                <Button
+                  variant='contained'
+                  sx={{
+                    background: `${MthColor.BLACK_GRADIENT} !important`,
+                    borderRadius: 5,
+                  }}
+                  type='submit'
+                >
+                  Save Changes
+                </Button>
+              )}
+            </Grid>
+            <Grid item xs={12}>
+              <Box display='flex' flexDirection='column'>
+                <Box display='flex' flexDirection='row'>
+                  {Image()}
+                  <Box
+                    display='flex'
+                    flexDirection='column'
+                    justifyContent='center'
+                    marginLeft={2}
+                    color={MthColor.GRAY}
+                  >
+                    <Subtitle size='small'>{gradeText(student)}</Subtitle>
+                    {/*{ status !== PacketStatus.MISSING_INFO && status !== 'Submitted' && <Title>GPA</Title>}*/}
+                  </Box>
+                </Box>
+              </Box>
+            </Grid>
+            <Grid item xs={12}>
+              {status !== PacketStatus.MISSING_INFO && status !== 'Submitted' && (
+                <Box display='flex' flexDirection='column' justifyContent='start' alignItems='start' height='100%'>
+                  <Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between'>
+                    <Subtitle size='large' fontWeight='700' color={MthColor.GRAY}>
+                      1st Semester
+                    </Subtitle>
+                  </Box>
+                  <Box display='flex' flexDirection='row' alignItems='center'>
+                    <Subtitle size='large' fontWeight='700' color={MthColor.GRAY}>
+                      2nd Semester
+                    </Subtitle>
+                  </Box>
+                </Box>
+              )}
+            </Grid>
+            <Grid item xs={6}>
+              {status !== PacketStatus.MISSING_INFO && status !== 'Submitted' && (
+                <Box>
+                  <Box display='flex' flexDirection='column' alignItems='center'>
+                    <Paragraph size='medium' fontWeight='500'>
+                      Learning Logs
+                    </Paragraph>
+                    <Button variant='contained' sx={studentProfileClasses.button} disableElevation>
+                      Download
+                    </Button>
+                  </Box>
+                </Box>
+              )}
+            </Grid>
+            <Grid item xs={6}>
+              {status !== PacketStatus.MISSING_INFO && status !== 'Submitted' && (
+                <Box display='flex' flexDirection='column' alignItems='center'>
+                  <Paragraph size='medium' fontWeight='500'>
+                    Unofficial Transcript
+                  </Paragraph>
+                  <Button variant='contained' sx={studentProfileClasses.button} disableElevation>
+                    Download
+                  </Button>
+                </Box>
+              )}
+            </Grid>
+            <Grid item xs={6}>
+              <Box display='flex' flexDirection='column'>
+                <Paragraph size='medium' fontWeight='500' textAlign='left'>
+                  Preferred First Name
+                </Paragraph>
+                <OutlinedInput
+                  name='firstName'
+                  value={formik.values.firstName}
+                  onChange={(e) => {
+                    formik.handleChange(e)
+                    setIsFormChanged(true)
+                  }}
+                  sx={studentProfileClasses.formField}
+                  disabled={!isEditingMobile}
+                />
+              </Box>
+            </Grid>
+            <Grid item xs={6}>
+              <Box display='flex' flexDirection='column'>
+                <Paragraph size='medium' fontWeight='500' textAlign='left'>
+                  Preferred Last Name
+                </Paragraph>
+                <OutlinedInput
+                  name='lastName'
+                  value={formik.values.lastName}
+                  onChange={(e) => {
+                    formik.handleChange(e)
+                    setIsFormChanged(true)
+                  }}
+                  sx={studentProfileClasses.formField}
+                  disabled={!isEditingMobile}
+                />
+              </Box>
+            </Grid>
+            <Grid item xs={12}>
+              {status !== PacketStatus.MISSING_INFO && (
+                <Box display='flex' flexDirection='column'>
+                  <Paragraph size='medium' fontWeight='500' textAlign='left'>
+                    Testing Preference
+                  </Paragraph>
+                  {assessmentItems.map((assessment: AssessmentType) => {
+                    const asseessmentAnswer = studentAssessments.find(
+                      (studnetAnswer: StudentAssessment) => studnetAnswer.assessmentId === assessment.assessment_id,
+                    )
+                    let testingResult = ''
+                    if (asseessmentAnswer) {
+                      const testingOption = assessment.Options.find(
+                        (option) => option.option_id === asseessmentAnswer.optionId,
+                      )
+                      testingResult = testingOption ? testingOption.label : ''
+                    }
+                    return (
+                      <Grid container key={assessment.assessment_id} sx={{ marginTop: '6px' }}>
+                        <Grid item md={6}>
+                          <Paragraph size='medium' fontWeight='700'>
+                            {assessment.test_name}
+                          </Paragraph>
+                        </Grid>
+                        <Grid item md={6}>
+                          <Paragraph size='medium' fontWeight='700'>
+                            {testingResult}
+                          </Paragraph>
+                        </Grid>
+                      </Grid>
+                    )
+                  })}
+                </Box>
+              )}
+            </Grid>
+            <Grid item xs={6}>
+              <Box display='flex' flexDirection='column' alignItems='center'>
+                <Paragraph size='medium' fontWeight='500'>
+                  Enrollment Packet
+                </Paragraph>
+                {status === PacketStatus.MISSING_INFO ? (
+                  <Button
+                    sx={studentProfileClasses.resubmitButton}
+                    variant='contained'
+                    onClick={() => history.push(enrollmentLink)}
+                  >
+                    Resubmit
+                  </Button>
+                ) : status === 'Submitted' || status === PacketStatus.RESUBMITTED ? (
+                  <Button sx={studentProfileClasses.pendingBtn} variant='contained'>
+                    Pending Approval
+                  </Button>
+                ) : (
+                  <Button
+                    sx={studentProfileClasses.enrollmentButton}
+                    variant='contained'
+                    onClick={() => history.push(enrollmentLink)}
+                  >
+                    View
+                  </Button>
+                )}
+              </Box>
+            </Grid>
+            <Grid item xs={12}>
+              {status !== PacketStatus.MISSING_INFO && (
+                <Box display='flex' flexDirection='column'>
+                  <Paragraph size='medium' fontWeight='500' textAlign='left'>
+                    Student Email
+                  </Paragraph>
+                  <OutlinedInput
+                    name='email'
+                    value={formik.values.email}
+                    onChange={(e) => {
+                      formik.handleChange(e)
+                      if (status !== PacketStatus.MISSING_INFO) setIsFormChanged(true)
+                    }}
+                    sx={studentProfileClasses.formField}
+                    autoComplete='off'
+                    disabled={!isEditingMobile}
+                  />
+                </Box>
+              )}
+            </Grid>
+            <Grid item xs={12}>
+              {status !== PacketStatus.MISSING_INFO && (
+                <Box display='flex' flexDirection='column' width='100%'>
+                  <Paragraph size='medium' fontWeight='500' textAlign='left'>
+                    Password
+                  </Paragraph>
+                  <OutlinedInput
+                    name='password'
+                    type='password'
+                    value={formik.values.password}
+                    onChange={(e) => {
+                      formik.handleChange(e)
+                      if (status !== PacketStatus.MISSING_INFO) setIsFormChanged(true)
+                    }}
+                    sx={studentProfileClasses.formField}
+                    error={formik.touched.password && Boolean(formik.errors.password)}
+                    disabled={!isEditingMobile}
+                  />
+                  <FormHelperText sx={{ color: MthColor.RED }}>
+                    {formik.touched.password && formik.errors.password}
+                  </FormHelperText>
+                </Box>
+              )}
             </Grid>
           </Grid>
           {imageModalOpen && (

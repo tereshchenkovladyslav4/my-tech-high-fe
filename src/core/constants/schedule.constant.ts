@@ -3,6 +3,10 @@ import { ScheduleStatus } from '../enums/schedule-status.enums'
 
 export const SCHEDULE_STATUS_OPTIONS: DropDownItem[] = [
   {
+    label: 'Not Submitted',
+    value: ScheduleStatus.NOT_SUBMITTED,
+  },
+  {
     label: 'Submitted',
     value: ScheduleStatus.SUBMITTED,
   },

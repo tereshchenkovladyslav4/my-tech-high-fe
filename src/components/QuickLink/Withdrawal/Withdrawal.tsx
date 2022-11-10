@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import { useMutation, useQuery } from '@apollo/client'
 import { makeStyles, Theme } from '@material-ui/core/styles'
-import ArrowBackIosOutlinedIcon from '@mui/icons-material/ArrowBackIosOutlined'
 import { Alert, Box, Button, Grid, List, Stack, Typography } from '@mui/material'
 import { Form, Formik } from 'formik'
 import _ from 'lodash'
@@ -66,6 +65,7 @@ const additionalStyles = makeStyles((theme: Theme) => ({
   titleBox: {
     [theme.breakpoints.down('xs')]: {
       marginBottom: '24px',
+      display: 'none',
     },
     display: 'flex',
     flexDirection: 'row',
@@ -134,8 +134,7 @@ const Withdrawal: React.FC<{
   handleChange?: (flag: boolean) => void
   region: number
   studentId?: number
-  onBackPress: () => void
-}> = ({ action, handleChange, region, studentId, onBackPress }) => {
+}> = ({ action, handleChange, region, studentId }) => {
   const signature = useRef<SignaturePad | undefined>(undefined)
   const { me } = useContext(UserContext)
   const isEditable = (): boolean => {
@@ -412,7 +411,7 @@ const Withdrawal: React.FC<{
               section: 'quick-link-withdrawal',
               type: QUESTION_TYPE.SIGNATURE,
               sequence: 3,
-              question: 'Type full legal parent name and provide a digital signature below. Signature(touch to sign).',
+              question: 'Type full legal parent name and provide a digital signature below.',
               options: [],
               mainQuestion: true,
               defaultQuestion: false,
@@ -528,7 +527,6 @@ const Withdrawal: React.FC<{
               <Box sx={siteManagementClassess.base}>
                 <Box className={classes.header}>
                   <Box className={classes.titleBox}>
-                    <ArrowBackIosOutlinedIcon onClick={onBackPress} sx={{ cursor: 'pointer' }} />
                     <Typography sx={{ fontWeight: 700, fontSize: 20, ml: 1 }}>Withdraw</Typography>
                   </Box>
                   {isEditable() && (

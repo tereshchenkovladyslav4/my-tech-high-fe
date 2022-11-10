@@ -13,8 +13,8 @@ import { RED_GRADIENT } from '../../../../utils/constants'
 import { EmailModal } from '../ScheduleModal/ScheduleEmailModal'
 import { ScheduleTableFilters } from '../ScheduleTableFilters/ScheduleTableFilters'
 import { SchoolYearDropDown } from '../SchoolYearDropDown/SchoolYearDropDown'
-import { emailScheduleMutation, getSchedulesQuery } from '../services'
-import { ApplicationTableProps, EmailTemplateVM, Field, ScheduleCount, TableData } from '../type'
+import { emailScheduleMutation, getSchedulesQuery, scheduleCountGroupQuery } from '../services'
+import { ApplicationTableProps, EmailTemplateVM, Field, ScheduleFilterVM, ScheduleCount, TableData } from '../type'
 
 export const ScheduleTable: React.FC<ApplicationTableProps> = ({ filter }) => {
   const { me } = useContext(UserContext)
@@ -30,7 +30,9 @@ export const ScheduleTable: React.FC<ApplicationTableProps> = ({ filter }) => {
   const [tableData, setTableData] = useState<Array<TableData>>([])
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [selectedYearId, setSelectedYearId] = useState<number>(0)
-  const [filters, setFilters] = useState<Array<string>>([])
+  // const [filters, setFilters] = useState<Array<string>>([])
+
+  const [filters, setFilters] = useState<ScheduleFilterVM>()
   const initialFilters = [
     'Not Submitted',
     'Updates Required',
@@ -39,16 +41,18 @@ export const ScheduleTable: React.FC<ApplicationTableProps> = ({ filter }) => {
     'Submitted',
     'Accepted',
   ]
-  const [scheduleCount, setScheduleCount] = useState<ScheduleCount>({})
+  const [scheduleCount, setScheduleCount] = useState<ScheduleCount>()
   const scheduleIds = React.useRef<Array<number>>()
 
   const createData = (schedule: unknown) => {
     return {
+      key: schedule.schedule_id.toString(),
       columns: {
         id: schedule.schedule_id,
         date: schedule.date_submitted ? moment(schedule.date_submitted).format('MM/DD/YY') : null,
         status: schedule.status,
         student: `${schedule.ScheduleStudent.person?.last_name}, ${schedule.ScheduleStudent.person?.first_name}`,
+        studentId: +schedule.ScheduleStudent.student_id,
         grade: schedule.ScheduleStudent.grade_level,
         parent: `${schedule.ScheduleStudent.parent.person?.last_name}, ${schedule.ScheduleStudent.parent.person?.first_name}`,
         diploma: schedule.ScheduleStudent.diploma_seeking === 1 ? 1 : 0,
@@ -62,9 +66,13 @@ export const ScheduleTable: React.FC<ApplicationTableProps> = ({ filter }) => {
     }
   }
 
+  const { data: countGroup } = useQuery(scheduleCountGroupQuery, {
+    fetchPolicy: 'network-only',
+  })
+
   const { data, refetch } = useQuery(getSchedulesQuery, {
     variables: {
-      filter: { ...filter, status: filters },
+      filter: { ...filter, ...filters },
       skip: skip,
       sort: sort,
       take: paginatinLimit,
@@ -130,15 +138,10 @@ export const ScheduleTable: React.FC<ApplicationTableProps> = ({ filter }) => {
   }, [data])
 
   useEffect(() => {
-    setScheduleCount({
-      Submitted: tableData.filter((item) => item?.columns?.status === 'Submitted').length,
-      Resubmitted: tableData.filter((item) => item?.columns?.status === 'Resubmitted').length,
-      Accepted: tableData.filter((item) => item?.columns?.status === 'Accepted').length,
-      'Updates Requested': tableData.filter((item) => item?.columns?.status === 'Updates Requested').length,
-      'Updates Required': tableData.filter((item) => item?.columns?.status === 'Updates Required').length,
-      'Not Submitted': tableData.filter((item) => item?.columns?.status === 'Not Submitted').length,
-    })
-  }, [tableData])
+    if (countGroup) {
+      setScheduleCount(countGroup.scheduleCount.results)
+    }
+  }, [countGroup])
 
   useEffect(() => {
     setSort('status|ASC')
@@ -238,21 +241,21 @@ export const ScheduleTable: React.FC<ApplicationTableProps> = ({ filter }) => {
     {
       key: 'date',
       label: 'Date',
-      sortable: true,
+      sortable: false,
       tdClass: '',
       width: '0',
     },
     {
       key: 'status',
       label: 'Status',
-      sortable: true,
+      sortable: false,
       tdClass: '',
       width: '0',
     },
     {
       key: 'student',
       label: 'Student',
-      sortable: true,
+      sortable: false,
       tdClass: '',
       width: '0',
     },
@@ -266,7 +269,7 @@ export const ScheduleTable: React.FC<ApplicationTableProps> = ({ filter }) => {
     {
       key: 'parent',
       label: 'Parent',
-      sortable: true,
+      sortable: false,
       tdClass: '',
       width: '0',
     },
@@ -301,6 +304,11 @@ export const ScheduleTable: React.FC<ApplicationTableProps> = ({ filter }) => {
       }
     })
     scheduleIds.current = [...newScheduleIds]
+  }
+
+  const onSortChange = (filedKey: string, order: string) => {
+    setSort(`${filedKey}|${order}`)
+    refetch()
   }
 
   return (
@@ -382,7 +390,13 @@ export const ScheduleTable: React.FC<ApplicationTableProps> = ({ filter }) => {
           >
             Email
           </Button>
-          <SchoolYearDropDown selectedYearId={selectedYearId} setSelectedYearId={setSelectedYearId} />
+          <SchoolYearDropDown
+            selectedYearId={selectedYearId}
+            setSelectedYearId={(value) => {
+              setSelectedYearId(value)
+              setFilters({ ...filters, selectedYearId: +value })
+            }}
+          />
         </Box>
       </Box>
       <Box
@@ -423,6 +437,7 @@ export const ScheduleTable: React.FC<ApplicationTableProps> = ({ filter }) => {
           selectable={true}
           checkBoxColor='secondary'
           onSelectionChange={onSelectionChange}
+          onSortChange={onSortChange}
         />
       </Box>
       {open && (
@@ -437,7 +452,13 @@ export const ScheduleTable: React.FC<ApplicationTableProps> = ({ filter }) => {
           template={emailTemplate}
           editFrom={true}
           isNonSelected={scheduleIds.current.length === 0}
-          filters={filters.length === 0 ? initialFilters : filters}
+          filters={
+            scheduleIds.current?.length === 0
+              ? initialFilters
+              : tableData
+                  .filter((td) => scheduleIds.current?.find((sid) => sid === td.columns.id))
+                  .map((obj) => obj.columns.status)
+          }
           handleSchedulesByStatus={handleSchedulesByStatus}
         />
       )}

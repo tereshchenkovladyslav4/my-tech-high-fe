@@ -30,7 +30,7 @@ import { AssessmentType } from '@mth/screens/Admin/SiteManagement/EnrollmentSett
 import { StudentType } from '@mth/screens/HomeroomStudentProfile/Student/types'
 import { BUTTON_LINEAR_GRADIENT, MTHBLUE } from '../../../../utils/constants'
 import { STATES_WITH_ABBREVIATION } from '../../../../utils/states'
-import { getPreviousSchoolYearId } from '../../../../utils/utils'
+import { getPreviousSchoolYearId, phoneFormat } from '../../../../utils/utils'
 import { ProfilePacketModal } from '../../EnrollmentPackets/EnrollmentPacketModal/ProfilePacketModal'
 import { GetSchoolsPartner } from '../../SchoolOfEnrollment/services'
 import { getStudentDetail, getSchoolYearsByRegionId } from '../services'
@@ -43,6 +43,8 @@ type StudentProfileProps = {
   studentStatus: unknown
   applicationState: unknown
   setIsChanged: (_: unknown) => void
+  phoneInfo: unknown
+  setPhoneInfo: (_: unknown) => void
 }
 
 type StudentAssessment = {
@@ -90,6 +92,8 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
   studentStatus,
   applicationState,
   setIsChanged,
+  phoneInfo,
+  setPhoneInfo,
 }) => {
   const { me } = useContext(UserContext)
   const classes = selectStyles()
@@ -211,7 +215,6 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
   const [legalMiddleName, setLegalMiddleName] = useState('')
   const [legalLastName, setLegalLastName] = useState('')
 
-  const [phone, setPhone] = useState('')
   const [email, setEmail] = useState('')
   const [gender, setGender] = useState('')
   const [city, setCity] = useState('')
@@ -278,7 +281,6 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
       setStreet1(currentUserData.student.person.address.street)
       setStreet2(currentUserData.student.person.address.street2)
       setZip(currentUserData.student.person.address.zip)
-      setPhone(currentUserData.student.person.phone.number)
       setUserInfo(currentUserData.student.person)
       setPackets(currentUserData.student.packets)
       if (currentUserData.student.grade_levels && currentUserData.student.grade_levels[0]) {
@@ -733,10 +735,9 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
               size='small'
               variant='outlined'
               fullWidth
-              value={phone}
+              value={phoneFormat(phoneInfo?.number + '')}
               onChange={(e) => {
-                setPhone(e.target.value)
-                setUserInfo({ ...userInfo, phone: { ...userInfo.phone, number: e.target.value } })
+                setPhoneInfo({ ...phoneInfo, number: phoneFormat(e.target.value + '') })
               }}
             />
             <FormControlLabel

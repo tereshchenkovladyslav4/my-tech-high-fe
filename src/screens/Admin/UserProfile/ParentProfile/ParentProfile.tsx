@@ -5,6 +5,7 @@ import { Paragraph } from '../../../../components/Typography/Paragraph/Paragraph
 import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
 import { BUTTON_LINEAR_GRADIENT } from '../../../../utils/constants'
 import { STATES_WITH_ABBREVIATION } from '../../../../utils/states'
+import { phoneFormat } from '../../../../utils/utils'
 
 type ParentProfileProps = {
   userInfo: unknown
@@ -55,7 +56,7 @@ export const ParentProfile: FunctionComponent<ParentProfileProps> = ({
       setStreet2(userInfo.address.street2 || '')
       setZip(userInfo.address.zip || '')
     }
-    setPhone(phoneInfo?.number || '')
+    setPhone(phoneFormat(phoneInfo?.number + '') || '')
     if (phoneInfo?.ext) {
       setCanMessage(true)
     }
@@ -194,10 +195,10 @@ export const ParentProfile: FunctionComponent<ParentProfileProps> = ({
               size='small'
               variant='outlined'
               fullWidth
-              value={phone}
+              value={phoneFormat(phone + '')}
               onChange={(e) => {
-                setPhone(e.target.value)
-                setPhoneInfo({ ...phoneInfo, ...{ number: e.target.value } })
+                setPhone(phoneFormat(e.target.value + ''))
+                setPhoneInfo({ ...phoneInfo, ...{ number: phoneFormat(e.target.value + '') } })
               }}
             />
             <FormControlLabel

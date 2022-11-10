@@ -59,7 +59,7 @@ export const Contact: ContactTemplateType = ({ id, questions }) => {
                 } else if (q.type === QUESTION_TYPE.CHECKBOX || q.type === QUESTION_TYPE.AGREEMENT) {
                   valid_student[`${q.slug?.replace('student_', '')}`] = yup
                     .array()
-                    .min(1)
+                    .min(1, 'Required')
                     .required('Required')
                     .nullable()
                 } else {
@@ -84,7 +84,11 @@ export const Contact: ContactTemplateType = ({ id, questions }) => {
                       return isNumber.test(value)
                     })
                 } else if (q.type === QUESTION_TYPE.CHECKBOX || q.type === QUESTION_TYPE.AGREEMENT) {
-                  valid_parent[`${q.slug?.replace('parent_', '')}`] = yup.array().min(1).required('Required').nullable()
+                  valid_parent[`${q.slug?.replace('parent_', '')}`] = yup
+                    .array()
+                    .min(1, 'Required')
+                    .required('Required')
+                    .nullable()
                 } else {
                   valid_parent[`${q.slug?.replace('parent_', '')}`] = yup.string().required('Required').nullable()
                 }
@@ -100,9 +104,9 @@ export const Contact: ContactTemplateType = ({ id, questions }) => {
                     return isNumber.test(value)
                   })
               } else if (q.type === QUESTION_TYPE.CHECKBOX) {
-                valid_meta[`${q.slug}`] = yup.array().min(1).required('Required').nullable()
+                valid_meta[`${q.slug}`] = yup.array().min(1, 'Required').required('Required').nullable()
               } else if (q.type === QUESTION_TYPE.AGREEMENT) {
-                valid_meta[`${q.slug}`] = yup.array().min(1).required('Required').nullable()
+                valid_meta[`${q.slug}`] = yup.array().min(1, 'Required').required('Required').nullable()
               } else {
                 valid_meta[`${q.slug}`] = yup.string().required('Required').nullable()
               }

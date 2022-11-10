@@ -9,6 +9,7 @@ export const homeroomResourcesCardClasses = {
     width: 44,
     height: 44,
     borderRadius: '8px',
+    cursor: 'pointer',
     '& svg': {
       fontSize: '26px',
     },

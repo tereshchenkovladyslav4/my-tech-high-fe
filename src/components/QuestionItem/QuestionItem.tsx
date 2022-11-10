@@ -3,18 +3,7 @@ import { useQuery } from '@apollo/client'
 import DehazeIcon from '@mui/icons-material/Dehaze'
 import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined'
 import EditIcon from '@mui/icons-material/Edit'
-import {
-  Box,
-  Button,
-  Checkbox,
-  IconButton,
-  outlinedInputClasses,
-  inputLabelClasses,
-  Radio,
-  TextField,
-  FormHelperText,
-  Grid,
-} from '@mui/material'
+import { Box, Button, Checkbox, IconButton, Radio, TextField, FormHelperText, Grid } from '@mui/material'
 import { useFormikContext } from 'formik'
 import _ from 'lodash'
 import moment from 'moment'
@@ -35,6 +24,7 @@ import { Paragraph } from '../Typography/Paragraph/Paragraph'
 import { Subtitle } from '../Typography/Subtitle/Subtitle'
 import { QuestionModal } from './AddNewQuestion'
 import { Question, QUESTION_TYPE } from './QuestionItemProps'
+import { useStyles } from './styles'
 
 type QuestionItemProps = {
   questions: Question[]
@@ -286,6 +276,7 @@ export const QuestionItem: FunctionComponent<QuestionItemProps> = ({
 function Item({ question: q, signature }: { question: Question; signature?: unknown }) {
   //	Formik values context
   const { values, setValues, errors, touched } = useFormikContext<Question[]>()
+  const classes = useStyles
 
   //	Response
   const setQuestionResponse = (value) => {
@@ -321,25 +312,7 @@ function Item({ question: q, signature }: { question: Question; signature?: unkn
     case QUESTION_TYPE.DROPDOWN:
       return (
         <DropDown
-          sx={{
-            marginTop: '5px',
-            marginBottom: '0',
-            maxWidth: '100%',
-            borderColor: errors[q.id] ? 'red' : '',
-            [`& .${outlinedInputClasses.root} .${outlinedInputClasses.notchedOutline}`]: {
-              borderColor: SYSTEM_07,
-              borderWidth: '2px !important',
-            },
-            [`& .${inputLabelClasses.root}.${inputLabelClasses.focused}`]: {
-              transform: 'translate(14px, -11px) scale(1)',
-            },
-            [`& .${inputLabelClasses.root}.${inputLabelClasses.shrink}`]: {
-              transform: 'translate(14px, -11px) scale(1)',
-            },
-            [`& .${outlinedInputClasses.root} .${outlinedInputClasses.notchedOutline} span`]: {
-              fontSize: 16,
-            },
-          }}
+          sx={!!errors[q.id] ? classes.textFieldError : classes.dropdown}
           name={`Question${q.id}`}
           labelTop
           dropDownItems={q.options || []}
@@ -361,35 +334,8 @@ function Item({ question: q, signature }: { question: Question; signature?: unkn
       return (
         <TextField
           size='small'
-          sx={{
-            marginTop: '10px',
-            minWidth: '100%',
-            maxWidth: '100%',
-            [`& .${outlinedInputClasses.root} .${outlinedInputClasses.notchedOutline}`]: {
-              borderColor: SYSTEM_07,
-              borderWidth: '2px',
-            },
-            [`& .${inputLabelClasses.root}.${inputLabelClasses.focused}`]: {
-              transform: 'translate(14px, -11px) scale(1)',
-            },
-            [`& .${inputLabelClasses.root}.${inputLabelClasses.shrink}`]: {
-              transform: 'translate(14px, -11px) scale(1)',
-            },
-            [`& .${outlinedInputClasses.root} .${outlinedInputClasses.notchedOutline} span`]: {
-              fontSize: 16,
-            },
-          }}
-          InputLabelProps={{
-            style: { color: SYSTEM_05, fontSize: 16 },
-          }}
-          InputProps={{
-            style: { fontSize: 16 },
-          }}
-          FormHelperTextProps={{
-            style: {
-              color: '#BD0043',
-            },
-          }}
+          sx={!!errors[q.id] ? classes.textFieldError : classes.textField}
+          focused
           label={q.question}
           variant='outlined'
           value={q.response}
@@ -397,7 +343,7 @@ function Item({ question: q, signature }: { question: Question; signature?: unkn
             setQuestionResponse(e.currentTarget.value)
           }}
           name={`Question${q.id}`}
-          error={!!(touched[q.id] && Boolean(errors[q.id]))}
+          error={!!errors[q.id]}
           helperText={errors[q.id]}
         />
       )
@@ -465,7 +411,7 @@ function Item({ question: q, signature }: { question: Question; signature?: unkn
                 paddingLeft: 0,
               }}
             />
-            <p style={{ color: SYSTEM_05 }} dangerouslySetInnerHTML={{ __html: q.question }}></p>
+            <p dangerouslySetInnerHTML={{ __html: q.question }}></p>
           </Box>
           {Boolean(errors[q.id]) && (
             <Paragraph
@@ -473,7 +419,7 @@ function Item({ question: q, signature }: { question: Question; signature?: unkn
               textAlign='left'
               sx={{ marginTop: '4px', marginLeft: '14px', fontSize: '0.75rem' }}
             >
-              This field is required.
+              Required
             </Paragraph>
           )}
         </Box>
@@ -541,26 +487,7 @@ function Item({ question: q, signature }: { question: Question; signature?: unkn
       return (
         <TextField
           size='small'
-          sx={{
-            marginTop: '10px',
-            minWidth: '100%',
-            [`& .${outlinedInputClasses.root} .${outlinedInputClasses.notchedOutline}`]: {
-              borderColor: SYSTEM_07,
-              borderWidth: '2px',
-            },
-            [`& .${inputLabelClasses.root}.${inputLabelClasses.focused}`]: {
-              transform: 'translate(14px, -11px) scale(1)',
-            },
-            [`& .${inputLabelClasses.root}.${inputLabelClasses.shrink}`]: {
-              transform: 'translate(14px, -11px) scale(1)',
-            },
-            [`& .${outlinedInputClasses.root} .${outlinedInputClasses.notchedOutline} span`]: {
-              fontSize: 16,
-            },
-          }}
-          InputLabelProps={{
-            style: { color: SYSTEM_05 },
-          }}
+          sx={!!errors[q.id] ? classes.textFieldError : classes.textField}
           label={q.question}
           variant='outlined'
           value={q.response}
@@ -569,12 +496,7 @@ function Item({ question: q, signature }: { question: Question; signature?: unkn
           focused
           inputProps={{ min: min }}
           name={'Question' + q.id.toString()}
-          FormHelperTextProps={{
-            style: {
-              color: '#BD0043',
-            },
-          }}
-          error={!!touched[q.id] && !!errors[q.id]}
+          error={!!errors[q.id]}
           helperText={errors[q.id]}
         />
       )
@@ -583,7 +505,7 @@ function Item({ question: q, signature }: { question: Question; signature?: unkn
         <Paragraph
           size='large'
           sx={{
-            color: 'rgb(118, 118, 118)',
+            color: 'black',
             fontSize: '16px',
             marginBottom: '0px',
           }}
@@ -594,20 +516,19 @@ function Item({ question: q, signature }: { question: Question; signature?: unkn
     case QUESTION_TYPE.SIGNATURE:
       return (
         <Box sx={{ width: '100%', margin: 'auto', mt: '10px' }}>
+          <Subtitle
+            size={12}
+            sx={{
+              marginBottom: '12px',
+            }}
+          >
+            Type full legal parent name and provide a digital signature below.
+          </Subtitle>
           <TextField
             placeholder='Entry'
             fullWidth
             value={q.response}
-            sx={{
-              minWidth: '100%',
-              maxWidth: '100%',
-              [`& .${outlinedInputClasses.root} .${outlinedInputClasses.notchedOutline}`]: {
-                borderColor: SYSTEM_07,
-                borderWidth: '2px',
-              },
-              mb: 2,
-              background: '#fff',
-            }}
+            sx={!!errors[q.id] ? classes.textFieldError : classes.textField}
             name={'Question' + q.id.toString()}
             size='medium'
             onChange={(v) => setQuestionResponse(v.currentTarget.value)}
@@ -620,14 +541,19 @@ function Item({ question: q, signature }: { question: Question; signature?: unkn
             helperText={errors[q.id] ? 'Required' : ''}
           />
           <Subtitle
-            size={12}
-            sx={{
-              color: 'rgb(118, 118, 118)',
-            }}
+            sx={
+              !!errors[q.id]
+                ? {
+                    color: '#BD0043',
+                  }
+                : {
+                    color: 'black',
+                  }
+            }
           >
-            {q.question}
+            Signature (touch to sign)
           </Subtitle>
-          <SignaturePad options={{ minWidth: 1, maxWidth: 1 }} width={500} height={100} ref={signature} />
+          <SignaturePad options={{ minWidth: 1, maxWidth: 1 }} height={100} ref={signature} />
           <Box sx={{ height: 1, width: '100%', borderBottom: '1px solid #000', mb: 0.5 }} />
           {Boolean(errors[q.id]) && (
             <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'flex-start' }}>

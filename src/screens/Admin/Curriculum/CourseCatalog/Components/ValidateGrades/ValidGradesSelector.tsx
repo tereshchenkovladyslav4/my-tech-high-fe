@@ -28,12 +28,12 @@ const ValidGradesSelector: React.FC<ValidGradesSelectorProps> = ({ gradeOptions 
     ]
 
     // Check grades
-    if (grades[0] >= grades[1]) {
+    if (grades[0] > grades[1]) {
       setShowGradeError(true)
       return
     }
     // Check alternative grades
-    if (grades[2] >= grades[3]) {
+    if (grades[2] > grades[3]) {
       setShowAltGradeError(true)
       return
     }

@@ -60,7 +60,7 @@ export const Personal: PersonalTemplateType = ({ id, questions }) => {
                 } else if (q.type === QUESTION_TYPE.CHECKBOX || q.type === QUESTION_TYPE.AGREEMENT) {
                   valid_student[`${q.slug?.replace('student_', '')}`] = yup
                     .array()
-                    .min(1)
+                    .min(1, 'Required')
                     .required('Required')
                     .nullable()
                 } else {
@@ -88,7 +88,11 @@ export const Personal: PersonalTemplateType = ({ id, questions }) => {
                       return isNumber.test(value)
                     })
                 } else if (q.type === QUESTION_TYPE.CHECKBOX || q.type === QUESTION_TYPE.AGREEMENT) {
-                  valid_parent[`${q.slug?.replace('parent_', '')}`] = yup.array().min(1).required('Required').nullable()
+                  valid_parent[`${q.slug?.replace('parent_', '')}`] = yup
+                    .array()
+                    .min(1, 'Required')
+                    .required('Required')
+                    .nullable()
                 } else {
                   valid_parent[`${q.slug?.replace('parent_', '')}`] = yup.string().required('Required').nullable()
                 }
@@ -103,10 +107,12 @@ export const Personal: PersonalTemplateType = ({ id, questions }) => {
                   .test(`${q.question}-selected`, `${q.question} is invalid`, (value) => {
                     return isNumber.test(value)
                   })
+              } else if (q.type === 3 || q.type === 4) {
+                valid_meta[`${q.slug}`] = yup.array().min(1, 'Required').required('Required').nullable()
               } else if (q.type === QUESTION_TYPE.CHECKBOX) {
-                valid_meta[`${q.slug}`] = yup.array().min(1).required('Required').nullable()
+                valid_meta[`${q.slug}`] = yup.array().min(1, 'Required').required('Required').nullable()
               } else if (q.type === QUESTION_TYPE.AGREEMENT) {
-                valid_meta[`${q.slug}`] = yup.array().min(1).required('Required').nullable()
+                valid_meta[`${q.slug}`] = yup.array().min(1, 'Required').required('Required').nullable()
               } else {
                 valid_meta[`${q.slug}`] = yup.string().required('Required').nullable()
               }

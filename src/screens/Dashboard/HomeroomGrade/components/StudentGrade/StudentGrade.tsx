@@ -102,7 +102,7 @@ export const StudentGrade: StudentGradeTemplateType = ({ student, schoolYears, n
         icon: <ScheduleIcon sx={{ color: blue, cursor: 'pointer' }} />,
       })
     } else if (
-      studentSchoolYear?.schedule &&
+      studentSchoolYear?.schedule === true &&
       notification.at(0)?.phrase !== 'Submit Schedule' &&
       currPacket?.status === PacketStatus.ACCEPTED &&
       currApplication?.status === ApplicantStatus.ACCEPTED
@@ -111,7 +111,7 @@ export const StudentGrade: StudentGradeTemplateType = ({ student, schoolYears, n
         color: blue,
         progress: 75,
         message: 'Waiting for Schedule Builder to Open',
-        icon: <ErrorOutlineIcon sx={{ color: blue, cursor: 'pointer' }} />,
+        icon: <ScheduleIcon sx={{ color: blue, cursor: 'pointer' }} />,
       })
     } else if (notification.at(0)?.phrase === 'Submit Schedule') {
       setCircleData({
@@ -136,46 +136,48 @@ export const StudentGrade: StudentGradeTemplateType = ({ student, schoolYears, n
   }, [notification])
 
   return (
-    <Metadata
-      title={
-        <Subtitle size='medium' fontWeight={'600'}>
-          {/*{grade}%*/}
-        </Subtitle>
-      }
-      subtitle={
-        <Box>
-          <Paragraph fontWeight={'700'} color='black' size='medium'>
-            {student.person.preferred_first_name ? student.person.preferred_first_name : student.person.first_name}
-          </Paragraph>
-          {checkEnrollPacketStatus(schoolYears, student) && (
-            <Tooltip title={circleData?.message || ''}>
-              <IconButton
-                onClick={() => {
-                  if (checkEnrollPacketStatus(schoolYears, student)) {
-                    redirect()
-                  }
-                }}
-              >
-                {circleData?.icon}
-              </IconButton>
-            </Tooltip>
-          )}
-        </Box>
-      }
-      image={
-        <Box sx={classes.progressContainer} position='relative'>
-          <CircularProgress
-            variant='determinate'
-            value={checkEnrollPacketStatus(schoolYears, student) ? circleData?.progress : 0}
-            size={60}
-            sx={{ color: circleData?.color }}
-          />
-          <Box sx={classes.avatarContainer} position='absolute'>
-            <Avatar alt={student.person.first_name} src={getProfilePhoto(student.person)} sx={classes.avatar} />
+    <Box width={'100px'}>
+      <Metadata
+        title={
+          <Subtitle size='medium' fontWeight={'600'}>
+            {/*{grade}%*/}
+          </Subtitle>
+        }
+        subtitle={
+          <Box>
+            <Paragraph fontWeight={'700'} color='black' size='medium'>
+              {student.person.preferred_first_name ? student.person.preferred_first_name : student.person.first_name}
+            </Paragraph>
+            {checkEnrollPacketStatus(schoolYears, student) && (
+              <Tooltip title={circleData?.message || ''}>
+                <IconButton
+                  onClick={() => {
+                    if (checkEnrollPacketStatus(schoolYears, student)) {
+                      redirect()
+                    }
+                  }}
+                >
+                  {circleData?.icon}
+                </IconButton>
+              </Tooltip>
+            )}
           </Box>
-        </Box>
-      }
-      verticle
-    />
+        }
+        image={
+          <Box sx={classes.progressContainer} position='relative'>
+            <CircularProgress
+              variant='determinate'
+              value={checkEnrollPacketStatus(schoolYears, student) ? circleData?.progress : 0}
+              size={60}
+              sx={{ color: circleData?.color }}
+            />
+            <Box sx={classes.avatarContainer} position='absolute'>
+              <Avatar alt={student.person.first_name} src={getProfilePhoto(student.person)} sx={classes.avatar} />
+            </Box>
+          </Box>
+        }
+        verticle
+      />
+    </Box>
   )
 }

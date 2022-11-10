@@ -32,14 +32,13 @@ const HomeroomResourceCard: React.FC<HomeroomResourceCardProps> = ({ item, actio
       id='item-card'
       sx={{
         position: 'relative',
-        cursor: 'pointer',
+        cursor: item.is_active ? 'pointer' : '',
         borderRadius: '16px',
         opacity: item.resource_id && !item.is_active ? 0.5 : 1,
-        // minWidth: 300,
         boxShadow: 'none',
       }}
       onClick={() => {
-        actionHandler(EventType.CLICK)
+        if (item.is_active) actionHandler(EventType.CLICK)
       }}
     >
       {!!item.resource_id && (

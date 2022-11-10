@@ -58,15 +58,6 @@ export const Student: StudentTemplateType = ({
     const studentSchoolYear = schoolYears
       ?.filter((item) => item.school_year_id == student?.current_school_year_status?.school_year_id)
       .at(-1) as SchoolYearType
-    //  setCircleData({
-    //    mobileColor: MthColor.BUTTON_LINEAR_GRADIENT,
-    //    mobileText: 'Resubmit Now',
-    //    color: MthColor.MTHORANGE,
-    //    progress: 50,
-    //    type: 'Please Resubmit Enrollment Packet',
-    //    icon: <ErrorOutlineIcon sx={{ color: MthColor.MTHORANGE, marginTop: 2, cursor: 'pointer' }} />,
-    //  })
-    //}
     if (studentStatus === StudentStatus.WITHDRAWN) {
       setCircleData({
         mobileColor: MthColor.BUTTON_LINEAR_GRADIENT,
@@ -149,6 +140,7 @@ export const Student: StudentTemplateType = ({
         icon: <ScheduleIcon sx={{ color: MthColor.MTHGREEN, marginTop: 2, cursor: 'pointer' }} />,
       })
     } else if (
+      studentSchoolYear?.schedule === true &&
       !showNotification &&
       currApplication?.status === ApplicantStatus.ACCEPTED &&
       currPacket?.status === PacketStatus.ACCEPTED
@@ -158,7 +150,7 @@ export const Student: StudentTemplateType = ({
         mobileColor: MthColor.MTHGREEN,
         mobileText: 'Waiting for Schedule Builder to Open',
         color: MthColor.MTHGREEN,
-        progress: 50,
+        progress: 75,
         type: 'Waiting for Schedule Builder to Open',
         icon: <ScheduleIcon sx={{ color: MthColor.MTHGREEN, marginTop: 2, cursor: 'pointer' }} />,
       })
@@ -173,6 +165,7 @@ export const Student: StudentTemplateType = ({
         icon: <ErrorOutlineIcon sx={{ color: MthColor.MTHORANGE, marginTop: 2, cursor: 'pointer' }} />,
       })
     } else {
+      setLink(homeroomLink)
       setShowToolTip(false)
     }
   }, [student, showNotification])

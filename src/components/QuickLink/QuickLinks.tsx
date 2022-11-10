@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { useMutation, useQuery } from '@apollo/client'
+import { makeStyles, Theme } from '@material-ui/core/styles'
 import ArrowBackIosOutlinedIcon from '@mui/icons-material/ArrowBackIosOutlined'
 import { Box, ButtonBase, Grid, Typography } from '@mui/material'
 import { Prompt } from 'react-router-dom'
@@ -21,8 +22,29 @@ type QuickLinkProps = {
   studentId: number
 }
 
+const additionalStyles = makeStyles((theme: Theme) => ({
+  mainContent: {
+    [theme.breakpoints.down('xs')]: {
+      paddingRight: '0px!important',
+    },
+  },
+  linkCard: {
+    [theme.breakpoints.down('xs')]: {
+      paddingLeft: '32px!important',
+      paddingRight: '16px!important',
+    },
+  },
+  withdrawalBackHeader: {
+    [theme.breakpoints.down('xs')]: {
+      display: 'flex!important',
+    },
+    display: 'none!important',
+  },
+}))
+
 export const QuickLinks: React.FC<QuickLinkProps> = ({ backAction, initialLink, studentId }) => {
   const { me } = useContext(UserContext)
+  const classes = additionalStyles()
 
   //	Quick Links state which saves Quick Links array
   const [quickLinks, setQuickLinks] = useState<QuickLink[]>([])
@@ -181,9 +203,17 @@ export const QuickLinks: React.FC<QuickLinkProps> = ({ backAction, initialLink, 
   }
 
   const SortableQuickLinkListContainer = SortableContainer(({ items }: { items: QuickLink[] }) => (
-    <Grid container columnSpacing={8} rowSpacing={4} marginY={2} paddingX={6} paddingBottom={6}>
+    <Grid
+      container
+      columnSpacing={8}
+      rowSpacing={4}
+      marginY={2}
+      paddingX={6}
+      paddingBottom={6}
+      className={classes.mainContent}
+    >
       {items.map((item, idx) => (
-        <Grid item xs={12} sm={6} md={4} key={item.id}>
+        <Grid item xs={12} sm={6} md={4} key={item.id} className={classes.linkCard}>
           <SortableQuickLinkCard
             index={idx}
             key={idx}
@@ -305,6 +335,26 @@ export const QuickLinks: React.FC<QuickLinkProps> = ({ backAction, initialLink, 
     </Grid>
   )
 
+  const WithdrawalBackHeader = () => (
+    <Grid
+      className={classes.withdrawalBackHeader}
+      container
+      sx={{
+        p: 2,
+        width: 'auto',
+        margin: 'auto',
+        background: 'inherit',
+      }}
+    >
+      <Grid container justifyContent='flex-start' alignItems='center'>
+        <ButtonBase onClick={onBackPress} sx={{ p: 1, background: 'white', borderRadius: '4px' }}>
+          <ArrowBackIosOutlinedIcon sx={{ width: '20px', height: '20px' }} />
+        </ButtonBase>
+        <Typography sx={{ fontWeight: 700, fontSize: 20, ml: 1 }}>Withdrawal</Typography>
+      </Grid>
+    </Grid>
+  )
+
   return (
     <Box>
       {selectedQuickLink == null && isEditable() && <BackHeader />}
@@ -330,13 +380,10 @@ export const QuickLinks: React.FC<QuickLinkProps> = ({ backAction, initialLink, 
         />
       )}
       {selectedQuickLink && page == 'edit' && selectedQuickLink.type == QUICKLINK_TYPE.WITHDRAWAL && (
-        <Withdrawal
-          action={setPage}
-          handleChange={setChanged}
-          region={region}
-          studentId={studentId}
-          onBackPress={onBackPress}
-        />
+        <Box>
+          <WithdrawalBackHeader />
+          <Withdrawal action={setPage} handleChange={setChanged} region={region} studentId={studentId} />
+        </Box>
       )}
       {selectedQuickLink && page == 'reserved' && (
         <QuickLinkReservedEdit

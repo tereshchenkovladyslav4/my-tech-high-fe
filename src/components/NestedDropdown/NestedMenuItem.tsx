@@ -1,9 +1,11 @@
 import React, { useState, useRef, useImperativeHandle, ReactNode } from 'react'
 import { ChevronRight } from '@mui/icons-material'
-import { Typography } from '@mui/material'
+import ExpandMoreOutlinedIcon from '@mui/icons-material/ExpandMoreOutlined'
+import { Collapse, Typography } from '@mui/material'
 import Menu, { MenuProps } from '@mui/material/Menu'
 import { MenuItemProps } from '@mui/material/MenuItem'
 import { CustomModal, CustomModalType } from '@mth/components/CustomModal/CustomModals'
+import { MenuItemData } from '@mth/components/NestedDropdown/types'
 import { MthColor } from '@mth/enums'
 import { IconMenuItem } from './IconMenuItem'
 
@@ -21,6 +23,7 @@ export interface NestedMenuItemProps extends Omit<MenuItemProps, 'button'> {
   MenuProps?: Partial<Omit<MenuProps, 'children'>>
   button?: true | undefined
   customModalProps?: Partial<CustomModalType>
+  menuItemsData: MenuItemData
 }
 
 const NestedMenuItem = React.forwardRef<HTMLLIElement | null, NestedMenuItemProps>(function NestedMenuItem(props, ref) {
@@ -35,8 +38,11 @@ const NestedMenuItem = React.forwardRef<HTMLLIElement | null, NestedMenuItemProp
     ContainerProps: ContainerPropsProp = {},
     MenuProps,
     customModalProps,
+    menuItemsData,
     ...MenuItemProps
   } = props
+
+  const { moreItems, showMoreLabel, showLessLabel } = menuItemsData
 
   const { ref: containerRefProp, ...ContainerProps } = ContainerPropsProp
 
@@ -51,6 +57,7 @@ const NestedMenuItem = React.forwardRef<HTMLLIElement | null, NestedMenuItemProp
   const [isSubMenuOpen, setIsSubMenuOpen] = useState(false)
   const [isHover, setIsHover] = useState(false)
   const [showAlert, setShowAlert] = useState(false)
+  const [showMore, setShowMore] = useState<boolean>(false)
 
   const handleClick = () => {
     if (!isSubMenuOpen && customModalProps) {
@@ -168,7 +175,41 @@ const NestedMenuItem = React.forwardRef<HTMLLIElement | null, NestedMenuItemProp
         {...MenuProps}
       >
         <div ref={menuContainerRef} style={{ pointerEvents: 'auto' }}>
-          {children}
+          <>
+            {children}
+            {!!moreItems?.length && (
+              <Collapse in={showMore} timeout='auto' unmountOnExit>
+                {nestedMenuItemsFromObject({
+                  menuItemsData: moreItems,
+                  isOpen,
+                  handleClose,
+                })}
+              </Collapse>
+            )}
+            {!!moreItems?.length && (
+              <IconMenuItem
+                label={
+                  <Typography sx={{ color: MthColor.MTHBLUE }} component={'span'}>
+                    {showMore
+                      ? showLessLabel || 'Hide options for other grades'
+                      : showMoreLabel || 'Show options for other grades'}
+                  </Typography>
+                }
+                rightIcon={
+                  <ExpandMoreOutlinedIcon
+                    sx={{
+                      color: MthColor.MTHBLUE,
+                      transition: 'transform 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms',
+                      transform: showMore ? 'rotate(180deg)' : '',
+                    }}
+                  />
+                }
+                onClick={() => {
+                  setShowMore(!showMore)
+                }}
+              />
+            )}
+          </>
         </div>
       </Menu>
 

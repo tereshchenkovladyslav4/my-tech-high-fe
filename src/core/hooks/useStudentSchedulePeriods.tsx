@@ -1,14 +1,37 @@
 import { useEffect, useState } from 'react'
 import { useQuery } from '@apollo/client'
 import { groupBy } from 'lodash'
+import { COURSE_TYPE_ITEMS } from '@mth/constants'
+import { CourseType, DiplomaSeekingPath, ScheduleStatus } from '@mth/enums'
 import { SchedulePeriod } from '@mth/graphql/models/schedule-period'
 import { getStudentSchedulePeriodsQuery } from '@mth/graphql/queries/schedule-period'
 import { getStudentPeriodsQuery } from '@mth/screens/Homeroom/Schedule/services'
-import { Period, ScheduleData } from '@mth/screens/Homeroom/Schedule/types'
-import { COURSE_TYPE_ITEMS } from '../constants/course-types.constant'
-import { CourseType } from '../enums/course-type.enum'
-import { DiplomaSeekingPath } from '../enums/diploma-seeking-path.enum'
-import { ScheduleStatus } from '../enums/schedule-status.enums'
+import { Course, Period, Provider, ScheduleData } from '@mth/screens/Homeroom/Schedule/types'
+
+export const makeProviderData = (courses: Course[], altCourses: Course[]): Provider[] => {
+  const providers: Provider[] = []
+  const providersData = groupBy(courses, 'provider_id')
+  for (const key in providersData) {
+    providers.push({
+      ...providersData[key]?.[0].Provider,
+      Courses: providersData[key],
+    })
+  }
+  const altProvidersData = groupBy(altCourses, 'provider_id')
+  for (const key in altProvidersData) {
+    const index = providers.findIndex((item) => item.id === +key)
+    if (index > -1) {
+      providers[index].AltCourses = altProvidersData[key]
+    } else {
+      providers.push({
+        ...altProvidersData[key]?.[0].Provider,
+        Courses: [],
+        AltCourses: altProvidersData[key],
+      })
+    }
+  }
+  return providers
+}
 
 export const useStudentSchedulePeriods = (
   student_id: number,
@@ -58,34 +81,9 @@ export const useStudentSchedulePeriods = (
                 (item.value === CourseType.THIRD_PARTY_PROVIDER && title.third_party_provider),
             )
 
-            title.Providers = []
-            const providersData = groupBy(title.Courses, 'provider_id')
-            for (const key in providersData) {
-              title.Providers.push({
-                id: +key,
-                name: providersData[key]?.[0].Provider?.name,
-                reduce_funds: providersData[key]?.[0].Provider?.reduce_funds,
-                reduce_funds_notification: providersData[key]?.[0].Provider?.reduce_funds_notification,
-                Courses: providersData[key],
-              })
-            }
-            const altProvidersData = groupBy(title.AltCourses, 'provider_id')
-            for (const key in altProvidersData) {
-              const index = title.Providers.findIndex((item) => item.id === +key)
-              if (index > -1) {
-                title.Providers[index].AltCourses = altProvidersData[key]
-              } else {
-                title.Providers.push({
-                  id: +key,
-                  name: altProvidersData[key]?.[0].Provider?.name,
-                  reduce_funds: providersData[key]?.[0].Provider?.reduce_funds,
-                  reduce_funds_notification: providersData[key]?.[0].Provider?.reduce_funds_notification,
-                  Courses: [],
-                  AltCourses: altProvidersData[key],
-                })
-              }
-            }
+            title.Providers = makeProviderData(title.Courses, title.AltCourses)
           })
+          subject.Providers = makeProviderData(subject.Courses, subject.AltCourses)
         })
       })
 
@@ -95,6 +93,7 @@ export const useStudentSchedulePeriods = (
         scheduleDataArray.push({
           period: +key,
           Periods: scheduleData[key],
+          filteredPeriods: scheduleData[key],
         })
       }
 

@@ -168,13 +168,22 @@ export const HomeroomGrade: React.FC<HomeroomGradeProps> = ({ schoolYears, mainT
         </Box>
 
         {studentsCnt > 0 && (
-          <Stack display='flex' justifyContent='flex-end' alignSelf='center' marginY={1} direction='row' spacing={2}>
+          <Stack
+            display='flex'
+            justifyContent='flex-end'
+            alignSelf='center'
+            marginY={1}
+            direction='row'
+            spacing={2}
+            width='100%'
+          >
             <Box
+              className='dynamic-box'
               sx={{
                 width:
                   windowDimensions.width > 792
-                    ? Math.min(studentsCnt, 6) * 60 + 'px'
-                    : Math.min(studentsCnt, 3) * 60 + 'px',
+                    ? Math.max(studentsCnt, 3) * 60 + 'px'
+                    : Math.min(studentsCnt, 4.5) * 60 + 'px',
                 mr: '20px',
               }}
             >
