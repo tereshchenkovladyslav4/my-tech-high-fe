@@ -5,6 +5,7 @@ import { Form, Formik } from 'formik'
 import moment from 'moment'
 import { Prompt, useHistory } from 'react-router-dom'
 import * as yup from 'yup'
+import { RICH_TEXT_VALID_MIN_LENGTH } from '@mth/constants'
 import { MthRoute, MthTitle } from '@mth/enums'
 import { convertDateToUTCDate } from '@mth/utils'
 import { CustomModal } from '../../SiteManagement/EnrollmentSetting/components/CustomModal/CustomModals'
@@ -42,7 +43,11 @@ const AddEvent: React.FC<AddEventProps> = ({ selectedEvent }) => {
       .typeError('Invalid End Date')
       .min(yup.ref('startDate'), ({ min }) => moment(min).isValid() && 'Invalid End Date')
       .nullable(),
-    description: yup.string().required('Description Required').min(9, 'Invalid Description').nullable(),
+    description: yup
+      .string()
+      .required('Description Required')
+      .min(RICH_TEXT_VALID_MIN_LENGTH, 'Invalid Description')
+      .nullable(),
     grades: yup.array().min(1, 'Grade Required'),
     allDay: yup.boolean().nullable(),
     hasRSVP: yup.boolean().nullable(),
@@ -110,7 +115,7 @@ const AddEvent: React.FC<AddEventProps> = ({ selectedEvent }) => {
       {!showRSVPForm ? (
         <>
           <Prompt
-            when={isChanged ? true : false}
+            when={isChanged}
             message={JSON.stringify({
               header: MthTitle.UNSAVED_TITLE,
               content: MthTitle.UNSAVED_DESCRIPTION,

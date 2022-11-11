@@ -5,6 +5,7 @@ import { Box } from '@mui/system'
 import moment from 'moment'
 import { useHistory } from 'react-router-dom'
 import SignatureCanvas from 'react-signature-canvas'
+import BGSVG from '@mth/assets/AdminApplicationBG.svg'
 import { DropDown } from '@mth/components/DropDown/DropDown'
 import { DropDownItem } from '@mth/components/DropDown/types'
 import { RadioGroupOption } from '@mth/components/MthRadioGroup/types'
@@ -447,7 +448,12 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
 
   return (
     <Card sx={{ margin: 4, padding: 4 }}>
-      <Box sx={scheduleClassess.container}>
+      <Box
+        sx={{
+          ...scheduleClassess.container,
+          backgroundImage: step == MthTitle.STEP_SCHEDULE_BUILDER ? '' : `url(${BGSVG})`,
+        }}
+      >
         <Box display='flex' flexDirection='row' justifyContent='space-between' alignItems='center'>
           <HeaderComponent title={MthTitle.SCHEDULE} handleBack={handleBack} />
           {step == MthTitle.STEP_SCHEDULE_BUILDER && (

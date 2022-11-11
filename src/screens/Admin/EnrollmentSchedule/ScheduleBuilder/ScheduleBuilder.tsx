@@ -5,7 +5,7 @@ import ModeEditIcon from '@mui/icons-material/ModeEdit'
 import VpnKeyOutlinedIcon from '@mui/icons-material/VpnKeyOutlined'
 import { Button, Card, Grid, IconButton, Tooltip, Typography } from '@mui/material'
 import { Box } from '@mui/system'
-import { useHistory } from 'react-router-dom'
+import { Prompt, useHistory } from 'react-router-dom'
 import { CustomModal } from '@mth/components/CustomModal/CustomModals'
 import { DropDownItem } from '@mth/components/DropDown/types'
 import { CheckBoxListVM } from '@mth/components/MthCheckboxList/MthCheckboxList'
@@ -49,7 +49,6 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
   const { me } = useContext(UserContext)
   const history = useHistory()
   const [studentInfo, setStudentInfo] = useState<StudentScheduleInfo>()
-  // const [schoolYearItems, setSchoolYearItems] = useState<DropDownItem[]>([])
   const [selectedYear, setSelectedYear] = useState<number>(0)
   const [scheduleStatus, setScheduleStatus] = useState<DropDownItem>()
   const [tableData, setTableData] = useState<MthTableRowItem<ScheduleData>[]>([])
@@ -60,6 +59,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
   const [courseReduceFundsNotification, setCourseReduceFundsNotification] = useState<string | undefined>()
   const [showThirdPartyProviderModal, setShowThirdPartyProviderModal] = useState<boolean>(false)
   const [selectedSchedule, setSelectedSchedule] = useState<ScheduleData>()
+  const [selectedPeriod, setSelectedPeriod] = useState<Period>()
   const [selectedCourseType, setSelectedCourseType] = useState<CourseType>()
   const [selectedThridPartyProvider, setSelectedThridPartyProvider] = useState<ThirdPartyProvider>()
   const [showOnSiteSplitEnrollmentModal, setShowOnSiteSplitEnrollmentModal] = useState<boolean>(false)
@@ -71,11 +71,10 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
   const [periodItems, setPeriodItems] = useState<CheckBoxListVM[]>([])
   const [requireUpdatePeriods, setRequireUpdatePeriods] = useState<string[]>([])
   const [splitEnrollment, setSplitEnrollment] = useState<boolean>(false)
-  const [isChanged, setChanged] = useState(false)
-
+  const [isChanged, setIsChanged] = useState(false)
+  const [showUnsavedModal, setShowUnsavedModal] = useState<boolean>(false)
   const [lockedIcon, setLockedIcon] = useState(true)
   const [showReset, setShowReset] = useState(false)
-  const [selectedSubject, setSelectedSubject] = useState<Subject | undefined>()
 
   const { loading: studentInfoLoading, data: studentInfoData } = useQuery(getStudentDetail, {
     variables: {
@@ -245,7 +244,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
                 {('0' + item.rawData.period).slice(-2)}
               </Typography>
               <Box sx={{ marginLeft: '20px' }}>
-                {item.rawData.Periods?.length > 1 ? (
+                {item.rawData.Periods?.length > 0 ? (
                   <NestedDropdown
                     menuItemsData={createPeriodMenuItems(item.rawData)}
                     MenuProps={{ elevation: 3 }}
@@ -460,16 +459,20 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
                 <Check />
               </IconButton>
             )}
-            <IconButton
-              sx={{ color: MthColor.MTHORANGE, fontSize: '18px' }}
-              onClick={() => {
-                if (item?.rawData?.Period?.id) {
-                  handlePeriodUpdateEmail(`${item?.rawData?.Period?.id}`)
-                }
-              }}
-            >
-              <Close />
-            </IconButton>
+            {(studentScheduleStatus == ScheduleStatus.SUBMITTED ||
+              (studentScheduleStatus == ScheduleStatus.ACCEPTED && item?.rawData?.updateRequired) ||
+              (studentScheduleStatus == ScheduleStatus.RESUBMITTED && item?.rawData?.updateRequired)) && (
+              <IconButton
+                sx={{ color: MthColor.MTHORANGE, fontSize: '18px' }}
+                onClick={() => {
+                  if (item?.rawData?.Period?.id) {
+                    handlePeriodUpdateEmail(`${item?.rawData?.Period?.id}`)
+                  }
+                }}
+              >
+                <Close />
+              </IconButton>
+            )}
           </Box>
         )
       },
@@ -480,17 +483,51 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
     const scheduleIdx = scheduleData.findIndex((item) => item.period === schedule.period)
     if (scheduleIdx > -1) {
       if (schedule.Period?.id === period.id) return
-      schedule.Period = period
-      delete schedule.Subject
-      delete schedule.Title
-      delete schedule.CourseType
-      delete schedule.Course
-      scheduleData[scheduleIdx] = schedule
-      setScheduleData(JSON.parse(JSON.stringify(scheduleData)))
       if (period.notify_period) {
         setPeriodNotification(period.message_period)
+        setSelectedSchedule(schedule)
+        setSelectedPeriod(period)
+      } else {
+        schedule.Period = period
+        delete schedule.Subject
+        delete schedule.Title
+        delete schedule.CourseType
+        delete schedule.Course
+        delete schedule.OnSiteSplitEnrollment
+        delete schedule.CustomBuiltDescription
+        delete schedule.ThirdParty
+        scheduleData[scheduleIdx] = schedule
+        setScheduleData(JSON.parse(JSON.stringify(scheduleData)))
+        setIsChanged(true)
       }
     }
+  }
+
+  const handleSaveSelectedPeriod = () => {
+    if (selectedSchedule && selectedPeriod) {
+      const schedule = { ...selectedSchedule }
+      const scheduleIdx = scheduleData.findIndex((item) => item.period === schedule.period)
+      if (scheduleIdx > -1) {
+        schedule.Period = selectedPeriod
+        delete schedule.Subject
+        delete schedule.Title
+        delete schedule.CourseType
+        delete schedule.Course
+        delete schedule.OnSiteSplitEnrollment
+        delete schedule.CustomBuiltDescription
+        delete schedule.ThirdParty
+        scheduleData[scheduleIdx] = schedule
+        handleCancelSelectedPeriod()
+        setScheduleData(JSON.parse(JSON.stringify(scheduleData)))
+        setIsChanged(true)
+      }
+    }
+  }
+
+  const handleCancelSelectedPeriod = () => {
+    setSelectedSchedule(undefined)
+    setSelectedPeriod(undefined)
+    setPeriodNotification(undefined)
   }
 
   const handleSelectSubject = (schedule: ScheduleData, subject: Subject) => {
@@ -503,7 +540,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
       delete schedule.Course
       scheduleData[scheduleIdx] = schedule
       setScheduleData(JSON.parse(JSON.stringify(scheduleData)))
-      setSelectedSubject(subject)
+      setIsChanged(true)
     }
   }
 
@@ -517,6 +554,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
       delete schedule.Course
       scheduleData[scheduleIdx] = schedule
       setScheduleData(JSON.parse(JSON.stringify(scheduleData)))
+      setIsChanged(true)
       if (title.display_notification) {
         setSubjectNotification(title.subject_notification)
       }
@@ -548,6 +586,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
           delete schedule.ThirdParty
           scheduleData[scheduleIdx] = schedule
           setScheduleData(JSON.parse(JSON.stringify(scheduleData)))
+          setIsChanged(true)
           break
       }
     }
@@ -572,6 +611,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
       delete schedule.CustomBuiltDescription
       scheduleData[scheduleIdx] = schedule
       setScheduleData(JSON.parse(JSON.stringify(scheduleData)))
+      setIsChanged(true)
     }
     setSelectedSchedule(undefined)
     setSelectedCourseType(undefined)
@@ -594,6 +634,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
       delete schedule.ThirdParty
       scheduleData[scheduleIdx] = schedule
       setScheduleData(JSON.parse(JSON.stringify(scheduleData)))
+      setIsChanged(true)
     }
     setSelectedSchedule(undefined)
     setShowOnSiteSplitEnrollmentModal(false)
@@ -609,6 +650,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
       delete selectedSchedule.Course
       scheduleData[scheduleIdx] = selectedSchedule
       setScheduleData(JSON.parse(JSON.stringify(scheduleData)))
+      setIsChanged(true)
     }
   }
 
@@ -622,6 +664,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
       delete schedule.ThirdParty
       scheduleData[scheduleIdx] = schedule
       setScheduleData(JSON.parse(JSON.stringify(scheduleData)))
+      setIsChanged(true)
       if (course.display_notification) {
         setCourseNotification(course.course_notification)
       }
@@ -638,7 +681,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
     if (schedule.Period?.Subjects?.length === 1) {
       const subject = schedule.Period.Subjects[0]
       if (!subject.Titles?.length && !schedule.Subject) {
-        schedule.Subject = subject
+        //schedule.Subject = subject
       } else if (subject.Titles?.length === 1 && !schedule.Title) {
         schedule.Title = subject.Titles[0]
       }
@@ -704,41 +747,56 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
       })
 
       if (submitResponse) {
-        let scheduleDataToSave = scheduleData
-        if (status === ScheduleStatus.NOT_SUBMITTED) {
-          scheduleDataToSave = scheduleData.map(
-            ({ period, Periods, Period, schedulePeriodId, updateRequired }: ScheduleData) => {
-              return { Period, Periods, period, schedulePeriodId, updateRequired }
-            },
-          )
-        }
         const scheduleId = submitResponse.data?.createOrUpdateSchedule?.schedule_id
         setStudentScheduleId(scheduleId)
         const response = await saveDraft({
           variables: {
             createSchedulePeriodInput: {
-              param: scheduleDataToSave?.map((item) => ({
-                CourseId: Number(item?.Course?.id),
-                PeriodId: Number(item?.Period?.id),
-                ProviderId: Number(item?.Course?.Provider?.id),
-                ScheduleId: Number(scheduleId),
-                SubjectId: Number(item?.Subject?.subject_id),
-                TitleId: Number(item?.Title?.title_id),
-                course_type: item?.CourseType,
-                custom_build_description: item?.CustomBuiltDescription,
-                osse_coures_name: item?.OnSiteSplitEnrollment?.courseName,
-                osse_district_school: item?.OnSiteSplitEnrollment?.districtSchool,
-                osse_school_district_name: item?.OnSiteSplitEnrollment?.schoolDistrictName,
-                schedule_period_id: item?.schedulePeriodId,
-                tp_addtional_specific_course_website: item?.ThirdParty?.additionalWebsite
-                  ? JSON.stringify(item.ThirdParty.additionalWebsite)
-                  : '',
-                tp_course_name: item?.ThirdParty?.courseName,
-                tp_phone_number: item?.ThirdParty?.phoneNumber,
-                tp_provider_name: item?.ThirdParty?.providerName,
-                tp_specific_course_website: item?.ThirdParty?.specificCourseWebsite,
-                update_required: item?.updateRequired,
-              })),
+              param: scheduleData?.map((item) => {
+                return status === ScheduleStatus.NOT_SUBMITTED
+                  ? {
+                      CourseId: null,
+                      PeriodId: Number(item?.Period?.id),
+                      ProviderId: null,
+                      ScheduleId: Number(scheduleId),
+                      SubjectId: null,
+                      TitleId: null,
+                      course_type: null,
+                      custom_build_description: null,
+                      osse_coures_name: null,
+                      osse_district_school: null,
+                      osse_school_district_name: null,
+                      schedule_period_id: item?.schedulePeriodId,
+                      tp_addtional_specific_course_website: null,
+                      tp_course_name: null,
+                      tp_phone_number: null,
+                      tp_provider_name: null,
+                      tp_specific_course_website: null,
+                      update_required: item?.updateRequired,
+                    }
+                  : {
+                      CourseId: Number(item?.Course?.id),
+                      PeriodId: Number(item?.Period?.id),
+                      ProviderId: Number(item?.Course?.Provider?.id),
+                      ScheduleId: Number(scheduleId),
+                      SubjectId: Number(item?.Subject?.subject_id),
+                      TitleId: Number(item?.Title?.title_id),
+                      course_type: item?.CourseType,
+                      custom_build_description: item?.CustomBuiltDescription,
+                      osse_coures_name: item?.OnSiteSplitEnrollment?.courseName,
+                      osse_district_school: item?.OnSiteSplitEnrollment?.districtSchool,
+                      osse_school_district_name: item?.OnSiteSplitEnrollment?.schoolDistrictName,
+                      schedule_period_id: item?.schedulePeriodId,
+                      tp_addtional_specific_course_website: item?.ThirdParty?.additionalWebsite
+                        ? JSON.stringify(item.ThirdParty.additionalWebsite)
+                        : '',
+                      tp_course_name: item?.ThirdParty?.courseName,
+                      tp_phone_number: item?.ThirdParty?.phoneNumber,
+                      tp_provider_name: item?.ThirdParty?.providerName,
+                      tp_specific_course_website: item?.ThirdParty?.specificCourseWebsite,
+                      update_required: item?.updateRequired,
+                    }
+              }),
             },
           },
         })
@@ -754,7 +812,8 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
           }
         }
       }
-      history.push(ENROLLMENT_SCHEDULE)
+      setIsChanged(false)
+      handleBack()
     }
   }
 
@@ -779,11 +838,8 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
   }
 
   const handleBack = () => {
-    if (selectedSubject || selectedCourseType || selectedSchedule || selectedThridPartyProvider) {
-      setChanged(true)
-    } else {
-      history.push(ENROLLMENT_SCHEDULE)
-    }
+    if (isChanged) setShowUnsavedModal(true)
+    else history.push(ENROLLMENT_SCHEDULE)
   }
 
   const handleSchedule = (status: ScheduleStatus) => {
@@ -797,9 +853,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
   }
 
   const handleSaveChanges = () => {
-    if (selectedSubject || selectedCourseType || selectedSchedule || selectedThridPartyProvider) {
-      setChanged(true)
-    }
+    setIsChanged(false)
   }
 
   const handleCancelUpdates = () => {
@@ -921,6 +975,13 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
   return (
     <>
       <Card sx={scheduleBuilderClass.main}>
+        <Prompt
+          when={isChanged}
+          message={JSON.stringify({
+            header: MthTitle.UNSAVED_TITLE,
+            content: MthTitle.UNSAVED_DESCRIPTION,
+          })}
+        />
         <Header
           title={MthTitle.SCHEDULE}
           selectedYear={selectedYear}
@@ -1037,20 +1098,18 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
           />
         )}
 
-        {isChanged && (
+        {showUnsavedModal && (
           <CustomModal
-            title={'Unsaved Changes'}
-            description={'Are you sure you want to leave without saving changes?'}
-            confirmStr='Yes'
+            title={MthTitle.UNSAVED_TITLE}
+            description={MthTitle.UNSAVED_DESCRIPTION}
             cancelStr='Cancel'
-            onClose={() => {
-              setChanged(false)
-            }}
+            confirmStr='Yes'
+            backgroundColor={MthColor.WHITE}
+            onClose={() => setShowUnsavedModal(false)}
             onConfirm={() => {
-              setChanged(false)
-              history.push(ENROLLMENT_SCHEDULE)
+              setShowUnsavedModal(false)
+              setIsChanged(false)
             }}
-            backgroundColor='white'
           />
         )}
 
@@ -1071,11 +1130,11 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
             title={MthTitle.NOTIFICATION}
             description={extractContent(periodNotification || '')}
             confirmStr='Ok'
+            cancelStr='Cancel'
             showIcon={false}
-            showCancel={false}
             backgroundColor={MthColor.WHITE}
-            onClose={() => setPeriodNotification(undefined)}
-            onConfirm={() => setPeriodNotification(undefined)}
+            onClose={() => handleCancelSelectedPeriod()}
+            onConfirm={() => handleSaveSelectedPeriod()}
           />
         )}
         {!!subjectNotification && (

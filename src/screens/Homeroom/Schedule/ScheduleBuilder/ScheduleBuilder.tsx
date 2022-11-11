@@ -13,7 +13,7 @@ import { NestedDropdown } from '@mth/components/NestedDropdown'
 import { MenuItemData } from '@mth/components/NestedDropdown/types'
 import { SuccessModal } from '@mth/components/SuccessModal/SuccessModal'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
-import { COURSE_TYPE_ITEMS } from '@mth/constants'
+import { COURSE_TYPE_ITEMS, RICH_TEXT_VALID_MIN_LENGTH } from '@mth/constants'
 import { CourseType, MthColor, MthTitle, ReduceFunds, ScheduleStatus } from '@mth/enums'
 import { saveScheduleMutation } from '@mth/graphql/mutation/schedule'
 import { saveSchedulePeriodMutation } from '@mth/graphql/mutation/schedule-period'
@@ -66,6 +66,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
   const [courseReduceFundsNotification, setCourseReduceFundsNotification] = useState<string | undefined>()
   const [showThirdPartyProviderModal, setShowThirdPartyProviderModal] = useState<boolean>(false)
   const [selectedSchedule, setSelectedSchedule] = useState<ScheduleData>()
+  const [selectedPeriod, setSelectedPeriod] = useState<Period>()
   const [selectedCourseType, setSelectedCourseType] = useState<CourseType>()
   const [selectedThirdPartyProvider, setSelectedThirdPartyProvider] = useState<ThirdPartyProvider>()
   const [showOnSiteSplitEnrollmentModal, setShowOnSiteSplitEnrollmentModal] = useState<boolean>(false)
@@ -229,18 +230,51 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
     const scheduleIdx = scheduleData.findIndex((item) => item.period === schedule.period)
     if (scheduleIdx > -1) {
       if (schedule.Period?.id === period.id) return
-      schedule.Period = period
-      delete schedule.Subject
-      delete schedule.Title
-      delete schedule.CourseType
-      delete schedule.Course
-      scheduleData[scheduleIdx] = schedule
-      setScheduleData(JSON.parse(JSON.stringify(scheduleData)))
       if (period.notify_period) {
         setPeriodNotification(period.message_period)
+        setSelectedSchedule(schedule)
+        setSelectedPeriod(period)
+      } else {
+        schedule.Period = period
+        delete schedule.Subject
+        delete schedule.Title
+        delete schedule.CourseType
+        delete schedule.Course
+        delete schedule.OnSiteSplitEnrollment
+        delete schedule.CustomBuiltDescription
+        delete schedule.ThirdParty
+        scheduleData[scheduleIdx] = schedule
+        setScheduleData(JSON.parse(JSON.stringify(scheduleData)))
+        setIsChanged(true)
       }
-      setIsChanged(true)
     }
+  }
+
+  const handleSaveSelectedPeriod = () => {
+    if (selectedSchedule && selectedPeriod) {
+      const schedule = { ...selectedSchedule }
+      const scheduleIdx = scheduleData.findIndex((item) => item.period === schedule.period)
+      if (scheduleIdx > -1) {
+        schedule.Period = selectedPeriod
+        delete schedule.Subject
+        delete schedule.Title
+        delete schedule.CourseType
+        delete schedule.Course
+        delete schedule.OnSiteSplitEnrollment
+        delete schedule.CustomBuiltDescription
+        delete schedule.ThirdParty
+        scheduleData[scheduleIdx] = schedule
+        handleCancelSelectedPeriod()
+        setScheduleData(JSON.parse(JSON.stringify(scheduleData)))
+        setIsChanged(true)
+      }
+    }
+  }
+
+  const handleCancelSelectedPeriod = () => {
+    setSelectedSchedule(undefined)
+    setSelectedPeriod(undefined)
+    setPeriodNotification(undefined)
   }
 
   const handleSelectSubject = (schedule: ScheduleData, subject: Subject) => {
@@ -370,28 +404,33 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
     const scheduleIdx = scheduleData.findIndex((item) => item.period === schedule.period)
     if (scheduleIdx > -1) {
       if (schedule.Course?.id === course.id) return
-      if (course.Provider?.multiple_periods && !multiPeriodsConfirmed) {
+      if (
+        course.Provider?.multiple_periods &&
+        !multiPeriodsConfirmed &&
+        course.Provider.multi_periods_notification?.length >= RICH_TEXT_VALID_MIN_LENGTH
+      ) {
         // The multiple periods notification should show on the parent end
         // when they select a provider that requires multiple periods for the first time
         setSelectedSchedule(schedule)
         setSelectedCourse(course)
         setMultiPeriodsNotification(course.Provider.multi_periods_notification)
-      } else {
-        schedule.Course = course
-        delete schedule.OnSiteSplitEnrollment
-        delete schedule.CustomBuiltDescription
-        delete schedule.ThirdParty
-        scheduleData[scheduleIdx] = schedule
-        if (course.display_notification) {
-          setCourseNotification(course.course_notification)
-        }
-        if (course.reduce_funds !== ReduceFunds.NONE) {
-          setCourseReduceFundsNotification(course.reduce_funds_notification)
-        }
-
-        setScheduleData(JSON.parse(JSON.stringify(scheduleData)))
-        setIsChanged(true)
+        return
       }
+
+      schedule.Course = course
+      delete schedule.OnSiteSplitEnrollment
+      delete schedule.CustomBuiltDescription
+      delete schedule.ThirdParty
+      scheduleData[scheduleIdx] = schedule
+      if (course.display_notification) {
+        setCourseNotification(course.course_notification)
+      }
+      if (course.reduce_funds !== ReduceFunds.NONE) {
+        setCourseReduceFundsNotification(course.reduce_funds_notification)
+      }
+
+      setScheduleData(JSON.parse(JSON.stringify(scheduleData)))
+      setIsChanged(true)
     }
   }
 
@@ -413,7 +452,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
                 {('0' + item.rawData.period).slice(-2)}
               </Typography>
               <Box sx={{ marginLeft: '20px' }}>
-                {editable(item.rawData) && item.rawData.filteredPeriods?.length > 1 ? (
+                {editable(item.rawData) && item.rawData.filteredPeriods?.length > 0 ? (
                   <NestedDropdown
                     menuItemsData={createPeriodMenuItems(item.rawData)}
                     MenuProps={{ elevation: 3 }}
@@ -714,7 +753,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
     )
 
     if (schedule.filteredPeriods?.length === 1) {
-      schedule.Period = schedule.filteredPeriods[0]
+      //schedule.Period = schedule.filteredPeriods[0]
     } else if (!schedule.filteredPeriods?.length) {
       delete schedule.Period
     }
@@ -1015,11 +1054,11 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
           title={MthTitle.NOTIFICATION}
           description={extractContent(periodNotification || '')}
           confirmStr='Ok'
+          cancelStr='Cancel'
           showIcon={false}
-          showCancel={false}
           backgroundColor={MthColor.WHITE}
-          onClose={() => setPeriodNotification(undefined)}
-          onConfirm={() => setPeriodNotification(undefined)}
+          onClose={() => handleCancelSelectedPeriod()}
+          onConfirm={() => handleSaveSelectedPeriod()}
         />
       )}
       {!!subjectNotification && (

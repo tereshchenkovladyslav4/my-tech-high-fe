@@ -1,0 +1,1 @@
+export const RICH_TEXT_VALID_MIN_LENGTH = 9

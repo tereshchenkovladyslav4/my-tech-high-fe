@@ -1,9 +1,7 @@
-import BGSVG from '@mth/assets/AdminApplicationBG.svg'
 import { MthColor } from '@mth/enums'
 
 export const scheduleClassess = {
   container: {
-    backgroundImage: `url(${BGSVG})`,
     backgroundRepeat: 'no-repeat',
     backgroundPosition: 'top',
     display: 'flex',

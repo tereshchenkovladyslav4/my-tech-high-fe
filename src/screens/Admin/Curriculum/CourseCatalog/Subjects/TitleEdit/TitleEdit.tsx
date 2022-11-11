@@ -3,7 +3,7 @@ import { useMutation } from '@apollo/client'
 import { Box, Modal } from '@mui/material'
 import { Form, Formik } from 'formik'
 import * as yup from 'yup'
-import { GRADES } from '@mth/constants'
+import { GRADES, RICH_TEXT_VALID_MIN_LENGTH } from '@mth/constants'
 import { MthColor, ReduceFunds } from '@mth/enums'
 import { useProgramYearListBySchoolYearId, useScheduleBuilder, useSubjects } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
@@ -57,14 +57,14 @@ const TitleEdit: React.FC<TitleEditProps> = ({
       .when('reduce_funds', {
         is: (reduce_funds: ReduceFunds) =>
           reduce_funds == ReduceFunds.TECHNOLOGY_ALLOWANCE || reduce_funds == ReduceFunds.SUPPLEMENTAL_LEARNING_FUNDS,
-        then: yup.string().required('Required').min(9, 'Required').nullable(),
+        then: yup.string().required('Required').min(RICH_TEXT_VALID_MIN_LENGTH, 'Required').nullable(),
       })
       .nullable(),
     subject_notification: yup
       .string()
       .when('display_notification', {
         is: true,
-        then: yup.string().required('Required').min(9, 'Required').nullable(),
+        then: yup.string().required('Required').min(RICH_TEXT_VALID_MIN_LENGTH, 'Required').nullable(),
       })
       .nullable(),
     course_id: yup

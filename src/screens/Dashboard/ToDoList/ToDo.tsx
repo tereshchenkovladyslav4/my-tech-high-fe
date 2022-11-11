@@ -101,7 +101,7 @@ export const ToDo: FunctionComponent<TodoProps> = ({ schoolYears, setIsLoading, 
               />
             </Box>
           ) : (
-            <EmptyStateWrapper title='Congrats!' subtitle='You are all caught up.' />
+            <EmptyStateWrapper title='Congratulations!' subtitle='You are all caught up.' />
           )}
         </Flexbox>
       </Box>

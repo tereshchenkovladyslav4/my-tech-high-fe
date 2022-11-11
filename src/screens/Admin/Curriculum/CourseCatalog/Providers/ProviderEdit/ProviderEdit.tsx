@@ -5,6 +5,7 @@ import { Form, Formik } from 'formik'
 import { Prompt } from 'react-router-dom'
 import * as yup from 'yup'
 import { CustomModal } from '@mth/components/CustomModal/CustomModals'
+import { RICH_TEXT_VALID_MIN_LENGTH } from '@mth/constants'
 import { MthColor, MthTitle, ReduceFunds } from '@mth/enums'
 import { usePeriods } from '@mth/hooks'
 import { defaultProviderFormData } from '@mth/screens/Admin/Curriculum/CourseCatalog/Providers/defaultValues'
@@ -52,7 +53,7 @@ const ProviderEdit: React.FC<ProviderEditProps> = ({ schoolYearId, item, refetch
       .when('reduce_funds', {
         is: (reduce_funds: ReduceFunds) =>
           reduce_funds == ReduceFunds.TECHNOLOGY_ALLOWANCE || reduce_funds == ReduceFunds.SUPPLEMENTAL_LEARNING_FUNDS,
-        then: yup.string().required('Required').min(9, 'Required').nullable(),
+        then: yup.string().required('Required').min(RICH_TEXT_VALID_MIN_LENGTH, 'Required').nullable(),
       })
       .nullable(),
     PeriodIds: yup

@@ -10,6 +10,7 @@ import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { getEmailTemplateQuery } from '@mth/graphql/queries/email-template'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { RED_GRADIENT } from '../../../../utils/constants'
+import { ScheduleEmailHistoryModal } from '../ScheduleModal/ScheduleEmailHistoryModal'
 import { EmailModal } from '../ScheduleModal/ScheduleEmailModal'
 import { ScheduleTableFilters } from '../ScheduleTableFilters/ScheduleTableFilters'
 import { SchoolYearDropDown } from '../SchoolYearDropDown/SchoolYearDropDown'
@@ -30,9 +31,10 @@ export const ScheduleTable: React.FC<ApplicationTableProps> = ({ filter }) => {
   const [tableData, setTableData] = useState<Array<TableData>>([])
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [selectedYearId, setSelectedYearId] = useState<number>(0)
-  // const [filters, setFilters] = useState<Array<string>>([])
-
   const [filters, setFilters] = useState<ScheduleFilterVM>()
+  const [emailHistory, setEmailHistory] = useState([])
+  const [openEmailModal, setOpenEmailModal] = useState<boolean>(false)
+
   const initialFilters = [
     'Not Submitted',
     'Updates Required',
@@ -58,12 +60,17 @@ export const ScheduleTable: React.FC<ApplicationTableProps> = ({ filter }) => {
         diploma: schedule.ScheduleStudent.diploma_seeking === 1 ? 1 : 0,
         emailed:
           schedule.ScheduleEmails?.length > 0 ? (
-            <Box sx={{ cursor: 'pointer' }}>
+            <Box sx={{ cursor: 'pointer' }} onClick={() => handleOpenEmailHistory(schedule)}>
               {moment(schedule.ScheduleEmails[schedule.ScheduleEmails.length - 1].created_at).format('MM/DD/YY')}
             </Box>
           ) : null,
       },
     }
+  }
+
+  const handleOpenEmailHistory = (data) => {
+    setEmailHistory(data?.ScheduleEmails)
+    setOpenEmailModal(true)
   }
 
   const { data: countGroup } = useQuery(scheduleCountGroupQuery, {
@@ -460,6 +467,13 @@ export const ScheduleTable: React.FC<ApplicationTableProps> = ({ filter }) => {
                   .map((obj) => obj.columns.status)
           }
           handleSchedulesByStatus={handleSchedulesByStatus}
+        />
+      )}
+      {openEmailModal && (
+        <ScheduleEmailHistoryModal
+          handleModem={() => {}}
+          handleSubmit={() => setOpenEmailModal(false)}
+          data={emailHistory}
         />
       )}
     </Card>

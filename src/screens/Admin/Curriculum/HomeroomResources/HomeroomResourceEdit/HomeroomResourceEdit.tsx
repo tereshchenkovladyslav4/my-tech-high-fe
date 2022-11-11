@@ -5,7 +5,7 @@ import { Form, Formik } from 'formik'
 import { Prompt } from 'react-router-dom'
 import * as yup from 'yup'
 import { CustomModal } from '@mth/components/CustomModal/CustomModals'
-import { SNOWPACK_PUBLIC_S3_URL, urlRex } from '@mth/constants'
+import { RICH_TEXT_VALID_MIN_LENGTH, SNOWPACK_PUBLIC_S3_URL, urlRex } from '@mth/constants'
 import { MthColor, MthTitle, ResourceSubtitle } from '@mth/enums'
 import { defaultHomeroomFormData } from '../../defaultValues'
 import { createOrUpdateResourceMutation } from '../../services'
@@ -59,7 +59,11 @@ const HomeroomResourceEdit: React.FC<HomeroomResourceEditProps> = ({
     grades: yup.string().required('At least one Grade Level must be selected'),
     std_user_name: yup.string().required('Username Required').nullable(),
     std_password: yup.string().required('Password Required').nullable(),
-    detail: yup.string().required('Description Required').min(9, 'Invalid Description').nullable(),
+    detail: yup
+      .string()
+      .required('Description Required')
+      .min(RICH_TEXT_VALID_MIN_LENGTH, 'Invalid Description')
+      .nullable(),
     resource_limit: yup.number().min(1, 'Limit Invalid').positive('Limit Invalid').integer('Limit Invalid').nullable(),
     ResourceLevels: yup
       .array()

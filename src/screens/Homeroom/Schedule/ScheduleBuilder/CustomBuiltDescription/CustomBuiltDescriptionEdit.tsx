@@ -3,6 +3,7 @@ import { Box } from '@mui/material'
 import { Form, Formik, FormikProps } from 'formik'
 import * as yup from 'yup'
 import { MthModal } from '@mth/components/MthModal/MthModal'
+import { RICH_TEXT_VALID_MIN_LENGTH } from '@mth/constants'
 import CustomBuiltDescriptionForm from '@mth/screens/Homeroom/Schedule/ScheduleBuilder/CustomBuiltDescription/CustomBuiltDescriptionForm'
 import {
   CustomBuiltDescription,
@@ -22,7 +23,7 @@ const CustomBuiltDescriptionEdit: React.FC<CustomBuiltDescriptionEditProps> = ({
   }
 
   const validationSchema = yup.object({
-    custom_built_description: yup.string().required('Required').min(9, 'Required').nullable(),
+    custom_built_description: yup.string().required('Required').min(RICH_TEXT_VALID_MIN_LENGTH, 'Required').nullable(),
   })
 
   const handleSave = async (value: CustomBuiltDescription) => {
