@@ -17,7 +17,7 @@ export const NestedDropdown = React.forwardRef<HTMLDivElement | null, NestedDrop
   props,
   ref,
 ) {
-  const [anchorEl, setAnchorEl] = React.useState<EventTarget | HTMLButtonElement | null>(null)
+  const [anchorEl, setAnchorEl] = React.useState<null | Element | ((element: Element) => Element)>(null)
   const open = Boolean(anchorEl)
 
   const { menuItemsData: data, onClick, ButtonProps, MenuProps, ...rest } = props

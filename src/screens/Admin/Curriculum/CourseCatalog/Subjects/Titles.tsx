@@ -162,7 +162,10 @@ const Titles: React.FC<TitlesProps> = ({ schoolYearId, schoolYearData, subject, 
       key: `title-${showArchived}-${title.title_id}`,
       columns: {
         name: <Typography sx={{ color: MthColor.MTHBLUE, fontSize: 'inherit' }}>{title.name}</Typography>,
-        grades: `${gradeShortText(title.min_grade)} - ${gradeShortText(title.max_grade)}`,
+        grades:
+          title.min_grade === title.max_grade
+            ? gradeShortText(title.min_grade)
+            : `${gradeShortText(title.min_grade)} - ${gradeShortText(title.max_grade)}`,
         diplomaSeeking: DIPLOMA_SEEKING_PATH_ITEMS.find((x) => x.value == title.diploma_seeking_path)?.label || 'NA',
         customBuilt: title.custom_built === undefined ? 'N/A' : title.custom_built ? 'Yes' : 'No',
         thirdParty: title.third_party_provider === undefined ? 'N/A' : title.third_party_provider ? 'Yes' : 'No',

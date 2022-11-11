@@ -93,6 +93,8 @@ export const getEnrollmentPacketsQuery = gql`
                 city
                 zip
                 state
+                county_id
+                country_id
               }
             }
             phone {

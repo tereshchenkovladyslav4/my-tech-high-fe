@@ -483,7 +483,8 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
               (editable(item.rawData) &&
               (item.rawData.Period.Subjects?.length > 1 ||
                 (item.rawData.Period.Subjects?.length === 1 &&
-                  item.rawData.Period.Subjects?.[0]?.Titles?.length > 1)) ? (
+                  (item.rawData.Period.Subjects?.[0]?.Titles?.length > 1 ||
+                    item.rawData.Period.Subjects?.[0]?.AltTitles?.length))) ? (
                 <NestedDropdown
                   menuItemsData={createSubjectMenuItems(item.rawData)}
                   MenuProps={{ elevation: 3 }}
@@ -1180,7 +1181,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
           ))}
         {studentScheduleStatus === ScheduleStatus.SUBMITTED && !isEditMode && (
           <Box sx={{ display: 'flex', justifyContent: 'end', paddingX: 6 }}>
-            <Button onClick={() => setShowRequestUpdatesModal(true)} sx={mthButtonClasses.red}>
+            <Button onClick={() => setShowRequestUpdatesModal(true)} sx={mthButtonClasses.orange}>
               {MthTitle.REQUEST_UPDATES}
             </Button>
           </Box>

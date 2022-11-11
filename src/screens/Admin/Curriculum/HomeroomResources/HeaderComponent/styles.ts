@@ -1,6 +1,4 @@
-import { MthColor } from '@mth/enums'
-
-export const headerComponentClassess = {
+export const headerComponentClasses = {
   pageTop: {
     textAlign: 'left',
     display: 'flex',
@@ -21,36 +19,6 @@ export const headerComponentClassess = {
     flexDirection: 'row',
     marginLeft: '24px',
     alignItems: 'center',
-  },
-  cancelBtn: {
-    fontSize: 11,
-    fontWeight: 700,
-    borderRadius: 2,
-    textTransform: 'none',
-    background: MthColor.RED_GRADIENT,
-    color: 'white',
-    width: '92px',
-    marginRight: 2,
-    height: '33px',
-    '&:hover': {
-      background: '#D23C33',
-      color: '#fff',
-    },
-  },
-  saveBtn: {
-    fontSize: 11,
-    fontWeight: 700,
-    borderRadius: 2,
-    textTransform: 'none',
-    height: '33px',
-    background: MthColor.BLUE_GRDIENT,
-    color: 'white',
-    width: '92px',
-    marginRight: 2,
-    '&:hover': {
-      background: '#4145FF',
-      color: '#fff',
-    },
   },
   arrowButton: {
     fontSize: '18px',

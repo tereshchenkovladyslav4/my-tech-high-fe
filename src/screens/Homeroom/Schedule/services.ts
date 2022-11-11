@@ -28,7 +28,6 @@ export const ProviderFragment = gql`
 `
 
 export const CourseFragment = gql`
-  ${ProviderFragment}
   fragment courseFragment on Course {
     __typename
     id
@@ -41,14 +40,10 @@ export const CourseFragment = gql`
     reduce_funds_notification
     display_notification
     course_notification
-    Provider {
-      ...providerFragment
-    }
   }
 `
 
 export const TitleFragment = gql`
-  ${ProviderFragment}
   ${CourseFragment}
   fragment titleFragment on Title {
     __typename
@@ -73,7 +68,6 @@ export const TitleFragment = gql`
 `
 
 export const getStudentPeriodsQuery = gql`
-  ${ProviderFragment}
   ${CourseFragment}
   ${TitleFragment}
   query StudentPeriods($studentId: ID!, $schoolYearId: ID!, $diplomaSeekingPath: String) {
@@ -99,6 +93,15 @@ export const getStudentPeriodsQuery = gql`
           ...courseFragment
         }
       }
+    }
+  }
+`
+
+export const getStudentProvidersQuery = gql`
+  ${ProviderFragment}
+  query StudentProviders($schoolYearId: ID!) {
+    studentProviders(schoolYearId: $schoolYearId) {
+      ...providerFragment
     }
   }
 `

@@ -8,12 +8,18 @@ export const mthButtonCommonStyles = {
 }
 
 export const mthButtonSizeClasses = {
+  xs: {
+    ...mthButtonCommonStyles,
+    height: '29px',
+    fontSize: '12px',
+    fontWeight: '700',
+    padding: '6px 16px',
+  },
   small: {
     ...mthButtonCommonStyles,
     height: '36px',
     fontSize: '12px',
     fontWeight: '700',
-    lineHeight: '14px',
     padding: '11px 16px',
   },
   medium: {
@@ -21,7 +27,6 @@ export const mthButtonSizeClasses = {
     height: '48px',
     fontSize: '12px',
     fontWeight: '700',
-    lineHeight: '14px',
     padding: '11px 16px',
   },
 }
@@ -36,7 +41,7 @@ export const mthButtonColorClasses = {
     },
   },
   dark: {
-    background: 'linear-gradient(90deg, #0E0E0E 0%, #666666 99.68%), #0E0E0E;',
+    background: 'linear-gradient(90deg, #0E0E0E 0%, #666666 99.68%), #0E0E0E',
     color: MthColor.WHITE,
     '&:hover': {
       background: '#0E0E0E',
@@ -51,7 +56,7 @@ export const mthButtonColorClasses = {
       color: MthColor.SYSTEM_01,
     },
   },
-  red: {
+  orange: {
     background: 'linear-gradient(90deg, #8E2C09 0%, rgba(168, 72, 38, 0) 100%), #EC5925',
     color: MthColor.WHITE,
     '&:hover': {
@@ -59,9 +64,18 @@ export const mthButtonColorClasses = {
       color: MthColor.WHITE,
     },
   },
+  red: {
+    background: 'linear-gradient(90deg, #730D07 0%, rgba(117, 13, 7, 0) 100%), #D23C33',
+    color: MthColor.WHITE,
+    '&:hover': {
+      background: '#D23C33',
+      color: MthColor.WHITE,
+    },
+  },
 }
 
 export const mthButtonClasses = {
+  // Primary buttons
   primary: {
     ...mthButtonSizeClasses.medium,
     ...mthButtonColorClasses.primary,
@@ -82,7 +96,14 @@ export const mthButtonClasses = {
     ...mthButtonColorClasses.primary,
     borderRadius: '40px',
   },
+  roundXsPrimary: {
+    ...mthButtonSizeClasses.xs,
+    ...mthButtonColorClasses.primary,
+    borderRadius: '40px',
+    minWidth: '92px',
+  },
 
+  // Dark buttons
   dark: {
     ...mthButtonSizeClasses.medium,
     ...mthButtonColorClasses.dark,
@@ -104,6 +125,7 @@ export const mthButtonClasses = {
     borderRadius: '40px',
   },
 
+  // Gray buttons
   gray: {
     ...mthButtonSizeClasses.medium,
     ...mthButtonColorClasses.gray,
@@ -125,24 +147,33 @@ export const mthButtonClasses = {
     borderRadius: '40px',
   },
 
-  red: {
+  // Orange buttons
+  orange: {
     ...mthButtonSizeClasses.medium,
-    ...mthButtonColorClasses.red,
+    ...mthButtonColorClasses.orange,
     borderRadius: '8px',
     minWidth: '140px',
   },
-  roundRed: {
+  roundOrange: {
     ...mthButtonSizeClasses.medium,
-    ...mthButtonColorClasses.red,
+    ...mthButtonColorClasses.orange,
     borderRadius: '40px',
   },
-  smallRed: {
+  smallOrange: {
     ...mthButtonSizeClasses.small,
-    ...mthButtonColorClasses.red,
+    ...mthButtonColorClasses.orange,
   },
-  roundSmallRed: {
+  roundSmallOrange: {
     ...mthButtonSizeClasses.small,
+    ...mthButtonColorClasses.orange,
+    borderRadius: '40px',
+  },
+
+  // Red buttons
+  roundXsRed: {
+    ...mthButtonSizeClasses.xs,
     ...mthButtonColorClasses.red,
     borderRadius: '40px',
+    minWidth: '92px',
   },
 }

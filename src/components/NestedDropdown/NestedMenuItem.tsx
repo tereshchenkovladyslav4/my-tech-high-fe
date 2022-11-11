@@ -1,10 +1,11 @@
-import React, { useState, useRef, useImperativeHandle, ReactNode } from 'react'
+import React, { useState, useRef, useImperativeHandle, ReactNode, forwardRef } from 'react'
 import { ChevronRight } from '@mui/icons-material'
 import ExpandMoreOutlinedIcon from '@mui/icons-material/ExpandMoreOutlined'
 import { Collapse, Typography } from '@mui/material'
 import Menu, { MenuProps } from '@mui/material/Menu'
 import { MenuItemProps } from '@mui/material/MenuItem'
 import { CustomModal, CustomModalType } from '@mth/components/CustomModal/CustomModals'
+import { nestedMenuItemsFromObject } from '@mth/components/NestedDropdown/nestedMenuItemsFromObject'
 import { MenuItemData } from '@mth/components/NestedDropdown/types'
 import { MthColor } from '@mth/enums'
 import { IconMenuItem } from './IconMenuItem'
@@ -24,9 +25,11 @@ export interface NestedMenuItemProps extends Omit<MenuItemProps, 'button'> {
   button?: true | undefined
   customModalProps?: Partial<CustomModalType>
   menuItemsData: MenuItemData
+  isOpen: boolean
+  handleClose: () => void
 }
 
-const NestedMenuItem = React.forwardRef<HTMLLIElement | null, NestedMenuItemProps>(function NestedMenuItem(props, ref) {
+const NestedMenuItem = forwardRef<HTMLLIElement | null, NestedMenuItemProps>(function NestedMenuItem(props, ref) {
   const {
     parentMenuOpen,
     label,
@@ -39,6 +42,8 @@ const NestedMenuItem = React.forwardRef<HTMLLIElement | null, NestedMenuItemProp
     MenuProps,
     customModalProps,
     menuItemsData,
+    isOpen,
+    handleClose,
     ...MenuItemProps
   } = props
 
@@ -46,13 +51,13 @@ const NestedMenuItem = React.forwardRef<HTMLLIElement | null, NestedMenuItemProp
 
   const { ref: containerRefProp, ...ContainerProps } = ContainerPropsProp
 
-  const menuItemRef = useRef()
-  useImperativeHandle(ref, () => menuItemRef?.current)
+  const menuItemRef = useRef<HTMLLIElement>(null)
+  useImperativeHandle<HTMLLIElement | null, HTMLLIElement | null>(ref, () => menuItemRef.current)
 
-  const containerRef = useRef()
+  const containerRef = useRef<HTMLDivElement>(null)
   useImperativeHandle(containerRefProp, () => containerRef.current)
 
-  const menuContainerRef = useRef()
+  const menuContainerRef = useRef<HTMLDivElement>(null)
 
   const [isSubMenuOpen, setIsSubMenuOpen] = useState(false)
   const [isHover, setIsHover] = useState(false)
@@ -84,9 +89,12 @@ const NestedMenuItem = React.forwardRef<HTMLLIElement | null, NestedMenuItemProp
   // Check if any immediate children are active
   const isSubmenuFocused = () => {
     const active = containerRef?.current?.ownerDocument.activeElement
-    for (const child of menuContainerRef?.current?.children) {
-      if (child === active) {
-        return true
+    if (menuContainerRef?.current?.children?.length) {
+      for (let index = 0; index < menuContainerRef.current.children.length; index++) {
+        const child = menuContainerRef.current.children[index]
+        if (child === active) {
+          return true
+        }
       }
     }
     return false
@@ -118,8 +126,8 @@ const NestedMenuItem = React.forwardRef<HTMLLIElement | null, NestedMenuItemProp
     }
 
     if (e.key === 'ArrowRight' && e.target === containerRef.current && e.target === active) {
-      const firstChild = menuContainerRef?.current?.children[0]
-      firstChild.focus()
+      const firstChild = menuContainerRef?.current?.children[0] as HTMLElement
+      firstChild?.focus()
     }
   }
 

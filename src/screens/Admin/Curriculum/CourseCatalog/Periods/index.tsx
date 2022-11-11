@@ -396,7 +396,13 @@ const Periods: FunctionComponent = () => {
       sortable: false,
       thClass: 'w-31',
       formatter: (item) =>
-        `${item.grade_level_min === 'Kindergarten' ? 'K' : item.grade_level_min} - ${item.grade_level_max}`,
+        item.grade_level_min === item.grade_level_max
+          ? item.grade_level_min === 'Kindergarten'
+            ? 'K'
+            : item.grade_level_min
+          : `${item.grade_level_min === 'Kindergarten' ? 'K' : item.grade_level_min} - ${
+              item.grade_level_max === 'Kindergarten' ? 'K' : item.grade_level_max
+            }`,
     },
     {
       key: 'category',

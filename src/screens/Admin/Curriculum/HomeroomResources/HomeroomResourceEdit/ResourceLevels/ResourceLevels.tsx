@@ -1,25 +1,16 @@
 import React, { useState } from 'react'
 import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined'
-import {
-  Box,
-  Button,
-  OutlinedInput,
-  Dialog,
-  DialogTitle,
-  DialogActions,
-  Tooltip,
-  FormControlLabel,
-  Checkbox,
-} from '@mui/material'
-import { useFormikContext } from 'formik'
+import { Box, Button, OutlinedInput, Tooltip, FormControlLabel, Checkbox, Modal, Typography } from '@mui/material'
+import { FormikErrors, useFormikContext } from 'formik'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { REMOVE_FAMILY_RESOURCE } from '@mth/constants'
 import { MthColor } from '@mth/enums'
+import { mthButtonClasses } from '@mth/styles/button.style'
+import { commonClasses } from '@mth/styles/common.style'
 import { defaultResourceLevelFormData } from '../../../defaultValues'
 import { homeroomResourcesClasses } from '../../styles'
 import { HomeroomResource, ResourceLevel } from '../../types'
-import { resourceLevelsClassess } from './styles'
 
 type ResourceLevelsProps = {
   setIsChanged: (value: boolean) => void
@@ -33,6 +24,7 @@ export const ResourceLevels: React.FC<ResourceLevelsProps> = ({ setIsChanged }) 
   const [initialResourceLevels, setInitialResourceLevels] = useState<ResourceLevel[]>([])
 
   const handleClickOpen = () => {
+    setFieldTouched('ResourceLevels', false)
     setInitialResourceLevels(values.ResourceLevels)
     if (!values.ResourceLevels.length) setFieldValue('ResourceLevels', [defaultResourceLevelFormData])
     else setFieldValue('ResourceLevels', values.ResourceLevels)
@@ -51,8 +43,8 @@ export const ResourceLevels: React.FC<ResourceLevelsProps> = ({ setIsChanged }) 
   }
 
   const validateLimits = (values: ResourceLevel[]): boolean => {
-    const inputedCnt = values?.filter((item) => !!item.limit)?.length
-    if (inputedCnt && values?.length !== inputedCnt) {
+    const inputtedCnt = values?.filter((item) => !!item.limit)?.length
+    if (inputtedCnt && values?.length !== inputtedCnt) {
       setLimitError(true)
       return false
     } else {
@@ -93,6 +85,10 @@ export const ResourceLevels: React.FC<ResourceLevelsProps> = ({ setIsChanged }) 
     setFieldValue('ResourceLevels', [...values.ResourceLevels, ...[defaultResourceLevelFormData]])
   }
 
+  const resourceLevelErrors = (index: number): FormikErrors<ResourceLevel> | undefined => {
+    return errors.ResourceLevels?.[index] as FormikErrors<ResourceLevel>
+  }
+
   return (
     <>
       <Tooltip title={values?.family_resource ? REMOVE_FAMILY_RESOURCE : ''} placement='top'>
@@ -127,95 +123,104 @@ export const ResourceLevels: React.FC<ResourceLevelsProps> = ({ setIsChanged }) 
             handleClickOpen()
           }}
         >
-          Edit Resource Levels
+          Edit Levels
         </Subtitle>
       )}
 
-      <Dialog open={open} onClose={handleClose} sx={resourceLevelsClassess.gradesDialog}>
-        <DialogTitle sx={resourceLevelsClassess.dialogTitle}>Resource Levels</DialogTitle>
-        <Box sx={{ padding: '26px', textAlign: 'left' }}>
-          <Box sx={{ display: 'flex', marginBottom: '12px', gap: '20px' }}>
-            <Paragraph sx={{ flex: 1, fontSize: '20px', fontWeight: '700', minWidth: '120px' }}>Limit</Paragraph>
-            <Paragraph sx={{ flex: 2, fontSize: '20px', fontWeight: '700', minWidth: '240px' }}>Level Name</Paragraph>
-            <Box sx={{ width: '24px' }}></Box>
-          </Box>
-          {(values.ResourceLevels || []).map((item, index) => (
-            <Box key={index}>
-              <Box sx={{ display: 'flex', alignItems: 'end', marginBottom: '12px', gap: '20px' }}>
-                <Box sx={{ flex: 1 }}>
-                  <Subtitle sx={homeroomResourcesClasses.formError}>
-                    {touched.ResourceLevels &&
-                      (errors.ResourceLevels?.[index]?.limit || (limitError && !item.limit && 'Required'))}
-                  </Subtitle>
-                  <Tooltip
-                    title={!!values.resource_limit ? 'Remove general limit to enable feature' : ''}
-                    placement='top'
-                  >
+      <Modal open={open} onClose={handleClose}>
+        <Box
+          sx={{
+            ...commonClasses.modalWrap,
+            maxWidth: '615px',
+            p: 3,
+          }}
+        >
+          <Typography variant='h5' sx={{ fontSize: '20px', fontWeight: '700', textAlign: 'center', mb: 6 }}>
+            Resource Levels
+          </Typography>
+          <Box sx={{ pl: '48px', textAlign: 'left' }}>
+            <Box sx={{ display: 'flex', marginBottom: '12px', gap: '20px' }}>
+              <Typography sx={{ flex: 1, fontSize: '20px', fontWeight: '700' }}>Limit</Typography>
+              <Typography sx={{ flex: 2, fontSize: '20px', fontWeight: '700' }}>Level Name</Typography>
+              <Box sx={{ width: '24px' }}></Box>
+            </Box>
+            {(values.ResourceLevels || []).map((item, index) => (
+              <Box key={index}>
+                <Box sx={{ display: 'flex', alignItems: 'end', marginBottom: '12px', gap: '20px' }}>
+                  <Box sx={{ flex: 1 }}>
+                    <Subtitle sx={homeroomResourcesClasses.formError}>
+                      {touched.ResourceLevels &&
+                        (resourceLevelErrors(index)?.limit || (limitError && !item.limit && 'Required'))}
+                    </Subtitle>
+                    <Tooltip
+                      title={!!values.resource_limit ? 'Remove general limit to enable feature' : ''}
+                      placement='top'
+                    >
+                      <OutlinedInput
+                        size='small'
+                        fullWidth
+                        placeholder='Limit'
+                        type='number'
+                        value={item.limit || ''}
+                        onChange={(e) => handleChangeOption(index, 'limit', Number(e.target.value) || null)}
+                        disabled={!!values.resource_limit}
+                        error={
+                          touched.ResourceLevels && (!!resourceLevelErrors(index)?.limit || (limitError && !item.limit))
+                        }
+                      />
+                    </Tooltip>
+                  </Box>
+                  <Box sx={{ flex: 2 }}>
+                    <Subtitle sx={homeroomResourcesClasses.formError}>
+                      {touched.ResourceLevels && resourceLevelErrors(index)?.name}
+                    </Subtitle>
                     <OutlinedInput
                       size='small'
                       fullWidth
-                      placeholder='Limit'
-                      type='number'
-                      value={item.limit || ''}
-                      onChange={(e) => handleChangeOption(index, 'limit', Number(e.target.value) || null)}
-                      disabled={!!values.resource_limit}
-                      error={
-                        touched.ResourceLevels &&
-                        (!!errors.ResourceLevels?.[index]?.limit || (limitError && !item.limit))
-                      }
+                      placeholder='Level Name'
+                      value={item.name}
+                      onChange={(e) => handleChangeOption(index, 'name', e.target.value)}
+                      error={touched.ResourceLevels && !!resourceLevelErrors(index)?.name}
                     />
-                  </Tooltip>
-                </Box>
-                <Box sx={{ flex: 2 }}>
-                  <Subtitle sx={homeroomResourcesClasses.formError}>
-                    {touched.ResourceLevels && errors.ResourceLevels?.[index]?.name}
-                  </Subtitle>
-                  <OutlinedInput
-                    size='small'
-                    fullWidth
-                    placeholder='Level Name'
-                    value={item.name}
-                    onChange={(e) => handleChangeOption(index, 'name', e.target.value)}
-                    error={touched.ResourceLevels && !!errors.ResourceLevels?.[index]?.name}
-                  />
-                </Box>
-                <Box
-                  display={'flex'}
-                  flexDirection={'column'}
-                  justifyContent={'center'}
-                  alignItems={'center'}
-                  className='delete-row'
-                  sx={{ cursor: 'pointer', width: '24px', mb: '8px' }}
-                >
-                  <Tooltip title='Delete' arrow>
-                    <DeleteForeverOutlinedIcon onClick={() => handleDeleteOption(index)} />
-                  </Tooltip>
+                  </Box>
+                  <Box
+                    display={'flex'}
+                    flexDirection={'column'}
+                    justifyContent={'center'}
+                    alignItems={'center'}
+                    className='delete-row'
+                    sx={{ cursor: 'pointer', width: '24px', mb: '8px' }}
+                  >
+                    <Tooltip title='Delete' arrow>
+                      <DeleteForeverOutlinedIcon onClick={() => handleDeleteOption(index)} />
+                    </Tooltip>
+                  </Box>
                 </Box>
               </Box>
+            ))}
+            <Box sx={{ display: 'flex', gap: '20px' }}>
+              <Box sx={{ flex: 1 }}></Box>
+              <Box sx={{ flex: 2, display: 'flex' }}>
+                <Paragraph
+                  sx={{ fontSize: '18px', color: MthColor.MTHBLUE, fontWeight: 500, cursor: 'pointer' }}
+                  onClick={handleAddOption}
+                >
+                  + Add Option
+                </Paragraph>
+              </Box>
+              <Box sx={{ width: '24px' }}></Box>
             </Box>
-          ))}
-          <Box sx={{ display: 'flex', gap: '20px' }}>
-            <Box sx={{ flex: 1 }}></Box>
-            <Box sx={{ flex: 2, display: 'flex' }}>
-              <Paragraph
-                sx={{ fontSize: '18px', color: MthColor.MTHBLUE, fontWeight: 500, cursor: 'pointer' }}
-                onClick={handleAddOption}
-              >
-                + Add Resource
-              </Paragraph>
-            </Box>
-            <Box sx={{ width: '24px' }}></Box>
+          </Box>
+          <Box sx={{ display: 'flex', justifyContent: 'center', gap: 4, mt: '70px' }}>
+            <Button sx={mthButtonClasses.roundXsRed} onClick={handleClose}>
+              Cancel
+            </Button>
+            <Button sx={{ ...mthButtonClasses.roundXsPrimary }} onClick={handleSave}>
+              Save
+            </Button>
           </Box>
         </Box>
-        <DialogActions sx={resourceLevelsClassess.dialogAction}>
-          <Button variant='contained' sx={resourceLevelsClassess.cancelButton} onClick={handleClose}>
-            Cancel
-          </Button>
-          <Button variant='contained' sx={resourceLevelsClassess.submitButton} onClick={handleSave}>
-            Save
-          </Button>
-        </DialogActions>
-      </Dialog>
+      </Modal>
     </>
   )
 }

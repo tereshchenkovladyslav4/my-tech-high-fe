@@ -2,6 +2,7 @@ import React, { ReactNode } from 'react'
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline'
 import { Box, Button, Modal, Typography } from '@mui/material'
 import { customModalClasses } from '@mth/components/CustomModal/styles'
+import { commonClasses } from '@mth/styles/common.style'
 
 export type CustomModalType = {
   title: string
@@ -37,16 +38,10 @@ export const CustomModal: React.FC<CustomModalType> = ({
     >
       <Box
         sx={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          width: subDescription ? '550px' : '450px',
-          height: 'auto',
-          bgcolor: backgroundColor,
+          ...commonClasses.modalWrap,
+          maxWidth: subDescription ? '550px' : '450px',
+          backgroundColor: backgroundColor,
           borderRadius: 2,
-          display: 'flex',
-          justifyContent: 'center',
           p: 4,
         }}
       >

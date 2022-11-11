@@ -153,7 +153,10 @@ const Courses: React.FC<CoursesProps> = ({ schoolYearId, schoolYearData, provide
       key: `course-${showArchived}-${course.id}`,
       columns: {
         name: <Typography sx={{ color: MthColor.MTHBLUE, fontSize: 'inherit' }}>{course.name}</Typography>,
-        grades: `${gradeShortText(course.min_grade)} - ${gradeShortText(course.max_grade)}`,
+        grades:
+          course.min_grade === course.max_grade
+            ? gradeShortText(course.min_grade)
+            : `${gradeShortText(course.min_grade)} - ${gradeShortText(course.max_grade)}`,
         diplomaSeeking: DIPLOMA_SEEKING_PATH_ITEMS.find((x) => x.value == course.diploma_seeking_path)?.label || 'NA',
         reducesFunds: course.reduce_funds === ReduceFunds.NONE ? 'No' : 'Yes',
         semesterOnly: course.always_unlock === undefined ? 'N/A' : course.always_unlock ? 'Yes' : 'No',

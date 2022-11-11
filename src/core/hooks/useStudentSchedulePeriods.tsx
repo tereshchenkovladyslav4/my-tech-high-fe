@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
 import { useQuery } from '@apollo/client'
-import { groupBy } from 'lodash'
+import { groupBy, keyBy } from 'lodash'
 import { COURSE_TYPE_ITEMS } from '@mth/constants'
 import { CourseType, DiplomaSeekingPath, ScheduleStatus } from '@mth/enums'
 import { SchedulePeriod } from '@mth/graphql/models/schedule-period'
 import { getStudentSchedulePeriodsQuery } from '@mth/graphql/queries/schedule-period'
-import { getStudentPeriodsQuery } from '@mth/screens/Homeroom/Schedule/services'
+import { getStudentPeriodsQuery, getStudentProvidersQuery } from '@mth/screens/Homeroom/Schedule/services'
 import { Course, Period, Provider, ScheduleData } from '@mth/screens/Homeroom/Schedule/types'
 
 export const makeProviderData = (courses: Course[], altCourses: Course[]): Provider[] => {
@@ -49,6 +49,13 @@ export const useStudentSchedulePeriods = (
   const [studentScheduleId, setStudentScheduleId] = useState<number>(0)
   const [studentScheduleStatus, setStudentScheduleStatus] = useState<ScheduleStatus>(ScheduleStatus.SUBMITTED)
 
+  // Have to call Providers API individually instead of JOIN in Periods API(For the performance)
+  const { loading: loadingProviders, data: providersData } = useQuery(getStudentProvidersQuery, {
+    variables: { schoolYearId: school_year_id },
+    skip: !school_year_id,
+    fetchPolicy: 'network-only',
+  })
+
   const { loading, data: periodsData } = useQuery(getStudentPeriodsQuery, {
     variables: { studentId: student_id, schoolYearId: school_year_id, diplomaSeekingPath: diplomaSeekingPath },
     skip: !student_id || !school_year_id,
@@ -69,7 +76,9 @@ export const useStudentSchedulePeriods = (
   })
 
   useEffect(() => {
-    if (!loading && periodsData?.studentPeriods) {
+    if (!loading && periodsData?.studentPeriods && !loadingProviders && providersData.studentProviders) {
+      const studentProviders: { [key: string]: Provider } = keyBy(providersData.studentProviders, 'id')
+
       const { studentPeriods } = periodsData
       studentPeriods.map((period: Period) => {
         period.Subjects.map((subject) => {
@@ -81,8 +90,14 @@ export const useStudentSchedulePeriods = (
                 (item.value === CourseType.THIRD_PARTY_PROVIDER && title.third_party_provider),
             )
 
+            title.Courses.concat(title.AltCourses).map(
+              (course) => (course.Provider = studentProviders[course.provider_id]),
+            )
             title.Providers = makeProviderData(title.Courses, title.AltCourses)
           })
+          subject.Courses.concat(subject.AltCourses).map(
+            (course) => (course.Provider = studentProviders[course.provider_id]),
+          )
           subject.Providers = makeProviderData(subject.Courses, subject.AltCourses)
         })
       })
@@ -109,15 +124,18 @@ export const useStudentSchedulePeriods = (
               if (schedulePeriod.SubjectId)
                 item.Subject = period.Subjects?.find((subject) => subject?.subject_id === schedulePeriod.SubjectId)
               if (schedulePeriod.TitleId)
-                period.Subjects?.map((subject) => {
-                  subject.Titles?.map((title) => {
+                period.Subjects?.forEach((subject) => {
+                  subject.Titles.concat(subject.AltTitles)?.map((title) => {
                     if (title.title_id === schedulePeriod.TitleId) item.Title = title
                   })
                 })
               if (schedulePeriod.CourseId)
-                period.Subjects?.map((subject) => {
-                  subject.Titles?.map((title) => {
-                    title.Courses?.map((course) => {
+                period.Subjects?.forEach((subject) => {
+                  subject.Courses.concat(subject.AltCourses)?.forEach((course) => {
+                    if (course.id === schedulePeriod.CourseId) item.Course = course
+                  })
+                  subject.Titles.concat(subject.AltTitles)?.forEach((title) => {
+                    title.Courses.concat(title.AltCourses)?.forEach((course) => {
                       if (course.id === schedulePeriod.CourseId) item.Course = course
                     })
                   })
@@ -150,7 +168,7 @@ export const useStudentSchedulePeriods = (
 
       setScheduleData(scheduleDataArray)
     }
-  }, [loading, periodsData, studentSchedulePeriodsLoading, studentSchedulePeriodsData])
+  }, [loading, periodsData, studentSchedulePeriodsLoading, studentSchedulePeriodsData, loadingProviders, providersData])
 
   return {
     scheduleData: scheduleData,
