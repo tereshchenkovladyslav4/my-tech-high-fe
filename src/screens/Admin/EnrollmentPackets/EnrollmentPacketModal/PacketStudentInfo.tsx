@@ -1,6 +1,8 @@
-import React, { FunctionComponent, useContext } from 'react'
+import React, { FunctionComponent, useContext, useEffect, useState } from 'react'
+import { useQuery, gql } from '@apollo/client'
 import { Grid } from '@mui/material'
 import moment from 'moment'
+import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { Paragraph } from '../../../../components/Typography/Paragraph/Paragraph'
 import { Title } from '../../../../components/Typography/Title/Title'
 import { ProfileContext } from '../../../../providers/ProfileProvider/ProfileContext'
@@ -8,12 +10,58 @@ import { MTHBLUE, SYSTEM_06 } from '../../../../utils/constants'
 import { parseGradeLevel } from '../../../../utils/stringHelpers'
 import { Packet } from '../../../HomeroomStudentProfile/Student/types'
 
+const getSchoolYearsByRegionId = gql`
+  query Region($regionId: ID!) {
+    region(id: $regionId) {
+      SchoolYears {
+        school_year_id
+        date_begin
+        date_end
+        grades
+        birth_date_cut
+        special_ed
+        special_ed_options
+        enrollment_packet
+        date_reg_close
+        date_reg_open
+        midyear_application
+        midyear_application_close
+        midyear_application_open
+      }
+    }
+  }
+`
+
 type EnrollmentJobsInfoProps = {
   packet: Packet
   handleModem: () => void
 }
 export const EnrollmentJobsInfo: FunctionComponent<EnrollmentJobsInfoProps> = ({ packet, handleModem }) => {
   const { showModal } = useContext(ProfileContext)
+  const { me } = useContext(UserContext)
+  const [specialEdOptions, setSpecialEdOptions] = useState<string[]>([])
+
+  const { data: schoolYearData } = useQuery(getSchoolYearsByRegionId, {
+    variables: {
+      regionId: me?.selectedRegionId,
+    },
+    fetchPolicy: 'cache-and-network',
+  })
+
+  useEffect(() => {
+    if (schoolYearData?.region?.SchoolYears) {
+      const shoolYears = schoolYearData?.region?.SchoolYears || []
+      let special_ed_options = ''
+      shoolYears
+        .filter((item) => moment(item.date_begin).format('YYYY') >= moment().format('YYYY'))
+        .map((item: { special_ed_options: string }): void => {
+          if (item.special_ed_options != '' && item.special_ed_options != null)
+            special_ed_options = item.special_ed_options
+        })
+      if (special_ed_options == '') setSpecialEdOptions([])
+      else setSpecialEdOptions(special_ed_options.split(','))
+    }
+  }, [schoolYearData?.region?.SchoolYears])
 
   const profileClicked = (profileData) => {
     showModal(profileData)
@@ -32,18 +80,8 @@ export const EnrollmentJobsInfo: FunctionComponent<EnrollmentJobsInfoProps> = ({
   const street2 = student.parent.person.address.street2
 
   function studentSPED() {
-    switch (student.special_ed) {
-      case 0:
-        return 'No'
-      case 1:
-        return 'IEP'
-      case 2:
-        return '504'
-      case 3:
-        return 'EXIT'
-      default:
-        return ''
-    }
+    if (specialEdOptions.length > Number(student.special_ed)) return specialEdOptions[Number(student.special_ed)]
+    return ''
   }
 
   return (

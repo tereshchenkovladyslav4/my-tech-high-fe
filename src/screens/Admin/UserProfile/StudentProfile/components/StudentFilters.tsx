@@ -19,6 +19,7 @@ type StudentFiltersProps = {
   originStudentStatus: unknown
   studentStatusData: unknown
   withdrawalStatus: unknown
+  specialEdOptions: string[]
   setWithdrawalStatus: () => void
   setIsChanged: () => void
 }
@@ -199,6 +200,7 @@ export const StudentFilters: React.FC<StudentFiltersProps> = ({
   originStudentStatus,
   studentStatusData,
   withdrawalStatus,
+  specialEdOptions,
   setWithdrawalStatus,
   setIsChanged,
 }) => {
@@ -238,7 +240,8 @@ export const StudentFilters: React.FC<StudentFiltersProps> = ({
       value: StudentStatus.WITHDRAWN,
     },
   ])
-  const specialEds: DropDownItem[] = [
+
+  const [specialEds, setSpecialEds] = useState<DropDownItem[]>([
     {
       label: 'No',
       value: 0,
@@ -255,7 +258,8 @@ export const StudentFilters: React.FC<StudentFiltersProps> = ({
       label: 'Exit',
       value: 3,
     },
-  ]
+  ])
+
   const seeking: DropDownItem[] = [
     {
       label: 'No',
@@ -312,7 +316,18 @@ export const StudentFilters: React.FC<StudentFiltersProps> = ({
     if (currentUserData && currentUserData.student) {
       setApplications(currentUserData.student.applications)
     }
+    if (specialEdOptions.length != 0) {
+      const speicalEdDropdonws: DropDownItem[] = []
+      specialEdOptions.map((item, index): void => {
+        speicalEdDropdonws.push({
+          label: item,
+          value: index,
+        })
+      })
+      setSpecialEds(speicalEdDropdonws)
+    }
   }, [currentUserData])
+
   useEffect(() => {
     if (studentStatusData.diploma_seeking !== null && studentStatusData.diploma_seeking !== undefined) {
       setDiplomaSeeking(studentStatusData.diploma_seeking)

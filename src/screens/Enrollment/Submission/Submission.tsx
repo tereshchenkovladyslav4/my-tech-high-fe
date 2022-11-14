@@ -389,8 +389,20 @@ export const Submission: SubmissionTemplateType = ({ id, questions }) => {
                 fullWidth
                 focused
                 placeholder='Entry'
-                error={formik.errors['meta'] && Boolean(formik.errors['meta']['meta_parentlegalname'])}
-                helperText={formik.errors['meta'] && formik.errors['meta']['meta_parentlegalname']}
+                error={
+                  !!(
+                    formik.touched['meta'] &&
+                    Boolean(formik.touched['meta']['meta_parentlegalname']) &&
+                    formik.errors['meta'] &&
+                    Boolean(formik.errors['meta']['meta_parentlegalname'])
+                  )
+                }
+                helperText={
+                  (formik.touched['meta'] &&
+                    Boolean(formik.touched['meta']['meta_parentlegalname']) &&
+                    formik.errors['meta']['meta_parentlegalname'] &&
+                    formik.errors['meta']['meta_parentlegalname']) as string
+                }
                 onChange={formik.handleChange}
                 value={formik.values['meta'] ? formik.values['meta']['meta_parentlegalname'] : ''}
               />

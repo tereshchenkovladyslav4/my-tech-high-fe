@@ -100,6 +100,7 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
   const [originStudentStatus, setOriginStudentStatus] = useState({})
   const [studentAssessments, setStudentAssessments] = useState<StudentAssessment[]>([])
   const [assessmentItems, setAssessmentItems] = useState<AssessmentType[]>([])
+  const [specialEdOptions, setSpecialEdOptions] = useState<string[]>([])
 
   const { data: currentUserData, refetch } = useQuery(getStudentDetail, {
     variables: {
@@ -326,6 +327,16 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
 
   const previousYearId = useMemo(() => {
     const shoolYears = regionData?.region?.SchoolYears || []
+    let special_ed_options = ''
+    shoolYears
+      .filter((item) => moment(item.date_begin).format('YYYY') >= moment().format('YYYY'))
+      .map((item: { special_ed_options: string }): void => {
+        if (item.special_ed_options != '' && item.special_ed_options != null)
+          special_ed_options = item.special_ed_options
+      })
+    if (special_ed_options == '') setSpecialEdOptions([])
+    else setSpecialEdOptions(special_ed_options.split(','))
+
     return getPreviousSchoolYearId(selectedYearId, shoolYears)
   }, [regionData, selectedYearId])
 
@@ -566,6 +577,7 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
             withdrawalStatus={withdrawalStatus}
             setWithdrawalStatus={setWithdrawalStatus}
             setIsChanged={setIsChanged}
+            specialEdOptions={specialEdOptions}
           />
         </Grid>
         <Grid item xs={3}>

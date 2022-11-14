@@ -42,7 +42,8 @@ const MthTable = <T extends unknown>({
   const [rowCount, setRowCount] = useState<number>(0)
   const [tableWidth, setTableWidth] = useState<number>(0)
   const tableRef = useRef<HTMLDivElement>(null)
-  const [order, setOrder] = useState<Order>(Order.ASC)
+  // const [order, setOrder] = useState<Order>(Order.ASC)
+  const [order, setOrder] = useState<Order>(Order.DESC)
   const [orderBy, setOrderBy] = useState<string>('name')
 
   const handleRequestSort = (fieldKey: string) => {
