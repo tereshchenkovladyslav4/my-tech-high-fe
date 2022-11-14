@@ -7,6 +7,7 @@ export const studentInfoClass = {
     justifyContent: 'space-between',
     marginTop: '37px',
     paddingRight: '46px',
+    paddingLeft: '30px',
     '& p': {
       whiteSpace: 'nowrap',
       overflow: 'hidden',

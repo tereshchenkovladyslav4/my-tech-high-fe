@@ -1,6 +1,7 @@
 export const headerClass = {
   headerMain: {
     paddingRight: '46px',
+    paddingLeft: '30px',
     textAlign: 'left',
     display: 'flex',
     flexDirection: 'row',

@@ -8,9 +8,10 @@ export const scheduleBuilderClasses = {
       color: '#4145FF !important',
     },
     paddingLeft: 2,
+    marginTop: 3,
   },
   customTable: {
-    width: 'calc( 100% - 50px )',
+    width: '100%',
     '& thead th': {
       fontWeight: 'bold',
       fontSize: '16px',
@@ -49,6 +50,7 @@ export const scheduleBuilderClasses = {
     position: 'absolute',
     top: '0',
     right: '0',
+    marginRight: 2,
   },
   labelColor: {
     color: '#4145FF !important',

@@ -61,7 +61,6 @@ export const EmailTemplateModal: FunctionComponent<EmailTemplateModalProps> = ({
 }) => {
   const classes = useStyles()
   const { me } = useContext(UserContext)
-  const [titleReadOnly, setTitleReadOnly] = useState(true)
   const [editorState, setEditorState] = useState(EditorState.createEmpty())
   const [subject, setSubject] = useState('')
   const [emailTitle, setEmailTitle] = useState(template.title)
@@ -469,20 +468,10 @@ export const EmailTemplateModal: FunctionComponent<EmailTemplateModalProps> = ({
       aria-describedby='modal-modal-description'
     >
       <Box className={classes.modalCard}>
-        <Box className={classes.header}>
-          <OutlinedInput
-            sx={{ flex: 1 }}
-            inputProps={{ sx: { textOverflow: 'ellipsis', overflow: 'hidden' } }}
-            size='small'
-            fullWidth
-            multiline
-            placeholder='[Email Title]'
-            value={emailTitle}
-            onChange={(e) => setEmailTitle(e.target.value)}
-            readOnly={titleReadOnly}
-            onFocus={() => setTitleReadOnly(false)}
-            onBlur={() => setTitleReadOnly(true)}
-          />
+        <Box className={classes.header} sx={{ paddingBottom: '8px' }}>
+          <Subtitle fontWeight='700' size='large' sx={{ paddingLeft: '8px' }}>
+            {emailTitle}
+          </Subtitle>
           <Box className={classes.subHeader}>
             <Button className={classes.save} onClick={handleSave}>
               Save

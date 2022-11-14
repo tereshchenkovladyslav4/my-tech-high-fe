@@ -405,6 +405,7 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
           )}`,
         },
       ])
+      setSplitEnrollment(currentSchoolYear?.ScheduleBuilder?.split_enrollment)
     }
   }, [currentSchoolYear, currentSchoolYearLoading])
 
@@ -426,20 +427,6 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
       }
     }
   }, [diplomaAnswerLoading, diplomaAnswerData])
-
-  useEffect(() => {
-    if (!currentSchoolYearLoading && currentSchoolYear) {
-      setSchoolYearItems([
-        {
-          value: currentSchoolYear.school_year_id,
-          label: `${moment(currentSchoolYear.date_begin).format('YYYY')}-${moment(currentSchoolYear.date_end).format(
-            'YY',
-          )}`,
-        },
-      ])
-      setSplitEnrollment(currentSchoolYear?.ScheduleBuilder?.split_enrollment)
-    }
-  }, [currentSchoolYear, currentSchoolYearLoading])
 
   useEffect(() => {
     if (diplomaOptions[0].value) setDiplomaSeekingPathStatus(DiplomaSeekingPath.DIPLOMA_SEEKING)

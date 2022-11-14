@@ -7,7 +7,7 @@ export const scheduleBuilderClass = {
   main: {
     display: 'flex',
     flexDirection: 'column',
-    padding: '24px 0px 34px 20px',
+    padding: '34px 0px',
     margin: '28px 34px 16px 30px',
     minHeight: '820px',
   },
@@ -64,6 +64,7 @@ export const scheduleBuilderClass = {
     columnGap: '38px',
     marginTop: '65px',
     paddingRight: '46px',
+    paddingLeft: '30px',
     '& button': {
       height: '48px',
       width: '160px',
