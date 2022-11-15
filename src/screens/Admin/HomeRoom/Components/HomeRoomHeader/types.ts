@@ -1,8 +1,8 @@
-import { SchoolYearResponseType } from '@mth/hooks'
+import { DropDownItem } from '@mth/components/DropDown/types'
 
 export type HomeRoomHeraderProps = {
   title: string
   selectedYear: number
   setSelectedYear: (value: number) => void
-  setSelectedYearData?: (value?: SchoolYearResponseType) => void
+  schoolYearDropdownItems: DropDownItem[]
 }

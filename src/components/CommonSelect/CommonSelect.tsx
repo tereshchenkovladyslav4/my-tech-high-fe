@@ -11,6 +11,7 @@ type CommonSelectProps = {
   selectItem: CommonSelectType
   verticalDividHeight?: string
   hasDeleteIcon?: boolean
+  dividerStyle?: { top?: string; bottom?: string; height?: string }
   handleDeleteAction?: () => void
 }
 
@@ -19,6 +20,7 @@ export const CommonSelect: React.FC<CommonSelectProps> = ({
   selectItem,
   verticalDividHeight,
   hasDeleteIcon,
+  dividerStyle,
   handleDeleteAction,
 }) => {
   const classes = useStyles
@@ -27,7 +29,7 @@ export const CommonSelect: React.FC<CommonSelectProps> = ({
       key={index}
       direction='row'
       spacing={1}
-      sx={{ ...classes.selectBox, background: index % 2 == 0 ? '#FAFAFA' : '' }}
+      sx={{ ...classes.selectBox, background: index % 2 == 0 ? '#FAFAFA' : '', position: 'relative' }}
     >
       <Subtitle size={16} fontWeight='600' textAlign='left' sx={{ minWidth: hasDeleteIcon ? 150 : 200 }}>
         {selectItem?.name}
@@ -46,7 +48,11 @@ export const CommonSelect: React.FC<CommonSelectProps> = ({
         <Box
           sx={{
             ...classes.verticalLine,
-            height: verticalDividHeight ? verticalDividHeight : 'auto',
+            height: verticalDividHeight ?? 'auto',
+            ...dividerStyle,
+            position: 'absolute',
+            left: 215,
+            zIndex: 1,
           }}
         ></Box>
       )}

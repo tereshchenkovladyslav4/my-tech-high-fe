@@ -83,15 +83,40 @@ export const PageContent: React.FC<PageContentProps> = ({
     ),
   })
 
+  const filteredList = yearsSettingList?.filter(
+    (list) =>
+      !midYearExpend ||
+      (midYearExpend && list.name != MthTitle.MID_YEAR_APPLICATION && list.name != MthTitle.MID_YEAR_SCHEDULES),
+  )
+
   return (
     <>
-      {yearsSettingList
-        ?.filter(
-          (list) =>
-            !midYearExpend ||
-            (midYearExpend && list.name != MthTitle.MID_YEAR_APPLICATION && list.name != MthTitle.MID_YEAR_SCHEDULES),
-        )
-        .map((yearsSetting, index) => (
+      {filteredList.map((yearsSetting, index) => {
+        let dividerStyle = {}
+        switch (yearsSetting.name) {
+          case MthTitle.SCHOOL_YEAR:
+          case MthTitle.APPLICATIONS:
+          case MthTitle.HOMEROOM_RESOURCES:
+          case MthTitle.MID_YEAR_APPLICATION:
+            dividerStyle = { height: 'auto' }
+            break
+          case MthTitle.MID_YEAR:
+            if (midYearExpend) {
+              dividerStyle = { height: 'auto' }
+            } else {
+              dividerStyle = { top: '24px', height: '100%' }
+            }
+            break
+          case MthTitle.SCHEUDLE_BUILDER:
+            dividerStyle = { top: '24px', height: '100%' }
+            break
+          case MthTitle.MID_YEAR_SCHEDULES:
+          case MthTitle.SECOND_SEMESTER:
+            dividerStyle = { bottom: '24px', height: '100%' }
+            break
+        }
+
+        return (
           <CommonSelect
             key={index}
             index={
@@ -104,8 +129,10 @@ export const PageContent: React.FC<PageContentProps> = ({
                 : index
             }
             selectItem={yearsSetting}
+            dividerStyle={dividerStyle}
           />
-        ))}
+        )
+      })}
     </>
   )
 }

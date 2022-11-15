@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
+import { useMutation, useQuery } from '@apollo/client'
 import { DeleteForeverOutlined } from '@mui/icons-material'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import CreateIcon from '@mui/icons-material/Create'
@@ -9,10 +10,13 @@ import { MthTable } from '@mth/components/MthTable'
 import { MthTableField, MthTableRowItem } from '@mth/components/MthTable/types'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { MthColor } from '@mth/enums'
-import { SchoolYearResponseType } from '@mth/hooks'
+import { SchoolYearResponseType, useSchoolYearsByRegionId } from '@mth/hooks'
+import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { commonClasses } from '@mth/styles/common.style'
 import { HomeRoomHeader } from '../Components/HomeRoomHeader'
+import { CreateNewMasterGql, GetMastersBySchoolYearIDGql } from '../services'
 import Classes from './Classes'
+import { CreateMasterModal } from './CreateMasterModal'
 import { Master } from './types'
 
 const LearningLogs: React.FC = () => {
@@ -20,8 +24,25 @@ const LearningLogs: React.FC = () => {
   const [selectedYearData, setSelectedYearData] = useState<SchoolYearResponseType | undefined>()
   // const [searchField, setSearchField] = useState<string>('')
   const [tableData, setTableData] = useState<MthTableRowItem<Master>[]>([])
-
   const [localSearchField, setLocalSearchField] = useState<string>('')
+
+  const [isCreateModal, setIsCreateModal] = useState<boolean>(false)
+
+  const { me } = useContext(UserContext)
+  const { dropdownItems: schoolYearDropdownItems, schoolYears: schoolYears } = useSchoolYearsByRegionId(
+    me?.selectedRegionId,
+  )
+
+  useEffect(() => {
+    if (selectedYear && schoolYears) {
+      const schoolYearData = schoolYears.find((item) => item.school_year_id == selectedYear)
+      if (schoolYearData) setSelectedYearData(schoolYearData)
+    }
+  }, [selectedYear])
+
+  useEffect(() => {
+    if (schoolYears?.length) setSelectedYear(schoolYears[0].school_year_id)
+  }, [schoolYears])
 
   const fields: MthTableField<Master>[] = [
     {
@@ -80,9 +101,9 @@ const LearningLogs: React.FC = () => {
 
   const createData = (master: Master): MthTableRowItem<Master> => {
     return {
-      key: `master-${master.id}`,
+      key: `master-${master.master_id}`,
       columns: {
-        master: master.master,
+        master: master.master_name,
         classesCount: master.classesCount,
       },
       rawData: master,
@@ -90,68 +111,97 @@ const LearningLogs: React.FC = () => {
     }
   }
 
-  const exampleData = [
-    {
-      id: 1,
-      master: '2020-21 Master',
-      classesCount: 2,
-      classes: [
-        {
-          class_id: 1,
-          className: 'Arcadia',
-          teacher: 'Erin Sublette',
-          students: 245,
-          ungraded: '20',
-          additionalTeacher: 'Andrea Fife, Bree Clukey',
-        },
-        {
-          class_id: 2,
-          className: 'Arches',
-          teacher: 'Andrea Fife',
-          students: 300,
-          ungraded: 'Yes',
-          additionalTeacher: 'Erin Sublette, Bree Clukey',
-        },
-      ],
+  // const exampleData = [
+  //   {
+  //     id: 1,
+  //     master: '2020-21 Master',
+  //     classesCount: 2,
+  //     classes: [
+  //       {
+  //         class_id: 1,
+  //         className: 'Arcadia',
+  //         teacher: 'Erin Sublette',
+  //         students: 245,
+  //         ungraded: '20',
+  //         additionalTeacher: 'Andrea Fife, Bree Clukey',
+  //       },
+  //       {
+  //         class_id: 2,
+  //         className: 'Arches',
+  //         teacher: 'Andrea Fife',
+  //         students: 300,
+  //         ungraded: 'Yes',
+  //         additionalTeacher: 'Erin Sublette, Bree Clukey',
+  //       },
+  //     ],
+  //   },
+  //   {
+  //     id: 2,
+  //     master: '2020-21 Mid-year Master',
+  //     classesCount: 2,
+  //     classes: [
+  //       {
+  //         class_id: 3,
+  //         className: 'Arcadia',
+  //         teacher: 'Erin Sublette',
+  //         students: 100,
+  //         ungraded: '5',
+  //         additionalTeacher: 'Andrea Fife, Bree Clukey',
+  //       },
+  //       {
+  //         class_id: 4,
+  //         className: 'Arches',
+  //         teacher: 'Andrea Fife',
+  //         students: 15,
+  //         ungraded: '0',
+  //         additionalTeacher: 'Erin Sublette, Bree Clukey',
+  //       },
+  //     ],
+  //   },
+  //   {
+  //     id: 3,
+  //     master: '2020-21 Second Homeroom',
+  //     classesCount: 18,
+  //     classes: [],
+  //   },
+  // ]
+
+  const { loading, data, refetch } = useQuery(GetMastersBySchoolYearIDGql, {
+    variables: {
+      schoolYearId: selectedYear,
     },
-    {
-      id: 2,
-      master: '2020-21 Mid-year Master',
-      classesCount: 2,
-      classes: [
-        {
-          class_id: 3,
-          className: 'Arcadia',
-          teacher: 'Erin Sublette',
-          students: 100,
-          ungraded: '5',
-          additionalTeacher: 'Andrea Fife, Bree Clukey',
-        },
-        {
-          class_id: 4,
-          className: 'Arches',
-          teacher: 'Andrea Fife',
-          students: 15,
-          ungraded: '0',
-          additionalTeacher: 'Erin Sublette, Bree Clukey',
-        },
-      ],
-    },
-    {
-      id: 3,
-      master: '2020-21 Second Homeroom',
-      classesCount: 18,
-      classes: [],
-    },
-  ]
+    skip: selectedYear ? false : true,
+    fetchPolicy: 'network-only',
+  })
 
   useEffect(() => {
-    setTableData(
-      exampleData.map((item: Master) => {
-        return createData(item)
-      }),
-    )
-  }, [])
+    if (!loading && data) {
+      setTableData(
+        data.getMastersBySchoolId.map((item: Master) => {
+          return createData({
+            master_name: item.master_name,
+            classesCount: 0,
+            classes: [],
+          })
+        }),
+      )
+    }
+  }, [data, loading])
+
+  const [createNewMaster] = useMutation(CreateNewMasterGql)
+
+  const createMasterSubmit = async (values: Master) => {
+    await createNewMaster({
+      variables: {
+        createNewMasterInput: {
+          school_year_id: values.schoolYear,
+          master_name: values.master_name,
+        },
+      },
+    })
+    refetch()
+    setIsCreateModal(false)
+  }
 
   return (
     <Box sx={commonClasses.mainLayout}>
@@ -160,7 +210,7 @@ const LearningLogs: React.FC = () => {
           title='Homerooms & Learning Logs'
           selectedYear={selectedYear}
           setSelectedYear={setSelectedYear}
-          setSelectedYearData={setSelectedYearData}
+          schoolYearDropdownItems={schoolYearDropdownItems}
         />
 
         {/* search */}
@@ -211,12 +261,21 @@ const LearningLogs: React.FC = () => {
                 color: 'white',
               },
             }}
+            onClick={() => setIsCreateModal(true)}
           >
             <Subtitle sx={{ fontSize: '14px', fontWeight: '500' }}>+ Add Master</Subtitle>
             <Subtitle sx={{ display: 'none' }}>{selectedYearData?.school_year_id}</Subtitle>
           </Button>
         </Box>
       </Card>
+      {isCreateModal && (
+        <CreateMasterModal
+          selectedYear={selectedYear}
+          schoolYearDropdownItems={schoolYearDropdownItems}
+          handleClose={() => setIsCreateModal(false)}
+          handleSubmit={createMasterSubmit}
+        />
+      )}
     </Box>
   )
 }

@@ -13,23 +13,25 @@ export interface MthCheckboxProps extends CheckboxProps {
 }
 
 const MthCheckbox = (props: MthCheckboxProps): React.ReactElement => {
+  const { label, labelSx, wrapSx, ...otherProps } = props
+
   const renderCheckbox = () => (
     <Checkbox
-      {...props}
+      {...otherProps}
       sx={{
         '&.Mui-checked, &.MuiCheckbox-indeterminate': {
-          color: props.color == 'secondary' ? MthColor.MTHBLUE : MthColor.SYSTEM_01,
+          color: otherProps.color == 'secondary' ? MthColor.MTHBLUE : MthColor.SYSTEM_01,
         },
         '&:not(.Mui-disabled) .MuiSvgIcon-root': {
-          color: props.color == 'secondary' ? MthColor.MTHBLUE : MthColor.SYSTEM_01,
+          color: otherProps.color == 'secondary' ? MthColor.MTHBLUE : MthColor.SYSTEM_01,
         },
         '&.Mui-disabled:not(.Mui-checked)': {
           position: 'relative',
           '&:before': {
             content: '""',
             position: 'absolute',
-            width: props.size == 'medium' ? 18 : 16,
-            height: props.size == 'medium' ? 18 : 16,
+            width: otherProps.size == 'small' ? 16 : 18,
+            height: otherProps.size == 'small' ? 16 : 18,
             borderRadius: '2px',
             border: 'solid 2px #A3A3A4',
             backgroundColor: MthColor.SYSTEM_07,
@@ -43,25 +45,32 @@ const MthCheckbox = (props: MthCheckboxProps): React.ReactElement => {
             opacity: 0.5,
           },
         },
-        ...props.sx,
+        ...otherProps.sx,
       }}
     />
   )
 
   return (
     <>
-      {!!props.label ? (
+      {!!label ? (
         <FormControlLabel
           control={renderCheckbox()}
           label={
             <Paragraph
               size='large'
-              sx={{ marginLeft: '12px', fontSize: '16px', fontWeight: '500', lineHeight: 1, ...props.labelSx }}
+              sx={{ marginLeft: '12px', fontSize: '16px', fontWeight: '500', lineHeight: 1, ...labelSx }}
             >
-              {props.label}
+              {label}
             </Paragraph>
           }
-          sx={{ ml: 0, mr: 0, ...props.wrapSx }}
+          sx={{
+            '.MuiFormControlLabel-label.Mui-disabled': {
+              color: 'unset',
+            },
+            ml: 0,
+            mr: 0,
+            ...wrapSx,
+          }}
         />
       ) : (
         renderCheckbox()

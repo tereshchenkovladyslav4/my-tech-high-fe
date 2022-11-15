@@ -1,11 +1,12 @@
 import React, { useState } from 'react'
 import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt'
-import { Avatar, Box, Checkbox, FormControlLabel, Grid, TextField, Tooltip } from '@mui/material'
+import { Avatar, Box, Grid, TextField, Tooltip } from '@mui/material'
 import { useFormikContext } from 'formik'
 import { DocumentUploadModal } from '@mth/components/DocumentUploadModal/DocumentUploadModal'
 import { DropDown } from '@mth/components/DropDown/DropDown'
 import { DropDownItem } from '@mth/components/DropDown/types'
 import { MthBulletEditor } from '@mth/components/MthBulletEditor'
+import { MthCheckbox } from '@mth/components/MthCheckbox'
 import { MultiSelect } from '@mth/components/MultiSelect/MultiSelect'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
@@ -304,25 +305,19 @@ const HomeroomResourceForm: React.FC<HomeroomResourceFormProps> = ({ schoolYearI
                   }
                   placement='top'
                 >
-                  <FormControlLabel
-                    sx={{ height: 30, marginTop: 2 }}
-                    control={
-                      <Checkbox
-                        checked={values?.family_resource}
-                        value={values?.family_resource}
-                        onChange={() => {
-                          setFieldValue('family_resource', !values?.family_resource)
-                          setIsChanged(true)
-                        }}
-                      />
-                    }
-                    label={
-                      <Paragraph size='large' fontWeight='700' sx={{ marginLeft: '12px' }}>
-                        Family Resource
-                      </Paragraph>
-                    }
-                    disabled={!!values.resource_limit || values.add_resource_level}
-                  />
+                  <Box>
+                    <MthCheckbox
+                      label='Family Resource'
+                      labelSx={{ fontWeight: '600' }}
+                      wrapSx={{ height: 30, marginTop: 2 }}
+                      checked={values?.family_resource}
+                      onChange={() => {
+                        setFieldValue('family_resource', !values?.family_resource)
+                        setIsChanged(true)
+                      }}
+                      disabled={!!values.resource_limit || values.add_resource_level}
+                    ></MthCheckbox>
+                  </Box>
                 </Tooltip>
               </Box>
             </Grid>
