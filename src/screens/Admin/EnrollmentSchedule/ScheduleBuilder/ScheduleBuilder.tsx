@@ -323,6 +323,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
           scheduleStatus={studentScheduleStatus}
           isAdmin={true}
           isEditMode={true}
+          isUpdatePeriodRequired={requireUpdatePeriods?.length ? true : false}
           setIsChanged={setIsChanged}
           setScheduleData={setScheduleData}
           handlePeriodUpdateEmail={handlePeriodUpdateEmail}
