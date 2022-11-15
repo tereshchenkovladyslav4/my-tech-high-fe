@@ -74,7 +74,6 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
   const [enableQuestionTooltip, setEnableQuestionTooltip] = useState<boolean>(false)
   const [multiPeriodsNotification, setMultiPeriodsNotification] = useState<string | undefined>()
   const [selectedCourse, setSelectedCourse] = useState<Course | undefined>()
-  const [fields, setFields] = useState<MthTableField<ScheduleData>[]>([])
   const [lockedIcon, setLockedIcon] = useState(true)
 
   const createPeriodMenuItems = (schedule: ScheduleData): MenuItemData => {
@@ -605,7 +604,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
 
   const courseMenuLabel = (course: Course, isAlt = false): string | ReactNode => {
     return (
-      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+      <Box component='span' sx={{ display: 'flex', alignItems: 'center' }}>
         {`${course.name}`}&nbsp;
         {isAlt ? `(${gradeShortText(course.min_alt_grade)}-${gradeShortText(course.max_alt_grade)})` : ''}
         {!!course.website && (
@@ -616,8 +615,8 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
             sx={{ display: 'flex', alignItems: 'center', ml: 4 }}
             onClick={(event) => event.stopPropagation()}
           >
-            <Typography sx={{ fontSize: '12px', fontWeight: '600', color: MthColor.MTHBLUE }}>
-              {course.website}
+            <Typography component='span' sx={{ fontSize: '12px', fontWeight: '600', color: MthColor.MTHBLUE }}>
+              Course Catalog
             </Typography>
             <CallMissedOutgoingIcon sx={{ color: MthColor.MTHBLUE, ml: 2 }} />
           </Link>
@@ -626,8 +625,8 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
     )
   }
 
-  useEffect(() => {
-    const defaultFields = [
+  const fields = (): MthTableField<ScheduleData>[] => {
+    const parentFields = [
       {
         key: 'Period',
         label: 'Period',
@@ -907,50 +906,49 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
         },
       },
     ]
-    if (isAdmin)
-      setFields([
-        ...defaultFields,
-        {
-          key: 'CloseIcon',
-          label: '',
-          sortable: false,
-          tdClass: '',
-          formatter: (item: MthTableRowItem<ScheduleData>) => {
-            return (
-              <Box sx={{ display: 'flex' }}>
-                {((scheduleStatus === ScheduleStatus.ACCEPTED && !item?.rawData?.updateRequired) ||
-                  (scheduleStatus === ScheduleStatus.RESUBMITTED && !item?.rawData?.updateRequired) ||
-                  scheduleStatus === ScheduleStatus.UPDATES_REQUESTED) && (
-                  <IconButton
-                    sx={{ color: MthColor.GREEN, fontSize: '18px' }}
-                    onClick={() => {
-                      if (handlePeriodUpdateRequired) handlePeriodUpdateRequired(`${item?.rawData?.Period?.id}`)
-                    }}
-                  >
-                    <Check />
-                  </IconButton>
-                )}
-                {(scheduleStatus == ScheduleStatus.SUBMITTED ||
-                  (scheduleStatus == ScheduleStatus.ACCEPTED && item?.rawData?.updateRequired) ||
-                  (scheduleStatus == ScheduleStatus.RESUBMITTED && item?.rawData?.updateRequired)) && (
-                  <IconButton
-                    sx={{ color: MthColor.MTHORANGE, fontSize: '18px' }}
-                    onClick={() => {
-                      if (handlePeriodUpdateEmail) {
-                        handlePeriodUpdateEmail(`${item?.rawData?.Period?.id}`)
-                      }
-                    }}
-                  >
-                    <Close />
-                  </IconButton>
-                )}
-              </Box>
-            )
-          },
+    const adminFields = [
+      ...parentFields,
+      {
+        key: 'CloseIcon',
+        label: '',
+        sortable: false,
+        tdClass: '',
+        formatter: (item: MthTableRowItem<ScheduleData>) => {
+          return (
+            <Box sx={{ display: 'flex' }}>
+              {((scheduleStatus === ScheduleStatus.ACCEPTED && !item?.rawData?.updateRequired) ||
+                (scheduleStatus === ScheduleStatus.RESUBMITTED && !item?.rawData?.updateRequired) ||
+                scheduleStatus === ScheduleStatus.UPDATES_REQUESTED) && (
+                <IconButton
+                  sx={{ color: MthColor.GREEN, fontSize: '18px' }}
+                  onClick={() => {
+                    if (handlePeriodUpdateRequired) handlePeriodUpdateRequired(`${item?.rawData?.Period?.id}`)
+                  }}
+                >
+                  <Check />
+                </IconButton>
+              )}
+              {(scheduleStatus == ScheduleStatus.SUBMITTED ||
+                (scheduleStatus == ScheduleStatus.ACCEPTED && item?.rawData?.updateRequired) ||
+                (scheduleStatus == ScheduleStatus.RESUBMITTED && item?.rawData?.updateRequired)) && (
+                <IconButton
+                  sx={{ color: MthColor.MTHORANGE, fontSize: '18px' }}
+                  onClick={() => {
+                    if (handlePeriodUpdateEmail) {
+                      handlePeriodUpdateEmail(`${item?.rawData?.Period?.id}`)
+                    }
+                  }}
+                >
+                  <Close />
+                </IconButton>
+              )}
+            </Box>
+          )
         },
-      ])
-    else setFields(defaultFields)
-  }, [isAdmin, scheduleStatus])
+      },
+    ]
+    return isAdmin ? adminFields : parentFields
+  }
 
   useEffect(() => {
     if (scheduleData?.length) {
@@ -967,7 +965,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
       <Box sx={scheduleBuilderClasses.main}>
         <MthTable
           items={tableData}
-          fields={fields}
+          fields={fields()}
           isDraggable={false}
           checkBoxColor='secondary'
           sx={scheduleBuilderClasses.customTable}
@@ -977,6 +975,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
             <StyledTooltip
               title={parse(parentTooltip)}
               open={enableQuestionTooltip}
+              placement='left'
               onClose={() => setEnableQuestionTooltip(false)}
               disableFocusListener
               disableHoverListener

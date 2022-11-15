@@ -27,6 +27,8 @@ export const Documents: DocuementsTemplateType = ({ id, questions }) => {
   const { setPacketId, disabled, packetId } = useContext(EnrollmentContext)
   const { profile, students } = me as UserInfo
 
+  const [isSubmit, setIsSubmit] = useState<boolean>(false)
+
   const student = students.find((s) => s.student_id === id)
 
   const [validationSchema, setValidationSchema] = useState(yup.object({}))
@@ -321,6 +323,7 @@ export const Documents: DocuementsTemplateType = ({ id, questions }) => {
   }, [files])
 
   const nextTab = (e) => {
+    setIsSubmit(true)
     e.preventDefault()
     setTab({
       currentTab: tab.currentTab + 1,
@@ -331,6 +334,7 @@ export const Documents: DocuementsTemplateType = ({ id, questions }) => {
   const [documents, setDocuments] = useState([])
 
   const goNext = async () => {
+    setIsSubmit(true)
     let validDoc = true
     questions?.groups[0]?.questions.map((item) => (validDoc = validDoc && checkValidate(item)))
     if (validDoc) {
@@ -436,7 +440,7 @@ export const Documents: DocuementsTemplateType = ({ id, questions }) => {
                       firstName={student.person.first_name}
                       lastName={student.person.last_name}
                     />
-                    {item[0].type === QUESTION_TYPE.UPLOAD && !checkValidate(item[0]) && !disabled && (
+                    {item[0].type === QUESTION_TYPE.UPLOAD && !checkValidate(item[0]) && !disabled && isSubmit && (
                       <Paragraph color={RED} size='medium' fontWeight='700' sx={{ marginLeft: '12px' }}>
                         File is required
                       </Paragraph>
