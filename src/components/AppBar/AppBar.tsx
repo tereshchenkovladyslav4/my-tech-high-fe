@@ -10,7 +10,6 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import CloseIcon from '@mui/icons-material/Close'
 import CreditCardRoundedIcon from '@mui/icons-material/CreditCardRounded'
 import DatRangeOutlinedIcon from '@mui/icons-material/DateRangeOutlined'
-import DescriptionIcon from '@mui/icons-material/Description'
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
@@ -492,7 +491,7 @@ export const AppBar: FunctionComponent = () => {
     if (theIcon.type === 'side') {
       switch (theIcon.name) {
         case 'dashboard':
-          return <DescriptionIcon />
+          return <BackupTableIcon />
         case 'settings':
           return <SettingsIcon />
         case 'Announcements':

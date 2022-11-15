@@ -5,10 +5,13 @@ import { EditorState, convertToRaw, ContentState } from 'draft-js'
 
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
 import draftToHtml from 'draftjs-to-html'
+import { useFormik } from 'formik'
 import htmlToDraft from 'html-to-draftjs'
 import Wysiwyg from 'react-draft-wysiwyg'
+import * as yup from 'yup'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Title } from '@mth/components/Typography/Title/Title'
+import { MthColor } from '@mth/enums'
 import { useStyles } from './styles'
 import { EmailModalTemplateType } from './types'
 
@@ -23,16 +26,34 @@ export const EmailModal: EmailModalTemplateType = ({
   handleSchedulesByStatus,
 }) => {
   const classes = useStyles
-  const [editorState, setEditorState] = useState(EditorState.createEmpty())
-  const [subject, setSubject] = useState('')
-  const [emailFrom, setEmailFrom] = useState('')
   const editorRef = useRef(null)
   const [currentBlocks, setCurrentBlocks] = useState(0)
-  const onSubmit = () => {
-    if (handleSubmit && subject) {
-      handleSubmit(emailFrom, subject, draftToHtml(convertToRaw(editorState.getCurrentContent())))
-    }
-  }
+
+  const validationSchema = yup.object({
+    emailFrom: yup.string().email().required('Required'),
+    subject: yup.string().required('Required'),
+    editorState: yup
+      .object()
+      .test('has text', 'Cannot save an empty note', (value) => {
+        return value.getCurrentContent().hasText()
+      })
+      .required('This field is required.'),
+  })
+
+  const formik = useFormik({
+    initialValues: {
+      emailFrom: '',
+      subject: '',
+      editorState: EditorState.createEmpty(),
+    },
+    validationSchema: validationSchema,
+    onSubmit: async ({ emailFrom, editorState, subject }) => {
+      if (editFrom) {
+        handleSubmit(emailFrom, subject, draftToHtml(convertToRaw(editorState.getCurrentContent())))
+      }
+    },
+  })
+
   const handleEditorChange = (state) => {
     try {
       if (currentBlocks !== 0 && currentBlocks !== state.blocks.length) {
@@ -45,17 +66,19 @@ export const EmailModal: EmailModalTemplateType = ({
   useEffect(() => {
     if (template) {
       const { subject, from, body } = template
-      setSubject(subject)
-      setEmailFrom(from)
+      formik.setFieldValue('subject', subject, true)
+      formik.setFieldValue('emailFrom', from, true)
+
       if (body) {
         const contentBlock = htmlToDraft(body)
         if (contentBlock) {
           const contentState = ContentState.createFromBlockArray(contentBlock.contentBlocks)
-          setEditorState(EditorState.createWithContent(contentState))
+          formik.setFieldValue('editorState', EditorState.createWithContent(contentState))
         }
       }
     }
   }, [template])
+
   return (
     <Modal
       open={true}
@@ -73,13 +96,25 @@ export const EmailModal: EmailModalTemplateType = ({
             }}
           >
             <Title fontWeight='700'>Status</Title>
+            {!editFrom && (
+              <Paragraph size='large' fontWeight='500' color={MthColor.RED}>
+                Required
+              </Paragraph>
+            )}
             <div style={{ height: 15 }} />
             {filters?.map((item, index) => {
               return (
                 <FormControlLabel
                   key={index}
                   sx={{ height: 30 }}
-                  control={<Checkbox value={item} onChange={(e) => handleSchedulesByStatus(e.target.value)} />}
+                  control={
+                    <Checkbox
+                      value={item}
+                      onChange={(e) => {
+                        handleSchedulesByStatus(e.target.value)
+                      }}
+                    />
+                  }
                   label={
                     <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
                       {item}
@@ -90,50 +125,70 @@ export const EmailModal: EmailModalTemplateType = ({
             })}
           </Box>
         )}
-        <Title fontWeight='700'>{title}</Title>
+
         {editFrom && (
-          <OutlinedInput
-            value={emailFrom}
-            size='small'
-            fullWidth
-            placeholder='From: email in template'
-            sx={classes.from}
-            onChange={(e) => setEmailFrom(e.target.value)}
-          />
+          <>
+            <Title fontWeight='700'>{title}</Title>
+            {(formik.errors.emailFrom || formik.errors.subject || formik.errors.editorState) && (
+              <Paragraph size='large' fontWeight='500' color={MthColor.RED}>
+                Required
+              </Paragraph>
+            )}
+
+            <OutlinedInput
+              id='emailFrom'
+              name='emailFrom'
+              value={formik.values.emailFrom}
+              size='small'
+              fullWidth
+              placeholder='From: email in template'
+              sx={classes.from}
+              onChange={formik.handleChange}
+              error={formik.errors.emailFrom ? true : false}
+              autoFocus
+            />
+            <OutlinedInput
+              id='subject'
+              name='subject'
+              value={formik.values.subject}
+              size='small'
+              fullWidth
+              placeholder='Subject'
+              sx={classes.subject}
+              onChange={formik.handleChange}
+              error={formik.errors.subject ? true : false}
+            />
+
+            <Box sx={(classes.editor, formik.errors.editorState ? classes.redBorder : classes.editor)}>
+              <Wysiwyg.Editor
+                onContentStateChange={handleEditorChange}
+                editorRef={(ref) => (editorRef.current = ref)}
+                editorState={formik.values.editorState}
+                onEditorStateChange={(value) => {
+                  formik.setFieldValue('editorState', value)
+                }}
+                handlePastedText={() => false}
+                toolbar={{
+                  options: [
+                    'inline',
+                    'blockType',
+                    'fontSize',
+                    'fontFamily',
+                    'list',
+                    'textAlign',
+                    'colorPicker',
+                    'link',
+                    'embedded',
+                    'image',
+                    'remove',
+                    'history',
+                  ],
+                }}
+              />
+            </Box>
+          </>
         )}
-        <OutlinedInput
-          value={subject}
-          size='small'
-          fullWidth
-          placeholder='Subject'
-          sx={classes.subject}
-          onChange={(e) => setSubject(e.target.value)}
-        />
-        <Box sx={classes.editor}>
-          <Wysiwyg.Editor
-            onContentStateChange={handleEditorChange}
-            editorRef={(ref) => (editorRef.current = ref)}
-            editorState={editorState}
-            onEditorStateChange={setEditorState}
-            handlePastedText={() => false}
-            toolbar={{
-              options: [
-                'inline',
-                'blockType',
-                'fontSize',
-                'fontFamily',
-                'list',
-                'textAlign',
-                'colorPicker',
-                'link',
-                'embedded',
-                'image',
-                'remove',
-                'history',
-              ],
-            }}
-          />
-        </Box>
+
         <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', width: '100%' }}>
           <Button
             variant='contained'
@@ -144,7 +199,14 @@ export const EmailModal: EmailModalTemplateType = ({
           >
             Cancel
           </Button>
-          <Button variant='contained' disableElevation sx={classes.submitButton} onClick={onSubmit}>
+          <Button
+            variant='contained'
+            disableElevation
+            sx={classes.submitButton}
+            onClick={() => {
+              formik.handleSubmit()
+            }}
+          >
             Send
           </Button>
         </Box>

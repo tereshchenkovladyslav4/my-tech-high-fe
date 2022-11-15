@@ -34,6 +34,7 @@ export const ScheduleTable: React.FC<ApplicationTableProps> = ({ filter }) => {
   const [filters, setFilters] = useState<ScheduleFilterVM>()
   const [emailHistory, setEmailHistory] = useState([])
   const [openEmailModal, setOpenEmailModal] = useState<boolean>(false)
+  const [editFrom, setEditFrom] = useState<boolean>(false)
 
   const initialFilters = [
     'Not Submitted',
@@ -177,6 +178,7 @@ export const ScheduleTable: React.FC<ApplicationTableProps> = ({ filter }) => {
         .map((item) => {
           tempScheduleIds.push(item.columns.id)
         })
+      setEditFrom(true)
       setModalScheduleIds([...tempScheduleIds])
     } else {
       const tempArray = modalSelectedStatus
@@ -189,6 +191,11 @@ export const ScheduleTable: React.FC<ApplicationTableProps> = ({ filter }) => {
           tempScheduleIds = findElementAndDelete(tempScheduleIds, item.columns.id)
         })
       setModalScheduleIds([...tempScheduleIds])
+      if (tempArray.length <= 0) {
+        setEditFrom(false)
+      } else {
+        setEditFrom(true)
+      }
     }
   }
 
@@ -230,6 +237,11 @@ export const ScheduleTable: React.FC<ApplicationTableProps> = ({ filter }) => {
     onSendEmail(from, subject, body)
   }
   const handleOpenEmailModal = () => {
+    if (scheduleIds?.current && scheduleIds?.current?.length > 0) {
+      setEditFrom(true)
+    } else {
+      setEditFrom(false)
+    }
     setOpen(true)
   }
   const handleChangePageLimit = (value) => {
@@ -457,7 +469,7 @@ export const ScheduleTable: React.FC<ApplicationTableProps> = ({ filter }) => {
           }
           handleSubmit={handleEmailSend}
           template={emailTemplate}
-          editFrom={true}
+          editFrom={editFrom}
           isNonSelected={scheduleIds.current.length === 0}
           filters={
             scheduleIds.current?.length === 0

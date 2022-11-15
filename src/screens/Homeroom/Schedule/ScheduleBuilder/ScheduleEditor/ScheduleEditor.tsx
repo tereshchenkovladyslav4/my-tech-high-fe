@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react'
+import React, { ReactNode, useEffect, useState } from 'react'
 import { Close, Check } from '@mui/icons-material'
+import CallMissedOutgoingIcon from '@mui/icons-material/CallMissedOutgoing'
 import ModeEditIcon from '@mui/icons-material/ModeEdit'
 import QuestionMarkIcon from '@mui/icons-material/QuestionMark'
 import VpnKeyOutlinedIcon from '@mui/icons-material/VpnKeyOutlined'
-import { ClickAwayListener, Grid, IconButton, Tooltip, Typography } from '@mui/material'
+import { ClickAwayListener, Grid, IconButton, Link, Tooltip, Typography } from '@mui/material'
 import { Box, styled } from '@mui/system'
 import parse from 'html-react-parser'
 import { CustomModal } from '@mth/components/CustomModal/CustomModals'
@@ -152,7 +153,9 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
 
   const createDescriptionMenuItems = (schedule: ScheduleData): MenuItemData => {
     const menuItemsData: MenuItemData = {
-      label: schedule.Course?.name || (
+      label: schedule.Course ? (
+        selectedCourseLabel(schedule.Course)
+      ) : (
         <Typography sx={{ ...scheduleBuilderClasses.tableContent, color: MthColor.MTHBLUE }}>Select</Typography>
       ),
       items: [],
@@ -176,7 +179,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
       }
       provider.Courses?.forEach((course) => {
         subMenu.items?.push({
-          label: course.name,
+          label: courseMenuLabel(course),
           callback: () => handleSelectCourse(schedule, course),
         })
       })
@@ -187,7 +190,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
         subMenu.showLessLabel = 'Hide options for other grades'
         provider.AltCourses?.forEach((course) => {
           subMenu.moreItems?.push({
-            label: `${course.name} (${gradeShortText(course.min_alt_grade)}-${gradeShortText(course.max_alt_grade)})`,
+            label: courseMenuLabel(course, true),
             callback: () => handleSelectCourse(schedule, course),
           })
         })
@@ -596,6 +599,33 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
     }
   }
 
+  const selectedCourseLabel = (course: Course | undefined): string => {
+    return course ? `${course.Provider?.name} - ${course.name}` : ''
+  }
+
+  const courseMenuLabel = (course: Course, isAlt = false): string | ReactNode => {
+    return (
+      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+        {`${course.name}`}&nbsp;
+        {isAlt ? `(${gradeShortText(course.min_alt_grade)}-${gradeShortText(course.max_alt_grade)})` : ''}
+        {!!course.website && (
+          <Link
+            href={course.website}
+            target='_blank'
+            underline='hover'
+            sx={{ display: 'flex', alignItems: 'center', ml: 4 }}
+            onClick={(event) => event.stopPropagation()}
+          >
+            <Typography sx={{ fontSize: '12px', fontWeight: '600', color: MthColor.MTHBLUE }}>
+              {course.website}
+            </Typography>
+            <CallMissedOutgoingIcon sx={{ color: MthColor.MTHBLUE, ml: 2 }} />
+          </Link>
+        )}
+      </Box>
+    )
+  }
+
   useEffect(() => {
     const defaultFields = [
       {
@@ -723,7 +753,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
                         />
                       ) : (
                         <Typography sx={scheduleBuilderClasses.tableContent}>
-                          {item.rawData.Course?.name || item.rawData.Course?.name}
+                          {selectedCourseLabel(item.rawData.Course)}
                         </Typography>
                       )}
                       {item.rawData.Provider?.multiple_periods && (
@@ -741,7 +771,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
                       )}
                     </Box>
                   )}
-                  {!!item.rawData.Subject && (
+                  {!item.rawData.Title && !!item.rawData.Subject && (
                     <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                       {item.rawData.Subject.Providers?.length > 1 ||
                       (editable(item.rawData) &&
@@ -758,7 +788,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
                         />
                       ) : (
                         <Typography sx={scheduleBuilderClasses.tableContent}>
-                          {item.rawData.Course?.name || item.rawData.Course?.name}
+                          {selectedCourseLabel(item.rawData.Course)}
                         </Typography>
                       )}
                       {item.rawData.Provider?.multiple_periods && (

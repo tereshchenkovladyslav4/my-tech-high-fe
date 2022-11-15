@@ -177,4 +177,9 @@ export const useStyles = {
     padding: '30px',
     marginBottom: '50px',
   },
+  redBorder: {
+    border: '1px solid red',
+    borderRadius: '4px',
+    marginBottom: '24px',
+  },
 }
