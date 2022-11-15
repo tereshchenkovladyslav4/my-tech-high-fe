@@ -26,7 +26,7 @@ export const MasqueradeFooter: FunctionComponent<MasqueradeFooterProps> = ({ me 
         width: '100%',
         height: '100px',
         bottom: 0,
-        zIndex: 999999,
+        zIndex: 1200,
         position: 'sticky',
         display: 'flex',
         justifyContent: 'space-between',

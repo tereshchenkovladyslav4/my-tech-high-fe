@@ -13,3 +13,8 @@ export const sendEmailUpdateRequired = gql`
     updateRequiredEmail(updateRequiredEmail: $updateRequiredEmail)
   }
 `
+export const restoreScheduleHistoryMuation = gql`
+  mutation Mutation($scheduleHistoryId: Int!) {
+    restoreScheduleHistory(schedule_history_id: $scheduleHistoryId)
+  }
+`

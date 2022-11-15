@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
 import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined'
-import { Box, Button, OutlinedInput, Tooltip, FormControlLabel, Checkbox, Modal, Typography } from '@mui/material'
+import { Box, Button, OutlinedInput, Tooltip, Modal, Typography } from '@mui/material'
 import { FormikErrors, useFormikContext } from 'formik'
+import { MthCheckbox } from '@mth/components/MthCheckbox'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { REMOVE_FAMILY_RESOURCE } from '@mth/constants'
@@ -92,33 +93,32 @@ export const ResourceLevels: React.FC<ResourceLevelsProps> = ({ setIsChanged }) 
   return (
     <>
       <Tooltip title={values?.family_resource ? REMOVE_FAMILY_RESOURCE : ''} placement='top'>
-        <FormControlLabel
-          sx={{ height: 30, marginTop: 2 }}
-          control={
-            <Checkbox
-              checked={values?.add_resource_level}
-              value={values?.add_resource_level}
-              onChange={() => {
-                if (!values?.add_resource_level) handleClickOpen()
-                setFieldValue('add_resource_level', !values?.add_resource_level)
-                setIsChanged(true)
-              }}
-            />
-          }
-          label={
-            <Paragraph size='large' fontWeight='700' sx={{ marginLeft: '12px' }}>
-              Add Resource Levels
-            </Paragraph>
-          }
-          disabled={values?.family_resource}
-        />
+        <Box>
+          <MthCheckbox
+            label='Add Resource Levels'
+            labelSx={{ fontWeight: '600' }}
+            wrapSx={{ height: 30, marginTop: 2 }}
+            checked={values?.add_resource_level}
+            onChange={() => {
+              if (!values?.add_resource_level) {
+                handleClickOpen()
+              } else {
+                // Remove all resource levels when uncheck 'Add Resource Levels'
+                setFieldValue('ResourceLevels', [])
+              }
+              setFieldValue('add_resource_level', !values?.add_resource_level)
+              setIsChanged(true)
+            }}
+            disabled={values?.family_resource}
+          ></MthCheckbox>
+        </Box>
       </Tooltip>
       {values?.add_resource_level && (
         <Subtitle
           size={16}
           color={MthColor.MTHBLUE}
           fontWeight='700'
-          sx={{ cursor: 'pointer', marginTop: 1, marginLeft: '44px' }}
+          sx={{ cursor: 'pointer', marginTop: 1, marginLeft: '54px' }}
           onClick={() => {
             handleClickOpen()
           }}
@@ -159,7 +159,6 @@ export const ResourceLevels: React.FC<ResourceLevelsProps> = ({ setIsChanged }) 
                       <OutlinedInput
                         size='small'
                         fullWidth
-                        placeholder='Limit'
                         type='number'
                         value={item.limit || ''}
                         onChange={(e) => handleChangeOption(index, 'limit', Number(e.target.value) || null)}
@@ -167,6 +166,7 @@ export const ResourceLevels: React.FC<ResourceLevelsProps> = ({ setIsChanged }) 
                         error={
                           touched.ResourceLevels && (!!resourceLevelErrors(index)?.limit || (limitError && !item.limit))
                         }
+                        sx={{ '.Mui-disabled': { backgroundColor: MthColor.SYSTEM_07 } }}
                       />
                     </Tooltip>
                   </Box>
@@ -177,7 +177,6 @@ export const ResourceLevels: React.FC<ResourceLevelsProps> = ({ setIsChanged }) 
                     <OutlinedInput
                       size='small'
                       fullWidth
-                      placeholder='Level Name'
                       value={item.name}
                       onChange={(e) => handleChangeOption(index, 'name', e.target.value)}
                       error={touched.ResourceLevels && !!resourceLevelErrors(index)?.name}

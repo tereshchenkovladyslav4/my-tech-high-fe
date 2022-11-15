@@ -334,6 +334,17 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
         schoolDistrict: student?.packets?.at(-1)?.school_district || '',
         specialEd: `${SPECIAL_EDUCATIONS.find((item) => item.value == student?.special_ed)?.label}`,
       })
+      switch (student.diploma_seeking) {
+        case 0:
+          setDiplomaSeekingPathStatus(DiplomaSeekingPath.NON_DIPLOMA_SEEKING)
+          break
+        case 1:
+          setDiplomaSeekingPathStatus(DiplomaSeekingPath.DIPLOMA_SEEKING)
+          break
+        default:
+          setDiplomaSeekingPathStatus(DiplomaSeekingPath.BOTH)
+          break
+      }
     }
   }, [student])
 
@@ -427,11 +438,6 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
       }
     }
   }, [diplomaAnswerLoading, diplomaAnswerData])
-
-  useEffect(() => {
-    if (diplomaOptions[0].value) setDiplomaSeekingPathStatus(DiplomaSeekingPath.DIPLOMA_SEEKING)
-    if (diplomaOptions[1].value) setDiplomaSeekingPathStatus(DiplomaSeekingPath.NON_DIPLOMA_SEEKING)
-  }, [diplomaOptions])
 
   return (
     <Card sx={{ margin: 4, padding: 4 }}>

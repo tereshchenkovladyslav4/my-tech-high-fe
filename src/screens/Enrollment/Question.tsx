@@ -317,33 +317,36 @@ function Item({
 
   if (q.type === QUESTION_TYPE.DROPDOWN) {
     return (
-      <DropDown
-        sx={{
-          minWidth: '100%',
-          [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
-            borderColor: SYSTEM_07,
-          },
-          marginY: 0,
-        }}
-        defaultValue={getDropDownLabel(fieldData)}
-        labelTop
-        disabled={disabled}
-        dropDownItems={dropDownItemsData}
-        setParentValue={(v) => onChangeDropDown(v as string)}
-        size='small'
-        error={{
-          error: !!(
-            formik.touched[`${keyName}`] &&
-            Boolean(formik.touched[`${keyName}`][`${fieldName}`]) &&
-            formik.errors[`${keyName}`] &&
-            Boolean(formik.errors[`${keyName}`][`${fieldName}`])
-          ),
-          errorMsg: (formik.touched[`${keyName}`] &&
-            Boolean(formik.touched[`${keyName}`][`${fieldName}`]) &&
-            formik.errors[`${keyName}`] &&
-            formik.errors[`${keyName}`][`${fieldName}`]) as string,
-        }}
-      />
+      <>
+        <DropDown
+          sx={{
+            minWidth: '100%',
+            [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
+              {
+                borderColor: SYSTEM_07,
+              },
+            marginY: 0,
+          }}
+          defaultValue={getDropDownLabel(fieldData)}
+          labelTop
+          disabled={disabled}
+          dropDownItems={dropDownItemsData}
+          setParentValue={(v) => onChangeDropDown(v as string)}
+          size='small'
+          error={{
+            error: !!(
+              formik.touched[`${keyName}`] &&
+              Boolean(formik.touched[`${keyName}`][`${fieldName}`]) &&
+              formik.errors[`${keyName}`] &&
+              Boolean(formik.errors[`${keyName}`][`${fieldName}`])
+            ),
+            errorMsg: (formik.touched[`${keyName}`] &&
+              Boolean(formik.touched[`${keyName}`][`${fieldName}`]) &&
+              formik.errors[`${keyName}`] &&
+              formik.errors[`${keyName}`][`${fieldName}`]) as string,
+          }}
+        />
+      </>
     )
   } else if (q.type === QUESTION_TYPE.TEXTFIELD) {
     return (

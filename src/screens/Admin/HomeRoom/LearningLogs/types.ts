@@ -8,10 +8,11 @@ export type Classes = {
 }
 
 export type Master = {
-  id: number
-  master: string
+  master_id?: number
+  master_name: string
   classesCount: number
   classes?: Classes[]
+  schoolYear?: number
   // Temp fields
 }
 

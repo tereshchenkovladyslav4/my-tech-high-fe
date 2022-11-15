@@ -74,7 +74,7 @@ export const DropDown: React.FC<DropDownProps> = ({
   }, [defaultValue])
 
   return (
-    <Box sx={{ minWidth: 120, ...sx }}>
+    <Box sx={{ minWidth: 120, zIndex: 10000, ...sx }}>
       {!labelTop ? (
         <>
           {borderNone ? (

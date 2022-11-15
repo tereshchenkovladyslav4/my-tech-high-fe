@@ -10,7 +10,7 @@ import { SuccessModal } from '@mth/components/SuccessModal/SuccessModal'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { SCHEDULE_STATUS_OPTIONS, SPECIAL_EDUCATIONS } from '@mth/constants'
-import { MthColor, MthTitle, ScheduleStatus } from '@mth/enums'
+import { DiplomaSeekingPath, MthColor, MthTitle, ScheduleStatus } from '@mth/enums'
 import { saveScheduleMutation, sendEmailUpdateRequired } from '@mth/graphql/mutation/schedule'
 import { saveSchedulePeriodMutation } from '@mth/graphql/mutation/schedule-period'
 import { useCurrentSchoolYearByRegionId, useStudentSchedulePeriods } from '@mth/hooks'
@@ -48,6 +48,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
   const [isChanged, setIsChanged] = useState(false)
   const [showUnsavedModal, setShowUnsavedModal] = useState<boolean>(false)
   const [showReset, setShowReset] = useState(false)
+  const [diplomaSeekingPath, setDiplomaSeekingPath] = useState<DiplomaSeekingPath>(DiplomaSeekingPath.BOTH)
 
   const { loading: studentInfoLoading, data: studentInfoData } = useQuery(getStudentDetail, {
     variables: {
@@ -61,7 +62,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
   )
 
   const { scheduleData, studentScheduleId, studentScheduleStatus, setScheduleData, setStudentScheduleId, refetch } =
-    useStudentSchedulePeriods(studentId, selectedYear)
+    useStudentSchedulePeriods(studentId, selectedYear, diplomaSeekingPath)
 
   const [submitScheduleBuilder] = useMutation(saveScheduleMutation)
   const [saveDraft] = useMutation(saveSchedulePeriodMutation)
@@ -253,6 +254,17 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
         schoolDistrict: student?.packets?.at(-1)?.school_district || '',
         specialEd: `${SPECIAL_EDUCATIONS.find((item) => item.value == student?.special_ed)?.label}`,
       })
+      switch (student.diploma_seeking) {
+        case 0:
+          setDiplomaSeekingPath(DiplomaSeekingPath.NON_DIPLOMA_SEEKING)
+          break
+        case 1:
+          setDiplomaSeekingPath(DiplomaSeekingPath.DIPLOMA_SEEKING)
+          break
+        default:
+          setDiplomaSeekingPath(DiplomaSeekingPath.BOTH)
+          break
+      }
     }
   }, [studentInfoLoading, studentInfoData])
 
@@ -383,7 +395,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
             Reset Schedule
           </Button>
         </Box>
-        <ScheduleHistory studentId={studentId} schoolYearId={selectedYear} />
+        <ScheduleHistory studentId={studentId} schoolYearId={selectedYear} refetchSchedule={refetch} />
         {showRequireUpdateModal && (
           <RequireUpdateModal
             periodItems={periodItems}

@@ -67,6 +67,7 @@ export const getMeQuery = gql`
         testing_preference
         student_id
         special_ed
+        diploma_seeking
         hidden
         status {
           status

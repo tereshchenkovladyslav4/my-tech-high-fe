@@ -1,4 +1,6 @@
-import { ERROR_RED } from '../../../utils/constants'
+import { outlinedInputClasses, inputLabelClasses } from '@mui/material'
+import { MthColor } from '@mth/enums'
+import { BLACK, ERROR_RED } from '../../../utils/constants'
 
 export const useStyles = {
   base: {
@@ -60,5 +62,91 @@ export const useStyles = {
   },
   textLabel: {
     fontWeight: 600,
+  },
+  modalCard: {
+    position: 'absolute' as const,
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 828,
+    bgcolor: 'background.paper',
+    boxShadow: 24,
+    p: 4,
+    borderRadius: 2,
+    overflowY: 'auto',
+    maxHeight: '97vh',
+  },
+  content: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: '100%',
+  },
+  textField: {
+    [`& .${outlinedInputClasses.root} .${outlinedInputClasses.notchedOutline}`]: {
+      borderColor: 'black !important',
+      borderWidth: '1px !important',
+    },
+    width: '100%',
+    [`& .${inputLabelClasses.root}.${inputLabelClasses.focused}`]: {
+      transform: 'translate(14px, -11px) scale(1)',
+    },
+    [`& .${outlinedInputClasses.root} .${outlinedInputClasses.notchedOutline} span`]: {
+      fontSize: 16,
+    },
+    marginY: 2,
+  },
+  textFieldError: {
+    [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
+      borderColor: '#BD0043',
+    },
+    marginY: 2,
+    width: '100%',
+    [`& .${inputLabelClasses.root}.${inputLabelClasses.focused}`]: {
+      transform: 'translate(14px, -11px) scale(1)',
+    },
+    [`& .${outlinedInputClasses.root} .${outlinedInputClasses.notchedOutline} span`]: {
+      fontSize: 16,
+    },
+  },
+  dropdown: {
+    [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
+      borderColor: BLACK,
+      borderWidth: '2px',
+      height: '46px',
+    },
+    [`& .${outlinedInputClasses.notchedOutline}`]: {
+      borderColor: BLACK,
+      borderWidth: '2px',
+    },
+    [`& .${inputLabelClasses.root}.${inputLabelClasses.focused}`]: {
+      transform: 'translate(14px, -11px) scale(1)',
+    },
+    [`& .${inputLabelClasses.root}.${inputLabelClasses.shrink}`]: {
+      transform: 'translate(14px, -11px) scale(1)',
+    },
+    [`& .${outlinedInputClasses.root} .${outlinedInputClasses.notchedOutline} span`]: {
+      fontSize: 16,
+    },
+    width: '100%',
+  },
+  cancelButton: {
+    borderRadius: 10,
+    background: '#E7E7E7',
+    width: '200px',
+    marginRight: 1,
+  },
+  submitButton: {
+    borderRadius: 10,
+    width: '200px',
+    marginLeft: 1,
+  },
+  formError: {
+    color: MthColor.ERROR_RED,
+    fontSize: '12px',
+    fontWeight: 600,
+    lineHeight: '20px',
+    marginLeft: '12px',
+    marginTop: '4px',
   },
 }

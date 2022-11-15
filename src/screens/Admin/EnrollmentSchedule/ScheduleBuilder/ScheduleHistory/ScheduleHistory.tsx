@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { useMutation } from '@apollo/client'
 import ExpandLessIcon from '@mui/icons-material/ExpandLess'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { Button } from '@mui/material'
@@ -7,15 +8,19 @@ import moment from 'moment'
 import { CustomModal } from '@mth/components/CustomModal/CustomModals'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { MthColor, ScheduleStatus } from '@mth/enums'
+import { restoreScheduleHistoryMuation } from '@mth/graphql/mutation/schedule'
 import { useStudentSchedulePeriodHistories } from '@mth/hooks'
 import { ScheduleEditor } from '@mth/screens/Homeroom/Schedule/ScheduleBuilder/ScheduleEditor'
 import { ScheduleHistoryData, ScheduleHistoryProps } from './types'
 
-const ScheduleHistory: React.FC<ScheduleHistoryProps> = ({ studentId, schoolYearId }) => {
+const ScheduleHistory: React.FC<ScheduleHistoryProps> = ({ studentId, schoolYearId, refetchSchedule }) => {
   const { scheduleDataHistory, setScheduleDataHistory } = useStudentSchedulePeriodHistories(studentId, schoolYearId)
   const [showMore, setShowMore] = useState<boolean>(false)
   const [showWarningModal, setShowWarningModal] = useState<boolean>(false)
   const [selectedScheduleHistoryId, setSelectedScheduleHistoryId] = useState<number>()
+
+  const [restoreScheduleHistory] = useMutation(restoreScheduleHistoryMuation)
+
   const chevron = (scheduleHistory: ScheduleHistoryData) =>
     !scheduleHistory.isExpand ? (
       <ExpandMoreIcon
@@ -36,6 +41,7 @@ const ScheduleHistory: React.FC<ScheduleHistoryProps> = ({ studentId, schoolYear
         onClick={() => setExpand(scheduleHistory)}
       />
     )
+
   const setExpand = (scheduleHistory: ScheduleHistoryData) => {
     setScheduleDataHistory(
       scheduleDataHistory?.map((history) => ({
@@ -46,8 +52,16 @@ const ScheduleHistory: React.FC<ScheduleHistoryProps> = ({ studentId, schoolYear
     )
   }
 
-  const handleRestoreVersion = () => {
+  const handleRestoreVersion = async () => {
     if (selectedScheduleHistoryId) {
+      const result = await restoreScheduleHistory({
+        variables: {
+          scheduleHistoryId: selectedScheduleHistoryId,
+        },
+      })
+      if (result) {
+        refetchSchedule()
+      }
     }
   }
 
@@ -62,7 +76,7 @@ const ScheduleHistory: React.FC<ScheduleHistoryProps> = ({ studentId, schoolYear
                   {`Accepted ${moment(new Date(history.acceptedDate)).format('MM/DD/YY')}`}
                 </Subtitle>
                 {chevron(history)}
-                {history.isExpand && (
+                {history.isExpand && index == 0 && (
                   <Button
                     sx={{ backgroundColor: MthColor.LIGHTGRAY, marginLeft: 'auto', fontWeight: 700 }}
                     onClick={() => {
@@ -90,7 +104,7 @@ const ScheduleHistory: React.FC<ScheduleHistoryProps> = ({ studentId, schoolYear
           return <></>
         }
       })}
-      {!showMore && (
+      {!showMore && scheduleDataHistory?.length > 5 && (
         <Box sx={{ padding: 2, borderBottom: '1px solid #eee' }}>
           <Subtitle
             fontWeight='700'
