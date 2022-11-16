@@ -103,7 +103,7 @@ export const Profile: React.FC<ProfileProps> = ({ handleIsFormChange }) => {
         if (uploadedFile) {
           profileUrl = await uploadPhoto(uploadedFile)
           if (profileUrl) {
-            setOpenSaveAlert({ message: 'Profile updated Successfully.', status: 'success', open: true })
+            setOpenSaveAlert({ message: 'Profile Updated Successfully.', status: 'success', open: true })
 
             setTimeout(() => {
               setOpenSaveAlert({ message: '', status: 'success', open: false })
@@ -124,7 +124,7 @@ export const Profile: React.FC<ProfileProps> = ({ handleIsFormChange }) => {
           }
           handleIsFormChange(false)
         } else {
-          setOpenSaveAlert({ message: 'Profile updated Successfully.', status: 'success', open: true })
+          setOpenSaveAlert({ message: 'Profile Updated Successfully.', status: 'success', open: true })
 
           setTimeout(() => {
             setOpenSaveAlert({ message: '', status: 'success', open: false })
