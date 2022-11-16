@@ -163,6 +163,7 @@ export type ScheduleData = {
   CustomBuiltDescription?: string
   IsChangedCustomBuiltDescription?: boolean
   updateRequired?: boolean
+  standardResponseOptions?: string
 
   // Temp fields
   editable?: boolean
