@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { useMutation, useQuery } from '@apollo/client'
-import { Button, Card, Grid } from '@mui/material'
+import { Button, Card } from '@mui/material'
 import { Box } from '@mui/system'
 import { Prompt, useHistory } from 'react-router-dom'
 import { CustomModal } from '@mth/components/CustomModal/CustomModals'
@@ -8,7 +8,6 @@ import { DropDownItem } from '@mth/components/DropDown/types'
 import { CheckBoxListVM } from '@mth/components/MthCheckboxList/MthCheckboxList'
 import { SuccessModal } from '@mth/components/SuccessModal/SuccessModal'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
-import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { SCHEDULE_STATUS_OPTIONS, SPECIAL_EDUCATIONS } from '@mth/constants'
 import { DiplomaSeekingPath, MthColor, MthTitle, ScheduleStatus } from '@mth/enums'
 import { saveScheduleMutation, sendEmailUpdateRequired } from '@mth/graphql/mutation/schedule'
@@ -24,10 +23,9 @@ import { getStudentDetail } from '../../UserProfile/services'
 import Header from './Header/Header'
 import { RequireUpdateModal } from './RequireUpdateModal'
 import { ScheduleHistory } from './ScheduleHistory'
-import { ScheduleUpdatesRequiredEmail } from './ScheduleUpdatesRequriedEmail'
 import StudentInfo from './StudentInfo/StudentInfo'
 import { scheduleBuilderClass } from './styles'
-import { UpdateRequiredPeriods } from './UpdateRequiredPeroids'
+import { UpdatesRequired } from './UpdatesRequried'
 
 type ScheduleBuilderProps = {
   studentId: number
@@ -467,28 +465,14 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
         )}
       </Card>
       {!!requireUpdatePeriods?.length && (
-        <Card sx={{ ...scheduleBuilderClass.main, paddingLeft: '30px' }}>
-          <Subtitle size='medium' textAlign='left' fontWeight='700'>
-            Update Required
-          </Subtitle>
-          <Box sx={{ width: '100%' }}>
-            <Grid container justifyContent='start'>
-              <Grid item xs={7} sx={{ textAlign: 'left', marginTop: 'auto', marginBottom: 'auto' }}>
-                <ScheduleUpdatesRequiredEmail
-                  handleCancelAction={handleCancelUpdates}
-                  handleSendAction={handleEmailSend}
-                />
-              </Grid>
-              <Grid item xs={5}>
-                <UpdateRequiredPeriods
-                  scheduleData={scheduleData}
-                  requireUpdatePeriods={requireUpdatePeriods}
-                  setRequiredUpdatePeriods={setRequireUpdatePeriods}
-                />
-              </Grid>
-            </Grid>
-          </Box>
-        </Card>
+        <UpdatesRequired
+          scheduleData={scheduleData}
+          requireUpdatePeriods={requireUpdatePeriods}
+          setScheduleData={setScheduleData}
+          handleCancelUpdates={handleCancelUpdates}
+          handleEmailSend={handleEmailSend}
+          setRequireUpdatePeriods={setRequireUpdatePeriods}
+        />
       )}
     </>
   )

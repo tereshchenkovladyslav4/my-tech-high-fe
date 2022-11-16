@@ -1,39 +1,20 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { useQuery } from '@apollo/client'
+import React from 'react'
 import { Button, OutlinedInput } from '@mui/material'
 import { Box } from '@mui/system'
 import { MthBulletEditor } from '@mth/components/MthBulletEditor'
-import { getEmailTemplateQuery } from '@mth/graphql/queries/email-template'
-import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { updatesRequiredEmailClasses } from './styles'
-import { ScheduleUpdatesRequiredEmailProps } from './types'
+import { UpdatesRequiredEmailProps } from './types'
 
-const ScheduleUpdatesRequiredEmail: React.FC<ScheduleUpdatesRequiredEmailProps> = ({
+const UpdatesRequiredEmail: React.FC<UpdatesRequiredEmailProps> = ({
+  emailFrom,
+  emailSubject,
+  emailBody,
+  setEmailFrom,
+  setEmailSubject,
+  setEmailBody,
   handleCancelAction,
   handleSendAction,
 }) => {
-  const { me } = useContext(UserContext)
-  const [emailSubject, setEmailSubject] = useState<string>('')
-  const [emailFrom, setEmailFrom] = useState<string>('')
-  const [emailBody, setEmailBody] = useState<string>('')
-
-  const { data: emailTemplateData } = useQuery(getEmailTemplateQuery, {
-    variables: {
-      template: 'Updates Required',
-      regionId: me?.selectedRegionId,
-    },
-    fetchPolicy: 'network-only',
-  })
-
-  useEffect(() => {
-    if (emailTemplateData) {
-      const { emailTemplateName } = emailTemplateData
-      const { subject, from, body } = emailTemplateName
-      setEmailSubject(subject)
-      setEmailFrom(from)
-      setEmailBody(body)
-    }
-  }, [emailTemplateData])
   return (
     <Box sx={{ marginTop: 3 }}>
       <OutlinedInput
@@ -79,4 +60,4 @@ const ScheduleUpdatesRequiredEmail: React.FC<ScheduleUpdatesRequiredEmailProps> 
   )
 }
 
-export default ScheduleUpdatesRequiredEmail
+export default UpdatesRequiredEmail
