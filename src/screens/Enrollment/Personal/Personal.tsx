@@ -24,10 +24,15 @@ export const Personal: PersonalTemplateType = ({ id, questions }) => {
 
   const student = students.find((s) => s.student_id === id)
 
+  const [metaData, setMetaData] = useState(
+    (student.packets.at(-1)?.meta && JSON.parse(student.packets.at(-1)?.meta)) || {},
+  )
+
   const [validationSchema, setValidationSchema] = useState(yup.object({}))
   const [submitPersonalMutation] = useMutation(enrollmentContactMutation)
 
   useEffect(() => {
+    const initMeta = { ...metaData }
     if (questions?.groups?.length > 0) {
       const valid_student = {}
       const valid_parent = {}
@@ -98,6 +103,9 @@ export const Personal: PersonalTemplateType = ({ id, questions }) => {
                 }
               }
             } else if (q.slug?.includes('meta_') && q.required && !q.additional_question) {
+              if (!initMeta[q.slug]) {
+                initMeta[q.slug] = ''
+              }
               if (q.validation === 1) {
                 valid_meta[`${q.slug}`] = yup.string().email('Enter a valid email').required('Required').nullable()
               } else if (q.validation === 2) {
@@ -125,6 +133,8 @@ export const Personal: PersonalTemplateType = ({ id, questions }) => {
         })
       })
 
+      setMetaData(initMeta)
+
       setValidationSchema(
         yup.object({
           parent: yup.object(valid_parent),
@@ -150,11 +160,11 @@ export const Personal: PersonalTemplateType = ({ id, questions }) => {
         emailConfirm: student.person.email,
       },
       packet: { ...student.packets.at(-1) },
-      meta: (student.packets.at(-1)?.meta && JSON.parse(student.packets.at(-1)?.meta)) || {},
+      meta: metaData,
       address: { ...profile.address },
       school_year_id: student.current_school_year_status.school_year_id,
     })
-  }, [profile, student])
+  }, [profile, student, metaData])
 
   const formik = useFormik({
     enableReinitialize: true,

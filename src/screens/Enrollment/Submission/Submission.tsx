@@ -53,6 +53,9 @@ export const Submission: SubmissionTemplateType = ({ id, questions }) => {
     }),
   )
 
+  const [metaData, setMetaData] = useState(student.packets.at(-1)?.meta && JSON.parse(student.packets.at(-1)?.meta))
+  const [isSubmit, setIsSubmit] = useState<boolean>(false)
+
   useEffect(() => {
     function handleResize() {
       setWindowDimensions(getWindowDimension())
@@ -68,6 +71,7 @@ export const Submission: SubmissionTemplateType = ({ id, questions }) => {
   }, [disabled])
 
   useEffect(() => {
+    const initMeta = { ...metaData }
     if (questions?.groups?.length > 0) {
       const valid_student = {}
       const valid_parent = {}
@@ -139,6 +143,9 @@ export const Submission: SubmissionTemplateType = ({ id, questions }) => {
                 }
               }
             } else if (q.slug?.includes('meta_') && q.required && !q.additional_question) {
+              if (!initMeta[q.slug]) {
+                initMeta[q.slug] = ''
+              }
               if (q.validation === 1) {
                 valid_meta[`${q.slug}`] = yup.string().email('Enter a valid email').required('Required').nullable()
               } else if (q.validation === 2) {
@@ -164,6 +171,8 @@ export const Submission: SubmissionTemplateType = ({ id, questions }) => {
         })
       })
 
+      setMetaData(initMeta)
+
       setValidationSchema(
         yup.object({
           parent: yup.object(valid_parent),
@@ -179,7 +188,6 @@ export const Submission: SubmissionTemplateType = ({ id, questions }) => {
   const [initFormikValues, setInitFormikValues] = useState({})
 
   useEffect(() => {
-    const metaData = student.packets.at(-1)?.meta && JSON.parse(student.packets.at(-1)?.meta)
     if (!metaData.meta_parentlegalname) {
       metaData.meta_parentlegalname = ''
     }
@@ -198,7 +206,7 @@ export const Submission: SubmissionTemplateType = ({ id, questions }) => {
       address: { ...profile.address },
       school_year_id: student.current_school_year_status.school_year_id,
     })
-  }, [profile, student])
+  }, [profile, student, metaData])
 
   const formik = useFormik({
     enableReinitialize: true,
@@ -215,6 +223,7 @@ export const Submission: SubmissionTemplateType = ({ id, questions }) => {
     if (signatureRef.current.isEmpty()) {
       setSignatureInvalid(true)
     }
+    setIsSubmit(true)
     formik.handleSubmit(e)
   }
 
@@ -389,8 +398,8 @@ export const Submission: SubmissionTemplateType = ({ id, questions }) => {
                 fullWidth
                 focused
                 placeholder='Entry'
-                error={formik.errors['meta'] && Boolean(formik.errors['meta']['meta_parentlegalname'])}
-                helperText={formik.errors['meta'] && formik.errors['meta']['meta_parentlegalname']}
+                error={isSubmit && formik.errors['meta'] && Boolean(formik.errors['meta']['meta_parentlegalname'])}
+                helperText={isSubmit && formik.errors['meta'] && formik.errors['meta']['meta_parentlegalname']}
                 onChange={formik.handleChange}
                 value={formik.values['meta'] ? formik.values['meta']['meta_parentlegalname'] : ''}
               />

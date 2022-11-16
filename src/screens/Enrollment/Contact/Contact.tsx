@@ -24,8 +24,12 @@ export const Contact: ContactTemplateType = ({ id, questions }) => {
   const classes = useStyles
 
   const [validationSchema, setValidationSchema] = useState(null)
+  const [metaData, setMetaData] = useState(
+    (student.packets.at(-1)?.meta && JSON.parse(student.packets.at(-1)?.meta)) || {},
+  )
 
   useEffect(() => {
+    const initMeta = { ...metaData }
     if (questions?.groups?.length > 0) {
       const valid_student = {}
       const valid_parent = {}
@@ -94,6 +98,9 @@ export const Contact: ContactTemplateType = ({ id, questions }) => {
                 }
               }
             } else if (q.slug?.includes('meta_') && q.required && !q.additional_question) {
+              if (!initMeta[q.slug]) {
+                initMeta[q.slug] = ''
+              }
               if (q.validation === 1) {
                 valid_meta[`${q.slug}`] = yup.string().email('Enter a valid email').required('Required').nullable()
               } else if (q.validation === 2) {
@@ -118,7 +125,7 @@ export const Contact: ContactTemplateType = ({ id, questions }) => {
           }
         })
       })
-
+      setMetaData(initMeta)
       setValidationSchema(
         yup.object({
           parent: yup.object(valid_parent),
@@ -129,8 +136,10 @@ export const Contact: ContactTemplateType = ({ id, questions }) => {
         }),
       )
     }
+    formik.resetForm()
   }, [questions])
   const [submitContactMutation] = useMutation(enrollmentContactMutation)
+
   const formik = useFormik({
     initialValues: {
       parent: { ...profile, phone_number: profile.phone.number, emailConfirm: profile.email },
@@ -142,11 +151,12 @@ export const Contact: ContactTemplateType = ({ id, questions }) => {
         emailConfirm: student.person.email,
       },
       packet: { ...student.packets.at(-1) },
-      meta: (student.packets.at(-1)?.meta && JSON.parse(student.packets.at(-1)?.meta)) || {},
+      meta: metaData,
       address: { ...profile.address },
       school_year_id: student.current_school_year_status.school_year_id,
     },
     validationSchema: validationSchema,
+    enableReinitialize: true,
     onSubmit: () => {
       goNext()
     },
@@ -222,7 +232,6 @@ export const Contact: ContactTemplateType = ({ id, questions }) => {
     })
     window.scrollTo(0, 0)
   }
-
   return (
     <form onSubmit={(e) => (!disabled ? formik.handleSubmit(e) : nextTab(e))}>
       <Grid container rowSpacing={2} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>

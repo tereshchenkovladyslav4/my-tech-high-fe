@@ -334,9 +334,21 @@ function Item({
           setParentValue={(v) => onChangeDropDown(v as string)}
           size='small'
           error={{
-            error: !!(formik.errors[`${keyName}`] && Boolean(formik.errors[`${keyName}`][`${fieldName}`])),
-            errorMsg: (formik.errors[`${keyName}`] && formik.errors[`${keyName}`][`${fieldName}`]) as string,
+            error: !!(
+              formik.touched[`${keyName}`] &&
+              Boolean(formik.touched[`${keyName}`][`${fieldName}`]) &&
+              formik.errors[`${keyName}`] &&
+              Boolean(formik.errors[`${keyName}`][`${fieldName}`])
+            ),
+            errorMsg: (formik.touched[`${keyName}`] &&
+              Boolean(formik.touched[`${keyName}`][`${fieldName}`]) &&
+              formik.errors[`${keyName}`] &&
+              formik.errors[`${keyName}`][`${fieldName}`]) as string,
           }}
+          // error={{
+          //   error: !!(formik.errors[`${keyName}`] && Boolean(formik.errors[`${keyName}`][`${fieldName}`])),
+          //   errorMsg: (formik.errors[`${keyName}`] && formik.errors[`${keyName}`][`${fieldName}`]) as string,
+          // }}
         />
       </>
     )
@@ -362,8 +374,18 @@ function Item({
         variant='outlined'
         fullWidth
         focused
-        error={formik.errors[`${keyName}`] && Boolean(formik.errors[`${keyName}`][`${fieldName}`])}
-        helperText={formik.errors[`${keyName}`] && formik.errors[`${keyName}`][`${fieldName}`]}
+        error={
+          formik.touched[`${keyName}`] &&
+          Boolean(formik.touched[`${keyName}`][`${fieldName}`]) &&
+          formik.errors[`${keyName}`] &&
+          Boolean(formik.errors[`${keyName}`][`${fieldName}`])
+        }
+        helperText={
+          (formik.touched[`${keyName}`] &&
+            Boolean(formik.touched[`${keyName}`][`${fieldName}`]) &&
+            formik.errors[`${keyName}`] &&
+            formik.errors[`${keyName}`][`${fieldName}`]) as string
+        }
       />
     )
   } else if (q.type === QUESTION_TYPE.CHECKBOX) {
@@ -374,7 +396,14 @@ function Item({
           component='fieldset'
           variant='standard'
           sx={{ width: '100%' }}
-          error={!!(formik.errors[`${keyName}`] && Boolean(formik.errors[`${keyName}`][`${fieldName}`]))}
+          error={
+            !!(
+              formik.touched[`${keyName}`] &&
+              Boolean(formik.touched[`${keyName}`][`${fieldName}`]) &&
+              formik.errors[`${keyName}`] &&
+              Boolean(formik.errors[`${keyName}`][`${fieldName}`])
+            )
+          }
         >
           <FormGroup style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
             <Grid container>
@@ -417,7 +446,12 @@ function Item({
           </FormGroup>
         </FormControl>
         <FormLabel sx={{ marginLeft: '14px', color: ERROR_RED, fontSize: '0.75rem' }}>
-          {(formik.errors[`${keyName}`] && formik.errors[`${keyName}`][`${fieldName}`]) as string}
+          {
+            (formik.touched[`${keyName}`] &&
+              Boolean(formik.touched[`${keyName}`][`${fieldName}`]) &&
+              formik.errors[`${keyName}`] &&
+              formik.errors[`${keyName}`][`${fieldName}`]) as string
+          }
         </FormLabel>
       </>
     )
@@ -429,7 +463,14 @@ function Item({
           name='acknowledge'
           component='fieldset'
           variant='standard'
-          error={!!(formik.errors[`${keyName}`] && Boolean(formik.errors[`${keyName}`][`${fieldName}`]))}
+          error={
+            !!(
+              formik.touched[`${keyName}`] &&
+              Boolean(formik.touched[`${keyName}`][`${fieldName}`]) &&
+              formik.errors[`${keyName}`] &&
+              Boolean(formik.errors[`${keyName}`][`${fieldName}`])
+            )
+          }
         >
           <FormGroup>
             <FormControlLabel
@@ -446,7 +487,12 @@ function Item({
           </FormGroup>
         </FormControl>
         <FormLabel sx={{ marginLeft: '14px', color: ERROR_RED, fontSize: '0.75rem' }}>
-          {(formik.errors[`${keyName}`] && formik.errors[`${keyName}`][`${fieldName}`]) as string}
+          {
+            (formik.touched[`${keyName}`] &&
+              Boolean(formik.touched[`${keyName}`][`${fieldName}`]) &&
+              formik.errors[`${keyName}`] &&
+              formik.errors[`${keyName}`][`${fieldName}`]) as string
+          }
         </FormLabel>
       </>
     )
@@ -458,7 +504,14 @@ function Item({
           component='fieldset'
           variant='standard'
           sx={{ width: '100%' }}
-          error={!!(formik.errors[`${keyName}`] && Boolean(formik.errors[`${keyName}`][`${fieldName}`]))}
+          error={
+            !!(
+              formik.touched[`${keyName}`] &&
+              Boolean(formik.touched[`${keyName}`][`${fieldName}`]) &&
+              formik.errors[`${keyName}`] &&
+              Boolean(formik.errors[`${keyName}`][`${fieldName}`])
+            )
+          }
         >
           <FormGroup style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
             <Grid container>
@@ -480,7 +533,12 @@ function Item({
           </FormGroup>
         </FormControl>
         <FormLabel sx={{ marginLeft: '14px', color: ERROR_RED, fontSize: '0.75rem' }}>
-          {(formik.errors[`${keyName}`] && formik.errors[`${keyName}`][`${fieldName}`]) as string}
+          {
+            (formik.touched[`${keyName}`] &&
+              Boolean(formik.touched[`${keyName}`][`${fieldName}`]) &&
+              formik.errors[`${keyName}`] &&
+              formik.errors[`${keyName}`][`${fieldName}`]) as string
+          }
         </FormLabel>
       </>
     )
@@ -511,8 +569,20 @@ function Item({
         variant='outlined'
         focused
         type='date'
-        error={!!(formik.errors[`${keyName}`] && Boolean(formik.errors[`${keyName}`][`${fieldName}`]))}
-        helperText={(formik.errors[`${keyName}`] && formik.errors[`${keyName}`][`${fieldName}`]) as string}
+        error={
+          !!(
+            formik.touched[`${keyName}`] &&
+            Boolean(formik.touched[`${keyName}`][`${fieldName}`]) &&
+            formik.errors[`${keyName}`] &&
+            Boolean(formik.errors[`${keyName}`][`${fieldName}`])
+          )
+        }
+        helperText={
+          (formik.touched[`${keyName}`] &&
+            Boolean(formik.touched[`${keyName}`][`${fieldName}`]) &&
+            formik.errors[`${keyName}`] &&
+            formik.errors[`${keyName}`][`${fieldName}`]) as string
+        }
       />
     )
   }
