@@ -200,6 +200,11 @@ export const getStudentDetail = gql`
           RegionId
         }
       }
+      current_school_year_status {
+        application_id
+        school_year_id
+        special_ed_options
+      }
     }
   }
 `

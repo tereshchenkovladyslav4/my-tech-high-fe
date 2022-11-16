@@ -158,6 +158,7 @@ export const getMeQuery = gql`
           school_year_id
           student_id
           grade_level
+          special_ed_options
         }
       }
     }

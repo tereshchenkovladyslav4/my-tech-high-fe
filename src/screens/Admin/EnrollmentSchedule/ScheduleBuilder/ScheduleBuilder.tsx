@@ -8,7 +8,7 @@ import { DropDownItem } from '@mth/components/DropDown/types'
 import { CheckBoxListVM } from '@mth/components/MthCheckboxList/MthCheckboxList'
 import { SuccessModal } from '@mth/components/SuccessModal/SuccessModal'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
-import { SCHEDULE_STATUS_OPTIONS, SPECIAL_EDUCATIONS } from '@mth/constants'
+import { SCHEDULE_STATUS_OPTIONS } from '@mth/constants'
 import { DiplomaSeekingPath, MthColor, MthTitle, ScheduleStatus } from '@mth/enums'
 import { saveScheduleMutation, sendEmailUpdateRequired } from '@mth/graphql/mutation/schedule'
 import { saveSchedulePeriodMutation } from '@mth/graphql/mutation/schedule-period'
@@ -246,11 +246,18 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
   useEffect(() => {
     if (!studentInfoLoading && studentInfoData) {
       const student: StudentType = studentInfoData?.student
+      const specialEdOptions = student?.current_school_year_status?.special_ed_options?.split(',')
+      let studentSpecialEd = ''
+      specialEdOptions?.map((item, index) => {
+        if (index == student?.special_ed) {
+          studentSpecialEd = item
+        }
+      })
       setStudentInfo({
         name: `${student?.person?.first_name} ${student?.person?.last_name}`,
         grade: gradeText(student),
         schoolDistrict: student?.packets?.at(-1)?.school_district || '',
-        specialEd: `${SPECIAL_EDUCATIONS.find((item) => item.value == student?.special_ed)?.label}`,
+        specialEd: studentSpecialEd,
       })
       switch (student.diploma_seeking) {
         case 0:

@@ -29,9 +29,7 @@ export const studentInfoClass = {
   },
   info_box: {
     display: 'flex',
-    '& p:last-child': {
-      marginLeft: '100px',
-    },
+    justifyContent: 'start',
   },
   select: {
     fontSize: '12px',

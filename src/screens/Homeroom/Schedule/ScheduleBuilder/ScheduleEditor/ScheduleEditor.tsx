@@ -421,6 +421,10 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
     return !scheduleStatus || scheduleStatus === ScheduleStatus.DRAFT || schedule.editable || isAdmin
   }
 
+  const formatPhoneNumber = (phone: string) => {
+    return `+1 (${phone?.substring(0, 3)}) ${phone.substring(3, 6)} ${phone?.substring(6, 10)}`
+  }
+
   const setMultiPeriods = (schedules: ScheduleData[]): ScheduleData[] => {
     schedules.forEach((schedule) => {
       if (schedule.Course?.Provider?.multiple_periods) {
@@ -444,6 +448,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
     }, [])
     scheduleData.map((item) => {
       if (multiPeriods.findIndex((x) => x === item.period) > -1) {
+        item.editable = true
         delete item.Provider
         delete item.Course
       }
@@ -598,6 +603,15 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
     }
   }
 
+  const showCourseSelector = (schedule: ScheduleData): boolean => {
+    const providers = schedule.Title?.Providers || schedule.Subject?.Providers || []
+    return (
+      editable(schedule) &&
+      (providers.length > 1 ||
+        (providers.length === 1 && (providers[0]?.Courses?.length > 1 || !!providers[0]?.AltCourses?.length)))
+    )
+  }
+
   const selectedCourseLabel = (course: Course | undefined): string => {
     return course ? `${course.Provider?.name} - ${course.name}` : ''
   }
@@ -643,11 +657,12 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
                 >
                   {('0' + item.rawData.period).slice(-2)}
                 </Typography>
-                <Box sx={{ marginLeft: '20px' }}>
+                <Box sx={{ marginLeft: '20px', minWidth: 'calc(100% - 40px)' }}>
                   {editable(item.rawData) && item.rawData.filteredPeriods?.length > 0 ? (
                     <NestedDropdown
                       menuItemsData={createPeriodMenuItems(item.rawData)}
                       MenuProps={{ elevation: 3 }}
+                      endIconSx={{ color: item.rawData.Period ? MthColor.BLACK : MthColor.MTHBLUE }}
                       ButtonProps={{
                         variant: 'outlined',
                         sx: scheduleBuilderClasses.nestedDropdownButton,
@@ -737,11 +752,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
                 <>
                   {!!item.rawData.Title && (
                     <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                      {item.rawData.Title.Providers?.length > 1 ||
-                      (editable(item.rawData) &&
-                        item.rawData.Title.Providers?.length === 1 &&
-                        (item.rawData.Title.Providers?.[0]?.Courses?.length > 1 ||
-                          !!item.rawData.Title.Providers?.[0]?.AltCourses?.length)) ? (
+                      {showCourseSelector(item.rawData) ? (
                         <NestedDropdown
                           menuItemsData={createDescriptionMenuItems(item.rawData)}
                           MenuProps={{ elevation: 3 }}
@@ -755,7 +766,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
                           {selectedCourseLabel(item.rawData.Course)}
                         </Typography>
                       )}
-                      {item.rawData.Provider?.multiple_periods && (
+                      {editable(item.rawData) && item.rawData.Provider?.multiple_periods && (
                         <Typography
                           sx={{
                             ...scheduleBuilderClasses.tableContent,
@@ -772,11 +783,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
                   )}
                   {!item.rawData.Title && !!item.rawData.Subject && (
                     <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                      {item.rawData.Subject.Providers?.length > 1 ||
-                      (editable(item.rawData) &&
-                        item.rawData.Subject.Providers?.length === 1 &&
-                        (item.rawData.Subject.Providers?.[0]?.Courses?.length > 1 ||
-                          !!item.rawData.Subject.Providers?.[0]?.AltCourses?.length)) ? (
+                      {showCourseSelector(item.rawData) ? (
                         <NestedDropdown
                           menuItemsData={createDescriptionMenuItems(item.rawData)}
                           MenuProps={{ elevation: 3 }}
@@ -790,7 +797,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
                           {selectedCourseLabel(item.rawData.Course)}
                         </Typography>
                       )}
-                      {item.rawData.Provider?.multiple_periods && (
+                      {editable(item.rawData) && item.rawData.Provider?.multiple_periods && (
                         <Typography
                           sx={{
                             ...scheduleBuilderClasses.tableContent,
@@ -848,7 +855,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
                       {item.rawData.ThirdParty?.courseName}
                     </Typography>
                     <Typography sx={scheduleBuilderClasses.tableContent}>
-                      {item.rawData.ThirdParty?.phoneNumber}
+                      {formatPhoneNumber(item.rawData.ThirdParty?.phoneNumber)}
                     </Typography>
                     <Typography sx={scheduleBuilderClasses.tableContent}>
                       {item.rawData.ThirdParty?.specificCourseWebsite}

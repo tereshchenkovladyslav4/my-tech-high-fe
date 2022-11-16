@@ -17,11 +17,6 @@ export enum REDUCE_FUNDS_TYPE {
   TECHNOLOGY = 'TECHNOLOGY',
 }
 
-export type OptionType = {
-  value: string | number
-  label: string | number
-}
-
 export type CurriculumItem = {
   id: number
   icon?: string | ReactNode
@@ -38,12 +33,12 @@ export type PeriodItem = {
   period: number
   category: string
   semester: SEMESTER_TYPE
-  grade_level_min: string
-  grade_level_max: string
+  min_grade: number | null
+  max_grade: number | null
   message_period?: string
   message_semester?: string
   reduce_funds?: REDUCE_FUNDS_TYPE
-  price?: string | number
+  price: number | null
   archived?: boolean
   notify_semester: boolean
   notify_period: boolean

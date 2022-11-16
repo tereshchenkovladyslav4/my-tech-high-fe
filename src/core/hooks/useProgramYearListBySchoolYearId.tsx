@@ -22,7 +22,7 @@ type SchoolYearType = {
 }
 
 export const useProgramYearListBySchoolYearId = (
-  school_year_id: number,
+  school_year_id: number | undefined,
 ): {
   loading: boolean
   programYearList: CheckBoxListVM[]
@@ -46,7 +46,7 @@ export const useProgramYearListBySchoolYearId = (
   })
 
   useEffect(() => {
-    if (!loading && data?.region?.SchoolYears) {
+    if (!loading && data?.region?.SchoolYears && school_year_id) {
       const { SchoolYears } = data?.region
       SchoolYears?.map((schoolYear: SchoolYearType) => {
         if (schoolYear?.school_year_id == Number(school_year_id)) {

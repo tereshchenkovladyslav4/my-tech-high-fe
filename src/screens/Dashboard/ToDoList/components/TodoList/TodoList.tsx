@@ -20,6 +20,7 @@ export const TodoList: TodoListTemplateType = ({ handleShowEmpty, schoolYears, s
       sort: 'status|ASC',
       take: paginatinLimit,
     },
+    fetchPolicy: 'network-only',
   })
 
   useEffect(() => {

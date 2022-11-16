@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react'
+import React from 'react'
 import { Grid, Box } from '@mui/material'
 import BgBlue from '@mth/assets/quick-link-blue.png'
 import BgOrange from '@mth/assets/quick-link-orange.png'
@@ -13,7 +13,7 @@ import {
 } from '../../../../utils/constants'
 import { useStyles } from '../styles'
 
-const CourseCatalog: FunctionComponent = () => {
+const CourseCatalog: React.FC = () => {
   const items = [
     {
       icon: 'Settings',

@@ -14,7 +14,12 @@ const StudentInfo: React.FC<StudentInfoProps> = ({ studentInfo, scheduleStatus, 
         <Subtitle sx={studentInfoClass.info_name}>{studentInfo?.name}</Subtitle>
         <Box sx={studentInfoClass.info_box}>
           <Paragraph size={'large'}>{studentInfo?.grade}</Paragraph>
-          <Paragraph size={'large'}>{`Special Education: ${studentInfo?.specialEd}`}</Paragraph>
+          {studentInfo?.specialEd && studentInfo?.specialEd?.indexOf('No') == -1 && (
+            <Paragraph
+              size={'large'}
+              sx={{ marginLeft: '100px' }}
+            >{`Special Education: ${studentInfo?.specialEd}`}</Paragraph>
+          )}
         </Box>
         <Paragraph size={'large'}>{studentInfo?.schoolDistrict}</Paragraph>
       </Box>

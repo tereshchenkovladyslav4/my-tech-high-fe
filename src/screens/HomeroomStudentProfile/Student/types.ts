@@ -110,6 +110,7 @@ export type StudentType = {
     application_id: number
     school_year_id: number
     grade_level: string
+    special_ed_options?: string
   }
   status: Status[]
   reenrollment_status: ReenrollmentStatus[]

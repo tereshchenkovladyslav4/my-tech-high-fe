@@ -17,7 +17,6 @@ import {
   DEFUALT_DIPLOMA_QUESTION_DESCRIPTION,
   DEFUALT_DIPLOMA_QUESTION_TITLE,
   SNOWPACK_PUBLIC_S3_URL,
-  SPECIAL_EDUCATIONS,
 } from '@mth/constants'
 import { DiplomaSeekingPath, MthRoute, MthTitle, OPT_TYPE } from '@mth/enums'
 import { diplomaAnswerGql, diplomaQuestionForStudent, submitDiplomaAnswerGql } from '@mth/graphql/queries/diploma'
@@ -328,11 +327,18 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
 
   useEffect(() => {
     if (student) {
+      const specialEdOptions = student.current_school_year_status?.special_ed_options?.split(',')
+      let studentSpecialEd = ''
+      specialEdOptions?.map((item, index) => {
+        if (index == student?.special_ed) {
+          studentSpecialEd = item
+        }
+      })
       setStudentInfo({
         name: `${student.person?.first_name} ${student.person?.last_name}`,
         grade: gradeText(student),
         schoolDistrict: student?.packets?.at(-1)?.school_district || '',
-        specialEd: `${SPECIAL_EDUCATIONS.find((item) => item.value == student?.special_ed)?.label}`,
+        specialEd: studentSpecialEd,
       })
       switch (student.diploma_seeking) {
         case 0:

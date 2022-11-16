@@ -65,6 +65,7 @@ const ThirdPartyProviderForm: React.FC<ThirdPartyProviderFormProps> = () => {
           name='phoneNumber'
           label='Phone Number'
           placeholder='Entry'
+          type={'number'}
           fullWidth
           InputLabelProps={{ shrink: true }}
           className='MthFormField'

@@ -1,7 +1,9 @@
 import React from 'react'
+import { Theme } from '@emotion/react'
 import ExpandMoreOutlinedIcon from '@mui/icons-material/ExpandMoreOutlined'
 import Button, { ButtonProps } from '@mui/material/Button'
 import Menu, { MenuProps } from '@mui/material/Menu'
+import { SxProps } from '@mui/system'
 import { MenuItemData } from '@mth/components/NestedDropdown/types'
 import { nestedMenuItemsFromObject } from './nestedMenuItemsFromObject'
 
@@ -10,6 +12,7 @@ interface NestedDropdownProps {
   menuItemsData?: MenuItemData
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void
   ButtonProps?: Partial<ButtonProps>
+  endIconSx?: SxProps<Theme> | undefined
   MenuProps?: Partial<MenuProps>
 }
 
@@ -20,7 +23,7 @@ export const NestedDropdown = React.forwardRef<HTMLDivElement | null, NestedDrop
   const [anchorEl, setAnchorEl] = React.useState<null | Element | ((element: Element) => Element)>(null)
   const open = Boolean(anchorEl)
 
-  const { menuItemsData: data, onClick, ButtonProps, MenuProps, ...rest } = props
+  const { menuItemsData: data, onClick, ButtonProps, MenuProps, endIconSx, ...rest } = props
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(e.currentTarget)
@@ -36,7 +39,7 @@ export const NestedDropdown = React.forwardRef<HTMLDivElement | null, NestedDrop
 
   return (
     <div ref={ref} {...rest}>
-      <Button onClick={handleClick} endIcon={<ExpandMoreOutlinedIcon />} {...ButtonProps}>
+      <Button onClick={handleClick} endIcon={<ExpandMoreOutlinedIcon sx={endIconSx} />} {...ButtonProps}>
         {data?.label}
       </Button>
       <Menu anchorEl={anchorEl} open={open} onClose={handleClose} {...MenuProps}>

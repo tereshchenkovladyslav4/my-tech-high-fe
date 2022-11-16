@@ -74,8 +74,8 @@ export const getPeriods = gql`
       period
       reduce_funds
       price
-      grade_level_min
-      grade_level_max
+      min_grade
+      max_grade
       notify_period
       notify_semester
       message_period
@@ -94,8 +94,8 @@ export const upsertPeriod = gql`
       period
       reduce_funds
       price
-      grade_level_min
-      grade_level_max
+      min_grade
+      max_grade
       notify_period
       notify_semester
       message_period

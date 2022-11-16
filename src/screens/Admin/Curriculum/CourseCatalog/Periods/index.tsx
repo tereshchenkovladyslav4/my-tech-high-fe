@@ -36,12 +36,12 @@ import { Field } from '@mth/components/Table/types'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { WarningModal } from '@mth/components/WarningModal/Warning'
 import { MthColor } from '@mth/enums'
-import { useSchoolYearsByRegionId } from '@mth/hooks'
+import { useProgramYearListBySchoolYearId, useSchoolYearsByRegionId } from '@mth/hooks'
 import { loadingState } from '@mth/providers/Store/State'
 import { getPeriods, upsertPeriod, periodArchive, deletePeriodsByIds } from '@mth/screens/Admin/Curriculum/services'
-import { ordinalSuffixOf } from '@mth/utils'
+import { gradeShortText } from '@mth/utils'
 import { useStyles } from '../../styles'
-import { PeriodItem, SEMESTER_TYPE, REDUCE_FUNDS_TYPE, OptionType, SEMESTER_MESSAGE } from '../../types'
+import { PeriodItem, SEMESTER_TYPE, REDUCE_FUNDS_TYPE, SEMESTER_MESSAGE } from '../../types'
 import { SaveCancelComponent } from '../Components/SaveCancelComponent'
 import Filter from './Filter'
 
@@ -97,6 +97,8 @@ const Periods: FunctionComponent = () => {
     archived: false,
   })
 
+  const { numericGradeList: gradeOptions } = useProgramYearListBySchoolYearId(selectedYearId)
+
   const setFilter = (field: string, value: string | boolean) => {
     setQuery({
       ...query,
@@ -125,26 +127,6 @@ const Periods: FunctionComponent = () => {
   useEffect(() => {
     setItems(periods?.periods || [])
   }, [periods])
-
-  const grades: string[] = useMemo(() => {
-    return (
-      schoolYearData?.grades
-        ?.split(',')
-        .sort((a: string, b: string) => (parseInt(a) > parseInt(b) ? 1 : -1))
-        .sort((a: string) => (a === 'Kindergarten' ? -1 : 0)) || []
-    )
-  }, [schoolYearData])
-
-  const gradeList: OptionType[] = useMemo(
-    () =>
-      grades.map(
-        (value: string): OptionType => ({
-          label: ordinalSuffixOf(value) + ' Grade',
-          value,
-        }),
-      ),
-    [grades],
-  )
 
   // count of Max period
   const maxPeriodCount: number = useMemo(() => {
@@ -239,10 +221,10 @@ const Periods: FunctionComponent = () => {
   const initialValues: PeriodItem = {
     period: 0,
     category: '',
-    grade_level_min: '',
-    grade_level_max: '',
+    min_grade: null,
+    max_grade: null,
     reduce_funds: REDUCE_FUNDS_TYPE.NONE,
-    price: '',
+    price: null,
     semester: SEMESTER_TYPE.NONE,
     message_period: '',
     message_semester: '',
@@ -254,8 +236,8 @@ const Periods: FunctionComponent = () => {
     validationSchema: Yup.object({
       period: Yup.number().required().min(1, 'Required'),
       category: Yup.string().required(),
-      grade_level_max: Yup.string().required(),
-      grade_level_min: Yup.string().required(),
+      min_grade: Yup.string().required('Required').nullable(),
+      max_grade: Yup.string().required('Required').nullable(),
       notify_semester: Yup.boolean(),
       notify_period: Yup.boolean(),
       message_period: Yup.string().when('notify_period', {
@@ -296,11 +278,11 @@ const Periods: FunctionComponent = () => {
     formik.setValues({
       period: item.period,
       category: item.category,
-      grade_level_min: item.grade_level_min,
-      grade_level_max: item.grade_level_max,
+      min_grade: item.min_grade,
+      max_grade: item.max_grade,
       reduce_funds: item.reduce_funds,
       semester: item.semester,
-      price: item.price || '',
+      price: item.price || null,
       message_period: item.message_period,
       message_semester: item.message_semester,
       notify_semester: item.notify_semester,
@@ -355,9 +337,9 @@ const Periods: FunctionComponent = () => {
   }
 
   // Validation min - max grade levels
-  const validateGrade = (gradeMin: string, gradeMax: string) => {
-    const indexMin = grades.findIndex((el) => el === gradeMin)
-    const indexMax = grades.findIndex((el) => el === gradeMax)
+  const validateGrade = (gradeMin: number | null, gradeMax: number | null) => {
+    const indexMin = gradeOptions.findIndex((el) => el.value === Number(gradeMin))
+    const indexMax = gradeOptions.findIndex((el) => el.value === Number(gradeMax))
     if (indexMin <= indexMax || indexMax === -1) {
       setModalErrorGradeValidation(false)
       return true
@@ -368,16 +350,16 @@ const Periods: FunctionComponent = () => {
   }
   // Grade Level Max
   const handleGradeLevelMin = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newGradeMin = e.target.value
-    const isValidateGrade = validateGrade(newGradeMin, formik.values.grade_level_max)
+    const newGradeMin = Number(e.target.value)
+    const isValidateGrade = validateGrade(newGradeMin, formik.values.max_grade)
     if (isValidateGrade) {
       formik.handleChange(e)
     }
   }
   // Grade Level Max
   const handleGradeLevelMax = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newGradeMax = e.target.value
-    const isValidateGrade = validateGrade(formik.values.grade_level_min, newGradeMax)
+    const newGradeMax = Number(e.target.value)
+    const isValidateGrade = validateGrade(formik.values.min_grade, newGradeMax)
     if (isValidateGrade) {
       formik.handleChange(e)
     }
@@ -396,13 +378,9 @@ const Periods: FunctionComponent = () => {
       sortable: false,
       thClass: 'w-31',
       formatter: (item) =>
-        item.grade_level_min === item.grade_level_max
-          ? item.grade_level_min === 'Kindergarten'
-            ? 'K'
-            : item.grade_level_min
-          : `${item.grade_level_min === 'Kindergarten' ? 'K' : item.grade_level_min} - ${
-              item.grade_level_max === 'Kindergarten' ? 'K' : item.grade_level_max
-            }`,
+        item.min_grade === item.max_grade
+          ? gradeShortText(item.min_grade)
+          : `${gradeShortText(item.min_grade)} - ${gradeShortText(item.max_grade)}`,
     },
     {
       key: 'category',
@@ -522,7 +500,7 @@ const Periods: FunctionComponent = () => {
               transform: 'translate(-50%, -50%)',
               width: '630px',
               height: 'auto',
-              bgcolor: 'white',
+              backgroundColor: 'white',
               borderRadius: 2,
               p: 6,
               maxHeight: '90vh',
@@ -574,22 +552,23 @@ const Periods: FunctionComponent = () => {
                   InputLabelProps={{ shrink: true, sx: classes.textLabel }}
                 />
               </Grid>
+
               <Grid item xs={12} sm={6}>
                 <CssTextField
-                  name='grade_level_min'
+                  name='min_grade'
                   label='Minimum Grade Level'
                   placeholder='Minimum Grade Level'
                   fullWidth
-                  value={formik.values.grade_level_min}
+                  value={formik.values.min_grade}
                   onChange={handleGradeLevelMin}
-                  error={formik.touched.grade_level_min && !!formik.errors.grade_level_min}
-                  helperText={formik.touched.grade_level_min && formik.errors.grade_level_min}
+                  error={formik.touched.min_grade && !!formik.errors.min_grade}
+                  helperText={formik.touched.min_grade && formik.errors.min_grade}
                   InputLabelProps={{ shrink: true, sx: classes.textLabel }}
                   SelectProps={{ displayEmpty: true }}
                   select
                 >
-                  {gradeList.map((option) => (
-                    <MenuItem key={`min_${option.value}`} value={option.value}>
+                  {gradeOptions.map((option) => (
+                    <MenuItem key={`min_${option.value}`} value={Number(option.value)}>
                       {option.label}
                     </MenuItem>
                   ))}
@@ -597,21 +576,21 @@ const Periods: FunctionComponent = () => {
               </Grid>
               <Grid item xs={12} sm={6}>
                 <CssTextField
-                  name='grade_level_max'
+                  name='max_grade'
                   label='Maximum Grade Level'
                   placeholder='Maximum Grade Level'
                   fullWidth
-                  value={formik.values.grade_level_max}
+                  value={formik.values.max_grade}
                   onChange={handleGradeLevelMax}
                   onBlur={formik.handleBlur}
-                  error={formik.touched.grade_level_max && !!formik.errors.grade_level_max}
-                  helperText={formik.touched.grade_level_max && formik.errors.grade_level_max}
+                  error={formik.touched.max_grade && !!formik.errors.max_grade}
+                  helperText={formik.touched.max_grade && formik.errors.max_grade}
                   InputLabelProps={{ shrink: true, sx: classes.textLabel }}
                   SelectProps={{ displayEmpty: true }}
                   select
                 >
-                  {gradeList.map((option) => (
-                    <MenuItem key={`max_${option.value}`} value={option.value}>
+                  {gradeOptions.map((option) => (
+                    <MenuItem key={`max_${option.value}`} value={Number(option.value)}>
                       {option.label}
                     </MenuItem>
                   ))}
@@ -854,8 +833,6 @@ const Periods: FunctionComponent = () => {
           subtitle={`Are you sure you want to ${modalWarning} this Period?`}
           handleSubmit={handleArchiveOrDelete}
           canceltitle='Cancel'
-          classNameBtnOk='bg-gradient-dark'
-          className='custom-modal'
         >
           {modalWarning === 'delete' && (
             <Typography
@@ -870,7 +847,7 @@ const Periods: FunctionComponent = () => {
         </WarningModal>
       )}
 
-      {!!modalErrorGradeValidation && (
+      {modalErrorGradeValidation && (
         <WarningModal
           handleModem={() => setModalErrorGradeValidation(false)}
           title='Error'

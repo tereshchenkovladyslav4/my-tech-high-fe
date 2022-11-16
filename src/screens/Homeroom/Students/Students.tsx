@@ -84,7 +84,7 @@ export const Students: FunctionComponent<StudentsProps> = ({ schoolYears, isLoad
       sort: 'status|ASC',
       take: 25,
     },
-    fetchPolicy: 'cache-only',
+    fetchPolicy: 'network-only',
   })
 
   useEffect(() => {

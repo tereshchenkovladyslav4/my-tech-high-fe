@@ -27,7 +27,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
   onWithoutSaved,
 }) => {
   const [isDraftSaved, setIsDraftSaved] = useState<boolean>(false)
-  const [showSubmitBtn, setShowSubmitBtn] = useState<boolean>(false)
+  const [isValid, setIsValid] = useState<boolean>(false)
   const [showSubmitSuccessModal, setShowSubmitSuccessModal] = useState<boolean>(false)
   const [showRequestUpdatesModal, setShowRequestUpdatesModal] = useState<boolean>(false)
   const [isEditMode, setIsEditMode] = useState<boolean>(false)
@@ -140,7 +140,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
           isInvalid = true
         }
       })
-      setShowSubmitBtn(!isInvalid)
+      setIsValid(!isInvalid)
     }
   }, [scheduleData])
 
@@ -213,14 +213,14 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
         })}
       />
       <Box sx={{ mt: 3 }}>
-        {(isEditMode || !studentScheduleStatus || studentScheduleStatus === ScheduleStatus.DRAFT) &&
-          (showSubmitBtn ? (
+        {(!studentScheduleStatus || studentScheduleStatus === ScheduleStatus.DRAFT) &&
+          (isValid ? (
             <Box sx={{ display: 'flex', justifyContent: 'space-between', paddingX: 6 }}>
               <Button onClick={() => handleSave(ScheduleStatus.DRAFT)} sx={mthButtonClasses.primary}>
                 {MthTitle.SAVE_DRAFT}
               </Button>
               <Button onClick={() => handleSave(ScheduleStatus.SUBMITTED)} sx={mthButtonClasses.dark}>
-                {isEditMode ? MthTitle.SUBMIT_UPDATES : MthTitle.SUBMIT}
+                {MthTitle.SUBMIT}
               </Button>
             </Box>
           ) : (
@@ -230,11 +230,21 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
               </Button>
             </Box>
           ))}
-        {studentScheduleStatus === ScheduleStatus.SUBMITTED && !isEditMode && (
+        {studentScheduleStatus === ScheduleStatus.SUBMITTED && (
           <Box sx={{ display: 'flex', justifyContent: 'end', paddingX: 6 }}>
-            <Button onClick={() => setShowRequestUpdatesModal(true)} sx={mthButtonClasses.orange}>
-              {MthTitle.REQUEST_UPDATES}
-            </Button>
+            {!isEditMode ? (
+              <Button onClick={() => setShowRequestUpdatesModal(true)} sx={mthButtonClasses.orange}>
+                {MthTitle.REQUEST_UPDATES}
+              </Button>
+            ) : (
+              <Button
+                onClick={() => handleSave(ScheduleStatus.SUBMITTED)}
+                sx={mthButtonClasses.dark}
+                disabled={!isValid}
+              >
+                {MthTitle.SUBMIT_UPDATES}
+              </Button>
+            )}
           </Box>
         )}
       </Box>
