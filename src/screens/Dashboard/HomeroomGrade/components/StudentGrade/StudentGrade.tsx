@@ -3,7 +3,7 @@ import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline'
 import ScheduleIcon from '@mui/icons-material/Schedule'
 import { Avatar, Box, CircularProgress, IconButton, Tooltip } from '@mui/material'
 import { useHistory } from 'react-router-dom'
-import { ApplicantStatus, MthColor, MthRoute, PacketStatus } from '@mth/enums'
+import { ApplicantStatus, MthColor, MthRoute, PacketStatus, ScheduleStatus } from '@mth/enums'
 import { SchoolYearType } from '@mth/models'
 import { Metadata } from '../../../../../components/Metadata/Metadata'
 import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragraph'
@@ -41,9 +41,14 @@ export const StudentGrade: StudentGradeTemplateType = ({ student, schoolYears, n
   }
 
   const progress = () => {
-    const { applications, packets } = student
+    const { applications, packets, StudentSchedules } = student
     const currApplication = applications?.at(0)
     const currPacket = packets?.at(0)
+    const currentSchedule = StudentSchedules?.filter(
+      (schedule) =>
+        schedule.StudentId === Number(student?.student_id) &&
+        schedule.SchoolYearId === Number(student?.current_school_year_status?.school_year_id),
+    )?.at(-1)
 
     const studentSchoolYear = schoolYears
       ?.filter((item) => item.school_year_id == student?.current_school_year_status?.school_year_id)
@@ -107,12 +112,31 @@ export const StudentGrade: StudentGradeTemplateType = ({ student, schoolYears, n
       currPacket?.status === PacketStatus.ACCEPTED &&
       currApplication?.status === ApplicantStatus.ACCEPTED
     ) {
-      setCircleData({
-        color: blue,
-        progress: 75,
-        message: 'Waiting for Schedule Builder to Open',
-        icon: <ScheduleIcon sx={{ color: blue, cursor: 'pointer' }} />,
-      })
+      if (currentSchedule?.status === ScheduleStatus.ACCEPTED) {
+        setCircleData({
+          color: blue,
+          progress: 100,
+          message: 'Homeroom Assignment in Progress',
+          icon: <ScheduleIcon sx={{ color: blue, cursor: 'pointer' }} />,
+        })
+      } else if (
+        currentSchedule?.status === ScheduleStatus.SUBMITTED ||
+        currentSchedule?.status === ScheduleStatus.RESUBMITTED
+      ) {
+        setCircleData({
+          color: blue,
+          progress: 75,
+          message: 'Schedule Pending Approval',
+          icon: <ScheduleIcon sx={{ color: blue, cursor: 'pointer' }} />,
+        })
+      } else {
+        setCircleData({
+          color: blue,
+          progress: 75,
+          message: 'Waiting for Schedule Builder to Open',
+          icon: <ScheduleIcon sx={{ color: blue, cursor: 'pointer' }} />,
+        })
+      }
     } else if (notification.at(0)?.phrase === 'Submit Schedule') {
       setCircleData({
         color: MthColor.MTHORANGE,
@@ -120,7 +144,7 @@ export const StudentGrade: StudentGradeTemplateType = ({ student, schoolYears, n
         message: 'Please Submit a Schedule',
         icon: <ErrorOutlineIcon sx={{ color: MthColor.MTHORANGE, cursor: 'pointer' }} />,
       })
-    } else if (notification?.phrase === 'Submit Schedule') {
+    } else if (notification?.at(0)?.phrase === 'Submit Schedule') {
       setCircleData({
         mobileColor: MthColor.MTHORANGE,
         mobileText: notification?.phrase,

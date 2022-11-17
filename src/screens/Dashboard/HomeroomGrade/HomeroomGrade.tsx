@@ -180,10 +180,10 @@ export const HomeroomGrade: React.FC<HomeroomGradeProps> = ({ schoolYears, mainT
             <Box
               className='dynamic-box'
               sx={{
-                width:
+                minWidth:
                   windowDimensions.width > 792
-                    ? Math.max(studentsCnt, 3) * 60 + 'px'
-                    : Math.min(studentsCnt, 4.5) * 60 + 'px',
+                    ? Math.max(studentsCnt, 3) * 100 + 'px'
+                    : Math.min(studentsCnt, 4.5) * 100 + 'px',
                 mr: '20px',
               }}
             >

@@ -1,5 +1,6 @@
 import { FunctionComponent } from 'react'
 import { DropDownItem } from '@mth/components/DropDown/types'
+import { ScheduleStatus } from '@mth/enums'
 import { SchoolYearType } from '@mth/models'
 import { ToDoItem } from '@mth/screens/Dashboard/ToDoList/components/ToDoListItem/types'
 
@@ -94,6 +95,14 @@ export type Application = {
   student_id: number
 }
 
+export type Schedule = {
+  schedule_id: number
+  StudentId: number
+  SchoolYearId: number
+  is_second_semester: boolean
+  status: ScheduleStatus
+}
+
 export type StudentType = {
   grade_levels: GradeLevel[]
   person: Person
@@ -112,6 +121,7 @@ export type StudentType = {
     grade_level: string
     special_ed_options?: string
   }
+  StudentSchedules?: Schedule[]
   status: Status[]
   reenrollment_status: ReenrollmentStatus[]
   testing_preference: string

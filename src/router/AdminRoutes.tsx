@@ -20,6 +20,7 @@ import { Enrollment } from '@mth/screens/Admin/Enrollment/Enrollment'
 import { EnrollmentPackets } from '@mth/screens/Admin/EnrollmentPackets/EnrollmentPackets'
 import { EnrollmentSchedule } from '@mth/screens/Admin/EnrollmentSchedule/EnrollmentSchedule'
 import { ScheduleBuilder } from '@mth/screens/Admin/EnrollmentSchedule/ScheduleBuilder'
+import { CheckList } from '@mth/screens/Admin/HomeRoom/CheckList'
 import { HomeRoom } from '@mth/screens/Admin/HomeRoom/HomeRoom'
 import { LearningLogs } from '@mth/screens/Admin/HomeRoom/LearningLogs'
 import { Records } from '@mth/screens/Admin/Records'
@@ -29,6 +30,7 @@ import { EmailTemplatePage } from '@mth/screens/Admin/SiteManagement/components/
 import SiteManagement from '@mth/screens/Admin/SiteManagement/SiteManagement'
 import { Users } from '@mth/screens/Admin/Users/Users'
 import { Withdrawals } from '@mth/screens/Admin/Withdrawals'
+
 import {
   ADMIN_APPLICATIONS,
   DASHBOARD,
@@ -56,6 +58,7 @@ import {
   CURRICULUM_COURSE_CATALOG_STATE_CODES,
   HOMEROOM,
   HOMEROOM_LEARNING_LOGS,
+  HOMEROOM_CHECKLIST,
 } from '../utils/constants'
 
 export const AdminRoutes: React.FC = () => {
@@ -144,6 +147,9 @@ export const AdminRoutes: React.FC = () => {
       </Route>
       <Route exact path={HOMEROOM_LEARNING_LOGS}>
         <LearningLogs />
+      </Route>
+      <Route exact path={HOMEROOM_CHECKLIST}>
+        <CheckList />
       </Route>
     </Switch>
   )

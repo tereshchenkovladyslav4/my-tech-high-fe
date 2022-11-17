@@ -1,13 +1,14 @@
 import SignatureCanvas from 'react-signature-canvas'
 import { DropDownItem } from '@mth/components/DropDown/types'
 import { RadioGroupOption } from '@mth/components/MthRadioGroup/types'
-import { CourseType, DiplomaSeekingPath, ReduceFunds } from '@mth/enums'
+import { CourseType, DiplomaSeekingPath, ReduceFunds, ScheduleStatus } from '@mth/enums'
 import { AssessmentType } from '@mth/screens/Admin/SiteManagement/EnrollmentSetting/TestingPreference/types'
 import { OnSiteSplitEnrollment } from './ScheduleBuilder/OnSiteSplitEnrollmentEdit/types'
 import { ThirdPartyProvider } from './ScheduleBuilder/ThirdPartyProviderEdit/types'
 
 export type HeaderComponentProps = {
   title: string
+  scheduleStatus?: ScheduleStatus
   handleBack: () => void
 }
 
@@ -62,6 +63,7 @@ export type ScheduleBuilderProps = {
   showUnsavedModal: boolean
   splitEnrollment: boolean
   diplomaSeekingPath: DiplomaSeekingPath
+  setScheduleStatus: (value: ScheduleStatus) => void
   setIsChanged: (value: boolean) => void
   onWithoutSaved: (isYes: boolean) => void
 }

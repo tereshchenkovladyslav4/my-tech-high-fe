@@ -240,7 +240,6 @@ const Subjects: React.FC = () => {
       }),
     )
   }, [subjects])
-
   return (
     <Box sx={commonClasses.mainLayout}>
       <Card sx={{ ...commonClasses.mainBlock, ...commonClasses.fitScreen }}>

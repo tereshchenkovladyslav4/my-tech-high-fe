@@ -23,6 +23,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
   showUnsavedModal = false,
   splitEnrollment = false,
   diplomaSeekingPath,
+  setScheduleStatus,
   setIsChanged,
   onWithoutSaved,
 }) => {
@@ -150,6 +151,10 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
     }
   }, [scheduleBuilderSettingLoading, scheduleBuilderSettingData])
 
+  useEffect(() => {
+    if (studentScheduleStatus) setScheduleStatus(studentScheduleStatus)
+  }, [studentScheduleStatus])
+
   return (
     <>
       <ScheduleEditor
@@ -230,7 +235,9 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
               </Button>
             </Box>
           ))}
-        {studentScheduleStatus === ScheduleStatus.SUBMITTED && (
+        {(studentScheduleStatus === ScheduleStatus.SUBMITTED ||
+          studentScheduleStatus === ScheduleStatus.ACCEPTED ||
+          studentScheduleStatus === ScheduleStatus.RESUBMITTED) && (
           <Box sx={{ display: 'flex', justifyContent: 'end', paddingX: 6 }}>
             {!isEditMode ? (
               <Button onClick={() => setShowRequestUpdatesModal(true)} sx={mthButtonClasses.orange}>

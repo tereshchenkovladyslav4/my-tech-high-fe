@@ -93,7 +93,11 @@ export const StudentSchedule: React.FC = () => {
             <Paragraph
               sx={{ textDecoration: 'underline', cursor: 'pointer' }}
               color={MthColor.MTHBLUE}
-              onClick={() => history.push(`${MthRoute.HOMEROOM}${MthRoute.SUBMIT_SCHEDULE}/${currentStudentId}`)}
+              onClick={() =>
+                history.push(
+                  `${MthRoute.HOMEROOM}${MthRoute.SUBMIT_SCHEDULE}/${currentStudentId}?backTo=${MthRoute.HOMEROOM}/${currentStudentId}`,
+                )
+              }
             >
               Edit/View All
             </Paragraph>

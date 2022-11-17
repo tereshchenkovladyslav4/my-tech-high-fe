@@ -3,6 +3,7 @@ import { useQuery } from '@apollo/client'
 import { Card, Box } from '@mui/material'
 import moment from 'moment'
 import { SortableTable } from '@mth/components/SortableTable/SortableTable'
+import { MthColor } from '@mth/enums'
 import { Withdrawal } from '@mth/graphql/models/withdrawal'
 import { getWithdrawalsQuery } from '@mth/graphql/queries/withdrawal'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
@@ -143,7 +144,18 @@ const WithdrawalPage: React.FC<WithdrawalPageProps> = ({
       setTableData(
         data?.withdrawals.results.map((withdrawal: WithdrawalResponseVM) => ({
           submitted: withdrawal.date ? moment(withdrawal.date).format('MM/DD/YY') : '',
-          status: <Box onClick={() => handleOpenWithdrawalModal(withdrawal)}>{withdrawal.status}</Box>,
+          // status: <Box onClick={() => handleOpenWithdrawalModal(withdrawal)}>{withdrawal.status}</Box>,
+          status: (
+            <Box
+              onClick={() => handleOpenWithdrawalModal(withdrawal)}
+              sx={{
+                cursor: withdrawal.status === 'Requested' ? 'pointer' : 'auto',
+                color: withdrawal.status === 'Requested' ? MthColor.MTHBLUE : MthColor.BLACK,
+              }}
+            >
+              {withdrawal.status}
+            </Box>
+          ),
           effective: withdrawal.date_effective ? (
             <Box
               sx={{ cursor: 'pointer' }}

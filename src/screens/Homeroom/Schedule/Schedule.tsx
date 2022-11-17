@@ -3,7 +3,7 @@ import { useLazyQuery, useMutation, useQuery } from '@apollo/client'
 import { Button, Card } from '@mui/material'
 import { Box } from '@mui/system'
 import moment from 'moment'
-import { useHistory } from 'react-router-dom'
+import { useHistory, useLocation } from 'react-router-dom'
 import SignatureCanvas from 'react-signature-canvas'
 import BGSVG from '@mth/assets/AdminApplicationBG.svg'
 import { DropDown } from '@mth/components/DropDown/DropDown'
@@ -18,7 +18,7 @@ import {
   DEFUALT_DIPLOMA_QUESTION_TITLE,
   SNOWPACK_PUBLIC_S3_URL,
 } from '@mth/constants'
-import { DiplomaSeekingPath, MthRoute, MthTitle, OPT_TYPE } from '@mth/enums'
+import { DiplomaSeekingPath, MthRoute, MthTitle, OPT_TYPE, ScheduleStatus } from '@mth/enums'
 import { diplomaAnswerGql, diplomaQuestionForStudent, submitDiplomaAnswerGql } from '@mth/graphql/queries/diploma'
 import { getSignatureInfoByStudentId } from '@mth/graphql/queries/user'
 import { useAssessmentsBySchoolYearId, useCurrentSchoolYearByRegionId } from '@mth/hooks'
@@ -38,6 +38,9 @@ import { ScheduleProps, StudentAssessment, StudentScheduleInfo, DiplomaQuestionT
 
 const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
   const { me } = useContext(UserContext)
+  const { search } = useLocation()
+  const queryParams = new URLSearchParams(search)
+  const backTo = queryParams.get('backTo')
   const history = useHistory()
   const student = me?.students?.filter((item) => Number(item.student_id) == Number(studentId))?.at(0)
   const [studentInfo, setStudentInfo] = useState<StudentScheduleInfo>()
@@ -63,6 +66,7 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
     description: '',
   })
   const [isDiplomaError, setIsDiplomaError] = useState<boolean>(false)
+  const [scheduleStatus, setScheduleStatus] = useState<ScheduleStatus>()
   const [diplomaOptions, setDiplomaOptions] = useState<RadioGroupOption[]>([
     {
       option_id: 1,
@@ -274,7 +278,7 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
       case MthTitle.STEP_DIPLOMA_SEEKING:
         if (!isInvalid()) {
           // next schedule step
-          setStep(MthTitle.SCHEDULE)
+          setStep(MthTitle.STEP_SCHEDULE_BUILDER)
           setIsDiplomaError(false)
         } else {
           setIsDiplomaError(true)
@@ -300,12 +304,14 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
         if (activeTestingPreference) setStep(MthTitle.STEP_TESTING_PREFERENCE)
         else history.push(MthRoute.DASHBOARD)
         break
-      case MthTitle.SCHEDULE:
+      case MthTitle.STEP_SCHEDULE_BUILDER:
         if (isChanged) {
           setShowUnsavedModal(true)
         } else {
-          if (activeDiplomaSeeking) setStep(MthTitle.STEP_DIPLOMA_SEEKING)
-          else setStep(MthTitle.STEP_OPT_OUT_FORM)
+          if (backTo) history.push(backTo)
+          else if (activeDiplomaSeeking) setStep(MthTitle.STEP_DIPLOMA_SEEKING)
+          else if (activeTestingPreference) setStep(MthTitle.STEP_TESTING_PREFERENCE)
+          else history.push(MthRoute.DASHBOARD)
         }
         break
       default:
@@ -445,6 +451,12 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
     }
   }, [diplomaAnswerLoading, diplomaAnswerData])
 
+  useEffect(() => {
+    if (backTo) {
+      setStep(MthTitle.STEP_SCHEDULE_BUILDER)
+    }
+  }, [backTo])
+
   return (
     <Card sx={{ margin: 4, padding: 4 }}>
       <Box
@@ -454,7 +466,7 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
         }}
       >
         <Box display='flex' flexDirection='row' justifyContent='space-between' alignItems='center'>
-          <HeaderComponent title={MthTitle.SCHEDULE} handleBack={handleBack} />
+          <HeaderComponent scheduleStatus={scheduleStatus} title={MthTitle.SCHEDULE} handleBack={handleBack} />
           {step == MthTitle.STEP_SCHEDULE_BUILDER && (
             <DropDown
               dropDownItems={schoolYearItems}
@@ -512,6 +524,7 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
             splitEnrollment={splitEnrollment}
             showUnsavedModal={showUnsavedModal}
             diplomaSeekingPath={diplomaSeekingPathStatus}
+            setScheduleStatus={setScheduleStatus}
             setIsChanged={setIsChanged}
             onWithoutSaved={handleWithoutSaved}
           />

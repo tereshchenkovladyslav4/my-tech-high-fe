@@ -14,9 +14,9 @@ export type StudentGradeTemplateType = FunctionComponent<StudentGradeProps>
 export type CircleData = {
   color?: string
   progress: number
-  type: string
+  type?: string
   icon?: ReactElement<unknown, string>
-  mobileColor: string
-  mobileText: string
+  mobileColor?: string
+  mobileText?: string
   message?: string
 }

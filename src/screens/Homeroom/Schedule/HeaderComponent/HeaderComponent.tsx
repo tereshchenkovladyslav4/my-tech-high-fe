@@ -1,12 +1,14 @@
 import React from 'react'
 import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded'
-import { IconButton } from '@mui/material'
+import { IconButton, Tooltip } from '@mui/material'
 import { Box } from '@mui/system'
+import DownloadFileIcon from '@mth/assets/icons/file-download.svg'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { ScheduleStatus } from '@mth/enums'
 import { HeaderComponentProps } from '../types'
 import { headerComponentClassess } from './styles'
 
-const HeaderComponent: React.FC<HeaderComponentProps> = ({ title, handleBack }) => {
+const HeaderComponent: React.FC<HeaderComponentProps> = ({ title, scheduleStatus, handleBack }) => {
   return (
     <Box sx={headerComponentClassess.main}>
       <Box sx={headerComponentClassess.pageTitle}>
@@ -16,6 +18,13 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({ title, handleBack }) 
         <Subtitle size='medium' sx={{ fontSize: '20px', marginLeft: 3 }} fontWeight='700'>
           {title}
         </Subtitle>
+        {scheduleStatus && scheduleStatus == ScheduleStatus.ACCEPTED && (
+          <Box sx={{ marginLeft: 4 }}>
+            <Tooltip title='Download' placement='top'>
+              <img src={DownloadFileIcon} alt='Download Icon' />
+            </Tooltip>
+          </Box>
+        )}
       </Box>
     </Box>
   )

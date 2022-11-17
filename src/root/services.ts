@@ -117,6 +117,13 @@ export const getMeQuery = gql`
           status
           application_id
         }
+        StudentSchedules {
+          schedule_id
+          StudentId
+          SchoolYearId
+          status
+          is_second_semester
+        }
         person {
           email
           first_name
