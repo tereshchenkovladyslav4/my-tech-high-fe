@@ -57,7 +57,6 @@ const AddEvent: React.FC<AddEventProps> = ({ selectedEvent }) => {
   const handleCancelClick = () => {
     history.push(MthRoute.CALENDAR)
   }
-
   const onSave = async (values: EventFormData) => {
     await submitSave({
       variables: {
@@ -71,9 +70,11 @@ const AddEvent: React.FC<AddEventProps> = ({ selectedEvent }) => {
           title: values?.title,
           filter_grades: JSON.stringify(values?.grades.filter((grade) => grade)),
           filter_other: JSON.stringify(others),
-          filter_program_year: JSON.stringify(programYears),
+          filter_program_year: JSON.stringify(values?.programYears.filter((programYear) => programYear)),
           filter_provider: JSON.stringify(providers),
-          filter_school_of_enrollment: JSON.stringify(schoolofEnrollments),
+          filter_school_of_enrollment: JSON.stringify(
+            values?.schoolOfEnrollments.filter((schoolOfEnrollment) => schoolOfEnrollment),
+          ),
           filter_users: JSON.stringify(values.users),
           has_rsvp: values?.hasRSVP,
         },
@@ -94,8 +95,10 @@ const AddEvent: React.FC<AddEventProps> = ({ selectedEvent }) => {
       grades: grades,
       hasRSVP: !!event?.hasRSVP,
       users: users,
+      programYears: programYears,
+      schoolOfEnrollments: schoolofEnrollments,
     })
-  }, [event, grades])
+  }, [event, grades, users, programYears, schoolofEnrollments])
 
   useEffect(() => {
     if (selectedEvent) {
@@ -109,7 +112,6 @@ const AddEvent: React.FC<AddEventProps> = ({ selectedEvent }) => {
       if (selectedEvent?.filters?.provider) setProviders(JSON.parse(selectedEvent?.filters?.provider))
     }
   }, [selectedEvent])
-
   return (
     <Card sx={addEventClassess.cardBody}>
       {!showRSVPForm ? (
@@ -140,19 +142,12 @@ const AddEvent: React.FC<AddEventProps> = ({ selectedEvent }) => {
                   </Grid>
                   <Grid item xs={5}>
                     <FilterComponent
-                      grades={grades}
-                      programYears={programYears}
-                      users={users}
-                      schoolofEnrollments={schoolofEnrollments}
                       others={others}
                       providers={providers}
-                      setGrades={setGrades}
-                      setProgramYears={setProgramYears}
-                      setUsers={setUsers}
-                      setSchoolofEnrollment={setSchoolofEnrollment}
                       setOthers={setOthers}
                       setProviders={setProviders}
                       setIsChanged={setIsChanged}
+                      isNew={event === defaultEvent}
                     />
                   </Grid>
                 </Grid>

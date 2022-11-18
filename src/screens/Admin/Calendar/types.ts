@@ -123,6 +123,8 @@ export interface EventFormData {
   grades: string[]
   hasRSVP: boolean
   users: string[]
+  programYears: string[]
+  schoolOfEnrollments: string[]
 }
 
 export type EventFormProps = {
@@ -131,19 +133,12 @@ export type EventFormProps = {
 }
 
 export type FilterComponentProps = {
-  grades: string[]
-  programYears: string[]
-  users: string[]
-  schoolofEnrollments: string[]
   others: string[]
   providers: string[]
-  setGrades: (value: string[]) => void
-  setProgramYears: (value: string[]) => void
-  setUsers: (value: string[]) => void
-  setSchoolofEnrollment: (value: string[]) => void
   setOthers: (value: string[]) => void
   setProviders: (value: string[]) => void
   setIsChanged: (value: boolean) => void
+  isNew?: boolean
 }
 
 export type EventTypeTableProps = {

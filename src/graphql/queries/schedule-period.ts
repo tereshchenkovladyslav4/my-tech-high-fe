@@ -23,6 +23,7 @@ export const getStudentSchedulePeriodsQuery = gql`
       update_required
       Schedule {
         status
+        is_second_semester
       }
     }
   }

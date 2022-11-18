@@ -1,3 +1,10 @@
+import { ScheduleStatus } from '@mth/enums'
+
+export type Schedule = {
+  status: ScheduleStatus
+  is_second_semester: boolean
+}
+
 export type SchedulePeriod = {
   CourseId: number
   PeriodId: number
@@ -17,6 +24,7 @@ export type SchedulePeriod = {
   tp_provider_name: string
   tp_specific_course_website: string
   update_required: boolean
+  Schedule: Schedule
 }
 
 export type SchedulePeriodHistory = {

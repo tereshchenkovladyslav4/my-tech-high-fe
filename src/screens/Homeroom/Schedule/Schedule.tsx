@@ -7,7 +7,6 @@ import { useHistory, useLocation } from 'react-router-dom'
 import SignatureCanvas from 'react-signature-canvas'
 import BGSVG from '@mth/assets/AdminApplicationBG.svg'
 import { DropDown } from '@mth/components/DropDown/DropDown'
-import { DropDownItem } from '@mth/components/DropDown/types'
 import { RadioGroupOption } from '@mth/components/MthRadioGroup/types'
 import {
   DEFAULT_OPT_OUT_FORM_DESCRIPTION,
@@ -21,7 +20,7 @@ import {
 import { DiplomaSeekingPath, MthRoute, MthTitle, OPT_TYPE, ScheduleStatus } from '@mth/enums'
 import { diplomaAnswerGql, diplomaQuestionForStudent, submitDiplomaAnswerGql } from '@mth/graphql/queries/diploma'
 import { getSignatureInfoByStudentId } from '@mth/graphql/queries/user'
-import { useAssessmentsBySchoolYearId, useCurrentSchoolYearByRegionId } from '@mth/hooks'
+import { useActiveScheduleSchoolYears, useAssessmentsBySchoolYearId } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { getSignatureFile } from '@mth/screens/Admin/EnrollmentPackets/services'
 import { AssessmentType } from '@mth/screens/Admin/SiteManagement/EnrollmentSetting/TestingPreference/types'
@@ -59,8 +58,6 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
   const [signatureFileUrl, setSignatureFileUrl] = useState<string>('')
   const [activeTestingPreference, setActiveTestingPreference] = useState<boolean>(false)
   const [activeDiplomaSeeking, setActiveDiplomaSeeking] = useState<boolean>(false)
-  const [schoolYearItems, setSchoolYearItems] = useState<DropDownItem[]>([])
-  const [splitEnrollment, setSplitEnrollment] = useState<boolean>(false)
   const [diplomaQuestion, setDiplomaQuestion] = useState<DiplomaQuestionType>({
     title: '',
     description: '',
@@ -82,10 +79,13 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
   const [diplomaSeekingPathStatus, setDiplomaSeekingPathStatus] = useState<DiplomaSeekingPath>(DiplomaSeekingPath.BOTH)
   const [isChanged, setIsChanged] = useState<boolean>(false)
   const [showUnsavedModal, setShowUnsavedModal] = useState<boolean>(false)
-  const [selectedYear, setSelectedYear] = useState<number>(student?.current_school_year_status?.school_year_id || 0)
-  const { data: currentSchoolYear, loading: currentSchoolYearLoading } = useCurrentSchoolYearByRegionId(
-    me?.userRegion?.at(-1)?.region_id || 0,
-  )
+
+  const {
+    selectedYearId,
+    setSelectedYearId,
+    selectedYear,
+    dropdownItems: schoolYearItems,
+  } = useActiveScheduleSchoolYears(studentId)
 
   const { loading: diplomaLoading, data: diplomaData } = useQuery(diplomaQuestionForStudent, {
     variables: {
@@ -116,7 +116,7 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
   const [saveDiplomaAnswer] = useMutation(submitDiplomaAnswerGql)
 
   const submitDiplomaAnswer = async (options: RadioGroupOption[]) => {
-    const answerOption = options.find((item: RadioGroupOption) => item.value === true)
+    const answerOption = options.find((item: RadioGroupOption) => item.value)
     const answer = answerOption?.option_id === 1 ? 1 : 0
     await saveDiplomaAnswer({
       variables: {
@@ -127,7 +127,7 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
         },
       },
     })
-    diplomaAnswerRefetch()
+    await diplomaAnswerRefetch()
   }
 
   const { assessments, loading, schoolYear } = useAssessmentsBySchoolYearId(
@@ -138,7 +138,7 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
     variables: {
       studentId: studentId,
     },
-    skip: studentId ? false : true,
+    skip: !studentId,
     fetchPolicy: 'network-only',
   })
 
@@ -202,7 +202,7 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
         })
         return invalid
       case MthTitle.STEP_DIPLOMA_SEEKING:
-        const answerOb = diplomaOptions.find((item: RadioGroupOption) => item.value === true)
+        const answerOb = diplomaOptions.find((item: RadioGroupOption) => item.value)
         if (!answerOb) {
           invalid = true
         }
@@ -247,7 +247,7 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
   const handleSaveSignatureFile = async () => {
     if (signatureRef && !signatureRef.isEmpty()) {
       const file = await dataUrlToFile(signatureRef?.getTrimmedCanvas()?.toDataURL('image/png') || '', 'signature')
-      if (file) uploadSignature(file)
+      if (file) await uploadSignature(file)
     }
   }
 
@@ -259,7 +259,7 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
     setShowUnsavedModal(false)
   }
 
-  const handleNextStep = () => {
+  const handleNextStep = async () => {
     switch (step) {
       case MthTitle.STEP_TESTING_PREFERENCE:
         if (!isInvalid()) {
@@ -269,7 +269,7 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
         }
         break
       case MthTitle.STEP_OPT_OUT_FORM:
-        handleSaveSignatureFile()
+        await handleSaveSignatureFile()
         if (!isInvalid()) {
           if (activeDiplomaSeeking) setStep(MthTitle.STEP_DIPLOMA_SEEKING)
           else setStep(MthTitle.STEP_SCHEDULE_BUILDER)
@@ -287,7 +287,7 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
     }
   }
 
-  const handleBack = () => {
+  const handleBack = async () => {
     switch (step) {
       case MthTitle.STEP_TESTING_PREFERENCE:
         history.push(MthRoute.DASHBOARD)
@@ -300,7 +300,7 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
         } else history.push(MthRoute.DASHBOARD)
         break
       case MthTitle.STEP_OPT_OUT_FORM:
-        handleSaveSignatureFile()
+        await handleSaveSignatureFile()
         if (activeTestingPreference) setStep(MthTitle.STEP_TESTING_PREFERENCE)
         else history.push(MthRoute.DASHBOARD)
         break
@@ -419,20 +419,6 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
   }, [diplomaLoading, diplomaData])
 
   useEffect(() => {
-    if (!currentSchoolYearLoading && currentSchoolYear) {
-      setSchoolYearItems([
-        {
-          value: currentSchoolYear.school_year_id,
-          label: `${moment(currentSchoolYear.date_begin).format('YYYY')}-${moment(currentSchoolYear.date_end).format(
-            'YY',
-          )}`,
-        },
-      ])
-      setSplitEnrollment(currentSchoolYear?.ScheduleBuilder?.split_enrollment)
-    }
-  }, [currentSchoolYear, currentSchoolYearLoading])
-
-  useEffect(() => {
     if (!diplomaAnswerLoading) {
       if (diplomaAnswerData && diplomaAnswerData.getDiplomaAnswer) {
         setDiplomaOptions([
@@ -471,10 +457,10 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
             <DropDown
               dropDownItems={schoolYearItems}
               placeholder={'Select Year'}
-              defaultValue={selectedYear}
+              defaultValue={selectedYearId}
               borderNone={true}
               setParentValue={(val) => {
-                setSelectedYear(Number(val))
+                setSelectedYearId(Number(val))
               }}
             />
           )}
@@ -520,11 +506,15 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
           <ScheduleBuilder
             studentId={studentId}
             studentName={student?.person?.first_name || ''}
-            selectedYear={selectedYear}
-            splitEnrollment={splitEnrollment}
+            selectedYear={selectedYearId}
+            showSecondSemester={
+              selectedYear?.ScheduleStatus === ScheduleStatus.ACCEPTED && !!selectedYear?.IsSecondSemesterOpen
+            }
+            splitEnrollment={!!selectedYear?.ScheduleBuilder?.split_enrollment}
             showUnsavedModal={showUnsavedModal}
             diplomaSeekingPath={diplomaSeekingPathStatus}
             setScheduleStatus={setScheduleStatus}
+            isChanged={isChanged}
             setIsChanged={setIsChanged}
             onWithoutSaved={handleWithoutSaved}
           />

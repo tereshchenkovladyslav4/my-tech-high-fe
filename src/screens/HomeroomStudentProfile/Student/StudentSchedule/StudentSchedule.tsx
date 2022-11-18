@@ -47,11 +47,12 @@ export const StudentSchedule: React.FC = () => {
 
   const [tableData, setTableData] = useState<MthTableRowItem<ScheduleData>[]>([])
 
-  const { selectedYearId } = useActiveScheduleSchoolYears(currentStudentId)
-  const { scheduleData } = useStudentSchedulePeriods(currentStudentId, selectedYearId)
+  const { activeScheduleYearId } = useActiveScheduleSchoolYears(currentStudentId)
+  const { scheduleData } = useStudentSchedulePeriods(currentStudentId, activeScheduleYearId)
 
   const createData = (schedule: ScheduleData): MthTableRowItem<ScheduleData> => {
     return {
+      key: `schedule-${schedule.period}`,
       columns: {},
       rawData: schedule,
     }
@@ -69,7 +70,7 @@ export const StudentSchedule: React.FC = () => {
 
   return (
     <>
-      {!!selectedYearId && !!scheduleData?.length && (
+      {!!activeScheduleYearId && !!scheduleData?.length && (
         <Card
           sx={{
             borderRadius: 4,

@@ -1,3 +1,4 @@
+import { ScheduleStatus } from '@mth/enums'
 import { ScheduleBuilder } from '@mth/models'
 
 export type SchoolYear = {
@@ -26,4 +27,8 @@ export type SchoolYear = {
   schedule: boolean
   diploma_seeking: boolean
   ScheduleBuilder?: ScheduleBuilder
+  IsCurrentYear: boolean
+  IsScheduleBuilderOpen: boolean
+  IsSecondSemesterOpen: boolean
+  ScheduleStatus: ScheduleStatus
 }

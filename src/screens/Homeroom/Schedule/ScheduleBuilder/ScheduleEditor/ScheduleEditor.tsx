@@ -1,5 +1,5 @@
 import React, { ReactNode, useEffect, useState } from 'react'
-import { Close, Check } from '@mui/icons-material'
+import { Check, Close } from '@mui/icons-material'
 import CallMissedOutgoingIcon from '@mui/icons-material/CallMissedOutgoing'
 import ModeEditIcon from '@mui/icons-material/ModeEdit'
 import QuestionMarkIcon from '@mui/icons-material/QuestionMark'
@@ -15,6 +15,7 @@ import { MenuItemData } from '@mth/components/NestedDropdown/types'
 import { COURSE_TYPE_ITEMS, RICH_TEXT_VALID_MIN_LENGTH } from '@mth/constants'
 import { CourseType, MthColor, MthTitle, ReduceFunds, ScheduleStatus } from '@mth/enums'
 import { makeProviderData } from '@mth/hooks'
+import { SEMESTER_TYPE } from '@mth/screens/Admin/Curriculum/types'
 import { CustomBuiltDescriptionEdit } from '@mth/screens/Homeroom/Schedule/ScheduleBuilder/CustomBuiltDescription'
 import { extractContent, gradeShortText } from '@mth/utils'
 import { Course, Period, ScheduleData, Subject, Title } from '../../types'
@@ -48,6 +49,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
   setScheduleData,
   isAdmin = false,
   isEditMode = false,
+  isSecondSemester = false,
   setIsChanged,
   splitEnrollment,
   parentTooltip,
@@ -565,13 +567,20 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
       }
     }
 
+    if (
+      isSecondSemester &&
+      schedule.FirstSemesterSchedule?.Period?.semester !== SEMESTER_TYPE.NONE &&
+      (!scheduleStatus || scheduleStatus === ScheduleStatus.DRAFT)
+    ) {
+      schedule.editable = true
+    }
     return schedule
   }
 
   const createData = (schedule: ScheduleData): MthTableRowItem<ScheduleData> => {
     schedule = processScheduleData(schedule)
     return {
-      key: `schedule-${schedule.period}`,
+      key: `${isSecondSemester}-schedule-${schedule.period}`,
       columns: {
         Type: 'Lorem',
         Description: 'Lorem',
@@ -658,7 +667,10 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
                   {('0' + item.rawData.period).slice(-2)}
                 </Typography>
                 <Box sx={{ marginLeft: '20px', minWidth: 'calc(100% - 40px)' }}>
-                  {editable(item.rawData) && item.rawData.filteredPeriods?.length > 0 ? (
+                  {editable(item.rawData) &&
+                  (!isSecondSemester ||
+                    item.rawData.FirstSemesterSchedule?.Period?.semester === SEMESTER_TYPE.PERIOD) &&
+                  item.rawData.filteredPeriods?.length > 0 ? (
                     <NestedDropdown
                       menuItemsData={createPeriodMenuItems(item.rawData)}
                       MenuProps={{ elevation: 3 }}
@@ -908,6 +920,24 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
                   )}
                 </Box>
               )}
+              {isSecondSemester && editable(item.rawData) && (
+                <Typography
+                  sx={{
+                    ...scheduleBuilderClasses.tableContent,
+                    position: 'absolute',
+                    right: '12px',
+                    bottom: '4px',
+                    fontWeight: 700,
+                    color: MthColor.MTHBLUE,
+                    cursor: 'pointer',
+                  }}
+                  onClick={() => {
+                    //  TODO
+                  }}
+                >
+                  No Changes
+                </Typography>
+              )}
             </Box>
           )
         },
@@ -958,7 +988,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
   }
 
   useEffect(() => {
-    if (scheduleData?.length) {
+    if (scheduleData) {
       setTableData(
         setMultiPeriods(scheduleData).map((item) => {
           return createData(item)

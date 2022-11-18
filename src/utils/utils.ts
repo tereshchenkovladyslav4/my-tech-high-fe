@@ -167,6 +167,9 @@ export const extractAllNumFromStr = (str: string): Array<number> => {
 }
 
 export const phoneFormat = (phone: string): string => {
+  if (!phone) {
+    return ''
+  }
   phone = phone.replaceAll('-', '')
   return `${phone.substring(0, 3)}-${phone.substring(3, 6)}-${phone.substring(6, 10)}`
 }

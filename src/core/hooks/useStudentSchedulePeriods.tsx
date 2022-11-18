@@ -33,19 +33,75 @@ export const makeProviderData = (courses: Course[], altCourses: Course[]): Provi
   return providers
 }
 
+export const attachSelectedItems = (
+  item: ScheduleData,
+  schedulePeriod: SchedulePeriod | undefined,
+): ScheduleData | void => {
+  if (!schedulePeriod) return
+  const period = item?.Periods?.find((periodItem) => periodItem?.id === schedulePeriod?.PeriodId)
+  if (period) {
+    item.Period = period
+    item.schedulePeriodId = schedulePeriod.schedule_period_id
+    item.updateRequired = schedulePeriod.update_required
+    if (schedulePeriod.SubjectId)
+      item.Subject = period.Subjects?.find((subject) => subject?.subject_id === schedulePeriod.SubjectId)
+    if (schedulePeriod.TitleId)
+      period.Subjects?.forEach((subject) => {
+        subject.Titles.concat(subject.AltTitles)?.map((title) => {
+          if (title.title_id === schedulePeriod.TitleId) item.Title = title
+        })
+      })
+    if (schedulePeriod.CourseId)
+      period.Subjects?.forEach((subject) => {
+        subject.Courses.concat(subject.AltCourses)?.forEach((course) => {
+          if (course.id === schedulePeriod.CourseId) item.Course = course
+        })
+        subject.Titles.concat(subject.AltTitles)?.forEach((title) => {
+          title.Courses.concat(title.AltCourses)?.forEach((course) => {
+            if (course.id === schedulePeriod.CourseId) item.Course = course
+          })
+        })
+      })
+    if (schedulePeriod.course_type) item.CourseType = schedulePeriod.course_type as CourseType
+    if (schedulePeriod.course_type === CourseType.CUSTOM_BUILT)
+      item.CustomBuiltDescription = schedulePeriod.custom_build_description
+    if (schedulePeriod.course_type === CourseType.MTH_DIRECT && schedulePeriod.osse_coures_name)
+      item.OnSiteSplitEnrollment = {
+        courseName: schedulePeriod.osse_coures_name,
+        districtSchool: schedulePeriod.osse_district_school,
+        schoolDistrictName: schedulePeriod.osse_school_district_name,
+      }
+    if (schedulePeriod.course_type === CourseType.THIRD_PARTY_PROVIDER)
+      item.ThirdParty = {
+        providerName: schedulePeriod.tp_provider_name,
+        courseName: schedulePeriod.tp_course_name,
+        phoneNumber: schedulePeriod.tp_phone_number,
+        specificCourseWebsite: schedulePeriod.tp_specific_course_website,
+        additionalWebsite: schedulePeriod.tp_addtional_specific_course_website
+          ? JSON.parse(schedulePeriod.tp_addtional_specific_course_website)
+          : '',
+      }
+  }
+  return item
+}
+
 export const useStudentSchedulePeriods = (
   student_id: number,
   school_year_id: number | undefined,
   diplomaSeekingPath: DiplomaSeekingPath | null = null,
+  showSecondSemester = false,
 ): {
   scheduleData: ScheduleData[]
-  studentScheduleId: number
-  studentScheduleStatus: ScheduleStatus
   setScheduleData: (value: ScheduleData[]) => void
+  secondScheduleData: ScheduleData[]
+  setSecondScheduleData: (value: ScheduleData[]) => void
+  studentScheduleId: number
   setStudentScheduleId: (value: number) => void
+  studentScheduleStatus: ScheduleStatus
   refetch: () => void
 } => {
   const [scheduleData, setScheduleData] = useState<ScheduleData[]>([])
+  const [secondScheduleData, setSecondScheduleData] = useState<ScheduleData[]>([])
   const [studentScheduleId, setStudentScheduleId] = useState<number>(0)
   const [studentScheduleStatus, setStudentScheduleStatus] = useState<ScheduleStatus>(ScheduleStatus.SUBMITTED)
 
@@ -104,6 +160,8 @@ export const useStudentSchedulePeriods = (
 
       const scheduleData = groupBy(studentPeriods, 'period')
       const scheduleDataArray: ScheduleData[] = []
+      let firstScheduleDataArray: ScheduleData[] = []
+      let secondScheduleDataArray: ScheduleData[] = []
       for (const key in scheduleData) {
         scheduleDataArray.push({
           period: +key,
@@ -114,68 +172,59 @@ export const useStudentSchedulePeriods = (
 
       if (!studentSchedulePeriodsLoading && studentSchedulePeriodsData?.schedulePeriods) {
         const { schedulePeriods } = studentSchedulePeriodsData
-        schedulePeriods.map((schedulePeriod: SchedulePeriod) => {
-          scheduleDataArray.map((item) => {
-            const period = item?.Periods?.find((periodItem) => periodItem?.id === schedulePeriod?.PeriodId)
-            if (period) {
-              item.Period = period
-              item.schedulePeriodId = schedulePeriod.schedule_period_id
-              item.updateRequired = schedulePeriod.update_required
-              if (schedulePeriod.SubjectId)
-                item.Subject = period.Subjects?.find((subject) => subject?.subject_id === schedulePeriod.SubjectId)
-              if (schedulePeriod.TitleId)
-                period.Subjects?.forEach((subject) => {
-                  subject.Titles.concat(subject.AltTitles)?.map((title) => {
-                    if (title.title_id === schedulePeriod.TitleId) item.Title = title
-                  })
-                })
-              if (schedulePeriod.CourseId)
-                period.Subjects?.forEach((subject) => {
-                  subject.Courses.concat(subject.AltCourses)?.forEach((course) => {
-                    if (course.id === schedulePeriod.CourseId) item.Course = course
-                  })
-                  subject.Titles.concat(subject.AltTitles)?.forEach((title) => {
-                    title.Courses.concat(title.AltCourses)?.forEach((course) => {
-                      if (course.id === schedulePeriod.CourseId) item.Course = course
-                    })
-                  })
-                })
-              if (schedulePeriod.course_type) item.CourseType = schedulePeriod.course_type as CourseType
-              if (schedulePeriod.course_type === CourseType.CUSTOM_BUILT)
-                item.CustomBuiltDescription = schedulePeriod.custom_build_description
-              if (schedulePeriod.course_type === CourseType.MTH_DIRECT && schedulePeriod.osse_coures_name)
-                item.OnSiteSplitEnrollment = {
-                  courseName: schedulePeriod.osse_coures_name,
-                  districtSchool: schedulePeriod.osse_district_school,
-                  schoolDistrictName: schedulePeriod.osse_school_district_name,
-                }
-              if (schedulePeriod.course_type === CourseType.THIRD_PARTY_PROVIDER)
-                item.ThirdParty = {
-                  providerName: schedulePeriod.tp_provider_name,
-                  courseName: schedulePeriod.tp_course_name,
-                  phoneNumber: schedulePeriod.tp_phone_number,
-                  specificCourseWebsite: schedulePeriod.tp_specific_course_website,
-                  additionalWebsite: schedulePeriod.tp_addtional_specific_course_website
-                    ? JSON.parse(schedulePeriod.tp_addtional_specific_course_website)
-                    : '',
-                }
-            }
-          })
+        const firstSchedulePeriods: SchedulePeriod[] = schedulePeriods.filter(
+          (item: SchedulePeriod) => !item.Schedule.is_second_semester,
+        )
+        firstScheduleDataArray = JSON.parse(JSON.stringify(scheduleDataArray))
+        firstScheduleDataArray.map((item) => {
+          const schedulePeriod = firstSchedulePeriods.find(
+            (x) => item.Periods.findIndex((period) => period.id === x.PeriodId) > -1,
+          )
+          return attachSelectedItems(item, schedulePeriod)
         })
-        setStudentScheduleId(schedulePeriods[0]?.ScheduleId)
-        setStudentScheduleStatus(schedulePeriods[0]?.Schedule?.status)
+
+        const secondSchedulePeriods: SchedulePeriod[] = schedulePeriods.filter(
+          (item: SchedulePeriod) => item.Schedule.is_second_semester,
+        )
+        if (secondSchedulePeriods?.length) {
+          secondScheduleDataArray = JSON.parse(JSON.stringify(scheduleDataArray))
+          secondScheduleDataArray.map((item) => {
+            const schedulePeriod = secondSchedulePeriods.find(
+              (x) => item.Periods.findIndex((period) => period.id === x.PeriodId) > -1,
+            )
+            return attachSelectedItems(item, schedulePeriod)
+          })
+        } else {
+          secondScheduleDataArray = JSON.parse(JSON.stringify(firstScheduleDataArray))
+          secondScheduleDataArray.map((item) => delete item.schedulePeriodId)
+        }
+
+        secondScheduleDataArray.map((item) => {
+          item.FirstSemesterSchedule = firstScheduleDataArray.find((x) => (x.period = item.period))
+        })
+
+        if (showSecondSemester) {
+          setStudentScheduleId(secondSchedulePeriods[0]?.ScheduleId)
+          setStudentScheduleStatus(secondSchedulePeriods[0]?.Schedule?.status)
+        } else {
+          setStudentScheduleId(firstSchedulePeriods[0]?.ScheduleId)
+          setStudentScheduleStatus(firstSchedulePeriods[0]?.Schedule?.status)
+        }
       }
 
-      setScheduleData(scheduleDataArray)
+      setScheduleData(firstScheduleDataArray.length ? firstScheduleDataArray : scheduleDataArray)
+      setSecondScheduleData(secondScheduleDataArray.length ? secondScheduleDataArray : scheduleDataArray)
     }
   }, [loading, periodsData, studentSchedulePeriodsLoading, studentSchedulePeriodsData, loadingProviders, providersData])
 
   return {
     scheduleData: scheduleData,
-    studentScheduleId: studentScheduleId,
-    studentScheduleStatus: studentScheduleStatus,
     setScheduleData: setScheduleData,
+    secondScheduleData: secondScheduleData,
+    setSecondScheduleData: setSecondScheduleData,
+    studentScheduleId: studentScheduleId,
     setStudentScheduleId: setStudentScheduleId,
+    studentScheduleStatus: studentScheduleStatus,
     refetch,
   }
 }

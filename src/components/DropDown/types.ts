@@ -26,6 +26,7 @@ export type DropDownProps = {
   name?: string
   disabled?: boolean
   dropdownColor?: string
+  color?: string
   isAddable?: boolean
   idx?: number
   auto?: boolean

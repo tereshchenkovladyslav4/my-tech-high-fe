@@ -3,7 +3,7 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { Box, Card, Grid } from '@mui/material'
 import { useFormikContext } from 'formik'
-import { map, sortBy } from 'lodash'
+import { sortBy } from 'lodash'
 import { MthCheckboxList } from '@mth/components/MthCheckboxList'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { MthColor } from '@mth/enums'
@@ -20,23 +20,18 @@ type OtherType = {
 }
 
 const FilterComponent: React.FC<FilterComponentProps> = ({
-  programYears,
-  schoolofEnrollments,
   others,
   providers,
-  setGrades,
-  setProgramYears,
-  setSchoolofEnrollment,
   setOthers,
   setProviders,
   setIsChanged,
+  isNew,
 }) => {
   const { me } = useContext(UserContext)
   const { errors, setFieldValue, touched, values } = useFormikContext<EventFormData>()
   const { programYearList, gradeList, schoolPartnerList, testPreference } = useCurrentGradeAndProgramByRegionId(
     Number(me?.selectedRegionId),
   )
-
   const [expand, setExpand] = useState<boolean>(true)
   const [showOtherFilters, setShowOtherFilters] = useState(false)
   const [otherList, setOtherList] = useState<OtherType[]>([])
@@ -46,14 +41,22 @@ const FilterComponent: React.FC<FilterComponentProps> = ({
 
   useEffect(() => {
     if (selectAll && programYearList && schoolPartnerList && gradeList) {
-      setProgramYears(map(programYearList, (el) => el.value))
-      setSchoolofEnrollment(map(schoolPartnerList, (el) => el.value))
-      if (values.grades.length === 0) setGrades(['all', ...map(gradeList, (el) => el.value)])
+      setFieldValue('grades', ['all', ...sortedGradeList.map(({ value }) => value)])
+      setFieldValue(
+        'programYears',
+        programYearList.map(({ value }) => value),
+      )
+      setFieldValue(
+        'schoolOfEnrollments',
+        schoolPartnerList.map(({ value }) => value),
+      )
     }
   }, [selectAll])
 
   useEffect(() => {
-    setSelectAll(values.users.includes('1') || values.users.includes('2'))
+    if (isNew) {
+      setSelectAll(values.users.includes('1') || values.users.includes('2'))
+    }
   }, [values.users])
 
   useEffect(() => {
@@ -154,19 +157,21 @@ const FilterComponent: React.FC<FilterComponentProps> = ({
             <Box sx={addEventClassess.container}>
               <MthCheckboxList
                 title={'Program Year'}
-                values={programYears}
-                setValues={(value) => {
-                  setProgramYears(value)
-                  setIsChanged(true)
-                }}
+                values={values.programYears}
                 checkboxLists={programYearList}
                 haveSelectAll={false}
+                setValues={(value) => {
+                  setFieldValue('programYears', value)
+                  setIsChanged(true)
+                }}
+                showError={(touched.programYears && errors.programYears) as boolean}
+                error={<Subtitle sx={calendarClassess.formError}>{errors.programYears}</Subtitle>}
               />
               <MthCheckboxList
                 title={'School of Enrollment'}
-                values={schoolofEnrollments}
+                values={values.schoolOfEnrollments}
                 setValues={(value) => {
-                  setSchoolofEnrollment(value)
+                  setFieldValue('schoolOfEnrollments', value)
                   setIsChanged(true)
                 }}
                 checkboxLists={schoolPartnerList}

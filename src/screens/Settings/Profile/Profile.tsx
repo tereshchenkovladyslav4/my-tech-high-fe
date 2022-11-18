@@ -16,14 +16,14 @@ import {
 import { useFormik } from 'formik'
 import * as yup from 'yup'
 import { CustomConfirmModal } from '@mth/components/CustomConfirmModal/CustomConfirmModal'
-import { DocumentUploadModal } from '@mth/components/DocumentUploadModal/DocumentUploadModal'
 import { DropDown } from '@mth/components/DropDown/DropDown'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { SNOWPACK_PUBLIC_S3_UPLOAD } from '@mth/constants'
 import { UserContext, UserInfo } from '@mth/providers/UserContext/UserProvider'
 import { usStates } from '../../../utils/states'
-import { updateProfile, removeProfilePhoto } from '../service'
+import { ImageCropper } from '../ImageCropper'
+import { updateProfile } from '../service'
 import { settingClasses } from '../styles'
 import { ProfileProps } from './types'
 
@@ -36,7 +36,6 @@ type openAlertSaveType = {
 export const Profile: React.FC<ProfileProps> = ({ handleIsFormChange }) => {
   const { me, setMe } = useContext(UserContext)
   const { profile } = me as UserInfo
-  const [imageModalOpen, setImageModalOpen] = useState(false)
   const [warningModalOpen, setWarningModalOpen] = useState<{
     title: string
     subtitle: string
@@ -48,6 +47,27 @@ export const Profile: React.FC<ProfileProps> = ({ handleIsFormChange }) => {
   const [avatar, setAvatar] = useState<string | null>(null)
   const [receiveText, setReceiveText] = useState(false)
   const [uploadedFile, setUploadedFile] = useState<File | undefined>()
+  const [open, setOpen] = useState<boolean>(false)
+  const [imageToCrop, setImageToCrop] = useState<string | ArrayBuffer | null>('')
+
+  const handleClickOpen = () => {
+    setOpen(true)
+  }
+
+  const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setOpen(false)
+    if (e.target.files && e.target.files.length > 0) {
+      const reader = new FileReader()
+      reader.addEventListener('load', () => {
+        const image = reader.result
+        setImageToCrop(image)
+        handleClickOpen()
+        e.target.value = ''
+      })
+
+      reader.readAsDataURL(e.target.files[0])
+    }
+  }
 
   const [openSaveAlert, setOpenSaveAlert] = useState<openAlertSaveType>({
     message: '',
@@ -55,7 +75,6 @@ export const Profile: React.FC<ProfileProps> = ({ handleIsFormChange }) => {
     open: false,
   })
   const [submitUpdate] = useMutation(updateProfile)
-  const [submitRemoveProfilePhoto] = useMutation(removeProfilePhoto)
 
   const uploadPhoto = async (file: File) => {
     if (file) {
@@ -78,9 +97,22 @@ export const Profile: React.FC<ProfileProps> = ({ handleIsFormChange }) => {
   }
 
   const onSave = async () => {
+    let profileUrl = avatar
+    if (uploadedFile) {
+      profileUrl = await uploadPhoto(uploadedFile)
+      if (!profileUrl) {
+        setOpenSaveAlert({
+          message: 'Unknown error occurred while uploading profile photo.',
+          status: 'error',
+          open: true,
+        })
+        return
+      }
+    }
     submitUpdate({
       variables: {
         updateProfileInput: {
+          avatar_url: profileUrl,
           address_1: formik.values.address1,
           address_2: formik.values.address2,
           city: formik.values.city,
@@ -98,44 +130,18 @@ export const Profile: React.FC<ProfileProps> = ({ handleIsFormChange }) => {
       },
     })
       .then(async () => {
-        // fire upload fetch
-        let profileUrl = ''
-        if (uploadedFile) {
-          profileUrl = await uploadPhoto(uploadedFile)
-          if (profileUrl) {
-            setOpenSaveAlert({ message: 'Profile Updated Successfully.', status: 'success', open: true })
+        setOpenSaveAlert({ message: 'Profile Updated Successfully.', status: 'success', open: true })
 
-            setTimeout(() => {
-              setOpenSaveAlert({ message: '', status: 'success', open: false })
-              if (formik.values.email !== profile?.email) location.replace('/')
-            }, 2000)
-          } else {
-            setOpenSaveAlert({
-              message: 'Unknown error occurred while uploading profile photo.',
-              status: 'error',
-              open: true,
-            })
-
-            setTimeout(() => {
-              setOpenSaveAlert({ message: '', status: 'success', open: false })
-
-              if (formik.values.email !== me?.email) location.replace('/')
-            }, 2000)
-          }
-          handleIsFormChange(false)
-        } else {
-          setOpenSaveAlert({ message: 'Profile Updated Successfully.', status: 'success', open: true })
-
-          setTimeout(() => {
-            setOpenSaveAlert({ message: '', status: 'success', open: false })
-
-            if (formik.values.email !== me?.email) location.replace('/')
-          }, 2000)
-
-          handleIsFormChange(false)
+        setTimeout(() => {
+          setOpenSaveAlert({ message: '', status: 'success', open: false })
 
           if (formik.values.email !== me?.email) location.replace('/')
-        }
+        }, 2000)
+
+        handleIsFormChange(false)
+
+        if (formik.values.email !== me?.email) location.replace('/')
+        // fire upload fetch
 
         setMe((prevMe) => {
           return {
@@ -238,14 +244,6 @@ export const Profile: React.FC<ProfileProps> = ({ handleIsFormChange }) => {
     }
   }
 
-  const openImageModal = () => setImageModalOpen(true)
-
-  const handleFile = (files: File[]) => {
-    if (files?.length) {
-      setUploadedFile(files[0])
-    }
-  }
-
   useEffect(() => {
     if (me && me.avatar_url) setAvatar(me?.avatar_url)
   }, [me])
@@ -256,48 +254,37 @@ export const Profile: React.FC<ProfileProps> = ({ handleIsFormChange }) => {
 
   const Image = () => (
     <Box display='flex' flexDirection='column' justifyContent={'center'} sx={{ height: 167, width: 167 }}>
-      {uploadedFile || avatar ? (
-        <>
-          <Avatar
-            src={uploadedFile ? convertToBlob(uploadedFile) : getProfilePhoto()}
-            variant='rounded'
-            sx={{ height: '100%', width: '100%' }}
-          />
+      <input
+        style={{ display: 'none' }}
+        id='uploadProfileImageId'
+        type='file'
+        accept='image/png, image/jpeg'
+        onChange={(e) => handleFileInput(e)}
+      />
+      <label style={{ display: 'flex', justifyContent: 'space-around', minWidth: 160 }} htmlFor='uploadProfileImageId'>
+        {uploadedFile || avatar ? (
+          <>
+            <Avatar
+              src={uploadedFile ? convertToBlob(uploadedFile) : getProfilePhoto()}
+              variant='rounded'
+              sx={{ height: '100%', width: '100%', cursor: 'pointer' }}
+            />
+          </>
+        ) : (
           <Box
-            component='a'
-            onClick={() =>
-              setWarningModalOpen({
-                title: 'Delete Image',
-                subtitle: 'Are you sure you want to delete this image?',
-                callback: () => {
-                  submitRemoveProfilePhoto().then(() => {
-                    setUploadedFile(undefined)
-                    setAvatar(null)
-                  })
-                },
-              })
-            }
-            sx={{ cursor: 'pointer', p: 1, zIndex: 999 }}
+            display='flex'
+            flexDirection='column'
+            justifyContent={'center'}
+            sx={{ backgroundColor: '#FAFAFA', alignItems: 'center', cursor: 'pointer', height: '100%', width: '100%' }}
           >
-            <Paragraph size='medium' color='#7B61FF' fontWeight='500' textAlign='center'>
-              Remove Profile Picture
+            <SystemUpdateAltIcon />
+            <Paragraph size='medium' fontWeight='500'>
+              Upload Photo
             </Paragraph>
           </Box>
-        </>
-      ) : (
-        <Box
-          display='flex'
-          flexDirection='column'
-          justifyContent={'center'}
-          sx={{ backgroundColor: '#FAFAFA', alignItems: 'center', cursor: 'pointer', height: '100%', width: '100%' }}
-          onClick={() => openImageModal()}
-        >
-          <SystemUpdateAltIcon />
-          <Paragraph size='medium' fontWeight='500'>
-            Upload Photo
-          </Paragraph>
-        </Box>
-      )}
+        )}
+      </label>
+      {open && <ImageCropper imageToCrop={imageToCrop} setProfileFile={setUploadedFile} />}
     </Box>
   )
 
@@ -561,13 +548,6 @@ export const Profile: React.FC<ProfileProps> = ({ handleIsFormChange }) => {
               </Alert>
             )}
           </Grid>
-          {imageModalOpen && (
-            <DocumentUploadModal
-              handleModem={() => setImageModalOpen(!imageModalOpen)}
-              handleFile={handleFile}
-              limit={1}
-            />
-          )}
           {warningModalOpen && warningModalOpen.title + warningModalOpen.subtitle != '' && (
             <CustomConfirmModal
               header={warningModalOpen.title}

@@ -7,7 +7,9 @@ import { Paragraph } from '../../../../components/Typography/Paragraph/Paragraph
 import { Title } from '../../../../components/Typography/Title/Title'
 import { ProfileContext } from '../../../../providers/ProfileProvider/ProfileContext'
 import { MTHBLUE, SYSTEM_06 } from '../../../../utils/constants'
+import { STATES_WITH_ABBREVIATION } from '../../../../utils/states'
 import { parseGradeLevel } from '../../../../utils/stringHelpers'
+import { phoneFormat } from '../../../../utils/utils'
 import { Packet } from '../../../HomeroomStudentProfile/Student/types'
 
 const getSchoolYearsByRegionId = gql`
@@ -69,10 +71,6 @@ export const EnrollmentJobsInfo: FunctionComponent<EnrollmentJobsInfoProps> = ({
   }
 
   const student = packet.student
-  const phoneFormat = (phone: string) => {
-    phone = phone.replaceAll('-', '')
-    return `${phone.substring(0, 3)}-${phone.substring(3, 6)}-${phone.substring(6, 10)}`
-  }
 
   const age = student.person.date_of_birth ? moment().diff(student.person.date_of_birth, 'years', false) : undefined
 
@@ -81,6 +79,17 @@ export const EnrollmentJobsInfo: FunctionComponent<EnrollmentJobsInfoProps> = ({
 
   function studentSPED() {
     if (specialEdOptions.length > Number(student.special_ed)) return specialEdOptions[Number(student.special_ed)]
+    return ''
+  }
+
+  const getState = (state: string | null) => {
+    if (state) {
+      return state + ','
+    }
+    const defaultState = student.parent?.person?.user?.userRegions[0].regionDetail.name
+    if (defaultState && STATES_WITH_ABBREVIATION[defaultState]) {
+      return STATES_WITH_ABBREVIATION[defaultState] + ','
+    }
     return ''
   }
 
@@ -110,6 +119,7 @@ export const EnrollmentJobsInfo: FunctionComponent<EnrollmentJobsInfoProps> = ({
             {student.person.first_name} {student.person.last_name}
           </span>
         </Title>
+
         <Paragraph sx={{ marginY: '4px', fontSize: '14px' }} color={SYSTEM_06} fontWeight='400'>
           <b>
             {student.person.preferred_first_name && student.person.preferred_last_name
@@ -171,7 +181,7 @@ export const EnrollmentJobsInfo: FunctionComponent<EnrollmentJobsInfoProps> = ({
           !student.parent.person.address.state &&
           !student.parent.person.address.zip
             ? 'Not found'
-            : `${student.parent.person.address.city + ',' || ''} ${student.parent.person.address.state + ',' || ''}
+            : `${student.parent.person.address.city + ',' || ''} ${getState(student.parent.person.address.state)}
             ${student.parent.person.address.zip || ''}`}
         </Paragraph>
       </Grid>

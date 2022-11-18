@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useMutation, useQuery } from '@apollo/client'
-import { Button } from '@mui/material'
+import { Button, Typography } from '@mui/material'
 import { Box } from '@mui/system'
 import { Prompt } from 'react-router-dom'
 import { CustomModal } from '@mth/components/CustomModal/CustomModals'
@@ -11,6 +11,7 @@ import { saveScheduleMutation } from '@mth/graphql/mutation/schedule'
 import { saveSchedulePeriodMutation } from '@mth/graphql/mutation/schedule-period'
 import { getAllScheduleBuilderQuery } from '@mth/graphql/queries/schedule-builder'
 import { useStudentSchedulePeriods } from '@mth/hooks'
+import { scheduleBuilderClasses } from '@mth/screens/Homeroom/Schedule/ScheduleBuilder/styles'
 import { mthButtonClasses } from '@mth/styles/button.style'
 import { ScheduleBuilderProps } from '../types'
 import { RequestUpdatesModal } from './RequestUpdatesModal'
@@ -20,10 +21,12 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
   studentId,
   studentName,
   selectedYear,
+  showSecondSemester,
   showUnsavedModal = false,
   splitEnrollment = false,
   diplomaSeekingPath,
   setScheduleStatus,
+  isChanged,
   setIsChanged,
   onWithoutSaved,
 }) => {
@@ -33,9 +36,18 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
   const [showRequestUpdatesModal, setShowRequestUpdatesModal] = useState<boolean>(false)
   const [isEditMode, setIsEditMode] = useState<boolean>(false)
   const [parentTooltip, setParentTooltip] = useState<string>()
+  const [showNoChangesModal, setShowNoChangesModal] = useState<boolean>(false)
 
-  const { scheduleData, studentScheduleId, studentScheduleStatus, setScheduleData, setStudentScheduleId, refetch } =
-    useStudentSchedulePeriods(studentId, selectedYear, diplomaSeekingPath)
+  const {
+    scheduleData,
+    setScheduleData,
+    secondScheduleData,
+    setSecondScheduleData,
+    studentScheduleId,
+    setStudentScheduleId,
+    studentScheduleStatus,
+    refetch,
+  } = useStudentSchedulePeriods(studentId, selectedYear, diplomaSeekingPath, showSecondSemester)
 
   const { loading: scheduleBuilderSettingLoading, data: scheduleBuilderSettingData } = useQuery(
     getAllScheduleBuilderQuery,
@@ -49,7 +61,12 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
   const [saveDraft] = useMutation(saveSchedulePeriodMutation)
 
   const handleSave = async (kind: ScheduleStatus) => {
-    if (scheduleData?.length) {
+    if (!isChanged) {
+      setShowNoChangesModal(true)
+      return
+    }
+    const data = showSecondSemester ? secondScheduleData : scheduleData
+    if (data?.length) {
       const submitResponse = await submitScheduleBuilder({
         variables: {
           createScheduleInput: {
@@ -57,16 +74,18 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
             StudentId: Number(studentId),
             status: kind,
             schedule_id: studentScheduleId,
+            is_second_semester: !!showSecondSemester,
           },
         },
       })
       if (submitResponse) {
         const scheduleId = submitResponse.data?.createOrUpdateSchedule?.schedule_id
         setStudentScheduleId(scheduleId)
+
         const response = await saveDraft({
           variables: {
             createSchedulePeriodInput: {
-              param: scheduleData?.map((item) => ({
+              param: data?.map((item) => ({
                 CourseId: Number(item?.Course?.id),
                 PeriodId: Number(item?.Period?.id),
                 ProviderId: Number(item?.Course?.Provider?.id),
@@ -95,21 +114,20 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
           switch (kind) {
             case ScheduleStatus.DRAFT:
               setIsDraftSaved(true)
-              setIsChanged(false)
-              setIsEditMode(false)
-              scheduleData.map((x) => (x.editable = false))
-              setScheduleData(JSON.parse(JSON.stringify(scheduleData)))
-              refetch()
               break
             case ScheduleStatus.SUBMITTED:
               setShowSubmitSuccessModal(true)
-              setIsChanged(false)
-              setIsEditMode(false)
-              scheduleData.map((x) => (x.editable = false))
-              setScheduleData(JSON.parse(JSON.stringify(scheduleData)))
-              refetch()
               break
           }
+          setIsChanged(false)
+          setIsEditMode(false)
+          data.map((x) => (x.editable = false))
+          if (showSecondSemester) {
+            setSecondScheduleData(JSON.parse(JSON.stringify(data)))
+          } else {
+            setScheduleData(JSON.parse(JSON.stringify(data)))
+          }
+          refetch()
         }
       }
     }
@@ -117,8 +135,14 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
 
   const startEdit = (periodIds: number[]) => {
     setIsEditMode(true)
-    scheduleData.map((item) => (item.editable = periodIds.includes(item.period)))
-    setScheduleData(JSON.parse(JSON.stringify(scheduleData)))
+
+    const data = showSecondSemester ? secondScheduleData : scheduleData
+    data.map((item) => (item.editable = periodIds.includes(item.period)))
+    if (showSecondSemester) {
+      setSecondScheduleData(JSON.parse(JSON.stringify(data)))
+    } else {
+      setScheduleData(JSON.parse(JSON.stringify(data)))
+    }
   }
 
   useEffect(() => {
@@ -157,15 +181,31 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
 
   return (
     <>
+      {showSecondSemester && <Typography sx={scheduleBuilderClasses.semesterTitle}>1st Semester</Typography>}
       <ScheduleEditor
         scheduleData={scheduleData}
         splitEnrollment={splitEnrollment}
-        isEditMode={isEditMode}
-        scheduleStatus={studentScheduleStatus}
+        isEditMode={isEditMode && !showSecondSemester}
+        scheduleStatus={showSecondSemester ? ScheduleStatus.ACCEPTED : studentScheduleStatus}
         parentTooltip={parentTooltip}
         setIsChanged={setIsChanged}
         setScheduleData={setScheduleData}
       />
+      {showSecondSemester && (
+        <Typography sx={{ ...scheduleBuilderClasses.semesterTitle, mt: 4 }}>2nd Semester</Typography>
+      )}
+      {showSecondSemester && (
+        <ScheduleEditor
+          scheduleData={secondScheduleData}
+          splitEnrollment={splitEnrollment}
+          isEditMode={isEditMode || !studentScheduleStatus || studentScheduleStatus === ScheduleStatus.DRAFT}
+          isSecondSemester={true}
+          scheduleStatus={studentScheduleStatus}
+          parentTooltip={parentTooltip}
+          setIsChanged={setIsChanged}
+          setScheduleData={setSecondScheduleData}
+        />
+      )}
       {showUnsavedModal && (
         <CustomModal
           title={MthTitle.UNSAVED_TITLE}
@@ -175,6 +215,26 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
           backgroundColor={MthColor.WHITE}
           onClose={() => onWithoutSaved(false)}
           onConfirm={() => onWithoutSaved(true)}
+        />
+      )}
+      {showNoChangesModal && (
+        <CustomModal
+          title='Error'
+          description='No changes were made.'
+          subDescription={
+            <Typography component='span'>
+              Please select{' '}
+              <Typography component='span' sx={{ fontWeight: '700' }}>
+                No Changes
+              </Typography>{' '}
+              if you don’t intend to make updates.
+            </Typography>
+          }
+          confirmStr='Ok'
+          showCancel={false}
+          backgroundColor={MthColor.WHITE}
+          onClose={() => setShowNoChangesModal(false)}
+          onConfirm={() => setShowNoChangesModal(false)}
         />
       )}
       {isDraftSaved && (
@@ -217,44 +277,46 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
           content: MthTitle.UNSAVED_DESCRIPTION,
         })}
       />
-      <Box sx={{ mt: 3 }}>
-        {(!studentScheduleStatus || studentScheduleStatus === ScheduleStatus.DRAFT) &&
-          (isValid ? (
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', paddingX: 6 }}>
-              <Button onClick={() => handleSave(ScheduleStatus.DRAFT)} sx={mthButtonClasses.primary}>
-                {MthTitle.SAVE_DRAFT}
-              </Button>
-              <Button onClick={() => handleSave(ScheduleStatus.SUBMITTED)} sx={mthButtonClasses.dark}>
-                {MthTitle.SUBMIT}
-              </Button>
-            </Box>
-          ) : (
-            <Box sx={{ display: 'flex', justifyContent: 'end', paddingX: 6 }}>
-              <Button onClick={() => handleSave(ScheduleStatus.DRAFT)} sx={mthButtonClasses.primary}>
-                {MthTitle.SAVE_DRAFT}
-              </Button>
-            </Box>
-          ))}
-        {(studentScheduleStatus === ScheduleStatus.SUBMITTED ||
-          studentScheduleStatus === ScheduleStatus.ACCEPTED ||
-          studentScheduleStatus === ScheduleStatus.RESUBMITTED) && (
-          <Box sx={{ display: 'flex', justifyContent: 'end', paddingX: 6 }}>
-            {!isEditMode ? (
-              <Button onClick={() => setShowRequestUpdatesModal(true)} sx={mthButtonClasses.orange}>
-                {MthTitle.REQUEST_UPDATES}
-              </Button>
+      {!!scheduleData?.length && (
+        <Box sx={{ mt: 3 }}>
+          {(!studentScheduleStatus || studentScheduleStatus === ScheduleStatus.DRAFT) &&
+            (isValid ? (
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', paddingX: 6 }}>
+                <Button onClick={() => handleSave(ScheduleStatus.DRAFT)} sx={mthButtonClasses.primary}>
+                  {MthTitle.SAVE_DRAFT}
+                </Button>
+                <Button onClick={() => handleSave(ScheduleStatus.SUBMITTED)} sx={mthButtonClasses.dark}>
+                  {MthTitle.SUBMIT}
+                </Button>
+              </Box>
             ) : (
-              <Button
-                onClick={() => handleSave(ScheduleStatus.SUBMITTED)}
-                sx={mthButtonClasses.dark}
-                disabled={!isValid}
-              >
-                {MthTitle.SUBMIT_UPDATES}
-              </Button>
-            )}
-          </Box>
-        )}
-      </Box>
+              <Box sx={{ display: 'flex', justifyContent: 'end', paddingX: 6 }}>
+                <Button onClick={() => handleSave(ScheduleStatus.DRAFT)} sx={mthButtonClasses.primary}>
+                  {MthTitle.SAVE_DRAFT}
+                </Button>
+              </Box>
+            ))}
+          {(studentScheduleStatus === ScheduleStatus.SUBMITTED ||
+            studentScheduleStatus === ScheduleStatus.ACCEPTED ||
+            studentScheduleStatus === ScheduleStatus.RESUBMITTED) && (
+            <Box sx={{ display: 'flex', justifyContent: 'end', paddingX: 6 }}>
+              {!isEditMode ? (
+                <Button onClick={() => setShowRequestUpdatesModal(true)} sx={mthButtonClasses.orange}>
+                  {MthTitle.REQUEST_UPDATES}
+                </Button>
+              ) : (
+                <Button
+                  onClick={() => handleSave(ScheduleStatus.SUBMITTED)}
+                  sx={mthButtonClasses.dark}
+                  disabled={!isValid}
+                >
+                  {MthTitle.SUBMIT_UPDATES}
+                </Button>
+              )}
+            </Box>
+          )}
+        </Box>
+      )}
     </>
   )
 }

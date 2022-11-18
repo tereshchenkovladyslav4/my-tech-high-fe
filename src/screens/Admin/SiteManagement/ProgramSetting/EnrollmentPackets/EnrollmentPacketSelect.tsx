@@ -38,7 +38,7 @@ export const EnrollPacketSelect: React.FC<EnrollPacketSelectProps> = ({
       dropDownItems={items}
       placeholder={'Select status'}
       defaultValue={enroll ? 'true' : 'false'}
-      sx={{ width: '160px', marginLeft: '25px' }}
+      sx={{ width: '160px', marginLeft: '25px', zIndex: 1 }}
       borderNone={false}
       setParentValue={handleChange}
     />

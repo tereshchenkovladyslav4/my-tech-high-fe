@@ -6,6 +6,13 @@ export const getActiveScheduleSchoolYearsQuery = gql`
       school_year_id
       date_begin
       date_end
+      IsCurrentYear
+      IsScheduleBuilderOpen
+      IsSecondSemesterOpen
+      ScheduleStatus
+      ScheduleBuilder {
+        split_enrollment
+      }
     }
   }
 `
@@ -77,6 +84,7 @@ export const getStudentPeriodsQuery = gql`
       category
       message_period
       notify_period
+      semester
       Subjects {
         subject_id
         name

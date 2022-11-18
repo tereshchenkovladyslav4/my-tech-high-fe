@@ -9,6 +9,7 @@ import { bulletEditorClassess } from './styles'
 type MthBulletEditorProps = {
   value?: string
   height?: string
+  maxHeight?: string
   setValue: (value: string) => void
   error?: boolean
 }
@@ -19,7 +20,7 @@ const generateEditorState = (htmlContent: string): EditorState => {
   return EditorState.createWithContent(contentState)
 }
 
-const MthBulletEditor: React.FC<MthBulletEditorProps> = ({ value, setValue, error, height }) => {
+const MthBulletEditor: React.FC<MthBulletEditorProps> = ({ value, setValue, error, height, maxHeight }) => {
   const [currentBlocks, setCurrentBlocks] = useState<number>(0)
   const editorRef = useRef<unknown>()
   const [editorState, setEditorState] = useState<EditorState>(generateEditorState(''))
@@ -51,7 +52,11 @@ const MthBulletEditor: React.FC<MthBulletEditorProps> = ({ value, setValue, erro
       sx={{
         ...bulletEditorClassess.editor,
         ...(error && bulletEditorClassess.editorInvalid),
-        'div.DraftEditor-editorContainer': { minHeight: height ? height : '300px', marginX: '10px' },
+        'div.DraftEditor-editorContainer': {
+          minHeight: height ? height : '300px',
+          maxHeight: maxHeight ? maxHeight : '350px',
+          marginX: '10px',
+        },
         marginY: 'auto',
       }}
     >

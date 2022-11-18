@@ -1,3 +1,5 @@
 export type ScheduleBuilder = {
+  split_enrollment: boolean
+  always_unlock: boolean
   max_num_periods: number
 }

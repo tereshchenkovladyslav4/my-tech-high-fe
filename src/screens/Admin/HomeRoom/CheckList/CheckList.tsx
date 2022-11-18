@@ -9,28 +9,23 @@ import { MthTable } from '@mth/components/MthTable'
 import { MthTableField, MthTableRowItem } from '@mth/components/MthTable/types'
 import { Pagination } from '@mth/components/Pagination/Pagination'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { MthColor } from '@mth/enums'
 import { SchoolYearResponseType, useSchoolYearsByRegionId } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { commonClasses } from '@mth/styles/common.style'
 import { HomeRoomHeader } from '../Components/HomeRoomHeader'
 
 import { checkListClass } from './styles'
-import { CheckList } from './types'
+import { SubjectCheckList, IndependentCheckList } from './types'
 
 const CheckList: React.FC = () => {
   const [selectedYear, setSelectedYear] = useState<number>(0)
   const [selectedYearData, setSelectedYearData] = useState<SchoolYearResponseType | undefined>()
   const [localSearchField, setLocalSearchField] = useState<string>('')
-
   const [currentPage, setCurrentPage] = useState<number>(1)
-
-  const [checkListItems, setCheckListItems] = useState<DropDownItem[]>([
-    { label: 'Subject Checklist', value: 'subject_checklist' },
-    { label: 'Independent Checklist', value: 'independent_checklist' },
-  ])
-
-  const [selectedCheckListItem, setSelectedCheckListItem] = useState<string | number | boolean>(checkListItems[0].value)
-
+  const [checkListItems, setCheckListItems] = useState<DropDownItem[]>([])
+  const [selectedCheckListItem, setSelectedCheckListItem] = useState<string | number | boolean>('subject_checklist')
+  const [tableData, setTableData] = useState<MthTableRowItem<SubjectCheckList>[]>([])
   const { me } = useContext(UserContext)
   const { dropdownItems: schoolYearDropdownItems, schoolYears: schoolYears } = useSchoolYearsByRegionId(
     me?.selectedRegionId,
@@ -56,7 +51,7 @@ const CheckList: React.FC = () => {
     if (schoolYears?.length) setSelectedYear(schoolYears[0].school_year_id)
   }, [schoolYears])
 
-  const fields: MthTableField<CheckList>[] = [
+  const subjectFields: MthTableField<SubjectCheckList>[] = [
     {
       key: 'id',
       label: 'ID',
@@ -91,7 +86,43 @@ const CheckList: React.FC = () => {
       sortable: false,
       tdClass: '',
       width: 'calc(25% - 48px)',
-      formatter: (item: MthTableRowItem<CheckList>) => {
+      formatter: (item: MthTableRowItem<SubjectCheckList>) => {
+        return (
+          <Box display={'flex'} flexDirection='row' justifyContent={'flex-end'} flexWrap={'wrap'}>
+            <Box sx={{ display: 'none' }}>{item.key}</Box>
+            <Tooltip title='Edit' placement='top'>
+              <IconButton color='primary' className='actionButton'>
+                <CreateIcon />
+              </IconButton>
+            </Tooltip>
+          </Box>
+        )
+      },
+    },
+  ]
+
+  const independentFields: MthTableField<IndependentCheckList>[] = [
+    {
+      key: 'id',
+      label: 'ID',
+      sortable: false,
+      tdClass: '',
+      width: '0',
+    },
+    {
+      key: 'goal',
+      label: 'Goal',
+      sortable: false,
+      tdClass: '',
+      width: '0',
+    },
+    {
+      key: 'action',
+      label: '',
+      sortable: false,
+      tdClass: '',
+      width: 'calc(25% - 48px)',
+      formatter: (item: MthTableRowItem<IndependentCheckList>) => {
         return (
           <Box display={'flex'} flexDirection='row' justifyContent={'flex-end'} flexWrap={'wrap'}>
             <Box sx={{ display: 'none' }}>{item.key}</Box>
@@ -144,8 +175,14 @@ const CheckList: React.FC = () => {
             defaultValue={selectedCheckListItem}
             sx={{ minWidth: '200px', maxWidth: '230px', textAlign: 'left', alignItems: 'center' }}
             borderNone={true}
+            color={MthColor.BLACK}
             setParentValue={(value) => {
               setSelectedCheckListItem(value)
+              if (value === 'independent_checklist') {
+                setTableData(exampleData)
+              } else {
+                setTableData([])
+              }
             }}
           />
 
@@ -189,7 +226,12 @@ const CheckList: React.FC = () => {
 
         {/* render mthTable table */}
         <Box>
-          <MthTable items={exampleData} loading={false} fields={fields} checkBoxColor='secondary' />
+          <MthTable
+            items={tableData}
+            loading={false}
+            fields={selectedCheckListItem === 'subject_checklist' ? subjectFields : independentFields}
+            checkBoxColor='secondary'
+          />
         </Box>
       </Card>
     </Box>

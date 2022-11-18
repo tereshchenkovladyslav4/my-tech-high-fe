@@ -79,7 +79,7 @@ export const TodoList: TodoListTemplateType = ({ handleShowEmpty, schoolYears, s
   const calcCreateDate = (todoItem: ToDoItem): string => {
     switch (todoItem.category) {
       case ToDoCategory.SUBMIT_WITHDRAW: {
-        return moment(todoItem.students.at(-1)?.StudentWithdrawals.at(-1)?.date).format('MMMM Do, YYYY')
+        return moment(todoItem.students.at(-1)?.StudentWithdrawals?.at(-1)?.date).format('MMMM Do, YYYY')
       }
       case ToDoCategory.SUBMIT_SCHEDULE: {
         if (todoItem.students.at(-1)?.current_school_year_status?.midyear_application)
@@ -88,6 +88,26 @@ export const TodoList: TodoListTemplateType = ({ handleShowEmpty, schoolYears, s
           )
         else
           return moment(todoItem.students.at(-1)?.current_school_year_status?.schedule_builder_open).format(
+            'MMMM Do, YYYY',
+          )
+      }
+      case ToDoCategory.RESUBMIT_SECOND_SEMESTER_SCHEDULE: {
+        if (todoItem.students.at(-1)?.current_school_year_status?.midyear_application)
+          return moment(todoItem.students.at(-1)?.current_school_year_status?.midyear_schedule_open).format(
+            'MMMM Do, YYYY',
+          )
+        else
+          return moment(todoItem.students.at(-1)?.current_school_year_status?.second_semester_open).format(
+            'MMMM Do, YYYY',
+          )
+      }
+      case ToDoCategory.SUBMIT_SECOND_SEMESTER_SCHEDULE: {
+        if (todoItem.students.at(-1)?.current_school_year_status?.midyear_application)
+          return moment(todoItem.students.at(-1)?.current_school_year_status?.midyear_schedule_open).format(
+            'MMMM Do, YYYY',
+          )
+        else
+          return moment(todoItem.students.at(-1)?.current_school_year_status?.second_semester_open).format(
             'MMMM Do, YYYY',
           )
       }
@@ -106,8 +126,8 @@ export const TodoList: TodoListTemplateType = ({ handleShowEmpty, schoolYears, s
       case ToDoCategory.SUBMIT_WITHDRAW: {
         return (
           moment(
-            todoItem.students.at(-1)?.StudentWithdrawals.at(-1)?.date_emailed ||
-              todoItem.students.at(-1)?.StudentWithdrawals.at(-1)?.date,
+            todoItem.students.at(-1)?.StudentWithdrawals?.at(-1)?.date_emailed ||
+              todoItem.students.at(-1)?.StudentWithdrawals?.at(-1)?.date,
           )
             .add(todoItem.students.at(-1)?.current_school_year_status?.withdraw_deadline_num_days || 0, 'days')
             .format('MM.DD') || '-'
@@ -117,6 +137,16 @@ export const TodoList: TodoListTemplateType = ({ handleShowEmpty, schoolYears, s
         if (todoItem.students.at(-1)?.current_school_year_status?.midyear_application)
           return moment(todoItem.students.at(-1)?.current_school_year_status?.midyear_schedule_close).format('MM.DD')
         else return moment(todoItem.students.at(-1)?.current_school_year_status?.schedule_builder_close).format('MM.DD')
+      }
+      case ToDoCategory.RESUBMIT_SECOND_SEMESTER_SCHEDULE: {
+        if (todoItem.students.at(-1)?.current_school_year_status?.midyear_application)
+          return moment(todoItem.students.at(-1)?.current_school_year_status?.midyear_schedule_close).format('MM.DD')
+        else return moment(todoItem.students.at(-1)?.current_school_year_status?.second_semester_close).format('MM.DD')
+      }
+      case ToDoCategory.SUBMIT_SECOND_SEMESTER_SCHEDULE: {
+        if (todoItem.students.at(-1)?.current_school_year_status?.midyear_application)
+          return moment(todoItem.students.at(-1)?.current_school_year_status?.midyear_schedule_close).format('MM.DD')
+        else return moment(todoItem.students.at(-1)?.current_school_year_status?.second_semester_close).format('MM.DD')
       }
       default: {
         return todoItem.students.at(-1)?.current_school_year_status?.enrollment_packet_date_deadline || '-'

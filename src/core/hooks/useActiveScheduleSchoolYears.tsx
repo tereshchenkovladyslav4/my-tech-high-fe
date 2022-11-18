@@ -1,26 +1,29 @@
-import { useEffect, useState, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { ApolloError, useQuery } from '@apollo/client'
 import { sortBy } from 'lodash'
 import moment from 'moment'
 import { DropDownItem } from '@mth/components/DropDown/types'
+import { ScheduleStatus } from '@mth/enums'
+import { SchoolYear } from '@mth/models'
 import { getActiveScheduleSchoolYearsQuery } from '@mth/screens/Homeroom/Schedule/services'
-import { SchoolYearResponseType } from './useSchoolYearsByRegionId'
 
 export const useActiveScheduleSchoolYears = (
   studentId?: number | undefined,
 ): {
   loading: boolean
-  schoolYears: SchoolYearResponseType[]
+  schoolYears: SchoolYear[]
   dropdownItems: DropDownItem[]
   error: ApolloError | undefined
   refetchSchoolYear: () => void
   selectedYearId: number | undefined
   setSelectedYearId: (_?: number) => void
-  selectedYear: SchoolYearResponseType | undefined
+  selectedYear: SchoolYear | undefined
+  activeScheduleYearId: number | undefined
 } => {
   const [dropdownItems, setDropdownItems] = useState<Array<DropDownItem>>([])
-  const [schoolYears, setSchoolYears] = useState<Array<SchoolYearResponseType>>([])
+  const [schoolYears, setSchoolYears] = useState<Array<SchoolYear>>([])
   const [selectedYearId, setSelectedYearId] = useState<number | undefined>()
+  const [activeScheduleYearId, setActiveScheduleYearId] = useState<number | undefined>()
 
   const { loading, data, error, refetch } = useQuery(getActiveScheduleSchoolYearsQuery, {
     variables: {
@@ -34,7 +37,7 @@ export const useActiveScheduleSchoolYears = (
     if (data?.activeScheduleSchoolYears) {
       const { activeScheduleSchoolYears: schoolYears } = data
       setDropdownItems(
-        sortBy(schoolYears, 'date_begin').map((item: SchoolYearResponseType) => ({
+        sortBy(schoolYears, 'date_begin').map((item: SchoolYear) => ({
           value: item.school_year_id,
           label: `${moment(item.date_begin).format('YYYY')}-${moment(item.date_end).format('YY')}`,
         })),
@@ -45,7 +48,17 @@ export const useActiveScheduleSchoolYears = (
 
   useEffect(() => {
     if (schoolYears?.length) {
-      setSelectedYearId(schoolYears[0].school_year_id)
+      const currentYear = schoolYears.filter((item) => item.IsCurrentYear)[0]
+      setSelectedYearId(currentYear?.school_year_id || schoolYears.at(-1)?.school_year_id)
+      const activeScheduleYear =
+        currentYear?.ScheduleStatus === ScheduleStatus.SUBMITTED ||
+        currentYear?.ScheduleStatus === ScheduleStatus.ACCEPTED
+          ? currentYear
+          : schoolYears.filter(
+              (item) =>
+                item.ScheduleStatus === ScheduleStatus.SUBMITTED || item.ScheduleStatus === ScheduleStatus.ACCEPTED,
+            )[0]
+      setActiveScheduleYearId(activeScheduleYear?.school_year_id)
     } else {
       setSelectedYearId(undefined)
     }
@@ -66,5 +79,6 @@ export const useActiveScheduleSchoolYears = (
     selectedYearId,
     setSelectedYearId,
     selectedYear,
+    activeScheduleYearId,
   }
 }

@@ -115,6 +115,48 @@ export const getTodoList = gql`
           }
         }
       }
+      submit_second_semester_schedule {
+        category
+        button
+        dashboard
+        homeroom
+        icon
+        phrase
+        students {
+          student_id
+          person {
+            first_name
+            last_name
+            person_id
+            photo
+            preferred_first_name
+            preferred_last_name
+          }
+          current_school_year_status {
+            student_id
+            school_year_id
+            application_id
+            application_status
+            packet_status
+            packet_id
+            application_school_year_id
+            grade_level
+            application_date_submitted
+            application_date_started
+            application_date_accepted
+            application_deadline_num_days
+            enrollment_packet_deadline_num_days
+            enrollment_packet_date_deadline
+            midyear_application
+            schedule_builder_close
+            schedule_builder_open
+            midyear_schedule_close
+            midyear_schedule_open
+            second_semester_open
+            second_semester_close
+          }
+        }
+      }
       resubmit_schedule {
         category
         button
@@ -147,6 +189,48 @@ export const getTodoList = gql`
             application_deadline_num_days
             enrollment_packet_deadline_num_days
             enrollment_packet_date_deadline
+          }
+        }
+      }
+      resubmit_second_semester_schedule {
+        category
+        button
+        dashboard
+        homeroom
+        icon
+        phrase
+        students {
+          student_id
+          person {
+            first_name
+            last_name
+            person_id
+            photo
+            preferred_first_name
+            preferred_last_name
+          }
+          current_school_year_status {
+            student_id
+            school_year_id
+            application_id
+            application_status
+            packet_status
+            packet_id
+            application_school_year_id
+            grade_level
+            application_date_submitted
+            application_date_started
+            application_date_accepted
+            application_deadline_num_days
+            enrollment_packet_deadline_num_days
+            enrollment_packet_date_deadline
+            midyear_application
+            schedule_builder_close
+            schedule_builder_open
+            midyear_schedule_close
+            midyear_schedule_open
+            second_semester_open
+            second_semester_close
           }
         }
       }

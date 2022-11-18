@@ -2,6 +2,7 @@ import SignatureCanvas from 'react-signature-canvas'
 import { DropDownItem } from '@mth/components/DropDown/types'
 import { RadioGroupOption } from '@mth/components/MthRadioGroup/types'
 import { CourseType, DiplomaSeekingPath, ReduceFunds, ScheduleStatus } from '@mth/enums'
+import { SEMESTER_TYPE } from '@mth/screens/Admin/Curriculum/types'
 import { AssessmentType } from '@mth/screens/Admin/SiteManagement/EnrollmentSetting/TestingPreference/types'
 import { OnSiteSplitEnrollment } from './ScheduleBuilder/OnSiteSplitEnrollmentEdit/types'
 import { ThirdPartyProvider } from './ScheduleBuilder/ThirdPartyProviderEdit/types'
@@ -59,11 +60,13 @@ export type OptOutFormProps = {
 export type ScheduleBuilderProps = {
   studentId: number
   studentName: string
-  selectedYear: number
+  selectedYear: number | undefined
+  showSecondSemester: boolean
   showUnsavedModal: boolean
   splitEnrollment: boolean
   diplomaSeekingPath: DiplomaSeekingPath
   setScheduleStatus: (value: ScheduleStatus) => void
+  isChanged?: boolean
   setIsChanged: (value: boolean) => void
   onWithoutSaved: (isYes: boolean) => void
 }
@@ -144,6 +147,7 @@ export type Period = {
   message_period: string
   notify_period: boolean
   category: string
+  semester: SEMESTER_TYPE
   Subjects: Subject[]
 }
 
@@ -166,6 +170,9 @@ export type ScheduleData = {
   IsChangedCustomBuiltDescription?: boolean
   updateRequired?: boolean
   standardResponseOptions?: string
+
+  // Special fields
+  FirstSemesterSchedule?: ScheduleData
 
   // Temp fields
   editable?: boolean

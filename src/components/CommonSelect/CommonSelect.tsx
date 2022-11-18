@@ -52,7 +52,6 @@ export const CommonSelect: React.FC<CommonSelectProps> = ({
             ...dividerStyle,
             position: 'absolute',
             left: 215,
-            zIndex: 1,
           }}
         ></Box>
       )}

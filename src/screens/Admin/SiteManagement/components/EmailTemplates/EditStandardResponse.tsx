@@ -26,7 +26,7 @@ export const EditStandardResponse: React.FC<EditStandardResProp> = ({ response, 
             sx={{ my: 1, maxWidth: '50%' }}
             onChange={(e) => setTitle(e.target.value)}
           />
-          <MthBulletEditor value={text} setValue={(value) => setText(value)} />
+          <MthBulletEditor value={text} setValue={(value) => setText(value)} maxHeight='350px' />
         </Box>
         <Box sx={classes.btnGroup}>
           <Button sx={classes.cancelBtn} onClick={onClose}>

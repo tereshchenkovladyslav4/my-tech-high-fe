@@ -277,6 +277,7 @@ export const AddNewQuestionModal: React.FC<AddNewQuestionModalProps> = ({
         type: newQuestion.type,
         options: newQuestion.options.filter((v) => {
           v.label = v.label.trim()
+          if (v.label == '') return false
           if (newQuestion.slug === 'address_country_id' || newQuestion.slug === 'address_state') {
             v.value = v.value + ''
           }
@@ -307,7 +308,6 @@ export const AddNewQuestionModal: React.FC<AddNewQuestionModalProps> = ({
         newValues = newValues.map((v) => (v.id === newQuestion.id ? item : v))
       }
     }
-
     newValues = newValues.filter((i) => deleteIds.find((x) => x == i.id) == null)
     setValues(newValues)
     onClose(true)

@@ -40,6 +40,7 @@ export const DropDown: React.FC<DropDownProps> = ({
   idx,
   auto = true,
   borderNone = false,
+  color,
 }) => {
   const [value, setValue] = useState(defaultValue || '')
   const handleChange = (val: string) => {
@@ -74,7 +75,7 @@ export const DropDown: React.FC<DropDownProps> = ({
   }, [defaultValue])
 
   return (
-    <Box sx={{ minWidth: 120, zIndex: 10000, ...sx }}>
+    <Box sx={{ minWidth: 120, zIndex: 1, ...sx }}>
       {!labelTop ? (
         <>
           {borderNone ? (
@@ -82,13 +83,13 @@ export const DropDown: React.FC<DropDownProps> = ({
               <Select
                 size='small'
                 value={value}
-                IconComponent={ExpandMoreIcon}
+                IconComponent={(props) => <ExpandMoreIcon style={{ color: color ?? 'blue' }} {...props} />}
                 disableUnderline
                 onChange={(e) => handleChange(e.target?.value)}
                 displayEmpty
                 renderValue={
                   !!value || value === 0
-                    ? () => <span>{dropDownItems?.find((item) => item.value == value)?.label}</span>
+                    ? () => <span style={{ color }}>{dropDownItems?.find((item) => item.value == value)?.label}</span>
                     : () => <span style={{ color: MthColor.BLUE_GRDIENT }}>{placeholder}</span>
                 }
                 sx={{ ...dropdownClasses.borderNone }}

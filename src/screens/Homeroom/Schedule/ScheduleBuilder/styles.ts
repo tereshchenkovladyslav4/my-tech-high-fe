@@ -76,4 +76,10 @@ export const scheduleBuilderClasses = {
     marginY: 'auto',
   },
   editIcon: { fontSize: '22px', fontWeight: 700, color: MthColor.SYSTEM_06 },
+  semesterTitle: {
+    fontSize: '20px',
+    fontWeight: '700',
+    textAlign: 'left',
+    ml: '32px',
+  },
 }

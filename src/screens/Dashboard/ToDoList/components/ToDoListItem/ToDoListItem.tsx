@@ -36,8 +36,9 @@ export const ToDoListItem: TodoListTemplateType = ({ todoItem, todoDate, todoDea
   const renderStudentAvatars = () => {
     return (
       <AvatarGroup style={{ justifyContent: 'flex-end' }}>
-        {map(todoItem.students, (student) => (
+        {map(todoItem.students, (student, index) => (
           <Avatar
+            key={index}
             alt={`${student.person.first_name} ${student.person.last_name}`}
             src={getProfilePhoto(student.person)}
           />
@@ -61,7 +62,10 @@ export const ToDoListItem: TodoListTemplateType = ({ todoItem, todoDate, todoDea
         setLink(`${MthRoute.PARENT_LINK}${MthRoute.SUBMIT_WITHDRAWAL}/${students.at(-1)?.student_id}`)
         break
       }
-      case ToDoCategory.SUBMIT_SCHEDULE: {
+      case ToDoCategory.SUBMIT_SCHEDULE:
+      case ToDoCategory.RESUBMIT_SCHEDULE:
+      case ToDoCategory.SUBMIT_SECOND_SEMESTER_SCHEDULE:
+      case ToDoCategory.RESUBMIT_SECOND_SEMESTER_SCHEDULE: {
         setLink(`${MthRoute.HOMEROOM}${MthRoute.SUBMIT_SCHEDULE}/${students.at(-1)?.student_id}`)
         break
       }

@@ -96,6 +96,14 @@ export const getEnrollmentPacketsQuery = gql`
                 county_id
                 country_id
               }
+              user {
+                user_id
+                userRegions {
+                  regionDetail {
+                    name
+                  }
+                }
+              }
             }
             phone {
               number

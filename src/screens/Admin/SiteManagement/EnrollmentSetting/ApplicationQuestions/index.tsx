@@ -355,6 +355,7 @@ export const ApplicationQuestions: React.FC = () => {
         }
         return arr
       })
+
     return sortList
   }
 
