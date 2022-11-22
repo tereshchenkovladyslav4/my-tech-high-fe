@@ -87,7 +87,7 @@ export const Profile: FunctionComponent<{ handleIsFormChange: () => void }> = ({
   }
 
   const onSubmitSuccess = (avatarUrl?: string) => {
-    setOpenSaveAlert({ message: 'Profile Updated Successfully.', status: 'success', open: true })
+    setOpenSaveAlert({ message: 'Profile Updated Successfully', status: 'success', open: true })
 
     setMe((prev) => {
       return {

@@ -130,7 +130,7 @@ export const Profile: React.FC<ProfileProps> = ({ handleIsFormChange }) => {
       },
     })
       .then(async () => {
-        setOpenSaveAlert({ message: 'Profile Updated Successfully.', status: 'success', open: true })
+        setOpenSaveAlert({ message: 'Profile Updated Successfully', status: 'success', open: true })
 
         setTimeout(() => {
           setOpenSaveAlert({ message: '', status: 'success', open: false })

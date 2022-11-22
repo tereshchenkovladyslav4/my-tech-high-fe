@@ -1,6 +1,9 @@
 import React from 'react'
 import { CommonSelect } from '@mth/components/CommonSelect'
 import { MthTitle } from '@mth/enums'
+import { DirectOrdersSelect } from '@mth/screens/Admin/SiteManagement/ProgramSetting/DirectOrders/DirectOrdersSelect'
+import { LearningLogsSelect } from '@mth/screens/Admin/SiteManagement/ProgramSetting/LearningLogs/LearningLogsSelect'
+import { ReimbursementsSelect } from '@mth/screens/Admin/SiteManagement/ProgramSetting/Reimbursements/ReimbursementsSelect'
 import { CommonSelectType } from '../../types'
 import { BirthDateCutOffSelect } from '../BirthDateCutOffSelect'
 import { CountySelect } from '../CountySelect'
@@ -29,6 +32,9 @@ export const PageContent: React.FC<PageContentProps> = ({
   setIsDelete,
   isDelete,
   scheduleItem,
+  learningLogItem,
+  reimbursementsItem,
+  directOrdersItem,
 }) => {
   const programSettingList: CommonSelectType[] = [
     {
@@ -147,6 +153,43 @@ export const PageContent: React.FC<PageContentProps> = ({
           setSchedule={scheduleItem.setSchedule}
           setDiplomaSeeking={scheduleItem.setDiplomaSeeking}
           setTestingPreference={scheduleItem.setTestingPreference}
+          setIsChanged={setIsChanged}
+        />
+      ),
+    },
+    {
+      name: MthTitle.LEARNING_LOGS,
+      component: (
+        <LearningLogsSelect
+          learningLogs={learningLogItem.learningLogs}
+          learningLogsFirstSecondSemesters={learningLogItem.learningLogsFirstSecondSemesters}
+          isChanged={isChanged}
+          setLearningLogs={learningLogItem.setLearningLogs}
+          setLearningLogsFirstSecondSemesters={learningLogItem.setLearningLogsFirstSecondSemesters}
+          setIsChanged={setIsChanged}
+        />
+      ),
+    },
+    {
+      name: MthTitle.REIMBURSEMENTS,
+      component: (
+        <ReimbursementsSelect
+          reimbursements={reimbursementsItem.reimbursements}
+          requireSoftware={reimbursementsItem.requireSoftware}
+          isChanged={isChanged}
+          setReimbursements={reimbursementsItem.setReimbursements}
+          setRequireSoftware={reimbursementsItem.setRequireSoftware}
+          setIsChanged={setIsChanged}
+        />
+      ),
+    },
+    {
+      name: MthTitle.DIRECT_ORDERS,
+      component: (
+        <DirectOrdersSelect
+          directOrders={directOrdersItem.directOrders}
+          isChanged={isChanged}
+          setDirectOrders={directOrdersItem.setDirectOrders}
           setIsChanged={setIsChanged}
         />
       ),

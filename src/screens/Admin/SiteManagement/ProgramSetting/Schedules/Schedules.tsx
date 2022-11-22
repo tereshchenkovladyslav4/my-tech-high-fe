@@ -47,7 +47,7 @@ const Schedules: React.FC<SchedulesProps> = ({
   }
 
   return (
-    <Box sx={{ width: '100%', flexDirection: 'row', justifyContent: 'space-between' }} style={{ display: 'flex' }}>
+    <Box sx={{ width: '100%', flexDirection: 'row' }} style={{ display: 'flex' }}>
       <Box>
         <DropDown
           dropDownItems={items}
@@ -63,6 +63,7 @@ const Schedules: React.FC<SchedulesProps> = ({
           <MthCheckbox
             label={MthTitle.DIPLOMA_SEEKING}
             labelSx={{ fontWeight: 700 }}
+            wrapSx={{ ml: 6 }}
             checked={diplomaSeeking}
             onChange={() => {
               setDiplomaSeeking(!diplomaSeeking)
@@ -72,6 +73,7 @@ const Schedules: React.FC<SchedulesProps> = ({
           <MthCheckbox
             label={MthTitle.TESTING_PREFERENCE}
             labelSx={{ fontWeight: 700 }}
+            wrapSx={{ ml: 6 }}
             checked={testingPreference}
             onChange={() => {
               setTestingPreference(!testingPreference)

@@ -44,7 +44,7 @@ const ProviderEdit: React.FC<ProviderEditProps> = ({ schoolYearId, item, refetch
       .number()
       .when('reduce_funds', {
         is: (reduce_funds: ReduceFunds) =>
-          reduce_funds == ReduceFunds.TECHNOLOGY_ALLOWANCE || reduce_funds == ReduceFunds.SUPPLEMENTAL_LEARNING_FUNDS,
+          reduce_funds == ReduceFunds.TECHNOLOGY || reduce_funds == ReduceFunds.SUPPLEMENTAL,
         then: yup.number().required('Required').positive('Should be greater than 0').nullable(),
       })
       .nullable(),
@@ -52,7 +52,7 @@ const ProviderEdit: React.FC<ProviderEditProps> = ({ schoolYearId, item, refetch
       .string()
       .when('reduce_funds', {
         is: (reduce_funds: ReduceFunds) =>
-          reduce_funds == ReduceFunds.TECHNOLOGY_ALLOWANCE || reduce_funds == ReduceFunds.SUPPLEMENTAL_LEARNING_FUNDS,
+          reduce_funds == ReduceFunds.TECHNOLOGY || reduce_funds == ReduceFunds.SUPPLEMENTAL,
         then: yup.string().required('Required').min(RICH_TEXT_VALID_MIN_LENGTH, 'Required').nullable(),
       })
       .nullable(),

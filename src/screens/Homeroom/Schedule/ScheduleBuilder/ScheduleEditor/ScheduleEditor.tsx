@@ -4,7 +4,7 @@ import CallMissedOutgoingIcon from '@mui/icons-material/CallMissedOutgoing'
 import ModeEditIcon from '@mui/icons-material/ModeEdit'
 import QuestionMarkIcon from '@mui/icons-material/QuestionMark'
 import VpnKeyOutlinedIcon from '@mui/icons-material/VpnKeyOutlined'
-import { ClickAwayListener, Grid, IconButton, Link, Tooltip, Typography } from '@mui/material'
+import { Grid, IconButton, Link, Tooltip, tooltipClasses, TooltipProps, Typography } from '@mui/material'
 import { Box, styled } from '@mui/system'
 import parse from 'html-react-parser'
 import { CustomModal } from '@mth/components/CustomModal/CustomModals'
@@ -38,9 +38,17 @@ const StyledTooltipBgDiv = styled('div')(({}) => ({
     opacity: 0.5,
   },
 }))
-const StyledTooltip = styled(Tooltip)(({}) => ({
-  '& .MuiTooltip-tooltip a': {
-    color: `${MthColor.BLUE_GRDIENT} !important`,
+
+const StyledTooltip = styled(({ className, ...props }: TooltipProps) => (
+  <Tooltip {...props} classes={{ popper: className }} />
+))(() => ({
+  [`& .${tooltipClasses.tooltip}`]: {
+    marginRight: '32px !important',
+    textAlign: 'ceter',
+    fontSize: '14px',
+    '& a': {
+      color: `${MthColor.MTHBLUE} !important`,
+    },
   },
 }))
 
@@ -420,7 +428,11 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
   }
 
   const editable = (schedule: ScheduleData) => {
-    return !scheduleStatus || scheduleStatus === ScheduleStatus.DRAFT || schedule.editable || isAdmin
+    if (isSecondSemester) {
+      return !!schedule.editable
+    } else {
+      return !scheduleStatus || scheduleStatus === ScheduleStatus.DRAFT || schedule.editable || isAdmin
+    }
   }
 
   const formatPhoneNumber = (phone: string) => {
@@ -580,11 +592,8 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
   const createData = (schedule: ScheduleData): MthTableRowItem<ScheduleData> => {
     schedule = processScheduleData(schedule)
     return {
-      key: `${isSecondSemester}-schedule-${schedule.period}`,
-      columns: {
-        Type: 'Lorem',
-        Description: 'Lorem',
-      },
+      key: `${isSecondSemester ? 'first' : 'second'}-semester-schedule-${schedule.period}`,
+      columns: {},
       rawData: schedule,
       sx: isAdmin
         ? schedule?.updateRequired
@@ -607,7 +616,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
           ? { '& .MuiTableCell-root': { background: '#F2F2F2 !important' } }
           : {}
         : isEditMode && schedule.editable
-        ? { '& .MuiTableCell-root': { background: 'rgba(236, 89, 37, 0.1) !important' } }
+        ? { position: 'relative', '& .MuiTableCell-root': { background: 'rgba(236, 89, 37, 0.1) !important' } }
         : {},
     }
   }
@@ -1008,29 +1017,28 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
           sx={scheduleBuilderClasses.customTable}
         />
         {parentTooltip && (
-          <ClickAwayListener onClickAway={() => setEnableQuestionTooltip(false)}>
-            <StyledTooltip
-              title={parse(parentTooltip)}
-              open={enableQuestionTooltip}
-              placement='left'
-              onClose={() => setEnableQuestionTooltip(false)}
-              disableFocusListener
-              disableHoverListener
-              disableTouchListener
+          <StyledTooltip
+            title={parse(parentTooltip)}
+            open={enableQuestionTooltip}
+            placement='left'
+            sx={{ textAlign: 'center' }}
+            onClose={() => setEnableQuestionTooltip(false)}
+            disableFocusListener
+            disableHoverListener
+            disableTouchListener
+          >
+            <IconButton
+              size='large'
+              edge='start'
+              aria-label='open drawer'
+              sx={[scheduleBuilderClasses.questionButton]}
+              onClick={() => setEnableQuestionTooltip(true)}
             >
-              <IconButton
-                size='large'
-                edge='start'
-                aria-label='open drawer'
-                sx={[scheduleBuilderClasses.questionButton]}
-                onClick={() => setEnableQuestionTooltip(true)}
-              >
-                <QuestionMarkIcon sx={{ fontSize: '20px', color: MthColor.BLACK }} />
-              </IconButton>
-            </StyledTooltip>
-          </ClickAwayListener>
+              <QuestionMarkIcon sx={{ fontSize: '20px', color: MthColor.BLACK }} />
+            </IconButton>
+          </StyledTooltip>
         )}
-        {enableQuestionTooltip && <StyledTooltipBgDiv />}
+        {enableQuestionTooltip && <StyledTooltipBgDiv onClick={() => setEnableQuestionTooltip(false)} />}
         {isAdmin && (
           <IconButton
             sx={{ ...scheduleBuilderClasses.questionButton, backgroundColor: MthColor.LIGHTGRAY }}

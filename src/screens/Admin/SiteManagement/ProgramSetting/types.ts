@@ -1,4 +1,5 @@
 import { FunctionComponent, ReactNode } from 'react'
+import { ReduceFunds } from '@mth/enums'
 
 export type SchoolYears = {
   schoolYearId: number
@@ -12,6 +13,11 @@ export type SchoolYears = {
   schedule: boolean
   diplomaSeeking: boolean
   testingPreference: boolean
+  learningLogs: boolean
+  learningLogsFirstSecondSemesters: boolean
+  reimbursements: ReduceFunds
+  requireSoftware: boolean
+  directOrders: ReduceFunds
 }
 
 export type ProgramSettingType = {
@@ -37,6 +43,11 @@ export type ProgramSettingChanged = {
   schedule?: boolean
   diplomaSeeking?: boolean
   testingPreference?: boolean
+  learningLogs: boolean
+  learningLogsFirstSecondSemesters: boolean
+  reimbursements: boolean
+  requireSoftware: boolean
+  directOrders: boolean
 }
 
 export type FileDeleted = {

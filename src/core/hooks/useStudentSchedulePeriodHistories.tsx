@@ -143,10 +143,10 @@ export const useStudentSchedulePeriodHistories = (
                   item.CustomBuiltDescription = schedulePeriodHistory.custom_build_description
                 if (
                   schedulePeriodHistory.course_type === CourseType.MTH_DIRECT &&
-                  schedulePeriodHistory.osse_coures_name
+                  schedulePeriodHistory.osse_course_name
                 )
                   item.OnSiteSplitEnrollment = {
-                    courseName: schedulePeriodHistory.osse_coures_name,
+                    courseName: schedulePeriodHistory.osse_course_name,
                     districtSchool: schedulePeriodHistory.osse_district_school,
                     schoolDistrictName: schedulePeriodHistory.osse_school_district_name,
                   }
@@ -156,8 +156,8 @@ export const useStudentSchedulePeriodHistories = (
                     courseName: schedulePeriodHistory.tp_course_name,
                     phoneNumber: schedulePeriodHistory.tp_phone_number,
                     specificCourseWebsite: schedulePeriodHistory.tp_specific_course_website,
-                    additionalWebsite: schedulePeriodHistory.tp_addtional_specific_course_website
-                      ? JSON.parse(schedulePeriodHistory.tp_addtional_specific_course_website)
+                    additionalWebsite: schedulePeriodHistory.tp_additional_specific_course_website
+                      ? JSON.parse(schedulePeriodHistory.tp_additional_specific_course_website)
                       : '',
                   }
               }

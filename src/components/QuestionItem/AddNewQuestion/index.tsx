@@ -40,6 +40,7 @@ export const QuestionModal: FunctionComponent<QuestionModalProps> = ({
 
   const [editQuestions, setEditQuestions] = useState(JSON.parse(JSON.stringify(questions)))
   const [deleteIds, setDeleteIds] = useState([])
+  const [isDefaultQuestion] = useState(questions[0]?.default_question || false)
 
   const editQuestionsRef = useRef([])
 
@@ -249,7 +250,7 @@ export const QuestionModal: FunctionComponent<QuestionModalProps> = ({
         response: '',
       }
 
-      const id = newQuestion.id
+      const id = newQuestion.id == -1 ? undefined : newQuestion.id
       if (id === undefined) {
         //	Insert case
         //	Generate new id
@@ -268,32 +269,26 @@ export const QuestionModal: FunctionComponent<QuestionModalProps> = ({
     onClose(true)
   }
 
-  //	Set default options for default questions
-  // useEffect(() => {
-  // 	if(options.length == 0 && editItem?.defaultQuestion) {
-  // 		switch(editItem?.slug) {
-  // 			case 'student_grade_level':
-  // 				break;
-  // 			case 'address_state':
-  // 				break;
-  // 			case 'student_gender':
-  // 				break;
-  // 			case 'packet_school_district':
-  // 				break;
-  // 			case 'address_country_id':
-  // 				break;
-  // 			case 'program_year':
-  // 				break;
-  // 			default:
-  // 				if(editItem?.type == QUESTION_TYPE.MULTIPLECHOICES
-  // 					|| editItem?.type == QUESTION_TYPE.DROPDOWN
-  // 					|| editItem?.type == QUESTION_TYPE.CHECKBOX) {
-  // 					console.warn(editItem);
-  // 				}
-  // 				break;
-  // 		}
-  // 	}
-  // }, [options]);
+  const [clickedEvent, setClickedEvent] = useState({})
+  const [ableToEdit, setAbleToEdit] = useState(false)
+
+  useEffect(() => {
+    if (ableToEdit == true) clickedEvent.target.focus()
+  }, [ableToEdit])
+
+  const setFocused = (event) => {
+    if (!isDefaultQuestion) return
+
+    if (!ableToEdit || clickedEvent.target != event.target) {
+      event.preventDefault()
+      event.target.blur()
+      setClickedEvent(event)
+    }
+  }
+
+  const setBlured = () => {
+    setAbleToEdit(false)
+  }
 
   return (
     <Modal open={true} aria-labelledby='child-modal-title' aria-describedby='child-modal-description'>
@@ -419,6 +414,9 @@ export const QuestionModal: FunctionComponent<QuestionModalProps> = ({
                     options={newQuestion.options}
                     setOptions={(options) => setQuestionValue(newQuestion.id, newQuestion.slug, 'options', options)}
                     type={newQuestion.type}
+                    setFocused={i == 0 ? setFocused : setBlured}
+                    setBlured={setBlured}
+                    isDefault={i == 0 ? isDefaultQuestion : false}
                   />
                 )
               )}

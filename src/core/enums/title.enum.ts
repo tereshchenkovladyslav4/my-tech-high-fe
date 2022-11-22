@@ -48,4 +48,7 @@ export enum MthTitle {
   REQUEST_UPDATES = 'Request Updates',
   SUBMIT = 'Submit',
   SUBMIT_UPDATES = 'Submit Updates',
+  LEARNING_LOGS = 'Learning Logs',
+  REIMBURSEMENTS = 'Reimbursements',
+  DIRECT_ORDERS = 'Direct Orders',
 }

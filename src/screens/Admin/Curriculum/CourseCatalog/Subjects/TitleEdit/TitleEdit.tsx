@@ -48,7 +48,7 @@ const TitleEdit: React.FC<TitleEditProps> = ({
       .number()
       .when('reduce_funds', {
         is: (reduce_funds: ReduceFunds) =>
-          reduce_funds == ReduceFunds.TECHNOLOGY_ALLOWANCE || reduce_funds == ReduceFunds.SUPPLEMENTAL_LEARNING_FUNDS,
+          reduce_funds == ReduceFunds.TECHNOLOGY || reduce_funds == ReduceFunds.SUPPLEMENTAL,
         then: yup.number().required('Price Required').positive('Should be greater than 0').nullable(),
       })
       .nullable(),
@@ -56,7 +56,7 @@ const TitleEdit: React.FC<TitleEditProps> = ({
       .string()
       .when('reduce_funds', {
         is: (reduce_funds: ReduceFunds) =>
-          reduce_funds == ReduceFunds.TECHNOLOGY_ALLOWANCE || reduce_funds == ReduceFunds.SUPPLEMENTAL_LEARNING_FUNDS,
+          reduce_funds == ReduceFunds.TECHNOLOGY || reduce_funds == ReduceFunds.SUPPLEMENTAL,
         then: yup.string().required('Required').min(RICH_TEXT_VALID_MIN_LENGTH, 'Required').nullable(),
       })
       .nullable(),

@@ -3,7 +3,7 @@ import { useMutation } from '@apollo/client'
 import { Box } from '@mui/material'
 import moment from 'moment'
 import { Prompt } from 'react-router-dom'
-import { MthTitle } from '@mth/enums'
+import { MthTitle, ReduceFunds } from '@mth/enums'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { PageHeader } from '../components/PageHeader'
 import {
@@ -43,6 +43,11 @@ const ProgramSetting: React.FC = () => {
   const [schedule, setSchedule] = useState<boolean>(false)
   const [diplomaSeeking, setDiplomaSeeking] = useState<boolean>(false)
   const [testingPreference, setTestingPreference] = useState<boolean>(false)
+  const [learningLogs, setLearningLogs] = useState<boolean | undefined>(undefined)
+  const [learningLogsFirstSecondSemesters, setLearningLogsFirstSecondSemesters] = useState<boolean>(false)
+  const [reimbursements, setReimbursements] = useState<ReduceFunds | undefined>(undefined)
+  const [requireSoftware, setRequireSoftware] = useState<boolean>(false)
+  const [directOrders, setDirectOrders] = useState<ReduceFunds | undefined>(undefined)
   const [isChanged, setIsChanged] = useState<ProgramSettingChanged>({
     state: false,
     stateLogo: false,
@@ -53,6 +58,11 @@ const ProgramSetting: React.FC = () => {
     birth: false,
     specialEd: false,
     enrollment: false,
+    learningLogs: false,
+    learningLogsFirstSecondSemesters: false,
+    reimbursements: false,
+    requireSoftware: false,
+    directOrders: false,
   })
 
   const [isDelete, setIsDelete] = useState<FileDeleted>({
@@ -197,6 +207,11 @@ const ProgramSetting: React.FC = () => {
             schedule: schedule,
             diploma_seeking: diplomaSeeking,
             testing_preference: testingPreference,
+            learning_logs: learningLogs,
+            learning_logs_first_second_semesters: learningLogsFirstSecondSemesters,
+            reimbursements: reimbursements,
+            require_software: requireSoftware,
+            direct_orders: directOrders,
           },
         },
       })
@@ -219,6 +234,11 @@ const ProgramSetting: React.FC = () => {
       schedule: false,
       diplomaSeeking: false,
       testingPreference: false,
+      learningLogs: false,
+      learningLogsFirstSecondSemesters: false,
+      reimbursements: false,
+      requireSoftware: false,
+      directOrders: false,
     })
 
     setMe((prevMe) => {
@@ -259,6 +279,11 @@ const ProgramSetting: React.FC = () => {
       birth: false,
       specialEd: false,
       enrollment: false,
+      learningLogs: false,
+      learningLogsFirstSecondSemesters: false,
+      reimbursements: false,
+      requireSoftware: false,
+      directOrders: false,
     })
   }, [me?.selectedRegionId])
 
@@ -326,6 +351,11 @@ const ProgramSetting: React.FC = () => {
         setSchedule={setSchedule}
         setDiplomaSeeking={setDiplomaSeeking}
         setTestingPreference={setTestingPreference}
+        setLearningLogs={setLearningLogs}
+        setLearningLogsFirstSecondSemesters={setLearningLogsFirstSecondSemesters}
+        setReimbursements={setReimbursements}
+        setRequireSoftware={setRequireSoftware}
+        setDirectOrders={setDirectOrders}
       />
       <PageContent
         stateSelectItem={{
@@ -352,6 +382,19 @@ const ProgramSetting: React.FC = () => {
         birthDayCutItem={{ birthDate, setBirthDate }}
         specialEdItem={{ specialEd, setSpecialEd, specialEdOptions, setSpecialEdOptions }}
         enrollItem={{ enroll, setEnroll }}
+        learningLogItem={{
+          learningLogs,
+          learningLogsFirstSecondSemesters,
+          setLearningLogs,
+          setLearningLogsFirstSecondSemesters,
+        }}
+        reimbursementsItem={{
+          reimbursements,
+          requireSoftware,
+          setReimbursements,
+          setRequireSoftware,
+        }}
+        directOrdersItem={{ directOrders, setDirectOrders }}
         isChanged={isChanged}
         setIsChanged={setIsChanged}
         setIsDelete={setIsDelete}

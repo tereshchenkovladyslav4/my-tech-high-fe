@@ -11,6 +11,7 @@ import {
   Box,
   TableFooter,
   TableSortLabel,
+  styled,
 } from '@mui/material'
 import { visuallyHidden } from '@mui/utils'
 import { DragDropContext, Droppable, DroppableProvided, DropResult } from 'react-beautiful-dnd'
@@ -20,6 +21,19 @@ import { mthTableClasses } from '@mth/components/MthTable/styles'
 import { convertWidth } from '@mth/utils'
 import { Order } from '../SortableTable/types'
 import { MthTableProps, MthTableRowItem } from './types'
+
+const CssTableSortLabel = styled(TableSortLabel)(() => ({
+  '.MuiTableSortLabel-iconDirectionDesc': {
+    color: '#0E0E0E !important',
+    fontSize: '22px',
+    marginLeft: '20px',
+  },
+  '.MuiTableSortLabel-iconDirectionAsc': {
+    color: '#0E0E0E !important',
+    fontSize: '22px',
+    marginLeft: '20px',
+  },
+}))
 
 const MthTable = <T extends unknown>({
   fields,
@@ -129,7 +143,7 @@ const MthTable = <T extends unknown>({
               {fields.map((field) => (
                 <TableCell key={field.key} width={convertWidth(field.width || 0, tableRef.current?.clientWidth || 0)}>
                   {field.sortable ? (
-                    <TableSortLabel
+                    <CssTableSortLabel
                       active={true}
                       // active={orderBy === headCell.id}
                       // direction={orderBy === headCell.id ? order : 'asc'}
@@ -143,7 +157,7 @@ const MthTable = <T extends unknown>({
                           {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
                         </Box>
                       ) : null}
-                    </TableSortLabel>
+                    </CssTableSortLabel>
                   ) : (
                     field.label
                   )}

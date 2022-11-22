@@ -1,8 +1,9 @@
 import { DropDownItem } from '@mth/components/DropDown/types'
 export type HeaderProps = {
   title: string
-  selectedYear: number
+  schoolYearItems: DropDownItem[]
+  selectedYearId: number | undefined
   scheduleStatus: DropDownItem | undefined
-  onSelectYear: (year: number) => void
+  setSelectedYearId: (value: number) => void
   handleBack: () => void
 }

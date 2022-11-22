@@ -53,6 +53,11 @@ export const getSchoolYearsByRegionId = gql`
         midyear_schedule_close
         homeroom_resource_open
         homeroom_resource_close
+        learning_logs
+        learning_logs_first_second_semesters
+        reimbursements
+        require_software
+        direct_orders
       }
       county_file_name
       county_file_path

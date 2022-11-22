@@ -1,7 +1,7 @@
 import SignatureCanvas from 'react-signature-canvas'
 import { DropDownItem } from '@mth/components/DropDown/types'
 import { RadioGroupOption } from '@mth/components/MthRadioGroup/types'
-import { CourseType, DiplomaSeekingPath, ReduceFunds, ScheduleStatus } from '@mth/enums'
+import { CourseType, DiplomaSeekingPath, ReduceFunds, SchedulePeriodStatus, ScheduleStatus } from '@mth/enums'
 import { SEMESTER_TYPE } from '@mth/screens/Admin/Curriculum/types'
 import { AssessmentType } from '@mth/screens/Admin/SiteManagement/EnrollmentSetting/TestingPreference/types'
 import { OnSiteSplitEnrollment } from './ScheduleBuilder/OnSiteSplitEnrollmentEdit/types'
@@ -158,6 +158,7 @@ export type ScheduleData = {
 
   // Selected values
   schedulePeriodId?: number
+  schedulePeriodStatus?: SchedulePeriodStatus
   Period?: Period
   Subject?: Subject
   Title?: Title

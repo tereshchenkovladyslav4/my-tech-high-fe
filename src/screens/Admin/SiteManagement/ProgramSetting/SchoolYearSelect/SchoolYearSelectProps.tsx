@@ -1,3 +1,4 @@
+import { ReduceFunds } from '@mth/enums'
 import { CountyFileType } from '../CountySelect/CountySelectTypes'
 import { SchoolDistrictFileType } from '../SchoolDistrictSelect/SchoolDistrictSelectTypes'
 import { SchoolYears } from '../types'
@@ -17,4 +18,9 @@ export type SchoolYearSelectProps = {
   setSchedule: (value: boolean) => void
   setDiplomaSeeking: (value: boolean) => void
   setTestingPreference: (value: boolean) => void
+  setLearningLogs: (value: boolean | undefined) => void
+  setLearningLogsFirstSecondSemesters: (value: boolean) => void
+  setReimbursements: (value: ReduceFunds | undefined) => void
+  setRequireSoftware: (value: boolean) => void
+  setDirectOrders: (value: ReduceFunds | undefined) => void
 }

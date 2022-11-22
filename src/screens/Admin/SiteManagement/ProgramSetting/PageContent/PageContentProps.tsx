@@ -1,3 +1,4 @@
+import { ReduceFunds } from '@mth/enums'
 import { CountyFileType } from '../CountySelect/CountySelectTypes'
 import { StateLogoFileType } from '../ImageCropper/ImageCropper'
 import { SchoolDistrictFileType } from '../SchoolDistrictSelect/SchoolDistrictSelectTypes'
@@ -61,6 +62,22 @@ export type PageContentProps = {
   enrollItem: {
     enroll: boolean
     setEnroll: (value: boolean) => void
+  }
+  learningLogItem: {
+    learningLogs: boolean | undefined
+    learningLogsFirstSecondSemesters: boolean | undefined
+    setLearningLogs: (value: boolean) => void
+    setLearningLogsFirstSecondSemesters: (value: boolean) => void
+  }
+  reimbursementsItem: {
+    reimbursements: ReduceFunds | undefined
+    requireSoftware: boolean | undefined
+    setReimbursements: (value: ReduceFunds) => void
+    setRequireSoftware: (value: boolean) => void
+  }
+  directOrdersItem: {
+    directOrders: ReduceFunds | undefined
+    setDirectOrders: (value: ReduceFunds) => void
   }
   isChanged: ProgramSettingChanged
   setIsChanged: (value: ProgramSettingChanged) => void

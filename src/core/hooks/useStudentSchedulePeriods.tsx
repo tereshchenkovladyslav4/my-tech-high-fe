@@ -65,9 +65,9 @@ export const attachSelectedItems = (
     if (schedulePeriod.course_type) item.CourseType = schedulePeriod.course_type as CourseType
     if (schedulePeriod.course_type === CourseType.CUSTOM_BUILT)
       item.CustomBuiltDescription = schedulePeriod.custom_build_description
-    if (schedulePeriod.course_type === CourseType.MTH_DIRECT && schedulePeriod.osse_coures_name)
+    if (schedulePeriod.course_type === CourseType.MTH_DIRECT && schedulePeriod.osse_course_name)
       item.OnSiteSplitEnrollment = {
-        courseName: schedulePeriod.osse_coures_name,
+        courseName: schedulePeriod.osse_course_name,
         districtSchool: schedulePeriod.osse_district_school,
         schoolDistrictName: schedulePeriod.osse_school_district_name,
       }
@@ -77,8 +77,8 @@ export const attachSelectedItems = (
         courseName: schedulePeriod.tp_course_name,
         phoneNumber: schedulePeriod.tp_phone_number,
         specificCourseWebsite: schedulePeriod.tp_specific_course_website,
-        additionalWebsite: schedulePeriod.tp_addtional_specific_course_website
-          ? JSON.parse(schedulePeriod.tp_addtional_specific_course_website)
+        additionalWebsite: schedulePeriod.tp_additional_specific_course_website
+          ? JSON.parse(schedulePeriod.tp_additional_specific_course_website)
           : '',
       }
   }
@@ -200,7 +200,7 @@ export const useStudentSchedulePeriods = (
         }
 
         secondScheduleDataArray.map((item) => {
-          item.FirstSemesterSchedule = firstScheduleDataArray.find((x) => (x.period = item.period))
+          item.FirstSemesterSchedule = firstScheduleDataArray.find((x) => x.period === item.period)
         })
 
         if (showSecondSemester) {

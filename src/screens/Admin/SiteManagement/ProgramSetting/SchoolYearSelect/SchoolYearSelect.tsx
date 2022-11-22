@@ -4,6 +4,7 @@ import { Stack } from '@mui/material'
 import moment from 'moment'
 import { DropDown } from '@mth/components/DropDown/DropDown'
 import { DropDownItem } from '@mth/components/DropDown/types'
+import { ReduceFunds } from '@mth/enums'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { getSchoolYearsByRegionId } from '../../services'
 import { SchoolYears } from '../types'
@@ -24,6 +25,11 @@ export const SchoolYearSelect: React.FC<SchoolYearSelectProps> = ({
   setSchedule,
   setDiplomaSeeking,
   setTestingPreference,
+  setLearningLogs,
+  setLearningLogsFirstSecondSemesters,
+  setReimbursements,
+  setRequireSoftware,
+  setDirectOrders,
 }) => {
   const { me } = useContext(UserContext)
   // const [schoolYears, setSchoolYears] = useState<SchoolYears[]>([])
@@ -62,6 +68,11 @@ export const SchoolYearSelect: React.FC<SchoolYearSelectProps> = ({
           setSchedule(schoolYear.schedule)
           setDiplomaSeeking(schoolYear.diplomaSeeking)
           setTestingPreference(schoolYear.testingPreference)
+          setLearningLogs(schoolYear.learningLogs)
+          setLearningLogsFirstSecondSemesters(schoolYear.learningLogsFirstSecondSemesters)
+          setReimbursements(schoolYear.reimbursements)
+          setRequireSoftware(schoolYear.requireSoftware)
+          setDirectOrders(schoolYear.directOrders)
         }
       })
     }
@@ -85,6 +96,11 @@ export const SchoolYearSelect: React.FC<SchoolYearSelectProps> = ({
           setSchedule(schoolYear.schedule)
           setDiplomaSeeking(schoolYear.diplomaSeeking)
           setTestingPreference(schoolYear.testingPreference)
+          setLearningLogs(schoolYear.learningLogs)
+          setLearningLogsFirstSecondSemesters(schoolYear.learningLogsFirstSecondSemesters)
+          setReimbursements(schoolYear.reimbursements)
+          setRequireSoftware(schoolYear.requireSoftware)
+          setDirectOrders(schoolYear.directOrders)
         }
         dropYears.push({
           value: `${schoolYear.schoolYearId}`,
@@ -125,6 +141,11 @@ export const SchoolYearSelect: React.FC<SchoolYearSelectProps> = ({
             schedule: boolean
             diploma_seeking: boolean
             testing_preference: boolean
+            learning_logs: boolean
+            learning_logs_first_second_semesters: boolean
+            reimbursements: ReduceFunds
+            require_software: boolean
+            direct_orders: ReduceFunds
           }) => {
             if (selectedYearId == schoolYear?.school_year_id) {
               setSpecialEd(schoolYear?.special_ed)
@@ -135,6 +156,11 @@ export const SchoolYearSelect: React.FC<SchoolYearSelectProps> = ({
               setSchedule(schoolYear.schedule)
               setDiplomaSeeking(schoolYear.diploma_seeking)
               setTestingPreference(schoolYear.testing_preference)
+              setLearningLogs(schoolYear.learning_logs)
+              setLearningLogsFirstSecondSemesters(schoolYear.learning_logs_first_second_semesters)
+              setReimbursements(schoolYear.reimbursements)
+              setRequireSoftware(schoolYear.require_software)
+              setDirectOrders(schoolYear.direct_orders)
               cnt++
             }
             return {
@@ -149,6 +175,11 @@ export const SchoolYearSelect: React.FC<SchoolYearSelectProps> = ({
               schedule: schoolYear.schedule,
               diplomaSeeking: schoolYear.diploma_seeking,
               testingPreference: schoolYear.testing_preference,
+              learningLogs: schoolYear.learning_logs,
+              learningLogsFirstSecondSemesters: schoolYear.learning_logs_first_second_semesters,
+              reimbursements: schoolYear.reimbursements,
+              requireSoftware: schoolYear.require_software,
+              directOrders: schoolYear.direct_orders,
             }
           },
         ).sort((a: SchoolYears, b: SchoolYears) => {
@@ -167,6 +198,11 @@ export const SchoolYearSelect: React.FC<SchoolYearSelectProps> = ({
         setDiplomaSeeking(false)
         setSchedule(false)
         setTestingPreference(false)
+        setLearningLogs(undefined)
+        setLearningLogsFirstSecondSemesters(false)
+        setReimbursements(undefined)
+        setRequireSoftware(false)
+        setDirectOrders(undefined)
       }
     }
   }, [me?.selectedRegionId, schoolYearData?.data?.region])

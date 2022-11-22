@@ -1,6 +1,7 @@
 import React, { FunctionComponent } from 'react'
 import { Grid, TextField } from '@mui/material'
 import { useFormContext, Controller } from 'react-hook-form'
+import { extractContent } from '@mth/utils'
 import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
 import { SYSTEM_01 } from '../../../../utils/constants'
 
@@ -18,9 +19,11 @@ export const EnrollmentPacketNotes: FunctionComponent = () => {
           name='notes'
           control={control}
           render={({ field }) => {
+            const value = extractContent(field.value)
             return (
               <TextField
                 {...field}
+                value={value}
                 size='small'
                 variant='outlined'
                 fullWidth

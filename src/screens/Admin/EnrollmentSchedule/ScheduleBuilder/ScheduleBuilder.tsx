@@ -12,7 +12,7 @@ import { SCHEDULE_STATUS_OPTIONS } from '@mth/constants'
 import { DiplomaSeekingPath, MthColor, MthTitle, ScheduleStatus } from '@mth/enums'
 import { saveScheduleMutation, sendEmailUpdateRequired } from '@mth/graphql/mutation/schedule'
 import { saveSchedulePeriodMutation } from '@mth/graphql/mutation/schedule-period'
-import { useCurrentSchoolYearByRegionId, useStudentSchedulePeriods } from '@mth/hooks'
+import { useActiveScheduleSchoolYears, useStudentSchedulePeriods } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { ScheduleEditor } from '@mth/screens/Homeroom/Schedule/ScheduleBuilder/ScheduleEditor'
 import { StudentScheduleInfo } from '@mth/screens/Homeroom/Schedule/types'
@@ -35,14 +35,12 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
   const { me } = useContext(UserContext)
   const history = useHistory()
   const [studentInfo, setStudentInfo] = useState<StudentScheduleInfo>()
-  const [selectedYear, setSelectedYear] = useState<number>(0)
   const [scheduleStatus, setScheduleStatus] = useState<DropDownItem>()
   const [isDraftSaved, setIsDraftSaved] = useState<boolean>(false)
   const [showSubmitSuccessModal, setShowSubmitSuccessModal] = useState<boolean>(false)
   const [showRequireUpdateModal, setShowRequireUpdateModal] = useState<boolean>(false)
   const [periodItems, setPeriodItems] = useState<CheckBoxListVM[]>([])
   const [requireUpdatePeriods, setRequireUpdatePeriods] = useState<string[]>([])
-  const [splitEnrollment, setSplitEnrollment] = useState<boolean>(false)
   const [isChanged, setIsChanged] = useState(false)
   const [showUnsavedModal, setShowUnsavedModal] = useState<boolean>(false)
   const [showReset, setShowReset] = useState(false)
@@ -55,12 +53,15 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
     fetchPolicy: 'network-only',
   })
 
-  const { data: currentSchoolYear, loading: currentSchoolYearLoading } = useCurrentSchoolYearByRegionId(
-    me?.selectedRegionId || 0,
-  )
+  const {
+    selectedYearId,
+    setSelectedYearId,
+    selectedYear,
+    dropdownItems: schoolYearItems,
+  } = useActiveScheduleSchoolYears(studentId)
 
   const { scheduleData, studentScheduleId, studentScheduleStatus, setScheduleData, setStudentScheduleId, refetch } =
-    useStudentSchedulePeriods(studentId, selectedYear, diplomaSeekingPath)
+    useStudentSchedulePeriods(studentId, selectedYearId, diplomaSeekingPath)
 
   const [submitScheduleBuilder] = useMutation(saveScheduleMutation)
   const [saveDraft] = useMutation(saveSchedulePeriodMutation)
@@ -96,11 +97,11 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
                       TitleId: null,
                       course_type: null,
                       custom_build_description: null,
-                      osse_coures_name: null,
+                      osse_course_name: null,
                       osse_district_school: null,
                       osse_school_district_name: null,
                       schedule_period_id: item?.schedulePeriodId,
-                      tp_addtional_specific_course_website: null,
+                      tp_additional_specific_course_website: null,
                       tp_course_name: null,
                       tp_phone_number: null,
                       tp_provider_name: null,
@@ -116,11 +117,11 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
                       TitleId: Number(item?.Title?.title_id),
                       course_type: item?.CourseType,
                       custom_build_description: item?.CustomBuiltDescription,
-                      osse_coures_name: item?.OnSiteSplitEnrollment?.courseName,
+                      osse_course_name: item?.OnSiteSplitEnrollment?.courseName,
                       osse_district_school: item?.OnSiteSplitEnrollment?.districtSchool,
                       osse_school_district_name: item?.OnSiteSplitEnrollment?.schoolDistrictName,
                       schedule_period_id: item?.schedulePeriodId,
-                      tp_addtional_specific_course_website: item?.ThirdParty?.additionalWebsite
+                      tp_additional_specific_course_website: item?.ThirdParty?.additionalWebsite
                         ? JSON.stringify(item.ThirdParty.additionalWebsite)
                         : '',
                       tp_course_name: item?.ThirdParty?.courseName,
@@ -150,10 +151,6 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
       setIsChanged(false)
       handleBack()
     }
-  }
-
-  const handleYearDropDown = (year: number) => {
-    setSelectedYear(year)
   }
 
   const updateScheduleStatus = async (num: string) => {
@@ -274,13 +271,6 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
   }, [studentInfoLoading, studentInfoData])
 
   useEffect(() => {
-    if (!currentSchoolYearLoading && currentSchoolYear) {
-      setSelectedYear(currentSchoolYear.school_year_id)
-      setSplitEnrollment(currentSchoolYear?.ScheduleBuilder?.split_enrollment)
-    }
-  }, [currentSchoolYear, currentSchoolYearLoading])
-
-  useEffect(() => {
     if (studentScheduleStatus) {
       setScheduleStatus(SCHEDULE_STATUS_OPTIONS.find((item) => item.value === studentScheduleStatus) as DropDownItem)
     }
@@ -324,9 +314,10 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
         />
         <Header
           title={MthTitle.SCHEDULE}
-          selectedYear={selectedYear}
           scheduleStatus={scheduleStatus}
-          onSelectYear={handleYearDropDown}
+          schoolYearItems={schoolYearItems}
+          selectedYearId={selectedYearId}
+          setSelectedYearId={setSelectedYearId}
           handleBack={handleBack}
         />
         <StudentInfo
@@ -336,7 +327,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
         />
         <ScheduleEditor
           scheduleData={scheduleData}
-          splitEnrollment={splitEnrollment}
+          splitEnrollment={!!selectedYear?.ScheduleBuilder?.split_enrollment}
           scheduleStatus={studentScheduleStatus}
           isAdmin={true}
           isEditMode={true}
@@ -401,7 +392,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
             Reset Schedule
           </Button>
         </Box>
-        <ScheduleHistory studentId={studentId} schoolYearId={selectedYear} refetchSchedule={refetch} />
+        <ScheduleHistory studentId={studentId} schoolYearId={selectedYearId || 0} refetchSchedule={refetch} />
         {showRequireUpdateModal && (
           <RequireUpdateModal
             periodItems={periodItems}

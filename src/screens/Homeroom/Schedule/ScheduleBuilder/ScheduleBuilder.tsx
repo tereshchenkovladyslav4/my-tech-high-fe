@@ -2,11 +2,11 @@ import React, { useEffect, useState } from 'react'
 import { useMutation, useQuery } from '@apollo/client'
 import { Button, Typography } from '@mui/material'
 import { Box } from '@mui/system'
-import { Prompt } from 'react-router-dom'
+import { Prompt, useHistory } from 'react-router-dom'
 import { CustomModal } from '@mth/components/CustomModal/CustomModals'
 import { SuccessModal } from '@mth/components/SuccessModal/SuccessModal'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
-import { CourseType, MthColor, MthTitle, ScheduleStatus } from '@mth/enums'
+import { CourseType, MthColor, MthRoute, MthTitle, SchedulePeriodStatus, ScheduleStatus } from '@mth/enums'
 import { saveScheduleMutation } from '@mth/graphql/mutation/schedule'
 import { saveSchedulePeriodMutation } from '@mth/graphql/mutation/schedule-period'
 import { getAllScheduleBuilderQuery } from '@mth/graphql/queries/schedule-builder'
@@ -21,7 +21,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
   studentId,
   studentName,
   selectedYear,
-  showSecondSemester,
+  showSecondSemester = false,
   showUnsavedModal = false,
   splitEnrollment = false,
   diplomaSeekingPath,
@@ -30,6 +30,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
   setIsChanged,
   onWithoutSaved,
 }) => {
+  const history = useHistory()
   const [isDraftSaved, setIsDraftSaved] = useState<boolean>(false)
   const [isValid, setIsValid] = useState<boolean>(false)
   const [showSubmitSuccessModal, setShowSubmitSuccessModal] = useState<boolean>(false)
@@ -61,7 +62,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
   const [saveDraft] = useMutation(saveSchedulePeriodMutation)
 
   const handleSave = async (kind: ScheduleStatus) => {
-    if (!isChanged) {
+    if (showSecondSemester && !isChanged) {
       setShowNoChangesModal(true)
       return
     }
@@ -74,7 +75,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
             StudentId: Number(studentId),
             status: kind,
             schedule_id: studentScheduleId,
-            is_second_semester: !!showSecondSemester,
+            is_second_semester: showSecondSemester,
           },
         },
       })
@@ -94,17 +95,18 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
                 TitleId: Number(item?.Title?.title_id),
                 course_type: item?.CourseType,
                 custom_build_description: item?.CustomBuiltDescription,
-                osse_coures_name: item?.OnSiteSplitEnrollment?.courseName,
+                osse_course_name: item?.OnSiteSplitEnrollment?.courseName,
                 osse_district_school: item?.OnSiteSplitEnrollment?.districtSchool,
                 osse_school_district_name: item?.OnSiteSplitEnrollment?.schoolDistrictName,
                 schedule_period_id: item?.schedulePeriodId,
-                tp_addtional_specific_course_website: item?.ThirdParty?.additionalWebsite
+                tp_additional_specific_course_website: item?.ThirdParty?.additionalWebsite
                   ? JSON.stringify(item.ThirdParty.additionalWebsite)
                   : '',
                 tp_course_name: item?.ThirdParty?.courseName,
                 tp_phone_number: item?.ThirdParty?.phoneNumber,
                 tp_provider_name: item?.ThirdParty?.providerName,
                 tp_specific_course_website: item?.ThirdParty?.specificCourseWebsite,
+                status: item.schedulePeriodStatus || null,
               })),
             },
           },
@@ -118,6 +120,9 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
             case ScheduleStatus.SUBMITTED:
               setShowSubmitSuccessModal(true)
               break
+            case ScheduleStatus.UPDATES_REQUESTED:
+              history.push(MthRoute.DASHBOARD)
+              return
           }
           setIsChanged(false)
           setIsEditMode(false)
@@ -133,15 +138,21 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
     }
   }
 
-  const startEdit = (periodIds: number[]) => {
-    setIsEditMode(true)
-
-    const data = showSecondSemester ? secondScheduleData : scheduleData
-    data.map((item) => (item.editable = periodIds.includes(item.period)))
-    if (showSecondSemester) {
-      setSecondScheduleData(JSON.parse(JSON.stringify(data)))
+  const handleRequestUpdates = async (periodIds: number[]) => {
+    if (studentScheduleStatus === ScheduleStatus.ACCEPTED) {
+      scheduleData
+        .filter((item) => periodIds.includes(item.period))
+        .map((item) => (item.schedulePeriodStatus = SchedulePeriodStatus.UPDATE_REQUESTED))
+      await handleSave(ScheduleStatus.UPDATES_REQUESTED)
     } else {
-      setScheduleData(JSON.parse(JSON.stringify(data)))
+      setIsEditMode(true)
+      const data = showSecondSemester ? secondScheduleData : scheduleData
+      data.map((item) => (item.editable = periodIds.includes(item.period)))
+      if (showSecondSemester) {
+        setSecondScheduleData(JSON.parse(JSON.stringify(data)))
+      } else {
+        setScheduleData(JSON.parse(JSON.stringify(data)))
+      }
     }
   }
 
@@ -267,11 +278,11 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
         <RequestUpdatesModal
           scheduleData={scheduleData}
           setShowEditModal={setShowRequestUpdatesModal}
-          onSave={startEdit}
+          onSave={handleRequestUpdates}
         />
       )}
       <Prompt
-        when={showUnsavedModal}
+        when={isChanged ? true : false}
         message={JSON.stringify({
           header: MthTitle.UNSAVED_TITLE,
           content: MthTitle.UNSAVED_DESCRIPTION,

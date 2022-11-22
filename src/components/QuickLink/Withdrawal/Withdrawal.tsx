@@ -492,7 +492,7 @@ const Withdrawal: React.FC<{
                 }
 
                 if (val.slug == 'signature' && signature?.current?.isEmpty()) {
-                  errors[val.id] = 'Rrequired.'
+                  errors[val.id] = 'Required.'
                 }
               })
 
