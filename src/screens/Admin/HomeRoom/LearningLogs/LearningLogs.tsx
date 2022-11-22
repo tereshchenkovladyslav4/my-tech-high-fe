@@ -6,6 +6,7 @@ import CreateIcon from '@mui/icons-material/Create'
 import ExpandMoreOutlinedIcon from '@mui/icons-material/ExpandMoreOutlined'
 import SearchIcon from '@mui/icons-material/Search'
 import { Box, Button, Card, IconButton, Tooltip, InputAdornment, OutlinedInput } from '@mui/material'
+import { useHistory } from 'react-router-dom'
 import { MthTable } from '@mth/components/MthTable'
 import { MthTableField, MthTableRowItem } from '@mth/components/MthTable/types'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
@@ -13,6 +14,7 @@ import { MthColor } from '@mth/enums'
 import { SchoolYearResponseType, useSchoolYearsByRegionId } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { commonClasses } from '@mth/styles/common.style'
+import { HOMEROOM_LEARNING_LOGS } from '../../../../utils/constants'
 import { HomeRoomHeader } from '../Components/HomeRoomHeader'
 import { CreateNewMasterGql, GetMastersBySchoolYearIDGql } from '../services'
 import Classes from './Classes'
@@ -20,6 +22,8 @@ import { CreateMasterModal } from './CreateMasterModal'
 import { Master } from './types'
 
 const LearningLogs: React.FC = () => {
+  const history = useHistory()
+
   const [selectedYear, setSelectedYear] = useState<number>(0)
   const [selectedYearData, setSelectedYearData] = useState<SchoolYearResponseType | undefined>()
   // const [searchField, setSearchField] = useState<string>('')
@@ -69,7 +73,11 @@ const LearningLogs: React.FC = () => {
       formatter: (item: MthTableRowItem<Master>) => {
         return (
           <Box display={'flex'} flexDirection='row' justifyContent={'flex-end'} flexWrap={'wrap'}>
-            <Tooltip title='Edit' placement='top'>
+            <Tooltip
+              title='Edit'
+              placement='top'
+              onClick={() => history.push(`${HOMEROOM_LEARNING_LOGS}/edit/${item.rawData.master_id}`)}
+            >
               <IconButton color='primary' className='actionButton'>
                 <CreateIcon />
               </IconButton>
@@ -179,6 +187,7 @@ const LearningLogs: React.FC = () => {
       setTableData(
         data.getMastersBySchoolId.map((item: Master) => {
           return createData({
+            master_id: item.master_id,
             master_name: item.master_name,
             classesCount: 0,
             classes: [],

@@ -44,7 +44,7 @@ export const studentInfoClass = {
       fontSize: '12px',
     },
     '& .MuiSvgIcon-root': {
-      color: 'white',
+      color: 'white !important',
     },
   },
 }

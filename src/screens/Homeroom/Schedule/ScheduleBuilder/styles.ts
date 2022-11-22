@@ -50,7 +50,7 @@ export const scheduleBuilderClasses = {
     position: 'absolute',
     top: '0',
     right: '0',
-    marginRight: 2,
+    marginRight: 6,
   },
   labelColor: {
     color: '#4145FF !important',
@@ -61,6 +61,7 @@ export const scheduleBuilderClasses = {
     justifyContent: 'space-between',
     width: '100%',
     padding: '4px 4px 4px 0px',
+    textAlign: 'left',
     '&:hover': { border: 'none', background: MthColor.WHITE },
   },
   descriptionWrap: {

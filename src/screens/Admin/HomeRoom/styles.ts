@@ -149,4 +149,12 @@ export const useStyles = {
     marginLeft: '12px',
     marginTop: '4px',
   },
+  saveButtons: {
+    borderRadius: 10,
+    mr: '20px',
+    background: 'linear-gradient(90deg, #3E2783 0%, rgba(62, 39, 131, 0) 100%) #4145FF',
+    fontWeight: 'bold',
+    paddingX: '40px !important',
+    color: 'white',
+  },
 }

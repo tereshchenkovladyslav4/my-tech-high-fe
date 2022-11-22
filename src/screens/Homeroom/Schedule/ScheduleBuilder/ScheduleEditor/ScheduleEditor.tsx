@@ -84,7 +84,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
   const [enableQuestionTooltip, setEnableQuestionTooltip] = useState<boolean>(false)
   const [multiPeriodsNotification, setMultiPeriodsNotification] = useState<string | undefined>()
   const [selectedCourse, setSelectedCourse] = useState<Course | undefined>()
-  const [lockedIcon, setLockedIcon] = useState(true)
+  const [lockedIcon, setLockedIcon] = useState(false)
 
   const createPeriodMenuItems = (schedule: ScheduleData): MenuItemData => {
     const menuItemsData: MenuItemData = {
@@ -772,7 +772,13 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
               {item.rawData.CourseType === CourseType.MTH_DIRECT && !item.rawData.OnSiteSplitEnrollment && (
                 <>
                   {!!item.rawData.Title && (
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Box
+                      sx={
+                        editable(item.rawData) && item.rawData.Provider?.multiple_periods
+                          ? { display: 'flex', justifyContent: 'space-between' }
+                          : {}
+                      }
+                    >
                       {showCourseSelector(item.rawData) ? (
                         <NestedDropdown
                           menuItemsData={createDescriptionMenuItems(item.rawData)}
@@ -803,7 +809,13 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
                     </Box>
                   )}
                   {!item.rawData.Title && !!item.rawData.Subject && (
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Box
+                      sx={
+                        editable(item.rawData) && item.rawData.Provider?.multiple_periods
+                          ? { display: 'flex', justifyContent: 'space-between' }
+                          : {}
+                      }
+                    >
                       {showCourseSelector(item.rawData) ? (
                         <NestedDropdown
                           menuItemsData={createDescriptionMenuItems(item.rawData)}

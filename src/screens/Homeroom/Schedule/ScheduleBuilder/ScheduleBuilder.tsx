@@ -271,7 +271,10 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
             </Paragraph>
           }
           btntitle='Done'
-          handleSubmit={() => setShowSubmitSuccessModal(false)}
+          handleSubmit={() => {
+            setShowSubmitSuccessModal(false)
+            history.push(MthRoute.DASHBOARD)
+          }}
         />
       )}
       {showRequestUpdatesModal && (
