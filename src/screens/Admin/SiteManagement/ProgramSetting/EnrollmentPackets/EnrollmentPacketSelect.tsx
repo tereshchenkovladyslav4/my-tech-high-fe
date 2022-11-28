@@ -1,4 +1,5 @@
 import React from 'react'
+import { Box } from '@mui/material'
 import { DropDown } from '@mth/components/DropDown/DropDown'
 import { ProgramSettingChanged } from '../types'
 
@@ -34,13 +35,15 @@ export const EnrollPacketSelect: React.FC<EnrollPacketSelectProps> = ({
   }
 
   return (
-    <DropDown
-      dropDownItems={items}
-      placeholder={'Select status'}
-      defaultValue={enroll ? 'true' : 'false'}
-      sx={{ width: '160px', marginLeft: '25px', zIndex: 1 }}
-      borderNone={false}
-      setParentValue={handleChange}
-    />
+    <Box sx={{ marginLeft: '25px' }}>
+      <DropDown
+        dropDownItems={items}
+        placeholder={'Select status'}
+        defaultValue={enroll ? 'true' : 'false'}
+        sx={{ width: '160px', zIndex: 1 }}
+        borderNone={false}
+        setParentValue={handleChange}
+      />
+    </Box>
   )
 }

@@ -145,7 +145,7 @@ export const Filters: FunctionComponent<FiltersProps> = ({ filter, setFilter }) 
   useEffect(() => {
     const additionalGrades: (string | number)[] = []
     schoolYears.map((item) => {
-      if (schoolYear.includes(item.school_year_id) || schoolYear.includes(item.school_year_id + '-midyear')) {
+      if (schoolYear.includes(String(item.school_year_id)) || schoolYear.includes(item.school_year_id + '-midyear')) {
         if (item.grades != null) {
           const eachGrades = item.grades.split(',')
           eachGrades.map((i) => {

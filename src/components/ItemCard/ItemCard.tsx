@@ -1,12 +1,7 @@
 import React from 'react'
-import DehazeIcon from '@mui/icons-material/Dehaze'
 import EastIcon from '@mui/icons-material/East'
-import EditIcon from '@mui/icons-material/Edit'
-import LoginIcon from '@mui/icons-material/Login'
 import { Box, Card, CardContent, CardMedia, Stack, Typography } from '@mui/material'
 import { useHistory } from 'react-router-dom'
-import AddNewIcon from '../../assets/add-new.png'
-import { SYSTEM_01 } from '../../utils/constants'
 import { ItemCardProps } from './ItemCardProps'
 import { useStyles } from './styles'
 
@@ -17,7 +12,6 @@ export const ItemCard: React.FC<ItemCardProps> = ({
   link,
   isLink,
   onClick,
-  action,
   hasTitle = false,
   icon,
   disabled,
@@ -29,9 +23,10 @@ export const ItemCard: React.FC<ItemCardProps> = ({
       sx={{
         position: 'relative',
         cursor: 'pointer',
-        borderRadius: 2,
+        borderRadius: '16px',
         marginX: 4,
         opacity: disabled ? 0.5 : 1,
+        boxShadow: 'none',
       }}
       onClick={() => {
         if (!disabled) {
@@ -58,17 +53,15 @@ export const ItemCard: React.FC<ItemCardProps> = ({
         <CardMedia component='img' sx={{ minHeight: img ? 'auto' : 240 }} src={img} />
       )}
 
-      {!img && (
-        <img onClick={() => history.push(link)} src={AddNewIcon} style={{ position: 'absolute', top: 15, right: 15 }} />
-      )}
       <CardContent sx={{ textAlign: 'left' }}>
         <Box
           sx={{
             display: 'flex',
             flexDirection: 'row',
             justifyContent: 'space-between',
-            alignItems: 'center',
+            alignItems: 'flex-start',
             alignContent: 'flex-start',
+            minHeight: '54px',
           }}
         >
           <Box>
@@ -76,38 +69,20 @@ export const ItemCard: React.FC<ItemCardProps> = ({
               {title}
             </Typography>
             <Stack direction='row' justifyContent='space-between' alignItems='center'>
-              <Typography
-                color='#A1A1A1'
-                fontSize='16px'
-                fontWeight='700'
-                sx={{ visibility: subTitle ? 'shown' : 'hidden' }}
-              >
-                {subTitle || 'N/A'}
-              </Typography>
-              {action && (
-                <Stack direction='row' spacing={1.5} alignItems='center'>
-                  <DehazeIcon htmlColor={SYSTEM_01} />
-                  <EditIcon
-                    htmlColor={SYSTEM_01}
-                    onClick={(e) => {
-                      alert(`Edit ${title}`)
-                      e.stopPropagation()
-                    }}
-                  />
-                  <LoginIcon
-                    htmlColor={SYSTEM_01}
-                    sx={{ transform: 'rotate(90deg)' }}
-                    onClick={(e) => {
-                      alert(`Download ${title}`)
-                      e.stopPropagation()
-                    }}
-                  />
-                </Stack>
+              {!!subTitle && (
+                <Typography
+                  color='#A1A1A1'
+                  fontSize='16px'
+                  fontWeight='700'
+                  sx={{ visibility: subTitle ? 'shown' : 'hidden' }}
+                >
+                  {subTitle || 'N/A'}
+                </Typography>
               )}
             </Stack>
           </Box>
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            {!action && <EastIcon sx={{ mt: subTitle ? 0 : 0.75 }} />}
+          <Box sx={{ display: 'flex', alignItems: 'center', mt: '8px' }}>
+            <EastIcon sx={{ mt: subTitle ? 0 : 0.75 }} />
           </Box>
         </Box>
       </CardContent>

@@ -91,6 +91,16 @@ export const TodoList: TodoListTemplateType = ({ handleShowEmpty, schoolYears, s
             'MMMM Do, YYYY',
           )
       }
+      case ToDoCategory.RESUBMIT_SCHEDULE: {
+        if (todoItem.students.at(-1)?.current_school_year_status?.midyear_application)
+          return moment(todoItem.students.at(-1)?.current_school_year_status?.midyear_schedule_open).format(
+            'MMMM Do, YYYY',
+          )
+        else
+          return moment(todoItem.students.at(-1)?.current_school_year_status?.schedule_builder_open).format(
+            'MMMM Do, YYYY',
+          )
+      }
       case ToDoCategory.RESUBMIT_SECOND_SEMESTER_SCHEDULE: {
         if (todoItem.students.at(-1)?.current_school_year_status?.midyear_application)
           return moment(todoItem.students.at(-1)?.current_school_year_status?.midyear_schedule_open).format(
@@ -134,6 +144,11 @@ export const TodoList: TodoListTemplateType = ({ handleShowEmpty, schoolYears, s
         )
       }
       case ToDoCategory.SUBMIT_SCHEDULE: {
+        if (todoItem.students.at(-1)?.current_school_year_status?.midyear_application)
+          return moment(todoItem.students.at(-1)?.current_school_year_status?.midyear_schedule_close).format('MM.DD')
+        else return moment(todoItem.students.at(-1)?.current_school_year_status?.schedule_builder_close).format('MM.DD')
+      }
+      case ToDoCategory.RESUBMIT_SCHEDULE: {
         if (todoItem.students.at(-1)?.current_school_year_status?.midyear_application)
           return moment(todoItem.students.at(-1)?.current_school_year_status?.midyear_schedule_close).format('MM.DD')
         else return moment(todoItem.students.at(-1)?.current_school_year_status?.schedule_builder_close).format('MM.DD')

@@ -4,6 +4,7 @@ import { Box, InputAdornment, OutlinedInput, ToggleButton, ToggleButtonGroup } f
 import { debounce } from 'lodash'
 import { DropDown } from '@mth/components/DropDown/DropDown'
 import PageHeader from '@mth/components/PageHeader'
+import { MthRoute } from '@mth/enums'
 import { useSchoolYearsByRegionId } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { courseCatalogHeaderClasses } from '@mth/screens/Admin/Curriculum/CourseCatalog/Components/CourseCatalogHeader/styles'
@@ -49,7 +50,7 @@ const CourseCatalogHeader: React.FC<CourseCatalogHeaderProps> = ({
   return (
     <>
       <Box sx={{ mb: 4 }}>
-        <PageHeader title={title} to='/curriculum/course-catalog'>
+        <PageHeader title={title} to={MthRoute.CURRICULUM_COURSE_CATALOG}>
           <DropDown
             dropDownItems={schoolYearDropdownItems}
             placeholder={'Select Year'}

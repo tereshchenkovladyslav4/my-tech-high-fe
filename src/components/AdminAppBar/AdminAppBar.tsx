@@ -7,6 +7,7 @@ import {
   AppBar as MUIAppBar,
   Avatar,
   Box,
+  Divider,
   Grid,
   InputAdornment,
   List,
@@ -235,12 +236,21 @@ export const AdminAppBar: FunctionComponent = () => {
     map(me?.userRegion, (region: RegionType) => {
       return (
         <Box
-          sx={{ textDecoration: 'none', cursor: 'pointer' }}
+          sx={{ textDecoration: 'none', cursor: 'pointer', position: 'relative', padding: '0px 12px 0px 32px' }}
           key={region?.regionDetail.id}
           onClick={() => handleRegionChange(region)}
         >
+          <Divider
+            orientation='vertical'
+            sx={{
+              position: 'absolute',
+              height: 35,
+              top: '12px',
+              left: '12px',
+            }}
+            variant='middle'
+          />
           <Metadata
-            divider={true}
             title={
               <Subtitle color={isActive(region?.regionDetail.id) ? MTHBLUE : '#A1A1A1'}>
                 {region?.regionDetail.name}

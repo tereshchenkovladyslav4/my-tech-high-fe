@@ -1,6 +1,6 @@
 import { DropDownItem } from '@mth/components/DropDown/types'
 
-export type HomeRoomHeraderProps = {
+export type HomeRoomHeaderProps = {
   title: string
   selectedYear: number
   setSelectedYear: (value: number) => void

@@ -54,7 +54,7 @@ const PageAction: React.FC<PageActionProps> = ({
       setSchoolYears(
         SchoolYears.map((item: SchoolYearType) => ({
           value: item.school_year_id,
-          label: moment(item.date_begin).format('YYYY') + ' - ' + moment(item.date_end).format('YY'),
+          label: moment(item.date_begin).format('YYYY') + '-' + moment(item.date_end).format('YY'),
         })),
       )
       setSelectedYear(SchoolYears[0].school_year_id)

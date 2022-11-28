@@ -5,7 +5,7 @@ import { Box } from '@mui/system'
 import DownloadFileIcon from '@mth/assets/icons/file-download.svg'
 import { DropDown } from '@mth/components/DropDown/DropDown'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
-import { ScheduleStatus } from '@mth/enums'
+import { MthColor, ScheduleStatus } from '@mth/enums'
 import { headerClass } from './styles'
 import { HeaderProps } from './types'
 
@@ -20,7 +20,7 @@ const Header: React.FC<HeaderProps> = ({
   return (
     <Box sx={headerClass.headerMain}>
       <IconButton
-        sx={{ backgroundColor: '#FAFAFA', borderRadius: '5px', width: '44px', height: '44px' }}
+        sx={{ backgroundColor: MthColor.BG_MAIN, borderRadius: '5px', width: '44px', height: '44px' }}
         onClick={() => handleBack()}
       >
         <ArrowBackIosRoundedIcon sx={{ fontSize: '18px !important' }} />

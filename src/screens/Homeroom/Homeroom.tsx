@@ -1,9 +1,12 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { useQuery } from '@apollo/client'
 import { Box, Grid } from '@mui/material'
+import { sortBy } from 'lodash'
 import moment from 'moment'
 import { useRouteMatch } from 'react-router-dom'
+import { DropDownItem } from '@mth/components/DropDown/types'
 import { MthRoute } from '@mth/enums'
+import { getActiveSchoolYearsByRegionId } from '@mth/graphql/queries/school-year'
 import { UserContext } from '../../providers/UserContext/UserProvider'
 import { SchoolYearType } from '../../utils/utils.types'
 import { getSchoolYearsByRegionId } from '../Admin/Dashboard/SchoolYear/SchoolYear'
@@ -29,33 +32,6 @@ export const Homeroom: React.FC = () => {
   useEffect(() => {
     if (schoolYearData?.data?.region?.SchoolYears) {
       const { SchoolYears } = schoolYearData?.data?.region
-      const yearList = []
-      SchoolYears.sort((a, b) => (a.date_begin > b.date_begin ? 1 : -1))
-        .filter((item) => moment(item.date_begin).format('YYYY') >= moment().format('YYYY'))
-        .map(
-          (item: {
-            date_begin: string
-            date_end: string
-            school_year_id: string
-            midyear_application: number
-            midyear_application_open: string
-            midyear_application_close: string
-          }): void => {
-            yearList.push({
-              label: `${moment(item.date_begin).format('YYYY')}-${moment(item.date_end).format('YY')}`,
-              value: item.school_year_id,
-            })
-            if (item && item.midyear_application === 1) {
-              yearList.push({
-                label: `${moment(item.date_begin).format('YYYY')}-${moment(item.date_end).format(
-                  'YY',
-                )} Mid-year Program`,
-                value: `${item.school_year_id}-mid`,
-              })
-            }
-          },
-        )
-      setSchoolYearsDropdown(yearList.sort((a, b) => (a.label > b.label ? 1 : -1)))
       setSchoolYears(
         SchoolYears.map((item: SchoolYearType) => ({
           school_year_id: item.school_year_id,
@@ -65,6 +41,38 @@ export const Homeroom: React.FC = () => {
       )
     }
   }, [region_id, schoolYearData?.data?.region?.SchoolYears])
+
+  const { loading, data } = useQuery(getActiveSchoolYearsByRegionId, {
+    variables: {
+      regionId: region_id,
+    },
+    skip: region_id ? false : true,
+    fetchPolicy: 'network-only',
+  })
+
+  useEffect(() => {
+    if (!loading && data?.getActiveSchoolYears) {
+      const schoolYearsArray: Array<DropDownItem> = []
+      data.getActiveSchoolYears
+        .filter((item: SchoolYearType) => moment(item.date_begin).format('YYYY') >= moment().format('YYYY'))
+        .map((item: SchoolYearType): void => {
+          if (item.midyear_application) {
+            schoolYearsArray.push({
+              label: `${moment(item.date_begin).format('YYYY')}-${moment(item.date_end).format('YY')}`,
+              value: item.school_year_id,
+            })
+          }
+
+          if (item.midyear_application) {
+            schoolYearsArray.push({
+              label: `${moment(item.date_begin).format('YYYY')}-${moment(item.date_end).format('YY')} Mid-year Program`,
+              value: `${item.school_year_id}-mid`,
+            })
+          }
+        })
+      setSchoolYearsDropdown(sortBy(schoolYearsArray, 'label'))
+    }
+  }, [loading, data])
 
   return (
     <Box>

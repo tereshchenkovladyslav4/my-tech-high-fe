@@ -1,5 +1,4 @@
-import React, { FunctionComponent, useContext } from 'react'
-
+import React, { useContext } from 'react'
 import AllInboxOutlinedIcon from '@mui/icons-material/AllInboxOutlined'
 import BackupTableIcon from '@mui/icons-material/BackupTable'
 import CallMadeRoundedIcon from '@mui/icons-material/CallMadeRounded'
@@ -16,10 +15,10 @@ import KeyIcon from '@mui/icons-material/VpnKey'
 import { List, ListItem, Box, ListItemButton } from '@mui/material'
 import { map } from 'lodash'
 import { NavLink, useHistory } from 'react-router-dom'
-import { AuthContext } from '../../providers/AuthProvider/AuthContext'
-import { UserContext } from '../../providers/UserContext/UserProvider'
+import { MthColor, MthRoute } from '@mth/enums'
+import { AuthContext } from '@mth/providers/AuthProvider/AuthContext'
+import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import {
-  ACTIVELINKBACKGROUND,
   ANNOUNCEMENTS,
   CALENDAR,
   CURRICULUM,
@@ -38,7 +37,7 @@ import { MTHLogo } from '../SVG/MTHLogo'
 import { Paragraph } from '../Typography/Paragraph/Paragraph'
 import { useStyles } from './styles'
 
-export const AdminSideMenu: FunctionComponent = () => {
+export const AdminSideMenu: React.FC = () => {
   const history = useHistory()
   const classes = useStyles
 
@@ -51,7 +50,16 @@ export const AdminSideMenu: FunctionComponent = () => {
     history.push(DASHBOARD)
   }
 
-  const unExactPages = [SITE_MANAGEMENT, ENROLLMENT, ANNOUNCEMENTS, CALENDAR, COMMUNICATION, CURRICULUM, HOMEROOM]
+  const unExactPages = [
+    SITE_MANAGEMENT,
+    ENROLLMENT,
+    ANNOUNCEMENTS,
+    CALENDAR,
+    COMMUNICATION,
+    CURRICULUM,
+    HOMEROOM,
+    MthRoute.REIMBURSEMENTS,
+  ]
 
   const navigationList = [
     {
@@ -131,11 +139,11 @@ export const AdminSideMenu: FunctionComponent = () => {
           {map(navigationList, (item, index) => (
             <NavLink
               key={index}
-              exact={unExactPages.includes(item.to) ? false : true}
+              exact={!unExactPages.includes(item.to)}
               to={item.to}
               style={classes.navLink}
               activeStyle={{
-                backgroundColor: ACTIVELINKBACKGROUND,
+                backgroundColor: MthColor.ACTIVE_LINK_BG,
                 color: '#4145FF',
               }}
             >

@@ -62,6 +62,10 @@ export const SchoolOfEnrollment: React.FC = () => {
           label: item.abbreviation,
         })
       })
+    list.push({
+      value: 'unassigned',
+      label: 'Unassigned',
+    })
     setPartnerList(list)
   }, [schoolPartnerData])
 

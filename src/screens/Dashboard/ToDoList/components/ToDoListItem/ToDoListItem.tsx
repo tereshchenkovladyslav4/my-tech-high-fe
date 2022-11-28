@@ -3,7 +3,7 @@ import SubjectIcon from '@mui/icons-material/Subject'
 import WarningAmberOutlinedIcon from '@mui/icons-material/WarningAmberOutlined'
 import { Avatar, AvatarGroup, Box, Button, Card, TableCell, TableRow } from '@mui/material'
 import { map } from 'lodash'
-import { useHistory } from 'react-router-dom'
+import { useHistory, useLocation } from 'react-router-dom'
 import { Metadata } from '@mth/components/Metadata/Metadata'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
@@ -25,6 +25,7 @@ export const ToDoListItem: TodoListTemplateType = ({ todoItem, todoDate, todoDea
   const { students } = todoItem
   const [link, setLink] = useState<string>('')
   const [windowDimensions, setWindowDimensions] = useState(getWindowDimension())
+  const location = useLocation()
 
   const getProfilePhoto = (person: Person) => {
     if (!person.photo) return 'image'
@@ -63,10 +64,15 @@ export const ToDoListItem: TodoListTemplateType = ({ todoItem, todoDate, todoDea
         break
       }
       case ToDoCategory.SUBMIT_SCHEDULE:
-      case ToDoCategory.RESUBMIT_SCHEDULE:
       case ToDoCategory.SUBMIT_SECOND_SEMESTER_SCHEDULE:
       case ToDoCategory.RESUBMIT_SECOND_SEMESTER_SCHEDULE: {
         setLink(`${MthRoute.HOMEROOM}${MthRoute.SUBMIT_SCHEDULE}/${students.at(-1)?.student_id}`)
+        break
+      }
+      case ToDoCategory.RESUBMIT_SCHEDULE: {
+        setLink(
+          `${MthRoute.HOMEROOM}${MthRoute.SUBMIT_SCHEDULE}/${students.at(-1)?.student_id}?backTo=${location.pathname}`,
+        )
         break
       }
       default: {

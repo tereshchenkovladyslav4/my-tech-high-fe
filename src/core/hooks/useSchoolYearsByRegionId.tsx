@@ -36,6 +36,7 @@ export type SchoolYearResponseType = {
   schedule: boolean
   diploma_seeking: boolean
   ScheduleBuilder?: ScheduleBuilder
+  IsCurrentYear: boolean
 }
 
 export const useSchoolYearsByRegionId = (
@@ -78,7 +79,10 @@ export const useSchoolYearsByRegionId = (
   }, [loading, data])
 
   useEffect(() => {
-    if (schoolYears?.length) setSelectedYearId(schoolYears[0].school_year_id)
+    if (schoolYears?.length) {
+      const currentYear = schoolYears.filter((item) => item.IsCurrentYear)[0]
+      setSelectedYearId(currentYear?.school_year_id || schoolYears[0].school_year_id)
+    }
   }, [schoolYears])
 
   const selectedYear = useMemo(() => {

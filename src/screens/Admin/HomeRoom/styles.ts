@@ -140,11 +140,11 @@ export const useStyles = {
     borderRadius: 10,
     width: '200px',
     marginLeft: 1,
+    background: 'linear-gradient(90deg, #0E0E0E 0%, #666666 99.68%), #0E0E0E',
   },
   formError: {
     color: MthColor.ERROR_RED,
     fontSize: '12px',
-    fontWeight: 600,
     lineHeight: '20px',
     marginLeft: '12px',
     marginTop: '4px',
@@ -156,5 +156,15 @@ export const useStyles = {
     fontWeight: 'bold',
     paddingX: '40px !important',
     color: 'white',
+  },
+  searchList: {
+    width: '100%',
+    position: 'absolute',
+    color: 'black',
+    maxWidth: 360,
+    backgroundColor: '#FFFFFF',
+    borderRadius: '4px',
+    boxShadow: 24,
+    zIndex: 100,
   },
 }

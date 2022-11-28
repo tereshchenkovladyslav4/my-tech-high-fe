@@ -1,4 +1,4 @@
-import { ScheduleStatus } from '@mth/enums'
+import { ReduceFunds, ScheduleStatus } from '@mth/enums'
 import { ScheduleBuilder } from '@mth/models'
 
 export type SchoolYear = {
@@ -31,4 +31,7 @@ export type SchoolYear = {
   IsScheduleBuilderOpen: boolean
   IsSecondSemesterOpen: boolean
   ScheduleStatus: ScheduleStatus
+  reimbursements: ReduceFunds
+  require_software: boolean
+  direct_orders: ReduceFunds
 }

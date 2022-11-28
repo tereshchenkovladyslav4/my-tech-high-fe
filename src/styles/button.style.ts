@@ -95,6 +95,7 @@ export const mthButtonClasses = {
     ...mthButtonSizeClasses.small,
     ...mthButtonColorClasses.primary,
     borderRadius: '40px',
+    minWidth: '100px',
   },
   roundXsPrimary: {
     ...mthButtonSizeClasses.xs,

@@ -1,0 +1,28 @@
+import { ReimbursementSetting } from '@mth/screens/Admin/Reimbursements/Settings/types'
+
+export const defaultSettingFormData: ReimbursementSetting = {
+  id: null,
+  school_year_id: null,
+  information: null,
+  supplemental_reimbursements_forms: null,
+  supplemental_direct_order_forms: null,
+  technology_reimbursements_forms: null,
+  technology_direct_order_forms: null,
+  custom_reimbursements_forms: null,
+  custom_direct_order_forms: null,
+  is_merged_periods: null,
+  merged_periods: null,
+  merged_periods_reimbursements_forms: null,
+  merged_periods_direct_order_forms: null,
+  third_party_reimbursements_forms: null,
+  require_software_reimbursements_forms: null,
+  max_receipts: null,
+  require_passing_grade: null,
+  min_grade_percentage: null,
+  allow_delete: null,
+  allow_submit_with_updates_required: null,
+  auto_delete_updates_required: null,
+  num_days_delete_updates_required: null,
+  display_remaining_funds: null,
+  remaining_funds: null,
+}

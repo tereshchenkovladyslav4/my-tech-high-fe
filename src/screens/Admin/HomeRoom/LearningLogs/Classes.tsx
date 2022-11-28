@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { useMutation } from '@apollo/client'
 import { DeleteForeverOutlined } from '@mui/icons-material'
 import CreateIcon from '@mui/icons-material/Create'
 import { Box, Button, IconButton, Tooltip } from '@mui/material'
@@ -6,9 +7,11 @@ import { MthTable } from '@mth/components/MthTable'
 import { MthTableField, MthTableRowItem } from '@mth/components/MthTable/types'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { MthColor } from '@mth/enums'
-import { Classes, ClassessProps } from './types'
+import { CreateNewClassesGql } from '../services'
+import { CreateTeacherModal } from './CreateTeacherModal'
+import { Classes, ClassessProps, Teacher } from './types'
 
-const Classes: React.FC<ClassessProps> = ({ classes }) => {
+const Classes: React.FC<ClassessProps> = ({ master, refetch }) => {
   const fields: MthTableField<Classes>[] = [
     {
       key: 'name',
@@ -72,34 +75,101 @@ const Classes: React.FC<ClassessProps> = ({ classes }) => {
   ]
 
   const [tableData, setTableData] = useState<MthTableRowItem<Classes>[]>([])
+  const [createModal, setCreateModal] = useState<boolean>(false)
+
+  const [classData, setClassData] = useState<Classes[] | undefined>(master?.masterClasses)
+
   const createData = (classesItem: Classes): MthTableRowItem<Classes> => {
     return {
       key: 'classes ' + classesItem.class_id,
       columns: {
-        name: classesItem.className,
-        teacher: classesItem.teacher,
-        students: classesItem.students,
-        ungraded: classesItem.ungraded,
-        additionalTeachers: classesItem.additionalTeacher,
+        name: classesItem.class_name,
+        teacher: classesItem?.primaryTeacher
+          ? classesItem?.primaryTeacher.firstName + ' ' + classesItem?.primaryTeacher.lastName
+          : '',
+        students: 0,
+        ungraded: 0,
+        additionalTeachers: classesItem.addition_id ? classesItem.addition_id : '',
       },
       rawData: classesItem,
     }
   }
 
   useEffect(() => {
-    if (classes?.length) {
+    setClassData(master?.masterClasses)
+  }, [master])
+
+  useEffect(() => {
+    if (classData && classData?.length) {
       setTableData(
-        classes?.map((item: Classes) => {
+        classData?.map((item: Classes) => {
           return createData(item)
         }),
       )
     }
-  }, [])
+  }, [classData])
+
+  const openCreateModal = () => {
+    setCreateModal(true)
+  }
+
+  const [createNewClasses] = useMutation(CreateNewClassesGql)
+
+  const handleCreateSubmit = async (className: string, primary: string | undefined, addTeachers: Teacher[]) => {
+    const addTeacherIds = addTeachers.map((i) => i.first_name + ' ' + i.last_name)
+    const classInfo: {
+      class_name: string
+      master_id: number
+      primary_id?: number
+      addition_id?: string
+    } = {
+      class_name: className,
+      master_id: parseInt(master.master_id),
+    }
+    if (primary) {
+      classInfo['primary_id'] = parseInt(primary)
+    }
+    if (addTeacherIds.length > 0) {
+      classInfo['addition_id'] = addTeacherIds.join(',')
+    }
+    await createNewClasses({
+      variables: {
+        createNewClassInput: classInfo,
+      },
+    })
+    refetch()
+    setCreateModal(false)
+  }
+
+  const onSortChange = (fieldKey: string, orderBy: string) => {
+    const newClasses = [...classData]
+    const sortBy = orderBy == 'asc' ? 1 : -1
+    switch (fieldKey) {
+      case 'name':
+        newClasses.sort((a, b) => (a.class_name.toLowerCase() > b.class_name.toLowerCase() ? sortBy : -1 * sortBy))
+        break
+      case 'teacher':
+        newClasses.sort((a, b) =>
+          a?.primaryTeacher?.firstName?.toLowerCase() > b?.primaryTeacher?.firstName?.toLowerCase()
+            ? sortBy
+            : -1 * sortBy,
+        )
+        break
+    }
+    setClassData(newClasses)
+  }
 
   return (
     <Box sx={{ pb: 3, textAlign: 'left' }}>
       <Box sx={{ borderTop: `solid 1px ${MthColor.SYSTEM_09}` }}>
-        <MthTable items={tableData} fields={fields} showSelectAll={false} size='small' oddBg={false} />
+        <MthTable
+          items={tableData}
+          fields={fields}
+          showSelectAll={false}
+          size='small'
+          oddBg={false}
+          onSortChange={onSortChange}
+        />
       </Box>
 
       <Box sx={{ mt: '56px' }}>
@@ -118,10 +188,19 @@ const Classes: React.FC<ClassessProps> = ({ classes }) => {
               color: 'white',
             },
           }}
+          onClick={openCreateModal}
         >
           <Subtitle sx={{ fontSize: '12px', fontWeight: '500' }}>+ Add Teacher</Subtitle>
         </Button>
       </Box>
+
+      {createModal && (
+        <CreateTeacherModal
+          master={master}
+          handleClose={() => setCreateModal(false)}
+          handleCreateSubmit={handleCreateSubmit}
+        />
+      )}
     </Box>
   )
 }

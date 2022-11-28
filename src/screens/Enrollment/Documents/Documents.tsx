@@ -452,7 +452,7 @@ export const Documents: DocuementsTemplateType = ({ id, questions }) => {
                     />
                     {item[0].type === QUESTION_TYPE.UPLOAD && !checkValidate(item[0]) && !disabled && isSubmit && (
                       <Paragraph color={RED} size='medium' fontWeight='700' sx={{ marginLeft: '12px' }}>
-                        File is required
+                        Required
                       </Paragraph>
                     )}
                   </Grid>

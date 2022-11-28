@@ -43,7 +43,7 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
   const history = useHistory()
   const student = me?.students?.filter((item) => Number(item.student_id) == Number(studentId))?.at(0)
   const [studentInfo, setStudentInfo] = useState<StudentScheduleInfo>()
-  const [step, setStep] = useState<string>(MthTitle.STEP_TESTING_PREFERENCE)
+  const [step, setStep] = useState<string>()
   const [availableAssessments, setAvailableAssessments] = useState<AssessmentType[]>([])
   const [studentAssessments, setStudentAssessments] = useState<StudentAssessment[]>([])
   const [testingPreferenceTitle, setTestingPreferenceTitle] = useState<string>('')
@@ -363,7 +363,8 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
   useEffect(() => {
     if (!loading && assessments && schoolYear) {
       setActiveTestingPreference(schoolYear?.testing_preference)
-      if (schoolYear?.testing_preference) setStep(MthTitle.STEP_TESTING_PREFERENCE)
+      if (backTo) setStep(MthTitle.STEP_SCHEDULE_BUILDER)
+      else if (schoolYear?.testing_preference) setStep(MthTitle.STEP_TESTING_PREFERENCE)
       else if (schoolYear?.diploma_seeking) setStep(MthTitle.STEP_DIPLOMA_SEEKING)
       else setStep('')
       setActiveDiplomaSeeking(schoolYear?.diploma_seeking)
@@ -380,7 +381,7 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
         ),
       )
     }
-  }, [assessments, loading, schoolYear])
+  }, [assessments, loading, schoolYear, backTo])
 
   useEffect(() => {
     if (signatureFileId) {
@@ -437,12 +438,6 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
     }
   }, [diplomaAnswerLoading, diplomaAnswerData])
 
-  useEffect(() => {
-    if (backTo) {
-      setStep(MthTitle.STEP_SCHEDULE_BUILDER)
-    }
-  }, [backTo])
-
   return (
     <Card sx={{ margin: 4, padding: 4 }}>
       <Box
@@ -453,7 +448,7 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
       >
         <Box display='flex' flexDirection='row' justifyContent='space-between' alignItems='center'>
           <HeaderComponent scheduleStatus={scheduleStatus} title={MthTitle.SCHEDULE} handleBack={handleBack} />
-          {step == MthTitle.STEP_SCHEDULE_BUILDER && (
+          {step === MthTitle.STEP_SCHEDULE_BUILDER && (
             <DropDown
               dropDownItems={schoolYearItems}
               placeholder={'Select Year'}
@@ -466,7 +461,7 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
           )}
         </Box>
         <StudentInfo studentInfo={studentInfo} />
-        {step == MthTitle.STEP_TESTING_PREFERENCE && (
+        {step === MthTitle.STEP_TESTING_PREFERENCE && (
           <TestingPreference
             studentId={Number(studentId)}
             invalidationTP={invalidationTP}
@@ -477,7 +472,7 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
             setStudentAssessments={setStudentAssessments}
           />
         )}
-        {step == MthTitle.STEP_OPT_OUT_FORM && (
+        {step === MthTitle.STEP_OPT_OUT_FORM && (
           <OptOutForm
             studentId={Number(studentId)}
             invalidationOF={invalidationOF}
@@ -494,7 +489,7 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
             setSignatureName={setSignatureName}
           />
         )}
-        {step == MthTitle.STEP_DIPLOMA_SEEKING && (
+        {step === MthTitle.STEP_DIPLOMA_SEEKING && (
           <DiplomaSeeking
             diplomaQuestion={diplomaQuestion}
             options={diplomaOptions}
@@ -502,7 +497,7 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
             isError={isDiplomaError}
           />
         )}
-        {step == MthTitle.STEP_SCHEDULE_BUILDER && (
+        {step === MthTitle.STEP_SCHEDULE_BUILDER && (
           <ScheduleBuilder
             studentId={studentId}
             studentName={student?.person?.first_name || ''}

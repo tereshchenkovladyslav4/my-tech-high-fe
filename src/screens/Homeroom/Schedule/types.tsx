@@ -169,7 +169,7 @@ export type ScheduleData = {
   OnSiteSplitEnrollment?: OnSiteSplitEnrollment
   CustomBuiltDescription?: string
   IsChangedCustomBuiltDescription?: boolean
-  updateRequired?: boolean
+  periodStatus?: SchedulePeriodStatus | null
   standardResponseOptions?: string
 
   // Special fields

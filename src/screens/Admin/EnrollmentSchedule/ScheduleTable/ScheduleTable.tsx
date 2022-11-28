@@ -9,11 +9,11 @@ import { Pagination } from '@mth/components/Pagination/Pagination'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { getEmailTemplateQuery } from '@mth/graphql/queries/email-template'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
+import { SchoolYearDropDown } from '@mth/screens/Admin/Components/SchoolYearDropdown'
 import { RED_GRADIENT } from '../../../../utils/constants'
 import { ScheduleEmailHistoryModal } from '../ScheduleModal/ScheduleEmailHistoryModal'
 import { EmailModal } from '../ScheduleModal/ScheduleEmailModal'
 import { ScheduleTableFilters } from '../ScheduleTableFilters/ScheduleTableFilters'
-import { SchoolYearDropDown } from '../SchoolYearDropDown/SchoolYearDropDown'
 import { emailScheduleMutation, getSchedulesQuery, scheduleCountGroupQuery } from '../services'
 import { ApplicationTableProps, EmailTemplateVM, Field, ScheduleFilterVM, ScheduleCount, TableData } from '../type'
 
@@ -31,7 +31,7 @@ export const ScheduleTable: React.FC<ApplicationTableProps> = ({ filter }) => {
   const [tableData, setTableData] = useState<Array<TableData>>([])
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [selectedYearId, setSelectedYearId] = useState<number>(0)
-  const [filters, setFilters] = useState<ScheduleFilterVM>()
+  const [filters, setFilters] = useState<ScheduleFilterVM>({ status: ['Submitted', 'Resubmitted'] })
   const [emailHistory, setEmailHistory] = useState([])
   const [openEmailModal, setOpenEmailModal] = useState<boolean>(false)
   const [editFrom, setEditFrom] = useState<boolean>(false)

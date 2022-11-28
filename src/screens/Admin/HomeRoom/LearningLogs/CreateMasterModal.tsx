@@ -9,14 +9,14 @@ import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { useStyles } from '../styles'
 import { Master } from './types'
 
-type EditYearModalProps = {
+type CreateMasterModalProps = {
   handleSubmit: (values: Master) => void
   handleClose: () => void
   selectedYear: number
   schoolYearDropdownItems: DropDownItem[]
 }
 
-export const CreateMasterModal: FunctionComponent<EditYearModalProps> = ({
+export const CreateMasterModal: FunctionComponent<CreateMasterModalProps> = ({
   handleSubmit,
   handleClose,
   selectedYear,
@@ -73,9 +73,10 @@ export const CreateMasterModal: FunctionComponent<EditYearModalProps> = ({
                         <Box sx={{ marginTop: '30px' }}>
                           <DropDown
                             dropDownItems={schoolYearDropdownItems}
-                            placeholder='School Year Id'
+                            placeholder='Year'
                             name='schoolYear'
                             labelTop
+                            borderNone
                             sx={{ m: 0 }}
                             defaultValue={selectedYear}
                             setParentValue={(value) => {

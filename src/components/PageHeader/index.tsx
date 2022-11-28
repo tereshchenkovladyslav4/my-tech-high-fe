@@ -8,14 +8,12 @@ import { useStyles } from './styles'
 const PageHeader: React.FC<PageHeaderProps> = ({ title, to, onBack, children }) => {
   const history = useHistory()
   const classes = useStyles
+
   const handleBackClick = () => {
-    if (to) {
-      history.push(to)
-    } else {
-      history.goBack()
-    }
+    if (to) history.push(to)
     if (onBack) onBack()
   }
+
   return (
     <Box sx={classes.pageHeader}>
       <Box sx={classes.backTitle}>

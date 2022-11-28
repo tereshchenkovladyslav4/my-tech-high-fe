@@ -261,7 +261,10 @@ export const Profile: React.FC<ProfileProps> = ({ handleIsFormChange }) => {
         accept='image/png, image/jpeg'
         onChange={(e) => handleFileInput(e)}
       />
-      <label style={{ display: 'flex', justifyContent: 'space-around', minWidth: 160 }} htmlFor='uploadProfileImageId'>
+      <label
+        style={{ display: 'flex', justifyContent: 'space-around', minWidth: 160, height: '100%' }}
+        htmlFor='uploadProfileImageId'
+      >
         {uploadedFile || avatar ? (
           <>
             <Avatar

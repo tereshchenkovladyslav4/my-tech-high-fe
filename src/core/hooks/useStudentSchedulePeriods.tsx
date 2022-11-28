@@ -42,7 +42,7 @@ export const attachSelectedItems = (
   if (period) {
     item.Period = period
     item.schedulePeriodId = schedulePeriod.schedule_period_id
-    item.updateRequired = schedulePeriod.update_required
+    item.periodStatus = schedulePeriod.status
     if (schedulePeriod.SubjectId)
       item.Subject = period.Subjects?.find((subject) => subject?.subject_id === schedulePeriod.SubjectId)
     if (schedulePeriod.TitleId)
@@ -92,6 +92,7 @@ export const useStudentSchedulePeriods = (
   showSecondSemester = false,
 ): {
   scheduleData: ScheduleData[]
+  hasSecondSemester: boolean
   setScheduleData: (value: ScheduleData[]) => void
   secondScheduleData: ScheduleData[]
   setSecondScheduleData: (value: ScheduleData[]) => void
@@ -103,7 +104,8 @@ export const useStudentSchedulePeriods = (
   const [scheduleData, setScheduleData] = useState<ScheduleData[]>([])
   const [secondScheduleData, setSecondScheduleData] = useState<ScheduleData[]>([])
   const [studentScheduleId, setStudentScheduleId] = useState<number>(0)
-  const [studentScheduleStatus, setStudentScheduleStatus] = useState<ScheduleStatus>(ScheduleStatus.SUBMITTED)
+  const [studentScheduleStatus, setStudentScheduleStatus] = useState<ScheduleStatus>(ScheduleStatus.DRAFT)
+  const [hasSecondSemesterSchedule, setHasSecondSemesterSchedule] = useState<boolean>(false)
 
   // Have to call Providers API individually instead of JOIN in Periods API(For the performance)
   const { loading: loadingProviders, data: providersData } = useQuery(getStudentProvidersQuery, {
@@ -187,6 +189,7 @@ export const useStudentSchedulePeriods = (
           (item: SchedulePeriod) => item.Schedule.is_second_semester,
         )
         if (secondSchedulePeriods?.length) {
+          setHasSecondSemesterSchedule(true)
           secondScheduleDataArray = JSON.parse(JSON.stringify(scheduleDataArray))
           secondScheduleDataArray.map((item) => {
             const schedulePeriod = secondSchedulePeriods.find(
@@ -195,6 +198,7 @@ export const useStudentSchedulePeriods = (
             return attachSelectedItems(item, schedulePeriod)
           })
         } else {
+          setHasSecondSemesterSchedule(false)
           secondScheduleDataArray = JSON.parse(JSON.stringify(firstScheduleDataArray))
           secondScheduleDataArray.map((item) => delete item.schedulePeriodId)
         }
@@ -203,13 +207,20 @@ export const useStudentSchedulePeriods = (
           item.FirstSemesterSchedule = firstScheduleDataArray.find((x) => x.period === item.period)
         })
 
-        if (showSecondSemester) {
-          setStudentScheduleId(secondSchedulePeriods[0]?.ScheduleId)
-          setStudentScheduleStatus(secondSchedulePeriods[0]?.Schedule?.status)
-        } else {
-          setStudentScheduleId(firstSchedulePeriods[0]?.ScheduleId)
-          setStudentScheduleStatus(firstSchedulePeriods[0]?.Schedule?.status)
-        }
+        setStudentScheduleId(
+          secondSchedulePeriods?.length
+            ? secondSchedulePeriods[0]?.ScheduleId
+            : showSecondSemester
+            ? 0
+            : firstSchedulePeriods[0]?.ScheduleId,
+        )
+        setStudentScheduleStatus(
+          secondSchedulePeriods?.length
+            ? secondSchedulePeriods[0]?.Schedule?.status
+            : showSecondSemester
+            ? ScheduleStatus.DRAFT
+            : firstSchedulePeriods[0]?.Schedule?.status,
+        )
       }
 
       setScheduleData(firstScheduleDataArray.length ? firstScheduleDataArray : scheduleDataArray)
@@ -219,6 +230,7 @@ export const useStudentSchedulePeriods = (
 
   return {
     scheduleData: scheduleData,
+    hasSecondSemester: hasSecondSemesterSchedule,
     setScheduleData: setScheduleData,
     secondScheduleData: secondScheduleData,
     setSecondScheduleData: setSecondScheduleData,

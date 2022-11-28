@@ -31,7 +31,12 @@ export const CommonSelect: React.FC<CommonSelectProps> = ({
       spacing={1}
       sx={{ ...classes.selectBox, background: index % 2 == 0 ? '#FAFAFA' : '', position: 'relative' }}
     >
-      <Subtitle size={16} fontWeight='600' textAlign='left' sx={{ minWidth: hasDeleteIcon ? 150 : 200 }}>
+      <Subtitle
+        size={16}
+        fontWeight='600'
+        textAlign='left'
+        sx={{ minWidth: hasDeleteIcon ? 150 : 200, width: hasDeleteIcon ? 150 : 200 }}
+      >
         {selectItem?.name}
       </Subtitle>
       {hasDeleteIcon && handleDeleteAction && (
@@ -55,7 +60,7 @@ export const CommonSelect: React.FC<CommonSelectProps> = ({
           }}
         ></Box>
       )}
-      {selectItem?.component}
+      <Box sx={{ width: 'calc(100% - 230px)' }}>{selectItem?.component}</Box>
     </Stack>
   )
 }

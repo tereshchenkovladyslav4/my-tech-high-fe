@@ -79,7 +79,8 @@ export const UserProfile: React.FC<UserProfileProps> = ({ handleClose, data, set
         await assignStudentToSOE({
           variables: {
             assignStudentToSoeInput: {
-              school_partner_id: parseInt(studentStatus.school_partner_id),
+              school_partner_id:
+                studentStatus.school_partner_id === 'unassigned' ? -1 : parseInt(studentStatus.school_partner_id),
               school_year_id: parseInt(studentStatus.school_year_id),
               student_ids: [parseInt(studentStatus.student_id)],
             },
@@ -93,7 +94,6 @@ export const UserProfile: React.FC<UserProfileProps> = ({ handleClose, data, set
       delete person.school_partner_id_updated
       delete person.school_partner_id
       person.person_id = Number(person.person_id)
-      phoneInfo.phone_id = Number(phoneInfo.phone_id)
       const address = Object.assign({}, studentPerson.address)
       address.address_id = +address.address_id
 
@@ -101,7 +101,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ handleClose, data, set
         variables: {
           updatePersonAddressInput: {
             address: address,
-            phone: phoneInfo,
+            phone: { ...phoneInfo, phone_id: Number(phoneInfo.phone_id) },
             person: person,
           },
         },
@@ -110,7 +110,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ handleClose, data, set
         variables: {
           updateStudentInput: {
             student_id: studentStatus?.student_id ? studentStatus?.student_id : null,
-            grade_level: studentStatus?.student_id ? studentStatus?.grade_level : null,
+            grade_level: studentStatus?.student_id ? String(studentStatus?.grade_level) : null,
             special_ed: studentStatus?.student_id ? studentStatus?.special_ed : null,
             diploma_seeking: studentStatus?.student_id ? studentStatus?.diploma_seeking : null,
             status: studentStatus?.student_id ? studentStatus?.status : null,
@@ -145,6 +145,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ handleClose, data, set
           },
         })
       }
+      document.location.reload()
       setRequesting(false)
       handleClose(true)
     }

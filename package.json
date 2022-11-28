@@ -128,6 +128,7 @@
     "ts-invariant": "^0.9.3",
     "typescript": "^4.4.3",
     "uuid": "^8.3.2",
+    "xlsx": "^0.18.5",
     "webfontloader": "^1.6.28",
     "yup": "^0.32.11"
   }

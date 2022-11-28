@@ -2,9 +2,10 @@ import React from 'react'
 import { Box } from '@mui/material'
 import { DropDown } from '@mth/components/DropDown/DropDown'
 import PageHeader from '@mth/components/PageHeader'
-import { HomeRoomHeraderProps } from './types'
+import { MthRoute } from '@mth/enums'
+import { HomeRoomHeaderProps } from './types'
 
-const HomeRoomHeader: React.FC<HomeRoomHeraderProps> = ({
+const HomeRoomHeader: React.FC<HomeRoomHeaderProps> = ({
   title,
   selectedYear,
   setSelectedYear,
@@ -12,7 +13,7 @@ const HomeRoomHeader: React.FC<HomeRoomHeraderProps> = ({
 }) => {
   return (
     <Box sx={{ mb: 4 }}>
-      <PageHeader title={title} to='/homeroom'>
+      <PageHeader title={title} to={MthRoute.HOMEROOM}>
         <DropDown
           dropDownItems={schoolYearDropdownItems}
           placeholder={'Select Year'}

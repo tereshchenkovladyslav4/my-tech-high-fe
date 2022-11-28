@@ -1,17 +1,31 @@
-export type SubjectCheckList = {
-  id: number
-  grade: string
-  subject: number
-  goal?: string[]
+export type CheckListType = {
+  id?: number
+  checklistId?: string
+  grade?: number
+  subject?: string
+  goal?: string
   schoolYear?: number
-  // Temp fields
 }
 
-export type IndependentCheckList = {
-  id: number
-  grade: string
-  subject: number
-  goal?: string[]
-  schoolYear?: number
-  // Temp fields
+export type CheckListField = {
+  id?: number
+  region_id: number
+  status: string
+  school_year_id: number
+  checklist_id: string
+  goal: string
+  subject?: string
+  grade?: number
+}
+
+export type ChecklistTemplateType = {
+  ID?: string
+  Goal?: string
+  Grade?: number
+  Subject?: string
+}
+
+export type ChecklistFilterVM = {
+  selectedYearId?: number
+  status?: string
 }

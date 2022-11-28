@@ -4,13 +4,7 @@ import BgBlue from '@mth/assets/quick-link-blue.png'
 import BgOrange from '@mth/assets/quick-link-orange.png'
 import { ItemCard } from '@mth/components/ItemCard/ItemCard'
 import PageHeader from '@mth/components/PageHeader'
-import {
-  CURRICULUM_COURSE_CATALOG_SETTINGS,
-  CURRICULUM_COURSE_CATALOG_PERIODS,
-  CURRICULUM_COURSE_CATALOG_SUBJECTS,
-  CURRICULUM_COURSE_CATALOG_PROVIDERS,
-  CURRICULUM_COURSE_CATALOG_STATE_CODES,
-} from '../../../../utils/constants'
+import { MthRoute } from '@mth/enums'
 import { useStyles } from '../styles'
 
 const CourseCatalog: React.FC = () => {
@@ -19,34 +13,35 @@ const CourseCatalog: React.FC = () => {
       icon: 'Settings',
       title: 'Schedule Builder Settings',
       subtitle: 'Edit',
-      link: CURRICULUM_COURSE_CATALOG_SETTINGS,
+      link: MthRoute.CURRICULUM_COURSE_CATALOG_SETTINGS,
     },
     {
       icon: 'Periods',
       title: 'Schedule Periods',
       subtitle: 'Edit',
-      link: CURRICULUM_COURSE_CATALOG_PERIODS,
+      link: MthRoute.CURRICULUM_COURSE_CATALOG_PERIODS,
     },
     {
       title: 'Subjects',
       subtitle: 'Add, Edit, & Archive',
-      link: CURRICULUM_COURSE_CATALOG_SUBJECTS,
+      link: MthRoute.CURRICULUM_COURSE_CATALOG_SUBJECTS,
     },
     {
       title: 'Providers',
       subtitle: 'Add, Edit, & Archive',
-      link: CURRICULUM_COURSE_CATALOG_PROVIDERS,
+      link: MthRoute.CURRICULUM_COURSE_CATALOG_PROVIDERS,
     },
     {
       title: 'State Codes',
       subtitle: 'Import, Delete, & Edit',
-      link: CURRICULUM_COURSE_CATALOG_STATE_CODES,
+      link: MthRoute.CURRICULUM_COURSE_CATALOG_STATE_CODES,
     },
   ]
+
   return (
     <Box sx={{ marginTop: '29px', px: 3, ...useStyles.cardBox }}>
       <Box mb={2}>
-        <PageHeader title='Course Catalog' to='/curriculum'></PageHeader>
+        <PageHeader title='Course Catalog' to={MthRoute.CURRICULUM}></PageHeader>
       </Box>
       <Grid container rowSpacing={4} columnSpacing={8} padding={4}>
         {items.map((item, idx) => (

@@ -20,7 +20,6 @@ export const getStudentSchedulePeriodsQuery = gql`
       tp_phone_number
       tp_provider_name
       tp_specific_course_website
-      update_required
       status
       Schedule {
         status
@@ -50,7 +49,7 @@ export const getStudentSchedulePeriodHistoriesQuery = gql`
       tp_phone_number
       tp_provider_name
       tp_specific_course_website
-      update_required
+      status
       ScheduleHistory {
         schedule_history_id
         date_accepted

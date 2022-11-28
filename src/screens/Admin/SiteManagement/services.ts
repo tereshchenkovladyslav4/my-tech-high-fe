@@ -58,6 +58,7 @@ export const getSchoolYearsByRegionId = gql`
         reimbursements
         require_software
         direct_orders
+        IsCurrentYear
       }
       county_file_name
       county_file_path

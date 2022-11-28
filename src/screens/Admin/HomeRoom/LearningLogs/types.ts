@@ -1,21 +1,32 @@
 export type Classes = {
   class_id: number
-  className: string
-  teacher: string
-  students: number
-  ungraded: string
-  additionalTeacher: string
+  class_name: string
+  primaryTeacher?: {
+    firstName?: string
+    lastName?: string
+    user_id?: number
+  }
+  students?: number
+  ungraded?: string
+  addition_id?: string
 }
 
 export type Master = {
-  master_id?: number
+  master_id: number
   master_name?: string
   classesCount?: number
-  classes?: Classes[]
+  masterClasses?: Classes[] | undefined
   schoolYear?: number
   // Temp fields
 }
 
 export type ClassessProps = {
-  classes: Classes[] | undefined
+  master: Master
+  refetch: () => void
+}
+
+export type Teacher = {
+  user_id: number
+  first_name?: string
+  last_name?: string
 }

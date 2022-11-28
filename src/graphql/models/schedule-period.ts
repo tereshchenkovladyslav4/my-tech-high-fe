@@ -23,7 +23,6 @@ export type SchedulePeriod = {
   tp_phone_number: string
   tp_provider_name: string
   tp_specific_course_website: string
-  update_required: boolean
   status: SchedulePeriodStatus
   Schedule: Schedule
 }
@@ -46,7 +45,7 @@ export type SchedulePeriodHistory = {
   tp_phone_number: string
   tp_provider_name: string
   tp_specific_course_website: string
-  update_required: boolean
+  status: SchedulePeriodStatus
   ScheduleHistory: {
     schedule_history_id: number
     date_accepted: string

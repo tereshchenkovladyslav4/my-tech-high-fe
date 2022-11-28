@@ -7,6 +7,7 @@ import { RefUploaderHandle } from '@mth/components/MthUpload/types'
 import PageHeader from '@mth/components/PageHeader'
 import CustomTable from '@mth/components/Table/CustomTable'
 import { Field } from '@mth/components/Table/types'
+import { MthRoute } from '@mth/enums'
 import { SchoolYearDropDown } from '@mth/screens/Admin/SiteManagement/SchoolPartner/SchoolYearDropDown/SchoolYearDropDown'
 import { useStyles } from '../../styles'
 import { StateCodeType } from '../../types'
@@ -127,7 +128,7 @@ const StateCodes: FunctionComponent = () => {
   }
   return (
     <Box sx={classes.base}>
-      <PageHeader title='State Codes'>
+      <PageHeader title='State Codes' to={MthRoute.CURRICULUM_COURSE_CATALOG}>
         <SchoolYearDropDown setSelectedYearId={setSelectedYearId} selectedYearId={selectedYearId} />
       </PageHeader>
 

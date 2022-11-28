@@ -208,6 +208,7 @@ export const Enrollment: EnrollmentTemplateType = ({ id, disabled }: { id: numbe
             <Breadcrumbs steps={breadCrumb} handleClick={handleBreadCrumbClicked} disabled={disabled} />
           </Box>
           <Box sx={classes.breadcrumbs}>
+            {/* <Documents id={id} questions={questionsData.filter((q) => q.tab_name === 'Documents')[0]} /> */}
             {currentTabName === 'Contact' ? (
               <Contact id={id} questions={questionsData.filter((q) => q.tab_name === currentTabName)[0]} />
             ) : currentTabName === 'Personal' ? (

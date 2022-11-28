@@ -108,12 +108,12 @@ export const SpecialEdSelect: React.FC<SpecialEdSelectProps> = ({
   }
 
   return (
-    <>
+    <Box sx={{ display: 'flex', alignItems: 'center', marginLeft: '25px' }}>
       <DropDown
         dropDownItems={items}
         placeholder={'Select status'}
         defaultValue={specialEd ? 'true' : 'false'}
-        sx={{ width: '160px', marginLeft: '25px', zIndex: 1 }}
+        sx={{ width: '160px', zIndex: 1 }}
         borderNone={false}
         setParentValue={handleChange}
       />
@@ -203,6 +203,6 @@ export const SpecialEdSelect: React.FC<SpecialEdSelectProps> = ({
           }}
         />
       )}
-    </>
+    </Box>
   )
 }

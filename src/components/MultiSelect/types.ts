@@ -8,6 +8,7 @@ type FormikCustomError = {
 export type MultiSelectProps = {
   options: DropDownItem[]
   label?: string
+  placeholder?: string
   renderValue?: string
   defaultValue?: (string | number)[]
   error?: FormikCustomError

@@ -16,7 +16,7 @@ export const isNumber = /^[0-9\b]+$/
 export function parseGradeLevel(value?: string | number): string {
   if (!value) return ''
   if (value === 'OR-K') return 'OR - Kindergarten (5)'
-  if (['K', 'Kindergarten'].indexOf(value + '') !== -1) return 'Kindergarten (5)'
+  if (['K', 'Kindergarten', 'Kin'].indexOf(value + '') !== -1) return 'Kindergarten (5)'
   const numberValue = parseInt(value + '')
 
   if (numberValue === 1) return '1st Grade (6)'

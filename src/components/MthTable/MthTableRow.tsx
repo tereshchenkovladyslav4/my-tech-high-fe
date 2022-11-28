@@ -31,6 +31,7 @@ const StyledTableRow = styled(TableRow)(({}) => ({
   },
   '.cell-item.border-l': {
     borderLeft: '1px solid black',
+    minHeight: '17px',
   },
 }))
 

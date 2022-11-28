@@ -157,11 +157,12 @@ export const Login: React.FC = () => {
       <Box sx={{ alignItems: 'center', paddingBottom: 4 }}>
         {!!signinError && (
           <WarningModal
-            title='Error'
-            subtitle={signinError}
+            title='Sign'
+            subtitle={'Whoops! You have entered an invalid username or password. Please try again.'}
             btntitle='Close'
             handleModem={() => setSigninError('')}
             handleSubmit={() => setSigninError('')}
+            textCenter
           />
         )}
         {resendResult === false && (

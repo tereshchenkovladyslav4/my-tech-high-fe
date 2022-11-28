@@ -4,7 +4,7 @@ type DocumentUploadProps = {
   item: unknown
   formik: unknown
   handleUpload: () => void
-  file: File
+  file?: File
   firstName: string
   lastName: string
   disabled: boolean

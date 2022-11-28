@@ -107,6 +107,14 @@ const LearningLogs: React.FC = () => {
     },
   ]
 
+  const { loading, data, refetch } = useQuery(GetMastersBySchoolYearIDGql, {
+    variables: {
+      schoolYearId: selectedYear,
+    },
+    skip: selectedYear ? false : true,
+    fetchPolicy: 'network-only',
+  })
+
   const createData = (master: Master): MthTableRowItem<Master> => {
     return {
       key: `master-${master.master_id}`,
@@ -115,72 +123,9 @@ const LearningLogs: React.FC = () => {
         classesCount: master.classesCount,
       },
       rawData: master,
-      expandNode: <Classes classes={master.classes} />,
+      expandNode: <Classes master={master} refetch={refetch} />,
     }
   }
-
-  // const exampleData = [
-  //   {
-  //     id: 1,
-  //     master: '2020-21 Master',
-  //     classesCount: 2,
-  //     classes: [
-  //       {
-  //         class_id: 1,
-  //         className: 'Arcadia',
-  //         teacher: 'Erin Sublette',
-  //         students: 245,
-  //         ungraded: '20',
-  //         additionalTeacher: 'Andrea Fife, Bree Clukey',
-  //       },
-  //       {
-  //         class_id: 2,
-  //         className: 'Arches',
-  //         teacher: 'Andrea Fife',
-  //         students: 300,
-  //         ungraded: 'Yes',
-  //         additionalTeacher: 'Erin Sublette, Bree Clukey',
-  //       },
-  //     ],
-  //   },
-  //   {
-  //     id: 2,
-  //     master: '2020-21 Mid-year Master',
-  //     classesCount: 2,
-  //     classes: [
-  //       {
-  //         class_id: 3,
-  //         className: 'Arcadia',
-  //         teacher: 'Erin Sublette',
-  //         students: 100,
-  //         ungraded: '5',
-  //         additionalTeacher: 'Andrea Fife, Bree Clukey',
-  //       },
-  //       {
-  //         class_id: 4,
-  //         className: 'Arches',
-  //         teacher: 'Andrea Fife',
-  //         students: 15,
-  //         ungraded: '0',
-  //         additionalTeacher: 'Erin Sublette, Bree Clukey',
-  //       },
-  //     ],
-  //   },
-  //   {
-  //     id: 3,
-  //     master: '2020-21 Second Homeroom',
-  //     classesCount: 18,
-  //     classes: [],
-  //   },
-  // ]
-
-  const { loading, data, refetch } = useQuery(GetMastersBySchoolYearIDGql, {
-    variables: {
-      schoolYearId: selectedYear,
-    },
-    skip: selectedYear ? false : true,
-    fetchPolicy: 'network-only',
-  })
 
   useEffect(() => {
     if (!loading && data) {
@@ -190,7 +135,7 @@ const LearningLogs: React.FC = () => {
             master_id: item.master_id,
             master_name: item.master_name,
             classesCount: 0,
-            classes: [],
+            masterClasses: item?.masterClasses,
           })
         }),
       )

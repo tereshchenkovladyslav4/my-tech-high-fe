@@ -301,21 +301,6 @@ export const Filters: FunctionComponent<FiltersProps> = ({
             <Paragraph sx={{ marginTop: '12px' }} size='large' fontWeight='700'>
               Current SoE
             </Paragraph>
-            <FormControlLabel
-              sx={{ height: 30 }}
-              control={
-                <Checkbox
-                  value='unassigned'
-                  checked={schoolOfEnrollments.includes('unassigned')}
-                  onChange={handleSchoolOfEnrollments}
-                />
-              }
-              label={
-                <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
-                  Unassigned
-                </Paragraph>
-              }
-            />
             {partnerList.map((item: OptionType, index: number) => (
               <FormControlLabel
                 key={index}

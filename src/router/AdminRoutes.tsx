@@ -25,13 +25,16 @@ import { HomeRoom } from '@mth/screens/Admin/HomeRoom/HomeRoom'
 import { LearningLogs } from '@mth/screens/Admin/HomeRoom/LearningLogs'
 import { MasterHomeroom } from '@mth/screens/Admin/HomeRoom/LearningLogs/Master'
 import { Records } from '@mth/screens/Admin/Records'
+import { Reimbursements } from '@mth/screens/Admin/Reimbursements'
+import { DirectOrderForms } from '@mth/screens/Admin/Reimbursements/DirectOrderForms'
+import { ReimbursementForms } from '@mth/screens/Admin/Reimbursements/ReimbursementForms'
+import { ReimbursementsSettings } from '@mth/screens/Admin/Reimbursements/Settings'
 import { SchoolOfEnrollment } from '@mth/screens/Admin/SchoolOfEnrollment/SchoolOfEnrollment'
 import AdminSettings from '@mth/screens/Admin/Settings/AdminSettings'
 import { EmailTemplatePage } from '@mth/screens/Admin/SiteManagement/components/EmailTemplates/EmailTemplatePage'
 import SiteManagement from '@mth/screens/Admin/SiteManagement/SiteManagement'
 import { Users } from '@mth/screens/Admin/Users/Users'
 import { Withdrawals } from '@mth/screens/Admin/Withdrawals'
-
 import {
   ADMIN_APPLICATIONS,
   DASHBOARD,
@@ -70,6 +73,18 @@ export const AdminRoutes: React.FC = () => {
       </Route>
       <Route exact path={ENROLLMENT}>
         <Enrollment />
+      </Route>
+      <Route exact path={MthRoute.REIMBURSEMENTS}>
+        <Reimbursements />
+      </Route>
+      <Route exact path={MthRoute.REIMBURSEMENTS_SETTINGS}>
+        <ReimbursementsSettings />
+      </Route>
+      <Route exact path={MthRoute.REIMBURSEMENTS_REIMBURSEMENT_FORM}>
+        <ReimbursementForms />
+      </Route>
+      <Route exact path={MthRoute.REIMBURSEMENTS_DIRECT_ORDER_FORM}>
+        <DirectOrderForms />
       </Route>
       <Route exact path={COMMUNICATION}>
         <Communication />

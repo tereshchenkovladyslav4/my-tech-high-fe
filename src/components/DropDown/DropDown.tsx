@@ -37,7 +37,6 @@ export const DropDown: React.FC<DropDownProps> = ({
   name,
   dropdownColor,
   isAddable,
-  idx,
   auto = true,
   borderNone = false,
   color,
@@ -45,7 +44,7 @@ export const DropDown: React.FC<DropDownProps> = ({
   const [value, setValue] = useState(defaultValue || '')
   const handleChange = (val: string) => {
     if (auto) setValue(val)
-    setParentValue(val, idx)
+    setParentValue(val)
   }
 
   const renderDropDownItem = map(dropDownItems, (dropDownItem, index) => (
@@ -99,7 +98,7 @@ export const DropDown: React.FC<DropDownProps> = ({
               <FormHelperText sx={{ color: MthColor.ERROR_RED }}>{error?.errorMsg}</FormHelperText>
             </FormControl>
           ) : (
-            <FormControl fullWidth>
+            <FormControl fullWidth className='MthFormField'>
               <Select
                 labelId='demo-simple-select-label'
                 id='demo-simple-select'
@@ -113,7 +112,6 @@ export const DropDown: React.FC<DropDownProps> = ({
                 }
                 sx={{
                   ...sx,
-                  borderRadius: 2,
                   '& .MuiSelect-outlined': {
                     background: dropdownColor,
                   },

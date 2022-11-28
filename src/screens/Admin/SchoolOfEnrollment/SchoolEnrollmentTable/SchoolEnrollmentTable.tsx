@@ -305,7 +305,8 @@ export const EnrollmentSchoolTable: React.FC<EnrollmentSchoolTableProps> = ({
             sx={{ width: '100%' }}
             size='small'
             setParentValue={(val) => {
-              setSchoolPartner(val as string)
+              const partnerId = val !== 'unassigned' ? val : -1
+              setSchoolPartner(partnerId as string)
             }}
           />
 

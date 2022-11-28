@@ -179,13 +179,19 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
 
   const SoEitems = useMemo(() => {
     if (schoolPartnerData?.getSchoolsOfEnrollmentByRegion?.length) {
-      return schoolPartnerData.getSchoolsOfEnrollmentByRegion
+      const partnerList = schoolPartnerData.getSchoolsOfEnrollmentByRegion
         .filter((el) => !!el.active)
         .map((item) => ({
           value: item.school_partner_id,
           label: item.name,
           abb: item.abbreviation,
         }))
+      partnerList.push({
+        value: 'unassigned',
+        label: 'Unassigned',
+        abb: 'Unassigned',
+      })
+      return partnerList
     } else return []
   }, [schoolPartnerData])
 
@@ -459,8 +465,12 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
               <Select
                 IconComponent={KeyboardArrowDown}
                 className={classes.select}
-                value={gradeLevel.includes('K') ? 'Kindergarten' : gradeLevel}
+                value={String(gradeLevel).includes('K') ? 'Kindergarten' : gradeLevel}
                 sx={{ color: '#cccccc', fontWeight: '700' }}
+                onChange={(e) => {
+                  setGradeLevel(e.target.value)
+                  setStudentStatus({ ...studentStatus, ...{ grade_level: e.target.value } })
+                }}
               >
                 <MenuItem value='Kindergarten'>Kindergarten</MenuItem>
                 {[...Array(12).keys()].map((item, idx) => (
@@ -885,38 +895,54 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
           canceltitle='Cancel'
           handleSubmit={() => handleAssignOrTransfer()}
         >
-          {currentSoE && previousSoE && (
-            <Box
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                width: '100%',
-              }}
-            >
-              <Typography sx={{ marginBottom: '10px' }}>How would you like to proceed with the SoE change?</Typography>
-              <RadioGroup
-                name='assignOrTransfer'
-                value={assignOrTransfer}
-                onChange={(e) => setAssignOrTransfer(e.target.value)}
-              >
-                <FormControlLabel value='assign' control={<Radio />} label=' Assign new SoE' />
-                <FormControlLabel
-                  value='transfer'
-                  control={<Radio />}
-                  label=' Create a transfer form from previous SoE'
-                />
-              </RadioGroup>
-            </Box>
-          )}
-          {!previousSoE && (
+          {tempSoE === 'unassigned' ? (
             <Typography
               sx={{
                 marginBottom: '10px',
                 width: '100%',
+                textAlign: 'center',
               }}
             >
-              Are you sure you want to assign this student to an SoE?
+              Are you sure you want to change this student to Unassigned?
             </Typography>
+          ) : (
+            <>
+              {currentSoE && previousSoE && (
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    width: '100%',
+                  }}
+                >
+                  <Typography sx={{ marginBottom: '10px' }}>
+                    How would you like to proceed with the SoE change?
+                  </Typography>
+                  <RadioGroup
+                    name='assignOrTransfer'
+                    value={assignOrTransfer}
+                    onChange={(e) => setAssignOrTransfer(e.target.value)}
+                  >
+                    <FormControlLabel value='assign' control={<Radio />} label=' Assign new SoE' />
+                    <FormControlLabel
+                      value='transfer'
+                      control={<Radio />}
+                      label=' Create a transfer form from previous SoE'
+                    />
+                  </RadioGroup>
+                </Box>
+              )}
+              {!previousSoE && (
+                <Typography
+                  sx={{
+                    marginBottom: '10px',
+                    width: '100%',
+                  }}
+                >
+                  Are you sure you want to assign this student to an SoE?
+                </Typography>
+              )}
+            </>
           )}
         </WarningModal>
       )}

@@ -4,14 +4,14 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { Box, Button, Card, Checkbox, FormControlLabel, Grid } from '@mui/material'
 import { map } from 'lodash'
 import { useHistory } from 'react-router-dom'
+import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
-import { Paragraph } from '../../../../components/Typography/Paragraph/Paragraph'
-import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
+import { SchoolYearDropDown } from '@mth/screens/Admin/Components/SchoolYearDropdown'
 import { BUTTON_LINEAR_GRADIENT, MTHBLUE, RED_GRADIENT, CURRICULUM_PROVIDERS } from '../../../../utils/constants'
 import { toOrdinalSuffix } from '../../../../utils/stringHelpers'
 import { getSchoolYear } from '../../Curriculum/services'
 import { getSchoolYearsByRegionId } from '../../SiteManagement/services'
-import { SchoolYearDropDown } from '../SchoolYearDropDown/SchoolYearDropDown'
 import { FiltersProps, COURSE_TYPE, FilterVM } from '../type'
 
 export const Filters: FunctionComponent<FiltersProps> = ({ filter, setFilter }) => {
@@ -64,12 +64,12 @@ export const Filters: FunctionComponent<FiltersProps> = ({ filter, setFilter }) 
   })
 
   useEffect(() => {
-    getSchoolYearData({
-      skip: me?.selectedRegionId ? false : true,
-      variables: {
-        school_year_id: selectedYearId,
-      },
-    })
+    if (me?.selectedRegionId && selectedYearId)
+      getSchoolYearData({
+        variables: {
+          school_year_id: selectedYearId,
+        },
+      })
   }, [selectedYearId])
 
   useEffect(() => {

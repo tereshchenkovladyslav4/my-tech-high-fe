@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { FormControl, Select, MenuItem, Checkbox, ListItemText, InputLabel, OutlinedInput } from '@mui/material'
 import { Box } from '@mui/system'
 import { map } from 'lodash'
+import { MthColor } from '@mth/enums'
 import { MultiSelectProps } from './types'
 
 const ITEM_HEIGHT = 54
@@ -17,6 +18,7 @@ const MenuProps = {
 export const MultiSelect: React.FC<MultiSelectProps> = ({
   options,
   label,
+  placeholder,
   renderValue,
   disabled,
   defaultValue,
@@ -30,18 +32,22 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
   }
 
   const renderSelectedItems = () =>
-    renderValue || (
-      <span>
-        {options
-          .filter((option) => value?.findIndex((item) => item === option.value) > -1)
-          .map((option) => option.label)
-          .join(', ')}
-      </span>
+    value?.length ? (
+      renderValue || (
+        <span>
+          {options
+            .filter((option) => value?.findIndex((item) => item === option.value) > -1)
+            .map((option) => option.label)
+            .join(', ')}
+        </span>
+      )
+    ) : (
+      <span style={{ color: MthColor.SYSTEM_12 }}>{placeholder}</span>
     )
 
   const renderDropDownItem = map(options, (dropDownItem, index) => (
     <MenuItem key={index} value={dropDownItem.value}>
-      <Checkbox checked={!!(value?.findIndex((item) => item === dropDownItem.value) >= 0)} />
+      <Checkbox checked={value?.findIndex((item) => item === dropDownItem.value) >= 0} />
       <ListItemText primary={dropDownItem.label} />
     </MenuItem>
   ))
@@ -52,7 +58,7 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
 
   return (
     <Box sx={{ minWidth: 120 }}>
-      <FormControl fullWidth size='medium'>
+      <FormControl fullWidth size='medium' className='MthFormField'>
         <InputLabel id='multiple-checkbox-label'>{label}</InputLabel>
         <Select
           labelId='multiple-checkbox-label'
@@ -60,6 +66,7 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
           multiple={true}
           value={value}
           onChange={(e) => handleChange(e.target.value)}
+          displayEmpty
           input={<OutlinedInput label={label} />}
           renderValue={renderSelectedItems}
           MenuProps={MenuProps}

@@ -106,7 +106,10 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
                 tp_phone_number: item?.ThirdParty?.phoneNumber,
                 tp_provider_name: item?.ThirdParty?.providerName,
                 tp_specific_course_website: item?.ThirdParty?.specificCourseWebsite,
-                status: item.schedulePeriodStatus || null,
+                status:
+                  kind === ScheduleStatus.RESUBMITTED && item.periodStatus === SchedulePeriodStatus.UPDATE_REQUIRED
+                    ? SchedulePeriodStatus.RESUBMITTED
+                    : item.periodStatus || null,
               })),
             },
           },
@@ -293,19 +296,50 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
       />
       {!!scheduleData?.length && (
         <Box sx={{ mt: 3 }}>
-          {(!studentScheduleStatus || studentScheduleStatus === ScheduleStatus.DRAFT) &&
+          {(!studentScheduleStatus ||
+            studentScheduleStatus === ScheduleStatus.DRAFT ||
+            studentScheduleStatus === ScheduleStatus.UPDATES_REQUIRED) &&
             (isValid ? (
               <Box sx={{ display: 'flex', justifyContent: 'space-between', paddingX: 6 }}>
-                <Button onClick={() => handleSave(ScheduleStatus.DRAFT)} sx={mthButtonClasses.primary}>
+                <Button
+                  onClick={() =>
+                    handleSave(
+                      studentScheduleStatus === ScheduleStatus.UPDATES_REQUIRED
+                        ? ScheduleStatus.UPDATES_REQUIRED
+                        : ScheduleStatus.DRAFT,
+                    )
+                  }
+                  sx={mthButtonClasses.primary}
+                >
                   {MthTitle.SAVE_DRAFT}
                 </Button>
-                <Button onClick={() => handleSave(ScheduleStatus.SUBMITTED)} sx={mthButtonClasses.dark}>
-                  {MthTitle.SUBMIT}
+                <Button
+                  onClick={() =>
+                    handleSave(
+                      studentScheduleStatus === ScheduleStatus.UPDATES_REQUIRED
+                        ? ScheduleStatus.RESUBMITTED
+                        : ScheduleStatus.SUBMITTED,
+                    )
+                  }
+                  sx={mthButtonClasses.dark}
+                >
+                  {studentScheduleStatus === ScheduleStatus.UPDATES_REQUIRED
+                    ? MthTitle.SUBMIT_UPDATES
+                    : MthTitle.SUBMIT}
                 </Button>
               </Box>
             ) : (
               <Box sx={{ display: 'flex', justifyContent: 'end', paddingX: 6 }}>
-                <Button onClick={() => handleSave(ScheduleStatus.DRAFT)} sx={mthButtonClasses.primary}>
+                <Button
+                  onClick={() =>
+                    handleSave(
+                      studentScheduleStatus === ScheduleStatus.UPDATES_REQUIRED
+                        ? ScheduleStatus.UPDATES_REQUIRED
+                        : ScheduleStatus.DRAFT,
+                    )
+                  }
+                  sx={mthButtonClasses.primary}
+                >
                   {MthTitle.SAVE_DRAFT}
                 </Button>
               </Box>

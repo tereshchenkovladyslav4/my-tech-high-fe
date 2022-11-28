@@ -64,11 +64,7 @@ export const EnrollmentPacketDocument: FunctionComponent<EnrollmentPacketDocumen
               const tempFile = {
                 file_id: file.file_id,
                 kind: packetfile.kind,
-                name:
-                  packetData.student?.person.first_name.substring(0, 1).toUpperCase() +
-                  '.' +
-                  packetData.student?.person.last_name +
-                  packetfile.kind.toUpperCase(),
+                name: file.name,
                 url: file.signedUrl,
               }
               filesData.push(tempFile)

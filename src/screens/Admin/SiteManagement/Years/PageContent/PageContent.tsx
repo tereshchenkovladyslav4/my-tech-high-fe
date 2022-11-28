@@ -97,8 +97,10 @@ export const PageContent: React.FC<PageContentProps> = ({
           case MthTitle.SCHOOL_YEAR:
           case MthTitle.APPLICATIONS:
           case MthTitle.HOMEROOM_RESOURCES:
-          case MthTitle.MID_YEAR_APPLICATION:
             dividerStyle = { height: 'auto' }
+            break
+          case MthTitle.MID_YEAR_APPLICATION:
+            dividerStyle = { top: 0, height: '100%' }
             break
           case MthTitle.MID_YEAR:
             if (midYearExpend) {

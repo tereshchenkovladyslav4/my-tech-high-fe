@@ -1,4 +1,5 @@
 import React from 'react'
+import { Box } from '@mui/material'
 import { DropDown } from '@mth/components/DropDown/DropDown'
 import { DropDownItem } from '@mth/components/DropDown/types'
 import { ProgramSettingChanged } from '../types'
@@ -42,13 +43,15 @@ export const ProgramSelect: React.FC<ProgramSelectProps> = ({ program, setProgra
   }
 
   return (
-    <DropDown
-      dropDownItems={items}
-      placeholder={'Select Year'}
-      defaultValue={program ? program : ''}
-      sx={{ width: '160px', marginLeft: '25px' }}
-      borderNone={false}
-      setParentValue={handleChange}
-    />
+    <Box sx={{ marginLeft: '25px' }}>
+      <DropDown
+        dropDownItems={items}
+        placeholder={'Select Year'}
+        defaultValue={program ? program : ''}
+        sx={{ width: '160px' }}
+        borderNone={false}
+        setParentValue={handleChange}
+      />
+    </Box>
   )
 }

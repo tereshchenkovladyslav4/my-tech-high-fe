@@ -14,11 +14,13 @@ export const ScheduleTableFilters: FunctionComponent<EnrollmentScheduleProps> = 
   scheduleCount,
 }) => {
   const handleSelectFilter = (value: string) => {
+    let newStatusList = []
     if (filters?.status?.includes(value)) {
-      setFilters({ ...filters, status: filters.status.filter((item) => item !== value) })
+      newStatusList = filters.status.filter((item) => item !== value)
     } else {
-      setFilters({ ...filters, status: [...(filters?.status ? filters?.status : []), value] })
+      newStatusList = [...(filters?.status ? filters?.status : []), value]
     }
+    setFilters({ ...filters, status: newStatusList.length > 0 ? newStatusList : [''] })
   }
   return (
     <Box

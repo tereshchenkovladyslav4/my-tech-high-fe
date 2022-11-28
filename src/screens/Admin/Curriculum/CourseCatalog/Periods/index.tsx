@@ -35,7 +35,7 @@ import CustomTable from '@mth/components/Table/CustomTable'
 import { Field } from '@mth/components/Table/types'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { WarningModal } from '@mth/components/WarningModal/Warning'
-import { MthColor } from '@mth/enums'
+import { MthColor, MthRoute } from '@mth/enums'
 import { useProgramYearListBySchoolYearId, useSchoolYearsByRegionId } from '@mth/hooks'
 import { loadingState } from '@mth/providers/Store/State'
 import { getPeriods, upsertPeriod, periodArchive, deletePeriodsByIds } from '@mth/screens/Admin/Curriculum/services'
@@ -51,7 +51,6 @@ Yup.setLocale({
     required: 'Required',
   },
 })
-const initialEditorState = EditorState.createWithContent(ContentState.createFromText(''))
 
 const CssTextField = withStyles({
   root: {
@@ -69,6 +68,8 @@ const CssTextField = withStyles({
     },
   },
 })(TextField)
+
+const initialEditorState = EditorState.createWithContent(ContentState.createFromText(''))
 
 const Periods: FunctionComponent = () => {
   const classes = useStyles
@@ -444,7 +445,7 @@ const Periods: FunctionComponent = () => {
         }}
       >
         <Box sx={{ mb: 4 }}>
-          <PageHeader title='Periods' to='/curriculum/course-catalog'>
+          <PageHeader title='Periods' to={MthRoute.CURRICULUM_COURSE_CATALOG}>
             <DropDown
               dropDownItems={schoolYearDropdownItems}
               placeholder={'Select Year'}

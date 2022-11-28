@@ -1,8 +1,8 @@
 import React, { FunctionComponent, useContext, useEffect, useRef, useState } from 'react'
 import { useMutation, useQuery } from '@apollo/client'
-import { Alert, Button, Checkbox, AlertColor } from '@mui/material'
+import { Alert, AlertColor, Button, Checkbox } from '@mui/material'
 import { Box } from '@mui/system'
-import { ContentState, EditorState, convertToRaw } from 'draft-js'
+import { ContentState, convertToRaw, EditorState } from 'draft-js'
 import draftToHtml from 'draftjs-to-html'
 import { useFormik } from 'formik'
 import htmlToDraft from 'html-to-draftjs'
@@ -14,7 +14,7 @@ import { CommonSelect } from '@mth/components/CommonSelect'
 import { DropDown } from '@mth/components/DropDown/DropDown'
 import PageHeader from '@mth/components/PageHeader'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
-import { MthColor, ScheduleBuilder } from '@mth/enums'
+import { MthColor, MthRoute, ScheduleBuilder } from '@mth/enums'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { SchoolYearDropDown } from '@mth/screens/Admin/SiteManagement/SchoolPartner/SchoolYearDropDown/SchoolYearDropDown'
 import { createOrUpdateScheduleBuilder, getSchoolYear } from '../../services'
@@ -373,7 +373,7 @@ const Settings: FunctionComponent = () => {
   return (
     <form onSubmit={formik.handleSubmit} style={{ height: '100%' }}>
       <Box sx={classes.baseSettings}>
-        <PageHeader title='Schedule Builder Settings'>
+        <PageHeader title='Schedule Builder Settings' to={MthRoute.CURRICULUM_COURSE_CATALOG}>
           <Button
             variant='contained'
             type='submit'

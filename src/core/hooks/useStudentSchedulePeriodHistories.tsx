@@ -116,7 +116,7 @@ export const useStudentSchedulePeriodHistories = (
               if (period) {
                 item.Period = period
                 item.schedulePeriodId = schedulePeriodHistory.schedule_period_history_id
-                item.updateRequired = schedulePeriodHistory.update_required
+                item.periodStatus = schedulePeriodHistory.status
                 if (schedulePeriodHistory.SubjectId)
                   item.Subject = period.Subjects?.find(
                     (subject) => subject?.subject_id === schedulePeriodHistory.SubjectId,
