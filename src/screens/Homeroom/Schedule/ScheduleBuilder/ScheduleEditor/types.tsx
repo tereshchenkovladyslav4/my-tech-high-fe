@@ -1,4 +1,4 @@
-import { ScheduleStatus } from '@mth/enums'
+import { SchedulePeriodStatus, ScheduleStatus } from '@mth/enums'
 import { ScheduleData } from '../../types'
 
 export type ScheduleEditorProps = {
@@ -15,4 +15,5 @@ export type ScheduleEditorProps = {
   setScheduleData: (value: ScheduleData[]) => void
   handlePeriodUpdateRequired?: (value: string) => void
   handlePeriodUpdateEmail?: (value: string) => void
+  handleSchedulePeriodStatusChange?: (value: ScheduleData, status: SchedulePeriodStatus | undefined) => void
 }

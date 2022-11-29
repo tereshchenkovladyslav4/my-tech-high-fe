@@ -5,13 +5,19 @@ import * as yup from 'yup'
 import { CheckBoxListVM } from '@mth/components/MthCheckboxList/MthCheckboxList'
 import { MthModal } from '@mth/components/MthModal/MthModal'
 import { MthTitle } from '@mth/enums'
+import { SEMESTER_TYPE } from '@mth/screens/Admin/Curriculum/types'
 import RequestUpdatesForm from '@mth/screens/Homeroom/Schedule/ScheduleBuilder/RequestUpdatesModal/RequestUpdatesForm'
 import {
   PeriodSelect,
   RequestUpdatesModalProps,
 } from '@mth/screens/Homeroom/Schedule/ScheduleBuilder/RequestUpdatesModal/types'
 
-const RequestUpdatesModal: React.FC<RequestUpdatesModalProps> = ({ scheduleData, onSave, setShowEditModal }) => {
+const RequestUpdatesModal: React.FC<RequestUpdatesModalProps> = ({
+  scheduleData,
+  isSecondSemester,
+  onSave,
+  setShowEditModal,
+}) => {
   const formRef = useRef<FormikProps<PeriodSelect>>(null)
   const [initialValues] = useState<PeriodSelect>({ PeriodIds: [] })
   const [periodsItems, setPeriodsItems] = useState<CheckBoxListVM[]>([])
@@ -31,14 +37,24 @@ const RequestUpdatesModal: React.FC<RequestUpdatesModalProps> = ({ scheduleData,
 
   useEffect(() => {
     if (scheduleData?.length) {
-      setPeriodsItems(
-        scheduleData.map((item) => ({
-          label: `Period ${item.period} - ${item.Period?.category}`,
-          value: item.period.toString(),
-        })),
-      )
+      if (isSecondSemester)
+        setPeriodsItems(
+          scheduleData
+            .filter((item) => item.FirstSemesterSchedule?.Period?.semester !== SEMESTER_TYPE.NONE)
+            .map((item) => ({
+              label: `Period ${item.period} - ${item.Period?.category}`,
+              value: item.period.toString(),
+            })),
+        )
+      else
+        setPeriodsItems(
+          scheduleData.map((item) => ({
+            label: `Period ${item.period} - ${item.Period?.category}`,
+            value: item.period.toString(),
+          })),
+        )
     }
-  }, [scheduleData])
+  }, [scheduleData, isSecondSemester])
 
   return (
     <MthModal
@@ -65,7 +81,7 @@ const RequestUpdatesModal: React.FC<RequestUpdatesModalProps> = ({ scheduleData,
           onSubmit={handleSave}
         >
           <Form>
-            <RequestUpdatesForm periodsItems={periodsItems} />
+            <RequestUpdatesForm periodsItems={periodsItems} isSecondSemester={isSecondSemester} />
           </Form>
         </Formik>
       </Box>

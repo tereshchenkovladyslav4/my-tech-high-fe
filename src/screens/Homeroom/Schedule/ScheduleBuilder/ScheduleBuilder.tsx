@@ -13,7 +13,7 @@ import { getAllScheduleBuilderQuery } from '@mth/graphql/queries/schedule-builde
 import { useStudentSchedulePeriods } from '@mth/hooks'
 import { scheduleBuilderClasses } from '@mth/screens/Homeroom/Schedule/ScheduleBuilder/styles'
 import { mthButtonClasses } from '@mth/styles/button.style'
-import { ScheduleBuilderProps } from '../types'
+import { ScheduleBuilderProps, ScheduleData } from '../types'
 import { RequestUpdatesModal } from './RequestUpdatesModal'
 import { ScheduleEditor } from './ScheduleEditor'
 
@@ -25,6 +25,8 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
   showUnsavedModal = false,
   splitEnrollment = false,
   diplomaSeekingPath,
+  isUpdatePeriodRequested,
+  setIsUpdatePeriodRequested,
   setScheduleStatus,
   isChanged,
   setIsChanged,
@@ -41,6 +43,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
 
   const {
     scheduleData,
+    hasSecondSemester,
     setScheduleData,
     secondScheduleData,
     setSecondScheduleData,
@@ -54,6 +57,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
     getAllScheduleBuilderQuery,
     {
       variables: { schoolYearId: selectedYear },
+      skip: !selectedYear,
       fetchPolicy: 'network-only',
     },
   )
@@ -61,8 +65,8 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
   const [submitScheduleBuilder] = useMutation(saveScheduleMutation)
   const [saveDraft] = useMutation(saveSchedulePeriodMutation)
 
-  const handleSave = async (kind: ScheduleStatus) => {
-    if (showSecondSemester && !isChanged) {
+  const handleSave = async (kind: ScheduleStatus, directly = false) => {
+    if (showSecondSemester && !isChanged && kind !== ScheduleStatus.UPDATES_REQUESTED && !directly) {
       setShowNoChangesModal(true)
       return
     }
@@ -107,9 +111,10 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
                 tp_provider_name: item?.ThirdParty?.providerName,
                 tp_specific_course_website: item?.ThirdParty?.specificCourseWebsite,
                 status:
-                  kind === ScheduleStatus.RESUBMITTED && item.periodStatus === SchedulePeriodStatus.UPDATE_REQUIRED
+                  kind === ScheduleStatus.RESUBMITTED &&
+                  item.schedulePeriodStatus === SchedulePeriodStatus.UPDATE_REQUIRED
                     ? SchedulePeriodStatus.RESUBMITTED
-                    : item.periodStatus || null,
+                    : item.schedulePeriodStatus || null,
               })),
             },
           },
@@ -143,12 +148,14 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
 
   const handleRequestUpdates = async (periodIds: number[]) => {
     if (studentScheduleStatus === ScheduleStatus.ACCEPTED) {
-      scheduleData
+      const data = showSecondSemester ? secondScheduleData : scheduleData
+      data
         .filter((item) => periodIds.includes(item.period))
         .map((item) => (item.schedulePeriodStatus = SchedulePeriodStatus.UPDATE_REQUESTED))
       await handleSave(ScheduleStatus.UPDATES_REQUESTED)
     } else {
       setIsEditMode(true)
+      setIsUpdatePeriodRequested(true)
       const data = showSecondSemester ? secondScheduleData : scheduleData
       data.map((item) => (item.editable = periodIds.includes(item.period)))
       if (showSecondSemester) {
@@ -156,6 +163,28 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
       } else {
         setScheduleData(JSON.parse(JSON.stringify(data)))
       }
+    }
+  }
+
+  const handleSchedulePeriodStatusChange = async (schedule: ScheduleData, status: SchedulePeriodStatus | undefined) => {
+    if (schedule) {
+      setSecondScheduleData(
+        secondScheduleData?.map((item) => {
+          if (item?.Period?.id == schedule.Period?.id)
+            return {
+              ...item,
+              schedulePeriodStatus: status,
+            }
+          else return { ...item }
+        }),
+      )
+      const data = secondScheduleData?.filter(
+        (item) => item?.Period?.id == schedule.Period?.id && item?.showButtonName === SchedulePeriodStatus.NO_UPDATES,
+      )
+      handleSave(
+        data?.length ? (hasSecondSemester ? studentScheduleStatus : ScheduleStatus.DRAFT) : ScheduleStatus.ACCEPTED,
+        true,
+      )
     }
   }
 
@@ -195,7 +224,9 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
 
   return (
     <>
-      {showSecondSemester && <Typography sx={scheduleBuilderClasses.semesterTitle}>1st Semester</Typography>}
+      {showSecondSemester && (
+        <Typography sx={scheduleBuilderClasses.semesterTitle}>{MthTitle.FIRST_SEMESTER}</Typography>
+      )}
       <ScheduleEditor
         scheduleData={scheduleData}
         splitEnrollment={splitEnrollment}
@@ -206,7 +237,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
         setScheduleData={setScheduleData}
       />
       {showSecondSemester && (
-        <Typography sx={{ ...scheduleBuilderClasses.semesterTitle, mt: 4 }}>2nd Semester</Typography>
+        <Typography sx={{ ...scheduleBuilderClasses.semesterTitle, mt: 4 }}>{MthTitle.SECOND_SEMESTER}</Typography>
       )}
       {showSecondSemester && (
         <ScheduleEditor
@@ -218,6 +249,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
           parentTooltip={parentTooltip}
           setIsChanged={setIsChanged}
           setScheduleData={setSecondScheduleData}
+          handleSchedulePeriodStatusChange={handleSchedulePeriodStatusChange}
         />
       )}
       {showUnsavedModal && (
@@ -282,7 +314,8 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
       )}
       {showRequestUpdatesModal && (
         <RequestUpdatesModal
-          scheduleData={scheduleData}
+          scheduleData={showSecondSemester ? secondScheduleData : scheduleData}
+          isSecondSemester={showSecondSemester}
           setShowEditModal={setShowRequestUpdatesModal}
           onSave={handleRequestUpdates}
         />
@@ -298,7 +331,10 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
         <Box sx={{ mt: 3 }}>
           {(!studentScheduleStatus ||
             studentScheduleStatus === ScheduleStatus.DRAFT ||
-            studentScheduleStatus === ScheduleStatus.UPDATES_REQUIRED) &&
+            studentScheduleStatus === ScheduleStatus.UPDATES_REQUIRED ||
+            (isUpdatePeriodRequested &&
+              (studentScheduleStatus === ScheduleStatus.SUBMITTED ||
+                studentScheduleStatus === ScheduleStatus.RESUBMITTED))) &&
             (isValid ? (
               <Box sx={{ display: 'flex', justifyContent: 'space-between', paddingX: 6 }}>
                 <Button
@@ -306,7 +342,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
                     handleSave(
                       studentScheduleStatus === ScheduleStatus.UPDATES_REQUIRED
                         ? ScheduleStatus.UPDATES_REQUIRED
-                        : ScheduleStatus.DRAFT,
+                        : studentScheduleStatus,
                     )
                   }
                   sx={mthButtonClasses.primary}
@@ -318,12 +354,16 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
                     handleSave(
                       studentScheduleStatus === ScheduleStatus.UPDATES_REQUIRED
                         ? ScheduleStatus.RESUBMITTED
+                        : studentScheduleStatus === ScheduleStatus.RESUBMITTED
+                        ? ScheduleStatus.RESUBMITTED
                         : ScheduleStatus.SUBMITTED,
                     )
                   }
                   sx={mthButtonClasses.dark}
                 >
-                  {studentScheduleStatus === ScheduleStatus.UPDATES_REQUIRED
+                  {studentScheduleStatus === ScheduleStatus.UPDATES_REQUIRED ||
+                  studentScheduleStatus === ScheduleStatus.RESUBMITTED ||
+                  studentScheduleStatus === ScheduleStatus.SUBMITTED
                     ? MthTitle.SUBMIT_UPDATES
                     : MthTitle.SUBMIT}
                 </Button>
@@ -344,25 +384,31 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
                 </Button>
               </Box>
             ))}
-          {(studentScheduleStatus === ScheduleStatus.SUBMITTED ||
-            studentScheduleStatus === ScheduleStatus.ACCEPTED ||
-            studentScheduleStatus === ScheduleStatus.RESUBMITTED) && (
-            <Box sx={{ display: 'flex', justifyContent: 'end', paddingX: 6 }}>
-              {!isEditMode ? (
-                <Button onClick={() => setShowRequestUpdatesModal(true)} sx={mthButtonClasses.orange}>
-                  {MthTitle.REQUEST_UPDATES}
-                </Button>
-              ) : (
-                <Button
-                  onClick={() => handleSave(ScheduleStatus.SUBMITTED)}
-                  sx={mthButtonClasses.dark}
-                  disabled={!isValid}
-                >
-                  {MthTitle.SUBMIT_UPDATES}
-                </Button>
-              )}
-            </Box>
-          )}
+          {!isUpdatePeriodRequested &&
+            (studentScheduleStatus === ScheduleStatus.SUBMITTED ||
+              studentScheduleStatus === ScheduleStatus.ACCEPTED ||
+              studentScheduleStatus === ScheduleStatus.RESUBMITTED) && (
+              <Box sx={{ display: 'flex', justifyContent: 'end', paddingX: 6 }}>
+                {!isEditMode ? (
+                  <Button
+                    onClick={() => {
+                      setShowRequestUpdatesModal(true)
+                    }}
+                    sx={mthButtonClasses.orange}
+                  >
+                    {MthTitle.REQUEST_UPDATES}
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={() => handleSave(ScheduleStatus.SUBMITTED)}
+                    sx={mthButtonClasses.dark}
+                    disabled={!isValid}
+                  >
+                    {MthTitle.SUBMIT_UPDATES}
+                  </Button>
+                )}
+              </Box>
+            )}
         </Box>
       )}
     </>

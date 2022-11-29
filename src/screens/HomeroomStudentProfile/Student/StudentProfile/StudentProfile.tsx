@@ -304,12 +304,12 @@ export const StudentProfile: React.FC = () => {
                   <Box display='flex' flexDirection='column' justifyContent='end' alignItems='end' height='100%'>
                     <Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between'>
                       <Subtitle size='large' fontWeight='700' color={MthColor.GRAY}>
-                        1st Semester
+                        {MthTitle.FIRST_SEMESTER}
                       </Subtitle>
                     </Box>
                     <Box display='flex' flexDirection='row' alignItems='center'>
                       <Subtitle size='large' fontWeight='700' color={MthColor.GRAY}>
-                        2nd Semester
+                        {MthTitle.SECOND_SEMESTER}
                       </Subtitle>
                     </Box>
                   </Box>
@@ -558,12 +558,12 @@ export const StudentProfile: React.FC = () => {
                 <Box display='flex' flexDirection='column' justifyContent='start' alignItems='start' height='100%'>
                   <Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between'>
                     <Subtitle size='large' fontWeight='700' color={MthColor.GRAY}>
-                      1st Semester
+                      {MthTitle.FIRST_SEMESTER}
                     </Subtitle>
                   </Box>
                   <Box display='flex' flexDirection='row' alignItems='center'>
                     <Subtitle size='large' fontWeight='700' color={MthColor.GRAY}>
-                      2nd Semester
+                      {MthTitle.SECOND_SEMESTER}
                     </Subtitle>
                   </Box>
                 </Box>

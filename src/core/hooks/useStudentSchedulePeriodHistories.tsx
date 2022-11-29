@@ -13,6 +13,7 @@ import { makeProviderData } from './useStudentSchedulePeriods'
 export const useStudentSchedulePeriodHistories = (
   student_id: number,
   school_year_id: number | undefined,
+  isSecondSemester: boolean,
   diplomaSeekingPath: DiplomaSeekingPath | null = null,
 ): {
   scheduleDataHistory: ScheduleHistoryData[]
@@ -42,6 +43,7 @@ export const useStudentSchedulePeriodHistories = (
     variables: {
       schoolYearId: school_year_id,
       studentId: student_id,
+      isSecondSemester: isSecondSemester,
     },
     skip: !student_id || !school_year_id,
     fetchPolicy: 'network-only',
@@ -116,7 +118,7 @@ export const useStudentSchedulePeriodHistories = (
               if (period) {
                 item.Period = period
                 item.schedulePeriodId = schedulePeriodHistory.schedule_period_history_id
-                item.periodStatus = schedulePeriodHistory.status
+                item.schedulePeriodStatus = schedulePeriodHistory.status
                 if (schedulePeriodHistory.SubjectId)
                   item.Subject = period.Subjects?.find(
                     (subject) => subject?.subject_id === schedulePeriodHistory.SubjectId,

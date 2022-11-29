@@ -23,6 +23,7 @@ import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { Title } from '@mth/components/Typography/Title/Title'
 import { WarningModal } from '@mth/components/WarningModal/Warning'
+import { MthTitle } from '@mth/enums'
 import { getAssessmentsBySchoolYearId, getStudentAssessmentsByStudentId } from '@mth/graphql/queries/assessment'
 import { getWithdrawalStatusQuery } from '@mth/graphql/queries/withdrawal'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
@@ -547,12 +548,12 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
         <Grid item container xs={4}>
           <Grid item xs={12} sx={{ alignItems: 'center', display: 'flex' }}>
             <Subtitle textAlign='left' fontWeight='700' color={'#CCCCCC'} sx={{ marginLeft: 3 }}>
-              1st Semester # of Zeros
+              {`${MthTitle.FIRST_SEMESTER} # of Zeros`}
             </Subtitle>
           </Grid>
           <Grid item xs={12} sx={{ alignItems: 'center', display: 'flex' }}>
             <Subtitle textAlign='left' fontWeight='700' color={'#CCCCCC'} sx={{ marginLeft: 3 }}>
-              2nd Semester # of Zeros
+              {`${MthTitle.SECOND_SEMESTER} # of Zeros`}
             </Subtitle>
           </Grid>
         </Grid>

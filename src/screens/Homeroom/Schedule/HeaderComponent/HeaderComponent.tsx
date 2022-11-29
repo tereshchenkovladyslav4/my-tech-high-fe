@@ -8,7 +8,12 @@ import { ScheduleStatus } from '@mth/enums'
 import { HeaderComponentProps } from '../types'
 import { headerComponentClassess } from './styles'
 
-const HeaderComponent: React.FC<HeaderComponentProps> = ({ title, scheduleStatus, handleBack }) => {
+const HeaderComponent: React.FC<HeaderComponentProps> = ({
+  title,
+  scheduleStatus,
+  isUpdatePeriodRequested,
+  handleBack,
+}) => {
   return (
     <Box sx={headerComponentClassess.main}>
       <Box sx={headerComponentClassess.pageTitle}>
@@ -18,13 +23,17 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({ title, scheduleStatus
         <Subtitle size='medium' sx={{ fontSize: '20px', marginLeft: 3 }} fontWeight='700'>
           {title}
         </Subtitle>
-        {scheduleStatus && scheduleStatus == ScheduleStatus.ACCEPTED && (
-          <Box sx={{ marginLeft: 4 }}>
-            <Tooltip title='Download' placement='top'>
-              <img src={DownloadFileIcon} alt='Download Icon' />
-            </Tooltip>
-          </Box>
-        )}
+        {scheduleStatus &&
+          !isUpdatePeriodRequested &&
+          (scheduleStatus == ScheduleStatus.ACCEPTED ||
+            scheduleStatus == ScheduleStatus.SUBMITTED ||
+            scheduleStatus == ScheduleStatus.RESUBMITTED) && (
+            <Box sx={{ marginLeft: 4 }}>
+              <Tooltip title='Download' placement='top'>
+                <img src={DownloadFileIcon} alt='Download Icon' />
+              </Tooltip>
+            </Box>
+          )}
       </Box>
     </Box>
   )

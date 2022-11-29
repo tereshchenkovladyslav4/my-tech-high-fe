@@ -16,10 +16,11 @@ import { useActiveScheduleSchoolYears, useStudentSchedulePeriods } from '@mth/ho
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { ScheduleEditor } from '@mth/screens/Homeroom/Schedule/ScheduleBuilder/ScheduleEditor'
 import { scheduleBuilderClasses } from '@mth/screens/Homeroom/Schedule/ScheduleBuilder/styles'
-import { StudentScheduleInfo } from '@mth/screens/Homeroom/Schedule/types'
+import { ScheduleData, StudentScheduleInfo } from '@mth/screens/Homeroom/Schedule/types'
 import { StudentType } from '@mth/screens/HomeroomStudentProfile/Student/types'
 import { gradeText } from '@mth/utils'
 import { ENROLLMENT_SCHEDULE } from '../../../../utils/constants'
+import { SEMESTER_TYPE } from '../../Curriculum/types'
 import { getStudentDetail } from '../../UserProfile/services'
 import Header from './Header/Header'
 import { RequireUpdateModal } from './RequireUpdateModal'
@@ -118,7 +119,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
                       tp_phone_number: null,
                       tp_provider_name: null,
                       tp_specific_course_website: null,
-                      status: item?.periodStatus,
+                      status: item?.schedulePeriodStatus,
                     }
                   : {
                       CourseId: Number(item?.Course?.id),
@@ -140,7 +141,13 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
                       tp_phone_number: item?.ThirdParty?.phoneNumber,
                       tp_provider_name: item?.ThirdParty?.providerName,
                       tp_specific_course_website: item?.ThirdParty?.specificCourseWebsite,
-                      status: item?.periodStatus,
+                      status:
+                        status === ScheduleStatus.UPDATES_REQUIRED &&
+                        item?.schedulePeriodStatus === SchedulePeriodStatus.UPDATE_REQUESTED
+                          ? SchedulePeriodStatus.UPDATE_REQUIRED
+                          : status === ScheduleStatus.ACCEPTED
+                          ? null
+                          : item?.schedulePeriodStatus,
                     }
               }),
             },
@@ -189,12 +196,20 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
   }
 
   const handleCancelUpdates = () => {
-    setScheduleData(
-      scheduleData?.map((item) => ({
-        ...item,
-        periodStatus: null,
-      })),
-    )
+    if (hasSecondSemester)
+      setSecondScheduleData(
+        secondScheduleData?.map((item) => ({
+          ...item,
+          schedulePeriodStatus: null,
+        })),
+      )
+    else
+      setScheduleData(
+        scheduleData?.map((item) => ({
+          ...item,
+          schedulePeriodStatus: null,
+        })),
+      )
     setScheduleStatus(SCHEDULE_STATUS_OPTIONS.find((item) => item.value === studentScheduleStatus) as DropDownItem)
     setRequireUpdatePeriods([])
   }
@@ -209,9 +224,10 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
   }
 
   const handlePeriodUpdateRequired = (periodId: string) => {
+    const data = hasSecondSemester ? secondScheduleData : scheduleData
     setRequireUpdatePeriods([
-      ...scheduleData
-        ?.filter((item) => item?.periodStatus === SchedulePeriodStatus.UPDATE_REQUIRED)
+      ...data
+        ?.filter((item) => item?.schedulePeriodStatus === SchedulePeriodStatus.UPDATE_REQUIRED)
         ?.map((item) => {
           return `${item?.Period?.id}`
         }),
@@ -246,6 +262,25 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
       },
     })
     handleSave(ScheduleStatus.UPDATES_REQUIRED)
+  }
+
+  const handleSchedulePeriodStatusChange = async (schedule: ScheduleData, status: SchedulePeriodStatus | undefined) => {
+    if (schedule) {
+      setSecondScheduleData(
+        secondScheduleData?.map((item) => {
+          if (item?.Period?.id == schedule.Period?.id)
+            return {
+              ...item,
+              schedulePeriodStatus: status,
+            }
+          else return { ...item }
+        }),
+      )
+      const data = secondScheduleData?.filter(
+        (item) => item?.Period?.id == schedule.Period?.id && item?.showButtonName === SchedulePeriodStatus.NO_UPDATES,
+      )
+      handleSave(data?.length ? studentScheduleStatus : ScheduleStatus.ACCEPTED)
+    }
   }
 
   useEffect(() => {
@@ -285,9 +320,12 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
   }, [studentScheduleStatus])
 
   useEffect(() => {
-    if (scheduleData?.length) {
+    if (scheduleData?.length || secondScheduleData?.length) {
+      const data = hasSecondSemester
+        ? secondScheduleData.filter((item) => item.FirstSemesterSchedule?.Period?.semester !== SEMESTER_TYPE.NONE)
+        : scheduleData
       setPeriodItems(
-        scheduleData.map((item) => ({
+        data.map((item) => ({
           label: `Period ${item?.period} - ${item?.Title?.name} - ${
             item?.Title?.CourseTypes?.find((courseType) => courseType?.value === item?.CourseType)?.label
           }`,
@@ -295,18 +333,30 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
         })),
       )
     }
-  }, [scheduleData])
+  }, [scheduleData, hasSecondSemester, secondScheduleData])
 
   useEffect(() => {
     if (requireUpdatePeriods) {
-      setScheduleData(
-        scheduleData.map((item) => ({
-          ...item,
-          periodStatus: requireUpdatePeriods.includes(`${item?.Period?.id}`)
-            ? SchedulePeriodStatus.UPDATE_REQUIRED
-            : null,
-        })),
-      )
+      if (hasSecondSemester)
+        setSecondScheduleData(
+          secondScheduleData.map((item) => ({
+            ...item,
+            editable: requireUpdatePeriods.includes(`${item?.Period?.id}`),
+            schedulePeriodStatus: requireUpdatePeriods.includes(`${item?.Period?.id}`)
+              ? SchedulePeriodStatus.UPDATE_REQUIRED
+              : null,
+          })),
+        )
+      else
+        setScheduleData(
+          scheduleData.map((item) => ({
+            ...item,
+            editable: requireUpdatePeriods.includes(`${item?.Period?.id}`),
+            schedulePeriodStatus: requireUpdatePeriods.includes(`${item?.Period?.id}`)
+              ? SchedulePeriodStatus.UPDATE_REQUIRED
+              : null,
+          })),
+        )
       if (requireUpdatePeriods.length == 0)
         setScheduleStatus(SCHEDULE_STATUS_OPTIONS.find((item) => item.value === studentScheduleStatus) as DropDownItem)
     }
@@ -336,7 +386,9 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
           onUpdateScheduleStatus={updateScheduleStatus}
         />
         {hasSecondSemester && (
-          <Typography sx={{ ...scheduleBuilderClasses.semesterTitle, marginTop: 3 }}>1st Semester</Typography>
+          <Typography sx={{ ...scheduleBuilderClasses.semesterTitle, marginTop: 3 }}>
+            {MthTitle.FIRST_SEMESTER}
+          </Typography>
         )}
         <ScheduleEditor
           scheduleData={scheduleData}
@@ -351,7 +403,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
           handlePeriodUpdateRequired={handlePeriodUpdateRequired}
         />
         {hasSecondSemester && (
-          <Typography sx={{ ...scheduleBuilderClasses.semesterTitle, mt: 4 }}>2nd Semester</Typography>
+          <Typography sx={{ ...scheduleBuilderClasses.semesterTitle, mt: 4 }}>{MthTitle.SECOND_SEMESTER}</Typography>
         )}
         {hasSecondSemester && (
           <ScheduleEditor
@@ -363,6 +415,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
             scheduleStatus={studentScheduleStatus}
             setIsChanged={setIsChanged}
             setScheduleData={setSecondScheduleData}
+            handleSchedulePeriodStatusChange={handleSchedulePeriodStatusChange}
           />
         )}
         <Box sx={scheduleBuilderClass.submit}>
@@ -420,9 +473,12 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
             Reset Schedule
           </Button>
         </Box>
-        {!hasSecondSemester && (
-          <ScheduleHistory studentId={studentId} schoolYearId={selectedYearId || 0} refetchSchedule={refetch} />
-        )}
+        <ScheduleHistory
+          studentId={studentId}
+          schoolYearId={selectedYearId || 0}
+          isSecondSemester={hasSecondSemester}
+          refetchSchedule={refetch}
+        />
         {showRequireUpdateModal && (
           <RequireUpdateModal
             periodItems={periodItems}
@@ -494,9 +550,9 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
       </Card>
       {!!requireUpdatePeriods?.length && (
         <UpdatesRequired
-          scheduleData={scheduleData}
+          scheduleData={hasSecondSemester ? secondScheduleData : scheduleData}
           requireUpdatePeriods={requireUpdatePeriods}
-          setScheduleData={setScheduleData}
+          setScheduleData={hasSecondSemester ? setSecondScheduleData : setScheduleData}
           handleCancelUpdates={handleCancelUpdates}
           handleEmailSend={handleEmailSend}
           setRequireUpdatePeriods={setRequireUpdatePeriods}

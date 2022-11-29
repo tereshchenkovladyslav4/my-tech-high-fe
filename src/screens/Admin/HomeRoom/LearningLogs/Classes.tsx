@@ -12,6 +12,18 @@ import { CreateTeacherModal } from './CreateTeacherModal'
 import { Classes, ClassessProps, Teacher } from './types'
 
 const Classes: React.FC<ClassessProps> = ({ master, refetch }) => {
+  const [tableData, setTableData] = useState<MthTableRowItem<Classes>[]>([])
+  const [createModal, setCreateModal] = useState<boolean>(false)
+
+  const [classData, setClassData] = useState<Classes[] | undefined>(master?.masterClasses)
+
+  const [selectedClasses, setSelectedClasses] = useState<Classes | null>()
+
+  const editClasses = (val: Classes) => {
+    setSelectedClasses(val)
+    setCreateModal(true)
+  }
+
   const fields: MthTableField<Classes>[] = [
     {
       key: 'name',
@@ -59,7 +71,7 @@ const Classes: React.FC<ClassessProps> = ({ master, refetch }) => {
         return (
           <Box display={'flex'} flexDirection='row' justifyContent={'flex-end'} flexWrap={'wrap'}>
             <Tooltip title='Edit' placement='top'>
-              <IconButton className='actionButton' color='primary'>
+              <IconButton className='actionButton' color='primary' onClick={() => editClasses(item.rawData)}>
                 <CreateIcon />
               </IconButton>
             </Tooltip>
@@ -74,10 +86,17 @@ const Classes: React.FC<ClassessProps> = ({ master, refetch }) => {
     },
   ]
 
-  const [tableData, setTableData] = useState<MthTableRowItem<Classes>[]>([])
-  const [createModal, setCreateModal] = useState<boolean>(false)
-
-  const [classData, setClassData] = useState<Classes[] | undefined>(master?.masterClasses)
+  const fetchAddTeacher = (val: string | undefined) => {
+    if (!val) {
+      return ''
+    }
+    const teachers = JSON.parse(val)
+    if (teachers.length === 0) {
+      return ''
+    }
+    const addTeachers = teachers.map((item: Teacher) => item.first_name + ' ' + item.last_name)
+    return addTeachers.join(',')
+  }
 
   const createData = (classesItem: Classes): MthTableRowItem<Classes> => {
     return {
@@ -89,7 +108,7 @@ const Classes: React.FC<ClassessProps> = ({ master, refetch }) => {
           : '',
         students: 0,
         ungraded: 0,
-        additionalTeachers: classesItem.addition_id ? classesItem.addition_id : '',
+        additionalTeachers: fetchAddTeacher(classesItem?.addition_id),
       },
       rawData: classesItem,
     }
@@ -110,27 +129,37 @@ const Classes: React.FC<ClassessProps> = ({ master, refetch }) => {
   }, [classData])
 
   const openCreateModal = () => {
+    setSelectedClasses(null)
     setCreateModal(true)
   }
 
   const [createNewClasses] = useMutation(CreateNewClassesGql)
 
-  const handleCreateSubmit = async (className: string, primary: string | undefined, addTeachers: Teacher[]) => {
-    const addTeacherIds = addTeachers.map((i) => i.first_name + ' ' + i.last_name)
+  const handleCreateSubmit = async (
+    classId: string | number | undefined,
+    className: string,
+    primary: string | undefined,
+    addTeachers: Teacher[],
+  ) => {
+    // const addTeacherIds = addTeachers.map((i) => i.first_name + ' ' + i.last_name)
     const classInfo: {
+      class_id?: number | null
       class_name: string
       master_id: number
       primary_id?: number
       addition_id?: string
     } = {
       class_name: className,
-      master_id: parseInt(master.master_id),
+      master_id: parseInt(master?.master_id),
+    }
+    if (classId) {
+      classInfo['class_id'] = parseInt(classId)
     }
     if (primary) {
       classInfo['primary_id'] = parseInt(primary)
     }
-    if (addTeacherIds.length > 0) {
-      classInfo['addition_id'] = addTeacherIds.join(',')
+    if (addTeachers.length > 0) {
+      classInfo['addition_id'] = JSON.stringify(addTeachers)
     }
     await createNewClasses({
       variables: {
@@ -142,7 +171,7 @@ const Classes: React.FC<ClassessProps> = ({ master, refetch }) => {
   }
 
   const onSortChange = (fieldKey: string, orderBy: string) => {
-    const newClasses = [...classData]
+    const newClasses: Classes[] | undefined = [...classData]
     const sortBy = orderBy == 'asc' ? 1 : -1
     switch (fieldKey) {
       case 'name':
@@ -199,6 +228,7 @@ const Classes: React.FC<ClassessProps> = ({ master, refetch }) => {
           master={master}
           handleClose={() => setCreateModal(false)}
           handleCreateSubmit={handleCreateSubmit}
+          selectedClasses={selectedClasses}
         />
       )}
     </Box>

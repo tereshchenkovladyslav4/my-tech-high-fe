@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext, useCallback, ReactElement } from 'react'
-import { gql, useQuery } from '@apollo/client'
+import { gql, useLazyQuery, useQuery } from '@apollo/client'
 import {
   Box,
   Checkbox,
@@ -19,6 +19,7 @@ import { DropDownItem } from '@mth/components/DropDown/types'
 import { QUESTION_TYPE } from '@mth/components/QuestionItem/QuestionItemProps'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { checkEmailQuery } from '@mth/graphql/queries/email-template'
 import { EnrollmentContext } from '@mth/providers/EnrollmentPacketPrivder/EnrollmentPacketProvider'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { SYSTEM_05, SYSTEM_07, ERROR_RED, GRADES } from '../../utils/constants'
@@ -315,6 +316,33 @@ function Item({
     [fieldData, otherValue, q],
   )
 
+  const [checkEmail, { loading: emailLoading, data: emailData }] = useLazyQuery(checkEmailQuery, {
+    fetchPolicy: 'network-only',
+  })
+
+  const [showEmailError, setShowEmailError] = useState<boolean>(false)
+
+  useEffect(() => {
+    if (!emailLoading && emailData !== undefined) {
+      if (emailData.emailTaken === true) {
+        setShowEmailError(true)
+        const response = new CustomEvent('emailTaken', { detail: { error: true } })
+        document.dispatchEvent(response)
+        // formik.setErrors({
+        //   student: {
+        //     email: (
+        //       <Paragraph fontWeight='400' fontSize='0.75rem'>
+        //         This email is already being used.
+        //       </Paragraph>
+        //     ),
+        //   },
+        // })
+      } else {
+        setShowEmailError(false)
+      }
+    }
+  }, [emailLoading, emailData])
+
   if (q.type === QUESTION_TYPE.DROPDOWN) {
     return (
       <>
@@ -353,41 +381,103 @@ function Item({
       </>
     )
   } else if (q.type === QUESTION_TYPE.TEXTFIELD) {
-    return (
-      <TextField
-        disabled={disabled}
-        name={`${keyName}.${fieldName}`}
-        value={formik.values[`${keyName}`] ? formik.values[`${keyName}`][`${fieldName}`] : ''}
-        onChange={formik.handleChange}
-        onBlur={formik.handleBlur}
-        size='small'
-        sx={{
-          maxWidth: '100%',
+    if (keyName === 'student' && fieldName === 'email') {
+      return (
+        <>
+          <TextField
+            disabled={disabled}
+            name={`${keyName}.${fieldName}`}
+            value={formik.values[`${keyName}`] ? formik.values[`${keyName}`][`${fieldName}`] : ''}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            size='small'
+            sx={{
+              maxWidth: '100%',
 
-          [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
-            borderColor: SYSTEM_07,
-          },
-        }}
-        InputLabelProps={{
-          style: { color: SYSTEM_05 },
-        }}
-        variant='outlined'
-        fullWidth
-        focused
-        error={
-          formik.touched[`${keyName}`] &&
-          Boolean(formik.touched[`${keyName}`][`${fieldName}`]) &&
-          formik.errors[`${keyName}`] &&
-          Boolean(formik.errors[`${keyName}`][`${fieldName}`])
-        }
-        helperText={
-          (formik.touched[`${keyName}`] &&
+              [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
+                {
+                  borderColor: SYSTEM_07,
+                },
+            }}
+            InputLabelProps={{
+              style: { color: SYSTEM_05 },
+            }}
+            variant='outlined'
+            fullWidth
+            focused
+            error={
+              (formik.touched[`${keyName}`] &&
+                Boolean(formik.touched[`${keyName}`][`${fieldName}`]) &&
+                formik.errors[`${keyName}`] &&
+                Boolean(formik.errors[`${keyName}`][`${fieldName}`])) ||
+              showEmailError
+            }
+            helperText={
+              (formik.touched[`${keyName}`] &&
+                Boolean(formik.touched[`${keyName}`][`${fieldName}`]) &&
+                formik.errors[`${keyName}`] &&
+                formik.errors[`${keyName}`][`${fieldName}`]) as string
+            }
+            onKeyUp={() => {
+              // TODO fix validation here
+              checkEmail({
+                variables: {
+                  email: formik.values[`${keyName}`][`${fieldName}`],
+                },
+              })
+            }}
+          />
+          {showEmailError &&
+            formik.setErrors({
+              ...formik.errors,
+              student: {
+                email: (
+                  <Paragraph fontWeight='400' fontSize='0.75rem'>
+                    This email is already being used.
+                  </Paragraph>
+                ),
+              },
+            })}
+        </>
+      )
+    } else {
+      return (
+        <TextField
+          disabled={disabled}
+          name={`${keyName}.${fieldName}`}
+          value={formik.values[`${keyName}`] ? formik.values[`${keyName}`][`${fieldName}`] : ''}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          size='small'
+          sx={{
+            maxWidth: '100%',
+
+            [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
+              {
+                borderColor: SYSTEM_07,
+              },
+          }}
+          InputLabelProps={{
+            style: { color: SYSTEM_05 },
+          }}
+          variant='outlined'
+          fullWidth
+          focused
+          error={
+            formik.touched[`${keyName}`] &&
             Boolean(formik.touched[`${keyName}`][`${fieldName}`]) &&
             formik.errors[`${keyName}`] &&
-            formik.errors[`${keyName}`][`${fieldName}`]) as string
-        }
-      />
-    )
+            Boolean(formik.errors[`${keyName}`][`${fieldName}`])
+          }
+          helperText={
+            (formik.touched[`${keyName}`] &&
+              Boolean(formik.touched[`${keyName}`][`${fieldName}`]) &&
+              formik.errors[`${keyName}`] &&
+              formik.errors[`${keyName}`][`${fieldName}`]) as string
+          }
+        />
+      )
+    }
   } else if (q.type === QUESTION_TYPE.CHECKBOX) {
     return (
       <>

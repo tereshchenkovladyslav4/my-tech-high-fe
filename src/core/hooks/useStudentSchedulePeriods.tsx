@@ -42,7 +42,7 @@ export const attachSelectedItems = (
   if (period) {
     item.Period = period
     item.schedulePeriodId = schedulePeriod.schedule_period_id
-    item.periodStatus = schedulePeriod.status
+    item.schedulePeriodStatus = schedulePeriod.status
     if (schedulePeriod.SubjectId)
       item.Subject = period.Subjects?.find((subject) => subject?.subject_id === schedulePeriod.SubjectId)
     if (schedulePeriod.TitleId)
@@ -189,7 +189,9 @@ export const useStudentSchedulePeriods = (
           (item: SchedulePeriod) => item.Schedule.is_second_semester,
         )
         if (secondSchedulePeriods?.length) {
-          setHasSecondSemesterSchedule(true)
+          setHasSecondSemesterSchedule(
+            secondSchedulePeriods[0]?.Schedule?.status === ScheduleStatus.DRAFT ? false : true,
+          )
           secondScheduleDataArray = JSON.parse(JSON.stringify(scheduleDataArray))
           secondScheduleDataArray.map((item) => {
             const schedulePeriod = secondSchedulePeriods.find(

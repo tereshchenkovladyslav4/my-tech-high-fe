@@ -13,4 +13,10 @@ export const studentScheduleClasses = {
       pl: 0,
     },
   },
+  semesterTitle: {
+    fontSize: '12px',
+    fontWeight: '700',
+    textAlign: 'left',
+    color: MthColor.SYSTEM_03,
+  },
 }

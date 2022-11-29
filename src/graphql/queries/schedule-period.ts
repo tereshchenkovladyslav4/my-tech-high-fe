@@ -30,8 +30,8 @@ export const getStudentSchedulePeriodsQuery = gql`
 `
 
 export const getStudentSchedulePeriodHistoriesQuery = gql`
-  query SchedulePeriodHistories($schoolYearId: Float!, $studentId: Float!) {
-    schedulePeriodHistories(schoolYearId: $schoolYearId, studentId: $studentId) {
+  query SchedulePeriodHistories($isSecondSemester: Boolean!, $schoolYearId: Float!, $studentId: Float!) {
+    schedulePeriodHistories(isSecondSemester: $isSecondSemester, schoolYearId: $schoolYearId, studentId: $studentId) {
       CourseId
       PeriodId
       ProviderId

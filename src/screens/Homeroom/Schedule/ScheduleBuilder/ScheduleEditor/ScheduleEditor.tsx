@@ -54,18 +54,19 @@ const StyledTooltip = styled(({ className, ...props }: TooltipProps) => (
 
 const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
   scheduleData,
-  setScheduleData,
   isAdmin = false,
   isEditMode = false,
   isSecondSemester = false,
-  setIsChanged,
   splitEnrollment,
   parentTooltip,
   scheduleStatus,
   selectedScheduleStatus,
   isUpdatePeriodRequired,
+  setIsChanged,
+  setScheduleData,
   handlePeriodUpdateRequired,
   handlePeriodUpdateEmail,
+  handleSchedulePeriodStatusChange,
 }) => {
   const [tableData, setTableData] = useState<MthTableRowItem<ScheduleData>[]>([])
   const [periodNotification, setPeriodNotification] = useState<string | undefined>()
@@ -589,14 +590,21 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
       schedule.FirstSemesterSchedule?.Period?.semester !== SEMESTER_TYPE.NONE &&
       (!scheduleStatus ||
         scheduleStatus === ScheduleStatus.DRAFT ||
-        (isAdmin && (scheduleStatus == ScheduleStatus.SUBMITTED || scheduleStatus == ScheduleStatus.RESUBMITTED)))
+        scheduleStatus === ScheduleStatus.UPDATES_REQUIRED ||
+        (isAdmin && (scheduleStatus === ScheduleStatus.SUBMITTED || scheduleStatus === ScheduleStatus.RESUBMITTED)))
     ) {
-      schedule.editable = true
+      if (schedule.schedulePeriodStatus === SchedulePeriodStatus.NO_UPDATES) {
+        schedule.editable = false
+        schedule.showButtonName = SchedulePeriodStatus.MAKE_UPDATES
+      } else {
+        schedule.editable = true
+        schedule.showButtonName = SchedulePeriodStatus.NO_UPDATES
+      }
     }
 
     if (
       !isSecondSemester &&
-      schedule.periodStatus === SchedulePeriodStatus.UPDATE_REQUIRED &&
+      schedule.schedulePeriodStatus === SchedulePeriodStatus.UPDATE_REQUIRED &&
       scheduleStatus === ScheduleStatus.UPDATES_REQUIRED
     ) {
       schedule.editable = true
@@ -612,7 +620,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
       rawData: schedule,
       sx: isAdmin
         ? !isSecondSemester
-          ? schedule?.periodStatus === SchedulePeriodStatus.UPDATE_REQUIRED
+          ? schedule?.schedulePeriodStatus === SchedulePeriodStatus.UPDATE_REQUIRED
             ? (scheduleStatus === ScheduleStatus.ACCEPTED ||
                 selectedScheduleStatus === ScheduleStatus.UPDATES_REQUIRED) &&
               isUpdatePeriodRequired
@@ -632,14 +640,24 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
               scheduleStatus === ScheduleStatus.ACCEPTED
             ? { '& .MuiTableCell-root': { background: '#F2F2F2 !important' } }
             : {}
-          : (scheduleStatus === ScheduleStatus.SUBMITTED || scheduleStatus === ScheduleStatus.RESUBMITTED) &&
+          : (scheduleStatus === ScheduleStatus.ACCEPTED ||
+              scheduleStatus === ScheduleStatus.SUBMITTED ||
+              scheduleStatus === ScheduleStatus.RESUBMITTED ||
+              scheduleStatus === ScheduleStatus.UPDATES_REQUESTED) &&
             !schedule.editable
-          ? { '& .MuiTableCell-root': { background: '#F2F2F2 !important' } }
+          ? scheduleStatus === ScheduleStatus.UPDATES_REQUESTED &&
+            schedule.schedulePeriodStatus === SchedulePeriodStatus.UPDATE_REQUESTED
+            ? {
+                '& .MuiTableCell-root': { background: 'rgba(65, 69, 255, 0.2) !important' },
+              }
+            : { '& .MuiTableCell-root': { background: '#F2F2F2 !important' } }
+          : schedule.editable
+          ? { '& .MuiTableCell-root': { background: 'rgba(236, 89, 37, 0.1) !important' } }
           : {}
         : isEditMode && schedule.editable
         ? { position: 'relative', '& .MuiTableCell-root': { background: 'rgba(236, 89, 37, 0.1) !important' } }
         : scheduleStatus === ScheduleStatus.UPDATES_REQUIRED &&
-          schedule.periodStatus === SchedulePeriodStatus.UPDATE_REQUIRED
+          schedule.schedulePeriodStatus === SchedulePeriodStatus.UPDATE_REQUIRED
         ? { '& .MuiTableCell-root': { background: 'rgba(236, 89, 37, 0.1) !important' } }
         : {},
     }
@@ -792,7 +810,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
         width: '40%',
         formatter: (item: MthTableRowItem<ScheduleData>) => {
           return (
-            <Box>
+            <Box sx={{ position: 'relative' }}>
               {item.rawData.CourseType === CourseType.MTH_DIRECT && !item.rawData.OnSiteSplitEnrollment && (
                 <>
                   {!!item.rawData.Title && (
@@ -965,22 +983,24 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
                   )}
                 </Box>
               )}
-              {isSecondSemester && editable(item.rawData) && (
+              {isSecondSemester && item.rawData.showButtonName && (
                 <Typography
                   sx={{
                     ...scheduleBuilderClasses.tableContent,
                     position: 'absolute',
                     right: '12px',
-                    bottom: '4px',
+                    bottom: '1px',
                     fontWeight: 700,
                     color: MthColor.MTHBLUE,
                     cursor: 'pointer',
                   }}
                   onClick={() => {
                     //  TODO
+                    if (handleSchedulePeriodStatusChange)
+                      handleSchedulePeriodStatusChange(item.rawData, item.rawData.showButtonName)
                   }}
                 >
-                  No Changes
+                  {item.rawData.showButtonName === SchedulePeriodStatus.NO_UPDATES ? 'No Updates' : 'Make Updates'}
                 </Typography>
               )}
             </Box>
@@ -1000,7 +1020,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
             <Box sx={{ display: 'flex' }}>
               {((!isSecondSemester &&
                 (((scheduleStatus === ScheduleStatus.ACCEPTED || scheduleStatus === ScheduleStatus.RESUBMITTED) &&
-                  item?.rawData?.periodStatus != SchedulePeriodStatus.UPDATE_REQUIRED) ||
+                  item?.rawData?.schedulePeriodStatus != SchedulePeriodStatus.UPDATE_REQUIRED) ||
                   scheduleStatus === ScheduleStatus.UPDATES_REQUESTED)) ||
                 (isSecondSemester && !item.rawData.editable)) && (
                 <IconButton
@@ -1014,7 +1034,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
               )}
               {((!isSecondSemester &&
                 (scheduleStatus == ScheduleStatus.SUBMITTED ||
-                  (item?.rawData?.periodStatus === SchedulePeriodStatus.UPDATE_REQUIRED &&
+                  (item?.rawData?.schedulePeriodStatus === SchedulePeriodStatus.UPDATE_REQUIRED &&
                     (scheduleStatus == ScheduleStatus.ACCEPTED || scheduleStatus == ScheduleStatus.RESUBMITTED)))) ||
                 (isSecondSemester && item.rawData.editable)) && (
                 <IconButton

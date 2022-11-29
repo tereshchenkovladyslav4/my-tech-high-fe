@@ -1,4 +1,4 @@
-import { FunctionComponent, ReactElement } from 'react'
+import { ReactElement } from 'react'
 import { SchoolYearType } from '@mth/models'
 import { ToDoItem } from '@mth/screens/Dashboard/ToDoList/components/ToDoListItem/types'
 import { StudentType } from '@mth/screens/HomeroomStudentProfile/Student/types'
@@ -8,8 +8,6 @@ export type StudentGradeProps = {
   schoolYears: SchoolYearType[]
   notification: ToDoItem
 }
-
-export type StudentGradeTemplateType = FunctionComponent<StudentGradeProps>
 
 export type CircleData = {
   color?: string

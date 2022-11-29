@@ -5,7 +5,7 @@ import { MthTable } from '@mth/components/MthTable'
 import { MthTableField, MthTableRowItem } from '@mth/components/MthTable/types'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
-import { MthColor, MthRoute } from '@mth/enums'
+import { MthColor, MthRoute, MthTitle } from '@mth/enums'
 import { useActiveScheduleSchoolYears, useStudentSchedulePeriods } from '@mth/hooks'
 import { ScheduleData } from '@mth/screens/Homeroom/Schedule/types'
 import { studentScheduleClasses } from '@mth/screens/HomeroomStudentProfile/Student/StudentSchedule/styles'
@@ -46,9 +46,13 @@ export const StudentSchedule: React.FC = () => {
   ]
 
   const [tableData, setTableData] = useState<MthTableRowItem<ScheduleData>[]>([])
+  const [secondSemesterTableData, setSecondSemesterTableData] = useState<MthTableRowItem<ScheduleData>[]>([])
 
   const { activeScheduleYearId } = useActiveScheduleSchoolYears(currentStudentId)
-  const { scheduleData } = useStudentSchedulePeriods(currentStudentId, activeScheduleYearId)
+  const { scheduleData, secondScheduleData, hasSecondSemester } = useStudentSchedulePeriods(
+    currentStudentId,
+    activeScheduleYearId,
+  )
 
   const createData = (schedule: ScheduleData): MthTableRowItem<ScheduleData> => {
     return {
@@ -66,7 +70,14 @@ export const StudentSchedule: React.FC = () => {
         }),
       )
     }
-  }, [scheduleData])
+    if (secondScheduleData?.length) {
+      setSecondSemesterTableData(
+        secondScheduleData.map((item) => {
+          return createData(item)
+        }),
+      )
+    }
+  }, [scheduleData, secondScheduleData])
 
   return (
     <>
@@ -103,7 +114,21 @@ export const StudentSchedule: React.FC = () => {
               Edit/View All
             </Paragraph>
           </Box>
+          {hasSecondSemester && (
+            <Typography sx={studentScheduleClasses.semesterTitle}>{MthTitle.FIRST_SEMESTER}</Typography>
+          )}
           <MthTable items={tableData} fields={fields} oddBg={false} sx={studentScheduleClasses.customTable} />
+          {hasSecondSemester && (
+            <Typography sx={studentScheduleClasses.semesterTitle}>{MthTitle.SECOND_SEMESTER}</Typography>
+          )}
+          {hasSecondSemester && (
+            <MthTable
+              items={secondSemesterTableData}
+              fields={fields}
+              oddBg={false}
+              sx={studentScheduleClasses.customTable}
+            />
+          )}
         </Card>
       )}
     </>

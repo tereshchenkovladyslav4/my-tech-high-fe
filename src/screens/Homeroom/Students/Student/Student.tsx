@@ -10,18 +10,24 @@ import { Metadata } from '@mth/components/Metadata/Metadata'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { Title } from '@mth/components/Typography/Title/Title'
-
-import { ApplicantStatus, MthColor, MthRoute, PacketStatus, StudentStatus, RelationStatus } from '@mth/enums'
+import { WarningModal } from '@mth/components/WarningModal/Warning'
+import {
+  ApplicantStatus,
+  MthColor,
+  MthRoute,
+  PacketStatus,
+  StudentStatus,
+  RelationStatus,
+  StudentNotification,
+} from '@mth/enums'
 import { SchoolYearType } from '@mth/models'
 import { UserContext, UserInfo } from '@mth/providers/UserContext/UserProvider'
 import { CircleData } from '@mth/screens/Dashboard/HomeroomGrade/components/StudentGrade/types'
-import { Person } from '@mth/screens/HomeroomStudentProfile/Student/types'
+import { Person, StudentProps } from '@mth/screens/HomeroomStudentProfile/Student/types'
 import { checkEnrollPacketStatus, toOrdinalSuffix } from '@mth/utils'
-import { WarningModal } from '../../../../components/WarningModal/Warning'
 import { updateApplicationMutation, UpdateStudentMutation } from './service'
-import { StudentTemplateType } from './type'
 
-export const Student: StudentTemplateType = ({
+export const Student: React.FC<StudentProps> = ({
   student,
   schoolYears,
   showNotification,
@@ -156,7 +162,7 @@ export const Student: StudentTemplateType = ({
         type: 'Waiting for Schedule Builder to Open',
         icon: <ScheduleIcon sx={{ color: MthColor.MTHGREEN, marginTop: 2, cursor: 'pointer' }} />,
       })
-    } else if (studentSchoolYear.schedule && showNotification?.phrase === 'Submit Schedule') {
+    } else if (studentSchoolYear.schedule && showNotification?.phrase === StudentNotification.SUBMIT_SCHEDULE) {
       setLink(scheduleBuilderLink)
       setCircleData({
         mobileColor: MthColor.MTHORANGE,

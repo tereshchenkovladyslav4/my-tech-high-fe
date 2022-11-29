@@ -242,7 +242,11 @@ export const Personal: PersonalTemplateType = ({ id, questions }) => {
   }
 
   return (
-    <form onSubmit={(e) => (!disabled ? formik.handleSubmit(e) : nextTab(e))}>
+    <form
+      onSubmit={(e) =>
+        formik.errors['student'] ? e.preventDefault() : !disabled ? formik.handleSubmit(e) : nextTab(e)
+      }
+    >
       <Grid container rowSpacing={2} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
         {questions?.groups?.map((item, index) => (
           <GroupItem key={index} group={item} formik={formik} />

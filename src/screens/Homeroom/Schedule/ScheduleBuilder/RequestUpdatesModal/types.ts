@@ -7,10 +7,12 @@ export type PeriodSelect = {
 
 export type RequestUpdatesModalProps = {
   scheduleData: ScheduleData[]
+  isSecondSemester?: boolean
   onSave: (value: number[]) => void
   setShowEditModal: (value: boolean) => void
 }
 
 export type RequestUpdatesFormProps = {
   periodsItems: CheckBoxListVM[]
+  isSecondSemester?: boolean
 }

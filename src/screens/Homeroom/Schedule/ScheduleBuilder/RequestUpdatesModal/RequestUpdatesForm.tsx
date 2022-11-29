@@ -9,14 +9,14 @@ import {
   RequestUpdatesFormProps,
 } from '@mth/screens/Homeroom/Schedule/ScheduleBuilder/RequestUpdatesModal/types'
 
-const RequestUpdatesForm: React.FC<RequestUpdatesFormProps> = ({ periodsItems }) => {
+const RequestUpdatesForm: React.FC<RequestUpdatesFormProps> = ({ periodsItems, isSecondSemester }) => {
   const { errors, setFieldValue, touched, values } = useFormikContext<PeriodSelect>()
 
   return (
     <Box sx={{ width: '100%', textAlign: 'left' }}>
       <Box>
         <Typography sx={{ fontSize: '20px', fontWeight: '700', lineHeight: '22px', mb: 2 }}>
-          Please select the Periods you would like to update:
+          {`Please select the ${isSecondSemester ? '2nd Semester Periods' : 'Periods'} you would like to update:`}
         </Typography>
         <MthCheckboxList
           checkboxLists={periodsItems}

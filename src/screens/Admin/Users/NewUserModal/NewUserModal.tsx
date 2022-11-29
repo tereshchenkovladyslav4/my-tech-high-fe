@@ -1,5 +1,5 @@
 import React, { Fragment, useCallback, useContext, useEffect, useState } from 'react'
-import { useMutation, useQuery } from '@apollo/client'
+import { useLazyQuery, useMutation, useQuery } from '@apollo/client'
 import CloseIcon from '@mui/icons-material/Close'
 import {
   Button,
@@ -18,8 +18,10 @@ import { DropDown } from '@mth/components/DropDown/DropDown'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { WarningModal } from '@mth/components/WarningModal/Warning'
 import { RECEIVE_EMAIL_GIVING_LINK_TO_CREATE_PASSWORD } from '@mth/constants'
+import { MthColor } from '@mth/enums'
 import { createUserMutation } from '@mth/graphql/mutation/user'
 import { getAllAccess } from '@mth/graphql/queries/access'
+import { checkEmailQuery } from '@mth/graphql/queries/email-template'
 import { getAllRegion } from '@mth/graphql/queries/region'
 import { getAllRoles } from '@mth/graphql/queries/role'
 import { getUsersByRegions, getParentDetailByEmail } from '@mth/graphql/queries/user'
@@ -68,6 +70,8 @@ export const NewUserModal: NewModalTemplateType = ({ handleModem, visible }) => 
   const [rolesOption, setRolesOption] = useState([])
   const [regionOption, setRegionOption] = useState<CheckBoxTemplate[]>([])
   const [accessOption, setAccessOption] = useState<CheckBoxTemplate[]>([])
+
+  const [showEmailError, setShowEmailError] = useState<boolean>(false)
 
   const { loading: load1, data: data1 } = useQuery(getAllRegion)
   const { loading: load2, data: data2 } = useQuery(getAllRoles)
@@ -288,7 +292,14 @@ export const NewUserModal: NewModalTemplateType = ({ handleModem, visible }) => 
   }
 
   const handleSubmit = () => {
-    if (!firstName) {
+    if (showEmailError) {
+      setApolloError({
+        title: 'This email is already being used.',
+        severity: 'Warning',
+        flag: true,
+      })
+      return
+    } else if (!firstName) {
       setApolloError({
         title: 'First name is required',
         severity: 'Warning',
@@ -658,6 +669,20 @@ export const NewUserModal: NewModalTemplateType = ({ handleModem, visible }) => 
     return form
   }
 
+  const [checkEmail, { loading: emailLoading, data: emailData }] = useLazyQuery(checkEmailQuery, {
+    fetchPolicy: 'network-only',
+  })
+
+  useEffect(() => {
+    if (!emailLoading && emailData !== undefined) {
+      if (emailData.emailTaken === true) {
+        setShowEmailError(true)
+      } else {
+        setShowEmailError(false)
+      }
+    }
+  }, [emailLoading, emailData])
+
   return (
     <Modal
       open={visible}
@@ -715,7 +740,20 @@ export const NewUserModal: NewModalTemplateType = ({ handleModem, visible }) => 
               fullWidth
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              onKeyUp={() => {
+                // TODO fix validation here
+                checkEmail({
+                  variables: {
+                    email: email,
+                  },
+                })
+              }}
             />
+            {showEmailError && (
+              <Subtitle size='medium' color={MthColor.RED}>
+                This email is already being used.
+              </Subtitle>
+            )}
           </Grid>
           <Grid item xs={12}>
             <Subtitle fontWeight='700' size='large'>

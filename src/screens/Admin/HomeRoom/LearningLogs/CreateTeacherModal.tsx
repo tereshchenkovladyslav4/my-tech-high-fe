@@ -23,18 +23,25 @@ import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { BUTTON_LINEAR_GRADIENT } from '../../../../utils/constants'
 import { searchTeacher } from '../services'
 import { useStyles } from '../styles'
-import { Master, Teacher } from './types'
+import { Classes, Master, Teacher } from './types'
 
 type CreateTeacherModalProps = {
   master: Master
   handleClose?: () => void
-  handleCreateSubmit?: (className: string, primary: string | undefined, addTeachers: Teacher[]) => void
+  handleCreateSubmit?: (
+    classId: number | undefined,
+    className: string,
+    primary: string | undefined,
+    addTeachers: Teacher[],
+  ) => void
+  selectedClasses: Classes | null | undefined
 }
 
 export const CreateTeacherModal: FunctionComponent<CreateTeacherModalProps> = ({
   master,
   handleCreateSubmit,
   handleClose,
+  selectedClasses,
 }) => {
   const classes = useStyles
 
@@ -42,7 +49,7 @@ export const CreateTeacherModal: FunctionComponent<CreateTeacherModalProps> = ({
 
   const [primarySearchListView, setPrimarySearchListView] = useState(false)
 
-  const [teacherList, setTeacherList] = useState([])
+  const [teacherList, setTeacherList] = useState<Teacher[]>([])
 
   const [primarySearchField, setPrimarySearchField] = useState<string>('')
   const [primarySearchList, setPrimarySearchList] = useState([])
@@ -52,6 +59,16 @@ export const CreateTeacherModal: FunctionComponent<CreateTeacherModalProps> = ({
   const [additionalTeachers, setAdditionalTeachers] = useState<Teacher[]>([])
 
   const [checkedTeachers, setCheckedTeachers] = useState<Teacher[]>([])
+
+  useEffect(() => {
+    if (selectedClasses) {
+      setPrimaryTeacher(teacherList.find((item: Teacher) => item.user_id === selectedClasses?.primaryTeacher?.user_id))
+      const addTeachers = JSON.parse(selectedClasses?.addition_id)
+      if (addTeachers.length > 0) {
+        setCheckedTeachers(addTeachers)
+      }
+    }
+  }, [selectedClasses, teacherList])
 
   const handleAdditionalTeacher = (isChecked: boolean, teacher: Teacher) => {
     if (isChecked) {
@@ -142,16 +159,22 @@ export const CreateTeacherModal: FunctionComponent<CreateTeacherModalProps> = ({
         >
           <Formik
             initialValues={{
-              class_name: '',
+              class_name: selectedClasses?.class_name ? selectedClasses.class_name : '',
             }}
+            enableReinitialize={true}
             validationSchema={Yup.object({
               class_name: Yup.string().required('Required'),
             })}
             onSubmit={async (values) => {
-              await handleCreateSubmit(values.class_name, primaryTeacher?.user_id, checkedTeachers)
+              await handleCreateSubmit(
+                selectedClasses?.class_id,
+                values.class_name,
+                primaryTeacher?.user_id,
+                checkedTeachers,
+              )
             }}
           >
-            {({ setFieldValue }) => {
+            {({ setFieldValue, values }) => {
               return (
                 <Form>
                   <Box sx={{ ...classes.content, display: 'flex', alignItems: 'center', px: 5 }}>
@@ -180,6 +203,7 @@ export const CreateTeacherModal: FunctionComponent<CreateTeacherModalProps> = ({
                               }}
                               className='MthFormField'
                               error={meta.touched && !!meta.error}
+                              value={values['class_name']}
                             />
                             <Subtitle sx={classes.formError}>{meta.touched && meta.error}</Subtitle>
                           </Box>

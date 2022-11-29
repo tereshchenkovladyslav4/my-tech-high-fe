@@ -10,6 +10,7 @@ import { ThirdPartyProvider } from './ScheduleBuilder/ThirdPartyProviderEdit/typ
 export type HeaderComponentProps = {
   title: string
   scheduleStatus?: ScheduleStatus
+  isUpdatePeriodRequested?: boolean
   handleBack: () => void
 }
 
@@ -65,7 +66,9 @@ export type ScheduleBuilderProps = {
   showUnsavedModal: boolean
   splitEnrollment: boolean
   diplomaSeekingPath: DiplomaSeekingPath
+  isUpdatePeriodRequested: boolean
   setScheduleStatus: (value: ScheduleStatus) => void
+  setIsUpdatePeriodRequested: (value: boolean) => void
   isChanged?: boolean
   setIsChanged: (value: boolean) => void
   onWithoutSaved: (isYes: boolean) => void
@@ -158,7 +161,7 @@ export type ScheduleData = {
 
   // Selected values
   schedulePeriodId?: number
-  schedulePeriodStatus?: SchedulePeriodStatus
+  schedulePeriodStatus?: SchedulePeriodStatus | null
   Period?: Period
   Subject?: Subject
   Title?: Title
@@ -169,7 +172,6 @@ export type ScheduleData = {
   OnSiteSplitEnrollment?: OnSiteSplitEnrollment
   CustomBuiltDescription?: string
   IsChangedCustomBuiltDescription?: boolean
-  periodStatus?: SchedulePeriodStatus | null
   standardResponseOptions?: string
 
   // Special fields
@@ -177,6 +179,7 @@ export type ScheduleData = {
 
   // Temp fields
   editable?: boolean
+  showButtonName?: SchedulePeriodStatus
 
   // TODO Should remove below fields
   Type?: string

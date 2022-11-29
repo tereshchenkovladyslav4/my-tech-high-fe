@@ -79,6 +79,7 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
   const [diplomaSeekingPathStatus, setDiplomaSeekingPathStatus] = useState<DiplomaSeekingPath>(DiplomaSeekingPath.BOTH)
   const [isChanged, setIsChanged] = useState<boolean>(false)
   const [showUnsavedModal, setShowUnsavedModal] = useState<boolean>(false)
+  const [isUpdatePeriodRequested, setIsUpdatePeriodRequested] = useState<boolean>(false)
 
   const {
     selectedYearId,
@@ -447,7 +448,12 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
         }}
       >
         <Box display='flex' flexDirection='row' justifyContent='space-between' alignItems='center'>
-          <HeaderComponent scheduleStatus={scheduleStatus} title={MthTitle.SCHEDULE} handleBack={handleBack} />
+          <HeaderComponent
+            scheduleStatus={scheduleStatus}
+            isUpdatePeriodRequested={isUpdatePeriodRequested}
+            title={MthTitle.SCHEDULE}
+            handleBack={handleBack}
+          />
           {step === MthTitle.STEP_SCHEDULE_BUILDER && (
             <DropDown
               dropDownItems={schoolYearItems}
@@ -505,10 +511,12 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
             showSecondSemester={
               selectedYear?.ScheduleStatus === ScheduleStatus.ACCEPTED && !!selectedYear?.IsSecondSemesterOpen
             }
+            isUpdatePeriodRequested={isUpdatePeriodRequested}
             splitEnrollment={!!selectedYear?.ScheduleBuilder?.split_enrollment}
             showUnsavedModal={showUnsavedModal}
             diplomaSeekingPath={diplomaSeekingPathStatus}
             setScheduleStatus={setScheduleStatus}
+            setIsUpdatePeriodRequested={setIsUpdatePeriodRequested}
             isChanged={isChanged}
             setIsChanged={setIsChanged}
             onWithoutSaved={handleWithoutSaved}

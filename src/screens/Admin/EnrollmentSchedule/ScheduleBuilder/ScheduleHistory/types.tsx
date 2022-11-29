@@ -4,6 +4,7 @@ import { ScheduleData } from '@mth/screens/Homeroom/Schedule/types'
 export type ScheduleHistoryProps = {
   studentId: number
   schoolYearId: number
+  isSecondSemester: boolean
   refetchSchedule: () => void
 }
 

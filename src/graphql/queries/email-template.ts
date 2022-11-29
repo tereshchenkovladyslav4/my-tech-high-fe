@@ -101,3 +101,9 @@ export const updateEmailTemplateMutation = gql`
     }
   }
 `
+
+export const checkEmailQuery = gql`
+  query CheckEmail($email: String!) {
+    emailTaken(email: $email)
+  }
+`

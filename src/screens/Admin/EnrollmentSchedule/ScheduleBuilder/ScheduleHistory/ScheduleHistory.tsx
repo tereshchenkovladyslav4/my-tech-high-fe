@@ -13,8 +13,17 @@ import { useStudentSchedulePeriodHistories } from '@mth/hooks'
 import { ScheduleEditor } from '@mth/screens/Homeroom/Schedule/ScheduleBuilder/ScheduleEditor'
 import { ScheduleHistoryData, ScheduleHistoryProps } from './types'
 
-const ScheduleHistory: React.FC<ScheduleHistoryProps> = ({ studentId, schoolYearId, refetchSchedule }) => {
-  const { scheduleDataHistory, setScheduleDataHistory } = useStudentSchedulePeriodHistories(studentId, schoolYearId)
+const ScheduleHistory: React.FC<ScheduleHistoryProps> = ({
+  studentId,
+  schoolYearId,
+  isSecondSemester,
+  refetchSchedule,
+}) => {
+  const { scheduleDataHistory, setScheduleDataHistory } = useStudentSchedulePeriodHistories(
+    studentId,
+    schoolYearId,
+    isSecondSemester,
+  )
   const [showMore, setShowMore] = useState<boolean>(false)
   const [showWarningModal, setShowWarningModal] = useState<boolean>(false)
   const [selectedScheduleHistoryId, setSelectedScheduleHistoryId] = useState<number>()
