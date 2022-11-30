@@ -244,7 +244,7 @@ export const ApplicationTable: FunctionComponent<ApplicationTableProps> = ({ fil
                 value: `${item.school_year_id}-mid`,
               })
             }
-            if (item.special_ed_options != '' && item.special_ed_options != null)
+            if (item.special_ed_options != '' && item.special_ed_options != null && special_ed_options == '')
               special_ed_options = item.special_ed_options
           },
         )

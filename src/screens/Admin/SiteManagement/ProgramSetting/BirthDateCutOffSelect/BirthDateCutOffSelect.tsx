@@ -12,6 +12,7 @@ type BirthDateCutOffSelectProps = {
 
 export const BirthDateCutOffSelect: React.FC<BirthDateCutOffSelectProps> = ({ birthDate, setBirthDate }) => {
   const handleChange = (value: Date | null) => {
+    value?.setHours(3)
     setBirthDate(moment(value).format(MYSQL_DATE_FORMAT))
   }
   return (

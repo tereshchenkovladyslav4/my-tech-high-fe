@@ -337,8 +337,13 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
     let special_ed_options = ''
     shoolYears
       .filter((item) => moment(item.date_begin).format('YYYY') >= moment().format('YYYY'))
-      .map((item: { special_ed_options: string }): void => {
-        if (item.special_ed_options != '' && item.special_ed_options != null)
+      .map((item: { special_ed_options: string; special_ed: boolean }): void => {
+        if (
+          item.special_ed == true &&
+          item.special_ed_options != '' &&
+          item.special_ed_options != null &&
+          special_ed_options == ''
+        )
           special_ed_options = item.special_ed_options
       })
     if (special_ed_options == '') setSpecialEdOptions([])

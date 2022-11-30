@@ -63,7 +63,7 @@ export const ERROR_RED = '#BD0043'
 export const MTHBLUE = '#4145FF'
 export const MTHPURPLE = '#3E2783'
 export const MTHORANGE = '#EC5925'
-export const MTHGREEN = '#2B9EB7'
+export const MTHGREEN = '#16870f'
 
 export const SYSTEM_01 = '#0E0E0E'
 export const SYSTEM_02 = '#313131'

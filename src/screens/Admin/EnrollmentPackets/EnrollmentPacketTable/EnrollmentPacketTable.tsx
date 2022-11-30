@@ -15,7 +15,7 @@ import { PacketStatus } from '@mth/enums'
 import { getEmailTemplateQuery } from '@mth/graphql/queries/email-template'
 import { ProfileContext } from '@mth/providers/ProfileProvider/ProfileContext'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
-import { GREEN_GRADIENT, RED_GRADIENT } from '../../../../utils/constants'
+import { GREEN_GRADIENT, RED_GRADIENT, MTHGREEN, MTHBLUE } from '../../../../utils/constants'
 import { ENROLLMENT_PACKET_HEADCELLS } from '../../../../utils/PageHeadCellsConstant'
 import { toOrdinalSuffix } from '../../../../utils/stringHelpers'
 import { Packet } from '../../../HomeroomStudentProfile/Student/types'
@@ -102,7 +102,12 @@ export const EnrollmentPacketTable: React.FC = () => {
             : `${toOrdinalSuffix(Number(packet.student.grade_levels[grade_value].grade_level))} Grade`
           : ' ',
       parent: `${packet?.student?.parent?.person?.last_name}, ${packet?.student?.parent?.person?.first_name}`,
-      studentStatus: packet.student?.reenrolled > 0 ? 'Update' : 'New',
+      studentStatus:
+        packet.student?.reenrolled > 0 ? (
+          <Box sx={{ color: MTHBLUE }}>Update</Box>
+        ) : (
+          <Box sx={{ color: MTHGREEN }}>New</Box>
+        ),
       emailed:
         packet.packet_emails.length > 0 ? (
           <Box sx={{ cursor: 'pointer', width: '70px' }} onClick={() => handleOpenEmailHistory(packet)}>
