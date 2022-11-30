@@ -42,12 +42,12 @@ const CheckList: React.FC = () => {
   const [selectedYear, setSelectedYear] = useState<number>(0)
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [checkListItems, setCheckListItems] = useState<DropDownItem[]>([])
-  const [selectedCheckListItem, setSelectedCheckListItem] = useState<string | number | boolean>('subject_checklist')
+  const [selectedCheckListItem, setSelectedCheckListItem] = useState<string | number>('subject_checklist')
   const [tableData, setTableData] = useState<MthTableRowItem<CheckListType>[]>([])
   const [fileModalOpen, setFileModalOpen] = useState<boolean>(false)
   const [searchField, setSearchField] = useState<string>('')
   const [totalChecklist, setTotalChecklist] = useState<number>()
-  const [filters, setFilters] = useState<ChecklistFilterVM>({ status: 'Subject Checklist' })
+  const [filters, setFilters] = useState<ChecklistFilterVM>({ status: 'Independent Checklist' })
   const [editModal, setEditModal] = useState(false)
   const [selectedChecklist, setSelectedChecklist] = useState<MthTableRowItem<CheckListType>>()
   const { me } = useContext(UserContext)
@@ -321,7 +321,7 @@ const CheckList: React.FC = () => {
     }
   }
 
-  const handleChangeChecklist = (value: string | number | boolean) => {
+  const handleChangeChecklist = (value: string | number) => {
     setSelectedCheckListItem(value)
     const theFilterStatus = value === 'independent_checklist' ? 'Independent Checklist' : 'Subject Checklist'
     setFilters({ ...filters, status: theFilterStatus as string })
@@ -331,7 +331,7 @@ const CheckList: React.FC = () => {
     <Box sx={commonClasses.mainLayout}>
       <Card sx={{ ...commonClasses.mainBlock, ...commonClasses.fitScreen }}>
         <HomeRoomHeader
-          title='CheckList'
+          title='Checklist'
           selectedYear={selectedYear}
           setSelectedYear={(value) => {
             setSelectedYear(value)

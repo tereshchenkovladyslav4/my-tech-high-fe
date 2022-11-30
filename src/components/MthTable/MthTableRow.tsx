@@ -60,6 +60,7 @@ const MthTableRow = <T extends unknown>({
   size,
   checkBoxColor,
   handleToggleCheck,
+  isTableCellBorder = true,
 }: MthTableRowProps<T>): React.ReactElement => {
   const [isExpanded, setIsExpanded] = useState<boolean>(false)
   const history = useHistory()
@@ -114,12 +115,18 @@ const MthTableRow = <T extends unknown>({
               key={indexCol}
               width={convertWidth(field.width || 0, tableWidth)}
               sx={{
-                color: getColor(field.key, item.columns[field.key])?.toString(),
+                color: getColor(field.key, item.columns[field.key] as string)?.toString(),
                 cursor: field.key === 'status' ? 'pointer' : 'auto',
               }}
-              onClick={() => handleCellClick(field.key, item.columns.studentId)}
+              onClick={() => handleCellClick(field.key, item.columns.studentId as number)}
             >
-              <div className={indexCol > 0 && indexCol + 1 !== fields.length ? 'border-l cell-item' : 'cell-item'}>
+              <div
+                className={
+                  indexCol > 0 && indexCol + 1 !== fields.length && isTableCellBorder
+                    ? 'border-l cell-item'
+                    : 'cell-item'
+                }
+              >
                 {field.formatter ? field.formatter(item, provided?.dragHandleProps) : item.columns[field.key]}
               </div>
             </TableCell>

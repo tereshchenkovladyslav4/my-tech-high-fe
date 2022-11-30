@@ -14,7 +14,7 @@ module.exports = {
   },
   packageOptions: {
     /* ... */
-    namedExports: ['draft-js', 'react-draft-wysiwyg'],
+    namedExports: ['draft-js', 'react-draft-wysiwyg', '@unleash/proxy-client-react', 'unleash-proxy-client'],
   },
   devOptions: {
     /* ... */

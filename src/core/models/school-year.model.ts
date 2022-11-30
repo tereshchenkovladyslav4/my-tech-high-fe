@@ -34,4 +34,24 @@ export type SchoolYear = {
   reimbursements: ReduceFunds
   require_software: boolean
   direct_orders: ReduceFunds
+  direct_order_open: string
+  direct_order_close: string
+  reimbursement_open: string
+  reimbursement_close: string
+  custom_built_open: string
+  custom_built_close: string
+  require_software_open: string
+  require_software_close: string
+  third_party_open: string
+  third_party_close: string
+  mid_direct_order_open: string
+  mid_direct_order_close: string
+  mid_reimbursement_open: string
+  mid_reimbursement_close: string
+  mid_custom_built_open: string
+  mid_custom_built_close: string
+  mid_require_software_open: string
+  mid_require_software_close: string
+  mid_third_party_open: string
+  mid_third_party_close: string
 }

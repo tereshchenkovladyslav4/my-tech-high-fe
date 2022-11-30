@@ -44,6 +44,7 @@ export type MthTableProps<T> = {
   onSelectionChange?: (arrangedItems: MthTableRowItem<T>[], isAll: boolean) => void
   onSortChange?: (property: string, order: string) => void
   sx?: SxProps<Theme>
+  isTableCellBorder?: boolean
 }
 
 export type MthTableRowProps<T> = {
@@ -56,4 +57,5 @@ export type MthTableRowProps<T> = {
   size?: 'medium' | 'small'
   checkBoxColor?: 'primary' | 'secondary'
   handleToggleCheck: (item: MthTableRowItem<T>) => void
+  isTableCellBorder?: boolean
 }

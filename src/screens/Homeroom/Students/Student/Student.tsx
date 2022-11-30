@@ -60,9 +60,7 @@ export const Student: React.FC<StudentProps> = ({
 
     const enrollmentLink = `${MthRoute.HOMEROOM + MthRoute.ENROLLMENT}/${student.student_id}`
     const homeroomLink = `${MthRoute.HOMEROOM}/${student.student_id}`
-    const scheduleBuilderLink = `${MthRoute.HOMEROOM + MthRoute.SUBMIT_SCHEDULE}/${student.student_id}?backTo=${
-      MthRoute.HOMEROOM
-    }/${student.student_id}`
+    const scheduleBuilderLink = `${MthRoute.HOMEROOM + MthRoute.SUBMIT_SCHEDULE}/${student.student_id}`
     const studentSchoolYear = schoolYears
       ?.filter((item) => item.school_year_id == student?.current_school_year_status?.school_year_id)
       .at(-1) as SchoolYearType

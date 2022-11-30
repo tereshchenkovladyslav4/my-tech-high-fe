@@ -51,6 +51,7 @@ const MthTable = <T extends unknown>({
   onSelectionChange,
   onSortChange,
   sx = [],
+  isTableCellBorder,
 }: MthTableProps<T>): React.ReactElement => {
   const [numSelected, setNumSelected] = useState<number>(0)
   const [rowCount, setRowCount] = useState<number>(0)
@@ -203,6 +204,7 @@ const MthTable = <T extends unknown>({
                   size={size}
                   checkBoxColor={checkBoxColor}
                   handleToggleCheck={handleToggleCheck}
+                  isTableCellBorder={isTableCellBorder}
                 />
               ))}
             </TableBody>

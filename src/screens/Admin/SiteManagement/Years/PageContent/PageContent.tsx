@@ -1,12 +1,14 @@
 import React, { useState } from 'react'
-import { CommonSelect } from '@mth/components/CommonSelect'
-import { MthTitle } from '@mth/enums'
-import { CommonSelectType } from '../../types'
+import { Box, Typography } from '@mui/material'
+import { CommonSelectList } from '@mth/components/CommonSelect'
+import { CommonSelectType } from '@mth/components/CommonSelect/types'
+import { MthTitle, ReduceFunds } from '@mth/enums'
 import { MidYearSelect } from '../MidYearSelect'
 import { OpenAndCloseSelect } from '../OpenAndCloseSelect'
 import { PageContentProps } from './PageContentProps'
 
 export const PageContent: React.FC<PageContentProps> = ({
+  schoolYear,
   enableSchedule,
   schoolYearItem,
   setSchoolYearItem,
@@ -22,9 +24,29 @@ export const PageContent: React.FC<PageContentProps> = ({
   setMidYearScheduleItem,
   homeroomResourceItem,
   setHomeroomResourceItem,
+  directOrderItem,
+  setDirectOrderItem,
+  reimbursementItem,
+  setReimbursementItem,
+  customBuiltItem,
+  setCustomBuiltItem,
+  requireSoftwareItem,
+  setRequireSoftwareItem,
+  thirdPartyItem,
+  setThirdPartyItem,
+  midDirectOrderItem,
+  setMidDirectOrderItem,
+  midReimbursementItem,
+  setMidReimbursementItem,
+  midCustomBuiltItem,
+  setMidCustomBuiltItem,
+  midRequireSoftwareItem,
+  setMidRequireSoftwareItem,
+  midThirdPartyItem,
+  setMidThirdPartyItem,
   setIsChanged,
 }) => {
-  const [midYearExpend, setMidYearExpend] = useState<boolean | undefined>(false)
+  const [midYearExpended, setMidYearExpended] = useState<boolean>(true)
   const yearsSettingList: CommonSelectType[] = [
     {
       name: MthTitle.SCHOOL_YEAR,
@@ -34,45 +56,162 @@ export const PageContent: React.FC<PageContentProps> = ({
       name: MthTitle.APPLICATIONS,
       component: <OpenAndCloseSelect item={applicationItem} setItem={setApplicationItem} setIsChanged={setIsChanged} />,
     },
-    {
-      name: MthTitle.MID_YEAR,
-      component: (
-        <MidYearSelect
-          midYearItem={midYearItem}
-          setMidYearItem={setMidYearItem}
-          setMidYearExpend={setMidYearExpend}
-          setIsChanged={setIsChanged}
-        />
-      ),
-    },
   ]
 
-  if (midYearItem?.status) {
-    yearsSettingList.push({
+  const midYearSetting: CommonSelectType = {
+    name: MthTitle.MID_YEAR,
+    component: (
+      <MidYearSelect
+        midYearItem={midYearItem}
+        setMidYearItem={setMidYearItem}
+        midYearExpended={midYearExpended}
+        setMidYearExpended={setMidYearExpended}
+        setIsChanged={setIsChanged}
+      />
+    ),
+    mergedItems: [],
+  }
+  if (midYearExpended && midYearItem?.status) {
+    midYearSetting.mergedItems?.push({
       name: MthTitle.MID_YEAR_APPLICATION,
       component: <OpenAndCloseSelect item={midYearItem} setItem={setMidYearItem} setIsChanged={setIsChanged} />,
     })
     if (enableSchedule)
-      yearsSettingList.push({
+      midYearSetting.mergedItems?.push({
         name: MthTitle.MID_YEAR_SCHEDULES,
         component: (
           <OpenAndCloseSelect item={midYearScheduleItem} setItem={setMidYearScheduleItem} setIsChanged={setIsChanged} />
         ),
       })
+
+    if (
+      schoolYear?.direct_orders === ReduceFunds.SUPPLEMENTAL ||
+      schoolYear?.direct_orders === ReduceFunds.TECHNOLOGY
+    ) {
+      midYearSetting.mergedItems?.push({
+        name: (
+          <Typography component='span' sx={{ fontSize: '16px', fontWeight: '700' }}>
+            {MthTitle.DIRECT_ORDERS}
+          </Typography>
+        ),
+        component: <Box></Box>,
+      })
+      if (schoolYear?.direct_orders === ReduceFunds.SUPPLEMENTAL) {
+        midYearSetting.mergedItems?.push({
+          name: MthTitle.SUPPLEMENTAL_LEARNING_FUNDS,
+          component: (
+            <OpenAndCloseSelect item={midDirectOrderItem} setItem={setMidDirectOrderItem} setIsChanged={setIsChanged} />
+          ),
+        })
+      }
+      if (schoolYear?.direct_orders === ReduceFunds.TECHNOLOGY) {
+        midYearSetting.mergedItems?.push({
+          name: MthTitle.TECHNOLOGY,
+          component: (
+            <OpenAndCloseSelect item={midDirectOrderItem} setItem={setMidDirectOrderItem} setIsChanged={setIsChanged} />
+          ),
+        })
+        if (schoolYear?.ScheduleBuilder?.custom_built) {
+          midYearSetting.mergedItems?.push({
+            name: MthTitle.CUSTOM_BUILT,
+            component: (
+              <OpenAndCloseSelect
+                item={midCustomBuiltItem}
+                setItem={setMidCustomBuiltItem}
+                setIsChanged={setIsChanged}
+              />
+            ),
+          })
+        }
+      }
+    }
+
+    if (
+      schoolYear?.reimbursements === ReduceFunds.SUPPLEMENTAL ||
+      schoolYear?.reimbursements === ReduceFunds.TECHNOLOGY
+    ) {
+      midYearSetting.mergedItems?.push({
+        name: (
+          <Typography component='span' sx={{ fontSize: '16px', fontWeight: '700' }}>
+            {MthTitle.REIMBURSEMENTS}
+          </Typography>
+        ),
+        component: <Box></Box>,
+      })
+      if (schoolYear?.reimbursements === ReduceFunds.SUPPLEMENTAL) {
+        midYearSetting.mergedItems?.push({
+          name: MthTitle.SUPPLEMENTAL_LEARNING_FUNDS,
+          component: (
+            <OpenAndCloseSelect
+              item={midReimbursementItem}
+              setItem={setMidReimbursementItem}
+              setIsChanged={setIsChanged}
+            />
+          ),
+        })
+      }
+      if (schoolYear?.reimbursements === ReduceFunds.TECHNOLOGY) {
+        midYearSetting.mergedItems?.push({
+          name: MthTitle.TECHNOLOGY,
+          component: (
+            <OpenAndCloseSelect
+              item={midReimbursementItem}
+              setItem={setMidReimbursementItem}
+              setIsChanged={setIsChanged}
+            />
+          ),
+        })
+        if (schoolYear?.ScheduleBuilder?.custom_built) {
+          midYearSetting.mergedItems?.push({
+            name: MthTitle.CUSTOM_BUILT,
+            component: (
+              <OpenAndCloseSelect
+                item={midCustomBuiltItem}
+                setItem={setMidCustomBuiltItem}
+                setIsChanged={setIsChanged}
+              />
+            ),
+          })
+        }
+        if (schoolYear?.ScheduleBuilder?.third_party_provider) {
+          midYearSetting.mergedItems?.push({
+            name: '3rd Party Provider',
+            component: (
+              <OpenAndCloseSelect item={midThirdPartyItem} setItem={setMidThirdPartyItem} setIsChanged={setIsChanged} />
+            ),
+          })
+        }
+      }
+      if (schoolYear?.require_software) {
+        midYearSetting.mergedItems?.push({
+          name: 'Required Software',
+          component: (
+            <OpenAndCloseSelect
+              item={midRequireSoftwareItem}
+              setItem={setMidRequireSoftwareItem}
+              setIsChanged={setIsChanged}
+            />
+          ),
+        })
+      }
+    }
   }
+  yearsSettingList.push(midYearSetting)
+
   if (enableSchedule) {
     yearsSettingList.push({
       name: MthTitle.SCHEUDLE_BUILDER,
       component: (
         <OpenAndCloseSelect item={scheduleBuilderItem} setItem={setScheduleBuilderItem} setIsChanged={setIsChanged} />
       ),
-    })
-
-    yearsSettingList.push({
-      name: MthTitle.SECOND_SEMESTER,
-      component: (
-        <OpenAndCloseSelect item={secondSemesterItem} setItem={setSecondSemesterItem} setIsChanged={setIsChanged} />
-      ),
+      mergedItems: [
+        {
+          name: MthTitle.SECOND_SEMESTER,
+          component: (
+            <OpenAndCloseSelect item={secondSemesterItem} setItem={setSecondSemesterItem} setIsChanged={setIsChanged} />
+          ),
+        },
+      ],
     })
   }
 
@@ -83,58 +222,98 @@ export const PageContent: React.FC<PageContentProps> = ({
     ),
   })
 
-  const filteredList = yearsSettingList?.filter(
-    (list) =>
-      !midYearExpend ||
-      (midYearExpend && list.name != MthTitle.MID_YEAR_APPLICATION && list.name != MthTitle.MID_YEAR_SCHEDULES),
-  )
+  if (schoolYear?.direct_orders === ReduceFunds.SUPPLEMENTAL || schoolYear?.direct_orders === ReduceFunds.TECHNOLOGY) {
+    const directOrderSetting: CommonSelectType = {
+      name: (
+        <Typography component='span' sx={{ fontSize: '18px', fontWeight: '700' }}>
+          {MthTitle.DIRECT_ORDERS}
+        </Typography>
+      ),
+      component: <Box sx={{ height: '48px' }}></Box>,
+      mergedItems: [],
+    }
+    if (schoolYear?.direct_orders === ReduceFunds.SUPPLEMENTAL) {
+      directOrderSetting.mergedItems?.push({
+        name: MthTitle.SUPPLEMENTAL_LEARNING_FUNDS,
+        component: (
+          <OpenAndCloseSelect item={directOrderItem} setItem={setDirectOrderItem} setIsChanged={setIsChanged} />
+        ),
+      })
+    }
+    if (schoolYear?.direct_orders === ReduceFunds.TECHNOLOGY) {
+      directOrderSetting.mergedItems?.push({
+        name: MthTitle.TECHNOLOGY,
+        component: (
+          <OpenAndCloseSelect item={directOrderItem} setItem={setDirectOrderItem} setIsChanged={setIsChanged} />
+        ),
+      })
+      if (schoolYear?.ScheduleBuilder?.custom_built) {
+        directOrderSetting.mergedItems?.push({
+          name: MthTitle.CUSTOM_BUILT,
+          component: (
+            <OpenAndCloseSelect item={customBuiltItem} setItem={setCustomBuiltItem} setIsChanged={setIsChanged} />
+          ),
+        })
+      }
+    }
+    yearsSettingList.push(directOrderSetting)
+  }
 
-  return (
-    <>
-      {filteredList.map((yearsSetting, index) => {
-        let dividerStyle = {}
-        switch (yearsSetting.name) {
-          case MthTitle.SCHOOL_YEAR:
-          case MthTitle.APPLICATIONS:
-          case MthTitle.HOMEROOM_RESOURCES:
-            dividerStyle = { height: 'auto' }
-            break
-          case MthTitle.MID_YEAR_APPLICATION:
-            dividerStyle = { top: 0, height: '100%' }
-            break
-          case MthTitle.MID_YEAR:
-            if (midYearExpend) {
-              dividerStyle = { height: 'auto' }
-            } else {
-              dividerStyle = { top: '24px', height: '100%' }
-            }
-            break
-          case MthTitle.SCHEUDLE_BUILDER:
-            dividerStyle = { top: '24px', height: '100%' }
-            break
-          case MthTitle.MID_YEAR_SCHEDULES:
-          case MthTitle.SECOND_SEMESTER:
-            dividerStyle = { bottom: '24px', height: '100%' }
-            break
-        }
+  if (
+    schoolYear?.reimbursements === ReduceFunds.SUPPLEMENTAL ||
+    schoolYear?.reimbursements === ReduceFunds.TECHNOLOGY
+  ) {
+    const reimbursementSetting: CommonSelectType = {
+      name: (
+        <Typography component='span' sx={{ fontSize: '18px', fontWeight: '700' }}>
+          {MthTitle.REIMBURSEMENTS}
+        </Typography>
+      ),
+      component: <Box sx={{ height: '48px' }}></Box>,
+      mergedItems: [],
+    }
+    if (schoolYear?.reimbursements === ReduceFunds.SUPPLEMENTAL) {
+      reimbursementSetting.mergedItems?.push({
+        name: MthTitle.SUPPLEMENTAL_LEARNING_FUNDS,
+        component: (
+          <OpenAndCloseSelect item={reimbursementItem} setItem={setReimbursementItem} setIsChanged={setIsChanged} />
+        ),
+      })
+    }
+    if (schoolYear?.reimbursements === ReduceFunds.TECHNOLOGY) {
+      reimbursementSetting.mergedItems?.push({
+        name: MthTitle.TECHNOLOGY,
+        component: (
+          <OpenAndCloseSelect item={reimbursementItem} setItem={setReimbursementItem} setIsChanged={setIsChanged} />
+        ),
+      })
+      if (schoolYear?.ScheduleBuilder?.custom_built) {
+        reimbursementSetting.mergedItems?.push({
+          name: MthTitle.CUSTOM_BUILT,
+          component: (
+            <OpenAndCloseSelect item={customBuiltItem} setItem={setCustomBuiltItem} setIsChanged={setIsChanged} />
+          ),
+        })
+      }
+      if (schoolYear?.ScheduleBuilder?.third_party_provider) {
+        reimbursementSetting.mergedItems?.push({
+          name: '3rd Party Provider',
+          component: (
+            <OpenAndCloseSelect item={thirdPartyItem} setItem={setThirdPartyItem} setIsChanged={setIsChanged} />
+          ),
+        })
+      }
+    }
+    if (schoolYear?.require_software) {
+      reimbursementSetting.mergedItems?.push({
+        name: 'Required Software',
+        component: (
+          <OpenAndCloseSelect item={requireSoftwareItem} setItem={setRequireSoftwareItem} setIsChanged={setIsChanged} />
+        ),
+      })
+    }
+    yearsSettingList.push(reimbursementSetting)
+  }
 
-        return (
-          <CommonSelect
-            key={index}
-            index={
-              yearsSetting.name == MthTitle.MID_YEAR_APPLICATION || yearsSetting.name == MthTitle.SECOND_SEMESTER
-                ? index + 1
-                : yearsSetting.name == MthTitle.MID_YEAR_SCHEDULES
-                ? index + 2
-                : yearsSetting.name == MthTitle.HOMEROOM_RESOURCES
-                ? index + 1
-                : index
-            }
-            selectItem={yearsSetting}
-            dividerStyle={dividerStyle}
-          />
-        )
-      })}
-    </>
-  )
+  return <CommonSelectList settingList={yearsSettingList}></CommonSelectList>
 }

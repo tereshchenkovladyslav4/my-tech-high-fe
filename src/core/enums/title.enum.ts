@@ -52,4 +52,7 @@ export enum MthTitle {
   REIMBURSEMENTS = 'Reimbursements',
   DIRECT_ORDERS = 'Direct Orders',
   FIRST_SEMESTER = '1st Semester',
+  SUPPLEMENTAL_LEARNING_FUNDS = 'Supplemental Learning Funds',
+  TECHNOLOGY = 'Technology',
+  CUSTOM_BUILT = 'Custom-built',
 }

@@ -1,68 +1,57 @@
-import React, { useState } from 'react'
+import React from 'react'
 import ExpandLessIcon from '@mui/icons-material/ExpandLess'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { Box, Stack } from '@mui/material'
 import { DropDown } from '@mth/components/DropDown/DropDown'
-import { BLACK } from '../../../../../utils/constants'
+import { ENABLE_DISABLE_OPTIONS } from '@mth/constants'
+import { MthColor } from '@mth/enums'
 import { SchoolYearItem } from '../types'
 
-type MideYearSelectProps = {
+type MidYearSelectProps = {
   midYearItem: SchoolYearItem | undefined
   setMidYearItem: (value: SchoolYearItem | undefined) => void
   setIsChanged: (value: boolean) => void
-  setMidYearExpend: (value: boolean) => void
+  midYearExpended: boolean
+  setMidYearExpended: (value: boolean) => void
 }
 
-export const MidYearSelect: React.FC<MideYearSelectProps> = ({
+export const MidYearSelect: React.FC<MidYearSelectProps> = ({
   midYearItem,
   setMidYearItem,
-  setMidYearExpend,
+  midYearExpended,
+  setMidYearExpended,
   setIsChanged,
 }) => {
   const statusHandleChange = (value: string | number | boolean) => {
-    if (midYearItem) setMidYearItem({ ...midYearItem, status: value == 'true' ? true : false })
+    if (midYearItem) setMidYearItem({ ...midYearItem, status: value == 'true' })
     setIsChanged(true)
   }
-  const [expand, setExpand] = useState<boolean>(false)
-
-  const items = [
-    {
-      label: 'Enabled',
-      value: 'true',
-    },
-    {
-      label: 'Disabled',
-      value: 'false',
-    },
-  ]
 
   const chevron = () =>
-    !expand ? (
+    midYearExpended ? (
       <ExpandLessIcon
         sx={{
-          color: BLACK,
+          color: MthColor.BLACK,
           verticalAlign: 'bottom',
           cursor: 'pointer',
           marginRight: 10,
           marginTop: 3,
         }}
         onClick={() => {
-          setExpand(true)
-          setMidYearExpend(true)
+          setMidYearExpended(false)
         }}
       />
     ) : (
       <ExpandMoreIcon
         sx={{
-          color: BLACK,
+          color: MthColor.BLACK,
           verticalAlign: 'bottom',
           cursor: 'pointer',
           marginRight: 10,
           marginTop: 3,
         }}
         onClick={() => {
-          setExpand(false)
-          setMidYearExpend(false)
+          setMidYearExpended(true)
         }}
       />
     )
@@ -72,7 +61,7 @@ export const MidYearSelect: React.FC<MideYearSelectProps> = ({
       <Stack direction='row' width={'100%'} sx={{ ml: 1.5 }} alignItems='center'>
         <Box sx={{ display: 'flex', width: '100%', justifyContent: 'space-between' }}>
           <DropDown
-            dropDownItems={items}
+            dropDownItems={ENABLE_DISABLE_OPTIONS}
             placeholder={'Select status'}
             defaultValue={midYearItem?.status ? 'true' : 'false'}
             sx={{ width: '220px', marginRight: 8 }}

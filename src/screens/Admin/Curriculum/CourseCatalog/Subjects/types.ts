@@ -1,7 +1,8 @@
 import { DropDownItem } from '@mth/components/DropDown/types'
 import { CheckBoxListVM } from '@mth/components/MthCheckboxList/MthCheckboxList'
 import { DiplomaSeekingPath, ReduceFunds } from '@mth/enums'
-import { ScheduleBuilder, SchoolYearResponseType } from '@mth/hooks'
+import { ScheduleBuilder } from '@mth/hooks'
+import { SchoolYear } from '@mth/models'
 
 export enum EventType {
   ARCHIVE = 'archive',
@@ -67,7 +68,7 @@ export type Title = {
 
 export type TitlesProps = {
   schoolYearId: number
-  schoolYearData?: SchoolYearResponseType
+  schoolYearData?: SchoolYear
   subject: Subject
   showArchived: boolean
   refetch: () => void
@@ -88,14 +89,14 @@ export type SubjectFormProps = {
 export interface TitleEditProps {
   subjectId: number
   schoolYearId: number
-  schoolYearData?: SchoolYearResponseType
+  schoolYearData?: SchoolYear
   item?: Title
   refetch: () => void
   setShowEditModal: (value: boolean) => void
 }
 
 export type TitleFormProps = {
-  schoolYearData?: SchoolYearResponseType
+  schoolYearData?: SchoolYear
   subjectsItems: DropDownItem[]
   gradeOptions: DropDownItem[]
   scheduleBuilder?: ScheduleBuilder

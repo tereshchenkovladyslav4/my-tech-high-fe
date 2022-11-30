@@ -25,7 +25,7 @@ export const MthDatePicker: React.FC<MthDatePickerProps> = ({
           minDate={minDate && moment(minDate).toDate()}
           maxDate={maxDate && moment(maxDate).toDate()}
           onChange={(val) => {
-            handleChange(moment(val).format(dateFormat))
+            handleChange(val ? moment(val).format(dateFormat) : null)
           }}
           renderInput={(params) => <TextField {...params} />}
         />

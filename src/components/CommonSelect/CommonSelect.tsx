@@ -49,7 +49,7 @@ export const CommonSelect: React.FC<CommonSelectProps> = ({
           </Tooltip>
         </Box>
       )}
-      {!selectItem?.name.includes('Option') && (
+      {!(typeof selectItem?.name === 'string' && selectItem?.name.includes('Option')) && (
         <Box
           sx={{
             ...classes.verticalLine,

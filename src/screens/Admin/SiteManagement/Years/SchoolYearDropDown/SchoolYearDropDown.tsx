@@ -7,9 +7,10 @@ import { CustomModal } from '@mth/components/CustomModal/CustomModals'
 import { DropDown } from '@mth/components/DropDown/DropDown'
 import { DropDownItem } from '@mth/components/DropDown/types'
 import { deleteSchoolYearByIdMutation } from '@mth/graphql/mutation/schoolYear'
-import { SchoolYearResponseType, useSchoolYearsByRegionId } from '@mth/hooks'
+import { useSchoolYearsByRegionId } from '@mth/hooks'
+import { SchoolYear } from '@mth/models'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
-import { SchoolYearItem, SchoolYearType } from '../types'
+import { SchoolYearItem } from '../types'
 
 type SchoolYearDropDownProps = {
   setSchoolYearItem: (value: SchoolYearItem | undefined) => void
@@ -23,13 +24,25 @@ type SchoolYearDropDownProps = {
   setSecondSemesterItem: (value: SchoolYearItem | undefined) => void
   setMidYearScheduleItem: (value: SchoolYearItem | undefined) => void
   setHomeroomResourceItem: (value: SchoolYearItem | undefined) => void
-  schoolYears: SchoolYearType[]
-  setSchoolYears: (value: SchoolYearType[]) => void
+  setDirectOrderItem: (value: SchoolYearItem | undefined) => void
+  setReimbursementItem: (value: SchoolYearItem | undefined) => void
+  setCustomBuiltItem: (value: SchoolYearItem | undefined) => void
+  setRequireSoftwareItem: (value: SchoolYearItem | undefined) => void
+  setThirdPartyItem: (value: SchoolYearItem | undefined) => void
+  setMidDirectOrderItem: (value: SchoolYearItem | undefined) => void
+  setMidReimbursementItem: (value: SchoolYearItem | undefined) => void
+  setMidCustomBuiltItem: (value: SchoolYearItem | undefined) => void
+  setMidRequireSoftwareItem: (value: SchoolYearItem | undefined) => void
+  setMidThirdPartyItem: (value: SchoolYearItem | undefined) => void
+  schoolYears: SchoolYear[]
+  setSchoolYears: (value: SchoolYear[]) => void
   setAddSchoolYears: (value: DropDownItem[]) => void
   selectedYearId: number
+  setSelectedYear: (value: SchoolYear) => void
 }
 
 export const SchoolYearDropDown: React.FC<SchoolYearDropDownProps> = ({
+  setSelectedYear,
   setSelectedYearId,
   setSchoolYearItem,
   setApplicationItem,
@@ -41,6 +54,16 @@ export const SchoolYearDropDown: React.FC<SchoolYearDropDownProps> = ({
   setMidYearScheduleItem,
   setEnableSchedule,
   setHomeroomResourceItem,
+  setDirectOrderItem,
+  setReimbursementItem,
+  setCustomBuiltItem,
+  setRequireSoftwareItem,
+  setThirdPartyItem,
+  setMidDirectOrderItem,
+  setMidReimbursementItem,
+  setMidCustomBuiltItem,
+  setMidRequireSoftwareItem,
+  setMidThirdPartyItem,
   selectedYearId,
   setSchoolYears,
   setAddSchoolYears,
@@ -54,36 +77,77 @@ export const SchoolYearDropDown: React.FC<SchoolYearDropDownProps> = ({
 
   const [deleteAction] = useMutation(deleteSchoolYearByIdMutation)
 
-  const setAllBySchoolYear = (schoolYear: SchoolYearType) => {
+  const setAllBySchoolYear = (schoolYear: SchoolYear) => {
+    setSelectedYear(schoolYear)
     setEnableSchedule(schoolYear.schedule)
     setSchoolYearItem({
-      open: schoolYear.schoolYearOpen,
-      close: schoolYear.schoolYearClose,
+      open: schoolYear.date_begin,
+      close: schoolYear.date_end,
     })
     setApplicationItem({
-      open: schoolYear.applicationsOpen,
-      close: schoolYear.applicationsClose,
+      open: schoolYear.date_reg_open,
+      close: schoolYear.date_reg_close,
     })
     setMidYearItem({
-      open: schoolYear.midYearOpen,
-      close: schoolYear.midYearClose,
-      status: schoolYear.midYearStatus,
+      open: schoolYear.midyear_application_open,
+      close: schoolYear.midyear_application_close,
+      status: schoolYear.midyear_application,
     })
     setMidYearScheduleItem({
-      open: schoolYear.midYearScheduleOpen,
-      close: schoolYear.midYearScheduleClose,
+      open: schoolYear.midyear_schedule_open,
+      close: schoolYear.midyear_schedule_close,
     })
     setSecondSemesterItem({
-      open: schoolYear.secondSemesterOpen,
-      close: schoolYear.secondSemesterClose,
+      open: schoolYear.second_semester_open,
+      close: schoolYear.second_semester_close,
     })
     setScheduleBuilderItem({
-      open: schoolYear.scheduleBuilderOpen,
-      close: schoolYear.scheduleBuilderClose,
+      open: schoolYear.schedule_builder_open,
+      close: schoolYear.schedule_builder_close,
     })
     setHomeroomResourceItem({
-      open: schoolYear.homeroomResourceOpen,
-      close: schoolYear.homeroomResourceClose,
+      open: schoolYear.homeroom_resource_open,
+      close: schoolYear.homeroom_resource_close,
+    })
+    setDirectOrderItem({
+      open: schoolYear.direct_order_open,
+      close: schoolYear.direct_order_close,
+    })
+    setReimbursementItem({
+      open: schoolYear.reimbursement_open,
+      close: schoolYear.reimbursement_close,
+    })
+    setCustomBuiltItem({
+      open: schoolYear.custom_built_open,
+      close: schoolYear.custom_built_close,
+    })
+    setRequireSoftwareItem({
+      open: schoolYear.require_software_open,
+      close: schoolYear.require_software_close,
+    })
+    setThirdPartyItem({
+      open: schoolYear.third_party_open,
+      close: schoolYear.third_party_close,
+    })
+    setMidDirectOrderItem({
+      open: schoolYear.mid_direct_order_open,
+      close: schoolYear.mid_direct_order_close,
+    })
+    setMidReimbursementItem({
+      open: schoolYear.mid_reimbursement_open,
+      close: schoolYear.mid_reimbursement_close,
+    })
+    setMidCustomBuiltItem({
+      open: schoolYear.mid_custom_built_open,
+      close: schoolYear.mid_custom_built_close,
+    })
+    setMidRequireSoftwareItem({
+      open: schoolYear.mid_require_software_open,
+      close: schoolYear.mid_require_software_close,
+    })
+    setMidThirdPartyItem({
+      open: schoolYear.mid_third_party_open,
+      close: schoolYear.mid_third_party_close,
     })
   }
 
@@ -97,7 +161,7 @@ export const SchoolYearDropDown: React.FC<SchoolYearDropDownProps> = ({
     }
     if (schoolYears && schoolYears.length > 0) {
       schoolYears.forEach((schoolYear) => {
-        if (schoolYear.schoolYearId == val) {
+        if (schoolYear.school_year_id == val) {
           setAllBySchoolYear(schoolYear)
         }
       })
@@ -117,6 +181,16 @@ export const SchoolYearDropDown: React.FC<SchoolYearDropDownProps> = ({
     setSecondSemesterItem(undefined)
     setScheduleBuilderItem(undefined)
     setHomeroomResourceItem(undefined)
+    setDirectOrderItem(undefined)
+    setReimbursementItem(undefined)
+    setCustomBuiltItem(undefined)
+    setRequireSoftwareItem(undefined)
+    setThirdPartyItem(undefined)
+    setMidDirectOrderItem(undefined)
+    setMidReimbursementItem(undefined)
+    setMidCustomBuiltItem(undefined)
+    setMidRequireSoftwareItem(undefined)
+    setMidThirdPartyItem(undefined)
   }
 
   const handleDeleteItem = (value: string | number | boolean) => {
@@ -133,34 +207,30 @@ export const SchoolYearDropDown: React.FC<SchoolYearDropDownProps> = ({
     refetchSchoolYear()
   }
 
-  const setDropYears = (schoolYearsArr: SchoolYearType[]) => {
+  const setDropYears = (schoolYearsArr: SchoolYear[]) => {
     const dropYears: DropDownItem[] = []
     const newSchoolYears: DropDownItem[] = [{ value: 'none', label: 'None' }]
     if (schoolYearsArr && schoolYearsArr.length > 0) {
       schoolYearsArr.forEach((schoolYear) => {
         if (
           !selectedYearId &&
-          parseInt(moment(schoolYear.schoolYearOpen).format('YYYY')) >= parseInt(moment().format('YYYY')) &&
-          parseInt(moment(schoolYear.schoolYearClose).format('YYYY')) <= parseInt(moment().format('YYYY')) + 1
+          parseInt(moment(schoolYear.date_begin).format('YYYY')) >= parseInt(moment().format('YYYY')) &&
+          parseInt(moment(schoolYear.date_end).format('YYYY')) <= parseInt(moment().format('YYYY')) + 1
         ) {
-          setSelectedYearId(schoolYear.schoolYearId)
+          setSelectedYearId(schoolYear.school_year_id)
           setEnableSchedule(schoolYear.schedule)
           setAllBySchoolYear(schoolYear)
         }
         dropYears.push({
-          value: schoolYear.schoolYearId + '',
-          label:
-            moment(schoolYear.schoolYearOpen).format('YYYY') + '-' + moment(schoolYear.schoolYearClose).format('YY'),
+          value: schoolYear.school_year_id + '',
+          label: moment(schoolYear.date_begin).format('YYYY') + '-' + moment(schoolYear.date_end).format('YY'),
           hasDeleteIcon:
-            parseInt(moment(schoolYear.schoolYearOpen).format('YYYY')) > parseInt(moment().format('YYYY'))
-              ? true
-              : false,
+            parseInt(moment(schoolYear.date_begin).format('YYYY')) > parseInt(moment().format('YYYY')) ? true : false,
           handleDeleteItem: handleDeleteItem,
         })
         newSchoolYears.push({
-          value: schoolYear.schoolYearId + '',
-          label:
-            moment(schoolYear.schoolYearOpen).format('YYYY') + '-' + moment(schoolYear.schoolYearClose).format('YY'),
+          value: schoolYear.school_year_id + '',
+          label: moment(schoolYear.date_begin).format('YYYY') + '-' + moment(schoolYear.date_end).format('YY'),
         })
       })
       dropYears.push({
@@ -179,10 +249,10 @@ export const SchoolYearDropDown: React.FC<SchoolYearDropDownProps> = ({
 
   useEffect(() => {
     if (schoolYearData) {
-      const schoolYearsArr: SchoolYearType[] = []
+      const schoolYearsArr: SchoolYear[] = []
       let cnt = 0
 
-      schoolYearData?.forEach((schoolYear: SchoolYearResponseType) => {
+      schoolYearData?.forEach((schoolYear: SchoolYear) => {
         const schoolYearId = +schoolYear.school_year_id
         if (schoolYearId == selectedYearId) {
           setEnableSchedule(schoolYear.schedule)
@@ -215,27 +285,49 @@ export const SchoolYearDropDown: React.FC<SchoolYearDropDownProps> = ({
             open: schoolYear.homeroom_resource_open,
             close: schoolYear.homeroom_resource_close,
           })
+          setDirectOrderItem({
+            open: schoolYear.direct_order_open,
+            close: schoolYear.direct_order_close,
+          })
+          setReimbursementItem({
+            open: schoolYear.reimbursement_open,
+            close: schoolYear.reimbursement_close,
+          })
+          setCustomBuiltItem({
+            open: schoolYear.custom_built_open,
+            close: schoolYear.custom_built_close,
+          })
+          setRequireSoftwareItem({
+            open: schoolYear.require_software_open,
+            close: schoolYear.require_software_close,
+          })
+          setThirdPartyItem({
+            open: schoolYear.third_party_open,
+            close: schoolYear.third_party_close,
+          })
+          setMidDirectOrderItem({
+            open: schoolYear.mid_direct_order_open,
+            close: schoolYear.mid_direct_order_close,
+          })
+          setMidReimbursementItem({
+            open: schoolYear.mid_reimbursement_open,
+            close: schoolYear.mid_reimbursement_close,
+          })
+          setMidCustomBuiltItem({
+            open: schoolYear.mid_custom_built_open,
+            close: schoolYear.mid_custom_built_close,
+          })
+          setMidRequireSoftwareItem({
+            open: schoolYear.mid_require_software_open,
+            close: schoolYear.mid_require_software_close,
+          })
+          setMidThirdPartyItem({
+            open: schoolYear.mid_third_party_open,
+            close: schoolYear.mid_third_party_close,
+          })
           cnt++
         }
-        schoolYearsArr.push({
-          schoolYearId: schoolYearId,
-          schoolYearOpen: schoolYear.date_begin,
-          schoolYearClose: schoolYear.date_end,
-          applicationsOpen: schoolYear.date_reg_open,
-          applicationsClose: schoolYear.date_reg_close,
-          midYearOpen: schoolYear.midyear_application_open,
-          midYearClose: schoolYear.midyear_application_close,
-          midYearStatus: schoolYear.midyear_application,
-          midYearScheduleOpen: schoolYear.midyear_schedule_open,
-          midYearScheduleClose: schoolYear.midyear_schedule_close,
-          scheduleBuilderOpen: schoolYear.schedule_builder_open,
-          scheduleBuilderClose: schoolYear.schedule_builder_close,
-          secondSemesterOpen: schoolYear.second_semester_open,
-          secondSemesterClose: schoolYear.second_semester_close,
-          schedule: schoolYear.schedule,
-          homeroomResourceOpen: schoolYear.homeroom_resource_open,
-          homeroomResourceClose: schoolYear.homeroom_resource_close,
-        })
+        schoolYearsArr.push(schoolYear)
       })
       if (cnt == 0) {
         setAllDefault()

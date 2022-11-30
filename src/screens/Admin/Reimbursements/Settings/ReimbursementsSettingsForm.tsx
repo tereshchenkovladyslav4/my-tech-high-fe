@@ -2,7 +2,7 @@ import React from 'react'
 import { Box, Grid } from '@mui/material'
 import { useFormikContext } from 'formik'
 import { range } from 'lodash'
-import { CommonSelect } from '@mth/components/CommonSelect'
+import { CommonSelectList } from '@mth/components/CommonSelect'
 import { CommonSelectType } from '@mth/components/CommonSelect/types'
 import { DropDown } from '@mth/components/DropDown/DropDown'
 import { DropDownItem } from '@mth/components/DropDown/types'
@@ -473,36 +473,5 @@ export const ReimbursementsSettingsForm: React.FC<ReimbursementsSettingsFormProp
     },
   ]
 
-  return (
-    <>
-      {settingList.map(
-        (setting, pIdx) =>
-          setting !== null && (
-            <Box key={pIdx}>
-              <CommonSelect
-                key={pIdx}
-                index={pIdx}
-                selectItem={setting}
-                dividerStyle={
-                  setting.mergedItems?.length ? { top: '24px', height: '100%' } : { top: '24px', bottom: '24px' }
-                }
-              />
-
-              {setting.mergedItems?.map((child, cIdx) => (
-                <CommonSelect
-                  key={`${pIdx}-${cIdx}`}
-                  index={pIdx}
-                  selectItem={child}
-                  dividerStyle={
-                    setting.mergedItems?.length && cIdx + 1 === setting.mergedItems.length
-                      ? { bottom: '24px', height: '100%' }
-                      : {}
-                  }
-                />
-              ))}
-            </Box>
-          ),
-      )}
-    </>
-  )
+  return <CommonSelectList settingList={settingList}> </CommonSelectList>
 }

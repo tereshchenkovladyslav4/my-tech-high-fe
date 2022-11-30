@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { CssBaseline } from '@mui/material'
 import ThemeProvider from '@mui/system/ThemeProvider'
+import { FlagProvider } from '@unleash/proxy-client-react'
 import moment from 'moment-timezone'
 import { BrowserRouter as Router } from 'react-router-dom'
 import { RecoilRoot } from 'recoil'
@@ -13,13 +14,26 @@ import { ProfileProvider } from './providers/ProfileProvider/ProfileProvider'
 import { TabContext, TabInfo, UserContext, UserInfo } from './providers/UserContext/UserProvider'
 import { Root } from './root/Root'
 import { theme } from './utils/theme'
+
 moment.tz.setDefault('MST')
 
 declare global {
   interface ImportMeta {
     env: {
       MODE: string
-      API_URL: string
+      SNOWPACK_PUBLIC_API_URL: string
+      SNOWPACK_PUBLIC_S3_URL: string
+      SNOWPACK_PUBLIC_S3_UPLOAD: string
+      SNOWPACK_PUBLIC_S3_STUDENT_RECORD_FILES_DOWNLOAD: string
+      SNOWPACK_PUBLIC_COUNTIES_TEMPLATE: string
+      SNOWPACK_PUBLIC_SCHOOL_DISTRICT_TEMPLATE: string
+      SNOWPACK_PUBLIC_BASE_S3_UPLOAD_URL: string
+      SNOWPACK_PUBLIC_BASE_S3_IMAGE_URL: string
+      SNOWPACK_PUBLIC_WEB_URL: string
+      SNOWPACK_PUBLIC_FEATURE_FLAG_URL: string
+      SNOWPACK_PUBLIC_FEATURE_FLAG_CLIENT_KEY: string
+      SNOWPACK_PUBLIC_FEATURE_FLAG_APP_NAME: string
+      SNOWPACK_PUBLIC_FEATURE_FLAG_ENV: string
     }
   }
 }
@@ -47,6 +61,14 @@ export const App: React.FC = () => {
     [tab, visitedTabs],
   )
 
+  const featureFlagConfig = {
+    url: import.meta.env.SNOWPACK_PUBLIC_FEATURE_FLAG_URL, // or https://UNLEASH_HOSTNAME/api/frontend
+    clientKey: import.meta.env.SNOWPACK_PUBLIC_FEATURE_FLAG_CLIENT_KEY,
+    refreshInterval: 15,
+    appName: import.meta.env.SNOWPACK_PUBLIC_FEATURE_FLAG_APP_NAME,
+    environment: import.meta.env.SNOWPACK_PUBLIC_FEATURE_FLAG_ENV,
+  }
+
   useEffect(() => {
     WebFont.load({
       custom: {
@@ -55,35 +77,36 @@ export const App: React.FC = () => {
       },
     })
   }, [])
-
   return (
-    <Router
-      getUserConfirmation={(message, callback) => {
-        return UserLeaveConfirmation(
-          message,
-          callback,
-          // confirmOpen,
-          // setConfirmOpen
-        )
-      }}
-    >
-      <ThemeProvider theme={theme}>
-        <AuthProvider>
-          <ApolloProvider>
-            <UserContext.Provider value={userContext}>
-              <TabContext.Provider value={tabContext}>
-                <ProfileProvider>
-                  <CssBaseline />
-                  <RecoilRoot>
-                    <Root />
-                    <MthLoading />
-                  </RecoilRoot>
-                </ProfileProvider>
-              </TabContext.Provider>
-            </UserContext.Provider>
-          </ApolloProvider>
-        </AuthProvider>
-      </ThemeProvider>
-    </Router>
+    <FlagProvider config={featureFlagConfig}>
+      <Router
+        getUserConfirmation={(message, callback) => {
+          return UserLeaveConfirmation(
+            message,
+            callback,
+            // confirmOpen,
+            // setConfirmOpen
+          )
+        }}
+      >
+        <ThemeProvider theme={theme}>
+          <AuthProvider>
+            <ApolloProvider>
+              <UserContext.Provider value={userContext}>
+                <TabContext.Provider value={tabContext}>
+                  <ProfileProvider>
+                    <CssBaseline />
+                    <RecoilRoot>
+                      <Root />
+                      <MthLoading />
+                    </RecoilRoot>
+                  </ProfileProvider>
+                </TabContext.Provider>
+              </UserContext.Provider>
+            </ApolloProvider>
+          </AuthProvider>
+        </ThemeProvider>
+      </Router>
+    </FlagProvider>
   )
 }

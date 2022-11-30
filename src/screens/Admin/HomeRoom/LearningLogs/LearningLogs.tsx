@@ -11,7 +11,8 @@ import { MthTable } from '@mth/components/MthTable'
 import { MthTableField, MthTableRowItem } from '@mth/components/MthTable/types'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { MthColor } from '@mth/enums'
-import { SchoolYearResponseType, useSchoolYearsByRegionId } from '@mth/hooks'
+import { useSchoolYearsByRegionId } from '@mth/hooks'
+import { SchoolYear } from '@mth/models'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { commonClasses } from '@mth/styles/common.style'
 import { HOMEROOM_LEARNING_LOGS } from '../../../../utils/constants'
@@ -25,7 +26,7 @@ const LearningLogs: React.FC = () => {
   const history = useHistory()
 
   const [selectedYear, setSelectedYear] = useState<number>(0)
-  const [selectedYearData, setSelectedYearData] = useState<SchoolYearResponseType | undefined>()
+  const [selectedYearData, setSelectedYearData] = useState<SchoolYear | undefined>()
   // const [searchField, setSearchField] = useState<string>('')
   const [tableData, setTableData] = useState<MthTableRowItem<Master>[]>([])
   const [localSearchField, setLocalSearchField] = useState<string>('')

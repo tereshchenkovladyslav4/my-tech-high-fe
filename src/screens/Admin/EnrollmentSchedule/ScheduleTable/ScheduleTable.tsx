@@ -5,6 +5,7 @@ import { Box, Button, Card, InputAdornment, OutlinedInput } from '@mui/material'
 import { map } from 'lodash'
 import moment from 'moment'
 import { MthTable } from '@mth/components/MthTable'
+import { MthTableField } from '@mth/components/MthTable/types'
 import { Pagination } from '@mth/components/Pagination/Pagination'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { getEmailTemplateQuery } from '@mth/graphql/queries/email-template'
@@ -15,7 +16,7 @@ import { ScheduleEmailHistoryModal } from '../ScheduleModal/ScheduleEmailHistory
 import { EmailModal } from '../ScheduleModal/ScheduleEmailModal'
 import { ScheduleTableFilters } from '../ScheduleTableFilters/ScheduleTableFilters'
 import { emailScheduleMutation, getSchedulesQuery, scheduleCountGroupQuery } from '../services'
-import { ApplicationTableProps, EmailTemplateVM, Field, ScheduleFilterVM, ScheduleCount, TableData } from '../type'
+import { ApplicationTableProps, EmailTemplateVM, ScheduleFilterVM, ScheduleCount, TableData } from '../type'
 
 export const ScheduleTable: React.FC<ApplicationTableProps> = ({ filter }) => {
   const { me } = useContext(UserContext)
@@ -256,7 +257,7 @@ export const ScheduleTable: React.FC<ApplicationTableProps> = ({ filter }) => {
     setModalSelectedStatus([])
   }
 
-  const fields: Field[] = [
+  const fields: MthTableField<unknown>[] = [
     {
       key: 'date',
       label: 'Date',
@@ -350,7 +351,7 @@ export const ScheduleTable: React.FC<ApplicationTableProps> = ({ filter }) => {
           }}
         >
           <Subtitle size='medium' fontWeight='700'>
-            Students
+            Schedules
           </Subtitle>
           <Subtitle size='medium' fontWeight='700' sx={{ marginLeft: 2 }}>
             {totalApplications}
@@ -457,6 +458,7 @@ export const ScheduleTable: React.FC<ApplicationTableProps> = ({ filter }) => {
           checkBoxColor='secondary'
           onSelectionChange={onSelectionChange}
           onSortChange={onSortChange}
+          isTableCellBorder={false}
         />
       </Box>
       {open && (

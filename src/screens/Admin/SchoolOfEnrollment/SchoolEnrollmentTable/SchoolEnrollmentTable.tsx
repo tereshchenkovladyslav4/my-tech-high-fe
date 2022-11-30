@@ -130,7 +130,7 @@ export const EnrollmentSchoolTable: React.FC<EnrollmentSchoolTableProps> = ({
     await assignStudentToSOE({
       variables: {
         assignStudentToSoeInput: {
-          school_partner_id: parseInt(schoolPartner),
+          school_partner_id: schoolPartner !== 'unassigned' ? parseInt(schoolPartner) : -1,
           school_year_id: parseInt(selectedYear?.value as string),
           student_ids: studentIds.map((item) => parseInt(item as string)),
         },
@@ -305,8 +305,7 @@ export const EnrollmentSchoolTable: React.FC<EnrollmentSchoolTableProps> = ({
             sx={{ width: '100%' }}
             size='small'
             setParentValue={(val) => {
-              const partnerId = val !== 'unassigned' ? val : -1
-              setSchoolPartner(partnerId as string)
+              setSchoolPartner(val as string)
             }}
           />
 

@@ -24,6 +24,7 @@ export const getMeQuery = gql`
           zip
           county_id
           country_id
+          school_district
         }
         phone {
           phone_id

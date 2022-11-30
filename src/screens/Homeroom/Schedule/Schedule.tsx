@@ -253,11 +253,18 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
   }
 
   const handleWithoutSaved = (isYes: boolean) => {
+    setShowUnsavedModal(false)
     if (isYes) {
+      setIsChanged(false)
+      if (backTo) {
+        setTimeout(() => {
+          history.push(backTo)
+        }, 300)
+        return
+      }
       if (activeDiplomaSeeking) setStep(MthTitle.STEP_DIPLOMA_SEEKING)
       else setStep(MthTitle.STEP_OPT_OUT_FORM)
     }
-    setShowUnsavedModal(false)
   }
 
   const handleNextStep = async () => {

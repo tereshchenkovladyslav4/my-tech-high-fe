@@ -11,7 +11,8 @@ import { MthTable } from '@mth/components/MthTable'
 import { MthTableField, MthTableRowItem } from '@mth/components/MthTable/types'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { MthColor } from '@mth/enums'
-import { SchoolYearResponseType, useSubjects } from '@mth/hooks'
+import { useSubjects } from '@mth/hooks'
+import { SchoolYear } from '@mth/models'
 import {
   createOrUpdateSubjectMutation,
   deleteSubjectMutation,
@@ -25,7 +26,7 @@ import CourseCatalogHeader from '../Components/CourseCatalogHeader/CourseCatalog
 
 const Subjects: React.FC = () => {
   const [selectedYear, setSelectedYear] = useState<number>(0)
-  const [selectedYearData, setSelectedYearData] = useState<SchoolYearResponseType | undefined>()
+  const [selectedYearData, setSelectedYearData] = useState<SchoolYear | undefined>()
   const [searchField, setSearchField] = useState<string>('')
   const [showArchived, setShowArchived] = useState<boolean>(false)
   const [tableData, setTableData] = useState<MthTableRowItem<Subject>[]>([])

@@ -236,7 +236,12 @@ export const AdminAppBar: FunctionComponent = () => {
     map(me?.userRegion, (region: RegionType) => {
       return (
         <Box
-          sx={{ textDecoration: 'none', cursor: 'pointer', position: 'relative', padding: '0px 12px 0px 32px' }}
+          sx={{
+            textDecoration: 'none',
+            cursor: 'pointer',
+            position: 'relative',
+            margin: '0 8px',
+          }}
           key={region?.regionDetail.id}
           onClick={() => handleRegionChange(region)}
         >
@@ -246,42 +251,44 @@ export const AdminAppBar: FunctionComponent = () => {
               position: 'absolute',
               height: 35,
               top: '12px',
-              left: '12px',
+              left: 0,
             }}
             variant='middle'
           />
-          <Metadata
-            title={
-              <Subtitle color={isActive(region?.regionDetail.id) ? MTHBLUE : '#A1A1A1'}>
-                {region?.regionDetail.name}
-              </Subtitle>
-            }
-            subtitle={
-              <Paragraph color='#cccccc' size={'large'}>
-                {region?.regionDetail.program}
-              </Paragraph>
-            }
-            image={
-              <Box sx={{ position: 'relative' }}>
-                <Avatar
-                  alt={region?.regionDetail.name}
-                  src={region?.regionDetail?.state_logo}
-                  variant='rounded'
-                  style={{ marginRight: 24 }}
-                />
-                <Box
-                  sx={{
-                    position: 'absolute',
-                    bottom: -16,
-                    left: 0,
-                    width: '65%',
-                    height: 2,
-                    borderBottom: region.region_id === selected?.region_id ? '2px solid #4145FF' : 0,
-                  }}
-                />
-              </Box>
-            }
-          />
+          <Box sx={{ px: '22px' }}>
+            <Metadata
+              title={
+                <Subtitle color={isActive(region?.regionDetail.id) ? MTHBLUE : '#A1A1A1'}>
+                  {region?.regionDetail.name}
+                </Subtitle>
+              }
+              subtitle={
+                <Paragraph color='#cccccc' size={'large'}>
+                  {region?.regionDetail.program}
+                </Paragraph>
+              }
+              image={
+                <Box sx={{ position: 'relative' }}>
+                  <Avatar
+                    alt={region?.regionDetail.name}
+                    src={region?.regionDetail?.state_logo}
+                    variant='rounded'
+                    style={{ marginRight: 24 }}
+                  />
+                  <Box
+                    sx={{
+                      position: 'absolute',
+                      bottom: -16,
+                      left: 0,
+                      width: '65%',
+                      height: 2,
+                      borderBottom: region.region_id === selected?.region_id ? '2px solid #4145FF' : 0,
+                    }}
+                  />
+                </Box>
+              }
+            />
+          </Box>
         </Box>
       )
     })
