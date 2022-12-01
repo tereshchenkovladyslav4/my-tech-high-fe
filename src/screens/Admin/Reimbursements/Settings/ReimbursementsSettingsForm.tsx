@@ -20,10 +20,20 @@ import { ReimbursementSetting } from '@mth/screens/Admin/Reimbursements/Settings
 export type ReimbursementsSettingsFormProps = {
   schoolYear: SchoolYear
   gradeOptions: DropDownItem[]
+  setIsChanged: (value: boolean) => void
 }
 
-export const ReimbursementsSettingsForm: React.FC<ReimbursementsSettingsFormProps> = ({ schoolYear, gradeOptions }) => {
+export const ReimbursementsSettingsForm: React.FC<ReimbursementsSettingsFormProps> = ({
+  schoolYear,
+  gradeOptions,
+  setIsChanged,
+}) => {
   const { errors, setFieldValue, touched, values } = useFormikContext<ReimbursementSetting>()
+
+  const renderPeriods = (periodsStr: string | undefined | null): string => {
+    const periods = periodsStr?.split(',') || []
+    return periods.map((x, i) => (periods.length > 1 && i === periods.length - 1 ? `& ${x}` : x)).join(', ')
+  }
 
   const periodOptions: CheckBoxListVM[] = range(1, (schoolYear.ScheduleBuilder?.max_num_periods || 0) + 1, 1).map(
     (item) => ({
@@ -42,6 +52,7 @@ export const ReimbursementsSettingsForm: React.FC<ReimbursementsSettingsFormProp
             value={values?.information || ''}
             setValue={(value) => {
               setFieldValue('information', value)
+              setIsChanged(true)
             }}
             error={touched.information && Boolean(errors.information)}
           />
@@ -65,6 +76,7 @@ export const ReimbursementsSettingsForm: React.FC<ReimbursementsSettingsFormProp
                   value={values?.supplemental_reimbursements_forms}
                   onChangeValue={(value: number | null) => {
                     setFieldValue('supplemental_reimbursements_forms', value)
+                    setIsChanged(true)
                   }}
                   error={touched.supplemental_reimbursements_forms && !!errors.supplemental_reimbursements_forms}
                   disabled={schoolYear.reimbursements !== ReduceFunds.SUPPLEMENTAL}
@@ -84,6 +96,7 @@ export const ReimbursementsSettingsForm: React.FC<ReimbursementsSettingsFormProp
                   value={values?.supplemental_direct_order_forms}
                   onChangeValue={(value: number | null) => {
                     setFieldValue('supplemental_direct_order_forms', value)
+                    setIsChanged(true)
                   }}
                   error={touched.supplemental_direct_order_forms && !!errors.supplemental_direct_order_forms}
                   disabled={schoolYear.direct_orders !== ReduceFunds.SUPPLEMENTAL}
@@ -112,6 +125,7 @@ export const ReimbursementsSettingsForm: React.FC<ReimbursementsSettingsFormProp
                   value={values?.technology_reimbursements_forms}
                   onChangeValue={(value: number | null) => {
                     setFieldValue('technology_reimbursements_forms', value)
+                    setIsChanged(true)
                   }}
                   error={touched.technology_reimbursements_forms && !!errors.technology_reimbursements_forms}
                   disabled={schoolYear.reimbursements !== ReduceFunds.TECHNOLOGY}
@@ -131,6 +145,7 @@ export const ReimbursementsSettingsForm: React.FC<ReimbursementsSettingsFormProp
                   value={values?.technology_direct_order_forms}
                   onChangeValue={(value: number | null) => {
                     setFieldValue('technology_direct_order_forms', value)
+                    setIsChanged(true)
                   }}
                   error={touched.technology_direct_order_forms && !!errors.technology_direct_order_forms}
                   disabled={schoolYear.direct_orders !== ReduceFunds.TECHNOLOGY}
@@ -159,6 +174,7 @@ export const ReimbursementsSettingsForm: React.FC<ReimbursementsSettingsFormProp
                   value={values?.custom_reimbursements_forms}
                   onChangeValue={(value: number | null) => {
                     setFieldValue('custom_reimbursements_forms', value)
+                    setIsChanged(true)
                   }}
                   error={touched.custom_reimbursements_forms && !!errors.custom_reimbursements_forms}
                 />
@@ -177,6 +193,7 @@ export const ReimbursementsSettingsForm: React.FC<ReimbursementsSettingsFormProp
                   value={values?.custom_direct_order_forms}
                   onChangeValue={(value: number | null) => {
                     setFieldValue('custom_direct_order_forms', value)
+                    setIsChanged(true)
                   }}
                   error={touched.custom_direct_order_forms && !!errors.custom_direct_order_forms}
                 />
@@ -197,6 +214,7 @@ export const ReimbursementsSettingsForm: React.FC<ReimbursementsSettingsFormProp
                       defaultValue={values?.is_merged_periods?.toString()}
                       setParentValue={(value) => {
                         setFieldValue('is_merged_periods', value == 'true')
+                        setIsChanged(true)
                       }}
                       error={{
                         error: touched.is_merged_periods && !!errors.is_merged_periods,
@@ -209,13 +227,15 @@ export const ReimbursementsSettingsForm: React.FC<ReimbursementsSettingsFormProp
                     <MultiSelect
                       options={periodOptions}
                       placeholder='Select'
+                      borderNone={true}
                       onChange={(value) => {
                         const filteredGrades = value.filter(
                           (item) => periodOptions.findIndex((option) => option.value === item) > -1,
                         )
                         setFieldValue('merged_periods', filteredGrades.join(','))
+                        setIsChanged(true)
                       }}
-                      // renderValue={renderGrades(values.grades)}
+                      renderValue={renderPeriods(values?.merged_periods)}
                       defaultValue={values?.merged_periods?.length ? values.merged_periods.split(',') : []}
                       error={{ error: touched.merged_periods && !!errors.merged_periods, errorMsg: '' }}
                       disabled={!values.is_merged_periods}
@@ -232,6 +252,7 @@ export const ReimbursementsSettingsForm: React.FC<ReimbursementsSettingsFormProp
                       value={values?.merged_periods_reimbursements_forms}
                       onChangeValue={(value: number | null) => {
                         setFieldValue('merged_periods_reimbursements_forms', value)
+                        setIsChanged(true)
                       }}
                       error={
                         touched.merged_periods_reimbursements_forms && !!errors.merged_periods_reimbursements_forms
@@ -253,6 +274,7 @@ export const ReimbursementsSettingsForm: React.FC<ReimbursementsSettingsFormProp
                       value={values?.merged_periods_direct_order_forms}
                       onChangeValue={(value: number | null) => {
                         setFieldValue('merged_periods_direct_order_forms', value)
+                        setIsChanged(true)
                       }}
                       error={touched.merged_periods_direct_order_forms && !!errors.merged_periods_direct_order_forms}
                       disabled={!values.is_merged_periods}
@@ -283,6 +305,7 @@ export const ReimbursementsSettingsForm: React.FC<ReimbursementsSettingsFormProp
                   value={values?.third_party_reimbursements_forms}
                   onChangeValue={(value: number | null) => {
                     setFieldValue('third_party_reimbursements_forms', value)
+                    setIsChanged(true)
                   }}
                   error={touched.third_party_reimbursements_forms && !!errors.third_party_reimbursements_forms}
                 />
@@ -310,6 +333,7 @@ export const ReimbursementsSettingsForm: React.FC<ReimbursementsSettingsFormProp
                   value={values?.require_software_reimbursements_forms}
                   onChangeValue={(value: number | null) => {
                     setFieldValue('require_software_reimbursements_forms', value)
+                    setIsChanged(true)
                   }}
                   error={
                     touched.require_software_reimbursements_forms && !!errors.require_software_reimbursements_forms
@@ -337,6 +361,7 @@ export const ReimbursementsSettingsForm: React.FC<ReimbursementsSettingsFormProp
               value={values?.max_receipts}
               onChangeValue={(value: number | null) => {
                 setFieldValue('max_receipts', value)
+                setIsChanged(true)
               }}
               error={touched.max_receipts && !!errors.max_receipts}
             />
@@ -357,6 +382,7 @@ export const ReimbursementsSettingsForm: React.FC<ReimbursementsSettingsFormProp
               defaultValue={values?.require_passing_grade?.toString()}
               setParentValue={(value) => {
                 setFieldValue('require_passing_grade', value === 'true')
+                setIsChanged(true)
               }}
               error={{ error: touched.require_passing_grade && !!errors.require_passing_grade, errorMsg: '' }}
             />
@@ -371,6 +397,7 @@ export const ReimbursementsSettingsForm: React.FC<ReimbursementsSettingsFormProp
               defaultValue={values?.min_grade_percentage || undefined}
               setParentValue={(value) => {
                 setFieldValue('min_grade_percentage', value)
+                setIsChanged(true)
               }}
               error={{ error: touched.min_grade_percentage && !!errors.min_grade_percentage, errorMsg: '' }}
               disabled={!values.require_passing_grade}
@@ -392,6 +419,7 @@ export const ReimbursementsSettingsForm: React.FC<ReimbursementsSettingsFormProp
               defaultValue={values?.allow_delete?.toString()}
               setParentValue={(value) => {
                 setFieldValue('allow_delete', value === 'true')
+                setIsChanged(true)
               }}
               error={{ error: touched.allow_delete && !!errors.allow_delete, errorMsg: '' }}
             />
@@ -412,6 +440,7 @@ export const ReimbursementsSettingsForm: React.FC<ReimbursementsSettingsFormProp
               defaultValue={values?.allow_submit_with_updates_required?.toString()}
               setParentValue={(value) => {
                 setFieldValue('allow_submit_with_updates_required', value === 'true')
+                setIsChanged(true)
               }}
               error={{
                 error: touched.allow_submit_with_updates_required && !!errors.allow_submit_with_updates_required,
@@ -437,6 +466,7 @@ export const ReimbursementsSettingsForm: React.FC<ReimbursementsSettingsFormProp
               defaultValue={values?.auto_delete_updates_required?.toString()}
               setParentValue={(value) => {
                 setFieldValue('auto_delete_updates_required', value === 'true')
+                setIsChanged(true)
               }}
               error={{
                 error: touched.auto_delete_updates_required && !!errors.auto_delete_updates_required,
@@ -456,6 +486,7 @@ export const ReimbursementsSettingsForm: React.FC<ReimbursementsSettingsFormProp
               value={values?.num_days_delete_updates_required}
               onChangeValue={(value: number | null) => {
                 setFieldValue('num_days_delete_updates_required', value)
+                setIsChanged(true)
               }}
               error={touched.num_days_delete_updates_required && !!errors.num_days_delete_updates_required}
               disabled={!values.auto_delete_updates_required}
@@ -469,7 +500,7 @@ export const ReimbursementsSettingsForm: React.FC<ReimbursementsSettingsFormProp
     },
     {
       name: 'Display Remaining Funds',
-      component: <RemainingFunds gradeOptions={gradeOptions}></RemainingFunds>,
+      component: <RemainingFunds gradeOptions={gradeOptions} setIsChanged={setIsChanged}></RemainingFunds>,
     },
   ]
 

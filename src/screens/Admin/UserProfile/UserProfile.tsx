@@ -145,7 +145,6 @@ export const UserProfile: React.FC<UserProfileProps> = ({ handleClose, data, set
           },
         })
       }
-      document.location.reload()
       setRequesting(false)
       handleClose(true)
     }

@@ -66,7 +66,7 @@ export const EnrollmentPacketTable: React.FC = () => {
 
   const handleOpenProfile = (rowId: number) => {
     const row = enrollmentPackets?.find((el) => el.packet_id === rowId)
-    showModal(row.student.parent)
+    showModal(row.student.parent, refetch)
     setStore(true)
   }
 

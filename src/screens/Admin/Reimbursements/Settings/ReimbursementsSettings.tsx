@@ -2,11 +2,12 @@ import React, { useEffect, useState } from 'react'
 import { useMutation, useQuery } from '@apollo/client'
 import { Box, Button } from '@mui/material'
 import { Form, Formik } from 'formik'
+import { Prompt } from 'react-router-dom'
 import * as yup from 'yup'
 import { Layout } from '@mth/components/Layout'
 import { PageBlock } from '@mth/components/PageBlock'
 import PageHeader from '@mth/components/PageHeader'
-import { MthRoute } from '@mth/enums'
+import { MthRoute, MthTitle } from '@mth/enums'
 import { useProgramYearListBySchoolYearId } from '@mth/hooks'
 import { SchoolYear } from '@mth/models'
 import { SchoolYearDropDown } from '@mth/screens/Admin/Components/SchoolYearDropdown'
@@ -17,6 +18,7 @@ import { ReimbursementSetting, RemainingFund } from '@mth/screens/Admin/Reimburs
 import { mthButtonClasses } from '@mth/styles/button.style'
 
 export const ReimbursementsSettings: React.FC = () => {
+  const [isChanged, setIsChanged] = useState<boolean>(false)
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false)
   const [selectedYearId, setSelectedYearId] = useState<number>()
   const [schoolYear, setSchoolYear] = useState<SchoolYear | undefined>(undefined)
@@ -69,10 +71,12 @@ export const ReimbursementsSettings: React.FC = () => {
     })
       .then(() => {
         setIsSubmitted(false)
+        setIsChanged(false)
         refetch()
       })
       .catch(() => {
         setIsSubmitted(false)
+        setIsChanged(false)
       })
   }
 
@@ -100,6 +104,13 @@ export const ReimbursementsSettings: React.FC = () => {
   return (
     <Layout>
       <PageBlock>
+        <Prompt
+          when={isChanged}
+          message={JSON.stringify({
+            header: MthTitle.UNSAVED_TITLE,
+            content: MthTitle.UNSAVED_DESCRIPTION,
+          })}
+        />
         <Formik
           initialValues={initialValues}
           enableReinitialize={true}
@@ -122,6 +133,7 @@ export const ReimbursementsSettings: React.FC = () => {
                 <ReimbursementsSettingsForm
                   schoolYear={schoolYear}
                   gradeOptions={gradeOptions}
+                  setIsChanged={setIsChanged}
                 ></ReimbursementsSettingsForm>
               )}
             </Box>

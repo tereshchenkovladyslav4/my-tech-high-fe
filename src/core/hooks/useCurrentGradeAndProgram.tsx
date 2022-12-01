@@ -64,12 +64,6 @@ export const useCurrentGradeAndProgramByRegionId = (
       if (schoolYearData?.midyear_application) {
         const schoolYear_date_begin = moment(schoolYearData?.date_begin?.substring(0, 10)).toISOString()
         const schoolYear_date_end = moment(schoolYearData?.date_end?.substring(0, 10)).toISOString()
-        const schoolYear_midyear_application_open = moment(
-          schoolYearData?.midyear_application_open?.substring(0, 10),
-        ).toISOString()
-        const schoolYear_midyear_application_close = moment(
-          schoolYearData?.midyear_application_close?.substring(0, 10),
-        ).toISOString()
 
         setProgramYearList(() => [
           {
@@ -77,9 +71,7 @@ export const useCurrentGradeAndProgramByRegionId = (
             value: 'schoolYear',
           },
           {
-            label: `${moment(schoolYear_midyear_application_open).format('YYYY')}-${moment(
-              schoolYear_midyear_application_close,
-            ).format('YY')} Mid-year`,
+            label: `${moment(schoolYear_date_end).format('YYYY')}-${moment(schoolYear_date_end).format('YY')} Mid-year`,
             value: 'midYear',
           },
         ])

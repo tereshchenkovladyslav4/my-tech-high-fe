@@ -346,7 +346,7 @@ export const EnrollmentPacketModal: React.FC<EnrollmentPacketModalProps> = ({ ha
                 <Box sx={classes.content}>
                   <Grid container sx={{ padding: '10px 0px' }}>
                     <Grid item md={6} sm={6} xs={12}>
-                      <EnrollmentJobsInfo packet={packet} handleModem={tempFunction} />
+                      <EnrollmentJobsInfo packet={packet} handleModem={tempFunction} refetch={refetch} />
                       <EnrollmentPacketDocument packetData={packet} />
                       <EnrollmentPacketNotes />
                       <PacketSaveButtons submitForm={methods.handleSubmit(onSubmit)} />

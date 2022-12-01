@@ -10,9 +10,10 @@ import { ReimbursementSetting, RemainingFund } from '@mth/screens/Admin/Reimburs
 
 export type RemainingFundsProps = {
   gradeOptions: DropDownItem[]
+  setIsChanged: (value: boolean) => void
 }
 
-export const RemainingFunds: React.FC<RemainingFundsProps> = ({ gradeOptions }) => {
+export const RemainingFunds: React.FC<RemainingFundsProps> = ({ gradeOptions, setIsChanged }) => {
   const { errors, setFieldValue, touched, values } = useFormikContext<ReimbursementSetting>()
 
   const handleChangeOption = (i: number, amount: number | null) => {
@@ -22,6 +23,7 @@ export const RemainingFunds: React.FC<RemainingFundsProps> = ({ gradeOptions }) 
       amount,
     }
     setFieldValue('stateCourseCords', temp)
+    setIsChanged(true)
   }
 
   return (
@@ -35,6 +37,7 @@ export const RemainingFunds: React.FC<RemainingFundsProps> = ({ gradeOptions }) 
             defaultValue={values?.display_remaining_funds?.toString()}
             setParentValue={(value) => {
               setFieldValue('display_remaining_funds', value === 'true')
+              setIsChanged(true)
             }}
             error={{ error: touched.display_remaining_funds && !!errors.display_remaining_funds, errorMsg: '' }}
           />

@@ -7,7 +7,6 @@ import { Prompt, useHistory } from 'react-router-dom'
 import * as yup from 'yup'
 import { RICH_TEXT_VALID_MIN_LENGTH } from '@mth/constants'
 import { MthRoute, MthTitle } from '@mth/enums'
-import { convertDateToUTCDate } from '@mth/utils'
 import { CustomModal } from '../../SiteManagement/EnrollmentSetting/components/CustomModal/CustomModals'
 import { defaultEvent, defaultEventFormData } from '../defaultValue'
 import { RSVPComponent } from '../RSVPComponent'
@@ -48,7 +47,13 @@ const AddEvent: React.FC<AddEventProps> = ({ selectedEvent }) => {
       .required('Description Required')
       .min(RICH_TEXT_VALID_MIN_LENGTH, 'Invalid Description')
       .nullable(),
-    grades: yup.array().min(1, 'Grade Required'),
+    grades: yup
+      .array()
+      .nullable()
+      .when('users', {
+        is: (users: string[]) => users.includes('1') || users.includes('2'),
+        then: yup.array().required().min(1, 'Grades Required'),
+      }),
     allDay: yup.boolean().nullable(),
     hasRSVP: yup.boolean().nullable(),
     users: yup.array().min(1, 'User Required'),
@@ -64,8 +69,16 @@ const AddEvent: React.FC<AddEventProps> = ({ selectedEvent }) => {
           event_id: Number(event?.eventId),
           TypeId: Number(values?.eventTypeId),
           description: values?.description,
-          end_date: convertDateToUTCDate(values?.endDate, values?.allDay ? '00:00' : values?.time),
-          start_date: convertDateToUTCDate(values?.startDate, values?.allDay ? '00:00' : values?.time),
+          end_date: moment(
+            `${moment(values?.endDate).tz('America/Denver').format('yyyy-MM-DD')} ${
+              values?.allDay ? '00:00' : values?.time
+            }`,
+          ).toISOString(),
+          start_date: moment(
+            `${moment(values?.startDate).tz('America/Denver').format('yyyy-MM-DD')} ${
+              values?.allDay ? '00:00' : values?.time
+            }`,
+          ).toISOString(),
           all_day: values?.allDay,
           title: values?.title,
           filter_grades: JSON.stringify(values?.grades.filter((grade) => grade)),

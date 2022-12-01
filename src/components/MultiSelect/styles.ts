@@ -1,24 +1,10 @@
-import { MTHBLUE } from '../../utils/constants'
-
-export const dropdownClassess = {
-  textfield: {
-    width: '100%',
-    margin: '16px 0',
-  },
-  alternate: {
-    width: '100%',
-    margin: '16px 0',
-    '& .MuiSvgIcon-root': {
-      color: MTHBLUE,
-      alignSelf: 'center',
-      justifyContent: 'center',
-    },
-  },
+export const multiSelectClasses = {
   borderNone: {
     color: 'blue',
     border: 'none',
+    marginTop: '8px !important',
     '& .MuiSvgIcon-root': {
-      color: 'blue',
+      display: 'none',
     },
   },
 }

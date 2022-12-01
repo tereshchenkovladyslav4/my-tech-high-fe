@@ -243,7 +243,7 @@ export const StudentFilters: React.FC<StudentFiltersProps> = ({
 
   const [specialEds, setSpecialEds] = useState<DropDownItem[]>([
     {
-      label: 'No',
+      label: 'None',
       value: 0,
     },
     {
@@ -253,10 +253,6 @@ export const StudentFilters: React.FC<StudentFiltersProps> = ({
     {
       label: '504',
       value: 2,
-    },
-    {
-      label: 'Exit',
-      value: 3,
     },
   ])
 
@@ -316,6 +312,9 @@ export const StudentFilters: React.FC<StudentFiltersProps> = ({
     if (currentUserData && currentUserData.student) {
       setApplications(currentUserData.student.applications)
     }
+  }, [currentUserData])
+
+  useEffect(() => {
     if (specialEdOptions.length != 0) {
       const speicalEdDropdonws: DropDownItem[] = []
       specialEdOptions.map((item, index): void => {
@@ -326,7 +325,7 @@ export const StudentFilters: React.FC<StudentFiltersProps> = ({
       })
       setSpecialEds(speicalEdDropdonws)
     }
-  }, [currentUserData])
+  }, [specialEdOptions])
 
   useEffect(() => {
     if (studentStatusData.diploma_seeking !== null && studentStatusData.diploma_seeking !== undefined) {

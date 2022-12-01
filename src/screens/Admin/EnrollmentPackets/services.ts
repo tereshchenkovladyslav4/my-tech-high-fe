@@ -252,6 +252,93 @@ export const getEnrollmentPacketQuery = gql`
   }
 `
 
+export const getPacket = gql`
+  query Packet($packetID: ID!) {
+    packet(packet_id: $packetID) {
+      packet_id
+      student {
+        status {
+          status
+        }
+        reenrolled
+        grade_level
+        student_id
+        special_ed
+        grade_levels {
+          grade_level
+          school_year {
+            date_begin
+            date_end
+          }
+        }
+        current_school_year_status {
+          school_year_id
+        }
+        applications {
+          midyear_application
+          school_year {
+            school_year_id
+            schedule
+            date_begin
+            date_end
+          }
+        }
+        parent {
+          parent_id
+          person {
+            person_id
+            preferred_first_name
+            preferred_last_name
+            first_name
+            last_name
+            middle_name
+            email
+            address {
+              street
+              street2
+              city
+              zip
+              state
+              county_id
+              country_id
+            }
+            user {
+              user_id
+              userRegions {
+                regionDetail {
+                  name
+                }
+              }
+            }
+          }
+          phone {
+            number
+          }
+        }
+        person {
+          person_id
+          preferred_first_name
+          preferred_last_name
+          first_name
+          last_name
+          middle_name
+          email
+          date_of_birth
+          gender
+          address {
+            street
+            street2
+            city
+            zip
+            state
+            county_id
+          }
+        }
+      }
+    }
+  }
+`
+
 export const getEnrollmentPacketStatusesQuery = gql`
   query packetStatuses {
     packetStatuses {

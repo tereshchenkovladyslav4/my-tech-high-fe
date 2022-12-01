@@ -4,19 +4,24 @@ import { MthColor, MthTitle } from '@mth/enums'
 import { CustomModal } from '../../screens/Admin/SiteManagement/EnrollmentSetting/components/CustomModal/CustomModals'
 import { UserProfile } from '../../screens/Admin/UserProfile/UserProfile'
 import { ProfileContext } from './ProfileContext'
+
+type RefetchType = () => void
+
 export const ProfileProvider: FunctionComponent = ({ children }) => {
   const [store, setStore] = useState(false)
   const [open, setOpen] = useState(false)
   const [isChanged, setIsChanged] = useState(false)
   const [data, setData] = useState()
+  const [refetch, setRefetch] = useState<RefetchType>(() => () => {})
   const [showConfirmModal, setShowConfirmModal] = useState(false)
   const profileContext = React.useMemo(
     () => ({
       store,
       setStore,
       hideModal: () => {},
-      showModal: (data) => {
+      showModal: (data, refetch: RefetchType = () => () => {}) => {
         setData(data)
+        setRefetch(() => () => refetch())
         setOpen(true)
       },
     }),
@@ -27,12 +32,14 @@ export const ProfileProvider: FunctionComponent = ({ children }) => {
       setOpen(false)
       setStore(false)
       setIsChanged(false)
+      refetch()
     } else if (isChanged) {
       setShowConfirmModal(true)
     } else {
       setOpen(false)
       setStore(false)
       setIsChanged(false)
+      refetch()
     }
   }
   return (

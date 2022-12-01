@@ -9,6 +9,7 @@ export type MultiSelectProps = {
   options: DropDownItem[]
   label?: string
   placeholder?: string
+  borderNone?: boolean
   renderValue?: string
   defaultValue?: (string | number)[]
   error?: FormikCustomError

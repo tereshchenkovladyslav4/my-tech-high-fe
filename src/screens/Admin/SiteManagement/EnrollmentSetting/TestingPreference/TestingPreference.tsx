@@ -64,7 +64,7 @@ const TestingPreference: React.FC = () => {
       schoolYears
         .filter((schoolYear) => Number(schoolYear.school_year_id) == selectedSchoolYear)
         .map((schoolYear) => {
-          setAvailableGrades(schoolYear.grades?.split(','))
+          setAvailableGrades(schoolYear.grades?.split(',').sort((a, b) => (parseInt(a) > parseInt(b) ? 1 : -1)))
           infoArray.push({
             schoolYear: Number(schoolYear.school_year_id),
             type: TESTING_PREFERENCE,

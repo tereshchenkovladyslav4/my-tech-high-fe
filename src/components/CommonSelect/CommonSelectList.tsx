@@ -4,7 +4,7 @@ import { CommonSelect } from '@mth/components/CommonSelect/CommonSelect'
 import { CommonSelectType } from './types'
 
 type CommonSelectListProps = {
-  settingList: CommonSelectType[]
+  settingList: (CommonSelectType | null)[]
 }
 
 export const CommonSelectList: React.FC<CommonSelectListProps> = ({ settingList }) => {

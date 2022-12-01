@@ -32,6 +32,7 @@ const FilterComponent: React.FC<FilterComponentProps> = ({
   const { programYearList, gradeList, schoolPartnerList, testPreference } = useCurrentGradeAndProgramByRegionId(
     Number(me?.selectedRegionId),
   )
+
   const [expand, setExpand] = useState<boolean>(true)
   const [showOtherFilters, setShowOtherFilters] = useState(false)
   const [otherList, setOtherList] = useState<OtherType[]>([])
@@ -67,7 +68,6 @@ const FilterComponent: React.FC<FilterComponentProps> = ({
     let newList = []
     if (gradeList.length > 0) {
       newList = sortBy(gradeList, (a) => (parseFloat(a.value) ? parseFloat(a.value) : 0))
-      newList.splice(0, 0, newList.pop())
       setSortedGradeList(newList)
     }
   }, [gradeList])

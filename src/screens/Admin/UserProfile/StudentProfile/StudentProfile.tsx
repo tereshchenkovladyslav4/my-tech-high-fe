@@ -475,6 +475,7 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
                 sx={{ color: '#cccccc', fontWeight: '700' }}
                 onChange={(e) => {
                   setGradeLevel(e.target.value)
+                  setIsChanged(true)
                   setStudentStatus({ ...studentStatus, ...{ grade_level: e.target.value } })
                 }}
               >

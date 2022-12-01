@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { FormControl, Select, MenuItem, Checkbox, ListItemText, InputLabel, OutlinedInput } from '@mui/material'
 import { Box } from '@mui/system'
 import { map } from 'lodash'
+import { multiSelectClasses } from '@mth/components/MultiSelect/styles'
 import { MthColor } from '@mth/enums'
 import { MultiSelectProps } from './types'
 
@@ -19,6 +20,7 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
   options,
   label,
   placeholder,
+  borderNone = false,
   renderValue,
   disabled,
   defaultValue,
@@ -42,7 +44,7 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
         </span>
       )
     ) : (
-      <span style={{ color: MthColor.SYSTEM_12 }}>{placeholder}</span>
+      <span style={{ color: borderNone ? MthColor.MTHBLUE : MthColor.SYSTEM_12 }}>{placeholder}</span>
     )
 
   const renderDropDownItem = map(options, (dropDownItem, index) => (
@@ -58,7 +60,7 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
 
   return (
     <Box sx={{ minWidth: 120 }}>
-      <FormControl fullWidth size='medium' className='MthFormField'>
+      <FormControl variant={borderNone ? 'standard' : 'outlined'} fullWidth size='medium' className='MthFormField'>
         <InputLabel id='multiple-checkbox-label'>{label}</InputLabel>
         <Select
           labelId='multiple-checkbox-label'
@@ -66,8 +68,10 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
           multiple={true}
           value={value}
           onChange={(e) => handleChange(e.target.value)}
+          disableUnderline={borderNone ? true : false}
           displayEmpty
-          input={<OutlinedInput label={label} />}
+          input={borderNone ? undefined : <OutlinedInput label={label} />}
+          sx={borderNone ? multiSelectClasses.borderNone : {}}
           renderValue={renderSelectedItems}
           MenuProps={MenuProps}
           error={error?.error}
