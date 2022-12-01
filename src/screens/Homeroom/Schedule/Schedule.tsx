@@ -25,13 +25,14 @@ import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { getSignatureFile } from '@mth/screens/Admin/EnrollmentPackets/services'
 import { AssessmentType } from '@mth/screens/Admin/SiteManagement/EnrollmentSetting/TestingPreference/types'
 import { UpdateStudentMutation } from '@mth/screens/Admin/UserProfile/services'
+import { mthButtonClasses } from '@mth/styles/button.style'
 import { extractContent, gradeNum, gradeText } from '@mth/utils'
 import { DiplomaSeeking } from './DiplomaSeeking'
 import { HeaderComponent } from './HeaderComponent'
 import { OptOutForm } from './OptOutForm'
 import { ScheduleBuilder } from './ScheduleBuilder'
 import { StudentInfo } from './StudentInfo'
-import { scheduleClassess } from './styles'
+import { scheduleClasses } from './styles'
 import { TestingPreference } from './TestingPreference'
 import { ScheduleProps, StudentAssessment, StudentScheduleInfo, DiplomaQuestionType } from './types'
 
@@ -91,7 +92,7 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
   const { loading: diplomaLoading, data: diplomaData } = useQuery(diplomaQuestionForStudent, {
     variables: {
       diplomaQuestionInput: {
-        schoolYearId: Number(student?.current_school_year_status?.school_year_id),
+        schoolYearId: selectedYearId,
         grades: gradeNum(student),
       },
     },
@@ -106,7 +107,7 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
   } = useQuery(diplomaAnswerGql, {
     variables: {
       diplomaAnswerInput: {
-        schoolYearId: Number(student?.current_school_year_status?.school_year_id),
+        schoolYearId: selectedYearId,
         studentId: studentId,
       },
     },
@@ -124,16 +125,14 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
         saveDiplomaAnswerInput: {
           answer: answer,
           studentId: studentId,
-          schoolYearId: Number(student?.current_school_year_status?.school_year_id),
+          schoolYearId: selectedYearId,
         },
       },
     })
     await diplomaAnswerRefetch()
   }
 
-  const { assessments, loading, schoolYear } = useAssessmentsBySchoolYearId(
-    Number(student?.current_school_year_status?.school_year_id),
-  )
+  const { loading: assessmentsLoading, assessments } = useAssessmentsBySchoolYearId(selectedYearId)
 
   const { loading: signatureInfoLoading, data: signatureData } = useQuery(getSignatureInfoByStudentId, {
     variables: {
@@ -369,19 +368,19 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
   }, [student])
 
   useEffect(() => {
-    if (!loading && assessments && schoolYear) {
-      setActiveTestingPreference(schoolYear?.testing_preference)
+    if (!assessmentsLoading && assessments && selectedYear) {
+      setActiveTestingPreference(selectedYear?.testing_preference)
       if (backTo) setStep(MthTitle.STEP_SCHEDULE_BUILDER)
-      else if (schoolYear?.testing_preference) setStep(MthTitle.STEP_TESTING_PREFERENCE)
-      else if (schoolYear?.diploma_seeking) setStep(MthTitle.STEP_DIPLOMA_SEEKING)
+      else if (selectedYear?.testing_preference) setStep(MthTitle.STEP_TESTING_PREFERENCE)
+      else if (selectedYear?.diploma_seeking) setStep(MthTitle.STEP_DIPLOMA_SEEKING)
       else setStep('')
-      setActiveDiplomaSeeking(schoolYear?.diploma_seeking)
-      setTestingPreferenceTitle(schoolYear?.testing_preference_title || DEFAULT_TESTING_PREFERENCE_TITLE)
+      setActiveDiplomaSeeking(selectedYear?.diploma_seeking)
+      setTestingPreferenceTitle(selectedYear?.testing_preference_title || DEFAULT_TESTING_PREFERENCE_TITLE)
       setTestingPreferenceDescription(
-        schoolYear?.testing_preference_description || DEFAULT_TESTING_PREFERENCE_DESCRIPTION,
+        selectedYear?.testing_preference_description || DEFAULT_TESTING_PREFERENCE_DESCRIPTION,
       )
-      setOptOutFormTitle(schoolYear?.opt_out_form_title || DEFAULT_OPT_OUT_FORM_TITLE)
-      setOptOutFormDescription(schoolYear?.opt_out_form_description || DEFAULT_OPT_OUT_FORM_DESCRIPTION)
+      setOptOutFormTitle(selectedYear?.opt_out_form_title || DEFAULT_OPT_OUT_FORM_TITLE)
+      setOptOutFormDescription(selectedYear?.opt_out_form_description || DEFAULT_OPT_OUT_FORM_DESCRIPTION)
       setAvailableAssessments(
         assessments?.filter(
           (assessment) =>
@@ -389,7 +388,7 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
         ),
       )
     }
-  }, [assessments, loading, schoolYear, backTo])
+  }, [assessments, assessmentsLoading, selectedYear, backTo])
 
   useEffect(() => {
     if (signatureFileId) {
@@ -397,7 +396,7 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
         variables: {
           fileId: signatureFileId,
         },
-      })
+      }).then(() => {})
     }
   }, [signatureFileId])
 
@@ -450,7 +449,7 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
     <Card sx={{ margin: 4, padding: 4 }}>
       <Box
         sx={{
-          ...scheduleClassess.container,
+          ...scheduleClasses.container,
           backgroundImage: step == MthTitle.STEP_SCHEDULE_BUILDER ? '' : `url(${BGSVG})`,
         }}
       >
@@ -531,8 +530,8 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
         )}
         {step !== MthTitle.SCHEDULE && (
           <Box sx={{ display: 'flex', justifyContent: 'end' }}>
-            <Button onClick={() => handleNextStep()} variant='contained' sx={scheduleClassess.button}>
-              {'Next'}
+            <Button onClick={() => handleNextStep()} sx={mthButtonClasses.primary}>
+              Next
             </Button>
           </Box>
         )}

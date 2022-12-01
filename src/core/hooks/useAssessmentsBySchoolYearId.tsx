@@ -4,7 +4,7 @@ import { getAssessmentsBySchoolYearId } from '@mth/graphql/queries/assessment'
 import { AssessmentType } from '@mth/screens/Admin/SiteManagement/EnrollmentSetting/TestingPreference/types'
 
 export const useAssessmentsBySchoolYearId = (
-  school_year_id: number,
+  school_year_id: number | undefined,
 ): {
   loading: boolean
   assessments: AssessmentType[]
@@ -26,7 +26,7 @@ export const useAssessmentsBySchoolYearId = (
     variables: {
       schoolYearId: school_year_id,
     },
-    skip: school_year_id ? false : true,
+    skip: !school_year_id,
     fetchPolicy: 'network-only',
   })
 

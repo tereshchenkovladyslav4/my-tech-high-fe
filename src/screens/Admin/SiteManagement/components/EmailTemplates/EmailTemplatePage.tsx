@@ -168,7 +168,12 @@ export const EmailTemplatePage: FunctionComponent<{ onBackPress?: () => void }> 
     if (emailTemplatesData != undefined) {
       const templates = {}
       emailTemplatesData.emailTemplatesByRegion
-        .sort((a, b) => (a.category_id * 1000 + parseInt(a.id) > b.category_id * 1000 + parseInt(b.id) ? 1 : -1))
+        .sort((a, b) =>
+          a.category_id * 10000 + parseInt(a.priority) * 100 + parseInt(a.id) >
+          b.category_id * 10000 + parseInt(b.priority) * 100 + parseInt(b.id)
+            ? 1
+            : -1,
+        )
         .forEach((emailTemplate) => {
           let category = null
           const category_name = emailTemplate?.category?.category_name

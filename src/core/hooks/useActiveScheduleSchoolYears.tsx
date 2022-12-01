@@ -49,7 +49,6 @@ export const useActiveScheduleSchoolYears = (
   useEffect(() => {
     if (schoolYears?.length) {
       const currentYear = schoolYears.filter((item) => item.IsCurrentYear)[0]
-      setSelectedYearId(currentYear?.school_year_id || schoolYears.at(-1)?.school_year_id)
       const activeScheduleYear =
         currentYear?.ScheduleStatus === ScheduleStatus.SUBMITTED ||
         currentYear?.ScheduleStatus === ScheduleStatus.ACCEPTED
@@ -58,6 +57,9 @@ export const useActiveScheduleSchoolYears = (
               (item) =>
                 item.ScheduleStatus === ScheduleStatus.SUBMITTED || item.ScheduleStatus === ScheduleStatus.ACCEPTED,
             )[0]
+      setSelectedYearId(
+        activeScheduleYear?.school_year_id || currentYear?.school_year_id || schoolYears.at(-1)?.school_year_id,
+      )
       setActiveScheduleYearId(activeScheduleYear?.school_year_id)
     } else {
       setSelectedYearId(undefined)

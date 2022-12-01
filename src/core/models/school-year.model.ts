@@ -26,6 +26,7 @@ export type SchoolYear = {
   homeroom_resource_close: string
   schedule: boolean
   diploma_seeking: boolean
+  testing_preference: boolean
   ScheduleBuilder?: ScheduleBuilder
   IsCurrentYear: boolean
   IsScheduleBuilderOpen: boolean

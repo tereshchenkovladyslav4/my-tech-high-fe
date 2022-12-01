@@ -67,6 +67,7 @@ export const getEmailTemplatesByRegionQuery = gql`
       from
       bcc
       standard_responses
+      priority
       category_id
       category {
         category_name

@@ -6,6 +6,12 @@ export const getActiveScheduleSchoolYearsQuery = gql`
       school_year_id
       date_begin
       date_end
+      testing_preference_title
+      testing_preference_description
+      opt_out_form_title
+      opt_out_form_description
+      diploma_seeking
+      testing_preference
       IsCurrentYear
       IsScheduleBuilderOpen
       IsSecondSemesterOpen
