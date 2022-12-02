@@ -7,8 +7,7 @@ import { useHistory } from 'react-router-dom'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { CourseType } from '@mth/enums'
-import { useProviders } from '@mth/hooks'
-import { SchoolYear } from '@mth/models'
+import { SchoolYearResponseType, useProviders } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 // import { SchoolYearDropDown } from '@mth/screens/Admin/Components/SchoolYearDropdown'
 import { BUTTON_LINEAR_GRADIENT, MTHBLUE, RED_GRADIENT } from '../../../../utils/constants'
@@ -25,7 +24,7 @@ export const Filters: FunctionComponent<FiltersProps> = ({ filter, setFilter }) 
   const [courseType, setCourseType] = useState<CourseType[]>([])
   const [mthDirectProvider, setMthDirectProvider] = useState<number[]>([])
   const [selectedYearId, setSelectedYearId] = useState<number>()
-  const [schoolYears, setSchoolYears] = useState<SchoolYear[]>([])
+  const [schoolYears, setSchoolYears] = useState<SchoolYearResponseType[]>([])
   const [gradeLevels, setGradeLevels] = useState<string[]>([])
   const [showDiplomaSeeking, setShowDiplomaSeeking] = useState(false)
   const [showCustomBuilt, setShowCustomBuilt] = useState<number>(0)
