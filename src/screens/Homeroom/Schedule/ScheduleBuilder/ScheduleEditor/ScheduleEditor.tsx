@@ -85,7 +85,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
   const [enableQuestionTooltip, setEnableQuestionTooltip] = useState<boolean>(false)
   const [multiPeriodsNotification, setMultiPeriodsNotification] = useState<string | undefined>()
   const [selectedCourse, setSelectedCourse] = useState<Course | undefined>()
-  const [lockedIcon, setLockedIcon] = useState(false)
+  const [lockedIcon, setLockedIcon] = useState(true)
 
   const createPeriodMenuItems = (schedule: ScheduleData): MenuItemData => {
     const menuItemsData: MenuItemData = {
@@ -622,6 +622,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
         ? !isSecondSemester
           ? schedule?.schedulePeriodStatus === SchedulePeriodStatus.UPDATE_REQUIRED
             ? (scheduleStatus === ScheduleStatus.ACCEPTED ||
+                scheduleStatus === ScheduleStatus.SUBMITTED ||
                 selectedScheduleStatus === ScheduleStatus.UPDATES_REQUIRED) &&
               isUpdatePeriodRequired
               ? { '& .MuiTableCell-root': { background: 'rgba(236, 89, 37, 0.1) !important' } }
@@ -784,7 +785,8 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
               {editable(item.rawData) &&
               !item.rawData.Provider?.multiple_periods &&
               !!item.rawData.Title &&
-              item.rawData.Title.CourseTypes?.length > 1 ? (
+              item.rawData.Title.CourseTypes?.length > 1 &&
+              !lockedIcon ? (
                 <NestedDropdown
                   menuItemsData={createCourseTypeMenuItems(item.rawData)}
                   MenuProps={{ elevation: 3 }}
@@ -963,7 +965,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
               {item.rawData.CourseType === CourseType.CUSTOM_BUILT && !!item.rawData.CustomBuiltDescription && (
                 <Box sx={scheduleBuilderClasses.descriptionWrap}>
                   <Typography
-                    sx={scheduleBuilderClasses.tableContent}
+                    sx={{ ...scheduleBuilderClasses.tableContent, background: MthColor.LIGHTGREEN }}
                     component={'span'}
                     variant={'body2'}
                     dangerouslySetInnerHTML={{ __html: item.rawData.CustomBuiltDescription }}

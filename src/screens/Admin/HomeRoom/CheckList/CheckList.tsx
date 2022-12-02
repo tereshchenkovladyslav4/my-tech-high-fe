@@ -42,12 +42,12 @@ const CheckList: React.FC = () => {
   const [selectedYear, setSelectedYear] = useState<number>(0)
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [checkListItems, setCheckListItems] = useState<DropDownItem[]>([])
-  const [selectedCheckListItem, setSelectedCheckListItem] = useState<string | number>('subject_checklist')
+  const [selectedCheckListItem, setSelectedCheckListItem] = useState<string | number>('independent_checklist')
   const [tableData, setTableData] = useState<MthTableRowItem<CheckListType>[]>([])
   const [fileModalOpen, setFileModalOpen] = useState<boolean>(false)
   const [searchField, setSearchField] = useState<string>('')
   const [totalChecklist, setTotalChecklist] = useState<number>()
-  const [filters, setFilters] = useState<ChecklistFilterVM>({ status: 'Independent Checklist' })
+  const [filters, setFilters] = useState<ChecklistFilterVM>()
   const [editModal, setEditModal] = useState(false)
   const [selectedChecklist, setSelectedChecklist] = useState<MthTableRowItem<CheckListType>>()
   const { me } = useContext(UserContext)
@@ -65,7 +65,14 @@ const CheckList: React.FC = () => {
   }, [])
 
   useEffect(() => {
-    if (schoolYears?.length) setSelectedYear(schoolYears[0].school_year_id)
+    if (schoolYears?.length) {
+      setSelectedYear(schoolYears[0].school_year_id)
+      setFilters({
+        ...filters,
+        selectedYearId: schoolYears[0].school_year_id as number,
+        status: 'Independent Checklist',
+      })
+    }
   }, [schoolYears])
 
   const subjectFields: MthTableField<CheckListType>[] = [

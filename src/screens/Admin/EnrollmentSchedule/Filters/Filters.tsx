@@ -6,29 +6,34 @@ import { map } from 'lodash'
 import { useHistory } from 'react-router-dom'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { CourseType } from '@mth/enums'
+import { useProviders } from '@mth/hooks'
+import { SchoolYear } from '@mth/models'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
-import { SchoolYearDropDown } from '@mth/screens/Admin/Components/SchoolYearDropdown'
-import { BUTTON_LINEAR_GRADIENT, MTHBLUE, RED_GRADIENT, CURRICULUM_PROVIDERS } from '../../../../utils/constants'
+// import { SchoolYearDropDown } from '@mth/screens/Admin/Components/SchoolYearDropdown'
+import { BUTTON_LINEAR_GRADIENT, MTHBLUE, RED_GRADIENT } from '../../../../utils/constants'
 import { toOrdinalSuffix } from '../../../../utils/stringHelpers'
 import { getSchoolYear } from '../../Curriculum/services'
 import { getSchoolYearsByRegionId } from '../../SiteManagement/services'
-import { FiltersProps, COURSE_TYPE, FilterVM } from '../type'
+import { FiltersProps, COURSE_TYPE } from '../type'
 
 export const Filters: FunctionComponent<FiltersProps> = ({ filter, setFilter }) => {
   const history = useHistory()
   const [expand, setExpand] = useState<boolean>(true)
   const [grades, setGrades] = useState<string[]>([])
   const [diploma, setDiploma] = useState<number>()
-  const [courseType, setCourseType] = useState<COURSE_TYPE[]>([])
-  const [curriculumProviders, setCurriculumProviders] = useState<string[]>([])
+  const [courseType, setCourseType] = useState<CourseType[]>([])
+  const [mthDirectProvider, setMthDirectProvider] = useState<number[]>([])
   const [selectedYearId, setSelectedYearId] = useState<number>()
-  const [schoolYears, setSchoolYears] = useState([])
-  const [gradeLevels, setGradeLevels] = useState([])
+  const [schoolYears, setSchoolYears] = useState<SchoolYear[]>([])
+  const [gradeLevels, setGradeLevels] = useState<string[]>([])
   const [showDiplomaSeeking, setShowDiplomaSeeking] = useState(false)
   const [showCustomBuilt, setShowCustomBuilt] = useState<number>(0)
   const [showThirdParty, setShowThirdParty] = useState<number>(0)
+  const [providerList, setProviderList] = useState<{ id: number; name: string }[]>([])
 
   const { me } = useContext(UserContext)
+  const { providers } = useProviders(selectedYearId!)
 
   const schoolYearData = useQuery(getSchoolYearsByRegionId, {
     variables: {
@@ -43,9 +48,13 @@ export const Filters: FunctionComponent<FiltersProps> = ({ filter, setFilter }) 
   }, [schoolYearData?.data?.region?.SchoolYears])
 
   useEffect(() => {
-    if (schoolYears?.length > 0 && selectedYearId > 0) {
-      const tempSchoolyears = schoolYears
-      const schoolYear = tempSchoolyears.filter((year) => year.school_year_id === selectedYearId)
+    setSelectedYearId(filter?.selectedYearId)
+  }, [filter?.selectedYearId])
+
+  useEffect(() => {
+    if (schoolYears?.length > 0 && selectedYearId && selectedYearId > 0) {
+      const tempSchoolYears = schoolYears
+      const schoolYear = tempSchoolYears.filter((year) => year.school_year_id === selectedYearId)
       if (schoolYear.length > 0) {
         setGradeLevels(
           schoolYear[0]?.grades?.split(',').sort((n1: string, n2: string) => {
@@ -110,27 +119,24 @@ export const Filters: FunctionComponent<FiltersProps> = ({ filter, setFilter }) 
       />
     )
 
-  const handleCurriculumProviders = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let newCurriculumProviders = [...curriculumProviders]
-    if (newCurriculumProviders.includes(e.target.value)) {
-      newCurriculumProviders = curriculumProviders
-        .filter((item) => item !== e.target.value)
-        .filter((item) => item !== 'all')
+  const handleCheckCurriculumProviders = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const providerValue = +e.target.value
+    let newMthProviders = mthDirectProvider
+    if (providerValue === 0) {
+      if (mthDirectProvider.length === providerList.length) {
+        newMthProviders = []
+      } else {
+        newMthProviders = providerList.map((obj) => obj.id)
+      }
     } else {
-      newCurriculumProviders.push(e.target.value)
+      if (mthDirectProvider.includes(providerValue)) {
+        newMthProviders = mthDirectProvider.filter((item) => item !== providerValue)
+      } else {
+        newMthProviders.push(providerValue)
+      }
     }
-    if (newCurriculumProviders.length === CURRICULUM_PROVIDERS.length) {
-      newCurriculumProviders.push('all')
-    }
-    setCurriculumProviders([...newCurriculumProviders])
-  }
 
-  const handleChangeAllCP = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.checked) {
-      setCurriculumProviders([...['all'], ...CURRICULUM_PROVIDERS.map((item) => item.toString())])
-    } else {
-      setCurriculumProviders([])
-    }
+    setMthDirectProvider([...newMthProviders])
   }
 
   const handleChangeGrades = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -148,14 +154,21 @@ export const Filters: FunctionComponent<FiltersProps> = ({ filter, setFilter }) 
 
   const handleChangeAll = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.checked) {
-      setGrades([...['all'], ...gradeLevels.map((item) => item.toString())])
+      setGrades([...['all'], ...gradeLevels.map((item) => item as string)])
     } else {
       setGrades([])
     }
   }
 
-  const handlesetCourseType = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value as COURSE_TYPE
+  const handleSetCourseType = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value as CourseType
+    if (value === CourseType.MTH_DIRECT) {
+      setProviderList(
+        providers.map((obj) => {
+          return { id: obj.id, name: obj.name }
+        }),
+      )
+    }
     if (courseType.includes(value)) {
       setCourseType(courseType.filter((i) => i !== value))
     } else {
@@ -169,19 +182,16 @@ export const Filters: FunctionComponent<FiltersProps> = ({ filter, setFilter }) 
       grades: grades,
       diplomaSeeking: diploma,
       courseType: courseType,
-      curriculumProviders: curriculumProviders,
-      selectedYearId: selectedYearId,
+      curriculumProviders: mthDirectProvider,
+      selectedYearId: selectedYearId ?? 0,
     })
   }
   const handleClear = () => {
-    const emptyFilter = {}
-    setFilter({
-      ...emptyFilter,
-    })
+    setFilter(undefined)
     setGrades([])
-    setDiploma(null)
+    setDiploma(undefined)
     setCourseType([])
-    setCurriculumProviders([])
+    setMthDirectProvider([])
     const state = {}
     history.replace({ ...history.location, state })
   }
@@ -191,23 +201,23 @@ export const Filters: FunctionComponent<FiltersProps> = ({ filter, setFilter }) 
       <FormControlLabel
         key={index}
         sx={{ height: 30 }}
-        control={<Checkbox checked={grades.includes(grade.toString())} value={grade} onChange={handleChangeGrades} />}
+        control={<Checkbox checked={grades.includes(grade as string)} value={grade} onChange={handleChangeGrades} />}
         label={
           <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
-            {grade === 'Kindergarten' ? grade : `${toOrdinalSuffix(grade)} Grade`}
+            {grade === 'Kindergarten' ? grade : `${toOrdinalSuffix(+grade)} Grade`}
           </Paragraph>
         }
       />
     ))
 
   const columnWidth = () => {
-    return courseType.includes('MTH Direct') && showDiplomaSeeking ? 2 : 3
+    return courseType.includes(CourseType.MTH_DIRECT) && showDiplomaSeeking ? 2 : 3
   }
 
   const Filters = () => (
     <Grid container sx={{ textAlign: 'left', marginY: '12px' }}>
       <Grid item container xs={10}>
-        <Grid item xs={columnWidth()}>
+        {/* <Grid item xs={columnWidth()}>
           <Box
             sx={{
               display: 'flex',
@@ -219,7 +229,7 @@ export const Filters: FunctionComponent<FiltersProps> = ({ filter, setFilter }) 
             </Paragraph>
             <SchoolYearDropDown selectedYearId={selectedYearId} setSelectedYearId={setSelectedYearId} />
           </Box>
-        </Grid>
+        </Grid> */}
         <Grid item xs={columnWidth()}>
           <Box
             sx={{
@@ -281,38 +291,56 @@ export const Filters: FunctionComponent<FiltersProps> = ({ filter, setFilter }) 
             <Paragraph size='large' fontWeight='700'>
               Course Type
             </Paragraph>
-            {(Object.keys(COURSE_TYPE) as Array<keyof typeof COURSE_TYPE>).map(
-              (item) =>
+            {(Object.keys(CourseType) as Array<keyof typeof CourseType>).map((item) => {
+              return (
                 !(
-                  (COURSE_TYPE[item] === '3rd Party' && showThirdParty === 0) ||
-                  (COURSE_TYPE[item] === 'Custom-built' && showCustomBuilt === 0)
+                  (CourseType[item] === CourseType.THIRD_PARTY_PROVIDER && showThirdParty === 0) ||
+                  (CourseType[item] === CourseType.CUSTOM_BUILT && showCustomBuilt === 0)
                 ) && (
                   <FormControlLabel
                     key={item}
                     sx={{ height: 30 }}
                     control={
                       <Checkbox
-                        value={COURSE_TYPE[item]}
-                        checked={courseType.includes(COURSE_TYPE[item])}
-                        onChange={handlesetCourseType}
+                        value={CourseType[item]}
+                        checked={courseType.includes(CourseType[item])}
+                        onChange={handleSetCourseType}
                       />
                     }
                     label={
                       <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
-                        {COURSE_TYPE[item]}
+                        {CourseType[item] === CourseType.MTH_DIRECT
+                          ? COURSE_TYPE.MTH
+                          : CourseType[item] === CourseType.CUSTOM_BUILT
+                          ? COURSE_TYPE.CUSTOM_BUILT
+                          : COURSE_TYPE.THIRD_PARTY}
                       </Paragraph>
                     }
                   />
-                ),
-            )}
+                )
+              )
+            })}
           </Box>
         </Grid>
-        {courseType.includes('MTH Direct') && (
-          <Grid item xs={columnWidth()}>
+        {courseType.includes(CourseType.MTH_DIRECT) && (
+          <Grid item xs={4}>
             <Box
               sx={{
                 display: 'flex',
                 flexDirection: 'column',
+                maxHeight: '200px',
+                overflowY: 'auto',
+                scrollbarWidth: 'thin',
+                '*::-webkit-scrollbar': {
+                  width: '0.4em',
+                },
+                '*::-webkit-scrollbar-track': {
+                  background: '#f1f1f1',
+                },
+                '*::-webkit-scrollbar-thumb': {
+                  backgroundColor: '#888',
+                  borderRadius: 2,
+                },
               }}
             >
               <Paragraph size='large' fontWeight='700'>
@@ -329,7 +357,11 @@ export const Filters: FunctionComponent<FiltersProps> = ({ filter, setFilter }) 
                 <FormControlLabel
                   sx={{ height: 30 }}
                   control={
-                    <Checkbox value='all' checked={curriculumProviders.includes('all')} onChange={handleChangeAllCP} />
+                    <Checkbox
+                      value={0}
+                      checked={mthDirectProvider.length === providerList.length ? true : false}
+                      onChange={handleCheckCurriculumProviders}
+                    />
                   }
                   label={
                     <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
@@ -337,20 +369,20 @@ export const Filters: FunctionComponent<FiltersProps> = ({ filter, setFilter }) 
                     </Paragraph>
                   }
                 />
-                {CURRICULUM_PROVIDERS.map((provider: string) => (
+                {providerList.map((provider) => (
                   <FormControlLabel
-                    key={provider}
+                    key={provider.id}
                     sx={{ height: 30 }}
                     control={
                       <Checkbox
-                        onChange={handleCurriculumProviders}
-                        checked={curriculumProviders.includes(provider)}
-                        value={provider}
+                        onChange={handleCheckCurriculumProviders}
+                        checked={mthDirectProvider.includes(provider.id)}
+                        value={provider.id}
                       />
                     }
                     label={
                       <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
-                        {provider}
+                        {provider.name}
                       </Paragraph>
                     }
                   />
@@ -418,14 +450,6 @@ export const Filters: FunctionComponent<FiltersProps> = ({ filter, setFilter }) 
       </Grid>
     </Grid>
   )
-
-  useEffect(() => {
-    if (history.location && history.location.state) {
-      const state: FilterVM = { ...history.location.state }
-      setGrades(state.grades || [])
-      setFilter(state)
-    }
-  }, [])
 
   return (
     <Card sx={{ marginTop: 2, padding: 2 }}>

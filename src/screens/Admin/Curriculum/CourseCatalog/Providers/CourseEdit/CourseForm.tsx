@@ -73,7 +73,7 @@ const CourseForm: React.FC<CourseFormProps> = ({
             <Grid item xs={12}>
               {!!scheduleBuilder?.always_unlock && (
                 <MthCheckbox
-                  label='Always unlock this subject for 2nd Semester'
+                  label='Always unlock this course for 2nd Semester changes'
                   checked={values?.always_unlock}
                   onChange={() => {
                     setFieldValue('always_unlock', !values?.always_unlock)
@@ -81,14 +81,14 @@ const CourseForm: React.FC<CourseFormProps> = ({
                 />
               )}
               <MthCheckbox
-                label='This subject qualifies for Required Software Reimbursement'
+                label='This course qualifies for Required Software Reimbursement'
                 checked={values?.software_reimbursement}
                 onChange={() => {
                   setFieldValue('software_reimbursement', !values?.software_reimbursement)
                 }}
               />{' '}
               <MthCheckbox
-                label='Display a notification when selecting this subject'
+                label='Display a notification message for this course'
                 checked={values?.display_notification}
                 onChange={() => {
                   setFieldValue('display_notification', !values?.display_notification)

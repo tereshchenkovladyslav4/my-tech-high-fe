@@ -2085,13 +2085,13 @@
     "@typescript-eslint/types" "5.34.0"
     "@typescript-eslint/visitor-keys" "5.34.0"
 
-"@typescript-eslint/scope-manager@5.36.2":
-  "integrity" "sha512-cNNP51L8SkIFSfce8B1NSUBTJTu2Ts4nWeWbFrdaqjmn9yKrAaJUBHkyTZc0cL06OFHpb+JZq5AUHROS398Orw=="
-  "resolved" "https://registry.npmjs.org/@typescript-eslint/scope-manager/-/scope-manager-5.36.2.tgz"
-  "version" "5.36.2"
+"@typescript-eslint/scope-manager@5.43.0":
+  "integrity" "sha512-XNWnGaqAtTJsUiZaoiGIrdJYHsUOd3BZ3Qj5zKp9w6km6HsrjPk/TGZv0qMTWyWj0+1QOqpHQ2gZOLXaGA9Ekw=="
+  "resolved" "https://registry.npmjs.org/@typescript-eslint/scope-manager/-/scope-manager-5.43.0.tgz"
+  "version" "5.43.0"
   dependencies:
-    "@typescript-eslint/types" "5.36.2"
-    "@typescript-eslint/visitor-keys" "5.36.2"
+    "@typescript-eslint/types" "5.43.0"
+    "@typescript-eslint/visitor-keys" "5.43.0"
 
 "@typescript-eslint/types@4.33.0":
   "integrity" "sha512-zKp7CjQzLQImXEpLt2BUw1tvOMPfNoTAfb8l51evhYbOEEzdWyQNmHWWGPR6hwKJDAi+1VXSBmnhL9kyVTTOuQ=="
@@ -2103,10 +2103,10 @@
   "resolved" "https://registry.npmjs.org/@typescript-eslint/types/-/types-5.34.0.tgz"
   "version" "5.34.0"
 
-"@typescript-eslint/types@5.36.2":
-  "integrity" "sha512-9OJSvvwuF1L5eS2EQgFUbECb99F0mwq501w0H0EkYULkhFa19Qq7WFbycdw1PexAc929asupbZcgjVIe6OK/XQ=="
-  "resolved" "https://registry.npmjs.org/@typescript-eslint/types/-/types-5.36.2.tgz"
-  "version" "5.36.2"
+"@typescript-eslint/types@5.43.0":
+  "integrity" "sha512-jpsbcD0x6AUvV7tyOlyvon0aUsQpF8W+7TpJntfCUWU1qaIKu2K34pMwQKSzQH8ORgUrGYY6pVIh1Pi8TNeteg=="
+  "resolved" "https://registry.npmjs.org/@typescript-eslint/types/-/types-5.43.0.tgz"
+  "version" "5.43.0"
 
 "@typescript-eslint/typescript-estree@4.33.0":
   "integrity" "sha512-rkWRY1MPFzjwnEVHsxGemDzqqddw2QbTJlICPD9p9I9LfsO8fdmfQPOX3uKfUaGRDFJbfrtm/sXhVXN4E+bzCA=="
@@ -2134,13 +2134,13 @@
     "semver" "^7.3.7"
     "tsutils" "^3.21.0"
 
-"@typescript-eslint/typescript-estree@5.36.2":
-  "integrity" "sha512-8fyH+RfbKc0mTspfuEjlfqA4YywcwQK2Amcf6TDOwaRLg7Vwdu4bZzyvBZp4bjt1RRjQ5MDnOZahxMrt2l5v9w=="
-  "resolved" "https://registry.npmjs.org/@typescript-eslint/typescript-estree/-/typescript-estree-5.36.2.tgz"
-  "version" "5.36.2"
+"@typescript-eslint/typescript-estree@5.43.0":
+  "integrity" "sha512-BZ1WVe+QQ+igWal2tDbNg1j2HWUkAa+CVqdU79L4HP9izQY6CNhXfkNwd1SS4+sSZAP/EthI1uiCSY/+H0pROg=="
+  "resolved" "https://registry.npmjs.org/@typescript-eslint/typescript-estree/-/typescript-estree-5.43.0.tgz"
+  "version" "5.43.0"
   dependencies:
-    "@typescript-eslint/types" "5.36.2"
-    "@typescript-eslint/visitor-keys" "5.36.2"
+    "@typescript-eslint/types" "5.43.0"
+    "@typescript-eslint/visitor-keys" "5.43.0"
     "debug" "^4.3.4"
     "globby" "^11.1.0"
     "is-glob" "^4.0.3"
@@ -2163,13 +2163,18 @@
     "@typescript-eslint/types" "5.34.0"
     "eslint-visitor-keys" "^3.3.0"
 
-"@typescript-eslint/visitor-keys@5.36.2":
-  "integrity" "sha512-BtRvSR6dEdrNt7Net2/XDjbYKU5Ml6GqJgVfXT0CxTCJlnIqK7rAGreuWKMT2t8cFUT2Msv5oxw0GMRD7T5J7A=="
-  "resolved" "https://registry.npmjs.org/@typescript-eslint/visitor-keys/-/visitor-keys-5.36.2.tgz"
-  "version" "5.36.2"
+"@typescript-eslint/visitor-keys@5.43.0":
+  "integrity" "sha512-icl1jNH/d18OVHLfcwdL3bWUKsBeIiKYTGxMJCoGe7xFht+E4QgzOqoWYrU8XSLJWhVw8nTacbm03v23J/hFTg=="
+  "resolved" "https://registry.npmjs.org/@typescript-eslint/visitor-keys/-/visitor-keys-5.43.0.tgz"
+  "version" "5.43.0"
   dependencies:
-    "@typescript-eslint/types" "5.36.2"
+    "@typescript-eslint/types" "5.43.0"
     "eslint-visitor-keys" "^3.3.0"
+
+"@unleash/proxy-client-react@^3.4.0":
+  "integrity" "sha512-9SWiII3KSub00fiL81fx8h3kDNrAQ7zqzyll7Sp8g+x/VC1zXINU9AIcfzqayBZCsAp5urUsQWEIz0v0XwMHbg=="
+  "resolved" "https://registry.npmjs.org/@unleash/proxy-client-react/-/proxy-client-react-3.4.0.tgz"
+  "version" "3.4.0"
 
 "@webassemblyjs/ast@1.11.1":
   "integrity" "sha512-ukBh14qFLjxTQNTXocdyksN5QdM28S1CxHt2rdskFyL+xFV7VremuBLVbmCePj+URalXBENx/9Lm7lnhihtCSw=="
@@ -6753,6 +6758,11 @@
   "resolved" "https://registry.npmjs.org/text-table/-/text-table-0.2.0.tgz"
   "version" "0.2.0"
 
+"tiny-emitter@^2.1.0":
+  "integrity" "sha512-NB6Dk1A9xgQPMoGqC5CVXn123gWyte215ONT5Pp5a0yt4nlEoO1ZWeCwpncaekPHXO60i47ihFnZPiRPjRMq4Q=="
+  "resolved" "https://registry.npmjs.org/tiny-emitter/-/tiny-emitter-2.1.0.tgz"
+  "version" "2.1.0"
+
 "tiny-invariant@^1.0.2", "tiny-invariant@^1.0.6":
   "integrity" "sha512-1Uhn/aqw5C6RI4KejVeTg6mIS7IqxnLJ8Mv2tV5rTc0qWobay7pDUz6Wi392Cnc8ak1H0F2cjoRzb2/AW4+Fvg=="
   "resolved" "https://registry.npmjs.org/tiny-invariant/-/tiny-invariant-1.2.0.tgz"
@@ -6960,6 +6970,14 @@
   "integrity" "sha512-rBJeI5CXAlmy1pV+617WB9J63U6XcazHHF2f2dbJix4XzpUF0RS3Zbj0FGIOCAva5P/d/GBOYaACQ1w+0azUkg=="
   "resolved" "https://registry.npmjs.org/universalify/-/universalify-0.1.2.tgz"
   "version" "0.1.2"
+
+"unleash-proxy-client@^2.3.0":
+  "integrity" "sha512-UYDZjjsIF+n01LnijR8t/FXOM5XPnjZkE5K/E+SInFzBfL1SckYZHiuzii1/4QmiRo/x+vjx9LJjAzE8JRas4Q=="
+  "resolved" "https://registry.npmjs.org/unleash-proxy-client/-/unleash-proxy-client-2.3.0.tgz"
+  "version" "2.3.0"
+  dependencies:
+    "tiny-emitter" "^2.1.0"
+    "uuid" "^8.3.2"
 
 "untildify@^2.0.0":
   "integrity" "sha512-sJjbDp2GodvkB0FZZcn7k6afVisqX5BZD7Yq3xp4nN2O15BBK0cLm3Vwn2vQaF7UDS0UUsrQMkkplmDI5fskig=="

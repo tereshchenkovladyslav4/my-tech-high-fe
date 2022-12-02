@@ -22,6 +22,7 @@ import { gradeText } from '@mth/utils'
 import { ENROLLMENT_SCHEDULE } from '../../../../utils/constants'
 import { SEMESTER_TYPE } from '../../Curriculum/types'
 import { getStudentDetail } from '../../UserProfile/services'
+import { updateScheduleMutation } from '../services'
 import Header from './Header/Header'
 import { RequireUpdateModal } from './RequireUpdateModal'
 import { ScheduleHistory } from './ScheduleHistory'
@@ -77,6 +78,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
   const [submitScheduleBuilder] = useMutation(saveScheduleMutation)
   const [saveDraft] = useMutation(saveSchedulePeriodMutation)
   const [sendEmail] = useMutation(sendEmailUpdateRequired)
+  const [updateScheduleStatusById] = useMutation(updateScheduleMutation)
 
   const handleSave = async (status: ScheduleStatus) => {
     const data = hasSecondSemester ? secondScheduleData : scheduleData
@@ -162,8 +164,11 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
           }
         }
       }
+
+      if (status !== ScheduleStatus.NOT_SUBMITTED) {
+        handleBack()
+      }
       setIsChanged(false)
-      handleBack()
     }
   }
 
@@ -171,6 +176,15 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
     const newStatus = SCHEDULE_STATUS_OPTIONS.find((item) => item.value === num) as DropDownItem
     if (newStatus?.value === ScheduleStatus.UPDATES_REQUIRED) {
       setShowRequireUpdateModal(true)
+    } else {
+      await updateScheduleStatusById({
+        variables: {
+          createScheduleInput: {
+            status: num,
+            schedule_id: studentScheduleId,
+          },
+        },
+      })
     }
     setScheduleStatus(newStatus)
   }

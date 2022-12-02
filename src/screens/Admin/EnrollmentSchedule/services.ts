@@ -61,8 +61,8 @@ export const updateScheduleMutation = gql`
 `
 
 export const scheduleCountQuery = gql`
-  query ScheduleCountByRegionId($regionId: ID!) {
-    scheduleCountByRegionId(region_id: $regionId) {
+  query ScheduleCountByRegionId($scheduleGroupCountArgs: SchedulesGroupCountArgs!) {
+    scheduleCountByRegionId(scheduleGroupCountArgs: $scheduleGroupCountArgs) {
       error
       message
       results

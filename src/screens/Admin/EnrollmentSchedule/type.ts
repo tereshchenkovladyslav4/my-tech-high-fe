@@ -31,12 +31,12 @@ export type Field = {
 }
 
 export type FilterVM = {
-  grades: string[]
-  diplomaSeeking: boolean
-  courseType: string[]
-  curriculumProviders: string[]
+  grades?: string[]
+  diplomaSeeking?: number
+  courseType?: string[]
+  curriculumProviders?: number[]
   selectedYearId: number
-  status: string[]
+  status?: string[]
 }
 
 export type ScheduleFilterVM = {

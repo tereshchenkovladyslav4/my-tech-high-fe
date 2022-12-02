@@ -15,10 +15,10 @@ import { RED_GRADIENT } from '../../../../utils/constants'
 import { ScheduleEmailHistoryModal } from '../ScheduleModal/ScheduleEmailHistoryModal'
 import { EmailModal } from '../ScheduleModal/ScheduleEmailModal'
 import { ScheduleTableFilters } from '../ScheduleTableFilters/ScheduleTableFilters'
-import { emailScheduleMutation, getSchedulesQuery, scheduleCountGroupQuery } from '../services'
-import { ApplicationTableProps, EmailTemplateVM, ScheduleFilterVM, ScheduleCount, TableData } from '../type'
+import { emailScheduleMutation, getSchedulesQuery, scheduleCountQuery } from '../services'
+import { FiltersProps, EmailTemplateVM, ScheduleFilterVM, ScheduleCount, TableData } from '../type'
 
-export const ScheduleTable: React.FC<ApplicationTableProps> = ({ filter }) => {
+export const ScheduleTable: React.FC<FiltersProps> = ({ filter, setFilter }) => {
   const { me } = useContext(UserContext)
   const [emailTemplate, setEmailTemplate] = useState<EmailTemplateVM>()
   const [pageLoading, setPageLoading] = useState<boolean>(false)
@@ -75,7 +75,13 @@ export const ScheduleTable: React.FC<ApplicationTableProps> = ({ filter }) => {
     setOpenEmailModal(true)
   }
 
-  const { data: countGroup } = useQuery(scheduleCountGroupQuery, {
+  const { data: countGroup } = useQuery(scheduleCountQuery, {
+    variables: {
+      scheduleGroupCountArgs: {
+        region_id: me?.selectedRegionId,
+        school_year_id: selectedYearId,
+      },
+    },
     fetchPolicy: 'network-only',
   })
 
@@ -148,7 +154,7 @@ export const ScheduleTable: React.FC<ApplicationTableProps> = ({ filter }) => {
 
   useEffect(() => {
     if (countGroup) {
-      setScheduleCount(countGroup.scheduleCount.results)
+      setScheduleCount(countGroup.scheduleCountByRegionId.results)
     }
   }, [countGroup])
 
@@ -415,6 +421,7 @@ export const ScheduleTable: React.FC<ApplicationTableProps> = ({ filter }) => {
             setSelectedYearId={(value) => {
               setSelectedYearId(value)
               setFilters({ ...filters, selectedYearId: +value })
+              setFilter({ ...filter, selectedYearId: +value })
             }}
           />
         </Box>

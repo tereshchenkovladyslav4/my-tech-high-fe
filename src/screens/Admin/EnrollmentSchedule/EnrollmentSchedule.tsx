@@ -14,7 +14,7 @@ export const EnrollmentSchedule: React.FC = () => {
           <Filters filter={filter} setFilter={setFilter} />
         </Grid>
         <Grid item xs={12}>
-          <ScheduleTable filter={filter} />
+          <ScheduleTable filter={filter} setFilter={setFilter} />
         </Grid>
       </Grid>
     </Box>

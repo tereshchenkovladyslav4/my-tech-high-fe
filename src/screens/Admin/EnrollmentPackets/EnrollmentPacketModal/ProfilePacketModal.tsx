@@ -7,6 +7,7 @@ import { omit } from 'lodash'
 import moment from 'moment'
 import { FormProvider, useForm } from 'react-hook-form'
 import { QUESTION_TYPE } from '@mth/components/QuestionItem/QuestionItemProps'
+import { saveScheduleMutation } from '@mth/graphql/mutation/schedule'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { SYSTEM_11 } from '../../../../utils/constants'
 import { GenerateStudentPacketPDF } from '../../Records/services'
@@ -72,6 +73,7 @@ export const ProfilePacketModal: React.FC<ProfilePacketModalProps> = ({ handleMo
   const [updateStudentStatus] = useMutation(updateStudentStatusMutation)
   const [generateStudentPacketPDF] = useMutation(GenerateStudentPacketPDF)
   const [savePacket] = useMutation(savePacketMutation)
+  const [saveSchedule] = useMutation(saveScheduleMutation)
   const [initValues, setInitValues] = useState({})
   const [, setBirthday] = useState('')
   const [packet, setPacket] = useState({})
@@ -312,6 +314,18 @@ export const ProfilePacketModal: React.FC<ProfilePacketModalProps> = ({ handleMo
           },
         },
       })
+
+      //create schedule with Not submit status
+      await saveSchedule({
+        variables: {
+          createScheduleInput: {
+            SchoolYearId: Number(packet.student.current_school_year_status.school_year_id),
+            StudentId: Number(packet.student.student_id),
+            status: 'Not Submitted',
+          },
+        },
+      })
+      ///////////////////////////////////////
       await generateStudentPacketPDF({
         variables: {
           generatePacketPdfInput: {
