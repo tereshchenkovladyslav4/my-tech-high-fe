@@ -19,6 +19,7 @@ import {
   StudentStatus,
   RelationStatus,
   StudentNotification,
+  ScheduleStatus,
 } from '@mth/enums'
 import { SchoolYearType } from '@mth/models'
 import { UserContext, UserInfo } from '@mth/providers/UserContext/UserProvider'
@@ -53,10 +54,23 @@ export const Student: React.FC<StudentProps> = ({
     return s3URL + person.photo
   }
   useEffect(() => {
-    const { applications, packets, status } = student
+    const { applications, packets, status, StudentSchedules } = student
     const currApplication = applications?.at(-1)
     const currPacket = packets?.at(-1)
     const studentStatus = status?.at(-1)?.status
+
+    const currentSchedule = StudentSchedules?.filter(
+      (schedule) =>
+        schedule.StudentId === Number(student?.student_id) &&
+        schedule.SchoolYearId === Number(student?.current_school_year_status?.school_year_id) &&
+        !schedule.is_second_semester,
+    )?.at(-1)
+    const currentSecondSemesterSchedule = StudentSchedules?.filter(
+      (schedule) =>
+        schedule.StudentId === Number(student?.student_id) &&
+        schedule.SchoolYearId === Number(student?.current_school_year_status?.school_year_id) &&
+        schedule.is_second_semester,
+    )?.at(-1)
 
     const enrollmentLink = `${MthRoute.HOMEROOM + MthRoute.ENROLLMENT}/${student.student_id}`
     const homeroomLink = `${MthRoute.HOMEROOM}/${student.student_id}`
@@ -152,15 +166,56 @@ export const Student: React.FC<StudentProps> = ({
       currPacket?.status === PacketStatus.ACCEPTED
     ) {
       setLink(homeroomLink)
-      setCircleData({
-        mobileColor: MthColor.MTHGREEN,
-        mobileText: 'Waiting for Schedule Builder to Open',
-        color: MthColor.MTHGREEN,
-        progress: 75,
-        type: 'Waiting for Schedule Builder to Open',
-        icon: <ScheduleIcon sx={{ color: MthColor.MTHGREEN, marginTop: 2, cursor: 'pointer' }} />,
-      })
-    } else if (studentSchoolYear.schedule && showNotification?.phrase === StudentNotification.SUBMIT_SCHEDULE) {
+      if (
+        currentSecondSemesterSchedule?.status === ScheduleStatus.SUBMITTED ||
+        currentSecondSemesterSchedule?.status === ScheduleStatus.RESUBMITTED
+      ) {
+        setCircleData({
+          mobileColor: MthColor.MTHGREEN,
+          mobileText: '2nd Semester Schedule Pending Approval',
+          color: MthColor.MTHGREEN,
+          progress: 75,
+          type: '2nd Semester Schedule Pending Approval',
+          icon: <ScheduleIcon sx={{ color: MthColor.MTHGREEN, marginTop: 2, cursor: 'pointer' }} />,
+        })
+      } else if (currentSchedule?.status === ScheduleStatus.ACCEPTED) {
+        setCircleData({
+          mobileColor: MthColor.MTHGREEN,
+          mobileText: 'Homeroom Assignment in Progress',
+          color: MthColor.MTHGREEN,
+          progress: 75,
+          type: 'Homeroom Assignment in Progress',
+          icon: <ScheduleIcon sx={{ color: MthColor.MTHGREEN, marginTop: 2, cursor: 'pointer' }} />,
+        })
+      } else if (
+        currentSchedule?.status === ScheduleStatus.SUBMITTED ||
+        currentSchedule?.status === ScheduleStatus.RESUBMITTED
+      ) {
+        setCircleData({
+          mobileColor: MthColor.MTHGREEN,
+          mobileText: 'Schedule Pending Approval',
+          color: MthColor.MTHGREEN,
+          progress: 75,
+          type: 'Schedule Pending Approval',
+          icon: <ScheduleIcon sx={{ color: MthColor.MTHGREEN, marginTop: 2, cursor: 'pointer' }} />,
+        })
+      } else {
+        setCircleData({
+          mobileColor: MthColor.MTHGREEN,
+          mobileText: 'Waiting for Schedule Builder to Open',
+          color: MthColor.MTHGREEN,
+          progress: 75,
+          type: 'Waiting for Schedule Builder to Open',
+          icon: <ScheduleIcon sx={{ color: MthColor.MTHGREEN, marginTop: 2, cursor: 'pointer' }} />,
+        })
+      }
+    } else if (
+      studentSchoolYear.schedule &&
+      (showNotification?.phrase === StudentNotification.SUBMIT_SCHEDULE ||
+        showNotification?.phrase === StudentNotification.RESUBMIT_SCHEDULE ||
+        showNotification?.phrase === StudentNotification.SUBMIT_SECOND_SEMESTER_SCHEDULE ||
+        showNotification?.phrase === StudentNotification.RESUBMIT_SECOND_SEMESTER_SCHEDULE)
+    ) {
       setLink(scheduleBuilderLink)
       setCircleData({
         mobileColor: MthColor.MTHORANGE,

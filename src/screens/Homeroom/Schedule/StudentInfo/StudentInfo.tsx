@@ -14,7 +14,7 @@ const StudentInfo: React.FC<StudentInfoProps> = ({ studentInfo }) => {
           {studentInfo?.grade}
         </Paragraph>
         {studentInfo?.specialEd && studentInfo?.specialEd?.indexOf('No') == -1 && (
-          <Paragraph size={'large'} sx={{ ...studentInfoClassess.text, paddingY: 1, marginLeft: 13 }}>
+          <Paragraph size={'large'} sx={{ ...studentInfoClassess.text, paddingY: 1, fontWeight: 600, marginLeft: 13 }}>
             {`Special Education: ${studentInfo?.specialEd}`}
           </Paragraph>
         )}

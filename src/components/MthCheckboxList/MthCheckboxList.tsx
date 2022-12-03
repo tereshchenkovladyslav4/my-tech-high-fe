@@ -67,6 +67,7 @@ const MthCheckboxList: React.FC<MthCheckboxListProps> = ({
             sx={{ height: 30, width: 'max-content' }}
             control={
               <Checkbox
+                sx={{ '& .MuiSvgIcon-root': { fill: '#000 !important' } }}
                 checked={values.includes(list.value)}
                 value={list.value}
                 onChange={handleChangeValues}

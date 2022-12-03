@@ -62,7 +62,7 @@ const UpdatesRequired: React.FC<UpdatesRequiredProps> = ({
   return (
     <Card sx={{ ...scheduleBuilderClass.main, paddingLeft: '30px' }}>
       <Subtitle size='medium' textAlign='left' fontWeight='700'>
-        Update Required
+        Updates Required
       </Subtitle>
       <Box sx={{ width: '100%' }}>
         <Grid container justifyContent='start'>

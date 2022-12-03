@@ -33,8 +33,7 @@ export const studentInfoClass = {
   },
   select: {
     fontSize: '12px',
-    paddingTop: '2px',
-    paddingBottom: '1px',
+    padding: '2px 30px 1px 40px',
     background: MthColor.BUTTON_LINEAR_GRADIENT,
     height: '35px',
     borderRadius: '8px',

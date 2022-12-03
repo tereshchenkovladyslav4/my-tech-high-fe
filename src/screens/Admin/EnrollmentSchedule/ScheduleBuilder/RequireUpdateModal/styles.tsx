@@ -6,7 +6,7 @@ export const requireUpdateModalClasses = {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: '530px',
+    width: '700px',
     height: 'auto',
     bgcolor: MthColor.WHITE,
     borderRadius: 2,

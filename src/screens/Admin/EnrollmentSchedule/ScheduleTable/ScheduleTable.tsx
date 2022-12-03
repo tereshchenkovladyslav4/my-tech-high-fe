@@ -8,6 +8,7 @@ import { MthTable } from '@mth/components/MthTable'
 import { MthTableField } from '@mth/components/MthTable/types'
 import { Pagination } from '@mth/components/Pagination/Pagination'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { ScheduleStatus } from '@mth/enums'
 import { getEmailTemplateQuery } from '@mth/graphql/queries/email-template'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { SchoolYearDropDown } from '@mth/screens/Admin/Components/SchoolYearDropdown'
@@ -53,7 +54,12 @@ export const ScheduleTable: React.FC<FiltersProps> = ({ filter, setFilter }) => 
       key: schedule.schedule_id.toString(),
       columns: {
         id: schedule.schedule_id,
-        date: schedule.date_submitted ? moment(schedule.date_submitted).format('MM/DD/YY') : null,
+        date:
+          schedule.status === ScheduleStatus.ACCEPTED
+            ? moment(schedule.date_accepted).format('MM/DD/YY')
+            : schedule.date_submitted
+            ? moment(schedule.date_submitted).format('MM/DD/YY')
+            : null,
         status: schedule.status,
         student: `${schedule.ScheduleStudent.person?.last_name}, ${schedule.ScheduleStudent.person?.first_name}`,
         studentId: +schedule.ScheduleStudent.student_id,

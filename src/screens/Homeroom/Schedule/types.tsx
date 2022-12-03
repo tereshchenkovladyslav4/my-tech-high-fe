@@ -171,7 +171,6 @@ export type ScheduleData = {
   ThirdParty?: ThirdPartyProvider
   OnSiteSplitEnrollment?: OnSiteSplitEnrollment
   CustomBuiltDescription?: string
-  IsChangedCustomBuiltDescription?: boolean
   standardResponseOptions?: string
 
   // Special fields

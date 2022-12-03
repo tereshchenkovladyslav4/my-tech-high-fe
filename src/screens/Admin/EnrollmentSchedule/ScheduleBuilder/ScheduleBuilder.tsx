@@ -165,10 +165,13 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
         }
       }
 
-      if (status !== ScheduleStatus.NOT_SUBMITTED) {
-        handleBack()
-      }
       setIsChanged(false)
+
+      if (status !== ScheduleStatus.NOT_SUBMITTED) {
+        setTimeout(() => {
+          history.push(ENROLLMENT_SCHEDULE)
+        }, 300)
+      }
     }
   }
 
@@ -187,11 +190,6 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
       })
     }
     setScheduleStatus(newStatus)
-  }
-
-  const handleBack = () => {
-    if (isChanged) setShowUnsavedModal(true)
-    else history.push(ENROLLMENT_SCHEDULE)
   }
 
   const handleSchedule = (status: ScheduleStatus) => {
@@ -238,28 +236,32 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
   }
 
   const handlePeriodUpdateRequired = (periodId: string) => {
-    const data = hasSecondSemester ? secondScheduleData : scheduleData
-    setRequireUpdatePeriods([
-      ...data
-        ?.filter((item) => item?.schedulePeriodStatus === SchedulePeriodStatus.UPDATE_REQUIRED)
-        ?.map((item) => {
-          return `${item?.Period?.id}`
-        }),
-      periodId,
-    ])
-    setScheduleStatus(
-      SCHEDULE_STATUS_OPTIONS.find((item) => item.value === ScheduleStatus.UPDATES_REQUIRED) as DropDownItem,
-    )
-  }
-
-  const handlePeriodUpdateEmail = (periodId: string) => {
-    if (requireUpdatePeriods.some((pid) => pid === periodId)) {
-      handleCancelUpdates()
-    } else {
-      setRequireUpdatePeriods([periodId])
+    if (studentScheduleStatus !== ScheduleStatus.ACCEPTED) {
+      const data = hasSecondSemester ? secondScheduleData : scheduleData
+      setRequireUpdatePeriods([
+        ...data
+          ?.filter((item) => item?.schedulePeriodStatus === SchedulePeriodStatus.UPDATE_REQUIRED)
+          ?.map((item) => {
+            return `${item?.Period?.id}`
+          }),
+        periodId,
+      ])
       setScheduleStatus(
         SCHEDULE_STATUS_OPTIONS.find((item) => item.value === ScheduleStatus.UPDATES_REQUIRED) as DropDownItem,
       )
+    }
+  }
+
+  const handlePeriodUpdateEmail = (periodId: string) => {
+    if (studentScheduleStatus !== ScheduleStatus.RESUBMITTED) {
+      if (requireUpdatePeriods.some((pid) => pid === periodId)) {
+        handleCancelUpdates()
+      } else {
+        setRequireUpdatePeriods([periodId])
+        setScheduleStatus(
+          SCHEDULE_STATUS_OPTIONS.find((item) => item.value === ScheduleStatus.UPDATES_REQUIRED) as DropDownItem,
+        )
+      }
     }
   }
 
@@ -272,6 +274,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
           subject: subject,
           student_id: studentId,
           region_id: Number(me?.selectedRegionId),
+          schedule_id: studentScheduleId,
         },
       },
     })
@@ -392,7 +395,10 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
           schoolYearItems={schoolYearItems}
           selectedYearId={selectedYearId}
           setSelectedYearId={setSelectedYearId}
-          handleBack={handleBack}
+          handleBack={() => {
+            if (isChanged) setShowUnsavedModal(true)
+            else history.push(ENROLLMENT_SCHEDULE)
+          }}
         />
         <StudentInfo
           studentInfo={studentInfo}
@@ -546,6 +552,9 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
             onConfirm={() => {
               setShowUnsavedModal(false)
               setIsChanged(false)
+              setTimeout(() => {
+                history.push(ENROLLMENT_SCHEDULE)
+              }, 300)
             }}
           />
         )}

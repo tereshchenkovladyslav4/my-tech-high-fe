@@ -432,12 +432,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
     if (isSecondSemester) {
       return !!schedule.editable
     } else {
-      return (
-        !scheduleStatus ||
-        scheduleStatus === ScheduleStatus.DRAFT ||
-        schedule.editable ||
-        (isAdmin && scheduleStatus != ScheduleStatus.ACCEPTED)
-      )
+      return !scheduleStatus || scheduleStatus === ScheduleStatus.DRAFT || schedule.editable || (isAdmin && isEditMode)
     }
   }
 
@@ -700,6 +695,12 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
     )
   }
 
+  const getDescriptionBGColor = (schedule: ScheduleData) => {
+    return isAdmin && schedule?.CustomBuiltDescription != schedule?.Title?.custom_built_description
+      ? MthColor.LIGHTGREEN
+      : ''
+  }
+
   const fields = (): MthTableField<ScheduleData>[] => {
     const parentFields = [
       {
@@ -710,7 +711,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
         width: '20%',
         formatter: (item: MthTableRowItem<ScheduleData>) => {
           return (
-            <Box>
+            <Box sx={{ paddingRight: '50px' }}>
               <Grid container alignItems='center' sx={{ display: 'flex' }}>
                 <Typography
                   sx={{ ...scheduleBuilderClasses.tableContent, width: '20px', paddingY: '24px' }}
@@ -749,7 +750,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
         width: '20%',
         formatter: (item: MthTableRowItem<ScheduleData>) => {
           return (
-            <Box>
+            <Box sx={{ paddingRight: '50px' }}>
               {!!item.rawData.Period &&
                 (editable(item.rawData) &&
                 (item.rawData.Period.Subjects?.length > 1 ||
@@ -759,6 +760,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
                   <NestedDropdown
                     menuItemsData={createSubjectMenuItems(item.rawData)}
                     MenuProps={{ elevation: 3 }}
+                    endIconSx={{ color: item.rawData.Title ? MthColor.BLACK : MthColor.MTHBLUE }}
                     ButtonProps={{
                       variant: 'outlined',
                       sx: scheduleBuilderClasses.nestedDropdownButton,
@@ -781,15 +783,16 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
         width: '20%',
         formatter: (item: MthTableRowItem<ScheduleData>) => {
           return (
-            <Box>
+            <Box sx={{ paddingRight: '50px' }}>
               {editable(item.rawData) &&
               !item.rawData.Provider?.multiple_periods &&
               !!item.rawData.Title &&
               item.rawData.Title.CourseTypes?.length > 1 &&
-              !lockedIcon ? (
+              (!isAdmin || (isAdmin && !lockedIcon)) ? (
                 <NestedDropdown
                   menuItemsData={createCourseTypeMenuItems(item.rawData)}
                   MenuProps={{ elevation: 3 }}
+                  endIconSx={{ color: item.rawData.CourseType ? MthColor.BLACK : MthColor.MTHBLUE }}
                   ButtonProps={{
                     variant: 'outlined',
                     sx: scheduleBuilderClasses.nestedDropdownButton,
@@ -827,6 +830,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
                         <NestedDropdown
                           menuItemsData={createDescriptionMenuItems(item.rawData)}
                           MenuProps={{ elevation: 3 }}
+                          endIconSx={{ color: item.rawData.Course ? MthColor.BLACK : MthColor.MTHBLUE }}
                           ButtonProps={{
                             variant: 'outlined',
                             sx: scheduleBuilderClasses.nestedDropdownButton,
@@ -864,6 +868,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
                         <NestedDropdown
                           menuItemsData={createDescriptionMenuItems(item.rawData)}
                           MenuProps={{ elevation: 3 }}
+                          endIconSx={{ color: item.rawData.Course ? MthColor.BLACK : MthColor.MTHBLUE }}
                           ButtonProps={{
                             variant: 'outlined',
                             sx: scheduleBuilderClasses.nestedDropdownButton,
@@ -965,7 +970,11 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
               {item.rawData.CourseType === CourseType.CUSTOM_BUILT && !!item.rawData.CustomBuiltDescription && (
                 <Box sx={scheduleBuilderClasses.descriptionWrap}>
                   <Typography
-                    sx={{ ...scheduleBuilderClasses.tableContent, background: MthColor.LIGHTGREEN }}
+                    sx={{
+                      ...scheduleBuilderClasses.tableContent,
+                      width: '100%',
+                      backgroundColor: getDescriptionBGColor(item.rawData),
+                    }}
                     component={'span'}
                     variant={'body2'}
                     dangerouslySetInnerHTML={{ __html: item.rawData.CustomBuiltDescription }}
@@ -1022,7 +1031,8 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
             <Box sx={{ display: 'flex' }}>
               {((!isSecondSemester &&
                 (((scheduleStatus === ScheduleStatus.ACCEPTED || scheduleStatus === ScheduleStatus.RESUBMITTED) &&
-                  item?.rawData?.schedulePeriodStatus != SchedulePeriodStatus.UPDATE_REQUIRED) ||
+                  item?.rawData?.schedulePeriodStatus != SchedulePeriodStatus.UPDATE_REQUIRED &&
+                  item?.rawData?.schedulePeriodStatus != SchedulePeriodStatus.RESUBMITTED) ||
                   scheduleStatus === ScheduleStatus.UPDATES_REQUESTED)) ||
                 (isSecondSemester && !item.rawData.editable)) && (
                 <IconButton
@@ -1036,7 +1046,8 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
               )}
               {((!isSecondSemester &&
                 (scheduleStatus == ScheduleStatus.SUBMITTED ||
-                  (item?.rawData?.schedulePeriodStatus === SchedulePeriodStatus.UPDATE_REQUIRED &&
+                  ((item?.rawData?.schedulePeriodStatus === SchedulePeriodStatus.UPDATE_REQUIRED ||
+                    item?.rawData?.schedulePeriodStatus == SchedulePeriodStatus.RESUBMITTED) &&
                     (scheduleStatus == ScheduleStatus.ACCEPTED || scheduleStatus == ScheduleStatus.RESUBMITTED)))) ||
                 (isSecondSemester && item.rawData.editable)) && (
                 <IconButton

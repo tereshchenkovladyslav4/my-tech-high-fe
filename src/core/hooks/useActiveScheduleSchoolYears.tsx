@@ -51,6 +51,7 @@ export const useActiveScheduleSchoolYears = (
       const currentYear = schoolYears.filter((item) => item.IsCurrentYear)[0]
       const activeScheduleYear =
         currentYear?.ScheduleStatus === ScheduleStatus.SUBMITTED ||
+        currentYear?.ScheduleStatus === ScheduleStatus.RESUBMITTED ||
         currentYear?.ScheduleStatus === ScheduleStatus.ACCEPTED
           ? currentYear
           : schoolYears.filter(
