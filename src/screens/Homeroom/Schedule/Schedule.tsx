@@ -369,11 +369,16 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
 
   useEffect(() => {
     if (!assessmentsLoading && assessments && selectedYear) {
+      const fitleredAssessments = assessments?.filter(
+        (assessment) =>
+          assessment?.grades?.includes(`${student?.grade_levels?.at(-1)?.grade_level}`) && !assessment?.is_archived,
+      )
       setActiveTestingPreference(selectedYear?.testing_preference)
       if (backTo) setStep(MthTitle.STEP_SCHEDULE_BUILDER)
-      else if (selectedYear?.testing_preference) setStep(MthTitle.STEP_TESTING_PREFERENCE)
+      else if (selectedYear?.testing_preference && fitleredAssessments?.length)
+        setStep(MthTitle.STEP_TESTING_PREFERENCE)
       else if (selectedYear?.diploma_seeking) setStep(MthTitle.STEP_DIPLOMA_SEEKING)
-      else setStep('')
+      else setStep(MthTitle.STEP_SCHEDULE_BUILDER)
       setActiveDiplomaSeeking(selectedYear?.diploma_seeking)
       setTestingPreferenceTitle(selectedYear?.testing_preference_title || DEFAULT_TESTING_PREFERENCE_TITLE)
       setTestingPreferenceDescription(
@@ -381,12 +386,7 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
       )
       setOptOutFormTitle(selectedYear?.opt_out_form_title || DEFAULT_OPT_OUT_FORM_TITLE)
       setOptOutFormDescription(selectedYear?.opt_out_form_description || DEFAULT_OPT_OUT_FORM_DESCRIPTION)
-      setAvailableAssessments(
-        assessments?.filter(
-          (assessment) =>
-            assessment?.grades?.includes(`${student?.grade_levels?.at(-1)?.grade_level}`) && !assessment?.is_archived,
-        ),
-      )
+      setAvailableAssessments(fitleredAssessments)
     }
   }, [assessments, assessmentsLoading, selectedYear, backTo])
 

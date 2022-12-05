@@ -14,7 +14,7 @@ type ProgramSelectProps = {
 export const ProgramSelect: React.FC<ProgramSelectProps> = ({ program, setProgram, setIsChanged, isChanged }) => {
   const items: DropDownItem[] = [
     {
-      label: `${(<em>None</em>)}`,
+      label: <em>None</em>,
       value: '',
     },
     {

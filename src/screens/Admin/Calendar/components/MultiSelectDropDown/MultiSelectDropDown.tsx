@@ -53,7 +53,7 @@ const MultiSelectDropDown: React.FC<MultiSelectDropDownProps> = ({
           labelId='multiple-checkbox-label'
           id='multiple-checkbox'
           multiple
-          value={focus ? selectedLists : []}
+          value={focus || selectedLists.length > 0 ? selectedLists : []}
           onChange={handleChange}
           input={<OutlinedInput label='Select Filter' />}
           renderValue={(selected) => selected.join(', ')}

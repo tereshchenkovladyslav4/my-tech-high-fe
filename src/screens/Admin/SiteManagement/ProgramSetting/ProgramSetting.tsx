@@ -136,6 +136,14 @@ const ProgramSetting: React.FC = () => {
       setStateInvalid(true)
       return
     }
+    if (isDelete.county) {
+      await handleCountyInfoDelete()
+    }
+
+    if (isDelete.schoolDistrict) {
+      await handleSchoolDistrictInfoDelete()
+    }
+
     let imageLocation = ''
     if (stateLogoFile) {
       imageLocation = await uploadImage(stateLogoFile?.file, stateName)
@@ -144,14 +152,6 @@ const ProgramSetting: React.FC = () => {
     let countyFileLocation = ''
     if (county?.file && countyArray.length > 0) {
       countyFileLocation = await uploadFile(county?.file, 'county', stateName)
-    }
-
-    if (isDelete.county) {
-      handleCountyInfoDelete()
-    }
-
-    if (isDelete.schoolDistrict) {
-      handleSchoolDistrictInfoDelete()
     }
 
     let schoolDistrictFileLocation = ''

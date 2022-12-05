@@ -171,8 +171,8 @@ export const FileUploadModal: React.FC<SubmissionModal> = ({
   }
 
   const renderFiles = () =>
-    map(validFiles, (file) => (
-      <Box sx={{ padding: '15px' }}>
+    map(validFiles, (file, index) => (
+      <Box key={index} sx={{ padding: '15px' }}>
         <FileListItem file={file as File} deleteAction={deleteFile} hasDeleteAction={true} />
       </Box>
     ))

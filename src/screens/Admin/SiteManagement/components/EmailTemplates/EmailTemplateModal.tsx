@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, useContext, FunctionComponent } from 'react'
+import React, { useRef, useState, useEffect, useContext } from 'react'
 import { useQuery } from '@apollo/client'
 import { Add } from '@mui/icons-material'
 import CloseIcon from '@mui/icons-material/Close'
@@ -16,25 +16,24 @@ import {
   Tooltip,
   IconButton,
 } from '@mui/material'
-
 import { ContentState, EditorState, convertToRaw } from 'draft-js'
-
 import draftToHtml from 'draftjs-to-html'
 import htmlToDraft from 'html-to-draftjs'
 import Wysiwyg from 'react-draft-wysiwyg'
 import { MthBulletEditor } from '@mth/components/MthBulletEditor'
-import { MthColor } from '@mth/enums'
-import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
-import { getEmailTemplateByIdQuery, getEmailRemindersQuery } from '../../../../../graphql/queries/email-template'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { EmailCategoryEnum, MthColor } from '@mth/enums'
+import { getEmailTemplateByIdQuery, getEmailRemindersQuery } from '@mth/graphql/queries/email-template'
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
-import { getEnrollmentQuestionsGql } from '../../../../../graphql/queries/enrollment-question'
-import { UserContext } from '../../../../../providers/UserContext/UserProvider'
+import { getEnrollmentQuestionsGql } from '@mth/graphql/queries/enrollment-question'
+import { EmailTemplate } from '@mth/models'
+import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { useStyles } from './styles'
 import { StandardRes } from './types'
 
 type EmailTemplateModalProps = {
   handleModem: () => void
-  template: unknown
+  template: EmailTemplate
   onSave: (_) => void
   openResponseModal: (value: StandardRes[]) => void
 }
@@ -53,7 +52,8 @@ const insertDescriptions = {
   application_year: 'School Year (2021-2022)',
   student_grade_level: 'Current grade level (6) (Kindergarten)',
 }
-export const EmailTemplateModal: FunctionComponent<EmailTemplateModalProps> = ({
+
+export const EmailTemplateModal: React.FC<EmailTemplateModalProps> = ({
   handleModem,
   template,
   onSave,
@@ -223,7 +223,10 @@ export const EmailTemplateModal: FunctionComponent<EmailTemplateModalProps> = ({
   }
 
   const handleSave = () => {
-    const reminderData = []
+    const reminderData: (
+      | { title: string; subject: string; body: string; reminder: string; id?: undefined }
+      | { id: number; title: string; subject: string; body: string; reminder: string }
+    )[] = []
     if (reminders.length > 0) {
       reminders.forEach((remind) => {
         if (remind.reminderDay !== '') {
@@ -249,7 +252,7 @@ export const EmailTemplateModal: FunctionComponent<EmailTemplateModalProps> = ({
       })
     }
 
-    switch (template.template) {
+    switch (template?.template) {
       case 'standard_response':
         onSave({
           id: template.id,
@@ -257,7 +260,7 @@ export const EmailTemplateModal: FunctionComponent<EmailTemplateModalProps> = ({
           title: emailTitle,
           from: emailFrom,
           bcc: emailBcc,
-          template_name: emailTitle,
+          template_name: template?.template_name || emailTitle,
           body: draftToHtml(convertToRaw(editorState.getCurrentContent())),
           standard_responses: addResponse,
           template: template.template,
@@ -272,7 +275,7 @@ export const EmailTemplateModal: FunctionComponent<EmailTemplateModalProps> = ({
           title: emailTitle,
           from: emailFrom,
           bcc: emailBcc,
-          template_name: emailTitle,
+          ttemplate_name: template?.template_name || emailTitle,
           body: draftToHtml(convertToRaw(editorState.getCurrentContent())),
           standard_responses: addResponse,
           template: template.template,
@@ -287,7 +290,7 @@ export const EmailTemplateModal: FunctionComponent<EmailTemplateModalProps> = ({
           title: emailTitle,
           from: emailFrom,
           bcc: emailBcc,
-          template_name: emailTitle,
+          template_name: template?.template_name || emailTitle,
           body: draftToHtml(convertToRaw(editorState.getCurrentContent())),
           standard_responses: JSON.stringify(template?.standard_responses),
           template: template.template,
@@ -304,7 +307,7 @@ export const EmailTemplateModal: FunctionComponent<EmailTemplateModalProps> = ({
           bcc: emailBcc,
           deadline: deadline,
           reminders: reminderData,
-          template_name: emailTitle,
+          template_name: template?.template_name || emailTitle,
           template: template.template,
           body: draftToHtml(convertToRaw(editorState.getCurrentContent())),
         })
@@ -316,7 +319,7 @@ export const EmailTemplateModal: FunctionComponent<EmailTemplateModalProps> = ({
           title: emailTitle,
           from: emailFrom,
           bcc: emailBcc,
-          template_name: emailTitle,
+          template_name: template?.template_name || emailTitle,
           template: template.template,
           body: draftToHtml(convertToRaw(editorState.getCurrentContent())),
         })
@@ -328,7 +331,7 @@ export const EmailTemplateModal: FunctionComponent<EmailTemplateModalProps> = ({
           title: emailTitle,
           from: emailFrom,
           bcc: emailBcc,
-          template_name: emailTitle,
+          template_name: template?.template_name || emailTitle,
           template: template.template,
           body: draftToHtml(convertToRaw(editorState.getCurrentContent())),
         })
@@ -399,36 +402,16 @@ export const EmailTemplateModal: FunctionComponent<EmailTemplateModalProps> = ({
         })
         setResponses(tmpArr)
       }
-      if (emailTemplate.category.category_name == 'Applications') {
+      if (emailTemplate.category.category_name == EmailCategoryEnum.APPLICATIONS) {
         setDeadline(emailTemplate?.region?.enrollment_packet_deadline_num_days)
       }
 
-      if (emailTemplate.category.category_name == 'Enrollment Packets') {
+      if (emailTemplate.category.category_name == EmailCategoryEnum.PACKETS) {
         setDeadline(emailTemplate?.region?.enrollment_packet_deadline_num_days)
       }
 
-      if (emailTemplate.category.category_name == 'Withdraw') {
+      if (emailTemplate.category.category_name == EmailCategoryEnum.WITHDRAWAL) {
         setDeadline(emailTemplate?.region?.withdraw_deadline_num_days)
-      }
-      setAddResponse(emailTemplate.standard_responses)
-      setAvailableInserts(emailTemplate?.inserts?.split(','))
-      setType(emailTemplate.template)
-      if (emailTemplate.category.category_name != 'Withdraw') {
-        setAvailableInsertDescription(insertDescriptions)
-      }
-      if (emailTemplate.template_name === 'Application Accepted') {
-        setAvailableInsertDescription({
-          ...insertDescriptions,
-          deadline: 'Deadline set in the Packet Reminders Template',
-        })
-      }
-      if (emailTemplate.category.category_name == 'Users') {
-        setAvailableInsertDescription({
-          ...insertDescriptions,
-          link: 'Link for user to access  verification or update',
-        })
-      }
-      if (emailTemplate.category.category_name === 'Withdraw') {
         setAvailableInsertDescription({
           parent: "Parent's First Name",
           student: "Student's First Name",
@@ -438,7 +421,25 @@ export const EmailTemplateModal: FunctionComponent<EmailTemplateModalProps> = ({
           link: 'Link to Withdraw Form to sign',
         })
       }
-      if (emailTemplate.category.category_name == 'Schedules') {
+      setAddResponse(emailTemplate.standard_responses)
+      setAvailableInserts(emailTemplate?.inserts?.split(','))
+      setType(emailTemplate.template)
+      if (emailTemplate.category.category_name != EmailCategoryEnum.WITHDRAWAL) {
+        setAvailableInsertDescription(insertDescriptions)
+      }
+      if (emailTemplate.template_name === 'Application Accepted') {
+        setAvailableInsertDescription({
+          ...insertDescriptions,
+          deadline: 'Deadline set in the Packet Reminders Template',
+        })
+      }
+      if (emailTemplate.category.category_name == EmailCategoryEnum.USERS) {
+        setAvailableInsertDescription({
+          ...insertDescriptions,
+          link: 'Link for user to access  verification or update',
+        })
+      }
+      if (emailTemplate.category.category_name == EmailCategoryEnum.SCHEDULES) {
         setAvailableInsertDescription({
           ...insertDescriptions,
           year: 'School Year the schedule is for (2022-2023)',

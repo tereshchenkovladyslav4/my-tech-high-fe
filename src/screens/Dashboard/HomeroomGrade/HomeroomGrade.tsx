@@ -93,7 +93,7 @@ export const HomeroomGrade: React.FC<HomeroomGradeProps> = ({ schoolYears, mainT
 
   const settings = () => ({
     className: 'slider variable-width',
-    infinite: true,
+    infinite: false,
     speed: 500,
     slidesToShow: 6,
     slidesToScroll: 1,

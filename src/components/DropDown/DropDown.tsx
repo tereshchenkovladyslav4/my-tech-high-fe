@@ -52,7 +52,11 @@ export const DropDown: React.FC<DropDownProps> = ({
       {dropDownItem.label}
       {dropDownItem.hasDeleteIcon && (
         <Tooltip title='Delete' placement='top'>
-          <IconButton onClick={() => dropDownItem.handleDeleteItem(dropDownItem.value)}>
+          <IconButton
+            onClick={() => {
+              if (dropDownItem?.handleDeleteItem) dropDownItem?.handleDeleteItem(dropDownItem.value)
+            }}
+          >
             <DeleteForeverOutlinedIcon sx={{ cursor: 'pointer', width: '25px', height: '25px' }} fontSize='medium' />
           </IconButton>
         </Tooltip>

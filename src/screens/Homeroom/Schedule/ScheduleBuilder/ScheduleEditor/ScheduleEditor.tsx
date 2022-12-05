@@ -481,6 +481,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
 
     if (schedule.filteredPeriods?.length === 1) {
       //schedule.Period = schedule.filteredPeriods[0]
+      handleSelectPeriod(schedule, schedule.filteredPeriods[0])
     } else if (!schedule.filteredPeriods?.length) {
       delete schedule.Period
     }
@@ -630,12 +631,12 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
                   '& .MuiTableCell-root': { background: 'rgba(65, 69, 255, 0.2) !important' },
                 }
               : {}
-            : (scheduleStatus === ScheduleStatus.RESUBMITTED &&
-                selectedScheduleStatus != ScheduleStatus.UPDATES_REQUIRED) ||
-              scheduleStatus === ScheduleStatus.UPDATES_REQUESTED ||
-              scheduleStatus === ScheduleStatus.ACCEPTED
-            ? { '& .MuiTableCell-root': { background: '#F2F2F2 !important' } }
-            : {}
+            : schedule.schedulePeriodStatus === SchedulePeriodStatus.UPDATE_REQUESTED &&
+              scheduleStatus === ScheduleStatus.UPDATES_REQUESTED
+            ? {
+                '& .MuiTableCell-root': { background: 'rgba(65, 69, 255, 0.2) !important' },
+              }
+            : { '& .MuiTableCell-root': { background: '#F2F2F2 !important' } }
           : (scheduleStatus === ScheduleStatus.ACCEPTED ||
               scheduleStatus === ScheduleStatus.SUBMITTED ||
               scheduleStatus === ScheduleStatus.RESUBMITTED ||
@@ -723,7 +724,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
                   {editable(item.rawData) &&
                   (!isSecondSemester ||
                     item.rawData.FirstSemesterSchedule?.Period?.semester === SEMESTER_TYPE.PERIOD) &&
-                  item.rawData.filteredPeriods?.length > 0 ? (
+                  item.rawData.filteredPeriods?.length > 1 ? (
                     <NestedDropdown
                       menuItemsData={createPeriodMenuItems(item.rawData)}
                       MenuProps={{ elevation: 3 }}

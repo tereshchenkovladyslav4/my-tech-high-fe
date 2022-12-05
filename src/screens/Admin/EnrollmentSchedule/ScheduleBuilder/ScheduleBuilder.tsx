@@ -236,7 +236,10 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
   }
 
   const handlePeriodUpdateRequired = (periodId: string) => {
-    if (studentScheduleStatus !== ScheduleStatus.ACCEPTED) {
+    if (
+      studentScheduleStatus !== ScheduleStatus.ACCEPTED &&
+      studentScheduleStatus !== ScheduleStatus.UPDATES_REQUESTED
+    ) {
       const data = hasSecondSemester ? secondScheduleData : scheduleData
       setRequireUpdatePeriods([
         ...data

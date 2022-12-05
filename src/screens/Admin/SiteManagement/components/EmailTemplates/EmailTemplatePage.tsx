@@ -6,6 +6,7 @@ import ArrowBackIosOutlinedIcon from '@mui/icons-material/ArrowBackIosOutlined'
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
 import SearchIcon from '@mui/icons-material/Search'
 import { Box, Grid, Card, OutlinedInput, InputAdornment, Typography } from '@mui/material'
+import { EmailTemplate } from '@mth/models'
 import { getEmailTemplatesByRegionQuery } from '../../../../../graphql/queries/email-template'
 import { createEmailTemplateMutation, updateEmailTemplateMutation } from '../../../../../graphql/queries/email-template'
 import { UserContext } from '../../../../../providers/UserContext/UserProvider'
@@ -109,7 +110,7 @@ export const EmailTemplatePage: FunctionComponent<{ onBackPress?: () => void }> 
   const { me } = useContext(UserContext)
   const [searchField, setSearchField] = useState('')
   const [openEdit, setOpenEdit] = useState(false)
-  const [currentTemplate, setCurrentTemplate] = useState(null)
+  const [currentTemplate, setCurrentTemplate] = useState<EmailTemplate | null>(null)
   const [currentCategory, setCurrentCategory] = useState(null)
   const [responseEdit, setResponseEdit] = useState<boolean>(false)
   const [standardRes, setStandardRes] = useState<StandardRes[]>([])

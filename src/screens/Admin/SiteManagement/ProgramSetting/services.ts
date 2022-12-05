@@ -41,12 +41,6 @@ export const getSchoolYearsByRegionId = gql`
   }
 `
 
-export const removeCountyInfoByRegionId = gql`
-  mutation RemoveCountyInfoByRegionId($regionId: ID!) {
-    removeCountyInfoByRegionId(region_id: $regionId)
-  }
-`
-
 export const removeFileByFileId = gql`
   mutation DeletePacketDocumentFile($fileId: String!) {
     deletePacketDocumentFile(fileId: $fileId) {
