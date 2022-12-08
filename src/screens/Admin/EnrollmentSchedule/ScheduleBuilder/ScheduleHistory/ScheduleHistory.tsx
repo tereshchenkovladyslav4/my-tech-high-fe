@@ -110,7 +110,7 @@ const ScheduleHistory: React.FC<ScheduleHistoryProps> = ({
             </Box>
           )
         } else {
-          return <></>
+          return <Box key={index}></Box>
         }
       })}
       {!showMore && scheduleDataHistory?.length > 5 && (

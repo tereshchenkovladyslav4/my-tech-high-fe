@@ -57,6 +57,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
   isAdmin = false,
   isEditMode = false,
   isSecondSemester = false,
+  hasUnlockedPeriods = false,
   splitEnrollment,
   parentTooltip,
   scheduleStatus,
@@ -429,7 +430,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
   }
 
   const editable = (schedule: ScheduleData) => {
-    if (isSecondSemester) {
+    if (isSecondSemester && hasUnlockedPeriods) {
       return !!schedule.editable
     } else {
       return !scheduleStatus || scheduleStatus === ScheduleStatus.DRAFT || schedule.editable || (isAdmin && isEditMode)
@@ -583,6 +584,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
 
     if (
       isSecondSemester &&
+      hasUnlockedPeriods &&
       schedule.FirstSemesterSchedule?.Period?.semester !== SEMESTER_TYPE.NONE &&
       (!scheduleStatus ||
         scheduleStatus === ScheduleStatus.DRAFT ||
@@ -599,7 +601,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
     }
 
     if (
-      !isSecondSemester &&
+      (!isSecondSemester || (isSecondSemester && !hasUnlockedPeriods)) &&
       schedule.schedulePeriodStatus === SchedulePeriodStatus.UPDATE_REQUIRED &&
       scheduleStatus === ScheduleStatus.UPDATES_REQUIRED
     ) {
@@ -636,6 +638,11 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
             ? {
                 '& .MuiTableCell-root': { background: 'rgba(65, 69, 255, 0.2) !important' },
               }
+            : schedule.schedulePeriodStatus === SchedulePeriodStatus.RESUBMITTED &&
+              scheduleStatus === ScheduleStatus.RESUBMITTED
+            ? {
+                '& .MuiTableCell-root': { background: '#FFFFFF !important' },
+              }
             : { '& .MuiTableCell-root': { background: '#F2F2F2 !important' } }
           : (scheduleStatus === ScheduleStatus.ACCEPTED ||
               scheduleStatus === ScheduleStatus.SUBMITTED ||
@@ -646,6 +653,11 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
             schedule.schedulePeriodStatus === SchedulePeriodStatus.UPDATE_REQUESTED
             ? {
                 '& .MuiTableCell-root': { background: 'rgba(65, 69, 255, 0.2) !important' },
+              }
+            : schedule.schedulePeriodStatus === SchedulePeriodStatus.RESUBMITTED &&
+              scheduleStatus === ScheduleStatus.RESUBMITTED
+            ? {
+                '& .MuiTableCell-root': { background: '#FFFFFF !important' },
               }
             : { '& .MuiTableCell-root': { background: '#F2F2F2 !important' } }
           : schedule.editable
@@ -723,6 +735,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
                 <Box sx={{ marginLeft: '20px', width: '100%' }}>
                   {editable(item.rawData) &&
                   (!isSecondSemester ||
+                    (isSecondSemester && !hasUnlockedPeriods) ||
                     item.rawData.FirstSemesterSchedule?.Period?.semester === SEMESTER_TYPE.PERIOD) &&
                   item.rawData.filteredPeriods?.length > 1 ? (
                     <NestedDropdown

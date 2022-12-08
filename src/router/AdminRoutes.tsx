@@ -20,6 +20,7 @@ import { Enrollment } from '@mth/screens/Admin/Enrollment/Enrollment'
 import { EnrollmentPackets } from '@mth/screens/Admin/EnrollmentPackets/EnrollmentPackets'
 import { EnrollmentSchedule } from '@mth/screens/Admin/EnrollmentSchedule/EnrollmentSchedule'
 import { ScheduleBuilder } from '@mth/screens/Admin/EnrollmentSchedule/ScheduleBuilder'
+import { Assignments } from '@mth/screens/Admin/HomeRoom/Assignments/Assignments'
 import { CheckList } from '@mth/screens/Admin/HomeRoom/CheckList'
 import { HomeRoom } from '@mth/screens/Admin/HomeRoom/HomeRoom'
 import { LearningLogs } from '@mth/screens/Admin/HomeRoom/LearningLogs'
@@ -64,6 +65,7 @@ import {
   HOMEROOM,
   HOMEROOM_LEARNING_LOGS,
   HOMEROOM_CHECKLIST,
+  HOMEROOM_ASSIGNMENTS,
 } from '../utils/constants'
 
 export const AdminRoutes: React.FC = () => {
@@ -172,6 +174,9 @@ export const AdminRoutes: React.FC = () => {
           return <MasterHomeroom masterId={Number(match?.params?.id)} />
         }}
       />
+      <Route exact path={HOMEROOM_ASSIGNMENTS}>
+        <Assignments />
+      </Route>
       <Route
         path={`${HOMEROOM_LEARNING_LOGS}/edit/:id/edit-assignment`}
         exact

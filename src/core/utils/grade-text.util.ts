@@ -1,4 +1,5 @@
 import { StudentType } from '@mth/screens/HomeroomStudentProfile/Student/types'
+import { SchoolYear } from '../models/school-year.model'
 import { toOrdinalSuffix } from './string.util'
 
 export const gradeText = (student: StudentType): string => {
@@ -10,6 +11,31 @@ export const gradeText = (student: StudentType): string => {
   if (gradeLevel === undefined) return ''
 
   return (gradeLevel + '').toLowerCase().startsWith('k') ? 'Kindergarten' : `${toOrdinalSuffix(+gradeLevel)} Grade`
+}
+
+export const calculateGrade = (
+  student: StudentType,
+  schoolYears: SchoolYear[],
+  selectedYear: SchoolYear | undefined,
+): string => {
+  if (student && schoolYears?.length && selectedYear) {
+    if (!student.grade_levels?.length) {
+      return ''
+    }
+    const gradeLevel = student.grade_levels[student.grade_levels.length - 1]?.grade_level
+    const activeSchoolYear = schoolYears?.find(
+      (schoolYear) => schoolYear.school_year_id === student.current_school_year_status?.school_year_id,
+    )
+    const diffYear =
+      Number(selectedYear?.date_begin?.split('-')?.[0]) - Number(activeSchoolYear?.date_end?.split('-')?.[0]) + 1
+    if (gradeLevel === undefined) return ''
+
+    return (gradeLevel + '').toLowerCase().startsWith('k')
+      ? diffYear == 0
+        ? 'Kindergarten'
+        : `${toOrdinalSuffix(1)} Grade`
+      : `${toOrdinalSuffix(+gradeLevel + diffYear)} Grade`
+  } else return ''
 }
 
 export const gradeNum = (student: StudentType | undefined): string => {

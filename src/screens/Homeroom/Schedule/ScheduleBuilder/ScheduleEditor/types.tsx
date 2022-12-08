@@ -6,6 +6,7 @@ export type ScheduleEditorProps = {
   isAdmin?: boolean
   isEditMode?: boolean
   isSecondSemester?: boolean
+  hasUnlockedPeriods?: boolean
   splitEnrollment?: boolean
   parentTooltip?: string
   scheduleStatus: ScheduleStatus

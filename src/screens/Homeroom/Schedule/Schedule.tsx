@@ -26,7 +26,7 @@ import { getSignatureFile } from '@mth/screens/Admin/EnrollmentPackets/services'
 import { AssessmentType } from '@mth/screens/Admin/SiteManagement/EnrollmentSetting/TestingPreference/types'
 import { UpdateStudentMutation } from '@mth/screens/Admin/UserProfile/services'
 import { mthButtonClasses } from '@mth/styles/button.style'
-import { extractContent, gradeNum, gradeText } from '@mth/utils'
+import { calculateGrade, extractContent, gradeNum } from '@mth/utils'
 import { DiplomaSeeking } from './DiplomaSeeking'
 import { HeaderComponent } from './HeaderComponent'
 import { OptOutForm } from './OptOutForm'
@@ -86,6 +86,7 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
     selectedYearId,
     setSelectedYearId,
     selectedYear,
+    schoolYears,
     dropdownItems: schoolYearItems,
   } = useActiveScheduleSchoolYears(studentId)
 
@@ -349,7 +350,7 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
       })
       setStudentInfo({
         name: `${student.person?.first_name} ${student.person?.last_name}`,
-        grade: gradeText(student),
+        grade: calculateGrade(student, schoolYears, selectedYear),
         schoolDistrict: student?.packets?.at(-1)?.school_district || '',
         specialEd: studentSpecialEd,
       })
@@ -365,7 +366,7 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
           break
       }
     }
-  }, [student])
+  }, [student, schoolYears, selectedYear])
 
   useEffect(() => {
     if (!assessmentsLoading && assessments && selectedYear) {
@@ -373,7 +374,7 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
         (assessment) =>
           assessment?.grades?.includes(`${student?.grade_levels?.at(-1)?.grade_level}`) && !assessment?.is_archived,
       )
-      setActiveTestingPreference(selectedYear?.testing_preference)
+      setActiveTestingPreference(selectedYear?.testing_preference && !!fitleredAssessments?.length)
       if (backTo) setStep(MthTitle.STEP_SCHEDULE_BUILDER)
       else if (selectedYear?.testing_preference && fitleredAssessments?.length)
         setStep(MthTitle.STEP_TESTING_PREFERENCE)

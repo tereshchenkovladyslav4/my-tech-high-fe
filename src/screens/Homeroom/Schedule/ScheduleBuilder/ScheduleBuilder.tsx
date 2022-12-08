@@ -50,6 +50,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
     studentScheduleId,
     setStudentScheduleId,
     studentScheduleStatus,
+    hasUnlockedPeriods,
     refetch,
   } = useStudentSchedulePeriods(studentId, selectedYear, diplomaSeekingPath, showSecondSemester)
 
@@ -123,6 +124,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
         if (response) {
           switch (kind) {
             case ScheduleStatus.DRAFT:
+            case ScheduleStatus.UPDATES_REQUIRED:
               setIsDraftSaved(true)
               break
             case ScheduleStatus.SUBMITTED:
@@ -219,30 +221,33 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
   }, [scheduleBuilderSettingLoading, scheduleBuilderSettingData])
 
   useEffect(() => {
-    if (studentScheduleStatus) setScheduleStatus(studentScheduleStatus)
+    setScheduleStatus(studentScheduleStatus)
   }, [studentScheduleStatus])
 
   return (
     <>
-      {showSecondSemester && (
+      {showSecondSemester && hasUnlockedPeriods && (
         <Typography sx={scheduleBuilderClasses.semesterTitle}>{MthTitle.FIRST_SEMESTER}</Typography>
       )}
-      <ScheduleEditor
-        scheduleData={scheduleData}
-        splitEnrollment={splitEnrollment}
-        isEditMode={isEditMode && !showSecondSemester}
-        scheduleStatus={showSecondSemester ? ScheduleStatus.ACCEPTED : studentScheduleStatus}
-        parentTooltip={parentTooltip}
-        setIsChanged={setIsChanged}
-        setScheduleData={setScheduleData}
-      />
-      {showSecondSemester && (
+      {(!showSecondSemester || (showSecondSemester && hasUnlockedPeriods)) && (
+        <ScheduleEditor
+          scheduleData={scheduleData}
+          splitEnrollment={splitEnrollment}
+          isEditMode={isEditMode && !showSecondSemester}
+          scheduleStatus={showSecondSemester ? ScheduleStatus.ACCEPTED : studentScheduleStatus}
+          parentTooltip={parentTooltip}
+          setIsChanged={setIsChanged}
+          setScheduleData={setScheduleData}
+        />
+      )}
+      {showSecondSemester && hasUnlockedPeriods && (
         <Typography sx={{ ...scheduleBuilderClasses.semesterTitle, mt: 4 }}>{MthTitle.SECOND_SEMESTER}</Typography>
       )}
       {showSecondSemester && (
         <ScheduleEditor
           scheduleData={secondScheduleData}
           splitEnrollment={splitEnrollment}
+          hasUnlockedPeriods={hasUnlockedPeriods}
           isEditMode={isEditMode || !studentScheduleStatus || studentScheduleStatus === ScheduleStatus.DRAFT}
           isSecondSemester={true}
           scheduleStatus={studentScheduleStatus}
@@ -342,7 +347,9 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
                     handleSave(
                       studentScheduleStatus === ScheduleStatus.UPDATES_REQUIRED
                         ? ScheduleStatus.UPDATES_REQUIRED
-                        : studentScheduleStatus,
+                        : studentScheduleStatus
+                        ? studentScheduleStatus
+                        : ScheduleStatus.DRAFT,
                     )
                   }
                   sx={mthButtonClasses.primary}
@@ -375,6 +382,8 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
                     handleSave(
                       studentScheduleStatus === ScheduleStatus.UPDATES_REQUIRED
                         ? ScheduleStatus.UPDATES_REQUIRED
+                        : studentScheduleStatus
+                        ? studentScheduleStatus
                         : ScheduleStatus.DRAFT,
                     )
                   }

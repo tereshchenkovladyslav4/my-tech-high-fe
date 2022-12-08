@@ -29,7 +29,6 @@ export const HomeRoom: FunctionComponent = () => {
       title: 'Homeroom Assignments',
       subtitle: 'Assign & Transfer',
       link: HOMEROOM_ASSIGNMENTS,
-      disabled: true,
     },
     {
       title: 'Settings',

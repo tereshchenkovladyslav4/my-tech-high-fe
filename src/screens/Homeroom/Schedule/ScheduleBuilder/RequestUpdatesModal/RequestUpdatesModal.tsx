@@ -37,16 +37,22 @@ const RequestUpdatesModal: React.FC<RequestUpdatesModalProps> = ({
 
   useEffect(() => {
     if (scheduleData?.length) {
-      if (isSecondSemester)
-        setPeriodsItems(
-          scheduleData
-            .filter((item) => item.FirstSemesterSchedule?.Period?.semester !== SEMESTER_TYPE.NONE)
-            .map((item) => ({
-              label: `Period ${item.period} - ${item.Period?.category}`,
-              value: item.period.toString(),
-            })),
+      if (isSecondSemester) {
+        const filteredScheduleData = scheduleData.filter(
+          (item) => item.FirstSemesterSchedule?.Period?.semester !== SEMESTER_TYPE.NONE,
         )
-      else
+        setPeriodsItems(
+          filteredScheduleData.length
+            ? filteredScheduleData.map((item) => ({
+                label: `Period ${item.period} - ${item.Period?.category}`,
+                value: item.period.toString(),
+              }))
+            : scheduleData.map((item) => ({
+                label: `Period ${item.period} - ${item.Period?.category}`,
+                value: item.period.toString(),
+              })),
+        )
+      } else
         setPeriodsItems(
           scheduleData.map((item) => ({
             label: `Period ${item.period} - ${item.Period?.category}`,

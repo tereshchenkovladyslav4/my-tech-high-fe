@@ -5,6 +5,7 @@ import { COURSE_TYPE_ITEMS } from '@mth/constants'
 import { CourseType, DiplomaSeekingPath, ScheduleStatus } from '@mth/enums'
 import { SchedulePeriod } from '@mth/graphql/models/schedule-period'
 import { getStudentSchedulePeriodsQuery } from '@mth/graphql/queries/schedule-period'
+import { SEMESTER_TYPE } from '@mth/screens/Admin/Curriculum/types'
 import { getStudentPeriodsQuery, getStudentProvidersQuery } from '@mth/screens/Homeroom/Schedule/services'
 import { Course, Period, Provider, ScheduleData } from '@mth/screens/Homeroom/Schedule/types'
 
@@ -97,8 +98,11 @@ export const useStudentSchedulePeriods = (
   secondScheduleData: ScheduleData[]
   setSecondScheduleData: (value: ScheduleData[]) => void
   studentScheduleId: number
+  firstSemesterScheduleId: number
+  secondSemesterScheduleId: number
   setStudentScheduleId: (value: number) => void
   studentScheduleStatus: ScheduleStatus
+  hasUnlockedPeriods: boolean
   refetch: () => void
 } => {
   const [scheduleData, setScheduleData] = useState<ScheduleData[]>([])
@@ -106,6 +110,9 @@ export const useStudentSchedulePeriods = (
   const [studentScheduleId, setStudentScheduleId] = useState<number>(0)
   const [studentScheduleStatus, setStudentScheduleStatus] = useState<ScheduleStatus>(ScheduleStatus.DRAFT)
   const [hasSecondSemesterSchedule, setHasSecondSemesterSchedule] = useState<boolean>(false)
+  const [hasUnlockedPeriods, setHasUnlockedPeriods] = useState<boolean>(false)
+  const [firstSemesterScheduleId, setFirstSemesterScheduleId] = useState<number>(0)
+  const [secondSemesterScheduleId, setSecondSemesterScheduleId] = useState<number>(0)
 
   // Have to call Providers API individually instead of JOIN in Periods API(For the performance)
   const { loading: loadingProviders, data: providersData } = useQuery(getStudentProvidersQuery, {
@@ -208,23 +215,40 @@ export const useStudentSchedulePeriods = (
         secondScheduleDataArray.map((item) => {
           item.FirstSemesterSchedule = firstScheduleDataArray.find((x) => x.period === item.period)
         })
+        const regularScheduleData = firstScheduleDataArray.length ? firstScheduleDataArray : scheduleDataArray
 
-        setStudentScheduleId(
-          secondSchedulePeriods?.length
-            ? secondSchedulePeriods[0]?.ScheduleId
-            : showSecondSemester
-            ? 0
-            : firstSchedulePeriods[0]?.ScheduleId,
-        )
-        setStudentScheduleStatus(
-          secondSchedulePeriods?.length
-            ? secondSchedulePeriods[0]?.Schedule?.status
-            : showSecondSemester
-            ? ScheduleStatus.DRAFT
-            : firstSchedulePeriods[0]?.Schedule?.status,
-        )
+        if (
+          showSecondSemester &&
+          regularScheduleData?.filter((item) => item?.Period?.semester !== SEMESTER_TYPE.NONE).length
+        ) {
+          setHasUnlockedPeriods(true)
+          setStudentScheduleId(secondSchedulePeriods?.length ? secondSchedulePeriods[0]?.ScheduleId : 0)
+          setStudentScheduleStatus(
+            secondSchedulePeriods?.length ? secondSchedulePeriods[0]?.Schedule?.status : ScheduleStatus.DRAFT,
+          )
+        } else {
+          if (secondSchedulePeriods[0]?.Schedule?.status === ScheduleStatus.ACCEPTED) {
+            setHasUnlockedPeriods(true)
+          } else {
+            setHasUnlockedPeriods(false)
+          }
+          setStudentScheduleId(
+            secondSchedulePeriods?.length
+              ? secondSchedulePeriods[0]?.ScheduleId
+              : showSecondSemester
+              ? 0
+              : firstSchedulePeriods[0]?.ScheduleId,
+          )
+          setStudentScheduleStatus(
+            secondSchedulePeriods?.length
+              ? secondSchedulePeriods[0]?.Schedule?.status
+              : firstSchedulePeriods[0]?.Schedule?.status,
+          )
+        }
+
+        setFirstSemesterScheduleId(firstSchedulePeriods[0]?.ScheduleId)
+        setSecondSemesterScheduleId(secondSchedulePeriods[0]?.ScheduleId)
       }
-
       setScheduleData(firstScheduleDataArray.length ? firstScheduleDataArray : scheduleDataArray)
       setSecondScheduleData(secondScheduleDataArray.length ? secondScheduleDataArray : scheduleDataArray)
     }
@@ -239,6 +263,9 @@ export const useStudentSchedulePeriods = (
     studentScheduleId: studentScheduleId,
     setStudentScheduleId: setStudentScheduleId,
     studentScheduleStatus: studentScheduleStatus,
+    hasUnlockedPeriods: hasUnlockedPeriods,
+    firstSemesterScheduleId: firstSemesterScheduleId,
+    secondSemesterScheduleId: secondSemesterScheduleId,
     refetch,
   }
 }

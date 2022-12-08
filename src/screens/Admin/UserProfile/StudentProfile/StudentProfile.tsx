@@ -217,7 +217,6 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
   const [userInfo, setUserInfo] = useState<unknown>({})
   const [preferedFirstName, setPreferredFirstName] = useState('')
   const [preferedLastName, setPreferredLastName] = useState('')
-  const [hispanicOrLatino, setHispanicOrLatino] = useState('Opt-in')
 
   const [legalFirstName, setLegalFirstName] = useState('')
   const [legalMiddleName, setLegalMiddleName] = useState('')
@@ -247,17 +246,6 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
     setPacketID(packets[0].packet_id)
     setShowPacketModal(true)
   }
-
-  const hispanicOrLatinoItems: DropDownItem[] = [
-    {
-      label: 'Opt-in',
-      value: 'Opt-in',
-    },
-    {
-      label: 'Opt-out',
-      value: 'Opt-out',
-    },
-  ]
 
   const genderItems: DropDownItem[] = [
     {
@@ -313,9 +301,6 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
       setOriginStudentStatus({
         status: currentUserData?.student?.status?.length && currentUserData.student.status.at(-1).status,
       })
-      if (currentUserData.student.testing_preference) {
-        setHispanicOrLatino(currentUserData.student.testing_preference)
-      }
     }
   }, [currentUserData])
 
@@ -385,6 +370,37 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
       setModalAssign(false)
     }
   }
+
+  const studentAseessOption = (assessment_id) => {
+    const studentAsses = studentAssessments.find((ass) => ass.assessmentId == assessment_id)
+    if (!studentAsses) {
+      return ''
+    }
+    return studentAsses.optionId
+  }
+
+  const handleTestPreferenceChange = (assessId, optionId) => {
+    const updatedValue = studentAssessments.map((item) => {
+      if (item.assessmentId === assessId) {
+        return {
+          ...item,
+          optionId: optionId,
+        }
+      } else {
+        return item
+      }
+    })
+    setIsChanged(true)
+    setStudentAssessments(updatedValue)
+    const testString = updatedValue.map((i) => {
+      return {
+        assessmentOptionId: i.assessmentOptionId,
+        optionId: i.optionId,
+      }
+    })
+    setStudentStatus({ ...studentStatus, ...{ testing_preference: JSON.stringify(testString) } })
+  }
+
   return (
     <Box
       sx={{
@@ -654,54 +670,21 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
               </Grid>
               <Grid item xs={9} sx={{ alignItems: 'center', display: 'flex' }}>
                 <Select
-                  value={hispanicOrLatino}
+                  value={studentAseessOption(assess.assessment_id)}
                   IconComponent={KeyboardArrowDown}
                   className={classes.select}
                   sx={{ fontWeight: '700', fontSize: '12px', color: '#0E0E0E' }}
-                  onChange={(e) => {
-                    setHispanicOrLatino(e.target.value)
-                    setStudentStatus({ ...studentStatus, ...{ testing_preference: e.target.value } })
-                  }}
+                  onChange={(e) => handleTestPreferenceChange(assess.assessment_id, e.target.value)}
                 >
-                  {hispanicOrLatinoItems.map((item) => (
-                    <MenuItem key={item.value} value={item.value}>
-                      {item.label}
+                  {assess.Options.map((el) => (
+                    <MenuItem value={el.option_id} key={el.option_id}>
+                      {el.label}
                     </MenuItem>
                   ))}
-                  {false &&
-                    studentAssessments &&
-                    assess.Options.map((el) => (
-                      <MenuItem value={el.option_id} key={el.option_id}>
-                        {el.label}
-                      </MenuItem>
-                    ))}
                 </Select>
               </Grid>
             </Grid>
           ))}
-
-          {/* <Select
-            value={hispanicOrLatino}
-            onChange={(e) => {
-              setHispanicOrLatino(e.target.value)
-              setStudentStatus({ ...studentStatus, ...{ testing_preference: e.target.value } })
-            }}
-            displayEmpty
-            sx={{
-              width: '30%',
-              borderRadius: 2,
-            }}
-            size={'small'}
-          >
-            <MenuItem value='' disabled>
-              Select
-            </MenuItem>
-            {hispanicOrLatinoItems.map((item) => (
-              <MenuItem key={item.value} value={item.value}>
-                {item.label}
-              </MenuItem>
-            ))}
-          </Select> */}
         </Grid>
         <Grid item xs={3}>
           <Paragraph size='medium' textAlign='left'>

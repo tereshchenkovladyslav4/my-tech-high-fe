@@ -44,6 +44,7 @@ export enum MthTitle {
   ON_SITE_SPLIT_ENROLLMENT = 'On-site Split Enrollment',
   SAVE_CHANGES = 'Save Changes',
   ACCEPT = 'Accept',
+  ACCEPT_AS_SECOND_SEMESTER = 'Accept as 2nd semester',
   SAVE_DRAFT = 'Save Draft',
   REQUEST_UPDATES = 'Request Updates',
   SUBMIT = 'Submit',
