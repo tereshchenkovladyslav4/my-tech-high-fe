@@ -28,5 +28,5 @@ export type HeaderComponentProps = {
   selectedEventTypes: string[]
   setSelectedEventTypes: (value: string[]) => void
   setSearchField: (value: string) => void
-  setSectionName: (value: string) => void
+  setSectionName: (value: DashboardSection) => void
 }

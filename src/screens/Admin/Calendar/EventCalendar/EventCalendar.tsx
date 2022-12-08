@@ -95,26 +95,20 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
             variant='contained'
             sx={mainClasses.leftArrowButton}
             onClick={() => {
-              if (currentMonth.getMonth() == 0) {
-                setCurrentMonth(new Date(currentMonth.getFullYear() - 1, 11, 1))
-              } else {
-                setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1))
-              }
+              setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 3))
             }}
           >
             <ArrowBackIosNewIcon />
           </Button>
-          <label style={{ marginBottom: 'auto', marginTop: 'auto' }}>{moment(currentMonth).format('MMMM YYYY')}</label>
+          <label style={{ marginBottom: 'auto', marginTop: 'auto' }}>
+            {moment(new Date(currentMonth)).format('MMMM YYYY')}
+          </label>
           <Button
             disableElevation
             variant='contained'
             sx={mainClasses.rightArrowButton}
             onClick={() => {
-              if (currentMonth.getMonth() == 11) {
-                setCurrentMonth(new Date(currentMonth.getFullYear() + 1, 0, 1))
-              } else {
-                setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1))
-              }
+              setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 3))
             }}
           >
             <ArrowForwardIosIcon />

@@ -1,4 +1,5 @@
 import { ReactNode } from 'react'
+import { ReduceFunds } from '@mth/enums'
 
 export enum SEMESTER_TYPE {
   NONE = 'NONE',
@@ -9,12 +10,6 @@ export const SEMESTER_MESSAGE = {
   [SEMESTER_TYPE.NONE]: 'None',
   [SEMESTER_TYPE.PERIOD]: 'Unlock this Period',
   [SEMESTER_TYPE.SUBJECT]: 'Only unlock Subjects mapped to this Period',
-}
-
-export enum REDUCE_FUNDS_TYPE {
-  NONE = 'NONE',
-  SUPPLEMENTAL = 'SUPPLEMENTAL',
-  TECHNOLOGY = 'TECHNOLOGY',
 }
 
 export type CurriculumItem = {
@@ -37,7 +32,7 @@ export type PeriodItem = {
   max_grade: number | null
   message_period?: string
   message_semester?: string
-  reduce_funds?: REDUCE_FUNDS_TYPE
+  reduce_funds?: ReduceFunds
   price: number | null
   archived?: boolean
   notify_semester: boolean

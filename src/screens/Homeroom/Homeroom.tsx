@@ -53,23 +53,28 @@ export const Homeroom: React.FC = () => {
   useEffect(() => {
     if (!loading && data?.getActiveSchoolYears) {
       const schoolYearsArray: Array<DropDownItem> = []
-      data.getActiveSchoolYears
-        .filter((item: SchoolYearType) => moment(item.date_begin).format('YYYY') >= moment().format('YYYY'))
-        .map((item: SchoolYearType): void => {
-          if (item.midyear_application) {
-            schoolYearsArray.push({
-              label: `${moment(item.date_begin).format('YYYY')}-${moment(item.date_end).format('YY')}`,
-              value: item.school_year_id,
-            })
-          }
+      data.getActiveSchoolYears.map((item: SchoolYearType): void => {
+        if (
+          moment(item.date_reg_open).format('YYYY-MM-DD') <= moment().format('YYYY-MM-DD') &&
+          moment(item.date_reg_close).format('YYYY-MM-DD') >= moment().format('YYYY-MM-DD')
+        ) {
+          schoolYearsArray.push({
+            label: `${moment(item.date_begin).format('YYYY')}-${moment(item.date_end).format('YY')}`,
+            value: item.school_year_id,
+          })
+        }
 
-          if (item.midyear_application) {
-            schoolYearsArray.push({
-              label: `${moment(item.date_begin).format('YYYY')}-${moment(item.date_end).format('YY')} Mid-year Program`,
-              value: `${item.school_year_id}-mid`,
-            })
-          }
-        })
+        if (
+          item.midyear_application &&
+          moment(item.midyear_application_open).format('YYYY-MM-DD') <= moment().format('YYYY-MM-DD') &&
+          moment(item.midyear_application_close).format('YYYY-MM-DD') >= moment().format('YYYY-MM-DD')
+        ) {
+          schoolYearsArray.push({
+            label: `${moment(item.date_begin).format('YYYY')}-${moment(item.date_end).format('YY')} Mid-year Program`,
+            value: `${item.school_year_id}-mid`,
+          })
+        }
+      })
       setSchoolYearsDropdown(sortBy(schoolYearsArray, 'label'))
     }
   }, [loading, data])

@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import { List, ListItem, Box, ListItemButton, IconButton } from '@mui/material'
 import { map, some } from 'lodash'
@@ -28,7 +28,7 @@ type Props = {
   handleDrawerClose: (type: string, name: string) => void
 }
 
-export const MobileSideMenu: FunctionComponent<Props> = ({ handleDrawerClose }) => {
+export const MobileSideMenu: React.FC<Props> = ({ handleDrawerClose }) => {
   const history = useHistory()
   const classes = useStyles
   const location = useLocation()

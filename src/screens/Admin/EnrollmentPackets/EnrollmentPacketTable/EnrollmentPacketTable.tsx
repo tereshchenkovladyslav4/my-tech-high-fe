@@ -11,7 +11,7 @@ import { Pagination } from '@mth/components/Pagination/Pagination'
 import { SortableTable } from '@mth/components/SortableTable/SortableTable'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { WarningModal } from '@mth/components/WarningModal/Warning'
-import { PacketStatus } from '@mth/enums'
+import { MthColor, PacketStatus } from '@mth/enums'
 import { getEmailTemplateQuery } from '@mth/graphql/queries/email-template'
 import { ProfileContext } from '@mth/providers/ProfileProvider/ProfileContext'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
@@ -93,7 +93,11 @@ export const EnrollmentPacketTable: React.FC = () => {
           : '',
       status: packet.status + (packet.is_age_issue ? ' (Age Issue)' : ''),
       deadline: moment(packet.deadline).format('MM/DD/YY'),
-      student: `${packet.student.person?.last_name}, ${packet.student.person?.first_name}`,
+      student: (
+        <Box sx={{ cursor: 'pointer', color: MthColor.MTHBLUE }}>
+          {`${packet.student.person?.last_name}, ${packet.student.person?.first_name}`}
+        </Box>
+      ),
       grade:
         packet.student.grade_levels?.length && packet.student.grade_levels[grade_value].grade_level
           ? packet.student.grade_levels[grade_value].grade_level === 'K' ||
@@ -101,7 +105,11 @@ export const EnrollmentPacketTable: React.FC = () => {
             ? 'K'
             : `${toOrdinalSuffix(Number(packet.student.grade_levels[grade_value].grade_level))} Grade`
           : ' ',
-      parent: `${packet?.student?.parent?.person?.last_name}, ${packet?.student?.parent?.person?.first_name}`,
+      parent: (
+        <Box sx={{ cursor: 'pointer', color: MthColor.MTHBLUE }}>
+          {`${packet?.student?.parent?.person?.last_name}, ${packet?.student?.parent?.person?.first_name}`}
+        </Box>
+      ),
       studentStatus:
         packet.student?.reenrolled > 0 ? (
           <Box sx={{ color: MTHBLUE }}>Update</Box>

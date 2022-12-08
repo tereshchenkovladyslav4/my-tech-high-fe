@@ -126,10 +126,15 @@ const ProviderForm: React.FC<ProviderFormProps> = ({ setIsChanged, periodsItems 
           >
             Require Multiple Periods
           </Typography>
+          <Subtitle sx={{ fontSize: '14px', color: MthColor.RED }}>
+            {!!values?.SchedulePeriods?.length &&
+              'These settings cannot be changed once a student has added this provider to their schedule.'}
+          </Subtitle>
           <Box sx={{ ml: '-12px' }}>
             <MthCheckbox
               label='If this Provider is selected, it must also be selected for the following periods:'
               checked={values?.multiple_periods}
+              disabled={!!values?.SchedulePeriods?.length}
               onChange={() => {
                 setFieldValue('multiple_periods', !values?.multiple_periods)
               }}
@@ -144,6 +149,7 @@ const ProviderForm: React.FC<ProviderFormProps> = ({ setIsChanged, periodsItems 
                 checkboxLists={periodsItems}
                 haveSelectAll={false}
                 values={values?.PeriodIds || []}
+                disabled={!!values?.SchedulePeriods?.length}
                 setValues={(value) => {
                   setFieldValue('PeriodIds', value)
                 }}

@@ -63,7 +63,7 @@ export const AddNewQuestionModal: React.FC<AddNewQuestionModalProps> = ({
       newQuestion?.slug &&
       [
         'address_state',
-        'packet_school_district',
+        'address_school_district',
         'packet_secondary_contact_first',
         'packet_secondary_contact_last',
         'address_county_id',

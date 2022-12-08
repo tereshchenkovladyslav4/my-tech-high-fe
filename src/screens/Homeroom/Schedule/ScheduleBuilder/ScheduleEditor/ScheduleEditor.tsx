@@ -4,7 +4,7 @@ import CallMissedOutgoingIcon from '@mui/icons-material/CallMissedOutgoing'
 import ModeEditIcon from '@mui/icons-material/ModeEdit'
 import QuestionMarkIcon from '@mui/icons-material/QuestionMark'
 import VpnKeyOutlinedIcon from '@mui/icons-material/VpnKeyOutlined'
-import { Grid, IconButton, Link, Tooltip, tooltipClasses, TooltipProps, Typography } from '@mui/material'
+import { IconButton, Link, Tooltip, tooltipClasses, TooltipProps, Typography } from '@mui/material'
 import { Box, styled } from '@mui/system'
 import parse from 'html-react-parser'
 import { CustomModal } from '@mth/components/CustomModal/CustomModals'
@@ -709,18 +709,18 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
         label: 'Period',
         sortable: false,
         tdClass: '',
-        width: '20%',
+        width: '25%',
         formatter: (item: MthTableRowItem<ScheduleData>) => {
           return (
             <Box sx={{ paddingRight: '50px' }}>
-              <Grid container alignItems='center' sx={{ display: 'flex' }}>
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
                 <Typography
                   sx={{ ...scheduleBuilderClasses.tableContent, width: '20px', paddingY: '24px' }}
                   component={'span'}
                 >
                   {('0' + item.rawData.period).slice(-2)}
                 </Typography>
-                <Box sx={{ marginLeft: '20px', minWidth: 'calc(100% - 40px)' }}>
+                <Box sx={{ marginLeft: '20px', width: '100%' }}>
                   {editable(item.rawData) &&
                   (!isSecondSemester ||
                     item.rawData.FirstSemesterSchedule?.Period?.semester === SEMESTER_TYPE.PERIOD) &&
@@ -738,7 +738,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
                     <Typography sx={scheduleBuilderClasses.tableContent}>{item.rawData.Period?.category}</Typography>
                   )}
                 </Box>
-              </Grid>
+              </Box>
             </Box>
           )
         },
@@ -813,7 +813,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
         label: 'Description',
         sortable: false,
         tdClass: '',
-        width: '40%',
+        width: '35%',
         formatter: (item: MthTableRowItem<ScheduleData>) => {
           return (
             <Box sx={{ position: 'relative' }}>

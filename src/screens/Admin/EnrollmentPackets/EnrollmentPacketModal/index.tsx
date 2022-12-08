@@ -331,7 +331,7 @@ export const EnrollmentPacketModal: React.FC<EnrollmentPacketModalProps> = ({ ha
     if (status === 'Accepted') {
       methods.setValue('saveAlert', 'The packet has been accepted')
       setTimeout(() => methods.setValue('saveAlert', ''), 5000)
-    } else if (!['Age Issue', 'Missing Info'].includes(status)) {
+    } else {
       methods.setValue('saveAlert', 'Packet Saved')
       setTimeout(() => methods.setValue('saveAlert', ''), 5000)
     }

@@ -2,11 +2,11 @@ import React, { useEffect, useState } from 'react'
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline'
 import ScheduleIcon from '@mui/icons-material/Schedule'
 import { Avatar, Box, CircularProgress, IconButton, Tooltip } from '@mui/material'
-import { useHistory } from 'react-router-dom'
+import { useHistory, useLocation } from 'react-router-dom'
 import { Metadata } from '@mth/components/Metadata/Metadata'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
-import { ApplicantStatus, MthColor, MthRoute, PacketStatus, ScheduleStatus, StudentNotification } from '@mth/enums'
+import { ApplicationStatus, MthColor, MthRoute, PacketStatus, ScheduleStatus, StudentNotification } from '@mth/enums'
 import { SchoolYearType } from '@mth/models'
 import { checkEnrollPacketStatus } from '../../../../../utils/utils'
 import { Person } from '../../../../HomeroomStudentProfile/Student/types'
@@ -14,21 +14,29 @@ import { useStyles } from './styles'
 import { CircleData, StudentGradeProps } from './types'
 
 export const StudentGrade: React.FC<StudentGradeProps> = ({ student, schoolYears, notification }) => {
-  const red = '#D23C33'
-  const blue = '#2B9EB7'
   const classes = useStyles
   const [circleData, setCircleData] = useState<CircleData>()
   const history = useHistory()
+  const location = useLocation()
   const redirect = () => {
     const { applications, packets } = student
     const currApplication = applications?.at(0)
     const currPacket = packets?.at(0)
-    if (notification.at(0)?.phrase === StudentNotification.SUBMIT_SCHEDULE) {
-      const scheduleBuilderLink = `${MthRoute.HOMEROOM + MthRoute.SUBMIT_SCHEDULE}/${student.student_id}`
-      history.push(scheduleBuilderLink)
+    if (
+      notification.at(0)?.phrase === StudentNotification.SUBMIT_SCHEDULE ||
+      notification.at(0)?.phrase === StudentNotification.SUBMIT_SECOND_SEMESTER_SCHEDULE
+    ) {
+      history.push(`${MthRoute.HOMEROOM + MthRoute.SUBMIT_SCHEDULE}/${student.student_id}`)
       return
     }
-    if (currApplication?.status !== ApplicantStatus.ACCEPTED && currPacket?.status !== PacketStatus.ACCEPTED) {
+    if (
+      notification.at(0)?.phrase === StudentNotification.RESUBMIT_SCHEDULE ||
+      notification.at(0)?.phrase === StudentNotification.RESUBMIT_SECOND_SEMESTER_SCHEDULE
+    ) {
+      history.push(`${MthRoute.HOMEROOM + MthRoute.SUBMIT_SCHEDULE}/${student.student_id}?backTo=${location.pathname}`)
+      return
+    }
+    if (currApplication?.status !== ApplicationStatus.ACCEPTED && currPacket?.status !== PacketStatus.ACCEPTED) {
       history.push(`${MthRoute.HOMEROOM + MthRoute.ENROLLMENT}/` + student.student_id)
     }
   }
@@ -61,57 +69,57 @@ export const StudentGrade: React.FC<StudentGradeProps> = ({ student, schoolYears
       ?.filter((item) => item.school_year_id == student?.current_school_year_status?.school_year_id)
       .at(-1) as SchoolYearType
 
-    if (currApplication && currApplication?.status === ApplicantStatus.SUBMITTED) {
+    if (currApplication && currApplication?.status === ApplicationStatus.SUBMITTED) {
       setCircleData({
         progress: 25,
-        color: blue,
-        message: 'Application Pending Approval',
-        icon: <ScheduleIcon sx={{ color: blue, cursor: 'pointer' }} />,
+        color: MthColor.MTHGREEN,
+        message: StudentNotification.APPLICATION_PENDING_APPROVAL,
+        icon: <ScheduleIcon sx={{ color: MthColor.MTHGREEN, cursor: 'pointer' }} />,
       })
     } else if (
       currApplication &&
-      currApplication?.status === ApplicantStatus.ACCEPTED &&
+      currApplication?.status === ApplicationStatus.ACCEPTED &&
       packets &&
       (currPacket?.status === PacketStatus.NOT_STARTED || currPacket?.status === PacketStatus.MISSING_INFO)
     ) {
       if (currPacket?.status === PacketStatus.NOT_STARTED) {
         setCircleData({
           progress: 50,
-          color: red,
-          message: 'Please Submit an Enrollment Packet',
-          icon: <ErrorOutlineIcon sx={{ color: red, cursor: 'pointer' }} />,
+          color: MthColor.RED,
+          message: StudentNotification.PLEASE_SUBMIT_ENROLLMENT_PACKET,
+          icon: <ErrorOutlineIcon sx={{ color: MthColor.RED, cursor: 'pointer' }} />,
         })
       } else {
         setCircleData({
           progress: 50,
-          color: red,
-          message: 'Please Resubmit Enrollment Packet',
-          icon: <ErrorOutlineIcon sx={{ color: red, cursor: 'pointer' }} />,
+          color: MthColor.RED,
+          message: StudentNotification.PLEASE_RESUBMIT_ENROLLMENT_PACKET,
+          icon: <ErrorOutlineIcon sx={{ color: MthColor.RED, cursor: 'pointer' }} />,
         })
       }
     } else if (
       currApplication &&
-      currApplication?.status === ApplicantStatus.ACCEPTED &&
+      currApplication?.status === ApplicationStatus.ACCEPTED &&
       currPacket &&
       currPacket?.status === PacketStatus.STARTED
     ) {
       setCircleData({
         progress: 50,
-        color: red,
-        message: 'Please Submit Enrollment Packet',
-        icon: <ErrorOutlineIcon sx={{ color: red, cursor: 'pointer' }} />,
+        color: MthColor.RED,
+        message: StudentNotification.PLEASE_SUBMIT_ENROLLMENT_PACKET,
+        icon: <ErrorOutlineIcon sx={{ color: MthColor.RED, cursor: 'pointer' }} />,
       })
     } else if (
       currApplication &&
-      currApplication?.status === ApplicantStatus.ACCEPTED &&
+      currApplication?.status === ApplicationStatus.ACCEPTED &&
       currPacket &&
       (currPacket?.status === PacketStatus.SUBMITTED || currPacket?.status === PacketStatus.RESUBMITTED)
     ) {
       setCircleData({
         progress: 50,
-        color: blue,
-        message: 'Enrollment Packet Pending Approval',
-        icon: <ScheduleIcon sx={{ color: blue, cursor: 'pointer' }} />,
+        color: MthColor.MTHGREEN,
+        message: StudentNotification.ENROLLMENT_PACKET_PENDING_APPROVAL,
+        icon: <ScheduleIcon sx={{ color: MthColor.MTHGREEN, cursor: 'pointer' }} />,
       })
     } else if (
       studentSchoolYear?.schedule === true &&
@@ -120,69 +128,69 @@ export const StudentGrade: React.FC<StudentGradeProps> = ({ student, schoolYears
       notification.at(0)?.phrase !== StudentNotification.SUBMIT_SECOND_SEMESTER_SCHEDULE &&
       notification.at(0)?.phrase !== StudentNotification.RESUBMIT_SECOND_SEMESTER_SCHEDULE &&
       currPacket?.status === PacketStatus.ACCEPTED &&
-      currApplication?.status === ApplicantStatus.ACCEPTED
+      currApplication?.status === ApplicationStatus.ACCEPTED
     ) {
       if (
         currentSecondSemesterSchedule?.status === ScheduleStatus.SUBMITTED ||
         currentSecondSemesterSchedule?.status === ScheduleStatus.RESUBMITTED
       ) {
         setCircleData({
-          color: blue,
+          color: MthColor.MTHGREEN,
           progress: 75,
-          message: '2nd Semester Schedule Pending Approval',
-          icon: <ScheduleIcon sx={{ color: blue, cursor: 'pointer' }} />,
+          message: StudentNotification.SECOND_SEMESTER_SCHEDULE_PENDING_APPROVAL,
+          icon: <ScheduleIcon sx={{ color: MthColor.MTHGREEN, cursor: 'pointer' }} />,
         })
       } else if (currentSchedule?.status === ScheduleStatus.ACCEPTED) {
         setCircleData({
-          color: blue,
+          color: MthColor.MTHGREEN,
           progress: 100,
-          message: 'Homeroom Assignment in Progress',
-          icon: <ScheduleIcon sx={{ color: blue, cursor: 'pointer' }} />,
+          message: StudentNotification.HOMEROOM_ASSIGNMENT_IN_PROGRESS,
+          icon: <ScheduleIcon sx={{ color: MthColor.MTHGREEN, cursor: 'pointer' }} />,
         })
       } else if (
         currentSchedule?.status === ScheduleStatus.SUBMITTED ||
         currentSchedule?.status === ScheduleStatus.RESUBMITTED
       ) {
         setCircleData({
-          color: blue,
+          color: MthColor.MTHGREEN,
           progress: 75,
-          message: 'Schedule Pending Approval',
-          icon: <ScheduleIcon sx={{ color: blue, cursor: 'pointer' }} />,
+          message: StudentNotification.SCHEDULE_PENDING_APPROVAL,
+          icon: <ScheduleIcon sx={{ color: MthColor.MTHGREEN, cursor: 'pointer' }} />,
         })
       } else {
         setCircleData({
-          color: blue,
+          color: MthColor.MTHGREEN,
           progress: 75,
-          message: 'Waiting for Schedule Builder to Open',
-          icon: <ScheduleIcon sx={{ color: blue, cursor: 'pointer' }} />,
+          message: StudentNotification.WAITING_FOR_SCHEDULE_BUILDER_TO_OPEN,
+          icon: <ScheduleIcon sx={{ color: MthColor.MTHGREEN, cursor: 'pointer' }} />,
         })
       }
     } else if (notification.at(0)?.phrase === StudentNotification.SUBMIT_SCHEDULE) {
       setCircleData({
         color: MthColor.MTHORANGE,
         progress: 75,
-        message: 'Please Submit a Schedule',
+        message: StudentNotification.PLEASE_SUBMIT_SCHEDULE,
         icon: <ErrorOutlineIcon sx={{ color: MthColor.MTHORANGE, cursor: 'pointer' }} />,
       })
     } else if (notification.at(0)?.phrase === StudentNotification.RESUBMIT_SCHEDULE) {
       setCircleData({
         color: MthColor.MTHORANGE,
         progress: 75,
-        message: 'Please resubmit a Schedule',
+        message: StudentNotification.PLEASE_RESUBMIT_SCHEDULE,
         icon: <ErrorOutlineIcon sx={{ color: MthColor.MTHORANGE, cursor: 'pointer' }} />,
       })
     } else if (notification.at(0)?.phrase === StudentNotification.SUBMIT_SECOND_SEMESTER_SCHEDULE) {
       setCircleData({
         color: MthColor.MTHORANGE,
         progress: 75,
-        message: 'Submit 2nd Semester Schedule',
+        message: StudentNotification.SUBMIT_SECOND_SEMESTER_SCHEDULE,
         icon: <ErrorOutlineIcon sx={{ color: MthColor.MTHORANGE, cursor: 'pointer' }} />,
       })
     } else if (notification.at(0)?.phrase === StudentNotification.RESUBMIT_SECOND_SEMESTER_SCHEDULE) {
       setCircleData({
         color: MthColor.MTHORANGE,
         progress: 75,
-        message: 'Resubmit 2nd Semester Schedule',
+        message: StudentNotification.RESUBMIT_SECOND_SEMESTER_SCHEDULE,
         icon: <ErrorOutlineIcon sx={{ color: MthColor.MTHORANGE, cursor: 'pointer' }} />,
       })
     }

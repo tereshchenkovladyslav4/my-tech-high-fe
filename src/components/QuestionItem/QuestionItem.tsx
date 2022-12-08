@@ -162,7 +162,7 @@ export const QuestionItem: FunctionComponent<QuestionItemProps> = ({
       hasAction ||
       questions[0]?.defaultQuestion === false ||
       questions[0]?.options.length > 0 ||
-      questions[0]?.slug != 'packet_school_district',
+      questions[0]?.slug != 'address_school_district',
     fetchPolicy: 'network-only',
   })
   useEffect(() => {
@@ -528,7 +528,7 @@ function Item({ question: q, signature }: { question: Question; signature?: unkn
             placeholder='Entry'
             fullWidth
             value={q.response}
-            sx={!!errors[q.id] ? classes.textFieldError : classes.textField}
+            sx={!!errors[q.id + 'entry'] ? classes.textFieldError : classes.textField}
             name={'Question' + q.id.toString()}
             size='medium'
             onChange={(v) => setQuestionResponse(v.currentTarget.value)}
@@ -537,12 +537,12 @@ function Item({ question: q, signature }: { question: Question; signature?: unkn
                 color: '#BD0043',
               },
             }}
-            error={!!touched[q.id] && !!errors[q.id]}
-            helperText={errors[q.id] ? 'Required' : ''}
+            error={!!touched[q.id] && !!errors[q.id + 'entry']}
+            helperText={errors[q.id + 'entry'] ? 'Required' : ''}
           />
           <Subtitle
             sx={
-              !!errors[q.id]
+              !!errors[q.id + 'entry']
                 ? {
                     color: '#BD0043',
                   }
@@ -554,8 +554,24 @@ function Item({ question: q, signature }: { question: Question; signature?: unkn
             Signature (touch to sign)
           </Subtitle>
           <SignaturePad options={{ minWidth: 1, maxWidth: 1 }} height={100} ref={signature} />
-          <Box sx={{ height: 1, width: '100%', borderBottom: '1px solid #000', mb: 0.5 }} />
-          {Boolean(errors[q.id]) && (
+          <Box
+            sx={
+              !!errors[q.id + 'signature']
+                ? {
+                    height: 1,
+                    width: '100%',
+                    borderBottom: '1px solid #BD0043',
+                    mb: 0.5,
+                  }
+                : {
+                    height: 1,
+                    width: '100%',
+                    borderBottom: '1px solid #000',
+                    mb: 0.5,
+                  }
+            }
+          />
+          {Boolean(errors[q.id + 'signature']) && (
             <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'flex-start' }}>
               <FormHelperText style={{ textAlign: 'left', color: RED, marginLeft: '14px' }}>Required</FormHelperText>
             </Grid>

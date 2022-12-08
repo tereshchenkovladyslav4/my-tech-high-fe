@@ -202,7 +202,7 @@ export const defaultQuestions: DefaultQuestion[] = [
   {
     question: 'School District',
     type: QUESTION_TYPE.DROPDOWN,
-    slug: 'packet_school_district',
+    slug: 'address_school_district',
   },
   {
     question: 'County',

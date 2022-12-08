@@ -156,7 +156,6 @@ export const Contact: ContactTemplateType = ({ id, questions }) => {
       school_year_id: student.current_school_year_status.school_year_id,
     },
     validationSchema: validationSchema,
-    enableReinitialize: true,
     onSubmit: () => {
       goNext()
     },
@@ -193,6 +192,7 @@ export const Contact: ContactTemplateType = ({ id, questions }) => {
       },
     }).then((data) => {
       setPacketId(data.data.saveEnrollmentPacketContact.packet.packet_id)
+
       setMe((prev) => {
         return {
           ...prev,

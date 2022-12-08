@@ -10,7 +10,11 @@ import { SuccessModal } from '@mth/components/SuccessModal/SuccessModal'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { SCHEDULE_STATUS_OPTIONS } from '@mth/constants'
 import { DiplomaSeekingPath, MthColor, MthTitle, SchedulePeriodStatus, ScheduleStatus } from '@mth/enums'
-import { saveScheduleMutation, sendEmailUpdateRequired } from '@mth/graphql/mutation/schedule'
+import {
+  saveScheduleMutation,
+  sendUpdatesAllowedEmailMutation,
+  sendUpdatesRequiredEmailMutation,
+} from '@mth/graphql/mutation/schedule'
 import { saveSchedulePeriodMutation } from '@mth/graphql/mutation/schedule-period'
 import { useActiveScheduleSchoolYears, useStudentSchedulePeriods } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
@@ -77,7 +81,8 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
 
   const [submitScheduleBuilder] = useMutation(saveScheduleMutation)
   const [saveDraft] = useMutation(saveSchedulePeriodMutation)
-  const [sendEmail] = useMutation(sendEmailUpdateRequired)
+  const [sendUpdatesRequiredEmail] = useMutation(sendUpdatesRequiredEmailMutation)
+  const [sendUpdatesAllowedEmail] = useMutation(sendUpdatesAllowedEmailMutation)
   const [updateScheduleStatusById] = useMutation(updateScheduleMutation)
 
   const handleSave = async (status: ScheduleStatus) => {
@@ -198,6 +203,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
     } else if (status === ScheduleStatus.SUBMITTED || status === ScheduleStatus.RESUBMITTED) {
       handleSave(ScheduleStatus.ACCEPTED)
     } else if (status === ScheduleStatus.UPDATES_REQUESTED) {
+      handleSendUpdatesAllowedEmail()
       handleSave(ScheduleStatus.UPDATES_REQUIRED)
     }
   }
@@ -269,7 +275,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
   }
 
   const handleEmailSend = async (from: string, subject: string, body: string) => {
-    await sendEmail({
+    await sendUpdatesRequiredEmail({
       variables: {
         updateRequiredEmail: {
           body: body,
@@ -282,6 +288,18 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
       },
     })
     handleSave(ScheduleStatus.UPDATES_REQUIRED)
+  }
+
+  const handleSendUpdatesAllowedEmail = async () => {
+    await sendUpdatesAllowedEmail({
+      variables: {
+        updatesAllowedEmail: {
+          student_id: studentId,
+          region_id: Number(me?.selectedRegionId),
+          schedule_id: studentScheduleId,
+        },
+      },
+    })
   }
 
   const handleSchedulePeriodStatusChange = async (schedule: ScheduleData, status: SchedulePeriodStatus | undefined) => {

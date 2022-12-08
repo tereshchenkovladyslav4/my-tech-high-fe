@@ -80,13 +80,15 @@ const CourseForm: React.FC<CourseFormProps> = ({
                   }}
                 />
               )}
-              <MthCheckbox
-                label='This course qualifies for Required Software Reimbursement'
-                checked={values?.software_reimbursement}
-                onChange={() => {
-                  setFieldValue('software_reimbursement', !values?.software_reimbursement)
-                }}
-              />{' '}
+              {!!values?.show_software_reimbursement && (
+                <MthCheckbox
+                  label='This course qualifies for Required Software Reimbursement'
+                  checked={values?.software_reimbursement}
+                  onChange={() => {
+                    setFieldValue('software_reimbursement', !values?.software_reimbursement)
+                  }}
+                />
+              )}
               <MthCheckbox
                 label='Display a notification message for this course'
                 checked={values?.display_notification}

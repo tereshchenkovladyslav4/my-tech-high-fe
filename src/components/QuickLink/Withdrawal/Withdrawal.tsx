@@ -482,7 +482,8 @@ const Withdrawal: React.FC<{
               const errors: { [key: string]: string } = {}
               filterAdditionalQuestions(values).forEach((val) => {
                 if (val.required && !val.response) {
-                  errors[val.id] = 'Required'
+                  if (val.slug == 'signature') errors[val.id + 'entry'] = 'Required'
+                  else errors[val.id] = 'Required'
                 } else if (val.validation && !!val.response) {
                   if (val.validation == ValidationType.NUMBER) {
                     if (!isNumber.test(val.response.toString())) errors[val.id] = 'Please enter numbers only.'
@@ -492,7 +493,7 @@ const Withdrawal: React.FC<{
                 }
 
                 if (val.slug == 'signature' && signature?.current?.isEmpty()) {
-                  errors[val.id] = 'Required.'
+                  errors[val.id + 'signature'] = 'Required.'
                 }
               })
 

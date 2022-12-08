@@ -8,7 +8,7 @@ import moment from 'moment'
 import { CustomModal } from '@mth/components/CustomModal/CustomModals'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { MthColor, ScheduleStatus } from '@mth/enums'
-import { restoreScheduleHistoryMuation } from '@mth/graphql/mutation/schedule'
+import { restoreScheduleHistoryMutation } from '@mth/graphql/mutation/schedule'
 import { useStudentSchedulePeriodHistories } from '@mth/hooks'
 import { ScheduleEditor } from '@mth/screens/Homeroom/Schedule/ScheduleBuilder/ScheduleEditor'
 import { ScheduleHistoryData, ScheduleHistoryProps } from './types'
@@ -28,7 +28,7 @@ const ScheduleHistory: React.FC<ScheduleHistoryProps> = ({
   const [showWarningModal, setShowWarningModal] = useState<boolean>(false)
   const [selectedScheduleHistoryId, setSelectedScheduleHistoryId] = useState<number>()
 
-  const [restoreScheduleHistory] = useMutation(restoreScheduleHistoryMuation)
+  const [restoreScheduleHistory] = useMutation(restoreScheduleHistoryMutation)
 
   const chevron = (scheduleHistory: ScheduleHistoryData) =>
     !scheduleHistory.isExpand ? (

@@ -16,6 +16,8 @@ import {
   TextField,
   Typography,
 } from '@mui/material'
+import moment from 'moment'
+import { useHistory } from 'react-router-dom'
 import { DropDown } from '@mth/components/DropDown/DropDown'
 import { MthTable } from '@mth/components/MthTable'
 import { MthTableField, MthTableRowItem } from '@mth/components/MthTable/types'
@@ -23,28 +25,27 @@ import PageHeader from '@mth/components/PageHeader'
 import { Pagination } from '@mth/components/Pagination/Pagination'
 import { useSchoolYearsByRegionId } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
-import { commonClasses } from '@mth/styles/common.style'
 import { BUTTON_LINEAR_GRADIENT, HOMEROOM_LEARNING_LOGS } from '../../../../../utils/constants'
-import { GetMastersBySchoolYearIDGql, GetMastersByIDGql } from '../../services'
+import { GetMastersByIDGql, getAssignmentsByMasterIdgql } from '../../services'
 import { useStyles } from '../../styles'
 import { Master } from '../types'
-import { Teacher } from './types'
+import { Assignment } from './types'
 
 const MasterHoomroom: React.FC<{ masterId: number }> = ({ masterId }) => {
-  const [selectedYear, setSelectedYear] = useState<number>(0)
-
   const [masterTitle, setMasterTitle] = useState<string>()
   const [masterSchoolYearId, setMasterSchoolYearId] = useState<number>(0)
-  // const [searchField, setSearchField] = useState<string>('')
-  const [tableData, setTableData] = useState<MthTableRowItem<Teacher>[]>([])
+  const [tableData, setTableData] = useState<MthTableRowItem<Assignment>[]>([])
   const [localSearchField, setLocalSearchField] = useState<string>('')
 
-  const [masterInfo, setMasterInfo] = useState<Master>({})
+  const [masterInfo, setMasterInfo] = useState<Master | null>(null)
+
+  const [paginatinLimit, setPaginatinLimit] = useState<number>(25)
+  const [currentPage, setCurrentPage] = useState<number>(1)
+  const [totalPage, setTotalPage] = useState<number>(0)
+  const [skip, setSkip] = useState<number>()
 
   const { me } = useContext(UserContext)
-  const { dropdownItems: schoolYearDropdownItems, schoolYears: schoolYears } = useSchoolYearsByRegionId(
-    me?.selectedRegionId,
-  )
+  const { dropdownItems: schoolYearDropdownItems } = useSchoolYearsByRegionId(me?.selectedRegionId)
 
   const { loading: masterLoading, data: masterData } = useQuery(GetMastersByIDGql, {
     variables: {
@@ -54,6 +55,8 @@ const MasterHoomroom: React.FC<{ masterId: number }> = ({ masterId }) => {
     fetchPolicy: 'network-only',
   })
 
+  const history = useHistory()
+
   useEffect(() => {
     if (!masterLoading && masterData.getMastersById) {
       setMasterInfo(masterData.getMastersById)
@@ -62,11 +65,7 @@ const MasterHoomroom: React.FC<{ masterId: number }> = ({ masterId }) => {
     }
   }, [masterLoading, masterData])
 
-  useEffect(() => {
-    if (schoolYears?.length) setSelectedYear(schoolYears[0].school_year_id)
-  }, [schoolYears])
-
-  const fields: MthTableField<Teacher>[] = [
+  const fields: MthTableField<Assignment>[] = [
     {
       key: 'due_date',
       label: 'Due Date',
@@ -133,70 +132,67 @@ const MasterHoomroom: React.FC<{ masterId: number }> = ({ masterId }) => {
     },
   ]
 
-  const createData = (teacher: Teacher): MthTableRowItem<Teacher> => {
+  const createData = (assignment: Assignment): MthTableRowItem<Assignment> => {
     return {
-      key: `teacher-${teacher.id}`,
+      key: `assignment-${assignment.id}`,
       columns: {
-        due_date: teacher.due_date,
-        title: teacher.title,
-        reminder: teacher.reminder,
-        auto_grade: teacher.auto_grade,
-        teacher_deadline: teacher.teacher_deadline,
+        title: assignment.title,
+        reminder: moment(assignment.reminder_date).format('MMM DD [at] h:mm A'),
+        auto_grade: moment(assignment.auto_grade).format('MMM DD [at] h:mm A'),
+        teacher_deadline: moment(assignment.teacher_deadline).format('MMM DD [at] h:mm A'),
+        due_date: moment(assignment.due_date).format('MMM DD'),
       },
-      rawData: teacher,
+      rawData: assignment,
     }
   }
 
-  const exampleData = [
-    {
-      id: 1,
-      due_date: 'Aug 1',
-      title: 'Learning Log #1-2',
-      reminder: 'Aug 1 at 10:00 AM',
-      auto_grade: 'Aug 2 at 8:00 AM',
-      teacher_deadline: 'Aug 2 at 8:00 AM',
-    },
-    {
-      id: 2,
-      due_date: 'Aug 2',
-      title: 'Learning Log #2-2',
-      reminder: 'Aug 1 at 11:00 AM',
-      auto_grade: 'Aug 2 at 18:00 PM',
-      teacher_deadline: 'Aug 2 at 8:00 AM',
-    },
-    {
-      id: 3,
-      due_date: 'Aug 11',
-      title: 'Learning Log #10-2',
-      reminder: 'Aug 1 at 11:00 AM',
-      auto_grade: 'Aug 2 at 8:00 AM',
-      teacher_deadline: 'Aug 2 at 8:00 AM',
-    },
-  ]
-
-  const { loading, data } = useQuery(GetMastersBySchoolYearIDGql, {
+  const { loading: assloading, data: assData } = useQuery(getAssignmentsByMasterIdgql, {
     variables: {
-      schoolYearId: selectedYear,
+      masterId: masterId,
+      take: paginatinLimit,
+      sort: null,
+      skip: skip,
+      search: null,
     },
-    skip: selectedYear ? false : true,
+    skip: masterId ? false : true,
     fetchPolicy: 'network-only',
   })
 
   useEffect(() => {
-    if (!loading && data) {
+    if (!assloading && assData?.getAssignmentsByMasterId) {
+      setTotalPage(assData?.getAssignmentsByMasterId.page_total)
       setTableData(
-        exampleData.map((item: Teacher) => {
+        assData?.getAssignmentsByMasterId.results.map((item: Assignment) => {
           return createData(item)
         }),
       )
     }
-  }, [data, loading])
+  }, [assData])
+
+  const handleChangePageLimit = (num: number) => {
+    setPaginatinLimit(num)
+    setCurrentPage(0)
+  }
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page)
+    setSkip(() => {
+      return paginatinLimit ? paginatinLimit * (page - 1) : 25
+    })
+  }
 
   return (
-    <Box sx={commonClasses.mainLayout}>
-      <Card sx={{ ...commonClasses.mainBlock, ...commonClasses.fitScreen }}>
+    <Box sx={{ p: 4, textAlign: 'left' }}>
+      <Card
+        sx={{
+          p: 4,
+          borderRadius: '12px',
+          boxShadow: '0px 0px 35px rgba(0, 0, 0, 0.05)',
+          minHeight: 'calc(100vh - 150px)',
+        }}
+      >
         <Box sx={{ mb: 4 }}>
-          <PageHeader title={masterInfo.master_name || ''} to={HOMEROOM_LEARNING_LOGS}>
+          <PageHeader title={masterInfo?.master_name || ''} to={HOMEROOM_LEARNING_LOGS}>
             <Button sx={useStyles.saveButtons} type='button'>
               Save
             </Button>
@@ -297,16 +293,17 @@ const MasterHoomroom: React.FC<{ masterId: number }> = ({ masterId }) => {
                 padding: '10px 30px',
                 fontSize: '12px',
               }}
+              onClick={() => history.push(`${HOMEROOM_LEARNING_LOGS}/edit/${masterId}/edit-assignment`)}
             >
               + Add Assignment
             </Button>
           </Box>
           <Pagination
-            // setParentLimit={handleChangePageLimit}
-            handlePageChange={() => {}}
-            // defaultValue={paginatinLimit || 25}
-            numPages={8}
-            currentPage={1}
+            setParentLimit={handleChangePageLimit}
+            handlePageChange={handlePageChange}
+            defaultValue={paginatinLimit || 25}
+            numPages={Math.ceil(totalPage / paginatinLimit) || 0}
+            currentPage={currentPage}
           />
         </Box>
 

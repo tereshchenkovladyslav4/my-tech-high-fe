@@ -256,6 +256,7 @@ const Providers: React.FC = () => {
 
       {showEditModal && (
         <ProviderEdit
+          schoolYearData={selectedYearData}
           schoolYearId={selectedYear}
           item={selectedProvider}
           refetch={refetch}

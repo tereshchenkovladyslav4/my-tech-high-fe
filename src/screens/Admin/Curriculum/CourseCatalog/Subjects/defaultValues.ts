@@ -28,6 +28,7 @@ export const defaultTitleFormData: Title = {
   third_party_provider: false,
   split_enrollment: false,
   software_reimbursement: false,
+  show_software_reimbursement: true,
   display_notification: false,
   launchpad_course: false,
   subject_notification: '',

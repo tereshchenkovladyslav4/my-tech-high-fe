@@ -294,7 +294,7 @@ export const ApplicationQuestions: React.FC = () => {
         ]
       } else if (selectedQuestion.slug === 'program_year') {
         options = schoolYears
-      } else if (selectedQuestion.slug === 'packet_school_district') {
+      } else if (selectedQuestion.slug === 'address_school_district') {
         options = schoolDistricts
       } else if (selectedQuestion.slug === 'address_state') {
         options = usStates

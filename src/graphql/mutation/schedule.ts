@@ -8,12 +8,19 @@ export const saveScheduleMutation = gql`
   }
 `
 
-export const sendEmailUpdateRequired = gql`
-  mutation UpdateRequiredEmail($updateRequiredEmail: EmailUpdateRequiredInput!) {
-    updateRequiredEmail(updateRequiredEmail: $updateRequiredEmail)
+export const sendUpdatesRequiredEmailMutation = gql`
+  mutation SendUpdatesRequiredEmail($updateRequiredEmail: EmailUpdatesRequiredInput!) {
+    sendUpdatesRequiredEmail(updateRequiredEmail: $updateRequiredEmail)
   }
 `
-export const restoreScheduleHistoryMuation = gql`
+
+export const sendUpdatesAllowedEmailMutation = gql`
+  mutation SendUpdatesAllowedEmail($updatesAllowedEmail: EmailUpdatesAllowedInput!) {
+    sendUpdatesAllowedEmail(updatesAllowedEmail: $updatesAllowedEmail)
+  }
+`
+
+export const restoreScheduleHistoryMutation = gql`
   mutation Mutation($scheduleHistoryId: Int!) {
     restoreScheduleHistory(schedule_history_id: $scheduleHistoryId)
   }

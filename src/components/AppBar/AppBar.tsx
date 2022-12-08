@@ -35,12 +35,12 @@ import {
 import { filter, map } from 'lodash'
 import { NavLink, useLocation } from 'react-router-dom'
 import Slider from 'react-slick'
-import { PacketStatus } from '@mth/enums'
+import { ApplicationStatus, MthColor, PacketStatus, StudentNotification, StudentStatus } from '@mth/enums'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { getSchoolYearsByRegionId } from '@mth/screens/Admin/Dashboard/SchoolYear/SchoolYear'
 import { StudentType, Person } from '@mth/screens/HomeroomStudentProfile/Student/types'
 import { getWindowDimension, gradeText } from '@mth/utils'
-import { APPLICATIONS, HOMEROOM, MTHBLUE } from '../../utils/constants'
+import { APPLICATIONS, HOMEROOM } from '../../utils/constants'
 import { checkEnrollPacketStatus } from '../../utils/utils'
 import { SchoolYearType } from '../../utils/utils.types'
 import { Metadata } from '../Metadata/Metadata'
@@ -99,66 +99,63 @@ export const AppBar: FunctionComponent = () => {
     }
   }, [region_id, schoolYearData?.data?.region?.SchoolYears])
 
-  const red = '#D23C33'
-  const blue = '#2B9EB7'
-
   const circleData = (
     student: StudentType,
   ): { progress: number; color: string; message: string; icon: ReactElement } | undefined => {
     const { applications, packets } = student
-    const currApplication = applications.at(0)
-    const currPacket = packets.at(0)
-    if (currApplication && currApplication?.status === 'Submitted') {
+    const currApplication = applications?.at(0)
+    const currPacket = packets?.at(0)
+    if (currApplication && currApplication?.status === ApplicationStatus.SUBMITTED) {
       return {
         progress: 25,
-        color: blue,
-        message: 'Application Pending Approval',
-        icon: <ScheduleIcon sx={{ color: blue, cursor: 'pointer' }} />,
+        color: MthColor.MTHGREEN,
+        message: StudentNotification.APPLICATION_PENDING_APPROVAL,
+        icon: <ScheduleIcon sx={{ color: MthColor.MTHGREEN, cursor: 'pointer' }} />,
       }
     } else if (
       currApplication &&
-      currApplication?.status === 'Accepted' &&
+      currApplication?.status === ApplicationStatus.ACCEPTED &&
       packets &&
-      (currPacket?.status === 'Not Started' || currPacket?.status === 'Missing Info')
+      (currPacket?.status === PacketStatus.NOT_STARTED || currPacket?.status === PacketStatus.MISSING_INFO)
     ) {
-      if (currPacket?.status === 'Not Started') {
+      if (currPacket?.status === PacketStatus.NOT_STARTED) {
         return {
           progress: 50,
-          color: red,
-          message: 'Please Submit an Enrollment Packet',
-          icon: <ErrorOutlineIcon sx={{ color: red, cursor: 'pointer' }} />,
+          color: MthColor.RED,
+          message: StudentNotification.PLEASE_SUBMIT_ENROLLMENT_PACKET,
+          icon: <ErrorOutlineIcon sx={{ color: MthColor.RED, cursor: 'pointer' }} />,
         }
       } else {
         return {
           progress: 50,
-          color: red,
-          message: 'Please Resubmit Enrollment Packet',
-          icon: <ErrorOutlineIcon sx={{ color: red, cursor: 'pointer' }} />,
+          color: MthColor.RED,
+          message: StudentNotification.PLEASE_RESUBMIT_ENROLLMENT_PACKET,
+          icon: <ErrorOutlineIcon sx={{ color: MthColor.RED, cursor: 'pointer' }} />,
         }
       }
     } else if (
       currApplication &&
-      currApplication?.status === 'Accepted' &&
+      currApplication?.status === ApplicationStatus.ACCEPTED &&
       currPacket &&
-      currPacket?.status === 'Started'
+      currPacket?.status === PacketStatus.STARTED
     ) {
       return {
         progress: 50,
-        color: red,
-        message: 'Please Submit Enrollment Packet',
-        icon: <ErrorOutlineIcon sx={{ color: red, cursor: 'pointer' }} />,
+        color: MthColor.RED,
+        message: StudentNotification.PLEASE_SUBMIT_ENROLLMENT_PACKET,
+        icon: <ErrorOutlineIcon sx={{ color: MthColor.RED, cursor: 'pointer' }} />,
       }
     } else if (
       currApplication &&
-      currApplication?.status === 'Accepted' &&
+      currApplication?.status === ApplicationStatus.ACCEPTED &&
       currPacket &&
-      (currPacket?.status === 'Submitted' || currPacket?.status === PacketStatus.RESUBMITTED)
+      (currPacket?.status === PacketStatus.SUBMITTED || currPacket?.status === PacketStatus.RESUBMITTED)
     ) {
       return {
         progress: 50,
-        color: blue,
-        message: 'Enrollment Packet Pending Approval',
-        icon: <ScheduleIcon sx={{ color: blue, cursor: 'pointer' }} />,
+        color: MthColor.MTHGREEN,
+        message: StudentNotification.ENROLLMENT_PACKET_PENDING_APPROVAL,
+        icon: <ScheduleIcon sx={{ color: MthColor.MTHGREEN, cursor: 'pointer' }} />,
       }
     }
     return undefined
@@ -270,10 +267,10 @@ export const AppBar: FunctionComponent = () => {
   const renderStudentHeader = () =>
     map(activeStudents, (student, idx) => {
       const link =
-        student?.applications?.at(-1)?.status === 'Submitted' ||
-        student?.status?.at(-1)?.status === 2 ||
-        student?.packets?.at(-1)?.status === 'Started' ||
-        student?.packets?.at(-1)?.status === 'Not Started'
+        student?.applications?.at(-1)?.status === ApplicationStatus.SUBMITTED ||
+        student?.status?.at(-1)?.status === StudentStatus.WITHDRAWN ||
+        student?.packets?.at(-1)?.status === PacketStatus.STARTED ||
+        student?.packets?.at(-1)?.status === PacketStatus.NOT_STARTED
           ? HOMEROOM
           : `${HOMEROOM}/${student.student_id}`
       return (
@@ -283,7 +280,10 @@ export const AppBar: FunctionComponent = () => {
               <Metadata
                 divider={true}
                 title={
-                  <Subtitle color={isActive(student.student_id) ? MTHBLUE : '#A1A1A1'} sx={classes.studentItemText}>
+                  <Subtitle
+                    color={isActive(student.student_id) ? MthColor.MTHBLUE : '#A1A1A1'}
+                    sx={classes.studentItemText}
+                  >
                     {student.person.preferred_first_name
                       ? student.person.preferred_first_name
                       : student.person.first_name}
@@ -308,7 +308,7 @@ export const AppBar: FunctionComponent = () => {
             <Metadata
               divider={true}
               title={
-                <Subtitle color={isActive(student.student_id) ? MTHBLUE : '#A1A1A1'}>
+                <Subtitle color={isActive(student.student_id) ? MthColor.MTHBLUE : '#A1A1A1'}>
                   {student.person.first_name}
                 </Subtitle>
               }
@@ -360,10 +360,10 @@ export const AppBar: FunctionComponent = () => {
     >
       {map(activeStudents, (student, idx) => {
         const link =
-          student?.applications?.at(-1)?.status === 'Submitted' ||
+          student?.applications?.at(-1)?.status === ApplicationStatus.SUBMITTED ||
           student?.status?.at(-1)?.status === 2 ||
-          student?.packets?.at(-1)?.status === 'Started' ||
-          student?.packets?.at(-1)?.status === 'Not Started'
+          student?.packets?.at(-1)?.status === PacketStatus.STARTED ||
+          student?.packets?.at(-1)?.status === PacketStatus.NOT_STARTED
             ? HOMEROOM
             : `${HOMEROOM}/${student.student_id}`
         return (

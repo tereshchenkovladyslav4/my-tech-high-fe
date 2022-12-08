@@ -5,6 +5,7 @@ import { Box, Button, Grid, InputAdornment, OutlinedInput } from '@mui/material'
 import { debounce } from 'lodash'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import MultiSelectDropDown from '../../../Admin/Calendar/components/MultiSelectDropDown/MultiSelectDropDown'
+import { DashboardSection } from '../../types'
 import { HeaderComponentProps } from '../types'
 import { headerClasses } from './styles'
 
@@ -28,7 +29,7 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
             <Button
               onClick={() => {
                 setSearchField('')
-                setSectionName('root')
+                setSectionName(DashboardSection.ROOT)
               }}
             >
               <ChevronLeftIcon sx={{ marginRight: 0.5, marginLeft: -2.5 }} />

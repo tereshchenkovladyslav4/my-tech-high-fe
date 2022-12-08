@@ -1,3 +1,5 @@
+import { SchoolYear } from '@mth/models'
+
 export enum EventType {
   ADD = 'add',
   ALLOW_REQUEST = 'allowRequest',
@@ -41,6 +43,7 @@ export type HomeroomResource = {
   priority: number
   is_active: boolean
   allow_request: boolean
+  software_reimbursement: boolean
   // Temp field
   file?: File
   background?: string
@@ -75,6 +78,7 @@ export interface HomeroomResourceModalProps {
 
 export interface HomeroomResourceEditProps {
   schoolYearId: number
+  schoolYearData: SchoolYear | undefined
   item: HomeroomResource | undefined
   stateName: string
   setPage: (value: HomeroomResourcePage) => void

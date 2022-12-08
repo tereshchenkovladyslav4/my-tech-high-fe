@@ -82,3 +82,27 @@ export const getChecklistQuery = gql`
     }
   }
 `
+export const createAssignmentMutation = gql`
+  mutation CreateNewAssignment($createNewAssignmentInput: CreateNewAssignmentInput!) {
+    createNewAssignment(createNewAssignmentInput: $createNewAssignmentInput)
+  }
+`
+
+export const getAssignmentsByMasterIdgql = gql`
+  query GetAssignmentsByMasterId($masterId: Int!, $take: Int, $sort: String, $skip: Int, $search: String) {
+    getAssignmentsByMasterId(masterId: $masterId, take: $take, sort: $sort, skip: $skip, search: $search) {
+      total
+      page_total
+      results {
+        title
+        reminder_date
+        master_id
+        id
+        auto_grade_email
+        auto_grade
+        due_date
+        teacher_deadline
+      }
+    }
+  }
+`

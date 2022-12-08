@@ -18,7 +18,7 @@ const UpdatesRequiredPeriods: React.FC<UpdatesRequiredPeriodsProps> = ({
   }
 
   const handleResponseChangeValue = (schedule: ScheduleData, value: (string | number)[]) => {
-    const scheduleIdx = scheduleData?.findIndex((item) => item.period === schedule.period)
+    const scheduleIdx = scheduleData?.findIndex((item) => item?.Period?.id === schedule?.Period?.id)
     if (scheduleIdx > -1) {
       schedule.standardResponseOptions = value.join(',')
       scheduleData[scheduleIdx] = schedule

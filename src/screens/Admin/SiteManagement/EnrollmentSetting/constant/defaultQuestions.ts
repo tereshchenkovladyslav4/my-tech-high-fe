@@ -128,7 +128,7 @@ export const defaultQuestions = [
   {
     label: 'School District',
     type: 'Drop Down',
-    slug: 'packet_school_district',
+    slug: 'address_school_district',
     validation: 0,
   },
   {

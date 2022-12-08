@@ -31,11 +31,7 @@ export const DashboardCalendar: React.FC<DashboardCalendarProps> = ({
             <Box
               className='calender-year'
               onClick={() => {
-                if (currentMonth.getMonth() == 0) {
-                  setCurrentMonth(new Date(currentMonth.getFullYear() - 1, 11, 1))
-                } else {
-                  setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1))
-                }
+                setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 3))
               }}
             >
               <img className='arrow' src={leftArrowCalendar} />
@@ -46,11 +42,7 @@ export const DashboardCalendar: React.FC<DashboardCalendarProps> = ({
             <Box
               className='calender-year'
               onClick={() => {
-                if (currentMonth.getMonth() == 11) {
-                  setCurrentMonth(new Date(currentMonth.getFullYear() + 1, 0, 1))
-                } else {
-                  setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1))
-                }
+                setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 3))
               }}
             >
               <img className='arrow' src={rightArrowCalendar} />

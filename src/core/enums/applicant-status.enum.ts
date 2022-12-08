@@ -1,4 +1,4 @@
-export enum ApplicantStatus {
+export enum ApplicationStatus {
   ACCEPTED = 'Accepted',
   SUBMITTED = 'Submitted',
 }

@@ -148,13 +148,15 @@ const TitleForm: React.FC<TitleFormProps> = ({ schoolYearData, subjectsItems, gr
                   }}
                 />
               )}
-              <MthCheckbox
-                label='This subject qualifies for Required Software Reimbursement'
-                checked={values?.software_reimbursement}
-                onChange={() => {
-                  setFieldValue('software_reimbursement', !values?.software_reimbursement)
-                }}
-              />{' '}
+              {!!values?.show_software_reimbursement && (
+                <MthCheckbox
+                  label='This subject qualifies for Required Software Reimbursement'
+                  checked={values?.software_reimbursement}
+                  onChange={() => {
+                    setFieldValue('software_reimbursement', !values?.software_reimbursement)
+                  }}
+                />
+              )}
               <MthCheckbox
                 label='Display a notification when selecting this subject'
                 checked={values?.display_notification}

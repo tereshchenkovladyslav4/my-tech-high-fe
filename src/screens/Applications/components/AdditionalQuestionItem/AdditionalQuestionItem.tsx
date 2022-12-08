@@ -45,12 +45,12 @@ export const AdditionalQuestionItem: ApplicationQuestionTemplateType = ({
         }),
       )
   }, [countyData])
-  //	packet_school_district
+
   const { loading: schoolDistrictsDataLoading, data: schoolDistrictsData } = useQuery(getSchoolDistrictsByRegionId, {
     variables: {
       regionId: q?.region_id,
     },
-    skip: q?.slug != 'packet_school_district' || !q?.region_id,
+    skip: q?.slug != 'address_school_district' || !q?.region_id,
     fetchPolicy: 'network-only',
   })
   useEffect(() => {

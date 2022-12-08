@@ -1,4 +1,5 @@
 import React, { FunctionComponent } from 'react'
+import { makeStyles, Theme } from '@material-ui/core/styles'
 import { Button, Modal } from '@mui/material'
 import { Box } from '@mui/system'
 import { Field, Form, Formik } from 'formik'
@@ -17,6 +18,32 @@ type EditYearModalProps = {
   handleClose: () => void
 }
 
+const additionalStyles = makeStyles((theme: Theme) => ({
+  modalCard: {
+    [theme.breakpoints.down('xs')]: {
+      width: '95% !important',
+    },
+  },
+  content: {
+    [theme.breakpoints.down('xs')]: {
+      display: 'block!important',
+      padding: '0px!important',
+    },
+  },
+  mainBox: {
+    [theme.breakpoints.down('xs')]: {
+      width: '100%',
+    },
+    width: '60%',
+  },
+  schoolYearEdit: {
+    [theme.breakpoints.down('xs')]: {
+      width: '100%',
+    },
+    width: '451.53px',
+  },
+}))
+
 export const EditYearModal: FunctionComponent<EditYearModalProps> = ({
   title,
   schoolYears,
@@ -24,6 +51,7 @@ export const EditYearModal: FunctionComponent<EditYearModalProps> = ({
   handleClose,
 }) => {
   const classes = useStyles
+  const extraClasses = additionalStyles()
   return (
     <Modal
       open={true}
@@ -31,7 +59,7 @@ export const EditYearModal: FunctionComponent<EditYearModalProps> = ({
       aria-labelledby='modal-modal-title'
       aria-describedby='modal-modal-description'
     >
-      <Box sx={classes.modalCard}>
+      <Box sx={classes.modalCard} className={extraClasses.modalCard}>
         <Title fontWeight='700' textAlign='center'>
           {title}
         </Title>
@@ -49,11 +77,14 @@ export const EditYearModal: FunctionComponent<EditYearModalProps> = ({
           {({ errors }) => {
             return (
               <Form>
-                <Box sx={{ ...classes.content, display: 'flex', alignItems: 'center', px: 5 }}>
-                  <Box sx={{ width: '60%' }}>
+                <Box
+                  sx={{ ...classes.content, display: 'flex', alignItems: 'center', px: 5 }}
+                  className={extraClasses.content}
+                >
+                  <Box className={extraClasses.mainBox}>
                     <Field name={'schoolYear'} fullWidth focused>
                       {({ field, form, meta }) => (
-                        <Box width={'451.53px'}>
+                        <Box className={extraClasses.schoolYearEdit}>
                           <DropDown
                             name='state'
                             labelTop

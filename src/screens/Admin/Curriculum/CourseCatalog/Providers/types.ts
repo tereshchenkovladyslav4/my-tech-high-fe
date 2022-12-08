@@ -12,6 +12,10 @@ export enum EventType {
   DUPLICATE = 'duplicate',
 }
 
+export type SchedulePeriod = {
+  schedule_period_id: number
+}
+
 export type Provider = {
   id: number
   name: string
@@ -25,6 +29,7 @@ export type Provider = {
   is_active: boolean
   Periods: Period[]
   Courses?: Course[]
+  SchedulePeriods?: SchedulePeriod[]
   // Temp fields
   PeriodIds: string[]
 }
@@ -55,6 +60,7 @@ export type Course = {
   is_active: boolean
   // Temp fields
   TitleIds?: string[]
+  show_software_reimbursement?: boolean
 }
 
 export type Period = {
@@ -72,6 +78,7 @@ export type CoursesProps = {
 }
 
 export interface ProviderEditProps {
+  schoolYearData: SchoolYear | undefined
   schoolYearId: number
   item?: Provider
   refetch: () => void

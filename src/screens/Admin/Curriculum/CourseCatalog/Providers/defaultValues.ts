@@ -42,4 +42,5 @@ export const defaultCourseFormData: Course = {
   allow_request: false,
   is_active: true,
   TitleIds: [],
+  show_software_reimbursement: true,
 }

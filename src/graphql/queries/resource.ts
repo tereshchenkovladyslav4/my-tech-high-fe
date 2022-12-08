@@ -25,6 +25,7 @@ export const getResourcesQuery = gql`
       priority
       is_active
       allow_request
+      software_reimbursement
     }
   }
 `

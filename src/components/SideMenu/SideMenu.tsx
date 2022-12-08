@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import AllInboxOutlinedIcon from '@mui/icons-material/AllInboxOutlined'
 import BackupTableIcon from '@mui/icons-material/BackupTable'
 import CallMadeRoundedIcon from '@mui/icons-material/CallMadeRounded'
@@ -35,7 +35,7 @@ import { useStyles } from './styles'
 
 const noSidebarUsers = [15, 14, 16, 11, 9, 10, 13, 12]
 
-export const SideMenu: FunctionComponent = () => {
+export const SideMenu: React.FC = () => {
   const history = useHistory()
   const classes = useStyles
   const location = useLocation()

@@ -19,6 +19,7 @@ type MthCheckboxListProps = {
   haveSelectAll: boolean
   error?: ReactNode
   showError?: boolean
+  disabled?: boolean
 }
 const MthCheckboxList: React.FC<MthCheckboxListProps> = ({
   title,
@@ -28,6 +29,7 @@ const MthCheckboxList: React.FC<MthCheckboxListProps> = ({
   haveSelectAll,
   error,
   showError,
+  disabled,
 }) => {
   const handleChangeValues = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (haveSelectAll) {
@@ -67,11 +69,11 @@ const MthCheckboxList: React.FC<MthCheckboxListProps> = ({
             sx={{ height: 30, width: 'max-content' }}
             control={
               <Checkbox
-                sx={{ '& .MuiSvgIcon-root': { fill: '#000 !important' } }}
+                sx={!disabled ? { '& .MuiSvgIcon-root': { fill: '#000 !important' } } : {}}
                 checked={values.includes(list.value)}
                 value={list.value}
                 onChange={handleChangeValues}
-                disabled={list.disabled === true}
+                disabled={disabled || list.disabled === true}
               />
             }
             label={

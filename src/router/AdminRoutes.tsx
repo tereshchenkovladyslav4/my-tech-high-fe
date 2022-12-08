@@ -24,6 +24,7 @@ import { CheckList } from '@mth/screens/Admin/HomeRoom/CheckList'
 import { HomeRoom } from '@mth/screens/Admin/HomeRoom/HomeRoom'
 import { LearningLogs } from '@mth/screens/Admin/HomeRoom/LearningLogs'
 import { MasterHomeroom } from '@mth/screens/Admin/HomeRoom/LearningLogs/Master'
+import EditAssignment from '@mth/screens/Admin/HomeRoom/LearningLogs/Master/EditAssignment'
 import { Records } from '@mth/screens/Admin/Records'
 import { Reimbursements } from '@mth/screens/Admin/Reimbursements'
 import { DirectOrderForms } from '@mth/screens/Admin/Reimbursements/DirectOrderForms'
@@ -166,8 +167,16 @@ export const AdminRoutes: React.FC = () => {
       </Route>
       <Route
         path={`${HOMEROOM_LEARNING_LOGS}/edit/:id`}
+        exact
         children={({ match }) => {
           return <MasterHomeroom masterId={Number(match?.params?.id)} />
+        }}
+      />
+      <Route
+        path={`${HOMEROOM_LEARNING_LOGS}/edit/:id/edit-assignment`}
+        exact
+        children={({ match }) => {
+          return <EditAssignment masterId={Number(match?.params?.id)} />
         }}
       />
       <Route exact path={HOMEROOM_CHECKLIST}>

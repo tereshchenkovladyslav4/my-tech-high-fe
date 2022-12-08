@@ -127,6 +127,7 @@ const HomeroomResourceEdit: React.FC<HomeroomResourceEditProps> = ({
           add_resource_level: value.add_resource_level,
           resourceLevelsStr: JSON.stringify(value.add_resource_level ? resourceLevels : []),
           family_resource: value.family_resource,
+          software_reimbursement: value.software_reimbursement,
         },
       },
     })

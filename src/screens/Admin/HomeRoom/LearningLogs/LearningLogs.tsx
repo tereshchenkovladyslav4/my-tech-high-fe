@@ -14,7 +14,6 @@ import { MthColor } from '@mth/enums'
 import { useSchoolYearsByRegionId } from '@mth/hooks'
 import { SchoolYear } from '@mth/models'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
-import { commonClasses } from '@mth/styles/common.style'
 import { HOMEROOM_LEARNING_LOGS } from '../../../../utils/constants'
 import { HomeRoomHeader } from '../Components/HomeRoomHeader'
 import { CreateNewMasterGql, GetMastersBySchoolYearIDGql } from '../services'
@@ -159,8 +158,15 @@ const LearningLogs: React.FC = () => {
   }
 
   return (
-    <Box sx={commonClasses.mainLayout}>
-      <Card sx={{ ...commonClasses.mainBlock, ...commonClasses.fitScreen }}>
+    <Box sx={{ p: 4, textAlign: 'left' }}>
+      <Card
+        sx={{
+          p: 4,
+          borderRadius: '12px',
+          boxShadow: '0px 0px 35px rgba(0, 0, 0, 0.05)',
+          minHeight: 'calc(100vh - 150px)',
+        }}
+      >
         <HomeRoomHeader
           title='Homerooms & Learning Logs'
           selectedYear={selectedYear}

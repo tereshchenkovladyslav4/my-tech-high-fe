@@ -194,8 +194,8 @@ export const EnrollmentSchoolTable: React.FC<EnrollmentSchoolTableProps> = ({
         label: 'Parent',
         sortable: true,
         tdClass: 'fw-700',
-        formatter: (parent) => {
-          return `${parent?.person?.last_name}, ${parent?.person?.first_name}`
+        formatter: (student) => {
+          return `${student.parent?.person?.last_name}, ${student.parent?.person?.first_name}`
         },
       },
       {

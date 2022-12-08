@@ -40,6 +40,11 @@ const additionalStyles = makeStyles((theme: Theme) => ({
     },
     display: 'none!important',
   },
+  promptStyle: {
+    [theme.breakpoints.down('xs')]: {
+      width: '95%',
+    },
+  },
 }))
 
 export const QuickLinks: React.FC<QuickLinkProps> = ({ backAction, initialLink, studentId }) => {
@@ -350,7 +355,7 @@ export const QuickLinks: React.FC<QuickLinkProps> = ({ backAction, initialLink, 
         <ButtonBase onClick={onBackPress} sx={{ p: 1, background: 'white', borderRadius: '4px' }}>
           <ArrowBackIosOutlinedIcon sx={{ width: '20px', height: '20px' }} />
         </ButtonBase>
-        <Typography sx={{ fontWeight: 700, fontSize: 20, ml: 1 }}>Withdrawal</Typography>
+        <Typography sx={{ fontWeight: 700, fontSize: 20, ml: 1 }}>Withdraw</Typography>
       </Grid>
     </Grid>
   )

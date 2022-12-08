@@ -134,8 +134,15 @@ const TitleEdit: React.FC<TitleEditProps> = ({
         diploma_seeking: schoolYearData?.diploma_seeking,
         price: item.price || null,
       })
+    } else {
+      setInitialValues({
+        ...defaultTitleFormData,
+        subject_id: subjectId,
+        show_software_reimbursement: !!schoolYearData?.require_software,
+        reduce_funds: schoolYearData?.reimbursements || ReduceFunds.NONE,
+      })
     }
-  }, [item])
+  }, [item, schoolYearData])
 
   return (
     <Modal

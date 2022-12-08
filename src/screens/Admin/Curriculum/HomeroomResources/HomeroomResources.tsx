@@ -23,9 +23,11 @@ export const HomeroomResources: React.FC = () => {
   const { me } = useContext(UserContext)
   const history = useHistory()
 
-  const { dropdownItems: schoolYearDropdownItems, schoolYears: schoolYears } = useSchoolYearsByRegionId(
-    me?.selectedRegionId,
-  )
+  const {
+    dropdownItems: schoolYearDropdownItems,
+    schoolYears: schoolYears,
+    selectedYear: selectedYearData,
+  } = useSchoolYearsByRegionId(me?.selectedRegionId)
   const [stateName, setStateName] = useState<string>('')
   const [resources, setResources] = useState<HomeroomResource[]>([])
   const [visibleResources, setVisibleResources] = useState<HomeroomResource[]>([])
@@ -123,6 +125,7 @@ export const HomeroomResources: React.FC = () => {
                 ),
                 family_resource: resource.family_resource,
                 priority: resource.priority,
+                software_reimbursement: resource.software_reimbursement,
               },
             },
           })
@@ -308,6 +311,7 @@ export const HomeroomResources: React.FC = () => {
       {page === HomeroomResourcePage.EDIT && (
         <HomeroomResourceEdit
           schoolYearId={Number(selectedYear)}
+          schoolYearData={selectedYearData}
           item={selectedHomeroomResource}
           stateName={stateName}
           setPage={setPage}

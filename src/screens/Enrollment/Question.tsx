@@ -19,7 +19,7 @@ import { DropDownItem } from '@mth/components/DropDown/types'
 import { QUESTION_TYPE } from '@mth/components/QuestionItem/QuestionItemProps'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
-import { checkEmailQuery } from '@mth/graphql/queries/email-template'
+import { studentEmailTaken } from '@mth/graphql/queries/email-template'
 import { EnrollmentContext } from '@mth/providers/EnrollmentPacketPrivder/EnrollmentPacketProvider'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { SYSTEM_05, SYSTEM_07, ERROR_RED, GRADES } from '../../utils/constants'
@@ -316,7 +316,7 @@ function Item({
     [fieldData, otherValue, q],
   )
 
-  const [checkEmail, { loading: emailLoading, data: emailData }] = useLazyQuery(checkEmailQuery, {
+  const [checkEmail, { loading: emailLoading, data: emailData }] = useLazyQuery(studentEmailTaken, {
     fetchPolicy: 'network-only',
   })
 
@@ -324,7 +324,7 @@ function Item({
 
   useEffect(() => {
     if (!emailLoading && emailData !== undefined) {
-      if (emailData.emailTaken === true) {
+      if (emailData.studentEmailTaken === true) {
         setShowEmailError(true)
         const response = new CustomEvent('emailTaken', { detail: { error: true } })
         document.dispatchEvent(response)
@@ -422,7 +422,7 @@ function Item({
               // TODO fix validation here
               checkEmail({
                 variables: {
-                  email: formik.values[`${keyName}`][`${fieldName}`],
+                  email: formik.values[`${keyName}`][`${fieldName}`] + '-' + formik.values.student.person_id,
                 },
               })
             }}

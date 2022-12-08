@@ -95,11 +95,7 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
             sx={mainClasses.leftArrowButton}
             startIcon={<ArrowBackIosNewIcon />}
             onClick={() => {
-              if (currentMonth.getMonth() == 0) {
-                setCurrentMonth(new Date(currentMonth.getFullYear() - 1, 11, 1))
-              } else {
-                setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1))
-              }
+              setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 3))
             }}
           ></Button>
           <label style={{ marginBottom: 'auto', marginTop: 'auto' }}>{moment(currentMonth).format('MMMM YYYY')}</label>
@@ -109,11 +105,7 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
             sx={mainClasses.rightArrowButton}
             startIcon={<ArrowForwardIosIcon />}
             onClick={() => {
-              if (currentMonth.getMonth() == 11) {
-                setCurrentMonth(new Date(currentMonth.getFullYear() + 1, 0, 1))
-              } else {
-                setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1))
-              }
+              setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 3))
             }}
           ></Button>
         </Box>

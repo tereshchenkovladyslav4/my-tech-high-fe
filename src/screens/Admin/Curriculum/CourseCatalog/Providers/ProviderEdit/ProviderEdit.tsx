@@ -14,7 +14,13 @@ import { createOrUpdateProviderMutation } from '@mth/screens/Admin/Curriculum/Co
 import SaveCancelComponent from '../../Components/SaveCancelComponent/SaveCancelComponent'
 import { Period, ProviderEditProps, Provider } from '../types'
 
-const ProviderEdit: React.FC<ProviderEditProps> = ({ schoolYearId, item, refetch, setShowEditModal }) => {
+const ProviderEdit: React.FC<ProviderEditProps> = ({
+  schoolYearData,
+  schoolYearId,
+  item,
+  refetch,
+  setShowEditModal,
+}) => {
   const [isChanged, setIsChanged] = useState<boolean>(false)
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false)
   const [showCancelModal, setShowCancelModal] = useState<boolean>(false)
@@ -102,16 +108,12 @@ const ProviderEdit: React.FC<ProviderEditProps> = ({ schoolYearId, item, refetch
         PeriodIds: item.Periods.map((x: Period) => x.id.toString()),
         price: item.price || null,
       })
-  }, [item])
-
-  useEffect(() => {
-    if (item?.id)
+    else
       setInitialValues({
-        ...item,
-        PeriodIds: item.Periods.map((x: Period) => x.id.toString()),
-        price: item.price || null,
+        ...defaultProviderFormData,
+        reduce_funds: schoolYearData?.reimbursements || ReduceFunds.NONE,
       })
-  }, [item])
+  }, [item, schoolYearData])
 
   return (
     <Modal

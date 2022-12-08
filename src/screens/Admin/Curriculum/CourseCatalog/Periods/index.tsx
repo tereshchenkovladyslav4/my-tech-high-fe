@@ -35,13 +35,13 @@ import CustomTable from '@mth/components/Table/CustomTable'
 import { Field } from '@mth/components/Table/types'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { WarningModal } from '@mth/components/WarningModal/Warning'
-import { MthColor, MthRoute } from '@mth/enums'
+import { MthColor, MthRoute, ReduceFunds } from '@mth/enums'
 import { useProgramYearListBySchoolYearId, useSchoolYearsByRegionId } from '@mth/hooks'
 import { loadingState } from '@mth/providers/Store/State'
 import { getPeriods, upsertPeriod, periodArchive, deletePeriodsByIds } from '@mth/screens/Admin/Curriculum/services'
 import { gradeShortText } from '@mth/utils'
 import { useStyles } from '../../styles'
-import { PeriodItem, SEMESTER_TYPE, REDUCE_FUNDS_TYPE, SEMESTER_MESSAGE } from '../../types'
+import { PeriodItem, SEMESTER_TYPE, SEMESTER_MESSAGE } from '../../types'
 import { SaveCancelComponent } from '../Components/SaveCancelComponent'
 import Filter from './Filter'
 
@@ -189,7 +189,7 @@ const Periods: FunctionComponent = () => {
     (values) => {
       if (selectedYearId) {
         const variables = { school_year_id: +selectedYearId, ...values }
-        if (variables.reduce_funds === REDUCE_FUNDS_TYPE.NONE) {
+        if (variables.reduce_funds === ReduceFunds.NONE) {
           variables.price = 0
         }
         if (values.notify_period) {
@@ -224,7 +224,7 @@ const Periods: FunctionComponent = () => {
     category: '',
     min_grade: null,
     max_grade: null,
-    reduce_funds: REDUCE_FUNDS_TYPE.NONE,
+    reduce_funds: ReduceFunds.NONE,
     price: null,
     semester: SEMESTER_TYPE.NONE,
     message_period: '',
@@ -232,6 +232,7 @@ const Periods: FunctionComponent = () => {
     notify_semester: false,
     notify_period: false,
   }
+
   const formik = useFormik({
     initialValues,
     validationSchema: Yup.object({
@@ -255,7 +256,7 @@ const Periods: FunctionComponent = () => {
       }),
       price: Yup.number()
         .when(['reduce_funds'], {
-          is: (reduce_funds: REDUCE_FUNDS_TYPE) => reduce_funds !== REDUCE_FUNDS_TYPE.NONE,
+          is: (reduce_funds: ReduceFunds) => reduce_funds !== ReduceFunds.NONE,
           then: Yup.number().required('Required').positive('Should be greater than 0').nullable(),
         })
         .nullable(),
@@ -269,7 +270,20 @@ const Periods: FunctionComponent = () => {
     setTemp(undefined)
     setEditorStatePeriod(initialEditorState)
     setEditorStateSemester(initialEditorState)
-    formik.resetForm()
+    formik.setValues({
+      period: 0,
+      category: '',
+      min_grade: null,
+      max_grade: null,
+      reduce_funds: schoolYearData?.reimbursements || ReduceFunds.NONE,
+      price: null,
+      semester: SEMESTER_TYPE.NONE,
+      message_period: '',
+      message_semester: '',
+      notify_semester: false,
+      notify_period: false,
+    })
+    //formik.resetForm()
     setOpen(true)
   }
 
@@ -605,7 +619,7 @@ const Periods: FunctionComponent = () => {
                   fullWidth
                   value={formik.values.reduce_funds}
                   onChange={(e) => {
-                    if (e.target.value === REDUCE_FUNDS_TYPE.NONE) formik.setFieldValue('price', '')
+                    if (e.target.value === ReduceFunds.NONE) formik.setFieldValue('price', '')
                     formik.handleChange(e)
                   }}
                   error={formik.touched.reduce_funds && !!formik.errors.reduce_funds}
@@ -615,9 +629,9 @@ const Periods: FunctionComponent = () => {
                   select
                 >
                   {[
-                    { label: 'None', value: REDUCE_FUNDS_TYPE.NONE },
-                    { label: 'Supplemental Learning Funds', value: REDUCE_FUNDS_TYPE.SUPPLEMENTAL },
-                    { label: 'Technology Allowance', value: REDUCE_FUNDS_TYPE.TECHNOLOGY },
+                    { label: 'None', value: ReduceFunds.NONE },
+                    { label: 'Supplemental Learning Funds', value: ReduceFunds.SUPPLEMENTAL },
+                    { label: 'Technology Allowance', value: ReduceFunds.TECHNOLOGY },
                   ].map((option) => (
                     <MenuItem key={option.value} value={option.value}>
                       {option.label}
@@ -638,7 +652,7 @@ const Periods: FunctionComponent = () => {
                     formik.setFieldValue('price', value)
                   }}
                   error={formik.touched.price && !!formik.errors.price}
-                  disabled={formik.values?.reduce_funds === REDUCE_FUNDS_TYPE.NONE}
+                  disabled={formik.values?.reduce_funds === ReduceFunds.NONE}
                 />
                 <Subtitle
                   sx={{

@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect, useContext } from 'react'
 import { useQuery } from '@apollo/client'
 import { Add } from '@mui/icons-material'
 import CloseIcon from '@mui/icons-material/Close'
+import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined'
 import EditIcon from '@mui/icons-material/Edit'
 import {
   Button,
@@ -204,6 +205,16 @@ export const EmailTemplateModal: React.FC<EmailTemplateModalProps> = ({
     setAddResponse(JSON.stringify(standard_response))
   }
 
+  const handleDeleteResponse = (index: number) => {
+    response.splice(index, 1)
+    setAddResponse(JSON.stringify(response))
+  }
+
+  const handleDeleteResponseGroup = (index: number, index_1: number) => {
+    response[index].responses.splice(index_1, 1)
+    setAddResponse(JSON.stringify(response))
+  }
+
   const handleChangeGroupResponse = (value, index, i, field) => {
     const groups = response.slice()
 
@@ -275,7 +286,7 @@ export const EmailTemplateModal: React.FC<EmailTemplateModalProps> = ({
           title: emailTitle,
           from: emailFrom,
           bcc: emailBcc,
-          ttemplate_name: template?.template_name || emailTitle,
+          template_name: template?.template_name || emailTitle,
           body: draftToHtml(convertToRaw(editorState.getCurrentContent())),
           standard_responses: addResponse,
           template: template.template,
@@ -633,9 +644,9 @@ export const EmailTemplateModal: React.FC<EmailTemplateModalProps> = ({
             {type === 'standard_response' && (
               <Grid container rowSpacing={2}>
                 {response.length > 0 &&
-                  response.map((reminder, i) => (
+                  response.map((_reminder, i) => (
                     <Box key={i} sx={{ width: '100%' }}>
-                      <Grid item xs={12} sx={{ marginTop: '50px' }}>
+                      <Grid item xs={12} sx={{ marginTop: '50px', display: 'flex', alignItems: 'center' }}>
                         <TextField
                           size='small'
                           placeholder='Edit Title'
@@ -645,8 +656,17 @@ export const EmailTemplateModal: React.FC<EmailTemplateModalProps> = ({
                           fullWidth
                           value={response[i].title}
                         />
+                        {template_name === 'Age Issue' && (
+                          <Box onClick={() => handleDeleteResponse(i)}>
+                            <Tooltip title='Delete' placement='top'>
+                              <DeleteForeverOutlinedIcon
+                                sx={{ cursor: 'pointer', width: '40px', color: MthColor.BLACK }}
+                                fontSize='medium'
+                              />
+                            </Tooltip>
+                          </Box>
+                        )}
                       </Grid>
-
                       <Grid item xs={12} sx={{ marginTop: '25px' }}>
                         <TextField
                           size='small'
@@ -679,9 +699,13 @@ export const EmailTemplateModal: React.FC<EmailTemplateModalProps> = ({
                     </Subtitle>
                     <Grid item xs={12} sx={{ textAlign: 'left' }}>
                       {response[index].responses.length > 0 &&
-                        response[index].responses.map((reminder, i) => (
+                        response[index].responses.map((_reminder: unknown, i: number) => (
                           <Box key={i} sx={{ width: '100%' }}>
-                            <Grid item xs={12} sx={{ marginTop: '25px', width: '80%' }}>
+                            <Grid
+                              item
+                              xs={12}
+                              sx={{ marginTop: '25px', width: '80%', display: 'flex', alignItems: 'center' }}
+                            >
                               <TextField
                                 size='small'
                                 placeholder='Edit Title'
@@ -690,8 +714,17 @@ export const EmailTemplateModal: React.FC<EmailTemplateModalProps> = ({
                                 fullWidth
                                 value={response[index].responses[i].title}
                               />
+                              {template_name === 'Missing Information' && (
+                                <Box onClick={() => handleDeleteResponseGroup(index, i)}>
+                                  <Tooltip title='Delete' placement='top'>
+                                    <DeleteForeverOutlinedIcon
+                                      sx={{ cursor: 'pointer', width: '40px', color: MthColor.BLACK }}
+                                      fontSize='medium'
+                                    />
+                                  </Tooltip>
+                                </Box>
+                              )}
                             </Grid>
-
                             <Grid item xs={12} sx={{ marginTop: '25px' }}>
                               <MthBulletEditor
                                 value={response[index].responses[i].extraText}
@@ -725,7 +758,7 @@ export const EmailTemplateModal: React.FC<EmailTemplateModalProps> = ({
                   </IconButton>
                 </Subtitle>
                 {template?.standard_responses &&
-                  Object.keys(template?.standard_responses).map((index: number) => (
+                  Object.keys(template?.standard_responses).map((_value: string, index: number) => (
                     <Box key={index} className={classes['availbe-row']}>
                       <Subtitle fontWeight='600' color='#A3A3A4' sx={{ fontSize: '18px', marginLeft: '8px' }}>
                         {template?.standard_responses[index].title}

@@ -4,7 +4,7 @@ import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline'
 import ScheduleIcon from '@mui/icons-material/Schedule'
 import WarningAmberIcon from '@mui/icons-material/WarningAmber'
 import { Avatar, Box, Button, Card } from '@mui/material'
-import { useHistory } from 'react-router-dom'
+import { useHistory, useLocation } from 'react-router-dom'
 import { EditYearModal } from '@mth/components/EmailModal/EditYearModal'
 import { Metadata } from '@mth/components/Metadata/Metadata'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
@@ -12,7 +12,7 @@ import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { Title } from '@mth/components/Typography/Title/Title'
 import { WarningModal } from '@mth/components/WarningModal/Warning'
 import {
-  ApplicantStatus,
+  ApplicationStatus,
   MthColor,
   MthRoute,
   PacketStatus,
@@ -37,7 +37,7 @@ export const Student: React.FC<StudentProps> = ({
 }) => {
   const { me, setMe } = useContext(UserContext)
   const history = useHistory()
-
+  const location = useLocation()
   const [circleData, setCircleData] = useState<CircleData>()
   const [link, setLink] = useState<string>('')
   const [showToolTip, setShowToolTip] = useState(true)
@@ -65,6 +65,7 @@ export const Student: React.FC<StudentProps> = ({
         schedule.SchoolYearId === Number(student?.current_school_year_status?.school_year_id) &&
         !schedule.is_second_semester,
     )?.at(-1)
+
     const currentSecondSemesterSchedule = StudentSchedules?.filter(
       (schedule) =>
         schedule.StudentId === Number(student?.student_id) &&
@@ -74,7 +75,10 @@ export const Student: React.FC<StudentProps> = ({
 
     const enrollmentLink = `${MthRoute.HOMEROOM + MthRoute.ENROLLMENT}/${student.student_id}`
     const homeroomLink = `${MthRoute.HOMEROOM}/${student.student_id}`
-    const scheduleBuilderLink = `${MthRoute.HOMEROOM + MthRoute.SUBMIT_SCHEDULE}/${student.student_id}`
+    const scheduleLink = `${MthRoute.HOMEROOM + MthRoute.SUBMIT_SCHEDULE}/${student.student_id}`
+    const scheduleBuilderLink = `${MthRoute.HOMEROOM + MthRoute.SUBMIT_SCHEDULE}/${student.student_id}?backTo=${
+      location.pathname
+    }`
     const studentSchoolYear = schoolYears
       ?.filter((item) => item.school_year_id == student?.current_school_year_status?.school_year_id)
       .at(-1) as SchoolYearType
@@ -92,14 +96,14 @@ export const Student: React.FC<StudentProps> = ({
           />
         ),
       })
-    } else if (currApplication && currApplication?.status === ApplicantStatus.SUBMITTED) {
+    } else if (currApplication && currApplication?.status === ApplicationStatus.SUBMITTED) {
       setLink(MthRoute.HOMEROOM)
       setCircleData({
         mobileColor: MthColor.MTHGREEN,
-        mobileText: 'Application Pending Approval',
+        mobileText: StudentNotification.APPLICATION_PENDING_APPROVAL,
         color: MthColor.MTHGREEN,
         progress: 25,
-        type: 'Application Pending Approval',
+        type: StudentNotification.APPLICATION_PENDING_APPROVAL,
         icon: (
           <ScheduleIcon
             sx={{ color: MthColor.MTHGREEN, marginTop: 2, cursor: 'pointer' }}
@@ -114,22 +118,33 @@ export const Student: React.FC<StudentProps> = ({
       })
     } else if (
       currApplication &&
-      currApplication?.status === ApplicantStatus.ACCEPTED &&
+      currApplication?.status === ApplicationStatus.ACCEPTED &&
       packets &&
-      currPacket?.status === PacketStatus.NOT_STARTED
+      (currPacket?.status === PacketStatus.NOT_STARTED || currPacket?.status === PacketStatus.MISSING_INFO)
     ) {
       setLink(enrollmentLink)
-      setCircleData({
-        mobileColor: MthColor.BUTTON_LINEAR_GRADIENT,
-        mobileText: 'Submit Now',
-        progress: 50,
-        color: MthColor.MTHORANGE,
-        type: 'Please Submit an Enrollment Packet',
-        icon: <ErrorOutlineIcon sx={{ color: MthColor.MTHORANGE, marginTop: 2, cursor: 'pointer' }} />,
-      })
+      if (currPacket?.status === PacketStatus.NOT_STARTED) {
+        setCircleData({
+          mobileColor: MthColor.BUTTON_LINEAR_GRADIENT,
+          mobileText: 'Submit Now',
+          progress: 50,
+          color: MthColor.MTHORANGE,
+          type: StudentNotification.PLEASE_SUBMIT_ENROLLMENT_PACKET,
+          icon: <ErrorOutlineIcon sx={{ color: MthColor.MTHORANGE, marginTop: 2, cursor: 'pointer' }} />,
+        })
+      } else {
+        setCircleData({
+          mobileColor: MthColor.BUTTON_LINEAR_GRADIENT,
+          mobileText: 'Resubmit Now',
+          progress: 50,
+          color: MthColor.MTHORANGE,
+          type: StudentNotification.PLEASE_RESUBMIT_ENROLLMENT_PACKET,
+          icon: <ErrorOutlineIcon sx={{ color: MthColor.MTHORANGE, marginTop: 2, cursor: 'pointer' }} />,
+        })
+      }
     } else if (
       currApplication &&
-      currApplication?.status === ApplicantStatus.ACCEPTED &&
+      currApplication?.status === ApplicationStatus.ACCEPTED &&
       currPacket &&
       currPacket?.status === PacketStatus.STARTED
     ) {
@@ -139,13 +154,13 @@ export const Student: React.FC<StudentProps> = ({
         mobileText: 'Submit Now',
         progress: 50,
         color: MthColor.MTHORANGE,
-        type: 'Please Submit an Enrollment Packet',
+        type: StudentNotification.PLEASE_SUBMIT_ENROLLMENT_PACKET,
         icon: <ErrorOutlineIcon sx={{ color: MthColor.MTHORANGE, marginTop: 2, cursor: 'pointer' }} />,
       })
     } else if (
       !showNotification &&
       currApplication &&
-      currApplication?.status === ApplicantStatus.ACCEPTED &&
+      currApplication?.status === ApplicationStatus.ACCEPTED &&
       ((currPacket && currPacket?.status === PacketStatus.SUBMITTED) ||
         currPacket?.status === PacketStatus.MISSING_INFO ||
         currPacket?.status === PacketStatus.RESUBMITTED)
@@ -153,16 +168,16 @@ export const Student: React.FC<StudentProps> = ({
       setLink(homeroomLink)
       setCircleData({
         mobileColor: MthColor.MTHGREEN,
-        mobileText: 'Enrollment Pending Approval',
+        mobileText: StudentNotification.ENROLLMENT_PENDING_APPROVAL,
         color: MthColor.MTHGREEN,
         progress: 50,
-        type: 'Enrollment Packet Pending Approval',
+        type: StudentNotification.ENROLLMENT_PACKET_PENDING_APPROVAL,
         icon: <ScheduleIcon sx={{ color: MthColor.MTHGREEN, marginTop: 2, cursor: 'pointer' }} />,
       })
     } else if (
       studentSchoolYear?.schedule === true &&
       !showNotification &&
-      currApplication?.status === ApplicantStatus.ACCEPTED &&
+      currApplication?.status === ApplicationStatus.ACCEPTED &&
       currPacket?.status === PacketStatus.ACCEPTED
     ) {
       setLink(homeroomLink)
@@ -172,19 +187,19 @@ export const Student: React.FC<StudentProps> = ({
       ) {
         setCircleData({
           mobileColor: MthColor.MTHGREEN,
-          mobileText: '2nd Semester Schedule Pending Approval',
+          mobileText: StudentNotification.SECOND_SEMESTER_SCHEDULE_PENDING_APPROVAL,
           color: MthColor.MTHGREEN,
           progress: 75,
-          type: '2nd Semester Schedule Pending Approval',
+          type: StudentNotification.SECOND_SEMESTER_SCHEDULE_PENDING_APPROVAL,
           icon: <ScheduleIcon sx={{ color: MthColor.MTHGREEN, marginTop: 2, cursor: 'pointer' }} />,
         })
       } else if (currentSchedule?.status === ScheduleStatus.ACCEPTED) {
         setCircleData({
           mobileColor: MthColor.MTHGREEN,
-          mobileText: 'Homeroom Assignment in Progress',
+          mobileText: StudentNotification.HOMEROOM_ASSIGNMENT_IN_PROGRESS,
           color: MthColor.MTHGREEN,
           progress: 75,
-          type: 'Homeroom Assignment in Progress',
+          type: StudentNotification.HOMEROOM_ASSIGNMENT_IN_PROGRESS,
           icon: <ScheduleIcon sx={{ color: MthColor.MTHGREEN, marginTop: 2, cursor: 'pointer' }} />,
         })
       } else if (
@@ -193,19 +208,19 @@ export const Student: React.FC<StudentProps> = ({
       ) {
         setCircleData({
           mobileColor: MthColor.MTHGREEN,
-          mobileText: 'Schedule Pending Approval',
+          mobileText: StudentNotification.SCHEDULE_PENDING_APPROVAL,
           color: MthColor.MTHGREEN,
           progress: 75,
-          type: 'Schedule Pending Approval',
+          type: StudentNotification.SCHEDULE_PENDING_APPROVAL,
           icon: <ScheduleIcon sx={{ color: MthColor.MTHGREEN, marginTop: 2, cursor: 'pointer' }} />,
         })
       } else {
         setCircleData({
           mobileColor: MthColor.MTHGREEN,
-          mobileText: 'Waiting for Schedule Builder to Open',
+          mobileText: StudentNotification.WAITING_FOR_SCHEDULE_BUILDER_TO_OPEN,
           color: MthColor.MTHGREEN,
           progress: 75,
-          type: 'Waiting for Schedule Builder to Open',
+          type: StudentNotification.WAITING_FOR_SCHEDULE_BUILDER_TO_OPEN,
           icon: <ScheduleIcon sx={{ color: MthColor.MTHGREEN, marginTop: 2, cursor: 'pointer' }} />,
         })
       }
@@ -216,7 +231,12 @@ export const Student: React.FC<StudentProps> = ({
         showNotification?.phrase === StudentNotification.SUBMIT_SECOND_SEMESTER_SCHEDULE ||
         showNotification?.phrase === StudentNotification.RESUBMIT_SECOND_SEMESTER_SCHEDULE)
     ) {
-      setLink(scheduleBuilderLink)
+      setLink(
+        showNotification?.phrase === StudentNotification.SUBMIT_SCHEDULE ||
+          showNotification?.phrase === StudentNotification.SUBMIT_SECOND_SEMESTER_SCHEDULE
+          ? scheduleLink
+          : scheduleBuilderLink,
+      )
       setCircleData({
         mobileColor: MthColor.MTHORANGE,
         mobileText: showNotification.phrase,
@@ -240,7 +260,7 @@ export const Student: React.FC<StudentProps> = ({
       variables: {
         updateApplicationInput: {
           application_id: Number(currApplication?.application_id),
-          status: ApplicantStatus.SUBMITTED,
+          status: ApplicationStatus.SUBMITTED,
           relation_status: RelationStatus.RETURNING,
           school_year_id: parseInt(String(schoolYear)?.split('-')[0]),
           midyear_application: String(schoolYear)?.split('-')[1] === 'mid' ? true : false,
@@ -388,6 +408,7 @@ export const Student: React.FC<StudentProps> = ({
                 variant='contained'
                 fullWidth
                 sx={{ background: MthColor.RED_GRADIENT, color: MthColor.WHITE, marginBottom: 2 }}
+                onClick={handleWithrawanStudent}
               >
                 Re-apply
               </Button>

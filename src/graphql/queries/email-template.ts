@@ -108,3 +108,9 @@ export const checkEmailQuery = gql`
     emailTaken(email: $email)
   }
 `
+
+export const studentEmailTaken = gql`
+  query Query($email: String!) {
+    studentEmailTaken(email: $email)
+  }
+`

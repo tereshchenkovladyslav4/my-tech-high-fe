@@ -63,6 +63,7 @@ export type Title = {
 
   //  Temp fields
   diploma_seeking?: boolean
+  show_software_reimbursement?: boolean
   stateCourseCords?: StateCourseCord[]
 }
 

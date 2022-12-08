@@ -19,6 +19,7 @@ export const defaultHomeroomFormData: HomeroomResource = {
   priority: 0,
   is_active: false,
   allow_request: false,
+  software_reimbursement: false,
 }
 
 export const defaultResourceLevelFormData: ResourceLevel = {

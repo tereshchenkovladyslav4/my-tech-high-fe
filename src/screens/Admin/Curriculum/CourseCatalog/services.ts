@@ -106,6 +106,9 @@ export const getProvidersQuery = gql`
         period
         category
       }
+      SchedulePeriods {
+        schedule_period_id
+      }
       Courses {
         id
         provider_id

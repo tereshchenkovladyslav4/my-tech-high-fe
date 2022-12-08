@@ -126,8 +126,15 @@ const CourseEdit: React.FC<CourseEditProps> = ({
         TitleIds: (item.Titles || []).map((x: Title) => x.title_id.toString()),
         price: item.price || null,
       })
+    } else {
+      setInitialValues({
+        ...defaultCourseFormData,
+        reduce_funds: schoolYearData?.reimbursements || ReduceFunds.NONE,
+        show_software_reimbursement: !!schoolYearData?.require_software,
+        provider_id: providerId,
+      })
     }
-  }, [item])
+  }, [item, schoolYearData])
 
   return (
     <Modal

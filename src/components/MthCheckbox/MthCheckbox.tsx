@@ -13,11 +13,12 @@ export interface MthCheckboxProps extends CheckboxProps {
 }
 
 const MthCheckbox = (props: MthCheckboxProps): React.ReactElement => {
-  const { label, labelSx, wrapSx, ...otherProps } = props
+  const { label, labelSx, wrapSx, disabled, ...otherProps } = props
 
   const renderCheckbox = () => (
     <Checkbox
       {...otherProps}
+      disabled={!!disabled}
       sx={{
         '&.Mui-checked, &.MuiCheckbox-indeterminate': {
           color: otherProps.color == 'secondary' ? MthColor.MTHBLUE : MthColor.SYSTEM_01,

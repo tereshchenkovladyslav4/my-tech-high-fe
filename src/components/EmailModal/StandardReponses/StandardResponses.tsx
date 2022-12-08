@@ -82,27 +82,33 @@ export const StandardResponses: FunctionComponent<StandardResponses> = ({
         </FormLabel>
         <RadioGroup aria-label='gender' name='radio-buttons-group'>
           {type !== 'missingInfo' &&
-            map(options, (option) => (
-              <FormControlLabel
-                value={option.title}
-                control={
-                  <SelectionComponent
-                    onChange={(e) => {
-                      checkResponse(option.title, e)
-                    }}
+            map(
+              options,
+              (option, index) =>
+                !!option.title && (
+                  <FormControlLabel
+                    key={index}
+                    value={option.title}
+                    control={
+                      <SelectionComponent
+                        onChange={(e) => {
+                          checkResponse(option.title, e)
+                        }}
+                      />
+                    }
+                    label={<Paragraph size='large'>{option.title}</Paragraph>}
+                    style={{ fontSize: '12px' }}
                   />
-                }
-                label={<Paragraph size='large'>{option.title}</Paragraph>}
-                style={{ fontSize: '12px' }}
-              />
-            ))}
+                ),
+            )}
           {type === 'missingInfo' &&
             map(options, (option) =>
               map(
                 option.responses,
-                (response) =>
-                  response.title != '' && (
+                (response, index) =>
+                  !!response.title && (
                     <FormControlLabel
+                      key={index}
                       value={response.title}
                       control={
                         <SelectionComponent

@@ -48,7 +48,7 @@ export const UserLeaveConfirmation = (
         </Box>
         <Box sx={classes.content as Record<string, unknown>}>
           <InfoIcon sx={{ fontSize: 50, margin: '20px 0px' }} />
-          <Paragraph size='large' color={SYSTEM_01}>
+          <Paragraph size='large' color={SYSTEM_01} sx={{ textAlign: 'center' }}>
             {content}
           </Paragraph>
           <Box display='flex' flexDirection='row'>
