@@ -125,6 +125,12 @@ export const mthButtonClasses = {
     ...mthButtonColorClasses.dark,
     borderRadius: '40px',
   },
+  roundXsDark: {
+    ...mthButtonSizeClasses.xs,
+    ...mthButtonColorClasses.dark,
+    borderRadius: '40px',
+    minWidth: '92px',
+  },
 
   // Gray buttons
   gray: {
@@ -146,6 +152,12 @@ export const mthButtonClasses = {
     ...mthButtonSizeClasses.small,
     ...mthButtonColorClasses.gray,
     borderRadius: '40px',
+  },
+  roundXsGray: {
+    ...mthButtonSizeClasses.xs,
+    ...mthButtonColorClasses.gray,
+    borderRadius: '40px',
+    minWidth: '92px',
   },
 
   // Orange buttons

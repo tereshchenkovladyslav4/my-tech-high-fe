@@ -12,6 +12,7 @@ import PageHeader from '@mth/components/PageHeader'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { WarningModal } from '@mth/components/WarningModal/Warning'
 import { MthTitle } from '@mth/enums'
+import { mthButtonClasses } from '@mth/styles/button.style'
 import { HOMEROOM_LEARNING_LOGS } from '../../../../../utils/constants'
 import { createAssignmentMutation, GetMastersByIDGql } from '../../services'
 import { masterUseStyles } from './styles'
@@ -293,12 +294,14 @@ const EditAssignment: React.FC<{ masterId: number }> = ({ masterId }) => {
       >
         {/* <Box sx={{ mb: 4 }}> */}
         <PageHeader title={masterTitle || ''} to={`${HOMEROOM_LEARNING_LOGS}/edit/${masterId}`}>
-          <Button sx={masterUseStyles.cancelButtons} type='button' onClick={handleCancel}>
-            Cancel
-          </Button>
-          <Button sx={masterUseStyles.saveButtons} type='button' onClick={handleSubmit}>
-            Save
-          </Button>
+          <Box display='flex'>
+            <Button sx={{ ...mthButtonClasses.roundXsGray, mr: '20px' }} type='button' onClick={handleCancel}>
+              Cancel
+            </Button>
+            <Button sx={mthButtonClasses.roundXsDark} type='button' onClick={handleSubmit}>
+              Save
+            </Button>
+          </Box>
         </PageHeader>
         {/* </Box> */}
         {/* <CommonSelectList settingList={editAssignmentList}></CommonSelectList> */}

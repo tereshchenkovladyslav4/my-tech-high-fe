@@ -25,9 +25,9 @@ import PageHeader from '@mth/components/PageHeader'
 import { Pagination } from '@mth/components/Pagination/Pagination'
 import { useSchoolYearsByRegionId } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
+import { mthButtonClasses } from '@mth/styles/button.style'
 import { BUTTON_LINEAR_GRADIENT, HOMEROOM_LEARNING_LOGS } from '../../../../../utils/constants'
 import { GetMastersByIDGql, getAssignmentsByMasterIdgql } from '../../services'
-import { useStyles } from '../../styles'
 import { Master } from '../types'
 import { Assignment } from './types'
 
@@ -152,7 +152,7 @@ const MasterHoomroom: React.FC<{ masterId: number }> = ({ masterId }) => {
       take: paginatinLimit,
       sort: null,
       skip: skip,
-      search: null,
+      search: localSearchField,
     },
     skip: masterId ? false : true,
     fetchPolicy: 'network-only',
@@ -160,7 +160,7 @@ const MasterHoomroom: React.FC<{ masterId: number }> = ({ masterId }) => {
 
   useEffect(() => {
     if (!assloading && assData?.getAssignmentsByMasterId) {
-      setTotalPage(assData?.getAssignmentsByMasterId.page_total)
+      setTotalPage(assData?.getAssignmentsByMasterId.total)
       setTableData(
         assData?.getAssignmentsByMasterId.results.map((item: Assignment) => {
           return createData(item)
@@ -171,7 +171,7 @@ const MasterHoomroom: React.FC<{ masterId: number }> = ({ masterId }) => {
 
   const handleChangePageLimit = (num: number) => {
     setPaginatinLimit(num)
-    setCurrentPage(0)
+    handlePageChange(1)
   }
 
   const handlePageChange = (page: number) => {
@@ -193,7 +193,7 @@ const MasterHoomroom: React.FC<{ masterId: number }> = ({ masterId }) => {
       >
         <Box sx={{ mb: 4 }}>
           <PageHeader title={masterInfo?.master_name || ''} to={HOMEROOM_LEARNING_LOGS}>
-            <Button sx={useStyles.saveButtons} type='button'>
+            <Button sx={mthButtonClasses.roundXsPrimary} type='button'>
               Save
             </Button>
           </PageHeader>
