@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react'
-import { useQuery } from '@apollo/client'
+import { useMutation, useQuery } from '@apollo/client'
 import { DeleteForeverOutlined } from '@mui/icons-material'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import CreateIcon from '@mui/icons-material/Create'
@@ -17,17 +17,18 @@ import {
   Typography,
 } from '@mui/material'
 import moment from 'moment'
-import { useHistory } from 'react-router-dom'
+import { Prompt, useHistory } from 'react-router-dom'
 import { DropDown } from '@mth/components/DropDown/DropDown'
 import { MthTable } from '@mth/components/MthTable'
 import { MthTableField, MthTableRowItem } from '@mth/components/MthTable/types'
 import PageHeader from '@mth/components/PageHeader'
 import { Pagination } from '@mth/components/Pagination/Pagination'
+import { MthTitle } from '@mth/enums'
 import { useSchoolYearsByRegionId } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { mthButtonClasses } from '@mth/styles/button.style'
 import { BUTTON_LINEAR_GRADIENT, HOMEROOM_LEARNING_LOGS } from '../../../../../utils/constants'
-import { GetMastersByIDGql, getAssignmentsByMasterIdgql } from '../../services'
+import { GetMastersByIDGql, getAssignmentsByMasterIdgql, updateMasterById } from '../../services'
 import { Master } from '../types'
 import { Assignment } from './types'
 
@@ -43,6 +44,8 @@ const MasterHoomroom: React.FC<{ masterId: number }> = ({ masterId }) => {
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [totalPage, setTotalPage] = useState<number>(0)
   const [skip, setSkip] = useState<number>()
+
+  const [isChange, setIsChange] = useState<boolean>(false)
 
   const { me } = useContext(UserContext)
   const { dropdownItems: schoolYearDropdownItems } = useSchoolYearsByRegionId(me?.selectedRegionId)
@@ -71,43 +74,36 @@ const MasterHoomroom: React.FC<{ masterId: number }> = ({ masterId }) => {
       label: 'Due Date',
       sortable: false,
       tdClass: '',
-      // width: '30%',
     },
     {
       key: 'title',
       label: 'Title',
       sortable: false,
       tdClass: '',
-      // width: '30%',
     },
     {
       key: 'reminder',
       label: 'Reminder',
       sortable: false,
       tdClass: '',
-      // width: '30%',
     },
     {
       key: 'auto_grade',
       label: 'Auto-grade',
       sortable: false,
       tdClass: '',
-      // width: '50%',
     },
     {
       key: 'teacher_deadline',
       label: 'Teacher Deadline',
       sortable: false,
       tdClass: '',
-      // width: '50%',
     },
     {
       key: 'action',
       label: '',
       sortable: false,
       tdClass: '',
-      // 48px is for checkbox
-      // width: 'calc(25% - 48px)',
       formatter: () => {
         return (
           <Box display={'flex'} flexDirection='row' justifyContent={'flex-end'} flexWrap={'wrap'}>
@@ -181,8 +177,30 @@ const MasterHoomroom: React.FC<{ masterId: number }> = ({ masterId }) => {
     })
   }
 
+  const [updateMaster] = useMutation(updateMasterById)
+  const handleSubmit = async () => {
+    await updateMaster({
+      variables: {
+        updateMaster: {
+          master_id: parseInt(masterInfo?.master_id),
+          master_name: masterTitle,
+          school_year_id: masterSchoolYearId,
+        },
+      },
+    })
+    setIsChange(false)
+    history.push(HOMEROOM_LEARNING_LOGS)
+  }
+
   return (
     <Box sx={{ p: 4, textAlign: 'left' }}>
+      <Prompt
+        when={isChange ? true : false}
+        message={JSON.stringify({
+          header: MthTitle.UNSAVED_TITLE,
+          content: MthTitle.UNSAVED_DESCRIPTION,
+        })}
+      />
       <Card
         sx={{
           p: 4,
@@ -193,7 +211,7 @@ const MasterHoomroom: React.FC<{ masterId: number }> = ({ masterId }) => {
       >
         <Box sx={{ mb: 4 }}>
           <PageHeader title={masterInfo?.master_name || ''} to={HOMEROOM_LEARNING_LOGS}>
-            <Button sx={mthButtonClasses.roundXsPrimary} type='button'>
+            <Button sx={mthButtonClasses.roundXsPrimary} type='button' onClick={handleSubmit}>
               Save
             </Button>
           </PageHeader>
@@ -207,6 +225,7 @@ const MasterHoomroom: React.FC<{ masterId: number }> = ({ masterId }) => {
               fullWidth
               InputLabelProps={{ shrink: true }}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                setIsChange(e.target.value !== masterInfo?.master_name)
                 setMasterTitle(e.target.value)
               }}
               className='MthFormField'
@@ -222,6 +241,7 @@ const MasterHoomroom: React.FC<{ masterId: number }> = ({ masterId }) => {
               sx={{ m: 0 }}
               defaultValue={masterSchoolYearId}
               setParentValue={(val) => {
+                setIsChange(val !== masterInfo?.school_year_id)
                 setMasterSchoolYearId(+val)
               }}
             />

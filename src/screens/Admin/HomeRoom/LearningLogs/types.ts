@@ -16,8 +16,7 @@ export type Master = {
   master_name?: string
   classesCount?: number
   masterClasses?: Classes[] | undefined
-  schoolYear?: number
-  // Temp fields
+  school_year_id?: number
 }
 
 export type ClassessProps = {
