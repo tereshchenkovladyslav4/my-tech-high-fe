@@ -7,13 +7,13 @@ import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined'
 import { Box, Button, Card, CardContent, CardMedia, Stack, Tooltip, Typography } from '@mui/material'
 import { s3URL } from '@mth/constants'
-import { MthColor, ResourceRequestStatus, ResourceSubtitle } from '@mth/enums'
+import { CartEventType, MthColor, ResourceRequestStatus, ResourceSubtitle } from '@mth/enums'
 import { isFullResource } from '../services'
-import { EventType, ResourceCardProps, ResourcePage } from '../types'
+import { ResourceCardProps, ResourcePage } from '../types'
 import { resourceCardClasses } from './styles'
 
 const ResourceCard: React.FC<ResourceCardProps> = ({ page, item, onAction }) => {
-  const actionHandler = (e: React.MouseEvent<HTMLElement>, eventType?: EventType) => {
+  const actionHandler = (e: React.MouseEvent<HTMLElement>, eventType?: CartEventType) => {
     e.stopPropagation()
     if (onAction && eventType) onAction(eventType)
   }
@@ -29,7 +29,7 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ page, item, onAction }) => 
         ...resourceCardClasses.card,
         opacity: item.HiddenByStudent ? 0.5 : 1,
       }}
-      onClick={(e) => actionHandler(e, EventType.CLICK)}
+      onClick={(e) => actionHandler(e, CartEventType.CLICK)}
     >
       <CardMedia
         component='img'
@@ -46,7 +46,7 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ page, item, onAction }) => 
       {showRequestCta() && (
         <Tooltip title={item.CartDate ? 'Remove' : isFullResource(item) ? 'Join Waitlist' : 'Request'}>
           <Stack
-            onClick={(e) => actionHandler(e, item.CartDate ? EventType.REMOVE_CART : EventType.ADD_CART)}
+            onClick={(e) => actionHandler(e, item.CartDate ? CartEventType.REMOVE_CART : CartEventType.ADD_CART)}
             sx={{
               ...resourceCardClasses.iconButton,
               top: 15,
@@ -74,7 +74,7 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ page, item, onAction }) => 
       {page !== ResourcePage.REQUEST && (
         <Tooltip title={item.HiddenByStudent ? 'Unhide' : 'Hide'}>
           <Stack
-            onClick={(e) => actionHandler(e, item.HiddenByStudent ? EventType.UN_HIDE : EventType.HIDE)}
+            onClick={(e) => actionHandler(e, item.HiddenByStudent ? CartEventType.UN_HIDE : CartEventType.HIDE)}
             sx={{
               ...resourceCardClasses.iconButton,
               top: showRequestCta() ? 77 : 15,
@@ -150,7 +150,7 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ page, item, onAction }) => 
                 spacing={1.5}
                 alignItems='center'
                 sx={{ mt: '8px', mr: 2 }}
-                onClick={(e) => actionHandler(e, EventType.DETAILS)}
+                onClick={(e) => actionHandler(e, CartEventType.DETAILS)}
               >
                 <EastIcon />
               </Stack>

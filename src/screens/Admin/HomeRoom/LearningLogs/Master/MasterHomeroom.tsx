@@ -15,21 +15,30 @@ import {
   OutlinedInput,
   TextField,
   Typography,
+  Modal,
 } from '@mui/material'
 import moment from 'moment'
 import { Prompt, useHistory } from 'react-router-dom'
 import { DropDown } from '@mth/components/DropDown/DropDown'
+import { MthBulletEditor } from '@mth/components/MthBulletEditor'
 import { MthTable } from '@mth/components/MthTable'
 import { MthTableField, MthTableRowItem } from '@mth/components/MthTable/types'
 import PageHeader from '@mth/components/PageHeader'
 import { Pagination } from '@mth/components/Pagination/Pagination'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { MthTitle } from '@mth/enums'
 import { useSchoolYearsByRegionId } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { mthButtonClasses } from '@mth/styles/button.style'
 import { BUTTON_LINEAR_GRADIENT, HOMEROOM_LEARNING_LOGS } from '../../../../../utils/constants'
-import { GetMastersByIDGql, getAssignmentsByMasterIdgql, updateMasterById } from '../../services'
+import {
+  GetMastersByIDGql,
+  getAssignmentsByMasterIdgql,
+  updateMasterById,
+  createOrUpdateInstruction,
+} from '../../services'
 import { Master } from '../types'
+import { masterUseStyles } from './styles'
 import { Assignment } from './types'
 
 const MasterHoomroom: React.FC<{ masterId: number }> = ({ masterId }) => {
@@ -46,6 +55,9 @@ const MasterHoomroom: React.FC<{ masterId: number }> = ({ masterId }) => {
   const [skip, setSkip] = useState<number>()
 
   const [isChange, setIsChange] = useState<boolean>(false)
+
+  const [isSetInstructions, setIsSetInstructions] = useState<boolean>(false)
+  const [instructions, setInstructions] = useState<string>('')
 
   const { me } = useContext(UserContext)
   const { dropdownItems: schoolYearDropdownItems } = useSchoolYearsByRegionId(me?.selectedRegionId)
@@ -65,6 +77,8 @@ const MasterHoomroom: React.FC<{ masterId: number }> = ({ masterId }) => {
       setMasterInfo(masterData.getMastersById)
       setMasterTitle(masterData.getMastersById.master_name)
       setMasterSchoolYearId(masterData.getMastersById.school_year_id)
+
+      setInstructions(masterData.getMastersById.instructions)
     }
   }, [masterLoading, masterData])
 
@@ -192,6 +206,19 @@ const MasterHoomroom: React.FC<{ masterId: number }> = ({ masterId }) => {
     history.push(HOMEROOM_LEARNING_LOGS)
   }
 
+  const [sbumitInstruction] = useMutation(createOrUpdateInstruction)
+  const handleInstructionSubmit = async () => {
+    await sbumitInstruction({
+      variables: {
+        createOrUpdateInstructions: {
+          instructions: instructions,
+          master_id: parseInt(masterInfo?.master_id),
+        },
+      },
+    })
+    setIsSetInstructions(false)
+  }
+
   return (
     <Box sx={{ p: 4, textAlign: 'left' }}>
       <Prompt
@@ -263,7 +290,7 @@ const MasterHoomroom: React.FC<{ masterId: number }> = ({ masterId }) => {
               Instructions
             </Typography>
             <Tooltip title='Edit' sx={{ marginLeft: '15px' }}>
-              <IconButton>
+              <IconButton onClick={() => setIsSetInstructions(true)}>
                 <EditIcon sx={{ color: '#4145FF' }} />
               </IconButton>
             </Tooltip>
@@ -331,6 +358,37 @@ const MasterHoomroom: React.FC<{ masterId: number }> = ({ masterId }) => {
           <MthTable items={tableData} loading={false} fields={fields} checkBoxColor='secondary' />
         </Box>
       </Card>
+      <Modal
+        open={isSetInstructions}
+        onClose={() => setIsSetInstructions(false)}
+        aria-labelledby='modal-modal-title'
+        aria-describedby='modal-modal-description'
+      >
+        <Box sx={masterUseStyles.modalRoot}>
+          <Box>
+            <Subtitle size='medium' fontWeight='600' sx={{ marginBottom: '30px' }}>
+              Instructions
+            </Subtitle>
+            <MthBulletEditor value={instructions} setValue={(value) => setInstructions(value)} />
+          </Box>
+          <Box sx={masterUseStyles.btnGroup}>
+            <Button
+              sx={{ ...mthButtonClasses.roundXsGray, padding: '20px 60px' }}
+              type='button'
+              onClick={() => setIsSetInstructions(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              sx={{ ...mthButtonClasses.roundXsDark, padding: '20px 60px' }}
+              type='button'
+              onClick={handleInstructionSubmit}
+            >
+              Save
+            </Button>
+          </Box>
+        </Box>
+      </Modal>
     </Box>
   )
 }

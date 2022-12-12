@@ -4,6 +4,7 @@ import SearchIcon from '@mui/icons-material/Search'
 import { Box, Button, Card, InputAdornment, OutlinedInput } from '@mui/material'
 import { map } from 'lodash'
 import moment from 'moment'
+import { useHistory } from 'react-router-dom'
 import { MthTable } from '@mth/components/MthTable'
 import { MthTableField } from '@mth/components/MthTable/types'
 import { Pagination } from '@mth/components/Pagination/Pagination'
@@ -20,6 +21,7 @@ import { emailScheduleMutation, getSchedulesQuery, scheduleCountQuery } from '..
 import { FiltersProps, EmailTemplateVM, ScheduleFilterVM, ScheduleCount, TableData } from '../type'
 
 export const ScheduleTable: React.FC<FiltersProps> = ({ filter, setFilter }) => {
+  const history = useHistory()
   const { me } = useContext(UserContext)
   const [emailTemplate, setEmailTemplate] = useState<EmailTemplateVM>()
   const [pageLoading, setPageLoading] = useState<boolean>(false)
@@ -165,7 +167,7 @@ export const ScheduleTable: React.FC<FiltersProps> = ({ filter, setFilter }) => 
   }, [countGroup])
 
   useEffect(() => {
-    setSort('status|ASC')
+    setSort('date|ASC')
     if (localStorage.getItem('currentPage')) {
       handlePageChange(Number(localStorage.getItem('currentPage')))
     }
@@ -273,21 +275,40 @@ export const ScheduleTable: React.FC<FiltersProps> = ({ filter, setFilter }) => 
     {
       key: 'date',
       label: 'Date',
-      sortable: false,
+      sortable: true,
       tdClass: '',
       width: '0',
     },
     {
       key: 'status',
       label: 'Status',
-      sortable: false,
+      sortable: true,
       tdClass: '',
       width: '0',
+      formatter: (item: MthTableField<unknown>) => {
+        return (
+          <Box
+            display={'flex'}
+            flexDirection='row'
+            justifyContent={'flex-start'}
+            flexWrap={'wrap'}
+            onClick={() => {
+              if (item.columns.status !== ScheduleStatus.NOT_SUBMITTED) {
+                history.push(`/enrollment/enrollment-schedule/${item.columns.studentId}`)
+              }
+            }}
+          >
+            <Box sx={{ cursor: item.columns.status === ScheduleStatus.NOT_SUBMITTED ? 'auto' : 'pointer' }}>
+              {item.columns.status}
+            </Box>
+          </Box>
+        )
+      },
     },
     {
       key: 'student',
       label: 'Student',
-      sortable: false,
+      sortable: true,
       tdClass: '',
       width: '0',
     },
@@ -301,7 +322,7 @@ export const ScheduleTable: React.FC<FiltersProps> = ({ filter, setFilter }) => 
     {
       key: 'parent',
       label: 'Parent',
-      sortable: false,
+      sortable: true,
       tdClass: '',
       width: '0',
     },
@@ -339,7 +360,12 @@ export const ScheduleTable: React.FC<FiltersProps> = ({ filter, setFilter }) => 
   }
 
   const onSortChange = (filedKey: string, order: string) => {
-    setSort(`${filedKey}|${order}`)
+    if (filedKey === 'date') {
+      setSort(`${filedKey}|${order.toLocaleLowerCase() === 'asc' ? 'desc' : 'asc'}`)
+    } else {
+      setSort(`${filedKey}|${order}`)
+    }
+
     refetch()
   }
 
@@ -468,7 +494,7 @@ export const ScheduleTable: React.FC<FiltersProps> = ({ filter, setFilter }) => 
           items={tableData}
           fields={fields}
           selectable={true}
-          checkBoxColor='secondary'
+          checkBoxColor='primary'
           onSelectionChange={onSelectionChange}
           onSortChange={onSortChange}
           isTableCellBorder={false}

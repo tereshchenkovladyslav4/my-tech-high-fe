@@ -1,6 +1,7 @@
 import React from 'react'
 import { CustomModal } from '@mth/components/CustomModal/CustomModals'
-import { EventType, HomeroomResourceModalProps } from '../types'
+import { CartEventType } from '@mth/enums'
+import { HomeroomResourceModalProps } from '../types'
 
 const HomeroomResourceModal: React.FC<HomeroomResourceModalProps> = ({
   showArchivedModal,
@@ -31,7 +32,7 @@ const HomeroomResourceModal: React.FC<HomeroomResourceModalProps> = ({
             setShowArchivedModal(false)
           }}
           onConfirm={() => {
-            handleChangeResourceStatus(EventType.ARCHIVE)
+            handleChangeResourceStatus(CartEventType.ARCHIVE)
             setShowArchivedModal(false)
           }}
         />
@@ -48,7 +49,7 @@ const HomeroomResourceModal: React.FC<HomeroomResourceModalProps> = ({
             setShowUnarchivedModal(false)
           }}
           onConfirm={() => {
-            handleChangeResourceStatus(EventType.RESTORE)
+            handleChangeResourceStatus(CartEventType.RESTORE)
             setShowUnarchivedModal(false)
           }}
         />
@@ -64,7 +65,7 @@ const HomeroomResourceModal: React.FC<HomeroomResourceModalProps> = ({
             setShowAllowModal(false)
           }}
           onConfirm={() => {
-            handleChangeResourceStatus(EventType.ALLOW_REQUEST)
+            handleChangeResourceStatus(CartEventType.ALLOW_REQUEST)
             setShowAllowModal(false)
           }}
         />
@@ -80,7 +81,7 @@ const HomeroomResourceModal: React.FC<HomeroomResourceModalProps> = ({
             setShowDisallowModal(false)
           }}
           onConfirm={() => {
-            handleChangeResourceStatus(EventType.DISALLOW_REQUEST)
+            handleChangeResourceStatus(CartEventType.DISALLOW_REQUEST)
             setShowDisallowModal(false)
           }}
         />
@@ -102,7 +103,7 @@ const HomeroomResourceModal: React.FC<HomeroomResourceModalProps> = ({
             setShowDeleteModal(false)
           }}
           onConfirm={() => {
-            handleChangeResourceStatus(EventType.DELETE)
+            handleChangeResourceStatus(CartEventType.DELETE)
             setShowDeleteModal(false)
           }}
         />
@@ -118,7 +119,7 @@ const HomeroomResourceModal: React.FC<HomeroomResourceModalProps> = ({
             setShowCloneModal(false)
           }}
           onConfirm={() => {
-            handleChangeResourceStatus(EventType.DUPLICATE)
+            handleChangeResourceStatus(CartEventType.DUPLICATE)
             setShowCloneModal(false)
           }}
         />

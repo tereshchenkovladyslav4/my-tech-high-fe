@@ -5,11 +5,12 @@ import { Box, Card, Grid } from '@mui/material'
 import { useFormikContext } from 'formik'
 import { sortBy } from 'lodash'
 import { MthCheckboxList } from '@mth/components/MthCheckboxList'
+import { CheckBoxListVM } from '@mth/components/MthCheckboxList/MthCheckboxList'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { MthColor } from '@mth/enums'
-import { useCurrentGradeAndProgramByRegionId } from '@mth/hooks'
+import { useCurrentGradeAndProgramByRegionId, useCurrentSchoolYearByRegionId, useProviders } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
-import { defaultProviderList, defaultUserList } from '../defaultValue'
+import { defaultUserList } from '../defaultValue'
 import { calendarClassess } from '../styles'
 import { EventFormData, FilterComponentProps } from '../types'
 import { addEventClassess } from './styles'
@@ -32,6 +33,8 @@ const FilterComponent: React.FC<FilterComponentProps> = ({
   const { programYearList, gradeList, schoolPartnerList, testPreference } = useCurrentGradeAndProgramByRegionId(
     Number(me?.selectedRegionId),
   )
+  const { data: currentSchoolYear } = useCurrentSchoolYearByRegionId(Number(me?.selectedRegionId))
+  const { providers: providerList } = useProviders(currentSchoolYear?.school_year_id ?? 0)
 
   const [expand, setExpand] = useState<boolean>(true)
   const [showOtherFilters, setShowOtherFilters] = useState(false)
@@ -39,7 +42,19 @@ const FilterComponent: React.FC<FilterComponentProps> = ({
   const [sortedGradeList, setSortedGradeList] = useState<string[]>([])
 
   const [selectAll, setSelectAll] = useState(false)
+  const [curriculumProviders, setCurriculumProviders] = useState<CheckBoxListVM[]>([])
 
+  useEffect(() => {
+    if (providerList && providerList.length > 0) {
+      setCurriculumProviders(
+        providerList
+          .filter((p) => p.is_display)
+          .map((obj) => {
+            return { label: obj.name, value: obj.id.toString() }
+          }),
+      )
+    }
+  }, [providerList])
   useEffect(() => {
     if (selectAll && programYearList && schoolPartnerList && gradeList) {
       setFieldValue('grades', ['all', ...sortedGradeList.map(({ value }) => value)])
@@ -194,7 +209,7 @@ const FilterComponent: React.FC<FilterComponentProps> = ({
                   setProviders(value)
                   setIsChanged(true)
                 }}
-                checkboxLists={defaultProviderList}
+                checkboxLists={curriculumProviders}
                 haveSelectAll={false}
               />
             </Box>

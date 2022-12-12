@@ -5,12 +5,21 @@ import { Box, Button, Card, Checkbox, FormControlLabel, Grid } from '@mui/materi
 import { map, capitalize } from 'lodash'
 import { useHistory } from 'react-router-dom'
 import { getSchoolDistrictsByRegionId } from '@mth/graphql/queries/school-district'
+import { useProviders } from '@mth/hooks'
 import { Paragraph } from '../../../../components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
 import { UserContext } from '../../../../providers/UserContext/UserProvider'
 import { BUTTON_LINEAR_GRADIENT, MTHBLUE, RED_GRADIENT, GRADES, GRADE_GROUPS } from '../../../../utils/constants'
 import { toOrdinalSuffix } from '../../../../utils/stringHelpers'
-import { FiltersProps, SchoolPartner, YEAR_STATUS, SchoolDistrictType, FilterVM, OptionType } from '../type'
+import {
+  FiltersProps,
+  SchoolPartner,
+  YEAR_STATUS,
+  SchoolDistrictType,
+  FilterVM,
+  OptionType,
+  FilteredProviderType,
+} from '../type'
 
 export const Filters: FunctionComponent<FiltersProps> = ({
   filter,
@@ -29,8 +38,10 @@ export const Filters: FunctionComponent<FiltersProps> = ({
   const [schoolOfEnrollments, setSchoolOfEnrollments] = useState<string[]>([])
   const [previousSOE, setPreviousSOE] = useState<string[]>([])
   const [schoolDistrict, setSchoolDistrict] = useState<string[]>([])
-  const [curriculumProvider, setCurriculumProvider] = useState<string[]>([])
+  const [curriculumProvider, setCurriculumProvider] = useState<number[]>([])
+  const [providerList, setProviderList] = useState<FilteredProviderType[]>([])
 
+  const { providers } = useProviders(Number(selectedYear?.value) ?? 0)
   const { data: schoolDistrictsData } = useQuery(getSchoolDistrictsByRegionId, {
     variables: {
       regionId: me?.selectedRegionId,
@@ -40,11 +51,30 @@ export const Filters: FunctionComponent<FiltersProps> = ({
   })
 
   useEffect(() => {
+    if (providers?.length > 0) {
+      setProviderList(
+        providers
+          .filter((p) => p.is_display)
+          .map((obj) => {
+            return { id: obj.id, name: obj.name }
+          }),
+      )
+    } else {
+      setProviderList([])
+    }
+  }, [providers])
+
+  useEffect(() => {
     setGrades([])
     setYearStatus([])
     setSchoolOfEnrollments([])
     setSchoolDistrict([])
     setCurriculumProvider([])
+    setProviderList(
+      providers.map((obj) => {
+        return { id: obj.id, name: obj.name }
+      }),
+    )
   }, [selectedYear])
 
   const chevron = () =>
@@ -154,10 +184,11 @@ export const Filters: FunctionComponent<FiltersProps> = ({
   }
 
   const handleCurriculumProvider = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (curriculumProvider.includes(e.target.value)) {
-      setCurriculumProvider(curriculumProvider.filter((i) => i !== e.target.value))
+    const providerValue = +e.target.value
+    if (curriculumProvider.includes(providerValue)) {
+      setCurriculumProvider(curriculumProvider.filter((i) => i !== providerValue))
     } else {
-      setCurriculumProvider([...curriculumProvider, e.target.value])
+      setCurriculumProvider([...curriculumProvider, providerValue])
     }
   }
 
@@ -169,6 +200,7 @@ export const Filters: FunctionComponent<FiltersProps> = ({
       schoolOfEnrollments,
       schoolDistrict,
       yearStatus,
+      curriculumProviders: curriculumProvider,
     })
     // setExpand(false)
     // const state = {
@@ -430,20 +462,20 @@ export const Filters: FunctionComponent<FiltersProps> = ({
             <Paragraph size='large' fontWeight='700'>
               Curriculum Provider
             </Paragraph>
-            {['CfA', 'Spark', 'Snow'].map((item, index) => (
+            {providerList.map((item, index) => (
               <FormControlLabel
                 sx={{ height: 30 }}
                 key={index}
                 control={
                   <Checkbox
-                    value={item}
-                    checked={curriculumProvider.includes(item)}
+                    value={item.id}
+                    checked={curriculumProvider.includes(item.id)}
                     onChange={handleCurriculumProvider}
                   />
                 }
                 label={
                   <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
-                    {item}
+                    {item.name}
                   </Paragraph>
                 }
               />

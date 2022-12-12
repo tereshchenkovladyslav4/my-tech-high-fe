@@ -22,7 +22,7 @@ import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { BUTTON_LINEAR_GRADIENT } from '../../../../utils/constants'
 import { searchTeacher } from '../services'
-import { useStyles } from '../styles'
+import { useStyles as masterStyle } from '../styles'
 import { Classes, Master, Teacher } from './types'
 
 type CreateTeacherModalProps = {
@@ -43,8 +43,7 @@ export const CreateTeacherModal: FunctionComponent<CreateTeacherModalProps> = ({
   handleClose,
   selectedClasses,
 }) => {
-  const classes = useStyles
-
+  const classes = masterStyle
   const { me } = useContext(UserContext)
 
   const [primarySearchListView, setPrimarySearchListView] = useState(false)

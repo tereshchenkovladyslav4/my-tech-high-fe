@@ -40,25 +40,30 @@ const UpdatesRequired: React.FC<UpdatesRequiredProps> = ({
     if (body && scheduleData?.length && standardResponse) {
       const options = JSON.parse(standardResponse)
       let newBody = body
-      scheduleData.map((schedule) => {
-        if (schedule.standardResponseOptions) {
-          newBody += `\n<p><strong>Period ${schedule.period}</strong></p>`
-        }
-        options?.map((option: { title: string; text: string }) => {
-          if (schedule.standardResponseOptions && schedule.standardResponseOptions.split(',').includes(option.title)) {
-            newBody += `<ul><li>${extractContent(option.text)}</li></ul>`
+      scheduleData
+        ?.filter((item) => requireUpdatePeriods?.includes(`${item?.Period?.id}`))
+        .map((schedule) => {
+          if (schedule.standardResponseOptions) {
+            newBody += `\n<p><strong>Period ${schedule.period}</strong></p>`
           }
+          options?.map((option: { title: string; text: string }, index: number) => {
+            if (
+              schedule.standardResponseOptions &&
+              schedule.standardResponseOptions.split(',').includes(`${index}_${option.title}`)
+            ) {
+              newBody += `<ul><li>${extractContent(option.text)}</li></ul>`
+            }
+          })
         })
-      })
       setStandardResponseOptions(
-        options?.map((option: { title: string }) => ({
+        options?.map((option: { title: string }, index: number) => ({
           label: option.title,
-          value: option.title,
+          value: `${index}_${option.title}`,
         })),
       )
       setEmailBody(newBody)
     }
-  }, [scheduleData, body, standardResponse])
+  }, [scheduleData, body, standardResponse, requireUpdatePeriods])
   return (
     <Card sx={{ ...scheduleBuilderClass.main, paddingLeft: '30px' }}>
       <Subtitle size='medium' textAlign='left' fontWeight='700'>

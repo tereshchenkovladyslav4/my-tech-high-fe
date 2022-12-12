@@ -32,14 +32,16 @@ const ResourceDetails: React.FC<ResourceDetailsProps> = ({ item, handleBack, onC
             <Typography sx={{ fontWeight: 600, fontSize: 16, color: MthColor.SYSTEM_06, mt: 1, mb: 2 }}>
               {renderGrades(item.grades)}
             </Typography>
-            <Link
-              href={item.website}
-              target='_blank'
-              underline='hover'
-              sx={{ fontWeight: 600, fontSize: 27, color: MthColor.MTHBLUE }}
-            >
-              {item.website}
-            </Link>
+            {item.website && (
+              <Link
+                href={item.website}
+                target='_blank'
+                underline='hover'
+                sx={{ fontWeight: 600, fontSize: 27, color: MthColor.MTHBLUE }}
+              >
+                {item.website}
+              </Link>
+            )}
             {item.RequestStatus === ResourceRequestStatus.ACCEPTED ||
               (item.subtitle === ResourceSubtitle.INCLUDED && (
                 <Box
@@ -51,22 +53,28 @@ const ResourceDetails: React.FC<ResourceDetailsProps> = ({ item, handleBack, onC
                     mt: 4,
                   }}
                 >
-                  <Box sx={{ mb: 3, flex: 1 }}>
-                    <Subtitle sx={{ fontSize: 14, fontWeight: 600, mb: 1 }}>Username</Subtitle>
-                    <TextField
-                      fullWidth
-                      value={item.std_user_name}
-                      InputProps={{ style: { fontSize: 14, fontWeight: 700 } }}
-                    />
-                  </Box>
-                  <Box sx={{ mb: 3, flex: 1 }}>
-                    <Subtitle sx={{ fontSize: 14, fontWeight: 600, mb: 1 }}>Password</Subtitle>
-                    <TextField
-                      fullWidth
-                      value={item.std_password}
-                      InputProps={{ style: { fontSize: 14, fontWeight: 700 } }}
-                    />
-                  </Box>
+                  {item.std_user_name && (
+                    <Box sx={{ mb: 3, flex: 1 }}>
+                      <Subtitle sx={{ fontSize: 14, fontWeight: 600, mb: 1 }}>Username</Subtitle>
+                      <TextField
+                        fullWidth
+                        disabled
+                        value={item.std_user_name}
+                        InputProps={{ style: { fontSize: 14, fontWeight: 700 } }}
+                      />
+                    </Box>
+                  )}
+                  {item.std_password && (
+                    <Box sx={{ mb: 3, flex: 1 }}>
+                      <Subtitle sx={{ fontSize: 14, fontWeight: 600, mb: 1 }}>Password</Subtitle>
+                      <TextField
+                        fullWidth
+                        disabled
+                        value={item.std_password}
+                        InputProps={{ style: { fontSize: 14, fontWeight: 700 } }}
+                      />
+                    </Box>
+                  )}
                 </Box>
               ))}
           </Grid>

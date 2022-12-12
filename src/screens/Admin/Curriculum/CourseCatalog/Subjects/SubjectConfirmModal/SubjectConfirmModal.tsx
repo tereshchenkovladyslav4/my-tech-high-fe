@@ -1,6 +1,7 @@
 import React from 'react'
 import { CustomModal } from '@mth/components/CustomModal/CustomModals'
-import { EventType, SubjectConfirmModalProps } from '../types'
+import { CartEventType } from '@mth/enums'
+import { SubjectConfirmModalProps } from '../types'
 
 const SubjectConfirmModal: React.FC<SubjectConfirmModalProps> = ({
   showArchivedModal,
@@ -25,7 +26,7 @@ const SubjectConfirmModal: React.FC<SubjectConfirmModalProps> = ({
             setShowArchivedModal(false)
           }}
           onConfirm={() => {
-            handleChangeSubjectStatus(EventType.ARCHIVE)
+            handleChangeSubjectStatus(CartEventType.ARCHIVE)
             setShowArchivedModal(false)
           }}
         />
@@ -42,7 +43,7 @@ const SubjectConfirmModal: React.FC<SubjectConfirmModalProps> = ({
             setShowUnarchivedModal(false)
           }}
           onConfirm={() => {
-            handleChangeSubjectStatus(EventType.UNARCHIVE)
+            handleChangeSubjectStatus(CartEventType.UNARCHIVE)
             setShowUnarchivedModal(false)
           }}
         />
@@ -59,7 +60,7 @@ const SubjectConfirmModal: React.FC<SubjectConfirmModalProps> = ({
             setShowDeleteModal(false)
           }}
           onConfirm={() => {
-            handleChangeSubjectStatus(EventType.DELETE)
+            handleChangeSubjectStatus(CartEventType.DELETE)
             setShowDeleteModal(false)
           }}
         />

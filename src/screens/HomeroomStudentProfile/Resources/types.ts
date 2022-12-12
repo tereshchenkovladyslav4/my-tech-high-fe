@@ -1,13 +1,5 @@
-import { ResourceRequestStatus } from '@mth/enums'
-
-export enum EventType {
-  HIDE = 'hide',
-  UN_HIDE = 'unHide',
-  ADD_CART = 'addCart',
-  REMOVE_CART = 'removeCart',
-  CLICK = 'click',
-  DETAILS = 'details',
-}
+import { CartEventType } from '@mth/enums'
+import { HomeroomResource } from '@mth/models'
 
 export enum ResourcePage {
   ROOT = 'root',
@@ -15,61 +7,25 @@ export enum ResourcePage {
   DETAILS = 'details',
 }
 
-export type ResourceLevel = {
-  resource_level_id: number
-  limit: number | null
-  name: string
-  TotalRequests: number
-}
-
-export type Resource = {
-  resource_id?: number
-  SchoolYearId: number
-  title: string
-  image: string
-  subtitle: string
-  price: number
-  website: string
-  grades: string
-  resource_limit?: number | null
-  std_user_name: string
-  std_password: string
-  detail: string
-  add_resource_level: boolean
-  ResourceLevels: ResourceLevel[]
-  family_resource: boolean
-  priority: number
-  is_active: boolean
-  allow_request: boolean
-  CartDate: Date
-  TotalRequests: number
-  WaitListConfirmed: boolean
-  ResourceLevelId?: number
-  HiddenByStudent: boolean
-  RequestStatus: ResourceRequestStatus
-  // Temp field
-  background?: string
-}
-
 export interface ResourceCardProps {
-  item: Resource
+  item: HomeroomResource
   page?: ResourcePage
-  onAction?: (evtType: EventType) => void
+  onAction?: (evtType: CartEventType) => void
 }
 
 export interface ResourceCartBarProps {
-  resourcesInCart: Resource[]
-  handleChangeResourceStatus: (resource: Resource, eventType: EventType) => void
+  resourcesInCart: HomeroomResource[]
+  handleChangeResourceStatus: (resource: HomeroomResource, eventType: CartEventType) => void
   setPage: (value: ResourcePage) => void
 }
 
 export interface ResourceRequestProps {
   currentStudentId: number
-  resourcesInCart: Resource[]
+  resourcesInCart: HomeroomResource[]
   setPage: (value: ResourcePage) => void
-  handleChangeResourceStatus: (resource: Resource, eventType: EventType) => void
+  handleChangeResourceStatus: (resource: HomeroomResource, eventType: CartEventType) => void
   refetch: () => void
-  goToDetails: (item: Resource) => void
+  goToDetails: (item: HomeroomResource) => void
 }
 
 export interface ResourceConfirmProps {
@@ -81,17 +37,17 @@ export interface ResourceConfirmProps {
 export interface ResourceModalProps {
   showHideModal: boolean
   setShowHideModal: (value: boolean) => void
-  handleChangeResourceStatus: (eventType: EventType) => void
+  handleChangeResourceStatus: (eventType: CartEventType) => void
 }
 
 export interface WaitListModalProps {
-  joinWaitlistResources: Resource[]
-  handleChangeResourceStatus: (resource: Resource, eventType: EventType) => void
+  joinWaitlistResources: HomeroomResource[]
+  handleChangeResourceStatus: (resource: HomeroomResource, eventType: CartEventType) => void
   isAllDone: () => void
 }
 
 export interface ResourceDetailsProps {
-  item: Resource
+  item: HomeroomResource
   handleBack: () => void
-  onCardAction: (evtType: EventType) => void
+  onCardAction: (evtType: CartEventType) => void
 }

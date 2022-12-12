@@ -1,7 +1,8 @@
 import { Theme, makeStyles } from '@material-ui/core/styles'
-export const useStyles = makeStyles((theme: Theme) => ({
+export const assignmentStyle = makeStyles((theme: Theme) => ({
   root: {
     display: 'flex',
+    alignItems: 'center',
     flexDirection: 'column',
     gap: '10px',
     '& .btn-action': {

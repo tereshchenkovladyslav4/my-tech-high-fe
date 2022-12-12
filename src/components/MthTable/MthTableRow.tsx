@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { TableCell, TableRow, styled, Collapse, Typography, TableBody, Table } from '@mui/material'
 import { Draggable, DraggableProvided } from 'react-beautiful-dnd'
-import { useHistory } from 'react-router-dom'
 import { MthCheckbox } from '@mth/components/MthCheckbox'
 import { MthColor } from '@mth/enums'
 import { convertWidth } from '@mth/utils'
@@ -63,7 +62,6 @@ const MthTableRow = <T extends unknown>({
   isTableCellBorder = true,
 }: MthTableRowProps<T>): React.ReactElement => {
   const [isExpanded, setIsExpanded] = useState<boolean>(false)
-  const history = useHistory()
   const renderDraggableTableRow = (isSelectable: boolean, provided: DraggableProvided, item: MthTableRowItem<T>) => {
     return (
       <TableRow
@@ -83,12 +81,6 @@ const MthTableRow = <T extends unknown>({
         </TableCell>
       </TableRow>
     )
-  }
-
-  const handleCellClick = (key: string, studentId: number) => {
-    if (key === 'status') {
-      history.push(`/enrollment/enrollment-schedule/${studentId}`)
-    }
   }
 
   const renderGeneralTableRow = (
@@ -116,9 +108,7 @@ const MthTableRow = <T extends unknown>({
               width={convertWidth(field.width || 0, tableWidth)}
               sx={{
                 color: getColor(field.key, item.columns[field.key] as string)?.toString(),
-                cursor: field.key === 'status' ? 'pointer' : 'auto',
               }}
-              onClick={() => handleCellClick(field.key, item.columns.studentId as number)}
             >
               <div
                 className={

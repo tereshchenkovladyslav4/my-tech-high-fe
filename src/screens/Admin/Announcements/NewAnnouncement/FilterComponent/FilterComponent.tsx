@@ -4,9 +4,10 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { Box, Grid } from '@mui/material'
 import { map } from 'lodash'
 import { MthCheckboxList } from '@mth/components/MthCheckboxList'
+import { CheckBoxListVM } from '@mth/components/MthCheckboxList/MthCheckboxList'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { MthColor } from '@mth/enums'
-import { useCurrentGradeAndProgramByRegionId } from '@mth/hooks'
+import { useCurrentGradeAndProgramByRegionId, useCurrentSchoolYearByRegionId, useProviders } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { defaultUserList } from '../../../Calendar/defaultValue'
 
@@ -21,11 +22,13 @@ type FilterComponentProps = {
   programYears: string[]
   schoolPartners: string[]
   others: string[]
+  providers: string[]
   gradesInvalid: boolean
   usersInvalid: boolean
   schoolPartnersInvalid: boolean
   programYearsInvalid: boolean
   setOthers: (value: string[]) => void
+  setProviders: (value: string[]) => void
   setUsers: (value: string[]) => void
   setGrades: (value: string[]) => void
   setGradesInvalid: (value: boolean) => void
@@ -44,7 +47,9 @@ const FilterComponent: React.FC<FilterComponentProps> = ({
   gradesInvalid,
   usersInvalid,
   others,
+  providers,
   setOthers,
+  setProviders,
   setUsers,
   setGrades,
   setGradesInvalid,
@@ -56,10 +61,26 @@ const FilterComponent: React.FC<FilterComponentProps> = ({
 }) => {
   const { me } = useContext(UserContext)
 
+  const { data: currentSchoolYear } = useCurrentSchoolYearByRegionId(Number(me?.selectedRegionId))
+  const { providers: providerList } = useProviders(currentSchoolYear?.school_year_id ?? 0)
+
   const [selectAll, setSelectAll] = useState(false)
+  const [curriculumProviders, setCurriculumProviders] = useState<CheckBoxListVM[]>([])
 
   useEffect(() => {
-    setSelectAll(users.includes('1') || users.includes('2'))
+    if (providerList && providerList.length > 0) {
+      setCurriculumProviders(
+        providerList
+          .filter((p) => p.is_display)
+          .map((obj) => {
+            return { label: obj.name, value: obj.id.toString() }
+          }),
+      )
+    }
+  }, [providerList])
+
+  useEffect(() => {
+    setSelectAll(users?.includes('1') || users?.includes('2'))
   }, [users])
 
   useEffect(() => {
@@ -193,6 +214,16 @@ const FilterComponent: React.FC<FilterComponentProps> = ({
                   setOthers(value)
                 }}
                 checkboxLists={otherList}
+                haveSelectAll={false}
+              />
+
+              <MthCheckboxList
+                title={'Providers'}
+                values={providers}
+                setValues={(value) => {
+                  setProviders(value)
+                }}
+                checkboxLists={curriculumProviders}
                 haveSelectAll={false}
               />
             </>

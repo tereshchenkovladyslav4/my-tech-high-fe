@@ -26,6 +26,15 @@ const UpdatesRequiredPeriods: React.FC<UpdatesRequiredPeriodsProps> = ({
     }
   }
 
+  const renderStandardResponseOption = (options: string): string => {
+    const renderedOptions = options?.split(',')?.map((option) => {
+      return standardResponseOptions
+        ?.filter((item) => item?.value === option)
+        .map((standardOption) => standardOption?.label)
+    })
+    return renderedOptions?.join(',')
+  }
+
   return (
     <Box sx={{ marginTop: 3, paddingX: 3 }}>
       <Subtitle size='medium' textAlign='left' fontWeight='700'>
@@ -53,7 +62,7 @@ const UpdatesRequiredPeriods: React.FC<UpdatesRequiredPeriodsProps> = ({
                       )
                       handleResponseChangeValue(item, filteredResponse)
                     }}
-                    renderValue={item.standardResponseOptions}
+                    renderValue={renderStandardResponseOption(item.standardResponseOptions || '')}
                     defaultValue={item.standardResponseOptions?.length ? item.standardResponseOptions.split(',') : []}
                   />
                 </Box>

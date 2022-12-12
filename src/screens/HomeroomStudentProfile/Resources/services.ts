@@ -1,5 +1,5 @@
 import { gql } from '@apollo/client'
-import { Resource } from '@mth/screens/HomeroomStudentProfile/Resources/types'
+import { HomeroomResource } from '@mth/models'
 
 export const getActiveHomeroomResourceSchoolYearsQuery = gql`
   query ActiveHomeroomResourceSchoolYears($studentId: Int!) {
@@ -65,7 +65,7 @@ export const requestResourcesMutation = gql`
   }
 `
 
-export const isFullResource = (resource: Resource): boolean => {
+export const isFullResource = (resource: HomeroomResource): boolean => {
   const resourceLevel = resource.ResourceLevels?.find(
     (resourceLevel) => resourceLevel.resource_level_id == resource.ResourceLevelId,
   )
@@ -73,10 +73,10 @@ export const isFullResource = (resource: Resource): boolean => {
   return (
     (!!resource.resource_limit && resource.resource_limit <= resource.TotalRequests) ||
     (!!limitSum && limitSum <= resource.TotalRequests) ||
-    (!!resourceLevel?.limit && resourceLevel?.limit <= resourceLevel?.TotalRequests)
+    (!!resourceLevel?.limit && !!resourceLevel?.TotalRequests && resourceLevel?.limit <= resourceLevel?.TotalRequests)
   )
 }
 
-export const shouldConfirmWaitlist = (resource: Resource): boolean => {
+export const shouldConfirmWaitlist = (resource: HomeroomResource): boolean => {
   return !resource.WaitListConfirmed && isFullResource(resource)
 }

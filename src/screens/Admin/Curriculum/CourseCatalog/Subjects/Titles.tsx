@@ -10,7 +10,7 @@ import { MthTable } from '@mth/components/MthTable'
 import { MthTableField, MthTableRowItem } from '@mth/components/MthTable/types'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { DIPLOMA_SEEKING_PATH_ITEMS } from '@mth/constants'
-import { MthColor } from '@mth/enums'
+import { CartEventType, MthColor } from '@mth/enums'
 import {
   cloneTitleMutation,
   createOrUpdateTitleMutation,
@@ -18,7 +18,7 @@ import {
 } from '@mth/screens/Admin/Curriculum/CourseCatalog/services'
 import TitleConfirmModal from '@mth/screens/Admin/Curriculum/CourseCatalog/Subjects/TitleConfirmModl/TitleConfirmModal'
 import { TitleEdit } from '@mth/screens/Admin/Curriculum/CourseCatalog/Subjects/TitleEdit'
-import { EventType, Title, TitlesProps } from '@mth/screens/Admin/Curriculum/CourseCatalog/Subjects/types'
+import { Title, TitlesProps } from '@mth/screens/Admin/Curriculum/CourseCatalog/Subjects/types'
 import { gradeShortText } from '@mth/utils'
 
 const Titles: React.FC<TitlesProps> = ({ schoolYearId, schoolYearData, subject, showArchived = false, refetch }) => {
@@ -310,22 +310,22 @@ const Titles: React.FC<TitlesProps> = ({ schoolYearId, schoolYearData, subject, 
           setShowDeleteModal={setShowDeleteModal}
           handleChangeTitleStatus={async (eventType) => {
             switch (eventType) {
-              case EventType.ARCHIVE: {
+              case CartEventType.ARCHIVE: {
                 setShowArchivedModal(false)
                 await handleToggleActive(selectedTitle)
                 break
               }
-              case EventType.UNARCHIVE: {
+              case CartEventType.UNARCHIVE: {
                 setShowUnarchivedModal(false)
                 await handleToggleActive(selectedTitle)
                 break
               }
-              case EventType.DELETE: {
+              case CartEventType.DELETE: {
                 setShowDeleteModal(false)
                 await handleDelete(selectedTitle)
                 break
               }
-              case EventType.DUPLICATE: {
+              case CartEventType.DUPLICATE: {
                 setShowCloneModal(false)
                 await handleClone(selectedTitle)
                 break

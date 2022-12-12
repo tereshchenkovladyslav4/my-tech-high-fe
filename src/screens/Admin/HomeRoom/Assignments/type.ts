@@ -80,6 +80,7 @@ export type EnrollmentSchoolTableProps = {
   selectedYear?: DropDownItem
   setSelectedYear: (value: DropDownItem) => void
   previousYear?: schoolYearDataType
+  currentHomeroomes: OptionType[]
 }
 
 export type EmailTemplateVM = {

@@ -9,6 +9,7 @@ export const getAnnouncementsQuery = gql`
       filter_grades
       filter_users
       filter_others
+      filter_providers
       posted_by
       schedule_time
       status
@@ -25,6 +26,7 @@ export const CreateAnnouncementMutation = gql`
       date
       filter_grades
       filter_users
+      filter_provider
       status
       subject
       posted_by
@@ -39,6 +41,7 @@ export const UpdateAnnouncementMutation = gql`
       date
       filter_grades
       filter_users
+      filter_providers
       status
       subject
       posted_by

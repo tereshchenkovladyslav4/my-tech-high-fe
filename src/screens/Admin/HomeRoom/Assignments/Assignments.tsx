@@ -26,9 +26,9 @@ export const Assignments: React.FC = () => {
   const [previousYear, setPreviousYear] = useState<schoolYearDataType>()
 
   const [specEd, setSpecEd] = useState<string[]>([])
-  const [currentHomeroomes, setCurrentHomeroomes] = useState([])
-  const [prevHomeroomes, setPrevHomeroomes] = useState([])
-  const [providers, setProviders] = useState([])
+  const [currentHomeroomes, setCurrentHomeroomes] = useState<OptionType[]>([])
+  const [prevHomeroomes, setPrevHomeroomes] = useState<OptionType[]>([])
+  const [providers, setProviders] = useState<OptionType[]>([])
 
   const { data: schoolPartnerData } = useQuery(GetSchoolsPartner, {
     variables: {
@@ -228,7 +228,8 @@ export const Assignments: React.FC = () => {
             schoolYears={schoolYears}
             selectedYear={selectedYear}
             setSelectedYear={setSelectedYear}
-            previousYear={[]}
+            previousYear={previousYear}
+            currentHomeroomes={currentHomeroomes}
           />
         </Grid>
       </Grid>

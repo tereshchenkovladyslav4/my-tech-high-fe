@@ -63,7 +63,7 @@ export const HomeroomGrade: React.FC<HomeroomGradeProps> = ({ schoolYears, mainT
           display: 'flex',
           flexDirection: 'row',
           textAlign: 'center',
-          right: '-160px',
+          right: '-142px',
           top: 'calc(50% - 15px)',
           width: '150px',
           height: '30px',
@@ -93,9 +93,9 @@ export const HomeroomGrade: React.FC<HomeroomGradeProps> = ({ schoolYears, mainT
 
   const settings = () => ({
     className: 'slider variable-width',
-    infinite: false,
+    infinite: true,
     speed: 500,
-    slidesToShow: 6,
+    slidesToShow: 5,
     slidesToScroll: 1,
     nextArrow: <SampleNextArrow />,
     prevArrow: <SamplePrevArrow />,
@@ -148,7 +148,7 @@ export const HomeroomGrade: React.FC<HomeroomGradeProps> = ({ schoolYears, mainT
       mapStudentsToTodoList()
     }
   }, [filteredStudents, mainTodoList])
-
+  const sliderWidth = Math.max(studentsCnt, 1) * 100 > 600 ? 600 : Math.max(studentsCnt, 1) * 100
   return (
     <Card style={{ borderRadius: 12 }}>
       <Box
@@ -180,11 +180,7 @@ export const HomeroomGrade: React.FC<HomeroomGradeProps> = ({ schoolYears, mainT
             <Box
               className='dynamic-box'
               sx={{
-                minWidth:
-                  windowDimensions.width > 792
-                    ? Math.max(studentsCnt, 3) * 100 + 'px'
-                    : Math.min(studentsCnt, 4.5) * 100 + 'px',
-                mr: '20px',
+                width: windowDimensions.width > 792 ? sliderWidth + 'px' : Math.min(studentsCnt, 4.5) * 100 + 'px',
               }}
             >
               <style dangerouslySetInnerHTML={{ __html: '.slick-track {display: flex;}' }} />

@@ -1,8 +1,8 @@
 import { gql } from '@apollo/client'
 
-export const getStudents = gql`
-  query studentsForSOE($skip: Int, $take: Int, $filter: StudentFilters, $sort: String, $search: String) {
-    studentsForSOE(skip: $skip, take: $take, filter: $filter, sort: $sort, search: $search) {
+export const getStudentsForHoomroom = gql`
+  query studentsForHoomeroom($skip: Int, $take: Int, $filter: StudentHomeroomFilters, $sort: String, $search: String) {
+    studentsForHoomeroom(skip: $skip, take: $take, filter: $filter, sort: $sort, search: $search) {
       results {
         grade_levels {
           school_year_id

@@ -3,14 +3,15 @@ import EastIcon from '@mui/icons-material/East'
 import { Box, Card, CardMedia, Stack, Typography } from '@mui/material'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { s3URL } from '@mth/constants'
+import { HomeroomResource } from '@mth/models'
 import { shouldConfirmWaitlist } from '../services'
-import { Resource, ResourceCartBarProps, ResourcePage } from '../types'
+import { ResourceCartBarProps, ResourcePage } from '../types'
 import { WaitListModal } from '../WaitListModal'
 
 const ResourceCartBar: React.FC<ResourceCartBarProps> = ({ resourcesInCart, handleChangeResourceStatus, setPage }) => {
   const SHOW_CART_LIMIT = 5
   const MAX_TITLE_LENGTH = 3
-  const [joinWaitlistResources, setJoinWaitlistResources] = useState<Resource[]>([])
+  const [joinWaitlistResources, setJoinWaitlistResources] = useState<HomeroomResource[]>([])
 
   const checkWaitList = () => {
     const filteredResources = resourcesInCart.filter((item) => shouldConfirmWaitlist(item))

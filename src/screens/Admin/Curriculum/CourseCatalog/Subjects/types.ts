@@ -1,15 +1,8 @@
 import { DropDownItem } from '@mth/components/DropDown/types'
 import { CheckBoxListVM } from '@mth/components/MthCheckboxList/MthCheckboxList'
-import { DiplomaSeekingPath, ReduceFunds } from '@mth/enums'
+import { CartEventType, DiplomaSeekingPath, ReduceFunds } from '@mth/enums'
 import { ScheduleBuilder } from '@mth/hooks'
 import { SchoolYear } from '@mth/models'
-
-export enum EventType {
-  ARCHIVE = 'archive',
-  UNARCHIVE = 'unarchive',
-  DELETE = 'delete',
-  DUPLICATE = 'duplicate',
-}
 
 export type Subject = {
   subject_id: number
@@ -110,7 +103,7 @@ export interface SubjectConfirmModalProps {
   setShowUnarchivedModal: (value: boolean) => void
   showDeleteModal: boolean
   setShowDeleteModal: (value: boolean) => void
-  handleChangeSubjectStatus: (eventType: EventType) => void
+  handleChangeSubjectStatus: (eventType: CartEventType) => void
 }
 
 export interface TitleConfirmModalProps {
@@ -122,5 +115,5 @@ export interface TitleConfirmModalProps {
   setShowCloneModal: (value: boolean) => void
   showDeleteModal: boolean
   setShowDeleteModal: (value: boolean) => void
-  handleChangeTitleStatus: (eventType: EventType) => void
+  handleChangeTitleStatus: (eventType: CartEventType) => void
 }

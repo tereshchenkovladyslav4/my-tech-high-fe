@@ -2,11 +2,11 @@ import React, { useState } from 'react'
 import { Box, Button, Dialog, DialogTitle, DialogActions } from '@mui/material'
 import { DropDown } from '@mth/components/DropDown/DropDown'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
-import { Resource } from '@mth/screens/HomeroomStudentProfile/Resources/types'
+import { HomeroomResource } from '@mth/models'
 import { resourceLevelsClasses } from './styles'
 
 export interface ResourceLevelSelectorProps {
-  resource: Resource
+  resource: HomeroomResource
   handleCancel: () => void
   handleSelect: (resourceLevelId: number) => void
 }

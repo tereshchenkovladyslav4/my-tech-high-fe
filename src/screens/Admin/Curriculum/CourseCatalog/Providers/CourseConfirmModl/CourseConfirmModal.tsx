@@ -1,6 +1,7 @@
 import React from 'react'
 import { CustomModal } from '@mth/components/CustomModal/CustomModals'
-import { CourseConfirmModalProps, EventType } from '../types'
+import { CartEventType } from '@mth/enums'
+import { CourseConfirmModalProps } from '../types'
 
 const CourseConfirmModal: React.FC<CourseConfirmModalProps> = ({
   showArchivedModal,
@@ -26,7 +27,7 @@ const CourseConfirmModal: React.FC<CourseConfirmModalProps> = ({
             setShowArchivedModal(false)
           }}
           onConfirm={() => {
-            onConfirm(EventType.ARCHIVE)
+            onConfirm(CartEventType.ARCHIVE)
             setShowArchivedModal(false)
           }}
         />
@@ -42,7 +43,7 @@ const CourseConfirmModal: React.FC<CourseConfirmModalProps> = ({
             setShowUnarchivedModal(false)
           }}
           onConfirm={() => {
-            onConfirm(EventType.UNARCHIVE)
+            onConfirm(CartEventType.UNARCHIVE)
             setShowUnarchivedModal(false)
           }}
         />
@@ -59,7 +60,7 @@ const CourseConfirmModal: React.FC<CourseConfirmModalProps> = ({
             setShowDeleteModal(false)
           }}
           onConfirm={() => {
-            onConfirm(EventType.DELETE)
+            onConfirm(CartEventType.DELETE)
             setShowDeleteModal(false)
           }}
         />
@@ -75,7 +76,7 @@ const CourseConfirmModal: React.FC<CourseConfirmModalProps> = ({
             setShowCloneModal(false)
           }}
           onConfirm={() => {
-            onConfirm(EventType.DUPLICATE)
+            onConfirm(CartEventType.DUPLICATE)
             setShowCloneModal(false)
           }}
         />

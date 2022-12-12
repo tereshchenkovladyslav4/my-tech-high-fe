@@ -13,9 +13,10 @@ import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { REMOVE_FAMILY_RESOURCE, s3URL } from '@mth/constants'
 import { ResourceSubtitle } from '@mth/enums'
 import { useProgramYearListBySchoolYearId } from '@mth/hooks'
+import { HomeroomResource } from '@mth/models'
 import { renderGrades } from '@mth/utils'
 import { homeroomResourcesClasses } from '../styles'
-import { HomeroomResource, HomeroomResourceFormProps } from '../types'
+import { HomeroomResourceFormProps } from '../types'
 import { ResourceLevels } from './ResourceLevels'
 
 const HomeroomResourceForm: React.FC<HomeroomResourceFormProps> = ({ schoolYearId, setIsChanged }) => {

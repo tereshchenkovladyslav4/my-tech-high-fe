@@ -1,6 +1,7 @@
 import React from 'react'
 import { CustomModal } from '@mth/components/CustomModal/CustomModals'
-import { EventType, TitleConfirmModalProps } from '../types'
+import { CartEventType } from '@mth/enums'
+import { TitleConfirmModalProps } from '../types'
 
 const TitleConfirmModal: React.FC<TitleConfirmModalProps> = ({
   showArchivedModal,
@@ -26,7 +27,7 @@ const TitleConfirmModal: React.FC<TitleConfirmModalProps> = ({
             setShowArchivedModal(false)
           }}
           onConfirm={() => {
-            handleChangeTitleStatus(EventType.ARCHIVE)
+            handleChangeTitleStatus(CartEventType.ARCHIVE)
             setShowArchivedModal(false)
           }}
         />
@@ -42,7 +43,7 @@ const TitleConfirmModal: React.FC<TitleConfirmModalProps> = ({
             setShowUnarchivedModal(false)
           }}
           onConfirm={() => {
-            handleChangeTitleStatus(EventType.UNARCHIVE)
+            handleChangeTitleStatus(CartEventType.UNARCHIVE)
             setShowUnarchivedModal(false)
           }}
         />
@@ -59,7 +60,7 @@ const TitleConfirmModal: React.FC<TitleConfirmModalProps> = ({
             setShowDeleteModal(false)
           }}
           onConfirm={() => {
-            handleChangeTitleStatus(EventType.DELETE)
+            handleChangeTitleStatus(CartEventType.DELETE)
             setShowDeleteModal(false)
           }}
         />
@@ -75,7 +76,7 @@ const TitleConfirmModal: React.FC<TitleConfirmModalProps> = ({
             setShowCloneModal(false)
           }}
           onConfirm={() => {
-            handleChangeTitleStatus(EventType.DUPLICATE)
+            handleChangeTitleStatus(CartEventType.DUPLICATE)
             setShowCloneModal(false)
           }}
         />

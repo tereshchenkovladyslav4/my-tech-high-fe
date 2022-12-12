@@ -10,10 +10,10 @@ import { MthTable } from '@mth/components/MthTable'
 import { MthTableField, MthTableRowItem } from '@mth/components/MthTable/types'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { DIPLOMA_SEEKING_PATH_ITEMS } from '@mth/constants'
-import { MthColor, ReduceFunds } from '@mth/enums'
+import { CartEventType, MthColor, ReduceFunds } from '@mth/enums'
 import { CourseConfirmModal } from '@mth/screens/Admin/Curriculum/CourseCatalog/Providers/CourseConfirmModl'
 import { CourseEdit } from '@mth/screens/Admin/Curriculum/CourseCatalog/Providers/CourseEdit'
-import { Course, CoursesProps, EventType } from '@mth/screens/Admin/Curriculum/CourseCatalog/Providers/types'
+import { Course, CoursesProps } from '@mth/screens/Admin/Curriculum/CourseCatalog/Providers/types'
 import {
   cloneCourseMutation,
   createOrUpdateCourseMutation,
@@ -302,19 +302,19 @@ const Courses: React.FC<CoursesProps> = ({ schoolYearId, schoolYearData, provide
           setShowDeleteModal={setShowDeleteModal}
           onConfirm={async (eventType) => {
             switch (eventType) {
-              case EventType.ARCHIVE: {
+              case CartEventType.ARCHIVE: {
                 await handleToggleActive(selectedCourse)
                 break
               }
-              case EventType.UNARCHIVE: {
+              case CartEventType.UNARCHIVE: {
                 await handleToggleActive(selectedCourse)
                 break
               }
-              case EventType.DELETE: {
+              case CartEventType.DELETE: {
                 await handleDelete(selectedCourse)
                 break
               }
-              case EventType.DUPLICATE: {
+              case CartEventType.DUPLICATE: {
                 await handleClone(selectedCourse)
                 break
               }

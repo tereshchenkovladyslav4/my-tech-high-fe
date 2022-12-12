@@ -5,12 +5,13 @@ import { Form, Formik } from 'formik'
 import { Prompt } from 'react-router-dom'
 import * as yup from 'yup'
 import { CustomModal } from '@mth/components/CustomModal/CustomModals'
-import { RICH_TEXT_VALID_MIN_LENGTH, SNOWPACK_PUBLIC_S3_URL, urlRex } from '@mth/constants'
+import { RICH_TEXT_VALID_MIN_LENGTH, SNOWPACK_PUBLIC_S3_URL } from '@mth/constants'
 import { MthColor, MthTitle, ResourceSubtitle } from '@mth/enums'
+import { HomeroomResource } from '@mth/models'
 import { defaultHomeroomFormData } from '../../defaultValues'
 import { createOrUpdateResourceMutation } from '../../services'
 import { HeaderComponent } from '../HeaderComponent'
-import { HomeroomResource, HomeroomResourceEditProps, HomeroomResourcePage } from '../types'
+import { HomeroomResourceEditProps, HomeroomResourcePage } from '../types'
 import HomeroomResourceForm from './HomeroomResourceForm'
 import { editHomeroomResourceClasses } from './styles'
 
@@ -55,10 +56,7 @@ const HomeroomResourceEdit: React.FC<HomeroomResourceEditProps> = ({
         then: yup.number().required('Price Required').moreThan(0, 'Should be greater than 0').positive('Price Invalid'),
       })
       .nullable(),
-    website: yup.string().required('Website Required').matches(urlRex, 'Invalid URL').nullable(),
     grades: yup.string().required('At least one Grade Level must be selected'),
-    std_user_name: yup.string().required('Username Required').nullable(),
-    std_password: yup.string().required('Password Required').nullable(),
     detail: yup
       .string()
       .required('Description Required')

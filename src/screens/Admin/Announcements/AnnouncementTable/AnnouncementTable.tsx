@@ -69,6 +69,7 @@ const AnnouncementTable: React.FC<AnnouncementTableProps> = ({ setAnnouncement }
             filterGrades: announcement.filter_grades,
             filterUsers: announcement.filter_users,
             filterOthers: announcement.filter_others,
+            filterProviders: announcement.filter_providers,
             regionId: announcement.RegionId,
             body: announcement.body,
             scheduleTime: announcement.schedule_time,

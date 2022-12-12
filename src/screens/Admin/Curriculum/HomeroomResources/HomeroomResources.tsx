@@ -7,17 +7,19 @@ import moment from 'moment'
 import { useHistory } from 'react-router-dom'
 import { arrayMove, SortableContainer, SortableElement } from 'react-sortable-hoc'
 import { DropDown } from '@mth/components/DropDown/DropDown'
-import { MthColor } from '@mth/enums'
+import { CartEventType, MthColor } from '@mth/enums'
 import { getResourcesQuery } from '@mth/graphql/queries/resource'
 import { useSchoolYearsByRegionId } from '@mth/hooks'
+import { HomeroomResource } from '@mth/models'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
+import { ResourceDetails } from '@mth/screens/HomeroomStudentProfile/Resources/ResourceDetails'
 import { defaultHomeroomFormData } from '../defaultValues'
 import { createOrUpdateResourceMutation, deleteResourceMutation } from '../services'
 import { ConfirmationDetails } from './ConfirmationDetails'
 import { HomeroomResourceCard } from './HomeroomResourceCard'
 import { HomeroomResourceEdit } from './HomeroomResourceEdit'
 import { HomeroomResourceModal } from './HomeroomResourceModal'
-import { EventType, HomeroomResource, HomeroomResourceCardProps, HomeroomResourcePage } from './types'
+import { HomeroomResourceCardProps, HomeroomResourcePage } from './types'
 
 export const HomeroomResources: React.FC = () => {
   const { me } = useContext(UserContext)
@@ -66,11 +68,11 @@ export const HomeroomResources: React.FC = () => {
     return !!selectedSchoolYear && moment().isAfter(selectedSchoolYear.date_end)
   }
 
-  const handleChangeResourceStatus = async (resource: HomeroomResource | undefined, eventType: EventType) => {
+  const handleChangeResourceStatus = async (resource: HomeroomResource | undefined, eventType: CartEventType) => {
     if (resource) {
       switch (eventType) {
-        case EventType.ARCHIVE:
-        case EventType.RESTORE:
+        case CartEventType.ARCHIVE:
+        case CartEventType.RESTORE:
           await updateResource({
             variables: {
               createResourceInput: {
@@ -81,8 +83,8 @@ export const HomeroomResources: React.FC = () => {
             },
           })
           break
-        case EventType.ALLOW_REQUEST:
-        case EventType.DISALLOW_REQUEST:
+        case CartEventType.ALLOW_REQUEST:
+        case CartEventType.DISALLOW_REQUEST:
           await updateResource({
             variables: {
               createResourceInput: {
@@ -92,14 +94,14 @@ export const HomeroomResources: React.FC = () => {
             },
           })
           break
-        case EventType.DELETE:
+        case CartEventType.DELETE:
           await deleteResource({
             variables: {
               resourceId: Number(resource.resource_id),
             },
           })
           break
-        case EventType.DUPLICATE:
+        case CartEventType.DUPLICATE:
           await updateResource({
             variables: {
               createResourceInput: {
@@ -174,42 +176,42 @@ export const HomeroomResources: React.FC = () => {
           action={!(!hasPermission() || item.resource_id == 0)}
           setPage={setPage}
           isPast={isPast()}
-          onAction={(evtType: EventType) => {
+          onAction={(evtType: CartEventType) => {
             setSelectedHomeroomResource(item)
             switch (evtType) {
-              case EventType.ADD: {
+              case CartEventType.ADD: {
                 setPage(HomeroomResourcePage.EDIT)
                 break
               }
-              case EventType.EDIT: {
+              case CartEventType.EDIT: {
                 setPage(HomeroomResourcePage.EDIT)
                 break
               }
-              case EventType.CLICK: {
-                if (item.website) window.open(item.website, '_blank')
+              case CartEventType.CLICK: {
+                setPage(HomeroomResourcePage.DETAIL)
                 break
               }
-              case EventType.ARCHIVE: {
+              case CartEventType.ARCHIVE: {
                 setShowArchivedModal(true)
                 break
               }
-              case EventType.RESTORE: {
+              case CartEventType.RESTORE: {
                 setShowUnarchivedModal(true)
                 break
               }
-              case EventType.ALLOW_REQUEST: {
+              case CartEventType.ALLOW_REQUEST: {
                 setShowAllowModal(true)
                 break
               }
-              case EventType.DISALLOW_REQUEST: {
+              case CartEventType.DISALLOW_REQUEST: {
                 setShowDisallowModal(true)
                 break
               }
-              case EventType.DELETE: {
+              case CartEventType.DELETE: {
                 setShowDeleteModal(true)
                 break
               }
-              case EventType.DUPLICATE: {
+              case CartEventType.DUPLICATE: {
                 setShowCloneModal(true)
               }
             }
@@ -316,6 +318,13 @@ export const HomeroomResources: React.FC = () => {
           stateName={stateName}
           setPage={setPage}
           refetch={refetch}
+        />
+      )}
+      {page === HomeroomResourcePage.DETAIL && selectedHomeroomResource && (
+        <ResourceDetails
+          item={selectedHomeroomResource}
+          handleBack={() => setPage(HomeroomResourcePage.ROOT)}
+          onCardAction={(evtType: CartEventType) => handleChangeResourceStatus(selectedHomeroomResource, evtType)}
         />
       )}
       {page === HomeroomResourcePage.CONFIRMATION_DETAILS && <ConfirmationDetails setPage={setPage} />}

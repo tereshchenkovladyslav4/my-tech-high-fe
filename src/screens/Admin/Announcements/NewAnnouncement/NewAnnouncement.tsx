@@ -36,6 +36,7 @@ const NewAnnouncement: FunctionComponent<NewAnnouncementProps> = ({ announcement
   const [programYears, setProgramYears] = useState<string[]>([])
   const [schoolPartners, setSchoolPartners] = useState<string[]>([])
   const [others, setOthers] = useState<string[]>([])
+  const [providers, setProviders] = useState<string[]>([])
   const defaultEmail = ''
   const [editorState, setEditorState] = useState(
     EditorState.createWithContent(ContentState.createFromText(defaultEmail)),
@@ -131,6 +132,7 @@ const NewAnnouncement: FunctionComponent<NewAnnouncementProps> = ({ announcement
             filter_program_years: JSON.stringify(programYears),
             filter_school_partners: JSON.stringify(schoolPartners),
             filter_others: JSON.stringify(others),
+            filter_providers: JSON.stringify(providers),
             status: status,
             subject: subject,
             RegionId: me?.selectedRegionId,
@@ -154,6 +156,7 @@ const NewAnnouncement: FunctionComponent<NewAnnouncementProps> = ({ announcement
             filter_program_years: JSON.stringify(programYears),
             filter_school_partners: JSON.stringify(schoolPartners),
             filter_others: JSON.stringify(others),
+            filter_providers: JSON.stringify(providers),
             status: status,
             subject: subject,
             RegionId: me?.selectedRegionId,
@@ -191,6 +194,7 @@ const NewAnnouncement: FunctionComponent<NewAnnouncementProps> = ({ announcement
       setGrades(JSON.parse(announcement?.filterGrades || ''))
       setUsers(JSON.parse(announcement?.filterUsers || ''))
       setOthers(announcement?.filterOthers ? JSON.parse(announcement?.filterOthers) : [])
+      setProviders(announcement?.filterProviders ? JSON.parse(announcement?.filterProviders) : [])
       setSubject(announcement?.subject || '')
       setIsArchived(!!announcement?.isArchived)
       if (announcement.body) {
@@ -244,6 +248,8 @@ const NewAnnouncement: FunctionComponent<NewAnnouncementProps> = ({ announcement
                 schoolPartnersInvalid={schoolPartnersInvalid}
                 programYearsInvalid={programYearsInvalid}
                 others={others}
+                providers={providers}
+                setProviders={setProviders}
                 setOthers={setOthers}
                 setUsers={setUsers}
                 setGrades={setGrades}

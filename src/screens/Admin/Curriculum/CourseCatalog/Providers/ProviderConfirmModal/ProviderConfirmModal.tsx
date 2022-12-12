@@ -1,6 +1,7 @@
 import React from 'react'
 import { CustomModal } from '@mth/components/CustomModal/CustomModals'
-import { EventType, ProviderConfirmModalProps } from '../types'
+import { CartEventType } from '@mth/enums'
+import { ProviderConfirmModalProps } from '../types'
 
 const ProviderConfirmModal: React.FC<ProviderConfirmModalProps> = ({
   showArchivedModal,
@@ -24,7 +25,7 @@ const ProviderConfirmModal: React.FC<ProviderConfirmModalProps> = ({
             setShowArchivedModal(false)
           }}
           onConfirm={() => {
-            onConfirm(EventType.ARCHIVE)
+            onConfirm(CartEventType.ARCHIVE)
             setShowArchivedModal(false)
           }}
         />
@@ -40,7 +41,7 @@ const ProviderConfirmModal: React.FC<ProviderConfirmModalProps> = ({
             setShowUnarchivedModal(false)
           }}
           onConfirm={() => {
-            onConfirm(EventType.UNARCHIVE)
+            onConfirm(CartEventType.UNARCHIVE)
             setShowUnarchivedModal(false)
           }}
         />
@@ -57,7 +58,7 @@ const ProviderConfirmModal: React.FC<ProviderConfirmModalProps> = ({
             setShowDeleteModal(false)
           }}
           onConfirm={() => {
-            onConfirm(EventType.DELETE)
+            onConfirm(CartEventType.DELETE)
             setShowDeleteModal(false)
           }}
         />

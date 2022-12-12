@@ -7,11 +7,11 @@ import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { REMOVE_FAMILY_RESOURCE } from '@mth/constants'
 import { MthColor } from '@mth/enums'
+import { HomeroomResource, ResourceLevel } from '@mth/models'
 import { mthButtonClasses } from '@mth/styles/button.style'
 import { commonClasses } from '@mth/styles/common.style'
 import { defaultResourceLevelFormData } from '../../../defaultValues'
 import { homeroomResourcesClasses } from '../../styles'
-import { HomeroomResource, ResourceLevel } from '../../types'
 
 type ResourceLevelsProps = {
   setIsChanged: (value: boolean) => void

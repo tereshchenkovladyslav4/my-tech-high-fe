@@ -1,7 +1,18 @@
 import React, { useEffect, useState, useMemo } from 'react'
-import { useQuery, useMutation } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 import SearchIcon from '@mui/icons-material/Search'
-import { Box, Button, Card, InputAdornment, OutlinedInput, Tooltip } from '@mui/material'
+import {
+  Box,
+  Button,
+  Card,
+  InputAdornment,
+  List,
+  ListItemButton,
+  ListItemText,
+  OutlinedInput,
+  TextField,
+  Tooltip,
+} from '@mui/material'
 import { toString } from 'lodash'
 import moment from 'moment'
 import { DropDown } from '@mth/components/DropDown/DropDown'
@@ -11,22 +22,21 @@ import { Field, ValueOf } from '@mth/components/Table/types'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { WarningModal } from '@mth/components/WarningModal/Warning'
 import { BLUE_GRDIENT, RED_GRADIENT } from '../../../../../utils/constants'
-import { assignStudentToSOEGql } from '../../../SiteManagement/services'
-import { getStudents } from '../services'
-import { useStyles } from '../styles'
-import { EnrollmentSchoolTableProps, YEAR_STATUS, StudentVM } from '../type'
+import { useStyles } from '../../styles'
+import { getStudentsForHoomroom } from '../services'
+import { assignmentStyle } from '../styles'
+import { EnrollmentSchoolTableProps, YEAR_STATUS, StudentVM, OptionType } from '../type'
 export const AssignmentTable: React.FC<EnrollmentSchoolTableProps> = ({
   filter,
   schoolYears,
   selectedYear,
   setSelectedYear,
   previousYear,
+  currentHomeroomes,
 }) => {
   const [pageLoading, setPageLoading] = useState<boolean>(false)
   const [searchField, setSearchField] = useState<string>('')
   const [openAlert, setOpenAlert] = useState<boolean>(false)
-  const [open, setOpen] = useState<boolean>(false)
-  const [message, setMessage] = useState<string>('')
   const [noStudentAlert, setNoStudentAlert] = useState<boolean>(false)
   const [paginationLimit, setPaginationLimit] = useState<number>(Number(localStorage.getItem('pageLimit')) || 25)
   const [sortField, setSortField] = useState<string>('student')
@@ -35,10 +45,13 @@ export const AssignmentTable: React.FC<EnrollmentSchoolTableProps> = ({
   const [totalApplications, setTotalApplications] = useState<number>()
   const [items, setItems] = useState<Array<StudentVM>>([])
   const [currentPage, setCurrentPage] = useState<number>(1)
-  const [schoolPartner, setSchoolPartner] = useState('')
   const [studentIds, setStudentIds] = useState<Array<ValueOf<StudentVM>>>([])
 
-  const [assignStudentToSOE] = useMutation(assignStudentToSOEGql)
+  const [isHomeroomList, setIsHomeroomList] = useState<boolean>(false)
+
+  const [searchHomeroomKeyword, setSearchHomeroomKeyword] = useState<string>('')
+  const [searchHomeroomList, setSearchHomeroomList] = useState<OptionType[]>(currentHomeroomes)
+  // const [selectedHomeroom, setSelHomeroom] = useState<OptionType>();
 
   const groupGrades = useMemo(() => {
     if (filter?.grades) {
@@ -46,7 +59,7 @@ export const AssignmentTable: React.FC<EnrollmentSchoolTableProps> = ({
     } else return []
   }, [filter])
 
-  const { data, refetch, loading } = useQuery(getStudents, {
+  const { data, loading } = useQuery(getStudentsForHoomroom, {
     variables: {
       skip,
       sort: `${sortField}|${sortOrder}`,
@@ -79,8 +92,8 @@ export const AssignmentTable: React.FC<EnrollmentSchoolTableProps> = ({
   useEffect(() => {
     if (data !== undefined) {
       setPageLoading(true)
-      const { studentsForSOE } = data
-      const { results, total } = studentsForSOE
+      const { studentsForHoomeroom } = data
+      const { results, total } = studentsForHoomeroom
       setItems(results)
       setTotalApplications(total)
     }
@@ -108,40 +121,6 @@ export const AssignmentTable: React.FC<EnrollmentSchoolTableProps> = ({
   const sortChangeAction = (property: string, order: 'desc' | 'asc') => {
     setSortField(property)
     setSortOrder(order)
-  }
-
-  const validAssignOrTransfer = () => {
-    let msg = ''
-    if (!studentIds.length) {
-      msg = 'No student(s) selected'
-    } else if (!schoolPartner) {
-      msg = 'No School of Enrollment selected'
-    }
-    if (msg) {
-      setMessage(msg)
-      setOpen(true)
-    }
-    return !msg
-  }
-
-  const handleAssignStudentToSOE = async () => {
-    if (!validAssignOrTransfer()) return
-    await assignStudentToSOE({
-      variables: {
-        assignStudentToSoeInput: {
-          school_partner_id: schoolPartner !== 'unassigned' ? parseInt(schoolPartner) : -1,
-          school_year_id: parseInt(selectedYear?.value as string),
-          student_ids: studentIds.map((item) => parseInt(item as string)),
-        },
-      },
-    })
-    setSchoolPartner('')
-    setItems([])
-    refetch()
-  }
-
-  const handleTransfer = () => {
-    if (!validAssignOrTransfer()) return
   }
 
   const fields: Field<StudentVM>[] = useMemo(() => {
@@ -193,7 +172,7 @@ export const AssignmentTable: React.FC<EnrollmentSchoolTableProps> = ({
         label: 'Parent',
         sortable: true,
         tdClass: 'fw-400',
-        formatter: (parent) => {
+        formatter: ({ parent }) => {
           return `${parent?.person?.last_name}, ${parent?.person?.first_name}`
         },
       },
@@ -202,8 +181,8 @@ export const AssignmentTable: React.FC<EnrollmentSchoolTableProps> = ({
         label: current_Label,
         sortable: true,
         tdClass: 'fw-400',
-        formatter: (item) => {
-          return item.currentSoe?.[0]?.partner?.abbreviation || 'Unassigned'
+        formatter: () => {
+          return 'Unassigned'
         },
       },
     ]
@@ -213,8 +192,8 @@ export const AssignmentTable: React.FC<EnrollmentSchoolTableProps> = ({
         label: previous_Label,
         sortable: true,
         tdClass: 'fw-400',
-        formatter: (student) => {
-          return student.previousSoe?.[0]?.partner?.abbreviation || 'Unassigned'
+        formatter: () => {
+          return 'Unassigned'
         },
       })
     }
@@ -222,10 +201,26 @@ export const AssignmentTable: React.FC<EnrollmentSchoolTableProps> = ({
   }, [groupGrades, previousYear])
 
   const rowGroupBy: keyof StudentVM | undefined = useMemo(() => {
-    return filter?.yearStatus?.includes(YEAR_STATUS.SIBLING) ? ('parent_id' as keyof StudentVM) : undefined
+    return filter?.yearStatus?.includes(YEAR_STATUS.FAMILIES) ? ('parent_id' as keyof StudentVM) : undefined
   }, [filter?.yearStatus])
 
-  const classes = useStyles()
+  const classes = assignmentStyle()
+
+  const classesMaster = useStyles
+
+  const handleChangeSearch = (search: string) => {
+    setSearchHomeroomKeyword(search)
+    setSearchHomeroomList(
+      currentHomeroomes.filter((item: OptionType) => item.label.toLowerCase().indexOf(search.toLowerCase()) !== -1),
+    )
+  }
+
+  const handleListItemClick = (homeroom: OptionType) => {
+    // setSelHomeroom(homeroom)
+    setSearchHomeroomKeyword(homeroom.label)
+    setIsHomeroomList(false)
+  }
+
   return (
     <Card sx={{ paddingTop: '24px', marginBottom: '24px', paddingBottom: 5, px: 3 }}>
       {/*  Headers */}
@@ -296,17 +291,43 @@ export const AssignmentTable: React.FC<EnrollmentSchoolTableProps> = ({
             }}
           />
 
-          <DropDown
-            dropDownItems={[]}
-            alternate={true}
-            placeholder={'Select'}
-            defaultValue={''}
-            sx={{ width: '50%' }}
-            size='small'
-            setParentValue={(val) => {
-              setSchoolPartner(val as string)
-            }}
-          />
+          <Box position='relative' sx={{ flexGrow: 1 }}>
+            <TextField
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position='start'>
+                    <SearchIcon style={{ color: 'black' }} />
+                  </InputAdornment>
+                ),
+              }}
+              fullWidth
+              placeholder='Search'
+              onBlur={() => {
+                setIsHomeroomList(false)
+              }}
+              onFocus={() => {
+                setSearchHomeroomList(currentHomeroomes)
+                setIsHomeroomList(true)
+              }}
+              onChange={(e) => handleChangeSearch(e.target.value)}
+              value={searchHomeroomKeyword}
+              autoComplete='off'
+            />
+
+            {isHomeroomList && searchHomeroomList && searchHomeroomList.length > 0 && (
+              <Box sx={classesMaster.searchList}>
+                <List arial-label='main mailbox folders'>
+                  {searchHomeroomList
+                    .filter((item) => item.value !== 'all')
+                    .map((homeroom: OptionType) => (
+                      <ListItemButton key={homeroom.value} onClick={() => handleListItemClick(homeroom)}>
+                        <ListItemText primary={homeroom.label} />
+                      </ListItemButton>
+                    ))}
+                </List>
+              </Box>
+            )}
+          </Box>
 
           <Tooltip title='Assign School of Enrollment' placement='top'>
             <Button
@@ -320,7 +341,6 @@ export const AssignmentTable: React.FC<EnrollmentSchoolTableProps> = ({
                   background: BLUE_GRDIENT,
                 },
               }}
-              onClick={handleAssignStudentToSOE}
               className='btn-action'
             >
               Assign
@@ -341,7 +361,6 @@ export const AssignmentTable: React.FC<EnrollmentSchoolTableProps> = ({
                 },
               }}
               className='btn-action'
-              onClick={handleTransfer}
             >
               Transfer
             </Button>
@@ -400,15 +419,6 @@ export const AssignmentTable: React.FC<EnrollmentSchoolTableProps> = ({
           subtitle='No student(s) selected'
           btntitle='OK'
           handleSubmit={() => setNoStudentAlert(!noStudentAlert)}
-        />
-      )}
-      {open && (
-        <WarningModal
-          handleModem={() => setOpen(!open)}
-          title='Error'
-          subtitle={message}
-          btntitle='Ok'
-          handleSubmit={() => setOpen(!open)}
         />
       )}
     </Card>

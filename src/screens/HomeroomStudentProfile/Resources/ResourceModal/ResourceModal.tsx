@@ -1,6 +1,7 @@
 import React from 'react'
 import { CustomModal } from '@mth/components/CustomModal/CustomModals'
-import { EventType, ResourceModalProps } from '../types'
+import { CartEventType } from '@mth/enums'
+import { ResourceModalProps } from '../types'
 
 const ResourceModal: React.FC<ResourceModalProps> = ({
   showHideModal,
@@ -20,7 +21,7 @@ const ResourceModal: React.FC<ResourceModalProps> = ({
             setShowHideModal(false)
           }}
           onConfirm={() => {
-            handleChangeResourceStatus(EventType.HIDE)
+            handleChangeResourceStatus(CartEventType.HIDE)
             setShowHideModal(false)
           }}
         />

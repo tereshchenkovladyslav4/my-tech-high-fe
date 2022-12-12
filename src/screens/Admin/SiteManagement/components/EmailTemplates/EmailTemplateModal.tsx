@@ -29,6 +29,7 @@ import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
 import { getEnrollmentQuestionsGql } from '@mth/graphql/queries/enrollment-question'
 import { EmailTemplate } from '@mth/models'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
+import { mthButtonClasses } from '@mth/styles/button.style'
 import { useStyles } from './styles'
 import { StandardRes } from './types'
 
@@ -679,9 +680,9 @@ export const EmailTemplateModal: React.FC<EmailTemplateModalProps> = ({
                       </Grid>
                     </Box>
                   ))}
-                <Box sx={{ width: '100%', textAlign: 'right', marginTop: 4 }}>
+                <Box sx={{ width: '100%', marginTop: 4 }}>
                   <Grid item xs={12}>
-                    <Button className={classes.add} onClick={handleResponse}>
+                    <Button sx={{ ...mthButtonClasses.primary, float: 'right' }} onClick={handleResponse}>
                       <Add />
                       Add Response
                     </Button>
@@ -737,9 +738,8 @@ export const EmailTemplateModal: React.FC<EmailTemplateModalProps> = ({
                     </Grid>
                     <Grid item xs={12} sx={{ marginTop: '25px' }}>
                       <Button
-                        className={classes.add}
+                        sx={{ ...mthButtonClasses.primary, float: 'right' }}
                         onClick={() => handleGroupResponse(index)}
-                        style={{ color: MthColor.WHITE }}
                       >
                         <Add />
                         Add Response
@@ -843,9 +843,13 @@ export const EmailTemplateModal: React.FC<EmailTemplateModalProps> = ({
                     </Grid>
                   </Box>
                 ))}
-                <Box sx={{ width: '100%', textAlign: 'right', marginTop: reminders.length > 0 ? '0' : '16px' }}>
+                <Box sx={{ width: '100%', marginTop: reminders.length > 0 ? '0' : '16px' }}>
                   <Grid item xs={12}>
-                    <Button className={classes.add} onClick={handleAddReminder} style={{ color: MthColor.WHITE }}>
+                    <Button
+                      sx={{ ...mthButtonClasses.primary, float: 'right' }}
+                      onClick={handleAddReminder}
+                      style={{ color: MthColor.WHITE }}
+                    >
                       <Add />
                       Add Reminder
                     </Button>

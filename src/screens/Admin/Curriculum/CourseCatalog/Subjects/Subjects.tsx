@@ -10,7 +10,7 @@ import { Box, Button, Card, IconButton, Tooltip } from '@mui/material'
 import { MthTable } from '@mth/components/MthTable'
 import { MthTableField, MthTableRowItem } from '@mth/components/MthTable/types'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
-import { MthColor } from '@mth/enums'
+import { CartEventType, MthColor } from '@mth/enums'
 import { useSubjects } from '@mth/hooks'
 import { SchoolYear } from '@mth/models'
 import {
@@ -20,7 +20,7 @@ import {
 import { SubjectConfirmModal } from '@mth/screens/Admin/Curriculum/CourseCatalog/Subjects/SubjectConfirmModal'
 import { SubjectEdit } from '@mth/screens/Admin/Curriculum/CourseCatalog/Subjects/SubjectEdit'
 import Titles from '@mth/screens/Admin/Curriculum/CourseCatalog/Subjects/Titles'
-import { EventType, Subject } from '@mth/screens/Admin/Curriculum/CourseCatalog/Subjects/types'
+import { Subject } from '@mth/screens/Admin/Curriculum/CourseCatalog/Subjects/types'
 import { commonClasses } from '@mth/styles/common.style'
 import CourseCatalogHeader from '../Components/CourseCatalogHeader/CourseCatalogHeader'
 
@@ -315,17 +315,17 @@ const Subjects: React.FC = () => {
           setShowDeleteModal={setShowDeleteModal}
           handleChangeSubjectStatus={async (eventType) => {
             switch (eventType) {
-              case EventType.ARCHIVE: {
+              case CartEventType.ARCHIVE: {
                 setShowArchivedModal(false)
                 await handleToggleActive(selectedSubject)
                 break
               }
-              case EventType.UNARCHIVE: {
+              case CartEventType.UNARCHIVE: {
                 setShowUnarchivedModal(false)
                 await handleToggleActive(selectedSubject)
                 break
               }
-              case EventType.DELETE: {
+              case CartEventType.DELETE: {
                 setShowDeleteModal(false)
                 await handleDelete(selectedSubject)
                 break

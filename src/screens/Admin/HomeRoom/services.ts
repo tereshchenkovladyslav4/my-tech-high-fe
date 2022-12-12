@@ -28,6 +28,7 @@ export const GetMastersByIDGql = gql`
       master_id
       master_name
       school_year_id
+      instructions
     }
   }
 `
@@ -109,5 +110,11 @@ export const getAssignmentsByMasterIdgql = gql`
 export const updateMasterById = gql`
   mutation UpdateMaster($updateMaster: CreateNewMasterInput!) {
     updateMaster(updateMaster: $updateMaster)
+  }
+`
+
+export const createOrUpdateInstruction = gql`
+  mutation CreateOrUpdateInstructions($createOrUpdateInstructions: CreateOrUpdateInstructions!) {
+    createOrUpdateInstructions(createOrUpdateInstructions: $createOrUpdateInstructions)
   }
 `

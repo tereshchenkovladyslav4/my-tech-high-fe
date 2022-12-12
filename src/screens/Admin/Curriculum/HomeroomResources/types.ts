@@ -1,52 +1,11 @@
-import { SchoolYear } from '@mth/models'
-
-export enum EventType {
-  ADD = 'add',
-  ALLOW_REQUEST = 'allowRequest',
-  DISALLOW_REQUEST = 'disallowRequest',
-  ARCHIVE = 'archive',
-  CLICK = 'click',
-  DELETE = 'delete',
-  DUPLICATE = 'duplicate',
-  EDIT = 'edit',
-  RESTORE = 'restore',
-}
+import { CartEventType } from '@mth/enums'
+import { HomeroomResource, SchoolYear } from '@mth/models'
 
 export enum HomeroomResourcePage {
   ROOT = 'root',
   EDIT = 'edit',
   CONFIRMATION_DETAILS = 'confirmation-details',
-}
-
-export type ResourceLevel = {
-  resource_level_id: number
-  limit: number | null
-  name: string
-}
-
-export type HomeroomResource = {
-  resource_id?: number
-  SchoolYearId: number
-  title: string
-  image: string
-  subtitle: string
-  price: number
-  website: string
-  grades: string
-  resource_limit?: number | null
-  std_user_name: string
-  std_password: string
-  detail: string
-  add_resource_level: boolean
-  ResourceLevels: ResourceLevel[]
-  family_resource: boolean
-  priority: number
-  is_active: boolean
-  allow_request: boolean
-  software_reimbursement: boolean
-  // Temp field
-  file?: File
-  background?: string
+  DETAIL = 'detail',
 }
 
 export type ConfirmationDetails = {
@@ -57,7 +16,7 @@ export interface HomeroomResourceCardProps {
   action: boolean
   isPast: boolean
   setPage: (value: HomeroomResourcePage) => void
-  onAction?: (evtType: EventType) => void
+  onAction?: (evtType: CartEventType) => void
 }
 
 export interface HomeroomResourceModalProps {
@@ -73,7 +32,7 @@ export interface HomeroomResourceModalProps {
   setShowDisallowModal: (value: boolean) => void
   setShowDeleteModal: (value: boolean) => void
   setShowCloneModal: (value: boolean) => void
-  handleChangeResourceStatus: (eventType: EventType) => void
+  handleChangeResourceStatus: (eventType: CartEventType) => void
 }
 
 export interface HomeroomResourceEditProps {

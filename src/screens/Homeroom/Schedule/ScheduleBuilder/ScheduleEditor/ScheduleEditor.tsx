@@ -1103,7 +1103,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
           checkBoxColor='secondary'
           sx={scheduleBuilderClasses.customTable}
         />
-        {parentTooltip && scheduleStatus === ScheduleStatus.DRAFT && (
+        {parentTooltip && (
           <StyledTooltip
             title={parse(parentTooltip)}
             open={enableQuestionTooltip}

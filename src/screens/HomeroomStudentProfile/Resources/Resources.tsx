@@ -5,8 +5,8 @@ import { sortBy } from 'lodash'
 import moment from 'moment'
 import { DropDown } from '@mth/components/DropDown/DropDown'
 import { DropDownItem } from '@mth/components/DropDown/types'
-import { ResourceSubtitle } from '@mth/enums'
-import { SchoolYear } from '@mth/models'
+import { CartEventType, ResourceSubtitle } from '@mth/enums'
+import { HomeroomResource, ResourceLevel, SchoolYear } from '@mth/models'
 import { ResourceCard } from './ResourceCard'
 import { ResourceCartBar } from './ResourceCartBar'
 import { ResourceDetails } from './ResourceDetails'
@@ -20,7 +20,7 @@ import {
   toggleHiddenResourceMutation,
   toggleResourceCartMutation,
 } from './services'
-import { EventType, Resource, ResourceLevel, ResourcePage } from './types'
+import { ResourcePage } from './types'
 import { WaitListModal } from './WaitListModal'
 
 export const Resources: React.FC = () => {
@@ -28,10 +28,10 @@ export const Resources: React.FC = () => {
 
   const [page, setPage] = useState<ResourcePage>(ResourcePage.ROOT)
   const [prePage, setPrePage] = useState<ResourcePage>(ResourcePage.ROOT)
-  const [resources, setResources] = useState<Resource[]>([])
-  const [resourcesInCart, setResourcesInCart] = useState<Resource[]>([])
-  const [joinWaitlistResources, setJoinWaitlistResources] = useState<Resource[]>([])
-  const [selectedResource, setSelectedResource] = useState<Resource>()
+  const [resources, setResources] = useState<HomeroomResource[]>([])
+  const [resourcesInCart, setResourcesInCart] = useState<HomeroomResource[]>([])
+  const [joinWaitlistResources, setJoinWaitlistResources] = useState<HomeroomResource[]>([])
+  const [selectedResource, setSelectedResource] = useState<HomeroomResource>()
   const [selectedResourceLevel, setSelectedResourceLevel] = useState<ResourceLevel>()
   const [showHideModal, setShowHideModal] = useState<boolean>(false)
   const [showResourceLevelModal, setShowResourceLevelModal] = useState<boolean>(false)
@@ -58,15 +58,15 @@ export const Resources: React.FC = () => {
   const [toggleResourceCart, {}] = useMutation(toggleResourceCartMutation)
 
   const handleChangeResourceStatus = async (
-    resource: Resource | undefined,
-    eventType: EventType,
+    resource: HomeroomResource | undefined,
+    eventType: CartEventType,
     resourceLevelId?: number,
     waitlist_confirmed?: boolean,
   ) => {
     if (resource) {
       switch (eventType) {
-        case EventType.HIDE:
-        case EventType.UN_HIDE: {
+        case CartEventType.HIDE:
+        case CartEventType.UN_HIDE: {
           await toggleHiddenResource({
             variables: {
               toggleHiddenResourceInput: {
@@ -78,14 +78,14 @@ export const Resources: React.FC = () => {
           })
           break
         }
-        case EventType.ADD_CART:
-        case EventType.REMOVE_CART: {
+        case CartEventType.ADD_CART:
+        case CartEventType.REMOVE_CART: {
           await toggleResourceCart({
             variables: {
               toggleResourceCartInput: {
                 student_id: currentStudentId,
                 resource_id: Number(resource.resource_id),
-                inCart: eventType == EventType.ADD_CART,
+                inCart: eventType == CartEventType.ADD_CART,
                 resource_level_id: Number(resourceLevelId),
                 waitlist_confirmed,
               },
@@ -98,14 +98,10 @@ export const Resources: React.FC = () => {
     }
   }
 
-  const handleCardActions = async (resource: Resource, evtType: EventType) => {
+  const handleCardActions = async (resource: HomeroomResource, evtType: CartEventType) => {
     setSelectedResource(resource)
     switch (evtType) {
-      case EventType.CLICK: {
-        if (resource.website) window.open(resource.website, '_blank')
-        break
-      }
-      case EventType.ADD_CART: {
+      case CartEventType.ADD_CART: {
         if (resource.add_resource_level && resource.ResourceLevels?.length) {
           setShowResourceLevelModal(true)
         } else if (shouldConfirmWaitlist(resource)) {
@@ -115,23 +111,24 @@ export const Resources: React.FC = () => {
         }
         break
       }
-      case EventType.REMOVE_CART: {
+      case CartEventType.REMOVE_CART: {
         await handleChangeResourceStatus(resource, evtType)
         break
       }
-      case EventType.HIDE: {
+      case CartEventType.HIDE: {
         if (resource.RequestStatus && resource.subtitle === ResourceSubtitle.PRICE) {
           setShowHideModal(true)
         } else {
-          await handleChangeResourceStatus(resource, EventType.HIDE)
+          await handleChangeResourceStatus(resource, CartEventType.HIDE)
         }
         break
       }
-      case EventType.UN_HIDE: {
-        await handleChangeResourceStatus(resource, EventType.UN_HIDE)
+      case CartEventType.UN_HIDE: {
+        await handleChangeResourceStatus(resource, CartEventType.UN_HIDE)
         break
       }
-      case EventType.DETAILS: {
+      case CartEventType.CLICK:
+      case CartEventType.DETAILS: {
         setPage(ResourcePage.DETAILS)
         setPrePage(ResourcePage.ROOT)
         break
@@ -141,7 +138,7 @@ export const Resources: React.FC = () => {
 
   useEffect(() => {
     if (resources?.length) {
-      const items: Resource[] = sortBy(
+      const items: HomeroomResource[] = sortBy(
         resources.filter((item) => item.CartDate),
         'CartDate',
       ).reverse()
@@ -156,7 +153,7 @@ export const Resources: React.FC = () => {
   useEffect(() => {
     if (!loading && resourcesData) {
       const colors = ['blue', 'orange']
-      const { studentResources: resources }: { studentResources: Resource[] } = resourcesData
+      const { studentResources: resources }: { studentResources: HomeroomResource[] } = resourcesData
       resources?.filter((item) => !item.image).map((item, index) => (item.background = colors[index % 2]))
       setResources(resources || [])
     }
@@ -203,7 +200,7 @@ export const Resources: React.FC = () => {
           <Grid container padding={4} spacing={4}>
             {resources.map((item, idx) => (
               <Grid key={idx} item xs={4} paddingTop={4}>
-                <ResourceCard item={item} onAction={(evtType: EventType) => handleCardActions(item, evtType)} />
+                <ResourceCard item={item} onAction={(evtType: CartEventType) => handleCardActions(item, evtType)} />
               </Grid>
             ))}
           </Grid>
@@ -219,7 +216,7 @@ export const Resources: React.FC = () => {
             handleChangeResourceStatus(resource, eventType, resource.ResourceLevelId, true)
           }
           refetch={refetch}
-          goToDetails={(item: Resource) => {
+          goToDetails={(item: HomeroomResource) => {
             setSelectedResource(item)
             setPage(ResourcePage.DETAILS)
             setPrePage(ResourcePage.REQUEST)
@@ -231,7 +228,7 @@ export const Resources: React.FC = () => {
         <ResourceDetails
           item={selectedResource}
           handleBack={() => setPage(prePage)}
-          onCardAction={(evtType: EventType) => handleCardActions(selectedResource, evtType)}
+          onCardAction={(evtType: CartEventType) => handleCardActions(selectedResource, evtType)}
         />
       )}
 
@@ -248,7 +245,7 @@ export const Resources: React.FC = () => {
             if (shouldConfirmWaitlist({ ...selectedResource, ResourceLevelId: resourceLevelId })) {
               setJoinWaitlistResources([selectedResource])
             } else {
-              await handleChangeResourceStatus(selectedResource, EventType.ADD_CART, resourceLevelId)
+              await handleChangeResourceStatus(selectedResource, CartEventType.ADD_CART, resourceLevelId)
             }
           }}
         />

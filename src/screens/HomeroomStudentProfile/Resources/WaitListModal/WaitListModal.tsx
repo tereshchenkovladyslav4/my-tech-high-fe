@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { CustomModal } from '@mth/components/CustomModal/CustomModals'
-import { MthColor } from '@mth/enums'
-import { EventType, WaitListModalProps } from '../types'
+import { CartEventType, MthColor } from '@mth/enums'
+import { WaitListModalProps } from '../types'
 
 const WaitListModal: React.FC<WaitListModalProps> = ({
   joinWaitlistResources,
@@ -25,11 +25,11 @@ const WaitListModal: React.FC<WaitListModalProps> = ({
         confirmStr='Join Waitlist'
         backgroundColor={MthColor.WHITE}
         onClose={() => {
-          handleChangeResourceStatus(joinWaitlistResources[selectedIdx], EventType.REMOVE_CART)
+          handleChangeResourceStatus(joinWaitlistResources[selectedIdx], CartEventType.REMOVE_CART)
           setSelectedIdx((prev) => ++prev)
         }}
         onConfirm={() => {
-          handleChangeResourceStatus(joinWaitlistResources[selectedIdx], EventType.ADD_CART)
+          handleChangeResourceStatus(joinWaitlistResources[selectedIdx], CartEventType.ADD_CART)
           setSelectedIdx((prev) => ++prev)
         }}
       />

@@ -2,9 +2,11 @@ import React, { useEffect, useState } from 'react'
 import { useMutation } from '@apollo/client'
 import ArrowBackIosOutlinedIcon from '@mui/icons-material/ArrowBackIosOutlined'
 import { Box, ButtonBase, Grid, Stack, Typography } from '@mui/material'
+import { CartEventType } from '@mth/enums'
+import { HomeroomResource } from '@mth/models'
 import { ResourceCard } from '../ResourceCard'
 import { shouldConfirmWaitlist, requestResourcesMutation } from '../services'
-import { ResourceRequestProps, ResourcePage, EventType, Resource } from '../types'
+import { ResourceRequestProps, ResourcePage } from '../types'
 import { WaitListModal } from '../WaitListModal'
 import ResourceConfirm from './ResourceConfirm'
 
@@ -18,7 +20,7 @@ const ResourceRequest: React.FC<ResourceRequestProps> = ({
 }) => {
   const [totalPrice, setTotalPrice] = useState<number>(0)
   const [waitingRefetch, setWaitingRefetch] = useState<boolean>(false)
-  const [joinWaitlistResources, setJoinWaitlistResources] = useState<Resource[]>([])
+  const [joinWaitlistResources, setJoinWaitlistResources] = useState<HomeroomResource[]>([])
 
   const [requestResources, {}] = useMutation(requestResourcesMutation)
 
@@ -31,10 +33,10 @@ const ResourceRequest: React.FC<ResourceRequestProps> = ({
     }
   }
 
-  const removeInCart = (resource: Resource) => {
+  const removeInCart = (resource: HomeroomResource) => {
     const index = resourcesInCart.findIndex((item) => item.resource_id === resource.resource_id)
     if (index > -1) {
-      handleChangeResourceStatus(resource, EventType.REMOVE_CART)
+      handleChangeResourceStatus(resource, CartEventType.REMOVE_CART)
     }
     if (!resourcesInCart.length) {
       setPage(ResourcePage.ROOT)
@@ -96,17 +98,17 @@ const ResourceRequest: React.FC<ResourceRequestProps> = ({
             <ResourceCard
               page={ResourcePage.REQUEST}
               item={item}
-              onAction={(evtType: EventType) => {
+              onAction={(evtType: CartEventType) => {
                 switch (evtType) {
-                  case EventType.CLICK: {
+                  case CartEventType.CLICK: {
                     if (item.website) window.open(item.website, '_blank')
                     break
                   }
-                  case EventType.REMOVE_CART: {
+                  case CartEventType.REMOVE_CART: {
                     removeInCart(item)
                     break
                   }
-                  case EventType.DETAILS: {
+                  case CartEventType.DETAILS: {
                     goToDetails(item)
                     break
                   }

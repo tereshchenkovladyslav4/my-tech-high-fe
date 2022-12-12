@@ -9,7 +9,7 @@ import { Box, Button, Card, IconButton, Tooltip } from '@mui/material'
 import { MthTable } from '@mth/components/MthTable'
 import { MthTableField, MthTableRowItem } from '@mth/components/MthTable/types'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
-import { MthColor, ReduceFunds } from '@mth/enums'
+import { CartEventType, MthColor, ReduceFunds } from '@mth/enums'
 import { useProviders } from '@mth/hooks'
 import { SchoolYear } from '@mth/models'
 import Courses from '@mth/screens/Admin/Curriculum/CourseCatalog/Providers/Courses'
@@ -20,7 +20,6 @@ import {
   createOrUpdateProviderMutation,
   deleteProviderMutation,
 } from '@mth/screens/Admin/Curriculum/CourseCatalog/services'
-import { EventType } from '@mth/screens/Admin/Curriculum/CourseCatalog/Subjects/types'
 import { commonClasses } from '@mth/styles/common.style'
 import CourseCatalogHeader from '../Components/CourseCatalogHeader/CourseCatalogHeader'
 
@@ -274,15 +273,15 @@ const Providers: React.FC = () => {
           setShowDeleteModal={setShowDeleteModal}
           onConfirm={async (eventType) => {
             switch (eventType) {
-              case EventType.ARCHIVE: {
+              case CartEventType.ARCHIVE: {
                 await handleToggleActive(selectedProvider)
                 break
               }
-              case EventType.UNARCHIVE: {
+              case CartEventType.UNARCHIVE: {
                 await handleToggleActive(selectedProvider)
                 break
               }
-              case EventType.DELETE: {
+              case CartEventType.DELETE: {
                 await handleDelete(selectedProvider)
                 break
               }

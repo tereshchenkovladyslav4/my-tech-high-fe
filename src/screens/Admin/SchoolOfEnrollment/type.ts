@@ -19,6 +19,7 @@ export type FilterVM = {
   previousSOE?: string[]
   schoolDistrict?: string[]
   yearStatus?: YEAR_STATUS[]
+  curriculumProviders?: number[]
 }
 
 export type SchoolPartner = {
@@ -128,4 +129,9 @@ export type StudentVM = {
 export type SchoolDistrictType = {
   id: string
   school_district_name: string
+}
+
+export type FilteredProviderType = {
+  id: number
+  name: string
 }

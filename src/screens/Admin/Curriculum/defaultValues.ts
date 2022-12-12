@@ -1,4 +1,5 @@
-import { HomeroomResource, ResourceLevel } from './HomeroomResources/types'
+import { ResourceRequestStatus } from '@mth/enums'
+import { HomeroomResource, ResourceLevel } from '@mth/models'
 
 export const defaultHomeroomFormData: HomeroomResource = {
   resource_id: 0,
@@ -20,6 +21,11 @@ export const defaultHomeroomFormData: HomeroomResource = {
   is_active: false,
   allow_request: false,
   software_reimbursement: false,
+  CartDate: new Date(),
+  TotalRequests: 0,
+  WaitListConfirmed: false,
+  HiddenByStudent: false,
+  RequestStatus: ResourceRequestStatus.REQUESTED,
 }
 
 export const defaultResourceLevelFormData: ResourceLevel = {

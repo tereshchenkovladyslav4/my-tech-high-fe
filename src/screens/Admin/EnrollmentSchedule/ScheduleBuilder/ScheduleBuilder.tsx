@@ -184,9 +184,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
           }
         }
       }
-
       setIsChanged(false)
-
       if (status !== ScheduleStatus.NOT_SUBMITTED) {
         setTimeout(() => {
           history.push(ENROLLMENT_SCHEDULE)
@@ -403,6 +401,8 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
             editable: requireUpdatePeriods.includes(`${item?.Period?.id}`) ? true : item.editable,
             schedulePeriodStatus: requireUpdatePeriods.includes(`${item?.Period?.id}`)
               ? SchedulePeriodStatus.UPDATE_REQUIRED
+              : item.schedulePeriodStatus === SchedulePeriodStatus.UPDATE_REQUIRED
+              ? null
               : item.schedulePeriodStatus,
           })),
         )
@@ -413,6 +413,8 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
             editable: requireUpdatePeriods.includes(`${item?.Period?.id}`) ? true : item.editable,
             schedulePeriodStatus: requireUpdatePeriods.includes(`${item?.Period?.id}`)
               ? SchedulePeriodStatus.UPDATE_REQUIRED
+              : item.schedulePeriodStatus === SchedulePeriodStatus.UPDATE_REQUIRED
+              ? null
               : item.schedulePeriodStatus,
           })),
         )

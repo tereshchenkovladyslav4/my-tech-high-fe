@@ -10,8 +10,8 @@ import SystemUpdateAltRoundedIcon from '@mui/icons-material/SystemUpdateAltRound
 import { Box, Card, CardContent, CardMedia, IconButton, Stack, Tooltip, Typography } from '@mui/material'
 import { SortableHandle } from 'react-sortable-hoc'
 import { s3URL } from '@mth/constants'
-import { MthColor, ResourceSubtitle } from '@mth/enums'
-import { EventType, HomeroomResourceCardProps } from '../types'
+import { CartEventType, MthColor, ResourceSubtitle } from '@mth/enums'
+import { HomeroomResourceCardProps } from '../types'
 import { homeroomResourcesCardClasses } from './styles'
 
 const HomeroomResourceCard: React.FC<HomeroomResourceCardProps> = ({ item, action, isPast, onAction }) => {
@@ -23,7 +23,7 @@ const HomeroomResourceCard: React.FC<HomeroomResourceCardProps> = ({ item, actio
     </IconButton>
   ))
 
-  const actionHandler = (eventType: EventType) => {
+  const actionHandler = (eventType: CartEventType) => {
     if (onAction) onAction(eventType)
   }
 
@@ -38,7 +38,7 @@ const HomeroomResourceCard: React.FC<HomeroomResourceCardProps> = ({ item, actio
         boxShadow: 'none',
       }}
       onClick={() => {
-        if (item.is_active) actionHandler(EventType.CLICK)
+        if (item.is_active) actionHandler(CartEventType.CLICK)
       }}
     >
       {!!item.resource_id && (
@@ -75,7 +75,7 @@ const HomeroomResourceCard: React.FC<HomeroomResourceCardProps> = ({ item, actio
         <Tooltip title='Add'>
           <Stack
             onClick={(e) => {
-              actionHandler(EventType.ADD)
+              actionHandler(CartEventType.ADD)
               e.stopPropagation()
             }}
             sx={{
@@ -94,7 +94,7 @@ const HomeroomResourceCard: React.FC<HomeroomResourceCardProps> = ({ item, actio
         <Tooltip title='Delete'>
           <Stack
             onClick={(e) => {
-              actionHandler(EventType.DELETE)
+              actionHandler(CartEventType.DELETE)
               e.stopPropagation()
             }}
             sx={{
@@ -113,7 +113,7 @@ const HomeroomResourceCard: React.FC<HomeroomResourceCardProps> = ({ item, actio
         <Tooltip title={item.allow_request ? 'View Only' : 'Allow Request'}>
           <Stack
             onClick={(e) => {
-              actionHandler(item.allow_request ? EventType.DISALLOW_REQUEST : EventType.ALLOW_REQUEST)
+              actionHandler(item.allow_request ? CartEventType.DISALLOW_REQUEST : CartEventType.ALLOW_REQUEST)
               e.stopPropagation()
             }}
             sx={{
@@ -132,7 +132,7 @@ const HomeroomResourceCard: React.FC<HomeroomResourceCardProps> = ({ item, actio
         <Tooltip title='Clone'>
           <Stack
             onClick={(e) => {
-              actionHandler(EventType.DUPLICATE)
+              actionHandler(CartEventType.DUPLICATE)
               e.stopPropagation()
             }}
             sx={{
@@ -177,7 +177,7 @@ const HomeroomResourceCard: React.FC<HomeroomResourceCardProps> = ({ item, actio
                 <IconButton
                   sx={homeroomResourcesCardClasses.actionButton}
                   onClick={(e) => {
-                    actionHandler(EventType.EDIT)
+                    actionHandler(CartEventType.EDIT)
                     e.stopPropagation()
                   }}
                   disabled={!item.is_active}
@@ -190,7 +190,7 @@ const HomeroomResourceCard: React.FC<HomeroomResourceCardProps> = ({ item, actio
                   <IconButton
                     sx={homeroomResourcesCardClasses.actionButton}
                     onClick={(e) => {
-                      actionHandler(EventType.ARCHIVE)
+                      actionHandler(CartEventType.ARCHIVE)
                       e.stopPropagation()
                     }}
                   >
@@ -203,7 +203,7 @@ const HomeroomResourceCard: React.FC<HomeroomResourceCardProps> = ({ item, actio
                   <IconButton
                     sx={homeroomResourcesCardClasses.actionButton}
                     onClick={(e) => {
-                      actionHandler(EventType.RESTORE)
+                      actionHandler(CartEventType.RESTORE)
                       e.stopPropagation()
                     }}
                   >

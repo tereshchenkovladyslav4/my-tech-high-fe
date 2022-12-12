@@ -7,7 +7,8 @@ import { useHistory } from 'react-router-dom'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { CourseType } from '@mth/enums'
-import { SchoolYearResponseType, useProviders } from '@mth/hooks'
+import { useProviders } from '@mth/hooks'
+import { SchoolYear } from '@mth/models'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 // import { SchoolYearDropDown } from '@mth/screens/Admin/Components/SchoolYearDropdown'
 import { BUTTON_LINEAR_GRADIENT, MTHBLUE, RED_GRADIENT } from '../../../../utils/constants'
@@ -24,7 +25,7 @@ export const Filters: FunctionComponent<FiltersProps> = ({ filter, setFilter }) 
   const [courseType, setCourseType] = useState<CourseType[]>([])
   const [mthDirectProvider, setMthDirectProvider] = useState<number[]>([])
   const [selectedYearId, setSelectedYearId] = useState<number>()
-  const [schoolYears, setSchoolYears] = useState<SchoolYearResponseType[]>([])
+  const [schoolYears, setSchoolYears] = useState<SchoolYear[]>([])
   const [gradeLevels, setGradeLevels] = useState<string[]>([])
   const [showDiplomaSeeking, setShowDiplomaSeeking] = useState(false)
   const [showCustomBuilt, setShowCustomBuilt] = useState<number>(0)
@@ -163,9 +164,11 @@ export const Filters: FunctionComponent<FiltersProps> = ({ filter, setFilter }) 
     const value = e.target.value as CourseType
     if (value === CourseType.MTH_DIRECT) {
       setProviderList(
-        providers.map((obj) => {
-          return { id: obj.id, name: obj.name }
-        }),
+        providers
+          .filter((p) => p.is_display)
+          .map((obj) => {
+            return { id: obj.id, name: obj.name }
+          }),
       )
     }
     if (courseType.includes(value)) {
