@@ -107,6 +107,7 @@ export const getAssignmentsByMasterIdgql = gql`
     }
   }
 `
+
 export const updateMasterById = gql`
   mutation UpdateMaster($updateMaster: CreateNewMasterInput!) {
     updateMaster(updateMaster: $updateMaster)

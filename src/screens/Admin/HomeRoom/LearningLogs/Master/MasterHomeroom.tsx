@@ -53,7 +53,6 @@ const MasterHoomroom: React.FC<{ masterId: number }> = ({ masterId }) => {
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [totalPage, setTotalPage] = useState<number>(0)
   const [skip, setSkip] = useState<number>()
-
   const [isChange, setIsChange] = useState<boolean>(false)
 
   const [isSetInstructions, setIsSetInstructions] = useState<boolean>(false)
@@ -190,7 +189,6 @@ const MasterHoomroom: React.FC<{ masterId: number }> = ({ masterId }) => {
       return paginatinLimit ? paginatinLimit * (page - 1) : 25
     })
   }
-
   const [updateMaster] = useMutation(updateMasterById)
   const handleSubmit = async () => {
     await updateMaster({
