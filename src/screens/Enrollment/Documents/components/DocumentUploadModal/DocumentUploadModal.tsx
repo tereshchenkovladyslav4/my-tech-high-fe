@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import SystemUpdateAltRoundedIcon from '@mui/icons-material/SystemUpdateAltRounded'
 import { Box, Button, Modal } from '@mui/material'
 import { filter, map } from 'lodash'
@@ -25,6 +25,8 @@ export const DocumentUploadModal: DocumentUploadModalTemplateType = ({ handleMod
   const [errorMessage, setErrorMessage] = useState('')
 
   const [deletedFiles, setDeletedFiles] = useState([])
+
+  const inputRef = useRef(null)
 
   useEffect(() => {
     const filteredArr = selectedFiles.reduce((acc, current) => {
@@ -113,6 +115,11 @@ export const DocumentUploadModal: DocumentUploadModalTemplateType = ({ handleMod
     handleModem()
   }
 
+  const btnOnClick = (e) => {
+    e.preventDefault()
+    inputRef.current.click()
+  }
+
   const deleteFile = (file: File) => {
     setValidFiles(filter(validFiles, (validFile) => validFile !== file))
     setDeletedFiles((prev) => [...prev, file])
@@ -170,15 +177,17 @@ export const DocumentUploadModal: DocumentUploadModalTemplateType = ({ handleMod
           <Paragraph size='medium' color={SYSTEM_06} sx={{ marginY: 1, marginBottom: 0 }}>
             Or
           </Paragraph>
-          <Button sx={classes.uploadButton} variant='contained'>
+          <Button sx={classes.uploadButton} variant='contained' onClick={btnOnClick}>
             <label>
               <input
+                ref={inputRef}
                 type='file'
                 style={classes.input}
                 onChange={filesSelected}
                 multiple
                 accept='application/pdf, image/png, image/jpeg'
                 value={''}
+                onClick={(event) => event.stopPropagation()}
               />
               Browse Files
             </label>

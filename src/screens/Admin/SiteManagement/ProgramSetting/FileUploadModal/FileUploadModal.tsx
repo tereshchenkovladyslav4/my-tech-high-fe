@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import CloseIcon from '@mui/icons-material/Close'
 import { Box, Button, Modal } from '@mui/material'
 import { filter, has, includes, map, pull } from 'lodash'
@@ -29,6 +29,8 @@ export const FileUploadModal: React.FC<SubmissionModal> = ({
   const [errorMessage, setErrorMessage] = useState<string>('')
   const [deletedFiles, setDeletedFiles] = useState<File[]>([])
   const template = type === 'county' ? SNOWPACK_PUBLIC_COUNTIES_TEMPLATE : SNOWPACK_PUBLIC_SCHOOL_DISTRICT_TEMPLATE
+
+  const inputRef = useRef(null)
 
   const preventDefault = (e: HTMLInputEvent) => {
     e.preventDefault()
@@ -165,6 +167,11 @@ export const FileUploadModal: React.FC<SubmissionModal> = ({
     handleModem()
   }
 
+  const btnOnClick = (e) => {
+    e.preventDefault()
+    inputRef.current.click()
+  }
+
   const deleteFile = (file: File | S3FileType) => {
     setValidFiles(filter(validFiles, (validFile) => validFile !== file))
     if (deletedFiles) setDeletedFiles([...deletedFiles, file])
@@ -237,16 +244,18 @@ export const FileUploadModal: React.FC<SubmissionModal> = ({
                 {' '}
                 Or
               </Paragraph>
-              <Button sx={fileUploadModalClassess.uploadButton} variant='contained'>
+              <Button sx={fileUploadModalClassess.uploadButton} variant='contained' onClick={btnOnClick}>
                 {multi ? (
                   <label>
                     <input
+                      ref={inputRef}
                       type='file'
                       style={fileUploadModalClassess.input}
                       onChange={filesSelected}
                       multiple
                       accept={extensions}
                       onClick={(event) => {
+                        event.stopPropagation()
                         event.currentTarget.value = ''
                       }}
                     />
@@ -255,11 +264,13 @@ export const FileUploadModal: React.FC<SubmissionModal> = ({
                 ) : (
                   <label>
                     <input
+                      ref={inputRef}
                       type='file'
                       style={fileUploadModalClassess.input}
                       onChange={filesSelected}
                       accept={extensions}
                       onClick={(event) => {
+                        event.stopPropagation()
                         event.currentTarget.value = ''
                       }}
                     />

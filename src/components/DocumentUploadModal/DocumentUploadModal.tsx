@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import CloseIcon from '@mui/icons-material/Close'
 import UploadFileIcon from '@mui/icons-material/UploadFile'
 import { Box, Button, Modal } from '@mui/material'
@@ -27,6 +27,7 @@ export const DocumentUploadModal: React.FC<SubmissionModal> = ({
 }) => {
   const [validFiles, setValidFiles] = useState<File[]>([])
   const [errorMessage, setErrorMessage] = useState('')
+  const inputRef = useRef(null)
   const preventDefault = (e: HTMLInputEvent) => {
     e.preventDefault()
   }
@@ -103,6 +104,10 @@ export const DocumentUploadModal: React.FC<SubmissionModal> = ({
     handleFile(validFiles)
     handleModem()
   }
+  const btnOnClick = (e) => {
+    e.preventDefault()
+    inputRef.current.click()
+  }
   const renderFiles = () =>
     map(validFiles, (file, idx) => (
       <Box key={idx}>
@@ -171,14 +176,16 @@ export const DocumentUploadModal: React.FC<SubmissionModal> = ({
               {' '}
               Or
             </Paragraph>
-            <Button sx={documentUploadModalClasses.uploadButton} variant='contained'>
+            <Button sx={documentUploadModalClasses.uploadButton} variant='contained' onClick={btnOnClick}>
               <label>
                 <input
+                  ref={inputRef}
                   type='file'
                   style={documentUploadModalClasses.input}
                   onChange={filesSelected}
                   multiple
                   accept='application/pdf, image/png, image/jpeg'
+                  onClick={(event) => event.stopPropagation()}
                 />
                 Browse Files
               </label>

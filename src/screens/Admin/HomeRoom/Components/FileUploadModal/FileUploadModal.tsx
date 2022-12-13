@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import SystemUpdateAltRoundedIcon from '@mui/icons-material/SystemUpdateAltRounded'
 import { Box, Button, Modal } from '@mui/material'
 import { MthColor } from '@mth/enums'
@@ -19,6 +19,8 @@ const FileUploadModal: FileUploadModalProps = ({ open, onClose, handleFile, onDo
   const classes = FileUploadModalClasses
   const [validFile, setValidFile] = useState<File>()
   const [errorMessage, setErrorMessage] = useState('')
+
+  const inputRef = useRef(null)
 
   useEffect(() => {
     if (open) {
@@ -92,6 +94,11 @@ const FileUploadModal: FileUploadModalProps = ({ open, onClose, handleFile, onDo
     onClose()
   }
 
+  const btnOnClick = (e) => {
+    e.preventDefault()
+    inputRef.current.click()
+  }
+
   const deleteFile = (file?: File) => {
     if (file) {
       setValidFile(undefined)
@@ -158,14 +165,16 @@ const FileUploadModal: FileUploadModalProps = ({ open, onClose, handleFile, onDo
           <Paragraph size='medium' color={MthColor.SYSTEM_06} sx={{ marginY: 1, marginBottom: 0 }}>
             Or
           </Paragraph>
-          <Button sx={classes.uploadButton} variant='contained'>
+          <Button sx={classes.uploadButton} variant='contained' onClick={btnOnClick}>
             <label>
               <input
+                ref={inputRef}
                 type='file'
                 style={classes.input}
                 onChange={filesSelected}
                 accept='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel'
                 value={''}
+                onClick={(event) => event.stopPropagation()}
               />
               Browse Files
             </label>
