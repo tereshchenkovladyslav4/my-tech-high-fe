@@ -222,8 +222,15 @@ export const StudentProfile: React.FC = () => {
           display='flex'
           flexDirection='column'
           justifyContent={'center'}
-          sx={{ backgroundColor: '#FAFAFA', alignItems: 'center', cursor: 'pointer', height: '100%', width: '100%' }}
-          onClick={() => isEditingMobile && openImageModal()}
+          sx={{
+            display: { xs: isEditingMobile ? 'block' : 'none', sm: 'block' },
+            backgroundColor: '#FAFAFA',
+            alignItems: 'center',
+            cursor: 'pointer',
+            height: '100%',
+            width: '100%',
+          }}
+          onClick={() => openImageModal()}
         >
           <SystemUpdateAltIcon />
           <Paragraph size='medium' fontWeight='500'>
