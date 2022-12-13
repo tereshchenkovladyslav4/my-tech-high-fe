@@ -121,9 +121,11 @@ const Classes: React.FC<ClassessProps> = ({ master, refetch }) => {
   useEffect(() => {
     if (classData && classData?.length) {
       setTableData(
-        classData?.map((item: Classes) => {
-          return createData(item)
-        }),
+        classData
+          ?.sort((a, b) => (a.class_name.toLowerCase() > b.class_name.toLowerCase() ? 1 : -1))
+          .map((item: Classes) => {
+            return createData(item)
+          }),
       )
     }
   }, [classData])

@@ -136,13 +136,17 @@ const ProgramSetting: React.FC = () => {
       setStateInvalid(true)
       return
     }
+    // Delete counties and school districts
     if (isDelete.county) {
       await handleCountyInfoDelete()
     }
-
     if (isDelete.schoolDistrict) {
       await handleSchoolDistrictInfoDelete()
     }
+    setIsDelete({
+      county: false,
+      schoolDistrict: false,
+    })
 
     let imageLocation = ''
     if (stateLogoFile) {
@@ -159,7 +163,7 @@ const ProgramSetting: React.FC = () => {
       schoolDistrictFileLocation = await uploadFile(schoolDistrict.file, 'schoolDistrict', stateName)
     }
 
-    const submitedResponse = await submitSave({
+    const submittedResponse = await submitSave({
       variables: {
         updateRegionInput: {
           id: me?.selectedRegionId,
@@ -219,7 +223,7 @@ const ProgramSetting: React.FC = () => {
 
     const forSaveUpdatedRegion = {
       region_id: me?.selectedRegionId,
-      regionDetail: submitedResponse.data.updateRegion,
+      regionDetail: submittedResponse.data.updateRegion,
     }
     setIsChanged({
       state: false,
@@ -329,7 +333,7 @@ const ProgramSetting: React.FC = () => {
     <Box sx={siteManagementClassess.base}>
       <input type='hidden' value={changeStatus() ? '1' : '0'} className='program-set' />
       <Prompt
-        when={changeStatus() ? true : false}
+        when={changeStatus()}
         message={JSON.stringify({
           header: MthTitle.UNSAVED_TITLE,
           content: MthTitle.UNSAVED_DESCRIPTION,

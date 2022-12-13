@@ -25,7 +25,7 @@ import { SchoolYearType } from '@mth/models'
 import { UserContext, UserInfo } from '@mth/providers/UserContext/UserProvider'
 import { CircleData } from '@mth/screens/Dashboard/HomeroomGrade/components/StudentGrade/types'
 import { Person, StudentProps } from '@mth/screens/HomeroomStudentProfile/Student/types'
-import { checkEnrollPacketStatus, toOrdinalSuffix } from '@mth/utils'
+import { checkEnrollPacketStatus, currentGradeText } from '@mth/utils'
 import { updateApplicationMutation, UpdateStudentMutation } from './service'
 
 export const Student: React.FC<StudentProps> = ({
@@ -33,7 +33,7 @@ export const Student: React.FC<StudentProps> = ({
   schoolYears,
   showNotification,
   withdrawn,
-  schoolYearsDropdown,
+  schoolYearsDropdown = [],
 }) => {
   const { me, setMe } = useContext(UserContext)
   const history = useHistory()
@@ -92,7 +92,7 @@ export const Student: React.FC<StudentProps> = ({
         icon: (
           <ErrorOutlineIcon
             sx={{ color: MthColor.MTHORANGE, marginTop: 2, cursor: 'pointer' }}
-            onClick={handleWithrawanStudent}
+            onClick={handleWithdrawnStudent}
           />
         ),
       })
@@ -225,7 +225,7 @@ export const Student: React.FC<StudentProps> = ({
         })
       }
     } else if (
-      studentSchoolYear.schedule &&
+      studentSchoolYear?.schedule &&
       (showNotification?.phrase === StudentNotification.SUBMIT_SCHEDULE ||
         showNotification?.phrase === StudentNotification.RESUBMIT_SCHEDULE ||
         showNotification?.phrase === StudentNotification.SUBMIT_SECOND_SEMESTER_SCHEDULE ||
@@ -251,7 +251,7 @@ export const Student: React.FC<StudentProps> = ({
     }
   }, [student, showNotification])
 
-  const submitEditYear = async (form) => {
+  const submitEditYear = async (form: { schoolYear: string }) => {
     const { schoolYear } = form
     const { applications } = student
     const currApplication = applications?.at(-1)
@@ -263,7 +263,7 @@ export const Student: React.FC<StudentProps> = ({
           status: ApplicationStatus.SUBMITTED,
           relation_status: RelationStatus.RETURNING,
           school_year_id: parseInt(String(schoolYear)?.split('-')[0]),
-          midyear_application: String(schoolYear)?.split('-')[1] === 'mid' ? true : false,
+          midyear_application: String(schoolYear)?.split('-')[1] === 'mid',
         },
       },
     })
@@ -282,15 +282,10 @@ export const Student: React.FC<StudentProps> = ({
     window.location.reload()
   }
 
-  const handleWithrawanStudent = () => {
+  const handleWithdrawnStudent = () => {
     if (schoolYearsDropdown?.length == 0) setShowComingBack(true)
     else setEditYearModal(true)
   }
-
-  const gradeText =
-    student?.grade_levels?.at(-1)?.grade_level !== 'Kindergarten'
-      ? `${toOrdinalSuffix(student?.grade_levels?.at(-1)?.grade_level as number)} Grade`
-      : student?.grade_levels?.at(-1)?.grade_level
 
   return (
     <>
@@ -299,7 +294,7 @@ export const Student: React.FC<StudentProps> = ({
           title={<Title>{student.person.first_name}</Title>}
           subtitle={
             <Box>
-              <Subtitle size={'large'}>{gradeText}</Subtitle>
+              <Subtitle size={'large'}>{currentGradeText(student)}</Subtitle>
               {showToolTip && (checkEnrollPacketStatus(schoolYears, student) || showNotification) && (
                 <Box
                   onClick={() => {
@@ -333,7 +328,7 @@ export const Student: React.FC<StudentProps> = ({
                   setMe({ ...me, currentTab: 0 } as UserInfo)
                   if (link) history.push(link)
                   else {
-                    if (circleData?.type == 'Re-apply') handleWithrawanStudent()
+                    if (circleData?.type == 'Re-apply') handleWithdrawnStudent()
                   }
                 }
               }}
@@ -354,7 +349,7 @@ export const Student: React.FC<StudentProps> = ({
               subtitle={
                 <Box>
                   <Paragraph size={'medium'} color={MthColor.SYSTEM_06}>
-                    {gradeText}
+                    {currentGradeText(student)}
                   </Paragraph>
                 </Box>
               }
@@ -408,7 +403,7 @@ export const Student: React.FC<StudentProps> = ({
                 variant='contained'
                 fullWidth
                 sx={{ background: MthColor.RED_GRADIENT, color: MthColor.WHITE, marginBottom: 2 }}
-                onClick={handleWithrawanStudent}
+                onClick={handleWithdrawnStudent}
               >
                 Re-apply
               </Button>

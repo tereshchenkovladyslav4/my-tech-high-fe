@@ -11,6 +11,7 @@ import { MthColor, ScheduleStatus } from '@mth/enums'
 import { restoreScheduleHistoryMutation } from '@mth/graphql/mutation/schedule'
 import { useStudentSchedulePeriodHistories } from '@mth/hooks'
 import { ScheduleEditor } from '@mth/screens/Homeroom/Schedule/ScheduleBuilder/ScheduleEditor'
+import { mthButtonClasses } from '@mth/styles/button.style'
 import { ScheduleHistoryData, ScheduleHistoryProps } from './types'
 
 const ScheduleHistory: React.FC<ScheduleHistoryProps> = ({
@@ -87,7 +88,7 @@ const ScheduleHistory: React.FC<ScheduleHistoryProps> = ({
                 {chevron(history)}
                 {history.isExpand && index == 0 && (
                   <Button
-                    sx={{ backgroundColor: MthColor.LIGHTGRAY, marginLeft: 'auto', fontWeight: 700 }}
+                    sx={{ ...mthButtonClasses.darkGray, marginLeft: 'auto' }}
                     onClick={() => {
                       setShowWarningModal(true)
                       setSelectedScheduleHistoryId(history.scheduleHistoryId)

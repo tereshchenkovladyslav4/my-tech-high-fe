@@ -63,7 +63,7 @@ export const CreateTeacherModal: FunctionComponent<CreateTeacherModalProps> = ({
     if (selectedClasses) {
       setPrimaryTeacher(teacherList.find((item: Teacher) => item.user_id === selectedClasses?.primaryTeacher?.user_id))
       const addTeachers = JSON.parse(selectedClasses?.addition_id)
-      if (addTeachers.length > 0) {
+      if (addTeachers?.length > 0) {
         setCheckedTeachers(addTeachers)
       }
     }
@@ -151,8 +151,6 @@ export const CreateTeacherModal: FunctionComponent<CreateTeacherModalProps> = ({
       <Box sx={classes.modalCard}>
         <Box
           sx={{
-            maxHeight: '90vh',
-            overflow: 'auto',
             p: 1,
           }}
         >
@@ -177,7 +175,7 @@ export const CreateTeacherModal: FunctionComponent<CreateTeacherModalProps> = ({
               return (
                 <Form>
                   <Box sx={{ ...classes.content, display: 'flex', alignItems: 'center', px: 5 }}>
-                    <Box sx={{ width: '60%' }}>
+                    <Box sx={{ width: '80%' }}>
                       <Box>
                         <TextField
                           label='Master'
@@ -218,10 +216,12 @@ export const CreateTeacherModal: FunctionComponent<CreateTeacherModalProps> = ({
                                     <SearchIcon style={{ color: 'black' }} />
                                   </InputAdornment>
                                 ),
+                                style: { fontSize: '18px' },
                               }}
                               fullWidth
                               placeholder='Search'
                               label='Primary Teacher'
+                              className='MthFormField'
                               onFocus={() => {
                                 setPrimarySearchListView(true)
                               }}
@@ -307,7 +307,7 @@ export const CreateTeacherModal: FunctionComponent<CreateTeacherModalProps> = ({
                           }
                         />
                       </Box>
-                      <Box sx={{ border: 'solid 1px #CCCCCC', minHeight: '360px', marginTop: '20px' }}>
+                      <Box sx={{ border: 'solid 1px #CCCCCC', marginTop: '20px', height: '30vh', overflow: 'auto' }}>
                         {additionalTeachers?.map((teacher: Teacher) => (
                           <Box sx={{ width: '100%' }} key={teacher.user_id}>
                             <MthCheckbox

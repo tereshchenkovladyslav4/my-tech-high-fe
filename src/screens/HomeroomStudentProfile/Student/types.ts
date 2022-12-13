@@ -1,10 +1,11 @@
 import { FunctionComponent } from 'react'
 import { DropDownItem } from '@mth/components/DropDown/types'
 import { ScheduleStatus } from '@mth/enums'
-import { SchoolYearType } from '@mth/models'
+import { SchoolYear, SchoolYearType } from '@mth/models'
 import { ToDoItem } from '@mth/screens/Dashboard/ToDoList/components/ToDoListItem/types'
 
 export type GradeLevel = {
+  school_year_id: number | string
   grade_level: number | string
 }
 
@@ -198,7 +199,7 @@ export type Person = {
 }
 export type StudentProps = {
   student: StudentType
-  schoolYears: SchoolYearType[]
+  schoolYears: SchoolYear[]
   showNotification?: ToDoItem | undefined
   withdrawn?: boolean
   schoolYearsDropdown?: DropDownItem[] | []

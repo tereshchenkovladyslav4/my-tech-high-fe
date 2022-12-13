@@ -1,5 +1,5 @@
+import { SchoolYear } from '@mth/models'
 import { StudentType } from '@mth/screens/HomeroomStudentProfile/Student/types'
-import { SchoolYear } from '../models/school-year.model'
 import { toOrdinalSuffix } from './string.util'
 
 export const gradeText = (student: StudentType): string => {
@@ -36,6 +36,21 @@ export const calculateGrade = (
         : `${toOrdinalSuffix(1)} Grade`
       : `${toOrdinalSuffix(+gradeLevel + diffYear)} Grade`
   } else return ''
+}
+
+export const currentGradeText = (student: StudentType): string => {
+  if (student) {
+    if (!student.grade_levels?.length) {
+      return ''
+    }
+    const gradeLevel = student.grade_levels?.find(
+      (item) => item.school_year_id == student.current_school_year_status?.school_year_id,
+    )?.grade_level
+
+    if (gradeLevel)
+      return (gradeLevel + '').toLowerCase().startsWith('k') ? 'Kindergarten' : `${toOrdinalSuffix(+gradeLevel)} Grade`
+  }
+  return ''
 }
 
 export const gradeNum = (student: StudentType | undefined): string => {

@@ -34,13 +34,9 @@ export const makeProviderData = (courses: Course[], altCourses: Course[]): Provi
   return providers
 }
 
-export const attachSelectedItems = (
-  item: ScheduleData,
-  schedulePeriod: SchedulePeriod | undefined,
-): ScheduleData | void => {
-  if (!schedulePeriod) return
+export const attachSelectedItems = (item: ScheduleData, schedulePeriod: SchedulePeriod | undefined): ScheduleData => {
   const period = item?.Periods?.find((periodItem) => periodItem?.id === schedulePeriod?.PeriodId)
-  if (period) {
+  if (period && schedulePeriod) {
     item.Period = period
     item.schedulePeriodId = schedulePeriod.schedule_period_id
     item.schedulePeriodStatus = schedulePeriod.status
@@ -196,9 +192,7 @@ export const useStudentSchedulePeriods = (
           (item: SchedulePeriod) => item.Schedule.is_second_semester,
         )
         if (secondSchedulePeriods?.length) {
-          setHasSecondSemesterSchedule(
-            secondSchedulePeriods[0]?.Schedule?.status === ScheduleStatus.DRAFT ? false : true,
-          )
+          setHasSecondSemesterSchedule(secondSchedulePeriods[0]?.Schedule?.status !== ScheduleStatus.DRAFT)
           secondScheduleDataArray = JSON.parse(JSON.stringify(scheduleDataArray))
           secondScheduleDataArray.map((item) => {
             const schedulePeriod = secondSchedulePeriods.find(

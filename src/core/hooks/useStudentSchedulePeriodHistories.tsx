@@ -104,7 +104,7 @@ export const useStudentSchedulePeriodHistories = (
             scheduleDataHistoryDataArray.push({
               scheduleHistoryId: schedulePeriodHistory.ScheduleHistoryId,
               acceptedDate: schedulePeriodHistory.ScheduleHistory.date_accepted,
-              scheduleData: scheduleDataArray,
+              scheduleData: JSON.parse(JSON.stringify(scheduleDataArray)),
               schedulePeriodHistory: [schedulePeriodHistory],
               isExpand: false,
             })
@@ -112,58 +112,57 @@ export const useStudentSchedulePeriodHistories = (
         })
 
         scheduleDataHistoryDataArray.map((historyData) => {
-          historyData.schedulePeriodHistory?.map((schedulePeriodHistory: SchedulePeriodHistory) => {
-            historyData.scheduleData.map((item) => {
-              const period = item?.Periods?.find((periodItem) => periodItem?.id === schedulePeriodHistory?.PeriodId)
-              if (period) {
-                item.Period = period
-                item.schedulePeriodId = schedulePeriodHistory.schedule_period_history_id
-                item.schedulePeriodStatus = schedulePeriodHistory.status
-                if (schedulePeriodHistory.SubjectId)
-                  item.Subject = period.Subjects?.find(
-                    (subject) => subject?.subject_id === schedulePeriodHistory.SubjectId,
-                  )
-                if (schedulePeriodHistory.TitleId)
-                  period.Subjects?.forEach((subject) => {
-                    subject.Titles.concat(subject.AltTitles)?.map((title) => {
-                      if (title.title_id === schedulePeriodHistory.TitleId) item.Title = title
-                    })
+          historyData.scheduleData.map((item) => {
+            const schedulePeriodHistory = historyData.schedulePeriodHistory?.find(
+              (x) => item.Periods.findIndex((period) => period.id === x.PeriodId) > -1,
+            )
+            if (!schedulePeriodHistory) return
+            const period = item?.Periods?.find((periodItem) => periodItem?.id === schedulePeriodHistory?.PeriodId)
+            if (period) {
+              item.Period = period
+              item.schedulePeriodId = schedulePeriodHistory.schedule_period_history_id
+              item.schedulePeriodStatus = schedulePeriodHistory.status
+              if (schedulePeriodHistory.SubjectId)
+                item.Subject = period.Subjects?.find(
+                  (subject) => subject?.subject_id === schedulePeriodHistory.SubjectId,
+                )
+              if (schedulePeriodHistory.TitleId)
+                period.Subjects?.forEach((subject) => {
+                  subject.Titles.concat(subject.AltTitles)?.map((title) => {
+                    if (title.title_id === schedulePeriodHistory.TitleId) item.Title = title
                   })
-                if (schedulePeriodHistory.CourseId)
-                  period.Subjects?.forEach((subject) => {
-                    subject.Courses.concat(subject.AltCourses)?.forEach((course) => {
+                })
+              if (schedulePeriodHistory.CourseId)
+                period.Subjects?.forEach((subject) => {
+                  subject.Courses.concat(subject.AltCourses)?.forEach((course) => {
+                    if (course.id === schedulePeriodHistory.CourseId) item.Course = course
+                  })
+                  subject.Titles.concat(subject.AltTitles)?.forEach((title) => {
+                    title.Courses.concat(title.AltCourses)?.forEach((course) => {
                       if (course.id === schedulePeriodHistory.CourseId) item.Course = course
                     })
-                    subject.Titles.concat(subject.AltTitles)?.forEach((title) => {
-                      title.Courses.concat(title.AltCourses)?.forEach((course) => {
-                        if (course.id === schedulePeriodHistory.CourseId) item.Course = course
-                      })
-                    })
                   })
-                if (schedulePeriodHistory.course_type) item.CourseType = schedulePeriodHistory.course_type as CourseType
-                if (schedulePeriodHistory.course_type === CourseType.CUSTOM_BUILT)
-                  item.CustomBuiltDescription = schedulePeriodHistory.custom_build_description
-                if (
-                  schedulePeriodHistory.course_type === CourseType.MTH_DIRECT &&
-                  schedulePeriodHistory.osse_course_name
-                )
-                  item.OnSiteSplitEnrollment = {
-                    courseName: schedulePeriodHistory.osse_course_name,
-                    districtSchool: schedulePeriodHistory.osse_district_school,
-                    schoolDistrictName: schedulePeriodHistory.osse_school_district_name,
-                  }
-                if (schedulePeriodHistory.course_type === CourseType.THIRD_PARTY_PROVIDER)
-                  item.ThirdParty = {
-                    providerName: schedulePeriodHistory.tp_provider_name,
-                    courseName: schedulePeriodHistory.tp_course_name,
-                    phoneNumber: schedulePeriodHistory.tp_phone_number,
-                    specificCourseWebsite: schedulePeriodHistory.tp_specific_course_website,
-                    additionalWebsite: schedulePeriodHistory.tp_additional_specific_course_website
-                      ? JSON.parse(schedulePeriodHistory.tp_additional_specific_course_website)
-                      : '',
-                  }
-              }
-            })
+                })
+              if (schedulePeriodHistory.course_type) item.CourseType = schedulePeriodHistory.course_type as CourseType
+              if (schedulePeriodHistory.course_type === CourseType.CUSTOM_BUILT)
+                item.CustomBuiltDescription = schedulePeriodHistory.custom_build_description
+              if (schedulePeriodHistory.course_type === CourseType.MTH_DIRECT && schedulePeriodHistory.osse_course_name)
+                item.OnSiteSplitEnrollment = {
+                  courseName: schedulePeriodHistory.osse_course_name,
+                  districtSchool: schedulePeriodHistory.osse_district_school,
+                  schoolDistrictName: schedulePeriodHistory.osse_school_district_name,
+                }
+              if (schedulePeriodHistory.course_type === CourseType.THIRD_PARTY_PROVIDER)
+                item.ThirdParty = {
+                  providerName: schedulePeriodHistory.tp_provider_name,
+                  courseName: schedulePeriodHistory.tp_course_name,
+                  phoneNumber: schedulePeriodHistory.tp_phone_number,
+                  specificCourseWebsite: schedulePeriodHistory.tp_specific_course_website,
+                  additionalWebsite: schedulePeriodHistory.tp_additional_specific_course_website
+                    ? JSON.parse(schedulePeriodHistory.tp_additional_specific_course_website)
+                    : '',
+                }
+            }
           })
         })
       }

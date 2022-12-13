@@ -154,6 +154,7 @@ export const getMeQuery = gql`
           }
         }
         grade_levels {
+          school_year_id
           grade_level
         }
         grade_level

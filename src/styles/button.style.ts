@@ -56,6 +56,14 @@ export const mthButtonColorClasses = {
       color: MthColor.SYSTEM_01,
     },
   },
+  darkGray: {
+    background: MthColor.SYSTEM_08,
+    color: MthColor.SYSTEM_01,
+    '&:hover': {
+      background: MthColor.SYSTEM_08,
+      color: MthColor.SYSTEM_01,
+    },
+  },
   orange: {
     background: 'linear-gradient(90deg, #8E2C09 0%, rgba(168, 72, 38, 0) 100%), #EC5925',
     color: MthColor.WHITE,
@@ -104,7 +112,7 @@ export const mthButtonClasses = {
     minWidth: '92px',
   },
 
-  // Dark buttons
+  // Dark gradient buttons
   dark: {
     ...mthButtonSizeClasses.medium,
     ...mthButtonColorClasses.dark,
@@ -158,6 +166,14 @@ export const mthButtonClasses = {
     ...mthButtonColorClasses.gray,
     borderRadius: '40px',
     minWidth: '92px',
+  },
+
+  // Dark gray buttons
+  darkGray: {
+    ...mthButtonSizeClasses.medium,
+    ...mthButtonColorClasses.darkGray,
+    borderRadius: '8px',
+    minWidth: '140px',
   },
 
   // Orange buttons

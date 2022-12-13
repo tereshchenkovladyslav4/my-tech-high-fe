@@ -55,4 +55,5 @@ export type SchoolYear = {
   mid_require_software_close: string
   mid_third_party_open: string
   mid_third_party_close: string
+  enrollment_packet: boolean
 }

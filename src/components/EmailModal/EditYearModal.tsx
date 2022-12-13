@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react'
+import React from 'react'
 import { makeStyles, Theme } from '@material-ui/core/styles'
 import { Button, Modal } from '@mui/material'
 import { Box } from '@mui/system'
@@ -14,7 +14,7 @@ import { useStyles } from './styles'
 type EditYearModalProps = {
   title: string
   schoolYears: DropDownItem[]
-  handleSubmit: (values: unknown) => void
+  handleSubmit: (values: { schoolYear: string }) => void
   handleClose: () => void
 }
 
@@ -44,12 +44,7 @@ const additionalStyles = makeStyles((theme: Theme) => ({
   },
 }))
 
-export const EditYearModal: FunctionComponent<EditYearModalProps> = ({
-  title,
-  schoolYears,
-  handleSubmit,
-  handleClose,
-}) => {
+export const EditYearModal: React.FC<EditYearModalProps> = ({ title, schoolYears, handleSubmit, handleClose }) => {
   const classes = useStyles
   const extraClasses = additionalStyles()
   return (
