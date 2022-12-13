@@ -1,11 +1,12 @@
-import React, { useEffect, useState, useContext, FunctionComponent } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import { useMutation } from '@apollo/client'
 import { Box, Card, Grid } from '@mui/material'
 import { ContentState, EditorState, convertToRaw } from 'draft-js'
 import draftToHtml from 'draftjs-to-html'
 import htmlToDraft from 'html-to-draftjs'
 import { useHistory } from 'react-router-dom'
-import { UserContext } from '../../../../providers/UserContext/UserProvider'
+import { PageBlock } from '@mth/components/PageBlock'
+import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { ANNOUNCEMENTS } from '../../../../utils/constants'
 import { Announcement } from '../../../Dashboard/Announcements/types'
 import { PublishModal } from '../PublishModal'
@@ -13,15 +14,13 @@ import { CreateAnnouncementMutation, UpdateAnnouncementMutation } from '../servi
 import { EditComponent } from './EditComponent'
 import { FilterComponent } from './FilterComponent'
 import { HeaderComponent } from './HeaderComponent'
-import { useStyles } from './styles'
 
 type NewAnnouncementProps = {
   announcement: Announcement | null
   setAnnouncement: (value: Announcement | null) => void
 }
 
-const NewAnnouncement: FunctionComponent<NewAnnouncementProps> = ({ announcement, setAnnouncement }) => {
-  const classes = useStyles
+const NewAnnouncement: React.FC<NewAnnouncementProps> = ({ announcement, setAnnouncement }) => {
   const history = useHistory()
   const { me } = useContext(UserContext)
   const [emailFrom, setEmailFrom] = useState<string>('')
@@ -54,15 +53,15 @@ const NewAnnouncement: FunctionComponent<NewAnnouncementProps> = ({ announcement
 
   const handlePublish = () => {
     setShowPublishModal(false)
-    handleSaveClick('Published')
+    handleSaveClick('Published').then(() => {})
   }
 
   const handleSetSchedule = () => {
-    handleSaveClick('Scheduled')
+    handleSaveClick('Scheduled').then(() => {})
   }
 
   const handleRepublish = () => {
-    handleSaveClick('Published')
+    handleSaveClick('Published').then(() => {})
   }
 
   const handleBackClick = () => {
@@ -150,7 +149,7 @@ const NewAnnouncement: FunctionComponent<NewAnnouncementProps> = ({ announcement
     } else if (validation()) {
       const submitCreateResponse = await submitCreate({
         variables: {
-          createAnnoucementInput: {
+          createAnnouncementInput: {
             filter_grades: JSON.stringify(grades),
             filter_users: JSON.stringify(users),
             filter_program_years: JSON.stringify(programYears),
@@ -210,7 +209,7 @@ const NewAnnouncement: FunctionComponent<NewAnnouncementProps> = ({ announcement
   }, [me?.selectedRegionId, announcement])
 
   return (
-    <Card sx={classes.cardBody}>
+    <PageBlock>
       <HeaderComponent
         announcement={announcement}
         setAnnouncement={setAnnouncement}
@@ -274,7 +273,7 @@ const NewAnnouncement: FunctionComponent<NewAnnouncementProps> = ({ announcement
           />
         )}
       </Box>
-    </Card>
+    </PageBlock>
   )
 }
 

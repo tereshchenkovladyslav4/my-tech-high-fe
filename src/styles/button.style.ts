@@ -80,6 +80,14 @@ export const mthButtonColorClasses = {
       color: MthColor.WHITE,
     },
   },
+  green: {
+    background: 'linear-gradient(90deg, #17490F 0%, rgba(23, 73, 15, 0) 100%), #38892B',
+    color: MthColor.WHITE,
+    '&:hover': {
+      background: MthColor.GREEN,
+      color: MthColor.WHITE,
+    },
+  },
 }
 
 export const mthButtonClasses = {
@@ -202,6 +210,14 @@ export const mthButtonClasses = {
   roundXsRed: {
     ...mthButtonSizeClasses.xs,
     ...mthButtonColorClasses.red,
+    borderRadius: '40px',
+    minWidth: '92px',
+  },
+
+  // Green buttons
+  roundXsGreen: {
+    ...mthButtonSizeClasses.xs,
+    ...mthButtonColorClasses.green,
     borderRadius: '40px',
     minWidth: '92px',
   },

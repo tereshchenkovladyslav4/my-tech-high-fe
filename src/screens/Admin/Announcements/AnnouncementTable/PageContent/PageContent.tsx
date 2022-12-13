@@ -6,6 +6,7 @@ import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined'
 import { Box, Table, TableBody, TableCell, TableContainer, TableRow, Tooltip, Typography } from '@mui/material'
 import { useHistory } from 'react-router-dom'
 import { SortableTableHeader } from '@mth/components/SortableTable/SortableTableHeader/SortableTableHeader'
+import { Order } from '@mth/components/SortableTable/types'
 import { ANNOUNCEMENTS } from '../../../../../utils/constants'
 import { ANNOUNCEMENT_HEADCELLS } from '../../../../../utils/PageHeadCellsConstant'
 import { Announcement } from '../../../../Dashboard/Announcements/types'
@@ -13,17 +14,15 @@ import { toolTipStyles } from '../../types'
 import { useStyles } from '../styles'
 
 type PageContentProps = {
-  tableDatas: Announcement[]
+  tableData: Announcement[]
   showArchivedAnnouncement: boolean
   setAnnouncement: (value: Announcement) => void
   handleArchiveChangeStatus: (value: Announcement) => void
   handleDelete: (id: number) => void
 }
 
-type Order = 'asc' | 'desc'
-
 const PageContent: React.FC<PageContentProps> = ({
-  tableDatas,
+  tableData,
   showArchivedAnnouncement,
   setAnnouncement,
   handleArchiveChangeStatus,
@@ -32,13 +31,13 @@ const PageContent: React.FC<PageContentProps> = ({
   const classes = useStyles
   const toolTipClasses = toolTipStyles()
   const history = useHistory()
-  const [order, setOrder] = useState<Order>('asc')
-  const [orderBy, setOrderBy] = useState<keyof string>('date')
+  const [order, setOrder] = useState<Order>(Order.ASC)
+  const [orderBy, setOrderBy] = useState<keyof Announcement>('date')
   const [selected] = useState<readonly string[]>([])
   const handleSelectAllClick = () => {}
-  const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof string) => {
-    const isAsc = orderBy === property && order === 'asc'
-    setOrder(isAsc ? 'desc' : 'asc')
+  const handleRequestSort = (_event: React.MouseEvent<unknown>, property: keyof Announcement) => {
+    const isAsc = orderBy === property && order === Order.ASC
+    setOrder(isAsc ? Order.DESC : Order.ASC)
     setOrderBy(property)
   }
 
@@ -52,12 +51,12 @@ const PageContent: React.FC<PageContentProps> = ({
             orderBy={orderBy.toString()}
             onSelectAllClick={handleSelectAllClick}
             onRequestSort={handleRequestSort}
-            rowCount={tableDatas.length}
+            rowCount={tableData.length}
             headCells={ANNOUNCEMENT_HEADCELLS}
             noCheckbox
           />
           <TableBody>
-            {tableDatas
+            {tableData
               .filter(
                 (item) =>
                   (showArchivedAnnouncement && item.isArchived) || (!showArchivedAnnouncement && !item.isArchived),
@@ -133,7 +132,13 @@ const PageContent: React.FC<PageContentProps> = ({
                           </Tooltip>
                         </TableCell>
                       ) : (
-                        <TableCell sx={classes.tableCell} key={`${index}-7`} onClick={() => handleDelete(row.id)}>
+                        <TableCell
+                          sx={classes.tableCell}
+                          key={`${index}-7`}
+                          onClick={() => {
+                            if (row.id) handleDelete(row.id)
+                          }}
+                        >
                           <Tooltip
                             title='Delete'
                             placement='top'

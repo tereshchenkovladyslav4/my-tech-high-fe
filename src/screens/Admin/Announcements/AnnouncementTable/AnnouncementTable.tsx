@@ -1,24 +1,22 @@
 import React, { useEffect, useState, useContext } from 'react'
 import { useMutation, useQuery } from '@apollo/client'
-import { Card } from '@mui/material'
 import moment from 'moment'
-import { CustomConfirmModal } from '../../../../components/CustomConfirmModal/CustomConfirmModal'
-import { UserContext } from '../../../../providers/UserContext/UserProvider'
+import { CustomConfirmModal } from '@mth/components/CustomConfirmModal/CustomConfirmModal'
+import { PageBlock } from '@mth/components/PageBlock'
+import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { Announcement } from '../../../Dashboard/Announcements/types'
 import { deleteAnnouncementsById, getAnnouncementsQuery, UpdateAnnouncementMutation } from '../services'
 import { PageContent } from './PageContent'
 import { PageHeader } from './PageHeader'
-import { useStyles } from './styles'
 
 type AnnouncementTableProps = {
   setAnnouncement: (value: Announcement) => void
 }
 
 const AnnouncementTable: React.FC<AnnouncementTableProps> = ({ setAnnouncement }) => {
-  const classes = useStyles
   const { me } = useContext(UserContext)
   const [searchField, setSearchField] = useState<string>('')
-  const [tableDatas, setTableDatas] = useState<Announcement[]>([])
+  const [tableData, setTableData] = useState<Announcement[]>([])
   const [totalAnnouncements, setTotalAnnouncements] = useState<number>(0)
   const [showArchivedAnnouncement, setShowArchivedAnnouncement] = useState<boolean>(false)
   const [showConfirmModal, setShowConfirmModal] = useState<number>(0)
@@ -26,7 +24,7 @@ const AnnouncementTable: React.FC<AnnouncementTableProps> = ({ setAnnouncement }
     variables: {
       regionId: me?.selectedRegionId,
     },
-    skip: me?.selectedRegionId ? false : true,
+    skip: !me?.selectedRegionId,
     fetchPolicy: 'network-only',
   })
   const [submitSave, {}] = useMutation(UpdateAnnouncementMutation)
@@ -39,7 +37,7 @@ const AnnouncementTable: React.FC<AnnouncementTableProps> = ({ setAnnouncement }
         },
       },
     })
-    refetch()
+    await refetch()
   }
 
   const [deleteAnnouncementById, {}] = useMutation(deleteAnnouncementsById)
@@ -53,12 +51,12 @@ const AnnouncementTable: React.FC<AnnouncementTableProps> = ({ setAnnouncement }
         id: id,
       },
     })
-    refetch()
+    await refetch()
   }
 
   useEffect(() => {
     if (!loading && data?.announcements) {
-      setTableDatas(
+      setTableData(
         data?.announcements.map(
           (announcement: Announcement): Announcement => ({
             id: announcement.announcement_id,
@@ -73,7 +71,7 @@ const AnnouncementTable: React.FC<AnnouncementTableProps> = ({ setAnnouncement }
             regionId: announcement.RegionId,
             body: announcement.body,
             scheduleTime: announcement.schedule_time,
-            isArchived: announcement.isArchived ? true : false,
+            isArchived: !!announcement.isArchived,
           }),
         ),
       )
@@ -82,7 +80,7 @@ const AnnouncementTable: React.FC<AnnouncementTableProps> = ({ setAnnouncement }
   }, [data])
 
   return (
-    <Card sx={classes.cardBody}>
+    <PageBlock>
       <PageHeader
         totalAnnouncements={totalAnnouncements}
         showArchivedAnnouncement={showArchivedAnnouncement}
@@ -91,7 +89,7 @@ const AnnouncementTable: React.FC<AnnouncementTableProps> = ({ setAnnouncement }
         setShowArchivedAnnouncement={setShowArchivedAnnouncement}
       />
       <PageContent
-        tableDatas={tableDatas}
+        tableData={tableData}
         showArchivedAnnouncement={showArchivedAnnouncement}
         setAnnouncement={setAnnouncement}
         handleArchiveChangeStatus={handleArchiveChangeStatus}
@@ -104,13 +102,13 @@ const AnnouncementTable: React.FC<AnnouncementTableProps> = ({ setAnnouncement }
           confirmBtnTitle='Delete'
           handleConfirmModalChange={(isOk: boolean) => {
             if (isOk) {
-              confirmDeleteAnnouncement(showConfirmModal)
+              confirmDeleteAnnouncement(showConfirmModal).then(() => {})
             }
             setShowConfirmModal(0)
           }}
         />
       )}
-    </Card>
+    </PageBlock>
   )
 }
 

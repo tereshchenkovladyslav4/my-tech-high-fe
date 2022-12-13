@@ -20,13 +20,13 @@ export const getAnnouncementsQuery = gql`
 `
 
 export const CreateAnnouncementMutation = gql`
-  mutation CreateAnnoucement($createAnnoucementInput: CreateAnnouncementInput!) {
-    createAnnoucement(createAnnoucementInput: $createAnnoucementInput) {
+  mutation CreateAnnouncement($createAnnouncementInput: CreateAnnouncementInput!) {
+    createAnnouncement(createAnnouncementInput: $createAnnouncementInput) {
       announcement_id
       date
       filter_grades
       filter_users
-      filter_provider
+      filter_providers
       status
       subject
       posted_by
@@ -35,8 +35,8 @@ export const CreateAnnouncementMutation = gql`
 `
 
 export const UpdateAnnouncementMutation = gql`
-  mutation UpdateAnouncement($updateAnnouncementInput: UpdateAnnouncementInput!) {
-    updateAnouncement(updateAnnouncementInput: $updateAnnouncementInput) {
+  mutation UpdateAnnouncement($updateAnnouncementInput: UpdateAnnouncementInput!) {
+    updateAnnouncement(updateAnnouncementInput: $updateAnnouncementInput) {
       announcement_id
       date
       filter_grades

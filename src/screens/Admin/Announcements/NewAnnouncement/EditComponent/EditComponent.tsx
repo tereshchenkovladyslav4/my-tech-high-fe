@@ -1,8 +1,9 @@
-import React, { FunctionComponent, useRef, useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { Box, OutlinedInput } from '@mui/material'
-import Wysiwyg from 'react-draft-wysiwyg'
-import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
-import { RED } from '../../../../../utils/constants'
+import { EditorState } from 'draft-js'
+import Wysiwyg, { RawDraftContentState } from 'react-draft-wysiwyg'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { MthColor } from '@mth/enums'
 import { useStyles } from '../styles'
 
 type EditComponentProps = {
@@ -10,17 +11,17 @@ type EditComponentProps = {
   emailInvalid: boolean
   subject: string
   subjectInvalid: boolean
-  editorState: unknown
+  editorState: EditorState
   bodyInvalid: boolean
   setBodyInvalid: (value: boolean) => void
-  setEditorState: (value: unknown) => void
+  setEditorState: (value: EditorState) => void
   setEmailFrom: (value: string) => void
   setEmailInvalid: (value: boolean) => void
   setSubject: (value: string) => void
   setSubjectInvalid: (value: boolean) => void
 }
 
-const EditComponent: FunctionComponent<EditComponentProps> = ({
+const EditComponent: React.FC<EditComponentProps> = ({
   emailFrom,
   emailInvalid,
   subject,
@@ -43,7 +44,7 @@ const EditComponent: FunctionComponent<EditComponentProps> = ({
     setBodyInvalid(false)
   }
 
-  const handleEditorChange = (state) => {
+  const handleEditorChange = (state: RawDraftContentState) => {
     try {
       if (currentBlocks !== 0 && currentBlocks !== state.blocks.length) {
         editorRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' })
@@ -66,12 +67,12 @@ const EditComponent: FunctionComponent<EditComponentProps> = ({
         sx={classes.subject}
       />
       {emailInvalid && emailFrom == '' && (
-        <Subtitle size='small' color={RED} fontWeight='700'>
+        <Subtitle size='small' color={MthColor.RED} fontWeight='700'>
           Please enter email
         </Subtitle>
       )}
       {emailInvalid && emailFrom != '' && (
-        <Subtitle size='small' color={RED} fontWeight='700'>
+        <Subtitle size='small' color={MthColor.RED} fontWeight='700'>
           Invalid Email. Please enter registered email
         </Subtitle>
       )}
@@ -86,7 +87,7 @@ const EditComponent: FunctionComponent<EditComponentProps> = ({
         }}
       />
       {subjectInvalid && (
-        <Subtitle size='small' color={RED} fontWeight='700'>
+        <Subtitle size='small' color={MthColor.RED} fontWeight='700'>
           Please enter subject
         </Subtitle>
       )}
@@ -118,7 +119,7 @@ const EditComponent: FunctionComponent<EditComponentProps> = ({
         />
       </Box>
       {bodyInvalid && (
-        <Subtitle size='small' color={RED} fontWeight='700'>
+        <Subtitle size='small' color={MthColor.RED} fontWeight='700'>
           Please enter email content.
         </Subtitle>
       )}

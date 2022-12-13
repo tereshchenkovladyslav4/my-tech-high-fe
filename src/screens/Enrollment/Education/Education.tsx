@@ -46,6 +46,7 @@ export const Education: EducationTemplateType = ({ id, questions }) => {
                 if (q.slug?.toLocaleLowerCase().includes('emailconfirm')) {
                   valid_student[`${q.slug?.replace('student_', '')}`] = yup
                     .string()
+                    .nullable()
                     .required('Required')
                     .oneOf([yup.ref('email')], 'Emails do not match')
                 } else if (q.validation === 1) {
@@ -77,6 +78,7 @@ export const Education: EducationTemplateType = ({ id, questions }) => {
                   valid_parent[`${q.slug?.replace('parent_', '')}`] = yup
                     .string()
                     .required('Required')
+                    .nullable()
                     .oneOf([yup.ref('email')], 'Emails do not match')
                 } else if (q.validation === 1) {
                   valid_parent[`${q.slug?.replace('parent_', '')}`] = yup

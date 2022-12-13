@@ -24,6 +24,8 @@ export type Announcement = {
   RegionId?: number
   posted_by?: string
   filter_users?: string
+  filter_others?: string
+  filter_providers?: string
   schedule_time?: Date
 }
 

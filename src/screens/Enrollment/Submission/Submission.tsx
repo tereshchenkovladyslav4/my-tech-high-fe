@@ -87,6 +87,7 @@ export const Submission: SubmissionTemplateType = ({ id, questions }) => {
                 if (q.slug?.toLocaleLowerCase().includes('emailconfirm')) {
                   valid_student[`${q.slug?.replace('student_', '')}`] = yup
                     .string()
+                    .nullable()
                     .required('Required')
                     .oneOf([yup.ref('email')], 'Emails do not match')
                 } else if (q.validation === 1) {
@@ -117,6 +118,7 @@ export const Submission: SubmissionTemplateType = ({ id, questions }) => {
                 if (q.slug?.toLocaleLowerCase().includes('emailconfirm')) {
                   valid_parent[`${q.slug?.replace('parent_', '')}`] = yup
                     .string()
+                    .nullable()
                     .required('Required')
                     .oneOf([yup.ref('email')], 'Emails do not match')
                 } else if (q.validation === 1) {
