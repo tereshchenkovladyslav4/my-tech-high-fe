@@ -10,7 +10,7 @@ import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { Title } from '@mth/components/Typography/Title/Title'
 import { WarningModal } from '@mth/components/WarningModal/Warning'
-import { s3URL, SNOWPACK_PUBLIC_S3_URL } from '@mth/constants'
+import { isValidPassword, s3URL, SNOWPACK_PUBLIC_S3_URL } from '@mth/constants'
 import { MthColor, MthRoute, MthTitle, PacketStatus } from '@mth/enums'
 import { getAssessmentsBySchoolYearId, getStudentAssessmentsByStudentId } from '@mth/graphql/queries/assessment'
 import { UserContext, UserInfo } from '@mth/providers/UserContext/UserProvider'
@@ -95,13 +95,7 @@ export const StudentProfile: React.FC = () => {
     firstName: yup.string().nullable(),
     lastName: yup.string().nullable(),
     email: yup.string().email('Please enter a valid email').nullable().required('Email is required'),
-    password: yup
-      .string()
-      .matches(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/,
-        'Passwords must contain 8 characters, 1 uppercase, 1 lowercase, 1 number, and 1 special character.',
-      )
-      .nullable(),
+    password: yup.string().matches(isValidPassword, MthTitle.PASSWORD_HINT).nullable(),
   })
 
   const formik = useFormik({

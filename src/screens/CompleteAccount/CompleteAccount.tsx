@@ -4,12 +4,13 @@ import { Button, TextField } from '@mui/material'
 import { Box } from '@mui/system'
 import { useFormik } from 'formik'
 import * as yup from 'yup'
+import { NewApplicationFooter } from '@mth/components/NewApplicationFooter/NewApplicationFooter'
+import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
+import { Title } from '@mth/components/Typography/Title/Title'
+import { isValidPassword } from '@mth/constants'
+import { MthColor, MthTitle, RoleLevel } from '@mth/enums'
 import { getWindowDimension } from '@mth/utils'
 import BGSVG from '../../assets/ApplicationBG.svg'
-import { NewApplicationFooter } from '../../components/NewApplicationFooter/NewApplicationFooter'
-import { Paragraph } from '../../components/Typography/Paragraph/Paragraph'
-import { Title } from '../../components/Typography/Title/Title'
-import { MTHBLUE, SYSTEM_05 } from '../../utils/constants'
 import { CompleteAccountSuccess } from '../CompleteAccountSuccess/CompleteAccountSuccess'
 import { confirmAccount, sendApplicationEmail } from './service'
 import { useStyles } from './styles'
@@ -26,13 +27,7 @@ export const CompleteAccount: React.FC = () => {
 
   const validationSchema = yup.object({
     email: yup.string().email('Enter a valid email').required('Email is required'),
-    password: yup
-      .string()
-      .matches(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/,
-        'Passwords must contain 8 characters, 1 uppercase, 1 lowercase, 1 number, and 1 special case character.',
-      )
-      .required('Password is required'),
+    password: yup.string().matches(isValidPassword, MthTitle.PASSWORD_HINT).required('Password is required'),
     confirmPassword: yup
       .string()
       .required('Please enter your password again')
@@ -41,9 +36,9 @@ export const CompleteAccount: React.FC = () => {
 
   const formik = useFormik({
     initialValues: {
-      email: undefined,
-      password: undefined,
-      confirmPassword: undefined,
+      email: '',
+      password: '',
+      confirmPassword: '',
     },
     validationSchema: validationSchema,
     onSubmit: async () => {
@@ -59,9 +54,10 @@ export const CompleteAccount: React.FC = () => {
           password: formik.values.password,
         },
       },
-    }).then(() => {
+    }).then((res) => {
       setShowSuccess(true)
-      sendApplicationReceiveEmail({ variables: { email: formik.values.email } })
+      const roleLevel = res?.data?.verify?.level
+      if (roleLevel === RoleLevel.PARENT) sendApplicationReceiveEmail({ variables: { email: formik.values.email } })
     })
   }
 
@@ -79,7 +75,7 @@ export const CompleteAccount: React.FC = () => {
   }, [showSuccess])
 
   return !showSuccess ? (
-    <Box paddingY={6} sx={{ bgcolor: '#EEF4F8' }}>
+    <Box paddingY={6} sx={{ backgroundColor: MthColor.SYSTEM_09 }}>
       <Box
         sx={{
           backgroundImage: `url(${BGSVG})`,
@@ -93,7 +89,7 @@ export const CompleteAccount: React.FC = () => {
         <Box>
           <Box paddingX={windowDimensions.width < 1000 ? 5 : 36}>
             <Box marginTop={12} marginBottom={3}>
-              <Title color={MTHBLUE} textAlign='center'>
+              <Title color={MthColor.MTHBLUE} textAlign='center'>
                 InfoCenter
               </Title>
             </Box>
@@ -125,7 +121,7 @@ export const CompleteAccount: React.FC = () => {
                     style: { color: 'black' },
                   }}
                   InputLabelProps={{
-                    style: { color: SYSTEM_05 },
+                    style: { color: MthColor.SYSTEM_05 },
                   }}
                   size='small'
                   value={formik.values.email}
@@ -148,7 +144,7 @@ export const CompleteAccount: React.FC = () => {
                     style: { color: 'black' },
                   }}
                   InputLabelProps={{
-                    style: { color: SYSTEM_05 },
+                    style: { color: MthColor.SYSTEM_05 },
                   }}
                   onBlur={formik.handleBlur}
                   value={formik.values.password}
@@ -171,7 +167,7 @@ export const CompleteAccount: React.FC = () => {
                     style: { color: 'black' },
                   }}
                   InputLabelProps={{
-                    style: { color: SYSTEM_05 },
+                    style: { color: MthColor.SYSTEM_05 },
                   }}
                   value={formik.values.confirmPassword}
                   onChange={formik.handleChange}

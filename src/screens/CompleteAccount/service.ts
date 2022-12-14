@@ -6,6 +6,7 @@ export const confirmAccount = gql`
       email
       status
       token
+      level
     }
   }
 `

@@ -7,7 +7,9 @@ import { Box } from '@mui/system'
 import { useFormik } from 'formik'
 import { useHistory } from 'react-router-dom'
 import * as yup from 'yup'
-import { AuthContext } from '../../providers/AuthProvider/AuthContext'
+import { isValidPassword } from '@mth/constants'
+import { MthTitle } from '@mth/enums'
+import { AuthContext } from '@mth/providers/AuthProvider/AuthContext'
 import { BUTTON_LINEAR_GRADIENT } from '../../utils/constants'
 import { CompleteAccountSuccess } from '../CompleteAccountSuccess/CompleteAccountSuccess'
 import { resetPasswordMutation } from './service'
@@ -37,13 +39,7 @@ export const ResetPassword: React.FC = () => {
   const history = useHistory()
   const validationSchema = yup.object({
     email: yup.string().email('Enter a valid email').required('Email is required'),
-    password: yup
-      .string()
-      .matches(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/,
-        'Passwords must contain 8 characters, 1 uppercase, 1 lowercase, 1 number, and 1 special character.',
-      )
-      .required('Password is required'),
+    password: yup.string().matches(isValidPassword, MthTitle.PASSWORD_HINT).required('Password is required'),
     confirmPassword: yup
       .string()
       .required('Please enter your password again')

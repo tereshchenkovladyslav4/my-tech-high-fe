@@ -13,3 +13,5 @@ export const urlRex = RegExp('^(https?://)?([\\da-z.-]+)\\.([a-z.]{2,6})[/\\w .-
 export const isPrice = /^\d+(\.\d{0,2})?$/
 
 export const isDecimal = /^\d+(\.\d*)?$/
+
+export const isValidPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/

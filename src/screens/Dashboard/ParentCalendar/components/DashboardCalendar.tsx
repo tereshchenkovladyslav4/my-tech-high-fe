@@ -72,7 +72,7 @@ export const DashboardCalendar: React.FC<DashboardCalendarProps> = ({
             setSelectedDate={setSelectedDate}
             handleSelectedEvent={handleSelectedEvent}
             eventList={calendarEventList.filter((item) => selectedEventTypes.includes(item.title))}
-            day={currentMonth}
+            currentMonth={currentMonth}
           />
         </Box>
       </Box>

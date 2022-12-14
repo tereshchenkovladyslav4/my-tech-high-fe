@@ -17,7 +17,7 @@ export type DayVM = {
 export type CalendarDaysProps = {
   selectedEvent: EventVM | undefined
   eventList: CalendarEvent[]
-  day: Date
+  currentMonth: Date
   selectedDate: Date | undefined
   handleSelectedEvent: (value: CalendarEvent, date: Date) => void
   setSelectedDate: (value: Date | undefined) => void

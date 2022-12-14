@@ -56,4 +56,5 @@ export enum MthTitle {
   SUPPLEMENTAL_LEARNING_FUNDS = 'Supplemental Learning Funds',
   TECHNOLOGY = 'Technology',
   CUSTOM_BUILT = 'Custom-built',
+  PASSWORD_HINT = 'Passwords must contain 8 characters, 1 uppercase, 1 lowercase, 1 number, and 1 special character.',
 }

@@ -12,7 +12,7 @@ import { CalendarDaysProps, DayVM } from './types'
 export const CalendarDays: React.FC<CalendarDaysProps> = ({
   selectedEvent,
   eventList,
-  day,
+  currentMonth,
   selectedDate,
   setSelectedDate,
   handleSelectedEvent,
@@ -117,7 +117,7 @@ export const CalendarDays: React.FC<CalendarDaysProps> = ({
 
   useEffect(() => {
     const calendarDays: DayVM[] = []
-    const firstDayOfMonth = new Date(day.getFullYear(), day.getMonth(), 1)
+    const firstDayOfMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1)
     const weekdayOfFirstDay = firstDayOfMonth.getDay()
     for (let cell = 1; cell < 43; cell++) {
       if (cell === 1 && weekdayOfFirstDay === 0) {
@@ -127,13 +127,13 @@ export const CalendarDays: React.FC<CalendarDaysProps> = ({
       } else {
         firstDayOfMonth.setDate(firstDayOfMonth.getDate() + 1)
       }
-      if (cell === 7 && !(firstDayOfMonth.getMonth() === day.getMonth())) {
+      if (cell === 7 && !(firstDayOfMonth.getMonth() === currentMonth.getMonth())) {
         calendarDays.splice(0)
         continue
       }
       const { counts, color } = getEventCountsAndColor(eventList, new Date(firstDayOfMonth))
       const calendarDay: DayVM = {
-        currentMonth: firstDayOfMonth.getMonth() === day.getMonth(),
+        currentMonth: firstDayOfMonth.getMonth() === currentMonth.getMonth(),
         date: new Date(firstDayOfMonth),
         month: firstDayOfMonth.getMonth(),
         number: firstDayOfMonth.getDate(),
@@ -144,14 +144,18 @@ export const CalendarDays: React.FC<CalendarDaysProps> = ({
         eventElement: getEventElement(eventList, new Date(firstDayOfMonth)),
         eventColor: color,
       }
-      if (cell === 36 && !(firstDayOfMonth.getMonth() === day.getMonth())) {
+      if (cell === 36 && !(firstDayOfMonth.getMonth() === currentMonth.getMonth())) {
         break
       }
 
       calendarDays.push(calendarDay)
     }
     setCurrentDays(calendarDays)
-  }, [day, selectedDate, eventList])
+  }, [currentMonth, selectedDate, eventList])
+
+  useEffect(() => {
+    setShowEventLstPopup(false)
+  }, [currentMonth])
 
   return (
     <Box className='table-content' sx={calendarDayClasses.relative}>
@@ -167,6 +171,14 @@ export const CalendarDays: React.FC<CalendarDaysProps> = ({
                 backgroundColor: currentDay.eventCount === 1 ? currentDay.eventColor : '',
               }}
               onClick={() => {
+                if (
+                  showEventLstPopup &&
+                  currentDay.date &&
+                  selectedDate &&
+                  moment(currentDay.date).diff(selectedDate, 'hours')
+                ) {
+                  setShowEventLstPopup(false)
+                }
                 setSelectedDate(currentDay.date)
               }}
             >

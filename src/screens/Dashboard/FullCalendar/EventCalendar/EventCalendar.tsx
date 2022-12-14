@@ -29,6 +29,7 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
   setSelectedEventId,
   setSelectedDate,
 }) => {
+  const TRANSITION_TIME = 250
   const [showMore, setShowMore] = useState<boolean>(false)
   const [selectedEvents, setSelectedEvents] = useState<CalendarEvent[]>([])
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
@@ -83,7 +84,7 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
       )
     })
   }
-  const handleOnNaviate = () => {}
+  const handleOnNavigate = () => {}
 
   const CustomToolbar = () => {
     return (
@@ -95,7 +96,10 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
             sx={mainClasses.leftArrowButton}
             startIcon={<ArrowBackIosNewIcon />}
             onClick={() => {
-              setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 3))
+              setShowMore(false)
+              setTimeout(() => {
+                setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 3))
+              }, TRANSITION_TIME)
             }}
           ></Button>
           <label style={{ marginBottom: 'auto', marginTop: 'auto' }}>{moment(currentMonth).format('MMMM YYYY')}</label>
@@ -105,7 +109,10 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
             sx={mainClasses.rightArrowButton}
             startIcon={<ArrowForwardIosIcon />}
             onClick={() => {
-              setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 3))
+              setShowMore(false)
+              setTimeout(() => {
+                setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 3))
+              }, TRANSITION_TIME)
             }}
           ></Button>
         </Box>
@@ -128,7 +135,7 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
         onSelectEvent={handleSelectEvent}
         selectable
         popup={false}
-        onNavigate={handleOnNaviate}
+        onNavigate={handleOnNavigate}
         messages={{
           showMore: (target: number) => (
             <span
@@ -179,7 +186,7 @@ const EventCalendar: React.FC<EventCalendarProps> = ({
       />
       <Popper id={'simple-popper'} open={showMore} anchorEl={anchorEl} transition>
         {({ TransitionProps }) => (
-          <Fade {...TransitionProps} timeout={350}>
+          <Fade {...TransitionProps} timeout={TRANSITION_TIME}>
             <Card sx={calendarDayClasses.modal}>
               <Box sx={calendarDayClasses.title}>
                 <Subtitle color={MthColor.GRAY} sx={{ fontSize: '20px' }} fontWeight='700'>

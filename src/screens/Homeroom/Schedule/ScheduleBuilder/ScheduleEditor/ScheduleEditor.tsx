@@ -44,7 +44,7 @@ const StyledTooltip = styled(({ className, ...props }: TooltipProps) => (
 ))(() => ({
   [`& .${tooltipClasses.tooltip}`]: {
     marginRight: '32px !important',
-    textAlign: 'ceter',
+    textAlign: 'center',
     fontSize: '14px',
     '& a': {
       color: `${MthColor.MTHBLUE} !important`,
@@ -402,7 +402,11 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
       if (
         course.Provider?.multiple_periods &&
         !multiPeriodsConfirmed &&
-        course.Provider.multi_periods_notification?.length >= RICH_TEXT_VALID_MIN_LENGTH
+        course.Provider.multi_periods_notification?.length >= RICH_TEXT_VALID_MIN_LENGTH &&
+        // It should show multiple periods notification only the first time.
+        !schedule.Provider?.multiple_periods &&
+        // It should check selected period is included in multiple periods.
+        course.Provider?.Periods?.findIndex((x) => x.id === schedule.Period?.id) > -1
       ) {
         // The multiple periods notification should show on the parent end
         // when they select a provider that requires multiple periods for the first time

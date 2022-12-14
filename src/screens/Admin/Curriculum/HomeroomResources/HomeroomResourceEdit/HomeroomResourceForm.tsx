@@ -293,7 +293,7 @@ const HomeroomResourceForm: React.FC<HomeroomResourceFormProps> = ({ schoolYearI
               </Box>
               <Box>
                 <MthCheckbox
-                  label='This resource qualifies for Required Software Reimbursement'
+                  label='This resource qualifies for a Required Software Reimbursement.'
                   checked={values?.software_reimbursement}
                   onChange={() => {
                     setFieldValue('software_reimbursement', !values?.software_reimbursement)

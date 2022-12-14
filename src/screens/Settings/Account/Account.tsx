@@ -5,7 +5,8 @@ import { useFormik } from 'formik'
 import * as yup from 'yup'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
-import { MthColor } from '@mth/enums'
+import { isValidPassword } from '@mth/constants'
+import { MthColor, MthTitle } from '@mth/enums'
 import { UserContext, UserInfo } from '@mth/providers/UserContext/UserProvider'
 import { updatePassword } from '../service'
 import { settingClasses } from '../styles'
@@ -65,13 +66,7 @@ export const Account: React.FC<AccountProps> = ({ handleIsFormChange }) => {
   }
 
   const validationSchema = yup.object({
-    newPassword: yup
-      .string()
-      .matches(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/,
-        'Passwords must contain 8 characters, 1 uppercase, 1 lowercase, 1 number, and 1 special character.',
-      )
-      .required('Password is required'),
+    newPassword: yup.string().matches(isValidPassword, MthTitle.PASSWORD_HINT).required('Password is required'),
     confirmPassword: yup
       .string()
       .required('Re-Enter password is required')

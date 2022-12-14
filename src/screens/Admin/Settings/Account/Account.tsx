@@ -1,12 +1,13 @@
-import React, { FunctionComponent, useContext, useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { useMutation } from '@apollo/client'
 import { Alert, AlertColor, Box, Button, Card, Grid, TextField } from '@mui/material'
 import { useFormik } from 'formik'
-
 import * as yup from 'yup'
-import { Paragraph } from '../../../../components/Typography/Paragraph/Paragraph'
-import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
-import { UserContext } from '../../../../providers/UserContext/UserProvider'
+import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { isValidPassword } from '@mth/constants'
+import { MthTitle } from '@mth/enums'
+import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { SYSTEM_08 } from '../../../../utils/constants'
 import { updatePassword } from '../service'
 import { useStyles } from '../styles'
@@ -17,7 +18,7 @@ type openAlertSaveType = {
   open: boolean
 }
 
-export const Account: FunctionComponent<{ handleIsFormChange: () => void }> = ({ handleIsFormChange }) => {
+export const Account: React.FC<{ handleIsFormChange: () => void }> = ({ handleIsFormChange }) => {
   const classes = useStyles
 
   const { me } = useContext(UserContext)
@@ -60,13 +61,7 @@ export const Account: FunctionComponent<{ handleIsFormChange: () => void }> = ({
 
   const validationSchema = yup.object({
     currentPassword: yup.string().required('Current Password is required'),
-    newPassword: yup
-      .string()
-      .matches(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/,
-        'Passwords must contain 8 characters, 1 uppercase, 1 lowercase, 1 number, and 1 special character.',
-      )
-      .required('New Password is required'),
+    newPassword: yup.string().matches(isValidPassword, MthTitle.PASSWORD_HINT).required('New Password is required'),
     confirmNewPassword: yup
       .string()
       .required('Re-Enter new password is required')
