@@ -33,7 +33,9 @@ export const getSchedulesQuery = gql`
         status
         ScheduleStudent {
           student_id
-          grade_level
+          grade_levels {
+            grade_level
+          }
           person {
             user_id
             first_name

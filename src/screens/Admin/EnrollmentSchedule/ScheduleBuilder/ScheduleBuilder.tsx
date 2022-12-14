@@ -88,7 +88,11 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
   const [sendUpdatesAllowedEmail] = useMutation(sendUpdatesAllowedEmailMutation)
   const [updateScheduleStatusById] = useMutation(updateScheduleMutation)
 
-  const handleSave = async (status: ScheduleStatus, clickedAcceptAsSecondSemester = false) => {
+  const handleSave = async (
+    status: ScheduleStatus,
+    clickedAcceptAsSecondSemester = false,
+    clickedSaveChange = false,
+  ) => {
     const data = hasSecondSemester ? secondScheduleData : scheduleData
     if (data?.length) {
       const submitResponse = await submitScheduleBuilder({
@@ -122,10 +126,10 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
           variables: {
             createSchedulePeriodInput: {
               param: data?.map((item) => {
-                return status === ScheduleStatus.NOT_SUBMITTED
+                return status === ScheduleStatus.NOT_SUBMITTED && !clickedSaveChange
                   ? {
                       CourseId: null,
-                      PeriodId: Number(item?.Period?.id),
+                      PeriodId: null,
                       ProviderId: null,
                       ScheduleId: Number(scheduleId),
                       SubjectId: null,
@@ -185,7 +189,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
         }
       }
       setIsChanged(false)
-      if (status !== ScheduleStatus.NOT_SUBMITTED) {
+      if (status !== ScheduleStatus.NOT_SUBMITTED || clickedSaveChange) {
         setTimeout(() => {
           history.push(ENROLLMENT_SCHEDULE)
         }, 300)
@@ -222,8 +226,10 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
   }
 
   const handleSaveChanges = () => {
-    setIsChanged(false)
-    handleSave(studentScheduleStatus)
+    if (isChanged) {
+      setIsChanged(false)
+      handleSave(scheduleStatus?.value as ScheduleStatus, false, true)
+    }
   }
 
   const handleCancelUpdates = () => {

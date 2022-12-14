@@ -51,7 +51,23 @@ export const ScheduleTable: React.FC<FiltersProps> = ({ filter, setFilter }) => 
   const [scheduleCount, setScheduleCount] = useState<ScheduleCount>()
   const scheduleIds = React.useRef<Array<number>>()
 
-  const createData = (schedule: unknown) => {
+  const checker = (arr: string[], target: string[]) => target.every((v) => arr.includes(v))
+  const createData = (schedule) => {
+    const gradeArray = schedule.ScheduleStudent.grade_levels
+    let gradeLevel =
+      gradeArray.length &&
+      (gradeArray[0].grade_level.includes('Kin')
+        ? 'K'
+        : gradeArray[0]?.grade_level.includes('undefined')
+        ? ''
+        : gradeArray[0]?.grade_level)
+
+    if (filter?.grades != undefined && checker(filter?.grades, ['K', '1-8', '9-12'])) {
+      if (gradeLevel == 'K') gradeLevel = 'K'
+      else if (Number(gradeLevel) >= 1 && Number(gradeLevel) <= 8) gradeLevel = '1-8'
+      else gradeLevel = '9-12'
+    }
+
     return {
       key: schedule.schedule_id.toString(),
       columns: {
@@ -65,7 +81,7 @@ export const ScheduleTable: React.FC<FiltersProps> = ({ filter, setFilter }) => 
         status: schedule.status,
         student: `${schedule.ScheduleStudent.person?.last_name}, ${schedule.ScheduleStudent.person?.first_name}`,
         studentId: +schedule.ScheduleStudent.student_id,
-        grade: schedule.ScheduleStudent.grade_level,
+        grade: gradeLevel,
         parent: `${schedule.ScheduleStudent.parent.person?.last_name}, ${schedule.ScheduleStudent.parent.person?.first_name}`,
         diploma: schedule.ScheduleStudent.diploma_seeking === 1 ? 1 : 0,
         emailed:
