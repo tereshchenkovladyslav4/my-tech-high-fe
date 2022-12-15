@@ -143,6 +143,7 @@ export const Students: React.FC<StudentsProps> = ({ students, selectedStudent, h
                     status === StudentStatus.PENDING ||
                     status === StudentStatus.ACTIVE ||
                     status === StudentStatus.APPLIED ||
+                    status === StudentStatus.REAPPLIED ||
                     status === StudentStatus.ACCEPTED ||
                     status === StudentStatus.WITHDRAWN
                   )

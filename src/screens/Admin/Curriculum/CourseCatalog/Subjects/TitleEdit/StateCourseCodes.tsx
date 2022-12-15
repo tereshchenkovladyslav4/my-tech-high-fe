@@ -4,23 +4,28 @@ import { AccordionSummary, Typography, AccordionDetails, Grid, TextField, Accord
 import { useFormikContext } from 'formik'
 import { GRADES } from '@mth/constants'
 import { MthColor } from '@mth/enums'
-import { StateCourseCord, Title } from '@mth/screens/Admin/Curriculum/CourseCatalog/Subjects/types'
+import { Title } from '@mth/screens/Admin/Curriculum/CourseCatalog/Subjects/types'
 import { editTitleClasses } from './styles'
 
 export const StateCourseCords: React.FC = () => {
   const { values, setFieldValue } = useFormikContext<Title>()
-
   const [minGrade, setMinGrade] = useState<number>(Number.POSITIVE_INFINITY)
   const [maxGrade, setMaxGrade] = useState<number>(Number.NEGATIVE_INFINITY)
-
   const handleChangeOption = (i: number, field: string, value: string | number | null) => {
-    const temp: StateCourseCord[] = values?.stateCourseCords || []
-    temp[i] = {
-      ...temp[i],
-      [field]: value,
-      gradeIndex: i,
+    let found = false
+    let newCourses = values?.stateCourseCords?.map((course) => {
+      if (course.gradeIndex === i) {
+        found = true
+        return { ...course, [field]: value }
+      }
+      return course
+    })
+
+    newCourses = newCourses ?? []
+    if (!found) {
+      newCourses?.push({ gradeIndex: i, stateCode: '', teacher: '', [field]: value })
     }
-    setFieldValue('stateCourseCords', temp)
+    setFieldValue('stateCourseCords', newCourses)
   }
 
   useEffect(() => {
@@ -58,7 +63,11 @@ export const StateCourseCords: React.FC = () => {
                           fullWidth
                           InputLabelProps={{ shrink: true }}
                           className='MthFormField'
-                          value={values?.stateCourseCords?.[index]?.stateCode || ''}
+                          value={
+                            values?.stateCourseCords?.find(
+                              (code) => code?.gradeIndex === (typeof grade === 'string' ? 0 : grade),
+                            )?.stateCode || ''
+                          }
                           onChange={(e) => handleChangeOption(index, 'stateCode', e.target.value || null)}
                         />
                       </Grid>
@@ -70,7 +79,11 @@ export const StateCourseCords: React.FC = () => {
                           fullWidth
                           InputLabelProps={{ shrink: true }}
                           className='MthFormField'
-                          value={values?.stateCourseCords?.[index]?.teacher || ''}
+                          value={
+                            values?.stateCourseCords?.find(
+                              (code) => code?.gradeIndex === (typeof grade === 'string' ? 0 : grade),
+                            )?.teacher || ''
+                          }
                           onChange={(e) => handleChangeOption(index, 'teacher', e.target.value || null)}
                         />
                       </Grid>

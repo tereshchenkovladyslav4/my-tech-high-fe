@@ -272,7 +272,7 @@ export const Student: React.FC<StudentProps> = ({
       variables: {
         updateStudentInput: {
           student_id: Number(student?.student_id),
-          status: StudentStatus.APPLIED,
+          status: StudentStatus.REAPPLIED,
           school_year_id: parseInt(String(schoolYear)?.split('-')[0]),
         },
       },

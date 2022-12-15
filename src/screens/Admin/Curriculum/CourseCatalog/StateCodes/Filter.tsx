@@ -5,25 +5,30 @@ import { Pagination } from '@mth/components/Pagination/Pagination'
 import { useStyles } from '../../styles'
 
 type FilterProps = {
-  query: {
-    keyword?: string
-    limit: number
-    page: number
-  }
+  setSearchField: (value: string) => void
+  limit: number
+  curPage: number
+  onChangePageLimit: (value: number) => void
   total: number
-  setValue: (field: string, value: string | boolean | number) => void
+  onPageChange: (value: number) => void
 }
 
-const Periods: FunctionComponent<FilterProps> = ({ query, setValue, total }) => {
+const Periods: FunctionComponent<FilterProps> = ({
+  setSearchField,
+  total,
+  curPage,
+  limit,
+  onChangePageLimit,
+  onPageChange,
+}) => {
   const classes = useStyles
   return (
     <Box sx={classes.filter}>
       <OutlinedInput
         size='small'
         fullWidth
-        value={query.keyword}
         placeholder='Search...'
-        onChange={(e) => setValue('keyword', e.target.value)}
+        onChange={(e) => setSearchField(e.target.value)}
         startAdornment={
           <InputAdornment position='start'>
             <SearchIcon style={{ color: 'black' }} />
@@ -33,11 +38,11 @@ const Periods: FunctionComponent<FilterProps> = ({ query, setValue, total }) => 
       />
       <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: '20px' }}>
         <Pagination
-          defaultValue={query.limit}
-          numPages={Math.ceil(total / query.limit) || 0}
-          currentPage={query.page}
-          setParentLimit={(value) => setValue('limit', value)}
-          handlePageChange={(vv) => setValue('page', vv)}
+          defaultValue={limit}
+          numPages={Math.ceil(total / limit) || 0}
+          currentPage={curPage}
+          setParentLimit={(value) => onChangePageLimit(value)}
+          handlePageChange={(vv) => onPageChange(vv)}
         />
       </Box>
     </Box>

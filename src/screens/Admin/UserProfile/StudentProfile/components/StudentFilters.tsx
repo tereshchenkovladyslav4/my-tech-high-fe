@@ -340,36 +340,38 @@ export const StudentFilters: React.FC<StudentFiltersProps> = ({
         },
         {
           label:
-            studentStatusData?.status == 5
-              ? `Applied (${moment(studentStatusData?.date).format('MM/DD/YYYY')})`
+            studentStatusData?.status == 5 || studentStatusData?.status == 7
+              ? `${studentStatusData?.status == 7 ? 'Applied (re-apply)' : 'Applied'} ${moment(
+                  studentStatusData?.date,
+                ).format('MM/DD/YYYY')}`
               : 'Applied',
-          value: StudentStatus.APPLIED,
+          value: studentStatusData?.status == 7 ? StudentStatus.REAPPLIED : StudentStatus.APPLIED,
         },
         {
           label:
             studentStatusData?.status == 6
-              ? `Accepted (${moment(studentStatusData?.date).format('MM/DD/YYYY')})`
+              ? `Accepted ${moment(studentStatusData?.date).format('MM/DD/YYYY')}`
               : 'Accepted',
           value: StudentStatus.ACCEPTED,
         },
         {
           label:
             studentStatusData?.status == 0
-              ? `Pending (${moment(studentStatusData?.date).format('MM/DD/YYYY')})`
+              ? `Pending ${moment(studentStatusData?.date).format('MM/DD/YYYY')}`
               : 'Pending',
           value: StudentStatus.PENDING,
         },
         {
           label:
             studentStatusData?.status == 1
-              ? `Active (${moment(studentStatusData?.date).format('MM/DD/YYYY')})`
+              ? `Active ${moment(studentStatusData?.date).format('MM/DD/YYYY')}`
               : 'Active',
           value: StudentStatus.ACTIVE,
         },
         {
           label:
             studentStatusData?.status == 2
-              ? `Withdrawn (${moment(studentStatusData?.date).format('MM/DD/YYYY')})`
+              ? `Withdrawn ${moment(studentStatusData?.date).format('MM/DD/YYYY')}`
               : 'Withdrawn',
           value: StudentStatus.WITHDRAWN,
         },
@@ -613,8 +615,8 @@ export const StudentFilters: React.FC<StudentFiltersProps> = ({
                 <Subtitle sx={{ ...(classes.formValue as Record<string, unknown>) }} fontWeight='500'>
                   {applications[0].status}{' '}
                   {applications[0].date_accepted
-                    ? moment(applications[0].date_accepted).format('l')
-                    : moment(applications[0].date_submitted).format('l')}
+                    ? moment(applications[0].date_accepted).format('MM/DD/YYYY')
+                    : moment(applications[0].date_submitted).format('MM/DD/YYYY')}
                 </Subtitle>
               </Box>
               <Box sx={classes.formRow}>
@@ -624,7 +626,7 @@ export const StudentFilters: React.FC<StudentFiltersProps> = ({
                 </Subtitle>
                 <Subtitle sx={classes.formValue as Record<string, unknown>} fontWeight='500'>
                   {currentUserData.student.person.date_of_birth &&
-                    moment(currentUserData.student.person.date_of_birth).format('l')}
+                    moment(currentUserData.student.person.date_of_birth).format('MM/DD/YYYY')}
                   {currentUserData.student.person.date_of_birth &&
                     `(${moment().diff(currentUserData.student.person.date_of_birth, 'years')})`}
                 </Subtitle>

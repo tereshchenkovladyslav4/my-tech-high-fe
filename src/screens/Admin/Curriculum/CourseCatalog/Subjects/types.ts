@@ -3,6 +3,7 @@ import { CheckBoxListVM } from '@mth/components/MthCheckboxList/MthCheckboxList'
 import { CartEventType, DiplomaSeekingPath, ReduceFunds } from '@mth/enums'
 import { ScheduleBuilder } from '@mth/hooks'
 import { SchoolYear } from '@mth/models'
+import { StateCodeField } from '../StateCodes/types'
 
 export type Subject = {
   subject_id: number
@@ -58,6 +59,7 @@ export type Title = {
   diploma_seeking?: boolean
   show_software_reimbursement?: boolean
   stateCourseCords?: StateCourseCord[]
+  StateCodes?: StateCodeField[]
 }
 
 export type TitlesProps = {

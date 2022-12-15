@@ -7,7 +7,10 @@ import { GRADES, RICH_TEXT_VALID_MIN_LENGTH } from '@mth/constants'
 import { MthColor, ReduceFunds } from '@mth/enums'
 import { useProgramYearListBySchoolYearId, useScheduleBuilder, useSubjects } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
-import { createOrUpdateTitleMutation } from '@mth/screens/Admin/Curriculum/CourseCatalog/services'
+import {
+  createOrUpdateTitleMutation,
+  createStateCodesMutation,
+} from '@mth/screens/Admin/Curriculum/CourseCatalog/services'
 import { defaultTitleFormData } from '@mth/screens/Admin/Curriculum/CourseCatalog/Subjects/defaultValues'
 import TitleForm from '@mth/screens/Admin/Curriculum/CourseCatalog/Subjects/TitleEdit/TitleForm'
 import SaveCancelComponent from '../../Components/SaveCancelComponent/SaveCancelComponent'
@@ -26,6 +29,7 @@ const TitleEdit: React.FC<TitleEditProps> = ({
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false)
   const [initialValues, setInitialValues] = useState<Title>({ ...defaultTitleFormData, subject_id: subjectId })
   const [submitSave, {}] = useMutation(createOrUpdateTitleMutation)
+  const [createStateCodes] = useMutation(createStateCodesMutation)
 
   const { checkBoxItems: subjectsItems } = useSubjects(schoolYearId)
   const { numericGradeList: gradeOptions } = useProgramYearListBySchoolYearId(schoolYearId)
@@ -75,10 +79,8 @@ const TitleEdit: React.FC<TitleEditProps> = ({
       })
       .nullable(),
   })
-
   const onSave = async (value: Title) => {
     setIsSubmitted(true)
-
     await submitSave({
       variables: {
         createTitleInput: {
@@ -107,7 +109,25 @@ const TitleEdit: React.FC<TitleEditProps> = ({
         },
       },
     })
-      .then(() => {
+      .then(async (data) => {
+        const stateCodes = value.stateCourseCords?.map((codes) => {
+          return {
+            state_codes_id: item?.StateCodes?.find((code) => Number(code.grade) === codes.gradeIndex)?.state_codes_id,
+            TitleId: data?.data.createOrUpdateTitle?.title_id,
+            title_name: value.name,
+            state_code: codes.stateCode,
+            teacher: codes.teacher,
+            subject: subjectsItems.find((obj) => Number(obj.value) === Number(value.subject_id))?.label,
+            grade: codes.gradeIndex === 0 ? 'K' : codes.gradeIndex.toString(),
+          }
+        })
+        if (stateCodes && stateCodes?.length > 0) {
+          await createStateCodes({
+            variables: {
+              createStateCodesInput: stateCodes,
+            },
+          })
+        }
         setIsSubmitted(false)
         refetch()
         setShowEditModal(false)
@@ -119,15 +139,20 @@ const TitleEdit: React.FC<TitleEditProps> = ({
 
   useEffect(() => {
     if (item?.title_id) {
-      const originalCords: StateCourseCord[] = item.state_course_codes ? JSON.parse(item.state_course_codes) : []
+      const originalCords = item?.StateCodes?.map((obj) => {
+        if (obj?.grade?.toLowerCase()?.includes('k')) {
+          return { ...obj, grade: 0 }
+        }
+        return obj
+      })
       const stateCourseCords: StateCourseCord[] = GRADES.map((_item, index) => {
-        const stateCourseCord = originalCords.find((x) => x?.gradeIndex == index)
+        const stateCourseCord = originalCords?.find((x) => Number(x?.grade) === index)
         return {
           gradeIndex: index,
-          stateCode: stateCourseCord?.stateCode || '',
+          stateCode: stateCourseCord?.state_code || '',
           teacher: stateCourseCord?.teacher || '',
         }
-      })
+      }).filter((obj) => obj.stateCode || obj.teacher)
       setInitialValues({
         ...item,
         stateCourseCords,

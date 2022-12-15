@@ -66,7 +66,12 @@ export const QuickLinks: React.FC<QuickLinkProps> = ({ backAction, initialLink, 
   const [leavingConfirmModal, showLeavingConfirmModal] = useState(false)
 
   const onBackPress = () => {
-    selectQuickLink(null)
+    if (!hasChange) {
+      selectQuickLink(null)
+      setChanged(false)
+    } else {
+      showLeavingConfirmModal(true)
+    }
   }
 
   //	Detect profile change

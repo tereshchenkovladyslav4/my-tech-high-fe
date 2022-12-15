@@ -78,8 +78,8 @@ export const SortableUserTable: SortableTableTemplateType = ({
       {currentUserID && updateModal && (
         <UpdateUserModal visible={updateModal} userID={currentUserID} handleModem={() => setUpdateModal(false)} />
       )}
-      <TableContainer>
-        <Table sx={{ width: '87%', minWidth: 750, marginX: '95px' }} aria-labelledby='tableTitle' size='medium'>
+      <TableContainer sx={{ overflowX: 'hidden' }}>
+        <Table sx={{ width: '87%', minWidth: 750, marginX: 'auto' }} aria-labelledby='tableTitle' size='medium'>
           <SortableTableHeader
             numSelected={selected.length}
             order={order}

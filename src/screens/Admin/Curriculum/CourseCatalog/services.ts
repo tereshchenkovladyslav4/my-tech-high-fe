@@ -40,6 +40,15 @@ export const getSubjectsQuery = gql`
         allow_request
         is_active
         is_active
+        StateCodes {
+          state_codes_id
+          TitleId
+          title_name
+          state_code
+          grade
+          teacher
+          subject
+        }
       }
     }
   }
@@ -165,5 +174,39 @@ export const deleteCourseMutation = gql`
 export const cloneCourseMutation = gql`
   mutation CloneCourse($courseId: Float!) {
     cloneCourse(courseId: $courseId)
+  }
+`
+
+export const getStateCodesQuery = gql`
+  query StateCodes($skip: Int, $take: Int, $filter: StateCodesFilters, $regionId: Int, $sort: String, $search: String) {
+    stateCodes(skip: $skip, take: $take, filter: $filter, region_id: $regionId, sort: $sort, search: $search) {
+      total
+      results {
+        state_codes_id
+        TitleId
+        title_name
+        state_code
+        grade
+        teacher
+        subject
+      }
+    }
+  }
+`
+
+export const CreateNewStateCodesMutation = gql`
+  mutation Mutation($createNewStateCodesInput: [StateCodesInput!]!) {
+    createNewStateCodesInput(createNewStateCodesInput: $createNewStateCodesInput)
+  }
+`
+
+export const createStateCodesMutation = gql`
+  mutation CreateStateCodes($createStateCodesInput: [StateCodesInput!]!) {
+    createStateCodes(createStateCodesInput: $createStateCodesInput)
+  }
+`
+export const UpdateStateCodesMutation = gql`
+  mutation UpdateStateCodesById($updateStateCodesInput: StateCodesInput!) {
+    updateStateCodesById(updateStateCodesInput: $updateStateCodesInput)
   }
 `

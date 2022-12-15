@@ -3,15 +3,24 @@ import { useMutation, useQuery } from '@apollo/client'
 import CloseIcon from '@mui/icons-material/Close'
 import { Box, Button, Card } from '@mui/material'
 import { WithdrawalOption, WithdrawalStatus } from '@mth/enums'
+import { StudentStatus } from '@mth/enums'
 import { assignStudentToSOEGql } from '@mth/screens/Admin/SiteManagement/services'
 import { saveWithdrawalMutation } from '../../../graphql/mutation/withdrawal'
 import { UserContext } from '../../../providers/UserContext/UserProvider'
 import { BLACK, BUTTON_LINEAR_GRADIENT } from '../../../utils/constants'
+import { approveApplicationMutation } from '../Applications/services'
+import { savePacketMutation } from '../EnrollmentPackets/services'
 import { Header } from './components/Header/Header'
 import { NewUserModal } from './components/NewUserModal/NewUserModal'
 import { Students } from './components/Students/Students'
 import { ParentProfile } from './ParentProfile/ParentProfile'
-import { DeleteWithdrawal, getParentDetail, updatePersonAddressMutation, UpdateStudentMutation } from './services'
+import {
+  DeleteWithdrawal,
+  getParentDetail,
+  updatePersonAddressMutation,
+  UpdateStudentMutation,
+  getStudentDetail,
+} from './services'
 import { StudentProfile } from './StudentProfile/StudentProfile'
 import { useStyles } from './styles'
 type UserProfileProps = {
@@ -34,6 +43,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ handleClose, data, set
   const [selectedStudent, setSelectedStudent] = useState(parseInt(data.student_id))
   const [selectedParentType, setSelectedParentType] = useState('parent')
   const [applicationState, setApplicationState] = useState('')
+  const [studentOldStatus, setStudentOldStatus] = useState(0)
   const [requesting, setRequesting] = useState<boolean>(false)
   const { me } = useContext(UserContext)
   const { data: currentUserData, refetch } = useQuery(getParentDetail, {
@@ -48,6 +58,43 @@ export const UserProfile: React.FC<UserProfileProps> = ({ handleClose, data, set
   const [deleteWithdrawal] = useMutation(DeleteWithdrawal)
 
   const [updatePersonAddress] = useMutation(updatePersonAddressMutation)
+
+  const { data: currentStudentData, refetch: refetchStudent } = useQuery(getStudentDetail, {
+    variables: {
+      student_id: selectedStudent,
+    },
+    fetchPolicy: 'cache-and-network',
+  })
+
+  useEffect(() => {
+    if (currentStudentData?.student) {
+      setStudentOldStatus(currentStudentData.student.status.at(-1).status)
+    }
+  }, [currentStudentData?.student])
+
+  const [approveApplication] = useMutation(approveApplicationMutation)
+
+  const approveApplicationAction = async (applicationId: number | string) => {
+    await approveApplication({
+      variables: {
+        acceptApplicationInput: {
+          application_ids: [String(applicationId)],
+        },
+      },
+    })
+  }
+
+  const [savePacket] = useMutation(savePacketMutation)
+  const approveEnrollmentPacketAction = async (packet_id: number | string) => {
+    await savePacket({
+      variables: {
+        enrollmentPacketInput: {
+          packet_id: Number(packet_id),
+          status: 'Accepted',
+        },
+      },
+    })
+  }
 
   const handleSavePerson = async () => {
     if (selectedParent) {
@@ -120,6 +167,27 @@ export const UserProfile: React.FC<UserProfileProps> = ({ handleClose, data, set
           },
         },
       })
+      if (
+        (studentStatus?.student_id ? studentStatus?.status : null) == StudentStatus.ACCEPTED &&
+        studentOldStatus == StudentStatus.APPLIED
+      ) {
+        //Accept application here
+        const curStudent = currentStudentData?.student
+        if (curStudent?.applications.length > 0) {
+          const curApplicatonID = curStudent?.applications[0].application_id
+          approveApplicationAction(curApplicatonID)
+        }
+      } else if (
+        (studentStatus?.student_id ? studentStatus?.status : null) == StudentStatus.PENDING &&
+        studentOldStatus == StudentStatus.ACCEPTED
+      ) {
+        //Accept enrollment packets
+        const curStudent = currentStudentData?.student
+        if (curStudent?.packets.length > 0) {
+          const curPacektID = curStudent?.packets[0].packet_id
+          approveEnrollmentPacketAction(curPacektID)
+        }
+      }
       if (studentStatus?.withdrawOption) {
         await createWithdrawal({
           variables: {
@@ -177,6 +245,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ handleClose, data, set
     // if (data.student_id) {
     setSelectedParent(0)
     setSelectedStudent(parseInt(student.student_id))
+    refetchStudent()
     // }
 
     setSelectedParentType('parent')

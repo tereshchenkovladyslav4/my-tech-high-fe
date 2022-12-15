@@ -387,6 +387,7 @@ const CheckList: React.FC = () => {
             }}
             onDownloadTemplate={handleDownloadTemplate}
             handleFile={handleImportTemplate}
+            isDownloadTemplate={true}
           />
         </Box>
 

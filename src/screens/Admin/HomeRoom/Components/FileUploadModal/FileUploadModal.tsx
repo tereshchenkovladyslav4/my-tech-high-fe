@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useEffect, useState } from 'react'
 import SystemUpdateAltRoundedIcon from '@mui/icons-material/SystemUpdateAltRounded'
 import { Box, Button, Modal } from '@mui/material'
 import { MthColor } from '@mth/enums'
@@ -6,21 +6,23 @@ import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragr
 import { FileUploadModalClasses } from './styles'
 import { FileUploadModalProps } from './types'
 
-interface HTMLInputEvent extends Event {
-  target: HTMLInputElement & EventTarget & File
-}
-
 type ValidateFileResponse = {
   status: boolean
   message?: string
 }
 
-const FileUploadModal: FileUploadModalProps = ({ open, onClose, handleFile, onDownloadTemplate }) => {
+const FileUploadModal: FileUploadModalProps = ({
+  open,
+  isDownloadTemplate = false,
+  onClose,
+  handleFile,
+  onDownloadTemplate,
+}) => {
   const classes = FileUploadModalClasses
   const [validFile, setValidFile] = useState<File>()
   const [errorMessage, setErrorMessage] = useState('')
 
-  const inputRef = useRef(null)
+  const inputRef = React.createRef<HTMLInputElement>()
 
   useEffect(() => {
     if (open) {
@@ -28,24 +30,21 @@ const FileUploadModal: FileUploadModalProps = ({ open, onClose, handleFile, onDo
       setErrorMessage('')
     }
   }, [open])
-  const preventDefault = (e: HTMLInputEvent) => {
+
+  const dragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault()
   }
 
-  const dragOver = (e: HTMLInputEvent) => {
-    preventDefault(e)
+  const dragEnter = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
   }
 
-  const dragEnter = (e: HTMLInputEvent) => {
-    preventDefault(e)
+  const dragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
   }
 
-  const dragLeave = (e: HTMLInputEvent) => {
-    preventDefault(e)
-  }
-
-  const fileDrop = (e: HTMLInputEvent) => {
-    preventDefault(e)
+  const fileDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
     const files = e.dataTransfer.files
     if (files.length > 1) {
       setErrorMessage('File submission limited to 1 file')
@@ -54,8 +53,8 @@ const FileUploadModal: FileUploadModalProps = ({ open, onClose, handleFile, onDo
     }
   }
 
-  const filesSelected = (e: unknown) => {
-    handleFiles(e.target.files[0])
+  const filesSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
+    handleFiles(e.target.files?.[0] as File)
   }
 
   const handleFiles = (file: File) => {
@@ -79,7 +78,7 @@ const FileUploadModal: FileUploadModalProps = ({ open, onClose, handleFile, onDo
     if (validTypes.indexOf(file.type) === -1) {
       return {
         status: false,
-        message: 'Please only submit spreadsheet',
+        message: 'Incorrect Format',
       }
     }
     return {
@@ -92,11 +91,6 @@ const FileUploadModal: FileUploadModalProps = ({ open, onClose, handleFile, onDo
       handleFile(validFile)
     }
     onClose()
-  }
-
-  const btnOnClick = (e) => {
-    e.preventDefault()
-    inputRef.current.click()
   }
 
   const deleteFile = (file?: File) => {
@@ -157,7 +151,7 @@ const FileUploadModal: FileUploadModalProps = ({ open, onClose, handleFile, onDo
           <Paragraph size='medium' fontWeight='700' sx={classes.dragAndDropText}>
             Drag &amp; Drop to Upload
           </Paragraph>
-          {!validFile && (
+          {!validFile && isDownloadTemplate && (
             <Button sx={{ color: MthColor.MTHBLUE }} onClick={() => onDownloadTemplate && onDownloadTemplate()}>
               Download Template
             </Button>
@@ -165,7 +159,14 @@ const FileUploadModal: FileUploadModalProps = ({ open, onClose, handleFile, onDo
           <Paragraph size='medium' color={MthColor.SYSTEM_06} sx={{ marginY: 1, marginBottom: 0 }}>
             Or
           </Paragraph>
-          <Button sx={classes.uploadButton} variant='contained' onClick={btnOnClick}>
+          <Button
+            sx={classes.uploadButton}
+            variant='contained'
+            onClick={(e) => {
+              e.preventDefault()
+              inputRef.current?.click()
+            }}
+          >
             <label>
               <input
                 ref={inputRef}

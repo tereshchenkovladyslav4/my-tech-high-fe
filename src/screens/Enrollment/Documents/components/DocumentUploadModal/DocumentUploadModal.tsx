@@ -197,7 +197,7 @@ export const DocumentUploadModal: DocumentUploadModalTemplateType = ({ handleMod
           </Paragraph>
         </Box>
         <Box
-          sx={{ justifyContent: { xs: 'center', sm: 'space-around' }, minHeight: '64.5px' }}
+          sx={{ justifyContent: 'space-between', maxWidth: '350px', marginX: 'auto', minHeight: '64.5px' }}
           display='flex'
           flexDirection={'row'}
         >

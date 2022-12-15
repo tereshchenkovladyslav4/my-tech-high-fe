@@ -38,14 +38,3 @@ export type PeriodItem = {
   notify_semester: boolean
   notify_period: boolean
 }
-
-export type StateCodeType = {
-  id?: number
-  title_id: string | number
-  title: string
-  grade: string
-  teacher_id?: number
-  teacher_name: string
-  state_code: string | number
-  subject: string
-}
