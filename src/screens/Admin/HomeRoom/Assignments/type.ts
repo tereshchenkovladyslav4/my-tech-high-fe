@@ -1,4 +1,5 @@
 import { DropDownItem } from '@mth/components/DropDown/types'
+import { Classes } from '../LearningLogs/types'
 
 export enum YEAR_STATUS {
   NEW = 'NEW',
@@ -131,13 +132,18 @@ export type Parent = {
   person?: Person
 }
 
+export type HomeroomStudent = {
+  id: number
+  teacher: Classes
+}
+
 export type StudentVM = {
-  currentSoe: Person[]
   grade_levels: GradeLevel[]
   parent: Parent
   person: Person
-  previousSoe: Person[]
   student_id: string | number
+  currentHomeroom?: HomeroomStudent
+  previousHomeroom?: HomeroomStudent
 }
 
 export type SchoolDistrictType = {

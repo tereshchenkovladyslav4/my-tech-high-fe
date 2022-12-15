@@ -29,6 +29,7 @@ export const getSchedulesQuery = gql`
         }
         schedule_id
         date_submitted
+        last_modified
         date_accepted
         status
         ScheduleStudent {

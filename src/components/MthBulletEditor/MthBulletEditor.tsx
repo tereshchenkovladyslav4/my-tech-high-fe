@@ -34,10 +34,10 @@ const MthBulletEditor: React.FC<MthBulletEditorProps> = ({
   const [editorState, setEditorState] = useState<EditorState>(generateEditorState(''))
   const [isEdited, setIsEdited] = useState<boolean>(false)
 
-  const handleEditorChange = (state: unknown) => {
+  const handleEditorChange = (state: Draft.DraftModel.Encoding.RawDraftContentState) => {
     try {
       if (currentBlocks !== 0 && currentBlocks !== state?.blocks?.length) {
-        editorRef?.current.scrollIntoView({ behavior: 'smooth', block: 'end' })
+        ;(editorRef.current as Element).scrollIntoView({ behavior: 'smooth', block: 'end' })
       }
       setCurrentBlocks(state?.blocks?.length)
       setValue(draftToHtml(convertToRaw(editorState.getCurrentContent())))

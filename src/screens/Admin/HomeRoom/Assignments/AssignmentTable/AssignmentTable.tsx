@@ -1,17 +1,20 @@
 import React, { useEffect, useState, useMemo } from 'react'
-import { useQuery } from '@apollo/client'
+import { useMutation, useQuery } from '@apollo/client'
 import SearchIcon from '@mui/icons-material/Search'
 import {
   Box,
   Button,
   Card,
+  FormControl,
+  FormControlLabel,
   InputAdornment,
   List,
   ListItemButton,
   ListItemText,
   OutlinedInput,
+  Radio,
+  RadioGroup,
   TextField,
-  Tooltip,
 } from '@mui/material'
 import { toString } from 'lodash'
 import moment from 'moment'
@@ -21,9 +24,9 @@ import CustomTable from '@mth/components/Table/CustomTable'
 import { Field, ValueOf } from '@mth/components/Table/types'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { WarningModal } from '@mth/components/WarningModal/Warning'
-import { BLUE_GRDIENT, RED_GRADIENT } from '../../../../../utils/constants'
+import { BLUE_GRDIENT, RED, RED_GRADIENT } from '../../../../../utils/constants'
 import { useStyles } from '../../styles'
-import { getStudentsForHoomroom } from '../services'
+import { assignStudentsToHomeroomMutation, getStudentsForHoomroom } from '../services'
 import { assignmentStyle } from '../styles'
 import { EnrollmentSchoolTableProps, YEAR_STATUS, StudentVM, OptionType } from '../type'
 export const AssignmentTable: React.FC<EnrollmentSchoolTableProps> = ({
@@ -51,7 +54,13 @@ export const AssignmentTable: React.FC<EnrollmentSchoolTableProps> = ({
 
   const [searchHomeroomKeyword, setSearchHomeroomKeyword] = useState<string>('')
   const [searchHomeroomList, setSearchHomeroomList] = useState<OptionType[]>(currentHomeroomes)
-  // const [selectedHomeroom, setSelHomeroom] = useState<OptionType>();
+  const [selectedHomeroom, setSelHomeroom] = useState<OptionType | null>()
+
+  const [assignError, setAssignError] = useState<boolean>(false)
+  const [autoGradeModal, setAutoGradeModal] = useState<boolean>(false)
+  const [autoGrade, setAutoGrade] = useState<string>('')
+
+  const [warningError, setWarningError] = useState<boolean>(false)
 
   const groupGrades = useMemo(() => {
     if (filter?.grades) {
@@ -59,7 +68,7 @@ export const AssignmentTable: React.FC<EnrollmentSchoolTableProps> = ({
     } else return []
   }, [filter])
 
-  const { data, loading } = useQuery(getStudentsForHoomroom, {
+  const { data, loading, refetch } = useQuery(getStudentsForHoomroom, {
     variables: {
       skip,
       sort: `${sortField}|${sortOrder}`,
@@ -177,23 +186,23 @@ export const AssignmentTable: React.FC<EnrollmentSchoolTableProps> = ({
         },
       },
       {
-        key: 'currentSoe',
+        key: 'currentHomeroom',
         label: current_Label,
         sortable: true,
         tdClass: 'fw-400',
-        formatter: () => {
-          return 'Unassigned'
+        formatter: (studednt) => {
+          return studednt.currentHomeroom?.teacher?.class_name || 'Unassigned'
         },
       },
     ]
     if (previous_Label) {
       fieldItems.push({
-        key: 'previousSoe',
+        key: 'previousHomeroom',
         label: previous_Label,
         sortable: true,
         tdClass: 'fw-400',
-        formatter: () => {
-          return 'Unassigned'
+        formatter: (studednt) => {
+          return studednt.previousHomeroom?.teacher?.class_name || 'Unassigned'
         },
       })
     }
@@ -216,9 +225,62 @@ export const AssignmentTable: React.FC<EnrollmentSchoolTableProps> = ({
   }
 
   const handleListItemClick = (homeroom: OptionType) => {
-    // setSelHomeroom(homeroom)
+    setSelHomeroom(homeroom)
     setSearchHomeroomKeyword(homeroom.label)
     setIsHomeroomList(false)
+  }
+
+  const [assignStudentsToHomeroom] = useMutation(assignStudentsToHomeroomMutation)
+
+  const submitAssignStudent = async (autoGrade: string | null) => {
+    const students = studentIds.map((i) => parseInt(i))
+    await assignStudentsToHomeroom({
+      variables: {
+        createNewMasterInput: {
+          school_year_id: parseInt(selectedYear?.value as string),
+          studentIds: students,
+          teacher_id: parseInt(selectedHomeroom?.value !== 'unassigned' ? selectedHomeroom?.value : -1),
+          auto_grade: autoGrade,
+        },
+      },
+    })
+    refetch()
+    setStudentIds([])
+    setSelHomeroom(null)
+    setSearchHomeroomKeyword('')
+    setAutoGrade('')
+  }
+
+  const handleAssign = async () => {
+    if (studentIds.length > 0 && selectedHomeroom?.value) {
+      // not unassigned
+      if (selectedHomeroom?.value !== 'unassigned') {
+        for (let i = 0; i < studentIds.length; i++) {
+          const student = items.find((q) => q.student_id === studentIds[i])
+          if (student?.currentHomeroom?.teacher) {
+            setAssignError(true)
+            return
+          }
+        }
+      }
+
+      // due date
+      if (selectedHomeroom?.dueStatus) {
+        setAutoGradeModal(true)
+      } else {
+        await submitAssignStudent('')
+      }
+    }
+  }
+
+  const handleSubmitAutoGrade = async () => {
+    if (!autoGrade) {
+      setWarningError(true)
+      return
+    }
+    setWarningError(false)
+    await submitAssignStudent(autoGrade)
+    setAutoGradeModal(false)
   }
 
   return (
@@ -291,7 +353,7 @@ export const AssignmentTable: React.FC<EnrollmentSchoolTableProps> = ({
             }}
           />
 
-          <Box position='relative' sx={{ flexGrow: 1 }}>
+          <Box sx={{ flexGrow: 1 }}>
             <TextField
               InputProps={{
                 startAdornment: (
@@ -303,7 +365,10 @@ export const AssignmentTable: React.FC<EnrollmentSchoolTableProps> = ({
               fullWidth
               placeholder='Search'
               onBlur={() => {
-                setIsHomeroomList(false)
+                setTimeout(() => {
+                  setSearchHomeroomList([])
+                  setIsHomeroomList(false)
+                }, 300)
               }}
               onFocus={() => {
                 setSearchHomeroomList(currentHomeroomes)
@@ -313,9 +378,8 @@ export const AssignmentTable: React.FC<EnrollmentSchoolTableProps> = ({
               value={searchHomeroomKeyword}
               autoComplete='off'
             />
-
             {isHomeroomList && searchHomeroomList && searchHomeroomList.length > 0 && (
-              <Box sx={classesMaster.searchList}>
+              <Box sx={{ ...classesMaster.searchList, maxHeight: '25vh', overflow: 'auto' }}>
                 <List arial-label='main mailbox folders'>
                   {searchHomeroomList
                     .filter((item) => item.value !== 'all')
@@ -329,42 +393,40 @@ export const AssignmentTable: React.FC<EnrollmentSchoolTableProps> = ({
             )}
           </Box>
 
-          <Tooltip title='Assign School of Enrollment' placement='top'>
-            <Button
-              sx={{
-                borderRadius: 2,
-                textTransform: 'none',
-                height: 29,
-                color: 'white',
+          <Button
+            sx={{
+              borderRadius: 2,
+              textTransform: 'none',
+              height: 29,
+              color: 'white',
+              background: BLUE_GRDIENT,
+              '&:hover': {
                 background: BLUE_GRDIENT,
-                '&:hover': {
-                  background: BLUE_GRDIENT,
-                },
-              }}
-              className='btn-action'
-            >
-              Assign
-            </Button>
-          </Tooltip>
+              },
+            }}
+            className='btn-action'
+            onClick={handleAssign}
+            type='button'
+          >
+            Assign
+          </Button>
 
-          <Tooltip title='Create withdraw form from previous SoE' placement='top'>
-            <Button
-              sx={{
-                borderRadius: 2,
-                textTransform: 'none',
-                height: 29,
-                color: 'white',
-                background: RED_GRADIENT,
-                '&:hover': {
-                  background: '#D23C33',
-                  color: '#fff',
-                },
-              }}
-              className='btn-action'
-            >
-              Transfer
-            </Button>
-          </Tooltip>
+          <Button
+            sx={{
+              borderRadius: 2,
+              textTransform: 'none',
+              height: 29,
+              color: 'white',
+              background: RED_GRADIENT,
+              '&:hover': {
+                background: '#D23C33',
+                color: '#fff',
+              },
+            }}
+            className='btn-action'
+          >
+            Transfer
+          </Button>
 
           {/*  Pagination & Actions */}
           <Box
@@ -420,6 +482,68 @@ export const AssignmentTable: React.FC<EnrollmentSchoolTableProps> = ({
           btntitle='OK'
           handleSubmit={() => setNoStudentAlert(!noStudentAlert)}
         />
+      )}
+      {assignError && (
+        <WarningModal
+          title='Error'
+          subtitle='This student(s) has already been assigned to a Homeroom. Please transfer the student instead.'
+          btntitle='Ok'
+          handleSubmit={() => setAssignError(false)}
+          textCenter
+        />
+      )}
+      {autoGradeModal && (
+        <WarningModal
+          title='Assign'
+          subtitle='This Homeroom has Learning Logs past their due date. How would you like to proceed?'
+          btntitle='Assign'
+          canceltitle='Cancel'
+          handleModem={() => {
+            setAutoGradeModal(false)
+            setWarningError(false)
+            setAutoGrade('')
+          }}
+          handleSubmit={() => handleSubmitAutoGrade()}
+          textCenter
+          modalWidth='500px'
+          error={warningError && !autoGrade}
+        >
+          <Box sx={{ marginTop: '30px', overflow: 'auto', width: '100%', textAlign: 'start' }}>
+            <FormControl>
+              <RadioGroup
+                aria-labelledby='demo-controlled-radio-buttons-group'
+                name='controlled-radio-buttons-group'
+                value={autoGrade}
+                onChange={(e) => setAutoGrade(e.target.value)}
+              >
+                <FormControlLabel
+                  value='N/A'
+                  control={<Radio sx={{ marginRight: '20px' }} />}
+                  label='Automatically mark the past-due Learning Logs as N/A'
+                />
+              </RadioGroup>
+            </FormControl>
+            <FormControl>
+              <RadioGroup
+                aria-labelledby='demo-controlled-radio-buttons-group'
+                name='controlled-radio-buttons-group'
+                value={autoGrade}
+                onChange={(e) => setAutoGrade(e.target.value)}
+              >
+                <FormControlLabel
+                  value='0'
+                  control={<Radio sx={{ marginRight: '20px' }} />}
+                  label='Auto-grade the past-due Learning Logs as 0, requiring the student to submit'
+                />
+              </RadioGroup>
+            </FormControl>
+            {warningError && !autoGrade && (
+              <Subtitle size={'small'} color={RED}>
+                Required
+              </Subtitle>
+            )}
+          </Box>
+        </WarningModal>
       )}
     </Card>
   )

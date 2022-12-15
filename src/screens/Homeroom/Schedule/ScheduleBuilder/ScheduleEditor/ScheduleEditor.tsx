@@ -623,10 +623,11 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
       sx: isAdmin
         ? !isSecondSemester
           ? schedule?.schedulePeriodStatus === SchedulePeriodStatus.UPDATE_REQUIRED
-            ? (scheduleStatus === ScheduleStatus.ACCEPTED ||
+            ? ((scheduleStatus === ScheduleStatus.ACCEPTED ||
                 scheduleStatus === ScheduleStatus.SUBMITTED ||
                 selectedScheduleStatus === ScheduleStatus.UPDATES_REQUIRED) &&
-              isUpdatePeriodRequired
+                isUpdatePeriodRequired) ||
+              scheduleStatus === ScheduleStatus.UPDATES_REQUIRED
               ? { '& .MuiTableCell-root': { background: 'rgba(236, 89, 37, 0.1) !important' } }
               : scheduleStatus === ScheduleStatus.RESUBMITTED
               ? {
@@ -1048,7 +1049,9 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
           return (
             <Box sx={{ display: 'flex' }}>
               {((!isSecondSemester &&
-                (((scheduleStatus === ScheduleStatus.ACCEPTED || scheduleStatus === ScheduleStatus.RESUBMITTED) &&
+                (((scheduleStatus === ScheduleStatus.ACCEPTED ||
+                  scheduleStatus === ScheduleStatus.RESUBMITTED ||
+                  scheduleStatus === ScheduleStatus.UPDATES_REQUIRED) &&
                   item?.rawData?.schedulePeriodStatus != SchedulePeriodStatus.UPDATE_REQUIRED &&
                   item?.rawData?.schedulePeriodStatus != SchedulePeriodStatus.RESUBMITTED) ||
                   scheduleStatus === ScheduleStatus.UPDATES_REQUESTED)) ||
@@ -1066,7 +1069,9 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
                 (scheduleStatus == ScheduleStatus.SUBMITTED ||
                   ((item?.rawData?.schedulePeriodStatus === SchedulePeriodStatus.UPDATE_REQUIRED ||
                     item?.rawData?.schedulePeriodStatus == SchedulePeriodStatus.RESUBMITTED) &&
-                    (scheduleStatus == ScheduleStatus.ACCEPTED || scheduleStatus == ScheduleStatus.RESUBMITTED)))) ||
+                    (scheduleStatus == ScheduleStatus.ACCEPTED ||
+                      scheduleStatus == ScheduleStatus.RESUBMITTED ||
+                      scheduleStatus == ScheduleStatus.UPDATES_REQUIRED)))) ||
                 (isSecondSemester && item.rawData.editable)) && (
                 <IconButton
                   sx={{ color: MthColor.MTHORANGE, fontSize: '18px' }}

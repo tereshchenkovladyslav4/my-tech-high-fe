@@ -1,7 +1,7 @@
 import React from 'react'
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline'
 import { Button, Modal, Typography, Box } from '@mui/material'
-import { SYSTEM_01 } from '../../utils/constants'
+import { SYSTEM_01, RED } from '../../utils/constants'
 import { Paragraph } from '../Typography/Paragraph/Paragraph'
 import { useStyles } from './styles'
 import { WarningModalProps } from './types'
@@ -16,6 +16,8 @@ export const WarningModal: React.FC<WarningModalProps> = ({
   showIcon = true,
   children,
   textCenter,
+  modalWidth,
+  error = false,
   upperCase = true,
 }) => {
   const classes = useStyles()
@@ -26,7 +28,7 @@ export const WarningModal: React.FC<WarningModalProps> = ({
       aria-labelledby='modal-modal-title'
       aria-describedby='modal-modal-description'
     >
-      <Box className={classes.modalCard}>
+      <Box className={classes.modalCard} sx={{ width: modalWidth ? modalWidth : '470px' }}>
         <Box className={classes.header} sx={{ textTransform: upperCase ? 'capitalize' : 'inherit' }}>
           <Typography variant='h5' fontSize={'20px'} fontWeight={'bold'}>
             {title}
@@ -37,7 +39,7 @@ export const WarningModal: React.FC<WarningModalProps> = ({
           <Paragraph
             size='large'
             fontWeight='600'
-            color={SYSTEM_01}
+            color={!error ? SYSTEM_01 : RED}
             sx={{ textAlign: textCenter ? 'center' : 'left', mt: showIcon ? '0' : '56px' }}
           >
             {subtitle}

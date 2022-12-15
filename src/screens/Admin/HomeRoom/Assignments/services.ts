@@ -23,16 +23,18 @@ export const getStudentsForHoomroom = gql`
             }
           }
         }
-        currentSoe {
-          partner {
-            name
-            abbreviation
+        previousHomeroom {
+          id
+          teacher {
+            class_name
+            class_id
           }
         }
-        previousSoe {
-          partner {
-            name
-            abbreviation
+        currentHomeroom {
+          id
+          teacher {
+            class_name
+            class_id
           }
         }
       }
@@ -188,5 +190,11 @@ export const toggleHideApplicationMutation = gql`
       status
       application_id
     }
+  }
+`
+
+export const assignStudentsToHomeroomMutation = gql`
+  mutation AssignStudentToHomeroom($createNewMasterInput: HomeroomStudentInput!) {
+    assignStudentToHomeroom(createNewMasterInput: $createNewMasterInput)
   }
 `

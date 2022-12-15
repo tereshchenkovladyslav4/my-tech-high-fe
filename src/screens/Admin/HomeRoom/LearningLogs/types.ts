@@ -1,3 +1,5 @@
+import { Assignment } from './Master/types'
+
 export type Classes = {
   class_id: number
   class_name: string
@@ -18,6 +20,7 @@ export type Master = {
   masterClasses?: Classes[] | undefined
   school_year_id?: number
   instructions?: string | null
+  masterAssignments?: Assignment[]
 }
 
 export type ClassessProps = {

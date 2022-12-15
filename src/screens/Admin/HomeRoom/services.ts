@@ -17,6 +17,10 @@ export const GetMastersBySchoolYearIDGql = gql`
           user_id
         }
       }
+      masterAssignments {
+        due_date
+        id
+      }
     }
   }
 `

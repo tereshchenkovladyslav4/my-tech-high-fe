@@ -7,7 +7,6 @@ export const scheduleBuilderClasses = {
     '& .MuiSelect-select': {
       color: '#4145FF !important',
     },
-    paddingLeft: 2,
     marginTop: 3,
   },
   customTable: {

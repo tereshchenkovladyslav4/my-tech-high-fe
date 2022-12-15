@@ -72,12 +72,13 @@ export const ScheduleTable: React.FC<FiltersProps> = ({ filter, setFilter }) => 
       key: schedule.schedule_id.toString(),
       columns: {
         id: schedule.schedule_id,
-        date:
+        date: moment(
           schedule.status === ScheduleStatus.ACCEPTED
-            ? moment(schedule.date_accepted).format('MM/DD/YY')
-            : schedule.date_submitted
-            ? moment(schedule.date_submitted).format('MM/DD/YY')
-            : null,
+            ? schedule.date_accepted
+            : schedule.status === ScheduleStatus.SUBMITTED || schedule.status === ScheduleStatus.RESUBMITTED
+            ? schedule.date_submitted
+            : schedule.last_modified,
+        ).format('MM/DD/YY'),
         status: schedule.status,
         student: `${schedule.ScheduleStudent.person?.last_name}, ${schedule.ScheduleStudent.person?.first_name}`,
         studentId: +schedule.ScheduleStudent.student_id,

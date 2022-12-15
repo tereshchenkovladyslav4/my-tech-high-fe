@@ -210,6 +210,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
           },
         },
       })
+      refetch()
     }
     setScheduleStatus(newStatus)
   }
@@ -498,23 +499,25 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
           <Box sx={scheduleBuilderClass.submit}>
             {!requireUpdatePeriods.length ? (
               <>
-                <Button
-                  variant='contained'
-                  sx={{
-                    background: `${
-                      scheduleStatus?.value == ScheduleStatus.ACCEPTED
-                        ? MthColor.ORANGE_GRADIENT
-                        : MthColor.GREEN_GRADIENT
-                    }`,
-                  }}
-                  onClick={() => handleSchedule(scheduleStatus?.value as ScheduleStatus)}
-                >
-                  {scheduleStatus?.value == ScheduleStatus.ACCEPTED
-                    ? 'Require Updates'
-                    : scheduleStatus?.value == ScheduleStatus.UPDATES_REQUESTED
-                    ? 'Allow Updates'
-                    : MthTitle.ACCEPT}
-                </Button>
+                {studentScheduleStatus !== ScheduleStatus.UPDATES_REQUIRED && (
+                  <Button
+                    variant='contained'
+                    sx={{
+                      background: `${
+                        scheduleStatus?.value == ScheduleStatus.ACCEPTED
+                          ? MthColor.ORANGE_GRADIENT
+                          : MthColor.GREEN_GRADIENT
+                      }`,
+                    }}
+                    onClick={() => handleSchedule(scheduleStatus?.value as ScheduleStatus)}
+                  >
+                    {scheduleStatus?.value == ScheduleStatus.ACCEPTED
+                      ? 'Require Updates'
+                      : scheduleStatus?.value == ScheduleStatus.UPDATES_REQUESTED
+                      ? 'Allow Updates'
+                      : MthTitle.ACCEPT}
+                  </Button>
+                )}
                 {hasSecondSemester && !hasUnlockedPeriods && scheduleStatus?.value == ScheduleStatus.RESUBMITTED && (
                   <Button
                     variant='contained'
@@ -533,17 +536,18 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
                   variant='contained'
                   sx={{
                     background:
-                      scheduleStatus?.value == ScheduleStatus.UPDATES_REQUESTED
+                      scheduleStatus?.value === ScheduleStatus.UPDATES_REQUESTED
                         ? MthColor.BLACK_GRADIENT
                         : MthColor.LIGHTGRAY,
-                    color: scheduleStatus?.value == ScheduleStatus.UPDATES_REQUESTED ? MthColor.WHITE : MthColor.BLACK,
+                    color: scheduleStatus?.value === ScheduleStatus.UPDATES_REQUESTED ? MthColor.WHITE : MthColor.BLACK,
+                    marginLeft: studentScheduleStatus === ScheduleStatus.UPDATES_REQUIRED ? 25 : 0,
                   }}
                   onClick={() => {
-                    if (scheduleStatus?.value == ScheduleStatus.UPDATES_REQUESTED) handleSave(ScheduleStatus.ACCEPTED)
+                    if (scheduleStatus?.value === ScheduleStatus.UPDATES_REQUESTED) handleSave(ScheduleStatus.ACCEPTED)
                     else handleSaveChanges()
                   }}
                 >
-                  {scheduleStatus?.value == ScheduleStatus.UPDATES_REQUESTED
+                  {scheduleStatus?.value === ScheduleStatus.UPDATES_REQUESTED
                     ? 'Revert to Accepted'
                     : MthTitle.SAVE_CHANGES}
                 </Button>
@@ -565,13 +569,14 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
             </Button>
           </Box>
         )}
-
-        <ScheduleHistory
-          studentId={studentId}
-          schoolYearId={selectedYearId || 0}
-          isSecondSemester={hasSecondSemester && hasUnlockedPeriods}
-          refetchSchedule={refetch}
-        />
+        {studentScheduleStatus !== ScheduleStatus.UPDATES_REQUIRED && (
+          <ScheduleHistory
+            studentId={studentId}
+            schoolYearId={selectedYearId || 0}
+            isSecondSemester={hasSecondSemester && hasUnlockedPeriods}
+            refetchSchedule={refetch}
+          />
+        )}
         {showRequireUpdateModal && (
           <RequireUpdateModal
             periodItems={periodItems}

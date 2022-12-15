@@ -6,7 +6,8 @@ import { DropDownItem } from '@mth/components/DropDown/types'
 import { useProviders } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { getSchoolYearsByRegionId } from '../../SiteManagement/services'
-import { Master } from '../LearningLogs/types'
+import { Assignment } from '../LearningLogs/Master/types'
+import { Classes, Master } from '../LearningLogs/types'
 import { GetMastersBySchoolYearIDGql } from '../services'
 import { AssignmentTable } from './AssignmentTable/AssignmentTable'
 import { Filters } from './Filters/Filters'
@@ -139,11 +140,26 @@ export const Assignments: React.FC = () => {
 
   useEffect(() => {
     if (!currentHomeroomLoading && currentHomeroomData) {
-      const currentHomes = currentHomeroomData.getMastersBySchoolId.map((item: Master) => {
-        return {
-          value: item.master_id,
-          label: item.master_name,
+      const currentHomes = []
+      currentHomeroomData.getMastersBySchoolId.map((item: Master) => {
+        let dueStatus = false
+        if (item?.masterAssignments.length > 0) {
+          item?.masterAssignments.map((assignment: Assignment) => {
+            if (
+              assignment.due_date < moment(`${moment().tz('America/Denver').format('yyyy-MM-DD hh:mm')}`).toISOString()
+            ) {
+              dueStatus = true
+            }
+          })
         }
+
+        item?.masterClasses?.map((mclass: Classes) => {
+          currentHomes.push({
+            value: mclass.class_id,
+            label: mclass.class_name,
+            dueStatus,
+          })
+        })
       })
       currentHomes.unshift(
         {
@@ -169,11 +185,14 @@ export const Assignments: React.FC = () => {
 
   useEffect(() => {
     if (!prevHomeroomLoading && prevHomeroomData) {
-      const homerooms = prevHomeroomData.getMastersBySchoolId.map((item: Master) => {
-        return {
-          value: item.master_id,
-          label: item.master_name,
-        }
+      const homerooms = []
+      prevHomeroomData.getMastersBySchoolId.map((item: Master) => {
+        item?.masterClasses?.map((mclass: Classes) => {
+          homerooms.push({
+            value: mclass.class_id,
+            label: mclass.class_name,
+          })
+        })
       })
       homerooms.unshift(
         {
@@ -185,6 +204,7 @@ export const Assignments: React.FC = () => {
           label: 'Unassigned',
         },
       )
+
       setPrevHomeroomes(homerooms)
     }
   }, [prevHomeroomLoading, prevHomeroomData])
