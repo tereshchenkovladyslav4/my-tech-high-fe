@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from 'react'
 import { useMutation, useQuery } from '@apollo/client'
-import { Box, Button, Card, Stack, styled, TextField } from '@mui/material'
+import { Box, Button, Card, Stack, styled, TextField, Typography } from '@mui/material'
 import moment from 'moment'
 import { Prompt, useHistory } from 'react-router-dom'
 import BGSVG from '@mth/assets/ApplicationBG.svg'
 import { CommonSelect } from '@mth/components/CommonSelect'
 import { DefaultDatePicker } from '@mth/components/DefaultDatePicker/DefaultDatePicker'
 import { MthCheckbox } from '@mth/components/MthCheckbox'
+import { MthCheckboxList } from '@mth/components/MthCheckboxList'
+import { CheckBoxListVM } from '@mth/components/MthCheckboxList/MthCheckboxList'
+import { RadioGroupOption } from '@mth/components/MthRadioGroup/types'
 import { MthTimePicker } from '@mth/components/MthTimePicker/MthTimePicker'
 import PageHeader from '@mth/components/PageHeader'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
@@ -14,7 +17,16 @@ import { WarningModal } from '@mth/components/WarningModal/Warning'
 import { MthTitle } from '@mth/enums'
 import { mthButtonClasses } from '@mth/styles/button.style'
 import { HOMEROOM_LEARNING_LOGS } from '../../../../../utils/constants'
-import { createAssignmentMutation, GetMastersByIDGql } from '../../services'
+import AddNewQuestionModal from '../../Components/AddNewQuestionModal/AddNewQuestionModal'
+import { DefaultQuestionModal } from '../../Components/DefaultQuestionModal/DefaultQuestionModal'
+import {
+  createAssignmentMutation,
+  createOrUpdateLearningLogQuestionMutation,
+  GetLearningLogQuestionByMasterIdQuery,
+  GetMastersByIDGql,
+} from '../../services'
+import { defaultQuestions } from '../defaultValue'
+import { LearningLogQuestion } from '../types'
 import { masterUseStyles } from './styles'
 
 const CssTextField = styled(TextField, {
@@ -62,6 +74,12 @@ const EditAssignment: React.FC<{ masterId: number }> = ({ masterId }) => {
   const [confirmSubTitle, setConfirmSubTitle] = useState<string>('')
 
   const [isChanged, setIsChanged] = useState<boolean>(false)
+  const [openDefaultQuestionModal, setOpenDefaultQuestionModal] = useState<boolean>(false)
+  const [openAddQuestionModal, setOpenAddQuestionModal] = useState<boolean>(false)
+
+  const [questionType, setQuestionType] = useState<RadioGroupOption[]>(defaultQuestions)
+  const [questionCheckboxList, setQuestionCheckboxList] = useState<CheckBoxListVM[]>([])
+  const [selectedQuestions, setSelectedQuestions] = useState<string[]>([])
 
   const { loading: masterLoading, data: masterData } = useQuery(GetMastersByIDGql, {
     variables: {
@@ -70,6 +88,37 @@ const EditAssignment: React.FC<{ masterId: number }> = ({ masterId }) => {
     skip: masterId ? false : true,
     fetchPolicy: 'network-only',
   })
+
+  const {
+    loading: questionLoading,
+    data: questionData,
+    refetch: questionRefetch,
+  } = useQuery(GetLearningLogQuestionByMasterIdQuery, {
+    variables: {
+      masterId,
+    },
+    fetchPolicy: 'network-only',
+  })
+
+  const [createLearningLogQuestion] = useMutation(createOrUpdateLearningLogQuestionMutation)
+
+  useEffect(() => {
+    if (!questionLoading && questionData?.getLearningLogQuestionByMasterId) {
+      setQuestionCheckboxList(
+        questionData?.getLearningLogQuestionByMasterId.map((obj: LearningLogQuestion) => {
+          return {
+            label: (
+              <span
+                dangerouslySetInnerHTML={{ __html: `${obj.required ? '*' : ''} ${obj?.question}` }}
+                style={{ display: 'flex', alignItems: 'center' }}
+              ></span>
+            ),
+            value: obj.id?.toString(),
+          }
+        }),
+      )
+    }
+  }, [questionLoading, questionData])
 
   useEffect(() => {
     if (!masterLoading && masterData?.getMastersById) {
@@ -276,6 +325,17 @@ const EditAssignment: React.FC<{ masterId: number }> = ({ masterId }) => {
     history.push(`${HOMEROOM_LEARNING_LOGS}/edit/${masterId}`)
   }
 
+  const handleSaveQuestion = async (value: LearningLogQuestion) => {
+    await createLearningLogQuestion({
+      variables: {
+        createOrUpdateLearningLogQuestionInput: { ...value, master_id: masterId },
+      },
+    })
+    setOpenAddQuestionModal(false)
+    setQuestionType(defaultQuestions)
+    await questionRefetch()
+  }
+
   return (
     <Box sx={{ p: 4, textAlign: 'left' }}>
       <Prompt
@@ -322,6 +382,7 @@ const EditAssignment: React.FC<{ masterId: number }> = ({ masterId }) => {
           paddingBottom={10}
           paddingX={'20px'}
           sx={{
+            position: 'relative',
             backgroundImage: `url(${BGSVG})`,
             backgroundSize: '100%',
             backgroundRepeat: 'no-repeat',
@@ -335,12 +396,44 @@ const EditAssignment: React.FC<{ masterId: number }> = ({ masterId }) => {
         >
           <Box
             sx={{
+              position: 'absolute',
+              top: '10%',
+              px: '12%',
+              display: 'flex',
+              justifyContent: 'center',
+              width: '100%',
+            }}
+          >
+            <Box>
+              <Typography variant='subtitle1'>
+                Select one or more of the competencies you were developing this week, if interested.
+              </Typography>
+              <Box sx={{ padding: '10px 80px', marginTop: '16px' }}>
+                <MthCheckboxList
+                  values={selectedQuestions}
+                  setValues={(value) => {
+                    setSelectedQuestions(value)
+                  }}
+                  checkboxLists={questionCheckboxList}
+                  haveSelectAll={false}
+                />
+              </Box>
+            </Box>
+          </Box>
+          <Box
+            sx={{
               textAlign: 'center',
               display: 'flex',
               flexDirection: 'column',
             }}
           >
-            <Button sx={masterUseStyles.primaryGradient} type='button'>
+            <Button
+              sx={masterUseStyles.primaryGradient}
+              type='button'
+              onClick={() => {
+                setOpenDefaultQuestionModal(true)
+              }}
+            >
               + Add Question
             </Button>
             <Button sx={{ ...masterUseStyles.saveButtons, margin: '30px auto' }} type='button'>
@@ -360,6 +453,31 @@ const EditAssignment: React.FC<{ masterId: number }> = ({ masterId }) => {
           handleSubmit={handleCancelSubmit}
           showIcon={true}
           textCenter
+        />
+      )}
+      {openDefaultQuestionModal && (
+        <DefaultQuestionModal
+          onClose={() => {
+            setOpenDefaultQuestionModal(false)
+          }}
+          onAction={(value: 'default' | 'custom') => {
+            if (value === 'default') {
+              setOpenAddQuestionModal(true)
+            }
+            setOpenDefaultQuestionModal(false)
+          }}
+          setQuestionType={setQuestionType}
+          questionType={questionType}
+        />
+      )}
+      {openAddQuestionModal && (
+        <AddNewQuestionModal
+          onClose={() => {
+            setOpenAddQuestionModal(false)
+            setQuestionType(defaultQuestions)
+          }}
+          type={questionType.find((obj) => obj.value)?.label ?? ''}
+          onSave={handleSaveQuestion}
         />
       )}
     </Box>

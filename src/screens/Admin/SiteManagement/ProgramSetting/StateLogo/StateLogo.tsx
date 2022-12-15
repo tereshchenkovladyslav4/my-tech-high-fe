@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import SystemUpdateAltOutlinedIcon from '@mui/icons-material/SystemUpdateAltOutlined'
 import { Box, Stack } from '@mui/material'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
-import { siteManagementClassess } from '../../styles'
 import { ImageCropper } from '../ImageCropper'
 import { StateLogoProps } from './StateLogoTypes'
 
@@ -57,14 +56,18 @@ export const StateLogo: React.FC<StateLogoProps> = ({
         )}
         {(stateLogoFile || stateLogo) && (
           <Box>
-            <img src={stateLogoFile ? stateLogoFile.image : stateLogo} width={150} style={{ cursor: 'pointer' }} />
+            <img
+              src={stateLogoFile ? stateLogoFile.image : stateLogo}
+              width={150}
+              style={{ cursor: 'pointer' }}
+              alt='State Logo'
+            />
           </Box>
         )}
       </label>
       {open && (
         <ImageCropper
           imageToCrop={imageToCrop}
-          classes={siteManagementClassess}
           setStateLogoFile={setStateLogoFile}
           setIsChanged={setIsChanged}
           isChanged={isChanged}

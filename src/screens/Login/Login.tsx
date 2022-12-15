@@ -63,7 +63,7 @@ export const Login: React.FC = () => {
     },
   ]
 
-  const renderInfocenterHelpLinks = (arr: Array<unknown>, canvas?: boolean): ReactElement[] =>
+  const renderInfocenterHelpLinks = (arr: Array<{ title: string }>, canvas?: boolean): ReactElement[] =>
     map(arr, (link, idx) => (
       <Grid item key={idx} xs={12} textAlign='left'>
         <Paragraph size='large' color={canvas ? 'black' : 'white'}>
@@ -163,6 +163,7 @@ export const Login: React.FC = () => {
             handleModem={() => setSigninError('')}
             handleSubmit={() => setSigninError('')}
             textCenter
+            upperCase={false}
           />
         )}
         {resendResult === false && (

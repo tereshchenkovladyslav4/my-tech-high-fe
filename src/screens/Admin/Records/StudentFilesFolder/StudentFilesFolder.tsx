@@ -118,32 +118,34 @@ const StudentFilesFolder: React.FC<StudentFilesFolderProps> = ({ filter }) => {
   useEffect(() => {
     if (!loading && data?.studentRecords) {
       const { total, results } = data.studentRecords
-      setTotalStudentRecords(total)
-      setStudentRecords(
-        results?.map(
-          (result: {
-            record_id: number
-            StudentId: number
-            Student: { person: { first_name: string; last_name: string } }
-            StudentRecordFiles: { FileId: number; file_kind: string; File: { name: string; item1: string } }[]
-          }) => {
-            return {
-              recordId: result?.record_id,
-              studentId: result?.StudentId,
-              firstName: result?.Student?.person?.first_name,
-              lastName: result?.Student?.person?.last_name,
-              files: result?.StudentRecordFiles?.map((file) => {
-                return {
-                  fileId: file?.FileId,
-                  fileName: file?.File?.name,
-                  filePath: file?.File?.item1,
-                  fileKind: file?.file_kind,
-                }
-              }),
-            }
-          },
-        ),
+      const records = results?.map(
+        (result: {
+          record_id: number
+          StudentId: number
+          Student: { person: { first_name: string; last_name: string } }
+          StudentRecordFiles: { FileId: number; file_kind: string; File: { name: string; item1: string } }[]
+        }) => {
+          return {
+            recordId: result?.record_id,
+            studentId: result?.StudentId,
+            firstName: result?.Student?.person?.first_name,
+            lastName: result?.Student?.person?.last_name,
+            files: result?.StudentRecordFiles?.map((file) => {
+              return {
+                fileId: file?.FileId,
+                fileName: file?.File?.name,
+                filePath: file?.File?.item1,
+                fileKind: file?.file_kind,
+              }
+            }),
+          }
+        },
       )
+      if (showStudentFilesModal && selectedRecord) {
+        setSelectedRecord(records?.find((item: StudentRecord) => item?.studentId === selectedRecord.studentId))
+      }
+      setTotalStudentRecords(total)
+      setStudentRecords(records)
     }
   }, [loading, data])
 

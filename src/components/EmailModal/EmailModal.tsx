@@ -1,17 +1,14 @@
-/* eslint-disable no-unused-expressions */
-import React, { useContext, useRef, useState, useMemo, useEffect, FunctionComponent } from 'react'
+import React, { useContext, useRef, useState, useMemo, useEffect } from 'react'
 import { useQuery } from '@apollo/client'
 import { Alert, Button, Modal, OutlinedInput } from '@mui/material'
 import { Box } from '@mui/system'
-
 import { ContentState, EditorState, convertToRaw } from 'draft-js'
 import draftToHtml from 'draftjs-to-html'
 import htmlToDraft from 'html-to-draftjs'
 import Wysiwyg from 'react-draft-wysiwyg'
-import { getEmailTemplateQuery } from '../../graphql/queries/email-template'
-
+import { getEmailTemplateQuery } from '@mth/graphql/queries/email-template'
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
-import { UserContext } from '../../providers/UserContext/UserProvider'
+import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { Title } from '../Typography/Title/Title'
 import { StandardResponses } from './StandardReponses/StandardResponses'
 import { useStyles } from './styles'
@@ -20,14 +17,14 @@ type EmailModalProps = {
   handleSubmit: () => void
   handleModem: () => void
   title: string
-  options: unknown
+  options: string[]
   setEmailTemplate: () => void
   type: string
   setEmailFrom: () => void
   emailFrom: () => void
   setEmailBodyInfo: () => void
 }
-export const EmailModal: FunctionComponent<EmailModalProps> = ({
+export const EmailModal: React.FC<EmailModalProps> = ({
   handleSubmit,
   handleModem,
   title,

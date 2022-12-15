@@ -17,6 +17,15 @@ module.exports = {
   rules: {
     'react/prop-types': 'off',
     '@typescript-eslint/no-explicit-any': 2,
+    '@typescript-eslint/ban-types': [
+      'warn',
+      {
+        types: {
+          unknown: "Don't use unknown because it is unsafe",
+        },
+        extendDefaults: true,
+      },
+    ],
     '@typescript-eslint/ban-ts-comment': 'off',
     '@typescript-eslint/no-non-null-assertion': 'off',
     '@typescript-eslint/no-empty-function': 'off',

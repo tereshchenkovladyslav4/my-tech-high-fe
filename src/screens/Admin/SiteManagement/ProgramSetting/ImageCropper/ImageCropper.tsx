@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Box, Button, Stack, Dialog, DialogTitle, DialogActions } from '@mui/material'
 import Cropper from 'react-cropper'
 import 'cropperjs/dist/cropper.css'
+import { mthButtonClasses } from '@mth/styles/button.style'
 import { ProgramSettingChanged } from '../types'
 
 export type StateLogoFileType = {
@@ -11,8 +12,7 @@ export type StateLogoFileType = {
 }
 
 export type ImageCropperProps = {
-  imageToCrop: unknown
-  classes: unknown
+  imageToCrop: string | ArrayBuffer | null
   setStateLogoFile: (value: StateLogoFileType) => void
   setIsChanged: (value: ProgramSettingChanged) => void
   isChanged: ProgramSettingChanged
@@ -20,7 +20,6 @@ export type ImageCropperProps = {
 
 export const ImageCropper: React.FC<ImageCropperProps> = ({
   imageToCrop,
-  classes,
   setStateLogoFile,
   setIsChanged,
   isChanged,
@@ -64,8 +63,22 @@ export const ImageCropper: React.FC<ImageCropperProps> = ({
   return (
     <>
       {imageToCrop && (
-        <Dialog open={open} onClose={handleClose} fullWidth={true} maxWidth={'xl'} sx={classes.imageCropper}>
-          <DialogTitle sx={classes?.imageCropperDialogTitle}>{'Image Cropper'}</DialogTitle>
+        <Dialog
+          open={open}
+          onClose={handleClose}
+          fullWidth={true}
+          maxWidth={'xl'}
+          sx={{
+            marginX: 'auto',
+            paddingY: '10px',
+            borderRadius: 10,
+            textAlign: 'center',
+            alignItems: 'center',
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
+          <DialogTitle sx={{ fontWeight: 'bold', marginTop: '10px', textAlign: 'left' }}>{'Image Cropper'}</DialogTitle>
           <Box sx={{ maxWidth: '50vw', minWidth: '400px', overflow: 'hidden' }}>
             <Stack>
               <Box>
@@ -91,11 +104,15 @@ export const ImageCropper: React.FC<ImageCropperProps> = ({
               </Box>
             </Stack>
           </Box>
-          <DialogActions sx={classes.dialogAction}>
-            <Button variant='contained' sx={classes.cancelButton} onClick={handleClose}>
+          <DialogActions sx={{ justifyContent: 'center', marginBottom: 2 }}>
+            <Button variant='contained' sx={mthButtonClasses.xsRed} onClick={handleClose}>
               Cancel
             </Button>
-            <Button variant='contained' sx={classes.submitButton} onClick={handleSave}>
+            <Button
+              variant='contained'
+              sx={{ ...mthButtonClasses.xsPrimary, marginLeft: '32px !important' }}
+              onClick={handleSave}
+            >
               Save
             </Button>
           </DialogActions>

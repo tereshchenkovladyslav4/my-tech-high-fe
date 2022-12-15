@@ -80,7 +80,7 @@ export const DocumentUploadModal: React.FC<SubmissionModal> = ({
   }
   const validateFile = (file: File): ValidateFileResponse => {
     // Get the size of the file by files.item(i).size.
-    const validTypes = ['application/pdf', 'image/png', 'image/jpeg']
+    const validTypes = ['application/pdf', 'image/png', 'image/jpeg', 'image/gif', 'image/bmp']
     if (Math.round(file.size / 1024) > 25000) {
       return {
         status: false,

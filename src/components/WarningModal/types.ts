@@ -7,4 +7,5 @@ export type WarningModalProps = {
   handleSubmit?: () => void
   showIcon?: boolean
   textCenter?: boolean
+  upperCase?: boolean
 }

@@ -30,3 +30,15 @@ export type Teacher = {
   first_name?: string
   last_name?: string
 }
+
+export type LearningLogQuestion = {
+  id?: number
+  master_id?: number
+  type?: string
+  question?: string
+  options?: string
+  default_question?: boolean
+  custom_question?: boolean
+  required?: boolean
+  can_upload?: boolean
+}

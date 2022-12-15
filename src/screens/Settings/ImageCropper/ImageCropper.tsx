@@ -9,7 +9,7 @@ export type ProfileFileType = {
 }
 
 export type ImageCropperProps = {
-  imageToCrop: unknown
+  imageToCrop: string | ArrayBuffer | null
   setProfileFile: (value: File | undefined) => void
 }
 

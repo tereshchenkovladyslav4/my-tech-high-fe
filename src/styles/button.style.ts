@@ -107,6 +107,12 @@ export const mthButtonClasses = {
     ...mthButtonSizeClasses.small,
     ...mthButtonColorClasses.primary,
   },
+  xsPrimary: {
+    ...mthButtonSizeClasses.xs,
+    ...mthButtonColorClasses.primary,
+    borderRadius: '8px',
+    minWidth: '92px',
+  },
   roundSmallPrimary: {
     ...mthButtonSizeClasses.small,
     ...mthButtonColorClasses.primary,
@@ -207,6 +213,12 @@ export const mthButtonClasses = {
   },
 
   // Red buttons
+  xsRed: {
+    ...mthButtonSizeClasses.xs,
+    ...mthButtonColorClasses.red,
+    borderRadius: '8px',
+    minWidth: '92px',
+  },
   roundXsRed: {
     ...mthButtonSizeClasses.xs,
     ...mthButtonColorClasses.red,

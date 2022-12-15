@@ -23,9 +23,10 @@ import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { Title } from '@mth/components/Typography/Title/Title'
 import { WarningModal } from '@mth/components/WarningModal/Warning'
-import { MthTitle } from '@mth/enums'
+import { ApplicationStatus, MthTitle } from '@mth/enums'
 import { getAssessmentsBySchoolYearId, getStudentAssessmentsByStudentId } from '@mth/graphql/queries/assessment'
 import { getWithdrawalStatusQuery } from '@mth/graphql/queries/withdrawal'
+import { Packet, Person, Phone } from '@mth/models'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { AssessmentType } from '@mth/screens/Admin/SiteManagement/EnrollmentSetting/TestingPreference/types'
 import { StudentType } from '@mth/screens/HomeroomStudentProfile/Student/types'
@@ -37,15 +38,27 @@ import { GetSchoolsPartner } from '../../SchoolOfEnrollment/services'
 import { getStudentDetail, getSchoolYearsByRegionId } from '../services'
 import { StudentFilters } from './components/StudentFilters'
 
+type StudentTemp = {
+  student_id: number
+  special_ed: string
+  diploma_seeking: string
+  testing_preference: string
+  status: string
+  date: string
+  school_year_id: number
+  school_partner_id: number
+  school_partner_id_updated: boolean
+}
+
 type StudentProfileProps = {
   studentId: number
   setStudentPerson: StudentType
-  setStudentStatus: (_: unknown) => void
-  studentStatus: unknown
-  applicationState: unknown
-  setIsChanged: (_: unknown) => void
-  phoneInfo: unknown
-  setPhoneInfo: (_: unknown) => void
+  setStudentStatus: (_: StudentTemp) => void
+  studentStatus: StudentTemp
+  applicationState: ApplicationStatus
+  setIsChanged: (_: boolean) => void
+  phoneInfo: Phone
+  setPhoneInfo: (_: Phone) => void
 }
 
 type StudentAssessment = {
@@ -214,7 +227,7 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
   }, [withdrawalStatusData])
   //
 
-  const [userInfo, setUserInfo] = useState<unknown>({})
+  const [userInfo, setUserInfo] = useState<Person>({})
   const [preferedFirstName, setPreferredFirstName] = useState('')
   const [preferedLastName, setPreferredLastName] = useState('')
 
@@ -230,7 +243,7 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
   const [street2, setStreet2] = useState('')
   const [state, setState] = useState('')
   const [gradeLevel, setGradeLevel] = useState('')
-  const [packets, setPackets] = useState([])
+  const [packets, setPackets] = useState<Packet[]>([])
   const [openNotes, setOpenNotes] = useState(false)
   const [canMessage, setCanMessage] = useState(false)
   const [showPacketModal, setShowPacketModal] = useState(false)

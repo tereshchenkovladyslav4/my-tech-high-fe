@@ -25,7 +25,6 @@ export const useStyles = makeStyles((theme: Theme) => ({
     textAlign: 'center',
     marginLeft: 'auto',
     marginRight: 'auto',
-    textTransform: 'capitalize',
   },
   close: {
     background: 'black',

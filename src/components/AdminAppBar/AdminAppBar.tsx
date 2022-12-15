@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useContext, useEffect, useRef, useState, useCallback } from 'react'
+import React, { useContext, useEffect, useRef, useState, useCallback } from 'react'
 import { gql, useQuery } from '@apollo/client'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
@@ -21,10 +21,11 @@ import { useLocation } from 'react-router-dom'
 import Slider from 'react-slick'
 import { useRecoilState } from 'recoil'
 import { MthColor, MthTitle } from '@mth/enums'
+import { PersonInfo } from '@mth/models'
+import { ProfileContext } from '@mth/providers/ProfileProvider/ProfileContext'
+import { RegionType } from '@mth/providers/UserContext/types'
+import { UserContext, userRegionState } from '@mth/providers/UserContext/UserProvider'
 import { getWindowDimension } from '@mth/utils'
-import { ProfileContext } from '../../providers/ProfileProvider/ProfileContext'
-import { RegionType } from '../../providers/UserContext/types'
-import { UserContext, userRegionState } from '../../providers/UserContext/UserProvider'
 import { MTHBLUE } from '../../utils/constants'
 import { CustomConfirmModal } from '../CustomConfirmModal/CustomConfirmModal'
 import { Metadata } from '../Metadata/Metadata'
@@ -45,7 +46,7 @@ export const getAllPersonInfoBySearchItem = gql`
   }
 `
 
-export const AdminAppBar: FunctionComponent = () => {
+export const AdminAppBar: React.FC = () => {
   const classes = useStyles
   const { me, setMe } = useContext(UserContext)
   const location = useLocation()
@@ -54,7 +55,7 @@ export const AdminAppBar: FunctionComponent = () => {
   const [selected, setSelected] = useRecoilState(userRegionState)
 
   const [searchListView, setSearchListView] = useState(false)
-  const [personInfoList, setPersonInfoList] = useState<unknown[]>([])
+  const [personInfoList, setPersonInfoList] = useState<PersonInfo[]>([])
   const { showModal, setStore } = useContext(ProfileContext)
   const { loading: personInfoLoading, data: personInfos } = useQuery(getAllPersonInfoBySearchItem, {
     variables: {

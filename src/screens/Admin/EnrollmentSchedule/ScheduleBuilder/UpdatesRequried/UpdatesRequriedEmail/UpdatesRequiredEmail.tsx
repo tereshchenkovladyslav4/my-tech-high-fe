@@ -9,6 +9,7 @@ const UpdatesRequiredEmail: React.FC<UpdatesRequiredEmailProps> = ({
   emailFrom,
   emailSubject,
   emailBody,
+  isEditedByExternal,
   setEmailFrom,
   setEmailSubject,
   setEmailBody,
@@ -33,6 +34,7 @@ const UpdatesRequiredEmail: React.FC<UpdatesRequiredEmailProps> = ({
       />
       <MthBulletEditor
         value={emailBody}
+        isEditedByExternal={isEditedByExternal}
         setValue={(value) => {
           setEmailBody(value)
         }}

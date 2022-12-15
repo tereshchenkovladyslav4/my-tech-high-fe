@@ -119,3 +119,26 @@ export const createOrUpdateInstruction = gql`
     createOrUpdateInstructions(createOrUpdateInstructions: $createOrUpdateInstructions)
   }
 `
+
+export const createOrUpdateLearningLogQuestionMutation = gql`
+  mutation CreateOrUpdateLearningLogQuestion(
+    $createOrUpdateLearningLogQuestionInput: CreateOrUpdateLearningLogQuestionInput!
+  ) {
+    createOrUpdateLearningLogQuestion(createOrUpdateLearningLogQuestionInput: $createOrUpdateLearningLogQuestionInput)
+  }
+`
+export const GetLearningLogQuestionByMasterIdQuery = gql`
+  query GetLearningLogQuestionByMasterId($masterId: Int!) {
+    getLearningLogQuestionByMasterId(masterId: $masterId) {
+      id
+      master_id
+      type
+      question
+      options
+      default_question
+      custom_question
+      required
+      can_upload
+    }
+  }
+`

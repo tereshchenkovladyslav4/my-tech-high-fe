@@ -32,10 +32,10 @@ export const CustomConfirmModal: React.FC<CustomConfirmModalType> = ({
   return (
     <Modal open={true}>
       <Box sx={classes.modalCard}>
-        <Box sx={classes.header as Record<string, unknown>}>
+        <Box sx={classes.header}>
           <Subtitle fontWeight='700'>{header}</Subtitle>
         </Box>
-        <Box sx={classes.content as Record<string, unknown>}>
+        <Box sx={classes.content}>
           <ErrorOutlineIcon style={classes.errorOutline} />
           <Paragraph size='large' color={SYSTEM_01} textAlign='center'>
             {content}

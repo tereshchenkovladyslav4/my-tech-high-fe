@@ -10,6 +10,7 @@ type MthBulletEditorProps = {
   value?: string
   height?: string
   maxHeight?: string
+  isEditedByExternal?: boolean
   setValue: (value: string) => void
   error?: boolean
 }
@@ -20,7 +21,14 @@ const generateEditorState = (htmlContent: string): EditorState => {
   return EditorState.createWithContent(contentState)
 }
 
-const MthBulletEditor: React.FC<MthBulletEditorProps> = ({ value, setValue, error, height, maxHeight }) => {
+const MthBulletEditor: React.FC<MthBulletEditorProps> = ({
+  value,
+  setValue,
+  isEditedByExternal,
+  error,
+  height,
+  maxHeight,
+}) => {
   const [currentBlocks, setCurrentBlocks] = useState<number>(0)
   const editorRef = useRef<unknown>()
   const [editorState, setEditorState] = useState<EditorState>(generateEditorState(''))
@@ -46,6 +54,10 @@ const MthBulletEditor: React.FC<MthBulletEditorProps> = ({ value, setValue, erro
     // Prevent get initial value once touched
     if (!isEdited) setEditorState(generateEditorState(value || ''))
   }, [value])
+
+  useEffect(() => {
+    setEditorState(generateEditorState(value || ''))
+  }, [isEditedByExternal])
 
   return (
     <Box

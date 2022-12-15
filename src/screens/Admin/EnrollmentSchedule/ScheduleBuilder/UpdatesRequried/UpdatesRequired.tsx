@@ -3,6 +3,7 @@ import { Card, Grid } from '@mui/material'
 import { Box } from '@mui/system'
 import { CheckBoxListVM } from '@mth/components/MthCheckboxList/MthCheckboxList'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { EmailTemplateEnum } from '@mth/enums'
 import { useEmailTemplateByNameAndRegionId } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { ScheduleData } from '@mth/screens/Homeroom/Schedule/types'
@@ -31,9 +32,10 @@ const UpdatesRequired: React.FC<UpdatesRequiredProps> = ({
   const { me } = useContext(UserContext)
   const [standardResponseOptions, setStandardResponseOptions] = useState<CheckBoxListVM[]>([])
   const [emailBody, setEmailBody] = useState<string>('')
+  const [isEditedByExternal, setIsEditedByExternal] = useState<boolean>(false)
   const { from, body, subject, setFrom, setSubject, standardResponse } = useEmailTemplateByNameAndRegionId(
     me?.selectedRegionId || 0,
-    'Updates Required',
+    EmailTemplateEnum.UPDATES_REQUIRED,
   )
 
   useEffect(() => {
@@ -62,6 +64,7 @@ const UpdatesRequired: React.FC<UpdatesRequiredProps> = ({
         })),
       )
       setEmailBody(newBody)
+      setIsEditedByExternal(!isEditedByExternal)
     }
   }, [scheduleData, body, standardResponse, requireUpdatePeriods])
   return (
@@ -76,6 +79,7 @@ const UpdatesRequired: React.FC<UpdatesRequiredProps> = ({
               emailFrom={from}
               emailBody={emailBody}
               emailSubject={subject}
+              isEditedByExternal={isEditedByExternal}
               setEmailFrom={setFrom}
               setEmailSubject={setSubject}
               setEmailBody={setEmailBody}
