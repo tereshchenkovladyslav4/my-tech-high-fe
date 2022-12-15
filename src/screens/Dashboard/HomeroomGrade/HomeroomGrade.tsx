@@ -7,7 +7,7 @@ import { find, forEach, map } from 'lodash'
 import Slider from 'react-slick'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { StudentStatus } from '@mth/enums'
-import { SchoolYearType } from '@mth/models'
+import { SchoolYear } from '@mth/models'
 import { UserContext, UserInfo } from '@mth/providers/UserContext/UserProvider'
 import { StudentType } from '@mth/screens/HomeroomStudentProfile/Student/types'
 import { getWindowDimension } from '@mth/utils'
@@ -15,7 +15,7 @@ import { ToDoItem } from '../ToDoList/components/ToDoListItem/types'
 import { StudentGrade } from './components/StudentGrade/StudentGrade'
 
 type HomeroomGradeProps = {
-  schoolYears: SchoolYearType[]
+  schoolYears: SchoolYear[]
   mainTodoList: ToDoItem[]
 }
 
@@ -25,7 +25,7 @@ export const HomeroomGrade: React.FC<HomeroomGradeProps> = ({ schoolYears, mainT
 
   const [filteredStudents, setFilteredStudents] = useState<StudentType[]>([])
   const [studentsCnt, setStudentsCnt] = useState<number>(0)
-  const [mappedTodoList, setMappedTodoList] = useState()
+  const [mappedTodoList, setMappedTodoList] = useState<Map<number, ToDoItem[]>>(new Map())
 
   const sliderRef = useRef()
 
@@ -41,13 +41,13 @@ export const HomeroomGrade: React.FC<HomeroomGradeProps> = ({ schoolYears, mainT
   }, [])
 
   const mapStudentsToTodoList = () => {
-    const mappedStudents = new Map()
+    const mappedStudents = new Map<number, ToDoItem[]>()
     forEach(filteredStudents, (student) => {
       if (!mappedStudents.has(student.student_id)) {
         mappedStudents.set(student.student_id, [])
         forEach(mainTodoList, (todoListItem) => {
           if (find(todoListItem.students, { student_id: student.student_id }) !== undefined) {
-            mappedStudents.get(student.student_id).push(todoListItem)
+            mappedStudents.get(student.student_id)?.push(todoListItem)
           }
         })
       }
@@ -130,13 +130,17 @@ export const HomeroomGrade: React.FC<HomeroomGradeProps> = ({ schoolYears, mainT
           schoolYears={schoolYears}
           student={student}
           key={index}
-          notification={mappedTodoList.get(student.student_id)}
+          notifications={mappedTodoList.get(student.student_id) || []}
         />
       )
     })
 
   useEffect(() => {
-    setFilteredStudents((students || []).filter((x) => x.status.at(-1)?.status !== StudentStatus.WITHDRAWN))
+    setFilteredStudents(
+      (students || []).filter(
+        (x) => x.status.at(-1)?.status !== StudentStatus.WITHDRAWN && x.status.at(-1)?.status !== StudentStatus.DELETED,
+      ),
+    )
   }, [students])
 
   useEffect(() => {

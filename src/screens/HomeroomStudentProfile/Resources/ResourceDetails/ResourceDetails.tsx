@@ -58,9 +58,15 @@ const ResourceDetails: React.FC<ResourceDetailsProps> = ({ item, handleBack, onC
                       <Subtitle sx={{ fontSize: 14, fontWeight: 600, mb: 1 }}>Username</Subtitle>
                       <TextField
                         fullWidth
-                        disabled
+                        aria-readonly
+                        focused
                         value={item.std_user_name}
                         InputProps={{ style: { fontSize: 14, fontWeight: 700 } }}
+                        sx={{
+                          '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                            border: '1px solid #E7E7E7',
+                          },
+                        }}
                       />
                     </Box>
                   )}
@@ -69,9 +75,15 @@ const ResourceDetails: React.FC<ResourceDetailsProps> = ({ item, handleBack, onC
                       <Subtitle sx={{ fontSize: 14, fontWeight: 600, mb: 1 }}>Password</Subtitle>
                       <TextField
                         fullWidth
-                        disabled
+                        aria-readonly
+                        focused
                         value={item.std_password}
-                        InputProps={{ style: { fontSize: 14, fontWeight: 700 } }}
+                        InputProps={{ style: { fontSize: 14, fontWeight: 700, color: MthColor.SYSTEM_01 } }}
+                        sx={{
+                          '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                            border: '1px solid #E7E7E7',
+                          },
+                        }}
                       />
                     </Box>
                   )}

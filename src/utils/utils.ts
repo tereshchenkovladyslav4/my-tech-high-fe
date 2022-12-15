@@ -1,18 +1,4 @@
-import { StudentType } from '@mth/screens/HomeroomStudentProfile/Student/types'
 import { SchoolYearType } from './utils.types'
-
-export const checkEnrollPacketStatus = (schoolYears: SchoolYearType[], student: StudentType): boolean => {
-  if (student?.status && student?.status?.at(-1)?.status != 0) return true
-  if (schoolYears.length > 0) {
-    const studentSchoolYear: SchoolYearType[] = schoolYears?.filter(
-      (item) => item.school_year_id == student?.current_school_year_status?.school_year_id,
-    )
-
-    return (studentSchoolYear?.length > 0 && studentSchoolYear?.at(-1)?.enrollment_packet) || false
-  } else {
-    return false
-  }
-}
 
 export const extractContent = (s: string): string | null => {
   const span = document.createElement('span')

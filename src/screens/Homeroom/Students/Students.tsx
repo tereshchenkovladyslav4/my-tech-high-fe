@@ -1,24 +1,24 @@
-import React, { FunctionComponent, useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { useQuery } from '@apollo/client'
 import { Box, Button, Card, CircularProgress, Divider } from '@mui/material'
 import { filter, map } from 'lodash'
+import { DropDownItem } from '@mth/components/DropDown/types'
+import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
+import { Title } from '@mth/components/Typography/Title/Title'
+import { MthColor, StudentStatus } from '@mth/enums'
+import { SchoolYear } from '@mth/models'
+import { UserContext, UserInfo } from '@mth/providers/UserContext/UserProvider'
 import { ToDoItem } from '@mth/screens/Dashboard/ToDoList/components/ToDoListItem/types'
 import { getTodoList } from '@mth/screens/Dashboard/ToDoList/service'
-import { DropDownItem } from '../../../components/DropDown/types'
-import { Paragraph } from '../../../components/Typography/Paragraph/Paragraph'
-import { Title } from '../../../components/Typography/Title/Title'
-import { MthColor, StudentStatus } from '../../../core/enums'
-import { UserContext, UserInfo } from '../../../providers/UserContext/UserProvider'
-import { SchoolYearType } from '../../../utils/utils.types'
 import { StudentType } from '../../HomeroomStudentProfile/Student/types'
 import { Student } from './Student/Student'
 
 type StudentsProps = {
-  schoolYears: SchoolYearType[]
+  schoolYears: SchoolYear[]
   isLoading: boolean
   schoolYearsDropdown: DropDownItem[]
 }
-export const Students: FunctionComponent<StudentsProps> = ({ schoolYears, isLoading, schoolYearsDropdown }) => {
+export const Students: React.FC<StudentsProps> = ({ schoolYears, isLoading, schoolYearsDropdown }) => {
   const { me } = useContext(UserContext)
   const { students } = me as UserInfo
 
@@ -72,9 +72,19 @@ export const Students: FunctionComponent<StudentsProps> = ({ schoolYears, isLoad
     })
 
   useEffect(() => {
-    const availableStudents = filter(students, (student) => student.status.at(-1)?.status !== StudentStatus.WITHDRAWN)
+    const availableStudents = filter(
+      students,
+      (student) =>
+        student.status.at(-1)?.status !== StudentStatus.WITHDRAWN &&
+        student.status.at(-1)?.status !== StudentStatus.DELETED,
+    )
     setAvailableStudents(availableStudents)
-    const inactiveStudents = filter(students, (student) => student.status.at(-1)?.status === StudentStatus.WITHDRAWN)
+    const inactiveStudents = filter(
+      students,
+      (student) =>
+        student.status.at(-1)?.status === StudentStatus.WITHDRAWN ||
+        student.status.at(-1)?.status === StudentStatus.DELETED,
+    )
     setInactiveStudents(inactiveStudents)
     setShowInactiveButton(Boolean(inactiveStudents?.length))
   }, [students])

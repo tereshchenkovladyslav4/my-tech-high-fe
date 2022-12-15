@@ -1,10 +1,10 @@
-import React, { FunctionComponent, useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { Box, Card } from '@mui/material'
+import { EmptyState } from '@mth/components/EmptyState/EmptyState'
+import { Flexbox } from '@mth/components/Flexbox/Flexbox'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { Title } from '@mth/components/Typography/Title/Title'
 import BGSVG from '../../../assets/ToDoListBG.svg'
-import { EmptyState } from '../../../components/EmptyState/EmptyState'
-import { Flexbox } from '../../../components/Flexbox/Flexbox'
-import { Subtitle } from '../../../components/Typography/Subtitle/Subtitle'
-import { Title } from '../../../components/Typography/Title/Title'
 import { SYSTEM_06 } from '../../../utils/constants'
 import { SchoolYearType } from '../HomeroomGrade/components/StudentGrade/types'
 import { TodoList } from './components/TodoList/TodoList'
@@ -53,7 +53,7 @@ type TodoProps = {
   setMainTodoList?: (todoList: ToDoItem[]) => void
 }
 
-export const ToDo: FunctionComponent<TodoProps> = ({ schoolYears, setIsLoading, setMainTodoList }) => {
+export const ToDo: React.FC<TodoProps> = ({ schoolYears, setIsLoading, setMainTodoList }) => {
   const cardRef = useRef(null)
 
   const [showEmpty, setShowEmpty] = useState(false)

@@ -6,4 +6,8 @@ export enum StudentStatus {
   APPLIED = 5,
   REAPPLIED = 7,
   ACCEPTED = 6,
+  /**
+   * Packet is deleted by Admin
+   */
+  DELETED = 7,
 }

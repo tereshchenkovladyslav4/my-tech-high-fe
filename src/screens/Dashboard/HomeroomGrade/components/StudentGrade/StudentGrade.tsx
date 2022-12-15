@@ -8,12 +8,12 @@ import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { ApplicationStatus, MthColor, MthRoute, PacketStatus, ScheduleStatus, StudentNotification } from '@mth/enums'
 import { SchoolYearType } from '@mth/models'
-import { checkEnrollPacketStatus } from '../../../../../utils/utils'
+import { checkEnrollPacketStatus } from '@mth/utils'
 import { Person } from '../../../../HomeroomStudentProfile/Student/types'
 import { useStyles } from './styles'
 import { CircleData, StudentGradeProps } from './types'
 
-export const StudentGrade: React.FC<StudentGradeProps> = ({ student, schoolYears, notification }) => {
+export const StudentGrade: React.FC<StudentGradeProps> = ({ student, schoolYears, notifications }) => {
   const classes = useStyles
   const [circleData, setCircleData] = useState<CircleData>()
   const history = useHistory()
@@ -23,15 +23,15 @@ export const StudentGrade: React.FC<StudentGradeProps> = ({ student, schoolYears
     const currApplication = applications?.at(0)
     const currPacket = packets?.at(0)
     if (
-      notification.at(0)?.phrase === StudentNotification.SUBMIT_SCHEDULE ||
-      notification.at(0)?.phrase === StudentNotification.SUBMIT_SECOND_SEMESTER_SCHEDULE
+      notifications.at(0)?.phrase === StudentNotification.SUBMIT_SCHEDULE ||
+      notifications.at(0)?.phrase === StudentNotification.SUBMIT_SECOND_SEMESTER_SCHEDULE
     ) {
       history.push(`${MthRoute.HOMEROOM + MthRoute.SUBMIT_SCHEDULE}/${student.student_id}`)
       return
     }
     if (
-      notification.at(0)?.phrase === StudentNotification.RESUBMIT_SCHEDULE ||
-      notification.at(0)?.phrase === StudentNotification.RESUBMIT_SECOND_SEMESTER_SCHEDULE
+      notifications.at(0)?.phrase === StudentNotification.RESUBMIT_SCHEDULE ||
+      notifications.at(0)?.phrase === StudentNotification.RESUBMIT_SECOND_SEMESTER_SCHEDULE
     ) {
       history.push(`${MthRoute.HOMEROOM + MthRoute.SUBMIT_SCHEDULE}/${student.student_id}?backTo=${location.pathname}`)
       return
@@ -123,10 +123,10 @@ export const StudentGrade: React.FC<StudentGradeProps> = ({ student, schoolYears
       })
     } else if (
       studentSchoolYear?.schedule === true &&
-      notification.at(0)?.phrase !== StudentNotification.SUBMIT_SCHEDULE &&
-      notification.at(0)?.phrase !== StudentNotification.RESUBMIT_SCHEDULE &&
-      notification.at(0)?.phrase !== StudentNotification.SUBMIT_SECOND_SEMESTER_SCHEDULE &&
-      notification.at(0)?.phrase !== StudentNotification.RESUBMIT_SECOND_SEMESTER_SCHEDULE &&
+      notifications.at(0)?.phrase !== StudentNotification.SUBMIT_SCHEDULE &&
+      notifications.at(0)?.phrase !== StudentNotification.RESUBMIT_SCHEDULE &&
+      notifications.at(0)?.phrase !== StudentNotification.SUBMIT_SECOND_SEMESTER_SCHEDULE &&
+      notifications.at(0)?.phrase !== StudentNotification.RESUBMIT_SECOND_SEMESTER_SCHEDULE &&
       currPacket?.status === PacketStatus.ACCEPTED &&
       currApplication?.status === ApplicationStatus.ACCEPTED
     ) {
@@ -165,28 +165,28 @@ export const StudentGrade: React.FC<StudentGradeProps> = ({ student, schoolYears
           icon: <ScheduleIcon sx={{ color: MthColor.MTHGREEN, cursor: 'pointer' }} />,
         })
       }
-    } else if (notification.at(0)?.phrase === StudentNotification.SUBMIT_SCHEDULE) {
+    } else if (notifications.at(0)?.phrase === StudentNotification.SUBMIT_SCHEDULE) {
       setCircleData({
         color: MthColor.MTHORANGE,
         progress: 75,
         message: StudentNotification.PLEASE_SUBMIT_SCHEDULE,
         icon: <ErrorOutlineIcon sx={{ color: MthColor.MTHORANGE, cursor: 'pointer' }} />,
       })
-    } else if (notification.at(0)?.phrase === StudentNotification.RESUBMIT_SCHEDULE) {
+    } else if (notifications.at(0)?.phrase === StudentNotification.RESUBMIT_SCHEDULE) {
       setCircleData({
         color: MthColor.MTHORANGE,
         progress: 75,
         message: StudentNotification.PLEASE_RESUBMIT_SCHEDULE,
         icon: <ErrorOutlineIcon sx={{ color: MthColor.MTHORANGE, cursor: 'pointer' }} />,
       })
-    } else if (notification.at(0)?.phrase === StudentNotification.SUBMIT_SECOND_SEMESTER_SCHEDULE) {
+    } else if (notifications.at(0)?.phrase === StudentNotification.SUBMIT_SECOND_SEMESTER_SCHEDULE) {
       setCircleData({
         color: MthColor.MTHORANGE,
         progress: 75,
         message: StudentNotification.SUBMIT_SECOND_SEMESTER_SCHEDULE,
         icon: <ErrorOutlineIcon sx={{ color: MthColor.MTHORANGE, cursor: 'pointer' }} />,
       })
-    } else if (notification.at(0)?.phrase === StudentNotification.RESUBMIT_SECOND_SEMESTER_SCHEDULE) {
+    } else if (notifications.at(0)?.phrase === StudentNotification.RESUBMIT_SECOND_SEMESTER_SCHEDULE) {
       setCircleData({
         color: MthColor.MTHORANGE,
         progress: 75,
@@ -197,7 +197,7 @@ export const StudentGrade: React.FC<StudentGradeProps> = ({ student, schoolYears
   }
   useEffect(() => {
     progress()
-  }, [notification])
+  }, [notifications])
 
   return (
     <Box width={'100px'}>

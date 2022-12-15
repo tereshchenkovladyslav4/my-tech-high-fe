@@ -3,22 +3,22 @@ import { useQuery } from '@apollo/client'
 import { Table, TableBody, TableContainer, Box } from '@mui/material'
 import { forOwn, map, groupBy, values } from 'lodash'
 import moment from 'moment'
-import { checkEnrollPacketStatus } from '../../../../../utils/utils'
+import { TodoListProps } from '@mth/screens/Dashboard/ToDoList/components/TodoList/types'
+import { checkEnrollPacketStatus } from '@mth/utils'
 import { getTodoList } from '../../service'
 import { ToDoListItem } from '../ToDoListItem/ToDoListItem'
 import { ToDoCategory, ToDoItem } from '../ToDoListItem/types'
-import { TodoListTemplateType } from './types'
 
-export const TodoList: TodoListTemplateType = ({ handleShowEmpty, schoolYears, setIsLoading, setMainTodoList }) => {
+export const TodoList: React.FC<TodoListProps> = ({ handleShowEmpty, schoolYears, setIsLoading, setMainTodoList }) => {
   const [todoList, setTodoList] = useState<ToDoItem[]>([])
-  const [paginatinLimit] = useState<number>(25)
+  const [paginationLimit] = useState<number>(25)
   const [skip] = useState<number>()
 
   const { loading, data } = useQuery(getTodoList, {
     variables: {
       skip: skip,
       sort: 'status|ASC',
-      take: paginatinLimit,
+      take: paginationLimit,
     },
     fetchPolicy: 'network-only',
   })
@@ -32,26 +32,26 @@ export const TodoList: TodoListTemplateType = ({ handleShowEmpty, schoolYears, s
         if (key !== '__typename') {
           if (item.category == ToDoCategory.SUBMIT_ENROLLMENT_PACKET) {
             // Have to group by accepted date
-            const splitedItems = values(
+            const splitItems = values(
               groupBy(
                 item.students.filter((student) => checkEnrollPacketStatus(schoolYears, student)),
                 (student) => student.current_school_year_status.application_date_accepted,
               ),
             ).reduce((list: ToDoItem[], students) => list.concat([{ ...item, students: students }]), [])
-            setTodoList((prev) => [...prev, ...splitedItems])
+            setTodoList((prev) => [...prev, ...splitItems])
           } else if (item.category == ToDoCategory.SUBMIT_WITHDRAW) {
             // If there are multiple students, they should each have their own to-do item
-            const splitedItems: ToDoItem[] = item.students.reduce(
+            const splitItems: ToDoItem[] = item.students.reduce(
               (list: ToDoItem[], student) => list.concat([{ ...item, students: [student] }]),
               [],
             )
-            setTodoList((prev) => [...prev, ...splitedItems])
+            setTodoList((prev) => [...prev, ...splitItems])
           } else {
-            const splitedItems: ToDoItem[] = item.students.reduce(
+            const splitItems: ToDoItem[] = item.students.reduce(
               (list: ToDoItem[], student) => list.concat([{ ...item, students: [student] }]),
               [],
             )
-            setTodoList((prev) => [...prev, ...splitedItems])
+            setTodoList((prev) => [...prev, ...splitItems])
           }
 
           if (item.students.length) {

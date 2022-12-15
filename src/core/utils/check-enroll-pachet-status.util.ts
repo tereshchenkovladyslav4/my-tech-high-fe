@@ -2,8 +2,8 @@ import { SchoolYear } from '@mth/models'
 import { StudentType } from '@mth/screens/HomeroomStudentProfile/Student/types'
 
 /**
- * @param {schoolYears} SchoolYear
- * @param {student} StudentType
+ * @param {SchoolYear} schoolYears
+ * @param {StudentType} student
  * @description check enrollment packet is submitted or not
  * @logic if enrollment packet is submitted, return true else return false
  * @return boolean

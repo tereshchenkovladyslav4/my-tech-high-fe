@@ -39,9 +39,8 @@ import { ApplicationStatus, MthColor, PacketStatus, StudentNotification, Student
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { getSchoolYearsByRegionId } from '@mth/screens/Admin/Dashboard/SchoolYear/SchoolYear'
 import { StudentType, Person } from '@mth/screens/HomeroomStudentProfile/Student/types'
-import { getWindowDimension, gradeText } from '@mth/utils'
+import { checkEnrollPacketStatus, getWindowDimension, gradeText } from '@mth/utils'
 import { APPLICATIONS, HOMEROOM } from '../../utils/constants'
-import { checkEnrollPacketStatus } from '../../utils/utils'
 import { SchoolYearType } from '../../utils/utils.types'
 import { Metadata } from '../Metadata/Metadata'
 import { MobileSideMenu } from '../SideMenu/MobileSideMenu'
@@ -83,7 +82,7 @@ export const AppBar: FunctionComponent = () => {
     variables: {
       regionId: region_id,
     },
-    skip: region_id ? false : true,
+    skip: !region_id,
     fetchPolicy: 'network-only',
   })
 
@@ -442,7 +441,10 @@ export const AppBar: FunctionComponent = () => {
       setStudents(me?.students)
       setActiveStudents(
         filter(me?.students, (student) => {
-          return student?.status?.at(-1)?.status !== 2
+          return (
+            student?.status?.at(-1)?.status !== StudentStatus.WITHDRAWN &&
+            student?.status?.at(-1)?.status !== StudentStatus.DELETED
+          )
         }),
       )
     }
@@ -525,10 +527,20 @@ export const AppBar: FunctionComponent = () => {
       return <BackupTableIcon />
     } else if (theIcon.type === 'img') {
       return (
-        <Avatar alt='Avatar' src={theIcon.name} sx={{ width: 24, height: 24, bgcolor: 'blue', fontSize: '1rem' }} />
+        <Avatar
+          alt='Avatar'
+          src={theIcon.name}
+          sx={{ width: 24, height: 24, backgroundColor: 'blue', fontSize: '1rem' }}
+        />
       )
     } else if (theIcon.type === 'avatar') {
-      return <Avatar alt={theIcon.name} src='image' sx={{ width: 24, height: 24, bgcolor: 'blue', fontSize: '1rem' }} />
+      return (
+        <Avatar
+          alt={theIcon.name}
+          src='image'
+          sx={{ width: 24, height: 24, backgroundColor: 'blue', fontSize: '1rem' }}
+        />
+      )
     } else {
       return <BackupTableIcon />
     }

@@ -26,7 +26,7 @@ import { EnrollmentPacketModal } from '../EnrollmentPacketModal'
 import {
   getEnrollmentPacketsQuery,
   emailPacketMutation,
-  deletePacketMutation,
+  deletePacketsMutation,
   packetCountQuery,
   updateEnrollmentSchoolYearByIds,
 } from '../services'
@@ -49,7 +49,7 @@ export const EnrollmentPacketTable: React.FC = () => {
   const [isShowModal, setIsShowModal] = useState(false)
   const [enrollmentPackets, setEnrollmentPackets] = useState<Array<Packet>>([])
   const [enrollmentPacket, setEnrollmentPacket] = useState<Packet | null>(null)
-  const [deletePacket] = useMutation(deletePacketMutation)
+  const [deletePackets] = useMutation(deletePacketsMutation)
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [openEmailModal, setOpenEmailModal] = useState<boolean>(false)
   const [emailHistory, setEmailHistory] = useState([])
@@ -309,11 +309,11 @@ export const EnrollmentPacketTable: React.FC = () => {
     onSendEmail(from, subject, body)
   }
 
-  const handleDelete = async (id) => {
-    await deletePacket({
+  const handleDelete = async (packetId: number) => {
+    await deletePackets({
       variables: {
-        deleteApplicationInput: {
-          application_ids: [id],
+        packetsActionInput: {
+          packetIds: [packetId],
         },
       },
     })
@@ -325,10 +325,10 @@ export const EnrollmentPacketTable: React.FC = () => {
       setOpenWarningModal(true)
       return
     }
-    await deletePacket({
+    await deletePackets({
       variables: {
-        deleteApplicationInput: {
-          application_ids: packetIds,
+        packetsActionInput: {
+          packetIds: packetIds,
         },
       },
     })

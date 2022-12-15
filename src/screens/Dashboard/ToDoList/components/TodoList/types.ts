@@ -1,12 +1,9 @@
-import { FunctionComponent } from 'react'
-import { SchoolYearType } from '../../../../../utils/utils.types'
+import { SchoolYear } from '@mth/models'
 import { ToDoItem } from '../ToDoListItem/types'
 
-type TodoListProps = {
+export type TodoListProps = {
   handleShowEmpty: (isEmpty: boolean) => void
-  schoolYears: SchoolYearType[]
+  schoolYears: SchoolYear[]
   setIsLoading?: (isLoading: boolean) => void
   setMainTodoList?: (todoList: ToDoItem[]) => void
 }
-
-export type TodoListTemplateType = FunctionComponent<TodoListProps>

@@ -348,14 +348,6 @@ export const getEnrollmentPacketStatusesQuery = gql`
   }
 `
 
-// export const deletePacketMutation = gql`
-//   mutation deletePacket($packetIds: String!) {
-//     deletePacket(packetIds: $packetIds) {
-//       error
-//       message
-//     }
-//   }
-// `
 export const getImmunizationSettings = gql`
   query ImmunizationSettings($where: FindImunizationSettingsInput) {
     immunizationSettings(where: $where) {
@@ -466,9 +458,9 @@ export const emailPacketMutation = gql`
   }
 `
 
-export const deletePacketMutation = gql`
-  mutation DeletePacket($deleteApplicationInput: DeleteApplicationInput!) {
-    deletePacket(deleteApplicationInput: $deleteApplicationInput) {
+export const deletePacketsMutation = gql`
+  mutation DeletePackets($packetsActionInput: PacketsActionInput!) {
+    deletePackets(packetsActionInput: $packetsActionInput) {
       packet_id
       status
     }

@@ -82,7 +82,7 @@ export const Student: React.FC<StudentProps> = ({
     const studentSchoolYear = schoolYears
       ?.filter((item) => item.school_year_id == student?.current_school_year_status?.school_year_id)
       .at(-1) as SchoolYearType
-    if (studentStatus === StudentStatus.WITHDRAWN) {
+    if (studentStatus === StudentStatus.WITHDRAWN || studentStatus === StudentStatus.DELETED) {
       setCircleData({
         mobileColor: MthColor.BUTTON_LINEAR_GRADIENT,
         mobileText: 'Re-apply',
