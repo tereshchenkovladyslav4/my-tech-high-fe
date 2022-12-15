@@ -73,7 +73,6 @@ export const useStyles = {
     boxShadow: 24,
     p: 4,
     borderRadius: 2,
-    overflowY: 'auto',
     maxHeight: '97vh',
   },
   content: {

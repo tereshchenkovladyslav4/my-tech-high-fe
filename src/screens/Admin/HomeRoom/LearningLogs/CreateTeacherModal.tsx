@@ -272,7 +272,7 @@ export const CreateTeacherModal: FunctionComponent<CreateTeacherModalProps> = ({
                         <Typography fontSize='18' fontWeight='800'>
                           Additional Teachers
                         </Typography>
-                        <Box sx={{ minHeight: '50px' }}>
+                        <Box sx={{ minHeight: '50px', maxHeight: '70px', overflow: 'auto' }}>
                           {checkedTeachers.map((teacher) => (
                             <Button
                               sx={{
