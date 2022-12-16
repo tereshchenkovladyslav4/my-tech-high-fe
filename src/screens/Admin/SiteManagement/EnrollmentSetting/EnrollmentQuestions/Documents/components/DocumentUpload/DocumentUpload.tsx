@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useState } from 'react'
+import React, { useState } from 'react'
 import DehazeIcon from '@mui/icons-material/Dehaze'
 import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined'
 import EditIcon from '@mui/icons-material/Edit'
@@ -7,15 +7,15 @@ import { Box } from '@mui/system'
 import { useFormikContext } from 'formik'
 import { filter, map } from 'lodash'
 import { SortableHandle } from 'react-sortable-hoc'
-import { QUESTION_TYPE } from '../../../../../../../../components/QuestionItem/QuestionItemProps'
-import { Paragraph } from '../../../../../../../../components/Typography/Paragraph/Paragraph'
-import { Subtitle } from '../../../../../../../../components/Typography/Subtitle/Subtitle'
+import { DocumentListItem } from '@mth/components/DocumentUploadModal/DocumentListItem'
+import { DocumentUploadModal } from '@mth/components/DocumentUploadModal/DocumentUploadModal'
+import { QUESTION_TYPE } from '@mth/components/QuestionItem/QuestionItemProps'
+import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { CustomModal } from '../../../../components/CustomModal/CustomModals'
 import { AddUploadModal } from '../../../AddUpload/index'
 import { EnrollmentQuestionItem } from '../../../Question'
 import { EnrollmentQuestionTab, EnrollmentQuestion } from '../../../types'
-import { DocumentListItem } from '../DocumentList/DocumentListItem'
-import { DocumentUploadModal } from '../DocumentUploadModal/DocumentUploadModal'
 import { useStyles } from './styles'
 
 const DragHandle = SortableHandle(() => (
@@ -26,10 +26,7 @@ const DragHandle = SortableHandle(() => (
   </Tooltip>
 ))
 
-export const DocumentUpload: FunctionComponent<{ item: EnrollmentQuestion[]; specialEd: unknown }> = ({
-  item,
-  specialEd,
-}) => {
+export const DocumentUpload: React.FC<{ item: EnrollmentQuestion[]; specialEd: unknown }> = ({ item, specialEd }) => {
   const classes = useStyles
 
   const [open, setOpen] = useState(false)
@@ -40,7 +37,7 @@ export const DocumentUpload: FunctionComponent<{ item: EnrollmentQuestion[]; spe
   const handleFile = (fileName: File[]) => {
     setFiles(
       fileName.map((f, index) => {
-        return { ...f, name: `F.Last${item.options[0].label}(${index + 1})` }
+        return { ...f, name: `F.Last${item[0].options?.[0].label}(${index + 1})` }
       }),
     )
   }
@@ -49,7 +46,7 @@ export const DocumentUpload: FunctionComponent<{ item: EnrollmentQuestion[]; spe
   }
 
   const renderFiles = () => {
-    return map(files, (curr) => <DocumentListItem file={curr} closeAction={deleteFile} />)
+    return map(files, (curr) => <DocumentListItem file={curr} closeAction={() => deleteFile(curr)} />)
   }
   if (item[0].type !== QUESTION_TYPE.UPLOAD) {
     return (
@@ -79,7 +76,7 @@ export const DocumentUpload: FunctionComponent<{ item: EnrollmentQuestion[]; spe
           </Box>
         </Box>
         <Paragraph size='medium'>
-          <p dangerouslySetInnerHTML={{ __html: item[0].options[0].value }}></p>
+          <p dangerouslySetInnerHTML={{ __html: item[0].options?.[0].value?.toString() || '' }}></p>
         </Paragraph>
         {files && renderFiles()}
         <Box sx={classes.buttonContainer}>

@@ -1,60 +1,48 @@
 import React, { useEffect, useState } from 'react'
 import { Button, Grid } from '@mui/material'
 import { Box } from '@mui/system'
-import { filter, map } from 'lodash'
-import { QUESTION_TYPE } from '../../../../../components/QuestionItem/QuestionItemProps'
-import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragraph'
-import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
+import { filter } from 'lodash'
+import { DocumentListItem } from '@mth/components/DocumentUploadModal/DocumentListItem'
+import { DocumentUploadModal } from '@mth/components/DocumentUploadModal/DocumentUploadModal'
+import { QUESTION_TYPE } from '@mth/components/QuestionItem/QuestionItemProps'
+import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { EnrollmentQuestionItem } from '../../../Question'
-import { DocumentListItem } from '../DocumentList/DocumentListItem'
-import { DocumentUploadModal } from '../DocumentUploadModal/DocumentUploadModal'
 import { useStyles } from './styles'
-import { DocumentUploadTemplateType } from './types'
+import { DocumentUploadProps } from './types'
 
-export const DocumentUpload: DocumentUploadTemplateType = ({
+export const DocumentUpload: React.FC<DocumentUploadProps> = ({
   item,
   formik,
   handleUpload,
-  file,
-  firstName,
-  lastName,
+  files,
+  handleDelete,
+  fileName,
   disabled,
 }) => {
   const classes = useStyles
 
   const [open, setOpen] = useState(false)
-  const [files, setFiles] = useState<undefined | File[]>()
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([])
 
-  const handleFile = (fileName: File[]) => {
-    const myRenamedFile = fileName.map((f) => {
+  const handleFile = (tempFiles: File[]) => {
+    const myRenamedFile = tempFiles.map((f) => {
       const fileType = f.name.split('.')[1]
-      return new File([f], `${firstName.charAt(0).toUpperCase()}.${lastName}${item[0].options[0].label}.${fileType}`, {
+      return new File([f], `${fileName}.${fileType}`, {
         type: f.type,
       })
     })
-    setFiles(myRenamedFile)
+    setUploadedFiles((prev) => prev.concat(myRenamedFile))
   }
 
   const deleteFile = (currFile: File) => {
-    setFiles(filter(files, (validFile) => validFile !== currFile))
+    setUploadedFiles(filter(uploadedFiles, (validFile) => validFile !== currFile))
   }
 
   useEffect(() => {
-    handleUpload(item[0].question, files)
-  }, [item[0], files])
+    handleUpload(item[0].question, uploadedFiles)
+  }, [item[0], uploadedFiles])
 
-  const renderFiles = (upload) => {
-    return upload
-      ? map(files, (curr, index) => <DocumentListItem file={curr} key={index} closeAction={deleteFile} />)
-      : //  map(file, (curr, index) => (
-        file?.length > 0 && (
-          <DocumentListItem
-            file={file?.at(-1)}
-            // key={index}
-          />
-        )
-    // ))
-  }
   if (item[0].type !== QUESTION_TYPE.UPLOAD) {
     return (
       <Grid container rowSpacing={2} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
@@ -68,16 +56,31 @@ export const DocumentUpload: DocumentUploadTemplateType = ({
           <Subtitle fontWeight='700'>{`${item[0].question} ${item[0].required ? '(required)' : ''}`}</Subtitle>
         </Box>
         <Paragraph size='medium'>
-          <p dangerouslySetInnerHTML={{ __html: item[0].options[0].value }}></p>
+          <p dangerouslySetInnerHTML={{ __html: item[0]?.options?.[0].value?.toString() || '' }}></p>
         </Paragraph>
-        {files ? renderFiles(true) : renderFiles(false)}
+        <Box>
+          {(files || []).map((curr, index) => (
+            <DocumentListItem
+              file={curr}
+              key={index}
+              closeAction={() => {
+                if (handleDelete) handleDelete(curr)
+              }}
+            />
+          ))}
+        </Box>
+        <Box>
+          {uploadedFiles.map((curr, index) => (
+            <DocumentListItem file={curr} key={index} closeAction={() => deleteFile(curr)} />
+          ))}
+        </Box>
         <Box sx={classes.buttonContainer}>
           <Paragraph size='medium'>{'Allowed file types: pdf, png, jpg, jpeg, gif, bmp (Less than 25MB)'}</Paragraph>
           <Button disabled={disabled} style={classes.button} onClick={() => setOpen(true)}>
             <Paragraph size='medium'>Upload</Paragraph>
           </Button>
         </Box>
-        {open && <DocumentUploadModal handleModem={() => setOpen(!open)} handleFile={handleFile} limit={1} />}
+        {open && <DocumentUploadModal handleModem={() => setOpen(!open)} handleFile={handleFile} />}
       </Box>
     )
   }

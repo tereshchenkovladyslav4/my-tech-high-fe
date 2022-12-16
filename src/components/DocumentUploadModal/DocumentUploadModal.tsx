@@ -1,17 +1,14 @@
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useEffect, useState, useRef, ChangeEvent, DragEvent, MouseEvent } from 'react'
 import CloseIcon from '@mui/icons-material/Close'
-import UploadFileIcon from '@mui/icons-material/UploadFile'
+import SystemUpdateAltRoundedIcon from '@mui/icons-material/SystemUpdateAltRounded'
 import { Box, Button, Modal } from '@mui/material'
 import { filter, map } from 'lodash'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { MthColor } from '@mth/enums'
+import { mthButtonClasses } from '@mth/styles/button.style'
 import { DocumentListItem } from './DocumentListItem'
 import { documentUploadModalClasses } from './styles'
 import { SubmissionModal } from './types'
-
-interface HTMLInputEvent extends Event {
-  target: HTMLInputElement & EventTarget & File
-}
 
 type ValidateFileResponse = {
   status: boolean
@@ -27,22 +24,20 @@ export const DocumentUploadModal: React.FC<SubmissionModal> = ({
 }) => {
   const [validFiles, setValidFiles] = useState<File[]>([])
   const [errorMessage, setErrorMessage] = useState('')
-  const inputRef = useRef(null)
-  const preventDefault = (e: HTMLInputEvent) => {
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  const dragOver = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault()
   }
-  const dragOver = (e: HTMLInputEvent) => {
-    preventDefault(e)
+  const dragEnter = (e: DragEvent<HTMLElement>) => {
+    e.preventDefault()
   }
-  const dragEnter = (e: HTMLInputEvent) => {
-    preventDefault(e)
+  const dragLeave = (e: DragEvent<HTMLElement>) => {
+    e.preventDefault()
   }
-  const dragLeave = (e: HTMLInputEvent) => {
-    preventDefault(e)
-  }
-  const fileDrop = (e: HTMLInputEvent) => {
-    preventDefault(e)
-    const files = e.dataTransfer.files
+  const fileDrop = (e: DragEvent<HTMLElement>) => {
+    e.preventDefault()
+    const files = e?.dataTransfer?.files
     handleFiles(files)
   }
   const handleNewFiles = (newFiles: File[]) => {
@@ -56,13 +51,14 @@ export const DocumentUploadModal: React.FC<SubmissionModal> = ({
     }, [] as File[])
     setValidFiles((pre) => [...pre, ...filteredArr])
   }
-  const filesSelected = (e) => {
+  const filesSelected = (e: ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
     handleFiles(files)
     // Have to release file input element
     e.target.value = ''
   }
-  const handleFiles = (files: File[]) => {
+  const handleFiles = (files: File[] | FileList | undefined | null) => {
+    if (!files?.length) return
     if (limit && files.length + validFiles.length > limit) {
       setErrorMessage(`File submission limited to ${limit} files`)
       return
@@ -70,7 +66,7 @@ export const DocumentUploadModal: React.FC<SubmissionModal> = ({
     let newFiles: File[] = []
     for (let i = 0; i < files.length; i++) {
       const file = validateFile(files[i])
-      if (file.status === true) {
+      if (file.status) {
         newFiles = newFiles.concat(files[i])
       } else {
         setErrorMessage(file.message || '')
@@ -104,14 +100,14 @@ export const DocumentUploadModal: React.FC<SubmissionModal> = ({
     handleFile(validFiles)
     handleModem()
   }
-  const btnOnClick = (e) => {
+  const btnOnClick = (e: MouseEvent<HTMLElement>) => {
     e.preventDefault()
-    inputRef.current.click()
+    inputRef.current?.click()
   }
   const renderFiles = () =>
     map(validFiles, (file, idx) => (
       <Box key={idx}>
-        <DocumentListItem file={file as File} secondaryModal={secondaryModal} closeAction={() => deleteFile(file)} />
+        <DocumentListItem file={file as File} closeAction={() => deleteFile(file)} />
       </Box>
     ))
   useEffect(() => {
@@ -130,8 +126,8 @@ export const DocumentUploadModal: React.FC<SubmissionModal> = ({
       aria-describedby='modal-modal-description'
       disableAutoFocus
     >
-      <Box sx={documentUploadModalClasses.modalCard}>
-        {secondaryModal && validFiles.length == 0 && (
+      <Box sx={{ ...documentUploadModalClasses.modalCard, width: { xs: '95%', sm: 628 } }}>
+        {validFiles.length == 0 && (
           <Box display={'flex'} flexDirection={'row'} justifyContent={'end'} sx={{ marginBottom: 5 }}>
             <CloseIcon style={documentUploadModalClasses.closeBtn} onClick={() => handleModem()} />
           </Box>
@@ -168,16 +164,15 @@ export const DocumentUploadModal: React.FC<SubmissionModal> = ({
             onDragLeave={dragLeave}
             onDrop={fileDrop}
           >
-            <UploadFileIcon />
+            <SystemUpdateAltRoundedIcon sx={{ transform: 'rotate(-180deg)', fontSize: '35px' }} />
             <Paragraph size='medium' fontWeight='700' sx={documentUploadModalClasses.dragAndDropText}>
               Drag &amp; Drop to Upload
             </Paragraph>
-            <Paragraph size='medium' color={MthColor.SYSTEM_06}>
-              {' '}
+            <Paragraph size='medium' color={MthColor.SYSTEM_06} sx={{ marginBottom: 2 }}>
               Or
             </Paragraph>
-            <Button sx={documentUploadModalClasses.uploadButton} variant='contained' onClick={btnOnClick}>
-              <label>
+            <Button sx={{ ...mthButtonClasses.roundSmallBlack, width: '152px' }} onClick={btnOnClick}>
+              <label style={{ cursor: 'pointer' }}>
                 <input
                   ref={inputRef}
                   type='file'
@@ -195,31 +190,26 @@ export const DocumentUploadModal: React.FC<SubmissionModal> = ({
             </Paragraph>
           </Box>
         )}
-        <Box justifyContent='space-between' display='flex' flexDirection='row'>
-          {((secondaryModal && validFiles.length > 0) || !secondaryModal) && (
-            <Button
-              sx={{
-                ...documentUploadModalClasses.cancelButton,
-                background: secondaryModal ? MthColor.SYSTEM_08 : MthColor.BUTTON_LINEAR_GRADIENT,
-                color: secondaryModal ? MthColor.BLACK : MthColor.WHITE,
-              }}
-              variant='contained'
-              onClick={() => handleModem()}
-            >
-              Cancel
-            </Button>
-          )}
+        <Box
+          sx={{ justifyContent: 'space-between', maxWidth: '350px', marginX: 'auto', mt: 4, minHeight: '36px' }}
+          display='flex'
+          flexDirection={'row'}
+        >
           {validFiles.length > 0 && (
-            <Button
-              sx={{
-                ...documentUploadModalClasses.finishButton,
-                background: secondaryModal ? MthColor.BLACK : MthColor.BUTTON_LINEAR_GRADIENT,
-              }}
-              variant='contained'
-              onClick={() => submitAndClose()}
-            >
-              Finish
-            </Button>
+            <>
+              <Button sx={{ ...mthButtonClasses.roundSmallGray, width: '152px' }} onClick={() => handleModem()}>
+                Cancel
+              </Button>
+              <Button
+                sx={{
+                  ...(secondaryModal ? mthButtonClasses.roundSmallBlack : mthButtonClasses.roundSmallPrimary),
+                  width: '152px',
+                }}
+                onClick={() => submitAndClose()}
+              >
+                Finish
+              </Button>
+            </>
           )}
         </Box>
       </Box>

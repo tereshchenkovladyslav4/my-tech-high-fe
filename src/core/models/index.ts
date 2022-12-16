@@ -1,5 +1,7 @@
 export * from './address.model'
+export * from './api-response.model'
 export * from './email-template.model'
+export * from './file.model'
 export * from './email.model'
 export * from './homeroom-resource.model'
 export * from './mth-button-type.model'

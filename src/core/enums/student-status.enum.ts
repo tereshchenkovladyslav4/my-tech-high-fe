@@ -4,10 +4,10 @@ export enum StudentStatus {
   WITHDRAWN = 2,
   GRADUATED = 3,
   APPLIED = 5,
-  REAPPLIED = 7,
   ACCEPTED = 6,
+  REAPPLIED = 7,
   /**
    * Packet is deleted by Admin
    */
-  DELETED = 7,
+  DELETED = 8,
 }

@@ -1,6 +1,6 @@
 import { MthColor } from '@mth/enums'
 
-export const mthButtonCommonStyles = {
+const mthButtonCommonStyles = {
   display: 'flex',
   flexDirection: 'row',
   justifyContent: 'center',
@@ -85,6 +85,14 @@ export const mthButtonColorClasses = {
     color: MthColor.WHITE,
     '&:hover': {
       background: MthColor.GREEN,
+      color: MthColor.WHITE,
+    },
+  },
+  black: {
+    background: MthColor.SYSTEM_01,
+    color: MthColor.WHITE,
+    '&:hover': {
+      background: MthColor.SYSTEM_01,
       color: MthColor.WHITE,
     },
   },
@@ -230,6 +238,14 @@ export const mthButtonClasses = {
   roundXsGreen: {
     ...mthButtonSizeClasses.xs,
     ...mthButtonColorClasses.green,
+    borderRadius: '40px',
+    minWidth: '92px',
+  },
+
+  // Black buttons
+  roundSmallBlack: {
+    ...mthButtonSizeClasses.small,
+    ...mthButtonColorClasses.black,
     borderRadius: '40px',
     minWidth: '92px',
   },

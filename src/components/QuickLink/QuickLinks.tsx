@@ -18,8 +18,8 @@ import Withdrawal from './Withdrawal/Withdrawal'
 
 type QuickLinkProps = {
   backAction: () => void
-  initialLink: string
-  studentId: number
+  initialLink?: string
+  studentId?: number
 }
 
 const additionalStyles = makeStyles((theme: Theme) => ({
@@ -82,13 +82,13 @@ export const QuickLinks: React.FC<QuickLinkProps> = ({ backAction, initialLink, 
   }, [me])
 
   const isEditable = () => {
-    return me.level <= 2
+    return me?.level && me?.level <= 2
   }
 
   const resetRegion = () => {
     let nextRegion: number | undefined
     if (isEditable()) nextRegion = me?.selectedRegionId
-    else if (me.userRegion?.length > 0) {
+    else if (me?.userRegion && me?.userRegion?.length > 0) {
       nextRegion = me.userRegion[0].region_id
     } else {
       nextRegion = 0
@@ -135,7 +135,7 @@ export const QuickLinks: React.FC<QuickLinkProps> = ({ backAction, initialLink, 
 
       arrangeQuickLinks(
         !isEditable()
-          ? getQuickLinksByRegion.filter((x) => x.flag == 0)
+          ? getQuickLinksByRegion.filter((x: { flag: number }) => x.flag == 0)
           : getQuickLinksByRegion.concat([
               {
                 id: 0,
@@ -200,9 +200,19 @@ export const QuickLinks: React.FC<QuickLinkProps> = ({ backAction, initialLink, 
     setChanged(false)
   }
 
-  const SortableQuickLinkCard = SortableElement(({ item, action, onAction, background }) => (
-    <QuickLinkCard item={item} action={action} onAction={onAction} background={background} />
-  ))
+  const SortableQuickLinkCard = SortableElement(
+    ({
+      item,
+      action,
+      onAction,
+      background,
+    }: {
+      item: QuickLink
+      action: boolean
+      onAction: (value: string) => void
+      background: string | undefined
+    }) => <QuickLinkCard item={item} action={action} onAction={onAction} background={background} />,
+  )
 
   const getColor = (items: QuickLink[], idx: number) => {
     let isBlue = true
@@ -320,7 +330,7 @@ export const QuickLinks: React.FC<QuickLinkProps> = ({ backAction, initialLink, 
       }
     }
     setQuickLinks(newQuickLinks)
-    if (initialLink == QUICKLINK_TYPE.WITHDRAWAL) {
+    if (initialLink === QUICKLINK_TYPE.WITHDRAWAL) {
       const quickLink = newQuickLinks.find((item) => item.type == QUICKLINK_TYPE.WITHDRAWAL)
       if (quickLink) selectQuickLink(quickLink)
     }

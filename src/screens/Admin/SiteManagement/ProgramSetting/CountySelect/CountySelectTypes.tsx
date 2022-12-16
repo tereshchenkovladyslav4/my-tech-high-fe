@@ -6,10 +6,12 @@ export type CountyFileType = {
   file: File | undefined | null
 }
 
+export type CountyArrayItem = { county_name: string }
+
 export type CountySelectProps = {
   county: CountyFileType | null
   setCounty: (value: CountyFileType) => void
-  setCountyArray: (value: { county_name: string }[]) => void
+  setCountyArray: (value: CountyArrayItem[]) => void
   setIsChanged: (value: ProgramSettingChanged) => void
   setIsDelete: (value: FileDeleted) => void
   isDelete: FileDeleted

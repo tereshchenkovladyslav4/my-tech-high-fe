@@ -1,14 +1,14 @@
-import React, { FunctionComponent, useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { useMutation } from '@apollo/client'
 import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt'
 import { Alert, AlertColor, Avatar, Box, Button, Card, Grid, TextField } from '@mui/material'
 import { useFormik } from 'formik'
 import * as yup from 'yup'
-import { CustomConfirmModal } from '../../../../components/CustomConfirmModal/CustomConfirmModal'
-import { Paragraph } from '../../../../components/Typography/Paragraph/Paragraph'
-import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
-import { UserContext, UserInfo } from '../../../../providers/UserContext/UserProvider'
-import { DocumentUploadModal } from '../../../Enrollment/Documents/components/DocumentUploadModal/DocumentUploadModal'
+import { CustomConfirmModal } from '@mth/components/CustomConfirmModal/CustomConfirmModal'
+import { DocumentUploadModal } from '@mth/components/DocumentUploadModal/DocumentUploadModal'
+import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { UserContext, UserInfo } from '@mth/providers/UserContext/UserProvider'
 import { updateProfile, removeProfilePhoto } from '../service'
 import { useStyles } from '../styles'
 
@@ -18,7 +18,7 @@ type openAlertSaveType = {
   open: boolean
 }
 
-export const Profile: FunctionComponent<{ handleIsFormChange: () => void }> = ({ handleIsFormChange }) => {
+export const Profile: React.FC<{ handleIsFormChange: () => void }> = ({ handleIsFormChange }) => {
   const classes = useStyles
   const { me, setMe } = useContext(UserContext)
   const { profile } = me as UserInfo

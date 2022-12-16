@@ -36,7 +36,8 @@
       "@mth/providers/*": ["src/providers/*"],
       "@mth/screens/*": ["src/screens/*"],
       "@mth/utils": ["src/core/utils"],
-      "@mth/styles/*": ["src/styles/*"]
+      "@mth/styles/*": ["src/styles/*"],
+      "@mth/services": ["src/core/services"]
     }
   },
   "exclude": ["node_modules"],

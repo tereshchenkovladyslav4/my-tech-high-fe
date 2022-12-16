@@ -1,6 +1,7 @@
 import React, { ReactElement, ReactNode } from 'react'
 import { Box, Checkbox, FormControlLabel } from '@mui/material'
 import { map } from 'lodash'
+import { MthCheckbox } from '@mth/components/MthCheckbox'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { MthColor } from '@mth/enums'
@@ -64,23 +65,14 @@ const MthCheckboxList: React.FC<MthCheckboxListProps> = ({
     map(checkboxLists, (list, index): ReactElement | undefined => {
       if (typeof list !== 'string') {
         return (
-          <FormControlLabel
+          <MthCheckbox
             key={index}
-            sx={{ height: 30, width: 'max-content' }}
-            control={
-              <Checkbox
-                sx={!disabled ? { '& .MuiSvgIcon-root': { fill: '#000 !important' } } : {}}
-                checked={values.includes(list.value)}
-                value={list.value}
-                onChange={handleChangeValues}
-                disabled={disabled || list.disabled === true}
-              />
-            }
-            label={
-              <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
-                {list.label}
-              </Paragraph>
-            }
+            label={list.label}
+            checked={values.includes(list.value)}
+            value={list.value}
+            disabled={disabled || list.disabled === true}
+            onChange={handleChangeValues}
+            sx={{ my: '-4px' }}
           />
         )
       } else {

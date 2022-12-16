@@ -2,15 +2,13 @@ import React, { useEffect, useState, useMemo } from 'react'
 import { useMutation, useQuery } from '@apollo/client'
 import SearchIcon from '@mui/icons-material/Search'
 import {
+  Autocomplete,
   Box,
   Button,
   Card,
   FormControl,
   FormControlLabel,
   InputAdornment,
-  List,
-  ListItemButton,
-  ListItemText,
   OutlinedInput,
   Radio,
   RadioGroup,
@@ -25,7 +23,6 @@ import { Field, ValueOf } from '@mth/components/Table/types'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { WarningModal } from '@mth/components/WarningModal/Warning'
 import { BLUE_GRDIENT, RED, RED_GRADIENT } from '../../../../../utils/constants'
-import { useStyles } from '../../styles'
 import { assignStudentsToHomeroomMutation, getStudentsForHoomroom } from '../services'
 import { assignmentStyle } from '../styles'
 import { EnrollmentSchoolTableProps, YEAR_STATUS, StudentVM, OptionType } from '../type'
@@ -50,10 +47,6 @@ export const AssignmentTable: React.FC<EnrollmentSchoolTableProps> = ({
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [studentIds, setStudentIds] = useState<Array<ValueOf<StudentVM>>>([])
 
-  const [isHomeroomList, setIsHomeroomList] = useState<boolean>(false)
-
-  const [searchHomeroomKeyword, setSearchHomeroomKeyword] = useState<string>('')
-  const [searchHomeroomList, setSearchHomeroomList] = useState<OptionType[]>(currentHomeroomes)
   const [selectedHomeroom, setSelHomeroom] = useState<OptionType | null>()
 
   const [assignError, setAssignError] = useState<boolean>(false)
@@ -215,19 +208,12 @@ export const AssignmentTable: React.FC<EnrollmentSchoolTableProps> = ({
 
   const classes = assignmentStyle()
 
-  const classesMaster = useStyles
-
-  const handleChangeSearch = (search: string) => {
-    setSearchHomeroomKeyword(search)
-    setSearchHomeroomList(
-      currentHomeroomes.filter((item: OptionType) => item.label.toLowerCase().indexOf(search.toLowerCase()) !== -1),
-    )
-  }
-
   const handleListItemClick = (homeroom: OptionType) => {
-    setSelHomeroom(homeroom)
-    setSearchHomeroomKeyword(homeroom.label)
-    setIsHomeroomList(false)
+    if (homeroom) {
+      setSelHomeroom(homeroom)
+    } else {
+      setSelHomeroom(null)
+    }
   }
 
   const [assignStudentsToHomeroom] = useMutation(assignStudentsToHomeroomMutation)
@@ -247,7 +233,6 @@ export const AssignmentTable: React.FC<EnrollmentSchoolTableProps> = ({
     refetch()
     setStudentIds([])
     setSelHomeroom(null)
-    setSearchHomeroomKeyword('')
     setAutoGrade('')
   }
 
@@ -354,43 +339,13 @@ export const AssignmentTable: React.FC<EnrollmentSchoolTableProps> = ({
           />
 
           <Box sx={{ flexGrow: 1 }}>
-            <TextField
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position='start'>
-                    <SearchIcon style={{ color: 'black' }} />
-                  </InputAdornment>
-                ),
-              }}
-              fullWidth
-              placeholder='Search'
-              onBlur={() => {
-                setTimeout(() => {
-                  setSearchHomeroomList([])
-                  setIsHomeroomList(false)
-                }, 300)
-              }}
-              onFocus={() => {
-                setSearchHomeroomList(currentHomeroomes)
-                setIsHomeroomList(true)
-              }}
-              onChange={(e) => handleChangeSearch(e.target.value)}
-              value={searchHomeroomKeyword}
-              autoComplete='off'
+            <Autocomplete
+              disablePortal
+              options={currentHomeroomes}
+              onChange={(event, value) => handleListItemClick(value)}
+              sx={{ width: 300 }}
+              renderInput={(params) => <TextField {...params} label='Search...' />}
             />
-            {isHomeroomList && searchHomeroomList && searchHomeroomList.length > 0 && (
-              <Box sx={{ ...classesMaster.searchList, maxHeight: '25vh', overflow: 'auto' }}>
-                <List arial-label='main mailbox folders'>
-                  {searchHomeroomList
-                    .filter((item) => item.value !== 'all')
-                    .map((homeroom: OptionType) => (
-                      <ListItemButton key={homeroom.value} onClick={() => handleListItemClick(homeroom)}>
-                        <ListItemText primary={homeroom.label} />
-                      </ListItemButton>
-                    ))}
-                </List>
-              </Box>
-            )}
           </Box>
 
           <Button

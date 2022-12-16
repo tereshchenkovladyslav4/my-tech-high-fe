@@ -38,5 +38,6 @@ module.exports = {
     '@mth/screens': './src/screens',
     '@mth/utils': './src/core/utils',
     '@mth/styles': './src/styles',
+    '@mth/services': './src/core/services',
   },
 }

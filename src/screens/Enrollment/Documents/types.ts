@@ -1,8 +1,11 @@
-import { FunctionComponent } from 'react'
+import { EnrollmentQuestionTab } from '@mth/screens/Admin/SiteManagement/EnrollmentSetting/EnrollmentQuestions/types'
 
-type DocumentsProps = {
-  id: number | string
-  questions: Record<string, unknown>
+export type PacketDocument = {
+  kind: string
+  mth_file_id: number
 }
 
-export type DocuementsTemplateType = FunctionComponent<DocumentsProps>
+export type DocumentsProps = {
+  id: number | string
+  questions: EnrollmentQuestionTab
+}

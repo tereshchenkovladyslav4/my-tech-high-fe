@@ -3,29 +3,30 @@ import ArrowBackIosOutlinedIcon from '@mui/icons-material/ArrowBackIosOutlined'
 import { Box, ButtonBase, Grid, Typography } from '@mui/material'
 import { map } from 'lodash'
 import { Route, Switch, useRouteMatch } from 'react-router-dom'
-import EmailTemplateImage from '../../../assets/email-template.png'
-import EnrollmentImg from '../../../assets/enrollment.png'
-import ProgramSettingImage from '../../../assets/program-setting.png'
-import QuickLinksImage from '../../../assets/quick-links.png'
-import YearstImg from '../../../assets/schedules.png'
-import SchoolPartnerImage from '../../../assets/schoolAssignments.png'
-import { ItemCard } from '../../../components/ItemCard/ItemCard'
-import { QuickLinks } from '../../../components/QuickLink/QuickLinks'
+import EmailTemplateImage from '@mth/assets/email-template.png'
+import EnrollmentImg from '@mth/assets/enrollment.png'
+import ProgramSettingImage from '@mth/assets/program-setting.png'
+import QuickLinksImage from '@mth/assets/quick-links.png'
+import YearstImg from '@mth/assets/schedules.png'
+import SchoolPartnerImage from '@mth/assets/schoolAssignments.png'
+import { ItemCard } from '@mth/components/ItemCard/ItemCard'
+import { QuickLinks } from '@mth/components/QuickLink/QuickLinks'
 import { EmailTemplatePage } from './components/EmailTemplates/EmailTemplatePage'
 import EnrollmentSetting from './EnrollmentSetting/EnrollmentSetting'
 import { ProgramSetting } from './ProgramSetting'
 import { SchoolPartner } from './SchoolPartner/SchoolPartner'
+import { SiteManagementItem } from './types'
 import { Years } from './Years'
 
 const SiteManagement: React.FC = () => {
-  const { isExact } = useRouteMatch('/site-management')
-  const [currentView, setCurrentView] = useState('root')
-  const [prevView, setPrevView] = useState([])
-  const [selected, setSelected] = useState(null)
-  const [prevSelected, setPrevSelected] = useState([])
+  const isExact = useRouteMatch('/site-management')?.isExact
+  const [currentView, setCurrentView] = useState<string>('root')
+  const [prevView, setPrevView] = useState<string[]>([])
+  const [selected, setSelected] = useState<SiteManagementItem | null>()
+  const [prevSelected, setPrevSelected] = useState<SiteManagementItem[]>([])
   const currentYear = new Date().getFullYear()
 
-  const items = [
+  const items: SiteManagementItem[] = [
     {
       id: 1,
       title: 'Years',
@@ -42,14 +43,6 @@ const SiteManagement: React.FC = () => {
       isLink: false,
       to: 'email-template',
     },
-    // {
-    //   id: 3,
-    //   title: 'Reimbursements and Direct orders',
-    //   subtitle: '',
-    //   img: DirectOrdersImage,
-    //   isLink: false,
-    //   to: `direct-order`,
-    // },
     {
       id: 4,
       title: 'School Partners',
@@ -66,14 +59,6 @@ const SiteManagement: React.FC = () => {
       isLink: true,
       to: 'enrollment',
     },
-    // {
-    //   id: 6,
-    //   title: 'Homeroom',
-    //   subtitle: '',
-    //   img: HomeRoomImage,
-    //   isLink: false,
-    //   to: `homeroom`,
-    // },
     {
       id: 7,
       title: 'Program Settings',
@@ -90,14 +75,6 @@ const SiteManagement: React.FC = () => {
       isLink: false,
       to: 'quick-links',
     },
-    // {
-    //   id: 9,
-    //   title: 'Re-enroll',
-    //   subtitle: '',
-    //   isLink: false,
-    //   img: ReEnrollLinkImage,
-    //   to: `re-enroll`,
-    // },
   ]
 
   const onBackPress = () => {
@@ -137,7 +114,7 @@ const SiteManagement: React.FC = () => {
     </Grid>
   )
 
-  const renderCardsHandler = (items: unknown) => (
+  const renderCardsHandler = (items: SiteManagementItem[]) => (
     <Grid container rowSpacing={4} columnSpacing={0} sx={{ paddingX: 2, marginTop: 4 }}>
       {map(items, (item, idx) => (
         <Grid item xs={4} key={idx}>
@@ -147,11 +124,11 @@ const SiteManagement: React.FC = () => {
             img={item.img}
             isLink={item.isLink}
             link={'/site-management/' + item.to}
-            action={item?.action}
             onClick={() => {
-              setPrevView((prevView) => [...prevView, currentView])
+              setPrevView([...prevView, currentView])
               setCurrentView(item.to)
-              setPrevSelected((prevSelected) => [...prevSelected, selected])
+              if (prevSelected && selected) setPrevSelected([...prevSelected, selected])
+              else if (selected) setPrevSelected([selected])
               setSelected(item)
             }}
           />

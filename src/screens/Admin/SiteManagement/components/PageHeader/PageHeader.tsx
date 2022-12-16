@@ -5,7 +5,7 @@ import { useHistory } from 'react-router-dom'
 import { siteManagementClassess } from '../../styles'
 import { PageHeaderProps } from './PageHeaderProps'
 
-export const PageHeader: React.FC<PageHeaderProps> = ({ title, back, handleClickSave }) => {
+export const PageHeader: React.FC<PageHeaderProps> = ({ title, back, isOnSaving, handleClickSave }) => {
   const history = useHistory()
   const handleBackClick = () => {
     history.push(back || '/site-management/')
@@ -21,7 +21,13 @@ export const PageHeader: React.FC<PageHeaderProps> = ({ title, back, handleClick
         </Typography>
       </Box>
       <Box>
-        <Button variant='contained' onClick={handleClickSave} disableElevation sx={siteManagementClassess.submitButton}>
+        <Button
+          variant='contained'
+          onClick={handleClickSave}
+          disableElevation
+          disabled={isOnSaving}
+          sx={siteManagementClassess.submitButton}
+        >
           Save
         </Button>
       </Box>

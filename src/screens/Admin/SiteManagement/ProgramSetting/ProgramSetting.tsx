@@ -16,9 +16,9 @@ import {
   uploadImage,
 } from '../services'
 import { siteManagementClassess } from '../styles'
-import { CountyFileType } from './CountySelect/CountySelectTypes'
+import { CountyArrayItem, CountyFileType } from './CountySelect/CountySelectTypes'
 import { PageContent } from './PageContent'
-import { SchoolDistrictFileType } from './SchoolDistrictSelect/SchoolDistrictSelectTypes'
+import { SchoolDistrictArrayItem, SchoolDistrictFileType } from './SchoolDistrictSelect/SchoolDistrictSelectTypes'
 import { SchoolYearSelect } from './SchoolYearSelect'
 import { StateLogoFileType } from './StateLogo/StateLogoTypes'
 import { FileDeleted, ProgramSettingChanged, SchoolYears } from './types'
@@ -34,8 +34,8 @@ const ProgramSetting: React.FC = () => {
   const [isInvalidStateName, setIsInvalidStateName] = useState<boolean>(false)
   const [birthDate, setBirthDate] = useState<string>('')
   const [stateLogo, setStateLogo] = useState<string>('')
-  const [countyArray, setCountyArray] = useState<Array<unknown>>([])
-  const [schoolDistrictArray, setSchoolDistrictArray] = useState<Array<unknown>>([])
+  const [countyArray, setCountyArray] = useState<Array<CountyArrayItem>>([])
+  const [schoolDistrictArray, setSchoolDistrictArray] = useState<Array<SchoolDistrictArrayItem>>([])
   const [grades, setGrades] = useState<string>('')
   const [county, setCounty] = useState<CountyFileType | null>(null)
   const [schoolDistrict, setSchoolDistrict] = useState<SchoolDistrictFileType | null>(null)
@@ -48,6 +48,7 @@ const ProgramSetting: React.FC = () => {
   const [reimbursements, setReimbursements] = useState<ReduceFunds | undefined>(undefined)
   const [requireSoftware, setRequireSoftware] = useState<boolean>(false)
   const [directOrders, setDirectOrders] = useState<ReduceFunds | undefined>(undefined)
+  const [isOnSaving, setIsOnSaving] = useState<boolean>(false)
   const [isChanged, setIsChanged] = useState<ProgramSettingChanged>({
     state: false,
     stateLogo: false,
@@ -132,6 +133,7 @@ const ProgramSetting: React.FC = () => {
   }
 
   const handleClickSave = async () => {
+    setIsOnSaving(true)
     if (isInvalidStateName) {
       setStateInvalid(true)
       return
@@ -219,6 +221,7 @@ const ProgramSetting: React.FC = () => {
           },
         },
       })
+      setIsOnSaving(false)
     }
 
     const forSaveUpdatedRegion = {
@@ -339,7 +342,7 @@ const ProgramSetting: React.FC = () => {
           content: MthTitle.UNSAVED_DESCRIPTION,
         })}
       />
-      <PageHeader title={MthTitle.PROGRAM_SETTINGS} handleClickSave={handleClickSave} />
+      <PageHeader title={MthTitle.PROGRAM_SETTINGS} isOnSaving={isOnSaving} handleClickSave={handleClickSave} />
       <SchoolYearSelect
         setSelectedYearId={setSelectedYearId}
         setSpecialEd={setSpecialEd}

@@ -23,6 +23,5 @@ export type S3FileType = {
 
 export type DocumentListItemProp = {
   closeAction?: () => void
-  secondaryModal?: boolean
   file: File | S3FileType
 }

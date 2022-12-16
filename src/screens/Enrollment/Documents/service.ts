@@ -92,6 +92,14 @@ export const uploadDocumentMutation = gql`
     }
   }
 `
+
+export const deleteDocumentsMutation = gql`
+  mutation DeleteEnrollmentPacketDocuments(
+    $deleteEnrollmentPacketDocumentsInput: DeleteEnrollmentPacketDocumentsInput!
+  ) {
+    deleteEnrollmentPacketDocuments(deleteEnrollmentPacketDocumentsInput: $deleteEnrollmentPacketDocumentsInput)
+  }
+`
 export const enrollmentContactMutation = gql`
   mutation SaveEnrollmentPacketContact($enrollmentPacketContactInput: EnrollmentPacketContactInput!) {
     saveEnrollmentPacketContact(enrollmentPacketContactInput: $enrollmentPacketContactInput) {

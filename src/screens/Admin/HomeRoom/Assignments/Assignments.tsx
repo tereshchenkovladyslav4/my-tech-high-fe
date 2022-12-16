@@ -209,17 +209,19 @@ export const Assignments: React.FC = () => {
     }
   }, [prevHomeroomLoading, prevHomeroomData])
 
-  const { providerData } = useProviders(selectedYear?.value, '')
+  const { providers: providerData } = useProviders(selectedYear?.value, '')
 
   useEffect(() => {
-    setProviders(
-      (providerData || []).map((item) => {
-        return {
-          value: item.id,
-          label: item.name,
-        }
-      }),
-    )
+    if (providerData) {
+      setProviders(
+        (providerData || []).map((item) => {
+          return {
+            value: item.id,
+            label: item.name,
+          }
+        }),
+      )
+    }
   }, [providerData])
 
   return (
