@@ -1,16 +1,16 @@
-import React, { FunctionComponent, useEffect, useState } from 'react'
-import { Checkbox, Typography } from '@mui/material'
+import React, { useEffect, useState } from 'react'
+import { Box, Checkbox, Typography } from '@mui/material'
 import { Grid } from '@mui/material'
 import { Controller, useFormContext } from 'react-hook-form'
-import { SYSTEM_01 } from '../../../../../utils/constants'
+import { MthColor } from '@mth/enums'
 import { isValidDate } from '../helpers'
 import { EnrollmentPacketFormType } from '../types'
 import { CustomDateInput } from './CustomDateInput'
 
-export const VaccinesInfoHeader: FunctionComponent = () => {
+export const VaccinesInfoHeader: React.FC = () => {
   const { watch, setValue, control } = useFormContext<EnrollmentPacketFormType>()
   const [immunizations, enableExemptionDate] = watch(['immunizations', 'enableExemptionDate'])
-  const [fullExempt, setFullExempt] = useState(false)
+  const [fullExempt, setFullExempt] = useState<boolean>(false)
 
   useEffect(() => {
     let _enableExamptiondate = false
@@ -32,7 +32,9 @@ export const VaccinesInfoHeader: FunctionComponent = () => {
       immunizations.map((im) => ({
         ...im,
         value: !fullExempt ? 'Exempt' : '',
-        siblings: immunizations.filter((i) => im.immunization.consecutives?.includes(+i.immunization_id)),
+        siblings: immunizations.filter(
+          (i) => i?.immunization_id && im?.immunization?.consecutives?.includes(+i?.immunization_id),
+        ),
       })),
     )
   }
@@ -40,17 +42,23 @@ export const VaccinesInfoHeader: FunctionComponent = () => {
   return (
     <>
       <Grid container sx={{ gap: '25px' }}>
-        <div style={{ marginRight: 5 }}>
+        <Box style={{ marginRight: 5 }}>
           <Grid item>
-            <Typography fontSize='14px' color={SYSTEM_01} fontWeight='700'>
+            <Typography fontSize='14px' color={MthColor.SYSTEM_01} fontWeight='700'>
               Exempt
             </Typography>
             <Checkbox color='primary' checked={fullExempt} onChange={toggleExempt} />
           </Grid>
-        </div>
-        <div style={{ marginRight: 5 }}>
+        </Box>
+        <Box style={{ marginRight: 5 }}>
           <Grid item>
-            <Typography sx={{ marginBottom: '5px' }} component='div' fontSize='14px' color={SYSTEM_01} fontWeight='700'>
+            <Typography
+              sx={{ marginBottom: '5px' }}
+              component='div'
+              fontSize='14px'
+              color={MthColor.SYSTEM_01}
+              fontWeight='700'
+            >
               Exemption Date
             </Typography>
             <Controller
@@ -66,10 +74,10 @@ export const VaccinesInfoHeader: FunctionComponent = () => {
               )}
             />
           </Grid>
-        </div>
-        <div style={{ marginRight: 5 }}>
+        </Box>
+        <Box style={{ marginRight: 5 }}>
           <Grid item>
-            <Typography component='div' fontSize='14px' color={SYSTEM_01} fontWeight='700'>
+            <Typography component='div' fontSize='14px' color={MthColor.SYSTEM_01} fontWeight='700'>
               Medical Exemption
             </Typography>
             <Controller
@@ -85,7 +93,7 @@ export const VaccinesInfoHeader: FunctionComponent = () => {
               )}
             />
           </Grid>
-        </div>
+        </Box>
       </Grid>
     </>
   )

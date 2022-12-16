@@ -10,7 +10,6 @@ import { MthTableField } from '@mth/components/MthTable/types'
 import { Pagination } from '@mth/components/Pagination/Pagination'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { ScheduleStatus } from '@mth/enums'
-import { getEmailTemplateQuery } from '@mth/graphql/queries/email-template'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { SchoolYearDropDown } from '@mth/screens/Admin/Components/SchoolYearDropdown'
 import { RED_GRADIENT } from '../../../../utils/constants'
@@ -18,12 +17,11 @@ import { ScheduleEmailHistoryModal } from '../ScheduleModal/ScheduleEmailHistory
 import { EmailModal } from '../ScheduleModal/ScheduleEmailModal'
 import { ScheduleTableFilters } from '../ScheduleTableFilters/ScheduleTableFilters'
 import { emailScheduleMutation, getSchedulesQuery, scheduleCountQuery } from '../services'
-import { FiltersProps, EmailTemplateVM, ScheduleFilterVM, ScheduleCount, TableData } from '../type'
+import { FiltersProps, ScheduleFilterVM, ScheduleCount, TableData } from '../type'
 
 export const ScheduleTable: React.FC<FiltersProps> = ({ filter, setFilter }) => {
   const history = useHistory()
   const { me } = useContext(UserContext)
-  const [emailTemplate, setEmailTemplate] = useState<EmailTemplateVM>()
   const [pageLoading, setPageLoading] = useState<boolean>(false)
   const [seachField, setSearchField] = useState<string>('')
   const [open, setOpen] = useState<boolean>(false)
@@ -40,14 +38,7 @@ export const ScheduleTable: React.FC<FiltersProps> = ({ filter, setFilter }) => 
   const [openEmailModal, setOpenEmailModal] = useState<boolean>(false)
   const [editFrom, setEditFrom] = useState<boolean>(false)
 
-  const initialFilters = [
-    'Not Submitted',
-    'Updates Required',
-    'Updates Requested',
-    'Resubmitted',
-    'Submitted',
-    'Accepted',
-  ]
+  const initialFilters = ['Not Submitted', 'Updates Required', 'Updates Requested', 'Resubmitted', 'Submitted']
   const [scheduleCount, setScheduleCount] = useState<ScheduleCount>()
   const scheduleIds = React.useRef<Array<number>>()
 
@@ -123,14 +114,6 @@ export const ScheduleTable: React.FC<FiltersProps> = ({ filter, setFilter }) => 
     fetchPolicy: 'network-only',
   })
 
-  const { data: emailTemplateData, refetch: refetchEmailTemplate } = useQuery(getEmailTemplateQuery, {
-    variables: {
-      template: 'Application Page',
-      regionId: me?.selectedRegionId,
-    },
-    fetchPolicy: 'network-only',
-  })
-
   const handlePageChange = (page: number) => {
     localStorage.setItem('currentPage', page.toString())
     setCurrentPage(page)
@@ -145,15 +128,6 @@ export const ScheduleTable: React.FC<FiltersProps> = ({ filter, setFilter }) => 
     setCurrentPage(1)
     setSkip(0)
   }, [me?.selectedRegionId])
-
-  useEffect(() => {
-    if (emailTemplateData !== undefined) {
-      const { emailTemplateName } = emailTemplateData
-      if (emailTemplateName) {
-        setEmailTemplate(emailTemplateName)
-      }
-    }
-  }, [emailTemplateData])
 
   useEffect(() => {
     if (pageLoading) {
@@ -243,6 +217,7 @@ export const ScheduleTable: React.FC<FiltersProps> = ({ filter, setFilter }) => 
     if (!scheduleIds.current || (scheduleIds?.current?.length === 0 && modalScheduleIds.length === 0)) {
       return
     }
+    setOpen(false)
     try {
       await emailApplication({
         variables: {
@@ -254,9 +229,7 @@ export const ScheduleTable: React.FC<FiltersProps> = ({ filter, setFilter }) => 
           },
         },
       })
-      refetchEmailTemplate()
       refetch()
-      setOpen(false)
       scheduleIds.current = []
       setModalScheduleIds([])
       setModalSelectedStatus([])
@@ -276,8 +249,8 @@ export const ScheduleTable: React.FC<FiltersProps> = ({ filter, setFilter }) => 
     }
     setOpen(true)
   }
-  const handleChangePageLimit = (value) => {
-    localStorage.setItem('pageLimit', value)
+  const handleChangePageLimit = (value: number) => {
+    localStorage.setItem('pageLimit', `${value}`)
     handlePageChange(1)
     setPaginatinLimit(value)
   }
@@ -526,7 +499,6 @@ export const ScheduleTable: React.FC<FiltersProps> = ({ filter, setFilter }) => 
             (scheduleIds?.current?.length + modalScheduleIds.length > 1 ? 's' : '')
           }
           handleSubmit={handleEmailSend}
-          template={emailTemplate}
           editFrom={editFrom}
           isNonSelected={scheduleIds.current.length === 0}
           filters={

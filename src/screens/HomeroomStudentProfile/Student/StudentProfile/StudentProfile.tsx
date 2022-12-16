@@ -264,6 +264,46 @@ export const StudentProfile: React.FC = () => {
     })
   }, [studentId])
 
+  const isVisibleTestPreference = (grades: string) => {
+    if (!student.grade_levels?.length) {
+      return false
+    }
+    const gradeLevel = student.grade_levels[student.grade_levels.length - 1]?.grade_level
+    const availableGrades = grades.split(',')
+    if (availableGrades.indexOf('K') !== -1 || availableGrades.indexOf('k')) {
+      availableGrades.push('Kindergarten')
+    } else if (availableGrades.indexOf('Kindergarten') !== -1) {
+      availableGrades.push('K')
+      availableGrades.push('k')
+    }
+    if (availableGrades.indexOf(gradeLevel) !== -1) {
+      return true
+    }
+    return false
+  }
+
+  const visibleAssessment = (list: AssessmentType[]) => {
+    const result: AssessmentType[] = []
+    list.map((assessment: AssessmentType) => {
+      if (isVisibleTestPreference(assessment.grades)) {
+        result.push(assessment)
+      }
+    })
+    return result
+  }
+
+  const getTestingResult = (assessment: AssessmentType) => {
+    const asseessmentAnswer = studentAssessments.find(
+      (studnetAnswer: StudentAssessment) => studnetAnswer.assessmentId === assessment.assessment_id,
+    )
+    let testingResult = ''
+    if (asseessmentAnswer) {
+      const testingOption = assessment.Options.find((option) => option.option_id === asseessmentAnswer.optionId)
+      testingResult = testingOption ? testingOption.label : ''
+    }
+    return testingResult
+  }
+
   return (
     <form onSubmit={formik.handleSubmit}>
       {student && person && (
@@ -369,32 +409,20 @@ export const StudentProfile: React.FC = () => {
                     <Paragraph size='medium' fontWeight='500'>
                       Testing Preference
                     </Paragraph>
-                    {assessmentItems.map((assessment: AssessmentType) => {
-                      const asseessmentAnswer = studentAssessments.find(
-                        (studnetAnswer: StudentAssessment) => studnetAnswer.assessmentId === assessment.assessment_id,
-                      )
-                      let testingResult = ''
-                      if (asseessmentAnswer) {
-                        const testingOption = assessment.Options.find(
-                          (option) => option.option_id === asseessmentAnswer.optionId,
-                        )
-                        testingResult = testingOption ? testingOption.label : ''
-                      }
-                      return (
-                        <Grid container key={assessment.assessment_id} sx={{ marginTop: '6px' }}>
-                          <Grid item md={6}>
-                            <Paragraph size='medium' fontWeight='700'>
-                              {assessment.test_name}
-                            </Paragraph>
-                          </Grid>
-                          <Grid item md={6}>
-                            <Paragraph size='medium' fontWeight='700'>
-                              {testingResult}
-                            </Paragraph>
-                          </Grid>
+                    {visibleAssessment(assessmentItems).map((assessment: AssessmentType) => (
+                      <Grid container key={assessment.assessment_id} sx={{ marginTop: '6px' }}>
+                        <Grid item md={6}>
+                          <Paragraph size='medium' fontWeight='700'>
+                            {assessment.test_name}
+                          </Paragraph>
                         </Grid>
-                      )
-                    })}
+                        <Grid item md={6}>
+                          <Paragraph size='medium' fontWeight='700'>
+                            {getTestingResult(assessment)}
+                          </Paragraph>
+                        </Grid>
+                      </Grid>
+                    ))}
                   </Box>
                 )}
               </Grid>

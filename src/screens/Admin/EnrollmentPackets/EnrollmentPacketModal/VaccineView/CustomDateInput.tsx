@@ -1,4 +1,4 @@
-import React, { FunctionComponent, ReactNode, useEffect, useState } from 'react'
+import React, { ReactNode, useEffect, useState } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import { TextField } from '@mui/material'
 import { isValidVaccInput } from '../helpers'
@@ -11,6 +11,7 @@ type CustomDateInputProps = {
   allowIM?: boolean
   endAdornment?: ReactNode
 }
+
 const useStyles = makeStyles(() => ({
   textInput: {
     '& .Mui-focused .MuiOutlinedInput-notchedOutline': {
@@ -18,7 +19,8 @@ const useStyles = makeStyles(() => ({
     },
   },
 }))
-export const CustomDateInput: FunctionComponent<CustomDateInputProps> = ({
+
+export const CustomDateInput: React.FC<CustomDateInputProps> = ({
   initVal = '',
   onChange,
   disabled = false,

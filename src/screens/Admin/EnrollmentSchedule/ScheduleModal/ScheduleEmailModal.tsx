@@ -1,12 +1,11 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { Button, Checkbox, FormControlLabel, Modal, OutlinedInput } from '@mui/material'
 import { Box } from '@mui/system'
-import { EditorState, convertToRaw, ContentState } from 'draft-js'
+import { EditorState, convertToRaw } from 'draft-js'
 
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
 import draftToHtml from 'draftjs-to-html'
 import { useFormik } from 'formik'
-import htmlToDraft from 'html-to-draftjs'
 import Wysiwyg from 'react-draft-wysiwyg'
 import * as yup from 'yup'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
@@ -14,13 +13,11 @@ import { Title } from '@mth/components/Typography/Title/Title'
 import { MthColor } from '@mth/enums'
 import { useStyles } from './styles'
 import { EmailModalTemplateType } from './types'
-
 export const EmailModal: EmailModalTemplateType = ({
   handleSubmit,
   handleModem,
   title,
   editFrom,
-  template,
   isNonSelected,
   filters,
   handleSchedulesByStatus,
@@ -28,6 +25,7 @@ export const EmailModal: EmailModalTemplateType = ({
   const classes = useStyles
   const editorRef = useRef(null)
   const [currentBlocks, setCurrentBlocks] = useState(0)
+  const [isCheckedStatus, setCheckedStatus] = useState<boolean>(false)
 
   const validationSchema = yup.object({
     emailFrom: yup.string().email().required('Required'),
@@ -50,6 +48,8 @@ export const EmailModal: EmailModalTemplateType = ({
     onSubmit: async ({ emailFrom, editorState, subject }) => {
       if (editFrom) {
         handleSubmit(emailFrom, subject, draftToHtml(convertToRaw(editorState.getCurrentContent())))
+      } else {
+        setCheckedStatus(true)
       }
     },
   })
@@ -62,22 +62,6 @@ export const EmailModal: EmailModalTemplateType = ({
       setCurrentBlocks(state.blocks.length)
     } catch {}
   }
-
-  useEffect(() => {
-    if (template) {
-      const { subject, from, body } = template
-      formik.setFieldValue('subject', subject, true)
-      formik.setFieldValue('emailFrom', from, true)
-
-      if (body) {
-        const contentBlock = htmlToDraft(body)
-        if (contentBlock) {
-          const contentState = ContentState.createFromBlockArray(contentBlock.contentBlocks)
-          formik.setFieldValue('editorState', EditorState.createWithContent(contentState))
-        }
-      }
-    }
-  }, [template])
 
   return (
     <Modal
@@ -96,7 +80,7 @@ export const EmailModal: EmailModalTemplateType = ({
             }}
           >
             <Title fontWeight='700'>Status</Title>
-            {!editFrom && (
+            {!editFrom && isCheckedStatus && (
               <Paragraph size='large' fontWeight='500' color={MthColor.RED}>
                 Required
               </Paragraph>

@@ -3,6 +3,7 @@ import { Grid } from '@mui/material'
 import applicationsImg from '@mth/assets/applications.png'
 import enrollmentImg from '@mth/assets/enrollment.png'
 import withdrawlsImg from '@mth/assets/quick-link-blue.png'
+import homeroomResourcesImg from '@mth/assets/quick-link-orange.png'
 import schedules from '@mth/assets/schedules.png'
 import schoolAssignmentsImg from '@mth/assets/schoolAssignments.png'
 import testingPreferencesImg from '@mth/assets/testingPreferences.png'
@@ -31,7 +32,7 @@ export const Enrollment: React.FC = () => {
     }
   }, [schoolYear])
   return (
-    <Grid container rowSpacing={4} columnSpacing={0} sx={{ paddingX: 2, marginTop: 4 }}>
+    <Grid container rowSpacing={4} columnSpacing={0} sx={{ paddingX: 2, marginTop: 4, marginBottom: 4 }}>
       <Grid item xs={4}>
         <AdminEnrollmentCard title={MthTitle.APPLICATIONS} link={ADMIN_APPLICATIONS} img={applicationsImg} />
       </Grid>
@@ -58,6 +59,15 @@ export const Enrollment: React.FC = () => {
           disabled={enableSchedule ? false : true}
           link='https://google.com'
           img={testingPreferencesImg}
+        />
+      </Grid>
+      <Grid item xs={4}>
+        <AdminEnrollmentCard
+          title='Requests'
+          fullTitle='Homeroom Resources'
+          link={''}
+          img={homeroomResourcesImg}
+          showTitle={true}
         />
       </Grid>
     </Grid>

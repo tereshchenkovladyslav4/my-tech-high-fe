@@ -18,7 +18,7 @@ export function getValidGrade(v: string): number {
   if (!v) return -1
   const g = +v
   if (isNaN(g)) {
-    return v === 'K' ? 0 : -1
+    return v.toLocaleLowerCase().startsWith('k') ? 0 : -1
   }
   return g
 }
@@ -37,13 +37,13 @@ export function checkImmmValueWithSpacing(item: StudentImmunization, all: Studen
 
   // Check the consecutive date value
   const conDate = moment(
-    all.find((v) => v.immunization_id === item.immunization.consecutive_vaccine + '')?.value || '',
+    all.find((v) => v.immunization_id === item?.immunization?.consecutive_vaccine + '')?.value || '',
     'MM/DD/YYYY',
   )
   if (!conDate.isValid()) return true
 
-  const minDur = getDuration(item.immunization.min_spacing_interval, item.immunization.min_spacing_date)
-  const maxDur = getDuration(item.immunization.max_spacing_interval, item.immunization.max_spacing_date)
+  const minDur = getDuration(item?.immunization?.min_spacing_interval || 0, item?.immunization?.min_spacing_date || 0)
+  const maxDur = getDuration(item?.immunization?.max_spacing_interval || 0, item?.immunization?.max_spacing_date || 0)
   if (!minDur || !maxDur) return true
 
   const dur = moment.duration(itemDate.diff(conDate))

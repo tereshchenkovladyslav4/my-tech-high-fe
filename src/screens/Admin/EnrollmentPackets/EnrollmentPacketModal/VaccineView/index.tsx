@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { useQuery } from '@apollo/client'
 import { Box, Typography } from '@mui/material'
 import { useFormContext } from 'react-hook-form'
@@ -11,27 +11,28 @@ import { VaccinesInfoHeader } from './Header'
 import ImmunizationItem from './ImmunizationItem'
 import { StudentImmunization } from './types'
 
-export const EnrollmentPacketVaccineView: FunctionComponent = () => {
+export const EnrollmentPacketVaccineView: React.FC = () => {
   const { setValue } = useFormContext()
   const student = useContext(studentContext)
 
   const { data } = useQuery<{ StudentImmunizations: StudentImmunization[] }>(StudentImmunizatiosnQuery, {
     variables: {
-      student_id: +student?.student_id,
+      student_id: +(student?.student_id || 0),
     },
+    skip: !student?.student_id,
     fetchPolicy: 'network-only',
   })
 
   useEffect(() => {
     if (data?.StudentImmunizations) {
-      const levels = student.grade_levels
+      const levels = student?.grade_levels
       const grade = getValidGrade(levels?.length ? levels[0]?.grade_level + '' : '')
       setValue(
         'immunizations',
         data?.StudentImmunizations.map((v) => {
           if (v.value) return v
-          const max_grade = getValidGrade(v.immunization.max_grade_level)
-          const min_grade = getValidGrade(v.immunization.min_grade_level)
+          const max_grade = getValidGrade(v?.immunization?.max_grade_level || '')
+          const min_grade = getValidGrade(v?.immunization?.min_grade_level || '')
           const isNA = grade < min_grade || grade > max_grade
           return {
             ...v,
@@ -46,7 +47,7 @@ export const EnrollmentPacketVaccineView: FunctionComponent = () => {
 }
 
 const VaccineView: React.FC = () => {
-  const [showImmunizations, setShowImmunizations] = useState(true)
+  const [showImmunizations, setShowImmunizations] = useState<boolean>(true)
   const { watch } = useFormContext<EnrollmentPacketFormType>()
   const immunizations = watch('immunizations')
 

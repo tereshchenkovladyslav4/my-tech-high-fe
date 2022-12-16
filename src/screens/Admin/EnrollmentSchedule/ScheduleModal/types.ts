@@ -23,10 +23,8 @@ export type EnrollmentEmailModalType = FunctionComponent<EnrollmentEmailModalPro
 
 type EmailModalProps = {
   handleModem: () => void
-  handleSubmit: (from: string, subject: string, body: string, options?: StandardResponseOption) => void
+  handleSubmit: (from: string, subject: string, body: string) => void
   title: string
-  options?: StandardResponseOption
-  template?: unknown
   editFrom?: boolean
   isNonSelected: boolean
   filters: Array<string>

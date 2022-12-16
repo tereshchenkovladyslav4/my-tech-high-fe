@@ -414,6 +414,33 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
     setStudentStatus({ ...studentStatus, ...{ testing_preference: JSON.stringify(testString) } })
   }
 
+  const isVisibleTestPreference = (grades: string) => {
+    if (!gradeLevel) {
+      return false
+    }
+    const availableGrades = grades.split(',')
+    if (availableGrades.indexOf('K') !== -1 || availableGrades.indexOf('k')) {
+      availableGrades.push('Kindergarten')
+    } else if (availableGrades.indexOf('Kindergarten') !== -1) {
+      availableGrades.push('K')
+      availableGrades.push('k')
+    }
+    if (availableGrades.indexOf(gradeLevel) !== -1) {
+      return true
+    }
+    return false
+  }
+
+  const visibleAssessmentItems = (list: AssessmentType[]) => {
+    const result: AssessmentType[] = []
+    list.map((item: AssessmentType) => {
+      if (isVisibleTestPreference(item?.grades)) {
+        result.push(item)
+      }
+    })
+    return result
+  }
+
   return (
     <Box
       sx={{
@@ -673,10 +700,10 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
           />
         </Grid>
         <Grid item xs={4}>
-          <Paragraph size='medium' textAlign='left'>
+          <Paragraph size='medium' textAlign='left' fontWeight='700' color='#0E0E0E'>
             Testing Preference
           </Paragraph>
-          {assessmentItems.map((assess: AssessmentType) => (
+          {visibleAssessmentItems(assessmentItems).map((assess: AssessmentType) => (
             <Grid item container key={assess.assessment_id}>
               <Grid item xs={3} sx={{ alignItems: 'center', display: 'flex', fontWeight: '700' }}>
                 <Subtitle sx={{ fontWeight: '700', fontSize: '12px', color: '#0E0E0E' }}>{assess.test_name}</Subtitle>

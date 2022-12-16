@@ -5,7 +5,14 @@ import { useHistory } from 'react-router-dom'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { AdminEnrolmentCardProps } from './types'
 
-export const AdminEnrollmentCard: React.FC<AdminEnrolmentCardProps> = ({ title, disabled, link, img, showTitle }) => {
+export const AdminEnrollmentCard: React.FC<AdminEnrolmentCardProps> = ({
+  title,
+  disabled,
+  link,
+  img,
+  showTitle,
+  fullTitle,
+}) => {
   const history = useHistory()
 
   return (
@@ -23,9 +30,19 @@ export const AdminEnrollmentCard: React.FC<AdminEnrolmentCardProps> = ({ title, 
       <Box sx={{ position: 'relative' }}>
         <CardMedia component='img' src={img} />
         {showTitle && (
-          <Box sx={{ width: '100%', position: 'absolute', left: 0, textAlign: 'center', top: '40%', color: 'white' }}>
+          <Box
+            sx={{
+              width: '100%',
+              position: 'absolute',
+              textAlign: 'center',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              color: 'white',
+            }}
+          >
             <Typography fontSize='40px' component='div' fontWeight='600'>
-              {title}
+              {fullTitle || title}
             </Typography>
           </Box>
         )}
