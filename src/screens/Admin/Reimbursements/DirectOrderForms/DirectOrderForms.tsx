@@ -9,14 +9,16 @@ import PageHeader from '@mth/components/PageHeader'
 import { MthRoute, ReduceFunds, ReimbursementFormType } from '@mth/enums'
 import { SchoolYear } from '@mth/models'
 import { SchoolYearDropDown } from '@mth/screens/Admin/Components/SchoolYearDropdown'
-import { ReimbursementFormEdit } from '@mth/screens/Admin/Reimbursements/ReimbursementFormEdit'
 import { getSchoolYear } from '@mth/screens/Admin/Reimbursements/services'
+import { RequestComponent } from '../Common'
+import RequestForm from '../Common/RequestForm'
 
 export const DirectOrderForms: React.FC = () => {
   const [selectedYearId, setSelectedYearId] = useState<number>()
   const [schoolYear, setSchoolYear] = useState<SchoolYear | undefined>(undefined)
   const [cardItems, setCardItems] = useState<CardItem[]>([])
   const [formType, setFormType] = useState<ReimbursementFormType | undefined>()
+  const [isChanged, setIsChanged] = useState<boolean>(false)
 
   const { data: schoolYearData } = useQuery(getSchoolYear, {
     variables: {
@@ -89,7 +91,23 @@ export const DirectOrderForms: React.FC = () => {
           <CardGrid items={cardItems}></CardGrid>
         </>
       )}
-      {!!formType && <ReimbursementFormEdit formType={formType} setFormType={setFormType} />}
+      {!!formType && (
+        <RequestComponent
+          selectedYearId={selectedYearId}
+          formType={formType}
+          isDirectOrder={true}
+          setFormType={setFormType}
+        >
+          <RequestForm
+            selectedYearId={selectedYearId}
+            formType={formType}
+            isDirectOrder={true}
+            setFormType={setFormType}
+            setIsChanged={setIsChanged}
+          />
+        </RequestComponent>
+      )}
+      {isChanged}
     </Layout>
   )
 }
