@@ -194,6 +194,9 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
           history.push(ENROLLMENT_SCHEDULE)
         }, 300)
       }
+      if (status === ScheduleStatus.NOT_SUBMITTED) {
+        refetch()
+      }
     }
   }
 
@@ -230,6 +233,12 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
     if (isChanged) {
       setIsChanged(false)
       handleSave(scheduleStatus?.value as ScheduleStatus, false, true)
+    } else {
+      setIsChanged(true)
+      setTimeout(() => {
+        history.push(ENROLLMENT_SCHEDULE)
+        setIsChanged(false)
+      }, 300)
     }
   }
 

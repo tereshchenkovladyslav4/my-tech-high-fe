@@ -59,17 +59,19 @@ export const ScheduleTable: React.FC<FiltersProps> = ({ filter, setFilter }) => 
       else gradeLevel = '9-12'
     }
 
+    const dateToDisplay = moment(
+      schedule.status === ScheduleStatus.ACCEPTED
+        ? schedule.date_accepted
+        : schedule.status === ScheduleStatus.SUBMITTED || schedule.status === ScheduleStatus.RESUBMITTED
+        ? schedule.date_submitted
+        : schedule.last_modified,
+    ).format('MM/DD/YY')
+
     return {
       key: schedule.schedule_id.toString(),
       columns: {
         id: schedule.schedule_id,
-        date: moment(
-          schedule.status === ScheduleStatus.ACCEPTED
-            ? schedule.date_accepted
-            : schedule.status === ScheduleStatus.SUBMITTED || schedule.status === ScheduleStatus.RESUBMITTED
-            ? schedule.date_submitted
-            : schedule.last_modified,
-        ).format('MM/DD/YY'),
+        date: dateToDisplay.includes('Invalid') ? '' : dateToDisplay,
         status: schedule.status,
         student: `${schedule.ScheduleStudent.person?.last_name}, ${schedule.ScheduleStudent.person?.first_name}`,
         studentId: +schedule.ScheduleStudent.student_id,
@@ -95,7 +97,7 @@ export const ScheduleTable: React.FC<FiltersProps> = ({ filter, setFilter }) => 
     variables: {
       scheduleGroupCountArgs: {
         region_id: me?.selectedRegionId,
-        school_year_id: selectedYearId,
+        filter,
       },
     },
     fetchPolicy: 'network-only',
@@ -158,7 +160,7 @@ export const ScheduleTable: React.FC<FiltersProps> = ({ filter, setFilter }) => 
   }, [countGroup])
 
   useEffect(() => {
-    setSort('date|ASC')
+    setSort('status|ASC')
     if (localStorage.getItem('currentPage')) {
       handlePageChange(Number(localStorage.getItem('currentPage')))
     }
@@ -170,6 +172,7 @@ export const ScheduleTable: React.FC<FiltersProps> = ({ filter, setFilter }) => 
       localStorage.removeItem('pageLimit')
     }
   }, [])
+
   const [modalSelectedStatus, setModalSelectedStatus] = useState<Array<string>>([])
   const [modalScheduleIds, setModalScheduleIds] = useState<Array<number>>([])
   const handleSchedulesByStatus = (status: string) => {
