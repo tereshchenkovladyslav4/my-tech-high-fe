@@ -25,7 +25,7 @@ export const EmailModal: EmailModalTemplateType = ({
   const classes = useStyles
   const editorRef = useRef(null)
   const [currentBlocks, setCurrentBlocks] = useState(0)
-  const [isCheckedStatus, setCheckedStatus] = useState<boolean>(false)
+  const [isErrorStatus, setErrorStatus] = useState<boolean>(false)
 
   const validationSchema = yup.object({
     emailFrom: yup.string().email().required('Required'),
@@ -80,7 +80,7 @@ export const EmailModal: EmailModalTemplateType = ({
             }}
           >
             <Title fontWeight='700'>Status</Title>
-            {!editFrom && isCheckedStatus && (
+            {!editFrom && isErrorStatus && (
               <Paragraph size='large' fontWeight='500' color={MthColor.RED}>
                 Required
               </Paragraph>
@@ -188,7 +188,11 @@ export const EmailModal: EmailModalTemplateType = ({
             disableElevation
             sx={classes.submitButton}
             onClick={() => {
-              formik.handleSubmit()
+              if (editFrom) {
+                formik.handleSubmit()
+              } else {
+                setErrorStatus(true)
+              }
             }}
           >
             Send

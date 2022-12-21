@@ -189,7 +189,7 @@ export const Filters: FunctionComponent<FiltersProps> = ({ filter, setFilter }) 
     })
   }
   const handleClear = () => {
-    setFilter(undefined)
+    setFilter({ selectedYearId: selectedYearId ?? 0 })
     setGrades([])
     setDiploma(undefined)
     setCourseType([])

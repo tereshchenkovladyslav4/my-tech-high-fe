@@ -112,15 +112,13 @@ const TitleForm: React.FC<TitleFormProps> = ({ schoolYearData, subjectsItems, gr
               <Subtitle sx={editTitleClasses.formError}>{touched.price && errors.price}</Subtitle>
             </Grid>
             <Grid item xs={12}>
-              {!!scheduleBuilder?.always_unlock && (
-                <MthCheckbox
-                  label='Always unlock this subject for 2nd Semester'
-                  checked={values?.always_unlock}
-                  onChange={() => {
-                    setFieldValue('always_unlock', !values?.always_unlock)
-                  }}
-                />
-              )}
+              <MthCheckbox
+                label='Always unlock this subject for 2nd Semester'
+                checked={values?.always_unlock}
+                onChange={() => {
+                  setFieldValue('always_unlock', !values?.always_unlock)
+                }}
+              />
               {!!scheduleBuilder?.custom_built && (
                 <MthCheckbox
                   label='Allow Custom-built for this subject'

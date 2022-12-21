@@ -1,7 +1,6 @@
 import { DropDownItem } from '@mth/components/DropDown/types'
 import { CheckBoxListVM } from '@mth/components/MthCheckboxList/MthCheckboxList'
 import { CartEventType, DiplomaSeekingPath, ReduceFunds } from '@mth/enums'
-import { ScheduleBuilder } from '@mth/hooks'
 import { SchoolYear } from '@mth/models'
 import { Title } from '@mth/screens/Admin/Curriculum/CourseCatalog/Subjects/types'
 
@@ -98,7 +97,6 @@ export type CourseFormProps = {
   providerItems: DropDownItem[]
   providers: Provider[]
   gradeOptions: DropDownItem[]
-  scheduleBuilder?: ScheduleBuilder
 }
 
 export interface CourseTitlesProps {

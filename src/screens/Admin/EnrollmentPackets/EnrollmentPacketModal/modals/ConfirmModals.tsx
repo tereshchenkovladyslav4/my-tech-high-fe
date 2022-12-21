@@ -170,7 +170,6 @@ export const PacketConfirmModals: FunctionComponent<PacketConfirmModalsProps> = 
 
     newNotesLines.splice(newNotesLines.indexOf('<SEP>'), 1)
     newNotes += newNotesLines.join('\n')
-
     if (oldNotes.length) return setEmailBodyInfo(newNotes) + '\n\n' + oldNotes
     return setEmailBodyInfo(newNotes) + '\n'
   }

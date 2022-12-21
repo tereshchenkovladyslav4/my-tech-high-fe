@@ -58,15 +58,21 @@ const ResourceDetails: React.FC<ResourceDetailsProps> = ({ item, handleBack, onC
                       <Subtitle sx={{ fontSize: 14, fontWeight: 600, mb: 1 }}>Username</Subtitle>
                       <TextField
                         fullWidth
-                        aria-readonly
-                        focused
+                        disabled
                         value={item.std_user_name}
                         InputProps={{ style: { fontSize: 14, fontWeight: 700 } }}
                         sx={{
-                          '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                            border: '1px solid #E7E7E7',
+                          '& .MuiInputBase-input': {
+                            cursor: 'copy',
+                          },
+                          '& .MuiOutlinedInput-root.Mui-disabled .MuiOutlinedInput-input.Mui-disabled': {
+                            '-webkit-text-fill-color': MthColor.SYSTEM_01,
+                          },
+                          '& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline': {
+                            border: '1px solid #E7E7E7 !important',
                           },
                         }}
+                        onClick={() => navigator.clipboard.writeText(item.std_user_name)}
                       />
                     </Box>
                   )}
@@ -75,15 +81,21 @@ const ResourceDetails: React.FC<ResourceDetailsProps> = ({ item, handleBack, onC
                       <Subtitle sx={{ fontSize: 14, fontWeight: 600, mb: 1 }}>Password</Subtitle>
                       <TextField
                         fullWidth
-                        aria-readonly
-                        focused
+                        disabled
                         value={item.std_password}
-                        InputProps={{ style: { fontSize: 14, fontWeight: 700, color: MthColor.SYSTEM_01 } }}
+                        InputProps={{ style: { fontSize: 14, fontWeight: 700 } }}
                         sx={{
-                          '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                            border: '1px solid #E7E7E7',
+                          '& .MuiInputBase-input': {
+                            cursor: 'copy',
+                          },
+                          '& .MuiOutlinedInput-root.Mui-disabled .MuiOutlinedInput-input.Mui-disabled': {
+                            '-webkit-text-fill-color': MthColor.SYSTEM_01,
+                          },
+                          '& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline': {
+                            border: '1px solid #E7E7E7 !important',
                           },
                         }}
+                        onClick={() => navigator.clipboard.writeText(item.std_password)}
                       />
                     </Box>
                   )}

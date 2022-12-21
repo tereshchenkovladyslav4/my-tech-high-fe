@@ -294,10 +294,23 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
 
   const handlePeriodUpdateEmail = (periodId: string) => {
     if (studentScheduleStatus !== ScheduleStatus.RESUBMITTED) {
+      const data = hasSecondSemester ? secondScheduleData : scheduleData
       if (requireUpdatePeriods.some((pid) => pid === periodId)) {
-        handleCancelUpdates()
+        const periodIds = requireUpdatePeriods.filter((obj) => obj !== periodId)
+        if (periodIds.length > 0) {
+          setRequireUpdatePeriods(periodIds)
+        } else {
+          handleCancelUpdates()
+        }
       } else {
-        setRequireUpdatePeriods([periodId])
+        setRequireUpdatePeriods([
+          ...data
+            ?.filter((item) => item?.schedulePeriodStatus === SchedulePeriodStatus.UPDATE_REQUIRED)
+            ?.map((item) => {
+              return `${item?.Period?.id}`
+            }),
+          periodId,
+        ])
         setScheduleStatus(
           SCHEDULE_STATUS_OPTIONS.find((item) => item.value === ScheduleStatus.UPDATES_REQUIRED) as DropDownItem,
         )

@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import SystemUpdateAltOutlinedIcon from '@mui/icons-material/SystemUpdateAltOutlined'
 import { Box, Stack } from '@mui/material'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { MthColor } from '@mth/enums'
 import { ImageCropper } from '../ImageCropper'
 import { StateLogoProps } from './StateLogoTypes'
 
@@ -34,7 +35,7 @@ export const StateLogo: React.FC<StateLogoProps> = ({
   }
 
   return (
-    <Box>
+    <Box sx={{ ml: '25px' }}>
       <input
         style={{ display: 'none' }}
         id='uploadStateLogoImageId'
@@ -43,26 +44,27 @@ export const StateLogo: React.FC<StateLogoProps> = ({
         onChange={(e) => handleFileInput(e)}
       />
       <label
-        style={{ display: 'flex', justifyContent: 'space-around', minWidth: 200 }}
+        style={{ display: 'block', width: '164px', height: '164px', borderRadius: '12px', overflow: 'hidden' }}
         htmlFor='uploadStateLogoImageId'
       >
-        {!(stateLogoFile || stateLogo) && (
-          <Stack sx={{ cursor: 'pointer' }} direction='column' justifyContent={'center'} alignItems='center'>
+        {!(stateLogoFile || stateLogo) ? (
+          <Stack
+            sx={{ width: '100%', height: '100%', cursor: 'pointer', backgroundColor: MthColor.BG_MAIN }}
+            direction='column'
+            justifyContent={'center'}
+            alignItems='center'
+          >
             <SystemUpdateAltOutlinedIcon sx={{ transform: 'rotate(180deg)' }} fontSize='large' />
-            <Subtitle size={12} fontWeight='500'>
-              Upload Photo
-            </Subtitle>
+            <Subtitle sx={{ fontSize: '12px', fontWeight: '500' }}>Upload Photo</Subtitle>
           </Stack>
-        )}
-        {(stateLogoFile || stateLogo) && (
-          <Box>
-            <img
-              src={stateLogoFile ? stateLogoFile.image : stateLogo}
-              width={150}
-              style={{ cursor: 'pointer' }}
-              alt='State Logo'
-            />
-          </Box>
+        ) : (
+          <img
+            src={stateLogoFile ? stateLogoFile.image : stateLogo}
+            width='100%'
+            height='100%'
+            style={{ cursor: 'pointer' }}
+            alt='State Logo'
+          />
         )}
       </label>
       {open && (

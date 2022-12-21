@@ -105,18 +105,21 @@ export const EmailModal: React.FC<EmailModalProps> = ({
     for (let i = 0; i < standard_responses.length; i++) {
       if (type == 'ageIssue') standardResponseExtraText += `<p>${standard_responses[i].extraText}</p>`
       else if (type == 'missingInfo') {
-        standardResponseExtraSpan += `<li>${standard_responses[i].title}`
-        if (standard_responses[i].extraText.trim() != '')
-          standardResponseExtraSpan += `<ul class="sub-bullet"><li>${standard_responses[i].extraText}</li></ul>`
+        standardResponseExtraSpan += `<li>${standard_responses[i].title?.trim()}`
+
+        if (standard_responses[i].extraText.trim() != '') {
+          standardResponseExtraSpan += `<ul class="sub-bullet"><li>${standard_responses[i].extraText
+            ?.trim()
+            ?.replace(/<p[^>]+?>|<p>|<\/p>/g, '')}</li></ul>`
+        }
         standardResponseExtraSpan += '</li>'
-        //standardResponseExtraText += `<p>${standard_responses[i].extraText}</p>`;
       }
     }
 
     HtmlInput = HtmlInput.replace(/\[FILES\]/g, `<ul class="primary-bullet">${standardResponseExtraSpan}</ul>`).replace(
       /\[INSTRUCTIONS\]/g,
       '',
-    ) //`<ul>${standardResponseExtraText}</ul>`)
+    )
 
     if (type == 'ageIssue') {
       HtmlInput = HtmlInput.slice(0, index) + standardResponseExtraText + HtmlInput.slice(index)

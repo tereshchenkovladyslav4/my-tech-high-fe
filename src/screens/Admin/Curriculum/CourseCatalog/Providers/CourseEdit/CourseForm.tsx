@@ -16,7 +16,6 @@ import ValidGradesSelector from '../../Components/ValidateGrades/ValidGradesSele
 const CourseForm: React.FC<CourseFormProps> = ({
   schoolYearId,
   schoolYearData,
-  scheduleBuilder,
   providerItems,
   providers,
   gradeOptions,
@@ -71,15 +70,13 @@ const CourseForm: React.FC<CourseFormProps> = ({
             </Grid>
             <ValidGradesSelector gradeOptions={gradeOptions} />
             <Grid item xs={12}>
-              {!!scheduleBuilder?.always_unlock && (
-                <MthCheckbox
-                  label='Always unlock this course for 2nd Semester changes'
-                  checked={values?.always_unlock}
-                  onChange={() => {
-                    setFieldValue('always_unlock', !values?.always_unlock)
-                  }}
-                />
-              )}
+              <MthCheckbox
+                label='Always unlock this course for 2nd Semester changes'
+                checked={values?.always_unlock}
+                onChange={() => {
+                  setFieldValue('always_unlock', !values?.always_unlock)
+                }}
+              />
               {!!values?.show_software_reimbursement && (
                 <MthCheckbox
                   label='This course qualifies for Required Software Reimbursement'

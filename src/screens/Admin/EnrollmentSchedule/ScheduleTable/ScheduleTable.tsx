@@ -2,7 +2,6 @@ import React, { useEffect, useState, useContext } from 'react'
 import { useQuery, useMutation } from '@apollo/client'
 import SearchIcon from '@mui/icons-material/Search'
 import { Box, Button, Card, InputAdornment, OutlinedInput } from '@mui/material'
-import { map } from 'lodash'
 import moment from 'moment'
 import { useHistory } from 'react-router-dom'
 import { MthTable } from '@mth/components/MthTable'
@@ -144,11 +143,27 @@ export const ScheduleTable: React.FC<FiltersProps> = ({ filter, setFilter }) => 
       const { schedules } = data
       const { results, total } = schedules
 
-      setTableData(() => {
-        return map(results, (schedule) => {
-          return createData(schedule)
+      const createdData = results.map((schedule) => createData(schedule))
+      if (sort.includes('date|asc')) {
+        createdData.sort((a, b) => {
+          if (a.columns.date) {
+            return new Date(a.columns.date).getTime() - new Date(b.columns.date).getTime()
+          } else {
+            return -1
+          }
         })
-      })
+      }
+      if (sort.includes('date|desc')) {
+        createdData.sort((a, b) => {
+          if (b.columns.date) {
+            return new Date(b.columns.date).getTime() - new Date(a.columns.date).getTime()
+          } else {
+            return -1
+          }
+        })
+      }
+
+      setTableData(createdData)
       setTotalApplications(total)
     }
   }, [data])
@@ -480,7 +495,14 @@ export const ScheduleTable: React.FC<FiltersProps> = ({ filter, setFilter }) => 
         />
       </Box>
       <Box sx={{ paddingX: '24px' }}>
-        <ScheduleTableFilters filters={filters} setFilters={setFilters} scheduleCount={scheduleCount} />
+        <ScheduleTableFilters
+          filters={filters}
+          setFilters={(value) => {
+            setFilters(value)
+            handlePageChange(1)
+          }}
+          scheduleCount={scheduleCount}
+        />
       </Box>
       <Box>
         <MthTable

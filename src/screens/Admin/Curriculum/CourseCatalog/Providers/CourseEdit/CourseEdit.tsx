@@ -1,12 +1,11 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useMutation } from '@apollo/client'
 import { Box, Modal } from '@mui/material'
 import { Form, Formik } from 'formik'
 import * as yup from 'yup'
 import { RICH_TEXT_VALID_MIN_LENGTH } from '@mth/constants'
 import { MthColor, ReduceFunds } from '@mth/enums'
-import { useProgramYearListBySchoolYearId, useProviders, useScheduleBuilder } from '@mth/hooks'
-import { UserContext } from '@mth/providers/UserContext/UserProvider'
+import { useProgramYearListBySchoolYearId, useProviders } from '@mth/hooks'
 import CourseForm from '@mth/screens/Admin/Curriculum/CourseCatalog/Providers/CourseEdit/CourseForm'
 import { defaultCourseFormData } from '@mth/screens/Admin/Curriculum/CourseCatalog/Providers/defaultValues'
 import { createOrUpdateCourseMutation } from '@mth/screens/Admin/Curriculum/CourseCatalog/services'
@@ -22,15 +21,12 @@ const CourseEdit: React.FC<CourseEditProps> = ({
   refetch,
   setShowEditModal,
 }) => {
-  const { me } = useContext(UserContext)
-
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false)
   const [initialValues, setInitialValues] = useState<Course>({ ...defaultCourseFormData, provider_id: providerId })
   const [submitSave, {}] = useMutation(createOrUpdateCourseMutation)
 
   const { checkBoxItems: providerItems, providers } = useProviders(schoolYearId)
   const { numericGradeList: gradeOptions } = useProgramYearListBySchoolYearId(schoolYearId)
-  const { scheduleBuilder } = useScheduleBuilder(me?.selectedRegionId)
 
   const handleCancel = () => {
     setShowEditModal(false)
@@ -176,7 +172,6 @@ const CourseEdit: React.FC<CourseEditProps> = ({
                 providerItems={providerItems}
                 providers={providers}
                 gradeOptions={gradeOptions}
-                scheduleBuilder={scheduleBuilder}
               />
               <Box sx={{ mt: 6 }} />
               <SaveCancelComponent isSubmitted={isSubmitted} handleCancel={handleCancel} />

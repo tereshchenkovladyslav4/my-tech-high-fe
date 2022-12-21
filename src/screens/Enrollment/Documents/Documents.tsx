@@ -423,7 +423,7 @@ export const Documents: React.FC<DocumentsProps> = ({ id, questions }) => {
                         setPacketFiles(filter(packetFiles, (validFile) => validFile !== file))
                         setFilesToDelete((prev) => prev.concat(file))
                       }}
-                      fileName={`${fileNamePrefix}${item[0]?.options?.[0].label}`}
+                      fileName={`${fileNamePrefix}${item[0]?.options?.[0]?.label}`}
                     />
                     {item[0].type === QUESTION_TYPE.UPLOAD && !checkValidate(item[0]) && !disabled && isSubmit && (
                       <Paragraph color={RED} size='medium' fontWeight='700' sx={{ marginLeft: '12px' }}>

@@ -13,6 +13,7 @@ type MthBulletEditorProps = {
   isEditedByExternal?: boolean
   setValue: (value: string) => void
   error?: boolean
+  isBlockEnd?: boolean
 }
 
 const generateEditorState = (htmlContent: string): EditorState => {
@@ -28,15 +29,16 @@ const MthBulletEditor: React.FC<MthBulletEditorProps> = ({
   error,
   height,
   maxHeight,
+  isBlockEnd = true,
 }) => {
   const [currentBlocks, setCurrentBlocks] = useState<number>(0)
-  const editorRef = useRef<unknown>()
+  const editorRef = useRef()
   const [editorState, setEditorState] = useState<EditorState>(generateEditorState(''))
   const [isEdited, setIsEdited] = useState<boolean>(false)
 
   const handleEditorChange = (state: Draft.DraftModel.Encoding.RawDraftContentState) => {
     try {
-      if (currentBlocks !== 0 && currentBlocks !== state?.blocks?.length) {
+      if (currentBlocks !== 0 && currentBlocks !== state?.blocks?.length && isBlockEnd) {
         ;(editorRef.current as Element).scrollIntoView({ behavior: 'smooth', block: 'end' })
       }
       setCurrentBlocks(state?.blocks?.length)
@@ -68,6 +70,9 @@ const MthBulletEditor: React.FC<MthBulletEditorProps> = ({
           minHeight: height ? height : '300px',
           maxHeight: maxHeight ? maxHeight : '350px',
           marginX: '10px',
+          '.public-DraftStyleDefault-block': {
+            margin: 0,
+          },
         },
         marginY: 'auto',
       }}

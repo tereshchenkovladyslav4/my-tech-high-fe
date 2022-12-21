@@ -1,6 +1,6 @@
 import React, { FunctionComponent, ReactElement, useContext, useEffect, useState } from 'react'
 import { useMutation, useQuery } from '@apollo/client'
-import { Grid } from '@mui/material'
+import { Grid, Box } from '@mui/material'
 import DeleteIcon from '../../../../assets/icons/icon-delete-small.svg'
 import { QUESTION_TYPE } from '../../../../components/QuestionItem/QuestionItemProps'
 import { Paragraph } from '../../../../components/Typography/Paragraph/Paragraph'
@@ -73,15 +73,13 @@ export const EnrollmentPacketDocument: FunctionComponent<EnrollmentPacketDocumen
           // }
         }
       }
-
       setFiles(filesData)
     }
   }, [loading, data])
-
   return (
     <Grid container sx={{ paddingTop: '20px' }}>
       <Grid item md={12} sm={12} xs={12}>
-        <Subtitle sx={{ fontSize: '18px' }} color={SYSTEM_01} fontWeight='700'>
+        <Subtitle sx={{ fontSize: '18px', marginBottom: 1 }} color={SYSTEM_01} fontWeight='700'>
           Documents
         </Subtitle>
       </Grid>
@@ -90,12 +88,12 @@ export const EnrollmentPacketDocument: FunctionComponent<EnrollmentPacketDocumen
         <Grid
           sx={{
             '&.MuiGrid-root': {
-              maxWidth: '12rem',
+              maxWidth: '28rem',
             },
           }}
           item
-          md={6}
-          sm={6}
+          md={12}
+          sm={12}
           xs={12}
         >
           {questions?.length > 0 &&
@@ -103,146 +101,58 @@ export const EnrollmentPacketDocument: FunctionComponent<EnrollmentPacketDocumen
               ?.find((tab) => tab.tab_name === 'Documents')
               ?.groups[0]?.questions?.map((q, index): ReactElement | undefined => {
                 if (q.type === QUESTION_TYPE.UPLOAD) {
+                  const filteredFiles = files?.filter((file) => file.kind === q.question)
                   return (
-                    <Paragraph key={index} color={SYSTEM_06} sx={{ fontSize: '14px' }} fontWeight='400'>
-                      {q.question}
-                    </Paragraph>
+                    <Box sx={{ display: 'flex', gap: 4 }}>
+                      <Box sx={{ minWidth: '200px' }}>
+                        <Paragraph key={index} color={SYSTEM_06} sx={{ fontSize: '14px' }} fontWeight='400'>
+                          {q.question}
+                        </Paragraph>
+                      </Box>
+                      <Box sx={{ marginBottom: '8px' }}>
+                        {files?.length > 0 ? (
+                          filteredFiles.length > 0 ? (
+                            filteredFiles.map((obj) => {
+                              return (
+                                <Paragraph
+                                  key={`$file-${index}`}
+                                  color={PRIMARY_MEDIUM_MOUSEOVER}
+                                  fontWeight='400'
+                                  sx={{ fontSize: '14px', display: 'flex', alignItems: 'center', marginTop: '4px' }}
+                                >
+                                  <a
+                                    href={obj.url}
+                                    target='_blank'
+                                    style={{ cursor: 'pointer', textDecoration: 'unset' }}
+                                    rel='noreferrer'
+                                  >
+                                    {obj.name}
+                                  </a>
+                                  <img
+                                    src={DeleteIcon}
+                                    style={classes.deleteIcon}
+                                    onClick={() => onDeletefile(obj.file_id)}
+                                  />
+                                </Paragraph>
+                              )
+                            })
+                          ) : (
+                            <Paragraph color={SYSTEM_06} sx={{ fontSize: '14px' }} fontWeight='400'>
+                              Not found
+                            </Paragraph>
+                          )
+                        ) : (
+                          <Paragraph color={SYSTEM_06} sx={{ fontSize: '14px' }} fontWeight='400'>
+                            Not found
+                          </Paragraph>
+                        )}
+                      </Box>
+                    </Box>
                   )
                 } else {
                   return undefined
                 }
               })}
-        </Grid>
-        <Grid item md={6} sm={6} xs={12}>
-          {questions?.length > 0 &&
-            questions
-              ?.find((tab) => tab.tab_name === 'Documents')
-              ?.groups[0]?.questions?.map((q, index): ReactElement | undefined => {
-                if (q.type === QUESTION_TYPE.UPLOAD) {
-                  return (
-                    <div key={index}>
-                      {files?.length > 0 && files?.find((e) => e.kind === q.question) ? (
-                        <Paragraph
-                          color={PRIMARY_MEDIUM_MOUSEOVER}
-                          fontWeight='400'
-                          sx={{ fontSize: '14px', display: 'flex', alignItems: 'center' }}
-                        >
-                          <a
-                            href={files?.find((e) => e.kind === q.question).url}
-                            target='_blank'
-                            style={{ cursor: 'pointer', textDecoration: 'unset' }}
-                            rel='noreferrer'
-                          >
-                            {files?.find((e) => e.kind === q.question).name}
-                          </a>
-                          <img
-                            src={DeleteIcon}
-                            style={classes.deleteIcon}
-                            onClick={() => onDeletefile(files?.find((e) => e.kind === q.question).file_id)}
-                          />
-                        </Paragraph>
-                      ) : (
-                        <Paragraph color={SYSTEM_06} sx={{ fontSize: '14px' }} fontWeight='400'>
-                          Not found
-                        </Paragraph>
-                      )}
-                    </div>
-                  )
-                } else {
-                  return undefined
-                }
-              })}
-          {/* {files?.length > 0 ? (
-            <div>
-              {files?.find((e) => e.kind === 'bc') ? (
-                <Paragraph
-                  color={PRIMARY_MEDIUM_MOUSEOVER}
-                  fontWeight='400'
-                  sx={{ fontSize: '14px', display: 'flex', alignItems: 'center' }}
-                >
-                  <a
-                    href={files?.find((e) => e.kind === 'bc').url}
-                    target='_blank'
-                    style={{ cursor: 'pointer', textDecoration: 'unset' }}
-                    rel='noreferrer'
-                  >
-                    {files?.find((e) => e.kind === 'bc').name}
-                  </a>
-                  <img
-                    src={DeleteIcon}
-                    style={classes.deleteIcon}
-                    onClick={() => onDeletefile(files?.find((e) => e.kind === 'bc').file_id)}
-                  />
-                </Paragraph>
-              ) : (
-                <Paragraph color={SYSTEM_06} sx={{ fontSize: '14px' }} fontWeight='400'>
-                  Not found
-                </Paragraph>
-              )}
-              {files?.find((e) => e.kind === 'im') ? (
-                <Paragraph
-                  color={PRIMARY_MEDIUM_MOUSEOVER}
-                  fontWeight='400'
-                  sx={{ fontSize: '14px', display: 'flex', alignItems: 'center' }}
-                >
-                  <a
-                    href={files?.find((e) => e.kind === 'im').url}
-                    target='_blank'
-                    style={{ cursor: 'pointer', textDecorationLine: 'unset' }}
-                    rel='noreferrer'
-                  >
-                    {files?.find((e) => e.kind === 'im').name}
-                  </a>
-                  <img
-                    src={DeleteIcon}
-                    style={classes.deleteIcon}
-                    onClick={() => onDeletefile(files?.find((e) => e.kind === 'im').file_id)}
-                  />
-                </Paragraph>
-              ) : (
-                <Paragraph color={SYSTEM_06} sx={{ fontSize: '14px' }} fontWeight='400'>
-                  Not found
-                </Paragraph>
-              )}
-              {files?.find((e) => e.kind === 'ur') ? (
-                <Paragraph
-                  color={PRIMARY_MEDIUM_MOUSEOVER}
-                  fontWeight='400'
-                  sx={{ fontSize: '14px', display: 'flex', alignItems: 'center' }}
-                >
-                  <a
-                    href={files?.find((e) => e.kind === 'ur').url}
-                    target='_blank'
-                    style={{ cursor: 'pointer', textDecoration: 'unset' }}
-                    rel='noreferrer'
-                  >
-                    {files?.find((e) => e.kind === 'ur').name}
-                  </a>
-                  <img
-                    src={DeleteIcon}
-                    style={classes.deleteIcon}
-                    onClick={() => onDeletefile(files?.find((e) => e.kind === 'ur').file_id)}
-                  />
-                </Paragraph>
-              ) : (
-                <Paragraph color={SYSTEM_06} sx={{ fontSize: '14px' }} fontWeight='400'>
-                  Not found
-                </Paragraph>
-              )}
-            </div>
-          ) : (
-            <div>
-              <Paragraph color={SYSTEM_06} sx={{ fontSize: '14px' }} fontWeight='400'>
-                Not found
-              </Paragraph>
-              <Paragraph color={SYSTEM_06} sx={{ fontSize: '14px' }} fontWeight='400'>
-                Not found
-              </Paragraph>
-              <Paragraph color={SYSTEM_06} sx={{ fontSize: '14px' }} fontWeight='400'>
-                Not found
-              </Paragraph>
-            </div>
-          )} */}
         </Grid>
       </Grid>
 

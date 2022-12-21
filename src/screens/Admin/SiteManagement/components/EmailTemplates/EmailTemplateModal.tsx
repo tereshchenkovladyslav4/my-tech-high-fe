@@ -731,6 +731,7 @@ export const EmailTemplateModal: React.FC<EmailTemplateModalProps> = ({
                                 value={response[index].responses[i].extraText}
                                 setValue={(value) => handleChangeGroupResponse(value, index, i, 'extraText')}
                                 height='150px'
+                                isBlockEnd={false}
                               />
                             </Grid>
                           </Box>
