@@ -1,7 +1,11 @@
+import { DropDownItem } from '@mth/components/DropDown/types'
+import { CheckBoxListVM } from '@mth/components/MthCheckboxList/MthCheckboxList'
+import { RadioGroupOption } from '@mth/components/MthRadioGroup/types'
 import { QUESTION_TYPE } from '@mth/components/QuestionItem/QuestionItemProps'
-import { ReimbursementFormType } from '@mth/enums'
+import { AdditionalQuestionAction, ReimbursementFormType } from '@mth/enums'
+import { ReimbursementQuestion } from '@mth/models'
 
-export const DEFAULT_IS_DIRECT_ORDER_TECHNOLOGY_QUESTIONS = [
+export const DEFAULT_IS_DIRECT_ORDER_TECHNOLOGY_QUESTIONS: ReimbursementQuestion[] = [
   {
     type: QUESTION_TYPE.DROPDOWN,
     priority: 0,
@@ -10,7 +14,7 @@ export const DEFAULT_IS_DIRECT_ORDER_TECHNOLOGY_QUESTIONS = [
     required: true,
     SchoolYearId: 0,
     slug: 'reimbursement_student_id',
-    defaultQuestion: true,
+    default_question: true,
     reimbursement_form_type: ReimbursementFormType.TECHNOLOGY,
     is_direct_order: true,
     reimbursement_question_id: 0,
@@ -24,21 +28,21 @@ export const DEFAULT_IS_DIRECT_ORDER_TECHNOLOGY_QUESTIONS = [
     required: true,
     SchoolYearId: 0,
     slug: 'reimbursement_form_type',
-    defaultQuestion: true,
+    default_question: true,
     reimbursement_form_type: ReimbursementFormType.TECHNOLOGY,
     is_direct_order: true,
     reimbursement_question_id: 0,
     sortable: false,
   },
   {
-    type: QUESTION_TYPE.TEXTFIELD,
+    type: QUESTION_TYPE.TEXTBOX,
     priority: 2,
     question: 'Total Amount Requested',
     options: '',
     required: true,
     SchoolYearId: 0,
     slug: 'reimbursement_total_amount_requested',
-    defaultQuestion: true,
+    default_question: true,
     reimbursement_form_type: ReimbursementFormType.TECHNOLOGY,
     is_direct_order: true,
     reimbursement_question_id: 0,
@@ -52,7 +56,7 @@ export const DEFAULT_IS_DIRECT_ORDER_TECHNOLOGY_QUESTIONS = [
     required: true,
     SchoolYearId: 0,
     slug: 'reimbursement_signature_name',
-    defaultQuestion: true,
+    default_question: true,
     reimbursement_form_type: ReimbursementFormType.TECHNOLOGY,
     is_direct_order: true,
     reimbursement_question_id: 0,
@@ -60,7 +64,7 @@ export const DEFAULT_IS_DIRECT_ORDER_TECHNOLOGY_QUESTIONS = [
   },
 ]
 
-export const DEFAULT_TECHNOLOGY_QUESTIONS = [
+export const DEFAULT_TECHNOLOGY_QUESTIONS: ReimbursementQuestion[] = [
   {
     type: QUESTION_TYPE.DROPDOWN,
     priority: 0,
@@ -69,7 +73,7 @@ export const DEFAULT_TECHNOLOGY_QUESTIONS = [
     required: true,
     SchoolYearId: 0,
     slug: 'reimbursement_student_id',
-    defaultQuestion: true,
+    default_question: true,
     reimbursement_form_type: ReimbursementFormType.TECHNOLOGY,
     is_direct_order: false,
     reimbursement_question_id: 0,
@@ -83,7 +87,7 @@ export const DEFAULT_TECHNOLOGY_QUESTIONS = [
     required: true,
     SchoolYearId: 0,
     slug: 'reimbursement_form_type',
-    defaultQuestion: true,
+    default_question: true,
     reimbursement_form_type: ReimbursementFormType.TECHNOLOGY,
     is_direct_order: false,
     reimbursement_question_id: 0,
@@ -97,7 +101,7 @@ export const DEFAULT_TECHNOLOGY_QUESTIONS = [
     required: true,
     SchoolYearId: 0,
     slug: 'reimbursement_receipts',
-    defaultQuestion: true,
+    default_question: true,
     reimbursement_form_type: ReimbursementFormType.TECHNOLOGY,
     is_direct_order: false,
     reimbursement_question_id: 0,
@@ -111,7 +115,7 @@ export const DEFAULT_TECHNOLOGY_QUESTIONS = [
     required: true,
     SchoolYearId: 0,
     slug: 'reimbursement_total_amount_requested',
-    defaultQuestion: true,
+    default_question: true,
     reimbursement_form_type: ReimbursementFormType.TECHNOLOGY,
     is_direct_order: false,
     reimbursement_question_id: 0,
@@ -125,7 +129,7 @@ export const DEFAULT_TECHNOLOGY_QUESTIONS = [
     required: true,
     SchoolYearId: 0,
     slug: 'reimbursement_signature_name',
-    defaultQuestion: true,
+    default_question: true,
     reimbursement_form_type: ReimbursementFormType.TECHNOLOGY,
     is_direct_order: false,
     reimbursement_question_id: 0,
@@ -133,7 +137,7 @@ export const DEFAULT_TECHNOLOGY_QUESTIONS = [
   },
 ]
 
-export const DEFAULT_IS_DIRECT_ORDER_SUPPLEMENTAL_LEARNING_QUESTIONS = [
+export const DEFAULT_IS_DIRECT_ORDER_SUPPLEMENTAL_LEARNING_QUESTIONS: ReimbursementQuestion[] = [
   {
     type: QUESTION_TYPE.DROPDOWN,
     priority: 0,
@@ -142,7 +146,7 @@ export const DEFAULT_IS_DIRECT_ORDER_SUPPLEMENTAL_LEARNING_QUESTIONS = [
     required: true,
     SchoolYearId: 0,
     slug: 'reimbursement_student_id',
-    defaultQuestion: true,
+    default_question: true,
     reimbursement_form_type: ReimbursementFormType.SUPPLEMENTAL,
     is_direct_order: true,
     reimbursement_question_id: 0,
@@ -156,21 +160,21 @@ export const DEFAULT_IS_DIRECT_ORDER_SUPPLEMENTAL_LEARNING_QUESTIONS = [
     required: true,
     SchoolYearId: 0,
     slug: 'reimbursement_form_type',
-    defaultQuestion: true,
+    default_question: true,
     reimbursement_form_type: ReimbursementFormType.SUPPLEMENTAL,
     is_direct_order: true,
     reimbursement_question_id: 0,
     sortable: false,
   },
   {
-    type: QUESTION_TYPE.TEXTFIELD,
+    type: QUESTION_TYPE.TEXTBOX,
     priority: 2,
     question: 'Total Amount Requested',
     options: '',
     required: true,
     SchoolYearId: 0,
     slug: 'reimbursement_total_amount_requested',
-    defaultQuestion: true,
+    default_question: true,
     reimbursement_form_type: ReimbursementFormType.SUPPLEMENTAL,
     is_direct_order: true,
     reimbursement_question_id: 0,
@@ -184,7 +188,7 @@ export const DEFAULT_IS_DIRECT_ORDER_SUPPLEMENTAL_LEARNING_QUESTIONS = [
     required: true,
     SchoolYearId: 0,
     slug: 'reimbursement_signature_name',
-    defaultQuestion: true,
+    default_question: true,
     reimbursement_form_type: ReimbursementFormType.SUPPLEMENTAL,
     is_direct_order: true,
     reimbursement_question_id: 0,
@@ -192,7 +196,7 @@ export const DEFAULT_IS_DIRECT_ORDER_SUPPLEMENTAL_LEARNING_QUESTIONS = [
   },
 ]
 
-export const DEFAULT_SUPPLEMENTAL_LEARNING_QUESTIONS = [
+export const DEFAULT_SUPPLEMENTAL_LEARNING_QUESTIONS: ReimbursementQuestion[] = [
   {
     type: QUESTION_TYPE.DROPDOWN,
     priority: 0,
@@ -201,7 +205,7 @@ export const DEFAULT_SUPPLEMENTAL_LEARNING_QUESTIONS = [
     required: true,
     SchoolYearId: 0,
     slug: 'reimbursement_student_id',
-    defaultQuestion: true,
+    default_question: true,
     reimbursement_form_type: ReimbursementFormType.SUPPLEMENTAL,
     is_direct_order: false,
     reimbursement_question_id: 0,
@@ -215,7 +219,7 @@ export const DEFAULT_SUPPLEMENTAL_LEARNING_QUESTIONS = [
     required: true,
     SchoolYearId: 0,
     slug: 'reimbursement_form_type',
-    defaultQuestion: true,
+    default_question: true,
     reimbursement_form_type: ReimbursementFormType.SUPPLEMENTAL,
     is_direct_order: false,
     reimbursement_question_id: 0,
@@ -229,7 +233,7 @@ export const DEFAULT_SUPPLEMENTAL_LEARNING_QUESTIONS = [
     required: true,
     SchoolYearId: 0,
     slug: 'reimbursement_receipts',
-    defaultQuestion: true,
+    default_question: true,
     reimbursement_form_type: ReimbursementFormType.TECHNOLOGY,
     is_direct_order: false,
     reimbursement_question_id: 0,
@@ -243,7 +247,7 @@ export const DEFAULT_SUPPLEMENTAL_LEARNING_QUESTIONS = [
     required: true,
     SchoolYearId: 0,
     slug: 'reimbursement_total_amount_requested',
-    defaultQuestion: true,
+    default_question: true,
     reimbursement_form_type: ReimbursementFormType.TECHNOLOGY,
     is_direct_order: false,
     reimbursement_question_id: 0,
@@ -257,7 +261,7 @@ export const DEFAULT_SUPPLEMENTAL_LEARNING_QUESTIONS = [
     required: true,
     SchoolYearId: 0,
     slug: 'reimbursement_signature_name',
-    defaultQuestion: true,
+    default_question: true,
     reimbursement_form_type: ReimbursementFormType.TECHNOLOGY,
     is_direct_order: false,
     reimbursement_question_id: 0,
@@ -265,7 +269,7 @@ export const DEFAULT_SUPPLEMENTAL_LEARNING_QUESTIONS = [
   },
 ]
 
-export const DEFAULT_IS_DIRECT_ORDER_CUSTOM_BUILT_QUESTIONS = [
+export const DEFAULT_IS_DIRECT_ORDER_CUSTOM_BUILT_QUESTIONS: ReimbursementQuestion[] = [
   {
     type: QUESTION_TYPE.DROPDOWN,
     priority: 0,
@@ -274,7 +278,7 @@ export const DEFAULT_IS_DIRECT_ORDER_CUSTOM_BUILT_QUESTIONS = [
     required: true,
     SchoolYearId: 0,
     slug: 'reimbursement_student_id',
-    defaultQuestion: true,
+    default_question: true,
     reimbursement_form_type: ReimbursementFormType.CUSTOM_BUILT,
     is_direct_order: true,
     reimbursement_question_id: 0,
@@ -288,7 +292,7 @@ export const DEFAULT_IS_DIRECT_ORDER_CUSTOM_BUILT_QUESTIONS = [
     required: true,
     SchoolYearId: 0,
     slug: 'reimbursement_form_type',
-    defaultQuestion: true,
+    default_question: true,
     reimbursement_form_type: ReimbursementFormType.CUSTOM_BUILT,
     is_direct_order: true,
     reimbursement_question_id: 0,
@@ -302,21 +306,21 @@ export const DEFAULT_IS_DIRECT_ORDER_CUSTOM_BUILT_QUESTIONS = [
     required: true,
     SchoolYearId: 0,
     slug: 'reimbursement_period',
-    defaultQuestion: true,
+    default_question: true,
     reimbursement_form_type: ReimbursementFormType.CUSTOM_BUILT,
     is_direct_order: true,
     reimbursement_question_id: 0,
     sortable: false,
   },
   {
-    type: QUESTION_TYPE.TEXTFIELD,
+    type: QUESTION_TYPE.TEXTBOX,
     priority: 3,
     question: 'Total Amount Requested',
     options: '',
     required: true,
     SchoolYearId: 0,
     slug: 'reimbursement_total_amount_requested',
-    defaultQuestion: true,
+    default_question: true,
     reimbursement_form_type: ReimbursementFormType.CUSTOM_BUILT,
     is_direct_order: true,
     reimbursement_question_id: 0,
@@ -330,7 +334,7 @@ export const DEFAULT_IS_DIRECT_ORDER_CUSTOM_BUILT_QUESTIONS = [
     required: true,
     SchoolYearId: 0,
     slug: 'reimbursement_signature_name',
-    defaultQuestion: true,
+    default_question: true,
     reimbursement_form_type: ReimbursementFormType.CUSTOM_BUILT,
     is_direct_order: true,
     reimbursement_question_id: 0,
@@ -338,7 +342,7 @@ export const DEFAULT_IS_DIRECT_ORDER_CUSTOM_BUILT_QUESTIONS = [
   },
 ]
 
-export const DEFAULT_CUSTOM_BUILT_QUESTIONS = [
+export const DEFAULT_CUSTOM_BUILT_QUESTIONS: ReimbursementQuestion[] = [
   {
     type: QUESTION_TYPE.DROPDOWN,
     priority: 0,
@@ -347,7 +351,7 @@ export const DEFAULT_CUSTOM_BUILT_QUESTIONS = [
     required: true,
     SchoolYearId: 0,
     slug: 'reimbursement_student_id',
-    defaultQuestion: true,
+    default_question: true,
     reimbursement_form_type: ReimbursementFormType.CUSTOM_BUILT,
     is_direct_order: false,
     reimbursement_question_id: 0,
@@ -361,7 +365,7 @@ export const DEFAULT_CUSTOM_BUILT_QUESTIONS = [
     required: true,
     SchoolYearId: 0,
     slug: 'reimbursement_form_type',
-    defaultQuestion: true,
+    default_question: true,
     reimbursement_form_type: ReimbursementFormType.CUSTOM_BUILT,
     is_direct_order: false,
     reimbursement_question_id: 0,
@@ -375,7 +379,7 @@ export const DEFAULT_CUSTOM_BUILT_QUESTIONS = [
     required: true,
     SchoolYearId: 0,
     slug: 'reimbursement_period',
-    defaultQuestion: true,
+    default_question: true,
     reimbursement_form_type: ReimbursementFormType.CUSTOM_BUILT,
     is_direct_order: false,
     reimbursement_question_id: 0,
@@ -389,7 +393,7 @@ export const DEFAULT_CUSTOM_BUILT_QUESTIONS = [
     required: true,
     SchoolYearId: 0,
     slug: 'reimbursement_receipts',
-    defaultQuestion: true,
+    default_question: true,
     reimbursement_form_type: ReimbursementFormType.TECHNOLOGY,
     is_direct_order: false,
     reimbursement_question_id: 0,
@@ -403,7 +407,7 @@ export const DEFAULT_CUSTOM_BUILT_QUESTIONS = [
     required: true,
     SchoolYearId: 0,
     slug: 'reimbursement_total_amount_requested',
-    defaultQuestion: true,
+    default_question: true,
     reimbursement_form_type: ReimbursementFormType.TECHNOLOGY,
     is_direct_order: false,
     reimbursement_question_id: 0,
@@ -417,7 +421,7 @@ export const DEFAULT_CUSTOM_BUILT_QUESTIONS = [
     required: true,
     SchoolYearId: 0,
     slug: 'reimbursement_signature_name',
-    defaultQuestion: true,
+    default_question: true,
     reimbursement_form_type: ReimbursementFormType.CUSTOM_BUILT,
     is_direct_order: false,
     reimbursement_question_id: 0,
@@ -425,7 +429,7 @@ export const DEFAULT_CUSTOM_BUILT_QUESTIONS = [
   },
 ]
 
-export const DEFAULT_THIRD_PARTY_PROVIDER_QUESTIONS = [
+export const DEFAULT_THIRD_PARTY_PROVIDER_QUESTIONS: ReimbursementQuestion[] = [
   {
     type: QUESTION_TYPE.DROPDOWN,
     priority: 0,
@@ -434,7 +438,7 @@ export const DEFAULT_THIRD_PARTY_PROVIDER_QUESTIONS = [
     required: true,
     SchoolYearId: 0,
     slug: 'reimbursement_student_id',
-    defaultQuestion: true,
+    default_question: true,
     reimbursement_form_type: ReimbursementFormType.THIRD_PARTY_PROVIDER,
     is_direct_order: false,
     reimbursement_question_id: 0,
@@ -448,7 +452,7 @@ export const DEFAULT_THIRD_PARTY_PROVIDER_QUESTIONS = [
     required: true,
     SchoolYearId: 0,
     slug: 'reimbursement_form_type',
-    defaultQuestion: true,
+    default_question: true,
     reimbursement_form_type: ReimbursementFormType.THIRD_PARTY_PROVIDER,
     is_direct_order: false,
     reimbursement_question_id: 0,
@@ -462,7 +466,7 @@ export const DEFAULT_THIRD_PARTY_PROVIDER_QUESTIONS = [
     required: true,
     SchoolYearId: 0,
     slug: 'reimbursement_period',
-    defaultQuestion: true,
+    default_question: true,
     reimbursement_form_type: ReimbursementFormType.THIRD_PARTY_PROVIDER,
     is_direct_order: false,
     reimbursement_question_id: 0,
@@ -476,7 +480,7 @@ export const DEFAULT_THIRD_PARTY_PROVIDER_QUESTIONS = [
     required: true,
     SchoolYearId: 0,
     slug: 'reimbursement_receipts',
-    defaultQuestion: true,
+    default_question: true,
     reimbursement_form_type: ReimbursementFormType.THIRD_PARTY_PROVIDER,
     is_direct_order: false,
     reimbursement_question_id: 0,
@@ -490,7 +494,7 @@ export const DEFAULT_THIRD_PARTY_PROVIDER_QUESTIONS = [
     required: true,
     SchoolYearId: 0,
     slug: 'reimbursement_total_amount_requested',
-    defaultQuestion: true,
+    default_question: true,
     reimbursement_form_type: ReimbursementFormType.THIRD_PARTY_PROVIDER,
     is_direct_order: false,
     reimbursement_question_id: 0,
@@ -504,7 +508,7 @@ export const DEFAULT_THIRD_PARTY_PROVIDER_QUESTIONS = [
     required: true,
     SchoolYearId: 0,
     slug: 'reimbursement_signature_name',
-    defaultQuestion: true,
+    default_question: true,
     reimbursement_form_type: ReimbursementFormType.THIRD_PARTY_PROVIDER,
     is_direct_order: false,
     reimbursement_question_id: 0,
@@ -512,7 +516,7 @@ export const DEFAULT_THIRD_PARTY_PROVIDER_QUESTIONS = [
   },
 ]
 
-export const DEFAULT_REQUIRED_SOFTWARE_QUESTIONS = [
+export const DEFAULT_REQUIRED_SOFTWARE_QUESTIONS: ReimbursementQuestion[] = [
   {
     type: QUESTION_TYPE.DROPDOWN,
     priority: 0,
@@ -521,7 +525,7 @@ export const DEFAULT_REQUIRED_SOFTWARE_QUESTIONS = [
     required: true,
     SchoolYearId: 0,
     slug: 'reimbursement_student_id',
-    defaultQuestion: true,
+    default_question: true,
     reimbursement_form_type: ReimbursementFormType.REQUIRED_SOFTWARE,
     is_direct_order: false,
     reimbursement_question_id: 0,
@@ -535,7 +539,7 @@ export const DEFAULT_REQUIRED_SOFTWARE_QUESTIONS = [
     required: true,
     SchoolYearId: 0,
     slug: 'reimbursement_form_type',
-    defaultQuestion: true,
+    default_question: true,
     reimbursement_form_type: ReimbursementFormType.REQUIRED_SOFTWARE,
     is_direct_order: false,
     reimbursement_question_id: 0,
@@ -549,7 +553,7 @@ export const DEFAULT_REQUIRED_SOFTWARE_QUESTIONS = [
     required: true,
     SchoolYearId: 0,
     slug: 'reimbursement_period',
-    defaultQuestion: true,
+    default_question: true,
     reimbursement_form_type: ReimbursementFormType.REQUIRED_SOFTWARE,
     is_direct_order: false,
     reimbursement_question_id: 0,
@@ -563,7 +567,7 @@ export const DEFAULT_REQUIRED_SOFTWARE_QUESTIONS = [
     required: true,
     SchoolYearId: 0,
     slug: 'reimbursement_receipts',
-    defaultQuestion: true,
+    default_question: true,
     reimbursement_form_type: ReimbursementFormType.REQUIRED_SOFTWARE,
     is_direct_order: false,
     reimbursement_question_id: 0,
@@ -577,7 +581,7 @@ export const DEFAULT_REQUIRED_SOFTWARE_QUESTIONS = [
     required: true,
     SchoolYearId: 0,
     slug: 'reimbursement_total_amount_requested',
-    defaultQuestion: true,
+    default_question: true,
     reimbursement_form_type: ReimbursementFormType.REQUIRED_SOFTWARE,
     is_direct_order: false,
     reimbursement_question_id: 0,
@@ -591,10 +595,84 @@ export const DEFAULT_REQUIRED_SOFTWARE_QUESTIONS = [
     required: true,
     SchoolYearId: 0,
     slug: 'reimbursement_signature_name',
-    defaultQuestion: true,
+    default_question: true,
     reimbursement_form_type: ReimbursementFormType.REQUIRED_SOFTWARE,
     is_direct_order: false,
     reimbursement_question_id: 0,
     sortable: true,
+  },
+]
+
+export const REIMBURSEMENT_DEFAULT_QUESTIONS: RadioGroupOption[] = [
+  {
+    option_id: 1,
+    label: 'New Device',
+    value: false,
+  },
+]
+
+export const QUESTION_SETTING_LIST: CheckBoxListVM[] = [
+  { label: 'Required', value: 'required' },
+  { label: 'Display for Admin Processing', value: 'display_for_admin' },
+]
+
+export const REIMBURSEMENT_QUESTION_TYPES: DropDownItem[] = [
+  {
+    value: QUESTION_TYPE.TEXTBOX,
+    label: 'Text box',
+  },
+  {
+    value: QUESTION_TYPE.TEXTFIELD,
+    label: 'Text Field',
+  },
+  {
+    value: QUESTION_TYPE.MULTIPLECHOICES,
+    label: 'Multiple Choices',
+  },
+  {
+    value: QUESTION_TYPE.CHECKBOX,
+    label: 'Checkbox',
+  },
+  {
+    value: QUESTION_TYPE.DROPDOWN,
+    label: 'Dropdown',
+  },
+  {
+    value: QUESTION_TYPE.AGREEMENT,
+    label: 'Agreement',
+  },
+  {
+    value: QUESTION_TYPE.INFORMATION,
+    label: 'New Information',
+  },
+]
+
+export const REIMBURSEMENT_ADDITIONAL_QUESTION_TYPES: DropDownItem[] = [
+  {
+    value: QUESTION_TYPE.TEXTFIELD,
+    label: 'Text Field',
+  },
+  {
+    value: QUESTION_TYPE.MULTIPLECHOICES,
+    label: 'Multiple Choices',
+  },
+  {
+    value: QUESTION_TYPE.CHECKBOX,
+    label: 'Checkbox',
+  },
+  {
+    value: QUESTION_TYPE.DROPDOWN,
+    label: 'Dropdown',
+  },
+]
+
+export const AdditionalQuestionActionList = [
+  {
+    label: 'Continue to next',
+    value: AdditionalQuestionAction.CONTINUE_TO_NEXT,
+  },
+  {
+    label: 'Ask additional question',
+    value: AdditionalQuestionAction.ASK_ADDITIONAL_QUESTION,
   },
 ]

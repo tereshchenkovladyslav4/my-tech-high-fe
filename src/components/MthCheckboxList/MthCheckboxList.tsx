@@ -4,11 +4,12 @@ import { map } from 'lodash'
 import { MthCheckbox } from '@mth/components/MthCheckbox'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
-import { MthColor } from '@mth/enums'
+import { AdditionalQuestionAction, MthColor } from '@mth/enums'
 
 export type CheckBoxListVM = {
   label: string
   value: string
+  action?: AdditionalQuestionAction
   disabled?: boolean
 }
 

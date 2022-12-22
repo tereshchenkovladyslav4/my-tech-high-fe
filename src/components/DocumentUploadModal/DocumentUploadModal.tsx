@@ -191,19 +191,26 @@ export const DocumentUploadModal: React.FC<SubmissionModal> = ({
           </Box>
         )}
         <Box
-          sx={{ justifyContent: 'space-between', maxWidth: '350px', marginX: 'auto', mt: 4, minHeight: '36px' }}
+          sx={{ justifyContent: 'space-around', maxWidth: '400px', marginX: 'auto', mt: 4, minHeight: '36px' }}
           display='flex'
           flexDirection={'row'}
         >
           {validFiles.length > 0 && (
             <>
-              <Button sx={{ ...mthButtonClasses.roundSmallGray, width: '152px' }} onClick={() => handleModem()}>
+              <Button
+                sx={{
+                  ...mthButtonClasses.roundSmallGray,
+                  width: { xs: '135px', sm: '152px' },
+                  marginRight: { xs: '15px', sm: '0px' },
+                }}
+                onClick={() => handleModem()}
+              >
                 Cancel
               </Button>
               <Button
                 sx={{
                   ...(secondaryModal ? mthButtonClasses.roundSmallBlack : mthButtonClasses.roundSmallPrimary),
-                  width: '152px',
+                  width: { xs: '135px', sm: '152px' },
                 }}
                 onClick={() => submitAndClose()}
               >

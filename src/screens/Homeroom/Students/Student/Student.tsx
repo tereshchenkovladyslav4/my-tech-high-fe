@@ -279,7 +279,7 @@ export const Student: React.FC<StudentProps> = ({
     })
 
     setEditYearModal(false)
-    window.location.reload()
+    //window.location.reload()
   }
 
   const handleWithdrawnStudent = () => {

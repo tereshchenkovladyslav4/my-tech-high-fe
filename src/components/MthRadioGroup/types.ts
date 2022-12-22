@@ -1,6 +1,9 @@
+import { AdditionalQuestionAction } from '@mth/enums'
+
 export type RadioGroupOption = {
-  option_id: number
+  option_id?: number
   label: string
   value: boolean
+  action?: AdditionalQuestionAction
   color?: string
 }

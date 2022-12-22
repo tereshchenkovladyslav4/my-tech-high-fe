@@ -9,7 +9,7 @@ export const documentUploadModalClasses = {
     width: 628,
     backgroundColor: 'background.paper',
     boxShadow: 24,
-    p: 4,
+    p: { xs: 2, sm: 3 },
     borderRadius: 2,
   },
   close: {

@@ -7,12 +7,18 @@ import { SxProps } from '@mui/system'
 import SignatureCanvas from 'react-signature-canvas'
 import { SortableHandle } from 'react-sortable-hoc'
 import { DropDown } from '@mth/components/DropDown/DropDown'
+import { MthBulletEditor } from '@mth/components/MthBulletEditor'
+import { MthCheckboxList } from '@mth/components/MthCheckboxList'
+import { CheckBoxListVM } from '@mth/components/MthCheckboxList/MthCheckboxList'
+import { MthRadioGroup } from '@mth/components/MthRadioGroup'
+import { RadioGroupOption } from '@mth/components/MthRadioGroup/types'
 import { QUESTION_TYPE } from '@mth/components/QuestionItem/QuestionItemProps'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { REIMBURSEMENT_FORM_TYPE_ITEMS } from '@mth/constants'
-import { MthColor } from '@mth/enums'
+import { AdditionalQuestionAction, MthColor } from '@mth/enums'
 import { ReimbursementQuestion } from '@mth/models'
+import { extractContent } from '@mth/utils'
 
 type QuestionProps = {
   question: ReimbursementQuestion
@@ -50,7 +56,7 @@ const CssTextField = withStyles({
   },
 })(TextField)
 
-const Question: React.FC<QuestionProps> = ({ question }) => {
+export const QuestionItem: React.FC<QuestionProps> = ({ question }) => {
   const [signatureRef, setSignatureRef] = useState<SignatureCanvas | null>(null)
 
   const resetSignature = () => {
@@ -65,7 +71,7 @@ const Question: React.FC<QuestionProps> = ({ question }) => {
             <Box sx={{ position: 'relative' }}>
               <DropDown
                 dropDownItems={question.slug == 'reimbursement_form_type' ? REIMBURSEMENT_FORM_TYPE_ITEMS : []}
-                placeholder={question.question}
+                placeholder={extractContent(question.question)}
                 labelTop
                 defaultValue={question.slug == 'reimbursement_form_type' ? question.reimbursement_form_type : ''}
                 setParentValue={() => {}}
@@ -79,7 +85,7 @@ const Question: React.FC<QuestionProps> = ({ question }) => {
           <Grid item xs={12}>
             <DropDown
               dropDownItems={question.slug == 'reimbursement_form_type' ? REIMBURSEMENT_FORM_TYPE_ITEMS : []}
-              placeholder={question.question}
+              placeholder={extractContent(question.question)}
               labelTop
               defaultValue={question.slug == 'reimbursement_form_type' ? question.reimbursement_form_type : ''}
               setParentValue={() => {}}
@@ -144,13 +150,13 @@ const Question: React.FC<QuestionProps> = ({ question }) => {
           </Grid>
         )
       }
-      case QUESTION_TYPE.TEXTFIELD: {
+      case QUESTION_TYPE.TEXTBOX: {
         return question.sortable ? (
           <Grid item xs={12}>
             <Box sx={{ position: 'relative' }}>
               <CssTextField
-                name={question.question}
-                label={question.question}
+                name={extractContent(question.question)}
+                label={extractContent(question.question)}
                 placeholder='Entry'
                 fullWidth
                 focused
@@ -164,8 +170,8 @@ const Question: React.FC<QuestionProps> = ({ question }) => {
         ) : (
           <Grid item xs={12}>
             <CssTextField
-              name={question.question}
-              label={question.question}
+              name={extractContent(question.question)}
+              label={extractContent(question.question)}
               placeholder='Entry'
               fullWidth
               focused
@@ -176,7 +182,28 @@ const Question: React.FC<QuestionProps> = ({ question }) => {
           </Grid>
         )
       }
-
+      case QUESTION_TYPE.TEXTFIELD: {
+        return question.sortable ? (
+          <Grid item xs={12}>
+            <Box sx={{ position: 'relative' }}>
+              <Subtitle fontWeight='600' sx={{ cursor: 'pointer', fontSize: '14px', paddingY: 1 }}>
+                {extractContent(question?.question)}
+              </Subtitle>
+              <MthBulletEditor value={''} setValue={() => {}} />
+              <DragHandle sx={{ right: '-90px', top: '0px' }} />
+            </Box>
+          </Grid>
+        ) : (
+          <Grid item xs={12}>
+            <Box sx={{ position: 'relative' }}>
+              <Subtitle fontWeight='600' sx={{ cursor: 'pointer', fontSize: '14px', paddingY: 1 }}>
+                {extractContent(question?.question)}
+              </Subtitle>
+              <MthBulletEditor value={''} setValue={() => {}} />
+            </Box>
+          </Grid>
+        )
+      }
       case QUESTION_TYPE.INFORMATION: {
         return question.sortable ? (
           <Grid item xs={12}>
@@ -184,7 +211,7 @@ const Question: React.FC<QuestionProps> = ({ question }) => {
               {question.slug === 'reimbursement_total_amount_requested' && (
                 <Box sx={{ display: 'flex', width: '100%', justifyContent: 'space-between' }}>
                   <Subtitle fontWeight='700' color={MthColor.SYSTEM_02} sx={{ cursor: 'pointer', fontSize: '20px' }}>
-                    {question.question}
+                    {extractContent(question.question)}
                   </Subtitle>
                   <Subtitle fontWeight='700' color={MthColor.SYSTEM_02} sx={{ cursor: 'pointer', fontSize: '20px' }}>
                     {'$0.00'}
@@ -193,7 +220,7 @@ const Question: React.FC<QuestionProps> = ({ question }) => {
               )}
               {question.slug !== 'reimbursement_total_amount_requested' && (
                 <Subtitle fontWeight='700' color={MthColor.SYSTEM_02} sx={{ cursor: 'pointer', fontSize: '18px' }}>
-                  {question.question}
+                  {extractContent(question.question)}
                 </Subtitle>
               )}
               <DragHandle sx={{ right: '-90px', top: '-5px' }} />
@@ -202,8 +229,110 @@ const Question: React.FC<QuestionProps> = ({ question }) => {
         ) : (
           <Grid item xs={12}>
             <Subtitle fontWeight='700' color={MthColor.SYSTEM_02} sx={{ cursor: 'pointer', fontSize: '18px' }}>
-              {question.question}
+              {extractContent(question.question)}
             </Subtitle>
+          </Grid>
+        )
+      }
+      case QUESTION_TYPE.MULTIPLECHOICES: {
+        return question.sortable ? (
+          <Grid item xs={12}>
+            <Box sx={{ position: 'relative' }}>
+              <Subtitle fontWeight='600' sx={{ cursor: 'pointer', fontSize: '14px', paddingY: 1 }}>
+                {extractContent(question?.question)}
+              </Subtitle>
+              <MthRadioGroup
+                ariaLabel='reimbursement-questions'
+                options={
+                  question?.Options
+                    ? question?.Options?.filter((item) => item?.label)?.map(
+                        (option) =>
+                          ({
+                            label: option?.label,
+                            value: false,
+                            action: option.action || AdditionalQuestionAction.CONTINUE_TO_NEXT,
+                          } as RadioGroupOption),
+                      )
+                    : []
+                }
+                handleChangeOption={() => {}}
+              />
+              <DragHandle sx={{ right: '-90px', top: '0px' }} />
+            </Box>
+          </Grid>
+        ) : (
+          <Grid item xs={12}>
+            <Box sx={{ position: 'relative' }}>
+              <Subtitle fontWeight='600' sx={{ cursor: 'pointer', fontSize: '14px', paddingY: 1 }}>
+                {extractContent(question?.question)}
+              </Subtitle>
+              <MthRadioGroup
+                ariaLabel='reimbursement-questions'
+                options={
+                  question?.Options
+                    ? question?.Options?.filter((item) => item?.label)?.map(
+                        (option) =>
+                          ({
+                            label: option?.label,
+                            value: false,
+                            action: option.action || AdditionalQuestionAction.CONTINUE_TO_NEXT,
+                          } as RadioGroupOption),
+                      )
+                    : []
+                }
+                handleChangeOption={() => {}}
+              />
+            </Box>
+          </Grid>
+        )
+      }
+      case QUESTION_TYPE.CHECKBOX: {
+        return question.sortable ? (
+          <Grid item xs={12}>
+            <Box sx={{ position: 'relative' }}>
+              <MthCheckboxList
+                title={extractContent(question?.question)}
+                values={[]}
+                setValues={() => {}}
+                checkboxLists={
+                  question?.Options
+                    ? question?.Options?.filter((item) => item?.label)?.map(
+                        (option) =>
+                          ({
+                            label: option?.label,
+                            value: option?.value,
+                            action: option.action || AdditionalQuestionAction.CONTINUE_TO_NEXT,
+                          } as CheckBoxListVM),
+                      )
+                    : []
+                }
+                haveSelectAll={false}
+              />
+              <DragHandle sx={{ right: '-90px', top: '0px' }} />
+            </Box>
+          </Grid>
+        ) : (
+          <Grid item xs={12}>
+            <Box sx={{ position: 'relative' }}>
+              <MthCheckboxList
+                title={extractContent(question?.question)}
+                values={[]}
+                setValues={() => {}}
+                checkboxLists={
+                  question?.Options
+                    ? question?.Options?.filter((item) => item?.label)?.map(
+                        (option) =>
+                          ({
+                            label: option?.label,
+                            value: option?.value,
+                            action: option.action || AdditionalQuestionAction.CONTINUE_TO_NEXT,
+                          } as CheckBoxListVM),
+                      )
+                    : []
+                }
+                haveSelectAll={false}
+              />
+            </Box>
           </Grid>
         )
       }
@@ -220,5 +349,3 @@ const Question: React.FC<QuestionProps> = ({ question }) => {
 
   return <>{renderQuestion(question)}</>
 }
-
-export default Question

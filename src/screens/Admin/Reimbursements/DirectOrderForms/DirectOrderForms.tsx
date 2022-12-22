@@ -10,8 +10,8 @@ import { MthRoute, ReduceFunds, ReimbursementFormType } from '@mth/enums'
 import { SchoolYear } from '@mth/models'
 import { SchoolYearDropDown } from '@mth/screens/Admin/Components/SchoolYearDropdown'
 import { getSchoolYear } from '@mth/screens/Admin/Reimbursements/services'
-import { RequestComponent } from '../Common'
-import RequestForm from '../Common/RequestForm'
+import { RequestComponent } from '../Common/RequestComponent'
+import { RequestForm } from '../Common/RequestForm'
 
 export const DirectOrderForms: React.FC = () => {
   const [selectedYearId, setSelectedYearId] = useState<number>()

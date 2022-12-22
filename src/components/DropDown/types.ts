@@ -1,10 +1,13 @@
 import { ReactNode } from 'react'
 import { Theme } from '@emotion/react'
 import { SxProps } from '@mui/system'
+import { AdditionalQuestionAction } from '@mth/enums'
+import { QUESTION_TYPE } from '../QuestionItem/QuestionItemProps'
 
 export type DropDownItem = {
   label: string | number | ReactNode
-  value: string | number
+  value: string | number | QUESTION_TYPE
+  action?: AdditionalQuestionAction
   hasDeleteIcon?: boolean
   handleDeleteItem?: (value: string | number | boolean) => void
 }
@@ -17,7 +20,7 @@ type FormikCustomError = {
 export type DropDownProps = {
   dropDownItems: DropDownItem[]
   placeholder?: string
-  setParentValue: (value: string | number) => void
+  setParentValue: (value: string | number | QUESTION_TYPE) => void
   labelTop?: boolean
   sx?: SxProps<Theme> | undefined
   alternate?: boolean

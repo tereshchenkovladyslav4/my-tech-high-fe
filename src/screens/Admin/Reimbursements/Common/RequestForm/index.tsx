@@ -13,8 +13,8 @@ import {
   DEFAULT_SUPPLEMENTAL_LEARNING_QUESTIONS,
   DEFAULT_TECHNOLOGY_QUESTIONS,
   DEFAULT_THIRD_PARTY_PROVIDER_QUESTIONS,
-} from '../defaultValues'
-import RequestFormEdit from './RequestFormEdit'
+} from '../../defaultValues'
+import { RequestFormEdit } from './RequestFormEdit'
 
 export type RequestFormProps = {
   formType: ReimbursementFormType
@@ -24,7 +24,7 @@ export type RequestFormProps = {
   setIsChanged: (value: boolean) => void
 }
 
-const RequestForm: React.FC<RequestFormProps> = ({
+export const RequestForm: React.FC<RequestFormProps> = ({
   formType,
   setFormType,
   isDirectOrder,
@@ -95,5 +95,3 @@ const RequestForm: React.FC<RequestFormProps> = ({
     </>
   )
 }
-
-export default RequestForm

@@ -1,0 +1,20 @@
+export const defaultQuestionClasses = {
+  container: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: '496px',
+    bgcolor: '#fff',
+    borderRadius: 2,
+    display: 'flex',
+    justifyContent: 'center',
+    p: 4,
+  },
+  header: { textAlign: 'center', width: '100%' },
+  title: { fontWeight: 700, fontSize: '20px' },
+  search: { marginTop: '30px', px: 6 },
+  body: { marginTop: '30px', paddingX: 4, overflowX: 'auto', overflowY: 'scroll', height: '120px' },
+  btnGroup: { display: 'flex', justifyContent: 'space-evenly', marginTop: '60px', gap: '20px' },
+  centerBtn: { display: 'flex', justifyContent: 'center', marginTop: '80px', marginBottom: '30px' },
+}

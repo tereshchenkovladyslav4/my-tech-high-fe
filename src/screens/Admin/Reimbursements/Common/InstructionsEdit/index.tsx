@@ -13,7 +13,7 @@ export type InstructionsEditProps = {
   selectedYearId: number | undefined
 }
 
-const InstructionsEdit: React.FC<InstructionsEditProps> = ({ formType, isDirectOrder, selectedYearId }) => {
+export const InstructionsEdit: React.FC<InstructionsEditProps> = ({ formType, isDirectOrder, selectedYearId }) => {
   const [expand, setExpand] = useState<boolean>(true)
   const [description, setDescription] = useState<string>('')
 
@@ -81,5 +81,3 @@ const InstructionsEdit: React.FC<InstructionsEditProps> = ({ formType, isDirectO
     </>
   )
 }
-
-export default InstructionsEdit

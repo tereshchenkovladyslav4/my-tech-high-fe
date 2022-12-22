@@ -5,8 +5,8 @@ import PageHeader from '@mth/components/PageHeader'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { REIMBURSEMENT_FORM_TYPE_ITEMS } from '@mth/constants'
 import { MthColor, ReimbursementFormType } from '@mth/enums'
-import InstructionsEdit from './InstructionsEdit'
-import { requestComponentClasses } from './styles'
+import { InstructionsEdit } from '../InstructionsEdit'
+import { requestComponentClasses } from '../styles'
 
 export type RequestComponentProps = {
   formType: ReimbursementFormType
@@ -16,7 +16,7 @@ export type RequestComponentProps = {
   children?: ReactNode
 }
 
-const RequestComponent: React.FC<RequestComponentProps> = ({
+export const RequestComponent: React.FC<RequestComponentProps> = ({
   formType,
   setFormType,
   isDirectOrder,
@@ -50,5 +50,3 @@ const RequestComponent: React.FC<RequestComponentProps> = ({
     </>
   )
 }
-
-export default RequestComponent

@@ -1,3 +1,4 @@
+import { DropDownItem } from '@mth/components/DropDown/types'
 import { QUESTION_TYPE } from '@mth/components/QuestionItem/QuestionItemProps'
 import { ReimbursementFormType } from '../enums/reimbursement-form-type'
 
@@ -9,9 +10,15 @@ export type ReimbursementQuestion = {
   required: boolean
   SchoolYearId: number
   slug: string
-  defaultQuestion: boolean
+  default_question: boolean
   reimbursement_form_type: ReimbursementFormType
   is_direct_order: boolean
   reimbursement_question_id?: number
   sortable: boolean
+  display_for_admin?: boolean
+  additional_question?: string
+
+  // Temp Items
+  Options?: DropDownItem[]
+  SettingList?: string[]
 }

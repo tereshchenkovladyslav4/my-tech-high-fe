@@ -8,6 +8,7 @@ export enum QUESTION_TYPE {
   INFORMATION,
   UPLOAD,
   SIGNATURE,
+  TEXTBOX,
 }
 
 export const QuestionTypes = [

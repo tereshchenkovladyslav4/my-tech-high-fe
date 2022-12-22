@@ -5,6 +5,7 @@ import { FormControl, Select, MenuItem, TextField, FormHelperText, Divider, Icon
 import { Box, styled } from '@mui/system'
 import { map } from 'lodash'
 import { MthColor } from '@mth/enums'
+import { QUESTION_TYPE } from '../QuestionItem/QuestionItemProps'
 import { dropdownClasses } from './styles'
 import { DropDownProps } from './types'
 
@@ -42,7 +43,7 @@ export const DropDown: React.FC<DropDownProps> = ({
   color,
 }) => {
   const [value, setValue] = useState(defaultValue || '')
-  const handleChange = (val: string) => {
+  const handleChange = (val: string | QUESTION_TYPE) => {
     if (auto) setValue(val)
     setParentValue(val)
   }
