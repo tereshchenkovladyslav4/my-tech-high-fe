@@ -10,13 +10,14 @@ import { useHistory } from 'react-router-dom'
 import { MthTable } from '@mth/components/MthTable'
 import { MthTableField, MthTableRowItem } from '@mth/components/MthTable/types'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { WarningModal } from '@mth/components/WarningModal/Warning'
 import { MthColor } from '@mth/enums'
 import { useSchoolYearsByRegionId } from '@mth/hooks'
 import { SchoolYear } from '@mth/models'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { HOMEROOM_LEARNING_LOGS } from '../../../../utils/constants'
 import { HomeRoomHeader } from '../Components/HomeRoomHeader'
-import { CreateNewMasterGql, GetMastersBySchoolYearIDGql } from '../services'
+import { CreateNewMasterGql, DeleteMasterByIdGql, GetMastersBySchoolYearIDGql } from '../services'
 import Classes from './Classes'
 import { CreateMasterModal } from './CreateMasterModal'
 import { Master } from './types'
@@ -29,8 +30,10 @@ const LearningLogs: React.FC = () => {
   // const [searchField, setSearchField] = useState<string>('')
   const [tableData, setTableData] = useState<MthTableRowItem<Master>[]>([])
   const [localSearchField, setLocalSearchField] = useState<string>('')
-
   const [isCreateModal, setIsCreateModal] = useState<boolean>(false)
+
+  const [deleteConfirm, setDeleteConfirm] = useState<boolean>(false)
+  const [deleteId, setDeleteId] = useState<number | null>()
 
   const { me } = useContext(UserContext)
   const { dropdownItems: schoolYearDropdownItems, schoolYears: schoolYears } = useSchoolYearsByRegionId(
@@ -47,6 +50,22 @@ const LearningLogs: React.FC = () => {
   useEffect(() => {
     if (schoolYears?.length) setSelectedYear(schoolYears[0].school_year_id)
   }, [schoolYears])
+
+  const handleDeleteMaster = async (masterId: string) => {
+    setDeleteConfirm(true)
+    setDeleteId(parseInt(masterId))
+  }
+
+  const [deleteMaster] = useMutation(DeleteMasterByIdGql)
+  const submitDeleteMaster = async () => {
+    await deleteMaster({
+      variables: {
+        masterId: deleteId,
+      },
+    })
+    refetch()
+    setDeleteConfirm(false)
+  }
 
   const fields: MthTableField<Master>[] = [
     {
@@ -82,11 +101,21 @@ const LearningLogs: React.FC = () => {
                 <CreateIcon />
               </IconButton>
             </Tooltip>
-            <Tooltip title='Delete' placement='top'>
-              <IconButton className='actionButton' color='primary'>
+            {calcMasterStudentCount(item.rawData.masterClasses) > 0 ? (
+              <IconButton className='actionButton' color='primary' disabled>
                 <DeleteForeverOutlined />
               </IconButton>
-            </Tooltip>
+            ) : (
+              <Tooltip title='Delete' placement='top'>
+                <IconButton
+                  className='actionButton'
+                  color='primary'
+                  onClick={() => handleDeleteMaster(item.rawData.master_id)}
+                >
+                  <DeleteForeverOutlined />
+                </IconButton>
+              </Tooltip>
+            )}
             <Tooltip title='Clone' placement='top'>
               <IconButton className='actionButton' color='primary'>
                 <ContentCopyIcon />
@@ -127,6 +156,14 @@ const LearningLogs: React.FC = () => {
     }
   }
 
+  const calcMasterStudentCount = (classes) => {
+    let count = 0
+    classes.map((item) => {
+      count += item.homeroomStudent?.length
+    })
+    return count
+  }
+
   useEffect(() => {
     if (!loading && data) {
       setTableData(
@@ -134,7 +171,7 @@ const LearningLogs: React.FC = () => {
           return createData({
             master_id: item.master_id,
             master_name: item.master_name,
-            classesCount: 0,
+            classesCount: calcMasterStudentCount(item?.masterClasses),
             masterClasses: item?.masterClasses,
           })
         }),
@@ -235,6 +272,16 @@ const LearningLogs: React.FC = () => {
           schoolYearDropdownItems={schoolYearDropdownItems}
           handleClose={() => setIsCreateModal(false)}
           handleSubmit={createMasterSubmit}
+        />
+      )}
+      {deleteConfirm && (
+        <WarningModal
+          title='Delete'
+          subtitle='Are you sure you want to delete this Master Homeroom?'
+          handleModem={() => setDeleteConfirm(false)}
+          handleSubmit={() => submitDeleteMaster()}
+          btntitle='Delete'
+          canceltitle='Cancel'
         />
       )}
     </Box>

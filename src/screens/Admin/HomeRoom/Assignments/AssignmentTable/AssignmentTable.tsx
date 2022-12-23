@@ -344,6 +344,7 @@ export const AssignmentTable: React.FC<EnrollmentSchoolTableProps> = ({
               options={currentHomeroomes}
               onChange={(event, value) => handleListItemClick(value)}
               sx={{ width: 300 }}
+              value={selectedHomeroom}
               renderInput={(params) => <TextField {...params} label='Search...' />}
             />
           </Box>

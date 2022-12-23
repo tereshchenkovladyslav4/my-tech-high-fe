@@ -16,6 +16,10 @@ export const GetMastersBySchoolYearIDGql = gql`
           lastName
           user_id
         }
+        homeroomStudent {
+          id
+          student_id
+        }
       }
       masterAssignments {
         due_date
@@ -144,5 +148,10 @@ export const GetLearningLogQuestionByMasterIdQuery = gql`
       required
       can_upload
     }
+  }
+`
+export const DeleteMasterByIdGql = gql`
+  mutation DeleteMasterById($masterId: Int!) {
+    deleteMasterById(masterId: $masterId)
   }
 `

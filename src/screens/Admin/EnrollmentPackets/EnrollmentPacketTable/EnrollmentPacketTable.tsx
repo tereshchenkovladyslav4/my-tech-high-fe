@@ -20,6 +20,7 @@ import { ENROLLMENT_PACKET_HEADCELLS } from '../../../../utils/PageHeadCellsCons
 import { toOrdinalSuffix } from '../../../../utils/stringHelpers'
 import { Packet } from '../../../HomeroomStudentProfile/Student/types'
 import { ApplicationEmailModal } from '../../Applications/ApplicationModal/ApplicationEmailModal'
+import { SchoolYearDropDown } from '../../Components/SchoolYearDropdown'
 import { getSchoolYearsByRegionId } from '../../SiteManagement/services'
 import { EnrollmentPacketFilters } from '../EnrollmentPacketFilters/EnrollmentPacketFilters'
 import { EnrollmentPacketModal } from '../EnrollmentPacketModal'
@@ -59,6 +60,7 @@ export const EnrollmentPacketTable: React.FC = () => {
   const [editYearModal, setEditYearModal] = useState<boolean>(false)
   const [clearAll, setClearAll] = useState<boolean>(false)
   const [schoolYears, setSchoolYears] = useState<unknown[]>([])
+  const [selectedYearId, setSelectedYearId] = useState<number>(0)
 
   const [openWarningModal, setOpenWarningModal] = useState<boolean>(false)
   const [packetCount, setpacketCount] = useState({})
@@ -159,6 +161,7 @@ export const EnrollmentPacketTable: React.FC = () => {
       take: paginatinLimit,
       search: searchField,
       filters: filters,
+      selectedYearId,
       regionId: me?.selectedRegionId,
     },
     skip: me?.selectedRegionId ? false : true,
@@ -462,6 +465,19 @@ export const EnrollmentPacketTable: React.FC = () => {
             Change Program Year
           </Button>
         </Box>
+      </Box>
+
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          width: '100%',
+          justifyContent: 'flex-end',
+          px: '48px',
+        }}
+      >
+        <SchoolYearDropDown selectedYearId={selectedYearId} setSelectedYearId={setSelectedYearId} />
       </Box>
       {/*  Pagination & Actions */}
       <Box

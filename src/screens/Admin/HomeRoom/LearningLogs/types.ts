@@ -1,5 +1,10 @@
 import { Assignment } from './Master/types'
 
+export type HomeroomStudent = {
+  id: number | string
+  student_id: number
+}
+
 export type Classes = {
   class_id: number
   class_name: string
@@ -11,6 +16,7 @@ export type Classes = {
   students?: number
   ungraded?: string
   addition_id?: string
+  homeroomStudent: HomeroomStudent[]
 }
 
 export type Master = {

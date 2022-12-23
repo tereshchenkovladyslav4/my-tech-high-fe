@@ -75,11 +75,17 @@ const Classes: React.FC<ClassessProps> = ({ master, refetch }) => {
                 <CreateIcon />
               </IconButton>
             </Tooltip>
-            <Tooltip title='Delete' placement='top'>
-              <IconButton className={'actionButton ' + item.key} color='primary'>
+            {item.rawData.homeroomStudent.length > 0 ? (
+              <IconButton className={'actionButton ' + item.key} color='primary' disabled>
                 <DeleteForeverOutlined />
               </IconButton>
-            </Tooltip>
+            ) : (
+              <Tooltip title='Delete' placement='top'>
+                <IconButton className={'actionButton ' + item.key} color='primary'>
+                  <DeleteForeverOutlined />
+                </IconButton>
+              </Tooltip>
+            )}
           </Box>
         )
       },
@@ -106,7 +112,7 @@ const Classes: React.FC<ClassessProps> = ({ master, refetch }) => {
         teacher: classesItem?.primaryTeacher
           ? classesItem?.primaryTeacher.firstName + ' ' + classesItem?.primaryTeacher.lastName
           : '',
-        students: 0,
+        students: classesItem?.homeroomStudent.length,
         ungraded: 0,
         additionalTeachers: fetchAddTeacher(classesItem?.addition_id),
       },
