@@ -128,6 +128,7 @@ export type Title = {
   custom_built: boolean
   custom_built_description: string
   third_party_provider: boolean
+  always_unlock: boolean
   CourseTypes: DropDownItem[]
   Providers: Provider[]
   Courses: Course[]

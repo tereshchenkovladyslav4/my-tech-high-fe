@@ -184,7 +184,7 @@ const TitleEdit: React.FC<TitleEditProps> = ({
           transform: 'translate(-50%, -50%)',
           width: '1180px',
           height: 'auto',
-          bgcolor: MthColor.WHITE,
+          backgroundColor: MthColor.WHITE,
           borderRadius: 2,
           p: 6,
         }}

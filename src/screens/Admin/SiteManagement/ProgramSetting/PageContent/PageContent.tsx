@@ -187,6 +187,7 @@ export const PageContent: React.FC<PageContentProps> = ({
       name: MthTitle.DIRECT_ORDERS,
       component: (
         <DirectOrdersSelect
+          reimbursements={reimbursementsItem.reimbursements}
           directOrders={directOrdersItem.directOrders}
           isChanged={isChanged}
           setDirectOrders={directOrdersItem.setDirectOrders}

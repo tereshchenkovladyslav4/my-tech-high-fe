@@ -40,7 +40,9 @@ const StyledTooltipBgDiv = styled('div')(({}) => ({
 }))
 
 const StyledTooltip = styled(({ className, ...props }: TooltipProps) => (
-  <Tooltip {...props} classes={{ popper: className }} />
+  <Tooltip {...props} classes={{ popper: className }}>
+    {props.children}
+  </Tooltip>
 ))(() => ({
   [`& .${tooltipClasses.tooltip}`]: {
     marginRight: '32px !important',
@@ -589,7 +591,8 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
     if (
       isSecondSemester &&
       hasUnlockedPeriods &&
-      schedule.FirstSemesterSchedule?.Period?.semester !== SEMESTER_TYPE.NONE &&
+      (schedule.FirstSemesterSchedule?.Period?.semester !== SEMESTER_TYPE.NONE ||
+        schedule.FirstSemesterSchedule?.Title?.always_unlock) &&
       (!scheduleStatus ||
         scheduleStatus === ScheduleStatus.DRAFT ||
         scheduleStatus === ScheduleStatus.UPDATES_REQUIRED ||
@@ -837,45 +840,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
             <Box sx={{ position: 'relative' }}>
               {item.rawData.CourseType === CourseType.MTH_DIRECT && !item.rawData.OnSiteSplitEnrollment && (
                 <>
-                  {!!item.rawData.Title && (
-                    <Box
-                      sx={
-                        editable(item.rawData) && item.rawData.Provider?.multiple_periods
-                          ? { display: 'flex', justifyContent: 'space-between' }
-                          : {}
-                      }
-                    >
-                      {showCourseSelector(item.rawData) ? (
-                        <NestedDropdown
-                          menuItemsData={createDescriptionMenuItems(item.rawData)}
-                          MenuProps={{ elevation: 3 }}
-                          endIconSx={{ color: item.rawData.Course ? MthColor.BLACK : MthColor.MTHBLUE }}
-                          ButtonProps={{
-                            variant: 'outlined',
-                            sx: scheduleBuilderClasses.nestedDropdownButton,
-                          }}
-                        />
-                      ) : (
-                        <Typography sx={scheduleBuilderClasses.tableContent}>
-                          {selectedCourseLabel(item.rawData.Course)}
-                        </Typography>
-                      )}
-                      {editable(item.rawData) && item.rawData.Provider?.multiple_periods && (
-                        <Typography
-                          sx={{
-                            ...scheduleBuilderClasses.tableContent,
-                            color: MthColor.MTHBLUE,
-                            cursor: 'pointer',
-                            mt: 'auto',
-                          }}
-                          onClick={() => resetMultiPeriods(item.rawData)}
-                        >
-                          Reset Course Options
-                        </Typography>
-                      )}
-                    </Box>
-                  )}
-                  {!item.rawData.Title && !!item.rawData.Subject && (
+                  {(!!item.rawData.Title || !!item.rawData.Subject) && (
                     <Box
                       sx={
                         editable(item.rawData) && item.rawData.Provider?.multiple_periods
@@ -1017,9 +982,8 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
                 <Typography
                   sx={{
                     ...scheduleBuilderClasses.tableContent,
-                    position: 'absolute',
-                    right: '12px',
-                    bottom: '1px',
+                    float: 'right',
+                    mr: '12px',
                     fontWeight: 700,
                     color: MthColor.MTHBLUE,
                     cursor: 'pointer',

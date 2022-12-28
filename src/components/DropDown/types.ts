@@ -10,6 +10,7 @@ export type DropDownItem = {
   action?: AdditionalQuestionAction
   hasDeleteIcon?: boolean
   handleDeleteItem?: (value: string | number | boolean) => void
+  disabled?: boolean
 }
 
 type FormikCustomError = {

@@ -71,6 +71,7 @@ export const TitleFragment = gql`
     custom_built
     custom_built_description
     third_party_provider
+    always_unlock
     Courses {
       ...courseFragment
     }

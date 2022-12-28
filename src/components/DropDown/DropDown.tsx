@@ -49,7 +49,12 @@ export const DropDown: React.FC<DropDownProps> = ({
   }
 
   const renderDropDownItem = map(dropDownItems, (dropDownItem, index) => (
-    <MenuItem key={index} sx={{ display: 'flex', justifyContent: 'space-between' }} value={dropDownItem.value}>
+    <MenuItem
+      key={index}
+      sx={{ display: 'flex', justifyContent: 'space-between' }}
+      value={dropDownItem.value}
+      disabled={dropDownItem.disabled === true}
+    >
       {dropDownItem.label}
       {dropDownItem.hasDeleteIcon && (
         <Tooltip title='Delete' placement='top'>
