@@ -534,6 +534,3 @@ export const monthlyIncome = [
     value: 6,
   },
 ]
-
-//  Withdrawal
-export const WITHDRAWAL_STATUS_LABEL = ['Requested', 'Notified', 'Withdrawn']

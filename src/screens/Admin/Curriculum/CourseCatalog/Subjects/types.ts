@@ -2,7 +2,7 @@ import { DropDownItem } from '@mth/components/DropDown/types'
 import { CheckBoxListVM } from '@mth/components/MthCheckboxList/MthCheckboxList'
 import { CartEventType, DiplomaSeekingPath, ReduceFunds } from '@mth/enums'
 import { ScheduleBuilder } from '@mth/hooks'
-import { SchoolYear } from '@mth/models'
+import { Period, SchoolYear } from '@mth/models'
 import { StateCodeField } from '../StateCodes/types'
 
 export type Subject = {
@@ -15,12 +15,6 @@ export type Subject = {
   Titles?: Title[]
   // Temp fields
   PeriodIds?: string[]
-}
-
-export type Period = {
-  id: number
-  period: number
-  category: string
 }
 
 export type StateCourseCord = {

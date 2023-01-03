@@ -18,8 +18,8 @@ export const SortableTable: SortableTableTemplateType = ({
   hover = true,
 }) => {
   const [order, setOrder] = useState<Order>(Order.ASC)
-  const [orderBy, setOrderBy] = useState<keyof unknown>('name')
-  const [selected, setSelected] = useState<readonly string[]>([])
+  const [orderBy, setOrderBy] = useState<string>('name')
+  const [selected, setSelected] = useState<string[]>([])
 
   useEffect(() => {
     if (onCheck) {
@@ -31,7 +31,7 @@ export const SortableTable: SortableTableTemplateType = ({
     setSelected([])
   }, [clearAll])
 
-  const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof unknown) => {
+  const handleRequestSort = (__event: React.MouseEvent<HTMLSpanElement>, property: string) => {
     const isAsc = orderBy === property && order === Order.ASC
     setOrder(isAsc ? Order.DESC : Order.ASC)
     setOrderBy(property)
@@ -49,7 +49,7 @@ export const SortableTable: SortableTableTemplateType = ({
 
   const handleRowClick = (id: string): void => {
     const selectedIndex = selected.indexOf(id)
-    let newSelected: readonly string[] = []
+    let newSelected: string[] = []
 
     if (selectedIndex === -1) {
       newSelected = newSelected.concat(selected, id)

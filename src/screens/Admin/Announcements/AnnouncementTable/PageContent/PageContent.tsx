@@ -7,8 +7,8 @@ import { Box, Table, TableBody, TableCell, TableContainer, TableRow, Tooltip, Ty
 import { useHistory } from 'react-router-dom'
 import { SortableTableHeader } from '@mth/components/SortableTable/SortableTableHeader/SortableTableHeader'
 import { Order } from '@mth/components/SortableTable/types'
-import { ANNOUNCEMENTS } from '../../../../../utils/constants'
-import { ANNOUNCEMENT_HEADCELLS } from '../../../../../utils/PageHeadCellsConstant'
+import { ANNOUNCEMENT_HEADCELLS } from '@mth/constants'
+import { MthRoute } from '@mth/enums'
 import { Announcement } from '../../../../Dashboard/Announcements/types'
 import { toolTipStyles } from '../../types'
 import { useStyles } from '../styles'
@@ -32,10 +32,10 @@ const PageContent: React.FC<PageContentProps> = ({
   const toolTipClasses = toolTipStyles()
   const history = useHistory()
   const [order, setOrder] = useState<Order>(Order.ASC)
-  const [orderBy, setOrderBy] = useState<keyof Announcement>('date')
+  const [orderBy, setOrderBy] = useState<string>('date')
   const [selected] = useState<readonly string[]>([])
   const handleSelectAllClick = () => {}
-  const handleRequestSort = (_event: React.MouseEvent<unknown>, property: keyof Announcement) => {
+  const handleRequestSort = (_event: React.MouseEvent<HTMLSpanElement>, property: string) => {
     const isAsc = orderBy === property && order === Order.ASC
     setOrder(isAsc ? Order.DESC : Order.ASC)
     setOrderBy(property)
@@ -82,7 +82,7 @@ const PageContent: React.FC<PageContentProps> = ({
                         key={`${index}-5`}
                         onClick={() => {
                           setAnnouncement(row)
-                          history.push(`${ANNOUNCEMENTS}/edit`)
+                          history.push(`${MthRoute.ANNOUNCEMENTS}/edit`)
                         }}
                       >
                         <Tooltip
@@ -101,7 +101,7 @@ const PageContent: React.FC<PageContentProps> = ({
                       key={`${index}-6`}
                       onClick={() => {
                         setAnnouncement(row)
-                        history.push(`${ANNOUNCEMENTS}/view`)
+                        history.push(`${MthRoute.ANNOUNCEMENTS}/view`)
                       }}
                     >
                       <Tooltip

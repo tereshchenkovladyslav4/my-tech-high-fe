@@ -646,8 +646,9 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
             ? {
                 '& .MuiTableCell-root': { background: 'rgba(65, 69, 255, 0.2) !important' },
               }
-            : schedule.schedulePeriodStatus === SchedulePeriodStatus.RESUBMITTED &&
-              scheduleStatus === ScheduleStatus.RESUBMITTED
+            : (schedule.schedulePeriodStatus === SchedulePeriodStatus.RESUBMITTED &&
+                scheduleStatus === ScheduleStatus.RESUBMITTED) ||
+              scheduleStatus === ScheduleStatus.SUBMITTED
             ? {
                 '& .MuiTableCell-root': { background: '#FFFFFF !important' },
               }

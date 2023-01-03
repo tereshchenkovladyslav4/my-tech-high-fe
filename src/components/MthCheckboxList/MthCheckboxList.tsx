@@ -1,5 +1,5 @@
 import React, { ReactElement, ReactNode } from 'react'
-import { Box, Checkbox, FormControlLabel } from '@mui/material'
+import { Box } from '@mui/material'
 import { map } from 'lodash'
 import { MthCheckbox } from '@mth/components/MthCheckbox'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
@@ -104,14 +104,13 @@ const MthCheckboxList: React.FC<MthCheckboxListProps> = ({
         </Box>
       )}
       {haveSelectAll && !!checkboxLists?.length && (
-        <FormControlLabel
-          sx={{ height: 30, width: 'max-content' }}
-          control={<Checkbox value='all' checked={values.includes('all')} onChange={handleChangeAll} />}
-          label={
-            <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
-              Select All
-            </Paragraph>
-          }
+        <MthCheckbox
+          key={-1}
+          label='Select All'
+          checked={values.includes('all')}
+          value='all'
+          onChange={handleChangeAll}
+          sx={{ my: '-4px' }}
         />
       )}
       {renderLists()}

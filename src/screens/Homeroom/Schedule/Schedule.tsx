@@ -351,7 +351,7 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
       setStudentInfo({
         name: `${student.person?.first_name} ${student.person?.last_name}`,
         grade: calculateGrade(student, schoolYears, selectedYear),
-        schoolDistrict: student?.packets?.at(-1)?.school_district || '',
+        schoolDistrict: student?.person?.address?.school_district || '',
         specialEd: studentSpecialEd,
       })
       switch (student.diploma_seeking) {

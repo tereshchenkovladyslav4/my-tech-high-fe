@@ -1,6 +1,7 @@
 import React from 'react'
 import { Button, Box } from '@mui/material'
-import { MTHBLUE, BUTTON_LINEAR_GRADIENT, WITHDRAWAL_STATUS_LABEL } from '../../../../utils/constants'
+import { WITHDRAWAL_STATUS_LABEL } from '@mth/constants'
+import { MthColor } from '@mth/enums'
 import { WithdrawalFiltersProps } from '../type'
 
 const WithdrawalFilters: React.FC<WithdrawalFiltersProps> = ({ filters, setFilters, withdrawCount }) => {
@@ -24,6 +25,7 @@ const WithdrawalFilters: React.FC<WithdrawalFiltersProps> = ({ filters, setFilte
         return 0
     }
   }
+
   return (
     <Box
       sx={{
@@ -39,8 +41,8 @@ const WithdrawalFilters: React.FC<WithdrawalFiltersProps> = ({ filters, setFilte
           key={index}
           variant={filters.includes(label) ? 'text' : 'outlined'}
           sx={{
-            background: (filters.includes(label) && BUTTON_LINEAR_GRADIENT) || null,
-            color: filters.includes(label) ? 'white' : MTHBLUE,
+            background: (filters.includes(label) && MthColor.BUTTON_LINEAR_GRADIENT) || null,
+            color: filters.includes(label) ? 'white' : MthColor.MTHBLUE,
             borderRadius: 2,
             textTransform: 'none',
             height: 25,

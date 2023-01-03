@@ -1,8 +1,8 @@
 import moment from 'moment'
 import { StudentImmunization } from './VaccineView/types'
 
-export function isValidVaccInput(val: string, allowIM = true): boolean {
-  if (val === null) return false
+export function isValidVaccInput(val: string | undefined, allowIM = true): boolean {
+  if (!val) return false
   if (['EXEMPT', 'NA'].includes(val.toUpperCase())) {
     return true
   } else if (val.toUpperCase() === 'IM' && allowIM) {

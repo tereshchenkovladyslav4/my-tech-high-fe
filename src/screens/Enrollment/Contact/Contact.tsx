@@ -4,17 +4,17 @@ import { Grid, Box, Button } from '@mui/material'
 import { useFormik } from 'formik'
 import { omit } from 'lodash'
 import * as yup from 'yup'
-import { QUESTION_TYPE } from '../../../components/QuestionItem/QuestionItemProps'
-import { Paragraph } from '../../../components/Typography/Paragraph/Paragraph'
-import { EnrollmentContext } from '../../../providers/EnrollmentPacketPrivder/EnrollmentPacketProvider'
-import { TabContext, UserContext, UserInfo } from '../../../providers/UserContext/UserProvider'
+import { QUESTION_TYPE } from '@mth/components/QuestionItem/QuestionItemProps'
+import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
+import { EnrollmentContext } from '@mth/providers/EnrollmentPacketPrivder/EnrollmentPacketProvider'
+import { TabContext, UserContext, UserInfo } from '@mth/providers/UserContext/UserProvider'
 import { isNumber } from '../../../utils/stringHelpers'
 import { GroupItem } from '../Group'
 import { useStyles } from '../styles'
 import { enrollmentContactMutation } from './service'
-import { ContactTemplateType } from './types'
+import { ContactProps } from './types'
 
-export const Contact: ContactTemplateType = ({ id, questions }) => {
+export const Contact: React.FC<ContactProps> = ({ id, questions }) => {
   const { me, setMe } = useContext(UserContext)
   const { tab, setTab, setVisitedTabs } = useContext(TabContext)
   const { setPacketId, disabled } = useContext(EnrollmentContext)

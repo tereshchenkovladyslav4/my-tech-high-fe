@@ -1,16 +1,16 @@
-import React, { FunctionComponent, useEffect, useState, useContext } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import { useQuery, useMutation } from '@apollo/client'
 import SearchIcon from '@mui/icons-material/Search'
 import { Box, Button, Card, InputAdornment, OutlinedInput } from '@mui/material'
 import { map } from 'lodash'
 import moment from 'moment'
-import { Pagination } from '../../../../components/Pagination/Pagination'
-import { SortableTable } from '../../../../components/SortableTable/SortableTable'
-import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
-import { WarningModal } from '../../../../components/WarningModal/Warning'
-import { UserContext } from '../../../../providers/UserContext/UserProvider'
-import { BLUE_GRDIENT, RED_GRADIENT } from '../../../../utils/constants'
-import { EMAIL_RECORDS_HEADCELLS } from '../../../../utils/PageHeadCellsConstant'
+import { Pagination } from '@mth/components/Pagination/Pagination'
+import { SortableTable } from '@mth/components/SortableTable/SortableTable'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { WarningModal } from '@mth/components/WarningModal/Warning'
+import { EMAIL_RECORDS_HEADCELLS } from '@mth/constants'
+import { MthColor } from '@mth/enums'
+import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { CustomModal } from '../../SiteManagement/EnrollmentSetting/components/CustomModal/CustomModals'
 import { EmailRecordsFilter } from '../EmailRecordsFilter/EmailRecordsFilter'
 import { EmailResendModal } from '../EmailResendModal/EmailResendModal'
@@ -23,7 +23,7 @@ import {
 } from '../service'
 import { EmailRecord } from '../type'
 
-export const EmailRecordsTable: FunctionComponent = () => {
+export const EmailRecordsTable: React.FC = () => {
   const { me } = useContext(UserContext)
   const [deleteRecords] = useMutation(deleteRecordsMutation)
   const [resendRecords] = useMutation(resendRecordsMutation)
@@ -158,7 +158,7 @@ export const EmailRecordsTable: FunctionComponent = () => {
     })
   }
 
-  const sortChangeAction = (property, order) => {
+  const sortChangeAction = (property: string, order: string) => {
     setSort(`${property}|${order}`)
   }
 
@@ -263,7 +263,7 @@ export const EmailRecordsTable: FunctionComponent = () => {
               fontWeight: 700,
               borderRadius: 2,
               textTransform: 'none',
-              background: BLUE_GRDIENT,
+              background: MthColor.BLUE_GRDIENT,
               color: 'white',
               width: '157px',
               marginRight: 2,
@@ -284,7 +284,7 @@ export const EmailRecordsTable: FunctionComponent = () => {
               borderRadius: 2,
               textTransform: 'none',
               height: '33px',
-              background: RED_GRADIENT,
+              background: MthColor.RED_GRADIENT,
               color: 'white',
               width: '157px',
               marginRight: 2,

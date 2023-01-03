@@ -5,4 +5,5 @@ export type Address = {
   zip: string
   state: string
   county_id: number
+  school_district: string
 }

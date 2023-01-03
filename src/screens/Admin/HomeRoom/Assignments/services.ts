@@ -194,7 +194,13 @@ export const toggleHideApplicationMutation = gql`
 `
 
 export const assignStudentsToHomeroomMutation = gql`
-  mutation AssignStudentToHomeroom($createNewMasterInput: HomeroomStudentInput!) {
-    assignStudentToHomeroom(createNewMasterInput: $createNewMasterInput)
+  mutation AssignStudentToHomeroom($homeroomStudentInput: HomeroomStudentInput!) {
+    assignStudentToHomeroom(homeroomStudentInput: $homeroomStudentInput)
+  }
+`
+
+export const transferStudentsToHomeroomMutation = gql`
+  mutation TransferStudentToHomeroom($homeroomStudentInput: HomeroomStudentInput!) {
+    transferStudentToHomeroom(homeroomStudentInput: $homeroomStudentInput)
   }
 `

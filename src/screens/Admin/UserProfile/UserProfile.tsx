@@ -79,6 +79,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ handleClose, data, set
       variables: {
         acceptApplicationInput: {
           application_ids: [String(applicationId)],
+          fromAdmin: true,
         },
       },
     })
@@ -91,6 +92,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ handleClose, data, set
         enrollmentPacketInput: {
           packet_id: Number(packet_id),
           status: 'Accepted',
+          fromAdmin: true,
         },
       },
     })

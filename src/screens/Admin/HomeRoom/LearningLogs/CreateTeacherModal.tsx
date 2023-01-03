@@ -152,6 +152,8 @@ export const CreateTeacherModal: FunctionComponent<CreateTeacherModalProps> = ({
         <Box
           sx={{
             p: 1,
+            maxHeight: '90vh',
+            overflow: 'auto',
           }}
         >
           <Formik

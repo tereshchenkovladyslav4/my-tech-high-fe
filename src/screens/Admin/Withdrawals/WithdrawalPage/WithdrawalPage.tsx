@@ -1,14 +1,13 @@
 import React, { useEffect, useState, useContext } from 'react'
 import { useQuery } from '@apollo/client'
 import { Card, Box } from '@mui/material'
-import moment from 'moment'
+import moment from 'moment-timezone'
 import { SortableTable } from '@mth/components/SortableTable/SortableTable'
+import { WITHDRAWAL_HEADCELLS, WITHDRAWAL_STATUS_LABEL } from '@mth/constants'
 import { MthColor } from '@mth/enums'
 import { Withdrawal } from '@mth/graphql/models/withdrawal'
 import { getWithdrawalsQuery } from '@mth/graphql/queries/withdrawal'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
-import { WITHDRAWAL_STATUS_LABEL } from '../../../../utils/constants'
-import { WITHDRAWAL_HEADCELLS } from '../../../../utils/PageHeadCellsConstant'
 import PageAction from '../PageAction/PageAction'
 import { PageHeader } from '../PageHeader'
 import { PageModals } from '../PageModals'
@@ -42,6 +41,7 @@ const WithdrawalPage: React.FC<WithdrawalPageProps> = ({
   const [openEmailHistoryModal, setOpenEmailHistoryModal] = useState<boolean>(false)
 
   const [showWithdrawalConfirmModal, setShowWithdrawalConfirmModal] = useState<boolean>(false)
+  const [showWithdrawModal, setShowWithdrawModal] = useState<boolean>(false)
   const [showReinstateModal, setShowReinstateModal] = useState<boolean>(false)
   const [reinstateModalType, setReinstateModalType] = useState<number>(0)
   const [errorReinstateModal, setErrorReinstateModal] = useState<boolean>(false)
@@ -84,12 +84,18 @@ const WithdrawalPage: React.FC<WithdrawalPageProps> = ({
     setOpenEffectiveCalendar(true)
   }
 
-  const sortChangeAction = (property: keyof unknown, order: string) => {
+  const sortChangeAction = (property: string, order: string) => {
     setSort(`${property.toString()}|${order}`)
     refetch()
   }
 
-  const onWithdrawClick = () => {}
+  const onWithdrawClick = () => {
+    if (checkedWithdrawalIds.length === 0) {
+      setOpenWarningModal(true)
+      return
+    }
+    setShowWithdrawModal(true)
+  }
 
   const onEmailClick = () => {
     if (checkedWithdrawalIds.length === 0) {
@@ -161,7 +167,7 @@ const WithdrawalPage: React.FC<WithdrawalPageProps> = ({
               sx={{ cursor: 'pointer' }}
               onClick={() => handleOpenEffectiveCalendar(withdrawal.date_effective, withdrawal.withdrawal_id)}
             >
-              {moment(withdrawal.date_effective).format('MM/DD/YY')}
+              {moment(withdrawal.date_effective).tz('UTC').format('MM/DD/YY')}
             </Box>
           ) : (
             ''
@@ -177,7 +183,7 @@ const WithdrawalPage: React.FC<WithdrawalPageProps> = ({
           ) : (
             ''
           ),
-          id: withdrawal?.withdrawal_id,
+          id: `${withdrawal?.withdrawal_id}`,
         })),
       )
       setTotalWithdrawals(data.withdrawals.total)
@@ -221,6 +227,7 @@ const WithdrawalPage: React.FC<WithdrawalPageProps> = ({
         showReinstateModal={showReinstateModal}
         reinstateModalType={reinstateModalType}
         openWarningModal={openWarningModal}
+        withdrawals={withdrawals}
         errorReinstateModal={errorReinstateModal}
         openEmailModal={openEmailModal}
         checkedWithdrawalIds={checkedWithdrawalIds}
@@ -231,8 +238,10 @@ const WithdrawalPage: React.FC<WithdrawalPageProps> = ({
         openEffectiveCalendar={openEffectiveCalendar}
         isShowWithdrawalModal={isShowWithdrawalModal}
         selectedWithdrawal={selectedWithdrawal}
+        showWithdrawModal={showWithdrawModal}
         setIsShowWithdrawalModal={setIsShowWithdrawalModal}
         setShowWithdrawalConfirmModal={setShowWithdrawalConfirmModal}
+        setShowWithdrawModal={setShowWithdrawModal}
         setShowReinstateModal={setShowReinstateModal}
         setOpenWarningModal={setOpenWarningModal}
         setErrorReinstateModal={setErrorReinstateModal}

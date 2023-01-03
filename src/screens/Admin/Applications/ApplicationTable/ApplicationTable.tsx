@@ -1,20 +1,20 @@
-import React, { useEffect, useState, useContext, FunctionComponent } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import { useQuery, useMutation } from '@apollo/client'
 import SearchIcon from '@mui/icons-material/Search'
 import { Box, Button, Card, InputAdornment, OutlinedInput, Tooltip } from '@mui/material'
 import { map, parseInt } from 'lodash'
 import moment from 'moment'
-import { ApplicationEmailModal as EmailModal } from '../../../../components/EmailModal/ApplicationEmailModal'
-import { EditYearModal } from '../../../../components/EmailModal/EditYearModal'
-import { Pagination } from '../../../../components/Pagination/Pagination'
-import { SortableTable } from '../../../../components/SortableTable/SortableTable'
-import { Paragraph } from '../../../../components/Typography/Paragraph/Paragraph'
-import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
-import { WarningModal } from '../../../../components/WarningModal/Warning'
-import { getEmailTemplateQuery } from '../../../../graphql/queries/email-template'
-import { UserContext } from '../../../../providers/UserContext/UserProvider'
-import { BUTTON_LINEAR_GRADIENT, GREEN_GRADIENT, RED_GRADIENT } from '../../../../utils/constants'
-import { APPLICATION_HEADCELLS } from '../../../../utils/PageHeadCellsConstant'
+import { ApplicationEmailModal as EmailModal } from '@mth/components/EmailModal/ApplicationEmailModal'
+import { EditYearModal } from '@mth/components/EmailModal/EditYearModal'
+import { Pagination } from '@mth/components/Pagination/Pagination'
+import { SortableTable } from '@mth/components/SortableTable/SortableTable'
+import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { WarningModal } from '@mth/components/WarningModal/Warning'
+import { APPLICATION_HEADCELLS } from '@mth/constants'
+import { MthColor } from '@mth/enums'
+import { getEmailTemplateQuery } from '@mth/graphql/queries/email-template'
+import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { getSchoolYearsByRegionId } from '../../SiteManagement/services'
 import { ApplicationEmailModal } from '../ApplicationModal/ApplicationEmailModal'
 import { ApplicationModal } from '../ApplicationModal/ApplicationModal'
@@ -29,7 +29,7 @@ import {
 } from '../services'
 import { ApplicationTableProps, EmailTemplateVM } from '../type'
 
-export const ApplicationTable: FunctionComponent<ApplicationTableProps> = ({ filter }) => {
+export const ApplicationTable: React.FC<ApplicationTableProps> = ({ filter }) => {
   const { me } = useContext(UserContext)
   const [emailTemplate, setEmailTemplate] = useState<EmailTemplateVM>()
   const [pageLoading, setPageLoading] = useState<boolean>(false)
@@ -453,7 +453,7 @@ export const ApplicationTable: FunctionComponent<ApplicationTableProps> = ({ fil
     setPaginatinLimit(value)
   }
 
-  const sortChangeAction = (property, order) => {
+  const sortChangeAction = (property: string, order: string) => {
     setSort(`${property}|${order}`)
     refetch()
   }
@@ -520,7 +520,7 @@ export const ApplicationTable: FunctionComponent<ApplicationTableProps> = ({ fil
               fontWeight: 700,
               borderRadius: 2,
               textTransform: 'none',
-              background: RED_GRADIENT,
+              background: MthColor.RED_GRADIENT,
               color: 'white',
               width: '195px',
               marginRight: 2,
@@ -542,7 +542,7 @@ export const ApplicationTable: FunctionComponent<ApplicationTableProps> = ({ fil
               borderRadius: 2,
               textTransform: 'none',
               height: '33px',
-              background: GREEN_GRADIENT,
+              background: MthColor.GREEN_GRADIENT,
               color: 'white',
               width: '195px',
               '&:hover': {
@@ -581,7 +581,7 @@ export const ApplicationTable: FunctionComponent<ApplicationTableProps> = ({ fil
               height: 29,
               color: 'white',
               width: '92px',
-              background: RED_GRADIENT,
+              background: MthColor.RED_GRADIENT,
               '&:hover': {
                 background: '#D23C33',
                 color: '#fff',
@@ -618,7 +618,7 @@ export const ApplicationTable: FunctionComponent<ApplicationTableProps> = ({ fil
               borderRadius: 2,
               textTransform: 'none',
               height: 29,
-              background: BUTTON_LINEAR_GRADIENT,
+              background: MthColor.BUTTON_LINEAR_GRADIENT,
               color: 'white',
               marginRight: '12px',
               width: '92px',

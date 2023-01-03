@@ -56,7 +56,7 @@ export const DocumentUpload: React.FC<DocumentUploadProps> = ({
           <Subtitle fontWeight='700'>{`${item[0].question} ${item[0].required ? '(required)' : ''}`}</Subtitle>
         </Box>
         <Paragraph size='medium'>
-          <p dangerouslySetInnerHTML={{ __html: item[0]?.options?.[0].value?.toString() || '' }}></p>
+          <span dangerouslySetInnerHTML={{ __html: item[0]?.options?.[0].value?.toString() || '' }}></span>
         </Paragraph>
         <Box>
           {(files || []).map((curr, index) => (

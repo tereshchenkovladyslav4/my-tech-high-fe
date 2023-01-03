@@ -4,19 +4,23 @@ import { Stack, TextField } from '@mui/material'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker'
-import { ApplicationEmailModal as EmailModal } from '../../../../components/EmailModal/ApplicationEmailModal'
-import { WarningModal } from '../../../../components/WarningModal/Warning'
-import { getEmailByWithdrawalId } from '../../../../graphql/queries/withdrawal'
-import { UserContext } from '../../../../providers/UserContext/UserProvider'
+import { CustomModal } from '@mth/components/CustomModal/CustomModals'
+import { ApplicationEmailModal as EmailModal } from '@mth/components/EmailModal/ApplicationEmailModal'
+import { WarningModal } from '@mth/components/WarningModal/Warning'
+import { WithdrawalOption, WithdrawalStatus } from '@mth/enums'
+import { saveWithdrawalMutation } from '@mth/graphql/mutation/withdrawal'
+import { getEmailByWithdrawalId } from '@mth/graphql/queries/withdrawal'
+import { EmailTemplate } from '@mth/models'
+import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { ActiveModal } from '../../UserProfile/StudentProfile/components/ActiveModal'
-import { ConfirmModal } from '../components/ConfirmModal'
+import { WithdrawModal } from '../../UserProfile/StudentProfile/components/WithdrawModal'
 import {
   emailWithdrawalMutation,
   quickWithdrawalMutation,
   reinstateWithdrawalMutation,
   updateWithdrawalMutation,
 } from '../service'
-import { PageModalsProps } from '../type'
+import { EmailTemplateResponseVM, PageModalsProps } from '../type'
 import { WithdrawalModal } from '../WithdrawalModal'
 import { WithdrawalEmailModal } from '../WithdrawalPage/WithdrawalEmailModal'
 
@@ -35,6 +39,9 @@ const PageModals: React.FC<PageModalsProps> = ({
   withdrawalId,
   isShowWithdrawalModal,
   selectedWithdrawal,
+  showWithdrawModal,
+  withdrawals,
+  setShowWithdrawModal,
   setIsShowWithdrawalModal,
   setShowWithdrawalConfirmModal,
   setShowReinstateModal,
@@ -53,6 +60,7 @@ const PageModals: React.FC<PageModalsProps> = ({
   const [reinstateWithdrawal] = useMutation(reinstateWithdrawalMutation)
   const [updateWithdrawal] = useMutation(updateWithdrawalMutation)
   const [emailWithdrawal] = useMutation(emailWithdrawalMutation)
+  const [createWithdrawal] = useMutation(saveWithdrawalMutation)
 
   const { loading: emailLoading, data: emailData } = useQuery(getEmailByWithdrawalId, {
     variables: {
@@ -105,7 +113,7 @@ const PageModals: React.FC<PageModalsProps> = ({
       date: value?.toString() || '',
     })
   }
-  const handleAcceptDate = async (e: unknown) => {
+  const handleAcceptDate = async (e: Date | null) => {
     const acceptDate = new Date(e || '').toISOString()
     await updateWithdrawal({
       variables: {
@@ -124,6 +132,34 @@ const PageModals: React.FC<PageModalsProps> = ({
       return
     }
     onSendEmail(from, subject, body)
+  }
+
+  const handleWithdrawAction = async (option: WithdrawalOption) => {
+    if (checkedWithdrawalIds.length === 0 || withdrawals?.length === 0) {
+      return
+    }
+    setShowWithdrawModal(false)
+    for (const withdrawal_id of checkedWithdrawalIds) {
+      const withdrawal = withdrawals.find((item) => item.withdrawal_id == +withdrawal_id)
+      if (withdrawal) {
+        await createWithdrawal({
+          variables: {
+            withdrawalInput: {
+              withdrawal: {
+                withdrawal_id: +withdrawal?.withdrawal_id,
+                StudentId: +withdrawal?.StudentId,
+                status:
+                  option == WithdrawalOption.NOTIFY_PARENT_OF_WITHDRAW
+                    ? WithdrawalStatus.NOTIFIED
+                    : WithdrawalStatus.WITHDRAWN,
+              },
+              withdrawalOption: +option,
+            },
+          },
+        })
+      }
+    }
+    refetch()
   }
 
   const onSendEmail = async (from: string, subject: string, body: string) => {
@@ -150,11 +186,12 @@ const PageModals: React.FC<PageModalsProps> = ({
   return (
     <>
       {showWithdrawalConfirmModal && (
-        <ConfirmModal
+        <CustomModal
           title='Withdraw'
           description='A withdrawal form will be created and comfirmation email will be sent.'
           cancelStr='Cancel'
           confirmStr='Withdraw'
+          backgroundColor='#FFFFFF'
           onClose={() => {
             setShowWithdrawalConfirmModal(false)
           }}
@@ -165,10 +202,11 @@ const PageModals: React.FC<PageModalsProps> = ({
         />
       )}
       {showReinstateModal && reinstateModalType == 0 && (
-        <ConfirmModal
+        <CustomModal
           title='Reinstate'
           description='Are you sure you want reinstate the student(s)?'
           cancelStr='Cancel'
+          backgroundColor='#FFFFFF'
           confirmStr='Reinstate'
           onClose={() => {
             setShowReinstateModal(false)
@@ -213,8 +251,11 @@ const PageModals: React.FC<PageModalsProps> = ({
           handleModem={() => setOpenEmailModal(!openEmailModal)}
           title={checkedWithdrawalIds.length + ' Recipients'}
           handleSubmit={handleEmailSend}
-          template={emailTemplate}
+          template={emailTemplate as EmailTemplate}
           editFrom={true}
+          isNonSelected={false}
+          filters={[]}
+          handleSchedulesByStatus={() => {}}
         />
       )}
       {openEmailHistoryModal && !emailLoading && (
@@ -226,12 +267,22 @@ const PageModals: React.FC<PageModalsProps> = ({
       {isShowWithdrawalModal && selectedWithdrawal && (
         <WithdrawalModal
           withdrawal={selectedWithdrawal}
-          emailTemplate={emailTemplate}
+          emailTemplate={emailTemplate as EmailTemplateResponseVM}
           handleModem={() => {
             refetch()
             refetchEmailTemplate()
             setIsShowWithdrawalModal(false)
           }}
+        />
+      )}
+      {showWithdrawModal && (
+        <WithdrawModal
+          title='Withdraw'
+          description='How would you like to proceed with this withdraw?'
+          confirmStr='Withdraw'
+          cancelStr='Cancel'
+          onWithdraw={handleWithdrawAction}
+          onClose={() => setShowWithdrawModal(false)}
         />
       )}
       <LocalizationProvider dateAdapter={AdapterDateFns} localeText='Save' cancelButtonLabel='Cancel'>

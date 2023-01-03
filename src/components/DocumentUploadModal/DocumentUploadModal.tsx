@@ -179,7 +179,7 @@ export const DocumentUploadModal: React.FC<SubmissionModal> = ({
                   style={documentUploadModalClasses.input}
                   onChange={filesSelected}
                   multiple
-                  accept='application/pdf, image/png, image/jpeg'
+                  accept='application/pdf, image/png, image/jpeg, image/gif, image/bmp'
                   onClick={(event) => event.stopPropagation()}
                 />
                 Browse Files

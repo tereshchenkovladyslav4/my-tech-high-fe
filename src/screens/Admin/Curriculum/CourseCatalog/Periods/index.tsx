@@ -37,11 +37,12 @@ import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { WarningModal } from '@mth/components/WarningModal/Warning'
 import { MthColor, MthRoute, ReduceFunds } from '@mth/enums'
 import { useProgramYearListBySchoolYearId, useSchoolYearsByRegionId } from '@mth/hooks'
+import { Period } from '@mth/models'
 import { loadingState } from '@mth/providers/Store/State'
 import { getPeriods, upsertPeriod, periodArchive, deletePeriodsByIds } from '@mth/screens/Admin/Curriculum/services'
 import { gradeShortText } from '@mth/utils'
 import { useStyles } from '../../styles'
-import { PeriodItem, SEMESTER_TYPE, SEMESTER_MESSAGE } from '../../types'
+import { SEMESTER_TYPE, SEMESTER_MESSAGE } from '../../types'
 import { SaveCancelComponent } from '../Components/SaveCancelComponent'
 import Filter from './Filter'
 
@@ -84,14 +85,14 @@ const Periods: FunctionComponent = () => {
   // Modal for Archive, Unarchive, Delete
   const [modalWarning, setModalWarning] = useState<'delete' | 'unarchive' | 'archive' | ''>('')
   const [modalErrorGradeValidation, setModalErrorGradeValidation] = useState<boolean>(false)
-  const [temp, setTemp] = useState<PeriodItem>()
+  const [temp, setTemp] = useState<Period>()
   // Create / Update
   const [open, setOpen] = useState<boolean>(false)
   // Html Editor
   const [editorStatePeriod, setEditorStatePeriod] = useState(initialEditorState)
   const [editorStateSemester, setEditorStateSemester] = useState(initialEditorState)
 
-  const [items, setItems] = useState<Array<PeriodItem>>([])
+  const [items, setItems] = useState<Array<Period>>([])
   // Filter Box
   const [query, setQuery] = useState({
     keyword: '',
@@ -135,12 +136,12 @@ const Periods: FunctionComponent = () => {
   }, [schoolYearData])
 
   // open modals
-  const handleArchiveModal = (item: PeriodItem) => {
+  const handleArchiveModal = (item: Period) => {
     setTemp(item)
     setModalWarning(item.archived ? 'unarchive' : 'archive')
   }
 
-  const handleDeleteModal = (item: PeriodItem) => {
+  const handleDeleteModal = (item: Period) => {
     setTemp(item)
     setModalWarning('delete')
   }
@@ -219,7 +220,8 @@ const Periods: FunctionComponent = () => {
     [editorStatePeriod, editorStateSemester, selectedYearId, temp],
   )
 
-  const initialValues: PeriodItem = {
+  const initialValues: Period = {
+    id: 0,
     period: 0,
     category: '',
     min_grade: null,
@@ -271,6 +273,7 @@ const Periods: FunctionComponent = () => {
     setEditorStatePeriod(initialEditorState)
     setEditorStateSemester(initialEditorState)
     formik.setValues({
+      id: 0,
       period: 0,
       category: '',
       min_grade: null,
@@ -287,10 +290,11 @@ const Periods: FunctionComponent = () => {
     setOpen(true)
   }
 
-  const handleEditModal = (item: PeriodItem) => {
+  const handleEditModal = (item: Period) => {
     formik.resetForm()
     setTemp(item)
     formik.setValues({
+      id: item.id,
       period: item.period,
       category: item.category,
       min_grade: item.min_grade,
@@ -380,7 +384,7 @@ const Periods: FunctionComponent = () => {
     }
   }
 
-  const fields: Field<PeriodItem>[] = [
+  const fields: Field<Period>[] = [
     {
       key: 'period',
       label: 'Period',

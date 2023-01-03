@@ -1,4 +1,4 @@
-import { HeadCell } from '../components/SortableTable/SortableTableHeader/types'
+import { HeadCell } from '@mth/components/SortableTable/SortableTableHeader/types'
 
 export const WITHDRAWAL_HEADCELLS: HeadCell[] = [
   {

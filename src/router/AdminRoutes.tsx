@@ -31,6 +31,7 @@ import { Reimbursements } from '@mth/screens/Admin/Reimbursements'
 import { DirectOrderForms } from '@mth/screens/Admin/Reimbursements/DirectOrderForms'
 import { ReimbursementForms } from '@mth/screens/Admin/Reimbursements/ReimbursementForms'
 import { ReimbursementsSettings } from '@mth/screens/Admin/Reimbursements/Settings'
+import { ResourceRequests } from '@mth/screens/Admin/ResourceRequests'
 import { SchoolOfEnrollment } from '@mth/screens/Admin/SchoolOfEnrollment/SchoolOfEnrollment'
 import AdminSettings from '@mth/screens/Admin/Settings/AdminSettings'
 import { EmailTemplatePage } from '@mth/screens/Admin/SiteManagement/components/EmailTemplates/EmailTemplatePage'
@@ -121,6 +122,9 @@ export const AdminRoutes: React.FC = () => {
       </Route>
       <Route path={SCHOOL_ENROLLMENT}>
         <SchoolOfEnrollment />
+      </Route>
+      <Route path={MthRoute.RESOURCE_REQUESTS}>
+        <ResourceRequests />
       </Route>
       <Route path={SITE_MANAGEMENT}>
         <SiteManagement />

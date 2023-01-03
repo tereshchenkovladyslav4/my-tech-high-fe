@@ -122,7 +122,9 @@ export const Options: React.FC<OptionsProps> = ({ options, setOptions, type, set
                 dropDownItems={
                   (typeof option.label == 'string' && option.label.trim() == '') ||
                   options.filter((op) => typeof op.label == 'string' && op.label.trim() !== '').length < 2
-                    ? AdditionalQuestionActionList.filter((a) => a.value === AdditionalQuestionAction.CONTINUE_TO_NEXT)
+                    ? AdditionalQuestionActionList.filter(
+                        (a) => a.value === AdditionalQuestionAction.CONTINUE_TO_NEXT.toString(),
+                      )
                     : AdditionalQuestionActionList
                 }
                 defaultValue={option.action || 1}

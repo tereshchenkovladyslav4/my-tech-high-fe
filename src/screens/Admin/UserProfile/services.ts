@@ -176,6 +176,7 @@ export const getStudentDetail = gql`
           zip
           city
           county_id
+          school_district
         }
         phone {
           person_id

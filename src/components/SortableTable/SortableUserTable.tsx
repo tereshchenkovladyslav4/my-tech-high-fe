@@ -22,8 +22,8 @@ export const SortableUserTable: SortableTableTemplateType = ({
   canMasquerade,
 }) => {
   const [order, setOrder] = useState<Order>('asc')
-  const [orderBy, setOrderBy] = useState<keyof string>('status')
-  const [selected, setSelected] = useState<readonly string[]>([])
+  const [orderBy, setOrderBy] = useState<string>('status')
+  const [selected, setSelected] = useState<string[]>([])
   const { me } = useContext(UserContext)
   const [currentUserID, setCurrentUserID] = useState(null)
   const [updateModal, setUpdateModal] = useState(false)
@@ -43,18 +43,18 @@ export const SortableUserTable: SortableTableTemplateType = ({
   ])
 
   useEffect(() => {
-    onCheck(selected)
+    if (onCheck) onCheck(selected)
   }, [selected])
 
   useEffect(() => {
     setSelected([])
   }, [clearAll])
 
-  const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof unknown) => {
+  const handleRequestSort = (__event: React.MouseEvent<HTMLSpanElement>, property: string) => {
     const isAsc = orderBy === property && order === 'asc'
     setOrder(isAsc ? 'desc' : 'asc')
     setOrderBy(property)
-    onSortChange(property, isAsc ? 'desc' : 'asc')
+    if (onSortChange) onSortChange(property, isAsc ? 'desc' : 'asc')
   }
 
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {

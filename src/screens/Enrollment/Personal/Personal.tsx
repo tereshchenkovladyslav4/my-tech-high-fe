@@ -4,10 +4,10 @@ import { Grid, Box, Button } from '@mui/material'
 import { useFormik } from 'formik'
 import { omit } from 'lodash'
 import * as yup from 'yup'
-import { QUESTION_TYPE } from '../../../components/QuestionItem/QuestionItemProps'
-import { Paragraph } from '../../../components/Typography/Paragraph/Paragraph'
-import { EnrollmentContext } from '../../../providers/EnrollmentPacketPrivder/EnrollmentPacketProvider'
-import { TabContext, UserContext, UserInfo } from '../../../providers/UserContext/UserProvider'
+import { QUESTION_TYPE } from '@mth/components/QuestionItem/QuestionItemProps'
+import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
+import { EnrollmentContext } from '@mth/providers/EnrollmentPacketPrivder/EnrollmentPacketProvider'
+import { TabContext, UserContext, UserInfo } from '@mth/providers/UserContext/UserProvider'
 import { isNumber } from '../../../utils/stringHelpers'
 import { GroupItem } from '../Group'
 import { useStyles } from '../styles'
@@ -191,7 +191,7 @@ export const Personal: PersonalTemplateType = ({ id, questions }) => {
     submitPersonalMutation({
       variables: {
         enrollmentPacketContactInput: {
-          student_id: parseInt(id as unknown as string),
+          student_id: parseInt(id as string),
           parent: omit(formik.values.parent, ['address', 'person_id', 'phone', 'emailConfirm']),
           packet: {
             secondary_contact_first: formik.values.packet?.secondary_contact_first || '',

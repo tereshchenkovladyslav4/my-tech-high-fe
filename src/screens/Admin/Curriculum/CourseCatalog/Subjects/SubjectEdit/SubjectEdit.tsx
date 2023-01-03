@@ -7,11 +7,12 @@ import * as yup from 'yup'
 import { CustomModal } from '@mth/components/CustomModal/CustomModals'
 import { MthColor, MthTitle } from '@mth/enums'
 import { usePeriods } from '@mth/hooks'
+import { Period } from '@mth/models'
 import { createOrUpdateSubjectMutation } from '@mth/screens/Admin/Curriculum/CourseCatalog/services'
 import { defaultSubjectFormData } from '@mth/screens/Admin/Curriculum/CourseCatalog/Subjects/defaultValues'
 import SubjectForm from '@mth/screens/Admin/Curriculum/CourseCatalog/Subjects/SubjectEdit/SubjectForm'
 import SaveCancelComponent from '../../Components/SaveCancelComponent/SaveCancelComponent'
-import { Period, Subject, SubjectEditProps } from '../types'
+import { Subject, SubjectEditProps } from '../types'
 
 const SubjectEdit: React.FC<SubjectEditProps> = ({ schoolYearId, item, refetch, setShowEditModal }) => {
   const [isChanged, setIsChanged] = useState<boolean>(false)
@@ -83,63 +84,71 @@ const SubjectEdit: React.FC<SubjectEditProps> = ({ schoolYearId, item, refetch, 
           transform: 'translate(-50%, -50%)',
           width: '530px',
           height: 'auto',
-          bgcolor: MthColor.WHITE,
+          backgroundColor: MthColor.WHITE,
           borderRadius: 2,
           p: 6,
         }}
       >
-        <Prompt
-          when={isChanged}
-          message={JSON.stringify({
-            header: MthTitle.UNSAVED_TITLE,
-            content: MthTitle.UNSAVED_DESCRIPTION,
-          })}
-        />
-        <Formik
-          initialValues={initialValues}
-          enableReinitialize={true}
-          validationSchema={validationSchema}
-          onSubmit={onSave}
+        <Box
+          sx={{
+            maxHeight: '80vh',
+            overflow: 'auto',
+            p: 1,
+          }}
         >
-          <Form>
-            <SubjectForm setIsChanged={setIsChanged} periodsItems={periodsItems} />
-            <SaveCancelComponent isSubmitted={isSubmitted} handleCancel={handleCancel} />
-          </Form>
-        </Formik>
-        {showCancelModal && (
-          <CustomModal
-            title='Cancel Changes'
-            description='Are you sure you want to cancel changes made?'
-            cancelStr='Cancel'
-            confirmStr='Yes'
-            backgroundColor={MthColor.WHITE}
-            onClose={() => {
-              setShowCancelModal(false)
-            }}
-            onConfirm={() => {
-              setShowCancelModal(false)
-              setIsChanged(false)
-              setShowEditModal(false)
-            }}
+          <Prompt
+            when={isChanged}
+            message={JSON.stringify({
+              header: MthTitle.UNSAVED_TITLE,
+              content: MthTitle.UNSAVED_DESCRIPTION,
+            })}
           />
-        )}
-        {showLeaveModal && (
-          <CustomModal
-            title={MthTitle.UNSAVED_TITLE}
-            description={MthTitle.UNSAVED_DESCRIPTION}
-            cancelStr='Cancel'
-            confirmStr='Yes'
-            backgroundColor={MthColor.WHITE}
-            onClose={() => {
-              setShowLeaveModal(false)
-            }}
-            onConfirm={() => {
-              setShowLeaveModal(false)
-              setIsChanged(false)
-              setShowEditModal(false)
-            }}
-          />
-        )}
+          <Formik
+            initialValues={initialValues}
+            enableReinitialize={true}
+            validationSchema={validationSchema}
+            onSubmit={onSave}
+          >
+            <Form>
+              <SubjectForm setIsChanged={setIsChanged} periodsItems={periodsItems} />
+              <SaveCancelComponent isSubmitted={isSubmitted} handleCancel={handleCancel} />
+            </Form>
+          </Formik>
+          {showCancelModal && (
+            <CustomModal
+              title='Cancel Changes'
+              description='Are you sure you want to cancel changes made?'
+              cancelStr='Cancel'
+              confirmStr='Yes'
+              backgroundColor={MthColor.WHITE}
+              onClose={() => {
+                setShowCancelModal(false)
+              }}
+              onConfirm={() => {
+                setShowCancelModal(false)
+                setIsChanged(false)
+                setShowEditModal(false)
+              }}
+            />
+          )}
+          {showLeaveModal && (
+            <CustomModal
+              title={MthTitle.UNSAVED_TITLE}
+              description={MthTitle.UNSAVED_DESCRIPTION}
+              cancelStr='Cancel'
+              confirmStr='Yes'
+              backgroundColor={MthColor.WHITE}
+              onClose={() => {
+                setShowLeaveModal(false)
+              }}
+              onConfirm={() => {
+                setShowLeaveModal(false)
+                setIsChanged(false)
+                setShowEditModal(false)
+              }}
+            />
+          )}
+        </Box>
       </Box>
     </Modal>
   )

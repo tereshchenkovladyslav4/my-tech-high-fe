@@ -1,7 +1,7 @@
 import React, { FunctionComponent, useContext, useEffect, useState } from 'react'
 import { useQuery, gql } from '@apollo/client'
 import { Grid, Box } from '@mui/material'
-import moment from 'moment'
+import moment from 'moment-timezone'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { Paragraph } from '../../../../components/Typography/Paragraph/Paragraph'
 import { Title } from '../../../../components/Typography/Title/Title'
@@ -162,7 +162,7 @@ export const EnrollmentJobsInfo: FunctionComponent<EnrollmentJobsInfoProps> = ({
               DOB:{' '}
               <b>
                 {student?.person.date_of_birth
-                  ? moment(student?.person.date_of_birth).format('MMMM D, YYYY')
+                  ? moment(student?.person.date_of_birth).tz('UTC').format('MMMM D, YYYY')
                   : 'Not found'}
                 {age ? ` (${age})` : ''}
               </b>

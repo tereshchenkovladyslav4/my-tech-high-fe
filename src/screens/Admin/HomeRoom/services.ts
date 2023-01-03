@@ -155,3 +155,8 @@ export const DeleteMasterByIdGql = gql`
     deleteMasterById(masterId: $masterId)
   }
 `
+export const DeleteClassByIdGql = gql`
+  mutation DeleteClassesById($classId: Int!) {
+    deleteClassesById(classId: $classId)
+  }
+`

@@ -144,6 +144,7 @@ export const getMeQuery = gql`
             ext
           }
           address {
+            address_id
             city
             street
             street2
@@ -151,6 +152,7 @@ export const getMeQuery = gql`
             state
             county_id
             country_id
+            school_district
           }
         }
         grade_levels {

@@ -7,6 +7,7 @@ import { omit } from 'lodash'
 import moment from 'moment'
 import { FormProvider, useForm } from 'react-hook-form'
 import { QUESTION_TYPE } from '@mth/components/QuestionItem/QuestionItemProps'
+import { StudentStatus } from '@mth/enums'
 import { saveScheduleMutation } from '@mth/graphql/mutation/schedule'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { SYSTEM_11 } from '../../../../utils/constants'
@@ -309,7 +310,7 @@ export const ProfilePacketModal: React.FC<ProfilePacketModalProps> = ({ handleMo
           input: {
             student_id: Number(packet.student.student_id),
             school_year_id: packet.student.current_school_year_status.school_year_id,
-            status: 1,
+            status: StudentStatus.ACTIVE,
             packet_id: Number(packet.packet_id),
           },
         },

@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react'
+import React from 'react'
 import { Button, Grid } from '@mui/material'
 import { useFormContext } from 'react-hook-form'
 import {
@@ -11,7 +11,7 @@ import {
 import { checkImmmValueWithSpacing, isValidDate, isValidVaccInput } from './helpers'
 import { EnrollmentPacketFormType, SaveButtonsType } from './types'
 
-export const PacketSaveButtons: FunctionComponent<{ submitForm: () => void }> = ({ submitForm }) => {
+export const PacketSaveButtons: React.FC<{ submitForm: () => void }> = ({ submitForm }) => {
   const { watch, getValues, setValue, setError } = useFormContext<EnrollmentPacketFormType>()
 
   const [status, exemptionDate, enableExemptionDate] = watch(['status', 'exemptionDate', 'enableExemptionDate'])
@@ -20,9 +20,9 @@ export const PacketSaveButtons: FunctionComponent<{ submitForm: () => void }> = 
   const isValidExemptDate = !enableExemptionDate || isValidDate(exemptionDate)
 
   function onClick(action: SaveButtonsType) {
-    const vals = getValues()
+    const values = getValues()
 
-    if (enableExemptionDate && !isValidDate(vals.exemptionDate)) {
+    if (enableExemptionDate && !isValidDate(values.exemptionDate)) {
       setError('exemptionDate', { type: 'required', message: 'Please enter a valid date' })
       return
     }
@@ -33,17 +33,17 @@ export const PacketSaveButtons: FunctionComponent<{ submitForm: () => void }> = 
       setValue('showAgeIssueModal', true)
     } else {
       let isValid = true
-      for (const e of vals.immunizations) {
-        if (e.immunization.is_deleted) continue
-        if (!isValidVaccInput(e.value, e.immunization.immunity_allowed === 1)) {
+      for (const e of values.immunizations) {
+        if (e?.immunization?.is_deleted) continue
+        if (!isValidVaccInput(e?.value, e?.immunization?.immunity_allowed === 1)) {
           isValid = false
           break
         }
-        if (e.value === 'Exempt' && !isValidDate(vals.exemptionDate)) {
+        if (e.value === 'Exempt' && !isValidDate(values.exemptionDate)) {
           isValid = false
           break
         }
-        if (!checkImmmValueWithSpacing(e, vals.immunizations)) {
+        if (!checkImmmValueWithSpacing(e, values.immunizations)) {
           isValid = false
           break
         }

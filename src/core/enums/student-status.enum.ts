@@ -10,4 +10,8 @@ export enum StudentStatus {
    * Packet is deleted by Admin
    */
   DELETED = 8,
+  /**
+   * This is not stored DB and used to pass the filter option
+   */
+  MID_YEAR = 50,
 }

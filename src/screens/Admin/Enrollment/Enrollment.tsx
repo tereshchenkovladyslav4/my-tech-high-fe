@@ -2,12 +2,12 @@ import React, { useContext, useEffect, useState } from 'react'
 import { Grid } from '@mui/material'
 import applicationsImg from '@mth/assets/applications.png'
 import enrollmentImg from '@mth/assets/enrollment.png'
-import withdrawlsImg from '@mth/assets/quick-link-blue.png'
-import homeroomResourcesImg from '@mth/assets/quick-link-orange.png'
+import blueGradientImg from '@mth/assets/quick-link-blue.png'
+import orangeImg from '@mth/assets/quick-link-orange.png'
 import schedules from '@mth/assets/schedules.png'
 import schoolAssignmentsImg from '@mth/assets/schoolAssignments.png'
 import testingPreferencesImg from '@mth/assets/testingPreferences.png'
-import { MthTitle } from '@mth/enums'
+import { MthRoute, MthTitle } from '@mth/enums'
 import { useCurrentSchoolYearByRegionId } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import {
@@ -40,23 +40,18 @@ export const Enrollment: React.FC = () => {
         <AdminEnrollmentCard title={MthTitle.ENROLLMENT_PACKETS} link={ENROLLMENT_PACKETS} img={enrollmentImg} />
       </Grid>
       <Grid item xs={4}>
-        <AdminEnrollmentCard
-          title='Schedules'
-          disabled={enableSchedule ? false : true}
-          link={ENROLLMENT_SCHEDULE}
-          img={schedules}
-        />
+        <AdminEnrollmentCard title='Schedules' disabled={!enableSchedule} link={ENROLLMENT_SCHEDULE} img={schedules} />
       </Grid>
       <Grid item xs={4}>
         <AdminEnrollmentCard title='School of Enrollment' link={SCHOOL_ENROLLMENT} img={schoolAssignmentsImg} />
       </Grid>
       <Grid item xs={4}>
-        <AdminEnrollmentCard title='Withdrawals' link={WITHDRAWAL} img={withdrawlsImg} showTitle={true} />
+        <AdminEnrollmentCard title='Withdrawals' link={WITHDRAWAL} img={blueGradientImg} showTitle={true} />
       </Grid>
       <Grid item xs={4}>
         <AdminEnrollmentCard
           title='Testing Preference'
-          disabled={enableSchedule ? false : true}
+          disabled={!enableSchedule}
           link='https://google.com'
           img={testingPreferencesImg}
         />
@@ -65,8 +60,8 @@ export const Enrollment: React.FC = () => {
         <AdminEnrollmentCard
           title='Requests'
           fullTitle='Homeroom Resources'
-          link={''}
-          img={homeroomResourcesImg}
+          link={MthRoute.RESOURCE_REQUESTS}
+          img={orangeImg}
           showTitle={true}
         />
       </Grid>

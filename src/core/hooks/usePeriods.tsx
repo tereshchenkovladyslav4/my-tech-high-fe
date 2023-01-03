@@ -2,14 +2,9 @@ import { useEffect, useState } from 'react'
 import { ApolloError, useQuery } from '@apollo/client'
 import { DropDownItem } from '@mth/components/DropDown/types'
 import { CheckBoxListVM } from '@mth/components/MthCheckboxList/MthCheckboxList'
+import { Period } from '@mth/models'
 import { getPeriods } from '@mth/screens/Admin/Curriculum/services'
-
-export type Period = {
-  id: number
-  period: number
-  category: string
-  archived: boolean
-}
+import { gradeShortText } from '@mth/utils'
 
 export const usePeriods = (
   schoolYearId: number,
@@ -47,7 +42,11 @@ export const usePeriods = (
         (periods || [])
           .filter((item: Period) => !item.archived || preSelectedIds?.includes(item.id))
           .map((item: Period) => ({
-            label: `Period ${item.period} - ${item.category}`,
+            label: `Period ${item.period} - ${item.category} (${
+              item.min_grade === item.max_grade
+                ? gradeShortText(item.min_grade)
+                : gradeShortText(item.min_grade) + '-' + gradeShortText(item.max_grade)
+            })`,
             value: item.id.toString(),
             disabled: item.archived,
           })),

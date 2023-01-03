@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState, useCallback, FunctionComponent } from 'react'
+import React, { useContext, useEffect, useState, useCallback } from 'react'
 import { useMutation, useQuery } from '@apollo/client'
 import SearchIcon from '@mui/icons-material/Search'
 import { Box, Button, Card, InputAdornment, OutlinedInput } from '@mui/material'
@@ -6,15 +6,15 @@ import { map } from 'lodash'
 import debounce from 'lodash.debounce'
 import moment from 'moment'
 import { useHistory } from 'react-router-dom'
-import { Pagination } from '../../../components/Pagination/Pagination'
-import { SortableUserTable } from '../../../components/SortableTable/SortableUserTable'
-import { Subtitle } from '../../../components/Typography/Subtitle/Subtitle'
-import { WarningModal } from '../../../components/WarningModal/Warning'
-import { changeUserStatusMutation, becomeUserMutation, toggleMasqueradeMutation } from '../../../graphql/mutation/user'
-import { getUsersByRegions } from '../../../graphql/queries/user'
-import { UserContext } from '../../../providers/UserContext/UserProvider'
-import { BUTTON_LINEAR_GRADIENT, DASHBOARD } from '../../../utils/constants'
-import { USERS_HEADCELLS } from '../../../utils/PageHeadCellsConstant'
+import { Pagination } from '@mth/components/Pagination/Pagination'
+import { SortableUserTable } from '@mth/components/SortableTable/SortableUserTable'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { WarningModal } from '@mth/components/WarningModal/Warning'
+import { USERS_HEADCELLS } from '@mth/constants'
+import { MthColor, MthRoute } from '@mth/enums'
+import { changeUserStatusMutation, becomeUserMutation, toggleMasqueradeMutation } from '@mth/graphql/mutation/user'
+import { getUsersByRegions } from '@mth/graphql/queries/user'
+import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { ApolloError } from './interfaces'
 import { NewUserModal } from './NewUserModal/NewUserModal'
 import { UserFilters } from './UserFilters/UserFilters'
@@ -29,7 +29,7 @@ type UserInfo = {
   masquerade: boolean
 }
 
-export const Users: FunctionComponent = () => {
+export const Users: React.FC = () => {
   const [rows, setRows] = useState<Array<UserInfo>>([])
   const [paginatinLimit, setPaginatinLimit] = useState<number>(25)
   const [currentPage, setCurrentPage] = useState<number>(1)
@@ -79,7 +79,7 @@ export const Users: FunctionComponent = () => {
         localStorage.setItem('previousPage', '/users')
       })
       .then(() => {
-        history.push(DASHBOARD)
+        history.push(MthRoute.DASHBOARD)
         location.reload()
       })
   }
@@ -121,7 +121,7 @@ export const Users: FunctionComponent = () => {
     })
   }
 
-  const sortChangeAction = (property, order) => {
+  const sortChangeAction = (property: string, order: string) => {
     setSort(`${property}|${order}`)
     refetch()
   }
@@ -276,7 +276,7 @@ export const Users: FunctionComponent = () => {
               }
             }}
             sx={{
-              background: BUTTON_LINEAR_GRADIENT,
+              background: MthColor.BUTTON_LINEAR_GRADIENT,
               textTransform: 'none',
               color: 'white',
               width: '150px',

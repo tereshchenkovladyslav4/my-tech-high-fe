@@ -14,7 +14,7 @@ export const SortableTableHeader: SortableTableHeaders = ({
   headCells,
   noCheckbox,
 }) => {
-  const createSortHandler = (property: keyof unknown) => (event: React.MouseEvent<unknown>) => {
+  const createSortHandler = (property: string) => (event: React.MouseEvent<HTMLSpanElement>) => {
     onRequestSort(event, property)
   }
 

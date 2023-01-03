@@ -6,7 +6,7 @@ import { QUESTION_TYPE } from '../QuestionItem/QuestionItemProps'
 
 export type DropDownItem = {
   label: string | number | ReactNode
-  value: string | number | QUESTION_TYPE
+  value: string | number
   action?: AdditionalQuestionAction
   hasDeleteIcon?: boolean
   handleDeleteItem?: (value: string | number | boolean) => void

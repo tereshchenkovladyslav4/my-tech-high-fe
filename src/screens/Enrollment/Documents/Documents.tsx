@@ -7,13 +7,12 @@ import * as yup from 'yup'
 import { S3FileType } from '@mth/components/DocumentUploadModal/types'
 import { QUESTION_TYPE } from '@mth/components/QuestionItem/QuestionItemProps'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
-import { FileCategory } from '@mth/enums'
+import { isNumber } from '@mth/constants'
+import { FileCategory, MthColor } from '@mth/enums'
 import { EnrollmentContext } from '@mth/providers/EnrollmentPacketPrivder/EnrollmentPacketProvider'
 import { TabContext, UserContext, UserInfo } from '@mth/providers/UserContext/UserProvider'
 import { EnrollmentQuestion } from '@mth/screens/Admin/SiteManagement/EnrollmentSetting/EnrollmentQuestions/types'
 import { uploadFile } from '@mth/services'
-import { RED } from '../../../utils/constants'
-import { isNumber } from '../../../utils/stringHelpers'
 import { getPacketFiles } from '../../Admin/EnrollmentPackets/services'
 import { LoadingScreen } from '../../LoadingScreen/LoadingScreen'
 import { useStyles } from '../styles'
@@ -23,19 +22,216 @@ import { DocumentsProps, PacketDocument } from './types'
 
 export const Documents: React.FC<DocumentsProps> = ({ id, questions }) => {
   const classes = useStyles
-  const { tab, setTab, setVisitedTabs } = useContext(TabContext)
 
+  const { tab, setTab, setVisitedTabs } = useContext(TabContext)
   const { me, setMe } = useContext(UserContext)
   const { setPacketId, disabled, packetId } = useContext(EnrollmentContext)
   const { profile, students } = me as UserInfo
   const student = students?.find((s) => s.student_id === id)
   const fileNamePrefix = `${student?.person.first_name.charAt(0).toUpperCase()}.${student?.person.last_name}`
+  const fileIds = map(student?.packets?.at(-1)?.files || [], 'mth_file_id')
 
+  const [dataLoading, setDataLoading] = useState(true)
   const [isSubmit, setIsSubmit] = useState<boolean>(false)
   const [validationSchema, setValidationSchema] = useState(yup.object({}))
   const [metaData, setMetaData] = useState(
     (student?.packets?.at(-1)?.meta && JSON.parse(student?.packets?.at(-1)?.meta || '')) || {},
   )
+  const [filesToUpload, setFilesToUpload] = useState<{ files: File[]; type: string }[]>([])
+  const [filesToDelete, setFilesToDelete] = useState<S3FileType[]>([])
+
+  const [packetFiles, setPacketFiles] = useState<S3FileType[]>()
+  const [initFormikValues, setInitFormikValues] = useState({})
+
+  const formik = useFormik({
+    enableReinitialize: true,
+    initialValues: initFormikValues,
+    validationSchema: validationSchema,
+    onSubmit: async () => {
+      await goNext()
+    },
+  })
+
+  const [uploadDocument, { data }] = useMutation(uploadDocumentMutation)
+  const [deleteDocuments] = useMutation(deleteDocumentsMutation)
+  const [saveEnrollmentContact] = useMutation(enrollmentContactMutation)
+
+  const submitDocuments = async () => {
+    const address = { ...formik.values.address }
+    if (address.address_id) {
+      address.address_id = parseInt(address.address_id)
+    }
+    if (address.state) {
+      address.state = address.state + ''
+    }
+    if (address.country_id) {
+      address.country_id = address.country_id + ''
+    }
+    saveEnrollmentContact({
+      variables: {
+        enrollmentPacketContactInput: {
+          student_id: +id,
+          parent: omit(formik.values.parent, ['address', 'person_id', 'phone', 'emailConfirm']),
+          packet: {
+            secondary_contact_first: formik.values.packet?.secondary_contact_first || '',
+            secondary_contact_last: formik.values.packet?.secondary_contact_last || '',
+            school_district: formik.values.packet?.school_district || '',
+            meta: JSON.stringify(formik.values.meta),
+          },
+          student: {
+            ...omit(formik.values.student, ['person_id', 'photo', 'phone', 'grade_levels', 'emailConfirm']),
+            address: address,
+          },
+          school_year_id: student?.current_school_year_status.school_year_id,
+        },
+      },
+    }).then(async (data) => {
+      setPacketId(data.data.saveEnrollmentPacketContact.packet.packet_id)
+      setMe((prev) => {
+        return {
+          ...prev,
+          profile: {
+            ...prev?.profile,
+            address: address,
+          },
+          students: prev?.students?.map((student) => {
+            const returnValue = { ...student }
+            if (student.student_id === data.data.saveEnrollmentPacketContact.student.student_id) {
+              return data.data.saveEnrollmentPacketContact.student
+            }
+            return returnValue
+          }),
+        }
+      })
+
+      const promises: Promise<boolean>[] = []
+
+      if (filesToDelete.length) {
+        promises.push(
+          new Promise(async (resolve) => {
+            await deleteDocuments({
+              variables: {
+                deleteEnrollmentPacketDocumentsInput: {
+                  packetId: +packetId,
+                  mthFileIds: map(filesToDelete, 'file_id'),
+                },
+              },
+            })
+            resolve(true)
+          }),
+        )
+      }
+
+      const tempUploads: PacketDocument[] = []
+      if (filesToUpload.length > 0) {
+        filesToUpload.map((uploadEl) => {
+          uploadEl.files?.map((file) => {
+            promises.push(
+              new Promise(async (resolve) => {
+                const res = await uploadFile(file, FileCategory.PACKET)
+                if (res.success && res.data?.file.file_id) {
+                  tempUploads.push({
+                    kind: uploadEl.type,
+                    mth_file_id: res.data.file.file_id,
+                  })
+                }
+                resolve(true)
+              }),
+            )
+          })
+        })
+      }
+
+      if (promises.length) {
+        await Promise.all(promises)
+        await uploadDocument({
+          variables: {
+            enrollmentPacketDocumentInput: {
+              packet_id: +packetId,
+              documents: tempUploads,
+            },
+          },
+        })
+      } else {
+        setVisitedTabs(Array.from(Array((tab?.currentTab || 0) + 1).keys()))
+        setTab({ currentTab: (tab?.currentTab || 0) + 1 })
+        window.scrollTo(0, 0)
+      }
+    })
+  }
+
+  const { loading, data: fileData } = useQuery(getPacketFiles, {
+    variables: {
+      fileIds: fileIds?.toString() || '',
+    },
+    skip: !fileIds?.length,
+    fetchPolicy: 'network-only',
+  })
+
+  const nextTab = (e: FormEvent<HTMLFormElement>) => {
+    setIsSubmit(true)
+    e.preventDefault()
+    setTab({ currentTab: (tab?.currentTab || 0) + 1 })
+    window.scrollTo(0, 0)
+  }
+
+  const goNext = async () => {
+    setIsSubmit(true)
+    let validDoc = true
+    questions?.groups[0]?.questions.map((item) => (validDoc = validDoc && checkValidate(item)))
+    if (validDoc) {
+      await submitDocuments()
+    }
+  }
+
+  const submitRecord = useCallback(
+    (documentType: string, files: File[]) => {
+      if (files?.length) {
+        setFilesToUpload([...filesToUpload, { files: files, type: documentType }])
+      }
+    },
+    [filesToUpload],
+  )
+
+  const checkValidate = (item: EnrollmentQuestion) => {
+    if (item) {
+      if (item.required && specialEdStatus(item)) {
+        const exist = !!packetFiles?.filter((file) =>
+          file.name.includes(`${fileNamePrefix}${item.options?.[0]?.label}`),
+        )?.length
+        const upload = filesToUpload?.filter((file) => file.type === item.question).length > 0
+        return exist || upload
+      } else {
+        return true
+      }
+    }
+    return false
+  }
+
+  const questionsArr = questions?.groups[0]?.questions.map((q) => {
+    let current = q,
+      child
+    const arr = [q]
+
+    while ((child = questions?.groups[0]?.questions.find((x) => x.additional_question == current.slug))) {
+      arr.push(child)
+      current = child
+    }
+    return arr
+  })
+
+  const questionsLists = questionsArr.filter((item) => !item[0].additional_question)
+
+  const specialEdStatus = (item: EnrollmentQuestion) => {
+    const specialResponseMeta = formik?.values?.packet?.meta
+    const specialResponse = specialResponseMeta ? JSON.parse(specialResponseMeta) : {}
+    const slug = item.options?.[0]?.label?.trim()
+    if (slug === 'sped') {
+      return !!(specialResponse && (specialResponse.meta_special_education || 0) !== 0)
+    } else {
+      return true
+    }
+  }
 
   useEffect(() => {
     const initMeta = { ...metaData }
@@ -142,103 +338,6 @@ export const Documents: React.FC<DocumentsProps> = ({ id, questions }) => {
     }
   }, [questions])
 
-  const [submitDocumentMutation] = useMutation(enrollmentContactMutation)
-
-  const [filesToUpload, setFilesToUpload] = useState<{ files: File[]; type: string }[]>([])
-  const [filesToDelete, setFilesToDelete] = useState<S3FileType[]>([])
-
-  const submitDocuments = async () => {
-    const address = { ...formik.values.address }
-    if (address.address_id) {
-      address.address_id = parseInt(address.address_id)
-    }
-    if (address.state) {
-      address.state = address.state + ''
-    }
-    if (address.country_id) {
-      address.country_id = address.country_id + ''
-    }
-    submitDocumentMutation({
-      variables: {
-        enrollmentPacketContactInput: {
-          student_id: +id,
-          parent: omit(formik.values.parent, ['address', 'person_id', 'phone', 'emailConfirm']),
-          packet: {
-            secondary_contact_first: formik.values.packet?.secondary_contact_first || '',
-            secondary_contact_last: formik.values.packet?.secondary_contact_last || '',
-            school_district: formik.values.packet?.school_district || '',
-            meta: JSON.stringify(formik.values.meta),
-          },
-          student: {
-            ...omit(formik.values.student, ['person_id', 'photo', 'phone', 'grade_levels', 'emailConfirm']),
-            address: address,
-          },
-          school_year_id: student?.current_school_year_status.school_year_id,
-        },
-      },
-    }).then(async (data) => {
-      setPacketId(data.data.saveEnrollmentPacketContact.packet.packet_id)
-      setMe((prev) => {
-        return {
-          ...prev,
-          profile: {
-            ...prev?.profile,
-            address: address,
-          },
-          students: prev?.students?.map((student) => {
-            const returnValue = { ...student }
-            if (student.student_id === data.data.saveEnrollmentPacketContact.student.student_id) {
-              return data.data.saveEnrollmentPacketContact.student
-            }
-            return returnValue
-          }),
-        }
-      })
-
-      if (filesToDelete.length) {
-        await deleteDocuments({
-          variables: {
-            deleteEnrollmentPacketDocumentsInput: {
-              packetId: +packetId,
-              mthFileIds: map(filesToDelete, 'file_id'),
-            },
-          },
-        })
-      }
-
-      if (filesToUpload.length > 0) {
-        const tempUploads: PacketDocument[] = []
-        const promises: Promise<boolean>[] = []
-        filesToUpload.map((uploadEl) => {
-          uploadEl.files?.map((file) => {
-            promises.push(
-              new Promise(async (resolve) => {
-                const res = await uploadFile(file, FileCategory.PACKET)
-                if (res.success && res.data?.file.file_id) {
-                  tempUploads.push({
-                    kind: uploadEl.type,
-                    mth_file_id: res.data.file.file_id,
-                  })
-                }
-                resolve(true)
-              }),
-            )
-          })
-        })
-        await Promise.all(promises)
-        setDocuments(tempUploads)
-      } else {
-        setVisitedTabs(Array.from(Array((tab?.currentTab || 0) + 1).keys()))
-        setTab({
-          currentTab: (tab?.currentTab || 0) + 1,
-        })
-        window.scrollTo(0, 0)
-      }
-    })
-  }
-
-  const [initFormikValues, setInitFormikValues] = useState({})
-
   useEffect(() => {
     setInitFormikValues({
       parent: { ...profile, phone_number: profile?.phone?.number, emailConfirm: profile?.email },
@@ -256,20 +355,6 @@ export const Documents: React.FC<DocumentsProps> = ({ id, questions }) => {
     })
   }, [profile, student, metaData])
 
-  const formik = useFormik({
-    enableReinitialize: true,
-    initialValues: initFormikValues,
-    validationSchema: validationSchema,
-    onSubmit: async () => {
-      await goNext()
-    },
-  })
-
-  const [packetFiles, setPacketFiles] = useState<S3FileType[]>()
-
-  const [uploadDocument, { data }] = useMutation(uploadDocumentMutation)
-  const [deleteDocuments] = useMutation(deleteDocumentsMutation)
-
   useEffect(() => {
     if (data) {
       setMe((prev) => {
@@ -284,30 +369,15 @@ export const Documents: React.FC<DocumentsProps> = ({ id, questions }) => {
           }),
         }
       })
-      setVisitedTabs(Array.from(Array(tab?.currentTab + 1).keys()))
-      setTab({
-        currentTab: tab?.currentTab + 1,
-      })
+      setVisitedTabs(Array.from(Array((tab?.currentTab || 0) + 1).keys()))
+      setTab({ currentTab: (tab?.currentTab || 0) + 1 })
       window.scrollTo(0, 0)
     }
   }, [data])
 
-  const [fileIds, setFileIds] = useState<string[]>()
-
   useEffect(() => {
-    const temp = []
-    student?.packets.at(-1).files.map((f) => {
-      temp.push(f?.mth_file_id)
-    })
-    setFileIds(temp)
-  }, student.packets)
-
-  const { loading, data: fileData } = useQuery(getPacketFiles, {
-    variables: {
-      fileIds: fileIds?.toString() || '',
-    },
-    fetchPolicy: 'network-only',
-  })
+    setDataLoading(false)
+  }, [packetFiles])
 
   useEffect(() => {
     if (!loading && fileData !== undefined) {
@@ -315,93 +385,6 @@ export const Documents: React.FC<DocumentsProps> = ({ id, questions }) => {
     }
   }, [loading])
 
-  const [dataLoading, setDataLoading] = useState(true)
-
-  const isLoading = () => {
-    setDataLoading(false)
-  }
-
-  useEffect(() => {
-    isLoading()
-  }, [packetFiles])
-
-  const nextTab = (e: FormEvent<HTMLFormElement>) => {
-    setIsSubmit(true)
-    e.preventDefault()
-    setTab({ currentTab: (tab?.currentTab || 0) + 1 })
-    window.scrollTo(0, 0)
-  }
-
-  const [documents, setDocuments] = useState<PacketDocument[]>([])
-
-  const goNext = async () => {
-    setIsSubmit(true)
-    let validDoc = true
-    questions?.groups[0]?.questions.map((item) => (validDoc = validDoc && checkValidate(item)))
-    if (validDoc) {
-      await submitDocuments()
-    }
-  }
-
-  useEffect(() => {
-    if (documents?.length > 0) {
-      uploadDocument({
-        variables: {
-          enrollmentPacketDocumentInput: {
-            packet_id: +packetId,
-            documents,
-          },
-        },
-      })
-    }
-  }, [documents])
-
-  const submitRecord = useCallback(
-    (documentType: string, files: File[]) => {
-      if (files?.length) {
-        setFilesToUpload([...filesToUpload, { files: files, type: documentType }])
-      }
-    },
-    [filesToUpload],
-  )
-
-  const checkValidate = (item: EnrollmentQuestion) => {
-    if (item) {
-      if (item.required && specialEdStatus(item)) {
-        const exist = !!packetFiles?.filter((file) =>
-          file.name.includes(`${fileNamePrefix}${item.options?.[0]?.label}`),
-        )?.length
-        const upload = filesToUpload?.filter((file) => file.type === item.question).length > 0
-        return exist || upload
-      } else {
-        return true
-      }
-    }
-    return false
-  }
-  const questionsArr = questions?.groups[0]?.questions.map((q) => {
-    let current = q,
-      child
-    const arr = [q]
-
-    while ((child = questions?.groups[0]?.questions.find((x) => x.additional_question == current.slug))) {
-      arr.push(child)
-      current = child
-    }
-    return arr
-  })
-  const questionsLists = questionsArr.filter((item) => !item[0].additional_question)
-
-  const specialEdStatus = (item: EnrollmentQuestion) => {
-    const specialResponseMeta = formik?.values?.packet?.meta
-    const specialResponse = specialResponseMeta ? JSON.parse(specialResponseMeta) : {}
-    const slug = item.options?.[0]?.label?.trim()
-    if (slug === 'sped') {
-      return !!(specialResponse && (specialResponse.meta_special_education || 0) !== 0)
-    } else {
-      return true
-    }
-  }
   return !dataLoading ? (
     <form onSubmit={(e) => (!disabled ? formik.handleSubmit(e) : nextTab(e))}>
       <Grid container rowSpacing={3} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
@@ -426,7 +409,7 @@ export const Documents: React.FC<DocumentsProps> = ({ id, questions }) => {
                       fileName={`${fileNamePrefix}${item[0]?.options?.[0]?.label}`}
                     />
                     {item[0].type === QUESTION_TYPE.UPLOAD && !checkValidate(item[0]) && !disabled && isSubmit && (
-                      <Paragraph color={RED} size='medium' fontWeight='700' sx={{ marginLeft: '12px' }}>
+                      <Paragraph color={MthColor.RED} size='medium' fontWeight='700' sx={{ marginLeft: '12px' }}>
                         Required
                       </Paragraph>
                     )}

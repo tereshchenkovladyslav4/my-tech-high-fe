@@ -26,12 +26,14 @@ const CssTableSortLabel = styled(TableSortLabel)(() => ({
   '.MuiTableSortLabel-iconDirectionDesc': {
     color: '#0E0E0E !important',
     fontSize: '22px',
-    marginLeft: '20px',
+    marginLeft: '16px',
+    marginRight: '-40px',
   },
   '.MuiTableSortLabel-iconDirectionAsc': {
     color: '#0E0E0E !important',
     fontSize: '22px',
-    marginLeft: '20px',
+    marginLeft: '16px',
+    marginRight: '-40px',
   },
 }))
 

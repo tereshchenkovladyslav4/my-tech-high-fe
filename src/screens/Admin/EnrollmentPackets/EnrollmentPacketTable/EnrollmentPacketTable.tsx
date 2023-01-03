@@ -11,13 +11,12 @@ import { Pagination } from '@mth/components/Pagination/Pagination'
 import { SortableTable } from '@mth/components/SortableTable/SortableTable'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { WarningModal } from '@mth/components/WarningModal/Warning'
+import { ENROLLMENT_PACKET_HEADCELLS } from '@mth/constants'
 import { MthColor, PacketStatus } from '@mth/enums'
 import { getEmailTemplateQuery } from '@mth/graphql/queries/email-template'
 import { ProfileContext } from '@mth/providers/ProfileProvider/ProfileContext'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
-import { GREEN_GRADIENT, RED_GRADIENT, MTHGBRIGHTREEN, MTHBLUE } from '../../../../utils/constants'
-import { ENROLLMENT_PACKET_HEADCELLS } from '../../../../utils/PageHeadCellsConstant'
-import { toOrdinalSuffix } from '../../../../utils/stringHelpers'
+import { toOrdinalSuffix } from '@mth/utils'
 import { Packet } from '../../../HomeroomStudentProfile/Student/types'
 import { ApplicationEmailModal } from '../../Applications/ApplicationModal/ApplicationEmailModal'
 import { SchoolYearDropDown } from '../../Components/SchoolYearDropdown'
@@ -114,9 +113,9 @@ export const EnrollmentPacketTable: React.FC = () => {
       ),
       studentStatus:
         packet.student?.reenrolled > 0 ? (
-          <Box sx={{ color: MTHBLUE }}>Update</Box>
+          <Box sx={{ color: MthColor.MTHBLUE }}>Update</Box>
         ) : (
-          <Box sx={{ color: MTHGBRIGHTREEN }}>New</Box>
+          <Box sx={{ color: MthColor.GREEN }}>New</Box>
         ),
       emailed:
         packet.packet_emails.length > 0 ? (
@@ -154,7 +153,16 @@ export const EnrollmentPacketTable: React.FC = () => {
     }
   }
 
-  const { loading, data, refetch } = useQuery(getEnrollmentPacketsQuery, {
+  const refetch = () => {
+    refetchPackets()
+    refetchPacketCount()
+  }
+
+  const {
+    loading,
+    data,
+    refetch: refetchPackets,
+  } = useQuery(getEnrollmentPacketsQuery, {
     variables: {
       skip: skip,
       sort: sort,
@@ -176,7 +184,7 @@ export const EnrollmentPacketTable: React.FC = () => {
     fetchPolicy: 'network-only',
   })
 
-  const { data: countGroup } = useQuery(packetCountQuery, {
+  const { data: countGroup, refetch: refetchPacketCount } = useQuery(packetCountQuery, {
     variables: {
       regionId: me?.selectedRegionId,
     },
@@ -365,7 +373,7 @@ export const EnrollmentPacketTable: React.FC = () => {
     refetch()
   }
 
-  const sortChangeAction = (property, order) => {
+  const sortChangeAction = (property: string, order: string) => {
     setSort(`${property}|${order}`)
     refetch()
   }
@@ -429,7 +437,7 @@ export const EnrollmentPacketTable: React.FC = () => {
               fontWeight: 700,
               borderRadius: 2,
               textTransform: 'none',
-              background: RED_GRADIENT,
+              background: MthColor.RED_GRADIENT,
               color: 'white',
               width: '157px',
               marginRight: 2,
@@ -451,7 +459,7 @@ export const EnrollmentPacketTable: React.FC = () => {
               borderRadius: 2,
               textTransform: 'none',
               height: '33px',
-              background: GREEN_GRADIENT,
+              background: MthColor.GREEN_GRADIENT,
               color: 'white',
               width: '195px',
               '&:hover': {
@@ -515,7 +523,7 @@ export const EnrollmentPacketTable: React.FC = () => {
                 height: 29,
                 color: 'white',
                 width: '92px',
-                background: RED_GRADIENT,
+                background: MthColor.RED_GRADIENT,
                 '&:hover': {
                   background: '#D23C33',
                   color: '#fff',

@@ -2,11 +2,13 @@ import React, { useContext, useEffect } from 'react'
 import { find, toNumber } from 'lodash'
 import { DropDown } from '@mth/components/DropDown/DropDown'
 import { useSchoolYearsByRegionId } from '@mth/hooks'
+import { SchoolYear } from '@mth/models'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 
 type SchoolYearDropDownProps = {
   setSelectedYearId: (_: number) => void
   selectedYearId?: number
+  setSelectedYear?: (_: SchoolYear | undefined) => void
   setDisableForm?: (value: boolean) => void
   align?: 'start' | 'end'
 }
@@ -14,6 +16,7 @@ type SchoolYearDropDownProps = {
 export const SchoolYearDropDown: React.FC<SchoolYearDropDownProps> = ({
   selectedYearId,
   setSelectedYearId,
+  setSelectedYear,
   setDisableForm,
   align = 'end',
 }: SchoolYearDropDownProps) => {
@@ -21,20 +24,27 @@ export const SchoolYearDropDown: React.FC<SchoolYearDropDownProps> = ({
 
   const {
     dropdownItems: schoolYearDropdownItems,
-    selectedYearId: selectedYear,
-    setSelectedYearId: setSelectedYear,
+    selectedYearId: tempSelectedYearId,
+    setSelectedYearId: setTempSelectedYearId,
+    selectedYear: tempSelectedYear,
   } = useSchoolYearsByRegionId(me?.selectedRegionId)
 
   useEffect(() => {
-    if (selectedYear) {
-      setSelectedYearId(selectedYear)
+    if (tempSelectedYearId) {
+      setSelectedYearId(tempSelectedYearId)
       if (setDisableForm) {
         const currentYear = new Date().getFullYear()
-        const year = find(schoolYearDropdownItems, { value: selectedYear })
+        const year = find(schoolYearDropdownItems, { value: tempSelectedYearId })
         setDisableForm(toNumber((year?.label as string).split('-')[0]) < currentYear)
       }
     }
-  }, [selectedYear])
+  }, [tempSelectedYearId])
+
+  useEffect(() => {
+    if (setSelectedYear) {
+      setSelectedYear(tempSelectedYear)
+    }
+  }, [tempSelectedYear])
 
   return (
     <DropDown
@@ -43,7 +53,7 @@ export const SchoolYearDropDown: React.FC<SchoolYearDropDownProps> = ({
       sx={{ width: '120px', textAlign: 'left', alignItems: align }}
       borderNone={true}
       setParentValue={(value) => {
-        setSelectedYear(+value)
+        setTempSelectedYearId(+value)
       }}
     />
   )

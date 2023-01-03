@@ -5,9 +5,10 @@ import { COURSE_TYPE_ITEMS } from '@mth/constants'
 import { CourseType, DiplomaSeekingPath } from '@mth/enums'
 import { SchedulePeriodHistory } from '@mth/graphql/models/schedule-period'
 import { getStudentSchedulePeriodHistoriesQuery } from '@mth/graphql/queries/schedule-period'
+import { Period } from '@mth/models'
 import { ScheduleHistoryData } from '@mth/screens/Admin/EnrollmentSchedule/ScheduleBuilder/ScheduleHistory/types'
 import { getStudentPeriodsQuery, getStudentProvidersQuery } from '@mth/screens/Homeroom/Schedule/services'
-import { Period, Provider, ScheduleData } from '@mth/screens/Homeroom/Schedule/types'
+import { Provider, ScheduleData } from '@mth/screens/Homeroom/Schedule/types'
 import { makeProviderData } from './useStudentSchedulePeriods'
 
 export const useStudentSchedulePeriodHistories = (
@@ -55,7 +56,7 @@ export const useStudentSchedulePeriodHistories = (
 
       const { studentPeriods } = periodsData
       studentPeriods.map((period: Period) => {
-        period.Subjects.map((subject) => {
+        period.Subjects?.map((subject) => {
           subject.Titles.concat(subject.AltTitles || []).map((title) => {
             title.CourseTypes = COURSE_TYPE_ITEMS.filter(
               (item) =>

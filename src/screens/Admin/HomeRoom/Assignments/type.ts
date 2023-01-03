@@ -1,4 +1,5 @@
 import { DropDownItem } from '@mth/components/DropDown/types'
+import { Address } from '@mth/models'
 import { Classes } from '../LearningLogs/types'
 
 export enum YEAR_STATUS {
@@ -109,10 +110,6 @@ export type SchoolYearVM = {
 export type GradeLevel = {
   grade_level?: string
   school_year_id: string | number
-}
-
-export type Address = {
-  city?: string
 }
 
 export type Partner = {

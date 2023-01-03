@@ -1,4 +1,4 @@
-import { Dispatch, FunctionComponent, SetStateAction } from 'react'
+import { Dispatch, SetStateAction } from 'react'
 
 export type Step = {
   label: string
@@ -10,4 +10,3 @@ export type BreadCrumbsProps = {
   steps: Step[]
   handleClick?: Dispatch<SetStateAction<number>>
 }
-export type BreadcrumbsTemplateType = FunctionComponent<BreadCrumbsProps>

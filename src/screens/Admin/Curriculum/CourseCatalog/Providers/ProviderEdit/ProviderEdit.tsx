@@ -8,11 +8,12 @@ import { CustomModal } from '@mth/components/CustomModal/CustomModals'
 import { RICH_TEXT_VALID_MIN_LENGTH } from '@mth/constants'
 import { MthColor, MthTitle, ReduceFunds } from '@mth/enums'
 import { usePeriods } from '@mth/hooks'
+import { Period } from '@mth/models'
 import { defaultProviderFormData } from '@mth/screens/Admin/Curriculum/CourseCatalog/Providers/defaultValues'
 import ProviderForm from '@mth/screens/Admin/Curriculum/CourseCatalog/Providers/ProviderEdit/ProviderForm'
 import { createOrUpdateProviderMutation } from '@mth/screens/Admin/Curriculum/CourseCatalog/services'
 import SaveCancelComponent from '../../Components/SaveCancelComponent/SaveCancelComponent'
-import { Period, ProviderEditProps, Provider } from '../types'
+import { ProviderEditProps, Provider } from '../types'
 
 const ProviderEdit: React.FC<ProviderEditProps> = ({
   schoolYearData,

@@ -6,8 +6,9 @@ import { Box, Button, IconButton, Tooltip } from '@mui/material'
 import { MthTable } from '@mth/components/MthTable'
 import { MthTableField, MthTableRowItem } from '@mth/components/MthTable/types'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { WarningModal } from '@mth/components/WarningModal/Warning'
 import { MthColor } from '@mth/enums'
-import { CreateNewClassesGql } from '../services'
+import { CreateNewClassesGql, DeleteClassByIdGql } from '../services'
 import { CreateTeacherModal } from './CreateTeacherModal'
 import { Classes, ClassessProps, Teacher } from './types'
 
@@ -19,9 +20,28 @@ const Classes: React.FC<ClassessProps> = ({ master, refetch }) => {
 
   const [selectedClasses, setSelectedClasses] = useState<Classes | null>()
 
+  const [deleteConfirmModal, setDeleteConfirmModal] = useState<boolean>(false)
+  const [deleteId, setDeleteId] = useState<number | null>()
+
   const editClasses = (val: Classes) => {
     setSelectedClasses(val)
     setCreateModal(true)
+  }
+
+  const handleDelete = (id: string) => {
+    setDeleteConfirmModal(true)
+    setDeleteId(parseInt(id))
+  }
+
+  const [submitClass] = useMutation(DeleteClassByIdGql)
+  const submitDeleteClass = async () => {
+    await submitClass({
+      variables: {
+        classId: deleteId,
+      },
+    })
+    refetch()
+    setDeleteConfirmModal(false)
   }
 
   const fields: MthTableField<Classes>[] = [
@@ -81,7 +101,11 @@ const Classes: React.FC<ClassessProps> = ({ master, refetch }) => {
               </IconButton>
             ) : (
               <Tooltip title='Delete' placement='top'>
-                <IconButton className={'actionButton ' + item.key} color='primary'>
+                <IconButton
+                  className={'actionButton ' + item.key}
+                  color='primary'
+                  onClick={() => handleDelete(item.rawData.class_id)}
+                >
                   <DeleteForeverOutlined />
                 </IconButton>
               </Tooltip>
@@ -237,6 +261,16 @@ const Classes: React.FC<ClassessProps> = ({ master, refetch }) => {
           handleClose={() => setCreateModal(false)}
           handleCreateSubmit={handleCreateSubmit}
           selectedClasses={selectedClasses}
+        />
+      )}
+      {deleteConfirmModal && (
+        <WarningModal
+          title='Delete'
+          subtitle='Are you sure you want to delete this homeroom?'
+          handleModem={() => setDeleteConfirmModal(false)}
+          handleSubmit={() => submitDeleteClass()}
+          btntitle='Delete'
+          canceltitle='Cancel'
         />
       )}
     </Box>

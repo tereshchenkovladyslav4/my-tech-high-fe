@@ -14,9 +14,8 @@ import * as yup from 'yup'
 import { SortableTable } from '@mth/components/SortableTable/SortableTable'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
-import { MthTitle } from '@mth/enums'
-import { BUTTON_LINEAR_GRADIENT, RED_GRADIENT } from '../../../../utils/constants'
-import { SCHOOL_PARTNER_HEADCELLS } from '../../../../utils/PageHeadCellsConstant'
+import { SCHOOL_PARTNER_HEADCELLS } from '@mth/constants'
+import { MthColor, MthTitle } from '@mth/enums'
 import { siteManagementClassess } from '../styles'
 import { ArchiveSchoolPartnerModal } from './ArchiveSchoolPartnerModal/ArchiveSchoolPartnerModal'
 import { SchoolPartnerEditModal } from './SchoolPartnerEditModal/SchoolPartnerEditModal'
@@ -208,7 +207,7 @@ export const SchoolPartner: React.FC = () => {
     }
   }, [archiveModal])
 
-  const sortChangeAction = (property: keyof unknown, order: string) => {
+  const sortChangeAction = (property: string, order: string) => {
     setSort({
       column: property.toString(),
       direction: upperCase(order),
@@ -444,7 +443,7 @@ export const SchoolPartner: React.FC = () => {
                                 borderRadius: 2,
                                 textTransform: 'none',
                                 height: '33px',
-                                background: RED_GRADIENT,
+                                background: MthColor.RED_GRADIENT,
                                 color: 'white',
                                 width: '195px',
                                 marginRight: 2,
@@ -466,7 +465,7 @@ export const SchoolPartner: React.FC = () => {
                                 borderRadius: 2,
                                 textTransform: 'none',
                                 height: '33px',
-                                background: BUTTON_LINEAR_GRADIENT,
+                                background: MthColor.BUTTON_LINEAR_GRADIENT,
                                 color: 'white',
                                 width: '195px',
                                 marginRight: 2,

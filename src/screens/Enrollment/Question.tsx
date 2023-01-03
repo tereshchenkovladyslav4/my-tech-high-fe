@@ -12,7 +12,7 @@ import {
   FormControl,
   FormControlLabel,
 } from '@mui/material'
-import moment from 'moment'
+import moment from 'moment-timezone'
 import { v4 as uuidv4 } from 'uuid'
 import { DropDown } from '@mth/components/DropDown/DropDown'
 import { DropDownItem } from '@mth/components/DropDown/types'
@@ -100,7 +100,7 @@ export const EnrollmentQuestionItem: EnrollmentQuestionTemplateType = ({ item, f
               <Grid key={index} item xs={12} sm={6}>
                 <Box display='flex' alignItems='center'>
                   <Paragraph size='large'>
-                    <p dangerouslySetInnerHTML={{ __html: q.question }}></p>
+                    <span dangerouslySetInnerHTML={{ __html: q.question }}></span>
                   </Paragraph>
                 </Box>
               </Grid>
@@ -644,7 +644,7 @@ function Item({
         value={
           formik.values[`${keyName}`] &&
           formik.values[`${keyName}`][`${fieldName}`] &&
-          moment(formik.values[`${keyName}`][`${fieldName}`]).format('YYYY-MM-DD')
+          moment(formik.values[`${keyName}`][`${fieldName}`]).tz('UTC').format('YYYY-MM-DD')
         }
         sx={{
           minWidth: '100%',

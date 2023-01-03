@@ -4,5 +4,6 @@ export enum PacketStatus {
   RESUBMITTED = 'Resubmitted',
   STARTED = 'Started',
   ACCEPTED = 'Accepted',
+  CONDITIONAL = 'Conditional',
   NOT_STARTED = 'Not Started',
 }

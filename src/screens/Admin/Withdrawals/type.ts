@@ -1,3 +1,6 @@
+import { Withdrawal } from '@mth/graphql/models/withdrawal'
+import { EmailTemplate } from '@mth/models'
+
 export type WithdrawalCount = {
   Notified?: number
   Withdrawn?: number
@@ -14,6 +17,7 @@ export type WithdrawalResponseVM = {
   funding: string
   date_emailed: string
   withdrawal_id: number
+  StudentId: number
 }
 
 export type WithdrawalEmailResponseVM = {
@@ -52,16 +56,19 @@ export type PageModalsProps = {
   errorReinstateModal: boolean
   openEmailModal: boolean
   checkedWithdrawalIds: Array<string>
-  emailTemplate: EmailTemplateResponseVM | undefined
+  emailTemplate: EmailTemplateResponseVM | EmailTemplate | undefined
   openEmailHistoryModal: boolean
   withdrawalId: number
   effective: EffectiveVM
   openEffectiveCalendar: boolean
   isShowWithdrawalModal: boolean
   selectedWithdrawal: WithdrawalResponseVM | undefined
+  showWithdrawModal: boolean
+  withdrawals: Withdrawal[]
   setIsShowWithdrawalModal: (value: boolean) => void
   setShowReinstateModal: (value: boolean) => void
   setShowWithdrawalConfirmModal: (value: boolean) => void
+  setShowWithdrawModal: (value: boolean) => void
   setOpenWarningModal: (value: boolean) => void
   setErrorReinstateModal: (value: boolean) => void
   setOpenEmailModal: (value: boolean) => void

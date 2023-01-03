@@ -111,6 +111,7 @@ export const getEnrollmentPacketsQuery = gql`
                 state
                 county_id
                 country_id
+                school_district
               }
               user {
                 user_id
@@ -257,6 +258,7 @@ export const getEnrollmentPacketQuery = gql`
             zip
             state
             county_id
+            school_district
           }
         }
       }

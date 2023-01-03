@@ -4,12 +4,13 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { Box, Button, Card, Checkbox, FormControlLabel, Grid } from '@mui/material'
 import { map, capitalize } from 'lodash'
 import { useHistory } from 'react-router-dom'
+import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { MthColor } from '@mth/enums'
 import { getSchoolDistrictsByRegionId } from '@mth/graphql/queries/school-district'
 import { useProviders } from '@mth/hooks'
-import { Paragraph } from '../../../../components/Typography/Paragraph/Paragraph'
-import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
-import { UserContext } from '../../../../providers/UserContext/UserProvider'
-import { BUTTON_LINEAR_GRADIENT, MTHBLUE, RED_GRADIENT, GRADES, GRADE_GROUPS } from '../../../../utils/constants'
+import { UserContext } from '@mth/providers/UserContext/UserProvider'
+import { BUTTON_LINEAR_GRADIENT, GRADES, GRADE_GROUPS } from '../../../../utils/constants'
 import { toOrdinalSuffix } from '../../../../utils/stringHelpers'
 import {
   FiltersProps,
@@ -81,7 +82,7 @@ export const Filters: FunctionComponent<FiltersProps> = ({
     !expand ? (
       <ExpandMoreIcon
         sx={{
-          color: MTHBLUE,
+          color: MthColor.MTHBLUE,
           verticalAlign: 'bottom',
           cursor: 'pointer',
           transform: 'rotate(180deg)',
@@ -90,7 +91,7 @@ export const Filters: FunctionComponent<FiltersProps> = ({
     ) : (
       <ExpandMoreIcon
         sx={{
-          color: MTHBLUE,
+          color: MthColor.MTHBLUE,
           verticalAlign: 'bottom',
           cursor: 'pointer',
         }}
@@ -309,7 +310,7 @@ export const Filters: FunctionComponent<FiltersProps> = ({
             }}
           >
             <Paragraph size='large' fontWeight='700'>
-              {selectedYear?.label ? `For ${(selectedYear.label as string).split('Mid-year')[0]} Year` : ''}
+              {selectedYear?.label ? `For ${(selectedYear.label as string).split('Mid-year')[0]}` : ''}
             </Paragraph>
             {(Object.keys(YEAR_STATUS) as Array<keyof typeof YEAR_STATUS>).map((item) => (
               <FormControlLabel
@@ -508,7 +509,7 @@ export const Filters: FunctionComponent<FiltersProps> = ({
                 fontWeight: 700,
                 borderRadius: 2,
                 textTransform: 'none',
-                background: RED_GRADIENT,
+                background: MthColor.RED_GRADIENT,
                 color: 'white',
                 width: '140px',
               }}
@@ -533,7 +534,7 @@ export const Filters: FunctionComponent<FiltersProps> = ({
   return (
     <Card sx={{ marginTop: 2, padding: 2 }}>
       <Box display='flex' flexDirection='row' onClick={() => setExpand(!expand)}>
-        <Subtitle fontWeight='700' color={MTHBLUE} sx={{ cursor: 'pointer' }}>
+        <Subtitle fontWeight='700' color={MthColor.MTHBLUE} sx={{ cursor: 'pointer' }}>
           Filter
         </Subtitle>
         {chevron()}

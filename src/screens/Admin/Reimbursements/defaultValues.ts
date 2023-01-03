@@ -669,10 +669,10 @@ export const REIMBURSEMENT_ADDITIONAL_QUESTION_TYPES: DropDownItem[] = [
 export const AdditionalQuestionActionList = [
   {
     label: 'Continue to next',
-    value: AdditionalQuestionAction.CONTINUE_TO_NEXT,
+    value: AdditionalQuestionAction.CONTINUE_TO_NEXT.toString(),
   },
   {
     label: 'Ask additional question',
-    value: AdditionalQuestionAction.ASK_ADDITIONAL_QUESTION,
+    value: AdditionalQuestionAction.ASK_ADDITIONAL_QUESTION.toString(),
   },
 ]

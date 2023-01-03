@@ -1,7 +1,7 @@
 import { FunctionComponent } from 'react'
 import { DropDownItem } from '@mth/components/DropDown/types'
 import { ScheduleStatus } from '@mth/enums'
-import { Email, SchoolYear, SchoolYearType } from '@mth/models'
+import { Address, Email, SchoolYear, SchoolYearType } from '@mth/models'
 import { ToDoItem } from '@mth/screens/Dashboard/ToDoList/components/ToDoListItem/types'
 
 export type GradeLevel = {
@@ -158,14 +158,6 @@ export type Status = {
   student_id: number
 }
 
-export type Address = {
-  city: string
-  street: string
-  street2: string
-  zip: string
-  state: string
-  county_id: number
-}
 export type Parent = {
   parent_id?: number
 

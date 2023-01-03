@@ -9,8 +9,11 @@ export enum MthRoute {
   EMAIL_RECORDS = '/communication/email-records',
   EMAIL_VERIFICATION = '/email-verification',
   EMAILTEMPLATES = '/email-templates',
+
   ENROLLMENT = '/enrollment',
   ENROLLMENT_PACKETS = '/enrollment/enrollment-packets',
+  RESOURCE_REQUESTS = '/enrollment/resource-requests',
+
   FORGOT_PASSWORD = '/forgot-password',
   HOMEROOM = '/homeroom',
   PARENT_LINK = '/parent-link',
