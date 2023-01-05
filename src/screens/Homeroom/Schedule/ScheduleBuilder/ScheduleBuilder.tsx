@@ -336,6 +336,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
         <Box sx={{ mt: 3 }}>
           {(!studentScheduleStatus ||
             studentScheduleStatus === ScheduleStatus.DRAFT ||
+            studentScheduleStatus === ScheduleStatus.NOT_SUBMITTED ||
             studentScheduleStatus === ScheduleStatus.UPDATES_REQUIRED ||
             (isUpdatePeriodRequested &&
               (studentScheduleStatus === ScheduleStatus.SUBMITTED ||

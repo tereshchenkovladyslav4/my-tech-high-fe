@@ -1,11 +1,6 @@
 import { FunctionComponent } from 'react'
 import { HeadCell } from './SortableTableHeader/types'
 
-export enum Order {
-  ASC = 'asc',
-  DESC = 'desc',
-}
-
 type SortableTableProps = {
   rows?: unknown
   type?: string

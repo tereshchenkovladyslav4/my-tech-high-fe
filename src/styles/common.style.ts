@@ -31,5 +31,22 @@ export const commonClasses = {
     /* Below parameters should be customized */
     maxWidth: '440px',
     p: 3,
+    outline: '0',
+  },
+  formError: {
+    color: MthColor.ERROR_RED,
+    fontSize: '12px',
+    fontWeight: 600,
+    lineHeight: '20px',
+    marginLeft: '12px',
+    marginTop: '4px',
+  },
+  formErrorTop: {
+    color: MthColor.ERROR_RED,
+    fontSize: '12px',
+    fontWeight: 600,
+    lineHeight: '20px',
+    marginLeft: '12px',
+    marginBottom: '4px',
   },
 }

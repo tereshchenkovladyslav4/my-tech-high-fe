@@ -4,6 +4,7 @@ import SearchIcon from '@mui/icons-material/Search'
 import { Box, Button, Card, InputAdornment, OutlinedInput } from '@mui/material'
 import moment from 'moment'
 import { useHistory } from 'react-router-dom'
+import { EmailHistoryModal } from '@mth/components/EmailHistoryModal/EmailHistoryModal'
 import { MthTable } from '@mth/components/MthTable'
 import { MthTableField } from '@mth/components/MthTable/types'
 import { Pagination } from '@mth/components/Pagination/Pagination'
@@ -12,7 +13,6 @@ import { ScheduleStatus } from '@mth/enums'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { SchoolYearDropDown } from '@mth/screens/Admin/Components/SchoolYearDropdown'
 import { RED_GRADIENT } from '../../../../utils/constants'
-import { ScheduleEmailHistoryModal } from '../ScheduleModal/ScheduleEmailHistoryModal'
 import { EmailModal } from '../ScheduleModal/ScheduleEmailModal'
 import { ScheduleTableFilters } from '../ScheduleTableFilters/ScheduleTableFilters'
 import { emailScheduleMutation, getSchedulesQuery, scheduleCountQuery } from '../services'
@@ -111,7 +111,7 @@ export const ScheduleTable: React.FC<FiltersProps> = ({ filter, setFilter }) => 
       search: seachField,
       regionId: me?.selectedRegionId,
     },
-    skip: me?.selectedRegionId ? false : true,
+    skip: !me?.selectedRegionId,
     fetchPolicy: 'network-only',
   })
 
@@ -537,11 +537,7 @@ export const ScheduleTable: React.FC<FiltersProps> = ({ filter, setFilter }) => 
         />
       )}
       {openEmailModal && (
-        <ScheduleEmailHistoryModal
-          handleModem={() => {}}
-          handleSubmit={() => setOpenEmailModal(false)}
-          data={emailHistory}
-        />
+        <EmailHistoryModal handleModem={() => {}} handleSubmit={() => setOpenEmailModal(false)} data={emailHistory} />
       )}
     </Card>
   )

@@ -1,5 +1,5 @@
 import { FunctionComponent } from 'react'
-import { Order } from '../types'
+import { Order } from '@mth/enums'
 
 export interface HeadCell {
   disablePadding: boolean

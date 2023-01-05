@@ -328,7 +328,7 @@ export const EnrollmentSchoolTable: React.FC<EnrollmentSchoolTableProps> = ({
             </Button>
           </Tooltip>
 
-          <Tooltip title='Create withdraw form from previous SoE' placement='top'>
+          <Tooltip title='Create withdrawal form from previous SoE' placement='top'>
             <Button
               sx={{
                 borderRadius: 2,

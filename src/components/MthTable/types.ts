@@ -1,6 +1,7 @@
 import { ReactNode } from 'react'
 import { SxProps, Theme } from '@mui/material/styles'
 import { DraggableProvidedDragHandleProps } from 'react-beautiful-dnd'
+import { Order } from '@mth/enums'
 
 export type MthTableField<T> = {
   key: string
@@ -40,9 +41,11 @@ export type MthTableProps<T> = {
   oddBg?: boolean
   borderBottom?: boolean
   isDraggable?: boolean
+  defaultOrder?: Order
+  defaultOrderBy?: string
   onArrange?: (arrangedItems: MthTableRowItem<T>[]) => void
   onSelectionChange?: (arrangedItems: MthTableRowItem<T>[], isAll: boolean) => void
-  onSortChange?: (property: string, order: string) => void
+  onSortChange?: (property: string, order: Order) => void
   sx?: SxProps<Theme>
   isTableCellBorder?: boolean
 }

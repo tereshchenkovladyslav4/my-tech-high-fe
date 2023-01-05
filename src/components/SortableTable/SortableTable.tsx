@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { TableContainer, Table, TableBody, TableRow, TableCell, Checkbox } from '@mui/material'
 import { Box } from '@mui/system'
+import { Order } from '@mth/enums'
 import { MTHBLUE } from '../../utils/constants'
 import { SortableTableHeader } from './SortableTableHeader/SortableTableHeader'
 import { tableClasses } from './styles'
-import { Order, SortableTableTemplateType } from './types'
+import { SortableTableTemplateType } from './types'
 
 export const SortableTable: SortableTableTemplateType = ({
   headCells,

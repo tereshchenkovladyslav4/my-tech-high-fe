@@ -1,19 +1,19 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { Button, Checkbox, FormControlLabel, Modal, OutlinedInput } from '@mui/material'
-import { Box } from '@mui/system'
-import { EditorState, convertToRaw, ContentState } from 'draft-js'
-
+import React, { useState } from 'react'
+import { Box, Button, Checkbox, FormControlLabel, Grid, Modal, OutlinedInput } from '@mui/material'
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
-import draftToHtml from 'draftjs-to-html'
-import htmlToDraft from 'html-to-draftjs'
-import Wysiwyg from 'react-draft-wysiwyg'
-
-import { Paragraph } from '../Typography/Paragraph/Paragraph'
-import { Title } from '../Typography/Title/Title'
+import { useFormik } from 'formik'
+import * as yup from 'yup'
+import { MthBulletEditor } from '@mth/components/MthBulletEditor'
+import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { Title } from '@mth/components/Typography/Title/Title'
+import { RICH_TEXT_VALID_MIN_LENGTH } from '@mth/constants'
+import { mthButtonClasses } from '@mth/styles/button.style'
+import { commonClasses } from '@mth/styles/common.style'
 import { useStyles } from './styles'
-import { EmailModalTemplateType } from './types'
+import { EmailModalProps } from './types'
 
-export const ApplicationEmailModal: EmailModalTemplateType = ({
+export const ApplicationEmailModal: React.FC<EmailModalProps> = ({
   handleSubmit,
   handleModem,
   title,
@@ -21,42 +21,35 @@ export const ApplicationEmailModal: EmailModalTemplateType = ({
   template,
   isNonSelected,
   filters,
+  inserts = [],
+  insertDescriptions = {},
   handleSchedulesByStatus,
 }) => {
   const classes = useStyles
-  const [editorState, setEditorState] = useState(EditorState.createEmpty())
-  const [subject, setSubject] = useState('')
-  const [emailFrom, setEmailFrom] = useState('')
-  const editorRef = useRef(null)
-  const [currentBlocks, setCurrentBlocks] = useState(0)
-  const onSubmit = () => {
-    if (handleSubmit && subject) {
-      handleSubmit(emailFrom, subject, draftToHtml(convertToRaw(editorState.getCurrentContent())))
-    }
-  }
-  const handleEditorChange = (state) => {
-    try {
-      if (currentBlocks !== 0 && currentBlocks !== state.blocks.length) {
-        editorRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' })
-      }
-      setCurrentBlocks(state.blocks.length)
-    } catch {}
-  }
 
-  useEffect(() => {
-    if (template) {
-      const { subject, from, body } = template
-      setSubject(subject)
-      setEmailFrom(from)
-      if (body) {
-        const contentBlock = htmlToDraft(body)
-        if (contentBlock) {
-          const contentState = ContentState.createFromBlockArray(contentBlock.contentBlocks)
-          setEditorState(EditorState.createWithContent(contentState))
-        }
+  const [availableInserts] = useState(inserts)
+  const [availableInsertDescription] = useState(insertDescriptions)
+
+  const validationSchema = yup.object({
+    emailFrom: yup.string().required('Required').nullable(),
+    subject: yup.string().required('Required').nullable(),
+    body: yup.string().required('Required').min(RICH_TEXT_VALID_MIN_LENGTH, 'Required').nullable(),
+  })
+
+  const formik = useFormik({
+    initialValues: {
+      emailFrom: template?.from || '',
+      subject: template?.subject || '',
+      body: template?.body || '',
+    },
+    validationSchema: validationSchema,
+    onSubmit: async () => {
+      if (handleSubmit) {
+        handleSubmit(formik.values.emailFrom, formik.values.subject, formik.values.body)
       }
-    }
-  }, [template])
+    },
+  })
+
   return (
     <Modal
       open={true}
@@ -64,93 +57,93 @@ export const ApplicationEmailModal: EmailModalTemplateType = ({
       aria-labelledby='modal-modal-title'
       aria-describedby='modal-modal-description'
     >
-      <Box sx={classes.modalCard}>
-        {isNonSelected && (
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              marginBottom: '35px',
-            }}
-          >
-            <Title fontWeight='700'>Status</Title>
-            <div style={{ height: 15 }} />
-            {filters?.map((item, index) => {
-              return (
-                <FormControlLabel
-                  key={index}
-                  sx={{ height: 30 }}
-                  control={<Checkbox value={item} onChange={(e) => handleSchedulesByStatus(e.target.value)} />}
-                  label={
-                    <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
-                      {item}
-                    </Paragraph>
-                  }
-                />
-              )
-            })}
-          </Box>
-        )}
-        <Title fontWeight='700'>{title}</Title>
-        {/* {options && <StandardResponses options={options} />} */}
-        {editFrom && (
+      <form onSubmit={formik.handleSubmit}>
+        <Box sx={classes.modalCard}>
+          {isNonSelected && (
+            <Box sx={{ display: 'flex', flexDirection: 'column', mb: '35px' }}>
+              <Title fontWeight='700'>Status</Title>
+              <div style={{ height: 15 }} />
+              {filters?.map((item, index) => {
+                return (
+                  <FormControlLabel
+                    key={index}
+                    sx={{ height: 30 }}
+                    control={<Checkbox value={item} onChange={(e) => handleSchedulesByStatus(e.target.value)} />}
+                    label={
+                      <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
+                        {item}
+                      </Paragraph>
+                    }
+                  />
+                )
+              })}
+            </Box>
+          )}
+          <Title fontWeight='700' sx={{ mb: 2 }}>
+            {title}
+          </Title>
+          <Subtitle sx={commonClasses.formErrorTop}>
+            {((formik.touched.emailFrom && !!formik.errors.emailFrom) ||
+              (formik.touched.subject && !!formik.errors.subject) ||
+              (formik.touched.body && !!formik.errors.body)) &&
+              'Required'}
+          </Subtitle>
+          {editFrom && (
+            <OutlinedInput
+              value={formik.values.emailFrom}
+              size='small'
+              fullWidth
+              placeholder='From: email in template'
+              onChange={(e) => formik.setFieldValue('emailFrom', e.target.value)}
+              error={formik.touched.emailFrom && !!formik.errors.emailFrom}
+            />
+          )}
           <OutlinedInput
-            value={emailFrom}
+            value={formik.values.subject}
             size='small'
             fullWidth
-            placeholder='From: email in template'
-            sx={classes.from}
-            onChange={(e) => setEmailFrom(e.target.value)}
+            placeholder='Subject'
+            onChange={(e) => formik.setFieldValue('subject', e.target.value)}
+            error={formik.touched.subject && !!formik.errors.subject}
           />
-        )}
-        <OutlinedInput
-          value={subject}
-          size='small'
-          fullWidth
-          placeholder='Subject'
-          sx={classes.subject}
-          onChange={(e) => setSubject(e.target.value)}
-        />
-        <Box sx={classes.editor}>
-          <Wysiwyg.Editor
-            onContentStateChange={handleEditorChange}
-            editorRef={(ref) => (editorRef.current = ref)}
-            editorState={editorState}
-            onEditorStateChange={setEditorState}
-            handlePastedText={() => false}
-            toolbar={{
-              options: [
-                'inline',
-                'blockType',
-                'fontSize',
-                'fontFamily',
-                'list',
-                'textAlign',
-                'colorPicker',
-                'link',
-                'embedded' /*, 'emoji'*/,
-                'image',
-                'remove',
-                'history',
-              ],
+          <MthBulletEditor
+            height='200px'
+            maxHeight='250px'
+            value={formik.values.body}
+            setValue={(value) => {
+              formik.setFieldValue('body', value)
             }}
+            error={formik.touched.body && !!formik.errors.body}
           />
+
+          {availableInserts && (
+            <Grid item xs={12} sx={{ mt: 4 }}>
+              <Subtitle fontWeight='700' size='large'>
+                Available Inserts
+              </Subtitle>
+              {availableInserts.map((item, i) => (
+                <Box key={i} sx={{ display: 'flex', alignItems: 'center' }}>
+                  <Subtitle fontWeight='600' size='large' sx={{ minWidth: '165px', textTransform: 'uppercase' }}>
+                    [{item}]
+                  </Subtitle>
+                  <Subtitle fontWeight='600' color='#A3A3A4' sx={{ fontSize: '18px', marginLeft: '30px' }}>
+                    {availableInsertDescription?.[item] || ''}
+                  </Subtitle>
+                </Box>
+              ))}
+            </Grid>
+          )}
+
+          <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', width: '100%', mt: 4 }}>
+            <Button sx={{ ...mthButtonClasses.roundGray, width: '200px' }} onClick={() => handleModem()}>
+              Cancel
+            </Button>
+            <Button sx={{ ...mthButtonClasses.roundDark, width: '200px', ml: 6 }} type='submit'>
+              Send
+            </Button>
+          </Box>
         </Box>
-        <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', width: '100%' }}>
-          <Button
-            variant='contained'
-            color='secondary'
-            disableElevation
-            sx={classes.cancelButton}
-            onClick={() => handleModem()}
-          >
-            Cancel
-          </Button>
-          <Button variant='contained' disableElevation sx={classes.submitButton} onClick={onSubmit}>
-            Send
-          </Button>
-        </Box>
-      </Box>
+      </form>
     </Modal>
   )
 }

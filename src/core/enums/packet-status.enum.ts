@@ -6,4 +6,5 @@ export enum PacketStatus {
   ACCEPTED = 'Accepted',
   CONDITIONAL = 'Conditional',
   NOT_STARTED = 'Not Started',
+  AGE_ISSUE = 'Age Issue',
 }

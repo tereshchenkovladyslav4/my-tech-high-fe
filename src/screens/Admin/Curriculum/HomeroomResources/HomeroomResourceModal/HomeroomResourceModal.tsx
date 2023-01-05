@@ -89,7 +89,7 @@ const HomeroomResourceModal: React.FC<HomeroomResourceModalProps> = ({
       {showDeleteModal && (
         <CustomModal
           title='Delete'
-          description='If there was a Direct Deduction associated with this Resource, &nbsp;&nbsp;&nbsp;&nbsp;it will be removed.'
+          description='If there was a Direct Deduction associated with this Resource, it will be removed.'
           subDescription={
             <>
               Once deleted, it cannot be restored.

@@ -42,65 +42,64 @@ const ResourceDetails: React.FC<ResourceDetailsProps> = ({ item, handleBack, onC
                 {item.website}
               </Link>
             )}
-            {item.RequestStatus === ResourceRequestStatus.ACCEPTED ||
-              (item.subtitle === ResourceSubtitle.INCLUDED && (
-                <Box
-                  sx={{
-                    display: 'flex',
-                    gap: '24px',
-                    justifyContent: 'space-between',
-                    alignItems: 'end',
-                    mt: 4,
-                  }}
-                >
-                  {item.std_user_name && (
-                    <Box sx={{ mb: 3, flex: 1 }}>
-                      <Subtitle sx={{ fontSize: 14, fontWeight: 600, mb: 1 }}>Username</Subtitle>
-                      <TextField
-                        fullWidth
-                        disabled
-                        value={item.std_user_name}
-                        InputProps={{ style: { fontSize: 14, fontWeight: 700 } }}
-                        sx={{
-                          '& .MuiInputBase-input': {
-                            cursor: 'copy',
-                          },
-                          '& .MuiOutlinedInput-root.Mui-disabled .MuiOutlinedInput-input.Mui-disabled': {
-                            '-webkit-text-fill-color': MthColor.SYSTEM_01,
-                          },
-                          '& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline': {
-                            border: '1px solid #E7E7E7 !important',
-                          },
-                        }}
-                        onClick={() => navigator.clipboard.writeText(item.std_user_name)}
-                      />
-                    </Box>
-                  )}
-                  {item.std_password && (
-                    <Box sx={{ mb: 3, flex: 1 }}>
-                      <Subtitle sx={{ fontSize: 14, fontWeight: 600, mb: 1 }}>Password</Subtitle>
-                      <TextField
-                        fullWidth
-                        disabled
-                        value={item.std_password}
-                        InputProps={{ style: { fontSize: 14, fontWeight: 700 } }}
-                        sx={{
-                          '& .MuiInputBase-input': {
-                            cursor: 'copy',
-                          },
-                          '& .MuiOutlinedInput-root.Mui-disabled .MuiOutlinedInput-input.Mui-disabled': {
-                            '-webkit-text-fill-color': MthColor.SYSTEM_01,
-                          },
-                          '& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline': {
-                            border: '1px solid #E7E7E7 !important',
-                          },
-                        }}
-                        onClick={() => navigator.clipboard.writeText(item.std_password)}
-                      />
-                    </Box>
-                  )}
-                </Box>
-              ))}
+            {(item.RequestStatus === ResourceRequestStatus.ACCEPTED || item.subtitle === ResourceSubtitle.INCLUDED) && (
+              <Box
+                sx={{
+                  display: 'flex',
+                  gap: '24px',
+                  justifyContent: 'space-between',
+                  alignItems: 'end',
+                  mt: 4,
+                }}
+              >
+                {item.std_user_name && (
+                  <Box sx={{ mb: 3, flex: 1 }}>
+                    <Subtitle sx={{ fontSize: 14, fontWeight: 600, mb: 1 }}>Username</Subtitle>
+                    <TextField
+                      fullWidth
+                      disabled
+                      value={item.std_user_name}
+                      InputProps={{ style: { fontSize: 14, fontWeight: 700 } }}
+                      sx={{
+                        '& .MuiInputBase-input': {
+                          cursor: 'copy',
+                        },
+                        '& .MuiOutlinedInput-root.Mui-disabled .MuiOutlinedInput-input.Mui-disabled': {
+                          '-webkit-text-fill-color': MthColor.SYSTEM_01,
+                        },
+                        '& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline': {
+                          border: '1px solid #E7E7E7 !important',
+                        },
+                      }}
+                      onClick={() => navigator.clipboard.writeText(item.std_user_name)}
+                    />
+                  </Box>
+                )}
+                {item.std_password && (
+                  <Box sx={{ mb: 3, flex: 1 }}>
+                    <Subtitle sx={{ fontSize: 14, fontWeight: 600, mb: 1 }}>Password</Subtitle>
+                    <TextField
+                      fullWidth
+                      disabled
+                      value={item.std_password}
+                      InputProps={{ style: { fontSize: 14, fontWeight: 700 } }}
+                      sx={{
+                        '& .MuiInputBase-input': {
+                          cursor: 'copy',
+                        },
+                        '& .MuiOutlinedInput-root.Mui-disabled .MuiOutlinedInput-input.Mui-disabled': {
+                          '-webkit-text-fill-color': MthColor.SYSTEM_01,
+                        },
+                        '& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline': {
+                          border: '1px solid #E7E7E7 !important',
+                        },
+                      }}
+                      onClick={() => navigator.clipboard.writeText(item.std_password)}
+                    />
+                  </Box>
+                )}
+              </Box>
+            )}
           </Grid>
         </Grid>
         <Box sx={{ px: 6, py: 5 }}>

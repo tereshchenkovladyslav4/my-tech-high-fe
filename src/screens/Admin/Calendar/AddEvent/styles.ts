@@ -113,9 +113,6 @@ export const addEventClassess = {
     display: 'flex',
     flexDirection: 'column',
     marginBottom: 3,
-    '.MuiFormControlLabel-root': {
-      width: 'auto',
-    },
   },
   card: {
     boxShadow: 'none',

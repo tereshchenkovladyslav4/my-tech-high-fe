@@ -19,6 +19,7 @@ export const getResourceRequestsQuery = gql`
     ) {
       total
       results {
+        id
         student_id
         resource_id
         resource_level_id
@@ -44,6 +45,10 @@ export const getResourceRequestsQuery = gql`
             school_year_id
             status
           }
+          grade_levels {
+            school_year_id
+            grade_level
+          }
         }
         Resource {
           subtitle
@@ -53,6 +58,15 @@ export const getResourceRequestsQuery = gql`
         }
         ResourceLevel {
           name
+        }
+        ResourceRequestEmails {
+          id
+          resource_request_id
+          email_record_id
+          subject
+          body
+          from_email
+          created_at
         }
       }
     }

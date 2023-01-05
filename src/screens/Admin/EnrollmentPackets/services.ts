@@ -357,15 +357,6 @@ export const getPacket = gql`
   }
 `
 
-export const getEnrollmentPacketStatusesQuery = gql`
-  query packetStatuses {
-    packetStatuses {
-      error
-      results
-    }
-  }
-`
-
 export const getImmunizationSettings = gql`
   query ImmunizationSettings($where: FindImunizationSettingsInput) {
     immunizationSettings(where: $where) {

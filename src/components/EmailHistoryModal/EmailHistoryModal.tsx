@@ -1,61 +1,51 @@
 import React, { useState } from 'react'
 import { ArrowDropDown, ArrowDropUp } from '@mui/icons-material'
 import CloseIcon from '@mui/icons-material/Close'
-import { Modal, Grid, Typography } from '@mui/material'
-import { Box } from '@mui/system'
+import { Box, Modal, Grid, Typography } from '@mui/material'
 import { sortBy } from 'lodash'
 import moment from 'moment'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { MthColor } from '@mth/enums'
-import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
-import { useStyles } from './styles'
-import { EnrollmentEmailModalType } from './types'
+import { Email } from '@mth/models'
+import { commonClasses } from '@mth/styles/common.style'
+import { emailHistoryModalClasses } from './styles'
 
-type emailDataType = {
-  from_email: string
-  subject: string
-  body: string
+type EmailHistoryModalProps = {
+  handleModem: () => void
+  data: Email[]
+  handleSubmit: () => void
 }
 
-export const ScheduleEmailHistoryModal: EnrollmentEmailModalType = ({ handleModem, data, handleSubmit }) => {
-  const classes = useStyles
+export const EmailHistoryModal: React.FC<EmailHistoryModalProps> = ({ handleModem, data, handleSubmit }) => {
   const [dateSortDirection, setDateSortDirection] = useState('')
   const [subjectSortDirection, setSubjectSortDirection] = useState('')
-  const [emailData, setEmailData] = useState(data)
-  const [emailViewData, setEmailViewData] = useState<emailDataType>({
-    from_email: '',
-    subject: '',
-    body: '',
-  })
+  const [emailData, setEmailData] = useState<Email[]>(data)
+  const [emailViewData, setEmailViewData] = useState<Email | undefined>()
   const [emailView, setEmailView] = useState(false)
 
-  const handleEmailView = (email) => {
+  const handleEmailView = (email: Email) => {
     setEmailViewData(email)
     setEmailView(true)
   }
 
-  const createMarkup = (value) => {
+  const createMarkup = (value: string) => {
     return {
       __html: value,
     }
   }
 
-  const handleSorting = (key) => {
+  const handleSorting = (key: string) => {
     const sortedData = [...emailData]
     if (key === 'date') {
       if (dateSortDirection === '' || dateSortDirection === 'DESC') {
-        // const sort = sortBy(sortedData, 'date')
         sortedData.sort((a, b) => {
-          const dateA: Date = new Date(a.created_at)
-          const dateB: Date = new Date(b.created_at)
-          return dateA - dateB
+          return moment(a.created_at).diff(moment(b.created_at), 'seconds')
         })
         setEmailData(sortedData)
         setDateSortDirection('ASC')
       } else {
         sortedData.sort((a, b) => {
-          const dateA: Date = new Date(a.created_at)
-          const dateB: Date = new Date(b.created_at)
-          return dateB - dateA
+          return moment(b.created_at).diff(moment(a.created_at), 'seconds')
         })
         setEmailData(sortedData)
         setDateSortDirection('DESC')
@@ -80,24 +70,24 @@ export const ScheduleEmailHistoryModal: EnrollmentEmailModalType = ({ handleMode
         aria-labelledby='modal-modal-title'
         aria-describedby='modal-modal-description'
       >
-        <Box sx={classes.modalEmailCard}>
+        <Box sx={{ ...commonClasses.modalWrap }}>
           <Box display={'flex'} flexDirection={'row'} sx={{ marginRight: '10px' }} justifyContent={'end'}>
-            <CloseIcon style={classes.close} onClick={handleSubmit} />
+            <CloseIcon style={emailHistoryModalClasses.close} onClick={handleSubmit} />
           </Box>
-          <Box sx={classes.modalHistoryContent}>
-            <Box sx={classes.emailRowHead}>
-              <Subtitle fontWeight='700' sx={classes.emailLabel}>
+          <Box sx={emailHistoryModalClasses.modalHistoryContent}>
+            <Box sx={emailHistoryModalClasses.emailRowHead}>
+              <Subtitle fontWeight='700' sx={emailHistoryModalClasses.emailLabel}>
                 Sent Date
                 {dateSortDirection === '' || dateSortDirection === 'ASC' ? (
                   <ArrowDropDown
-                    sx={{ ml: 2 }}
+                    sx={{ cursor: 'pointer', ml: 2 }}
                     onClick={() => {
                       handleSorting('date')
                     }}
                   />
                 ) : (
                   <ArrowDropUp
-                    sx={{ ml: 2 }}
+                    sx={{ cursor: 'pointer', ml: 2 }}
                     onClick={() => {
                       handleSorting('date')
                     }}
@@ -124,10 +114,10 @@ export const ScheduleEmailHistoryModal: EnrollmentEmailModalType = ({ handleMode
               </Subtitle>
             </Box>
             {emailData.slice(0, 5).map((item, index) => (
-              <Box sx={classes.emailRow} key={index} onClick={() => handleEmailView(item)}>
+              <Box sx={emailHistoryModalClasses.emailRow} key={index} onClick={() => handleEmailView(item)}>
                 <Grid container rowSpacing={2}>
                   <Grid item xs={4}>
-                    <Subtitle fontWeight='700' sx={{ ...classes.emailLabel, color: MthColor.MTHBLUE }}>
+                    <Subtitle fontWeight='700' sx={{ ...emailHistoryModalClasses.emailLabel, color: MthColor.MTHBLUE }}>
                       {moment(item.created_at).format('MM/DD/yy')}
                     </Subtitle>
                   </Grid>
@@ -142,33 +132,36 @@ export const ScheduleEmailHistoryModal: EnrollmentEmailModalType = ({ handleMode
           </Box>
         </Box>
       </Modal>
+
       <Modal
         open={emailView}
         onClose={() => setEmailView(false)}
         aria-labelledby='modal-modal-title'
         aria-describedby='modal-modal-description'
       >
-        <Box sx={classes.modalEmailViewCard}>
-          <Box display={'flex'} flexDirection={'row'} sx={{ marginRight: '10px' }} justifyContent={'end'}>
-            <CloseIcon style={classes.close} onClick={() => setEmailView(false)} />
-          </Box>
-          <Box sx={classes.emailViewContent}>
-            {emailViewData && (
-              <Box sx={{ display: 'grid' }}>
-                <Box sx={{ display: 'flex' }}>
-                  <Typography sx={{ fontWeight: 'bold' }}>From: </Typography>
-                  <Typography sx={{ marginLeft: '10px' }}>{emailViewData?.from_email}</Typography>
+        <Box sx={{ ...commonClasses.modalWrap, maxWidth: '800px' }}>
+          <Box sx={{ maxHeight: '80vh', overflow: 'auto', p: 1 }}>
+            <Box display={'flex'} flexDirection={'row'} sx={{ marginRight: '10px' }} justifyContent={'end'}>
+              <CloseIcon style={emailHistoryModalClasses.close} onClick={() => setEmailView(false)} />
+            </Box>
+            <Box sx={emailHistoryModalClasses.emailViewContent}>
+              {emailViewData && (
+                <Box sx={{ display: 'grid' }}>
+                  <Box sx={{ display: 'flex' }}>
+                    <Typography sx={{ fontWeight: 'bold' }}>From: </Typography>
+                    <Typography sx={{ marginLeft: '10px' }}>{emailViewData?.from_email}</Typography>
+                  </Box>
+                  <Box sx={emailHistoryModalClasses.historySubject}>
+                    <Subtitle fontWeight='700' sx={{ width: '100%' }}>
+                      {emailViewData?.subject}
+                    </Subtitle>
+                  </Box>
+                  <Box sx={emailHistoryModalClasses.body}>
+                    <div dangerouslySetInnerHTML={createMarkup(emailViewData.body)} />
+                  </Box>
                 </Box>
-                <Box sx={classes.historySubject}>
-                  <Subtitle fontWeight='700' sx={{ width: '100%' }}>
-                    {emailViewData?.subject}
-                  </Subtitle>
-                </Box>
-                <Box sx={classes.body}>
-                  <div dangerouslySetInnerHTML={createMarkup(emailViewData.body)} />
-                </Box>
-              </Box>
-            )}
+              )}
+            </Box>
           </Box>
         </Box>
       </Modal>

@@ -1,6 +1,6 @@
 export enum ResourceRequestStatus {
-  REQUESTED = 'Requested',
-  ACCEPTED = 'Accepted',
+  REQUESTED = 'REQUESTED',
+  ACCEPTED = 'ACCEPTED',
   PENDING_REMOVAL = 'PENDING_REMOVAL',
   REMOVED = 'REMOVED',
   WAITLIST = 'WAITLIST',

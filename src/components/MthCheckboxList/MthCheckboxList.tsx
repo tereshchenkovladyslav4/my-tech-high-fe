@@ -1,5 +1,7 @@
 import React, { ReactElement, ReactNode } from 'react'
+import { Theme } from '@emotion/react'
 import { Box } from '@mui/material'
+import { SxProps } from '@mui/system'
 import { map } from 'lodash'
 import { MthCheckbox } from '@mth/components/MthCheckbox'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
@@ -22,6 +24,8 @@ type MthCheckboxListProps = {
   error?: ReactNode
   showError?: boolean
   disabled?: boolean
+  labelSx?: SxProps<Theme>
+  wrapSx?: SxProps<Theme>
 }
 const MthCheckboxList: React.FC<MthCheckboxListProps> = ({
   title,
@@ -32,6 +36,8 @@ const MthCheckboxList: React.FC<MthCheckboxListProps> = ({
   error,
   showError,
   disabled,
+  labelSx,
+  wrapSx,
 }) => {
   const handleChangeValues = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (haveSelectAll) {
@@ -74,6 +80,8 @@ const MthCheckboxList: React.FC<MthCheckboxListProps> = ({
             disabled={disabled || list.disabled === true}
             onChange={handleChangeValues}
             sx={{ my: '-4px' }}
+            wrapSx={!!title ? { ...wrapSx, ml: -1.4 } : wrapSx}
+            labelSx={labelSx}
           />
         )
       } else {
@@ -87,6 +95,9 @@ const MthCheckboxList: React.FC<MthCheckboxListProps> = ({
         display: 'flex',
         flexDirection: 'column',
         marginBottom: 3,
+        '.MuiFormControlLabel-root': {
+          width: 'fit-content',
+        },
       }}
     >
       {!!checkboxLists?.length && (
@@ -111,6 +122,8 @@ const MthCheckboxList: React.FC<MthCheckboxListProps> = ({
           value='all'
           onChange={handleChangeAll}
           sx={{ my: '-4px' }}
+          wrapSx={!!title ? { ...wrapSx, ml: -1.4 } : wrapSx}
+          labelSx={labelSx}
         />
       )}
       {renderLists()}

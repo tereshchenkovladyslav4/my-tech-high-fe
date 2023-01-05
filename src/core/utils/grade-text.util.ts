@@ -89,6 +89,6 @@ export const sortGrades = (grades: string): string => {
   return result
 }
 
-export const gradeShortText = (gradeLevel?: number | null): string => {
-  return gradeLevel === -1 ? 'K' : (gradeLevel || '').toString()
+export const gradeShortText = (gradeLevel?: number | string | null | undefined): string => {
+  return gradeLevel === -1 || (gradeLevel + '').toLowerCase().startsWith('k') ? 'K' : (gradeLevel || '').toString()
 }

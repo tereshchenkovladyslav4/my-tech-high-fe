@@ -1,21 +1,30 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { useQuery } from '@apollo/client'
+import { useMutation, useQuery } from '@apollo/client'
 import ExpandMoreOutlinedIcon from '@mui/icons-material/ExpandMoreOutlined'
 import SearchIcon from '@mui/icons-material/Search'
 import { Box, Button, IconButton, InputAdornment, OutlinedInput, Typography } from '@mui/material'
 import { debounce } from 'lodash'
 import moment from 'moment'
+import { EmailHistoryModal } from '@mth/components/EmailHistoryModal/EmailHistoryModal'
+import { ApplicationEmailModal } from '@mth/components/EmailModal/ApplicationEmailModal'
 import { MthTable } from '@mth/components/MthTable'
 import { MthTableField, MthTableRowItem } from '@mth/components/MthTable/types'
 import { PageBlock } from '@mth/components/PageBlock'
 import { Pagination } from '@mth/components/Pagination/Pagination'
-import { MthColor, ResourceSubtitle } from '@mth/enums'
+import { WarningModal } from '@mth/components/WarningModal/Warning'
+import { MthColor, Order, ResourceSubtitle } from '@mth/enums'
+import {
+  acceptResourceRequestsMutation,
+  deleteResourceRequestsMutation,
+  emailResourceRequestsMutation,
+  removeResourceRequestsMutation,
+} from '@mth/graphql/mutation/resource-request'
 import { getResourceRequestsQuery } from '@mth/graphql/queries/resource-request'
-import { ResourceRequest } from '@mth/models'
+import { Email, ResourceRequest } from '@mth/models'
 import { SchoolYearDropDown } from '@mth/screens/Admin/Components/SchoolYearDropdown'
 import { ResourceRequestsTableProps } from '@mth/screens/Admin/ResourceRequests/ResourceRequestsTable/type'
 import { mthButtonClasses } from '@mth/styles/button.style'
-import { studentStatusText } from '@mth/utils'
+import { gradeShortText, resourceRequestStatus, studentStatusText } from '@mth/utils'
 
 export const ResourceRequestsTable: React.FC<ResourceRequestsTableProps> = ({
   schoolYearId,
@@ -30,7 +39,14 @@ export const ResourceRequestsTable: React.FC<ResourceRequestsTableProps> = ({
   const [paginationLimit, setPaginationLimit] = useState<number>(Number(localStorage.getItem('pageLimit')) || 25)
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [skip, setSkip] = useState<number>(0)
+  const [sortField, setSortField] = useState<string>('created_at')
+  const [sortOrder, setSortOrder] = useState<Order>(Order.ASC)
   const [tableData, setTableData] = useState<MthTableRowItem<ResourceRequest>[]>([])
+  const [selectedItems, setSelectedItems] = useState<ResourceRequest[]>([])
+  const [showNoSelectError, setShowNoSelectError] = useState<boolean>(false)
+  const [emailHistory, setEmailHistory] = useState<Email[]>([])
+  const [showEmailHistoryModal, setShowEmailHistoryModal] = useState<boolean>(false)
+  const [showEmailModal, setShowEmailModal] = useState<boolean>(false)
 
   const fields: MthTableField<ResourceRequest>[] = [
     {
@@ -63,7 +79,7 @@ export const ResourceRequestsTable: React.FC<ResourceRequestsTableProps> = ({
       label: 'Grade',
       sortable: true,
       formatter: (item: MthTableRowItem<ResourceRequest>) => {
-        return item.rawData.Student?.person?.first_name
+        return gradeShortText(item.rawData.Student?.grade_levels?.[0]?.grade_level)
       },
     },
     {
@@ -87,7 +103,7 @@ export const ResourceRequestsTable: React.FC<ResourceRequestsTableProps> = ({
       label: 'Status',
       sortable: true,
       formatter: (item: MthTableRowItem<ResourceRequest>) => {
-        return item.rawData.status
+        return resourceRequestStatus(item.rawData.status)
       },
     },
     {
@@ -111,7 +127,14 @@ export const ResourceRequestsTable: React.FC<ResourceRequestsTableProps> = ({
       formatter: (item: MthTableRowItem<ResourceRequest>) => {
         return (
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Typography sx={{ fontSize: '12px', fontWeight: '600', color: MthColor.MTHBLUE }}>09/01/2021</Typography>
+            <Typography
+              sx={{ fontSize: '12px', fontWeight: '600', color: MthColor.MTHBLUE, cursor: 'pointer' }}
+              onClick={() => handleOpenEmailHistory(item.rawData)}
+            >
+              {item.rawData.ResourceRequestEmails?.length
+                ? moment(item.rawData.ResourceRequestEmails[0].created_at)?.format('MM/DD/YYYY')
+                : ''}
+            </Typography>
             <IconButton
               onClick={() => {
                 if (item.toggleExpand) item.toggleExpand()
@@ -133,18 +156,24 @@ export const ResourceRequestsTable: React.FC<ResourceRequestsTableProps> = ({
       filter: filter || {},
       skip: skip,
       take: paginationLimit,
-      sort: '',
+      sort: `${sortField}|${sortOrder}`,
       search: searchField,
     },
     skip: !schoolYearId,
     fetchPolicy: 'network-only',
   })
+
+  const [acceptResourceRequests] = useMutation(acceptResourceRequestsMutation)
+  const [removeResourceRequests] = useMutation(removeResourceRequestsMutation)
+  const [deleteResourceRequests] = useMutation(deleteResourceRequestsMutation)
+  const [emailResourceRequests] = useMutation(emailResourceRequestsMutation)
+
   const createData = (resourceRequest: ResourceRequest): MthTableRowItem<ResourceRequest> => {
     return {
       key: `schedule-request-${resourceRequest.resource_id}-${resourceRequest.student_id}`,
       columns: {},
       selectable: true,
-      isSelected: true,
+      isSelected: false,
       rawData: resourceRequest,
       expandNode: (
         <Box
@@ -231,6 +260,80 @@ export const ResourceRequestsTable: React.FC<ResourceRequestsTableProps> = ({
   }
   const debouncedChangeHandler = useCallback(debounce(changeHandler, 300), [])
 
+  const handleSelectionChange = (items: MthTableRowItem<ResourceRequest>[]) => {
+    setSelectedItems(items.filter((item) => item.isSelected).map((item) => item.rawData))
+  }
+
+  const handleEmailSend = async (from: string, subject: string, body: string) => {
+    await emailResourceRequests({
+      variables: {
+        emailResourceRequestsInput: {
+          resourceRequestIds: selectedItems.map((item) => item.id),
+          from: from,
+          subject: subject,
+          body: body,
+        },
+      },
+    })
+    setShowEmailModal(false)
+    refetch()
+  }
+
+  const handleAccept = async () => {
+    if (selectedItems?.length) {
+      await acceptResourceRequests({
+        variables: {
+          resourceRequestsActionInput: {
+            resourceRequestIds: selectedItems.map((item) => item.id),
+          },
+        },
+      })
+      await refetch()
+    } else {
+      setShowNoSelectError(true)
+    }
+  }
+
+  const handleRemove = async () => {
+    if (selectedItems?.length) {
+      await removeResourceRequests({
+        variables: {
+          resourceRequestsActionInput: {
+            resourceRequestIds: selectedItems.map((item) => item.id),
+          },
+        },
+      })
+      await refetch()
+    } else {
+      setShowNoSelectError(true)
+    }
+  }
+
+  const handleDelete = async () => {
+    if (selectedItems?.length) {
+      await deleteResourceRequests({
+        variables: {
+          resourceRequestsActionInput: {
+            resourceRequestIds: selectedItems.map((item) => item.id),
+          },
+        },
+      })
+      await refetch()
+    } else {
+      setShowNoSelectError(true)
+    }
+  }
+
+  const handleSort = (property: string, order: Order) => {
+    setSortField(property)
+    setSortOrder(order)
+  }
+
+  const handleOpenEmailHistory = (data: ResourceRequest) => {
+    setEmailHistory(data?.ResourceRequestEmails)
+    setShowEmailHistoryModal(true)
+  }
+
   useEffect(() => {
     setLocalSearchField(localSearchField)
     debouncedChangeHandler(localSearchField)
@@ -246,6 +349,7 @@ export const ResourceRequestsTable: React.FC<ResourceRequestsTableProps> = ({
           return createData(item)
         }),
       )
+      setSelectedItems([])
     }
   }, [loading, data])
 
@@ -286,7 +390,18 @@ export const ResourceRequestsTable: React.FC<ResourceRequestsTableProps> = ({
             />
           </Box>
           <Box marginLeft={4}>
-            <Button sx={{ ...mthButtonClasses.smallRed, width: '160px' }}>Email</Button>
+            <Button
+              sx={{ ...mthButtonClasses.smallRed, width: '160px' }}
+              onClick={() => {
+                if (!selectedItems?.length) {
+                  setShowNoSelectError(true)
+                } else {
+                  setShowEmailModal(true)
+                }
+              }}
+            >
+              Email
+            </Button>
           </Box>
         </Box>
         <Box>
@@ -299,9 +414,15 @@ export const ResourceRequestsTable: React.FC<ResourceRequestsTableProps> = ({
       </Box>
       <Box sx={{ display: 'flex', gap: '60px', mt: 4 }}>
         <Button sx={mthButtonClasses.primary}>Download</Button>
-        <Button sx={mthButtonClasses.green}>Accept</Button>
-        <Button sx={mthButtonClasses.orange}>Remove Resource</Button>
-        <Button sx={mthButtonClasses.yellow}>Delete Request</Button>
+        <Button sx={mthButtonClasses.green} onClick={() => handleAccept()}>
+          Accept
+        </Button>
+        <Button sx={mthButtonClasses.orange} onClick={() => handleRemove()}>
+          Remove Resource
+        </Button>
+        <Button sx={mthButtonClasses.yellow} onClick={() => handleDelete()}>
+          Delete Request
+        </Button>
       </Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
         <Button sx={mthButtonClasses.darkGray}>Import</Button>
@@ -322,8 +443,53 @@ export const ResourceRequestsTable: React.FC<ResourceRequestsTableProps> = ({
           selectable={true}
           oddBg={false}
           isTableCellBorder={false}
+          defaultOrder={Order.ASC}
+          defaultOrderBy={sortField}
+          onSelectionChange={handleSelectionChange}
+          onSortChange={handleSort}
         />
       </Box>
+
+      {showNoSelectError && (
+        <WarningModal
+          title='Error'
+          subtitle='No student(s) selected'
+          btntitle='Ok'
+          handleModem={() => setShowNoSelectError(false)}
+          handleSubmit={() => setShowNoSelectError(false)}
+          textCenter={true}
+        />
+      )}
+
+      {showEmailHistoryModal && !!emailHistory?.length && (
+        <EmailHistoryModal
+          handleModem={() => {}}
+          handleSubmit={() => setShowEmailHistoryModal(false)}
+          data={emailHistory}
+        />
+      )}
+
+      {showEmailModal && (
+        <ApplicationEmailModal
+          handleModem={() => setShowEmailModal(!showEmailModal)}
+          title={selectedItems.length + ' Recipients'}
+          handleSubmit={handleEmailSend}
+          editFrom={true}
+          isNonSelected={false}
+          filters={[]}
+          inserts={['parent', 'student', 'username', 'password', 'parent_email', 'student_email', 'resource']}
+          insertDescriptions={{
+            parent: "Parent's First Name",
+            student: "Student's First Name",
+            username: 'Student Username',
+            password: 'User Password',
+            parent_email: 'Parent Email',
+            student_email: 'Student Email',
+            resource: 'Resource Title',
+          }}
+          handleSchedulesByStatus={() => {}}
+        />
+      )}
     </PageBlock>
   )
 }

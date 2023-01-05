@@ -2,7 +2,7 @@ import { FunctionComponent } from 'react'
 import { EmailTemplate } from '@mth/models'
 import { StandardResponseOption } from './StandardReponses/types'
 
-type EmailModalProps = {
+export type EmailModalProps = {
   handleModem: () => void
   handleSubmit: (from: string, subject: string, body: string, options?: StandardResponseOption) => void
   title: string
@@ -11,6 +11,8 @@ type EmailModalProps = {
   editFrom?: boolean
   isNonSelected: boolean
   filters: Array<string>
+  inserts?: string[]
+  insertDescriptions?: { [key: string]: string }
   handleSchedulesByStatus: (status: string) => void
 }
 

@@ -39,7 +39,7 @@ const FilterComponent: React.FC<FilterComponentProps> = ({
   const [expand, setExpand] = useState<boolean>(true)
   const [showOtherFilters, setShowOtherFilters] = useState(false)
   const [otherList, setOtherList] = useState<OtherType[]>([])
-  const [sortedGradeList, setSortedGradeList] = useState<string[]>([])
+  const [sortedGradeList, setSortedGradeList] = useState<CheckBoxListVM[]>([])
 
   const [selectAll, setSelectAll] = useState(false)
   const [curriculumProviders, setCurriculumProviders] = useState<CheckBoxListVM[]>([])

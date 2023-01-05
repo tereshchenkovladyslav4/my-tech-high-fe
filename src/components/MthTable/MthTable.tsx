@@ -18,8 +18,8 @@ import { DragDropContext, Droppable, DroppableProvided, DropResult } from 'react
 import { MthCheckbox } from '@mth/components/MthCheckbox'
 import MthTableRow from '@mth/components/MthTable/MthTableRow'
 import { mthTableClasses } from '@mth/components/MthTable/styles'
+import { Order } from '@mth/enums'
 import { convertWidth } from '@mth/utils'
-import { Order } from '../SortableTable/types'
 import { MthTableProps, MthTableRowItem } from './types'
 
 const CssTableSortLabel = styled(TableSortLabel)(() => ({
@@ -49,6 +49,8 @@ const MthTable = <T extends unknown>({
   oddBg = true,
   borderBottom = true,
   isDraggable = false,
+  defaultOrder = Order.DESC,
+  defaultOrderBy = 'name',
   onArrange,
   onSelectionChange,
   onSortChange,
@@ -59,9 +61,8 @@ const MthTable = <T extends unknown>({
   const [rowCount, setRowCount] = useState<number>(0)
   const [tableWidth, setTableWidth] = useState<number>(0)
   const tableRef = useRef<HTMLDivElement>(null)
-  // const [order, setOrder] = useState<Order>(Order.ASC)
-  const [order, setOrder] = useState<Order>(Order.DESC)
-  const [orderBy, setOrderBy] = useState<string>('name')
+  const [order, setOrder] = useState<Order>(defaultOrder)
+  const [orderBy, setOrderBy] = useState<string>(defaultOrderBy)
 
   const handleRequestSort = (fieldKey: string) => {
     const isAsc = orderBy === fieldKey && order === Order.ASC

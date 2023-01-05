@@ -439,7 +439,13 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
     if (isSecondSemester && hasUnlockedPeriods) {
       return !!schedule.editable
     } else {
-      return !scheduleStatus || scheduleStatus === ScheduleStatus.DRAFT || schedule.editable || (isAdmin && isEditMode)
+      return (
+        !scheduleStatus ||
+        scheduleStatus === ScheduleStatus.DRAFT ||
+        scheduleStatus === ScheduleStatus.NOT_SUBMITTED ||
+        schedule.editable ||
+        (isAdmin && isEditMode)
+      )
     }
   }
 

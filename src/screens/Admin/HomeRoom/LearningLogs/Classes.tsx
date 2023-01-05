@@ -85,7 +85,6 @@ const Classes: React.FC<ClassessProps> = ({ master, refetch }) => {
       label: '',
       sortable: false,
       tdClass: '',
-      // 48px is for checkbox
       width: 'calc(19% - 48px)',
       formatter: (item: MthTableRowItem<Classes>) => {
         return (
@@ -149,7 +148,7 @@ const Classes: React.FC<ClassessProps> = ({ master, refetch }) => {
   }, [master])
 
   useEffect(() => {
-    if (classData && classData?.length) {
+    if (classData) {
       setTableData(
         classData
           ?.sort((a, b) => (a.class_name.toLowerCase() > b.class_name.toLowerCase() ? 1 : -1))
