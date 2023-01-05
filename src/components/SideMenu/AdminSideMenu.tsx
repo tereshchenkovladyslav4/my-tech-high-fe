@@ -15,7 +15,8 @@ import KeyIcon from '@mui/icons-material/VpnKey'
 import { List, ListItem, Box, ListItemButton } from '@mui/material'
 import { map } from 'lodash'
 import { NavLink, useHistory } from 'react-router-dom'
-import { MthColor, MthRoute } from '@mth/enums'
+import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
+import { MthColor, MthRoute, MthTitle } from '@mth/enums'
 import { AuthContext } from '@mth/providers/AuthProvider/AuthContext'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import {
@@ -34,7 +35,6 @@ import {
   COMMUNICATION,
 } from '../../utils/constants'
 import { MTHLogo } from '../SVG/MTHLogo'
-import { Paragraph } from '../Typography/Paragraph/Paragraph'
 import { useStyles } from './styles'
 
 export const AdminSideMenu: React.FC = () => {
@@ -74,7 +74,7 @@ export const AdminSideMenu: React.FC = () => {
     },
     {
       to: REIMBURSMENTS,
-      label: 'Reimbursements & Direct Orders',
+      label: MthTitle.DIRECT_ORDERS_REIMBURSEMENTS,
       icon: <CreditCardRoundedIcon style={classes.logos} />,
     },
     {

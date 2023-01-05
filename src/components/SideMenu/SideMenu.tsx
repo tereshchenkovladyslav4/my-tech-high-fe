@@ -11,8 +11,10 @@ import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded'
 import { List, ListItem, Box, ListItemButton } from '@mui/material'
 import { map, some } from 'lodash'
 import { NavLink, useHistory, useLocation } from 'react-router-dom'
-import { AuthContext } from '../../providers/AuthProvider/AuthContext'
-import { UserContext } from '../../providers/UserContext/UserProvider'
+import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
+import { MthTitle } from '@mth/enums'
+import { AuthContext } from '@mth/providers/AuthProvider/AuthContext'
+import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import {
   ACTIVELINKBACKGROUND,
   COMMUNICATION,
@@ -30,7 +32,6 @@ import {
 } from '../../utils/constants'
 import { MTHLogo } from '../SVG/MTHLogo'
 import { TTALogo } from '../SVG/TTALogo'
-import { Paragraph } from '../Typography/Paragraph/Paragraph'
 import { useStyles } from './styles'
 
 const noSidebarUsers = [15, 14, 16, 11, 9, 10, 13, 12]
@@ -98,9 +99,9 @@ export const SideMenu: React.FC = () => {
     },
     {
       to: REIMBURSMENTS,
-      label: 'Reimbursements & Direct Orders',
+      label: MthTitle.DIRECT_ORDERS_REIMBURSEMENTS,
       icon: <CreditCardRoundedIcon style={classes.logos} />,
-      access: [3, 15, checkAdminAccessOnSidebar('Reimbursements & Direct Orders')],
+      access: [3, 15, checkAdminAccessOnSidebar(MthTitle.DIRECT_ORDERS_REIMBURSEMENTS)],
     },
     {
       to: REPORTS,

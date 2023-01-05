@@ -33,7 +33,7 @@ export const ReimbursementForms: React.FC = () => {
       const cardItems: CardItem[] = []
       const images = [BgOrange, BgBlue]
       let index = 1
-      if (schoolYear.ScheduleBuilder?.custom_built) {
+      if (schoolYear.reimbursements === ReduceFunds.TECHNOLOGY) {
         cardItems.push({
           id: index++,
           icon: 'Custom-built',
@@ -44,8 +44,6 @@ export const ReimbursementForms: React.FC = () => {
             setFormType(ReimbursementFormType.CUSTOM_BUILT)
           },
         })
-      }
-      if (schoolYear.reimbursements === ReduceFunds.TECHNOLOGY) {
         cardItems.push({
           id: index++,
           icon: 'Technology',
@@ -56,18 +54,18 @@ export const ReimbursementForms: React.FC = () => {
             setFormType(ReimbursementFormType.TECHNOLOGY)
           },
         })
-      }
-      if (schoolYear.ScheduleBuilder?.third_party_provider) {
-        cardItems.push({
-          id: index++,
-          icon: '3rd Party Provider',
-          title: 'Edit',
-          img: images[index % 2],
-          isLink: false,
-          onClick: () => {
-            setFormType(ReimbursementFormType.THIRD_PARTY_PROVIDER)
-          },
-        })
+        if (schoolYear.ScheduleBuilder?.third_party_provider) {
+          cardItems.push({
+            id: index++,
+            icon: '3rd Party Provider',
+            title: 'Edit',
+            img: images[index % 2],
+            isLink: false,
+            onClick: () => {
+              setFormType(ReimbursementFormType.THIRD_PARTY_PROVIDER)
+            },
+          })
+        }
       }
       if (schoolYear.reimbursements === ReduceFunds.SUPPLEMENTAL) {
         cardItems.push({

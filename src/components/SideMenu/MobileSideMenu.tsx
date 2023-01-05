@@ -3,8 +3,10 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import { List, ListItem, Box, ListItemButton, IconButton } from '@mui/material'
 import { map, some } from 'lodash'
 import { NavLink, useHistory, useLocation } from 'react-router-dom'
-import { AuthContext } from '../../providers/AuthProvider/AuthContext'
-import { UserContext } from '../../providers/UserContext/UserProvider'
+import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
+import { MthTitle } from '@mth/enums'
+import { AuthContext } from '@mth/providers/AuthProvider/AuthContext'
+import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import {
   ACTIVELINKBACKGROUND,
   COMMUNICATION,
@@ -20,7 +22,6 @@ import {
   SETTINGS,
   USERS,
 } from '../../utils/constants'
-import { Paragraph } from '../Typography/Paragraph/Paragraph'
 import { useStyles } from './styles'
 const noSidebarUsers = [15, 14, 16, 11, 9, 10, 13, 12]
 
@@ -78,8 +79,8 @@ export const MobileSideMenu: React.FC<Props> = ({ handleDrawerClose }) => {
     },
     {
       to: REIMBURSMENTS,
-      label: 'Reimbursements & Direct Orders',
-      access: [3, 15, checkAdminAccessOnSidebar('Reimbursements & Direct Orders')],
+      label: MthTitle.DIRECT_ORDERS_REIMBURSEMENTS,
+      access: [3, 15, checkAdminAccessOnSidebar(MthTitle.DIRECT_ORDERS_REIMBURSEMENTS)],
     },
     {
       to: PARENT_LINK,

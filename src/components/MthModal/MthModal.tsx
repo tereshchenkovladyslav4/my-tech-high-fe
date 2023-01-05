@@ -20,6 +20,10 @@ export type CustomModalType = {
   showBtnClose?: boolean
   showBtnConfirm?: boolean
   showBtnCancel?: boolean
+  isCustomBtn: boolean
+  customStr: string
+  customBtnType: string
+  onCustom: () => void
 }
 
 export const MthModal: React.FC<CustomModalType> = ({
@@ -38,6 +42,10 @@ export const MthModal: React.FC<CustomModalType> = ({
   showBtnClose = false,
   showBtnConfirm = true,
   showBtnCancel = true,
+  isCustomBtn = false,
+  customStr = '',
+  customBtnType = 'primary',
+  onCustom,
 }) => {
   const onBackdropClick = () => {
     if (!noCloseOnBackdrop) onClose()
@@ -82,6 +90,13 @@ export const MthModal: React.FC<CustomModalType> = ({
                   {confirmStr}
                 </Button>
               )}
+            </Box>
+          )}
+          {isCustomBtn && (
+            <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '60px' }}>
+              <Button sx={mthButtonClasses[customBtnType]} onClick={onCustom} type='button'>
+                {customStr}
+              </Button>
             </Box>
           )}
         </Box>

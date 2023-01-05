@@ -550,7 +550,11 @@ export const AssignmentTable: React.FC<EnrollmentSchoolTableProps> = ({
                 <FormControlLabel
                   value='N/A'
                   control={<Radio sx={{ marginRight: '20px' }} />}
-                  label='Automatically mark the past-due Learning Logs as N/A'
+                  label={
+                    <Paragraph size='large' fontWeight='600'>
+                      Automatically mark the past-due Learning Logs as N/A
+                    </Paragraph>
+                  }
                 />
               </RadioGroup>
             </FormControl>
@@ -564,14 +568,18 @@ export const AssignmentTable: React.FC<EnrollmentSchoolTableProps> = ({
                 <FormControlLabel
                   value='0'
                   control={<Radio sx={{ marginRight: '20px' }} />}
-                  label='Auto-grade the past-due Learning Logs as 0, requiring the student to submit'
+                  label={
+                    <Paragraph size='large' fontWeight='600'>
+                      Auto-grade the past-due Learning Logs as 0, requiring the student to submit
+                    </Paragraph>
+                  }
                 />
               </RadioGroup>
             </FormControl>
             {warningError && !autoGrade && (
-              <Subtitle size={'small'} color={RED}>
+              <Paragraph size={'large'} fontWeight='600' color={RED}>
                 Required
-              </Subtitle>
+              </Paragraph>
             )}
           </Box>
         </WarningModal>

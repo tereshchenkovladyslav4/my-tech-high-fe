@@ -25,6 +25,10 @@ export const GetMastersBySchoolYearIDGql = gql`
         due_date
         id
       }
+      masterAssignments {
+        due_date
+        id
+      }
     }
   }
 `
@@ -93,7 +97,9 @@ export const getChecklistQuery = gql`
 `
 export const createAssignmentMutation = gql`
   mutation CreateNewAssignment($createNewAssignmentInput: CreateNewAssignmentInput!) {
-    createNewAssignment(createNewAssignmentInput: $createNewAssignmentInput)
+    createNewAssignment(createNewAssignmentInput: $createNewAssignmentInput) {
+      id
+    }
   }
 `
 
@@ -130,23 +136,26 @@ export const createOrUpdateInstruction = gql`
 
 export const createOrUpdateLearningLogQuestionMutation = gql`
   mutation CreateOrUpdateLearningLogQuestion(
-    $createOrUpdateLearningLogQuestionInput: CreateOrUpdateLearningLogQuestionInput!
+    $createOrUpdateLearningLogQuestionInput: [CreateOrUpdateLearningLogQuestionInput!]!
   ) {
     createOrUpdateLearningLogQuestion(createOrUpdateLearningLogQuestionInput: $createOrUpdateLearningLogQuestionInput)
   }
 `
 export const GetLearningLogQuestionByMasterIdQuery = gql`
-  query GetLearningLogQuestionByMasterId($masterId: Int!) {
-    getLearningLogQuestionByMasterId(masterId: $masterId) {
-      id
-      master_id
-      type
-      question
-      options
-      default_question
-      custom_question
-      required
+  query GetLearningLogQuestionByAssignmentId($assignmentId: Int!) {
+    getLearningLogQuestionByAssignmentId(assignmentId: $assignmentId) {
+      assignment_id
       can_upload
+      default_question
+      grades
+      grade_specific
+      id
+      options
+      parent_slug
+      question
+      required
+      slug
+      type
     }
   }
 `

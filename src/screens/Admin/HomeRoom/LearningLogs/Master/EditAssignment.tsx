@@ -1,19 +1,18 @@
 import React, { useEffect, useState } from 'react'
 import { useMutation, useQuery } from '@apollo/client'
-import { Box, Button, Card, Stack, styled, TextField, Typography } from '@mui/material'
+import { Box, Button, Card, Stack, styled, TextField } from '@mui/material'
 import moment from 'moment'
 import { Prompt, useHistory } from 'react-router-dom'
 import BGSVG from '@mth/assets/ApplicationBG.svg'
 import { CommonSelect } from '@mth/components/CommonSelect'
 import { DefaultDatePicker } from '@mth/components/DefaultDatePicker/DefaultDatePicker'
 import { MthCheckbox } from '@mth/components/MthCheckbox'
-import { MthCheckboxList } from '@mth/components/MthCheckboxList'
-import { CheckBoxListVM } from '@mth/components/MthCheckboxList/MthCheckboxList'
 import { RadioGroupOption } from '@mth/components/MthRadioGroup/types'
 import { MthTimePicker } from '@mth/components/MthTimePicker/MthTimePicker'
 import PageHeader from '@mth/components/PageHeader'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { WarningModal } from '@mth/components/WarningModal/Warning'
+import { QuestionTypes } from '@mth/constants'
 import { MthTitle } from '@mth/enums'
 import { mthButtonClasses } from '@mth/styles/button.style'
 import { HOMEROOM_LEARNING_LOGS } from '../../../../../utils/constants'
@@ -27,7 +26,11 @@ import {
 } from '../../services'
 import { defaultQuestions } from '../defaultValue'
 import { LearningLogQuestion } from '../types'
+import { Master } from '../types'
+import CustomQuestion from './AssignmentQuestion/CustomQuestion'
+import LearningQuestionList from './AssignmentQuestion/LearningQuestionList'
 import { masterUseStyles } from './styles'
+import { AssignmentQuestionType, LearningQuestionType } from './types'
 
 const CssTextField = styled(TextField, {
   shouldForwardProp: (props) => props !== 'focusColor',
@@ -54,7 +57,7 @@ const CssTextField = styled(TextField, {
 const EditAssignment: React.FC<{ masterId: number }> = ({ masterId }) => {
   const history = useHistory()
 
-  const [masterTitle, setMasterTitle] = useState<string>('')
+  const [master, setMaster] = useState<Master>('')
   const [assignmentTitle, setAssignmentTitle] = useState<string>('')
   const [isTitleError, setIsTitleError] = useState<boolean>(false)
 
@@ -78,8 +81,12 @@ const EditAssignment: React.FC<{ masterId: number }> = ({ masterId }) => {
   const [openAddQuestionModal, setOpenAddQuestionModal] = useState<boolean>(false)
 
   const [questionType, setQuestionType] = useState<RadioGroupOption[]>(defaultQuestions)
-  const [questionCheckboxList, setQuestionCheckboxList] = useState<CheckBoxListVM[]>([])
-  const [selectedQuestions, setSelectedQuestions] = useState<string[]>([])
+  const [learningQuestionList, setLearningQuestionList] = useState<LearningQuestionType[]>([])
+
+  const [assignmentId, setAssignmentId] = useState<number | null>(15)
+
+  const [isCustomeQuestionModal, setIsCustomeQuestionModal] = useState<boolean>(false)
+  const [editQuestionList, setEditQuestionList] = useState<AssignmentQuestionType[]>([])
 
   const { loading: masterLoading, data: masterData } = useQuery(GetMastersByIDGql, {
     variables: {
@@ -95,25 +102,23 @@ const EditAssignment: React.FC<{ masterId: number }> = ({ masterId }) => {
     refetch: questionRefetch,
   } = useQuery(GetLearningLogQuestionByMasterIdQuery, {
     variables: {
-      masterId,
+      assignmentId: assignmentId,
     },
+    skip: assignmentId ? false : true,
     fetchPolicy: 'network-only',
   })
 
   const [createLearningLogQuestion] = useMutation(createOrUpdateLearningLogQuestionMutation)
 
   useEffect(() => {
-    if (!questionLoading && questionData?.getLearningLogQuestionByMasterId) {
-      setQuestionCheckboxList(
-        questionData?.getLearningLogQuestionByMasterId.map((obj: LearningLogQuestion) => {
+    if (!questionLoading && questionData?.getLearningLogQuestionByAssignmentId) {
+      setLearningQuestionList(
+        questionData?.getLearningLogQuestionByAssignmentId.map((item) => {
           return {
-            label: (
-              <span
-                dangerouslySetInnerHTML={{ __html: `${obj.required ? '*' : ''} ${obj?.question}` }}
-                style={{ display: 'flex', alignItems: 'center' }}
-              ></span>
-            ),
-            value: obj.id?.toString(),
+            ...item,
+            response: '',
+            active: !item.parent_slug ? true : false,
+            options: JSON.parse(item.options),
           }
         }),
       )
@@ -122,7 +127,7 @@ const EditAssignment: React.FC<{ masterId: number }> = ({ masterId }) => {
 
   useEffect(() => {
     if (!masterLoading && masterData?.getMastersById) {
-      setMasterTitle(masterData?.getMastersById.master_name)
+      setMaster(masterData?.getMastersById)
     }
   }, [masterLoading, masterData])
 
@@ -308,7 +313,7 @@ const EditAssignment: React.FC<{ masterId: number }> = ({ masterId }) => {
     const teacherDateTime = moment(
       `${moment(teacherDate).tz('America/Denver').format('yyyy-MM-DD')} ${teacherTime}`,
     ).toISOString()
-    await createAssignment({
+    const { data: newAssignment } = await createAssignment({
       variables: {
         createNewAssignmentInput: {
           autoGradeDateTime: autoGradeDateTime,
@@ -322,18 +327,24 @@ const EditAssignment: React.FC<{ masterId: number }> = ({ masterId }) => {
       },
     })
     setIsChanged(false)
-    history.push(`${HOMEROOM_LEARNING_LOGS}/edit/${masterId}`)
+    setAssignmentId(parseInt(newAssignment.createNewAssignment.id))
   }
 
-  const handleSaveQuestion = async (value: LearningLogQuestion) => {
+  const handleSaveQuestion = async (value: LearningLogQuestion[]) => {
     await createLearningLogQuestion({
       variables: {
-        createOrUpdateLearningLogQuestionInput: { ...value, master_id: masterId },
+        createOrUpdateLearningLogQuestionInput: value.map((item) => {
+          return {
+            ...item,
+            assignment_id: assignmentId,
+          }
+        }),
       },
     })
     setOpenAddQuestionModal(false)
+    setIsCustomeQuestionModal(false)
     setQuestionType(defaultQuestions)
-    await questionRefetch()
+    questionRefetch()
   }
 
   return (
@@ -353,7 +364,7 @@ const EditAssignment: React.FC<{ masterId: number }> = ({ masterId }) => {
         }}
       >
         {/* <Box sx={{ mb: 4 }}> */}
-        <PageHeader title={masterTitle || ''} to={`${HOMEROOM_LEARNING_LOGS}/edit/${masterId}`}>
+        <PageHeader title={master?.master_name || ''} to={`${HOMEROOM_LEARNING_LOGS}/edit/${masterId}`}>
           <Box display='flex'>
             <Button sx={{ ...mthButtonClasses.roundXsGray, mr: '20px' }} type='button' onClick={handleCancel}>
               Cancel
@@ -369,80 +380,84 @@ const EditAssignment: React.FC<{ masterId: number }> = ({ masterId }) => {
           <CommonSelect key={index} index={index + 1} selectItem={editSeeing} verticalDividHeight='auto' />
         ))}
       </Card>
-      <Card
-        sx={{
-          p: 4,
-          borderRadius: '12px',
-          boxShadow: '0px 0px 35px rgba(0, 0, 0, 0.05)',
-          width: '50%',
-          margin: '20px auto',
-        }}
-      >
-        <Box
-          paddingBottom={10}
-          paddingX={'20px'}
-          sx={{
-            position: 'relative',
-            backgroundImage: `url(${BGSVG})`,
-            backgroundSize: '100%',
-            backgroundRepeat: 'no-repeat',
-            backgroundPosition: 'top',
-            alignItems: 'center',
-            display: 'flex',
-            flexDirection: 'column',
-            minHeight: '66vh',
-            justifyContent: 'flex-end',
-          }}
-        >
-          <Box
-            sx={{
-              position: 'absolute',
-              top: '10%',
-              px: '12%',
-              display: 'flex',
-              justifyContent: 'center',
-              width: '100%',
-            }}
-          >
-            <Box>
-              <Typography variant='subtitle1'>
-                Select one or more of the competencies you were developing this week, if interested.
-              </Typography>
-              <Box sx={{ padding: '10px 80px', marginTop: '16px' }}>
-                <MthCheckboxList
-                  values={selectedQuestions}
-                  setValues={(value) => {
-                    setSelectedQuestions(value)
-                  }}
-                  checkboxLists={questionCheckboxList}
-                  haveSelectAll={false}
-                />
-              </Box>
+      {assignmentId && (
+        <>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: '15px' }}>
+            <Subtitle>Learning Log</Subtitle>
+            <Box display='flex'>
+              <Button sx={{ ...mthButtonClasses.roundXsGray, mr: '20px' }} type='button' onClick={handleCancel}>
+                Cancel
+              </Button>
+              <Button sx={mthButtonClasses.roundXsDark} type='button' onClick={handleSubmit}>
+                Save
+              </Button>
             </Box>
           </Box>
-          <Box
+          <Card
             sx={{
-              textAlign: 'center',
-              display: 'flex',
-              flexDirection: 'column',
+              p: 4,
+              borderRadius: '12px',
+              boxShadow: '0px 0px 35px rgba(0, 0, 0, 0.05)',
+              // width: '50%',
+              margin: '20px auto',
             }}
           >
-            <Button
-              sx={masterUseStyles.primaryGradient}
-              type='button'
-              onClick={() => {
-                setOpenDefaultQuestionModal(true)
+            <Box
+              paddingBottom={10}
+              paddingX={'20px'}
+              sx={{
+                position: 'relative',
+                backgroundImage: `url(${BGSVG})`,
+                backgroundSize: '100%',
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: 'top',
+                alignItems: 'center',
+                display: 'flex',
+                flexDirection: 'column',
+                minHeight: '66vh',
+                justifyContent: 'flex-end',
               }}
             >
-              + Add Question
-            </Button>
-            <Button sx={{ ...masterUseStyles.saveButtons, margin: '30px auto' }} type='button'>
-              + Add Page
-            </Button>
-            <Subtitle size={'medium'}>1/1</Subtitle>
-          </Box>
-        </Box>
-      </Card>
+              <Box
+                sx={{
+                  top: '10%',
+                  px: '12%',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  width: '100%',
+                }}
+              >
+                <Box sx={{ width: '100%' }}>
+                  <LearningQuestionList learningQuestionList={learningQuestionList} />
+                </Box>
+              </Box>
+              <Box
+                sx={{
+                  textAlign: 'center',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  marginTop: 2,
+                }}
+              >
+                <Button
+                  sx={{ ...mthButtonClasses.primary }}
+                  type='button'
+                  onClick={() => {
+                    setOpenDefaultQuestionModal(true)
+                  }}
+                >
+                  + Add Question
+                </Button>
+                <Button sx={{ ...mthButtonClasses.roundXsDark, minHeight: '50px', marginTop: '60px' }} type='button'>
+                  + Add Page
+                </Button>
+                <Subtitle size={'medium'}>1/1</Subtitle>
+              </Box>
+            </Box>
+          </Card>
+        </>
+      )}
+
       {isConfirmModal && (
         <WarningModal
           handleModem={() => setIsConfirmModal(false)}
@@ -455,6 +470,14 @@ const EditAssignment: React.FC<{ masterId: number }> = ({ masterId }) => {
           textCenter
         />
       )}
+      <CustomQuestion
+        isCustomeQuestionModal={isCustomeQuestionModal}
+        onClose={() => setIsCustomeQuestionModal(false)}
+        master={master}
+        handleSaveQuestion={handleSaveQuestion}
+        assignmentId={assignmentId}
+        editQuestionList={editQuestionList}
+      />
       {openDefaultQuestionModal && (
         <DefaultQuestionModal
           onClose={() => {
@@ -463,6 +486,20 @@ const EditAssignment: React.FC<{ masterId: number }> = ({ masterId }) => {
           onAction={(value: 'default' | 'custom') => {
             if (value === 'default') {
               setOpenAddQuestionModal(true)
+            }
+            if (value === 'custom') {
+              setEditQuestionList([
+                {
+                  id: undefined,
+                  type: QuestionTypes.TEXTBOX,
+                  question: '',
+                  options: [],
+                  validations: [],
+                  slug: `meta_${+new Date()}`,
+                  parentSlug: '',
+                },
+              ])
+              setIsCustomeQuestionModal(true)
             }
             setOpenDefaultQuestionModal(false)
           }}

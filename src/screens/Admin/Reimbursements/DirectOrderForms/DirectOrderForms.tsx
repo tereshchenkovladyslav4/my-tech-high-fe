@@ -33,7 +33,7 @@ export const DirectOrderForms: React.FC = () => {
       const cardItems: CardItem[] = []
       const images = [BgOrange, BgBlue]
       let index = 1
-      if (schoolYear.ScheduleBuilder?.custom_built) {
+      if (schoolYear.direct_orders === ReduceFunds.TECHNOLOGY) {
         cardItems.push({
           id: index++,
           icon: 'Custom-built',
@@ -44,8 +44,6 @@ export const DirectOrderForms: React.FC = () => {
             setFormType(ReimbursementFormType.CUSTOM_BUILT)
           },
         })
-      }
-      if (schoolYear.direct_orders === ReduceFunds.TECHNOLOGY) {
         cardItems.push({
           id: index++,
           icon: 'Technology',

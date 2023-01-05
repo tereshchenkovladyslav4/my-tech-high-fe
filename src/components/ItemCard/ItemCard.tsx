@@ -42,7 +42,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({
     >
       {hasTitle ? (
         <Box sx={useStyles.cardHeader}>
-          <CardMedia component='img' src={img} sx={{ height: 240 }} />
+          <CardMedia component='img' src={img} sx={{ height: img ? 'auto' : 240 }} />
           <Box className='card-title'>
             <Typography fontSize='45px' component='div' fontWeight='600'>
               {icon || title}

@@ -206,6 +206,12 @@ export const mthButtonClasses = {
     minWidth: '140px',
   },
 
+  roundDarkGray: {
+    ...mthButtonSizeClasses.medium,
+    ...mthButtonColorClasses.darkGray,
+    borderRadius: '20px',
+  },
+
   // Orange buttons
   orange: {
     ...mthButtonSizeClasses.medium,

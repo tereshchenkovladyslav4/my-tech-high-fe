@@ -35,17 +35,24 @@ import {
 import { filter, map } from 'lodash'
 import { NavLink, useLocation } from 'react-router-dom'
 import Slider from 'react-slick'
-import { ApplicationStatus, MthColor, PacketStatus, StudentNotification, StudentStatus } from '@mth/enums'
+import { Metadata } from '@mth/components/Metadata/Metadata'
+import { MobileSideMenu } from '@mth/components/SideMenu/MobileSideMenu'
+import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import {
+  ApplicationStatus,
+  MthColor,
+  MthRoute,
+  MthTitle,
+  PacketStatus,
+  StudentNotification,
+  StudentStatus,
+} from '@mth/enums'
+import { SchoolYear } from '@mth/models'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { getSchoolYearsByRegionId } from '@mth/screens/Admin/Dashboard/SchoolYear/SchoolYear'
 import { StudentType, Person } from '@mth/screens/HomeroomStudentProfile/Student/types'
 import { checkEnrollPacketStatus, getWindowDimension, gradeText } from '@mth/utils'
-import { APPLICATIONS, HOMEROOM } from '../../utils/constants'
-import { SchoolYearType } from '../../utils/utils.types'
-import { Metadata } from '../Metadata/Metadata'
-import { MobileSideMenu } from '../SideMenu/MobileSideMenu'
-import { Paragraph } from '../Typography/Paragraph/Paragraph'
-import { Subtitle } from '../Typography/Subtitle/Subtitle'
 import { useStyles } from './styles'
 
 const drawerWidth = '100%'
@@ -73,11 +80,11 @@ export const AppBar: FunctionComponent = () => {
 
   const [windowDimensions] = useState(getWindowDimension())
 
-  const isActive = (id) => location.pathname.includes(`/${id}`)
+  const isActive = (id: number) => location.pathname.includes(`/${id}`)
 
   // get student status
   const region_id = me?.userRegion?.at(-1)?.region_id
-  const [schoolYears, setSchoolYears] = useState<SchoolYearType[]>([])
+  const [schoolYears, setSchoolYears] = useState<SchoolYear[]>([])
   const schoolYearData = useQuery(getSchoolYearsByRegionId, {
     variables: {
       regionId: region_id,
@@ -90,7 +97,7 @@ export const AppBar: FunctionComponent = () => {
     if (schoolYearData?.data?.region?.SchoolYears) {
       const { SchoolYears } = schoolYearData?.data?.region
       setSchoolYears(
-        SchoolYears.map((item: SchoolYearType) => ({
+        SchoolYears.map((item: SchoolYear) => ({
           school_year_id: item.school_year_id,
           enrollment_packet: item.enrollment_packet,
         })),
@@ -163,7 +170,7 @@ export const AppBar: FunctionComponent = () => {
   const AddStudentButton = () => (
     <Button
       disableElevation
-      href={APPLICATIONS}
+      href={MthRoute.APPLICATIONS.toString()}
       variant='contained'
       sx={{
         background: '#FAFAFA',
@@ -270,8 +277,8 @@ export const AppBar: FunctionComponent = () => {
         student?.status?.at(-1)?.status === StudentStatus.WITHDRAWN ||
         student?.packets?.at(-1)?.status === PacketStatus.STARTED ||
         student?.packets?.at(-1)?.status === PacketStatus.NOT_STARTED
-          ? HOMEROOM
-          : `${HOMEROOM}/${student.student_id}`
+          ? MthRoute.HOMEROOM
+          : `${MthRoute.HOMEROOM}/${student.student_id}`
       return (
         <Box key={idx} sx={{ textDecoration: 'none', marginTop: 1 }}>
           {link ? (
@@ -363,8 +370,8 @@ export const AppBar: FunctionComponent = () => {
           student?.status?.at(-1)?.status === 2 ||
           student?.packets?.at(-1)?.status === PacketStatus.STARTED ||
           student?.packets?.at(-1)?.status === PacketStatus.NOT_STARTED
-            ? HOMEROOM
-            : `${HOMEROOM}/${student.student_id}`
+            ? MthRoute.HOMEROOM
+            : `${MthRoute.HOMEROOM}/${student.student_id}`
         return (
           <div key={idx}>
             {link ? (
@@ -425,7 +432,7 @@ export const AppBar: FunctionComponent = () => {
           </div>
         )
       })}
-      <NavLink to={APPLICATIONS} style={{ textDecoration: 'none' }}>
+      <NavLink to={MthRoute.APPLICATIONS} style={{ textDecoration: 'none' }}>
         <MenuItem onClick={() => handleDrawerCloseAndTheIcon('header', 'addStudent')}>
           <ListItemIcon sx={{ marginRight: '24px' }}>
             <AddCircleIcon sx={{ fontSize: '2.5rem' }} />
@@ -512,7 +519,7 @@ export const AppBar: FunctionComponent = () => {
           return <CallMadeRoundedIcon />
         case 'Records':
           return <CallMadeRoundedIcon />
-        case 'Reimbursements & Direct Orders':
+        case MthTitle.DIRECT_ORDERS_REIMBURSEMENTS:
           return <CreditCardRoundedIcon />
         case 'Reports':
           return <CallMadeRoundedIcon />

@@ -203,7 +203,7 @@ const Withdrawal: React.FC<{
   const [unsavedChanges, setUnsavedChanges] = useState<boolean>(false)
 
   //	Select Questions Query from the Database
-  const { data: questionsData, refetch: refetchQuestionData } = useQuery(getQuestionsByRegionQuery, {
+  const { data: questionsData } = useQuery(getQuestionsByRegionQuery, {
     variables: { regionId: region, section: 'quick-link-withdrawal' },
     fetchPolicy: 'network-only',
   })
@@ -356,10 +356,7 @@ const Withdrawal: React.FC<{
     })
 
     if (data.saveQuestions) {
-      await refetchQuestionData()
-      setSuccessAlert(true)
-      setUnsavedChanges(false)
-      onChangeHandler(false)
+      onActionHandler('')
     } else {
       console.error(data)
     }

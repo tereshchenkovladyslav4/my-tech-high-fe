@@ -20,7 +20,7 @@ type DropItem = {
 }
 
 type AddNewQuestionModalProps = {
-  onClose: (res) => void
+  onClose: (res: boolean) => void
   questions?: ApplicationQuestion[]
   questionTypes: DropItem[]
   additionalQuestionTypes: DropItem[]

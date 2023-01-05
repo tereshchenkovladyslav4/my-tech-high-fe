@@ -69,6 +69,7 @@ const MthBulletEditor: React.FC<MthBulletEditorProps> = ({
         'div.DraftEditor-editorContainer': {
           minHeight: height ? height : '300px',
           maxHeight: maxHeight ? maxHeight : '350px',
+          wordBreak: 'break-all',
           marginX: '10px',
           '.public-DraftStyleDefault-block': {
             margin: 0,

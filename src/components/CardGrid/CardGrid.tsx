@@ -15,7 +15,7 @@ export const CardGrid: React.FC<CardGridProps> = ({ items }) => {
         },
       }}
     >
-      <Grid container rowSpacing='32px' columnSpacing='36px'>
+      <Grid container rowSpacing='32px' columnSpacing='64px'>
         {map(items, (item, idx) => (
           <Grid item key={idx} sm={12} md={6} lg={4}>
             <ItemCard
