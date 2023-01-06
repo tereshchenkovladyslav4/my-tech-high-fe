@@ -2,8 +2,8 @@ import React, { useState, useContext } from 'react'
 import { useMutation } from '@apollo/client'
 import { Box, Button, TextField } from '@mui/material'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { MthColor } from '@mth/enums'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
-import { SYSTEM_05 } from '../../../../../utils/constants'
 import { ColorPicker } from '../../components/ColorPicker'
 import { createEventTypeMutation, updateEventTypeMutation } from '../../services'
 import { EventType } from '../../types'
@@ -72,7 +72,7 @@ const NewType: React.FC<NewTypeProps> = ({ eventType, eventTypeCount, onCancel, 
           style: { color: 'black' },
         }}
         InputLabelProps={{
-          style: { color: SYSTEM_05 },
+          style: { color: MthColor.SYSTEM_05 },
         }}
         sx={eventTypeClassess.textfield}
         fullWidth

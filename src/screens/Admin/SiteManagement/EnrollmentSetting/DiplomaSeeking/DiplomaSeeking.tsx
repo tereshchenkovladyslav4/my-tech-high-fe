@@ -82,7 +82,7 @@ const DiplomaSeeking: React.FC = () => {
           label: `${moment(item.date_begin).format('YYYY')}-${moment(item.date_end).format('YY')}`,
           value: item.school_year_id,
         })
-        if (moment(item.date_begin).format('YYYY') === moment().format('YYYY')) {
+        if (new Date(item.date_begin) <= new Date() && new Date(item.date_end) >= new Date()) {
           thisYearId = item.school_year_id // set init year
           if (item?.grades) {
             setGrades(item?.grades.split(',').sort((a: string, b: string) => (parseInt(a) > parseInt(b) ? 1 : -1)))

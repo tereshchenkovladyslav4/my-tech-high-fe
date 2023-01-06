@@ -17,9 +17,9 @@ import { DropDown } from '@mth/components/DropDown/DropDown'
 import { DropDownItem } from '@mth/components/DropDown/types'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
-import { QUESTION_TYPE } from '@mth/enums'
+import { GRADES } from '@mth/constants'
+import { MthColor, QUESTION_TYPE } from '@mth/enums'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
-import { SYSTEM_05, SYSTEM_07, GRADES } from '../../../../../utils/constants'
 import { toOrdinalSuffix } from '../../../../../utils/stringHelpers'
 import { EnrollmentQuestion } from '../../../SiteManagement/EnrollmentSetting/EnrollmentQuestions/types'
 
@@ -303,7 +303,7 @@ function Item({
               minWidth: '100%',
               [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
                 {
-                  borderColor: SYSTEM_07,
+                  borderColor: MthColor.SYSTEM_07,
                 },
             }}
             defaultValue={field.value}
@@ -335,11 +335,11 @@ function Item({
 
               [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
                 {
-                  borderColor: SYSTEM_07,
+                  borderColor: MthColor.SYSTEM_07,
                 },
             }}
             InputLabelProps={{
-              style: { color: SYSTEM_05 },
+              style: { color: MthColor.SYSTEM_05 },
             }}
           />
         )}
@@ -374,11 +374,11 @@ function Item({
 
                           [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
                             {
-                              borderColor: SYSTEM_07,
+                              borderColor: MthColor.SYSTEM_07,
                             },
                         }}
                         InputLabelProps={{
-                          style: { color: SYSTEM_05 },
+                          style: { color: MthColor.SYSTEM_05 },
                         }}
                         variant='outlined'
                         fullWidth
@@ -475,11 +475,11 @@ function Item({
 
                 [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
                   {
-                    borderColor: SYSTEM_07,
+                    borderColor: MthColor.SYSTEM_07,
                   },
               }}
               InputLabelProps={{
-                style: { color: SYSTEM_05 },
+                style: { color: MthColor.SYSTEM_05 },
               }}
             />
           )

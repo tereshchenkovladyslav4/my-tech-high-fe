@@ -1,4 +1,4 @@
-import { BUTTON_LINEAR_GRADIENT } from '../../../../../utils/constants'
+import { MthColor } from '@mth/enums'
 
 export const useStyles = {
   modalCard: {
@@ -162,7 +162,7 @@ export const useStyles = {
     borderRadius: '8px',
     textTransform: 'none',
     height: 40,
-    background: BUTTON_LINEAR_GRADIENT,
+    background: MthColor.BUTTON_LINEAR_GRADIENT,
     color: 'white',
     fontSize: 14,
     fontWeight: 500,

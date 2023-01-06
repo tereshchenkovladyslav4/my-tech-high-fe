@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useState } from 'react'
+import React, { useState } from 'react'
 import { useMutation } from '@apollo/client'
 import SystemUpdateAltRoundedIcon from '@mui/icons-material/SystemUpdateAltRounded'
 import { Box, Button, Modal, TextField } from '@mui/material'
@@ -6,15 +6,14 @@ import CircularProgress from '@mui/material/CircularProgress'
 import { Field, Form, Formik } from 'formik'
 import { toNumber } from 'lodash'
 import * as yup from 'yup'
-import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragraph'
-
-import { Title } from '../../../../../components/Typography/Title/Title'
-import { RED_GRADIENT, BUTTON_LINEAR_GRADIENT } from '../../../../../utils/constants'
+import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
+import { Title } from '@mth/components/Typography/Title/Title'
+import { MthColor } from '@mth/enums'
 import { ValidateFileResponse } from '../SchoolPartner'
 import { UpdateSchoolPartnerMutation } from '../services'
 import { SchoolPartnerType } from '../types'
 
-export const SchoolPartnerEditModal: FunctionComponent<{ handleModem: () => void; el: SchoolPartnerType }> = ({
+export const SchoolPartnerEditModal: React.FC<{ handleModem: () => void; el: SchoolPartnerType }> = ({
   handleModem,
   el,
 }) => {
@@ -292,7 +291,7 @@ export const SchoolPartnerEditModal: FunctionComponent<{ handleModem: () => void
                         borderRadius: 2,
                         textTransform: 'none',
                         height: '33px',
-                        background: RED_GRADIENT,
+                        background: MthColor.RED_GRADIENT,
                         color: 'white',
                         width: '100px',
                         marginRight: 2,
@@ -312,7 +311,7 @@ export const SchoolPartnerEditModal: FunctionComponent<{ handleModem: () => void
                         borderRadius: 2,
                         textTransform: 'none',
                         height: '33px',
-                        background: BUTTON_LINEAR_GRADIENT,
+                        background: MthColor.BUTTON_LINEAR_GRADIENT,
                         color: 'white',
                         width: '100px',
                         marginRight: 2,

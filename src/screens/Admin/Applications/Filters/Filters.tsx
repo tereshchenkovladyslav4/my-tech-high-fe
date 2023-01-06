@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { useQuery } from '@apollo/client'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
@@ -6,16 +6,16 @@ import { Box, Button, Card, Checkbox, FormControlLabel, Grid } from '@mui/materi
 import { map } from 'lodash'
 import moment from 'moment'
 import { useHistory } from 'react-router-dom'
-import { MthTitle } from '@mth/enums'
-import { Paragraph } from '../../../../components/Typography/Paragraph/Paragraph'
-import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
-import { UserContext } from '../../../../providers/UserContext/UserProvider'
-import { BUTTON_LINEAR_GRADIENT, MTHBLUE, RED_GRADIENT, GRADES, GRADE_GROUPS } from '../../../../utils/constants'
+import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { GRADES, GRADE_GROUPS } from '@mth/constants'
+import { MthColor, MthTitle } from '@mth/enums'
+import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { toOrdinalSuffix } from '../../../../utils/stringHelpers'
 import { getActiveSchoolYearsByRegionId } from '../../../Applications/NewParent/service'
 import { FiltersProps, SchoolYearVM } from '../type'
 
-export const Filters: FunctionComponent<FiltersProps> = ({ filter, setFilter }) => {
+export const Filters: React.FC<FiltersProps> = ({ filter, setFilter }) => {
   const { me } = useContext(UserContext)
   const history = useHistory()
   const [expand, setExpand] = useState<boolean>(false)
@@ -39,7 +39,7 @@ export const Filters: FunctionComponent<FiltersProps> = ({ filter, setFilter }) 
     !expand ? (
       <ChevronRightIcon
         sx={{
-          color: MTHBLUE,
+          color: MthColor.MTHBLUE,
           verticalAlign: 'bottom',
           cursor: 'pointer',
         }}
@@ -47,7 +47,7 @@ export const Filters: FunctionComponent<FiltersProps> = ({ filter, setFilter }) 
     ) : (
       <ExpandMoreIcon
         sx={{
-          color: MTHBLUE,
+          color: MthColor.MTHBLUE,
           verticalAlign: 'bottom',
           cursor: 'pointer',
         }}
@@ -508,7 +508,7 @@ export const Filters: FunctionComponent<FiltersProps> = ({ filter, setFilter }) 
               fontWeight: 700,
               borderRadius: 2,
               textTransform: 'none',
-              background: BUTTON_LINEAR_GRADIENT,
+              background: MthColor.BUTTON_LINEAR_GRADIENT,
               color: 'white',
               marginBottom: '12px',
               width: '140px',
@@ -523,7 +523,7 @@ export const Filters: FunctionComponent<FiltersProps> = ({ filter, setFilter }) 
               fontWeight: 700,
               borderRadius: 2,
               textTransform: 'none',
-              background: RED_GRADIENT,
+              background: MthColor.RED_GRADIENT,
               color: 'white',
               width: '140px',
             }}
@@ -539,7 +539,7 @@ export const Filters: FunctionComponent<FiltersProps> = ({ filter, setFilter }) 
   useEffect(() => {
     if (history.location && history.location.state) {
       const state = { ...history.location.state }
-      setGrades(state.grades || [])
+      setGrades(state?.grades || [])
       setSpecialEd(state.specialEd || [])
       setAccountStatus(state.accountStatus || [])
       setStatus(state.status || [])
@@ -559,7 +559,7 @@ export const Filters: FunctionComponent<FiltersProps> = ({ filter, setFilter }) 
   return (
     <Card sx={{ marginTop: 2, padding: 2 }}>
       <Box display='flex' flexDirection='row' onClick={() => setExpand(!expand)}>
-        <Subtitle fontWeight='700' color={MTHBLUE} sx={{ cursor: 'pointer' }}>
+        <Subtitle fontWeight='700' color={MthColor.MTHBLUE} sx={{ cursor: 'pointer' }}>
           Filter
         </Subtitle>
         {chevron()}

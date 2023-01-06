@@ -43,4 +43,5 @@ export enum MthColor {
 
   PRIMARY_MEDIUM_MOUSEOVER = '#585CFF',
   BLACK_MOUSEOVER = '#292626',
+  PRIMARY_SMALL_DEFAULT = 'linear-gradient(90deg, #3E2783 0%, rgba(62, 39, 131, 0) 100%), linear-gradient(0deg, #4145FF, #4145FF)',
 }

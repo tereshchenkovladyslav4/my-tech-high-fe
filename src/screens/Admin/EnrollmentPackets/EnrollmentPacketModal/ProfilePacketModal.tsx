@@ -6,10 +6,9 @@ import { Box } from '@mui/system'
 import { omit } from 'lodash'
 import moment from 'moment'
 import { FormProvider, useForm } from 'react-hook-form'
-import { QUESTION_TYPE, StudentStatus } from '@mth/enums'
+import { MthColor, QUESTION_TYPE, StudentStatus } from '@mth/enums'
 import { saveScheduleMutation } from '@mth/graphql/mutation/schedule'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
-import { SYSTEM_11 } from '../../../../utils/constants'
 import { GenerateStudentPacketPDF } from '../../Records/services'
 import { EnrollmentQuestionTab } from '../../SiteManagement/EnrollmentSetting/EnrollmentQuestions/types'
 import {
@@ -379,7 +378,7 @@ export const ProfilePacketModal: React.FC<ProfilePacketModalProps> = ({ handleMo
                       </Grid>
                     </Grid>
                     <Grid item md={12} sm={12} xs={12} sx={{ padding: '20px 0px' }}>
-                      <hr style={{ borderTop: `solid 1px ${SYSTEM_11}`, width: '97%', borderBottom: '0' }} />
+                      <hr style={{ borderTop: `solid 1px ${MthColor.SYSTEM_11}`, width: '97%', borderBottom: '0' }} />
                     </Grid>
                     <EnrollmentPacketInfo />
                   </Box>

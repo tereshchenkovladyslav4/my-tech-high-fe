@@ -5,12 +5,12 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import { Box, Card, Container } from '@mui/material'
 import { find, includes } from 'lodash'
 import { useHistory } from 'react-router-dom'
-import { Breadcrumbs } from '../../components/Breadcrumbs/Breadcrumbs'
-import { Step } from '../../components/Breadcrumbs/types'
-import { Subtitle } from '../../components/Typography/Subtitle/Subtitle'
-import { EnrollmentContext } from '../../providers/EnrollmentPacketPrivder/EnrollmentPacketProvider'
-import { TabContext, UserContext } from '../../providers/UserContext/UserProvider'
-import { HOMEROOM } from '../../utils/constants'
+import { Breadcrumbs } from '@mth/components/Breadcrumbs/Breadcrumbs'
+import { Step } from '@mth/components/Breadcrumbs/types'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { MthRoute } from '@mth/enums'
+import { EnrollmentContext } from '@mth/providers/EnrollmentPacketPrivder/EnrollmentPacketProvider'
+import { TabContext, UserContext } from '@mth/providers/UserContext/UserProvider'
 import {
   EnrollmentQuestionTab,
   initEnrollmentQuestions,
@@ -22,9 +22,9 @@ import { Personal } from './Personal/Personal'
 import { getParentQuestionsGql, getRegionByUserId } from './services'
 import { useStyles } from './styles'
 import { Submission } from './Submission/Submission'
-import { EnrollmentTemplateType } from './types'
+import { EnrollmentProps } from './types'
 
-export const Enrollment: EnrollmentTemplateType = ({ id, disabled }: { id: number; disabled: boolean }) => {
+export const Enrollment: React.FC<EnrollmentProps> = ({ id, disabled }: { id: number; disabled: boolean }) => {
   const { me, setMe } = useContext(UserContext)
   const { students } = me
   const { tab, setTab, visitedTabs, setVisitedTabs } = useContext(TabContext)
@@ -187,7 +187,7 @@ export const Enrollment: EnrollmentTemplateType = ({ id, disabled }: { id: numbe
     <EnrollmentContext.Provider value={enrollmentPacketContext}>
       <Container sx={classes.container}>
         <Box sx={{ display: { xs: 'flex', sm: 'none' }, marginBottom: 5, marginTop: 10, marginX: 3 }}>
-          <ChevronLeftIcon sx={classes.chevronIcon} onClick={() => history.push(HOMEROOM)} />
+          <ChevronLeftIcon sx={classes.chevronIcon} onClick={() => history.push(MthRoute.HOMEROOM.toString())} />
           <Subtitle size='large' fontWeight='700'>
             Enrollment Packet
           </Subtitle>
@@ -200,7 +200,7 @@ export const Enrollment: EnrollmentTemplateType = ({ id, disabled }: { id: numbe
                 flexDirection: 'row',
               }}
             >
-              <ChevronLeftIcon sx={classes.chevronIcon} onClick={() => history.push(HOMEROOM)} />
+              <ChevronLeftIcon sx={classes.chevronIcon} onClick={() => history.push(MthRoute.HOMEROOM.toString())} />
               <Subtitle size='large' fontWeight='700'>
                 Enrollment Packet
               </Subtitle>

@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { useLazyQuery, useQuery } from '@apollo/client'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { Box, Button, Card, Checkbox, FormControlLabel, Grid } from '@mui/material'
@@ -6,18 +6,16 @@ import { map } from 'lodash'
 import { useHistory } from 'react-router-dom'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
-import { CourseType } from '@mth/enums'
+import { CourseType, MthColor } from '@mth/enums'
 import { useProviders } from '@mth/hooks'
 import { SchoolYear } from '@mth/models'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
-// import { SchoolYearDropDown } from '@mth/screens/Admin/Components/SchoolYearDropdown'
-import { BUTTON_LINEAR_GRADIENT, MTHBLUE, RED_GRADIENT } from '../../../../utils/constants'
 import { toOrdinalSuffix } from '../../../../utils/stringHelpers'
 import { getSchoolYear } from '../../Curriculum/services'
 import { getSchoolYearsByRegionId } from '../../SiteManagement/services'
 import { FiltersProps, COURSE_TYPE } from '../type'
 
-export const Filters: FunctionComponent<FiltersProps> = ({ filter, setFilter }) => {
+export const Filters: React.FC<FiltersProps> = ({ filter, setFilter }) => {
   const history = useHistory()
   const [expand, setExpand] = useState<boolean>(true)
   const [grades, setGrades] = useState<string[]>([])
@@ -103,7 +101,7 @@ export const Filters: FunctionComponent<FiltersProps> = ({ filter, setFilter }) 
     !expand ? (
       <ExpandMoreIcon
         sx={{
-          color: MTHBLUE,
+          color: MthColor.MTHBLUE,
           verticalAlign: 'bottom',
           cursor: 'pointer',
           transform: 'rotate(180deg)',
@@ -112,7 +110,7 @@ export const Filters: FunctionComponent<FiltersProps> = ({ filter, setFilter }) 
     ) : (
       <ExpandMoreIcon
         sx={{
-          color: MTHBLUE,
+          color: MthColor.MTHBLUE,
           verticalAlign: 'bottom',
           cursor: 'pointer',
         }}
@@ -424,7 +422,7 @@ export const Filters: FunctionComponent<FiltersProps> = ({ filter, setFilter }) 
                 fontWeight: 700,
                 borderRadius: 2,
                 textTransform: 'none',
-                background: BUTTON_LINEAR_GRADIENT,
+                background: MthColor.BUTTON_LINEAR_GRADIENT,
                 color: 'white',
                 marginBottom: '12px',
                 width: '140px',
@@ -439,7 +437,7 @@ export const Filters: FunctionComponent<FiltersProps> = ({ filter, setFilter }) 
                 fontWeight: 700,
                 borderRadius: 2,
                 textTransform: 'none',
-                background: RED_GRADIENT,
+                background: MthColor.RED_GRADIENT,
                 color: 'white',
                 width: '140px',
               }}
@@ -456,7 +454,7 @@ export const Filters: FunctionComponent<FiltersProps> = ({ filter, setFilter }) 
   return (
     <Card sx={{ marginTop: 2, padding: 2 }}>
       <Box display='flex' flexDirection='row' onClick={() => setExpand(!expand)}>
-        <Subtitle fontWeight='700' color={MTHBLUE} sx={{ cursor: 'pointer' }}>
+        <Subtitle fontWeight='700' color={MthColor.MTHBLUE} sx={{ cursor: 'pointer' }}>
           Filter
         </Subtitle>
         {chevron()}

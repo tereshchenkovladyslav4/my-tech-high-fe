@@ -1,4 +1,5 @@
-import { PRIMARY_MEDIUM_MOUSEOVER, BUTTON_LINEAR_GRADIENT, RED_GRADIENT } from '../../../utils/constants'
+import { MthColor } from '@mth/enums'
+
 export const siteManagementClassess = {
   base: {
     position: 'relative',
@@ -19,7 +20,7 @@ export const siteManagementClassess = {
     fontWeight: 700,
     textTransform: 'none',
     '&:hover': {
-      background: PRIMARY_MEDIUM_MOUSEOVER,
+      background: MthColor.PRIMARY_MEDIUM_MOUSEOVER,
       color: 'white',
     },
   },
@@ -29,7 +30,7 @@ export const siteManagementClassess = {
     height: 29,
     color: 'white',
     width: '92px',
-    background: RED_GRADIENT,
+    background: MthColor.RED_GRADIENT,
     marginRight: 3,
     '&:hover': {
       background: '#D23C33',
@@ -37,7 +38,7 @@ export const siteManagementClassess = {
     },
   },
   submitButton: {
-    background: BUTTON_LINEAR_GRADIENT,
+    background: MthColor.BUTTON_LINEAR_GRADIENT,
     color: 'white',
     width: '92px',
     borderRadius: 2,

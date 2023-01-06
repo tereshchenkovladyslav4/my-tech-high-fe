@@ -16,10 +16,10 @@ import BGSVG from '@mth/assets/AdminApplicationBG.svg'
 import { DropDown } from '@mth/components/DropDown/DropDown'
 import { DropDownItem } from '@mth/components/DropDown/types'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
-import { QUESTION_TYPE } from '@mth/enums'
+import { GRADES } from '@mth/constants'
+import { MthColor, QUESTION_TYPE } from '@mth/enums'
 import { useActiveSchoolYearsByRegionId } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
-import { GRADES, RED } from '../../../utils/constants'
 import { toOrdinalSuffix, isNumber } from '../../../utils/stringHelpers'
 import { AdditionalQuestionItem } from '../components/AdditionalQuestionItem/AdditionalQuestionItem'
 import { ApplicationQuestion } from '../components/AdditionalQuestionItem/types'
@@ -720,7 +720,7 @@ export const ExistingParent: React.FC = () => {
                           ))}
                           <Grid item>
                             {typeof errors.students === 'string' ? (
-                              <Paragraph color={RED}>{errors.students}</Paragraph>
+                              <Paragraph color={MthColor.RED}>{errors.students}</Paragraph>
                             ) : null}
                           </Grid>
                           <Grid item>

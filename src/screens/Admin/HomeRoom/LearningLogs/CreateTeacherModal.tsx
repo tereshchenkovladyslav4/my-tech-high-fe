@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useState, useContext, useEffect } from 'react'
+import React, { useState, useContext, useEffect } from 'react'
 import { useQuery } from '@apollo/client'
 import CloseIcon from '@mui/icons-material/Close'
 import SearchIcon from '@mui/icons-material/Search'
@@ -19,8 +19,8 @@ import { Field, Form, Formik } from 'formik'
 import * as Yup from 'yup'
 import { MthCheckbox } from '@mth/components/MthCheckbox'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { MthColor } from '@mth/enums'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
-import { BUTTON_LINEAR_GRADIENT } from '../../../../utils/constants'
 import { searchTeacher } from '../services'
 import { useStyles as masterStyle } from '../styles'
 import { Classes, Master, Teacher } from './types'
@@ -37,7 +37,7 @@ type CreateTeacherModalProps = {
   selectedClasses: Classes | null | undefined
 }
 
-export const CreateTeacherModal: FunctionComponent<CreateTeacherModalProps> = ({
+export const CreateTeacherModal: React.FC<CreateTeacherModalProps> = ({
   master,
   handleCreateSubmit,
   handleClose,
@@ -281,7 +281,7 @@ export const CreateTeacherModal: FunctionComponent<CreateTeacherModalProps> = ({
                                 borderRadius: 2,
                                 textTransform: 'none',
                                 height: 29,
-                                background: BUTTON_LINEAR_GRADIENT,
+                                background: MthColor.BUTTON_LINEAR_GRADIENT,
                                 color: 'white',
                                 marginRight: '12px',
                                 marginBottom: '6px',

@@ -5,8 +5,8 @@ import { Box, TextField, FormControl, Select, MenuItem, SelectChangeEvent } from
 import { map } from 'lodash'
 import { DropDownItem } from '@mth/components/DropDown/types'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { MthColor } from '@mth/enums'
 import { getAllRegion } from '@mth/graphql/queries/region'
-import { RED } from '../../../../../utils/constants'
 import { usStates } from '../../../../../utils/states'
 import { siteManagementClassess } from '../../styles'
 
@@ -169,7 +169,7 @@ export const StateSelect: React.FC<StateSelectProps> = ({
         )}
       </Box>
       {stateInvalid && (
-        <Subtitle size='small' textAlign='left' color={RED} fontWeight='700'>
+        <Subtitle size='small' textAlign='left' color={MthColor.RED} fontWeight='700'>
           {stateInvalidMessage}
         </Subtitle>
       )}

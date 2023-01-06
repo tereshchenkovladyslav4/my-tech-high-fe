@@ -13,13 +13,13 @@ import {
 import { DropDown } from '@mth/components/DropDown/DropDown'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
-import { QUESTION_TYPE } from '@mth/enums'
+import { MthColor, QUESTION_TYPE } from '@mth/enums'
 import { getSchoolDistrictsByRegionId } from '@mth/graphql/queries/school-district'
-import { SYSTEM_05, SYSTEM_07 } from '../../../../utils/constants'
 import { getCountiesByRegionId } from '../../../Admin/SiteManagement/EnrollmentSetting/EnrollmentQuestions/services'
 import { useStyles } from '../../styles'
-import { ApplicationQuestionTemplateType } from './types'
-export const AdditionalQuestionItem: ApplicationQuestionTemplateType = ({
+import { ApplicationQuestionProps } from './types'
+
+export const AdditionalQuestionItem: React.FC<ApplicationQuestionProps> = ({
   question: q,
   field,
   meta,
@@ -97,7 +97,7 @@ export const AdditionalQuestionItem: ApplicationQuestionTemplateType = ({
           style: { color: 'black' },
         }}
         InputLabelProps={{
-          style: { color: SYSTEM_05 },
+          style: { color: MthColor.SYSTEM_05 },
         }}
         {...field}
         error={meta.touched && meta.error}
@@ -108,13 +108,13 @@ export const AdditionalQuestionItem: ApplicationQuestionTemplateType = ({
     return (
       <Box sx={{ marginY: 2 }}>
         <Subtitle
-          color={SYSTEM_05}
+          color={MthColor.SYSTEM_05}
           sx={{
             paddingLeft: 0,
             paddingBottom: '10px',
             width: '100%',
             textAlign: 'start',
-            borderBottom: '1px solid ' + SYSTEM_07,
+            borderBottom: '1px solid ' + MthColor.SYSTEM_07,
             wordWrap: 'break-word',
           }}
         >
@@ -126,7 +126,7 @@ export const AdditionalQuestionItem: ApplicationQuestionTemplateType = ({
             display='flex'
             alignItems='center'
             sx={{
-              borderBottom: '1px solid ' + SYSTEM_07,
+              borderBottom: '1px solid ' + MthColor.SYSTEM_07,
               width: '100%',
             }}
           >
@@ -153,7 +153,7 @@ export const AdditionalQuestionItem: ApplicationQuestionTemplateType = ({
               </Field> */}
             <Subtitle
               size='small'
-              sx={{ wordWrap: 'break-word', maxWidth: '90%', textAlign: 'start', color: SYSTEM_05 }}
+              sx={{ wordWrap: 'break-word', maxWidth: '90%', textAlign: 'start', color: MthColor.SYSTEM_05 }}
             >
               {o.label}
             </Subtitle>
@@ -182,7 +182,7 @@ export const AdditionalQuestionItem: ApplicationQuestionTemplateType = ({
               },
             }}
           />
-          <Paragraph size='medium' sx={{ fontSize: 16, color: SYSTEM_05 }}>
+          <Paragraph size='medium' sx={{ fontSize: 16, color: MthColor.SYSTEM_05 }}>
             <p dangerouslySetInnerHTML={{ __html: q.question }}></p>
           </Paragraph>
         </Box>
@@ -198,10 +198,10 @@ export const AdditionalQuestionItem: ApplicationQuestionTemplateType = ({
             paddingBottom: '10px',
             width: '100%',
             textAlign: 'start',
-            borderBottom: '1px solid ' + SYSTEM_07,
+            borderBottom: '1px solid ' + MthColor.SYSTEM_07,
             wordWrap: 'break-word',
           }}
-          color={SYSTEM_05}
+          color={MthColor.SYSTEM_05}
         >
           {q.question}
         </Subtitle>
@@ -221,7 +221,7 @@ export const AdditionalQuestionItem: ApplicationQuestionTemplateType = ({
                 display='flex'
                 alignItems='center'
                 sx={{
-                  borderBottom: '1px solid ' + SYSTEM_07,
+                  borderBottom: '1px solid ' + MthColor.SYSTEM_07,
                   width: '100%',
                   paddingLeft: 0,
                 }}
@@ -242,7 +242,7 @@ export const AdditionalQuestionItem: ApplicationQuestionTemplateType = ({
                     />
                   }
                   label={o.label}
-                  sx={{ color: SYSTEM_05 }}
+                  sx={{ color: MthColor.SYSTEM_05 }}
                 />
               </Box>
             ))}
@@ -257,7 +257,7 @@ export const AdditionalQuestionItem: ApplicationQuestionTemplateType = ({
         size='small'
         sx={!!(meta.touched && meta.error) ? classes.textFieldError : classes.textField}
         InputLabelProps={{
-          style: { color: SYSTEM_05 },
+          style: { color: MthColor.SYSTEM_05 },
         }}
         label={q.question}
         variant='outlined'

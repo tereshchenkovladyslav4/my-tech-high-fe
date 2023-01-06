@@ -1,4 +1,4 @@
-import { RED_GRADIENT, BLUE_GRDIENT, ERROR_RED } from '../../../../utils/constants'
+import { MthColor } from '@mth/enums'
 
 export const addEventClassess = {
   cardBody: {
@@ -32,7 +32,7 @@ export const addEventClassess = {
     fontWeight: 700,
     borderRadius: 2,
     textTransform: 'none',
-    background: RED_GRADIENT,
+    background: MthColor.RED_GRADIENT,
     color: 'white',
     width: '92px',
     marginRight: 2,
@@ -48,7 +48,7 @@ export const addEventClassess = {
     borderRadius: 2,
     textTransform: 'none',
     height: '33px',
-    background: BLUE_GRDIENT,
+    background: MthColor.BLUE_GRDIENT,
     color: 'white',
     width: '92px',
     marginRight: 2,
@@ -63,7 +63,7 @@ export const addEventClassess = {
     borderRadius: 2,
     textTransform: 'none',
     height: '33px',
-    background: BLUE_GRDIENT,
+    background: MthColor.BLUE_GRDIENT,
     color: 'white',
     width: '160px',
     marginRight: 2,
@@ -91,7 +91,7 @@ export const addEventClassess = {
     },
   },
   editorInvalid: {
-    borderColor: ERROR_RED,
+    borderColor: MthColor.ERROR_RED,
   },
   arrowButton: {
     fontSize: '15px',

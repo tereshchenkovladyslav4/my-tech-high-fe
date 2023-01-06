@@ -1,10 +1,10 @@
 import { outlinedInputClasses } from '@mui/material'
-import { SYSTEM_07 } from '../../../../utils/constants'
+import { MthColor } from '@mth/enums'
 
 export const useStyles = {
   textfield: {
     [`& .${outlinedInputClasses.root} .${outlinedInputClasses.notchedOutline}`]: {
-      borderColor: SYSTEM_07,
+      borderColor: MthColor.SYSTEM_07,
       borderWidth: '1px',
     },
     marginY: 2,
@@ -20,7 +20,7 @@ export const useStyles = {
   },
   dropdown: {
     [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
-      borderColor: SYSTEM_07,
+      borderColor: MthColor.SYSTEM_07,
     },
     marginY: 2,
     width: '100%',

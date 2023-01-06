@@ -1,4 +1,4 @@
-import React, { useState, useEffect, FunctionComponent } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   Modal,
   Box,
@@ -10,10 +10,10 @@ import {
   Radio,
   FormControlLabel,
 } from '@mui/material'
-import { Paragraph } from '../../../../../../../components/Typography/Paragraph/Paragraph'
-import { Subtitle } from '../../../../../../../components/Typography/Subtitle/Subtitle'
-import { Title } from '../../../../../../../components/Typography/Title/Title'
-import { SYSTEM_07, SYSTEM_05, RED } from '../../../../../../../utils/constants'
+import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { Title } from '@mth/components/Typography/Title/Title'
+import { MthColor } from '@mth/enums'
 
 type EditItem = {
   type: string
@@ -26,7 +26,8 @@ type EditModalProps = {
   setOption: (_: EditItem) => void
   editItem?: EditItem
 }
-export const EditLinkModal: FunctionComponent<EditModalProps> = ({ onClose, setOption, editItem }) => {
+
+export const EditLinkModal: React.FC<EditModalProps> = ({ onClose, setOption, editItem }) => {
   const [value, setValue] = useState(editItem?.type || 'web')
   const [text, setText] = useState(editItem?.text || '')
   const [link, setLink] = useState(editItem?.link || '')
@@ -89,11 +90,11 @@ export const EditLinkModal: FunctionComponent<EditModalProps> = ({ onClose, setO
               mt: 2,
               [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
                 {
-                  borderColor: SYSTEM_07,
+                  borderColor: MthColor.SYSTEM_07,
                 },
             }}
             InputLabelProps={{
-              style: { color: SYSTEM_05 },
+              style: { color: MthColor.SYSTEM_05 },
             }}
             // label={q.question}
             variant='outlined'
@@ -102,7 +103,7 @@ export const EditLinkModal: FunctionComponent<EditModalProps> = ({ onClose, setO
             onChange={(v) => setText(v.currentTarget.value)}
             focused
           />
-          <Paragraph color={RED} size='medium' fontWeight='700'>
+          <Paragraph color={MthColor.RED} size='medium' fontWeight='700'>
             {errText}
           </Paragraph>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 4 }}>
@@ -130,11 +131,11 @@ export const EditLinkModal: FunctionComponent<EditModalProps> = ({ onClose, setO
                   mt: 2,
                   [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
                     {
-                      borderColor: SYSTEM_07,
+                      borderColor: MthColor.SYSTEM_07,
                     },
                 }}
                 InputLabelProps={{
-                  style: { color: SYSTEM_05 },
+                  style: { color: MthColor.SYSTEM_05 },
                 }}
                 placeholder='enter address'
                 variant='outlined'
@@ -143,7 +144,7 @@ export const EditLinkModal: FunctionComponent<EditModalProps> = ({ onClose, setO
                 onChange={(v) => setLink(v.currentTarget.value)}
                 focused
               />
-              <Paragraph color={RED} size='medium' fontWeight='700'>
+              <Paragraph color={MthColor.RED} size='medium' fontWeight='700'>
                 {errLink}
               </Paragraph>
             </Box>

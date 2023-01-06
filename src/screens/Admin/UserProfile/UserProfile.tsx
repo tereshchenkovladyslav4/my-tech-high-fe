@@ -2,13 +2,12 @@ import React, { useState, useEffect, useContext } from 'react'
 import { useMutation, useQuery } from '@apollo/client'
 import CloseIcon from '@mui/icons-material/Close'
 import { Box, Button, Card } from '@mui/material'
-import { WithdrawalOption, WithdrawalStatus } from '@mth/enums'
+import { MthColor, WithdrawalOption, WithdrawalStatus } from '@mth/enums'
 import { StudentStatus } from '@mth/enums'
+import { saveWithdrawalMutation } from '@mth/graphql/mutation/withdrawal'
 import { submitDiplomaAnswerGql } from '@mth/graphql/queries/diploma'
+import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { assignStudentToSOEGql } from '@mth/screens/Admin/SiteManagement/services'
-import { saveWithdrawalMutation } from '../../../graphql/mutation/withdrawal'
-import { UserContext } from '../../../providers/UserContext/UserProvider'
-import { BLACK, BUTTON_LINEAR_GRADIENT } from '../../../utils/constants'
 import { approveApplicationMutation } from '../Applications/services'
 import { savePacketMutation } from '../EnrollmentPackets/services'
 import { Header } from './components/Header/Header'
@@ -321,7 +320,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ handleClose, data, set
           {!requesting && (
             <Button
               sx={{
-                background: BUTTON_LINEAR_GRADIENT,
+                background: MthColor.BUTTON_LINEAR_GRADIENT,
                 textTransform: 'none',
                 color: 'white',
                 marginRight: 2,
@@ -338,7 +337,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ handleClose, data, set
             </Button>
           )}
           <CloseIcon
-            style={{ color: 'white', background: BLACK, borderRadius: 2, cursor: 'pointer' }}
+            style={{ color: 'white', background: MthColor.BLACK, borderRadius: 2, cursor: 'pointer' }}
             onClick={() => handleClose(false)}
           />
         </Box>

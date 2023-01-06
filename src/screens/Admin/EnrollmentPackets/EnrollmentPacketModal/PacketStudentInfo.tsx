@@ -1,12 +1,12 @@
-import React, { FunctionComponent, useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { useQuery, gql } from '@apollo/client'
 import { Grid, Box } from '@mui/material'
 import moment from 'moment-timezone'
+import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
+import { Title } from '@mth/components/Typography/Title/Title'
+import { MthColor } from '@mth/enums'
+import { ProfileContext } from '@mth/providers/ProfileProvider/ProfileContext'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
-import { Paragraph } from '../../../../components/Typography/Paragraph/Paragraph'
-import { Title } from '../../../../components/Typography/Title/Title'
-import { ProfileContext } from '../../../../providers/ProfileProvider/ProfileContext'
-import { MTHBLUE, SYSTEM_06 } from '../../../../utils/constants'
 import { STATES_WITH_ABBREVIATION } from '../../../../utils/states'
 import { parseGradeLevel } from '../../../../utils/stringHelpers'
 import { phoneFormat } from '../../../../utils/utils'
@@ -40,7 +40,8 @@ type EnrollmentJobsInfoProps = {
   handleModem: () => void
   refetch: () => void
 }
-export const EnrollmentJobsInfo: FunctionComponent<EnrollmentJobsInfoProps> = ({ packet, handleModem, refetch }) => {
+
+export const EnrollmentJobsInfo: React.FC<EnrollmentJobsInfoProps> = ({ packet, handleModem, refetch }) => {
   const { showModal } = useContext(ProfileContext)
   const { me } = useContext(UserContext)
   const [specialEdOptions, setSpecialEdOptions] = useState<string[]>([])
@@ -69,7 +70,7 @@ export const EnrollmentJobsInfo: FunctionComponent<EnrollmentJobsInfoProps> = ({
       const shoolYears = schoolYearData?.region?.SchoolYears || []
       let special_ed_options = ''
       shoolYears
-        .filter((item) => moment(item.date_begin).format('YYYY') >= moment().format('YYYY'))
+        .filter((item) => new Date(item.date_begin) <= new Date() && new Date(item.date_end) >= new Date())
         .map((item: { special_ed_options: string; special_ed: boolean }): void => {
           if (
             item.special_ed == true &&
@@ -136,7 +137,7 @@ export const EnrollmentJobsInfo: FunctionComponent<EnrollmentJobsInfoProps> = ({
             xl={6}
           >
             <Title
-              color={MTHBLUE}
+              color={MthColor.MTHBLUE}
               size='small'
               fontWeight='700'
               sx={{
@@ -148,17 +149,17 @@ export const EnrollmentJobsInfo: FunctionComponent<EnrollmentJobsInfoProps> = ({
               </span>
             </Title>
 
-            <Paragraph sx={{ marginY: '4px', fontSize: '14px' }} color={SYSTEM_06} fontWeight='400'>
+            <Paragraph sx={{ marginY: '4px', fontSize: '14px' }} color={MthColor.SYSTEM_06} fontWeight='400'>
               <b>
                 {student?.person.preferred_first_name && student?.person.preferred_last_name
                   ? `${student?.person.preferred_first_name} ${student?.person.preferred_last_name}`
                   : 'Not found'}
               </b>
             </Paragraph>
-            <Paragraph sx={{ marginY: '4px', fontSize: '14px' }} color={SYSTEM_06} fontWeight='400'>
+            <Paragraph sx={{ marginY: '4px', fontSize: '14px' }} color={MthColor.SYSTEM_06} fontWeight='400'>
               Gender: <b>{student?.person.gender ? student?.person.gender : 'Not found'}</b>
             </Paragraph>
-            <Paragraph sx={{ fontSize: '14px' }} color={SYSTEM_06} fontWeight='400'>
+            <Paragraph sx={{ fontSize: '14px' }} color={MthColor.SYSTEM_06} fontWeight='400'>
               DOB:{' '}
               <b>
                 {student?.person.date_of_birth
@@ -167,10 +168,10 @@ export const EnrollmentJobsInfo: FunctionComponent<EnrollmentJobsInfoProps> = ({
                 {age ? ` (${age})` : ''}
               </b>
             </Paragraph>
-            <Paragraph sx={{ marginY: '4px', fontSize: '14px' }} color={SYSTEM_06} fontWeight='400'>
+            <Paragraph sx={{ marginY: '4px', fontSize: '14px' }} color={MthColor.SYSTEM_06} fontWeight='400'>
               {parseGradeLevel(student?.grade_levels?.[0]?.grade_level)}
             </Paragraph>
-            <Paragraph sx={{ marginY: '4px', fontSize: '14px' }} color={SYSTEM_06} fontWeight='400'>
+            <Paragraph sx={{ marginY: '4px', fontSize: '14px' }} color={MthColor.SYSTEM_06} fontWeight='400'>
               SPED: {studentSPED()}
             </Paragraph>
           </Grid>
@@ -186,7 +187,7 @@ export const EnrollmentJobsInfo: FunctionComponent<EnrollmentJobsInfoProps> = ({
             }}
           >
             <Title
-              color={MTHBLUE}
+              color={MthColor.MTHBLUE}
               size='small'
               fontWeight='700'
               sx={{
@@ -200,13 +201,13 @@ export const EnrollmentJobsInfo: FunctionComponent<EnrollmentJobsInfoProps> = ({
             <Paragraph color='#7B61FF' sx={{ fontSize: '14px', marginY: '4px', marginRight: '10px' }} fontWeight='400'>
               {student?.parent.person.email ? `${student?.parent.person.email}` : 'Not found'}
             </Paragraph>
-            <Paragraph color={SYSTEM_06} sx={{ fontSize: '14px', marginY: '4px' }} fontWeight='400'>
+            <Paragraph color={MthColor.SYSTEM_06} sx={{ fontSize: '14px', marginY: '4px' }} fontWeight='400'>
               {student?.parent.phone.number ? phoneFormat(student?.parent.phone.number) : 'Not found'}
             </Paragraph>
-            <Paragraph color={SYSTEM_06} sx={{ fontSize: '14px', marginY: '4px' }} fontWeight='400'>
+            <Paragraph color={MthColor.SYSTEM_06} sx={{ fontSize: '14px', marginY: '4px' }} fontWeight='400'>
               {street ? `${street} ${street2 ? ', ' + street2 : ''}` : 'Not found'}
             </Paragraph>
-            <Paragraph color={SYSTEM_06} sx={{ fontSize: '14px', marginY: '4px' }} fontWeight='400'>
+            <Paragraph color={MthColor.SYSTEM_06} sx={{ fontSize: '14px', marginY: '4px' }} fontWeight='400'>
               {!student?.parent.person.address.city &&
               !student?.parent.person.address.state &&
               !student?.parent.person.address.zip

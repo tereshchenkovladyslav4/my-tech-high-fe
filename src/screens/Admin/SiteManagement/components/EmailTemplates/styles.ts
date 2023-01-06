@@ -1,5 +1,5 @@
 import { makeStyles } from '@material-ui/core'
-import { BUTTON_LINEAR_GRADIENT } from '../../../../../utils/constants'
+import { MthColor } from '@mth/enums'
 
 export const useStyles = makeStyles({
   modalCard: {
@@ -88,7 +88,7 @@ export const useStyles = makeStyles({
     borderRadius: 8,
     textTransform: 'none',
     height: 40,
-    background: BUTTON_LINEAR_GRADIENT,
+    background: MthColor.BUTTON_LINEAR_GRADIENT,
     color: 'white',
     fontSize: 16,
   },

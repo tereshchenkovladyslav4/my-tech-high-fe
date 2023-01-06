@@ -10,11 +10,12 @@ import CustomTable from '@mth/components/Table/CustomTable'
 import { Field, ValueOf } from '@mth/components/Table/types'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { WarningModal } from '@mth/components/WarningModal/Warning'
-import { BLUE_GRDIENT, RED_GRADIENT } from '../../../../utils/constants'
+import { MthColor } from '@mth/enums'
 import { assignStudentToSOEGql } from '../../SiteManagement/services'
 import { getStudents } from '../services'
 import { useStyles } from '../styles'
 import { EnrollmentSchoolTableProps, YEAR_STATUS, StudentVM } from '../type'
+
 export const EnrollmentSchoolTable: React.FC<EnrollmentSchoolTableProps> = ({
   filter,
   partnerList,
@@ -316,9 +317,9 @@ export const EnrollmentSchoolTable: React.FC<EnrollmentSchoolTableProps> = ({
                 textTransform: 'none',
                 height: 29,
                 color: 'white',
-                background: BLUE_GRDIENT,
+                background: MthColor.BLUE_GRDIENT,
                 '&:hover': {
-                  background: BLUE_GRDIENT,
+                  background: MthColor.BLUE_GRDIENT,
                 },
               }}
               onClick={handleAssignStudentToSOE}
@@ -335,7 +336,7 @@ export const EnrollmentSchoolTable: React.FC<EnrollmentSchoolTableProps> = ({
                 textTransform: 'none',
                 height: 29,
                 color: 'white',
-                background: RED_GRADIENT,
+                background: MthColor.RED_GRADIENT,
                 '&:hover': {
                   background: '#D23C33',
                   color: '#fff',

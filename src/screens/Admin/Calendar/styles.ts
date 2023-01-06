@@ -1,8 +1,8 @@
-import { ERROR_RED } from '../../../utils/constants'
+import { MthColor } from '@mth/enums'
 
 export const calendarClassess = {
   formError: {
-    color: ERROR_RED,
+    color: MthColor.ERROR_RED,
     fontSize: '12px',
     fontWeight: 600,
     lineHeight: '20px',

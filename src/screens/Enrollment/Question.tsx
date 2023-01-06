@@ -18,14 +18,14 @@ import { DropDown } from '@mth/components/DropDown/DropDown'
 import { DropDownItem } from '@mth/components/DropDown/types'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
-import { QUESTION_TYPE } from '@mth/enums'
+import { GRADES } from '@mth/constants'
+import { MthColor, QUESTION_TYPE } from '@mth/enums'
 import { studentEmailTaken } from '@mth/graphql/queries/email-template'
 import { EnrollmentContext } from '@mth/providers/EnrollmentPacketPrivder/EnrollmentPacketProvider'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
-import { SYSTEM_05, SYSTEM_07, ERROR_RED, GRADES } from '../../utils/constants'
 import { toOrdinalSuffix } from '../../utils/stringHelpers'
 import { EnrollmentQuestion } from '../Admin/SiteManagement/EnrollmentSetting/EnrollmentQuestions/types'
-import { EnrollmentQuestionTemplateType } from './types'
+import { EnrollmentQuestionProps } from './types'
 
 export const getActiveSchoolYearsByRegionId = gql`
   query GetActiveSchoolYears($regionId: ID!) {
@@ -36,7 +36,7 @@ export const getActiveSchoolYearsByRegionId = gql`
   }
 `
 
-export const EnrollmentQuestionItem: EnrollmentQuestionTemplateType = ({ item, formik }) => {
+export const EnrollmentQuestionItem: React.FC<EnrollmentQuestionProps> = ({ item, formik }) => {
   const [questionItems, setQuestionItems] = useState<Array<unknown>>([<Grid key={uuidv4()}></Grid>])
 
   useEffect(() => {
@@ -351,7 +351,7 @@ function Item({
             minWidth: '100%',
             [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
               {
-                borderColor: SYSTEM_07,
+                borderColor: MthColor.SYSTEM_07,
               },
             marginY: 0,
           }}
@@ -396,11 +396,11 @@ function Item({
 
               [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
                 {
-                  borderColor: SYSTEM_07,
+                  borderColor: MthColor.SYSTEM_07,
                 },
             }}
             InputLabelProps={{
-              style: { color: SYSTEM_05 },
+              style: { color: MthColor.SYSTEM_05 },
             }}
             variant='outlined'
             fullWidth
@@ -454,11 +454,11 @@ function Item({
 
             [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
               {
-                borderColor: SYSTEM_07,
+                borderColor: MthColor.SYSTEM_07,
               },
           }}
           InputLabelProps={{
-            style: { color: SYSTEM_05 },
+            style: { color: MthColor.SYSTEM_05 },
           }}
           variant='outlined'
           fullWidth
@@ -518,11 +518,11 @@ function Item({
 
                         [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
                           {
-                            borderColor: SYSTEM_07,
+                            borderColor: MthColor.SYSTEM_07,
                           },
                       }}
                       InputLabelProps={{
-                        style: { color: SYSTEM_05 },
+                        style: { color: MthColor.SYSTEM_05 },
                       }}
                       variant='outlined'
                       fullWidth
@@ -535,7 +535,7 @@ function Item({
             </Grid>
           </FormGroup>
         </FormControl>
-        <FormLabel sx={{ marginLeft: '14px', color: ERROR_RED, fontSize: '0.75rem' }}>
+        <FormLabel sx={{ marginLeft: '14px', color: MthColor.ERROR_RED, fontSize: '0.75rem' }}>
           {
             (formik.touched[`${keyName}`] &&
               Boolean(formik.touched[`${keyName}`][`${fieldName}`]) &&
@@ -576,7 +576,7 @@ function Item({
             />
           </FormGroup>
         </FormControl>
-        <FormLabel sx={{ marginLeft: '14px', color: ERROR_RED, fontSize: '0.75rem' }}>
+        <FormLabel sx={{ marginLeft: '14px', color: MthColor.ERROR_RED, fontSize: '0.75rem' }}>
           {
             (formik.touched[`${keyName}`] &&
               Boolean(formik.touched[`${keyName}`][`${fieldName}`]) &&
@@ -622,7 +622,7 @@ function Item({
             </Grid>
           </FormGroup>
         </FormControl>
-        <FormLabel sx={{ marginLeft: '14px', color: ERROR_RED, fontSize: '0.75rem' }}>
+        <FormLabel sx={{ marginLeft: '14px', color: MthColor.ERROR_RED, fontSize: '0.75rem' }}>
           {
             (formik.touched[`${keyName}`] &&
               Boolean(formik.touched[`${keyName}`][`${fieldName}`]) &&
@@ -650,11 +650,11 @@ function Item({
           minWidth: '100%',
 
           [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
-            borderColor: SYSTEM_07,
+            borderColor: MthColor.SYSTEM_07,
           },
         }}
         InputLabelProps={{
-          style: { color: SYSTEM_05 },
+          style: { color: MthColor.SYSTEM_05 },
         }}
         variant='outlined'
         focused

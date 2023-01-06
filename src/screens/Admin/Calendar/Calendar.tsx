@@ -1,14 +1,14 @@
 import React, { useState } from 'react'
 import { Box, Grid } from '@mui/material'
 import { Route, Switch, useRouteMatch } from 'react-router-dom'
-import { CALENDAR } from '../../../utils/constants'
+import { MthRoute } from '@mth/enums'
 import { AddEvent } from './AddEvent'
 import { EditType } from './EditType'
 import { MainComponent } from './MainComponent'
 import { EventVM } from './types'
 
 const Calendar: React.FC = () => {
-  const isExact = useRouteMatch(CALENDAR)?.isExact
+  const isExact = useRouteMatch(MthRoute.CALENDAR)?.isExact
   const [event, setEvent] = useState<EventVM>()
   const [selectedEventIndex, setSelectedEventIndex] = useState<number>(0)
   return (
@@ -26,10 +26,10 @@ const Calendar: React.FC = () => {
         </Grid>
       </Grid>
       <Switch>
-        <Route exact path={`${CALENDAR}/editType`}>
+        <Route exact path={`${MthRoute.CALENDAR}/editType`}>
           <EditType />
         </Route>
-        <Route exact path={`${CALENDAR}/addEvent`}>
+        <Route exact path={`${MthRoute.CALENDAR}/addEvent`}>
           <AddEvent selectedEvent={event} />
         </Route>
       </Switch>

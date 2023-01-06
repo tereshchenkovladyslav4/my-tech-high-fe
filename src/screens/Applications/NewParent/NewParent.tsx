@@ -17,11 +17,11 @@ import { DropDownItem } from '@mth/components/DropDown/types'
 import { NewApplicationFooter } from '@mth/components/NewApplicationFooter/NewApplicationFooter'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Title } from '@mth/components/Typography/Title/Title'
-import { QUESTION_TYPE } from '@mth/enums'
+import { GRADES } from '@mth/constants'
+import { MthColor, MthRoute, QUESTION_TYPE } from '@mth/enums'
 import { getAllRegion } from '@mth/graphql/queries/region'
 import { useActiveSchoolYearsByRegionId } from '@mth/hooks'
 import { getWindowDimension } from '@mth/utils'
-import { DASHBOARD, GRADES, MTHBLUE, RED, SYSTEM_05 } from '../../../utils/constants'
 import { toOrdinalSuffix, isNumber } from '../../../utils/stringHelpers'
 import { phoneFormat } from '../../../utils/utils'
 import { LoadingScreen } from '../../LoadingScreen/LoadingScreen'
@@ -663,7 +663,7 @@ export const NewParent: React.FC = () => {
                 >
                   <Grid container rowSpacing={2} paddingTop={10}>
                     <Grid item xs={12}>
-                      <Title color={MTHBLUE} textAlign='center'>
+                      <Title color={MthColor.MTHBLUE} textAlign='center'>
                         InfoCenter
                       </Title>
                     </Grid>
@@ -749,11 +749,11 @@ export const NewParent: React.FC = () => {
                                               <Paragraph>
                                                 This email is already being used.&nbsp;&nbsp;
                                                 <Link
-                                                  to={DASHBOARD}
+                                                  to={MthRoute.DASHBOARD.toString()}
                                                   style={{
                                                     fontSize: '11.2px',
                                                     fontWeight: 700,
-                                                    color: MTHBLUE,
+                                                    color: MthColor.MTHBLUE,
                                                     textDecoration: 'none',
                                                   }}
                                                 >
@@ -777,7 +777,7 @@ export const NewParent: React.FC = () => {
                                               style: { color: 'black' },
                                             }}
                                             InputLabelProps={{
-                                              style: { color: SYSTEM_05 },
+                                              style: { color: MthColor.SYSTEM_05 },
                                             }}
                                             sx={
                                               !!(meta.touched && meta.error)
@@ -820,7 +820,7 @@ export const NewParent: React.FC = () => {
                                             style: { color: 'black' },
                                           }}
                                           InputLabelProps={{
-                                            style: { color: SYSTEM_05 },
+                                            style: { color: MthColor.SYSTEM_05 },
                                           }}
                                           sx={
                                             !!(meta.touched && meta.error) ? classes.textFieldError : classes.textField
@@ -1158,7 +1158,7 @@ export const NewParent: React.FC = () => {
                               ))}
                               <Grid item>
                                 {typeof errors.students === 'string' ? (
-                                  <Paragraph color={RED}>{errors.students}</Paragraph>
+                                  <Paragraph color={MthColor.RED}>{errors.students}</Paragraph>
                                 ) : null}
                               </Grid>
                               <Grid item xs={12} display='flex' justifyContent={'center'}>
@@ -1212,7 +1212,7 @@ export const NewParent: React.FC = () => {
             }}
           >
             <Box marginTop={12}>
-              <Title color={MTHBLUE} textAlign='center'>
+              <Title color={MthColor.MTHBLUE} textAlign='center'>
                 InfoCenter
               </Title>
             </Box>

@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Box, Card } from '@mui/material'
+import BGSVG from '@mth/assets/ToDoListBG.svg'
 import { EmptyState } from '@mth/components/EmptyState/EmptyState'
 import { Flexbox } from '@mth/components/Flexbox/Flexbox'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { Title } from '@mth/components/Typography/Title/Title'
-import BGSVG from '../../../assets/ToDoListBG.svg'
-import { SYSTEM_06 } from '../../../utils/constants'
+import { MthColor } from '@mth/enums'
 import { SchoolYearType } from '../HomeroomGrade/components/StudentGrade/types'
 import { TodoList } from './components/TodoList/TodoList'
 import { ToDoItem } from './components/ToDoListItem/types'
@@ -25,7 +25,7 @@ const EmptyStateWrapper = (props) => (
     <EmptyState
       title={<Title>{props.title}</Title>}
       subtitle={
-        <Subtitle color={SYSTEM_06} fontWeight='700'>
+        <Subtitle color={MthColor.SYSTEM_06} fontWeight='700'>
           {props.subtitle}
         </Subtitle>
       }

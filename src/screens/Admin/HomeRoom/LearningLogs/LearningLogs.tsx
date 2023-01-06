@@ -11,11 +11,10 @@ import { MthTable } from '@mth/components/MthTable'
 import { MthTableField, MthTableRowItem } from '@mth/components/MthTable/types'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { WarningModal } from '@mth/components/WarningModal/Warning'
-import { MthColor } from '@mth/enums'
+import { MthColor, MthRoute } from '@mth/enums'
 import { useSchoolYearsByRegionId } from '@mth/hooks'
 import { SchoolYear } from '@mth/models'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
-import { HOMEROOM_LEARNING_LOGS } from '../../../../utils/constants'
 import { HomeRoomHeader } from '../Components/HomeRoomHeader'
 import { CreateNewMasterGql, DeleteMasterByIdGql, GetMastersBySchoolYearIDGql } from '../services'
 import Classes from './Classes'
@@ -94,7 +93,7 @@ const LearningLogs: React.FC = () => {
             <Tooltip
               title='Edit'
               placement='top'
-              onClick={() => history.push(`${HOMEROOM_LEARNING_LOGS}/edit/${item.rawData.master_id}`)}
+              onClick={() => history.push(`${MthRoute.HOMEROOM_LEARNING_LOGS}/edit/${item.rawData.master_id}`)}
             >
               <IconButton color='primary' className='actionButton'>
                 <CreateIcon />

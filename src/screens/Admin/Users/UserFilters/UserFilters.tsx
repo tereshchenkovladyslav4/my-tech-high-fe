@@ -1,14 +1,14 @@
-import React, { FunctionComponent } from 'react'
+import React from 'react'
 import { Box, Button } from '@mui/material'
 import { map } from 'lodash'
-import { BUTTON_LINEAR_GRADIENT, MTHBLUE } from '../../../../utils/constants'
+import { MthColor } from '@mth/enums'
 
 type UserFiltersProps = {
   filters: Array<string>
   setFilters: (value: Array<string>) => void
 }
 
-export const UserFilters: FunctionComponent<UserFiltersProps> = ({ setFilters, filters }) => {
+export const UserFilters: React.FC<UserFiltersProps> = ({ setFilters, filters }) => {
   const roles = [
     {
       id: 1,
@@ -71,9 +71,11 @@ export const UserFilters: FunctionComponent<UserFiltersProps> = ({ setFilters, f
           variant={filters.findIndex((filter) => filter === role.name) !== -1 ? 'text' : 'outlined'}
           onClick={() => handleSelectFilter(role?.name)}
           sx={{
-            color: filters.findIndex((filter) => filter === role.name) !== -1 ? 'white' : MTHBLUE,
+            color: filters.findIndex((filter) => filter === role.name) !== -1 ? 'white' : MthColor.MTHBLUE,
             background:
-              filters.findIndex((filter) => filter === role.name) !== -1 ? BUTTON_LINEAR_GRADIENT : 'transparent',
+              filters.findIndex((filter) => filter === role.name) !== -1
+                ? MthColor.BUTTON_LINEAR_GRADIENT
+                : 'transparent',
             borderRadius: 2,
             textTransform: 'none',
             height: 25,

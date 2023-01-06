@@ -6,7 +6,7 @@ import { Box, Stack } from '@mui/material'
 import Papa from 'papaparse'
 import DownloadFileIcon from '@mth/assets/icons/file-download.svg'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
-import { MTHBLUE } from '../../../../../utils/constants'
+import { MthColor } from '@mth/enums'
 import { CustomModal } from '../../EnrollmentSetting/components/CustomModal/CustomModals'
 import { FileUploadModal } from '../FileUploadModal/FileUploadModal'
 import { SchoolDistrictSelectProps } from './SchoolDistrictSelectTypes'
@@ -124,14 +124,14 @@ export const SchoolDistrictSelect: React.FC<SchoolDistrictSelectProps> = ({
       >
         {!schoolDistrict?.name ? (
           <Stack direction='row' sx={{ ml: 1.5, cursor: 'pointer' }} alignItems='center' onClick={handleClickOpen}>
-            <Subtitle size={12} color={MTHBLUE} fontWeight='500'>
+            <Subtitle size={12} color={MthColor.MTHBLUE} fontWeight='500'>
               Import
             </Subtitle>
           </Stack>
         ) : (
           <Stack direction='row' sx={{ ml: 1.5, cursor: 'pointer' }} alignItems='center'>
             <Box onClick={handleClickOpen}>
-              <Subtitle size={12} color={MTHBLUE} fontWeight='500'>
+              <Subtitle size={12} color={MthColor.MTHBLUE} fontWeight='500'>
                 {schoolDistrict.name}
               </Subtitle>
             </Box>

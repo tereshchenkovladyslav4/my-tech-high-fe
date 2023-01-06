@@ -5,11 +5,12 @@ import { useFormik } from 'formik'
 import { map } from 'lodash'
 import * as yup from 'yup'
 import { DropDown } from '@mth/components/DropDown/DropDown'
-import { GRADES, SYSTEM_05 } from '../../../../utils/constants'
+import { GRADES } from '@mth/constants'
+import { MthColor } from '@mth/enums'
 import { useStyles } from './styles'
-import { AddStudentTemplate } from './types'
+import { AddStudentProps } from './types'
 
-export const AddStudent: AddStudentTemplate = ({ idx, onFieldChange, handleRemoveStudent, yearLabel }) => {
+export const AddStudent: React.FC<AddStudentProps> = ({ idx, onFieldChange, handleRemoveStudent, yearLabel }) => {
   const classes = useStyles
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
@@ -106,7 +107,7 @@ export const AddStudent: AddStudentTemplate = ({ idx, onFieldChange, handleRemov
             value={formik.values.firstName}
             onChange={setFormikFirstName}
             InputLabelProps={{
-              style: { color: SYSTEM_05 },
+              style: { color: MthColor.SYSTEM_05 },
             }}
             error={formik.touched.firstName && Boolean(formik.errors.firstName)}
             helperText={formik.touched.firstName && formik.errors.firstName}
@@ -133,7 +134,7 @@ export const AddStudent: AddStudentTemplate = ({ idx, onFieldChange, handleRemov
           value={formik.values.lastName}
           onChange={setFormikLastName}
           InputLabelProps={{
-            style: { color: SYSTEM_05 },
+            style: { color: MthColor.SYSTEM_05 },
           }}
           error={formik.touched.lastName && Boolean(formik.errors.lastName)}
           helperText={formik.touched.lastName && formik.errors.lastName}

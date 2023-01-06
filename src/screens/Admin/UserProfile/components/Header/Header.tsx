@@ -1,16 +1,16 @@
-import React, { FunctionComponent } from 'react'
+import React from 'react'
 import { useMutation } from '@apollo/client'
 import AccountBoxOutlinedIcon from '@mui/icons-material/AccountBoxOutlined'
 import AddIcon from '@mui/icons-material/Add'
 import { Avatar, Button, Tooltip } from '@mui/material'
 import { Box } from '@mui/system'
 import { useHistory } from 'react-router-dom'
+import { Metadata } from '@mth/components/Metadata/Metadata'
+import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { MthRoute } from '@mth/enums'
+import { becomeUserMutation } from '@mth/graphql/mutation/user'
 import { UserInfo } from '@mth/providers/UserContext/UserProvider'
-import { Metadata } from '../../../../../components/Metadata/Metadata'
-import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragraph'
-import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
-import { becomeUserMutation } from '../../../../../graphql/mutation/user'
-import { DASHBOARD } from '../../../../../utils/constants'
 
 type HeaderProps = {
   userData: unknown
@@ -21,7 +21,7 @@ type HeaderProps = {
   parentId: number
   me: UserInfo
 }
-export const Header: FunctionComponent<HeaderProps> = ({
+export const Header: React.FC<HeaderProps> = ({
   userData,
   setOpenObserverModal,
   observers,
@@ -50,7 +50,7 @@ export const Header: FunctionComponent<HeaderProps> = ({
         localStorage.setItem('previousPage', location.href.replace(import.meta.env.SNOWPACK_PUBLIC_WEB_URL, ''))
       })
       .then(() => {
-        history.push(DASHBOARD)
+        history.push(MthRoute.DASHBOARD.toString())
         location.reload()
       })
   }

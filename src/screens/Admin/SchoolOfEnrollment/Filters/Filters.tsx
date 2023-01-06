@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { useQuery } from '@apollo/client'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { Box, Button, Card, Checkbox, FormControlLabel, Grid } from '@mui/material'
@@ -6,11 +6,11 @@ import { map, capitalize } from 'lodash'
 import { useHistory } from 'react-router-dom'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { GRADES, GRADE_GROUPS } from '@mth/constants'
 import { MthColor } from '@mth/enums'
 import { getSchoolDistrictsByRegionId } from '@mth/graphql/queries/school-district'
 import { useProviders } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
-import { BUTTON_LINEAR_GRADIENT, GRADES, GRADE_GROUPS } from '../../../../utils/constants'
 import { toOrdinalSuffix } from '../../../../utils/stringHelpers'
 import {
   FiltersProps,
@@ -22,7 +22,7 @@ import {
   FilteredProviderType,
 } from '../type'
 
-export const Filters: FunctionComponent<FiltersProps> = ({
+export const Filters: React.FC<FiltersProps> = ({
   filter,
   setFilter,
   partnerList,
@@ -494,7 +494,7 @@ export const Filters: FunctionComponent<FiltersProps> = ({
                 fontWeight: 700,
                 borderRadius: 2,
                 textTransform: 'none',
-                background: BUTTON_LINEAR_GRADIENT,
+                background: MthColor.BUTTON_LINEAR_GRADIENT,
                 color: 'white',
                 marginBottom: '12px',
                 width: '140px',

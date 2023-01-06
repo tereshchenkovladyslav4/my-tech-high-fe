@@ -1,6 +1,6 @@
-import React, { FunctionComponent } from 'react'
+import React from 'react'
 import { Button, Box } from '@mui/material'
-import { MTHBLUE, BUTTON_LINEAR_GRADIENT } from '../../../../utils/constants'
+import { MthColor } from '@mth/enums'
 
 type EmailRecordsFilter = {
   filters: unknown[]
@@ -9,7 +9,7 @@ type EmailRecordsFilter = {
   recordCount: unknown
 }
 
-export const EmailRecordsFilter: FunctionComponent<EmailRecordsFilter> = ({
+export const EmailRecordsFilter: React.FC<EmailRecordsFilter> = ({
   filters,
   setFilters,
   recordCount,
@@ -37,8 +37,8 @@ export const EmailRecordsFilter: FunctionComponent<EmailRecordsFilter> = ({
       <Button
         variant={filters.includes('Error') ? 'text' : 'outlined'}
         sx={{
-          background: filters.includes('Error') && BUTTON_LINEAR_GRADIENT,
-          color: filters.includes('Error') ? 'white' : MTHBLUE,
+          background: filters.includes('Error') && MthColor.BUTTON_LINEAR_GRADIENT,
+          color: filters.includes('Error') ? 'white' : MthColor.MTHBLUE,
           borderRadius: 2,
           textTransform: 'none',
           height: 25,
@@ -56,8 +56,8 @@ export const EmailRecordsFilter: FunctionComponent<EmailRecordsFilter> = ({
           textTransform: 'none',
           height: 25,
           width: 150,
-          background: filters.includes('Sent') && BUTTON_LINEAR_GRADIENT,
-          color: filters.includes('Sent') ? 'white' : MTHBLUE,
+          background: filters.includes('Sent') && MthColor.BUTTON_LINEAR_GRADIENT,
+          color: filters.includes('Sent') ? 'white' : MthColor.MTHBLUE,
           whiteSpace: 'nowrap',
         }}
         onClick={() => handleSelectFilter('Sent')}

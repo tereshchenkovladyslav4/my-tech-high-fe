@@ -10,13 +10,6 @@ import testingPreferencesImg from '@mth/assets/testingPreferences.png'
 import { MthRoute, MthTitle } from '@mth/enums'
 import { useCurrentSchoolYearByRegionId } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
-import {
-  ADMIN_APPLICATIONS,
-  ENROLLMENT_PACKETS,
-  WITHDRAWAL,
-  SCHOOL_ENROLLMENT,
-  ENROLLMENT_SCHEDULE,
-} from '../../../utils/constants'
 import { AdminEnrollmentCard } from './components/AdminEnrollmentCard/AdminEnrollmentCard'
 
 export const Enrollment: React.FC = () => {
@@ -34,19 +27,41 @@ export const Enrollment: React.FC = () => {
   return (
     <Grid container rowSpacing={4} columnSpacing={0} sx={{ paddingX: 2, marginTop: 4, marginBottom: 4 }}>
       <Grid item xs={4}>
-        <AdminEnrollmentCard title={MthTitle.APPLICATIONS} link={ADMIN_APPLICATIONS} img={applicationsImg} />
+        <AdminEnrollmentCard
+          title={MthTitle.APPLICATIONS}
+          link={MthRoute.ADMIN_APPLICATIONS.toString()}
+          img={applicationsImg}
+        />
       </Grid>
       <Grid item xs={4}>
-        <AdminEnrollmentCard title={MthTitle.ENROLLMENT_PACKETS} link={ENROLLMENT_PACKETS} img={enrollmentImg} />
+        <AdminEnrollmentCard
+          title={MthTitle.ENROLLMENT_PACKETS}
+          link={MthRoute.ENROLLMENT_PACKETS.toString()}
+          img={enrollmentImg}
+        />
       </Grid>
       <Grid item xs={4}>
-        <AdminEnrollmentCard title='Schedules' disabled={!enableSchedule} link={ENROLLMENT_SCHEDULE} img={schedules} />
+        <AdminEnrollmentCard
+          title='Schedules'
+          disabled={!enableSchedule}
+          link={MthRoute.ENROLLMENT_SCHEDULE.toString()}
+          img={schedules}
+        />
       </Grid>
       <Grid item xs={4}>
-        <AdminEnrollmentCard title='School of Enrollment' link={SCHOOL_ENROLLMENT} img={schoolAssignmentsImg} />
+        <AdminEnrollmentCard
+          title='School of Enrollment'
+          link={MthRoute.SCHOOL_ENROLLMENT.toString()}
+          img={schoolAssignmentsImg}
+        />
       </Grid>
       <Grid item xs={4}>
-        <AdminEnrollmentCard title='Withdrawals' link={WITHDRAWAL} img={blueGradientImg} showTitle={true} />
+        <AdminEnrollmentCard
+          title='Withdrawals'
+          link={MthRoute.WITHDRAWAL.toString()}
+          img={blueGradientImg}
+          showTitle={true}
+        />
       </Grid>
       <Grid item xs={4}>
         <AdminEnrollmentCard

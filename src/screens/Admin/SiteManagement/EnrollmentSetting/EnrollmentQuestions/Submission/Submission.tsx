@@ -3,8 +3,8 @@ import { Box, Grid, FormHelperText, TextField, outlinedInputClasses } from '@mui
 import { useFormikContext } from 'formik'
 import SignatureCanvas from 'react-signature-canvas'
 import { arrayMove, SortableContainer, SortableElement } from 'react-sortable-hoc'
-import { Paragraph } from '../../../../../../components/Typography/Paragraph/Paragraph'
-import { SYSTEM_05, SYSTEM_07 } from '../../../../../../utils/constants'
+import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
+import { MthColor } from '@mth/enums'
 import { EnrollmentQuestionItem } from '../Question'
 import { TabContext } from '../TabContextProvider'
 import { EnrollmentQuestionTab, EnrollmentQuestion } from '../types'
@@ -80,11 +80,11 @@ export const Submission: FunctionComponent = () => {
                 sx={{
                   [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
                     {
-                      borderColor: SYSTEM_07,
+                      borderColor: MthColor.SYSTEM_07,
                     },
                 }}
                 InputLabelProps={{
-                  style: { color: SYSTEM_05 },
+                  style: { color: MthColor.SYSTEM_05 },
                 }}
                 variant='outlined'
                 fullWidth

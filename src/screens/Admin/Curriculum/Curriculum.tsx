@@ -3,10 +3,10 @@ import { Grid, Box } from '@mui/material'
 import { map } from 'lodash'
 import BgBlue from '@mth/assets/quick-link-blue.png'
 import BgOrange from '@mth/assets/quick-link-orange.png'
+import { MthRoute } from '@mth/enums'
 import { useCurrentSchoolYearByRegionId } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { ItemCard } from '../../../components/ItemCard/ItemCard'
-import { CURRICULUM_HOMEROOM_RESOURCES, CURRICULUM_COURSE_CATALOG } from '../../../utils/constants'
 import { useStyles } from './styles'
 import { CurriculumItem } from './types'
 
@@ -29,7 +29,7 @@ const Curriculum: React.FC = () => {
           title: 'Homeroom Resources',
           subtitle: 'Add, Edit, & Archive',
           img: BgOrange,
-          link: CURRICULUM_HOMEROOM_RESOURCES,
+          link: MthRoute.CURRICULUM_HOMEROOM_RESOURCES.toString(),
           disabled: false,
         },
         {
@@ -43,7 +43,7 @@ const Curriculum: React.FC = () => {
           title: 'Subjects, Providers, & Settings',
           subtitle: 'Add, Edit, & Archive',
           img: BgBlue,
-          link: CURRICULUM_COURSE_CATALOG,
+          link: MthRoute.CURRICULUM_COURSE_CATALOG.toString(),
           disabled: !schoolYear?.schedule,
         },
       ])

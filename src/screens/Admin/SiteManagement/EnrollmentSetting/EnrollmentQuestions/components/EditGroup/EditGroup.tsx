@@ -1,11 +1,11 @@
-import React, { FunctionComponent, useContext, useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { Box, Button, Modal, outlinedInputClasses, TextField, Typography } from '@mui/material'
 import { useFormikContext } from 'formik'
-import { SYSTEM_07 } from '../../../../../../../utils/constants'
+import { MthColor } from '@mth/enums'
 import { TabContext } from '../../TabContextProvider'
 import { EnrollmentQuestionTab } from '../../types'
 
-export const EditGroup: FunctionComponent<{ onClose: () => void; group?: string }> = ({ onClose, group }) => {
+export const EditGroup: React.FC<{ onClose: () => void; group?: string }> = ({ onClose, group }) => {
   const tabName = useContext(TabContext)
   const { values, setValues } = useFormikContext<EnrollmentQuestionTab[]>()
   const [groupName, setGroupName] = useState(group || '')
@@ -49,7 +49,7 @@ export const EditGroup: FunctionComponent<{ onClose: () => void; group?: string 
             minWidth: '100%',
             [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
               {
-                borderColor: SYSTEM_07,
+                borderColor: MthColor.SYSTEM_07,
               },
           }}
           label='Group Name'

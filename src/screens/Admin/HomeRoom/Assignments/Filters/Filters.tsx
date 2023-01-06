@@ -4,9 +4,10 @@ import { Box, Button, Card, Checkbox, FormControlLabel, Grid } from '@mui/materi
 import { map, capitalize } from 'lodash'
 import moment from 'moment'
 import { useHistory } from 'react-router-dom'
-import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragraph'
-import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
-import { BUTTON_LINEAR_GRADIENT, MTHBLUE, RED_GRADIENT, GRADES, GRADE_GROUPS } from '../../../../../utils/constants'
+import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { GRADES, GRADE_GROUPS } from '@mth/constants'
+import { MthColor } from '@mth/enums'
 import { toOrdinalSuffix } from '../../../../../utils/stringHelpers'
 import { FiltersProps, YEAR_STATUS, FilterVM, OptionType } from '../type'
 
@@ -40,7 +41,7 @@ export const Filters: FunctionComponent<FiltersProps> = ({
     !expand ? (
       <ExpandMoreIcon
         sx={{
-          color: MTHBLUE,
+          color: MthColor.MTHBLUE,
           verticalAlign: 'bottom',
           cursor: 'pointer',
           transform: 'rotate(180deg)',
@@ -49,7 +50,7 @@ export const Filters: FunctionComponent<FiltersProps> = ({
     ) : (
       <ExpandMoreIcon
         sx={{
-          color: MTHBLUE,
+          color: MthColor.MTHBLUE,
           verticalAlign: 'bottom',
           cursor: 'pointer',
         }}
@@ -383,7 +384,7 @@ export const Filters: FunctionComponent<FiltersProps> = ({
                 fontWeight: 700,
                 borderRadius: 2,
                 textTransform: 'none',
-                background: BUTTON_LINEAR_GRADIENT,
+                background: MthColor.BUTTON_LINEAR_GRADIENT,
                 color: 'white',
                 marginBottom: '12px',
                 width: '140px',
@@ -398,7 +399,7 @@ export const Filters: FunctionComponent<FiltersProps> = ({
                 fontWeight: 700,
                 borderRadius: 2,
                 textTransform: 'none',
-                background: RED_GRADIENT,
+                background: MthColor.RED_GRADIENT,
                 color: 'white',
                 width: '140px',
               }}
@@ -423,7 +424,7 @@ export const Filters: FunctionComponent<FiltersProps> = ({
   return (
     <Card sx={{ marginTop: 2, padding: 2 }}>
       <Box display='flex' flexDirection='row' onClick={() => setExpand(!expand)}>
-        <Subtitle fontWeight='700' color={MTHBLUE} sx={{ cursor: 'pointer' }}>
+        <Subtitle fontWeight='700' color={MthColor.MTHBLUE} sx={{ cursor: 'pointer' }}>
           Filter
         </Subtitle>
         {chevron()}

@@ -8,9 +8,8 @@ import { useFormik } from 'formik'
 import { useHistory } from 'react-router-dom'
 import * as yup from 'yup'
 import { isValidPassword } from '@mth/constants'
-import { MthTitle } from '@mth/enums'
+import { MthColor, MthTitle } from '@mth/enums'
 import { AuthContext } from '@mth/providers/AuthProvider/AuthContext'
-import { BUTTON_LINEAR_GRADIENT } from '../../utils/constants'
 import { CompleteAccountSuccess } from '../CompleteAccountSuccess/CompleteAccountSuccess'
 import { resetPasswordMutation } from './service'
 import { forgotPasswordClasses, useClasses } from './styles'
@@ -101,7 +100,7 @@ export const ResetPassword: React.FC = () => {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        background: BUTTON_LINEAR_GRADIENT,
+        background: MthColor.BUTTON_LINEAR_GRADIENT,
         paddingTop: 12,
         minHeight: '100vh',
       }}

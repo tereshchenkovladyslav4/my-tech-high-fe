@@ -3,8 +3,9 @@ import { Checkbox, Grid, TextField } from '@mui/material'
 import { Box } from '@mui/system'
 import { Controller, useFormContext } from 'react-hook-form'
 import { DropDown } from '@mth/components/DropDown/DropDown'
+import { DropDownItem } from '@mth/components/DropDown/types'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
-import { schoolDistricts } from '../../../../../utils/constants'
+import { SCHOOL_DISTRICTS_OPTIONS } from '@mth/constants'
 import { EnrollmentPacketFormType } from '../types'
 
 export const SchoolInfo: React.FC = () => {
@@ -87,7 +88,7 @@ export const SchoolInfo: React.FC = () => {
                             ) : ( */}
                   <Box>
                     <DropDown
-                      dropDownItems={schoolDistricts}
+                      dropDownItems={SCHOOL_DISTRICTS_OPTIONS as DropDownItem[]}
                       placeholder='Entry'
                       defaultValue={field.value}
                       size='small'

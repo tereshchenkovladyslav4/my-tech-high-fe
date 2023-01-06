@@ -1,4 +1,3 @@
-import { FunctionComponent } from 'react'
 import { StudentType } from '@mth/screens/HomeroomStudentProfile/Student/types'
 
 export enum ToDoCategory {
@@ -31,11 +30,9 @@ export interface ToDoItem {
   parsed?: unknown
 }
 
-type TodoListItemProps = {
+export type TodoListItemProps = {
   todoItem: ToDoItem
   idx: number
   todoDate?: unknown
   todoDeadline?: unknown
 }
-
-export type TodoListTemplateType = FunctionComponent<TodoListItemProps>

@@ -1,5 +1,5 @@
 import { makeStyles, Theme } from '@material-ui/core/styles'
-import { BUTTON_LINEAR_GRADIENT } from '../../utils/constants'
+import { MthColor } from '@mth/enums'
 
 export const useStyles = makeStyles((theme: Theme) => ({
   mainContent: {
@@ -10,7 +10,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
     padding: '48px 93px',
   },
   signInContent: {
-    background: BUTTON_LINEAR_GRADIENT,
+    background: MthColor.BUTTON_LINEAR_GRADIENT,
     padding: '48px',
     [theme.breakpoints.down('xs')]: {
       paddingLeft: '16px',

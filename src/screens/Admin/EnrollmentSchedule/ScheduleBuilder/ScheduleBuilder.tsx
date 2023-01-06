@@ -9,7 +9,7 @@ import { CheckBoxListVM } from '@mth/components/MthCheckboxList/MthCheckboxList'
 import { SuccessModal } from '@mth/components/SuccessModal/SuccessModal'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { SCHEDULE_STATUS_OPTIONS } from '@mth/constants'
-import { DiplomaSeekingPath, MthColor, MthTitle, SchedulePeriodStatus, ScheduleStatus } from '@mth/enums'
+import { DiplomaSeekingPath, MthColor, MthRoute, MthTitle, SchedulePeriodStatus, ScheduleStatus } from '@mth/enums'
 import {
   saveScheduleMutation,
   sendUpdatesAllowedEmailMutation,
@@ -23,7 +23,6 @@ import { scheduleBuilderClasses } from '@mth/screens/Homeroom/Schedule/ScheduleB
 import { ScheduleData, StudentScheduleInfo } from '@mth/screens/Homeroom/Schedule/types'
 import { StudentType } from '@mth/screens/HomeroomStudentProfile/Student/types'
 import { calculateGrade } from '@mth/utils'
-import { ENROLLMENT_SCHEDULE } from '../../../../utils/constants'
 import { SEMESTER_TYPE } from '../../Curriculum/types'
 import { getStudentDetail } from '../../UserProfile/services'
 import { updateScheduleMutation } from '../services'
@@ -191,7 +190,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
       setIsChanged(false)
       if (status !== ScheduleStatus.NOT_SUBMITTED || clickedSaveChange) {
         setTimeout(() => {
-          history.push(ENROLLMENT_SCHEDULE)
+          history.push(MthRoute.ENROLLMENT_SCHEDULE.toString())
         }, 300)
       }
       if (status === ScheduleStatus.NOT_SUBMITTED) {
@@ -236,7 +235,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
     } else {
       setIsChanged(true)
       setTimeout(() => {
-        history.push(ENROLLMENT_SCHEDULE)
+        history.push(MthRoute.ENROLLMENT_SCHEDULE.toString())
         setIsChanged(false)
       }, 300)
     }
@@ -470,7 +469,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
           setSelectedYearId={setSelectedYearId}
           handleBack={() => {
             if (isChanged) setShowUnsavedModal(true)
-            else history.push(ENROLLMENT_SCHEDULE)
+            else history.push(MthRoute.ENROLLMENT_SCHEDULE.toString())
           }}
         />
         <StudentInfo
@@ -653,7 +652,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
               setShowUnsavedModal(false)
               setIsChanged(false)
               setTimeout(() => {
-                history.push(ENROLLMENT_SCHEDULE)
+                history.push(MthRoute.ENROLLMENT_SCHEDULE.toString())
               }, 300)
             }}
           />

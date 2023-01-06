@@ -1,6 +1,6 @@
 import { FunctionComponent } from 'react'
 
-type AddedProps = {
+export type AddedProps = {
   handleModem: (type: string) => void
 }
 

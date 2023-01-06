@@ -23,14 +23,13 @@ import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { Title } from '@mth/components/Typography/Title/Title'
 import { WarningModal } from '@mth/components/WarningModal/Warning'
-import { ApplicationStatus, MthTitle } from '@mth/enums'
+import { ApplicationStatus, MthColor, MthTitle } from '@mth/enums'
 import { getAssessmentsBySchoolYearId, getStudentAssessmentsByStudentId } from '@mth/graphql/queries/assessment'
 import { getWithdrawalStatusQuery } from '@mth/graphql/queries/withdrawal'
 import { Packet, Person, Phone } from '@mth/models'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { AssessmentType } from '@mth/screens/Admin/SiteManagement/EnrollmentSetting/TestingPreference/types'
 import { StudentType } from '@mth/screens/HomeroomStudentProfile/Student/types'
-import { BUTTON_LINEAR_GRADIENT, MTHBLUE } from '../../../../utils/constants'
 import { STATES_WITH_ABBREVIATION } from '../../../../utils/states'
 import { getPreviousSchoolYearId, phoneFormat } from '../../../../utils/utils'
 import { ProfilePacketModal } from '../../EnrollmentPackets/EnrollmentPacketModal/ProfilePacketModal'
@@ -84,13 +83,13 @@ const selectStyles = makeStyles({
     minWidth: '80px',
     height: '29px',
     textAlign: 'center',
-    background: BUTTON_LINEAR_GRADIENT,
+    background: MthColor.BUTTON_LINEAR_GRADIENT,
     color: '#F2F2F2',
     '&:before': {
-      borderColor: BUTTON_LINEAR_GRADIENT,
+      borderColor: MthColor.BUTTON_LINEAR_GRADIENT,
     },
     '&:after': {
-      borderColor: BUTTON_LINEAR_GRADIENT,
+      borderColor: MthColor.BUTTON_LINEAR_GRADIENT,
     },
   },
 })
@@ -253,7 +252,7 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
     const shoolYears = regionData?.region?.SchoolYears || []
     let special_ed_options = ''
     shoolYears
-      .filter((item) => moment(item.date_begin).format('YYYY') >= moment().format('YYYY'))
+      .filter((item) => new Date(item.date_begin) <= new Date() && new Date(item.date_end) >= new Date())
       .map((item: { special_ed_options: string; special_ed: boolean }): void => {
         if (
           item.special_ed == true &&
@@ -459,7 +458,7 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
       >
         <Button
           sx={{
-            background: BUTTON_LINEAR_GRADIENT,
+            background: MthColor.BUTTON_LINEAR_GRADIENT,
             textTransform: 'none',
             color: 'white',
             marginRight: 2,
@@ -472,7 +471,7 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
         </Button>
         <Button
           sx={{
-            background: BUTTON_LINEAR_GRADIENT,
+            background: MthColor.BUTTON_LINEAR_GRADIENT,
             textTransform: 'none',
             color: 'white',
             marginRight: 2,
@@ -485,7 +484,7 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
         </Button>
         <Button
           sx={{
-            background: BUTTON_LINEAR_GRADIENT,
+            background: MthColor.BUTTON_LINEAR_GRADIENT,
             textTransform: 'none',
             color: 'white',
             marginRight: 2,
@@ -520,7 +519,7 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
                 textAlign: 'left',
               }}
             >
-              <Title textAlign='left' fontWeight='700' color={MTHBLUE}>
+              <Title textAlign='left' fontWeight='700' color={MthColor.MTHBLUE}>
                 {legalFirstName} {legalLastName}
               </Title>
               {/* <Subtitle textAlign='left' fontWeight='700'>
@@ -568,7 +567,7 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
           <Grid item xs={9} sx={{ alignItems: 'center', display: 'flex' }}>
             <Button
               sx={{
-                background: BUTTON_LINEAR_GRADIENT,
+                background: MthColor.BUTTON_LINEAR_GRADIENT,
                 textTransform: 'none',
                 color: 'white',
                 marginRight: 2,
@@ -597,7 +596,7 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
           <Grid item xs={9} sx={{ alignItems: 'center', display: 'flex' }}>
             <Button
               sx={{
-                background: BUTTON_LINEAR_GRADIENT,
+                background: MthColor.BUTTON_LINEAR_GRADIENT,
                 textTransform: 'none',
                 color: 'white',
                 marginRight: 2,
@@ -626,7 +625,7 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
             <Grid item xs={12} sx={{ alignItems: 'center', display: 'flex' }}>
               <Button
                 sx={{
-                  background: BUTTON_LINEAR_GRADIENT,
+                  background: MthColor.BUTTON_LINEAR_GRADIENT,
                   textTransform: 'none',
                   color: 'white',
                   marginLeft: 5,

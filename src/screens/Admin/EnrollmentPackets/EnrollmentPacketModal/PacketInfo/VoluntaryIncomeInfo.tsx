@@ -3,8 +3,9 @@ import { Grid, TextField } from '@mui/material'
 import { Box } from '@mui/system'
 import { Controller, useFormContext } from 'react-hook-form'
 import { DropDown } from '@mth/components/DropDown/DropDown'
+import { DropDownItem } from '@mth/components/DropDown/types'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
-import { monthlyIncome } from '../../../../../utils/constants'
+import { MONTHLY_INCOME_OPTIONS } from '@mth/constants'
 
 export const VoluntaryIncomeInfo: React.FC = () => {
   const { control } = useFormContext()
@@ -38,7 +39,7 @@ export const VoluntaryIncomeInfo: React.FC = () => {
               control={control}
               render={({ field }) => (
                 <DropDown
-                  dropDownItems={monthlyIncome}
+                  dropDownItems={MONTHLY_INCOME_OPTIONS as DropDownItem[]}
                   placeholder='Entry'
                   defaultValue={field.value}
                   setParentValue={(v) => field.onChange(v as string)}

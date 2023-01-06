@@ -1,4 +1,4 @@
-import { BUTTON_LINEAR_GRADIENT, SYSTEM_08, BLACK } from '../../../../../utils/constants'
+import { MthColor } from '@mth/enums'
 
 export const fileUploadModalClassess = {
   modalCard: {
@@ -36,16 +36,16 @@ export const fileUploadModalClassess = {
     justifyContent: 'center',
   },
   finishButton: {
-    background: BUTTON_LINEAR_GRADIENT,
+    background: MthColor.BUTTON_LINEAR_GRADIENT,
     borderRadius: 5,
     width: '152px',
     marginTop: '14px',
     marginBottom: '14px',
   },
   cancelButton: {
-    background: SYSTEM_08,
+    background: MthColor.SYSTEM_08,
     borderRadius: 5,
-    color: BLACK,
+    color: MthColor.BLACK,
     width: '152px',
     marginTop: '14px',
     marginBottom: '14px',

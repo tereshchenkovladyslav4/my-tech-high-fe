@@ -6,9 +6,8 @@ import * as yup from 'yup'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { isValidPassword } from '@mth/constants'
-import { MthTitle } from '@mth/enums'
+import { MthColor, MthTitle } from '@mth/enums'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
-import { SYSTEM_08 } from '../../../../utils/constants'
 import { updatePassword } from '../service'
 import { useStyles } from '../styles'
 
@@ -113,7 +112,7 @@ export const Account: React.FC<{ handleIsFormChange: () => void }> = ({ handleIs
             <Grid item xs={12}>
               <hr
                 style={{
-                  borderTop: `solid 1px ${SYSTEM_08}`,
+                  borderTop: `solid 1px ${MthColor.SYSTEM_08}`,
                   width: '100%',
                   borderBottom: '0',
                   margin: '22px 0 16px 0',

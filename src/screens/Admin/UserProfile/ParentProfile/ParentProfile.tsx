@@ -1,9 +1,9 @@
-import React, { FunctionComponent, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button, Checkbox, FormControlLabel, Grid, TextField } from '@mui/material'
 import { Box } from '@mui/system'
-import { Paragraph } from '../../../../components/Typography/Paragraph/Paragraph'
-import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
-import { BUTTON_LINEAR_GRADIENT } from '../../../../utils/constants'
+import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { MthColor } from '@mth/enums'
 import { STATES_WITH_ABBREVIATION } from '../../../../utils/states'
 import { phoneFormat } from '../../../../utils/utils'
 
@@ -16,7 +16,7 @@ type ParentProfileProps = {
   setNotes: (_: unknown) => void
   applicationState: unknown
 }
-export const ParentProfile: FunctionComponent<ParentProfileProps> = ({
+export const ParentProfile: React.FC<ParentProfileProps> = ({
   userInfo,
   setUserInfo,
   phoneInfo,
@@ -76,7 +76,7 @@ export const ParentProfile: FunctionComponent<ParentProfileProps> = ({
       >
         <Button
           sx={{
-            background: BUTTON_LINEAR_GRADIENT,
+            background: MthColor.BUTTON_LINEAR_GRADIENT,
             textTransform: 'none',
             color: 'white',
             marginRight: 5,
@@ -89,7 +89,7 @@ export const ParentProfile: FunctionComponent<ParentProfileProps> = ({
         </Button>
         <Button
           sx={{
-            background: BUTTON_LINEAR_GRADIENT,
+            background: MthColor.BUTTON_LINEAR_GRADIENT,
             textTransform: 'none',
             color: 'white',
             marginRight: 2,

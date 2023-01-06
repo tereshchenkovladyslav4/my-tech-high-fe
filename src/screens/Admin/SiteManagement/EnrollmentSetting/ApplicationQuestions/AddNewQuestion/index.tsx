@@ -8,8 +8,7 @@ import htmlToDraft from 'html-to-draftjs'
 import Wysiwyg from 'react-draft-wysiwyg'
 import { DropDown } from '@mth/components/DropDown/DropDown'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
-import { QUESTION_TYPE } from '@mth/enums'
-import { SYSTEM_07 } from '../../../../../../utils/constants'
+import { MthColor, QUESTION_TYPE } from '@mth/enums'
 import { CustomModal } from '../../components/CustomModal/CustomModals'
 import { ApplicationQuestion } from '../types'
 import { QuestionOptions } from './Options'
@@ -408,7 +407,7 @@ export const AddNewQuestionModal: React.FC<AddNewQuestionModalProps> = ({
                       minWidth: '400px',
                       [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
                         {
-                          borderColor: SYSTEM_07,
+                          borderColor: MthColor.SYSTEM_07,
                         },
                     }}
                     label='Question'
@@ -432,7 +431,7 @@ export const AddNewQuestionModal: React.FC<AddNewQuestionModalProps> = ({
                       minWidth: '200px',
                       [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
                         {
-                          borderColor: SYSTEM_07,
+                          borderColor: MthColor.SYSTEM_07,
                         },
                       marginRight: '50px',
                     }}
@@ -567,7 +566,7 @@ export const AddNewQuestionModal: React.FC<AddNewQuestionModalProps> = ({
                       minWidth: '200px',
                       [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
                         {
-                          borderColor: SYSTEM_07,
+                          borderColor: MthColor.SYSTEM_07,
                         },
                     }}
                     labelTop

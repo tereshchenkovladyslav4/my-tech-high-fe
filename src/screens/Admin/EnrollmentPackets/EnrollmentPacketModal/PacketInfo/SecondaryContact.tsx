@@ -3,8 +3,10 @@ import { Grid, TextField } from '@mui/material'
 import { Box } from '@mui/system'
 import { Controller, useFormContext } from 'react-hook-form'
 import { DropDown } from '@mth/components/DropDown/DropDown'
+import { DropDownItem } from '@mth/components/DropDown/types'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
-import { hispanicOptions, SYSTEM_01 } from '../../../../../utils/constants'
+import { HISPANIC_OPTIONS } from '@mth/constants'
+import { MthColor } from '@mth/enums'
 import { countries } from '../../../../../utils/countries'
 
 export const SecondaryContact: React.FC = () => {
@@ -12,7 +14,7 @@ export const SecondaryContact: React.FC = () => {
 
   return (
     <Box sx={{ paddingTop: '15px' }}>
-      <Subtitle color={SYSTEM_01} size='small' fontWeight='700'>
+      <Subtitle color={MthColor.SYSTEM_01} size='small' fontWeight='700'>
         Secondary Contact
       </Subtitle>
       <Grid container columnSpacing={4} rowSpacing={2} sx={{ paddingTop: '15px' }}>
@@ -138,7 +140,7 @@ export const SecondaryContact: React.FC = () => {
               control={control}
               render={({ field }) => (
                 <DropDown
-                  dropDownItems={hispanicOptions}
+                  dropDownItems={HISPANIC_OPTIONS as DropDownItem[]}
                   defaultValue={field.value}
                   placeholder='Entry'
                   size='small'

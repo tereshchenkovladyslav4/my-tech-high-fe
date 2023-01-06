@@ -1,4 +1,4 @@
-import { ERROR_RED } from '../../../utils/constants'
+import { MthColor } from '@mth/enums'
 
 export const useStyles = {
   base: {
@@ -43,7 +43,7 @@ export const useStyles = {
       height: '46px',
     },
     '& .Mui-error': {
-      color: ERROR_RED,
+      color: MthColor.ERROR_RED,
     },
     '& .MuiFormControlLabel-root': {
       alignItems: 'flex-start',

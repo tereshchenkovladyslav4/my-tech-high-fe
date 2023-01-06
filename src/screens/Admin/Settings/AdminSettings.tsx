@@ -1,10 +1,9 @@
 import React, { useState } from 'react'
 import { Box, Tab, Tabs } from '@mui/material'
 import { Prompt } from 'react-router-dom'
-import { MthTitle } from '@mth/enums'
-import { CustomConfirmModal } from '../../../components/CustomConfirmModal/CustomConfirmModal'
-import { Subtitle } from '../../../components/Typography/Subtitle/Subtitle'
-import { MTHBLUE } from '../../../utils/constants'
+import { CustomConfirmModal } from '@mth/components/CustomConfirmModal/CustomConfirmModal'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { MthColor, MthTitle } from '@mth/enums'
 import { Account } from './Account/Account'
 import { Profile } from './Profile/Profile'
 import { useStyles } from './styles'
@@ -31,7 +30,7 @@ const AdminSetting: React.FC = () => {
     }
   }
 
-  const tabTextColor = (tab: number) => (value === tab ? MTHBLUE : '')
+  const tabTextColor = (tab: number) => (value === tab ? MthColor.MTHBLUE : '')
 
   return (
     <Box display='flex' flexDirection='column' height={'100%'}>

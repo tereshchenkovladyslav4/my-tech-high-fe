@@ -221,7 +221,7 @@ export const EnrollmentPacketTable: React.FC = () => {
       const { SchoolYears } = schoolYearData?.region
       const yearList = []
       SchoolYears.sort((a, b) => (a.date_begin > b.date_begin ? 1 : -1))
-        .filter((item) => moment(item.date_begin).format('YYYY') >= moment().format('YYYY'))
+        .filter((item) => new Date(item.date_begin) <= new Date() && new Date(item.date_end) >= new Date())
         .map(
           (item: {
             date_begin: string

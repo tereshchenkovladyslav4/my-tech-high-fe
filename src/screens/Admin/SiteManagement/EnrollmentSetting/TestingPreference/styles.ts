@@ -1,5 +1,4 @@
 import { MthColor } from '@mth/enums'
-import { ERROR_RED } from '../../../../../utils/constants'
 
 export const testingPreferenceClassess = {
   container: {
@@ -44,7 +43,7 @@ export const testingPreferenceClassess = {
     },
   },
   formError: {
-    color: ERROR_RED,
+    color: MthColor.ERROR_RED,
     fontSize: '12px',
     fontWeight: 600,
     lineHeight: '20px',

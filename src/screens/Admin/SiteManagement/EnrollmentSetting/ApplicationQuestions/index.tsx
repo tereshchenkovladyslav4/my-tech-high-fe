@@ -9,10 +9,10 @@ import { useHistory } from 'react-router-dom'
 import { arrayMove, SortableContainer, SortableElement } from 'react-sortable-hoc'
 import BGSVG from '@mth/assets/ApplicationBG.svg'
 import { DropDownItem } from '@mth/components/DropDown/types'
+import { GRADES } from '@mth/constants'
 import { QUESTION_TYPE, MthTitle } from '@mth/enums'
 import { getSchoolDistrictsByRegionId } from '@mth/graphql/queries/school-district'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
-import { GRADES } from '../../../../../utils/constants'
 import { countries } from '../../../../../utils/countries'
 import { usStates } from '../../../../../utils/states'
 import { toOrdinalSuffix } from '../../../../../utils/stringHelpers'
@@ -125,7 +125,7 @@ export const ApplicationQuestions: React.FC = () => {
     if (!schoolLoading && schoolYearData.getSchoolYearsByRegionId) {
       const schoolYearsArray = []
       schoolYearData.getSchoolYearsByRegionId
-        .filter((item) => moment(item.date_begin).format('YYYY') >= moment().format('YYYY'))
+        .filter((item) => new Date(item.date_begin) <= new Date() && new Date(item.date_end) >= new Date())
         .map(
           (item: {
             date_begin: string

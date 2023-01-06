@@ -21,8 +21,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { DropDown } from '@mth/components/DropDown/DropDown'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
-import { QUESTION_TYPE } from '@mth/enums'
-import { SYSTEM_05, SYSTEM_07 } from '../../../../../utils/constants'
+import { MthColor, QUESTION_TYPE } from '@mth/enums'
 import { CustomModal } from '../components/CustomModal/CustomModals'
 import { ProgramYearContext } from '../provider/ProgramYearProvider'
 import { AddNewQuestionModal } from './AddNewQuestion'
@@ -287,7 +286,7 @@ function Item({
           width: '99%',
           maxWidth: '99%',
           [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
-            borderColor: SYSTEM_07,
+            borderColor: MthColor.SYSTEM_07,
           },
         }}
         labelTop
@@ -306,11 +305,11 @@ function Item({
           width: '99%',
 
           [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
-            borderColor: SYSTEM_07,
+            borderColor: MthColor.SYSTEM_07,
           },
         }}
         InputLabelProps={{
-          style: { color: SYSTEM_05 },
+          style: { color: MthColor.SYSTEM_05 },
         }}
         variant='outlined'
         fullWidth
@@ -341,11 +340,11 @@ function Item({
 
                       [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
                         {
-                          borderColor: SYSTEM_07,
+                          borderColor: MthColor.SYSTEM_07,
                         },
                     }}
                     InputLabelProps={{
-                      style: { color: SYSTEM_05 },
+                      style: { color: MthColor.SYSTEM_05 },
                     }}
                     variant='outlined'
                     fullWidth
@@ -383,11 +382,11 @@ function Item({
           minWidth: '99%',
 
           [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
-            borderColor: SYSTEM_07,
+            borderColor: MthColor.SYSTEM_07,
           },
         }}
         InputLabelProps={{
-          style: { color: SYSTEM_05 },
+          style: { color: MthColor.SYSTEM_05 },
         }}
         variant='outlined'
         onChange={() => {}}

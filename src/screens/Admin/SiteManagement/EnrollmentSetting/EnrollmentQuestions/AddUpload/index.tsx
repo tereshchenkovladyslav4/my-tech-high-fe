@@ -1,12 +1,12 @@
-import React, { useState, useRef, FunctionComponent } from 'react'
+import React, { useState, useRef } from 'react'
 import { Box, Button, Checkbox, Modal, outlinedInputClasses, TextField, Typography } from '@mui/material'
 import { ContentState, convertToRaw, EditorState } from 'draft-js'
 import draftToHtml from 'draftjs-to-html'
 import { useFormikContext } from 'formik'
 import htmlToDraft from 'html-to-draftjs'
 import Wysiwyg from 'react-draft-wysiwyg'
-import { Subtitle } from '../../../../../../components/Typography/Subtitle/Subtitle'
-import { SYSTEM_07 } from '../../../../../../utils/constants'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { MthColor } from '@mth/enums'
 import { EnrollmentQuestion, EnrollmentQuestionGroup, EnrollmentQuestionTab } from '../types'
 
 type AddUploadModal = {
@@ -14,7 +14,7 @@ type AddUploadModal = {
   editItem?: EnrollmentQuestion
   specialEd: unknown
 }
-export const AddUploadModal: FunctionComponent<AddUploadModal> = ({ onClose, editItem, specialEd }) => {
+export const AddUploadModal: React.FC<AddUploadModal> = ({ onClose, editItem, specialEd }) => {
   const { values, setValues } = useFormikContext<EnrollmentQuestionTab[]>()
   const [uploadTitle, setUploadTitle] = useState(editItem?.question || '')
   const [fileName, setFileName] = useState(editItem?.options[0]?.label || '')
@@ -166,7 +166,7 @@ export const AddUploadModal: FunctionComponent<AddUploadModal> = ({ onClose, edi
               minWidth: '300px',
               [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
                 {
-                  borderColor: SYSTEM_07,
+                  borderColor: MthColor.SYSTEM_07,
                 },
             }}
             label='Title'
@@ -181,7 +181,7 @@ export const AddUploadModal: FunctionComponent<AddUploadModal> = ({ onClose, edi
               minWidth: '200px',
               [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
                 {
-                  borderColor: SYSTEM_07,
+                  borderColor: MthColor.SYSTEM_07,
                 },
             }}
             label='File Name'

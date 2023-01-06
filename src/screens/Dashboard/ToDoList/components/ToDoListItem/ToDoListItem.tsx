@@ -7,12 +7,10 @@ import { useHistory, useLocation } from 'react-router-dom'
 import { Metadata } from '@mth/components/Metadata/Metadata'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
-import { MthRoute } from '@mth/enums'
-import { MthColor } from '@mth/enums'
+import { MthRoute, MthColor } from '@mth/enums'
 import { getWindowDimension } from '@mth/utils'
-import { PRIMARY_MEDIUM_MOUSEOVER, MTHORANGE } from '../../../../../utils/constants'
 import { Person } from '../../../../HomeroomStudentProfile/Student/types'
-import { ToDoCategory, TodoListTemplateType } from './types'
+import { ToDoCategory, TodoListItemProps } from './types'
 
 const Row = (props: unknown) => (
   <Box display='flex' flexDirection='row' alignItems='center' justifyContent={props.content || 'flex-start'}>
@@ -20,7 +18,7 @@ const Row = (props: unknown) => (
   </Box>
 )
 
-export const ToDoListItem: TodoListTemplateType = ({ todoItem, todoDate, todoDeadline }) => {
+export const ToDoListItem: React.FC<TodoListItemProps> = ({ todoItem, todoDate, todoDeadline }) => {
   const history = useHistory()
   const { students } = todoItem
   const [link, setLink] = useState<string>('')
@@ -124,8 +122,8 @@ export const ToDoListItem: TodoListTemplateType = ({ todoItem, todoDate, todoDea
                 }}
               >
                 <Row>
-                  <WarningAmberOutlinedIcon fontSize='small' htmlColor={MTHORANGE} />
-                  <Subtitle size={12} color={MTHORANGE} sx={{ ml: 1 }}>
+                  <WarningAmberOutlinedIcon fontSize='small' htmlColor={MthColor.MTHORANGE} />
+                  <Subtitle size={12} color={MthColor.MTHORANGE} sx={{ ml: 1 }}>
                     {todoDeadline}
                   </Subtitle>
                 </Row>
@@ -145,7 +143,7 @@ export const ToDoListItem: TodoListTemplateType = ({ todoItem, todoDate, todoDea
                 fontWeight: 700,
                 textTransform: 'none',
                 '&:hover': {
-                  background: PRIMARY_MEDIUM_MOUSEOVER,
+                  background: MthColor.PRIMARY_MEDIUM_MOUSEOVER,
                   color: 'white',
                 },
               }}
@@ -196,8 +194,8 @@ export const ToDoListItem: TodoListTemplateType = ({ todoItem, todoDate, todoDea
                   }}
                 >
                   <Row>
-                    <WarningAmberOutlinedIcon fontSize='small' htmlColor={MTHORANGE} />
-                    <Subtitle size={12} color={MTHORANGE} sx={{ ml: 1 }}>
+                    <WarningAmberOutlinedIcon fontSize='small' htmlColor={MthColor.MTHORANGE} />
+                    <Subtitle size={12} color={MthColor.MTHORANGE} sx={{ ml: 1 }}>
                       {todoDeadline}
                     </Subtitle>
                   </Row>
@@ -216,7 +214,7 @@ export const ToDoListItem: TodoListTemplateType = ({ todoItem, todoDate, todoDea
                 fontWeight: 700,
                 textTransform: 'none',
                 '&:hover': {
-                  background: PRIMARY_MEDIUM_MOUSEOVER,
+                  background: MthColor.PRIMARY_MEDIUM_MOUSEOVER,
                   color: 'white',
                 },
                 marginTop: '24px',
@@ -266,8 +264,8 @@ export const ToDoListItem: TodoListTemplateType = ({ todoItem, todoDate, todoDea
                   }}
                 >
                   <Row>
-                    <WarningAmberOutlinedIcon fontSize='small' htmlColor={MTHORANGE} />
-                    <Subtitle size={12} color={MTHORANGE} sx={{ ml: 1 }}>
+                    <WarningAmberOutlinedIcon fontSize='small' htmlColor={MthColor.MTHORANGE} />
+                    <Subtitle size={12} color={MthColor.MTHORANGE} sx={{ ml: 1 }}>
                       {todoDeadline}
                     </Subtitle>
                   </Row>
@@ -286,7 +284,7 @@ export const ToDoListItem: TodoListTemplateType = ({ todoItem, todoDate, todoDea
                 fontWeight: 700,
                 textTransform: 'none',
                 '&:hover': {
-                  background: PRIMARY_MEDIUM_MOUSEOVER,
+                  background: MthColor.PRIMARY_MEDIUM_MOUSEOVER,
                   color: 'white',
                 },
                 marginTop: '12px',

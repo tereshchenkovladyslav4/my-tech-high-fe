@@ -83,8 +83,8 @@ export const SchoolYearSelect: React.FC<SchoolYearSelectProps> = ({
     if (schoolYearsArr && schoolYearsArr.length > 0) {
       schoolYearsArr.forEach((schoolYear) => {
         if (
-          parseInt(moment(schoolYear.schoolYearOpen).format('YYYY')) >= parseInt(moment().format('YYYY')) &&
-          parseInt(moment(schoolYear.schoolYearClose).format('YYYY')) <= parseInt(moment().format('YYYY')) + 1 &&
+          new Date(schoolYear.schoolYearOpen) <= new Date() &&
+          new Date(schoolYear.schoolYearClose) >= new Date() &&
           selectedYearId == ''
         ) {
           setSelectedYearId(schoolYear.schoolYearId.toString())

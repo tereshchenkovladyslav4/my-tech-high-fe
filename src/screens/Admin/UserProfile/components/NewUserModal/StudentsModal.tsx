@@ -4,13 +4,14 @@ import CloseIcon from '@mui/icons-material/Close'
 import { Button, Checkbox, FormControlLabel, Grid, Modal } from '@mui/material'
 import { Box } from '@mui/system'
 import { map } from 'lodash'
-import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
-import { WarningModal } from '../../../../../components/WarningModal/Warning'
-import { BUTTON_LINEAR_GRADIENT, RED_GRADIENT } from '../../../../../utils/constants'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { WarningModal } from '@mth/components/WarningModal/Warning'
+import { MthColor } from '@mth/enums'
 import { CreateObserMutation } from '../../services'
 import { useStyles } from './styles'
-import { NewModalTemplateType, ApolloError } from './types'
-export const StudentsModal: NewModalTemplateType = ({ handleModem, students = [], data }) => {
+import { ApolloError, NewModalProps } from './types'
+
+export const StudentsModal: React.FC<NewModalProps> = ({ handleModem, students = [], data }) => {
   const classes = useStyles
   const [apolloError, setApolloError] = useState<ApolloError>({
     title: '',
@@ -101,7 +102,7 @@ export const StudentsModal: NewModalTemplateType = ({ handleModem, students = []
                   height: 29,
                   color: 'white',
                   width: '92px',
-                  background: RED_GRADIENT,
+                  background: MthColor.RED_GRADIENT,
                   marginRight: 3,
                   '&:hover': {
                     background: '#D23C33',
@@ -115,7 +116,7 @@ export const StudentsModal: NewModalTemplateType = ({ handleModem, students = []
               <Button
                 onClick={handleSubmit}
                 sx={{
-                  background: BUTTON_LINEAR_GRADIENT,
+                  background: MthColor.BUTTON_LINEAR_GRADIENT,
                   color: 'white',
                   width: '92px',
                   borderRadius: 2,

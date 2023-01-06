@@ -1,12 +1,12 @@
-import React, { FunctionComponent } from 'react'
+import React from 'react'
 import { Box, Grid } from '@mui/material'
-import { Paragraph } from '../../../components/Typography/Paragraph/Paragraph'
-import { Subtitle } from '../../../components/Typography/Subtitle/Subtitle'
-import { Title } from '../../../components/Typography/Title/Title'
-import { BUTTON_LINEAR_GRADIENT } from '../../../utils/constants'
+import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { Title } from '@mth/components/Typography/Title/Title'
+import { MthColor } from '@mth/enums'
 
-export const Contact: FunctionComponent = () => (
-  <Box sx={{ background: BUTTON_LINEAR_GRADIENT, paddingY: 10, paddingX: 12 }}>
+export const Contact: React.FC = () => (
+  <Box sx={{ background: MthColor.BUTTON_LINEAR_GRADIENT, paddingY: 10, paddingX: 12 }}>
     <Grid container>
       <Grid item xs={6}>
         <Title size='large' color='white'>

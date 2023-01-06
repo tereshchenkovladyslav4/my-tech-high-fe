@@ -8,7 +8,7 @@ type WarningModalProps = {
 
 export type WarningModalTemplateType = FunctionComponent<WarningModalProps>
 
-type UpdateModalProps = {
+export type UpdateModalProps = {
   visible: boolean
   userID: string | number
   handleModem: () => void

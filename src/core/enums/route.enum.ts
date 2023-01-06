@@ -37,6 +37,8 @@ export enum MthRoute {
   HOMEROOM_LEARNING_LOGS = '/homeroom/learning-log',
   HOMEROOM_ASSIGNMENTS = '/homeroom/assignments',
   HOMEROOM_CHECKLIST = '/homeroom/checklist',
+  HOMEROOM_GRADEBOOK = '/homeroom/gradebook',
+  HOMEROOM_SETTINGS = '/homeroom/settings',
 
   REPORTS = '/reports',
   RESET_PASSWORD = '/reset-password',

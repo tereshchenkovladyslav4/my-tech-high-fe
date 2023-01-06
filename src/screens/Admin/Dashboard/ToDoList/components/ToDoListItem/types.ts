@@ -1,5 +1,3 @@
-import { FunctionComponent } from 'react'
-
 type ToDoListItem = {
   id: number
   title: string
@@ -9,9 +7,7 @@ type ToDoListItem = {
   buttonTitle?: string
 }
 
-type TodoListItemProps = {
+export type TodoListItemProps = {
   todoItem: ToDoListItem
   idx: number
 }
-
-export type TodoListTemplateType = FunctionComponent<TodoListItemProps>

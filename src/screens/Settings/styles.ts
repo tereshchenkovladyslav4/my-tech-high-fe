@@ -1,4 +1,4 @@
-import { MTHBLUE } from '../../utils/constants'
+import { MthColor } from '@mth/enums'
 
 export const settingClasses = {
   gridContainer: {
@@ -11,7 +11,7 @@ export const settingClasses = {
     backgroundColor: '#EEF4F8',
     color: 'red',
     '&.Mui-selected': {
-      color: MTHBLUE,
+      color: MthColor.MTHBLUE,
     },
   },
   saveButton: {

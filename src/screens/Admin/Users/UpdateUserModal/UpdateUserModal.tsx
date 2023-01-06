@@ -17,7 +17,8 @@ import { map } from 'lodash'
 import { DropDown } from '@mth/components/DropDown/DropDown'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { WarningModal } from '@mth/components/WarningModal/Warning'
-import { RECEIVE_EMAIL_GIVING_LINK_TO_CREATE_PASSWORD } from '@mth/constants'
+import { PROVIDERS, RECEIVE_EMAIL_GIVING_LINK_TO_CREATE_PASSWORD, SOE, SOE_OPTIONS, SPED } from '@mth/constants'
+import { MthColor } from '@mth/enums'
 import { updateUserMutation } from '@mth/graphql/mutation/user'
 import { getAllAccess } from '@mth/graphql/queries/access'
 import { getAllRegion } from '@mth/graphql/queries/region'
@@ -25,10 +26,9 @@ import { getAllRoles } from '@mth/graphql/queries/role'
 import { getUser, getUsersByRegions } from '@mth/graphql/queries/user'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { sortRegions } from '@mth/utils'
-import { BUTTON_LINEAR_GRADIENT, PROVIDERS, SOE, SOE_OPTIONS, SPED } from '../../../../utils/constants'
 import { ApolloError, Region } from '../interfaces'
 import { useStyles } from './styles'
-import { UpdateModalTemplateType } from './types'
+import { UpdateModalProps } from './types'
 
 interface CheckBoxTemplate {
   value: number
@@ -36,7 +36,7 @@ interface CheckBoxTemplate {
   selected: boolean
 }
 
-export const UpdateUserModal: UpdateModalTemplateType = ({ handleModem, userID, visible }) => {
+export const UpdateUserModal: React.FC<UpdateModalProps> = ({ handleModem, userID, visible }) => {
   const classes = useStyles
   const { me } = useContext(UserContext)
   const [apolloError, setApolloError] = useState<ApolloError>({
@@ -799,7 +799,7 @@ export const UpdateUserModal: UpdateModalTemplateType = ({ handleModem, userID, 
                 <Button
                   onClick={handleSubmit}
                   sx={{
-                    background: BUTTON_LINEAR_GRADIENT,
+                    background: MthColor.BUTTON_LINEAR_GRADIENT,
                     color: 'white',
                     width: '92px',
                     borderRadius: 8,

@@ -8,18 +8,17 @@ import SignatureCanvas from 'react-signature-canvas'
 import * as yup from 'yup'
 import { SuccessModal } from '@mth/components/SuccessModal/SuccessModal'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
-import { QUESTION_TYPE } from '@mth/enums'
+import { MthColor, MthRoute, QUESTION_TYPE } from '@mth/enums'
 import { EnrollmentContext } from '@mth/providers/EnrollmentPacketPrivder/EnrollmentPacketProvider'
 import { UserContext, UserInfo } from '@mth/providers/UserContext/UserProvider'
 import { getWindowDimension } from '@mth/utils'
-import { HOMEROOM, RED, SYSTEM_05, SYSTEM_07 } from '../../../utils/constants'
 import { isNumber } from '../../../utils/stringHelpers'
 import { EnrollmentQuestionItem } from '../Question'
 import { useStyles } from '../styles'
 import { enrollmentContactMutation } from './service'
-import { SubmissionTemplateType } from './types'
+import { SubmissionProps } from './types'
 
-export const Submission: SubmissionTemplateType = ({ id, questions }) => {
+export const Submission: React.FC<SubmissionProps> = ({ id, questions }) => {
   const { setPacketId, packetId, disabled } = useContext(EnrollmentContext)
 
   const classes = useStyles
@@ -319,7 +318,7 @@ export const Submission: SubmissionTemplateType = ({ id, questions }) => {
 
   const nextTab = (e) => {
     e.preventDefault()
-    history.push(`${HOMEROOM}` + '/' + id)
+    history.push(`${MthRoute.HOMEROOM}` + '/' + id)
     window.scrollTo(0, 0)
   }
 
@@ -347,7 +346,7 @@ export const Submission: SubmissionTemplateType = ({ id, questions }) => {
           )}'s Enrollment Packet has been submitted successfully and is now pending approval.`}
           btntitle='Done'
           handleSubmit={() => {
-            history.push(`${HOMEROOM}`)
+            history.push(`${MthRoute.HOMEROOM}`)
             location.reload()
           }}
         />
@@ -389,12 +388,12 @@ export const Submission: SubmissionTemplateType = ({ id, questions }) => {
                 sx={{
                   [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
                     {
-                      borderColor: SYSTEM_07,
+                      borderColor: MthColor.SYSTEM_07,
                     },
                 }}
                 name={'meta.meta_parentlegalname'}
                 InputLabelProps={{
-                  style: { color: SYSTEM_05 },
+                  style: { color: MthColor.SYSTEM_05 },
                 }}
                 variant='outlined'
                 fullWidth
@@ -433,7 +432,7 @@ export const Submission: SubmissionTemplateType = ({ id, questions }) => {
         </Grid>
         {signatureInvalid && (
           <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'center' }}>
-            <FormHelperText style={{ textAlign: 'center', color: RED }}>Required</FormHelperText>
+            <FormHelperText style={{ textAlign: 'center', color: MthColor.RED }}>Required</FormHelperText>
           </Grid>
         )}
         <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'center' }}>

@@ -1,5 +1,5 @@
 import { gql } from '@apollo/client'
-import { SNOWPACK_PUBLIC_S3_URL } from '../../../utils/constants'
+import { MthRoute } from '@mth/enums'
 
 export const createSchoolYearMutation = gql`
   mutation CreateSchoolYear($createSchoolYearInput: CreateSchoolYearInput!, $previousYearId: Float!) {
@@ -166,7 +166,7 @@ export const uploadImage = async (file: File | undefined, stateName: string): Pr
     bodyFormData.append('region', stateName)
     bodyFormData.append('directory', 'stateLogo')
 
-    const response = await fetch(SNOWPACK_PUBLIC_S3_URL, {
+    const response = await fetch(MthRoute.SNOWPACK_PUBLIC_S3_URL.toString(), {
       method: 'POST',
       body: bodyFormData,
       headers: {
@@ -189,7 +189,7 @@ export const uploadFile = async (file: File, type: string, stateName: string): P
     bodyFormData.append('region', stateName)
     bodyFormData.append('directory', type)
 
-    const response = await fetch(SNOWPACK_PUBLIC_S3_URL, {
+    const response = await fetch(MthRoute.SNOWPACK_PUBLIC_S3_URL.toString(), {
       method: 'POST',
       body: bodyFormData,
       headers: {

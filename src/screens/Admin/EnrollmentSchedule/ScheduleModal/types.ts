@@ -1,6 +1,6 @@
 import { FunctionComponent } from 'react'
 
-type EnrollmentModalProps = {
+export type EnrollmentModalProps = {
   title?: string
   subtitle?: string
   btntitle?: string
@@ -10,8 +10,6 @@ type EnrollmentModalProps = {
   schoolYears?: unknown[]
   handleRefetch: () => void
 }
-
-export type EnrollmentModalType = FunctionComponent<EnrollmentModalProps>
 
 type EnrollmentEmailModalProps = {
   handleModem: () => void

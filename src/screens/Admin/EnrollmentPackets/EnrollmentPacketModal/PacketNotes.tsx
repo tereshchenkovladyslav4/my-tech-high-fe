@@ -1,16 +1,16 @@
-import React, { FunctionComponent } from 'react'
+import React from 'react'
 import { Grid, TextField } from '@mui/material'
 import { useFormContext, Controller } from 'react-hook-form'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { MthColor } from '@mth/enums'
 import { extractContent } from '@mth/utils'
-import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
-import { SYSTEM_01 } from '../../../../utils/constants'
 
-export const EnrollmentPacketNotes: FunctionComponent = () => {
+export const EnrollmentPacketNotes: React.FC = () => {
   const { control } = useFormContext()
   return (
     <Grid container sx={{ paddingTop: '20px' }}>
       <Grid item md={12} sm={12} xs={12}>
-        <Subtitle color={SYSTEM_01} size='medium' fontWeight='700'>
+        <Subtitle color={MthColor.SYSTEM_01} size='medium' fontWeight='700'>
           Packet Notes
         </Subtitle>
       </Grid>

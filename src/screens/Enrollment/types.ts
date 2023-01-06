@@ -4,13 +4,14 @@ import {
   EnrollmentQuestionGroup,
 } from '../Admin/SiteManagement/EnrollmentSetting/EnrollmentQuestions/types'
 
-type EnrollmentProps = {
+export type EnrollmentProps = {
   id: number
+  disabled: boolean
 }
 
 export type EnrollmentTemplateType = FunctionComponent<EnrollmentProps>
 
-type EnrollmentQuestionProps = {
+export type EnrollmentQuestionProps = {
   item: EnrollmentQuestion[]
   group: string
   formik: unknown

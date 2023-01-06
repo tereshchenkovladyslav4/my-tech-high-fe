@@ -27,11 +27,10 @@ import PageHeader from '@mth/components/PageHeader'
 import { Pagination } from '@mth/components/Pagination/Pagination'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { WarningModal } from '@mth/components/WarningModal/Warning'
-import { MthTitle } from '@mth/enums'
+import { MthColor, MthRoute, MthTitle } from '@mth/enums'
 import { useSchoolYearsByRegionId } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { mthButtonClasses } from '@mth/styles/button.style'
-import { BUTTON_LINEAR_GRADIENT, HOMEROOM_LEARNING_LOGS } from '../../../../../utils/constants'
 import {
   GetMastersByIDGql,
   getAssignmentsByMasterIdgql,
@@ -226,7 +225,7 @@ const MasterHoomroom: React.FC<{ masterId: number }> = ({ masterId }) => {
       },
     })
     setIsChange(false)
-    history.push(HOMEROOM_LEARNING_LOGS)
+    history.push(MthRoute.HOMEROOM_LEARNING_LOGS.toString())
   }
 
   const [sbumitInstruction] = useMutation(createOrUpdateInstruction)
@@ -260,7 +259,7 @@ const MasterHoomroom: React.FC<{ masterId: number }> = ({ masterId }) => {
         }}
       >
         <Box sx={{ mb: 4 }}>
-          <PageHeader title={masterInfo?.master_name || ''} to={HOMEROOM_LEARNING_LOGS}>
+          <PageHeader title={masterInfo?.master_name || ''} to={MthRoute.HOMEROOM_LEARNING_LOGS.toString()}>
             <Button sx={mthButtonClasses.roundXsPrimary} type='button' onClick={handleSubmit}>
               Save
             </Button>
@@ -358,12 +357,12 @@ const MasterHoomroom: React.FC<{ masterId: number }> = ({ masterId }) => {
               sx={{
                 borderRadius: 2,
                 textTransform: 'none',
-                background: BUTTON_LINEAR_GRADIENT,
+                background: MthColor.BUTTON_LINEAR_GRADIENT,
                 color: 'white',
                 padding: '10px 30px',
                 fontSize: '12px',
               }}
-              onClick={() => history.push(`${HOMEROOM_LEARNING_LOGS}/edit/${masterId}/edit-assignment`)}
+              onClick={() => history.push(`${MthRoute.HOMEROOM_LEARNING_LOGS}/edit/${masterId}/edit-assignment`)}
             >
               + Add Assignment
             </Button>

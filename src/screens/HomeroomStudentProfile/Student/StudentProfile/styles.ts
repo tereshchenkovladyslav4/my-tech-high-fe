@@ -1,4 +1,4 @@
-import { SYSTEM_01, LIGHTGRAY, SYSTEM_02, RED } from '../../../../utils/constants'
+import { MthColor } from '@mth/enums'
 
 export const studentProfileClasses = {
   gridContainer: {
@@ -32,20 +32,20 @@ export const studentProfileClasses = {
     height: '45px',
     width: '100%',
     borderRadius: 2,
-    backgroundColor: LIGHTGRAY,
-    color: SYSTEM_01,
+    backgroundColor: MthColor.LIGHTGRAY,
+    color: MthColor.SYSTEM_01,
     '&:hover': {
       background: '#e6e6e6',
       color: '#000',
     },
   },
   resubmitButton: {
-    background: RED,
+    background: MthColor.RED,
     height: '45px',
     width: '100%',
     borderRadius: 2,
     '&:hover': {
-      background: RED,
+      background: MthColor.RED,
     },
   },
   enrollmentButton: {
@@ -63,7 +63,7 @@ export const studentProfileClasses = {
     lineHeight: '22px',
     lettersSpacing: '0px',
     textAlign: 'left',
-    color: SYSTEM_02,
+    color: MthColor.SYSTEM_02,
   },
   pendingBtn: {
     height: '45px',

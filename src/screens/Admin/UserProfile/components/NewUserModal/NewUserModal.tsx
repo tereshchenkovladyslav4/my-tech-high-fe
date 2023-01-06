@@ -7,12 +7,12 @@ import { DropDownItem } from '@mth/components/DropDown/types'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { WarningModal } from '@mth/components/WarningModal/Warning'
 import { RECEIVE_EMAIL_GIVING_LINK_TO_CREATE_PASSWORD } from '@mth/constants'
-import { BUTTON_LINEAR_GRADIENT } from '../../../../../utils/constants'
+import { MthColor } from '@mth/enums'
 import { StudentsModal } from './StudentsModal'
 import { useStyles } from './styles'
-import { NewModalTemplateType, ApolloError } from './types'
+import { ApolloError, NewModalProps } from './types'
 
-export const NewUserModal: NewModalTemplateType = ({
+export const NewUserModal: React.FC<NewModalProps> = ({
   handleModem,
   visible = false,
   students = [],
@@ -208,7 +208,7 @@ export const NewUserModal: NewModalTemplateType = ({
               <Button
                 onClick={handleSubmit}
                 sx={{
-                  background: BUTTON_LINEAR_GRADIENT,
+                  background: MthColor.BUTTON_LINEAR_GRADIENT,
                   color: 'white',
                   width: '92px',
                   borderRadius: '8px',

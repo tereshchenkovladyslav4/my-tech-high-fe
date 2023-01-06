@@ -1,44 +1,38 @@
-import React, { FunctionComponent } from 'react'
+import React from 'react'
 import { Grid, Box } from '@mui/material'
 import BgBlue from '@mth/assets/quick-link-blue.png'
 import BgOrange from '@mth/assets/quick-link-orange.png'
 import { ItemCard } from '@mth/components/ItemCard/ItemCard'
-import {
-  HOMEROOM_GRADEBOOK,
-  HOMEROOM_LEARNING_LOGS,
-  HOMEROOM_ASSIGNMENTS,
-  HOMEROOM_SETTINGS,
-  HOMEROOM_CHECKLIST,
-} from '../../../utils/constants'
+import { MthRoute } from '@mth/enums'
 import { useStyles } from './styles'
 
-export const HomeRoom: FunctionComponent = () => {
+export const HomeRoom: React.FC = () => {
   const items = [
     {
       title: 'Gradebook',
       subtitle: 'Grades & Reports',
-      link: HOMEROOM_GRADEBOOK,
+      link: MthRoute.HOMEROOM_GRADEBOOK.toString(),
       disabled: true,
     },
     {
       title: 'Homerooms & Learning Logs',
       subtitle: 'Create, Edit, & Delete',
-      link: HOMEROOM_LEARNING_LOGS,
+      link: MthRoute.HOMEROOM_LEARNING_LOGS.toString(),
     },
     {
       title: 'Homeroom Assignments',
       subtitle: 'Assign & Transfer',
-      link: HOMEROOM_ASSIGNMENTS,
+      link: MthRoute.HOMEROOM_ASSIGNMENTS.toString(),
     },
     {
       title: 'Settings',
       subtitle: 'Edit',
-      link: HOMEROOM_SETTINGS,
+      link: MthRoute.HOMEROOM_SETTINGS.toString(),
     },
     {
       title: 'Checklist',
       subtitle: 'Import, Edit, & Delete',
-      link: HOMEROOM_CHECKLIST,
+      link: MthRoute.HOMEROOM_CHECKLIST.toString(),
     },
   ]
   return (

@@ -1,4 +1,4 @@
-import { BLUE_GRDIENT } from '../../../../utils/constants'
+import { MthColor } from '@mth/enums'
 
 export const headerClasses = {
   cardBody: {
@@ -54,7 +54,7 @@ export const headerClasses = {
     borderRadius: 2,
     textTransform: 'none',
     height: '48px',
-    background: BLUE_GRDIENT,
+    background: MthColor.BLUE_GRDIENT,
     color: 'white',
     width: '140px',
     marginRight: 2,

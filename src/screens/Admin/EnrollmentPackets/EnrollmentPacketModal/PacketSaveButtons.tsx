@@ -1,13 +1,7 @@
 import React from 'react'
 import { Button, Grid } from '@mui/material'
 import { useFormContext } from 'react-hook-form'
-import {
-  BLACK_GRADIENT,
-  BUTTON_LINEAR_GRADIENT,
-  GREEN_GRADIENT,
-  RED_GRADIENT,
-  YELLOW_GRADIENT,
-} from '../../../../utils/constants'
+import { MthColor } from '@mth/enums'
 import { checkImmmValueWithSpacing, isValidDate, isValidVaccInput } from './helpers'
 import { EnrollmentPacketFormType, SaveButtonsType } from './types'
 
@@ -79,7 +73,7 @@ export const PacketSaveButtons: React.FC<{ submitForm: () => void }> = ({ submit
                 borderRadius: 2,
                 textTransform: 'none',
                 height: 25,
-                background: BUTTON_LINEAR_GRADIENT,
+                background: MthColor.BUTTON_LINEAR_GRADIENT,
                 color: 'white',
                 width: '92px',
                 marginRight: '5px',
@@ -97,7 +91,7 @@ export const PacketSaveButtons: React.FC<{ submitForm: () => void }> = ({ submit
                 borderRadius: 2,
                 textTransform: 'none',
                 height: 25,
-                background: GREEN_GRADIENT,
+                background: MthColor.GREEN_GRADIENT,
                 color: 'white',
                 width: '92px',
                 marginRight: '5px',
@@ -115,7 +109,7 @@ export const PacketSaveButtons: React.FC<{ submitForm: () => void }> = ({ submit
                 borderRadius: 2,
                 textTransform: 'none',
                 height: 25,
-                background: RED_GRADIENT,
+                background: MthColor.RED_GRADIENT,
                 color: 'white',
                 width: '92px',
                 marginRight: '5px',
@@ -132,7 +126,7 @@ export const PacketSaveButtons: React.FC<{ submitForm: () => void }> = ({ submit
                 borderRadius: 2,
                 textTransform: 'none',
                 height: 25,
-                background: YELLOW_GRADIENT,
+                background: MthColor.YELLOW_GRADIENT,
                 color: 'white',
                 width: '92px',
                 marginRight: '5px',
@@ -149,7 +143,7 @@ export const PacketSaveButtons: React.FC<{ submitForm: () => void }> = ({ submit
                 borderRadius: 2,
                 textTransform: 'none',
                 height: 25,
-                background: BLACK_GRADIENT,
+                background: MthColor.BLACK_GRADIENT,
                 color: 'white',
                 width: '92px',
                 marginRight: '5px',

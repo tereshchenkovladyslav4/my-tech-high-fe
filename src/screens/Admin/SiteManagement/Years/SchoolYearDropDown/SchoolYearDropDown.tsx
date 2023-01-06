@@ -214,8 +214,8 @@ export const SchoolYearDropDown: React.FC<SchoolYearDropDownProps> = ({
       schoolYearsArr.forEach((schoolYear) => {
         if (
           !selectedYearId &&
-          parseInt(moment(schoolYear.date_begin).format('YYYY')) >= parseInt(moment().format('YYYY')) &&
-          parseInt(moment(schoolYear.date_end).format('YYYY')) <= parseInt(moment().format('YYYY')) + 1
+          new Date(schoolYear.date_begin) <= new Date() &&
+          new Date(schoolYear.date_end) >= new Date()
         ) {
           setSelectedYearId(schoolYear.school_year_id)
           setEnableSchedule(schoolYear.schedule)
@@ -224,8 +224,7 @@ export const SchoolYearDropDown: React.FC<SchoolYearDropDownProps> = ({
         dropYears.push({
           value: schoolYear.school_year_id + '',
           label: moment(schoolYear.date_begin).format('YYYY') + '-' + moment(schoolYear.date_end).format('YY'),
-          hasDeleteIcon:
-            parseInt(moment(schoolYear.date_begin).format('YYYY')) > parseInt(moment().format('YYYY')) ? true : false,
+          hasDeleteIcon: new Date(schoolYear.date_begin) >= new Date() ? true : false,
           handleDeleteItem: handleDeleteItem,
         })
         newSchoolYears.push({

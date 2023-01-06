@@ -1,4 +1,4 @@
-import { BLACK, SYSTEM_08 } from '../../../../../utils/constants'
+import { MthColor } from '@mth/enums'
 
 export const useStyles = {
   modalCard: {
@@ -28,7 +28,7 @@ export const useStyles = {
   errorOutline: {
     background: '#FAFAFA',
     borderRadius: 1,
-    color: BLACK,
+    color: MthColor.BLACK,
     marginBottom: 12,
     height: 42,
     width: 42,
@@ -50,6 +50,6 @@ export const useStyles = {
   cancelButton: {
     borderRadius: 10,
     width: '160px',
-    backgroundColor: SYSTEM_08,
+    backgroundColor: MthColor.SYSTEM_08,
   },
 }

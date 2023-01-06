@@ -1,5 +1,4 @@
 import React from 'react'
-
 import CreditCardOutlinedIcon from '@mui/icons-material/CreditCardOutlined'
 import FeedOutlinedIcon from '@mui/icons-material/FeedOutlined'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
@@ -8,16 +7,17 @@ import SubjectOutlinedIcon from '@mui/icons-material/SubjectOutlined'
 import WarningAmberOutlinedIcon from '@mui/icons-material/WarningAmberOutlined'
 import { Box, Button } from '@mui/material'
 import { useHistory } from 'react-router-dom'
-import { Subtitle } from '../../../../../../components/Typography/Subtitle/Subtitle'
-import { MTHORANGE, PRIMARY_MEDIUM_MOUSEOVER } from '../../../../../../utils/constants'
-import { TodoListTemplateType } from './types'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { MthColor } from '@mth/enums'
+import { TodoListItemProps } from './types'
 
 const Row = (props) => (
   <Box display='flex' flexDirection='row' alignItems='center' justifyContent={props.content || 'flex-start'}>
     {props.children}
   </Box>
 )
-export const ToDoListItem: TodoListTemplateType = ({ todoItem, idx }) => {
+
+export const ToDoListItem: React.FC<TodoListItemProps> = ({ todoItem, idx }) => {
   const history = useHistory()
   const renderIcon = (idx) => {
     if (idx == 1 || idx == 2) {
@@ -61,8 +61,8 @@ export const ToDoListItem: TodoListTemplateType = ({ todoItem, idx }) => {
                 }}
               >
                 <Row>
-                  <WarningAmberOutlinedIcon fontSize='small' htmlColor={MTHORANGE} />
-                  <Subtitle size={12} color={MTHORANGE} sx={{ ml: 1 }}>
+                  <WarningAmberOutlinedIcon fontSize='small' htmlColor={MthColor.MTHORANGE} />
+                  <Subtitle size={12} color={MthColor.MTHORANGE} sx={{ ml: 1 }}>
                     {todoItem.severity}
                   </Subtitle>
                 </Row>
@@ -78,7 +78,7 @@ export const ToDoListItem: TodoListTemplateType = ({ todoItem, idx }) => {
                   fontWeight: 700,
                   textTransform: 'none',
                   '&:hover': {
-                    background: PRIMARY_MEDIUM_MOUSEOVER,
+                    background: MthColor.PRIMARY_MEDIUM_MOUSEOVER,
                     color: 'white',
                   },
                 }}

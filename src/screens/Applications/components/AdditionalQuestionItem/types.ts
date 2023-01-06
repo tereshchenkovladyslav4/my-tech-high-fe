@@ -19,7 +19,7 @@ export type ApplicationQuestion = {
   active: boolean
 }
 
-type ApplicationQuestionProps = {
+export type ApplicationQuestionProps = {
   question: ApplicationQuestion
   field: unknown
   meta: unknown

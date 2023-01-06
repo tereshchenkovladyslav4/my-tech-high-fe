@@ -3,14 +3,15 @@ import { Grid } from '@mui/material'
 import { Box } from '@mui/system'
 import { Controller, useFormContext } from 'react-hook-form'
 import { DropDown } from '@mth/components/DropDown/DropDown'
+import { DropDownItem } from '@mth/components/DropDown/types'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import {
-  directoryPermissionptions,
-  militaryOptions,
-  otherPermissionptions,
-  picturePermissionptions,
-  workInAgricultureOptions,
-} from '../../../../../utils/constants'
+  DIRECTORY_PERMISSION_OPTIONS,
+  MILITARY_OPTIONS,
+  OTHER_PERMISSION_OPTIONS,
+  PICTURE_PERMISSION_OPTIONS,
+  WORKIN_AGRICULTURE_OPTIONS,
+} from '@mth/constants'
 
 export const OtherInfo: React.FC = () => {
   const { control } = useFormContext()
@@ -30,7 +31,7 @@ export const OtherInfo: React.FC = () => {
               control={control}
               render={({ field }) => (
                 <DropDown
-                  dropDownItems={workInAgricultureOptions}
+                  dropDownItems={WORKIN_AGRICULTURE_OPTIONS as DropDownItem[]}
                   placeholder='Entry'
                   defaultValue={field.value}
                   size='small'
@@ -50,7 +51,7 @@ export const OtherInfo: React.FC = () => {
               control={control}
               render={({ field }) => (
                 <DropDown
-                  dropDownItems={militaryOptions}
+                  dropDownItems={MILITARY_OPTIONS as DropDownItem[]}
                   placeholder='Entry'
                   defaultValue={field.value}
                   size='small'
@@ -70,7 +71,7 @@ export const OtherInfo: React.FC = () => {
               control={control}
               render={({ field }) => (
                 <DropDown
-                  dropDownItems={otherPermissionptions}
+                  dropDownItems={OTHER_PERMISSION_OPTIONS as DropDownItem[]}
                   placeholder='Entry'
                   defaultValue={field.value}
                   size='small'
@@ -90,7 +91,7 @@ export const OtherInfo: React.FC = () => {
               control={control}
               render={({ field }) => (
                 <DropDown
-                  dropDownItems={picturePermissionptions}
+                  dropDownItems={PICTURE_PERMISSION_OPTIONS as DropDownItem[]}
                   placeholder='Entry'
                   defaultValue={field.value}
                   size='small'
@@ -110,7 +111,7 @@ export const OtherInfo: React.FC = () => {
               control={control}
               render={({ field }) => (
                 <DropDown
-                  dropDownItems={directoryPermissionptions}
+                  dropDownItems={DIRECTORY_PERMISSION_OPTIONS as DropDownItem[]}
                   placeholder='Entry'
                   defaultValue={field.value}
                   size='small'

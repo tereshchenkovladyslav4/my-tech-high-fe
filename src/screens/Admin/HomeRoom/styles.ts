@@ -1,6 +1,5 @@
 import { outlinedInputClasses, inputLabelClasses } from '@mui/material'
 import { MthColor } from '@mth/enums'
-import { BLACK, ERROR_RED } from '../../../utils/constants'
 
 export const useStyles = {
   base: {
@@ -45,7 +44,7 @@ export const useStyles = {
       height: '46px',
     },
     '& .Mui-error': {
-      color: ERROR_RED,
+      color: MthColor.ERROR_RED,
     },
     '& .MuiFormControlLabel-root': {
       alignItems: 'flex-start',
@@ -110,12 +109,12 @@ export const useStyles = {
   },
   dropdown: {
     [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
-      borderColor: BLACK,
+      borderColor: MthColor.BLACK,
       borderWidth: '2px',
       height: '46px',
     },
     [`& .${outlinedInputClasses.notchedOutline}`]: {
-      borderColor: BLACK,
+      borderColor: MthColor.BLACK,
       borderWidth: '2px',
     },
     [`& .${inputLabelClasses.root}.${inputLabelClasses.focused}`]: {

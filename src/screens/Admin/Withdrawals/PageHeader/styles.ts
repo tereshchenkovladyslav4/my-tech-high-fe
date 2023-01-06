@@ -1,4 +1,4 @@
-import { GREEN_GRADIENT, RED_GRADIENT, YELLOW_GRADIENT } from '../../../../utils/constants'
+import { MthColor } from '@mth/enums'
 
 export const headerClassess = {
   pageHeader: {
@@ -27,7 +27,7 @@ export const headerClassess = {
     fontWeight: 700,
     borderRadius: 2,
     textTransform: 'none',
-    background: RED_GRADIENT,
+    background: MthColor.RED_GRADIENT,
     color: 'white',
     width: '157px',
     marginRight: 2,
@@ -43,7 +43,7 @@ export const headerClassess = {
     borderRadius: 2,
     textTransform: 'none',
     height: '33px',
-    background: YELLOW_GRADIENT,
+    background: MthColor.YELLOW_GRADIENT,
     color: 'white',
     width: '195px',
     marginRight: 2,
@@ -58,7 +58,7 @@ export const headerClassess = {
     borderRadius: 2,
     textTransform: 'none',
     height: '33px',
-    background: GREEN_GRADIENT,
+    background: MthColor.GREEN_GRADIENT,
     color: 'white',
     width: '195px',
     '&:hover': {

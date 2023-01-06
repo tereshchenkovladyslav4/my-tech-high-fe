@@ -1,5 +1,5 @@
 import { outlinedInputClasses } from '@mui/material'
-import { BLUE_GRDIENT, RED_GRADIENT, SYSTEM_07 } from '../../../../utils/constants'
+import { MthColor } from '@mth/enums'
 
 export const eventTypeClassess = {
   cardBody: {
@@ -70,7 +70,7 @@ export const eventTypeClassess = {
   textfield: {
     color: 'green',
     [`& .${outlinedInputClasses.root} .${outlinedInputClasses.notchedOutline}`]: {
-      borderColor: SYSTEM_07,
+      borderColor: MthColor.SYSTEM_07,
       borderWidth: '1px',
     },
     marginTop: 2,
@@ -82,7 +82,7 @@ export const eventTypeClassess = {
     fontWeight: 700,
     borderRadius: 2,
     textTransform: 'none',
-    background: RED_GRADIENT,
+    background: MthColor.RED_GRADIENT,
     color: 'white',
     width: '92px',
     height: '33px',
@@ -97,7 +97,7 @@ export const eventTypeClassess = {
     borderRadius: 2,
     textTransform: 'none',
     height: '33px',
-    background: BLUE_GRDIENT,
+    background: MthColor.BLUE_GRDIENT,
     color: 'white',
     width: '92px',
     '&:hover': {

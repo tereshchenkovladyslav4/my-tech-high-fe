@@ -9,10 +9,9 @@ import { MthTable } from '@mth/components/MthTable'
 import { MthTableField } from '@mth/components/MthTable/types'
 import { Pagination } from '@mth/components/Pagination/Pagination'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
-import { ScheduleStatus } from '@mth/enums'
+import { MthColor, ScheduleStatus } from '@mth/enums'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { SchoolYearDropDown } from '@mth/screens/Admin/Components/SchoolYearDropdown'
-import { RED_GRADIENT } from '../../../../utils/constants'
 import { EmailModal } from '../ScheduleModal/ScheduleEmailModal'
 import { ScheduleTableFilters } from '../ScheduleTableFilters/ScheduleTableFilters'
 import { emailScheduleMutation, getSchedulesQuery, scheduleCountQuery } from '../services'
@@ -430,7 +429,7 @@ export const ScheduleTable: React.FC<FiltersProps> = ({ filter, setFilter }) => 
               fontWeight: 700,
               borderRadius: 2,
               textTransform: 'none',
-              background: RED_GRADIENT,
+              background: MthColor.RED_GRADIENT,
               color: 'white',
               width: '100px',
               marginRight: 2,

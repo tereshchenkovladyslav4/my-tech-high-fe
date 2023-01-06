@@ -13,8 +13,9 @@ import {
 import { map } from 'lodash'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { GRADES } from '@mth/constants'
+import { MthColor } from '@mth/enums'
 import { renderGrades } from '@mth/utils'
-import { GRADES, MTHBLUE } from '../../../../../utils/constants'
 import { toOrdinalSuffix } from '../../../../../utils/stringHelpers'
 import { siteManagementClassess } from '../../styles'
 import { ProgramSettingChanged } from '../types'
@@ -108,7 +109,7 @@ export const GradesSelect: React.FC<GradesSelectProps> = ({ grades, setGrades, s
     <>
       <Box sx={siteManagementClassess.gradeBox}>
         <Stack direction='row' sx={{ ml: 1.5, cursor: 'pointer' }} alignItems='center' onClick={handleClickOpen}>
-          <Subtitle size={12} color={MTHBLUE} fontWeight='500'>
+          <Subtitle size={12} color={MthColor.MTHBLUE} fontWeight='500'>
             {grades ? renderGrades(grades) : 'Select'}
           </Subtitle>
         </Stack>

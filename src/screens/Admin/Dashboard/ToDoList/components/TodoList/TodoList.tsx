@@ -4,9 +4,8 @@ import { Card } from '@mui/material'
 import { map } from 'lodash'
 import { Flexbox } from '@mth/components/Flexbox/Flexbox'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
-import { MthTitle } from '@mth/enums'
+import { MthRoute, MthTitle } from '@mth/enums'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
-import { WITHDRAWAL, ADMIN_APPLICATIONS, ENROLLMENT_PACKETS } from '../../../../../../utils/constants'
 import { getEmailRecordsQuery } from '../../service'
 import { ToDoListItem } from '../ToDoListItem/ToDoListItem'
 
@@ -55,14 +54,14 @@ export const TodoList: FunctionComponent = () => {
         {
           id: 1,
           title: MthTitle.APPLICATIONS,
-          link: ADMIN_APPLICATIONS,
+          link: MthRoute.ADMIN_APPLICATIONS.toString(),
           date: new Date(),
           severity: application,
         },
         {
           id: 2,
           title: 'Enrollment Packets',
-          link: ENROLLMENT_PACKETS,
+          link: MthRoute.ENROLLMENT_PACKETS.toString(),
           date: new Date(),
           severity: packet,
         },
@@ -76,7 +75,7 @@ export const TodoList: FunctionComponent = () => {
         {
           id: 4,
           title: 'Withdrawals',
-          link: WITHDRAWAL,
+          link: MthRoute.WITHDRAWAL.toString(),
           date: new Date(),
           severity: withdrawal,
         },

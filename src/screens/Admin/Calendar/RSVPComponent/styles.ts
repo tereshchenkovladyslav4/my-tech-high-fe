@@ -1,4 +1,4 @@
-import { BLUE_GRDIENT, RED_GRADIENT } from '../../../../utils/constants'
+import { MthColor } from '@mth/enums'
 
 export const rsvpClassess = {
   cardBody: {
@@ -33,7 +33,7 @@ export const rsvpClassess = {
     fontWeight: 700,
     borderRadius: 2,
     textTransform: 'none',
-    background: RED_GRADIENT,
+    background: MthColor.RED_GRADIENT,
     color: 'white',
     width: '92px',
     height: '33px',
@@ -49,7 +49,7 @@ export const rsvpClassess = {
     borderRadius: 2,
     textTransform: 'none',
     height: '33px',
-    background: BLUE_GRDIENT,
+    background: MthColor.BLUE_GRDIENT,
     color: 'white',
     width: '92px',
     '&:hover': {

@@ -1,6 +1,6 @@
-import React, { FunctionComponent } from 'react'
+import React from 'react'
 import { Button, Box } from '@mui/material'
-import { BUTTON_LINEAR_GRADIENT, BLACK } from '../../../../utils/constants'
+import { MthColor } from '@mth/enums'
 import { ScheduleFilterVM, ScheduleCount } from '../type'
 
 type EnrollmentScheduleProps = {
@@ -8,11 +8,7 @@ type EnrollmentScheduleProps = {
   setFilters: (_: ScheduleFilterVM) => void
   scheduleCount?: ScheduleCount
 }
-export const ScheduleTableFilters: FunctionComponent<EnrollmentScheduleProps> = ({
-  filters,
-  setFilters,
-  scheduleCount,
-}) => {
+export const ScheduleTableFilters: React.FC<EnrollmentScheduleProps> = ({ filters, setFilters, scheduleCount }) => {
   const handleSelectFilter = (value: string) => {
     let newStatusList = []
     if (filters?.status?.includes(value)) {
@@ -37,8 +33,8 @@ export const ScheduleTableFilters: FunctionComponent<EnrollmentScheduleProps> = 
       <Button
         variant={filters?.status?.includes('Submitted') ? 'text' : 'outlined'}
         sx={{
-          background: filters?.status?.includes('Submitted') ? BUTTON_LINEAR_GRADIENT : '',
-          color: filters?.status?.includes('Submitted') ? 'white' : BLACK,
+          background: filters?.status?.includes('Submitted') ? MthColor.BUTTON_LINEAR_GRADIENT : '',
+          color: filters?.status?.includes('Submitted') ? 'white' : MthColor.BLACK,
           borderRadius: 2,
           textTransform: 'none',
           height: 25,
@@ -54,8 +50,8 @@ export const ScheduleTableFilters: FunctionComponent<EnrollmentScheduleProps> = 
           borderRadius: 2,
           textTransform: 'none',
           height: 25,
-          background: filters?.status?.includes('Resubmitted') ? BUTTON_LINEAR_GRADIENT : '',
-          color: filters?.status?.includes('Resubmitted') ? 'white' : BLACK,
+          background: filters?.status?.includes('Resubmitted') ? MthColor.BUTTON_LINEAR_GRADIENT : '',
+          color: filters?.status?.includes('Resubmitted') ? 'white' : MthColor.BLACK,
           whiteSpace: 'nowrap',
         }}
         onClick={() => handleSelectFilter('Resubmitted')}
@@ -65,8 +61,8 @@ export const ScheduleTableFilters: FunctionComponent<EnrollmentScheduleProps> = 
       <Button
         variant={filters?.status?.includes('Updates Requested') ? 'text' : 'outlined'}
         sx={{
-          background: filters?.status?.includes('Updates Requested') ? BUTTON_LINEAR_GRADIENT : '',
-          color: filters?.status?.includes('Updates Requested') ? 'white' : BLACK,
+          background: filters?.status?.includes('Updates Requested') ? MthColor.BUTTON_LINEAR_GRADIENT : '',
+          color: filters?.status?.includes('Updates Requested') ? 'white' : MthColor.BLACK,
           borderRadius: 2,
           textTransform: 'none',
           height: 25,
@@ -79,8 +75,8 @@ export const ScheduleTableFilters: FunctionComponent<EnrollmentScheduleProps> = 
       <Button
         variant={filters?.status?.includes('Updates Required') ? 'text' : 'outlined'}
         sx={{
-          background: filters?.status?.includes('Updates Required') ? BUTTON_LINEAR_GRADIENT : '',
-          color: filters?.status?.includes('Updates Required') ? 'white' : BLACK,
+          background: filters?.status?.includes('Updates Required') ? MthColor.BUTTON_LINEAR_GRADIENT : '',
+          color: filters?.status?.includes('Updates Required') ? 'white' : MthColor.BLACK,
           borderRadius: 2,
           textTransform: 'none',
           height: 25,
@@ -96,8 +92,8 @@ export const ScheduleTableFilters: FunctionComponent<EnrollmentScheduleProps> = 
           borderRadius: 2,
           textTransform: 'none',
           height: 25,
-          background: filters?.status?.includes('Not Submitted') ? BUTTON_LINEAR_GRADIENT : '',
-          color: filters?.status?.includes('Not Submitted') ? 'white' : BLACK,
+          background: filters?.status?.includes('Not Submitted') ? MthColor.BUTTON_LINEAR_GRADIENT : '',
+          color: filters?.status?.includes('Not Submitted') ? 'white' : MthColor.BLACK,
           whiteSpace: 'nowrap',
         }}
         onClick={() => handleSelectFilter('Not Submitted')}
@@ -110,8 +106,8 @@ export const ScheduleTableFilters: FunctionComponent<EnrollmentScheduleProps> = 
           borderRadius: 2,
           textTransform: 'none',
           height: 25,
-          background: filters?.status?.includes('Accepted') ? BUTTON_LINEAR_GRADIENT : '',
-          color: filters?.status?.includes('Accepted') ? 'white' : BLACK,
+          background: filters?.status?.includes('Accepted') ? MthColor.BUTTON_LINEAR_GRADIENT : '',
+          color: filters?.status?.includes('Accepted') ? 'white' : MthColor.BLACK,
           whiteSpace: 'nowrap',
         }}
         onClick={() => handleSelectFilter('Accepted')}

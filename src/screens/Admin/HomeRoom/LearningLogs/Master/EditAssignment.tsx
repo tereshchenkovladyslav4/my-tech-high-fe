@@ -13,9 +13,8 @@ import PageHeader from '@mth/components/PageHeader'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { WarningModal } from '@mth/components/WarningModal/Warning'
 import { QuestionTypes } from '@mth/constants'
-import { MthTitle } from '@mth/enums'
+import { MthRoute, MthTitle } from '@mth/enums'
 import { mthButtonClasses } from '@mth/styles/button.style'
-import { HOMEROOM_LEARNING_LOGS } from '../../../../../utils/constants'
 import AddNewQuestionModal from '../../Components/AddNewQuestionModal/AddNewQuestionModal'
 import { DefaultQuestionModal } from '../../Components/DefaultQuestionModal/DefaultQuestionModal'
 import {
@@ -287,7 +286,7 @@ const EditAssignment: React.FC<{ masterId: number }> = ({ masterId }) => {
 
   const handleCancelSubmit = () => {
     setIsConfirmModal(false)
-    history.push(`${HOMEROOM_LEARNING_LOGS}/edit/${masterId}`)
+    history.push(`${MthRoute.HOMEROOM_LEARNING_LOGS}/edit/${masterId}`)
   }
 
   const handleCancel = () => {
@@ -365,7 +364,7 @@ const EditAssignment: React.FC<{ masterId: number }> = ({ masterId }) => {
         }}
       >
         {/* <Box sx={{ mb: 4 }}> */}
-        <PageHeader title={master?.master_name || ''} to={`${HOMEROOM_LEARNING_LOGS}/edit/${masterId}`}>
+        <PageHeader title={master?.master_name || ''} to={`${MthRoute.HOMEROOM_LEARNING_LOGS}/edit/${masterId}`}>
           <Box display='flex'>
             <Button sx={{ ...mthButtonClasses.roundXsGray, mr: '20px' }} type='button' onClick={handleCancel}>
               Cancel

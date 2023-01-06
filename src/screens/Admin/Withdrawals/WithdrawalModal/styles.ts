@@ -1,4 +1,4 @@
-import { BUTTON_LINEAR_GRADIENT } from '../../../../utils/constants'
+import { MthColor } from '@mth/enums'
 
 export const withdrawalModalClasses = {
   modalCard: {
@@ -62,7 +62,7 @@ export const withdrawalModalClasses = {
     fontSize: '3rem',
   },
   reimbursementBtn: {
-    background: BUTTON_LINEAR_GRADIENT,
+    background: MthColor.BUTTON_LINEAR_GRADIENT,
     textTransform: 'none',
     color: 'white',
     marginRight: 2,
@@ -80,7 +80,7 @@ export const withdrawalModalClasses = {
   emailBtn: {
     width: '200px',
     height: '48px',
-    background: BUTTON_LINEAR_GRADIENT,
+    background: MthColor.BUTTON_LINEAR_GRADIENT,
     borderRadius: '50px',
     fontSize: '12px',
     color: 'white',

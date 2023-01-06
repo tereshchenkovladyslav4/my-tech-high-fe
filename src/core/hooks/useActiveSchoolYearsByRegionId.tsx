@@ -38,7 +38,9 @@ export const useActiveSchoolYearsByRegionId = (
     if (!loading && data?.getActiveSchoolYears) {
       const schoolYearsArray: Array<DropDownItem> = []
       data.getActiveSchoolYears
-        .filter((item: SchoolYearType) => moment(item.date_begin).format('YYYY') >= moment().format('YYYY'))
+        .filter(
+          (item: SchoolYearType) => new Date(item.date_begin) <= new Date() && new Date(item.date_end) >= new Date(),
+        )
         .map((item: SchoolYearType): void => {
           if (item.MainyearApplicatable) {
             schoolYearsArray.push({

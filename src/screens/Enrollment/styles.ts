@@ -1,4 +1,4 @@
-import { BUTTON_LINEAR_GRADIENT } from '../../utils/constants'
+import { MthColor } from '@mth/enums'
 
 export const useStyles = {
   container: {
@@ -40,7 +40,7 @@ export const useStyles = {
     width: '100%',
   },
   button: {
-    background: BUTTON_LINEAR_GRADIENT,
+    background: MthColor.BUTTON_LINEAR_GRADIENT,
     color: 'white',
     alignSelf: 'flex-end' as const,
     paddingTop: '17px',

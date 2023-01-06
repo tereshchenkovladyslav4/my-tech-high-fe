@@ -1,19 +1,19 @@
-import React, { FunctionComponent, useState } from 'react'
+import React, { useState } from 'react'
 import { useMutation } from '@apollo/client'
 import { Button, Container, TextField } from '@mui/material'
 import { Box } from '@mui/system'
 import { useFormik } from 'formik'
 import { Link } from 'react-router-dom'
 import * as yup from 'yup'
-import BGSVG from '../../assets/ApplicationBG.svg'
-import { NewApplicationFooter } from '../../components/NewApplicationFooter/NewApplicationFooter'
-import { Paragraph } from '../../components/Typography/Paragraph/Paragraph'
-import { Title } from '../../components/Typography/Title/Title'
-import { DASHBOARD, MTHBLUE, SYSTEM_05 } from '../../utils/constants'
+import BGSVG from '@mth/assets/ApplicationBG.svg'
+import { NewApplicationFooter } from '@mth/components/NewApplicationFooter/NewApplicationFooter'
+import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
+import { Title } from '@mth/components/Typography/Title/Title'
+import { MthColor, MthRoute } from '@mth/enums'
 import { verifyEmail } from './service'
 import { useStyles } from './styles'
 
-export const VerifyEmail: FunctionComponent = () => {
+export const VerifyEmail: React.FC = () => {
   const token = window.location.href.split('=')[1]
 
   const [verifyEmailMutation] = useMutation(verifyEmail)
@@ -67,7 +67,7 @@ export const VerifyEmail: FunctionComponent = () => {
         <Box>
           <Box paddingX={36}>
             <Box marginTop={12} marginBottom={3}>
-              <Title color={MTHBLUE} textAlign='center'>
+              <Title color={MthColor.MTHBLUE} textAlign='center'>
                 InfoCenter
               </Title>
             </Box>
@@ -98,7 +98,7 @@ export const VerifyEmail: FunctionComponent = () => {
                     style: { color: 'black' },
                   }}
                   InputLabelProps={{
-                    style: { color: SYSTEM_05 },
+                    style: { color: MthColor.SYSTEM_05 },
                   }}
                   onBlur={formik.handleBlur}
                   value={formik.values.password}
@@ -141,7 +141,7 @@ export const VerifyEmail: FunctionComponent = () => {
           >
             <Box paddingX={36}>
               <Box marginTop={12}>
-                <Title color={MTHBLUE} textAlign='center'>
+                <Title color={MthColor.MTHBLUE} textAlign='center'>
                   InfoCenter
                 </Title>
               </Box>
@@ -151,7 +151,10 @@ export const VerifyEmail: FunctionComponent = () => {
               <Box marginTop={'5%'}>
                 <Title size='medium' fontWeight='500' textAlign='center'>
                   You have successfully verified your email address. Please continue
-                  <Link to={DASHBOARD} style={{ fontWeight: 700, color: MTHBLUE, textDecoration: 'none' }}>
+                  <Link
+                    to={MthRoute.DASHBOARD.toString()}
+                    style={{ fontWeight: 700, color: MthColor.MTHBLUE, textDecoration: 'none' }}
+                  >
                     {'\u00A0'}here{'\u00A0'}
                   </Link>
                   and login.

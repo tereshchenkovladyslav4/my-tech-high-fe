@@ -4,8 +4,7 @@ import { Grid, Box } from '@mui/material'
 import DeleteIcon from '@mth/assets/icons/icon-delete-small.svg'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
-import { QUESTION_TYPE } from '@mth/enums'
-import { SYSTEM_06, SYSTEM_01, PRIMARY_MEDIUM_MOUSEOVER } from '../../../../utils/constants'
+import { MthColor, QUESTION_TYPE } from '@mth/enums'
 import { CustomModal } from '../../SiteManagement/EnrollmentSetting/components/CustomModal/CustomModals'
 import { deletePacketDocumentFileMutation, getPacketFiles } from '../services'
 import { PacketModalQuestionsContext } from './providers'
@@ -79,7 +78,7 @@ export const EnrollmentPacketDocument: React.FC<EnrollmentPacketDocumentProps> =
   return (
     <Grid container sx={{ paddingTop: '20px' }}>
       <Grid item md={12} sm={12} xs={12}>
-        <Subtitle sx={{ fontSize: '18px', marginBottom: 1 }} color={SYSTEM_01} fontWeight='700'>
+        <Subtitle sx={{ fontSize: '18px', marginBottom: 1 }} color={MthColor.SYSTEM_01} fontWeight='700'>
           Documents
         </Subtitle>
       </Grid>
@@ -105,7 +104,7 @@ export const EnrollmentPacketDocument: React.FC<EnrollmentPacketDocumentProps> =
                   return (
                     <Box sx={{ display: 'flex', gap: 4 }}>
                       <Box sx={{ minWidth: '200px' }}>
-                        <Paragraph key={index} color={SYSTEM_06} sx={{ fontSize: '14px' }} fontWeight='400'>
+                        <Paragraph key={index} color={MthColor.SYSTEM_06} sx={{ fontSize: '14px' }} fontWeight='400'>
                           {q.question}
                         </Paragraph>
                       </Box>
@@ -116,7 +115,7 @@ export const EnrollmentPacketDocument: React.FC<EnrollmentPacketDocumentProps> =
                               return (
                                 <Paragraph
                                   key={`$file-${index}`}
-                                  color={PRIMARY_MEDIUM_MOUSEOVER}
+                                  color={MthColor.PRIMARY_MEDIUM_MOUSEOVER}
                                   fontWeight='400'
                                   sx={{ fontSize: '14px', display: 'flex', alignItems: 'center', marginTop: '4px' }}
                                 >
@@ -137,12 +136,12 @@ export const EnrollmentPacketDocument: React.FC<EnrollmentPacketDocumentProps> =
                               )
                             })
                           ) : (
-                            <Paragraph color={SYSTEM_06} sx={{ fontSize: '14px' }} fontWeight='400'>
+                            <Paragraph color={MthColor.SYSTEM_06} sx={{ fontSize: '14px' }} fontWeight='400'>
                               Not found
                             </Paragraph>
                           )
                         ) : (
-                          <Paragraph color={SYSTEM_06} sx={{ fontSize: '14px' }} fontWeight='400'>
+                          <Paragraph color={MthColor.SYSTEM_06} sx={{ fontSize: '14px' }} fontWeight='400'>
                             Not found
                           </Paragraph>
                         )}

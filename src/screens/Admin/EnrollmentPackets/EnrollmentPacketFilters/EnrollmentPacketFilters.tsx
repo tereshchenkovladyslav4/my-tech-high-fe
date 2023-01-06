@@ -1,13 +1,13 @@
-import React, { FunctionComponent } from 'react'
+import React from 'react'
 import { Button, Box } from '@mui/material'
-import { MTHBLUE, BUTTON_LINEAR_GRADIENT } from '../../../../utils/constants'
+import { MthColor } from '@mth/enums'
 
 type EnrollmentPacketFiltersProps = {
   filters: unknown
   setFilters: (_: unknown) => void
   packetCount: number
 }
-export const EnrollmentPacketFilters: FunctionComponent<EnrollmentPacketFiltersProps> = ({
+export const EnrollmentPacketFilters: React.FC<EnrollmentPacketFiltersProps> = ({
   filters,
   setFilters,
   packetCount,
@@ -33,8 +33,8 @@ export const EnrollmentPacketFilters: FunctionComponent<EnrollmentPacketFiltersP
       <Button
         variant={filters.includes('Not Started') ? 'text' : 'outlined'}
         sx={{
-          background: filters.includes('Not Started') && BUTTON_LINEAR_GRADIENT,
-          color: filters.includes('Not Started') ? 'white' : MTHBLUE,
+          background: filters.includes('Not Started') && MthColor.BUTTON_LINEAR_GRADIENT,
+          color: filters.includes('Not Started') ? 'white' : MthColor.MTHBLUE,
           borderRadius: 2,
           textTransform: 'none',
           height: 25,
@@ -50,8 +50,8 @@ export const EnrollmentPacketFilters: FunctionComponent<EnrollmentPacketFiltersP
           borderRadius: 2,
           textTransform: 'none',
           height: 25,
-          background: filters.includes('Started') && BUTTON_LINEAR_GRADIENT,
-          color: filters.includes('Started') ? 'white' : MTHBLUE,
+          background: filters.includes('Started') && MthColor.BUTTON_LINEAR_GRADIENT,
+          color: filters.includes('Started') ? 'white' : MthColor.MTHBLUE,
           whiteSpace: 'nowrap',
         }}
         onClick={() => handleSelectFilter('Started')}
@@ -61,8 +61,8 @@ export const EnrollmentPacketFilters: FunctionComponent<EnrollmentPacketFiltersP
       <Button
         variant={filters.includes('Missing Info') ? 'text' : 'outlined'}
         sx={{
-          background: filters.includes('Missing Info') && BUTTON_LINEAR_GRADIENT,
-          color: filters.includes('Missing Info') ? 'white' : MTHBLUE,
+          background: filters.includes('Missing Info') && MthColor.BUTTON_LINEAR_GRADIENT,
+          color: filters.includes('Missing Info') ? 'white' : MthColor.MTHBLUE,
           borderRadius: 2,
           textTransform: 'none',
           height: 25,
@@ -75,8 +75,8 @@ export const EnrollmentPacketFilters: FunctionComponent<EnrollmentPacketFiltersP
       <Button
         variant={filters.includes('Submitted') ? 'text' : 'outlined'}
         sx={{
-          background: filters.includes('Submitted') && BUTTON_LINEAR_GRADIENT,
-          color: filters.includes('Submitted') ? 'white' : MTHBLUE,
+          background: filters.includes('Submitted') && MthColor.BUTTON_LINEAR_GRADIENT,
+          color: filters.includes('Submitted') ? 'white' : MthColor.MTHBLUE,
           borderRadius: 2,
           textTransform: 'none',
           height: 25,
@@ -92,8 +92,8 @@ export const EnrollmentPacketFilters: FunctionComponent<EnrollmentPacketFiltersP
           borderRadius: 2,
           textTransform: 'none',
           height: 25,
-          background: filters.includes('Resubmitted') && BUTTON_LINEAR_GRADIENT,
-          color: filters.includes('Resubmitted') ? 'white' : MTHBLUE,
+          background: filters.includes('Resubmitted') && MthColor.BUTTON_LINEAR_GRADIENT,
+          color: filters.includes('Resubmitted') ? 'white' : MthColor.MTHBLUE,
           whiteSpace: 'nowrap',
         }}
         onClick={() => handleSelectFilter('Resubmitted')}
@@ -103,8 +103,8 @@ export const EnrollmentPacketFilters: FunctionComponent<EnrollmentPacketFiltersP
       <Button
         variant={filters.includes('Age Issue') ? 'text' : 'outlined'}
         sx={{
-          background: filters.includes('Age Issue') && BUTTON_LINEAR_GRADIENT,
-          color: filters.includes('Age Issue') ? 'white' : MTHBLUE,
+          background: filters.includes('Age Issue') && MthColor.BUTTON_LINEAR_GRADIENT,
+          color: filters.includes('Age Issue') ? 'white' : MthColor.MTHBLUE,
           borderRadius: 2,
           textTransform: 'none',
           height: 25,
@@ -117,8 +117,8 @@ export const EnrollmentPacketFilters: FunctionComponent<EnrollmentPacketFiltersP
       <Button
         variant={filters.includes('Conditional') ? 'text' : 'outlined'}
         sx={{
-          background: filters.includes('Conditional') && BUTTON_LINEAR_GRADIENT,
-          color: filters.includes('Conditional') ? 'white' : MTHBLUE,
+          background: filters.includes('Conditional') && MthColor.BUTTON_LINEAR_GRADIENT,
+          color: filters.includes('Conditional') ? 'white' : MthColor.MTHBLUE,
           borderRadius: 2,
           textTransform: 'none',
           height: 25,

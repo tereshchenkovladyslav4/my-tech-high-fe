@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Box, TextField } from '@mui/material'
 import { SketchPicker } from 'react-color'
 import reactCSS from 'reactcss'
-import { SYSTEM_05 } from '../../../../../utils/constants'
+import { MthColor } from '@mth/enums'
 import { eventTypeClassess } from '../../EditType/styles'
 
 type ColorPickerProps = {
@@ -64,7 +64,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({ color, setColor }) => {
           style: { color: 'black' },
         }}
         InputLabelProps={{
-          style: { color: SYSTEM_05 },
+          style: { color: MthColor.SYSTEM_05 },
         }}
         sx={eventTypeClassess.textfield}
         fullWidth

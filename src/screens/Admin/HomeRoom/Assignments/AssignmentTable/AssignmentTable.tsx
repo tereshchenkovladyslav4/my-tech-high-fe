@@ -23,7 +23,7 @@ import { Field, ValueOf } from '@mth/components/Table/types'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { WarningModal } from '@mth/components/WarningModal/Warning'
-import { BLUE_GRDIENT, RED, RED_GRADIENT } from '../../../../../utils/constants'
+import { MthColor } from '@mth/enums'
 import {
   assignStudentsToHomeroomMutation,
   getStudentsForHoomroom,
@@ -429,9 +429,9 @@ export const AssignmentTable: React.FC<EnrollmentSchoolTableProps> = ({
               textTransform: 'none',
               height: 29,
               color: 'white',
-              background: BLUE_GRDIENT,
+              background: MthColor.BLUE_GRDIENT,
               '&:hover': {
-                background: BLUE_GRDIENT,
+                background: MthColor.BLUE_GRDIENT,
               },
             }}
             className='btn-action'
@@ -447,7 +447,7 @@ export const AssignmentTable: React.FC<EnrollmentSchoolTableProps> = ({
               textTransform: 'none',
               height: 29,
               color: 'white',
-              background: RED_GRADIENT,
+              background: MthColor.RED_GRADIENT,
               '&:hover': {
                 background: '#D23C33',
                 color: '#fff',
@@ -577,7 +577,7 @@ export const AssignmentTable: React.FC<EnrollmentSchoolTableProps> = ({
               </RadioGroup>
             </FormControl>
             {warningError && !autoGrade && (
-              <Paragraph size={'large'} fontWeight='600' color={RED}>
+              <Paragraph size={'large'} fontWeight='600' color={MthColor.RED}>
                 Required
               </Paragraph>
             )}

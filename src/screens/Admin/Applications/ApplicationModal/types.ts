@@ -1,6 +1,6 @@
 import { FunctionComponent } from 'react'
 
-type ApplicationModalProps = {
+export type ApplicationModalProps = {
   title?: string
   subtitle?: string
   btntitle?: string
@@ -10,8 +10,6 @@ type ApplicationModalProps = {
   schoolYears?: unknown[]
   handleRefetch: () => void
 }
-
-export type ApplicationModalType = FunctionComponent<ApplicationModalProps>
 
 type ApplicationEmailModalProps = {
   handleModem: () => void

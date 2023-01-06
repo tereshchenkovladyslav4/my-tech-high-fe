@@ -112,7 +112,7 @@ export const SchoolOfEnrollment: React.FC = () => {
             value: item.school_year_id,
           })
 
-          if (moment(item.date_begin).format('YYYY') === moment().format('YYYY')) {
+          if (new Date(item.date_begin) <= new Date() && new Date(item.date_end) >= new Date()) {
             setSelectedYear({
               label: `${moment(item.date_begin).format('YYYY')}-${moment(item.date_end).format('YY')}`,
               value: item.school_year_id,

@@ -1,9 +1,9 @@
-import React, { FunctionComponent } from 'react'
+import React from 'react'
 import CloseIcon from '@mui/icons-material/Close'
 import { Box, Button, Card } from '@mui/material'
-import { BUTTON_LINEAR_GRADIENT } from '../../../../utils/constants'
+import { MthColor } from '@mth/enums'
 
-export const EnrollmentPacketView: FunctionComponent = () => {
+export const EnrollmentPacketView: React.FC = () => {
   return (
     <Card
       sx={{
@@ -21,7 +21,7 @@ export const EnrollmentPacketView: FunctionComponent = () => {
       >
         <Button
           sx={{
-            background: BUTTON_LINEAR_GRADIENT,
+            background: MthColor.BUTTON_LINEAR_GRADIENT,
             textTransform: 'none',
             color: 'white',
             marginRight: 2,

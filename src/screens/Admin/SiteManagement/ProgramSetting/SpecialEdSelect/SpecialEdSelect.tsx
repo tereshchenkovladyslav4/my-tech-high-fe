@@ -3,7 +3,7 @@ import { Box, Button, OutlinedInput, Stack, Dialog, DialogTitle, DialogActions, 
 import { CustomConfirmModal } from '@mth/components/CustomConfirmModal/CustomConfirmModal'
 import { DropDown } from '@mth/components/DropDown/DropDown'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
-import { MTHBLUE } from '../../../../../utils/constants'
+import { MthColor } from '@mth/enums'
 import { siteManagementClassess } from '../../styles'
 import { ProgramSettingChanged } from '../types'
 
@@ -120,7 +120,7 @@ export const SpecialEdSelect: React.FC<SpecialEdSelectProps> = ({
       {specialEd && (
         <Box sx={siteManagementClassess.gradeBox}>
           <Stack direction='row' sx={{ ml: 1.5, cursor: 'pointer' }} alignItems='center' onClick={handleClickOpen}>
-            <Subtitle size={12} color={MTHBLUE} fontWeight='500'>
+            <Subtitle size={12} color={MthColor.MTHBLUE} fontWeight='500'>
               {options != '' ? options : 'Select'}
             </Subtitle>
           </Stack>
@@ -175,7 +175,7 @@ export const SpecialEdSelect: React.FC<SpecialEdSelectProps> = ({
             sx={{ width: '100%', textAlign: 'left', marginTop: '50px', cursor: 'pointer' }}
             onClick={handleAddOption}
           >
-            <Subtitle size={12} color={MTHBLUE} fontWeight='500'>
+            <Subtitle size={12} color={MthColor.MTHBLUE} fontWeight='500'>
               + Add Option
             </Subtitle>
           </Box>

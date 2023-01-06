@@ -5,11 +5,11 @@ import { Button, MenuItem, Modal, Select } from '@mui/material'
 import { Box } from '@mui/system'
 import { Formik, Form } from 'formik'
 import moment from 'moment'
-import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
-import { ProfileContext } from '../../../../providers/ProfileProvider/ProfileContext'
-import { BUTTON_LINEAR_GRADIENT } from '../../../../utils/constants'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { MthColor } from '@mth/enums'
+import { ProfileContext } from '@mth/providers/ProfileProvider/ProfileContext'
 import { useStyles } from './styles'
-import { EnrollmentModalType } from './types'
+import { EnrollmentModalProps } from './types'
 const selectStyles = makeStyles({
   select: {
     fontSize: '12px',
@@ -25,7 +25,7 @@ const selectStyles = makeStyles({
     minWidth: '80px',
     height: '29px',
     textAlign: 'center',
-    background: BUTTON_LINEAR_GRADIENT,
+    background: MthColor.BUTTON_LINEAR_GRADIENT,
     marginLeft: '30px',
     color: 'white !important',
     '&:before': {
@@ -36,7 +36,7 @@ const selectStyles = makeStyles({
     },
   },
 })
-export const ScheduleModal: EnrollmentModalType = ({
+export const ScheduleModal: React.FC<EnrollmentModalProps> = ({
   handleModem,
   title = 'Application',
   btntitle = 'Save',

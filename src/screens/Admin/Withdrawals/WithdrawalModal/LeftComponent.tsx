@@ -3,8 +3,8 @@ import { Avatar, Box, Grid, Typography } from '@mui/material'
 import { MthCheckboxList } from '@mth/components/MthCheckboxList'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { Title } from '@mth/components/Typography/Title/Title'
+import { MthColor } from '@mth/enums'
 import { ProfileContext } from '@mth/providers/ProfileProvider/ProfileContext'
-import { MTHBLUE } from '../../../../utils/constants'
 import { toOrdinalSuffix } from '../../../../utils/stringHelpers'
 import { StudentInfo } from '../type'
 import { withdrawalModalClasses } from './styles'
@@ -87,7 +87,7 @@ export const LeftComponent: React.FC<LeftComponentProps> = ({ studentInfo }) => 
             textAlign='left'
             fontWeight='700'
             sx={{ fontSize: '18px', cursor: 'pointer' }}
-            color={MTHBLUE}
+            color={MthColor.MTHBLUE}
             onClick={handleViewStudentProfile}
           >
             {`${studentInfo?.firstName} ${studentInfo?.lastName}`}
