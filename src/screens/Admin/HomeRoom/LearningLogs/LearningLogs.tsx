@@ -87,7 +87,6 @@ const LearningLogs: React.FC = () => {
       label: '',
       sortable: false,
       tdClass: '',
-      // 48px is for checkbox
       width: 'calc(25% - 48px)',
       formatter: (item: MthTableRowItem<Master>) => {
         return (

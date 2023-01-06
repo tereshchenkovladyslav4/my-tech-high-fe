@@ -156,15 +156,6 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
     fetchPolicy: 'network-only',
   })
 
-  useEffect(() => {
-    if (!assessmentsLoading && assessments?.getAssessmentsBySchoolYearId) {
-      const items = assessments?.getAssessmentsBySchoolYearId
-      setAssessmentItems(items.map((item: AssessmentType) => ({ ...item, assessment_id: Number(item.assessment_id) })))
-    } else {
-      setAssessmentItems([])
-    }
-  }, [assessments, assessmentsLoading])
-
   const { loading: studentAssessmentLoading, data: studentAssessmentsData } = useQuery(
     getStudentAssessmentsByStudentId,
     {
@@ -175,21 +166,6 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
       fetchPolicy: 'network-only',
     },
   )
-
-  useEffect(() => {
-    if (!studentAssessmentLoading && studentAssessmentsData?.getStudentAssessmentsByStudentId) {
-      setStudentAssessments(
-        studentAssessmentsData?.getStudentAssessmentsByStudentId?.map(
-          (assessment: { AssessmentId: number; assessment_option_id: number; OptionId: number; out_text: string }) => ({
-            assessmentId: assessment?.AssessmentId,
-            assessmentOptionId: assessment?.assessment_option_id,
-            optionId: assessment?.OptionId,
-            assessmentOptionOutText: assessment?.out_text,
-          }),
-        ),
-      )
-    }
-  }, [studentAssessmentLoading, studentAssessmentsData])
 
   const SoEitems = useMemo(() => {
     if (schoolPartnerData?.getSchoolsOfEnrollmentByRegion?.length) {
@@ -219,13 +195,6 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
     },
     fetchPolicy: 'network-only',
   })
-  useEffect(() => {
-    if (withdrawalStatusData && withdrawalStatusData.withdrawalStatus.error === false) {
-      if (withdrawalStatusData.withdrawalStatus.results.length > 0)
-        setWithdrawalStatus(withdrawalStatusData.withdrawalStatus.results[0])
-    }
-  }, [withdrawalStatusData])
-  //
 
   const [userInfo, setUserInfo] = useState<Person>({})
   const [preferedFirstName, setPreferredFirstName] = useState('')
@@ -270,56 +239,6 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
       value: 'Female',
     },
   ]
-  useEffect(() => {
-    setStudentPerson(userInfo)
-  }, [userInfo])
-
-  useEffect(() => {
-    if (currentUserData) {
-      const stateSelected = currentUserData.student.person.address.state || applicationState
-
-      setEmail(currentUserData.student.person.email)
-      setPreferredFirstName(currentUserData.student.person.preferred_first_name)
-      setPreferredLastName(currentUserData.student.person.preferred_last_name)
-      setLegalFirstName(currentUserData.student.person.first_name)
-      setLegalLastName(currentUserData.student.person.last_name)
-      setLegalMiddleName(currentUserData.student.person.middle_name)
-      setGender(currentUserData.student.person.gender)
-      setCity(currentUserData.student.person.address.city)
-      setState(STATES_WITH_ABBREVIATION[stateSelected] || stateSelected)
-      setStreet1(currentUserData.student.person.address.street)
-      setStreet2(currentUserData.student.person.address.street2)
-      setZip(currentUserData.student.person.address.zip)
-      setUserInfo(currentUserData.student.person)
-      setPackets(currentUserData.student.packets)
-      if (currentUserData.student.grade_levels && currentUserData.student.grade_levels[0]) {
-        setGradeLevel(currentUserData.student.grade_levels[0].grade_level)
-      }
-      if (currentUserData.student.person.phone.ext) {
-        setCanMessage(true)
-      }
-      setStudentStatus({
-        student_id: +studentId,
-        special_ed: currentUserData.student.special_ed,
-        diploma_seeking: currentUserData.student.diploma_seeking,
-        testing_preference: currentUserData.student.testing_preference,
-        status: currentUserData?.student?.status?.length && currentUserData.student.status.at(-1).status,
-        date: currentUserData?.student?.status?.length > 0 ? currentUserData.student.status.at(-1).date_updated : '',
-        // grade_level: currentUserData.student.status.length && currentUserData.student.status[0].grade_level,
-        school_year_id:
-          currentUserData.student.applications.length && currentUserData.student.applications[0].school_year_id,
-        school_partner_id: currentUserData.student?.currentSoe?.[0]?.school_partner_id,
-        school_partner_id_updated: false,
-      })
-      setOriginStudentStatus({
-        status: currentUserData?.student?.status?.length && currentUserData.student.status.at(-1).status,
-      })
-    }
-  }, [currentUserData])
-
-  useEffect(() => {
-    refetch()
-  }, [studentId])
 
   const currentSoE = useMemo(() => {
     let currentSoE = false
@@ -366,6 +285,7 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
       ...school_partner,
     })
   }
+
   const handleChangeSoE = (e) => {
     if (!currentSoE) {
       setSOE(e.target.value)
@@ -374,6 +294,7 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
       setModalAssign(true)
     }
   }
+
   const handleAssignOrTransfer = async () => {
     if (assignOrTransfer === 'assign' || !currentSoE) {
       setSOE(tempSoE)
@@ -440,6 +361,87 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
     })
     return result
   }
+
+  useEffect(() => {
+    if (!studentAssessmentLoading && studentAssessmentsData?.getStudentAssessmentsByStudentId) {
+      setStudentAssessments(
+        studentAssessmentsData?.getStudentAssessmentsByStudentId?.map(
+          (assessment: { AssessmentId: number; assessment_option_id: number; OptionId: number; out_text: string }) => ({
+            assessmentId: assessment?.AssessmentId,
+            assessmentOptionId: assessment?.assessment_option_id,
+            optionId: assessment?.OptionId,
+            assessmentOptionOutText: assessment?.out_text,
+          }),
+        ),
+      )
+    }
+  }, [studentAssessmentLoading, studentAssessmentsData])
+
+  useEffect(() => {
+    if (withdrawalStatusData && withdrawalStatusData.withdrawalStatus.error === false) {
+      if (withdrawalStatusData.withdrawalStatus.results.length > 0)
+        setWithdrawalStatus(withdrawalStatusData.withdrawalStatus.results[0])
+    }
+  }, [withdrawalStatusData])
+
+  useEffect(() => {
+    if (!assessmentsLoading && assessments?.getAssessmentsBySchoolYearId) {
+      const items = assessments?.getAssessmentsBySchoolYearId
+      setAssessmentItems(items.map((item: AssessmentType) => ({ ...item, assessment_id: Number(item.assessment_id) })))
+    } else {
+      setAssessmentItems([])
+    }
+  }, [assessments, assessmentsLoading])
+
+  useEffect(() => {
+    setStudentPerson(userInfo)
+  }, [userInfo])
+
+  useEffect(() => {
+    if (currentUserData) {
+      const stateSelected = currentUserData.student.person.address.state || applicationState
+
+      setEmail(currentUserData.student.person.email)
+      setPreferredFirstName(currentUserData.student.person.preferred_first_name)
+      setPreferredLastName(currentUserData.student.person.preferred_last_name)
+      setLegalFirstName(currentUserData.student.person.first_name)
+      setLegalLastName(currentUserData.student.person.last_name)
+      setLegalMiddleName(currentUserData.student.person.middle_name)
+      setGender(currentUserData.student.person.gender)
+      setCity(currentUserData.student.person.address.city)
+      setState(STATES_WITH_ABBREVIATION[stateSelected] || stateSelected)
+      setStreet1(currentUserData.student.person.address.street)
+      setStreet2(currentUserData.student.person.address.street2)
+      setZip(currentUserData.student.person.address.zip)
+      setUserInfo(currentUserData.student.person)
+      setPackets(currentUserData.student.packets)
+      if (currentUserData.student.grade_levels && currentUserData.student.grade_levels[0]) {
+        setGradeLevel(currentUserData.student.grade_levels[0].grade_level)
+      }
+      if (currentUserData.student.person.phone.ext) {
+        setCanMessage(true)
+      }
+      setStudentStatus({
+        student_id: +studentId,
+        special_ed: currentUserData.student.special_ed,
+        diploma_seeking: currentUserData.student.diploma_seeking,
+        testing_preference: currentUserData.student.testing_preference,
+        status: currentUserData?.student?.status?.length && currentUserData.student.status.at(-1).status,
+        date: currentUserData?.student?.status?.length > 0 ? currentUserData.student.status.at(-1).date_updated : '',
+        school_year_id:
+          currentUserData.student.applications.length && currentUserData.student.applications[0].school_year_id,
+        school_partner_id: currentUserData.student?.currentSoe?.[0]?.school_partner_id,
+        school_partner_id_updated: false,
+      })
+      setOriginStudentStatus({
+        status: currentUserData?.student?.status?.length && currentUserData.student.status.at(-1).status,
+      })
+    }
+  }, [currentUserData])
+
+  useEffect(() => {
+    refetch()
+  }, [studentId])
 
   return (
     <Box

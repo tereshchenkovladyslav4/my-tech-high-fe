@@ -29,3 +29,11 @@ export const emailResourceRequestsMutation = gql`
     }
   }
 `
+
+export const updateResourceRequestMutation = gql`
+  mutation UpdateResourceRequest($updateResourceRequestInput: UpdateResourceRequestInput!) {
+    updateResourceRequest(updateResourceRequestInput: $updateResourceRequestInput) {
+      id
+    }
+  }
+`

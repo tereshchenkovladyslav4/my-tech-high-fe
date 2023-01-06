@@ -55,6 +55,11 @@ export const getResourceRequestsQuery = gql`
           price
           std_user_name
           std_password
+          ResourceLevels {
+            resource_level_id
+            name
+            limit
+          }
         }
         ResourceLevel {
           name

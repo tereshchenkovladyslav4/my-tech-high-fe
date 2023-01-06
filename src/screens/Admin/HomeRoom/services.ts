@@ -159,6 +159,12 @@ export const GetLearningLogQuestionByMasterIdQuery = gql`
     }
   }
 `
+export const DeleteAssignmentGql = gql`
+  mutation DeleteAssignmentById($assignmentId: Int!) {
+    deleteAssignmentById(assignmentId: $assignmentId)
+  }
+`
+
 export const DeleteMasterByIdGql = gql`
   mutation DeleteMasterById($masterId: Int!) {
     deleteMasterById(masterId: $masterId)

@@ -1,8 +1,9 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { useMutation, useQuery } from '@apollo/client'
 import ExpandMoreOutlinedIcon from '@mui/icons-material/ExpandMoreOutlined'
+import ModeEditIcon from '@mui/icons-material/ModeEdit'
 import SearchIcon from '@mui/icons-material/Search'
-import { Box, Button, IconButton, InputAdornment, OutlinedInput, Typography } from '@mui/material'
+import { Box, Button, IconButton, InputAdornment, OutlinedInput, Tooltip, Typography } from '@mui/material'
 import { debounce } from 'lodash'
 import moment from 'moment'
 import { EmailHistoryModal } from '@mth/components/EmailHistoryModal/EmailHistoryModal'
@@ -25,6 +26,7 @@ import { SchoolYearDropDown } from '@mth/screens/Admin/Components/SchoolYearDrop
 import { ResourceRequestsTableProps } from '@mth/screens/Admin/ResourceRequests/ResourceRequestsTable/type'
 import { mthButtonClasses } from '@mth/styles/button.style'
 import { gradeShortText, resourceRequestStatus, studentStatusText } from '@mth/utils'
+import ResourceRequestEdit from '../ResourceRequestEdit/ResourceRequestEdit'
 
 export const ResourceRequestsTable: React.FC<ResourceRequestsTableProps> = ({
   schoolYearId,
@@ -47,6 +49,8 @@ export const ResourceRequestsTable: React.FC<ResourceRequestsTableProps> = ({
   const [emailHistory, setEmailHistory] = useState<Email[]>([])
   const [showEmailHistoryModal, setShowEmailHistoryModal] = useState<boolean>(false)
   const [showEmailModal, setShowEmailModal] = useState<boolean>(false)
+  const [highlightItem, setHighlightItem] = useState<ResourceRequest | undefined>()
+  const [showEditModal, setShowEditModal] = useState<boolean>(false)
 
   const fields: MthTableField<ResourceRequest>[] = [
     {
@@ -178,6 +182,7 @@ export const ResourceRequestsTable: React.FC<ResourceRequestsTableProps> = ({
       expandNode: (
         <Box
           sx={{
+            position: 'relative',
             p: '8px 64px',
             '& .MuiBox-root': {
               display: 'flex',
@@ -206,9 +211,7 @@ export const ResourceRequestsTable: React.FC<ResourceRequestsTableProps> = ({
           </Box>
           <Box>
             <Typography>Birthdate</Typography>
-            <Typography>
-              {moment(resourceRequest.Student?.parent?.person?.date_of_birth).format('MM/DD/YYYY')}
-            </Typography>
+            <Typography>{moment(resourceRequest.Student?.person?.date_of_birth).format('MM/DD/YYYY')}</Typography>
           </Box>
           <Box>
             <Typography>Username</Typography>
@@ -235,6 +238,26 @@ export const ResourceRequestsTable: React.FC<ResourceRequestsTableProps> = ({
           <Box>
             <Typography>Resource Level</Typography>
             <Typography>{resourceRequest.ResourceLevel?.name}</Typography>
+          </Box>
+
+          <Box sx={{ position: 'absolute', bottom: 2, right: 2 }}>
+            <Tooltip title='Edit' placement='top'>
+              <IconButton
+                sx={{
+                  position: 'relative',
+                  bottom: '2px',
+                  width: '32px',
+                  height: '32px',
+                  marginY: 'auto',
+                }}
+                onClick={() => {
+                  setHighlightItem(resourceRequest)
+                  setShowEditModal(true)
+                }}
+              >
+                <ModeEditIcon sx={{ fontSize: '22px', fontWeight: 700, color: MthColor.SYSTEM_01 }} />
+              </IconButton>
+            </Tooltip>
           </Box>
         </Box>
       ),
@@ -489,6 +512,10 @@ export const ResourceRequestsTable: React.FC<ResourceRequestsTableProps> = ({
           }}
           handleSchedulesByStatus={() => {}}
         />
+      )}
+
+      {showEditModal && !!highlightItem && (
+        <ResourceRequestEdit item={highlightItem} refetch={refetch} setShowEditModal={setShowEditModal} />
       )}
     </PageBlock>
   )

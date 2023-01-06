@@ -79,8 +79,8 @@ export const Submission: SubmissionTemplateType = ({ id, questions }) => {
       const valid_address = {}
       const valid_packet = {}
       valid_meta['meta_parentlegalname'] = yup.string().required('Required').nullable()
-      questions.groups.map((g) => {
-        g.questions.map((q) => {
+      questions.groups?.map((g) => {
+        g.questions?.map((q) => {
           if (q.type !== QUESTION_TYPE.UPLOAD && q.type !== QUESTION_TYPE.INFORMATION) {
             if (q.slug?.includes('student_')) {
               if (q.required) {
@@ -303,7 +303,7 @@ export const Submission: SubmissionTemplateType = ({ id, questions }) => {
               ...prev.profile,
               address: address,
             },
-            students: prev?.students.map((student) => {
+            students: prev?.students?.map((student) => {
               const returnValue = { ...student }
               if (student.student_id === data.data.saveEnrollmentPacketSubmit.student.student_id) {
                 return data.data.saveEnrollmentPacketSubmit.student
@@ -323,7 +323,7 @@ export const Submission: SubmissionTemplateType = ({ id, questions }) => {
     window.scrollTo(0, 0)
   }
 
-  const questionsArr = questions?.groups[0]?.questions.map((q) => {
+  const questionsArr = questions?.groups[0]?.questions?.map((q) => {
     let current = q,
       child
 
@@ -353,7 +353,7 @@ export const Submission: SubmissionTemplateType = ({ id, questions }) => {
         />
       )}
       <Grid container rowSpacing={2} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
-        {questionsLists.map((item, index) => (
+        {questionsLists?.map((item, index) => (
           <EnrollmentQuestionItem key={index} item={item} group={'root'} formik={formik} />
         ))}
       </Grid>

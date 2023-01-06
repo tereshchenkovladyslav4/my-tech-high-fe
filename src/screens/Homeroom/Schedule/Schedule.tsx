@@ -18,9 +18,13 @@ import {
   SNOWPACK_PUBLIC_S3_URL,
 } from '@mth/constants'
 import { DiplomaSeekingPath, MthRoute, MthTitle, OPT_TYPE, ScheduleStatus } from '@mth/enums'
-import { diplomaAnswerGql, diplomaQuestionForStudent, submitDiplomaAnswerGql } from '@mth/graphql/queries/diploma'
+import { diplomaQuestionForStudent, submitDiplomaAnswerGql } from '@mth/graphql/queries/diploma'
 import { getSignatureInfoByStudentId } from '@mth/graphql/queries/user'
-import { useActiveScheduleSchoolYears, useAssessmentsBySchoolYearId } from '@mth/hooks'
+import {
+  useActiveScheduleSchoolYears,
+  useAssessmentsBySchoolYearId,
+  useDiplomaSeekingOptionsByStudentIdandSchoolYearId,
+} from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { getSignatureFile } from '@mth/screens/Admin/EnrollmentPackets/services'
 import { AssessmentType } from '@mth/screens/Admin/SiteManagement/EnrollmentSetting/TestingPreference/types'
@@ -65,18 +69,6 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
   })
   const [isDiplomaError, setIsDiplomaError] = useState<boolean>(false)
   const [scheduleStatus, setScheduleStatus] = useState<ScheduleStatus>()
-  const [diplomaOptions, setDiplomaOptions] = useState<RadioGroupOption[]>([
-    {
-      option_id: 1,
-      label: 'Yes',
-      value: false,
-    },
-    {
-      option_id: 2,
-      label: 'No',
-      value: false,
-    },
-  ])
   const [diplomaSeekingPathStatus, setDiplomaSeekingPathStatus] = useState<DiplomaSeekingPath>(DiplomaSeekingPath.BOTH)
   const [isChanged, setIsChanged] = useState<boolean>(false)
   const [showUnsavedModal, setShowUnsavedModal] = useState<boolean>(false)
@@ -90,26 +82,17 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
     dropdownItems: schoolYearItems,
   } = useActiveScheduleSchoolYears(studentId)
 
+  const { diplomaOptions, diplomaAnswerRefetch } = useDiplomaSeekingOptionsByStudentIdandSchoolYearId(
+    selectedYearId || 0,
+    studentId,
+    !student || !studentId || !selectedYearId || step !== MthTitle.STEP_DIPLOMA_SEEKING,
+  )
+
   const { loading: diplomaLoading, data: diplomaData } = useQuery(diplomaQuestionForStudent, {
     variables: {
       diplomaQuestionInput: {
         schoolYearId: selectedYearId,
         grades: gradeNum(student),
-      },
-    },
-    skip: !student || !studentId || step !== MthTitle.STEP_DIPLOMA_SEEKING,
-    fetchPolicy: 'network-only',
-  })
-
-  const {
-    loading: diplomaAnswerLoading,
-    data: diplomaAnswerData,
-    refetch: diplomaAnswerRefetch,
-  } = useQuery(diplomaAnswerGql, {
-    variables: {
-      diplomaAnswerInput: {
-        schoolYearId: selectedYearId,
-        studentId: studentId,
       },
     },
     skip: !student || !studentId || step !== MthTitle.STEP_DIPLOMA_SEEKING,
@@ -426,25 +409,6 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
       }
     }
   }, [diplomaLoading, diplomaData])
-
-  useEffect(() => {
-    if (!diplomaAnswerLoading) {
-      if (diplomaAnswerData && diplomaAnswerData.getDiplomaAnswer) {
-        setDiplomaOptions([
-          {
-            option_id: 1,
-            label: 'Yes',
-            value: 1 === diplomaAnswerData.getDiplomaAnswer.answer,
-          },
-          {
-            option_id: 2,
-            label: 'No',
-            value: 0 === diplomaAnswerData.getDiplomaAnswer.answer,
-          },
-        ])
-      }
-    }
-  }, [diplomaAnswerLoading, diplomaAnswerData])
 
   return (
     <Card sx={{ margin: 4, padding: 4 }}>

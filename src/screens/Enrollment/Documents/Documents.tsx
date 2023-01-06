@@ -178,7 +178,7 @@ export const Documents: React.FC<DocumentsProps> = ({ id, questions }) => {
   const goNext = async () => {
     setIsSubmit(true)
     let validDoc = true
-    questions?.groups[0]?.questions.map((item) => (validDoc = validDoc && checkValidate(item)))
+    questions?.groups[0]?.questions?.map((item) => (validDoc = validDoc && checkValidate(item)))
     if (validDoc) {
       await submitDocuments()
     }
@@ -208,7 +208,7 @@ export const Documents: React.FC<DocumentsProps> = ({ id, questions }) => {
     return false
   }
 
-  const questionsArr = questions?.groups[0]?.questions.map((q) => {
+  const questionsArr = questions?.groups[0]?.questions?.map((q) => {
     let current = q,
       child
     const arr = [q]
@@ -390,7 +390,7 @@ export const Documents: React.FC<DocumentsProps> = ({ id, questions }) => {
       <Grid container rowSpacing={3} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
         <Grid item xs={12}>
           <List>
-            {questionsLists.map(
+            {questionsLists?.map(
               (item, index) =>
                 specialEdStatus(item[0]) && (
                   <Grid item xs={12} marginTop={4} key={index}>

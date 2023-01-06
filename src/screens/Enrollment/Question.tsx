@@ -72,7 +72,7 @@ export const EnrollmentQuestionItem: EnrollmentQuestionTemplateType = ({ item, f
 
   const handleAdditionalAction = (slug, value) => {
     let index = 1000
-    const updateQuestionItems = questionItems.map((q) => {
+    const updateQuestionItems = questionItems?.map((q) => {
       if (q.additional_question === slug) {
         index = q.order
         return { ...q, isEnable: value }
@@ -93,7 +93,7 @@ export const EnrollmentQuestionItem: EnrollmentQuestionTemplateType = ({ item, f
 
   return (
     <>
-      {questionItems.map((q, index): ReactElement | undefined => {
+      {questionItems?.map((q, index): ReactElement | undefined => {
         if ((q.additional_question && q.isEnable) || !q.additional_question) {
           if (q.type === QUESTION_TYPE.INFORMATION) {
             return (
@@ -255,7 +255,7 @@ function Item({
   function handleChangeOther(value: string) {
     const otherTemp = multiSelected('Other')
     if (otherTemp) {
-      const updateOther = fieldData.map((f) => (f.label === 'Other' ? { label: 'Other', value: value } : f))
+      const updateOther = fieldData?.map((f) => (f.label === 'Other' ? { label: 'Other', value: value } : f))
       setFieldData(updateOther)
     }
     setOtherValue(value)
@@ -497,7 +497,7 @@ function Item({
         >
           <FormGroup style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
             <Grid container>
-              {q.options.map((o, index) => (
+              {q.options?.map((o, index) => (
                 <Grid item xs={q.options.length > 3 ? 6 : 12} key={index}>
                   <FormControlLabel
                     control={
@@ -605,7 +605,7 @@ function Item({
         >
           <FormGroup style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
             <Grid container>
-              {q.options.map((o, index) => (
+              {q.options?.map((o, index) => (
                 <Grid item xs={q.options.length > 3 ? 6 : 12} key={index}>
                   <FormControlLabel
                     control={

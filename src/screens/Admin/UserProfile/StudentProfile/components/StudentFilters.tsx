@@ -5,11 +5,13 @@ import { Grid, Select, MenuItem } from '@mui/material'
 import { Box } from '@mui/system'
 import moment from 'moment'
 import { CustomConfirmModal } from '@mth/components/CustomConfirmModal/CustomConfirmModal'
+import { DropDown } from '@mth/components/DropDown/DropDown'
 import { DropDownItem } from '@mth/components/DropDown/types'
+import { RadioGroupOption } from '@mth/components/MthRadioGroup/types'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
-import { StudentStatus } from '@mth/enums'
-import { MTHBLUE, BLACK, BUTTON_LINEAR_GRADIENT, RED_GRADIENT, YELLOW_GRADIENT } from '../../../../../utils/constants'
+import { MthColor, StudentStatus } from '@mth/enums'
+import { useDiplomaSeekingOptionsByStudentIdandSchoolYearId } from '@mth/hooks'
 import { ActiveModal } from './ActiveModal'
 import { WithdrawModal } from './WithdrawModal'
 
@@ -23,6 +25,7 @@ type StudentFiltersProps = {
   setWithdrawalStatus: () => void
   setIsChanged: () => void
 }
+
 const selectStyles = makeStyles({
   backgroundSelect: {
     fontSize: '12px',
@@ -30,13 +33,13 @@ const selectStyles = makeStyles({
     minWidth: '135px',
     height: '29px',
     textAlign: 'center',
-    background: BUTTON_LINEAR_GRADIENT,
+    background: MthColor.BUTTON_LINEAR_GRADIENT,
     color: '#F2F2F2 !important',
     '&:before': {
-      borderColor: BUTTON_LINEAR_GRADIENT,
+      borderColor: MthColor.BUTTON_LINEAR_GRADIENT,
     },
     '&:after': {
-      borderColor: BUTTON_LINEAR_GRADIENT,
+      borderColor: MthColor.BUTTON_LINEAR_GRADIENT,
     },
   },
   withdrawBackgroundSelect: {
@@ -45,13 +48,13 @@ const selectStyles = makeStyles({
     minWidth: '135px',
     height: '29px',
     textAlign: 'center',
-    background: RED_GRADIENT,
+    background: MthColor.RED_GRADIENT,
     color: '#F2F2F2 !important',
     '&:before': {
-      borderColor: RED_GRADIENT,
+      borderColor: MthColor.RED_GRADIENT,
     },
     '&:after': {
-      borderColor: RED_GRADIENT,
+      borderColor: MthColor.RED_GRADIENT,
     },
   },
   yellowBackgroundSelect: {
@@ -60,13 +63,13 @@ const selectStyles = makeStyles({
     minWidth: '135px',
     height: '29px',
     textAlign: 'center',
-    background: YELLOW_GRADIENT,
+    background: MthColor.YELLOW_GRADIENT,
     color: '#F2F2F2 !important',
     '&:before': {
-      borderColor: YELLOW_GRADIENT,
+      borderColor: MthColor.YELLOW_GRADIENT,
     },
     '&:after': {
-      borderColor: YELLOW_GRADIENT,
+      borderColor: MthColor.YELLOW_GRADIENT,
     },
     '& > div': {
       paddingTop: 0,
@@ -81,6 +84,7 @@ const selectStyles = makeStyles({
     color: '#F2F2F2 !important',
   },
 })
+
 const useStyles = {
   modalCard: {
     position: 'absolute' as const,
@@ -115,7 +119,7 @@ const useStyles = {
   errorOutline: {
     background: '#FAFAFA',
     borderRadius: 1,
-    color: BLACK,
+    color: MthColor.BLACK,
     marginBottom: 12,
     height: 42,
     width: 42,
@@ -189,11 +193,13 @@ const useStyles = {
     marginTop: 4,
   },
 }
+
 const ordinal = (n) => {
   const s = ['th', 'st', 'nd', 'rd']
   const v = n % 100
   return n + (s[(v - 20) % 10] || s[v] || s[0])
 }
+
 export const StudentFilters: React.FC<StudentFiltersProps> = ({
   currentUserData,
   setStudentStatuData,
@@ -213,7 +219,7 @@ export const StudentFilters: React.FC<StudentFiltersProps> = ({
   const [showWithdrawalModal, setShowWithdrawalModal] = useState<boolean>(false)
   const [showActiveModal, setShowActiveModal] = useState<boolean>(false)
   const [showConfirmModal, setShowConfirmModal] = useState<boolean>(false)
-  const [diplomaSeeking, setDiplomaSeeking] = useState<unknown>('')
+  const [diplomaSeeking, setDiplomaSeeking] = useState<string>('')
   const [status, setStatus] = useState<DropDownItem[]>([
     {
       label: ' ',
@@ -256,16 +262,22 @@ export const StudentFilters: React.FC<StudentFiltersProps> = ({
     },
   ])
 
-  const seeking: DropDownItem[] = [
+  const DIPLOMA_SEEKING_OPTIONS: DropDownItem[] = [
     {
       label: 'No',
-      value: 0,
+      value: '0',
     },
     {
       label: 'Yes',
-      value: 1,
+      value: '1',
     },
   ]
+
+  const { diplomaOptions } = useDiplomaSeekingOptionsByStudentIdandSchoolYearId(
+    studentStatusData?.school_year_id || 0,
+    studentStatusData?.student_id,
+    !studentStatusData?.student_id || !studentStatusData?.school_year_id,
+  )
 
   const handleChangeStudentStatus = (e) => {
     if (e.target.value == StudentStatus.ACTIVE || e.target.value == StudentStatus.PENDING) {
@@ -328,10 +340,6 @@ export const StudentFilters: React.FC<StudentFiltersProps> = ({
   }, [specialEdOptions])
 
   useEffect(() => {
-    if (studentStatusData.diploma_seeking !== null && studentStatusData.diploma_seeking !== undefined) {
-      setDiplomaSeeking(studentStatusData.diploma_seeking)
-    }
-
     if (studentStatusData?.date) {
       setStatus([
         {
@@ -441,6 +449,14 @@ export const StudentFilters: React.FC<StudentFiltersProps> = ({
     setShowConfirmModal(true)
   }
 
+  useEffect(() => {
+    if (diplomaOptions) {
+      const answerOption = diplomaOptions.find((item: RadioGroupOption) => item.value)
+      const answer = answerOption?.option_id === 1 ? 1 : 0
+      setDiplomaSeeking(answer)
+    }
+  }, [diplomaOptions])
+
   return (
     <Box
       sx={{
@@ -499,7 +515,7 @@ export const StudentFilters: React.FC<StudentFiltersProps> = ({
               </Select>
               {withdrawalStatus?.status == 'Requested' && (
                 <Box onClick={() => onRemoveWithdrawalRequest()}>
-                  <Paragraph sx={{ color: MTHBLUE, my: '5px', cursor: 'pointer' }} textAlign='center'>
+                  <Paragraph sx={{ color: MthColor.MTHBLUE, my: '5px', cursor: 'pointer' }} textAlign='center'>
                     Remove Withdraw Request
                   </Paragraph>
                 </Box>
@@ -507,7 +523,7 @@ export const StudentFilters: React.FC<StudentFiltersProps> = ({
             </Box>
           </Box>
           <Box onClick={() => setShowDetails(!showDetails)}>
-            <Paragraph sx={{ textDecoration: 'underline', color: MTHBLUE }}>
+            <Paragraph sx={{ textDecoration: 'underline', color: MthColor.MTHBLUE }}>
               {showDetails ? 'Hide' : 'View'} Details
             </Paragraph>
           </Box>
@@ -578,30 +594,31 @@ export const StudentFilters: React.FC<StudentFiltersProps> = ({
             <Subtitle textAlign='left' fontWeight='700' sx={{ marginRight: '30px', marginBottom: '5px' }}>
               Diploma Seeking
             </Subtitle>
-            <Select
-              displayEmpty
-              className={selectClasses.backgroundSelect}
-              IconComponent={KeyboardArrowDown}
-              inputProps={{
-                classes: {
-                  icon: selectClasses.selectIcon,
+            <DropDown
+              sx={{
+                fontSize: '16px',
+                padding: '0px 20px 4px 10px',
+                background: MthColor.BUTTON_LINEAR_GRADIENT,
+                height: '29px',
+                borderRadius: '4px',
+                textAlign: 'center',
+                '& .MuiSelect-select': {
+                  color: MthColor.WHITE,
+                  fontWeight: 500,
+                  fontSize: '16px',
+                },
+                '& .MuiSvgIcon-root': {
+                  color: `${MthColor.WHITE} !important`,
                 },
               }}
-              value={diplomaSeeking}
-              onChange={(e) => {
-                setDiplomaSeeking(e.target.value)
-                setStudentStatuData({ ...studentStatusData, ...{ diploma_seeking: e.target.value } })
+              dropDownItems={DIPLOMA_SEEKING_OPTIONS}
+              defaultValue={`${diplomaSeeking}`}
+              borderNone={true}
+              setParentValue={(val) => {
+                setDiplomaSeeking(`${val}`)
+                setStudentStatuData({ ...studentStatusData, ...{ diploma_seeking: +val } })
               }}
-            >
-              <MenuItem value='' disabled>
-                Select
-              </MenuItem>
-              {seeking.map((item) => (
-                <MenuItem key={item.value} value={item.value}>
-                  {item.label}
-                </MenuItem>
-              ))}
-            </Select>
+            />
           </Box>
         </Grid>
         {showDetails && (

@@ -36,8 +36,8 @@ export const Contact: React.FC<ContactProps> = ({ id, questions }) => {
       const valid_meta = {}
       const valid_address = {}
       const valid_packet = {}
-      questions.groups.map((g) => {
-        g.questions.map((q) => {
+      questions.groups?.map((g) => {
+        g.questions?.map((q) => {
           if (q.type !== QUESTION_TYPE.UPLOAD && q.type !== QUESTION_TYPE.INFORMATION) {
             if (q.slug?.includes('student_')) {
               if (q.required) {
@@ -204,7 +204,7 @@ export const Contact: React.FC<ContactProps> = ({ id, questions }) => {
             },
             address: address,
           },
-          students: prev?.students.map((student) => {
+          students: prev?.students?.map((student) => {
             const returnValue = { ...student }
             if (student.student_id === data.data.saveEnrollmentPacketContact.student.student_id) {
               return data.data.saveEnrollmentPacketContact.student

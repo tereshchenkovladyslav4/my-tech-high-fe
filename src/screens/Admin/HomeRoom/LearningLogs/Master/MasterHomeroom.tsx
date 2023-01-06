@@ -26,6 +26,7 @@ import { MthTableField, MthTableRowItem } from '@mth/components/MthTable/types'
 import PageHeader from '@mth/components/PageHeader'
 import { Pagination } from '@mth/components/Pagination/Pagination'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { WarningModal } from '@mth/components/WarningModal/Warning'
 import { MthTitle } from '@mth/enums'
 import { useSchoolYearsByRegionId } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
@@ -36,6 +37,7 @@ import {
   getAssignmentsByMasterIdgql,
   updateMasterById,
   createOrUpdateInstruction,
+  DeleteAssignmentGql,
 } from '../../services'
 import { Master } from '../types'
 import { masterUseStyles } from './styles'
@@ -57,6 +59,9 @@ const MasterHoomroom: React.FC<{ masterId: number }> = ({ masterId }) => {
 
   const [isSetInstructions, setIsSetInstructions] = useState<boolean>(false)
   const [instructions, setInstructions] = useState<string>('')
+
+  const [deleteConfirmModal, setDeleteConfirmModal] = useState<boolean>(false)
+  const [deleteId, setDeleteId] = useState<number | null>()
 
   const { me } = useContext(UserContext)
   const { dropdownItems: schoolYearDropdownItems } = useSchoolYearsByRegionId(me?.selectedRegionId)
@@ -80,6 +85,22 @@ const MasterHoomroom: React.FC<{ masterId: number }> = ({ masterId }) => {
       setInstructions(masterData.getMastersById.instructions)
     }
   }, [masterLoading, masterData])
+
+  const handleDelete = (id: string) => {
+    setDeleteConfirmModal(true)
+    setDeleteId(parseInt(id))
+  }
+
+  const [deleteAssignment] = useMutation(DeleteAssignmentGql)
+  const submitDelete = async () => {
+    await deleteAssignment({
+      variables: {
+        assignmentId: deleteId,
+      },
+    })
+    refetch()
+    setDeleteConfirmModal(false)
+  }
 
   const fields: MthTableField<Assignment>[] = [
     {
@@ -117,7 +138,7 @@ const MasterHoomroom: React.FC<{ masterId: number }> = ({ masterId }) => {
       label: '',
       sortable: false,
       tdClass: '',
-      formatter: () => {
+      formatter: (item) => {
         return (
           <Box display={'flex'} flexDirection='row' justifyContent={'flex-end'} flexWrap={'wrap'}>
             <Tooltip title='Edit' placement='top'>
@@ -126,7 +147,7 @@ const MasterHoomroom: React.FC<{ masterId: number }> = ({ masterId }) => {
               </IconButton>
             </Tooltip>
             <Tooltip title='Delete' placement='top'>
-              <IconButton className='actionButton' color='primary'>
+              <IconButton className='actionButton' color='primary' onClick={() => handleDelete(item.rawData.id)}>
                 <DeleteForeverOutlined />
               </IconButton>
             </Tooltip>
@@ -155,7 +176,11 @@ const MasterHoomroom: React.FC<{ masterId: number }> = ({ masterId }) => {
     }
   }
 
-  const { loading: assloading, data: assData } = useQuery(getAssignmentsByMasterIdgql, {
+  const {
+    loading: assloading,
+    data: assData,
+    refetch,
+  } = useQuery(getAssignmentsByMasterIdgql, {
     variables: {
       masterId: masterId,
       take: paginatinLimit,
@@ -387,6 +412,16 @@ const MasterHoomroom: React.FC<{ masterId: number }> = ({ masterId }) => {
           </Box>
         </Box>
       </Modal>
+      {deleteConfirmModal && (
+        <WarningModal
+          title='Delete'
+          subtitle='Are you sure you want to delete this Learning Log?'
+          handleModem={() => setDeleteConfirmModal(false)}
+          handleSubmit={() => submitDelete()}
+          btntitle='Delete'
+          canceltitle='Cancel'
+        />
+      )}
     </Box>
   )
 }

@@ -4,6 +4,7 @@ import CloseIcon from '@mui/icons-material/Close'
 import { Box, Button, Card } from '@mui/material'
 import { WithdrawalOption, WithdrawalStatus } from '@mth/enums'
 import { StudentStatus } from '@mth/enums'
+import { submitDiplomaAnswerGql } from '@mth/graphql/queries/diploma'
 import { assignStudentToSOEGql } from '@mth/screens/Admin/SiteManagement/services'
 import { saveWithdrawalMutation } from '../../../graphql/mutation/withdrawal'
 import { UserContext } from '../../../providers/UserContext/UserProvider'
@@ -23,11 +24,13 @@ import {
 } from './services'
 import { StudentProfile } from './StudentProfile/StudentProfile'
 import { useStyles } from './styles'
+
 type UserProfileProps = {
   handleClose: () => void
   data: unknown
   setIsChanged: () => void
 }
+
 export const UserProfile: React.FC<UserProfileProps> = ({ handleClose, data, setIsChanged }) => {
   const classes = useStyles
   const [userInfo, setUserInfo] = useState<unknown>()
@@ -56,6 +59,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ handleClose, data, set
   const [updateStudent] = useMutation(UpdateStudentMutation)
   const [createWithdrawal] = useMutation(saveWithdrawalMutation)
   const [deleteWithdrawal] = useMutation(DeleteWithdrawal)
+  const [saveDiplomaAnswer] = useMutation(submitDiplomaAnswerGql)
 
   const [updatePersonAddress] = useMutation(updatePersonAddressMutation)
 
@@ -68,7 +72,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ handleClose, data, set
 
   useEffect(() => {
     if (currentStudentData?.student) {
-      setStudentOldStatus(currentStudentData.student.status.at(-1).status)
+      setStudentOldStatus(currentStudentData.student?.status.at(-1)?.status)
     }
   }, [currentStudentData?.student])
 
@@ -190,6 +194,19 @@ export const UserProfile: React.FC<UserProfileProps> = ({ handleClose, data, set
           approveEnrollmentPacketAction(curPacektID)
         }
       }
+
+      if (typeof studentStatus?.diploma_seeking == 'number') {
+        await saveDiplomaAnswer({
+          variables: {
+            saveDiplomaAnswerInput: {
+              answer: studentStatus?.diploma_seeking,
+              studentId: studentStatus?.student_id,
+              schoolYearId: studentStatus?.school_year_id,
+            },
+          },
+        })
+      }
+
       if (studentStatus?.withdrawOption) {
         await createWithdrawal({
           variables: {
