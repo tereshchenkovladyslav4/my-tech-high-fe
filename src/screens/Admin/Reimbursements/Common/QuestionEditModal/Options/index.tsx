@@ -4,7 +4,7 @@ import { Box, Radio, TextField, Checkbox, IconButton, outlinedInputClasses } fro
 import { CustomModal } from '@mth/components/CustomModal/CustomModals'
 import { DropDown } from '@mth/components/DropDown/DropDown'
 import { DropDownItem } from '@mth/components/DropDown/types'
-import { QUESTION_TYPE } from '@mth/components/QuestionItem/QuestionItemProps'
+import { QUESTION_TYPE } from '@mth/enums'
 import { AdditionalQuestionAction } from '@mth/enums'
 import { AdditionalQuestionActionList } from '../../../defaultValues'
 import { optionClasses } from './styles'

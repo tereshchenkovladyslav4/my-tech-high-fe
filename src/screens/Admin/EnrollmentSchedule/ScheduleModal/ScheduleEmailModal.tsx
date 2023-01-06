@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Button, Checkbox, FormControlLabel, Modal, OutlinedInput } from '@mui/material'
 import { Box } from '@mui/system'
 import { EditorState, convertToRaw } from 'draft-js'
@@ -37,7 +37,11 @@ export const EmailModal: EmailModalTemplateType = ({
       })
       .required('This field is required.'),
   })
-
+  useEffect(() => {
+    if (editFrom) {
+      setErrorStatus(false)
+    }
+  }, [editFrom])
   const formik = useFormik({
     initialValues: {
       emailFrom: '',
@@ -48,8 +52,6 @@ export const EmailModal: EmailModalTemplateType = ({
     onSubmit: async ({ emailFrom, editorState, subject }) => {
       if (editFrom) {
         handleSubmit(emailFrom, subject, draftToHtml(convertToRaw(editorState.getCurrentContent())))
-      } else {
-        setCheckedStatus(true)
       }
     },
   })
@@ -113,7 +115,9 @@ export const EmailModal: EmailModalTemplateType = ({
         {editFrom && (
           <>
             <Title fontWeight='700'>{title}</Title>
-            {(formik.errors.emailFrom || formik.errors.subject || formik.errors.editorState) && (
+            {((formik.touched.emailFrom && formik.errors.emailFrom) ||
+              (formik.touched.subject && formik.errors.subject) ||
+              (formik.touched.editorState && formik.errors.editorState)) && (
               <Paragraph size='large' fontWeight='500' color={MthColor.RED}>
                 Required
               </Paragraph>
@@ -128,7 +132,7 @@ export const EmailModal: EmailModalTemplateType = ({
               placeholder='From: email in template'
               sx={classes.from}
               onChange={formik.handleChange}
-              error={formik.errors.emailFrom ? true : false}
+              error={formik.touched.emailFrom && formik.errors.emailFrom ? true : false}
               autoFocus
             />
             <OutlinedInput
@@ -140,10 +144,15 @@ export const EmailModal: EmailModalTemplateType = ({
               placeholder='Subject'
               sx={classes.subject}
               onChange={formik.handleChange}
-              error={formik.errors.subject ? true : false}
+              error={formik.touched.subject && formik.errors.subject ? true : false}
             />
 
-            <Box sx={(classes.editor, formik.errors.editorState ? classes.redBorder : classes.editor)}>
+            <Box
+              sx={
+                (classes.editor,
+                formik.touched.editorState && formik.errors.editorState ? classes.redBorder : classes.editor)
+              }
+            >
               <Wysiwyg.Editor
                 onContentStateChange={handleEditorChange}
                 editorRef={(ref) => (editorRef.current = ref)}

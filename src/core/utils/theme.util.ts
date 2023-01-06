@@ -1,5 +1,5 @@
 import { createTheme } from '@mui/material/styles'
-import { BUTTON_LINEAR_GRADIENT, BUTTON_LINEAR_GRADIENT_DARK } from './constants'
+import { MthColor } from '../enums/color.enum'
 
 export const theme = createTheme({
   palette: {
@@ -65,10 +65,10 @@ export const theme = createTheme({
             margin: 0,
           },
           '& .bg-gradient': {
-            background: BUTTON_LINEAR_GRADIENT,
+            background: MthColor.BUTTON_LINEAR_GRADIENT,
           },
           '& .bg-gradient-dark': {
-            background: BUTTON_LINEAR_GRADIENT_DARK,
+            background: MthColor.BUTTON_LINEAR_GRADIENT_DARK,
           },
           '& .rounded-full': {
             borderRadius: '999px',

@@ -1,6 +1,5 @@
 import { makeStyles, Theme } from '@material-ui/core/styles'
 import { MthColor } from '@mth/enums'
-import { BLACK } from '../../utils/constants'
 
 export const useClasses = makeStyles((theme: Theme) => ({
   modalCard: {
@@ -38,7 +37,7 @@ export const useStyles = {
   errorOutline: {
     background: '#FAFAFA',
     borderRadius: 1,
-    color: BLACK,
+    color: MthColor.BLACK,
     marginBottom: 12,
     height: 42,
     width: 42,

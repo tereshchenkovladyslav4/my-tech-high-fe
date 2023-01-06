@@ -60,4 +60,4 @@ export const additionalAssignmentCustomQuestionTypes = [
 ]
 
 export const defaultExcuseAssignmentLog = 'Please excuse this Weekly Learning Log.'
-export const defaultExcuseAssignmentExplain = 'Please excuse this Weekly Learning Log.'
+export const defaultExcuseAssignmentExplain = 'Please explain:'

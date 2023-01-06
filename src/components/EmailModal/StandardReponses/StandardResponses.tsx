@@ -1,8 +1,8 @@
-import React, { FunctionComponent } from 'react'
+import React from 'react'
 import { FormControl, FormLabel, RadioGroup, FormControlLabel, Checkbox, Radio } from '@mui/material'
 import { Box } from '@mui/system'
 import { map } from 'lodash'
-import { BLACK } from '../../../utils/constants'
+import { MthColor } from '@mth/enums'
 import { Paragraph } from '../../Typography/Paragraph/Paragraph'
 import { Subtitle } from '../../Typography/Subtitle/Subtitle'
 
@@ -12,7 +12,7 @@ type StandardResponses = {
   standardResponses: { title: string }[]
   setStandardResponses: () => void
 }
-export const StandardResponses: FunctionComponent<StandardResponses> = ({
+export const StandardResponses: React.FC<StandardResponses> = ({
   options,
   type,
   standardResponses,
@@ -76,7 +76,7 @@ export const StandardResponses: FunctionComponent<StandardResponses> = ({
     >
       <FormControl component='fieldset'>
         <FormLabel component='legend'>
-          <Subtitle size='large' fontWeight='700' color={BLACK}>
+          <Subtitle size='large' fontWeight='700' color={MthColor.BLACK}>
             Standard Responses
           </Subtitle>
         </FormLabel>

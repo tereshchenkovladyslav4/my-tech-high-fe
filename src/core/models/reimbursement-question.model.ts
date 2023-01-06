@@ -1,5 +1,5 @@
 import { DropDownItem } from '@mth/components/DropDown/types'
-import { QUESTION_TYPE } from '@mth/components/QuestionItem/QuestionItemProps'
+import { QUESTION_TYPE } from '../enums/question-type.enum'
 import { ReimbursementFormType } from '../enums/reimbursement-form-type'
 
 export type ReimbursementQuestion = {

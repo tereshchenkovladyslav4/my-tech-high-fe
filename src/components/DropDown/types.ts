@@ -1,8 +1,7 @@
 import { ReactNode } from 'react'
 import { Theme } from '@emotion/react'
 import { SxProps } from '@mui/system'
-import { AdditionalQuestionAction } from '@mth/enums'
-import { QUESTION_TYPE } from '../QuestionItem/QuestionItemProps'
+import { AdditionalQuestionAction, QUESTION_TYPE } from '@mth/enums'
 
 export type DropDownItem = {
   label: string | number | ReactNode

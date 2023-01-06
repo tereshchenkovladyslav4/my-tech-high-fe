@@ -32,12 +32,18 @@ export enum MthRoute {
   CURRICULUM_COURSE_CATALOG_SUBJECTS = '/curriculum/course-catalog/subjects',
   CURRICULUM_COURSE_CATALOG_PROVIDERS = '/curriculum/course-catalog/providers',
   CURRICULUM_COURSE_CATALOG_STATE_CODES = '/curriculum/course-catalog/state-codes',
+  CURRICULUM_HOMEROOM_RESOURCES = '/curriculum/homeroom-resources',
+
+  HOMEROOM_LEARNING_LOGS = '/homeroom/learning-log',
+  HOMEROOM_ASSIGNMENTS = '/homeroom/assignments',
+  HOMEROOM_CHECKLIST = '/homeroom/checklist',
 
   REPORTS = '/reports',
   RESET_PASSWORD = '/reset-password',
   SETTINGS = '/settings',
   SITE_MANAGEMENT = '/site-management',
   SITEMANAGEMENT = '/site-management',
+  SCHOOL_ENROLLMENT = '/enrollment/school-enrollment',
   SNOWPACK_PUBLIC_COUNTIES_TEMPLATE = import.meta.env.SNOWPACK_PUBLIC_COUNTIES_TEMPLATE,
   SNOWPACK_PUBLIC_S3_URL = import.meta.env.SNOWPACK_PUBLIC_S3_URL,
   SNOWPACK_PUBLIC_SCHOOL_DISTRICT_TEMPLATE = import.meta.env.SNOWPACK_PUBLIC_SCHOOL_DISTRICT_TEMPLATE,

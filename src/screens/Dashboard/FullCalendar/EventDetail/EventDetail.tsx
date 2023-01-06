@@ -1,4 +1,5 @@
 import React, { ReactElement, useContext, useEffect, useState } from 'react'
+import { useQuery } from '@apollo/client'
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew'
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
 import { Avatar, AvatarGroup, Box, Button, Stack } from '@mui/material'
@@ -6,7 +7,9 @@ import moment from 'moment'
 import { useHistory } from 'react-router-dom'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { MthColor, MthRoute } from '@mth/enums'
+import { SchedulePeriod } from '@mth/graphql/models/schedule-period'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
+import { StudentType } from '@mth/screens/HomeroomStudentProfile/Student/types'
 import {
   extractContent,
   getFirstDayAndLastDayOfMonth,
@@ -15,6 +18,7 @@ import {
   renderDate,
   renderFilter,
 } from '@mth/utils'
+import { getSchedulePeriodByProviderIds } from '../../services'
 import { EventDetailProps } from '../types'
 import { eventDetailClassess } from './styles'
 
@@ -33,7 +37,28 @@ const EventDetail: React.FC<EventDetailProps> = ({
   const students = me?.students
   const [firstDay, setFirstDay] = useState<Date>()
   const [lastDay, setLastDay] = useState<Date>()
+  const [scheduleIds, setScheduleIds] = useState<Number[]>()
+  const { data: studentSchedulePeriodsData, refetch } = useQuery(getSchedulePeriodByProviderIds, {
+    variables: {
+      providerIds: selectedEvent?.filters?.provider,
+    },
+    skip: !selectedEvent?.filters?.provider,
+    fetchPolicy: 'network-only',
+  })
 
+  useEffect(() => {
+    if (!studentSchedulePeriodsData) {
+      refetch()
+    } else {
+      const periodsProvider: Number[] = []
+      studentSchedulePeriodsData.schedulePeriodsByProvider.map((obj: SchedulePeriod) => {
+        if (!periodsProvider.includes(obj.ScheduleId) && obj.ScheduleId) {
+          periodsProvider.push(obj.ScheduleId)
+        }
+      })
+      setScheduleIds(periodsProvider)
+    }
+  }, [studentSchedulePeriodsData])
   const handleRSVPClick = () => {
     history.push(`${MthRoute.CALENDAR}/rsvp`)
   }
@@ -70,29 +95,43 @@ const EventDetail: React.FC<EventDetailProps> = ({
     }
   }
 
-  const avatarGroup = (gradeFilter: string) => {
+  const avatarGroup = (gradeFilter: string, providerFilter: string) => {
     const grades = JSON.parse(gradeFilter)
+    const providers = JSON.parse(providerFilter)
+    let filteredStudents =
+      students &&
+      students
+        .filter((student) => student?.status?.at(-1)?.status != 2)
+        .filter(
+          (student: StudentType) =>
+            student?.grade_levels &&
+            grades.includes(
+              student?.grade_levels[0].grade_level == 'Kin' ? 'Kindergarten' : student?.grade_levels[0].grade_level,
+            ),
+        )
+    if (providers && providers.length > 0) {
+      filteredStudents = filteredStudents
+        ?.filter((student) => student.StudentSchedules && student.StudentSchedules.length > 0)
+        ?.filter((obj) => {
+          const newStudents = obj?.StudentSchedules?.filter((schedule) =>
+            scheduleIds?.some((sid) => {
+              return +schedule.schedule_id === +sid
+            }),
+          )
+          return newStudents && newStudents?.length > 0
+        })
+    }
     return (
       <AvatarGroup max={5} spacing={0}>
-        {students &&
-          students
-            .filter((student) => student?.status?.at(-1)?.status != 2)
-            .map((student, index): ReactElement | undefined => {
-              if (
-                student?.grade_levels &&
-                grades.includes(
-                  student?.grade_levels[0].grade_level == 'Kin' ? 'Kindergarten' : student?.grade_levels[0].grade_level,
-                )
-              ) {
-                return (
-                  <Avatar
-                    key={index}
-                    alt={student.person.first_name || student.person.preferred_first_name}
-                    src={getProfilePhoto(student.person)}
-                  />
-                )
-              } else return undefined
-            })}
+        {filteredStudents?.map((student, index): ReactElement | undefined => {
+          return (
+            <Avatar
+              key={index}
+              alt={student.person.first_name || student.person.preferred_first_name}
+              src={getProfilePhoto(student.person)}
+            />
+          )
+        })}
       </AvatarGroup>
     )
   }
@@ -124,7 +163,8 @@ const EventDetail: React.FC<EventDetailProps> = ({
       {selectedEvent && (
         <>
           <Box sx={{ display: 'flex', padding: '10px 0' }}>
-            {selectedEvent?.filters?.grades && avatarGroup(selectedEvent?.filters?.grades)}
+            {selectedEvent?.filters?.grades &&
+              avatarGroup(selectedEvent?.filters?.grades, selectedEvent?.filters?.provider)}
           </Box>
           <Box>
             <Button

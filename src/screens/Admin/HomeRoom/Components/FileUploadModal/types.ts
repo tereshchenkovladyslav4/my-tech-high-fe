@@ -6,6 +6,7 @@ type SubmissionModal = {
   onClose: () => void
   onDownloadTemplate?: () => void
   isDownloadTemplate?: boolean
+  isError?: boolean
 }
 
 export type S3FileType = {

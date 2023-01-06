@@ -1,4 +1,4 @@
-import { GREEN_GRADIENT, RED_GRADIENT, BUTTON_LINEAR_GRADIENT } from '../../../../utils/constants'
+import { MthColor } from '@mth/enums'
 
 export const useStyles = {
   cardBody: {
@@ -32,7 +32,7 @@ export const useStyles = {
     fontWeight: 700,
     borderRadius: 2,
     textTransform: 'none',
-    background: RED_GRADIENT,
+    background: MthColor.RED_GRADIENT,
     color: 'white',
     width: '157px',
     marginRight: 2,
@@ -47,7 +47,7 @@ export const useStyles = {
     fontWeight: 700,
     borderRadius: 2,
     textTransform: 'none',
-    background: RED_GRADIENT,
+    background: MthColor.RED_GRADIENT,
     color: 'white',
     width: '125px',
     marginRight: 2,
@@ -63,7 +63,7 @@ export const useStyles = {
     borderRadius: 2,
     textTransform: 'none',
     height: '33px',
-    background: BUTTON_LINEAR_GRADIENT,
+    background: MthColor.BUTTON_LINEAR_GRADIENT,
     color: 'white',
     width: '195px',
     marginRight: 2,
@@ -78,7 +78,7 @@ export const useStyles = {
     borderRadius: 2,
     textTransform: 'none',
     height: '33px',
-    background: GREEN_GRADIENT,
+    background: MthColor.GREEN_GRADIENT,
     color: 'white',
     width: '195px',
     '&:hover': {
@@ -92,7 +92,7 @@ export const useStyles = {
     borderRadius: 2,
     textTransform: 'none',
     height: '33px',
-    background: GREEN_GRADIENT,
+    background: MthColor.GREEN_GRADIENT,
     color: 'white',
     width: '125px',
     '&:hover': {

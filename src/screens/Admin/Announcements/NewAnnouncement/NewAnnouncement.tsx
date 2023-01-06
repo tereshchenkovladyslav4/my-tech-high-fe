@@ -6,8 +6,8 @@ import draftToHtml from 'draftjs-to-html'
 import htmlToDraft from 'html-to-draftjs'
 import { useHistory } from 'react-router-dom'
 import { PageBlock } from '@mth/components/PageBlock'
+import { MthRoute } from '@mth/enums'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
-import { ANNOUNCEMENTS } from '../../../../utils/constants'
 import { Announcement } from '../../../Dashboard/Announcements/types'
 import { PublishModal } from '../PublishModal'
 import { CreateAnnouncementMutation, UpdateAnnouncementMutation } from '../services'
@@ -66,7 +66,7 @@ const NewAnnouncement: React.FC<NewAnnouncementProps> = ({ announcement, setAnno
 
   const handleBackClick = () => {
     if (announcement) setAnnouncement(null)
-    history.push(ANNOUNCEMENTS)
+    history.push(`${MthRoute.ANNOUNCEMENTS}`)
   }
 
   const validation = (): boolean => {

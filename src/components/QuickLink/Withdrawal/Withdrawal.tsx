@@ -15,12 +15,11 @@ import {
   defaultQuestions,
   HasAdditionalQuestion,
   Question,
-  QUESTION_TYPE,
   ValidationType,
 } from '@mth/components/QuestionItem/QuestionItemProps'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { isEmail, isNumber } from '@mth/constants'
-import { MthTitle, WithdrawalStatus } from '@mth/enums'
+import { MthTitle, QUESTION_TYPE, WithdrawalStatus } from '@mth/enums'
 import { deleteQuestionMutation, saveQuestionsMutation } from '@mth/graphql/mutation/question'
 import { saveWithdrawalMutation } from '@mth/graphql/mutation/withdrawal'
 import { getQuestionsByRegionQuery } from '@mth/graphql/queries/question'
@@ -114,21 +113,6 @@ const QuestionTypes = [
   },
 ]
 
-const AdditionalQuestionTypes = [
-  {
-    value: QUESTION_TYPE.DROPDOWN,
-    label: 'Drop Down',
-  },
-  {
-    value: QUESTION_TYPE.CHECKBOX,
-    label: 'Checkbox',
-  },
-  {
-    value: QUESTION_TYPE.MULTIPLECHOICES,
-    label: 'Multiple Choices',
-  },
-]
-
 const Withdrawal: React.FC<{
   action?: (page: string) => void
   handleChange?: (flag: boolean) => void
@@ -183,7 +167,7 @@ const Withdrawal: React.FC<{
             key={index}
             questions={questions}
             questionTypes={QuestionTypes}
-            additionalQuestionTypes={AdditionalQuestionTypes}
+            additionalQuestionTypes={QuestionTypes}
             hasAction={isEditable()}
           />
         ))}
@@ -564,13 +548,13 @@ const Withdrawal: React.FC<{
                     <QuestionItem
                       questions={[values[0]]}
                       questionTypes={QuestionTypes}
-                      additionalQuestionTypes={AdditionalQuestionTypes}
+                      additionalQuestionTypes={QuestionTypes}
                       hasAction={isEditable()}
                     />
                     <QuestionItem
                       questions={[values[1]]}
                       questionTypes={QuestionTypes}
-                      additionalQuestionTypes={AdditionalQuestionTypes}
+                      additionalQuestionTypes={QuestionTypes}
                       hasAction={isEditable()}
                     />
                   </List>
@@ -610,7 +594,7 @@ const Withdrawal: React.FC<{
                     <QuestionItem
                       questions={[values[values.length - 1]]}
                       questionTypes={QuestionTypes}
-                      additionalQuestionTypes={AdditionalQuestionTypes}
+                      additionalQuestionTypes={QuestionTypes}
                       hasAction={isEditable()}
                       signature={signature}
                     />
@@ -646,7 +630,7 @@ const Withdrawal: React.FC<{
                   }}
                   questions={currentQuestions}
                   questionTypes={QuestionTypes}
-                  additionalQuestionTypes={AdditionalQuestionTypes}
+                  additionalQuestionTypes={QuestionTypes}
                 />
               )}
               {openAddQuestion === 'default' && (

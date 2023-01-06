@@ -19,21 +19,6 @@ import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { MthColor, MthRoute, MthTitle } from '@mth/enums'
 import { AuthContext } from '@mth/providers/AuthProvider/AuthContext'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
-import {
-  ANNOUNCEMENTS,
-  CALENDAR,
-  CURRICULUM,
-  DASHBOARD,
-  ENROLLMENT,
-  HOMEROOM,
-  REIMBURSMENTS,
-  REPORTS,
-  SETTINGS,
-  SITE_MANAGEMENT,
-  RECORDS,
-  USERS,
-  COMMUNICATION,
-} from '../../utils/constants'
 import { MTHLogo } from '../SVG/MTHLogo'
 import { useStyles } from './styles'
 
@@ -47,78 +32,78 @@ export const AdminSideMenu: React.FC = () => {
   const logout = () => {
     setMe(null)
     signOut()
-    history.push(DASHBOARD)
+    history.push(`${MthRoute.DASHBOARD}`)
   }
 
   const unExactPages = [
-    SITE_MANAGEMENT,
-    ENROLLMENT,
-    ANNOUNCEMENTS,
-    CALENDAR,
-    COMMUNICATION,
-    CURRICULUM,
-    HOMEROOM,
-    MthRoute.REIMBURSEMENTS,
+    `${MthRoute.SITE_MANAGEMENT}`,
+    `${MthRoute.ENROLLMENT}`,
+    `${MthRoute.ANNOUNCEMENTS}`,
+    `${MthRoute.CALENDAR}`,
+    `${MthRoute.COMMUNICATION}`,
+    `${MthRoute.CURRICULUM}`,
+    `${MthRoute.HOMEROOM}`,
+    `${MthRoute.REIMBURSEMENTS}`,
   ]
 
   const navigationList = [
     {
-      to: DASHBOARD,
+      to: `${MthRoute.DASHBOARD}`,
       label: 'Dashboard',
       icon: <BackupTableIcon style={classes.logos} />,
     },
     {
-      to: ENROLLMENT,
+      to: `${MthRoute.ENROLLMENT}`,
       label: 'Enrollment',
       icon: <DescriptionIcon style={classes.logos} />,
     },
     {
-      to: REIMBURSMENTS,
+      to: `${MthRoute.REIMBURSEMENTS}`,
       label: MthTitle.DIRECT_ORDERS_REIMBURSEMENTS,
       icon: <CreditCardRoundedIcon style={classes.logos} />,
     },
     {
-      to: HOMEROOM,
+      to: `${MthRoute.HOMEROOM}`,
       label: 'Homeroom',
       icon: <PeopleAltOutlinedIcon style={classes.logos} />,
     },
     {
-      to: COMMUNICATION,
+      to: `${MthRoute.COMMUNICATION}`,
       label: 'Communication',
       icon: <MarkunreadMailboxOutlinedIcon style={classes.logos} />,
     },
     {
-      to: CALENDAR,
+      to: `${MthRoute.CALENDAR}`,
       label: 'Calendar',
       icon: <DatRangeOutlinedIcon style={classes.logos} />,
     },
     {
-      to: CURRICULUM,
+      to: `${MthRoute.CURRICULUM}`,
       label: 'Curriculum',
       icon: <AllInboxOutlinedIcon style={classes.logos} />,
     },
     {
-      to: REPORTS,
+      to: `${MthRoute.REPORTS}`,
       label: 'Reports',
       icon: <CallMadeRoundedIcon style={classes.logos} />,
     },
     {
-      to: SITE_MANAGEMENT,
+      to: `${MthRoute.SITE_MANAGEMENT}`,
       label: 'Site Management',
       icon: <KeyIcon style={classes.logos} />,
     },
     {
-      to: RECORDS,
+      to: `${MthRoute.RECORDS}`,
       label: 'Records',
       icon: <RecentActorsOutlinedIcon style={classes.logos} />,
     },
     {
-      to: USERS,
+      to: `${MthRoute.USERS}`,
       label: 'Users',
       icon: <PermIdentityOutlinedIcon style={classes.logos} />,
     },
     {
-      to: SETTINGS,
+      to: `${MthRoute.SETTINGS}`,
       label: 'Settings',
       icon: <SettingsOutlinedIcon style={classes.logos} />,
     },

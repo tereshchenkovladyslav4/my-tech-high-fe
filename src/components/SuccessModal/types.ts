@@ -1,11 +1,9 @@
-import { FunctionComponent, ReactNode } from 'react'
+import { ReactNode } from 'react'
 
-type WarningModalProps = {
+export type WarningModalProps = {
   title: string
   subtitle: string | ReactNode
   btntitle?: string
   handleSubmit: () => void
   showIcon?: boolean
 }
-
-export type WarningModalTemplateType = FunctionComponent<WarningModalProps>

@@ -1,14 +1,14 @@
-import React, { useState, useRef, useEffect, FunctionComponent } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { Box, Button, Checkbox, Modal, outlinedInputClasses, TextField, Typography } from '@mui/material'
 import { EditorState, convertToRaw, ContentState } from 'draft-js'
 import draftToHtml from 'draftjs-to-html'
 import { useFormikContext } from 'formik'
 import htmlToDraft from 'html-to-draftjs'
 import Wysiwyg from 'react-draft-wysiwyg'
-import { SYSTEM_07 } from '../../../utils/constants'
+import { MthColor, QUESTION_TYPE } from '@mth/enums'
 import { DropDown } from '../../DropDown/DropDown'
 import { Subtitle } from '../../Typography/Subtitle/Subtitle'
-import { Question, QUESTION_TYPE } from '../QuestionItemProps'
+import { Question } from '../QuestionItemProps'
 import { QuestionOptions } from './Options'
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
 
@@ -18,7 +18,7 @@ type QuestionModalProps = {
   questionTypes: unknown[]
   additionalQuestionTypes: unknown[]
 }
-export const QuestionModal: FunctionComponent<QuestionModalProps> = ({
+export const QuestionModal: React.FC<QuestionModalProps> = ({
   onClose,
   questions,
   questionTypes,
@@ -343,7 +343,7 @@ export const QuestionModal: FunctionComponent<QuestionModalProps> = ({
                   minWidth: '400px',
                   [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
                     {
-                      borderColor: SYSTEM_07,
+                      borderColor: MthColor.SYSTEM_07,
                     },
                 }}
                 label='Question'
@@ -361,7 +361,7 @@ export const QuestionModal: FunctionComponent<QuestionModalProps> = ({
                   minWidth: '200px',
                   [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
                     {
-                      borderColor: SYSTEM_07,
+                      borderColor: MthColor.SYSTEM_07,
                     },
                   marginRight: '50px',
                 }}
@@ -474,7 +474,7 @@ export const QuestionModal: FunctionComponent<QuestionModalProps> = ({
                   minWidth: '200px',
                   [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
                     {
-                      borderColor: SYSTEM_07,
+                      borderColor: MthColor.SYSTEM_07,
                     },
                 }}
                 labelTop

@@ -1,4 +1,4 @@
-import { SYSTEM_01 } from '../../utils/constants'
+import { MthColor } from '@mth/enums'
 
 export const useStyles = {
   modal: {
@@ -19,7 +19,7 @@ export const useStyles = {
       minWidth: 32,
       width: 32,
       height: 32,
-      backgroundColor: SYSTEM_01,
+      backgroundColor: MthColor.SYSTEM_01,
       color: 'white',
       padding: 0,
     },

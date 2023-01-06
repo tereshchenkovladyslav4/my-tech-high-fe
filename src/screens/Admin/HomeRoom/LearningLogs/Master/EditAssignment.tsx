@@ -83,7 +83,7 @@ const EditAssignment: React.FC<{ masterId: number }> = ({ masterId }) => {
   const [questionType, setQuestionType] = useState<RadioGroupOption[]>(defaultQuestions)
   const [learningQuestionList, setLearningQuestionList] = useState<LearningQuestionType[]>([])
 
-  const [assignmentId, setAssignmentId] = useState<number | null>(15)
+  const [assignmentId, setAssignmentId] = useState<number | null>()
 
   const [isCustomeQuestionModal, setIsCustomeQuestionModal] = useState<boolean>(false)
   const [editQuestionList, setEditQuestionList] = useState<AssignmentQuestionType[]>([])
@@ -337,6 +337,7 @@ const EditAssignment: React.FC<{ masterId: number }> = ({ masterId }) => {
           return {
             ...item,
             assignment_id: assignmentId,
+            page: 1,
           }
         }),
       },
@@ -383,7 +384,9 @@ const EditAssignment: React.FC<{ masterId: number }> = ({ masterId }) => {
       {assignmentId && (
         <>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: '15px' }}>
-            <Subtitle>Learning Log</Subtitle>
+            <Subtitle fontWeight='700' size={'medium'}>
+              Learning Log
+            </Subtitle>
             <Box display='flex'>
               <Button sx={{ ...mthButtonClasses.roundXsGray, mr: '20px' }} type='button' onClick={handleCancel}>
                 Cancel

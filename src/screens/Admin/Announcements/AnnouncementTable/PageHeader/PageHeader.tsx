@@ -3,9 +3,8 @@ import AddIcon from '@mui/icons-material/Add'
 import SearchIcon from '@mui/icons-material/Search'
 import { Box, Button, InputAdornment, OutlinedInput } from '@mui/material'
 import { useHistory } from 'react-router-dom'
-import { MthTitle } from '@mth/enums'
-import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
-import { ANNOUNCEMENTS } from '../../../../../utils/constants'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { MthRoute, MthTitle } from '@mth/enums'
 import { useStyles } from '../styles'
 
 type PageHeaderProps = {
@@ -44,7 +43,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({
             sx={classes.addButton}
             startIcon={<AddIcon />}
             onClick={() => {
-              history.push(`${ANNOUNCEMENTS}/new`)
+              history.push(`${MthRoute.ANNOUNCEMENTS}/new`)
             }}
           >
             <Subtitle sx={{ whiteSpace: 'nowrap' }}>{MthTitle.ADD_ANNOUNCEMENT}</Subtitle>

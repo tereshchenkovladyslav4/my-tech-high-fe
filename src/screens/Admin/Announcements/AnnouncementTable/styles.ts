@@ -1,4 +1,4 @@
-import { SYSTEM_01, SYSTEM_08 } from '../../../../utils/constants'
+import { MthColor } from '@mth/enums'
 
 export const useStyles = {
   cardBody: {
@@ -50,9 +50,9 @@ export const useStyles = {
     borderRadius: 10,
     width: '160px',
     marginTop: 4,
-    background: SYSTEM_01,
+    background: MthColor.SYSTEM_01,
     '&:hover': {
-      background: SYSTEM_01,
+      background: MthColor.SYSTEM_01,
     },
   },
   inactiveButton: {
@@ -60,11 +60,11 @@ export const useStyles = {
     borderRadius: 10,
     width: '160px',
     marginTop: 4,
-    background: SYSTEM_08,
-    color: SYSTEM_01,
+    background: MthColor.SYSTEM_08,
+    color: MthColor.SYSTEM_01,
     '&:hover': {
-      background: SYSTEM_08,
-      color: SYSTEM_01,
+      background: MthColor.SYSTEM_08,
+      color: MthColor.SYSTEM_01,
     },
   },
   buttonGroup: {

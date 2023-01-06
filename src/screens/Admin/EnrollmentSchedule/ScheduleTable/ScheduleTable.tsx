@@ -38,7 +38,14 @@ export const ScheduleTable: React.FC<FiltersProps> = ({ filter, setFilter }) => 
   const [editFrom, setEditFrom] = useState<boolean>(false)
 
   const initialFilters = ['Not Submitted', 'Updates Required', 'Updates Requested', 'Resubmitted', 'Submitted']
-  const [scheduleCount, setScheduleCount] = useState<ScheduleCount>()
+  const [scheduleCount, setScheduleCount] = useState<ScheduleCount>({
+    Submitted: 0,
+    Resubmitted: 0,
+    Accepted: 0,
+    'Updates Requested': 0,
+    'Updates Required': 0,
+    'Not Submitted': 0,
+  })
   const scheduleIds = React.useRef<Array<number>>()
 
   const checker = (arr: string[], target: string[]) => target.every((v) => arr.includes(v))
@@ -189,50 +196,31 @@ export const ScheduleTable: React.FC<FiltersProps> = ({ filter, setFilter }) => 
   }, [])
 
   const [modalSelectedStatus, setModalSelectedStatus] = useState<Array<string>>([])
-  const [modalScheduleIds, setModalScheduleIds] = useState<Array<number>>([])
+  const [recipientByStatus, setRecipientByStatus] = useState<number>(0)
   const handleSchedulesByStatus = (status: string) => {
-    const indexToDelet = modalSelectedStatus.indexOf(status)
-    if (indexToDelet === -1) {
-      const tempArray = modalSelectedStatus
+    const valueByStatus = scheduleCount[status as keyof typeof scheduleCount]
+    const indexToDelete = modalSelectedStatus.indexOf(status)
+    const tempArray = modalSelectedStatus
+    if (indexToDelete === -1) {
+      setRecipientByStatus(recipientByStatus + valueByStatus)
       tempArray.push(status)
-      setModalSelectedStatus([...tempArray])
-      const tempScheduleIds: Array<number> = modalScheduleIds
-      tableData
-        .filter((item) => item.columns.status === status)
-        .map((item) => {
-          tempScheduleIds.push(item.columns.id)
-        })
       setEditFrom(true)
-      setModalScheduleIds([...tempScheduleIds])
     } else {
-      const tempArray = modalSelectedStatus
-      tempArray.splice(indexToDelet, 1)
-      setModalSelectedStatus([...tempArray])
-      let tempScheduleIds: Array<number> = modalScheduleIds
-      tableData
-        .filter((item) => item.columns.status === status)
-        .map((item) => {
-          tempScheduleIds = findElementAndDelete(tempScheduleIds, item.columns.id)
-        })
-      setModalScheduleIds([...tempScheduleIds])
+      setRecipientByStatus(recipientByStatus - valueByStatus)
+      tempArray.splice(indexToDelete, 1)
       if (tempArray.length <= 0) {
         setEditFrom(false)
       } else {
         setEditFrom(true)
       }
     }
-  }
-
-  const findElementAndDelete = (array: Array<number>, element: number) => {
-    const indexToDelet = array.indexOf(element)
-    array.splice(indexToDelet, 1)
-    return array
+    setModalSelectedStatus([...tempArray])
   }
 
   const [emailApplication] = useMutation(emailScheduleMutation)
 
   const onSendEmail = async (from: string, subject: string, body: string) => {
-    if (!scheduleIds.current || (scheduleIds?.current?.length === 0 && modalScheduleIds.length === 0)) {
+    if (!scheduleIds.current || (scheduleIds?.current?.length === 0 && recipientByStatus === 0)) {
       return
     }
     setOpen(false)
@@ -240,7 +228,8 @@ export const ScheduleTable: React.FC<FiltersProps> = ({ filter, setFilter }) => 
       await emailApplication({
         variables: {
           emailScheduleInput: {
-            schedule_ids: scheduleIds?.current?.length > 0 ? scheduleIds.current : modalScheduleIds,
+            schedule_ids: scheduleIds?.current?.length > 0 ? scheduleIds.current : [],
+            schedule_status: modalSelectedStatus ?? [],
             from: from,
             subject: subject,
             body: body,
@@ -249,12 +238,12 @@ export const ScheduleTable: React.FC<FiltersProps> = ({ filter, setFilter }) => 
       })
       refetch()
       scheduleIds.current = []
-      setModalScheduleIds([])
+      setRecipientByStatus(0)
       setModalSelectedStatus([])
     } catch (error) {}
   }
   const handleEmailSend = (from: string, subject: string, body: string) => {
-    if (scheduleIds?.current?.length === 0 && modalScheduleIds.length === 0) {
+    if (scheduleIds?.current?.length === 0 && recipientByStatus === 0) {
       return
     }
     onSendEmail(from, subject, body)
@@ -275,7 +264,7 @@ export const ScheduleTable: React.FC<FiltersProps> = ({ filter, setFilter }) => 
 
   const handleModem = () => {
     setOpen(!open)
-    setModalScheduleIds([])
+    setRecipientByStatus(0)
     setModalSelectedStatus([])
   }
 
@@ -519,13 +508,13 @@ export const ScheduleTable: React.FC<FiltersProps> = ({ filter, setFilter }) => 
         <EmailModal
           handleModem={handleModem}
           title={
-            (scheduleIds?.current?.length > 0 ? scheduleIds?.current?.length : modalScheduleIds.length) +
+            (scheduleIds?.current && scheduleIds.current.length > 0 ? scheduleIds.current.length : recipientByStatus) +
             ' Recipient' +
-            (scheduleIds?.current?.length + modalScheduleIds.length > 1 ? 's' : '')
+            (scheduleIds?.current && scheduleIds.current.length + recipientByStatus ? 's' : '')
           }
           handleSubmit={handleEmailSend}
           editFrom={editFrom}
-          isNonSelected={scheduleIds.current.length === 0}
+          isNonSelected={scheduleIds?.current && scheduleIds.current.length === 0 ? true : false}
           filters={
             scheduleIds.current?.length === 0
               ? initialFilters

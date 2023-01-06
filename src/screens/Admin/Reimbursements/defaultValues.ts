@@ -1,7 +1,7 @@
 import { DropDownItem } from '@mth/components/DropDown/types'
 import { CheckBoxListVM } from '@mth/components/MthCheckboxList/MthCheckboxList'
 import { RadioGroupOption } from '@mth/components/MthRadioGroup/types'
-import { QUESTION_TYPE } from '@mth/components/QuestionItem/QuestionItemProps'
+import { QUESTION_TYPE } from '@mth/enums'
 import { AdditionalQuestionAction, ReimbursementFormType } from '@mth/enums'
 import { ReimbursementQuestion } from '@mth/models'
 

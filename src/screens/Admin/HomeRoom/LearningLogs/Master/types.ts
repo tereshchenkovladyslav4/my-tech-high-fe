@@ -16,6 +16,7 @@ export type Assignment = {
   reminder_date: string
   title: string
   teacher_deadline: string
+  page_count?: string
 }
 
 export type QuestionOptionType = {
@@ -47,6 +48,7 @@ export type LearningQuestionType = {
   required?: boolean
   can_upload?: boolean
   grades?: string
+  page: number
 
   response?: string
 }

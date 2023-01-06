@@ -1,4 +1,4 @@
-import { BUTTON_LINEAR_GRADIENT } from '../../../../utils/constants'
+import { MthColor } from '@mth/enums'
 
 export const useStyles = {
   modalContainer: {
@@ -52,7 +52,7 @@ export const useStyles = {
     borderRadius: '50px',
     color: 'white',
     textTransform: 'none',
-    background: BUTTON_LINEAR_GRADIENT,
+    background: MthColor.BUTTON_LINEAR_GRADIENT,
     marginRight: 2,
     '&:hover': {
       background: '#4145FF',

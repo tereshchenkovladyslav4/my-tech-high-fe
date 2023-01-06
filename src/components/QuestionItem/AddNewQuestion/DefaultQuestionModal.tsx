@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useState } from 'react'
+import React, { useState } from 'react'
 import SearchIcon from '@mui/icons-material/Search'
 import {
   Box,
@@ -18,7 +18,7 @@ type DefaultQuestionModalProps = {
   onClose: () => void
   onCreate: (value: string) => void
 }
-export const DefaultQuestionModal: FunctionComponent<DefaultQuestionModalProps> = ({ onClose, onCreate }) => {
+export const DefaultQuestionModal: React.FC<DefaultQuestionModalProps> = ({ onClose, onCreate }) => {
   const [value, setValue] = useState(defaultQuestions[0].question)
   const [searchField, setSearchField] = useState('')
   const handleChange = (e) => {

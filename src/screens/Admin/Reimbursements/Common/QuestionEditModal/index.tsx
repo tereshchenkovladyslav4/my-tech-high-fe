@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Box, Button, Modal } from '@mui/material'
-import { QUESTION_TYPE } from '@mth/components/QuestionItem/QuestionItemProps'
+import { QUESTION_TYPE } from '@mth/enums'
 import { ReimbursementFormType } from '@mth/enums'
 import { ReimbursementQuestion } from '@mth/models'
 import { mthButtonClasses } from '@mth/styles/button.style'

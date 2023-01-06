@@ -26,7 +26,6 @@ import { ProfileContext } from '@mth/providers/ProfileProvider/ProfileContext'
 import { RegionType } from '@mth/providers/UserContext/types'
 import { UserContext, userRegionState } from '@mth/providers/UserContext/UserProvider'
 import { getWindowDimension } from '@mth/utils'
-import { MTHBLUE } from '../../utils/constants'
 import { CustomConfirmModal } from '../CustomConfirmModal/CustomConfirmModal'
 import { Metadata } from '../Metadata/Metadata'
 import { Paragraph } from '../Typography/Paragraph/Paragraph'
@@ -259,7 +258,7 @@ export const AdminAppBar: React.FC = () => {
           <Box sx={{ px: '22px' }}>
             <Metadata
               title={
-                <Subtitle color={isActive(region?.regionDetail.id) ? MTHBLUE : '#A1A1A1'}>
+                <Subtitle color={isActive(region?.regionDetail.id) ? MthColor.MTHBLUE : '#A1A1A1'}>
                   {region?.regionDetail.name}
                 </Subtitle>
               }

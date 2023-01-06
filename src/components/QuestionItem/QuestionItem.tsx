@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { useQuery } from '@apollo/client'
 import DehazeIcon from '@mui/icons-material/Dehaze'
 import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined'
@@ -9,6 +9,8 @@ import _ from 'lodash'
 import moment from 'moment'
 import SignaturePad from 'react-signature-pad-wrapper'
 import { SortableHandle } from 'react-sortable-hoc'
+import { GRADES } from '@mth/constants'
+import { MthColor, QUESTION_TYPE } from '@mth/enums'
 import { getSchoolDistrictsByRegionId } from '@mth/graphql/queries/school-district'
 import { UserContext } from '../../providers/UserContext/UserProvider'
 import {
@@ -16,14 +18,13 @@ import {
   getCountiesByRegionId,
   getAllRegion,
 } from '../../screens/Admin/SiteManagement/EnrollmentSetting/EnrollmentQuestions/services'
-import { SYSTEM_05, SYSTEM_07, GRADES, RED } from '../../utils/constants'
 import { toOrdinalSuffix } from '../../utils/stringHelpers'
 import { CustomConfirmModal } from '../CustomConfirmModal/CustomConfirmModal'
 import { DropDown } from '../DropDown/DropDown'
 import { Paragraph } from '../Typography/Paragraph/Paragraph'
 import { Subtitle } from '../Typography/Subtitle/Subtitle'
 import { QuestionModal } from './AddNewQuestion'
-import { Question, QUESTION_TYPE } from './QuestionItemProps'
+import { Question } from './QuestionItemProps'
 import { useStyles } from './styles'
 
 type QuestionItemProps = {
@@ -39,7 +40,7 @@ const DragHandle = SortableHandle(() => (
   </IconButton>
 ))
 
-export const QuestionItem: FunctionComponent<QuestionItemProps> = ({
+export const QuestionItem: React.FC<QuestionItemProps> = ({
   questions,
   questionTypes,
   additionalQuestionTypes,
@@ -351,7 +352,7 @@ function Item({ question: q, signature }: { question: Question; signature?: unkn
       return (
         <Box>
           <Subtitle
-            color={SYSTEM_05}
+            color={MthColor.SYSTEM_05}
             sx={{
               paddingLeft: 0,
               paddingBottom: '10px',
@@ -359,7 +360,7 @@ function Item({ question: q, signature }: { question: Question; signature?: unkn
               maxWidth: '100%',
               textAlign: 'start',
               wordWrap: 'break-word',
-              borderBottom: '1px solid ' + SYSTEM_07,
+              borderBottom: '1px solid ' + MthColor.SYSTEM_07,
             }}
           >
             {q.question}
@@ -370,7 +371,7 @@ function Item({ question: q, signature }: { question: Question; signature?: unkn
               display='flex'
               alignItems='center'
               sx={{
-                borderBottom: '1px solid ' + SYSTEM_07,
+                borderBottom: '1px solid ' + MthColor.SYSTEM_07,
                 marginTop: '10px',
                 width: '100%',
               }}
@@ -433,10 +434,10 @@ function Item({ question: q, signature }: { question: Question; signature?: unkn
               paddingBottom: '10px',
               width: '100%',
               textAlign: 'start',
-              borderBottom: '1px solid ' + SYSTEM_07,
+              borderBottom: '1px solid ' + MthColor.SYSTEM_07,
               wordWrap: 'break-word',
             }}
-            color={SYSTEM_05}
+            color={MthColor.SYSTEM_05}
           >
             {q.question}
           </Subtitle>
@@ -447,7 +448,7 @@ function Item({ question: q, signature }: { question: Question; signature?: unkn
               display='flex'
               alignItems='center'
               sx={{
-                borderBottom: '1px solid ' + SYSTEM_07,
+                borderBottom: '1px solid ' + MthColor.SYSTEM_07,
                 marginTop: '10px',
                 width: '100%',
               }}
@@ -573,7 +574,9 @@ function Item({ question: q, signature }: { question: Question; signature?: unkn
           />
           {Boolean(errors[q.id + 'signature']) && (
             <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'flex-start' }}>
-              <FormHelperText style={{ textAlign: 'left', color: RED, marginLeft: '14px' }}>Required</FormHelperText>
+              <FormHelperText style={{ textAlign: 'left', color: MthColor.RED, marginLeft: '14px' }}>
+                Required
+              </FormHelperText>
             </Grid>
           )}
           <Button

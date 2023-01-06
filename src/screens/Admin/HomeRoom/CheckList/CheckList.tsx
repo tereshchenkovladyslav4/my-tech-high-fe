@@ -56,6 +56,7 @@ const CheckList: React.FC = () => {
   )
   const [paginationLimit, setPaginationLimit] = useState<number>(Number(localStorage.getItem('pageLimit')) || 25)
   const [skip, setSkip] = useState<number>(0)
+  const [fileFormatError, setFileFormatError] = useState(false)
 
   useEffect(() => {
     setCheckListItems([
@@ -289,6 +290,7 @@ const CheckList: React.FC = () => {
   }
 
   const handleImportTemplate = async (file: File) => {
+    setFileFormatError(false)
     const fileBuffer = await file.arrayBuffer()
     const wb = XLSX.read(fileBuffer)
     const ws = wb.Sheets[wb.SheetNames[0]]
@@ -325,6 +327,9 @@ const CheckList: React.FC = () => {
         }
       })
       createChecklistSubmit(dataToSave)
+      setFileModalOpen(false)
+    } else {
+      setFileFormatError(true)
     }
   }
 
@@ -388,6 +393,7 @@ const CheckList: React.FC = () => {
             onDownloadTemplate={handleDownloadTemplate}
             handleFile={handleImportTemplate}
             isDownloadTemplate={true}
+            isError={fileFormatError}
           />
         </Box>
 

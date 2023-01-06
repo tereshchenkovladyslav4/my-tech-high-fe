@@ -12,24 +12,9 @@ import { List, ListItem, Box, ListItemButton } from '@mui/material'
 import { map, some } from 'lodash'
 import { NavLink, useHistory, useLocation } from 'react-router-dom'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
-import { MthTitle } from '@mth/enums'
+import { MthColor, MthRoute, MthTitle } from '@mth/enums'
 import { AuthContext } from '@mth/providers/AuthProvider/AuthContext'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
-import {
-  ACTIVELINKBACKGROUND,
-  COMMUNICATION,
-  CALENDAR,
-  CURRICULUM,
-  DASHBOARD,
-  ENROLLMENT,
-  HOMEROOM,
-  PARENT_LINK,
-  RECORDS,
-  REIMBURSMENTS,
-  REPORTS,
-  SETTINGS,
-  USERS,
-} from '../../utils/constants'
 import { MTHLogo } from '../SVG/MTHLogo'
 import { TTALogo } from '../SVG/TTALogo'
 import { useStyles } from './styles'
@@ -56,61 +41,61 @@ export const SideMenu: React.FC = () => {
 
   const navigationList = [
     {
-      to: COMMUNICATION,
+      to: `${MthRoute.COMMUNICATION}`,
       label: 'Announcements',
       icon: <AllInboxOutlinedIcon style={classes.logos} />,
       access: [7, checkAdminAccessOnSidebar('Communication')],
     },
     {
-      to: CALENDAR,
+      to: `${MthRoute.CALENDAR}`,
       label: 'Calender',
       icon: <DatRangeOutlinedIcon style={classes.logos} />,
       access: [7, checkAdminAccessOnSidebar('Calender')],
     },
     {
-      to: CURRICULUM,
+      to: `${MthRoute.CURRICULUM}`,
       label: 'Curriculum',
       icon: <AllInboxOutlinedIcon style={classes.logos} />,
       access: [6, 8, checkAdminAccessOnSidebar('Curriculum')],
     },
     {
-      to: ENROLLMENT,
+      to: `${MthRoute.ENROLLMENT}`,
       label: 'Enrollment',
       icon: <BackupTableIcon style={classes.logos} />,
       access: [4, checkAdminAccessOnSidebar('Enrollment')],
     },
     {
-      to: HOMEROOM,
+      to: `${MthRoute.HOMEROOM}`,
       label: 'Homeroom',
       icon: <PeopleAltOutlinedIcon style={classes.logos} />,
       access: [5, 15, checkAdminAccessOnSidebar('Homeroom Resources')],
     },
     {
-      to: PARENT_LINK,
+      to: `${MthRoute.PARENT_LINK}`,
       label: 'Quick Links',
       icon: <CallMadeRoundedIcon style={classes.logos} />,
       access: [15, checkAdminAccessOnSidebar('Parent Link')],
     },
     {
-      to: RECORDS,
+      to: `${MthRoute.RECORDS}`,
       label: 'Records',
       icon: <CallMadeRoundedIcon style={classes.logos} />,
       access: [4, 6, 8, checkAdminAccessOnSidebar('Records')],
     },
     {
-      to: REIMBURSMENTS,
+      to: `${MthRoute.REIMBURSEMENTS}`,
       label: MthTitle.DIRECT_ORDERS_REIMBURSEMENTS,
       icon: <CreditCardRoundedIcon style={classes.logos} />,
       access: [3, 15, checkAdminAccessOnSidebar(MthTitle.DIRECT_ORDERS_REIMBURSEMENTS)],
     },
     {
-      to: REPORTS,
+      to: `${MthRoute.REPORTS}`,
       label: 'Reports',
       icon: <CallMadeRoundedIcon style={classes.logos} />,
       access: [6, 8, checkAdminAccessOnSidebar('Reports')],
     },
     {
-      to: USERS,
+      to: `${MthRoute.USERS}`,
       label: 'Users',
       icon: <PeopleAltOutlinedIcon style={classes.logos} />,
       access: [2],
@@ -139,14 +124,14 @@ export const SideMenu: React.FC = () => {
   const logout = () => {
     setMe(null)
     signOut()
-    history.push(DASHBOARD)
+    history.push(`${MthRoute.DASHBOARD}`)
   }
 
   return (
     <Box sx={{ ...classes.container, display: { xs: 'none', sm: 'block' } }}>
       <nav aria-label='secondary mailbox folders' style={classes.navbar}>
         <List style={classes.navbar}>
-          <ListItem disablePadding style={classes.myTechHigh} onClick={() => history.push(DASHBOARD)}>
+          <ListItem disablePadding style={classes.myTechHigh} onClick={() => history.push(`${MthRoute.DASHBOARD}`)}>
             <ListItemButton component='a'>
               {userRegion?.regionDetail.program == 'MTH' ? <MTHLogo /> : <TTALogo />}
               <Box sx={classes.logoTitle}>
@@ -165,10 +150,10 @@ export const SideMenu: React.FC = () => {
           </ListItem>
           <NavLink
             exact
-            to={DASHBOARD}
+            to={`${MthRoute.DASHBOARD}`}
             style={classes.navLink}
             activeStyle={{
-              backgroundColor: ACTIVELINKBACKGROUND,
+              backgroundColor: MthColor.ACTIVE_LINK_BG,
               color: '#4145FF',
             }}
           >
@@ -187,7 +172,7 @@ export const SideMenu: React.FC = () => {
                 to={item.to}
                 style={classes.navLink}
                 activeStyle={{
-                  backgroundColor: ACTIVELINKBACKGROUND,
+                  backgroundColor: MthColor.ACTIVE_LINK_BG,
                   color: '#4145FF',
                 }}
               >
@@ -205,7 +190,7 @@ export const SideMenu: React.FC = () => {
                 to={item.to}
                 style={(classes.navLink, { color: isActive() ? '#4145FF' : '#CCC', textDecoration: 'none' })}
                 activeStyle={{
-                  backgroundColor: ACTIVELINKBACKGROUND,
+                  backgroundColor: MthColor.ACTIVE_LINK_BG,
                   color: '#4145FF',
                 }}
               >
@@ -220,10 +205,10 @@ export const SideMenu: React.FC = () => {
           )}
           <NavLink
             exact
-            to={SETTINGS}
+            to={`${MthRoute.SETTINGS}`}
             style={classes.navLink}
             activeStyle={{
-              backgroundColor: ACTIVELINKBACKGROUND,
+              backgroundColor: MthColor.ACTIVE_LINK_BG,
               color: '#4145FF',
             }}
           >

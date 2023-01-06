@@ -1,15 +1,15 @@
-import React, { FunctionComponent } from 'react'
+import React from 'react'
 import { Box, Avatar, Button } from '@mui/material'
 import { useHistory } from 'react-router-dom'
+import { MthRoute } from '@mth/enums'
 import { UserInfo } from '@mth/providers/UserContext/UserProvider'
 import { Person } from '../../screens/HomeroomStudentProfile/Student/types'
-import { DASHBOARD } from '../../utils/constants'
 import { Paragraph } from '../Typography/Paragraph/Paragraph'
 
 type MasqueradeFooterProps = {
   me: UserInfo
 }
-export const MasqueradeFooter: FunctionComponent<MasqueradeFooterProps> = ({ me }) => {
+export const MasqueradeFooter: React.FC<MasqueradeFooterProps> = ({ me }) => {
   const getProfilePhoto = (person: Person) => {
     if (!person?.photo) return 'image'
 
@@ -52,7 +52,7 @@ export const MasqueradeFooter: FunctionComponent<MasqueradeFooterProps> = ({ me 
           onClick={() => {
             localStorage.removeItem('masquerade')
             const prevPage = localStorage.getItem('previousPage')
-            history.push(prevPage || DASHBOARD)
+            history.push(prevPage || `${MthRoute.DASHBOARD}`)
             location.reload()
           }}
           sx={{

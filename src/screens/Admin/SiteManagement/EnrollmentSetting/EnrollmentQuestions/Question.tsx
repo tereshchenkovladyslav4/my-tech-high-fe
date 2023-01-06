@@ -19,9 +19,9 @@ import { useFormikContext } from 'formik'
 import { SortableHandle } from 'react-sortable-hoc'
 import { v4 as uuidv4 } from 'uuid'
 import { DropDown } from '@mth/components/DropDown/DropDown'
-import { QUESTION_TYPE } from '@mth/components/QuestionItem/QuestionItemProps'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { QUESTION_TYPE } from '@mth/enums'
 import { SYSTEM_05, SYSTEM_07 } from '../../../../../utils/constants'
 import { CustomModal } from '../components/CustomModal/CustomModals'
 import { ProgramYearContext } from '../provider/ProgramYearProvider'
@@ -101,7 +101,7 @@ export const EnrollmentQuestionItem: FunctionComponent<EnrollmentQuestionItemPro
                       <FormControlLabel
                         control={<Checkbox />}
                         label={
-                          <Paragraph size='medium'>
+                          <Paragraph sx={{ fontSize: '16px' }}>
                             <p dangerouslySetInnerHTML={{ __html: q.question }}></p>
                           </Paragraph>
                         }
@@ -109,7 +109,7 @@ export const EnrollmentQuestionItem: FunctionComponent<EnrollmentQuestionItemPro
                     </FormGroup>
                   </FormControl>
                   {!q.additional_question && !mainQuestion && (
-                    <Box display='inline-flex' height='40px'>
+                    <Box sx={{ marginTop: 1, height: '40px', display: 'inline-flex' }}>
                       <Tooltip title='Edit'>
                         <IconButton onClick={() => setShowEditDialog(true)}>
                           <EditIcon />
@@ -130,7 +130,7 @@ export const EnrollmentQuestionItem: FunctionComponent<EnrollmentQuestionItemPro
             } else if (q.type === QUESTION_TYPE.INFORMATION) {
               return (
                 <Box key={index} display='flex' alignItems='center' width={'100%'}>
-                  <Paragraph size='large'>
+                  <Paragraph sx={{ fontSize: '16px' }}>
                     <p dangerouslySetInnerHTML={{ __html: q.question }}></p>
                   </Paragraph>
                   {!q.additional_question && !mainQuestion && (

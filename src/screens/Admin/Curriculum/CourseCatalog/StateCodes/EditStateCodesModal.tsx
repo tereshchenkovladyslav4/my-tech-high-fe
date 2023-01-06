@@ -66,7 +66,7 @@ export const EditStateCodesModal: FunctionComponent<EditStateCodesModalProps> = 
           <Box>
             <TextField
               name='grade'
-              label='Grade'
+              label='Grade Level'
               fullWidth
               defaultValue={selectedStateCodes?.grade}
               InputLabelProps={{ shrink: true }}

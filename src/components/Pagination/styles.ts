@@ -1,4 +1,4 @@
-import { MTHBLUE, BLACK } from '../../utils/constants'
+import { MthColor } from '@mth/enums'
 
 export const useStyles = {
   root: {
@@ -6,11 +6,11 @@ export const useStyles = {
   },
   pageNumber: {
     '& .MuiButtonBase-root': {
-      color: MTHBLUE,
+      color: MthColor.MTHBLUE,
       fontWeight: 700,
     },
     '& .MuiPaginationItem-previousNext': {
-      color: BLACK,
+      color: MthColor.BLACK,
     },
   },
 }

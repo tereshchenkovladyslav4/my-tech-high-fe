@@ -16,11 +16,9 @@ import { useFormikContext } from 'formik'
 import { SortableHandle } from 'react-sortable-hoc'
 import { CustomConfirmModal } from '@mth/components/CustomConfirmModal/CustomConfirmModal'
 import { DropDown } from '@mth/components/DropDown/DropDown'
-import { QUESTION_TYPE } from '@mth/components/QuestionItem/QuestionItemProps'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
-import { SYSTEM_05, SYSTEM_07 } from '../../../../../utils/constants'
-
+import { MthColor, QUESTION_TYPE } from '@mth/enums'
 import { ProgramYearContext } from '../provider/ProgramYearProvider'
 import { AddNewQuestionModal } from './AddNewQuestion'
 import { ApplicationQuestion } from './types'
@@ -177,14 +175,14 @@ function Item({ question: q }: { question: ApplicationQuestion }) {
           maxWidth: '100%',
           borderColor: errors[index] ? 'red' : '',
           [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
-            borderColor: SYSTEM_07,
+            borderColor: MthColor.SYSTEM_07,
             borderWidth: '2px',
           },
           [`& .${inputLabelClasses.root}.${inputLabelClasses.focused}`]: {
             transform: 'translate(14px, -11px) scale(1)',
           },
           [`& .${outlinedInputClasses.notchedOutline}`]: {
-            borderColor: SYSTEM_07,
+            borderColor: MthColor.SYSTEM_07,
             borderWidth: '2px',
           },
           [`& .${inputLabelClasses.root}.${inputLabelClasses.shrink}`]: {
@@ -216,7 +214,7 @@ function Item({ question: q }: { question: ApplicationQuestion }) {
           minWidth: '100%',
           maxWidth: '100%',
           [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
-            borderColor: SYSTEM_07,
+            borderColor: MthColor.SYSTEM_07,
           },
           [`& .${inputLabelClasses.root}.${inputLabelClasses.focused}`]: {
             transform: 'translate(14px, -11px) scale(1)',
@@ -226,7 +224,7 @@ function Item({ question: q }: { question: ApplicationQuestion }) {
           },
         }}
         InputLabelProps={{
-          style: { color: SYSTEM_05 },
+          style: { color: MthColor.SYSTEM_05 },
         }}
         label={q.question}
         variant='outlined'
@@ -241,7 +239,7 @@ function Item({ question: q }: { question: ApplicationQuestion }) {
     return (
       <Box>
         <Subtitle
-          color={SYSTEM_05}
+          color={MthColor.SYSTEM_05}
           sx={{
             paddingLeft: 0,
             paddingBottom: '10px',
@@ -249,7 +247,7 @@ function Item({ question: q }: { question: ApplicationQuestion }) {
             maxWidth: '100%',
             textAlign: 'start',
             wordWrap: 'break-word',
-            borderBottom: '1px solid ' + SYSTEM_07,
+            borderBottom: '1px solid ' + MthColor.SYSTEM_07,
           }}
         >
           {q.question}
@@ -260,7 +258,7 @@ function Item({ question: q }: { question: ApplicationQuestion }) {
             display='flex'
             alignItems='center'
             sx={{
-              borderBottom: '1px solid ' + SYSTEM_07,
+              borderBottom: '1px solid ' + MthColor.SYSTEM_07,
               marginTop: '10px',
               width: '100%',
             }}
@@ -278,7 +276,7 @@ function Item({ question: q }: { question: ApplicationQuestion }) {
             />
             <Subtitle
               size='small'
-              sx={{ wordWrap: 'break-word', maxWidth: '90%', textAlign: 'start', color: SYSTEM_05 }}
+              sx={{ wordWrap: 'break-word', maxWidth: '90%', textAlign: 'start', color: MthColor.SYSTEM_05 }}
             >
               {o.label}
             </Subtitle>
@@ -300,7 +298,7 @@ function Item({ question: q }: { question: ApplicationQuestion }) {
             },
           }}
         />
-        <Paragraph size='large' sx={{ fontSize: 16, color: SYSTEM_05 }}>
+        <Paragraph size='large' sx={{ fontSize: 16, color: MthColor.SYSTEM_05 }}>
           <p dangerouslySetInnerHTML={{ __html: q.question }}></p>
         </Paragraph>
       </Box>
@@ -314,10 +312,10 @@ function Item({ question: q }: { question: ApplicationQuestion }) {
             paddingBottom: '10px',
             width: '100%',
             textAlign: 'start',
-            borderBottom: '1px solid ' + SYSTEM_07,
+            borderBottom: '1px solid ' + MthColor.SYSTEM_07,
             wordWrap: 'break-word',
           }}
-          color={SYSTEM_05}
+          color={MthColor.SYSTEM_05}
         >
           {q.question}
         </Subtitle>
@@ -328,7 +326,7 @@ function Item({ question: q }: { question: ApplicationQuestion }) {
             display='flex'
             alignItems='center'
             sx={{
-              borderBottom: '1px solid ' + SYSTEM_07,
+              borderBottom: '1px solid ' + MthColor.SYSTEM_07,
               marginTop: '10px',
               width: '100%',
             }}
@@ -346,7 +344,7 @@ function Item({ question: q }: { question: ApplicationQuestion }) {
             />
             <Subtitle
               size='small'
-              sx={{ wordWrap: 'break-word', maxWidth: '90%', textAlign: 'start', color: SYSTEM_05 }}
+              sx={{ wordWrap: 'break-word', maxWidth: '90%', textAlign: 'start', color: MthColor.SYSTEM_05 }}
             >
               {o.label}
             </Subtitle>
@@ -362,7 +360,7 @@ function Item({ question: q }: { question: ApplicationQuestion }) {
           marginTop: '10px',
           minWidth: '100%',
           [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
-            borderColor: SYSTEM_07,
+            borderColor: MthColor.SYSTEM_07,
           },
           [`& .${inputLabelClasses.root}.${inputLabelClasses.focused}`]: {
             transform: 'translate(14px, -11px) scale(1)',
@@ -372,7 +370,7 @@ function Item({ question: q }: { question: ApplicationQuestion }) {
           },
         }}
         InputLabelProps={{
-          style: { color: SYSTEM_05 },
+          style: { color: MthColor.SYSTEM_05 },
         }}
         label={q.question}
         variant='outlined'

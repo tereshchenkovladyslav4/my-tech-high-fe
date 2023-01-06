@@ -16,6 +16,7 @@ export type StateCodeField = {
   grade?: string
   subject?: string
   teacher?: string
+  SchoolYearId?: number
 }
 
 export type StateCodesTemplateType = {

@@ -52,18 +52,20 @@ const AddNewQuestionModal: React.FC<AddNewQuestionModalProps> = ({ type, onClose
       setIsError(true)
       return
     }
+    const parentSlug = `meta_${+new Date()}`
     onSave([
       {
         type: QuestionTypes.AGREEMENT,
         question: excuseAssignmentLog,
-        slug: `meta_${+new Date()}`,
+        slug: parentSlug,
         parent_slug: '',
+        options: JSON.stringify([]),
       },
       {
         type: QuestionTypes.TEXTBOX,
         question: excuseAssignmentExplain,
         slug: `meta_1${+new Date()}`,
-        parent_slug: '',
+        parent_slug: parentSlug,
       },
     ])
   }

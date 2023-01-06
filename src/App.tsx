@@ -5,6 +5,7 @@ import { FlagProvider } from '@unleash/proxy-client-react'
 import { BrowserRouter as Router } from 'react-router-dom'
 import { RecoilRoot } from 'recoil'
 import WebFont from 'webfontloader'
+import { theme } from '@mth/utils'
 import { MthLoading } from './components/MthLoading/MthLoading'
 import { UserLeaveConfirmation } from './components/UserLeaveConfirmation/UserLeaveConfirmation'
 import { ApolloProvider } from './providers/ApolloProvider/ApolloProvider'
@@ -12,7 +13,6 @@ import { AuthProvider } from './providers/AuthProvider/AuthProvider'
 import { ProfileProvider } from './providers/ProfileProvider/ProfileProvider'
 import { TabContext, TabInfo, UserContext, UserInfo } from './providers/UserContext/UserProvider'
 import { Root } from './root/Root'
-import { theme } from './utils/theme'
 
 //moment.tz.setDefault('MST')
 

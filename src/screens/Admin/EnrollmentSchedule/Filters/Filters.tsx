@@ -325,12 +325,12 @@ export const Filters: FunctionComponent<FiltersProps> = ({ filter, setFilter }) 
           </Box>
         </Grid>
         {courseType.includes(CourseType.MTH_DIRECT) && (
-          <Grid item xs={4}>
+          <Grid item xs={6} md={5} lg={5}>
             <Box
               sx={{
                 display: 'flex',
                 flexDirection: 'column',
-                maxHeight: '200px',
+                maxHeight: '160px',
                 overflowY: 'auto',
                 scrollbarWidth: 'thin',
                 '*::-webkit-scrollbar': {
@@ -346,7 +346,7 @@ export const Filters: FunctionComponent<FiltersProps> = ({ filter, setFilter }) 
               }}
             >
               <Paragraph size='large' fontWeight='700'>
-                Curriculum Providers
+                Curriculum Provider
               </Paragraph>
               <Box
                 sx={{

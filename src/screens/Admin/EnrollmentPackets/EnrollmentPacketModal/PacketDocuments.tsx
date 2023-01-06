@@ -1,10 +1,10 @@
-import React, { FunctionComponent, ReactElement, useContext, useEffect, useState } from 'react'
+import React, { ReactElement, useContext, useEffect, useState } from 'react'
 import { useMutation, useQuery } from '@apollo/client'
 import { Grid, Box } from '@mui/material'
-import DeleteIcon from '../../../../assets/icons/icon-delete-small.svg'
-import { QUESTION_TYPE } from '../../../../components/QuestionItem/QuestionItemProps'
-import { Paragraph } from '../../../../components/Typography/Paragraph/Paragraph'
-import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
+import DeleteIcon from '@mth/assets/icons/icon-delete-small.svg'
+import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { QUESTION_TYPE } from '@mth/enums'
 import { SYSTEM_06, SYSTEM_01, PRIMARY_MEDIUM_MOUSEOVER } from '../../../../utils/constants'
 import { CustomModal } from '../../SiteManagement/EnrollmentSetting/components/CustomModal/CustomModals'
 import { deletePacketDocumentFileMutation, getPacketFiles } from '../services'
@@ -15,7 +15,7 @@ type EnrollmentPacketDocumentProps = {
   packetData: unknown
 }
 
-export const EnrollmentPacketDocument: FunctionComponent<EnrollmentPacketDocumentProps> = ({ packetData }) => {
+export const EnrollmentPacketDocument: React.FC<EnrollmentPacketDocumentProps> = ({ packetData }) => {
   const questions = useContext(PacketModalQuestionsContext)
   const classes = useStyles
   const [files, setFiles] = useState<Array<File>>([])

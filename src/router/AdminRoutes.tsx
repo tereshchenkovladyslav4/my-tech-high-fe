@@ -38,44 +38,14 @@ import { EmailTemplatePage } from '@mth/screens/Admin/SiteManagement/components/
 import SiteManagement from '@mth/screens/Admin/SiteManagement/SiteManagement'
 import { Users } from '@mth/screens/Admin/Users/Users'
 import { Withdrawals } from '@mth/screens/Admin/Withdrawals'
-import {
-  ADMIN_APPLICATIONS,
-  DASHBOARD,
-  ENROLLMENT,
-  ENROLLMENT_PACKETS,
-  ENROLLMENT_SCHEDULE,
-  SETTINGS,
-  USERS,
-  EMAILTEMPLATES,
-  SITE_MANAGEMENT,
-  WITHDRAWAL,
-  ANNOUNCEMENTS,
-  CALENDAR,
-  COMMUNICATION,
-  EMAIL_RECORDS,
-  SCHOOL_ENROLLMENT,
-  CURRICULUM,
-  CURRICULUM_HOMEROOM_RESOURCES,
-  CURRICULUM_COURSE_CATALOG,
-  RECORDS,
-  CURRICULUM_COURSE_CATALOG_SETTINGS,
-  CURRICULUM_COURSE_CATALOG_PERIODS,
-  CURRICULUM_COURSE_CATALOG_SUBJECTS,
-  CURRICULUM_COURSE_CATALOG_PROVIDERS,
-  CURRICULUM_COURSE_CATALOG_STATE_CODES,
-  HOMEROOM,
-  HOMEROOM_LEARNING_LOGS,
-  HOMEROOM_CHECKLIST,
-  HOMEROOM_ASSIGNMENTS,
-} from '../utils/constants'
 
 export const AdminRoutes: React.FC = () => {
   return (
     <Switch>
-      <Route exact path={DASHBOARD}>
+      <Route exact path={MthRoute.DASHBOARD}>
         <AdminDashboard />
       </Route>
-      <Route exact path={ENROLLMENT}>
+      <Route exact path={MthRoute.ENROLLMENT}>
         <Enrollment />
       </Route>
       <Route exact path={MthRoute.REIMBURSEMENTS}>
@@ -90,16 +60,16 @@ export const AdminRoutes: React.FC = () => {
       <Route exact path={MthRoute.REIMBURSEMENTS_DIRECT_ORDER_FORM}>
         <DirectOrderForms />
       </Route>
-      <Route exact path={COMMUNICATION}>
+      <Route exact path={MthRoute.COMMUNICATION}>
         <Communication />
       </Route>
-      <Route path={EMAIL_RECORDS}>
+      <Route path={MthRoute.EMAIL_RECORDS}>
         <EmailRecords />
       </Route>
-      <Route exact path={ENROLLMENT_PACKETS}>
+      <Route exact path={MthRoute.ENROLLMENT_PACKETS}>
         <EnrollmentPackets />
       </Route>
-      <Route exact path={ENROLLMENT_SCHEDULE}>
+      <Route exact path={MthRoute.ENROLLMENT_SCHEDULE}>
         <EnrollmentSchedule />
       </Route>
       <Route
@@ -108,87 +78,87 @@ export const AdminRoutes: React.FC = () => {
           return <ScheduleBuilder studentId={Number(match?.params?.id)} />
         }}
       />
-      <Route exact path={WITHDRAWAL}>
+      <Route exact path={MthRoute.WITHDRAWAL}>
         <Withdrawals />
       </Route>
-      <Route path={ANNOUNCEMENTS}>
+      <Route path={MthRoute.ANNOUNCEMENTS}>
         <Announcements />
       </Route>
-      <Route path={CALENDAR}>
+      <Route path={MthRoute.CALENDAR}>
         <Calendar />
       </Route>
-      <Route path={ADMIN_APPLICATIONS}>
+      <Route path={MthRoute.ADMIN_APPLICATIONS}>
         <Applications />
       </Route>
-      <Route path={SCHOOL_ENROLLMENT}>
+      <Route path={MthRoute.SCHOOL_ENROLLMENT}>
         <SchoolOfEnrollment />
       </Route>
       <Route path={MthRoute.RESOURCE_REQUESTS}>
         <ResourceRequests />
       </Route>
-      <Route path={SITE_MANAGEMENT}>
+      <Route path={MthRoute.SITE_MANAGEMENT}>
         <SiteManagement />
       </Route>
-      <Route exact path={CURRICULUM}>
+      <Route exact path={MthRoute.CURRICULUM}>
         <Curriculum />
       </Route>
-      <Route path={CURRICULUM_HOMEROOM_RESOURCES}>
+      <Route path={MthRoute.CURRICULUM_HOMEROOM_RESOURCES}>
         <HomeroomResources />
       </Route>
-      <Route exact path={CURRICULUM_COURSE_CATALOG}>
+      <Route exact path={MthRoute.CURRICULUM_COURSE_CATALOG}>
         <CourseCatalog />
       </Route>
-      <Route path={CURRICULUM_COURSE_CATALOG_SETTINGS}>
+      <Route path={MthRoute.CURRICULUM_COURSE_CATALOG_SETTINGS}>
         <CourseCatalogSettings />
       </Route>
-      <Route path={CURRICULUM_COURSE_CATALOG_PERIODS}>
+      <Route path={MthRoute.CURRICULUM_COURSE_CATALOG_PERIODS}>
         <CourseCatalogPeriods />
       </Route>
-      <Route path={CURRICULUM_COURSE_CATALOG_SUBJECTS}>
+      <Route path={MthRoute.CURRICULUM_COURSE_CATALOG_SUBJECTS}>
         <CourseCatalogSubjects />
       </Route>
-      <Route path={CURRICULUM_COURSE_CATALOG_PROVIDERS}>
+      <Route path={MthRoute.CURRICULUM_COURSE_CATALOG_PROVIDERS}>
         <CourseCatalogProviders />
       </Route>
-      <Route path={CURRICULUM_COURSE_CATALOG_STATE_CODES}>
+      <Route path={MthRoute.CURRICULUM_COURSE_CATALOG_STATE_CODES}>
         <CourseCatalogStateCodes />
       </Route>
-      <Route path={USERS}>
+      <Route path={MthRoute.USERS}>
         <Users />
       </Route>
-      <Route path={SETTINGS}>
+      <Route path={MthRoute.SETTINGS}>
         <AdminSettings />
       </Route>
-      <Route path={RECORDS}>
+      <Route path={MthRoute.RECORDS}>
         <Records />
       </Route>
-      <Route path={EMAILTEMPLATES}>
+      <Route path={MthRoute.EMAILTEMPLATES}>
         <EmailTemplatePage />
       </Route>
-      <Route exact path={HOMEROOM}>
+      <Route exact path={MthRoute.HOMEROOM}>
         <HomeRoom />
       </Route>
-      <Route exact path={HOMEROOM_LEARNING_LOGS}>
+      <Route exact path={MthRoute.HOMEROOM_LEARNING_LOGS}>
         <LearningLogs />
       </Route>
       <Route
-        path={`${HOMEROOM_LEARNING_LOGS}/edit/:id`}
+        path={`${MthRoute.HOMEROOM_LEARNING_LOGS}/edit/:id`}
         exact
         children={({ match }) => {
           return <MasterHomeroom masterId={Number(match?.params?.id)} />
         }}
       />
-      <Route exact path={HOMEROOM_ASSIGNMENTS}>
+      <Route exact path={MthRoute.HOMEROOM_ASSIGNMENTS}>
         <Assignments />
       </Route>
       <Route
-        path={`${HOMEROOM_LEARNING_LOGS}/edit/:id/edit-assignment`}
+        path={`${MthRoute.HOMEROOM_LEARNING_LOGS}/edit/:id/edit-assignment`}
         exact
         children={({ match }) => {
           return <EditAssignment masterId={Number(match?.params?.id)} />
         }}
       />
-      <Route exact path={HOMEROOM_CHECKLIST}>
+      <Route exact path={MthRoute.HOMEROOM_CHECKLIST}>
         <CheckList />
       </Route>
     </Switch>

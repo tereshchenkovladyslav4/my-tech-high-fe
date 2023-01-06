@@ -9,9 +9,9 @@ import { MthTableField, MthTableRowItem } from '@mth/components/MthTable/types'
 import PageHeader from '@mth/components/PageHeader'
 import { MthRoute } from '@mth/enums'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
+import { SchoolYearDropDown } from '@mth/screens/Admin/Components/SchoolYearDropdown'
 import { FileUploadModal } from '@mth/screens/Admin/HomeRoom/Components/FileUploadModal'
-import { SchoolYearDropDown } from '@mth/screens/Admin/SiteManagement/SchoolPartner/SchoolYearDropDown/SchoolYearDropDown'
-import { mthButtonClasses } from '@mth/styles/button.style'
+import { mthButtonClasses, mthButtonSizeClasses } from '@mth/styles/button.style'
 import { useStyles } from '../../styles'
 import { createStateCodesMutation, getStateCodesQuery, UpdateStateCodesMutation } from '../services'
 import { EditStateCodesModal } from './EditStateCodesModal'
@@ -31,12 +31,12 @@ const StateCodes: FunctionComponent = () => {
   const [fileModalOpen, setFileModalOpen] = useState<boolean>(false)
   const [editModal, setEditModal] = useState<boolean>(false)
   const [selectedStateCodes, setSelectedStateCodes] = useState<MthTableRowItem<StateCodeType>>()
-
+  const [fileFormatError, setFileFormatError] = useState(false)
   const [createNewStateCodes] = useMutation(createStateCodesMutation)
 
   const { data: stateCodesData, refetch } = useQuery(getStateCodesQuery, {
     variables: {
-      // filter: filters,
+      filter: { selectedYearId },
       skip: skip,
       take: paginationLimit,
       search: searchField,
@@ -165,6 +165,7 @@ const StateCodes: FunctionComponent = () => {
   }
 
   const handleImportTemplate = async (file: File) => {
+    setFileFormatError(false)
     const fileBuffer = await file.arrayBuffer()
     const wb = XLSX.read(fileBuffer)
     const ws = wb.Sheets[wb.SheetNames[0]]
@@ -191,9 +192,13 @@ const StateCodes: FunctionComponent = () => {
           grade: item.Grade,
           subject: item.Subject,
           teacher: item.Teacher,
+          SchoolYearId: selectedYearId,
         }
       })
       createStateCodesSubmit(dataToSave)
+      setFileModalOpen(false)
+    } else {
+      setFileFormatError(true)
     }
   }
 
@@ -225,13 +230,21 @@ const StateCodes: FunctionComponent = () => {
   return (
     <Box sx={classes.base}>
       <PageHeader title='State Codes' to={MthRoute.CURRICULUM_COURSE_CATALOG}>
-        <SchoolYearDropDown setSelectedYearId={setSelectedYearId} selectedYearId={selectedYearId} />
+        <Box sx={{ marginRight: 4 }}>
+          <SchoolYearDropDown setSelectedYearId={setSelectedYearId} selectedYearId={selectedYearId} align='start' />
+        </Box>
       </PageHeader>
 
       <Box sx={{ mt: 3, mb: 2 }} display='flex' justifyContent='flex-end' gap={3} alignItems='center'>
         <Tooltip title='Import' placement='top'>
-          <Button sx={mthButtonClasses.primary} onClick={() => setFileModalOpen(true)}>
-            + Import
+          <Button
+            sx={[mthButtonClasses.primary, mthButtonSizeClasses.small, { width: '160px' }]}
+            onClick={() => {
+              setFileModalOpen(true)
+              setFileFormatError(false)
+            }}
+          >
+            Import
           </Button>
         </Tooltip>
         <FileUploadModal
@@ -240,6 +253,7 @@ const StateCodes: FunctionComponent = () => {
             setFileModalOpen(false)
           }}
           handleFile={handleImportTemplate}
+          isError={fileFormatError}
         />
         <Tooltip title='Download' placement='top'>
           <IconButton onClick={handleDownloadTableData} size='large'>

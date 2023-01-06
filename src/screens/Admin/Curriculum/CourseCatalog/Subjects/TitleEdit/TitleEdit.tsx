@@ -81,6 +81,19 @@ const TitleEdit: React.FC<TitleEditProps> = ({
   })
   const onSave = async (value: Title) => {
     setIsSubmitted(true)
+    const newStateCourseCords = value.stateCourseCords ?? []
+    if (!value.stateCourseCords) {
+      const grades: number[] = [value.min_grade, value.min_alt_grade, value.max_grade, value.max_alt_grade].filter(
+        (item) => !!item,
+      ) as number[]
+      const minGrade = Math.min(...grades, Number.POSITIVE_INFINITY)
+      const maxGrade = Math.max(...grades, Number.NEGATIVE_INFINITY)
+      if (minGrade !== maxGrade) {
+        for (let i = minGrade === -1 ? 0 : minGrade; i <= (maxGrade === -1 ? 0 : maxGrade); i++) {
+          newStateCourseCords.push({ gradeIndex: i, stateCode: '', teacher: '' })
+        }
+      }
+    }
     await submitSave({
       variables: {
         createTitleInput: {
@@ -110,7 +123,7 @@ const TitleEdit: React.FC<TitleEditProps> = ({
       },
     })
       .then(async (data) => {
-        const stateCodes = value.stateCourseCords?.map((codes) => {
+        const stateCodes = newStateCourseCords?.map((codes) => {
           return {
             state_codes_id: item?.StateCodes?.find((code) => Number(code.grade) === codes.gradeIndex)?.state_codes_id,
             TitleId: data?.data.createOrUpdateTitle?.title_id,
@@ -119,6 +132,7 @@ const TitleEdit: React.FC<TitleEditProps> = ({
             teacher: codes.teacher,
             subject: subjectsItems.find((obj) => Number(obj.value) === Number(value.subject_id))?.label,
             grade: codes.gradeIndex === 0 ? 'K' : codes.gradeIndex.toString(),
+            SchoolYearId: schoolYearId,
           }
         })
         if (stateCodes && stateCodes?.length > 0) {

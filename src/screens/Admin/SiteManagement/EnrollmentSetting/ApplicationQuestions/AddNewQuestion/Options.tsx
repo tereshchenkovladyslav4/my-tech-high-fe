@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import CloseSharp from '@mui/icons-material/CloseSharp'
 import { Box, Radio, TextField, Checkbox, IconButton, outlinedInputClasses } from '@mui/material'
 import { DropDown } from '@mth/components/DropDown/DropDown'
-import { QUESTION_TYPE } from '@mth/components/QuestionItem/QuestionItemProps'
+import { QUESTION_TYPE } from '@mth/enums'
 import { CustomModal } from '../../../../../../screens/Admin/SiteManagement/EnrollmentSetting/components/CustomModal/CustomModals'
 import { SYSTEM_07 } from '../../../../../../utils/constants'
 

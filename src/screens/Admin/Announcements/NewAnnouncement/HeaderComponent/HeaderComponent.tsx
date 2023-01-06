@@ -3,9 +3,8 @@ import { Box, Button } from '@mui/material'
 import { useHistory } from 'react-router-dom'
 import { CustomModal } from '@mth/components/CustomModal/CustomModals'
 import PageHeader from '@mth/components/PageHeader'
-import { MthTitle } from '@mth/enums'
+import { MthRoute, MthTitle } from '@mth/enums'
 import { mthButtonClasses } from '@mth/styles/button.style'
-import { ANNOUNCEMENTS } from '../../../../../utils/constants'
 import { Announcement } from '../../../../Dashboard/Announcements/types'
 
 type HeaderComponentProps = {
@@ -29,7 +28,7 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
 
   const handleBackClick = () => {
     if (announcement) setAnnouncement(null)
-    history.push(ANNOUNCEMENTS)
+    history.push(`${MthRoute.ANNOUNCEMENTS}`)
   }
 
   return (

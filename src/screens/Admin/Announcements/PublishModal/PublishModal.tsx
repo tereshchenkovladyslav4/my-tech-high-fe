@@ -1,12 +1,12 @@
-import React, { FunctionComponent, useState } from 'react'
+import React, { useState } from 'react'
 import InfoIcon from '@mui/icons-material/InfoOutlined'
 import { Box, Button, Modal, TextField, Typography } from '@mui/material'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import moment, { Moment } from 'moment'
+import { MthColor } from '@mth/enums'
 import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
-import { RED } from '../../../../utils/constants'
 import { useStyles } from './styles'
 
 type PublishModalProps = {
@@ -17,7 +17,7 @@ type PublishModalProps = {
   setCronJobTime: (value: Date) => void
   scheduledTime?: Date
 }
-export const PublishModal: FunctionComponent<PublishModalProps> = ({
+export const PublishModal: React.FC<PublishModalProps> = ({
   onClose,
   onPublish,
   onSchedule,
@@ -117,7 +117,7 @@ export const PublishModal: FunctionComponent<PublishModalProps> = ({
           </LocalizationProvider>
           {invalidTime && (
             <Box sx={{ textAlign: 'center' }}>
-              <Subtitle size='small' color={RED} fontWeight='700'>
+              <Subtitle size='small' color={MthColor.RED} fontWeight='700'>
                 Please select future time.
               </Subtitle>
             </Box>

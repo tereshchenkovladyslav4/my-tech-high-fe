@@ -1,5 +1,5 @@
 import { makeStyles, Theme } from '@material-ui/core/styles'
-import { BLACK, BUTTON_LINEAR_GRADIENT_DARK } from '../../utils/constants'
+import { MthColor } from '@mth/enums'
 
 export const useStyles = makeStyles((theme: Theme) => ({
   modalCard: {
@@ -35,7 +35,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
   errorOutline: {
     background: '#FAFAFA',
     borderRadius: '1px',
-    color: BLACK,
+    color: MthColor.BLACK,
     marginBottom: '20px',
     marginTop: '30px',
     height: '42px !important',
@@ -66,7 +66,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
     width: '200px',
     margin: '32px !important',
     marginBottom: '8px !important',
-    background: BUTTON_LINEAR_GRADIENT_DARK,
+    background: MthColor.BUTTON_LINEAR_GRADIENT_DARK,
     height: '36px',
     fontSize: '10px !important',
     '&:hover': {

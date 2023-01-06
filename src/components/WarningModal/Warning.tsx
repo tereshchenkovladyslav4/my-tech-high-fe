@@ -1,7 +1,7 @@
 import React from 'react'
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline'
 import { Button, Modal, Typography, Box } from '@mui/material'
-import { SYSTEM_01, RED } from '../../utils/constants'
+import { MthColor } from '@mth/enums'
 import { Paragraph } from '../Typography/Paragraph/Paragraph'
 import { useStyles } from './styles'
 import { WarningModalProps } from './types'
@@ -39,7 +39,7 @@ export const WarningModal: React.FC<WarningModalProps> = ({
           <Paragraph
             size='large'
             fontWeight='600'
-            color={!error ? SYSTEM_01 : RED}
+            color={!error ? MthColor.SYSTEM_01 : MthColor.RED}
             sx={{ textAlign: textCenter ? 'center' : 'left', mt: showIcon ? '0' : '56px' }}
           >
             {subtitle}

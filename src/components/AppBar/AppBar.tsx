@@ -170,7 +170,7 @@ export const AppBar: FunctionComponent = () => {
   const AddStudentButton = () => (
     <Button
       disableElevation
-      href={MthRoute.APPLICATIONS.toString()}
+      href={`${MthRoute.APPLICATIONS}`}
       variant='contained'
       sx={{
         background: '#FAFAFA',
@@ -277,7 +277,7 @@ export const AppBar: FunctionComponent = () => {
         student?.status?.at(-1)?.status === StudentStatus.WITHDRAWN ||
         student?.packets?.at(-1)?.status === PacketStatus.STARTED ||
         student?.packets?.at(-1)?.status === PacketStatus.NOT_STARTED
-          ? MthRoute.HOMEROOM
+          ? `${MthRoute.HOMEROOM}`
           : `${MthRoute.HOMEROOM}/${student.student_id}`
       return (
         <Box key={idx} sx={{ textDecoration: 'none', marginTop: 1 }}>
@@ -370,7 +370,7 @@ export const AppBar: FunctionComponent = () => {
           student?.status?.at(-1)?.status === 2 ||
           student?.packets?.at(-1)?.status === PacketStatus.STARTED ||
           student?.packets?.at(-1)?.status === PacketStatus.NOT_STARTED
-            ? MthRoute.HOMEROOM
+            ? `${MthRoute.HOMEROOM}`
             : `${MthRoute.HOMEROOM}/${student.student_id}`
         return (
           <div key={idx}>
@@ -432,7 +432,7 @@ export const AppBar: FunctionComponent = () => {
           </div>
         )
       })}
-      <NavLink to={MthRoute.APPLICATIONS} style={{ textDecoration: 'none' }}>
+      <NavLink to={`${MthRoute.APPLICATIONS}`} style={{ textDecoration: 'none' }}>
         <MenuItem onClick={() => handleDrawerCloseAndTheIcon('header', 'addStudent')}>
           <ListItemIcon sx={{ marginRight: '24px' }}>
             <AddCircleIcon sx={{ fontSize: '2.5rem' }} />

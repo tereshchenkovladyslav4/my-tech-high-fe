@@ -2,7 +2,7 @@ import React from 'react'
 import InfoIcon from '@mui/icons-material/InfoOutlined'
 import { Box, Button, Modal, Typography } from '@mui/material'
 import ReactDOM from 'react-dom'
-import { SYSTEM_01 } from '../../utils/constants'
+import { MthColor } from '@mth/enums'
 import { Paragraph } from '../Typography/Paragraph/Paragraph'
 import { useStyles } from './styles'
 
@@ -48,7 +48,7 @@ export const UserLeaveConfirmation = (
         </Box>
         <Box sx={classes.content as Record<string, unknown>}>
           <InfoIcon sx={{ fontSize: 50, margin: '20px 0px' }} />
-          <Paragraph size='large' color={SYSTEM_01} sx={{ textAlign: 'center' }}>
+          <Paragraph size='large' color={MthColor.SYSTEM_01} sx={{ textAlign: 'center' }}>
             {content}
           </Paragraph>
           <Box display='flex' flexDirection='row'>

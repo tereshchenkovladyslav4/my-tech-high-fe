@@ -1,38 +1,31 @@
-import React, { FunctionComponent } from 'react'
+import React from 'react'
 import { Route, Switch } from 'react-router-dom'
+import { MthRoute } from '@mth/enums'
 import { NewParent } from '../screens/Applications/NewParent/NewParent'
 import { CompleteAccount } from '../screens/CompleteAccount/CompleteAccount'
 import { ForgotPassword } from '../screens/ForgotPassword/ForgotPassword'
 import { ResetPassword } from '../screens/ForgotPassword/ResetPassword'
 import { Login } from '../screens/Login/Login'
 import { VerifyEmail } from '../screens/VerifyEmail/VerifyEmail'
-import {
-  APPLICATIONS,
-  CONFIRM_EMAIL,
-  DASHBOARD,
-  FORGOT_PASSWORD,
-  RESET_PASSWORD,
-  EMAIL_VERIFICATION,
-} from '../utils/constants'
 
-export const UnauthenticatedRoutes: FunctionComponent = () => (
+export const UnauthenticatedRoutes: React.FC = () => (
   <Switch>
-    <Route exact path={DASHBOARD}>
+    <Route exact path={MthRoute.DASHBOARD}>
       <Login />
     </Route>
-    <Route exact path={APPLICATIONS}>
+    <Route exact path={MthRoute.APPLICATIONS}>
       <NewParent />
     </Route>
-    <Route exact path={CONFIRM_EMAIL}>
+    <Route exact path={MthRoute.CONFIRM_EMAIL}>
       <CompleteAccount />
     </Route>
-    <Route exact path={EMAIL_VERIFICATION}>
+    <Route exact path={MthRoute.EMAIL_VERIFICATION}>
       <VerifyEmail />
     </Route>
-    <Route exact path={FORGOT_PASSWORD}>
+    <Route exact path={MthRoute.FORGOT_PASSWORD}>
       <ForgotPassword />
     </Route>
-    <Route exact path={RESET_PASSWORD}>
+    <Route exact path={MthRoute.RESET_PASSWORD}>
       <ResetPassword />
     </Route>
     <Route>

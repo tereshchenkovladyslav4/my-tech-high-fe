@@ -1,10 +1,9 @@
-import React, { FunctionComponent, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import CloseSharp from '@mui/icons-material/CloseSharp'
 import { Box, Radio, TextField, Checkbox, IconButton, outlinedInputClasses } from '@mui/material'
+import { MthColor, QUESTION_TYPE } from '@mth/enums'
 import { CustomModal } from '../../../screens/Admin/SiteManagement/EnrollmentSetting/components/CustomModal/CustomModals'
-import { SYSTEM_07 } from '../../../utils/constants'
 import { DropDown } from '../../DropDown/DropDown'
-import { QUESTION_TYPE } from '../QuestionItemProps'
 
 type QuestionOptions = {
   options: Array<unknown>
@@ -26,7 +25,7 @@ const actionTypes = [
   },
 ]
 
-export const QuestionOptions: FunctionComponent<QuestionOptions> = ({
+export const QuestionOptions: React.FC<QuestionOptions> = ({
   options,
   setOptions,
   type,
@@ -77,7 +76,7 @@ export const QuestionOptions: FunctionComponent<QuestionOptions> = ({
             sx={{
               alignItems: 'center',
               justifyContent: 'space-around',
-              borderBottom: `2px solid ${SYSTEM_07}`,
+              borderBottom: `2px solid ${MthColor.SYSTEM_07}`,
               opacity: opt.label.trim() || i === 0 ? 1 : 0.3,
             }}
             key={opt.value}

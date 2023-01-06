@@ -1,15 +1,4 @@
-export enum QUESTION_TYPE {
-  DROPDOWN = 1,
-  TEXTFIELD,
-  CHECKBOX,
-  AGREEMENT,
-  MULTIPLECHOICES,
-  CALENDAR,
-  INFORMATION,
-  UPLOAD,
-  SIGNATURE,
-  TEXTBOX,
-}
+import { QUESTION_TYPE } from '@mth/enums'
 
 export const QuestionTypes = [
   {

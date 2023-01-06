@@ -2,13 +2,13 @@ import React from 'react'
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline'
 import { Button, Modal } from '@mui/material'
 import { Box } from '@mui/system'
-import { SYSTEM_01 } from '../../utils/constants'
+import { MthColor } from '@mth/enums'
 import { Paragraph } from '../Typography/Paragraph/Paragraph'
 import { Subtitle } from '../Typography/Subtitle/Subtitle'
 import { useStyles, useClasses } from './styles'
-import { WarningModalTemplateType } from './types'
+import { WarningModalProps } from './types'
 
-export const SuccessModal: WarningModalTemplateType = ({
+export const SuccessModal: React.FC<WarningModalProps> = ({
   title,
   subtitle,
   btntitle = 'Submit',
@@ -26,7 +26,7 @@ export const SuccessModal: WarningModalTemplateType = ({
         <Box sx={classes.content as Record<string, unknown>}>
           {showIcon && <CheckCircleOutlineIcon style={classes.errorOutline} />}
           {subtitle && typeof subtitle == 'string' ? (
-            <Paragraph size='large' color={SYSTEM_01} textAlign='center'>
+            <Paragraph size='large' color={MthColor.SYSTEM_01} textAlign='center'>
               {subtitle}
             </Paragraph>
           ) : (

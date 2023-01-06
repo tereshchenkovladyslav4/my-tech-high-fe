@@ -1,5 +1,6 @@
 import { outlinedInputClasses, inputLabelClasses } from '@mui/material'
-import { SYSTEM_07 } from '../../utils/constants'
+import { MthColor } from '@mth/enums'
+
 export const useStyles = {
   modalCard: {
     position: 'absolute' as const,
@@ -70,11 +71,11 @@ export const useStyles = {
   },
   dropdown: {
     [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
-      borderColor: SYSTEM_07,
+      borderColor: MthColor.SYSTEM_07,
       borderWidth: '2px',
     },
     [`& .${outlinedInputClasses.notchedOutline}`]: {
-      borderColor: SYSTEM_07,
+      borderColor: MthColor.SYSTEM_07,
       borderWidth: '2px',
     },
     [`& .${inputLabelClasses.root}.${inputLabelClasses.focused}`]: {

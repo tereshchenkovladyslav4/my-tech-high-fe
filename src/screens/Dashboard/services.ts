@@ -42,3 +42,13 @@ export const deleteUserAnnouncementByUserId = gql`
     }
   }
 `
+
+export const getSchedulePeriodByProviderIds = gql`
+  query SchedulePeriodByProviderIds($providerIds: String!) {
+    schedulePeriodsByProvider(providerIds: $providerIds) {
+      PeriodId
+      ProviderId
+      ScheduleId
+    }
+  }
+`

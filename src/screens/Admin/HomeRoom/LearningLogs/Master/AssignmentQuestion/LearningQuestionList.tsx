@@ -45,14 +45,17 @@ const LearningQuestionItem = ({ question }: { question: LearningQuestionType[] }
           }
         : v,
     )
+
     newValues.forEach((item: LearningQuestionType, index: number) => {
       if (item.parent_slug) {
         const parent = newValues.find((x) => item.parent_slug == x.slug)
         if (
-          parent?.response &&
-          parent?.options.find((x) => x.value == parent.response || parent.response.toString().indexOf(x.value) >= 0)
-            .action == 2 &&
-          parent?.active
+          (parent?.type !== QuestionTypes.AGREEMENT &&
+            parent?.response &&
+            parent?.options?.find((x) => x.value == parent.response || parent.response.toString().indexOf(x.value) >= 0)
+              .action == 2 &&
+            parent?.active) ||
+          (parent?.type === QuestionTypes.AGREEMENT && value)
         ) {
           newValues[index] = {
             ...item,
@@ -111,27 +114,42 @@ const LearningQuestionItem = ({ question }: { question: LearningQuestionType[] }
               dropDownItems={question[0].options}
               setParentValue={(v) => handleChange(v as string)}
               alternate={true}
-              // defaultValue={q.response}
               size='small'
             />
           </Box>
         )
       case QuestionTypes.AGREEMENT:
         return (
-          <Box display='flex' alignItems='center'>
-            <Checkbox
-              checked={question[0].response === true}
-              sx={{
-                paddingLeft: 0,
-                color: 'MthColor.MTHBLUE',
-                '&.Mui-checked': {
+          <Box display='flex' justifyContent={'space-between'}>
+            <Box display='flex' alignItems='center'>
+              <Checkbox
+                checked={!!question[0].response}
+                sx={{
+                  paddingLeft: 0,
                   color: 'MthColor.MTHBLUE',
-                },
-              }}
-            />
-            <Paragraph size='large' sx={{ fontSize: 16 }}>
-              <p dangerouslySetInnerHTML={{ __html: question[0].question }}></p>
-            </Paragraph>
+                  '&.Mui-checked': {
+                    color: 'MthColor.MTHBLUE',
+                  },
+                }}
+                onClick={() => handleChange(!question[0].response)}
+              />
+              <Paragraph size='large' sx={{ fontSize: 16 }}>
+                <p dangerouslySetInnerHTML={{ __html: question[0].question }}></p>
+              </Paragraph>
+            </Box>
+            <Box display='inline-flex' paddingTop='10px' height='40px' alignItems='center' justifyContent='center'>
+              <Tooltip title='Edit'>
+                <IconButton>
+                  <EditIcon />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title='Delete'>
+                <IconButton>
+                  <DeleteForeverOutlinedIcon />
+                </IconButton>
+              </Tooltip>
+              <DragHandle />
+            </Box>
           </Box>
         )
       case QuestionTypes.INFORMATION:
@@ -245,6 +263,11 @@ const LearningQuestionItem = ({ question }: { question: LearningQuestionType[] }
         </Box>
       )}
       {QuestionItem()}
+      {question[0].can_upload && (
+        <Button sx={{ ...mthButtonClasses.roundDarkGray, padding: '8px 16px', height: 'unset', marginTop: 3 }}>
+          Upload File(MAXIMUM OF 20MB)
+        </Button>
+      )}
     </>
   )
 }
@@ -255,7 +278,7 @@ const LearningQuestionList = ({ learningQuestionList }) => {
   const SortableListContainer = SortableContainer(({ items }: { items: LearningQuestionType[] }) => (
     <List>
       {items.map((item, index) => (
-        <SortableItem question={item} key={index} />
+        <SortableItem question={item} key={index} index={index} />
       ))}
     </List>
   ))
@@ -278,7 +301,9 @@ const LearningQuestionList = ({ learningQuestionList }) => {
                       ?.response.toString()
                       .indexOf(x.value) >= 0),
               ) != null &&
-            values.find((x) => x.slug == v.parent_slug)?.active), // Parent
+            values.find((x) => x.slug == v.parent_slug)?.active) ||
+          (values.find((x) => x.slug == v.parent_slug)?.type === QuestionTypes.AGREEMENT &&
+            !!values.find((x) => x.slug == v.parent_slug)?.response), // Parent
       )
       .map((v) => {
         const arr = [v]

@@ -4,24 +4,10 @@ import { List, ListItem, Box, ListItemButton, IconButton } from '@mui/material'
 import { map, some } from 'lodash'
 import { NavLink, useHistory, useLocation } from 'react-router-dom'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
+import { MthColor, MthRoute } from '@mth/enums'
 import { MthTitle } from '@mth/enums'
 import { AuthContext } from '@mth/providers/AuthProvider/AuthContext'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
-import {
-  ACTIVELINKBACKGROUND,
-  COMMUNICATION,
-  CALENDAR,
-  CURRICULUM,
-  DASHBOARD,
-  ENROLLMENT,
-  HOMEROOM,
-  PARENT_LINK,
-  RECORDS,
-  REIMBURSMENTS,
-  REPORTS,
-  SETTINGS,
-  USERS,
-} from '../../utils/constants'
 import { useStyles } from './styles'
 const noSidebarUsers = [15, 14, 16, 11, 9, 10, 13, 12]
 
@@ -48,52 +34,52 @@ export const MobileSideMenu: React.FC<Props> = ({ handleDrawerClose }) => {
 
   const navigationList = [
     {
-      to: COMMUNICATION,
+      to: `${MthRoute.COMMUNICATION}`,
       label: 'Communication',
       access: [7, checkAdminAccessOnSidebar('Communication')],
     },
     {
-      to: CALENDAR,
+      to: `${MthRoute.CALENDAR}`,
       label: 'Calender',
       access: [7, checkAdminAccessOnSidebar('Calender')],
     },
     {
-      to: CURRICULUM,
+      to: `${MthRoute.CURRICULUM}`,
       label: 'Curriculum',
       access: [6, 8, checkAdminAccessOnSidebar('Curriculum')],
     },
     {
-      to: ENROLLMENT,
+      to: `${MthRoute.ENROLLMENT}`,
       label: 'Enrollment',
       access: [4, checkAdminAccessOnSidebar('Enrollment')],
     },
     {
-      to: HOMEROOM,
+      to: `${MthRoute.HOMEROOM}`,
       label: 'Homeroom',
       access: [5, 15, checkAdminAccessOnSidebar('Homeroom Resources')],
     },
     {
-      to: RECORDS,
+      to: `${MthRoute.RECORDS}`,
       label: 'Records',
       access: [4, 6, 8, checkAdminAccessOnSidebar('Records')],
     },
     {
-      to: REIMBURSMENTS,
+      to: `${MthRoute.REIMBURSEMENTS}`,
       label: MthTitle.DIRECT_ORDERS_REIMBURSEMENTS,
       access: [3, 15, checkAdminAccessOnSidebar(MthTitle.DIRECT_ORDERS_REIMBURSEMENTS)],
     },
     {
-      to: PARENT_LINK,
+      to: `${MthRoute.PARENT_LINK}`,
       label: 'Quick Links',
       access: [15, checkAdminAccessOnSidebar('Parent Link')],
     },
     {
-      to: REPORTS,
+      to: `${MthRoute.REPORTS}`,
       label: 'Reports',
       access: [6, 8, checkAdminAccessOnSidebar('Reports')],
     },
     {
-      to: USERS,
+      to: `${MthRoute.USERS}`,
       label: 'Users',
       access: [2],
     },
@@ -121,7 +107,7 @@ export const MobileSideMenu: React.FC<Props> = ({ handleDrawerClose }) => {
   const logout = () => {
     setMe(null)
     signOut()
-    history.push(DASHBOARD)
+    history.push(`${MthRoute.DASHBOARD}`)
   }
 
   return (
@@ -130,10 +116,10 @@ export const MobileSideMenu: React.FC<Props> = ({ handleDrawerClose }) => {
         <List style={classes.navbar}>
           <NavLink
             exact
-            to={DASHBOARD}
+            to={`${MthRoute.DASHBOARD}`}
             style={classes.navLink}
             activeStyle={{
-              backgroundColor: ACTIVELINKBACKGROUND,
+              backgroundColor: MthColor.ACTIVE_LINK_BG,
               color: '#4145FF',
             }}
           >
@@ -162,7 +148,7 @@ export const MobileSideMenu: React.FC<Props> = ({ handleDrawerClose }) => {
                 to={item.to}
                 style={classes.navLink}
                 activeStyle={{
-                  backgroundColor: ACTIVELINKBACKGROUND,
+                  backgroundColor: MthColor.ACTIVE_LINK_BG,
                   color: '#4145FF',
                 }}
               >
@@ -190,7 +176,7 @@ export const MobileSideMenu: React.FC<Props> = ({ handleDrawerClose }) => {
                 to={item.to}
                 style={(classes.navLink, { color: isActive() ? '#4145FF' : '#CCC', textDecoration: 'none' })}
                 activeStyle={{
-                  backgroundColor: ACTIVELINKBACKGROUND,
+                  backgroundColor: MthColor.ACTIVE_LINK_BG,
                   color: '#4145FF',
                 }}
               >
@@ -216,10 +202,10 @@ export const MobileSideMenu: React.FC<Props> = ({ handleDrawerClose }) => {
           )}
           <NavLink
             exact
-            to={SETTINGS}
+            to={`${MthRoute.SETTINGS}`}
             style={classes.navLink}
             activeStyle={{
-              backgroundColor: ACTIVELINKBACKGROUND,
+              backgroundColor: MthColor.ACTIVE_LINK_BG,
               color: '#4145FF',
             }}
           >
