@@ -748,11 +748,12 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
                   {('0' + item.rawData.period).slice(-2)}
                 </Typography>
                 <Box sx={{ marginLeft: '20px', width: '100%' }}>
-                  {editable(item.rawData) &&
-                  (!isSecondSemester ||
-                    (isSecondSemester && !hasUnlockedPeriods) ||
-                    item.rawData.FirstSemesterSchedule?.Period?.semester === SEMESTER_TYPE.PERIOD) &&
-                  item.rawData.filteredPeriods?.length > 1 ? (
+                  {(editable(item.rawData) &&
+                    (!isSecondSemester ||
+                      (isSecondSemester && !hasUnlockedPeriods) ||
+                      item.rawData.FirstSemesterSchedule?.Period?.semester === SEMESTER_TYPE.PERIOD) &&
+                    item.rawData.filteredPeriods?.length > 1) ||
+                  (isAdmin && !lockedIcon) ? (
                     <NestedDropdown
                       menuItemsData={createPeriodMenuItems(item.rawData)}
                       MenuProps={{ elevation: 3 }}
@@ -781,11 +782,12 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
           return (
             <Box sx={{ paddingRight: '50px' }}>
               {!!item.rawData.Period &&
-                (editable(item.rawData) &&
-                (item.rawData.Period.Subjects?.length > 1 ||
-                  (item.rawData.Period.Subjects?.length === 1 &&
-                    (item.rawData.Period.Subjects?.[0]?.Titles?.length > 1 ||
-                      item.rawData.Period.Subjects?.[0]?.AltTitles?.length))) ? (
+                ((editable(item.rawData) &&
+                  (item.rawData.Period.Subjects?.length > 1 ||
+                    (item.rawData.Period.Subjects?.length === 1 &&
+                      (item.rawData.Period.Subjects?.[0]?.Titles?.length > 1 ||
+                        item.rawData.Period.Subjects?.[0]?.AltTitles?.length)))) ||
+                (isAdmin && !lockedIcon) ? (
                   <NestedDropdown
                     menuItemsData={createSubjectMenuItems(item.rawData)}
                     MenuProps={{ elevation: 3 }}

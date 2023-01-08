@@ -23,7 +23,7 @@ export const DocumentUpload: React.FC<DocumentUploadProps> = ({
   const classes = useStyles
 
   const [open, setOpen] = useState(false)
-  const [uploadedFiles, setUploadedFiles] = useState<File[]>([])
+  const [newFiles, setNewFiles] = useState<File[]>([])
 
   const handleFile = (tempFiles: File[]) => {
     const myRenamedFile = tempFiles.map((f) => {
@@ -32,16 +32,16 @@ export const DocumentUpload: React.FC<DocumentUploadProps> = ({
         type: f.type,
       })
     })
-    setUploadedFiles((prev) => prev.concat(myRenamedFile))
+    setNewFiles((prev) => prev.concat(myRenamedFile))
   }
 
-  const deleteFile = (currFile: File) => {
-    setUploadedFiles(filter(uploadedFiles, (validFile) => validFile !== currFile))
+  const deleteNewFile = (currFile: File) => {
+    setNewFiles(filter(newFiles, (validFile) => validFile !== currFile))
   }
 
   useEffect(() => {
-    handleUpload(item[0].question, uploadedFiles)
-  }, [item[0], uploadedFiles])
+    handleUpload(item[0].question, newFiles)
+  }, [item[0], newFiles])
 
   if (item[0].type !== QUESTION_TYPE.UPLOAD) {
     return (
@@ -70,8 +70,8 @@ export const DocumentUpload: React.FC<DocumentUploadProps> = ({
           ))}
         </Box>
         <Box>
-          {uploadedFiles.map((curr, index) => (
-            <DocumentListItem file={curr} key={index} closeAction={() => deleteFile(curr)} />
+          {newFiles.map((curr, index) => (
+            <DocumentListItem file={curr} key={index} closeAction={() => deleteNewFile(curr)} />
           ))}
         </Box>
         <Box sx={classes.buttonContainer}>

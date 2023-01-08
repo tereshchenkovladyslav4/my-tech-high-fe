@@ -5,9 +5,8 @@ import { Controller, useFormContext } from 'react-hook-form'
 import { DropDown } from '@mth/components/DropDown/DropDown'
 import { DropDownItem } from '@mth/components/DropDown/types'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
-import { HISPANIC_OPTIONS } from '@mth/constants'
+import { COUNTRIES, HISPANIC_OPTIONS } from '@mth/constants'
 import { MthColor } from '@mth/enums'
-import { countries } from '../../../../../utils/countries'
 
 export const SecondaryContact: React.FC = () => {
   const { control } = useFormContext()
@@ -120,7 +119,7 @@ export const SecondaryContact: React.FC = () => {
               control={control}
               render={({ field }) => (
                 <DropDown
-                  dropDownItems={countries}
+                  dropDownItems={COUNTRIES as DropDownItem[]}
                   placeholder='Entry'
                   defaultValue={field.value}
                   size='small'

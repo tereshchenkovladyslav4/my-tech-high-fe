@@ -8,7 +8,7 @@ import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { GRADES, GRADE_GROUPS } from '@mth/constants'
 import { MthColor } from '@mth/enums'
-import { toOrdinalSuffix } from '../../../../../utils/stringHelpers'
+import { toOrdinalSuffix } from '@mth/utils'
 import { FiltersProps, YEAR_STATUS, FilterVM, OptionType } from '../type'
 
 export const Filters: FunctionComponent<FiltersProps> = ({

@@ -23,7 +23,7 @@ import { MthColor, QUESTION_TYPE } from '@mth/enums'
 import { studentEmailTaken } from '@mth/graphql/queries/email-template'
 import { EnrollmentContext } from '@mth/providers/EnrollmentPacketPrivder/EnrollmentPacketProvider'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
-import { toOrdinalSuffix } from '../../utils/stringHelpers'
+import { toOrdinalSuffix } from '@mth/utils'
 import { EnrollmentQuestion } from '../Admin/SiteManagement/EnrollmentSetting/EnrollmentQuestions/types'
 import { EnrollmentQuestionProps } from './types'
 

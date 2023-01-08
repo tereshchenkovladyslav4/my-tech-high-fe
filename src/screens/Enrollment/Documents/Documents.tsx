@@ -4,19 +4,21 @@ import { Box, Button, Grid, List } from '@mui/material'
 import { useFormik } from 'formik'
 import { filter, map, omit } from 'lodash'
 import * as yup from 'yup'
+import { AnySchema } from 'yup'
 import { S3FileType } from '@mth/components/DocumentUploadModal/types'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { isNumber } from '@mth/constants'
 import { QUESTION_TYPE } from '@mth/enums'
 import { FileCategory, MthColor } from '@mth/enums'
+import { Address, Packet, Person, Student } from '@mth/models'
 import { EnrollmentContext } from '@mth/providers/EnrollmentPacketPrivder/EnrollmentPacketProvider'
 import { TabContext, UserContext, UserInfo } from '@mth/providers/UserContext/UserProvider'
+import { getPacketFiles } from '@mth/screens/Admin/EnrollmentPackets/services'
 import { EnrollmentQuestion } from '@mth/screens/Admin/SiteManagement/EnrollmentSetting/EnrollmentQuestions/types'
+import { DocumentUpload } from '@mth/screens/Enrollment/Documents/components/DocumentUpload/DocumentUpload'
+import { LoadingScreen } from '@mth/screens/LoadingScreen/LoadingScreen'
 import { uploadFile } from '@mth/services'
-import { getPacketFiles } from '../../Admin/EnrollmentPackets/services'
-import { LoadingScreen } from '../../LoadingScreen/LoadingScreen'
 import { useStyles } from '../styles'
-import { DocumentUpload } from './components/DocumentUpload/DocumentUpload'
 import { deleteDocumentsMutation, enrollmentContactMutation, uploadDocumentMutation } from './service'
 import { DocumentsProps, PacketDocument } from './types'
 
@@ -29,21 +31,21 @@ export const Documents: React.FC<DocumentsProps> = ({ id, questions }) => {
   const { profile, students } = me as UserInfo
   const student = students?.find((s) => s.student_id === id)
   const fileNamePrefix = `${student?.person.first_name.charAt(0).toUpperCase()}.${student?.person.last_name}`
-  const fileIds = map(student?.packets?.at(-1)?.files || [], 'mth_file_id')
 
   const [dataLoading, setDataLoading] = useState(true)
+  const [fileIds, setFileIds] = useState<string>('')
   const [isSubmit, setIsSubmit] = useState<boolean>(false)
   const [validationSchema, setValidationSchema] = useState(yup.object({}))
   const [metaData, setMetaData] = useState(
     (student?.packets?.at(-1)?.meta && JSON.parse(student?.packets?.at(-1)?.meta || '')) || {},
   )
-  const [filesToUpload, setFilesToUpload] = useState<{ files: File[]; type: string }[]>([])
+  const [filesToUpload, setFilesToUpload] = useState<{ [key: string]: File[] }>({})
   const [filesToDelete, setFilesToDelete] = useState<S3FileType[]>([])
 
   const [packetFiles, setPacketFiles] = useState<S3FileType[]>()
   const [initFormikValues, setInitFormikValues] = useState({})
 
-  const formik = useFormik({
+  const formik = useFormik<{ address?: Address; parent?: Person; student?: Student; packet?: Packet; meta?: object }>({
     enableReinitialize: true,
     initialValues: initFormikValues,
     validationSchema: validationSchema,
@@ -52,14 +54,22 @@ export const Documents: React.FC<DocumentsProps> = ({ id, questions }) => {
     },
   })
 
-  const [uploadDocument, { data }] = useMutation(uploadDocumentMutation)
+  const { loading, data: fileData } = useQuery(getPacketFiles, {
+    variables: {
+      fileIds: fileIds,
+    },
+    skip: !fileIds,
+    fetchPolicy: 'network-only',
+  })
+
+  const [uploadDocument, { data: saveEnrollmentPacketData }] = useMutation(uploadDocumentMutation)
   const [deleteDocuments] = useMutation(deleteDocumentsMutation)
   const [saveEnrollmentContact] = useMutation(enrollmentContactMutation)
 
   const submitDocuments = async () => {
     const address = { ...formik.values.address }
     if (address.address_id) {
-      address.address_id = parseInt(address.address_id)
+      address.address_id = +address.address_id
     }
     if (address.state) {
       address.state = address.state + ''
@@ -85,8 +95,8 @@ export const Documents: React.FC<DocumentsProps> = ({ id, questions }) => {
           school_year_id: student?.current_school_year_status.school_year_id,
         },
       },
-    }).then(async (data) => {
-      setPacketId(data.data.saveEnrollmentPacketContact.packet.packet_id)
+    }).then(async (res) => {
+      setPacketId(res.data.saveEnrollmentPacketContact.packet.packet_id)
       setMe((prev) => {
         return {
           ...prev,
@@ -96,8 +106,8 @@ export const Documents: React.FC<DocumentsProps> = ({ id, questions }) => {
           },
           students: prev?.students?.map((student) => {
             const returnValue = { ...student }
-            if (student.student_id === data.data.saveEnrollmentPacketContact.student.student_id) {
-              return data.data.saveEnrollmentPacketContact.student
+            if (student.student_id === res.data.saveEnrollmentPacketContact.student.student_id) {
+              return res.data.saveEnrollmentPacketContact.student
             }
             return returnValue
           }),
@@ -123,15 +133,16 @@ export const Documents: React.FC<DocumentsProps> = ({ id, questions }) => {
       }
 
       const tempUploads: PacketDocument[] = []
-      if (filesToUpload.length > 0) {
-        filesToUpload.map((uploadEl) => {
-          uploadEl.files?.map((file) => {
+      for (const key in filesToUpload) {
+        if (filesToUpload.hasOwnProperty(key)) {
+          const files = filesToUpload[key]
+          files?.map((file) => {
             promises.push(
               new Promise(async (resolve) => {
                 const res = await uploadFile(file, FileCategory.PACKET)
                 if (res.success && res.data?.file.file_id) {
                   tempUploads.push({
-                    kind: uploadEl.type,
+                    kind: key,
                     mth_file_id: res.data.file.file_id,
                   })
                 }
@@ -139,7 +150,7 @@ export const Documents: React.FC<DocumentsProps> = ({ id, questions }) => {
               }),
             )
           })
-        })
+        }
       }
 
       if (promises.length) {
@@ -160,14 +171,6 @@ export const Documents: React.FC<DocumentsProps> = ({ id, questions }) => {
     })
   }
 
-  const { loading, data: fileData } = useQuery(getPacketFiles, {
-    variables: {
-      fileIds: fileIds?.toString() || '',
-    },
-    skip: !fileIds?.length,
-    fetchPolicy: 'network-only',
-  })
-
   const nextTab = (e: FormEvent<HTMLFormElement>) => {
     setIsSubmit(true)
     e.preventDefault()
@@ -186,9 +189,7 @@ export const Documents: React.FC<DocumentsProps> = ({ id, questions }) => {
 
   const submitRecord = useCallback(
     (documentType: string, files: File[]) => {
-      if (files?.length) {
-        setFilesToUpload([...filesToUpload, { files: files, type: documentType }])
-      }
+      setFilesToUpload({ ...filesToUpload, [documentType]: files })
     },
     [filesToUpload],
   )
@@ -199,7 +200,7 @@ export const Documents: React.FC<DocumentsProps> = ({ id, questions }) => {
         const exist = !!packetFiles?.filter((file) =>
           file.name.includes(`${fileNamePrefix}${item.options?.[0]?.label}`),
         )?.length
-        const upload = filesToUpload?.filter((file) => file.type === item.question).length > 0
+        const upload = !!filesToUpload?.[item.question]?.length
         return exist || upload
       } else {
         return true
@@ -236,11 +237,11 @@ export const Documents: React.FC<DocumentsProps> = ({ id, questions }) => {
   useEffect(() => {
     const initMeta = { ...metaData }
     if (questions?.groups?.length > 0) {
-      const valid_student: { [key: string]: object } = {}
-      const valid_parent: { [key: string]: object } = {}
-      const valid_meta: { [key: string]: object } = {}
-      const valid_address: { [key: string]: object } = {}
-      const valid_packet: { [key: string]: object } = {}
+      const valid_student: { [key: string]: AnySchema } = {}
+      const valid_parent: { [key: string]: AnySchema } = {}
+      const valid_meta: { [key: string]: AnySchema } = {}
+      const valid_address: { [key: string]: AnySchema } = {}
+      const valid_packet: { [key: string]: AnySchema } = {}
       questions.groups.map((g) => {
         g.questions.map((q) => {
           if (q.type !== QUESTION_TYPE.UPLOAD && q.type !== QUESTION_TYPE.INFORMATION) {
@@ -356,14 +357,14 @@ export const Documents: React.FC<DocumentsProps> = ({ id, questions }) => {
   }, [profile, student, metaData])
 
   useEffect(() => {
-    if (data) {
+    if (saveEnrollmentPacketData) {
       setMe((prev) => {
         return {
           ...prev,
           students: prev?.students?.map((student) => {
             const returnValue = { ...student }
-            if (student.student_id === data.saveEnrollmentPacketDocument.student.student_id) {
-              return data.saveEnrollmentPacketDocument.student
+            if (student.student_id === saveEnrollmentPacketData.saveEnrollmentPacketDocument.student.student_id) {
+              return saveEnrollmentPacketData.saveEnrollmentPacketDocument.student
             }
             return returnValue
           }),
@@ -373,7 +374,14 @@ export const Documents: React.FC<DocumentsProps> = ({ id, questions }) => {
       setTab({ currentTab: (tab?.currentTab || 0) + 1 })
       window.scrollTo(0, 0)
     }
-  }, [data])
+  }, [saveEnrollmentPacketData])
+
+  useEffect(() => {
+    const tempIds = map(student?.packets?.at(-1)?.files || [], 'mth_file_id').toString()
+    if (fileIds !== tempIds) {
+      setFileIds(tempIds)
+    }
+  }, [student?.packets?.at(-1)?.files])
 
   useEffect(() => {
     setDataLoading(false)
@@ -383,7 +391,7 @@ export const Documents: React.FC<DocumentsProps> = ({ id, questions }) => {
     if (!loading && fileData !== undefined) {
       setPacketFiles(fileData.packetFiles.results)
     }
-  }, [loading])
+  }, [loading, fileData])
 
   return !dataLoading ? (
     <form onSubmit={(e) => (!disabled ? formik.handleSubmit(e) : nextTab(e))}>
@@ -400,10 +408,11 @@ export const Documents: React.FC<DocumentsProps> = ({ id, questions }) => {
                       formik={formik}
                       handleUpload={submitRecord}
                       files={(packetFiles || [])
+                        .filter((file) => filesToDelete.findIndex((x) => x.file_id === file.file_id) < 0)
                         .filter((file) => file.name.includes(`${fileNamePrefix}${item[0]?.options?.[0]?.label}`))
                         .sort((a, b) => Number(b.file_id) - Number(a.file_id))}
                       handleDelete={(file: S3FileType) => {
-                        setPacketFiles(filter(packetFiles, (validFile) => validFile !== file))
+                        setPacketFiles(filter(packetFiles, (validFile) => validFile.file_id !== file.file_id))
                         setFilesToDelete((prev) => prev.concat(file))
                       }}
                       fileName={`${fileNamePrefix}${item[0]?.options?.[0]?.label}`}

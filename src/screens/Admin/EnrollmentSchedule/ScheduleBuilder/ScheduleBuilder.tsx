@@ -25,7 +25,6 @@ import { StudentType } from '@mth/screens/HomeroomStudentProfile/Student/types'
 import { calculateGrade } from '@mth/utils'
 import { SEMESTER_TYPE } from '../../Curriculum/types'
 import { getStudentDetail } from '../../UserProfile/services'
-import { updateScheduleMutation } from '../services'
 import Header from './Header/Header'
 import { RequireUpdateModal } from './RequireUpdateModal'
 import { ScheduleHistory } from './ScheduleHistory'
@@ -85,7 +84,6 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
   const [saveDraft] = useMutation(saveSchedulePeriodMutation)
   const [sendUpdatesRequiredEmail] = useMutation(sendUpdatesRequiredEmailMutation)
   const [sendUpdatesAllowedEmail] = useMutation(sendUpdatesAllowedEmailMutation)
-  const [updateScheduleStatusById] = useMutation(updateScheduleMutation)
 
   const handleSave = async (
     status: ScheduleStatus,
@@ -188,12 +186,12 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
         }
       }
       setIsChanged(false)
-      if (status !== ScheduleStatus.NOT_SUBMITTED || clickedSaveChange) {
+      if (status !== ScheduleStatus.NOT_SUBMITTED && !clickedSaveChange) {
         setTimeout(() => {
           history.push(MthRoute.ENROLLMENT_SCHEDULE.toString())
         }, 300)
       }
-      if (status === ScheduleStatus.NOT_SUBMITTED) {
+      if (status === ScheduleStatus.NOT_SUBMITTED || clickedSaveChange) {
         refetch()
       }
     }
@@ -204,15 +202,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
     if (newStatus?.value === ScheduleStatus.UPDATES_REQUIRED) {
       setShowRequireUpdateModal(true)
     } else {
-      await updateScheduleStatusById({
-        variables: {
-          createScheduleInput: {
-            status: num,
-            schedule_id: studentScheduleId,
-          },
-        },
-      })
-      refetch()
+      setIsChanged(true)
     }
     setScheduleStatus(newStatus)
   }

@@ -37,7 +37,7 @@ const EventDetail: React.FC<EventDetailProps> = ({
   const students = me?.students
   const [firstDay, setFirstDay] = useState<Date>()
   const [lastDay, setLastDay] = useState<Date>()
-  const [scheduleIds, setScheduleIds] = useState<Number[]>()
+  const [scheduleIds, setScheduleIds] = useState<number[]>()
   const { data: studentSchedulePeriodsData, refetch } = useQuery(getSchedulePeriodByProviderIds, {
     variables: {
       providerIds: selectedEvent?.filters?.provider,
@@ -50,7 +50,7 @@ const EventDetail: React.FC<EventDetailProps> = ({
     if (!studentSchedulePeriodsData) {
       refetch()
     } else {
-      const periodsProvider: Number[] = []
+      const periodsProvider: number[] = []
       studentSchedulePeriodsData.schedulePeriodsByProvider.map((obj: SchedulePeriod) => {
         if (!periodsProvider.includes(obj.ScheduleId) && obj.ScheduleId) {
           periodsProvider.push(obj.ScheduleId)

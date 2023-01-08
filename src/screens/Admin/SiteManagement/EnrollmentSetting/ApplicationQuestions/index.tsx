@@ -9,13 +9,11 @@ import { useHistory } from 'react-router-dom'
 import { arrayMove, SortableContainer, SortableElement } from 'react-sortable-hoc'
 import BGSVG from '@mth/assets/ApplicationBG.svg'
 import { DropDownItem } from '@mth/components/DropDown/types'
-import { GRADES } from '@mth/constants'
+import { COUNTRIES, GRADES, US_STATES } from '@mth/constants'
 import { QUESTION_TYPE, MthTitle } from '@mth/enums'
 import { getSchoolDistrictsByRegionId } from '@mth/graphql/queries/school-district'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
-import { countries } from '../../../../../utils/countries'
-import { usStates } from '../../../../../utils/states'
-import { toOrdinalSuffix } from '../../../../../utils/stringHelpers'
+import { toOrdinalSuffix } from '@mth/utils'
 import { AddQuestionModal } from '../components/AddQuestionModal/AddQuestionModal'
 import { CustomModal } from '../components/CustomModal/CustomModals'
 import { DefaultQuestionModal } from '../components/DefaultQuestionModal/DefaultQuestionModal'
@@ -289,14 +287,14 @@ export const ApplicationQuestions: React.FC = () => {
             label: 'United States',
             value: 'United States',
           },
-          ...countries.filter((item) => item.value !== 'United States'),
+          ...COUNTRIES.filter((item) => item.value !== 'United States'),
         ]
       } else if (selectedQuestion.slug === 'program_year') {
         options = schoolYears
       } else if (selectedQuestion.slug === 'address_school_district') {
         options = schoolDistricts
       } else if (selectedQuestion.slug === 'address_state') {
-        options = usStates
+        options = US_STATES
       } else if (selectedQuestion.slug === 'student_gender') {
         options = [
           { label: 'Male', value: 1 },

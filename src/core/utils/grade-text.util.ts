@@ -92,3 +92,15 @@ export const sortGrades = (grades: string): string => {
 export const gradeShortText = (gradeLevel?: number | string | null | undefined): string => {
   return gradeLevel === -1 || (gradeLevel + '').toLowerCase().startsWith('k') ? 'K' : (gradeLevel || '').toString()
 }
+
+export const parseGradeLevel = (value?: string | number): string => {
+  if (!value) return ''
+  if (value === 'OR-K') return 'OR - Kindergarten (5)'
+  if (['K', 'Kindergarten', 'Kin'].indexOf(value + '') !== -1) return 'Kindergarten (5)'
+  const numberValue = parseInt(value + '')
+
+  if (numberValue === 1) return '1st Grade (6)'
+  if (numberValue === 2) return '2nd Grade (7)'
+  if (numberValue === 3) return '3rd Grade (8)'
+  return `${value}th Grade (${value !== '12' ? numberValue + 5 : `${numberValue + 5}/${numberValue + 6}`})`
+}

@@ -15,6 +15,12 @@ export const toOrdinalSuffix = (number: number): string => {
     : number + ordinals[3]
 }
 
+export const extractAllNumFromStr = (str: string): Array<number> => {
+  const nums = str.match(/\d+/g)
+  if (nums) return nums.map(Number)
+  else return []
+}
+
 export const ordinalSuffixOf = (num: number | string): string => {
   const i: number = +num
   if (!i) return num as string
@@ -44,4 +50,12 @@ export const renderDate = (selectedEvent: EventVM | undefined): string => {
     if (startDate === endDate) return `${endDate}`
     else return `${startDate} - ${endDate}`
   }
+}
+
+export const phoneFormat = (phone: string): string => {
+  if (!phone) {
+    return ''
+  }
+  phone = phone.replaceAll('-', '')
+  return `${phone.substring(0, 3)}-${phone.substring(3, 6)}-${phone.substring(6, 10)}`
 }

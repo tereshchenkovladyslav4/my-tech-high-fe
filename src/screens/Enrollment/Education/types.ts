@@ -1,6 +1,6 @@
 import { FunctionComponent } from 'react'
 
-type EducationProps = {
+export type EducationProps = {
   id: number | string
   questions: Record<string, unknown>
 }

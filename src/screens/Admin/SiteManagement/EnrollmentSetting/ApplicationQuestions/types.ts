@@ -1,4 +1,4 @@
-import { STATES_WITH_ID } from '../../../../../utils/states'
+import { STATES_WITH_ID } from '@mth/constants'
 
 export const QuestionTypes = [
   {
@@ -57,7 +57,7 @@ export const initQuestions: ApplicationQuestion[] = [
     type: 1,
     question: 'Program State',
     required: true,
-    options: STATES_WITH_ID,
+    options: STATES_WITH_ID as OptionsType[],
     validation: '',
     student_question: false,
     default_question: false,

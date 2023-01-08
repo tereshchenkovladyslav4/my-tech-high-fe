@@ -3,9 +3,9 @@ import { Button, Checkbox, FormControlLabel, Grid, TextField } from '@mui/materi
 import { Box } from '@mui/system'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { STATES_WITH_ABBREVIATION } from '@mth/constants'
 import { MthColor } from '@mth/enums'
-import { STATES_WITH_ABBREVIATION } from '../../../../utils/states'
-import { phoneFormat } from '../../../../utils/utils'
+import { phoneFormat } from '@mth/utils'
 
 type ParentProfileProps = {
   userInfo: unknown

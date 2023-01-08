@@ -1,4 +1,4 @@
-import { extractAllNumFromStr } from '../../utils/utils'
+import { extractAllNumFromStr } from './string.util'
 
 export const convertWidth = (str: string | number, total: number): number => {
   let returnVal = 0

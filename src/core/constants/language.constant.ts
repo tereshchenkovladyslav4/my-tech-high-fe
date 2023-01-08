@@ -1,4 +1,4 @@
-export const languages = [
+export const LANGUAGES = [
   {
     label: 'Afrikaans',
     value: 'Afrikaans',

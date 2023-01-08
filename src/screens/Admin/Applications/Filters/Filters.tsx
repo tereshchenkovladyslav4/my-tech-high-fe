@@ -11,7 +11,7 @@ import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { GRADES, GRADE_GROUPS } from '@mth/constants'
 import { MthColor, MthTitle } from '@mth/enums'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
-import { toOrdinalSuffix } from '../../../../utils/stringHelpers'
+import { toOrdinalSuffix } from '@mth/utils'
 import { getActiveSchoolYearsByRegionId } from '../../../Applications/NewParent/service'
 import { FiltersProps, SchoolYearVM } from '../type'
 

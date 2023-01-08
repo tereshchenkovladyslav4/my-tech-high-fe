@@ -17,11 +17,11 @@ import { useFormik } from 'formik'
 import * as yup from 'yup'
 import { CustomConfirmModal } from '@mth/components/CustomConfirmModal/CustomConfirmModal'
 import { DropDown } from '@mth/components/DropDown/DropDown'
+import { DropDownItem } from '@mth/components/DropDown/types'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
-import { SNOWPACK_PUBLIC_S3_UPLOAD } from '@mth/constants'
+import { SNOWPACK_PUBLIC_S3_UPLOAD, US_STATES } from '@mth/constants'
 import { UserContext, UserInfo } from '@mth/providers/UserContext/UserProvider'
-import { usStates } from '../../../utils/states'
 import { ImageCropper } from '../ImageCropper'
 import { updateProfile } from '../service'
 import { settingClasses } from '../styles'
@@ -485,7 +485,7 @@ export const Profile: React.FC<ProfileProps> = ({ handleIsFormChange }) => {
                   State
                 </Paragraph>
                 <DropDown
-                  dropDownItems={usStates}
+                  dropDownItems={US_STATES as DropDownItem[]}
                   setParentValue={(val) => {
                     formik.values.state = val?.toString()
                     handleIsFormChange(true)

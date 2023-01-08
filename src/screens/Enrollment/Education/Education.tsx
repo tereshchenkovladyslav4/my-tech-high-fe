@@ -5,16 +5,16 @@ import { useFormik } from 'formik'
 import { omit } from 'lodash'
 import * as yup from 'yup'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
+import { isNumber } from '@mth/constants'
 import { QUESTION_TYPE } from '@mth/enums'
 import { EnrollmentContext } from '@mth/providers/EnrollmentPacketPrivder/EnrollmentPacketProvider'
 import { TabContext, UserContext, UserInfo } from '@mth/providers/UserContext/UserProvider'
-import { isNumber } from '../../../utils/stringHelpers'
 import { GroupItem } from '../Group'
 import { useStyles } from '../styles'
 import { enrollmentContactMutation } from './service'
-import { EducationTemplateType } from './types'
+import { EducationProps } from './types'
 
-export const Education: EducationTemplateType = ({ id, questions }) => {
+export const Education: React.FC<EducationProps> = ({ id, questions }) => {
   const { tab, setTab, setVisitedTabs } = useContext(TabContext)
   const classes = useStyles
 

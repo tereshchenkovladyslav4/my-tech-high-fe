@@ -57,6 +57,7 @@ const MasterHoomroom: React.FC<{ masterId: number }> = ({ masterId }) => {
   const [isChange, setIsChange] = useState<boolean>(false)
 
   const [isSetInstructions, setIsSetInstructions] = useState<boolean>(false)
+  const [initInstructions, setInitInstructions] = useState<string>('')
   const [instructions, setInstructions] = useState<string>('')
 
   const [deleteConfirmModal, setDeleteConfirmModal] = useState<boolean>(false)
@@ -64,6 +65,7 @@ const MasterHoomroom: React.FC<{ masterId: number }> = ({ masterId }) => {
 
   const { me } = useContext(UserContext)
   const { dropdownItems: schoolYearDropdownItems } = useSchoolYearsByRegionId(me?.selectedRegionId)
+  const [initRegion, setInitRegion] = useState<number>(-1)
 
   const { loading: masterLoading, data: masterData } = useQuery(GetMastersByIDGql, {
     variables: {
@@ -76,12 +78,25 @@ const MasterHoomroom: React.FC<{ masterId: number }> = ({ masterId }) => {
   const history = useHistory()
 
   useEffect(() => {
+    if (me?.selectedRegionId) {
+      if (initRegion === -1) {
+        setInitRegion(me?.selectedRegionId)
+      } else {
+        if (initRegion !== me?.selectedRegionId) {
+          history.push(MthRoute.HOMEROOM_LEARNING_LOGS.toString())
+        }
+      }
+    }
+  }, [me?.selectedRegionId])
+
+  useEffect(() => {
     if (!masterLoading && masterData.getMastersById) {
       setMasterInfo(masterData.getMastersById)
       setMasterTitle(masterData.getMastersById.master_name)
       setMasterSchoolYearId(masterData.getMastersById.school_year_id)
 
       setInstructions(masterData.getMastersById.instructions)
+      setInitInstructions(masterData.getMastersById.instructions)
     }
   }, [masterLoading, masterData])
 
@@ -113,6 +128,7 @@ const MasterHoomroom: React.FC<{ masterId: number }> = ({ masterId }) => {
       label: 'Title',
       sortable: false,
       tdClass: '',
+      width: '25%',
     },
     {
       key: 'reminder',
@@ -239,6 +255,7 @@ const MasterHoomroom: React.FC<{ masterId: number }> = ({ masterId }) => {
       },
     })
     setIsSetInstructions(false)
+    setInitInstructions(instructions)
   }
 
   return (
@@ -297,7 +314,6 @@ const MasterHoomroom: React.FC<{ masterId: number }> = ({ masterId }) => {
           </Box>
         </Box>
 
-        {/* search */}
         <Box
           sx={{
             display: 'flex',
@@ -312,7 +328,11 @@ const MasterHoomroom: React.FC<{ masterId: number }> = ({ masterId }) => {
               Instructions
             </Typography>
             <Tooltip title='Edit' sx={{ marginLeft: '15px' }}>
-              <IconButton onClick={() => setIsSetInstructions(true)}>
+              <IconButton
+                onClick={() => {
+                  setIsSetInstructions(true)
+                }}
+              >
                 <EditIcon sx={{ color: '#4145FF' }} />
               </IconButton>
             </Tooltip>
@@ -397,7 +417,10 @@ const MasterHoomroom: React.FC<{ masterId: number }> = ({ masterId }) => {
             <Button
               sx={{ ...mthButtonClasses.roundXsGray, padding: '20px 60px' }}
               type='button'
-              onClick={() => setIsSetInstructions(false)}
+              onClick={() => {
+                setIsSetInstructions(false)
+                setInstructions(initInstructions)
+              }}
             >
               Cancel
             </Button>

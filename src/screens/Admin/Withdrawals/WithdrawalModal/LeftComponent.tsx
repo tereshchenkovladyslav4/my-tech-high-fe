@@ -5,7 +5,7 @@ import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { Title } from '@mth/components/Typography/Title/Title'
 import { MthColor } from '@mth/enums'
 import { ProfileContext } from '@mth/providers/ProfileProvider/ProfileContext'
-import { toOrdinalSuffix } from '../../../../utils/stringHelpers'
+import { toOrdinalSuffix } from '@mth/utils'
 import { StudentInfo } from '../type'
 import { withdrawalModalClasses } from './styles'
 

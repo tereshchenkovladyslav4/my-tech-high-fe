@@ -2,8 +2,9 @@ import React from 'react'
 import { Grid } from '@mui/material'
 import { Controller, useFormContext } from 'react-hook-form'
 import { DropDown } from '@mth/components/DropDown/DropDown'
+import { DropDownItem } from '@mth/components/DropDown/types'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
-import { languages } from '../../../../../utils/languages'
+import { LANGUAGES } from '@mth/constants'
 
 export const LanguagesInfo: React.FC = () => {
   const { control } = useFormContext()
@@ -17,7 +18,7 @@ export const LanguagesInfo: React.FC = () => {
           control={control}
           render={({ field }) => (
             <DropDown
-              dropDownItems={languages}
+              dropDownItems={LANGUAGES as DropDownItem[]}
               placeholder='Entry'
               defaultValue={field.value}
               setParentValue={(v) => field.onChange(v as string)}
@@ -33,7 +34,7 @@ export const LanguagesInfo: React.FC = () => {
           control={control}
           render={({ field }) => (
             <DropDown
-              dropDownItems={languages}
+              dropDownItems={LANGUAGES as DropDownItem[]}
               placeholder='Entry'
               defaultValue={field.value}
               setParentValue={(v) => field.onChange(v as string)}
@@ -49,7 +50,7 @@ export const LanguagesInfo: React.FC = () => {
           control={control}
           render={({ field }) => (
             <DropDown
-              dropDownItems={languages}
+              dropDownItems={LANGUAGES as DropDownItem[]}
               placeholder='Entry'
               defaultValue={field.value}
               setParentValue={(v) => field.onChange(v as string)}
@@ -65,7 +66,7 @@ export const LanguagesInfo: React.FC = () => {
           control={control}
           render={({ field }) => (
             <DropDown
-              dropDownItems={languages}
+              dropDownItems={LANGUAGES as DropDownItem[]}
               placeholder='Entry'
               defaultValue={field.value}
               setParentValue={(v) => field.onChange(v as string)}
@@ -81,7 +82,7 @@ export const LanguagesInfo: React.FC = () => {
           control={control}
           render={({ field }) => (
             <DropDown
-              dropDownItems={languages}
+              dropDownItems={LANGUAGES as DropDownItem[]}
               placeholder='Entry'
               defaultValue={field.value}
               setParentValue={(v) => field.onChange(v as string)}

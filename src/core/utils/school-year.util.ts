@@ -1,10 +1,4 @@
-import { SchoolYearType } from './utils.types'
-
-export const extractContent = (s: string): string | null => {
-  const span = document.createElement('span')
-  span.innerHTML = s
-  return span.textContent || span.innerText
-}
+import { SchoolYearType } from '../models/school-year-type.model'
 
 export const getPreviousSchoolYearId = (
   currentYearId: string | number,
@@ -22,18 +16,4 @@ export const getPreviousSchoolYearId = (
     }
   }
   return previousYearId
-}
-
-export const extractAllNumFromStr = (str: string): Array<number> => {
-  const nums = str.match(/\d+/g)
-  if (nums) return nums.map(Number)
-  else return []
-}
-
-export const phoneFormat = (phone: string): string => {
-  if (!phone) {
-    return ''
-  }
-  phone = phone.replaceAll('-', '')
-  return `${phone.substring(0, 3)}-${phone.substring(3, 6)}-${phone.substring(6, 10)}`
 }

@@ -1,10 +1,10 @@
 export const STATES_WITH_ID = [
-  { label: 'Arizona', value: 1 },
-  { label: 'Colorado', value: 2 },
-  { label: 'Idaho', value: 3 },
-  { label: 'Indiana', value: 4 },
-  { label: 'Wyoming', value: 5 },
-  { label: 'Utah', value: 6 },
+  { label: 'Arizona', value: 1, action: 1 },
+  { label: 'Colorado', value: 2, action: 1 },
+  { label: 'Idaho', value: 3, action: 1 },
+  { label: 'Indiana', value: 4, action: 1 },
+  { label: 'Wyoming', value: 5, action: 1 },
+  { label: 'Utah', value: 6, action: 1 },
 ]
 
 export const STATES_WITH_ABBREVIATION = {
@@ -17,7 +17,7 @@ export const STATES_WITH_ABBREVIATION = {
   Utah: 'UT',
 }
 
-export const usStates = [
+export const US_STATES = [
   {
     label: 'Alabama',
     value: 'AL',

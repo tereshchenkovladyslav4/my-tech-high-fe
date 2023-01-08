@@ -5,9 +5,9 @@ import { Box, TextField, FormControl, Select, MenuItem, SelectChangeEvent } from
 import { map } from 'lodash'
 import { DropDownItem } from '@mth/components/DropDown/types'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { US_STATES } from '@mth/constants'
 import { MthColor } from '@mth/enums'
 import { getAllRegion } from '@mth/graphql/queries/region'
-import { usStates } from '../../../../../utils/states'
 import { siteManagementClassess } from '../../styles'
 
 type StateSelectProps = {
@@ -30,7 +30,7 @@ export const StateSelect: React.FC<StateSelectProps> = ({
   const [stateInvalidMessage, setStateInvalidMessage] = useState<string>('')
   const [selectedRegionName, setSelectedRegionName] = useState<string>('')
   const [showNewRegionName, setShowNewRegionName] = useState<boolean>(false)
-  const [allStates, setAllStates] = useState<DropDownItem[]>(usStates)
+  const [allStates, setAllStates] = useState<DropDownItem[]>(US_STATES)
   const [regions, setAllRegions] = useState<DropDownItem[]>([])
   const { data: regionData, loading: regionDataLoading } = useQuery(getAllRegion)
 

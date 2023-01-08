@@ -12,13 +12,13 @@ import { SortableHandle } from 'react-sortable-hoc'
 import { GRADES } from '@mth/constants'
 import { MthColor, QUESTION_TYPE } from '@mth/enums'
 import { getSchoolDistrictsByRegionId } from '@mth/graphql/queries/school-district'
-import { UserContext } from '../../providers/UserContext/UserProvider'
+import { UserContext } from '@mth/providers/UserContext/UserProvider'
+import { toOrdinalSuffix } from '@mth/utils'
 import {
   getActiveSchoolYearsByRegionId,
   getCountiesByRegionId,
   getAllRegion,
 } from '../../screens/Admin/SiteManagement/EnrollmentSetting/EnrollmentQuestions/services'
-import { toOrdinalSuffix } from '../../utils/stringHelpers'
 import { CustomConfirmModal } from '../CustomConfirmModal/CustomConfirmModal'
 import { DropDown } from '../DropDown/DropDown'
 import { Paragraph } from '../Typography/Paragraph/Paragraph'
@@ -34,6 +34,7 @@ type QuestionItemProps = {
   hasAction: boolean
   signature?: unknown
 }
+
 const DragHandle = SortableHandle(() => (
   <IconButton>
     <DehazeIcon />

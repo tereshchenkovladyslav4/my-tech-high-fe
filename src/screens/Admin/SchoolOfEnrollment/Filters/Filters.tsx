@@ -11,7 +11,7 @@ import { MthColor } from '@mth/enums'
 import { getSchoolDistrictsByRegionId } from '@mth/graphql/queries/school-district'
 import { useProviders } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
-import { toOrdinalSuffix } from '../../../../utils/stringHelpers'
+import { toOrdinalSuffix } from '@mth/utils'
 import {
   FiltersProps,
   SchoolPartner,

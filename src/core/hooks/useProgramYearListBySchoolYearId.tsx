@@ -5,8 +5,7 @@ import { DropDownItem } from '@mth/components/DropDown/types'
 import { CheckBoxListVM } from '@mth/components/MthCheckBoxList/MthCheckboxList'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { getSchoolYearsByRegionId } from '@mth/screens/Admin/SiteManagement/services'
-import { toOrdinalSuffix } from '../../utils/stringHelpers'
-import { sortGrades } from '../utils'
+import { sortGrades, toOrdinalSuffix } from '../utils'
 
 type SchoolYearType = {
   school_year_id: number

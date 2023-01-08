@@ -20,7 +20,7 @@ import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { GRADES } from '@mth/constants'
 import { MthColor, QUESTION_TYPE } from '@mth/enums'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
-import { toOrdinalSuffix } from '../../../../../utils/stringHelpers'
+import { toOrdinalSuffix } from '@mth/utils'
 import { EnrollmentQuestion } from '../../../SiteManagement/EnrollmentSetting/EnrollmentQuestions/types'
 
 export const getActiveSchoolYearsByRegionId = gql`

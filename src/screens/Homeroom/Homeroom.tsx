@@ -7,8 +7,8 @@ import { useRouteMatch } from 'react-router-dom'
 import { DropDownItem } from '@mth/components/DropDown/types'
 import { MthRoute } from '@mth/enums'
 import { getActiveSchoolYearsByRegionId } from '@mth/graphql/queries/school-year'
+import { SchoolYear, SchoolYearType } from '@mth/models'
 import { UserContext } from '../../providers/UserContext/UserProvider'
-import { SchoolYearType } from '../../utils/utils.types'
 import { getSchoolYearsByRegionId } from '../Admin/Dashboard/SchoolYear/SchoolYear'
 import { ToDo } from '../Dashboard/ToDoList/ToDo'
 import { Students } from './Students/Students'
@@ -17,8 +17,8 @@ export const Homeroom: React.FC = () => {
   const isExact = useRouteMatch(MthRoute.HOMEROOM)?.isExact
   const { me } = useContext(UserContext)
   const region_id = me?.userRegion?.at(-1)?.region_id
-  const [schoolYears, setSchoolYears] = useState<SchoolYearType[]>([])
-  const [schoolYearsDropdown, setSchoolYearsDropdown] = useState<unknown[]>([])
+  const [schoolYears, setSchoolYears] = useState<SchoolYear[]>([])
+  const [schoolYearsDropdown, setSchoolYearsDropdown] = useState<DropDownItem[]>([])
   const [isLoading, setIsLoading] = useState<boolean>(true)
 
   const schoolYearData = useQuery(getSchoolYearsByRegionId, {
