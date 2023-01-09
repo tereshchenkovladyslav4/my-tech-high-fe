@@ -36,29 +36,27 @@ export const StateSelect: React.FC<StateSelectProps> = ({
 
   useEffect(() => {
     if (stateName) {
-      const usState = usStates.find((state) => state.label == stateName)
+      const usState = US_STATES.find((state) => state.label == stateName)
       if (usState) {
-        setAllStates(usStates)
+        setAllStates(US_STATES)
         setSelectedRegionName(usState.value)
         setShowNewRegionName(false)
         setNewStateName('')
         setStateInvalid(false)
       } else {
         setAllStates(
-          usStates
-            .concat({
-              label: stateName,
-              value: stateName,
-            })
-            .sort(function (a, b) {
-              if (a.label < b.label) {
-                return -1
-              }
-              if (a.label > b.label) {
-                return 1
-              }
-              return 0
-            }),
+          US_STATES.concat({
+            label: stateName,
+            value: stateName,
+          }).sort(function (a, b) {
+            if (a.label < b.label) {
+              return -1
+            }
+            if (a.label > b.label) {
+              return 1
+            }
+            return 0
+          }),
         )
         setSelectedRegionName(stateName)
         setShowNewRegionName(false)
@@ -120,7 +118,7 @@ export const StateSelect: React.FC<StateSelectProps> = ({
         }
       } else {
         setShowNewRegionName(false)
-        const selectedRegionFullName = usStates.find((state) => state.value == event.target.value)?.label
+        const selectedRegionFullName = US_STATES.find((state) => state.value == event.target.value)?.label
         const region = regions?.find((region) => region?.label == selectedRegionFullName)
         if (selectedRegionFullName != stateName && region) {
           setStateInvalidMessage('This state is already being used')
