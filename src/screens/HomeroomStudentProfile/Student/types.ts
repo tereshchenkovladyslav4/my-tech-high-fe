@@ -107,7 +107,7 @@ export type Schedule = {
 export type StudentType = {
   grade_levels: GradeLevel[]
   person: Person
-  student_id: number
+  student_id: number | string
   parent_id: number
   person_id: number
   reenrolled: number

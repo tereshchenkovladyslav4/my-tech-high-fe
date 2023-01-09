@@ -76,7 +76,7 @@ const StudentNav: React.FC<StudentNavProps> = ({ nav, setNav, student, avatar })
         <Grid item xs={6}>
           <Metadata
             title={
-              <Subtitle>
+              <Subtitle color={MthColor.MTHBLUE}>
                 {student?.person.preferred_first_name
                   ? student?.person.preferred_first_name
                   : student?.person.first_name}
@@ -99,6 +99,7 @@ const StudentNav: React.FC<StudentNavProps> = ({ nav, setNav, student, avatar })
         </Grid>
         <Grid item xs={6}>
           <DropDown
+            color={MthColor.BLACK}
             dropDownItems={STUDENT_DROPDOWN_PROFILE_ITEMS}
             setParentValue={setNav}
             borderNone={true}

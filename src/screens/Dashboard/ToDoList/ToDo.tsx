@@ -6,6 +6,7 @@ import { Flexbox } from '@mth/components/Flexbox/Flexbox'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { Title } from '@mth/components/Typography/Title/Title'
 import { MthColor } from '@mth/enums'
+import { Student } from '@mth/models'
 import { SchoolYearType } from '../HomeroomGrade/components/StudentGrade/types'
 import { TodoList } from './components/TodoList/TodoList'
 import { ToDoItem } from './components/ToDoListItem/types'
@@ -51,14 +52,13 @@ type TodoProps = {
   schoolYears: SchoolYearType[]
   setIsLoading?: (isLoading: boolean) => void
   setMainTodoList?: (todoList: ToDoItem[]) => void
+  filteredByStudent?: Student
 }
 
-export const ToDo: React.FC<TodoProps> = ({ schoolYears, setIsLoading, setMainTodoList }) => {
+export const ToDo: React.FC<TodoProps> = ({ schoolYears, setIsLoading, setMainTodoList, filteredByStudent }) => {
   const cardRef = useRef(null)
-
   const [showEmpty, setShowEmpty] = useState(false)
   const [windowDimensions, setWindowDimensions] = useState(0)
-
   useEffect(() => {
     function handleResize() {
       setWindowDimensions(cardRef.current.offsetWidth)
@@ -98,6 +98,7 @@ export const ToDo: React.FC<TodoProps> = ({ schoolYears, setIsLoading, setMainTo
                 handleShowEmpty={handleShowEmpty}
                 setIsLoading={setIsLoading}
                 setMainTodoList={setMainTodoList}
+                filteredByStudent={filteredByStudent?.student_id}
               />
             </Box>
           ) : (

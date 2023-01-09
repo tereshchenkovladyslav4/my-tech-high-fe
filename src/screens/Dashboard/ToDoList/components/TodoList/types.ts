@@ -6,4 +6,5 @@ export type TodoListProps = {
   schoolYears: SchoolYear[]
   setIsLoading?: (isLoading: boolean) => void
   setMainTodoList?: (todoList: ToDoItem[]) => void
+  filteredByStudent?: number
 }

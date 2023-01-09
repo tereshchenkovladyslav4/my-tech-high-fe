@@ -4,12 +4,19 @@ import { Table, TableBody, TableContainer, Box } from '@mui/material'
 import { forOwn, map, groupBy, values } from 'lodash'
 import moment from 'moment'
 import { TodoListProps } from '@mth/screens/Dashboard/ToDoList/components/TodoList/types'
+import { StudentType } from '@mth/screens/HomeroomStudentProfile/Student/types'
 import { checkEnrollPacketStatus } from '@mth/utils'
 import { getTodoList } from '../../service'
 import { ToDoListItem } from '../ToDoListItem/ToDoListItem'
 import { ToDoCategory, ToDoItem } from '../ToDoListItem/types'
 
-export const TodoList: React.FC<TodoListProps> = ({ handleShowEmpty, schoolYears, setIsLoading, setMainTodoList }) => {
+export const TodoList: React.FC<TodoListProps> = ({
+  handleShowEmpty,
+  schoolYears,
+  setIsLoading,
+  setMainTodoList,
+  filteredByStudent,
+}) => {
   const [todoList, setTodoList] = useState<ToDoItem[]>([])
   const [paginationLimit] = useState<number>(25)
   const [skip] = useState<number>()
@@ -22,7 +29,6 @@ export const TodoList: React.FC<TodoListProps> = ({ handleShowEmpty, schoolYears
     },
     fetchPolicy: 'network-only',
   })
-
   useEffect(() => {
     if (data !== undefined && schoolYears?.length > 0) {
       const { parent_todos } = data
@@ -51,7 +57,16 @@ export const TodoList: React.FC<TodoListProps> = ({ handleShowEmpty, schoolYears
               (list: ToDoItem[], student) => list.concat([{ ...item, students: [student] }]),
               [],
             )
-            setTodoList((prev) => [...prev, ...splitItems])
+            if (filteredByStudent) {
+              setTodoList((prev) => [
+                ...prev,
+                ...splitItems.filter((item) =>
+                  item?.students.find((student: StudentType) => student.student_id == filteredByStudent),
+                ),
+              ])
+            } else {
+              setTodoList((prev) => [...prev, ...splitItems])
+            }
           }
 
           if (item.students.length) {

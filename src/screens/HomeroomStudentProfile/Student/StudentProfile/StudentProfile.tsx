@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useMutation, useQuery } from '@apollo/client'
 import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt'
 import { Avatar, Box, Button, Card, FormHelperText, Grid, OutlinedInput, TextField } from '@mui/material'
@@ -13,7 +13,6 @@ import { WarningModal } from '@mth/components/WarningModal/Warning'
 import { isValidPassword, s3URL, SNOWPACK_PUBLIC_S3_URL } from '@mth/constants'
 import { MthColor, MthRoute, MthTitle, PacketStatus } from '@mth/enums'
 import { getAssessmentsBySchoolYearId, getStudentAssessmentsByStudentId } from '@mth/graphql/queries/assessment'
-import { UserContext, UserInfo } from '@mth/providers/UserContext/UserProvider'
 import { AssessmentType } from '@mth/screens/Admin/SiteManagement/EnrollmentSetting/TestingPreference/types'
 import { StudentAssessment } from '@mth/screens/Homeroom/Schedule/types'
 import { gradeText } from '@mth/utils'
@@ -21,10 +20,12 @@ import { Person, StudentType } from '../types'
 import { updateProfile, removeProfilePhoto } from './service'
 import { studentProfileClasses } from './styles'
 
-export const StudentProfile: React.FC = () => {
+type StudentProfileProps = {
+  currStudent: StudentType
+}
+
+export const StudentProfile: undefined | React.FC<StudentProfileProps> = ({ currStudent }) => {
   const history = useHistory()
-  const { me } = useContext(UserContext)
-  const { students } = me as UserInfo
   const studentId = location.pathname.split('/').at(-1)
 
   const [student, setStudent] = useState<StudentType>()
@@ -240,12 +241,6 @@ export const StudentProfile: React.FC = () => {
   }, [person])
 
   useEffect(() => {
-    if (!studentId) {
-      history.push(MthRoute.HOMEROOM)
-      return
-    }
-
-    const currStudent: StudentType | undefined = students?.find((item) => +item.student_id === +studentId)
     if (!currStudent) {
       history.push(MthRoute.HOMEROOM)
       return
@@ -265,7 +260,7 @@ export const StudentProfile: React.FC = () => {
   }, [studentId])
 
   const isVisibleTestPreference = (grades: string) => {
-    if (!student.grade_levels?.length) {
+    if (!student?.grade_levels?.length) {
       return false
     }
     const gradeLevel = student.grade_levels[student.grade_levels.length - 1]?.grade_level
@@ -276,7 +271,7 @@ export const StudentProfile: React.FC = () => {
       availableGrades.push('K')
       availableGrades.push('k')
     }
-    if (availableGrades.indexOf(gradeLevel) !== -1) {
+    if (availableGrades.indexOf(gradeLevel as string) !== -1) {
       return true
     }
     return false
@@ -576,7 +571,9 @@ export const StudentProfile: React.FC = () => {
                     marginLeft={2}
                     color={MthColor.GRAY}
                   >
-                    <Subtitle size='small'>{gradeText(student)}</Subtitle>
+                    <Subtitle size='small' fontWeight='700'>
+                      {gradeText(student)}
+                    </Subtitle>
                     {/*{ status !== PacketStatus.MISSING_INFO && status !== 'Submitted' && <Title>GPA</Title>}*/}
                   </Box>
                 </Box>
@@ -586,12 +583,12 @@ export const StudentProfile: React.FC = () => {
               {status !== PacketStatus.MISSING_INFO && status !== 'Submitted' && (
                 <Box display='flex' flexDirection='column' justifyContent='start' alignItems='start' height='100%'>
                   <Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between'>
-                    <Subtitle size='large' fontWeight='700' color={MthColor.GRAY}>
+                    <Subtitle fontWeight='700' color={MthColor.GRAY}>
                       {MthTitle.FIRST_SEMESTER}
                     </Subtitle>
                   </Box>
                   <Box display='flex' flexDirection='row' alignItems='center'>
-                    <Subtitle size='large' fontWeight='700' color={MthColor.GRAY}>
+                    <Subtitle fontWeight='700' color={MthColor.GRAY}>
                       {MthTitle.SECOND_SEMESTER}
                     </Subtitle>
                   </Box>
@@ -677,13 +674,13 @@ export const StudentProfile: React.FC = () => {
                     }
                     return (
                       <Grid container key={assessment.assessment_id} sx={{ marginTop: '6px' }}>
-                        <Grid item md={6}>
-                          <Paragraph size='medium' fontWeight='700'>
+                        <Grid item xs={6}>
+                          <Paragraph size='medium' fontWeight='700' textAlign='left'>
                             {assessment.test_name}
                           </Paragraph>
                         </Grid>
-                        <Grid item md={6}>
-                          <Paragraph size='medium' fontWeight='700'>
+                        <Grid item xs={6}>
+                          <Paragraph size='medium' fontWeight='700' textAlign='left'>
                             {testingResult}
                           </Paragraph>
                         </Grid>
@@ -758,6 +755,7 @@ export const StudentProfile: React.FC = () => {
                     sx={studentProfileClasses.formField}
                     error={formik.touched.password && Boolean(formik.errors.password)}
                     disabled={!isEditingMobile}
+                    placeholder='********'
                   />
                   <FormHelperText sx={{ color: MthColor.RED }}>
                     {formik.touched.password && formik.errors.password}
