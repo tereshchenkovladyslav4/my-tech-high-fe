@@ -322,7 +322,12 @@ function Item({
         <FormGroup style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
           <Grid container>
             {(q.options ?? []).map((o, index) => (
-              <Grid item xs={q.options.length > 3 ? 6 : 12} key={index}>
+              <Grid
+                item
+                xs={q.options.length > 3 ? 6 : 12}
+                key={index}
+                sx={{ marginTop: 'auto', marginBottom: 'auto', paddingBottom: q.options.length > 3 ? '15px' : '0px' }}
+              >
                 <FormControlLabel
                   control={
                     <Checkbox
@@ -362,7 +367,12 @@ function Item({
         <FormGroup style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
           <Grid container>
             {(q.options ?? []).map((o, index) => (
-              <Grid item xs={q.options.length > 3 ? 6 : 12} key={index}>
+              <Grid
+                item
+                xs={q.options.length > 3 ? 6 : 12}
+                key={index}
+                sx={{ marginTop: 'auto', marginBottom: 'auto', paddingBottom: q.options.length > 3 ? '15px' : '0px' }}
+              >
                 <FormControlLabel
                   control={<Radio checked={selectedOption[0] === o.value} onClick={() => onChange(o.value)} />}
                   label={o.label}

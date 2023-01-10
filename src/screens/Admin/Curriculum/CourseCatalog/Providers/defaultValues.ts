@@ -37,7 +37,7 @@ export const defaultCourseFormData: Course = {
   limit: null,
   reduce_funds: ReduceFunds.NONE,
   price: null,
-  subject_id: 0,
+  subject_id: -1,
   Titles: [],
   allow_request: false,
   is_active: true,

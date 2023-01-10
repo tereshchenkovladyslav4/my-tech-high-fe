@@ -100,7 +100,6 @@ const CourseEdit: React.FC<CourseEditProps> = ({
           limit: value.limit,
           reduce_funds: value.reduce_funds,
           price: value.price || null,
-          subject_id: Number(value.subject_id),
           titles: value.TitleIds?.join(','),
         },
       },

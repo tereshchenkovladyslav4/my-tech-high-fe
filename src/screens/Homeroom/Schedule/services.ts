@@ -101,12 +101,6 @@ export const getStudentPeriodsQuery = gql`
         AltTitles {
           ...titleFragment
         }
-        Courses {
-          ...courseFragment
-        }
-        AltCourses {
-          ...courseFragment
-        }
       }
     }
   }

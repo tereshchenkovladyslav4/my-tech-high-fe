@@ -70,10 +70,6 @@ export const useStudentSchedulePeriodHistories = (
             )
             title.Providers = makeProviderData(title.Courses, title.AltCourses)
           })
-          subject.Courses.concat(subject.AltCourses).map(
-            (course) => (course.Provider = studentProviders[course.provider_id]),
-          )
-          subject.Providers = makeProviderData(subject.Courses, subject.AltCourses)
         })
       })
 
@@ -135,9 +131,6 @@ export const useStudentSchedulePeriodHistories = (
                 })
               if (schedulePeriodHistory.CourseId)
                 period.Subjects?.forEach((subject) => {
-                  subject.Courses.concat(subject.AltCourses)?.forEach((course) => {
-                    if (course.id === schedulePeriodHistory.CourseId) item.Course = course
-                  })
                   subject.Titles.concat(subject.AltTitles)?.forEach((title) => {
                     title.Courses.concat(title.AltCourses)?.forEach((course) => {
                       if (course.id === schedulePeriodHistory.CourseId) item.Course = course

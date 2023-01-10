@@ -467,7 +467,7 @@ export const StudentFilters: React.FC<StudentFiltersProps> = ({
     >
       <Grid container>
         <Grid xs={4} display={'flex'} flexDirection={'column'} textAlign='left'>
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Box sx={{ display: 'flex', alignItems: 'flex-start' }}>
             <Subtitle fontWeight='700' sx={{ marginRight: '30px', marginBottom: '5px' }}>
               {applications?.[0]?.midyear_application
                 ? `${moment(applications[0].school_year.date_begin).format('YYYY')} - ${moment(

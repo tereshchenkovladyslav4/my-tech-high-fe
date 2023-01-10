@@ -17,29 +17,46 @@ export const CourseTitles: React.FC<CourseTitlesProps> = ({ schoolYearId }) => {
 
   const [searchField, setSearchField] = useState<string>('')
   const [titleItems, setTitleItems] = useState<CheckBoxListVM[]>([])
+  const [allTitleItems, setAllTitleItems] = useState<CheckBoxListVM[]>([])
   const [filteredTitleItems, setFilteredTitleItems] = useState<CheckBoxListVM[]>([])
   const [selectedItems, setSelectedItems] = useState<CheckBoxListVM[]>([])
 
-  const { subjects, dropdownItems: subjectItems } = useSubjects(schoolYearId)
+  const { subjects, dropdownItems: subjectItems } = useSubjects(schoolYearId, '', true, true)
 
   useEffect(() => {
-    const subject: Subject | undefined = subjects.find((item) => item.subject_id == values.subject_id)
-    if (subject) {
+    let allItems: CheckBoxListVM[] = []
+    subjects?.forEach((subject: Subject) => {
       const { Titles } = subject
-      setTitleItems(
-        (Titles || []).map((item: Title): CheckBoxListVM => {
-          return {
-            label: `${subject.name} - ${item.name}`,
-            value: item.title_id.toString(),
-          }
-        }),
-      )
+      const items = (Titles || []).map((item: Title): CheckBoxListVM => {
+        return {
+          label: `${subject.name} - ${item.name}`,
+          value: item.title_id.toString(),
+        }
+      })
+      allItems = allItems.concat(items)
+    })
+    setAllTitleItems(allItems)
+    if ((values.subject_id === -1 || !values.subject_id) && subjects?.length) {
+      setTitleItems(allItems)
+    } else {
+      const subject: Subject | undefined = subjects.find((item) => item.subject_id == values.subject_id)
+      if (subject) {
+        const { Titles } = subject
+        setTitleItems(
+          (Titles || []).map((item: Title): CheckBoxListVM => {
+            return {
+              label: `${subject.name} - ${item.name}`,
+              value: item.title_id.toString(),
+            }
+          }),
+        )
+      }
     }
   }, [values.subject_id, subjects])
 
   useEffect(() => {
-    setSelectedItems(titleItems?.filter((x) => (values?.TitleIds || []).findIndex((y) => x.value == y) > -1))
-  }, [values.TitleIds, titleItems])
+    setSelectedItems(allTitleItems?.filter((x) => (values?.TitleIds || []).findIndex((y) => x.value == y) > -1))
+  }, [values.TitleIds, allTitleItems])
 
   useEffect(() => {
     if (searchField) {
@@ -81,7 +98,7 @@ export const CourseTitles: React.FC<CourseTitlesProps> = ({ schoolYearId }) => {
             setFieldValue('subject_id', +value)
           }}
           sx={{ m: 0 }}
-          defaultValue={values.subject_id}
+          defaultValue={-1}
         />
       </Grid>
 

@@ -9,6 +9,7 @@ export const useSubjects = (
   schoolYearId: number,
   searchField = '',
   isActive = true,
+  hasAllItem = false,
 ): {
   loading: boolean
   subjects: Subject[]
@@ -32,12 +33,11 @@ export const useSubjects = (
   useEffect(() => {
     if (data?.subjects) {
       const { subjects } = data
-      setDropdownItems(
-        subjects.map((item: Subject) => ({
-          value: item.subject_id,
-          label: item.name,
-        })),
-      )
+      const subjectItems = subjects.map((item: Subject) => ({
+        value: item.subject_id,
+        label: item.name,
+      }))
+      setDropdownItems(hasAllItem ? [{ label: 'All', value: -1 }, ...subjectItems] : subjectItems)
       setCheckBoxItems(
         subjects.map((item: Subject) => ({
           value: item.subject_id.toString(),

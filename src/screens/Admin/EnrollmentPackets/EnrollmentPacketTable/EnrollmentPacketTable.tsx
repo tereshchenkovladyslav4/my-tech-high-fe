@@ -92,7 +92,7 @@ export const EnrollmentPacketTable: React.FC = () => {
           : packet.status == PacketStatus.MISSING_INFO
           ? moment(packet.date_submitted || packet.deadline).format('MM/DD/YY') // will update again
           : '',
-      status: packet.status + (packet.is_age_issue ? ' (Age Issue)' : ''),
+      status: packet.status + (packet.is_age_issue && packet.status != 'Age Issue' ? ' (Age Issue)' : ''),
       deadline: moment(packet.deadline).format('MM/DD/YY'),
       student: (
         <Box sx={{ cursor: 'pointer', color: MthColor.MTHBLUE }}>

@@ -141,8 +141,6 @@ export type Subject = {
   Titles: Title[]
   AltTitles: Title[]
   Providers: Provider[]
-  Courses: Course[]
-  AltCourses: Course[]
 }
 
 export type ScheduleData = {

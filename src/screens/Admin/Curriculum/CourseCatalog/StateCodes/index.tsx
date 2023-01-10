@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useState, useContext, useEffect } from 'react'
+import React, { useState, useContext, useEffect } from 'react'
 import { useMutation, useQuery } from '@apollo/client'
 import CreateIcon from '@mui/icons-material/Create'
 import { Box, Button, IconButton, Tooltip } from '@mui/material'
@@ -18,7 +18,7 @@ import { EditStateCodesModal } from './EditStateCodesModal'
 import Filter from './Filter'
 import { StateCodeField, StateCodesTemplateType, StateCodeType } from './types'
 
-const StateCodes: FunctionComponent = () => {
+const StateCodes: React.FC = () => {
   const classes = useStyles
   const { me } = useContext(UserContext)
   const [selectedYearId, setSelectedYearId] = useState<number>()

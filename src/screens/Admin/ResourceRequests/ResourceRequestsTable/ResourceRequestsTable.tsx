@@ -6,6 +6,7 @@ import SearchIcon from '@mui/icons-material/Search'
 import { Box, Button, IconButton, InputAdornment, OutlinedInput, Tooltip, Typography } from '@mui/material'
 import { debounce } from 'lodash'
 import moment from 'moment'
+import * as XLSX from 'xlsx'
 import { EmailHistoryModal } from '@mth/components/EmailHistoryModal/EmailHistoryModal'
 import { ApplicationEmailModal } from '@mth/components/EmailModal/ApplicationEmailModal'
 import { MthTable } from '@mth/components/MthTable'
@@ -13,7 +14,7 @@ import { MthTableField, MthTableRowItem } from '@mth/components/MthTable/types'
 import { PageBlock } from '@mth/components/PageBlock'
 import { Pagination } from '@mth/components/Pagination/Pagination'
 import { WarningModal } from '@mth/components/WarningModal/Warning'
-import { MthColor, Order, ResourceSubtitle } from '@mth/enums'
+import { MthColor, Order } from '@mth/enums'
 import {
   acceptResourceRequestsMutation,
   deleteResourceRequestsMutation,
@@ -25,7 +26,7 @@ import { Email, ResourceRequest } from '@mth/models'
 import { SchoolYearDropDown } from '@mth/screens/Admin/Components/SchoolYearDropdown'
 import { ResourceRequestsTableProps } from '@mth/screens/Admin/ResourceRequests/ResourceRequestsTable/type'
 import { mthButtonClasses } from '@mth/styles/button.style'
-import { gradeShortText, resourceRequestStatus, studentStatusText } from '@mth/utils'
+import { gradeShortText, resourceRequestCost, resourceRequestStatus, studentStatusText } from '@mth/utils'
 import ResourceRequestEdit from '../ResourceRequestEdit/ResourceRequestEdit'
 
 export const ResourceRequestsTable: React.FC<ResourceRequestsTableProps> = ({
@@ -115,13 +116,7 @@ export const ResourceRequestsTable: React.FC<ResourceRequestsTableProps> = ({
       label: 'Cost',
       sortable: true,
       formatter: (item: MthTableRowItem<ResourceRequest>) => {
-        const subtitle = item.rawData.Resource?.subtitle
-        const price = item.rawData.Resource?.price
-        return subtitle == ResourceSubtitle.PRICE
-          ? `$${price}`
-          : subtitle == ResourceSubtitle.INCLUDED
-          ? 'Included'
-          : 'Free'
+        return resourceRequestCost(item.rawData)
       },
     },
     {
@@ -347,6 +342,41 @@ export const ResourceRequestsTable: React.FC<ResourceRequestsTableProps> = ({
     }
   }
 
+  const handleDownloadResourceRequests = () => {
+    if (tableData && tableData.length > 0) {
+      const wb = XLSX.utils.book_new()
+      const ws = XLSX.utils.json_to_sheet(
+        tableData.map(({ rawData }) => {
+          return {
+            Vendor: 'Adobe',
+            'Resource Level': rawData?.ResourceLevel?.name,
+            Submitted: moment(rawData?.created_at)?.format('MM/DD/YYYY'),
+            Status: resourceRequestStatus(rawData.status),
+            'Student ID': rawData?.Student?.student_id,
+            'Student First Name': rawData?.Student?.person?.first_name,
+            'Student Last Name': rawData?.Student?.person?.last_name,
+            'Student Email': rawData?.Student?.person?.email,
+            Grade: gradeShortText(rawData?.Student?.grade_levels?.[0]?.grade_level),
+            'Student Birthdate': moment(rawData?.Student?.person?.date_of_birth).format('MM/DD/YYYY'),
+            'Parent First Name': rawData?.Student?.parent?.person?.first_name,
+            'Parent Last Name': rawData?.Student?.parent?.person?.last_name,
+            'Parent Email': rawData?.Student?.parent?.person?.email,
+            Cost: resourceRequestCost(rawData),
+            'Username Generator': rawData?.Resource?.std_user_name,
+            'Password Generator': rawData?.Resource?.std_password,
+            'Returning Status': 'No',
+            'School Year': `${moment(schoolYear?.date_begin).format('YYYY')}-${moment(schoolYear?.date_end).format(
+              'YY',
+            )}`,
+            'School Year Status': studentStatusText(rawData?.Student?.status?.[0]),
+          }
+        }),
+      )
+      XLSX.utils.book_append_sheet(wb, ws, 'Blank')
+      XLSX.writeFile(wb, 'resource-requests.xlsx')
+    }
+  }
+
   const handleSort = (property: string, order: Order) => {
     setSortField(property)
     setSortOrder(order)
@@ -436,7 +466,9 @@ export const ResourceRequestsTable: React.FC<ResourceRequestsTableProps> = ({
         </Box>
       </Box>
       <Box sx={{ display: 'flex', gap: '60px', mt: 4 }}>
-        <Button sx={mthButtonClasses.primary}>Download</Button>
+        <Button sx={mthButtonClasses.primary} onClick={() => handleDownloadResourceRequests()}>
+          Download
+        </Button>
         <Button sx={mthButtonClasses.green} onClick={() => handleAccept()}>
           Accept
         </Button>

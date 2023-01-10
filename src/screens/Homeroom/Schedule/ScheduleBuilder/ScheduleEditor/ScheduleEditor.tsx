@@ -15,10 +15,11 @@ import { MenuItemData } from '@mth/components/NestedDropdown/types'
 import { COURSE_TYPE_ITEMS, RICH_TEXT_VALID_MIN_LENGTH } from '@mth/constants'
 import { CourseType, MthColor, MthTitle, ReduceFunds, SchedulePeriodStatus, ScheduleStatus } from '@mth/enums'
 import { makeProviderData } from '@mth/hooks'
+import { Period } from '@mth/models'
 import { SEMESTER_TYPE } from '@mth/screens/Admin/Curriculum/types'
 import { CustomBuiltDescriptionEdit } from '@mth/screens/Homeroom/Schedule/ScheduleBuilder/CustomBuiltDescription'
 import { extractContent, gradeShortText } from '@mth/utils'
-import { Course, Period, ScheduleData, Subject, Title } from '../../types'
+import { Course, ScheduleData, Subject, Title } from '../../types'
 import { OnSiteSplitEnrollmentEdit } from '../OnSiteSplitEnrollmentEdit'
 import { OnSiteSplitEnrollment } from '../OnSiteSplitEnrollmentEdit/types'
 import { scheduleBuilderClasses } from '../styles'
@@ -507,7 +508,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
     }
 
     if (multiProvider && schedule.Period) {
-      schedule.Period.Subjects = schedule.Period.Subjects.filter(
+      schedule.Period.Subjects = schedule.Period.Subjects?.filter(
         (subject) =>
           (subject.Titles || subject.AltTitles).filter(
             (title) =>
@@ -515,7 +516,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
               -1,
           ).length > 0,
       )
-      schedule.Period.Subjects.map((subject) => {
+      schedule.Period.Subjects?.map((subject) => {
         subject.Titles = subject.Titles.filter(
           (title) =>
             title.Courses.concat(title.AltCourses).findIndex((course) => course.provider_id === multiProvider.id) > -1,
@@ -528,24 +529,16 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
           title.Courses = title.Courses.filter((course) => course.provider_id === multiProvider.id)
           title.AltCourses = title.AltCourses.filter((course) => course.provider_id === multiProvider.id)
         })
-        subject.Courses = subject.Courses.filter((course) => course.provider_id === multiProvider.id)
-        subject.AltCourses = subject.AltCourses.filter((course) => course.provider_id === multiProvider.id)
       })
     }
 
     let newSubject: Subject | undefined = undefined
     let newTitle: Title | undefined = undefined
     let newCourse: Course | undefined = undefined
-    schedule.Period?.Subjects.map((subject) => {
-      subject.Providers = makeProviderData(subject.Courses, subject.AltCourses)
+    schedule.Period?.Subjects?.map((subject) => {
       if (subject.subject_id === schedule.Subject?.subject_id) {
         newSubject = subject
       }
-      subject.Courses.concat(subject.AltCourses).map((course) => {
-        if (course.id === schedule.Course?.id) {
-          schedule.Course = course
-        }
-      })
       subject.Titles.concat(subject.AltTitles).map((title) => {
         title.Providers = makeProviderData(title.Courses, title.AltCourses)
         if (title.title_id === schedule.Title?.title_id) {
@@ -783,7 +776,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
             <Box sx={{ paddingRight: '50px' }}>
               {!!item.rawData.Period &&
                 ((editable(item.rawData) &&
-                  (item.rawData.Period.Subjects?.length > 1 ||
+                  ((item.rawData.Period.Subjects?.length && item.rawData.Period.Subjects?.length > 1) ||
                     (item.rawData.Period.Subjects?.length === 1 &&
                       (item.rawData.Period.Subjects?.[0]?.Titles?.length > 1 ||
                         item.rawData.Period.Subjects?.[0]?.AltTitles?.length)))) ||

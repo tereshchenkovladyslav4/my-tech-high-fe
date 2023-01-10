@@ -158,6 +158,12 @@ export const getStudentDetail = gql`
         status
         date_updated
       }
+      status_history {
+        student_id
+        school_year_id
+        status
+        date_updated
+      }
       person {
         person_id
         email
