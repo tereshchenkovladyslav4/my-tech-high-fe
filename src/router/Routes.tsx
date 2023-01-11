@@ -3,6 +3,7 @@
 import React, { useContext } from 'react'
 import { find } from 'lodash'
 import { Redirect, Route, Switch } from 'react-router-dom'
+import { CustomModal } from '@mth/components/CustomModal/CustomModals'
 import { MthRoute } from '@mth/enums'
 import { Schedule } from '@mth/screens/Homeroom/Schedule'
 import { QUICKLINK_TYPE } from '../components/QuickLink/QuickLinkCardProps'
@@ -29,11 +30,35 @@ export const Routes: React.FC = () => {
         path={`${MthRoute.HOMEROOM + MthRoute.ENROLLMENT}/:id`}
         children={({ match }) => {
           const currStudent = find(students, { student_id: match?.params.id })
-          const packetAccepted = currStudent.packets?.length > 0 && currStudent.packets?.at(-1).status === 'Accepted'
+          const packetAccepted =
+            currStudent?.packets &&
+            currStudent.packets?.length > 0 &&
+            currStudent?.packets &&
+            currStudent?.packets?.at?.(-1)?.status === 'Accepted'
           if (currStudent === undefined) {
-            return <Homeroom />
+            return (
+              <CustomModal
+                showCancel={false}
+                title='Alert'
+                description='Student is not enrolled/not existing'
+                confirmStr='Ok'
+                onClose={() => {
+                  if (typeof window !== 'undefined') {
+                    window.location.href = '/homeroom'
+                  }
+                }}
+                onConfirm={() => {
+                  if (typeof window !== 'undefined') {
+                    window.location.href = '/homeroom'
+                  }
+                }}
+              />
+            )
           } else {
-            return currStudent.applications.length > 0 && currStudent.applications.at(-1).status === 'Accepted' ? (
+            return currStudent?.applications &&
+              currStudent.applications.length > 0 &&
+              currStudent?.applications &&
+              currStudent?.applications?.at?.(-1)?.status === 'Accepted' ? (
               packetAccepted ? (
                 <Enrollment id={match?.params.id} disabled={true} />
               ) : (

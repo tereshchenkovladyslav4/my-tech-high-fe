@@ -14,20 +14,27 @@ import { MthTableField, MthTableRowItem } from '@mth/components/MthTable/types'
 import { PageBlock } from '@mth/components/PageBlock'
 import { Pagination } from '@mth/components/Pagination/Pagination'
 import { WarningModal } from '@mth/components/WarningModal/Warning'
-import { MthColor, Order } from '@mth/enums'
+import { MthColor, Order, ResourceRequestAction } from '@mth/enums'
 import {
   acceptResourceRequestsMutation,
   deleteResourceRequestsMutation,
   emailResourceRequestsMutation,
   removeResourceRequestsMutation,
+  updateResourceRequestMutation,
 } from '@mth/graphql/mutation/resource-request'
 import { getResourceRequestsQuery } from '@mth/graphql/queries/resource-request'
 import { Email, ResourceRequest } from '@mth/models'
 import { SchoolYearDropDown } from '@mth/screens/Admin/Components/SchoolYearDropdown'
-import { ResourceRequestsTableProps } from '@mth/screens/Admin/ResourceRequests/ResourceRequestsTable/type'
+import {
+  ResourceRequestsFileType,
+  ResourceRequestsTableProps,
+  UpdateResourceRequestVM,
+} from '@mth/screens/Admin/ResourceRequests/ResourceRequestsTable/type'
 import { mthButtonClasses } from '@mth/styles/button.style'
 import { gradeShortText, resourceRequestCost, resourceRequestStatus, studentStatusText } from '@mth/utils'
+import { FileUploadModal } from '../../HomeRoom/Components/FileUploadModal'
 import ResourceRequestEdit from '../ResourceRequestEdit/ResourceRequestEdit'
+import { SuccessModal } from '../SuccessModal'
 
 export const ResourceRequestsTable: React.FC<ResourceRequestsTableProps> = ({
   schoolYearId,
@@ -52,6 +59,14 @@ export const ResourceRequestsTable: React.FC<ResourceRequestsTableProps> = ({
   const [showEmailModal, setShowEmailModal] = useState<boolean>(false)
   const [highlightItem, setHighlightItem] = useState<ResourceRequest | undefined>()
   const [showEditModal, setShowEditModal] = useState<boolean>(false)
+  const [showUploadModal, setShowUploadModal] = useState<boolean>(false)
+  const [fileFormatError, setFileFormatError] = useState<boolean>(false)
+  const [showSuccessModal, setShowSuccessModal] = useState<boolean>(false)
+  const [failedResourceRequestIds, setFailedResourceRequestIds] = useState<number[]>([])
+  const [successedResourceRequestIds, setSuccessedResourceRequestIds] = useState<number[]>([])
+  const [importedResourceRequests, setImportedResourceRequests] = useState<ResourceRequestsFileType[]>([])
+
+  const [submitSave, {}] = useMutation(updateResourceRequestMutation)
 
   const fields: MthTableField<ResourceRequest>[] = [
     {
@@ -286,23 +301,25 @@ export const ResourceRequestsTable: React.FC<ResourceRequestsTableProps> = ({
     await emailResourceRequests({
       variables: {
         emailResourceRequestsInput: {
-          resourceRequestIds: selectedItems.map((item) => item.id),
+          resourceRequestIds: successedResourceRequestIds || selectedItems.map((item) => item.id),
           from: from,
           subject: subject,
           body: body,
         },
       },
     })
+    setSuccessedResourceRequestIds([])
+    setFailedResourceRequestIds([])
     setShowEmailModal(false)
     refetch()
   }
 
-  const handleAccept = async () => {
-    if (selectedItems?.length) {
+  const handleAccept = async (items: number[]) => {
+    if (items?.length) {
       await acceptResourceRequests({
         variables: {
           resourceRequestsActionInput: {
-            resourceRequestIds: selectedItems.map((item) => item.id),
+            resourceRequestIds: items,
           },
         },
       })
@@ -349,6 +366,9 @@ export const ResourceRequestsTable: React.FC<ResourceRequestsTableProps> = ({
         tableData.map(({ rawData }) => {
           return {
             Vendor: 'Adobe',
+            'Resource Request ID': rawData?.id,
+            'Resource ID': rawData?.resource_id,
+            'Resource Level ID': rawData?.resource_level_id,
             'Resource Level': rawData?.ResourceLevel?.name,
             Submitted: moment(rawData?.created_at)?.format('MM/DD/YYYY'),
             Status: resourceRequestStatus(rawData.status),
@@ -385,6 +405,97 @@ export const ResourceRequestsTable: React.FC<ResourceRequestsTableProps> = ({
   const handleOpenEmailHistory = (data: ResourceRequest) => {
     setEmailHistory(data?.ResourceRequestEmails)
     setShowEmailHistoryModal(true)
+  }
+
+  const handleImportTemplate = async (file: File) => {
+    setFileFormatError(false)
+    const fileBuffer = await file.arrayBuffer()
+    const wb = XLSX.read(fileBuffer)
+    const ws = wb.Sheets[wb.SheetNames[0]]
+    const sheetHeader = XLSX.utils.sheet_to_json(ws, { header: 1 })[0] as string[]
+    let isFormat = false
+    if (
+      sheetHeader.includes('Vendor') &&
+      sheetHeader.includes('Resource Level') &&
+      sheetHeader.includes('Submitted') &&
+      sheetHeader.includes('Status') &&
+      sheetHeader.includes('Student ID') &&
+      sheetHeader.includes('Student First Name') &&
+      sheetHeader.includes('Student Last Name') &&
+      sheetHeader.includes('Student Email') &&
+      sheetHeader.includes('Grade') &&
+      sheetHeader.includes('Student Birthdate') &&
+      sheetHeader.includes('Parent First Name') &&
+      sheetHeader.includes('Parent Last Name') &&
+      sheetHeader.includes('Parent Email') &&
+      sheetHeader.includes('Cost') &&
+      sheetHeader.includes('Username Generator') &&
+      sheetHeader.includes('Password Generator') &&
+      sheetHeader.includes('Returning Status') &&
+      sheetHeader.includes('School Year') &&
+      sheetHeader.includes('Resource ID') &&
+      sheetHeader.includes('Resource Level ID') &&
+      sheetHeader.includes('Resource Request ID') &&
+      sheetHeader.includes('School Year Status')
+    ) {
+      isFormat = true
+    }
+    if (isFormat) {
+      const jsonData: ResourceRequestsFileType[] = XLSX.utils.sheet_to_json(ws)
+      setImportedResourceRequests(jsonData)
+      const dataToSave: UpdateResourceRequestVM[] = jsonData?.map((item: ResourceRequestsFileType) => {
+        return {
+          id: +item['Resource Request ID'],
+          resource_id: +item['Resource ID'],
+          resource_level_id: +item['Resource Level ID'],
+          username: item['Username Generator'],
+          password: item['Password Generator'],
+        }
+      })
+      dataToSave?.map(async (item: UpdateResourceRequestVM) => {
+        const response = await submitSave({
+          variables: {
+            updateResourceRequestInput: item,
+          },
+        })
+        if (!response?.data?.updateResourceRequest?.id) {
+          setFailedResourceRequestIds([...failedResourceRequestIds, +item.id])
+        }
+      })
+      setSuccessedResourceRequestIds(dataToSave?.map((item) => +item?.id))
+      setShowSuccessModal(true)
+      setShowUploadModal(false)
+    } else {
+      setFileFormatError(true)
+    }
+  }
+
+  const handleDownloadErros = () => {
+    const wb = XLSX.utils.book_new()
+    const ws = XLSX.utils.json_to_sheet(
+      importedResourceRequests
+        ?.filter((item) => failedResourceRequestIds?.findIndex((x) => x == +item['Resource Request ID']) > -1)
+        .map((item) => {
+          return item
+        }),
+    )
+    XLSX.utils.book_append_sheet(wb, ws, 'Blank')
+    XLSX.writeFile(wb, 'resource-requests-errors.xlsx')
+  }
+
+  const handleAction = (value: ResourceRequestAction) => {
+    if (value === ResourceRequestAction.ACCEPTED_EMAIL) {
+      handleAccept(successedResourceRequestIds)
+      setShowEmailModal(true)
+    } else if (value === ResourceRequestAction.ACCEPTED) {
+      handleAccept(successedResourceRequestIds)
+      setSuccessedResourceRequestIds([])
+      setFailedResourceRequestIds([])
+    } else {
+      setSuccessedResourceRequestIds([])
+      setFailedResourceRequestIds([])
+    }
+    setShowSuccessModal(false)
   }
 
   useEffect(() => {
@@ -469,7 +580,7 @@ export const ResourceRequestsTable: React.FC<ResourceRequestsTableProps> = ({
         <Button sx={mthButtonClasses.primary} onClick={() => handleDownloadResourceRequests()}>
           Download
         </Button>
-        <Button sx={mthButtonClasses.green} onClick={() => handleAccept()}>
+        <Button sx={mthButtonClasses.green} onClick={() => handleAccept(selectedItems?.map((item) => +item.id))}>
           Accept
         </Button>
         <Button sx={mthButtonClasses.orange} onClick={() => handleRemove()}>
@@ -480,7 +591,9 @@ export const ResourceRequestsTable: React.FC<ResourceRequestsTableProps> = ({
         </Button>
       </Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
-        <Button sx={mthButtonClasses.darkGray}>Import</Button>
+        <Button sx={mthButtonClasses.darkGray} onClick={() => setShowUploadModal(true)}>
+          Import
+        </Button>
         <Pagination
           setParentLimit={handleChangePageLimit}
           handlePageChange={handlePageChange}
@@ -504,6 +617,15 @@ export const ResourceRequestsTable: React.FC<ResourceRequestsTableProps> = ({
           onSortChange={handleSort}
         />
       </Box>
+
+      <FileUploadModal
+        open={showUploadModal}
+        onClose={() => {
+          setShowUploadModal(false)
+        }}
+        handleFile={handleImportTemplate}
+        isError={fileFormatError}
+      />
 
       {showNoSelectError && (
         <WarningModal
@@ -543,6 +665,15 @@ export const ResourceRequestsTable: React.FC<ResourceRequestsTableProps> = ({
             resource: 'Resource Title',
           }}
           handleSchedulesByStatus={() => {}}
+        />
+      )}
+
+      {showSuccessModal && (
+        <SuccessModal
+          failedResourceRequestIds={failedResourceRequestIds}
+          successedResourceRequestIds={successedResourceRequestIds}
+          handleAction={handleAction}
+          handleDownloadErrors={handleDownloadErros}
         />
       )}
 

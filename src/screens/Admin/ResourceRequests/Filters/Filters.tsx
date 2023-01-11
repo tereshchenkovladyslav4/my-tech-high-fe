@@ -74,7 +74,7 @@ export const Filters: React.FC<FiltersProps> = ({ schoolYearId, schoolYear, setF
   return (
     <PageBlock>
       <Box display='flex' flexDirection='row' onClick={() => setExpanded(!expanded)}>
-        <Subtitle fontWeight='700' color={MthColor.MTHBLUE} sx={{ cursor: 'pointer', mr: 1 }}>
+        <Subtitle fontWeight='700' color={MthColor.MTHBLUE} sx={{ cursor: 'pointer', mr: 1, fontSize: '20px' }}>
           Filter
         </Subtitle>
         <ExpandMoreIcon
@@ -98,6 +98,7 @@ export const Filters: React.FC<FiltersProps> = ({ schoolYearId, schoolYear, setF
                 checkboxLists={studentStatusItems}
                 values={studentStatuses}
                 setValues={setStudentStatuses}
+                labelSx={{ fontSize: '14px' }}
                 haveSelectAll={false}
               />
               <MthCheckboxList
@@ -106,6 +107,7 @@ export const Filters: React.FC<FiltersProps> = ({ schoolYearId, schoolYear, setF
                 values={statuses}
                 setValues={setStatuses}
                 haveSelectAll={false}
+                labelSx={{ fontSize: '14px' }}
               />
               <MthCheckboxList
                 title='Relation'
@@ -113,6 +115,7 @@ export const Filters: React.FC<FiltersProps> = ({ schoolYearId, schoolYear, setF
                 values={relations}
                 setValues={setRelations}
                 haveSelectAll={false}
+                labelSx={{ fontSize: '14px' }}
               />
             </Grid>
             <Grid item xs={6}>
@@ -122,6 +125,7 @@ export const Filters: React.FC<FiltersProps> = ({ schoolYearId, schoolYear, setF
                 values={features}
                 setValues={setFeatures}
                 haveSelectAll={false}
+                labelSx={{ fontSize: '14px' }}
               />
               <MthCheckboxList
                 title='Type'
@@ -129,6 +133,7 @@ export const Filters: React.FC<FiltersProps> = ({ schoolYearId, schoolYear, setF
                 values={types}
                 setValues={setTypes}
                 haveSelectAll={false}
+                labelSx={{ fontSize: '14px' }}
               />
             </Grid>
           </Grid>
@@ -140,6 +145,7 @@ export const Filters: React.FC<FiltersProps> = ({ schoolYearId, schoolYear, setF
                 values={resources}
                 setValues={setResources}
                 haveSelectAll={true}
+                labelSx={{ fontSize: '14px' }}
               />
             </Grid>
             <Grid item xs={6} sx={{ overflowY: 'auto', height: '460px' }}>
@@ -149,6 +155,7 @@ export const Filters: React.FC<FiltersProps> = ({ schoolYearId, schoolYear, setF
                 values={courses}
                 setValues={setCourses}
                 haveSelectAll={true}
+                labelSx={{ fontSize: '14px' }}
               />
             </Grid>
           </Grid>

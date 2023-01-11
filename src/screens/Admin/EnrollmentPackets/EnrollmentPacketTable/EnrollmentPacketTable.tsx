@@ -9,6 +9,7 @@ import { ApplicationEmailModal as EmailModal } from '@mth/components/EmailModal/
 import { EditYearModal } from '@mth/components/EmailModal/EditYearModal'
 import { Pagination } from '@mth/components/Pagination/Pagination'
 import { SortableTable } from '@mth/components/SortableTable/SortableTable'
+import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { WarningModal } from '@mth/components/WarningModal/Warning'
 import { ENROLLMENT_PACKET_HEADCELLS } from '@mth/constants'
@@ -93,7 +94,19 @@ export const EnrollmentPacketTable: React.FC = () => {
           ? moment(packet.date_submitted || packet.deadline).format('MM/DD/YY') // will update again
           : '',
       status: packet.status + (packet.is_age_issue && packet.status != 'Age Issue' ? ' (Age Issue)' : ''),
-      deadline: moment(packet.deadline).format('MM/DD/YY'),
+      deadline: (
+        <Paragraph
+          size={'large'}
+          sx={{
+            color:
+              moment(new Date()).format('YYYY-MM-DD') > moment(packet.deadline).format('YYYY-MM-DD')
+                ? MthColor.RED
+                : MthColor.BLACK,
+          }}
+        >
+          {moment(packet.deadline).format('MM/DD/YY')}
+        </Paragraph>
+      ),
       student: (
         <Box sx={{ cursor: 'pointer', color: MthColor.MTHBLUE }}>
           {`${packet.student.person?.last_name}, ${packet.student.person?.first_name}`}
