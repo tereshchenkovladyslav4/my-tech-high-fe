@@ -48,6 +48,7 @@ export type MthTableProps<T> = {
   onSortChange?: (property: string, order: Order) => void
   sx?: SxProps<Theme>
   isTableCellBorder?: boolean
+  labelSize?: number
 }
 
 export type MthTableRowProps<T> = {

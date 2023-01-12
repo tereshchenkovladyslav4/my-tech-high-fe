@@ -91,16 +91,18 @@ export const DropDown: React.FC<DropDownProps> = ({
               <Select
                 size='small'
                 value={value}
-                IconComponent={(props) => (
-                  <ExpandMoreIcon style={{ color: color ?? 'blue', right: '-15px' }} {...props} />
-                )}
+                IconComponent={(props) => <ExpandMoreIcon style={{ color: color ?? 'blue' }} {...props} />}
                 disableUnderline
                 onChange={(e) => handleChange(e.target?.value)}
                 displayEmpty
                 renderValue={
                   !!value || value === 0
-                    ? () => <span style={{ color }}>{dropDownItems?.find((item) => item.value == value)?.label}</span>
-                    : () => <span style={{ color: MthColor.BLUE_GRDIENT }}>{placeholder}</span>
+                    ? () => (
+                        <span style={{ color, marginRight: '15px' }}>
+                          {dropDownItems?.find((item) => item.value == value)?.label}
+                        </span>
+                      )
+                    : () => <span style={{ color: MthColor.BLUE_GRDIENT, marginRight: '15px' }}>{placeholder}</span>
                 }
                 sx={{ ...dropdownClasses.borderNone }}
               >

@@ -1,3 +1,4 @@
+import { Application } from './application.model'
 import { Parent } from './parent.model'
 import { Person } from './person.model'
 import { StudentGradeLevel } from './student-grade-level.model'
@@ -9,4 +10,5 @@ export type Student = {
   parent: Parent
   status: StudentStatusModel[]
   grade_levels: StudentGradeLevel[]
+  applications?: Application[]
 }

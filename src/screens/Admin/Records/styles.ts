@@ -63,4 +63,12 @@ export const recordClassess = {
     justifyContent: 'space-between',
     alignItems: 'end',
   },
+  expandIcon: {
+    color: MthColor.MTHBLUE,
+    verticalAlign: 'bottom',
+    cursor: 'pointer',
+    marginBottom: 'auto',
+    marginTop: 'auto',
+    fontSize: '25px',
+  },
 }

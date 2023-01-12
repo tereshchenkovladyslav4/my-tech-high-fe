@@ -16,7 +16,7 @@ import {
   Typography,
 } from '@mui/material'
 import { Box } from '@mui/system'
-import moment from 'moment'
+import moment from 'moment-timezone'
 import { DropDown } from '@mth/components/DropDown/DropDown'
 import { DropDownItem } from '@mth/components/DropDown/types'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
@@ -37,7 +37,9 @@ import { GetSchoolsPartner } from '../../SchoolOfEnrollment/services'
 import { getStudentDetail, getSchoolYearsByRegionId } from '../services'
 import { StudentFilters } from './components/StudentFilters'
 
-type StudentTemp = {
+moment.tz.setDefault('MST')
+
+export type StudentTemp = {
   student_id: number
   special_ed: string
   diploma_seeking: string
@@ -47,6 +49,7 @@ type StudentTemp = {
   school_year_id: number
   school_partner_id: number
   school_partner_id_updated: boolean
+  brith?: string
 }
 
 type StudentProfileProps = {
@@ -184,7 +187,7 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
     } else return []
   }, [schoolPartnerData])
 
-  const [withdrawalStatus, setWithdrawalStatus] = useState('')
+  const [withdrawalStatus, setWithdrawalStatus] = useState<string>('')
   //  Load withdrawal status from database
   const { data: withdrawalStatusData } = useQuery(getWithdrawalStatusQuery, {
     variables: {
@@ -431,6 +434,7 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
           currentUserData.student.applications.length && currentUserData.student.applications[0].school_year_id,
         school_partner_id: currentUserData.student?.currentSoe?.[0]?.school_partner_id,
         school_partner_id_updated: false,
+        brith: currentUserData?.student?.person.date_of_birth,
       })
       setOriginStudentStatus({
         status: currentUserData?.student?.status?.length && currentUserData.student.status.at(-1).status,

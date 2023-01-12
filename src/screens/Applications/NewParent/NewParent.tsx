@@ -490,9 +490,7 @@ export const NewParent: React.FC = () => {
             values
               .find((x) => x.slug == v.additional_question) // drop down addintion question
               ?.options.find(
-                (x) =>
-                  x.action == 2 &&
-                  x.value === getMatchField(field, values.find((y) => y.slug == v.additional_question)?.slug),
+                (x) => x.action == 2 && x.value === values.find((y) => y.slug == v.additional_question)?.response,
               ) != null &&
             values.find((x) => x.slug == v.additional_question)?.active) ||
           (values.find((x) => x.slug == v.additional_question)?.type == QUESTION_TYPE.MULTIPLECHOICES &&
@@ -529,11 +527,7 @@ export const NewParent: React.FC = () => {
             values
               .find((x) => x.slug == v.additional_question) // drop down addintion question
               ?.options.find(
-                (x) =>
-                  x.action == 2 &&
-                  x.value ===
-                    (field[values.find((y) => y.slug == v.additional_question)?.slug] ||
-                      field.meta?.[values.find((y) => y.slug == v.additional_question)?.slug]),
+                (x) => x.action == 2 && x.value === values.find((y) => y.slug == v.additional_question)?.response,
               ) != null &&
             values.find((x) => x.slug == v.additional_question)?.active) ||
           (values.find((x) => x.slug == v.additional_question)?.type == QUESTION_TYPE.MULTIPLECHOICES &&

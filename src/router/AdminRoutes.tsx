@@ -158,6 +158,16 @@ export const AdminRoutes: React.FC = () => {
           return <EditAssignment masterId={Number(match?.params?.id)} />
         }}
       />
+
+      <Route
+        path={`${MthRoute.HOMEROOM_LEARNING_LOGS}/edit/:id/edit-assignment/:assignmentId`}
+        exact
+        children={({ match }) => {
+          return (
+            <EditAssignment masterId={Number(match?.params?.id)} assignmentId={Number(match?.params?.assignmentId)} />
+          )
+        }}
+      />
       <Route exact path={MthRoute.HOMEROOM_CHECKLIST}>
         <CheckList />
       </Route>

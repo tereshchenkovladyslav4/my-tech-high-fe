@@ -25,7 +25,13 @@ import { MthColor } from '@mth/enums'
 import { mthButtonClasses } from '@mth/styles/button.style'
 import { LearningQuestionType } from '../types'
 
-const LearningQuestionItem = ({ question }: { question: LearningQuestionType[] }) => {
+const LearningQuestionItem = ({
+  question,
+  handleDeleteQuestion,
+}: {
+  question: LearningQuestionType[]
+  handleDeleteQuestion: (val: LearningQuestionType) => void
+}) => {
   const { values, setValues } = useFormikContext<LearningQuestionType[]>()
   const handleChange = (value) => {
     const q = question[0]
@@ -38,7 +44,7 @@ const LearningQuestionItem = ({ question }: { question: LearningQuestionType[] }
       value = q.response
     }
     const newValues = values.map((v) =>
-      v.id == q.id
+      v.slug == q.slug
         ? {
             ...v,
             response: value,
@@ -52,10 +58,11 @@ const LearningQuestionItem = ({ question }: { question: LearningQuestionType[] }
         if (
           (parent?.type !== QuestionTypes.AGREEMENT &&
             parent?.response &&
-            parent?.options?.find((x) => x.value == parent.response || parent.response.toString().indexOf(x.value) >= 0)
-              .action == 2 &&
+            parent?.options?.find(
+              (x) => x.value == parent.response || parent.response?.toString().indexOf(x.value) >= 0,
+            ).action == 2 &&
             parent?.active) ||
-          (parent?.type === QuestionTypes.AGREEMENT && value)
+          (parent?.type === QuestionTypes.AGREEMENT && !!parent.response)
         ) {
           newValues[index] = {
             ...item,
@@ -80,7 +87,7 @@ const LearningQuestionItem = ({ question }: { question: LearningQuestionType[] }
       case QuestionTypes.TEXTBOX:
         return (
           <Box>
-            <MthBulletEditor setValue={() => handleChange()} value='' />
+            <MthBulletEditor setValue={(val) => handleChange(val)} value='' />
           </Box>
         )
       case QuestionTypes.DROPDOWN:
@@ -144,7 +151,7 @@ const LearningQuestionItem = ({ question }: { question: LearningQuestionType[] }
                 </IconButton>
               </Tooltip>
               <Tooltip title='Delete'>
-                <IconButton>
+                <IconButton onClick={() => handleDeleteQuestion(question[0])}>
                   <DeleteForeverOutlinedIcon />
                 </IconButton>
               </Tooltip>
@@ -254,7 +261,7 @@ const LearningQuestionItem = ({ question }: { question: LearningQuestionType[] }
               </IconButton>
             </Tooltip>
             <Tooltip title='Delete'>
-              <IconButton>
+              <IconButton onClick={() => handleDeleteQuestion(question[0])}>
                 <DeleteForeverOutlinedIcon />
               </IconButton>
             </Tooltip>
@@ -274,11 +281,11 @@ const LearningQuestionItem = ({ question }: { question: LearningQuestionType[] }
 
 const SortableItem = SortableElement(LearningQuestionItem)
 
-const LearningQuestionList = ({ learningQuestionList }) => {
-  const SortableListContainer = SortableContainer(({ items }: { items: LearningQuestionType[] }) => (
+const LearningQuestionList = ({ learningQuestionList, handleDeleteQuestion }) => {
+  const SortableListContainer = SortableContainer(({ items }: { items: LearningQuestionType[][] }) => (
     <List>
       {items.map((item, index) => (
-        <SortableItem question={item} key={index} index={index} />
+        <SortableItem question={item} key={index} index={index} handleDeleteQuestion={handleDeleteQuestion} />
       ))}
     </List>
   ))
@@ -288,22 +295,21 @@ const LearningQuestionList = ({ learningQuestionList }) => {
       .filter(
         (v) =>
           !v.parent_slug ||
+          v.active ||
           v.parent_slug == '' ||
           (values.find((x) => x.slug == v.parent_slug)?.response !== '' &&
             values
               .find((x) => x.slug == v.parent_slug)
-              ?.options.find(
+              ?.options?.find(
                 (x) =>
                   x.action == 2 &&
                   (x.value == values.find((y) => y.slug == v.parent_slug)?.response ||
                     values
                       .find((y) => y.slug == v.parent_slug)
-                      ?.response.toString()
+                      ?.response?.toString()
                       .indexOf(x.value) >= 0),
               ) != null &&
-            values.find((x) => x.slug == v.parent_slug)?.active) ||
-          (values.find((x) => x.slug == v.parent_slug)?.type === QuestionTypes.AGREEMENT &&
-            !!values.find((x) => x.slug == v.parent_slug)?.response), // Parent
+            values.find((x) => x.slug == v.parent_slug)?.active),
       )
       .map((v) => {
         const arr = [v]
@@ -346,7 +352,7 @@ const LearningQuestionList = ({ learningQuestionList }) => {
                   group?.forEach((q) => {
                     newValues.push({
                       ...q,
-                      sequence: newValues.length + 1,
+                      order: newValues.length + 1,
                     })
                   })
                 })

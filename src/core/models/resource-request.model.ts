@@ -13,7 +13,6 @@ export type ResourceRequest = {
   updated_at: number
   Student: Student
   Resource: HomeroomResource
-
   ResourceLevel: ResourceLevel
   ResourceRequestEmails: ResourceRequestEmail[]
 }

@@ -104,7 +104,7 @@ export const EnrollmentPacketDocument: React.FC<EnrollmentPacketDocumentProps> =
                   return (
                     <Box sx={{ display: 'flex', gap: 4 }}>
                       <Box sx={{ minWidth: '200px' }}>
-                        <Paragraph key={index} color={MthColor.SYSTEM_06} sx={{ fontSize: '14px' }} fontWeight='400'>
+                        <Paragraph key={index} color={MthColor.SYSTEM_01} sx={{ fontSize: '14px' }} fontWeight='400'>
                           {q.question}
                         </Paragraph>
                       </Box>

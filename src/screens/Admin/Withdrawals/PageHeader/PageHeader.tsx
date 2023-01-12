@@ -17,7 +17,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({
     <Box sx={headerClassess.pageHeader}>
       <Box sx={headerClassess.pageHeaderContent}>
         <Subtitle size='medium' fontWeight='700'>
-          Withdraws
+          Withdrawals
         </Subtitle>
         <Subtitle size='medium' fontWeight='700' sx={{ marginLeft: 2 }}>
           {totalWithdrawals}

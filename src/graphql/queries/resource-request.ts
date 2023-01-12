@@ -41,6 +41,10 @@ export const getResourceRequestsQuery = gql`
               email
             }
           }
+          applications {
+            midyear_application
+            school_year_id
+          }
           status {
             school_year_id
             status
@@ -55,6 +59,7 @@ export const getResourceRequestsQuery = gql`
           price
           std_user_name
           std_password
+          title
           ResourceLevels {
             resource_level_id
             name

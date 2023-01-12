@@ -28,7 +28,6 @@ type openAlertSaveType = {
 
 const Settings: FunctionComponent = () => {
   const classes = useStyles
-
   const [selectedYearId, setSelectedYearId] = useState<number>()
   const [maxPeriods, setMaxPeriods] = useState<number>()
   const [thirdParty, setThirdParty] = useState<string>()

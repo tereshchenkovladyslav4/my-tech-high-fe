@@ -3,27 +3,29 @@ import { makeStyles } from '@material-ui/styles'
 import { KeyboardArrowDown } from '@mui/icons-material'
 import { Grid, Select, MenuItem } from '@mui/material'
 import { Box } from '@mui/system'
-import moment from 'moment'
+import moment from 'moment-timezone'
 import { CustomConfirmModal } from '@mth/components/CustomConfirmModal/CustomConfirmModal'
 import { DropDown } from '@mth/components/DropDown/DropDown'
 import { DropDownItem } from '@mth/components/DropDown/types'
+import { MthDatePicker } from '@mth/components/MthDatePicker/MthDatePicker'
 import { RadioGroupOption } from '@mth/components/MthRadioGroup/types'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { MthColor, StudentStatus } from '@mth/enums'
 import { useDiplomaSeekingOptionsByStudentIdandSchoolYearId } from '@mth/hooks'
+import { StudentTemp } from '../StudentProfile'
 import { ActiveModal } from './ActiveModal'
 import { WithdrawModal } from './WithdrawModal'
 
 type StudentFiltersProps = {
   currentUserData: unknown
-  setStudentStatuData: () => void
+  setStudentStatuData: (value: StudentTemp) => void
   originStudentStatus: unknown
-  studentStatusData: unknown
-  withdrawalStatus: unknown
+  studentStatusData: StudentTemp
+  withdrawalStatus: string
   specialEdOptions: string[]
-  setWithdrawalStatus: () => void
-  setIsChanged: () => void
+  setWithdrawalStatus: (value: string) => void
+  setIsChanged: (_: boolean) => void
 }
 
 const selectStyles = makeStyles({
@@ -134,7 +136,7 @@ const useStyles = {
   formRow: {
     display: 'flex',
     alignItems: 'center',
-    height: '39px',
+    paddingY: '10px',
     background: '#FAFAFA',
     '&:nth-child(even)': {
       background: '#fff',
@@ -220,6 +222,7 @@ export const StudentFilters: React.FC<StudentFiltersProps> = ({
   const [showActiveModal, setShowActiveModal] = useState<boolean>(false)
   const [showConfirmModal, setShowConfirmModal] = useState<boolean>(false)
   const [diplomaSeeking, setDiplomaSeeking] = useState<string>('')
+  const [editingDOB, setEditingDOB] = useState<boolean>(false)
   const [status, setStatus] = useState<DropDownItem[]>([
     {
       label: ' ',
@@ -295,6 +298,12 @@ export const StudentFilters: React.FC<StudentFiltersProps> = ({
     } else {
       setStudentStatus(e.target.value)
       setStudentStatuData({ ...studentStatusData, ...{ status: e.target.value } })
+    }
+  }
+
+  const handleChangeBirthDay = (value: string | null) => {
+    if (value) {
+      setStudentStatuData({ ...studentStatusData, ...{ brith: value } })
     }
   }
 
@@ -641,12 +650,24 @@ export const StudentFilters: React.FC<StudentFiltersProps> = ({
                   Date of Birth
                   <Box sx={classes.labelAfter as Record<string, unknown>}></Box>
                 </Subtitle>
-                <Subtitle sx={classes.formValue as Record<string, unknown>} fontWeight='500'>
-                  {currentUserData.student.person.date_of_birth &&
-                    moment(currentUserData.student.person.date_of_birth).format('MM/DD/YYYY')}
-                  {currentUserData.student.person.date_of_birth &&
-                    `(${moment().diff(currentUserData.student.person.date_of_birth, 'years')})`}
-                </Subtitle>
+                {!editingDOB ? (
+                  <Subtitle
+                    sx={{ ...(classes.formValue as Record<string, unknown>), cursor: 'pointer' }}
+                    fontWeight='500'
+                    onClick={() => setEditingDOB(true)}
+                  >
+                    {studentStatusData?.brith && moment(studentStatusData?.brith).tz('UTC').format('MM/DD/YYYY')}
+                    {studentStatusData?.brith && `(${moment().tz('UTC').diff(studentStatusData?.brith, 'years')})`}
+                  </Subtitle>
+                ) : (
+                  <Box sx={{ paddingX: '30px' }}>
+                    <MthDatePicker
+                      date={moment(studentStatusData?.brith).tz('UTC').format('MM/DD/YYYY')}
+                      label={'Date Of Birth'}
+                      handleChange={handleChangeBirthDay}
+                    />
+                  </Box>
+                )}
               </Box>
               {applications.map((application, idx) => (
                 <Box sx={classes.formRow} key={idx}>
@@ -662,8 +683,8 @@ export const StudentFilters: React.FC<StudentFiltersProps> = ({
                   </Subtitle>
                   <Box sx={classes.formRow}>
                     <Subtitle sx={classes.formValue as Record<string, unknown>} fontWeight='500'>
-                      {currentUserData.student.grade_levels &&
-                        ordinal(currentUserData.student.grade_levels[0].grade_level)}{' '}
+                      {currentUserData?.student?.grade_levels &&
+                        ordinal(currentUserData?.student?.grade_levels[0].grade_level)}{' '}
                       Grade
                       <Box sx={classes.labelAfter as Record<string, unknown>}></Box>
                     </Subtitle>

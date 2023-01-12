@@ -157,7 +157,13 @@ const MasterHoomroom: React.FC<{ masterId: number }> = ({ masterId }) => {
         return (
           <Box display={'flex'} flexDirection='row' justifyContent={'flex-end'} flexWrap={'wrap'}>
             <Tooltip title='Edit' placement='top'>
-              <IconButton color='primary' className='actionButton'>
+              <IconButton
+                color='primary'
+                className='actionButton'
+                onClick={() =>
+                  history.push(`${MthRoute.HOMEROOM_LEARNING_LOGS}/edit/${masterId}/edit-assignment/${item.rawData.id}`)
+                }
+              >
                 <CreateIcon />
               </IconButton>
             </Tooltip>

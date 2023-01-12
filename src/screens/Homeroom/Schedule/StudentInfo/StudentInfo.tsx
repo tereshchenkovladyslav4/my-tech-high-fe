@@ -20,7 +20,7 @@ const StudentInfo: React.FC<StudentInfoProps> = ({ studentInfo }) => {
         )}
       </Box>
       <Paragraph size={'large'} sx={studentInfoClassess.text}>
-        {studentInfo?.schoolDistrict}
+        {studentInfo?.schoolOfEnrollment || 'Unassigned'}
       </Paragraph>
     </Box>
   )

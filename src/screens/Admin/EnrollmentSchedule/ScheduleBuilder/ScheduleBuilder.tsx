@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { useMutation, useQuery } from '@apollo/client'
+import { useMutation } from '@apollo/client'
 import { Button, Card, Typography } from '@mui/material'
 import { Box } from '@mui/system'
 import { Prompt, useHistory } from 'react-router-dom'
@@ -16,15 +16,13 @@ import {
   sendUpdatesRequiredEmailMutation,
 } from '@mth/graphql/mutation/schedule'
 import { saveSchedulePeriodMutation } from '@mth/graphql/mutation/schedule-period'
-import { useActiveScheduleSchoolYears, useStudentSchedulePeriods } from '@mth/hooks'
+import { useActiveScheduleSchoolYears, useStudentInfo, useStudentSchedulePeriods } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { ScheduleEditor } from '@mth/screens/Homeroom/Schedule/ScheduleBuilder/ScheduleEditor'
 import { scheduleBuilderClasses } from '@mth/screens/Homeroom/Schedule/ScheduleBuilder/styles'
 import { ScheduleData, StudentScheduleInfo } from '@mth/screens/Homeroom/Schedule/types'
-import { StudentType } from '@mth/screens/HomeroomStudentProfile/Student/types'
 import { calculateGrade } from '@mth/utils'
 import { SEMESTER_TYPE } from '../../Curriculum/types'
-import { getStudentDetail } from '../../UserProfile/services'
 import Header from './Header/Header'
 import { RequireUpdateModal } from './RequireUpdateModal'
 import { ScheduleHistory } from './ScheduleHistory'
@@ -51,12 +49,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
   const [showReset, setShowReset] = useState(false)
   const [diplomaSeekingPath, setDiplomaSeekingPath] = useState<DiplomaSeekingPath>(DiplomaSeekingPath.BOTH)
 
-  const { loading: studentInfoLoading, data: studentInfoData } = useQuery(getStudentDetail, {
-    variables: {
-      student_id: studentId,
-    },
-    fetchPolicy: 'network-only',
-  })
+  const { studentInfo: studentInfoData } = useStudentInfo(+studentId)
 
   const {
     selectedYearId,
@@ -355,22 +348,23 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
   }
 
   useEffect(() => {
-    if (!studentInfoLoading && studentInfoData) {
-      const student: StudentType = studentInfoData?.student
-      const specialEdOptions = student?.current_school_year_status?.special_ed_options?.split(',')
+    if (studentInfoData) {
+      const specialEdOptions = studentInfoData.current_school_year_status?.special_ed_options?.split(',')
       let studentSpecialEd = ''
       specialEdOptions?.map((item, index) => {
-        if (index == student?.special_ed) {
+        if (index == studentInfoData.special_ed) {
           studentSpecialEd = item
         }
       })
       setStudentInfo({
-        name: `${student?.person?.first_name} ${student?.person?.last_name}`,
-        grade: calculateGrade(student, schoolYears, selectedYear),
-        schoolDistrict: student?.person?.address?.school_district || '',
+        name: `${studentInfoData.person?.first_name} ${studentInfoData.person?.last_name}`,
+        grade: calculateGrade(studentInfoData, schoolYears, selectedYear),
+        schoolDistrict: studentInfoData.person?.address?.school_district || '',
         specialEd: studentSpecialEd,
+        schoolOfEnrollment: studentInfoData.currentSoe?.find((item) => item?.school_year_id === selectedYearId)?.partner
+          ?.name,
       })
-      switch (student.diploma_seeking) {
+      switch (studentInfoData.diploma_seeking) {
         case 0:
           setDiplomaSeekingPath(DiplomaSeekingPath.NON_DIPLOMA_SEEKING)
           break
@@ -382,7 +376,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
           break
       }
     }
-  }, [studentInfoLoading, studentInfoData, schoolYears, selectedYear])
+  }, [studentInfoData, schoolYears, selectedYear])
 
   useEffect(() => {
     setScheduleStatus(SCHEDULE_STATUS_OPTIONS.find((item) => item.value === studentScheduleStatus) as DropDownItem)

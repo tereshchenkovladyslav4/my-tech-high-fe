@@ -24,6 +24,7 @@ import {
   useActiveScheduleSchoolYears,
   useAssessmentsBySchoolYearId,
   useDiplomaSeekingOptionsByStudentIdandSchoolYearId,
+  useStudentInfo,
 } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { getSignatureFile } from '@mth/screens/Admin/EnrollmentPackets/services'
@@ -73,6 +74,7 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
   const [isChanged, setIsChanged] = useState<boolean>(false)
   const [showUnsavedModal, setShowUnsavedModal] = useState<boolean>(false)
   const [isUpdatePeriodRequested, setIsUpdatePeriodRequested] = useState<boolean>(false)
+  const { studentInfo: studentInfoData } = useStudentInfo(+studentId)
 
   const {
     selectedYearId,
@@ -323,8 +325,8 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
   }, [signatureInfoLoading, signatureData])
 
   useEffect(() => {
-    if (student) {
-      const specialEdOptions = student.current_school_year_status?.special_ed_options?.split(',')
+    if (studentInfoData) {
+      const specialEdOptions = studentInfoData.current_school_year_status?.special_ed_options?.split(',')
       let studentSpecialEd = ''
       specialEdOptions?.map((item, index) => {
         if (index == student?.special_ed) {
@@ -332,12 +334,14 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
         }
       })
       setStudentInfo({
-        name: `${student.person?.first_name} ${student.person?.last_name}`,
-        grade: calculateGrade(student, schoolYears, selectedYear),
-        schoolDistrict: student?.person?.address?.school_district || '',
+        name: `${studentInfoData.person?.first_name} ${studentInfoData.person?.last_name}`,
+        grade: calculateGrade(studentInfoData, schoolYears, selectedYear),
+        schoolDistrict: studentInfoData.person?.address?.school_district || '',
         specialEd: studentSpecialEd,
+        schoolOfEnrollment: studentInfoData.currentSoe?.find((item) => item?.school_year_id === selectedYearId)?.partner
+          ?.name,
       })
-      switch (student.diploma_seeking) {
+      switch (studentInfoData.diploma_seeking) {
         case 0:
           setDiplomaSeekingPathStatus(DiplomaSeekingPath.NON_DIPLOMA_SEEKING)
           break
@@ -349,7 +353,7 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
           break
       }
     }
-  }, [student, schoolYears, selectedYear])
+  }, [studentInfoData, schoolYears, selectedYear])
 
   useEffect(() => {
     if (!assessmentsLoading && assessments && selectedYear) {

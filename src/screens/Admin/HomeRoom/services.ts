@@ -99,7 +99,14 @@ export const createAssignmentMutation = gql`
   mutation CreateNewAssignment($createNewAssignmentInput: CreateNewAssignmentInput!) {
     createNewAssignment(createNewAssignmentInput: $createNewAssignmentInput) {
       id
+      page_count
     }
+  }
+`
+
+export const updateAssignmentMutation = gql`
+  mutation UpdateNewAssignment($updateAssignmentInput: CreateNewAssignmentInput!) {
+    updateNewAssignment(updateAssignmentInput: $updateAssignmentInput)
   }
 `
 
@@ -156,6 +163,8 @@ export const GetLearningLogQuestionByMasterIdQuery = gql`
       required
       slug
       type
+      page
+      order
     }
   }
 `
@@ -173,5 +182,20 @@ export const DeleteMasterByIdGql = gql`
 export const DeleteClassByIdGql = gql`
   mutation DeleteClassesById($classId: Int!) {
     deleteClassesById(classId: $classId)
+  }
+`
+
+export const getAssignmentByIdGql = gql`
+  query GetAssignmentById($assignmentId: Int!) {
+    getAssignmentById(assignmentId: $assignmentId) {
+      page_count
+      reminder_date
+      title
+      teacher_deadline
+      id
+      due_date
+      auto_grade_email
+      auto_grade
+    }
   }
 `

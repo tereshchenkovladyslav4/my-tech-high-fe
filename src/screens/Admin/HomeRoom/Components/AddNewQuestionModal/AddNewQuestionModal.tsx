@@ -59,13 +59,16 @@ const AddNewQuestionModal: React.FC<AddNewQuestionModalProps> = ({ type, onClose
         question: excuseAssignmentLog,
         slug: parentSlug,
         parent_slug: '',
-        options: JSON.stringify([]),
+        active: true,
+        response: '',
       },
       {
         type: QuestionTypes.TEXTBOX,
         question: excuseAssignmentExplain,
         slug: `meta_1${+new Date()}`,
         parent_slug: parentSlug,
+        active: false,
+        response: '',
       },
     ])
   }

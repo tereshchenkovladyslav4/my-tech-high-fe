@@ -140,6 +140,10 @@ export const getStudentDetail = gql`
       currentSoe {
         school_partner_id
         school_year_id
+        partner {
+          name
+          abbreviation
+        }
       }
       packets {
         student_id

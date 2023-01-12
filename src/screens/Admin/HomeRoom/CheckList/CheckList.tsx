@@ -42,7 +42,7 @@ const CheckList: React.FC = () => {
   const [selectedYear, setSelectedYear] = useState<number>(0)
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [checkListItems, setCheckListItems] = useState<DropDownItem[]>([])
-  const [selectedCheckListItem, setSelectedCheckListItem] = useState<string | number>('independent_checklist')
+  const [selectedCheckListItem, setSelectedCheckListItem] = useState<string | number>()
   const [tableData, setTableData] = useState<MthTableRowItem<CheckListType>[]>([])
   const [fileModalOpen, setFileModalOpen] = useState<boolean>(false)
   const [searchField, setSearchField] = useState<string>('')
@@ -57,7 +57,7 @@ const CheckList: React.FC = () => {
   const [paginationLimit, setPaginationLimit] = useState<number>(Number(localStorage.getItem('pageLimit')) || 25)
   const [skip, setSkip] = useState<number>(0)
   const [fileFormatError, setFileFormatError] = useState(false)
-
+  const initialPageNumber = 1
   useEffect(() => {
     setCheckListItems([
       { label: 'Subject Checklist', value: 'subject_checklist' },
@@ -71,8 +71,14 @@ const CheckList: React.FC = () => {
       setFilters({
         ...filters,
         selectedYearId: schoolYears[0].school_year_id as number,
-        status: 'Independent Checklist',
+        status:
+          selectedCheckListItem === 'independent_checklist'
+            ? 'Independent Checklist'
+            : selectedCheckListItem === 'subject_checklist'
+            ? 'Subject Checklist'
+            : 'both',
       })
+      handlePageChange(initialPageNumber)
     }
   }, [schoolYears])
 
@@ -157,7 +163,15 @@ const CheckList: React.FC = () => {
       width: 'calc(25% - 48px)',
       formatter: (item: MthTableRowItem<CheckListType>) => {
         return (
-          <Box display={'flex'} flexDirection='row' justifyContent={'flex-end'} flexWrap={'wrap'}>
+          <Box
+            display={'flex'}
+            flexDirection='row'
+            justifyContent={'flex-end'}
+            flexWrap={'wrap'}
+            onClick={() => {
+              handleEditChecklist(item)
+            }}
+          >
             <Box sx={{ display: 'none' }}>{item.key}</Box>
             <Tooltip title='Edit' placement='top'>
               <IconButton color='primary' className='actionButton'>
@@ -232,19 +246,18 @@ const CheckList: React.FC = () => {
         }),
       )
       setTotalChecklist(total)
-    }
-  }, [checklistData])
-
-  useEffect(() => {
-    if (checklistData !== undefined) {
-      const { checklist } = checklistData
-      const { results, total } = checklist
-      setTableData(
-        results.map((res: CheckListField) => {
-          return createData(res)
-        }),
-      )
-      setTotalChecklist(total)
+      if (!selectedCheckListItem) {
+        if (results.length > 0) {
+          const checklistKeys = Object.keys(results[0])
+          setSelectedCheckListItem(
+            checklistKeys.includes('grade') && checklistKeys.includes('subject')
+              ? 'subject_checklist'
+              : 'independent_checklist',
+          )
+        } else {
+          setSelectedCheckListItem('independent_checklist')
+        }
+      }
     }
   }, [checklistData])
 
@@ -253,7 +266,7 @@ const CheckList: React.FC = () => {
     setSelectedChecklist(item)
   }
   const handleChangePageLimit = (value: number) => {
-    handlePageChange(1)
+    handlePageChange(initialPageNumber)
     setPaginationLimit(value)
   }
 
@@ -279,9 +292,9 @@ const CheckList: React.FC = () => {
     const ws = XLSX.utils.json_to_sheet(
       tableData.map(({ columns }) => {
         if (selectedCheckListItem === 'subject_checklist') {
-          return { ID: columns.checklist_id, Goal: columns.goal, Subject: columns.subject, Grade: columns.grade }
+          return { ID: columns.checklistId, Goal: columns.goal, Subject: columns.subject, Grade: columns.grade }
         } else {
-          return { ID: columns.checklist_id, Goal: columns.goal }
+          return { ID: columns.checklistId, Goal: columns.goal }
         }
       }),
     )
@@ -326,7 +339,9 @@ const CheckList: React.FC = () => {
           ...(item.Grade && { grade: item?.Grade as number }),
         }
       })
-      createChecklistSubmit(dataToSave)
+      if (dataToSave && dataToSave.length > 0) {
+        createChecklistSubmit(dataToSave)
+      }
       setFileModalOpen(false)
     } else {
       setFileFormatError(true)
@@ -337,6 +352,7 @@ const CheckList: React.FC = () => {
     setSelectedCheckListItem(value)
     const theFilterStatus = value === 'independent_checklist' ? 'Independent Checklist' : 'Subject Checklist'
     setFilters({ ...filters, status: theFilterStatus as string })
+    handlePageChange(initialPageNumber)
   }
 
   return (
@@ -348,6 +364,7 @@ const CheckList: React.FC = () => {
           setSelectedYear={(value) => {
             setSelectedYear(value)
             setFilters({ ...filters, selectedYearId: value as number })
+            handlePageChange(initialPageNumber)
           }}
           schoolYearDropdownItems={schoolYearDropdownItems}
         />
@@ -367,7 +384,7 @@ const CheckList: React.FC = () => {
           {/* import button */}
           <Box sx={{ ...checkListClass.flexCenter, gap: '24px' }}>
             <Button variant='contained' sx={checkListClass.submitBtn} onClick={() => setFileModalOpen(true)}>
-              <Subtitle sx={{ fontSize: '14px', fontWeight: '500' }}>+ Import</Subtitle>
+              <Subtitle sx={{ fontSize: '14px', fontWeight: '500' }}>Import</Subtitle>
             </Button>
             {totalChecklist && totalChecklist > 0 ? (
               <Box sx={{ cursor: 'pointer' }}>
@@ -431,6 +448,7 @@ const CheckList: React.FC = () => {
             loading={false}
             fields={selectedCheckListItem === 'subject_checklist' ? subjectFields : independentFields}
             checkBoxColor='secondary'
+            labelSize={16}
           />
         </Box>
         {editModal && (

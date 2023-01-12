@@ -37,25 +37,21 @@ export const useActiveSchoolYearsByRegionId = (
   useEffect(() => {
     if (!loading && data?.getActiveSchoolYears) {
       const schoolYearsArray: Array<DropDownItem> = []
-      data.getActiveSchoolYears
-        .filter(
-          (item: SchoolYearType) => new Date(item.date_begin) <= new Date() && new Date(item.date_end) >= new Date(),
-        )
-        .map((item: SchoolYearType): void => {
-          if (item.MainyearApplicatable) {
-            schoolYearsArray.push({
-              label: `${moment(item.date_begin).format('YYYY')}-${moment(item.date_end).format('YY')}`,
-              value: item.school_year_id,
-            })
-          }
+      data.getActiveSchoolYears.map((item: SchoolYearType): void => {
+        if (item.MainyearApplicatable) {
+          schoolYearsArray.push({
+            label: `${moment(item.date_begin).format('YYYY')}-${moment(item.date_end).format('YY')}`,
+            value: item.school_year_id,
+          })
+        }
 
-          if (item.MidyearApplicatable) {
-            schoolYearsArray.push({
-              label: `${moment(item.date_begin).format('YYYY')}-${moment(item.date_end).format('YY')} Mid-year Program`,
-              value: `${item.school_year_id}-mid`,
-            })
-          }
-        })
+        if (item.MidyearApplicatable) {
+          schoolYearsArray.push({
+            label: `${moment(item.date_begin).format('YYYY')}-${moment(item.date_end).format('YY')} Mid-year Program`,
+            value: `${item.school_year_id}-mid`,
+          })
+        }
+      })
       setDropdownItems(sortBy(schoolYearsArray, 'label'))
       setSchoolYears(data.getActiveSchoolYears)
     }

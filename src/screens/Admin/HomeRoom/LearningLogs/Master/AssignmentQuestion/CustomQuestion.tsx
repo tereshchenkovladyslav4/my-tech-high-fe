@@ -185,6 +185,7 @@ const CustomQuestion: React.FC<CustomQuestionProps> = ({
             validations: [],
             slug: `meta_${+new Date()}`,
             parentSlug: questionItem.slug,
+            active: false,
           },
         ])
       }
@@ -203,25 +204,14 @@ const CustomQuestion: React.FC<CustomQuestionProps> = ({
       if (!item.question) {
         isError = true
       }
-      if (item.options) {
-        return {
-          ...omit(item, 'parentSlug'),
-          options: JSON.stringify(item.options.filter((itemOption) => itemOption.label)),
-          default_question: false,
-          assignment_id: assignmentId,
-          validations: JSON.stringify(item.validations),
-          parent_slug: item.parentSlug,
-          grades: JSON.stringify(item.grades),
-        }
-      } else {
-        return {
-          ...omit(item, 'parentSlug'),
-          default_question: false,
-          assignment_id: assignmentId,
-          validations: JSON.stringify(item.validations),
-          parent_slug: item.parentSlug,
-          grades: JSON.stringify(item.grades),
-        }
+      return {
+        ...omit(item, 'parentSlug'),
+        options: item?.options.filter((itemOption) => itemOption.label),
+        default_question: false,
+        assignment_id: assignmentId,
+        validations: item.validations,
+        parent_slug: item.parentSlug,
+        grades: item.grades,
       }
     })
     if (isError) {

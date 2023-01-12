@@ -14,11 +14,19 @@ type EmailHistoryModalProps = {
   handleModem: () => void
   data: Email[]
   handleSubmit: () => void
+  defaultDateDirection?: string
+  defaultSubjectDirection?: string
 }
 
-export const EmailHistoryModal: React.FC<EmailHistoryModalProps> = ({ handleModem, data, handleSubmit }) => {
-  const [dateSortDirection, setDateSortDirection] = useState('')
-  const [subjectSortDirection, setSubjectSortDirection] = useState('')
+export const EmailHistoryModal: React.FC<EmailHistoryModalProps> = ({
+  handleModem,
+  data,
+  handleSubmit,
+  defaultDateDirection = '',
+  defaultSubjectDirection = '',
+}) => {
+  const [dateSortDirection, setDateSortDirection] = useState<string>(defaultDateDirection)
+  const [subjectSortDirection, setSubjectSortDirection] = useState<string>(defaultSubjectDirection)
   const [emailData, setEmailData] = useState<Email[]>(data)
   const [emailViewData, setEmailViewData] = useState<Email | undefined>()
   const [emailView, setEmailView] = useState(false)
@@ -39,29 +47,30 @@ export const EmailHistoryModal: React.FC<EmailHistoryModalProps> = ({ handleMode
     if (key === 'date') {
       if (dateSortDirection === '' || dateSortDirection === 'DESC') {
         sortedData.sort((a, b) => {
-          return moment(a.created_at).diff(moment(b.created_at), 'seconds')
+          return moment(b.created_at).diff(moment(a.created_at), 'seconds')
         })
         setEmailData(sortedData)
         setDateSortDirection('ASC')
       } else {
         sortedData.sort((a, b) => {
-          return moment(b.created_at).diff(moment(a.created_at), 'seconds')
+          return moment(a.created_at).diff(moment(b.created_at), 'seconds')
         })
         setEmailData(sortedData)
         setDateSortDirection('DESC')
       }
     } else {
       if (subjectSortDirection === '' || subjectSortDirection === 'DESC') {
-        const sort = sortBy(sortedData, 'subject')
+        const sort = sortBy(sortedData, 'subject').reverse()
         setEmailData(sort)
         setSubjectSortDirection('ASC')
       } else {
-        const sort = sortBy(sortedData, 'subject').reverse()
+        const sort = sortBy(sortedData, 'subject')
         setEmailData(sort)
         setSubjectSortDirection('DESC')
       }
     }
   }
+
   return (
     <>
       <Modal
@@ -152,7 +161,7 @@ export const EmailHistoryModal: React.FC<EmailHistoryModalProps> = ({ handleMode
                     <Typography sx={{ marginLeft: '10px' }}>{emailViewData?.from_email}</Typography>
                   </Box>
                   <Box sx={emailHistoryModalClasses.historySubject}>
-                    <Subtitle fontWeight='700' sx={{ width: '100%' }}>
+                    <Subtitle fontWeight='700' sx={{ width: '100%', color: MthColor.GRAY }}>
                       {emailViewData?.subject}
                     </Subtitle>
                   </Box>

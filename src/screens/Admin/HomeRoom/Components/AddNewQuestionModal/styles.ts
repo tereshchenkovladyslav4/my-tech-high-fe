@@ -9,6 +9,8 @@ export const addNewQuestionClasses = {
     boxShadow: 24,
     p: 4,
     borderRadius: 2,
+    maxHeight: '90vh',
+    overflow: 'auto',
   },
   modalContent: {
     display: 'flex',

@@ -50,4 +50,6 @@ export type LearningLogQuestion = {
   custom_question?: boolean
   required?: boolean
   can_upload?: boolean
+  order: number
+  page: number
 }

@@ -44,5 +44,6 @@ export const emailHistoryModalClasses = {
     minHeight: '360px',
     padding: '30px',
     marginBottom: '50px',
+    color: MthColor.GRAY,
   },
 }

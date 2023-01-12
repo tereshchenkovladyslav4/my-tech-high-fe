@@ -56,6 +56,7 @@ const MthTable = <T extends unknown>({
   onSortChange,
   sx = [],
   isTableCellBorder,
+  labelSize = 18,
 }: MthTableProps<T>): React.ReactElement => {
   const [numSelected, setNumSelected] = useState<number>(0)
   const [rowCount, setRowCount] = useState<number>(0)
@@ -163,7 +164,7 @@ const MthTable = <T extends unknown>({
                       ) : null}
                     </CssTableSortLabel>
                   ) : (
-                    field.label
+                    <Box fontSize={labelSize}>{field.label}</Box>
                   )}
                 </TableCell>
               ))}

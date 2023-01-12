@@ -88,9 +88,10 @@ export const EnrollmentPacketTable: React.FC = () => {
     return {
       id: packet.packet_id,
       submitted:
-        packet.status === PacketStatus.SUBMITTED || packet.status == PacketStatus.RESUBMITTED
-          ? moment(packet.date_submitted || packet.deadline).format('MM/DD/YY') // will update again
-          : packet.status == PacketStatus.MISSING_INFO
+        packet.status === PacketStatus.SUBMITTED ||
+        packet.status == PacketStatus.RESUBMITTED ||
+        packet.status == PacketStatus.MISSING_INFO ||
+        packet.status == PacketStatus.CONDITIONAL
           ? moment(packet.date_submitted || packet.deadline).format('MM/DD/YY') // will update again
           : '',
       status: packet.status + (packet.is_age_issue && packet.status != 'Age Issue' ? ' (Age Issue)' : ''),

@@ -23,6 +23,7 @@ export type StudentScheduleInfo = {
   grade: string
   schoolDistrict: string
   specialEd: string
+  schoolOfEnrollment?: string
 }
 
 export type StudentAssessment = {

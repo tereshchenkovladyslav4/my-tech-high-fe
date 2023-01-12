@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import ChevronRightIcon from '@mui/icons-material/ChevronRight'
+import ExpandLessIcon from '@mui/icons-material/ExpandLess'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { Box, Button, Card, Grid, TextField } from '@mui/material'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
@@ -65,23 +65,7 @@ const FilterComponent: React.FC<FilterComponentProps> = ({ setFilter }) => {
   ]
 
   const chevron = () =>
-    !expand ? (
-      <ChevronRightIcon
-        sx={{
-          color: MthColor.MTHBLUE,
-          verticalAlign: 'bottom',
-          cursor: 'pointer',
-        }}
-      />
-    ) : (
-      <ExpandMoreIcon
-        sx={{
-          color: MthColor.MTHBLUE,
-          verticalAlign: 'bottom',
-          cursor: 'pointer',
-        }}
-      />
-    )
+    !expand ? <ExpandLessIcon sx={recordClassess.expandIcon} /> : <ExpandMoreIcon sx={recordClassess.expandIcon} />
 
   const jsonStringify = (value: string[]) => {
     if (value?.length > 0) {
@@ -105,6 +89,7 @@ const FilterComponent: React.FC<FilterComponentProps> = ({ setFilter }) => {
         endDate: endDate,
       },
     })
+    setExpand(!expand)
   }
   const handleClear = () => {
     setGrades1([])
@@ -140,7 +125,7 @@ const FilterComponent: React.FC<FilterComponentProps> = ({ setFilter }) => {
   return (
     <Card sx={{ marginTop: 2, padding: 2 }}>
       <Box display='flex' flexDirection='row' onClick={() => setExpand(!expand)}>
-        <Subtitle fontWeight='700' color={MthColor.MTHBLUE} sx={{ cursor: 'pointer' }}>
+        <Subtitle fontWeight='700' color={MthColor.MTHBLUE} sx={{ cursor: 'pointer', fontSize: '20px' }}>
           Filter
         </Subtitle>
         {chevron()}
@@ -170,6 +155,7 @@ const FilterComponent: React.FC<FilterComponentProps> = ({ setFilter }) => {
                     }}
                     checkboxLists={gradeList}
                     haveSelectAll={true}
+                    labelSx={{ fontSize: '14px' }}
                   />
                 </Box>
               </Grid>
@@ -183,6 +169,7 @@ const FilterComponent: React.FC<FilterComponentProps> = ({ setFilter }) => {
                     }}
                     checkboxLists={grade2Options}
                     haveSelectAll={false}
+                    labelSx={{ fontSize: '14px' }}
                   />
                   <MthCheckboxList
                     title={'Program Year'}
@@ -192,6 +179,7 @@ const FilterComponent: React.FC<FilterComponentProps> = ({ setFilter }) => {
                     }}
                     checkboxLists={programYearList}
                     haveSelectAll={false}
+                    labelSx={{ fontSize: '14px' }}
                   />
                   <MthCheckboxList
                     title={'Status'}
@@ -201,6 +189,7 @@ const FilterComponent: React.FC<FilterComponentProps> = ({ setFilter }) => {
                     }}
                     checkboxLists={defaultStatusOptions}
                     haveSelectAll={false}
+                    labelSx={{ fontSize: '14px' }}
                   />
                 </Box>
               </Grid>
@@ -214,6 +203,7 @@ const FilterComponent: React.FC<FilterComponentProps> = ({ setFilter }) => {
                     }}
                     checkboxLists={schoolOfEnrollmentList}
                     haveSelectAll={false}
+                    labelSx={{ fontSize: '14px' }}
                   />
                   <MthCheckboxList
                     title={'Special Ed'}
@@ -223,6 +213,7 @@ const FilterComponent: React.FC<FilterComponentProps> = ({ setFilter }) => {
                     }}
                     checkboxLists={specialEdList}
                     haveSelectAll={false}
+                    labelSx={{ fontSize: '14px' }}
                   />
                 </Box>
               </Grid>
@@ -239,6 +230,7 @@ const FilterComponent: React.FC<FilterComponentProps> = ({ setFilter }) => {
                     }}
                     checkboxLists={enrollmentPacketDocumentList}
                     haveSelectAll={false}
+                    labelSx={{ fontSize: '14px' }}
                   />
                   <MthCheckboxList
                     title={'Other'}
@@ -258,6 +250,7 @@ const FilterComponent: React.FC<FilterComponentProps> = ({ setFilter }) => {
                         : defaultOtherOptions
                     }
                     haveSelectAll={false}
+                    labelSx={{ fontSize: '14px' }}
                   />
                 </Box>
               </Grid>

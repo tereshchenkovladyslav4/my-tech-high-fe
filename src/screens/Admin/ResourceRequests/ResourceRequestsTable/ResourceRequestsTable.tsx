@@ -114,8 +114,8 @@ export const ResourceRequestsTable: React.FC<ResourceRequestsTableProps> = ({
       key: 'vendor',
       label: 'Vendor',
       sortable: true,
-      formatter: () => {
-        return 'Adobe'
+      formatter: (item: MthTableRowItem<ResourceRequest>) => {
+        return item.rawData.Resource?.title
       },
     },
     {
@@ -146,7 +146,7 @@ export const ResourceRequestsTable: React.FC<ResourceRequestsTableProps> = ({
               onClick={() => handleOpenEmailHistory(item.rawData)}
             >
               {item.rawData.ResourceRequestEmails?.length
-                ? moment(item.rawData.ResourceRequestEmails[0].created_at)?.format('MM/DD/YYYY')
+                ? moment(item.rawData.ResourceRequestEmails.at(0)?.created_at)?.format('MM/DD/YYYY')
                 : ''}
             </Typography>
             <IconButton
@@ -240,9 +240,17 @@ export const ResourceRequestsTable: React.FC<ResourceRequestsTableProps> = ({
             <Typography>{resourceRequest.Student?.student_id}</Typography>
           </Box>
           <Box>
-            <Typography>{`${moment(schoolYear?.date_begin).format('YYYY')}-${moment(schoolYear?.date_end).format(
-              'YY',
-            )} Status`}</Typography>
+            {resourceRequest.Student?.applications?.find(
+              (application) => application.school_year_id == schoolYear?.school_year_id,
+            )?.midyear_application ? (
+              <Typography>{`${moment(schoolYear?.date_begin).format('YYYY')}-${moment(schoolYear?.date_end).format(
+                'YY',
+              )} Mid-year Status`}</Typography>
+            ) : (
+              <Typography>{`${moment(schoolYear?.date_begin).format('YYYY')}-${moment(schoolYear?.date_end).format(
+                'YY',
+              )} Status`}</Typography>
+            )}
             <Typography>{studentStatusText(resourceRequest.Student?.status?.[0])}</Typography>
           </Box>
           <Box>
@@ -301,7 +309,8 @@ export const ResourceRequestsTable: React.FC<ResourceRequestsTableProps> = ({
     await emailResourceRequests({
       variables: {
         emailResourceRequestsInput: {
-          resourceRequestIds: successedResourceRequestIds || selectedItems.map((item) => item.id),
+          resourceRequestIds:
+            successedResourceRequestIds.length > 0 ? successedResourceRequestIds : selectedItems.map((item) => item.id),
           from: from,
           subject: subject,
           body: body,
@@ -365,7 +374,7 @@ export const ResourceRequestsTable: React.FC<ResourceRequestsTableProps> = ({
       const ws = XLSX.utils.json_to_sheet(
         tableData.map(({ rawData }) => {
           return {
-            Vendor: 'Adobe',
+            Vendor: rawData?.Resource?.title,
             'Resource Request ID': rawData?.id,
             'Resource ID': rawData?.resource_id,
             'Resource Level ID': rawData?.resource_level_id,
@@ -642,14 +651,22 @@ export const ResourceRequestsTable: React.FC<ResourceRequestsTableProps> = ({
         <EmailHistoryModal
           handleModem={() => {}}
           handleSubmit={() => setShowEmailHistoryModal(false)}
-          data={emailHistory}
+          data={emailHistory.sort((a, b) => {
+            return moment(a.created_at).diff(moment(b.created_at), 'seconds')
+          })}
+          defaultDateDirection={'DESC'}
         />
       )}
 
       {showEmailModal && (
         <ApplicationEmailModal
           handleModem={() => setShowEmailModal(!showEmailModal)}
-          title={selectedItems.length + ' Recipients'}
+          title={
+            successedResourceRequestIds.length > 0
+              ? successedResourceRequestIds.length +
+                (successedResourceRequestIds.length > 1 ? ' Recipients' : ' Recipient')
+              : selectedItems.length + (selectedItems.length > 1 ? ' Recipients' : ' Recipient')
+          }
           handleSubmit={handleEmailSend}
           editFrom={true}
           isNonSelected={false}

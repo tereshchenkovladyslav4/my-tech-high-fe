@@ -6,6 +6,7 @@ import { MthColor, WithdrawalOption, WithdrawalStatus } from '@mth/enums'
 import { StudentStatus } from '@mth/enums'
 import { saveWithdrawalMutation } from '@mth/graphql/mutation/withdrawal'
 import { submitDiplomaAnswerGql } from '@mth/graphql/queries/diploma'
+import { Person } from '@mth/models'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { assignStudentToSOEGql } from '@mth/screens/Admin/SiteManagement/services'
 import { approveApplicationMutation } from '../Applications/services'
@@ -21,7 +22,7 @@ import {
   UpdateStudentMutation,
   getStudentDetail,
 } from './services'
-import { StudentProfile } from './StudentProfile/StudentProfile'
+import { StudentProfile, StudentTemp } from './StudentProfile/StudentProfile'
 import { useStyles } from './styles'
 
 type UserProfileProps = {
@@ -38,9 +39,20 @@ export const UserProfile: React.FC<UserProfileProps> = ({ handleClose, data, set
   const [students, setStudents] = useState([])
   const [observers, setObservers] = useState([])
   const [notes, setNotes] = useState('')
-  const [studentPerson, setStudentPerson] = useState<unknown>()
+  const [studentPerson, setStudentPerson] = useState<Person>()
   const [openObserverModal, setOpenObserverModal] = useState(false)
-  const [studentStatus, setStudentStatus] = useState({})
+  const [studentStatus, setStudentStatus] = useState<StudentTemp>({
+    student_id: 0,
+    special_ed: '',
+    diploma_seeking: '',
+    testing_preference: '',
+    status: '',
+    date: '',
+    school_year_id: 0,
+    school_partner_id: 0,
+    school_partner_id_updated: false,
+    brith: '',
+  })
   const [selectedParent, setSelectedParent] = useState(0)
   const [selectedStudent, setSelectedStudent] = useState(parseInt(data.student_id))
   const [selectedParentType, setSelectedParentType] = useState('parent')
@@ -146,6 +158,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ handleClose, data, set
       delete person.school_partner_id_updated
       delete person.school_partner_id
       person.person_id = Number(person.person_id)
+      person.date_of_birth = studentStatus.brith
       const address = Object.assign({}, studentPerson.address)
       address.address_id = +address.address_id
 
@@ -158,6 +171,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ handleClose, data, set
           },
         },
       })
+
       await updateStudent({
         variables: {
           updateStudentInput: {

@@ -93,7 +93,7 @@ export const ApplicationEmailModal: React.FC<EmailModalProps> = ({
               value={formik.values.emailFrom}
               size='small'
               fullWidth
-              placeholder='From: email in template'
+              placeholder='From'
               onChange={(e) => formik.setFieldValue('emailFrom', e.target.value)}
               error={formik.touched.emailFrom && !!formik.errors.emailFrom}
             />

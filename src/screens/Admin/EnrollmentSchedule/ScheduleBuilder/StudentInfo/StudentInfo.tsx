@@ -21,7 +21,7 @@ const StudentInfo: React.FC<StudentInfoProps> = ({ studentInfo, scheduleStatus, 
             >{`Special Education: ${studentInfo?.specialEd}`}</Paragraph>
           )}
         </Box>
-        <Paragraph size={'large'}>{studentInfo?.schoolDistrict}</Paragraph>
+        <Paragraph size={'large'}> {studentInfo?.schoolOfEnrollment || 'Unassigned'}</Paragraph>
       </Box>
       <DropDown
         sx={studentInfoClass.select}

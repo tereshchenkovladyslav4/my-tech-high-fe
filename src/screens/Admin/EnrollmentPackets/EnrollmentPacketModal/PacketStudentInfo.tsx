@@ -103,7 +103,7 @@ export const EnrollmentJobsInfo: React.FC<EnrollmentJobsInfoProps> = ({ packet, 
 
   function studentSPED() {
     if (specialEdOptions.length > Number(student?.special_ed)) return specialEdOptions[Number(student?.special_ed)]
-    return ''
+    return 'None'
   }
 
   const getState = (state: string | null) => {
@@ -148,30 +148,33 @@ export const EnrollmentJobsInfo: React.FC<EnrollmentJobsInfoProps> = ({ packet, 
               </span>
             </Title>
 
-            <Paragraph sx={{ marginY: '4px', fontSize: '14px' }} color={MthColor.SYSTEM_06} fontWeight='400'>
+            <Paragraph sx={{ marginY: '4px', fontSize: '14px' }} color={MthColor.SYSTEM_01} fontWeight='bold'>
               <b>
                 {student?.person.preferred_first_name && student?.person.preferred_last_name
                   ? `${student?.person.preferred_first_name} ${student?.person.preferred_last_name}`
                   : 'Not found'}
               </b>
             </Paragraph>
-            <Paragraph sx={{ marginY: '4px', fontSize: '14px' }} color={MthColor.SYSTEM_06} fontWeight='400'>
-              Gender: <b>{student?.person.gender ? student?.person.gender : 'Not found'}</b>
+            <Paragraph sx={{ marginY: '4px', fontSize: '14px' }} color={MthColor.SYSTEM_05} fontWeight='bold'>
+              Gender:{' '}
+              <b style={{ color: MthColor.SYSTEM_01 }}>
+                {student?.person.gender ? student?.person.gender : 'Not found'}
+              </b>
             </Paragraph>
-            <Paragraph sx={{ fontSize: '14px' }} color={MthColor.SYSTEM_06} fontWeight='400'>
+            <Paragraph sx={{ fontSize: '14px' }} color={MthColor.SYSTEM_05} fontWeight='bold'>
               DOB:{' '}
-              <b>
+              <b style={{ color: MthColor.SYSTEM_01 }}>
                 {student?.person.date_of_birth
                   ? moment(student?.person.date_of_birth).tz('UTC').format('MMMM D, YYYY')
                   : 'Not found'}
                 {age ? ` (${age})` : ''}
               </b>
             </Paragraph>
-            <Paragraph sx={{ marginY: '4px', fontSize: '14px' }} color={MthColor.SYSTEM_06} fontWeight='400'>
+            <Paragraph sx={{ marginY: '4px', fontSize: '14px' }} color={MthColor.SYSTEM_01} fontWeight='bold'>
               {parseGradeLevel(student?.grade_levels?.[0]?.grade_level)}
             </Paragraph>
-            <Paragraph sx={{ marginY: '4px', fontSize: '14px' }} color={MthColor.SYSTEM_06} fontWeight='400'>
-              SPED: {studentSPED()}
+            <Paragraph sx={{ marginY: '4px', fontSize: '14px' }} color={MthColor.SYSTEM_05} fontWeight='bold'>
+              SPED: <span style={{ color: MthColor.SYSTEM_01 }}>{studentSPED()}</span>
             </Paragraph>
           </Grid>
           <Grid
@@ -200,18 +203,20 @@ export const EnrollmentJobsInfo: React.FC<EnrollmentJobsInfoProps> = ({ packet, 
             <Paragraph color='#7B61FF' sx={{ fontSize: '14px', marginY: '4px', marginRight: '10px' }} fontWeight='400'>
               {student?.parent.person.email ? `${student?.parent.person.email}` : 'Not found'}
             </Paragraph>
-            <Paragraph color={MthColor.SYSTEM_06} sx={{ fontSize: '14px', marginY: '4px' }} fontWeight='400'>
+            <Paragraph color={MthColor.SYSTEM_01} sx={{ fontSize: '14px', marginY: '4px' }} fontWeight='400'>
               {student?.parent.phone.number ? phoneFormat(student?.parent.phone.number) : 'Not found'}
             </Paragraph>
-            <Paragraph color={MthColor.SYSTEM_06} sx={{ fontSize: '14px', marginY: '4px' }} fontWeight='400'>
+            <Paragraph color={MthColor.SYSTEM_01} sx={{ fontSize: '14px', marginY: '4px' }} fontWeight='400'>
               {street ? `${street} ${street2 ? ', ' + street2 : ''}` : 'Not found'}
             </Paragraph>
-            <Paragraph color={MthColor.SYSTEM_06} sx={{ fontSize: '14px', marginY: '4px' }} fontWeight='400'>
+            <Paragraph color={MthColor.SYSTEM_01} sx={{ fontSize: '14px', marginY: '4px' }} fontWeight='400'>
               {!student?.parent.person.address.city &&
               !student?.parent.person.address.state &&
               !student?.parent.person.address.zip
                 ? 'Not found'
-                : `${student?.parent.person.address.city + ',' || ''} ${getState(student?.parent.person.address.state)}
+                : `${student?.parent.person.address.city ? student?.parent.person.address.city + ',' : ''} ${getState(
+                    student?.parent.person.address.state,
+                  )}
                 ${student?.parent.person.address.zip || ''}`}
             </Paragraph>
           </Grid>

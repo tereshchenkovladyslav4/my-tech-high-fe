@@ -55,6 +55,10 @@ export const EditChecklistModal: FunctionComponent<EditChecklistModalProps> = ({
     const editedGoal = draftToHtml(convertToRaw(editorState.getCurrentContent())).replace(/<[^>]+>/g, '')
     handleSubmit(editedGoal)
   }
+
+  const isSubjectChecklist =
+    Object.keys?.(selectedChecklist ?? {}).includes('subject') &&
+    Object.keys?.(selectedChecklist ?? {}).includes('grade')
   return (
     <Modal
       open={true}
@@ -75,31 +79,35 @@ export const EditChecklistModal: FunctionComponent<EditChecklistModalProps> = ({
               disabled
             />
           </Box>
-          <Box>
-            <TextField
-              name='grade'
-              label='Grade'
-              fullWidth
-              defaultValue={selectedChecklist?.grade}
-              InputLabelProps={{ shrink: true }}
-              className='MthFormField'
-              disabled
-            />
-          </Box>
-          <Box>
-            <TextField
-              name='subject'
-              label='Subject'
-              fullWidth
-              defaultValue={selectedChecklist?.subject}
-              InputLabelProps={{ shrink: true }}
-              className='MthFormField'
-              disabled
-            />
-          </Box>
+          {isSubjectChecklist && (
+            <Box>
+              <TextField
+                name='grade'
+                label='Grade'
+                fullWidth
+                defaultValue={selectedChecklist?.grade}
+                InputLabelProps={{ shrink: true }}
+                className='MthFormField'
+                disabled
+              />
+            </Box>
+          )}
+          {isSubjectChecklist && (
+            <Box>
+              <TextField
+                name='subject'
+                label='Subject'
+                fullWidth
+                defaultValue={selectedChecklist?.subject}
+                InputLabelProps={{ shrink: true }}
+                className='MthFormField'
+                disabled
+              />
+            </Box>
+          )}
         </Box>
 
-        <Box sx={{ marginTop: 2, px: 2 }}>
+        <Box sx={{ marginTop: 2, px: isSubjectChecklist ? 2 : 0 }}>
           <Subtitle sx={{ fontSize: '14px' }}>Goal</Subtitle>
           <Box
             sx={{

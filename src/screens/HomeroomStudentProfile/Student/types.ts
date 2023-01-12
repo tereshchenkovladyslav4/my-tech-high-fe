@@ -1,7 +1,7 @@
 import { FunctionComponent } from 'react'
 import { DropDownItem } from '@mth/components/DropDown/types'
 import { ScheduleStatus } from '@mth/enums'
-import { Address, Email, SchoolYear, SchoolYearType } from '@mth/models'
+import { Address, Email, SchoolOfEnrollmentType, SchoolYear, SchoolYearType } from '@mth/models'
 import { ToDoItem } from '@mth/screens/Dashboard/ToDoList/components/ToDoListItem/types'
 
 export type GradeLevel = {
@@ -116,6 +116,7 @@ export type StudentType = {
   parent?: Parent
   hidden?: number
   grade_level?: string
+  currentSoe: SchoolOfEnrollmentType[]
   current_school_year_status: {
     application_id: number
     school_year_id: number
