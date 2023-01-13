@@ -196,7 +196,6 @@ const Subjects: React.FC = () => {
         })
       }
     })
-
     setTableData(arrangedItems)
   }
 

@@ -574,14 +574,15 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
             </Button>
           </Box>
         )}
-        {studentScheduleStatus !== ScheduleStatus.UPDATES_REQUIRED && (
-          <ScheduleHistory
-            studentId={studentId}
-            schoolYearId={selectedYearId || 0}
-            isSecondSemester={hasSecondSemester && hasUnlockedPeriods}
-            refetchSchedule={refetch}
-          />
-        )}
+        {studentScheduleStatus !== ScheduleStatus.NOT_SUBMITTED &&
+          studentScheduleStatus !== ScheduleStatus.SUBMITTED && (
+            <ScheduleHistory
+              studentId={studentId}
+              schoolYearId={selectedYearId || 0}
+              isSecondSemester={hasSecondSemester && hasUnlockedPeriods}
+              refetchSchedule={refetch}
+            />
+          )}
         {showRequireUpdateModal && (
           <RequireUpdateModal
             periodItems={periodItems}

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { ApolloError, useQuery } from '@apollo/client'
+import { ApolloError, useLazyQuery } from '@apollo/client'
 import { sortBy } from 'lodash'
 import moment from 'moment'
 import { DropDownItem } from '@mth/components/DropDown/types'
@@ -25,13 +25,22 @@ export const useActiveScheduleSchoolYears = (
   const [selectedYearId, setSelectedYearId] = useState<number | undefined>()
   const [activeScheduleYearId, setActiveScheduleYearId] = useState<number | undefined>()
 
-  const { loading, data, error, refetch } = useQuery(getActiveScheduleSchoolYearsQuery, {
-    variables: {
-      studentId: studentId,
+  const [getActiveScheduleSchoolYears, { loading, data, error, refetch }] = useLazyQuery(
+    getActiveScheduleSchoolYearsQuery,
+    {
+      fetchPolicy: 'network-only',
     },
-    skip: !studentId,
-    fetchPolicy: 'network-only',
-  })
+  )
+
+  useEffect(() => {
+    if (studentId) {
+      getActiveScheduleSchoolYears({
+        variables: {
+          studentId: studentId,
+        },
+      })
+    }
+  }, [studentId])
 
   useEffect(() => {
     if (data?.activeScheduleSchoolYears) {

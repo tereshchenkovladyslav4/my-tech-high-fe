@@ -24,6 +24,7 @@ export type Provider = {
   SchedulePeriods?: SchedulePeriod[]
   // Temp fields
   PeriodIds: string[]
+  priority?: number
 }
 
 export type Course = {

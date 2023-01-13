@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useQuery } from '@apollo/client'
+import { useLazyQuery } from '@apollo/client'
 import { getStudentDetail } from '@mth/screens/Admin/UserProfile/services'
 import { StudentType } from '@mth/screens/HomeroomStudentProfile/Student/types'
 
@@ -11,17 +11,22 @@ export const useStudentInfo = (
 } => {
   const [studentInfo, setStudentInfo] = useState<StudentType>()
 
-  const {
-    loading: studentInfoLoading,
-    data: studentInfoData,
-    refetch,
-  } = useQuery(getStudentDetail, {
-    variables: {
-      student_id: student_id,
+  const [getStudentInfo, { loading: studentInfoLoading, data: studentInfoData, refetch }] = useLazyQuery(
+    getStudentDetail,
+    {
+      fetchPolicy: 'network-only',
     },
-    skip: !student_id,
-    fetchPolicy: 'network-only',
-  })
+  )
+
+  useEffect(() => {
+    if (student_id) {
+      getStudentInfo({
+        variables: {
+          student_id: student_id,
+        },
+      })
+    }
+  }, [student_id])
 
   useEffect(() => {
     if (!studentInfoLoading && studentInfoData) {

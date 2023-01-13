@@ -3,6 +3,7 @@ import { useMutation } from '@apollo/client'
 import { DeleteForeverOutlined } from '@mui/icons-material'
 import CallMissedOutgoingIcon from '@mui/icons-material/CallMissedOutgoing'
 import CreateIcon from '@mui/icons-material/Create'
+import DehazeIcon from '@mui/icons-material/Dehaze'
 import ExpandMoreOutlinedIcon from '@mui/icons-material/ExpandMoreOutlined'
 import SystemUpdateAltRoundedIcon from '@mui/icons-material/SystemUpdateAltRounded'
 import { Box, Button, Card, IconButton, Tooltip } from '@mui/material'
@@ -45,26 +46,26 @@ const Providers: React.FC = () => {
       key: 'name',
       label: 'Provider',
       sortable: false,
-      tdClass: '',
+      width: '35%',
     },
     {
       key: 'reducesFunds',
       label: 'Reduces Funds',
       sortable: false,
-      tdClass: '',
+      width: '20%',
     },
     {
       key: 'multiplePeriods',
       label: 'Multiple Periods',
       sortable: false,
-      tdClass: '',
+      width: '20%',
     },
     {
       key: 'action',
       label: '',
       sortable: false,
-      tdClass: '',
-      formatter: (item: MthTableRowItem<Provider>) => {
+      width: 'calc(25% - 48px)',
+      formatter: (item: MthTableRowItem<Provider>, dragHandleProps) => {
         return (
           <Box display={'flex'} flexDirection='row' justifyContent={'flex-end'}>
             {!(showArchived && item.rawData.is_active) && (
@@ -96,6 +97,11 @@ const Providers: React.FC = () => {
                     }}
                   >
                     {item.rawData.is_active ? <SystemUpdateAltRoundedIcon /> : <CallMissedOutgoingIcon />}
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title='Move' placement='top'>
+                  <IconButton className='actionButton' color='primary' {...dragHandleProps}>
+                    <DehazeIcon />
                   </IconButton>
                 </Tooltip>
                 {!item.rawData.is_active && (
@@ -200,6 +206,24 @@ const Providers: React.FC = () => {
     )
   }, [providers])
 
+  const handleArrange = async (arrangedItems: MthTableRowItem<Provider>[]) => {
+    arrangedItems.map(async (item, index) => {
+      const correctPriority = index + 1
+      if (item.rawData.priority != correctPriority) {
+        item.rawData = { ...item.rawData, priority: correctPriority }
+        await updateProvider({
+          variables: {
+            createProviderInput: {
+              id: Number(item.rawData.id),
+              priority: correctPriority,
+            },
+          },
+        })
+      }
+    })
+    setTableData(arrangedItems)
+  }
+
   return (
     <Box sx={commonClasses.mainLayout}>
       <Card sx={{ ...commonClasses.mainBlock, ...commonClasses.fitScreen }}>
@@ -220,7 +244,9 @@ const Providers: React.FC = () => {
             fields={fields}
             selectable={true}
             disableSelectAll={showArchived}
+            isDraggable={true}
             checkBoxColor='secondary'
+            onArrange={handleArrange}
             onSelectionChange={handleAllowRequestChange}
           />
         </Box>

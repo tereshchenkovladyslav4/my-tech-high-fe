@@ -20,11 +20,11 @@ const ScheduleHistory: React.FC<ScheduleHistoryProps> = ({
   isSecondSemester,
   refetchSchedule,
 }) => {
-  const { scheduleDataHistory, setScheduleDataHistory } = useStudentSchedulePeriodHistories(
-    studentId,
-    schoolYearId,
-    isSecondSemester,
-  )
+  const {
+    scheduleDataHistory,
+    setScheduleDataHistory,
+    refetch: refetchScheduleHistory,
+  } = useStudentSchedulePeriodHistories(studentId, schoolYearId, isSecondSemester)
   const [showMore, setShowMore] = useState<boolean>(false)
   const [showWarningModal, setShowWarningModal] = useState<boolean>(false)
   const [selectedScheduleHistoryId, setSelectedScheduleHistoryId] = useState<number>()
@@ -71,6 +71,7 @@ const ScheduleHistory: React.FC<ScheduleHistoryProps> = ({
       })
       if (result) {
         refetchSchedule()
+        refetchScheduleHistory()
       }
     }
   }

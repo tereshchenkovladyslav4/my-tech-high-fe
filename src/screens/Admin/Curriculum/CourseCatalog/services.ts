@@ -110,6 +110,7 @@ export const getProvidersQuery = gql`
       multi_periods_notification
       allow_request
       is_active
+      priority
       Periods {
         id
         period

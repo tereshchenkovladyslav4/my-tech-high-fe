@@ -21,7 +21,7 @@ export const sendUpdatesAllowedEmailMutation = gql`
 `
 
 export const restoreScheduleHistoryMutation = gql`
-  mutation Mutation($scheduleHistoryId: Int!) {
+  mutation RestoreScheduleHistory($scheduleHistoryId: Int!) {
     restoreScheduleHistory(schedule_history_id: $scheduleHistoryId)
   }
 `
