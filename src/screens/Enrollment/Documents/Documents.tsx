@@ -189,7 +189,14 @@ export const Documents: React.FC<DocumentsProps> = ({ id, questions }) => {
 
   const submitRecord = useCallback(
     (documentType: string, files: File[]) => {
-      setFilesToUpload({ ...filesToUpload, [documentType]: files })
+      const renamedFiles = files.map((f, index) => {
+        const fileName = `${f.name.split('.').slice(0, -1).join('.')}${index !== 0 ? index : ''}`
+        const fileExt = f.name.split('.').slice(-1)
+        return new File([f], `${fileName}.${fileExt}`, {
+          type: f.type,
+        })
+      })
+      setFilesToUpload({ ...filesToUpload, [documentType]: renamedFiles })
     },
     [filesToUpload],
   )

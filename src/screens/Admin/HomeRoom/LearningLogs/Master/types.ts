@@ -8,15 +8,19 @@ export type Teacher = {
 }
 
 export type Assignment = {
-  auto_grade: string
   auto_grade_email: number
-  due_date: string
-  id: number
+  id?: number
   master_id: number
-  reminder_date: string
   title: string
-  teacher_deadline: string
   page_count: number
+  dueDate: string | Date
+  dueTime: string
+  reminderDate: string | Date
+  reminderTime: string
+  autoGradeDate: string | Date
+  autoGradeTime: string
+  teacherDate: string | Date
+  teacherTime: string
 }
 
 export type QuestionOptionType = {

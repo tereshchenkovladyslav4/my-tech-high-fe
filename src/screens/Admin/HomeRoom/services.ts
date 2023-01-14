@@ -196,6 +196,7 @@ export const getAssignmentByIdGql = gql`
       due_date
       auto_grade_email
       auto_grade
+      master_id
     }
   }
 `

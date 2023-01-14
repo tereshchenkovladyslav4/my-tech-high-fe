@@ -75,6 +75,7 @@ export const useStyles = {
   deleteIcon: {
     cursor: 'pointer',
     marginLeft: '3px',
+    marginTop: '6px',
     '&:hover': {
       opacity: '0.9',
     },

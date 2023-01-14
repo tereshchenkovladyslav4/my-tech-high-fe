@@ -179,7 +179,7 @@ export const useStyles = {
     marginBottom: '50px',
   },
   redBorder: {
-    border: '1px solid red',
+    border: '1px solid rgb(189, 0, 67)',
     borderRadius: '4px',
     marginBottom: '24px',
   },

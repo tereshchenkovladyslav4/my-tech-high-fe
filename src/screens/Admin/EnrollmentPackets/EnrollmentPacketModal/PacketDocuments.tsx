@@ -87,7 +87,7 @@ export const EnrollmentPacketDocument: React.FC<EnrollmentPacketDocumentProps> =
         <Grid
           sx={{
             '&.MuiGrid-root': {
-              maxWidth: '28rem',
+              maxWidth: '640px',
             },
           }}
           item
@@ -102,39 +102,63 @@ export const EnrollmentPacketDocument: React.FC<EnrollmentPacketDocumentProps> =
                 if (q.type === QUESTION_TYPE.UPLOAD) {
                   const filteredFiles = files?.filter((file) => file.kind === q.question)
                   return (
-                    <Box sx={{ display: 'flex', gap: 4 }}>
-                      <Box sx={{ minWidth: '200px' }}>
-                        <Paragraph key={index} color={MthColor.SYSTEM_01} sx={{ fontSize: '14px' }} fontWeight='400'>
+                    <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 4, marginBottom: '8px' }}>
+                      <Box sx={{ minWidth: '200px', maxWidth: '200px' }}>
+                        <Paragraph key={index} color={MthColor.SYSTEM_06} sx={{ fontSize: '14px' }} fontWeight='400'>
                           {q.question}
                         </Paragraph>
                       </Box>
-                      <Box sx={{ marginBottom: '8px' }}>
+                      <Box
+                        sx={{
+                          width: '100%',
+                          display: 'grid',
+                          gridTemplateColumns: 'repeat(auto-fill,minmax(160px, 1fr))',
+                          columnGap: 2,
+                        }}
+                      >
                         {files?.length > 0 ? (
                           filteredFiles.length > 0 ? (
-                            filteredFiles.map((obj) => {
-                              return (
-                                <Paragraph
-                                  key={`$file-${index}`}
-                                  color={MthColor.PRIMARY_MEDIUM_MOUSEOVER}
-                                  fontWeight='400'
-                                  sx={{ fontSize: '14px', display: 'flex', alignItems: 'center', marginTop: '4px' }}
-                                >
-                                  <a
-                                    href={obj.url}
-                                    target='_blank'
-                                    style={{ cursor: 'pointer', textDecoration: 'unset' }}
-                                    rel='noreferrer'
+                            filteredFiles
+                              .sort((a, b) => {
+                                if (a.name < b.name) {
+                                  return -1
+                                }
+                                if (a.name > b.name) {
+                                  return 1
+                                }
+                                return 0
+                              })
+                              .map((obj, fIndex) => {
+                                return (
+                                  <Paragraph
+                                    key={`file-${fIndex}`}
+                                    color={MthColor.PRIMARY_MEDIUM_MOUSEOVER}
+                                    fontWeight='400'
+                                    sx={{
+                                      fontSize: '14px',
+                                      display: 'flex',
+                                      alignItems: 'flex-start',
+                                      marginBottom: '4px',
+                                      // width: '156px',
+                                      wordBreak: 'break-all',
+                                    }}
                                   >
-                                    {obj.name}
-                                  </a>
-                                  <img
-                                    src={DeleteIcon}
-                                    style={classes.deleteIcon}
-                                    onClick={() => onDeletefile(obj.file_id)}
-                                  />
-                                </Paragraph>
-                              )
-                            })
+                                    <a
+                                      href={obj.url}
+                                      target='_blank'
+                                      style={{ cursor: 'pointer', textDecoration: 'unset' }}
+                                      rel='noreferrer'
+                                    >
+                                      {obj.name.split('.').slice(0, -1).join('.')}
+                                    </a>
+                                    <img
+                                      src={DeleteIcon}
+                                      style={classes.deleteIcon}
+                                      onClick={() => onDeletefile(obj.file_id)}
+                                    />
+                                  </Paragraph>
+                                )
+                              })
                           ) : (
                             <Paragraph color={MthColor.SYSTEM_06} sx={{ fontSize: '14px' }} fontWeight='400'>
                               Not found

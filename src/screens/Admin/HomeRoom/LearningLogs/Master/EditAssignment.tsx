@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useMutation, useQuery } from '@apollo/client'
 import DehazeIcon from '@mui/icons-material/Dehaze'
 import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined'
-import { Box, Button, Card, IconButton, List, Stack, styled, TextField, Tooltip } from '@mui/material'
+import { Alert, Box, Button, Card, IconButton, List, Stack, styled, TextField, Tooltip } from '@mui/material'
 import moment from 'moment'
 import { Prompt, useHistory } from 'react-router-dom'
 import { SortableContainer, SortableElement } from 'react-sortable-hoc'
@@ -61,22 +61,10 @@ const CssTextField = styled(TextField, {
 const EditAssignment: React.FC<{ masterId: number; assignmentId?: number }> = ({ masterId, assignmentId }) => {
   const history = useHistory()
 
-  const [tempAssignmentId, setTempAssignmentId] = useState<number>(assignmentId)
+  const [tempAssignmentId, setTempAssignmentId] = useState<number | undefined>(assignmentId)
 
   const [master, setMaster] = useState<Master>()
-  const [assignmentTitle, setAssignmentTitle] = useState<string>('')
   const [isTitleError, setIsTitleError] = useState<boolean>(false)
-
-  const [dueDate, setDueDate] = useState<Date>(new Date())
-  const [dueTime, setDueTime] = useState<string>('00:00')
-  const [reminderDate, setReminderDate] = useState<Date>(new Date())
-  const [reminderTime, setReminderTime] = useState('00:00')
-  const [teacherDate, setTeacherDate] = useState<Date>(new Date())
-  const [teacherTime, setTeacherTime] = useState<string>('00:00')
-
-  const [autoGradeDate, setAutoGradeDate] = useState<Date>(new Date())
-  const [autoGradeTime, setAutoGradeTime] = useState('00:00')
-  const [autoGradeEmail, setAutoGradeEmail] = useState<boolean>(false)
 
   const [isConfirmModal, setIsConfirmModal] = useState<boolean>(false)
   const [isConfirmQuestionModal, setIsConfirmQuestionModal] = useState<boolean>(false)
@@ -92,8 +80,21 @@ const EditAssignment: React.FC<{ masterId: number; assignmentId?: number }> = ({
   const [questionType, setQuestionType] = useState<RadioGroupOption[]>(defaultQuestions)
   const [tempLearningQuestionList, setTempLearningQuestionList] = useState<LearningQuestionType[]>([])
 
-  const [assignment, setAssignment] = useState<Assignment>()
-  const [tempAssignment, setTempAssignment] = useState<Assignment>()
+  const [assignment, setAssignment] = useState<Assignment | null>()
+  const [tempAssignment, setTempAssignment] = useState<Assignment>({
+    auto_grade_email: 0,
+    master_id: masterId,
+    title: '',
+    page_count: 1,
+    dueDate: new Date(),
+    dueTime: '00:00',
+    reminderDate: new Date(),
+    reminderTime: '00:00',
+    autoGradeDate: new Date(),
+    autoGradeTime: '00:00',
+    teacherDate: new Date(),
+    teacherTime: '00:00',
+  })
 
   const [isCustomeQuestionModal, setIsCustomeQuestionModal] = useState<boolean>(false)
   const [editQuestionList, setEditQuestionList] = useState<AssignmentQuestionType[]>([])
@@ -104,6 +105,8 @@ const EditAssignment: React.FC<{ masterId: number; assignmentId?: number }> = ({
 
   const [deleteQuestionSlug, setDeleteQuestionSlug] = useState<string>('')
   const [confirmDeleteQuestionModal, setConfirmDeleteQuestionModal] = useState<boolean>(false)
+
+  const [sucessAlert, setSucessAlert] = useState<boolean>(false)
 
   const { loading: masterLoading, data: masterData } = useQuery(GetMastersByIDGql, {
     variables: {
@@ -127,10 +130,26 @@ const EditAssignment: React.FC<{ masterId: number; assignmentId?: number }> = ({
 
   useEffect(() => {
     if (!assignmentLoading && assignmentData?.getAssignmentById) {
-      setAssignment(assignmentData?.getAssignmentById)
-      setTempAssignment(assignmentData?.getAssignmentById)
+      const initAssignment = {
+        auto_grade_email: assignmentData?.getAssignmentById.auto_grade_email,
+        id: parseInt(assignmentData?.getAssignmentById.id),
+        master_id: assignmentData?.getAssignmentById.master_id,
+        title: assignmentData?.getAssignmentById.title,
+        page_count: assignmentData?.getAssignmentById.page_count,
+        dueDate: assignmentData?.getAssignmentById.due_date,
+        dueTime: moment(assignmentData?.getAssignmentById.due_date).format('HH:mm'),
+        reminderDate: assignmentData?.getAssignmentById.reminder_date,
+        reminderTime: moment(assignmentData?.getAssignmentById.reminder_date).format('HH:mm'),
+        autoGradeDate: assignmentData?.getAssignmentById.auto_grade,
+        autoGradeTime: moment(assignmentData?.getAssignmentById.auto_grade).format('HH:mm'),
+        teacherDate: assignmentData?.getAssignmentById.teacher_deadline,
+        teacherTime: moment(assignmentData?.getAssignmentById.teacher_deadline).format('HH:mm'),
+      }
+
+      setAssignment(initAssignment)
+      setTempAssignment(initAssignment)
     }
-  }, [assignmentLoading, assignmentData])
+  }, [assignmentLoading, assignmentData, tempAssignmentId])
 
   const {
     loading: questionLoading,
@@ -138,9 +157,9 @@ const EditAssignment: React.FC<{ masterId: number; assignmentId?: number }> = ({
     refetch: questionRefetch,
   } = useQuery(GetLearningLogQuestionByMasterIdQuery, {
     variables: {
-      assignmentId: assignmentId,
+      assignmentId: assignment?.id,
     },
-    skip: assignmentId ? false : true,
+    skip: assignment?.id ? false : true,
     fetchPolicy: 'network-only',
   })
 
@@ -169,6 +188,13 @@ const EditAssignment: React.FC<{ masterId: number; assignmentId?: number }> = ({
     }
   }, [masterLoading, masterData])
 
+  const handleTempAssignmentChange = (val: string | Date | boolean, key: string) => {
+    setTempAssignment({
+      ...tempAssignment,
+      [key]: val,
+    })
+  }
+
   const editAssignmentList = [
     {
       name: 'Title',
@@ -182,7 +208,7 @@ const EditAssignment: React.FC<{ masterId: number; assignmentId?: number }> = ({
                 fullWidth
                 InputLabelProps={{ shrink: true }}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                  setAssignmentTitle(e.target.value)
+                  handleTempAssignmentChange(e.target.value, 'title')
                   setIsTitleError(false)
                   setIsChanged(true)
                 }}
@@ -202,20 +228,20 @@ const EditAssignment: React.FC<{ masterId: number; assignmentId?: number }> = ({
           <Stack direction='row' sx={{ ml: 1.5 }} alignItems='center'>
             <Box sx={{ minWidth: '284px' }}>
               <DefaultDatePicker
-                date={dueDate}
+                date={tempAssignment?.dueDate}
                 label='Date'
                 handleChange={(e) => {
-                  setDueDate(e)
+                  handleTempAssignmentChange(e, 'dueDate')
                   setIsChanged(true)
                 }}
               />
             </Box>
             <Box sx={{ minWidth: '220px' }}>
               <MthTimePicker
-                time={dueTime}
+                time={tempAssignment?.dueTime}
                 label='Time'
                 handleChange={(e) => {
-                  setDueTime(e)
+                  handleTempAssignmentChange(e, 'dueTime')
                   setIsChanged(true)
                 }}
               />
@@ -231,20 +257,20 @@ const EditAssignment: React.FC<{ masterId: number; assignmentId?: number }> = ({
           <Stack direction='row' sx={{ ml: 1.5 }} alignItems='center'>
             <Box sx={{ minWidth: '284px' }}>
               <DefaultDatePicker
-                date={reminderDate}
+                date={tempAssignment?.reminderDate}
                 label='Date'
                 handleChange={(e) => {
-                  setReminderDate(e)
+                  handleTempAssignmentChange(e, 'reminderDate')
                   setIsChanged(true)
                 }}
               />
             </Box>
             <Box sx={{ minWidth: '220px' }}>
               <MthTimePicker
-                time={reminderTime}
+                time={tempAssignment?.reminderTime}
                 label='Time'
                 handleChange={(e) => {
-                  setReminderTime(e)
+                  handleTempAssignmentChange(e, 'reminderTime')
                   setIsChanged(true)
                 }}
               />
@@ -260,20 +286,20 @@ const EditAssignment: React.FC<{ masterId: number; assignmentId?: number }> = ({
           <Stack direction='row' sx={{ ml: 1.5 }} alignItems='center'>
             <Box sx={{ minWidth: '284px' }}>
               <DefaultDatePicker
-                date={autoGradeDate}
+                date={tempAssignment?.autoGradeDate}
                 label='Date'
                 handleChange={(e) => {
-                  setAutoGradeDate(e)
+                  handleTempAssignmentChange(e, 'autoGradeDate')
                   setIsChanged(true)
                 }}
               />
             </Box>
             <Box sx={{ minWidth: '220px' }}>
               <MthTimePicker
-                time={autoGradeTime}
+                time={tempAssignment?.autoGradeTime}
                 label='Time'
                 handleChange={(e) => {
-                  setAutoGradeTime(e)
+                  handleTempAssignmentChange(e, 'autoGradeTime')
                   setIsChanged(true)
                 }}
               />
@@ -282,9 +308,9 @@ const EditAssignment: React.FC<{ masterId: number; assignmentId?: number }> = ({
               label={'Send Auto-grade Email'}
               labelSx={{ fontWeight: 700 }}
               wrapSx={{ ml: 6 }}
-              checked={autoGradeEmail}
+              checked={tempAssignment?.auto_grade_email}
               onChange={(e) => {
-                setAutoGradeEmail(e.target.checked)
+                handleTempAssignmentChange(e.target.checked, 'auto_grade_email')
                 setIsChanged(true)
               }}
             />
@@ -299,20 +325,20 @@ const EditAssignment: React.FC<{ masterId: number; assignmentId?: number }> = ({
           <Stack direction='row' sx={{ ml: 1.5 }} alignItems='center'>
             <Box sx={{ minWidth: '284px' }}>
               <DefaultDatePicker
-                date={teacherDate}
+                date={tempAssignment?.teacherDate}
                 label='Date'
                 handleChange={(e) => {
-                  setTeacherDate(e)
+                  handleTempAssignmentChange(e, 'teacherDate')
                   setIsChanged(true)
                 }}
               />
             </Box>
             <Box sx={{ minWidth: '220px' }}>
               <MthTimePicker
-                time={teacherTime}
+                time={tempAssignment?.teacherTime}
                 label='Time'
                 handleChange={(e) => {
-                  setTeacherTime(e)
+                  handleTempAssignmentChange(e, 'teacherTime')
                   setIsChanged(true)
                 }}
               />
@@ -349,36 +375,64 @@ const EditAssignment: React.FC<{ masterId: number; assignmentId?: number }> = ({
   const [updateAssignment] = useMutation(updateAssignmentMutation)
 
   const handleSubmit = async () => {
-    if (!assignmentTitle) {
+    if (!tempAssignment.title) {
       setIsTitleError(true)
       return
     }
-    const dueDateTime = moment(`${moment(dueDate).tz('America/Denver').format('yyyy-MM-DD')} ${dueTime}`).toISOString()
+    const dueDateTime = moment(
+      `${moment(tempAssignment.dueDate).tz('America/Denver').format('yyyy-MM-DD')} ${tempAssignment.dueTime}`,
+    ).toISOString()
     const reminderDateTime = moment(
-      `${moment(reminderDate).tz('America/Denver').format('yyyy-MM-DD')} ${reminderTime}`,
+      `${moment(tempAssignment.reminderDate).tz('America/Denver').format('yyyy-MM-DD')} ${tempAssignment.reminderTime}`,
     ).toISOString()
     const autoGradeDateTime = moment(
-      `${moment(autoGradeDate).tz('America/Denver').format('yyyy-MM-DD')} ${autoGradeTime}`,
+      `${moment(tempAssignment.autoGradeDate).tz('America/Denver').format('yyyy-MM-DD')} ${
+        tempAssignment.autoGradeTime
+      }`,
     ).toISOString()
     const teacherDateTime = moment(
-      `${moment(teacherDate).tz('America/Denver').format('yyyy-MM-DD')} ${teacherTime}`,
+      `${moment(tempAssignment.teacherDate).tz('America/Denver').format('yyyy-MM-DD')} ${tempAssignment.teacherTime}`,
     ).toISOString()
-    const { data: newAssignment } = await createAssignment({
-      variables: {
-        createNewAssignmentInput: {
-          autoGradeDateTime: autoGradeDateTime,
-          autoGradeEmail: autoGradeEmail,
-          dueDateTime: dueDateTime,
-          master_id: masterId,
-          reminderDateTime: reminderDateTime,
-          title: assignmentTitle,
-          teacher_deadline: teacherDateTime,
+    if (!assignment?.id) {
+      const { data: newAssignment } = await createAssignment({
+        variables: {
+          createNewAssignmentInput: {
+            autoGradeDateTime: autoGradeDateTime,
+            autoGradeEmail: tempAssignment?.auto_grade_email ? true : false,
+            dueDateTime: dueDateTime,
+            master_id: masterId,
+            reminderDateTime: reminderDateTime,
+            title: tempAssignment?.title,
+            teacher_deadline: teacherDateTime,
+          },
         },
-      },
-    })
+      })
+
+      setTempAssignmentId(parseInt(newAssignment.createNewAssignment.id))
+    } else {
+      await updateAssignment({
+        variables: {
+          updateAssignmentInput: {
+            autoGradeDateTime: autoGradeDateTime,
+            autoGradeEmail: tempAssignment?.auto_grade_email ? true : false,
+            dueDateTime: dueDateTime,
+            master_id: masterId,
+            reminderDateTime: reminderDateTime,
+            title: tempAssignment?.title,
+            teacher_deadline: teacherDateTime,
+            assignment_id: parseInt(assignment?.id),
+            page_count: tempAssignment?.page_count,
+          },
+        },
+      })
+    }
+
     setIsChanged(false)
-    setTempAssignmentId(parseInt(newAssignment.createNewAssignment.id))
+
     assignmentRefetch()
+
+    setSucessAlert(true)
+    setTimeout(() => setSucessAlert(false), 5000)
   }
 
   const handleSaveQuestion = async (value: LearningLogQuestion[]) => {
@@ -389,7 +443,7 @@ const EditAssignment: React.FC<{ masterId: number; assignmentId?: number }> = ({
         ...value.map((item) => {
           return {
             ...item,
-            assignment_id: assignmentId,
+            assignment_id: assignment.id,
             page: questionPageNum,
           }
         }),
@@ -453,8 +507,11 @@ const EditAssignment: React.FC<{ masterId: number; assignmentId?: number }> = ({
     })
 
     await assignmentRefetch()
-
     await questionRefetch()
+
+    setSucessAlert(true)
+    setQuestionChanged(false)
+    setTimeout(() => setSucessAlert(false), 5000)
   }
 
   const handleDeleteQuestion = (val: LearningQuestionType) => {
@@ -624,7 +681,7 @@ const EditAssignment: React.FC<{ masterId: number; assignmentId?: number }> = ({
           <CommonSelect key={index} index={index + 1} selectItem={editSeeing} verticalDividHeight='auto' />
         ))}
       </Card>
-      {assignment && (
+      {assignment?.id && (
         <>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: '15px' }}>
             <Subtitle fontWeight='700' size={'medium'}>
@@ -662,6 +719,21 @@ const EditAssignment: React.FC<{ masterId: number; assignmentId?: number }> = ({
                 setTempLearningQuestionList(newList)
               }}
             />
+          )}
+
+          {sucessAlert && (
+            <Alert
+              sx={{
+                position: 'fixed',
+                bottom: '25px',
+                marginBottom: '15px',
+                right: '20px',
+              }}
+              onClose={() => setSucessAlert(false)}
+              severity='success'
+            >
+              Questions saved successfully
+            </Alert>
           )}
         </>
       )}
