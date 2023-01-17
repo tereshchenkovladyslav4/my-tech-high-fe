@@ -16,7 +16,7 @@ const MainComponent: React.FC<MainComponentProps> = ({ selectedEventIndex, setSe
     calendarEventList,
     events,
     refetch,
-  } = useEventsByRegionIdAndFilterItem(Number(me?.selectedRegionId))
+  } = useEventsByRegionIdAndFilterItem({ regionId: Number(me?.selectedRegionId) })
   const { data: eventTypeLists, loading: eventTypeLoading } = useEventTypeListByRegionId(Number(me?.selectedRegionId))
   const [selectedEventTypes, setSelectedEventTypes] = useState<string[]>([])
   const [selectedEventId, setSelectedEventId] = useState<number>(0)

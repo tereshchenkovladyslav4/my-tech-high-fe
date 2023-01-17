@@ -38,11 +38,12 @@ export const Dashboard: React.FC = () => {
   const [selectedAnnouncement, setSelectedAnnouncement] = useState<Announcement>({})
   const [schoolYears, setSchoolYears] = useState<SchoolYearType[]>([])
   const [searchField, setSearchField] = useState<string>('')
-  const { calendarEventList, events } = useEventsByRegionIdAndFilterItem(
-    Number(region_id),
-    Number(me?.user_id),
+  const { calendarEventList, events } = useEventsByRegionIdAndFilterItem({
+    regionId: Number(region_id),
     searchField,
-  )
+    userId: Number(me?.user_id),
+    type: 'parent',
+  })
   const { data: eventTypeLists } = useEventTypeListByRegionId(Number(region_id))
   const [mainTodoList, setMainTodoList] = useState<ToDoItem[]>()
 

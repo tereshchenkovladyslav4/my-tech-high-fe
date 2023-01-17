@@ -37,7 +37,7 @@ export type AssignmentQuestionType = {
   validations: string[]
   grades?: Array<string | number>
   slug: string
-  parentSlug: string
+  parent_slug: string
   active: boolean
 }
 
@@ -54,6 +54,7 @@ export type LearningQuestionType = {
   can_upload?: boolean
   grades?: string
   page: number
+  validations: string[]
 
   active?: boolean
 

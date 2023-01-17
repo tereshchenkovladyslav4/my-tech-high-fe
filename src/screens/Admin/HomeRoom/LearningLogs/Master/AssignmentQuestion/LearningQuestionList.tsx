@@ -24,13 +24,18 @@ import { QuestionTypes } from '@mth/constants'
 import { MthColor } from '@mth/enums'
 import { mthButtonClasses } from '@mth/styles/button.style'
 import { LearningQuestionType } from '../types'
+import SubjectQuestion from './SubjectQuestion'
 
 const LearningQuestionItem = ({
   question,
   handleDeleteQuestion,
+  schoolYearId,
+  setEditQuestionList,
+  setIsCustomeQuestionModal,
 }: {
   question: LearningQuestionType[]
   handleDeleteQuestion: (val: LearningQuestionType) => void
+  schoolYearId: number
 }) => {
   const { values, setValues } = useFormikContext<LearningQuestionType[]>()
   const handleChange = (value) => {
@@ -144,19 +149,21 @@ const LearningQuestionItem = ({
                 <p dangerouslySetInnerHTML={{ __html: question[0].question }}></p>
               </Paragraph>
             </Box>
-            <Box display='inline-flex' paddingTop='10px' height='40px' alignItems='center' justifyContent='center'>
-              <Tooltip title='Edit'>
-                <IconButton>
-                  <EditIcon />
-                </IconButton>
-              </Tooltip>
-              <Tooltip title='Delete'>
-                <IconButton onClick={() => handleDeleteQuestion(question[0])}>
-                  <DeleteForeverOutlinedIcon />
-                </IconButton>
-              </Tooltip>
-              <DragHandle />
-            </Box>
+            {!question[0].parent_slug && (
+              <Box display='inline-flex' paddingTop='10px' height='40px' alignItems='center' justifyContent='center'>
+                <Tooltip title='Edit' onClick={() => handleEditQuestion(question)}>
+                  <IconButton>
+                    <EditIcon />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title='Delete'>
+                  <IconButton onClick={() => handleDeleteQuestion(question[0])}>
+                    <DeleteForeverOutlinedIcon />
+                  </IconButton>
+                </Tooltip>
+                <DragHandle />
+              </Box>
+            )}
           </Box>
         )
       case QuestionTypes.INFORMATION:
@@ -202,7 +209,6 @@ const LearningQuestionItem = ({
             </Subtitle>
           </Box>
         ))
-
       case QuestionTypes.CHECK_BOX:
         return (question[0]?.options || []).map((o) => (
           <Box
@@ -216,7 +222,7 @@ const LearningQuestionItem = ({
             }}
           >
             <Checkbox
-              checked={question[0]?.response?.indexOf(o.value) >= 0}
+              checked={question[0]?.response?.toString().indexOf(o.value) >= 0}
               onClick={() => handleChange(o.value)}
               sx={{
                 paddingLeft: 0,
@@ -234,6 +240,13 @@ const LearningQuestionItem = ({
             </Subtitle>
           </Box>
         ))
+      case QuestionTypes.SUBJECT_QUESTION:
+        return (
+          <Box>
+            <SubjectQuestion question={question[0]} schoolYearId={schoolYearId} />
+          </Box>
+        )
+
       default:
         return null
     }
@@ -247,6 +260,11 @@ const LearningQuestionItem = ({
     </Tooltip>
   ))
 
+  const handleEditQuestion = (question: LearningQuestionType[]) => {
+    setEditQuestionList(question)
+    setIsCustomeQuestionModal(true)
+  }
+
   return (
     <>
       {question[0].type !== QuestionTypes.AGREEMENT && (
@@ -254,23 +272,25 @@ const LearningQuestionItem = ({
           <Paragraph size='large' sx={{ fontSize: 16 }}>
             <p dangerouslySetInnerHTML={{ __html: question[0].question }}></p>
           </Paragraph>
-          <Box display='inline-flex' paddingTop='10px' height='40px' alignItems='center' justifyContent='center'>
-            <Tooltip title='Edit'>
-              <IconButton>
-                <EditIcon />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title='Delete'>
-              <IconButton onClick={() => handleDeleteQuestion(question[0])}>
-                <DeleteForeverOutlinedIcon />
-              </IconButton>
-            </Tooltip>
-            <DragHandle />
-          </Box>
+          {!question[0].parent_slug && (
+            <Box display='inline-flex' paddingTop='10px' height='40px' alignItems='center' justifyContent='center'>
+              <Tooltip title='Edit'>
+                <IconButton onClick={() => handleEditQuestion(question)}>
+                  <EditIcon />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title='Delete'>
+                <IconButton onClick={() => handleDeleteQuestion(question[0])}>
+                  <DeleteForeverOutlinedIcon />
+                </IconButton>
+              </Tooltip>
+              <DragHandle />
+            </Box>
+          )}
         </Box>
       )}
       {QuestionItem()}
-      {question[0].can_upload && (
+      {question[0].validations?.includes('can_upload') && (
         <Button sx={{ ...mthButtonClasses.roundDarkGray, padding: '8px 16px', height: 'unset', marginTop: 3 }}>
           Upload File(MAXIMUM OF 20MB)
         </Button>
@@ -281,11 +301,25 @@ const LearningQuestionItem = ({
 
 const SortableItem = SortableElement(LearningQuestionItem)
 
-const LearningQuestionList = ({ learningQuestionList, handleDeleteQuestion }) => {
+const LearningQuestionList = ({
+  learningQuestionList,
+  handleDeleteQuestion,
+  schoolYearId,
+  setEditQuestionList,
+  setIsCustomeQuestionModal,
+}) => {
   const SortableListContainer = SortableContainer(({ items }: { items: LearningQuestionType[][] }) => (
     <List>
       {items.map((item, index) => (
-        <SortableItem question={item} key={index} index={index} handleDeleteQuestion={handleDeleteQuestion} />
+        <SortableItem
+          question={item}
+          key={index}
+          index={index}
+          handleDeleteQuestion={handleDeleteQuestion}
+          schoolYearId={schoolYearId}
+          setEditQuestionList={setEditQuestionList}
+          setIsCustomeQuestionModal={setIsCustomeQuestionModal}
+        />
       ))}
     </List>
   ))

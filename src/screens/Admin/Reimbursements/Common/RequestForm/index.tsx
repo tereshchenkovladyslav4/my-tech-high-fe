@@ -38,7 +38,6 @@ export const RequestForm: React.FC<RequestFormProps> = ({
   const validationSchema = yup.object({})
 
   const onSave = (values: ReimbursementQuestion[]) => {
-    //console.log(values, 'values')
     values.map((value, index) => {
       value.priority = index
     })

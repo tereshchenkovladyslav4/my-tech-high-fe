@@ -4,7 +4,6 @@ import {
   Button,
   Checkbox,
   FormControl,
-  FormControlLabel,
   InputLabel,
   ListItemText,
   MenuItem,
@@ -15,6 +14,7 @@ import Select, { SelectChangeEvent } from '@mui/material/Select'
 import { map, omit } from 'lodash'
 import { DropDown } from '@mth/components/DropDown/DropDown'
 import { MthBulletEditor } from '@mth/components/MthBulletEditor'
+import { MthCheckboxList } from '@mth/components/MthCheckboxList'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { additionalAssignmentCustomQuestionTypes, assignmentCustomQuestionTypes, QuestionTypes } from '@mth/constants'
 import { MthColor } from '@mth/enums'
@@ -47,6 +47,12 @@ const MenuProps = {
   },
 }
 
+const validationCheckList = [
+  { value: 'required', label: 'Required' },
+  { value: 'can_upload', label: 'Add an Upload Option' },
+  { value: 'grade_specific', label: 'Grade Specific Question' },
+]
+
 const CustomQuestion: React.FC<CustomQuestionProps> = ({
   isCustomeQuestionModal,
   onClose,
@@ -57,8 +63,6 @@ const CustomQuestion: React.FC<CustomQuestionProps> = ({
 }) => {
   const { me } = useContext(UserContext)
   const { schoolYears } = useSchoolYearsByRegionId(me?.selectedRegionId)
-
-  const [questionType, setQuestionType] = useState<string>(QuestionTypes.TEXTBOX)
 
   const [grades, setGrades] = useState<Array<string | number>>([])
   const [questionList, setQuestionList] = useState<AssignmentQuestionType[]>(editQuestionList)
@@ -75,18 +79,6 @@ const CustomQuestion: React.FC<CustomQuestionProps> = ({
       setGrades(schoolYear?.grades.split(',').sort((a, b) => (parseInt(a) > parseInt(b) ? 1 : -1)))
     }
   }, [master, schoolYears])
-
-  const handleCheck = (
-    questionItem: AssignmentQuestionType,
-    e: React.ChangeEvent<HTMLInputElement>,
-    checkType: string,
-  ) => {
-    if (e.target.checked) {
-      return { ...questionItem, validations: [...questionItem.validations, checkType] }
-    } else {
-      return { ...questionItem, validations: questionItem.validations.filter((item) => item !== checkType) }
-    }
-  }
 
   const renderGradeList = (selectedList: Array<string | number>) =>
     map(grades, (grade, index) => {
@@ -172,7 +164,7 @@ const CustomQuestion: React.FC<CustomQuestionProps> = ({
     })
 
     if (val === 2) {
-      const parentQuestion = newQuestionList.find((item) => item.parentSlug === questionItem.slug)
+      const parentQuestion = newQuestionList.find((item) => item.parent_slug === questionItem.slug)
 
       if (!parentQuestion) {
         setQuestionList([
@@ -184,15 +176,16 @@ const CustomQuestion: React.FC<CustomQuestionProps> = ({
             options: [],
             validations: [],
             slug: `meta_${+new Date()}`,
-            parentSlug: questionItem.slug,
+            parent_slug: questionItem.slug,
             active: false,
+            grades: [],
           },
         ])
       }
     } else {
       const addOption = questionItem.options?.filter((item) => item.action === 2)
       if (addOption && addOption.length < 2) {
-        setQuestionList(newQuestionList.filter((q) => q.parentSlug !== questionItem.slug))
+        setQuestionList(newQuestionList.filter((q) => q.parent_slug !== questionItem.slug))
       }
     }
   }
@@ -205,13 +198,13 @@ const CustomQuestion: React.FC<CustomQuestionProps> = ({
         isError = true
       }
       return {
-        ...omit(item, 'parentSlug'),
-        options: item?.options.filter((itemOption) => itemOption.label),
+        ...omit(item, 'parent_slug'),
+        options: item?.options.filter((itemOption) => itemOption.label) || [],
         default_question: false,
         assignment_id: assignmentId,
         validations: item.validations,
-        parent_slug: item.parentSlug,
-        grades: item.grades,
+        parent_slug: item.parent_slug,
+        grades: item.grades || [],
       }
     })
     if (isError) {
@@ -254,13 +247,12 @@ const CustomQuestion: React.FC<CustomQuestionProps> = ({
                   }}
                   labelTop
                   dropDownItems={
-                    !questionItem.parentSlug ? assignmentCustomQuestionTypes : additionalAssignmentCustomQuestionTypes
+                    !questionItem.parent_slug ? assignmentCustomQuestionTypes : additionalAssignmentCustomQuestionTypes
                   }
                   placeholder='Type'
                   defaultValue={questionItem.type}
                   setParentValue={(v) => {
                     handleQuestionItemChange({ ...questionItem, type: v }, index)
-                    setQuestionType(v)
                   }}
                   size='small'
                 />
@@ -308,88 +300,30 @@ const CustomQuestion: React.FC<CustomQuestionProps> = ({
                 )}
               </Box>
               <Box sx={{ marginTop: '30px' }}>
-                <Box
-                  sx={{
-                    alignItems: 'center',
-                    visibility: 'visible',
+                <MthCheckboxList
+                  values={questionItem.validations || []}
+                  setValues={(value) => {
+                    handleQuestionItemChange({ ...questionItem, validations: value }, index)
                   }}
-                >
-                  <FormControlLabel
-                    sx={{ height: 30 }}
-                    control={
-                      <Checkbox
-                        value='all'
-                        checked={questionItem.validations.includes('required')}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                          const updatedQuestionItem = handleCheck(questionItem, e, 'required')
-                          handleQuestionItemChange(updatedQuestionItem, index)
-                        }}
-                      />
-                    }
-                    label={<Subtitle size='small'>Required</Subtitle>}
-                  />
-                </Box>
-                <Box
-                  sx={{
-                    alignItems: 'center',
-                    visibility: 'visible',
-                  }}
-                >
-                  <FormControlLabel
-                    sx={{ height: 30 }}
-                    control={
-                      <Checkbox
-                        value='all'
-                        checked={questionItem.validations.includes('upload')}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                          const updatedQuestionItem = handleCheck(questionItem, e, 'upload')
-                          handleQuestionItemChange(updatedQuestionItem, index)
-                        }}
-                        disabled={questionType === QuestionTypes.UPLOAD}
-                      />
-                    }
-                    label={<Subtitle size='small'>Add an Upload Option</Subtitle>}
-                  />
-                </Box>
-                <Box
-                  sx={{
-                    alignItems: 'center',
-                    visibility: 'visible',
-                  }}
-                >
-                  <Box sx={{ width: '100%' }}>
-                    <FormControlLabel
-                      sx={{ height: 30 }}
-                      control={
-                        <Checkbox
-                          value='all'
-                          checked={questionItem.validations.includes('grade_question')}
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                            const updatedQuestionItem = handleCheck(questionItem, e, 'grade_question')
-                            handleQuestionItemChange(updatedQuestionItem, index)
-                          }}
-                        />
-                      }
-                      label={<Subtitle size='small'>Grade Specific Question</Subtitle>}
-                    />
-                  </Box>
-                  {questionItem.validations.includes('grade_question') && (
-                    <FormControl sx={{ m: 1, width: 300 }}>
-                      <InputLabel id={'grade-tag-' + index}>Grades</InputLabel>
-                      <Select
-                        labelId={'grade-tag-' + index}
-                        multiple
-                        value={questionItem?.grades || []}
-                        onChange={(e) => handleGradeChange(e, index)}
-                        input={<OutlinedInput label='Grades' />}
-                        renderValue={(selected) => renderGrades(selected.join(','))}
-                        MenuProps={MenuProps}
-                      >
-                        {renderGradeList(questionItem?.grades || [])}
-                      </Select>
-                    </FormControl>
-                  )}
-                </Box>
+                  checkboxLists={validationCheckList}
+                  haveSelectAll={false}
+                />
+                {questionItem.validations?.includes('grade_specific') && (
+                  <FormControl sx={{ m: 1, width: 300 }}>
+                    <InputLabel id={'grade-tag-' + index}>Grades</InputLabel>
+                    <Select
+                      labelId={'grade-tag-' + index}
+                      multiple
+                      value={questionItem?.grades || []}
+                      onChange={(e) => handleGradeChange(e, index)}
+                      input={<OutlinedInput label='Grades' />}
+                      renderValue={(selected) => renderGrades(selected.join(','))}
+                      MenuProps={MenuProps}
+                    >
+                      {renderGradeList(questionItem?.grades || [])}
+                    </Select>
+                  </FormControl>
+                )}
               </Box>
             </Box>
           ))}

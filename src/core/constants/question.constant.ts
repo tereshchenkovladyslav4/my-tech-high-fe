@@ -6,6 +6,7 @@ export const QuestionTypes = {
   CHECK_BOX: 'CHECK_BOX',
   DROPDOWN: 'DROPDOWN',
   INFORMATION: 'INFORMATION',
+  SUBJECT_QUESTION: 'SUBJECT_QUESTION',
 }
 
 // assignment
@@ -61,3 +62,6 @@ export const additionalAssignmentCustomQuestionTypes = [
 
 export const defaultExcuseAssignmentLog = 'Please excuse this Weekly Learning Log.'
 export const defaultExcuseAssignmentExplain = 'Please explain:'
+
+export const checkListDefaultQuestion =
+  'Select one or more of the competencies you were developing this week, if interested.'

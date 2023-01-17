@@ -9,14 +9,16 @@ import { QuestionTypes, defaultExcuseAssignmentLog, defaultExcuseAssignmentExpla
 import { mthButtonClasses } from '@mth/styles/button.style'
 import { questionCheckboxList } from '../../LearningLogs/defaultValue'
 import { LearningLogQuestion } from '../../LearningLogs/types'
+import AddCheckListModal from './AddCheckListModal'
 import { addNewQuestionClasses } from './styles'
 export type AddNewQuestionModalProps = {
   type: string
   onClose: () => void
-  onSave: (value: LearningLogQuestion) => void
+  onSave: (value: LearningLogQuestion[]) => void
+  schoolYearId: number
 }
 
-const AddNewQuestionModal: React.FC<AddNewQuestionModalProps> = ({ type, onClose, onSave }) => {
+const AddNewQuestionModal: React.FC<AddNewQuestionModalProps> = ({ type, onClose, onSave, schoolYearId }) => {
   const [question, setQuestion] = useState<string>()
   const [checkboxList, setCheckboxList] = useState<string[]>([])
   const [isError, setIsError] = useState<boolean>(false)
@@ -31,13 +33,21 @@ const AddNewQuestionModal: React.FC<AddNewQuestionModalProps> = ({ type, onClose
         const contentState = ContentState.createFromBlockArray(contentBlock.contentBlocks)
         const editorState = EditorState.createWithContent(contentState)
         if (editorState.getCurrentContent().hasText()) {
-          onSave({
-            type,
-            question,
-            default_question: true,
-            required: checkboxList.includes('required') ? true : false,
-            can_upload: checkboxList.includes('uploadOption') ? true : false,
-          })
+          const validationList = []
+          if (checkboxList.includes('required')) {
+            validationList.push('required')
+          }
+          if (checkboxList.includes('uploadOption')) {
+            validationList.push('can_upload')
+          }
+          onSave([
+            {
+              type,
+              question,
+              default_question: true,
+              validations: validationList,
+            },
+          ])
         } else {
           setIsError(true)
         }
@@ -52,12 +62,12 @@ const AddNewQuestionModal: React.FC<AddNewQuestionModalProps> = ({ type, onClose
       setIsError(true)
       return
     }
-    const parentSlug = `meta_${+new Date()}`
+    const parent_slug = `meta_${+new Date()}`
     onSave([
       {
         type: QuestionTypes.AGREEMENT,
         question: excuseAssignmentLog,
-        slug: parentSlug,
+        slug: parent_slug,
         parent_slug: '',
         active: true,
         response: '',
@@ -66,11 +76,15 @@ const AddNewQuestionModal: React.FC<AddNewQuestionModalProps> = ({ type, onClose
         type: QuestionTypes.TEXTBOX,
         question: excuseAssignmentExplain,
         slug: `meta_1${+new Date()}`,
-        parent_slug: parentSlug,
+        parent_slug: parent_slug,
         active: false,
         response: '',
       },
     ])
+  }
+
+  if (type === 'Subject Checklist') {
+    return <AddCheckListModal onClose={onClose} schoolYearId={schoolYearId} onSave={onSave} />
   }
 
   return (

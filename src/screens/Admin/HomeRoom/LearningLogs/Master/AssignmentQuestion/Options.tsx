@@ -9,9 +9,14 @@ import { AssignmentQuestionType, QuestionOptionType } from '../types'
 
 type QuestionOptionProps = {
   questionItem: AssignmentQuestionType
-  options: QuestionOptionType
-  handleQuestionList: (targetIndex: number, questionOptions: QuestionOptionType) => void
-  handleAdditionalQuestion: (questionItem: AssignmentQuestionType) => void
+  options: QuestionOptionType[]
+  handleQuestionList: (targetIndex: number, questionOptions: QuestionOptionType[]) => void
+  handleAdditionalQuestion: (
+    questionItem: AssignmentQuestionType,
+    val: number,
+    newOps: QuestionOptionType[],
+    targetIndex: number,
+  ) => void
   targetIndex: number
 }
 const actionTypes = [
@@ -48,7 +53,7 @@ export const QuestionOptions: React.FC<QuestionOptionProps> = ({
     }
   }, [options])
 
-  const handleQuestionOption = (options: QuestionOptionType) => {
+  const handleQuestionOption = (options: QuestionOptionType[]) => {
     setQuestionOptions(options)
     handleQuestionList(targetIndex, options)
   }
@@ -164,7 +169,6 @@ export const QuestionOptions: React.FC<QuestionOptionProps> = ({
                   const val = +v
                   const newOps = questionOptions.map((o) => (o.value === opt.value ? { ...o, action: val } : o))
                   setQuestionOptions(newOps)
-                  // handleQuestionOption(newOps)
                   handleAdditionalQuestion(questionItem, val, newOps, targetIndex)
                 }}
                 size='small'

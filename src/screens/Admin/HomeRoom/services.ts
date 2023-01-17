@@ -152,15 +152,13 @@ export const GetLearningLogQuestionByMasterIdQuery = gql`
   query GetLearningLogQuestionByAssignmentId($assignmentId: Int!) {
     getLearningLogQuestionByAssignmentId(assignmentId: $assignmentId) {
       assignment_id
-      can_upload
+      validations
       default_question
       grades
-      grade_specific
       id
       options
       parent_slug
       question
-      required
       slug
       type
       page

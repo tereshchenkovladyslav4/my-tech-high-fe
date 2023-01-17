@@ -68,7 +68,7 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
           multiple={true}
           value={value}
           onChange={(e) => handleChange(e.target.value)}
-          disableUnderline={borderNone ? true : false}
+          {...(borderNone ? { disableUnderline: true } : {})}
           displayEmpty
           input={borderNone ? undefined : <OutlinedInput label={label} />}
           sx={borderNone ? multiSelectClasses.borderNone : {}}

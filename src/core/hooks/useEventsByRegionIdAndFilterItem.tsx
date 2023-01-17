@@ -7,11 +7,17 @@ import { getEventsQuery } from '@mth/screens/Admin/Calendar/services'
 import { CalendarEvent, EventResponseVM, EventVM } from '@mth/screens/Admin/Calendar/types'
 import { hexToRgbA } from '@mth/utils'
 
-export const useEventsByRegionIdAndFilterItem = (
+export const useEventsByRegionIdAndFilterItem = ({
   regionId = 0,
-  parent_id = 0,
   searchField = '',
-): {
+  userId = 0,
+  type,
+}: {
+  regionId: number
+  searchField?: string
+  userId?: number
+  type?: string
+}): {
   loading: boolean
   calendarEventList: CalendarEvent[]
   events: EventVM[]
@@ -20,9 +26,10 @@ export const useEventsByRegionIdAndFilterItem = (
     variables?:
       | Partial<{
           findEventsByRegionIdSearch: {
-            parent_id: number
+            user_id: number
             region_id: number
             search_field: string
+            type: string
           }
         }>
       | undefined,
@@ -51,9 +58,10 @@ export const useEventsByRegionIdAndFilterItem = (
   const { loading, data, error, refetch } = useQuery(getEventsQuery, {
     variables: {
       findEventsByRegionIdSearch: {
-        parent_id: Number(parent_id),
+        user_id: Number(userId),
         region_id: Number(regionId),
         search_field: searchField,
+        type,
       },
     },
     skip: regionId ? false : true,
@@ -63,7 +71,7 @@ export const useEventsByRegionIdAndFilterItem = (
   useEffect(() => {
     if (!loading && data?.eventsByRegionId) {
       let eventLists: EventResponseVM[] =
-        parent_id > 0
+        userId > 0
           ? data?.eventsByRegionId.filter((item: EventResponseVM) => isApplicate(item.filter_grades))
           : data?.eventsByRegionId
 

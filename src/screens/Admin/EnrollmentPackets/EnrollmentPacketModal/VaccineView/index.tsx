@@ -75,10 +75,17 @@ const VaccineView: React.FC = () => {
       </Box>
 
       {showImmunizations && (
-        <Box sx={{ width: '250px' }}>
-          {immunizations.map((it) => (
-            <ImmunizationItem key={it.immunization_id} item={it} />
-          ))}
+        <Box display={'flex'}>
+          <Box sx={{ width: '250px' }}>
+            {immunizations.slice(0, Math.ceil(immunizations.length / 2)).map((it) => (
+              <ImmunizationItem key={it.immunization_id} item={it} />
+            ))}
+          </Box>
+          <Box sx={{ width: '250px' }}>
+            {immunizations.slice(Math.ceil(immunizations.length / 2), immunizations.length).map((it) => (
+              <ImmunizationItem key={it.immunization_id} item={it} />
+            ))}
+          </Box>
         </Box>
       )}
     </>

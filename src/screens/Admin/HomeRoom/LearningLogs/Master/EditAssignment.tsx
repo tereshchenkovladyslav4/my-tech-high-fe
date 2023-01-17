@@ -175,6 +175,8 @@ const EditAssignment: React.FC<{ masterId: number; assignmentId?: number }> = ({
               response: '',
               active: !item.parent_slug ? true : false,
               options: JSON.parse(item.options),
+              grades: JSON.parse(item.grades),
+              validations: JSON.parse(item.validations),
             }
           })
           .sort((a, b) => (a.order > b.order ? 1 : -1)),
@@ -437,7 +439,9 @@ const EditAssignment: React.FC<{ masterId: number; assignmentId?: number }> = ({
 
   const handleSaveQuestion = async (value: LearningLogQuestion[]) => {
     setQuestionChanged(true)
-    if (!value.id) {
+
+    const existQuestion = tempLearningQuestionList.find((item) => item.slug === value[0].slug)
+    if (!existQuestion) {
       setTempLearningQuestionList([
         ...tempLearningQuestionList,
         ...value.map((item) => {
@@ -451,8 +455,9 @@ const EditAssignment: React.FC<{ masterId: number; assignmentId?: number }> = ({
     } else {
       setTempLearningQuestionList(
         tempLearningQuestionList.map((item) => {
-          if (item.id === value[0].id) {
-            return value[0]
+          const existItem = value.find((i) => i.slug === item.slug)
+          if (existItem) {
+            return existItem
           } else {
             return item
           }
@@ -478,6 +483,8 @@ const EditAssignment: React.FC<{ masterId: number; assignmentId?: number }> = ({
               options: JSON.stringify(item.options),
               default_question: item.default_question,
               order: index + 1,
+              grades: JSON.stringify(item.grades),
+              validations: JSON.stringify(item.validations || []),
             }
           }),
         },
@@ -540,8 +547,10 @@ const EditAssignment: React.FC<{ masterId: number; assignmentId?: number }> = ({
   ))
 
   const handleDeletePage = (pageNum: number) => {
-    setDeletePageNum(pageNum)
-    setConfirmDeletePageModal(true)
+    if (pageNum > 1) {
+      setDeletePageNum(pageNum)
+      setConfirmDeletePageModal(true)
+    }
   }
 
   const confirmDeletePage = () => {
@@ -605,6 +614,9 @@ const EditAssignment: React.FC<{ masterId: number; assignmentId?: number }> = ({
             <LearningQuestionList
               learningQuestionList={tempLearningQuestionList.filter((item) => item.page === pageNum)}
               handleDeleteQuestion={(val) => handleDeleteQuestion(val)}
+              schoolYearId={master?.school_year_id}
+              setEditQuestionList={setEditQuestionList}
+              setIsCustomeQuestionModal={setIsCustomeQuestionModal}
             />
           </Box>
           <Box
@@ -665,7 +677,6 @@ const EditAssignment: React.FC<{ masterId: number; assignmentId?: number }> = ({
           boxShadow: '0px 0px 35px rgba(0, 0, 0, 0.05)',
         }}
       >
-        {/* <Box sx={{ mb: 4 }}> */}
         <PageHeader title={master?.master_name || ''} to={`${MthRoute.HOMEROOM_LEARNING_LOGS}/edit/${masterId}`}>
           <Box display='flex'>
             <Button sx={{ ...mthButtonClasses.roundXsGray, mr: '20px' }} type='button' onClick={handleCancel}>
@@ -676,7 +687,6 @@ const EditAssignment: React.FC<{ masterId: number; assignmentId?: number }> = ({
             </Button>
           </Box>
         </PageHeader>
-        {/* </Box> */}
         {editAssignmentList?.map((editSeeing, index) => (
           <CommonSelect key={index} index={index + 1} selectItem={editSeeing} verticalDividHeight='auto' />
         ))}
@@ -789,7 +799,7 @@ const EditAssignment: React.FC<{ masterId: number; assignmentId?: number }> = ({
                   options: [],
                   validations: [],
                   slug: `meta_${+new Date()}`,
-                  parentSlug: '',
+                  parent_slug: '',
                   response: '',
                   active: true,
                 },
@@ -810,6 +820,7 @@ const EditAssignment: React.FC<{ masterId: number; assignmentId?: number }> = ({
           }}
           type={questionType.find((obj) => obj.value)?.label ?? ''}
           onSave={handleSaveQuestion}
+          schoolYearId={master?.school_year_id}
         />
       )}
       {confirmDeletePageModal && (
