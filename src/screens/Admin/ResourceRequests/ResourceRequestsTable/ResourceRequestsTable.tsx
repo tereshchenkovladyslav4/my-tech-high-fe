@@ -402,7 +402,7 @@ export const ResourceRequestsTable: React.FC<ResourceRequestsTableProps> = ({
         }),
       )
       XLSX.utils.book_append_sheet(wb, ws, 'Blank')
-      XLSX.writeFile(wb, 'resource-requests.xlsx')
+      XLSX.writeFile(wb, 'Homeroom Resource Requests 2.0.xlsx')
     }
   }
 

@@ -591,7 +591,8 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
       isSecondSemester &&
       hasUnlockedPeriods &&
       (schedule.FirstSemesterSchedule?.Period?.semester !== SEMESTER_TYPE.NONE ||
-        schedule.FirstSemesterSchedule?.Title?.always_unlock) &&
+        schedule.FirstSemesterSchedule?.Title?.always_unlock ||
+        schedule.FirstSemesterSchedule?.Course?.always_unlock) &&
       (!scheduleStatus ||
         scheduleStatus === ScheduleStatus.DRAFT ||
         scheduleStatus === ScheduleStatus.UPDATES_REQUIRED ||

@@ -103,6 +103,7 @@ export const EnrollmentPacketTable: React.FC = () => {
               moment(new Date()).format('YYYY-MM-DD') > moment(packet.deadline).format('YYYY-MM-DD')
                 ? MthColor.RED
                 : MthColor.BLACK,
+            fontWeight: '700',
           }}
         >
           {moment(packet.deadline).format('MM/DD/YY')}
@@ -172,11 +173,7 @@ export const EnrollmentPacketTable: React.FC = () => {
     refetchPacketCount()
   }
 
-  const {
-    loading,
-    data,
-    refetch: refetchPackets,
-  } = useQuery(getEnrollmentPacketsQuery, {
+  const { data: enrollmentPacketsData, refetch: refetchPackets } = useQuery(getEnrollmentPacketsQuery, {
     variables: {
       skip: skip,
       sort: sort,
@@ -186,15 +183,15 @@ export const EnrollmentPacketTable: React.FC = () => {
       selectedYearId,
       regionId: me?.selectedRegionId,
     },
-    skip: me?.selectedRegionId ? false : true,
+    skip: !me?.selectedRegionId || !selectedYearId,
     fetchPolicy: 'network-only',
   })
-
   const { data: emailTemplateData, refetch: refetchEmailTemplate } = useQuery(getEmailTemplateQuery, {
     variables: {
       template: 'Enrollment Packet Page',
       regionId: me?.selectedRegionId,
     },
+    skip: !me?.selectedRegionId,
     fetchPolicy: 'network-only',
   })
 
@@ -202,6 +199,7 @@ export const EnrollmentPacketTable: React.FC = () => {
     variables: {
       regionId: me?.selectedRegionId,
     },
+    skip: !me?.selectedRegionId,
     fetchPolicy: 'network-only',
   })
   const handlePageChange = (page) => {
@@ -273,8 +271,8 @@ export const EnrollmentPacketTable: React.FC = () => {
   }, [emailTemplateData])
 
   useEffect(() => {
-    if (data !== undefined) {
-      const { packets } = data
+    if (enrollmentPacketsData !== undefined) {
+      const { packets } = enrollmentPacketsData
       const { results, total } = packets
       setEnrollmentPackets(() => {
         return map(results, (application) => {
@@ -287,8 +285,9 @@ export const EnrollmentPacketTable: React.FC = () => {
           return createData(application)
         })
       })
+      refetchPacketCount()
     }
-  }, [loading, data])
+  }, [enrollmentPacketsData])
 
   useEffect(() => {
     if (countGroup) {
@@ -553,7 +552,7 @@ export const EnrollmentPacketTable: React.FC = () => {
           setParentLimit={setPaginatinLimit}
           handlePageChange={handlePageChange}
           defaultValue={paginatinLimit || 25}
-          numPages={Math.ceil(totalPackets / paginatinLimit)}
+          numPages={Math.ceil((totalPackets || 0) / paginatinLimit)}
           currentPage={currentPage}
         />
       </Box>

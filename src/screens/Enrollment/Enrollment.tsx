@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { useQuery } from '@apollo/client'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
@@ -6,14 +6,14 @@ import { Box, Card, Container } from '@mui/material'
 import { find, includes } from 'lodash'
 import { useHistory } from 'react-router-dom'
 import { Breadcrumbs } from '@mth/components/Breadcrumbs/Breadcrumbs'
-import { Step } from '@mth/components/Breadcrumbs/types'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
-import { MthRoute } from '@mth/enums'
+import { MthRoute, PacketStatus } from '@mth/enums'
 import { EnrollmentContext } from '@mth/providers/EnrollmentPacketPrivder/EnrollmentPacketProvider'
 import { TabContext, UserContext } from '@mth/providers/UserContext/UserProvider'
 import {
   EnrollmentQuestionTab,
   initEnrollmentQuestions,
+  UserRegion,
 } from '../Admin/SiteManagement/EnrollmentSetting/EnrollmentQuestions/types'
 import { Contact } from './Contact/Contact'
 import { Documents } from './Documents/Documents'
@@ -26,27 +26,24 @@ import { EnrollmentProps } from './types'
 
 export const Enrollment: React.FC<EnrollmentProps> = ({ id, disabled }: { id: number; disabled: boolean }) => {
   const { me, setMe } = useContext(UserContext)
-  const { students } = me
+  const students = useMemo(() => me?.students, [me])
   const { tab, setTab, visitedTabs, setVisitedTabs } = useContext(TabContext)
-  const { currentTab } = tab
   const [packetId, setPacketId] = useState<number>()
-  const [student] = useState(find(students, { student_id: id }))
+  const student = useMemo(() => find(students, { student_id: id }), [students, id])
+  const packet = useMemo(() => student?.packets?.at(-1), [student])
+  const documentsOnly = useMemo(() => Boolean(packet?.status == PacketStatus.MISSING_INFO), [packet?.status])
+
+  const currentTab = useMemo(() => tab?.currentTab || 0, [tab?.currentTab])
   const classes = useStyles
 
-  const [regionId, setRegionId] = useState<string>('')
-  const { loading: regionLoading, data: regionData } = useQuery(getRegionByUserId, {
+  const { data: regionData } = useQuery<{ userRegionByUserId: UserRegion[] }>(getRegionByUserId, {
     variables: {
       userId: me?.user_id,
     },
-    skip: regionId == '' ? false : true,
+    skip: !me?.user_id,
     fetchPolicy: 'network-only',
   })
-
-  useEffect(() => {
-    if (!regionLoading && regionData) {
-      setRegionId(regionData?.userRegionByUserId[0]?.region_id)
-    }
-  }, [me?.user_id, regionData])
+  const regionId = useMemo(() => regionData?.userRegionByUserId[0]?.region_id || 0, [regionData?.userRegionByUserId]) // will update again (localStorage.getItem('selectedRegion'))
 
   const { data } = useQuery(getParentQuestionsGql, {
     variables: { input: { region_id: Number(regionId) } },
@@ -97,49 +94,37 @@ export const Enrollment: React.FC<EnrollmentProps> = ({ id, disabled }: { id: nu
       setVisitedTabs,
       visitedTabs,
     }),
-    [packetId, disabled, student, me],
+    [packetId, student, disabled, me, setMe, setTab, setVisitedTabs, visitedTabs],
   )
 
   useEffect(() => {
-    if (student.packets.at(-1)) {
-      setPacketId(student.packets.at(-1).packet_id)
+    if (packet) {
+      setPacketId(packet.packet_id)
     }
-    // if(student.packets?.at(-1).status === 'Missing Info'){
-    //setTab({
-    //  currentTab: 3
-    //})
-    // }
-  }, [tab])
+  }, [tab, student, packet])
 
-  //if(student.packets?.at(-1).status === 'Missing Info'){
-  //  setTab({
-  //    currentTab: 3
-  //  })
-  //}
-  const breadCrumbData: Step[] = [
+  const [breadCrumb, setBreadCrumb] = useState([
     {
       label: 'Contact',
       active: true,
     },
     {
       label: 'Personal',
-      active: currentTab >= 1,
+      active: false,
     },
     {
       label: 'Education',
-      active: currentTab >= 2,
+      active: false,
     },
     {
       label: 'Documents',
-      active: currentTab >= 3,
+      active: false,
     },
     {
       label: 'Submission',
-      active: currentTab >= 4,
+      active: false,
     },
-  ]
-
-  const [breadCrumb, setBreadCrumb] = useState(breadCrumbData)
+  ])
 
   useEffect(() => {
     if (questionsData.length > 0) {
@@ -151,43 +136,46 @@ export const Enrollment: React.FC<EnrollmentProps> = ({ id, disabled }: { id: nu
       })
       setBreadCrumb(tempCrumb)
     }
-  }, [questionsData])
+  }, [currentTab, questionsData])
 
   const history = useHistory()
 
   useEffect(() => {
     setTab({
-      currentTab: 0,
+      currentTab: documentsOnly ? 3 : 0,
     })
-  }, [history])
-
-  const handleBreadCrumbClicked = (idx) => {
-    if (includes(visitedTabs, idx) || disabled) {
-      setTab({
-        currentTab: idx,
-      })
-    }
-  }
+  }, [documentsOnly, history, setTab])
+  const handleBack = useCallback(() => history.push(MthRoute.HOMEROOM.toString()), [history])
+  const handleBreadCrumbClicked = useCallback(
+    (idx) => {
+      if (includes(visitedTabs, idx) || disabled) {
+        setTab({
+          currentTab: idx,
+        })
+      }
+    },
+    [disabled, setTab, visitedTabs],
+  )
 
   const [currentTabName, setCurrentTabName] = useState(breadCrumb[0].label)
   useEffect(() => {
-    const currentName = breadCrumb[currentTab].label
-    setCurrentTabName(currentName)
+    const currentName = breadCrumb.length > currentTab ? breadCrumb[currentTab].label : null
+    if (currentName) {
+      setCurrentTabName(currentName)
+    }
   }, [currentTab, breadCrumb])
 
-  const changeTabNumber = (tabIdx) => {
-    if (includes(visitedTabs, tabIdx) || disabled) {
-      setTab({
-        currentTab: tabIdx,
-      })
-    }
-  }
-
+  const handleTabIndexPrev = useCallback(() => {
+    setTab({ currentTab: currentTab - 1 })
+  }, [currentTab, setTab])
+  const handleTabIndexNext = useCallback(() => {
+    setTab({ currentTab: currentTab + 1 })
+  }, [currentTab, setTab])
   return (
     <EnrollmentContext.Provider value={enrollmentPacketContext}>
       <Container sx={classes.container}>
         <Box sx={{ display: { xs: 'flex', sm: 'none' }, marginBottom: 5, marginTop: 10, marginX: 3 }}>
-          <ChevronLeftIcon sx={classes.chevronIcon} onClick={() => history.push(MthRoute.HOMEROOM.toString())} />
+          <ChevronLeftIcon sx={classes.chevronIcon} onClick={handleBack} />
           <Subtitle size='large' fontWeight='700'>
             Enrollment Packet
           </Subtitle>
@@ -200,12 +188,16 @@ export const Enrollment: React.FC<EnrollmentProps> = ({ id, disabled }: { id: nu
                 flexDirection: 'row',
               }}
             >
-              <ChevronLeftIcon sx={classes.chevronIcon} onClick={() => history.push(MthRoute.HOMEROOM.toString())} />
+              <ChevronLeftIcon sx={classes.chevronIcon} onClick={handleBack} />
               <Subtitle size='large' fontWeight='700'>
                 Enrollment Packet
               </Subtitle>
             </Box>
-            <Breadcrumbs steps={breadCrumb} handleClick={handleBreadCrumbClicked} disabled={disabled} />
+            <Breadcrumbs
+              steps={breadCrumb}
+              handleClick={handleBreadCrumbClicked}
+              disabled={disabled || documentsOnly}
+            />
           </Box>
           <Box sx={classes.breadcrumbs}>
             {/* <Documents id={id} questions={questionsData.filter((q) => q.tab_name === 'Documents')[0]} /> */}
@@ -216,7 +208,11 @@ export const Enrollment: React.FC<EnrollmentProps> = ({ id, disabled }: { id: nu
             ) : currentTabName === 'Education' ? (
               <Education id={id} questions={questionsData.filter((q) => q.tab_name === currentTabName)[0]} />
             ) : currentTabName === 'Documents' ? (
-              <Documents id={id} questions={questionsData.filter((q) => q.tab_name === currentTabName)[0]} />
+              <Documents
+                id={id}
+                questions={questionsData.filter((q) => q.tab_name === currentTabName)[0]}
+                regionId={regionId}
+              />
             ) : (
               <Submission id={id} questions={questionsData.filter((q) => q.tab_name === currentTabName)[0]} />
             )}
@@ -229,11 +225,11 @@ export const Enrollment: React.FC<EnrollmentProps> = ({ id, disabled }: { id: nu
             marginBottom={5}
             alignItems={'center'}
           >
-            <ChevronLeftIcon sx={classes.pageArrow} onClick={() => changeTabNumber(currentTab - 1)} />
+            <ChevronLeftIcon sx={classes.pageArrow} onClick={handleTabIndexPrev} />
             <Box sx={classes.pageNumber}>
               {currentTab + 1}/{breadCrumb.length}
             </Box>
-            <ChevronRightIcon sx={classes.pageArrow} onClick={() => changeTabNumber(currentTab + 1)} />
+            <ChevronRightIcon sx={classes.pageArrow} onClick={handleTabIndexNext} />
           </Box>
         </Card>
       </Container>

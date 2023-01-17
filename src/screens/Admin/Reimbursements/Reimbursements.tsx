@@ -45,7 +45,9 @@ export const Reimbursements: React.FC = () => {
 
   return (
     <Layout>
-      <CardGrid items={items}></CardGrid>
+      <Box sx={{ paddingX: 2, marginTop: 4, marginBottom: 4 }}>
+        <CardGrid items={items}></CardGrid>
+      </Box>
     </Layout>
   )
 }

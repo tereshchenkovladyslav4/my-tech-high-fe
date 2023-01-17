@@ -271,7 +271,7 @@ export const EnrollmentPacketModal: React.FC<EnrollmentPacketModalProps> = ({ ha
       })
     }
     const metaData = JSON.parse(packet.meta)
-    const parentLegalName = metaData.meta_parentlegalname ? metaData.meta_parentlegalname : ''
+    const parentLegalName = metaData?.meta_parentlegalname ? metaData.meta_parentlegalname : ''
     temp.meta['meta_parentlegalname'] = parentLegalName
 
     await savePacket({

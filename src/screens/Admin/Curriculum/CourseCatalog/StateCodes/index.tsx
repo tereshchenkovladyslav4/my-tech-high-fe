@@ -192,7 +192,6 @@ const StateCodes: React.FC = () => {
           grade: item.Grade,
           subject: item.Subject,
           teacher: item.Teacher,
-          SchoolYearId: selectedYearId,
         }
       })
       createStateCodesSubmit(dataToSave)

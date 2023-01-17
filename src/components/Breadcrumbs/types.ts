@@ -9,4 +9,5 @@ export type Step = {
 export type BreadCrumbsProps = {
   steps: Step[]
   handleClick?: Dispatch<SetStateAction<number>>
+  disabled: boolean
 }

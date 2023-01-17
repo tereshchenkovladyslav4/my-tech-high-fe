@@ -14,7 +14,17 @@ import { StandardResponses } from './StandardReponses/StandardResponses'
 import { useStyles } from './styles'
 
 type EmailModalProps = {
-  handleSubmit: () => void
+  handleSubmit: (
+    subject: string,
+    emailBody: string,
+    emailType: {
+      values: string
+      type: string
+    },
+    body: string,
+    addIndex: number,
+    keyText: string,
+  ) => void
   handleModem: () => void
   title: string
   options: string[]
@@ -46,6 +56,9 @@ export const EmailModal: React.FC<EmailModalProps> = ({
   const { me } = useContext(UserContext)
   const [standard_responses, setStandardResponses] = useState([])
   const [template, setTemplate] = useState(null)
+
+  const [addIndex, setAddIndex] = useState<number>(0)
+  const [keyText, setKeyText] = useState<string>('')
 
   const { data: emailTemplateData } = useQuery(getEmailTemplateQuery, {
     variables: {
@@ -100,6 +113,9 @@ export const EmailModal: React.FC<EmailModalProps> = ({
     //  find the second </p>
     const index = HtmlInput.indexOf('</p>', HtmlInput.indexOf('</p>') + 1) + 4
 
+    setAddIndex(index)
+    setKeyText(HtmlInput.slice(index, index + 20))
+
     let standardResponseExtraText = '',
       standardResponseExtraSpan = ''
     for (let i = 0; i < standard_responses.length; i++) {
@@ -152,10 +168,17 @@ export const EmailModal: React.FC<EmailModalProps> = ({
       return
     }
     if (handleSubmit) {
-      handleSubmit(subject, draftToHtml(convertToRaw(editorState.getCurrentContent())), {
-        values: standard_responses,
-        type: actionType,
-      })
+      handleSubmit(
+        subject,
+        draftToHtml(convertToRaw(editorState.getCurrentContent())),
+        {
+          values: standard_responses,
+          type: actionType,
+        },
+        body,
+        addIndex,
+        keyText,
+      )
     }
     handleModem(false)
   }

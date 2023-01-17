@@ -75,7 +75,14 @@ export const PacketConfirmModals: FunctionComponent<PacketConfirmModalsProps> = 
       .replace(/\[APPLICATION_YEAR\]/g, yearText)
   }
 
-  const handleEmailSend = (subject: string, body: string, options: StandardResponseOption) => {
+  const handleEmailSend = (
+    subject: string,
+    body: string,
+    options: StandardResponseOption,
+    emailBody = '',
+    addIndex = 0,
+    keyText = '',
+  ) => {
     try {
       const bodyData = setEmailBodyInfo(body)
       sendPacketEmail({
@@ -98,7 +105,7 @@ export const PacketConfirmModals: FunctionComponent<PacketConfirmModalsProps> = 
         },
       })
       refetch()
-      setValue('notes', constructPacketNotes(notes || '', options, options.type, body))
+      setValue('notes', constructPacketNotes(notes || '', options, options.type, body, emailBody, addIndex, keyText))
       if (options.type === 'AGE_ISSUE') {
         setValue('showAgeIssueModal', false)
         onSubmit()
@@ -125,53 +132,59 @@ export const PacketConfirmModals: FunctionComponent<PacketConfirmModalsProps> = 
     options: StandardResponseOption,
     type: 'MISSING_INFO' | 'AGE_ISSUE',
     body: string,
+    emailBody: string,
+    addIndex: number,
+    keyText: string,
   ) => {
     const date = new Date().toLocaleDateString()
     let newNotes = `${date} - ${type === 'AGE_ISSUE' ? 'Age Issue' : 'Missing Info'}\n`
-    const newNotesLines: Array<string> = ['<SEP>']
 
-    // const setEmailBodyInfo = (email: string, student) => {
-    //   const yearbegin = new Date(student.grade_levels[0].school_year.date_begin).getFullYear().toString()
-    //   const yearend = new Date(student.grade_levels[0].school_year.date_end).getFullYear().toString()
+    let writingBody = ''
+    let firstIndex = -1
+    let endIndex = -1
+    let result = ''
 
-    //   return email.toString()
-    //     .replace(/<STUDENT NAME>/g, student.person.first_name)
-    //     .replace(/<PARENT>/g, student.parent.person.first_name)
-    //     .replace(/<STUDENT GRADE>/g, student.grade_level)
-    //     .replace(/<SCHOOL YEAR>/g, `${yearbegin}-${yearend.substring(2, 4)}`)
-    // }
+    if (type === 'AGE_ISSUE') {
+      endIndex = body.indexOf(keyText)
+      firstIndex = addIndex - 2
+      result = body
+        .slice(firstIndex, endIndex)
+        .replace(/(<([^>]+)>)/gi, '')
+        .replaceAll('\n\n', '\n')
+    } else {
+      if (options.values.length > 0) {
+        const firstOptionTitle = options.values[0]?.title
 
-    const replaceBlank = (text: string, body: string): string => {
-      const startIdx = body.indexOf('but age-wise they could be in')
-      const endIdx = body.indexOf('\n', startIdx)
-      if (startIdx < 0 || endIdx < 0 || text.indexOf('[BLANK]') < 0) return text
+        firstIndex = body.indexOf(`<ul>\n<li>${firstOptionTitle}`)
 
-      const skipStart = 'but age-wise they could be in '.length
-      const skipEnd = body[endIdx - 1] === '.' ? 1 : 0
+        const filesIndex = emailBody.indexOf('<p>[INSTRUCTIONS]</p>\n')
+        const linkIndex = emailBody.indexOf('[LINK]')
+        const endEmailBody = emailBody.slice(filesIndex + 22, linkIndex)
 
-      const newBlank = body
-        .substring(startIdx + skipStart, endIdx - skipEnd)
-        .replace('.</p>', '')
-        .replace('</p>', '')
-
-      return text.replace('[BLANK]', newBlank)
+        endIndex = body.indexOf(endEmailBody)
+      }
+      result = body
+        .slice(firstIndex, endIndex)
+        .replace(/(<([^>]+)>)/gi, '')
+        .replaceAll('\n\n', '\n')
+        .replaceAll('\n\n', '\n')
     }
 
-    options.values
-      .slice()
-      .reverse()
-      .forEach((option) => {
-        const indexOfSeparator = newNotesLines.indexOf('<SEP>')
-        newNotesLines.splice(0, 0, `- ${option.title}`)
-        if (option.extraText) {
-          newNotesLines.splice(indexOfSeparator + 1, 0, replaceBlank(option.extraText.replace('\n\n', '\n'), body))
-        }
-      })
+    options.values.map((option) => {
+      if (writingBody) {
+        writingBody = writingBody.replace(option.title, `- ${option.title}`)
+      } else {
+        writingBody = result.replace(option.title, `- ${option.title}`)
+      }
+    })
 
-    newNotesLines.splice(newNotesLines.indexOf('<SEP>'), 1)
-    newNotes += newNotesLines.join('\n')
-    if (oldNotes.length) return setEmailBodyInfo(newNotes) + '\n\n' + oldNotes
-    return setEmailBodyInfo(newNotes) + '\n'
+    if (writingBody) {
+      newNotes += writingBody
+    }
+
+    if (oldNotes.length) return newNotes + '\n\n' + oldNotes
+
+    return newNotes + '\n'
   }
 
   if (showMissingInfoModal)

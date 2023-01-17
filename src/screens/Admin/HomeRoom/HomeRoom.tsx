@@ -36,7 +36,7 @@ export const HomeRoom: React.FC = () => {
     },
   ]
   return (
-    <Box sx={{ marginTop: '29px', px: 3, ...useStyles.cardBox }}>
+    <Box sx={{ marginTop: '29px', px: 2, ...useStyles.cardBox }}>
       <Grid container rowSpacing={4} columnSpacing={8} padding={4}>
         {items.map((item, idx) => (
           <Grid item key={idx} sm={12} md={6} lg={4}>

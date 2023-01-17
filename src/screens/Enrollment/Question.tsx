@@ -313,7 +313,7 @@ function Item({
         }
       }
     },
-    [fieldData, otherValue, q],
+    [fieldData, otherValue, q.options, q.slug, q.type, setAdditionalQuestion],
   )
 
   const [checkEmail, { loading: emailLoading, data: emailData }] = useLazyQuery(studentEmailTaken, {

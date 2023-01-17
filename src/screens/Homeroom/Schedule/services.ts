@@ -49,6 +49,7 @@ export const CourseFragment = gql`
     min_alt_grade
     max_alt_grade
     website
+    always_unlock
     reduce_funds
     reduce_funds_notification
     display_notification

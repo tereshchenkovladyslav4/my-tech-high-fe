@@ -7,5 +7,6 @@ export type PacketDocument = {
 
 export type DocumentsProps = {
   id: number | string
+  regionId: number
   questions: EnrollmentQuestionTab
 }

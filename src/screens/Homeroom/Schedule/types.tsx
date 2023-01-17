@@ -98,6 +98,7 @@ export type Course = {
   min_alt_grade: number
   max_alt_grade: number
   website: string
+  always_unlock: boolean
   display_notification: boolean
   course_notification: string
   reduce_funds: ReduceFunds

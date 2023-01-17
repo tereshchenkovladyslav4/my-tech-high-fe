@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from 'react'
+import React, { FormEvent, useContext, useEffect, useRef, useState } from 'react'
 import { useMutation } from '@apollo/client'
 import { Box, Button, Grid, FormHelperText, TextField, outlinedInputClasses } from '@mui/material'
 import { useFormik } from 'formik'
@@ -24,7 +24,7 @@ export const Submission: React.FC<SubmissionProps> = ({ id, questions }) => {
   const classes = useStyles
   const [signature, setSignature] = useState<File>()
   const [fileId, setFileId] = useState()
-  const signatureRef = useRef()
+  const signatureRef = useRef<SignatureCanvas>(null)
   const [signatureInvalid, setSignatureInvalid] = useState(false)
 
   const [showSuccess, setShowSuccess] = useState(false)
@@ -65,8 +65,8 @@ export const Submission: React.FC<SubmissionProps> = ({ id, questions }) => {
   }, [])
 
   useEffect(() => {
-    if (disabled == true) signatureRef.current.off()
-    else signatureRef.current.on()
+    if (disabled == true) signatureRef?.current?.off()
+    else signatureRef?.current?.on()
   }, [disabled])
 
   useEffect(() => {
@@ -189,7 +189,7 @@ export const Submission: React.FC<SubmissionProps> = ({ id, questions }) => {
   const [initFormikValues, setInitFormikValues] = useState({})
 
   useEffect(() => {
-    if (!metaData.meta_parentlegalname) {
+    if (!metaData?.meta_parentlegalname) {
       metaData.meta_parentlegalname = ''
     }
 
@@ -214,14 +214,14 @@ export const Submission: React.FC<SubmissionProps> = ({ id, questions }) => {
     initialValues: initFormikValues,
     validationSchema: validationSchema,
     onSubmit: () => {
-      if (!signatureRef.current.isEmpty()) {
+      if (!signatureRef?.current?.isEmpty()) {
         getSignature()
       }
     },
   })
 
-  const handleSubmit = (e) => {
-    if (signatureRef.current.isEmpty()) {
+  const handleSubmit = (e: FormEvent<HTMLFormElement> | undefined) => {
+    if (signatureRef?.current?.isEmpty()) {
       setSignatureInvalid(true)
     }
     setIsSubmit(true)
@@ -229,37 +229,37 @@ export const Submission: React.FC<SubmissionProps> = ({ id, questions }) => {
   }
 
   const resetSignature = () => {
-    signatureRef.current.clear()
+    signatureRef?.current?.clear()
   }
 
   const getSignature = async () => {
-    const file = await dataUrlToFile(signatureRef.current.getTrimmedCanvas().toDataURL('image/png'), 'signature')
-    setSignature(file)
+    if (signatureRef && signatureRef.current) {
+      const file = await dataUrlToFile(signatureRef.current.getTrimmedCanvas().toDataURL('image/png'), 'signature')
+      setSignature(file)
+    }
   }
 
   useEffect(() => {
     if (signature) {
-      uploadSignature()
+      const bodyFormData = new FormData()
+      bodyFormData.append('file', signature)
+      bodyFormData.append('region', 'UT')
+      bodyFormData.append('year', '2022')
+      fetch(import.meta.env.SNOWPACK_PUBLIC_S3_URL, {
+        method: 'POST',
+        body: bodyFormData,
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('JWT')}`,
+        },
+      }).then((res) => {
+        res.json().then(({ data }) => {
+          if (data.file.file_id) {
+            setFileId(data.file.file_id)
+          }
+        })
+      })
     }
   }, [signature])
-
-  const uploadSignature = async () => {
-    const bodyFormData = new FormData()
-    bodyFormData.append('file', signature)
-    bodyFormData.append('region', 'UT')
-    bodyFormData.append('year', '2022')
-    fetch(import.meta.env.SNOWPACK_PUBLIC_S3_URL, {
-      method: 'POST',
-      body: bodyFormData,
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('JWT')}`,
-      },
-    }).then((res) => {
-      res.json().then(({ data }) => {
-        setFileId(data.file.file_id)
-      })
-    })
-  }
 
   useEffect(() => {
     if (fileId) {

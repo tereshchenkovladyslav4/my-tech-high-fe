@@ -59,11 +59,7 @@ export const Routes: React.FC = () => {
               currStudent.applications.length > 0 &&
               currStudent?.applications &&
               currStudent?.applications?.at?.(-1)?.status === 'Accepted' ? (
-              packetAccepted ? (
-                <Enrollment id={match?.params.id} disabled={true} />
-              ) : (
-                <Enrollment id={match?.params.id} disabled={false} />
-              )
+              <Enrollment id={match?.params.id} disabled={Boolean(packetAccepted)} />
             ) : (
               <Homeroom />
             )

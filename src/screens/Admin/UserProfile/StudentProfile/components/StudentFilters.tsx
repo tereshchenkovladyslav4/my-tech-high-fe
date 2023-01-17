@@ -662,7 +662,11 @@ export const StudentFilters: React.FC<StudentFiltersProps> = ({
                 ) : (
                   <Box sx={{ paddingX: '30px' }}>
                     <MthDatePicker
-                      date={moment(studentStatusData?.brith).tz('UTC').format('MM/DD/YYYY')}
+                      date={
+                        studentStatusData?.brith?.includes('T')
+                          ? studentStatusData?.brith?.split('T')[0]
+                          : studentStatusData?.brith
+                      }
                       label={'Date Of Birth'}
                       handleChange={handleChangeBirthDay}
                     />

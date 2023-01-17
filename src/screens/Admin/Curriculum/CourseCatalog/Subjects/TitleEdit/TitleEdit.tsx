@@ -132,7 +132,6 @@ const TitleEdit: React.FC<TitleEditProps> = ({
             teacher: codes.teacher,
             subject: subjectsItems.find((obj) => Number(obj.value) === Number(value.subject_id))?.label,
             grade: codes.gradeIndex === 0 ? 'K' : codes.gradeIndex.toString(),
-            SchoolYearId: schoolYearId,
           }
         })
         if (stateCodes && stateCodes?.length > 0) {

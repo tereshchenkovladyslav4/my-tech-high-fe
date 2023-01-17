@@ -78,6 +78,7 @@ export type EnrollmentQuestion = {
   question: string
   options?: OptionsType[]
   required: boolean
+  missedInfo?: boolean
   order: number
   additional_question: string
   validation?: number
@@ -129,3 +130,7 @@ export const initEnrollmentQuestions: EnrollmentQuestionTab[] = [
     groups: [],
   },
 ]
+export type UserRegion = {
+  id?: number
+  region_id?: number
+}
