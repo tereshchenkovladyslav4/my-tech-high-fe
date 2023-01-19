@@ -11,7 +11,7 @@ import { MthRoute } from '@mth/enums'
 import { deleteAssessmentMutation, saveAssessmentMutation } from '@mth/graphql/mutation/assessment'
 import { renderGrades } from '@mth/utils'
 import { CustomModal } from '../components/CustomModal/CustomModals'
-import { testingPreferenceClassess } from './styles'
+import { testingPreferenceClasses } from './styles'
 import { AssessmentItemProps } from './types'
 
 const AssessmentItem: React.FC<AssessmentItemProps> = ({
@@ -58,7 +58,7 @@ const AssessmentItem: React.FC<AssessmentItemProps> = ({
   return (
     <Box
       sx={{
-        ...testingPreferenceClassess.tableCotainer,
+        ...testingPreferenceClasses.tableCotainer,
         color: item.is_archived ? '#A3A3A4' : '#000',
         background: index % 2 == 0 ? '#FAFAFA' : '',
         textAlign: 'left',
@@ -74,7 +74,7 @@ const AssessmentItem: React.FC<AssessmentItemProps> = ({
       >
         {item.test_name}
       </Typography>
-      <Box sx={testingPreferenceClassess.verticalLine}></Box>
+      <Box sx={testingPreferenceClasses.verticalLine}></Box>
       <Typography
         sx={{ minWidth: '300px', paddingLeft: 4 }}
         onMouseOver={() => {
@@ -83,12 +83,12 @@ const AssessmentItem: React.FC<AssessmentItemProps> = ({
       >
         {renderGrades(item.grades)}
       </Typography>
-      <Box sx={testingPreferenceClassess.action}>
+      <Box sx={testingPreferenceClasses.action}>
         {item.is_archived ? (
           <>
             <Tooltip title='Edit' placement='top'>
               <ModeEditIcon
-                sx={testingPreferenceClassess.iconCursor}
+                sx={testingPreferenceClasses.iconCursor}
                 fontSize='medium'
                 onClick={() => {
                   setSelectedAssessment(item)
@@ -102,14 +102,14 @@ const AssessmentItem: React.FC<AssessmentItemProps> = ({
             <Tooltip title='Unarchive' placement='top'>
               <CallMissedOutgoingIcon
                 onClick={() => setShowArchiveOrUnArchiveModal(true)}
-                sx={testingPreferenceClassess.iconCursor}
+                sx={testingPreferenceClasses.iconCursor}
                 fontSize='medium'
               />
             </Tooltip>
             <Tooltip title='Delete' placement='top'>
               <DeleteForeverOutlinedIcon
                 onClick={() => setShowDeleteModal(true)}
-                sx={testingPreferenceClassess.iconCursor}
+                sx={testingPreferenceClasses.iconCursor}
                 fontSize='medium'
               />
             </Tooltip>
@@ -118,7 +118,7 @@ const AssessmentItem: React.FC<AssessmentItemProps> = ({
           <>
             <Tooltip title='Edit' placement='top'>
               <ModeEditIcon
-                sx={testingPreferenceClassess.iconCursor}
+                sx={testingPreferenceClasses.iconCursor}
                 fontSize='medium'
                 onClick={() => {
                   setSelectedAssessment(item)
@@ -131,7 +131,7 @@ const AssessmentItem: React.FC<AssessmentItemProps> = ({
             </Tooltip>
             <Tooltip title='Archive' placement='top'>
               <SystemUpdateAltIcon
-                sx={testingPreferenceClassess.iconCursor}
+                sx={testingPreferenceClasses.iconCursor}
                 fontSize='medium'
                 onClick={() => setShowArchiveOrUnArchiveModal(true)}
                 onMouseOver={() => {
@@ -141,7 +141,7 @@ const AssessmentItem: React.FC<AssessmentItemProps> = ({
             </Tooltip>
             <Tooltip title='Move' placement='top'>
               <MenuIcon
-                sx={testingPreferenceClassess.iconCursor}
+                sx={testingPreferenceClasses.iconCursor}
                 onMouseOver={() => {
                   setIsDragDisable(false)
                 }}

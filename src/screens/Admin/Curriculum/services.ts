@@ -21,6 +21,7 @@ export const createOrUpdateScheduleBuilder = gql`
       max_num_periods
       custom_built
       split_enrollment
+      split_enrollment_grades
       always_unlock
       parent_tooltip
       school_year_id
@@ -55,6 +56,7 @@ export const getSchoolYear = gql`
         max_num_periods
         custom_built
         split_enrollment
+        split_enrollment_grades
         always_unlock
         parent_tooltip
         school_year_id

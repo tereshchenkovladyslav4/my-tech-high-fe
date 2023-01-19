@@ -1,8 +1,7 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { useLazyQuery, useMutation, useQuery } from '@apollo/client'
 import { Button, Card } from '@mui/material'
 import { Box } from '@mui/system'
-import moment from 'moment'
 import { useHistory, useLocation } from 'react-router-dom'
 import SignatureCanvas from 'react-signature-canvas'
 import BGSVG from '@mth/assets/AdminApplicationBG.svg'
@@ -15,9 +14,8 @@ import {
   DEFAULT_TESTING_PREFERENCE_TITLE,
   DEFUALT_DIPLOMA_QUESTION_DESCRIPTION,
   DEFUALT_DIPLOMA_QUESTION_TITLE,
-  SNOWPACK_PUBLIC_S3_URL,
 } from '@mth/constants'
-import { DiplomaSeekingPath, MthRoute, MthTitle, OPT_TYPE, ScheduleStatus } from '@mth/enums'
+import { DiplomaSeekingPath, FileCategory, MthRoute, MthTitle, OPT_TYPE, ScheduleStatus } from '@mth/enums'
 import { diplomaQuestionForStudent, submitDiplomaAnswerGql } from '@mth/graphql/queries/diploma'
 import { getSignatureInfoByStudentId } from '@mth/graphql/queries/user'
 import {
@@ -30,8 +28,9 @@ import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { getSignatureFile } from '@mth/screens/Admin/EnrollmentPackets/services'
 import { AssessmentType } from '@mth/screens/Admin/SiteManagement/EnrollmentSetting/TestingPreference/types'
 import { UpdateStudentMutation } from '@mth/screens/Admin/UserProfile/services'
+import { uploadFile } from '@mth/services'
 import { mthButtonClasses } from '@mth/styles/button.style'
-import { calculateGrade, extractContent, gradeNum } from '@mth/utils'
+import { calculateGrade, extractContent, getRegionCode, gradeNum } from '@mth/utils'
 import { DiplomaSeeking } from './DiplomaSeeking'
 import { HeaderComponent } from './HeaderComponent'
 import { OptOutForm } from './OptOutForm'
@@ -39,7 +38,7 @@ import { ScheduleBuilder } from './ScheduleBuilder'
 import { StudentInfo } from './StudentInfo'
 import { scheduleClasses } from './styles'
 import { TestingPreference } from './TestingPreference'
-import { ScheduleProps, StudentAssessment, StudentScheduleInfo, DiplomaQuestionType } from './types'
+import { DiplomaQuestionType, ScheduleProps, StudentAssessment, StudentScheduleInfo } from './types'
 
 const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
   const { me } = useContext(UserContext)
@@ -83,6 +82,13 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
     schoolYears,
     dropdownItems: schoolYearItems,
   } = useActiveScheduleSchoolYears(studentId)
+
+  const isSplitEnrollment = useMemo(() => {
+    const student_grade_level = student?.grade_levels?.length ? student?.grade_levels[0]?.grade_level : undefined
+    const split_enrollment = selectedYear?.ScheduleBuilder?.split_enrollment
+    const split_enrollment_grades = selectedYear?.ScheduleBuilder?.split_enrollment_grades?.split(',')
+    return Boolean(split_enrollment && split_enrollment_grades?.includes(String(student_grade_level)))
+  }, [selectedYear, student])
 
   const { diplomaOptions, diplomaAnswerRefetch } = useDiplomaSeekingOptionsByStudentIdandSchoolYearId(
     selectedYearId || 0,
@@ -205,28 +211,22 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
   }
 
   const uploadSignature = async (file: File) => {
-    const bodyFormData = new FormData()
-    bodyFormData.append('file', file)
-    bodyFormData.append('region', me?.userRegion?.at(-1)?.regionDetail?.name || 'Arizona')
-    bodyFormData.append('year', moment(new Date()).format('YYYY'))
-    fetch(SNOWPACK_PUBLIC_S3_URL, {
-      method: 'POST',
-      body: bodyFormData,
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('JWT')}`,
-      },
-    }).then((res) => {
-      res.json().then(async ({ data }) => {
+    uploadFile(
+      file,
+      FileCategory.SIGNATURE,
+      getRegionCode(me?.userRegion?.at(-1)?.regionDetail?.name || 'Arizona'),
+    ).then(async (res) => {
+      if (res.success && res.data?.file?.file_id) {
         await updateStudent({
           variables: {
             updateStudentInput: {
               student_id: studentId,
-              opt_out_form_signature_file_id: Number(data.file.file_id),
+              opt_out_form_signature_file_id: Number(res.data?.file.file_id),
             },
           },
         })
-        setSignatureFileId(Number(data.file.file_id))
-      })
+        setSignatureFileId(Number(res.data?.file.file_id))
+      }
     })
   }
 
@@ -357,13 +357,13 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
 
   useEffect(() => {
     if (!assessmentsLoading && assessments && selectedYear) {
-      const fitleredAssessments = assessments?.filter(
+      const filteredAssessments = assessments?.filter(
         (assessment) =>
           assessment?.grades?.includes(`${student?.grade_levels?.at(-1)?.grade_level}`) && !assessment?.is_archived,
       )
-      setActiveTestingPreference(selectedYear?.testing_preference && !!fitleredAssessments?.length)
+      setActiveTestingPreference(selectedYear?.testing_preference && !!filteredAssessments?.length)
       if (backTo) setStep(MthTitle.STEP_SCHEDULE_BUILDER)
-      else if (selectedYear?.testing_preference && fitleredAssessments?.length)
+      else if (selectedYear?.testing_preference && filteredAssessments?.length)
         setStep(MthTitle.STEP_TESTING_PREFERENCE)
       else if (selectedYear?.diploma_seeking) setStep(MthTitle.STEP_DIPLOMA_SEEKING)
       else setStep(MthTitle.STEP_SCHEDULE_BUILDER)
@@ -374,7 +374,7 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
       )
       setOptOutFormTitle(selectedYear?.opt_out_form_title || DEFAULT_OPT_OUT_FORM_TITLE)
       setOptOutFormDescription(selectedYear?.opt_out_form_description || DEFAULT_OPT_OUT_FORM_DESCRIPTION)
-      setAvailableAssessments(fitleredAssessments)
+      setAvailableAssessments(filteredAssessments)
     }
   }, [assessments, assessmentsLoading, selectedYear, backTo])
 
@@ -487,7 +487,7 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
               selectedYear?.ScheduleStatus === ScheduleStatus.ACCEPTED && !!selectedYear?.IsSecondSemesterOpen
             }
             isUpdatePeriodRequested={isUpdatePeriodRequested}
-            splitEnrollment={!!selectedYear?.ScheduleBuilder?.split_enrollment}
+            splitEnrollment={isSplitEnrollment}
             showUnsavedModal={showUnsavedModal}
             diplomaSeekingPath={diplomaSeekingPathStatus}
             setScheduleStatus={setScheduleStatus}

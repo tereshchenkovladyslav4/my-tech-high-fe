@@ -38,6 +38,14 @@ export const getSchoolYear = gql`
         display_remaining_funds
         remaining_funds
       }
+      direct_orders_technology_instructions
+      direct_orders_supplement_instructions
+      direct_orders_custom_built_instructions
+      reimbursements_technology_instructions
+      reimbursements_supplement_instructions
+      reimbursements_custom_built_instructions
+      reimbursements_third_party_instructions
+      reimbursements_required_software_instructions
     }
   }
 `

@@ -72,7 +72,9 @@ export const Options: React.FC<OptionsProps> = ({ options, setOptions, type, set
                 onBlur={(v) => setBlured(v)}
                 onChange={(e) => {
                   const val = e.currentTarget.value
-                  const newOptions = options.map((o) => (o.value === option.value ? { ...o, label: val } : o))
+                  const newOptions = options.map((o) =>
+                    o.value === option.value ? { ...o, label: val, value: val } : o,
+                  )
                   if (index === options.length - 1) {
                     setOptions([
                       ...newOptions,

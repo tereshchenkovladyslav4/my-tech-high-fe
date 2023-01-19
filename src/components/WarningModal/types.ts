@@ -1,6 +1,6 @@
 export type WarningModalProps = {
   title: string
-  subtitle: string
+  subtitle?: string
   handleModem?: () => void
   btntitle?: string
   canceltitle?: string

@@ -20,12 +20,12 @@ export const ReimbursementForms: React.FC = () => {
   const [formType, setFormType] = useState<ReimbursementFormType | undefined>()
   const [isChanged, setIsChanged] = useState<boolean>(false)
 
-  const { data: schoolYearData } = useQuery(getSchoolYear, {
+  const { data: schoolYearData, refetch } = useQuery(getSchoolYear, {
     variables: {
       school_year_id: selectedYearId,
     },
     skip: !selectedYearId,
-    fetchPolicy: 'cache-and-network',
+    fetchPolicy: 'network-only',
   })
 
   useEffect(() => {
@@ -114,7 +114,7 @@ export const ReimbursementForms: React.FC = () => {
         </>
       )}
       {!!formType && (
-        <RequestComponent selectedYearId={selectedYearId} formType={formType} setFormType={setFormType}>
+        <RequestComponent selectedYear={schoolYear} formType={formType} setFormType={setFormType} refetch={refetch}>
           <RequestForm
             selectedYearId={selectedYearId}
             formType={formType}

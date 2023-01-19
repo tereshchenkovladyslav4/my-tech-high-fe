@@ -37,57 +37,76 @@ export const QuestionEdit: React.FC<QuestionEditProps> = ({
   }
 
   useEffect(() => {
-    if (!editQuestion?.Options?.length) {
+    if (editQuestion.type) {
       switch (editQuestion.type) {
         case QUESTION_TYPE.MULTIPLECHOICES:
-          setEditQuestion({
-            ...editQuestion,
-            Options: [
-              {
-                label: '',
-                value: '',
-                action: AdditionalQuestionAction.CONTINUE_TO_NEXT,
-              },
-            ] as DropDownItem[],
-          })
+          if (!editQuestion.default_question)
+            setEditQuestion({
+              ...editQuestion,
+              Options: [
+                {
+                  label: '',
+                  value: '',
+                  action: AdditionalQuestionAction.CONTINUE_TO_NEXT,
+                },
+              ] as DropDownItem[],
+            })
           break
         case QUESTION_TYPE.DROPDOWN:
-          setEditQuestion({
-            ...editQuestion,
-            Options: [
-              {
-                label: 'Yes',
-                value: 'yes',
-                action: AdditionalQuestionAction.CONTINUE_TO_NEXT,
-              },
-              {
-                label: 'No',
-                value: 'no',
-                action: AdditionalQuestionAction.CONTINUE_TO_NEXT,
-              },
-            ] as DropDownItem[],
-          })
+          if (!editQuestion.default_question)
+            setEditQuestion({
+              ...editQuestion,
+              Options: [
+                {
+                  label: 'Yes',
+                  value: 1,
+                  action: AdditionalQuestionAction.CONTINUE_TO_NEXT,
+                },
+                {
+                  label: 'No',
+                  value: 2,
+                  action: AdditionalQuestionAction.CONTINUE_TO_NEXT,
+                },
+                {
+                  label: '',
+                  value: '',
+                  action: AdditionalQuestionAction.CONTINUE_TO_NEXT,
+                },
+              ] as DropDownItem[],
+            })
           break
         case QUESTION_TYPE.CHECKBOX:
+          if (!editQuestion.default_question)
+            setEditQuestion({
+              ...editQuestion,
+              Options: [
+                {
+                  label: 'Yes',
+                  value: 1,
+                  action: AdditionalQuestionAction.CONTINUE_TO_NEXT,
+                },
+                {
+                  label: 'No',
+                  value: 2,
+                  action: AdditionalQuestionAction.CONTINUE_TO_NEXT,
+                },
+                {
+                  label: '',
+                  value: '',
+                  action: AdditionalQuestionAction.CONTINUE_TO_NEXT,
+                },
+              ] as DropDownItem[],
+            })
+          break
+        default:
           setEditQuestion({
             ...editQuestion,
-            Options: [
-              {
-                label: 'Yes',
-                value: 'yes',
-                action: AdditionalQuestionAction.CONTINUE_TO_NEXT,
-              },
-              {
-                label: 'No',
-                value: 'no',
-                action: AdditionalQuestionAction.CONTINUE_TO_NEXT,
-              },
-            ] as DropDownItem[],
+            Options: [] as DropDownItem[],
           })
           break
       }
     }
-  }, [editQuestion])
+  }, [editQuestion.type])
 
   return (
     <>
@@ -103,16 +122,17 @@ export const QuestionEdit: React.FC<QuestionEditProps> = ({
         <Box sx={{ paddingY: 2, minWidth: '30%' }}>
           <DropDown
             dropDownItems={
-              !editQuestion?.additional_question
+              !editQuestion?.additional_question || editQuestion.default_question
                 ? REIMBURSEMENT_QUESTION_TYPES
                 : REIMBURSEMENT_ADDITIONAL_QUESTION_TYPES
             }
             placeholder={'Type'}
             labelTop
-            defaultValue={!editQuestion?.default_question ? QUESTION_TYPE.TEXTFIELD : 0}
+            defaultValue={!editQuestion?.default_question ? QUESTION_TYPE.TEXTFIELD : editQuestion?.type}
             setParentValue={handleChangeQuestionType}
             size='small'
             sx={{ m: 0 }}
+            disabled={editQuestion.default_question}
           />
         </Box>
       </Box>
@@ -175,9 +195,12 @@ export const QuestionEdit: React.FC<QuestionEditProps> = ({
             })
           }}
           checkboxLists={
-            !editQuestion?.additional_question && editQuestion?.type === QUESTION_TYPE.INFORMATION
+            (!editQuestion?.additional_question && editQuestion?.type === QUESTION_TYPE.INFORMATION) ||
+            (editQuestion?.additional_question &&
+              editQuestion?.type === QUESTION_TYPE.INFORMATION &&
+              editQuestion?.default_question)
               ? QUESTION_SETTING_LIST.filter((list) => list.value === 'display_for_admin')
-              : editQuestion?.additional_question
+              : editQuestion?.additional_question && !editQuestion.default_question
               ? QUESTION_SETTING_LIST.filter((list) => list.value === 'required')
               : QUESTION_SETTING_LIST
           }

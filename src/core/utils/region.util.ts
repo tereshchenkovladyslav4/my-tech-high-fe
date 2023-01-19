@@ -1,3 +1,4 @@
+import { US_STATES } from '@mth/constants'
 import { RegionDetailProps } from '../models/region.model'
 
 export const sortRegions = (allRegions: RegionDetailProps = []): RegionDetailProps => {
@@ -12,4 +13,8 @@ export const sortRegions = (allRegions: RegionDetailProps = []): RegionDetailPro
   })
 
   return regions
+}
+
+export const getRegionCode = (regionName: string | undefined): string => {
+  return US_STATES.find((item) => item.label === regionName)?.value || ''
 }

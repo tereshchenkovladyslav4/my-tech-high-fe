@@ -161,7 +161,7 @@ export const Assignments: React.FC = () => {
           })
         })
       })
-      currentHomes.unshift(
+      setCurrentHomeroomes([
         {
           value: 'all',
           label: 'Select All',
@@ -170,8 +170,8 @@ export const Assignments: React.FC = () => {
           value: 'unassigned',
           label: 'Unassigned',
         },
-      )
-      setCurrentHomeroomes(currentHomes)
+        ...currentHomes.sort((a, b) => (a.label.toLowerCase() > b.label.toLowerCase() ? 1 : -1)),
+      ])
     }
   }, [currentHomeroomData, currentHomeroomLoading])
 

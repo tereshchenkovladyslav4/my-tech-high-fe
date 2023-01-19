@@ -237,7 +237,7 @@ export const AssignmentTable: React.FC<EnrollmentSchoolTableProps> = ({
         homeroomStudentInput: {
           school_year_id: parseInt(selectedYear?.value as string),
           studentIds: students,
-          teacher_id: parseInt(selectedHomeroom?.value !== 'unassigned' ? selectedHomeroom?.value : -1),
+          teacher_id: parseInt(selectedHomeroom?.value !== 'unassign' ? selectedHomeroom?.value : -1),
           auto_grade: autoGrade,
         },
       },
@@ -415,11 +415,31 @@ export const AssignmentTable: React.FC<EnrollmentSchoolTableProps> = ({
           <Box sx={{ flexGrow: 1 }}>
             <Autocomplete
               disablePortal
-              options={currentHomeroomes}
+              options={[
+                {
+                  value: 'unassign',
+                  label: 'Unassign',
+                },
+                ...currentHomeroomes.filter((item) => !['all', 'unassigned'].includes(item.value)),
+              ]}
               onChange={(event, value) => handleListItemClick(value)}
               sx={{ width: 300 }}
               value={selectedHomeroom}
-              renderInput={(params) => <TextField {...params} label='Search...' />}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label='Search...'
+                  InputProps={{
+                    ...params.InputProps,
+                    startAdornment: (
+                      <InputAdornment position='start'>
+                        <SearchIcon />
+                      </InputAdornment>
+                    ),
+                    disableUnderline: true,
+                  }}
+                />
+              )}
             />
           </Box>
 

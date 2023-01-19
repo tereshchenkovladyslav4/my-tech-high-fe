@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { Box, Button, Grid } from '@mui/material'
-import moment from 'moment/moment'
 import { MthCheckboxList } from '@mth/components/MthCheckboxList'
 import { CheckBoxListVM } from '@mth/components/MthCheckboxList/MthCheckboxList'
 import { PageBlock } from '@mth/components/PageBlock'
@@ -10,6 +9,7 @@ import { MthColor, ResourceFeature, ResourceRequestStatus, ResourceSubtitle, Stu
 import { useProviders, useResources } from '@mth/hooks'
 import { FiltersProps } from '@mth/screens/Admin/ResourceRequests/Filters/type'
 import { mthButtonClasses } from '@mth/styles/button.style'
+import { schoolYearLabel } from '@mth/utils'
 
 export const Filters: React.FC<FiltersProps> = ({ schoolYearId, schoolYear, setFilter }) => {
   const [expanded, setExpanded] = useState<boolean>(true)
@@ -92,9 +92,7 @@ export const Filters: React.FC<FiltersProps> = ({ schoolYearId, schoolYear, setF
           <Grid item container columnSpacing={4} xs={4}>
             <Grid item xs={6}>
               <MthCheckboxList
-                title={`${moment(schoolYear?.date_begin).format('YYYY')}-${moment(schoolYear?.date_end).format(
-                  'YY',
-                )} Status`}
+                title={`${schoolYearLabel(schoolYear)} Status`}
                 checkboxLists={studentStatusItems}
                 values={studentStatuses}
                 setValues={setStudentStatuses}

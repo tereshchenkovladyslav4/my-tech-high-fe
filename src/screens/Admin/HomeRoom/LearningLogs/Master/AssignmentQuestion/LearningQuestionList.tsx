@@ -151,12 +151,12 @@ const LearningQuestionItem = ({
             </Box>
             {!question[0].parent_slug && (
               <Box display='inline-flex' paddingTop='10px' height='40px' alignItems='center' justifyContent='center'>
-                <Tooltip title='Edit' onClick={() => handleEditQuestion(question)}>
+                <Tooltip title='Edit' onClick={() => handleEditQuestion(question)} placement='top'>
                   <IconButton>
                     <EditIcon />
                   </IconButton>
                 </Tooltip>
-                <Tooltip title='Delete'>
+                <Tooltip title='Delete' placement='top'>
                   <IconButton onClick={() => handleDeleteQuestion(question[0])}>
                     <DeleteForeverOutlinedIcon />
                   </IconButton>
@@ -253,7 +253,7 @@ const LearningQuestionItem = ({
   }
 
   const DragHandle = SortableHandle(() => (
-    <Tooltip title='Move'>
+    <Tooltip title='Move' placement='top'>
       <IconButton>
         <DehazeIcon />
       </IconButton>
@@ -274,12 +274,12 @@ const LearningQuestionItem = ({
           </Paragraph>
           {!question[0].parent_slug && (
             <Box display='inline-flex' paddingTop='10px' height='40px' alignItems='center' justifyContent='center'>
-              <Tooltip title='Edit'>
+              <Tooltip title='Edit' placement='top'>
                 <IconButton onClick={() => handleEditQuestion(question)}>
                   <EditIcon />
                 </IconButton>
               </Tooltip>
-              <Tooltip title='Delete'>
+              <Tooltip title='Delete' placement='top'>
                 <IconButton onClick={() => handleDeleteQuestion(question[0])}>
                   <DeleteForeverOutlinedIcon />
                 </IconButton>

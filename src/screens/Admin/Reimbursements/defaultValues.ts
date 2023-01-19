@@ -603,11 +603,102 @@ export const DEFAULT_REQUIRED_SOFTWARE_QUESTIONS: ReimbursementQuestion[] = [
   },
 ]
 
+export enum REIMBURSEMENT_DEFAULT_QUESTION {
+  NEW_DEVICE = 'New Device',
+}
+
 export const REIMBURSEMENT_DEFAULT_QUESTIONS: RadioGroupOption[] = [
   {
     option_id: 1,
-    label: 'New Device',
+    label: REIMBURSEMENT_DEFAULT_QUESTION.NEW_DEVICE,
     value: false,
+  },
+]
+
+export const DEFAULT_NEW_DEVICE_QUESTION: ReimbursementQuestion[] = [
+  {
+    type: QUESTION_TYPE.MULTIPLECHOICES,
+    default_question: true,
+    required: true,
+    display_for_admin: false,
+    priority: 0,
+    question: 'Is this for a NEW (not used or refurbished computer, laptop, Chromebook, or iPad/tablet?',
+    options: '',
+    Options: [
+      {
+        label: 'Yes',
+        value: 1,
+        action: AdditionalQuestionAction.ASK_ADDITIONAL_QUESTION,
+      },
+      {
+        label: 'No',
+        value: 2,
+        action: AdditionalQuestionAction.CONTINUE_TO_NEXT,
+      },
+      {
+        label: '',
+        value: '',
+        action: AdditionalQuestionAction.CONTINUE_TO_NEXT,
+      },
+    ],
+    SchoolYearId: 0,
+    slug: 'reimbursement_new_device',
+    reimbursement_form_type: ReimbursementFormType.CUSTOM_BUILT,
+    is_direct_order: false,
+    sortable: true,
+    SettingList: ['required'],
+  },
+  {
+    type: QUESTION_TYPE.INFORMATION,
+    default_question: true,
+    required: false,
+    display_for_admin: false,
+    priority: 0,
+    question:
+      'NOTE: Please only include the new computer, laptop, Chromebook, or iPad/tablet on this Request for Reimbursement form. Submit a separate form for additional Technology Allowance items.<br />The Amount Paid should exclude takes. Note- this amount might be more than you are requesting for reimbursement.',
+    options: '',
+    Options: [],
+    SchoolYearId: 0,
+    slug: 'reimbursement_new_device_information',
+    reimbursement_form_type: ReimbursementFormType.CUSTOM_BUILT,
+    is_direct_order: false,
+    sortable: false,
+    SettingList: [],
+    additional_question: 'reimbursement_new_device',
+  },
+  {
+    type: QUESTION_TYPE.TEXTBOX,
+    default_question: true,
+    required: true,
+    display_for_admin: false,
+    priority: 0,
+    question: 'Item Name',
+    options: '',
+    Options: [],
+    SchoolYearId: 0,
+    slug: 'reimbursement_new_device_item_name',
+    reimbursement_form_type: ReimbursementFormType.CUSTOM_BUILT,
+    is_direct_order: false,
+    sortable: false,
+    SettingList: ['required'],
+    additional_question: 'reimbursement_new_device',
+  },
+  {
+    type: QUESTION_TYPE.TEXTBOX,
+    default_question: true,
+    required: true,
+    display_for_admin: false,
+    priority: 0,
+    question: 'Item Serial Number',
+    options: '',
+    Options: [],
+    SchoolYearId: 0,
+    slug: 'reimbursement_new_device_item_serial_number',
+    reimbursement_form_type: ReimbursementFormType.CUSTOM_BUILT,
+    is_direct_order: false,
+    sortable: false,
+    SettingList: ['required'],
+    additional_question: 'reimbursement_new_device',
   },
 ]
 

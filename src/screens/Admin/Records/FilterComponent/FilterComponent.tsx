@@ -20,7 +20,7 @@ import {
 } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { defaultOtherOptions, defaultStatusOptions } from '../defaultValues'
-import { recordClassess } from '../styles'
+import { recordClasses } from '../styles'
 import { FilterComponentProps } from '../types'
 import { filterComponentClassess } from './styles'
 
@@ -65,7 +65,7 @@ const FilterComponent: React.FC<FilterComponentProps> = ({ setFilter }) => {
   ]
 
   const chevron = () =>
-    !expand ? <ExpandLessIcon sx={recordClassess.expandIcon} /> : <ExpandMoreIcon sx={recordClassess.expandIcon} />
+    !expand ? <ExpandLessIcon sx={recordClasses.expandIcon} /> : <ExpandMoreIcon sx={recordClasses.expandIcon} />
 
   const jsonStringify = (value: string[]) => {
     if (value?.length > 0) {
@@ -132,7 +132,7 @@ const FilterComponent: React.FC<FilterComponentProps> = ({ setFilter }) => {
       </Box>
       {expand && (
         <>
-          <Box sx={recordClassess.dropDownContainer}>
+          <Box sx={recordClasses.dropDownContainer}>
             <DropDown
               dropDownItems={schoolYearDropdownItems}
               placeholder={'Select Year'}
@@ -259,7 +259,7 @@ const FilterComponent: React.FC<FilterComponentProps> = ({ setFilter }) => {
                   {'Date Range'}
                 </Paragraph>
                 <LocalizationProvider dateAdapter={AdapterDateFns}>
-                  <Box sx={recordClassess.dateGroup}>
+                  <Box sx={recordClasses.dateGroup}>
                     <Box sx={{ display: 'grid' }}>
                       <DatePicker
                         label='Start Date'
@@ -289,11 +289,11 @@ const FilterComponent: React.FC<FilterComponentProps> = ({ setFilter }) => {
               </Grid>
             </Grid>
           </Grid>
-          <Box sx={recordClassess.btnGroup}>
-            <Button sx={recordClassess.clearAllBtn} onClick={handleClear}>
+          <Box sx={recordClasses.btnGroup}>
+            <Button sx={recordClasses.clearAllBtn} onClick={handleClear}>
               Clear All
             </Button>
-            <Button sx={recordClassess.filterBtn} onClick={handleFilter}>
+            <Button sx={recordClasses.filterBtn} onClick={handleFilter}>
               Filter
             </Button>
           </Box>

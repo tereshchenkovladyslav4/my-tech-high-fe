@@ -1,5 +1,4 @@
 import { gql } from '@apollo/client'
-import { MthRoute } from '@mth/enums'
 
 export const createSchoolYearMutation = gql`
   mutation CreateSchoolYear($createSchoolYearInput: CreateSchoolYearInput!, $previousYearId: Float!) {
@@ -158,49 +157,3 @@ export const diplomaQuestionGradeSaveGql = gql`
     saveDiplomaQuestionGrade(diplomaQuestionInput: $diplomaQuestionInput)
   }
 `
-
-export const uploadImage = async (file: File | undefined, stateName: string): Promise<string> => {
-  const bodyFormData = new FormData()
-  if (file) {
-    bodyFormData.append('file', file)
-    bodyFormData.append('region', stateName)
-    bodyFormData.append('directory', 'stateLogo')
-
-    const response = await fetch(MthRoute.SNOWPACK_PUBLIC_S3_URL.toString(), {
-      method: 'POST',
-      body: bodyFormData,
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('JWT')}`,
-      },
-    })
-    const {
-      data: { s3 },
-    } = await response.json()
-    return s3.Location
-  } else {
-    return ''
-  }
-}
-
-export const uploadFile = async (file: File, type: string, stateName: string): Promise<string> => {
-  const bodyFormData = new FormData()
-  if (file) {
-    bodyFormData.append('file', file)
-    bodyFormData.append('region', stateName)
-    bodyFormData.append('directory', type)
-
-    const response = await fetch(MthRoute.SNOWPACK_PUBLIC_S3_URL.toString(), {
-      method: 'POST',
-      body: bodyFormData,
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('JWT')}`,
-      },
-    })
-    const {
-      data: { s3 },
-    } = await response.json()
-    return s3.Location
-  } else {
-    return ''
-  }
-}

@@ -56,4 +56,12 @@ export type SchoolYear = {
   mid_third_party_open: string
   mid_third_party_close: string
   enrollment_packet: boolean
+  direct_orders_technology_instructions: string
+  direct_orders_supplement_instructions: string
+  direct_orders_custom_built_instructions: string
+  reimbursements_technology_instructions: string
+  reimbursements_supplement_instructions: string
+  reimbursements_custom_built_instructions: string
+  reimbursements_third_party_instructions: string
+  reimbursements_required_software_instructions: string
 }

@@ -1,6 +1,6 @@
 import { MthColor } from '@mth/enums'
 
-export const recordClassess = {
+export const recordClasses = {
   btnGroup: {
     justifyContent: 'flex-end',
     display: 'flex',

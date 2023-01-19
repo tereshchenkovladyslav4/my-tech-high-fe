@@ -10,11 +10,13 @@ import { DropDownItem } from '@mth/components/DropDown/types'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { s3URL } from '@mth/constants'
-import { MthColor } from '@mth/enums'
+import { FileCategory, MthColor } from '@mth/enums'
 import { useEnrollmentPacketDocumentListByRegionId } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
-import { RegisterStudentRecordFileMutation, uploadFile } from '../services'
-import { recordClassess } from '../styles'
+import { uploadFile } from '@mth/services'
+import { getRegionCode } from '@mth/utils'
+import { RegisterStudentRecordFileMutation } from '../services'
+import { recordClasses } from '../styles'
 import { StudentFilesModalProps, StudentRecord, StudentRecordFile } from '../types'
 import { studentFilesModalClassess } from './styles'
 
@@ -47,11 +49,11 @@ const StudentFilesModal: React.FC<StudentFilesModalProps> = ({ record, handleMod
     if (!files?.length) return
     const file = files[0]
     if (selectedDocumentFileType) {
-      const fileId = await uploadFile(file, `${stateName}/Student Records/${record?.studentId}`, stateName)
+      const result = await uploadFile(file, FileCategory.STUDENT_RECORDS, getRegionCode(stateName), record?.studentId)
       await submitSave({
         variables: {
           createStudentRecordFileInput: {
-            FileId: Number(fileId),
+            FileId: Number(result?.data?.file?.file_id),
             RecordId: Number(record?.recordId),
             file_kind: selectedDocumentFileType,
           },
@@ -64,7 +66,7 @@ const StudentFilesModal: React.FC<StudentFilesModalProps> = ({ record, handleMod
   const renderStudentRecordFiles = () => {
     return record?.files?.map((file, index) => (
       <Grid item key={index} xs={12} lg={3} sx={{ padding: 2 }}>
-        <Box sx={recordClassess.record}>
+        <Box sx={recordClasses.record}>
           <Paragraph
             size='medium'
             sx={{ cursor: 'pointer', color: MthColor.MTHBLUE, maxWidth: '100px', wordWrap: 'break-word' }}

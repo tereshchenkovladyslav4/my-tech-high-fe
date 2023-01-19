@@ -1,3 +1,5 @@
+import moment from 'moment'
+import { SchoolYear } from '@mth/models'
 import { SchoolYearType } from '../models/school-year-type.model'
 
 export const getPreviousSchoolYearId = (
@@ -16,4 +18,11 @@ export const getPreviousSchoolYearId = (
     }
   }
   return previousYearId
+}
+
+export const schoolYearLabel = (schoolYear: SchoolYear | undefined): string => {
+  if (schoolYear && schoolYear.date_begin && schoolYear.date_end) {
+    return `${moment(schoolYear?.date_begin).format('YYYY')}-${moment(schoolYear?.date_end).format('YY')}`
+  }
+  return ''
 }

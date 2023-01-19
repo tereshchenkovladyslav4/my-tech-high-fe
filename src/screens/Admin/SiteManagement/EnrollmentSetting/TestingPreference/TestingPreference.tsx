@@ -16,7 +16,7 @@ import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { AssessmentEditForm } from './AssessmentEditForm'
 import AssessmentTable from './AssessmentTable'
 import HeaderComponent from './HeaderComponent'
-import { testingPreferenceClassess } from './styles'
+import { testingPreferenceClasses } from './styles'
 import TestingPreferenceInformation from './TestingPreferenceInformation'
 import { AssessmentType, Information } from './types'
 
@@ -94,7 +94,7 @@ const TestingPreference: React.FC = () => {
   }, [loading, assessments])
 
   return (
-    <Box sx={testingPreferenceClassess.container}>
+    <Box sx={testingPreferenceClasses.container}>
       {isExact && (
         <>
           <HeaderComponent
@@ -111,11 +111,11 @@ const TestingPreference: React.FC = () => {
               ))}
             </Grid>
           </Box>
-          <Box sx={testingPreferenceClassess.buttonGroup}>
+          <Box sx={testingPreferenceClasses.buttonGroup}>
             <Button
               variant='contained'
               disableElevation
-              sx={showArchived ? testingPreferenceClassess.activeButton : testingPreferenceClassess.inactiveButton}
+              sx={showArchived ? testingPreferenceClasses.activeButton : testingPreferenceClasses.inactiveButton}
               onClick={() => setShowArchived(true)}
             >
               {MthTitle.SHOW_ARCHIVED}
@@ -123,7 +123,7 @@ const TestingPreference: React.FC = () => {
             <Button
               variant='contained'
               disableElevation
-              sx={showArchived ? testingPreferenceClassess.inactiveButton : testingPreferenceClassess.activeButton}
+              sx={showArchived ? testingPreferenceClasses.inactiveButton : testingPreferenceClasses.activeButton}
               onClick={() => setShowArchived(false)}
             >
               {MthTitle.HIDE_ARCHIVED}
@@ -140,7 +140,7 @@ const TestingPreference: React.FC = () => {
               setSelectedAssessment(undefined)
               history.push(`${MthRoute.TESTING_PREFERENCE_PATH}/add`)
             }}
-            sx={testingPreferenceClassess.addBtn}
+            sx={testingPreferenceClasses.addBtn}
             startIcon={<AddIcon />}
           >
             {MthTitle.ADD_ASSESSMENT}

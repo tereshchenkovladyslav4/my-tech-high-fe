@@ -7,6 +7,7 @@ import { SxProps } from '@mui/system'
 import SignatureCanvas from 'react-signature-canvas'
 import { SortableHandle } from 'react-sortable-hoc'
 import { DropDown } from '@mth/components/DropDown/DropDown'
+import { DropDownItem } from '@mth/components/DropDown/types'
 import { MthBulletEditor } from '@mth/components/MthBulletEditor'
 import { MthCheckboxList } from '@mth/components/MthCheckboxList'
 import { CheckBoxListVM } from '@mth/components/MthCheckboxList/MthCheckboxList'
@@ -70,7 +71,11 @@ export const QuestionItem: React.FC<QuestionProps> = ({ question }) => {
           <Grid item xs={12}>
             <Box sx={{ position: 'relative' }}>
               <DropDown
-                dropDownItems={question.slug == 'reimbursement_form_type' ? REIMBURSEMENT_FORM_TYPE_ITEMS : []}
+                dropDownItems={
+                  question.slug == 'reimbursement_form_type'
+                    ? REIMBURSEMENT_FORM_TYPE_ITEMS
+                    : (question.Options?.filter((option) => option.value) as DropDownItem[])
+                }
                 placeholder={extractContent(question.question)}
                 labelTop
                 defaultValue={question.slug == 'reimbursement_form_type' ? question.reimbursement_form_type : ''}
@@ -78,7 +83,7 @@ export const QuestionItem: React.FC<QuestionProps> = ({ question }) => {
                 size='medium'
                 sx={{ m: 0 }}
               />
-              <DragHandle />
+              <DragHandle sx={{ right: '-90px', top: '0px' }} />
             </Box>
           </Grid>
         ) : (

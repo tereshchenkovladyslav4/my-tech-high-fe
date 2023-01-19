@@ -1,6 +1,6 @@
 import { MthColor } from '@mth/enums'
 
-export const testingPreferenceClassess = {
+export const testingPreferenceClasses = {
   container: {
     width: '95%',
     marginX: 'auto',

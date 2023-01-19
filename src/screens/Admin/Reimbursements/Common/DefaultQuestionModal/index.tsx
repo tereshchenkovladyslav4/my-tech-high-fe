@@ -2,15 +2,17 @@ import React, { useEffect, useState } from 'react'
 import AddIcon from '@mui/icons-material/Add'
 import SearchIcon from '@mui/icons-material/Search'
 import { Box, Button, Modal, Typography, OutlinedInput, InputAdornment } from '@mui/material'
+import { FormError } from '@mth/components/FormError'
 import { MthRadioGroup } from '@mth/components/MthRadioGroup'
 import { RadioGroupOption } from '@mth/components/MthRadioGroup/types'
 import { mthButtonClasses } from '@mth/styles/button.style'
+import { REIMBURSEMENT_DEFAULT_QUESTION } from '../../defaultValues'
 import { defaultQuestionClasses } from './styles'
 
 type DefaultQuestionModalProps = {
   defaultQuestions: RadioGroupOption[]
   onClose: () => void
-  onAddDefaultQuestion: (value: string | number) => void
+  onAddDefaultQuestion: (value: REIMBURSEMENT_DEFAULT_QUESTION) => void
   onCustomQuestion: () => void
 }
 
@@ -21,8 +23,15 @@ export const DefaultQuestionModal: React.FC<DefaultQuestionModalProps> = ({
   onCustomQuestion,
 }) => {
   const [searchField, setSearchField] = useState<string>('')
-  const [selectedQuestion, setSelectedQuestion] = useState<string | number>('')
+  const [selectedQuestion, setSelectedQuestion] = useState<REIMBURSEMENT_DEFAULT_QUESTION>()
   const [defaultQuestionOptions, setDefaultQuestionOptions] = useState<RadioGroupOption[]>([])
+  const [showError, setShowError] = useState<boolean>(false)
+
+  const handleAddDefaultQuestionAction = () => {
+    if (selectedQuestion) {
+      onAddDefaultQuestion(selectedQuestion)
+    } else setShowError(true)
+  }
 
   useEffect(() => {
     if (defaultQuestions?.length) {
@@ -59,18 +68,18 @@ export const DefaultQuestionModal: React.FC<DefaultQuestionModalProps> = ({
               options={defaultQuestionOptions}
               handleChangeOption={(value: RadioGroupOption[]) => {
                 setDefaultQuestionOptions(value)
-                setSelectedQuestion(value?.find((item) => item.value)?.option_id || '')
+                setSelectedQuestion(value?.find((item) => item.value)?.label as REIMBURSEMENT_DEFAULT_QUESTION)
               }}
             />
+            <FormError error={showError && 'Required'}></FormError>
           </Box>
-
           <Box sx={defaultQuestionClasses.btnGroup}>
             <Button sx={{ ...mthButtonClasses.roundSmallGray, width: '160px' }} onClick={onClose}>
               Cancel
             </Button>
             <Button
               sx={{ ...mthButtonClasses.roundSmallDark, width: '160px' }}
-              onClick={() => onAddDefaultQuestion(selectedQuestion)}
+              onClick={handleAddDefaultQuestionAction}
             >
               Add Default Question
             </Button>

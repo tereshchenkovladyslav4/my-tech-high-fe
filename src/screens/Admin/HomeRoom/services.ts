@@ -198,3 +198,9 @@ export const getAssignmentByIdGql = gql`
     }
   }
 `
+
+export const cloneAssignmentGql = gql`
+  mutation CloneAssignment($cloneAssignmentInput: CreateNewAssignmentInput!) {
+    cloneAssignment(cloneAssignmentInput: $cloneAssignmentInput)
+  }
+`

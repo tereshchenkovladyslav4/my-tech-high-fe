@@ -10,14 +10,15 @@ import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { Title } from '@mth/components/Typography/Title/Title'
 import { WarningModal } from '@mth/components/WarningModal/Warning'
-import { isValidPassword, s3URL, SNOWPACK_PUBLIC_S3_URL } from '@mth/constants'
-import { MthColor, MthRoute, MthTitle, PacketStatus } from '@mth/enums'
+import { isValidPassword, s3URL } from '@mth/constants'
+import { FileCategory, MthColor, MthRoute, MthTitle, PacketStatus } from '@mth/enums'
 import { getAssessmentsBySchoolYearId, getStudentAssessmentsByStudentId } from '@mth/graphql/queries/assessment'
 import { AssessmentType } from '@mth/screens/Admin/SiteManagement/EnrollmentSetting/TestingPreference/types'
 import { StudentAssessment } from '@mth/screens/Homeroom/Schedule/types'
-import { gradeText } from '@mth/utils'
+import { uploadFile } from '@mth/services'
+import { getRegionCode, gradeText } from '@mth/utils'
 import { Person, StudentType } from '../types'
-import { updateProfile, removeProfilePhoto } from './service'
+import { removeProfilePhoto, updateProfile } from './service'
 import { studentProfileClasses } from './styles'
 
 type StudentProfileProps = {
@@ -26,7 +27,7 @@ type StudentProfileProps = {
 
 export const StudentProfile: undefined | React.FC<StudentProfileProps> = ({ currStudent }) => {
   const history = useHistory()
-  const studentId = location.pathname.split('/').at(-1)
+  const studentId = location.pathname.split('/').at(-1) || 0
 
   const [student, setStudent] = useState<StudentType>()
   const [person, setPerson] = useState<Person>()
@@ -53,7 +54,7 @@ export const StudentProfile: undefined | React.FC<StudentProfileProps> = ({ curr
     variables: {
       schoolYearId: student?.current_school_year_status.school_year_id,
     },
-    skip: student?.current_school_year_status.school_year_id ? false : true,
+    skip: !student?.current_school_year_status.school_year_id,
     fetchPolicy: 'network-only',
   })
 
@@ -72,7 +73,7 @@ export const StudentProfile: undefined | React.FC<StudentProfileProps> = ({ curr
       variables: {
         studentId: Number(studentId),
       },
-      skip: Number(studentId) ? false : true,
+      skip: !Number(studentId),
       fetchPolicy: 'network-only',
     },
   )
@@ -115,7 +116,7 @@ export const StudentProfile: undefined | React.FC<StudentProfileProps> = ({ curr
 
   const onSave = async () => {
     const variables = {
-      student_id: parseFloat(studentId as unknown as string),
+      student_id: +studentId,
       preferred_first_name: formik.values.firstName,
       preferred_last_name: formik.values.lastName,
       email: formik.values.email,
@@ -123,16 +124,9 @@ export const StudentProfile: undefined | React.FC<StudentProfileProps> = ({ curr
       testing_preference: formik.values.testingPref,
       password: formik.values.password,
     }
-    if (file) {
-      const uploadData = await uploadPhoto(file).then(async (res) => {
-        return res.json().then(({ data }) => {
-          return data
-        })
-      })
-
-      if (uploadData && uploadData.key) {
-        variables.photo = uploadData.key
-      }
+    const uploadData = await uploadFile(file, FileCategory.PROFILE, getRegionCode('Arizona'))
+    if (uploadData?.data?.key) {
+      variables.photo = uploadData?.data?.key
     }
 
     submitUpdate({
@@ -145,26 +139,11 @@ export const StudentProfile: undefined | React.FC<StudentProfileProps> = ({ curr
     })
   }
 
-  const uploadPhoto = async (file: File) => {
-    const bodyFormData = new FormData()
-    bodyFormData.append('file', file)
-    bodyFormData.append('region', 'UT')
-    bodyFormData.append('year', '2022')
-
-    return await fetch(SNOWPACK_PUBLIC_S3_URL, {
-      method: 'POST',
-      body: bodyFormData,
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('JWT')}`,
-      },
-    })
-  }
-
   const onRemoveProfilePhoto = () => {
     setWarningModalOpen(!warningModalOpen)
     submitRemoveProfilePhoto({
       variables: {
-        updateStudentProfileInput: { student_id: parseFloat(studentId as unknown as string) },
+        updateStudentProfileInput: { student_id: +studentId },
       },
     }).then(() => {
       setFile(undefined)
@@ -271,10 +250,7 @@ export const StudentProfile: undefined | React.FC<StudentProfileProps> = ({ curr
       availableGrades.push('K')
       availableGrades.push('k')
     }
-    if (availableGrades.indexOf(gradeLevel as string) !== -1) {
-      return true
-    }
-    return false
+    return availableGrades.indexOf(gradeLevel as string) !== -1
   }
 
   const visibleAssessment = (list: AssessmentType[]) => {
@@ -288,12 +264,12 @@ export const StudentProfile: undefined | React.FC<StudentProfileProps> = ({ curr
   }
 
   const getTestingResult = (assessment: AssessmentType) => {
-    const asseessmentAnswer = studentAssessments.find(
-      (studnetAnswer: StudentAssessment) => studnetAnswer.assessmentId === assessment.assessment_id,
+    const assessmentAnswer = studentAssessments.find(
+      (studentAnswer: StudentAssessment) => studentAnswer.assessmentId === assessment.assessment_id,
     )
     let testingResult = ''
-    if (asseessmentAnswer) {
-      const testingOption = assessment.Options.find((option) => option.option_id === asseessmentAnswer.optionId)
+    if (assessmentAnswer) {
+      const testingOption = assessment.Options.find((option) => option.option_id === assessmentAnswer.optionId)
       testingResult = testingOption ? testingOption.label : ''
     }
     return testingResult
@@ -662,13 +638,13 @@ export const StudentProfile: undefined | React.FC<StudentProfileProps> = ({ curr
                     Testing Preference
                   </Paragraph>
                   {assessmentItems.map((assessment: AssessmentType) => {
-                    const asseessmentAnswer = studentAssessments.find(
-                      (studnetAnswer: StudentAssessment) => studnetAnswer.assessmentId === assessment.assessment_id,
+                    const assessmentAnswer = studentAssessments.find(
+                      (studentAnswer: StudentAssessment) => studentAnswer.assessmentId === assessment.assessment_id,
                     )
                     let testingResult = ''
-                    if (asseessmentAnswer) {
+                    if (assessmentAnswer) {
                       const testingOption = assessment.Options.find(
-                        (option) => option.option_id === asseessmentAnswer.optionId,
+                        (option) => option.option_id === assessmentAnswer.optionId,
                       )
                       testingResult = testingOption ? testingOption.label : ''
                     }

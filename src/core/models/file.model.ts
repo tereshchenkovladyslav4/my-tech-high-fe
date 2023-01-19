@@ -15,4 +15,5 @@ export type FileUploadResult = {
   type: string
   key: string
   file: MthFile
+  url: string
 }

@@ -5,23 +5,26 @@ import PageHeader from '@mth/components/PageHeader'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { REIMBURSEMENT_FORM_TYPE_ITEMS } from '@mth/constants'
 import { MthColor, ReimbursementFormType } from '@mth/enums'
+import { SchoolYear } from '@mth/models'
 import { InstructionsEdit } from '../InstructionsEdit'
 import { requestComponentClasses } from '../styles'
 
 export type RequestComponentProps = {
   formType: ReimbursementFormType
   isDirectOrder?: boolean
-  selectedYearId: number | undefined
+  selectedYear: SchoolYear | undefined
   setFormType: (value: ReimbursementFormType | undefined) => void
   children?: ReactNode
+  refetch: () => void
 }
 
 export const RequestComponent: React.FC<RequestComponentProps> = ({
   formType,
   setFormType,
   isDirectOrder,
-  selectedYearId,
+  selectedYear,
   children,
+  refetch,
 }) => {
   return (
     <>
@@ -35,7 +38,12 @@ export const RequestComponent: React.FC<RequestComponentProps> = ({
       </Box>
       <Box sx={{ marginBottom: 2 }}>
         <PageBlock>
-          <InstructionsEdit formType={formType} isDirectOrder={isDirectOrder} selectedYearId={selectedYearId} />
+          <InstructionsEdit
+            formType={formType}
+            isDirectOrder={isDirectOrder}
+            selectedYear={selectedYear}
+            refetch={refetch}
+          />
         </PageBlock>
       </Box>
 

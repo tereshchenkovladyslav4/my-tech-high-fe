@@ -37,8 +37,7 @@ export type ResourceRequestsFileType = {
 
 export type UpdateResourceRequestVM = {
   id: number
-  resource_id: number
-  resource_level_id: number
+  resource_level_id?: number
   username: string
   password: string
 }

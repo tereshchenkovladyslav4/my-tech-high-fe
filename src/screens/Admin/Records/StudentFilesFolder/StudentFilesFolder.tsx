@@ -11,7 +11,7 @@ import { MthColor } from '@mth/enums'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { DownloadStudentRecordFiles, GetStudentRecordFilesQuery } from '../services'
 import { StudentFilesModal } from '../StudentFilesModal'
-import { recordClassess } from '../styles'
+import { recordClasses } from '../styles'
 import { DownloadStudentRecordFilesVM, StudentFilesFolderProps, StudentRecord, StudentRecordFile } from '../types'
 
 const StudentFilesFolder: React.FC<StudentFilesFolderProps> = ({ filter }) => {
@@ -93,7 +93,7 @@ const StudentFilesFolder: React.FC<StudentFilesFolderProps> = ({ filter }) => {
   const renderStudentRecords = () => {
     return studentRecords.map((studentRecord, index) => (
       <Grid item key={index} xs={12} lg={2} sx={{ padding: 2 }}>
-        <Box sx={recordClassess.record}>
+        <Box sx={recordClasses.record}>
           <Paragraph
             size='large'
             sx={{ cursor: 'pointer', color: MthColor.MTHBLUE }}
@@ -151,7 +151,7 @@ const StudentFilesFolder: React.FC<StudentFilesFolderProps> = ({ filter }) => {
 
   return (
     <Card sx={{ paddingTop: '24px', marginBottom: '24px', paddingBottom: '12px' }}>
-      <Box sx={recordClassess.header}>
+      <Box sx={recordClasses.header}>
         <Subtitle size='medium' fontWeight='700'>
           Student Files Folder
         </Subtitle>
@@ -180,7 +180,7 @@ const StudentFilesFolder: React.FC<StudentFilesFolderProps> = ({ filter }) => {
           numPages={Math.ceil((totalStudentRecords as number) / paginationLimit) || 0}
           currentPage={currentPage}
         />
-        <Box sx={recordClassess.btnGroup}>
+        <Box sx={recordClasses.btnGroup}>
           <Paragraph size='large' sx={{ cursor: 'pointer' }} fontWeight='700'>
             Download All
           </Paragraph>

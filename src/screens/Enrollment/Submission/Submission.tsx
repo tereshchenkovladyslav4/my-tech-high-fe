@@ -1,6 +1,6 @@
 import React, { FormEvent, useContext, useEffect, useRef, useState } from 'react'
 import { useMutation } from '@apollo/client'
-import { Box, Button, Grid, FormHelperText, TextField, outlinedInputClasses } from '@mui/material'
+import { Box, Button, FormHelperText, Grid, outlinedInputClasses, TextField } from '@mui/material'
 import { useFormik } from 'formik'
 import { capitalize, omit } from 'lodash'
 import { useHistory } from 'react-router-dom'
@@ -9,10 +9,11 @@ import * as yup from 'yup'
 import { SuccessModal } from '@mth/components/SuccessModal/SuccessModal'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { isNumber } from '@mth/constants'
-import { MthColor, MthRoute, QUESTION_TYPE } from '@mth/enums'
+import { FileCategory, MthColor, MthRoute, QUESTION_TYPE } from '@mth/enums'
 import { EnrollmentContext } from '@mth/providers/EnrollmentPacketPrivder/EnrollmentPacketProvider'
 import { UserContext, UserInfo } from '@mth/providers/UserContext/UserProvider'
-import { getWindowDimension } from '@mth/utils'
+import { uploadFile } from '@mth/services'
+import { getRegionCode, getWindowDimension } from '@mth/utils'
 import { EnrollmentQuestionItem } from '../Question'
 import { useStyles } from '../styles'
 import { enrollmentContactMutation } from './service'
@@ -23,7 +24,7 @@ export const Submission: React.FC<SubmissionProps> = ({ id, questions }) => {
 
   const classes = useStyles
   const [signature, setSignature] = useState<File>()
-  const [fileId, setFileId] = useState()
+  const [fileId, setFileId] = useState<number | undefined>()
   const signatureRef = useRef<SignatureCanvas>(null)
   const [signatureInvalid, setSignatureInvalid] = useState(false)
 
@@ -241,22 +242,9 @@ export const Submission: React.FC<SubmissionProps> = ({ id, questions }) => {
 
   useEffect(() => {
     if (signature) {
-      const bodyFormData = new FormData()
-      bodyFormData.append('file', signature)
-      bodyFormData.append('region', 'UT')
-      bodyFormData.append('year', '2022')
-      fetch(import.meta.env.SNOWPACK_PUBLIC_S3_URL, {
-        method: 'POST',
-        body: bodyFormData,
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('JWT')}`,
-        },
-      }).then((res) => {
-        res.json().then(({ data }) => {
-          if (data.file.file_id) {
-            setFileId(data.file.file_id)
-          }
-        })
+      const selectedRegion = me?.userRegion?.find((region) => region.region_id === me?.selectedRegionId)
+      uploadFile(signature, FileCategory.SIGNATURE, getRegionCode(selectedRegion?.regionDetail?.name)).then((res) => {
+        if (res.success && res.data?.file?.file_id) setFileId(res.data.file.file_id)
       })
     }
   }, [signature])

@@ -4,7 +4,7 @@ import { Box, Button, Modal, TextField } from '@mui/material'
 import { MthBulletEditor } from '@mth/components/MthBulletEditor'
 import { TESTING_PREFERENCE } from '@mth/constants'
 import { updateSchoolYearMutation } from '../../services'
-import { testingPreferenceClassess } from './styles'
+import { testingPreferenceClasses } from './styles'
 import { CustomizableDetailModalProps } from './types'
 
 const CustomizableDetailModal: React.FC<CustomizableDetailModalProps> = ({ information, handleClose, refetch }) => {
@@ -43,8 +43,8 @@ const CustomizableDetailModal: React.FC<CustomizableDetailModalProps> = ({ infor
       aria-labelledby='modal-modal-title'
       aria-describedby='modal-modal-description'
     >
-      <Box sx={testingPreferenceClassess.customizeModalContainer}>
-        <Box sx={testingPreferenceClassess.content}>
+      <Box sx={testingPreferenceClasses.customizeModalContainer}>
+        <Box sx={testingPreferenceClasses.content}>
           <TextField
             name='title'
             label='Title'
@@ -63,11 +63,11 @@ const CustomizableDetailModal: React.FC<CustomizableDetailModalProps> = ({ infor
             }}
           />
         </Box>
-        <Box sx={testingPreferenceClassess.btnGroup}>
-          <Button sx={testingPreferenceClassess.cancelBtn} onClick={handleClose}>
+        <Box sx={testingPreferenceClasses.btnGroup}>
+          <Button sx={testingPreferenceClasses.cancelBtn} onClick={handleClose}>
             Cancel
           </Button>
-          <Button sx={testingPreferenceClassess.saveBtn} onClick={handleSave}>
+          <Button sx={testingPreferenceClasses.saveBtn} onClick={handleSave}>
             Save
           </Button>
         </Box>

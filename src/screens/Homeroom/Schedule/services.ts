@@ -18,6 +18,7 @@ export const getActiveScheduleSchoolYearsQuery = gql`
       ScheduleStatus
       ScheduleBuilder {
         split_enrollment
+        split_enrollment_grades
       }
     }
   }

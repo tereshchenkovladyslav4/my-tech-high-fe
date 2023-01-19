@@ -4,11 +4,12 @@ import { QUESTION_TYPE } from '@mth/enums'
 import { ReimbursementFormType } from '@mth/enums'
 import { ReimbursementQuestion } from '@mth/models'
 import { mthButtonClasses } from '@mth/styles/button.style'
+import { DEFAULT_NEW_DEVICE_QUESTION, REIMBURSEMENT_DEFAULT_QUESTION } from '../../defaultValues'
 import { QuestionEdit } from './QuestionEdit'
 import { questionEditClasses } from './styles'
 
 export type QuestionEditModalProps = {
-  defaultQuestionOptionId: number
+  defaultQuestion: REIMBURSEMENT_DEFAULT_QUESTION
   questions?: ReimbursementQuestion[]
   formType: ReimbursementFormType
   isDirectOrder?: boolean
@@ -18,7 +19,7 @@ export type QuestionEditModalProps = {
 }
 
 export const QuestionEditModal: React.FC<QuestionEditModalProps> = ({
-  defaultQuestionOptionId,
+  defaultQuestion,
   questions,
   formType,
   isDirectOrder,
@@ -29,7 +30,7 @@ export const QuestionEditModal: React.FC<QuestionEditModalProps> = ({
   const [editQuestions, setEditQuestions] = useState<ReimbursementQuestion[]>([
     {
       type: QUESTION_TYPE.TEXTFIELD,
-      default_question: defaultQuestionOptionId ? true : false,
+      default_question: defaultQuestion ? true : false,
       required: false,
       display_for_admin: false,
       priority: 0,
@@ -90,6 +91,14 @@ export const QuestionEditModal: React.FC<QuestionEditModalProps> = ({
   useEffect(() => {
     if (questions?.length) setEditQuestions(questions)
   }, [questions])
+
+  useEffect(() => {
+    switch (defaultQuestion) {
+      case REIMBURSEMENT_DEFAULT_QUESTION.NEW_DEVICE:
+        setEditQuestions(DEFAULT_NEW_DEVICE_QUESTION)
+        break
+    }
+  }, [defaultQuestion])
 
   return (
     <Modal open={true} onClose={onClose} aria-labelledby='modal-modal-title' aria-describedby='modal-modal-description'>

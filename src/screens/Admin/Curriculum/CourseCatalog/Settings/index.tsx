@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useContext, useEffect, useRef, useState } from 'react'
+import React, { FunctionComponent, useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { useMutation, useQuery } from '@apollo/client'
 import { Alert, AlertColor, Button, Checkbox } from '@mui/material'
 import { Box } from '@mui/system'
@@ -15,10 +15,12 @@ import { DropDown } from '@mth/components/DropDown/DropDown'
 import PageHeader from '@mth/components/PageHeader'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { MthColor, MthRoute, ScheduleBuilder } from '@mth/enums'
+import { SchoolYear } from '@mth/models'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { SchoolYearDropDown } from '@mth/screens/Admin/SiteManagement/SchoolPartner/SchoolYearDropDown/SchoolYearDropDown'
 import { createOrUpdateScheduleBuilder, getSchoolYear } from '../../services'
 import { useStyles } from '../../styles'
+import { GradesSelect } from './GradeSelect'
 
 type openAlertSaveType = {
   message: string
@@ -39,20 +41,18 @@ const Settings: FunctionComponent = () => {
   const [isValid, setIsValid] = useState(false)
   const [editorTouched, setEditorTouched] = useState(false)
   const [hasChange, setChanged] = useState(false)
-
+  const { me } = useContext(UserContext)
   const validateEditor = () => {
     setEditorTouched(true)
     setIsValid(editorState.getCurrentContent().hasText())
   }
-
+  const [grades, setGrades] = useState<string>('')
+  const [isChanged, setIsChanged] = useState<boolean>(false)
   const [openSaveAlert, setOpenSaveAlert] = useState<openAlertSaveType>({
     message: '',
     status: 'success',
     open: false,
   })
-
-  const { me } = useContext(UserContext)
-
   const editorRef = useRef<unknown>(null)
   const [editorState, setEditorState] = useState(EditorState.createWithContent(ContentState.createFromText('')))
 
@@ -62,31 +62,34 @@ const Settings: FunctionComponent = () => {
     setIsValid(e.getCurrentContent().hasText())
     setEditorState(e)
   }
-  const { data } = useQuery(getSchoolYear, {
+  const { data } = useQuery<{ getSchoolYear: SchoolYear }>(getSchoolYear, {
     variables: {
       school_year_id: selectedYearId,
     },
-    skip: me?.selectedRegionId ? false : true,
+    skip: !selectedYearId, //me?.selectedRegionId ? false : true,
     fetchPolicy: 'cache-and-network',
   })
 
   useEffect(() => {
     if (selectedYearId && data) {
-      if (data.getSchoolYear.ScheduleBuilder !== null) {
+      const scheduleBuilder = data?.getSchoolYear?.ScheduleBuilder
+      if (scheduleBuilder) {
         const {
           max_num_periods,
           custom_built,
           split_enrollment,
+          split_enrollment_grades,
           always_unlock,
           parent_tooltip,
           third_party_provider,
           id,
-        } = data?.getSchoolYear.ScheduleBuilder
+        } = scheduleBuilder
 
-        const contentBlock = htmlToDraft(parent_tooltip)
+        const contentBlock = htmlToDraft(parent_tooltip || '')
         const contentState = ContentState.createFromBlockArray(contentBlock.contentBlocks)
 
         setMaxPeriods(max_num_periods)
+        setGrades(split_enrollment_grades || '')
         setCustomBuilt(Boolean(custom_built) ? 'Enabled' : 'Disabled')
         setSplitEnrollment(Boolean(split_enrollment) ? 'Enabled' : 'Disabled')
         setAlwaysUnlock(always_unlock)
@@ -147,7 +150,13 @@ const Settings: FunctionComponent = () => {
     },
     enableReinitialize: true,
   })
-
+  const handleParentValueMaxNumPeriods = useCallback(
+    (id) => {
+      setChanged(true)
+      formik.setFieldValue('max_num_periods', id)
+    },
+    [formik],
+  )
   const scheduleBuilderItems = [
     {
       name: ScheduleBuilder.MAX_NUM_PERIODS,
@@ -161,10 +170,7 @@ const Settings: FunctionComponent = () => {
           }))}
           sx={{ width: '200px', textAlign: 'left' }}
           placeholder='Select'
-          setParentValue={(id) => {
-            setChanged(true)
-            formik.setFieldValue('max_num_periods', id)
-          }}
+          setParentValue={handleParentValueMaxNumPeriods}
           error={{
             error: !!formik.errors.max_num_periods && formik.touched.max_num_periods,
             errorMsg: (formik.touched.max_num_periods && formik.errors.max_num_periods) as string,
@@ -215,7 +221,7 @@ const Settings: FunctionComponent = () => {
     {
       name: ScheduleBuilder.SPLIT_ENROLLMENT,
       component: (
-        <Box display={'flex'} flexDirection='row' sx={{ width: '100%' }}>
+        <Box display={'flex'} flexDirection='row' alignItems='center' sx={{ width: '100%' }}>
           <DropDown
             defaultValue={splitEnrollment}
             name='split_enrollment'
@@ -233,6 +239,13 @@ const Settings: FunctionComponent = () => {
               error: !!formik.errors.split_enrollment && formik.touched.split_enrollment,
               errorMsg: (formik.touched.split_enrollment && formik.errors.split_enrollment) as string,
             }}
+          />
+          <GradesSelect
+            grades={grades}
+            setGrades={setGrades}
+            isChanged={isChanged}
+            setIsChanged={setIsChanged}
+            disabled={formik.values.split_enrollment === 'Disabled' || formik.values.split_enrollment === undefined}
           />
           <Box display='flex' alignItems='center'>
             <Checkbox
@@ -310,7 +323,6 @@ const Settings: FunctionComponent = () => {
   ]
 
   const [submitCreate] = useMutation(createOrUpdateScheduleBuilder)
-
   const handleSubmit = async () => {
     const enabledEnum = {
       Enabled: 1,
@@ -325,6 +337,7 @@ const Settings: FunctionComponent = () => {
             max_num_periods: formik.values.max_num_periods,
             custom_built: enabledEnum[formik.values.custom_built as keyof typeof enabledEnum],
             split_enrollment: enabledEnum[formik.values.split_enrollment as keyof typeof enabledEnum],
+            split_enrollment_grades: grades,
             always_unlock: formik.values.always_unlock === true ? 1 : 0,
             parent_tooltip: draftToHtml(convertToRaw(editorState.getCurrentContent())),
             third_party_provider: enabledEnum[formik.values.third_party_provider as keyof typeof enabledEnum],
@@ -393,7 +406,7 @@ const Settings: FunctionComponent = () => {
           <SchoolYearDropDown setSelectedYearId={setSelectedYearId} selectedYearId={selectedYearId} align='start' />
         </Box>
         {map(scheduleBuilderItems, (item, index) => (
-          <Box sx={{ width: '100%' }}>
+          <Box key={item.name} sx={{ width: '100%' }}>
             <CommonSelect
               key={index}
               index={index > 2 ? index + 1 : index}
@@ -415,6 +428,7 @@ const Settings: FunctionComponent = () => {
             {openSaveAlert.message}
           </Alert>
         )}
+
         <Prompt
           when={hasChange ? true : false}
           message={JSON.stringify({

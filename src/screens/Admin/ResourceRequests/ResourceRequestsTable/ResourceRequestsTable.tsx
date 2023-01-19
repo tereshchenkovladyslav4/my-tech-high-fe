@@ -31,7 +31,13 @@ import {
   UpdateResourceRequestVM,
 } from '@mth/screens/Admin/ResourceRequests/ResourceRequestsTable/type'
 import { mthButtonClasses } from '@mth/styles/button.style'
-import { gradeShortText, resourceRequestCost, resourceRequestStatus, studentStatusText } from '@mth/utils'
+import {
+  gradeShortText,
+  resourceRequestCost,
+  resourceRequestStatus,
+  schoolYearLabel,
+  studentStatusText,
+} from '@mth/utils'
 import { FileUploadModal } from '../../HomeRoom/Components/FileUploadModal'
 import ResourceRequestEdit from '../ResourceRequestEdit/ResourceRequestEdit'
 import { SuccessModal } from '../SuccessModal'
@@ -63,7 +69,7 @@ export const ResourceRequestsTable: React.FC<ResourceRequestsTableProps> = ({
   const [fileFormatError, setFileFormatError] = useState<boolean>(false)
   const [showSuccessModal, setShowSuccessModal] = useState<boolean>(false)
   const [failedResourceRequestIds, setFailedResourceRequestIds] = useState<number[]>([])
-  const [successedResourceRequestIds, setSuccessedResourceRequestIds] = useState<number[]>([])
+  const [succeededResourceRequestIds, setSucceededResourceRequestIds] = useState<number[]>([])
   const [importedResourceRequests, setImportedResourceRequests] = useState<ResourceRequestsFileType[]>([])
 
   const [submitSave, {}] = useMutation(updateResourceRequestMutation)
@@ -243,13 +249,9 @@ export const ResourceRequestsTable: React.FC<ResourceRequestsTableProps> = ({
             {resourceRequest.Student?.applications?.find(
               (application) => application.school_year_id == schoolYear?.school_year_id,
             )?.midyear_application ? (
-              <Typography>{`${moment(schoolYear?.date_begin).format('YYYY')}-${moment(schoolYear?.date_end).format(
-                'YY',
-              )} Mid-year Status`}</Typography>
+              <Typography>{`${schoolYearLabel(schoolYear)} Mid-year Status`}</Typography>
             ) : (
-              <Typography>{`${moment(schoolYear?.date_begin).format('YYYY')}-${moment(schoolYear?.date_end).format(
-                'YY',
-              )} Status`}</Typography>
+              <Typography>{`${schoolYearLabel(schoolYear)} Status`}</Typography>
             )}
             <Typography>{studentStatusText(resourceRequest.Student?.status?.[0])}</Typography>
           </Box>
@@ -310,17 +312,17 @@ export const ResourceRequestsTable: React.FC<ResourceRequestsTableProps> = ({
       variables: {
         emailResourceRequestsInput: {
           resourceRequestIds:
-            successedResourceRequestIds.length > 0 ? successedResourceRequestIds : selectedItems.map((item) => item.id),
+            succeededResourceRequestIds.length > 0 ? succeededResourceRequestIds : selectedItems.map((item) => item.id),
           from: from,
           subject: subject,
           body: body,
         },
       },
     })
-    setSuccessedResourceRequestIds([])
+    setSucceededResourceRequestIds([])
     setFailedResourceRequestIds([])
     setShowEmailModal(false)
-    refetch()
+    await refetch()
   }
 
   const handleAccept = async (items: number[]) => {
@@ -375,9 +377,6 @@ export const ResourceRequestsTable: React.FC<ResourceRequestsTableProps> = ({
         tableData.map(({ rawData }) => {
           return {
             Vendor: rawData?.Resource?.title,
-            'Resource Request ID': rawData?.id,
-            'Resource ID': rawData?.resource_id,
-            'Resource Level ID': rawData?.resource_level_id,
             'Resource Level': rawData?.ResourceLevel?.name,
             Submitted: moment(rawData?.created_at)?.format('MM/DD/YYYY'),
             Status: resourceRequestStatus(rawData.status),
@@ -394,10 +393,8 @@ export const ResourceRequestsTable: React.FC<ResourceRequestsTableProps> = ({
             'Username Generator': rawData?.Resource?.std_user_name,
             'Password Generator': rawData?.Resource?.std_password,
             'Returning Status': 'No',
-            'School Year': `${moment(schoolYear?.date_begin).format('YYYY')}-${moment(schoolYear?.date_end).format(
-              'YY',
-            )}`,
-            'School Year Status': studentStatusText(rawData?.Student?.status?.[0]),
+            [`${schoolYearLabel(schoolYear)} Status`]: studentStatusText(rawData?.Student?.status?.[0]),
+            'Resource Request ID': rawData?.id,
           }
         }),
       )
@@ -455,8 +452,6 @@ export const ResourceRequestsTable: React.FC<ResourceRequestsTableProps> = ({
       const dataToSave: UpdateResourceRequestVM[] = jsonData?.map((item: ResourceRequestsFileType) => {
         return {
           id: +item['Resource Request ID'],
-          resource_id: +item['Resource ID'],
-          resource_level_id: +item['Resource Level ID'],
           username: item['Username Generator'],
           password: item['Password Generator'],
         }
@@ -471,15 +466,16 @@ export const ResourceRequestsTable: React.FC<ResourceRequestsTableProps> = ({
           setFailedResourceRequestIds([...failedResourceRequestIds, +item.id])
         }
       })
-      setSuccessedResourceRequestIds(dataToSave?.map((item) => +item?.id))
+      setSucceededResourceRequestIds(dataToSave?.map((item) => +item?.id))
       setShowSuccessModal(true)
       setShowUploadModal(false)
+      await refetch()
     } else {
       setFileFormatError(true)
     }
   }
 
-  const handleDownloadErros = () => {
+  const handleDownloadErrors = () => {
     const wb = XLSX.utils.book_new()
     const ws = XLSX.utils.json_to_sheet(
       importedResourceRequests
@@ -494,14 +490,14 @@ export const ResourceRequestsTable: React.FC<ResourceRequestsTableProps> = ({
 
   const handleAction = (value: ResourceRequestAction) => {
     if (value === ResourceRequestAction.ACCEPTED_EMAIL) {
-      handleAccept(successedResourceRequestIds)
+      handleAccept(succeededResourceRequestIds)
       setShowEmailModal(true)
     } else if (value === ResourceRequestAction.ACCEPTED) {
-      handleAccept(successedResourceRequestIds)
-      setSuccessedResourceRequestIds([])
+      handleAccept(succeededResourceRequestIds)
+      setSucceededResourceRequestIds([])
       setFailedResourceRequestIds([])
     } else {
-      setSuccessedResourceRequestIds([])
+      setSucceededResourceRequestIds([])
       setFailedResourceRequestIds([])
     }
     setShowSuccessModal(false)
@@ -662,9 +658,9 @@ export const ResourceRequestsTable: React.FC<ResourceRequestsTableProps> = ({
         <ApplicationEmailModal
           handleModem={() => setShowEmailModal(!showEmailModal)}
           title={
-            successedResourceRequestIds.length > 0
-              ? successedResourceRequestIds.length +
-                (successedResourceRequestIds.length > 1 ? ' Recipients' : ' Recipient')
+            succeededResourceRequestIds.length > 0
+              ? succeededResourceRequestIds.length +
+                (succeededResourceRequestIds.length > 1 ? ' Recipients' : ' Recipient')
               : selectedItems.length + (selectedItems.length > 1 ? ' Recipients' : ' Recipient')
           }
           handleSubmit={handleEmailSend}
@@ -688,9 +684,9 @@ export const ResourceRequestsTable: React.FC<ResourceRequestsTableProps> = ({
       {showSuccessModal && (
         <SuccessModal
           failedResourceRequestIds={failedResourceRequestIds}
-          successedResourceRequestIds={successedResourceRequestIds}
+          succeededResourceRequestIds={succeededResourceRequestIds}
           handleAction={handleAction}
-          handleDownloadErrors={handleDownloadErros}
+          handleDownloadErrors={handleDownloadErrors}
         />
       )}
 

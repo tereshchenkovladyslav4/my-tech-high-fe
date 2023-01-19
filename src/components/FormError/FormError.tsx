@@ -18,6 +18,7 @@ export const FormError: React.FC<FormErrorProps> = ({ error }) => {
             lineHeight: '20px',
             marginLeft: '12px',
             marginTop: '4px',
+            textAlign: 'left',
           }}
         >
           {error}

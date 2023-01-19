@@ -6,7 +6,7 @@ import { MthCheckbox } from '@mth/components/MthCheckbox'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { DEFAULT_REASON, IF_SELECT_MARK_TESTING_PREFERENCE, REQUIRE_REASON_TO_OPT_OUT } from '@mth/constants'
 import { OPT_TYPE } from '@mth/enums'
-import { testingPreferenceClassess } from '../../styles'
+import { testingPreferenceClasses } from '../../styles'
 import { OptionFormProps } from '../types'
 
 const OptionForm: React.FC<OptionFormProps> = ({ option, setOption, invalidation, setIsChanged }) => {
@@ -41,7 +41,7 @@ const OptionForm: React.FC<OptionFormProps> = ({ option, setOption, invalidation
             sx={{ my: 1 }}
             error={invalidation && option?.label == ''}
           />
-          <Subtitle sx={testingPreferenceClassess.formError}>
+          <Subtitle sx={testingPreferenceClasses.formError}>
             {invalidation && option?.label == '' && 'Required'}
           </Subtitle>
         </Box>
@@ -59,7 +59,7 @@ const OptionForm: React.FC<OptionFormProps> = ({ option, setOption, invalidation
             }}
             error={{ error: invalidation && option?.method == '', errorMsg: '' }}
           />
-          <Subtitle sx={testingPreferenceClassess.formError}>
+          <Subtitle sx={testingPreferenceClasses.formError}>
             {invalidation && option?.method == '' && 'Required'}
           </Subtitle>
         </Box>

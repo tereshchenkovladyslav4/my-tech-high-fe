@@ -52,8 +52,7 @@ const ResourceRequestEdit: React.FC<ResourceRequestEditProps> = ({ item, refetch
       variables: {
         updateResourceRequestInput: {
           id: item.id,
-          resource_id: item.resource_id,
-          resource_level_id: value.resourceLevel,
+          resource_level_id: value.resourceLevel || null,
           username: value.username,
           password: value.password,
         },

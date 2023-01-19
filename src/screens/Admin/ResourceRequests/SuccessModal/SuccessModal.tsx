@@ -10,7 +10,7 @@ import { mthButtonClasses } from '@mth/styles/button.style'
 
 type SuccessModalProps = {
   failedResourceRequestIds: number[]
-  successedResourceRequestIds: number[]
+  succeededResourceRequestIds: number[]
   handleDownloadErrors: () => void
   handleAction: (value: ResourceRequestAction) => void
 }
@@ -27,7 +27,7 @@ export const RESOURCE_REQUEST_ACTIONS: RadioGroupOption[] = [
 
 export const SuccessModal: React.FC<SuccessModalProps> = ({
   failedResourceRequestIds,
-  successedResourceRequestIds,
+  succeededResourceRequestIds,
   handleDownloadErrors,
   handleAction,
 }) => {
@@ -51,8 +51,8 @@ export const SuccessModal: React.FC<SuccessModalProps> = ({
   }
 
   useEffect(() => {
-    setSuccessCount(successedResourceRequestIds?.length)
-  }, [successedResourceRequestIds?.length])
+    setSuccessCount(succeededResourceRequestIds?.length)
+  }, [succeededResourceRequestIds?.length])
 
   return (
     <Modal

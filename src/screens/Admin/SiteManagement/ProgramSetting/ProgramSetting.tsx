@@ -1,10 +1,12 @@
-import React, { useState, useEffect, useContext } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { useMutation } from '@apollo/client'
 import { Box } from '@mui/material'
 import moment from 'moment'
 import { Prompt } from 'react-router-dom'
-import { MthTitle, ReduceFunds } from '@mth/enums'
+import { FileCategory, MthTitle, ReduceFunds } from '@mth/enums'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
+import { uploadFile } from '@mth/services'
+import { getRegionCode } from '@mth/utils'
 import { PageHeader } from '../components/PageHeader'
 import {
   removeCountyInfoByRegionId,
@@ -12,8 +14,6 @@ import {
   removeSchoolDistrictInfoByRegionId,
   updateSchoolYearMutation,
   updateStateNameMutation,
-  uploadFile,
-  uploadImage,
 } from '../services'
 import { siteManagementClassess } from '../styles'
 import { CountyArrayItem, CountyFileType } from './CountySelect/CountySelectTypes'
@@ -150,19 +150,24 @@ const ProgramSetting: React.FC = () => {
       schoolDistrict: false,
     })
 
+    const regionCode = getRegionCode(stateName)
+
     let imageLocation = ''
     if (stateLogoFile) {
-      imageLocation = await uploadImage(stateLogoFile?.file, stateName)
+      const result = await uploadFile(stateLogoFile?.file, FileCategory.STATE_LOGO, regionCode)
+      imageLocation = result?.data?.url || ''
     }
 
     let countyFileLocation = ''
     if (county?.file && countyArray.length > 0) {
-      countyFileLocation = await uploadFile(county?.file, 'county', stateName)
+      const result = await uploadFile(county?.file, FileCategory.COUNTY, regionCode)
+      countyFileLocation = result?.data?.url || ''
     }
 
     let schoolDistrictFileLocation = ''
     if (schoolDistrict?.file && schoolDistrictArray.length > 0) {
-      schoolDistrictFileLocation = await uploadFile(schoolDistrict.file, 'schoolDistrict', stateName)
+      const result = await uploadFile(schoolDistrict.file, FileCategory.SCHOOL_DISTRICT, regionCode)
+      schoolDistrictFileLocation = result?.data?.url || ''
     }
 
     const submittedResponse = await submitSave({

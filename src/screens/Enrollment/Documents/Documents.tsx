@@ -19,6 +19,7 @@ import { EnrollmentQuestion } from '@mth/screens/Admin/SiteManagement/Enrollment
 import { DocumentUpload } from '@mth/screens/Enrollment/Documents/components/DocumentUpload/DocumentUpload'
 import { LoadingScreen } from '@mth/screens/LoadingScreen/LoadingScreen'
 import { uploadFile } from '@mth/services'
+import { getRegionCode } from '@mth/utils'
 import { useStyles } from '../styles'
 import { deleteDocumentsMutation, enrollmentContactMutation, uploadDocumentMutation } from './service'
 import { DocumentsProps, PacketDocument } from './types'
@@ -153,7 +154,8 @@ export const Documents: React.FC<DocumentsProps> = ({ id, regionId, questions })
             files?.map((file) => {
               promises.push(
                 new Promise(async (resolve) => {
-                  const res = await uploadFile(file, FileCategory.PACKET)
+                  const regionName = getRegionCode(me?.userRegion?.at(-1)?.regionDetail?.name)
+                  const res = await uploadFile(file, FileCategory.PACKET, regionName)
                   if (res.success && res.data?.file.file_id) {
                     tempUploads.push({
                       kind: key,
@@ -177,7 +179,9 @@ export const Documents: React.FC<DocumentsProps> = ({ id, regionId, questions })
               },
             },
           })
-          history.back()
+          if (packet?.status == PacketStatus.MISSING_INFO) {
+            history.back()
+          }
         } else {
           setVisitedTabs(Array.from(Array((tab?.currentTab || 0) + 1).keys()))
           setTab({ currentTab: (tab?.currentTab || 0) + 1 })

@@ -10,7 +10,7 @@ import { MthRoute, MthTitle, OPT_TYPE } from '@mth/enums'
 import { saveAssessmentMutation } from '@mth/graphql/mutation/assessment'
 import { PageHeader } from '../../../components/PageHeader'
 import { CommonSelectType } from '../../../types'
-import { testingPreferenceClassess } from '../styles'
+import { testingPreferenceClasses } from '../styles'
 import { AssessmentOptionType } from '../types'
 import { GradesSelect } from './GradesSelect'
 import { OptionForm } from './OptionForm'
@@ -53,7 +53,7 @@ const AssessmentEditForm: React.FC<AssessmentEditFormProps> = ({ assessment, sel
             sx={{ my: 1 }}
             error={invalidation && testName == ''}
           />
-          <Subtitle sx={testingPreferenceClassess.formError}>{invalidation && testName == '' && 'Required'}</Subtitle>
+          <Subtitle sx={testingPreferenceClasses.formError}>{invalidation && testName == '' && 'Required'}</Subtitle>
         </Box>
       ),
     },
@@ -62,7 +62,7 @@ const AssessmentEditForm: React.FC<AssessmentEditFormProps> = ({ assessment, sel
       component: (
         <Box sx={{ display: 'flex', flexDirection: 'column', textAlign: 'left', paddingLeft: 3 }}>
           <GradesSelect grades={grades} setGrades={setGrades} availGrades={availGrades} setIsChanged={setIsChanged} />
-          <Subtitle sx={testingPreferenceClassess.formError}>{invalidation && grades == '' && 'Required'}</Subtitle>
+          <Subtitle sx={testingPreferenceClasses.formError}>{invalidation && grades == '' && 'Required'}</Subtitle>
         </Box>
       ),
     },
@@ -257,7 +257,7 @@ const AssessmentEditForm: React.FC<AssessmentEditFormProps> = ({ assessment, sel
         ))}
       </Box>
       <Box sx={{ textAlign: 'left' }}>
-        <Button onClick={handleAddOption} sx={testingPreferenceClassess.addBtn} startIcon={<AddIcon />}>
+        <Button onClick={handleAddOption} sx={testingPreferenceClasses.addBtn} startIcon={<AddIcon />}>
           {MthTitle.ADD_OPTION}
         </Button>
       </Box>

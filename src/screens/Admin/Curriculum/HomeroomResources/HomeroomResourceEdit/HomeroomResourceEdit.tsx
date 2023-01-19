@@ -5,9 +5,11 @@ import { Form, Formik } from 'formik'
 import { Prompt } from 'react-router-dom'
 import * as yup from 'yup'
 import { CustomModal } from '@mth/components/CustomModal/CustomModals'
-import { RICH_TEXT_VALID_MIN_LENGTH, SNOWPACK_PUBLIC_S3_URL } from '@mth/constants'
-import { MthColor, MthTitle, ResourceSubtitle } from '@mth/enums'
+import { RICH_TEXT_VALID_MIN_LENGTH } from '@mth/constants'
+import { FileCategory, MthColor, MthTitle, ResourceSubtitle } from '@mth/enums'
 import { HomeroomResource } from '@mth/models'
+import { uploadFile } from '@mth/services'
+import { getRegionCode } from '@mth/utils'
 import { defaultHomeroomFormData } from '../../defaultValues'
 import { createOrUpdateResourceMutation } from '../../services'
 import { HeaderComponent } from '../HeaderComponent'
@@ -79,30 +81,10 @@ const HomeroomResourceEdit: React.FC<HomeroomResourceEditProps> = ({
     is_active: yup.boolean().nullable(),
   })
 
-  const uploadPhoto = async (file: File | undefined, stateName: string): Promise<string> => {
-    if (file) {
-      const bodyFormData = new FormData()
-      bodyFormData.append('file', file)
-      bodyFormData.append('region', stateName)
-      bodyFormData.append('directory', 'resources')
-
-      const response = await fetch(SNOWPACK_PUBLIC_S3_URL, {
-        method: 'POST',
-        body: bodyFormData,
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('JWT')}`,
-        },
-      })
-      const imageUrl = await response.json()
-      return imageUrl.data.file.item1
-    } else {
-      return ''
-    }
-  }
-
   const onSave = async (value: HomeroomResource) => {
     setIsSubmitted(true)
-    const imageUrl = await uploadPhoto(value.file, stateName)
+    const result = await uploadFile(value.file, FileCategory.RESOURCES, getRegionCode(stateName))
+    const imageUrl = result?.data?.key || ''
 
     const resourceLevels = value.ResourceLevels
     resourceLevels.map((item) => (item.resource_level_id = +item.resource_level_id))

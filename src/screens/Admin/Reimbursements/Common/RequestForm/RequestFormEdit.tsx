@@ -2,11 +2,11 @@ import React, { useState } from 'react'
 import AddIcon from '@mui/icons-material/Add'
 import { Box, Button, Grid, List } from '@mui/material'
 import { useFormikContext } from 'formik'
-import { SortableContainer, SortableElement } from 'react-sortable-hoc'
+import { arrayMove, SortableContainer, SortableElement } from 'react-sortable-hoc'
 import { ReimbursementFormType } from '@mth/enums'
 import { ReimbursementQuestion } from '@mth/models'
 import { mthButtonClasses } from '@mth/styles/button.style'
-import { REIMBURSEMENT_DEFAULT_QUESTIONS } from '../../defaultValues'
+import { REIMBURSEMENT_DEFAULT_QUESTION, REIMBURSEMENT_DEFAULT_QUESTIONS } from '../../defaultValues'
 import { DefaultQuestionModal } from '../DefaultQuestionModal'
 import { QuestionEditModal } from '../QuestionEditModal'
 import { QuestionItem } from '../QuestionItem'
@@ -26,7 +26,7 @@ const SortableListContainer = SortableContainer(({ items }: { items: Reimburseme
     <List>
       <Grid container rowSpacing={3}>
         {items.map((item, index) => (
-          <SortableItem index={index} key={index} question={item} setIsChanged={() => {}} />
+          <SortableItem index={index} key={`${item.slug}_${index}`} question={item} setIsChanged={() => {}} />
         ))}
       </Grid>
     </List>
@@ -41,12 +41,19 @@ export const RequestFormEdit: React.FC<RequestFormEditProps> = ({
 }) => {
   const { values, setValues } = useFormikContext<ReimbursementQuestion[]>()
   const [showDefaultQuestionModal, setShowDefaultQuestionModal] = useState<boolean>(false)
-  const [selectedDefaultQuestionOptionId, setSelectedDeafaultQuestionOptionId] = useState<number>(0)
+  const [selectedDefaultQuestion, setSelectedDeafaultQuestion] = useState<REIMBURSEMENT_DEFAULT_QUESTION>()
   const [showQuestionEditModal, setShowQuestionEditModal] = useState<boolean>(false)
-  const sortableList = values.filter((item) => item.sortable)
+  const sortableList = values
+    .filter((item) => item.sortable && !item.additional_question)
+    .sort((a, b) => {
+      if (a.priority > b.priority) return 1
+      else if (a.priority > b.priority) return -1
+      else return 0
+    })
+  const sortNonableList = values?.filter((item) => !item.sortable && !item.additional_question)
 
-  const handleAddDefaultQuestionAction = (value: string | number) => {
-    setSelectedDeafaultQuestionOptionId(+value)
+  const handleAddDefaultQuestionAction = (value: REIMBURSEMENT_DEFAULT_QUESTION) => {
+    setSelectedDeafaultQuestion(value)
     setShowQuestionEditModal(true)
   }
 
@@ -64,16 +71,35 @@ export const RequestFormEdit: React.FC<RequestFormEditProps> = ({
     setShowDefaultQuestionModal(false)
   }
 
+  const arrangeItems = (items: ReimbursementQuestion[]) => {
+    const newValues: ReimbursementQuestion[] = sortNonableList
+    items.map(async (item, index) => {
+      const correctPriority = index + sortNonableList?.length
+      values?.map((value) => {
+        if (value?.slug === item?.slug) {
+          value.priority = correctPriority
+          newValues.push(value)
+        }
+      })
+    })
+    setValues(newValues)
+  }
+
   return (
     <>
       <Grid container rowSpacing={3}>
-        {values
-          ?.filter((item) => !item.sortable)
-          .map((question, index) => (
-            <QuestionItem key={index} question={question} setIsChanged={setIsChanged} />
-          ))}
+        {sortNonableList?.map((question, index) => (
+          <QuestionItem key={index} question={question} setIsChanged={setIsChanged} />
+        ))}
         {!!sortableList?.length && (
-          <SortableListContainer items={sortableList} useDragHandle={true} onSortEnd={() => {}} />
+          <SortableListContainer
+            items={sortableList}
+            useDragHandle={true}
+            onSortEnd={({ oldIndex, newIndex }) => {
+              const newSortableList = arrayMove(sortableList, oldIndex, newIndex)
+              arrangeItems(newSortableList)
+            }}
+          />
         )}
         <Grid item xs={12}>
           <Box sx={{ display: 'flex', justifyContent: 'space-evenly' }}>
@@ -108,7 +134,7 @@ export const RequestFormEdit: React.FC<RequestFormEditProps> = ({
           formType={formType}
           selectedYearId={selectedYearId}
           isDirectOrder={isDirectOrder}
-          defaultQuestionOptionId={selectedDefaultQuestionOptionId}
+          defaultQuestion={selectedDefaultQuestion as REIMBURSEMENT_DEFAULT_QUESTION}
           onClose={handleCloseQuestionEditModal}
           onSave={handleSaveQuestionEditModal}
         />

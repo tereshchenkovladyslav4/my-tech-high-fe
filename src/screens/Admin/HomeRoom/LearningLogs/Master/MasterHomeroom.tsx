@@ -16,13 +16,19 @@ import {
   TextField,
   Typography,
   Modal,
+  Stack,
+  styled,
 } from '@mui/material'
 import moment from 'moment'
 import { Prompt, useHistory } from 'react-router-dom'
+import { CommonSelect } from '@mth/components/CommonSelect'
+import { DefaultDatePicker } from '@mth/components/DefaultDatePicker/DefaultDatePicker'
 import { DropDown } from '@mth/components/DropDown/DropDown'
 import { MthBulletEditor } from '@mth/components/MthBulletEditor'
+import { MthCheckbox } from '@mth/components/MthCheckbox'
 import { MthTable } from '@mth/components/MthTable'
 import { MthTableField, MthTableRowItem } from '@mth/components/MthTable/types'
+import { MthTimePicker } from '@mth/components/MthTimePicker/MthTimePicker'
 import PageHeader from '@mth/components/PageHeader'
 import { Pagination } from '@mth/components/Pagination/Pagination'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
@@ -37,10 +43,32 @@ import {
   updateMasterById,
   createOrUpdateInstruction,
   DeleteAssignmentGql,
+  cloneAssignmentGql,
 } from '../../services'
 import { Master } from '../types'
 import { masterUseStyles } from './styles'
 import { Assignment } from './types'
+
+const CssTextField = styled(TextField, {
+  shouldForwardProp: (props) => props !== 'focusColor',
+})(() => ({
+  '& .MuiOutlinedInput-root': {
+    minWidth: '500px',
+    height: '56px',
+    '& fieldset': {
+      border: '1px solid rgba(26, 26, 26, 0.25) !important',
+    },
+  },
+  '& .MuiInput-underline:after': {
+    borderBottomColor: '#ccc',
+    borderWidth: '1px',
+  },
+  // focused color for input with variant='filled'
+  '& .MuiFilledInput-underline:after': {
+    borderBottomColor: '#ccc',
+    borderWidth: '1px',
+  },
+}))
 
 const MasterHoomroom: React.FC<{ masterId: number }> = ({ masterId }) => {
   const [masterTitle, setMasterTitle] = useState<string>()
@@ -67,6 +95,10 @@ const MasterHoomroom: React.FC<{ masterId: number }> = ({ masterId }) => {
   const { dropdownItems: schoolYearDropdownItems } = useSchoolYearsByRegionId(me?.selectedRegionId)
   const [initRegion, setInitRegion] = useState<number>(-1)
 
+  const [cloneModal, setCloneModal] = useState<boolean>(false)
+
+  const [assignments, setAssignments] = useState<Assignment[]>([])
+
   const { loading: masterLoading, data: masterData } = useQuery(GetMastersByIDGql, {
     variables: {
       masterId: masterId,
@@ -90,7 +122,7 @@ const MasterHoomroom: React.FC<{ masterId: number }> = ({ masterId }) => {
   }, [me?.selectedRegionId])
 
   useEffect(() => {
-    if (!masterLoading && masterData.getMastersById) {
+    if (!masterLoading && masterData?.getMastersById) {
       setMasterInfo(masterData.getMastersById)
       setMasterTitle(masterData.getMastersById.master_name)
       setMasterSchoolYearId(masterData.getMastersById.school_year_id)
@@ -112,7 +144,7 @@ const MasterHoomroom: React.FC<{ masterId: number }> = ({ masterId }) => {
         assignmentId: deleteId,
       },
     })
-    refetch()
+    await refetch()
     setDeleteConfirmModal(false)
   }
 
@@ -173,7 +205,7 @@ const MasterHoomroom: React.FC<{ masterId: number }> = ({ masterId }) => {
               </IconButton>
             </Tooltip>
             <Tooltip title='Clone' placement='top'>
-              <IconButton className='actionButton' color='primary'>
+              <IconButton className='actionButton' color='primary' onClick={() => handleCloneOpen(item.rawData.id)}>
                 <ContentCopyIcon />
               </IconButton>
             </Tooltip>
@@ -216,6 +248,7 @@ const MasterHoomroom: React.FC<{ masterId: number }> = ({ masterId }) => {
   useEffect(() => {
     if (!assloading && assData?.getAssignmentsByMasterId) {
       setTotalPage(assData?.getAssignmentsByMasterId.total)
+      setAssignments(assData?.getAssignmentsByMasterId.results)
       setTableData(
         assData?.getAssignmentsByMasterId.results.map((item: Assignment) => {
           return createData(item)
@@ -250,9 +283,9 @@ const MasterHoomroom: React.FC<{ masterId: number }> = ({ masterId }) => {
     history.push(MthRoute.HOMEROOM_LEARNING_LOGS.toString())
   }
 
-  const [sbumitInstruction] = useMutation(createOrUpdateInstruction)
+  const [submitInstruction] = useMutation(createOrUpdateInstruction)
   const handleInstructionSubmit = async () => {
-    await sbumitInstruction({
+    await submitInstruction({
       variables: {
         createOrUpdateInstructions: {
           instructions: instructions,
@@ -263,6 +296,236 @@ const MasterHoomroom: React.FC<{ masterId: number }> = ({ masterId }) => {
     setIsSetInstructions(false)
     setInitInstructions(instructions)
   }
+
+  const [tempAssignment, setTempAssignment] = useState<Assignment>({
+    auto_grade_email: 0,
+    master_id: masterId,
+    title: '',
+    page_count: 1,
+    dueDate: new Date(),
+    dueTime: '00:00',
+    reminderDate: new Date(),
+    reminderTime: '00:00',
+    autoGradeDate: new Date(),
+    autoGradeTime: '00:00',
+    teacherDate: new Date(),
+    teacherTime: '00:00',
+  })
+  const [isTitleError, setIsTitleError] = useState<boolean>(false)
+
+  const handleTempAssignmentChange = (val: string | Date | boolean, key: string) => {
+    setTempAssignment({
+      ...tempAssignment,
+      [key]: val,
+    })
+  }
+
+  const handleCloneOpen = async (id: number) => {
+    setCloneModal(true)
+
+    const cloneAssignment = assignments.find((item) => item.id === id)
+
+    const initAssignment = {
+      auto_grade_email: cloneAssignment?.auto_grade_email,
+      id: parseInt(cloneAssignment?.id),
+      master_id: cloneAssignment?.master_id,
+      title: cloneAssignment?.title,
+      page_count: cloneAssignment?.page_count,
+      dueDate: cloneAssignment?.due_date,
+      dueTime: moment(cloneAssignment?.due_date).format('HH:mm'),
+      reminderDate: cloneAssignment?.reminder_date,
+      reminderTime: moment(cloneAssignment?.reminder_date).format('HH:mm'),
+      autoGradeDate: cloneAssignment?.auto_grade,
+      autoGradeTime: moment(cloneAssignment?.auto_grade).format('HH:mm'),
+      teacherDate: cloneAssignment?.teacher_deadline,
+      teacherTime: moment(cloneAssignment?.teacher_deadline).format('HH:mm'),
+    }
+    setTempAssignment(initAssignment)
+  }
+
+  const [cloneAssignment] = useMutation(cloneAssignmentGql)
+
+  const submitCloneHandle = async () => {
+    if (!tempAssignment.title) {
+      setIsTitleError(true)
+      return
+    }
+    const dueDateTime = moment(
+      `${moment(tempAssignment.dueDate).tz('America/Denver').format('yyyy-MM-DD')} ${tempAssignment.dueTime}`,
+    ).toISOString()
+    const reminderDateTime = moment(
+      `${moment(tempAssignment.reminderDate).tz('America/Denver').format('yyyy-MM-DD')} ${tempAssignment.reminderTime}`,
+    ).toISOString()
+    const autoGradeDateTime = moment(
+      `${moment(tempAssignment.autoGradeDate).tz('America/Denver').format('yyyy-MM-DD')} ${
+        tempAssignment.autoGradeTime
+      }`,
+    ).toISOString()
+    const teacherDateTime = moment(
+      `${moment(tempAssignment.teacherDate).tz('America/Denver').format('yyyy-MM-DD')} ${tempAssignment.teacherTime}`,
+    ).toISOString()
+
+    await cloneAssignment({
+      variables: {
+        cloneAssignmentInput: {
+          autoGradeDateTime: autoGradeDateTime,
+          autoGradeEmail: tempAssignment?.auto_grade_email ? true : false,
+          dueDateTime: dueDateTime,
+          master_id: masterId,
+          reminderDateTime: reminderDateTime,
+          title: tempAssignment?.title,
+          teacher_deadline: teacherDateTime,
+          assignment_id: tempAssignment.id,
+        },
+      },
+    })
+    await refetch()
+    setCloneModal(false)
+  }
+
+  const editAssignmentList = [
+    {
+      name: 'Title',
+      component: (
+        <Box>
+          <Stack direction='row' spacing={1} alignItems='center' sx={{ my: 2 }}>
+            <Stack direction='row' sx={{ ml: 1.5 }} alignItems='center'>
+              <CssTextField
+                label='Title'
+                placeholder='Entry'
+                fullWidth
+                InputLabelProps={{ shrink: true }}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  handleTempAssignmentChange(e.target.value, 'title')
+                  setIsTitleError(false)
+                }}
+                className='MthFormField'
+                value={tempAssignment?.title}
+              />
+            </Stack>
+          </Stack>
+          {isTitleError && <Subtitle sx={masterUseStyles.formError}>Required</Subtitle>}
+        </Box>
+      ),
+    },
+    {
+      name: 'Due Date',
+      component: (
+        <Stack direction='row' spacing={1} alignItems='center' sx={{ my: 2 }}>
+          <Stack direction='row' sx={{ ml: 1.5 }} alignItems='center'>
+            <Box sx={{ minWidth: '284px' }}>
+              <DefaultDatePicker
+                date={tempAssignment?.dueDate}
+                label='Date'
+                handleChange={(e) => {
+                  handleTempAssignmentChange(e, 'dueDate')
+                }}
+              />
+            </Box>
+            <Box sx={{ minWidth: '220px' }}>
+              <MthTimePicker
+                time={tempAssignment?.dueTime}
+                label='Time'
+                handleChange={(e) => {
+                  handleTempAssignmentChange(e, 'dueTime')
+                }}
+              />
+            </Box>
+          </Stack>
+        </Stack>
+      ),
+    },
+    {
+      name: 'Reminder',
+      component: (
+        <Stack direction='row' spacing={1} alignItems='center' sx={{ my: 2 }}>
+          <Stack direction='row' sx={{ ml: 1.5 }} alignItems='center'>
+            <Box sx={{ minWidth: '284px' }}>
+              <DefaultDatePicker
+                date={tempAssignment?.reminderDate}
+                label='Date'
+                handleChange={(e) => {
+                  handleTempAssignmentChange(e, 'reminderDate')
+                }}
+              />
+            </Box>
+            <Box sx={{ minWidth: '220px' }}>
+              <MthTimePicker
+                time={tempAssignment?.reminderTime}
+                label='Time'
+                handleChange={(e) => {
+                  handleTempAssignmentChange(e, 'reminderTime')
+                }}
+              />
+            </Box>
+          </Stack>
+        </Stack>
+      ),
+    },
+    {
+      name: 'Auto-grade',
+      component: (
+        <Stack direction='row' spacing={1} alignItems='center' sx={{ my: 2 }}>
+          <Stack direction='row' sx={{ ml: 1.5 }} alignItems='center'>
+            <Box sx={{ minWidth: '284px' }}>
+              <DefaultDatePicker
+                date={tempAssignment?.autoGradeDate}
+                label='Date'
+                handleChange={(e) => {
+                  handleTempAssignmentChange(e, 'autoGradeDate')
+                }}
+              />
+            </Box>
+            <Box sx={{ minWidth: '220px' }}>
+              <MthTimePicker
+                time={tempAssignment?.autoGradeTime}
+                label='Time'
+                handleChange={(e) => {
+                  handleTempAssignmentChange(e, 'autoGradeTime')
+                }}
+              />
+            </Box>
+            <MthCheckbox
+              label={'Send Auto-grade Email'}
+              labelSx={{ fontWeight: 700 }}
+              wrapSx={{ ml: 6 }}
+              checked={tempAssignment?.auto_grade_email ? true : false}
+              onChange={(e) => {
+                handleTempAssignmentChange(e.target.checked, 'auto_grade_email')
+              }}
+            />
+          </Stack>
+        </Stack>
+      ),
+    },
+    {
+      name: 'Teacher Deadline',
+      component: (
+        <Stack direction='row' spacing={1} alignItems='center' sx={{ my: 2 }}>
+          <Stack direction='row' sx={{ ml: 1.5 }} alignItems='center'>
+            <Box sx={{ minWidth: '284px' }}>
+              <DefaultDatePicker
+                date={tempAssignment?.teacherDate}
+                label='Date'
+                handleChange={(e) => {
+                  handleTempAssignmentChange(e, 'teacherDate')
+                }}
+              />
+            </Box>
+            <Box sx={{ minWidth: '220px' }}>
+              <MthTimePicker
+                time={tempAssignment?.teacherTime}
+                label='Time'
+                handleChange={(e) => {
+                  handleTempAssignmentChange(e, 'teacherTime')
+                }}
+              />
+            </Box>
+          </Stack>
+        </Stack>
+      ),
+    },
+  ]
 
   return (
     <Box sx={{ p: 4, textAlign: 'left' }}>
@@ -449,6 +712,23 @@ const MasterHoomroom: React.FC<{ masterId: number }> = ({ masterId }) => {
           btntitle='Delete'
           canceltitle='Cancel'
         />
+      )}
+      {cloneModal && (
+        <WarningModal
+          title='Clone Learning Log'
+          handleModem={() => setCloneModal(false)}
+          handleSubmit={() => submitCloneHandle()}
+          btntitle='Clone'
+          canceltitle='Cancel'
+          modalWidth='1070px'
+          textCenter={false}
+        >
+          <Box>
+            {editAssignmentList?.map((editSeeing, index) => (
+              <CommonSelect key={index} index={index + 1} selectItem={editSeeing} verticalDividHeight='auto' />
+            ))}
+          </Box>
+        </WarningModal>
       )}
     </Box>
   )

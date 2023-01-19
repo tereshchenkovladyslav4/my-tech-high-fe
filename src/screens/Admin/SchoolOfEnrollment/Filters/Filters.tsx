@@ -11,6 +11,7 @@ import { MthColor } from '@mth/enums'
 import { getSchoolDistrictsByRegionId } from '@mth/graphql/queries/school-district'
 import { useProviders } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
+import { mthButtonClasses } from '@mth/styles/button.style'
 import { toOrdinalSuffix } from '@mth/utils'
 import {
   FiltersProps,
@@ -489,30 +490,13 @@ export const Filters: React.FC<FiltersProps> = ({
             }}
           >
             <Button
-              sx={{
-                fontSize: 11,
-                fontWeight: 700,
-                borderRadius: 2,
-                textTransform: 'none',
-                background: MthColor.BUTTON_LINEAR_GRADIENT,
-                color: 'white',
-                marginBottom: '12px',
-                width: '140px',
-              }}
+              sx={{ ...mthButtonClasses.primary, marginBottom: '12px', height: '29px', fontWeight: 500 }}
               onClick={handleFilter}
             >
               Filter
             </Button>
             <Button
-              sx={{
-                fontSize: 11,
-                fontWeight: 700,
-                borderRadius: 2,
-                textTransform: 'none',
-                background: MthColor.RED_GRADIENT,
-                color: 'white',
-                width: '140px',
-              }}
+              sx={{ ...mthButtonClasses.smallRed, borderRadius: '8px', height: '29px', fontWeight: 500 }}
               onClick={handleClear}
             >
               Clear All

@@ -539,7 +539,7 @@ const EditAssignment: React.FC<{ masterId: number; assignmentId?: number }> = ({
   }
 
   const DragHandle = SortableHandle(() => (
-    <Tooltip title='Move'>
+    <Tooltip title='Move' placement='top'>
       <IconButton>
         <DehazeIcon />
       </IconButton>
@@ -584,7 +584,7 @@ const EditAssignment: React.FC<{ masterId: number; assignmentId?: number }> = ({
         }}
       >
         <Box display='flex' justifyContent={'flex-end'}>
-          <Tooltip title='Delete'>
+          <Tooltip title='Delete' placement='top'>
             <IconButton onClick={() => handleDeletePage(pageNum)}>
               <DeleteForeverOutlinedIcon />
             </IconButton>

@@ -10,7 +10,7 @@ import CustomTable from '@mth/components/Table/CustomTable'
 import { Field, ValueOf } from '@mth/components/Table/types'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { WarningModal } from '@mth/components/WarningModal/Warning'
-import { MthColor } from '@mth/enums'
+import { mthButtonClasses } from '@mth/styles/button.style'
 import { assignStudentToSOEGql } from '../../SiteManagement/services'
 import { getStudents } from '../services'
 import { useStyles } from '../styles'
@@ -284,70 +284,52 @@ export const EnrollmentSchoolTable: React.FC<EnrollmentSchoolTableProps> = ({
           marginBottom: 4,
         }}
       >
-        <Box className={classes.root} sx={{ marginLeft: '-16px' }}>
-          <DropDown
-            dropDownItems={schoolYears}
-            placeholder={'Select Year'}
-            defaultValue={selectedYear?.value || ''}
-            borderNone={true}
-            sx={{ width: '200px' }}
-            size='small'
-            setParentValue={(val) => {
-              const selYear = schoolYears.find((item) => item.value == val)
-              if (selYear) setSelectedYear(selYear)
-            }}
-          />
+        <Box
+          className={classes.root}
+          sx={{ marginLeft: '-16px', alignItems: 'center', justifyContent: 'space-between' }}
+        >
+          <Box display={'flex'} alignItems='center'>
+            <Box sx={{ marginRight: '30px' }}>
+              <DropDown
+                dropDownItems={schoolYears}
+                placeholder={'Select Year'}
+                defaultValue={selectedYear?.value || ''}
+                borderNone={true}
+                size='small'
+                setParentValue={(val) => {
+                  const selYear = schoolYears.find((item) => item.value == val)
+                  if (selYear) setSelectedYear(selYear)
+                }}
+              />
+            </Box>
 
-          <DropDown
-            dropDownItems={partnerList}
-            alternate={true}
-            placeholder={'Select'}
-            defaultValue={schoolPartner}
-            sx={{ width: '100%' }}
-            size='small'
-            setParentValue={(val) => {
-              setSchoolPartner(val as string)
-            }}
-          />
-
-          <Tooltip title='Assign School of Enrollment' placement='top'>
-            <Button
-              sx={{
-                borderRadius: 2,
-                textTransform: 'none',
-                height: 29,
-                color: 'white',
-                background: MthColor.BLUE_GRDIENT,
-                '&:hover': {
-                  background: MthColor.BLUE_GRDIENT,
-                },
+            <DropDown
+              dropDownItems={partnerList}
+              alternate={true}
+              placeholder={'Select'}
+              defaultValue={schoolPartner}
+              sx={{ width: '280px', marginRight: '40px' }}
+              size='small'
+              setParentValue={(val) => {
+                setSchoolPartner(val as string)
               }}
-              onClick={handleAssignStudentToSOE}
-              className='btn-action'
-            >
-              Assign
-            </Button>
-          </Tooltip>
+            />
 
-          <Tooltip title='Create withdrawal form from previous SoE' placement='top'>
-            <Button
-              sx={{
-                borderRadius: 2,
-                textTransform: 'none',
-                height: 29,
-                color: 'white',
-                background: MthColor.RED_GRADIENT,
-                '&:hover': {
-                  background: '#D23C33',
-                  color: '#fff',
-                },
-              }}
-              className='btn-action'
-              onClick={handleTransfer}
-            >
-              Transfer
-            </Button>
-          </Tooltip>
+            <Tooltip title='Assign School of Enrollment' placement='top'>
+              <Button
+                sx={{ ...mthButtonClasses.xsPrimary, fontWeight: 500, marginRight: '40px' }}
+                onClick={handleAssignStudentToSOE}
+              >
+                Assign
+              </Button>
+            </Tooltip>
+
+            <Tooltip title='Create withdrawal form from previous SoE' placement='top'>
+              <Button sx={{ ...mthButtonClasses.xsRed, fontWeight: 500 }} onClick={handleTransfer}>
+                Transfer
+              </Button>
+            </Tooltip>
+          </Box>
 
           {/*  Pagination & Actions */}
           <Box

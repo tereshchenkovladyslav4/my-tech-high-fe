@@ -18,3 +18,6 @@ export const DEFUALT_DIPLOMA_QUESTION_DESCRIPTION = 'Sample text'
 
 export const DEFAULT_REASON =
   'Because the assessment does not allow for students to opt-out, please indicate your reason for refusing to test.'
+
+export const DEFAULT_REIMBURSEMENT_INSTRUCTIONS =
+  'Parents purchase approved educational resources for Custom-built courses and Technology Allowance, pay tuition for 3rd party Provider courses, and seek reimbursement for their purchases.'
