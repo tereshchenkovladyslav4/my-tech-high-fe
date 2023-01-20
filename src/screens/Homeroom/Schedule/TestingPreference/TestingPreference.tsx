@@ -7,7 +7,6 @@ import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { OPT_TYPE } from '@mth/enums'
 import { updateStudentAssessmentMutation } from '@mth/graphql/mutation/assessment'
 import { getStudentAssessmentsByStudentId } from '@mth/graphql/queries/assessment'
-
 import TestingPreferenceInformation from '@mth/screens/Admin/SiteManagement/EnrollmentSetting/TestingPreference/TestingPreferenceInformation'
 import { extractContent } from '@mth/utils'
 import { TestingPreferenceProps } from '../types'

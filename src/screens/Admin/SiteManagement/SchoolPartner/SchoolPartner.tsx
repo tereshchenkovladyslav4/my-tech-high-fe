@@ -47,7 +47,7 @@ export const SchoolPartner: React.FC = () => {
   const [openEditModal, setOpenEditModal] = useState<SchoolPartnerType>()
   const [archiveModal, setArchiveModal] = useState<SchoolPartnerType>()
 
-  const [disabled, setDisabled] = useState(false)
+  const [disabled, setDisabled] = useState<boolean>(false)
 
   const { data: schoolsOfEnrollmentData, refetch } = useQuery(GetSchoolsOfEnrollment, {
     variables: {

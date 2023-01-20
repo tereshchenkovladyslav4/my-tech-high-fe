@@ -30,3 +30,10 @@ export const getFirstDayAndLastDayOfMonth = (date: Date = new Date()): { firstDa
 export const convertDateToUTCDate = (date: Date | string | undefined, time = '00:00'): string => {
   return new Date(`${moment(new Date(date || '')).format('yyyy-MM-DD')} ${time}`).toISOString()
 }
+
+export const calcAge = (birth: string | Date | undefined): number => {
+  if (birth) {
+    return moment().tz('UTC').diff(birth, 'years')
+  }
+  return 0
+}

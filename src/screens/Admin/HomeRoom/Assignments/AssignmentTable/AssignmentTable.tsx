@@ -51,19 +51,13 @@ export const AssignmentTable: React.FC<EnrollmentSchoolTableProps> = ({
   const [items, setItems] = useState<Array<StudentVM>>([])
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [studentIds, setStudentIds] = useState<Array<ValueOf<StudentVM>>>([])
-
   const [selectedHomeroom, setSelHomeroom] = useState<OptionType | null>()
-
   const [assignError, setAssignError] = useState<boolean>(false)
   const [autoGradeModal, setAutoGradeModal] = useState<boolean>(false)
   const [autoGrade, setAutoGrade] = useState<string>('')
-
   const [warningError, setWarningError] = useState<boolean>(false)
-
   const [isTransferAssignError, setIsTransferAssignError] = useState<boolean>(false)
-
   const [transferConfirmModal, setTransferConfirmModal] = useState<boolean>(false)
-
   const [errorHomeroom, setErrorHomeroom] = useState<boolean>(false)
   const [errorStudentSelect, setErrorStudentSelect] = useState<boolean>(false)
 

@@ -24,10 +24,10 @@ import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { Title } from '@mth/components/Typography/Title/Title'
 import { WarningModal } from '@mth/components/WarningModal/Warning'
 import { STATES_WITH_ABBREVIATION } from '@mth/constants'
-import { ApplicationStatus, MthColor, MthTitle } from '@mth/enums'
+import { ActivateOption, ApplicationStatus, MthColor, MthTitle, StudentStatus, WithdrawalOption } from '@mth/enums'
 import { getAssessmentsBySchoolYearId, getStudentAssessmentsByStudentId } from '@mth/graphql/queries/assessment'
 import { getWithdrawalStatusQuery } from '@mth/graphql/queries/withdrawal'
-import { Packet, Person, Phone } from '@mth/models'
+import { Packet, Person, Phone, Student, Withdrawal } from '@mth/models'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { AssessmentType } from '@mth/screens/Admin/SiteManagement/EnrollmentSetting/TestingPreference/types'
 import { StudentType } from '@mth/screens/HomeroomStudentProfile/Student/types'
@@ -44,12 +44,14 @@ export type StudentTemp = {
   special_ed: string
   diploma_seeking: string
   testing_preference: string
-  status: string
+  status: StudentStatus
   date: string
   school_year_id: number
   school_partner_id: number
   school_partner_id_updated: boolean
   brith?: string
+  withdrawOption?: WithdrawalOption
+  activeOption?: ActivateOption
 }
 
 type StudentProfileProps = {
@@ -113,10 +115,11 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
 }) => {
   const { me } = useContext(UserContext)
   const classes = selectStyles()
-  const [originStudentStatus, setOriginStudentStatus] = useState({})
+  const [originStudentStatus, setOriginStudentStatus] = useState<StudentTemp>({})
   const [studentAssessments, setStudentAssessments] = useState<StudentAssessment[]>([])
   const [assessmentItems, setAssessmentItems] = useState<AssessmentType[]>([])
   const [specialEdOptions, setSpecialEdOptions] = useState<string[]>([])
+  const [student, setStudent] = useState<Student | undefined>()
 
   const { data: currentUserData, refetch } = useQuery(getStudentDetail, {
     variables: {
@@ -132,8 +135,8 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
   })
 
   const selectedYearId = useMemo(() => {
-    return currentUserData?.student?.applications?.[0]?.school_year_id
-  }, [currentUserData])
+    return student?.applications?.[0]?.school_year_id
+  }, [student])
 
   const { data: schoolPartnerData } = useQuery(GetSchoolsPartner, {
     variables: {
@@ -187,7 +190,7 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
     } else return []
   }, [schoolPartnerData])
 
-  const [withdrawalStatus, setWithdrawalStatus] = useState<string>('')
+  const [withdrawalStatus, setWithdrawalStatus] = useState<Withdrawal | undefined>()
   //  Load withdrawal status from database
   const { data: withdrawalStatusData } = useQuery(getWithdrawalStatusQuery, {
     variables: {
@@ -244,8 +247,8 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
 
   const currentSoE = useMemo(() => {
     let currentSoE = false
-    if (selectedYearId && currentUserData.student.currentSoe?.length) {
-      currentSoE = currentUserData.student.currentSoe.find((soe) => soe.school_year_id == selectedYearId)
+    if (selectedYearId && student.currentSoe?.length) {
+      currentSoE = student.currentSoe.find((soe) => soe.school_year_id == selectedYearId)
       if (currentSoE) setSchoolPartnerId(currentSoE.school_partner_id)
     }
     return currentSoE?.school_partner_id
@@ -272,8 +275,8 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
   }, [regionData, selectedYearId])
 
   const previousSoE = useMemo(
-    () => currentUserData?.student?.currentSoe?.find((soe) => soe.school_year_id == previousYearId),
-    [currentUserData, previousYearId],
+    () => student?.currentSoe?.find((soe) => soe.school_year_id == previousYearId),
+    [student, previousYearId],
   )
 
   const setSOE = (school_partner_id) => {
@@ -400,45 +403,51 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
   }, [userInfo])
 
   useEffect(() => {
-    if (currentUserData) {
-      const stateSelected = currentUserData.student.person.address.state || applicationState
+    if (student) {
+      const stateSelected = student.person.address.state || applicationState
 
-      setEmail(currentUserData.student.person.email)
-      setPreferredFirstName(currentUserData.student.person.preferred_first_name)
-      setPreferredLastName(currentUserData.student.person.preferred_last_name)
-      setLegalFirstName(currentUserData.student.person.first_name)
-      setLegalLastName(currentUserData.student.person.last_name)
-      setLegalMiddleName(currentUserData.student.person.middle_name)
-      setGender(currentUserData.student.person.gender)
-      setCity(currentUserData.student.person.address.city)
+      setEmail(student.person.email)
+      setPreferredFirstName(student.person.preferred_first_name)
+      setPreferredLastName(student.person.preferred_last_name)
+      setLegalFirstName(student.person.first_name)
+      setLegalLastName(student.person.last_name)
+      setLegalMiddleName(student.person.middle_name)
+      setGender(student.person.gender)
+      setCity(student.person.address.city)
       setState(STATES_WITH_ABBREVIATION[stateSelected] || stateSelected)
-      setStreet1(currentUserData.student.person.address.street)
-      setStreet2(currentUserData.student.person.address.street2)
-      setZip(currentUserData.student.person.address.zip)
-      setUserInfo(currentUserData.student.person)
-      setPackets(currentUserData.student.packets)
-      if (currentUserData.student.grade_levels && currentUserData.student.grade_levels[0]) {
-        setGradeLevel(currentUserData.student.grade_levels[0].grade_level)
+      setStreet1(student.person.address.street)
+      setStreet2(student.person.address.street2)
+      setZip(student.person.address.zip)
+      setUserInfo(student.person)
+      setPackets(student.packets)
+      if (student.grade_levels && student.grade_levels[0]) {
+        setGradeLevel(student.grade_levels[0].grade_level)
       }
-      if (currentUserData.student.person.phone.ext) {
+      if (student.person.phone.ext) {
         setCanMessage(true)
       }
       setStudentStatus({
         student_id: +studentId,
-        special_ed: currentUserData.student.special_ed,
-        diploma_seeking: currentUserData.student.diploma_seeking,
-        testing_preference: currentUserData.student.testing_preference,
-        status: currentUserData?.student?.status?.length && currentUserData.student.status.at(-1).status,
-        date: currentUserData?.student?.status?.length > 0 ? currentUserData.student.status.at(-1).date_updated : '',
-        school_year_id:
-          currentUserData.student.applications.length && currentUserData.student.applications[0].school_year_id,
-        school_partner_id: currentUserData.student?.currentSoe?.[0]?.school_partner_id,
+        special_ed: student.special_ed,
+        diploma_seeking: student.diploma_seeking,
+        testing_preference: student.testing_preference,
+        status: student?.status?.length && student.status.at(-1).status,
+        date: student?.status?.length > 0 ? student.status.at(-1).date_updated : '',
+        school_year_id: student.applications.length && student.applications[0].school_year_id,
+        school_partner_id: student?.currentSoe?.[0]?.school_partner_id,
         school_partner_id_updated: false,
-        brith: currentUserData?.student?.person.date_of_birth,
+        brith: student?.person.date_of_birth,
       })
       setOriginStudentStatus({
-        status: currentUserData?.student?.status?.length && currentUserData.student.status.at(-1).status,
+        status: student?.status?.length && student.status.at(-1).status,
       })
+    }
+  }, [student])
+
+  useEffect(() => {
+    if (currentUserData) {
+      const { student } = currentUserData
+      setStudent(student)
     }
   }, [currentUserData])
 
@@ -648,7 +657,7 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
 
         <Grid item xs={12}>
           <StudentFilters
-            currentUserData={currentUserData}
+            student={student}
             setStudentStatuData={setStudentStatus}
             studentStatusData={studentStatus}
             originStudentStatus={originStudentStatus}

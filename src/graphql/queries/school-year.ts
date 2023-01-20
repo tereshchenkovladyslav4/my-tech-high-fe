@@ -57,3 +57,13 @@ export const GetCurrentSchoolYearByRegionId = gql`
     }
   }
 `
+
+export const getReimbursementSchoolYearsByRegionId = gql`
+  query ReimbursementRequestSchoolYears($regionId: Int!) {
+    reimbursementRequestSchoolYears(regionId: $regionId) {
+      school_year_id
+      date_begin
+      date_end
+    }
+  }
+`

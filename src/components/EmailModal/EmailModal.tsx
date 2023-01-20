@@ -57,7 +57,6 @@ export const EmailModal: React.FC<EmailModalProps> = ({
   const [standard_responses, setStandardResponses] = useState([])
   const [template, setTemplate] = useState(null)
 
-  const [addIndex, setAddIndex] = useState<number>(0)
   const [keyText, setKeyText] = useState<string>('')
 
   const { data: emailTemplateData } = useQuery(getEmailTemplateQuery, {
@@ -113,7 +112,6 @@ export const EmailModal: React.FC<EmailModalProps> = ({
     //  find the second </p>
     const index = HtmlInput.indexOf('</p>', HtmlInput.indexOf('</p>') + 1) + 4
 
-    setAddIndex(index)
     setKeyText(HtmlInput.slice(index, index + 20))
 
     let standardResponseExtraText = '',
@@ -176,7 +174,6 @@ export const EmailModal: React.FC<EmailModalProps> = ({
           type: actionType,
         },
         body,
-        addIndex,
         keyText,
       )
     }

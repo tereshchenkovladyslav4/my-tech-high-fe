@@ -1,6 +1,7 @@
 import React, { FunctionComponent, useState } from 'react'
 import InfoIcon from '@mui/icons-material/InfoOutlined'
 import { Box, Button, FormControl, FormControlLabel, Modal, Radio, RadioGroup, Typography } from '@mui/material'
+import { ActivateOption } from '@mth/enums'
 
 type ActiveModalProps = {
   title: string
@@ -23,7 +24,7 @@ export const ActiveModal: FunctionComponent<ActiveModalProps> = ({
   cancelStr = 'Cancel',
   backgroundColor = '#FFFFFF',
 }) => {
-  const [activeOption, setActiveOption] = useState<number>(1) // 1: Notify Parent of Withdraw, 2: No Form / No Email, 3: Undeclared Form/Email, 4: Undeclared Form / No Email
+  const [activeOption, setActiveOption] = useState<ActivateOption>(ActivateOption.DELETE_WITHDRAWAL_FORM)
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setActiveOption(parseInt(e.target.value))
   }
@@ -68,8 +69,16 @@ export const ActiveModal: FunctionComponent<ActiveModalProps> = ({
                 value={activeOption}
                 onChange={handleChange}
               >
-                <FormControlLabel value={1} control={<Radio />} label='Delete Withdraw Form from Records' />
-                <FormControlLabel value={2} control={<Radio />} label='Keep Withdraw Form' />
+                <FormControlLabel
+                  value={ActivateOption.DELETE_WITHDRAWAL_FORM}
+                  control={<Radio />}
+                  label='Delete Withdraw Form from Records'
+                />
+                <FormControlLabel
+                  value={ActivateOption.KEEP_WITHDRAWAL_FORM}
+                  control={<Radio />}
+                  label='Keep Withdraw Form'
+                />
               </RadioGroup>
             </FormControl>
           </Box>

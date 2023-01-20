@@ -1,4 +1,5 @@
 export enum StudentStatus {
+  NONE = 4,
   PENDING = 0,
   ACTIVE = 1,
   WITHDRAWN = 2,

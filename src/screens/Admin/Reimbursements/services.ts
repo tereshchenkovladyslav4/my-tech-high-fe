@@ -7,6 +7,26 @@ export const getSchoolYear = gql`
       reimbursements
       require_software
       direct_orders
+      direct_order_open
+      direct_order_close
+      reimbursement_open
+      reimbursement_close
+      custom_built_open
+      custom_built_close
+      require_software_open
+      require_software_close
+      third_party_open
+      third_party_close
+      mid_direct_order_open
+      mid_direct_order_close
+      mid_reimbursement_open
+      mid_reimbursement_close
+      mid_custom_built_open
+      mid_custom_built_close
+      mid_require_software_open
+      mid_require_software_close
+      mid_third_party_open
+      mid_third_party_close
       ScheduleBuilder {
         max_num_periods
         custom_built

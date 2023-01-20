@@ -46,12 +46,12 @@ export const Resources: React.FC = () => {
   })
 
   const {
-    loading,
+    loading: resourcesLoading,
     data: resourcesData,
     refetch,
   } = useQuery(getStudentResourcesQuery, {
     variables: { studentId: currentStudentId, schoolYearId: +selectedYear },
-    skip: !currentStudentId || !selectedYear,
+    skip: !currentStudentId || !selectedYear || schoolYearsLoading,
     fetchPolicy: 'network-only',
   })
   const [toggleHiddenResource, {}] = useMutation(toggleHiddenResourceMutation)
@@ -137,30 +137,28 @@ export const Resources: React.FC = () => {
   }
 
   useEffect(() => {
-    if (resources?.length) {
-      const items: HomeroomResource[] = sortBy(
-        resources.filter((item) => item.CartDate),
-        'CartDate',
-      ).reverse()
-      setResourcesInCart(items)
-      if (selectedResource) {
-        const resource = resources.find((item) => item.resource_id === selectedResource.resource_id)
-        setSelectedResource(resource)
-      }
+    const items: HomeroomResource[] = sortBy(
+      (resources || []).filter((item) => item.CartDate),
+      'CartDate',
+    ).reverse()
+    setResourcesInCart(items)
+    if (selectedResource) {
+      const resource = (resources || []).find((item) => item.resource_id === selectedResource.resource_id)
+      setSelectedResource(resource)
     }
   }, [resources])
 
   useEffect(() => {
-    if (!loading && resourcesData) {
+    if (!resourcesLoading && resourcesData) {
       const colors = ['blue', 'orange']
       const { studentResources: resources }: { studentResources: HomeroomResource[] } = resourcesData
       resources?.filter((item) => !item.image).map((item, index) => (item.background = colors[index % 2]))
       setResources(resources || [])
     }
-  }, [loading, resourcesData])
+  }, [resourcesLoading, resourcesData])
 
   useEffect(() => {
-    if (schoolYearsData?.activeHomeroomResourceSchoolYears?.length) {
+    if (!schoolYearsLoading && schoolYearsData?.activeHomeroomResourceSchoolYears?.length) {
       const { activeHomeroomResourceSchoolYears: schoolYears } = schoolYearsData
       const sortedSchoolYears = sortBy(schoolYears, 'date_begin').map((item: SchoolYear) => ({
         value: item.school_year_id,
@@ -170,6 +168,12 @@ export const Resources: React.FC = () => {
       setSchoolYears(sortedSchoolYears)
     }
   }, [schoolYearsLoading, schoolYearsData])
+
+  useEffect(() => {
+    setSelectedYear(0)
+    setSchoolYears([])
+    setResources([])
+  }, [currentStudentId])
 
   return (
     <Stack>

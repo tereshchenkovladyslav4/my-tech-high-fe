@@ -29,8 +29,8 @@ export const SideMenu: React.FC = () => {
   const userRegion = me?.userRegion?.at(-1)
   const isActive = () => location.pathname.includes('homeroom')
   const [authorizedList, setAuthorizedList] = useState([])
-  const checkAdminAccessOnSidebar = (label): number => {
-    const adminAccessArr = me.userAccess
+  const checkAdminAccessOnSidebar = (label: string): number => {
+    const adminAccessArr = me?.userAccess
     const role = some(adminAccessArr, (access: unknown) => access?.accessDetail?.name === label)
     if (role) {
       return me.level

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { makeStyles } from '@material-ui/styles'
 import { KeyboardArrowDown } from '@mui/icons-material'
-import { Grid, Select, MenuItem } from '@mui/material'
+import { Grid, MenuItem, Select } from '@mui/material'
 import { Box } from '@mui/system'
 import moment from 'moment-timezone'
 import { CustomConfirmModal } from '@mth/components/CustomConfirmModal/CustomConfirmModal'
@@ -11,20 +11,22 @@ import { MthDatePicker } from '@mth/components/MthDatePicker/MthDatePicker'
 import { RadioGroupOption } from '@mth/components/MthRadioGroup/types'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
-import { MthColor, StudentStatus } from '@mth/enums'
+import { ActivateOption, ApplicationStatus, MthColor, StudentStatus, WithdrawalOption } from '@mth/enums'
 import { useDiplomaSeekingOptionsByStudentIdandSchoolYearId } from '@mth/hooks'
+import { Application, Student, Withdrawal } from '@mth/models'
+import { calcAge, gradeText } from '@mth/utils'
 import { StudentTemp } from '../StudentProfile'
 import { ActiveModal } from './ActiveModal'
 import { WithdrawModal } from './WithdrawModal'
 
 type StudentFiltersProps = {
-  currentUserData: unknown
+  student: Student
   setStudentStatuData: (value: StudentTemp) => void
-  originStudentStatus: unknown
+  originStudentStatus: StudentTemp
   studentStatusData: StudentTemp
-  withdrawalStatus: string
+  withdrawalStatus: Withdrawal
   specialEdOptions: string[]
-  setWithdrawalStatus: (value: string) => void
+  setWithdrawalStatus: (value: Withdrawal | undefined) => void
   setIsChanged: (_: boolean) => void
 }
 
@@ -94,7 +96,7 @@ const useStyles = {
     left: '50%',
     transform: 'translate(-50%, -50%)',
     width: 850,
-    bgcolor: '#EEF4F8',
+    backgroundColor: '#EEF4F8',
     boxShadow: 24,
     padding: '16px 32px',
     borderRadius: 2,
@@ -168,7 +170,7 @@ const useStyles = {
     left: '50%',
     transform: 'translate(-50%, -50%)',
     width: 441,
-    bgcolor: 'background.paper',
+    backgroundColor: 'background.paper',
     boxShadow: 24,
     p: 4,
     borderRadius: 2,
@@ -196,14 +198,8 @@ const useStyles = {
   },
 }
 
-const ordinal = (n) => {
-  const s = ['th', 'st', 'nd', 'rd']
-  const v = n % 100
-  return n + (s[(v - 20) % 10] || s[v] || s[0])
-}
-
 export const StudentFilters: React.FC<StudentFiltersProps> = ({
-  currentUserData,
+  student,
   setStudentStatuData,
   originStudentStatus,
   studentStatusData,
@@ -215,9 +211,9 @@ export const StudentFilters: React.FC<StudentFiltersProps> = ({
   const classes = useStyles
   const selectClasses = selectStyles()
   const [showDetails, setShowDetails] = useState<boolean>(false)
-  const [applications, setApplications] = useState<unknown[]>([])
-  const [studentStatus, setStudentStatus] = useState<unknown>()
-  const [, setSpecialEd] = useState<unknown>()
+  const [applications, setApplications] = useState<Application[]>([])
+  const [originalStudentStatus, setOriginalStudentStatus] = useState<StudentStatus | undefined>()
+  const [, setSpecialEd] = useState<number>()
   const [showWithdrawalModal, setShowWithdrawalModal] = useState<boolean>(false)
   const [showActiveModal, setShowActiveModal] = useState<boolean>(false)
   const [showConfirmModal, setShowConfirmModal] = useState<boolean>(false)
@@ -282,22 +278,22 @@ export const StudentFilters: React.FC<StudentFiltersProps> = ({
     !studentStatusData?.student_id || !studentStatusData?.school_year_id,
   )
 
-  const handleChangeStudentStatus = (e) => {
-    if (e.target.value == StudentStatus.ACTIVE || e.target.value == StudentStatus.PENDING) {
+  const handleChangeStudentStatus = (status: StudentStatus) => {
+    if (status == StudentStatus.ACTIVE || status == StudentStatus.PENDING) {
       if (originStudentStatus?.status == StudentStatus.WITHDRAWN) {
         setShowActiveModal(true)
       }
-      setStudentStatus(studentStatusData.status)
-      setStudentStatuData({ ...studentStatusData, ...{ status: e.target.value } })
-    } else if (e.target.value == StudentStatus.WITHDRAWN) {
+      setOriginalStudentStatus(studentStatusData.status)
+      setStudentStatuData({ ...studentStatusData, ...{ status: status } })
+    } else if (status == StudentStatus.WITHDRAWN) {
       if (originStudentStatus?.status == StudentStatus.ACTIVE || originStudentStatus?.status == StudentStatus.PENDING) {
         setShowWithdrawalModal(true)
       }
-      setStudentStatus(studentStatusData.status)
-      setStudentStatuData({ ...studentStatusData, ...{ status: e.target.value } })
+      setOriginalStudentStatus(studentStatusData.status)
+      setStudentStatuData({ ...studentStatusData, ...{ status: status } })
     } else {
-      setStudentStatus(e.target.value)
-      setStudentStatuData({ ...studentStatusData, ...{ status: e.target.value } })
+      setOriginalStudentStatus(status)
+      setStudentStatuData({ ...studentStatusData, ...{ status: status } })
     }
   }
 
@@ -307,33 +303,33 @@ export const StudentFilters: React.FC<StudentFiltersProps> = ({
     }
   }
 
-  const handleSelectWithdrawOption = (withdrawOption) => {
+  const handleSelectWithdrawOption = (withdrawOption: WithdrawalOption) => {
     setIsChanged(true)
     setStudentStatuData({ ...studentStatusData, ...{ withdrawOption: withdrawOption } })
     setShowWithdrawalModal(false)
   }
 
-  const handleSelectActiveOption = (activeOption) => {
+  const handleSelectActiveOption = (activeOption: ActivateOption) => {
     setIsChanged(true)
     setStudentStatuData({ ...studentStatusData, ...{ activeOption: activeOption } })
     setShowActiveModal(false)
   }
 
   const handleWithdrawCancel = () => {
-    setStudentStatuData({ ...studentStatusData, ...{ status: studentStatus } })
+    if (originalStudentStatus) setStudentStatuData({ ...studentStatusData, ...{ status: originalStudentStatus } })
     setShowWithdrawalModal(false)
   }
 
   const handleActiveCancel = () => {
-    setStudentStatuData({ ...studentStatusData, ...{ status: studentStatus } })
+    if (originalStudentStatus) setStudentStatuData({ ...studentStatusData, ...{ status: originalStudentStatus } })
     setShowActiveModal(false)
   }
 
   useEffect(() => {
-    if (currentUserData && currentUserData.student) {
-      setApplications(currentUserData.student.applications)
+    if (student) {
+      setApplications(student.applications || [])
     }
-  }, [currentUserData])
+  }, [student])
 
   useEffect(() => {
     if (specialEdOptions.length != 0) {
@@ -357,37 +353,37 @@ export const StudentFilters: React.FC<StudentFiltersProps> = ({
         },
         {
           label:
-            studentStatusData?.status == 5 || studentStatusData?.status == 7
-              ? `${studentStatusData?.status == 7 ? 'Applied (re-apply)' : 'Applied'} ${moment(
+            studentStatusData?.status == StudentStatus.APPLIED || studentStatusData?.status == StudentStatus.REAPPLIED
+              ? `${studentStatusData?.status == StudentStatus.REAPPLIED ? 'Applied (re-apply)' : 'Applied'} ${moment(
                   studentStatusData?.date,
                 ).format('MM/DD/YYYY')}`
               : 'Applied',
-          value: studentStatusData?.status == 7 ? StudentStatus.REAPPLIED : StudentStatus.APPLIED,
+          value: studentStatusData?.status == StudentStatus.REAPPLIED ? StudentStatus.REAPPLIED : StudentStatus.APPLIED,
         },
         {
           label:
-            studentStatusData?.status == 6
+            studentStatusData?.status == StudentStatus.ACCEPTED
               ? `Accepted ${moment(studentStatusData?.date).format('MM/DD/YYYY')}`
               : 'Accepted',
           value: StudentStatus.ACCEPTED,
         },
         {
           label:
-            studentStatusData?.status == 0
+            studentStatusData?.status == StudentStatus.PENDING
               ? `Pending ${moment(studentStatusData?.date).format('MM/DD/YYYY')}`
               : 'Pending',
           value: StudentStatus.PENDING,
         },
         {
           label:
-            studentStatusData?.status == 1
+            studentStatusData?.status == StudentStatus.ACTIVE
               ? `Active ${moment(studentStatusData?.date).format('MM/DD/YYYY')}`
               : 'Active',
           value: StudentStatus.ACTIVE,
         },
         {
           label:
-            studentStatusData?.status == 2
+            studentStatusData?.status == StudentStatus.WITHDRAWN
               ? `Withdrawn ${moment(studentStatusData?.date).format('MM/DD/YYYY')}`
               : 'Withdrawn',
           value: StudentStatus.WITHDRAWN,
@@ -395,11 +391,15 @@ export const StudentFilters: React.FC<StudentFiltersProps> = ({
       ])
     }
 
-    if (studentStatusData.status == 2 && studentStatusData.withdrawOption && studentStatusData.withdrawOption > 0) {
+    if (
+      studentStatusData.status == StudentStatus.WITHDRAWN &&
+      studentStatusData.withdrawOption &&
+      studentStatusData.withdrawOption > 0
+    ) {
       setStatus([
         {
           label: ' ',
-          value: 4,
+          value: StudentStatus.NONE,
         },
         {
           label: 'Applied',
@@ -424,11 +424,11 @@ export const StudentFilters: React.FC<StudentFiltersProps> = ({
       ])
     }
 
-    if (studentStatusData.status == 1 && studentStatusData.activeOption && studentStatusData.activeOption > 0) {
+    if (studentStatusData.status == StudentStatus.ACTIVE && studentStatusData.activeOption) {
       setStatus([
         {
           label: ' ',
-          value: 4,
+          value: StudentStatus.NONE,
         },
         {
           label: 'Applied',
@@ -505,7 +505,7 @@ export const StudentFilters: React.FC<StudentFiltersProps> = ({
                 }}
                 value={+studentStatusData.status}
                 onChange={(e) => {
-                  handleChangeStudentStatus(e)
+                  handleChangeStudentStatus(e.target.value)
                 }}
               >
                 {status.map((item) => (
@@ -532,7 +532,7 @@ export const StudentFilters: React.FC<StudentFiltersProps> = ({
             </Box>
           </Box>
           <Box onClick={() => setShowDetails(!showDetails)}>
-            <Paragraph sx={{ textDecoration: 'underline', color: MthColor.MTHBLUE }}>
+            <Paragraph sx={{ textDecoration: 'underline', color: MthColor.MTHBLUE, cursor: 'pointer' }}>
               {showDetails ? 'Hide' : 'View'} Details
             </Paragraph>
           </Box>
@@ -563,7 +563,7 @@ export const StudentFilters: React.FC<StudentFiltersProps> = ({
               confirmBtnTitle='Delete'
               handleConfirmModalChange={(isOk: boolean) => {
                 if (isOk) {
-                  setWithdrawalStatus({})
+                  setWithdrawalStatus(undefined)
                   setStudentStatuData({ ...studentStatusData, ...{ activeOption: true } })
                 }
                 setShowConfirmModal(false)
@@ -634,30 +634,30 @@ export const StudentFilters: React.FC<StudentFiltersProps> = ({
           <Grid item xs={12}>
             <Box sx={classes.content}>
               <Box sx={classes.formRow}>
-                <Subtitle sx={classes.formLabel as Record<string, unknown>} fontWeight='500'>
+                <Subtitle sx={classes.formLabel} fontWeight='500'>
                   Application
-                  <Box sx={classes.labelAfter as Record<string, unknown>}></Box>
+                  <Box sx={classes.labelAfter}></Box>
                 </Subtitle>
-                <Subtitle sx={{ ...(classes.formValue as Record<string, unknown>) }} fontWeight='500'>
+                <Subtitle sx={{ ...classes.formValue }} fontWeight='500'>
                   {applications[0].status}{' '}
-                  {applications[0].status == 'Accepted'
+                  {applications[0].status == ApplicationStatus.ACCEPTED
                     ? moment(applications[0].date_accepted).format('MM/DD/YYYY')
                     : moment(applications[0].date_submitted).format('MM/DD/YYYY')}
                 </Subtitle>
               </Box>
               <Box sx={classes.formRow}>
-                <Subtitle sx={classes.formLabel as Record<string, unknown>} fontWeight='500'>
+                <Subtitle sx={classes.formLabel} fontWeight='500'>
                   Date of Birth
-                  <Box sx={classes.labelAfter as Record<string, unknown>}></Box>
+                  <Box sx={classes.labelAfter}></Box>
                 </Subtitle>
                 {!editingDOB ? (
                   <Subtitle
-                    sx={{ ...(classes.formValue as Record<string, unknown>), cursor: 'pointer' }}
+                    sx={{ ...classes.formValue, cursor: 'pointer' }}
                     fontWeight='500'
                     onClick={() => setEditingDOB(true)}
                   >
                     {studentStatusData?.brith && moment(studentStatusData?.brith).tz('UTC').format('MM/DD/YYYY')}
-                    {studentStatusData?.brith && `(${moment().tz('UTC').diff(studentStatusData?.brith, 'years')})`}
+                    {studentStatusData?.brith && ` (${calcAge(studentStatusData?.brith)})`}
                   </Subtitle>
                 ) : (
                   <Box sx={{ paddingX: '30px' }}>
@@ -675,7 +675,7 @@ export const StudentFilters: React.FC<StudentFiltersProps> = ({
               </Box>
               {applications.map((application, idx) => (
                 <Box sx={classes.formRow} key={idx}>
-                  <Subtitle sx={classes.formLabel as Record<string, unknown>} fontWeight='500'>
+                  <Subtitle sx={classes.formLabel} fontWeight='500'>
                     {application.midyear_application
                       ? `${moment(application.school_year.date_begin).format('YYYY')}-${moment(
                           application.school_year.date_end,
@@ -683,16 +683,13 @@ export const StudentFilters: React.FC<StudentFiltersProps> = ({
                       : `${moment(application.school_year.date_begin).format('YYYY')}-${moment(
                           application.school_year.date_end,
                         ).format('YY')}`}
-                    <Box sx={classes.labelAfter as Record<string, unknown>}></Box>
+                    <Box sx={classes.labelAfter}></Box>
                   </Subtitle>
                   <Box sx={classes.formRow}>
-                    <Subtitle sx={classes.formValue as Record<string, unknown>} fontWeight='500'>
-                      {currentUserData?.student?.grade_levels &&
-                        ordinal(currentUserData?.student?.grade_levels[0].grade_level)}{' '}
-                      Grade
-                      <Box sx={classes.labelAfter as Record<string, unknown>}></Box>
+                    <Subtitle sx={classes.formValue} fontWeight='500'>
+                      {gradeText(student)}
+                      <Box sx={classes.labelAfter}></Box>
                     </Subtitle>
-                    {/* <Subtitle sx={classes.formValue as Record<string, unknown>} fontWeight='500'></Subtitle> */}
                   </Box>
                 </Box>
               ))}

@@ -18,7 +18,7 @@ import Withdrawal from './Withdrawal/Withdrawal'
 
 type QuickLinkProps = {
   backAction: () => void
-  initialLink?: string
+  initialLink?: QUICKLINK_TYPE
   studentId?: number
 }
 

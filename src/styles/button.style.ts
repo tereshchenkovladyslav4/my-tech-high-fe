@@ -34,7 +34,7 @@ export const mthButtonSizeClasses = {
 export const mthButtonColorClasses = {
   primary: {
     background: 'linear-gradient(90deg, #3E2783 0%, rgba(62, 39, 131, 0) 100%), #4145FF',
-    color: MthColor.WHITE,
+    color: MthColor.LIGHTGRAY,
     '&:hover': {
       background: MthColor.PRIMARY_MEDIUM_MOUSEOVER,
       color: MthColor.WHITE,

@@ -21,6 +21,7 @@ export type Assignment = {
   autoGradeTime: string
   teacherDate: string | Date
   teacherTime: string
+  due_date: string | Date
 }
 
 export type QuestionOptionType = {

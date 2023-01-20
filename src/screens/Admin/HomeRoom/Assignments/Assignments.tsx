@@ -109,7 +109,7 @@ export const Assignments: React.FC = () => {
             value: item.school_year_id,
           })
 
-          if (moment(item.date_begin).format('YYYY') === moment().format('YYYY')) {
+          if (new Date() >= new Date(item.date_begin) && new Date() <= new Date(item.date_end)) {
             setSelectedYear({
               label: `${moment(item.date_begin).format('YYYY')}-${moment(item.date_end).format('YY')}`,
               value: item.school_year_id,
@@ -143,7 +143,7 @@ export const Assignments: React.FC = () => {
       const currentHomes = []
       currentHomeroomData.getMastersBySchoolId.map((item: Master) => {
         let dueStatus = false
-        if (item?.masterAssignments.length > 0) {
+        if (item?.masterAssignments?.length && item?.masterAssignments?.length > 0) {
           item?.masterAssignments.map((assignment: Assignment) => {
             if (
               assignment.due_date < moment(`${moment().tz('America/Denver').format('yyyy-MM-DD hh:mm')}`).toISOString()

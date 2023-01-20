@@ -6,6 +6,7 @@ import { Redirect, Route, Switch } from 'react-router-dom'
 import { CustomModal } from '@mth/components/CustomModal/CustomModals'
 import { MthRoute } from '@mth/enums'
 import { Schedule } from '@mth/screens/Homeroom/Schedule'
+import { Reimbursements } from '@mth/screens/Reimbursements'
 import { QUICKLINK_TYPE } from '../components/QuickLink/QuickLinkCardProps'
 import { QuickLinks } from '../components/QuickLink/QuickLinks'
 import { UserContext, UserInfo } from '../providers/UserContext/UserProvider'
@@ -59,7 +60,7 @@ export const Routes: React.FC = () => {
               currStudent.applications.length > 0 &&
               currStudent?.applications &&
               currStudent?.applications?.at?.(-1)?.status === 'Accepted' ? (
-              <Enrollment id={match?.params.id} disabled={Boolean(packetAccepted)} />
+              <Enrollment id={+(match?.params.id || 0)} disabled={Boolean(packetAccepted)} />
             ) : (
               <Homeroom />
             )
@@ -88,10 +89,19 @@ export const Routes: React.FC = () => {
       <Route path={MthRoute.SETTINGS}>
         <Settings />
       </Route>
+      <Route path={MthRoute.REIMBURSEMENTS}>
+        <Reimbursements />
+      </Route>
       <Route
         path={`${MthRoute.PARENT_LINK}${MthRoute.SUBMIT_WITHDRAWAL}/:id`}
         children={({ match }) => {
-          return <QuickLinks initialLink={QUICKLINK_TYPE.WITHDRAWAL} studentId={match?.params.id} />
+          return (
+            <QuickLinks
+              initialLink={QUICKLINK_TYPE.WITHDRAWAL}
+              studentId={+(match?.params.id || 0)}
+              backAction={() => {}}
+            />
+          )
         }}
       />
       <Route
@@ -101,7 +111,7 @@ export const Routes: React.FC = () => {
         }}
       />
       <Route path={MthRoute.PARENT_LINK}>
-        <QuickLinks />
+        <QuickLinks backAction={() => {}} />
       </Route>
       <Route render={() => <Redirect to={{ pathname: '/' }} />} />
     </Switch>

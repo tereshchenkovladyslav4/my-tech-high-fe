@@ -80,7 +80,6 @@ export const PacketConfirmModals: FunctionComponent<PacketConfirmModalsProps> = 
     body: string,
     options: StandardResponseOption,
     emailBody = '',
-    addIndex = 0,
     keyText = '',
   ) => {
     try {
@@ -105,7 +104,7 @@ export const PacketConfirmModals: FunctionComponent<PacketConfirmModalsProps> = 
         },
       })
       refetch()
-      setValue('notes', constructPacketNotes(notes || '', options, options.type, body, emailBody, addIndex, keyText))
+      setValue('notes', constructPacketNotes(notes || '', options, options.type, body, emailBody, keyText))
       if (options.type === 'AGE_ISSUE') {
         setValue('showAgeIssueModal', false)
         onSubmit()
@@ -133,7 +132,6 @@ export const PacketConfirmModals: FunctionComponent<PacketConfirmModalsProps> = 
     type: 'MISSING_INFO' | 'AGE_ISSUE',
     body: string,
     emailBody: string,
-    addIndex: number,
     keyText: string,
   ) => {
     const date = new Date().toLocaleDateString()
@@ -145,10 +143,13 @@ export const PacketConfirmModals: FunctionComponent<PacketConfirmModalsProps> = 
     let result = ''
 
     if (type === 'AGE_ISSUE') {
+      const secondPinex = body.indexOf('</p>', body.indexOf('</p>') + 1) + 4
+      const startIndex = body.indexOf('<p>', secondPinex + 1)
+
       endIndex = body.indexOf(keyText)
-      firstIndex = addIndex - 2
+      // firstIndex = addIndex - 2
       result = body
-        .slice(firstIndex, endIndex)
+        .slice(startIndex, endIndex)
         .replace(/(<([^>]+)>)/gi, '')
         .replaceAll('\n\n', '\n')
     } else {
@@ -158,8 +159,7 @@ export const PacketConfirmModals: FunctionComponent<PacketConfirmModalsProps> = 
         firstIndex = body.indexOf(`<ul>\n<li>${firstOptionTitle}`)
 
         const filesIndex = emailBody.indexOf('<p>[INSTRUCTIONS]</p>\n')
-        const linkIndex = emailBody.indexOf('[LINK]')
-        const endEmailBody = emailBody.slice(filesIndex + 22, linkIndex)
+        const endEmailBody = emailBody.slice(filesIndex + 22, filesIndex + 32)
 
         endIndex = body.indexOf(endEmailBody)
       }
