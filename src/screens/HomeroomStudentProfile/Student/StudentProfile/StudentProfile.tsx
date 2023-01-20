@@ -197,7 +197,6 @@ export const StudentProfile: undefined | React.FC<StudentProfileProps> = ({ curr
           flexDirection='column'
           justifyContent={'center'}
           sx={{
-            display: { xs: isEditingMobile ? 'block' : 'none', sm: 'block' },
             backgroundColor: '#FAFAFA',
             alignItems: 'center',
             cursor: 'pointer',

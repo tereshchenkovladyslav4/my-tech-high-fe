@@ -263,12 +263,12 @@ export const AssignmentTable: React.FC<EnrollmentSchoolTableProps> = ({
   }
 
   const handleAssign = async () => {
-    if (!selectedHomeroom) {
-      setErrorHomeroom(true)
-      return
-    }
     if (studentIds.length === 0) {
       setErrorStudentSelect(true)
+      return
+    }
+    if (!selectedHomeroom) {
+      setErrorHomeroom(true)
       return
     }
 

@@ -75,6 +75,13 @@ export const EnrollmentPacketDocument: React.FC<EnrollmentPacketDocumentProps> =
       setFiles(filesData)
     }
   }, [loading, data])
+
+  const openNewWindow = (url: string, name: string) => {
+    if (url) {
+      window.open(url, name, '500')
+    }
+  }
+
   return (
     <Grid container sx={{ paddingTop: '20px' }}>
       <Grid item md={12} sm={12} xs={12}>
@@ -144,7 +151,7 @@ export const EnrollmentPacketDocument: React.FC<EnrollmentPacketDocumentProps> =
                                     }}
                                   >
                                     <a
-                                      href={obj.url}
+                                      onClick={() => openNewWindow(obj.url, obj.name)}
                                       target='_blank'
                                       style={{ cursor: 'pointer', textDecoration: 'unset' }}
                                       rel='noreferrer'
