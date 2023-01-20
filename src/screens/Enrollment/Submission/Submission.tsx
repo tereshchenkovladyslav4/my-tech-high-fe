@@ -43,7 +43,7 @@ export const Submission: React.FC<SubmissionProps> = ({ id, questions }) => {
   const { me, setMe } = useContext(UserContext)
   const { profile, students } = me as UserInfo
 
-  const student = students.find((s) => s.student_id === id)
+  const student = students.find((s) => parseInt(s.student_id) === parseInt(id))
 
   const [validationSchema, setValidationSchema] = useState(
     yup.object({
@@ -242,10 +242,11 @@ export const Submission: React.FC<SubmissionProps> = ({ id, questions }) => {
 
   useEffect(() => {
     if (signature) {
-      const selectedRegion = me?.userRegion?.find((region) => region.region_id === me?.selectedRegionId)
-      uploadFile(signature, FileCategory.SIGNATURE, getRegionCode(selectedRegion?.regionDetail?.name)).then((res) => {
-        if (res.success && res.data?.file?.file_id) setFileId(res.data.file.file_id)
-      })
+      uploadFile(signature, FileCategory.SIGNATURE, getRegionCode(me?.userRegion?.at(-1)?.regionDetail?.name)).then(
+        (res) => {
+          if (res.success && res.data?.file?.file_id) setFileId(res.data.file.file_id)
+        },
+      )
     }
   }, [signature])
 

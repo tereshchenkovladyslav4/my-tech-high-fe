@@ -101,41 +101,37 @@ export const Filters: React.FC<FiltersProps> = ({
 
   const handleChangeGrades = (e: React.ChangeEvent<HTMLInputElement>) => {
     let newGrades = [...grades]
-    if (newGrades.includes(e.target.value)) {
-      newGrades = grades.filter((item) => item !== e.target.value).filter((item) => item !== 'all')
-    } else {
-      newGrades.push(e.target.value)
-    }
     // handle individual checkbox by group grade K, 1-8, 9-12
     if (GRADE_GROUPS.includes(e.target.value)) {
-      const groupsGrades: string[] = []
       const groupItems = {
         [GRADE_GROUPS[0]]: ['Kindergarten'],
         [GRADE_GROUPS[1]]: ['1', '2', '3', '4', '5', '6', '7', '8'],
         [GRADE_GROUPS[2]]: ['9', '10', '11', '12'],
       }
-      let selectedGroupCount = 0
-      GRADE_GROUPS.forEach((el) => {
-        if (newGrades.includes(el)) {
-          selectedGroupCount++
-          groupsGrades.push(...groupItems[el], el)
+
+      const addedGroupItems = groupItems[e.target.value]
+      addedGroupItems.map((item) => {
+        if (e.target.checked) {
+          if (!newGrades.includes(item)) {
+            newGrades.push(item)
+          }
+        } else {
+          newGrades = newGrades.filter((i) => i !== item)
         }
       })
-      if (selectedGroupCount < GRADE_GROUPS.length) newGrades = [...groupsGrades]
-      else newGrades = [...GRADE_GROUPS]
     } else {
-      // All select/deselect by individual checkbox
-      if (newGrades.filter((el) => ![...GRADE_GROUPS, 'all'].includes(el)).length === gradesList.length)
-        newGrades.push('all')
-      else newGrades = newGrades.filter((el) => el !== 'el')
+      if (!e.target.checked) {
+        newGrades = grades.filter((item) => item !== e.target.value).filter((item) => item !== 'all')
+      } else {
+        newGrades.push(e.target.value)
+      }
     }
-
-    setGrades([...new Set(newGrades)])
+    setGrades(newGrades)
   }
 
   const handleChangeAll = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.checked) {
-      setGrades([...['all'], ...GRADES.map((item) => item.toString())])
+      setGrades(GRADES.map((item) => item.toString()))
     } else {
       setGrades([])
     }
@@ -171,7 +167,7 @@ export const Filters: React.FC<FiltersProps> = ({
       if (e.target.checked) {
         setSchoolDistrict([
           'all',
-          ...schoolDistrictsData?.schoolDistrict?.map((item: SchoolDistrictType) => item.id.toString()),
+          ...schoolDistrictsData?.schoolDistrict?.map((item: SchoolDistrictType) => item.school_district_name),
         ])
       } else {
         setSchoolDistrict([])
@@ -236,7 +232,7 @@ export const Filters: React.FC<FiltersProps> = ({
           control={<Checkbox checked={grades.includes(grade)} value={grade} onChange={handleChangeGrades} />}
           label={
             <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
-              {grade === 'Kindergarten' ? grade : `${toOrdinalSuffix(parseInt(grade))} Grade`}
+              {grade === 'Kindergarten' ? grade : `${toOrdinalSuffix(parseInt(grade))}`}
             </Paragraph>
           }
         />
@@ -245,6 +241,37 @@ export const Filters: React.FC<FiltersProps> = ({
 
   const columnWidth = () => {
     return gradesList?.length === GRADES.length ? 3 : 4
+  }
+
+  const isCheckedGradeGroup = (grade: string) => {
+    let status = true
+    switch (grade) {
+      case 'K':
+        return grades.includes('Kindergarten')
+      case '1-8':
+        ;['1', '2', '3', '4', '5', '6', '7', '8'].map((item) => {
+          if (!grades.includes(item)) {
+            status = false
+          }
+        })
+        return status
+      case '9-12':
+        ;['9', '10', '11', '12'].map((item) => {
+          if (!grades.includes(item)) {
+            status = false
+          }
+        })
+        return status
+      case 'all':
+        ;['Kindergarten', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'].map((item) => {
+          if (!grades.includes(item)) {
+            status = false
+          }
+        })
+        return status
+      default:
+        return status
+    }
   }
 
   const Filters = () => (
@@ -262,7 +289,7 @@ export const Filters: React.FC<FiltersProps> = ({
             </Paragraph>
             <FormControlLabel
               sx={{ height: 30 }}
-              control={<Checkbox value='all' checked={grades.includes('all')} onChange={handleChangeAll} />}
+              control={<Checkbox value='all' checked={isCheckedGradeGroup('all')} onChange={handleChangeAll} />}
               label={
                 <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
                   Select All
@@ -288,7 +315,9 @@ export const Filters: React.FC<FiltersProps> = ({
                 <FormControlLabel
                   key={grade}
                   sx={{ height: 30 }}
-                  control={<Checkbox value={grade} checked={grades.includes(grade)} onChange={handleChangeGrades} />}
+                  control={
+                    <Checkbox value={grade} checked={isCheckedGradeGroup(grade)} onChange={handleChangeGrades} />
+                  }
                   label={
                     <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
                       {grade === 'K' ? 'Kindergarten' : grade}

@@ -22,7 +22,7 @@ export const Personal: React.FC<PersonalProps> = ({ id, questions }) => {
   const { setPacketId, disabled } = useContext(EnrollmentContext)
   const { profile, students } = me as UserInfo
 
-  const student = students.find((s) => s.student_id === id)
+  const student = students.find((s) => parseInt(s.student_id) === parseInt(id))
 
   const [metaData, setMetaData] = useState(
     (student.packets.at(-1)?.meta && JSON.parse(student.packets.at(-1)?.meta)) || {},

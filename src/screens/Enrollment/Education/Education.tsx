@@ -22,7 +22,7 @@ export const Education: React.FC<EducationProps> = ({ id, questions }) => {
   const { setPacketId, disabled } = useContext(EnrollmentContext)
   const { profile, students } = me as UserInfo
 
-  const student = students.find((s) => s.student_id === id)
+  const student = students.find((s) => parseInt(s.student_id) === parseInt(id))
   const [validationSchema, setValidationSchema] = useState(yup.object({}))
   const [submitEducationMutation] = useMutation(enrollmentContactMutation)
 

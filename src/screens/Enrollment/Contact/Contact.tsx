@@ -19,13 +19,13 @@ export const Contact: React.FC<ContactProps> = ({ id, questions }) => {
   const { tab, setTab, setVisitedTabs } = useContext(TabContext)
   const { setPacketId, disabled } = useContext(EnrollmentContext)
   const { profile, students } = me as UserInfo
-  const student = students.find((s) => s.student_id === id)
+  const student = students.find((s) => parseInt(s.student_id) === parseInt(id))
 
   const classes = useStyles
 
   const [validationSchema, setValidationSchema] = useState(null)
   const [metaData, setMetaData] = useState(
-    (student.packets.at(-1)?.meta && JSON.parse(student.packets.at(-1)?.meta)) || {},
+    (student?.packets.at(-1)?.meta && JSON.parse(student?.packets.at(-1)?.meta)) || {},
   )
 
   useEffect(() => {

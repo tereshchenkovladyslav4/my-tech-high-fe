@@ -53,19 +53,21 @@ export const SchoolOfEnrollment: React.FC = () => {
   })
 
   useEffect(() => {
-    const list: OptionType[] = []
+    const list: OptionType[] = [
+      {
+        value: 'unassigned',
+        label: 'Unassigned',
+      },
+    ]
     schoolPartnerData?.getSchoolsOfEnrollmentByRegion
       ?.filter((el: PartnerEnrollmentType) => el.active === 1)
+      .sort((a, b) => (a.abbreviation.toLowerCase() > b.abbreviation.toLowerCase() ? 1 : -1))
       .map((item: PartnerEnrollmentType) => {
         list.push({
           value: item.school_partner_id,
           label: item.abbreviation,
         })
       })
-    list.push({
-      value: 'unassigned',
-      label: 'Unassigned',
-    })
     setPartnerList(list)
   }, [schoolPartnerData])
 
@@ -73,6 +75,7 @@ export const SchoolOfEnrollment: React.FC = () => {
     const list: SchoolPartner[] = []
     previousSchoolPartnerData?.getSchoolsOfEnrollmentByRegion
       ?.filter((el: PartnerEnrollmentType) => el.active === 1)
+      .sort((a, b) => (a.abbreviation.toLowerCase() > b.abbreviation.toLowerCase() ? 1 : -1))
       .map((item: PartnerEnrollmentType) => {
         list.push({
           value: item.school_partner_id,
