@@ -2,7 +2,7 @@ import React, { FunctionComponent, useCallback, useContext, useEffect, useRef, u
 import { useMutation, useQuery } from '@apollo/client'
 import { Alert, AlertColor, Button, Checkbox } from '@mui/material'
 import { Box } from '@mui/system'
-import { ContentState, convertToRaw, EditorState } from 'draft-js'
+import { ContentBlock, ContentState, convertToRaw, EditorBlock, EditorState } from 'draft-js'
 import draftToHtml from 'draftjs-to-html'
 import { useFormik } from 'formik'
 import htmlToDraft from 'html-to-draftjs'
@@ -56,6 +56,125 @@ const Settings: FunctionComponent = () => {
   const editorRef = useRef<unknown>(null)
   const [editorState, setEditorState] = useState(EditorState.createWithContent(ContentState.createFromText('')))
 
+  const orderedList = 0
+  const unorderedList = 1
+  const baseBullets = [
+    [1, 'a'],
+    ['•', '▫', '▪'],
+  ]
+  const leavingLevel = 0
+  const initiatingLevel = 1
+  const crossingLevel = 2
+  let curListLvl = 0
+  let listEntriesLastIdx = []
+  const GetSisterBullet = (idx: number | string, type: number, whichSister: number) => {
+    if (type === orderedList) {
+      if (Number.isInteger(idx)) return Number(idx) + whichSister
+      else return String.fromCharCode((idx as string)?.charCodeAt(0) + whichSister) // Let's assume, for now, that we won't have more than 26 sublevels...
+    }
+    return idx
+  }
+
+  const GetLevelBaseBullet = (depth: number, type: number, action: number) => {
+    const curLevelBaseIdx = baseBullets[type][depth % baseBullets[type].length]
+    return action === leavingLevel ? GetSisterBullet(curLevelBaseIdx, type, -1) : curLevelBaseIdx
+  }
+
+  const SetLevelNextEntryBullet = (type: number, depth: number, action = crossingLevel) => {
+    switch (action) {
+      case crossingLevel:
+        listEntriesLastIdx[type][depth] = GetSisterBullet(listEntriesLastIdx[type][depth], type, 1)
+        break
+      case leavingLevel:
+        listEntriesLastIdx[type].splice(depth, 1)
+        if (depth > 0 && !listEntriesLastIdx[type][depth - 1])
+          listEntriesLastIdx[type][depth - 1] = GetLevelBaseBullet(depth - 1, type, initiatingLevel)
+        break
+      default:
+        listEntriesLastIdx[type][depth] = GetLevelBaseBullet(depth, type, action)
+        break
+    }
+  }
+
+  const handleBlockRender = (block: ContentBlock) => {
+    let blockType = -1
+    switch (block.getType()) {
+      case 'ordered-list-item':
+        blockType = orderedList
+        break
+      case 'unordered-list-item':
+        blockType = unorderedList
+        break
+      default:
+        break
+    }
+    if (blockType >= 0) {
+      if (block.getDepth() == curListLvl) SetLevelNextEntryBullet(blockType, curListLvl)
+      else {
+        if (!listEntriesLastIdx[blockType]) listEntriesLastIdx[blockType] = []
+        if (block.getDepth() < curListLvl) {
+          SetLevelNextEntryBullet(blockType, curListLvl, leavingLevel)
+        } else {
+          SetLevelNextEntryBullet(
+            blockType,
+            block.getDepth(),
+            listEntriesLastIdx[blockType][block.getDepth()] ? undefined : initiatingLevel,
+          )
+        }
+        curListLvl = block.getDepth()
+      }
+      const levelIndexToDisplay = listEntriesLastIdx[blockType][curListLvl] ?? [[]]
+      const HTMLStyles = EditorStylesToHTMLStyles(block.getInlineStyleAt(0))
+      return {
+        component: (props: Wysiwyg.EditorState) => (
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <Box>
+              <span className='bullet' style={HTMLStyles}>{`${levelIndexToDisplay}${
+                blockType === orderedList ? '. ' : ' '
+              }`}</span>
+            </Box>
+            <EditorBlock {...props} />
+          </Box>
+        ),
+      }
+    } else {
+      listEntriesLastIdx = []
+      curListLvl = -1
+    }
+  }
+
+  const EditorStylesToHTMLStyles = (editorStyles) => {
+    return editorStyles
+      .map((editorStyle) => GetHTMLStyles(editorStyle))
+      .toArray()
+      .reduce((acc, styles) => {
+        return { ...acc, ...styles }
+      }, {})
+  }
+
+  const GetHTMLStyles = (editorStyle) => {
+    let matches = null
+    if ((matches = editorStyle.match(/fontsize-(.*)/))) return { fontSize: matches[1] + 'px' }
+    else if ((matches = editorStyle.match(/color-(.*)/))) return { color: matches[1] }
+    else if ((matches = editorStyle.match(/fontfamily-(.*)/))) return { fontFamily: matches[1] }
+    else
+      switch (editorStyle) {
+        case 'BOLD':
+          return { fontWeight: 'bold' }
+        case 'ITALIC':
+          return { fontStyle: 'italic' }
+        case 'SUPERSCRIPT':
+          return { fontSize: '.7rem', position: 'relative', top: '-.5rem' }
+        case 'SUBSCRIPT':
+          return { fontSize: '.7rem', position: 'relative', bottom: '-.5rem' }
+        case 'UNDERLINE':
+          return { textDecoration: 'underline' }
+        case 'STRIKETHROUGH':
+          return { textDecoration: 'line-through' }
+        default:
+          return {}
+      }
+  }
   const handleBodyChange = (e: Wysiwyg.EditorState) => {
     setEditorTouched(true)
     setChanged(true)
@@ -294,6 +413,7 @@ const Settings: FunctionComponent = () => {
               onEditorStateChange={(e) => {
                 handleBodyChange(e)
               }}
+              customBlockRenderFunc={handleBlockRender}
               toolbar={{
                 options: [
                   'inline',

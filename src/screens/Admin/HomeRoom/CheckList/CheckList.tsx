@@ -248,11 +248,8 @@ const CheckList: React.FC = () => {
       setTotalChecklist(total)
       if (!selectedCheckListItem) {
         if (results.length > 0) {
-          const checklistKeys = Object.keys(results[0])
           setSelectedCheckListItem(
-            checklistKeys.includes('grade') && checklistKeys.includes('subject')
-              ? 'subject_checklist'
-              : 'independent_checklist',
+            results[0].status.includes('Subject Checklist') ? 'subject_checklist' : 'independent_checklist',
           )
         } else {
           setSelectedCheckListItem('independent_checklist')

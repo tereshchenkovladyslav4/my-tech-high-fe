@@ -85,6 +85,7 @@ export const useStudentSchedulePeriods = (
   school_year_id: number | undefined,
   diplomaSeekingPath: DiplomaSeekingPath | null = null,
   showSecondSemester = false,
+  isGradeFilter = false,
 ): {
   scheduleData: ScheduleData[]
   hasSecondSemester: boolean
@@ -116,7 +117,12 @@ export const useStudentSchedulePeriods = (
   })
 
   const { loading, data: periodsData } = useQuery(getStudentPeriodsQuery, {
-    variables: { studentId: student_id, schoolYearId: school_year_id, diplomaSeekingPath: diplomaSeekingPath },
+    variables: {
+      studentId: student_id,
+      schoolYearId: school_year_id,
+      diplomaSeekingPath: diplomaSeekingPath,
+      isGradeFilter,
+    },
     skip: !student_id || !school_year_id,
     fetchPolicy: 'network-only',
   })

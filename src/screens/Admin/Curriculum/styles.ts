@@ -37,6 +37,14 @@ export const useStyles = {
     background: '#fff',
     minHeight: '100%',
     borderRadius: '4px',
+    '& ul': {
+      listStyle: 'none !important',
+      marginLeft: '0 !important',
+    },
+    '& li': {
+      listStyle: 'none !important',
+      marginLeft: '0 !important',
+    },
   },
   form: {
     '& .MuiInputBase-root': {

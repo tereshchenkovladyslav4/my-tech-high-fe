@@ -16,6 +16,7 @@ export const useStudentSchedulePeriodHistories = (
   school_year_id: number | undefined,
   isSecondSemester: boolean,
   diplomaSeekingPath: DiplomaSeekingPath | null = null,
+  isGradeFilter = true,
 ): {
   scheduleDataHistory: ScheduleHistoryData[]
   setScheduleDataHistory: (value: ScheduleHistoryData[]) => void
@@ -31,7 +32,12 @@ export const useStudentSchedulePeriodHistories = (
   })
 
   const { loading, data: periodsData } = useQuery(getStudentPeriodsQuery, {
-    variables: { studentId: student_id, schoolYearId: school_year_id, diplomaSeekingPath: diplomaSeekingPath },
+    variables: {
+      studentId: student_id,
+      schoolYearId: school_year_id,
+      diplomaSeekingPath: diplomaSeekingPath,
+      isGradeFilter,
+    },
     skip: !student_id || !school_year_id,
     fetchPolicy: 'network-only',
   })

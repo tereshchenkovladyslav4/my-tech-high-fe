@@ -232,6 +232,7 @@ export const ScheduleTable: React.FC<FiltersProps> = ({ filter, setFilter }) => 
             from: from,
             subject: subject,
             body: body,
+            region_id: me?.selectedRegionId,
           },
         },
       })

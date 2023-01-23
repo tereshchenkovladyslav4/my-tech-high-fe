@@ -96,9 +96,14 @@ export const useStyles = {
     justifyContent: 'center',
     height: '100%',
   },
+  borderErrorColor: {
+    [`& .${outlinedInputClasses.notchedOutline}`]: {
+      borderColor: `${MthColor.RED} !important`,
+    },
+  },
   textFieldError: {
     [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
-      borderColor: '#BD0043',
+      borderColor: MthColor.RED,
     },
     marginY: 2,
     width: '100%',
@@ -179,7 +184,7 @@ export const useStyles = {
     marginBottom: '50px',
   },
   redBorder: {
-    border: '1px solid rgb(189, 0, 67)',
+    border: '1px solid #D23C33',
     borderRadius: '4px',
     marginBottom: '24px',
   },

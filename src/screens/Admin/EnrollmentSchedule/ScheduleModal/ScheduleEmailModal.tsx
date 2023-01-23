@@ -130,9 +130,11 @@ export const EmailModal: EmailModalTemplateType = ({
               size='small'
               fullWidth
               placeholder='From: email in template'
-              sx={classes.from}
+              sx={
+                (classes.subject,
+                formik.touched.emailFrom && formik.errors.subject ? classes.borderErrorColor : classes.subject)
+              }
               onChange={formik.handleChange}
-              error={formik.touched.emailFrom && formik.errors.emailFrom ? true : false}
               autoFocus
             />
             <OutlinedInput
@@ -142,9 +144,11 @@ export const EmailModal: EmailModalTemplateType = ({
               size='small'
               fullWidth
               placeholder='Subject'
-              sx={classes.subject}
+              sx={
+                (classes.subject,
+                formik.touched.subject && formik.errors.subject ? classes.borderErrorColor : classes.subject)
+              }
               onChange={formik.handleChange}
-              error={formik.touched.subject && formik.errors.subject ? true : false}
             />
 
             <Box

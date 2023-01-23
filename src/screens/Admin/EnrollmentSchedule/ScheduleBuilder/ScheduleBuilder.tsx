@@ -48,6 +48,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
   const [showUnsavedModal, setShowUnsavedModal] = useState<boolean>(false)
   const [showReset, setShowReset] = useState(false)
   const [diplomaSeekingPath, setDiplomaSeekingPath] = useState<DiplomaSeekingPath>(DiplomaSeekingPath.BOTH)
+  const [isLockedKey, setIsLockedKey] = useState(true)
 
   const { studentInfo: studentInfoData } = useStudentInfo(+studentId)
 
@@ -71,7 +72,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
     firstSemesterScheduleId,
     hasUnlockedPeriods,
     refetch,
-  } = useStudentSchedulePeriods(studentId, selectedYearId, diplomaSeekingPath)
+  } = useStudentSchedulePeriods(studentId, selectedYearId, diplomaSeekingPath, false, isLockedKey)
 
   const [submitScheduleBuilder] = useMutation(saveScheduleMutation)
   const [saveDraft] = useMutation(saveSchedulePeriodMutation)
@@ -105,6 +106,12 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
               status === ScheduleStatus.ACCEPTED
                 ? false
                 : hasSecondSemester,
+            is_sending_email:
+              status === ScheduleStatus.ACCEPTED
+                ? scheduleStatus?.value === studentScheduleStatus
+                  ? true
+                  : false
+                : false,
           },
         },
       })
@@ -215,12 +222,6 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
     if (isChanged) {
       setIsChanged(false)
       handleSave(scheduleStatus?.value as ScheduleStatus, false, true)
-    } else {
-      setIsChanged(true)
-      setTimeout(() => {
-        history.push(MthRoute.ENROLLMENT_SCHEDULE.toString())
-        setIsChanged(false)
-      }, 300)
     }
   }
 
@@ -479,6 +480,11 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
             setScheduleData={setScheduleData}
             handlePeriodUpdateEmail={handlePeriodUpdateEmail}
             handlePeriodUpdateRequired={handlePeriodUpdateRequired}
+            isLockedKey={isLockedKey}
+            setIsLockedKey={(value: boolean) => {
+              setIsLockedKey(value)
+              refetch()
+            }}
           />
         )}
 
