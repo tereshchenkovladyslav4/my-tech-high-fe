@@ -11,7 +11,7 @@ export type ReimbursementQuestion = {
   SchoolYearId: number
   slug: string
   default_question: boolean
-  reimbursement_form_type: ReimbursementFormType
+  reimbursement_form_type: ReimbursementFormType | undefined
   is_direct_order: boolean
   reimbursement_question_id?: number
   sortable: boolean
@@ -21,4 +21,5 @@ export type ReimbursementQuestion = {
   // Temp Items
   Options?: DropDownItem[]
   SettingList?: string[]
+  answer?: string
 }

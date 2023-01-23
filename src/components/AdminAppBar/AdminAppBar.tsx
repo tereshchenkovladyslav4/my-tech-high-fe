@@ -337,7 +337,7 @@ export const AdminAppBar: React.FC = () => {
             <Box
               width={
                 windowDimensions.width > 639
-                  ? 'calc(58vw - 200px)'
+                  ? 'calc(58vw - 180px)'
                   : windowDimensions.width > 565
                   ? 'calc(58vw - 150px)'
                   : windowDimensions.width > 505

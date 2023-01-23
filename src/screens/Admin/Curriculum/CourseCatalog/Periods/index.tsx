@@ -781,7 +781,7 @@ const Periods: FunctionComponent = () => {
                         onChange={formik.handleChange}
                       />
                     }
-                    label='Display a notification when this period is selected'
+                    label='Display a notification when this Period is selected'
                   />
                   {formik.values.notify_period && (
                     <>

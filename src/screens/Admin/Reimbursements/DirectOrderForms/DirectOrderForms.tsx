@@ -79,7 +79,7 @@ export const DirectOrderForms: React.FC = () => {
 
   return (
     <Layout>
-      {!formType && (
+      {!formType ? (
         <>
           <Box sx={{ mb: 4 }}>
             <PageHeader title='Direct Order Forms' to={MthRoute.REIMBURSEMENTS}>
@@ -88,8 +88,7 @@ export const DirectOrderForms: React.FC = () => {
           </Box>
           <CardGrid items={cardItems}></CardGrid>
         </>
-      )}
-      {!!formType && (
+      ) : (
         <RequestComponent
           selectedYear={schoolYear}
           formType={formType}

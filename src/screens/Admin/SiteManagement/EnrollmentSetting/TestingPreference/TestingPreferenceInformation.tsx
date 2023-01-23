@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import ModeEditIcon from '@mui/icons-material/ModeEdit'
 import { Box, IconButton, Tooltip, Typography } from '@mui/material'
 import { MthColor } from '@mth/enums'
-import { extractContent } from '@mth/utils'
 import CustomizableDetailModal from './CustomizableDetailModal'
 import { TestingPreferenceInformationProps } from './types'
 
@@ -27,7 +26,7 @@ const TestingPreferenceInformation: React.FC<TestingPreferenceInformationProps> 
         }}
       >
         <Typography fontSize='12px' fontWeight={500} component='span'>
-          {extractContent(information.description)}
+          <p dangerouslySetInnerHTML={{ __html: information.description }} />
         </Typography>
         {editable && (
           <Tooltip title='Edit' placement='top'>

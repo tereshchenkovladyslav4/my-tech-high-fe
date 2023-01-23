@@ -6,7 +6,7 @@ import * as yup from 'yup'
 import { ReimbursementFormType } from '@mth/enums'
 import { saveReimbursementQuestionsMutation } from '@mth/graphql/mutation/reimbursement-question'
 import { useReimbursementQuestions } from '@mth/hooks'
-import { ReimbursementQuestion } from '@mth/models'
+import { ReimbursementQuestion, SchoolYear } from '@mth/models'
 import {
   DEFAULT_CUSTOM_BUILT_QUESTIONS,
   DEFAULT_IS_DIRECT_ORDER_CUSTOM_BUILT_QUESTIONS,
@@ -20,9 +20,10 @@ import {
 import { RequestFormEdit } from './RequestFormEdit'
 
 export type RequestFormProps = {
-  formType: ReimbursementFormType
+  formType: ReimbursementFormType | undefined
   isDirectOrder?: boolean
   selectedYearId: number | undefined
+  selectedYear: SchoolYear | undefined
   setFormType: (value: ReimbursementFormType | undefined) => void
   setIsChanged: (value: boolean) => void
 }
@@ -32,6 +33,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
   setFormType,
   isDirectOrder,
   selectedYearId,
+  selectedYear,
   setIsChanged,
 }) => {
   const [initialValues, setInitialValues] = useState<ReimbursementQuestion[]>(
@@ -48,7 +50,9 @@ export const RequestForm: React.FC<RequestFormProps> = ({
 
   const validationSchema = yup.object({})
 
-  const onSave = async (values: ReimbursementQuestion[]) => {
+  const onSaveRequests = () => {}
+
+  const onSaveQuestions = async (values: ReimbursementQuestion[]) => {
     values.map((value, index) => {
       value.priority = index + 1
     })
@@ -118,15 +122,17 @@ export const RequestForm: React.FC<RequestFormProps> = ({
           initialValues={initialValues}
           enableReinitialize={true}
           validationSchema={validationSchema}
-          onSubmit={onSave}
+          onSubmit={onSaveRequests}
         >
           <Form>
             <RequestFormEdit
               formType={formType}
+              selectedYear={selectedYear}
               setFormType={setFormType}
               isDirectOrder={isDirectOrder}
               selectedYearId={selectedYearId}
               setIsChanged={setIsChanged}
+              handleSaveQuestions={onSaveQuestions}
             />
           </Form>
         </Formik>

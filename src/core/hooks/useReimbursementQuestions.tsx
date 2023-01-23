@@ -6,7 +6,7 @@ import { ReimbursementFormType } from '../enums/reimbursement-form-type'
 
 export const useReimbursementQuestions = (
   schoolYearId: number | undefined,
-  formType: ReimbursementFormType,
+  formType: ReimbursementFormType | undefined,
   isDirectOrder: boolean | undefined,
 ): {
   loading: boolean

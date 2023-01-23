@@ -48,7 +48,7 @@ export const Student: React.FC<StudentProps> = ({
   const [updateStudent] = useMutation(UpdateStudentMutation)
 
   const getProfilePhoto = (person: Person) => {
-    if (!person.photo) return undefined
+    if (!person.photo) return 'image'
 
     const s3URL = 'https://infocenter-v2-dev.s3.us-west-2.amazonaws.com/'
     return s3URL + person.photo
@@ -319,6 +319,7 @@ export const Student: React.FC<StudentProps> = ({
                 width: 150,
                 borderRadius: 6,
                 cursor: 'pointer',
+                fontSize: '4.0rem',
               }}
               alt={student.person.first_name}
               variant='rounded'

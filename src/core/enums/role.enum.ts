@@ -7,6 +7,7 @@ export enum RoleLevel {
   TEACHER_ASSISTANT = 3,
   SCHOOL_PARTNER = 12,
   STUDENT = 13,
+  OBSERVER = 14,
   PARENT = 15,
   TEACHER = 16,
 }

@@ -11,7 +11,7 @@ import { questionEditClasses } from './styles'
 export type QuestionEditModalProps = {
   defaultQuestion: REIMBURSEMENT_DEFAULT_QUESTION
   questions?: ReimbursementQuestion[]
-  formType: ReimbursementFormType
+  formType: ReimbursementFormType | undefined
   isDirectOrder?: boolean
   selectedYearId: number | undefined
   onClose: () => void

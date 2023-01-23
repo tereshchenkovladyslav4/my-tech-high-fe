@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
+import { useLazyQuery } from '@apollo/client'
 import { Theme } from '@emotion/react'
 import { withStyles } from '@material-ui/styles'
 import DehazeIcon from '@mui/icons-material/Dehaze'
@@ -16,13 +17,32 @@ import { RadioGroupOption } from '@mth/components/MthRadioGroup/types'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { REIMBURSEMENT_FORM_TYPE_ITEMS } from '@mth/constants'
-import { QUESTION_TYPE } from '@mth/enums'
-import { AdditionalQuestionAction, MthColor } from '@mth/enums'
-import { ReimbursementQuestion } from '@mth/models'
+import {
+  QUESTION_TYPE,
+  RoleLevel,
+  AdditionalQuestionAction,
+  MthColor,
+  ReimbursementFormType,
+  ScheduleStatus,
+  CourseType,
+  ReduceFunds,
+} from '@mth/enums'
+import { SchedulePeriod } from '@mth/graphql/models/schedule-period'
+import { getStudentSchedulePeriodsQuery } from '@mth/graphql/queries/schedule-period'
+import { ReimbursementQuestion, SchoolYear } from '@mth/models'
+import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { extractContent } from '@mth/utils'
 
 type QuestionProps = {
   question: ReimbursementQuestion
+  setQuestion: (value: ReimbursementQuestion) => void
+  selectedYearId: number | undefined
+  selectedYear: SchoolYear | undefined
+  isDirectOrder: boolean | undefined
+  selectedStudentId: number
+  selectedFormType: ReimbursementFormType | undefined
+  setSelectedStudentId: (value: number) => void
+  setSelectedFormType: (value: ReimbursementFormType | undefined) => void
   setIsChanged: (value: boolean) => void
 }
 
@@ -57,46 +77,118 @@ const CssTextField = withStyles({
   },
 })(TextField)
 
-export const QuestionItem: React.FC<QuestionProps> = ({ question }) => {
+export const QuestionItem: React.FC<QuestionProps> = ({
+  question,
+  selectedStudentId,
+  selectedYear,
+  selectedYearId,
+  selectedFormType,
+  isDirectOrder,
+  setSelectedStudentId,
+  setSelectedFormType,
+  setQuestion,
+}) => {
+  const { me } = useContext(UserContext)
+  const roleLevel = me?.role?.level
+  const students = me?.students
   const [signatureRef, setSignatureRef] = useState<SignatureCanvas | null>(null)
+  const [formTypeItems, setFormTypeItems] = useState<DropDownItem[]>([])
+
+  const [getStudentSchedulePeriods, { loading: studentSchedulePeriodsLoading, data: studentSchedulePeriodsData }] =
+    useLazyQuery(getStudentSchedulePeriodsQuery, {
+      fetchPolicy: 'network-only',
+    })
 
   const resetSignature = () => {
     signatureRef?.clear()
   }
 
+  const getDisableStatus = (question: ReimbursementQuestion): boolean => {
+    switch (question.slug) {
+      case 'reimbursement_form_type':
+        if (roleLevel === RoleLevel.SUPER_ADMIN || selectedStudentId) return false
+        else return true
+      default:
+        return false
+    }
+  }
+
+  const renderDropDownItems = (question: ReimbursementQuestion): DropDownItem[] => {
+    switch (question.slug) {
+      case 'reimbursement_student_id':
+        if (roleLevel === RoleLevel.PARENT && students?.length && students?.length > 0) {
+          return students?.map((student) => ({
+            label: `${student?.person?.first_name} - 100%, 0 missing`,
+            value: +student?.student_id,
+          })) as DropDownItem[]
+        } else {
+          return []
+        }
+      case 'reimbursement_form_type':
+        if (roleLevel === RoleLevel.PARENT && students?.length && students?.length > 0) {
+          return formTypeItems
+        } else {
+          return REIMBURSEMENT_FORM_TYPE_ITEMS
+        }
+      default:
+        return question.Options?.filter((option) => option.value) as DropDownItem[]
+    }
+  }
+
+  const handleChangeValue = (question: ReimbursementQuestion, value: string | number) => {
+    if (question.slug === 'reimbursement_student_id') setSelectedStudentId(+value)
+    if (question.slug === 'reimbursement_form_type') setSelectedFormType(value as ReimbursementFormType)
+    setQuestion({ ...question, answer: `${value}` })
+  }
+
+  const getDefaultValue = (question: ReimbursementQuestion) => {
+    switch (question.slug) {
+      case 'reimbursement_student_id':
+        return selectedStudentId ? selectedStudentId : question.answer
+      case 'reimbursement_form_type':
+        return selectedFormType && roleLevel === RoleLevel.PARENT
+          ? selectedFormType
+          : roleLevel === RoleLevel.SUPER_ADMIN
+          ? question.reimbursement_form_type
+          : question.answer
+      default:
+        return question.answer
+    }
+  }
+
   const renderQuestion = (question: ReimbursementQuestion) => {
+    if (
+      roleLevel !== RoleLevel.SUPER_ADMIN &&
+      question.slug != 'reimbursement_student_id' &&
+      question.slug != 'reimbursement_form_type' &&
+      !selectedFormType
+    ) {
+      return (
+        <Box sx={{ display: 'none' }}>
+          <DragHandle />
+        </Box>
+      )
+    }
+
     switch (question.type) {
       case QUESTION_TYPE.DROPDOWN: {
-        return question.sortable ? (
+        return (
           <Grid item xs={12}>
             <Box sx={{ position: 'relative' }}>
               <DropDown
-                dropDownItems={
-                  question.slug == 'reimbursement_form_type'
-                    ? REIMBURSEMENT_FORM_TYPE_ITEMS
-                    : (question.Options?.filter((option) => option.value) as DropDownItem[])
-                }
+                dropDownItems={renderDropDownItems(question)}
                 placeholder={extractContent(question.question)}
                 labelTop
-                defaultValue={question.slug == 'reimbursement_form_type' ? question.reimbursement_form_type : ''}
-                setParentValue={() => {}}
+                defaultValue={getDefaultValue(question)}
+                setParentValue={(value) => handleChangeValue(question, value)}
                 size='medium'
+                disabled={getDisableStatus(question)}
                 sx={{ m: 0 }}
               />
-              <DragHandle sx={{ right: '-90px', top: '0px' }} />
+              {roleLevel === RoleLevel.SUPER_ADMIN && question.sortable && (
+                <DragHandle sx={{ right: '-90px', top: '0px' }} />
+              )}
             </Box>
-          </Grid>
-        ) : (
-          <Grid item xs={12}>
-            <DropDown
-              dropDownItems={question.slug == 'reimbursement_form_type' ? REIMBURSEMENT_FORM_TYPE_ITEMS : []}
-              placeholder={extractContent(question.question)}
-              labelTop
-              defaultValue={question.slug == 'reimbursement_form_type' ? question.reimbursement_form_type : ''}
-              setParentValue={() => {}}
-              size='medium'
-              sx={{ m: 0 }}
-            />
           </Grid>
         )
       }
@@ -123,7 +215,7 @@ export const QuestionItem: React.FC<QuestionProps> = ({ question }) => {
                   sx={{ my: 1 }}
                   onChange={() => {}}
                 />
-                <DragHandle sx={{ marginLeft: '100px' }} />
+                {roleLevel === RoleLevel.SUPER_ADMIN && <DragHandle sx={{ marginLeft: '100px' }} />}
               </Box>
 
               <Paragraph size={'large'} sx={{ paddingY: 1, textAlign: 'center' }}>
@@ -156,7 +248,7 @@ export const QuestionItem: React.FC<QuestionProps> = ({ question }) => {
         )
       }
       case QUESTION_TYPE.TEXTBOX: {
-        return question.sortable ? (
+        return (
           <Grid item xs={12}>
             <Box sx={{ position: 'relative' }}>
               <CssTextField
@@ -169,48 +261,28 @@ export const QuestionItem: React.FC<QuestionProps> = ({ question }) => {
                 onChange={() => {}}
                 InputLabelProps={{ shrink: true }}
               />
-              <DragHandle />
+              {roleLevel === RoleLevel.SUPER_ADMIN && question.sortable && <DragHandle />}
             </Box>
-          </Grid>
-        ) : (
-          <Grid item xs={12}>
-            <CssTextField
-              name={extractContent(question.question)}
-              label={extractContent(question.question)}
-              placeholder='Entry'
-              fullWidth
-              focused
-              value={''}
-              onChange={() => {}}
-              InputLabelProps={{ shrink: true }}
-            />
           </Grid>
         )
       }
       case QUESTION_TYPE.TEXTFIELD: {
-        return question.sortable ? (
+        return (
           <Grid item xs={12}>
             <Box sx={{ position: 'relative' }}>
               <Subtitle fontWeight='600' sx={{ cursor: 'pointer', fontSize: '14px', paddingY: 1 }}>
                 {extractContent(question?.question)}
               </Subtitle>
               <MthBulletEditor value={''} setValue={() => {}} />
-              <DragHandle sx={{ right: '-90px', top: '0px' }} />
-            </Box>
-          </Grid>
-        ) : (
-          <Grid item xs={12}>
-            <Box sx={{ position: 'relative' }}>
-              <Subtitle fontWeight='600' sx={{ cursor: 'pointer', fontSize: '14px', paddingY: 1 }}>
-                {extractContent(question?.question)}
-              </Subtitle>
-              <MthBulletEditor value={''} setValue={() => {}} />
+              {roleLevel === RoleLevel.SUPER_ADMIN && question.sortable && (
+                <DragHandle sx={{ right: '-90px', top: '0px' }} />
+              )}
             </Box>
           </Grid>
         )
       }
       case QUESTION_TYPE.INFORMATION: {
-        return question.sortable ? (
+        return (
           <Grid item xs={12}>
             <Box sx={{ position: 'relative' }}>
               {question.slug === 'reimbursement_total_amount_requested' && (
@@ -228,19 +300,15 @@ export const QuestionItem: React.FC<QuestionProps> = ({ question }) => {
                   {extractContent(question.question)}
                 </Subtitle>
               )}
-              <DragHandle sx={{ right: '-90px', top: '-5px' }} />
+              {roleLevel === RoleLevel.SUPER_ADMIN && question.sortable && (
+                <DragHandle sx={{ right: '-90px', top: '-5px' }} />
+              )}
             </Box>
-          </Grid>
-        ) : (
-          <Grid item xs={12}>
-            <Subtitle fontWeight='700' color={MthColor.SYSTEM_02} sx={{ cursor: 'pointer', fontSize: '18px' }}>
-              {extractContent(question.question)}
-            </Subtitle>
           </Grid>
         )
       }
       case QUESTION_TYPE.MULTIPLECHOICES: {
-        return question.sortable ? (
+        return (
           <Grid item xs={12}>
             <Box sx={{ position: 'relative' }}>
               <Subtitle fontWeight='600' sx={{ cursor: 'pointer', fontSize: '14px', paddingY: 1 }}>
@@ -262,37 +330,15 @@ export const QuestionItem: React.FC<QuestionProps> = ({ question }) => {
                 }
                 handleChangeOption={() => {}}
               />
-              <DragHandle sx={{ right: '-90px', top: '0px' }} />
-            </Box>
-          </Grid>
-        ) : (
-          <Grid item xs={12}>
-            <Box sx={{ position: 'relative' }}>
-              <Subtitle fontWeight='600' sx={{ cursor: 'pointer', fontSize: '14px', paddingY: 1 }}>
-                {extractContent(question?.question)}
-              </Subtitle>
-              <MthRadioGroup
-                ariaLabel='reimbursement-questions'
-                options={
-                  question?.Options
-                    ? question?.Options?.filter((item) => item?.label)?.map(
-                        (option) =>
-                          ({
-                            label: option?.label,
-                            value: false,
-                            action: option.action || AdditionalQuestionAction.CONTINUE_TO_NEXT,
-                          } as RadioGroupOption),
-                      )
-                    : []
-                }
-                handleChangeOption={() => {}}
-              />
+              {roleLevel === RoleLevel.SUPER_ADMIN && question.sortable && (
+                <DragHandle sx={{ right: '-90px', top: '0px' }} />
+              )}
             </Box>
           </Grid>
         )
       }
       case QUESTION_TYPE.CHECKBOX: {
-        return question.sortable ? (
+        return (
           <Grid item xs={12}>
             <Box sx={{ position: 'relative' }}>
               <MthCheckboxList
@@ -313,44 +359,75 @@ export const QuestionItem: React.FC<QuestionProps> = ({ question }) => {
                 }
                 haveSelectAll={false}
               />
-              <DragHandle sx={{ right: '-90px', top: '0px' }} />
-            </Box>
-          </Grid>
-        ) : (
-          <Grid item xs={12}>
-            <Box sx={{ position: 'relative' }}>
-              <MthCheckboxList
-                title={extractContent(question?.question)}
-                values={[]}
-                setValues={() => {}}
-                checkboxLists={
-                  question?.Options
-                    ? question?.Options?.filter((item) => item?.label)?.map(
-                        (option) =>
-                          ({
-                            label: option?.label,
-                            value: option?.value,
-                            action: option.action || AdditionalQuestionAction.CONTINUE_TO_NEXT,
-                          } as CheckBoxListVM),
-                      )
-                    : []
-                }
-                haveSelectAll={false}
-              />
+              {roleLevel === RoleLevel.SUPER_ADMIN && question.sortable && (
+                <DragHandle sx={{ right: '-90px', top: '0px' }} />
+              )}
             </Box>
           </Grid>
         )
       }
       default:
         return (
-          <>
-            <Box sx={{ display: 'none' }}>
-              <DragHandle />
-            </Box>
-          </>
+          <Box sx={{ display: 'none' }}>
+            <DragHandle />
+          </Box>
         )
     }
   }
+
+  useEffect(() => {
+    if (selectedStudentId && selectedYearId) {
+      getStudentSchedulePeriods({
+        variables: {
+          schoolYearId: selectedYearId,
+          studentId: selectedStudentId,
+        },
+      })
+    }
+  }, [selectedStudentId, selectedYearId])
+
+  useEffect(() => {
+    if (!studentSchedulePeriodsLoading && studentSchedulePeriodsData?.schedulePeriods && selectedYear) {
+      const schedulePeriods: SchedulePeriod[] = studentSchedulePeriodsData?.schedulePeriods as SchedulePeriod[]
+      if (schedulePeriods?.length && schedulePeriods?.at(0)?.Schedule?.status === ScheduleStatus.ACCEPTED) {
+        const selectedCourseTypes: string[] = schedulePeriods
+          ?.filter((schedulePeriod) => schedulePeriod.course_type)
+          .map((schedulePeriod) => schedulePeriod.course_type)
+        const tempItems: DropDownItem[] = []
+        if (isDirectOrder) {
+          if (selectedCourseTypes?.includes(`${CourseType.CUSTOM_BUILT}`))
+            tempItems.push({ label: 'Custom-built', value: ReimbursementFormType.CUSTOM_BUILT.toString() })
+          if (selectedCourseTypes?.includes(`${CourseType.MTH_DIRECT}`)) {
+            if (selectedYear.direct_orders === ReduceFunds.TECHNOLOGY)
+              tempItems.push({ label: 'Technology Allowance', value: ReimbursementFormType.TECHNOLOGY.toString() })
+            else if (selectedYear.direct_orders === ReduceFunds.SUPPLEMENTAL)
+              tempItems.push({
+                label: 'Supplemental Learning Funds',
+                value: ReimbursementFormType.SUPPLEMENTAL.toString(),
+              })
+          }
+        } else {
+          if (selectedCourseTypes?.includes(`${CourseType.CUSTOM_BUILT}`))
+            tempItems.push({ label: 'Custom-built', value: ReimbursementFormType.CUSTOM_BUILT.toString() })
+          if (selectedCourseTypes?.includes(`${CourseType.MTH_DIRECT}`)) {
+            if (selectedYear.reimbursements === ReduceFunds.TECHNOLOGY)
+              tempItems.push({ label: 'Technology Allowance', value: ReimbursementFormType.TECHNOLOGY.toString() })
+            else if (selectedYear.reimbursements === ReduceFunds.SUPPLEMENTAL)
+              tempItems.push({
+                label: 'Supplemental Learning Funds',
+                value: ReimbursementFormType.SUPPLEMENTAL.toString(),
+              })
+          }
+          if (selectedCourseTypes?.includes(`${CourseType.THIRD_PARTY_PROVIDER}`))
+            tempItems.push({
+              label: '3rd Party Provider',
+              value: ReimbursementFormType.THIRD_PARTY_PROVIDER.toString(),
+            })
+        }
+        setFormTypeItems(tempItems)
+      }
+    }
+  }, [studentSchedulePeriodsLoading, studentSchedulePeriodsData, selectedYear, isDirectOrder])
 
   return <>{renderQuestion(question)}</>
 }

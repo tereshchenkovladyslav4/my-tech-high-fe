@@ -13,9 +13,10 @@ import { extractContent } from '@mth/utils'
 import InstructionsEditModal from './InstructionsEditModal'
 
 export type InstructionsEditProps = {
-  formType: ReimbursementFormType
+  formType: ReimbursementFormType | undefined
   isDirectOrder?: boolean
   selectedYear: SchoolYear | undefined
+  editable: boolean
   refetch: () => void
 }
 
@@ -23,6 +24,7 @@ export const InstructionsEdit: React.FC<InstructionsEditProps> = ({
   formType,
   isDirectOrder,
   selectedYear,
+  editable,
   refetch,
 }) => {
   const [expand, setExpand] = useState<boolean>(true)
@@ -167,19 +169,21 @@ export const InstructionsEdit: React.FC<InstructionsEditProps> = ({
           >
             Instructions
           </Subtitle>
-          <Tooltip title='Edit' placement='top'>
-            <IconButton
-              sx={{
-                position: 'relative',
-                marginTop: -0.7,
-                marginLeft: 3,
-                zIndex: 900,
-              }}
-              onClick={() => setShowEditModal(true)}
-            >
-              <ModeEditIcon sx={{ fontSize: '25px', fontWeight: 700, color: MthColor.GRAY }} />
-            </IconButton>
-          </Tooltip>
+          {editable && (
+            <Tooltip title='Edit' placement='top'>
+              <IconButton
+                sx={{
+                  position: 'relative',
+                  marginTop: -0.7,
+                  marginLeft: 3,
+                  zIndex: 900,
+                }}
+                onClick={() => setShowEditModal(true)}
+              >
+                <ModeEditIcon sx={{ fontSize: '25px', fontWeight: 700, color: MthColor.GRAY }} />
+              </IconButton>
+            </Tooltip>
+          )}
         </Box>
         {chevron()}
       </Box>

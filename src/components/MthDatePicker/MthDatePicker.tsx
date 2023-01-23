@@ -15,17 +15,33 @@ export const MthDatePicker: React.FC<MthDatePickerProps> = ({
   maxDate,
   handleChange,
 }) => {
+  // The x-date-picker works correctly only at midnight
+  const convert2MidNight = (val: Date | string) => {
+    const tempDate = typeof val === 'string' ? new Date(val) : val
+    return moment(tempDate)
+      .add(tempDate.getTimezoneOffset() + 60, 'minutes')
+      .toDate()
+  }
+
+  // Should store local date string
+  const convert2LocalDate = (val: Date) => {
+    return moment(val)
+      .subtract(val.getTimezoneOffset() - 60, 'minutes')
+      .utc()
+      .format(dateFormat)
+  }
+
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <Stack spacing={3} marginRight={8}>
         <MobileDatePicker
           label={label || 'Date'}
           inputFormat='MM/dd/yyyy'
-          value={date && moment(date).toDate()}
-          minDate={minDate && moment(minDate).toDate()}
-          maxDate={maxDate && moment(maxDate).toDate()}
+          value={date && convert2MidNight(date)}
+          minDate={minDate && convert2MidNight(minDate)}
+          maxDate={maxDate && convert2MidNight(maxDate)}
           onChange={(val) => {
-            handleChange(val ? moment(val).format(dateFormat) : null)
+            handleChange(val ? convert2LocalDate(val) : null)
           }}
           renderInput={(params) => <TextField {...params} />}
         />

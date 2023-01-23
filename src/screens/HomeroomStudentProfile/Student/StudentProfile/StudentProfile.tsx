@@ -180,13 +180,7 @@ export const StudentProfile: undefined | React.FC<StudentProfileProps> = ({ curr
             sx={{ height: { xs: 100, sm: 167 }, width: { xs: 100, sm: 167 }, borderRadius: 1 }}
           />
           <Box component='a' onClick={() => setWarningModalOpen(true)} sx={{ cursor: 'pointer', p: 1 }}>
-            <Paragraph
-              size='medium'
-              color='#7B61FF'
-              fontWeight='500'
-              textAlign='center'
-              sx={{ display: { xs: isEditingMobile ? 'block' : 'none', sm: 'block' } }}
-            >
+            <Paragraph size='medium' color='#7B61FF' fontWeight='500' textAlign='center'>
               Remove Profile Picture
             </Paragraph>
           </Box>
@@ -202,6 +196,7 @@ export const StudentProfile: undefined | React.FC<StudentProfileProps> = ({ curr
             cursor: 'pointer',
             height: '100%',
             width: '100%',
+            whiteSpace: 'nowrap',
           }}
           onClick={() => openImageModal()}
         >
@@ -506,34 +501,37 @@ export const StudentProfile: undefined | React.FC<StudentProfileProps> = ({ curr
               <Subtitle textAlign='left'>Student</Subtitle>
             </Grid>
             <Grid item xs={6}>
-              {!isEditingMobile ? (
-                <Button
-                  variant='contained'
-                  sx={{
-                    background: MthColor.LIGHTGRAY,
-                    borderRadius: 5,
-                    color: MthColor.BLACK,
-                  }}
-                  onClick={(e) => {
-                    e.preventDefault()
-                    setIsEditingMobile(true)
-                  }}
-                  type='button'
-                >
-                  Edit
-                </Button>
-              ) : (
-                <Button
-                  variant='contained'
-                  sx={{
-                    background: `${MthColor.BLACK_GRADIENT} !important`,
-                    borderRadius: 5,
-                  }}
-                  type='submit'
-                >
-                  Save Changes
-                </Button>
-              )}
+              {
+                // this will render when the file is present
+                !!file || isEditingMobile ? (
+                  <Button
+                    variant='contained'
+                    sx={{
+                      background: `${MthColor.BLACK_GRADIENT} !important`,
+                      borderRadius: 5,
+                    }}
+                    type='submit'
+                  >
+                    Save Changes
+                  </Button>
+                ) : (
+                  <Button
+                    variant='contained'
+                    sx={{
+                      background: MthColor.LIGHTGRAY,
+                      borderRadius: 5,
+                      color: MthColor.BLACK,
+                    }}
+                    onClick={(e) => {
+                      e.preventDefault()
+                      setIsEditingMobile(true)
+                    }}
+                    type='button'
+                  >
+                    Edit
+                  </Button>
+                )
+              }
             </Grid>
             <Grid item xs={12}>
               <Box display='flex' flexDirection='column'>

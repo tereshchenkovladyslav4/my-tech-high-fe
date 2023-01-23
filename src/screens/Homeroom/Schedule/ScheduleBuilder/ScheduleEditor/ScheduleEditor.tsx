@@ -450,6 +450,43 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
     }
   }
 
+  const showPeriodSelector = (schedule: ScheduleData): boolean => {
+    if (isAdmin && !lockedIcon) return true
+    if (!editable(schedule)) return false
+    if (!(schedule.filteredPeriods?.length > 1)) return false
+    return (
+      !isSecondSemester ||
+      (isSecondSemester && !hasUnlockedPeriods) ||
+      schedule.FirstSemesterSchedule?.Period?.semester === SEMESTER_TYPE.PERIOD
+    )
+  }
+
+  const showSubjectSelector = (schedule: ScheduleData): boolean => {
+    const subjects = schedule.Period?.Subjects || []
+    if (isAdmin && !lockedIcon) return true
+    if (!editable(schedule)) return false
+    if (
+      !(subjects.length > 1) &&
+      !(subjects.length === 1 && (subjects[0]?.Titles?.length > 1 || subjects[0]?.AltTitles?.length))
+    )
+      return false
+    return (
+      !isSecondSemester ||
+      (isSecondSemester && !hasUnlockedPeriods) ||
+      schedule.FirstSemesterSchedule?.Period?.semester !== SEMESTER_TYPE.NONE ||
+      !!schedule.FirstSemesterSchedule?.Title?.always_unlock
+    )
+  }
+
+  const showCourseSelector = (schedule: ScheduleData): boolean => {
+    const providers = schedule.Title?.Providers || schedule.Subject?.Providers || []
+    return (
+      editable(schedule) &&
+      (providers.length > 1 ||
+        (providers.length === 1 && (providers[0]?.Courses?.length > 1 || !!providers[0]?.AltCourses?.length)))
+    )
+  }
+
   const formatPhoneNumber = (phone: string) => {
     return `+1 (${phone?.substring(0, 3)}) ${phone.substring(3, 6)} ${phone?.substring(6, 10)}`
   }
@@ -681,15 +718,6 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
     }
   }
 
-  const showCourseSelector = (schedule: ScheduleData): boolean => {
-    const providers = schedule.Title?.Providers || schedule.Subject?.Providers || []
-    return (
-      editable(schedule) &&
-      (providers.length > 1 ||
-        (providers.length === 1 && (providers[0]?.Courses?.length > 1 || !!providers[0]?.AltCourses?.length)))
-    )
-  }
-
   const selectedCourseLabel = (course: Course | undefined): string => {
     return course ? `${course.Provider?.name} - ${course.name}` : ''
   }
@@ -742,12 +770,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
                   {('0' + item.rawData.period).slice(-2)}
                 </Typography>
                 <Box sx={{ marginLeft: '20px', width: '100%' }}>
-                  {(editable(item.rawData) &&
-                    (!isSecondSemester ||
-                      (isSecondSemester && !hasUnlockedPeriods) ||
-                      item.rawData.FirstSemesterSchedule?.Period?.semester === SEMESTER_TYPE.PERIOD) &&
-                    item.rawData.filteredPeriods?.length > 1) ||
-                  (isAdmin && !lockedIcon) ? (
+                  {showPeriodSelector(item.rawData) ? (
                     <NestedDropdown
                       menuItemsData={createPeriodMenuItems(item.rawData)}
                       MenuProps={{ elevation: 3 }}
@@ -776,12 +799,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
           return (
             <Box sx={{ paddingRight: '50px' }}>
               {!!item.rawData.Period &&
-                ((editable(item.rawData) &&
-                  ((item.rawData.Period.Subjects?.length && item.rawData.Period.Subjects?.length > 1) ||
-                    (item.rawData.Period.Subjects?.length === 1 &&
-                      (item.rawData.Period.Subjects?.[0]?.Titles?.length > 1 ||
-                        item.rawData.Period.Subjects?.[0]?.AltTitles?.length)))) ||
-                (isAdmin && !lockedIcon) ? (
+                (showSubjectSelector(item.rawData) ? (
                   <NestedDropdown
                     menuItemsData={createSubjectMenuItems(item.rawData)}
                     MenuProps={{ elevation: 3 }}

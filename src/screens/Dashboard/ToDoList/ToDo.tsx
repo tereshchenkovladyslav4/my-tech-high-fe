@@ -59,6 +59,7 @@ export const ToDo: React.FC<TodoProps> = ({ schoolYears, setIsLoading, setMainTo
   const cardRef = useRef(null)
   const [showEmpty, setShowEmpty] = useState(false)
   const [windowDimensions, setWindowDimensions] = useState(0)
+
   useEffect(() => {
     function handleResize() {
       setWindowDimensions(cardRef.current.offsetWidth)

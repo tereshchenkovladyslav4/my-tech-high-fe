@@ -31,7 +31,7 @@ const SubjectForm: React.FC<SubjectFormProps> = ({ setIsChanged, periodsItems })
       <Box>
         <Typography sx={{ fontSize: '18px', fontWeight: '700', lineHeight: '20px', mb: 3 }}>Periods</Typography>
         <Typography sx={{ fontSize: '18px', fontWeight: '600', lineHeight: '20px', mb: 2 }}>
-          Allow this subject to appear in the following periods:
+          Allow this Subject to appear in the following Periods:
         </Typography>
         <MthCheckboxList
           checkboxLists={periodsItems}

@@ -38,7 +38,7 @@ const ProviderForm: React.FC<ProviderFormProps> = ({ setIsChanged, periodsItems 
 
         <Grid item xs={12} sx={{ ml: '-12px' }}>
           <MthCheckbox
-            label='Display this provider wherever provider filters are shown'
+            label='Display this Provider wherever Provider filters are shown'
             checked={values?.is_display}
             onChange={() => {
               setFieldValue('is_display', !values?.is_display)
@@ -132,7 +132,7 @@ const ProviderForm: React.FC<ProviderFormProps> = ({ setIsChanged, periodsItems 
           </Subtitle>
           <Box sx={{ ml: '-12px' }}>
             <MthCheckbox
-              label='If this Provider is selected, it must also be selected for the following periods:'
+              label='If this Provider is selected, it must also be selected for the following Periods:'
               checked={values?.multiple_periods}
               disabled={!!values?.SchedulePeriods?.length}
               onChange={() => {
