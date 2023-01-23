@@ -99,7 +99,7 @@ export const EnrollmentQuestionItem: React.FC<EnrollmentQuestionProps> = ({ item
             return (
               <Grid key={index} item xs={12} sm={6}>
                 <Box display='flex' alignItems='center'>
-                  <Paragraph size='large'>
+                  <Paragraph size='large' sx={{ fontSize: '16px' }}>
                     <span dangerouslySetInnerHTML={{ __html: q.question }}></span>
                   </Paragraph>
                 </Box>
@@ -573,7 +573,7 @@ function Item({
                 <Checkbox checked={multiSelected(q.slug)} onClick={() => onChange(q.slug)} disabled={disabled} />
               }
               label={
-                <Paragraph size='medium'>
+                <Paragraph size='medium' sx={{ fontSize: '16px' }}>
                   {disabled == true && <p dangerouslySetInnerHTML={{ __html: q.question }}></p>}
                   {disabled == false && <p dangerouslySetInnerHTML={{ __html: q.question }}></p>}
                 </Paragraph>

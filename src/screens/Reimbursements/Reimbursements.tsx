@@ -45,32 +45,17 @@ const Reimbursements: React.FC = () => {
 
   useEffect(() => {
     if (schoolYear) {
-      const {
-        direct_order_close,
-        direct_order_open,
-        reimbursement_open,
-        reimbursement_close,
-        mid_direct_order_close,
-        mid_direct_order_open,
-        mid_reimbursement_close,
-        mid_reimbursement_open,
-      } = schoolYear
-      if ((direct_order_open && direct_order_close) || (mid_direct_order_close && mid_direct_order_open)) {
-        if (
-          (new Date(direct_order_open) <= new Date() && new Date(direct_order_close) >= new Date()) ||
-          (new Date(mid_direct_order_open) <= new Date() && new Date(mid_direct_order_close) >= new Date())
-        ) {
+      const { direct_order_close, direct_order_open, reimbursement_open, reimbursement_close } = schoolYear
+      if (direct_order_open && direct_order_close) {
+        if (new Date(direct_order_open) <= new Date() && new Date(direct_order_close) >= new Date()) {
           setDisabledDirectOrder(false)
         }
       } else {
         setDisabledDirectOrder(true)
       }
 
-      if ((reimbursement_open && reimbursement_close) || (mid_reimbursement_close && mid_reimbursement_open)) {
-        if (
-          (new Date(reimbursement_open) <= new Date() && new Date(reimbursement_close) >= new Date()) ||
-          (new Date(mid_reimbursement_open) <= new Date() && new Date(mid_reimbursement_close) >= new Date())
-        ) {
+      if (reimbursement_open && reimbursement_close) {
+        if (new Date(reimbursement_open) <= new Date() && new Date(reimbursement_close) >= new Date()) {
           setDisabledReimbursement(false)
         }
       } else {
