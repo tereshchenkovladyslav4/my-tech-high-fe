@@ -48,10 +48,10 @@ import {
   StudentNotification,
   StudentStatus,
 } from '@mth/enums'
-import { SchoolYear } from '@mth/models'
+import { SchoolYear, Student } from '@mth/models'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { getSchoolYearsByRegionId } from '@mth/screens/Admin/Dashboard/SchoolYear/SchoolYear'
-import { StudentType, Person } from '@mth/screens/HomeroomStudentProfile/Student/types'
+import { Person } from '@mth/screens/HomeroomStudentProfile/Student/types'
 import { checkEnrollPacketStatus, getWindowDimension, gradeText } from '@mth/utils'
 import { useStyles } from './styles'
 
@@ -72,9 +72,9 @@ export const AppBar: FunctionComponent = () => {
   const [openMobileSide, setOpenMobileSide] = useState(false)
 
   //const { students } = me
-  const [, setStudents] = useState<StudentType[]>([])
+  const [, setStudents] = useState<Student[]>([])
 
-  const [activeStudents, setActiveStudents] = useState<StudentType[]>([])
+  const [activeStudents, setActiveStudents] = useState<Student[]>([])
 
   const location = useLocation()
 
@@ -106,7 +106,7 @@ export const AppBar: FunctionComponent = () => {
   }, [region_id, schoolYearData?.data?.region?.SchoolYears])
 
   const circleData = (
-    student: StudentType,
+    student: Student,
   ): { progress: number; color: string; message: string; icon: ReactElement } | undefined => {
     const { applications, packets } = student
     const currApplication = applications?.at(0)
@@ -344,7 +344,7 @@ export const AppBar: FunctionComponent = () => {
     setAnchorEl(null)
   }
 
-  const getAvatar = (student: StudentType) => {
+  const getAvatar = (student: Student) => {
     if (getProfilePhoto(student.person) !== 'image') {
       return { type: 'img', link: getProfilePhoto(student.person) }
     }

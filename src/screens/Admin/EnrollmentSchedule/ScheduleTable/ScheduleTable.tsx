@@ -329,6 +329,13 @@ export const ScheduleTable: React.FC<FiltersProps> = ({ filter, setFilter }) => 
       sortable: true,
       tdClass: '',
       width: '0',
+      formatter: (item: MthTableField<unknown>) => {
+        return (
+          <Box display={'flex'} flexDirection='row' justifyContent={'flex-start'} flexWrap={'wrap'}>
+            {item.columns.diploma === 0 ? 'No' : 'Yes'}
+          </Box>
+        )
+      },
     },
     {
       key: 'emailed',
@@ -426,8 +433,8 @@ export const ScheduleTable: React.FC<FiltersProps> = ({ filter, setFilter }) => 
         >
           <Button
             sx={{
-              fontSize: 11,
-              fontWeight: 700,
+              fontSize: 12,
+              fontWeight: 400,
               borderRadius: 2,
               textTransform: 'none',
               background: MthColor.RED_GRADIENT,
@@ -502,6 +509,7 @@ export const ScheduleTable: React.FC<FiltersProps> = ({ filter, setFilter }) => 
           onSelectionChange={onSelectionChange}
           onSortChange={onSortChange}
           isTableCellBorder={false}
+          labelSize={14}
         />
       </Box>
       {open && (

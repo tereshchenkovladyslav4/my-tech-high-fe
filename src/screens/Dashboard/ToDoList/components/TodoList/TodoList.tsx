@@ -3,8 +3,8 @@ import { useQuery } from '@apollo/client'
 import { Table, TableBody, TableContainer, Box } from '@mui/material'
 import { forOwn, map, groupBy, values } from 'lodash'
 import moment from 'moment'
+import { Student } from '@mth/models'
 import { TodoListProps } from '@mth/screens/Dashboard/ToDoList/components/TodoList/types'
-import { StudentType } from '@mth/screens/HomeroomStudentProfile/Student/types'
 import { checkEnrollPacketStatus } from '@mth/utils'
 import { getTodoList } from '../../service'
 import { ToDoListItem } from '../ToDoListItem/ToDoListItem'
@@ -61,7 +61,7 @@ export const TodoList: React.FC<TodoListProps> = ({
               setTodoList((prev) => [
                 ...prev,
                 ...splitItems.filter((item) =>
-                  item?.students.find((student: StudentType) => student.student_id == filteredByStudent),
+                  item?.students.find((student: Student) => student.student_id == filteredByStudent),
                 ),
               ])
             } else {

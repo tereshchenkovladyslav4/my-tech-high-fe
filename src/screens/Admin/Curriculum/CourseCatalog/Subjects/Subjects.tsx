@@ -301,6 +301,7 @@ const Subjects: React.FC = () => {
           item={selectedSubject}
           refetch={refetch}
           setShowEditModal={setShowEditModal}
+          subjects={tableData.map((obj) => obj.rawData)}
         />
       )}
 

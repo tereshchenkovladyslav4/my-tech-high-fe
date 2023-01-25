@@ -1,1 +1,1 @@
-export { default as Student } from './Student'
+export { default as StudentPage } from './Student'

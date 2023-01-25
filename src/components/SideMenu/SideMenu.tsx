@@ -12,7 +12,7 @@ import { List, ListItem, Box, ListItemButton } from '@mui/material'
 import { map, some } from 'lodash'
 import { NavLink, useHistory, useLocation } from 'react-router-dom'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
-import { MthColor, MthRoute, MthTitle } from '@mth/enums'
+import { MthRoute, MthTitle } from '@mth/enums'
 import { AuthContext } from '@mth/providers/AuthProvider/AuthContext'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { MTHLogo } from '../SVG/MTHLogo'
@@ -148,15 +148,7 @@ export const SideMenu: React.FC = () => {
               </Box>
             </ListItemButton>
           </ListItem>
-          <NavLink
-            exact
-            to={`${MthRoute.DASHBOARD}`}
-            style={classes.navLink}
-            activeStyle={{
-              backgroundColor: MthColor.ACTIVE_LINK_BG,
-              color: '#4145FF',
-            }}
-          >
+          <NavLink exact to={`${MthRoute.DASHBOARD}`} style={classes.navLink} activeStyle={classes.activeNavLink}>
             <ListItem disablePadding style={{ backgroundColor: 'inherit' }}>
               <ListItemButton style={{ textDecoration: 'none' }}>
                 <DescriptionIcon style={classes.logos} />
@@ -166,16 +158,7 @@ export const SideMenu: React.FC = () => {
           </NavLink>
           {map(authorizedList, (item, index) =>
             item.label !== 'Homeroom' ? (
-              <NavLink
-                key={index}
-                exact
-                to={item.to}
-                style={classes.navLink}
-                activeStyle={{
-                  backgroundColor: MthColor.ACTIVE_LINK_BG,
-                  color: '#4145FF',
-                }}
-              >
+              <NavLink key={index} exact to={item.to} style={classes.navLink} activeStyle={classes.activeNavLink}>
                 <ListItem disablePadding style={{ backgroundColor: 'inherit' }}>
                   <ListItemButton style={{ textDecoration: 'none' }}>
                     {item.icon}
@@ -188,10 +171,10 @@ export const SideMenu: React.FC = () => {
                 key={index}
                 exact
                 to={item.to}
-                style={(classes.navLink, { color: isActive() ? '#4145FF' : '#CCC', textDecoration: 'none' })}
-                activeStyle={{
-                  backgroundColor: MthColor.ACTIVE_LINK_BG,
-                  color: '#4145FF',
+                style={{
+                  display: 'flex',
+                  textDecoration: 'none',
+                  ...(isActive() ? classes.activeNavLink : classes.navLink),
                 }}
               >
                 <ListItem disablePadding style={{ backgroundColor: 'inherit' }}>
@@ -203,15 +186,7 @@ export const SideMenu: React.FC = () => {
               </NavLink>
             ),
           )}
-          <NavLink
-            exact
-            to={`${MthRoute.SETTINGS}`}
-            style={classes.navLink}
-            activeStyle={{
-              backgroundColor: MthColor.ACTIVE_LINK_BG,
-              color: '#4145FF',
-            }}
-          >
+          <NavLink exact to={`${MthRoute.SETTINGS}`} style={classes.navLink} activeStyle={classes.activeNavLink}>
             <ListItem disablePadding style={{ backgroundColor: 'inherit' }}>
               <ListItemButton>
                 <SettingsRoundedIcon style={classes.logos} />

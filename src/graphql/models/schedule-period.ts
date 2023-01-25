@@ -1,9 +1,5 @@
-import { SchedulePeriodStatus, ScheduleStatus } from '@mth/enums'
-
-export type Schedule = {
-  status: ScheduleStatus
-  is_second_semester: boolean
-}
+import { SchedulePeriodStatus } from '@mth/enums'
+import { Schedule } from '@mth/models'
 
 export type SchedulePeriod = {
   CourseId: number

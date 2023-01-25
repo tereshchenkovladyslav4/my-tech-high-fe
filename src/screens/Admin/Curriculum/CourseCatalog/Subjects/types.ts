@@ -67,6 +67,7 @@ export type TitlesProps = {
 export interface SubjectEditProps {
   schoolYearId: number
   item?: Subject
+  subjects?: Subject[]
   refetch: () => void
   setShowEditModal: (value: boolean) => void
 }

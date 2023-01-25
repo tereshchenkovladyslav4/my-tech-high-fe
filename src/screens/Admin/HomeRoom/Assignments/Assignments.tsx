@@ -3,6 +3,7 @@ import { useQuery } from '@apollo/client'
 import { Box, Grid } from '@mui/material'
 import moment from 'moment'
 import { DropDownItem } from '@mth/components/DropDown/types'
+import { AssignmentStatus } from '@mth/enums'
 import { useProviders } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { getSchoolYearsByRegionId } from '../../SiteManagement/services'
@@ -47,19 +48,21 @@ export const Assignments: React.FC = () => {
   })
 
   useEffect(() => {
-    const list: OptionType[] = []
+    const list: OptionType[] = [
+      {
+        value: AssignmentStatus.UNASSIGNED.toLowerCase(),
+        label: AssignmentStatus.UNASSIGNED,
+      },
+    ]
     schoolPartnerData?.getSchoolsOfEnrollmentByRegion
       ?.filter((el: PartnerEnrollmentType) => el.active === 1)
+      .sort((a, b) => (a.abbreviation.toLowerCase() > b.abbreviation.toLowerCase() ? 1 : -1))
       .map((item: PartnerEnrollmentType) => {
         list.push({
           value: item.school_partner_id,
           label: item.abbreviation,
         })
       })
-    list.push({
-      value: 'unassigned',
-      label: 'Unassigned',
-    })
     setPartnerList(list)
   }, [schoolPartnerData])
 
@@ -167,8 +170,8 @@ export const Assignments: React.FC = () => {
           label: 'Select All',
         },
         {
-          value: 'unassigned',
-          label: 'Unassigned',
+          value: AssignmentStatus.UNASSIGNED.toLowerCase(),
+          label: AssignmentStatus.UNASSIGNED,
         },
         ...currentHomes.sort((a, b) => (a.label.toLowerCase() > b.label.toLowerCase() ? 1 : -1)),
       ])
@@ -200,8 +203,8 @@ export const Assignments: React.FC = () => {
           label: 'Select All',
         },
         {
-          value: 'unassigned',
-          label: 'Unassigned',
+          value: AssignmentStatus.UNASSIGNED.toLowerCase(),
+          label: AssignmentStatus.UNASSIGNED,
         },
       )
 

@@ -16,7 +16,7 @@ import { List, ListItem, Box, ListItemButton } from '@mui/material'
 import { map } from 'lodash'
 import { NavLink, useHistory } from 'react-router-dom'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
-import { MthColor, MthRoute, MthTitle } from '@mth/enums'
+import { MthRoute, MthTitle } from '@mth/enums'
 import { AuthContext } from '@mth/providers/AuthProvider/AuthContext'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { MTHLogo } from '../SVG/MTHLogo'
@@ -127,12 +127,9 @@ export const AdminSideMenu: React.FC = () => {
               exact={!unExactPages.includes(item.to)}
               to={item.to}
               style={classes.navLink}
-              activeStyle={{
-                backgroundColor: MthColor.ACTIVE_LINK_BG,
-                color: '#4145FF',
-              }}
+              activeStyle={classes.activeNavLink}
             >
-              <ListItem disablePadding style={{ backgroundColor: 'inherit', borderLeft: '3px solid' }}>
+              <ListItem disablePadding style={{ backgroundColor: 'inherit' }}>
                 <ListItemButton style={{ textDecoration: 'none' }}>
                   {item.icon}
                   <Paragraph size='medium'>{item.label}</Paragraph>

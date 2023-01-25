@@ -62,6 +62,8 @@ export const Filters: React.FC<FiltersProps> = ({ filter, setFilter }) => {
           }),
         )
         setShowDiplomaSeeking(schoolYear[0]?.diploma_seeking)
+        setMthDirectProvider([])
+        setCourseType([])
       }
     }
   }, [schoolYears, selectedYearId])
@@ -217,19 +219,6 @@ export const Filters: React.FC<FiltersProps> = ({ filter, setFilter }) => {
   const Filters = () => (
     <Grid container sx={{ textAlign: 'left', marginY: '12px' }}>
       <Grid item container xs={10}>
-        {/* <Grid item xs={columnWidth()}>
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-            }}
-          >
-            <Paragraph size='large' fontWeight='700'>
-              School Years
-            </Paragraph>
-            <SchoolYearDropDown selectedYearId={selectedYearId} setSelectedYearId={setSelectedYearId} />
-          </Box>
-        </Grid> */}
         <Grid item xs={columnWidth()}>
           <Box
             sx={{
@@ -323,37 +312,18 @@ export const Filters: React.FC<FiltersProps> = ({ filter, setFilter }) => {
           </Box>
         </Grid>
         {courseType.includes(CourseType.MTH_DIRECT) && (
-          <Grid item xs={6} md={5} lg={5}>
+          <Grid item xs={6} md={5} lg={5} sx={{ height: '340px', overflowY: 'scroll' }}>
             <Box
               sx={{
                 display: 'flex',
                 flexDirection: 'column',
-                maxHeight: '160px',
-                overflowY: 'auto',
-                scrollbarWidth: 'thin',
-                '*::-webkit-scrollbar': {
-                  width: '0.4em',
-                },
-                '*::-webkit-scrollbar-track': {
-                  background: '#f1f1f1',
-                },
-                '*::-webkit-scrollbar-thumb': {
-                  backgroundColor: '#888',
-                  borderRadius: 2,
-                },
+                height: '358px',
               }}
             >
               <Paragraph size='large' fontWeight='700'>
                 Curriculum Provider
               </Paragraph>
-              <Box
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  overflow: 'auto',
-                  height: '423px',
-                }}
-              >
+              <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                 <FormControlLabel
                   sx={{ height: 30 }}
                   control={
@@ -365,7 +335,7 @@ export const Filters: React.FC<FiltersProps> = ({ filter, setFilter }) => {
                   }
                   label={
                     <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
-                      All providers
+                      All Providers
                     </Paragraph>
                   }
                 />
@@ -381,7 +351,7 @@ export const Filters: React.FC<FiltersProps> = ({ filter, setFilter }) => {
                       />
                     }
                     label={
-                      <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
+                      <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px', textTransform: 'capitalize' }}>
                         {provider.name}
                       </Paragraph>
                     }
@@ -418,8 +388,8 @@ export const Filters: React.FC<FiltersProps> = ({ filter, setFilter }) => {
           >
             <Button
               sx={{
-                fontSize: 11,
-                fontWeight: 700,
+                fontSize: 12,
+                fontWeight: 400,
                 borderRadius: 2,
                 textTransform: 'none',
                 background: MthColor.BUTTON_LINEAR_GRADIENT,
@@ -433,8 +403,8 @@ export const Filters: React.FC<FiltersProps> = ({ filter, setFilter }) => {
             </Button>
             <Button
               sx={{
-                fontSize: 11,
-                fontWeight: 700,
+                fontSize: 12,
+                fontWeight: 400,
                 borderRadius: 2,
                 textTransform: 'none',
                 background: MthColor.RED_GRADIENT,

@@ -8,8 +8,8 @@ import { useHistory } from 'react-router-dom'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { MthColor, MthRoute } from '@mth/enums'
 import { SchedulePeriod } from '@mth/graphql/models/schedule-period'
+import { Student } from '@mth/models'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
-import { StudentType } from '@mth/screens/HomeroomStudentProfile/Student/types'
 import {
   extractContent,
   getFirstDayAndLastDayOfMonth,
@@ -103,7 +103,7 @@ const EventDetail: React.FC<EventDetailProps> = ({
       students
         .filter((student) => student?.status?.at(-1)?.status != 2)
         .filter(
-          (student: StudentType) =>
+          (student: Student) =>
             student?.grade_levels &&
             grades.includes(
               student?.grade_levels[0].grade_level == 'Kin' ? 'Kindergarten' : student?.grade_levels[0].grade_level,

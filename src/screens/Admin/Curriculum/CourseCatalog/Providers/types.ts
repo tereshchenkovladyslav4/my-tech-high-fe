@@ -68,6 +68,7 @@ export interface ProviderEditProps {
   schoolYearData: SchoolYear | undefined
   schoolYearId: number
   item?: Provider
+  providers?: Provider[]
   refetch: () => void
   setShowEditModal: (value: boolean) => void
 }

@@ -23,7 +23,7 @@ import { Field, ValueOf } from '@mth/components/Table/types'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { WarningModal } from '@mth/components/WarningModal/Warning'
-import { MthColor } from '@mth/enums'
+import { AssignmentStatus, MthColor } from '@mth/enums'
 import {
   assignStudentsToHomeroomMutation,
   getStudentsForHoomroom,
@@ -51,7 +51,7 @@ export const AssignmentTable: React.FC<EnrollmentSchoolTableProps> = ({
   const [items, setItems] = useState<Array<StudentVM>>([])
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [studentIds, setStudentIds] = useState<Array<ValueOf<StudentVM>>>([])
-  const [selectedHomeroom, setSelHomeroom] = useState<OptionType | null>()
+  const [selectedHomeroom, setSelHomeroom] = useState<OptionType | null>(null)
   const [assignError, setAssignError] = useState<boolean>(false)
   const [autoGradeModal, setAutoGradeModal] = useState<boolean>(false)
   const [autoGrade, setAutoGrade] = useState<string>('')
@@ -60,6 +60,7 @@ export const AssignmentTable: React.FC<EnrollmentSchoolTableProps> = ({
   const [transferConfirmModal, setTransferConfirmModal] = useState<boolean>(false)
   const [errorHomeroom, setErrorHomeroom] = useState<boolean>(false)
   const [errorStudentSelect, setErrorStudentSelect] = useState<boolean>(false)
+  const [submitType, setSubmitType] = useState<string>('')
 
   const groupGrades = useMemo(() => {
     if (filter?.grades) {
@@ -190,7 +191,7 @@ export const AssignmentTable: React.FC<EnrollmentSchoolTableProps> = ({
         sortable: true,
         tdClass: 'fw-400',
         formatter: (studednt) => {
-          return studednt.currentHomeroom?.teacher?.class_name || 'Unassigned'
+          return studednt.currentHomeroom?.teacher?.class_name || AssignmentStatus.UNASSIGNED
         },
       },
     ]
@@ -201,7 +202,7 @@ export const AssignmentTable: React.FC<EnrollmentSchoolTableProps> = ({
         sortable: true,
         tdClass: 'fw-400',
         formatter: (studednt) => {
-          return studednt.previousHomeroom?.teacher?.class_name || 'Unassigned'
+          return studednt.previousHomeroom?.teacher?.class_name || AssignmentStatus.UNASSIGNED
         },
       })
     }
@@ -215,11 +216,7 @@ export const AssignmentTable: React.FC<EnrollmentSchoolTableProps> = ({
   const classes = assignmentStyle()
 
   const handleListItemClick = (homeroom: OptionType) => {
-    if (homeroom) {
-      setSelHomeroom(homeroom)
-    } else {
-      setSelHomeroom(null)
-    }
+    setSelHomeroom(homeroom)
   }
 
   const [assignStudentsToHomeroom] = useMutation(assignStudentsToHomeroomMutation)
@@ -231,7 +228,9 @@ export const AssignmentTable: React.FC<EnrollmentSchoolTableProps> = ({
         homeroomStudentInput: {
           school_year_id: parseInt(selectedYear?.value as string),
           studentIds: students,
-          teacher_id: parseInt(selectedHomeroom?.value !== 'unassign' ? selectedHomeroom?.value : -1),
+          teacher_id: parseInt(
+            selectedHomeroom?.value !== AssignmentStatus.UNASSIGN.toLocaleLowerCase() ? selectedHomeroom?.value : -1,
+          ),
           auto_grade: autoGrade,
         },
       },
@@ -245,21 +244,31 @@ export const AssignmentTable: React.FC<EnrollmentSchoolTableProps> = ({
   const [transferStudentsToHomeroomSubmit] = useMutation(transferStudentsToHomeroomMutation)
 
   const submitTransferStudent = async (autoGrade: string | null) => {
+    // due date
+    if (selectedHomeroom?.dueStatus && !autoGrade) {
+      setAutoGradeModal(true)
+      setSubmitType('transfer')
+      return
+    }
+
     const students = studentIds.map((i) => parseInt(i))
     await transferStudentsToHomeroomSubmit({
       variables: {
         homeroomStudentInput: {
           school_year_id: parseInt(selectedYear?.value as string),
           studentIds: students,
-          teacher_id: parseInt(selectedHomeroom?.value !== 'unassigned' ? selectedHomeroom?.value : -1),
+          teacher_id: parseInt(
+            selectedHomeroom?.value !== AssignmentStatus.UNASSIGN.toLocaleLowerCase() ? selectedHomeroom?.value : -1,
+          ),
           auto_grade: autoGrade,
         },
       },
     })
-    refetch()
+    setAutoGrade('')
+
+    await refetch()
     setStudentIds([])
     setSelHomeroom(null)
-    setAutoGrade('')
   }
 
   const handleAssign = async () => {
@@ -274,7 +283,7 @@ export const AssignmentTable: React.FC<EnrollmentSchoolTableProps> = ({
 
     if (studentIds.length > 0 && selectedHomeroom?.value) {
       // not unassigned
-      if (selectedHomeroom?.value !== 'unassigned') {
+      if (selectedHomeroom?.value !== AssignmentStatus.UNASSIGN.toLocaleLowerCase()) {
         for (let i = 0; i < studentIds.length; i++) {
           const student = items.find((q) => q.student_id === studentIds[i])
           if (student?.currentHomeroom?.teacher) {
@@ -287,6 +296,7 @@ export const AssignmentTable: React.FC<EnrollmentSchoolTableProps> = ({
       // due date
       if (selectedHomeroom?.dueStatus) {
         setAutoGradeModal(true)
+        setSubmitType('assign')
       } else {
         await submitAssignStudent('')
       }
@@ -307,22 +317,16 @@ export const AssignmentTable: React.FC<EnrollmentSchoolTableProps> = ({
         const student = items.find((q) => q.student_id === studentIds[i])
         if (!student?.currentHomeroom?.teacher) {
           setIsTransferAssignError(true)
-          insteadAssign = true
           return
         } else if (student?.currentHomeroom?.teacher.class_id !== selectedHomeroom.value) {
           setTransferConfirmModal(true)
+          return
         } else if (selectedHomeroom?.dueStatus) {
           setAutoGradeModal(true)
+          setSubmitType('transfer')
+          return
         }
       }
-    }
-    // setIsTransferAssignError(insteadAssign)
-
-    // due date
-    if (selectedHomeroom?.dueStatus) {
-      setAutoGradeModal(true)
-    } else {
-      await submitAssignStudent('')
     }
   }
 
@@ -332,7 +336,12 @@ export const AssignmentTable: React.FC<EnrollmentSchoolTableProps> = ({
       return
     }
     setWarningError(false)
-    await submitAssignStudent(autoGrade)
+
+    if (submitType === 'transfer') {
+      await submitTransferStudent(autoGrade)
+    } else {
+      await submitAssignStudent(autoGrade)
+    }
     setAutoGradeModal(false)
   }
 
@@ -405,20 +414,21 @@ export const AssignmentTable: React.FC<EnrollmentSchoolTableProps> = ({
               if (selYear) setSelectedYear(selYear)
             }}
           />
-
           <Box sx={{ flexGrow: 1 }}>
             <Autocomplete
-              disablePortal
               options={[
                 {
-                  value: 'unassign',
-                  label: 'Unassign',
+                  value: AssignmentStatus.UNASSIGN.toLocaleLowerCase(),
+                  label: AssignmentStatus.UNASSIGN,
                 },
-                ...currentHomeroomes.filter((item) => !['all', 'unassigned'].includes(item.value)),
+                ...currentHomeroomes.filter(
+                  (item) => !['all', AssignmentStatus.UNASSIGNED.toLocaleLowerCase()].includes(item.value),
+                ),
               ]}
               onChange={(event, value) => handleListItemClick(value)}
               sx={{ width: 300 }}
               value={selectedHomeroom}
+              id='controlled-demo'
               renderInput={(params) => (
                 <TextField
                   {...params}
@@ -601,7 +611,7 @@ export const AssignmentTable: React.FC<EnrollmentSchoolTableProps> = ({
       {isTransferAssignError && (
         <WarningModal
           title='Error'
-          subtitle='This student(s) has already been assigned to a Homeroom. Please transfer the student instead.'
+          subtitle='This student(s) has not been assigned to a Homeroom. Please assign the student instead.'
           btntitle='Ok'
           handleModem={() => {
             setIsTransferAssignError(false)
@@ -624,6 +634,7 @@ export const AssignmentTable: React.FC<EnrollmentSchoolTableProps> = ({
           }}
           textCenter
           modalWidth='480px'
+          canceltitle='Cancel'
         >
           <Paragraph size='large' fontWeight='600' sx={{ textAlign: 'center' }}>
             The current Learning Logs do not match the new Learning Logs.

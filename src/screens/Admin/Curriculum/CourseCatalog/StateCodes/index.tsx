@@ -33,7 +33,8 @@ const StateCodes: React.FC = () => {
   const [selectedStateCodes, setSelectedStateCodes] = useState<MthTableRowItem<StateCodeType>>()
   const [fileFormatError, setFileFormatError] = useState(false)
   const [createNewStateCodes] = useMutation(createStateCodesMutation)
-
+  const [isDownload, setIsDownload] = useState(false)
+  const initialPageNumber = 1
   const { data: stateCodesData, refetch } = useQuery(getStateCodesQuery, {
     variables: {
       filter: { selectedYearId },
@@ -67,17 +68,39 @@ const StateCodes: React.FC = () => {
     if (stateCodesData !== undefined) {
       const { stateCodes } = stateCodesData
       const { results, total } = stateCodes
-      setTableData(
-        results.map((res: StateCodeField) => {
-          return createData(res)
-        }),
-      )
-      setTotal(total)
+      if (!isDownload) {
+        setTableData(
+          results.map((res: StateCodeField) => {
+            return createData(res)
+          }),
+        )
+        setTotal(total)
+      } else {
+        setIsDownload(false)
+        handleChangePageLimit(25)
+        if (results && results.length > 0) {
+          const wb = XLSX.utils.book_new()
+          const ws = XLSX.utils.json_to_sheet(
+            results.map((columns: StateCodeField) => {
+              return {
+                'Title ID': columns.TitleId,
+                Grade: columns.grade,
+                'State Code': columns.state_code,
+                Teacher: columns.teacher,
+                Subject: columns.subject,
+                Title: columns.title_name,
+              }
+            }),
+          )
+          XLSX.utils.book_append_sheet(wb, ws, 'Blank')
+          XLSX.writeFile(wb, 'state_codes.xlsx')
+        }
+      }
     }
   }, [stateCodesData])
 
   const handleChangePageLimit = (value: number) => {
-    handlePageChange(1)
+    handlePageChange(initialPageNumber)
     setPaginationLimit(value)
   }
 
@@ -145,23 +168,9 @@ const StateCodes: React.FC = () => {
   ]
 
   const handleDownloadTableData = () => {
-    if (tableData && tableData.length > 0) {
-      const wb = XLSX.utils.book_new()
-      const ws = XLSX.utils.json_to_sheet(
-        tableData.map(({ columns }) => {
-          return {
-            'Title ID': columns.titleId,
-            Grade: columns.grade,
-            'State Code': columns.stateCode,
-            Teacher: columns.teacher,
-            Subject: columns.subject,
-            Title: columns.titleName,
-          }
-        }),
-      )
-      XLSX.utils.book_append_sheet(wb, ws, 'Blank')
-      XLSX.writeFile(wb, 'state_codes.xlsx')
-    }
+    setIsDownload(true)
+    setSkip(0)
+    setPaginationLimit(total)
   }
 
   const handleImportTemplate = async (file: File) => {
@@ -209,6 +218,7 @@ const StateCodes: React.FC = () => {
       },
     })
     refetch()
+    handlePageChange(initialPageNumber)
   }
 
   const [updateStateCodesById] = useMutation(UpdateStateCodesMutation)
@@ -231,7 +241,14 @@ const StateCodes: React.FC = () => {
     <Box sx={classes.base}>
       <PageHeader title='State Codes' to={MthRoute.CURRICULUM_COURSE_CATALOG}>
         <Box sx={{ marginRight: 4 }}>
-          <SchoolYearDropDown setSelectedYearId={setSelectedYearId} selectedYearId={selectedYearId} align='start' />
+          <SchoolYearDropDown
+            setSelectedYearId={(value) => {
+              setSelectedYearId(value)
+              handlePageChange(initialPageNumber)
+            }}
+            selectedYearId={selectedYearId}
+            align='start'
+          />
         </Box>
       </PageHeader>
 
@@ -264,7 +281,10 @@ const StateCodes: React.FC = () => {
 
       <Box sx={{ my: 2 }}>
         <Filter
-          setSearchField={setSearchField}
+          setSearchField={(value) => {
+            setSearchField(value)
+            handlePageChange(initialPageNumber)
+          }}
           total={total}
           limit={paginationLimit}
           curPage={currentPage}

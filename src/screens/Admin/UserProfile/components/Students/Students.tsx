@@ -13,12 +13,12 @@ import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { MthRoute, StudentStatus } from '@mth/enums'
 import { becomeUserMutation } from '@mth/graphql/mutation/user'
+import { Student } from '@mth/models'
 import { UserInfo } from '@mth/providers/UserContext/UserProvider'
-import { StudentType } from '@mth/screens/HomeroomStudentProfile/Student/types'
 
 type StudentsProps = {
-  students: StudentType[]
-  selectedStudent: StudentType
+  students: Student[]
+  selectedStudent: Student
   handleChangeStudent: () => void
   me: UserInfo
 }

@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { useMutation, useQuery } from '@apollo/client'
-import { Alert, AlertColor, Button, Checkbox } from '@mui/material'
+import { Alert, AlertColor, Button, Checkbox, Typography } from '@mui/material'
 import { Box } from '@mui/system'
 import { ContentBlock, ContentState, convertToRaw, EditorBlock, EditorState } from 'draft-js'
 import draftToHtml from 'draftjs-to-html'
@@ -66,32 +66,45 @@ const Settings: FunctionComponent = () => {
   const initiatingLevel = 1
   const crossingLevel = 2
   let curListLvl = 0
-  let listEntriesLastIdx = []
-  const GetSisterBullet = (idx: number | string, type: number, whichSister: number) => {
+  let listEntriesLastIdx: number[][] | string[][] = []
+  let currentBlockKey = ''
+  const getSisterBullet = (idx: number | string, type: number, whichSister: number) => {
     if (type === orderedList) {
       if (Number.isInteger(idx)) return Number(idx) + whichSister
-      else return String.fromCharCode((idx as string)?.charCodeAt(0) + whichSister) // Let's assume, for now, that we won't have more than 26 sublevels...
+      else return String.fromCharCode((idx as string)?.charCodeAt(0) + whichSister)
     }
     return idx
   }
 
-  const GetLevelBaseBullet = (depth: number, type: number, action: number) => {
+  const getLevelBaseBullet = (depth: number, type: number, action: number) => {
     const curLevelBaseIdx = baseBullets[type][depth % baseBullets[type].length]
-    return action === leavingLevel ? GetSisterBullet(curLevelBaseIdx, type, -1) : curLevelBaseIdx
+    return action === leavingLevel ? getSisterBullet(curLevelBaseIdx, type, -1) : curLevelBaseIdx
   }
 
-  const SetLevelNextEntryBullet = (type: number, depth: number, action = crossingLevel) => {
+  const setLevelNextEntryBullet = (type: number, depth: number, action = crossingLevel, blockKey: string) => {
     switch (action) {
       case crossingLevel:
-        listEntriesLastIdx[type][depth] = GetSisterBullet(listEntriesLastIdx[type][depth], type, 1)
+        if (!listEntriesLastIdx[type]) {
+          if (type === orderedList) {
+            listEntriesLastIdx[type] = [1]
+          } else {
+            listEntriesLastIdx[type] = ['•']
+          }
+        }
+        listEntriesLastIdx[type][depth] = getSisterBullet(
+          listEntriesLastIdx[type][depth],
+          type,
+          blockKey === currentBlockKey ? 0 : 1,
+        )
+        currentBlockKey = blockKey
         break
       case leavingLevel:
         listEntriesLastIdx[type].splice(depth, 1)
         if (depth > 0 && !listEntriesLastIdx[type][depth - 1])
-          listEntriesLastIdx[type][depth - 1] = GetLevelBaseBullet(depth - 1, type, initiatingLevel)
+          listEntriesLastIdx[type][depth - 1] = getLevelBaseBullet(depth - 1, type, initiatingLevel)
         break
       default:
-        listEntriesLastIdx[type][depth] = GetLevelBaseBullet(depth, type, action)
+        listEntriesLastIdx[type][depth] = getLevelBaseBullet(depth, type, action)
         break
     }
   }
@@ -108,30 +121,35 @@ const Settings: FunctionComponent = () => {
       default:
         break
     }
+
     if (blockType >= 0) {
-      if (block.getDepth() == curListLvl) SetLevelNextEntryBullet(blockType, curListLvl)
-      else {
-        if (!listEntriesLastIdx[blockType]) listEntriesLastIdx[blockType] = []
+      if (block.getDepth() === curListLvl) {
+        setLevelNextEntryBullet(blockType, curListLvl, crossingLevel, block.getKey())
+      } else {
+        if (!listEntriesLastIdx[blockType]) {
+          listEntriesLastIdx[blockType] = []
+        }
         if (block.getDepth() < curListLvl) {
-          SetLevelNextEntryBullet(blockType, curListLvl, leavingLevel)
+          setLevelNextEntryBullet(blockType, curListLvl, leavingLevel, block.getKey())
         } else {
-          SetLevelNextEntryBullet(
+          setLevelNextEntryBullet(
             blockType,
             block.getDepth(),
             listEntriesLastIdx[blockType][block.getDepth()] ? undefined : initiatingLevel,
+            block.getKey(),
           )
         }
         curListLvl = block.getDepth()
       }
-      const levelIndexToDisplay = listEntriesLastIdx[blockType][curListLvl] ?? [[]]
-      const HTMLStyles = EditorStylesToHTMLStyles(block.getInlineStyleAt(0))
+      const levelIndexToDisplay = listEntriesLastIdx[blockType][curListLvl]
+      const HTMLStyles = editorStylesToHTMLStyles(block.getInlineStyleAt(0))
       return {
         component: (props: Wysiwyg.EditorState) => (
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Box sx={{ display: 'flex' }}>
             <Box>
-              <span className='bullet' style={HTMLStyles}>{`${levelIndexToDisplay}${
-                blockType === orderedList ? '. ' : ' '
-              }`}</span>
+              <Typography className='bullet' sx={{ ...HTMLStyles, marginRight: '8px' }}>{`${levelIndexToDisplay}${
+                blockType === orderedList ? '.' : ' '
+              }`}</Typography>
             </Box>
             <EditorBlock {...props} />
           </Box>
@@ -143,16 +161,16 @@ const Settings: FunctionComponent = () => {
     }
   }
 
-  const EditorStylesToHTMLStyles = (editorStyles) => {
+  const editorStylesToHTMLStyles = (editorStyles) => {
     return editorStyles
-      .map((editorStyle) => GetHTMLStyles(editorStyle))
+      .map((editorStyle) => getHTMLStyles(editorStyle))
       .toArray()
       .reduce((acc, styles) => {
         return { ...acc, ...styles }
       }, {})
   }
 
-  const GetHTMLStyles = (editorStyle) => {
+  const getHTMLStyles = (editorStyle) => {
     let matches = null
     if ((matches = editorStyle.match(/fontsize-(.*)/))) return { fontSize: matches[1] + 'px' }
     else if ((matches = editorStyle.match(/color-(.*)/))) return { color: matches[1] }

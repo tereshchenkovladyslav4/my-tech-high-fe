@@ -1,21 +1,20 @@
-import React, { FunctionComponent, useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { useQuery } from '@apollo/client'
 import { Grid } from '@mui/material'
 import { useHistory } from 'react-router-dom'
 import { MthRoute } from '@mth/enums'
 import { getSchoolYearsByRegionId } from '@mth/graphql/queries/school-year'
-import { SchoolYear, SchoolYearType } from '@mth/models'
+import { SchoolYear, SchoolYearType, Student } from '@mth/models'
 import { UserContext, UserInfo } from '@mth/providers/UserContext/UserProvider'
 import { ToDo } from '../../Dashboard/ToDoList/ToDo'
 import { StudentProfile } from './StudentProfile/StudentProfile'
 import { StudentSchedule } from './StudentSchedule/StudentSchedule'
-import { StudentType } from './types'
 
 type StudentProps = {
-  student?: StudentType | undefined
+  student?: Student | undefined
 }
 
-export const Student: FunctionComponent<StudentProps> = () => {
+export const StudentPage: React.FC<StudentProps> = () => {
   const history = useHistory()
   const { me } = useContext(UserContext)
   const { students } = me as UserInfo
@@ -23,7 +22,7 @@ export const Student: FunctionComponent<StudentProps> = () => {
   const [schoolYears, setSchoolYears] = useState<SchoolYear[]>([])
   const studentId = location.pathname.split('/').at(-1)
 
-  const currStudent: StudentType | undefined = students?.find((student) => student.student_id === studentId)
+  const currStudent: Student | undefined = students?.find((student) => student.student_id == studentId)
 
   if (!studentId) {
     history.push(MthRoute.HOMEROOM)
@@ -37,7 +36,7 @@ export const Student: FunctionComponent<StudentProps> = () => {
     variables: {
       regionId: region_id,
     },
-    skip: region_id ? false : true,
+    skip: !region_id,
     fetchPolicy: 'network-only',
   })
 
@@ -64,11 +63,11 @@ export const Student: FunctionComponent<StudentProps> = () => {
       <Grid item xs={12} sm={9}>
         <ToDo
           schoolYears={schoolYears}
-          filteredByStudent={students?.find((student) => student.student_id === studentId)}
+          filteredByStudent={students?.find((student) => student.student_id == studentId)}
         />
       </Grid>
     </Grid>
   )
 }
 
-export default Student
+export default StudentPage

@@ -156,7 +156,7 @@ const MthTable = <T extends unknown>({
                       onClick={() => handleRequestSort(field.key)}
                       IconComponent={ArrowDropDown}
                     >
-                      {field.label}
+                      <Box fontSize={labelSize}>{field.label}</Box>
                       {orderBy === field.key ? (
                         <Box component='span' sx={visuallyHidden}>
                           {order === 'desc' ? 'sorted descending' : 'sorted ascending'}

@@ -3,10 +3,11 @@ import { Box } from '@mui/system'
 import { useHistory } from 'react-router-dom'
 import { s3URL } from '@mth/constants'
 import { MthRoute } from '@mth/enums'
+import { Student } from '@mth/models'
 import { UserContext, UserInfo } from '@mth/providers/UserContext/UserProvider'
 import { Resources } from './Resources'
-import { Student } from './Student'
-import { Person, StudentType } from './Student/types'
+import { StudentPage } from './Student'
+import { Person } from './Student/types'
 import { StudentNav } from './StudentNav'
 import { StudentProfilePage } from './types'
 
@@ -16,7 +17,7 @@ export const HomeroomStudentProfile: React.FC = () => {
   const { me } = useContext(UserContext)
   const { students } = me as UserInfo
   const studentId = location.pathname.split('/').at(-1)
-  const [student, setStudent] = useState<StudentType>()
+  const [student, setStudent] = useState<Student>()
   const [person, setPerson] = useState<Person>()
   const [avatar, setAvatar] = useState<string | undefined>()
 
@@ -26,7 +27,7 @@ export const HomeroomStudentProfile: React.FC = () => {
       return
     }
 
-    const currStudent: StudentType | undefined = students?.find((item) => +item.student_id === +studentId)
+    const currStudent: Student | undefined = students?.find((item) => +item.student_id === +studentId)
     if (!currStudent) {
       history.push(MthRoute.HOMEROOM)
       return
@@ -44,7 +45,7 @@ export const HomeroomStudentProfile: React.FC = () => {
   return (
     <Box display='flex' flexDirection='column'>
       <StudentNav nav={nav} setNav={(value) => setNav(value)} student={student} avatar={getProfilePhoto} />
-      {nav === StudentProfilePage.STUDENT && <Student />}
+      {nav === StudentProfilePage.STUDENT && <StudentPage />}
       {nav === StudentProfilePage.HOMEROOM && <h1> Coming Soon </h1>}
       {nav === StudentProfilePage.RESOURCES && <Resources />}
     </Box>

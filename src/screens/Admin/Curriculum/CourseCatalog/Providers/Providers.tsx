@@ -286,6 +286,7 @@ const Providers: React.FC = () => {
           item={selectedProvider}
           refetch={refetch}
           setShowEditModal={setShowEditModal}
+          providers={tableData.map((obj) => obj.rawData)}
         />
       )}
 

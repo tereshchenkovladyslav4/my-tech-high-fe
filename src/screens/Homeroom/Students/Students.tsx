@@ -6,12 +6,11 @@ import { DropDownItem } from '@mth/components/DropDown/types'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Title } from '@mth/components/Typography/Title/Title'
 import { MthColor, StudentStatus } from '@mth/enums'
-import { SchoolYear } from '@mth/models'
+import { SchoolYear, Student } from '@mth/models'
 import { UserContext, UserInfo } from '@mth/providers/UserContext/UserProvider'
 import { ToDoItem } from '@mth/screens/Dashboard/ToDoList/components/ToDoListItem/types'
 import { getTodoList } from '@mth/screens/Dashboard/ToDoList/service'
-import { StudentType } from '../../HomeroomStudentProfile/Student/types'
-import { Student } from './Student/Student'
+import { StudentCard } from '@mth/screens/Homeroom/Students/Student/Student'
 
 type StudentsProps = {
   schoolYears: SchoolYear[]
@@ -24,8 +23,8 @@ export const Students: React.FC<StudentsProps> = ({ schoolYears, isLoading, scho
 
   const [showInactiveButton, setShowInactiveButton] = useState<boolean>(false)
   const [showInactiveStudents, setShowInactiveStudents] = useState(false)
-  const [availableStudents, setAvailableStudents] = useState<StudentType[]>([])
-  const [inactiveStudents, setInactiveStudents] = useState<StudentType[]>([])
+  const [availableStudents, setAvailableStudents] = useState<Student[]>([])
+  const [inactiveStudents, setInactiveStudents] = useState<Student[]>([])
   const [toDoList, setToDoList] = useState<ToDoItem[]>()
 
   const findStudent = (studentId: number) => {
@@ -44,7 +43,7 @@ export const Students: React.FC<StudentsProps> = ({ schoolYears, isLoading, scho
         .filter((item) => item !== false)
         .at(0) as ToDoItem
       return (
-        <Student
+        <StudentCard
           schoolYears={schoolYears}
           student={student}
           key={student?.student_id}
@@ -60,7 +59,7 @@ export const Students: React.FC<StudentsProps> = ({ schoolYears, isLoading, scho
         .filter((item) => item !== false)
         .at(0) as ToDoItem
       return (
-        <Student
+        <StudentCard
           withdrawn={true}
           schoolYears={schoolYears}
           schoolYearsDropdown={schoolYearsDropdown}

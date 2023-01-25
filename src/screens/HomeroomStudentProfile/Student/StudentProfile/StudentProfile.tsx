@@ -13,23 +13,24 @@ import { WarningModal } from '@mth/components/WarningModal/Warning'
 import { isValidPassword, s3URL } from '@mth/constants'
 import { FileCategory, MthColor, MthRoute, MthTitle, PacketStatus } from '@mth/enums'
 import { getAssessmentsBySchoolYearId, getStudentAssessmentsByStudentId } from '@mth/graphql/queries/assessment'
+import { Student } from '@mth/models'
 import { AssessmentType } from '@mth/screens/Admin/SiteManagement/EnrollmentSetting/TestingPreference/types'
 import { StudentAssessment } from '@mth/screens/Homeroom/Schedule/types'
 import { uploadFile } from '@mth/services'
 import { getRegionCode, gradeText } from '@mth/utils'
-import { Person, StudentType } from '../types'
+import { Person } from '../types'
 import { removeProfilePhoto, updateProfile } from './service'
 import { studentProfileClasses } from './styles'
 
 type StudentProfileProps = {
-  currStudent: StudentType
+  currStudent: Student
 }
 
 export const StudentProfile: undefined | React.FC<StudentProfileProps> = ({ currStudent }) => {
   const history = useHistory()
   const studentId = location.pathname.split('/').at(-1) || 0
 
-  const [student, setStudent] = useState<StudentType>()
+  const [student, setStudent] = useState<Student>()
   const [person, setPerson] = useState<Person>()
   const [status, setStatus] = useState<string>()
 

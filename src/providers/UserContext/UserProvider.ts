@@ -1,6 +1,6 @@
 import React, { createContext } from 'react'
 import { atom } from 'recoil'
-import { Person, StudentType } from '../../screens/HomeroomStudentProfile/Student/types'
+import { Person, Student } from '@mth/models'
 import { AccessType, RegionType, RoleType } from './types'
 
 export type UserInfo = {
@@ -15,7 +15,7 @@ export type UserInfo = {
   role?: RoleType
   userRegion?: RegionType[]
   userAccess?: AccessType
-  students?: StudentType[]
+  students?: Student[]
   profile?: Person
   selectedRegionId?: number
   masquerade: boolean

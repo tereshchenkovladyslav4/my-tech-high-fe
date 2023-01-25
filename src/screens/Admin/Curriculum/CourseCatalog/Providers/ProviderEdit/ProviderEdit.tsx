@@ -19,6 +19,7 @@ const ProviderEdit: React.FC<ProviderEditProps> = ({
   schoolYearData,
   schoolYearId,
   item,
+  providers,
   refetch,
   setShowEditModal,
 }) => {
@@ -74,20 +75,38 @@ const ProviderEdit: React.FC<ProviderEditProps> = ({
 
   const onSave = async (value: Provider) => {
     setIsSubmitted(true)
+    const dataToSave = {
+      id: Number(value.id),
+      school_year_id: +schoolYearId,
+      name: value.name,
+      is_display: value.is_display,
+      reduce_funds: value.reduce_funds,
+      price: value.price || null,
+      reduce_funds_notification: value.reduce_funds_notification,
+      multiple_periods: value.multiple_periods,
+      multi_periods_notification: value.multi_periods_notification,
+      periods: value.PeriodIds?.join(','),
+    }
+
+    const priorityIndex = [...(providers ? providers : []), dataToSave]
+      .sort((a, b) => {
+        if (a.name.toLowerCase() < b.name.toLowerCase()) {
+          return -1
+        }
+        if (a.name.toLowerCase() > b.name.toLowerCase()) {
+          return 1
+        }
+
+        return 0
+      })
+      .findIndex((obj) => obj.name.includes(value.name))
 
     await submitSave({
       variables: {
         createProviderInput: {
-          id: Number(value.id),
-          school_year_id: +schoolYearId,
-          name: value.name,
-          is_display: value.is_display,
-          reduce_funds: value.reduce_funds,
-          price: value.price || null,
-          reduce_funds_notification: value.reduce_funds_notification,
-          multiple_periods: value.multiple_periods,
-          multi_periods_notification: value.multi_periods_notification,
-          periods: value.PeriodIds?.join(','),
+          ...dataToSave,
+          ...(!value.id &&
+            (providers?.filter((obj) => obj.priority)?.length ?? 0) > 1 && { priority: priorityIndex + 1 }),
         },
       },
     })

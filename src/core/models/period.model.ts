@@ -1,10 +1,11 @@
-import { ReduceFunds } from '@mth/enums'
+import { DiplomaSeekingPath, ReduceFunds } from '@mth/enums'
 import { SEMESTER_TYPE } from '@mth/screens/Admin/Curriculum/types'
 import { Subject } from '@mth/screens/Homeroom/Schedule/types'
 
 export type Period = {
   id: number
   period: number
+  diploma_seeking_path?: DiplomaSeekingPath
   category: string
   min_grade: number | null
   max_grade: number | null

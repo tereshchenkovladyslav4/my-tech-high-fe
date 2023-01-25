@@ -1,4 +1,4 @@
-import { StudentType } from '@mth/screens/HomeroomStudentProfile/Student/types'
+import { Student } from '@mth/models'
 
 export enum ToDoCategory {
   SUBMIT_ENROLLMENT_PACKET = 'SUBMIT_ENROLLMENT_PACKET',
@@ -21,7 +21,7 @@ export interface ToDoItem {
   category: ToDoCategory
   phrase: string
   button: string
-  students: StudentType[]
+  students: Student[]
   icon: string
   dashboard: number
   homeroom: number

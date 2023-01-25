@@ -1,4 +1,4 @@
-import { StudentType } from './Student/types'
+import { Student } from '@mth/models'
 
 export enum StudentProfilePage {
   STUDENT = 'student',
@@ -14,6 +14,6 @@ export type StudentProfileItem = {
 export type StudentNavProps = {
   nav: StudentProfilePage
   setNav: (value: StudentProfilePage) => void
-  student: StudentType | undefined
+  student: Student | undefined
   avatar: string | undefined
 }

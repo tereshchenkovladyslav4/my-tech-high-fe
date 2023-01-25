@@ -28,7 +28,7 @@ import { Person, StudentProps } from '@mth/screens/HomeroomStudentProfile/Studen
 import { checkEnrollPacketStatus, currentGradeText } from '@mth/utils'
 import { updateApplicationMutation, UpdateStudentMutation } from './service'
 
-export const Student: React.FC<StudentProps> = ({
+export const StudentCard: React.FC<StudentProps> = ({
   student,
   schoolYears,
   showNotification,

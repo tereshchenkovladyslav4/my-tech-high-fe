@@ -12,8 +12,6 @@ import {
   DEFAULT_OPT_OUT_FORM_TITLE,
   DEFAULT_TESTING_PREFERENCE_DESCRIPTION,
   DEFAULT_TESTING_PREFERENCE_TITLE,
-  DEFUALT_DIPLOMA_QUESTION_DESCRIPTION,
-  DEFUALT_DIPLOMA_QUESTION_TITLE,
 } from '@mth/constants'
 import { DiplomaSeekingPath, FileCategory, MthRoute, MthTitle, OPT_TYPE, ScheduleStatus } from '@mth/enums'
 import { diplomaQuestionForStudent, submitDiplomaAnswerGql } from '@mth/graphql/queries/diploma'
@@ -62,11 +60,7 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
   const [signatureFileId, setSignatureFileId] = useState<number>(0)
   const [signatureFileUrl, setSignatureFileUrl] = useState<string>('')
   const [activeTestingPreference, setActiveTestingPreference] = useState<boolean>(false)
-  const [activeDiplomaSeeking, setActiveDiplomaSeeking] = useState<boolean>(false)
-  const [diplomaQuestion, setDiplomaQuestion] = useState<DiplomaQuestionType>({
-    title: '',
-    description: '',
-  })
+  const [diplomaQuestion, setDiplomaQuestion] = useState<DiplomaQuestionType | undefined>()
   const [isDiplomaError, setIsDiplomaError] = useState<boolean>(false)
   const [scheduleStatus, setScheduleStatus] = useState<ScheduleStatus>()
   const [diplomaSeekingPathStatus, setDiplomaSeekingPathStatus] = useState<DiplomaSeekingPath>(DiplomaSeekingPath.BOTH)
@@ -103,7 +97,7 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
         grades: gradeNum(student),
       },
     },
-    skip: !student || !studentId || step !== MthTitle.STEP_DIPLOMA_SEEKING,
+    skip: !student || !studentId,
     fetchPolicy: 'network-only',
   })
 
@@ -157,6 +151,10 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
       }
     }
     return false
+  }
+
+  const showDiplomaSeeking = () => {
+    return !!selectedYear?.diploma_seeking && !!diplomaQuestion
   }
 
   const isInvalid = () => {
@@ -247,7 +245,7 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
         }, 300)
         return
       }
-      if (activeDiplomaSeeking) setStep(MthTitle.STEP_DIPLOMA_SEEKING)
+      if (showDiplomaSeeking()) setStep(MthTitle.STEP_DIPLOMA_SEEKING)
       else setStep(MthTitle.STEP_OPT_OUT_FORM)
     }
   }
@@ -257,14 +255,14 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
       case MthTitle.STEP_TESTING_PREFERENCE:
         if (!isInvalid()) {
           if (hasReasonRequired()) setStep(MthTitle.STEP_OPT_OUT_FORM)
-          else if (activeDiplomaSeeking) setStep(MthTitle.STEP_DIPLOMA_SEEKING)
+          else if (showDiplomaSeeking()) setStep(MthTitle.STEP_DIPLOMA_SEEKING)
           else setStep(MthTitle.STEP_SCHEDULE_BUILDER)
         }
         break
       case MthTitle.STEP_OPT_OUT_FORM:
         await handleSaveSignatureFile()
         if (!isInvalid()) {
-          if (activeDiplomaSeeking) setStep(MthTitle.STEP_DIPLOMA_SEEKING)
+          if (showDiplomaSeeking()) setStep(MthTitle.STEP_DIPLOMA_SEEKING)
           else setStep(MthTitle.STEP_SCHEDULE_BUILDER)
         }
         break
@@ -302,7 +300,7 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
           setShowUnsavedModal(true)
         } else {
           if (backTo) history.push(backTo)
-          else if (activeDiplomaSeeking) setStep(MthTitle.STEP_DIPLOMA_SEEKING)
+          else if (showDiplomaSeeking()) setStep(MthTitle.STEP_DIPLOMA_SEEKING)
           else if (activeTestingPreference) setStep(MthTitle.STEP_TESTING_PREFERENCE)
           else history.push(MthRoute.DASHBOARD)
         }
@@ -367,7 +365,6 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
         setStep(MthTitle.STEP_TESTING_PREFERENCE)
       else if (selectedYear?.diploma_seeking) setStep(MthTitle.STEP_DIPLOMA_SEEKING)
       else setStep(MthTitle.STEP_SCHEDULE_BUILDER)
-      setActiveDiplomaSeeking(selectedYear?.diploma_seeking)
       setTestingPreferenceTitle(selectedYear?.testing_preference_title || DEFAULT_TESTING_PREFERENCE_TITLE)
       setTestingPreferenceDescription(
         selectedYear?.testing_preference_description || DEFAULT_TESTING_PREFERENCE_DESCRIPTION,
@@ -401,14 +398,6 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
         setDiplomaQuestion({
           title: diplomaData.getDiplomaQuestionForStudent.title,
           description: extractContent(diplomaData.getDiplomaQuestionForStudent.description),
-        })
-      } else {
-        setDiplomaQuestion({
-          title: DEFUALT_DIPLOMA_QUESTION_TITLE,
-          description: DEFUALT_DIPLOMA_QUESTION_DESCRIPTION.replace(
-            '%REGION_NAME%',
-            me?.userRegion?.at(-1)?.regionDetail?.name || '',
-          ),
         })
       }
     }
@@ -470,7 +459,7 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
             setSignatureName={setSignatureName}
           />
         )}
-        {step === MthTitle.STEP_DIPLOMA_SEEKING && (
+        {step === MthTitle.STEP_DIPLOMA_SEEKING && !!diplomaQuestion && (
           <DiplomaSeeking
             diplomaQuestion={diplomaQuestion}
             options={diplomaOptions}

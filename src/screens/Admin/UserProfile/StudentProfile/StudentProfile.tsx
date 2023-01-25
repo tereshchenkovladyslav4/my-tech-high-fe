@@ -30,7 +30,6 @@ import { getWithdrawalStatusQuery } from '@mth/graphql/queries/withdrawal'
 import { Packet, Person, Phone, Student, Withdrawal } from '@mth/models'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { AssessmentType } from '@mth/screens/Admin/SiteManagement/EnrollmentSetting/TestingPreference/types'
-import { StudentType } from '@mth/screens/HomeroomStudentProfile/Student/types'
 import { getPreviousSchoolYearId, phoneFormat } from '@mth/utils'
 import { ProfilePacketModal } from '../../EnrollmentPackets/EnrollmentPacketModal/ProfilePacketModal'
 import { GetSchoolsPartner } from '../../SchoolOfEnrollment/services'
@@ -56,7 +55,7 @@ export type StudentTemp = {
 
 type StudentProfileProps = {
   studentId: number
-  setStudentPerson: StudentType
+  setStudentPerson: Student
   setStudentStatus: (_: StudentTemp) => void
   studentStatus: StudentTemp
   applicationState: ApplicationStatus

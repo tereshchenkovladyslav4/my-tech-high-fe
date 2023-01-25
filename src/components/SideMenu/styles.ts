@@ -24,7 +24,14 @@ export const useStyles = {
   },
   navLink: {
     textDecoration: 'none',
-    color: '#CCC',
+    color: MthColor.BLACK,
+    borderLeft: `3px solid ${IS_STAGING ? MthColor.LIGHTRED : IS_DEMO ? MthColor.LIGHTBLUE : MthColor.WHITE}`,
+    display: 'flex',
+  },
+  activeNavLink: {
+    backgroundColor: MthColor.ACTIVE_LINK_BG,
+    color: MthColor.MTHBLUE,
+    borderLeft: `3px solid ${MthColor.MTHBLUE}`,
   },
   navbar: {
     height: '100%',

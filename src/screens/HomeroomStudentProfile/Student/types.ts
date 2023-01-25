@@ -1,13 +1,7 @@
 import { FunctionComponent } from 'react'
 import { DropDownItem } from '@mth/components/DropDown/types'
-import { ScheduleStatus } from '@mth/enums'
-import { Address, Email, SchoolOfEnrollmentType, SchoolYear, SchoolYearType } from '@mth/models'
+import { Address, Email, SchoolYear, SchoolYearType, Student } from '@mth/models'
 import { ToDoItem } from '@mth/screens/Dashboard/ToDoList/components/ToDoListItem/types'
-
-export type GradeLevel = {
-  school_year_id: number | string
-  grade_level: number | string
-}
 
 export type GQLFile = {
   file_id: string
@@ -65,7 +59,7 @@ export type Packet = {
   special_ed: string
   special_ed_desc: string
   status: string
-  student: StudentType
+  student: Student
   student_id: number
   understands_special_ed: number
   understands_sped_scheduling: number
@@ -92,64 +86,8 @@ export type Application = {
   school_year: SchoolYearType
   school_year_id: number
   status: string
-  student: StudentType
+  student: Student
   student_id: number
-}
-
-export type Schedule = {
-  schedule_id: number
-  StudentId: number
-  SchoolYearId: number
-  is_second_semester: boolean
-  status: ScheduleStatus
-}
-
-export type StudentType = {
-  grade_levels: GradeLevel[]
-  person: Person
-  student_id: number | string
-  parent_id: number
-  person_id: number
-  reenrolled: number
-  packets?: Packet[]
-  applications?: Application[]
-  parent?: Parent
-  hidden?: number
-  grade_level?: string
-  currentSoe: SchoolOfEnrollmentType[]
-  current_school_year_status: {
-    application_id: number
-    school_year_id: number
-    grade_level: string
-    special_ed_options?: string
-    midyear_application?: string
-    midyear_schedule_open?: string
-    midyear_schedule_close?: string
-    schedule_builder_open?: string
-    schedule_builder_close?: string
-    application_date_submitted?: string
-    second_semester_close?: string
-    second_semester_open?: string
-    withdraw_deadline_num_days?: number
-    enrollment_packet_date_deadline?: string
-    application_date_accepted?: string
-  }
-  StudentSchedules?: Schedule[]
-  StudentWithdrawals?: {
-    date?: string
-    date_emailed: string
-  }[]
-  status: Status[]
-  reenrollment_status: ReenrollmentStatus[]
-  testing_preference: string
-  special_ed?: number
-  diploma_seeking?: number
-}
-
-export type ReenrollmentStatus = {
-  student_id: number
-  reenrolled: number
-  school_year_id: number
 }
 
 export type Status = {
@@ -168,7 +106,7 @@ export type Parent = {
 
   person: Person
 
-  students?: StudentType[]
+  students?: Student[]
   phone?: {
     number: string
   }
@@ -190,8 +128,9 @@ export type Person = {
     recieve_text: number
   }
 }
+
 export type StudentProps = {
-  student: StudentType
+  student: Student
   schoolYears: SchoolYear[]
   showNotification?: ToDoItem | undefined
   withdrawn?: boolean

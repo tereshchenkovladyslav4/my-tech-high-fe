@@ -74,6 +74,7 @@ export const getPeriods = gql`
     periods(school_year_id: $school_year_id, archived: $archived, keyword: $keyword) {
       id
       period
+      diploma_seeking_path
       reduce_funds
       price
       min_grade

@@ -7,9 +7,8 @@ import { find, forEach, map } from 'lodash'
 import Slider from 'react-slick'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { StudentStatus } from '@mth/enums'
-import { SchoolYear } from '@mth/models'
+import { SchoolYear, Student } from '@mth/models'
 import { UserContext, UserInfo } from '@mth/providers/UserContext/UserProvider'
-import { StudentType } from '@mth/screens/HomeroomStudentProfile/Student/types'
 import { getWindowDimension } from '@mth/utils'
 import { ToDoItem } from '../ToDoList/components/ToDoListItem/types'
 import { StudentGrade } from './components/StudentGrade/StudentGrade'
@@ -23,7 +22,7 @@ export const HomeroomGrade: React.FC<HomeroomGradeProps> = ({ schoolYears, mainT
   const { me } = useContext(UserContext)
   const { students } = me as UserInfo
 
-  const [filteredStudents, setFilteredStudents] = useState<StudentType[]>([])
+  const [filteredStudents, setFilteredStudents] = useState<Student[]>([])
   const [studentsCnt, setStudentsCnt] = useState<number>(0)
   const [mappedTodoList, setMappedTodoList] = useState<Map<number, ToDoItem[]>>(new Map())
 

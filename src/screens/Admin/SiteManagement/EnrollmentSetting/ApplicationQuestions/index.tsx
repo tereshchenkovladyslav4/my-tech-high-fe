@@ -371,11 +371,17 @@ export const ApplicationQuestions: React.FC = () => {
           }
         }}
         onSubmit={async (vals) => {
-          questions.forEach((q) => {
-            if (!vals.find((v) => v.id === q.id)) {
-              deleteQuestion({ variables: { id: q.id } })
+          const countryQuestion = vals.find((item) => item.slug === 'address_country_id')
+          for (let i = 0; i < questions.length; i++) {
+            const q = questions[i]
+            if (
+              !vals.find((v) => v.id === q.id) ||
+              (!countryQuestion && q.additional_question === 'address_country_id') // remove child country questions
+            ) {
+              await deleteQuestion({ variables: { id: q.id } })
             }
-          })
+          }
+
           for (let i = 0; i < vals.length; i++) {
             if (vals[i].id < 0) vals[i].id = 0
             vals[i].order = i + 1

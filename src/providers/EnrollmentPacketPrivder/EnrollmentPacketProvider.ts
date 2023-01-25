@@ -1,5 +1,5 @@
 import React, { createContext } from 'react'
-import { StudentType } from '../../screens/HomeroomStudentProfile/Student/types'
+import { Student } from '@mth/models'
 import { UserInfo } from '../UserContext/UserProvider'
 
 export type EnrollmentPacketContextType = {
@@ -9,7 +9,7 @@ export type EnrollmentPacketContextType = {
   setCurrentTab: React.Dispatch<React.SetStateAction<number>>
   packetId: number
   setPacketId: React.Dispatch<React.SetStateAction<number>>
-  student?: StudentType
+  student?: Student
   disabled?: boolean
   visitedTabs?: number[]
   setVisitedTabs: React.Dispatch<React.SetStateAction<number[]>>

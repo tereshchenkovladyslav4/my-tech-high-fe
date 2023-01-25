@@ -1,5 +1,5 @@
-import { StudentType } from '@mth/screens/HomeroomStudentProfile/Student/types'
 import { Email } from './email.model'
+import { Student } from './student.model'
 
 export type GQLFile = {
   file_id: string
@@ -57,7 +57,7 @@ export type Packet = {
   special_ed: string
   special_ed_desc: string
   status: string
-  student: StudentType
+  student: Student
   student_id: number
   understands_special_ed: number
   understands_sped_scheduling: number

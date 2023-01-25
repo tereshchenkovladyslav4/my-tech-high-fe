@@ -14,7 +14,7 @@ import SubjectForm from '@mth/screens/Admin/Curriculum/CourseCatalog/Subjects/Su
 import SaveCancelComponent from '../../Components/SaveCancelComponent/SaveCancelComponent'
 import { Subject, SubjectEditProps } from '../types'
 
-const SubjectEdit: React.FC<SubjectEditProps> = ({ schoolYearId, item, refetch, setShowEditModal }) => {
+const SubjectEdit: React.FC<SubjectEditProps> = ({ schoolYearId, item, subjects, refetch, setShowEditModal }) => {
   const [isChanged, setIsChanged] = useState<boolean>(false)
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false)
   const [showCancelModal, setShowCancelModal] = useState<boolean>(false)
@@ -43,14 +43,30 @@ const SubjectEdit: React.FC<SubjectEditProps> = ({ schoolYearId, item, refetch, 
 
   const onSave = async (value: Subject) => {
     setIsSubmitted(true)
+    const dataToSave = {
+      subject_id: Number(value.subject_id),
+      SchoolYearId: +schoolYearId,
+      name: value.name,
+      periods: value.PeriodIds?.join(','),
+    }
+    const priorityIndex = [...(subjects ? subjects : []), dataToSave]
+      .sort((a, b) => {
+        if (a.name.toLowerCase() < b.name.toLowerCase()) {
+          return -1
+        }
+        if (a.name.toLowerCase() > b.name.toLowerCase()) {
+          return 1
+        }
 
+        return 0
+      })
+      .findIndex((obj) => obj.name.includes(value.name))
     await submitSave({
       variables: {
         createSubjectInput: {
-          subject_id: Number(value.subject_id),
-          SchoolYearId: +schoolYearId,
-          name: value.name,
-          periods: value.PeriodIds?.join(','),
+          ...dataToSave,
+          ...(!value.subject_id &&
+            (subjects?.filter((obj) => obj.priority)?.length ?? 0) > 1 && { priority: priorityIndex + 1 }),
         },
       },
     })

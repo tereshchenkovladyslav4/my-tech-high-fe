@@ -23,9 +23,10 @@ import { Table } from '@mth/components/Table/Table'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { MthColor } from '@mth/enums'
+import { Student } from '@mth/models'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { extractContent, getWindowDimension } from '@mth/utils'
-import { Person, StudentType } from '../../HomeroomStudentProfile/Student/types'
+import { Person } from '../../HomeroomStudentProfile/Student/types'
 import { Announcement } from '../Announcements/types'
 import { getUserAnnouncements } from '../services'
 import { DashboardSection } from '../types'
@@ -39,7 +40,7 @@ const getProfilePhoto = (person: Person) => {
   return s3URL + person.photo
 }
 
-export const avatarGroup = (gradeFilter: string, students: StudentType[] | undefined): ReactNode => {
+export const avatarGroup = (gradeFilter: string, students: Student[] | undefined): ReactNode => {
   const grades = JSON.parse(gradeFilter)
   return (
     <AvatarGroup max={5} sx={{ maxWidth: '300px', justifyContent: 'start' }} spacing={0}>

@@ -35,11 +35,13 @@ import CustomTable from '@mth/components/Table/CustomTable'
 import { Field } from '@mth/components/Table/types'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { WarningModal } from '@mth/components/WarningModal/Warning'
+import { DIPLOMA_SEEKING_PATH_ITEMS } from '@mth/constants'
 import { MthColor, MthRoute, ReduceFunds } from '@mth/enums'
 import { useProgramYearListBySchoolYearId, useSchoolYearsByRegionId } from '@mth/hooks'
 import { Period } from '@mth/models'
 import { loadingState } from '@mth/providers/Store/State'
 import { getPeriods, upsertPeriod, periodArchive, deletePeriodsByIds } from '@mth/screens/Admin/Curriculum/services'
+import { commonClasses } from '@mth/styles/common.style'
 import { gradeShortText } from '@mth/utils'
 import { useStyles } from '../../styles'
 import { SEMESTER_TYPE, SEMESTER_MESSAGE } from '../../types'
@@ -207,9 +209,9 @@ const Periods: FunctionComponent = () => {
             PeriodInput: variables,
           },
         })
-          .then(() => {
+          .then(async () => {
             setOpen(false)
-            refetchPeriod()
+            await refetchPeriod()
             setFilter('archived', false)
           })
           .finally(() => {
@@ -223,6 +225,7 @@ const Periods: FunctionComponent = () => {
   const initialValues: Period = {
     id: 0,
     period: 0,
+    diploma_seeking_path: undefined,
     category: '',
     min_grade: null,
     max_grade: null,
@@ -239,6 +242,9 @@ const Periods: FunctionComponent = () => {
     initialValues,
     validationSchema: Yup.object({
       period: Yup.number().required().min(1, 'Required'),
+      diploma_seeking_path: schoolYearData?.diploma_seeking
+        ? Yup.string().required('Required').nullable()
+        : Yup.string().nullable(),
       category: Yup.string().required(),
       min_grade: Yup.string().required('Required').nullable(),
       max_grade: Yup.string().required('Required').nullable(),
@@ -275,6 +281,7 @@ const Periods: FunctionComponent = () => {
     formik.setValues({
       id: 0,
       period: 0,
+      diploma_seeking_path: undefined,
       category: '',
       min_grade: null,
       max_grade: null,
@@ -296,6 +303,7 @@ const Periods: FunctionComponent = () => {
     formik.setValues({
       id: item.id,
       period: item.period,
+      diploma_seeking_path: item.diploma_seeking_path,
       category: item.category,
       min_grade: item.min_grade,
       max_grade: item.max_grade,
@@ -555,6 +563,29 @@ const Periods: FunctionComponent = () => {
                     </MenuItem>
                   )}
                 </CssTextField>
+              </Grid>
+              <Grid item xs={6}>
+                {schoolYearData?.diploma_seeking && (
+                  <>
+                    <DropDown
+                      dropDownItems={DIPLOMA_SEEKING_PATH_ITEMS}
+                      placeholder='Diploma-seeking Path'
+                      labelTop
+                      setParentValue={(value) => {
+                        formik.setFieldValue('diploma_seeking_path', value)
+                      }}
+                      sx={{ m: 0 }}
+                      defaultValue={formik.values?.diploma_seeking_path}
+                      error={{
+                        error: formik.touched.diploma_seeking_path && !!formik.errors.diploma_seeking_path,
+                        errorMsg: '',
+                      }}
+                    />
+                    <Subtitle sx={commonClasses.formError}>
+                      {formik.touched.diploma_seeking_path && formik.errors.diploma_seeking_path}
+                    </Subtitle>
+                  </>
+                )}
               </Grid>
               <Grid item xs={12}>
                 <CssTextField
