@@ -85,7 +85,7 @@ export const useStudentSchedulePeriods = (
   school_year_id: number | undefined,
   diplomaSeekingPath: DiplomaSeekingPath | null = null,
   showSecondSemester = false,
-  isGradeFilter = false,
+  isGradeFilter = true,
 ): {
   scheduleData: ScheduleData[]
   hasSecondSemester: boolean

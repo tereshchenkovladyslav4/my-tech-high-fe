@@ -291,7 +291,11 @@ export const StudentCard: React.FC<StudentProps> = ({
     <>
       <Box sx={{ marginX: 2, display: { xs: 'none', sm: 'inline-block' } }}>
         <Metadata
-          title={<Title>{student.person.first_name}</Title>}
+          title={
+            <Title>
+              {student.person.preferred_first_name ? student.person.preferred_first_name : student.person.first_name}
+            </Title>
+          }
           subtitle={
             <Box>
               <Subtitle size={'large'}>{currentGradeText(student)}</Subtitle>
@@ -321,7 +325,9 @@ export const StudentCard: React.FC<StudentProps> = ({
                 cursor: 'pointer',
                 fontSize: '4.0rem',
               }}
-              alt={student.person.first_name}
+              alt={
+                student.person.preferred_first_name ? student.person.preferred_first_name : student.person.first_name
+              }
               variant='rounded'
               src={getProfilePhoto(student.person)}
               onClick={() => {
@@ -346,7 +352,13 @@ export const StudentCard: React.FC<StudentProps> = ({
         <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
           <Box sx={{ opacity: withdrawn ? 0.35 : 1 }}>
             <Metadata
-              title={<Subtitle>{student.person.first_name}</Subtitle>}
+              title={
+                <Subtitle>
+                  {student.person.preferred_first_name
+                    ? student.person.preferred_first_name
+                    : student.person.first_name}
+                </Subtitle>
+              }
               subtitle={
                 <Box>
                   <Paragraph size={'medium'} color={MthColor.SYSTEM_06}>

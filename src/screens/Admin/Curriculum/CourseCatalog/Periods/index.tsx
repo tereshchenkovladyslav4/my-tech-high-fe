@@ -743,7 +743,7 @@ const Periods: FunctionComponent = () => {
                             onChange={formik.handleChange}
                           />
                         }
-                        label={`Display a notification when the ${formik.values.semester.toLocaleLowerCase()} is not changed at 2nd Semester`}
+                        label={`Display a notification when the ${formik.values.semester} is not changed at 2nd Semester`}
                       />
                       {formik.values.notify_semester && (
                         <>

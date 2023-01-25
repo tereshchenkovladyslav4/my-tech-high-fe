@@ -113,7 +113,7 @@ const TitleForm: React.FC<TitleFormProps> = ({ schoolYearData, subjectsItems, gr
             </Grid>
             <Grid item xs={12}>
               <MthCheckbox
-                label='Always unlock this subject for 2nd Semester'
+                label='Always unlock this Subject for 2nd Semester'
                 checked={values?.always_unlock}
                 onChange={() => {
                   setFieldValue('always_unlock', !values?.always_unlock)

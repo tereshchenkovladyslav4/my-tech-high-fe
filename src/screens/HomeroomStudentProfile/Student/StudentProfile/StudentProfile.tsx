@@ -195,8 +195,8 @@ export const StudentProfile: undefined | React.FC<StudentProfileProps> = ({ curr
             backgroundColor: '#FAFAFA',
             alignItems: 'center',
             cursor: 'pointer',
-            height: '100%',
-            width: '100%',
+            height: '164px',
+            width: '164px',
             whiteSpace: 'nowrap',
           }}
           onClick={() => openImageModal()}

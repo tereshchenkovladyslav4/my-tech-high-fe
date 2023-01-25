@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { useQuery } from '@apollo/client'
 import { Box, Button, Card, CircularProgress, Divider } from '@mui/material'
-import { filter, map } from 'lodash'
+import { filter, map, orderBy } from 'lodash'
 import { DropDownItem } from '@mth/components/DropDown/types'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Title } from '@mth/components/Typography/Title/Title'
@@ -38,20 +38,30 @@ export const Students: React.FC<StudentsProps> = ({ schoolYears, isLoading, scho
   }
 
   const renderStudents = () =>
-    map(availableStudents, (student) => {
-      const showNotification = findStudent(student.student_id)
-        .filter((item) => item !== false)
-        .at(0) as ToDoItem
-      return (
-        <StudentCard
-          schoolYears={schoolYears}
-          student={student}
-          key={student?.student_id}
-          schoolYearsDropdown={schoolYearsDropdown}
-          showNotification={showNotification}
-        />
-      )
-    })
+    map(
+      orderBy(
+        availableStudents,
+        [
+          (student) =>
+            student.person.preferred_first_name ? student.person.preferred_first_name : student.person.first_name,
+        ],
+        ['asc'],
+      ),
+      (student) => {
+        const showNotification = findStudent(student.student_id)
+          .filter((item) => item !== false)
+          .at(0) as ToDoItem
+        return (
+          <StudentCard
+            schoolYears={schoolYears}
+            student={student}
+            key={student?.student_id}
+            schoolYearsDropdown={schoolYearsDropdown}
+            showNotification={showNotification}
+          />
+        )
+      },
+    )
 
   const renderInactiveStudents = () =>
     map(inactiveStudents, (student) => {

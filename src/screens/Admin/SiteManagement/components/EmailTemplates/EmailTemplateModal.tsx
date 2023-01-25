@@ -585,7 +585,16 @@ export const EmailTemplateModal: React.FC<EmailTemplateModalProps> = ({
               placeholder='Subject'
               onChange={(e) => setSubject(e.target.value)}
             />
-            <Box className={classes.editor}>
+            <Box
+              className={classes.editor}
+              sx={{
+                'div.rdw-editor-main': {
+                  '.public-DraftStyleDefault-block': {
+                    margin: 0,
+                  },
+                },
+              }}
+            >
               <Wysiwyg.Editor
                 onContentStateChange={handleEditorChange}
                 editorRef={(ref) => (editorRef.current = ref)}

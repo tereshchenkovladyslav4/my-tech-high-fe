@@ -409,6 +409,7 @@ export const EnrollmentPacketTable: React.FC = () => {
             flexDirection: 'row',
             marginLeft: '24px',
             alignItems: 'center',
+            width: '100%',
           }}
         >
           <Subtitle size='medium' fontWeight='700'>
@@ -486,20 +487,20 @@ export const EnrollmentPacketTable: React.FC = () => {
             Change Program Year
           </Button>
         </Box>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            width: '100%',
+            justifyContent: 'flex-end',
+            px: '48px',
+          }}
+        >
+          <SchoolYearDropDown selectedYearId={selectedYearId} setSelectedYearId={setSelectedYearId} />
+        </Box>
       </Box>
 
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'row',
-          alignItems: 'center',
-          width: '100%',
-          justifyContent: 'flex-end',
-          px: '48px',
-        }}
-      >
-        <SchoolYearDropDown selectedYearId={selectedYearId} setSelectedYearId={setSelectedYearId} />
-      </Box>
       {/*  Pagination & Actions */}
       <Box
         sx={{

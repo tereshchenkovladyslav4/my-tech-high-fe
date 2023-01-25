@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useQuery } from '@apollo/client'
 import { Table, TableBody, TableContainer, Box } from '@mui/material'
-import { forOwn, map, groupBy, values } from 'lodash'
+import { forOwn, map, groupBy, values, orderBy } from 'lodash'
 import moment from 'moment'
 import { Student } from '@mth/models'
 import { TodoListProps } from '@mth/screens/Dashboard/ToDoList/components/TodoList/types'
@@ -185,7 +185,17 @@ export const TodoList: React.FC<TodoListProps> = ({
   }
 
   const renderTodoListItem = () => {
-    return map(todoList, (el, idx) => {
+    const sortedTodoList = orderBy(
+      todoList,
+      [
+        (todoItem) =>
+          todoItem.students[0].person.preferred_first_name
+            ? todoItem.students[0].person.preferred_first_name
+            : todoItem.students[0].person.first_name,
+      ],
+      ['asc'],
+    )
+    return map(sortedTodoList, (el, idx) => {
       return (
         el && (
           <ToDoListItem
