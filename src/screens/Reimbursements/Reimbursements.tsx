@@ -108,6 +108,7 @@ const Reimbursements: React.FC = () => {
             formType={formType}
             isDirectOrder={page === MthRoute.REIMBURSEMENTS_REIMBURSEMENT_FORM ? false : true}
             setFormType={setFormType}
+            setPage={setPage}
             setIsChanged={() => {}}
           />
         </RequestComponent>

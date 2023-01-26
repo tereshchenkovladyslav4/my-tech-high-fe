@@ -32,7 +32,7 @@ import {
   ListItemText,
   ListItemIcon,
 } from '@mui/material'
-import { filter, map } from 'lodash'
+import { filter, map, orderBy } from 'lodash'
 import { NavLink, useLocation } from 'react-router-dom'
 import Slider from 'react-slick'
 import { Metadata } from '@mth/components/Metadata/Metadata'
@@ -271,71 +271,110 @@ export const AppBar: FunctionComponent = () => {
   }
 
   const renderStudentHeader = () =>
-    map(activeStudents, (student, idx) => {
-      const link =
-        student?.applications?.at(-1)?.status === ApplicationStatus.SUBMITTED ||
-        student?.status?.at(-1)?.status === StudentStatus.WITHDRAWN ||
-        student?.packets?.at(-1)?.status === PacketStatus.STARTED ||
-        student?.packets?.at(-1)?.status === PacketStatus.NOT_STARTED
-          ? `${MthRoute.HOMEROOM}`
-          : `${MthRoute.HOMEROOM}/${student.student_id}`
-      return (
-        <Box key={idx} sx={{ textDecoration: 'none', marginTop: 1 }}>
-          {link ? (
-            <NavLink to={link} style={{ textDecoration: 'none' }}>
+    map(
+      orderBy(
+        activeStudents,
+        [
+          (student) =>
+            student.person.preferred_first_name ? student.person.preferred_first_name : student.person.first_name,
+        ],
+        ['asc'],
+      ),
+      (student, idx) => {
+        const link =
+          student?.applications?.at(-1)?.status === ApplicationStatus.SUBMITTED ||
+          student?.status?.at(-1)?.status === StudentStatus.WITHDRAWN ||
+          student?.packets?.at(-1)?.status === PacketStatus.STARTED ||
+          student?.packets?.at(-1)?.status === PacketStatus.NOT_STARTED
+            ? `${MthRoute.HOMEROOM}`
+            : `${MthRoute.HOMEROOM}/${student.student_id}`
+        return (
+          <Box key={idx} sx={{ textDecoration: 'none', marginTop: 1 }}>
+            {link ? (
+              <NavLink to={link} style={{ textDecoration: 'none' }}>
+                <Metadata
+                  divider={true}
+                  title={
+                    <Subtitle
+                      color={isActive(student.student_id) ? MthColor.MTHBLUE : MthColor.BLACK}
+                      sx={classes.studentItemText}
+                      fontWeight='600'
+                    >
+                      {student.person.preferred_first_name
+                        ? student.person.preferred_first_name
+                        : student.person.first_name}
+                    </Subtitle>
+                  }
+                  subtitle={
+                    <Paragraph
+                      fontWeight='600'
+                      color={isActive(student.student_id) ? MthColor.MTHBLUE : MthColor.SYSTEM_11}
+                      size={'large'}
+                      sx={classes.studentItemText}
+                    >
+                      {gradeText(student)}
+                    </Paragraph>
+                  }
+                  image={
+                    <Box sx={{ position: 'relative' }}>
+                      <Avatar
+                        alt={
+                          student.person.preferred_first_name
+                            ? student.person.preferred_first_name
+                            : student.person.first_name
+                        }
+                        src={getProfilePhoto(student.person)}
+                        variant='rounded'
+                        style={{ marginRight: 24 }}
+                      />
+                      <Box
+                        sx={{
+                          position: 'absolute',
+                          bottom: -16,
+                          left: '-2px',
+                          width: '270%',
+                          height: 2,
+                          borderBottom: isActive(student.student_id)
+                            ? '5px solid ' + MthColor.MTHBLUE
+                            : '5px solid transparent',
+                        }}
+                      />
+                    </Box>
+                  }
+                />
+              </NavLink>
+            ) : (
               <Metadata
                 divider={true}
                 title={
-                  <Subtitle
-                    color={isActive(student.student_id) ? MthColor.MTHBLUE : '#A1A1A1'}
-                    sx={classes.studentItemText}
-                  >
-                    {student.person.preferred_first_name
-                      ? student.person.preferred_first_name
-                      : student.person.first_name}
+                  <Subtitle fontWeight='600' color={isActive(student.student_id) ? MthColor.MTHBLUE : MthColor.BLACK}>
+                    {student.person.first_name}
                   </Subtitle>
                 }
                 subtitle={
-                  <Paragraph color='#cccccc' size={'large'} sx={classes.studentItemText}>
+                  <Paragraph
+                    fontWeight='600'
+                    color={isActive(student.student_id) ? MthColor.MTHBLUE : MthColor.SYSTEM_11}
+                    size={'large'}
+                  >
                     {gradeText(student)}
                   </Paragraph>
                 }
                 image={
                   <Avatar
-                    alt={student.person.preferred_first_name}
+                    alt={student.person.first_name}
                     src={getProfilePhoto(student.person)}
                     variant='rounded'
                     style={{ marginRight: 24 }}
                   />
                 }
+                borderBottom={isActive(student.student_id)}
               />
-            </NavLink>
-          ) : (
-            <Metadata
-              divider={true}
-              title={
-                <Subtitle color={isActive(student.student_id) ? MthColor.MTHBLUE : '#A1A1A1'}>
-                  {student.person.first_name}
-                </Subtitle>
-              }
-              subtitle={
-                <Paragraph color='#cccccc' size={'large'}>
-                  {gradeText(student)}
-                </Paragraph>
-              }
-              image={
-                <Avatar
-                  alt={student.person.first_name}
-                  src={getProfilePhoto(student.person)}
-                  variant='rounded'
-                  style={{ marginRight: 24 }}
-                />
-              }
-            />
-          )}
-        </Box>
-      )
-    })
+            )}
+          </Box>
+        )
+      },
+    )
 
   const handleAnchorClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget)
@@ -364,18 +403,54 @@ export const AppBar: FunctionComponent = () => {
         'aria-labelledby': 'basic-button',
       }}
     >
-      {map(activeStudents, (student, idx) => {
-        const link =
-          student?.applications?.at(-1)?.status === ApplicationStatus.SUBMITTED ||
-          student?.status?.at(-1)?.status === 2 ||
-          student?.packets?.at(-1)?.status === PacketStatus.STARTED ||
-          student?.packets?.at(-1)?.status === PacketStatus.NOT_STARTED
-            ? `${MthRoute.HOMEROOM}`
-            : `${MthRoute.HOMEROOM}/${student.student_id}`
-        return (
-          <div key={idx}>
-            {link ? (
-              <NavLink to={link} style={{ textDecoration: 'none' }}>
+      {map(
+        orderBy(
+          activeStudents,
+          [
+            (student) =>
+              student.person.preferred_first_name ? student.person.preferred_first_name : student.person.first_name,
+          ],
+          ['asc'],
+        ),
+        (student, idx) => {
+          const link =
+            student?.applications?.at(-1)?.status === ApplicationStatus.SUBMITTED ||
+            student?.status?.at(-1)?.status === 2 ||
+            student?.packets?.at(-1)?.status === PacketStatus.STARTED ||
+            student?.packets?.at(-1)?.status === PacketStatus.NOT_STARTED
+              ? `${MthRoute.HOMEROOM}`
+              : `${MthRoute.HOMEROOM}/${student.student_id}`
+          return (
+            <div key={idx}>
+              {link ? (
+                <NavLink to={link} style={{ textDecoration: 'none' }}>
+                  <MenuItem
+                    onClick={() => handleDrawerCloseAndTheIcon(getAvatar(student)['type'], getAvatar(student)['link'])}
+                  >
+                    <ListItemIcon>
+                      <Avatar
+                        alt={
+                          student.person.preferred_first_name
+                            ? student.person.preferred_first_name
+                            : student.person.first_name
+                        }
+                        src={getProfilePhoto(student.person)}
+                        style={{ marginRight: 8 }}
+                      />
+                    </ListItemIcon>
+                    <ListItemText sx={{ color: 'black', paddingX: '5px', minWidth: '100px' }}>
+                      {student.person.preferred_first_name
+                        ? student.person.preferred_first_name
+                        : student.person.first_name}
+                    </ListItemText>
+                    <ListItemIcon sx={{ minWidth: '70px' }}>
+                      {checkEnrollPacketStatus(schoolYears, student) && (
+                        <IconButton>{circleData(student)?.icon}</IconButton>
+                      )}
+                    </ListItemIcon>
+                  </MenuItem>
+                </NavLink>
+              ) : (
                 <MenuItem
                   onClick={() => handleDrawerCloseAndTheIcon(getAvatar(student)['type'], getAvatar(student)['link'])}
                 >
@@ -401,37 +476,11 @@ export const AppBar: FunctionComponent = () => {
                     )}
                   </ListItemIcon>
                 </MenuItem>
-              </NavLink>
-            ) : (
-              <MenuItem
-                onClick={() => handleDrawerCloseAndTheIcon(getAvatar(student)['type'], getAvatar(student)['link'])}
-              >
-                <ListItemIcon>
-                  <Avatar
-                    alt={
-                      student.person.preferred_first_name
-                        ? student.person.preferred_first_name
-                        : student.person.first_name
-                    }
-                    src={getProfilePhoto(student.person)}
-                    style={{ marginRight: 8 }}
-                  />
-                </ListItemIcon>
-                <ListItemText sx={{ color: 'black', paddingX: '5px', minWidth: '100px' }}>
-                  {student.person.preferred_first_name
-                    ? student.person.preferred_first_name
-                    : student.person.first_name}
-                </ListItemText>
-                <ListItemIcon sx={{ minWidth: '70px' }}>
-                  {checkEnrollPacketStatus(schoolYears, student) && (
-                    <IconButton>{circleData(student)?.icon}</IconButton>
-                  )}
-                </ListItemIcon>
-              </MenuItem>
-            )}
-          </div>
-        )
-      })}
+              )}
+            </div>
+          )
+        },
+      )}
       <NavLink to={`${MthRoute.APPLICATIONS}`} style={{ textDecoration: 'none' }}>
         <MenuItem onClick={() => handleDrawerCloseAndTheIcon('header', 'addStudent')}>
           <ListItemIcon sx={{ marginRight: '24px' }}>
@@ -495,9 +544,7 @@ export const AppBar: FunctionComponent = () => {
   const getTheIcon = () => {
     if (location.pathname.indexOf('homeroom/enrollment') !== -1) {
       return <PeopleAltOutlinedIcon />
-    }
-
-    if (theIcon.type === 'side') {
+    } else if (theIcon.type === 'side') {
       switch (theIcon.name) {
         case 'dashboard':
           return <BackupTableIcon />
@@ -540,10 +587,24 @@ export const AppBar: FunctionComponent = () => {
           sx={{ width: 24, height: 24, backgroundColor: 'blue', fontSize: '1rem' }}
         />
       )
-    } else if (theIcon.type === 'avatar') {
+    } else if (
+      (me && theIcon.type === 'avatar') ||
+      (location.pathname.includes('homeroom') &&
+        me?.students?.find((student) => student.student_id.toString() === location.pathname.split('/')[2]) !==
+          undefined)
+    ) {
+      const student = me.students?.find((student) => student.student_id.toString() === location.pathname.split('/')[2])
       return (
         <Avatar
-          alt={theIcon.name}
+          alt={
+            theIcon.name
+              ? theIcon.name
+              : student !== undefined
+              ? student.person.preferred_first_name !== undefined
+                ? student.person.preferred_first_name
+                : student.person.first_name
+              : ''
+          }
           src='image'
           sx={{ width: 24, height: 24, backgroundColor: 'blue', fontSize: '1rem' }}
         />

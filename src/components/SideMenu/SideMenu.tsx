@@ -12,7 +12,7 @@ import { List, ListItem, Box, ListItemButton } from '@mui/material'
 import { map, some } from 'lodash'
 import { NavLink, useHistory, useLocation } from 'react-router-dom'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
-import { MthRoute, MthTitle } from '@mth/enums'
+import { MthColor, MthRoute, MthTitle } from '@mth/enums'
 import { AuthContext } from '@mth/providers/AuthProvider/AuthContext'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { MTHLogo } from '../SVG/MTHLogo'
@@ -140,8 +140,8 @@ export const SideMenu: React.FC = () => {
                 </Paragraph>
                 <Paragraph
                   size='small'
-                  fontWeight='bold'
-                  sx={{ fontSize: '12px', color: '#CCCCCC', textAlign: 'center', paddingTop: '5px' }}
+                  fontWeight='500'
+                  sx={{ fontSize: '12px', color: MthColor.BLACK, textAlign: 'center', paddingTop: '5px' }}
                 >
                   {userRegion?.regionDetail.name}
                 </Paragraph>

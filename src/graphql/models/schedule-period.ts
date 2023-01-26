@@ -1,5 +1,6 @@
 import { SchedulePeriodStatus } from '@mth/enums'
-import { Schedule } from '@mth/models'
+import { Period, Schedule } from '@mth/models'
+import { Title } from '@mth/screens/Admin/Curriculum/CourseCatalog/Subjects/types'
 
 export type SchedulePeriod = {
   CourseId: number
@@ -21,6 +22,8 @@ export type SchedulePeriod = {
   tp_specific_course_website: string
   status: SchedulePeriodStatus
   Schedule: Schedule
+  Period?: Period
+  Title?: Title
 }
 
 export type SchedulePeriodHistory = {

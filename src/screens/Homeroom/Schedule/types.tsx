@@ -95,6 +95,8 @@ export type Course = {
   id: number
   provider_id: number
   name: string
+  min_grade: number
+  max_grade: number
   min_alt_grade: number
   max_alt_grade: number
   website: string
@@ -125,6 +127,8 @@ export type Title = {
   subject_notification: string
   reduce_funds: ReduceFunds
   reduce_funds_notification: string
+  min_grade: number
+  max_grade: number
   min_alt_grade: number
   max_alt_grade: number
   custom_built: boolean

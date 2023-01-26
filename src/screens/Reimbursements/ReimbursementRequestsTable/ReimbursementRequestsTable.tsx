@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
+import { useQuery } from '@apollo/client'
 import { DeleteForeverOutlined } from '@mui/icons-material'
 import ModeEditIcon from '@mui/icons-material/ModeEdit'
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined'
@@ -10,7 +11,8 @@ import { MthTable } from '@mth/components/MthTable'
 import { MthTableField, MthTableRowItem } from '@mth/components/MthTable/types'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { REIMBURSEMENT_FORM_TYPE_ITEMS } from '@mth/constants'
-import { MthColor, Order, ReimbursementFormType, ReimbursementRequestStatus } from '@mth/enums'
+import { MthColor, Order, ReimbursementRequestStatus } from '@mth/enums'
+import { getReimbursementRequestsQuery } from '@mth/graphql/queries/reimbursement-request'
 import { ReimbursementRequest } from '@mth/models'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { reimbursementRequestsTableClasses } from './styles'
@@ -44,6 +46,7 @@ const ReimbursementRequestsTable: React.FC<ReimbursementRequestsTableProps> = ({
 }) => {
   const { me } = useContext(UserContext)
   const [tableData, setTableData] = useState<MthTableRowItem<ReimbursementRequest>[]>([])
+  const [studentIds, setStudentIds] = useState<number[]>([])
   const [studentItems, setStudentItems] = useState<DropDownItem[]>([])
   const [selectedItems, setSelectedItems] = useState<ReimbursementRequest[]>([])
   const [selectedStudentId, setSelectedStudentId] = useState<number>(-1)
@@ -51,9 +54,22 @@ const ReimbursementRequestsTable: React.FC<ReimbursementRequestsTableProps> = ({
   const [sortField, setSortField] = useState<string>('created_at')
   const [sortOrder, setSortOrder] = useState<Order>(Order.ASC)
 
+  const { loading, data } = useQuery(getReimbursementRequestsQuery, {
+    variables: {
+      param: {
+        filter: {
+          SchoolYearId: selectedYearId,
+          StudentIds: selectedStudentId > 0 ? [selectedStudentId] : studentIds,
+        },
+      },
+    },
+    skip: !selectedYearId || !studentIds.length,
+    fetchPolicy: 'network-only',
+  })
+
   const createData = (resourceRequest: ReimbursementRequest): MthTableRowItem<ReimbursementRequest> => {
     return {
-      key: `schedule-request-${resourceRequest.id}-${resourceRequest.student_id}`,
+      key: `schedule-request-${resourceRequest.reimbursement_request_id}-${resourceRequest.StudentId}`,
       columns: {},
       selectable: true,
       isSelected: false,
@@ -77,7 +93,7 @@ const ReimbursementRequestsTable: React.FC<ReimbursementRequestsTableProps> = ({
       sortable: true,
       width: '110px',
       formatter: (item: MthTableRowItem<ReimbursementRequest>) => {
-        return <TableField item={item.rawData}>{`$${item.rawData.amount}`}</TableField>
+        return <TableField item={item.rawData}>{`$${item.rawData.total_amount}`}</TableField>
       },
     },
     {
@@ -86,7 +102,7 @@ const ReimbursementRequestsTable: React.FC<ReimbursementRequestsTableProps> = ({
       sortable: true,
       formatter: (item: MthTableRowItem<ReimbursementRequest>) => {
         //return item.rawData.Student?.person?.last_name
-        return <TableField item={item.rawData}>{item.rawData.student}</TableField>
+        return <TableField item={item.rawData}>{item.rawData.Student?.person?.last_name}</TableField>
       },
     },
     {
@@ -162,7 +178,7 @@ const ReimbursementRequestsTable: React.FC<ReimbursementRequestsTableProps> = ({
       formatter: (item: MthTableRowItem<ReimbursementRequest>) => {
         return (
           <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-            {item.rawData.status === ReimbursementRequestStatus.UPDATES_REQUIRED ? (
+            {item.rawData.status !== ReimbursementRequestStatus.PAID ? (
               <IconButton>
                 <Tooltip title='Edit' color='primary' placement='top'>
                   <ModeEditIcon fontSize='medium' />
@@ -202,82 +218,32 @@ const ReimbursementRequestsTable: React.FC<ReimbursementRequestsTableProps> = ({
           }
         }),
       ] as DropDownItem[])
+      setStudentIds(
+        me?.students?.map((student) => {
+          return +student?.student_id
+        }),
+      )
     }
   }, [me?.students])
 
-  useEffect(() => {
-    const results: ReimbursementRequest[] = [
-      {
-        id: 1,
-        student_id: 1,
-        status: ReimbursementRequestStatus.UPDATES_REQUIRED,
-        SchoolYearId: 19,
-        amount: 100,
-        date_submitted: '2022-09-30',
-        date_paid: '',
-        date_ordered: '',
-        is_direct_order: false,
-        form_type: ReimbursementFormType.THIRD_PARTY_PROVIDER,
-        periods: 'Period 5',
-        student: 'Hunter',
-      },
-      {
-        id: 2,
-        student_id: 2,
-        status: ReimbursementRequestStatus.PAID,
-        SchoolYearId: 19,
-        amount: 100,
-        date_submitted: '2022-10-05',
-        date_paid: '2022-10-12',
-        date_ordered: '',
-        is_direct_order: false,
-        form_type: ReimbursementFormType.TECHNOLOGY,
-        periods: '',
-        student: 'Hailey',
-      },
-      {
-        id: 3,
-        student_id: 3,
-        status: ReimbursementRequestStatus.DRAFT,
-        SchoolYearId: 19,
-        amount: 100,
-        date_submitted: '2022-09-27',
-        date_paid: '',
-        date_ordered: '',
-        is_direct_order: true,
-        form_type: ReimbursementFormType.CUSTOM_BUILT,
-        periods: 'Period 2, 3, 4 and 6',
-        student: 'Hayden',
-      },
-      {
-        id: 4,
-        student_id: 4,
-        status: ReimbursementRequestStatus.RESUBMITTED,
-        SchoolYearId: 19,
-        amount: 100,
-        date_submitted: '2022-09-28',
-        date_paid: '',
-        date_ordered: '',
-        is_direct_order: false,
-        form_type: ReimbursementFormType.CUSTOM_BUILT,
-        periods: 'Period 2, 3, 4 and 6',
-        student: 'Hayden',
-      },
-    ]
-    let tempSum = 0
-    results?.map((result) => {
-      tempSum += result.amount
-    })
-    setSum(tempSum)
-    setTableData(
-      (results || []).map((item: ReimbursementRequest) => {
-        return createData(item)
-      }),
-    )
-  }, [])
-
   // This will be deleted
   useEffect(() => {}, [selectedItems, sortOrder])
+
+  useEffect(() => {
+    if (!loading && data?.reimbursementRequests) {
+      const { reimbursementRequests } = data
+      let tempSum = 0
+      reimbursementRequests?.map((result: ReimbursementRequest) => {
+        tempSum += result.total_amount
+      })
+      setSum(tempSum)
+      setTableData(
+        (reimbursementRequests || []).map((item: ReimbursementRequest) => {
+          return createData(item)
+        }),
+      )
+    }
+  }, [loading, data])
 
   return (
     <Grid container>

@@ -8,7 +8,6 @@ import { OPT_TYPE } from '@mth/enums'
 import { updateStudentAssessmentMutation } from '@mth/graphql/mutation/assessment'
 import { getStudentAssessmentsByStudentId } from '@mth/graphql/queries/assessment'
 import TestingPreferenceInformation from '@mth/screens/Admin/SiteManagement/EnrollmentSetting/TestingPreference/TestingPreferenceInformation'
-import { extractContent } from '@mth/utils'
 import { TestingPreferenceProps } from '../types'
 import { testingPrefrenceClassess } from './styles'
 
@@ -92,7 +91,7 @@ const TestingPreference: React.FC<TestingPreferenceProps> = ({
           <MthRadioGroup
             ariaLabel={`testing_preference_${index}`}
             title={assessmentItem?.test_name}
-            description={extractContent(assessmentItem?.information)}
+            description={<p dangerouslySetInnerHTML={{ __html: assessmentItem?.information }} />}
             options={assessmentItem?.Options?.map((option) => ({
               option_id: option?.option_id || 0,
               label: option?.label,

@@ -50,7 +50,11 @@ export const CustomModal: React.FC<CustomModalType> = ({
             {title}
           </Typography>
           {showIcon && <ErrorOutlineIcon sx={{ fontSize: 50, margin: '20px 0px' }} />}
-          {showIcon ? <Typography>{description}</Typography> : <Typography marginTop={4}>{description}</Typography>}
+          <Typography
+            marginTop={showIcon ? 0 : 4}
+            component={'p'}
+            dangerouslySetInnerHTML={{ __html: description || '' }}
+          />
           {subDescription && <Typography>{subDescription}</Typography>}
           <Box
             sx={{

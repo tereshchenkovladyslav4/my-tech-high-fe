@@ -54,6 +54,7 @@ export type Title = {
   show_software_reimbursement?: boolean
   stateCourseCords?: StateCourseCord[]
   StateCodes?: StateCodeField[]
+  Subject?: Subject
 }
 
 export type TitlesProps = {

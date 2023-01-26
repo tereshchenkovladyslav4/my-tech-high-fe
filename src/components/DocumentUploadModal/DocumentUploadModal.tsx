@@ -21,6 +21,7 @@ export const DocumentUploadModal: React.FC<SubmissionModal> = ({
   limit,
   secondaryModal,
   node,
+  isUploadAble,
 }) => {
   const [validFiles, setValidFiles] = useState<File[]>([])
   const [errorMessage, setErrorMessage] = useState('')
@@ -97,6 +98,7 @@ export const DocumentUploadModal: React.FC<SubmissionModal> = ({
     setValidFiles(filter(validFiles, (validFile) => validFile !== file))
   }
   const submitAndClose = () => {
+    if (node && !isUploadAble) return
     handleFile(validFiles)
     handleModem()
   }

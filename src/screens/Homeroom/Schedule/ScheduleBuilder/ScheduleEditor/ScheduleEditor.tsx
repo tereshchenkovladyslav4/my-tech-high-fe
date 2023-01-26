@@ -18,7 +18,7 @@ import { makeProviderData } from '@mth/hooks'
 import { Period } from '@mth/models'
 import { SEMESTER_TYPE } from '@mth/screens/Admin/Curriculum/types'
 import { CustomBuiltDescriptionEdit } from '@mth/screens/Homeroom/Schedule/ScheduleBuilder/CustomBuiltDescription'
-import { extractContent, gradeShortText } from '@mth/utils'
+import { gradeShortText } from '@mth/utils'
 import { Course, ScheduleData, Subject, Title } from '../../types'
 import { OnSiteSplitEnrollmentEdit } from '../OnSiteSplitEnrollmentEdit'
 import { OnSiteSplitEnrollment } from '../OnSiteSplitEnrollmentEdit/types'
@@ -134,7 +134,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
         subMenu.showLessLabel = 'Hide options for other grades'
         subject.AltTitles?.forEach((title) => {
           subMenu.moreItems?.push({
-            label: `${title.name} (${gradeShortText(title.min_alt_grade)}-${gradeShortText(title.max_alt_grade)})`,
+            label: `${title.name} (${gradeShortText(title.min_grade)}-${gradeShortText(title.max_grade)})`,
             callback: () => handleSelectTitle(schedule, title),
           })
         })
@@ -185,7 +185,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
       if (provider.reduce_funds !== ReduceFunds.NONE && provider.reduce_funds_notification?.length > 8) {
         subMenu.customModalProps = {
           title: MthTitle.REDUCES_FUNDS,
-          description: extractContent(provider.reduce_funds_notification),
+          description: provider.reduce_funds_notification,
           confirmStr: 'Ok',
           showIcon: false,
           showCancel: false,
@@ -728,7 +728,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
     return (
       <Box component='span' sx={{ display: 'flex', alignItems: 'center' }}>
         {`${course.name}`}&nbsp;
-        {isAlt ? `(${gradeShortText(course.min_alt_grade)}-${gradeShortText(course.max_alt_grade)})` : ''}
+        {isAlt ? `(${gradeShortText(course.min_grade)}-${gradeShortText(course.max_grade)})` : ''}
         {!!course.website && (
           <Link
             href={course.website}
@@ -1133,7 +1133,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
       {!!periodNotification && (
         <CustomModal
           title={MthTitle.NOTIFICATION}
-          description={extractContent(periodNotification || '')}
+          description={periodNotification || ''}
           confirmStr='Ok'
           cancelStr='Cancel'
           showIcon={false}
@@ -1145,7 +1145,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
       {!!subjectNotification && (
         <CustomModal
           title={MthTitle.NOTIFICATION}
-          description={extractContent(subjectNotification || '')}
+          description={subjectNotification || ''}
           confirmStr='Ok'
           showIcon={false}
           showCancel={false}
@@ -1157,7 +1157,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
       {!subjectNotification && !!subjectReduceFundsNotification && (
         <CustomModal
           title={MthTitle.REDUCES_FUNDS}
-          description={extractContent(subjectReduceFundsNotification || '')}
+          description={subjectReduceFundsNotification || ''}
           confirmStr='Ok'
           showIcon={false}
           showCancel={false}
@@ -1169,7 +1169,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
       {!!courseNotification && (
         <CustomModal
           title={MthTitle.NOTIFICATION}
-          description={extractContent(courseNotification || '')}
+          description={courseNotification || ''}
           confirmStr='Ok'
           showIcon={false}
           showCancel={false}
@@ -1181,7 +1181,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
       {!courseNotification && !!courseReduceFundsNotification && (
         <CustomModal
           title={MthTitle.REDUCES_FUNDS}
-          description={extractContent(courseReduceFundsNotification || '')}
+          description={courseReduceFundsNotification || ''}
           confirmStr='Ok'
           showIcon={false}
           showCancel={false}
@@ -1193,7 +1193,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
       {!!selectedSchedule && !!selectedCourse && !!multiPeriodsNotification && (
         <CustomModal
           title='Multiple Periods Required'
-          description={extractContent(multiPeriodsNotification || '')}
+          description={multiPeriodsNotification || ''}
           confirmStr='Ok'
           showIcon={false}
           backgroundColor={MthColor.WHITE}

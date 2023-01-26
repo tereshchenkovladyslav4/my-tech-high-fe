@@ -1,4 +1,5 @@
 import { DropDownItem } from '@mth/components/DropDown/types'
+import { RadioGroupOption } from '@mth/components/MthRadioGroup/types'
 import { QUESTION_TYPE } from '../enums/question-type.enum'
 import { ReimbursementFormType } from '../enums/reimbursement-form-type'
 
@@ -19,7 +20,7 @@ export type ReimbursementQuestion = {
   additional_question?: string
 
   // Temp Items
-  Options?: DropDownItem[]
+  Options?: DropDownItem[] | RadioGroupOption[]
   SettingList?: string[]
-  answer?: string
+  answer?: string | number | boolean
 }

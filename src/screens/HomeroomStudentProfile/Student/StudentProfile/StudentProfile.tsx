@@ -210,11 +210,20 @@ export const StudentProfile: undefined | React.FC<StudentProfileProps> = ({ curr
     </Box>
   )
 
+  const resetState = () => {
+    setFile(undefined)
+    setAvatar(undefined)
+    setWarningModalOpen(false)
+    setImageModalOpen(false)
+    setIsEditingMobile(false)
+  }
+
   useEffect(() => {
     if (person && person.photo) setAvatar(person?.photo)
   }, [person])
 
   useEffect(() => {
+    resetState()
     if (!currStudent) {
       history.push(MthRoute.HOMEROOM)
       return
@@ -223,7 +232,6 @@ export const StudentProfile: undefined | React.FC<StudentProfileProps> = ({ curr
     const { person: currPerson } = currStudent
     setPerson(currStudent?.person)
     setStatus(currStudent?.packets?.at(-1)?.status)
-
     formik.setValues({
       firstName: currPerson?.preferred_first_name || '',
       lastName: currPerson?.preferred_last_name || '',

@@ -82,12 +82,12 @@ export const QuestionEdit: React.FC<QuestionEditProps> = ({
               Options: [
                 {
                   label: 'Yes',
-                  value: 1,
+                  value: '1',
                   action: AdditionalQuestionAction.CONTINUE_TO_NEXT,
                 },
                 {
                   label: 'No',
-                  value: 2,
+                  value: '2',
                   action: AdditionalQuestionAction.CONTINUE_TO_NEXT,
                 },
                 {

@@ -3,7 +3,7 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import { Card, Stack } from '@mui/material'
 import Box from '@mui/material/Box'
-import { find, forEach, map } from 'lodash'
+import { find, forEach, map, orderBy } from 'lodash'
 import Slider from 'react-slick'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { StudentStatus } from '@mth/enums'
@@ -123,16 +123,26 @@ export const HomeroomGrade: React.FC<HomeroomGradeProps> = ({ schoolYears, mainT
   })
 
   const renderStudents = () =>
-    map(filteredStudents, (student, index) => {
-      return (
-        <StudentGrade
-          schoolYears={schoolYears}
-          student={student}
-          key={index}
-          notifications={mappedTodoList.get(student.student_id) || []}
-        />
-      )
-    })
+    map(
+      orderBy(
+        filteredStudents,
+        [
+          (student) =>
+            student.person.preferred_first_name ? student.person.preferred_first_name : student.person.first_name,
+        ],
+        ['asc'],
+      ),
+      (student, index) => {
+        return (
+          <StudentGrade
+            schoolYears={schoolYears}
+            student={student}
+            key={index}
+            notifications={mappedTodoList.get(student.student_id) || []}
+          />
+        )
+      },
+    )
 
   useEffect(() => {
     setFilteredStudents(

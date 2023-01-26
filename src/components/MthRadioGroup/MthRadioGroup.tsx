@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { ReactNode } from 'react'
 import { Box, FormControlLabel, Radio, RadioGroup } from '@mui/material'
 import { MthColor } from '@mth/enums'
 import { Paragraph } from '../Typography/Paragraph/Paragraph'
@@ -8,7 +8,7 @@ import { RadioGroupOption } from './types'
 type MthRadioGroupProps = {
   ariaLabel: string
   title?: string
-  description?: string | null
+  description?: string | null | ReactNode
   options: RadioGroupOption[]
   handleChangeOption: (value: RadioGroupOption[]) => void
   isError?: boolean
@@ -30,7 +30,7 @@ const MthRadioGroup: React.FC<MthRadioGroupProps> = ({
         </Subtitle>
       )}
       {description && (
-        <Paragraph size={'large'} color={'#ccc'} sx={{ paddingY: 1 }}>
+        <Paragraph size={'large'} color={MthColor.SYSTEM_03} sx={{ paddingY: 1 }}>
           {description}
         </Paragraph>
       )}

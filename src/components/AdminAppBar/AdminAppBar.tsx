@@ -17,7 +17,6 @@ import {
 } from '@mui/material'
 import { map } from 'lodash'
 import debounce from 'lodash.debounce'
-import { useLocation } from 'react-router-dom'
 import Slider from 'react-slick'
 import { useRecoilState } from 'recoil'
 import { MthColor, MthTitle } from '@mth/enums'
@@ -48,7 +47,6 @@ export const getAllPersonInfoBySearchItem = gql`
 export const AdminAppBar: React.FC = () => {
   const classes = useStyles
   const { me, setMe } = useContext(UserContext)
-  const location = useLocation()
   const sliderRef = useRef()
   const [searchField, setSearchField] = useState('')
   const [selected, setSelected] = useRecoilState(userRegionState)
@@ -69,7 +67,6 @@ export const AdminAppBar: React.FC = () => {
 
   const [windowDimensions, setWindowDimensions] = useState(getWindowDimension())
 
-  const isActive = (id) => location.pathname.includes(`homeroom/${id}`)
   function SampleNextArrow(props) {
     const { style } = props
     return (
@@ -255,15 +252,22 @@ export const AdminAppBar: React.FC = () => {
             }}
             variant='middle'
           />
-          <Box sx={{ px: '22px' }}>
+          <Box sx={region.region_id === selected?.region_id ? { px: '22px' } : { px: '22px', opacity: 0.5 }}>
             <Metadata
               title={
-                <Subtitle color={isActive(region?.regionDetail.id) ? MthColor.MTHBLUE : '#A1A1A1'}>
+                <Subtitle
+                  fontWeight='600'
+                  color={region.region_id === selected?.region_id ? MthColor.MTHBLUE : MthColor.BLACK}
+                >
                   {region?.regionDetail.name}
                 </Subtitle>
               }
               subtitle={
-                <Paragraph color='#cccccc' size={'large'}>
+                <Paragraph
+                  color={region.region_id === selected?.region_id ? MthColor.MTHBLUE : MthColor.SYSTEM_05}
+                  size={'large'}
+                  fontWeight='600'
+                >
                   {region?.regionDetail.program}
                 </Paragraph>
               }
@@ -275,18 +279,9 @@ export const AdminAppBar: React.FC = () => {
                     variant='rounded'
                     style={{ marginRight: 24 }}
                   />
-                  <Box
-                    sx={{
-                      position: 'absolute',
-                      bottom: -16,
-                      left: 0,
-                      width: '65%',
-                      height: 2,
-                      borderBottom: region.region_id === selected?.region_id ? '2px solid #4145FF' : 0,
-                    }}
-                  />
                 </Box>
               }
+              borderBottom={region.region_id === selected?.region_id}
             />
           </Box>
         </Box>

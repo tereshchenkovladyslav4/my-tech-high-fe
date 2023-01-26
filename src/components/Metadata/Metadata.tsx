@@ -1,6 +1,7 @@
 import React from 'react'
 import { Divider, ListItem, ListItemText } from '@mui/material'
 import { Box } from '@mui/system'
+import { MthColor } from '@mth/enums'
 import { MetadataTemplateType } from './types'
 export const Metadata: MetadataTemplateType = ({
   image,
@@ -10,9 +11,14 @@ export const Metadata: MetadataTemplateType = ({
   verticle,
   disableGutters,
   divider,
+  borderBottom,
 }) =>
   !verticle ? (
-    <ListItem sx={{ px: 0 }} secondaryAction={secondaryAction} disableGutters={disableGutters}>
+    <ListItem
+      sx={!borderBottom ? { px: 0 } : { px: 0, paddingBottom: '3px', borderBottom: '5px solid ' + MthColor.MTHBLUE }}
+      secondaryAction={secondaryAction}
+      disableGutters={disableGutters}
+    >
       {divider && (
         <Divider
           sx={{

@@ -47,6 +47,8 @@ export const CourseFragment = gql`
     id
     provider_id
     name
+    min_grade
+    max_grade
     min_alt_grade
     max_alt_grade
     website
@@ -68,6 +70,8 @@ export const TitleFragment = gql`
     subject_notification
     reduce_funds
     reduce_funds_notification
+    min_grade
+    max_grade
     min_alt_grade
     max_alt_grade
     custom_built

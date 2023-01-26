@@ -4,13 +4,14 @@ import { Box, Radio, TextField, Checkbox, IconButton, outlinedInputClasses } fro
 import { CustomModal } from '@mth/components/CustomModal/CustomModals'
 import { DropDown } from '@mth/components/DropDown/DropDown'
 import { DropDownItem } from '@mth/components/DropDown/types'
+import { RadioGroupOption } from '@mth/components/MthRadioGroup/types'
 import { QUESTION_TYPE } from '@mth/enums'
 import { AdditionalQuestionAction } from '@mth/enums'
 import { AdditionalQuestionActionList } from '../../../defaultValues'
 import { optionClasses } from './styles'
 
 type OptionsProps = {
-  options: DropDownItem[]
+  options: DropDownItem[] | RadioGroupOption[]
   setOptions: (options: DropDownItem[]) => void
   type: QUESTION_TYPE
   setFocused: (event: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement, Element>) => void
@@ -72,8 +73,12 @@ export const Options: React.FC<OptionsProps> = ({ options, setOptions, type, set
                 onBlur={(v) => setBlured(v)}
                 onChange={(e) => {
                   const val = e.currentTarget.value
-                  const newOptions = options.map((o) =>
-                    o.value === option.value ? { ...o, label: val, value: val } : o,
+                  const newOptions = options.map((o, index) =>
+                    o.value === option.value
+                      ? type === QUESTION_TYPE.MULTIPLECHOICES
+                        ? { ...o, label: val, value: false, option_id: index + 1 }
+                        : { ...o, label: val, value: type === QUESTION_TYPE.CHECKBOX ? `${val}` : val }
+                      : o,
                   )
                   if (index === options.length - 1) {
                     setOptions([
@@ -94,7 +99,7 @@ export const Options: React.FC<OptionsProps> = ({ options, setOptions, type, set
                       setShowWarningModal(true)
                       setCurrentIndex(index)
                     } else {
-                      const newOptions = options
+                      const newOptions = (options as DropDownItem[])
                         ?.filter((opt, i) => opt.label != option.label && i != index)
                         ?.map((v, i) => ({
                           value: i,
@@ -123,7 +128,8 @@ export const Options: React.FC<OptionsProps> = ({ options, setOptions, type, set
                 labelTop
                 dropDownItems={
                   (typeof option.label == 'string' && option.label.trim() == '') ||
-                  options.filter((op) => typeof op.label == 'string' && op.label.trim() !== '').length < 2
+                  (options as DropDownItem[]).filter((op) => typeof op.label == 'string' && op.label.trim() !== '')
+                    .length < 2
                     ? AdditionalQuestionActionList.filter(
                         (a) => a.value === AdditionalQuestionAction.CONTINUE_TO_NEXT.toString(),
                       )

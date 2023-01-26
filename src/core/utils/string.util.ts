@@ -59,3 +59,21 @@ export const phoneFormat = (phone: string): string => {
   phone = phone.replaceAll('-', '')
   return `${phone.substring(0, 3)}-${phone.substring(3, 6)}-${phone.substring(6, 10)}`
 }
+
+export const arrayToString = (value: string[] | number[]): string => {
+  let str = ''
+  if (value?.length) {
+    value?.map((item, index) => {
+      if (index < value?.length - 1) {
+        if (index == 0) {
+          str = `${item}`
+        } else {
+          str = str + `, ${item}`
+        }
+      } else {
+        str = str + ` and ${item}`
+      }
+    })
+  }
+  return str
+}

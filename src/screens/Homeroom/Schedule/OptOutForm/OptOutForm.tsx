@@ -132,8 +132,8 @@ const OptOutForm: React.FC<OptOutFormProps> = ({
           sx={{ my: 1 }}
           onChange={(e) => handleChangeSignatureName(e)}
           error={invalidationOF && !signatureName}
+          helperText={invalidationOF && !signatureName && 'Required'}
         />
-        {invalidationOF && !signatureName && <Subtitle sx={optOutFormClassess.formError}>{'Required'}</Subtitle>}
         <Paragraph size={'large'} sx={{ paddingY: 1, textAlign: 'center' }}>
           {'Signature (use the mouse to sign):'}
         </Paragraph>

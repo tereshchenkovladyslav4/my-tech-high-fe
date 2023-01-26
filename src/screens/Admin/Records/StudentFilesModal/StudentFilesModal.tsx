@@ -59,6 +59,7 @@ const StudentFilesModal: React.FC<StudentFilesModalProps> = ({ record, handleMod
           },
         },
       })
+      setSelectedDocumentFileType('')
       refetch()
     }
   }
@@ -95,6 +96,7 @@ const StudentFilesModal: React.FC<StudentFilesModalProps> = ({ record, handleMod
         placeholder={'File Type'}
         labelTop
         size='medium'
+        defaultValue={selectedDocumentFileType}
         borderNone={true}
         setParentValue={(val) => {
           setSelectedDocumentFileType(`${val}`)
@@ -168,6 +170,7 @@ const StudentFilesModal: React.FC<StudentFilesModalProps> = ({ record, handleMod
             secondaryModal={true}
             node={fileTypeNode}
             limit={1}
+            isUploadAble={selectedDocumentFileType ? true : false}
           />
         )}
       </Box>

@@ -25,6 +25,17 @@ export const getStudentSchedulePeriodsQuery = gql`
         status
         is_second_semester
       }
+      Period {
+        id
+        period
+      }
+      Title {
+        title_id
+        name
+        Subject {
+          name
+        }
+      }
     }
   }
 `

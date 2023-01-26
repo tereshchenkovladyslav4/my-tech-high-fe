@@ -38,7 +38,7 @@ export const ToDoListItem: React.FC<TodoListItemProps> = ({ todoItem, todoDate, 
         {map(todoItem.students, (student, index) => (
           <Avatar
             key={index}
-            alt={`${student.person.first_name} ${student.person.last_name}`}
+            alt={student.person.preferred_first_name ? student.person.preferred_first_name : student.person.first_name}
             src={getProfilePhoto(student.person)}
           />
         ))}

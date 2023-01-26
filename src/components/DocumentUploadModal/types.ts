@@ -7,6 +7,7 @@ export type SubmissionModal = {
   limit?: number
   secondaryModal?: boolean
   node?: ReactNode
+  isUploadAble?: boolean
 }
 
 export type S3FileType = {

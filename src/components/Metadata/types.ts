@@ -9,6 +9,7 @@ export type MetadataProps = {
   verticle?: boolean
   disableGutters?: boolean
   divider?: boolean
+  borderBottom?: boolean
 }
 
 export type MetadataTemplateType = FunctionComponent<MetadataProps>

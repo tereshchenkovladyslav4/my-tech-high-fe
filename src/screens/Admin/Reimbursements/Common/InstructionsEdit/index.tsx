@@ -152,7 +152,7 @@ export const InstructionsEdit: React.FC<InstructionsEditProps> = ({
         )
         break
       default:
-        setDescription(DEFAULT_REIMBURSEMENT_INSTRUCTIONS)
+        setDescription('')
         break
     }
   }, [formType, isDirectOrder, selectedYear])

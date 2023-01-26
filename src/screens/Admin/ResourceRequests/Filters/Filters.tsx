@@ -73,7 +73,7 @@ export const Filters: React.FC<FiltersProps> = ({ schoolYearId, schoolYear, setF
 
   return (
     <PageBlock>
-      <Box display='flex' flexDirection='row' onClick={() => setExpanded(!expanded)}>
+      <Box sx={{ display: 'flex', alignItems: 'center' }} onClick={() => setExpanded(!expanded)}>
         <Subtitle fontWeight='700' color={MthColor.MTHBLUE} sx={{ cursor: 'pointer', mr: 1, fontSize: '20px' }}>
           Filter
         </Subtitle>
