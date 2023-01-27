@@ -143,6 +143,7 @@ export const getEnrollmentPacketsQuery = gql`
               zip
               state
               county_id
+              school_district
             }
           }
         }
@@ -210,6 +211,7 @@ export const getEnrollmentPacketQuery = gql`
         reenrolled
         grade_level
         student_id
+        special_ed
         grade_levels {
           grade_level
           school_year {
@@ -219,6 +221,15 @@ export const getEnrollmentPacketQuery = gql`
         }
         current_school_year_status {
           school_year_id
+        }
+        applications {
+          midyear_application
+          school_year {
+            school_year_id
+            schedule
+            date_begin
+            date_end
+          }
         }
         parent {
           parent_id
@@ -232,9 +243,21 @@ export const getEnrollmentPacketQuery = gql`
             email
             address {
               street
+              street2
               city
               zip
               state
+              county_id
+              country_id
+              school_district
+            }
+            user {
+              user_id
+              userRegions {
+                regionDetail {
+                  name
+                }
+              }
             }
           }
           phone {

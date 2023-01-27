@@ -358,7 +358,13 @@ const Settings: FunctionComponent = () => {
     {
       name: ScheduleBuilder.SPLIT_ENROLLMENT,
       component: (
-        <Box display={'flex'} flexDirection='row' alignItems='center' sx={{ width: '100%' }}>
+        <Box
+          display={'flex'}
+          flexDirection='row'
+          justifyContent='space-between'
+          alignItems='center'
+          sx={{ width: '100%' }}
+        >
           <DropDown
             defaultValue={splitEnrollment}
             name='split_enrollment'
@@ -384,7 +390,7 @@ const Settings: FunctionComponent = () => {
             setIsChanged={setIsChanged}
             disabled={formik.values.split_enrollment === 'Disabled' || formik.values.split_enrollment === undefined}
           />
-          <Box display='flex' alignItems='center'>
+          <Box display='flex' alignItems='center' sx={{ marginRight: '40px' }}>
             <Checkbox
               name='always_unlock'
               disabled={formik.values.split_enrollment === 'Disabled' || formik.values.split_enrollment === undefined}

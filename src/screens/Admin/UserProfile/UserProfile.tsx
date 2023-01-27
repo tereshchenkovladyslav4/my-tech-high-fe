@@ -226,6 +226,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ handleClose, data, set
             withdrawalInput: {
               withdrawal: {
                 StudentId: studentStatus?.student_id,
+                school_year_id: studentStatus?.school_year_id,
                 status:
                   studentStatus?.withdrawOption == WithdrawalOption.NOTIFY_PARENT_OF_WITHDRAW
                     ? WithdrawalStatus.NOTIFIED

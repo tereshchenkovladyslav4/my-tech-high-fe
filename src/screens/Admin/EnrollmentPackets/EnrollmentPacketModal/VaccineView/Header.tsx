@@ -15,11 +15,13 @@ export const VaccinesInfoHeader: React.FC = () => {
   useEffect(() => {
     let _enableExamptiondate = false
     let _fullExempt = true
-    for (const im of immunizations) {
-      if (im.value === 'Exempt') {
-        _enableExamptiondate = true
-      } else {
-        _fullExempt = false
+    if (immunizations) {
+      for (const im of immunizations) {
+        if (im.value === 'Exempt') {
+          _enableExamptiondate = true
+        } else {
+          _fullExempt = false
+        }
       }
     }
     setValue('enableExemptionDate', _enableExamptiondate)

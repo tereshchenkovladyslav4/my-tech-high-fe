@@ -382,14 +382,19 @@ export const ApplicationQuestions: React.FC = () => {
             }
           }
 
-          for (let i = 0; i < vals.length; i++) {
-            if (vals[i].id < 0) vals[i].id = 0
-            vals[i].order = i + 1
+          let filteredValues = [...vals]
+          if (!countryQuestion) {
+            filteredValues = filteredValues.filter((item) => item.additional_question !== 'address_country_id')
+          }
+
+          for (let i = 0; i < filteredValues.length; i++) {
+            if (filteredValues[i].id < 0) filteredValues[i].id = 0
+            filteredValues[i].order = i + 1
           }
 
           await saveQuestionsMutation({
             variables: {
-              input: vals.map((v) => ({
+              input: filteredValues.map((v) => ({
                 id: Number(v.id),
                 type: v.type,
                 question: v.question,

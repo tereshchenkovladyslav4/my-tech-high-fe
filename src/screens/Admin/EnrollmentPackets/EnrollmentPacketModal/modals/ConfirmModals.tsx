@@ -249,7 +249,7 @@ export const PacketConfirmModals: FunctionComponent<PacketConfirmModalsProps> = 
       </Alert>
     )
   }
-  if (saveAlert.length) {
+  if (saveAlert && saveAlert.length) {
     return (
       <Alert
         sx={{
