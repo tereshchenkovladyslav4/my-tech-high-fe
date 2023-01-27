@@ -140,9 +140,9 @@ export const EmailTemplateModal: React.FC<EmailTemplateModalProps> = ({
     }
   }, [reminderData])
 
-  const handleEditorChange = (state) => {
+  const handleEditorChange = (state, isBlockEnd = true) => {
     try {
-      if (currentBlocks !== 0 && currentBlocks !== state.blocks.length) {
+      if (currentBlocks !== 0 && currentBlocks !== state.blocks.length && isBlockEnd) {
         editorRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' })
       }
       setCurrentBlocks(state.blocks.length)
@@ -596,7 +596,9 @@ export const EmailTemplateModal: React.FC<EmailTemplateModalProps> = ({
               }}
             >
               <Wysiwyg.Editor
-                onContentStateChange={handleEditorChange}
+                onContentStateChange={(state) => {
+                  handleEditorChange(state, false)
+                }}
                 editorRef={(ref) => (editorRef.current = ref)}
                 editorState={editorState}
                 onEditorStateChange={setEditorState}

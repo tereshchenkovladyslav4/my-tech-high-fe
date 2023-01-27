@@ -14,7 +14,7 @@ type WithdrawModalProps = {
 }
 
 export const WITHDRAWAL_OPTIONS = [
-  { value: WithdrawalOption.NOTIFY_PARENT_OF_WITHDRAW, label: 'Notify Parent of Withdraw' },
+  { value: WithdrawalOption.NOTIFY_PARENT_OF_WITHDRAW, label: 'Notify Parent of Withdrawal' },
   { value: WithdrawalOption.NO_FORM_NO_EMAIL, label: 'No Form/No Email' },
   { value: WithdrawalOption.UNDECLARED_FORM_EMAIL, label: 'Undeclared Form/Email' },
   { value: WithdrawalOption.UNDECLARED_FORM_NO_EMAIL, label: 'Undeclared Form/No Email' },

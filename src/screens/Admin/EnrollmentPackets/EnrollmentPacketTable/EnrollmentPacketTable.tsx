@@ -198,6 +198,7 @@ export const EnrollmentPacketTable: React.FC = () => {
   const { data: countGroup, refetch: refetchPacketCount } = useQuery(packetCountQuery, {
     variables: {
       regionId: me?.selectedRegionId,
+      schoolYearId: selectedYearId,
     },
     skip: !me?.selectedRegionId,
     fetchPolicy: 'network-only',

@@ -32,7 +32,6 @@ const WithdrawalFilters: React.FC<WithdrawalFiltersProps> = ({ filters, setFilte
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'space-evenly',
-        paddingX: '100px',
         marginY: 2,
       }}
     >
@@ -46,7 +45,9 @@ const WithdrawalFilters: React.FC<WithdrawalFiltersProps> = ({ filters, setFilte
             borderRadius: 2,
             textTransform: 'none',
             height: 25,
+            width: 115,
             whiteSpace: 'nowrap',
+            fontSize: '12px',
           }}
           onClick={() => handleSelectFilter(label)}
         >

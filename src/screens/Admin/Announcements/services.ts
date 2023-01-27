@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client'
 export const getAnnouncementsQuery = gql`
-  query Announcements($regionId: Int!) {
-    announcements(region_id: $regionId) {
+  query Announcements($getAnnouncementParams: GetAnnouncementParams!) {
+    announcements(getAnnouncementParams: $getAnnouncementParams) {
       RegionId
       announcement_id
       body

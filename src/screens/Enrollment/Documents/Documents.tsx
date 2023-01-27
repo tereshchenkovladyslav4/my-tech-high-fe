@@ -31,7 +31,7 @@ export const Documents: React.FC<DocumentsProps> = ({ id, regionId, questions })
   const { me, setMe } = useContext(UserContext)
   const { setPacketId, disabled, packetId } = useContext(EnrollmentContext)
   const { profile, students } = me as UserInfo
-  const student = useMemo(() => students?.find((s) => s.student_id === id), [id, students])
+  const student = useMemo(() => students?.find((s) => Number(s.student_id) === Number(id)), [id, students])
   const packet = useMemo(() => student?.packets?.at(-1), [student?.packets])
   const fileNamePrefix = useMemo(
     () => `${student?.person.first_name.charAt(0).toUpperCase()}.${student?.person.last_name}`,
@@ -253,7 +253,7 @@ export const Documents: React.FC<DocumentsProps> = ({ id, regionId, questions })
   const submitRecord = useCallback(
     (documentType: string, files: File[]) => {
       const renamedFiles = files.map((f, index) => {
-        const fileName = `${f.name.split('.').slice(0, -1).join('.')}${index !== 0 ? index : ''}`
+        const fileName = `${f.name.split('.').slice(0, -1).join('.')}${index !== 0 ? index + 1 : ''}`
         const fileExt = f.name.split('.').slice(-1)
         return new File([f], `${fileName}.${fileExt}`, {
           type: f.type,

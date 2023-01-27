@@ -219,7 +219,7 @@ const NewAnnouncement: React.FC<NewAnnouncementProps> = ({ announcement, setAnno
       />
       <Box sx={{ width: '100%', padding: 3 }}>
         <Grid container justifyContent='space-between'>
-          <Grid item xs={6} sx={{ textAlign: 'left', marginTop: 'auto', marginBottom: 'auto' }}>
+          <Grid item xs={6} sx={{ textAlign: 'left', marginBottom: 'auto' }}>
             <EditComponent
               emailFrom={emailFrom}
               emailInvalid={emailInvalid}

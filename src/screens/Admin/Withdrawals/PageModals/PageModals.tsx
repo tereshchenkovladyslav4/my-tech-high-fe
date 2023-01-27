@@ -278,7 +278,7 @@ const PageModals: React.FC<PageModalsProps> = ({
       {showWithdrawModal && (
         <WithdrawModal
           title='Withdraw'
-          description='How would you like to proceed with this withdraw?'
+          description='How would you like to proceed with this withdrawal?'
           confirmStr='Withdraw'
           cancelStr='Cancel'
           onWithdraw={handleWithdrawAction}

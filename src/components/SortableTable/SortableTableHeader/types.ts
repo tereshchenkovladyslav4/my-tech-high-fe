@@ -6,6 +6,7 @@ export interface HeadCell {
   id: keyof number | string
   label: string
   numeric: boolean
+  cellSize?: string
 }
 
 export interface SortableTableHeaderProps {

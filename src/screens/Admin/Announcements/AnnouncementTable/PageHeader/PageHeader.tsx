@@ -56,7 +56,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({
               fullWidth
               value={searchField}
               placeholder='Search title, message, or student'
-              onChange={() => setSearchField}
+              onChange={(val) => setSearchField(val.target.value)}
               startAdornment={
                 <InputAdornment position='start'>
                   <SearchIcon style={{ color: 'black' }} />

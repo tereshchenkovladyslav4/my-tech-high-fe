@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { useLazyQuery, useQuery } from '@apollo/client'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
-import { Box, Button, Card, Checkbox, FormControlLabel, Grid } from '@mui/material'
+import { Box, Button, Card, Checkbox, FormControlLabel } from '@mui/material'
 import { map } from 'lodash'
 import { useHistory } from 'react-router-dom'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
@@ -212,107 +212,107 @@ export const Filters: React.FC<FiltersProps> = ({ filter, setFilter }) => {
       />
     ))
 
-  const columnWidth = () => {
-    return courseType.includes(CourseType.MTH_DIRECT) && showDiplomaSeeking ? 2 : 3
-  }
-
   const Filters = () => (
-    <Grid container sx={{ textAlign: 'left', marginY: '12px' }}>
-      <Grid item container xs={10}>
-        <Grid item xs={columnWidth()}>
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-            }}
-          >
-            <Paragraph size='large' fontWeight='700'>
-              Grade Level
-            </Paragraph>
-            {gradeLevels?.length > 0 && (
-              <FormControlLabel
-                sx={{ height: 30 }}
-                control={<Checkbox value='all' checked={grades.includes('all')} onChange={handleChangeAll} />}
-                label={
-                  <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
-                    Select All
-                  </Paragraph>
-                }
-              />
-            )}
-            {renderGrades()}
-          </Box>
-        </Grid>
+    <Box
+      sx={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        textAlign: 'left',
+        marginY: '12px',
+        width: '100%',
+      }}
+    >
+      <Box sx={{ display: 'flex', gap: '24px', width: '100%' }}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            width: '16%',
+          }}
+        >
+          <Paragraph size='large' fontWeight='700'>
+            Grade Level
+          </Paragraph>
+          {gradeLevels?.length > 0 && (
+            <FormControlLabel
+              sx={{ height: 30 }}
+              control={<Checkbox value='all' checked={grades.includes('all')} onChange={handleChangeAll} />}
+              label={
+                <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
+                  Select All
+                </Paragraph>
+              }
+            />
+          )}
+          {renderGrades()}
+        </Box>
 
         {showDiplomaSeeking && (
-          <Grid item xs={columnWidth()}>
-            <Box
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-              }}
-            >
-              <Paragraph size='large' fontWeight='700'>
-                Diploma-seeking
-              </Paragraph>
-              <FormControlLabel
-                sx={{ height: 30 }}
-                control={<Checkbox checked={diploma === 1} onChange={() => setDiploma(diploma === 1 ? 0 : 1)} />}
-                label={
-                  <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
-                    Yes
-                  </Paragraph>
-                }
-              />
-            </Box>
-          </Grid>
-        )}
-
-        <Grid item xs={columnWidth()}>
           <Box
             sx={{
               display: 'flex',
               flexDirection: 'column',
-              height: '444px',
-              marginRight: '16px',
+              width: '16%',
             }}
           >
             <Paragraph size='large' fontWeight='700'>
-              Course Type
+              Diploma-seeking
             </Paragraph>
-            {(Object.keys(CourseType) as Array<keyof typeof CourseType>).map((item) => {
-              return (
-                !(
-                  (CourseType[item] === CourseType.THIRD_PARTY_PROVIDER && showThirdParty === 0) ||
-                  (CourseType[item] === CourseType.CUSTOM_BUILT && showCustomBuilt === 0)
-                ) && (
-                  <FormControlLabel
-                    key={item}
-                    sx={{ height: 30 }}
-                    control={
-                      <Checkbox
-                        value={CourseType[item]}
-                        checked={courseType.includes(CourseType[item])}
-                        onChange={handleSetCourseType}
-                      />
-                    }
-                    label={
-                      <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
-                        {CourseType[item] === CourseType.MTH_DIRECT
-                          ? COURSE_TYPE.MTH
-                          : CourseType[item] === CourseType.CUSTOM_BUILT
-                          ? COURSE_TYPE.CUSTOM_BUILT
-                          : COURSE_TYPE.THIRD_PARTY}
-                      </Paragraph>
-                    }
-                  />
-                )
-              )
-            })}
+            <FormControlLabel
+              sx={{ height: 30 }}
+              control={<Checkbox checked={diploma === 1} onChange={() => setDiploma(diploma === 1 ? 0 : 1)} />}
+              label={
+                <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
+                  Yes
+                </Paragraph>
+              }
+            />
           </Box>
-        </Grid>
+        )}
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            height: '444px',
+            width: '16%',
+            marginRight: '16px',
+          }}
+        >
+          <Paragraph size='large' fontWeight='700'>
+            Course Type
+          </Paragraph>
+          {(Object.keys(CourseType) as Array<keyof typeof CourseType>).map((item) => {
+            return (
+              !(
+                (CourseType[item] === CourseType.THIRD_PARTY_PROVIDER && showThirdParty === 0) ||
+                (CourseType[item] === CourseType.CUSTOM_BUILT && showCustomBuilt === 0)
+              ) && (
+                <FormControlLabel
+                  key={item}
+                  sx={{ height: 30 }}
+                  control={
+                    <Checkbox
+                      value={CourseType[item]}
+                      checked={courseType.includes(CourseType[item])}
+                      onChange={handleSetCourseType}
+                    />
+                  }
+                  label={
+                    <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>
+                      {CourseType[item] === CourseType.MTH_DIRECT
+                        ? COURSE_TYPE.MTH
+                        : CourseType[item] === CourseType.CUSTOM_BUILT
+                        ? COURSE_TYPE.CUSTOM_BUILT
+                        : COURSE_TYPE.THIRD_PARTY}
+                    </Paragraph>
+                  }
+                />
+              )
+            )
+          })}
+        </Box>
         {courseType.includes(CourseType.MTH_DIRECT) && (
-          <Grid item xs={6} md={5} lg={5} sx={{ height: '340px', overflowY: 'scroll' }}>
+          <Box sx={{ height: '340px', width: '41%', overflowY: 'scroll' }}>
             <Box
               sx={{
                 display: 'flex',
@@ -359,10 +359,10 @@ export const Filters: React.FC<FiltersProps> = ({ filter, setFilter }) => {
                 ))}
               </Box>
             </Box>
-          </Grid>
+          </Box>
         )}
-      </Grid>
-      <Grid item xs={2}>
+      </Box>
+      <Box sx={{ width: '150px' }}>
         <Box
           sx={{
             justifyContent: 'space-between',
@@ -370,7 +370,6 @@ export const Filters: React.FC<FiltersProps> = ({ filter, setFilter }) => {
             height: '100%',
             alignItems: 'end',
             flexDirection: 'column',
-            paddingLeft: '30px',
           }}
         >
           <Box
@@ -417,8 +416,8 @@ export const Filters: React.FC<FiltersProps> = ({ filter, setFilter }) => {
             </Button>
           </Box>
         </Box>
-      </Grid>
-    </Grid>
+      </Box>
+    </Box>
   )
 
   return (

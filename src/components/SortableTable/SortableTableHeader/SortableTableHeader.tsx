@@ -33,7 +33,7 @@ export const SortableTableHeader: SortableTableHeaders = ({
         )}
         {headCells.map((headCell, idx) => (
           <TableCell
-            sx={{ fontWeight: 700 }}
+            sx={{ fontWeight: 700, width: headCell?.cellSize ?? 'auto' }}
             key={headCell.id}
             align={headCell.numeric ? 'right' : 'left'}
             padding={headCell.disablePadding ? 'none' : 'normal'}

@@ -563,8 +563,8 @@ export const updateSettingsMutation = gql`
 `
 
 export const packetCountQuery = gql`
-  query PacketCountByRegionId($regionId: ID!) {
-    packetCountByRegionId(region_id: $regionId) {
+  query PacketCountByRegionId($regionId: ID!, $schoolYearId: ID!) {
+    packetCountByRegionId(region_id: $regionId, school_year_id: $schoolYearId) {
       error
       message
       results

@@ -22,7 +22,10 @@ const AnnouncementTable: React.FC<AnnouncementTableProps> = ({ setAnnouncement }
   const [showConfirmModal, setShowConfirmModal] = useState<number>(0)
   const { loading, data, refetch } = useQuery(getAnnouncementsQuery, {
     variables: {
-      regionId: me?.selectedRegionId,
+      getAnnouncementParams: {
+        region_id: me?.selectedRegionId,
+        search: searchField,
+      },
     },
     skip: !me?.selectedRegionId,
     fetchPolicy: 'network-only',

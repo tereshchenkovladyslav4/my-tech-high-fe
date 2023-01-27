@@ -69,14 +69,21 @@ export const DocumentUpload: React.FC<DocumentUploadProps> = ({
           <span dangerouslySetInnerHTML={{ __html: item[0]?.options?.[0].value?.toString() || '' }}></span>
         </Paragraph>
         <Box>
-          {(files || []).map((curr, index) => (
-            <DocumentListItem file={curr} key={index} closeAction={undefined} />
-          ))}
+          {(files || []).map((curr, index) => {
+            const indexedFileName = `${curr.name.split('.').slice(0, -1).join('.')}${index !== 0 ? index + 1 : ''}`
+            const fileExt = curr.name.split('.').slice(-1)
+            const newCurr = { ...curr, name: `${indexedFileName}.${fileExt}` }
+            return <DocumentListItem file={newCurr} key={index} closeAction={undefined} />
+          })}
         </Box>
         <Box>
-          {newFiles.map((curr, index) => (
-            <DocumentListItem file={curr} key={index} closeAction={() => deleteNewFile(curr)} />
-          ))}
+          {newFiles.map((curr, index) => {
+            const fileNumber = files && files?.length > 0 ? files.length + index + 1 : index !== 0 ? index + 1 : ''
+            const indexedFileName = `${curr.name.split('.').slice(0, -1).join('.')}${fileNumber}`
+            const fileExt = curr.name.split('.').slice(-1)
+            const newCurr = { ...curr, name: `${indexedFileName}.${fileExt}` }
+            return <DocumentListItem file={newCurr} key={index} closeAction={() => deleteNewFile(curr)} />
+          })}
         </Box>
         <Box sx={classes.buttonContainer}>
           <Paragraph size='medium'>{'Allowed file types: pdf, png, jpg, jpeg, gif, bmp (Less than 25MB)'}</Paragraph>
