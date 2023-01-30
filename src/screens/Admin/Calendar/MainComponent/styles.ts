@@ -54,7 +54,7 @@ export const mainClasses = {
     borderRadius: 2,
     textTransform: 'none',
     height: '48px',
-    background: MthColor.BLUE_GRDIENT,
+    background: MthColor.BLUE_GRADIENT,
     color: 'white',
     width: '140px',
     minWidth: '140px',

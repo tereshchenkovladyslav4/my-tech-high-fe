@@ -3,7 +3,7 @@ import { useMutation } from '@apollo/client'
 import { Box, Button, Modal, TextField } from '@mui/material'
 import { MthBulletEditor } from '@mth/components/MthBulletEditor'
 import { diplomaQuestionSaveGql } from '../../services'
-import { diplomaSeekingClassess } from './styles'
+import { diplomaSeekingClasses } from './styles'
 import { DiplomaQuestionEditModalProps } from './types'
 
 const DiplomaQuestionEditModal: React.FC<DiplomaQuestionEditModalProps> = ({
@@ -40,8 +40,8 @@ const DiplomaQuestionEditModal: React.FC<DiplomaQuestionEditModalProps> = ({
 
   return (
     <Modal open={true} onClose={onClose} aria-labelledby='modal-modal-title' aria-describedby='modal-modal-description'>
-      <Box sx={diplomaSeekingClassess.customizeModalContainer}>
-        <Box sx={diplomaSeekingClassess.content}>
+      <Box sx={diplomaSeekingClasses.customizeModalContainer}>
+        <Box sx={diplomaSeekingClasses.content}>
           <TextField
             name='title'
             label='Title'
@@ -53,11 +53,11 @@ const DiplomaQuestionEditModal: React.FC<DiplomaQuestionEditModalProps> = ({
           />
           <MthBulletEditor value={informationDescription} setValue={(value) => setInformationDescription(value)} />
         </Box>
-        <Box sx={diplomaSeekingClassess.btnGroup}>
-          <Button sx={diplomaSeekingClassess.cancelBtn} onClick={onClose}>
+        <Box sx={diplomaSeekingClasses.btnGroup}>
+          <Button sx={diplomaSeekingClasses.cancelBtn} onClick={onClose}>
             Cancel
           </Button>
-          <Button sx={diplomaSeekingClassess.modalSaveBtn} onClick={handleModalSave}>
+          <Button sx={diplomaSeekingClasses.modalSaveBtn} onClick={handleModalSave}>
             Save
           </Button>
         </Box>

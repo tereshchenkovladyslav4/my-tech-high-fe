@@ -41,7 +41,11 @@ export const DropDown: React.FC<DropDownProps> = ({
   borderNone = false,
   color,
 }) => {
-  const [value, setValue] = useState(defaultValue || '')
+  const convertDefaultValue = (val: string | number | undefined): string | number => {
+    return !!val || val === 0 ? val : ''
+  }
+
+  const [value, setValue] = useState(convertDefaultValue(defaultValue))
   const handleChange = (val: string | QUESTION_TYPE) => {
     if (auto) setValue(val)
     setParentValue(val)
@@ -79,7 +83,7 @@ export const DropDown: React.FC<DropDownProps> = ({
   }
 
   useEffect(() => {
-    setValue(defaultValue || '')
+    setValue(convertDefaultValue(defaultValue))
   }, [defaultValue])
 
   return (
@@ -102,7 +106,7 @@ export const DropDown: React.FC<DropDownProps> = ({
                           {dropDownItems?.find((item) => item.value == value)?.label}
                         </span>
                       )
-                    : () => <span style={{ color: MthColor.BLUE_GRDIENT, marginRight: '15px' }}>{placeholder}</span>
+                    : () => <span style={{ color: MthColor.BLUE_GRADIENT, marginRight: '15px' }}>{placeholder}</span>
                 }
                 sx={{ ...dropdownClasses.borderNone }}
               >

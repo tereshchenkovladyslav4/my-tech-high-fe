@@ -19,7 +19,7 @@ import {
   diplomaQuestionGradeSaveGql,
 } from '../../services'
 import DiplomaQuestionEditModal from './DiplomaQuestionEditModal'
-import { diplomaSeekingClassess } from './styles'
+import { diplomaSeekingClasses } from './styles'
 import { SchoolYear, SchoolYearItem, DiplomaQuestionType } from './types'
 
 const DiplomaSeeking: React.FC = () => {
@@ -67,7 +67,7 @@ const DiplomaSeeking: React.FC = () => {
     variables: {
       regionId: me?.selectedRegionId,
     },
-    skip: me?.selectedRegionId ? false : true,
+    skip: !me?.selectedRegionId,
     fetchPolicy: 'network-only',
   })
 
@@ -116,8 +116,8 @@ const DiplomaSeeking: React.FC = () => {
   useEffect(() => {
     if (!loading && diplomaQuestionData) {
       if (diplomaQuestionData?.getDiplomaQuestion) {
-        const deplomaGrades = diplomaQuestionData?.getDiplomaQuestion?.grades
-        setSelectGrades(deplomaGrades?.split(',') || [])
+        const diplomaGrades = diplomaQuestionData?.getDiplomaQuestion?.grades
+        setSelectGrades(diplomaGrades?.split(',') || [])
         setDiplomaQuestion(diplomaQuestionData?.getDiplomaQuestion)
       } else {
         setSelectGrades([])
@@ -146,21 +146,20 @@ const DiplomaSeeking: React.FC = () => {
 
   const [saveDiplomaQuestionGrades] = useMutation(diplomaQuestionGradeSaveGql)
   const handleDiplomaGradeSave = async () => {
-    const grades = selectGrades.join(',')
     await saveDiplomaQuestionGrades({
       variables: {
         diplomaQuestionInput: {
           schoolYearId: +selectedSchoolYear,
           title: diplomaQuestion.title,
           description: diplomaQuestion.description,
-          grades: grades,
+          grades: selectGrades.filter((x) => grades?.includes(x)).join(','),
         },
       },
     })
-    refetch()
+    await refetch()
   }
 
-  const kinderGardernGrade = () => {
+  const kindergartenGrade = () => {
     const kinderGrade = grades.find((item: string) => isNaN(+item))
     if (!kinderGrade) {
       return null
@@ -213,9 +212,9 @@ const DiplomaSeeking: React.FC = () => {
   }
 
   return (
-    <Box sx={diplomaSeekingClassess.container}>
+    <Box sx={diplomaSeekingClasses.container}>
       <Prompt
-        when={isChanged() ? true : false}
+        when={isChanged()}
         message={JSON.stringify({
           header: 'Unsaved Changes',
           content: 'Are you sure you want to leave without saving changes?',
@@ -223,8 +222,8 @@ const DiplomaSeeking: React.FC = () => {
       />
       <Box paddingY='13px' paddingX='20px' display='flex' justifyContent='space-between'>
         <Box>
-          <IconButton onClick={() => history.push('/site-management/enrollment/')} sx={diplomaSeekingClassess.btnIcon}>
-            <ArrowBackIosRoundedIcon sx={diplomaSeekingClassess.iconArrow} />
+          <IconButton onClick={() => history.push('/site-management/enrollment/')} sx={diplomaSeekingClasses.btnIcon}>
+            <ArrowBackIosRoundedIcon sx={diplomaSeekingClasses.iconArrow} />
           </IconButton>
           <Typography paddingLeft='20px' fontSize='20px' fontWeight={700} component='span'>
             Diploma-seeking Path
@@ -249,8 +248,8 @@ const DiplomaSeeking: React.FC = () => {
               <Typography fontSize='16px' fontWeight={500} component='span'>
                 Select the grade levels that require a Diploma-seeking Path when creating a schedule:
               </Typography>
-              <Box sx={diplomaSeekingClassess.gradeGroup}>
-                {kinderGardernGrade()}
+              <Box sx={diplomaSeekingClasses.gradeGroup}>
+                {kindergartenGrade()}
                 {renderGrades()}
               </Box>
             </Box>
@@ -272,8 +271,8 @@ const DiplomaSeeking: React.FC = () => {
                   {extractContent(diplomaQuestion.description)}
                 </Typography>
                 <Tooltip title='Edit' placement='top'>
-                  <IconButton sx={diplomaSeekingClassess.diplomaQuestion} onClick={() => setOpenEditModal(true)}>
-                    <ModeEditIcon sx={diplomaSeekingClassess.editIcon} />
+                  <IconButton sx={diplomaSeekingClasses.diplomaQuestion} onClick={() => setOpenEditModal(true)}>
+                    <ModeEditIcon sx={diplomaSeekingClasses.editIcon} />
                   </IconButton>
                 </Tooltip>
               </Box>
@@ -294,7 +293,7 @@ const DiplomaSeeking: React.FC = () => {
                   checked={diplomaStatus === 1}
                   onClick={() => setDiplomaStatus(1)}
                 />
-                <Subtitle size='small' sx={diplomaSeekingClassess.btnRadio}>
+                <Subtitle size='small' sx={diplomaSeekingClasses.btnRadio}>
                   Yes
                 </Subtitle>
               </Box>
@@ -314,7 +313,7 @@ const DiplomaSeeking: React.FC = () => {
                   checked={diplomaStatus === 0}
                   onClick={() => setDiplomaStatus(0)}
                 />
-                <Subtitle size='small' sx={diplomaSeekingClassess.btnRadio}>
+                <Subtitle size='small' sx={diplomaSeekingClasses.btnRadio}>
                   No
                 </Subtitle>
               </Box>
@@ -322,8 +321,8 @@ const DiplomaSeeking: React.FC = () => {
           </Grid>
         </Grid>
       </Box>
-      <Box sx={diplomaSeekingClassess.boxSave}>
-        <Button sx={diplomaSeekingClassess.saveBtn} onClick={handleDiplomaGradeSave}>
+      <Box sx={diplomaSeekingClasses.boxSave}>
+        <Button sx={diplomaSeekingClasses.saveBtn} onClick={handleDiplomaGradeSave}>
           Save
         </Button>
       </Box>

@@ -139,6 +139,7 @@ export const getProvidersQuery = gql`
         reduce_funds
         price
         reduce_funds_notification
+        resource_id
         Titles {
           title_id
           subject_id

@@ -55,7 +55,7 @@ export const Filters: React.FC<FiltersProps> = ({ schoolYearId, schoolYear, setF
   ]
 
   const { checkBoxItems: resourceItems } = useResources(schoolYearId)
-  const { checkBoxItems: courseItems } = useProviders(schoolYearId)
+  const { courseWithResourceCheckBoxItems: courseItems } = useProviders(schoolYearId)
 
   const handleFilter = () => {
     setFilter({ studentStatuses, statuses, relations, features, types, resources, courses })

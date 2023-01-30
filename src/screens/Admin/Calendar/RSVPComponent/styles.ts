@@ -49,7 +49,7 @@ export const rsvpClassess = {
     borderRadius: 2,
     textTransform: 'none',
     height: '33px',
-    background: MthColor.BLUE_GRDIENT,
+    background: MthColor.BLUE_GRADIENT,
     color: 'white',
     width: '92px',
     '&:hover': {

@@ -517,6 +517,10 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
     scheduleData.map((item) => {
       if (multiPeriods.findIndex((x) => x === item.period) > -1) {
         item.editable = true
+        delete item.Period
+        delete item.Subject
+        delete item.Title
+        delete item.CourseType
         delete item.Provider
         delete item.Course
       }

@@ -263,7 +263,7 @@ export const EmailRecordsTable: React.FC = () => {
               fontWeight: 700,
               borderRadius: 2,
               textTransform: 'none',
-              background: MthColor.BLUE_GRDIENT,
+              background: MthColor.BLUE_GRADIENT,
               color: 'white',
               width: '157px',
               marginRight: 2,

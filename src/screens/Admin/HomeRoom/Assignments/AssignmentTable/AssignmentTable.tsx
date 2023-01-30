@@ -453,9 +453,9 @@ export const AssignmentTable: React.FC<EnrollmentSchoolTableProps> = ({
               textTransform: 'none',
               height: 29,
               color: 'white',
-              background: MthColor.BLUE_GRDIENT,
+              background: MthColor.BLUE_GRADIENT,
               '&:hover': {
-                background: MthColor.BLUE_GRDIENT,
+                background: MthColor.BLUE_GRADIENT,
               },
             }}
             className='btn-action'

@@ -1,4 +1,4 @@
-export const diplomaSeekingClassess = {
+export const diplomaSeekingClasses = {
   main: {
     minHeight: 500,
     textAlign: 'left',

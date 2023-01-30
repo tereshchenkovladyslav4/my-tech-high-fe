@@ -5,7 +5,7 @@ import { Form, Formik } from 'formik'
 import * as yup from 'yup'
 import { RICH_TEXT_VALID_MIN_LENGTH } from '@mth/constants'
 import { MthColor, ReduceFunds } from '@mth/enums'
-import { useProgramYearListBySchoolYearId, useProviders } from '@mth/hooks'
+import { useProgramYearListBySchoolYearId, useProviders, useResources } from '@mth/hooks'
 import CourseForm from '@mth/screens/Admin/Curriculum/CourseCatalog/Providers/CourseEdit/CourseForm'
 import { defaultCourseFormData } from '@mth/screens/Admin/Curriculum/CourseCatalog/Providers/defaultValues'
 import { createOrUpdateCourseMutation } from '@mth/screens/Admin/Curriculum/CourseCatalog/services'
@@ -26,6 +26,7 @@ const CourseEdit: React.FC<CourseEditProps> = ({
   const [submitSave, {}] = useMutation(createOrUpdateCourseMutation)
 
   const { checkBoxItems: providerItems, providers } = useProviders(schoolYearId)
+  const { dropdownItems: resourceItems } = useResources(schoolYearId)
   const { numericGradeList: gradeOptions } = useProgramYearListBySchoolYearId(schoolYearId)
 
   const handleCancel = () => {
@@ -100,6 +101,7 @@ const CourseEdit: React.FC<CourseEditProps> = ({
           limit: value.limit,
           reduce_funds: value.reduce_funds,
           price: value.price || null,
+          resource_id: value.resource_id || null,
           titles: value.TitleIds?.join(','),
         },
       },
@@ -169,6 +171,7 @@ const CourseEdit: React.FC<CourseEditProps> = ({
                 schoolYearId={schoolYearId}
                 schoolYearData={schoolYearData}
                 providerItems={providerItems}
+                resourceItems={resourceItems}
                 providers={providers}
                 gradeOptions={gradeOptions}
               />

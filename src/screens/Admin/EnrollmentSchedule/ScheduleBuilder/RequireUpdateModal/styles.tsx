@@ -29,7 +29,7 @@ export const requireUpdateModalClasses = {
     width: '160px',
     height: '36px',
     borderRadius: '40px',
-    background: MthColor.BLUE_GRDIENT,
+    background: MthColor.BLUE_GRADIENT,
     color: MthColor.WHITE,
     marginLeft: 5,
   },

@@ -1,6 +1,6 @@
 import { MthColor } from '@mth/enums'
 
-export const diplomaSeekingClassess = {
+export const diplomaSeekingClasses = {
   container: {
     width: '95%',
     marginX: 'auto',

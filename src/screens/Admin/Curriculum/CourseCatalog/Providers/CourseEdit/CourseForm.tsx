@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Box, Grid, TextField, Typography } from '@mui/material'
 import { useFormikContext } from 'formik'
 import { DropDown } from '@mth/components/DropDown/DropDown'
+import { DropDownItem } from '@mth/components/DropDown/types'
 import { MthBulletEditor } from '@mth/components/MthBulletEditor'
 import { MthCheckbox } from '@mth/components/MthCheckbox'
 import { MthNumberInput } from '@mth/components/MthNumberInput'
@@ -17,11 +18,13 @@ const CourseForm: React.FC<CourseFormProps> = ({
   schoolYearId,
   schoolYearData,
   providerItems,
+  resourceItems,
   providers,
   gradeOptions,
 }) => {
   const { errors, handleChange, setFieldValue, touched, values, setFieldTouched } = useFormikContext<Course>()
   const [provider, setProvider] = useState<Provider | undefined>()
+  const noneOption: DropDownItem = { label: 'None', value: 0 }
 
   useEffect(() => {
     if (values.provider_id) {
@@ -265,6 +268,18 @@ const CourseForm: React.FC<CourseFormProps> = ({
                 disabled={values?.reduce_funds === ReduceFunds.NONE}
               />
               <Subtitle sx={editCourseClasses.formError}>{touched.price && errors.price}</Subtitle>
+            </Grid>
+            <Grid item xs={12}>
+              <DropDown
+                dropDownItems={[noneOption].concat(resourceItems)}
+                placeholder='Associated Homeroom Resource'
+                labelTop
+                setParentValue={(value) => {
+                  setFieldValue('resource_id', value)
+                }}
+                sx={{ m: 0 }}
+                defaultValue={values?.resource_id || 0}
+              />
             </Grid>
             <Grid item xs={12}>
               <CourseTitles schoolYearId={schoolYearId} />

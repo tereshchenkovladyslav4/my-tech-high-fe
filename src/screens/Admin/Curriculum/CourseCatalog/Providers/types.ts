@@ -41,6 +41,7 @@ export type Course = {
   course_notification?: string
   launchpad_course: false
   course_id?: string
+  resource_id?: number
   website: string
   diploma_seeking_path?: DiplomaSeekingPath
   limit?: number | null
@@ -91,6 +92,7 @@ export type CourseFormProps = {
   schoolYearId: number
   schoolYearData?: SchoolYear
   providerItems: DropDownItem[]
+  resourceItems: DropDownItem[]
   providers: Provider[]
   gradeOptions: DropDownItem[]
 }
