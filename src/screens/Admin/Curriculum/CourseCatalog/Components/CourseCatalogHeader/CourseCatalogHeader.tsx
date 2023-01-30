@@ -12,7 +12,6 @@ import { CourseCatalogHeaderProps } from '@mth/screens/Admin/Curriculum/CourseCa
 
 const CourseCatalogHeader: React.FC<CourseCatalogHeaderProps> = ({
   title,
-  selectedYear,
   setSelectedYear,
   setSelectedYearData,
   showArchived,
@@ -22,9 +21,12 @@ const CourseCatalogHeader: React.FC<CourseCatalogHeaderProps> = ({
   const { me } = useContext(UserContext)
   const [localSearchField, setLocalSearchField] = useState<string>('')
 
-  const { dropdownItems: schoolYearDropdownItems, schoolYears: schoolYears } = useSchoolYearsByRegionId(
-    me?.selectedRegionId,
-  )
+  const {
+    dropdownItems: schoolYearDropdownItems,
+    selectedYearId,
+    setSelectedYearId,
+    selectedYear: selectedYearData,
+  } = useSchoolYearsByRegionId(me?.selectedRegionId)
 
   const changeHandler = (event = '') => {
     setSearchField(event)
@@ -37,15 +39,12 @@ const CourseCatalogHeader: React.FC<CourseCatalogHeaderProps> = ({
   }, [localSearchField])
 
   useEffect(() => {
-    if (selectedYear && schoolYears) {
-      const schoolYearData = schoolYears.find((item) => item.school_year_id == selectedYear)
-      if (schoolYearData && setSelectedYearData) setSelectedYearData(schoolYearData)
-    }
-  }, [selectedYear])
+    if (selectedYearData && setSelectedYearData) setSelectedYearData(selectedYearData)
+  }, [selectedYearData])
 
   useEffect(() => {
-    if (schoolYears?.length) setSelectedYear(schoolYears[0].school_year_id)
-  }, [schoolYears])
+    setSelectedYear(selectedYearId || 0)
+  }, [selectedYearId])
 
   return (
     <>
@@ -54,10 +53,10 @@ const CourseCatalogHeader: React.FC<CourseCatalogHeaderProps> = ({
           <DropDown
             dropDownItems={schoolYearDropdownItems}
             placeholder={'Select Year'}
-            defaultValue={selectedYear}
+            defaultValue={selectedYearId}
             borderNone={true}
             setParentValue={(val) => {
-              setSelectedYear(+val)
+              setSelectedYearId(+val)
             }}
           />
         </PageHeader>

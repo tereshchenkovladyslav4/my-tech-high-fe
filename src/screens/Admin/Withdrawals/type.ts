@@ -1,5 +1,4 @@
-import { Withdrawal } from '@mth/graphql/models/withdrawal'
-import { EmailTemplate } from '@mth/models'
+import { EmailTemplate, Withdrawal } from '@mth/models'
 
 export type WithdrawalCount = {
   Notified?: number
@@ -82,12 +81,12 @@ export type PageModalsProps = {
 
 export type WithdrawalPageProps = {
   searchField: string
-  selectedYear: string | number
+  selectedYear: number
   withdrawalCounts: WithdrawalCount
   emailTemplate: EmailTemplateResponseVM | undefined
   setSearchField: (value: string) => void
   setWithdrawalCounts: (value: WithdrawalCount) => void
-  setSelectedYear: (value: string | number) => void
+  setSelectedYear: (value: number) => void
   refetchWithdrawalsCount: () => void
   refetchEmailTemplate: () => void
 }
@@ -115,7 +114,7 @@ export type PageHeaderProps = {
 export type PageActionProps = {
   totalWithdrawals: number
   searchField: string
-  selectedYear: string | number
+  selectedYear: number
   paginationLimit: number
   selectedStatuses: string[]
   withdrawalCounts: WithdrawalCount
@@ -123,6 +122,6 @@ export type PageActionProps = {
   setSelectedStatuses: (value: string[]) => void
   setSkip: (value: number) => void
   setPaginationLimit: (value: number) => void
-  setSelectedYear: (value: string | number) => void
+  setSelectedYear: (value: number) => void
   onQuickWithdrawalClick: () => void
 }

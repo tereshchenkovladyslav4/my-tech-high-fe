@@ -23,6 +23,13 @@ export const CourseTitles: React.FC<CourseTitlesProps> = ({ schoolYearId }) => {
 
   const { subjects, dropdownItems: subjectItems } = useSubjects(schoolYearId, '', true, true)
 
+  const handleUnmapAction = (titleId: string) => {
+    setFieldValue(
+      'TitleIds',
+      values?.TitleIds?.filter((item) => item != titleId),
+    )
+  }
+
   useEffect(() => {
     let allItems: CheckBoxListVM[] = []
     subjects?.forEach((subject: Subject) => {
@@ -83,6 +90,8 @@ export const CourseTitles: React.FC<CourseTitlesProps> = ({ schoolYearId }) => {
               whiteSpace: 'nowrap',
               mr: 2,
             }}
+            onBlur={() => {}}
+            onClick={() => handleUnmapAction(item.value)}
           >
             {item.label}
           </Button>

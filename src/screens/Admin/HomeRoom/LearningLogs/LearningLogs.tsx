@@ -13,19 +13,15 @@ import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { WarningModal } from '@mth/components/WarningModal/Warning'
 import { MthColor, MthRoute } from '@mth/enums'
 import { useSchoolYearsByRegionId } from '@mth/hooks'
-import { SchoolYear } from '@mth/models'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { HomeRoomHeader } from '../Components/HomeRoomHeader'
 import { CreateNewMasterGql, DeleteMasterByIdGql, GetMastersBySchoolYearIDGql } from '../services'
-import Classes from './Classes'
+import ClassesComponent from './Classes'
 import { CreateMasterModal } from './CreateMasterModal'
-import { Master } from './types'
+import { Classes, Master } from './types'
 
 const LearningLogs: React.FC = () => {
   const history = useHistory()
-
-  const [selectedYear, setSelectedYear] = useState<number>(0)
-  const [selectedYearData, setSelectedYearData] = useState<SchoolYear | undefined>()
   // const [searchField, setSearchField] = useState<string>('')
   const [tableData, setTableData] = useState<MthTableRowItem<Master>[]>([])
   const [localSearchField, setLocalSearchField] = useState<string>('')
@@ -35,24 +31,16 @@ const LearningLogs: React.FC = () => {
   const [deleteId, setDeleteId] = useState<number | null>()
 
   const { me } = useContext(UserContext)
-  const { dropdownItems: schoolYearDropdownItems, schoolYears: schoolYears } = useSchoolYearsByRegionId(
-    me?.selectedRegionId,
-  )
+  const {
+    dropdownItems: schoolYearDropdownItems,
+    selectedYearId,
+    setSelectedYearId,
+    selectedYear,
+  } = useSchoolYearsByRegionId(me?.selectedRegionId)
 
-  useEffect(() => {
-    if (selectedYear && schoolYears) {
-      const schoolYearData = schoolYears.find((item) => item.school_year_id == selectedYear)
-      if (schoolYearData) setSelectedYearData(schoolYearData)
-    }
-  }, [selectedYear])
-
-  useEffect(() => {
-    if (schoolYears?.length) setSelectedYear(schoolYears[0].school_year_id)
-  }, [schoolYears])
-
-  const handleDeleteMaster = async (masterId: string) => {
+  const handleDeleteMaster = async (masterId: number) => {
     setDeleteConfirm(true)
-    setDeleteId(parseInt(masterId))
+    setDeleteId(masterId)
   }
 
   const [deleteMaster] = useMutation(DeleteMasterByIdGql)
@@ -99,7 +87,7 @@ const LearningLogs: React.FC = () => {
                 <CreateIcon />
               </IconButton>
             </Tooltip>
-            {calcMasterStudentCount(item.rawData.masterClasses) > 0 ? (
+            {calcMasterStudentCount(item.rawData.masterClasses || []) > 0 ? (
               <IconButton className='actionButton' color='primary' disabled>
                 <DeleteForeverOutlined />
               </IconButton>
@@ -136,9 +124,9 @@ const LearningLogs: React.FC = () => {
 
   const { loading, data, refetch } = useQuery(GetMastersBySchoolYearIDGql, {
     variables: {
-      schoolYearId: selectedYear,
+      schoolYearId: selectedYearId,
     },
-    skip: selectedYear ? false : true,
+    skip: selectedYearId ? false : true,
     fetchPolicy: 'network-only',
   })
 
@@ -150,11 +138,11 @@ const LearningLogs: React.FC = () => {
         classesCount: master.classesCount,
       },
       rawData: master,
-      expandNode: <Classes master={master} refetch={refetch} />,
+      expandNode: <ClassesComponent master={master} refetch={refetch} />,
     }
   }
 
-  const calcMasterStudentCount = (classes) => {
+  const calcMasterStudentCount = (classes: Classes[]) => {
     let count = 0
     classes.map((item) => {
       count += item.homeroomStudent?.length
@@ -169,7 +157,7 @@ const LearningLogs: React.FC = () => {
           return createData({
             master_id: item.master_id,
             master_name: item.master_name,
-            classesCount: calcMasterStudentCount(item?.masterClasses),
+            classesCount: calcMasterStudentCount(item?.masterClasses || []),
             masterClasses: item?.masterClasses,
           })
         }),
@@ -183,7 +171,7 @@ const LearningLogs: React.FC = () => {
     await createNewMaster({
       variables: {
         createNewMasterInput: {
-          school_year_id: values.schoolYear,
+          school_year_id: values.school_year_id,
           master_name: values.master_name,
         },
       },
@@ -204,8 +192,8 @@ const LearningLogs: React.FC = () => {
       >
         <HomeRoomHeader
           title='Homerooms & Learning Logs'
-          selectedYear={selectedYear}
-          setSelectedYear={setSelectedYear}
+          selectedYear={selectedYearId || 0}
+          setSelectedYear={setSelectedYearId}
           schoolYearDropdownItems={schoolYearDropdownItems}
         />
 
@@ -260,13 +248,13 @@ const LearningLogs: React.FC = () => {
             onClick={() => setIsCreateModal(true)}
           >
             <Subtitle sx={{ fontSize: '14px', fontWeight: '500' }}>+ Add Master</Subtitle>
-            <Subtitle sx={{ display: 'none' }}>{selectedYearData?.school_year_id}</Subtitle>
+            <Subtitle sx={{ display: 'none' }}>{selectedYear?.school_year_id}</Subtitle>
           </Button>
         </Box>
       </Card>
       {isCreateModal && (
         <CreateMasterModal
-          selectedYear={selectedYear}
+          selectedYear={selectedYearId || 0}
           schoolYearDropdownItems={schoolYearDropdownItems}
           handleClose={() => setIsCreateModal(false)}
           handleSubmit={createMasterSubmit}

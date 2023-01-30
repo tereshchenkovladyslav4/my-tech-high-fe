@@ -1,28 +1,30 @@
-import React, { FunctionComponent, useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import SearchIcon from '@mui/icons-material/Search'
 import { Avatar, AvatarGroup, Box, Card, Divider, Grid, IconButton, TextField } from '@mui/material'
-import { Metadata } from '../../../components/Metadata/Metadata'
-import { SegmentedControl } from '../../../components/SegmentedControl/SegmentedControl'
-import { Table } from '../../../components/Table/Table'
-import { Paragraph } from '../../../components/Typography/Paragraph/Paragraph'
-import { Subtitle } from '../../../components/Typography/Subtitle/Subtitle'
-import { UserContext } from '../../../providers/UserContext/UserProvider'
+import { Metadata } from '@mth/components/Metadata/Metadata'
+import { SegmentedControl } from '@mth/components/SegmentedControl/SegmentedControl'
+import { Table } from '@mth/components/Table/Table'
+import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { RoleLevel } from '@mth/enums'
+import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { imageA, imageB, imageC } from '../../Dashboard/Dashboard'
 import { Homeroom } from './Homeroom/Homeroom'
 import { SchoolEnrollment } from './SchoolEnrollment/SchoolEnrollment'
 import { SchoolYear } from './SchoolYear/SchoolYear'
 import { ToDo } from './ToDoList/ToDo'
 
-export const AdminDashboard: FunctionComponent = () => {
+export const AdminDashboard: React.FC = () => {
   const { me } = useContext(UserContext)
+  const roleLevel = me?.role?.level
   const [showAnnouncements, setShowAnnouncements] = useState(false)
-  const [, setIsSuper] = useState(null)
+  const [, setIsSuper] = useState<boolean>(false)
   const [selectedYear, setSelectedYear] = useState<string | number>('')
 
   useEffect(() => {
     if (me) {
-      setIsSuper(Number(me?.role?.level) === 1)
+      setIsSuper(roleLevel == RoleLevel.SUPER_ADMIN)
       setShowAnnouncements(Number(me?.role?.level) === 1)
     }
   }, [me])
@@ -94,7 +96,7 @@ export const AdminDashboard: FunctionComponent = () => {
           }}
         >
           <>
-            <SchoolEnrollment selectedYear={selectedYear} regionId={me?.selectedRegionId} />
+            <SchoolEnrollment selectedYear={selectedYear} regionId={me?.selectedRegionId || 0} />
             <Divider sx={{ marginY: '12px' }} />
             <Homeroom />
           </>

@@ -8,6 +8,7 @@ export type SchoolYear = {
   date_end: string
   label?: string
   midyear_application: boolean
+  special_ed: boolean
   midyear_application_open: string
   midyear_application_close: string
   testing_preference_title: string

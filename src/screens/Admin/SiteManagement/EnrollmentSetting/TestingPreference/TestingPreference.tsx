@@ -24,18 +24,20 @@ const TestingPreference: React.FC = () => {
   const { me } = useContext(UserContext)
   const { path, isExact } = useRouteMatch(MthRoute.TESTING_PREFERENCE_PATH) || {}
   const history = useHistory()
-  const [selectedSchoolYear, setSelectedSchoolYear] = useState<number>(0)
   const [showArchived, setShowArchived] = useState<boolean>(false)
   const [informations, setInformations] = useState<Information[]>([])
   const [availGrades, setAvailableGrades] = useState<(string | number)[]>([])
   const [assessmentItems, setAssessmentItems] = useState<AssessmentType[]>([])
-  const { assessments, loading, refetch } = useAssessmentsBySchoolYearId(selectedSchoolYear)
   const [selectedAssessment, setSelectedAssessment] = useState<AssessmentType>()
   const {
     dropdownItems: schoolYearDropdownItems,
     schoolYears: schoolYears,
+    selectedYearId,
+    setSelectedYearId,
     refetchSchoolYear,
   } = useSchoolYearsByRegionId(me?.selectedRegionId)
+
+  const { assessments, loading, refetch } = useAssessmentsBySchoolYearId(selectedYearId)
 
   const { data: schoolYearList } = useCurrentSchoolYearByRegionId(Number(me?.selectedRegionId))
 
@@ -48,21 +50,10 @@ const TestingPreference: React.FC = () => {
   }, [me?.selectedRegionId, schoolYearList])
 
   useEffect(() => {
-    if (schoolYears?.length) {
-      const schoolYear = schoolYears.filter((item) => item.school_year_id == selectedSchoolYear)
-      if (!schoolYear.length) {
-        setSelectedSchoolYear(Number(schoolYears[0].school_year_id))
-      }
-    }
-  }, [schoolYears, me?.selectedRegionId])
-
-  useEffect(() => {
-    if (schoolYears?.length && selectedSchoolYear == 0) {
-      setSelectedSchoolYear(Number(schoolYears[0].school_year_id))
-    } else if (schoolYears?.length && selectedSchoolYear > 0) {
+    if (schoolYears?.length && selectedYearId && selectedYearId > 0) {
       const infoArray: Information[] = []
       schoolYears
-        .filter((schoolYear) => Number(schoolYear.school_year_id) == selectedSchoolYear)
+        .filter((schoolYear) => Number(schoolYear.school_year_id) == selectedYearId)
         .map((schoolYear) => {
           setAvailableGrades(schoolYear.grades?.split(',').sort((a, b) => (parseInt(a) > parseInt(b) ? 1 : -1)))
           infoArray.push({
@@ -82,7 +73,7 @@ const TestingPreference: React.FC = () => {
     } else {
       setInformations([])
     }
-  }, [schoolYears, selectedSchoolYear])
+  }, [schoolYears, selectedYearId])
 
   useEffect(() => {
     if (!loading && assessments) {
@@ -99,8 +90,8 @@ const TestingPreference: React.FC = () => {
         <>
           <HeaderComponent
             dropDownItems={schoolYearDropdownItems}
-            selectedSchoolYear={selectedSchoolYear}
-            setSelectedSchoolYear={setSelectedSchoolYear}
+            selectedSchoolYear={selectedYearId || 0}
+            setSelectedSchoolYear={setSelectedYearId}
           />
           <Box sx={{ paddingX: 8, marginTop: 5 }}>
             <Grid container sx={{ textAlign: 'left' }}>
@@ -151,7 +142,7 @@ const TestingPreference: React.FC = () => {
         <Route path={`${path}/:id`}>
           <AssessmentEditForm
             assessment={selectedAssessment}
-            selectedYear={selectedSchoolYear}
+            selectedYear={selectedYearId || 0}
             availGrades={availGrades}
             refetch={refetch}
           />

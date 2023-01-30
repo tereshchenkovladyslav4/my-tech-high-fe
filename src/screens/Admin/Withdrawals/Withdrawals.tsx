@@ -11,7 +11,7 @@ import { WithdrawalPage } from './WithdrawalPage'
 const Withdrawals: React.FC = () => {
   const { me } = useContext(UserContext)
   const [searchField, setSearchField] = useState<string>('')
-  const [selectedYear, setSelectedYear] = useState<string | number>('1')
+  const [selectedYear, setSelectedYear] = useState<number>(0)
   const [emailTemplate, setEmailTemplate] = useState<EmailTemplateResponseVM>()
   const [withdrawalCounts, setWithdrawalCounts] = useState<WithdrawalCount>({
     Notified: 0,
@@ -35,6 +35,7 @@ const Withdrawals: React.FC = () => {
       template: 'Withdraw Page',
       regionId: me?.selectedRegionId,
     },
+    skip: !me?.selectedRegionId,
     fetchPolicy: 'network-only',
   })
 

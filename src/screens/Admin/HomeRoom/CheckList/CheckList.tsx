@@ -39,7 +39,6 @@ const subjectTemplate = [
 ]
 
 const CheckList: React.FC = () => {
-  const [selectedYear, setSelectedYear] = useState<number>(0)
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [checkListItems, setCheckListItems] = useState<DropDownItem[]>([])
   const [selectedCheckListItem, setSelectedCheckListItem] = useState<string | number>()
@@ -51,9 +50,12 @@ const CheckList: React.FC = () => {
   const [editModal, setEditModal] = useState(false)
   const [selectedChecklist, setSelectedChecklist] = useState<MthTableRowItem<CheckListType>>()
   const { me } = useContext(UserContext)
-  const { dropdownItems: schoolYearDropdownItems, schoolYears: schoolYears } = useSchoolYearsByRegionId(
-    me?.selectedRegionId,
-  )
+  const {
+    dropdownItems: schoolYearDropdownItems,
+    schoolYears: schoolYears,
+    selectedYearId,
+    setSelectedYearId,
+  } = useSchoolYearsByRegionId(me?.selectedRegionId)
   const [paginationLimit, setPaginationLimit] = useState<number>(Number(localStorage.getItem('pageLimit')) || 25)
   const [skip, setSkip] = useState<number>(0)
   const [fileFormatError, setFileFormatError] = useState(false)
@@ -67,7 +69,6 @@ const CheckList: React.FC = () => {
 
   useEffect(() => {
     if (schoolYears?.length) {
-      setSelectedYear(schoolYears[0].school_year_id)
       setFilters({
         ...filters,
         selectedYearId: schoolYears[0].school_year_id as number,
@@ -329,7 +330,7 @@ const CheckList: React.FC = () => {
         return {
           region_id: me?.selectedRegionId ?? 0,
           status: selectedCheckListItem === 'independent_checklist' ? 'Independent Checklist' : 'Subject Checklist',
-          school_year_id: selectedYear ?? 0,
+          school_year_id: selectedYearId ?? 0,
           checklist_id: item?.ID?.toString() ?? '',
           goal: item?.Goal?.toString() ?? '',
           ...(item.Subject && { subject: item?.Subject.toString() }),
@@ -357,9 +358,9 @@ const CheckList: React.FC = () => {
       <Card sx={{ ...commonClasses.mainBlock, ...commonClasses.fitScreen }}>
         <HomeRoomHeader
           title='Checklist'
-          selectedYear={selectedYear}
+          selectedYear={selectedYearId || 0}
           setSelectedYear={(value) => {
-            setSelectedYear(value)
+            setSelectedYearId(value)
             setFilters({ ...filters, selectedYearId: value as number })
             handlePageChange(initialPageNumber)
           }}

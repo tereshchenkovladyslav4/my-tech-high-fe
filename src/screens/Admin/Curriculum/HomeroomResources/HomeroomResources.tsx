@@ -29,11 +29,12 @@ export const HomeroomResources: React.FC = () => {
     dropdownItems: schoolYearDropdownItems,
     schoolYears: schoolYears,
     selectedYear: selectedYearData,
+    selectedYearId,
+    setSelectedYearId,
   } = useSchoolYearsByRegionId(me?.selectedRegionId)
   const [stateName, setStateName] = useState<string>('')
   const [resources, setResources] = useState<HomeroomResource[]>([])
   const [visibleResources, setVisibleResources] = useState<HomeroomResource[]>([])
-  const [selectedYear, setSelectedYear] = useState<string | number>('')
   const [page, setPage] = useState<HomeroomResourcePage>(HomeroomResourcePage.ROOT)
   const [selectedHomeroomResource, setSelectedHomeroomResource] = useState<HomeroomResource>()
   const [showArchivedModal, setShowArchivedModal] = useState<boolean>(false)
@@ -52,8 +53,8 @@ export const HomeroomResources: React.FC = () => {
     data: resourcesData,
     refetch,
   } = useQuery(getResourcesQuery, {
-    variables: { schoolYearId: selectedYear },
-    skip: !selectedYear,
+    variables: { schoolYearId: selectedYearId },
+    skip: !selectedYearId,
     fetchPolicy: 'network-only',
   })
   const [updateResource, {}] = useMutation(createOrUpdateResourceMutation)
@@ -64,7 +65,7 @@ export const HomeroomResources: React.FC = () => {
   }
 
   const isPast = (): boolean => {
-    const selectedSchoolYear = schoolYears.find((item) => item.school_year_id === selectedYear)
+    const selectedSchoolYear = schoolYears.find((item) => item.school_year_id === selectedYearId)
     return !!selectedSchoolYear && moment().isAfter(selectedSchoolYear.date_end)
   }
 
@@ -242,10 +243,6 @@ export const HomeroomResources: React.FC = () => {
   }, [loading, resourcesData])
 
   useEffect(() => {
-    if (schoolYears?.length) setSelectedYear(schoolYears[0].school_year_id)
-  }, [schoolYears])
-
-  useEffect(() => {
     const selectedRegion = me?.userRegion?.find((region) => region.region_id === me?.selectedRegionId)
     setStateName(selectedRegion?.regionDetail?.name || '')
   }, [me?.selectedRegionId])
@@ -276,10 +273,10 @@ export const HomeroomResources: React.FC = () => {
               <DropDown
                 dropDownItems={schoolYearDropdownItems}
                 placeholder={'Select Year'}
-                defaultValue={selectedYear}
+                defaultValue={selectedYearId || 0}
                 borderNone={true}
                 setParentValue={(val) => {
-                  setSelectedYear(+val)
+                  setSelectedYearId(+val)
                 }}
               />
             </Box>
@@ -312,7 +309,7 @@ export const HomeroomResources: React.FC = () => {
       )}
       {page === HomeroomResourcePage.EDIT && (
         <HomeroomResourceEdit
-          schoolYearId={Number(selectedYear)}
+          schoolYearId={selectedYearId || 0}
           schoolYearData={selectedYearData}
           item={selectedHomeroomResource}
           stateName={stateName}

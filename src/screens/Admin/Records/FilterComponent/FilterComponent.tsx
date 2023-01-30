@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useState } from 'react'
 import ExpandLessIcon from '@mui/icons-material/ExpandLess'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { Box, Button, Card, Grid, TextField } from '@mui/material'
@@ -30,7 +30,6 @@ const FilterComponent: React.FC<FilterComponentProps> = ({ setFilter }) => {
   const [expand, setExpand] = useState<boolean>(true)
   const [grades1, setGrades1] = useState<string[]>([])
   const [grades2, setGrades2] = useState<string[]>([])
-  const [selectedYear, setSelectedYear] = useState<string | number>('')
   const [programYears, setProgramYears] = useState<string[]>([])
   const [status, setStatus] = useState<string[]>([])
   const [schoolofEnrollment, setSchoolofEnrollment] = useState<string[]>([])
@@ -39,14 +38,16 @@ const FilterComponent: React.FC<FilterComponentProps> = ({ setFilter }) => {
   const [other, setOther] = useState<string[]>([])
   const [startDate, setStartDate] = useState<Date | undefined | null>(null)
   const [endDate, setEndDate] = useState<Date | undefined | null>(null)
-  const { programYearList, gradeList, specialEdList } = useProgramYearListBySchoolYearId(Number(selectedYear))
-  const { dropdownItems: schoolYearDropdownItems, schoolYears: schoolYears } = useSchoolYearsByRegionId(
-    me?.selectedRegionId,
-  )
+  const {
+    dropdownItems: schoolYearDropdownItems,
+    selectedYearId,
+    setSelectedYearId,
+  } = useSchoolYearsByRegionId(me?.selectedRegionId)
+  const { programYearList, gradeList, specialEdList } = useProgramYearListBySchoolYearId(selectedYearId)
   const { data: enrollmentPacketDocumentList } = useEnrollmentPacketDocumentListByRegionId(Number(me?.selectedRegionId))
   const { schoolOfEnrollmentList } = useSchoolPartnerListByRegionIdAndSchoolYearId(
     Number(me?.selectedRegionId),
-    Number(selectedYear),
+    selectedYearId,
   )
 
   const grade2Options: CheckBoxListVM[] = [
@@ -118,10 +119,6 @@ const FilterComponent: React.FC<FilterComponentProps> = ({ setFilter }) => {
     })
   }
 
-  useEffect(() => {
-    if (schoolYears?.length) setSelectedYear(schoolYears[0].school_year_id)
-  }, [schoolYears])
-
   return (
     <Card sx={{ marginTop: 2, padding: 2 }}>
       <Box display='flex' flexDirection='row' onClick={() => setExpand(!expand)}>
@@ -136,10 +133,10 @@ const FilterComponent: React.FC<FilterComponentProps> = ({ setFilter }) => {
             <DropDown
               dropDownItems={schoolYearDropdownItems}
               placeholder={'Select Year'}
-              defaultValue={selectedYear}
+              defaultValue={selectedYearId || 0}
               borderNone={true}
               setParentValue={(val) => {
-                setSelectedYear(Number(val))
+                setSelectedYearId(+val)
               }}
             />
           </Box>

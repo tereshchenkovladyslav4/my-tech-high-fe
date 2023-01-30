@@ -153,7 +153,7 @@ const CourseEdit: React.FC<CourseEditProps> = ({
       >
         <Box
           sx={{
-            maxHeight: '90vh',
+            maxHeight: '80vh',
             overflow: 'auto',
             p: 1,
           }}

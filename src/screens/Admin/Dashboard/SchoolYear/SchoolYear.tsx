@@ -1,22 +1,14 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { gql, useQuery } from '@apollo/client'
-import { makeStyles } from '@material-ui/styles'
 import ExpandLessIcon from '@mui/icons-material/ExpandLess'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
-import { Card, Grid, IconButton, Select, MenuItem, FormControl } from '@mui/material'
+import { Card, Grid, IconButton } from '@mui/material'
 import { Box } from '@mui/system'
-import moment from 'moment'
-import { DropDownItem } from '@mth/components/DropDown/types'
+import { DropDown } from '@mth/components/DropDown/DropDown'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { useSchoolYearsByRegionId } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
-const selectStyles = makeStyles({
-  select: {
-    '& .MuiSvgIcon-root': {
-      color: 'blue',
-    },
-  },
-})
 
 export const getSchoolYearsByRegionId = gql`
   query Region($regionId: ID!) {
@@ -140,57 +132,43 @@ type SchoolYearProps = {
   setSelectedYear: (selectedYear: string | number) => void
 }
 
-export const SchoolYear: React.FC<SchoolYearProps> = ({ selectedYear, setSelectedYear }) => {
+export const SchoolYear: React.FC<SchoolYearProps> = ({ setSelectedYear }) => {
   const [isExpanded, setIsExpanded] = useState(false)
   const { me } = useContext(UserContext)
-  const [schoolYears, setSchoolYears] = useState<Array<DropDownItem>>([])
   const [schoolYearDataCount, setSchoolYearDataCount] = useState(data)
   const [schoolYearSpedOptions, setSchoolYearSpedOptions] = useState<Array<SchoolYearSped>>([])
   const [specialEdStatus, setSpecialEdStatus] = useState(true)
 
-  const selectClasses = selectStyles()
-  const { loading: schoolYearDataLoading, data: schoolYearData } = useQuery(getSchoolYearsByRegionId, {
-    variables: {
-      regionId: me?.selectedRegionId,
-    },
-    skip: me?.selectedRegionId ? false : true,
-    fetchPolicy: 'network-only',
-  })
+  const {
+    dropdownItems: schoolYearDropdownItems,
+    schoolYears: schoolYears,
+    selectedYearId,
+    setSelectedYearId,
+  } = useSchoolYearsByRegionId(me?.selectedRegionId)
 
   const { loading: schoolYearDataCountsLoading, data: schoolYearDataCounts } = useQuery(schoolYearsDataquery, {
     variables: {
       schoolYearDataInput: {
         region_id: me?.selectedRegionId,
-        school_year_id: Number(selectedYear),
+        school_year_id: Number(selectedYearId),
       },
     },
-    skip: selectedYear ? false : true,
+    skip: selectedYearId ? false : true,
     fetchPolicy: 'network-only',
   })
 
   useEffect(() => {
-    if (!schoolYearDataLoading && schoolYearData?.region?.SchoolYears) {
-      setSchoolYears(
-        schoolYearData?.region?.SchoolYears.map(
-          (item: { date_begin: string; date_end: string; school_year_id: number }) => {
-            return {
-              label: moment(item.date_begin).format('YY') + '-' + moment(item.date_end).format('YY'),
-              value: item.school_year_id,
-            }
-          },
-        ),
-      )
+    if (schoolYears?.length) {
       setSchoolYearSpedOptions(
-        schoolYearData?.region?.SchoolYears.map((item: { school_year_id: number; special_ed: number }) => {
+        schoolYears?.map((item) => {
           return {
             school_year_id: item.school_year_id,
             special_ed: item.special_ed,
           }
         }),
       )
-      setSelectedYear(schoolYearData?.region?.SchoolYears[0]?.school_year_id)
     }
-  }, [me?.selectedRegionId, schoolYearDataLoading, schoolYearData?.data?.region?.SchoolYears])
+  }, [me?.selectedRegionId, schoolYears])
 
   useEffect(() => {
     if (!schoolYearDataCountsLoading && schoolYearDataCounts?.schoolYearsData) {
@@ -200,9 +178,10 @@ export const SchoolYear: React.FC<SchoolYearProps> = ({ selectedYear, setSelecte
 
   useEffect(() => {
     schoolYearSpedOptions.map((item) => {
-      if (item.school_year_id == selectedYear) setSpecialEdStatus(item.special_ed)
+      if (item.school_year_id == selectedYearId) setSpecialEdStatus(item.special_ed)
     })
-  }, [selectedYear])
+    setSelectedYear(selectedYearId || 0)
+  }, [selectedYearId])
 
   return (
     <Card>
@@ -226,28 +205,15 @@ export const SchoolYear: React.FC<SchoolYearProps> = ({ selectedYear, setSelecte
             </Box>
           </Box>
           <Box display='flex' flexDirection='row' alignItems='center'>
-            {!schoolYearDataLoading && selectedYear && (
-              <FormControl variant='standard' sx={{ m: 1 }}>
-                <Select
-                  size='small'
-                  value={selectedYear}
-                  IconComponent={ExpandMoreIcon}
-                  disableUnderline
-                  onChange={(e) => {
-                    setSelectedYear(e.target.value)
-                  }}
-                  label='year'
-                  className={selectClasses.select}
-                  sx={{ color: 'blue', border: 'none' }}
-                >
-                  {schoolYears.map((sy, i) => (
-                    <MenuItem key={i} value={sy.value}>
-                      {sy.label}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            )}
+            <DropDown
+              dropDownItems={schoolYearDropdownItems}
+              placeholder={'Select Year'}
+              defaultValue={selectedYearId}
+              borderNone={true}
+              setParentValue={(val) => {
+                setSelectedYearId(Number(val))
+              }}
+            />
           </Box>
         </Box>
         {isExpanded && (

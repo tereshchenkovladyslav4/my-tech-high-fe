@@ -48,7 +48,7 @@ export const useSchoolYearsByRegionId = (
 
   useEffect(() => {
     if (schoolYears?.length) {
-      const currentYear = schoolYears.filter((item) => item.IsCurrentYear)[0]
+      const currentYear = schoolYears.filter((item) => !!item.IsCurrentYear)[0]
       setSelectedYearId(currentYear?.school_year_id || schoolYears[0].school_year_id)
     }
   }, [schoolYears])

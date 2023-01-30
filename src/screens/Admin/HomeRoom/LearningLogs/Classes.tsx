@@ -12,7 +12,7 @@ import { CreateNewClassesGql, DeleteClassByIdGql } from '../services'
 import { CreateTeacherModal } from './CreateTeacherModal'
 import { Classes, ClassessProps, Teacher } from './types'
 
-const Classes: React.FC<ClassessProps> = ({ master, refetch }) => {
+const ClassesComponent: React.FC<ClassessProps> = ({ master, refetch }) => {
   const [tableData, setTableData] = useState<MthTableRowItem<Classes>[]>([])
   const [createModal, setCreateModal] = useState<boolean>(false)
 
@@ -28,9 +28,9 @@ const Classes: React.FC<ClassessProps> = ({ master, refetch }) => {
     setCreateModal(true)
   }
 
-  const handleDelete = (id: string) => {
+  const handleDelete = (id: number) => {
     setDeleteConfirmModal(true)
-    setDeleteId(parseInt(id))
+    setDeleteId(id)
   }
 
   const [submitClass] = useMutation(DeleteClassByIdGql)
@@ -181,10 +181,10 @@ const Classes: React.FC<ClassessProps> = ({ master, refetch }) => {
       addition_id?: string
     } = {
       class_name: className,
-      master_id: parseInt(master?.master_id),
+      master_id: +master?.master_id,
     }
     if (classId) {
-      classInfo['class_id'] = parseInt(classId)
+      classInfo['class_id'] = +classId
     }
     if (primary) {
       classInfo['primary_id'] = parseInt(primary)
@@ -276,4 +276,4 @@ const Classes: React.FC<ClassessProps> = ({ master, refetch }) => {
   )
 }
 
-export default Classes
+export default ClassesComponent
