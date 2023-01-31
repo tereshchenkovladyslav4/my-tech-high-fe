@@ -27,7 +27,7 @@ export const HomeroomStudentProfile: React.FC = () => {
       return
     }
 
-    const currStudent: Student | undefined = students?.find((item) => +item.student_id === +studentId)
+    const currStudent: Student | undefined = students?.find((item) => String(item.student_id) === String(studentId))
     if (!currStudent) {
       history.push(MthRoute.HOMEROOM)
       return

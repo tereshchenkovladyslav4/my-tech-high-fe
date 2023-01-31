@@ -58,11 +58,11 @@ export const ApplicationTable: React.FC<ApplicationTableProps> = ({ filter }) =>
 
   const createData = (application: unknown) => {
     let grade_level =
+      application?.student?.grade_levels &&
       application.student.grade_levels.length &&
       (application.student.grade_levels[0].grade_level.includes('Kin')
         ? 'K'
         : application.student.grade_levels[0].grade_level)
-
     if (filter?.grades != undefined && checker(filter?.grades, ['K', '1-8', '9-12'])) {
       if (grade_level == 'K') grade_level = 'K'
       else if (Number(grade_level) >= 1 && Number(grade_level) <= 8) grade_level = '1-8'

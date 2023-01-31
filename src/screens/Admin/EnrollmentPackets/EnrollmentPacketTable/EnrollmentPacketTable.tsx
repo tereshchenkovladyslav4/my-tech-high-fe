@@ -85,6 +85,19 @@ export const EnrollmentPacketTable: React.FC = () => {
     if (sort && _sort[0]?.toLowerCase() === 'grade' && _sort[1]?.toLowerCase() === 'desc') {
       grade_value = packet?.student?.grade_levels?.length ? packet.student.grade_levels.length - 1 : 0
     }
+    let grade_level: string | number | undefined = ''
+    const grade_levels = packet?.student?.grade_levels
+    if (grade_levels && grade_levels.length) {
+      grade_level = grade_levels[grade_value].grade_level
+    }
+    if (grade_level) {
+      grade_level =
+        grade_level === 'K' || String(grade_level).includes('Kin')
+          ? 'K'
+          : `${toOrdinalSuffix(Number(grade_level))} Grade`
+    } else {
+      grade_level = ' '
+    }
     return {
       id: packet.packet_id,
       submitted:
@@ -114,13 +127,7 @@ export const EnrollmentPacketTable: React.FC = () => {
           {`${packet.student.person?.last_name}, ${packet.student.person?.first_name}`}
         </Box>
       ),
-      grade:
-        packet.student.grade_levels?.length && packet.student.grade_levels[grade_value].grade_level
-          ? packet.student.grade_levels[grade_value].grade_level === 'K' ||
-            packet.student.grade_levels[grade_value].grade_level.includes('Kin')
-            ? 'K'
-            : `${toOrdinalSuffix(Number(packet.student.grade_levels[grade_value].grade_level))} Grade`
-          : ' ',
+      grade: grade_level,
       parent: (
         <Box sx={{ cursor: 'pointer', color: MthColor.MTHBLUE }}>
           {`${packet?.student?.parent?.person?.last_name}, ${packet?.student?.parent?.person?.first_name}`}

@@ -142,7 +142,7 @@ const StudentFilesFolder: React.FC<StudentFilesFolderProps> = ({ filter }) => {
         },
       )
       if (showStudentFilesModal && selectedRecord) {
-        setSelectedRecord(records?.find((item: StudentRecord) => item?.studentId === selectedRecord.studentId))
+        setSelectedRecord(records?.find((item: StudentRecord) => item?.studentId == selectedRecord.studentId))
       }
       setTotalStudentRecords(total)
       setStudentRecords(records)

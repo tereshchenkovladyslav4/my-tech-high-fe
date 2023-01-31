@@ -78,6 +78,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ handleClose, data, set
     variables: {
       student_id: selectedStudent,
     },
+    skip: !selectedStudent,
     fetchPolicy: 'cache-and-network',
   })
 

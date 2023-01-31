@@ -29,7 +29,7 @@ export const Students: React.FC<StudentsProps> = ({ schoolYears, isLoading, scho
 
   const findStudent = (studentId: number) => {
     return map(toDoList, (todoListItem) => {
-      if (todoListItem.students.some((student) => student.student_id === studentId)) {
+      if (todoListItem.students.some((student) => student.student_id == studentId)) {
         return todoListItem
       } else {
         return false

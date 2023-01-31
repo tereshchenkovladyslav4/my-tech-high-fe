@@ -30,7 +30,7 @@ export const Routes: React.FC = () => {
         exact
         path={`${MthRoute.HOMEROOM + MthRoute.ENROLLMENT}/:id`}
         children={({ match }) => {
-          const currStudent = find(students, { student_id: match?.params.id })
+          const currStudent = students?.filter((student) => student.student_id == match?.params.id).at(-1) // find(students, { student_id: match?.params.id })
           const packetAccepted =
             currStudent?.packets &&
             currStudent.packets?.length > 0 &&

@@ -115,6 +115,7 @@ export const getEnrollmentPacketsQuery = gql`
               }
               user {
                 user_id
+                email
                 userRegions {
                   regionDetail {
                     name
@@ -345,6 +346,7 @@ export const getPacket = gql`
             }
             user {
               user_id
+              email
               userRegions {
                 regionDetail {
                   name

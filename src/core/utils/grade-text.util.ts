@@ -5,9 +5,9 @@ export const gradeText = (student: Student): string => {
   if (!student.grade_levels?.length) {
     return ''
   }
-  const gradeLevel = student.grade_levels[student.grade_levels.length - 1]?.grade_level
+  const gradeLevel: string | number | undefined = student.grade_levels[student.grade_levels.length - 1]?.grade_level
 
-  if (gradeLevel === undefined) return ''
+  if (!gradeLevel) return ''
 
   return (gradeLevel + '').toLowerCase().startsWith('k') ? 'Kindergarten' : `${toOrdinalSuffix(+gradeLevel)} Grade`
 }
@@ -42,10 +42,12 @@ export const currentGradeText = (student: Student): string => {
     if (!student.grade_levels?.length) {
       return ''
     }
-    const gradeLevel = student.grade_levels?.find(
+    let gradeLevel = student.grade_levels?.find(
       (item) => item.school_year_id == student.current_school_year_status?.school_year_id,
     )?.grade_level
-
+    if (!gradeLevel && student.grade_levels.length) {
+      gradeLevel = student.grade_levels[0].grade_level
+    }
     if (gradeLevel)
       return (gradeLevel + '').toLowerCase().startsWith('k') ? 'Kindergarten' : `${toOrdinalSuffix(+gradeLevel)} Grade`
   }

@@ -58,10 +58,7 @@ export const DocumentUpload: React.FC<DocumentUploadProps> = ({
           <Subtitle
             fontWeight='700'
             sx={{
-              color:
-                (item[0].missedInfo && !newFiles.length) || (item[0].required && !files?.length && !newFiles.length)
-                  ? MthColor.RED
-                  : '',
+              color: item[0].missedInfo && !newFiles.length ? MthColor.RED : '',
             }}
           >{`${item[0].question} ${item[0].required ? '(required)' : ''}`}</Subtitle>
         </Box>

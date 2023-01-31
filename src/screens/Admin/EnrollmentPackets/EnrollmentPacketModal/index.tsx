@@ -105,7 +105,9 @@ export const EnrollmentPacketModal: React.FC<EnrollmentPacketModalProps> = ({ ha
     enableExemptionDate: false,
     signature_file_id: packet.signature_file_id || 0,
     missing_files: packet.missing_files || [],
-    school_year_id: packet.student.current_school_year_status.school_year_id,
+    school_year_id: packet.student.current_school_year_status.school_year_id
+      ? packet.student.current_school_year_status.school_year_id
+      : packet.student.applications[0].school_year.school_year_id,
   }
   const [questionsData, setQuestionsData] = useState<EnrollmentQuestionTab[]>()
 
@@ -232,7 +234,9 @@ export const EnrollmentPacketModal: React.FC<EnrollmentPacketModalProps> = ({ ha
       exemption_form_date: vals.exemptionDate,
       medical_exemption: vals.medicalExempt ? 1 : 0,
       missing_files: status === 'Missing Info' ? JSON.stringify(vals.missing_files) : '',
-      school_year_id: packet.student.current_school_year_status.school_year_id,
+      school_year_id: packet.student.current_school_year_status.school_year_id
+        ? packet.student.current_school_year_status.school_year_id
+        : packet.student.applications[0].school_year.school_year_id,
       student_id: Number(packet.student.student_id),
     }
     if (questionsData?.length > 0) {
@@ -274,6 +278,10 @@ export const EnrollmentPacketModal: React.FC<EnrollmentPacketModalProps> = ({ ha
     const parentLegalName = metaData?.meta_parentlegalname ? metaData.meta_parentlegalname : ''
     temp.meta['meta_parentlegalname'] = parentLegalName
 
+    if (!temp.parent['email']) {
+      temp.parent['email'] = vals.parent.user.email
+    }
+
     await savePacket({
       variables: {
         enrollmentPacketInput: {
@@ -304,7 +312,9 @@ export const EnrollmentPacketModal: React.FC<EnrollmentPacketModalProps> = ({ ha
         variables: {
           input: {
             student_id: Number(packet.student.student_id),
-            school_year_id: packet.student.current_school_year_status.school_year_id,
+            school_year_id: packet.student.current_school_year_status.school_year_id
+              ? packet.student.current_school_year_status.school_year_id
+              : packet.student.applications[0].school_year.school_year_id,
             status: studentStatus,
             packet_id: Number(packet.packet_id),
           },
@@ -314,7 +324,11 @@ export const EnrollmentPacketModal: React.FC<EnrollmentPacketModalProps> = ({ ha
       await saveSchedule({
         variables: {
           createScheduleInput: {
-            SchoolYearId: Number(packet.student.current_school_year_status.school_year_id),
+            SchoolYearId: Number(
+              packet.student.current_school_year_status.school_year_id
+                ? packet.student.current_school_year_status.school_year_id
+                : packet.student.applications[0].school_year.school_year_id,
+            ),
             StudentId: Number(packet.student.student_id),
             status: 'Not Submitted',
           },

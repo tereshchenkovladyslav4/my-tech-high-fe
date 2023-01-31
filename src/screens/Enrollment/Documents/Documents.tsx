@@ -11,7 +11,7 @@ import { isNumber } from '@mth/constants'
 import { EmailTemplateEnum, PacketStatus, QUESTION_TYPE } from '@mth/enums'
 import { FileCategory, MthColor } from '@mth/enums'
 import { getEmailTemplateQuery } from '@mth/graphql/queries/email-template'
-import { Address, EmailTemplate, Packet, Person, Student } from '@mth/models'
+import { Address, EmailTemplate, EnrollmentPacket, Packet, Person, Student } from '@mth/models'
 import { EnrollmentContext } from '@mth/providers/EnrollmentPacketPrivder/EnrollmentPacketProvider'
 import { TabContext, UserContext, UserInfo } from '@mth/providers/UserContext/UserProvider'
 import { getPacketFiles } from '@mth/screens/Admin/EnrollmentPackets/services'
@@ -73,9 +73,14 @@ export const Documents: React.FC<DocumentsProps> = ({ id, regionId, questions })
     fetchPolicy: 'network-only',
   })
 
-  const [uploadDocument, { data: saveEnrollmentPacketData }] = useMutation(uploadDocumentMutation)
+  const [uploadDocument, { data: saveEnrollmentPacketData }] = useMutation<{
+    saveEnrollmentPacketDocument: EnrollmentPacket
+  }>(uploadDocumentMutation)
+
   const [deleteDocuments] = useMutation(deleteDocumentsMutation)
-  const [saveEnrollmentContact] = useMutation<{ saveEnrollmentPacketContact: Packet }>(enrollmentContactMutation)
+  const [saveEnrollmentContact] = useMutation<{ saveEnrollmentPacketContact: EnrollmentPacket }>(
+    enrollmentContactMutation,
+  )
 
   const submitDocuments = async () => {
     const address = { ...formik.values.address }
@@ -110,25 +115,7 @@ export const Documents: React.FC<DocumentsProps> = ({ id, regionId, questions })
           },
         })
       ).data?.saveEnrollmentPacketContact
-      if (resPacket) {
-        setPacketId(resPacket.packet_id)
-        setMe((prev) => {
-          return {
-            ...prev,
-            profile: {
-              ...prev?.profile,
-              address: address,
-            },
-            students: prev?.students?.map((student) => {
-              const returnValue = { ...student }
-              if (student.student_id === resPacket.student.student_id) {
-                return resPacket.student
-              }
-              return returnValue
-            }),
-          }
-        })
-
+      if (resPacket && resPacket.packet && resPacket.student) {
         const promises: Promise<boolean>[] = []
 
         if (filesToDelete.length) {
@@ -168,7 +155,6 @@ export const Documents: React.FC<DocumentsProps> = ({ id, regionId, questions })
             })
           }
         }
-
         if (promises.length) {
           await Promise.all(promises)
           await uploadDocument({
@@ -179,20 +165,33 @@ export const Documents: React.FC<DocumentsProps> = ({ id, regionId, questions })
               },
             },
           })
-          if (packet?.status == PacketStatus.MISSING_INFO) {
-            history.back()
-          }
+        }
+        if (resPacket?.packet?.status == PacketStatus.RESUBMITTED) {
+          history.back()
+          return
         } else {
           setVisitedTabs(Array.from(Array((tab?.currentTab || 0) + 1).keys()))
           setTab({ currentTab: (tab?.currentTab || 0) + 1 })
           window.scrollTo(0, 0)
         }
+        setPacketId(resPacket.packet.packet_id)
+        setMe((prev) => {
+          return {
+            ...prev,
+            students: prev?.students?.map((student) => {
+              const returnValue = { ...student }
+              if (student.student_id == resPacket?.student?.student_id) {
+                return resPacket.student
+              }
+              return returnValue
+            }),
+          }
+        })
       }
     } catch (e) {
       console.error(e)
     }
   }
-
   const nextTab = useCallback(
     (e: FormEvent<HTMLFormElement>) => {
       setIsSubmit(true)
@@ -289,7 +288,6 @@ export const Documents: React.FC<DocumentsProps> = ({ id, regionId, questions })
 
   const questionsLists = useMemo(() => {
     const list = questionsArr?.filter((item) => item.length && !item[0].additional_question) || []
-
     if (emailTemplateData?.emailTemplateName?.standard_responses) {
       const standard_responses = JSON.parse(String(emailTemplateData?.emailTemplateName?.standard_responses))
       for (const resItem of standard_responses) {
@@ -436,14 +434,14 @@ export const Documents: React.FC<DocumentsProps> = ({ id, regionId, questions })
           ...prev,
           students: prev?.students?.map((student) => {
             const returnValue = { ...student }
-            if (student.student_id === saveEnrollmentPacketData.saveEnrollmentPacketDocument.student.student_id) {
+            if (student.student_id == saveEnrollmentPacketData.saveEnrollmentPacketDocument?.student?.student_id) {
               return saveEnrollmentPacketData.saveEnrollmentPacketDocument.student
             }
             return returnValue
           }),
         }
       })
-      if (saveEnrollmentPacketData?.status == PacketStatus.RESUBMITTED) {
+      if (saveEnrollmentPacketData?.saveEnrollmentPacketDocument?.packet?.status == PacketStatus.RESUBMITTED) {
         history.back()
       } else {
         setVisitedTabs(Array.from(Array((tab?.currentTab || 0) + 1).keys()))

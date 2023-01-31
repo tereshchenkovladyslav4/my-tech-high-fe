@@ -285,7 +285,7 @@ export const AssignmentTable: React.FC<EnrollmentSchoolTableProps> = ({
       // not unassigned
       if (selectedHomeroom?.value !== AssignmentStatus.UNASSIGN.toLocaleLowerCase()) {
         for (let i = 0; i < studentIds.length; i++) {
-          const student = items.find((q) => q.student_id === studentIds[i])
+          const student = items.find((q) => q.student_id == studentIds[i])
           if (student?.currentHomeroom?.teacher) {
             setAssignError(true)
             return
@@ -314,7 +314,7 @@ export const AssignmentTable: React.FC<EnrollmentSchoolTableProps> = ({
     }
     if (studentIds.length > 0 && selectedHomeroom?.value) {
       for (let i = 0; i < studentIds.length; i++) {
-        const student = items.find((q) => q.student_id === studentIds[i])
+        const student = items.find((q) => q.student_id == studentIds[i])
         if (!student?.currentHomeroom?.teacher) {
           setIsTransferAssignError(true)
           return

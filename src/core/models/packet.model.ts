@@ -69,3 +69,7 @@ export type Packet = {
   missing_files?: string[]
   meta?: string
 }
+export type EnrollmentPacket = {
+  packet?: Packet
+  student?: Student
+}

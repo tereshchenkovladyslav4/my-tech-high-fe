@@ -358,13 +358,7 @@ const Settings: FunctionComponent = () => {
     {
       name: ScheduleBuilder.SPLIT_ENROLLMENT,
       component: (
-        <Box
-          display={'flex'}
-          flexDirection='row'
-          justifyContent='space-between'
-          alignItems='center'
-          sx={{ width: '100%' }}
-        >
+        <Box display={'flex'} flexDirection='row' alignItems='center' sx={{ width: '100%' }}>
           <DropDown
             defaultValue={splitEnrollment}
             name='split_enrollment'
@@ -389,8 +383,9 @@ const Settings: FunctionComponent = () => {
             isChanged={isChanged}
             setIsChanged={setIsChanged}
             disabled={formik.values.split_enrollment === 'Disabled' || formik.values.split_enrollment === undefined}
+            sx={{ ml: { xs: 0, lg: 3, xl: 8 } }}
           />
-          <Box display='flex' alignItems='center' sx={{ marginRight: '40px' }}>
+          <Box display='flex' alignItems='center' sx={{ ml: { xs: 0, lg: 3, xl: 9 } }}>
             <Checkbox
               name='always_unlock'
               disabled={formik.values.split_enrollment === 'Disabled' || formik.values.split_enrollment === undefined}
@@ -401,11 +396,13 @@ const Settings: FunctionComponent = () => {
                   (e as unknown as React.ChangeEvent<HTMLInputElement>).target.checked,
                 )
               }
-              sx={{
-                marginLeft: 4,
-              }}
             />
-            <Paragraph size={'large'}>{ScheduleBuilder.CHECKBOX_LABEL}</Paragraph>
+            <Paragraph
+              size={'large'}
+              color={formik.values.split_enrollment === 'Enabled' ? MthColor.SYSTEM_01 : MthColor.SYSTEM_06}
+            >
+              {ScheduleBuilder.CHECKBOX_LABEL}
+            </Paragraph>
           </Box>
         </Box>
       ),
@@ -553,7 +550,7 @@ const Settings: FunctionComponent = () => {
           <Box key={item.name} sx={{ width: '100%' }}>
             <CommonSelect
               key={index}
-              index={index > 2 ? index + 1 : index}
+              index={index}
               selectItem={item}
               verticalDividHeight={item.name == ScheduleBuilder.TOOLTIP ? '250px' : '50px'}
             />

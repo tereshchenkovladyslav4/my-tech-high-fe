@@ -3,7 +3,7 @@ import { useQuery } from '@apollo/client'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import { Box, Card, Container } from '@mui/material'
-import { find, includes } from 'lodash'
+import { includes } from 'lodash'
 import { useHistory } from 'react-router-dom'
 import { Breadcrumbs } from '@mth/components/Breadcrumbs/Breadcrumbs'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
@@ -29,10 +29,9 @@ export const Enrollment: React.FC<EnrollmentProps> = ({ id, disabled }: { id: nu
   const students = useMemo(() => me?.students, [me])
   const { tab, setTab, visitedTabs, setVisitedTabs } = useContext(TabContext)
   const [packetId, setPacketId] = useState<number>()
-  const student = useMemo(() => find(students, { student_id: id }), [students, id])
+  const student = useMemo(() => students?.filter((e) => String(e.student_id) == String(id)).at(-1), [students, id])
   const packet = useMemo(() => student?.packets?.at(-1), [student])
   const documentsOnly = useMemo(() => Boolean(packet?.status == PacketStatus.MISSING_INFO), [packet?.status])
-
   const currentTab = useMemo(() => tab?.currentTab || 0, [tab?.currentTab])
   const classes = useStyles
 

@@ -9,6 +9,7 @@ import {
   Dialog,
   DialogTitle,
   DialogActions,
+  SxProps,
 } from '@mui/material'
 import { map } from 'lodash'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
@@ -24,9 +25,17 @@ export type GradesSelectProps = {
   setIsChanged?: (value: boolean) => void
   isChanged?: boolean
   disabled?: boolean
+  sx?: SxProps
 }
 
-export const GradesSelect: React.FC<GradesSelectProps> = ({ grades, setGrades, setIsChanged, isChanged, disabled }) => {
+export const GradesSelect: React.FC<GradesSelectProps> = ({
+  grades,
+  setGrades,
+  setIsChanged,
+  isChanged,
+  disabled,
+  sx,
+}) => {
   const [open, setOpen] = useState<boolean>(false)
   const [gradesArr, setGradesArr] = useState<string[]>([])
 
@@ -102,14 +111,14 @@ export const GradesSelect: React.FC<GradesSelectProps> = ({ grades, setGrades, s
 
   return (
     <>
-      <Box sx={siteManagementClassess.gradeBox}>
+      <Box sx={{ m: 1, ...sx }}>
         <Stack
           direction='row'
-          sx={{ ml: 1.5, cursor: disabled ? '' : 'pointer' }}
+          sx={{ cursor: disabled ? '' : 'pointer', p: 1 }}
           alignItems='center'
           onClick={disabled ? undefined : handleClickOpen}
         >
-          <Subtitle size={12} color={disabled ? MthColor.SYSTEM_05 : MthColor.MTHBLUE} fontWeight='500'>
+          <Subtitle size={12} color={disabled ? MthColor.MTHBLUE_DISABLED : MthColor.MTHBLUE} fontWeight='500'>
             {grades ? `Grades ${renderGrades(grades)}` : 'Select'}
           </Subtitle>
         </Stack>

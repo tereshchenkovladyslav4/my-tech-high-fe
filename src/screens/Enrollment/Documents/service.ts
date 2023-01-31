@@ -5,6 +5,7 @@ export const uploadDocumentMutation = gql`
     saveEnrollmentPacketDocument(enrollmentPacketDocumentInput: $enrollmentPacketDocumentInput) {
       packet {
         packet_id
+        status
       }
       student {
         student_id
@@ -79,6 +80,7 @@ export const uploadDocumentMutation = gql`
             zip
             state
             county_id
+            country_id
           }
         }
         grade_levels {
@@ -105,6 +107,7 @@ export const enrollmentContactMutation = gql`
     saveEnrollmentPacketContact(enrollmentPacketContactInput: $enrollmentPacketContactInput) {
       packet {
         packet_id
+        status
       }
       student {
         student_id

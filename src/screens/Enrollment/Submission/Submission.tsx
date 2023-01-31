@@ -293,7 +293,7 @@ export const Submission: React.FC<SubmissionProps> = ({ id, questions }) => {
             },
             students: prev?.students?.map((student) => {
               const returnValue = { ...student }
-              if (student.student_id === data.data.saveEnrollmentPacketSubmit.student.student_id) {
+              if (student.student_id == data.data.saveEnrollmentPacketSubmit.student.student_id) {
                 return data.data.saveEnrollmentPacketSubmit.student
               }
               return returnValue

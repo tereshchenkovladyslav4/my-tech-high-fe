@@ -201,7 +201,11 @@ export const EnrollmentJobsInfo: React.FC<EnrollmentJobsInfoProps> = ({ packet, 
               </span>
             </Title>
             <Paragraph color='#7B61FF' sx={{ fontSize: '14px', marginY: '4px', marginRight: '10px' }} fontWeight='400'>
-              {student?.parent.person.email ? `${student?.parent.person.email}` : 'Not found'}
+              {student?.parent.person.email
+                ? `${student?.parent.person.email}`
+                : student?.parent.person.user.email
+                ? student?.parent.person.user.email
+                : 'Not found'}
             </Paragraph>
             <Paragraph color={MthColor.SYSTEM_01} sx={{ fontSize: '14px', marginY: '4px' }} fontWeight='400'>
               {student?.parent.phone.number ? phoneFormat(student?.parent.phone.number) : 'Not found'}

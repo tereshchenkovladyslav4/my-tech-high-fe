@@ -61,14 +61,14 @@ export const StudentCard: React.FC<StudentProps> = ({
 
     const currentSchedule = StudentSchedules?.filter(
       (schedule) =>
-        schedule.StudentId === Number(student?.student_id) &&
+        Number(schedule.StudentId) === Number(student?.student_id) &&
         schedule.SchoolYearId === Number(student?.current_school_year_status?.school_year_id) &&
         !schedule.is_second_semester,
     )?.at(-1)
 
     const currentSecondSemesterSchedule = StudentSchedules?.filter(
       (schedule) =>
-        schedule.StudentId === Number(student?.student_id) &&
+        Number(schedule.StudentId) === Number(student?.student_id) &&
         schedule.SchoolYearId === Number(student?.current_school_year_status?.school_year_id) &&
         schedule.is_second_semester,
     )?.at(-1)

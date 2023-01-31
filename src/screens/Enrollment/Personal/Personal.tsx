@@ -217,7 +217,7 @@ export const Personal: React.FC<PersonalProps> = ({ id, questions }) => {
           },
           students: prev?.students?.map((student) => {
             const returnValue = { ...student }
-            if (student.student_id === data.data.saveEnrollmentPacketContact.student.student_id) {
+            if (student.student_id == data.data.saveEnrollmentPacketContact.student.student_id) {
               return data.data.saveEnrollmentPacketContact.student
             }
             return returnValue
