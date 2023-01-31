@@ -5,7 +5,7 @@ import { Layout } from '@mth/components/Layout'
 import { PageBlock } from '@mth/components/PageBlock'
 import { MthRoute, ReimbursementFormType } from '@mth/enums'
 import { useReimbursementRequestSchoolYears } from '@mth/hooks'
-import { SchoolYear } from '@mth/models'
+import { ReimbursementRequest, SchoolYear } from '@mth/models'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { RequestComponent } from '../Admin/Reimbursements/Common/RequestComponent'
 import { RequestForm } from '../Admin/Reimbursements/Common/RequestForm'
@@ -23,6 +23,7 @@ const Reimbursements: React.FC = () => {
   const [page, setPage] = useState<MthRoute>(MthRoute.DASHBOARD)
   const [disabledReimbursement, setDisabledReimbursement] = useState<boolean>(true)
   const [disabledDirectOrder, setDisabledDirectOrder] = useState<boolean>(true)
+  const [selectedReimbursementRequest, setSelectedReimbursementRequest] = useState<ReimbursementRequest>()
 
   const { reimbursementSchoolYears, selectedYearId, setSelectedYearId } = useReimbursementRequestSchoolYears(
     +(me?.userRegion?.at(0)?.region_id || 0),
@@ -86,6 +87,8 @@ const Reimbursements: React.FC = () => {
                 reimbursementSchoolYears={reimbursementSchoolYears}
                 selectedYearId={selectedYearId}
                 setSelectedYearId={setSelectedYearId}
+                setSelectedReimbursementRequest={setSelectedReimbursementRequest}
+                setPage={setPage}
               />
             </PageBlock>
           </Box>
@@ -109,6 +112,7 @@ const Reimbursements: React.FC = () => {
             isDirectOrder={page === MthRoute.REIMBURSEMENTS_REIMBURSEMENT_FORM ? false : true}
             setFormType={setFormType}
             setPage={setPage}
+            selectedReimbursementRequest={selectedReimbursementRequest}
             setIsChanged={() => {}}
           />
         </RequestComponent>

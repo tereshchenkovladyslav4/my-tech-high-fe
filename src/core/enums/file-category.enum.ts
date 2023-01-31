@@ -9,4 +9,5 @@ export enum FileCategory {
   SIGNATURE = 'signature',
   RESOURCES = 'resources',
   STUDENT_RECORDS = 'Student_Records',
+  RECEIPT = 'receipt',
 }

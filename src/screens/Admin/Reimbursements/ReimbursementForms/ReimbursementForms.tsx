@@ -120,6 +120,7 @@ export const ReimbursementForms: React.FC = () => {
             formType={formType}
             setFormType={setFormType}
             setIsChanged={setIsChanged}
+            selectedYear={undefined}
           />
         </RequestComponent>
       )}

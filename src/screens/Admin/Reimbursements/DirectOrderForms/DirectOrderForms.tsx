@@ -102,6 +102,7 @@ export const DirectOrderForms: React.FC = () => {
             isDirectOrder={true}
             setFormType={setFormType}
             setIsChanged={setIsChanged}
+            selectedYear={undefined}
           />
         </RequestComponent>
       )}

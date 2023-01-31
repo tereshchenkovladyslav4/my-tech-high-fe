@@ -28,7 +28,7 @@ import { AssessmentType } from '@mth/screens/Admin/SiteManagement/EnrollmentSett
 import { UpdateStudentMutation } from '@mth/screens/Admin/UserProfile/services'
 import { uploadFile } from '@mth/services'
 import { mthButtonClasses } from '@mth/styles/button.style'
-import { calculateGrade, extractContent, getRegionCode } from '@mth/utils'
+import { calculateGrade, dataUrlToFile, extractContent, getRegionCode } from '@mth/utils'
 import { DiplomaSeeking } from './DiplomaSeeking'
 import { HeaderComponent } from './HeaderComponent'
 import { OptOutForm } from './OptOutForm'
@@ -197,12 +197,6 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
       default:
         return true
     }
-  }
-
-  const dataUrlToFile = async (dataUrl: string, fileName: string): Promise<File> => {
-    const res: Response = await fetch(dataUrl)
-    const blob: Blob = await res.blob()
-    return new File([blob], fileName, { type: 'image/png' })
   }
 
   const uploadSignature = async (file: File) => {

@@ -1,25 +1,28 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { useLazyQuery, useMutation } from '@apollo/client'
-import { Box } from '@mui/material'
+import { Box, Grid, List } from '@mui/material'
 import { Form, Formik } from 'formik'
 import SignatureCanvas from 'react-signature-canvas'
+import { arrayMove, SortableContainer, SortableElement } from 'react-sortable-hoc'
 import * as yup from 'yup'
 import {
   FileCategory,
   MthRoute,
+  QUESTION_TYPE,
   ReimbursementFormType,
   ReimbursementQuestionSlug,
   ReimbursementRequestStatus,
   RoleLevel,
 } from '@mth/enums'
 import { saveReimbursementQuestionsMutation } from '@mth/graphql/mutation/reimbursement-question'
+import { saveReimbursementReceiptMutation } from '@mth/graphql/mutation/reimbursement-receipt'
 import { saveReimbursementRequestMutation } from '@mth/graphql/mutation/reimbursement-request'
 import { useReimbursementQuestions } from '@mth/hooks'
-import { ReimbursementQuestion, SchoolYear } from '@mth/models'
+import { ReimbursementQuestion, ReimbursementReceipt, ReimbursementRequest, SchoolYear } from '@mth/models'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { getSignatureFile } from '@mth/screens/Admin/EnrollmentPackets/services'
 import { uploadFile } from '@mth/services'
-import { getRegionCode } from '@mth/utils'
+import { dataUrlToFile, getRegionCode } from '@mth/utils'
 import {
   DEFAULT_CUSTOM_BUILT_QUESTIONS,
   DEFAULT_IS_DIRECT_ORDER_CUSTOM_BUILT_QUESTIONS,
@@ -30,13 +33,87 @@ import {
   DEFAULT_TECHNOLOGY_QUESTIONS,
   DEFAULT_THIRD_PARTY_PROVIDER_QUESTIONS,
 } from '../../defaultValues'
+import { QuestionItem } from '../QuestionItem'
 import { RequestFormEdit } from './RequestFormEdit'
+
+type SortableContainerProps = {
+  items: ReimbursementQuestion[]
+  selectedYearId: number | undefined
+  selectedStudentId: number
+  selectedYear: SchoolYear | undefined
+  selectedFormType: ReimbursementFormType | undefined
+  isDirectOrder: boolean | undefined
+  showError: boolean
+  signatureRef: SignatureCanvas | null
+  signatureName: string
+  signatureFileUrl: string
+  receipts: ReimbursementReceipt[]
+  setReceipts: (value: ReimbursementReceipt[]) => void
+  setSignatureRef: (value: SignatureCanvas | null) => void
+  setSignatureName: (value: string) => void
+  setSelectedStudentId: (value: number) => void
+  setSelectedFormType: (value: ReimbursementFormType | undefined) => void
+}
+
+const SortableItem = SortableElement(QuestionItem)
+
+const SortableListContainer = SortableContainer(
+  ({
+    items,
+    selectedStudentId,
+    selectedFormType,
+    selectedYearId,
+    selectedYear,
+    isDirectOrder,
+    showError,
+    signatureRef,
+    signatureName,
+    signatureFileUrl,
+    receipts,
+    setReceipts,
+    setSignatureRef,
+    setSignatureName,
+    setSelectedStudentId,
+    setSelectedFormType,
+  }: SortableContainerProps) => (
+    <Grid item xs={12}>
+      <List>
+        <Grid container rowSpacing={3}>
+          {items.map((item, index) => (
+            <SortableItem
+              index={index}
+              key={`${item.slug}_${index}`}
+              question={item}
+              isDirectOrder={isDirectOrder}
+              showError={showError}
+              selectedYearId={selectedYearId}
+              selectedYear={selectedYear}
+              selectedStudentId={selectedStudentId}
+              selectedFormType={selectedFormType}
+              signatureRef={signatureRef}
+              signatureName={signatureName}
+              signatureFileUrl={signatureFileUrl}
+              receipts={receipts}
+              setReceipts={setReceipts}
+              setSignatureRef={setSignatureRef}
+              setSignatureName={setSignatureName}
+              setSelectedStudentId={setSelectedStudentId}
+              setSelectedFormType={setSelectedFormType}
+              setIsChanged={() => {}}
+            />
+          ))}
+        </Grid>
+      </List>
+    </Grid>
+  ),
+)
 
 export type RequestFormProps = {
   formType: ReimbursementFormType | undefined
   isDirectOrder?: boolean
   selectedYearId: number | undefined
   selectedYear: SchoolYear | undefined
+  selectedReimbursementRequest?: ReimbursementRequest
   setFormType: (value: ReimbursementFormType | undefined) => void
   setIsChanged: (value: boolean) => void
   setPage?: (value: MthRoute) => void
@@ -44,10 +121,11 @@ export type RequestFormProps = {
 
 export const RequestForm: React.FC<RequestFormProps> = ({
   formType,
-  setFormType,
   isDirectOrder,
   selectedYearId,
   selectedYear,
+  selectedReimbursementRequest,
+  setFormType,
   setIsChanged,
   setPage,
 }) => {
@@ -63,6 +141,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
   const [signatureName, setSignatureName] = useState<string>('')
   const [signatureFileId, setSignatureFileId] = useState<number>(0)
   const [signatureFileUrl, setSignatureFileUrl] = useState<string>('')
+  const [receipts, setReceipts] = useState<ReimbursementReceipt[]>([])
 
   const [getSignatureFileUrl, { loading: signatureFileUrlLoading, data: signatureFileData }] = useLazyQuery(
     getSignatureFile,
@@ -79,29 +158,30 @@ export const RequestForm: React.FC<RequestFormProps> = ({
 
   const [submitSave] = useMutation(saveReimbursementQuestionsMutation)
   const [saveRequest] = useMutation(saveReimbursementRequestMutation)
+  const [saveReceipts] = useMutation(saveReimbursementReceiptMutation)
 
   const validationSchema = yup.object({})
 
   const isInvalid = (questions: ReimbursementQuestion[]): boolean => {
     if (questions?.length > 0) {
       let invalidationCount = 0
-      questions.map((question) => {
-        if (
-          (question.slug == ReimbursementQuestionSlug.SIGNATURE_NAME &&
-            (!signatureName || (!signatureFileUrl && !signatureFileId && signatureRef?.isEmpty()))) ||
-          (question.slug !== ReimbursementQuestionSlug.SIGNATURE_NAME && !question.answer)
+      questions
+        ?.filter(
+          (question) =>
+            question?.slug !== ReimbursementQuestionSlug.RECEIPTS &&
+            !(question?.slug == ReimbursementQuestionSlug.TOTAL_AMOUNT && question?.type == QUESTION_TYPE.INFORMATION),
         )
-          invalidationCount++
-      })
+        .map((question) => {
+          if (
+            (question.slug == ReimbursementQuestionSlug.SIGNATURE_NAME &&
+              (!signatureName || (!signatureFileUrl && !signatureFileId && signatureRef?.isEmpty()))) ||
+            (question.slug !== ReimbursementQuestionSlug.SIGNATURE_NAME && !question.answer)
+          )
+            invalidationCount++
+        })
       if (invalidationCount > 0) return true
     }
     return false
-  }
-
-  const dataUrlToFile = async (dataUrl: string, fileName: string): Promise<File> => {
-    const res: Response = await fetch(dataUrl)
-    const blob: Blob = await res.blob()
-    return new File([blob], fileName, { type: 'image/png' })
   }
 
   const onSubmitRequests = async (questions: ReimbursementQuestion[], status: ReimbursementRequestStatus) => {
@@ -124,16 +204,31 @@ export const RequestForm: React.FC<RequestFormProps> = ({
     }
 
     const periods = questions?.find((item) => item?.slug == ReimbursementQuestionSlug.PERIOD)?.answer
-    const total_amount = questions?.find((item) => item?.slug == ReimbursementQuestionSlug.TOTAL_AMOUNT)?.answer
+    let total_amount = 0
+    const receiptQuestion = questions?.find(
+      (item) => item?.type == QUESTION_TYPE.INFORMATION && item?.slug == ReimbursementQuestionSlug.RECEIPTS,
+    )
+    if (receiptQuestion) {
+      receipts?.forEach((receipt) => {
+        total_amount += receipt?.amount || 0
+      })
+    } else {
+      total_amount = +(
+        (questions?.find((item) => item?.slug == ReimbursementQuestionSlug.TOTAL_AMOUNT)?.answer as number) || 0
+      )
+    }
+
     const meta = questions
       ?.filter((item) => !item?.default_question)
       ?.map((question) => `"${question?.slug}":"${question?.answer}"`)
       ?.join(',')
 
-    await saveRequest({
+    const response = await saveRequest({
       variables: {
         requestInput: {
-          reimbursement_request_id: 0,
+          reimbursement_request_id: selectedReimbursementRequest
+            ? selectedReimbursementRequest?.reimbursement_request_id
+            : 0,
           SchoolYearId: selectedYearId,
           StudentId: selectedStudentId,
           form_type: formType,
@@ -143,10 +238,42 @@ export const RequestForm: React.FC<RequestFormProps> = ({
           signature_file_id: fileId > 0 ? fileId : signatureFileId,
           signature_name: signatureName,
           status: status,
-          total_amount: +(total_amount || 0),
+          total_amount: total_amount,
         },
       },
     })
+
+    if (response && receiptQuestion) {
+      const reimbursementRequestId = response.data?.createOrUpdateReimbursementRequest?.reimbursement_request_id
+      const newReceipts = [...receipts?.filter((receipt) => !receipt?.file_id)]
+      if (newReceipts?.length) {
+        for (const receipt of newReceipts) {
+          if (receipt?.file) {
+            const result = await uploadFile(
+              receipt?.file,
+              FileCategory.RECEIPT,
+              getRegionCode(me?.userRegion?.at(-1)?.regionDetail?.name || 'Arizona'),
+              selectedStudentId,
+            )
+            if (result?.data?.file?.file_id) {
+              receipt.file_id = result?.data?.file?.file_id
+            }
+          }
+        }
+        await saveReceipts({
+          variables: {
+            requestInput: {
+              receipts: newReceipts?.map((receipt) => ({
+                file_name: receipt.file_name,
+                file_id: receipt.file_id,
+                amount: receipt.amount,
+                ReimbursementRequestId: reimbursementRequestId,
+              })),
+            },
+          },
+        })
+      }
+    }
     if (setPage) setPage(MthRoute.DASHBOARD)
   }
 
@@ -190,46 +317,60 @@ export const RequestForm: React.FC<RequestFormProps> = ({
     }
   }
 
+  const arrangeItems = (
+    items: ReimbursementQuestion[],
+    values: ReimbursementQuestion[],
+    setValues: (value: ReimbursementQuestion[]) => void,
+  ) => {
+    const newValues: ReimbursementQuestion[] = []
+    items.map(async (item, index) => {
+      const correctPriority = index
+      values?.map((value) => {
+        if (value?.slug === item?.slug) {
+          value.priority = correctPriority
+          newValues.push(value)
+        }
+      })
+    })
+    onSaveQuestions(newValues)
+    setValues(newValues)
+  }
+
   useEffect(() => {
-    if (!reimbursementQuestionsLoading && reimbursementQuestions?.length > 3) {
-      setInitialValues(
-        reimbursementQuestions?.map((question) => {
-          if (question?.slug == ReimbursementQuestionSlug.STUDENT_ID && selectedStudentId)
-            return { ...question, answer: `${selectedStudentId}` }
-          if (question?.slug == ReimbursementQuestionSlug.FORM_TYPE && selectedFormType)
-            return { ...question, answer: `${selectedFormType}` }
-          return question
-        }),
-      )
-    } else {
+    if (!reimbursementQuestionsLoading && reimbursementQuestions) {
       let tempInitialValues: ReimbursementQuestion[] = []
-      switch (formType) {
-        case ReimbursementFormType.TECHNOLOGY:
-          tempInitialValues = isDirectOrder
-            ? DEFAULT_IS_DIRECT_ORDER_TECHNOLOGY_QUESTIONS
-            : DEFAULT_TECHNOLOGY_QUESTIONS
-          break
-        case ReimbursementFormType.SUPPLEMENTAL:
-          tempInitialValues = isDirectOrder
-            ? DEFAULT_IS_DIRECT_ORDER_SUPPLEMENTAL_LEARNING_QUESTIONS
-            : DEFAULT_SUPPLEMENTAL_LEARNING_QUESTIONS
+      if (reimbursementQuestions?.length > 3) {
+        tempInitialValues = reimbursementQuestions
+      } else {
+        switch (formType) {
+          case ReimbursementFormType.TECHNOLOGY:
+            tempInitialValues = isDirectOrder
+              ? DEFAULT_IS_DIRECT_ORDER_TECHNOLOGY_QUESTIONS
+              : DEFAULT_TECHNOLOGY_QUESTIONS
+            break
+          case ReimbursementFormType.SUPPLEMENTAL:
+            tempInitialValues = isDirectOrder
+              ? DEFAULT_IS_DIRECT_ORDER_SUPPLEMENTAL_LEARNING_QUESTIONS
+              : DEFAULT_SUPPLEMENTAL_LEARNING_QUESTIONS
 
-          break
-        case ReimbursementFormType.CUSTOM_BUILT:
-          tempInitialValues = isDirectOrder
-            ? DEFAULT_IS_DIRECT_ORDER_CUSTOM_BUILT_QUESTIONS
-            : DEFAULT_CUSTOM_BUILT_QUESTIONS
+            break
+          case ReimbursementFormType.CUSTOM_BUILT:
+            tempInitialValues = isDirectOrder
+              ? DEFAULT_IS_DIRECT_ORDER_CUSTOM_BUILT_QUESTIONS
+              : DEFAULT_CUSTOM_BUILT_QUESTIONS
 
-          break
-        case ReimbursementFormType.THIRD_PARTY_PROVIDER:
-          tempInitialValues = DEFAULT_THIRD_PARTY_PROVIDER_QUESTIONS
-          break
-        case ReimbursementFormType.REQUIRED_SOFTWARE:
-          tempInitialValues = DEFAULT_REQUIRED_SOFTWARE_QUESTIONS
-          break
-        default:
-          tempInitialValues = DEFAULT_IS_DIRECT_ORDER_TECHNOLOGY_QUESTIONS
+            break
+          case ReimbursementFormType.THIRD_PARTY_PROVIDER:
+            tempInitialValues = DEFAULT_THIRD_PARTY_PROVIDER_QUESTIONS
+            break
+          case ReimbursementFormType.REQUIRED_SOFTWARE:
+            tempInitialValues = DEFAULT_REQUIRED_SOFTWARE_QUESTIONS
+            break
+          default:
+            tempInitialValues = DEFAULT_IS_DIRECT_ORDER_TECHNOLOGY_QUESTIONS
+        }
       }
+
       setInitialValues(
         tempInitialValues?.map((question) => {
           if (question?.slug == ReimbursementQuestionSlug.STUDENT_ID && selectedStudentId)
@@ -258,6 +399,14 @@ export const RequestForm: React.FC<RequestFormProps> = ({
     }
   }, [signatureFileUrlLoading, signatureFileData])
 
+  useEffect(() => {
+    if (selectedReimbursementRequest) {
+      setSelectedStudentId(selectedReimbursementRequest?.StudentId)
+      setSelectedFormType(selectedReimbursementRequest?.form_type)
+      setReceipts(selectedReimbursementRequest?.ReimbursementReceipts || [])
+    }
+  }, [selectedReimbursementRequest])
+
   return (
     <>
       <Box sx={{ width: '600px', paddingY: 3 }}>
@@ -267,28 +416,47 @@ export const RequestForm: React.FC<RequestFormProps> = ({
           validationSchema={validationSchema}
           onSubmit={onSaveRequests}
         >
-          <Form>
-            <RequestFormEdit
-              formType={formType}
-              selectedYear={selectedYear}
-              isDirectOrder={isDirectOrder}
-              showError={showError}
-              selectedYearId={selectedYearId}
-              selectedStudentId={selectedStudentId}
-              selectedFormType={selectedFormType}
-              signatureRef={signatureRef}
-              signatureName={signatureName}
-              signatureFileUrl={signatureFileUrl}
-              onSubmitRequests={onSubmitRequests}
-              setSignatureRef={setSignatureRef}
-              setSignatureName={setSignatureName}
-              setFormType={setFormType}
-              setSelectedStudentId={setSelectedStudentId}
-              setSelectedFormType={setSelectedFormType}
-              setIsChanged={setIsChanged}
-              handleSaveQuestions={onSaveQuestions}
-            />
-          </Form>
+          {({ values, setValues }) => {
+            return (
+              <Form>
+                <RequestFormEdit
+                  formType={formType}
+                  isDirectOrder={isDirectOrder}
+                  selectedYearId={selectedYearId}
+                  selectedStudentId={selectedStudentId}
+                  selectedFormType={selectedFormType}
+                  onSubmitRequests={onSubmitRequests}
+                  setFormType={setFormType}
+                  setIsChanged={setIsChanged}
+                  handleSaveQuestions={onSaveQuestions}
+                >
+                  <SortableListContainer
+                    items={values}
+                    useDragHandle={true}
+                    selectedYear={selectedYear}
+                    isDirectOrder={isDirectOrder}
+                    selectedYearId={selectedYearId}
+                    showError={showError}
+                    selectedStudentId={selectedStudentId}
+                    selectedFormType={selectedFormType}
+                    signatureRef={signatureRef}
+                    signatureName={signatureName}
+                    signatureFileUrl={signatureFileUrl}
+                    receipts={receipts}
+                    setReceipts={setReceipts}
+                    setSignatureRef={setSignatureRef}
+                    setSignatureName={setSignatureName}
+                    setSelectedStudentId={setSelectedStudentId}
+                    setSelectedFormType={setSelectedFormType}
+                    onSortEnd={({ oldIndex, newIndex }) => {
+                      const newSortableList = arrayMove(values, oldIndex, newIndex)
+                      arrangeItems(newSortableList, values, setValues)
+                    }}
+                  />
+                </RequestFormEdit>
+              </Form>
+            )
+          }}
         </Formik>
       </Box>
     </>

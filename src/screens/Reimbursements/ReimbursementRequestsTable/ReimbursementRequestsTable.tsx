@@ -11,7 +11,7 @@ import { MthTable } from '@mth/components/MthTable'
 import { MthTableField, MthTableRowItem } from '@mth/components/MthTable/types'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { REIMBURSEMENT_FORM_TYPE_ITEMS } from '@mth/constants'
-import { MthColor, Order, ReimbursementRequestStatus } from '@mth/enums'
+import { MthColor, MthRoute, Order, ReimbursementRequestStatus } from '@mth/enums'
 import { getReimbursementRequestsQuery } from '@mth/graphql/queries/reimbursement-request'
 import { ReimbursementRequest } from '@mth/models'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
@@ -24,7 +24,9 @@ type TableFieldProps = {
 type ReimbursementRequestsTableProps = {
   reimbursementSchoolYears: DropDownItem[]
   selectedYearId: number
+  setPage: (value: MthRoute) => void
   setSelectedYearId: (value: number) => void
+  setSelectedReimbursementRequest: (value: ReimbursementRequest) => void
 }
 
 const TableField: React.FC<TableFieldProps> = ({ item, children }) => (
@@ -42,7 +44,9 @@ const TableField: React.FC<TableFieldProps> = ({ item, children }) => (
 const ReimbursementRequestsTable: React.FC<ReimbursementRequestsTableProps> = ({
   reimbursementSchoolYears,
   selectedYearId,
+  setPage,
   setSelectedYearId,
+  setSelectedReimbursementRequest,
 }) => {
   const { me } = useContext(UserContext)
   const [tableData, setTableData] = useState<MthTableRowItem<ReimbursementRequest>[]>([])
@@ -179,7 +183,13 @@ const ReimbursementRequestsTable: React.FC<ReimbursementRequestsTableProps> = ({
         return (
           <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
             {item.rawData.status !== ReimbursementRequestStatus.PAID ? (
-              <IconButton>
+              <IconButton
+                onClick={() => {
+                  setSelectedReimbursementRequest(item.rawData)
+                  if (item.rawData?.is_direct_order) setPage(MthRoute.REIMBURSEMENTS_DIRECT_ORDER_FORM)
+                  else setPage(MthRoute.REIMBURSEMENTS_REIMBURSEMENT_FORM)
+                }}
+              >
                 <Tooltip title='Edit' color='primary' placement='top'>
                   <ModeEditIcon fontSize='medium' />
                 </Tooltip>

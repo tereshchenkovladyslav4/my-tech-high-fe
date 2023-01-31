@@ -1,5 +1,6 @@
 import { ReimbursementFormType } from '../enums/reimbursement-form-type'
 import { ReimbursementRequestStatus } from '../enums/reimbursement-request-status.enum'
+import { ReimbursementReceipt } from './reimbursement-receipt.model'
 import { Student } from './student.model'
 
 export type ReimbursementRequest = {
@@ -18,4 +19,5 @@ export type ReimbursementRequest = {
   signature_file_id: number
   signature_name: string
   periods?: string
+  ReimbursementReceipts?: ReimbursementReceipt[]
 }

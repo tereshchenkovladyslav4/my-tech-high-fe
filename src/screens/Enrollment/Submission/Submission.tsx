@@ -13,7 +13,7 @@ import { FileCategory, MthColor, MthRoute, QUESTION_TYPE } from '@mth/enums'
 import { EnrollmentContext } from '@mth/providers/EnrollmentPacketPrivder/EnrollmentPacketProvider'
 import { UserContext, UserInfo } from '@mth/providers/UserContext/UserProvider'
 import { uploadFile } from '@mth/services'
-import { getRegionCode, getWindowDimension } from '@mth/utils'
+import { dataUrlToFile, getRegionCode, getWindowDimension } from '@mth/utils'
 import { EnrollmentQuestionItem } from '../Question'
 import { useStyles } from '../styles'
 import { enrollmentContactMutation } from './service'
@@ -31,12 +31,6 @@ export const Submission: React.FC<SubmissionProps> = ({ id, questions }) => {
   const [showSuccess, setShowSuccess] = useState(false)
   const [submitEnrollment] = useMutation(enrollmentContactMutation)
   const [windowDimensions, setWindowDimensions] = useState(getWindowDimension())
-
-  const dataUrlToFile = async (dataUrl: string, fileName: string): Promise<File> => {
-    const res: Response = await fetch(dataUrl)
-    const blob: Blob = await res.blob()
-    return new File([blob], fileName, { type: 'image/png' })
-  }
 
   const history = useHistory()
 

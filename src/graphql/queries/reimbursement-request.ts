@@ -30,6 +30,13 @@ export const getReimbursementRequestsQuery = gql`
       signature_name
       status
       total_amount
+      ReimbursementReceipts {
+        reimbursement_receipt_id
+        ReimbursementRequestId
+        file_id
+        file_name
+        amount
+      }
     }
   }
 `

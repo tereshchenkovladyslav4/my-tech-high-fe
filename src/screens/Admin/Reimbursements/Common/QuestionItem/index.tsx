@@ -1,12 +1,15 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { Fragment, useContext, useEffect, useState } from 'react'
 import { useLazyQuery } from '@apollo/client'
 import { Theme } from '@emotion/react'
-import { withStyles } from '@material-ui/styles'
+import { DeleteForeverOutlined } from '@mui/icons-material'
+import AddIcon from '@mui/icons-material/Add'
 import DehazeIcon from '@mui/icons-material/Dehaze'
-import { Box, Grid, IconButton, TextField, Tooltip } from '@mui/material'
+import { Box, Button, Grid, IconButton, TextField, Tooltip } from '@mui/material'
 import { SxProps } from '@mui/system'
+import { useFormikContext } from 'formik'
 import SignatureCanvas from 'react-signature-canvas'
 import { SortableHandle } from 'react-sortable-hoc'
+import { DocumentUploadModal } from '@mth/components/DocumentUploadModal/DocumentUploadModal'
 import { DropDown } from '@mth/components/DropDown/DropDown'
 import { DropDownItem } from '@mth/components/DropDown/types'
 import { FormError } from '@mth/components/FormError'
@@ -33,8 +36,9 @@ import {
 } from '@mth/enums'
 import { SchedulePeriod } from '@mth/graphql/models/schedule-period'
 import { getStudentSchedulePeriodsQuery } from '@mth/graphql/queries/schedule-period'
-import { ReimbursementQuestion, SchoolYear } from '@mth/models'
+import { ReimbursementQuestion, ReimbursementReceipt, SchoolYear } from '@mth/models'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
+import { mthButtonClasses } from '@mth/styles/button.style'
 import { arrayToString, extractContent } from '@mth/utils'
 
 type QuestionProps = {
@@ -48,9 +52,10 @@ type QuestionProps = {
   signatureRef: SignatureCanvas | null
   signatureName: string
   signatureFileUrl: string
+  receipts: ReimbursementReceipt[]
+  setReceipts: (value: ReimbursementReceipt[]) => void
   setSignatureRef: (value: SignatureCanvas | null) => void
   setSignatureName: (value: string) => void
-  setQuestion: (value: ReimbursementQuestion) => void
   setSelectedStudentId: (value: number) => void
   setSelectedFormType: (value: ReimbursementFormType | undefined) => void
   setIsChanged: (value: boolean) => void
@@ -70,23 +75,6 @@ const DragHandle = SortableHandle(({ sx }: { sx?: SxProps<Theme> }) => (
   </Tooltip>
 ))
 
-const CssTextField = withStyles({
-  root: {
-    '& .MuiOutlinedInput-root': {
-      '& fieldset': {
-        borderWidth: '1px !important',
-        borderColor: 'black',
-      },
-    },
-    '& .MuiInputLabel-root': {
-      color: '#333333',
-    },
-    '& .MuiInputLabel-root.Mui-focused': {
-      color: '#333333',
-    },
-  },
-})(TextField)
-
 export const QuestionItem: React.FC<QuestionProps> = ({
   question,
   selectedStudentId,
@@ -98,17 +86,20 @@ export const QuestionItem: React.FC<QuestionProps> = ({
   signatureRef,
   signatureName,
   signatureFileUrl,
+  receipts,
+  setReceipts,
   setSignatureRef,
   setSignatureName,
   setSelectedStudentId,
   setSelectedFormType,
-  setQuestion,
 }) => {
   const { me } = useContext(UserContext)
+  const { values, setValues } = useFormikContext<ReimbursementQuestion[]>()
   const roleLevel = me?.role?.level
   const students = me?.students
   const [formTypeItems, setFormTypeItems] = useState<DropDownItem[]>([])
   const [periodsItems, setPeriodsItems] = useState<DropDownItem[]>([])
+  const [showUploadModal, setShowUploadModal] = useState<boolean>(false)
 
   const [getStudentSchedulePeriods, { loading: studentSchedulePeriodsLoading, data: studentSchedulePeriodsData }] =
     useLazyQuery(getStudentSchedulePeriodsQuery, {
@@ -154,6 +145,56 @@ export const QuestionItem: React.FC<QuestionProps> = ({
     }
   }
 
+  const setQuestion = (question: ReimbursementQuestion) => {
+    const questionIndex = values?.findIndex((value) => value?.slug == question.slug)
+    values[questionIndex] = question
+    setValues(JSON.parse(JSON.stringify(values)))
+  }
+
+  const getTotalAmount = (): number => {
+    if (receipts?.length > 0) {
+      let sum = 0
+      receipts?.forEach((receipt) => {
+        sum += receipt?.amount || 0
+      })
+      return sum
+    } else {
+      return 0
+    }
+  }
+
+  const deleteReceipt = (index: number) => {
+    const temp = [...receipts]
+    temp?.splice(index, 1)
+    setReceipts(temp)
+  }
+
+  const handleChangeReceipts = (index: number, value: number | null) => {
+    setReceipts(
+      receipts?.map((receipt, i) => {
+        if (index == i) return { ...receipt, amount: value }
+        else return receipt
+      }),
+    )
+  }
+
+  const handleFileChange = (files: File[]) => {
+    if (files?.length) {
+      setReceipts([
+        ...receipts,
+        ...files?.map((file) => ({
+          reimbursement_receipt_id: 0,
+          ReimbursementRequestId: 0,
+          file_id: 0,
+          file_name: file?.name,
+          amount: 0,
+          file: file,
+        })),
+      ])
+      setShowUploadModal(false)
+    }
+  }
+
   const handleChangeValue = (question: ReimbursementQuestion, value: string | number | boolean) => {
     if (question.slug === ReimbursementQuestionSlug.STUDENT_ID) setSelectedStudentId(+value)
     if (question.slug === ReimbursementQuestionSlug.FORM_TYPE) setSelectedFormType(value as ReimbursementFormType)
@@ -173,6 +214,65 @@ export const QuestionItem: React.FC<QuestionProps> = ({
       default:
         return question.answer
     }
+  }
+
+  const renderRecipts = () => {
+    return (
+      <Box sx={{ marginTop: 2 }}>
+        <Grid container rowSpacing={3} sx={{ marginBottom: 4 }}>
+          {receipts?.map((receipt, index) => (
+            <Fragment key={index}>
+              <Grid item xs={8}>
+                <Box sx={{ display: 'flex', justifyContent: 'start' }}>
+                  <Paragraph
+                    size={'large'}
+                    sx={{ paddingY: 1, fontSize: '18px', fontWeight: 600, textAlign: 'center' }}
+                  >
+                    {`${index + 1}`}
+                  </Paragraph>
+                  <Paragraph
+                    size={'large'}
+                    sx={{
+                      paddingX: 3,
+                      marginTop: 'auto',
+                      marginBottom: 'auto',
+                      fontSize: '14px',
+                      fontWeight: '600',
+                      color: MthColor.MTHBLUE,
+                      textAlign: 'center',
+                    }}
+                  >
+                    {`${receipt?.file_name}`}
+                  </Paragraph>
+                  <IconButton onClick={() => deleteReceipt(index)}>
+                    <Tooltip title='Delete' color='primary' placement='top'>
+                      <DeleteForeverOutlined fontSize='medium' />
+                    </Tooltip>
+                  </IconButton>
+                </Box>
+              </Grid>
+              <Grid item xs={4}>
+                <MthNumberInput
+                  numberType='price'
+                  label={'Amount of Receipt'}
+                  placeholder='Entry'
+                  fullWidth
+                  InputLabelProps={{ shrink: true }}
+                  className='MthFormField'
+                  value={+(receipt?.amount?.toFixed(2) || 0)}
+                  onChangeValue={(value: number | null) => {
+                    handleChangeReceipts(index, value)
+                  }}
+                />
+              </Grid>
+            </Fragment>
+          ))}
+        </Grid>
+        <Button sx={{ ...mthButtonClasses.primary }} startIcon={<AddIcon />} onClick={() => setShowUploadModal(true)}>
+          Add Receipt
+        </Button>
+      </Box>
+    )
   }
 
   const renderQuestion = (question: ReimbursementQuestion) => {
@@ -301,7 +401,7 @@ export const QuestionItem: React.FC<QuestionProps> = ({
                   error={showError && question?.required && !question.answer}
                 />
               ) : (
-                <CssTextField
+                <TextField
                   name={extractContent(question.question)}
                   label={extractContent(question.question)}
                   placeholder='Entry'
@@ -357,14 +457,19 @@ export const QuestionItem: React.FC<QuestionProps> = ({
                     {extractContent(question.question)}
                   </Subtitle>
                   <Subtitle fontWeight='700' color={MthColor.SYSTEM_02} sx={{ cursor: 'pointer', fontSize: '20px' }}>
-                    {'$0.00'}
+                    {`$${getTotalAmount()?.toFixed(2)}`}
                   </Subtitle>
                 </Box>
               )}
               {question.slug !== ReimbursementQuestionSlug.TOTAL_AMOUNT && (
-                <Subtitle fontWeight='700' color={MthColor.SYSTEM_02} sx={{ cursor: 'pointer', fontSize: '18px' }}>
-                  {extractContent(question.question)}
-                </Subtitle>
+                <>
+                  <Subtitle fontWeight='700' color={MthColor.SYSTEM_02} sx={{ cursor: 'pointer', fontSize: '18px' }}>
+                    {extractContent(question.question)}
+                  </Subtitle>
+                  {roleLevel == RoleLevel.PARENT &&
+                    question.slug == ReimbursementQuestionSlug.RECEIPTS &&
+                    renderRecipts()}
+                </>
               )}
               {roleLevel === RoleLevel.SUPER_ADMIN && question.sortable && (
                 <DragHandle sx={{ right: '-90px', top: '-5px' }} />
@@ -555,5 +660,16 @@ export const QuestionItem: React.FC<QuestionProps> = ({
     }
   }, [studentSchedulePeriodsLoading, studentSchedulePeriodsData, selectedYear, isDirectOrder])
 
-  return <>{renderQuestion(question)}</>
+  return (
+    <>
+      {renderQuestion(question)}
+      {showUploadModal && (
+        <DocumentUploadModal
+          handleModem={() => setShowUploadModal(false)}
+          handleFile={(files: File[]) => handleFileChange(files)}
+          limit={3}
+        />
+      )}
+    </>
+  )
 }
