@@ -1,4 +1,5 @@
 export * from './check-enroll-pachet-status.util'
+export * from './convert-diploma-seeking.util'
 export * from './date.util'
 export * from './grade-text.util'
 export * from './hex-to-rgba.util'

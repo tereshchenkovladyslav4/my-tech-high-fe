@@ -1,8 +1,8 @@
 import { gql } from '@apollo/client'
 
 export const diplomaQuestionForStudent = gql`
-  query GetDiplomaQuestionForStudent($diplomaQuestionInput: DiplomaQuestionInput!) {
-    getDiplomaQuestionForStudent(diplomaQuestionInput: $diplomaQuestionInput) {
+  query GetDiplomaQuestionForStudent($studentId: Int!, $schoolYearId: Int!) {
+    getDiplomaQuestionForStudent(studentId: $studentId, schoolYearId: $schoolYearId) {
       id
       id
       description

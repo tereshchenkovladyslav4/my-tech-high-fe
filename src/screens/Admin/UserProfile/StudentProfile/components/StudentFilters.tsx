@@ -8,11 +8,10 @@ import { CustomConfirmModal } from '@mth/components/CustomConfirmModal/CustomCon
 import { DropDown } from '@mth/components/DropDown/DropDown'
 import { DropDownItem } from '@mth/components/DropDown/types'
 import { MthDatePicker } from '@mth/components/MthDatePicker/MthDatePicker'
-import { RadioGroupOption } from '@mth/components/MthRadioGroup/types'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { ActivateOption, ApplicationStatus, MthColor, StudentStatus, WithdrawalOption } from '@mth/enums'
-import { useDiplomaSeekingOptionsByStudentIdandSchoolYearId } from '@mth/hooks'
+import { useDiplomaSeekingOptionsByStudentIdAndSchoolYearId } from '@mth/hooks'
 import { Application, Student, Withdrawal } from '@mth/models'
 import { calcAge, gradeText } from '@mth/utils'
 import { StudentTemp } from '../StudentProfile'
@@ -217,7 +216,7 @@ export const StudentFilters: React.FC<StudentFiltersProps> = ({
   const [showWithdrawalModal, setShowWithdrawalModal] = useState<boolean>(false)
   const [showActiveModal, setShowActiveModal] = useState<boolean>(false)
   const [showConfirmModal, setShowConfirmModal] = useState<boolean>(false)
-  const [diplomaSeeking, setDiplomaSeeking] = useState<string>('')
+  const [diplomaSeeking, setDiplomaSeeking] = useState<number | null | undefined>()
   const [editingDOB, setEditingDOB] = useState<boolean>(false)
   const [status, setStatus] = useState<DropDownItem[]>([
     {
@@ -272,7 +271,7 @@ export const StudentFilters: React.FC<StudentFiltersProps> = ({
     },
   ]
 
-  const { diplomaOptions } = useDiplomaSeekingOptionsByStudentIdandSchoolYearId(
+  const { diplomaAnswer, diplomaOptions } = useDiplomaSeekingOptionsByStudentIdAndSchoolYearId(
     studentStatusData?.school_year_id || 0,
     studentStatusData?.student_id,
     !studentStatusData?.student_id || !studentStatusData?.school_year_id,
@@ -333,14 +332,14 @@ export const StudentFilters: React.FC<StudentFiltersProps> = ({
 
   useEffect(() => {
     if (specialEdOptions.length != 0) {
-      const speicalEdDropdonws: DropDownItem[] = []
+      const specialEdDropdowns: DropDownItem[] = []
       specialEdOptions.map((item, index): void => {
-        speicalEdDropdonws.push({
+        specialEdDropdowns.push({
           label: item,
           value: index,
         })
       })
-      setSpecialEds(speicalEdDropdonws)
+      setSpecialEds(speicalEdDropdowns)
     }
   }, [specialEdOptions])
 
@@ -460,11 +459,9 @@ export const StudentFilters: React.FC<StudentFiltersProps> = ({
 
   useEffect(() => {
     if (diplomaOptions) {
-      const answerOption = diplomaOptions.find((item: RadioGroupOption) => item.value)
-      const answer = answerOption?.option_id === 1 ? 1 : 0
-      setDiplomaSeeking(answer)
+      setDiplomaSeeking(diplomaAnswer)
     }
-  }, [diplomaOptions])
+  }, [diplomaOptions, diplomaAnswer])
 
   return (
     <Box
@@ -491,7 +488,7 @@ export const StudentFilters: React.FC<StudentFiltersProps> = ({
             <Box>
               <Select
                 className={
-                  studentStatusData?.status != 2
+                  studentStatusData?.status != StudentStatus.WITHDRAWN
                     ? withdrawalStatus?.status == 'Requested'
                       ? selectClasses.yellowBackgroundSelect
                       : selectClasses.backgroundSelect
@@ -505,7 +502,7 @@ export const StudentFilters: React.FC<StudentFiltersProps> = ({
                 }}
                 value={+studentStatusData.status}
                 onChange={(e) => {
-                  handleChangeStudentStatus(e.target.value)
+                  handleChangeStudentStatus(e.target.value as StudentStatus)
                 }}
               >
                 {status.map((item) => (
@@ -624,7 +621,7 @@ export const StudentFilters: React.FC<StudentFiltersProps> = ({
               defaultValue={`${diplomaSeeking}`}
               borderNone={true}
               setParentValue={(val) => {
-                setDiplomaSeeking(`${val}`)
+                setDiplomaSeeking(+val || null)
                 setStudentStatuData({ ...studentStatusData, ...{ diploma_seeking: +val } })
               }}
             />

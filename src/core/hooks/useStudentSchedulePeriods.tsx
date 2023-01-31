@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useQuery } from '@apollo/client'
 import { groupBy, keyBy } from 'lodash'
 import { COURSE_TYPE_ITEMS } from '@mth/constants'
-import { CourseType, DiplomaSeekingPath, ScheduleStatus } from '@mth/enums'
+import { CourseType, ScheduleStatus } from '@mth/enums'
 import { SchedulePeriod } from '@mth/graphql/models/schedule-period'
 import { getStudentSchedulePeriodsQuery } from '@mth/graphql/queries/schedule-period'
 import { Period } from '@mth/models'
@@ -83,7 +83,6 @@ export const attachSelectedItems = (item: ScheduleData, schedulePeriod: Schedule
 export const useStudentSchedulePeriods = (
   student_id: number,
   school_year_id: number | undefined,
-  diplomaSeekingPath: DiplomaSeekingPath | null = null,
   showSecondSemester = false,
   isGradeFilter = true,
 ): {
@@ -120,7 +119,6 @@ export const useStudentSchedulePeriods = (
     variables: {
       studentId: student_id,
       schoolYearId: school_year_id,
-      diplomaSeekingPath: diplomaSeekingPath,
       isGradeFilter,
     },
     skip: !student_id || !school_year_id,

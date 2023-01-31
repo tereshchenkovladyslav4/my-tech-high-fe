@@ -90,13 +90,8 @@ export const TitleFragment = gql`
 export const getStudentPeriodsQuery = gql`
   ${CourseFragment}
   ${TitleFragment}
-  query StudentPeriods($studentId: ID!, $schoolYearId: ID!, $diplomaSeekingPath: String, $isGradeFilter: Boolean!) {
-    studentPeriods(
-      studentId: $studentId
-      schoolYearId: $schoolYearId
-      diplomaSeekingPath: $diplomaSeekingPath
-      isGradeFilter: $isGradeFilter
-    ) {
+  query StudentPeriods($studentId: ID!, $schoolYearId: ID!, $isGradeFilter: Boolean!) {
+    studentPeriods(studentId: $studentId, schoolYearId: $schoolYearId, isGradeFilter: $isGradeFilter) {
       id
       period
       category

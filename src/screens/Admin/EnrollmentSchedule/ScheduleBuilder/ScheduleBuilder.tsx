@@ -9,7 +9,7 @@ import { CheckBoxListVM } from '@mth/components/MthCheckboxList/MthCheckboxList'
 import { SuccessModal } from '@mth/components/SuccessModal/SuccessModal'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { SCHEDULE_STATUS_OPTIONS } from '@mth/constants'
-import { DiplomaSeekingPath, MthColor, MthRoute, MthTitle, SchedulePeriodStatus, ScheduleStatus } from '@mth/enums'
+import { MthColor, MthRoute, MthTitle, SchedulePeriodStatus, ScheduleStatus } from '@mth/enums'
 import {
   saveScheduleMutation,
   sendUpdatesAllowedEmailMutation,
@@ -47,7 +47,6 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
   const [isChanged, setIsChanged] = useState(false)
   const [showUnsavedModal, setShowUnsavedModal] = useState<boolean>(false)
   const [showReset, setShowReset] = useState(false)
-  const [diplomaSeekingPath, setDiplomaSeekingPath] = useState<DiplomaSeekingPath>(DiplomaSeekingPath.BOTH)
   const [isLockedKey, setIsLockedKey] = useState(true)
 
   const { studentInfo: studentInfoData } = useStudentInfo(+studentId)
@@ -72,7 +71,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
     firstSemesterScheduleId,
     hasUnlockedPeriods,
     refetch,
-  } = useStudentSchedulePeriods(studentId, selectedYearId, diplomaSeekingPath, false, isLockedKey)
+  } = useStudentSchedulePeriods(studentId, selectedYearId, false, isLockedKey)
 
   const [submitScheduleBuilder] = useMutation(saveScheduleMutation)
   const [saveDraft] = useMutation(saveSchedulePeriodMutation)
@@ -107,11 +106,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
                 ? false
                 : hasSecondSemester,
             is_sending_email:
-              status === ScheduleStatus.ACCEPTED
-                ? scheduleStatus?.value === studentScheduleStatus
-                  ? true
-                  : false
-                : false,
+              status === ScheduleStatus.ACCEPTED ? scheduleStatus?.value === studentScheduleStatus : false,
           },
         },
       })
@@ -314,7 +309,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
         },
       },
     })
-    handleSave(ScheduleStatus.UPDATES_REQUIRED)
+    await handleSave(ScheduleStatus.UPDATES_REQUIRED)
   }
 
   const handleSendUpdatesAllowedEmail = async () => {
@@ -344,7 +339,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
       const data = secondScheduleData?.filter(
         (item) => item?.Period?.id == schedule.Period?.id && item?.showButtonName === SchedulePeriodStatus.NO_UPDATES,
       )
-      handleSave(data?.length ? studentScheduleStatus : ScheduleStatus.ACCEPTED)
+      await handleSave(data?.length ? studentScheduleStatus : ScheduleStatus.ACCEPTED)
     }
   }
 
@@ -365,17 +360,6 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
         schoolOfEnrollment: studentInfoData.currentSoe?.find((item) => item?.school_year_id === selectedYearId)?.partner
           ?.name,
       })
-      switch (studentInfoData.diploma_seeking) {
-        case 0:
-          setDiplomaSeekingPath(DiplomaSeekingPath.NON_DIPLOMA_SEEKING)
-          break
-        case 1:
-          setDiplomaSeekingPath(DiplomaSeekingPath.DIPLOMA_SEEKING)
-          break
-        default:
-          setDiplomaSeekingPath(DiplomaSeekingPath.BOTH)
-          break
-      }
     }
   }, [studentInfoData, schoolYears, selectedYear])
 
@@ -474,8 +458,8 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
             scheduleStatus={hasSecondSemester ? ScheduleStatus.ACCEPTED : studentScheduleStatus}
             selectedScheduleStatus={scheduleStatus?.value as ScheduleStatus}
             isAdmin={true}
-            isEditMode={hasSecondSemester ? false : true}
-            isUpdatePeriodRequired={requireUpdatePeriods?.length ? true : false}
+            isEditMode={!hasSecondSemester}
+            isUpdatePeriodRequired={!!requireUpdatePeriods?.length}
             setIsChanged={setIsChanged}
             setScheduleData={setScheduleData}
             handlePeriodUpdateEmail={handlePeriodUpdateEmail}

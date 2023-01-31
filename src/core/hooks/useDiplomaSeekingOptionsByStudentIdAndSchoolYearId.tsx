@@ -3,14 +3,16 @@ import { useQuery } from '@apollo/client'
 import { RadioGroupOption } from '@mth/components/MthRadioGroup/types'
 import { diplomaAnswerGql } from '@mth/graphql/queries/diploma'
 
-export const useDiplomaSeekingOptionsByStudentIdandSchoolYearId = (
+export const useDiplomaSeekingOptionsByStudentIdAndSchoolYearId = (
   schoolYearId: number,
   studentId: number,
   skip: boolean,
 ): {
+  diplomaAnswer: number | null | undefined
   diplomaOptions: RadioGroupOption[]
   diplomaAnswerRefetch: () => void
 } => {
+  const [diplomaAnswer, setDiplomaAnswer] = useState<number | null | undefined>()
   const [diplomaOptions, setDiplomaOptions] = useState<RadioGroupOption[]>([
     {
       option_id: 1,
@@ -41,6 +43,7 @@ export const useDiplomaSeekingOptionsByStudentIdandSchoolYearId = (
 
   useEffect(() => {
     if (!diplomaAnswerLoading) {
+      setDiplomaAnswer(diplomaAnswerData?.getDiplomaAnswer?.answer)
       if (diplomaAnswerData && diplomaAnswerData.getDiplomaAnswer) {
         setDiplomaOptions([
           {
@@ -72,6 +75,7 @@ export const useDiplomaSeekingOptionsByStudentIdandSchoolYearId = (
   }, [diplomaAnswerLoading, diplomaAnswerData])
 
   return {
+    diplomaAnswer,
     diplomaOptions,
     diplomaAnswerRefetch: refetch,
   }

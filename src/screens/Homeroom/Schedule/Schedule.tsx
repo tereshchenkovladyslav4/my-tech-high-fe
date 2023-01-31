@@ -13,13 +13,13 @@ import {
   DEFAULT_TESTING_PREFERENCE_DESCRIPTION,
   DEFAULT_TESTING_PREFERENCE_TITLE,
 } from '@mth/constants'
-import { DiplomaSeekingPath, FileCategory, MthRoute, MthTitle, OPT_TYPE, ScheduleStatus } from '@mth/enums'
+import { FileCategory, MthRoute, MthTitle, OPT_TYPE, ScheduleStatus } from '@mth/enums'
 import { diplomaQuestionForStudent, submitDiplomaAnswerGql } from '@mth/graphql/queries/diploma'
 import { getSignatureInfoByStudentId } from '@mth/graphql/queries/user'
 import {
   useActiveScheduleSchoolYears,
   useAssessmentsBySchoolYearId,
-  useDiplomaSeekingOptionsByStudentIdandSchoolYearId,
+  useDiplomaSeekingOptionsByStudentIdAndSchoolYearId,
   useStudentInfo,
 } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
@@ -28,7 +28,7 @@ import { AssessmentType } from '@mth/screens/Admin/SiteManagement/EnrollmentSett
 import { UpdateStudentMutation } from '@mth/screens/Admin/UserProfile/services'
 import { uploadFile } from '@mth/services'
 import { mthButtonClasses } from '@mth/styles/button.style'
-import { calculateGrade, extractContent, getRegionCode, gradeNum } from '@mth/utils'
+import { calculateGrade, extractContent, getRegionCode } from '@mth/utils'
 import { DiplomaSeeking } from './DiplomaSeeking'
 import { HeaderComponent } from './HeaderComponent'
 import { OptOutForm } from './OptOutForm'
@@ -63,7 +63,6 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
   const [diplomaQuestion, setDiplomaQuestion] = useState<DiplomaQuestionType | undefined>()
   const [isDiplomaError, setIsDiplomaError] = useState<boolean>(false)
   const [scheduleStatus, setScheduleStatus] = useState<ScheduleStatus>()
-  const [diplomaSeekingPathStatus, setDiplomaSeekingPathStatus] = useState<DiplomaSeekingPath>(DiplomaSeekingPath.BOTH)
   const [isChanged, setIsChanged] = useState<boolean>(false)
   const [showUnsavedModal, setShowUnsavedModal] = useState<boolean>(false)
   const [isUpdatePeriodRequested, setIsUpdatePeriodRequested] = useState<boolean>(false)
@@ -84,20 +83,18 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
     return Boolean(split_enrollment && split_enrollment_grades?.includes(String(student_grade_level)))
   }, [selectedYear, student])
 
-  const { diplomaOptions, diplomaAnswerRefetch } = useDiplomaSeekingOptionsByStudentIdandSchoolYearId(
+  const { diplomaOptions, diplomaAnswerRefetch } = useDiplomaSeekingOptionsByStudentIdAndSchoolYearId(
     selectedYearId || 0,
     studentId,
-    !student || !studentId || !selectedYearId || step !== MthTitle.STEP_DIPLOMA_SEEKING,
+    !student || !studentId || !selectedYearId,
   )
 
   const { loading: diplomaLoading, data: diplomaData } = useQuery(diplomaQuestionForStudent, {
     variables: {
-      diplomaQuestionInput: {
-        schoolYearId: selectedYearId,
-        grades: gradeNum(student),
-      },
+      schoolYearId: selectedYearId,
+      studentId: studentId,
     },
-    skip: !student || !studentId,
+    skip: !selectedYearId || !studentId,
     fetchPolicy: 'network-only',
   })
 
@@ -339,17 +336,6 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
         schoolOfEnrollment: studentInfoData.currentSoe?.find((item) => item?.school_year_id === selectedYearId)?.partner
           ?.name,
       })
-      switch (studentInfoData.diploma_seeking) {
-        case 0:
-          setDiplomaSeekingPathStatus(DiplomaSeekingPath.NON_DIPLOMA_SEEKING)
-          break
-        case 1:
-          setDiplomaSeekingPathStatus(DiplomaSeekingPath.DIPLOMA_SEEKING)
-          break
-        default:
-          setDiplomaSeekingPathStatus(DiplomaSeekingPath.BOTH)
-          break
-      }
     }
   }, [studentInfoData, schoolYears, selectedYear])
 
@@ -478,7 +464,6 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
             isUpdatePeriodRequested={isUpdatePeriodRequested}
             splitEnrollment={isSplitEnrollment}
             showUnsavedModal={showUnsavedModal}
-            diplomaSeekingPath={diplomaSeekingPathStatus}
             setScheduleStatus={setScheduleStatus}
             setIsUpdatePeriodRequested={setIsUpdatePeriodRequested}
             isChanged={isChanged}

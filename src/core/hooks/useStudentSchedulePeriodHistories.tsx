@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useQuery } from '@apollo/client'
 import { groupBy, keyBy } from 'lodash'
 import { COURSE_TYPE_ITEMS } from '@mth/constants'
-import { CourseType, DiplomaSeekingPath } from '@mth/enums'
+import { CourseType } from '@mth/enums'
 import { SchedulePeriodHistory } from '@mth/graphql/models/schedule-period'
 import { getStudentSchedulePeriodHistoriesQuery } from '@mth/graphql/queries/schedule-period'
 import { Period } from '@mth/models'
@@ -15,7 +15,6 @@ export const useStudentSchedulePeriodHistories = (
   student_id: number,
   school_year_id: number | undefined,
   isSecondSemester: boolean,
-  diplomaSeekingPath: DiplomaSeekingPath | null = null,
   isGradeFilter = true,
 ): {
   scheduleDataHistory: ScheduleHistoryData[]
@@ -35,7 +34,6 @@ export const useStudentSchedulePeriodHistories = (
     variables: {
       studentId: student_id,
       schoolYearId: school_year_id,
-      diplomaSeekingPath: diplomaSeekingPath,
       isGradeFilter,
     },
     skip: !student_id || !school_year_id,

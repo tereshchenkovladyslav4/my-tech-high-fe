@@ -24,7 +24,6 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
   showSecondSemester = false,
   showUnsavedModal = false,
   splitEnrollment = false,
-  diplomaSeekingPath,
   isUpdatePeriodRequested,
   setIsUpdatePeriodRequested,
   setScheduleStatus,
@@ -52,7 +51,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
     studentScheduleStatus,
     hasUnlockedPeriods,
     refetch,
-  } = useStudentSchedulePeriods(studentId, selectedYear, diplomaSeekingPath, showSecondSemester)
+  } = useStudentSchedulePeriods(studentId, selectedYear, showSecondSemester)
 
   const { loading: scheduleBuilderSettingLoading, data: scheduleBuilderSettingData } = useQuery(
     getAllScheduleBuilderQuery,
@@ -183,7 +182,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
       const data = secondScheduleData?.filter(
         (item) => item?.Period?.id == schedule.Period?.id && item?.showButtonName === SchedulePeriodStatus.NO_UPDATES,
       )
-      handleSave(
+      await handleSave(
         data?.length ? (hasSecondSemester ? studentScheduleStatus : ScheduleStatus.DRAFT) : ScheduleStatus.ACCEPTED,
         true,
       )
@@ -326,7 +325,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
         />
       )}
       <Prompt
-        when={isChanged ? true : false}
+        when={!!isChanged}
         message={JSON.stringify({
           header: MthTitle.UNSAVED_TITLE,
           content: MthTitle.UNSAVED_DESCRIPTION,

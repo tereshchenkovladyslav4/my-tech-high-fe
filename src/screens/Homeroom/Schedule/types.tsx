@@ -1,7 +1,7 @@
 import SignatureCanvas from 'react-signature-canvas'
 import { DropDownItem } from '@mth/components/DropDown/types'
 import { RadioGroupOption } from '@mth/components/MthRadioGroup/types'
-import { CourseType, DiplomaSeekingPath, ReduceFunds, SchedulePeriodStatus, ScheduleStatus } from '@mth/enums'
+import { CourseType, ReduceFunds, SchedulePeriodStatus, ScheduleStatus } from '@mth/enums'
 import { Period } from '@mth/models'
 import { AssessmentType } from '@mth/screens/Admin/SiteManagement/EnrollmentSetting/TestingPreference/types'
 import { OnSiteSplitEnrollment } from './ScheduleBuilder/OnSiteSplitEnrollmentEdit/types'
@@ -66,7 +66,6 @@ export type ScheduleBuilderProps = {
   showSecondSemester: boolean
   showUnsavedModal: boolean
   splitEnrollment: boolean
-  diplomaSeekingPath: DiplomaSeekingPath
   isUpdatePeriodRequested: boolean
   setScheduleStatus: (value: ScheduleStatus) => void
   setIsUpdatePeriodRequested: (value: boolean) => void

@@ -41,7 +41,7 @@ moment.tz.setDefault('MST')
 export type StudentTemp = {
   student_id: number
   special_ed: string
-  diploma_seeking: string
+  diploma_seeking: number | null
   testing_preference: string
   status: StudentStatus
   date: string
