@@ -1,4 +1,3 @@
-import React from 'react'
 import { Box, Container } from '@mui/material'
 import { Subtitle } from '../Typography/Subtitle/Subtitle'
 import { Title } from '../Typography/Title/Title'
@@ -16,7 +15,7 @@ export const EmptyState: EmptyStateTemplateType = ({ title, subtitle, image }) =
         textAlign: 'center',
       }}
     >
-      <img src={image} />
+      <img alt='Empty State Image' src={image} />
       {typeof title === 'string' ? <Title>{title}</Title> : title}
       {typeof subtitle === 'string' ? <Subtitle>{subtitle}</Subtitle> : subtitle}
     </Box>

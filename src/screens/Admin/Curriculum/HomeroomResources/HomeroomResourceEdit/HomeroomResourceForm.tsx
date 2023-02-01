@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt'
-import { Avatar, Box, Grid, TextField, Tooltip } from '@mui/material'
+import { Avatar, Box, Grid, TextField, Tooltip, Typography } from '@mui/material'
 import { useFormikContext } from 'formik'
 import { DocumentUploadModal } from '@mth/components/DocumentUploadModal/DocumentUploadModal'
 import { DropDown } from '@mth/components/DropDown/DropDown'
@@ -11,7 +11,7 @@ import { MultiSelect } from '@mth/components/MultiSelect/MultiSelect'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { REMOVE_FAMILY_RESOURCE, s3URL } from '@mth/constants'
-import { ResourceSubtitle } from '@mth/enums'
+import { ResourceSubtitle, UsernameFormat } from '@mth/enums'
 import { useProgramYearListBySchoolYearId } from '@mth/hooks'
 import { HomeroomResource } from '@mth/models'
 import { renderGrades } from '@mth/utils'
@@ -35,6 +35,116 @@ const HomeroomResourceForm: React.FC<HomeroomResourceFormProps> = ({ schoolYearI
     {
       label: 'Price',
       value: ResourceSubtitle.PRICE,
+    },
+  ]
+
+  const usernameFormatItems: DropDownItem[] = [
+    {
+      label: (
+        <Typography>
+          [first][last]&nbsp;&nbsp;
+          <Typography component='span' sx={{ fontWeight: '700' }}>
+            erinsublette
+          </Typography>
+        </Typography>
+      ),
+      value: UsernameFormat.FIRST_LAST,
+    },
+    {
+      label: (
+        <Typography>
+          [last][first][year]&nbsp;&nbsp;
+          <Typography component='span' sx={{ fontWeight: '700' }}>
+            subletteerin2022
+          </Typography>
+        </Typography>
+      ),
+      value: UsernameFormat.LAST_FIRST_YEAR,
+    },
+    {
+      label: (
+        <Typography>
+          [last][first]&nbsp;&nbsp;
+          <Typography component='span' sx={{ fontWeight: '700' }}>
+            subletteerin
+          </Typography>
+        </Typography>
+      ),
+      value: UsernameFormat.LAST_FIRST,
+    },
+    {
+      label: (
+        <Typography>
+          [last][firstinitial]&nbsp;&nbsp;
+          <Typography component='span' sx={{ fontWeight: '700' }}>
+            sublettee
+          </Typography>
+        </Typography>
+      ),
+      value: UsernameFormat.LAST_FIRSTINITIAL,
+    },
+    {
+      label: (
+        <Typography>
+          [last][first]mth&nbsp;&nbsp;
+          <Typography component='span' sx={{ fontWeight: '700' }}>
+            subletteerinmth
+          </Typography>
+        </Typography>
+      ),
+      value: UsernameFormat.LAST_FIRST_MTH,
+    },
+    {
+      label: (
+        <Typography>
+          [last][first][birthyear]&nbsp;&nbsp;
+          <Typography component='span' sx={{ fontWeight: '700' }}>
+            subletteerin1989
+          </Typography>
+        </Typography>
+      ),
+      value: UsernameFormat.LAST_FIRST_BIRTH_YEAR,
+    },
+    {
+      label: (
+        <Typography>
+          [first][last][@mytechhigh.com]&nbsp;&nbsp;
+          <Typography component='span' sx={{ fontWeight: '700' }}>
+            erinsublette@mytechhigh.com
+          </Typography>
+        </Typography>
+      ),
+      value: UsernameFormat.FIRST_LAST_DOMAIN,
+    },
+    {
+      label: (
+        <Typography>
+          [student email]&nbsp;&nbsp;
+          <Typography component='span' sx={{ fontWeight: '700' }}>
+            esublette@gmail.com
+          </Typography>
+        </Typography>
+      ),
+      value: UsernameFormat.STUDENT_EMAIL,
+    },
+    {
+      label: (
+        <Typography>
+          [parent email]&nbsp;&nbsp;
+          <Typography component='span' sx={{ fontWeight: '700' }}>
+            parent@gmail.com
+          </Typography>
+        </Typography>
+      ),
+      value: UsernameFormat.PARENT_EMAIL,
+    },
+    {
+      label: (
+        <Typography component='span' sx={{ fontWeight: '700' }}>
+          Generic
+        </Typography>
+      ),
+      value: UsernameFormat.GENERIC,
     },
   ]
 
@@ -260,18 +370,48 @@ const HomeroomResourceForm: React.FC<HomeroomResourceFormProps> = ({ schoolYearI
                   <Subtitle sx={homeroomResourcesClasses.formError}>
                     {touched.std_user_name && errors.std_user_name}
                   </Subtitle>
-                  <TextField
-                    name='std_user_name'
-                    label='Username'
-                    placeholder='Entry'
-                    fullWidth
-                    value={values?.std_user_name}
-                    onChange={(e) => {
-                      handleChange(e)
-                      setIsChanged(true)
-                    }}
-                    error={touched.std_user_name && !!errors.std_user_name}
-                  />
+                  <Box sx={{ position: 'relative' }}>
+                    <DropDown
+                      dropDownItems={usernameFormatItems}
+                      placeholder='Username'
+                      labelTop
+                      setParentValue={(value) => {
+                        setFieldValue('std_username_format', value)
+                        setFieldValue('std_user_name', '')
+                        setIsChanged(true)
+                      }}
+                      size='medium'
+                      sx={{
+                        m: 0,
+                        '.MuiSelect-outlined': {
+                          color: values?.std_username_format == UsernameFormat.GENERIC ? 'transparent' : '',
+                        },
+                      }}
+                      defaultValue={values?.std_username_format}
+                      error={{ error: touched.std_username_format && !!errors.std_username_format, errorMsg: '' }}
+                    />
+                    {values?.std_username_format == UsernameFormat.GENERIC && (
+                      <TextField
+                        name='std_user_name'
+                        placeholder='Entry'
+                        fullWidth
+                        value={values?.std_user_name}
+                        onChange={(e) => {
+                          handleChange(e)
+                          setIsChanged(true)
+                        }}
+                        error={touched.std_user_name && !!errors.std_user_name}
+                        sx={{
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          right: '36px',
+                          width: 'unset',
+                          '& .MuiOutlinedInput-notchedOutline': { border: 'none' },
+                        }}
+                      />
+                    )}
+                  </Box>
                 </Box>
                 <Box sx={{ mb: 3, flex: 1 }}>
                   <Subtitle sx={homeroomResourcesClasses.formError}>

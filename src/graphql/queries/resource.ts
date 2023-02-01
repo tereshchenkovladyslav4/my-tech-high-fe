@@ -11,6 +11,7 @@ export const getResourcesQuery = gql`
       price
       website
       grades
+      std_username_format
       std_user_name
       std_password
       detail

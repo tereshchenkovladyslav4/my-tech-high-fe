@@ -15,6 +15,8 @@ module.exports = {
     'plugin:react/recommended',
   ],
   rules: {
+    'react/jsx-uses-react': 'off',
+    'react/react-in-jsx-scope': 'off',
     'react/prop-types': 'off',
     '@typescript-eslint/no-explicit-any': 2,
     '@typescript-eslint/ban-types': [

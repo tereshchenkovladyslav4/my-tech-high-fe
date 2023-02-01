@@ -1,4 +1,4 @@
-import { ResourceRequestStatus } from '../enums/resource-request-status.enum'
+import { ResourceRequestStatus, UsernameFormat } from '@mth/enums'
 
 export type ResourceLevel = {
   resource_level_id: number
@@ -17,6 +17,7 @@ export type HomeroomResource = {
   website: string
   grades: string
   resource_limit?: number | null
+  std_username_format?: UsernameFormat
   std_user_name: string
   std_password: string
   detail: string

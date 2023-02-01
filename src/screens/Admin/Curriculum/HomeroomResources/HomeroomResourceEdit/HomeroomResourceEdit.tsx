@@ -100,6 +100,7 @@ const HomeroomResourceEdit: React.FC<HomeroomResourceEditProps> = ({
           price: value.subtitle == ResourceSubtitle.PRICE ? value.price : 0,
           website: value.website,
           grades: value.grades,
+          std_username_format: value.std_username_format || null,
           std_user_name: value.std_user_name,
           std_password: value.std_password,
           detail: value.detail,

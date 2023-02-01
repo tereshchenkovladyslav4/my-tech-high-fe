@@ -37,3 +37,5 @@ export const calcAge = (birth: string | Date | undefined): number => {
   }
   return 0
 }
+
+export const sum = (t: number, a: number) => t + a

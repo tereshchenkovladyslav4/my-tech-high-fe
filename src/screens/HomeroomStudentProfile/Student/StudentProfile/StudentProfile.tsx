@@ -556,7 +556,6 @@ export const StudentProfile: undefined | React.FC<StudentProfileProps> = ({ curr
                     <Subtitle size='small' fontWeight='700'>
                       {gradeText(student)}
                     </Subtitle>
-                    {/*{ status !== PacketStatus.MISSING_INFO && status !== 'Submitted' && <Title>GPA</Title>}*/}
                   </Box>
                 </Box>
               </Box>
