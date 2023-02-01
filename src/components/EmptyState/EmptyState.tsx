@@ -1,3 +1,4 @@
+import React from 'react'
 import { Box, Container } from '@mui/material'
 import { Subtitle } from '../Typography/Subtitle/Subtitle'
 import { Title } from '../Typography/Title/Title'
