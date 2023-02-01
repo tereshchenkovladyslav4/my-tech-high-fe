@@ -613,6 +613,7 @@ export const ResourceRequestsTable: React.FC<ResourceRequestsTableProps> = ({
           items={tableData}
           fields={fields}
           size='small'
+          labelSize={12}
           selectable={true}
           oddBg={false}
           isTableCellBorder={false}

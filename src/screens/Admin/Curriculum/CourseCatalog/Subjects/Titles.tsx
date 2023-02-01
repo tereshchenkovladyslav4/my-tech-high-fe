@@ -254,6 +254,7 @@ const Titles: React.FC<TitlesProps> = ({ schoolYearId, schoolYearData, subject, 
             selectable={true}
             showSelectAll={false}
             size='small'
+            labelSize={12}
             oddBg={false}
             onSelectionChange={handleAllowRequestChange}
           />

@@ -10,9 +10,8 @@ import { DropDownItem } from '@mth/components/DropDown/types'
 import { MthTable } from '@mth/components/MthTable'
 import { MthTableField, MthTableRowItem } from '@mth/components/MthTable/types'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
-import { REIMBURSEMENT_FORM_TYPE_ITEMS } from '@mth/constants'
 import { MthColor, MthRoute, Order, ReimbursementRequestStatus } from '@mth/enums'
-import { getReimbursementRequestsQuery } from '@mth/graphql/queries/reimbursement-request'
+import { getReimbursementRequestsForStudentsQuery } from '@mth/graphql/queries/reimbursement-request'
 import { ReimbursementRequest } from '@mth/models'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { reimbursementRequestsTableClasses } from './styles'
@@ -58,7 +57,7 @@ const ReimbursementRequestsTable: React.FC<ReimbursementRequestsTableProps> = ({
   const [sortField, setSortField] = useState<string>('created_at')
   const [sortOrder, setSortOrder] = useState<Order>(Order.ASC)
 
-  const { loading, data } = useQuery(getReimbursementRequestsQuery, {
+  const { loading, data } = useQuery(getReimbursementRequestsForStudentsQuery, {
     variables: {
       param: {
         filter: {
@@ -240,8 +239,8 @@ const ReimbursementRequestsTable: React.FC<ReimbursementRequestsTableProps> = ({
   useEffect(() => {}, [selectedItems, sortOrder])
 
   useEffect(() => {
-    if (!loading && data?.reimbursementRequests) {
-      const { reimbursementRequests } = data
+    if (!loading && data?.reimbursementRequestsForStudents) {
+      const { reimbursementRequestsForStudents: reimbursementRequests } = data
       let tempSum = 0
       reimbursementRequests?.map((result: ReimbursementRequest) => {
         tempSum += result.total_amount

@@ -16,6 +16,7 @@ import { ReduceFunds } from '@mth/enums'
 import { SchoolYear } from '@mth/models'
 import { RemainingFunds } from '@mth/screens/Admin/Reimbursements/Settings/RemainingFunds'
 import { ReimbursementSetting } from '@mth/screens/Admin/Reimbursements/Settings/types'
+import { renderCommaString } from '@mth/utils'
 
 export type ReimbursementsSettingsFormProps = {
   schoolYear: SchoolYear
@@ -29,11 +30,6 @@ export const ReimbursementsSettingsForm: React.FC<ReimbursementsSettingsFormProp
   setIsChanged,
 }) => {
   const { errors, setFieldValue, touched, values } = useFormikContext<ReimbursementSetting>()
-
-  const renderPeriods = (periodsStr: string | undefined | null): string => {
-    const periods = periodsStr?.split(',') || []
-    return periods.map((x, i) => (periods.length > 1 && i === periods.length - 1 ? `& ${x}` : x)).join(', ')
-  }
 
   const periodOptions: CheckBoxListVM[] = range(1, (schoolYear.ScheduleBuilder?.max_num_periods || 0) + 1, 1).map(
     (item) => ({
@@ -235,7 +231,7 @@ export const ReimbursementsSettingsForm: React.FC<ReimbursementsSettingsFormProp
                         setFieldValue('merged_periods', filteredGrades.join(','))
                         setIsChanged(true)
                       }}
-                      renderValue={renderPeriods(values?.merged_periods)}
+                      renderValue={renderCommaString(values?.merged_periods)}
                       defaultValue={values?.merged_periods?.length ? values.merged_periods.split(',') : []}
                       error={{ error: touched.merged_periods && !!errors.merged_periods, errorMsg: '' }}
                       disabled={!values.is_merged_periods}

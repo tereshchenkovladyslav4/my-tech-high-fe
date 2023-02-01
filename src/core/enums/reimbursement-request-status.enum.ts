@@ -4,4 +4,6 @@ export enum ReimbursementRequestStatus {
   SUBMITTED = 'Submitted',
   RESUBMITTED = 'Resubmitted',
   UPDATES_REQUIRED = 'Updates Required',
+  APPROVED = 'Approved',
+  ORDERED = 'Ordered',
 }

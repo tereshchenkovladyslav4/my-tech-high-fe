@@ -30,6 +30,7 @@ import { Records } from '@mth/screens/Admin/Records'
 import { Reimbursements } from '@mth/screens/Admin/Reimbursements'
 import { DirectOrderForms } from '@mth/screens/Admin/Reimbursements/DirectOrderForms'
 import { ReimbursementForms } from '@mth/screens/Admin/Reimbursements/ReimbursementForms'
+import { ReimbursementRequests } from '@mth/screens/Admin/Reimbursements/ReimbursementRequests'
 import { ReimbursementsSettings } from '@mth/screens/Admin/Reimbursements/Settings'
 import { ResourceRequests } from '@mth/screens/Admin/ResourceRequests'
 import { SchoolOfEnrollment } from '@mth/screens/Admin/SchoolOfEnrollment/SchoolOfEnrollment'
@@ -50,6 +51,9 @@ export const AdminRoutes: React.FC = () => {
       </Route>
       <Route exact path={MthRoute.REIMBURSEMENTS}>
         <Reimbursements />
+      </Route>
+      <Route exact path={MthRoute.REIMBURSEMENTS_REQUESTS}>
+        <ReimbursementRequests />
       </Route>
       <Route exact path={MthRoute.REIMBURSEMENTS_SETTINGS}>
         <ReimbursementsSettings />

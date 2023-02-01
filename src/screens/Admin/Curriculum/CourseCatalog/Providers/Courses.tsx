@@ -246,6 +246,7 @@ const Courses: React.FC<CoursesProps> = ({ schoolYearId, schoolYearData, provide
             selectable={true}
             showSelectAll={false}
             size='small'
+            labelSize={12}
             oddBg={false}
             onSelectionChange={handleAllowRequestChange}
           />

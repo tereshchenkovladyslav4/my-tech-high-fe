@@ -77,3 +77,8 @@ export const arrayToString = (value: string[] | number[]): string => {
   }
   return str
 }
+
+export const renderCommaString = (str: string | undefined | null): string => {
+  const list = str?.split(',') || []
+  return list.map((x, i) => (list.length > 1 && i === list.length - 1 ? `& ${x}` : x)).join(', ')
+}

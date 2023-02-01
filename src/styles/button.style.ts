@@ -235,6 +235,12 @@ export const mthButtonClasses = {
   },
 
   // Red buttons
+  red: {
+    ...mthButtonSizeClasses.medium,
+    ...mthButtonColorClasses.red,
+    borderRadius: '8px',
+    minWidth: '140px',
+  },
   smallRed: {
     ...mthButtonSizeClasses.small,
     ...mthButtonColorClasses.red,
