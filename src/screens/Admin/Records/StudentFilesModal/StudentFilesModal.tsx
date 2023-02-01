@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { useMutation } from '@apollo/client'
 import AddIcon from '@mui/icons-material/Add'
 import CloseIcon from '@mui/icons-material/Close'
@@ -25,9 +25,16 @@ const StudentFilesModal: React.FC<StudentFilesModalProps> = ({ record, handleMod
   const [stateName, setStateName] = useState<string>('')
   const [showUploadModal, setShowUploadModal] = useState<boolean>(false)
   const [fileTypeList, setFileTypeList] = useState<DropDownItem[]>([])
-  const { data: enrollmentPacketDocumentList } = useEnrollmentPacketDocumentListByRegionId(Number(me?.selectedRegionId))
   const [selectedDocumentFileType, setSelectedDocumentFileType] = useState<string>('')
+
+  const fileNamePrefix = useMemo(
+    () => `${record?.firstName.charAt(0).toUpperCase()}.${record?.lastName}`,
+    [record?.firstName, record?.lastName],
+  )
+
+  const { data: enrollmentPacketDocumentList } = useEnrollmentPacketDocumentListByRegionId(Number(me?.selectedRegionId))
   const [submitSave, {}] = useMutation(RegisterStudentRecordFileMutation)
+
   const handleFileClick = (file: StudentRecordFile) => {
     if (file?.filePath) {
       window.open(`${s3URL}${file.filePath}`)
@@ -49,7 +56,16 @@ const StudentFilesModal: React.FC<StudentFilesModalProps> = ({ record, handleMod
     if (!files?.length) return
     const file = files[0]
     if (selectedDocumentFileType) {
-      const result = await uploadFile(file, FileCategory.STUDENT_RECORDS, getRegionCode(stateName), record?.studentId)
+      const fileType = file.name.split('.')?.at(-1)
+      const renamedFile = new File([file], `${fileNamePrefix}${selectedDocumentFileType}.${fileType}`, {
+        type: file.type,
+      })
+      const result = await uploadFile(
+        renamedFile,
+        FileCategory.STUDENT_RECORDS,
+        getRegionCode(stateName),
+        record?.studentId,
+      )
       await submitSave({
         variables: {
           createStudentRecordFileInput: {

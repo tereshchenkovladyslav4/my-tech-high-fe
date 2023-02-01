@@ -179,6 +179,9 @@ export const RequestForm: React.FC<RequestFormProps> = ({
           )
             invalidationCount++
         })
+      receipts?.map((receipt) => {
+        if (!receipt?.amount) invalidationCount++
+      })
       if (invalidationCount > 0) return true
     }
     return false

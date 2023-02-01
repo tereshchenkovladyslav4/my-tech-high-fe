@@ -339,7 +339,7 @@ export const StudentFilters: React.FC<StudentFiltersProps> = ({
           value: index,
         })
       })
-      setSpecialEds(speicalEdDropdowns)
+      setSpecialEds(specialEdDropdowns)
     }
   }, [specialEdOptions])
 

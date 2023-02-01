@@ -29,10 +29,10 @@ export const useEnrollmentPacketDocumentListByRegionId = (
           documents?.groups
             ?.at(0)
             ?.questions?.filter((item: { required: boolean }) => item.required)
-            ?.map((question: { required: boolean; question: string }) => {
+            ?.map((question: { required: boolean; question: string; options: string }) => {
               return {
                 label: question.question,
-                value: question.question,
+                value: question.options ? JSON.parse(question?.options)?.at(0)?.label : question.question,
               }
             }),
         )

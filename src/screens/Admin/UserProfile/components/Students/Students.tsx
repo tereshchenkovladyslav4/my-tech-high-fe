@@ -140,6 +140,7 @@ export const Students: React.FC<StudentsProps> = ({ students, selectedStudent, h
                   const status: StudentStatus | undefined = Number(item.status?.[0]?.status) || undefined
                   return (
                     status === undefined ||
+                    status === StudentStatus.DELETED ||
                     status === StudentStatus.PENDING ||
                     status === StudentStatus.ACTIVE ||
                     status === StudentStatus.APPLIED ||

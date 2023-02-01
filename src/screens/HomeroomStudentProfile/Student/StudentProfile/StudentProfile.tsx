@@ -171,7 +171,7 @@ export const StudentProfile: undefined | React.FC<StudentProfileProps> = ({ curr
     if (files.length) setFile(files[0])
   }
 
-  const Image = () => (
+  const Image = (shouldDisable = false) => (
     <Box display='flex' flexDirection='column' justifyContent={'center'}>
       {file || avatar ? (
         <>
@@ -199,7 +199,7 @@ export const StudentProfile: undefined | React.FC<StudentProfileProps> = ({ curr
             width: '164px',
             whiteSpace: 'nowrap',
           }}
-          onClick={() => openImageModal()}
+          onClick={() => (shouldDisable ? () => null : openImageModal())}
         >
           <SystemUpdateAltIcon />
           <Paragraph size='medium' fontWeight='500'>
@@ -521,7 +521,7 @@ export const StudentProfile: undefined | React.FC<StudentProfileProps> = ({ curr
                     }}
                     type='submit'
                   >
-                    Save Changes
+                    Save
                   </Button>
                 ) : (
                   <Button
@@ -545,7 +545,7 @@ export const StudentProfile: undefined | React.FC<StudentProfileProps> = ({ curr
             <Grid item xs={12}>
               <Box display='flex' flexDirection='column'>
                 <Box display='flex' flexDirection='row'>
-                  {Image()}
+                  {Image(!isEditingMobile)}
                   <Box
                     display='flex'
                     flexDirection='column'

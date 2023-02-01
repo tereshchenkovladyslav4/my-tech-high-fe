@@ -58,4 +58,7 @@ export enum MthTitle {
   CUSTOM_BUILT = 'Custom-built',
   PASSWORD_HINT = 'Passwords must contain 8 characters, 1 uppercase, 1 lowercase, 1 number, and 1 special character.',
   DIRECT_ORDERS_REIMBURSEMENTS = 'Direct Orders & Reimbursements',
+  DELETE_PACKET_TITLE = 'Delete Packet',
+  DELETE_PACKET_DESCRIPTION = 'Deleting the student packet will revert their status to blank. They will need to re-apply. Are you sure you want to delete the packet(s)?',
+  BTN_DELETE = 'Delete',
 }

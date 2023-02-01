@@ -100,6 +100,7 @@ export const QuestionItem: React.FC<QuestionProps> = ({
   const [formTypeItems, setFormTypeItems] = useState<DropDownItem[]>([])
   const [periodsItems, setPeriodsItems] = useState<DropDownItem[]>([])
   const [showUploadModal, setShowUploadModal] = useState<boolean>(false)
+  const [maxReceipt, setMaxReceipt] = useState<number>(1)
 
   const [getStudentSchedulePeriods, { loading: studentSchedulePeriodsLoading, data: studentSchedulePeriodsData }] =
     useLazyQuery(getStudentSchedulePeriodsQuery, {
@@ -263,14 +264,18 @@ export const QuestionItem: React.FC<QuestionProps> = ({
                   onChangeValue={(value: number | null) => {
                     handleChangeReceipts(index, value)
                   }}
+                  error={showError && !receipt?.amount}
+                  helperText={showError && !receipt?.amount && 'Required'}
                 />
               </Grid>
             </Fragment>
           ))}
         </Grid>
-        <Button sx={{ ...mthButtonClasses.primary }} startIcon={<AddIcon />} onClick={() => setShowUploadModal(true)}>
-          Add Receipt
-        </Button>
+        {maxReceipt > receipts?.length && (
+          <Button sx={{ ...mthButtonClasses.primary }} startIcon={<AddIcon />} onClick={() => setShowUploadModal(true)}>
+            Add Receipt
+          </Button>
+        )}
       </Box>
     )
   }
@@ -625,6 +630,8 @@ export const QuestionItem: React.FC<QuestionProps> = ({
         }
 
         let mergedPeriods: string[] = []
+        if (selectedYear?.ReimbursementSetting?.max_receipts)
+          setMaxReceipt(selectedYear?.ReimbursementSetting?.max_receipts)
         if (selectedYear?.ReimbursementSetting?.is_merged_periods && selectedYear.ReimbursementSetting.merged_periods) {
           mergedPeriods = selectedYear.ReimbursementSetting.merged_periods.includes(',')
             ? selectedYear.ReimbursementSetting.merged_periods?.split(',')
@@ -667,7 +674,7 @@ export const QuestionItem: React.FC<QuestionProps> = ({
         <DocumentUploadModal
           handleModem={() => setShowUploadModal(false)}
           handleFile={(files: File[]) => handleFileChange(files)}
-          limit={3}
+          limit={maxReceipt - receipts?.length}
         />
       )}
     </>

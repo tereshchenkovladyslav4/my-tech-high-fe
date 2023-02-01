@@ -46,9 +46,9 @@ export const useStyles = {
     width: '160px',
     marginLeft: 1,
     marginTop: 4,
-    background: MthColor.SYSTEM_01,
+    background: MthColor.BUTTON_LINEAR_GRADIENT_DARK,
     '&:hover': {
-      background: MthColor.SYSTEM_01,
+      background: MthColor.BUTTON_LINEAR_GRADIENT_DARK_HOVER,
     },
   },
   cancelButton: {
@@ -60,7 +60,7 @@ export const useStyles = {
     background: MthColor.SYSTEM_08,
     color: MthColor.SYSTEM_01,
     '&:hover': {
-      background: MthColor.SYSTEM_08,
+      background: MthColor.SYSTEM_07,
       color: MthColor.SYSTEM_01,
     },
   },

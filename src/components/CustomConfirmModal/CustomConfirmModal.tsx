@@ -10,6 +10,9 @@ type CustomConfirmModalType = {
   header: string
   content: string
   confirmBtnTitle?: string
+  maxWidth?: number
+  height?: number
+  padding?: string
   handleConfirmModalChange: (isOk: boolean) => void
 }
 
@@ -17,6 +20,9 @@ export const CustomConfirmModal: React.FC<CustomConfirmModalType> = ({
   header,
   content,
   confirmBtnTitle = 'Yes',
+  maxWidth = 441,
+  height = 295,
+  padding = '32px',
   handleConfirmModalChange,
 }) => {
   const classes = useStyles
@@ -31,7 +37,7 @@ export const CustomConfirmModal: React.FC<CustomConfirmModalType> = ({
 
   return (
     <Modal open={true}>
-      <Box sx={classes.modalCard}>
+      <Box sx={{ ...classes.modalCard, maxWidth: maxWidth, height: height, paddingX: padding }}>
         <Box sx={classes.header}>
           <Subtitle fontWeight='700'>{header}</Subtitle>
         </Box>

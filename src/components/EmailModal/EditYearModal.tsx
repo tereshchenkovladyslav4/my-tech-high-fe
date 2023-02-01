@@ -60,7 +60,7 @@ export const EditYearModal: React.FC<EditYearModalProps> = ({ title, schoolYears
         </Title>
         <Formik
           initialValues={{
-            schoolYear: undefined,
+            schoolYear: '',
           }}
           validationSchema={Yup.object({
             schoolYear: Yup.string().required('This field is Required'),

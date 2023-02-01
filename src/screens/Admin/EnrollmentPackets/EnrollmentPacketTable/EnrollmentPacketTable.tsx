@@ -1,10 +1,12 @@
-import React, { useEffect, useState, useContext } from 'react'
+import React, { useEffect, useState, useContext, useMemo, useCallback } from 'react'
 import { useQuery, useMutation } from '@apollo/client'
 import SearchIcon from '@mui/icons-material/Search'
 import { Box, Button, Card, InputAdornment, OutlinedInput } from '@mui/material'
 import Tooltip from '@mui/material/Tooltip'
 import { map } from 'lodash'
 import moment from 'moment'
+import { CustomConfirmModal } from '@mth/components/CustomConfirmModal/CustomConfirmModal'
+import { DropDownItem } from '@mth/components/DropDown/types'
 import { ApplicationEmailModal as EmailModal } from '@mth/components/EmailModal/ApplicationEmailModal'
 import { EditYearModal } from '@mth/components/EmailModal/EditYearModal'
 import { Pagination } from '@mth/components/Pagination/Pagination'
@@ -13,8 +15,9 @@ import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { WarningModal } from '@mth/components/WarningModal/Warning'
 import { ENROLLMENT_PACKET_HEADCELLS } from '@mth/constants'
-import { MthColor, PacketStatus } from '@mth/enums'
+import { MthColor, MthTitle, PacketStatus } from '@mth/enums'
 import { getEmailTemplateQuery } from '@mth/graphql/queries/email-template'
+import { Region } from '@mth/models'
 import { ProfileContext } from '@mth/providers/ProfileProvider/ProfileContext'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { toOrdinalSuffix } from '@mth/utils'
@@ -46,7 +49,7 @@ export const EnrollmentPacketTable: React.FC = () => {
 
   const [totalPackets, setTotalPackets] = useState<number>()
   const [packetIds, setPacketIds] = useState<Array<string>>([])
-
+  const [delPacketId, setDelPacketId] = useState<number>()
   const [isShowModal, setIsShowModal] = useState(false)
   const [enrollmentPackets, setEnrollmentPackets] = useState<Array<Packet>>([])
   const [enrollmentPacket, setEnrollmentPacket] = useState<Packet | null>(null)
@@ -58,8 +61,9 @@ export const EnrollmentPacketTable: React.FC = () => {
 
   const [noStudnetAlert, setNoStudentAlert] = useState<boolean>(false)
   const [editYearModal, setEditYearModal] = useState<boolean>(false)
+  const [showConfirmModalOpen, setShowConfirmModalOpen] = useState<boolean>(false)
   const [clearAll, setClearAll] = useState<boolean>(false)
-  const [schoolYears, setSchoolYears] = useState<unknown[]>([])
+  const [schoolYears, setSchoolYears] = useState<DropDownItem[]>([])
   const [selectedYearId, setSelectedYearId] = useState<number>(0)
 
   const [openWarningModal, setOpenWarningModal] = useState<boolean>(false)
@@ -155,7 +159,7 @@ export const EnrollmentPacketTable: React.FC = () => {
             justifyContent={'center'}
             alignItems={'center'}
             className='delete-row'
-            onClick={() => handleDelete(packet.packet_id)}
+            onClick={() => handleDeleteRow(packet.packet_id)}
             sx={{
               borderRadius: 1,
               cursor: 'pointer',
@@ -179,13 +183,22 @@ export const EnrollmentPacketTable: React.FC = () => {
     refetchPackets()
     refetchPacketCount()
   }
-
+  const searchCond = useMemo(() => {
+    const ss = searchField.split('/')
+    if (ss.length == 3) {
+      const [m, d, y] = ss
+      const f = new Date(2000 + Number(y), Number(m) - 1, Number(d), 0, 0, 0).toISOString()
+      const t = new Date(2000 + Number(y), Number(m) - 1, Number(d), 23, 59, 59).toISOString()
+      return `${f} - ${t}`
+    }
+    return ''
+  }, [searchField])
   const { data: enrollmentPacketsData, refetch: refetchPackets } = useQuery(getEnrollmentPacketsQuery, {
     variables: {
       skip: skip,
       sort: sort,
       take: paginatinLimit,
-      search: searchField,
+      search: searchCond,
       filters: filters,
       selectedYearId,
       regionId: me?.selectedRegionId,
@@ -228,7 +241,7 @@ export const EnrollmentPacketTable: React.FC = () => {
     setIsShowModal(true)
   }
 
-  const { data: schoolYearData } = useQuery(getSchoolYearsByRegionId, {
+  const { data: schoolYearData } = useQuery<{ region: Region }>(getSchoolYearsByRegionId, {
     variables: {
       regionId: me?.selectedRegionId,
     },
@@ -239,35 +252,24 @@ export const EnrollmentPacketTable: React.FC = () => {
   useEffect(() => {
     if (schoolYearData?.region?.SchoolYears) {
       const { SchoolYears } = schoolYearData?.region
-      const yearList = []
+      const yearList: { label: string; value: string }[] = []
       SchoolYears.sort((a, b) => (a.date_begin > b.date_begin ? 1 : -1))
         .filter((item) => new Date(item.date_begin) <= new Date() && new Date(item.date_end) >= new Date())
-        .map(
-          (item: {
-            date_begin: string
-            date_end: string
-            school_year_id: string
-            midyear_application: number
-            midyear_application_open: string
-            midyear_application_close: string
-          }): void => {
+        .map((item): void => {
+          yearList.push({
+            label: `${moment(item.date_begin).format('YYYY')}-${moment(item.date_end).format('YY')}`,
+            value: String(item.school_year_id),
+          })
+          if (item && item.midyear_application) {
             yearList.push({
-              label: `${moment(item.date_begin).format('YYYY')}-${moment(item.date_end).format('YY')}`,
-              value: item.school_year_id,
+              label: `${moment(item.date_begin).format('YYYY')}-${moment(item.date_end).format('YY')} Mid-year Program`,
+              value: `${item.school_year_id}-mid`,
             })
-            if (item && item.midyear_application === 1) {
-              yearList.push({
-                label: `${moment(item.date_begin).format('YYYY')}-${moment(item.date_end).format(
-                  'YY',
-                )} Mid-year Program`,
-                value: `${item.school_year_id}-mid`,
-              })
-            }
-          },
-        )
+          }
+        })
       setSchoolYears(yearList.sort((a, b) => (a.label > b.label ? 1 : -1)))
     }
-  }, [schoolYearData?.region?.SchoolYears])
+  }, [schoolYearData?.region, schoolYearData?.region?.SchoolYears])
 
   useEffect(() => {
     if (emailTemplateData !== undefined) {
@@ -341,30 +343,42 @@ export const EnrollmentPacketTable: React.FC = () => {
     onSendEmail(from, subject, body)
   }
 
-  const handleDelete = async (packetId: number) => {
-    await deletePackets({
-      variables: {
-        packetsActionInput: {
-          packetIds: [packetId],
-        },
-      },
-    })
-    refetch()
+  const handleDeleteRow = async (packetId: number) => {
+    setDelPacketId(packetId)
+    setShowConfirmModalOpen(true)
   }
+  const handleConfirmDeleteModalChange = useCallback(
+    async (isOk: boolean) => {
+      if (isOk) {
+        await deletePackets({
+          variables: {
+            packetsActionInput: {
+              packetIds: delPacketId ? [delPacketId] : packetIds,
+            },
+          },
+        })
+        refetch()
+      }
+      setShowConfirmModalOpen(false)
+      setDelPacketId(undefined)
+    },
+    [delPacketId, deletePackets, packetIds, refetch],
+  )
 
-  const handleDeleteSelected = async () => {
+  const handleDeleteSelectedRows = async () => {
     if (packetIds.length === 0) {
       setOpenWarningModal(true)
       return
     }
-    await deletePackets({
-      variables: {
-        packetsActionInput: {
-          packetIds: packetIds,
-        },
-      },
-    })
-    refetch()
+    setShowConfirmModalOpen(true)
+    // await deletePackets({
+    //   variables: {
+    //     packetsActionInput: {
+    //       packetIds: packetIds,
+    //     },
+    //   },
+    // })
+    // refetch()
   }
 
   const [updateBulkSchoolYear] = useMutation(updateEnrollmentSchoolYearByIds)
@@ -376,29 +390,39 @@ export const EnrollmentPacketTable: React.FC = () => {
     }
     setEditYearModal(true)
   }
-
-  const submitEditYear = async (form) => {
-    const { schoolYear } = form
-    await updateBulkSchoolYear({
-      variables: {
-        updateEnrollmentSchoolYearByIdsInput: {
-          application_ids: packetIds,
-          school_year_id: parseInt(schoolYear?.split('-')[0]),
-          midyear_application: schoolYear?.split('-')[1] === 'mid' ? 1 : 0,
+  const submitEditYear = useCallback(
+    async (values: { schoolYear: string }) => {
+      const { schoolYear } = values
+      const array = schoolYear.split('-')
+      let schoolYearId = 0
+      let midyearApplication = 0
+      if (array.length) {
+        schoolYearId = parseInt(array[0])
+        if (array.length > 1 && array[1] === 'mid') {
+          midyearApplication = 1
+        }
+      }
+      await updateBulkSchoolYear({
+        variables: {
+          updateEnrollmentSchoolYearByIdsInput: {
+            application_ids: packetIds,
+            school_year_id: schoolYearId,
+            midyear_application: midyearApplication,
+          },
         },
-      },
-    })
-    setPacketIds([])
-    setClearAll(!clearAll)
-    setEditYearModal(false)
-    refetch()
-  }
+      })
+      setPacketIds([])
+      setClearAll(!clearAll)
+      setEditYearModal(false)
+      refetch()
+    },
+    [clearAll, packetIds, refetch, updateBulkSchoolYear],
+  )
 
   const sortChangeAction = (property: string, order: string) => {
     setSort(`${property}|${order}`)
     refetch()
   }
-
   return (
     <Card sx={{ paddingTop: '24px', marginBottom: '24px', paddingBottom: '12px' }}>
       {/*  Headers */}
@@ -551,7 +575,7 @@ export const EnrollmentPacketTable: React.FC = () => {
                   color: '#fff',
                 },
               }}
-              onClick={handleDeleteSelected}
+              onClick={handleDeleteSelectedRows}
             >
               Delete
             </Button>
@@ -625,6 +649,17 @@ export const EnrollmentPacketTable: React.FC = () => {
           schoolYears={schoolYears}
           handleSubmit={submitEditYear}
           handleClose={() => setEditYearModal(false)}
+        />
+      )}
+      {showConfirmModalOpen && (
+        <CustomConfirmModal
+          header={MthTitle.DELETE_PACKET_TITLE}
+          content={MthTitle.DELETE_PACKET_DESCRIPTION}
+          confirmBtnTitle={MthTitle.BTN_DELETE}
+          maxWidth={587}
+          height={316}
+          padding={'52px'}
+          handleConfirmModalChange={handleConfirmDeleteModalChange}
         />
       )}
     </Card>
