@@ -1,9 +1,9 @@
 import React from 'react'
 import { Box } from '@mui/material'
 import { Paragraph } from '../../Typography/Paragraph/Paragraph'
-import { BreadcrumbTemplateType } from './types'
+import { BreadcrumbProps } from './types'
 
-export const Breadcrumb: BreadcrumbTemplateType = ({ title, active, idx, handleClick }) => {
+export const Breadcrumb: React.FC<BreadcrumbProps> = ({ title, active, idx, handleClick }) => {
   const showBorder = active ? '#4145FF' : '#EEF4F8'
 
   return (

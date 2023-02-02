@@ -11,9 +11,9 @@ import Wysiwyg from 'react-draft-wysiwyg'
 import { Paragraph } from '../Typography/Paragraph/Paragraph'
 import { Title } from '../Typography/Title/Title'
 import { useStyles } from './styles'
-import { EmailModalTemplateType } from './types'
+import { EmailModalProps } from './types'
 
-export const EnrollmentEmailModal: EmailModalTemplateType = ({
+export const EnrollmentEmailModal: React.FC<EmailModalProps> = ({
   handleSubmit,
   handleModem,
   title,

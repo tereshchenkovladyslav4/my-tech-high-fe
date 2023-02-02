@@ -1,11 +1,11 @@
-import React, { FunctionComponent } from 'react'
+import React from 'react'
 import DateRangeIcon from '@mui/icons-material/DateRange'
 import { Box } from '@mui/system'
 import { map } from 'lodash'
-import { DataRow } from '../../../../components/DataRow/DataRow'
-import { Paragraph } from '../../../../components/Typography/Paragraph/Paragraph'
+import { DataRow } from '@mth/components/DataRow/DataRow'
+import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 
-export const AdminCalendar: FunctionComponent = () => {
+export const AdminCalendar: React.FC = () => {
   const data = [
     {
       date: 'November 09',

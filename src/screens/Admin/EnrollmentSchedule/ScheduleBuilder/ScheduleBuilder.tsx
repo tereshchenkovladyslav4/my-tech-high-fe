@@ -647,6 +647,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
       </Card>
       {!!requireUpdatePeriods?.length && (
         <UpdatesRequired
+          studentId={studentId}
           scheduleData={hasSecondSemester ? secondScheduleData : scheduleData}
           requireUpdatePeriods={requireUpdatePeriods}
           setScheduleData={hasSecondSemester ? setSecondScheduleData : setScheduleData}

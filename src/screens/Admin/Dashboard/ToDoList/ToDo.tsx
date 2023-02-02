@@ -1,10 +1,10 @@
-import React, { FunctionComponent, useState } from 'react'
+import React, { useState } from 'react'
 import { Box } from '@mui/material'
-import { EmptyState } from '../../../../components/EmptyState/EmptyState'
-import { Flexbox } from '../../../../components/Flexbox/Flexbox'
+import { EmptyState } from '@mth/components/EmptyState/EmptyState'
+import { Flexbox } from '@mth/components/Flexbox/Flexbox'
 import { TodoList } from './components/TodoList/TodoList'
 
-export const ToDo: FunctionComponent = () => {
+export const ToDo: React.FC = () => {
   const [showEmpty] = useState(false)
   return (
     <Box flexDirection='row' textAlign='left' paddingY={1.5} display='flex' justifyContent='space-between'>

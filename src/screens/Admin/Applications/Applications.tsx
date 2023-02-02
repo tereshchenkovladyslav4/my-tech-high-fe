@@ -1,10 +1,10 @@
-import React, { FunctionComponent, useState } from 'react'
+import React, { useState } from 'react'
 import { Box, Grid } from '@mui/material'
 import { ApplicationTable } from './ApplicationTable/ApplicationTable'
 import { Filters } from './Filters/Filters'
 import { FilterVM } from './type'
 
-export const Applications: FunctionComponent = () => {
+export const Applications: React.FC = () => {
   const [filter, setFilter] = useState<FilterVM>()
   return (
     <Box sx={{ marginX: 4 }}>

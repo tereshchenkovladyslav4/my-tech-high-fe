@@ -18,7 +18,7 @@ const SortableListContainer = SortableContainer(({ items }: { items: EnrollmentQ
 export default function Contact(): ReactElement {
   const tabName = useContext(TabContext)
   const { values, setValues } = useFormikContext<EnrollmentQuestionTab[]>()
-  const contactData = values.filter((v) => v.tab_name === tabName)[0].groups || []
+  const contactData = values.filter((v) => v.tab_name === tabName)[0]?.groups || []
 
   return (
     <SortableListContainer

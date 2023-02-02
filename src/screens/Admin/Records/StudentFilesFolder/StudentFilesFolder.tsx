@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useQuery } from '@apollo/client'
 import SearchIcon from '@mui/icons-material/Search'
 import { Box, Card, Grid, InputAdornment, OutlinedInput, Tooltip } from '@mui/material'
@@ -8,14 +8,12 @@ import { Pagination } from '@mth/components/Pagination/Pagination'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { MthColor } from '@mth/enums'
-import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { DownloadStudentRecordFiles, GetStudentRecordFilesQuery } from '../services'
 import { StudentFilesModal } from '../StudentFilesModal'
 import { recordClasses } from '../styles'
 import { DownloadStudentRecordFilesVM, StudentFilesFolderProps, StudentRecord, StudentRecordFile } from '../types'
 
 const StudentFilesFolder: React.FC<StudentFilesFolderProps> = ({ filter }) => {
-  const { me } = useContext(UserContext)
   const [searchField, setSearchField] = useState<string>('')
   const [paginationLimit, setPaginationLimit] = useState<number>(25)
   const [currentPage, setCurrentPage] = useState<number>(1)
@@ -29,7 +27,7 @@ const StudentFilesFolder: React.FC<StudentFilesFolderProps> = ({ filter }) => {
   const { loading, data, refetch } = useQuery(GetStudentRecordFilesQuery, {
     variables: {
       filter: {
-        region_id: Number(me?.selectedRegionId),
+        school_year_id: filter?.schoolYearId,
         status: filter?.status,
         special_ed: filter?.specialEd,
         school_of_enrollment: filter?.schoolOfEnrollment,
@@ -48,7 +46,7 @@ const StudentFilesFolder: React.FC<StudentFilesFolderProps> = ({ filter }) => {
       },
       searchKey: searchField,
     },
-    skip: !searchTyping && me?.selectedRegionId ? false : true,
+    skip: !searchTyping && filter?.schoolYearId ? false : true,
     fetchPolicy: 'network-only',
   })
 

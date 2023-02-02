@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react'
+import React from 'react'
 import SearchIcon from '@mui/icons-material/Search'
 import { Box, OutlinedInput, InputAdornment } from '@mui/material'
 import { Pagination } from '@mth/components/Pagination/Pagination'
@@ -13,14 +13,7 @@ type FilterProps = {
   onPageChange: (value: number) => void
 }
 
-const Periods: FunctionComponent<FilterProps> = ({
-  setSearchField,
-  total,
-  curPage,
-  limit,
-  onChangePageLimit,
-  onPageChange,
-}) => {
+const Periods: React.FC<FilterProps> = ({ setSearchField, total, curPage, limit, onChangePageLimit, onPageChange }) => {
   const classes = useStyles
   return (
     <Box sx={classes.filter}>

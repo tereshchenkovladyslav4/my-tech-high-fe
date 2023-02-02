@@ -1,5 +1,3 @@
-import { FunctionComponent } from 'react'
-
 export type EnrollmentModalProps = {
   title?: string
   subtitle?: string
@@ -11,15 +9,13 @@ export type EnrollmentModalProps = {
   handleRefetch: () => void
 }
 
-type EnrollmentEmailModalProps = {
+export type EnrollmentEmailModalProps = {
   handleModem: () => void
   data: unknown[]
   handleSubmit: () => void
 }
 
-export type EnrollmentEmailModalType = FunctionComponent<EnrollmentEmailModalProps>
-
-type EmailModalProps = {
+export type EmailModalProps = {
   handleModem: () => void
   handleSubmit: (from: string, subject: string, body: string) => void
   title: string
@@ -28,5 +24,3 @@ type EmailModalProps = {
   filters: Array<string>
   handleSchedulesByStatus: (status: string) => void
 }
-
-export type EmailModalTemplateType = FunctionComponent<EmailModalProps>

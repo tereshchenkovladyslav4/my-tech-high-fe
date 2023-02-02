@@ -1,4 +1,3 @@
-import { FunctionComponent } from 'react'
 import { DropDownItem } from '@mth/components/DropDown/types'
 import { Address, Email, SchoolYear, SchoolYearType, Student } from '@mth/models'
 import { ToDoItem } from '@mth/screens/Dashboard/ToDoList/components/ToDoListItem/types'
@@ -136,4 +135,3 @@ export type StudentProps = {
   withdrawn?: boolean
   schoolYearsDropdown?: DropDownItem[] | []
 }
-export type StudentComponentType = FunctionComponent<StudentProps>

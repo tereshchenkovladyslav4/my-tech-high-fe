@@ -1,7 +1,6 @@
 import * as React from 'react'
-import { FunctionComponent } from 'react'
 
-export const MTHLogo: FunctionComponent = () => (
+export const MTHLogo: React.FC = () => (
   <svg
     version='1.0'
     xmlns='http://www.w3.org/2000/svg'

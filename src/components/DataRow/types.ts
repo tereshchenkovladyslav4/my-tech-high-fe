@@ -1,9 +1,7 @@
-import { FunctionComponent, ReactNode } from 'react'
+import { ReactNode } from 'react'
 
-type DataRowProps = {
+export type DataRowProps = {
   label: ReactNode
   value: ReactNode
   backgroundColor?: string
 }
-
-export type DataRowTemplateType = FunctionComponent<DataRowProps>

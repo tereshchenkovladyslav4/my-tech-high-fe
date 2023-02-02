@@ -87,6 +87,7 @@ export const enrollmentEducationMutation = gql`
         current_school_year_status {
           school_year_id
           grade_level
+          midyear_application
         }
       }
     }
@@ -181,6 +182,7 @@ export const enrollmentContactMutation = gql`
         current_school_year_status {
           school_year_id
           grade_level
+          midyear_application
         }
       }
     }

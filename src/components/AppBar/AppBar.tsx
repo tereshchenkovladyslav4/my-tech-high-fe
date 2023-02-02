@@ -1,4 +1,4 @@
-import React, { FunctionComponent, ReactElement, useContext, useEffect, useRef, useState } from 'react'
+import React, { ReactElement, useContext, useEffect, useRef, useState } from 'react'
 import { useQuery } from '@apollo/client'
 import AddIcon from '@mui/icons-material/Add'
 import AddCircleIcon from '@mui/icons-material/AddCircle'
@@ -57,7 +57,7 @@ import { useStyles } from './styles'
 
 const drawerWidth = '100%'
 
-export const AppBar: FunctionComponent = () => {
+export const AppBar: React.FC = () => {
   const classes = useStyles
   const sliderRef = useRef()
 

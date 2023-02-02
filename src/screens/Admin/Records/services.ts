@@ -21,7 +21,7 @@ export const GetStudentRecordFilesQuery = gql`
       results {
         record_id
         StudentId
-        RegionId
+        SchoolYearId
         Student {
           person {
             first_name

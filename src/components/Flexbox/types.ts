@@ -1,8 +1,7 @@
-import { FunctionComponent, ReactNode } from 'react'
+import { ReactNode } from 'react'
 
 export type FlexboxProps = {
   flexDirection: 'row' | 'column' | 'row-reverse' | 'column-reverse'
   children: ReactNode
   textAlign?: 'left' | 'center'
 }
-export type FlexboxType = FunctionComponent<FlexboxProps>

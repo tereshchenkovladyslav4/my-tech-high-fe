@@ -2,8 +2,8 @@ import React from 'react'
 import { Divider, ListItem, ListItemText } from '@mui/material'
 import { Box } from '@mui/system'
 import { MthColor } from '@mth/enums'
-import { MetadataTemplateType } from './types'
-export const Metadata: MetadataTemplateType = ({
+import { MetadataProps } from './types'
+export const Metadata: React.FC<MetadataProps> = ({
   image,
   title,
   subtitle,

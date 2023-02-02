@@ -12,8 +12,8 @@ import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Title } from '@mth/components/Typography/Title/Title'
 import { MthColor } from '@mth/enums'
 import { useStyles } from './styles'
-import { EmailModalTemplateType } from './types'
-export const EmailModal: EmailModalTemplateType = ({
+import { EmailModalProps } from './types'
+export const EmailModal: React.FC<EmailModalProps> = ({
   handleSubmit,
   handleModem,
   title,

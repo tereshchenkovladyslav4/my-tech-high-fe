@@ -216,6 +216,12 @@ export const getStudentDetail = gql`
         school_year_id
         special_ed_options
       }
+      parent {
+        person {
+          first_name
+          last_name
+        }
+      }
     }
   }
 `

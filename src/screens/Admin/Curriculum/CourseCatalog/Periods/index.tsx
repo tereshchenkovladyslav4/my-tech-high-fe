@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useState, useMemo, useCallback, useEffect } from 'react'
+import React, { useState, useMemo, useCallback, useEffect } from 'react'
 import { useQuery, useMutation } from '@apollo/client'
 import { withStyles } from '@material-ui/core/styles'
 import { DeleteForeverOutlined } from '@mui/icons-material'
@@ -74,7 +74,7 @@ const CssTextField = withStyles({
 
 const initialEditorState = EditorState.createWithContent(ContentState.createFromText(''))
 
-const Periods: FunctionComponent = () => {
+const Periods: React.FC = () => {
   const classes = useStyles
   const setLoading = useSetRecoilState(loadingState)
   const {

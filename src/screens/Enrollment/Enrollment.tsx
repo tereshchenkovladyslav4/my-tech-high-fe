@@ -45,8 +45,16 @@ export const Enrollment: React.FC<EnrollmentProps> = ({ id, disabled }: { id: nu
   const regionId = useMemo(() => regionData?.userRegionByUserId[0]?.region_id || 0, [regionData?.userRegionByUserId]) // will update again (localStorage.getItem('selectedRegion'))
 
   const { data } = useQuery(getParentQuestionsGql, {
-    variables: { input: { region_id: Number(regionId) } },
+    variables: {
+      input: {
+        region_id: Number(regionId),
+        school_year_id:
+          student?.current_school_year_status.school_year_id +
+          (student?.current_school_year_status.midyear_application ? '-mid' : ''),
+      },
+    },
     fetchPolicy: 'network-only',
+    skip: !student,
   })
 
   const [questionsData, setQuestionsData] = useState<EnrollmentQuestionTab[]>(initEnrollmentQuestions)

@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useState } from 'react'
+import React, { useState } from 'react'
 import InfoIcon from '@mui/icons-material/InfoOutlined'
 import { Box, Button, FormControl, FormControlLabel, Modal, Radio, RadioGroup, Typography } from '@mui/material'
 import { ActivateOption } from '@mth/enums'
@@ -14,7 +14,7 @@ type ActiveModalProps = {
   backgroundColor?: string
 }
 
-export const ActiveModal: FunctionComponent<ActiveModalProps> = ({
+export const ActiveModal: React.FC<ActiveModalProps> = ({
   title,
   description,
   subDescription,

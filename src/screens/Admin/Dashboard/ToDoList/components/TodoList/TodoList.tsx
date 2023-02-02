@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useContext, useState, ReactElement } from 'react'
+import React, { useEffect, useContext, useState, ReactElement } from 'react'
 import { gql, useQuery } from '@apollo/client'
 import { Card } from '@mui/material'
 import { map } from 'lodash'
@@ -27,7 +27,7 @@ type ToDoListItem = {
   buttonTitle?: string
 }
 
-export const TodoList: FunctionComponent = () => {
+export const TodoList: React.FC = () => {
   const { me } = useContext(UserContext)
   const [todoList, setTodoList] = useState<Array<ToDoListItem>>([])
   const { loading, data } = useQuery(getTodoListItems, {

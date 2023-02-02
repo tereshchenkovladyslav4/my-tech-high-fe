@@ -12,6 +12,7 @@ export const getQuestionsGql = gql`
         group_name
         tab_id
         order
+        school_year_id
         questions {
           id
           question
@@ -67,6 +68,7 @@ export const getActiveSchoolYearsByRegionId = gql`
       special_ed_options
       birth_date_cut
       school_year_id
+      midyear_application
     }
   }
 `

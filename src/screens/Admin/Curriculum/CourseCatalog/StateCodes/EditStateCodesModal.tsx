@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { Button, Modal, TextField } from '@mui/material'
 import { Box } from '@mui/system'
 import { useFormik } from 'formik'
@@ -13,11 +13,7 @@ type EditStateCodesModalProps = {
   selectedStateCodes?: StateCodeType
 }
 
-export const EditStateCodesModal: FunctionComponent<EditStateCodesModalProps> = ({
-  onSave,
-  onClose,
-  selectedStateCodes,
-}) => {
+export const EditStateCodesModal: React.FC<EditStateCodesModalProps> = ({ onSave, onClose, selectedStateCodes }) => {
   const classes = stateCodesClass
   useEffect(() => {
     formik.setFieldValue('teacher', selectedStateCodes?.teacher)

@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { useQuery } from '@apollo/client'
 import { makeStyles, Theme } from '@material-ui/core/styles'
 import { Box } from '@mui/material'
@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }))
 
-export const Root: FunctionComponent = () => {
+export const Root: React.FC = () => {
   const classes = useStyles()
   const { me, setMe } = useContext(UserContext)
   const { setTab, setVisitedTabs } = useContext(TabContext)

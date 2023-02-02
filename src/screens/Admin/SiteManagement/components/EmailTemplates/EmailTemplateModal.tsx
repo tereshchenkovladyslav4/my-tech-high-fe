@@ -885,7 +885,7 @@ export const EmailTemplateModal: React.FC<EmailTemplateModalProps> = ({
                 </Grid>
               </>
             )}
-            {availableInserts && (
+            {!!availableInserts?.length && (
               <Grid item xs={12}>
                 <Subtitle fontWeight='700' size='large'>
                   Available Inserts

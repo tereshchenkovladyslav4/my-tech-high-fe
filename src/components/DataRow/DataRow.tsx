@@ -1,8 +1,8 @@
 import React from 'react'
 import { Box } from '@mui/system'
-import { DataRowTemplateType } from './types'
+import { DataRowProps } from './types'
 
-export const DataRow: DataRowTemplateType = ({ label, value, backgroundColor }) => (
+export const DataRow: React.FC<DataRowProps> = ({ label, value, backgroundColor }) => (
   <Box
     display='flex'
     flexDirection='row'

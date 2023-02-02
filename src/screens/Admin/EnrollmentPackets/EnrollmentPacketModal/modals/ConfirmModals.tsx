@@ -1,10 +1,10 @@
-import React, { useState, useContext, FunctionComponent } from 'react'
+import React, { useState, useContext } from 'react'
 import { useMutation } from '@apollo/client'
 import { Alert } from '@mui/material'
 import { useFormContext } from 'react-hook-form'
+import { EmailModal } from '@mth/components/EmailModal/EmailModal'
+import { StandardResponseOption } from '@mth/components/EmailModal/StandardReponses/types'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
-import { EmailModal } from '../../../../../components/EmailModal/EmailModal'
-import { StandardResponseOption } from '../../../../../components/EmailModal/StandardReponses/types'
 import { sendEmailMutation } from '../../services'
 import { studentContext } from '../providers'
 import { EnrollmentPacketFormType } from '../types'
@@ -15,7 +15,7 @@ type PacketConfirmModalsProps = {
   refetch: () => void
   submitForm: () => void
 }
-export const PacketConfirmModals: FunctionComponent<PacketConfirmModalsProps> = ({ packet, refetch, submitForm }) => {
+export const PacketConfirmModals: React.FC<PacketConfirmModalsProps> = ({ packet, refetch, submitForm }) => {
   const student = useContext(studentContext)
   const { me } = useContext(UserContext)
   const { watch, setValue } = useFormContext<EnrollmentPacketFormType>()

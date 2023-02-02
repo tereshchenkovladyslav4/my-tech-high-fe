@@ -1,4 +1,3 @@
-import { FunctionComponent } from 'react'
 import { EmailTemplate } from '@mth/models'
 import { StandardResponseOption } from './StandardReponses/types'
 
@@ -15,5 +14,3 @@ export type EmailModalProps = {
   insertDescriptions?: { [key: string]: string }
   handleSchedulesByStatus: (status: string) => void
 }
-
-export type EmailModalTemplateType = FunctionComponent<EmailModalProps>

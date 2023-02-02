@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { useQuery } from '@apollo/client'
 import moment from 'moment'
 import { DropDown } from '@mth/components/DropDown/DropDown'
@@ -6,7 +6,7 @@ import { DropDownItem } from '@mth/components/DropDown/types'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { getSchoolYearsByRegionId } from '@mth/screens/Admin/SiteManagement/services'
 
-export const SchoolYearDropDown: FunctionComponent = () => {
+export const SchoolYearDropDown: React.FC = () => {
   const { me } = useContext(UserContext)
   const [years, setYears] = useState<DropDownItem[]>([])
   const schoolYearData = useQuery(getSchoolYearsByRegionId, {

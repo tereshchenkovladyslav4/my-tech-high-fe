@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import ExpandLessIcon from '@mui/icons-material/ExpandLess'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { Box, Button, Card, Grid, TextField } from '@mui/material'
@@ -89,6 +89,7 @@ const FilterComponent: React.FC<FilterComponentProps> = ({ setFilter }) => {
         startDate: startDate,
         endDate: endDate,
       },
+      schoolYearId: selectedYearId || 0,
     })
     setExpand(!expand)
   }
@@ -116,8 +117,13 @@ const FilterComponent: React.FC<FilterComponentProps> = ({ setFilter }) => {
         startDate: null,
         endDate: null,
       },
+      schoolYearId: selectedYearId || 0,
     })
   }
+
+  useEffect(() => {
+    handleClear()
+  }, [selectedYearId])
 
   return (
     <Card sx={{ marginTop: 2, padding: 2 }}>

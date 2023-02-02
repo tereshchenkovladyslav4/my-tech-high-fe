@@ -3,21 +3,30 @@ import { useMutation } from '@apollo/client'
 import { Box, Button, Grid } from '@mui/material'
 import { MthBulletEditor } from '@mth/components/MthBulletEditor'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { useStudentInfo } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
+import { replaceInsertsToValue } from '@mth/utils/string.util'
 import { individualWithdrawalMutation } from '../service'
 import { EmailTemplateResponseVM } from '../type'
 import { withdrawalModalClasses } from './styles'
 
 type RightComponentProps = {
   withdrawalId: number
+  studentId: number
   emailTemplate: EmailTemplateResponseVM | undefined
   handleModem: () => void
 }
 
-export const RightComponent: React.FC<RightComponentProps> = ({ withdrawalId, emailTemplate, handleModem }) => {
+export const RightComponent: React.FC<RightComponentProps> = ({
+  withdrawalId,
+  emailTemplate,
+  studentId,
+  handleModem,
+}) => {
   const { me } = useContext(UserContext)
   const [individualWithdrawal] = useMutation(individualWithdrawalMutation)
   const [description, setDescription] = useState<string>(emailTemplate?.body ? emailTemplate?.body : '')
+  const { studentInfo } = useStudentInfo(studentId)
 
   const handleIndividualWithdrawal = async (type = 0) => {
     // type  0 : Email Only, 1: Withdraw & Email
@@ -51,7 +60,7 @@ export const RightComponent: React.FC<RightComponentProps> = ({ withdrawalId, em
       </Grid>
       <Box sx={{ paddingX: '100px' }}>
         <MthBulletEditor
-          value={description}
+          value={replaceInsertsToValue(studentInfo, description)}
           setValue={(value) => {
             setDescription(value)
           }}

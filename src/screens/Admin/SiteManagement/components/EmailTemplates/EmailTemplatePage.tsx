@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { useMutation, useQuery } from '@apollo/client'
 import { makeStyles } from '@material-ui/core'
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew'
@@ -6,10 +6,10 @@ import ArrowBackIosOutlinedIcon from '@mui/icons-material/ArrowBackIosOutlined'
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
 import SearchIcon from '@mui/icons-material/Search'
 import { Box, Grid, Card, OutlinedInput, InputAdornment, Typography } from '@mui/material'
+import { getEmailTemplatesByRegionQuery } from '@mth/graphql/queries/email-template'
+import { createEmailTemplateMutation, updateEmailTemplateMutation } from '@mth/graphql/queries/email-template'
 import { EmailTemplate } from '@mth/models'
-import { getEmailTemplatesByRegionQuery } from '../../../../../graphql/queries/email-template'
-import { createEmailTemplateMutation, updateEmailTemplateMutation } from '../../../../../graphql/queries/email-template'
-import { UserContext } from '../../../../../providers/UserContext/UserProvider'
+import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { EditStandardResponse } from './EditStandardResponse'
 import { EmailStandardResponse } from './EmailStandardResponse'
 import { EmailTemplateModal } from './EmailTemplateModal'
@@ -106,7 +106,7 @@ const useStyles = makeStyles({
   },
 })
 
-export const EmailTemplatePage: FunctionComponent<{ onBackPress?: () => void }> = ({ onBackPress }) => {
+export const EmailTemplatePage: React.FC<{ onBackPress?: () => void }> = ({ onBackPress }) => {
   const { me } = useContext(UserContext)
   const [searchField, setSearchField] = useState('')
   const [openEdit, setOpenEdit] = useState(false)

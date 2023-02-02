@@ -1,4 +1,5 @@
 export type FilterVM = {
+  schoolYearId: number
   gradeLevel1: string
   gradeLevel2: string
   programYear: string

@@ -5,9 +5,9 @@ import { DropDown } from '../DropDown/DropDown'
 import { DropDownItem } from '../DropDown/types'
 import { Subtitle } from '../Typography/Subtitle/Subtitle'
 import { useStyles } from './styles'
-import { PaginationTemplateType } from './types'
+import { PaginationProps } from './types'
 
-export const Pagination: PaginationTemplateType = ({
+export const Pagination: React.FC<PaginationProps> = ({
   setParentLimit,
   handlePageChange,
   defaultValue,

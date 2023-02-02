@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useContext } from 'react'
+import React, { useContext } from 'react'
 import { Grid } from '@mui/material'
 import { List } from '@mui/material'
 import { useFormikContext } from 'formik'
@@ -40,10 +40,10 @@ const SortableListContainer = SortableContainer(
   },
 )
 
-export const Documents: FunctionComponent = ({ specialEd }) => {
+export const Documents: React.FC = ({ specialEd }) => {
   const tabName = useContext(TabContext)
   const { values, setValues } = useFormikContext<EnrollmentQuestionTab[]>()
-  const uploadData = values.filter((v) => v.tab_name === tabName)[0].groups[0]?.questions || []
+  const uploadData = values.filter((v) => v.tab_name === tabName)[0]?.groups[0]?.questions || []
 
   return (
     <form>

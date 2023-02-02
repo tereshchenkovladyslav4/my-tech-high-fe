@@ -1,6 +1,8 @@
-import React, { FunctionComponent, ReactNode } from 'react'
+import React, { ReactNode } from 'react'
 import { Container as MuiContainer } from '@mui/material'
 
-export const Container: FunctionComponent = ({ children }: { children: ReactNode }) => (
-  <MuiContainer>{children}</MuiContainer>
-)
+type ContainerProps = {
+  children: ReactNode
+}
+
+export const Container: React.FC<ContainerProps> = ({ children }) => <MuiContainer>{children}</MuiContainer>

@@ -1,6 +1,6 @@
 import { FunctionComponent, ReactNode } from 'react'
 
-type EmptyStateProps = {
+export type EmptyStateProps = {
   title: string | ReactNode
   subtitle: string | ReactNode
   image?: string

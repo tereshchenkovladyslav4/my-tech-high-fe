@@ -1,8 +1,8 @@
-import React, { FunctionComponent } from 'react'
+import React from 'react'
 import { Checkbox, Grid, TextField } from '@mui/material'
 import { Box } from '@mui/system'
 import { Controller, useFormContext } from 'react-hook-form'
-import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 
 const RacesTypes = {
   asian: 'Asian',
@@ -13,7 +13,7 @@ const RacesTypes = {
   undeclared: 'Undeclared',
 }
 
-export const RaceInfo: FunctionComponent = () => {
+export const RaceInfo: React.FC = () => {
   const { control } = useFormContext()
 
   return (

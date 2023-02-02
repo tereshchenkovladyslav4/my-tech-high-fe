@@ -57,6 +57,7 @@ export const WithdrawalModal: React.FC<WithdrawalModalProps> = ({ handleModem, e
             </Grid>
             <Grid item md={7} sm={7} xs={12}>
               <RightComponent
+                studentId={withdrawal?.StudentId}
                 withdrawalId={withdrawal?.withdrawal_id}
                 emailTemplate={emailTemplate}
                 handleModem={handleModem}

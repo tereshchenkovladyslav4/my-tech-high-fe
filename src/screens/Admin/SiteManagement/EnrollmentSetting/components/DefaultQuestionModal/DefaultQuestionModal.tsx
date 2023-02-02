@@ -1,4 +1,4 @@
-import React, { useState, useEffect, FunctionComponent } from 'react'
+import React, { useState, useEffect } from 'react'
 import SearchIcon from '@mui/icons-material/Search'
 import {
   Box,
@@ -20,7 +20,7 @@ type DefaultQuestionModalProps = {
   special_ed: boolean
 }
 
-export const DefaultQuestionModal: FunctionComponent<DefaultQuestionModalProps> = ({
+export const DefaultQuestionModal: React.FC<DefaultQuestionModalProps> = ({
   onClose,
   onCreate,
   special_ed = false,

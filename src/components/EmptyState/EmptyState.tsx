@@ -2,9 +2,9 @@ import React from 'react'
 import { Box, Container } from '@mui/material'
 import { Subtitle } from '../Typography/Subtitle/Subtitle'
 import { Title } from '../Typography/Title/Title'
-import { EmptyStateTemplateType } from './types'
+import { EmptyStateProps } from './types'
 
-export const EmptyState: EmptyStateTemplateType = ({ title, subtitle, image }) => (
+export const EmptyState: React.FC<EmptyStateProps> = ({ title, subtitle, image }) => (
   <Container>
     <Box
       sx={{

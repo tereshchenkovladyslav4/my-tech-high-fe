@@ -1,11 +1,11 @@
-import React, { FunctionComponent, useState } from 'react'
+import React, { useState } from 'react'
 import { Box, Button, Modal, Typography, FormControl, RadioGroup, FormControlLabel, Radio } from '@mui/material'
 
 type SelectDefaultCustomQuestionModalProps = {
   onClose: () => void
   onCreate: (value: string) => void
 }
-export const SelectDefaultCustomQuestionModal: FunctionComponent<SelectDefaultCustomQuestionModalProps> = ({
+export const SelectDefaultCustomQuestionModal: React.FC<SelectDefaultCustomQuestionModalProps> = ({
   onClose,
   onCreate,
 }) => {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, FunctionComponent, ReactElement } from 'react'
+import React, { useState, useEffect, useContext, ReactElement } from 'react'
 import DehazeIcon from '@mui/icons-material/Dehaze'
 import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined'
 import EditIcon from '@mui/icons-material/Edit'
@@ -42,7 +42,7 @@ const DragHandle = SortableHandle(() => (
   </Tooltip>
 ))
 
-export const EnrollmentQuestionItem: FunctionComponent<EnrollmentQuestionItemProps> = ({
+export const EnrollmentQuestionItem: React.FC<EnrollmentQuestionItemProps> = ({
   item,
   group,
   mainQuestion = false,

@@ -1,9 +1,8 @@
 import React from 'react'
 import { Typography } from '@mui/material'
+import { TypographyProps } from '../types'
 
-import { TypographyTemplateType } from '../types'
-
-export const Title: TypographyTemplateType = ({ sx, fontWeight, children, size, color, textAlign }) => {
+export const Title: React.FC<TypographyProps> = ({ sx, fontWeight, children, size, color, textAlign }) => {
   const fontSize = () => (size === 'large' ? 32 : size === 'medium' ? 28 : 24)
 
   return (

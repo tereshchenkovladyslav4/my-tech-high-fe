@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useState } from 'react'
+import React, { useState } from 'react'
 import SearchIcon from '@mui/icons-material/Search'
 import { Box, Button, Modal, Typography, OutlinedInput, InputAdornment } from '@mui/material'
 import { MthRadioGroup } from '@mth/components/MthRadioGroup'
@@ -12,7 +12,7 @@ type DefaultQuestionModalProps = {
   questionType: RadioGroupOption[]
 }
 
-export const DefaultQuestionModal: FunctionComponent<DefaultQuestionModalProps> = ({
+export const DefaultQuestionModal: React.FC<DefaultQuestionModalProps> = ({
   onClose,
   onAction,
   setQuestionType,

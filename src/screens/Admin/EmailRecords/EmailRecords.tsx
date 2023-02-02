@@ -1,9 +1,9 @@
-import React, { FunctionComponent } from 'react'
+import React from 'react'
 import { Grid } from '@mui/material'
 import { Box } from '@mui/system'
 import { EmailRecordsTable } from './EmailRecordsTable/EmailRecordsTable'
 
-export const EmailRecords: FunctionComponent = () => {
+export const EmailRecords: React.FC = () => {
   return (
     <Box sx={{ marginX: 4 }}>
       <Grid container rowSpacing={2}>

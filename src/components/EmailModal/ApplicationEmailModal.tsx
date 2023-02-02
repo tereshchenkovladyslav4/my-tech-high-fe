@@ -116,7 +116,7 @@ export const ApplicationEmailModal: React.FC<EmailModalProps> = ({
             error={formik.touched.body && !!formik.errors.body}
           />
 
-          {availableInserts && (
+          {!!availableInserts?.length && (
             <Grid item xs={12} sx={{ mt: 4 }}>
               <Subtitle fontWeight='700' size='large'>
                 Available Inserts

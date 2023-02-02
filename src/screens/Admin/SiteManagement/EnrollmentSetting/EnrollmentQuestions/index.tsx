@@ -1,12 +1,13 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { useMutation, useQuery } from '@apollo/client'
 import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded'
-import { Box, Typography, Card, Grid, IconButton, Button, Alert } from '@mui/material'
+import { Box, Typography, Card, Grid, IconButton, Button, Alert, Stack } from '@mui/material'
 import { Form, Formik } from 'formik'
 import { includes } from 'lodash'
 import _ from 'lodash'
 import moment from 'moment'
 import { useHistory } from 'react-router-dom'
+import { DropDown } from '@mth/components/DropDown/DropDown'
 import { DropDownItem } from '@mth/components/DropDown/types'
 import { COUNTRIES, GRADES, US_STATES } from '@mth/constants'
 import { MthTitle } from '@mth/enums'
@@ -57,6 +58,9 @@ export const EnrollmentQuestions: React.FC = () => {
   const [specialEdStatus, setSpecialEdStatus] = useState<boolean>(false)
   const [specialEdList, setSpecialEdList] = useState<unknown>([])
 
+  const [schoolYearList, setSchoolYearList] = useState<DropDownItem[]>([])
+  const [activeSchoolYearId, setActiveSchoolYearId] = useState<string>('')
+
   const classes = useStyles
   const history = useHistory()
   const [saveQuestionsMutation] = useMutation(saveQuestionsGql)
@@ -64,8 +68,9 @@ export const EnrollmentQuestions: React.FC = () => {
   const [deleteQuestionGroup] = useMutation(deleteQuestionGroupGql)
   const { me } = useContext(UserContext)
   const { data, refetch } = useQuery(getQuestionsGql, {
-    variables: { input: { region_id: Number(me?.selectedRegionId) } },
+    variables: { input: { region_id: Number(me?.selectedRegionId), school_year_id: activeSchoolYearId } },
     fetchPolicy: 'network-only',
+    skip: !activeSchoolYearId,
   })
 
   const { data: specialEdData } = useQuery(getSpecialEdsByRegionId, {
@@ -226,8 +231,22 @@ export const EnrollmentQuestions: React.FC = () => {
   const [, setBirthDateCut] = useState<string>('')
   useEffect(() => {
     if (!schoolLoading && schoolYearData.getSchoolYearsByRegionId) {
+      const tempSchoolYearList: DropDownItem[] = []
       setSchoolYears(
         schoolYearData.getSchoolYearsByRegionId.map((item) => {
+          tempSchoolYearList.push({
+            label: moment(item.date_begin).format('YYYY') + '-' + moment(item.date_end).format('YY'),
+            value: item.school_year_id + '',
+          })
+          if (item.midyear_application === 1) {
+            tempSchoolYearList.push({
+              label: moment(item.date_begin).format('YYYY') + '-' + moment(item.date_end).format('YY') + ' Mid',
+              value: item.school_year_id + '-mid',
+            })
+          }
+          if (moment().format('YYYY-MM-DD') > item.date_begin && moment().format('YYYY-MM-DD') < item.date_end) {
+            setActiveSchoolYearId(item.school_year_id + '')
+          }
           return {
             label: moment(item.date_begin).format('YYYY') + '-' + moment(item.date_end).format('YYYY'),
             value: item.school_year_id,
@@ -235,6 +254,8 @@ export const EnrollmentQuestions: React.FC = () => {
         }),
       )
       setSchoolYearsData(schoolYearData.getSchoolYearsByRegionId)
+
+      setSchoolYearList(tempSchoolYearList)
 
       if (schoolYearData.getSchoolYearsByRegionId.length > 0) {
         setSpecialEd(schoolYearData.getSchoolYearsByRegionId[0].special_ed)
@@ -417,6 +438,7 @@ export const EnrollmentQuestions: React.FC = () => {
                 tab_name: v.tab_name,
                 groups: v.groups,
                 region_id: Number(me?.selectedRegionId),
+                school_year_id: activeSchoolYearId,
               })),
             },
           })
@@ -435,24 +457,37 @@ export const EnrollmentQuestions: React.FC = () => {
                   display: 'flex',
                   height: '40px',
                   width: '100%',
-                  justifyContent: 'end',
+                  justifyContent: 'space-between',
                 }}
               >
-                <Button
-                  sx={styles.cancelButton}
-                  onClick={() => {
-                    if (unsavedChanges) {
-                      setCancelModal(true)
-                    } else {
-                      history.goBack()
-                    }
-                  }}
-                >
-                  Cancel
-                </Button>
-                <Button sx={styles.actionButtons} type='submit'>
-                  Save
-                </Button>
+                <Stack direction='row' spacing={1} alignItems='center'>
+                  <DropDown
+                    dropDownItems={schoolYearList}
+                    placeholder={'Select Year'}
+                    defaultValue={activeSchoolYearId}
+                    borderNone={true}
+                    setParentValue={(val) => {
+                      setActiveSchoolYearId(val + '')
+                    }}
+                  />
+                </Stack>
+                <Box display={'flex'} justifyContent='space-between'>
+                  <Button
+                    sx={styles.cancelButton}
+                    onClick={() => {
+                      if (unsavedChanges) {
+                        setCancelModal(true)
+                      } else {
+                        history.goBack()
+                      }
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button sx={styles.actionButtons} type='submit'>
+                    Save
+                  </Button>
+                </Box>
               </Box>
               <Box sx={classes.header}>
                 <Box

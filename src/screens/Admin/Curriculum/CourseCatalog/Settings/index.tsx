@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useCallback, useContext, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { useMutation, useQuery } from '@apollo/client'
 import { Alert, AlertColor, Button, Checkbox, Typography } from '@mui/material'
 import { Box } from '@mui/system'
@@ -28,7 +28,7 @@ type openAlertSaveType = {
   open: boolean
 }
 
-const Settings: FunctionComponent = () => {
+const Settings: React.FC = () => {
   const classes = useStyles
   const [selectedYearId, setSelectedYearId] = useState<number>()
   const [maxPeriods, setMaxPeriods] = useState<number>()

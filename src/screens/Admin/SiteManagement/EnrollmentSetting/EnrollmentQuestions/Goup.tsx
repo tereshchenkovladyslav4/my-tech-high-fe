@@ -1,15 +1,12 @@
-import React, { FunctionComponent, useContext, useState } from 'react'
+import React, { useContext, useState } from 'react'
 import DehazeIcon from '@mui/icons-material/Dehaze'
 import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined'
 import EditIcon from '@mui/icons-material/Edit'
 import { Box, Grid, IconButton, Tooltip } from '@mui/material'
 import { useFormikContext } from 'formik'
 import { arrayMove, SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc'
-
-import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
-
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { CustomModal } from '../components/CustomModal/CustomModals'
-
 import { EditGroup } from './components/EditGroup/EditGroup'
 import { EnrollmentQuestionItem } from './Question'
 import { TabContext } from './TabContextProvider'
@@ -50,7 +47,7 @@ const SortableListContainer = SortableContainer(({ group }: { group: EnrollmentQ
   )
 })
 
-export const GroupItem: FunctionComponent<GroupItemProps> = ({ item, mainQuestion = false }) => {
+export const GroupItem: React.FC<GroupItemProps> = ({ item, mainQuestion = false }) => {
   const tabName = useContext(TabContext)
   const { values, setValues } = useFormikContext<EnrollmentQuestionTab[]>()
   const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false)

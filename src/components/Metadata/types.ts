@@ -1,4 +1,4 @@
-import { FunctionComponent, ReactNode } from 'react'
+import { ReactNode } from 'react'
 
 export type MetadataProps = {
   image?: ReactNode
@@ -11,5 +11,3 @@ export type MetadataProps = {
   divider?: boolean
   borderBottom?: boolean
 }
-
-export type MetadataTemplateType = FunctionComponent<MetadataProps>

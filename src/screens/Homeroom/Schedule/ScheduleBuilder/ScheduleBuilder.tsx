@@ -191,25 +191,25 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
 
   useEffect(() => {
     if (scheduleData?.length) {
-      let isInvalid = false
+      let invalidCnt = 0
       scheduleData.map((item) => {
         if (item?.CourseType) {
           switch (item.CourseType) {
             case CourseType.CUSTOM_BUILT:
-              if (!item.CustomBuiltDescription) isInvalid = true
+              if (!item.CustomBuiltDescription) invalidCnt++
               break
             case CourseType.MTH_DIRECT:
-              if (!item.OnSiteSplitEnrollment && !item.Course) isInvalid = true
+              if (!item.OnSiteSplitEnrollment && !item.Course) invalidCnt++
               break
             case CourseType.THIRD_PARTY_PROVIDER:
-              if (!item.ThirdParty) isInvalid = true
+              if (!item.ThirdParty) invalidCnt++
               break
           }
         } else {
-          isInvalid = true
+          if (!item?.Period || !!item?.Period?.Subjects?.length) invalidCnt++
         }
       })
-      setIsValid(!isInvalid)
+      setIsValid(invalidCnt == 0)
     }
   }, [scheduleData])
 

@@ -146,17 +146,16 @@ export const useStudentSchedulePeriods = (
       studentPeriods.map((period: Period) => {
         period.Subjects?.map((subject) => {
           subject.Titles.concat(subject.AltTitles || []).map((title) => {
-            title.CourseTypes = COURSE_TYPE_ITEMS.filter(
-              (item) =>
-                (item.value === CourseType.CUSTOM_BUILT && title.custom_built) ||
-                item.value === CourseType.MTH_DIRECT ||
-                (item.value === CourseType.THIRD_PARTY_PROVIDER && title.third_party_provider),
-            )
-
             title.Courses.concat(title.AltCourses).map(
               (course) => (course.Provider = studentProviders[course.provider_id]),
             )
             title.Providers = makeProviderData(title.Courses, title.AltCourses)
+            title.CourseTypes = COURSE_TYPE_ITEMS.filter(
+              (item) =>
+                (item.value === CourseType.CUSTOM_BUILT && title.custom_built) ||
+                (item.value === CourseType.MTH_DIRECT && !!title.Providers?.length) ||
+                (item.value === CourseType.THIRD_PARTY_PROVIDER && title.third_party_provider),
+            )
           })
         })
       })

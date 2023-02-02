@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useState } from 'react'
+import React, { useState } from 'react'
 import { Modal, Box } from '@mui/material'
 import { MthColor, MthTitle } from '@mth/enums'
 import { CustomModal } from '../../screens/Admin/SiteManagement/EnrollmentSetting/components/CustomModal/CustomModals'
@@ -7,7 +7,7 @@ import { ProfileContext } from './ProfileContext'
 
 type RefetchType = () => void
 
-export const ProfileProvider: FunctionComponent = ({ children }) => {
+export const ProfileProvider: React.FC = ({ children }) => {
   const [store, setStore] = useState(false)
   const [open, setOpen] = useState(false)
   const [isChanged, setIsChanged] = useState(false)

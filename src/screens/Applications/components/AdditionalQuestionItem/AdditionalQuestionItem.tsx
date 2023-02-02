@@ -10,6 +10,7 @@ import {
   RadioGroup,
   FormHelperText,
 } from '@mui/material'
+import moment from 'moment'
 import { DropDown } from '@mth/components/DropDown/DropDown'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
@@ -267,6 +268,7 @@ export const AdditionalQuestionItem: React.FC<ApplicationQuestionProps> = ({
         }}
         name={q.question.toLowerCase().replace(' ', '_')}
         {...field}
+        value={moment(field.value).tz('UTC').format('YYYY-MM-DD')}
         error={meta.touched && meta.error}
         helperText={meta.touched && meta.error}
         type='date'

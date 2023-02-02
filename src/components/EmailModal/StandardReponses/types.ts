@@ -1,5 +1,3 @@
-import { FunctionComponent } from 'react'
-
 export type StandardResponseOptionValues = { title: string; checked: boolean; extraText: string | null; abbr?: string }
 export type StandardResponseOption = {
   type: 'MISSING_INFO' | 'AGE_ISSUE'
@@ -7,9 +5,7 @@ export type StandardResponseOption = {
   values: StandardResponseOptionValues[]
 }
 
-type StandardResponseProps = {
+export type StandardResponseProps = {
   options: StandardResponseOption
   setTemplate: () => void
 }
-
-export type StandardResponseTemplateType = FunctionComponent<StandardResponseProps>

@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react'
+import React from 'react'
 import { Button, Modal, TextField } from '@mui/material'
 import { Box } from '@mui/system'
 import { Field, Form, Formik } from 'formik'
@@ -16,7 +16,7 @@ type CreateMasterModalProps = {
   schoolYearDropdownItems: DropDownItem[]
 }
 
-export const CreateMasterModal: FunctionComponent<CreateMasterModalProps> = ({
+export const CreateMasterModal: React.FC<CreateMasterModalProps> = ({
   handleSubmit,
   handleClose,
   selectedYear,

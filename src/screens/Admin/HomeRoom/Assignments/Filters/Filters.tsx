@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { Box, Button, Card, Checkbox, FormControlLabel, Grid } from '@mui/material'
 import { map, capitalize } from 'lodash'
@@ -11,7 +11,7 @@ import { MthColor } from '@mth/enums'
 import { toOrdinalSuffix } from '@mth/utils'
 import { FiltersProps, YEAR_STATUS, FilterVM, OptionType } from '../type'
 
-export const Filters: FunctionComponent<FiltersProps> = ({
+export const Filters: React.FC<FiltersProps> = ({
   setFilter,
   partnerList,
   selectedYear,

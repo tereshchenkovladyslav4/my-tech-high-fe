@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Button, Modal, TextField } from '@mui/material'
 import { Box } from '@mui/system'
 import { ContentState, EditorState, convertToRaw } from 'draft-js'
@@ -17,7 +17,7 @@ type EditChecklistModalProps = {
   selectedChecklist?: CheckListType
 }
 
-export const EditChecklistModal: FunctionComponent<EditChecklistModalProps> = ({
+export const EditChecklistModal: React.FC<EditChecklistModalProps> = ({
   handleSubmit,
   handleClose,
   selectedChecklist,

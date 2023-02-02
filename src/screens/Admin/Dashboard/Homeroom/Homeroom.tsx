@@ -1,15 +1,15 @@
-import React, { FunctionComponent } from 'react'
+import React from 'react'
 import { Link, TextField } from '@mui/material'
 import { Box } from '@mui/system'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { map } from 'lodash'
-import { DataRow } from '../../../../components/DataRow/DataRow'
-import { Paragraph } from '../../../../components/Typography/Paragraph/Paragraph'
-import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
+import { DataRow } from '@mth/components/DataRow/DataRow'
+import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 
-export const Homeroom: FunctionComponent = () => {
+export const Homeroom: React.FC = () => {
   const [value, setValue] = React.useState<Date | null | ''>(new Date())
   const handleChange = (newValue: Date | null) => {
     setValue(newValue)

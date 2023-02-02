@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react'
+import React from 'react'
 import { makeStyles, Theme } from '@material-ui/core/styles'
 import InfoIcon from '@mui/icons-material/InfoOutlined'
 import { Box, Button, Modal, Typography } from '@mui/material'
@@ -23,7 +23,7 @@ const useClasses = makeStyles((theme: Theme) => ({
   },
 }))
 
-export const CustomModal: FunctionComponent<CustomModalProps> = ({
+export const CustomModal: React.FC<CustomModalProps> = ({
   title,
   description,
   subDescription,

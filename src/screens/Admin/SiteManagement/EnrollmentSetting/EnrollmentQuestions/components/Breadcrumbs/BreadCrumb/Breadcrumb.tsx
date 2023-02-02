@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react'
 import { Box, FormControlLabel, Checkbox } from '@mui/material'
 import { useFormikContext } from 'formik'
 import { EnrollmentQuestionTab } from '../../../types'
-import { BreadcrumbTemplateType } from './types'
+import { BreadcrumbProps } from './types'
 
-export const Breadcrumb: BreadcrumbTemplateType = ({ title, active, idx, handleClick }) => {
+export const Breadcrumb: React.FC<BreadcrumbProps> = ({ title, active, idx, handleClick }) => {
   const showBorder = active ? '#4145FF' : '#EEF4F8'
   const [checked, setChecked] = useState(true)
 

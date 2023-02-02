@@ -1,7 +1,6 @@
 import * as React from 'react'
-import { FunctionComponent } from 'react'
 
-export const TTALogo: FunctionComponent = (props: React.SVGProps<SVGSVGElement>) => (
+export const TTALogo: React.FC = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
     width='71'
     height='28'

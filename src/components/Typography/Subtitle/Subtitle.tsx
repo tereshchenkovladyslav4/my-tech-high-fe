@@ -1,9 +1,8 @@
 import React from 'react'
 import { Typography } from '@mui/material'
+import { TypographyProps } from '../types'
 
-import { TypographyTemplateType } from '../types'
-
-export const Subtitle: TypographyTemplateType = ({
+export const Subtitle: React.FC<TypographyProps> = ({
   textAlign,
   children,
   size,

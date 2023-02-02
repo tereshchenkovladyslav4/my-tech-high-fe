@@ -10,9 +10,9 @@ import Wysiwyg from 'react-draft-wysiwyg'
 
 import { Title } from '../../../../components/Typography/Title/Title'
 import { useStyles } from './styles'
-import { EmailModalTemplateType } from './types'
+import { EmailModalProps } from './types'
 
-export const EmailResendModal: EmailModalTemplateType = ({ handleSubmit, handleModem, template }) => {
+export const EmailResendModal: React.FC<EmailModalProps> = ({ handleSubmit, handleModem, template }) => {
   const classes = useStyles
   const [editorState, setEditorState] = useState(EditorState.createEmpty())
   const [toEmail, setToEmail] = useState('')

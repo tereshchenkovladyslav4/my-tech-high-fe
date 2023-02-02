@@ -4,10 +4,10 @@ import { Box } from '@mui/system'
 import { CheckBoxListVM } from '@mth/components/MthCheckboxList/MthCheckboxList'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { EmailTemplateEnum } from '@mth/enums'
-import { useEmailTemplateByNameAndRegionId } from '@mth/hooks'
+import { useEmailTemplateByNameAndRegionId, useStudentInfo } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { ScheduleData } from '@mth/screens/Homeroom/Schedule/types'
-import { extractContent } from '@mth/utils'
+import { extractContent, replaceInsertsToValue } from '@mth/utils'
 import { scheduleBuilderClass } from '../styles'
 import { UpdatesRequiredPeriods } from './UpdatesRequiredPeroids'
 import { UpdatesRequiredEmail } from './UpdatesRequriedEmail'
@@ -15,6 +15,7 @@ import { UpdatesRequiredEmail } from './UpdatesRequriedEmail'
 type UpdatesRequiredProps = {
   scheduleData: ScheduleData[]
   requireUpdatePeriods: string[]
+  studentId: number
   setScheduleData: (value: ScheduleData[]) => void
   handleCancelUpdates: () => void
   handleEmailSend: (from: string, subject: string, body: string) => void
@@ -24,6 +25,7 @@ type UpdatesRequiredProps = {
 const UpdatesRequired: React.FC<UpdatesRequiredProps> = ({
   scheduleData,
   requireUpdatePeriods,
+  studentId,
   setScheduleData,
   handleCancelUpdates,
   handleEmailSend,
@@ -37,6 +39,7 @@ const UpdatesRequired: React.FC<UpdatesRequiredProps> = ({
     me?.selectedRegionId || 0,
     EmailTemplateEnum.UPDATES_REQUIRED,
   )
+  const { studentInfo } = useStudentInfo(studentId)
 
   useEffect(() => {
     if (body && scheduleData?.length && standardResponse) {
@@ -76,9 +79,9 @@ const UpdatesRequired: React.FC<UpdatesRequiredProps> = ({
         <Grid container justifyContent='start'>
           <Grid item xs={7} sx={{ textAlign: 'left', marginTop: 'auto', marginBottom: 'auto' }}>
             <UpdatesRequiredEmail
-              emailFrom={from}
-              emailBody={emailBody}
-              emailSubject={subject}
+              emailFrom={replaceInsertsToValue(studentInfo, from)}
+              emailBody={replaceInsertsToValue(studentInfo, emailBody)}
+              emailSubject={replaceInsertsToValue(studentInfo, subject)}
               isEditedByExternal={isEditedByExternal}
               setEmailFrom={setFrom}
               setEmailSubject={setSubject}

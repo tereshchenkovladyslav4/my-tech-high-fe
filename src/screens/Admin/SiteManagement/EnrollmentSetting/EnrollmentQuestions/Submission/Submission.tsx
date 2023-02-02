@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useRef, useContext } from 'react'
+import React, { useRef, useContext } from 'react'
 import { Box, Grid, FormHelperText, TextField, outlinedInputClasses } from '@mui/material'
 import { useFormikContext } from 'formik'
 import SignatureCanvas from 'react-signature-canvas'
@@ -32,7 +32,7 @@ const SortableListContainer = SortableContainer(({ items }: { items: EnrollmentQ
   )
 })
 
-export const Submission: FunctionComponent = () => {
+export const Submission: React.FC = () => {
   const signatureRef = useRef()
   const tabName = useContext(TabContext)
   const { values, setValues } = useFormikContext<EnrollmentQuestionTab[]>()

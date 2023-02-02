@@ -1,10 +1,10 @@
-import React, { FunctionComponent } from 'react'
+import React from 'react'
 import { AppBar, Tabs } from '@mui/material'
 import { Paragraph } from '../Typography/Paragraph/Paragraph'
 import { LinkTab } from './SegmentControlTab/SegmentControlTab'
 import { useStyles } from './styles'
 
-export const SegmentedControl: FunctionComponent = () => {
+export const SegmentedControl: React.FC = () => {
   const [value, setValue] = React.useState(0)
 
   const handleChange = (event: React.ChangeEvent<unknown>, newValue: number) => {

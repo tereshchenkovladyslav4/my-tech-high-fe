@@ -1,11 +1,11 @@
-import React, { FunctionComponent } from 'react'
+import React from 'react'
 import { useMutation } from '@apollo/client'
 import { toNumber } from 'lodash'
-import { CustomModal } from '../../../../../components/CustomModal/CustomModals'
+import { CustomModal } from '@mth/components/CustomModal/CustomModals'
 import { ToggleSchoolPartnerMutation } from '../services'
 import { SchoolPartnerType } from '../types'
 
-export const ArchiveSchoolPartnerModal: FunctionComponent<{ handleModem: () => void; el: SchoolPartnerType }> = ({
+export const ArchiveSchoolPartnerModal: React.FC<{ handleModem: () => void; el: SchoolPartnerType }> = ({
   handleModem,
   el,
 }) => {

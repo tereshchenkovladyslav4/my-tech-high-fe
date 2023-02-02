@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react'
+import React from 'react'
 import FacebookIcon from '@mui/icons-material/Facebook'
 import InstagramIcon from '@mui/icons-material/Instagram'
 import LinkedInIcon from '@mui/icons-material/LinkedIn'
@@ -6,9 +6,9 @@ import TwitterIcon from '@mui/icons-material/Twitter'
 import YoutubeIcon from '@mui/icons-material/YouTube'
 import { Divider, Grid } from '@mui/material'
 import { Box } from '@mui/system'
-import { Paragraph } from '../../../components/Typography/Paragraph/Paragraph'
+import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 
-export const Footer: FunctionComponent = () => (
+export const Footer: React.FC = () => (
   <Box paddingY={8} marginX={10}>
     <Grid container>
       <Grid item container textAlign='left' rowSpacing={1} columnSpacing={10} xs={2}>

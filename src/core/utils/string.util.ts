@@ -1,10 +1,13 @@
 import moment from 'moment'
 import { EventVM } from '@mth/screens/Admin/Calendar/types'
+import { SchoolYear } from '../models/school-year.model'
+import { Student } from '../models/student.model'
 /**
  * @param {number} number
  * @description convert to ordinal number
  * @return converted string
  */
+
 export const toOrdinalSuffix = (number: number): string => {
   const digits = [number % 10, number % 100],
     ordinals = ['st', 'nd', 'rd', 'th'],
@@ -19,6 +22,23 @@ export const extractAllNumFromStr = (str: string): Array<number> => {
   const nums = str.match(/\d+/g)
   if (nums) return nums.map(Number)
   else return []
+}
+
+export const replaceInsertsToValue = (studentInfo: Student | undefined, value: string): string => {
+  if (studentInfo) {
+    const { applications, person, parent } = studentInfo
+    const school_year: SchoolYear = (applications?.at(0)?.school_year || {}) as SchoolYear
+    const yearbegin = new Date(school_year.date_begin).getFullYear().toString()
+    const yearend = new Date(school_year.date_end).getFullYear().toString()
+    const yearText = applications?.at(0)?.midyear_application
+      ? `${yearbegin}-${yearend.substring(2, 4)} Mid-year`
+      : `${yearbegin}-${yearend.substring(2, 4)}`
+    return value
+      .toString()
+      .replace(/\[STUDENT\]/g, person.first_name)
+      .replace(/\[PARENT\]/g, parent.person.first_name)
+      .replace(/\[YEAR\]/g, yearText)
+  } else return value
 }
 
 export const ordinalSuffixOf = (num: number | string): string => {
