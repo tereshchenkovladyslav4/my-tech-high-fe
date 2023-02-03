@@ -4,9 +4,9 @@ import { Box } from '@mui/system'
 import { MthColor, Order } from '@mth/enums'
 import { SortableTableHeader } from './SortableTableHeader/SortableTableHeader'
 import { tableClasses } from './styles'
-import { SortableTableTemplateType } from './types'
+import { SortableTableProps } from './types'
 
-export const SortableTable: SortableTableTemplateType = ({
+export const SortableTable: React.FC<SortableTableProps> = ({
   headCells,
   rows,
   onCheck,

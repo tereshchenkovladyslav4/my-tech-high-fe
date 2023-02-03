@@ -1,4 +1,4 @@
-import { FunctionComponent, ReactNode } from 'react'
+import { ReactNode } from 'react'
 import { ReduceFunds } from '@mth/enums'
 
 export type SchoolYears = {
@@ -25,11 +25,6 @@ export type ProgramSettingType = {
   component: ReactNode
 }
 
-type ProgramSettingProps = {
-  title: string
-  data?: unknown
-}
-
 export type ProgramSettingChanged = {
   state: boolean
   stateLogo: boolean
@@ -54,5 +49,3 @@ export type FileDeleted = {
   county: boolean
   schoolDistrict: boolean
 }
-
-export type ProgramSettingTemplateType = FunctionComponent<ProgramSettingProps>

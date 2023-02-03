@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from '@emotion/styled'
 import { TextField as MuiTextField } from '@mui/material'
-import { TextFieldTemplateType } from './types'
+import { TextFieldProps } from './types'
 
 const CssTextField = styled(MuiTextField)({
   '& label.Mui-focused': {
@@ -28,7 +28,7 @@ const CssTextField = styled(MuiTextField)({
   },
 })
 
-const TextField: TextFieldTemplateType = ({
+const TextField: React.FC<TextFieldProps> = ({
   value,
   onChange,
   label,

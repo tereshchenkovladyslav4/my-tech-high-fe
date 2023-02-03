@@ -1,6 +1,6 @@
-import { FunctionComponent, ReactNode } from 'react'
+import { ReactNode } from 'react'
 
-type TableProps = {
+export type TableProps = {
   tableHeaders?: Array<string>
   tableBody: Array<Record<string | number, string | number | ReactNode>>
   isHover?: boolean
@@ -47,5 +47,3 @@ export type GroupItem<T> = {
   childrenIds: ValueOf<T>[]
   children: T[]
 }
-
-export type TableTemplateType = FunctionComponent<TableProps>

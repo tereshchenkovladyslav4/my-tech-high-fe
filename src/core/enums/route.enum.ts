@@ -4,6 +4,7 @@ export enum MthRoute {
   APPLICATIONS = '/applications',
   CALENDAR = '/calendar',
   COMMUNICATION = '/communication',
+  GRADEBOOK = '/gradebook',
   CONFIRM_EMAIL = '/confirm',
   DASHBOARD = '/',
   EMAIL_RECORDS = '/communication/email-records',

@@ -41,7 +41,6 @@ import { useProgramYearListBySchoolYearId, useSchoolYearsByRegionId } from '@mth
 import { Period } from '@mth/models'
 import { loadingState } from '@mth/providers/Store/State'
 import { getPeriods, upsertPeriod, periodArchive, deletePeriodsByIds } from '@mth/screens/Admin/Curriculum/services'
-import { commonClasses } from '@mth/styles/common.style'
 import { gradeShortText } from '@mth/utils'
 import { useStyles } from '../../styles'
 import { SEMESTER_TYPE, SEMESTER_MESSAGE } from '../../types'
@@ -567,23 +566,25 @@ const Periods: React.FC = () => {
               <Grid item xs={6}>
                 {schoolYearData?.diploma_seeking && (
                   <>
-                    <DropDown
-                      dropDownItems={DIPLOMA_SEEKING_PATH_ITEMS}
+                    <CssTextField
+                      name='diploma_seeking_path'
+                      label='Diploma-seeking Path'
                       placeholder='Diploma-seeking Path'
-                      labelTop
-                      setParentValue={(value) => {
-                        formik.setFieldValue('diploma_seeking_path', value)
-                      }}
-                      sx={{ m: 0 }}
-                      defaultValue={formik.values?.diploma_seeking_path}
-                      error={{
-                        error: formik.touched.diploma_seeking_path && !!formik.errors.diploma_seeking_path,
-                        errorMsg: '',
-                      }}
-                    />
-                    <Subtitle sx={commonClasses.formError}>
-                      {formik.touched.diploma_seeking_path && formik.errors.diploma_seeking_path}
-                    </Subtitle>
+                      fullWidth
+                      value={formik.values.diploma_seeking_path}
+                      onChange={(e) => formik.handleChange(e)}
+                      error={formik.touched.diploma_seeking_path && !!formik.errors.diploma_seeking_path}
+                      helperText={formik.touched.diploma_seeking_path && formik.errors.diploma_seeking_path}
+                      InputLabelProps={{ shrink: true, sx: classes.textLabel }}
+                      SelectProps={{ displayEmpty: true }}
+                      select
+                    >
+                      {DIPLOMA_SEEKING_PATH_ITEMS.map((option, index) => (
+                        <MenuItem key={index} value={option.value}>
+                          {option.label}
+                        </MenuItem>
+                      ))}
+                    </CssTextField>
                   </>
                 )}
               </Grid>

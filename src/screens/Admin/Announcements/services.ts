@@ -10,6 +10,8 @@ export const getAnnouncementsQuery = gql`
       filter_users
       filter_others
       filter_providers
+      filter_program_years
+      filter_school_partners
       posted_by
       schedule_time
       status
@@ -27,6 +29,8 @@ export const CreateAnnouncementMutation = gql`
       filter_grades
       filter_users
       filter_providers
+      filter_program_years
+      filter_school_partners
       status
       subject
       posted_by
@@ -42,6 +46,8 @@ export const UpdateAnnouncementMutation = gql`
       filter_grades
       filter_users
       filter_providers
+      filter_program_years
+      filter_school_partners
       status
       subject
       posted_by

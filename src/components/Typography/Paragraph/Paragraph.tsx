@@ -1,8 +1,8 @@
 import React from 'react'
 import { Typography } from '@mui/material'
-import { TypographyTemplateType } from '../types'
+import { TypographyProps } from '../types'
 
-export const Paragraph: TypographyTemplateType = ({
+export const Paragraph: React.FC<TypographyProps> = ({
   children,
   size,
   color,

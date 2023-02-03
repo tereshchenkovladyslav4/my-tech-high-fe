@@ -20,6 +20,15 @@ export type Student = {
   diploma_seeking?: number
   hidden?: number
   grade_level?: string
+  username_first_last: string
+  username_last_first: string
+  username_last_first_year: string
+  username_last_firstinitial: string
+  username_last_first_mth: string
+  username_last_first_birth: string
+  username_first_last_domain: string
+  username_student_email: string
+  username_parent_email: string
   person: Person
   parent: Parent
   status: StudentStatusModel[]

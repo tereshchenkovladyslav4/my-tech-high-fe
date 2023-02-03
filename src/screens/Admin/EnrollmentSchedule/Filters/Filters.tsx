@@ -50,6 +50,16 @@ export const Filters: React.FC<FiltersProps> = ({ filter, setFilter }) => {
   }, [filter?.selectedYearId])
 
   useEffect(() => {
+    setProviderList(
+      providers
+        .filter((p) => p.is_display)
+        .map((obj) => {
+          return { id: obj.id, name: obj.name }
+        }),
+    )
+  }, [providers])
+
+  useEffect(() => {
     if (schoolYears?.length > 0 && selectedYearId && selectedYearId > 0) {
       const tempSchoolYears = schoolYears
       const schoolYear = tempSchoolYears.filter((year) => year.school_year_id === selectedYearId)
@@ -162,15 +172,6 @@ export const Filters: React.FC<FiltersProps> = ({ filter, setFilter }) => {
 
   const handleSetCourseType = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value as CourseType
-    if (value === CourseType.MTH_DIRECT) {
-      setProviderList(
-        providers
-          .filter((p) => p.is_display)
-          .map((obj) => {
-            return { id: obj.id, name: obj.name }
-          }),
-      )
-    }
     if (courseType.includes(value)) {
       setCourseType(courseType.filter((i) => i !== value))
     } else {

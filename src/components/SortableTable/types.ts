@@ -1,7 +1,6 @@
-import { FunctionComponent } from 'react'
 import { HeadCell } from './SortableTableHeader/types'
 
-type SortableTableProps = {
+export type SortableTableProps = {
   rows?: unknown
   type?: string
   headCells: HeadCell[]
@@ -17,5 +16,3 @@ type SortableTableProps = {
   hideCheck?: boolean
   hover?: boolean
 }
-
-export type SortableTableTemplateType = FunctionComponent<SortableTableProps>

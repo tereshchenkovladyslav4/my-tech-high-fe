@@ -1,8 +1,7 @@
-import { FunctionComponent } from 'react'
 import { Theme } from '@mui/material'
 import { SxProps } from '@mui/system'
 
-type TextFieldProps = {
+export type TextFieldProps = {
   label?: string
   onChange: (value: React.SetStateAction<string>) => void
   sx?: SxProps<Theme> | undefined
@@ -15,5 +14,3 @@ type TextFieldProps = {
   style?: SxProps<Theme> | undefined
   placeholder?: string
 }
-
-export type TextFieldTemplateType = FunctionComponent<TextFieldProps>

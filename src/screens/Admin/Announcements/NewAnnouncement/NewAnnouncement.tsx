@@ -192,6 +192,8 @@ const NewAnnouncement: React.FC<NewAnnouncementProps> = ({ announcement, setAnno
       setEmailFrom(announcement?.postedBy || '')
       setGrades(JSON.parse(announcement?.filterGrades || ''))
       setUsers(JSON.parse(announcement?.filterUsers || ''))
+      setProgramYears(announcement?.filterProgramYears ? JSON.parse(announcement?.filterProgramYears) : [])
+      setSchoolPartners(announcement?.filterSchoolPartners ? JSON.parse(announcement?.filterSchoolPartners) : [])
       setOthers(announcement?.filterOthers ? JSON.parse(announcement?.filterOthers) : [])
       setProviders(announcement?.filterProviders ? JSON.parse(announcement?.filterProviders) : [])
       setSubject(announcement?.subject || '')

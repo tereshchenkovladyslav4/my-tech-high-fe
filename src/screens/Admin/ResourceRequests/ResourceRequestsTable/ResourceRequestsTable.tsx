@@ -35,6 +35,7 @@ import {
   gradeShortText,
   resourceRequestCost,
   resourceRequestStatus,
+  resourceUsername,
   schoolYearLabel,
   studentStatusText,
 } from '@mth/utils'
@@ -231,7 +232,7 @@ export const ResourceRequestsTable: React.FC<ResourceRequestsTableProps> = ({
           </Box>
           <Box>
             <Typography>Username</Typography>
-            <Typography>{resourceRequest.Resource?.std_user_name}</Typography>
+            <Typography>{resourceUsername(resourceRequest)}</Typography>
           </Box>
           <Box>
             <Typography>Password</Typography>

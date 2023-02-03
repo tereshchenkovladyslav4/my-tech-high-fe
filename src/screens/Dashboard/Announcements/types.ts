@@ -16,6 +16,8 @@ export type Announcement = {
   status?: string
   filterGrades?: string
   filterUsers?: string
+  filterProgramYears?: string
+  filterSchoolPartners?: string
   filterOthers?: string
   filterProviders?: string
   scheduleTime?: Date
@@ -24,6 +26,8 @@ export type Announcement = {
   RegionId?: number
   posted_by?: string
   filter_users?: string
+  filter_program_years?: string
+  filter_school_partners?: string
   filter_others?: string
   filter_providers?: string
   schedule_time?: Date

@@ -2,6 +2,9 @@ import React, { useContext, useEffect, useState } from 'react'
 import { useQuery } from '@apollo/client'
 import { makeStyles, Theme } from '@material-ui/core/styles'
 import { Box } from '@mui/material'
+import { TeacherSideMenu } from '@mth/components/SideMenu/TeacherSideMenu'
+import { TeacherAppBar } from '@mth/components/TeacherAppBar/TeacherAppBar'
+import { RoleLevel } from '@mth/enums'
 import { AdminAppBar } from '../components/AdminAppBar/AdminAppBar'
 import { AppBar } from '../components/AppBar/AppBar'
 import { Flexbox } from '../components/Flexbox/Flexbox'
@@ -11,6 +14,7 @@ import { SideMenu } from '../components/SideMenu/SideMenu'
 import { TabContext, UserContext } from '../providers/UserContext/UserProvider'
 import { AdminRoutes } from '../router/AdminRoutes'
 import { Routes } from '../router/Routes'
+import { TeacherRoutes } from '../router/TeacherRoutes'
 import { UnauthenticatedRoutes } from '../router/UnauthenticatedRoutes'
 import { LoadingScreen } from '../screens/LoadingScreen/LoadingScreen'
 import { getMeQuery } from './services'
@@ -60,7 +64,7 @@ export const Root: React.FC = () => {
   ) : me !== null ? (
     !isSuper ? (
       <Box sx={{ height: '100%', flex: 1 }} alignItems={'center'}>
-        <SideMenu />
+        {me.level === RoleLevel.TEACHER ? <TeacherSideMenu /> : <SideMenu />}
         <Box
           display='flex'
           flex={1}
@@ -70,9 +74,15 @@ export const Root: React.FC = () => {
           height='100vh'
         >
           <div className={classes.content}>
-            {me?.level === 2 ? <AdminAppBar /> : <AppBar />}
+            {me?.level === RoleLevel.ADMIN ? (
+              <AdminAppBar />
+            ) : me?.level === RoleLevel.TEACHER ? (
+              <TeacherAppBar />
+            ) : (
+              <AppBar />
+            )}
             <Box sx={{ marginTop: { xs: '65px', sm: 0 }, marginBottom: { xs: '15px', sm: 0 } }}>
-              <Routes />
+              {me.level === RoleLevel.TEACHER ? <TeacherRoutes /> : <Routes />}
             </Box>
           </div>
           {localStorage.getItem('masquerade') !== null && <MasqueradeFooter me={me} />}

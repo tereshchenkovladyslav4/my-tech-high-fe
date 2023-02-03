@@ -145,7 +145,7 @@ const Settings: React.FC = () => {
       const HTMLStyles = editorStylesToHTMLStyles(block.getInlineStyleAt(0))
       return {
         component: (props: Wysiwyg.EditorState) => (
-          <Box sx={{ display: 'flex' }}>
+          <Box sx={{ display: 'flex', alignItems: 'baseline' }}>
             <Box>
               <Typography className='bullet' sx={{ ...HTMLStyles, marginRight: '8px' }}>{`${levelIndexToDisplay}${
                 blockType === orderedList ? '.' : ' '

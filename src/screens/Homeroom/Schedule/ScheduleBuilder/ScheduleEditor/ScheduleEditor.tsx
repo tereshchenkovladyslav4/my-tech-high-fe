@@ -485,7 +485,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
     return (
       editable(schedule) &&
       (providers.length > 1 ||
-        (providers.length === 1 && (providers[0]?.Courses?.length > 1 || !!providers[0]?.AltCourses?.length)))
+        (providers.length === 1 && (providers[0]?.Courses?.length >= 1 || !!providers[0]?.AltCourses?.length)))
     )
   }
 
@@ -618,16 +618,6 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
 
     if ((schedule.Subject || schedule.Title) && multiProvider) {
       schedule.CourseType = CourseType.MTH_DIRECT
-    }
-
-    if (schedule.CourseType === CourseType.MTH_DIRECT) {
-      const providers = schedule.Title?.Providers || schedule.Subject?.Providers
-      if (providers?.length === 1) {
-        const provider = providers[0]
-        if (provider.Courses?.length === 1 && !provider.AltCourses?.length) {
-          schedule.Course = provider.Courses[0]
-        }
-      }
     }
 
     if (

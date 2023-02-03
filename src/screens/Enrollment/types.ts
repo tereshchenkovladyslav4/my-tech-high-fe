@@ -1,4 +1,3 @@
-import { FunctionComponent } from 'react'
 import {
   EnrollmentQuestion,
   EnrollmentQuestionGroup,
@@ -9,19 +8,13 @@ export type EnrollmentProps = {
   disabled: boolean
 }
 
-export type EnrollmentTemplateType = FunctionComponent<EnrollmentProps>
-
 export type EnrollmentQuestionProps = {
   item: EnrollmentQuestion[]
   group: string
   formik: unknown
 }
 
-export type EnrollmentQuestionTemplateType = FunctionComponent<EnrollmentQuestionProps>
-
-type GroupProps = {
+export type GroupProps = {
   group: EnrollmentQuestionGroup
   formik: unknown
 }
-
-export type GroupTemplateType = FunctionComponent<GroupProps>

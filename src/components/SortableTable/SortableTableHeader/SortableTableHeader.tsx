@@ -3,8 +3,8 @@ import { ArrowDropDown } from '@mui/icons-material'
 import { TableHead, TableRow, TableCell, Checkbox, TableSortLabel } from '@mui/material'
 import { Box } from '@mui/system'
 import { visuallyHidden } from '@mui/utils'
-import { SortableTableHeaders } from './types'
-export const SortableTableHeader: SortableTableHeaders = ({
+import { SortableTableHeaderProps } from './types'
+export const SortableTableHeader: React.FC<SortableTableHeaderProps> = ({
   numSelected,
   onRequestSort,
   onSelectAllClick,

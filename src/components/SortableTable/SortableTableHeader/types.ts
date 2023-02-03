@@ -1,4 +1,3 @@
-import { FunctionComponent } from 'react'
 import { Order } from '@mth/enums'
 
 export interface HeadCell {
@@ -19,5 +18,3 @@ export interface SortableTableHeaderProps {
   noCheckbox?: boolean
   headCells: HeadCell[]
 }
-
-export type SortableTableHeaders = FunctionComponent<SortableTableHeaderProps>

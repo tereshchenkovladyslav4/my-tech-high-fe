@@ -2,9 +2,9 @@ import React from 'react'
 import EastIcon from '@mui/icons-material/East'
 import { Card, CardMedia, CardContent, Box, Typography } from '@mui/material'
 import { useHistory } from 'react-router-dom'
-import { AdminSiteManagementCardTemplateType } from './types'
+import { AdminSiteManagementCardProps } from './types'
 
-export const AdminSiteManagementCard: AdminSiteManagementCardTemplateType = ({ title, link, img, subTitle }) => {
+export const AdminSiteManagementCard: React.FC<AdminSiteManagementCardProps> = ({ title, link, img, subTitle }) => {
   const history = useHistory()
 
   return (

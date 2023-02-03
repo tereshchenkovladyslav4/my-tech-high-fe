@@ -524,6 +524,14 @@ function Item({ question: q, signature }: { question: Question; signature?: unkn
               marginBottom: '12px',
             }}
           >
+            I (parent/guardian) verify my intent to withdraw my student:
+          </Subtitle>
+          <Subtitle
+            size={12}
+            sx={{
+              marginBottom: '12px',
+            }}
+          >
             Type full legal parent name and provide a digital signature below.
           </Subtitle>
           <TextField

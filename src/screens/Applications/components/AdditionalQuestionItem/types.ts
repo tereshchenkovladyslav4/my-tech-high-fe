@@ -1,5 +1,3 @@
-import { FunctionComponent } from 'react'
-
 export type OptionsType = { label: string; value: number }
 
 export type ApplicationQuestion = {
@@ -26,5 +24,3 @@ export type ApplicationQuestionProps = {
   form: unknown
   handleAddQuestion?: (value: unknown, q: unknown) => void
 }
-
-export type ApplicationQuestionTemplateType = FunctionComponent<ApplicationQuestionProps>

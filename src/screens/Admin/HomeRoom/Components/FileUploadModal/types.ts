@@ -1,6 +1,4 @@
-import { FunctionComponent } from 'react'
-
-type SubmissionModal = {
+export type SubmissionModal = {
   handleFile?: (file: File) => void
   open: boolean
   onClose: () => void
@@ -20,5 +18,3 @@ export type S3FileType = {
   type: string
   year: number
 }
-
-export type FileUploadModalProps = FunctionComponent<SubmissionModal>

@@ -5,11 +5,11 @@ import { UserContext } from '../../providers/UserContext/UserProvider'
 import { UpdateUserModal } from '../../screens/Admin/Users/UpdateUserModal/UpdateUserModal'
 import { DropDown } from '../DropDown/DropDown'
 import { SortableTableHeader } from './SortableTableHeader/SortableTableHeader'
-import { SortableTableTemplateType } from './types'
+import { SortableTableProps } from './types'
 
 type Order = 'asc' | 'desc'
 
-export const SortableUserTable: SortableTableTemplateType = ({
+export const SortableUserTable: React.FC<SortableTableProps> = ({
   headCells,
   type,
   rows,

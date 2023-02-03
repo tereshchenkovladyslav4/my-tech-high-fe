@@ -1,7 +1,5 @@
-import React, { ReactElement, useContext, useEffect, useRef, useState } from 'react'
+import React, { FunctionComponent, ReactElement, useContext, useEffect, useRef, useState } from 'react'
 import { useQuery } from '@apollo/client'
-import AddIcon from '@mui/icons-material/Add'
-import AddCircleIcon from '@mui/icons-material/AddCircle'
 import AllInboxOutlinedIcon from '@mui/icons-material/AllInboxOutlined'
 import BackupTableIcon from '@mui/icons-material/BackupTable'
 import CallMadeRoundedIcon from '@mui/icons-material/CallMadeRounded'
@@ -21,33 +19,24 @@ import {
   AppBar as MUIAppBar,
   Avatar,
   Box,
-  Button,
   Divider,
-  Grid,
   Toolbar,
   IconButton,
   Drawer,
   MenuItem,
   Menu,
+  Grid,
   ListItemText,
   ListItemIcon,
 } from '@mui/material'
-import { filter, map, orderBy } from 'lodash'
+import { map, orderBy } from 'lodash'
 import { NavLink, useLocation } from 'react-router-dom'
 import Slider from 'react-slick'
 import { Metadata } from '@mth/components/Metadata/Metadata'
 import { MobileSideMenu } from '@mth/components/SideMenu/MobileSideMenu'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
-import {
-  ApplicationStatus,
-  MthColor,
-  MthRoute,
-  MthTitle,
-  PacketStatus,
-  StudentNotification,
-  StudentStatus,
-} from '@mth/enums'
+import { ApplicationStatus, MthColor, MthRoute, MthTitle, PacketStatus, StudentNotification } from '@mth/enums'
 import { SchoolYear, Student } from '@mth/models'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { getSchoolYearsByRegionId } from '@mth/screens/Admin/Dashboard/SchoolYear/SchoolYear'
@@ -56,8 +45,121 @@ import { checkEnrollPacketStatus, getWindowDimension, gradeText } from '@mth/uti
 import { useStyles } from './styles'
 
 const drawerWidth = '100%'
-
-export const AppBar: React.FC = () => {
+const exampleTeacherData = [
+  {
+    applications: [{ status: 'Accepted', application_id: '3397' }],
+    person: {
+      address: {
+        address_id: '1212',
+        city: null,
+        country_id: 'Botswana',
+        county_id: 1044,
+        school_district: 'Alamosa RE-11J',
+        state: 'LA',
+        street: 'StreetSam',
+        street2: '',
+        zip: '111',
+      },
+      phone: { ext: null, name: null, number: null, person_id: 4212, phone_id: '5869' },
+      date_of_birth: '2017-07-19T00:00:00.000Z',
+      email: 'nairan+1189JON@codev.com',
+      first_name: 'Acacdia',
+      gender: 'Male',
+      last_name: 'test',
+      middle_name: null,
+      person_id: '4063',
+      photo: 'profile/8003/b9fc14b4267887a912010b4b27b81bd9.png',
+      preferred_first_name: null,
+      preferred_last_name: null,
+    },
+    student_id: '3490',
+  },
+  {
+    applications: [{ status: 'Accepted', application_id: '3397' }],
+    person: {
+      address: {
+        address_id: '1212',
+        city: null,
+        country_id: 'Botswana',
+        county_id: 1044,
+        school_district: 'Alamosa RE-11J',
+        state: 'LA',
+        street: 'StreetSam',
+        street2: '',
+        zip: '111',
+      },
+      phone: { ext: null, name: null, number: null, person_id: 4212, phone_id: '5869' },
+      date_of_birth: '2017-07-19T00:00:00.000Z',
+      email: 'nairan+1189JON@codev.com',
+      first_name: '1189JON',
+      gender: 'Male',
+      last_name: 'test',
+      middle_name: null,
+      person_id: '4063',
+      photo: null,
+      preferred_first_name: null,
+      preferred_last_name: null,
+    },
+    student_id: '3491',
+  },
+  {
+    applications: [{ status: 'Accepted', application_id: '3397' }],
+    person: {
+      address: {
+        address_id: '1212',
+        city: null,
+        country_id: 'Botswana',
+        county_id: 1044,
+        school_district: 'Alamosa RE-11J',
+        state: 'LA',
+        street: 'StreetSam',
+        street2: '',
+        zip: '111',
+      },
+      phone: { ext: null, name: null, number: null, person_id: 4212, phone_id: '5869' },
+      date_of_birth: '2017-07-19T00:00:00.000Z',
+      email: 'nairan+1189JON@codev.com',
+      first_name: '1189JON',
+      gender: 'Male',
+      last_name: 'test',
+      middle_name: null,
+      person_id: '4063',
+      photo: null,
+      preferred_first_name: null,
+      preferred_last_name: null,
+    },
+    student_id: '3492',
+  },
+  {
+    applications: [{ status: 'Accepted', application_id: '3397' }],
+    person: {
+      address: {
+        address_id: '1212',
+        city: null,
+        country_id: 'Botswana',
+        county_id: 1044,
+        school_district: 'Alamosa RE-11J',
+        state: 'LA',
+        street: 'StreetSam',
+        street2: '',
+        zip: '111',
+      },
+      phone: { ext: null, name: null, number: null, person_id: 4212, phone_id: '5869' },
+      date_of_birth: '2017-07-19T00:00:00.000Z',
+      email: 'nairan+1189JON@codev.com',
+      first_name: '1189JON',
+      gender: 'Male',
+      last_name: 'test',
+      middle_name: null,
+      person_id: '4063',
+      photo: null,
+      preferred_first_name: null,
+      preferred_last_name: null,
+    },
+    student_id: '3493',
+  },
+]
+export const TeacherAppBar: FunctionComponent = () => {
   const classes = useStyles
   const sliderRef = useRef()
 
@@ -66,15 +168,13 @@ export const AppBar: React.FC = () => {
     type: '',
     name: '',
   })
-  const openStudentList = Boolean(anchorEl)
+  const openTeacherList = Boolean(anchorEl)
 
   const { me } = useContext(UserContext)
   const [openMobileSide, setOpenMobileSide] = useState(false)
 
-  //const { students } = me
-  const [, setStudents] = useState<Student[]>([])
+  const [activeTeachers, setActiveTeachers] = useState<Student[]>([])
 
-  const [activeStudents, setActiveStudents] = useState<Student[]>([])
   const location = useLocation()
 
   const [windowDimensions] = useState(getWindowDimension())
@@ -166,28 +266,6 @@ export const AppBar: React.FC = () => {
     return undefined
   }
 
-  const AddStudentButton = () => (
-    <Button
-      disableElevation
-      href={`${MthRoute.APPLICATIONS}`}
-      variant='contained'
-      sx={{
-        background: '#FAFAFA',
-        color: 'black',
-        width: '200px',
-        height: '44px',
-        alignItems: 'center',
-        '&:hover': {
-          background: '#F5F5F5',
-          color: '#000',
-        },
-      }}
-      startIcon={<AddIcon />}
-    >
-      <Subtitle sx={{ whiteSpace: 'nowrap' }}>Add Student</Subtitle>
-    </Button>
-  )
-
   function SampleNextArrow(props) {
     const { style } = props
     return (
@@ -269,24 +347,18 @@ export const AppBar: React.FC = () => {
     return s3URL + person.photo
   }
 
-  const renderStudentHeader = () =>
+  const renderTeacherHeader = () =>
     map(
       orderBy(
-        activeStudents,
+        activeTeachers,
         [
-          (student) =>
-            student.person.preferred_first_name ? student.person.preferred_first_name : student.person.first_name,
+          (teacher) =>
+            teacher.person.preferred_first_name ? teacher.person.preferred_first_name : teacher.person.first_name,
         ],
         ['asc'],
       ),
-      (student, idx) => {
-        const link =
-          student?.applications?.at(-1)?.status === ApplicationStatus.SUBMITTED ||
-          student?.status?.at(-1)?.status === StudentStatus.WITHDRAWN ||
-          student?.packets?.at(-1)?.status === PacketStatus.STARTED ||
-          student?.packets?.at(-1)?.status === PacketStatus.NOT_STARTED
-            ? `${MthRoute.HOMEROOM}`
-            : `${MthRoute.HOMEROOM}/${student.student_id}`
+      (teacher, idx) => {
+        const link = `${MthRoute.HOMEROOM}/${teacher.student_id}`
         return (
           <Box key={idx} sx={{ textDecoration: 'none', marginTop: 1 }}>
             {link ? (
@@ -295,79 +367,71 @@ export const AppBar: React.FC = () => {
                   divider={true}
                   title={
                     <Subtitle
-                      color={isActive(student.student_id) ? MthColor.MTHBLUE : MthColor.BLACK}
+                      color={isActive(teacher.student_id) ? MthColor.MTHBLUE : MthColor.SYSTEM_01}
                       sx={classes.studentItemText}
                       fontWeight='600'
                     >
-                      {student.person.preferred_first_name
-                        ? student.person.preferred_first_name
-                        : student.person.first_name}
+                      {teacher.person.preferred_first_name
+                        ? teacher.person.preferred_first_name
+                        : teacher.person.first_name}
                     </Subtitle>
                   }
                   subtitle={
-                    <Paragraph
-                      fontWeight='600'
-                      color={isActive(student.student_id) ? MthColor.MTHBLUE : MthColor.SYSTEM_11}
-                      size={'large'}
-                      sx={classes.studentItemText}
-                    >
-                      {gradeText(student)}
+                    <Paragraph fontWeight='600' color={MthColor.SYSTEM_11} size={'large'} sx={classes.studentItemText}>
+                      245
                     </Paragraph>
                   }
                   image={
                     <Box sx={{ position: 'relative' }}>
                       <Avatar
                         alt={
-                          student.person.preferred_first_name
-                            ? student.person.preferred_first_name
-                            : student.person.first_name
+                          teacher.person.preferred_first_name
+                            ? teacher.person.preferred_first_name
+                            : teacher.person.first_name
                         }
-                        src={getProfilePhoto(student.person)}
+                        src={getProfilePhoto(teacher.person)}
                         variant='rounded'
-                        style={{ marginRight: 24 }}
-                      />
-                      <Box
-                        sx={{
-                          position: 'absolute',
-                          bottom: -16,
-                          left: '-2px',
-                          width: '270%',
-                          height: 2,
-                          borderBottom: isActive(student.student_id)
-                            ? '5px solid ' + MthColor.MTHBLUE
-                            : '5px solid transparent',
-                        }}
+                        style={{ marginRight: 24, width: 44, height: 44 }}
                       />
                     </Box>
                   }
+                />
+                <Box
+                  sx={{
+                    position: 'relative',
+                    bottom: 2,
+                    left: '18px',
+                    width: '82%',
+                    height: 2,
+                    margin: '0 auto',
+                    borderBottom: isActive(teacher.student_id)
+                      ? '5px solid ' + MthColor.MTHBLUE
+                      : '5px solid transparent',
+                  }}
                 />
               </NavLink>
             ) : (
               <Metadata
                 divider={true}
                 title={
-                  <Subtitle fontWeight='600' color={isActive(student.student_id) ? MthColor.MTHBLUE : MthColor.BLACK}>
-                    {student.person.first_name}
+                  <Subtitle fontWeight='600' color={isActive(teacher.student_id) ? MthColor.MTHBLUE : MthColor.BLACK}>
+                    {teacher.person.first_name}
                   </Subtitle>
                 }
                 subtitle={
-                  <Paragraph
-                    fontWeight='600'
-                    color={isActive(student.student_id) ? MthColor.MTHBLUE : MthColor.SYSTEM_11}
-                    size={'large'}
-                  >
-                    {gradeText(student)}
+                  <Paragraph fontWeight='600' color={MthColor.SYSTEM_11} size={'large'}>
+                    {gradeText(teacher)}
                   </Paragraph>
                 }
                 image={
                   <Avatar
-                    alt={student.person.first_name}
-                    src={getProfilePhoto(student.person)}
+                    alt={teacher.person.first_name}
+                    src={getProfilePhoto(teacher.person)}
                     variant='rounded'
                     style={{ marginRight: 24 }}
                   />
                 }
-                borderBottom={isActive(student.student_id)}
+                borderBottom={isActive(teacher.student_id)}
               />
             )}
           </Box>
@@ -382,20 +446,20 @@ export const AppBar: React.FC = () => {
     setAnchorEl(null)
   }
 
-  const getAvatar = (student: Student) => {
-    if (getProfilePhoto(student.person) !== 'image') {
-      return { type: 'img', link: getProfilePhoto(student.person) }
+  const getAvatar = (teacher: Student) => {
+    if (getProfilePhoto(teacher.person) !== 'image') {
+      return { type: 'img', link: getProfilePhoto(teacher.person) }
     }
     return {
       type: 'avatar',
-      link: student.person.preferred_first_name ? student.person.preferred_first_name : student.person.first_name,
+      link: teacher.person.preferred_first_name ? teacher.person.preferred_first_name : teacher.person.first_name,
     }
   }
 
-  const mobileStudentHeader = (handleDrawerCloseAndTheIcon) => (
+  const mobileTeacherHeader = (handleDrawerCloseAndTheIcon) => (
     <Menu
       id='basic-menu'
-      open={openStudentList}
+      open={openTeacherList}
       anchorEl={anchorEl}
       onClose={handleAnchorClose}
       MenuListProps={{
@@ -404,7 +468,7 @@ export const AppBar: React.FC = () => {
     >
       {map(
         orderBy(
-          activeStudents,
+          activeTeachers,
           [
             (student) =>
               student.person.preferred_first_name ? student.person.preferred_first_name : student.person.first_name,
@@ -480,28 +544,12 @@ export const AppBar: React.FC = () => {
           )
         },
       )}
-      <NavLink to={`${MthRoute.APPLICATIONS}`} style={{ textDecoration: 'none' }}>
-        <MenuItem onClick={() => handleDrawerCloseAndTheIcon('header', 'addStudent')}>
-          <ListItemIcon sx={{ marginRight: '24px' }}>
-            <AddCircleIcon sx={{ fontSize: '2.5rem' }} />
-          </ListItemIcon>
-          <ListItemText sx={{ color: 'black' }}>Add Student</ListItemText>
-        </MenuItem>
-      </NavLink>
     </Menu>
   )
 
   useEffect(() => {
     if (me?.students) {
-      setStudents(me?.students)
-      setActiveStudents(
-        filter(me?.students, (student) => {
-          return (
-            student?.status?.at(-1)?.status !== StudentStatus.WITHDRAWN &&
-            student?.status?.at(-1)?.status !== StudentStatus.DELETED
-          )
-        }),
-      )
+      setActiveTeachers(exampleTeacherData)
     }
   }, [me?.students])
 
@@ -642,9 +690,9 @@ export const AppBar: React.FC = () => {
                 }
                 sx={{ marginRight: '50px' }}
               >
-                {activeStudents.length > 3 ? (
+                {activeTeachers.length > 3 ? (
                   <Slider {...settings} ref={sliderRef}>
-                    {renderStudentHeader()}
+                    {renderTeacherHeader()}
                   </Slider>
                 ) : (
                   <Box
@@ -654,7 +702,7 @@ export const AppBar: React.FC = () => {
                     alignItems='center'
                     justifyContent='end'
                   >
-                    {renderStudentHeader()}
+                    {renderTeacherHeader()}
                     <Divider
                       sx={{
                         background: 'black',
@@ -667,9 +715,6 @@ export const AppBar: React.FC = () => {
                     />
                   </Box>
                 )}
-              </Box>
-              <Box sx={{ paddingTop: activeStudents.length === 0 ? '20px' : '' }}>
-                <AddStudentButton />
               </Box>
             </Grid>
           </Grid>
@@ -692,12 +737,12 @@ export const AppBar: React.FC = () => {
               size='large'
               aria-label='show 4 new mails'
               id='basic-button'
-              aria-controls={openStudentList ? 'basic-menu' : undefined}
+              aria-controls={openTeacherList ? 'basic-menu' : undefined}
               aria-haspopup='true'
-              aria-expanded={openStudentList ? 'true' : undefined}
+              aria-expanded={openTeacherList ? 'true' : undefined}
               onClick={handleAnchorClick}
             >
-              {!openStudentList ? <KeyboardArrowDownIcon /> : <KeyboardArrowUpIcon />}
+              {!openTeacherList ? <KeyboardArrowDownIcon /> : <KeyboardArrowUpIcon />}
             </IconButton>
             <IconButton
               sx={{
@@ -726,7 +771,7 @@ export const AppBar: React.FC = () => {
         open={openMobileSide}
       >
         <Divider />
-        {mobileStudentHeader(handleDrawerCloseAndTheIcon)}
+        {mobileTeacherHeader(handleDrawerCloseAndTheIcon)}
         <MobileSideMenu handleDrawerClose={handleDrawerCloseAndTheIcon} />
       </Drawer>
     </>

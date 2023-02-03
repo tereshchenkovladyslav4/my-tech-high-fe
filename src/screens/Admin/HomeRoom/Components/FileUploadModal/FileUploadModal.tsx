@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from 'react'
 import SystemUpdateAltRoundedIcon from '@mui/icons-material/SystemUpdateAltRounded'
 import { Box, Button, Modal, Tooltip } from '@mui/material'
+import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { MthColor } from '@mth/enums'
-import { Paragraph } from '../../../../../components/Typography/Paragraph/Paragraph'
 import { FileUploadModalClasses } from './styles'
-import { FileUploadModalProps } from './types'
+import { SubmissionModal } from './types'
 
 type ValidateFileResponse = {
   status: boolean
   message?: string
 }
 
-const FileUploadModal: FileUploadModalProps = ({
+const FileUploadModal: React.FC<SubmissionModal> = ({
   open,
   isDownloadTemplate = false,
   isError,

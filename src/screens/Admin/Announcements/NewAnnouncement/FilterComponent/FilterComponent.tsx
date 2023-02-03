@@ -85,8 +85,8 @@ const FilterComponent: React.FC<FilterComponentProps> = ({
 
   useEffect(() => {
     if (selectAll && programYearList && schoolPartnerList && gradeList) {
-      setProgramYears(map(programYearList, (el) => el.value))
-      setSchoolPartners(map(schoolPartnerList, (el) => el.value))
+      if (programYears.length === 0) setProgramYears(map(programYearList, (el) => el.value))
+      if (schoolPartners.length === 0) setSchoolPartners(map(schoolPartnerList, (el) => el.value))
       if (grades.length === 0) setGrades(['all', ...map(gradeList, (el) => el.value)])
     }
   }, [selectAll])

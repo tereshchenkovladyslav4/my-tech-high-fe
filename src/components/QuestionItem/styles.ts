@@ -14,6 +14,13 @@ export const useStyles = {
       fontSize: 16,
     },
     marginY: 2,
+    ['& label']: {
+      maxWidth: '95%',
+      top: 'auto',
+      bottom: '19px',
+      whiteSpace: 'pre-wrap',
+      textAlign: 'left',
+    },
   },
   textFieldError: {
     [`& .${outlinedInputClasses.root} .${outlinedInputClasses.notchedOutline}`]: {
@@ -28,6 +35,13 @@ export const useStyles = {
     },
     [`& .${outlinedInputClasses.root} .${outlinedInputClasses.notchedOutline} span`]: {
       fontSize: 16,
+    },
+    ['& label']: {
+      maxWidth: '95%',
+      top: 'auto',
+      bottom: '40px',
+      whiteSpace: 'pre-wrap',
+      textAlign: 'left',
     },
   },
   addStudentButton: {
@@ -65,6 +79,13 @@ export const useStyles = {
     },
     [`& .${outlinedInputClasses.root} .${outlinedInputClasses.notchedOutline} span`]: {
       fontSize: 16,
+    },
+    ['& label']: {
+      maxWidth: '95%',
+      top: 'auto',
+      bottom: '19px',
+      whiteSpace: 'pre-wrap',
+      textAlign: 'left',
     },
   },
 }

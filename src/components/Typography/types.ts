@@ -1,4 +1,4 @@
-import { FunctionComponent, ReactNode } from 'react'
+import { ReactNode } from 'react'
 import { Theme } from '@emotion/react'
 import { SxProps } from '@mui/system'
 
@@ -13,5 +13,3 @@ export type TypographyProps = {
   onClick?: () => void
   className?: string
 }
-
-export type TypographyTemplateType = FunctionComponent<TypographyProps>

@@ -5,16 +5,16 @@ import { Modal, Grid, Typography } from '@mui/material'
 import { Box } from '@mui/system'
 import { sortBy } from 'lodash'
 import moment from 'moment'
-import { Subtitle } from '../../../../components/Typography/Subtitle/Subtitle'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { useStyles } from './styles'
-import { ApplicationEmailModalType } from './types'
+import { ApplicationEmailModalProps } from './types'
 
 type emailDataType = {
   from_email: string
   subject: string
   body: string
 }
-export const ApplicationEmailModal: ApplicationEmailModalType = ({ handleModem, data, handleSubmit }) => {
+export const ApplicationEmailModal: React.FC<ApplicationEmailModalProps> = ({ handleModem, data, handleSubmit }) => {
   const classes = useStyles
   const [dateSortDirection, setDateSortDirection] = useState('')
   const [subjectSortDirection, setSubjectSortDirection] = useState('')

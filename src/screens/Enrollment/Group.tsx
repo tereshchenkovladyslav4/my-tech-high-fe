@@ -1,11 +1,10 @@
 import React from 'react'
 import { Box, Grid } from '@mui/material'
-
-import { Subtitle } from '../../components/Typography/Subtitle/Subtitle'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { EnrollmentQuestionItem } from './Question'
-import { GroupTemplateType } from './types'
+import { GroupProps } from './types'
 
-export const GroupItem: GroupTemplateType = ({ group, formik }) => {
+export const GroupItem: React.FC<GroupProps> = ({ group, formik }) => {
   const questionsArr = group?.questions?.map((q) => {
     let current = q,
       child

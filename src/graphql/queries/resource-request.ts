@@ -28,6 +28,15 @@ export const getResourceRequestsQuery = gql`
         updated_at
         Student {
           student_id
+          username_first_last
+          username_last_first
+          username_last_first_year
+          username_last_firstinitial
+          username_last_first_mth
+          username_last_first_birth
+          username_first_last_domain
+          username_student_email
+          username_parent_email
           person {
             first_name
             last_name
@@ -57,6 +66,7 @@ export const getResourceRequestsQuery = gql`
         Resource {
           subtitle
           price
+          std_username_format
           std_user_name
           std_password
           title

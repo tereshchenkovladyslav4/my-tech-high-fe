@@ -2,10 +2,10 @@ import React from 'react'
 import EastIcon from '@mui/icons-material/East'
 import { Card, CardMedia, CardContent, Box, Typography } from '@mui/material'
 import { useHistory } from 'react-router-dom'
-import { Subtitle } from '../../../../../components/Typography/Subtitle/Subtitle'
-import { CommunicationCardTemplateType } from './types'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { CommunicationCardProps } from './types'
 
-export const CommunicationCard: CommunicationCardTemplateType = ({ title, link, img, description = '' }) => {
+export const CommunicationCard: React.FC<CommunicationCardProps> = ({ title, link, img, description = '' }) => {
   const history = useHistory()
 
   return (
