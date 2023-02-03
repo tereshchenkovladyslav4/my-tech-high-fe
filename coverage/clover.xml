@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1675437196366" clover="3.2.0">
+  <project timestamp="1675437196366" name="All files">
+    <metrics statements="18" coveredstatements="18" conditionals="14" coveredconditionals="8" methods="7" coveredmethods="7" elements="39" coveredelements="33" complexity="0" loc="18" ncloc="18" packages="5" files="5" classes="5"/>
+    <package name="components.Card">
+      <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+      <file name="Card.tsx" path="/Users/mattdizon/Desktop/untitled folder 4/infocenter-v2-fe/src/components/Card/Card.tsx">
+        <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+        <line num="2" count="1" type="stmt"/>
+        <line num="4" count="1" type="stmt"/>
+      </file>
+    </package>
+    <package name="components.EmptyState">
+      <metrics statements="5" coveredstatements="5" conditionals="4" coveredconditionals="2" methods="1" coveredmethods="1"/>
+      <file name="EmptyState.tsx" path="/Users/mattdizon/Desktop/untitled folder 4/infocenter-v2-fe/src/components/EmptyState/EmptyState.tsx">
+        <metrics statements="5" coveredstatements="5" conditionals="4" coveredconditionals="2" methods="1" coveredmethods="1"/>
+        <line num="2" count="1" type="stmt"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="7" count="1" type="stmt"/>
+        <line num="8" count="1" type="stmt"/>
+      </file>
+    </package>
+    <package name="components.Typography.Subtitle">
+      <metrics statements="4" coveredstatements="4" conditionals="4" coveredconditionals="2" methods="2" coveredmethods="2"/>
+      <file name="Subtitle.tsx" path="/Users/mattdizon/Desktop/untitled folder 4/infocenter-v2-fe/src/components/Typography/Subtitle/Subtitle.tsx">
+        <metrics statements="4" coveredstatements="4" conditionals="4" coveredconditionals="2" methods="2" coveredmethods="2"/>
+        <line num="2" count="1" type="stmt"/>
+        <line num="5" count="1" type="stmt"/>
+        <line num="15" count="1" type="cond" truecount="2" falsecount="2"/>
+        <line num="17" count="1" type="stmt"/>
+      </file>
+    </package>
+    <package name="components.Typography.Title">
+      <metrics statements="4" coveredstatements="4" conditionals="6" coveredconditionals="4" methods="2" coveredmethods="2"/>
+      <file name="Title.tsx" path="/Users/mattdizon/Desktop/untitled folder 4/infocenter-v2-fe/src/components/Typography/Title/Title.tsx">
+        <metrics statements="4" coveredstatements="4" conditionals="6" coveredconditionals="4" methods="2" coveredmethods="2"/>
+        <line num="2" count="1" type="stmt"/>
+        <line num="5" count="1" type="stmt"/>
+        <line num="6" count="1" type="cond" truecount="2" falsecount="2"/>
+        <line num="8" count="1" type="stmt"/>
+      </file>
+    </package>
+    <package name="core.utils">
+      <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+      <file name="window.util.ts" path="/Users/mattdizon/Desktop/untitled folder 4/infocenter-v2-fe/src/core/utils/window.util.ts">
+        <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="2" count="1" type="stmt"/>
+        <line num="3" count="1" type="stmt"/>
+      </file>
+    </package>
+  </project>
+</coverage>

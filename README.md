@@ -22,6 +22,9 @@
 
 2a. Follow TDD Practices as best as possible. 
 
+	- Useful links: Jest: https://jestjs.io/docs/api
+	- React Testing Library: https://testing-library.com/docs/react-testing-library/api
+
 2b. We Use Storybook to develop components, run `yarn storybook` to run the storybook server
 
 
