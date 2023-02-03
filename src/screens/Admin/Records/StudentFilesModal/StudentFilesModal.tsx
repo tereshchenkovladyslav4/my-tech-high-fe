@@ -20,7 +20,13 @@ import { recordClasses } from '../styles'
 import { StudentFilesModalProps, StudentRecord, StudentRecordFile } from '../types'
 import { studentFilesModalClassess } from './styles'
 
-const StudentFilesModal: React.FC<StudentFilesModalProps> = ({ record, handleModem, handleDownload, refetch }) => {
+const StudentFilesModal: React.FC<StudentFilesModalProps> = ({
+  schoolYearId,
+  record,
+  handleModem,
+  handleDownload,
+  refetch,
+}) => {
   const { me } = useContext(UserContext)
   const [stateName, setStateName] = useState<string>('')
   const [showUploadModal, setShowUploadModal] = useState<boolean>(false)
@@ -32,7 +38,10 @@ const StudentFilesModal: React.FC<StudentFilesModalProps> = ({ record, handleMod
     [record?.firstName, record?.lastName],
   )
 
-  const { data: enrollmentPacketDocumentList } = useEnrollmentPacketDocumentListByRegionId(Number(me?.selectedRegionId))
+  const { data: enrollmentPacketDocumentList } = useEnrollmentPacketDocumentListByRegionId(
+    Number(me?.selectedRegionId),
+    schoolYearId,
+  )
   const [submitSave, {}] = useMutation(RegisterStudentRecordFileMutation)
 
   const handleFileClick = (file: StudentRecordFile) => {

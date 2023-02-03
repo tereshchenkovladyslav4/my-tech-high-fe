@@ -48,9 +48,8 @@ export const Enrollment: React.FC<EnrollmentProps> = ({ id, disabled }: { id: nu
     variables: {
       input: {
         region_id: Number(regionId),
-        school_year_id:
-          student?.current_school_year_status.school_year_id +
-          (student?.current_school_year_status.midyear_application ? '-mid' : ''),
+        school_year_id: parseInt(student?.current_school_year_status.school_year_id),
+        mid_year: student?.current_school_year_status.midyear_application ? true : false,
       },
     },
     fetchPolicy: 'network-only',
@@ -85,7 +84,14 @@ export const Enrollment: React.FC<EnrollmentProps> = ({ id, disabled }: { id: nu
         }
         return t
       })
-      setQuestionsData(jsonTabData)
+      const sortMap = {
+        Contact: 0,
+        Personal: 1,
+        Education: 2,
+        Documents: 3,
+        Submission: 4,
+      }
+      setQuestionsData(jsonTabData.sort((a, b) => (sortMap[a.tab_name] > sortMap[b.tab_name] ? 1 : -1)))
     }
   }, [data, regionId])
 

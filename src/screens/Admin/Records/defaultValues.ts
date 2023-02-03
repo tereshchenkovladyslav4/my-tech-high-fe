@@ -1,7 +1,7 @@
 import { CheckBoxListVM } from '@mth/components/MthCheckBoxList/MthCheckboxList'
 import { StudentRecordFileKind } from '@mth/enums'
 
-export const defaultStatusOptions: CheckBoxListVM[] = [
+export const DEFULAT_PROGRAM_YEAR_STATUS_LIST: CheckBoxListVM[] = [
   {
     label: 'New',
     value: 'New',
@@ -11,12 +11,47 @@ export const defaultStatusOptions: CheckBoxListVM[] = [
     value: 'Returning',
   },
   {
+    label: 'Transferred',
+    value: 'Transferred',
+  },
+]
+
+export const DEFULAT_ENROLLMENT_STATUS_LIST: CheckBoxListVM[] = [
+  {
+    label: 'Pending',
+    value: 'Pending',
+  },
+  {
+    label: 'Active',
+    value: 'Active',
+  },
+  {
     label: 'Withdrawn',
     value: 'Withdrawn',
   },
 ]
 
-export const defaultSpecialEdOptions: CheckBoxListVM[] = [
+export const DEFAULT_ENROLLMENT_STATUS_FILTER = ['Pending', 'Active']
+export const DEFULAT_PROGRAM_YEAR_STATUS_FILTER = ['New', 'Returning', 'Transferred']
+export const DEFAULT_GRADES_FILTER1 = [
+  'Kindergarten',
+  '1',
+  '2',
+  '3',
+  '4',
+  '5',
+  '6',
+  '7',
+  '8',
+  '9',
+  '10',
+  '11',
+  '12',
+  'all',
+]
+export const DEFAULT_GRADES_FILTER2 = ['Kindergarten', '1-8', '9-12']
+
+export const DEFAULT_SPECIAL_ED_LIST: CheckBoxListVM[] = [
   {
     label: 'IEP',
     value: 'IEP',
@@ -31,7 +66,7 @@ export const defaultSpecialEdOptions: CheckBoxListVM[] = [
   },
 ]
 
-export const defaultOtherOptions: CheckBoxListVM[] = [
+export const DEFAULT_OTHER_LIST: CheckBoxListVM[] = [
   {
     label: StudentRecordFileKind.STUDENT_PACKET,
     value: StudentRecordFileKind.STUDENT_PACKET,
@@ -43,5 +78,17 @@ export const defaultOtherOptions: CheckBoxListVM[] = [
   {
     label: StudentRecordFileKind.OPT_OUT_FORM,
     value: StudentRecordFileKind.OPT_OUT_FORM,
+  },
+  {
+    label: StudentRecordFileKind.USIRS,
+    value: StudentRecordFileKind.USIRS,
+  },
+  {
+    label: StudentRecordFileKind.SCHEDULE,
+    value: StudentRecordFileKind.SCHEDULE,
+  },
+  {
+    label: StudentRecordFileKind.WEEKLY_LEARNING_LOG,
+    value: StudentRecordFileKind.WEEKLY_LEARNING_LOG,
   },
 ]

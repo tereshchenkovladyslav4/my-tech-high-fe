@@ -60,6 +60,7 @@ export const EnrollmentQuestions: React.FC = () => {
 
   const [schoolYearList, setSchoolYearList] = useState<DropDownItem[]>([])
   const [activeSchoolYearId, setActiveSchoolYearId] = useState<string>('')
+  const [midActiveSchoolYearId, setMidActiveSchoolYearId] = useState<boolean>(false)
 
   const classes = useStyles
   const history = useHistory()
@@ -68,7 +69,13 @@ export const EnrollmentQuestions: React.FC = () => {
   const [deleteQuestionGroup] = useMutation(deleteQuestionGroupGql)
   const { me } = useContext(UserContext)
   const { data, refetch } = useQuery(getQuestionsGql, {
-    variables: { input: { region_id: Number(me?.selectedRegionId), school_year_id: activeSchoolYearId } },
+    variables: {
+      input: {
+        region_id: Number(me?.selectedRegionId),
+        school_year_id: parseInt(activeSchoolYearId),
+        mid_year: midActiveSchoolYearId,
+      },
+    },
     fetchPolicy: 'network-only',
     skip: !activeSchoolYearId,
   })
@@ -139,6 +146,46 @@ export const EnrollmentQuestions: React.FC = () => {
         }
         return t
       })
+      const contactTab = jsonTabData.find((item) => item.tab_name === 'Contact')
+      const personTab = jsonTabData.find((item) => item.tab_name === 'Personal')
+      const educationTab = jsonTabData.find((item) => item.tab_name === 'Education')
+      const documentTab = jsonTabData.find((item) => item.tab_name === 'Documents')
+      const submissionTab = jsonTabData.find((item) => item.tab_name === 'Submission')
+      if (!contactTab) {
+        jsonTabData.push({
+          tab_name: 'Contact',
+          is_active: true,
+          groups: [],
+        })
+      }
+      if (!personTab) {
+        jsonTabData.push({
+          tab_name: 'Personal',
+          is_active: true,
+          groups: [],
+        })
+      }
+      if (!educationTab) {
+        jsonTabData.push({
+          tab_name: 'Education',
+          is_active: true,
+          groups: [],
+        })
+      }
+      if (!documentTab) {
+        jsonTabData.push({
+          tab_name: 'Documents',
+          is_active: true,
+          groups: [],
+        })
+      }
+      if (!submissionTab) {
+        jsonTabData.push({
+          tab_name: 'Submission',
+          is_active: true,
+          groups: [],
+        })
+      }
       setQuestionsData(jsonTabData)
       setUnsavedChanges(false)
     } else {
@@ -233,25 +280,27 @@ export const EnrollmentQuestions: React.FC = () => {
     if (!schoolLoading && schoolYearData.getSchoolYearsByRegionId) {
       const tempSchoolYearList: DropDownItem[] = []
       setSchoolYears(
-        schoolYearData.getSchoolYearsByRegionId.map((item) => {
-          tempSchoolYearList.push({
-            label: moment(item.date_begin).format('YYYY') + '-' + moment(item.date_end).format('YY'),
-            value: item.school_year_id + '',
-          })
-          if (item.midyear_application === 1) {
+        schoolYearData.getSchoolYearsByRegionId
+          .sort((a, b) => (a.date_begin > b.date_begin ? 1 : -1))
+          .map((item) => {
             tempSchoolYearList.push({
-              label: moment(item.date_begin).format('YYYY') + '-' + moment(item.date_end).format('YY') + ' Mid',
-              value: item.school_year_id + '-mid',
+              label: moment(item.date_begin).format('YYYY') + '-' + moment(item.date_end).format('YY'),
+              value: item.school_year_id + '',
             })
-          }
-          if (moment().format('YYYY-MM-DD') > item.date_begin && moment().format('YYYY-MM-DD') < item.date_end) {
-            setActiveSchoolYearId(item.school_year_id + '')
-          }
-          return {
-            label: moment(item.date_begin).format('YYYY') + '-' + moment(item.date_end).format('YYYY'),
-            value: item.school_year_id,
-          }
-        }),
+            if (item.midyear_application === 1) {
+              tempSchoolYearList.push({
+                label: moment(item.date_begin).format('YYYY') + '-' + moment(item.date_end).format('YY') + ' Mid',
+                value: item.school_year_id + '-mid',
+              })
+            }
+            if (moment().format('YYYY-MM-DD') > item.date_begin && moment().format('YYYY-MM-DD') < item.date_end) {
+              setActiveSchoolYearId(item.school_year_id + '')
+            }
+            return {
+              label: moment(item.date_begin).format('YYYY') + '-' + moment(item.date_end).format('YYYY'),
+              value: item.school_year_id,
+            }
+          }),
       )
       setSchoolYearsData(schoolYearData.getSchoolYearsByRegionId)
 
@@ -438,7 +487,8 @@ export const EnrollmentQuestions: React.FC = () => {
                 tab_name: v.tab_name,
                 groups: v.groups,
                 region_id: Number(me?.selectedRegionId),
-                school_year_id: activeSchoolYearId,
+                school_year_id: parseInt(activeSchoolYearId),
+                mid_year: midActiveSchoolYearId,
               })),
             },
           })
@@ -467,7 +517,14 @@ export const EnrollmentQuestions: React.FC = () => {
                     defaultValue={activeSchoolYearId}
                     borderNone={true}
                     setParentValue={(val) => {
-                      setActiveSchoolYearId(val + '')
+                      let yearId = val + ''
+                      if (yearId?.indexOf('mid') > 0) {
+                        yearId = yearId?.split('-')?.at(0)
+                        setMidActiveSchoolYearId(true)
+                      } else {
+                        setMidActiveSchoolYearId(false)
+                      }
+                      setActiveSchoolYearId(val)
                     }}
                   />
                 </Stack>

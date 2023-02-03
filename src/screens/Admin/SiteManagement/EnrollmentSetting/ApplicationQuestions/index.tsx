@@ -1,13 +1,14 @@
 import React, { useEffect, useState, useContext } from 'react'
 import { useMutation, useQuery } from '@apollo/client'
 import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded'
-import { Alert, Box, Button, Card, Grid, IconButton, List, Typography } from '@mui/material'
+import { Alert, Box, Button, Card, Grid, IconButton, List, Stack, Typography } from '@mui/material'
 import { Form, Formik } from 'formik'
 import _ from 'lodash'
 import moment from 'moment'
 import { useHistory } from 'react-router-dom'
 import { arrayMove, SortableContainer, SortableElement } from 'react-sortable-hoc'
 import BGSVG from '@mth/assets/ApplicationBG.svg'
+import { DropDown } from '@mth/components/DropDown/DropDown'
 import { DropDownItem } from '@mth/components/DropDown/types'
 import { COUNTRIES, GRADES, US_STATES } from '@mth/constants'
 import { QUESTION_TYPE, MthTitle } from '@mth/enums'
@@ -49,6 +50,11 @@ export const ApplicationQuestions: React.FC = () => {
   const [editItem, setEditItem] = useState([])
   const [specialEd, setSpecialEd] = useState(false)
   const [specialEdOptions, setSpecialEdOptions] = useState([])
+
+  const [activeSchoolYearId, setActiveSchoolYearId] = useState<string>('')
+  const [activeMidSchoolYear, setActiveMidSchoolYear] = useState<boolean>(false)
+  const [schoolYearList, setSchoolYearList] = useState<DropDownItem[]>([])
+
   const { loading: countyLoading, data: countyData } = useQuery(getCountiesByRegionId, {
     variables: { regionId: Number(me?.selectedRegionId) },
     fetchPolicy: 'network-only',
@@ -88,8 +94,15 @@ export const ApplicationQuestions: React.FC = () => {
   }, [countyData])
 
   const { data, refetch } = useQuery(getQuestionsGql, {
-    variables: { input: { region_id: Number(me?.selectedRegionId) } },
+    variables: {
+      input: {
+        school_year_id: parseInt(activeSchoolYearId),
+        mid_year: activeMidSchoolYear,
+        region_id: Number(me?.selectedRegionId),
+      },
+    },
     fetchPolicy: 'network-only',
+    skip: !activeSchoolYearId,
   })
 
   const { loading: schoolLoading, data: schoolYearData } = useQuery(getActiveSchoolYearsByRegionId, {
@@ -121,7 +134,27 @@ export const ApplicationQuestions: React.FC = () => {
 
   useEffect(() => {
     if (!schoolLoading && schoolYearData.getSchoolYearsByRegionId) {
+      const tempSchoolYearList: DropDownItem[] = []
       const schoolYearsArray = []
+      schoolYearData.getSchoolYearsByRegionId
+        .sort((a, b) => (a.date_begin > b.date_begin ? 1 : -1))
+        .map((item) => {
+          tempSchoolYearList.push({
+            label: moment(item.date_begin).format('YYYY') + '-' + moment(item.date_end).format('YY'),
+            value: item.school_year_id + '',
+          })
+          if (item.midyear_application === 1) {
+            tempSchoolYearList.push({
+              label: moment(item.date_begin).format('YYYY') + '-' + moment(item.date_end).format('YY') + ' Mid',
+              value: item.school_year_id + '-mid',
+            })
+          }
+          if (moment().format('YYYY-MM-DD') > item.date_begin && moment().format('YYYY-MM-DD') < item.date_end) {
+            setActiveSchoolYearId(item.school_year_id)
+          }
+        })
+      setSchoolYearList(tempSchoolYearList)
+
       schoolYearData.getSchoolYearsByRegionId
         .filter((item) => new Date(item.date_begin) <= new Date() && new Date(item.date_end) >= new Date())
         .map(
@@ -409,6 +442,8 @@ export const ApplicationQuestions: React.FC = () => {
                 slug: v.slug || '',
                 additional_question: v.additional_question,
                 main_question: v.main_question,
+                school_year_id: parseInt(activeSchoolYearId),
+                mid_year: activeMidSchoolYear,
               })),
             },
           })
@@ -419,33 +454,55 @@ export const ApplicationQuestions: React.FC = () => {
       >
         {({ values, setValues }) => (
           <Form>
-            <Box
-              sx={{
-                textAlign: 'left',
-                marginBottom: '12px',
-                marginLeft: '32px',
-              }}
-            >
-              <IconButton
-                onClick={() => {
-                  history.goBack()
-                }}
+            <Box display='flex' justifyContent='space-between'>
+              <Box
                 sx={{
-                  position: 'relative',
-                  bottom: '2px',
+                  textAlign: 'left',
+                  marginBottom: '12px',
+                  marginLeft: '32px',
                 }}
               >
-                <ArrowBackIosRoundedIcon
-                  sx={{
-                    fontSize: '15px',
-                    stroke: 'black',
-                    strokeWidth: 2,
+                <IconButton
+                  onClick={() => {
+                    history.goBack()
                   }}
-                />
-              </IconButton>
-              <Typography paddingLeft='7px' fontSize='20px' fontWeight='700' component='span'>
-                Application Questions
-              </Typography>
+                  sx={{
+                    position: 'relative',
+                    bottom: '2px',
+                  }}
+                >
+                  <ArrowBackIosRoundedIcon
+                    sx={{
+                      fontSize: '15px',
+                      stroke: 'black',
+                      strokeWidth: 2,
+                    }}
+                  />
+                </IconButton>
+                <Typography paddingLeft='7px' fontSize='20px' fontWeight='700' component='span'>
+                  Application Questions
+                </Typography>
+              </Box>
+              <Box>
+                <Stack direction='row' spacing={1} alignItems='center'>
+                  <DropDown
+                    dropDownItems={schoolYearList}
+                    placeholder={'Select Year'}
+                    defaultValue={activeSchoolYearId}
+                    borderNone={true}
+                    setParentValue={(val) => {
+                      let schoolYearId: string = val + ''
+                      if (schoolYearId.indexOf('-mid') !== -1) {
+                        setActiveMidSchoolYear(true)
+                        schoolYearId = schoolYearId?.split('-')?.at(0)
+                      } else {
+                        setActiveMidSchoolYear(false)
+                      }
+                      setActiveSchoolYearId(val + '')
+                    }}
+                  />
+                </Stack>
+              </Box>
             </Box>
             <Card sx={styles.card}>
               <Box

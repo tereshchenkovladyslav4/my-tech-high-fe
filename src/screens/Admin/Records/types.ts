@@ -3,7 +3,8 @@ export type FilterVM = {
   gradeLevel1: string
   gradeLevel2: string
   programYear: string
-  status: string
+  programYearStatus: string
+  enrollmentStatus: string
   schoolOfEnrollment: string
   specialEd: string
   EnrollmentPacketDocuments: string
@@ -19,6 +20,7 @@ export type StudentFilesFolderProps = {
 }
 
 export type StudentFilesModalProps = {
+  schoolYearId: number | undefined
   record: StudentRecord | undefined
   handleDownload: (value: StudentRecord[], isIndividualFile?: boolean) => void
   handleModem: () => void

@@ -5,6 +5,7 @@ import { getEnrollmentQuestionsGql } from '@mth/graphql/queries/enrollment-quest
 
 export const useEnrollmentPacketDocumentListByRegionId = (
   regionId: number,
+  schoolYearId: number | undefined,
 ): {
   loading: boolean
   data: CheckBoxListVM[]
@@ -13,9 +14,9 @@ export const useEnrollmentPacketDocumentListByRegionId = (
   const [enrollmentPacketDocumentList, setEnrollmentPacketDocumentList] = useState<CheckBoxListVM[]>([])
   const { data, loading, error } = useQuery(getEnrollmentQuestionsGql, {
     variables: {
-      input: { region_id: regionId },
+      input: { region_id: regionId, school_year_id: `${schoolYearId}` },
     },
-    skip: regionId ? false : true,
+    skip: !regionId || !schoolYearId,
     fetchPolicy: 'network-only',
   })
 

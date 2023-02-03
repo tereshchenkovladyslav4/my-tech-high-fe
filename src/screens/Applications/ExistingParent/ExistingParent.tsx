@@ -64,6 +64,7 @@ export const ExistingParent: React.FC = () => {
   const [midYearApplication, setMidYearApplication] = useState<boolean>(false)
   const [gradesDropDownItems, setGradesDropDownItems] = useState<Array<DropDownItem>>([])
   const [birthDateCut, setBirthDateCut] = useState<string>('')
+  const [selectedSchoolYearId, setSelectedSchoolYearId] = useState<number | null>(null)
 
   const { schoolYears: schoolYearsData, dropdownItems: schoolYears } = useActiveSchoolYearsByRegionId(+regionId)
 
@@ -76,7 +77,9 @@ export const ExistingParent: React.FC = () => {
   })
 
   const { loading: questionLoading, data: questionData } = useQuery(getQuestionsGql, {
-    variables: { input: { region_id: Number(regionId) } },
+    variables: {
+      input: { region_id: Number(regionId), school_year_id: selectedSchoolYearId, mid_year: midYearApplication },
+    },
     fetchPolicy: 'network-only',
   })
 
@@ -433,6 +436,7 @@ export const ExistingParent: React.FC = () => {
                             }
                             form.setFieldValue(field.name, toNumber(id))
                             setGradesAndBirthDateCut(id)
+                            setSelectedSchoolYearId(+id)
                           }}
                           alternate={true}
                           size='small'

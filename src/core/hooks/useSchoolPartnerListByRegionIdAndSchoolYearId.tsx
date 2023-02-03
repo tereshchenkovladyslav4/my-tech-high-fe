@@ -9,8 +9,11 @@ export const useSchoolPartnerListByRegionIdAndSchoolYearId = (
 ): {
   loading: boolean
   schoolOfEnrollmentList: CheckBoxListVM[]
+  selectedSchoolofEnrollments: string[]
+  setSelectedSchoolofEnrollments: (value: string[]) => void
   error: ApolloError | undefined
 } => {
+  const [schoolofEnrollments, setSchoolofEnrollments] = useState<string[]>([])
   const {
     loading,
     data: schoolOfEnrollments,
@@ -23,7 +26,7 @@ export const useSchoolPartnerListByRegionIdAndSchoolYearId = (
         school_year_id: school_year_id,
       },
     },
-    skip: regionId ? false : true,
+    skip: !regionId || !school_year_id,
     fetchPolicy: 'network-only',
   })
 
@@ -39,11 +42,21 @@ export const useSchoolPartnerListByRegionIdAndSchoolYearId = (
             value: `${schoolOfEnroll?.school_partner_id}`,
           })),
       )
+      setSchoolofEnrollments(
+        schoolOfEnrollments?.getSchoolsOfEnrollmentByRegion
+          ?.filter((item: { active: boolean }) => !!item.active)
+          .map(
+            (schoolOfEnroll: { abbreviation: string; school_partner_id: number }) =>
+              `${schoolOfEnroll?.school_partner_id}`,
+          ),
+      )
     }
   }, [schoolOfEnrollments])
 
   return {
     loading: loading,
+    selectedSchoolofEnrollments: schoolofEnrollments,
+    setSelectedSchoolofEnrollments: setSchoolofEnrollments,
     schoolOfEnrollmentList: schoolOfEnrollmentList,
     error: error,
   }

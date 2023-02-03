@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useState } from 'react'
 import ExpandLessIcon from '@mui/icons-material/ExpandLess'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { Box, Button, Card, Grid, TextField } from '@mui/material'
@@ -19,7 +19,15 @@ import {
   useSchoolYearsByRegionId,
 } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
-import { defaultOtherOptions, defaultStatusOptions } from '../defaultValues'
+import {
+  DEFAULT_ENROLLMENT_STATUS_FILTER,
+  DEFAULT_GRADES_FILTER1,
+  DEFAULT_GRADES_FILTER2,
+  DEFAULT_OTHER_LIST,
+  DEFULAT_ENROLLMENT_STATUS_LIST,
+  DEFULAT_PROGRAM_YEAR_STATUS_FILTER,
+  DEFULAT_PROGRAM_YEAR_STATUS_LIST,
+} from '../defaultValues'
 import { recordClasses } from '../styles'
 import { FilterComponentProps } from '../types'
 import { filterComponentClassess } from './styles'
@@ -30,25 +38,37 @@ const FilterComponent: React.FC<FilterComponentProps> = ({ setFilter }) => {
   const [expand, setExpand] = useState<boolean>(true)
   const [grades1, setGrades1] = useState<string[]>([])
   const [grades2, setGrades2] = useState<string[]>([])
-  const [programYears, setProgramYears] = useState<string[]>([])
-  const [status, setStatus] = useState<string[]>([])
-  const [schoolofEnrollment, setSchoolofEnrollment] = useState<string[]>([])
-  const [speicalEd, setSpecialEd] = useState<string[]>([])
+  const [programYearStatus, setProgramYearStatus] = useState<string[]>([])
+  const [enrollmentStatus, setEnrollmentStatus] = useState<string[]>([])
   const [enrollmentPacketDocument, setEnrollmentPacketDocument] = useState<string[]>([])
   const [other, setOther] = useState<string[]>([])
   const [startDate, setStartDate] = useState<Date | undefined | null>(null)
   const [endDate, setEndDate] = useState<Date | undefined | null>(null)
+
   const {
     dropdownItems: schoolYearDropdownItems,
     selectedYearId,
     setSelectedYearId,
   } = useSchoolYearsByRegionId(me?.selectedRegionId)
-  const { programYearList, gradeList, specialEdList } = useProgramYearListBySchoolYearId(selectedYearId)
-  const { data: enrollmentPacketDocumentList } = useEnrollmentPacketDocumentListByRegionId(Number(me?.selectedRegionId))
-  const { schoolOfEnrollmentList } = useSchoolPartnerListByRegionIdAndSchoolYearId(
+
+  const {
+    programYearList,
+    programYears,
+    setProgramYears,
+    gradeList,
+    specialEdList,
+    selectedSpecialEd: specialEd,
+    setSelectedSpecialEd: setSpecialEd,
+  } = useProgramYearListBySchoolYearId(selectedYearId)
+  const { data: enrollmentPacketDocumentList } = useEnrollmentPacketDocumentListByRegionId(
     Number(me?.selectedRegionId),
     selectedYearId,
   )
+  const {
+    schoolOfEnrollmentList,
+    selectedSchoolofEnrollments: schoolofEnrollment,
+    setSelectedSchoolofEnrollments: setSchoolofEnrollment,
+  } = useSchoolPartnerListByRegionIdAndSchoolYearId(Number(me?.selectedRegionId), selectedYearId)
 
   const grade2Options: CheckBoxListVM[] = [
     {
@@ -75,14 +95,93 @@ const FilterComponent: React.FC<FilterComponentProps> = ({ setFilter }) => {
       return ''
     }
   }
+
+  const handleGradeFilterChange = useCallback(
+    (values: string[], isGrade1Filter: boolean) => {
+      let newGrades1: string[] = []
+      let newGrades2: string[] = []
+      const ONE_TO_EIGHT = ['1', '2', '3', '4', '5', '6', '7', '8']
+      const NINE_TO_TWELVE = ['9', '10', '11', '12']
+      if (isGrade1Filter) {
+        if (values?.includes('Kindergarten')) {
+          newGrades2 = ['Kindergarten']
+        } else {
+          newGrades2 = []
+        }
+
+        let oneToEightChecked = true
+        let nineToTwelveChecked = true
+
+        ONE_TO_EIGHT.map((item) => {
+          if (!values?.includes(item)) oneToEightChecked = false
+        })
+
+        NINE_TO_TWELVE.map((item) => {
+          if (!values?.includes(item)) nineToTwelveChecked = false
+        })
+
+        if (oneToEightChecked) newGrades2.push('1-8')
+        if (nineToTwelveChecked) newGrades2.push('9-12')
+
+        setGrades1(values)
+        setGrades2(newGrades2)
+      } else {
+        if (values?.includes('Kindergarten')) {
+          newGrades1 = ['Kindergarten']
+        } else {
+          newGrades1 = []
+        }
+
+        const filteredGrades = [...grades1.filter((item) => item !== 'Kindergarten' && item != 'all')]
+        let oneToEightChecked = true
+        let nineToTwelveChecked = true
+        if (values?.includes('1-8')) {
+          newGrades1 = newGrades1.concat(ONE_TO_EIGHT)
+        } else {
+          ONE_TO_EIGHT.map((item) => {
+            if (!filteredGrades?.includes(item)) oneToEightChecked = false
+          })
+        }
+        if (!values?.includes('1-8') && oneToEightChecked)
+          newGrades1 = [...newGrades1, ...filteredGrades?.filter((item) => !ONE_TO_EIGHT.includes(item))]
+        else
+          newGrades1 = [
+            ...newGrades1,
+            ...filteredGrades?.filter((item) => !newGrades1.includes(item) && !NINE_TO_TWELVE.includes(item)),
+          ]
+        if (values?.includes('9-12')) {
+          newGrades1 = newGrades1.concat(NINE_TO_TWELVE)
+        } else {
+          NINE_TO_TWELVE.map((item) => {
+            if (!filteredGrades?.includes(item)) nineToTwelveChecked = false
+          })
+        }
+        if (!values?.includes('9-12') && nineToTwelveChecked)
+          newGrades1 = [...newGrades1, ...filteredGrades?.filter((item) => !NINE_TO_TWELVE.includes(item))]
+        else
+          newGrades1 = [
+            ...newGrades1,
+            ...filteredGrades?.filter((item) => !newGrades1.includes(item) && !ONE_TO_EIGHT.includes(item)),
+          ]
+
+        if (values?.includes('1-8') && values?.includes('9-12') && values?.includes('Kindergarten'))
+          newGrades1.push('all')
+        setGrades1([...newGrades1])
+        setGrades2(values)
+      }
+    },
+    [grades1, grades2, setGrades1, setGrades2],
+  )
+
   const handleFilter = () => {
     setFilter({
       gradeLevel1: jsonStringify(grades1),
       gradeLevel2: jsonStringify(grades2),
       programYear: jsonStringify(programYears),
-      status: jsonStringify(status),
+      programYearStatus: jsonStringify(programYearStatus),
+      enrollmentStatus: jsonStringify(enrollmentStatus),
       schoolOfEnrollment: jsonStringify(schoolofEnrollment),
-      specialEd: jsonStringify(speicalEd),
+      specialEd: jsonStringify(specialEd),
       EnrollmentPacketDocuments: jsonStringify(enrollmentPacketDocument),
       other: jsonStringify(other),
       dateRange: {
@@ -93,11 +192,39 @@ const FilterComponent: React.FC<FilterComponentProps> = ({ setFilter }) => {
     })
     setExpand(!expand)
   }
+
+  const setDefaultFilter = () => {
+    handleGradeFilterChange(DEFAULT_GRADES_FILTER1, true)
+    setProgramYearStatus(DEFULAT_PROGRAM_YEAR_STATUS_FILTER)
+    setEnrollmentStatus(DEFAULT_ENROLLMENT_STATUS_FILTER)
+    setEnrollmentPacketDocument([])
+    setOther([])
+    setStartDate(null)
+    setEndDate(null)
+    setFilter({
+      gradeLevel1: jsonStringify(DEFAULT_GRADES_FILTER1),
+      gradeLevel2: jsonStringify(DEFAULT_GRADES_FILTER2),
+      programYear: jsonStringify(programYears),
+      programYearStatus: jsonStringify(DEFULAT_PROGRAM_YEAR_STATUS_FILTER),
+      enrollmentStatus: jsonStringify(DEFAULT_ENROLLMENT_STATUS_FILTER),
+      schoolOfEnrollment: jsonStringify(schoolofEnrollment),
+      specialEd: jsonStringify(specialEd),
+      EnrollmentPacketDocuments: '',
+      other: '',
+      dateRange: {
+        startDate: null,
+        endDate: null,
+      },
+      schoolYearId: selectedYearId || 0,
+    })
+  }
+
   const handleClear = () => {
     setGrades1([])
     setGrades2([])
     setProgramYears([])
-    setStatus([])
+    setProgramYearStatus([])
+    setEnrollmentStatus([])
     setSchoolofEnrollment([])
     setSpecialEd([])
     setEnrollmentPacketDocument([])
@@ -108,7 +235,8 @@ const FilterComponent: React.FC<FilterComponentProps> = ({ setFilter }) => {
       gradeLevel1: '',
       gradeLevel2: '',
       programYear: '',
-      status: '',
+      programYearStatus: '',
+      enrollmentStatus: '',
       schoolOfEnrollment: '',
       specialEd: '',
       EnrollmentPacketDocuments: '',
@@ -122,8 +250,8 @@ const FilterComponent: React.FC<FilterComponentProps> = ({ setFilter }) => {
   }
 
   useEffect(() => {
-    handleClear()
-  }, [selectedYearId])
+    setDefaultFilter()
+  }, [selectedYearId, programYears, specialEd, schoolofEnrollment])
 
   return (
     <Card sx={{ marginTop: 2, padding: 2 }}>
@@ -154,7 +282,7 @@ const FilterComponent: React.FC<FilterComponentProps> = ({ setFilter }) => {
                     title={'Grade Level'}
                     values={grades1}
                     setValues={(value) => {
-                      setGrades1(value)
+                      handleGradeFilterChange(value, true)
                     }}
                     checkboxLists={gradeList}
                     haveSelectAll={true}
@@ -168,9 +296,19 @@ const FilterComponent: React.FC<FilterComponentProps> = ({ setFilter }) => {
                     title={'Grade Level'}
                     values={grades2}
                     setValues={(value) => {
-                      setGrades2(value)
+                      handleGradeFilterChange(value, false)
                     }}
                     checkboxLists={grade2Options}
+                    haveSelectAll={false}
+                    labelSx={{ fontSize: '14px' }}
+                  />
+                  <MthCheckboxList
+                    title={'Enrollment Status'}
+                    values={enrollmentStatus}
+                    setValues={(value) => {
+                      setEnrollmentStatus(value)
+                    }}
+                    checkboxLists={DEFULAT_ENROLLMENT_STATUS_LIST}
                     haveSelectAll={false}
                     labelSx={{ fontSize: '14px' }}
                   />
@@ -185,12 +323,12 @@ const FilterComponent: React.FC<FilterComponentProps> = ({ setFilter }) => {
                     labelSx={{ fontSize: '14px' }}
                   />
                   <MthCheckboxList
-                    title={'Status'}
-                    values={status}
+                    title={'Program Year Status'}
+                    values={programYearStatus}
                     setValues={(value) => {
-                      setStatus(value)
+                      setProgramYearStatus(value)
                     }}
-                    checkboxLists={defaultStatusOptions}
+                    checkboxLists={DEFULAT_PROGRAM_YEAR_STATUS_LIST}
                     haveSelectAll={false}
                     labelSx={{ fontSize: '14px' }}
                   />
@@ -210,7 +348,7 @@ const FilterComponent: React.FC<FilterComponentProps> = ({ setFilter }) => {
                   />
                   <MthCheckboxList
                     title={'Special Ed'}
-                    values={speicalEd}
+                    values={specialEd}
                     setValues={(value) => {
                       setSpecialEd(value)
                     }}
@@ -243,14 +381,8 @@ const FilterComponent: React.FC<FilterComponentProps> = ({ setFilter }) => {
                     }}
                     checkboxLists={
                       region?.regionDetail?.name == 'Utah'
-                        ? [
-                            ...defaultOtherOptions,
-                            {
-                              label: StudentRecordFileKind.USIRS,
-                              value: StudentRecordFileKind.USIRS,
-                            },
-                          ]
-                        : defaultOtherOptions
+                        ? DEFAULT_OTHER_LIST
+                        : [...DEFAULT_OTHER_LIST.filter((item) => item.label !== StudentRecordFileKind.USIRS)]
                     }
                     haveSelectAll={false}
                     labelSx={{ fontSize: '14px' }}

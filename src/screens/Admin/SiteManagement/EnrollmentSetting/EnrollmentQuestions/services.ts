@@ -12,7 +12,6 @@ export const getQuestionsGql = gql`
         group_name
         tab_id
         order
-        school_year_id
         questions {
           id
           question

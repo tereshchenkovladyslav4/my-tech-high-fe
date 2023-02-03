@@ -25,6 +25,10 @@ export const useProgramYearListBySchoolYearId = (
 ): {
   loading: boolean
   programYearList: CheckBoxListVM[]
+  programYears: string[]
+  setProgramYears: (value: string[]) => void
+  selectedSpecialEd: string[]
+  setSelectedSpecialEd: (value: string[]) => void
   gradeList: CheckBoxListVM[]
   numericGradeList: DropDownItem[]
   specialEdList: CheckBoxListVM[]
@@ -32,6 +36,8 @@ export const useProgramYearListBySchoolYearId = (
 } => {
   const { me } = useContext(UserContext)
   const [programYearList, setProgramYearList] = useState<CheckBoxListVM[]>([])
+  const [programYears, setProgramYears] = useState<string[]>([])
+  const [specialEd, setSpecialEd] = useState<string[]>([])
   const [availableGrades, setAvailableGrades] = useState<CheckBoxListVM[]>([])
   const [numericGrades, setNumericGrades] = useState<DropDownItem[]>([])
   const [specialEdOptions, setSpecialEdOptions] = useState<CheckBoxListVM[]>([])
@@ -88,6 +94,7 @@ export const useProgramYearListBySchoolYearId = (
                 value: `${index}`,
               }
             })
+            setSpecialEd(specialEds?.map((item) => item.value))
             setSpecialEdOptions(specialEds || [])
           }
 
@@ -102,18 +109,25 @@ export const useProgramYearListBySchoolYearId = (
           if (schoolYear?.midyear_application) {
             setProgramYearList([
               {
-                label: `${moment(schoolYear_date_begin).format('YYYY')} - ${moment(schoolYear_date_end).format('YY')}`,
+                label: `${moment(schoolYear_date_begin).format('YYYY')}-${moment(schoolYear_date_end).format('YY')}`,
                 value: 'schoolYear',
               },
               {
-                label: `${moment(schoolYear_midyear_application_open).format('YYYY')} - ${moment(
+                label: `${moment(schoolYear_midyear_application_open).format('YYYY')}-${moment(
                   schoolYear_midyear_application_close,
                 ).format('YY')} Mid-year`,
                 value: 'midYear',
               },
             ])
+            setProgramYears(['schoolYear', 'midYear'])
           } else {
-            setProgramYearList([])
+            setProgramYearList([
+              {
+                label: `${moment(schoolYear_date_begin).format('YYYY')}-${moment(schoolYear_date_end).format('YY')}`,
+                value: 'schoolYear',
+              },
+            ])
+            setProgramYears(['schoolYear'])
           }
         }
       })
@@ -123,6 +137,10 @@ export const useProgramYearListBySchoolYearId = (
   return {
     loading: loading,
     programYearList: programYearList,
+    programYears,
+    setProgramYears,
+    selectedSpecialEd: specialEd,
+    setSelectedSpecialEd: setSpecialEd,
     gradeList: availableGrades,
     numericGradeList: numericGrades,
     specialEdList: specialEdOptions,

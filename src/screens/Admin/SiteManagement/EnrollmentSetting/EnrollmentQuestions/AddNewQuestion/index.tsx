@@ -253,6 +253,7 @@ export const AddNewQuestionModal: React.FC<AddNewQuestionModalProps> = ({
 
     const newQuestions = editQuestions.filter((x) => x.question.trim())
     const newQuestionsArr = []
+
     for (let i = 0; i < newQuestions.length; i++) {
       const newQuestion = newQuestions[i]
       //	Validation check
@@ -304,7 +305,6 @@ export const AddNewQuestionModal: React.FC<AddNewQuestionModalProps> = ({
     }
 
     // newValues = newValues.filter((i) => deleteIds.find(x => x == i.id) == null);
-
     if (!isNewQuestion) {
       //edit a question
       if (group === groupType) {
@@ -374,8 +374,10 @@ export const AddNewQuestionModal: React.FC<AddNewQuestionModalProps> = ({
             return g
           }),
         }
+
         setValues(values.map((v) => (v.tab_name === updatedTab.tab_name ? updatedTab : v)))
       }
+
       // else { // change group type
       //   const doubleQuestion = currentTabData.groups.filter((v) => v.group_name === groupType)[0].questions.filter((q) => q.question === question)
       //   if(doubleQuestion.length > 0) {
@@ -403,6 +405,7 @@ export const AddNewQuestionModal: React.FC<AddNewQuestionModalProps> = ({
       // }
     } else {
       //create a question
+
       let groupItem: EnrollmentQuestionGroup
       if (currentGroup) {
         groupItem = {
@@ -413,6 +416,7 @@ export const AddNewQuestionModal: React.FC<AddNewQuestionModalProps> = ({
         }
         const updatedGroups = currentTabData?.groups.map((v) => (v.group_name === groupItem.group_name ? groupItem : v))
         const updatedTab = { ...currentTabData, groups: updatedGroups, id: currentTabData?.id }
+
         setValues(values.map((v) => (v.tab_name === updatedTab.tab_name ? updatedTab : v)))
       } else {
         groupItem = {

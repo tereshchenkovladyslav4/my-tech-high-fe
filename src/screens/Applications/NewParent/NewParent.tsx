@@ -61,11 +61,16 @@ export const NewParent: React.FC = () => {
   const [questions, setQuestions] = useState<ApplicationQuestion[]>([])
   const [windowDimensions, setWindowDimensions] = useState(getWindowDimension())
 
+  const [selectedSchoolYear, setSelectedSchoolYear] = useState<number | null>(null)
+
   const { schoolYears: schoolYearsData, dropdownItems: schoolYears } = useActiveSchoolYearsByRegionId(+regionId)
 
   const { loading: questionLoading, data: questionData } = useQuery(getQuestionsGql, {
-    variables: { input: { region_id: Number(regionId) } },
+    variables: {
+      input: { region_id: Number(regionId), school_year_id: selectedSchoolYear, mid_year: midYearApplication },
+    },
     fetchPolicy: 'network-only',
+    skip: !selectedSchoolYear,
   })
 
   useEffect(() => {
@@ -689,7 +694,6 @@ export const NewParent: React.FC = () => {
                         )}
                       </Field>
                     </Grid>
-
                     <Grid item xs={12} display='flex' justifyContent={'center'}>
                       <Box width={'451.53px'}>
                         <Field name='programYear' fullWidth focused>
@@ -710,6 +714,7 @@ export const NewParent: React.FC = () => {
                                   }
                                   form.setFieldValue(field.name, toNumber(yearId))
                                   setGradesAndBirthDateCut(yearId)
+                                  setSelectedSchoolYear(+yearId)
                                 }}
                                 alternate={true}
                                 size='small'

@@ -28,7 +28,8 @@ const StudentFilesFolder: React.FC<StudentFilesFolderProps> = ({ filter }) => {
     variables: {
       filter: {
         school_year_id: filter?.schoolYearId,
-        status: filter?.status,
+        program_year_status: filter?.programYearStatus,
+        enrollment_status: filter?.enrollmentStatus,
         special_ed: filter?.specialEd,
         school_of_enrollment: filter?.schoolOfEnrollment,
         program_year: filter?.programYear,
@@ -201,6 +202,7 @@ const StudentFilesFolder: React.FC<StudentFilesFolderProps> = ({ filter }) => {
       </Box>
       {showStudentFilesModal && (
         <StudentFilesModal
+          schoolYearId={filter?.schoolYearId}
           record={selectedRecord}
           handleModem={() => setShowStudentFilesModal(false)}
           handleDownload={handleDownload}

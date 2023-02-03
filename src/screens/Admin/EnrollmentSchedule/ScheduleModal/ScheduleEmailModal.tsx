@@ -92,7 +92,7 @@ export const EmailModal: React.FC<EmailModalProps> = ({
               return (
                 <FormControlLabel
                   key={index}
-                  sx={{ height: 30 }}
+                  sx={{ height: 30, maxWidth: '200px' }}
                   control={
                     <Checkbox
                       value={item}
@@ -130,10 +130,7 @@ export const EmailModal: React.FC<EmailModalProps> = ({
               size='small'
               fullWidth
               placeholder='From: email in template'
-              sx={
-                (classes.subject,
-                formik.touched.emailFrom && formik.errors.subject ? classes.borderErrorColor : classes.subject)
-              }
+              sx={formik.touched.emailFrom && formik.errors.emailFrom ? classes.borderErrorColor : classes.from}
               onChange={formik.handleChange}
               autoFocus
             />
@@ -144,19 +141,11 @@ export const EmailModal: React.FC<EmailModalProps> = ({
               size='small'
               fullWidth
               placeholder='Subject'
-              sx={
-                (classes.subject,
-                formik.touched.subject && formik.errors.subject ? classes.borderErrorColor : classes.subject)
-              }
+              sx={formik.touched.subject && formik.errors.subject ? classes.borderErrorColor : classes.subject}
               onChange={formik.handleChange}
             />
 
-            <Box
-              sx={
-                (classes.editor,
-                formik.touched.editorState && formik.errors.editorState ? classes.redBorder : classes.editor)
-              }
-            >
+            <Box sx={formik.touched.editorState && formik.errors.editorState ? classes.redBorder : classes.editor}>
               <Wysiwyg.Editor
                 onContentStateChange={handleEditorChange}
                 editorRef={(ref) => (editorRef.current = ref)}

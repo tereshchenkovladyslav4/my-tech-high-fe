@@ -37,7 +37,6 @@ const Settings: React.FC = () => {
   const [splitEnrollment, setSplitEnrollment] = useState<string>()
   const [alwaysUnlock, setAlwaysUnlock] = useState<boolean>()
   const [scheduleBuilderId, setScheduleBuilderId] = useState<number>()
-  const [currentBlocks, setCurrentBlocks] = useState(0)
   const [isValid, setIsValid] = useState(false)
   const [editorTouched, setEditorTouched] = useState(false)
   const [hasChange, setChanged] = useState(false)
@@ -245,15 +244,6 @@ const Settings: React.FC = () => {
     }
   }, [me?.selectedRegionId, selectedYearId, data])
 
-  const handleEditorChange = (state: Draft.DraftModel.Encoding.RawDraftContentState) => {
-    try {
-      if (currentBlocks !== 0 && currentBlocks !== state.blocks.length) {
-        ;(editorRef.current as Element).scrollIntoView({ behavior: 'smooth', block: 'end' })
-      }
-      setCurrentBlocks(state.blocks.length)
-    } catch {}
-  }
-
   const enabledOptions = [
     {
       label: 'Enabled',
@@ -427,7 +417,6 @@ const Settings: React.FC = () => {
             }}
           >
             <Wysiwyg.Editor
-              onContentStateChange={handleEditorChange}
               placeholder='  Type here...'
               editorRef={(ref) => (editorRef.current = ref)}
               editorState={editorState}

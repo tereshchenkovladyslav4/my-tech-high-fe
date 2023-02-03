@@ -53,7 +53,7 @@ export const useStyles = {
     cursor: 'pointer',
   },
   from: {
-    marginTop: 2,
+    marginTop: 0,
   },
   subject: {
     marginTop: 0,
