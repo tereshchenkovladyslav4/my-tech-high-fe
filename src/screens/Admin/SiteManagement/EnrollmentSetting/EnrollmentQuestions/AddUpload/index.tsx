@@ -81,7 +81,7 @@ export const AddUploadModal: React.FC<AddUploadModal> = ({ onClose, editItem, sp
         : [newQuestion]
     }
     const newGroup: EnrollmentQuestionGroup = {
-      id: currentTabData.groups[0].id,
+      id: currentTabData.groups[0]?.id,
       group_name: 'root',
       order: 1,
       questions: newQuestions,

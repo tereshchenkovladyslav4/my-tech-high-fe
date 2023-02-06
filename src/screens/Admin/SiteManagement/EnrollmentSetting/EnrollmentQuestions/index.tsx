@@ -90,7 +90,9 @@ export const EnrollmentQuestions: React.FC = () => {
   useEffect(() => {
     setSpecialEdStatus(false)
     const thisSchoolYear = specialEdData?.region?.SchoolYears.find(
-      (i) => moment(i.date_begin).format('Y') == moment().format('Y'),
+      (i) =>
+        moment(i.date_begin).format('YYYY-MM-DD') < moment().format('YYYY-MM-DD') &&
+        moment(i.date_end).format('YYYY-MM-DD') > moment().format('YYYY-MM-DD'),
     )
     if (thisSchoolYear) {
       setSpecialEdStatus(thisSchoolYear.special_ed_options)
@@ -289,7 +291,7 @@ export const EnrollmentQuestions: React.FC = () => {
             })
             if (item.midyear_application === 1) {
               tempSchoolYearList.push({
-                label: moment(item.date_begin).format('YYYY') + '-' + moment(item.date_end).format('YY') + ' Mid',
+                label: moment(item.date_begin).format('YYYY') + '-' + moment(item.date_end).format('YY') + ' Mid-Year',
                 value: item.school_year_id + '-mid',
               })
             }

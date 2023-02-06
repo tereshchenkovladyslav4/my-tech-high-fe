@@ -89,6 +89,7 @@ export const getSpecialEdsByRegionId = gql`
         special_ed
         special_ed_options
         date_begin
+        date_end
       }
     }
   }

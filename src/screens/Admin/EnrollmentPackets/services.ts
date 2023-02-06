@@ -83,6 +83,7 @@ export const getEnrollmentPacketsQuery = gql`
           }
           current_school_year_status {
             school_year_id
+            midyear_application
           }
           applications {
             midyear_application
@@ -222,6 +223,7 @@ export const getEnrollmentPacketQuery = gql`
         }
         current_school_year_status {
           school_year_id
+          midyear_application
         }
         applications {
           midyear_application
@@ -315,6 +317,7 @@ export const getPacket = gql`
         }
         current_school_year_status {
           school_year_id
+          midyear_application
         }
         applications {
           midyear_application

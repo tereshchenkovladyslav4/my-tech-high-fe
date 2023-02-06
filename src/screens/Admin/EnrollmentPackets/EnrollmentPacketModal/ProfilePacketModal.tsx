@@ -88,7 +88,15 @@ export const ProfilePacketModal: React.FC<ProfilePacketModalProps> = ({ handleMo
   const packet = useMemo(() => packetData?.packet, [packetData?.packet])
   const { me } = useContext(UserContext)
   const { data } = useQuery(getPacketQuestionsGql, {
-    variables: { input: { region_id: Number(me?.selectedRegionId) } },
+    variables: {
+      input: {
+        region_id: Number(me?.selectedRegionId),
+        school_year_id: packet?.student.current_school_year_status.school_year_id
+          ? packet?.student.current_school_year_status.school_year_id
+          : packet?.student.applications[0].school_year.school_year_id,
+        mid_year: packet?.student.current_school_year_status.midyear_application,
+      },
+    },
     fetchPolicy: 'network-only',
   })
 
@@ -347,6 +355,7 @@ export const ProfilePacketModal: React.FC<ProfilePacketModalProps> = ({ handleMo
 
   return (
     <FormProvider {...methods}>
+      alskdjfklad askldjfkl asdlkfj lasdkj fasdlkfj
       <form onSubmit={methods.handleSubmit(onSubmit)}>
         <Modal
           open={true}

@@ -166,7 +166,6 @@ export const Filters: React.FC<FiltersProps> = ({
     if (e.target.value === 'all') {
       if (e.target.checked) {
         setSchoolDistrict([
-          'all',
           ...schoolDistrictsData?.schoolDistrict?.map((item: SchoolDistrictType) => item.school_district_name),
         ])
       } else {
@@ -179,6 +178,16 @@ export const Filters: React.FC<FiltersProps> = ({
         setSchoolDistrict(schoolDistrict.filter((item) => ![e.target.value, 'all'].includes(item)))
       }
     }
+  }
+
+  const isCheckedAllSchoolDistrict = () => {
+    let status = true
+    schoolDistrictsData?.schoolDistrict?.map((item) => {
+      if (!schoolDistrict.includes(item.school_district_name)) {
+        status = false
+      }
+    })
+    return status
   }
 
   const handleCurriculumProvider = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -442,7 +451,7 @@ export const Filters: React.FC<FiltersProps> = ({
               <FormControlLabel
                 sx={{ height: 30 }}
                 control={
-                  <Checkbox value='all' checked={schoolDistrict.includes('all')} onChange={handleSchoolDistrict} />
+                  <Checkbox value='all' checked={isCheckedAllSchoolDistrict()} onChange={handleSchoolDistrict} />
                 }
                 label={
                   <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px' }}>

@@ -155,6 +155,7 @@ export const Contact: React.FC<ContactProps> = ({ id, questions }) => {
       address: { ...profile.address },
       school_year_id: student.current_school_year_status.school_year_id,
     },
+    enableReinitialize: true,
     validationSchema: validationSchema,
     onSubmit: () => {
       goNext()
