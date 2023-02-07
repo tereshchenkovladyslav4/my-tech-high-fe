@@ -14,7 +14,7 @@ import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined'
 import KeyIcon from '@mui/icons-material/VpnKey'
 import { List, ListItem, Box, ListItemButton } from '@mui/material'
 import { map } from 'lodash'
-import { NavLink, useHistory } from 'react-router-dom'
+import { NavLink, useHistory, useLocation } from 'react-router-dom'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { MthRoute, MthTitle } from '@mth/enums'
 import { AuthContext } from '@mth/providers/AuthProvider/AuthContext'
@@ -34,6 +34,10 @@ export const AdminSideMenu: React.FC = () => {
     signOut()
     history.push(`${MthRoute.DASHBOARD}`)
   }
+
+  const location = useLocation()
+  const isActive = (path: string, exact: boolean) =>
+    exact ? location.pathname === path : location.pathname.includes(path)
 
   const unExactPages = [
     `${MthRoute.SITE_MANAGEMENT}`,
@@ -130,7 +134,12 @@ export const AdminSideMenu: React.FC = () => {
               activeStyle={classes.activeNavLink}
             >
               <ListItem disablePadding style={{ backgroundColor: 'inherit' }}>
-                <ListItemButton style={{ textDecoration: 'none' }}>
+                <ListItemButton
+                  style={{
+                    textDecoration: 'none',
+                    paddingLeft: isActive(item.to, !unExactPages.includes(item.to)) ? '13px' : '16px',
+                  }}
+                >
                   {item.icon}
                   <Paragraph size='medium'>{item.label}</Paragraph>
                 </ListItemButton>

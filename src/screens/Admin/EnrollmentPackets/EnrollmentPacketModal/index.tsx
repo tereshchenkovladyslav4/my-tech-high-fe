@@ -81,8 +81,17 @@ export const EnrollmentPacketModal: React.FC<EnrollmentPacketModalProps> = ({ ha
   const enableImmunization = settingsQuery.data?.settings?.enable_immunizations === 1
 
   const { me } = useContext(UserContext)
+
   const { data } = useQuery(getPacketQuestionsGql, {
-    variables: { input: { region_id: Number(me?.selectedRegionId) } },
+    variables: {
+      input: {
+        region_id: Number(me?.selectedRegionId),
+        school_year_id: packet.student.current_school_year_status.school_year_id
+          ? packet.student.current_school_year_status.school_year_id
+          : packet.student.applications[0].school_year.school_year_id,
+        mid_year: packet.student.current_school_year_status.midyear_application,
+      },
+    },
     fetchPolicy: 'network-only',
   })
 

@@ -626,7 +626,7 @@ export const NewParent: React.FC = () => {
       {!showConfirmationText ? (
         <Formik
           initialValues={{
-            programYear: undefined,
+            programYear: selectedSchoolYear,
             state: regionId,
             refferedBy: undefined,
             students: [emptyStudent],

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline'
 import ScheduleIcon from '@mui/icons-material/Schedule'
 import { Avatar, Box, CircularProgress, IconButton, Tooltip } from '@mui/material'
+import { useFlag } from '@unleash/proxy-client-react'
 import { useHistory, useLocation } from 'react-router-dom'
 import { Metadata } from '@mth/components/Metadata/Metadata'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
@@ -18,6 +19,10 @@ export const StudentGrade: React.FC<StudentGradeProps> = ({ student, schoolYears
   const [circleData, setCircleData] = useState<CircleData>()
   const history = useHistory()
   const location = useLocation()
+
+  // MARK: - Unleash Feature Flags
+  const infoctr1536 = useFlag('bugfix_1536')
+
   const redirect = () => {
     const { applications, packets } = student
     const currApplication = applications?.at(0)
@@ -35,6 +40,11 @@ export const StudentGrade: React.FC<StudentGradeProps> = ({ student, schoolYears
     ) {
       history.push(`${MthRoute.HOMEROOM + MthRoute.SUBMIT_SCHEDULE}/${student.student_id}?backTo=${location.pathname}`)
       return
+    }
+    if (infoctr1536) {
+      if (currApplication?.status === ApplicationStatus.SUBMITTED) {
+        return
+      }
     }
     if (currApplication?.status !== ApplicationStatus.ACCEPTED && currPacket?.status !== PacketStatus.ACCEPTED) {
       history.push(`${MthRoute.HOMEROOM + MthRoute.ENROLLMENT}/` + student.student_id)

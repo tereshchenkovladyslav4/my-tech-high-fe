@@ -236,8 +236,6 @@ export const ExistingParent: React.FC = () => {
           students: submitStudents,
           midyear_application: midYearApplication,
           meta: JSON.stringify(data.meta),
-          // address: { ...data.address, school_district: data.packet?.school_district, county_id: data.county?.county ? parseInt(data.county?.county) : null },
-          // packet: omit(data.packet, ['school_district']),
         },
       },
     }).then((res) => {
@@ -390,7 +388,7 @@ export const ExistingParent: React.FC = () => {
     <Card className={extraClasses.mainContent}>
       <Formik
         initialValues={{
-          programYear: undefined,
+          programYear: selectedSchoolYearId,
           students: [emptyStudent],
           meta: {},
         }}
