@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { Box, Button, Grid } from '@mui/material'
 import { MthCheckboxList } from '@mth/components/MthCheckboxList'
@@ -6,13 +6,19 @@ import { CheckBoxListVM } from '@mth/components/MthCheckboxList/MthCheckboxList'
 import { PageBlock } from '@mth/components/PageBlock'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { REIMBURSEMENT_FORM_TYPE_ITEMS, REIMBURSEMENT_REQUEST_STATUS_ITEMS } from '@mth/constants'
-import { MthColor, ReimbursementRequestType } from '@mth/enums'
+import {
+  MthColor,
+  ReduceFunds,
+  ReimbursementFormType,
+  ReimbursementOtherFilter,
+  ReimbursementRequestType,
+} from '@mth/enums'
 import { useProgramYearListBySchoolYearId } from '@mth/hooks'
 import { defaultStatusFilter } from '@mth/screens/Admin/Reimbursements/ReimbursementRequests/defaultValues'
 import { FiltersProps } from '@mth/screens/Admin/Reimbursements/ReimbursementRequests/Filters/type'
 import { mthButtonClasses } from '@mth/styles/button.style'
 
-export const Filters: React.FC<FiltersProps> = ({ schoolYearId, setFilter }) => {
+export const Filters: React.FC<FiltersProps> = ({ schoolYearId, schoolYear, setFilter }) => {
   const [expanded, setExpanded] = useState<boolean>(true)
   const [requests, setRequests] = useState<string[]>([])
   const [types, setTypes] = useState<string[]>([])
@@ -27,11 +33,25 @@ export const Filters: React.FC<FiltersProps> = ({ schoolYearId, setFilter }) => 
     { label: 'Reimbursement', value: ReimbursementRequestType.REIMBURSEMENT.toString() },
   ]
 
-  const typeItems: CheckBoxListVM[] = REIMBURSEMENT_FORM_TYPE_ITEMS as CheckBoxListVM[]
+  const typeItems = useMemo((): CheckBoxListVM[] => {
+    if (!schoolYear) return []
+    return REIMBURSEMENT_FORM_TYPE_ITEMS.filter(
+      (x) =>
+        (x.value !== ReimbursementFormType.THIRD_PARTY_PROVIDER || schoolYear.ScheduleBuilder?.third_party_provider) &&
+        (x.value !== ReimbursementFormType.CUSTOM_BUILT || schoolYear.ScheduleBuilder?.custom_built) &&
+        (x.value !== ReimbursementFormType.REQUIRED_SOFTWARE || schoolYear.require_software) &&
+        (x.value !== ReimbursementFormType.SUPPLEMENTAL ||
+          schoolYear.reimbursements === ReduceFunds.SUPPLEMENTAL ||
+          schoolYear.direct_orders === ReduceFunds.SUPPLEMENTAL) &&
+        (x.value !== ReimbursementFormType.TECHNOLOGY ||
+          schoolYear.reimbursements === ReduceFunds.TECHNOLOGY ||
+          schoolYear.direct_orders === ReduceFunds.TECHNOLOGY),
+    ) as CheckBoxListVM[]
+  }, [schoolYear])
 
   const otherItems: CheckBoxListVM[] = [
-    { label: 'Family', value: 'Family' },
-    { label: 'Grade Requirement', value: 'Grade_Requirement' },
+    { label: 'Family', value: ReimbursementOtherFilter.FAMILY },
+    { label: 'Grade Requirement', value: ReimbursementOtherFilter.GRADE_REQUIREMENT },
   ]
 
   const statusItems: CheckBoxListVM[] = REIMBURSEMENT_REQUEST_STATUS_ITEMS as CheckBoxListVM[]

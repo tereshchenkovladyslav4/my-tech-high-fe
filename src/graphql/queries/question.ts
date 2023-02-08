@@ -1,8 +1,8 @@
 import { gql } from '@apollo/client'
 
 export const getQuestionsByRegionQuery = gql`
-  query QuestionsByRegion($regionId: ID!, $section: String!) {
-    questionsByRegion(regionId: $regionId, section: $section) {
+  query QuestionsByRegion($withdrawQuestionInput: WithdrawQuestionInput!) {
+    questionsByRegion(withdrawQuestionInput: $withdrawQuestionInput) {
       id
       region_id
       section

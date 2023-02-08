@@ -123,7 +123,7 @@ export const EnrollmentPacketTable: React.FC = () => {
             fontWeight: '700',
           }}
         >
-          {moment(packet.deadline).format('MM/DD/YY')}
+          {moment(packet.deadline).local().format('MM/DD/YY')}
         </Paragraph>
       ),
       student: (
@@ -185,11 +185,31 @@ export const EnrollmentPacketTable: React.FC = () => {
   }
   const searchCond = useMemo(() => {
     const ss = searchField.split('/')
-    if (ss.length == 3) {
-      const [m, d, y] = ss
-      const f = new Date(2000 + Number(y), Number(m) - 1, Number(d), 0, 0, 0).toISOString()
-      const t = new Date(2000 + Number(y), Number(m) - 1, Number(d), 23, 59, 59).toISOString()
-      return `${f} - ${t}`
+    let y = '',
+      m = '',
+      d = ''
+    if (ss.length >= 2) {
+      if (ss.length == 3) {
+        ;[m, d, y] = ss
+      } else if (ss.length == 2) {
+        ;[m, d] = ss
+      }
+      if (m && d) {
+        const year = y ? parseInt(y) : new Date().getFullYear() % 100
+
+        const f = new Date(2000 + year, Number(m) - 1, Number(d), 0, 0, 0).toISOString()
+        const t = new Date(2000 + year, Number(m) - 1, Number(d), 23, 59, 59).toISOString()
+        if (y) {
+          return `${f} - ${t}`
+        } else {
+          const f2 = new Date(2000 + year - 1, Number(m) - 1, Number(d), 0, 0, 0).toISOString()
+          const t2 = new Date(2000 + year - 1, Number(m) - 1, Number(d), 23, 59, 59).toISOString()
+
+          const f3 = new Date(2000 + year + 1, Number(m) - 1, Number(d), 0, 0, 0).toISOString()
+          const t3 = new Date(2000 + year + 1, Number(m) - 1, Number(d), 23, 59, 59).toISOString()
+          return `${f} - ${t} - ${f2} - ${t2} - ${f3} - ${t3}`
+        }
+      }
     }
     return ''
   }, [searchField])
@@ -254,8 +274,8 @@ export const EnrollmentPacketTable: React.FC = () => {
       const { SchoolYears } = schoolYearData?.region
       const yearList: { label: string; value: string }[] = []
       SchoolYears.sort((a, b) => (a.date_begin > b.date_begin ? 1 : -1))
-        .filter((item) => new Date(item.date_begin) <= new Date() && new Date(item.date_end) >= new Date())
-        .map((item): void => {
+        .filter((item) => new Date(item.date_end) >= new Date())
+        .forEach((item): void => {
           yearList.push({
             label: `${moment(item.date_begin).format('YYYY')}-${moment(item.date_end).format('YY')}`,
             value: String(item.school_year_id),
@@ -405,7 +425,7 @@ export const EnrollmentPacketTable: React.FC = () => {
       await updateBulkSchoolYear({
         variables: {
           updateEnrollmentSchoolYearByIdsInput: {
-            application_ids: packetIds,
+            application_ids: packetIds.map((v) => String(v)),
             school_year_id: schoolYearId,
             midyear_application: midyearApplication,
           },

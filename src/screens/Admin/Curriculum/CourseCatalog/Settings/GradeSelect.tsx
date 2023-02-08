@@ -84,7 +84,18 @@ export const GradesSelect: React.FC<GradesSelectProps> = ({
             key={index}
             sx={{ height: 40 }}
             control={
-              <Checkbox checked={gradesArr.includes(grade.toString())} value={grade} onChange={handleChangeGrades} />
+              <Checkbox
+                checked={gradesArr.includes(grade.toString())}
+                value={grade}
+                onChange={handleChangeGrades}
+                sx={{
+                  '& svg': {
+                    width: 28,
+                    height: 28,
+                    color: MthColor.SYSTEM_01,
+                  },
+                }}
+              />
             }
             label={
               <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px', fontSize: '19.8627px' }}>
@@ -98,7 +109,20 @@ export const GradesSelect: React.FC<GradesSelectProps> = ({
           <FormControlLabel
             key={index}
             sx={{ height: 40 }}
-            control={<Checkbox checked={gradesArr.includes(grade)} value={grade} onChange={handleChangeGrades} />}
+            control={
+              <Checkbox
+                checked={gradesArr.includes(grade)}
+                value={grade}
+                onChange={handleChangeGrades}
+                sx={{
+                  '& svg': {
+                    width: 28,
+                    height: 28,
+                    color: MthColor.SYSTEM_01,
+                  },
+                }}
+              />
+            }
             label={
               <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px', fontSize: '19.8627px' }}>
                 {grade}

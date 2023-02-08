@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useQuery } from '@apollo/client'
 import DehazeIcon from '@mui/icons-material/Dehaze'
 import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined'
@@ -12,7 +12,6 @@ import { SortableHandle } from 'react-sortable-hoc'
 import { GRADES } from '@mth/constants'
 import { MthColor, QUESTION_TYPE } from '@mth/enums'
 import { getSchoolDistrictsByRegionId } from '@mth/graphql/queries/school-district'
-import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { toOrdinalSuffix } from '@mth/utils'
 import {
   getActiveSchoolYearsByRegionId,
@@ -48,8 +47,6 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
   hasAction, //	Admin => true, Parent => false
   signature,
 }) => {
-  const { me } = useContext(UserContext)
-
   //	Formik values context
   const { values, setValues } = useFormikContext<Question[]>()
 
@@ -213,25 +210,6 @@ export const QuestionItem: React.FC<QuestionItemProps> = ({
     }
   }, [])
 
-  //	student
-  useEffect(() => {
-    if (
-      !hasAction &&
-      questions[0]?.mainQuestion &&
-      questions[0]?.options.length == 0 &&
-      questions[0]?.slug == 'student'
-    ) {
-      if (me?.students?.length > 0) {
-        updateOptionsForDefaultQuestion(
-          me?.students?.map((student) => ({
-            label: student.person.first_name,
-            value: student.student_id,
-          })),
-        )
-      }
-    }
-  }, [questions])
-
   return (
     <>
       <Box display='flex' mt={signature ? '0' : '20px'} alignItems='center' justifyContent='left'>
@@ -289,6 +267,10 @@ function Item({ question: q, signature }: { question: Question; signature?: unkn
         q.response += value
       }
       value = q.response
+    }
+    if (q.type == QUESTION_TYPE.CALENDAR && q.slug == 'effective_withdraw_date') {
+      const min_value = moment().format('YYYY-MM-DD')
+      if (value < min_value) value = min_value
     }
     const newValues = values.map((v) =>
       v.id == q.id

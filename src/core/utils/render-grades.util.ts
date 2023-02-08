@@ -10,12 +10,10 @@ import { GRADES } from '../constants/grades.constant'
  */
 export const renderGrades = (gradesStr: string | undefined): string => {
   if (!gradesStr) return ''
-
   const decodedGrades: string[] = gradesStr.split(',').filter((item: string) => item != 'all')
   const grades = GRADES.filter((item) => decodedGrades.includes(`${item}`)).map((item) =>
     item == 'Kindergarten' ? 0 : Number(item),
   )
-
   return grades
     ?.reduce(
       (seq, v, i, a) => {
@@ -28,6 +26,6 @@ export const renderGrades = (gradesStr: string | undefined): string => {
       [[]] as (string | number)[][],
     )
     .filter(({ length }: { length: number }) => length > 0)
-    .map((item) => (item.length > 2 ? item[0] + '-' + item[item.length - 1] : item))
+    .map((item) => (item.length > 2 ? item[0] + '-' + item[item.length - 1] : item[0]))
     .join(', ')
 }

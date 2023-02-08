@@ -1,12 +1,25 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import { useMutation, useQuery } from '@apollo/client'
 import { makeStyles, Theme } from '@material-ui/core/styles'
-import { Alert, Box, Button, Grid, List, Stack, Typography } from '@mui/material'
+import {
+  Alert,
+  Box,
+  Button,
+  Grid,
+  inputLabelClasses,
+  List,
+  outlinedInputClasses,
+  Stack,
+  Typography,
+} from '@mui/material'
 import { Form, Formik } from 'formik'
 import _ from 'lodash'
+import moment from 'moment'
 import { Prompt } from 'react-router-dom'
 import { arrayMove, SortableContainer, SortableElement } from 'react-sortable-hoc'
 import { CustomConfirmModal } from '@mth/components/CustomConfirmModal/CustomConfirmModal'
+import { DropDown } from '@mth/components/DropDown/DropDown'
+import { DropDownItem } from '@mth/components/DropDown/types'
 import { QuestionModal } from '@mth/components/QuestionItem/AddNewQuestion'
 import { DefaultQuestionModal } from '@mth/components/QuestionItem/AddNewQuestion/DefaultQuestionModal'
 import { SelectDefaultCustomQuestionModal } from '@mth/components/QuestionItem/AddNewQuestion/SelectDefaultCustomQuestionModal'
@@ -19,10 +32,11 @@ import {
 } from '@mth/components/QuestionItem/QuestionItemProps'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { isEmail, isNumber } from '@mth/constants'
-import { MthTitle, QUESTION_TYPE, WithdrawalStatus } from '@mth/enums'
+import { MthColor, MthTitle, QUESTION_TYPE, WithdrawalStatus } from '@mth/enums'
 import { deleteQuestionMutation, saveQuestionsMutation } from '@mth/graphql/mutation/question'
 import { saveWithdrawalMutation } from '@mth/graphql/mutation/withdrawal'
 import { getQuestionsByRegionQuery } from '@mth/graphql/queries/question'
+import { getSchoolYearsByRegionId } from '@mth/graphql/queries/school-year'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { siteManagementClassess } from '@mth/screens/Admin/SiteManagement/styles'
 import CircleIcon from './CircleIcon'
@@ -82,6 +96,25 @@ const additionalStyles = makeStyles((theme: Theme) => ({
     justifyContent: 'space-between',
     alignItems: 'center',
     float: 'right',
+  },
+  dropdown: {
+    [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
+      borderColor: MthColor.SYSTEM_07,
+      borderWidth: '2px',
+    },
+    [`& .${outlinedInputClasses.notchedOutline}`]: {
+      borderColor: MthColor.SYSTEM_07,
+      borderWidth: '2px',
+    },
+    [`& .${inputLabelClasses.root}.${inputLabelClasses.focused}`]: {
+      transform: 'translate(14px, -11px) scale(1)',
+    },
+    [`& .${inputLabelClasses.root}.${inputLabelClasses.shrink}`]: {
+      transform: 'translate(14px, -11px) scale(1)',
+    },
+    [`& .${outlinedInputClasses.root} .${outlinedInputClasses.notchedOutline} span`]: {
+      fontSize: 16,
+    },
   },
 }))
 
@@ -186,10 +219,74 @@ const Withdrawal: React.FC<{
   //	Flag State which indicates if the Form has values changed. true => Form has values changed. false => No
   const [unsavedChanges, setUnsavedChanges] = useState<boolean>(false)
 
+  const [schoolYearList, setSchoolYearList] = useState<DropDownItem[]>([])
+  const [activeSchoolYearId, setActiveSchoolYearId] = useState<string>('')
+  const [midActiveSchoolYearId, setMidActiveSchoolYearId] = useState<boolean>(false)
+
+  const [futureYearList, setFutureYearList] = useState<DropDownItem[]>([])
+
+  const { loading: schoolLoading, data: schoolYearData } = useQuery(getSchoolYearsByRegionId, {
+    variables: {
+      regionId: region,
+    },
+    fetchPolicy: 'network-only',
+  })
+
+  useEffect(() => {
+    if (!schoolLoading && schoolYearData?.getSchoolYearsByRegionId) {
+      const tempSchoolYearList: DropDownItem[] = []
+      const futureSchoolYearList: DropDownItem[] = []
+      const yearList = schoolYearData.getSchoolYearsByRegionId.sort((a, b) => (a.date_begin > b.date_begin ? 1 : -1))
+      for (let i = 0; i < yearList.length; i++) {
+        const item = yearList[i]
+        tempSchoolYearList.push({
+          label: moment(item.date_begin).format('YYYY') + '-' + moment(item.date_end).format('YY'),
+          value: item.school_year_id + '',
+        })
+        if (moment().format('YYYY-MM-DD') < item.date_end) {
+          futureSchoolYearList.push({
+            label: moment(item.date_begin).format('YYYY') + '-' + moment(item.date_end).format('YY'),
+            value: item.school_year_id + '',
+          })
+        }
+
+        if (item.midyear_application === 1) {
+          tempSchoolYearList.push({
+            label: moment(item.date_begin).format('YYYY') + '-' + moment(item.date_end).format('YY') + ' Mid-Year',
+            value: item.school_year_id + '-mid',
+          })
+          if (moment().format('YYYY-MM-DD') < item.date_end) {
+            futureSchoolYearList.push({
+              label: moment(item.date_begin).format('YYYY') + '-' + moment(item.date_end).format('YY') + ' Mid-Year',
+              value: item.school_year_id + '-mid',
+            })
+          }
+        }
+        if (
+          moment().format('YYYY-MM-DD') > item.date_begin &&
+          moment().format('YYYY-MM-DD') < item.date_end &&
+          isEditable()
+        ) {
+          setActiveSchoolYearId(item.school_year_id + '')
+        }
+      }
+      setSchoolYearList(tempSchoolYearList)
+      setFutureYearList(futureSchoolYearList)
+    }
+  }, [schoolYearData])
+
   //	Select Questions Query from the Database
   const { data: questionsData } = useQuery(getQuestionsByRegionQuery, {
-    variables: { regionId: region, section: 'quick-link-withdrawal' },
+    variables: {
+      withdrawQuestionInput: {
+        school_year_id: parseInt(activeSchoolYearId),
+        mid_year: midActiveSchoolYearId,
+        section: 'quick-link-withdrawal',
+        regionId: region,
+      },
+    },
     fetchPolicy: 'network-only',
+    skip: !activeSchoolYearId,
   })
 
   //	Insert(Update) Questions Mutation into the Database
@@ -333,6 +430,8 @@ const Withdrawal: React.FC<{
               options: JSON.stringify(v.options),
               required: v.required ? 1 : 0,
               additionalQuestion: v.additionalQuestion,
+              school_year_id: parseInt(activeSchoolYearId),
+              mid_year: midActiveSchoolYearId,
             },
           }
         }),
@@ -403,8 +502,22 @@ const Withdrawal: React.FC<{
               response: '',
             },
           ])
+        } else {
+          setQuestions([])
         }
       } else {
+        const students = me?.students
+          ?.filter(
+            (item) =>
+              item.current_school_year_status.school_year_id === parseInt(activeSchoolYearId + '') &&
+              item.current_school_year_status.midyear_application === midActiveSchoolYearId &&
+              [0, 1].includes(item.status[0].status), // 0: pending, 1: active
+          )
+          .map((student) => ({
+            label: student.person.first_name,
+            value: student.student_id,
+          }))
+
         setQuestions(
           questionsData.questionsByRegion.map(
             (v: {
@@ -413,15 +526,40 @@ const Withdrawal: React.FC<{
               defaultQuestion: number
               required: number
               question: string
+              slug: string
             }) => {
-              return {
-                ...v,
-                options: JSON.parse(v.options),
-                mainQuestion: v.mainQuestion == 1,
-                defaultQuestion: v.defaultQuestion == 1,
-                required: v.required == 1,
-                response: (v.question === 'Student' && studentId) || '',
-                studentId: studentId,
+              if (isEditable()) {
+                return {
+                  ...v,
+                  options: JSON.parse(v.options),
+                  mainQuestion: v.mainQuestion == 1,
+                  defaultQuestion: v.defaultQuestion == 1,
+                  required: v.required == 1,
+                  response: (v.question === 'Student' && studentId) || '',
+                  studentId: studentId,
+                }
+              } else {
+                if (v.slug !== 'student') {
+                  return {
+                    ...v,
+                    options: JSON.parse(v.options),
+                    mainQuestion: v.mainQuestion == 1,
+                    defaultQuestion: v.defaultQuestion == 1,
+                    required: v.required == 1,
+                    response: (v.question === 'Student' && studentId) || '',
+                    studentId: studentId,
+                  }
+                } else {
+                  return {
+                    ...v,
+                    options: students,
+                    mainQuestion: v.mainQuestion == 1,
+                    defaultQuestion: v.defaultQuestion == 1,
+                    required: v.required == 1,
+                    response: (v.question === 'Student' && studentId) || '',
+                    studentId: studentId,
+                  }
+                }
               }
             },
           ),
@@ -440,7 +578,7 @@ const Withdrawal: React.FC<{
 
   return (
     <Grid className={classes.mainContent}>
-      {questions.length > 0 && (
+      {
         <Formik
           initialValues={questions}
           enableReinitialize={true}
@@ -509,7 +647,25 @@ const Withdrawal: React.FC<{
               <Box sx={siteManagementClassess.base}>
                 <Box className={classes.header}>
                   <Box className={classes.titleBox}>
-                    <Typography sx={{ fontWeight: 700, fontSize: 20, ml: 1 }}>Withdraw</Typography>
+                    <Typography sx={{ fontWeight: 700, fontSize: 20, ml: 1, mr: 2 }}>Withdraw</Typography>
+                    {isEditable() && (
+                      <DropDown
+                        dropDownItems={schoolYearList}
+                        placeholder={'Select Year'}
+                        defaultValue={activeSchoolYearId}
+                        borderNone={true}
+                        setParentValue={(val) => {
+                          let yearId = val + ''
+                          if (yearId?.indexOf('mid') > 0) {
+                            yearId = yearId?.split('-')?.at(0)
+                            setMidActiveSchoolYearId(true)
+                          } else {
+                            setMidActiveSchoolYearId(false)
+                          }
+                          setActiveSchoolYearId(val)
+                        }}
+                      />
+                    )}
                   </Box>
                   {isEditable() && (
                     <Box className={classes.actionButtons}>
@@ -545,6 +701,28 @@ const Withdrawal: React.FC<{
                   sx={{ mt: 2, ml: isEditable() ? 'calc(25% + 60px)' : 'auto' }}
                 >
                   <List sx={{ width: '100%', py: 0 }}>
+                    <Box style={{ maxWidth: isEditable() ? '80%' : '100%' }}>
+                      <DropDown
+                        name='programYear'
+                        labelTop
+                        placeholder='Program Year'
+                        dropDownItems={futureYearList}
+                        setParentValue={(id) => {
+                          if (!isEditable()) {
+                            let yearId = id.toString()
+                            if (yearId?.indexOf('mid') > 0) {
+                              yearId = yearId?.split('-')?.at(0)
+                              setMidActiveSchoolYearId(true)
+                            } else {
+                              setMidActiveSchoolYearId(false)
+                            }
+                            setActiveSchoolYearId(yearId)
+                          }
+                        }}
+                        alternate={true}
+                        size='small'
+                      />
+                    </Box>
                     <QuestionItem
                       questions={[values[0]]}
                       questionTypes={QuestionTypes}
@@ -710,7 +888,7 @@ const Withdrawal: React.FC<{
             </Form>
           )}
         </Formik>
-      )}
+      }
     </Grid>
   )
 }

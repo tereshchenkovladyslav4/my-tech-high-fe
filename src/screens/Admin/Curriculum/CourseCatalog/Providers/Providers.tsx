@@ -18,6 +18,7 @@ import ProviderConfirmModal from '@mth/screens/Admin/Curriculum/CourseCatalog/Pr
 import { ProviderEdit } from '@mth/screens/Admin/Curriculum/CourseCatalog/Providers/ProviderEdit'
 import { Provider } from '@mth/screens/Admin/Curriculum/CourseCatalog/Providers/types'
 import {
+  createOrUpdateCourseMutation,
   createOrUpdateProviderMutation,
   deleteProviderMutation,
 } from '@mth/screens/Admin/Curriculum/CourseCatalog/services'
@@ -40,6 +41,7 @@ const Providers: React.FC = () => {
 
   const [updateProvider, {}] = useMutation(createOrUpdateProviderMutation)
   const [deleteProvider, {}] = useMutation(deleteProviderMutation)
+  const [updateCourse, {}] = useMutation(createOrUpdateCourseMutation)
 
   const fields: MthTableField<Provider>[] = [
     {
@@ -136,6 +138,8 @@ const Providers: React.FC = () => {
   ]
 
   const createData = (provider: Provider): MthTableRowItem<Provider> => {
+    const selectableCount = provider.Courses?.filter((course) => course.is_active)?.length || 0
+    const selectedCount = provider.Courses?.filter((course) => course.allow_request)?.length || 0
     return {
       key: `provider-${showArchived}-${provider.id}`,
       columns: {
@@ -145,6 +149,7 @@ const Providers: React.FC = () => {
       },
       selectable: !showArchived && provider.is_active,
       isSelected: provider.allow_request,
+      isSelectedPartial: selectedCount > 0 && selectedCount < selectableCount,
       rawData: provider,
       expandNode: (
         <Courses
@@ -180,24 +185,47 @@ const Providers: React.FC = () => {
   }
 
   const handleAllowRequestChange = async (newItems: MthTableRowItem<Provider>[]) => {
-    newItems.map(async (item) => {
+    const promises: Promise<void>[] = []
+    newItems.forEach((item) => {
       const allowRequest = !!item.isSelected
       if (item.rawData.allow_request != allowRequest) {
         item.rawData = { ...item.rawData, allow_request: allowRequest }
-        await updateProvider({
-          variables: {
-            createProviderInput: {
-              id: Number(item.rawData.id),
-              allow_request: !!item.isSelected,
-            },
-          },
+        promises.push(
+          new Promise<void>(async (resolve) => {
+            await updateProvider({
+              variables: {
+                createProviderInput: {
+                  id: Number(item.rawData.id),
+                  allow_request: !!item.isSelected,
+                },
+              },
+            })
+            resolve()
+          }),
+        )
+        item.rawData.Courses?.forEach(async (course) => {
+          promises.push(
+            new Promise<void>(async (resolve) => {
+              await updateCourse({
+                variables: {
+                  createCourseInput: {
+                    id: Number(course.id),
+                    allow_request: allowRequest,
+                  },
+                },
+              })
+              resolve()
+            }),
+          )
         })
       }
     })
 
     setTableData(newItems)
+    Promise.all(promises).then(() => {
+      refetch()
+    })
   }
-
   useEffect(() => {
     setTableData(
       (providers || []).map((item) => {

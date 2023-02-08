@@ -5,6 +5,7 @@ export const useStyles = {
   textField: {
     [`& .${outlinedInputClasses.root} .${outlinedInputClasses.notchedOutline}`]: {
       borderWidth: '1px',
+      borderColor: MthColor.GRAY,
     },
     width: '100%',
     [`& .${inputLabelClasses.root}.${inputLabelClasses.focused}`]: {
@@ -20,11 +21,12 @@ export const useStyles = {
       bottom: '19px',
       whiteSpace: 'pre-wrap',
       textAlign: 'left',
+      color: `${MthColor.SYSTEM_07}!important`,
     },
   },
   textFieldError: {
     [`& .${outlinedInputClasses.root} .${outlinedInputClasses.notchedOutline}`]: {
-      borderColor: '#BD0043',
+      borderColor: MthColor.ERROR_RED,
     },
     width: '100%',
     [`& .${inputLabelClasses.root}.${inputLabelClasses.focused}`]: {
@@ -64,11 +66,11 @@ export const useStyles = {
   },
   dropdown: {
     [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
-      borderColor: MthColor.SYSTEM_07,
+      borderColor: `${MthColor.SYSTEM_07}!important`,
       borderWidth: '2px',
     },
     [`& .${outlinedInputClasses.notchedOutline}`]: {
-      borderColor: MthColor.SYSTEM_07,
+      borderColor: `${MthColor.SYSTEM_07}!important`,
       borderWidth: '2px',
     },
     [`& .${inputLabelClasses.root}.${inputLabelClasses.focused}`]: {
@@ -86,6 +88,7 @@ export const useStyles = {
       bottom: '19px',
       whiteSpace: 'pre-wrap',
       textAlign: 'left',
+      color: `${MthColor.SYSTEM_07}!important`,
     },
   },
 }

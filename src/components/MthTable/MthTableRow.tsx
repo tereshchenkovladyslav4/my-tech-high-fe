@@ -94,8 +94,9 @@ const MthTableRow = <T extends unknown>({
           {isSelectable && (
             <TableCell className='checkWrap'>
               <MthCheckbox
-                color={checkBoxColor}
+                color={item.isSelectedPartial ? 'primary' : checkBoxColor}
                 size={size}
+                indeterminate={item.isSelectedPartial}
                 checked={item.isSelected || false}
                 onChange={() => handleToggleCheck(item)}
                 disabled={item.selectable === false}

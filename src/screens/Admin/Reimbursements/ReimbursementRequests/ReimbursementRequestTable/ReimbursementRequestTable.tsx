@@ -22,6 +22,7 @@ import { gradeShortText, reimbursementRequestStatus, reimbursementRequestType, r
 export const ReimbursementRequestTable: React.FC<ReimbursementRequestTableProps> = ({
   schoolYearId,
   setSchoolYearId,
+  setSchoolYear,
   filter,
 }) => {
   const [searchField, setSearchField] = useState<string>('')
@@ -286,7 +287,11 @@ export const ReimbursementRequestTable: React.FC<ReimbursementRequestTableProps>
           </Box>
         </Box>
         <Box>
-          <SchoolYearDropDown selectedYearId={schoolYearId} setSelectedYearId={setSchoolYearId} />
+          <SchoolYearDropDown
+            selectedYearId={schoolYearId}
+            setSelectedYearId={setSchoolYearId}
+            setSelectedYear={setSchoolYear}
+          />
         </Box>
       </Box>
 

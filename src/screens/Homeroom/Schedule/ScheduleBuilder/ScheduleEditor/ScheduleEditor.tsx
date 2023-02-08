@@ -168,11 +168,13 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
 
   const createDescriptionMenuItems = (schedule: ScheduleData): MenuItemData => {
     const menuItemsData: MenuItemData = {
-      label: schedule.Course ? (
-        selectedCourseLabel(schedule.Course)
-      ) : (
-        <Typography sx={{ ...scheduleBuilderClasses.tableContent, color: MthColor.MTHBLUE }}>Select</Typography>
-      ),
+      label:
+        schedule.Course &&
+        !(splitEnrollment && schedule.Title?.split_enrollment && !schedule.Provider?.multiple_periods) ? (
+          selectedCourseLabel(schedule.Course)
+        ) : (
+          <Typography sx={{ ...scheduleBuilderClasses.tableContent, color: MthColor.MTHBLUE }}>Select</Typography>
+        ),
       items: [],
     }
     const providers = schedule.Title?.Providers || schedule.Subject?.Providers
@@ -213,7 +215,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
 
       menuItemsData.items?.push(subMenu)
     })
-    if (splitEnrollment && !schedule.Provider?.multiple_periods) {
+    if (splitEnrollment && schedule.Title?.split_enrollment && !schedule.Provider?.multiple_periods) {
       menuItemsData.items?.push({
         label: MthTitle.ON_SITE_SPLIT_ENROLLMENT,
         callback: () => {
@@ -485,7 +487,8 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
     return (
       editable(schedule) &&
       (providers.length > 1 ||
-        (providers.length === 1 && (providers[0]?.Courses?.length >= 1 || !!providers[0]?.AltCourses?.length)))
+        (providers.length === 1 && (providers[0]?.Courses?.length >= 1 || !!providers[0]?.AltCourses?.length)) ||
+        Boolean(splitEnrollment && schedule.Title?.split_enrollment && !schedule.Provider?.multiple_periods))
     )
   }
 

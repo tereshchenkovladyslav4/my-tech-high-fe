@@ -100,14 +100,11 @@ const ResourceRequest: React.FC<ResourceRequestProps> = ({
               item={item}
               onAction={(evtType: CartEventType) => {
                 switch (evtType) {
-                  case CartEventType.CLICK: {
-                    if (item.website) window.open(item.website, '_blank')
-                    break
-                  }
                   case CartEventType.REMOVE_CART: {
                     removeInCart(item)
                     break
                   }
+                  case CartEventType.CLICK:
                   case CartEventType.DETAILS: {
                     goToDetails(item)
                     break

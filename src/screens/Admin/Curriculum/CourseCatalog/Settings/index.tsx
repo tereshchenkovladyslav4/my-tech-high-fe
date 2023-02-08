@@ -373,7 +373,7 @@ const Settings: React.FC = () => {
             isChanged={isChanged}
             setIsChanged={setIsChanged}
             disabled={formik.values.split_enrollment === 'Disabled' || formik.values.split_enrollment === undefined}
-            sx={{ ml: { xs: 0, lg: 3, xl: 8 } }}
+            sx={{ ml: { xs: 0, lg: 3, xl: 7 } }}
           />
           <Box display='flex' alignItems='center' sx={{ ml: { xs: 0, lg: 3, xl: 9 } }}>
             <Checkbox
@@ -386,6 +386,23 @@ const Settings: React.FC = () => {
                   (e as unknown as React.ChangeEvent<HTMLInputElement>).target.checked,
                 )
               }
+              sx={{
+                '&.Mui-disabled': {
+                  position: 'relative',
+                  '&:before': {
+                    content: '""',
+                    position: 'absolute',
+                    width: 18,
+                    height: 18,
+                    borderRadius: '2px',
+                    border: `solid 2px ${MthColor.SYSTEM_12}`,
+                    backgroundColor: MthColor.SYSTEM_07,
+                  },
+                  '& svg': {
+                    opacity: 0,
+                  },
+                },
+              }}
             />
             <Paragraph
               size={'large'}

@@ -17,11 +17,13 @@ import { Course, CoursesProps } from '@mth/screens/Admin/Curriculum/CourseCatalo
 import {
   cloneCourseMutation,
   createOrUpdateCourseMutation,
+  createOrUpdateProviderMutation,
   deleteCourseMutation,
 } from '@mth/screens/Admin/Curriculum/CourseCatalog/services'
 import { gradeShortText } from '@mth/utils'
 
 const Courses: React.FC<CoursesProps> = ({ schoolYearId, schoolYearData, provider, showArchived = false, refetch }) => {
+  const [updateProvider, {}] = useMutation(createOrUpdateProviderMutation)
   const [updateCourse, {}] = useMutation(createOrUpdateCourseMutation)
   const [deleteCourse, {}] = useMutation(deleteCourseMutation)
   const [cloneCourse, {}] = useMutation(cloneCourseMutation)
@@ -220,6 +222,21 @@ const Courses: React.FC<CoursesProps> = ({ schoolYearId, schoolYearData, provide
         )
       }
     })
+
+    const isSelected = newItems.find((item) => item.isSelected) !== undefined
+    promises.push(
+      new Promise<void>(async (resolve) => {
+        await updateProvider({
+          variables: {
+            createProviderInput: {
+              id: provider.id,
+              allow_request: isSelected,
+            },
+          },
+        })
+        resolve()
+      }),
+    )
 
     Promise.all(promises).then(() => {
       refetch()
