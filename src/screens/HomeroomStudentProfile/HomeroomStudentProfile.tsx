@@ -3,11 +3,11 @@ import { Box } from '@mui/system'
 import { useHistory } from 'react-router-dom'
 import { s3URL } from '@mth/constants'
 import { MthRoute } from '@mth/enums'
-import { Student } from '@mth/models'
+import { Person, Student } from '@mth/models'
 import { UserContext, UserInfo } from '@mth/providers/UserContext/UserProvider'
 import { Resources } from './Resources'
 import { StudentPage } from './Student'
-import { Person } from './Student/types'
+import { StudentHomeroom } from './StudentHomeroom'
 import { StudentNav } from './StudentNav'
 import { StudentProfilePage } from './types'
 
@@ -46,7 +46,7 @@ export const HomeroomStudentProfile: React.FC = () => {
     <Box display='flex' flexDirection='column'>
       <StudentNav nav={nav} setNav={(value) => setNav(value)} student={student} avatar={getProfilePhoto} />
       {nav === StudentProfilePage.STUDENT && <StudentPage />}
-      {nav === StudentProfilePage.HOMEROOM && <h1> Coming Soon </h1>}
+      {nav === StudentProfilePage.HOMEROOM && <StudentHomeroom />}
       {nav === StudentProfilePage.RESOURCES && <Resources />}
     </Box>
   )

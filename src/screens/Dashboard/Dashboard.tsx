@@ -7,7 +7,7 @@ import { filter } from 'lodash'
 import moment from 'moment'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { useEventsByRegionIdAndFilterItem, useEventTypeListByRegionId } from '@mth/hooks'
-import { SchoolYearType } from '@mth/models'
+import { SchoolYear } from '@mth/models'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { getSchoolYearsByRegionId } from '../Admin/Dashboard/SchoolYear/SchoolYear'
 import { Announcements } from './Announcements'
@@ -36,7 +36,7 @@ export const Dashboard: React.FC = () => {
   const [inProp, setInProp] = useState<boolean>(false)
   const [announcements, setAnnouncements] = useState<Announcement[]>([])
   const [selectedAnnouncement, setSelectedAnnouncement] = useState<Announcement>({})
-  const [schoolYears, setSchoolYears] = useState<SchoolYearType[]>([])
+  const [schoolYears, setSchoolYears] = useState<SchoolYear[]>([])
   const [searchField, setSearchField] = useState<string>('')
   const { calendarEventList, events } = useEventsByRegionIdAndFilterItem({
     regionId: Number(region_id),
@@ -81,7 +81,7 @@ export const Dashboard: React.FC = () => {
               <Grid item xs={12} lg={8}>
                 <Grid container spacing={2}>
                   <Grid item xs={12}>
-                    <HomeroomGrade schoolYears={schoolYears} mainTodoList={mainTodoList} />
+                    <HomeroomGrade schoolYears={schoolYears} mainTodoList={mainTodoList || []} />
                   </Grid>
                   <Grid item xs={12} order={{ xs: 3, lg: 2 }}>
                     <ParentCalendar
@@ -97,7 +97,7 @@ export const Dashboard: React.FC = () => {
                   </Grid>
                 </Grid>
               </Grid>
-              <Grid item xs={12} lg={4}>
+              <Grid item xs={12} lg={4} order={{ xs: 1, lg: 3 }}>
                 <Card
                   style={{
                     width: '100%',
@@ -176,7 +176,7 @@ export const Dashboard: React.FC = () => {
     if (schoolYearData?.data?.region?.SchoolYears) {
       const { SchoolYears } = schoolYearData?.data?.region
       setSchoolYears(
-        SchoolYears.map((item: SchoolYearType) => ({
+        SchoolYears.map((item: SchoolYear) => ({
           school_year_id: item.school_year_id,
           enrollment_packet: item.enrollment_packet,
           schedule: item.schedule,

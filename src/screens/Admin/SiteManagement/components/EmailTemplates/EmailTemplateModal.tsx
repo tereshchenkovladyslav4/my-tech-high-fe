@@ -38,6 +38,8 @@ type EmailTemplateModalProps = {
   template: EmailTemplate
   onSave: (_) => void
   openResponseModal: (value: StandardRes[]) => void
+  schoolYearId: string
+  midYear: boolean
 }
 
 const insertDescriptions = {
@@ -60,6 +62,8 @@ export const EmailTemplateModal: React.FC<EmailTemplateModalProps> = ({
   template,
   onSave,
   openResponseModal,
+  schoolYearId,
+  midYear,
 }) => {
   const classes = useStyles()
   const { me } = useContext(UserContext)
@@ -106,7 +110,7 @@ export const EmailTemplateModal: React.FC<EmailTemplateModalProps> = ({
 
   const { data: enrollmentQuestionsData } = useQuery(getEnrollmentQuestionsGql, {
     variables: {
-      input: { region_id: me?.selectedRegionId },
+      input: { region_id: me?.selectedRegionId, school_year_id: parseInt(schoolYearId), mid_year: midYear },
     },
     fetchPolicy: 'network-only',
   })

@@ -297,6 +297,7 @@ export const EnrollmentQuestions: React.FC = () => {
             }
             if (moment().format('YYYY-MM-DD') > item.date_begin && moment().format('YYYY-MM-DD') < item.date_end) {
               setActiveSchoolYearId(item.school_year_id + '')
+              setMidActiveSchoolYearId(false)
             }
             return {
               label: moment(item.date_begin).format('YYYY') + '-' + moment(item.date_end).format('YYYY'),

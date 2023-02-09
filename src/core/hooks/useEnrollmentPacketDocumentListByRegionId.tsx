@@ -14,7 +14,7 @@ export const useEnrollmentPacketDocumentListByRegionId = (
   const [enrollmentPacketDocumentList, setEnrollmentPacketDocumentList] = useState<CheckBoxListVM[]>([])
   const { data, loading, error } = useQuery(getEnrollmentQuestionsGql, {
     variables: {
-      input: { region_id: regionId, school_year_id: `${schoolYearId}` },
+      input: { region_id: regionId, school_year_id: schoolYearId, mid_year: false },
     },
     skip: !regionId || !schoolYearId,
     fetchPolicy: 'network-only',

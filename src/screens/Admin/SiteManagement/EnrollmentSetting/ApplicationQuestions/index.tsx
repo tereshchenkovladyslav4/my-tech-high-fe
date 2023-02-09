@@ -151,6 +151,7 @@ export const ApplicationQuestions: React.FC = () => {
           }
           if (moment().format('YYYY-MM-DD') > item.date_begin && moment().format('YYYY-MM-DD') < item.date_end) {
             setActiveSchoolYearId(item.school_year_id)
+            setActiveMidSchoolYear(false)
           }
         })
       setSchoolYearList(tempSchoolYearList)

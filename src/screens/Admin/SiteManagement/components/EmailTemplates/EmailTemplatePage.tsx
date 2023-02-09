@@ -6,10 +6,14 @@ import ArrowBackIosOutlinedIcon from '@mui/icons-material/ArrowBackIosOutlined'
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
 import SearchIcon from '@mui/icons-material/Search'
 import { Box, Grid, Card, OutlinedInput, InputAdornment, Typography } from '@mui/material'
+import moment from 'moment'
+import { DropDown } from '@mth/components/DropDown/DropDown'
+import { DropDownItem } from '@mth/components/DropDown/types'
 import { getEmailTemplatesByRegionQuery } from '@mth/graphql/queries/email-template'
 import { createEmailTemplateMutation, updateEmailTemplateMutation } from '@mth/graphql/queries/email-template'
 import { EmailTemplate } from '@mth/models'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
+import { getSchoolYearsByRegionId } from '../../services'
 import { EditStandardResponse } from './EditStandardResponse'
 import { EmailStandardResponse } from './EmailStandardResponse'
 import { EmailTemplateModal } from './EmailTemplateModal'
@@ -121,6 +125,43 @@ export const EmailTemplatePage: React.FC<{ onBackPress?: () => void }> = ({ onBa
   })
   const [selResponseIdx, setSelResponseIdx] = useState<number>()
 
+  const [schoolYearList, setSchoolYearList] = useState<DropDownItem[]>([])
+  const [activeSchoolYearId, setActiveSchoolYearId] = useState<string>('')
+  const [midActiveSchoolYearId, setMidActiveSchoolYearId] = useState<boolean>(false)
+
+  const { loading: schoolLoading, data: schoolYearData } = useQuery(getSchoolYearsByRegionId, {
+    variables: {
+      regionId: me?.selectedRegionId,
+    },
+    fetchPolicy: 'network-only',
+  })
+
+  useEffect(() => {
+    if (!schoolLoading && schoolYearData.region?.SchoolYears) {
+      const tempSchoolYearList: DropDownItem[] = []
+      const yearList = schoolYearData.region?.SchoolYears?.sort((a, b) => (a.date_begin > b.date_begin ? 1 : -1))
+      for (let i = 0; i < yearList.length; i++) {
+        const item = yearList[i]
+        tempSchoolYearList.push({
+          label: moment(item.date_begin).format('YYYY') + '-' + moment(item.date_end).format('YY'),
+          value: item.school_year_id + '',
+        })
+
+        if (item.midyear_application === 1) {
+          tempSchoolYearList.push({
+            label: moment(item.date_begin).format('YYYY') + '-' + moment(item.date_end).format('YY') + ' Mid-Year',
+            value: item.school_year_id + '-mid',
+          })
+        }
+        if (moment().format('YYYY-MM-DD') > item.date_begin && moment().format('YYYY-MM-DD') < item.date_end) {
+          setActiveSchoolYearId(item.school_year_id + '')
+          setMidActiveSchoolYearId(false)
+        }
+      }
+      setSchoolYearList(tempSchoolYearList)
+    }
+  }, [schoolYearData])
+
   const handleCloseEditModal = () => {
     setOpenEdit(false)
   }
@@ -137,8 +178,11 @@ export const EmailTemplatePage: React.FC<{ onBackPress?: () => void }> = ({ onBa
   const { data: emailTemplatesData, refetch } = useQuery(getEmailTemplatesByRegionQuery, {
     variables: {
       regionId: me?.selectedRegionId,
+      schoolYearId: parseInt(activeSchoolYearId),
+      midYear: midActiveSchoolYearId,
     },
     fetchPolicy: 'network-only',
+    skip: !activeSchoolYearId,
   })
 
   const handleSave = async (data) => {
@@ -281,31 +325,58 @@ export const EmailTemplatePage: React.FC<{ onBackPress?: () => void }> = ({ onBa
             >
               <Box
                 sx={{
-                  textAlign: 'left',
                   display: 'flex',
-                  flexDirection: 'row',
-                  marginLeft: '24px',
                   alignItems: 'center',
+                  justifyContent: 'space-between',
+                  width: '100%',
                 }}
               >
-                <Grid container justifyContent='flex-start' alignItems='center' width={'auto'}>
-                  <ArrowBackIosOutlinedIcon onClick={onBackPress} sx={{ cursor: 'pointer' }} />
-                  <Typography sx={{ fontWeight: 700, fontSize: 20, ml: 1 }}>Email Templates</Typography>
-                </Grid>
-                <Box marginLeft={4}>
-                  <OutlinedInput
-                    onFocus={(e) => (e.target.placeholder = '')}
-                    onBlur={(e) => (e.target.placeholder = 'Search...')}
-                    size='small'
-                    fullWidth
-                    value={searchField}
-                    placeholder='Search...'
-                    onChange={(e) => setSearchField(e.target.value)}
-                    startAdornment={
-                      <InputAdornment position='start'>
-                        <SearchIcon style={{ color: 'black' }} />
-                      </InputAdornment>
-                    }
+                <Box
+                  sx={{
+                    textAlign: 'left',
+                    display: 'flex',
+                    flexDirection: 'row',
+                    marginLeft: '24px',
+                    alignItems: 'center',
+                  }}
+                >
+                  <Grid container justifyContent='flex-start' alignItems='center' width={'auto'}>
+                    <ArrowBackIosOutlinedIcon onClick={onBackPress} sx={{ cursor: 'pointer' }} />
+                    <Typography sx={{ fontWeight: 700, fontSize: 20, ml: 1 }}>Email Templates</Typography>
+                  </Grid>
+                  <Box marginLeft={4}>
+                    <OutlinedInput
+                      onFocus={(e) => (e.target.placeholder = '')}
+                      onBlur={(e) => (e.target.placeholder = 'Search...')}
+                      size='small'
+                      fullWidth
+                      value={searchField}
+                      placeholder='Search...'
+                      onChange={(e) => setSearchField(e.target.value)}
+                      startAdornment={
+                        <InputAdornment position='start'>
+                          <SearchIcon style={{ color: 'black' }} />
+                        </InputAdornment>
+                      }
+                    />
+                  </Box>
+                </Box>
+                <Box sx={{ marginRight: '24px' }}>
+                  <DropDown
+                    dropDownItems={schoolYearList}
+                    placeholder={'Select Year'}
+                    defaultValue={activeSchoolYearId}
+                    borderNone={true}
+                    setParentValue={(val) => {
+                      let yearId = val + ''
+                      if (yearId?.indexOf('mid') > 0) {
+                        yearId = yearId?.split('-')?.at(0)
+                        setMidActiveSchoolYearId(true)
+                      } else {
+                        setMidActiveSchoolYearId(false)
+                      }
+                      setActiveSchoolYearId(val)
+                    }}
                   />
                 </Box>
               </Box>
@@ -338,6 +409,8 @@ export const EmailTemplatePage: React.FC<{ onBackPress?: () => void }> = ({ onBa
           onSave={handleSave}
           template={currentTemplate}
           openResponseModal={openResponseModal}
+          schoolYearId={activeSchoolYearId}
+          midYear={midActiveSchoolYearId}
         />
       )}
 

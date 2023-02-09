@@ -57,7 +57,7 @@ export const StudentPage: React.FC<StudentProps> = () => {
       <Grid item xs={12} sm={9}>
         <StudentProfile currStudent={currStudent} />
       </Grid>
-      <Grid item xs={12} sm={3}>
+      <Grid item xs={12} sm={3} sx={{ paddingX: 1 }}>
         <StudentSchedule />
       </Grid>
       <Grid item xs={12} sm={9}>

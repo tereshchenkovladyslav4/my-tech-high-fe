@@ -10,6 +10,7 @@ export enum MthColor {
   GREEN_GRADIENT = 'linear-gradient(90deg, rgba(0, 0, 0, 0.5) 0%, rgba(62, 39, 131, 0) 100%), #38892B',
   BLACK_GRADIENT = 'linear-gradient(90deg, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.5) 100%), #fff',
   ORANGE_GRADIENT = 'linear-gradient(90deg, #8E2C09 0%, #EC5925 100%), #fff',
+  MTHGREEN_GRADIENT = 'linear-gradient(90deg, #053F4B 0%, rgba(62, 39, 131, 0) 100%), #2B9EB7',
 
   RED = '#D23C33',
   GRAY = '#CCCCCC',

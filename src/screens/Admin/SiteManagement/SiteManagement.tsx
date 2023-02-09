@@ -1,7 +1,8 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import ArrowBackIosOutlinedIcon from '@mui/icons-material/ArrowBackIosOutlined'
 import { Box, ButtonBase, Grid, Typography } from '@mui/material'
 import { map } from 'lodash'
+import moment from 'moment'
 import { Route, Switch, useRouteMatch } from 'react-router-dom'
 import EmailTemplateImage from '@mth/assets/email-template.png'
 import EnrollmentImg from '@mth/assets/enrollment.png'
@@ -11,6 +12,8 @@ import YearstImg from '@mth/assets/schedules.png'
 import SchoolPartnerImage from '@mth/assets/schoolAssignments.png'
 import { ItemCard } from '@mth/components/ItemCard/ItemCard'
 import { QuickLinks } from '@mth/components/QuickLink/QuickLinks'
+import { useCurrentSchoolYearByRegionId } from '@mth/hooks'
+import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { EmailTemplatePage } from './components/EmailTemplates/EmailTemplatePage'
 import EnrollmentSetting from './EnrollmentSetting/EnrollmentSetting'
 import { ProgramSetting } from './ProgramSetting'
@@ -20,17 +23,18 @@ import { Years } from './Years'
 
 const SiteManagement: React.FC = () => {
   const isExact = useRouteMatch('/site-management')?.isExact
+  const { me } = useContext(UserContext)
   const [currentView, setCurrentView] = useState<string>('root')
   const [prevView, setPrevView] = useState<string[]>([])
   const [selected, setSelected] = useState<SiteManagementItem | null>()
   const [prevSelected, setPrevSelected] = useState<SiteManagementItem[]>([])
-  const currentYear = new Date().getFullYear()
+  const { data: currentYear } = useCurrentSchoolYearByRegionId(me?.selectedRegionId || 0)
 
   const items: SiteManagementItem[] = [
     {
       id: 1,
       title: 'Years',
-      subtitle: currentYear + '-' + (currentYear - 1999),
+      subtitle: moment(currentYear?.date_begin).format('YYYY') + '-' + moment(currentYear?.date_end).format('YY'),
       img: YearstImg,
       isLink: true,
       to: 'years',

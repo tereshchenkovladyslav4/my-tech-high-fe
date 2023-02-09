@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import { Box, Card, Typography } from '@mui/material'
+import { Box, Card, Tooltip, Typography } from '@mui/material'
 import { useHistory } from 'react-router-dom'
+import DownloadFileIcon from '@mth/assets/icons/file-download.svg'
 import { MthTable } from '@mth/components/MthTable'
 import { MthTableField, MthTableRowItem } from '@mth/components/MthTable/types'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
@@ -21,9 +22,12 @@ export const StudentSchedule: React.FC = () => {
       width: '30%',
       formatter: (item: MthTableRowItem<ScheduleData>) => {
         return (
-          <Box>
+          <Box sx={{ display: 'flex' }}>
             <Typography sx={{ py: '4px', fontSize: '13px', fontWeight: '700', color: MthColor.SYSTEM_06 }}>
               {('0' + item.rawData.period).slice(-2)}
+            </Typography>
+            <Typography sx={{ py: '4px', paddingX: 2, fontSize: '13px', fontWeight: '700', color: MthColor.SYSTEM_06 }}>
+              {item.rawData.Period?.category}
             </Typography>
           </Box>
         )
@@ -86,10 +90,9 @@ export const StudentSchedule: React.FC = () => {
           sx={{
             borderRadius: 4,
             alignSelf: 'center',
-            width: '95%',
+            width: '100%',
             paddingY: 2,
             paddingX: 4,
-            marginLeft: 2,
             boxShadow: '0px 0px 28.951px rgba(0, 0, 0, 0.04)',
           }}
         >
@@ -101,7 +104,14 @@ export const StudentSchedule: React.FC = () => {
             marginTop={2}
             marginBottom={1}
           >
-            <Subtitle fontWeight='700'>Schedule</Subtitle>
+            <Box sx={{ display: 'flex' }}>
+              <Subtitle sx={{ fontSize: '16px', fontWeight: 700 }}>Schedule</Subtitle>
+              <Box sx={{ paddingX: 3, marginY: 'auto', cursor: 'pointer' }}>
+                <Tooltip title='Download' placement='top'>
+                  <img src={DownloadFileIcon} alt='Download Icon' />
+                </Tooltip>
+              </Box>
+            </Box>
             <Paragraph
               sx={{ textDecoration: 'underline', cursor: 'pointer' }}
               color={MthColor.MTHBLUE}
@@ -111,7 +121,7 @@ export const StudentSchedule: React.FC = () => {
                 )
               }
             >
-              Edit/View All
+              Update/View All
             </Paragraph>
           </Box>
           {hasSecondSemester && (
@@ -127,6 +137,7 @@ export const StudentSchedule: React.FC = () => {
               fields={fields}
               oddBg={false}
               sx={studentScheduleClasses.customTable}
+              labelSize={13}
             />
           )}
         </Card>

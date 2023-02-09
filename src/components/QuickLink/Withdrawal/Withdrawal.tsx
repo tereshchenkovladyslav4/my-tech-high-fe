@@ -268,6 +268,7 @@ const Withdrawal: React.FC<{
           isEditable()
         ) {
           setActiveSchoolYearId(item.school_year_id + '')
+          setMidActiveSchoolYearId(false)
         }
       }
       setSchoolYearList(tempSchoolYearList)
@@ -511,7 +512,7 @@ const Withdrawal: React.FC<{
             (item) =>
               item.current_school_year_status.school_year_id === parseInt(activeSchoolYearId + '') &&
               item.current_school_year_status.midyear_application === midActiveSchoolYearId &&
-              [0, 1].includes(item.status[0].status), // 0: pending, 1: active
+              [0, 1, 5, 6].includes(item.status[0]?.status), // 0: pending, 1: active
           )
           .map((student) => ({
             label: student.person.first_name,

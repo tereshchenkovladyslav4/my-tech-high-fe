@@ -72,6 +72,14 @@ export const mthButtonColorClasses = {
       color: MthColor.WHITE,
     },
   },
+  mthGreen: {
+    background: MthColor.MTHGREEN_GRADIENT,
+    color: MthColor.WHITE,
+    '&:hover': {
+      background: MthColor.MTHGREEN,
+      color: MthColor.WHITE,
+    },
+  },
   red: {
     background: 'linear-gradient(90deg, #730D07 0%, rgba(117, 13, 7, 0) 100%), #D23C33',
     color: MthColor.WHITE,
@@ -231,6 +239,28 @@ export const mthButtonClasses = {
   roundSmallOrange: {
     ...mthButtonSizeClasses.small,
     ...mthButtonColorClasses.orange,
+    borderRadius: '40px',
+  },
+
+  // MthGreen buttons
+  mthGreen: {
+    ...mthButtonSizeClasses.medium,
+    ...mthButtonColorClasses.mthGreen,
+    borderRadius: '8px',
+    minWidth: '120px',
+  },
+  roundMthGreen: {
+    ...mthButtonSizeClasses.medium,
+    ...mthButtonColorClasses.mthGreen,
+    borderRadius: '40px',
+  },
+  smallMthGreen: {
+    ...mthButtonSizeClasses.small,
+    ...mthButtonColorClasses.mthGreen,
+  },
+  roundSmallMthGreen: {
+    ...mthButtonSizeClasses.small,
+    ...mthButtonColorClasses.mthGreen,
     borderRadius: '40px',
   },
 

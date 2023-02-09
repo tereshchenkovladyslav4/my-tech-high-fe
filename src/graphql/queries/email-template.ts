@@ -57,8 +57,8 @@ export const getEmailRemindersQuery = gql`
 `
 
 export const getEmailTemplatesByRegionQuery = gql`
-  query EmailTemplatesByRegion($regionId: ID!) {
-    emailTemplatesByRegion(regionId: $regionId) {
+  query EmailTemplatesByRegion($midYear: Boolean, $schoolYearId: Float, $regionId: ID!) {
+    emailTemplatesByRegion(mid_year: $midYear, school_year_id: $schoolYearId, regionId: $regionId) {
       id
       template_name
       title
