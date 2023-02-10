@@ -95,25 +95,28 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ page, item, onAction }) => 
         </Tooltip>
       )}
 
-      {item.subtitle === ResourceSubtitle.INCLUDED && (
+      {item.subtitle === ResourceSubtitle.INCLUDED ? (
         <Button variant='contained' sx={resourceCardClasses.blackButton}>
           Included
         </Button>
-      )}
-      {item.RequestStatus === ResourceRequestStatus.REQUESTED && (
-        <Button variant='contained' sx={resourceCardClasses.blackButton}>
-          Requested
-        </Button>
-      )}
-      {isFullResource(item) && !item.CartDate && !item.RequestStatus && (
-        <Button variant='contained' sx={resourceCardClasses.purpleButton}>
-          Join Waitlist
-        </Button>
-      )}
-      {isFullResource(item) && (item.CartDate || item.RequestStatus) && (
-        <Button variant='contained' sx={resourceCardClasses.purpleButton}>
-          Waitlist
-        </Button>
+      ) : (
+        <>
+          {item.RequestStatus === ResourceRequestStatus.REQUESTED && (
+            <Button variant='contained' sx={resourceCardClasses.blackButton}>
+              Requested
+            </Button>
+          )}
+          {isFullResource(item) && !item.CartDate && !item.RequestStatus && (
+            <Button variant='contained' sx={resourceCardClasses.purpleButton}>
+              Join Waitlist
+            </Button>
+          )}
+          {isFullResource(item) && (item.CartDate || item.RequestStatus) && (
+            <Button variant='contained' sx={resourceCardClasses.purpleButton}>
+              Waitlist
+            </Button>
+          )}
+        </>
       )}
       {item.RequestStatus === ResourceRequestStatus.ACCEPTED && (
         <Button variant='contained' sx={resourceCardClasses.primaryButton}>
@@ -141,8 +144,6 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ page, item, onAction }) => 
                 ? `$${item.price}`
                 : item.subtitle == ResourceSubtitle.INCLUDED
                 ? 'Included'
-                : page === ResourcePage.REQUEST
-                ? 'Free'
                 : ''}
             </Typography>
           </Box>

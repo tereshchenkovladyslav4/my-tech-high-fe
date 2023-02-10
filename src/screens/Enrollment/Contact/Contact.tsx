@@ -214,16 +214,15 @@ export const Contact: React.FC<ContactProps> = ({ id, questions }) => {
           }),
         }
       })
-    })
-  }
-  const goNext = async () => {
-    await submitContact().then(() => {
       setTab({
         currentTab: tab.currentTab + 1,
       })
       setVisitedTabs(Array.from(Array(tab.currentTab + 1).keys()))
       window.scrollTo(0, 0)
     })
+  }
+  const goNext = async () => {
+    await submitContact()
   }
 
   const nextTab = (e) => {

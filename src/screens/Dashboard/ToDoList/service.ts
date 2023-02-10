@@ -12,6 +12,9 @@ export const getTodoList = gql`
         phrase
         students {
           student_id
+          status {
+            status
+          }
           person {
             first_name
             last_name
@@ -47,6 +50,9 @@ export const getTodoList = gql`
         phrase
         students {
           student_id
+          status {
+            status
+          }
           person {
             first_name
             last_name
@@ -82,6 +88,9 @@ export const getTodoList = gql`
         phrase
         students {
           student_id
+          status {
+            status
+          }
           person {
             first_name
             last_name
@@ -124,6 +133,9 @@ export const getTodoList = gql`
         phrase
         students {
           student_id
+          status {
+            status
+          }
           person {
             first_name
             last_name
@@ -166,6 +178,9 @@ export const getTodoList = gql`
         phrase
         students {
           student_id
+          status {
+            status
+          }
           person {
             first_name
             last_name
@@ -201,6 +216,9 @@ export const getTodoList = gql`
         phrase
         students {
           student_id
+          status {
+            status
+          }
           person {
             first_name
             last_name
@@ -243,6 +261,9 @@ export const getTodoList = gql`
         phrase
         students {
           student_id
+          status {
+            status
+          }
           person {
             first_name
             last_name
@@ -278,6 +299,9 @@ export const getTodoList = gql`
         phrase
         students {
           student_id
+          status {
+            status
+          }
           person {
             first_name
             last_name
@@ -313,6 +337,9 @@ export const getTodoList = gql`
         phrase
         students {
           student_id
+          status {
+            status
+          }
           person {
             first_name
             last_name
@@ -348,6 +375,9 @@ export const getTodoList = gql`
         phrase
         students {
           student_id
+          status {
+            status
+          }
           person {
             first_name
             last_name
@@ -383,6 +413,9 @@ export const getTodoList = gql`
         phrase
         students {
           student_id
+          status {
+            status
+          }
           person {
             first_name
             last_name
@@ -418,6 +451,9 @@ export const getTodoList = gql`
         phrase
         students {
           student_id
+          status {
+            status
+          }
           person {
             first_name
             last_name
@@ -453,6 +489,9 @@ export const getTodoList = gql`
         phrase
         students {
           student_id
+          status {
+            status
+          }
           person {
             first_name
             last_name
@@ -488,6 +527,9 @@ export const getTodoList = gql`
         phrase
         students {
           student_id
+          status {
+            status
+          }
           person {
             first_name
             last_name

@@ -7,6 +7,7 @@ import { useHistory, useLocation } from 'react-router-dom'
 import { Metadata } from '@mth/components/Metadata/Metadata'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { BUGFIX_1532 } from '@mth/constants'
 import { ApplicationStatus, MthColor, MthRoute, PacketStatus, ScheduleStatus, StudentNotification } from '@mth/enums'
 import { SchoolYearType } from '@mth/models'
 import { checkEnrollPacketStatus } from '@mth/utils'
@@ -21,7 +22,7 @@ export const StudentGrade: React.FC<StudentGradeProps> = ({ student, schoolYears
   const location = useLocation()
 
   // MARK: - Unleash Feature Flags
-  const infoctr1536 = useFlag('bugfix_1536')
+  const infoctr1536 = useFlag(BUGFIX_1532)
 
   const redirect = () => {
     const { applications, packets } = student

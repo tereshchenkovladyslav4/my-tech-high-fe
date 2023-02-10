@@ -25,7 +25,7 @@ export const Personal: React.FC<PersonalProps> = ({ id, questions }) => {
   const student = students.find((s) => parseInt(s.student_id) === parseInt(id))
 
   const [metaData, setMetaData] = useState(
-    (student.packets.at(-1)?.meta && JSON.parse(student.packets.at(-1)?.meta)) || {},
+    (student?.packets.at(-1)?.meta && JSON.parse(student?.packets.at(-1)?.meta)) || {},
   )
 
   const [validationSchema, setValidationSchema] = useState(yup.object({}))

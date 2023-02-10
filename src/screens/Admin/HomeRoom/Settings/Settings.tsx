@@ -1,4 +1,5 @@
-import React, { FunctionComponent, useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
+import { useMutation, useQuery } from '@apollo/client'
 import { Alert, AlertColor, Button, Checkbox, TextField, InputAdornment } from '@mui/material'
 import { Box } from '@mui/system'
 import { useFormik } from 'formik'
@@ -11,7 +12,10 @@ import PageHeader from '@mth/components/PageHeader'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { MthColor, MthRoute, HomeroomSettings } from '@mth/enums'
+import { saveHomeroomSettingMutation } from '@mth/graphql/mutation/homeroom-settings'
+import { getHomeroomSettingBySchoolYearIdQuery } from '@mth/graphql/queries/homeroom-settings'
 import { useSchoolYearsByRegionId } from '@mth/hooks'
+import { HomeroomSettingsModel } from '@mth/models'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { useStyles } from './styles'
 
@@ -21,16 +25,16 @@ type openAlertSaveType = {
   open: boolean
 }
 
-const Settings: FunctionComponent = () => {
+const Settings: React.FC = () => {
   const { me } = useContext(UserContext)
-  const [maxPeriods, setMaxPeriods] = useState<number>()
   const [gradeSubject, setGradeSubject] = useState<string>()
   const [displayStudent, setDisplayStudent] = useState<string>()
   const [customBuilt, setCustomBuilt] = useState<string>()
   const [splitEnrollment, setSplitEnrollment] = useState<string>()
-  const [specialEdStatus, setSpecialEdStatus] = useState(false)
-  const [diplomaStatus, setDiplomaStatus] = useState(false)
-  const [hasChange, setChanged] = useState(false)
+  const [specialEdStatus, setSpecialEdStatus] = useState<boolean>(false)
+  const [diplomaStatus, setDiplomaStatus] = useState<boolean>(false)
+  const [hasChange, setChanged] = useState<boolean>(false)
+  const [homeroomSettings, setHomeroomSettings] = useState<HomeroomSettingsModel>()
   const [openSaveAlert, setOpenSaveAlert] = useState<openAlertSaveType>({
     message: '',
     status: 'success',
@@ -43,20 +47,16 @@ const Settings: FunctionComponent = () => {
     selectedYearId,
     setSelectedYearId,
   } = useSchoolYearsByRegionId(me?.selectedRegionId)
-  useEffect(() => {
-    if (selectedYearId) {
-      const selectedSchoolYear = schoolYears.find((s) => s.school_year_id === selectedYearId)
-      setDiplomaStatus(selectedSchoolYear?.diploma_seeking ?? true)
-      setSpecialEdStatus(selectedSchoolYear?.special_ed ?? true)
-    } else {
-      setGradeSubject(undefined)
-      setDisplayStudent(undefined)
 
-      setMaxPeriods(undefined)
-      setCustomBuilt(undefined)
-      setSplitEnrollment(undefined)
-    }
-  }, [me?.selectedRegionId, selectedYearId])
+  const { loading, data, refetch } = useQuery(getHomeroomSettingBySchoolYearIdQuery, {
+    variables: {
+      schoolYearId: selectedYearId,
+    },
+    skip: !selectedYearId,
+    fetchPolicy: 'network-only',
+  })
+
+  const [saveHomeroomSetting] = useMutation(saveHomeroomSettingMutation)
 
   const enabledOptions = [
     {
@@ -80,16 +80,14 @@ const Settings: FunctionComponent = () => {
   ]
 
   const validationSchema = yup.object({
-    day_to_submit: yup.number().required('Required'),
-    max_of_excused: yup.number().required('Required'),
+    days_to_submit_early: yup.number().required('Required'),
+    max_of_excused_learning_logs_allowed: yup.number().required('Required'),
     grading_scale_percentage: yup.number().required('Required'),
     passing_average: yup.number().required('Required'),
-    grade_subject: yup.string().required('Required').nullable(),
-    display_student: yup.string().required('Required').nullable(),
-
-    max_num_periods: yup.number().required('Required').nullable(),
-    custom_built: yup.string().required('Required').nullable(),
-    split_enrollment: yup.string().required('Required').nullable(),
+    grades_by_subject: yup.string().required('Required').nullable(),
+    notify_when_graded: yup.string().required('Required').nullable(),
+    update_required_schedule_to_sumbit: yup.string().required('Required').nullable(),
+    notify_when_resubmit_required: yup.string().required('Required').nullable(),
     gender: yup.boolean().nullable(),
     special_education: yup.boolean().nullable(),
     diploma: yup.boolean().nullable(),
@@ -98,25 +96,50 @@ const Settings: FunctionComponent = () => {
 
   const formik = useFormik({
     initialValues: {
-      day_to_submit: '',
-      max_of_excused: '',
-      grading_scale_percentage: '',
-      passing_average: '',
-      grade_subject: gradeSubject,
-      display_student: displayStudent,
-
-      max_num_periods: maxPeriods,
-      custom_built: customBuilt,
-      split_enrollment: splitEnrollment,
+      days_to_submit_early: homeroomSettings?.days_to_submit_early,
+      max_of_excused_learning_logs_allowed: homeroomSettings?.max_of_excused_learning_logs_allowed,
+      grading_scale_percentage: homeroomSettings?.grading_scale_percentage,
+      passing_average: homeroomSettings?.passing_average,
+      grades_by_subject: gradeSubject,
+      notify_when_graded: displayStudent,
+      update_required_schedule_to_sumbit: customBuilt,
+      notify_when_resubmit_required: splitEnrollment,
       gender: false,
       special_education: false,
       diploma: false,
       zero_count: false,
     },
     validationSchema: validationSchema,
-    onSubmit: async () => {},
+    onSubmit: async () => {
+      await handleSubmit()
+    },
     enableReinitialize: true,
   })
+
+  const handleSubmit = async () => {
+    const response = await saveHomeroomSetting({
+      variables: {
+        createHomeroomSettingInput: {
+          id: homeroomSettings?.id || 0,
+          SchoolYearId: Number(selectedYearId),
+          days_to_submit_early: Number(formik?.values?.days_to_submit_early),
+          diploma: formik?.values?.diploma,
+          gender: formik?.values?.gender,
+          grades_by_subject: formik?.values?.grades_by_subject == 'enabled' ? true : false,
+          grading_scale_percentage: Number(formik?.values?.grading_scale_percentage),
+          max_of_excused_learning_logs_allowed: Number(formik?.values?.max_of_excused_learning_logs_allowed),
+          notify_when_graded: formik?.values?.notify_when_graded == 'yes' ? true : false,
+          notify_when_resubmit_required: formik?.values?.notify_when_resubmit_required == 'yes' ? true : false,
+          passing_average: Number(formik?.values?.passing_average),
+          special_education: formik?.values?.special_education,
+          update_required_schedule_to_sumbit:
+            formik?.values?.update_required_schedule_to_sumbit == 'yes' ? true : false,
+          zero_count: formik?.values?.zero_count,
+        },
+      },
+    })
+    if (response) refetch()
+  }
 
   const homeroomSettingsItems = [
     {
@@ -127,8 +150,9 @@ const Settings: FunctionComponent = () => {
             type='number'
             placeholder='Entry'
             sx={{ width: '200px' }}
+            value={homeroomSettings?.days_to_submit_early}
             onChange={(e) => {
-              formik.setFieldValue('day_to_submit', e.target.value)
+              formik.setFieldValue('days_to_submit_early', e.target.value)
               setChanged(true)
             }}
           />
@@ -197,11 +221,13 @@ const Settings: FunctionComponent = () => {
           placeholder='Select'
           setParentValue={(id) => {
             setChanged(true)
-            formik.setFieldValue('custom_built', id)
+            formik.setFieldValue('update_required_schedule_to_sumbit', id)
           }}
           error={{
-            error: !!formik.errors.custom_built && formik.touched.custom_built,
-            errorMsg: (formik.touched.custom_built && formik.errors.custom_built) as string,
+            error:
+              !!formik.errors.update_required_schedule_to_sumbit && formik.touched.update_required_schedule_to_sumbit,
+            errorMsg: (formik.touched.update_required_schedule_to_sumbit &&
+              formik.errors.update_required_schedule_to_sumbit) as string,
           }}
         />
       ),
@@ -212,20 +238,21 @@ const Settings: FunctionComponent = () => {
         <Box display={'flex'} flexDirection='row' alignItems='center' sx={{ width: '100%' }}>
           <DropDown
             defaultValue={splitEnrollment}
-            name='split_enrollment'
+            name='notify_when_resubmit_required'
             sx={{ width: '200px', textAlign: 'left' }}
             dropDownItems={enabledOptions}
             placeholder='Select'
             setParentValue={(id) => {
               setChanged(true)
-              formik.setFieldValue('split_enrollment', id)
+              formik.setFieldValue('notify_when_resubmit_required', id)
               if (id === 'Disabled') {
                 formik.setFieldValue('always_unlock', false)
               }
             }}
             error={{
-              error: !!formik.errors.split_enrollment && formik.touched.split_enrollment,
-              errorMsg: (formik.touched.split_enrollment && formik.errors.split_enrollment) as string,
+              error: !!formik.errors.notify_when_resubmit_required && formik.touched.notify_when_resubmit_required,
+              errorMsg: (formik.touched.notify_when_resubmit_required &&
+                formik.errors.notify_when_resubmit_required) as string,
             }}
           />
         </Box>
@@ -237,17 +264,17 @@ const Settings: FunctionComponent = () => {
       component: (
         <DropDown
           defaultValue={displayStudent}
-          name='display_student'
+          name='notify_when_graded'
           sx={{ width: '200px', textAlign: 'left' }}
           dropDownItems={enabledOptions}
           placeholder='Select'
           setParentValue={(id) => {
             setChanged(true)
-            formik.setFieldValue('display_student', id)
+            formik.setFieldValue('notify_when_graded', id)
           }}
           error={{
-            error: !!formik.errors.display_student && formik.touched.display_student,
-            errorMsg: (formik.touched.display_student && formik.errors.display_student) as string,
+            error: !!formik.errors.notify_when_graded && formik.touched.notify_when_graded,
+            errorMsg: (formik.touched.notify_when_graded && formik.errors.notify_when_graded) as string,
           }}
         />
       ),
@@ -260,7 +287,7 @@ const Settings: FunctionComponent = () => {
             type='number'
             placeholder='Entry'
             onChange={(e) => {
-              formik.setFieldValue('max_of_excused', e.target.value)
+              formik.setFieldValue('max_of_excused_learning_logs_allowed', e.target.value)
               setChanged(true)
             }}
             sx={{ width: '200px' }}
@@ -340,14 +367,14 @@ const Settings: FunctionComponent = () => {
             placeholder='Select'
             setParentValue={(value) => {
               setChanged(true)
-              formik.setFieldValue('grade_subject', value)
+              formik.setFieldValue('grades_by_subject', value)
             }}
             error={{
-              error: !!formik.errors.grade_subject && formik.touched.grade_subject,
-              errorMsg: (formik.touched.grade_subject && formik.errors.grade_subject) as string,
+              error: !!formik.errors.grades_by_subject && formik.touched.grades_by_subject,
+              errorMsg: (formik.touched.grades_by_subject && formik.errors.grades_by_subject) as string,
             }}
           />
-          {formik.values.grade_subject === 'enabled' && (
+          {formik.values.grades_by_subject === 'enabled' && (
             <Box textAlign='left' sx={{ marginTop: '24px', width: '200px' }}>
               <TextField placeholder='Entry' defaultValue={''} variant='outlined' label='Subject' focused />
               <Subtitle
@@ -364,6 +391,26 @@ const Settings: FunctionComponent = () => {
       ),
     },
   ]
+
+  useEffect(() => {
+    if (selectedYearId) {
+      const selectedSchoolYear = schoolYears.find((s) => s.school_year_id === selectedYearId)
+      setDiplomaStatus(selectedSchoolYear?.diploma_seeking ?? true)
+      setSpecialEdStatus(selectedSchoolYear?.special_ed ?? true)
+    } else {
+      setGradeSubject(undefined)
+      setDisplayStudent(undefined)
+      setCustomBuilt(undefined)
+      setSplitEnrollment(undefined)
+    }
+  }, [me?.selectedRegionId, selectedYearId])
+
+  useEffect(() => {
+    if (!loading && data?.homeroomSettingBySchoolYearId) {
+      setHomeroomSettings(data?.homeroomSettingBySchoolYearId?.at(0))
+    }
+  }, [loading, data])
+
   return (
     <form onSubmit={formik.handleSubmit} style={{ height: '100%' }}>
       <Box sx={useStyles.baseSettings}>
@@ -404,7 +451,7 @@ const Settings: FunctionComponent = () => {
                 item.name === HomeroomSettings.GRADING_SCALE
                   ? '120px'
                   : item.name === HomeroomSettings.GRADES_SUBJECT
-                  ? formik.values.grade_subject === 'enabled'
+                  ? formik.values.grades_by_subject === 'enabled'
                     ? '180px'
                     : '50px'
                   : '50px'

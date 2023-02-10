@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { useQuery } from '@apollo/client'
 import { Table, TableBody, TableContainer, Box } from '@mui/material'
+import { useFlag } from '@unleash/proxy-client-react'
 import { forOwn, map, groupBy, values, orderBy } from 'lodash'
 import moment from 'moment'
+import { BUGFIX_1565 } from '@mth/constants'
+import { StudentStatus } from '@mth/enums'
 import { Student } from '@mth/models'
 import { TodoListProps } from '@mth/screens/Dashboard/ToDoList/components/TodoList/types'
 import { checkEnrollPacketStatus } from '@mth/utils'
@@ -20,6 +23,8 @@ export const TodoList: React.FC<TodoListProps> = ({
   const [todoList, setTodoList] = useState<ToDoItem[]>([])
   const [paginationLimit] = useState<number>(25)
   const [skip] = useState<number>()
+
+  const infoctr1565 = useFlag(BUGFIX_1565)
 
   const { loading, data } = useQuery(getTodoList, {
     variables: {
@@ -196,17 +201,26 @@ export const TodoList: React.FC<TodoListProps> = ({
       ['asc'],
     )
     return map(sortedTodoList, (el, idx) => {
-      return (
-        el && (
-          <ToDoListItem
-            key={idx}
-            todoItem={el}
-            todoDate={calcCreateDate(el)}
-            todoDeadline={calcDueDate(el)}
-            idx={idx}
-          />
-        )
-      )
+      el.students.at(-1)?.status.at(-1)?.status === StudentStatus.WITHDRAWN
+      return infoctr1565
+        ? el && el.students.at(-1)?.status.at(-1)?.status !== StudentStatus.WITHDRAWN && (
+            <ToDoListItem
+              key={idx}
+              todoItem={el}
+              todoDate={calcCreateDate(el)}
+              todoDeadline={calcDueDate(el)}
+              idx={idx}
+            />
+          )
+        : el && (
+            <ToDoListItem
+              key={idx}
+              todoItem={el}
+              todoDate={calcCreateDate(el)}
+              todoDeadline={calcDueDate(el)}
+              idx={idx}
+            />
+          )
     })
   }
 

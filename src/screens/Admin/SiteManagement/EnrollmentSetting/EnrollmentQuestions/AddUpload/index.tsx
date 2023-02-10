@@ -113,7 +113,7 @@ export const AddUploadModal: React.FC<AddUploadModal> = ({ onClose, editItem, sp
   const handleSpecialService = (e, ed) => {
     const checked = e.target.checked
     if (checked) {
-      const newSpecialList = specialUploadList.concat(ed)
+      const newSpecialList = [...specialUploadList, ed]
       setSpecialUploadList(newSpecialList)
     } else {
       const newSpecialList = specialUploadList.filter((i) => i != ed)
@@ -263,10 +263,10 @@ export const AddUploadModal: React.FC<AddUploadModal> = ({ onClose, editItem, sp
                       }}
                     >
                       <Checkbox
-                        checked={specialUploadList?.indexOf(ed) !== -1}
-                        onClick={(e) => handleSpecialService(e, ed)}
+                        checked={specialUploadList?.indexOf(ed.label) !== -1}
+                        onClick={(e) => handleSpecialService(e, ed.label)}
                       />
-                      <Subtitle size='small'>{ed}</Subtitle>
+                      <Subtitle size='small'>{ed.label}</Subtitle>
                     </Box>
                   ))}
                 </>

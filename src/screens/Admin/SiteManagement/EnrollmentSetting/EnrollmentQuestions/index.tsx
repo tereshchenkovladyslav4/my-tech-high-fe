@@ -35,7 +35,6 @@ import {
   deleteQuestionGroupGql,
   getCountiesByRegionId,
   getActiveSchoolYearsByRegionId,
-  getSpecialEdsByRegionId,
 } from './services'
 import { useStyles } from './styles'
 import { Submission } from './Submission/Submission'
@@ -52,11 +51,10 @@ export const EnrollmentQuestions: React.FC = () => {
   const [openAddUpload, setOpenAddUpload] = useState(false)
   const [visitedTabs, setVisitedTabs] = useState([])
   const [unsavedChanges, setUnsavedChanges] = useState(false)
+
   const [specialEd, setSpecialEd] = useState(false)
   const [specialEdOptions, setSpecialEdOptions] = useState([])
-
-  const [specialEdStatus, setSpecialEdStatus] = useState<boolean>(false)
-  const [specialEdList, setSpecialEdList] = useState<unknown>([])
+  const [fullSchoolYearData, setFullSchoolYearData] = useState([])
 
   const [schoolYearList, setSchoolYearList] = useState<DropDownItem[]>([])
   const [activeSchoolYearId, setActiveSchoolYearId] = useState<string>('')
@@ -79,33 +77,6 @@ export const EnrollmentQuestions: React.FC = () => {
     fetchPolicy: 'network-only',
     skip: !activeSchoolYearId,
   })
-
-  const { data: specialEdData } = useQuery(getSpecialEdsByRegionId, {
-    variables: {
-      regionId: Number(me?.selectedRegionId),
-    },
-    fetchPolicy: 'network-only',
-  })
-
-  useEffect(() => {
-    setSpecialEdStatus(false)
-    const thisSchoolYear = specialEdData?.region?.SchoolYears.find(
-      (i) =>
-        moment(i.date_begin).format('YYYY-MM-DD') < moment().format('YYYY-MM-DD') &&
-        moment(i.date_end).format('YYYY-MM-DD') > moment().format('YYYY-MM-DD'),
-    )
-    if (thisSchoolYear) {
-      setSpecialEdStatus(thisSchoolYear.special_ed_options)
-      if (thisSchoolYear.special_ed_options && thisSchoolYear.special_ed_options) {
-        const special_ed_options = thisSchoolYear.special_ed_options.split(',')
-        const specialList = special_ed_options.filter((ii) => ii != 'None')
-        setSpecialEdList(specialList)
-      }
-      setSpecialEdStatus(thisSchoolYear.special_ed_options)
-    } else {
-      setSpecialEdStatus(false)
-    }
-  }, [specialEdData?.region?.SchoolYears])
 
   const [editItem, setEditItem] = useState(null)
   const [openSelectQuestionType, setOpenSelectQuestionType] = useState(false)
@@ -281,6 +252,7 @@ export const EnrollmentQuestions: React.FC = () => {
   useEffect(() => {
     if (!schoolLoading && schoolYearData.getSchoolYearsByRegionId) {
       const tempSchoolYearList: DropDownItem[] = []
+      setFullSchoolYearData(schoolYearData.getSchoolYearsByRegionId)
       setSchoolYears(
         schoolYearData.getSchoolYearsByRegionId
           .sort((a, b) => (a.date_begin > b.date_begin ? 1 : -1))
@@ -298,6 +270,9 @@ export const EnrollmentQuestions: React.FC = () => {
             if (moment().format('YYYY-MM-DD') > item.date_begin && moment().format('YYYY-MM-DD') < item.date_end) {
               setActiveSchoolYearId(item.school_year_id + '')
               setMidActiveSchoolYearId(false)
+
+              setSpecialEd(item.special_ed)
+              setSpecialEdOptions(convertSpeicalEdOptions(item.special_ed_options))
             }
             return {
               label: moment(item.date_begin).format('YYYY') + '-' + moment(item.date_end).format('YYYY'),
@@ -308,11 +283,6 @@ export const EnrollmentQuestions: React.FC = () => {
       setSchoolYearsData(schoolYearData.getSchoolYearsByRegionId)
 
       setSchoolYearList(tempSchoolYearList)
-
-      if (schoolYearData.getSchoolYearsByRegionId.length > 0) {
-        setSpecialEd(schoolYearData.getSchoolYearsByRegionId[0].special_ed)
-        setSpecialEdOptions(convertSpeicalEdOptions(schoolYearData.getSchoolYearsByRegionId[0].special_ed_options))
-      }
     }
   }, [schoolYearData])
 
@@ -528,6 +498,9 @@ export const EnrollmentQuestions: React.FC = () => {
                         setMidActiveSchoolYearId(false)
                       }
                       setActiveSchoolYearId(val)
+                      const selSchoolYear = fullSchoolYearData.find((item) => item.school_year_id === parseInt(yearId))
+                      setSpecialEd(selSchoolYear.special_ed)
+                      setSpecialEdOptions(convertSpeicalEdOptions(selSchoolYear.special_ed_options))
                     }}
                   />
                 </Stack>
@@ -595,8 +568,8 @@ export const EnrollmentQuestions: React.FC = () => {
                     ) : currentTab === 3 ? (
                       <Documents
                         specialEd={{
-                          specialEdStatus: specialEdStatus,
-                          specialEdList: specialEdList,
+                          specialEdStatus: specialEd,
+                          specialEdList: specialEdOptions,
                         }}
                       />
                     ) : (
@@ -641,8 +614,8 @@ export const EnrollmentQuestions: React.FC = () => {
                   <AddUploadModal
                     onClose={() => setOpenAddUpload(false)}
                     specialEd={{
-                      specialEdStatus: specialEdStatus,
-                      specialEdList: specialEdList,
+                      specialEdStatus: specialEd,
+                      specialEdList: specialEdOptions,
                     }}
                   />
                 )}
