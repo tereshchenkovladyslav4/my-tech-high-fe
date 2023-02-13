@@ -30,17 +30,21 @@
       "@mth/components/*": ["src/components/*"],
       "@mth/constants": ["src/core/constants"],
       "@mth/enums": ["src/core/enums"],
+      "@mth/envs": ["src/core/envs"],
+      "@mth/envs/*": ["src/core/envs/*"],
       "@mth/graphql/*": ["src/graphql/*"],
       "@mth/hooks": ["src/core/hooks"],
+      "@mth/hooks/*": ["src/core/hooks/*"],
+      "@mth/mocks/*": ["mocks/*"],
       "@mth/models": ["src/core/models"],
       "@mth/providers/*": ["src/providers/*"],
       "@mth/screens/*": ["src/screens/*"],
-      "@mth/utils/*": ["src/core/utils/*"],
-      "@mth/utils": ["src/core/utils"],
+      "@mth/services": ["src/core/services"],
       "@mth/styles/*": ["src/styles/*"],
-      "@mth/services": ["src/core/services"]
+      "@mth/utils": ["src/core/utils"],
+      "@mth/utils/*": ["src/core/utils/*"],
     }
   },
-  "exclude": ["node_modules"],
+  "exclude": ["node_modules", "**/mocks/*.ts"],
   "include": [".eslintrc.js", "./**/*"]
 }

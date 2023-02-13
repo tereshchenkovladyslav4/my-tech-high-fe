@@ -10,7 +10,7 @@ import { omit } from 'lodash'
 import moment from 'moment'
 import { Link } from 'react-router-dom'
 import * as yup from 'yup'
-import { object, string } from 'yup'
+import { AnyObject } from 'yup/lib/types'
 import BGSVG from '@mth/assets/ApplicationBG.svg'
 import { DropDown } from '@mth/components/DropDown/DropDown'
 import { DropDownItem } from '@mth/components/DropDown/types'
@@ -35,21 +35,21 @@ export type StudentInput = {
   grade_level: string
 }
 
+const initalSchema = {
+  state: yup.string().required('Required'),
+  program_year: yup.string().required('Required'),
+}
 export const NewParent: React.FC = () => {
   const classes = useStyles
   const theme = useTheme()
   const matches = useMediaQuery(theme.breakpoints.down('sm'))
-  const [initStudentQuestions, setInitStudentQuestions] = useState({ meta: {} })
-  const [emptyStudent, setEmptyStudent] = useState({ meta: {} })
-  const [emptyParent, setEmptyParent] = useState({})
-  const [emptyMeta, setEmptyMeta] = useState({})
-  const [emptyAddress, setEmptyAddress] = useState({})
-  const [emptyPacket, setEmptyPacket] = useState({})
-  const initSchema = {
-    state: string().required('Required'),
-    programYear: string().required('Required'),
-  }
-  const [validationSchema, setValidationSchema] = useState()
+  const [initStudentQuestions, setInitStudentQuestions] = useState<AnyObject>({ meta: {} })
+  const [emptyStudent, setEmptyStudent] = useState<AnyObject>({ meta: {} })
+  const [emptyParent, setEmptyParent] = useState<AnyObject>({})
+  const [emptyMeta, setEmptyMeta] = useState<AnyObject>({})
+  const [emptyAddress, setEmptyAddress] = useState<AnyObject>({})
+  const [emptyPacket, setEmptyPacket] = useState<AnyObject>({})
+  const [validationSchema, setValidationSchema] = useState<AnyObject>()
   const [availableRegions, setAvailableRegions] = useState([])
   const [regionId, setRegionId] = useState('')
   const [showEmailError, setShowEmailError] = useState(false)
@@ -65,13 +65,16 @@ export const NewParent: React.FC = () => {
 
   const { schoolYears: schoolYearsData, dropdownItems: schoolYears } = useActiveSchoolYearsByRegionId(+regionId)
 
-  const { loading: questionLoading, data: questionData } = useQuery(getQuestionsGql, {
-    variables: {
-      input: { region_id: Number(regionId), school_year_id: selectedSchoolYear, mid_year: midYearApplication },
+  const { loading: questionLoading, data: questionData } = useQuery<{ getApplicationQuestions: ApplicationQuestion[] }>(
+    getQuestionsGql,
+    {
+      variables: {
+        input: { region_id: Number(regionId), school_year_id: selectedSchoolYear, mid_year: midYearApplication },
+      },
+      fetchPolicy: 'network-only',
+      skip: !selectedSchoolYear,
     },
-    fetchPolicy: 'network-only',
-    skip: !selectedSchoolYear,
-  })
+  )
 
   useEffect(() => {
     if (!questionLoading && questionData?.getApplicationQuestions) {
@@ -108,20 +111,20 @@ export const NewParent: React.FC = () => {
 
   useEffect(() => {
     if (questionSortList(questions).length > 0) {
-      const empty: unknown = { ...emptyStudent }
-      const initParent: unknown = { ...emptyParent }
-      const initMeta: unknown = { ...emptyMeta }
-      const initAddress: unknown = { ...emptyAddress }
-      const initPacket: unknown = { ...emptyPacket }
+      const empty = { ...emptyStudent }
+      const initParent = { ...emptyParent }
+      const initMeta = { ...emptyMeta }
+      const initAddress = { ...emptyAddress }
+      const initPacket = { ...emptyPacket }
 
-      const valid_student: unknown = {}
-      const valid_student_meta: unknown = {}
+      const valid_student: AnyObject = {}
+      const valid_student_meta: AnyObject = {}
 
-      const valid_student_packet: unknown = {}
-      const valid_parent: unknown = {}
-      const valid_address: unknown = {}
-      const valid_packet: unknown = {}
-      const valid_meta: unknown = {}
+      const valid_student_packet: AnyObject = {}
+      const valid_parent: AnyObject = {}
+      const valid_address: AnyObject = {}
+      const valid_packet: AnyObject = {}
+      const valid_meta: AnyObject = {}
 
       questionSortList(questions).map((q) => {
         if (q.type !== QUESTION_TYPE.INFORMATION && !q.additional_question) {
@@ -137,8 +140,8 @@ export const NewParent: React.FC = () => {
                 valid_student[`${q.slug?.replace('student_', '')}`] = yup
                   .string()
                   .required('Required')
-                  .test(`${q.question}-selected`, `${q.question} is invalid`, (value: unknown) => {
-                    return isNumber.test(value)
+                  .test(`${q.question}-selected`, `${q.question} is invalid`, (value) => {
+                    return isNumber.test(String(value))
                   })
               } else if (q.slug?.toLocaleLowerCase().includes('emailconfirm')) {
                 valid_student[`${q.slug?.replace('student_', '')}`] = yup
@@ -188,8 +191,8 @@ export const NewParent: React.FC = () => {
                 valid_parent[`${q.slug?.replace('parent_', '')}`] = yup
                   .string()
                   .required('Required')
-                  .test(`${q.question}-selected`, `${q.question} is invalid`, (value: unknown) => {
-                    return isNumber.test(value)
+                  .test(`${q.question}-selected`, `${q.question} is invalid`, (value) => {
+                    return isNumber.test(String(value))
                   })
               } else if (q.type === QUESTION_TYPE.CHECKBOX) {
                 valid_parent[`${q.slug?.replace('parent_', '')}`] = yup.array().min(1, 'Required').required('Required')
@@ -215,8 +218,8 @@ export const NewParent: React.FC = () => {
               } else if (q.validation === 2) {
                 valid_parent[`${q.slug?.replace('parent_', '')}`] = yup
                   .string()
-                  .test(`${q.question}-selected`, `${q.question} is invalid`, (value: unknown) => {
-                    return !value || isNumber.test(value)
+                  .test(`${q.question}-selected`, `${q.question} is invalid`, (value) => {
+                    return !value || isNumber.test(String(value))
                   })
                   .nullable(true)
               }
@@ -231,8 +234,8 @@ export const NewParent: React.FC = () => {
                   valid_student_meta[`${q.slug}`] = yup
                     .string()
                     .required('Required')
-                    .test(`${q.question}-selected`, `${q.question} is invalid`, (value: unknown) => {
-                      return isNumber.test(value)
+                    .test(`${q.question}-selected`, `${q.question} is invalid`, (value) => {
+                      return isNumber.test(String(value))
                     })
                 } else if (q.type === QUESTION_TYPE.CHECKBOX) {
                   valid_student_meta[`${q.slug}`] = yup.array().min(1, 'Required').required('Required').nullable()
@@ -252,8 +255,8 @@ export const NewParent: React.FC = () => {
                   valid_meta[`${q.slug}`] = yup
                     .string()
                     .required('Required')
-                    .test(`${q.question}-selected`, `${q.question} is invalid`, (value: unknown) => {
-                      return isNumber.test(value)
+                    .test(`${q.question}-selected`, `${q.question} is invalid`, (value) => {
+                      return isNumber.test(String(value))
                     })
                 } else if (q.type === QUESTION_TYPE.CHECKBOX) {
                   valid_meta[`${q.slug}`] = yup.array().min(1, 'Required').required('Required').nullable()
@@ -274,8 +277,8 @@ export const NewParent: React.FC = () => {
                 } else if (q.validation === 2) {
                   valid_student_meta[`${q.slug}`] = yup
                     .string()
-                    .test(`${q.question}-selected`, `${q.question} is invalid`, (value: unknown) => {
-                      return !value || isNumber.test(value)
+                    .test(`${q.question}-selected`, `${q.question} is invalid`, (value) => {
+                      return !value || isNumber.test(String(value))
                     })
                     .nullable(true)
                 }
@@ -286,8 +289,8 @@ export const NewParent: React.FC = () => {
                 } else if (q.validation === 2) {
                   valid_meta[`${q.slug}`] = yup
                     .string()
-                    .test(`${q.question}-selected`, `${q.question} is invalid`, (value: unknown) => {
-                      return !value || isNumber.test(value)
+                    .test(`${q.question}-selected`, `${q.question} is invalid`, (value) => {
+                      return !value || isNumber.test(String(value))
                     })
                     .nullable(true)
                 }
@@ -300,8 +303,8 @@ export const NewParent: React.FC = () => {
                 valid_address[`${q.slug?.replace('address_', '')}`] = yup
                   .string()
                   .required('Required')
-                  .test(`${q.question}-selected`, `${q.question} is invalid`, (value: unknown) => {
-                    return isNumber.test(value)
+                  .test(`${q.question}-selected`, `${q.question} is invalid`, (value) => {
+                    return isNumber.test(String(value))
                   })
               } else {
                 valid_address[`${q.slug?.replace('address_', '')}`] = yup.string().required('Required')
@@ -310,8 +313,8 @@ export const NewParent: React.FC = () => {
               if (q.validation === 2) {
                 valid_address[`${q.slug?.replace('address_', '')}`] = yup
                   .string()
-                  .test(`${q.question}-selected`, `${q.question} is invalid`, (value: unknown) => {
-                    return !value || isNumber.test(value)
+                  .test(`${q.question}-selected`, `${q.question} is invalid`, (value) => {
+                    return !value || isNumber.test(String(value))
                   })
                   .nullable(true)
               }
@@ -332,7 +335,7 @@ export const NewParent: React.FC = () => {
       setEmptyAddress(initAddress)
       setEmptyPacket(initPacket)
       setValidationSchema({
-        ...initSchema,
+        ...initalSchema,
         parent: yup.object(valid_parent),
         address: yup.object(valid_address),
         packet: yup.object(valid_packet),
@@ -359,7 +362,7 @@ export const NewParent: React.FC = () => {
   const submitApplication = async (values) => {
     const submitStudents = values.students?.map((s) => {
       return {
-        ...omit(s, ['emailConfirm']),
+        ...omit(s, ['emailConfirm', 'parent']),
         meta: JSON.stringify(s?.meta || {}),
         // address: { ...s.address, school_district: s.packet?.school_district },
         // packet: omit(s.packet, ['school_district'])
@@ -376,7 +379,7 @@ export const NewParent: React.FC = () => {
         createApplicationInput: {
           referred_by: values.refferedBy,
           state: values.state.toString(),
-          program_year: parseInt(values.programYear!),
+          program_year: parseInt(values.program_year!),
           parent: parentInfo,
           students: submitStudents,
           midyear_application: midYearApplication,
@@ -445,11 +448,11 @@ export const NewParent: React.FC = () => {
   }, [emailLoading, emailData])
 
   // handle child component
-  const questionSortList = (values) => {
+  const questionSortList = (values: ApplicationQuestion[]) => {
     const sortList = values.filter(
       (v) =>
         v.slug !== 'program_year' &&
-        !v.mainQuestion &&
+        !v.main_question &&
         (!v.additional_question ||
           (values.find((x) => x.slug == v.additional_question)?.response !== '' &&
             values
@@ -485,11 +488,11 @@ export const NewParent: React.FC = () => {
     }
   }
 
-  const questionStudentSortList = (values, field) => {
+  const questionStudentSortList = (values: ApplicationQuestion[], field) => {
     const sortList = values.filter(
       (v) =>
         v.slug !== 'program_year' &&
-        !v.mainQuestion &&
+        !v.main_question &&
         (!v.additional_question || // main question
           (values.find((x) => x.slug == v.additional_question)?.type == QUESTION_TYPE.DROPDOWN &&
             values
@@ -522,23 +525,25 @@ export const NewParent: React.FC = () => {
     return sortList
   }
 
-  const questionAddStudentSortList = (values, field) => {
+  const questionAddStudentSortList = (values: ApplicationQuestion[], field: AnyObject): ApplicationQuestion[] => {
     const sortList = values.filter(
       (v) =>
         v.slug !== 'program_year' &&
-        !v.mainQuestion &&
+        !v.main_question &&
         (!v.additional_question || // main question
           (values.find((x) => x.slug == v.additional_question)?.type == QUESTION_TYPE.DROPDOWN &&
             values
               .find((x) => x.slug == v.additional_question) // drop down addintion question
-              ?.options.find(
-                (x) => x.action == 2 && x.value === values.find((y) => y.slug == v.additional_question)?.response,
+              ?.options?.find(
+                (x) =>
+                  x.action == 2 &&
+                  String(x.value) === String(values.find((y) => y.slug == v.additional_question)?.response),
               ) != null &&
             values.find((x) => x.slug == v.additional_question)?.active) ||
           (values.find((x) => x.slug == v.additional_question)?.type == QUESTION_TYPE.MULTIPLECHOICES &&
             values // multi item addintional question
               .find((x) => x.slug == v.additional_question)
-              ?.options.find(
+              ?.options?.find(
                 (x) =>
                   x.action == 2 &&
                   x.label ===
@@ -549,7 +554,7 @@ export const NewParent: React.FC = () => {
           (values.find((x) => x.slug == v.additional_question)?.type == QUESTION_TYPE.CHECKBOX &&
             values // checkbox addintional question
               .find((x) => x.slug == v.additional_question)
-              ?.options.find(
+              ?.options?.find(
                 (x) =>
                   x.action == 2 &&
                   (
@@ -626,7 +631,7 @@ export const NewParent: React.FC = () => {
       {!showConfirmationText ? (
         <Formik
           initialValues={{
-            programYear: selectedSchoolYear,
+            program_year: selectedSchoolYear,
             state: regionId,
             refferedBy: undefined,
             students: [emptyStudent],
@@ -637,7 +642,7 @@ export const NewParent: React.FC = () => {
             packet: emptyPacket,
           }}
           enableReinitialize={true}
-          validationSchema={object(validationSchema)}
+          validationSchema={yup.object(validationSchema)}
           onSubmit={async (values) => {
             await submitApplication(values)
           }}
@@ -696,11 +701,11 @@ export const NewParent: React.FC = () => {
                     </Grid>
                     <Grid item xs={12} display='flex' justifyContent={'center'}>
                       <Box width={'451.53px'}>
-                        <Field name='programYear' fullWidth focused>
+                        <Field name='program_year' fullWidth focused>
                           {({ field, form, meta }) => (
                             <Box width={'100%'}>
                               <DropDown
-                                name='programYear'
+                                name='program_year'
                                 labelTop
                                 placeholder='Program Year'
                                 dropDownItems={schoolYears}
@@ -732,7 +737,7 @@ export const NewParent: React.FC = () => {
                     {!questionLoading &&
                       questionStudentSortList(questions, values).length > 0 &&
                       questionStudentSortList(questions, values).map(
-                        (q: unknown, idx: number): ReactElement | undefined => {
+                        (q: ApplicationQuestion, idx: number): ReactElement | undefined => {
                           if (q.slug === 'parent_email') {
                             return (
                               <Grid key={idx} item xs={12} display='flex' justifyContent={'center'}>
@@ -977,29 +982,29 @@ export const NewParent: React.FC = () => {
                         <FieldArray name='students'>
                           {({ push, remove }) => (
                             <Grid item container spacing={2} xs={12} sm='auto'>
-                              {values.students.map((_, index) => (
+                              {values.students.map((student, index) => (
                                 <>
                                   {!questionLoading &&
                                     questionAddStudentSortList(
                                       questions.filter((qf) => qf.question.includes('student_') || qf.student_question),
-                                      _,
+                                      student,
                                     ).length > 0 &&
                                     index > 0 &&
                                     questionAddStudentSortList(
                                       questions.filter((qf) => qf.question.includes('student_') || qf.student_question),
-                                      _,
+                                      student,
                                     ).map((q, idx: number): ReactElement | undefined => {
                                       const firstQuestionSlug = questionAddStudentSortList(
                                         questions.filter(
                                           (qf) => qf.question.includes('student_') || qf.student_question,
                                         ),
-                                        _,
+                                        student,
                                       )[0].slug
                                       if (q.slug === 'student_grade_level') {
                                         return (
                                           <Grid
                                             item
-                                            key={idx}
+                                            key={`${index}-${idx}`}
                                             xs={12}
                                             width={'100%'}
                                             display='flex'

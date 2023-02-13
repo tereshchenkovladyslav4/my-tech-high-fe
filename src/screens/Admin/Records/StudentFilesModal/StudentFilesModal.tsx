@@ -9,8 +9,8 @@ import { DropDown } from '@mth/components/DropDown/DropDown'
 import { DropDownItem } from '@mth/components/DropDown/types'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
-import { s3URL } from '@mth/constants'
 import { FileCategory, MthColor } from '@mth/enums'
+import { s3URL } from '@mth/envs'
 import { useEnrollmentPacketDocumentListByRegionId } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { uploadFile } from '@mth/services'
@@ -18,7 +18,7 @@ import { getRegionCode } from '@mth/utils'
 import { RegisterStudentRecordFileMutation } from '../services'
 import { recordClasses } from '../styles'
 import { StudentFilesModalProps, StudentRecord, StudentRecordFile } from '../types'
-import { studentFilesModalClassess } from './styles'
+import { studentFilesModalClasses } from './styles'
 
 const StudentFilesModal: React.FC<StudentFilesModalProps> = ({
   schoolYearId,
@@ -149,9 +149,9 @@ const StudentFilesModal: React.FC<StudentFilesModalProps> = ({
       aria-describedby='modal-modal-description'
       disableAutoFocus={true}
     >
-      <Box sx={studentFilesModalClassess.modalCard}>
-        <Box sx={studentFilesModalClassess.header}>
-          <Box sx={{ ...studentFilesModalClassess.header, width: '50%', paddingX: 2 }}>
+      <Box sx={studentFilesModalClasses.modalCard}>
+        <Box sx={studentFilesModalClasses.header}>
+          <Box sx={{ ...studentFilesModalClasses.header, width: '50%', paddingX: 2 }}>
             <Subtitle
               sx={{ marginY: 'auto' }}
               size='medium'
@@ -170,7 +170,7 @@ const StudentFilesModal: React.FC<StudentFilesModalProps> = ({
             <Button
               disableElevation
               variant='contained'
-              sx={studentFilesModalClassess.addButton}
+              sx={studentFilesModalClasses.addButton}
               startIcon={<AddIcon />}
               onClick={() => setShowUploadModal(true)}
             >
@@ -178,7 +178,7 @@ const StudentFilesModal: React.FC<StudentFilesModalProps> = ({
             </Button>
           </Box>
           <IconButton sx={{ padding: 0, top: '-5px' }} onClick={handleModem}>
-            <CloseIcon style={studentFilesModalClassess.close} />
+            <CloseIcon style={studentFilesModalClasses.close} />
           </IconButton>
         </Box>
         <Box>
@@ -195,7 +195,7 @@ const StudentFilesModal: React.FC<StudentFilesModalProps> = ({
             secondaryModal={true}
             node={fileTypeNode}
             limit={1}
-            isUploadAble={selectedDocumentFileType ? true : false}
+            isUploadAble={!!selectedDocumentFileType}
           />
         )}
       </Box>

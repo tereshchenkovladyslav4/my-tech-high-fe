@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import UploadFileIcon from '@mui/icons-material/UploadFile'
 import { Box, Button, Typography } from '@mui/material'
-import { SNOWPACK_PUBLIC_S3_UPLOAD } from '@mth/constants'
+import { SNOWPACK_PUBLIC_S3_UPLOAD } from '@mth/envs'
 import { MthModal } from '../MthModal/MthModal'
 import FileItem from './FileItem'
 import { useStyles } from './styles'

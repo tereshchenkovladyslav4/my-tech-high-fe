@@ -1,5 +1,5 @@
 import { gql } from '@apollo/client'
-import { SNOWPACK_PUBLIC_S3_STUDENT_RECORD_FILES_DOWNLOAD } from '@mth/constants'
+import { SNOWPACK_PUBLIC_S3_STUDENT_RECORD_FILES_DOWNLOAD } from '@mth/envs'
 import { DownloadStudentRecordFilesVM } from './types'
 
 export const CreateStudentRecordMutation = gql`

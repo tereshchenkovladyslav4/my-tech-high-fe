@@ -1,4 +1,4 @@
-export type OptionsType = { label: string; value: number }
+export type OptionsType = { label: string; value: number; action?: number }
 
 export type ApplicationQuestion = {
   id?: number
@@ -9,6 +9,7 @@ export type ApplicationQuestion = {
   order: number
   response?: string
   region_id?: number
+  main_question?: number
   default_question: boolean
   student_question: boolean
   validation: number

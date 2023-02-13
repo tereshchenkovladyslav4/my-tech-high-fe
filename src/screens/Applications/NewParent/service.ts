@@ -51,6 +51,7 @@ export const getQuestionsGql = gql`
       id
       type
       order
+      main_question
       question
       options
       required

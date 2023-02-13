@@ -8,7 +8,7 @@ import { getStudentSchedulePeriodsQuery } from '@mth/graphql/queries/schedule-pe
 import { Period } from '@mth/models'
 import { SEMESTER_TYPE } from '@mth/screens/Admin/Curriculum/types'
 import { getStudentPeriodsQuery, getStudentProvidersQuery } from '@mth/screens/Homeroom/Schedule/services'
-import { Course, Provider, ScheduleData } from '@mth/screens/Homeroom/Schedule/types'
+import { Course, Provider, ScheduleData, Subject } from '@mth/screens/Homeroom/Schedule/types'
 
 export const makeProviderData = (courses: Course[], altCourses: Course[]): Provider[] => {
   const providers: Provider[] = []
@@ -80,6 +80,156 @@ export const attachSelectedItems = (item: ScheduleData, schedulePeriod: Schedule
   return item
 }
 
+export const filterSemesterOnlyTitles = (
+  subject: Subject | undefined,
+  scheduleData: ScheduleData,
+): Subject | undefined => {
+  if (!subject) return undefined
+  subject.Titles = subject.Titles.filter(
+    (title) => title.always_unlock || title.title_id == scheduleData.FirstSemesterSchedule?.Title?.title_id,
+  )
+  subject.AltTitles = subject.AltTitles.filter(
+    (title) => title.always_unlock || title.title_id == scheduleData.FirstSemesterSchedule?.Title?.title_id,
+  )
+  return subject
+}
+
+export const filterSemesterOnly = (item: ScheduleData): ScheduleData => {
+  item.Subject = filterSemesterOnlyTitles(item.Subject, item)
+
+  item?.Period?.Subjects?.map((subject) => filterSemesterOnlyTitles(subject, item))
+  item?.Periods?.map((period) => {
+    period.Subjects?.map((subject) => filterSemesterOnlyTitles(subject, item))
+  })
+  item?.filteredPeriods?.map((period) => {
+    period.Subjects?.map((subject) => filterSemesterOnlyTitles(subject, item))
+  })
+  return item
+}
+
+export const makeScheduleData = (
+  studentPeriods: Period[],
+  studentProvidersData: Provider[],
+  schedulePeriods: SchedulePeriod[],
+  showSecondSemester = false,
+): {
+  firstScheduleData: ScheduleData[]
+  secondScheduleData: ScheduleData[]
+  hasSecondSemesterSchedule: boolean
+  hasUnlockedPeriods: boolean
+  studentScheduleId: number
+  studentScheduleStatus: ScheduleStatus
+  firstSemesterScheduleId: number
+  secondSemesterScheduleId: number
+} => {
+  const studentProviders: { [key: string]: Provider } = keyBy(studentProvidersData, 'id')
+
+  studentPeriods.map((period: Period) => {
+    period.Subjects?.map((subject) => {
+      subject.Titles.concat(subject.AltTitles || []).map((title) => {
+        title.Courses.concat(title.AltCourses).map((course) => (course.Provider = studentProviders[course.provider_id]))
+        title.Providers = makeProviderData(title.Courses, title.AltCourses)
+        title.CourseTypes = COURSE_TYPE_ITEMS.filter(
+          (item) =>
+            (item.value === CourseType.CUSTOM_BUILT && title.custom_built) ||
+            (item.value === CourseType.MTH_DIRECT && !!title.Providers?.length) ||
+            (item.value === CourseType.THIRD_PARTY_PROVIDER && title.third_party_provider),
+        )
+      })
+    })
+  })
+
+  const scheduleData = groupBy(studentPeriods, 'period')
+  const scheduleDataArray: ScheduleData[] = []
+  let firstScheduleDataArray: ScheduleData[] = []
+  let secondScheduleDataArray: ScheduleData[] = []
+  for (const key in scheduleData) {
+    scheduleDataArray.push({
+      period: +key,
+      Periods: scheduleData[key],
+      filteredPeriods: scheduleData[key],
+    })
+  }
+
+  let hasSecondSemesterSchedule = false
+  let hasUnlockedPeriods = false
+  let studentScheduleId = 0
+  let studentScheduleStatus = ScheduleStatus.DRAFT
+  let firstSemesterScheduleId = 0
+  let secondSemesterScheduleId = 0
+  if (schedulePeriods) {
+    const firstSchedulePeriods: SchedulePeriod[] = schedulePeriods.filter(
+      (item: SchedulePeriod) => !item.Schedule.is_second_semester,
+    )
+    firstScheduleDataArray = JSON.parse(JSON.stringify(scheduleDataArray))
+    firstScheduleDataArray.map((item) => {
+      const schedulePeriod = firstSchedulePeriods.find(
+        (x) => item.Periods.findIndex((period) => period.id === x.PeriodId) > -1,
+      )
+      return attachSelectedItems(item, schedulePeriod)
+    })
+
+    const secondSchedulePeriods: SchedulePeriod[] = schedulePeriods.filter(
+      (item: SchedulePeriod) => item.Schedule.is_second_semester,
+    )
+    if (secondSchedulePeriods?.length) {
+      hasSecondSemesterSchedule = secondSchedulePeriods[0]?.Schedule?.status !== ScheduleStatus.DRAFT
+      secondScheduleDataArray = JSON.parse(JSON.stringify(scheduleDataArray))
+      secondScheduleDataArray.map((item) => {
+        const schedulePeriod = secondSchedulePeriods.find(
+          (x) => item.Periods.findIndex((period) => period.id === x.PeriodId) > -1,
+        )
+        return attachSelectedItems(item, schedulePeriod)
+      })
+    } else {
+      hasSecondSemesterSchedule = false
+      secondScheduleDataArray = JSON.parse(JSON.stringify(firstScheduleDataArray))
+      secondScheduleDataArray.map((item) => delete item.schedulePeriodId)
+    }
+
+    secondScheduleDataArray.map((item) => {
+      item.FirstSemesterSchedule = firstScheduleDataArray.find((x) => x.period === item.period)
+      return filterSemesterOnly(item)
+    })
+    const regularScheduleData = firstScheduleDataArray.length ? firstScheduleDataArray : scheduleDataArray
+
+    if (
+      showSecondSemester &&
+      regularScheduleData?.filter((item) => item?.Period?.semester !== SEMESTER_TYPE.NONE).length
+    ) {
+      hasUnlockedPeriods = true
+      studentScheduleId = secondSchedulePeriods?.length ? secondSchedulePeriods[0]?.ScheduleId : 0
+      studentScheduleStatus = secondSchedulePeriods?.length
+        ? secondSchedulePeriods[0]?.Schedule?.status
+        : ScheduleStatus.DRAFT
+    } else {
+      hasUnlockedPeriods = secondSchedulePeriods[0]?.Schedule?.status === ScheduleStatus.ACCEPTED
+      studentScheduleId = secondSchedulePeriods?.length
+        ? secondSchedulePeriods[0]?.ScheduleId
+        : showSecondSemester
+        ? 0
+        : firstSchedulePeriods[0]?.ScheduleId
+      studentScheduleStatus = secondSchedulePeriods?.length
+        ? secondSchedulePeriods[0]?.Schedule?.status
+        : firstSchedulePeriods[0]?.Schedule?.status
+    }
+
+    firstSemesterScheduleId = firstSchedulePeriods[0]?.ScheduleId
+    secondSemesterScheduleId = secondSchedulePeriods[0]?.ScheduleId
+  }
+
+  return {
+    firstScheduleData: firstScheduleDataArray.length ? firstScheduleDataArray : scheduleDataArray,
+    secondScheduleData: secondScheduleDataArray.length ? secondScheduleDataArray : scheduleDataArray,
+    hasSecondSemesterSchedule,
+    hasUnlockedPeriods,
+    studentScheduleId,
+    studentScheduleStatus,
+    firstSemesterScheduleId,
+    secondSemesterScheduleId,
+  }
+}
+
 export const useStudentSchedulePeriods = (
   student_id: number,
   school_year_id: number | undefined,
@@ -139,109 +289,27 @@ export const useStudentSchedulePeriods = (
   })
 
   useEffect(() => {
-    if (!loading && periodsData?.studentPeriods && !loadingProviders && providersData.studentProviders) {
-      const studentProviders: { [key: string]: Provider } = keyBy(providersData.studentProviders, 'id')
-
-      const { studentPeriods } = periodsData
-      studentPeriods.map((period: Period) => {
-        period.Subjects?.map((subject) => {
-          subject.Titles.concat(subject.AltTitles || []).map((title) => {
-            title.Courses.concat(title.AltCourses).map(
-              (course) => (course.Provider = studentProviders[course.provider_id]),
-            )
-            title.Providers = makeProviderData(title.Courses, title.AltCourses)
-            title.CourseTypes = COURSE_TYPE_ITEMS.filter(
-              (item) =>
-                (item.value === CourseType.CUSTOM_BUILT && title.custom_built) ||
-                (item.value === CourseType.MTH_DIRECT && !!title.Providers?.length) ||
-                (item.value === CourseType.THIRD_PARTY_PROVIDER && title.third_party_provider),
-            )
-          })
-        })
-      })
-
-      const scheduleData = groupBy(studentPeriods, 'period')
-      const scheduleDataArray: ScheduleData[] = []
-      let firstScheduleDataArray: ScheduleData[] = []
-      let secondScheduleDataArray: ScheduleData[] = []
-      for (const key in scheduleData) {
-        scheduleDataArray.push({
-          period: +key,
-          Periods: scheduleData[key],
-          filteredPeriods: scheduleData[key],
-        })
-      }
-
-      if (!studentSchedulePeriodsLoading && studentSchedulePeriodsData?.schedulePeriods) {
-        const { schedulePeriods } = studentSchedulePeriodsData
-        const firstSchedulePeriods: SchedulePeriod[] = schedulePeriods.filter(
-          (item: SchedulePeriod) => !item.Schedule.is_second_semester,
-        )
-        firstScheduleDataArray = JSON.parse(JSON.stringify(scheduleDataArray))
-        firstScheduleDataArray.map((item) => {
-          const schedulePeriod = firstSchedulePeriods.find(
-            (x) => item.Periods.findIndex((period) => period.id === x.PeriodId) > -1,
-          )
-          return attachSelectedItems(item, schedulePeriod)
-        })
-
-        const secondSchedulePeriods: SchedulePeriod[] = schedulePeriods.filter(
-          (item: SchedulePeriod) => item.Schedule.is_second_semester,
-        )
-        if (secondSchedulePeriods?.length) {
-          setHasSecondSemesterSchedule(secondSchedulePeriods[0]?.Schedule?.status !== ScheduleStatus.DRAFT)
-          secondScheduleDataArray = JSON.parse(JSON.stringify(scheduleDataArray))
-          secondScheduleDataArray.map((item) => {
-            const schedulePeriod = secondSchedulePeriods.find(
-              (x) => item.Periods.findIndex((period) => period.id === x.PeriodId) > -1,
-            )
-            return attachSelectedItems(item, schedulePeriod)
-          })
-        } else {
-          setHasSecondSemesterSchedule(false)
-          secondScheduleDataArray = JSON.parse(JSON.stringify(firstScheduleDataArray))
-          secondScheduleDataArray.map((item) => delete item.schedulePeriodId)
-        }
-
-        secondScheduleDataArray.map((item) => {
-          item.FirstSemesterSchedule = firstScheduleDataArray.find((x) => x.period === item.period)
-        })
-        const regularScheduleData = firstScheduleDataArray.length ? firstScheduleDataArray : scheduleDataArray
-
-        if (
-          showSecondSemester &&
-          regularScheduleData?.filter((item) => item?.Period?.semester !== SEMESTER_TYPE.NONE).length
-        ) {
-          setHasUnlockedPeriods(true)
-          setStudentScheduleId(secondSchedulePeriods?.length ? secondSchedulePeriods[0]?.ScheduleId : 0)
-          setStudentScheduleStatus(
-            secondSchedulePeriods?.length ? secondSchedulePeriods[0]?.Schedule?.status : ScheduleStatus.DRAFT,
-          )
-        } else {
-          if (secondSchedulePeriods[0]?.Schedule?.status === ScheduleStatus.ACCEPTED) {
-            setHasUnlockedPeriods(true)
-          } else {
-            setHasUnlockedPeriods(false)
-          }
-          setStudentScheduleId(
-            secondSchedulePeriods?.length
-              ? secondSchedulePeriods[0]?.ScheduleId
-              : showSecondSemester
-              ? 0
-              : firstSchedulePeriods[0]?.ScheduleId,
-          )
-          setStudentScheduleStatus(
-            secondSchedulePeriods?.length
-              ? secondSchedulePeriods[0]?.Schedule?.status
-              : firstSchedulePeriods[0]?.Schedule?.status,
-          )
-        }
-
-        setFirstSemesterScheduleId(firstSchedulePeriods[0]?.ScheduleId)
-        setSecondSemesterScheduleId(secondSchedulePeriods[0]?.ScheduleId)
-      }
-      setScheduleData(firstScheduleDataArray.length ? firstScheduleDataArray : scheduleDataArray)
-      setSecondScheduleData(secondScheduleDataArray.length ? secondScheduleDataArray : scheduleDataArray)
+    if (
+      !loading &&
+      periodsData?.studentPeriods &&
+      !loadingProviders &&
+      providersData.studentProviders &&
+      !studentSchedulePeriodsLoading
+    ) {
+      const result = makeScheduleData(
+        periodsData.studentPeriods,
+        providersData.studentProviders,
+        studentSchedulePeriodsData?.schedulePeriods,
+        showSecondSemester,
+      )
+      setScheduleData(result.firstScheduleData)
+      setSecondScheduleData(result.secondScheduleData)
+      setHasSecondSemesterSchedule(result.hasSecondSemesterSchedule)
+      setHasUnlockedPeriods(result.hasUnlockedPeriods)
+      setStudentScheduleId(result.studentScheduleId)
+      setStudentScheduleStatus(result.studentScheduleStatus)
+      setFirstSemesterScheduleId(result.firstSemesterScheduleId)
+      setSecondSemesterScheduleId(result.secondSemesterScheduleId)
     }
   }, [loading, periodsData, studentSchedulePeriodsLoading, studentSchedulePeriodsData, loadingProviders, providersData])
 

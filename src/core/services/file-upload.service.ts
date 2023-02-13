@@ -1,6 +1,6 @@
 import moment from 'moment'
-import { S3_UPLOAD_URL } from '@mth/constants'
 import { FileCategory } from '@mth/enums'
+import { S3_UPLOAD_URL } from '@mth/envs'
 import { ApiResponse, FileUploadResult } from '@mth/models'
 
 export const uploadFile = async (

@@ -1,4 +1,4 @@
-export const studentFilesModalClassess = {
+export const studentFilesModalClasses = {
   modalCard: {
     position: 'absolute' as const,
     top: '50%',
