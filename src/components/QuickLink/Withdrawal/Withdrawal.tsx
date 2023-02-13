@@ -510,9 +510,9 @@ const Withdrawal: React.FC<{
         const students = me?.students
           ?.filter(
             (item) =>
-              item.current_school_year_status.school_year_id === parseInt(activeSchoolYearId + '') &&
               item.current_school_year_status.midyear_application === midActiveSchoolYearId &&
-              [0, 1, 5, 6].includes(item.status[0]?.status), // 0: pending, 1: active
+              item.current_school_year_status.school_year_id === parseInt(activeSchoolYearId + '') &&
+              [0, 1, 5, 6].includes(item.status[0]?.status), // 0: pending, 1: active, 5:APPLIED, 6:ACCEPTED
           )
           .map((student) => ({
             label: student.person.first_name,

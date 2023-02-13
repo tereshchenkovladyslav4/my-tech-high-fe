@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
-import { Card, Stack } from '@mui/material'
+import { Card, CircularProgress, Stack } from '@mui/material'
 import Box from '@mui/material/Box'
 import { find, forEach, map, orderBy } from 'lodash'
 import Slider from 'react-slick'
@@ -16,9 +16,10 @@ import { StudentGrade } from './components/StudentGrade/StudentGrade'
 type HomeroomGradeProps = {
   schoolYears: SchoolYear[]
   mainTodoList: ToDoItem[]
+  isLoading: boolean
 }
 
-export const HomeroomGrade: React.FC<HomeroomGradeProps> = ({ schoolYears, mainTodoList }) => {
+export const HomeroomGrade: React.FC<HomeroomGradeProps> = ({ schoolYears, mainTodoList, isLoading }) => {
   const { me } = useContext(UserContext)
   const { students } = me as UserInfo
 
@@ -179,29 +180,42 @@ export const HomeroomGrade: React.FC<HomeroomGradeProps> = ({ schoolYears, mainT
             Students
           </Subtitle>
         </Box>
-
-        {studentsCnt > 0 && (
-          <Stack
-            display='flex'
-            justifyContent='flex-end'
-            alignSelf='center'
-            marginY={1}
-            direction='row'
-            spacing={2}
-            width='100%'
-          >
-            <Box
-              className='dynamic-box'
-              sx={{
-                width: windowDimensions.width > 792 ? sliderWidth + 'px' : Math.min(studentsCnt, 4.5) * 100 + 'px',
-              }}
+        {!isLoading ? (
+          studentsCnt > 0 && (
+            <Stack
+              display='flex'
+              justifyContent='flex-end'
+              alignSelf='center'
+              marginY={1}
+              direction='row'
+              spacing={2}
+              width='100%'
             >
-              <style dangerouslySetInnerHTML={{ __html: '.slick-track {display: flex;}' }} />
-              <Slider {...settings()} ref={sliderRef}>
-                {renderStudents()}
-              </Slider>
-            </Box>
-          </Stack>
+              <Box
+                className='dynamic-box'
+                sx={{
+                  width: windowDimensions.width > 792 ? sliderWidth + 'px' : Math.min(studentsCnt, 4.5) * 100 + 'px',
+                }}
+              >
+                <style dangerouslySetInnerHTML={{ __html: '.slick-track {display: flex;}' }} />
+                <Slider {...settings()} ref={sliderRef}>
+                  {renderStudents()}
+                </Slider>
+              </Box>
+            </Stack>
+          )
+        ) : (
+          <Box
+            sx={{
+              width: '100%',
+              justifyContent: 'center',
+              display: 'flex',
+              paddingTop: '24px',
+              paddingBottom: '24px',
+            }}
+          >
+            <CircularProgress />
+          </Box>
         )}
       </Box>
     </Card>

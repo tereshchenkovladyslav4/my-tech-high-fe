@@ -8,6 +8,7 @@ import { MthColor } from '@mth/enums'
 import { getWithdrawalsQuery } from '@mth/graphql/queries/withdrawal'
 import { Withdrawal } from '@mth/models'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
+import { showDate } from '@mth/utils'
 import PageAction from '../PageAction/PageAction'
 import { PageHeader } from '../PageHeader'
 import { PageModals } from '../PageModals'
@@ -67,7 +68,7 @@ const WithdrawalPage: React.FC<WithdrawalPageProps> = ({
         selectedYear: selectedYear,
       },
     },
-    skip: me?.selectedRegionId ? false : true,
+    skip: !me?.selectedRegionId,
     fetchPolicy: 'network-only',
   })
 
@@ -167,7 +168,7 @@ const WithdrawalPage: React.FC<WithdrawalPageProps> = ({
               sx={{ cursor: 'pointer' }}
               onClick={() => handleOpenEffectiveCalendar(withdrawal.date_effective, withdrawal.withdrawal_id)}
             >
-              {moment(withdrawal.date_effective).tz('UTC').format('MM/DD/YY')}
+              {showDate(withdrawal.date_effective, 'MM/DD/YY')}
             </Box>
           ) : (
             ''

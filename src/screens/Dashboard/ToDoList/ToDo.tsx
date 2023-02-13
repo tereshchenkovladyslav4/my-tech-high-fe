@@ -1,13 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Box, Card } from '@mui/material'
+import { Box, Card, CircularProgress } from '@mui/material'
 import BGSVG from '@mth/assets/ToDoListBG.svg'
 import { EmptyState } from '@mth/components/EmptyState/EmptyState'
 import { Flexbox } from '@mth/components/Flexbox/Flexbox'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { Title } from '@mth/components/Typography/Title/Title'
 import { MthColor } from '@mth/enums'
-import { Student } from '@mth/models'
-import { SchoolYearType } from '../HomeroomGrade/components/StudentGrade/types'
+import { SchoolYearType, Student } from '@mth/models'
 import { TodoList } from './components/TodoList/TodoList'
 import { ToDoItem } from './components/ToDoListItem/types'
 
@@ -50,12 +49,19 @@ const emptyStateHandler = (showEmpty: boolean, windowDimensions: number) => {
 
 type TodoProps = {
   schoolYears: SchoolYearType[]
+  isLoading?: boolean
   setIsLoading?: (isLoading: boolean) => void
   setMainTodoList?: (todoList: ToDoItem[]) => void
   filteredByStudent?: Student
 }
 
-export const ToDo: React.FC<TodoProps> = ({ schoolYears, setIsLoading, setMainTodoList, filteredByStudent }) => {
+export const ToDo: React.FC<TodoProps> = ({
+  schoolYears,
+  setIsLoading,
+  setMainTodoList,
+  filteredByStudent,
+  isLoading,
+}) => {
   const cardRef = useRef(null)
   const [showEmpty, setShowEmpty] = useState(false)
   const [windowDimensions, setWindowDimensions] = useState(0)
@@ -86,6 +92,19 @@ export const ToDo: React.FC<TodoProps> = ({ schoolYears, setIsLoading, setMainTo
           <Title textAlign='left' sx={{ marginLeft: { xs: 2, sm: 0 }, marginTop: { xs: 2, sm: 0 } }}>
             To-do List
           </Title>
+          {isLoading && (
+            <Box
+              sx={{
+                width: '100%',
+                justifyContent: 'center',
+                display: 'flex',
+                paddingTop: '24px',
+                paddingBottom: '24px',
+              }}
+            >
+              <CircularProgress />
+            </Box>
+          )}
           {!showEmpty ? (
             <Box
               flexDirection='column'

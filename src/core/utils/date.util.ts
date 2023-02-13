@@ -1,4 +1,4 @@
-import moment from 'moment'
+import moment from 'moment-timezone'
 
 export const getFirstDayAndLastDayOfMonth = (date: Date = new Date()): { firstDay?: Date; lastDay?: Date } => {
   const calendarDays: Date[] = []
@@ -39,3 +39,10 @@ export const calcAge = (birth: string | Date | undefined): number => {
 }
 
 export const sum = (t: number, a: number) => t + a
+
+export const showDate = (date: string | Date | undefined, format = 'MM/DD/YYYY'): string => {
+  if (date) {
+    return moment(date).tz('UTC').format(format)
+  }
+  return ''
+}

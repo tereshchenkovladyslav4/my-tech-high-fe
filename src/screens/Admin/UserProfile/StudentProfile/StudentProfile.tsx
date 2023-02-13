@@ -772,7 +772,7 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
         <Grid item xs={6}>
           <Box sx={{ width: '50%' }}>
             <Paragraph size='medium' textAlign='left'>
-              Legal Last Name ****
+              Legal Last Name
             </Paragraph>
             <TextField
               size='small'

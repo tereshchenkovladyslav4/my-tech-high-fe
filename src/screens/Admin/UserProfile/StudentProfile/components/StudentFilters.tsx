@@ -13,7 +13,7 @@ import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { ActivateOption, ApplicationStatus, MthColor, StudentStatus, WithdrawalOption } from '@mth/enums'
 import { useDiplomaSeekingOptionsByStudentIdAndSchoolYearId } from '@mth/hooks'
 import { Application, Student, Withdrawal } from '@mth/models'
-import { calcAge, gradeText } from '@mth/utils'
+import { calcAge, gradeText, showDate } from '@mth/utils'
 import { StudentTemp } from '../StudentProfile'
 import { ActiveModal } from './ActiveModal'
 import { WithdrawModal } from './WithdrawModal'
@@ -653,7 +653,7 @@ export const StudentFilters: React.FC<StudentFiltersProps> = ({
                     fontWeight='500'
                     onClick={() => setEditingDOB(true)}
                   >
-                    {studentStatusData?.brith && moment(studentStatusData?.brith).tz('UTC').format('MM/DD/YYYY')}
+                    {showDate(studentStatusData?.brith)}
                     {studentStatusData?.brith && ` (${calcAge(studentStatusData?.brith)})`}
                   </Subtitle>
                 ) : (

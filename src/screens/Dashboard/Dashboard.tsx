@@ -38,6 +38,7 @@ export const Dashboard: React.FC = () => {
   const [selectedAnnouncement, setSelectedAnnouncement] = useState<Announcement>({})
   const [schoolYears, setSchoolYears] = useState<SchoolYear[]>([])
   const [searchField, setSearchField] = useState<string>('')
+  const [isLoading, setIsLoading] = useState<boolean>(true)
   const { calendarEventList, events } = useEventsByRegionIdAndFilterItem({
     regionId: Number(region_id),
     searchField,
@@ -81,7 +82,7 @@ export const Dashboard: React.FC = () => {
               <Grid item xs={12} lg={8}>
                 <Grid container spacing={2}>
                   <Grid item xs={12}>
-                    <HomeroomGrade schoolYears={schoolYears} mainTodoList={mainTodoList || []} />
+                    <HomeroomGrade schoolYears={schoolYears} mainTodoList={mainTodoList || []} isLoading={isLoading} />
                   </Grid>
                   <Grid item xs={12} order={{ xs: 3, lg: 2 }}>
                     <ParentCalendar
@@ -93,7 +94,12 @@ export const Dashboard: React.FC = () => {
                     />
                   </Grid>
                   <Grid item xs={12} order={{ xs: 2, lg: 3 }}>
-                    {schoolYears.length > 0 && <ToDo schoolYears={schoolYears} setMainTodoList={setMainTodoList} />}
+                    <ToDo
+                      schoolYears={schoolYears}
+                      setMainTodoList={setMainTodoList}
+                      setIsLoading={setIsLoading}
+                      isLoading={isLoading}
+                    />
                   </Grid>
                 </Grid>
               </Grid>

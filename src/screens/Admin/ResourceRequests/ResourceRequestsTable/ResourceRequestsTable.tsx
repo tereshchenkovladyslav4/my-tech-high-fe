@@ -37,6 +37,7 @@ import {
   resourceRequestStatus,
   resourceUsername,
   schoolYearLabel,
+  showDate,
   studentStatusText,
 } from '@mth/utils'
 import { FileUploadModal } from '../../HomeRoom/Components/FileUploadModal'
@@ -228,7 +229,7 @@ export const ResourceRequestsTable: React.FC<ResourceRequestsTableProps> = ({
           </Box>
           <Box>
             <Typography>Birthdate</Typography>
-            <Typography>{moment(resourceRequest.Student?.person?.date_of_birth).format('MM/DD/YYYY')}</Typography>
+            <Typography>{showDate(resourceRequest.Student?.person?.date_of_birth)}</Typography>
           </Box>
           <Box>
             <Typography>Username</Typography>
@@ -372,36 +373,38 @@ export const ResourceRequestsTable: React.FC<ResourceRequestsTableProps> = ({
   }
 
   const handleDownloadResourceRequests = () => {
-    if (tableData && tableData.length > 0) {
-      const wb = XLSX.utils.book_new()
-      const ws = XLSX.utils.json_to_sheet(
-        tableData.map(({ rawData }) => {
-          return {
-            Vendor: rawData?.Resource?.title,
-            'Resource Level': rawData?.ResourceLevel?.name,
-            Submitted: moment(rawData?.created_at)?.format('MM/DD/YYYY'),
-            Status: resourceRequestStatus(rawData.status),
-            'Student ID': rawData?.Student?.student_id,
-            'Student First Name': rawData?.Student?.person?.first_name,
-            'Student Last Name': rawData?.Student?.person?.last_name,
-            'Student Email': rawData?.Student?.person?.email,
-            Grade: gradeShortText(rawData?.Student?.grade_levels?.[0]?.grade_level),
-            'Student Birthdate': moment(rawData?.Student?.person?.date_of_birth).format('MM/DD/YYYY'),
-            'Parent First Name': rawData?.Student?.parent?.person?.first_name,
-            'Parent Last Name': rawData?.Student?.parent?.person?.last_name,
-            'Parent Email': rawData?.Student?.parent?.person?.email,
-            Cost: resourceRequestCost(rawData),
-            'Username Generator': rawData?.Resource?.std_user_name,
-            'Password Generator': rawData?.Resource?.std_password,
-            'Returning Status': 'No',
-            [`${schoolYearLabel(schoolYear)} Status`]: studentStatusText(rawData?.Student?.status?.[0]),
-            'Resource Request ID': rawData?.id,
-          }
-        }),
-      )
-      XLSX.utils.book_append_sheet(wb, ws, 'Blank')
-      XLSX.writeFile(wb, 'Homeroom Resource Requests 2.0.xlsx')
+    if (!tableData?.length) {
+      setShowNoSelectError(true)
+      return
     }
+    const wb = XLSX.utils.book_new()
+    const ws = XLSX.utils.json_to_sheet(
+      tableData.map(({ rawData }) => {
+        return {
+          Vendor: rawData?.Resource?.title,
+          'Resource Level': rawData?.ResourceLevel?.name,
+          Submitted: moment(rawData?.created_at)?.format('MM/DD/YYYY'),
+          Status: resourceRequestStatus(rawData.status),
+          'Student ID': rawData?.Student?.student_id,
+          'Student First Name': rawData?.Student?.person?.first_name,
+          'Student Last Name': rawData?.Student?.person?.last_name,
+          'Student Email': rawData?.Student?.person?.email,
+          Grade: gradeShortText(rawData?.Student?.grade_levels?.[0]?.grade_level),
+          'Student Birthdate': showDate(rawData?.Student?.person?.date_of_birth),
+          'Parent First Name': rawData?.Student?.parent?.person?.first_name,
+          'Parent Last Name': rawData?.Student?.parent?.person?.last_name,
+          'Parent Email': rawData?.Student?.parent?.person?.email,
+          Cost: resourceRequestCost(rawData),
+          'Username Generator': rawData?.Resource?.std_user_name,
+          'Password Generator': rawData?.Resource?.std_password,
+          'Returning Status': 'No',
+          [`${schoolYearLabel(schoolYear)} Status`]: studentStatusText(rawData?.Student?.status?.[0]),
+          'Resource Request ID': rawData?.id,
+        }
+      }),
+    )
+    XLSX.utils.book_append_sheet(wb, ws, 'Blank')
+    XLSX.writeFile(wb, 'Homeroom Resource Requests 2.0.xlsx')
   }
 
   const handleSort = (property: string, order: Order) => {
@@ -439,11 +442,8 @@ export const ResourceRequestsTable: React.FC<ResourceRequestsTableProps> = ({
       sheetHeader.includes('Username Generator') &&
       sheetHeader.includes('Password Generator') &&
       sheetHeader.includes('Returning Status') &&
-      sheetHeader.includes('School Year') &&
-      sheetHeader.includes('Resource ID') &&
-      sheetHeader.includes('Resource Level ID') &&
-      sheetHeader.includes('Resource Request ID') &&
-      sheetHeader.includes('School Year Status')
+      sheetHeader.includes(`${schoolYearLabel(schoolYear)} Status`) &&
+      sheetHeader.includes('Resource Request ID')
     ) {
       isFormat = true
     }

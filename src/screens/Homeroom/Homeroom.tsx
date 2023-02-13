@@ -87,7 +87,7 @@ export const Homeroom: React.FC = () => {
             <Students isLoading={isLoading} schoolYears={schoolYears} schoolYearsDropdown={schoolYearsDropdown} />
           </Grid>
           <Grid item xs={12}>
-            {schoolYears.length > 0 && <ToDo schoolYears={schoolYears} setIsLoading={setIsLoading} />}
+            <ToDo schoolYears={schoolYears} setIsLoading={setIsLoading} isLoading={isLoading} />
           </Grid>
         </Grid>
       )}

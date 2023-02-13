@@ -50,7 +50,7 @@ export const SchoolYearDropDown: React.FC<SchoolYearDropDownProps> = ({
     <DropDown
       dropDownItems={schoolYearDropdownItems}
       defaultValue={selectedYearId || ''}
-      sx={{ textAlign: 'left', alignItems: align }}
+      sx={{ width: 'fit-content', textAlign: 'left', alignItems: align }}
       borderNone={true}
       setParentValue={(value) => {
         setTempSelectedYearId(+value)

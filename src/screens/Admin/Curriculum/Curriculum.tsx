@@ -3,10 +3,10 @@ import { Grid, Box } from '@mui/material'
 import { map } from 'lodash'
 import BgBlue from '@mth/assets/quick-link-blue.png'
 import BgOrange from '@mth/assets/quick-link-orange.png'
+import { ItemCard } from '@mth/components/ItemCard/ItemCard'
 import { MthRoute } from '@mth/enums'
 import { useCurrentSchoolYearByRegionId } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
-import { ItemCard } from '../../../components/ItemCard/ItemCard'
 import { useStyles } from './styles'
 import { CurriculumItem } from './types'
 
@@ -49,6 +49,7 @@ const Curriculum: React.FC = () => {
       ])
     }
   }, [schoolYear])
+
   return (
     <Box sx={{ marginTop: '64px', px: '56px', ...useStyles.cardBox }}>
       <Grid container rowSpacing={4} columnSpacing={8}>
@@ -61,7 +62,6 @@ const Curriculum: React.FC = () => {
               img={item.img}
               isLink={true}
               link={item.link}
-              action={item.action}
               hasTitle={true}
               disabled={item.disabled}
             />

@@ -168,45 +168,71 @@ const StateCodes: React.FC = () => {
   ]
 
   const handleDownloadTableData = () => {
-    setIsDownload(true)
-    setSkip(0)
-    setPaginationLimit(total)
+    if (tableData && tableData.length > 0) {
+      setIsDownload(true)
+      setSkip(0)
+      setPaginationLimit(total)
+    } else {
+      const wb = XLSX.utils.book_new()
+      const ws = XLSX.utils.json_to_sheet([
+        {
+          'Title ID': undefined,
+          Grade: undefined,
+          'State Code': undefined,
+          Teacher: undefined,
+          Subject: undefined,
+          Title: undefined,
+        },
+      ])
+      XLSX.utils.book_append_sheet(wb, ws, 'Blank')
+      XLSX.writeFile(wb, 'state_codes.xlsx')
+    }
   }
 
   const handleImportTemplate = async (file: File) => {
-    setFileFormatError(false)
-    const fileBuffer = await file.arrayBuffer()
-    const wb = XLSX.read(fileBuffer)
-    const ws = wb.Sheets[wb.SheetNames[0]]
-    const sheetHeader = XLSX.utils.sheet_to_json(ws, { header: 1 })[0] as string[]
-    let isFormat = false
-    if (
-      sheetHeader.includes('Title ID') &&
-      sheetHeader.includes('State Code') &&
-      sheetHeader.includes('Title') &&
-      sheetHeader.includes('Grade') &&
-      sheetHeader.includes('Teacher') &&
-      sheetHeader.includes('Title')
-    ) {
-      isFormat = true
-    }
-    if (isFormat) {
-      const jsonData: StateCodesTemplateType[] = XLSX.utils.sheet_to_json(ws)
-      const dataToSave: StateCodeField[] = jsonData?.map((item: StateCodesTemplateType) => {
-        return {
-          // state_codes_id: item.
-          TitleId: Number(item['Title ID']),
-          title_name: item.Title,
-          state_code: item['State Code'],
-          grade: item.Grade,
-          subject: item.Subject,
-          teacher: item.Teacher,
-          SchoolYearId: selectedYearId,
-        }
-      })
-      createStateCodesSubmit(dataToSave)
-      setFileModalOpen(false)
-    } else {
+    try {
+      setFileFormatError(false)
+      const fileBuffer = await file.arrayBuffer()
+      const wb = XLSX.read(fileBuffer)
+      const ws = wb.Sheets[wb.SheetNames[0]]
+      const sheetHeader = XLSX.utils.sheet_to_json(ws, { header: 1 })[0] as string[]
+      let isFormat = false
+      if (
+        sheetHeader.includes('Title ID') &&
+        sheetHeader.includes('State Code') &&
+        sheetHeader.includes('Title') &&
+        sheetHeader.includes('Grade') &&
+        sheetHeader.includes('Teacher') &&
+        sheetHeader.includes('Title')
+      ) {
+        isFormat = true
+      }
+      if (isFormat) {
+        const jsonData: StateCodesTemplateType[] = XLSX.utils.sheet_to_json(ws)
+        const dataToSave: StateCodeField[] = jsonData?.map((item: StateCodesTemplateType) => {
+          const grade = item.Grade?.toString()
+          const titleName = item.Title?.toString()
+          const titleId = Number(item['Title ID'])
+          const subject = item.Subject?.toString()
+          const stateCode = item['State Code']?.toString()
+          const teacher = item.Teacher?.toString()
+          return {
+            TitleId: titleId,
+            title_name: titleName,
+            state_code: stateCode,
+            grade,
+            subject,
+            teacher,
+            SchoolYearId: selectedYearId,
+          }
+        })
+
+        createStateCodesSubmit(dataToSave)
+        setFileModalOpen(false)
+      } else {
+        setFileFormatError(true)
+      }
+    } catch (error) {
       setFileFormatError(true)
     }
   }
