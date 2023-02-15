@@ -149,7 +149,7 @@ export const EmailTemplatePage: React.FC<{ onBackPress?: () => void }> = ({ onBa
 
         if (item.midyear_application === 1) {
           tempSchoolYearList.push({
-            label: moment(item.date_begin).format('YYYY') + '-' + moment(item.date_end).format('YY') + ' Mid-Year',
+            label: moment(item.date_begin).format('YYYY') + '-' + moment(item.date_end).format('YY') + ' Mid-year',
             value: item.school_year_id + '-mid',
           })
         }

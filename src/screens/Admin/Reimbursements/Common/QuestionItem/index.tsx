@@ -349,7 +349,7 @@ export const QuestionItem: React.FC<QuestionProps> = ({
               </Box>
 
               <Paragraph size={'large'} sx={{ paddingY: 1, textAlign: 'center' }}>
-                {'Signature (use the mouse to sign):'}
+                {'Signature (use the mouse to sign)'}
               </Paragraph>
               <Box
                 sx={{

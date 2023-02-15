@@ -252,12 +252,12 @@ const Withdrawal: React.FC<{
 
         if (item.midyear_application === 1) {
           tempSchoolYearList.push({
-            label: moment(item.date_begin).format('YYYY') + '-' + moment(item.date_end).format('YY') + ' Mid-Year',
+            label: moment(item.date_begin).format('YYYY') + '-' + moment(item.date_end).format('YY') + ' Mid-year',
             value: item.school_year_id + '-mid',
           })
           if (moment().format('YYYY-MM-DD') < item.date_end) {
             futureSchoolYearList.push({
-              label: moment(item.date_begin).format('YYYY') + '-' + moment(item.date_end).format('YY') + ' Mid-Year',
+              label: moment(item.date_begin).format('YYYY') + '-' + moment(item.date_end).format('YY') + ' Mid-year',
               value: item.school_year_id + '-mid',
             })
           }

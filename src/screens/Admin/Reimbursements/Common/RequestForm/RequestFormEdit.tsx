@@ -73,12 +73,12 @@ export const RequestFormEdit: React.FC<RequestFormEditProps> = ({
           <Grid item xs={12}>
             <Box sx={{ display: 'flex', justifyContent: 'space-evenly' }}>
               <Button
-                sx={{ ...mthButtonClasses.roundGray, padding: '17px 80px' }}
+                sx={{ ...mthButtonClasses.roundGray, padding: '17px 40px', width: '200px' }}
                 onClick={() => onSubmitRequests(values, ReimbursementRequestStatus.DRAFT)}
               >
                 Save Draft
               </Button>
-              <Button sx={{ ...mthButtonClasses.roundDark, padding: '17px 80px' }} type='submit'>
+              <Button sx={{ ...mthButtonClasses.roundDark, padding: '17px 40px', width: '200px' }} type='submit'>
                 Submit
               </Button>
             </Box>
@@ -88,7 +88,7 @@ export const RequestFormEdit: React.FC<RequestFormEditProps> = ({
           <Grid item xs={12}>
             <Box sx={{ display: 'flex', justifyContent: 'center', paddingY: 5 }}>
               <Button
-                sx={{ ...mthButtonClasses.primary }}
+                sx={{ ...mthButtonClasses.primary, padding: '7px 40px', height: 'auto' }}
                 startIcon={<AddIcon />}
                 onClick={() => setShowDefaultQuestionModal(true)}
               >
