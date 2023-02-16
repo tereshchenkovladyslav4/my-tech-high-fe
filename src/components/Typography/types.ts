@@ -3,6 +3,7 @@ import { Theme } from '@emotion/react'
 import { SxProps } from '@mui/system'
 
 export type TypographyProps = {
+  testId?: string
   size?: 'small' | 'medium' | 'large' | number
   children: ReactNode
   color?: string

@@ -4,13 +4,14 @@ import SearchIcon from '@mui/icons-material/Search'
 import { Box, Button, InputAdornment, OutlinedInput, Typography } from '@mui/material'
 import { debounce } from 'lodash'
 import moment from 'moment/moment'
+import { useHistory } from 'react-router-dom'
 import { ApplicationEmailModal } from '@mth/components/EmailModal/ApplicationEmailModal'
 import { MthTable } from '@mth/components/MthTable'
 import { MthTableField, MthTableRowItem } from '@mth/components/MthTable/types'
 import { PageBlock } from '@mth/components/PageBlock'
 import { Pagination } from '@mth/components/Pagination/Pagination'
 import { WarningModal } from '@mth/components/WarningModal/Warning'
-import { MthColor, Order } from '@mth/enums'
+import { MthColor, MthRoute, Order } from '@mth/enums'
 import { emailResourceRequestsMutation } from '@mth/graphql/mutation/resource-request'
 import { getReimbursementRequestsQuery } from '@mth/graphql/queries/reimbursement-request'
 import { ReimbursementRequest } from '@mth/models'
@@ -25,13 +26,14 @@ export const ReimbursementRequestTable: React.FC<ReimbursementRequestTableProps>
   setSchoolYear,
   filter,
 }) => {
+  const history = useHistory()
   const [searchField, setSearchField] = useState<string>('')
   const [localSearchField, setLocalSearchField] = useState<string>('')
   const [totalCnt, setTotalCnt] = useState<number>(0)
   const [paginationLimit, setPaginationLimit] = useState<number>(Number(localStorage.getItem('pageLimit')) || 25)
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [skip, setSkip] = useState<number>(0)
-  const [sortField, setSortField] = useState<string>('created_at')
+  const [sortField, setSortField] = useState<string>('date_submitted')
   const [sortOrder, setSortOrder] = useState<Order>(Order.ASC)
   const [tableData, setTableData] = useState<MthTableRowItem<ReimbursementRequest>[]>([])
   const [selectedItems, setSelectedItems] = useState<ReimbursementRequest[]>([])
@@ -61,7 +63,10 @@ export const ReimbursementRequestTable: React.FC<ReimbursementRequestTableProps>
       sortable: true,
       formatter: (item: MthTableRowItem<ReimbursementRequest>) => {
         return (
-          <Typography sx={{ fontSize: '12px', color: MthColor.MTHBLUE, cursor: 'pointer' }}>
+          <Typography
+            sx={{ fontSize: '12px', color: MthColor.MTHBLUE, cursor: 'pointer' }}
+            onClick={() => goToDetails(item.rawData)}
+          >
             {`${item.rawData.Student?.person?.last_name}, ${item.rawData.Student?.person?.first_name}`}
           </Typography>
         )
@@ -81,7 +86,10 @@ export const ReimbursementRequestTable: React.FC<ReimbursementRequestTableProps>
       sortable: true,
       formatter: (item: MthTableRowItem<ReimbursementRequest>) => {
         return (
-          <Typography sx={{ fontSize: '12px', color: MthColor.MTHBLUE, cursor: 'pointer' }}>
+          <Typography
+            sx={{ fontSize: '12px', color: MthColor.MTHBLUE, cursor: 'pointer' }}
+            onClick={() => goToDetails(item.rawData)}
+          >
             {`${item.rawData.Student?.parent?.person?.last_name}, ${item.rawData.Student?.parent?.person?.first_name}`}
           </Typography>
         )
@@ -216,6 +224,10 @@ export const ReimbursementRequestTable: React.FC<ReimbursementRequestTableProps>
     })
     setShowEmailModal(false)
     await refetch()
+  }
+
+  const goToDetails = (item: ReimbursementRequest) => {
+    history.push(`${MthRoute.REIMBURSEMENTS_REQUESTS}/${item.reimbursement_request_id}`)
   }
 
   useEffect(() => {

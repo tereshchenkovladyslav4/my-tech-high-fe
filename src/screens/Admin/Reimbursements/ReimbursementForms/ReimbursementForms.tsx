@@ -116,6 +116,7 @@ export const ReimbursementForms: React.FC = () => {
       {!!formType && (
         <RequestComponent selectedYear={schoolYear} formType={formType} setFormType={setFormType} refetch={refetch}>
           <RequestForm
+            isToBuildForm={true}
             selectedYearId={selectedYearId}
             formType={formType}
             setFormType={setFormType}

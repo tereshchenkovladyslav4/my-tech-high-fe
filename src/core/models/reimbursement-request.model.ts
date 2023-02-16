@@ -1,6 +1,7 @@
 import { ReimbursementFormType, ReimbursementRequestStatus } from '@mth/enums'
 import { ReimbursementReceipt } from './reimbursement-receipt.model'
 import { ReimbursementRequestEmail } from './reimbursement-request-email.model'
+import { SchoolYear } from './school-year.model'
 import { Student } from './student.model'
 
 export type ReimbursementRequest = {
@@ -21,4 +22,5 @@ export type ReimbursementRequest = {
   periods?: string
   ReimbursementRequestEmails: ReimbursementRequestEmail[]
   ReimbursementReceipts?: ReimbursementReceipt[]
+  SchoolYear?: SchoolYear
 }

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { useLazyQuery, useMutation } from '@apollo/client'
 import { Box, Grid, List } from '@mui/material'
 import { Form, Formik } from 'formik'
@@ -17,12 +17,13 @@ import {
 import { saveReimbursementQuestionsMutation } from '@mth/graphql/mutation/reimbursement-question'
 import { saveReimbursementReceiptMutation } from '@mth/graphql/mutation/reimbursement-receipt'
 import { saveReimbursementRequestMutation } from '@mth/graphql/mutation/reimbursement-request'
-import { useReimbursementQuestions } from '@mth/hooks'
-import { ReimbursementQuestion, ReimbursementReceipt, ReimbursementRequest, SchoolYear } from '@mth/models'
+import { useReimbursementQuestions } from '@mth/hooks/useReimbursementQuestions'
+import { ReimbursementQuestion, ReimbursementReceipt, ReimbursementRequest, SchoolYear, Student } from '@mth/models'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { getSignatureFile } from '@mth/screens/Admin/EnrollmentPackets/services'
-import { uploadFile } from '@mth/services'
-import { dataUrlToFile, getRegionCode } from '@mth/utils'
+import { uploadFile } from '@mth/services/file-upload.service'
+import { dataUrlToFile } from '@mth/utils/file.util'
+import { getRegionCode } from '@mth/utils/region.util'
 import {
   DEFAULT_CUSTOM_BUILT_QUESTIONS,
   DEFAULT_IS_DIRECT_ORDER_CUSTOM_BUILT_QUESTIONS,
@@ -37,6 +38,7 @@ import { QuestionItem } from '../QuestionItem'
 import { RequestFormEdit } from './RequestFormEdit'
 
 type SortableContainerProps = {
+  isToBuildForm: boolean
   items: ReimbursementQuestion[]
   selectedYearId: number | undefined
   selectedStudentId: number
@@ -47,6 +49,7 @@ type SortableContainerProps = {
   signatureRef: SignatureCanvas | null
   signatureName: string
   signatureFileUrl: string
+  students: Student[]
   receipts: ReimbursementReceipt[]
   setReceipts: (value: ReimbursementReceipt[]) => void
   setSignatureRef: (value: SignatureCanvas | null) => void
@@ -59,6 +62,7 @@ const SortableItem = SortableElement(QuestionItem)
 
 const SortableListContainer = SortableContainer(
   ({
+    isToBuildForm,
     items,
     selectedStudentId,
     selectedFormType,
@@ -69,6 +73,7 @@ const SortableListContainer = SortableContainer(
     signatureRef,
     signatureName,
     signatureFileUrl,
+    students,
     receipts,
     setReceipts,
     setSignatureRef,
@@ -83,6 +88,7 @@ const SortableListContainer = SortableContainer(
             <SortableItem
               index={index}
               key={`${item.slug}_${index}`}
+              isToBuildForm={isToBuildForm}
               question={item}
               isDirectOrder={isDirectOrder}
               showError={showError}
@@ -93,6 +99,7 @@ const SortableListContainer = SortableContainer(
               signatureRef={signatureRef}
               signatureName={signatureName}
               signatureFileUrl={signatureFileUrl}
+              students={students}
               receipts={receipts}
               setReceipts={setReceipts}
               setSignatureRef={setSignatureRef}
@@ -109,6 +116,7 @@ const SortableListContainer = SortableContainer(
 )
 
 export type RequestFormProps = {
+  isToBuildForm: boolean
   formType: ReimbursementFormType | undefined
   isDirectOrder?: boolean
   selectedYearId: number | undefined
@@ -120,6 +128,7 @@ export type RequestFormProps = {
 }
 
 export const RequestForm: React.FC<RequestFormProps> = ({
+  isToBuildForm,
   formType,
   isDirectOrder,
   selectedYearId,
@@ -142,6 +151,14 @@ export const RequestForm: React.FC<RequestFormProps> = ({
   const [signatureFileId, setSignatureFileId] = useState<number>(0)
   const [signatureFileUrl, setSignatureFileUrl] = useState<string>('')
   const [receipts, setReceipts] = useState<ReimbursementReceipt[]>([])
+
+  const students = useMemo(() => {
+    if (isToBuildForm) return []
+    if (roleLevel == RoleLevel.PARENT) {
+      return me?.students || []
+    }
+    return selectedReimbursementRequest?.Student?.parent?.students || []
+  }, [isToBuildForm, me?.students, selectedReimbursementRequest])
 
   const [getSignatureFileUrl, { loading: signatureFileUrlLoading, data: signatureFileData }] = useLazyQuery(
     getSignatureFile,
@@ -307,7 +324,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
             slug: value?.slug,
             default_question: value?.default_question,
             reimbursement_form_type: formType,
-            is_direct_order: isDirectOrder ? true : false,
+            is_direct_order: !!isDirectOrder,
             sortable: value?.sortable,
             display_for_admin: value?.SettingList?.includes('display_for_admin') || value?.display_for_admin,
             additional_question: value?.additional_question,
@@ -423,6 +440,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
             return (
               <Form>
                 <RequestFormEdit
+                  isToBuildForm={isToBuildForm}
                   formType={formType}
                   isDirectOrder={isDirectOrder}
                   selectedYearId={selectedYearId}
@@ -434,6 +452,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                   handleSaveQuestions={onSaveQuestions}
                 >
                   <SortableListContainer
+                    isToBuildForm={isToBuildForm}
                     items={values}
                     useDragHandle={true}
                     selectedYear={selectedYear}
@@ -445,6 +464,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                     signatureRef={signatureRef}
                     signatureName={signatureName}
                     signatureFileUrl={signatureFileUrl}
+                    students={students}
                     receipts={receipts}
                     setReceipts={setReceipts}
                     setSignatureRef={setSignatureRef}

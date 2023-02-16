@@ -3,6 +3,7 @@ import { Typography } from '@mui/material'
 import { TypographyProps } from '../types'
 
 export const Subtitle: React.FC<TypographyProps> = ({
+  testId,
   textAlign,
   children,
   size,
@@ -16,6 +17,7 @@ export const Subtitle: React.FC<TypographyProps> = ({
 
   return (
     <Typography
+      data-testid={testId}
       textAlign={textAlign}
       sx={sx}
       fontWeight={fontWeight}

@@ -36,12 +36,13 @@ import {
 } from '@mth/enums'
 import { SchedulePeriod } from '@mth/graphql/models/schedule-period'
 import { getStudentSchedulePeriodsQuery } from '@mth/graphql/queries/schedule-period'
-import { ReimbursementQuestion, ReimbursementReceipt, SchoolYear } from '@mth/models'
+import { ReimbursementQuestion, ReimbursementReceipt, SchoolYear, Student } from '@mth/models'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { mthButtonClasses } from '@mth/styles/button.style'
-import { arrayToString, extractContent } from '@mth/utils'
+import { arrayToString, extractContent } from '@mth/utils/string.util'
 
 type QuestionProps = {
+  isToBuildForm: boolean
   question: ReimbursementQuestion
   selectedYearId: number | undefined
   selectedYear: SchoolYear | undefined
@@ -52,6 +53,7 @@ type QuestionProps = {
   signatureRef: SignatureCanvas | null
   signatureName: string
   signatureFileUrl: string
+  students: Student[]
   receipts: ReimbursementReceipt[]
   setReceipts: (value: ReimbursementReceipt[]) => void
   setSignatureRef: (value: SignatureCanvas | null) => void
@@ -76,6 +78,7 @@ const DragHandle = SortableHandle(({ sx }: { sx?: SxProps<Theme> }) => (
 ))
 
 export const QuestionItem: React.FC<QuestionProps> = ({
+  isToBuildForm,
   question,
   selectedStudentId,
   selectedYear,
@@ -86,6 +89,7 @@ export const QuestionItem: React.FC<QuestionProps> = ({
   signatureRef,
   signatureName,
   signatureFileUrl,
+  students,
   receipts,
   setReceipts,
   setSignatureRef,
@@ -96,7 +100,6 @@ export const QuestionItem: React.FC<QuestionProps> = ({
   const { me } = useContext(UserContext)
   const { values, setValues } = useFormikContext<ReimbursementQuestion[]>()
   const roleLevel = me?.role?.level
-  const students = me?.students
   const [formTypeItems, setFormTypeItems] = useState<DropDownItem[]>([])
   const [periodsItems, setPeriodsItems] = useState<DropDownItem[]>([])
   const [showUploadModal, setShowUploadModal] = useState<boolean>(false)
@@ -124,7 +127,7 @@ export const QuestionItem: React.FC<QuestionProps> = ({
   const renderDropDownItems = (question: ReimbursementQuestion): DropDownItem[] => {
     switch (question.slug) {
       case ReimbursementQuestionSlug.STUDENT_ID:
-        if (roleLevel === RoleLevel.PARENT && students?.length && students?.length > 0) {
+        if (!isToBuildForm && !!students?.length) {
           return students?.map((student) => ({
             label: `${student?.person?.first_name} - 100%, 0 missing`,
             value: +student?.student_id,
@@ -133,7 +136,7 @@ export const QuestionItem: React.FC<QuestionProps> = ({
           return []
         }
       case ReimbursementQuestionSlug.FORM_TYPE:
-        if (roleLevel === RoleLevel.PARENT && students?.length && students?.length > 0) {
+        if (roleLevel === RoleLevel.PARENT && !!students?.length) {
           return formTypeItems
         } else {
           return REIMBURSEMENT_FORM_TYPE_ITEMS
@@ -217,7 +220,7 @@ export const QuestionItem: React.FC<QuestionProps> = ({
     }
   }
 
-  const renderRecipts = () => {
+  const renderReceipts = () => {
     return (
       <Box sx={{ marginTop: 2 }}>
         <Grid container rowSpacing={3} sx={{ marginBottom: 4 }}>
@@ -282,10 +285,11 @@ export const QuestionItem: React.FC<QuestionProps> = ({
 
   const renderQuestion = (question: ReimbursementQuestion) => {
     if (
-      roleLevel !== RoleLevel.SUPER_ADMIN &&
-      question.slug != ReimbursementQuestionSlug.STUDENT_ID &&
-      question.slug != ReimbursementQuestionSlug.FORM_TYPE &&
-      !selectedFormType
+      (roleLevel !== RoleLevel.SUPER_ADMIN &&
+        question.slug != ReimbursementQuestionSlug.STUDENT_ID &&
+        question.slug != ReimbursementQuestionSlug.FORM_TYPE &&
+        !selectedFormType) ||
+      (roleLevel == RoleLevel.SUPER_ADMIN && question.type == QUESTION_TYPE.SIGNATURE)
     ) {
       return (
         <Box sx={{ display: 'none' }}>
@@ -313,9 +317,7 @@ export const QuestionItem: React.FC<QuestionProps> = ({
                   errorMsg: 'Required',
                 }}
               />
-              {roleLevel === RoleLevel.SUPER_ADMIN && question.sortable && (
-                <DragHandle sx={{ right: '-90px', top: '0px' }} />
-              )}
+              {isToBuildForm && question.sortable && <DragHandle sx={{ right: '-90px', top: '0px' }} />}
             </Box>
           </Grid>
         )
@@ -345,7 +347,7 @@ export const QuestionItem: React.FC<QuestionProps> = ({
                   error={showError && question?.required && !signatureName}
                   helperText={showError && question?.required && !signatureName && 'Required'}
                 />
-                {roleLevel === RoleLevel.SUPER_ADMIN && <DragHandle sx={{ marginLeft: '100px' }} />}
+                {isToBuildForm && <DragHandle sx={{ marginLeft: '100px' }} />}
               </Box>
 
               <Paragraph size={'large'} sx={{ paddingY: 1, textAlign: 'center' }}>
@@ -420,7 +422,7 @@ export const QuestionItem: React.FC<QuestionProps> = ({
                   helperText={showError && question?.required && !question.answer && 'Required'}
                 />
               )}
-              {roleLevel === RoleLevel.SUPER_ADMIN && question.sortable && <DragHandle />}
+              {isToBuildForm && question.sortable && <DragHandle />}
             </Box>
           </Grid>
         )
@@ -445,9 +447,7 @@ export const QuestionItem: React.FC<QuestionProps> = ({
                 setValue={(value) => handleChangeValue(question, value)}
                 error={showError && question?.required && !question.answer}
               />
-              {roleLevel === RoleLevel.SUPER_ADMIN && question.sortable && (
-                <DragHandle sx={{ right: '-90px', top: '0px' }} />
-              )}
+              {isToBuildForm && question.sortable && <DragHandle sx={{ right: '-90px', top: '0px' }} />}
             </Box>
           </Grid>
         )
@@ -471,14 +471,10 @@ export const QuestionItem: React.FC<QuestionProps> = ({
                   <Subtitle fontWeight='700' color={MthColor.SYSTEM_02} sx={{ cursor: 'pointer', fontSize: '18px' }}>
                     {extractContent(question.question)}
                   </Subtitle>
-                  {roleLevel == RoleLevel.PARENT &&
-                    question.slug == ReimbursementQuestionSlug.RECEIPTS &&
-                    renderRecipts()}
+                  {!isToBuildForm && question.slug == ReimbursementQuestionSlug.RECEIPTS && renderReceipts()}
                 </>
               )}
-              {roleLevel === RoleLevel.SUPER_ADMIN && question.sortable && (
-                <DragHandle sx={{ right: '-90px', top: '-5px' }} />
-              )}
+              {isToBuildForm && question.sortable && <DragHandle sx={{ right: '-90px', top: '-5px' }} />}
             </Box>
           </Grid>
         )
@@ -512,9 +508,7 @@ export const QuestionItem: React.FC<QuestionProps> = ({
                 handleChangeOption={(values) => handleChangeValue(question, JSON.stringify(values))}
                 isError={showError && question?.required && !question.answer}
               />
-              {roleLevel === RoleLevel.SUPER_ADMIN && question.sortable && (
-                <DragHandle sx={{ right: '-90px', top: '0px' }} />
-              )}
+              {isToBuildForm && question.sortable && <DragHandle sx={{ right: '-90px', top: '0px' }} />}
             </Box>
           </Grid>
         )
@@ -545,9 +539,7 @@ export const QuestionItem: React.FC<QuestionProps> = ({
                 showError={showError && question?.required && !question.answer}
                 error={'Required'}
               />
-              {roleLevel === RoleLevel.SUPER_ADMIN && question.sortable && (
-                <DragHandle sx={{ right: '-90px', top: '0px' }} />
-              )}
+              {isToBuildForm && question.sortable && <DragHandle sx={{ right: '-90px', top: '0px' }} />}
             </Box>
           </Grid>
         )
@@ -562,9 +554,7 @@ export const QuestionItem: React.FC<QuestionProps> = ({
                 onChange={(e) => handleChangeValue(question, e.target.checked)}
               />
               {showError && question?.required && question?.answer == undefined && <FormError error={'Required'} />}
-              {roleLevel === RoleLevel.SUPER_ADMIN && question.sortable && (
-                <DragHandle sx={{ right: '-90px', top: '0px' }} />
-              )}
+              {isToBuildForm && question.sortable && <DragHandle sx={{ right: '-90px', top: '0px' }} />}
             </Box>
           </Grid>
         )

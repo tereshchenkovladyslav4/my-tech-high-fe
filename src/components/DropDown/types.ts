@@ -18,6 +18,7 @@ type FormikCustomError = {
 }
 
 export type DropDownProps = {
+  testId?: string
   dropDownItems: DropDownItem[]
   placeholder?: string
   setParentValue: (value: string | number | QUESTION_TYPE) => void

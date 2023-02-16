@@ -11,6 +11,7 @@ import { DefaultQuestionModal } from '../DefaultQuestionModal'
 import { QuestionEditModal } from '../QuestionEditModal'
 
 export type RequestFormEditProps = {
+  isToBuildForm: boolean
   formType: ReimbursementFormType | undefined
   isDirectOrder?: boolean
   selectedYearId: number | undefined
@@ -24,6 +25,7 @@ export type RequestFormEditProps = {
 }
 
 export const RequestFormEdit: React.FC<RequestFormEditProps> = ({
+  isToBuildForm,
   formType,
   selectedYearId,
   isDirectOrder,
@@ -69,7 +71,7 @@ export const RequestFormEdit: React.FC<RequestFormEditProps> = ({
     <>
       <Grid container rowSpacing={3}>
         {children}
-        {(roleLevel === RoleLevel.SUPER_ADMIN || (!!selectedStudentId && !!selectedFormType)) && (
+        {(isToBuildForm || (roleLevel != RoleLevel.SUPER_ADMIN && !!selectedStudentId && !!selectedFormType)) && (
           <Grid item xs={12}>
             <Box sx={{ display: 'flex', justifyContent: 'space-evenly' }}>
               <Button
@@ -84,7 +86,7 @@ export const RequestFormEdit: React.FC<RequestFormEditProps> = ({
             </Box>
           </Grid>
         )}
-        {roleLevel === RoleLevel.SUPER_ADMIN && (
+        {isToBuildForm && (
           <Grid item xs={12}>
             <Box sx={{ display: 'flex', justifyContent: 'center', paddingY: 5 }}>
               <Button

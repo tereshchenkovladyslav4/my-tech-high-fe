@@ -17,10 +17,10 @@ const PageHeader: React.FC<PageHeaderProps> = ({ title, to, onBack, children }) 
   return (
     <Box sx={classes.pageHeader}>
       <Box sx={classes.backTitle}>
-        <IconButton onClick={handleBackClick}>
+        <IconButton onClick={handleBackClick} data-testid='pageHeaderBack'>
           <ArrowBackIosOutlinedIcon sx={classes.arrowIcon} />
         </IconButton>
-        <Typography sx={classes.title} component='span'>
+        <Typography sx={classes.title} component='span' data-testid='pageHeaderTitle'>
           {title}
         </Typography>
       </Box>

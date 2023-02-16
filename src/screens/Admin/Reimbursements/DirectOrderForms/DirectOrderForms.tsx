@@ -97,6 +97,7 @@ export const DirectOrderForms: React.FC = () => {
           refetch={refetch}
         >
           <RequestForm
+            isToBuildForm={true}
             selectedYearId={selectedYearId}
             formType={formType}
             isDirectOrder={true}

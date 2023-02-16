@@ -40,6 +40,7 @@
       "@mth/providers/*": ["src/providers/*"],
       "@mth/screens/*": ["src/screens/*"],
       "@mth/services": ["src/core/services"],
+      "@mth/services/*": ["src/core/services/*"],
       "@mth/styles/*": ["src/styles/*"],
       "@mth/utils": ["src/core/utils"],
       "@mth/utils/*": ["src/core/utils/*"],

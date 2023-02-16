@@ -56,6 +56,8 @@
     "@typescript-eslint/eslint-plugin": "^4.33.0",
     "@typescript-eslint/parser": "^4.33.0",
     "babel-loader": "^8.2.2",
+    "canvas": "^2.11.0",
+    "canvas-node": "^0.3.23",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-import": "^2.24.2",
@@ -65,10 +67,12 @@
     "eslint-plugin-react-hooks": "^4.2.0",
     "husky": "^8.0.1",
     "jest": "^29.4.1",
+    "jest-canvas-mock": "^2.4.0",
     "jest-environment-jsdom": "^29.4.1",
     "postcss-import": "^14.0.2",
     "prettier-eslint-cli": "^7.0.1",
-    "snowpack": "~3.0.13"
+    "snowpack": "~3.0.13",
+    "ts-jest-mock-import-meta": "^1.0.0"
   },
   "dependencies": {
     "@apollo/client": "^3.4.16",

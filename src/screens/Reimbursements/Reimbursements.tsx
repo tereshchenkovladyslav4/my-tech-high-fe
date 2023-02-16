@@ -97,7 +97,7 @@ const Reimbursements: React.FC = () => {
         <RequestComponent
           selectedYear={schoolYear}
           formType={formType}
-          isDirectOrder={page === MthRoute.REIMBURSEMENTS_REIMBURSEMENT_FORM ? false : true}
+          isDirectOrder={page !== MthRoute.REIMBURSEMENTS_REIMBURSEMENT_FORM}
           setFormType={setFormType}
           refetch={refetch}
           isParent={true}
@@ -106,10 +106,11 @@ const Reimbursements: React.FC = () => {
           disabledDirectOrder={disabledDirectOrder}
         >
           <RequestForm
+            isToBuildForm={false}
             selectedYearId={selectedYearId}
             selectedYear={schoolYear}
             formType={formType}
-            isDirectOrder={page === MthRoute.REIMBURSEMENTS_REIMBURSEMENT_FORM ? false : true}
+            isDirectOrder={page !== MthRoute.REIMBURSEMENTS_REIMBURSEMENT_FORM}
             setFormType={setFormType}
             setPage={setPage}
             selectedReimbursementRequest={selectedReimbursementRequest}

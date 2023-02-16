@@ -9,6 +9,7 @@ import { dropdownClasses } from './styles'
 import { DropDownProps } from './types'
 
 export const DropDown: React.FC<DropDownProps> = ({
+  testId,
   dropDownItems,
   placeholder,
   setParentValue,
@@ -70,7 +71,7 @@ export const DropDown: React.FC<DropDownProps> = ({
   }, [defaultValue])
 
   return (
-    <Box sx={{ minWidth: 120, zIndex: 1, ...sx }}>
+    <Box sx={{ minWidth: 120, zIndex: 1, ...sx }} data-testid={testId}>
       {!labelTop ? (
         <>
           {borderNone ? (

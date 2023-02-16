@@ -50,12 +50,8 @@ export const attachSelectedItems = (item: ScheduleData, schedulePeriod: Schedule
         })
       })
     if (schedulePeriod.CourseId)
-      period.Subjects?.forEach((subject) => {
-        subject.Titles.concat(subject.AltTitles)?.forEach((title) => {
-          title.Courses.concat(title.AltCourses)?.forEach((course) => {
-            if (course.id === schedulePeriod.CourseId) item.Course = course
-          })
-        })
+      (item.Title?.Courses || []).concat(item.Title?.AltCourses || [])?.forEach((course) => {
+        if (course.id === schedulePeriod.CourseId) item.Course = course
       })
     if (schedulePeriod.course_type) item.CourseType = schedulePeriod.course_type as CourseType
     if (schedulePeriod.course_type === CourseType.CUSTOM_BUILT)
@@ -195,7 +191,10 @@ export const makeScheduleData = (
 
     if (
       showSecondSemester &&
-      regularScheduleData?.filter((item) => item?.Period?.semester !== SEMESTER_TYPE.NONE).length
+      regularScheduleData?.filter(
+        (item) =>
+          item?.Period?.semester !== SEMESTER_TYPE.NONE || item.Title?.always_unlock || item.Course?.always_unlock,
+      ).length
     ) {
       hasUnlockedPeriods = true
       studentScheduleId = secondSchedulePeriods?.length ? secondSchedulePeriods[0]?.ScheduleId : 0
