@@ -461,6 +461,29 @@ export const EmailTemplateModal: React.FC<EmailTemplateModalProps> = ({
           year: 'School Year the schedule is for (2022-2023)',
         })
       }
+      if (emailTemplate.category.category_name == EmailCategoryEnum.DIRECTORDERS) {
+        setAvailableInsertDescription({
+          ...insertDescriptions,
+          submitted: 'The date the Request was submitted (mm/dd/yyyy)',
+          amount: 'The total amout of the Request (Ex: $900.00)',
+          type: 'The type of Request (Ex: Custom-built)',
+          period: 'The Period tied to the Request',
+          link: 'Link to the Direct Order Request',
+          instructions: 'Standard Reponses',
+        })
+      }
+      if (emailTemplate.category.category_name == EmailCategoryEnum.REIMBURSEMENTS) {
+        setAvailableInsertDescription({
+          ...insertDescriptions,
+          submitted: 'The date the Request was submitted (mm/dd/yyyy)',
+          amount: 'The total amout of the Request (Ex: $900.00)',
+          type: 'The type of Request (Ex: Custom-built)',
+          period: 'The Period tied to the Request',
+          link: 'Link to the Request of Reimbursement',
+          confirmation: 'Confirmation Numbers',
+          instructions: 'Standard Reponses',
+        })
+      }
       if (emailTemplate.body) {
         const contentBlock = htmlToDraft(emailTemplate.body)
         if (contentBlock) {

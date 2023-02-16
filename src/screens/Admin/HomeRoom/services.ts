@@ -7,25 +7,21 @@ export const GetMastersBySchoolYearIDGql = gql`
       master_id
       master_name
       school_year_id
-      masterClasses {
+      Classes {
         class_id
         class_name
         addition_id
-        primaryTeacher {
+        PrimaryTeacher {
           firstName
           lastName
           user_id
         }
-        homeroomStudent {
+        HomeroomStudents {
           id
           student_id
         }
       }
-      masterAssignments {
-        due_date
-        id
-      }
-      masterAssignments {
+      Assignments {
         due_date
         id
       }

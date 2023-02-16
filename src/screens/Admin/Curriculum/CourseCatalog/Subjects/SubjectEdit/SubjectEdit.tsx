@@ -41,6 +41,38 @@ const SubjectEdit: React.FC<SubjectEditProps> = ({ schoolYearId, item, subjects,
     name: yup.string().required('Required').nullable(),
   })
 
+  const sortData = (array: Subject[], obj: Subject) => {
+    const sortedByName = array.sort((a, b) => a.name.localeCompare(b.name))
+    const index = sortedByName.findIndex((item) => item.subject_id === obj.subject_id)
+    let pastPriority = 0
+    if (index > 0) {
+      pastPriority = sortedByName[index - 1].priority ?? 1
+    }
+    if (!obj?.subject_id) {
+      return array.map((item) => {
+        if (!item.subject_id) {
+          return { ...item, priority: pastPriority + 1 }
+        }
+        if (item.priority > pastPriority) {
+          return { ...item, priority: item.priority + 1 }
+        }
+        return item
+      })
+    }
+
+    const objPriority = Number(obj.priority)
+
+    return array.map((item) => {
+      if (item.subject_id === obj.subject_id) {
+        return { ...item, priority: pastPriority }
+      }
+      if (item.priority <= pastPriority && item.priority > objPriority) {
+        return { ...item, priority: item.priority - 1 }
+      }
+      return item
+    })
+  }
+
   const onSave = async (value: Subject) => {
     setIsSubmitted(true)
     const dataToSave = {
@@ -48,29 +80,38 @@ const SubjectEdit: React.FC<SubjectEditProps> = ({ schoolYearId, item, subjects,
       SchoolYearId: +schoolYearId,
       name: value.name,
       periods: value.PeriodIds?.join(','),
+      priority: subjects?.find((s) => s.subject_id === Number(value.subject_id))?.priority,
     }
-    const priorityIndex = [...(subjects ? subjects : []), dataToSave]
-      .sort((a, b) => {
-        if (a.name.toLowerCase() < b.name.toLowerCase()) {
-          return -1
-        }
-        if (a.name.toLowerCase() > b.name.toLowerCase()) {
-          return 1
-        }
 
-        return 0
-      })
-      .findIndex((obj) => obj.name.includes(value.name))
+    const sortedData = sortData(
+      dataToSave?.subject_id
+        ? (subjects ?? []).map((s) => {
+            if (s.subject_id === dataToSave?.subject_id) {
+              return dataToSave
+            }
+            return s
+          })
+        : [...(subjects ?? []), dataToSave],
+      dataToSave,
+    )
     await submitSave({
       variables: {
-        createSubjectInput: {
-          ...dataToSave,
-          ...(!value.subject_id &&
-            (subjects?.filter((obj) => obj.priority)?.length ?? 0) > 1 && { priority: priorityIndex + 1 }),
-        },
+        createSubjectInput: sortedData.find((obj) => obj.name.includes(value.name)),
       },
     })
       .then(() => {
+        sortedData
+          .filter((obj) => !obj.name.includes(value.name))
+          .map(async (obj) => {
+            await submitSave({
+              variables: {
+                createSubjectInput: {
+                  subject_id: Number(obj.subject_id),
+                  priority: obj.priority,
+                },
+              },
+            })
+          })
         setIsSubmitted(false)
         setIsChanged(false)
         refetch()

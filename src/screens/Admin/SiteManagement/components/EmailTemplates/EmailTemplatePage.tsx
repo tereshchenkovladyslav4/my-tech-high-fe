@@ -9,6 +9,7 @@ import { Box, Grid, Card, OutlinedInput, InputAdornment, Typography } from '@mui
 import moment from 'moment'
 import { DropDown } from '@mth/components/DropDown/DropDown'
 import { DropDownItem } from '@mth/components/DropDown/types'
+import { ReduceFunds } from '@mth/enums'
 import { getEmailTemplatesByRegionQuery } from '@mth/graphql/queries/email-template'
 import { createEmailTemplateMutation, updateEmailTemplateMutation } from '@mth/graphql/queries/email-template'
 import { EmailTemplate } from '@mth/models'
@@ -108,6 +109,9 @@ const useStyles = makeStyles({
       fontSize: '12px',
     },
   },
+  disabledStatus: {
+    opacity: 0.5,
+  },
 })
 
 export const EmailTemplatePage: React.FC<{ onBackPress?: () => void }> = ({ onBackPress }) => {
@@ -119,6 +123,8 @@ export const EmailTemplatePage: React.FC<{ onBackPress?: () => void }> = ({ onBa
   const [responseEdit, setResponseEdit] = useState<boolean>(false)
   const [standardRes, setStandardRes] = useState<StandardRes[]>([])
   const [editReponseModal, setEditReponseModal] = useState<boolean>(false)
+  const [directOrdersStatus, setDirectOrdersStatus] = useState<boolean>(true)
+  const [reimbursementStatus, setReimbursementsStatus] = useState<boolean>(true)
   const [selResponse, setSelResponse] = useState<StandardRes>({
     title: '',
     text: '',
@@ -128,6 +134,7 @@ export const EmailTemplatePage: React.FC<{ onBackPress?: () => void }> = ({ onBa
   const [schoolYearList, setSchoolYearList] = useState<DropDownItem[]>([])
   const [activeSchoolYearId, setActiveSchoolYearId] = useState<string>('')
   const [midActiveSchoolYearId, setMidActiveSchoolYearId] = useState<boolean>(false)
+  const [SchoolYears, setSchoolYears] = useState([])
 
   const { loading: schoolLoading, data: schoolYearData } = useQuery(getSchoolYearsByRegionId, {
     variables: {
@@ -138,6 +145,7 @@ export const EmailTemplatePage: React.FC<{ onBackPress?: () => void }> = ({ onBa
 
   useEffect(() => {
     if (!schoolLoading && schoolYearData.region?.SchoolYears) {
+      setSchoolYears(schoolYearData.region?.SchoolYears)
       const tempSchoolYearList: DropDownItem[] = []
       const yearList = schoolYearData.region?.SchoolYears?.sort((a, b) => (a.date_begin > b.date_begin ? 1 : -1))
       for (let i = 0; i < yearList.length; i++) {
@@ -248,6 +256,34 @@ export const EmailTemplatePage: React.FC<{ onBackPress?: () => void }> = ({ onBa
       setEmailTemplates(templates)
     }
   }, [emailTemplatesData])
+
+  useEffect(() => {
+    let directOrderStatusChanged = false
+    let reimburementStatusChanged = false
+    const yearId = activeSchoolYearId?.split('-')?.at(0)
+    SchoolYears.map(
+      (schoolYear: {
+        school_year_id: number
+        date_begin: Date
+        date_end: Date
+        reimbursements: ReduceFunds
+        direct_orders: ReduceFunds
+      }) => {
+        if (Number(yearId) == schoolYear.school_year_id) {
+          if (schoolYear.direct_orders == null || schoolYear.direct_orders == ReduceFunds.NONE) {
+            setDirectOrdersStatus(false)
+            directOrderStatusChanged = true
+          }
+          if (schoolYear.reimbursements == null || schoolYear.reimbursements == ReduceFunds.NONE) {
+            setReimbursementsStatus(false)
+            reimburementStatusChanged = true
+          }
+        }
+      },
+    )
+    if (!directOrderStatusChanged) setDirectOrdersStatus(true)
+    if (!reimburementStatusChanged) setReimbursementsStatus(true)
+  }, [activeSchoolYearId])
 
   // standard response modal
   const openResponseModal = (response: StandardRes[]) => {
@@ -396,6 +432,13 @@ export const EmailTemplatePage: React.FC<{ onBackPress?: () => void }> = ({ onBa
                     templates={emailTemplates[category].filter(
                       (sub) => sub.title.toLowerCase().indexOf(searchField.toLowerCase()) > -1,
                     )}
+                    enabled={
+                      category == 'Direct Orders'
+                        ? directOrdersStatus
+                        : category == 'Reimbursements'
+                        ? reimbursementStatus
+                        : true
+                    }
                     handleOpenEdit={handleOpenEdit}
                   />
                 ))}
@@ -443,7 +486,7 @@ export const EmailTemplatePage: React.FC<{ onBackPress?: () => void }> = ({ onBa
   )
 }
 
-const TemplatesCategories = ({ category, templates, handleOpenEdit }) => {
+const TemplatesCategories = ({ category, templates, handleOpenEdit, enabled }) => {
   const classes = useStyles()
   const [page, setPage] = useState(0)
   const [total] = useState(Math.ceil(templates.length / 4))
@@ -460,10 +503,16 @@ const TemplatesCategories = ({ category, templates, handleOpenEdit }) => {
 
   return (
     <Box className={classes.category}>
-      <Typography className={classes.categoryTitle}>{category}</Typography>
+      <Typography className={`${classes.categoryTitle} ${enabled ? '' : classes.disabledStatus}`}>
+        {category}
+      </Typography>
       <Box className={classes.templateList}>
         {templates.slice(page * 4, page * 4 + 4).map((item, i) => (
-          <Typography key={i} className={classes.templateName} onClick={() => handleOpenEdit(item, category)}>
+          <Typography
+            key={i}
+            className={`${classes.templateName} ${enabled ? '' : classes.disabledStatus}`}
+            onClick={() => (enabled ? handleOpenEdit(item, category) : null)}
+          >
             {item.title}
           </Typography>
         ))}

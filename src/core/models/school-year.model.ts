@@ -1,5 +1,5 @@
 import { ReduceFunds, ScheduleStatus } from '@mth/enums'
-import { ScheduleBuilder } from '@mth/models'
+import { ScheduleBuilder, HomeroomSettingsModel } from '@mth/models'
 import { ReimbursementSetting } from '@mth/screens/Admin/Reimbursements/Settings/types'
 
 export type SchoolYear = {
@@ -67,4 +67,5 @@ export type SchoolYear = {
   reimbursements_third_party_instructions: string
   reimbursements_required_software_instructions: string
   ReimbursementSetting: ReimbursementSetting
+  HomeroomSettings?: HomeroomSettingsModel[]
 }

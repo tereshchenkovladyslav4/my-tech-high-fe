@@ -100,7 +100,7 @@ const DiplomaSeeking: React.FC = () => {
 
   useEffect(() => {
     const yearItem = schoolYearsData?.find(
-      (item: { school_year_id: string }) => item.school_year_id === selectedSchoolYear,
+      (item: { school_year_id: string }) => String(item.school_year_id) === String(selectedSchoolYear),
     )
     const newGrades = yearItem?.grades?.split(',')
 
@@ -121,7 +121,7 @@ const DiplomaSeeking: React.FC = () => {
         setDiplomaQuestion(diplomaQuestionData?.getDiplomaQuestion)
       } else {
         setSelectGrades([])
-        const regionName = me?.userRegion?.find((region) => region.region_id === me?.selectedRegionId)
+        const regionName = me?.userRegion?.find((region) => String(region.region_id) === String(me?.selectedRegionId))
         setDiplomaQuestion({
           id: '',
           schoolYearId: '',

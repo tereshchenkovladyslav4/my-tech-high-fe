@@ -37,13 +37,16 @@ export const useStyles = {
     background: '#fff',
     minHeight: '100%',
     borderRadius: '4px',
-    '& ul': {
+    '& ul, ol': {
       listStyle: 'none !important',
       marginLeft: '0 !important',
     },
     '& li': {
       listStyle: 'none !important',
-      marginLeft: '0 !important',
+      '&::before, &::marker': {
+        display: 'none !important',
+        content: '""',
+      },
     },
   },
   form: {

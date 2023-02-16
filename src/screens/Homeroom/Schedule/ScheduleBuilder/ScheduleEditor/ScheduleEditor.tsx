@@ -47,8 +47,7 @@ const StyledTooltip = styled(({ className, ...props }: TooltipProps) => (
 ))(() => ({
   [`& .${tooltipClasses.tooltip}`]: {
     marginRight: '32px !important',
-    textAlign: 'center',
-    fontSize: '14px',
+    padding: '12px',
     '& a': {
       color: `${MthColor.MTHBLUE} !important`,
     },
@@ -1100,7 +1099,6 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
             title={parse(parentTooltip)}
             open={enableQuestionTooltip}
             placement='left'
-            sx={{ textAlign: 'center' }}
             onClose={() => setEnableQuestionTooltip(false)}
             disableFocusListener
             disableHoverListener

@@ -47,7 +47,7 @@ const LearningLogs: React.FC = () => {
   const submitDeleteMaster = async () => {
     await deleteMaster({
       variables: {
-        masterId: deleteId,
+        masterId: Number(deleteId),
       },
     })
     refetch()
@@ -87,7 +87,7 @@ const LearningLogs: React.FC = () => {
                 <CreateIcon />
               </IconButton>
             </Tooltip>
-            {calcMasterStudentCount(item.rawData.masterClasses || []) > 0 ? (
+            {calcMasterStudentCount(item.rawData.Classes || []) > 0 ? (
               <IconButton className='actionButton' color='primary' disabled>
                 <DeleteForeverOutlined />
               </IconButton>
@@ -145,7 +145,7 @@ const LearningLogs: React.FC = () => {
   const calcMasterStudentCount = (classes: Classes[]) => {
     let count = 0
     classes.map((item) => {
-      count += item.homeroomStudent?.length
+      count += item.HomeroomStudents?.length
     })
     return count
   }
@@ -157,8 +157,8 @@ const LearningLogs: React.FC = () => {
           return createData({
             master_id: item.master_id,
             master_name: item.master_name,
-            classesCount: calcMasterStudentCount(item?.masterClasses || []),
-            masterClasses: item?.masterClasses,
+            classesCount: calcMasterStudentCount(item?.Classes || []),
+            Classes: item?.Classes,
           })
         }),
       )

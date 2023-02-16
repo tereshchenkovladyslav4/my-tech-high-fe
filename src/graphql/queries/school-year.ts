@@ -67,3 +67,30 @@ export const getReimbursementSchoolYearsByRegionId = gql`
     }
   }
 `
+
+export const getActiveStudentHomeroomSchoolYearsQuery = gql`
+  query ActiveHomeroomSchoolYears($studentId: Int!) {
+    activeHomeroomSchoolYears(studentId: $studentId) {
+      HomeroomSettings {
+        SchoolYearId
+        days_to_submit_early
+        diploma
+        gender
+        grades_by_subject
+        grading_scale_percentage
+        id
+        max_of_excused_learning_logs_allowed
+        notify_when_graded
+        notify_when_resubmit_required
+        passing_average
+        special_education
+        update_required_schedule_to_sumbit
+        zero_count
+      }
+      IsCurrentYear
+      date_begin
+      date_end
+      school_year_id
+    }
+  }
+`

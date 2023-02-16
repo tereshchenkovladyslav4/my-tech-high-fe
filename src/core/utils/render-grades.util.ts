@@ -26,6 +26,6 @@ export const renderGrades = (gradesStr: string | undefined): string => {
       [[]] as (string | number)[][],
     )
     .filter(({ length }: { length: number }) => length > 0)
-    .map((item) => (item.length > 2 ? item[0] + '-' + item[item.length - 1] : item[0]))
+    .map((item) => (item.length >= 2 ? item[0] + '-' + item[item.length - 1] : item[0]))
     .join(', ')
 }

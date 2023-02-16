@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext, useMemo, useCallback } from 'react'
+import React, { useEffect, useState, useContext, useMemo, useCallback, ChangeEvent } from 'react'
 import { useQuery, useMutation } from '@apollo/client'
 import SearchIcon from '@mui/icons-material/Search'
 import { Box, Button, Card, InputAdornment, OutlinedInput } from '@mui/material'
@@ -20,7 +20,7 @@ import { getEmailTemplateQuery } from '@mth/graphql/queries/email-template'
 import { Region } from '@mth/models'
 import { ProfileContext } from '@mth/providers/ProfileProvider/ProfileContext'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
-import { toOrdinalSuffix } from '@mth/utils'
+import { getTimezoneOffsetStr, toOrdinalSuffix } from '@mth/utils'
 import { Packet } from '../../../HomeroomStudentProfile/Student/types'
 import { ApplicationEmailModal } from '../../Applications/ApplicationModal/ApplicationEmailModal'
 import { SchoolYearDropDown } from '../../Components/SchoolYearDropdown'
@@ -40,7 +40,7 @@ export const EnrollmentPacketTable: React.FC = () => {
   const [filters, setFilters] = useState(['Submitted', 'Resubmitted'])
 
   const [emailTemplate, setEmailTemplate] = useState()
-  const [searchField, setSearchField] = useState('')
+  const [searchText, setSearchText] = useState('')
   const [tableData, setTableData] = useState<Array<unknown>>([])
 
   const [paginatinLimit, setPaginatinLimit] = useState(25)
@@ -72,10 +72,12 @@ export const EnrollmentPacketTable: React.FC = () => {
 
   const handleOpenProfile = (rowId: number) => {
     const row = enrollmentPackets?.find((el) => el.packet_id === rowId)
-    showModal(row.student.parent, refetch)
+    showModal(row?.student.parent, refetch)
     setStore(true)
   }
-
+  const handleSearchText = useCallback((e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setSearchText(e.target.value)
+  }, [])
   useEffect(() => {
     setPacketIds([])
     setClearAll(!clearAll)
@@ -83,142 +85,122 @@ export const EnrollmentPacketTable: React.FC = () => {
     setSkip(0)
   }, [me?.selectedRegionId])
 
-  const createData = (packet: Packet) => {
-    const _sort = sort?.split('|')
-    let grade_value = 0
-    if (sort && _sort[0]?.toLowerCase() === 'grade' && _sort[1]?.toLowerCase() === 'desc') {
-      grade_value = packet?.student?.grade_levels?.length ? packet.student.grade_levels.length - 1 : 0
-    }
-    let grade_level: string | number | undefined = ''
-    const grade_levels = packet?.student?.grade_levels
-    if (grade_levels && grade_levels.length) {
-      grade_level = grade_levels[grade_value].grade_level
-    }
-    if (grade_level) {
-      grade_level =
-        grade_level === 'K' || String(grade_level).includes('Kin')
-          ? 'K'
-          : `${toOrdinalSuffix(Number(grade_level))} Grade`
-    } else {
-      grade_level = ' '
-    }
-    return {
-      id: packet.packet_id,
-      submitted:
-        packet.status === PacketStatus.SUBMITTED ||
-        packet.status == PacketStatus.RESUBMITTED ||
-        packet.status == PacketStatus.MISSING_INFO ||
-        packet.status == PacketStatus.CONDITIONAL
-          ? moment(packet.date_submitted || packet.deadline).format('MM/DD/YY') // will update again
-          : '',
-      status: packet.status + (packet.is_age_issue && packet.status != 'Age Issue' ? ' (Age Issue)' : ''),
-      deadline: (
-        <Paragraph
-          size={'large'}
-          sx={{
-            color:
-              moment(new Date()).format('YYYY-MM-DD') > moment(packet.deadline).format('YYYY-MM-DD')
-                ? MthColor.RED
-                : MthColor.BLACK,
-            fontWeight: '700',
-          }}
-        >
-          {moment(packet.deadline).local().format('MM/DD/YY')}
-        </Paragraph>
-      ),
-      student: (
-        <Box sx={{ cursor: 'pointer', color: MthColor.MTHBLUE }}>
-          {`${packet.student.person?.last_name}, ${packet.student.person?.first_name}`}
-        </Box>
-      ),
-      grade: grade_level,
-      parent: (
-        <Box sx={{ cursor: 'pointer', color: MthColor.MTHBLUE }}>
-          {`${packet?.student?.parent?.person?.last_name}, ${packet?.student?.parent?.person?.first_name}`}
-        </Box>
-      ),
-      studentStatus:
-        packet.student?.reenrolled > 0 ? (
-          <Box sx={{ color: MthColor.MTHBLUE }}>Update</Box>
-        ) : (
-          <Box sx={{ color: MthColor.GREEN }}>New</Box>
-        ),
-      emailed:
-        packet.packet_emails.length > 0 ? (
-          <Box sx={{ cursor: 'pointer', width: '70px' }} onClick={() => handleOpenEmailHistory(packet)}>
-            {moment(packet?.packet_emails?.at(-1)?.created_at).format('MM/DD/YY')}
-          </Box>
-        ) : (
-          <Box sx={{ width: '70px' }}> </Box>
-        ),
-      delete: (
-        <Tooltip title='Delete' arrow>
-          <Box
-            display={'flex'}
-            flexDirection={'column'}
-            justifyContent={'center'}
-            alignItems={'center'}
-            className='delete-row'
-            onClick={() => handleDeleteRow(packet.packet_id)}
+  const createData = useCallback(
+    (packet: Packet) => {
+      const _sort = sort?.split('|')
+      let grade_value = 0
+      if (sort && _sort[0]?.toLowerCase() === 'grade' && _sort[1]?.toLowerCase() === 'desc') {
+        grade_value = packet?.student?.grade_levels?.length ? packet.student.grade_levels.length - 1 : 0
+      }
+      let grade_level: string | number | undefined = ''
+      const grade_levels = packet?.student?.grade_levels
+      if (grade_levels && grade_levels.length) {
+        grade_level = grade_levels[grade_value].grade_level
+      }
+      if (grade_level) {
+        grade_level =
+          grade_level === 'K' || String(grade_level).includes('Kin')
+            ? 'K'
+            : `${toOrdinalSuffix(Number(grade_level))} Grade`
+      } else {
+        grade_level = ' '
+      }
+      return {
+        id: packet.packet_id,
+        submitted:
+          packet.status === PacketStatus.SUBMITTED ||
+          packet.status == PacketStatus.RESUBMITTED ||
+          packet.status == PacketStatus.MISSING_INFO ||
+          packet.status == PacketStatus.CONDITIONAL
+            ? moment(packet.date_submitted || packet.deadline)
+                .local()
+                .format('MM/DD/YY') // will update again
+            : '',
+        status: packet.status + (packet.is_age_issue && packet.status != 'Age Issue' ? ' (Age Issue)' : ''),
+        deadline: (
+          <Paragraph
+            size={'large'}
             sx={{
-              borderRadius: 1,
-              cursor: 'pointer',
-              minHeight: '40px',
-              marginRight: '40px',
+              color:
+                moment(new Date()).format('YYYY-MM-DD') > moment(packet.deadline).format('YYYY-MM-DD')
+                  ? MthColor.RED
+                  : MthColor.BLACK,
+              fontWeight: '700',
             }}
           >
-            <svg width='14' height='18' viewBox='0 0 14 18' fill='none' xmlns='http://www.w3.org/2000/svg'>
-              <path
-                d='M9.12 7.47L7 9.59L4.87 7.47L3.46 8.88L5.59 11L3.47 13.12L4.88 14.53L7 12.41L9.12 14.53L10.53 13.12L8.41 11L10.53 8.88L9.12 7.47ZM10.5 1L9.5 0H4.5L3.5 1H0V3H14V1H10.5ZM1 16C1 17.1 1.9 18 3 18H11C12.1 18 13 17.1 13 16V4H1V16ZM3 6H11V16H3V6Z'
-                fill='#323232'
-              />
-            </svg>
+            {moment(packet.deadline).local().format('MM/DD/YY')}
+          </Paragraph>
+        ),
+        student: (
+          <Box sx={{ cursor: 'pointer', color: MthColor.MTHBLUE }}>
+            {`${packet.student.person?.last_name || ''}${
+              packet.student.person?.last_name && packet.student.person?.first_name ? ', ' : ''
+            }${packet.student.person?.first_name || ''}`}
           </Box>
-        </Tooltip>
-      ),
-    }
-  }
-
-  const refetch = () => {
-    refetchPackets()
-    refetchPacketCount()
-  }
-  const searchCond = useMemo(() => {
-    const ss = searchField.split('/')
-    let y = '',
-      m = '',
-      d = ''
-    if (ss.length >= 2) {
-      if (ss.length == 3) {
-        ;[m, d, y] = ss
-      } else if (ss.length == 2) {
-        ;[m, d] = ss
+        ),
+        grade: grade_level,
+        parent: (
+          <Box sx={{ cursor: 'pointer', color: MthColor.MTHBLUE }}>
+            {`${packet?.student?.parent?.person?.last_name || ''}${
+              packet?.student?.parent?.person?.last_name && packet?.student?.parent?.person?.first_name ? ', ' : ''
+            }${packet?.student?.parent?.person?.first_name || ''}`}
+          </Box>
+        ),
+        studentStatus:
+          packet.student?.reenrolled > 0 ? (
+            <Box sx={{ color: MthColor.MTHBLUE }}>Update</Box>
+          ) : (
+            <Box sx={{ color: MthColor.GREEN }}>New</Box>
+          ),
+        emailed:
+          packet.packet_emails.length > 0 ? (
+            <Box sx={{ cursor: 'pointer', width: '70px' }} onClick={() => handleOpenEmailHistory(packet)}>
+              {moment(packet?.packet_emails?.at(-1)?.created_at).local().format('MM/DD/YY')}
+            </Box>
+          ) : (
+            <Box sx={{ width: '70px' }}> </Box>
+          ),
+        delete: (
+          <Tooltip title='Delete' arrow>
+            <Box
+              display={'flex'}
+              flexDirection={'column'}
+              justifyContent={'center'}
+              alignItems={'center'}
+              className='delete-row'
+              onClick={() => handleDeleteRow(packet.packet_id)}
+              sx={{
+                borderRadius: 1,
+                cursor: 'pointer',
+                minHeight: '40px',
+                marginRight: '40px',
+              }}
+            >
+              <svg width='14' height='18' viewBox='0 0 14 18' fill='none' xmlns='http://www.w3.org/2000/svg'>
+                <path
+                  d='M9.12 7.47L7 9.59L4.87 7.47L3.46 8.88L5.59 11L3.47 13.12L4.88 14.53L7 12.41L9.12 14.53L10.53 13.12L8.41 11L10.53 8.88L9.12 7.47ZM10.5 1L9.5 0H4.5L3.5 1H0V3H14V1H10.5ZM1 16C1 17.1 1.9 18 3 18H11C12.1 18 13 17.1 13 16V4H1V16ZM3 6H11V16H3V6Z'
+                  fill='#323232'
+                />
+              </svg>
+            </Box>
+          </Tooltip>
+        ),
       }
-      if (m && d) {
-        const year = y ? parseInt(y) : new Date().getFullYear() % 100
-
-        const f = new Date(2000 + year, Number(m) - 1, Number(d), 0, 0, 0).toISOString()
-        const t = new Date(2000 + year, Number(m) - 1, Number(d), 23, 59, 59).toISOString()
-        if (y) {
-          return `${f} - ${t}`
-        } else {
-          const f2 = new Date(2000 + year - 1, Number(m) - 1, Number(d), 0, 0, 0).toISOString()
-          const t2 = new Date(2000 + year - 1, Number(m) - 1, Number(d), 23, 59, 59).toISOString()
-
-          const f3 = new Date(2000 + year + 1, Number(m) - 1, Number(d), 0, 0, 0).toISOString()
-          const t3 = new Date(2000 + year + 1, Number(m) - 1, Number(d), 23, 59, 59).toISOString()
-          return `${f} - ${t} - ${f2} - ${t2} - ${f3} - ${t3}`
-        }
-      }
-    }
-    return ''
-  }, [searchField])
+    },
+    [sort],
+  )
+  // get local timezone offset string (ex: -5:0, +3:0)
+  const timezoneOffsetStr = useMemo(() => {
+    const offsetMin = new Date().getTimezoneOffset()
+    return getTimezoneOffsetStr(offsetMin)
+  }, [])
   const { data: enrollmentPacketsData, refetch: refetchPackets } = useQuery(getEnrollmentPacketsQuery, {
     variables: {
       skip: skip,
       sort: sort,
       take: paginatinLimit,
-      search: searchCond,
+      search: searchText,
+      timezoneOffsetStr,
       filters: filters,
       selectedYearId,
       regionId: me?.selectedRegionId,
@@ -243,7 +225,12 @@ export const EnrollmentPacketTable: React.FC = () => {
     skip: !me?.selectedRegionId,
     fetchPolicy: 'network-only',
   })
-  const handlePageChange = (page) => {
+
+  const refetch = useCallback(() => {
+    refetchPackets()
+    refetchPacketCount()
+  }, [refetchPacketCount, refetchPackets])
+  const handlePageChange = (page: number) => {
     setCurrentPage(page)
     setSkip(() => {
       return paginatinLimit ? paginatinLimit * (page - 1) : 25
@@ -277,12 +264,14 @@ export const EnrollmentPacketTable: React.FC = () => {
         .filter((item) => new Date(item.date_end) >= new Date())
         .forEach((item): void => {
           yearList.push({
-            label: `${moment(item.date_begin).format('YYYY')}-${moment(item.date_end).format('YY')}`,
+            label: `${moment(item.date_begin).local().format('YYYY')}-${moment(item.date_end).local().format('YY')}`,
             value: String(item.school_year_id),
           })
           if (item && item.midyear_application) {
             yearList.push({
-              label: `${moment(item.date_begin).format('YYYY')}-${moment(item.date_end).format('YY')} Mid-year Program`,
+              label: `${moment(item.date_begin).local().format('YYYY')}-${moment(item.date_end)
+                .local()
+                .format('YY')} Mid-year Program`,
               value: `${item.school_year_id}-mid`,
             })
           }
@@ -476,9 +465,9 @@ export const EnrollmentPacketTable: React.FC = () => {
               onBlur={(e) => (e.target.placeholder = 'Search...')}
               size='small'
               fullWidth
-              value={searchField}
+              value={searchText}
               placeholder='Search...'
-              onChange={(e) => setSearchField(e.target.value)}
+              onChange={handleSearchText}
               startAdornment={
                 <InputAdornment position='start'>
                   <SearchIcon style={{ color: 'black' }} />

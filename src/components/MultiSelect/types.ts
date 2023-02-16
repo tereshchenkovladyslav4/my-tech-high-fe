@@ -15,4 +15,5 @@ export type MultiSelectProps = {
   error?: FormikCustomError
   disabled?: boolean
   onChange: (value: (string | number)[]) => void
+  allSelect?: boolean
 }

@@ -54,7 +54,7 @@ const UpdatesRequired: React.FC<UpdatesRequiredProps> = ({
           options?.map((option: { title: string; text: string }, index: number) => {
             if (
               schedule.standardResponseOptions &&
-              schedule.standardResponseOptions.split(',').includes(`${index}_${option.title}`)
+              schedule.standardResponseOptions.split(',').includes(`${index}_${option.title.replaceAll(',', '-')}`)
             ) {
               newBody += `<ul><li>${extractContent(option.text)}</li></ul>`
             }
@@ -63,7 +63,7 @@ const UpdatesRequired: React.FC<UpdatesRequiredProps> = ({
       setStandardResponseOptions(
         options?.map((option: { title: string }, index: number) => ({
           label: option.title,
-          value: `${index}_${option.title}`,
+          value: `${index}_${option.title.replaceAll(',', '-')}`,
         })),
       )
       setEmailBody(newBody)

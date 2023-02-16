@@ -191,7 +191,7 @@ export const AssignmentTable: React.FC<EnrollmentSchoolTableProps> = ({
         sortable: true,
         tdClass: 'fw-400',
         formatter: (studednt) => {
-          return studednt.currentHomeroom?.teacher?.class_name || AssignmentStatus.UNASSIGNED
+          return studednt.currentHomeroom?.Class?.class_name || AssignmentStatus.UNASSIGNED
         },
       },
     ]
@@ -202,7 +202,7 @@ export const AssignmentTable: React.FC<EnrollmentSchoolTableProps> = ({
         sortable: true,
         tdClass: 'fw-400',
         formatter: (studednt) => {
-          return studednt.previousHomeroom?.teacher?.class_name || AssignmentStatus.UNASSIGNED
+          return studednt.previousHomeroom?.Class?.class_name || AssignmentStatus.UNASSIGNED
         },
       })
     }
@@ -228,7 +228,7 @@ export const AssignmentTable: React.FC<EnrollmentSchoolTableProps> = ({
         homeroomStudentInput: {
           school_year_id: parseInt(selectedYear?.value as string),
           studentIds: students,
-          teacher_id: parseInt(
+          class_id: parseInt(
             selectedHomeroom?.value !== AssignmentStatus.UNASSIGN.toLocaleLowerCase() ? selectedHomeroom?.value : -1,
           ),
           auto_grade: autoGrade,
@@ -257,7 +257,7 @@ export const AssignmentTable: React.FC<EnrollmentSchoolTableProps> = ({
         homeroomStudentInput: {
           school_year_id: parseInt(selectedYear?.value as string),
           studentIds: students,
-          teacher_id: parseInt(
+          class_id: parseInt(
             selectedHomeroom?.value !== AssignmentStatus.UNASSIGN.toLocaleLowerCase() ? selectedHomeroom?.value : -1,
           ),
           auto_grade: autoGrade,
@@ -286,7 +286,7 @@ export const AssignmentTable: React.FC<EnrollmentSchoolTableProps> = ({
       if (selectedHomeroom?.value !== AssignmentStatus.UNASSIGN.toLocaleLowerCase()) {
         for (let i = 0; i < studentIds.length; i++) {
           const student = items.find((q) => q.student_id == studentIds[i])
-          if (student?.currentHomeroom?.teacher) {
+          if (student?.currentHomeroom?.Class) {
             setAssignError(true)
             return
           }
@@ -315,10 +315,10 @@ export const AssignmentTable: React.FC<EnrollmentSchoolTableProps> = ({
     if (studentIds.length > 0 && selectedHomeroom?.value) {
       for (let i = 0; i < studentIds.length; i++) {
         const student = items.find((q) => q.student_id == studentIds[i])
-        if (!student?.currentHomeroom?.teacher) {
+        if (!student?.currentHomeroom?.Class) {
           setIsTransferAssignError(true)
           return
-        } else if (student?.currentHomeroom?.teacher.class_id !== selectedHomeroom.value) {
+        } else if (student?.currentHomeroom?.Class.class_id !== selectedHomeroom.value) {
           setTransferConfirmModal(true)
           return
         } else if (selectedHomeroom?.dueStatus) {

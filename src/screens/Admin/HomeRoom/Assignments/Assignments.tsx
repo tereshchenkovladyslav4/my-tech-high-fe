@@ -146,8 +146,8 @@ export const Assignments: React.FC = () => {
       const currentHomes = []
       currentHomeroomData.getMastersBySchoolId.map((item: Master) => {
         let dueStatus = false
-        if (item?.masterAssignments?.length && item?.masterAssignments?.length > 0) {
-          item?.masterAssignments.map((assignment: Assignment) => {
+        if (item?.Assignments?.length && item?.Assignments?.length > 0) {
+          item?.Assignments.map((assignment: Assignment) => {
             if (
               assignment.due_date < moment(`${moment().tz('America/Denver').format('yyyy-MM-DD hh:mm')}`).toISOString()
             ) {
@@ -156,7 +156,7 @@ export const Assignments: React.FC = () => {
           })
         }
 
-        item?.masterClasses?.map((mclass: Classes) => {
+        item?.Classes?.map((mclass: Classes) => {
           currentHomes.push({
             value: mclass.class_id,
             label: mclass.class_name,
@@ -190,7 +190,7 @@ export const Assignments: React.FC = () => {
     if (!prevHomeroomLoading && prevHomeroomData) {
       const homerooms = []
       prevHomeroomData.getMastersBySchoolId.map((item: Master) => {
-        item?.masterClasses?.map((mclass: Classes) => {
+        item?.Classes?.map((mclass: Classes) => {
           homerooms.push({
             value: mclass.class_id,
             label: mclass.class_name,

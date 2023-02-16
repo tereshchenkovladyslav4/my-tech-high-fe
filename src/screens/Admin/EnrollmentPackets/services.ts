@@ -5,6 +5,7 @@ export const getEnrollmentPacketsQuery = gql`
     $skip: Int
     $take: Int
     $search: String
+    $timezoneOffsetStr: String
     $regionId: Int
     $sort: String
     $filters: [String!]
@@ -14,6 +15,7 @@ export const getEnrollmentPacketsQuery = gql`
       skip: $skip
       take: $take
       search: $search
+      timezoneOffsetStr: $timezoneOffsetStr
       region_id: $regionId
       sort: $sort
       filters: $filters

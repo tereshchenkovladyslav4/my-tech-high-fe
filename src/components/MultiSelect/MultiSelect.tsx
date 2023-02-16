@@ -26,10 +26,18 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
   defaultValue,
   error,
   onChange,
+  allSelect = false,
 }) => {
   const [value, setValue] = useState<(string | number)[]>(defaultValue || [])
 
   const handleChange = (val: string | (string | number)[]) => {
+    if (allSelect) {
+      const fullList = options.map((item) => item.value)
+      if (val[val.length - 1] === 'all') {
+        onChange(fullList.length === value.length && fullList.length > 0 ? [] : fullList)
+        return
+      }
+    }
     onChange(typeof val === 'string' ? [val] : val)
   }
 
@@ -46,6 +54,10 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
     ) : (
       <span style={{ color: borderNone ? MthColor.MTHBLUE : MthColor.SYSTEM_12 }}>{placeholder}</span>
     )
+
+  const isAllSelected = () => {
+    return options.length === value.length && options.length > 0
+  }
 
   const renderDropDownItem = map(options, (dropDownItem, index) => (
     <MenuItem key={index} value={dropDownItem.value}>
@@ -77,6 +89,12 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
           error={error?.error}
           disabled={disabled || false}
         >
+          {allSelect && (
+            <MenuItem value='all'>
+              <Checkbox checked={isAllSelected()} />
+              <ListItemText primary='Select All' />
+            </MenuItem>
+          )}
           {renderDropDownItem}
         </Select>
       </FormControl>

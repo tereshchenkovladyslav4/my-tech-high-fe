@@ -8,7 +8,7 @@ export type HomeroomStudent = {
 export type Classes = {
   class_id: number
   class_name: string
-  primaryTeacher?: {
+  PrimaryTeacher?: {
     firstName?: string
     lastName?: string
     user_id?: number
@@ -16,17 +16,17 @@ export type Classes = {
   students?: number
   ungraded?: string
   addition_id?: string
-  homeroomStudent: HomeroomStudent[]
+  HomeroomStudents: HomeroomStudent[]
 }
 
 export type Master = {
   master_id: number
   master_name?: string
   classesCount?: number
-  masterClasses?: Classes[] | undefined
+  Classes?: Classes[] | undefined
   school_year_id?: number
   instructions?: string | null
-  masterAssignments?: Assignment[]
+  Assignments?: Assignment[]
 }
 
 export type ClassessProps = {

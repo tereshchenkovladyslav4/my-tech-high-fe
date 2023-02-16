@@ -596,7 +596,7 @@ const MasterHoomroom: React.FC<{ masterId: number }> = ({ masterId }) => {
             <Typography fontSize='18px' fontWeight='700'>
               Instructions
             </Typography>
-            <Tooltip title='Edit' sx={{ marginLeft: '15px' }}>
+            <Tooltip title='Edit' sx={{ marginLeft: '15px' }} placement='top'>
               <IconButton
                 onClick={() => {
                   setIsSetInstructions(true)

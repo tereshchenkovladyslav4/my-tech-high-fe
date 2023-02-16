@@ -25,14 +25,14 @@ export const getStudentsForHoomroom = gql`
         }
         previousHomeroom {
           id
-          teacher {
+          Class {
             class_name
             class_id
           }
         }
         currentHomeroom {
           id
-          teacher {
+          Class {
             class_name
             class_id
           }

@@ -4,6 +4,8 @@ export enum EmailCategoryEnum {
   PACKETS = 'Enrollment Packets',
   SCHEDULES = 'Schedules',
   WITHDRAWAL = 'Withdrawal',
+  DIRECTORDERS = 'Direct Orders',
+  REIMBURSEMENTS = 'Reimbursements',
 }
 
 export enum EmailTemplateEnum {
@@ -28,4 +30,10 @@ export enum EmailTemplateEnum {
   UPDATES_REQUIRED = 'Updates Required',
   WITHDRAW_CONFIRMATION = 'Withdraw Confirmation',
   WITHDRAW_PAGE = 'Withdraw Page',
+  DIRECT_ORDER_UPDATE_REQURED = 'Direct Order Update Required',
+  DIRECT_ORDER_APPROVED = 'Direct Order Approved',
+  DIRECT_ORDER_ORDERED = 'Direct Order Ordered',
+  REIMBURSEMENT_UPDATE_REQUIRED = 'Reimbursement Update Required',
+  REIMBURSEMENT_APPROVED = 'Reimbursement Approved',
+  REIMBURSEMENT_PAID = 'Reimbursement Paid',
 }

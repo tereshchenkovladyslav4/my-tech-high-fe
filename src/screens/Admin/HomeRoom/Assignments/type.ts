@@ -131,7 +131,7 @@ export type Parent = {
 
 export type HomeroomStudent = {
   id: number
-  teacher: Classes
+  Class: Classes
 }
 
 export type StudentVM = {

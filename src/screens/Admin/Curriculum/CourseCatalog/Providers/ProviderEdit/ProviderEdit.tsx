@@ -29,7 +29,6 @@ const ProviderEdit: React.FC<ProviderEditProps> = ({
   const [showLeaveModal, setShowLeaveModal] = useState<boolean>(false)
   const [initialValues, setInitialValues] = useState<Provider>(defaultProviderFormData)
   const [submitSave, {}] = useMutation(createOrUpdateProviderMutation)
-
   const { checkBoxItems: periodsItems } = usePeriods(
     +schoolYearId,
     undefined,
@@ -73,6 +72,38 @@ const ProviderEdit: React.FC<ProviderEditProps> = ({
       .nullable(),
   })
 
+  const sortData = (array: Provider[], obj: Provider) => {
+    const sortedByName = array.sort((a, b) => a.name.localeCompare(b.name))
+    const index = sortedByName.findIndex((item) => item.id === obj.id)
+    let pastPriority = 0
+    if (index > 0) {
+      pastPriority = sortedByName[index - 1].priority ?? 1
+    }
+    if (!obj?.id) {
+      const updatedArray = array.map((item) => {
+        if (!item.id) {
+          return { ...item, priority: pastPriority + 1 }
+        }
+        if (item.priority > pastPriority) {
+          return { ...item, priority: item.priority + 1 }
+        }
+        return item
+      })
+      return updatedArray
+    }
+
+    const objPriority = Number(obj.priority)
+
+    return array.map((item) => {
+      if (item.id === obj.id) {
+        return { ...item, priority: pastPriority }
+      }
+      if (item.priority <= pastPriority && item.priority > objPriority) {
+        return { ...item, priority: item.priority - 1 }
+      }
+      return item
+    })
+  }
   const onSave = async (value: Provider) => {
     setIsSubmitted(true)
     const dataToSave = {
@@ -86,31 +117,39 @@ const ProviderEdit: React.FC<ProviderEditProps> = ({
       multiple_periods: value.multiple_periods,
       multi_periods_notification: value.multi_periods_notification,
       periods: value.PeriodIds?.join(','),
+      priority: providers?.find((p) => p.id === Number(value.id))?.priority,
     }
 
-    const priorityIndex = [...(providers ? providers : []), dataToSave]
-      .sort((a, b) => {
-        if (a.name.toLowerCase() < b.name.toLowerCase()) {
-          return -1
-        }
-        if (a.name.toLowerCase() > b.name.toLowerCase()) {
-          return 1
-        }
-
-        return 0
-      })
-      .findIndex((obj) => obj.name.includes(value.name))
+    const sortedData = sortData(
+      dataToSave?.id
+        ? (providers ?? []).map((p) => {
+            if (p.id === dataToSave?.id) {
+              return dataToSave
+            }
+            return p
+          })
+        : [...(providers ?? []), dataToSave],
+      dataToSave,
+    )
 
     await submitSave({
       variables: {
-        createProviderInput: {
-          ...dataToSave,
-          ...(!value.id &&
-            (providers?.filter((obj) => obj.priority)?.length ?? 0) > 1 && { priority: priorityIndex + 1 }),
-        },
+        createProviderInput: sortedData.find((obj) => obj.name.includes(value.name)),
       },
     })
       .then(() => {
+        sortedData
+          .filter((obj) => !obj.name.includes(value.name))
+          .map(async (obj) => {
+            await submitSave({
+              variables: {
+                createProviderInput: {
+                  id: Number(obj.id),
+                  priority: obj.priority,
+                },
+              },
+            })
+          })
         setIsSubmitted(false)
         setIsChanged(false)
         refetch()

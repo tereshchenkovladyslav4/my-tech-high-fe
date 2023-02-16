@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { Avatar, Box, Button, Grid } from '@mui/material'
 import { DropDown } from '@mth/components/DropDown/DropDown'
 import { DropDownItem } from '@mth/components/DropDown/types'
@@ -6,14 +6,24 @@ import { PageBlock } from '@mth/components/PageBlock'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { MthColor } from '@mth/enums'
+import { useStudentHomeroomInfo } from '@mth/hooks/useStudentHomeroomInfo'
 import { mthButtonClasses } from '@mth/styles/button.style'
 
-const HomeroomInfo: React.FC = () => {
-  const [selectedYearId, setSelectedYearId] = useState<number>(18)
-  const schoolYearItems: DropDownItem[] = [
-    { label: '2020-21', value: 18 },
-    { label: '2021-22', value: 19 },
-  ]
+type HomeroomInfoProps = {
+  studentId: number
+  schoolYearItems: DropDownItem[]
+  selectedYearId: number
+  setSelectedYearId: (value: number) => void
+}
+
+const HomeroomInfo: React.FC<HomeroomInfoProps> = ({
+  studentId,
+  schoolYearItems,
+  selectedYearId,
+  setSelectedYearId,
+}) => {
+  const { className, teacherName } = useStudentHomeroomInfo(studentId, selectedYearId)
+
   return (
     <PageBlock>
       <Grid container rowSpacing={2}>
@@ -22,8 +32,8 @@ const HomeroomInfo: React.FC = () => {
         </Grid>
         <Grid item xs={8} sm={7}>
           <Box sx={{ textAlign: 'left' }}>
-            <Subtitle sx={{ fontSize: '22px', fontWeight: '700' }}>Yosemite Homeroom</Subtitle>
-            <Paragraph sx={{ fontSize: '13px', fontWeight: '600', padding: 1 }}>{'Teacher: Erin Sublette'}</Paragraph>
+            <Subtitle sx={{ fontSize: '22px', fontWeight: '700' }}>{className}</Subtitle>
+            <Paragraph sx={{ fontSize: '13px', fontWeight: '600', padding: 1 }}>{`Teacher: ${teacherName}`}</Paragraph>
           </Box>
         </Grid>
         <Grid item xs={12} sm={3} sx={{ paddingX: 4 }}>

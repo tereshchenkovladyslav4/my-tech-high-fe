@@ -16,7 +16,7 @@ const ClassesComponent: React.FC<ClassessProps> = ({ master, refetch }) => {
   const [tableData, setTableData] = useState<MthTableRowItem<Classes>[]>([])
   const [createModal, setCreateModal] = useState<boolean>(false)
 
-  const [classData, setClassData] = useState<Classes[] | undefined>(master?.masterClasses)
+  const [classData, setClassData] = useState<Classes[] | undefined>(master?.Classes)
 
   const [selectedClasses, setSelectedClasses] = useState<Classes | null>()
 
@@ -37,7 +37,7 @@ const ClassesComponent: React.FC<ClassessProps> = ({ master, refetch }) => {
   const submitDeleteClass = async () => {
     await submitClass({
       variables: {
-        classId: deleteId,
+        classId: Number(deleteId),
       },
     })
     refetch()
@@ -94,7 +94,7 @@ const ClassesComponent: React.FC<ClassessProps> = ({ master, refetch }) => {
                 <CreateIcon />
               </IconButton>
             </Tooltip>
-            {item.rawData.homeroomStudent.length > 0 ? (
+            {item.rawData.HomeroomStudents.length > 0 ? (
               <IconButton className={'actionButton ' + item.key} color='primary' disabled>
                 <DeleteForeverOutlined />
               </IconButton>
@@ -132,10 +132,10 @@ const ClassesComponent: React.FC<ClassessProps> = ({ master, refetch }) => {
       key: 'classes ' + classesItem.class_id,
       columns: {
         name: classesItem.class_name,
-        teacher: classesItem?.primaryTeacher
-          ? classesItem?.primaryTeacher.firstName + ' ' + classesItem?.primaryTeacher.lastName
+        teacher: classesItem?.PrimaryTeacher
+          ? classesItem?.PrimaryTeacher.firstName + ' ' + classesItem?.PrimaryTeacher.lastName
           : '',
-        students: classesItem?.homeroomStudent.length,
+        students: classesItem?.HomeroomStudents.length,
         ungraded: 0,
         additionalTeachers: fetchAddTeacher(classesItem?.addition_id),
       },
@@ -144,7 +144,7 @@ const ClassesComponent: React.FC<ClassessProps> = ({ master, refetch }) => {
   }
 
   useEffect(() => {
-    setClassData(master?.masterClasses)
+    setClassData(master?.Classes)
   }, [master])
 
   useEffect(() => {
@@ -210,7 +210,7 @@ const ClassesComponent: React.FC<ClassessProps> = ({ master, refetch }) => {
         break
       case 'teacher':
         newClasses.sort((a, b) =>
-          a?.primaryTeacher?.firstName?.toLowerCase() > b?.primaryTeacher?.firstName?.toLowerCase()
+          a?.PrimaryTeacher?.firstName?.toLowerCase() > b?.PrimaryTeacher?.firstName?.toLowerCase()
             ? sortBy
             : -1 * sortBy,
         )

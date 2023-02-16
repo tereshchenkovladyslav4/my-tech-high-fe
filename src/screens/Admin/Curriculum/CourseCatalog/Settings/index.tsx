@@ -57,10 +57,7 @@ const Settings: React.FC = () => {
 
   const orderedList = 0
   const unorderedList = 1
-  const baseBullets = [
-    [1, 'a'],
-    ['•', '▫', '▪'],
-  ]
+  const baseBullets = [[1], ['•', '▫', '▪']]
   const leavingLevel = 0
   const initiatingLevel = 1
   const crossingLevel = 2
@@ -69,8 +66,11 @@ const Settings: React.FC = () => {
   let currentBlockKey = ''
   const getSisterBullet = (idx: number | string, type: number, whichSister: number) => {
     if (type === orderedList) {
-      if (Number.isInteger(idx)) return Number(idx) + whichSister
-      else return String.fromCharCode((idx as string)?.charCodeAt(0) + whichSister)
+      if (Number.isInteger(idx)) {
+        return Number(idx) + whichSister
+      } else {
+        return String.fromCharCode((idx as string)?.charCodeAt(0) + whichSister)
+      }
     }
     return idx
   }
@@ -99,8 +99,9 @@ const Settings: React.FC = () => {
         break
       case leavingLevel:
         listEntriesLastIdx[type].splice(depth, 1)
-        if (depth > 0 && !listEntriesLastIdx[type][depth - 1])
+        if (depth > 0 && !listEntriesLastIdx[type][depth - 1]) {
           listEntriesLastIdx[type][depth - 1] = getLevelBaseBullet(depth - 1, type, initiatingLevel)
+        }
         break
       default:
         listEntriesLastIdx[type][depth] = getLevelBaseBullet(depth, type, action)
@@ -140,6 +141,7 @@ const Settings: React.FC = () => {
         }
         curListLvl = block.getDepth()
       }
+
       const levelIndexToDisplay = listEntriesLastIdx[blockType][curListLvl]
       const HTMLStyles = editorStylesToHTMLStyles(block.getInlineStyleAt(0))
       return {

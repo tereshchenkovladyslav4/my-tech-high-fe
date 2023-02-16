@@ -61,7 +61,7 @@ export const CreateTeacherModal: React.FC<CreateTeacherModalProps> = ({
 
   useEffect(() => {
     if (selectedClasses) {
-      setPrimaryTeacher(teacherList.find((item: Teacher) => item.user_id === selectedClasses?.primaryTeacher?.user_id))
+      setPrimaryTeacher(teacherList.find((item: Teacher) => item.user_id === selectedClasses?.PrimaryTeacher?.user_id))
       const addTeachers = JSON.parse(selectedClasses?.addition_id)
       if (addTeachers?.length > 0) {
         setCheckedTeachers(addTeachers)

@@ -315,7 +315,7 @@ const HomeroomResourceForm: React.FC<HomeroomResourceFormProps> = ({ schoolYearI
                     label='Grades'
                     onChange={(value) => {
                       const filteredGrades = value.filter(
-                        (item) => gradeOptions.findIndex((option) => option.value === item) > -1,
+                        (item) => gradeOptions.findIndex((option) => option.value === item) > -1 || item === 'all',
                       )
                       setFieldValue('grades', filteredGrades.join(','))
                       setIsChanged(true)
@@ -323,6 +323,7 @@ const HomeroomResourceForm: React.FC<HomeroomResourceFormProps> = ({ schoolYearI
                     renderValue={renderGrades(values.grades)}
                     defaultValue={values?.grades?.length ? values.grades.split(',') : []}
                     error={{ error: touched.grades && !!errors.grades, errorMsg: '' }}
+                    allSelect
                   />
                 </Box>
                 <Box sx={{ mb: 3, flex: 1 }}>

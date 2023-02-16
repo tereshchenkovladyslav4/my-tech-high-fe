@@ -40,6 +40,12 @@ export const calcAge = (birth: string | Date | undefined): number => {
 
 export const sum = (t: number, a: number) => t + a
 
+export const getTimezoneOffsetStr = (offsetMin: number): string => {
+  const h = Math.floor(Math.abs(offsetMin) / 60)
+  const m = Math.abs(offsetMin) % 60
+  return `${offsetMin > 0 ? '-' : '+'}${h}:${m}`
+}
+
 export const showDate = (date: string | Date | undefined, format = 'MM/DD/YYYY'): string => {
   if (date) {
     return moment(date).tz('UTC').format(format)
