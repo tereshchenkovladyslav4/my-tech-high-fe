@@ -20,7 +20,7 @@ export const useActiveHomeroomSchoolYears = (
 } => {
   const [dropdownItems, setDropdownItems] = useState<Array<DropDownItem>>([])
   const [schoolYears, setSchoolYears] = useState<Array<SchoolYear>>([])
-  const [selectedYearId, setSelectedYearId] = useState<number | undefined>()
+  const [selectedYearId, setSelectedYearId] = useState<number | undefined>(0)
 
   const [getActiveHomeroomSchoolYears, { loading, data, error, refetch }] = useLazyQuery(
     getActiveStudentHomeroomSchoolYearsQuery,

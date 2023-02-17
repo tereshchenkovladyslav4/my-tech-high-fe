@@ -3,15 +3,17 @@ import { useMutation, useQuery } from '@apollo/client'
 import { Box, Button, Grid, List } from '@mui/material'
 import { useFormik } from 'formik'
 import { filter, map, omit } from 'lodash'
+import { useHistory } from 'react-router-dom'
 import * as yup from 'yup'
 import { AnySchema } from 'yup'
 import { S3FileType } from '@mth/components/DocumentUploadModal/types'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { isNumber } from '@mth/constants'
-import { EmailTemplateEnum, PacketStatus, QUESTION_TYPE } from '@mth/enums'
+import { EmailTemplateEnum, MthRoute, PacketStatus, QUESTION_TYPE } from '@mth/enums'
 import { FileCategory, MthColor } from '@mth/enums'
 import { getEmailTemplateQuery } from '@mth/graphql/queries/email-template'
 import { Address, EmailTemplate, EnrollmentPacket, Packet, Person, Student } from '@mth/models'
+import BackStackContext from '@mth/providers/BackStackProvider/BackStackContext'
 import { EnrollmentContext } from '@mth/providers/EnrollmentPacketPrivder/EnrollmentPacketProvider'
 import { TabContext, UserContext, UserInfo } from '@mth/providers/UserContext/UserProvider'
 import { getPacketFiles } from '@mth/screens/Admin/EnrollmentPackets/services'
@@ -33,6 +35,8 @@ export const Documents: React.FC<DocumentsProps> = ({ id, regionId, questions })
   const { profile, students } = me as UserInfo
   const student = useMemo(() => students?.find((s) => Number(s.student_id) === Number(id)), [id, students])
   const packet = useMemo(() => student?.packets?.at(-1), [student?.packets])
+  const history = useHistory()
+  const backStackPaths = useContext(BackStackContext)
   const fileNamePrefix = useMemo(
     () => `${student?.person.first_name.charAt(0).toUpperCase()}.${student?.person.last_name}`,
     [student?.person.first_name, student?.person.last_name],
@@ -81,7 +85,13 @@ export const Documents: React.FC<DocumentsProps> = ({ id, regionId, questions })
   const [saveEnrollmentContact] = useMutation<{ saveEnrollmentPacketContact: EnrollmentPacket }>(
     enrollmentContactMutation,
   )
-
+  const handleGoBack = useCallback(() => {
+    if (backStackPaths.length >= 2 && backStackPaths[backStackPaths.length - 1] === location.pathname) {
+      history.goBack()
+    } else {
+      history.replace(MthRoute.HOMEROOM.toString())
+    }
+  }, [backStackPaths, history])
   const submitDocuments = async () => {
     const address = { ...formik.values.address }
     if (address.address_id) {
@@ -166,14 +176,6 @@ export const Documents: React.FC<DocumentsProps> = ({ id, regionId, questions })
             },
           })
         }
-        if (resPacket?.packet?.status == PacketStatus.RESUBMITTED) {
-          history.back()
-          return
-        } else {
-          setVisitedTabs(Array.from(Array((tab?.currentTab || 0) + 1).keys()))
-          setTab({ currentTab: (tab?.currentTab || 0) + 1 })
-          window.scrollTo(0, 0)
-        }
         setPacketId(resPacket.packet.packet_id)
         setMe((prev) => {
           return {
@@ -187,6 +189,14 @@ export const Documents: React.FC<DocumentsProps> = ({ id, regionId, questions })
             }),
           }
         })
+        if (resPacket?.packet?.status == PacketStatus.RESUBMITTED) {
+          handleGoBack()
+          return
+        } else {
+          setVisitedTabs(Array.from(Array((tab?.currentTab || 0) + 1).keys()))
+          setTab({ currentTab: (tab?.currentTab || 0) + 1 })
+          window.scrollTo(0, 0)
+        }
       }
     } catch (e) {
       console.error(e)
@@ -441,14 +451,14 @@ export const Documents: React.FC<DocumentsProps> = ({ id, regionId, questions })
         }
       })
       if (saveEnrollmentPacketData?.saveEnrollmentPacketDocument?.packet?.status == PacketStatus.RESUBMITTED) {
-        history.back()
+        handleGoBack()
       } else {
         setVisitedTabs(Array.from(Array((tab?.currentTab || 0) + 1).keys()))
         setTab({ currentTab: (tab?.currentTab || 0) + 1 })
         window.scrollTo(0, 0)
       }
     }
-  }, [saveEnrollmentPacketData, setMe, setTab, setVisitedTabs, tab?.currentTab])
+  }, [handleGoBack, saveEnrollmentPacketData, setMe, setTab, setVisitedTabs, tab?.currentTab])
 
   useEffect(() => {
     const tempIds = map(packet?.files || [], 'mth_file_id').toString()

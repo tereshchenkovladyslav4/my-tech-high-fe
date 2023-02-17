@@ -89,6 +89,7 @@
     "@mui/x-data-grid": "^5.2.1",
     "@mui/x-date-pickers": "^5.0.0-alpha.1",
     "@snowpack/plugin-react-refresh": "^2.5.0",
+    "@testing-library/react-hooks": "^8.0.1",
     "@types/draft-js": "^0.11.8",
     "@types/draftjs-to-html": "^0.8.1",
     "@types/react-draft-wysiwyg": "^1.13.4",

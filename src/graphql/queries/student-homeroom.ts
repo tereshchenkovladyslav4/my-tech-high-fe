@@ -9,8 +9,6 @@ export const getStudentHomeroomInfoQuery = gql`
         PrimaryTeacher {
           first_name
           last_name
-          firstName
-          lastName
           user_id
         }
       }

@@ -10,6 +10,7 @@ import { MthLoading } from './components/MthLoading/MthLoading'
 import { UserLeaveConfirmation } from './components/UserLeaveConfirmation/UserLeaveConfirmation'
 import { ApolloProvider } from './providers/ApolloProvider/ApolloProvider'
 import { AuthProvider } from './providers/AuthProvider/AuthProvider'
+import BackStackProvider from './providers/BackStackProvider/BackStackProvider'
 import { ProfileProvider } from './providers/ProfileProvider/ProfileProvider'
 import { TabContext, TabInfo, UserContext, UserInfo } from './providers/UserContext/UserProvider'
 import { Root } from './root/Root'
@@ -88,23 +89,25 @@ export const App: React.FC = () => {
           )
         }}
       >
-        <ThemeProvider theme={theme}>
-          <AuthProvider>
-            <ApolloProvider>
-              <UserContext.Provider value={userContext}>
-                <TabContext.Provider value={tabContext}>
-                  <ProfileProvider>
-                    <CssBaseline />
-                    <RecoilRoot>
-                      <Root />
-                      <MthLoading />
-                    </RecoilRoot>
-                  </ProfileProvider>
-                </TabContext.Provider>
-              </UserContext.Provider>
-            </ApolloProvider>
-          </AuthProvider>
-        </ThemeProvider>
+        <BackStackProvider>
+          <ThemeProvider theme={theme}>
+            <AuthProvider>
+              <ApolloProvider>
+                <UserContext.Provider value={userContext}>
+                  <TabContext.Provider value={tabContext}>
+                    <ProfileProvider>
+                      <CssBaseline />
+                      <RecoilRoot>
+                        <Root />
+                        <MthLoading />
+                      </RecoilRoot>
+                    </ProfileProvider>
+                  </TabContext.Provider>
+                </UserContext.Provider>
+              </ApolloProvider>
+            </AuthProvider>
+          </ThemeProvider>
+        </BackStackProvider>
       </Router>
     </FlagProvider>
   )

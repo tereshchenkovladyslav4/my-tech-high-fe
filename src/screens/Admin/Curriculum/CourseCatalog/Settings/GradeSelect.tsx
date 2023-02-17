@@ -16,7 +16,6 @@ import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { GRADES } from '@mth/constants'
 import { MthColor } from '@mth/enums'
-import { siteManagementClassess } from '@mth/screens/Admin/SiteManagement/styles'
 import { renderGrades, toOrdinalSuffix } from '@mth/utils'
 
 export type GradesSelectProps = {
@@ -98,7 +97,7 @@ export const GradesSelect: React.FC<GradesSelectProps> = ({
               />
             }
             label={
-              <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px', fontSize: '19.8627px' }}>
+              <Paragraph size='large' fontWeight='500' sx={{ marginLeft: 5, fontSize: '19.8627px' }}>
                 {`${toOrdinalSuffix(grade)} Grade`}
               </Paragraph>
             }
@@ -124,7 +123,7 @@ export const GradesSelect: React.FC<GradesSelectProps> = ({
               />
             }
             label={
-              <Paragraph size='large' fontWeight='500' sx={{ marginLeft: '12px', fontSize: '19.8627px' }}>
+              <Paragraph size='large' fontWeight='500' sx={{ marginLeft: 5, fontSize: '19.8627px' }}>
                 {grade}
               </Paragraph>
             }
@@ -147,16 +146,82 @@ export const GradesSelect: React.FC<GradesSelectProps> = ({
           </Subtitle>
         </Stack>
       </Box>
-      <Dialog open={open} onClose={handleClose} sx={siteManagementClassess.gradesDialog}>
-        <DialogTitle sx={siteManagementClassess.dialogTitle}>{'Grades'}</DialogTitle>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        sx={{
+          marginX: 'auto',
+          paddingY: '10px',
+          textAlign: 'center',
+          alignItems: 'center',
+          display: 'flex',
+          flexDirection: 'column',
+          '& .MuiPaper-rounded': {
+            borderRadius: '20px',
+          },
+        }}
+      >
+        <DialogTitle
+          sx={{
+            fontWeight: 'bold',
+            mt: 4,
+            px: 6,
+            textAlign: 'left',
+          }}
+        >
+          {'Grades'}
+        </DialogTitle>
         <Box>
-          <FormGroup sx={siteManagementClassess.formGroup}>{renderGradeList()}</FormGroup>
+          <FormGroup
+            sx={{
+              marginLeft: 6,
+              marginRight: '150px',
+              marginBottom: '40px',
+            }}
+          >
+            {renderGradeList()}
+          </FormGroup>
         </Box>
-        <DialogActions sx={siteManagementClassess.dialogAction}>
-          <Button variant='contained' sx={siteManagementClassess.cancelButton} onClick={handleClose}>
+        <DialogActions
+          sx={{
+            justifyContent: 'center',
+            marginBottom: 2,
+          }}
+        >
+          <Button
+            variant='contained'
+            sx={{
+              borderRadius: 15,
+              textTransform: 'none',
+              height: 29,
+              color: 'white',
+              width: '92px',
+              background: MthColor.BUTTON_RED_GRADIENT,
+              marginRight: 3,
+              '&:hover': {
+                background: '#D23C33',
+              },
+            }}
+            onClick={handleClose}
+          >
             Cancel
           </Button>
-          <Button variant='contained' sx={siteManagementClassess.submitButton} onClick={handleSave}>
+          <Button
+            variant='contained'
+            sx={{
+              background: MthColor.BUTTON_LINEAR_GRADIENT,
+              color: 'white',
+              width: '92px',
+              borderRadius: 15,
+              textTransform: 'none',
+              fontWeight: 700,
+              height: 29,
+              '&:hover': {
+                background: '#4145FF',
+              },
+            }}
+            onClick={handleSave}
+          >
             Save
           </Button>
         </DialogActions>

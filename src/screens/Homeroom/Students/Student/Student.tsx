@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useState } from 'react'
 import { useMutation } from '@apollo/client'
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline'
 import ScheduleIcon from '@mui/icons-material/Schedule'
@@ -43,7 +43,6 @@ export const StudentCard: React.FC<StudentProps> = ({
   const [showToolTip, setShowToolTip] = useState(true)
   const [showComingBack, setShowComingBack] = useState(false)
   const [editYearModal, setEditYearModal] = useState(false)
-
   const [updateApplication] = useMutation(updateApplicationMutation)
   const [updateStudent] = useMutation(UpdateStudentMutation)
 
@@ -53,6 +52,10 @@ export const StudentCard: React.FC<StudentProps> = ({
     const s3URL = 'https://infocenter-v2-dev.s3.us-west-2.amazonaws.com/'
     return s3URL + person.photo
   }
+  const handleWithdrawnStudent = useCallback(() => {
+    if (schoolYearsDropdown?.length == 0) setShowComingBack(true)
+    else setEditYearModal(true)
+  }, [schoolYearsDropdown?.length])
   useEffect(() => {
     const { applications, packets, status, StudentSchedules } = student
     const currApplication = applications?.at(-1)
@@ -80,7 +83,7 @@ export const StudentCard: React.FC<StudentProps> = ({
       location.pathname
     }`
     const studentSchoolYear = schoolYears
-      ?.filter((item) => item.school_year_id == student?.current_school_year_status?.school_year_id)
+      ?.filter((item) => String(item.school_year_id) === String(student?.current_school_year_status?.school_year_id))
       .at(-1) as SchoolYearType
     if (studentStatus === StudentStatus.WITHDRAWN || studentStatus === StudentStatus.DELETED) {
       setCircleData({
@@ -96,6 +99,7 @@ export const StudentCard: React.FC<StudentProps> = ({
           />
         ),
       })
+      setShowToolTip(true)
     } else if (currApplication && currApplication?.status === ApplicationStatus.SUBMITTED) {
       setLink(MthRoute.HOMEROOM)
       setCircleData({
@@ -116,6 +120,7 @@ export const StudentCard: React.FC<StudentProps> = ({
           />
         ),
       })
+      setShowToolTip(true)
     } else if (
       currApplication &&
       currApplication?.status === ApplicationStatus.ACCEPTED &&
@@ -142,6 +147,7 @@ export const StudentCard: React.FC<StudentProps> = ({
           icon: <ErrorOutlineIcon sx={{ color: MthColor.MTHORANGE, marginTop: 2, cursor: 'pointer' }} />,
         })
       }
+      setShowToolTip(true)
     } else if (
       currApplication &&
       currApplication?.status === ApplicationStatus.ACCEPTED &&
@@ -157,6 +163,7 @@ export const StudentCard: React.FC<StudentProps> = ({
         type: StudentNotification.PLEASE_SUBMIT_ENROLLMENT_PACKET,
         icon: <ErrorOutlineIcon sx={{ color: MthColor.MTHORANGE, marginTop: 2, cursor: 'pointer' }} />,
       })
+      setShowToolTip(true)
     } else if (
       !showNotification &&
       currApplication &&
@@ -174,6 +181,7 @@ export const StudentCard: React.FC<StudentProps> = ({
         type: StudentNotification.ENROLLMENT_PACKET_PENDING_APPROVAL,
         icon: <ScheduleIcon sx={{ color: MthColor.MTHGREEN, marginTop: 2, cursor: 'pointer' }} />,
       })
+      setShowToolTip(true)
     } else if (
       studentSchoolYear?.schedule === true &&
       !showNotification &&
@@ -224,6 +232,7 @@ export const StudentCard: React.FC<StudentProps> = ({
           icon: <ScheduleIcon sx={{ color: MthColor.MTHGREEN, marginTop: 2, cursor: 'pointer' }} />,
         })
       }
+      setShowToolTip(true)
     } else if (
       studentSchoolYear?.schedule &&
       (showNotification?.phrase === StudentNotification.SUBMIT_SCHEDULE ||
@@ -245,11 +254,12 @@ export const StudentCard: React.FC<StudentProps> = ({
         type: showNotification.phrase,
         icon: <ErrorOutlineIcon sx={{ color: MthColor.MTHORANGE, marginTop: 2, cursor: 'pointer' }} />,
       })
+      setShowToolTip(true)
     } else {
       setLink(homeroomLink)
       setShowToolTip(false)
     }
-  }, [student, showNotification])
+  }, [student, showNotification, location.pathname, schoolYears, handleWithdrawnStudent, setMe, me, link, history])
 
   const submitEditYear = async (form: { schoolYear: string }) => {
     const { schoolYear } = form
@@ -280,11 +290,6 @@ export const StudentCard: React.FC<StudentProps> = ({
 
     setEditYearModal(false)
     window.location.reload()
-  }
-
-  const handleWithdrawnStudent = () => {
-    if (schoolYearsDropdown?.length == 0) setShowComingBack(true)
-    else setEditYearModal(true)
   }
 
   return (

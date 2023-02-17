@@ -48,7 +48,7 @@ export const Enrollment: React.FC<EnrollmentProps> = ({ id, disabled }: { id: nu
     variables: {
       input: {
         region_id: Number(regionId),
-        school_year_id: parseInt(student?.current_school_year_status.school_year_id),
+        school_year_id: parseInt(String(student?.current_school_year_status.school_year_id)) || 0,
         mid_year: student?.current_school_year_status.midyear_application ? true : false,
       },
     },
@@ -159,7 +159,7 @@ export const Enrollment: React.FC<EnrollmentProps> = ({ id, disabled }: { id: nu
       currentTab: documentsOnly ? 3 : 0,
     })
   }, [documentsOnly, history, setTab])
-  const handleBack = useCallback(() => history.push(MthRoute.HOMEROOM.toString()), [history])
+  const handleBack = useCallback(() => history.replace(MthRoute.HOMEROOM.toString()), [history])
   const handleBreadCrumbClicked = useCallback(
     (idx) => {
       if (includes(visitedTabs, idx) || disabled) {

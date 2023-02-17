@@ -167,13 +167,11 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
 
   const createDescriptionMenuItems = (schedule: ScheduleData): MenuItemData => {
     const menuItemsData: MenuItemData = {
-      label:
-        schedule.Course &&
-        !(splitEnrollment && schedule.Title?.split_enrollment && !schedule.Provider?.multiple_periods) ? (
-          selectedCourseLabel(schedule.Course)
-        ) : (
-          <Typography sx={{ ...scheduleBuilderClasses.tableContent, color: MthColor.MTHBLUE }}>Select</Typography>
-        ),
+      label: schedule.Course ? (
+        selectedCourseLabel(schedule.Course)
+      ) : (
+        <Typography sx={{ ...scheduleBuilderClasses.tableContent, color: MthColor.MTHBLUE }}>Select</Typography>
+      ),
       items: [],
     }
     const providers = schedule.Title?.Providers || schedule.Subject?.Providers
@@ -401,9 +399,9 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
   }
 
   const handleSelectCourse = (schedule: ScheduleData, course: Course, multiPeriodsConfirmed?: boolean) => {
-    const scheduleIdx = scheduleData?.findIndex((item) => item.period === schedule.period)
+    const scheduleIdx = scheduleData?.findIndex((item) => String(item.period) === String(schedule.period))
     if (scheduleIdx > -1) {
-      if (schedule.Course?.id === course.id) return
+      if (String(schedule.Course?.id) === String(course.id)) return
       if (
         course.Provider?.multiple_periods &&
         !multiPeriodsConfirmed &&
@@ -420,7 +418,6 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
         setMultiPeriodsNotification(course.Provider.multi_periods_notification)
         return
       }
-
       schedule.Course = course
       delete schedule.OnSiteSplitEnrollment
       delete schedule.CustomBuiltDescription
