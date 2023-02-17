@@ -49,10 +49,10 @@ export const Documents: React.FC<DocumentsProps> = ({ id, regionId, questions })
     skip: !regionId,
     fetchPolicy: 'network-only',
   })
+
   const [dataLoading, setDataLoading] = useState(true)
   const [fileIds, setFileIds] = useState<string>('')
   const [isSubmit, setIsSubmit] = useState<boolean>(false)
-  const [validationSchema, setValidationSchema] = useState(yup.object({}))
   const [metaData, setMetaData] = useState((packet?.meta && JSON.parse(packet?.meta || '')) || {})
   const [filesToUpload, setFilesToUpload] = useState<{ [key: string]: File[] }>({})
   const [filesToDelete, setFilesToDelete] = useState<S3FileType[]>([])
@@ -60,10 +60,121 @@ export const Documents: React.FC<DocumentsProps> = ({ id, regionId, questions })
   const [packetFiles, setPacketFiles] = useState<S3FileType[]>()
   const [initFormikValues, setInitFormikValues] = useState({})
 
+  const initMeta = useMemo(() => {
+    const { students } = me as UserInfo
+    const student = students.find((s) => parseInt(s.student_id) === parseInt(id))
+    return (student?.packets.at(-1)?.meta && JSON.parse(student?.packets.at(-1)?.meta)) || {}
+  }, [me])
+
+  const generateSchema = useCallback(() => {
+    if (questions?.groups?.length > 0) {
+      const valid_student: { [key: string]: AnySchema } = {}
+      const valid_parent: { [key: string]: AnySchema } = {}
+      const valid_meta: { [key: string]: AnySchema } = {}
+      const valid_address: { [key: string]: AnySchema } = {}
+      const valid_packet: { [key: string]: AnySchema } = {}
+      questions.groups.map((g) => {
+        g.questions.map((q) => {
+          const isDisplayed = document.getElementById(q.id)
+          if (!isDisplayed) {
+            return
+          }
+          if (q.type !== QUESTION_TYPE.UPLOAD && q.type !== QUESTION_TYPE.INFORMATION) {
+            if (q.slug?.includes('student_')) {
+              const slug = `${q.slug?.replace('student_', '')}`
+              if (q.required) {
+                if (q.slug?.toLocaleLowerCase().includes('emailconfirm')) {
+                  valid_student[slug] = yup
+                    .string()
+                    .nullable()
+                    .required('Required')
+                    .oneOf([yup.ref('email')], 'Emails do not match')
+                } else if (q.validation === 1) {
+                  valid_student[slug] = yup.string().required('Required').nullable()
+                } else if (q.validation === 2) {
+                  valid_student[slug] = yup
+                    .string()
+                    .required('Required')
+                    .test(`${q.question}-selected`, `${q.question} is invalid`, (value) => {
+                      return !!value && isNumber.test(value)
+                    })
+                } else if (q.type === QUESTION_TYPE.CHECKBOX || q.type === QUESTION_TYPE.AGREEMENT) {
+                  valid_student[slug] = yup.array().min(1, 'Required').required('Required').nullable()
+                } else {
+                  valid_student[slug] = yup.string().required('Required').nullable()
+                }
+              }
+            } else if (q.slug?.includes('parent_')) {
+              const slug = `${q.slug?.replace('parent_', '')}`
+              if (q.required) {
+                if (q.slug?.toLocaleLowerCase().includes('emailconfirm')) {
+                  valid_parent[slug] = yup
+                    .string()
+                    .nullable()
+                    .required('Required')
+                    .oneOf([yup.ref('email')], 'Emails do not match')
+                } else if (q.validation === 1) {
+                  valid_parent[slug] = yup.string().email('Enter a valid email').required('Required').nullable()
+                } else if (q.validation === 2) {
+                  valid_parent[slug] = yup
+                    .string()
+                    .required('Required')
+                    .test(`${q.question}-selected`, `${q.question} is invalid`, (value) => {
+                      return !!value && isNumber.test(value)
+                    })
+                } else if (q.type === QUESTION_TYPE.CHECKBOX || q.type === QUESTION_TYPE.AGREEMENT) {
+                  valid_parent[slug] = yup.array().min(1, 'Required').required('Required').nullable()
+                } else {
+                  valid_parent[slug] = yup.string().required('Required').nullable()
+                }
+              }
+            } else if (q.slug?.includes('meta_') && q.required) {
+              const slug = q.slug
+              if (!initMeta[slug]) {
+                initMeta[q.slug] = ''
+              }
+              if (q.validation === 1) {
+                valid_meta[slug] = yup.string().required('Required').nullable()
+              } else if (q.validation === 2) {
+                valid_meta[slug] = yup
+                  .string()
+                  .required('Required')
+                  .test(`${q.question}-selected`, `${q.question} is invalid`, (value) => {
+                    return !!value && isNumber.test(value)
+                  })
+              } else if (q.type === QUESTION_TYPE.CHECKBOX) {
+                valid_meta[slug] = yup.array().min(1, 'Required').required('Required').nullable()
+              } else if (q.type === QUESTION_TYPE.AGREEMENT) {
+                valid_meta[slug] = yup.array().min(1, 'Required').required('Required').nullable()
+              } else {
+                valid_meta[slug] = yup.string().required('Required').nullable()
+              }
+            } else if (q.slug?.includes('address_') && q.required) {
+              const slug = `${q.slug?.replace('address_', '')}`
+              valid_address[slug] = yup.string().required('Required').nullable()
+            } else if (q.slug?.includes('packet_') && q.required) {
+              const slug = `${q.slug?.replace('packet_', '')}`
+              valid_packet[slug] = yup.string().required('Required').nullable()
+            }
+          }
+        })
+      })
+
+      return yup.object({
+        parent: yup.object(valid_parent),
+        student: yup.object(valid_student),
+        meta: yup.object(valid_meta),
+        address: yup.object(valid_address),
+        packet: yup.object(valid_packet),
+      })
+    }
+    return yup.object({})
+  }, [questions])
+
   const formik = useFormik<{ address?: Address; parent?: Person; student?: Student; packet?: Packet; meta?: unknown }>({
     enableReinitialize: true,
     initialValues: initFormikValues,
-    validationSchema: validationSchema,
+    validationSchema: generateSchema,
     onSubmit: async () => {
       await goNext()
     },
@@ -248,7 +359,9 @@ export const Documents: React.FC<DocumentsProps> = ({ id, regionId, questions })
       return false
     }
     let validDoc = true
-    questions?.groups[0]?.questions?.map((item) => (validDoc = validDoc && checkValidate(item)))
+    questions?.groups[0]?.questions
+      ?.filter((item) => item.type === QUESTION_TYPE.UPLOAD)
+      .map((item) => (validDoc = validDoc && checkValidate(item)))
     return validDoc
   }, [checkValidate, filesToUpload, packet?.status, questions?.groups])
   const goNext = async () => {
@@ -317,105 +430,20 @@ export const Documents: React.FC<DocumentsProps> = ({ id, regionId, questions })
   useEffect(() => {
     const initMeta = { ...metaData }
     if (questions?.groups?.length > 0) {
-      const valid_student: { [key: string]: AnySchema } = {}
-      const valid_parent: { [key: string]: AnySchema } = {}
-      const valid_meta: { [key: string]: AnySchema } = {}
-      const valid_address: { [key: string]: AnySchema } = {}
-      const valid_packet: { [key: string]: AnySchema } = {}
       questions.groups.map((g) => {
         g.questions.map((q) => {
           if (q.type !== QUESTION_TYPE.UPLOAD && q.type !== QUESTION_TYPE.INFORMATION) {
-            if (q.slug?.includes('student_')) {
-              const slug = `${q.slug?.replace('student_', '')}`
-              if (q.required) {
-                if (q.slug?.toLocaleLowerCase().includes('emailconfirm')) {
-                  valid_student[slug] = yup
-                    .string()
-                    .nullable()
-                    .required('Required')
-                    .oneOf([yup.ref('email')], 'Emails do not match')
-                } else if (q.validation === 1) {
-                  valid_student[slug] = yup.string().required('Required').nullable()
-                } else if (q.validation === 2) {
-                  valid_student[slug] = yup
-                    .string()
-                    .required('Required')
-                    .test(`${q.question}-selected`, `${q.question} is invalid`, (value) => {
-                      return !!value && isNumber.test(value)
-                    })
-                } else if (q.type === QUESTION_TYPE.CHECKBOX || q.type === QUESTION_TYPE.AGREEMENT) {
-                  valid_student[slug] = yup.array().min(1, 'Required').required('Required').nullable()
-                } else {
-                  valid_student[slug] = yup.string().required('Required').nullable()
-                }
-              }
-            } else if (q.slug?.includes('parent_')) {
-              const slug = `${q.slug?.replace('parent_', '')}`
-              if (q.required) {
-                if (q.slug?.toLocaleLowerCase().includes('emailconfirm')) {
-                  valid_parent[slug] = yup
-                    .string()
-                    .nullable()
-                    .required('Required')
-                    .oneOf([yup.ref('email')], 'Emails do not match')
-                } else if (q.validation === 1) {
-                  valid_parent[slug] = yup.string().email('Enter a valid email').required('Required').nullable()
-                } else if (q.validation === 2) {
-                  valid_parent[slug] = yup
-                    .string()
-                    .required('Required')
-                    .test(`${q.question}-selected`, `${q.question} is invalid`, (value) => {
-                      return !!value && isNumber.test(value)
-                    })
-                } else if (q.type === QUESTION_TYPE.CHECKBOX || q.type === QUESTION_TYPE.AGREEMENT) {
-                  valid_parent[slug] = yup.array().min(1, 'Required').required('Required').nullable()
-                } else {
-                  valid_parent[slug] = yup.string().required('Required').nullable()
-                }
-              }
-            } else if (q.slug?.includes('meta_') && q.required && !q.additional_question) {
+            if (q.slug?.includes('meta_') && q.required && !q.additional_question) {
               const slug = q.slug
               if (!initMeta[slug]) {
                 initMeta[q.slug] = ''
               }
-              if (q.validation === 1) {
-                valid_meta[slug] = yup.string().required('Required').nullable()
-              } else if (q.validation === 2) {
-                valid_meta[slug] = yup
-                  .string()
-                  .required('Required')
-                  .test(`${q.question}-selected`, `${q.question} is invalid`, (value) => {
-                    return !!value && isNumber.test(value)
-                  })
-              } else if (q.type === QUESTION_TYPE.CHECKBOX) {
-                valid_meta[slug] = yup.array().min(1, 'Required').required('Required').nullable()
-              } else if (q.type === QUESTION_TYPE.AGREEMENT) {
-                valid_meta[slug] = yup.array().min(1, 'Required').required('Required').nullable()
-              } else {
-                valid_meta[slug] = yup.string().required('Required').nullable()
-              }
-            } else if (q.slug?.includes('address_') && q.required) {
-              const slug = `${q.slug?.replace('address_', '')}`
-              valid_address[slug] = yup.string().required('Required').nullable()
-            } else if (q.slug?.includes('packet_') && q.required) {
-              const slug = `${q.slug?.replace('packet_', '')}`
-              valid_packet[slug] = yup.string().required('Required').nullable()
             }
           }
         })
       })
 
       setMetaData(initMeta)
-
-      setValidationSchema(
-        yup.object({
-          parent: yup.object(valid_parent),
-          student: yup.object(valid_student),
-          meta: yup.object(valid_meta),
-          address: yup.object(valid_address),
-          packet: yup.object(valid_packet),
-        }),
-      )
     }
   }, [questions])
 

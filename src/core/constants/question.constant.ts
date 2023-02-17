@@ -65,3 +65,4 @@ export const defaultExcuseAssignmentExplain = 'Please explain:'
 
 export const checkListDefaultQuestion =
   'Select one or more of the competencies you were developing this week, if interested.'
+export const questionTextLengthError = 'Max Number of Characters Reached'

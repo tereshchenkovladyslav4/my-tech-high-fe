@@ -35,4 +35,5 @@ export type DropDownProps = {
   isAddable?: boolean
   auto?: boolean
   borderNone?: boolean
+  id?: string
 }

@@ -24,6 +24,7 @@ export const DropDown: React.FC<DropDownProps> = ({
   auto = true,
   borderNone = false,
   color,
+  id,
 }) => {
   const convertDefaultValue = (val: string | number | undefined): string | number => {
     return !!val || val === 0 ? val : ''
@@ -71,7 +72,7 @@ export const DropDown: React.FC<DropDownProps> = ({
   }, [defaultValue])
 
   return (
-    <Box sx={{ minWidth: 120, zIndex: 1, ...sx }} data-testid={testId}>
+    <Box sx={{ minWidth: 120, zIndex: 1, ...sx }} data-testid={testId} id={id}>
       {!labelTop ? (
         <>
           {borderNone ? (

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { useMutation } from '@apollo/client'
 import { Grid, Box, Button } from '@mui/material'
 import { useFormik } from 'formik'
@@ -23,13 +23,17 @@ export const Contact: React.FC<ContactProps> = ({ id, questions }) => {
 
   const classes = useStyles
 
-  const [validationSchema, setValidationSchema] = useState(null)
+  const initMeta = useMemo(() => {
+    const { students } = me as UserInfo
+    const student = students.find((s) => parseInt(s.student_id) === parseInt(id))
+    return (student?.packets.at(-1)?.meta && JSON.parse(student?.packets.at(-1)?.meta)) || {}
+  }, [me])
+
   const [metaData, setMetaData] = useState(
     (student?.packets.at(-1)?.meta && JSON.parse(student?.packets.at(-1)?.meta)) || {},
   )
 
-  useEffect(() => {
-    const initMeta = { ...metaData }
+  const generateValidationSchema = useCallback(() => {
     if (questions?.groups?.length > 0) {
       const valid_student = {}
       const valid_parent = {}
@@ -38,6 +42,10 @@ export const Contact: React.FC<ContactProps> = ({ id, questions }) => {
       const valid_packet = {}
       questions.groups?.map((g) => {
         g.questions?.map((q) => {
+          const isDisplayed = document.getElementById(q.id)
+          if (!isDisplayed) {
+            return
+          }
           if (q.type !== QUESTION_TYPE.UPLOAD && q.type !== QUESTION_TYPE.INFORMATION) {
             if (q.slug?.includes('student_')) {
               if (q.required) {
@@ -97,7 +105,7 @@ export const Contact: React.FC<ContactProps> = ({ id, questions }) => {
                   valid_parent[`${q.slug?.replace('parent_', '')}`] = yup.string().required('Required').nullable()
                 }
               }
-            } else if (q.slug?.includes('meta_') && q.required && !q.additional_question) {
+            } else if (q.slug?.includes('meta_') && q.required) {
               if (!initMeta[q.slug]) {
                 initMeta[q.slug] = ''
               }
@@ -115,7 +123,7 @@ export const Contact: React.FC<ContactProps> = ({ id, questions }) => {
               } else if (q.type === QUESTION_TYPE.AGREEMENT) {
                 valid_meta[`${q.slug}`] = yup.array().min(1, 'Required').required('Required').nullable()
               } else {
-                valid_meta[`${q.slug}`] = yup.string().required('Required').nullable()
+                valid_meta[`${q.slug}`] = yup.string().required('Required')
               }
             } else if (q.slug?.includes('address_') && q.required) {
               valid_address[`${q.slug?.replace('address_', '')}`] = yup.string().required('Required').nullable()
@@ -125,42 +133,61 @@ export const Contact: React.FC<ContactProps> = ({ id, questions }) => {
           }
         })
       })
-      setMetaData(initMeta)
-      setValidationSchema(
-        yup.object({
-          parent: yup.object(valid_parent),
-          student: yup.object(valid_student),
-          meta: yup.object(valid_meta),
-          address: yup.object(valid_address),
-          packet: yup.object(valid_packet),
-        }),
-      )
+
+      return yup.object({
+        parent: yup.object(valid_parent),
+        student: yup.object(valid_student),
+        meta: yup.object(valid_meta),
+        address: yup.object(valid_address),
+        packet: yup.object(valid_packet),
+      })
     }
-    formik.resetForm()
+    return yup.object({})
   }, [questions])
-  const [submitContactMutation] = useMutation(enrollmentContactMutation)
+
+  const initialValues = useMemo(() => {
+    return {
+      parent: { ...profile, phone_number: profile?.phone?.number, emailConfirm: profile?.email },
+      student: {
+        ...(student?.person || {}),
+        phone_number: student?.person?.phone?.number,
+        grade_levels: student?.grade_levels,
+        grade_level: student?.current_school_year_status?.grade_level,
+        emailConfirm: student?.person.email,
+      },
+      packet: { ...student?.packets?.at(-1) },
+      meta: metaData,
+      address: { ...profile?.address },
+      school_year_id: student?.current_school_year_status.school_year_id,
+    }
+  }, [profile, student, metaData])
 
   const formik = useFormik({
-    initialValues: {
-      parent: { ...profile, phone_number: profile.phone.number, emailConfirm: profile.email },
-      student: {
-        ...student.person,
-        phone_number: student.person.phone.number,
-        grade_levels: student.grade_levels,
-        grade_level: student.current_school_year_status.grade_level,
-        emailConfirm: student.person.email,
-      },
-      packet: { ...student.packets.at(-1) },
-      meta: metaData,
-      address: { ...profile.address },
-      school_year_id: student.current_school_year_status.school_year_id,
-    },
+    initialValues,
     enableReinitialize: true,
-    validationSchema: validationSchema,
+    validationSchema: generateValidationSchema,
     onSubmit: () => {
       goNext()
     },
   })
+
+  useEffect(() => {
+    const initMeta = { ...metaData }
+    if (questions?.groups?.length > 0) {
+      questions.groups?.map((g) => {
+        g.questions?.map((q) => {
+          if (q.slug?.includes('meta_') && q.required) {
+            if (!initMeta[q.slug]) {
+              initMeta[q.slug] = ''
+            }
+          }
+        })
+      })
+      setMetaData(initMeta)
+    }
+  }, [questions])
+
+  const [submitContactMutation] = useMutation(enrollmentContactMutation)
 
   const submitContact = async () => {
     const address = { ...formik.values.address }
@@ -232,6 +259,7 @@ export const Contact: React.FC<ContactProps> = ({ id, questions }) => {
     })
     window.scrollTo(0, 0)
   }
+
   return (
     <form
       onSubmit={(e) =>

@@ -72,7 +72,7 @@ export const Enrollment: React.FC<EnrollmentProps> = ({ id, disabled }: { id: nu
                       // additional2: {... JSON.parse(q.additional2), options: JSON.parse(JSON.parse(q.additional2).options)} || [],
                       // additional: {... JSON.parse(q.additional), options: JSON.parse(JSON.parse(q.additional).options)} || [],
                       options: JSON.parse(q.options) || [],
-                      isEnable: false,
+                      isEnable: true,
                     }
                   })
                   .sort((a, b) => a.order - b.order)

@@ -1,4 +1,4 @@
-import React, { FormEvent, useContext, useEffect, useRef, useState } from 'react'
+import React, { FormEvent, useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { useMutation } from '@apollo/client'
 import { Box, Button, FormHelperText, Grid, outlinedInputClasses, TextField } from '@mui/material'
 import { useFormik } from 'formik'
@@ -39,14 +39,6 @@ export const Submission: React.FC<SubmissionProps> = ({ id, questions }) => {
 
   const student = students.find((s) => parseInt(s.student_id) === parseInt(id))
 
-  const [validationSchema, setValidationSchema] = useState(
-    yup.object({
-      meta: yup.object({
-        meta_parentlegalname: yup.string().required('Required').nullable(),
-      }),
-    }),
-  )
-
   const [metaData, setMetaData] = useState(student.packets.at(-1)?.meta && JSON.parse(student.packets.at(-1)?.meta))
   const [isSubmit, setIsSubmit] = useState<boolean>(false)
 
@@ -67,6 +59,24 @@ export const Submission: React.FC<SubmissionProps> = ({ id, questions }) => {
   useEffect(() => {
     const initMeta = { ...metaData }
     if (questions?.groups?.length > 0) {
+      questions.groups?.map((g) => {
+        g.questions?.map((q) => {
+          if (q.type !== QUESTION_TYPE.UPLOAD && q.type !== QUESTION_TYPE.INFORMATION) {
+            if (q.slug?.includes('meta_') && q.required) {
+              if (!initMeta[q.slug]) {
+                initMeta[q.slug] = ''
+              }
+            }
+          }
+        })
+      })
+      setMetaData(initMeta)
+    }
+  }, [questions])
+
+  const generateSchema = useCallback(() => {
+    const initMeta = { ...metaData }
+    if (questions?.groups?.length > 0) {
       const valid_student = {}
       const valid_parent = {}
       const valid_meta = {}
@@ -75,6 +85,10 @@ export const Submission: React.FC<SubmissionProps> = ({ id, questions }) => {
       valid_meta['meta_parentlegalname'] = yup.string().required('Required').nullable()
       questions.groups?.map((g) => {
         g.questions?.map((q) => {
+          const isDisplayed = document.getElementById(q.id)
+          if (!isDisplayed) {
+            return
+          }
           if (q.type !== QUESTION_TYPE.UPLOAD && q.type !== QUESTION_TYPE.INFORMATION) {
             if (q.slug?.includes('student_')) {
               if (q.required) {
@@ -167,18 +181,15 @@ export const Submission: React.FC<SubmissionProps> = ({ id, questions }) => {
         })
       })
 
-      setMetaData(initMeta)
-
-      setValidationSchema(
-        yup.object({
-          parent: yup.object(valid_parent),
-          student: yup.object(valid_student),
-          meta: yup.object(valid_meta),
-          address: yup.object(valid_address),
-          packet: yup.object(valid_packet),
-        }),
-      )
+      return yup.object({
+        parent: yup.object(valid_parent),
+        student: yup.object(valid_student),
+        meta: yup.object(valid_meta),
+        address: yup.object(valid_address),
+        packet: yup.object(valid_packet),
+      })
     }
+    return yup.object({})
   }, [questions])
 
   const [initFormikValues, setInitFormikValues] = useState({})
@@ -207,7 +218,7 @@ export const Submission: React.FC<SubmissionProps> = ({ id, questions }) => {
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: initFormikValues,
-    validationSchema: validationSchema,
+    validationSchema: generateSchema,
     onSubmit: () => {
       if (!signatureRef?.current?.isEmpty()) {
         getSignature()

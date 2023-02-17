@@ -8,6 +8,7 @@ import htmlToDraft from 'html-to-draftjs'
 import Wysiwyg from 'react-draft-wysiwyg'
 import { DropDown } from '@mth/components/DropDown/DropDown'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { questionTextLengthError } from '@mth/constants'
 import { MthColor, QUESTION_TYPE } from '@mth/enums'
 import { CustomModal } from '../../components/CustomModal/CustomModals'
 import { ApplicationQuestion } from '../types'
@@ -48,6 +49,7 @@ export const AddNewQuestionModal: React.FC<AddNewQuestionModalProps> = ({
   const [deleteIds, setDeleteIds] = useState([])
   const [isDefaultQuestion] = useState(questions[0]?.default_question || false)
   const [isAddStudent, setAddStudent] = useState(false)
+  const [limitLengthError, setLimitLengthError] = useState<string[]>([])
 
   const editQuestionsRef = useRef([])
 
@@ -185,6 +187,12 @@ export const AddNewQuestionModal: React.FC<AddNewQuestionModalProps> = ({
 
   //	The fields of editItem(Question)
   const setQuestionValue = (id, slug, field, value) => {
+    if (value.toString().length > 61) {
+      setLimitLengthError([...limitLengthError, slug])
+      return
+    } else {
+      setLimitLengthError(limitLengthError.filter((item) => item !== slug))
+    }
     const newQuestions = editQuestions.map((question) => {
       if (question.id == id && question.slug == slug) {
         //	We compare slug if id is undefined when adding new question
@@ -393,38 +401,44 @@ export const AddNewQuestionModal: React.FC<AddNewQuestionModalProps> = ({
                     height: '40px',
                     mt: '40px',
                     display: 'flex',
-                    alignItems: 'center',
+                    alignItems: 'flex-start',
                     justifyContent: 'space-between',
                   }}
                 >
-                  <TextField
-                    size='small'
-                    sx={{
-                      visibility:
-                        newQuestion.type === QUESTION_TYPE.INFORMATION || newQuestion.type == QUESTION_TYPE.AGREEMENT
-                          ? 'hidden'
-                          : 'visible',
-                      minWidth: '400px',
-                      [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
-                        {
-                          borderColor: MthColor.SYSTEM_07,
-                        },
-                    }}
-                    label='Question'
-                    variant='outlined'
-                    value={newQuestion.question}
-                    onChange={(v) => {
-                      setQuestionValue(newQuestion.id, newQuestion.slug, 'question', v.currentTarget.value)
-                    }}
-                    onFocus={(v) => {
-                      if (i == 0) setFocused(v)
-                    }}
-                    onBlur={(v) => {
-                      if (i == 0) setBlured(v)
-                    }}
-                    focused
-                    // disabled={newQuestion.default_question}
-                  />
+                  <Box>
+                    <TextField
+                      size='small'
+                      sx={{
+                        visibility:
+                          newQuestion.type === QUESTION_TYPE.INFORMATION || newQuestion.type == QUESTION_TYPE.AGREEMENT
+                            ? 'hidden'
+                            : 'visible',
+                        minWidth: '400px',
+                        [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
+                          {
+                            borderColor: limitLengthError.includes(newQuestion.slug)
+                              ? MthColor.RED
+                              : MthColor.SYSTEM_07,
+                          },
+                      }}
+                      label='Question'
+                      variant='outlined'
+                      value={newQuestion.question}
+                      onChange={(v) => {
+                        setQuestionValue(newQuestion.id, newQuestion.slug, 'question', v.currentTarget.value)
+                      }}
+                      onFocus={(v) => {
+                        if (i == 0) setFocused(v)
+                      }}
+                      onBlur={(v) => {
+                        if (i == 0) setBlured(v)
+                      }}
+                      focused
+                      error={limitLengthError.includes(newQuestion.slug)}
+                      helperText={limitLengthError.includes(newQuestion.slug) ? questionTextLengthError : ''}
+                      // disabled={newQuestion.default_question}
+                    />
+                  </Box>
                   <DropDown
                     sx={{
                       pointerEvents: newQuestion.default_question ? 'none' : 'unset',

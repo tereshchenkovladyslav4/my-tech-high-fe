@@ -12,8 +12,8 @@ export const GetMastersBySchoolYearIDGql = gql`
         class_name
         addition_id
         PrimaryTeacher {
-          firstName
-          lastName
+          first_name
+          last_name
           user_id
         }
         HomeroomStudents {

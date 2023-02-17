@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useState } from 'react'
 import { useMutation } from '@apollo/client'
 import { Grid, Box, Button } from '@mui/material'
 import { useFormik } from 'formik'
@@ -28,10 +28,25 @@ export const Personal: React.FC<PersonalProps> = ({ id, questions }) => {
     (student?.packets.at(-1)?.meta && JSON.parse(student?.packets.at(-1)?.meta)) || {},
   )
 
-  const [validationSchema, setValidationSchema] = useState(yup.object({}))
   const [submitPersonalMutation] = useMutation(enrollmentContactMutation)
 
   useEffect(() => {
+    const initMeta = { ...metaData }
+    if (questions?.groups?.length > 0) {
+      questions.groups?.map((g) => {
+        g.questions?.map((q) => {
+          if (q.slug?.includes('meta_') && q.required) {
+            if (!initMeta[q.slug]) {
+              initMeta[q.slug] = ''
+            }
+          }
+        })
+      })
+      setMetaData(initMeta)
+    }
+  }, [questions])
+
+  const generateSchema = useCallback(() => {
     const initMeta = { ...metaData }
     if (questions?.groups?.length > 0) {
       const valid_student = {}
@@ -41,6 +56,10 @@ export const Personal: React.FC<PersonalProps> = ({ id, questions }) => {
       const valid_packet = {}
       questions.groups?.map((g) => {
         g.questions?.map((q) => {
+          const isDisplayed = document.getElementById(q.id)
+          if (!isDisplayed) {
+            return
+          }
           if (q.type !== QUESTION_TYPE.UPLOAD && q.type !== QUESTION_TYPE.INFORMATION) {
             if (q.slug?.includes('student_')) {
               if (q.required) {
@@ -104,10 +123,11 @@ export const Personal: React.FC<PersonalProps> = ({ id, questions }) => {
                   valid_parent[`${q.slug?.replace('parent_', '')}`] = yup.string().required('Required').nullable()
                 }
               }
-            } else if (q.slug?.includes('meta_') && q.required && !q.additional_question) {
+            } else if (q.slug?.includes('meta_') && q.required) {
               if (!initMeta[q.slug]) {
                 initMeta[q.slug] = ''
               }
+
               if (q.validation === 1) {
                 valid_meta[`${q.slug}`] = yup.string().email('Enter a valid email').required('Required').nullable()
               } else if (q.validation === 2) {
@@ -134,19 +154,15 @@ export const Personal: React.FC<PersonalProps> = ({ id, questions }) => {
           }
         })
       })
-
-      setMetaData(initMeta)
-
-      setValidationSchema(
-        yup.object({
-          parent: yup.object(valid_parent),
-          student: yup.object(valid_student),
-          meta: yup.object(valid_meta),
-          address: yup.object(valid_address),
-          packet: yup.object(valid_packet),
-        }),
-      )
+      return yup.object({
+        parent: yup.object(valid_parent),
+        student: yup.object(valid_student),
+        meta: yup.object(valid_meta),
+        address: yup.object(valid_address),
+        packet: yup.object(valid_packet),
+      })
     }
+    return yup.object({})
   }, [questions])
 
   const [initFormikValues, setInitFormikValues] = useState({})
@@ -171,7 +187,7 @@ export const Personal: React.FC<PersonalProps> = ({ id, questions }) => {
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: initFormikValues,
-    validationSchema: validationSchema,
+    validationSchema: generateSchema,
     onSubmit: () => {
       goNext()
     },

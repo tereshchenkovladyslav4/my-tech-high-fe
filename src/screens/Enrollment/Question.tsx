@@ -167,9 +167,18 @@ function Item({
   const keyName = q.slug?.split('_')[0]
   const fieldName = !q.slug?.includes('meta_') ? q.slug?.replace(`${keyName}_`, '') : q.slug
 
-  const [fieldData, setFieldData] = useState(
+  const [fieldData, _setFieldData] = useState(
     formik.values[`${keyName}`] ? formik.values[`${keyName}`][`${fieldName}`] : null,
   )
+
+  const setFieldData = async (value, setToFormik = false) => {
+    _setFieldData(value)
+    const key = `${keyName}.${fieldName}`
+    if (setToFormik) {
+      await formik?.setFieldValue(key, value)
+      formik?.setFieldTouched(key, true, true)
+    }
+  }
 
   useEffect(() => {
     setFieldData(formik.values[`${keyName}`] ? formik.values[`${keyName}`][`${fieldName}`] : null)
@@ -262,54 +271,49 @@ function Item({
   }
 
   const onChange = useCallback(
-    (value: string | number) => {
-      if (q.type !== QUESTION_TYPE.TEXTFIELD && q.type !== QUESTION_TYPE.CALENDAR) {
-        if (q?.options?.find((f) => f.value === value || f.label === value)?.action == 2) {
-          if (q.type === QUESTION_TYPE.CHECKBOX) {
-            if (Array.isArray(fieldData) && fieldData?.find((f) => f.label === value)) {
-              setAdditionalQuestion(q.slug, false)
-            } else {
-              setAdditionalQuestion(q.slug, true)
-            }
+    (value: string | number, isChecked?: boolean) => {
+      if (q.type !== QUESTION_TYPE.TEXTFIELD && q.tcype !== QUESTION_TYPE.CALENDAR) {
+        if (q.type === QUESTION_TYPE.CHECKBOX) {
+          let fieldValue = []
+          if (isChecked) {
+            const selectedOption = q.options?.find((i) => i.label === value)
+            fieldValue = Array.isArray(fieldData) ? [...fieldData, selectedOption] : [selectedOption]
           } else {
-            setAdditionalQuestion(q.slug, true)
+            fieldValue = fieldData?.filter((i) => i.label !== value)
           }
-        } else {
-          if (q.type === QUESTION_TYPE.CHECKBOX) {
-            if (
-              Array.isArray(fieldData) &&
-              fieldData?.find((f) => q.options?.find((qq) => qq.action == 2 && f.label == qq.label))
-            ) {
-              setAdditionalQuestion(q.slug, true)
-            } else {
-              setAdditionalQuestion(q.slug, false)
-            }
+          if (Array.isArray(fieldValue) && fieldValue.find((item) => item.action === 2)) {
+            setAdditionalQuestion(q.slug, true)
           } else {
             setAdditionalQuestion(q.slug, false)
           }
-        }
-        if (q.type === QUESTION_TYPE.AGREEMENT) {
-          if (fieldData && fieldData.indexOf(value) >= 0) {
-            setFieldData(fieldData.filter((f) => f !== value))
+
+          if (value === 'Other') {
+            setFieldData(
+              fieldValue ? [...fieldValue, { label: value, value: otherValue }] : [{ label: value, value: otherValue }],
+              true,
+            )
           } else {
-            setFieldData(fieldData ? [...fieldData, value] : [value])
-          }
-        } else if (q.type === QUESTION_TYPE.CHECKBOX) {
-          if (Array.isArray(fieldData) && fieldData?.find((f) => f.label === value)) {
-            setFieldData(fieldData?.filter((f) => f.label !== value))
-          } else {
-            if (value === 'Other') {
-              setFieldData(
-                fieldData ? [...fieldData, { label: value, value: otherValue }] : [{ label: value, value: otherValue }],
-              )
-            } else {
-              setFieldData(
-                fieldData ? [...fieldData, { label: value, value: value }] : [{ label: value, value: value }],
-              )
-            }
+            setFieldData(fieldValue, true)
           }
         } else {
-          setFieldData(value)
+          if (q?.options?.find((f) => f.value === value || f.label === value)?.action == 2) {
+            setAdditionalQuestion(q.slug, true)
+          } else {
+            setAdditionalQuestion(q.slug, false)
+          }
+
+          if (q.type === QUESTION_TYPE.AGREEMENT) {
+            if (fieldData && fieldData.indexOf(value) >= 0) {
+              setFieldData(
+                fieldData.filter((f) => f !== value),
+                true,
+              )
+            } else {
+              setFieldData(fieldData ? [...fieldData, value] : [value], true)
+            }
+          } else {
+            setFieldData(value, true)
+          }
         }
       }
     },
@@ -355,6 +359,7 @@ function Item({
               },
             marginY: 0,
           }}
+          id={`${q.id}`}
           defaultValue={getDropDownLabel(fieldData)}
           labelTop
           disabled={disabled}
@@ -385,6 +390,7 @@ function Item({
       return (
         <>
           <TextField
+            id={`${q.id}`}
             disabled={disabled}
             name={`${keyName}.${fieldName}`}
             value={formik.values[`${keyName}`] ? formik.values[`${keyName}`][`${fieldName}`] : ''}
@@ -442,40 +448,43 @@ function Item({
       )
     } else {
       return (
-        <TextField
-          disabled={disabled}
-          name={`${keyName}.${fieldName}`}
-          value={formik.values[`${keyName}`] ? formik.values[`${keyName}`][`${fieldName}`] : ''}
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          size='small'
-          sx={{
-            maxWidth: '100%',
+        <>
+          <TextField
+            id={`${q.id}`}
+            disabled={disabled}
+            name={`${keyName}.${fieldName}`}
+            value={formik.values[`${keyName}`] ? formik.values[`${keyName}`][`${fieldName}`] : ''}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            size='small'
+            sx={{
+              maxWidth: '100%',
 
-            [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
-              {
-                borderColor: MthColor.SYSTEM_07,
-              },
-          }}
-          InputLabelProps={{
-            style: { color: MthColor.SYSTEM_05 },
-          }}
-          variant='outlined'
-          fullWidth
-          focused
-          error={
-            formik.touched[`${keyName}`] &&
-            Boolean(formik.touched[`${keyName}`][`${fieldName}`]) &&
-            formik.errors[`${keyName}`] &&
-            Boolean(formik.errors[`${keyName}`][`${fieldName}`])
-          }
-          helperText={
-            (formik.touched[`${keyName}`] &&
+              [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
+                {
+                  borderColor: MthColor.SYSTEM_07,
+                },
+            }}
+            InputLabelProps={{
+              style: { color: MthColor.SYSTEM_05 },
+            }}
+            variant='outlined'
+            fullWidth
+            focused
+            error={
+              formik.touched[`${keyName}`] &&
               Boolean(formik.touched[`${keyName}`][`${fieldName}`]) &&
               formik.errors[`${keyName}`] &&
-              formik.errors[`${keyName}`][`${fieldName}`]) as string
-          }
-        />
+              Boolean(formik.errors[`${keyName}`][`${fieldName}`])
+            }
+            helperText={
+              (formik.touched[`${keyName}`] &&
+                Boolean(formik.touched[`${keyName}`][`${fieldName}`]) &&
+                formik.errors[`${keyName}`] &&
+                formik.errors[`${keyName}`][`${fieldName}`]) as string
+            }
+          />
+        </>
       )
     }
   } else if (q.type === QUESTION_TYPE.CHECKBOX) {
@@ -486,6 +495,7 @@ function Item({
           component='fieldset'
           variant='standard'
           sx={{ width: '100%' }}
+          id={`${q.id}`}
           error={
             !!(
               formik.touched[`${keyName}`] &&
@@ -509,7 +519,7 @@ function Item({
                       <Checkbox
                         disabled={disabled}
                         checked={multiSelected(o.label)}
-                        onClick={() => onChange(o.label)}
+                        onChange={(e) => onChange(o.label, e.target.checked)}
                       />
                     }
                     label={o.label}
@@ -558,6 +568,7 @@ function Item({
           name='acknowledge'
           component='fieldset'
           variant='standard'
+          id={`${q.id}`}
           error={
             !!(
               formik.touched[`${keyName}`] &&
@@ -599,6 +610,7 @@ function Item({
           component='fieldset'
           variant='standard'
           sx={{ width: '100%' }}
+          id={`${q.id}`}
           error={
             !!(
               formik.touched[`${keyName}`] &&
@@ -651,6 +663,7 @@ function Item({
         onBlur={formik.handleBlur}
         name={`${keyName}.${fieldName}`}
         defaultValue={null}
+        id={`${q.id}`}
         value={
           formik.values[`${keyName}`] &&
           formik.values[`${keyName}`][`${fieldName}`] &&
