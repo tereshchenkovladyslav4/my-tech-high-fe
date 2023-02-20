@@ -1,4 +1,3 @@
-import { ReduceFunds } from '@mth/enums'
 import { Subject, Title } from '@mth/screens/Admin/Curriculum/CourseCatalog/Subjects/types'
 
 export const defaultSubjectFormData: Subject = {
@@ -19,7 +18,7 @@ export const defaultTitleFormData: Title = {
   min_alt_grade: null,
   max_alt_grade: null,
   diploma_seeking_path: undefined,
-  reduce_funds: ReduceFunds.NONE,
+  reduce_funds: null,
   price: null,
   reduce_funds_notification: '',
   custom_built_description: '',
@@ -28,7 +27,6 @@ export const defaultTitleFormData: Title = {
   third_party_provider: false,
   split_enrollment: false,
   software_reimbursement: false,
-  show_software_reimbursement: true,
   display_notification: false,
   launchpad_course: false,
   subject_notification: '',

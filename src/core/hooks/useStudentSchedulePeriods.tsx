@@ -202,7 +202,12 @@ export const makeScheduleData = (
         ? secondSchedulePeriods[0]?.Schedule?.status
         : ScheduleStatus.DRAFT
     } else {
-      hasUnlockedPeriods = secondSchedulePeriods[0]?.Schedule?.status === ScheduleStatus.ACCEPTED
+      hasUnlockedPeriods = regularScheduleData?.filter(
+        (item) =>
+          item?.Period?.semester !== SEMESTER_TYPE.NONE || item.Title?.always_unlock || item.Course?.always_unlock,
+      ).length
+        ? true
+        : false
       studentScheduleId = secondSchedulePeriods?.length
         ? secondSchedulePeriods[0]?.ScheduleId
         : showSecondSemester

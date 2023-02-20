@@ -32,7 +32,7 @@ export type Title = {
   min_alt_grade: number | null
   max_alt_grade: number | null
   diploma_seeking_path?: DiplomaSeekingPath
-  reduce_funds: ReduceFunds
+  reduce_funds: ReduceFunds | null
   price: number | null
   always_unlock: boolean
   custom_built: boolean
@@ -51,7 +51,6 @@ export type Title = {
 
   //  Temp fields
   diploma_seeking?: boolean
-  show_software_reimbursement?: boolean
   stateCourseCords?: StateCourseCord[]
   StateCodes?: StateCodeField[]
   Subject?: Subject

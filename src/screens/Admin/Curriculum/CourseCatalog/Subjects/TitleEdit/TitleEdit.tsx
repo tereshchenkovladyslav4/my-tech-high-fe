@@ -13,6 +13,7 @@ import {
 } from '@mth/screens/Admin/Curriculum/CourseCatalog/services'
 import { defaultTitleFormData } from '@mth/screens/Admin/Curriculum/CourseCatalog/Subjects/defaultValues'
 import TitleForm from '@mth/screens/Admin/Curriculum/CourseCatalog/Subjects/TitleEdit/TitleForm'
+import { defaultReduceFunds } from '@mth/utils/default-reduce-funds.util'
 import SaveCancelComponent from '../../Components/SaveCancelComponent/SaveCancelComponent'
 import { StateCourseCord, Title, TitleEditProps } from '../types'
 
@@ -177,8 +178,7 @@ const TitleEdit: React.FC<TitleEditProps> = ({
       setInitialValues({
         ...defaultTitleFormData,
         subject_id: subjectId,
-        show_software_reimbursement: !!schoolYearData?.require_software,
-        reduce_funds: schoolYearData?.reimbursements || ReduceFunds.NONE,
+        reduce_funds: defaultReduceFunds(schoolYearData),
       })
     }
   }, [item, schoolYearData])

@@ -19,7 +19,7 @@ describe('makeScheduleData', () => {
     expect(firstScheduleData).toBeDefined()
     expect(secondScheduleData).toBeDefined()
     expect(hasSecondSemesterSchedule).toBe(true)
-    expect(hasUnlockedPeriods).toBe(false)
+    expect(hasUnlockedPeriods).toBe(true)
     expect(studentScheduleId).toBeGreaterThan(0)
     expect(studentScheduleStatus).toBe(ScheduleStatus.SUBMITTED)
     expect(secondSemesterScheduleId).toBeGreaterThan(0)

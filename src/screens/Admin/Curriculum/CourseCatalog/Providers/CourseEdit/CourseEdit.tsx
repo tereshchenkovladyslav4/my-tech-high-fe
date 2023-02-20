@@ -10,6 +10,7 @@ import CourseForm from '@mth/screens/Admin/Curriculum/CourseCatalog/Providers/Co
 import { defaultCourseFormData } from '@mth/screens/Admin/Curriculum/CourseCatalog/Providers/defaultValues'
 import { createOrUpdateCourseMutation } from '@mth/screens/Admin/Curriculum/CourseCatalog/services'
 import { Title } from '@mth/screens/Admin/Curriculum/CourseCatalog/Subjects/types'
+import { defaultReduceFunds } from '@mth/utils/default-reduce-funds.util'
 import SaveCancelComponent from '../../Components/SaveCancelComponent/SaveCancelComponent'
 import { Course, CourseEditProps } from '../types'
 
@@ -126,8 +127,7 @@ const CourseEdit: React.FC<CourseEditProps> = ({
     } else {
       setInitialValues({
         ...defaultCourseFormData,
-        reduce_funds: schoolYearData?.reimbursements || ReduceFunds.NONE,
-        show_software_reimbursement: !!schoolYearData?.require_software,
+        reduce_funds: defaultReduceFunds(schoolYearData),
         provider_id: providerId,
       })
     }

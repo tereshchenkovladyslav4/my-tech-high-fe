@@ -117,6 +117,9 @@ export const DropDown: React.FC<DropDownProps> = ({
                   '& .MuiSelect-outlined': {
                     background: dropdownColor,
                   },
+                  inputLabelRoot: {
+                    color: 'red',
+                  },
                 }}
                 size={size || 'medium'}
                 error={error?.error}
@@ -129,7 +132,7 @@ export const DropDown: React.FC<DropDownProps> = ({
           )}
         </>
       ) : (
-        <FormControl fullWidth className='MthFormField' focused>
+        <FormControl fullWidth className='MthFormField' focused error={error?.error}>
           <InputLabel sx={{ backgroundColor: '#FFF', paddingX: 1 }}>{placeholder}</InputLabel>
           <Select
             labelId='demo-simple-select-label'

@@ -1,12 +1,13 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { useQuery } from '@apollo/client'
-import { Box, Button, Modal, TextField } from '@mui/material'
+import { Box, Button, Modal, TextField, outlinedInputClasses } from '@mui/material'
 import { DropDown } from '@mth/components/DropDown/DropDown'
 import { DropDownItem } from '@mth/components/DropDown/types'
 import { MthBulletEditor } from '@mth/components/MthBulletEditor'
 import { MthCheckboxList } from '@mth/components/MthCheckboxList'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { checkListDefaultQuestion, QuestionTypes } from '@mth/constants'
+import { MthColor } from '@mth/enums'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { mthButtonClasses } from '@mth/styles/button.style'
 import { questionCheckboxList } from '../../LearningLogs/defaultValue'
@@ -85,6 +86,7 @@ const AddCheckListModal: React.FC<AddCheckListModalProp> = ({ onClose, schoolYea
         active: true,
         response: '',
         grades: subject,
+        validations: checkboxList,
       },
     ])
   }
@@ -96,11 +98,25 @@ const AddCheckListModal: React.FC<AddCheckListModalProp> = ({ onClose, schoolYea
           <Box>
             <TextField
               name='title'
-              label='Title'
+              label='Type'
               placeholder='Entry'
               fullWidth
               value={'Subject Checklist'}
-              sx={{ my: 1 }}
+              variant='outlined'
+              sx={{
+                my: 2,
+                [`& .${outlinedInputClasses.root}.${outlinedInputClasses.disabled} .${outlinedInputClasses.notchedOutline}`]:
+                  {
+                    borderColor: MthColor.BLACK,
+                  },
+                '& .MuiInputBase-root.Mui-disabled': {
+                  color: MthColor.BLACK,
+                },
+                '& .MuiInputLabel-root': {
+                  color: MthColor.BLACK,
+                },
+              }}
+              disabled
             />
             <DropDown
               labelTop
@@ -114,6 +130,11 @@ const AddCheckListModal: React.FC<AddCheckListModalProp> = ({ onClose, schoolYea
               }}
               // defaultValue={subject}
               placeholder='Subject'
+              sx={{
+                '& .MuiInputLabel-root': {
+                  color: isError ? MthColor.RED : MthColor.BLACK,
+                },
+              }}
               error={isError}
             />
           </Box>

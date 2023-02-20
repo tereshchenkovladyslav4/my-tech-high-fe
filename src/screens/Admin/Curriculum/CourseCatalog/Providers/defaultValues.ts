@@ -1,11 +1,10 @@
-import { ReduceFunds } from '@mth/enums'
 import { Course, Provider } from '@mth/screens/Admin/Curriculum/CourseCatalog/Providers/types'
 
 export const defaultProviderFormData: Provider = {
   id: 0,
   name: '',
   is_display: false,
-  reduce_funds: ReduceFunds.NONE,
+  reduce_funds: null,
   price: null,
   reduce_funds_notification: '',
   multiple_periods: false,
@@ -35,12 +34,11 @@ export const defaultCourseFormData: Course = {
   website: '',
   diploma_seeking_path: undefined,
   limit: null,
-  reduce_funds: ReduceFunds.NONE,
+  reduce_funds: null,
   price: null,
   subject_id: -1,
   Titles: [],
   allow_request: false,
   is_active: true,
   TitleIds: [],
-  show_software_reimbursement: true,
 }

@@ -44,10 +44,11 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
   const [showRequireUpdateModal, setShowRequireUpdateModal] = useState<boolean>(false)
   const [periodItems, setPeriodItems] = useState<CheckBoxListVM[]>([])
   const [requireUpdatePeriods, setRequireUpdatePeriods] = useState<string[]>([])
-  const [isChanged, setIsChanged] = useState(false)
+  const [isChanged, setIsChanged] = useState<boolean>(false)
   const [showUnsavedModal, setShowUnsavedModal] = useState<boolean>(false)
-  const [showReset, setShowReset] = useState(false)
-  const [isLockedKey, setIsLockedKey] = useState(true)
+  const [showReset, setShowReset] = useState<boolean>(false)
+  const [isLockedKey, setIsLockedKey] = useState<boolean>(true)
+  const [isSecondSemesterLockedKey, setIsSecondSemesterLockedKey] = useState<boolean>(false)
 
   const { studentInfo: studentInfoData } = useStudentInfo(+studentId)
 
@@ -488,6 +489,11 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
             setIsChanged={setIsChanged}
             setScheduleData={setSecondScheduleData}
             handleSchedulePeriodStatusChange={handleSchedulePeriodStatusChange}
+            isLockedKey={isSecondSemesterLockedKey}
+            setIsLockedKey={(value: boolean) => {
+              setIsSecondSemesterLockedKey(value)
+              refetch()
+            }}
           />
         )}
         {studentScheduleStatus && studentScheduleStatus !== ScheduleStatus.DRAFT && (

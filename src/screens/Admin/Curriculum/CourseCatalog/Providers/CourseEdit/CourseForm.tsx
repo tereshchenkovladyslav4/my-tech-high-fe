@@ -12,6 +12,7 @@ import { MthColor, ReduceFunds } from '@mth/enums'
 import { CourseTitles } from '@mth/screens/Admin/Curriculum/CourseCatalog/Providers/CourseEdit/CourseTitles'
 import { editCourseClasses } from '@mth/screens/Admin/Curriculum/CourseCatalog/Providers/CourseEdit/styles'
 import { Course, CourseFormProps, Provider } from '@mth/screens/Admin/Curriculum/CourseCatalog/Providers/types'
+import { defaultReduceFunds } from '@mth/utils/default-reduce-funds.util'
 import ValidGradesSelector from '../../Components/ValidateGrades/ValidGradesSelector'
 
 const CourseForm: React.FC<CourseFormProps> = ({
@@ -80,7 +81,7 @@ const CourseForm: React.FC<CourseFormProps> = ({
                   setFieldValue('always_unlock', !values?.always_unlock)
                 }}
               />
-              {!!values?.show_software_reimbursement && (
+              {!!schoolYearData?.require_software && (
                 <MthCheckbox
                   label='This course qualifies for Required Software Reimbursement'
                   checked={values?.software_reimbursement}
@@ -247,8 +248,9 @@ const CourseForm: React.FC<CourseFormProps> = ({
                   setFieldValue('reduce_funds', value)
                 }}
                 sx={{ m: 0 }}
-                defaultValue={values?.reduce_funds}
+                defaultValue={values?.reduce_funds || undefined}
                 error={{ error: touched.reduce_funds && !!errors.reduce_funds, errorMsg: '' }}
+                disabled={!defaultReduceFunds(schoolYearData)}
               />
               <Subtitle sx={editCourseClasses.formError}>{touched.reduce_funds && errors.reduce_funds}</Subtitle>
             </Grid>

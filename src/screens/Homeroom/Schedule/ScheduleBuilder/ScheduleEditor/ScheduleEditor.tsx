@@ -450,7 +450,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
   }
 
   const showPeriodSelector = (schedule: ScheduleData): boolean => {
-    if (isAdmin && !isLockedKey) return true
+    if (isAdmin && isLockedKey) return false
     if (!editable(schedule)) return false
     if (!(schedule.filteredPeriods?.length > 1)) return false
     return (
@@ -462,7 +462,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
 
   const showSubjectSelector = (schedule: ScheduleData): boolean => {
     const subjects = schedule.Period?.Subjects || []
-    if (isAdmin && !isLockedKey) return true
+    if (isAdmin && isLockedKey) return false
     if (!editable(schedule)) return false
     if (
       !(subjects.length > 1) &&
@@ -479,7 +479,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
 
   const showCourseSelector = (schedule: ScheduleData): boolean => {
     const providers = schedule.Title?.Providers || schedule.Subject?.Providers || []
-    if (isAdmin && !isLockedKey) return true
+    if (isAdmin && isLockedKey) return false
     return (
       editable(schedule) &&
       (providers.length > 1 ||

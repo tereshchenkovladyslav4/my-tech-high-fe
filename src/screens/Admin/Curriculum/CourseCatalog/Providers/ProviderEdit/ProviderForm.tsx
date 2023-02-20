@@ -11,6 +11,7 @@ import { REDUCE_FUNDS_ITEMS } from '@mth/constants'
 import { MthColor, ReduceFunds } from '@mth/enums'
 import { editProviderClasses } from '@mth/screens/Admin/Curriculum/CourseCatalog/Providers/ProviderEdit/styles'
 import { Provider, ProviderFormProps } from '@mth/screens/Admin/Curriculum/CourseCatalog/Providers/types'
+import { defaultReduceFunds } from '@mth/utils/default-reduce-funds.util'
 
 const ProviderForm: React.FC<ProviderFormProps> = ({ setIsChanged, periodsItems }) => {
   const { errors, handleChange, setFieldValue, touched, values, setFieldTouched } = useFormikContext<Provider>()
@@ -63,8 +64,9 @@ const ProviderForm: React.FC<ProviderFormProps> = ({ setIsChanged, periodsItems 
                   setFieldValue('reduce_funds', value)
                 }}
                 sx={{ m: 0 }}
-                defaultValue={values?.reduce_funds}
+                defaultValue={values?.reduce_funds || undefined}
                 error={{ error: touched.reduce_funds && !!errors.reduce_funds, errorMsg: '' }}
+                disabled={!defaultReduceFunds(schoolYearData)}
               />
               <Subtitle sx={editProviderClasses.formError}>{touched.reduce_funds && errors.reduce_funds}</Subtitle>
             </Grid>

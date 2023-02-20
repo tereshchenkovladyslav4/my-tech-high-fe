@@ -70,6 +70,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
       setShowNoChangesModal(true)
       return
     }
+
     const data = showSecondSemester ? secondScheduleData : scheduleData
     if (data?.length) {
       const submitResponse = await submitScheduleBuilder({
@@ -124,7 +125,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
           switch (kind) {
             case ScheduleStatus.DRAFT:
             case ScheduleStatus.UPDATES_REQUIRED:
-              setIsDraftSaved(true)
+              if (!directly) setIsDraftSaved(true)
               break
             case ScheduleStatus.SUBMITTED:
               setShowSubmitSuccessModal(true)
@@ -179,9 +180,13 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
           else return { ...item }
         }),
       )
-      const data = secondScheduleData?.filter(
-        (item) => item?.Period?.id == schedule.Period?.id && item?.showButtonName === SchedulePeriodStatus.NO_UPDATES,
-      )
+      const scheduleIdx = secondScheduleData.findIndex((item) => item?.Period?.id === schedule?.Period?.id)
+      schedule.schedulePeriodStatus = status
+      schedule.showButtonName =
+        status === SchedulePeriodStatus.NO_UPDATES ? SchedulePeriodStatus.MAKE_UPDATES : SchedulePeriodStatus.NO_UPDATES
+      secondScheduleData[scheduleIdx] = schedule
+      setScheduleData(JSON.parse(JSON.stringify(secondScheduleData)))
+      const data = secondScheduleData?.filter((item) => item?.showButtonName === SchedulePeriodStatus.NO_UPDATES)
       await handleSave(
         data?.length ? (hasSecondSemester ? studentScheduleStatus : ScheduleStatus.DRAFT) : ScheduleStatus.ACCEPTED,
         true,

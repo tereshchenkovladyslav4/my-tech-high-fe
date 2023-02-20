@@ -12,6 +12,7 @@ import { Period } from '@mth/models'
 import { defaultProviderFormData } from '@mth/screens/Admin/Curriculum/CourseCatalog/Providers/defaultValues'
 import ProviderForm from '@mth/screens/Admin/Curriculum/CourseCatalog/Providers/ProviderEdit/ProviderForm'
 import { createOrUpdateProviderMutation } from '@mth/screens/Admin/Curriculum/CourseCatalog/services'
+import { defaultReduceFunds } from '@mth/utils/default-reduce-funds.util'
 import SaveCancelComponent from '../../Components/SaveCancelComponent/SaveCancelComponent'
 import { ProviderEditProps, Provider } from '../types'
 
@@ -170,7 +171,7 @@ const ProviderEdit: React.FC<ProviderEditProps> = ({
     else
       setInitialValues({
         ...defaultProviderFormData,
-        reduce_funds: schoolYearData?.reimbursements || ReduceFunds.NONE,
+        reduce_funds: defaultReduceFunds(schoolYearData),
       })
   }, [item, schoolYearData])
 

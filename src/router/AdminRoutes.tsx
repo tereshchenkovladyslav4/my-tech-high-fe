@@ -1,6 +1,8 @@
 /* eslint-disable react/no-children-prop */
 import React from 'react'
+import { useFlag } from '@unleash/proxy-client-react'
 import { Route, Switch } from 'react-router-dom'
+import { EPIC_1396 } from '@mth/constants'
 import { MthRoute } from '@mth/enums'
 import { Announcements } from '@mth/screens/Admin/Announcements'
 import { Applications } from '@mth/screens/Admin/Applications/Applications'
@@ -43,6 +45,7 @@ import { Users } from '@mth/screens/Admin/Users/Users'
 import { Withdrawals } from '@mth/screens/Admin/Withdrawals'
 
 export const AdminRoutes: React.FC = () => {
+  const epic1396 = useFlag(EPIC_1396)
   return (
     <Switch>
       <Route exact path={MthRoute.DASHBOARD}>
@@ -54,15 +57,19 @@ export const AdminRoutes: React.FC = () => {
       <Route exact path={MthRoute.REIMBURSEMENTS}>
         <Reimbursements />
       </Route>
-      <Route exact path={MthRoute.REIMBURSEMENTS_REQUESTS}>
-        <ReimbursementRequests />
-      </Route>
-      <Route
-        path={`${MthRoute.REIMBURSEMENTS_REQUESTS}/:id`}
-        children={({ match }) => {
-          return <ReimbursementRequestView reimbursementRequestId={Number(match?.params?.id)} />
-        }}
-      />
+      {epic1396 && (
+        <>
+          <Route exact path={MthRoute.REIMBURSEMENTS_REQUESTS}>
+            <ReimbursementRequests />
+          </Route>
+          <Route
+            path={`${MthRoute.REIMBURSEMENTS_REQUESTS}/:id`}
+            children={({ match }) => {
+              return <ReimbursementRequestView reimbursementRequestId={Number(match?.params?.id)} />
+            }}
+          />
+        </>
+      )}
       <Route exact path={MthRoute.REIMBURSEMENTS_SETTINGS}>
         <ReimbursementsSettings />
       </Route>

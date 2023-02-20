@@ -33,12 +33,12 @@ export const CreateMasterModal: React.FC<CreateMasterModalProps> = ({
       <Box sx={classes.modalCard}>
         <Formik
           initialValues={{
-            schoolYear: selectedYear,
+            school_year_id: selectedYear,
             master_name: '',
           }}
           validationSchema={Yup.object({
             master_name: Yup.string().required('Required'),
-            schoolYear: Yup.number().required('Required'),
+            school_year_id: Yup.number().required('Required'),
           })}
           onSubmit={async (values: Master) => {
             await handleSubmit(values)
@@ -74,13 +74,13 @@ export const CreateMasterModal: React.FC<CreateMasterModalProps> = ({
                           <DropDown
                             dropDownItems={schoolYearDropdownItems}
                             placeholder='Year'
-                            name='schoolYear'
+                            name='school_year_id'
                             labelTop
                             borderNone
                             sx={{ m: 0 }}
                             defaultValue={selectedYear}
                             setParentValue={(value) => {
-                              setFieldValue('schoolYear', value)
+                              setFieldValue('school_year_id', value)
                             }}
                             error={{
                               error: !!(meta.touched && Boolean(meta.error)),

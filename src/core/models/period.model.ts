@@ -13,7 +13,7 @@ export type Period = {
   notify_period: boolean
   message_period: string
   message_semester: string
-  reduce_funds: ReduceFunds
+  reduce_funds: ReduceFunds | null
   price: number | null
   semester: SEMESTER_TYPE
   archived?: boolean

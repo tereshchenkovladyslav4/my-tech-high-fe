@@ -35,13 +35,14 @@ import CustomTable from '@mth/components/Table/CustomTable'
 import { Field } from '@mth/components/Table/types'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { WarningModal } from '@mth/components/WarningModal/Warning'
-import { DIPLOMA_SEEKING_PATH_ITEMS } from '@mth/constants'
+import { DIPLOMA_SEEKING_PATH_ITEMS, REDUCE_FUNDS_ITEMS } from '@mth/constants'
 import { MthColor, MthRoute, ReduceFunds } from '@mth/enums'
 import { useProgramYearListBySchoolYearId, useSchoolYearsByRegionId } from '@mth/hooks'
 import { Period } from '@mth/models'
 import { loadingState } from '@mth/providers/Store/State'
 import { getPeriods, upsertPeriod, periodArchive, deletePeriodsByIds } from '@mth/screens/Admin/Curriculum/services'
 import { gradeShortText } from '@mth/utils'
+import { defaultReduceFunds } from '@mth/utils/default-reduce-funds.util'
 import { useStyles } from '../../styles'
 import { SEMESTER_TYPE, SEMESTER_MESSAGE } from '../../types'
 import { SaveCancelComponent } from '../Components/SaveCancelComponent'
@@ -284,7 +285,7 @@ const Periods: React.FC = () => {
       category: '',
       min_grade: null,
       max_grade: null,
-      reduce_funds: schoolYearData?.reimbursements || ReduceFunds.NONE,
+      reduce_funds: defaultReduceFunds(schoolYearData),
       price: null,
       semester: SEMESTER_TYPE.NONE,
       message_period: '',
@@ -663,12 +664,9 @@ const Periods: React.FC = () => {
                   InputLabelProps={{ shrink: true, sx: classes.textLabel }}
                   SelectProps={{ displayEmpty: true }}
                   select
+                  disabled={!defaultReduceFunds(schoolYearData)}
                 >
-                  {[
-                    { label: 'None', value: ReduceFunds.NONE },
-                    { label: 'Supplemental Learning Funds', value: ReduceFunds.SUPPLEMENTAL },
-                    { label: 'Technology Allowance', value: ReduceFunds.TECHNOLOGY },
-                  ].map((option) => (
+                  {REDUCE_FUNDS_ITEMS.map((option) => (
                     <MenuItem key={option.value} value={option.value}>
                       {option.label}
                     </MenuItem>

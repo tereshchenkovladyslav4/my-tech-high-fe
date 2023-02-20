@@ -10,6 +10,7 @@ import { DIPLOMA_SEEKING_PATH_ITEMS, REDUCE_FUNDS_ITEMS } from '@mth/constants'
 import { MthColor, ReduceFunds } from '@mth/enums'
 import { StateCourseCords } from '@mth/screens/Admin/Curriculum/CourseCatalog/Subjects/TitleEdit/StateCourseCodes'
 import { editTitleClasses } from '@mth/screens/Admin/Curriculum/CourseCatalog/Subjects/TitleEdit/styles'
+import { defaultReduceFunds } from '@mth/utils/default-reduce-funds.util'
 import ValidGradesSelector from '../../Components/ValidateGrades/ValidGradesSelector'
 import { Title, TitleFormProps } from '../types'
 
@@ -88,8 +89,9 @@ const TitleForm: React.FC<TitleFormProps> = ({ schoolYearData, subjectsItems, gr
                   setFieldValue('reduce_funds', value)
                 }}
                 sx={{ m: 0 }}
-                defaultValue={values?.reduce_funds}
+                defaultValue={values?.reduce_funds || undefined}
                 error={{ error: touched.reduce_funds && !!errors.reduce_funds, errorMsg: '' }}
+                disabled={!defaultReduceFunds(schoolYearData)}
               />
               <Subtitle sx={editTitleClasses.formError}>{touched.reduce_funds && errors.reduce_funds}</Subtitle>
             </Grid>
@@ -146,7 +148,7 @@ const TitleForm: React.FC<TitleFormProps> = ({ schoolYearData, subjectsItems, gr
                   }}
                 />
               )}
-              {!!values?.show_software_reimbursement && (
+              {!!schoolYearData?.require_software && (
                 <MthCheckbox
                   label='This Subject qualifies for Required Software Reimbursement'
                   checked={values?.software_reimbursement}

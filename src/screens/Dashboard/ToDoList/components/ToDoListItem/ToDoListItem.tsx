@@ -61,11 +61,11 @@ export const ToDoListItem: React.FC<TodoListItemProps> = ({ todoItem, todoDate, 
         setLink(`${MthRoute.PARENT_LINK}${MthRoute.SUBMIT_WITHDRAWAL}/${students.at(-1)?.student_id}`)
         break
       }
-      case ToDoCategory.SUBMIT_SCHEDULE:
-      case ToDoCategory.SUBMIT_SECOND_SEMESTER_SCHEDULE: {
+      case ToDoCategory.SUBMIT_SCHEDULE: {
         setLink(`${MthRoute.HOMEROOM}${MthRoute.SUBMIT_SCHEDULE}/${students.at(-1)?.student_id}`)
         break
       }
+      case ToDoCategory.SUBMIT_SECOND_SEMESTER_SCHEDULE:
       case ToDoCategory.RESUBMIT_SECOND_SEMESTER_SCHEDULE:
       case ToDoCategory.RESUBMIT_SCHEDULE: {
         setLink(

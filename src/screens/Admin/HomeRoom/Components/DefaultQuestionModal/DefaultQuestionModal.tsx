@@ -38,7 +38,9 @@ export const DefaultQuestionModal: React.FC<DefaultQuestionModalProps> = ({
         }}
       >
         <Box sx={{ textAlign: 'center' }}>
-          <Typography variant='h5'>Default Questions</Typography>
+          <Typography variant='h5' fontWeight={700}>
+            Default Questions
+          </Typography>
 
           <Box sx={{ marginTop: '30px', px: 4 }}>
             <OutlinedInput
@@ -79,7 +81,7 @@ export const DefaultQuestionModal: React.FC<DefaultQuestionModalProps> = ({
           </Box>
           <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '80px' }}>
             <Button sx={{ ...mthButtonClasses.primary, width: '160px' }} onClick={() => onAction('custom')}>
-              + Custom Questions
+              + Custom Question
             </Button>
           </Box>
         </Box>
