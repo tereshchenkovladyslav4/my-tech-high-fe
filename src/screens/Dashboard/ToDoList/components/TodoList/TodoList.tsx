@@ -88,7 +88,7 @@ export const TodoList: React.FC<TodoListProps> = ({
         setIsLoading(false)
       }
     }
-  }, [loading, filteredByStudent])
+  }, [loading, filteredByStudent, data, schoolYears?.length])
 
   useEffect(() => {
     if (setMainTodoList) {

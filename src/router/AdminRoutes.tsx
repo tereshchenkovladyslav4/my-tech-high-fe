@@ -58,17 +58,17 @@ export const AdminRoutes: React.FC = () => {
         <Reimbursements />
       </Route>
       {epic1396 && (
-        <>
-          <Route exact path={MthRoute.REIMBURSEMENTS_REQUESTS}>
-            <ReimbursementRequests />
-          </Route>
-          <Route
-            path={`${MthRoute.REIMBURSEMENTS_REQUESTS}/:id`}
-            children={({ match }) => {
-              return <ReimbursementRequestView reimbursementRequestId={Number(match?.params?.id)} />
-            }}
-          />
-        </>
+        <Route exact path={MthRoute.REIMBURSEMENTS_REQUESTS}>
+          <ReimbursementRequests />
+        </Route>
+      )}
+      {epic1396 && (
+        <Route
+          path={`${MthRoute.REIMBURSEMENTS_REQUESTS}/:id`}
+          children={({ match }) => {
+            return <ReimbursementRequestView reimbursementRequestId={Number(match?.params?.id)} />
+          }}
+        />
       )}
       <Route exact path={MthRoute.REIMBURSEMENTS_SETTINGS}>
         <ReimbursementsSettings />
