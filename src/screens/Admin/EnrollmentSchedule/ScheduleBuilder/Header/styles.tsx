@@ -16,7 +16,6 @@ export const headerClass = {
     },
     '& p': {
       fontSize: '20px',
-      margin: '0 12px 0 24px',
     },
     '& div': {
       marginLeft: 'auto',

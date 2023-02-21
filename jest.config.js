@@ -40,5 +40,6 @@ module.exports = {
     '@mth/services/(.*)$': '<rootDir>/src/core/services/$1',
     '@mth/styles/(.*)$': '<rootDir>/src/styles/$1',
     '@mth/utils/(.*)$': '<rootDir>/src/core/utils/$1',
+    '@unleash/proxy-client-react': '<rootDir>/mocks/proxyClientReactMock.ts',
   },
 }

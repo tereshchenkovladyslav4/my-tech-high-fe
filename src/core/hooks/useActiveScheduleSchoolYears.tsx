@@ -9,6 +9,7 @@ import { getActiveScheduleSchoolYearsQuery } from '@mth/screens/Homeroom/Schedul
 
 export const useActiveScheduleSchoolYears = (
   studentId?: number | undefined,
+  defaultSchoolYearId?: number,
 ): {
   loading: boolean
   schoolYears: SchoolYear[]
@@ -67,8 +68,12 @@ export const useActiveScheduleSchoolYears = (
               (item) =>
                 item.ScheduleStatus === ScheduleStatus.SUBMITTED || item.ScheduleStatus === ScheduleStatus.ACCEPTED,
             )[0]
+      const defaultSchoolYear = schoolYears.filter((item) => item.school_year_id == defaultSchoolYearId)[0]
       setSelectedYearId(
-        activeScheduleYear?.school_year_id || currentYear?.school_year_id || schoolYears.at(-1)?.school_year_id,
+        defaultSchoolYear?.school_year_id ||
+          activeScheduleYear?.school_year_id ||
+          currentYear?.school_year_id ||
+          schoolYears.at(-1)?.school_year_id,
       )
       setActiveScheduleYearId(activeScheduleYear?.school_year_id)
     } else {

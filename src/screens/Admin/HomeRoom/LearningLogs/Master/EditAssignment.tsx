@@ -19,6 +19,7 @@ import { WarningModal } from '@mth/components/WarningModal/Warning'
 import { QuestionTypes } from '@mth/constants'
 import { MthRoute, MthTitle } from '@mth/enums'
 import { mthButtonClasses } from '@mth/styles/button.style'
+import AddCheckListModal from '../../Components/AddNewQuestionModal/AddCheckListModal'
 import AddNewQuestionModal from '../../Components/AddNewQuestionModal/AddNewQuestionModal'
 import { DefaultQuestionModal } from '../../Components/DefaultQuestionModal/DefaultQuestionModal'
 import {
@@ -457,7 +458,11 @@ const EditAssignment: React.FC<{ masterId: number; assignmentId?: number }> = ({
         tempLearningQuestionList.map((item) => {
           const existItem = value.find((i) => i.slug === item.slug)
           if (existItem) {
-            return existItem
+            return {
+              ...existItem,
+              assignment_id: assignment.id,
+              page: questionPageNum,
+            }
           } else {
             return item
           }
@@ -615,8 +620,8 @@ const EditAssignment: React.FC<{ masterId: number; assignmentId?: number }> = ({
               learningQuestionList={tempLearningQuestionList.filter((item) => item.page === pageNum)}
               handleDeleteQuestion={(val) => handleDeleteQuestion(val)}
               schoolYearId={master?.school_year_id}
-              setEditQuestionList={setEditQuestionList}
-              setIsCustomeQuestionModal={setIsCustomeQuestionModal}
+              setEditQuestionList={setEditQuestionList} // dev
+              setIsCustomeQuestionModal={setIsCustomeQuestionModal} // dev
             />
           </Box>
           <Box
@@ -773,14 +778,25 @@ const EditAssignment: React.FC<{ masterId: number; assignmentId?: number }> = ({
         />
       )}
 
-      <CustomQuestion
-        isCustomeQuestionModal={isCustomeQuestionModal}
-        onClose={() => setIsCustomeQuestionModal(false)}
-        master={master}
-        handleSaveQuestion={handleSaveQuestion}
-        assignmentId={assignmentId}
-        editQuestionList={editQuestionList}
-      />
+      {isCustomeQuestionModal &&
+        (editQuestionList[0]?.type !== QuestionTypes.SUBJECT_QUESTION ? (
+          <CustomQuestion
+            isCustomeQuestionModal={isCustomeQuestionModal}
+            onClose={() => setIsCustomeQuestionModal(false)}
+            master={master}
+            handleSaveQuestion={handleSaveQuestion}
+            assignmentId={assignmentId}
+            editQuestionList={editQuestionList}
+          />
+        ) : (
+          <AddCheckListModal
+            onClose={() => setIsCustomeQuestionModal(false)}
+            type={QuestionTypes.SUBJECT_QUESTION}
+            onSave={handleSaveQuestion}
+            schoolYearId={master?.school_year_id}
+            editQuestion={editQuestionList}
+          />
+        ))}
       {openDefaultQuestionModal && (
         <DefaultQuestionModal
           onClose={() => {

@@ -146,8 +146,8 @@ const LearningQuestionItem = ({
                 onClick={() => handleChange(!question[0].response)}
               />
               <Paragraph size='large' sx={{ fontSize: 16, display: 'flex', alignItems: 'center' }}>
-                <p dangerouslySetInnerHTML={{ __html: question[0].question }}></p>
-                {question[0]?.validations.includes('required') && <span style={{ marginLeft: '10px' }}>*</span>}
+                <span dangerouslySetInnerHTML={{ __html: question[0].question }}></span>
+                {question[0]?.validations?.includes('required') && <span style={{ marginLeft: '10px' }}>*</span>}
               </Paragraph>
             </Box>
             {!question[0].parent_slug && (
@@ -271,8 +271,8 @@ const LearningQuestionItem = ({
       {question[0].type !== QuestionTypes.AGREEMENT && (
         <Box display='flex' mt='20px' alignItems='center' justifyContent='space-between'>
           <Paragraph size='large' sx={{ fontSize: 16, display: 'flex', alignItems: 'center' }}>
-            <p dangerouslySetInnerHTML={{ __html: question[0].question }}></p>
-            {question[0]?.validations.includes('required') && <span style={{ marginLeft: '10px' }}>*</span>}
+            <span dangerouslySetInnerHTML={{ __html: question[0].question }}></span>
+            {question[0]?.validations?.includes('required') && <span style={{ marginLeft: '10px' }}>*</span>}
           </Paragraph>
           {!question[0].parent_slug && (
             <Box display='inline-flex' paddingTop='10px' height='40px' alignItems='center' justifyContent='center'>

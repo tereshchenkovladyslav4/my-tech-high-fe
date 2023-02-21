@@ -89,7 +89,7 @@ const AddNewQuestionModal: React.FC<AddNewQuestionModalProps> = ({ type, onClose
 
   return (
     <Modal open={true} onClose={onClose} aria-labelledby='modal-modal-title' aria-describedby='modal-modal-description'>
-      {type === 'Option to Excuse Learning Log' ? (
+      {type === 'Option to Excuse a Learning Log' ? (
         <Box sx={addNewQuestionClasses.modalContainer}>
           <Box sx={addNewQuestionClasses.modalContent}>
             <TextField

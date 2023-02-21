@@ -49,7 +49,7 @@ const MenuProps = {
 
 const validationCheckList = [
   { value: 'required', label: 'Required' },
-  { value: 'can_upload', label: 'Add an Upload Option' },
+  { value: 'can_upload', label: 'Add an Upload Option', disabled: false },
   { value: 'grade_specific', label: 'Grade Specific Question' },
 ]
 
@@ -199,7 +199,7 @@ const CustomQuestion: React.FC<CustomQuestionProps> = ({
       }
       return {
         ...omit(item, 'parent_slug'),
-        options: item?.options.filter((itemOption) => itemOption.label) || [],
+        options: item?.options?.filter((itemOption) => itemOption.label) || [],
         default_question: false,
         assignment_id: assignmentId,
         validations: item.validations,
@@ -212,6 +212,22 @@ const CustomQuestion: React.FC<CustomQuestionProps> = ({
       return
     }
     handleSaveQuestion(submittedQuestion)
+  }
+
+  const validationOptions = (questionItem: AssignmentQuestionType) => {
+    if (questionItem.type === QuestionTypes.UPLOAD) {
+      return validationCheckList.map((item) => {
+        if (item.value === 'can_upload') {
+          return {
+            ...item,
+            disabled: true,
+          }
+        } else {
+          return item
+        }
+      })
+    }
+    return validationCheckList
   }
 
   return (
@@ -305,7 +321,7 @@ const CustomQuestion: React.FC<CustomQuestionProps> = ({
                   setValues={(value) => {
                     handleQuestionItemChange({ ...questionItem, validations: value }, index)
                   }}
-                  checkboxLists={validationCheckList}
+                  checkboxLists={validationOptions(questionItem)}
                   haveSelectAll={false}
                 />
                 {questionItem.validations?.includes('grade_specific') && (

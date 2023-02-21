@@ -16,21 +16,25 @@ const Header: React.FC<HeaderProps> = ({
   selectedYearId,
   setSelectedYearId,
   handleBack,
+  viewonly,
 }) => {
   return (
     <Box sx={headerClass.headerMain}>
-      <IconButton
-        sx={{ backgroundColor: MthColor.BG_MAIN, borderRadius: '5px', width: '44px', height: '44px' }}
-        onClick={() => handleBack()}
-      >
-        <ArrowBackIosRoundedIcon sx={{ fontSize: '18px !important' }} />
-      </IconButton>
+      {!viewonly && (
+        <IconButton
+          sx={{ backgroundColor: MthColor.BG_MAIN, borderRadius: '5px', width: '44px', height: '44px', mr: 3 }}
+          onClick={() => handleBack()}
+        >
+          <ArrowBackIosRoundedIcon sx={{ fontSize: '18px !important' }} />
+        </IconButton>
+      )}
+
       <Subtitle size='medium' fontWeight='700'>
         {title}
       </Subtitle>
-      {scheduleStatus?.value == ScheduleStatus.ACCEPTED && (
+      {!viewonly && scheduleStatus?.value == ScheduleStatus.ACCEPTED && (
         <Tooltip title='Download' placement='top'>
-          <img src={DownloadFileIcon} alt='Download Icon' />
+          <img src={DownloadFileIcon} alt='Download Icon' style={{ marginLeft: '12px' }} />
         </Tooltip>
       )}
       <DropDown

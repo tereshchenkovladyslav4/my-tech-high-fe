@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import { useMutation } from '@apollo/client'
 import { Button, Card, Typography } from '@mui/material'
 import { Box } from '@mui/system'
-import { Prompt, useHistory } from 'react-router-dom'
+import { Prompt, useHistory, useLocation } from 'react-router-dom'
 import { CustomModal } from '@mth/components/CustomModal/CustomModals'
 import { DropDownItem } from '@mth/components/DropDown/types'
 import { CheckBoxListVM } from '@mth/components/MthCheckboxList/MthCheckboxList'
@@ -36,6 +36,10 @@ type ScheduleBuilderProps = {
 
 const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
   const { me } = useContext(UserContext)
+  const { search } = useLocation()
+  const queryParams = new URLSearchParams(search)
+  const viewonly = queryParams.get('viewonly') == 'true'
+  const defaultSchoolYearId = Number(queryParams.get('defaultSchoolYear') || 0)
   const history = useHistory()
   const [studentInfo, setStudentInfo] = useState<StudentScheduleInfo>()
   const [scheduleStatus, setScheduleStatus] = useState<DropDownItem>()
@@ -58,7 +62,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
     selectedYear,
     schoolYears,
     dropdownItems: schoolYearItems,
-  } = useActiveScheduleSchoolYears(studentId)
+  } = useActiveScheduleSchoolYears(studentId, defaultSchoolYearId)
 
   const {
     scheduleData,
@@ -365,7 +369,10 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
   }, [studentInfoData, schoolYears, selectedYear])
 
   useEffect(() => {
-    setScheduleStatus(SCHEDULE_STATUS_OPTIONS.find((item) => item.value === studentScheduleStatus) as DropDownItem)
+    setScheduleStatus(
+      (SCHEDULE_STATUS_OPTIONS.find((item) => item.value === studentScheduleStatus) ||
+        SCHEDULE_STATUS_OPTIONS.find((item) => item.value === ScheduleStatus.NOT_SUBMITTED)) as DropDownItem,
+    )
   }, [studentScheduleStatus])
 
   useEffect(() => {
@@ -424,13 +431,15 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
   return (
     <>
       <Card sx={scheduleBuilderClass.main}>
-        <Prompt
-          when={isChanged}
-          message={JSON.stringify({
-            header: MthTitle.UNSAVED_TITLE,
-            content: MthTitle.UNSAVED_DESCRIPTION,
-          })}
-        />
+        {!viewonly && (
+          <Prompt
+            when={isChanged}
+            message={JSON.stringify({
+              header: MthTitle.UNSAVED_TITLE,
+              content: MthTitle.UNSAVED_DESCRIPTION,
+            })}
+          />
+        )}
         <Header
           title={MthTitle.SCHEDULE}
           scheduleStatus={scheduleStatus}
@@ -441,8 +450,10 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
             if (isChanged) setShowUnsavedModal(true)
             else history.push(MthRoute.ENROLLMENT_SCHEDULE.toString())
           }}
+          viewonly={viewonly}
         />
         <StudentInfo
+          viewonly={viewonly}
           studentInfo={studentInfo}
           scheduleStatus={scheduleStatus}
           onUpdateScheduleStatus={updateScheduleStatus}
@@ -459,7 +470,8 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
             scheduleStatus={hasSecondSemester ? ScheduleStatus.ACCEPTED : studentScheduleStatus}
             selectedScheduleStatus={scheduleStatus?.value as ScheduleStatus}
             isAdmin={true}
-            isEditMode={!hasSecondSemester}
+            isEditMode={!hasSecondSemester && !viewonly}
+            viewonly={viewonly}
             isUpdatePeriodRequired={!!requireUpdatePeriods?.length}
             setIsChanged={setIsChanged}
             setScheduleData={setScheduleData}
@@ -481,7 +493,8 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
             scheduleData={secondScheduleData}
             splitEnrollment={!!selectedYear?.ScheduleBuilder?.split_enrollment}
             isAdmin={true}
-            isEditMode={true}
+            isEditMode={!viewonly}
+            viewonly={viewonly}
             hasUnlockedPeriods={hasUnlockedPeriods}
             selectedScheduleStatus={scheduleStatus?.value as ScheduleStatus}
             isSecondSemester={true}
@@ -496,7 +509,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
             }}
           />
         )}
-        {studentScheduleStatus && studentScheduleStatus !== ScheduleStatus.DRAFT && (
+        {!viewonly && studentScheduleStatus && studentScheduleStatus !== ScheduleStatus.DRAFT && (
           <Box sx={scheduleBuilderClass.submit}>
             {!requireUpdatePeriods.length ? (
               <>
@@ -570,7 +583,8 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
             </Button>
           </Box>
         )}
-        {studentScheduleStatus !== ScheduleStatus.NOT_SUBMITTED &&
+        {!viewonly &&
+          studentScheduleStatus !== ScheduleStatus.NOT_SUBMITTED &&
           studentScheduleStatus !== ScheduleStatus.SUBMITTED && (
             <ScheduleHistory
               studentId={studentId}
@@ -651,7 +665,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
           />
         )}
       </Card>
-      {!!requireUpdatePeriods?.length && (
+      {!viewonly && !!requireUpdatePeriods?.length && (
         <UpdatesRequired
           studentId={studentId}
           scheduleData={hasSecondSemester ? secondScheduleData : scheduleData}

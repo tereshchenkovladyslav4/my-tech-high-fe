@@ -1,13 +1,15 @@
 import React from 'react'
+import { Button } from '@mui/material'
 import { Box } from '@mui/system'
 import { DropDown } from '@mth/components/DropDown/DropDown'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { SCHEDULE_STATUS_OPTIONS } from '@mth/constants'
+import { mthButtonClasses } from '@mth/styles/button.style'
 import { studentInfoClass } from './styles'
 import { StudentInfoProps } from './types'
 
-const StudentInfo: React.FC<StudentInfoProps> = ({ studentInfo, scheduleStatus, onUpdateScheduleStatus }) => {
+const StudentInfo: React.FC<StudentInfoProps> = ({ viewonly, studentInfo, scheduleStatus, onUpdateScheduleStatus }) => {
   return (
     <Box sx={studentInfoClass.main}>
       <Box sx={studentInfoClass.info}>
@@ -23,15 +25,19 @@ const StudentInfo: React.FC<StudentInfoProps> = ({ studentInfo, scheduleStatus, 
         </Box>
         <Paragraph size={'large'}> {studentInfo?.schoolOfEnrollment || 'Unassigned'}</Paragraph>
       </Box>
-      <DropDown
-        sx={studentInfoClass.select}
-        dropDownItems={SCHEDULE_STATUS_OPTIONS}
-        defaultValue={scheduleStatus?.value}
-        borderNone={true}
-        setParentValue={(val) => {
-          onUpdateScheduleStatus(`${val}`)
-        }}
-      />
+      {viewonly ? (
+        <Button sx={{ ...mthButtonClasses.smallPrimary, width: '160px' }}>{scheduleStatus?.label}</Button>
+      ) : (
+        <DropDown
+          sx={studentInfoClass.select}
+          dropDownItems={SCHEDULE_STATUS_OPTIONS}
+          defaultValue={scheduleStatus?.value}
+          borderNone={true}
+          setParentValue={(val) => {
+            onUpdateScheduleStatus(`${val}`)
+          }}
+        />
+      )}
     </Box>
   )
 }

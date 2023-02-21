@@ -6,4 +6,5 @@ export type HeaderProps = {
   scheduleStatus: DropDownItem | undefined
   setSelectedYearId: (value: number) => void
   handleBack: () => void
+  viewonly: boolean
 }

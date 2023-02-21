@@ -46,6 +46,6 @@
       "@mth/utils/*": ["src/core/utils/*"],
     }
   },
-  "exclude": ["node_modules", "**/mocks/*.ts"],
+  "exclude": ["node_modules", "mocks"],
   "include": [".eslintrc.js", "./**/*"]
 }

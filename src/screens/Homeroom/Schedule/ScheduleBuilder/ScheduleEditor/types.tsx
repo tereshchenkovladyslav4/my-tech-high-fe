@@ -5,6 +5,7 @@ export type ScheduleEditorProps = {
   scheduleData: ScheduleData[]
   isAdmin?: boolean
   isEditMode?: boolean
+  viewonly?: boolean
   isSecondSemester?: boolean
   hasUnlockedPeriods?: boolean
   splitEnrollment?: boolean

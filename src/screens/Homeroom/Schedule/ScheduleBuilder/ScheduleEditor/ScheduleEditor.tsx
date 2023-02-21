@@ -58,6 +58,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
   scheduleData,
   isAdmin = false,
   isEditMode = false,
+  viewonly = false,
   isSecondSemester = false,
   hasUnlockedPeriods = false,
   splitEnrollment,
@@ -436,6 +437,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
   }
 
   const editable = (schedule: ScheduleData) => {
+    if (viewonly) return false
     if (isSecondSemester && hasUnlockedPeriods) {
       return !!schedule.editable
     } else {
@@ -655,60 +657,62 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
       key: `${isSecondSemester ? 'first' : 'second'}-semester-schedule-${schedule.period}`,
       columns: {},
       rawData: schedule,
-      sx: isAdmin
-        ? !isSecondSemester
-          ? schedule?.schedulePeriodStatus === SchedulePeriodStatus.UPDATE_REQUIRED
-            ? ((scheduleStatus === ScheduleStatus.ACCEPTED ||
-                scheduleStatus === ScheduleStatus.SUBMITTED ||
-                selectedScheduleStatus === ScheduleStatus.UPDATES_REQUIRED) &&
-                isUpdatePeriodRequired) ||
-              scheduleStatus === ScheduleStatus.UPDATES_REQUIRED
-              ? { '& .MuiTableCell-root': { background: 'rgba(236, 89, 37, 0.1) !important' } }
-              : scheduleStatus === ScheduleStatus.RESUBMITTED
-              ? {
-                  '& .MuiTableCell-root': { background: '#FFFFFF !important' },
-                }
-              : scheduleStatus === ScheduleStatus.UPDATES_REQUESTED
+      sx: !viewonly
+        ? isAdmin
+          ? !isSecondSemester
+            ? schedule?.schedulePeriodStatus === SchedulePeriodStatus.UPDATE_REQUIRED
+              ? ((scheduleStatus === ScheduleStatus.ACCEPTED ||
+                  scheduleStatus === ScheduleStatus.SUBMITTED ||
+                  selectedScheduleStatus === ScheduleStatus.UPDATES_REQUIRED) &&
+                  isUpdatePeriodRequired) ||
+                scheduleStatus === ScheduleStatus.UPDATES_REQUIRED
+                ? { '& .MuiTableCell-root': { background: 'rgba(236, 89, 37, 0.1) !important' } }
+                : scheduleStatus === ScheduleStatus.RESUBMITTED
+                ? {
+                    '& .MuiTableCell-root': { background: '#FFFFFF !important' },
+                  }
+                : scheduleStatus === ScheduleStatus.UPDATES_REQUESTED
+                ? {
+                    '& .MuiTableCell-root': { background: 'rgba(65, 69, 255, 0.2) !important' },
+                  }
+                : {}
+              : schedule.schedulePeriodStatus === SchedulePeriodStatus.UPDATE_REQUESTED &&
+                scheduleStatus === ScheduleStatus.UPDATES_REQUESTED
               ? {
                   '& .MuiTableCell-root': { background: 'rgba(65, 69, 255, 0.2) !important' },
                 }
-              : {}
-            : schedule.schedulePeriodStatus === SchedulePeriodStatus.UPDATE_REQUESTED &&
-              scheduleStatus === ScheduleStatus.UPDATES_REQUESTED
-            ? {
-                '& .MuiTableCell-root': { background: 'rgba(65, 69, 255, 0.2) !important' },
-              }
-            : (schedule.schedulePeriodStatus === SchedulePeriodStatus.RESUBMITTED &&
-                scheduleStatus === ScheduleStatus.RESUBMITTED) ||
-              scheduleStatus === ScheduleStatus.SUBMITTED
-            ? {
-                '& .MuiTableCell-root': { background: '#FFFFFF !important' },
-              }
-            : { '& .MuiTableCell-root': { background: '#F2F2F2 !important' } }
-          : (scheduleStatus === ScheduleStatus.ACCEPTED ||
-              scheduleStatus === ScheduleStatus.SUBMITTED ||
-              scheduleStatus === ScheduleStatus.RESUBMITTED ||
-              scheduleStatus === ScheduleStatus.UPDATES_REQUESTED) &&
-            !schedule.editable
-          ? scheduleStatus === ScheduleStatus.UPDATES_REQUESTED &&
-            schedule.schedulePeriodStatus === SchedulePeriodStatus.UPDATE_REQUESTED
-            ? {
-                '& .MuiTableCell-root': { background: 'rgba(65, 69, 255, 0.2) !important' },
-              }
-            : schedule.schedulePeriodStatus === SchedulePeriodStatus.RESUBMITTED &&
-              scheduleStatus === ScheduleStatus.RESUBMITTED
-            ? {
-                '& .MuiTableCell-root': { background: '#FFFFFF !important' },
-              }
-            : { '& .MuiTableCell-root': { background: '#F2F2F2 !important' } }
-          : schedule.editable
+              : (schedule.schedulePeriodStatus === SchedulePeriodStatus.RESUBMITTED &&
+                  scheduleStatus === ScheduleStatus.RESUBMITTED) ||
+                scheduleStatus === ScheduleStatus.SUBMITTED
+              ? {
+                  '& .MuiTableCell-root': { background: '#FFFFFF !important' },
+                }
+              : { '& .MuiTableCell-root': { background: '#F2F2F2 !important' } }
+            : (scheduleStatus === ScheduleStatus.ACCEPTED ||
+                scheduleStatus === ScheduleStatus.SUBMITTED ||
+                scheduleStatus === ScheduleStatus.RESUBMITTED ||
+                scheduleStatus === ScheduleStatus.UPDATES_REQUESTED) &&
+              !schedule.editable
+            ? scheduleStatus === ScheduleStatus.UPDATES_REQUESTED &&
+              schedule.schedulePeriodStatus === SchedulePeriodStatus.UPDATE_REQUESTED
+              ? {
+                  '& .MuiTableCell-root': { background: 'rgba(65, 69, 255, 0.2) !important' },
+                }
+              : schedule.schedulePeriodStatus === SchedulePeriodStatus.RESUBMITTED &&
+                scheduleStatus === ScheduleStatus.RESUBMITTED
+              ? {
+                  '& .MuiTableCell-root': { background: '#FFFFFF !important' },
+                }
+              : { '& .MuiTableCell-root': { background: '#F2F2F2 !important' } }
+            : schedule.editable
+            ? { '& .MuiTableCell-root': { background: 'rgba(236, 89, 37, 0.1) !important' } }
+            : {}
+          : isEditMode && schedule.editable
+          ? { position: 'relative', '& .MuiTableCell-root': { background: 'rgba(236, 89, 37, 0.1) !important' } }
+          : scheduleStatus === ScheduleStatus.UPDATES_REQUIRED &&
+            schedule.schedulePeriodStatus === SchedulePeriodStatus.UPDATE_REQUIRED
           ? { '& .MuiTableCell-root': { background: 'rgba(236, 89, 37, 0.1) !important' } }
           : {}
-        : isEditMode && schedule.editable
-        ? { position: 'relative', '& .MuiTableCell-root': { background: 'rgba(236, 89, 37, 0.1) !important' } }
-        : scheduleStatus === ScheduleStatus.UPDATES_REQUIRED &&
-          schedule.schedulePeriodStatus === SchedulePeriodStatus.UPDATE_REQUIRED
-        ? { '& .MuiTableCell-root': { background: 'rgba(236, 89, 37, 0.1) !important' } }
         : {},
     }
   }
@@ -741,7 +745,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
   }
 
   const getDescriptionBGColor = (schedule: ScheduleData) => {
-    return isAdmin && schedule?.CustomBuiltDescription != schedule?.Title?.custom_built_description
+    return !viewonly && isAdmin && schedule?.CustomBuiltDescription != schedule?.Title?.custom_built_description
       ? MthColor.LIGHTGREEN
       : ''
   }
@@ -1068,7 +1072,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
         },
       },
     ]
-    return isAdmin ? adminFields : parentFields
+    return isAdmin && !viewonly ? adminFields : parentFields
   }
 
   useEffect(() => {
@@ -1083,7 +1087,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
 
   return (
     <>
-      <Box sx={scheduleBuilderClasses.main}>
+      <Box sx={{ ...scheduleBuilderClasses.main }}>
         <MthTable
           items={tableData}
           fields={fields()}
@@ -1113,7 +1117,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
           </StyledTooltip>
         )}
         {enableQuestionTooltip && <StyledTooltipBgDiv onClick={() => setEnableQuestionTooltip(false)} />}
-        {isAdmin && (
+        {!viewonly && isAdmin && (
           <IconButton
             sx={{ ...scheduleBuilderClasses.questionButton, backgroundColor: MthColor.LIGHTGRAY }}
             onClick={() => setIsLockedKey && setIsLockedKey(!isLockedKey)}

@@ -19,11 +19,16 @@ type AddCheckListModalProp = {
   onClose: () => void
   schoolYearId: number
   onSave: (value: LearningLogQuestion[]) => void
+  editQuestion?: LearningLogQuestion[]
 }
 
-const AddCheckListModal: React.FC<AddCheckListModalProp> = ({ onClose, schoolYearId, onSave }) => {
-  const [checkboxList, setCheckboxList] = useState<string[]>([])
-  const [question, setQuestion] = useState<string>(checkListDefaultQuestion)
+const AddCheckListModal: React.FC<AddCheckListModalProp> = ({ onClose, schoolYearId, onSave, editQuestion }) => {
+  const [validationList, setValidationList] = useState<string[]>(
+    editQuestion && editQuestion[0] ? editQuestion[0].validations : [],
+  )
+  const [question, setQuestion] = useState<string>(
+    editQuestion && editQuestion[0] ? editQuestion[0].question : checkListDefaultQuestion,
+  )
   const [isError, setIsError] = useState({
     error: false,
     errorMsg: '',
@@ -31,7 +36,7 @@ const AddCheckListModal: React.FC<AddCheckListModalProp> = ({ onClose, schoolYea
   const { me } = useContext(UserContext)
 
   const [checkList, setCheckList] = useState<DropDownItem[]>([])
-  const [subject, setSubject] = useState<number | null>()
+  const [subject, setSubject] = useState<number | null>(editQuestion && editQuestion[0] ? editQuestion[0].grades : null)
 
   const { data: checklistData, loading: checklistLoading } = useQuery(getChecklistQuery, {
     variables: {
@@ -76,17 +81,17 @@ const AddCheckListModal: React.FC<AddCheckListModalProp> = ({ onClose, schoolYea
       })
       return
     }
-    const parent_slug = `meta_${+new Date()}`
+    const slug = editQuestion && editQuestion[0] ? editQuestion[0].slug : `meta_${+new Date()}`
     onSave([
       {
         type: QuestionTypes.SUBJECT_QUESTION,
         question: question,
-        slug: parent_slug,
+        slug: slug,
         parent_slug: '',
         active: true,
         response: '',
         grades: subject,
-        validations: checkboxList,
+        validations: validationList,
       },
     ])
   }
@@ -128,7 +133,7 @@ const AddCheckListModal: React.FC<AddCheckListModalProp> = ({ onClose, schoolYea
                   errorMsg: '',
                 })
               }}
-              // defaultValue={subject}
+              defaultValue={subject}
               placeholder='Subject'
               sx={{
                 '& .MuiInputLabel-root': {
@@ -154,9 +159,9 @@ const AddCheckListModal: React.FC<AddCheckListModalProp> = ({ onClose, schoolYea
         </Box>
         <Box sx={{ mt: 2 }}>
           <MthCheckboxList
-            values={checkboxList}
+            values={validationList}
             setValues={(value) => {
-              setCheckboxList(value)
+              setValidationList(value)
             }}
             checkboxLists={questionCheckboxList}
             haveSelectAll={false}
