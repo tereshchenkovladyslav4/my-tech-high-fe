@@ -15,6 +15,7 @@ const FileUploadModal: React.FC<SubmissionModal> = ({
   open,
   isDownloadTemplate = false,
   isError,
+  uploadedFileName,
   onClose,
   handleFile,
   onDownloadTemplate,
@@ -22,11 +23,14 @@ const FileUploadModal: React.FC<SubmissionModal> = ({
   const classes = FileUploadModalClasses
   const [validFile, setValidFile] = useState<File>()
   const [errorMessage, setErrorMessage] = useState('')
+  const [fileName, setFileName] = useState<string>()
+
   const inputRef = React.createRef<HTMLInputElement>()
   useEffect(() => {
     if (open) {
       setValidFile(undefined)
       setErrorMessage('')
+      setFileName(uploadedFileName)
     }
   }, [open])
 
@@ -67,6 +71,7 @@ const FileUploadModal: React.FC<SubmissionModal> = ({
     if (validatedFile.status) {
       setValidFile(file)
       setErrorMessage('')
+      setFileName(undefined)
     } else {
       setErrorMessage(validatedFile?.message as string)
     }
@@ -101,12 +106,13 @@ const FileUploadModal: React.FC<SubmissionModal> = ({
     if (file) {
       setValidFile(undefined)
     }
+    setFileName(undefined)
     setErrorMessage('')
   }
 
   const renderFiles = () => (
     <Box onClick={() => {}} display='flex' flexDirection='row' alignItems='flex-end' color='#7B61FF' marginTop='6px'>
-      <Paragraph sx={classes.text}>{validFile?.name}</Paragraph>
+      <Paragraph sx={classes.text}>{validFile?.name ?? fileName}</Paragraph>
       <Tooltip title='Delete' color='primary' placement='top'>
         <Button sx={classes.deleteIcon} onClick={() => deleteFile(validFile)}>
           <svg width='10' height='18' viewBox='0 0 14 18' fill='none' xmlns='http://www.w3.org/2000/svg'>
@@ -123,7 +129,7 @@ const FileUploadModal: React.FC<SubmissionModal> = ({
   return (
     <Modal open={open} onClose={onClose} aria-labelledby='modal-modal-title' aria-describedby='modal-modal-description'>
       <Box sx={{ ...classes.modalCard, width: { xs: '95%', sm: 628 } }}>
-        {validFile ? (
+        {validFile || fileName ? (
           <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'}>
             <Box display='flex' flexDirection='column'>
               <Paragraph size='medium' fontWeight='700'>
@@ -155,13 +161,16 @@ const FileUploadModal: React.FC<SubmissionModal> = ({
           onDrop={fileDrop}
         >
           <SystemUpdateAltRoundedIcon sx={{ transform: 'rotate(-180deg)', fontSize: '35px' }} />
-          <Paragraph size='medium' fontWeight='700' sx={classes.dragAndDropText}>
-            Drag &amp; Drop to Upload
+          <Paragraph fontWeight='700' sx={classes.dragAndDropText}>
+            Drag & Drop to Upload
           </Paragraph>
-          {!validFile && isDownloadTemplate && (
-            <Button sx={{ color: MthColor.MTHBLUE }} onClick={() => onDownloadTemplate && onDownloadTemplate()}>
+          {!validFile && !fileName && isDownloadTemplate && (
+            <Paragraph
+              sx={{ color: MthColor.MTHBLUE, fontSize: '12px', cursor: 'pointer' }}
+              onClick={() => onDownloadTemplate && onDownloadTemplate()}
+            >
               Download Template
-            </Button>
+            </Paragraph>
           )}
           <Paragraph size='medium' color={MthColor.SYSTEM_06} sx={{ marginY: 1, marginBottom: 0 }}>
             Or
@@ -197,7 +206,7 @@ const FileUploadModal: React.FC<SubmissionModal> = ({
           display='flex'
           flexDirection={'row'}
         >
-          {validFile && (
+          {(validFile || fileName) && (
             <>
               <Button sx={classes.cancelButton} variant='contained' onClick={onClose}>
                 Cancel

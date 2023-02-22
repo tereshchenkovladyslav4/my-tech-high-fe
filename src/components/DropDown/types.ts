@@ -21,6 +21,7 @@ export type DropDownProps = {
   testId?: string
   dropDownItems: DropDownItem[]
   placeholder?: string
+  placeholderColor?: string
   setParentValue: (value: string | number | QUESTION_TYPE) => void
   labelTop?: boolean
   sx?: SxProps<Theme> | undefined

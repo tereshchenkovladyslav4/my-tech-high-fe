@@ -16,6 +16,7 @@ export type CheckListField = {
   goal: string
   subject?: string
   grade?: number
+  file_name: string
 }
 
 export type ChecklistTemplateType = {

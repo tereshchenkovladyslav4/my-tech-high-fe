@@ -665,7 +665,7 @@ export const TeacherAppBar: FunctionComponent = () => {
     <>
       <MUIAppBar position='static' sx={{ ...classes.appBar, display: { xs: 'none', sm: 'block' } }} elevation={0}>
         <div style={classes.toolbar}>
-          <Grid container justifyContent='flex' alignItems='center'>
+          <Grid container justifyContent='flex' alignItems='center' sx={{ overflow: 'hidden' }}>
             <Grid item xs={4} />
             <Grid item xs={8} display='flex' justifyContent={'flex-end'} alignItems='center'>
               <Box

@@ -20,4 +20,27 @@ export const useStyles = {
       marginLeft: '0 !important',
     },
   },
+  outlinedTextWrapper: {
+    width: '200px',
+    '& .MuiOutlinedInput-notchedOutline': {
+      borderColor: MthColor.SYSTEM_13,
+      borderRadius: '3px',
+      color: MthColor.BLACK,
+    },
+    '& label': {
+      color: MthColor.SYSTEM_01,
+    },
+    '& .MuiOutlinedInput-root': {
+      '&.Mui-focused fieldset': {
+        border: `1px solid ${MthColor.SYSTEM_13} !important`,
+      },
+    },
+  },
+  dropdownWrapper: {
+    width: '200px',
+    textAlign: 'left',
+    '& .MuiOutlinedInput-notchedOutline': {
+      borderColor: `${MthColor.MTHLIGHTGRAY} !important`,
+    },
+  },
 }

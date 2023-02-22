@@ -49,7 +49,10 @@ const CheckList: React.FC = () => {
   const [filters, setFilters] = useState<ChecklistFilterVM>()
   const [editModal, setEditModal] = useState(false)
   const [selectedChecklist, setSelectedChecklist] = useState<MthTableRowItem<CheckListType>>()
+  const [uploadedFileName, setUploadedFileName] = useState<string>()
+
   const { me } = useContext(UserContext)
+
   const {
     dropdownItems: schoolYearDropdownItems,
     schoolYears: schoolYears,
@@ -246,6 +249,11 @@ const CheckList: React.FC = () => {
           return createData(res)
         }),
       )
+      if (results && results.length > 0) {
+        setUploadedFileName(results[0].file_name.length > 0 ? results[0].file_name : 'undefinedF_file.xlsx')
+      } else {
+        setUploadedFileName(undefined)
+      }
       setTotalChecklist(total)
       if (!selectedCheckListItem) {
         if (results.length > 0) {
@@ -290,7 +298,7 @@ const CheckList: React.FC = () => {
     const ws = XLSX.utils.json_to_sheet(
       tableData.map(({ columns }) => {
         if (selectedCheckListItem === 'subject_checklist') {
-          return { ID: columns.checklistId, Goal: columns.goal, Subject: columns.subject, Grade: columns.grade }
+          return { ID: columns.checklistId, Grade: columns.grade, Subject: columns.subject, Goal: columns.goal }
         } else {
           return { ID: columns.checklistId, Goal: columns.goal }
         }
@@ -335,6 +343,7 @@ const CheckList: React.FC = () => {
           goal: item?.Goal?.toString() ?? '',
           ...(item.Subject && { subject: item?.Subject.toString() }),
           ...(item.Grade && { grade: item?.Grade as number }),
+          file_name: file.name,
         }
       })
       if (dataToSave && dataToSave.length > 0) {
@@ -409,6 +418,7 @@ const CheckList: React.FC = () => {
             handleFile={handleImportTemplate}
             isDownloadTemplate={true}
             isError={fileFormatError}
+            uploadedFileName={uploadedFileName}
           />
         </Box>
 

@@ -12,6 +12,7 @@ export const DropDown: React.FC<DropDownProps> = ({
   testId,
   dropDownItems,
   placeholder,
+  placeholderColor,
   setParentValue,
   labelTop,
   disabled,
@@ -110,7 +111,7 @@ export const DropDown: React.FC<DropDownProps> = ({
                 renderValue={
                   !!value || value === 0
                     ? () => <span>{dropDownItems?.find((item) => item.value == value)?.label}</span>
-                    : () => <span style={{ color: 'gray' }}>{placeholder}</span>
+                    : () => <span style={{ color: placeholderColor ?? 'gray' }}>{placeholder}</span>
                 }
                 sx={{
                   ...sx,

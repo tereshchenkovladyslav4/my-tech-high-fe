@@ -3,10 +3,12 @@ import { useQuery } from '@apollo/client'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import { Box, Card, Container } from '@mui/material'
+import { useFlag } from '@unleash/proxy-client-react'
 import { includes } from 'lodash'
 import { useHistory } from 'react-router-dom'
 import { Breadcrumbs } from '@mth/components/Breadcrumbs/Breadcrumbs'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { BUG_1295 } from '@mth/constants'
 import { MthRoute, PacketStatus } from '@mth/enums'
 import { EnrollmentContext } from '@mth/providers/EnrollmentPacketPrivder/EnrollmentPacketProvider'
 import { TabContext, UserContext } from '@mth/providers/UserContext/UserProvider'
@@ -35,6 +37,8 @@ export const Enrollment: React.FC<EnrollmentProps> = ({ id, disabled }: { id: nu
   const currentTab = useMemo(() => tab?.currentTab || 0, [tab?.currentTab])
   const classes = useStyles
 
+  const bug_1295 = useFlag(BUG_1295)
+
   const { data: regionData } = useQuery<{ userRegionByUserId: UserRegion[] }>(getRegionByUserId, {
     variables: {
       userId: me?.user_id,
@@ -44,7 +48,7 @@ export const Enrollment: React.FC<EnrollmentProps> = ({ id, disabled }: { id: nu
   })
   const regionId = useMemo(() => regionData?.userRegionByUserId[0]?.region_id || 0, [regionData?.userRegionByUserId]) // will update again (localStorage.getItem('selectedRegion'))
 
-  const { data } = useQuery(getParentQuestionsGql, {
+  const { data, loading: questionLoading } = useQuery(getParentQuestionsGql, {
     variables: {
       input: {
         region_id: Number(regionId),
@@ -216,7 +220,15 @@ export const Enrollment: React.FC<EnrollmentProps> = ({ id, disabled }: { id: nu
           <Box sx={classes.breadcrumbs}>
             {/* <Documents id={id} questions={questionsData.filter((q) => q.tab_name === 'Documents')[0]} /> */}
             {currentTabName === 'Contact' ? (
-              <Contact id={id} questions={questionsData.filter((q) => q.tab_name === currentTabName)[0]} />
+              bug_1295 ? (
+                <Contact
+                  id={id}
+                  questions={questionsData.filter((q) => q.tab_name === currentTabName)[0]}
+                  questionLoading={questionLoading}
+                />
+              ) : (
+                <Contact id={id} questions={questionsData.filter((q) => q.tab_name === currentTabName)[0]} />
+              )
             ) : currentTabName === 'Personal' ? (
               <Personal id={id} questions={questionsData.filter((q) => q.tab_name === currentTabName)[0]} />
             ) : currentTabName === 'Education' ? (

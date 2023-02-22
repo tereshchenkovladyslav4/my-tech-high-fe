@@ -211,3 +211,8 @@ export const UpdateStateCodesMutation = gql`
     updateStateCodesById(updateStateCodesInput: $updateStateCodesInput)
   }
 `
+export const CreateStateCodesByTitleIdMutation = gql`
+  mutation CreateStateCodesByTitleId($schoolYearId: Float!) {
+    createStateCodesByTitleId(schoolYearId: $schoolYearId)
+  }
+`

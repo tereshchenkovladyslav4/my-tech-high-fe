@@ -38,7 +38,7 @@ export const Root: React.FC = () => {
   const [isSuper, setIsSuper] = useState(null)
 
   // MARK: Feature Flags
-  const epic1699 = useFlag(EPIC_1699)
+  const epic1699 = !useFlag(EPIC_1699)
 
   useEffect(() => {
     if (!loading && me === null && data !== undefined) {

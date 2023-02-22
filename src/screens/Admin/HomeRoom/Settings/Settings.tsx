@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { useMutation, useQuery } from '@apollo/client'
-import { Alert, AlertColor, Button, Checkbox, TextField, InputAdornment } from '@mui/material'
+import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined'
+import { Alert, AlertColor, Button, Checkbox, TextField, InputAdornment, Typography, Tooltip } from '@mui/material'
 import { Box } from '@mui/system'
 import { useFormik } from 'formik'
 import { map } from 'lodash'
@@ -40,7 +41,10 @@ const Settings: React.FC = () => {
     status: 'success',
     open: false,
   })
+  const [enabledGradesSubjects, setEnabledGradesSubjects] = useState<{ id: number; subject?: string }[]>()
+  const [addedPercentageItems, setAddedPercentagesItems] = useState<{ id: number; percentage?: string }[]>()
 
+  const styles = useStyles
   const {
     dropdownItems: schoolYearDropdownItems,
     schoolYears: schoolYears,
@@ -86,7 +90,7 @@ const Settings: React.FC = () => {
     passing_average: yup.number().required('Required'),
     grades_by_subject: yup.string().required('Required').nullable(),
     notify_when_graded: yup.string().required('Required').nullable(),
-    update_required_schedule_to_sumbit: yup.string().required('Required').nullable(),
+    update_required_schedule_to_submit: yup.string().required('Required').nullable(),
     notify_when_resubmit_required: yup.string().required('Required').nullable(),
     gender: yup.boolean().nullable(),
     special_education: yup.boolean().nullable(),
@@ -102,7 +106,7 @@ const Settings: React.FC = () => {
       passing_average: homeroomSettings?.passing_average,
       grades_by_subject: gradeSubject,
       notify_when_graded: displayStudent,
-      update_required_schedule_to_sumbit: customBuilt,
+      update_required_schedule_to_submit: customBuilt,
       notify_when_resubmit_required: splitEnrollment,
       gender: false,
       special_education: false,
@@ -132,8 +136,8 @@ const Settings: React.FC = () => {
           notify_when_resubmit_required: formik?.values?.notify_when_resubmit_required == 'yes' ? true : false,
           passing_average: Number(formik?.values?.passing_average),
           special_education: formik?.values?.special_education,
-          update_required_schedule_to_sumbit:
-            formik?.values?.update_required_schedule_to_sumbit == 'yes' ? true : false,
+          update_required_schedule_to_submit:
+            formik?.values?.update_required_schedule_to_submit == 'yes' ? true : false,
           zero_count: formik?.values?.zero_count,
         },
       },
@@ -153,7 +157,11 @@ const Settings: React.FC = () => {
             value={homeroomSettings?.days_to_submit_early}
             onChange={(e) => {
               formik.setFieldValue('days_to_submit_early', e.target.value)
-              setChanged(true)
+              if (e.target.value) {
+                setChanged(true)
+              } else {
+                setChanged(false)
+              }
             }}
           />
         </Box>
@@ -216,18 +224,19 @@ const Settings: React.FC = () => {
         <DropDown
           defaultValue={customBuilt}
           name='schedule_to_submit'
-          sx={{ width: '200px', textAlign: 'left' }}
+          sx={styles.dropdownWrapper}
           dropDownItems={enabledOptions}
           placeholder='Select'
+          placeholderColor={MthColor.BLACK}
           setParentValue={(id) => {
             setChanged(true)
-            formik.setFieldValue('update_required_schedule_to_sumbit', id)
+            formik.setFieldValue('update_required_schedule_to_submit', id)
           }}
           error={{
             error:
-              !!formik.errors.update_required_schedule_to_sumbit && formik.touched.update_required_schedule_to_sumbit,
-            errorMsg: (formik.touched.update_required_schedule_to_sumbit &&
-              formik.errors.update_required_schedule_to_sumbit) as string,
+              !!formik.errors.update_required_schedule_to_submit && formik.touched.update_required_schedule_to_submit,
+            errorMsg: (formik.touched.update_required_schedule_to_submit &&
+              formik.errors.update_required_schedule_to_submit) as string,
           }}
         />
       ),
@@ -239,9 +248,10 @@ const Settings: React.FC = () => {
           <DropDown
             defaultValue={splitEnrollment}
             name='notify_when_resubmit_required'
-            sx={{ width: '200px', textAlign: 'left' }}
+            sx={styles.dropdownWrapper}
             dropDownItems={enabledOptions}
             placeholder='Select'
+            placeholderColor={MthColor.BLACK}
             setParentValue={(id) => {
               setChanged(true)
               formik.setFieldValue('notify_when_resubmit_required', id)
@@ -265,9 +275,10 @@ const Settings: React.FC = () => {
         <DropDown
           defaultValue={displayStudent}
           name='notify_when_graded'
-          sx={{ width: '200px', textAlign: 'left' }}
+          sx={styles.dropdownWrapper}
           dropDownItems={enabledOptions}
           placeholder='Select'
+          placeholderColor={MthColor.BLACK}
           setParentValue={(id) => {
             setChanged(true)
             formik.setFieldValue('notify_when_graded', id)
@@ -288,7 +299,11 @@ const Settings: React.FC = () => {
             placeholder='Entry'
             onChange={(e) => {
               formik.setFieldValue('max_of_excused_learning_logs_allowed', e.target.value)
-              setChanged(true)
+              if (e.target.value) {
+                setChanged(true)
+              } else {
+                setChanged(false)
+              }
             }}
             sx={{ width: '200px' }}
           />
@@ -299,21 +314,83 @@ const Settings: React.FC = () => {
       name: HomeroomSettings.GRADING_SCALE,
       component: (
         <Box display='flex' sx={{ gap: '32px' }}>
-          <Box>
+          <Box textAlign='left'>
             <TextField
               type='number'
               label='Percentage'
               placeholder='Entry'
-              sx={{ width: '200px' }}
+              sx={styles.outlinedTextWrapper}
               onChange={(e) => {
                 formik.setFieldValue('grading_scale_percentage', e.target.value)
-                setChanged(true)
+                if (e.target.value) {
+                  setChanged(true)
+                } else {
+                  setChanged(false)
+                }
               }}
               InputProps={{
-                endAdornment: <InputAdornment position='end'>%</InputAdornment>,
+                endAdornment: (
+                  <InputAdornment position='end'>
+                    <Typography color={MthColor.BLACK}>%</Typography>
+                  </InputAdornment>
+                ),
+              }}
+              InputLabelProps={{
+                shrink: true,
               }}
             />
-            <Subtitle size={16} color={MthColor.MTHBLUE} textAlign='left' sx={{ marginTop: '18px', cursor: 'pointer' }}>
+            {addedPercentageItems?.map((obj, index) => {
+              return (
+                <Box sx={{ marginTop: '24px' }} key={index}>
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <TextField
+                      type='number'
+                      label='Percentage'
+                      placeholder='Entry'
+                      defaultValue={obj?.percentage ?? ''}
+                      sx={styles.outlinedTextWrapper}
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position='end'>
+                            <Typography color={MthColor.BLACK}>%</Typography>
+                          </InputAdornment>
+                        ),
+                      }}
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
+                    />
+                    <Box
+                      onClick={() => {
+                        setAddedPercentagesItems(
+                          addedPercentageItems.filter((item) => Number(item.id) !== Number(obj.id)),
+                        )
+                      }}
+                    >
+                      <Tooltip title='Delete' placement='top'>
+                        <DeleteForeverOutlinedIcon
+                          sx={{ cursor: 'pointer', width: '70px', color: MthColor.BLACK }}
+                          fontSize='medium'
+                        />
+                      </Tooltip>
+                    </Box>
+                  </Box>
+                </Box>
+              )
+            })}
+            <Subtitle
+              size={16}
+              fontWeight='600'
+              color={MthColor.MTHBLUE}
+              textAlign='left'
+              sx={{ marginTop: '18px', cursor: 'pointer' }}
+              onClick={() => {
+                setAddedPercentagesItems([
+                  ...(addedPercentageItems ?? []),
+                  { id: addedPercentageItems?.length ?? 1, percentage: '' },
+                ])
+              }}
+            >
               + Add Percentage
             </Subtitle>
           </Box>
@@ -326,13 +403,24 @@ const Settings: React.FC = () => {
                 type='number'
                 label='Percentage'
                 placeholder='Entry'
-                sx={{ width: '200px' }}
+                sx={styles.outlinedTextWrapper}
                 onChange={(e) => {
                   formik.setFieldValue('passing_average', e.target.value)
-                  setChanged(true)
+                  if (e.target.value) {
+                    setChanged(true)
+                  } else {
+                    setChanged(false)
+                  }
                 }}
                 InputProps={{
-                  endAdornment: <InputAdornment position='end'>%</InputAdornment>,
+                  endAdornment: (
+                    <InputAdornment position='end' sx={{ color: MthColor.BLACK }}>
+                      <Typography color={MthColor.BLACK}>%</Typography>
+                    </InputAdornment>
+                  ),
+                }}
+                InputLabelProps={{
+                  shrink: true,
                 }}
               />
             </Box>
@@ -362,30 +450,72 @@ const Settings: React.FC = () => {
           <DropDown
             defaultValue={gradeSubject}
             name='grades_subject'
-            sx={{ width: '200px', textAlign: 'left' }}
+            sx={styles.dropdownWrapper}
             dropDownItems={gradesSubjectOptions}
             placeholder='Select'
+            placeholderColor={MthColor.BLACK}
             setParentValue={(value) => {
               setChanged(true)
               formik.setFieldValue('grades_by_subject', value)
+              if (value === 'enabled') {
+                setEnabledGradesSubjects([{ id: 1, subject: '' }])
+              } else {
+                setEnabledGradesSubjects([])
+              }
             }}
             error={{
               error: !!formik.errors.grades_by_subject && formik.touched.grades_by_subject,
               errorMsg: (formik.touched.grades_by_subject && formik.errors.grades_by_subject) as string,
             }}
           />
+          {formik.values.grades_by_subject === 'enabled' &&
+            enabledGradesSubjects?.map((obj, index) => {
+              return (
+                <Box textAlign='left' sx={{ marginTop: '24px' }} key={index}>
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <TextField
+                      placeholder='Entry'
+                      defaultValue={obj?.subject ?? ''}
+                      label='Subject'
+                      sx={styles.outlinedTextWrapper}
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
+                    />
+                    <Box
+                      onClick={() => {
+                        setEnabledGradesSubjects(
+                          enabledGradesSubjects.filter((item) => Number(item.id) !== Number(obj.id)),
+                        )
+                      }}
+                    >
+                      <Tooltip title='Delete' placement='top'>
+                        <DeleteForeverOutlinedIcon
+                          sx={{ cursor: 'pointer', width: '70px', color: MthColor.BLACK }}
+                          fontSize='medium'
+                        />
+                      </Tooltip>
+                    </Box>
+                  </Box>
+                </Box>
+              )
+            })}
           {formik.values.grades_by_subject === 'enabled' && (
-            <Box textAlign='left' sx={{ marginTop: '24px', width: '200px' }}>
-              <TextField placeholder='Entry' defaultValue={''} variant='outlined' label='Subject' focused />
-              <Subtitle
-                size={16}
-                color={MthColor.MTHBLUE}
-                textAlign='left'
-                sx={{ marginTop: '18px', cursor: 'pointer' }}
-              >
-                + Add Subject
-              </Subtitle>
-            </Box>
+            <Subtitle
+              size={16}
+              fontWeight='600'
+              color={MthColor.MTHBLUE}
+              textAlign='left'
+              sx={{ marginTop: '18px', cursor: 'pointer' }}
+              onClick={() => {
+                setEnabledGradesSubjects([
+                  ...(enabledGradesSubjects ?? []),
+                  { id: enabledGradesSubjects?.length ? enabledGradesSubjects.length + 1 : 1, subject: '' },
+                ])
+              }}
+            >
+              + Add Subject
+            </Subtitle>
           )}
         </Box>
       ),
@@ -413,7 +543,7 @@ const Settings: React.FC = () => {
 
   return (
     <form onSubmit={formik.handleSubmit} style={{ height: '100%' }}>
-      <Box sx={useStyles.baseSettings}>
+      <Box sx={styles.baseSettings}>
         <PageHeader title='Homeroom Settings' to={MthRoute.HOMEROOM}>
           <Button
             variant='contained'
@@ -449,10 +579,10 @@ const Settings: React.FC = () => {
               selectItem={item}
               verticalDividHeight={
                 item.name === HomeroomSettings.GRADING_SCALE
-                  ? '120px'
+                  ? `${addedPercentageItems ? addedPercentageItems.length * 80 + 100 : 120}px`
                   : item.name === HomeroomSettings.GRADES_SUBJECT
                   ? formik.values.grades_by_subject === 'enabled'
-                    ? '180px'
+                    ? `${enabledGradesSubjects && enabledGradesSubjects.length * 80 + 100}px`
                     : '50px'
                   : '50px'
               }

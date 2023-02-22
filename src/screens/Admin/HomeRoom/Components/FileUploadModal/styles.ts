@@ -22,7 +22,7 @@ export const FileUploadModalClasses = {
     marginTop: '5px',
     marginBottom: '14px',
     padding: '12px',
-    fontSize: '10px',
+    fontSize: '9.12px',
   },
   finishButtonContainer: {
     display: 'flex',
@@ -47,8 +47,8 @@ export const FileUploadModalClasses = {
     fontWeight: 700,
   },
   dragAndDropText: {
+    fontSize: '12px',
     marginTop: '14px',
-    marginBotton: '4px',
   },
   input: {
     display: 'none',

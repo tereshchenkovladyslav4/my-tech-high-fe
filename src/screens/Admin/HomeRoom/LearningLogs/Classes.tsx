@@ -133,7 +133,7 @@ const ClassesComponent: React.FC<ClassessProps> = ({ master, refetch }) => {
       columns: {
         name: classesItem.class_name,
         teacher: classesItem?.PrimaryTeacher
-          ? classesItem?.PrimaryTeacher.firstName + ' ' + classesItem?.PrimaryTeacher.lastName
+          ? classesItem?.PrimaryTeacher?.first_name + ' ' + classesItem?.PrimaryTeacher?.last_name
           : '',
         students: classesItem?.HomeroomStudents.length,
         ungraded: 0,

@@ -32,6 +32,8 @@ export enum MthColor {
 
   BG_MAIN = '#FAFAFA',
 
+  MTHLIGHTGRAY = 'rgba(26, 26, 26, 0.25)',
+
   SYSTEM_01 = '#0E0E0E',
   SYSTEM_02 = '#313131',
   SYSTEM_03 = '#575757',
@@ -44,6 +46,7 @@ export enum MthColor {
   SYSTEM_10 = '#CCCCCC',
   SYSTEM_11 = '#898C8F',
   SYSTEM_12 = '#A3A3A4',
+  SYSTEM_13 = '#1A1A1A',
 
   PRIMARY_MEDIUM_MOUSEOVER = '#585CFF',
   BLACK_MOUSEOVER = '#292626',

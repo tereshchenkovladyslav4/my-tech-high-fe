@@ -87,6 +87,7 @@ export const getChecklistQuery = gql`
         goal
         subject
         status
+        file_name
       }
     }
   }

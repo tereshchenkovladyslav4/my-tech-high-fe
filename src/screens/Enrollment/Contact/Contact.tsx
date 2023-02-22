@@ -1,11 +1,12 @@
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { useMutation } from '@apollo/client'
 import { Grid, Box, Button } from '@mui/material'
+import { useFlag } from '@unleash/proxy-client-react'
 import { useFormik } from 'formik'
 import { omit } from 'lodash'
 import * as yup from 'yup'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
-import { isNumber } from '@mth/constants'
+import { BUG_1295, isNumber } from '@mth/constants'
 import { QUESTION_TYPE } from '@mth/enums'
 import { EnrollmentContext } from '@mth/providers/EnrollmentPacketPrivder/EnrollmentPacketProvider'
 import { TabContext, UserContext, UserInfo } from '@mth/providers/UserContext/UserProvider'
@@ -14,12 +15,14 @@ import { useStyles } from '../styles'
 import { enrollmentContactMutation } from './service'
 import { ContactProps } from './types'
 
-export const Contact: React.FC<ContactProps> = ({ id, questions }) => {
+export const Contact: React.FC<ContactProps> = ({ id, questions, questionLoading }) => {
   const { me, setMe } = useContext(UserContext)
   const { tab, setTab, setVisitedTabs } = useContext(TabContext)
   const { setPacketId, disabled } = useContext(EnrollmentContext)
   const { profile, students } = me as UserInfo
   const student = students.find((s) => parseInt(s.student_id) === parseInt(id))
+
+  const bug_1295 = useFlag(BUG_1295)
 
   const classes = useStyles
 
@@ -271,11 +274,19 @@ export const Contact: React.FC<ContactProps> = ({ id, questions }) => {
           <GroupItem key={index} group={item} formik={formik} />
         ))}
         <Box sx={classes.buttonContainer}>
-          <Button sx={classes.button} type='submit'>
-            <Paragraph fontWeight='700' size='medium'>
-              {disabled ? 'Next' : 'Save & Continue'}
-            </Paragraph>
-          </Button>
+          {bug_1295 ? (
+            <Button sx={classes.button} type='submit' disabled={questionLoading}>
+              <Paragraph fontWeight='700' size='medium'>
+                {disabled ? 'Next' : 'Save & Continue'}
+              </Paragraph>
+            </Button>
+          ) : (
+            <Button sx={classes.button} type='submit'>
+              <Paragraph fontWeight='700' size='medium'>
+                {disabled ? 'Next' : 'Save & Continue'}
+              </Paragraph>
+            </Button>
+          )}
         </Box>
       </Grid>
     </form>

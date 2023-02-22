@@ -82,19 +82,22 @@ const TitleEdit: React.FC<TitleEditProps> = ({
   })
   const onSave = async (value: Title) => {
     setIsSubmitted(true)
-    const newStateCourseCords = value.stateCourseCords ?? []
-    if (!value.stateCourseCords) {
-      const grades: number[] = [value.min_grade, value.min_alt_grade, value.max_grade, value.max_alt_grade].filter(
-        (item) => !!item,
-      ) as number[]
-      const minGrade = Math.min(...grades, Number.POSITIVE_INFINITY)
-      const maxGrade = Math.max(...grades, Number.NEGATIVE_INFINITY)
-      if (minGrade !== maxGrade) {
-        for (let i = minGrade === -1 ? 0 : minGrade; i <= (maxGrade === -1 ? 0 : maxGrade); i++) {
-          newStateCourseCords.push({ gradeIndex: i, stateCode: '', teacher: '' })
-        }
+    const newStateCourseCords: StateCourseCord[] = []
+    const grades: number[] = [value.min_grade, value.min_alt_grade, value.max_grade, value.max_alt_grade].filter(
+      (item) => !!item,
+    ) as number[]
+    const minGrade = Math.min(...grades, Number.POSITIVE_INFINITY)
+    const maxGrade = Math.max(...grades, Number.NEGATIVE_INFINITY)
+    if (minGrade !== maxGrade) {
+      for (let i = minGrade === -1 ? 0 : minGrade; i <= (maxGrade === -1 ? 0 : maxGrade); i++) {
+        newStateCourseCords.push({
+          gradeIndex: i,
+          stateCode: value?.stateCourseCords?.find((obj) => obj.gradeIndex === i)?.stateCode ?? '',
+          teacher: value?.stateCourseCords?.find((obj) => obj.gradeIndex === i)?.teacher ?? '',
+        })
       }
     }
+
     await submitSave({
       variables: {
         createTitleInput: {

@@ -13,7 +13,12 @@ import { SchoolYearDropDown } from '@mth/screens/Admin/Components/SchoolYearDrop
 import { FileUploadModal } from '@mth/screens/Admin/HomeRoom/Components/FileUploadModal'
 import { mthButtonClasses, mthButtonSizeClasses } from '@mth/styles/button.style'
 import { useStyles } from '../../styles'
-import { createStateCodesMutation, getStateCodesQuery, UpdateStateCodesMutation } from '../services'
+import {
+  createStateCodesMutation,
+  getStateCodesQuery,
+  CreateStateCodesByTitleIdMutation,
+  UpdateStateCodesMutation,
+} from '../services'
 import { EditStateCodesModal } from './EditStateCodesModal'
 import Filter from './Filter'
 import { StateCodeField, StateCodesTemplateType, StateCodeType } from './types'
@@ -32,8 +37,10 @@ const StateCodes: React.FC = () => {
   const [editModal, setEditModal] = useState<boolean>(false)
   const [selectedStateCodes, setSelectedStateCodes] = useState<MthTableRowItem<StateCodeType>>()
   const [fileFormatError, setFileFormatError] = useState(false)
-  const [createNewStateCodes] = useMutation(createStateCodesMutation)
   const [isDownload, setIsDownload] = useState(false)
+
+  const [createNewStateCodes] = useMutation(createStateCodesMutation)
+  const [createStateCodesBySchoolYearId] = useMutation(CreateStateCodesByTitleIdMutation)
   const initialPageNumber = 1
   const { data: stateCodesData, refetch } = useQuery(getStateCodesQuery, {
     variables: {
@@ -47,6 +54,18 @@ const StateCodes: React.FC = () => {
     fetchPolicy: 'network-only',
   })
 
+  const restoreStateCodes = async () => {
+    if (selectedYearId) {
+      const result = await createStateCodesBySchoolYearId({
+        variables: {
+          schoolYearId: Number(selectedYearId),
+        },
+      })
+      if (result.data.createStateCodesByTitleId) {
+        refetch()
+      }
+    }
+  }
   const createData = (stateCodes: StateCodeField): MthTableRowItem<StateCodeType> => {
     const columns: StateCodeType = {
       stateCodesId: stateCodes.state_codes_id,
@@ -68,6 +87,10 @@ const StateCodes: React.FC = () => {
     if (stateCodesData !== undefined) {
       const { stateCodes } = stateCodesData
       const { results, total } = stateCodes
+      if (total <= 0) {
+        restoreStateCodes()
+        return
+      }
       if (!isDownload) {
         setTableData(
           results.map((res: StateCodeField) => {

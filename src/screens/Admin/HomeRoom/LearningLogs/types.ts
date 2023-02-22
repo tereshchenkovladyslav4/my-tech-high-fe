@@ -9,8 +9,8 @@ export type Classes = {
   class_id: number
   class_name: string
   PrimaryTeacher?: {
-    firstName?: string
-    lastName?: string
+    first_name?: string
+    last_name?: string
     user_id?: number
   }
   students?: number
