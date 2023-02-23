@@ -174,7 +174,11 @@ const WithdrawalPage: React.FC<WithdrawalPageProps> = ({
             ''
           ),
           student: withdrawal?.student_name,
-          grade: withdrawal?.grade_level === 'Kin' ? 'K' : withdrawal?.grade_level,
+          grade: parseInt(withdrawal?.grade_level)
+            ? withdrawal?.grade_level
+            : withdrawal?.grade_level?.toLowerCase()?.startsWith('k')
+            ? 'K'
+            : '',
           soe: withdrawal?.soe,
           funding: withdrawal?.funding, //	TODO
           emailed: withdrawal?.date_emailed ? (

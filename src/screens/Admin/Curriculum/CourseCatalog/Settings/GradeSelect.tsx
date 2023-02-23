@@ -14,11 +14,11 @@ import {
 import { map } from 'lodash'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
-import { GRADES } from '@mth/constants'
 import { MthColor } from '@mth/enums'
 import { renderGrades, toOrdinalSuffix } from '@mth/utils'
 
 export type GradesSelectProps = {
+  availableGradesStr?: string
   grades: string
   setGrades: (value: string) => void
   setIsChanged?: (value: boolean) => void
@@ -27,7 +27,8 @@ export type GradesSelectProps = {
   sx?: SxProps
 }
 
-export const GradesSelect: React.FC<GradesSelectProps> = ({
+export const GradeSelect: React.FC<GradesSelectProps> = ({
+  availableGradesStr,
   grades,
   setGrades,
   setIsChanged,
@@ -37,7 +38,7 @@ export const GradesSelect: React.FC<GradesSelectProps> = ({
 }) => {
   const [open, setOpen] = useState<boolean>(false)
   const [gradesArr, setGradesArr] = useState<string[]>([])
-
+  const [availableGrades, setAvailableGrades] = useState<string[]>([])
   useEffect(() => {
     if (grades != undefined && grades != '') {
       setGradesArr(grades.split(','))
@@ -45,6 +46,14 @@ export const GradesSelect: React.FC<GradesSelectProps> = ({
       setGradesArr([])
     }
   }, [grades])
+  useEffect(() => {
+    if (availableGradesStr) {
+      setAvailableGrades(availableGradesStr.split(',').sort((a, b) => (parseInt(a) || 0) - (parseInt(b) || 0)))
+    } else {
+      setAvailableGrades([])
+    }
+  }, [availableGradesStr])
+
   const handleClickOpen = () => {
     setOpen(true)
   }
@@ -76,15 +85,15 @@ export const GradesSelect: React.FC<GradesSelectProps> = ({
   }
 
   const renderGradeList = () =>
-    map(GRADES, (grade, index) => {
-      if (typeof grade !== 'string') {
+    map(availableGrades, (grade, index) => {
+      if (parseInt(grade)) {
         return (
           <FormControlLabel
             key={index}
             sx={{ height: 40 }}
             control={
               <Checkbox
-                checked={gradesArr.includes(grade.toString())}
+                checked={gradesArr.includes(grade)}
                 value={grade}
                 onChange={handleChangeGrades}
                 sx={{
@@ -98,7 +107,7 @@ export const GradesSelect: React.FC<GradesSelectProps> = ({
             }
             label={
               <Paragraph size='large' fontWeight='500' sx={{ marginLeft: 5, fontSize: '19.8627px' }}>
-                {`${toOrdinalSuffix(grade)} Grade`}
+                {`${toOrdinalSuffix(parseInt(grade))} Grade`}
               </Paragraph>
             }
           />

@@ -37,10 +37,15 @@ import {
 
 export const EnrollmentPacketTable: React.FC = () => {
   const { me } = useContext(UserContext)
-  const [filters, setFilters] = useState(['Submitted', 'Resubmitted'])
+  const [filters, setFilters] = useState(['Submitted', 'Resubmitted', 'Age Issue'])
 
   const [emailTemplate, setEmailTemplate] = useState()
   const [searchText, setSearchText] = useState('')
+  const [searchField, setSearchField] = useState('')
+  useEffect(() => {
+    const timer = setTimeout(() => setSearchField(searchText), 600)
+    return () => clearTimeout(timer)
+  }, [searchText])
   const [tableData, setTableData] = useState<Array<unknown>>([])
 
   const [paginatinLimit, setPaginatinLimit] = useState(25)
@@ -199,7 +204,7 @@ export const EnrollmentPacketTable: React.FC = () => {
       skip: skip,
       sort: sort,
       take: paginatinLimit,
-      search: searchText,
+      search: searchField,
       timezoneOffsetStr,
       filters: filters,
       selectedYearId,
@@ -221,6 +226,7 @@ export const EnrollmentPacketTable: React.FC = () => {
     variables: {
       regionId: me?.selectedRegionId,
       schoolYearId: selectedYearId,
+      filters: filters,
     },
     skip: !me?.selectedRegionId,
     fetchPolicy: 'network-only',
@@ -307,6 +313,22 @@ export const EnrollmentPacketTable: React.FC = () => {
       refetchPacketCount()
     }
   }, [enrollmentPacketsData])
+
+  useEffect(() => {
+    if (filters.length === 1 && filters[0] === 'Age Issue') {
+      window.location.reload()
+    }
+
+    if (
+      !filters.some((filter) => filter === 'Submitted') &&
+      !filters.some((filter) => filter === 'Resubmitted') &&
+      !filters.some((filter) => filter === 'Conditional') &&
+      filters.some((filter) => filter === 'Age Issue')
+    ) {
+      const newFilters = filters.filter((filter) => filter !== 'Age Issue')
+      setFilters(newFilters)
+    }
+  }, [filters])
 
   useEffect(() => {
     if (countGroup) {

@@ -6,8 +6,7 @@ import { Box, Button, Card, Grid } from '@mui/material'
 import { useTheme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { Formik, FieldArray, Form, Field } from 'formik'
-import { toNumber } from 'lodash'
-import { omit } from 'lodash'
+import { omit, toNumber } from 'lodash'
 import moment from 'moment'
 import { useHistory } from 'react-router-dom'
 import { object, string } from 'yup'
@@ -222,10 +221,8 @@ export const ExistingParent: React.FC = () => {
   const submitApplication = async (data) => {
     const submitStudents = data.students?.map((s) => {
       return {
-        ...omit(s, ['emailConfirm']),
+        ...omit(s, ['emailConfirm', 'parent']),
         meta: JSON.stringify(s?.meta || {}),
-        // address: { ...s.address, county_id: Number(s.address?.county_id) || -1,
-        //    school_district: s.packet?.school_district }, packet: omit(s.packet, ['school_district'])
       }
     })
     submitApplicationAction({

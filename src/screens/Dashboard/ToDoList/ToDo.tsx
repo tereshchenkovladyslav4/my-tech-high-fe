@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { Box, Card, CircularProgress } from '@mui/material'
 import BGSVG from '@mth/assets/ToDoListBG.svg'
 import { EmptyState } from '@mth/components/EmptyState/EmptyState'
@@ -65,7 +65,6 @@ export const ToDo: React.FC<TodoProps> = ({
   const cardRef = useRef(null)
   const [showEmpty, setShowEmpty] = useState(false)
   const [windowDimensions, setWindowDimensions] = useState(0)
-
   useEffect(() => {
     function handleResize() {
       setWindowDimensions(cardRef.current.offsetWidth)
@@ -75,9 +74,9 @@ export const ToDo: React.FC<TodoProps> = ({
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
-  const handleShowEmpty = (isEmpty: boolean) => {
+  const handleShowEmpty = useCallback((isEmpty: boolean) => {
     setShowEmpty(isEmpty)
-  }
+  }, [])
 
   return (
     <Card sx={{ paddingY: { xs: 0, sm: 4 }, paddingX: { xs: 0, sm: 8 } }} ref={cardRef}>

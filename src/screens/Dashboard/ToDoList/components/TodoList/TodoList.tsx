@@ -35,10 +35,17 @@ export const TodoList: React.FC<TodoListProps> = ({
     fetchPolicy: 'network-only',
   })
   useEffect(() => {
+    if (!loading) {
+      if (setIsLoading) {
+        setIsLoading(false)
+      }
+    }
+  }, [loading, setIsLoading])
+  useEffect(() => {
     if (data !== undefined && schoolYears?.length > 0) {
       const { parent_todos } = data
       let todoListCount = 0
-      setTodoList([])
+      let newTodoList: ToDoItem[] = []
       forOwn(parent_todos, (item: ToDoItem, key) => {
         if (key !== '__typename') {
           if (item.category == ToDoCategory.SUBMIT_ENROLLMENT_PACKET) {
@@ -49,46 +56,40 @@ export const TodoList: React.FC<TodoListProps> = ({
                 (student) => student.current_school_year_status.application_date_accepted,
               ),
             ).reduce((list: ToDoItem[], students) => list.concat([{ ...item, students: students }]), [])
-            setTodoList((prev) => [...prev, ...splitItems])
+            newTodoList = newTodoList.concat(splitItems)
           } else if (item.category == ToDoCategory.SUBMIT_WITHDRAW) {
             // If there are multiple students, they should each have their own to-do item
             const splitItems: ToDoItem[] = item.students.reduce(
               (list: ToDoItem[], student) => list.concat([{ ...item, students: [student] }]),
               [],
             )
-            setTodoList((prev) => [...prev, ...splitItems])
+            newTodoList = newTodoList.concat(splitItems)
           } else {
             const splitItems: ToDoItem[] = item.students.reduce(
               (list: ToDoItem[], student) => list.concat([{ ...item, students: [student] }]),
               [],
             )
             if (filteredByStudent) {
-              setTodoList((prev) => [
-                ...prev,
-                ...splitItems.filter((item) =>
+              newTodoList = newTodoList.concat(
+                splitItems.filter((item) =>
                   item?.students.find((student: Student) => student.student_id == filteredByStudent),
                 ),
-              ])
+              )
             } else {
-              setTodoList((prev) => [...prev, ...splitItems])
+              newTodoList = newTodoList.concat(splitItems)
             }
           }
-
           if (item.students.length) {
             todoListCount++
           }
         }
       })
+      setTodoList(newTodoList)
       if (todoListCount == 0) {
         handleShowEmpty(true)
       }
     }
-    if (!loading) {
-      if (setIsLoading) {
-        setIsLoading(false)
-      }
-    }
-  }, [loading, filteredByStudent, data, schoolYears?.length])
+  }, [filteredByStudent, data, schoolYears, handleShowEmpty])
 
   useEffect(() => {
     if (setMainTodoList) {

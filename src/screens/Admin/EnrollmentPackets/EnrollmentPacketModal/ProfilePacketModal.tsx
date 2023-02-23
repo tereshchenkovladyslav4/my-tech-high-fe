@@ -234,7 +234,7 @@ export const ProfilePacketModal: React.FC<ProfilePacketModalProps> = ({ handleMo
         last_name: packet?.student?.person?.last_name,
         address: {},
       },
-      parent: { ...omit(packet?.student?.parent?.person, ['person_id', 'address', 'emailConfirm']) },
+      parent: { ...omit(packet?.student?.parent?.person, ['person_id', 'address', 'emailConfirm', 'user']) },
       meta: {},
       student_person_id: Number(packet?.student?.person?.person_id),
       parent_person_id: Number(packet?.student?.parent?.person?.person_id),

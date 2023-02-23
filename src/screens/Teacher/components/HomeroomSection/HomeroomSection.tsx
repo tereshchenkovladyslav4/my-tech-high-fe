@@ -11,7 +11,7 @@ import { getWindowDimension } from '../../../../core/utils/window.util'
 import { TeacherItem } from '../TeacherItem'
 
 type HomeroomSectionProps = {
-  title: String
+  title: string
   teachers?: Teacher[]
 }
 

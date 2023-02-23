@@ -51,6 +51,7 @@ export const getSchoolYear = gql`
   query GetSchoolYear($school_year_id: ID!) {
     getSchoolYear(school_year_id: $school_year_id) {
       school_year_id
+      grades
       ScheduleBuilder {
         id
         max_num_periods

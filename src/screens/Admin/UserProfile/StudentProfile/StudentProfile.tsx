@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext, useMemo } from 'react'
+import React, { useEffect, useState, useContext, useMemo, useCallback } from 'react'
 import { useQuery } from '@apollo/client'
 import { makeStyles } from '@material-ui/styles'
 import { KeyboardArrowDown } from '@mui/icons-material'
@@ -14,6 +14,7 @@ import {
   RadioGroup,
   Radio,
   Typography,
+  SelectChangeEvent,
 } from '@mui/material'
 import { Box } from '@mui/system'
 import moment from 'moment-timezone'
@@ -173,13 +174,14 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
 
   const SoEitems = useMemo(() => {
     if (schoolPartnerData?.getSchoolsOfEnrollmentByRegion?.length) {
-      const partnerList = schoolPartnerData.getSchoolsOfEnrollmentByRegion
-        .filter((el) => !!el.active)
-        .map((item) => ({
-          value: item.school_partner_id,
-          label: item.name,
-          abb: item.abbreviation,
-        }))
+      const partnerList: { value: string; label: string; abb: string }[] =
+        schoolPartnerData.getSchoolsOfEnrollmentByRegion
+          .filter((el) => !!el.active)
+          .map((item) => ({
+            value: String(item.school_partner_id || 'unassigned'),
+            label: String(item.name),
+            abb: String(item.abbreviation),
+          }))
       partnerList.push({
         value: 'unassigned',
         label: 'Unassigned',
@@ -221,11 +223,10 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
   const [canMessage, setCanMessage] = useState(false)
   const [showPacketModal, setShowPacketModal] = useState(false)
   const [packetID, setPacketID] = useState(0)
-  const [tempSoE, setTempSoE] = useState('')
+  const [tempSoE, setTempSoE] = useState('unassigned')
   const [assignOrTransfer, setAssignOrTransfer] = useState('assign')
   const [modalAssign, setModalAssign] = useState(false)
-  const [schoolPartnerId, setSchoolPartnerId] = useState('')
-
+  const [schoolPartnerId, setSchoolPartnerId] = useState('unassigned')
   const handlePacket = () => {
     if (packets.length <= 0) return
 
@@ -245,13 +246,10 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
   ]
 
   const currentSoE = useMemo(() => {
-    let currentSoE = false
-    if (selectedYearId && student.currentSoe?.length) {
-      currentSoE = student.currentSoe.find((soe) => soe.school_year_id == selectedYearId)
-      if (currentSoE) setSchoolPartnerId(currentSoE.school_partner_id)
-    }
-    return currentSoE?.school_partner_id
-  }, [selectedYearId])
+    const soe = student?.currentSoe?.find((e) => String(e.school_year_id) === String(selectedYearId))
+    setSchoolPartnerId(String(soe?.school_partner_id || 'unassigned'))
+    return String(soe?.school_partner_id || 'unassigned')
+  }, [selectedYearId, student?.currentSoe])
 
   const previousYearId = useMemo(() => {
     const shoolYears = regionData?.region?.SchoolYears || []
@@ -278,32 +276,35 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
     [student, previousYearId],
   )
 
-  const setSOE = (school_partner_id) => {
-    setSchoolPartnerId(school_partner_id)
-    const school_partner = { school_partner_id, school_partner_id_updated: false }
-    if (school_partner_id != currentSoE) {
-      school_partner.school_partner_id_updated = true
-    }
-    setStudentStatus({
-      ...studentStatus,
-      ...school_partner,
-    })
-  }
+  const setSOE = useCallback(
+    (newSchoolPartnerId: string) => {
+      setSchoolPartnerId(newSchoolPartnerId)
+      setStudentStatus({
+        ...studentStatus,
+        school_partner_id: parseInt(newSchoolPartnerId) | 0,
+        school_partner_id_updated: newSchoolPartnerId != currentSoE,
+      })
+    },
+    [currentSoE, setStudentStatus, studentStatus],
+  )
 
-  const handleChangeSoE = (e) => {
-    if (!currentSoE) {
-      setSOE(e.target.value)
-    } else if (e.target.value != currentSoE) {
-      setTempSoE(e.target.value)
-      setModalAssign(true)
-    }
-  }
+  const handleChangeSoE = useCallback(
+    (e: SelectChangeEvent) => {
+      if (currentSoE === 'unassigned' || e.target.value === currentSoE) {
+        setSOE(e.target.value)
+      } else {
+        setTempSoE(e.target.value)
+        setModalAssign(true)
+      }
+    },
+    [currentSoE, setSOE],
+  )
 
   const handleAssignOrTransfer = async () => {
-    if (assignOrTransfer === 'assign' || !currentSoE) {
+    if (assignOrTransfer === 'assign' || currentSoE == 'unassiigned') {
       setSOE(tempSoE)
       setModalAssign(false)
-    } else if (currentSoE && previousSoE) {
+    } else if (currentSoE != 'unassigned' && previousSoE) {
       // create a transfer form with last year's SoE
       setModalAssign(false)
     }
@@ -433,7 +434,7 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
         status: student?.status?.length && student.status.at(-1).status,
         date: student?.status?.length > 0 ? student.status.at(-1).date_updated : '',
         school_year_id: student.applications.length && student.applications[0].school_year_id,
-        school_partner_id: student?.currentSoe?.[0]?.school_partner_id,
+        school_partner_id: parseInt(String(student?.currentSoe?.[0]?.school_partner_id || '0')) || 0,
         school_partner_id_updated: false,
         brith: student?.person.date_of_birth,
       })
@@ -559,7 +560,7 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
               <Select
                 IconComponent={KeyboardArrowDown}
                 className={classes.select}
-                sx={{ color: '#cccccc', fontWeight: '700' }}
+                sx={{ color: MthColor.SYSTEM_07, fontWeight: '700' }}
                 value={schoolPartnerId}
                 onChange={handleChangeSoE}
               >
@@ -950,7 +951,7 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
             </Typography>
           ) : (
             <>
-              {currentSoE && previousSoE && (
+              {currentSoE != 'unassigned' && previousSoE && (
                 <Box
                   sx={{
                     display: 'flex',

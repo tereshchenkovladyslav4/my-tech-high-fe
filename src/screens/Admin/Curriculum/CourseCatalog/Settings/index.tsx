@@ -20,7 +20,7 @@ import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { SchoolYearDropDown } from '@mth/screens/Admin/SiteManagement/SchoolPartner/SchoolYearDropDown/SchoolYearDropDown'
 import { createOrUpdateScheduleBuilder, getSchoolYear } from '../../services'
 import { useStyles } from '../../styles'
-import { GradesSelect } from './GradeSelect'
+import { GradeSelect } from './GradeSelect'
 
 type openAlertSaveType = {
   message: string
@@ -47,6 +47,7 @@ const Settings: React.FC = () => {
   }
   const [grades, setGrades] = useState<string>('')
   const [isChanged, setIsChanged] = useState<boolean>(false)
+  const [schoolYearGrades, setSchoolYearGrades] = useState<string | undefined>()
   const [openSaveAlert, setOpenSaveAlert] = useState<openAlertSaveType>({
     message: '',
     status: 'success',
@@ -210,6 +211,7 @@ const Settings: React.FC = () => {
 
   useEffect(() => {
     if (selectedYearId && data) {
+      setSchoolYearGrades(data?.getSchoolYear?.grades)
       const scheduleBuilder = data?.getSchoolYear?.ScheduleBuilder
       if (scheduleBuilder) {
         const {
@@ -369,7 +371,8 @@ const Settings: React.FC = () => {
               errorMsg: (formik.touched.split_enrollment && formik.errors.split_enrollment) as string,
             }}
           />
-          <GradesSelect
+          <GradeSelect
+            availableGradesStr={schoolYearGrades}
             grades={grades}
             setGrades={setGrades}
             isChanged={isChanged}

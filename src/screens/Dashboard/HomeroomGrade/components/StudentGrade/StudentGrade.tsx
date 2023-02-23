@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline'
 import ScheduleIcon from '@mui/icons-material/Schedule'
 import { Avatar, Box, CircularProgress, IconButton, Tooltip } from '@mui/material'
@@ -24,33 +24,37 @@ export const StudentGrade: React.FC<StudentGradeProps> = ({ student, schoolYears
   // MARK: - Unleash Feature Flags
   const infoctr1536 = useFlag(BUGFIX_1532)
 
-  const redirect = () => {
-    const { applications, packets } = student
-    const currApplication = applications?.at(0)
-    const currPacket = packets?.at(0)
-    if (
-      notifications.at(0)?.phrase === StudentNotification.SUBMIT_SCHEDULE ||
-      notifications.at(0)?.phrase === StudentNotification.SUBMIT_SECOND_SEMESTER_SCHEDULE
-    ) {
-      history.push(`${MthRoute.HOMEROOM + MthRoute.SUBMIT_SCHEDULE}/${student.student_id}`)
-      return
-    }
-    if (
-      notifications.at(0)?.phrase === StudentNotification.RESUBMIT_SCHEDULE ||
-      notifications.at(0)?.phrase === StudentNotification.RESUBMIT_SECOND_SEMESTER_SCHEDULE
-    ) {
-      history.push(`${MthRoute.HOMEROOM + MthRoute.SUBMIT_SCHEDULE}/${student.student_id}?backTo=${location.pathname}`)
-      return
-    }
-    if (infoctr1536) {
-      if (currApplication?.status === ApplicationStatus.SUBMITTED) {
+  const redirect = useCallback(() => {
+    if (checkEnrollPacketStatus(schoolYears, student)) {
+      const { applications, packets } = student
+      const currApplication = applications?.at(0)
+      const currPacket = packets?.at(0)
+      if (
+        notifications.at(0)?.phrase === StudentNotification.SUBMIT_SCHEDULE ||
+        notifications.at(0)?.phrase === StudentNotification.SUBMIT_SECOND_SEMESTER_SCHEDULE
+      ) {
+        history.push(`${MthRoute.HOMEROOM + MthRoute.SUBMIT_SCHEDULE}/${student.student_id}`)
         return
       }
+      if (
+        notifications.at(0)?.phrase === StudentNotification.RESUBMIT_SCHEDULE ||
+        notifications.at(0)?.phrase === StudentNotification.RESUBMIT_SECOND_SEMESTER_SCHEDULE
+      ) {
+        history.push(
+          `${MthRoute.HOMEROOM + MthRoute.SUBMIT_SCHEDULE}/${student.student_id}?backTo=${location.pathname}`,
+        )
+        return
+      }
+      if (infoctr1536) {
+        if (currApplication?.status === ApplicationStatus.SUBMITTED) {
+          return
+        }
+      }
+      if (currApplication?.status === ApplicationStatus.ACCEPTED && currPacket?.status !== PacketStatus.ACCEPTED) {
+        history.push(`${MthRoute.HOMEROOM + MthRoute.ENROLLMENT}/` + student.student_id)
+      }
     }
-    if (currApplication?.status !== ApplicationStatus.ACCEPTED && currPacket?.status !== PacketStatus.ACCEPTED) {
-      history.push(`${MthRoute.HOMEROOM + MthRoute.ENROLLMENT}/` + student.student_id)
-    }
-  }
+  }, [history, infoctr1536, location.pathname, notifications, schoolYears, student])
 
   const getProfilePhoto = (person: Person) => {
     if (!person.photo) return 'image'
@@ -225,15 +229,7 @@ export const StudentGrade: React.FC<StudentGradeProps> = ({ student, schoolYears
             </Paragraph>
             {checkEnrollPacketStatus(schoolYears, student) && (
               <Tooltip title={circleData?.message || ''}>
-                <IconButton
-                  onClick={() => {
-                    if (checkEnrollPacketStatus(schoolYears, student)) {
-                      redirect()
-                    }
-                  }}
-                >
-                  {circleData?.icon}
-                </IconButton>
+                <IconButton onClick={redirect}>{circleData?.icon}</IconButton>
               </Tooltip>
             )}
           </Box>
