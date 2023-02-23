@@ -230,7 +230,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
       setSecondScheduleData(
         secondScheduleData?.map((item) => ({
           ...item,
-          schedulePeriodStatus: null,
+          schedulePeriodStatus: item.originalSchedulePeriodStatus,
           standardResponseOptions: '',
         })),
       )
@@ -238,7 +238,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
       setScheduleData(
         scheduleData?.map((item) => ({
           ...item,
-          schedulePeriodStatus: null,
+          schedulePeriodStatus: item.originalSchedulePeriodStatus,
           standardResponseOptions: '',
         })),
       )
@@ -276,28 +276,26 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
   }
 
   const handlePeriodUpdateEmail = (periodId: string) => {
-    if (studentScheduleStatus !== ScheduleStatus.RESUBMITTED) {
-      const data = hasSecondSemester ? secondScheduleData : scheduleData
-      if (requireUpdatePeriods.some((pid) => pid === periodId)) {
-        const periodIds = requireUpdatePeriods.filter((obj) => obj !== periodId)
-        if (periodIds.length > 0) {
-          setRequireUpdatePeriods(periodIds)
-        } else {
-          handleCancelUpdates()
-        }
+    const data = hasSecondSemester ? secondScheduleData : scheduleData
+    if (requireUpdatePeriods.some((pid) => pid === periodId)) {
+      const periodIds = requireUpdatePeriods.filter((obj) => obj !== periodId)
+      if (periodIds.length > 0) {
+        setRequireUpdatePeriods(periodIds)
       } else {
-        setRequireUpdatePeriods([
-          ...data
-            ?.filter((item) => item?.schedulePeriodStatus === SchedulePeriodStatus.UPDATE_REQUIRED)
-            ?.map((item) => {
-              return `${item?.Period?.id}`
-            }),
-          periodId,
-        ])
-        setScheduleStatus(
-          SCHEDULE_STATUS_OPTIONS.find((item) => item.value === ScheduleStatus.UPDATES_REQUIRED) as DropDownItem,
-        )
+        handleCancelUpdates()
       }
+    } else {
+      setRequireUpdatePeriods([
+        ...data
+          ?.filter((item) => item?.schedulePeriodStatus === SchedulePeriodStatus.UPDATE_REQUIRED)
+          ?.map((item) => {
+            return `${item?.Period?.id}`
+          }),
+        periodId,
+      ])
+      setScheduleStatus(
+        SCHEDULE_STATUS_OPTIONS.find((item) => item.value === ScheduleStatus.UPDATES_REQUIRED) as DropDownItem,
+      )
     }
   }
 
@@ -407,7 +405,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
             schedulePeriodStatus: requireUpdatePeriods.includes(`${item?.Period?.id}`)
               ? SchedulePeriodStatus.UPDATE_REQUIRED
               : item.schedulePeriodStatus === SchedulePeriodStatus.UPDATE_REQUIRED
-              ? null
+              ? item.originalSchedulePeriodStatus
               : item.schedulePeriodStatus,
           })),
         )
@@ -419,7 +417,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
             schedulePeriodStatus: requireUpdatePeriods.includes(`${item?.Period?.id}`)
               ? SchedulePeriodStatus.UPDATE_REQUIRED
               : item.schedulePeriodStatus === SchedulePeriodStatus.UPDATE_REQUIRED
-              ? null
+              ? item.originalSchedulePeriodStatus
               : item.schedulePeriodStatus,
           })),
         )

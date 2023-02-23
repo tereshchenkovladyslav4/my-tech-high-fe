@@ -40,6 +40,7 @@ export const attachSelectedItems = (item: ScheduleData, schedulePeriod: Schedule
   if (period && schedulePeriod) {
     item.Period = period
     item.schedulePeriodId = schedulePeriod.schedule_period_id
+    item.originalSchedulePeriodStatus = schedulePeriod.status
     item.schedulePeriodStatus = schedulePeriod.status
     if (schedulePeriod.SubjectId)
       item.Subject = period.Subjects?.find((subject) => subject?.subject_id === schedulePeriod.SubjectId)

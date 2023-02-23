@@ -1,9 +1,11 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { Card, Grid } from '@mui/material'
 import { Box } from '@mui/system'
+import { useFlag } from '@unleash/proxy-client-react'
 import { CheckBoxListVM } from '@mth/components/MthCheckboxList/MthCheckboxList'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
-import { EmailTemplateEnum } from '@mth/enums'
+import { EPIC_276_STORY_1284 } from '@mth/constants'
+import { EmailTemplateEnum, MthRoute } from '@mth/enums'
 import { useEmailTemplateByNameAndRegionId, useStudentInfo } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { ScheduleData } from '@mth/screens/Homeroom/Schedule/types'
@@ -41,25 +43,57 @@ const UpdatesRequired: React.FC<UpdatesRequiredProps> = ({
   )
   const { studentInfo } = useStudentInfo(studentId)
 
+  const epic1396story1568 = useFlag(EPIC_276_STORY_1284)
+
   useEffect(() => {
     if (body && scheduleData?.length && standardResponse) {
       const options = JSON.parse(standardResponse)
       let newBody = body
-      scheduleData
-        ?.filter((item) => requireUpdatePeriods?.includes(`${item?.Period?.id}`))
-        .map((schedule) => {
-          if (schedule.standardResponseOptions) {
-            newBody += `\n<p><strong>Period ${schedule.period}</strong></p>`
-          }
-          options?.map((option: { title: string; text: string }, index: number) => {
-            if (
-              schedule.standardResponseOptions &&
-              schedule.standardResponseOptions.split(',').includes(`${index}_${option.title.replaceAll(',', '-')}`)
-            ) {
-              newBody += `<ul><li>${extractContent(option.text)}</li></ul>`
+      let periodTxt = ''
+
+      if (epic1396story1568) {
+        scheduleData
+          ?.filter((item) => requireUpdatePeriods?.includes(`${item?.Period?.id}`))
+          .map((schedule) => {
+            if (schedule.standardResponseOptions) {
+              periodTxt += `\n<p><strong>Period ${schedule.period}</strong></p><ul>`
             }
+            options?.map((option: { title: string; text: string }, index: number) => {
+              if (
+                schedule.standardResponseOptions &&
+                schedule.standardResponseOptions.split(',').includes(`${index}_${option.title.replaceAll(',', '-')}`)
+              ) {
+                const txt = extractContent(option.text)
+                periodTxt += `<li>${txt.substring(0, txt.length - 1)}</li>`
+              }
+            })
+            periodTxt += '</ul>'
           })
-        })
+
+        let scheduleLink = window.location.href
+        scheduleLink = scheduleLink.substring(0, scheduleLink.indexOf('/', scheduleLink.indexOf('//') + 2))
+        scheduleLink += `${MthRoute.HOMEROOM}${MthRoute.SUBMIT_SCHEDULE}/${studentInfo?.student_id}`
+        newBody = newBody
+          .replace(/\[LINK\]/g, `<a href="${scheduleLink}">${scheduleLink}</a>`)
+          .replace(/\[INSTRUCTIONS\]/g, periodTxt)
+      } else {
+        scheduleData
+          ?.filter((item) => requireUpdatePeriods?.includes(`${item?.Period?.id}`))
+          .map((schedule) => {
+            if (schedule.standardResponseOptions) {
+              newBody += `\n<p><strong>Period ${schedule.period}</strong></p>`
+            }
+            options?.map((option: { title: string; text: string }, index: number) => {
+              if (
+                schedule.standardResponseOptions &&
+                schedule.standardResponseOptions.split(',').includes(`${index}_${option.title.replaceAll(',', '-')}`)
+              ) {
+                newBody += `<ul><li>${extractContent(option.text)}</li></ul>`
+              }
+            })
+          })
+      }
+
       setStandardResponseOptions(
         options?.map((option: { title: string }, index: number) => ({
           label: option.title,
@@ -69,7 +103,8 @@ const UpdatesRequired: React.FC<UpdatesRequiredProps> = ({
       setEmailBody(newBody)
       setIsEditedByExternal(!isEditedByExternal)
     }
-  }, [scheduleData, body, standardResponse, requireUpdatePeriods])
+  }, [scheduleData, body, standardResponse, requireUpdatePeriods, studentInfo])
+
   return (
     <Card sx={{ ...scheduleBuilderClass.main, paddingLeft: '30px' }}>
       <Subtitle size='medium' textAlign='left' fontWeight='700'>

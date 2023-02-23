@@ -156,6 +156,7 @@ export type ScheduleData = {
 
   // Selected values
   schedulePeriodId?: number
+  originalSchedulePeriodStatus?: SchedulePeriodStatus | null
   schedulePeriodStatus?: SchedulePeriodStatus | null
   Period?: Period
   Subject?: Subject
