@@ -50,7 +50,7 @@ export const useStyles = {
   dropdown: {
     [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
       borderColor: MthColor.SYSTEM_07,
-      borderWidth: '2px',
+      borderWidth: '2px !important',
     },
     [`& .${outlinedInputClasses.notchedOutline}`]: {
       borderColor: MthColor.SYSTEM_07,

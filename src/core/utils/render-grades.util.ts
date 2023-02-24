@@ -8,9 +8,12 @@ import { GRADES } from '../constants/grades.constant'
  * @example ['kindergarten',1,2,4,7,9,10,11,12] => ['kindergarten,1,2],[4],[7],[9,10,11,12] => k-2,4,7,9-12
  * @return converted string from array
  */
-export const renderGrades = (gradesStr: string | undefined): string => {
+export const renderGrades = (gradesStr: string | undefined | null): string => {
   if (!gradesStr) return ''
-  const decodedGrades: string[] = gradesStr.split(',').filter((item: string) => item != 'all')
+  const decodedGrades: string[] = gradesStr
+    .replace('-1', 'Kindergarten')
+    .split(',')
+    .filter((item: string) => item != 'all')
   const grades = GRADES.filter((item) => decodedGrades.includes(`${item}`)).map((item) =>
     item == 'Kindergarten' ? 0 : Number(item),
   )

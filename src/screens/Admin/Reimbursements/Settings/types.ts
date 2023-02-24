@@ -28,6 +28,7 @@ export type ReimbursementSetting = {
   num_days_delete_updates_required: number | null
   display_remaining_funds: boolean | null
   remaining_funds: string | null
+  notification_grades: string | null
 
   //  Temp fields
   RemainingFunds?: RemainingFund[]

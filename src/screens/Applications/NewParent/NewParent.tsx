@@ -681,6 +681,8 @@ export const NewParent: React.FC = () => {
                             <DropDown
                               name='state'
                               labelTop
+                              labelTopBgColor={MthColor.SYSTEM_09}
+                              labelTopColor={MthColor.SYSTEM_05}
                               dropDownItems={sortBy(availableRegions, 'label')}
                               placeholder='Program State'
                               setParentValue={(id) => {
@@ -707,6 +709,8 @@ export const NewParent: React.FC = () => {
                               <DropDown
                                 name='program_year'
                                 labelTop
+                                labelTopBgColor={MthColor.SYSTEM_09}
+                                labelTopColor={MthColor.SYSTEM_05}
                                 placeholder='Program Year'
                                 dropDownItems={schoolYears}
                                 setParentValue={(id) => {
@@ -787,7 +791,7 @@ export const NewParent: React.FC = () => {
                                                 : classes.textField
                                             }
                                             {...field}
-                                            error={meta.error || showEmailError}
+                                            error={(meta.touched && meta.error) || showEmailError}
                                             helperText={meta.touched && meta.error}
                                             onKeyUp={() => {
                                               // TODO fix validation here
@@ -848,6 +852,8 @@ export const NewParent: React.FC = () => {
                                           <DropDown
                                             name={'students[0].grade_level'}
                                             labelTop
+                                            labelTopBgColor={MthColor.SYSTEM_09}
+                                            labelTopColor={MthColor.SYSTEM_05}
                                             placeholder={`${q.question} as of ${moment(birthDateCut).format(
                                               !matches ? 'MMMM DD, YYYY' : 'MMM. DD, YYYY',
                                             )}`}
@@ -1017,6 +1023,8 @@ export const NewParent: React.FC = () => {
                                                   <DropDown
                                                     name={`students[${index}].grade_level`}
                                                     labelTop
+                                                    labelTopBgColor={MthColor.SYSTEM_09}
+                                                    labelTopColor={MthColor.SYSTEM_05}
                                                     placeholder={`${q.question} as of ${moment(birthDateCut).format(
                                                       !matches ? 'MMMM DD, YYYY' : 'MMM. DD, YYYY',
                                                     )}`}

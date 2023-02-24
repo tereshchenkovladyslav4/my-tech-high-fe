@@ -289,7 +289,7 @@ export const QuestionItem: React.FC<QuestionProps> = ({
         question.slug != ReimbursementQuestionSlug.STUDENT_ID &&
         question.slug != ReimbursementQuestionSlug.FORM_TYPE &&
         !selectedFormType) ||
-      (roleLevel == RoleLevel.SUPER_ADMIN && question.type == QUESTION_TYPE.SIGNATURE)
+      (roleLevel == RoleLevel.SUPER_ADMIN && !isToBuildForm && question.type == QUESTION_TYPE.SIGNATURE)
     ) {
       return (
         <Box sx={{ display: 'none' }}>

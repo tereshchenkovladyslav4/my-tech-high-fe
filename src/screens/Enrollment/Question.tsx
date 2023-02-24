@@ -355,7 +355,8 @@ function Item({
             minWidth: '100%',
             [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]:
               {
-                borderColor: MthColor.SYSTEM_07,
+                borderColor: `${MthColor.SYSTEM_07} !important`,
+                borderWidth: '2px !important',
               },
             marginY: 0,
           }}

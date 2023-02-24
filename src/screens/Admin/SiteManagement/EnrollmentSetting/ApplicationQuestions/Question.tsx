@@ -174,9 +174,9 @@ function Item({ question: q }: { question: ApplicationQuestion }) {
           minWidth: '100%',
           maxWidth: '100%',
           borderColor: errors[index] ? 'red' : '',
-          [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
-            borderColor: MthColor.SYSTEM_07,
-            borderWidth: '2px',
+          [`& .${outlinedInputClasses.root} .${outlinedInputClasses.notchedOutline}`]: {
+            borderColor: `${MthColor.SYSTEM_07} !important`,
+            borderWidth: '2px !important',
           },
           [`& .${inputLabelClasses.root}.${inputLabelClasses.focused}`]: {
             transform: 'translate(14px, -11px) scale(1)',
@@ -193,6 +193,8 @@ function Item({ question: q }: { question: ApplicationQuestion }) {
           },
         }}
         labelTop
+        labelTopBgColor={MthColor.SYSTEM_09}
+        labelTopColor={MthColor.SYSTEM_05}
         dropDownItems={dropItems}
         placeholder={q.question}
         setParentValue={(v) => onChange(v as string)}

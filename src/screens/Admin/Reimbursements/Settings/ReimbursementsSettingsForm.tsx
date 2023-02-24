@@ -16,7 +16,7 @@ import { ReduceFunds } from '@mth/enums'
 import { SchoolYear } from '@mth/models'
 import { RemainingFunds } from '@mth/screens/Admin/Reimbursements/Settings/RemainingFunds'
 import { ReimbursementSetting } from '@mth/screens/Admin/Reimbursements/Settings/types'
-import { renderCommaString } from '@mth/utils'
+import { renderCommaString, renderGrades } from '@mth/utils'
 
 export type ReimbursementsSettingsFormProps = {
   schoolYear: SchoolYear
@@ -497,6 +497,33 @@ export const ReimbursementsSettingsForm: React.FC<ReimbursementsSettingsFormProp
     {
       name: 'Display Remaining Funds',
       component: <RemainingFunds gradeOptions={gradeOptions} setIsChanged={setIsChanged}></RemainingFunds>,
+    },
+    {
+      name: 'Display Grade Specific Notification',
+      component: (
+        <Grid container columnSpacing={6}>
+          <Grid item xs={3}>
+            <MultiSelect
+              options={gradeOptions}
+              placeholder='Select'
+              onChange={(value) => {
+                const filteredGrades = value.filter(
+                  (item) => gradeOptions.findIndex((option) => option.value == item) > -1 || item === 'all',
+                )
+                setFieldValue('notification_grades', filteredGrades.join(','))
+                setIsChanged(true)
+              }}
+              renderValue={renderGrades(values.notification_grades)}
+              defaultValue={
+                values?.notification_grades?.length ? values.notification_grades.split(',').map((x) => +x) : []
+              }
+              error={{ error: touched.notification_grades && !!errors.notification_grades, errorMsg: '' }}
+              allSelect
+            />
+            <FormError error={touched.notification_grades && errors.notification_grades}></FormError>
+          </Grid>
+        </Grid>
+      ),
     },
   ]
 

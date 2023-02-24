@@ -66,6 +66,7 @@ export const ReimbursementsSettings: React.FC = () => {
           num_days_delete_updates_required: values.num_days_delete_updates_required,
           display_remaining_funds: values.display_remaining_funds,
           remaining_funds: JSON.stringify(values.RemainingFunds),
+          notification_grades: values.notification_grades,
         },
       },
     })

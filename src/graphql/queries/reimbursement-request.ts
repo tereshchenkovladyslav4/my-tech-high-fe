@@ -159,6 +159,7 @@ export const getReimbursementRequestQuery = gql`
           max_receipts
           is_merged_periods
           merged_periods
+          notification_grades
         }
       }
       ReimbursementReceipts {

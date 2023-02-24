@@ -26,6 +26,8 @@ export const DropDown: React.FC<DropDownProps> = ({
   borderNone = false,
   color,
   id,
+  labelTopBgColor,
+  labelTopColor,
 }) => {
   const convertDefaultValue = (val: string | number | undefined): string | number => {
     return !!val || val === 0 ? val : ''
@@ -118,9 +120,6 @@ export const DropDown: React.FC<DropDownProps> = ({
                   '& .MuiSelect-outlined': {
                     background: dropdownColor,
                   },
-                  inputLabelRoot: {
-                    color: 'red',
-                  },
                 }}
                 size={size || 'medium'}
                 error={error?.error}
@@ -134,7 +133,15 @@ export const DropDown: React.FC<DropDownProps> = ({
         </>
       ) : (
         <FormControl fullWidth className='MthFormField' focused error={error?.error}>
-          <InputLabel sx={{ backgroundColor: '#FFF', paddingX: 1 }}>{placeholder}</InputLabel>
+          <InputLabel
+            sx={{
+              backgroundColor: labelTopBgColor ? labelTopBgColor : '#FFF',
+              color: labelTopColor ? `${labelTopColor} !important` : MthColor.BLACK,
+              paddingX: 1,
+            }}
+          >
+            {placeholder}
+          </InputLabel>
           <Select
             labelId='demo-simple-select-label'
             id='demo-simple-select'

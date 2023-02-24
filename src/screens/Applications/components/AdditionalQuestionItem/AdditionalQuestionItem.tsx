@@ -66,6 +66,8 @@ export const AdditionalQuestionItem: React.FC<ApplicationQuestionProps> = ({
     return (
       <DropDown
         labelTop
+        labelTopBgColor={MthColor.SYSTEM_09}
+        labelTopColor={MthColor.SYSTEM_05}
         dropDownItems={q.options || []}
         // dropDownItems={options || []}
         placeholder={q.question}

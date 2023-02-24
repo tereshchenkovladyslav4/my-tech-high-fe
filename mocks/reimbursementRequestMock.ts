@@ -65,6 +65,7 @@ export const reimbursementRequestMock = {
             max_receipts: 10,
             is_merged_periods: true,
             merged_periods: '5,1,3,2,4',
+            notification_grades: '5',
           },
         },
         ReimbursementReceipts: [

@@ -47,11 +47,15 @@ export const StudentInfo: React.FC<StudentInfoProps> = ({ request }) => {
                 Mid-year Program
               </Button>
             )}
-          {epic1396story1568 && (
-            <Button sx={{ ...mthButtonClasses.smallRed, width: '160px' }} data-testid='gradeNotification'>
-              5th Grade
-            </Button>
-          )}
+          {epic1396story1568 &&
+            request.SchoolYear?.ReimbursementSetting?.notification_grades
+              ?.replace('-1', 'Kindergarten')
+              .split(',')
+              .includes(request.Student?.grade_levels[request.Student?.grade_levels?.length - 1]?.grade_level) && (
+              <Button sx={{ ...mthButtonClasses.smallRed, width: '160px' }} data-testid='gradeNotification'>
+                {gradeText(request.Student)}
+              </Button>
+            )}
           <DropDown
             testId='statusDropdown'
             sx={{

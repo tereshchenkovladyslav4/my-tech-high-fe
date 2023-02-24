@@ -57,6 +57,7 @@ export const getSchoolYear = gql`
         num_days_delete_updates_required
         display_remaining_funds
         remaining_funds
+        notification_grades
       }
       direct_orders_technology_instructions
       direct_orders_supplement_instructions

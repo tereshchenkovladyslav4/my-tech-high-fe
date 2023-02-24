@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react'
 import { useQuery, useMutation } from '@apollo/client'
 import SearchIcon from '@mui/icons-material/Search'
-import { Box, Button, Card, InputAdornment, OutlinedInput, Tooltip } from '@mui/material'
+import { Box, Button, Card, InputAdornment, OutlinedInput, Tooltip, outlinedInputClasses } from '@mui/material'
 import { toString } from 'lodash'
 import moment from 'moment'
 import { DropDown } from '@mth/components/DropDown/DropDown'
@@ -10,6 +10,7 @@ import CustomTable from '@mth/components/Table/CustomTable'
 import { Field, ValueOf } from '@mth/components/Table/types'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { WarningModal } from '@mth/components/WarningModal/Warning'
+import { MthColor } from '@mth/enums'
 import { mthButtonClasses } from '@mth/styles/button.style'
 import { assignStudentToSOEGql } from '../../SiteManagement/services'
 import { getStudents } from '../services'
@@ -308,7 +309,14 @@ export const EnrollmentSchoolTable: React.FC<EnrollmentSchoolTableProps> = ({
               alternate={true}
               placeholder={'Select'}
               defaultValue={schoolPartner}
-              sx={{ width: '280px', marginRight: '40px' }}
+              sx={{
+                width: '280px',
+                marginRight: '40px',
+                [`& .${outlinedInputClasses.root} .${outlinedInputClasses.notchedOutline}`]: {
+                  borderColor: `${MthColor.SYSTEM_07} !important`,
+                  borderWidth: '2px !important',
+                },
+              }}
               size='small'
               setParentValue={(val) => {
                 setSchoolPartner(val as string)

@@ -1,6 +1,4 @@
 import { ReactNode } from 'react'
-import { Theme } from '@emotion/react'
-import { SxProps } from '@mui/system'
 import { AdditionalQuestionAction, QUESTION_TYPE } from '@mth/enums'
 
 export type DropDownItem = {
@@ -17,14 +15,13 @@ type FormikCustomError = {
   errorMsg: string
 }
 
-export type DropDownProps = {
+export type DropDown = {
   testId?: string
   dropDownItems: DropDownItem[]
   placeholder?: string
   placeholderColor?: string
   setParentValue: (value: string | number | QUESTION_TYPE) => void
   labelTop?: boolean
-  sx?: SxProps<Theme> | undefined
   alternate?: boolean
   size?: 'small' | 'medium'
   defaultValue?: string | number

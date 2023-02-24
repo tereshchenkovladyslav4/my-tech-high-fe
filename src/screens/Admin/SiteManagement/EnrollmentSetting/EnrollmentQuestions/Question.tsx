@@ -286,7 +286,8 @@ function Item({
           width: '99%',
           maxWidth: '99%',
           [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
-            borderColor: MthColor.SYSTEM_07,
+            borderColor: `${MthColor.SYSTEM_07} !important`,
+            borderWidth: '2px !important',
           },
         }}
         labelTop
