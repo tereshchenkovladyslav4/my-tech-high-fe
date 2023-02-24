@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { useMutation, useQuery } from '@apollo/client'
 import { makeStyles } from '@material-ui/core'
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew'
@@ -12,7 +12,7 @@ import { DropDownItem } from '@mth/components/DropDown/types'
 import { ReduceFunds } from '@mth/enums'
 import { getEmailTemplatesByRegionQuery } from '@mth/graphql/queries/email-template'
 import { createEmailTemplateMutation, updateEmailTemplateMutation } from '@mth/graphql/queries/email-template'
-import { EmailTemplate } from '@mth/models'
+import { EmailTemplate, SchoolYear } from '@mth/models'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { getSchoolYearsByRegionId } from '../../services'
 import { EditStandardResponse } from './EditStandardResponse'
@@ -134,7 +134,11 @@ export const EmailTemplatePage: React.FC<{ onBackPress?: () => void }> = ({ onBa
   const [schoolYearList, setSchoolYearList] = useState<DropDownItem[]>([])
   const [activeSchoolYearId, setActiveSchoolYearId] = useState<string>('')
   const [midActiveSchoolYearId, setMidActiveSchoolYearId] = useState<boolean>(false)
-  const [SchoolYears, setSchoolYears] = useState([])
+  const [SchoolYears, setSchoolYears] = useState<SchoolYear[]>([])
+
+  const selectedYear = useMemo(() => {
+    return SchoolYears?.find((schoolYear) => schoolYear?.school_year_id == +activeSchoolYearId)
+  }, [SchoolYears, activeSchoolYearId])
 
   const { loading: schoolLoading, data: schoolYearData } = useQuery(getSchoolYearsByRegionId, {
     variables: {
@@ -261,26 +265,18 @@ export const EmailTemplatePage: React.FC<{ onBackPress?: () => void }> = ({ onBa
     let directOrderStatusChanged = false
     let reimburementStatusChanged = false
     const yearId = activeSchoolYearId?.split('-')?.at(0)
-    SchoolYears.map(
-      (schoolYear: {
-        school_year_id: number
-        date_begin: Date
-        date_end: Date
-        reimbursements: ReduceFunds
-        direct_orders: ReduceFunds
-      }) => {
-        if (Number(yearId) == schoolYear.school_year_id) {
-          if (schoolYear.direct_orders == null || schoolYear.direct_orders == ReduceFunds.NONE) {
-            setDirectOrdersStatus(false)
-            directOrderStatusChanged = true
-          }
-          if (schoolYear.reimbursements == null || schoolYear.reimbursements == ReduceFunds.NONE) {
-            setReimbursementsStatus(false)
-            reimburementStatusChanged = true
-          }
+    SchoolYears.map((schoolYear: SchoolYear) => {
+      if (Number(yearId) == schoolYear.school_year_id) {
+        if (schoolYear.direct_orders == null || schoolYear.direct_orders == ReduceFunds.NONE) {
+          setDirectOrdersStatus(false)
+          directOrderStatusChanged = true
         }
-      },
-    )
+        if (schoolYear.reimbursements == null || schoolYear.reimbursements == ReduceFunds.NONE) {
+          setReimbursementsStatus(false)
+          reimburementStatusChanged = true
+        }
+      }
+    })
     if (!directOrderStatusChanged) setDirectOrdersStatus(true)
     if (!reimburementStatusChanged) setReimbursementsStatus(true)
   }, [activeSchoolYearId])
@@ -454,6 +450,7 @@ export const EmailTemplatePage: React.FC<{ onBackPress?: () => void }> = ({ onBa
           openResponseModal={openResponseModal}
           schoolYearId={activeSchoolYearId}
           midYear={midActiveSchoolYearId}
+          schoolYear={selectedYear}
         />
       )}
 

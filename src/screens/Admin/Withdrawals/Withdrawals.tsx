@@ -2,10 +2,12 @@ import React, { useContext, useEffect, useState } from 'react'
 import { useQuery } from '@apollo/client'
 import { Grid } from '@mui/material'
 import { Box } from '@mui/system'
-import { getEmailTemplateQuery } from '@mth/graphql/queries/email-template'
+import { EmailTemplateEnum } from '@mth/enums'
+import { EmailTemplateResponseVM } from '@mth/graphql/models/email-template'
 import { getWithdrawalsCountByStatusQuery } from '@mth/graphql/queries/withdrawal'
+import { useEmailTemplateByNameAndSchoolYearId } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
-import { EmailTemplateResponseVM, WithdrawalCount } from './type'
+import { WithdrawalCount } from './type'
 import { WithdrawalPage } from './WithdrawalPage'
 
 const Withdrawals: React.FC = () => {
@@ -30,21 +32,15 @@ const Withdrawals: React.FC = () => {
     fetchPolicy: 'network-only',
   })
 
-  const { data: emailTemplateData, refetch: refetchEmailTemplate } = useQuery(getEmailTemplateQuery, {
-    variables: {
-      template: 'Withdraw Page',
-      regionId: me?.selectedRegionId,
-    },
-    skip: !me?.selectedRegionId,
-    fetchPolicy: 'network-only',
-  })
+  const { emailTemplate: emailTemplateData, refetch: refetchEmailTemplate } = useEmailTemplateByNameAndSchoolYearId(
+    EmailTemplateEnum.WITHDRAW_PAGE,
+    selectedYear,
+    false,
+  )
 
   useEffect(() => {
-    if (emailTemplateData !== undefined) {
-      const { emailTemplateName } = emailTemplateData
-      if (emailTemplateName) {
-        setEmailTemplate(emailTemplateName)
-      }
+    if (emailTemplateData) {
+      setEmailTemplate(emailTemplateData)
     }
   }, [emailTemplateData])
 

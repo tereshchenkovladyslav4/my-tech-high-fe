@@ -20,6 +20,7 @@ import {
 import { ContentState, EditorState, convertToRaw } from 'draft-js'
 import draftToHtml from 'draftjs-to-html'
 import htmlToDraft from 'html-to-draftjs'
+import moment from 'moment'
 import Wysiwyg from 'react-draft-wysiwyg'
 import { MthBulletEditor } from '@mth/components/MthBulletEditor'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
@@ -27,7 +28,7 @@ import { EmailCategoryEnum, MthColor } from '@mth/enums'
 import { getEmailTemplateByIdQuery, getEmailRemindersQuery } from '@mth/graphql/queries/email-template'
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
 import { getEnrollmentQuestionsGql } from '@mth/graphql/queries/enrollment-question'
-import { EmailTemplate } from '@mth/models'
+import { EmailTemplate, SchoolYear } from '@mth/models'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { mthButtonClasses } from '@mth/styles/button.style'
 import { useStyles } from './styles'
@@ -40,6 +41,7 @@ type EmailTemplateModalProps = {
   openResponseModal: (value: StandardRes[]) => void
   schoolYearId: string
   midYear: boolean
+  schoolYear?: SchoolYear
 }
 
 const insertDescriptions = {
@@ -64,6 +66,7 @@ export const EmailTemplateModal: React.FC<EmailTemplateModalProps> = ({
   openResponseModal,
   schoolYearId,
   midYear,
+  schoolYear,
 }) => {
   const classes = useStyles()
   const { me } = useContext(UserContext)
@@ -431,7 +434,9 @@ export const EmailTemplateModal: React.FC<EmailTemplateModalProps> = ({
         setAvailableInsertDescription({
           parent: "Parent's First Name",
           student: "Student's First Name",
-          year: 'School Year (2021-2022)',
+          year: `School Year (${moment(schoolYear?.date_begin)?.format('YYYY')}-${moment(schoolYear?.date_end)?.format(
+            'YYYY',
+          )})`,
           deadline: 'Due Date',
           teacher: 'Teacher Full Name',
           link: 'Link to Withdraw Form to sign',
@@ -441,11 +446,19 @@ export const EmailTemplateModal: React.FC<EmailTemplateModalProps> = ({
       setAvailableInserts(emailTemplate?.inserts?.split(','))
       setType(emailTemplate.template)
       if (emailTemplate.category.category_name != EmailCategoryEnum.WITHDRAWAL) {
-        setAvailableInsertDescription(insertDescriptions)
+        setAvailableInsertDescription({
+          ...insertDescriptions,
+          year: `School Year (${moment(schoolYear?.date_begin)?.format('YYYY')}-${moment(schoolYear?.date_end)?.format(
+            'YYYY',
+          )})`,
+        })
       }
       if (emailTemplate.template_name === 'Application Accepted') {
         setAvailableInsertDescription({
           ...insertDescriptions,
+          year: `School Year (${moment(schoolYear?.date_begin)?.format('YYYY')}-${moment(schoolYear?.date_end)?.format(
+            'YYYY',
+          )})`,
           deadline: 'Deadline set in the Packet Reminders Template',
         })
       }
@@ -458,7 +471,9 @@ export const EmailTemplateModal: React.FC<EmailTemplateModalProps> = ({
       if (emailTemplate.category.category_name == EmailCategoryEnum.SCHEDULES) {
         setAvailableInsertDescription({
           ...insertDescriptions,
-          year: 'School Year the schedule is for (2022-2023)',
+          year: `School Year the schedule is for (${moment(schoolYear?.date_begin)?.format('YYYY')}-${moment(
+            schoolYear?.date_end,
+          )?.format('YYYY')})`,
         })
       }
       if (emailTemplate.category.category_name == EmailCategoryEnum.DIRECTORDERS) {
@@ -493,7 +508,7 @@ export const EmailTemplateModal: React.FC<EmailTemplateModalProps> = ({
         }
       }
     }
-  }, [data, enrollmentQuestionsData])
+  }, [data, enrollmentQuestionsData, schoolYear])
 
   const handleRemoveReminder = (i) => {
     const newReminder = reminders.filter((item, index) => index !== i)

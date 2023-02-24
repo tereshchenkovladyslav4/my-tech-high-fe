@@ -3,7 +3,7 @@ export type CurrentSchoolYearStatus = {
   school_year_id: number
   grade_level: string
   special_ed_options?: string
-  midyear_application?: string
+  midyear_application?: boolean
   midyear_schedule_open?: string
   midyear_schedule_close?: string
   schedule_builder_open?: string

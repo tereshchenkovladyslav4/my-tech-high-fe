@@ -15,6 +15,25 @@ export const getEmailTemplateQuery = gql`
   }
 `
 
+export const getEmailTemplateByNameAndSchoolYearQuery = gql`
+  query GetEmailTemplateByNameAndSchoolYearId($midYear: Boolean!, $schoolYearId: Int!, $templateName: String!) {
+    getEmailTemplateByNameAndSchoolYearId(
+      mid_year: $midYear
+      school_year_id: $schoolYearId
+      template_name: $templateName
+    ) {
+      id
+      template_name
+      title
+      subject
+      body
+      from
+      bcc
+      standard_responses
+    }
+  }
+`
+
 export const getEmailTemplateByIdQuery = gql`
   query EmailTemplate($templateId: ID!) {
     emailTemplate(templateId: $templateId) {

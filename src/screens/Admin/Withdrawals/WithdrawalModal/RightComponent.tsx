@@ -3,11 +3,11 @@ import { useMutation } from '@apollo/client'
 import { Box, Button, Grid } from '@mui/material'
 import { MthBulletEditor } from '@mth/components/MthBulletEditor'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { EmailTemplateResponseVM } from '@mth/graphql/models/email-template'
 import { useStudentInfo } from '@mth/hooks'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { replaceInsertsToValue } from '@mth/utils/string.util'
 import { individualWithdrawalMutation } from '../service'
-import { EmailTemplateResponseVM } from '../type'
 import { withdrawalModalClasses } from './styles'
 
 type RightComponentProps = {

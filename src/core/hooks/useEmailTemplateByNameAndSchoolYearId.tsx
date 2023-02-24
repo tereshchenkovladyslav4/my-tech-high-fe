@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react'
 import { ApolloError, useQuery } from '@apollo/client'
-import { getEmailTemplateQuery } from '@mth/graphql/queries/email-template'
+import { EmailTemplateResponseVM } from '@mth/graphql/models/email-template'
+import { getEmailTemplateByNameAndSchoolYearQuery } from '@mth/graphql/queries/email-template'
 
-export const useEmailTemplateByNameAndRegionId = (
-  regionId: number,
+export const useEmailTemplateByNameAndSchoolYearId = (
   templateName: string,
+  schoolYearId: number,
+  mid_year = false,
 ): {
   loading: boolean
   from: string
@@ -14,34 +16,40 @@ export const useEmailTemplateByNameAndRegionId = (
   setFrom: (value: string) => void
   setBody: (value: string) => void
   setSubject: (value: string) => void
+  refetch: () => void
+  emailTemplate: EmailTemplateResponseVM | undefined
   error: ApolloError | undefined
 } => {
   const [emailSubject, setEmailSubject] = useState<string>('')
   const [emailFrom, setEmailFrom] = useState<string>('')
   const [emailBody, setEmailBody] = useState<string>('')
   const [standardResponse, setStandardResponse] = useState<string>('')
+  const [emailTempate, setEmailTemplate] = useState<EmailTemplateResponseVM>()
 
   const {
     data: emailTemplateData,
     loading,
     error,
-  } = useQuery(getEmailTemplateQuery, {
+    refetch,
+  } = useQuery(getEmailTemplateByNameAndSchoolYearQuery, {
     variables: {
-      template: templateName,
-      regionId: regionId,
+      templateName: templateName,
+      schoolYearId: schoolYearId,
+      midYear: mid_year,
     },
-    skip: !templateName || !regionId,
+    skip: !templateName || !schoolYearId,
     fetchPolicy: 'network-only',
   })
 
   useEffect(() => {
     if (emailTemplateData) {
-      const { emailTemplateName } = emailTemplateData
-      const { subject, from, body, standard_responses } = emailTemplateName
+      const { getEmailTemplateByNameAndSchoolYearId } = emailTemplateData
+      const { subject, from, body, standard_responses } = getEmailTemplateByNameAndSchoolYearId
       setEmailSubject(subject)
       setEmailFrom(from)
       setEmailBody(body)
       setStandardResponse(standard_responses)
+      setEmailTemplate(getEmailTemplateByNameAndSchoolYearId)
     }
   }, [emailTemplateData])
 
@@ -54,6 +62,8 @@ export const useEmailTemplateByNameAndRegionId = (
     setFrom: setEmailFrom,
     setBody: setEmailBody,
     setSubject: setEmailSubject,
+    emailTemplate: emailTempate,
+    refetch,
     error: error,
   }
 }

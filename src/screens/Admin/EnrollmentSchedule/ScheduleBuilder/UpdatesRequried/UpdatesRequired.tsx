@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Card, Grid } from '@mui/material'
 import { Box } from '@mui/system'
 import { useFlag } from '@unleash/proxy-client-react'
@@ -6,8 +6,7 @@ import { CheckBoxListVM } from '@mth/components/MthCheckboxList/MthCheckboxList'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { EPIC_276_STORY_1284 } from '@mth/constants'
 import { EmailTemplateEnum, MthRoute } from '@mth/enums'
-import { useEmailTemplateByNameAndRegionId, useStudentInfo } from '@mth/hooks'
-import { UserContext } from '@mth/providers/UserContext/UserProvider'
+import { useEmailTemplateByNameAndSchoolYearId, useStudentInfo } from '@mth/hooks'
 import { ScheduleData } from '@mth/screens/Homeroom/Schedule/types'
 import { extractContent, replaceInsertsToValue } from '@mth/utils'
 import { scheduleBuilderClass } from '../styles'
@@ -33,15 +32,15 @@ const UpdatesRequired: React.FC<UpdatesRequiredProps> = ({
   handleEmailSend,
   setRequireUpdatePeriods,
 }) => {
-  const { me } = useContext(UserContext)
   const [standardResponseOptions, setStandardResponseOptions] = useState<CheckBoxListVM[]>([])
   const [emailBody, setEmailBody] = useState<string>('')
   const [isEditedByExternal, setIsEditedByExternal] = useState<boolean>(false)
-  const { from, body, subject, setFrom, setSubject, standardResponse } = useEmailTemplateByNameAndRegionId(
-    me?.selectedRegionId || 0,
-    EmailTemplateEnum.UPDATES_REQUIRED,
-  )
   const { studentInfo } = useStudentInfo(studentId)
+  const { from, body, subject, setFrom, setSubject, standardResponse } = useEmailTemplateByNameAndSchoolYearId(
+    EmailTemplateEnum.UPDATES_REQUIRED,
+    studentInfo?.current_school_year_status?.school_year_id || 0,
+    studentInfo?.current_school_year_status?.midyear_application,
+  )
 
   const epic1396story1568 = useFlag(EPIC_276_STORY_1284)
 

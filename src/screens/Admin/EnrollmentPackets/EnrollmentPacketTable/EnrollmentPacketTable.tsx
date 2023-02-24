@@ -15,8 +15,9 @@ import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { WarningModal } from '@mth/components/WarningModal/Warning'
 import { ENROLLMENT_PACKET_HEADCELLS } from '@mth/constants'
-import { MthColor, MthTitle, PacketStatus } from '@mth/enums'
-import { getEmailTemplateQuery } from '@mth/graphql/queries/email-template'
+import { EmailTemplateEnum, MthColor, MthTitle, PacketStatus } from '@mth/enums'
+import { EmailTemplateResponseVM } from '@mth/graphql/models/email-template'
+import { useEmailTemplateByNameAndSchoolYearId } from '@mth/hooks'
 import { Region } from '@mth/models'
 import { ProfileContext } from '@mth/providers/ProfileProvider/ProfileContext'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
@@ -39,7 +40,7 @@ export const EnrollmentPacketTable: React.FC = () => {
   const { me } = useContext(UserContext)
   const [filters, setFilters] = useState(['Submitted', 'Resubmitted', 'Age Issue'])
 
-  const [emailTemplate, setEmailTemplate] = useState()
+  const [emailTemplate, setEmailTemplate] = useState<EmailTemplateResponseVM>()
   const [searchText, setSearchText] = useState('')
   const [searchField, setSearchField] = useState('')
   useEffect(() => {
@@ -213,14 +214,12 @@ export const EnrollmentPacketTable: React.FC = () => {
     skip: !me?.selectedRegionId || !selectedYearId,
     fetchPolicy: 'network-only',
   })
-  const { data: emailTemplateData, refetch: refetchEmailTemplate } = useQuery(getEmailTemplateQuery, {
-    variables: {
-      template: 'Enrollment Packet Page',
-      regionId: me?.selectedRegionId,
-    },
-    skip: !me?.selectedRegionId,
-    fetchPolicy: 'network-only',
-  })
+
+  const { emailTemplate: emailTemplateData, refetch: refetchEmailTemplate } = useEmailTemplateByNameAndSchoolYearId(
+    EmailTemplateEnum.ENROLLMENT_PACKET_PAGE,
+    selectedYearId,
+    false,
+  )
 
   const { data: countGroup, refetch: refetchPacketCount } = useQuery(packetCountQuery, {
     variables: {
@@ -287,11 +286,8 @@ export const EnrollmentPacketTable: React.FC = () => {
   }, [schoolYearData?.region, schoolYearData?.region?.SchoolYears])
 
   useEffect(() => {
-    if (emailTemplateData !== undefined) {
-      const { emailTemplateName } = emailTemplateData
-      if (emailTemplateName) {
-        setEmailTemplate(emailTemplateName)
-      }
+    if (emailTemplateData) {
+      setEmailTemplate(emailTemplateData)
     }
   }, [emailTemplateData])
 
@@ -645,6 +641,9 @@ export const EnrollmentPacketTable: React.FC = () => {
           title={packetIds.length + ' Recipient' + (packetIds.length > 1 ? 's' : '')}
           handleSubmit={handleEmailSend}
           template={emailTemplate}
+          isNonSelected={false}
+          filters={[]}
+          handleSchedulesByStatus={() => {}}
         />
       )}
       {openWarningModal && (

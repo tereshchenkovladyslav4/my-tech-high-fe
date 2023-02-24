@@ -1,3 +1,4 @@
+import { EmailTemplateResponseVM } from '@mth/graphql/models/email-template'
 import { EmailTemplate, Withdrawal } from '@mth/models'
 
 export type WithdrawalCount = {
@@ -24,17 +25,6 @@ export type WithdrawalEmailResponseVM = {
   body: string
   from_email: string
   created_at: string
-}
-
-export type EmailTemplateResponseVM = {
-  id: number
-  template_name: string
-  title: string
-  subject: string
-  body: string
-  from: string
-  bcc: string
-  standard_responses: string
 }
 
 export type StudentInfo = {

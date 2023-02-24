@@ -8,6 +8,7 @@ import { CustomModal } from '@mth/components/CustomModal/CustomModals'
 import { ApplicationEmailModal as EmailModal } from '@mth/components/EmailModal/ApplicationEmailModal'
 import { WarningModal } from '@mth/components/WarningModal/Warning'
 import { WithdrawalOption, WithdrawalStatus } from '@mth/enums'
+import { EmailTemplateResponseVM } from '@mth/graphql/models/email-template'
 import { saveWithdrawalMutation } from '@mth/graphql/mutation/withdrawal'
 import { getEmailByWithdrawalId } from '@mth/graphql/queries/withdrawal'
 import { EmailTemplate } from '@mth/models'
@@ -20,7 +21,7 @@ import {
   reinstateWithdrawalMutation,
   updateWithdrawalMutation,
 } from '../service'
-import { EmailTemplateResponseVM, PageModalsProps } from '../type'
+import { PageModalsProps } from '../type'
 import { WithdrawalModal } from '../WithdrawalModal'
 import { WithdrawalEmailModal } from '../WithdrawalPage/WithdrawalEmailModal'
 
