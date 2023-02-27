@@ -333,8 +333,12 @@ export const ProfilePacketModal: React.FC<ProfilePacketModalProps> = ({ handleMo
       await generateStudentPacketPDF({
         variables: {
           generatePacketPdfInput: {
-            region_id: Number(me?.selectedRegionId),
-            student_id: Number(packet?.student.student_id),
+            student_id: Number(packet?.student?.student_id),
+            school_year_id: Number(
+              packet?.student?.current_school_year_status?.school_year_id ||
+                packet?.student.applications?.[0].school_year.school_year_id,
+            ),
+            mid_year: Boolean(packet?.student?.current_school_year_status?.midyear_application),
           },
         },
       })
