@@ -11,4 +11,11 @@ describe('EmptyState', () => {
     expect(getByText('title')).toBeInTheDocument()
     expect(getByText('subtitle')).toBeInTheDocument()
   })
+  it('Does not render an image if an image is not provided', () => {
+    const { getByText, queryByAltText } = render(<EmptyState title='title' subtitle='subtitle' />)
+
+    expect(queryByAltText('Empty State Image')).toBeNull()
+    expect(getByText('title')).toBeInTheDocument()
+    expect(getByText('subtitle')).toBeInTheDocument()
+  })
 })

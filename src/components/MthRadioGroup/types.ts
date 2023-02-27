@@ -4,6 +4,6 @@ export type RadioGroupOption = {
   option_id?: number
   label: string
   value: boolean
-  action?: AdditionalQuestionAction
+  action?: AdditionalQuestionAction | number
   color?: string
 }

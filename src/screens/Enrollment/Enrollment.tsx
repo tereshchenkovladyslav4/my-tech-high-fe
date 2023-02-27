@@ -53,7 +53,7 @@ export const Enrollment: React.FC<EnrollmentProps> = ({ id, disabled }: { id: nu
       input: {
         region_id: Number(regionId),
         school_year_id: parseInt(String(student?.current_school_year_status.school_year_id)) || 0,
-        mid_year: student?.current_school_year_status.midyear_application ? true : false,
+        mid_year: student?.current_school_year_status?.midyear_application ? true : false,
       },
     },
     fetchPolicy: 'network-only',

@@ -1,7 +1,8 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { useQuery } from '@apollo/client'
 import EastIcon from '@mui/icons-material/East'
-import { Box, ToggleButton, ToggleButtonGroup, Tooltip } from '@mui/material'
+import { Box, IconButton, ToggleButton, ToggleButtonGroup, Tooltip } from '@mui/material'
+import { useFlag } from '@unleash/proxy-client-react'
 import moment from 'moment'
 import DownloadFileIcon from '@mth/assets/icons/file-download.svg'
 import { CustomModal } from '@mth/components/CustomModal/CustomModals'
@@ -11,6 +12,7 @@ import { PageBlock } from '@mth/components/PageBlock'
 import { Pagination } from '@mth/components/Pagination/Pagination'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { EPIC_STORY_1212 } from '@mth/constants'
 import { MthColor, Order, StudentLearningLogStatus } from '@mth/enums'
 import { getStudentLearningLogsQuery } from '@mth/graphql/queries/student-learning-log'
 import { Assignment, SchoolYear } from '@mth/models'
@@ -21,10 +23,11 @@ type TableFieldProps = {
   item: Assignment
 }
 
-type LearningLogProps = {
+type LearningLogsProps = {
   studentId: number
   schoolYearId: number
   selectedYear: SchoolYear | undefined
+  setSelectedLearningLog: (value: Assignment) => void
 }
 
 const getColor = (value: StudentLearningLogStatus | null | undefined): MthColor => {
@@ -48,8 +51,14 @@ const TableField: React.FC<TableFieldProps> = ({ item, children }) => (
   </Paragraph>
 )
 
-const LearningLog: React.FC<LearningLogProps> = ({ studentId, schoolYearId, selectedYear }) => {
+const LearningLogs: React.FC<LearningLogsProps> = ({
+  studentId,
+  schoolYearId,
+  selectedYear,
+  setSelectedLearningLog,
+}) => {
   const { me } = useContext(UserContext)
+  const epicStory1212 = useFlag(EPIC_STORY_1212)
   const currentStudentId = Number(location.pathname.split('/').at(-1))
   const currentStudent = useMemo(() => {
     return me?.students?.find((student) => student?.student_id == currentStudentId)
@@ -162,7 +171,15 @@ const LearningLog: React.FC<LearningLogProps> = ({ studentId, schoolYearId, sele
           (item.rawData.StudentLearningLogs?.at(0)?.status === StudentLearningLogStatus.RESUBMIT ||
             (!item.rawData.StudentLearningLogs?.length &&
               getStatus(item.rawData) === StudentLearningLogStatus.AVAILABLE) ||
-            item.rawData.StudentLearningLogs?.at(0)?.status === StudentLearningLogStatus.STARTED) && <EastIcon />
+            item.rawData.StudentLearningLogs?.at(0)?.status === StudentLearningLogStatus.STARTED) && (
+            <IconButton
+              onClick={() => {
+                if (epicStory1212) setSelectedLearningLog(item.rawData)
+              }}
+            >
+              <EastIcon />
+            </IconButton>
+          )
         )
       },
     },
@@ -282,4 +299,4 @@ const LearningLog: React.FC<LearningLogProps> = ({ studentId, schoolYearId, sele
   )
 }
 
-export default LearningLog
+export default LearningLogs

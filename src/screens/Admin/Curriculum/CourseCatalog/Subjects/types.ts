@@ -1,5 +1,5 @@
 import { DropDownItem } from '@mth/components/DropDown/types'
-import { CheckBoxListVM } from '@mth/components/MthCheckboxList/MthCheckboxList'
+import { CheckBoxListVM } from '@mth/components/MthCheckboxList/types'
 import { CartEventType, DiplomaSeekingPath, ReduceFunds } from '@mth/enums'
 import { ScheduleBuilder } from '@mth/hooks'
 import { Period, SchoolYear } from '@mth/models'

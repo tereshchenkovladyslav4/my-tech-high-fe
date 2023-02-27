@@ -1,4 +1,4 @@
-import { CheckBoxListVM } from '@mth/components/MthCheckboxList/MthCheckboxList'
+import { CheckBoxListVM } from '@mth/components/MthCheckboxList/types'
 import { ScheduleData } from '@mth/screens/Homeroom/Schedule/types'
 
 export type PeriodSelect = {

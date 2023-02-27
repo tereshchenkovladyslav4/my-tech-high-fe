@@ -16,7 +16,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({ title, subtitle, image }
         textAlign: 'center',
       }}
     >
-      <img alt='Empty State Image' src={image} />
+      {image && <img alt='Empty State Image' src={image} />}
       {typeof title === 'string' ? <Title>{title}</Title> : title}
       {typeof subtitle === 'string' ? <Subtitle>{subtitle}</Subtitle> : subtitle}
     </Box>

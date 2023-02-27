@@ -106,30 +106,32 @@ const MthBulletEditor: React.FC<MthBulletEditorProps> = ({
         marginY: 'auto',
       }}
     >
-      <Wysiwyg.Editor
-        onContentStateChange={onContentStateChange}
-        placeholder='  Type here...'
-        editorState={editorState}
-        onEditorStateChange={(e) => {
-          onEditorStateChange(e)
-        }}
-        toolbar={{
-          options: [
-            'inline',
-            'blockType',
-            'fontSize',
-            'fontFamily',
-            'list',
-            'textAlign',
-            'colorPicker',
-            'link',
-            'embedded' /*, 'emoji'*/,
-            'image',
-            'remove',
-            'history',
-          ],
-        }}
-      />
+      {Wysiwyg && (
+        <Wysiwyg.Editor
+          onContentStateChange={onContentStateChange}
+          placeholder='  Type here...'
+          editorState={editorState}
+          onEditorStateChange={(e) => {
+            onEditorStateChange(e)
+          }}
+          toolbar={{
+            options: [
+              'inline',
+              'blockType',
+              'fontSize',
+              'fontFamily',
+              'list',
+              'textAlign',
+              'colorPicker',
+              'link',
+              'embedded' /*, 'emoji'*/,
+              'image',
+              'remove',
+              'history',
+            ],
+          }}
+        />
+      )}
     </Box>
   )
 }

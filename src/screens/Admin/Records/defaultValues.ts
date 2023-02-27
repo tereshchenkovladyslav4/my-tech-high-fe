@@ -1,4 +1,4 @@
-import { CheckBoxListVM } from '@mth/components/MthCheckBoxList/MthCheckboxList'
+import { CheckBoxListVM } from '@mth/components/MthCheckBoxList/types'
 import { StudentRecordFileKind } from '@mth/enums'
 
 export const DEFULAT_PROGRAM_YEAR_STATUS_LIST: CheckBoxListVM[] = [

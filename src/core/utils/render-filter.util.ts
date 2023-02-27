@@ -29,10 +29,10 @@ export const renderFilter = (selectedEvent: EventVM | undefined): string => {
     const res = grades
       ?.reduce(
         (seq, v, i, a) => {
-          if (i && a[i - 1] !== v - 1) {
+          if (i && a[i - 1] !== (v as number) - 1) {
             seq.push([])
           }
-          seq[seq.length - 1].push(v)
+          seq[seq.length - 1].push(v as never)
           return seq
         },
         [[]],
@@ -40,11 +40,11 @@ export const renderFilter = (selectedEvent: EventVM | undefined): string => {
       .filter(({ length }: { length: number }) => length > 0)
 
     for (let i = 0; i < res.length; i++) {
-      const reverkIndex = res[i].indexOf(0)
-      if (~reverkIndex) res[i][reverkIndex] = 'K'
+      const reverkIndex = res[i].indexOf(0 as never)
+      if (~reverkIndex) res[i][reverkIndex] = 'K' as never
 
       if (res[i].length > 2) {
-        res[i] = res[i][0] + '-' + res[i][res[i].length - 1]
+        res[i] = (res[i][0] + '-' + res[i][res[i].length - 1]) as never
       }
     }
 

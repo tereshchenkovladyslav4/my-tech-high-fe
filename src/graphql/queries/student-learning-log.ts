@@ -31,6 +31,10 @@ export const getStudentLearningLogsQuery = gql`
           updated_at
           id
         }
+        Master {
+          master_id
+          instructions
+        }
       }
     }
   }

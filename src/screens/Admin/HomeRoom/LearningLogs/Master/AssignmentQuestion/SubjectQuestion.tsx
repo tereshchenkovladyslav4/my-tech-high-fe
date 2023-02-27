@@ -3,25 +3,26 @@ import { useQuery } from '@apollo/client'
 import { Box } from '@mui/material'
 import { DropDown } from '@mth/components/DropDown/DropDown'
 import { DropDownItem } from '@mth/components/DropDown/types'
-import { MthCheckboxList } from '@mth/components/MthCheckboxList'
+import { CheckBoxListVM, MthCheckboxList } from '@mth/components/MthCheckboxList'
+import { CheckListVM, LearningLogQuestion } from '@mth/models'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { getChecklistQuery } from '../../../services'
 import { LearningQuestionType } from '../types'
 
 type SubjectQuestionProp = {
-  question: LearningQuestionType
+  question: LearningQuestionType | LearningLogQuestion
   schoolYearId: number
 }
 
 const SubjectQuestion: React.FC<SubjectQuestionProp> = ({ question, schoolYearId }) => {
   const [gradeList, setGradeList] = useState<DropDownItem[]>([])
   const [selectedGrade, setSelectedGrade] = useState<string>()
-  const [goalList, setGoalList] = useState<DropDownItem[]>([])
+  const [goalList, setGoalList] = useState<CheckBoxListVM[]>([])
   const [checkedGoals, setCheckedGoals] = useState([''])
 
-  const [subjectCheckList, setSubjectCheckList] = useState([])
+  const [subjectCheckList, setSubjectCheckList] = useState<CheckListVM[]>([])
 
-  const [subjectList, setSubjectList] = useState([])
+  const [subjectList, setSubjectList] = useState<DropDownItem[]>([])
 
   const { me } = useContext(UserContext)
   const { data: checklistData, loading: checklistLoading } = useQuery(getChecklistQuery, {
@@ -38,7 +39,7 @@ const SubjectQuestion: React.FC<SubjectQuestionProp> = ({ question, schoolYearId
   })
 
   useEffect(() => {
-    if (!checklistLoading) {
+    if (!checklistLoading && checklistData) {
       const { checklist } = checklistData
       setSubjectCheckList(checklist.results)
     }
@@ -52,7 +53,7 @@ const SubjectQuestion: React.FC<SubjectQuestionProp> = ({ question, schoolYearId
         const existGradeItem = tempGradeList.find((i) => i.value === item.grade)
         if (!existGradeItem && item.subject === question.grades) {
           tempGradeList.push({
-            value: item.grade,
+            value: `${item.grade}`,
             label: item.grade,
           })
         }
@@ -60,7 +61,7 @@ const SubjectQuestion: React.FC<SubjectQuestionProp> = ({ question, schoolYearId
         const existSubjectItem = tempSubjectList.find((i) => i.value === item.subject)
         if (!existSubjectItem) {
           tempSubjectList.push({
-            value: item.subject,
+            value: `${item.subject}`,
             label: item.subject,
           })
         }
@@ -71,10 +72,10 @@ const SubjectQuestion: React.FC<SubjectQuestionProp> = ({ question, schoolYearId
   }, [subjectCheckList, question])
 
   const handleSelectGrade = (val: string | number) => {
-    setSelectedGrade(val)
+    setSelectedGrade(`${val}`)
     const goalTempList = subjectCheckList
       .filter((item) => item.grade === val)
-      .map((item) => ({ value: item.id + '', label: item.goal }))
+      .map((item) => ({ value: item.id + '', label: item.goal })) as CheckBoxListVM[]
     setGoalList(goalTempList)
     setCheckedGoals([])
   }
@@ -86,7 +87,7 @@ const SubjectQuestion: React.FC<SubjectQuestionProp> = ({ question, schoolYearId
       const existGradeItem = tempGradeList.find((i) => i.value === item.grade)
       if (!existGradeItem && item.subject === val) {
         tempGradeList.push({
-          value: item.grade,
+          value: `${item.grade}`,
           label: item.grade,
         })
       }
@@ -104,7 +105,7 @@ const SubjectQuestion: React.FC<SubjectQuestionProp> = ({ question, schoolYearId
               labelTop
               dropDownItems={subjectList}
               placeholder='Subject'
-              setParentValue={(val) => handleSelectSubject(val)}
+              setParentValue={(val) => handleSelectSubject(`${val}`)}
             />
           </Box>
         )}

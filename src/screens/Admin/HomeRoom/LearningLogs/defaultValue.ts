@@ -1,4 +1,4 @@
-import { CheckBoxListVM } from '@mth/components/MthCheckboxList/MthCheckboxList'
+import { CheckBoxListVM } from '@mth/components/MthCheckboxList/types'
 import { RadioGroupOption } from '@mth/components/MthRadioGroup/types'
 export const defaultQuestions: RadioGroupOption[] = [
   { option_id: 1, label: 'Subject Checklist', value: true },

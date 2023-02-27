@@ -16,7 +16,7 @@ import { FormError } from '@mth/components/FormError'
 import { MthBulletEditor } from '@mth/components/MthBulletEditor'
 import { MthCheckbox } from '@mth/components/MthCheckbox'
 import { MthCheckboxList } from '@mth/components/MthCheckboxList'
-import { CheckBoxListVM } from '@mth/components/MthCheckboxList/MthCheckboxList'
+import { CheckBoxListVM } from '@mth/components/MthCheckboxList/types'
 import { MthNumberInput } from '@mth/components/MthNumberInput'
 import { MthRadioGroup } from '@mth/components/MthRadioGroup'
 import { RadioGroupOption } from '@mth/components/MthRadioGroup/types'
@@ -520,7 +520,7 @@ export const QuestionItem: React.FC<QuestionProps> = ({
               <MthCheckboxList
                 title={extractContent(question?.question)}
                 values={question?.answer ? JSON.parse(question.answer as string) : []}
-                setValues={(values) => handleChangeValue(question, JSON.stringify(values))}
+                setValues={(values: string[]) => handleChangeValue(question, JSON.stringify(values))}
                 checkboxLists={
                   question?.Options
                     ? (question?.Options as DropDownItem[])

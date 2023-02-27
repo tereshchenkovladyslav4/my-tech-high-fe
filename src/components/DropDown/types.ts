@@ -6,7 +6,7 @@ import { AdditionalQuestionAction, QUESTION_TYPE } from '@mth/enums'
 export type DropDownItem = {
   label: string | number | ReactNode
   value: string | number
-  action?: AdditionalQuestionAction
+  action?: AdditionalQuestionAction | number
   hasDeleteIcon?: boolean
   handleDeleteItem?: (value: string | number | boolean) => void
   disabled?: boolean

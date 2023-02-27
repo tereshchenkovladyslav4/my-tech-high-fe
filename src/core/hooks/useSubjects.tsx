@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { ApolloError, useQuery } from '@apollo/client'
 import { DropDownItem } from '@mth/components/DropDown/types'
-import { CheckBoxListVM } from '@mth/components/MthCheckboxList/MthCheckboxList'
+import { CheckBoxListVM } from '@mth/components/MthCheckboxList/types'
 import { getSubjectsQuery } from '@mth/screens/Admin/Curriculum/CourseCatalog/services'
 import { Subject } from '@mth/screens/Admin/Curriculum/CourseCatalog/Subjects/types'
 

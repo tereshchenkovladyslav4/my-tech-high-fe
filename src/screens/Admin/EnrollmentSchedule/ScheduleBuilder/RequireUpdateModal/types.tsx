@@ -1,4 +1,4 @@
-import { CheckBoxListVM } from '@mth/components/MthCheckboxList/MthCheckboxList'
+import { CheckBoxListVM } from '@mth/components/MthCheckboxList/types'
 
 export type RequireUpdateModalProps = {
   periodItems: CheckBoxListVM[]

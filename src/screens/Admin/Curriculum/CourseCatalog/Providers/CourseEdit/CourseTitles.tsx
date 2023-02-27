@@ -4,7 +4,7 @@ import { Typography, Grid, Box, OutlinedInput, InputAdornment, Button } from '@m
 import { useFormikContext } from 'formik'
 import { DropDown } from '@mth/components/DropDown/DropDown'
 import { MthCheckboxList } from '@mth/components/MthCheckboxList'
-import { CheckBoxListVM } from '@mth/components/MthCheckboxList/MthCheckboxList'
+import { CheckBoxListVM } from '@mth/components/MthCheckboxList/types'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { MthColor } from '@mth/enums'
 import { useSubjects } from '@mth/hooks'

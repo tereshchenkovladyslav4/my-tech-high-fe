@@ -88,6 +88,7 @@ export const uploadDocumentMutation = gql`
         }
         current_school_year_status {
           school_year_id
+          midyear_application
           grade_level
         }
       }

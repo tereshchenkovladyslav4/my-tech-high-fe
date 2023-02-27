@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { ApolloError } from '@apollo/client'
 import { filter, map } from 'lodash'
 import moment from 'moment'
-import { CheckBoxListVM } from '@mth/components/MthCheckBoxList/MthCheckboxList'
+import { CheckBoxListVM } from '@mth/components/MthCheckBoxList/types'
 import { useCurrentSchoolYearByRegionId } from '@mth/hooks'
 import { toOrdinalSuffix } from '@mth/utils'
 
