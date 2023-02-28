@@ -199,6 +199,8 @@ export const PacketConfirmModals: React.FC<PacketConfirmModalsProps> = ({ packet
         setEmailFrom={setEmailFrom}
         emailFrom={emailFrom}
         setEmailBodyInfo={setEmailBodyInfo}
+        schoolYearId={student?.applications[0].school_year.school_year_id}
+        midYear={student?.applications[0].midyear_application}
       />
     )
   if (showAgeIssueModal) {
@@ -213,6 +215,8 @@ export const PacketConfirmModals: React.FC<PacketConfirmModalsProps> = ({ packet
         setEmailFrom={setEmailFrom}
         emailFrom={emailFrom}
         setEmailBodyInfo={setEmailBodyInfo}
+        schoolYearId={student?.applications[0].school_year.school_year_id}
+        midYear={student?.applications[0].midyear_application}
       />
     )
   }

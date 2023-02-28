@@ -8,7 +8,9 @@ export const isNumber = /^[0-9\b]+$/
 
 export const base64Rex = /data:image\/[a-z]*;base64,[^"]+/g
 
-export const urlRex = RegExp('^(https?://)?([\\da-z.-]+)\\.([a-z.]{2,6})[/\\w .-]*/?')
+export const urlRex = RegExp('^(https?://)([\\da-z.-]+)\\.([a-z.]{2,6})[/\\w .-]*/?')
+
+export const urlPrefixRex = RegExp('^(https?://)')
 
 export const isPrice = /^\d+(\.\d{0,2})?$/
 

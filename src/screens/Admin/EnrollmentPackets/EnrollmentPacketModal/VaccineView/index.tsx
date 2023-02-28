@@ -1,27 +1,35 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useQuery } from '@apollo/client'
 import { Box, Typography } from '@mui/material'
 import { useFormContext } from 'react-hook-form'
 import { MdArrowDropUp, MdArrowDropDown } from 'react-icons/md'
+import { Packet } from '@mth/screens/HomeroomStudentProfile/Student/types'
 import { StudentImmunizatiosnQuery } from '../../services'
 import { getValidGrade } from '../helpers'
-import { studentContext } from '../providers'
 import { EnrollmentPacketFormType } from '../types'
 import { VaccinesInfoHeader } from './Header'
 import ImmunizationItem from './ImmunizationItem'
 import { StudentImmunization } from './types'
 
-export const EnrollmentPacketVaccineView: React.FC = () => {
-  const { setValue } = useFormContext()
-  const student = useContext(studentContext)
+type EnrollmentVaccineInfoProps = {
+  packet: Packet
+}
 
-  const { data } = useQuery<{ StudentImmunizations: StudentImmunization[] }>(StudentImmunizatiosnQuery, {
+export const EnrollmentPacketVaccineView: React.FC<EnrollmentVaccineInfoProps> = ({ packet }) => {
+  const { setValue } = useFormContext()
+  const student = packet?.student
+
+  const { data, refetch } = useQuery<{ StudentImmunizations: StudentImmunization[] }>(StudentImmunizatiosnQuery, {
     variables: {
       student_id: +(student?.student_id || 0),
     },
-    skip: !student?.student_id,
     fetchPolicy: 'network-only',
+    notifyOnNetworkStatusChange: true,
   })
+
+  useEffect(() => {
+    refetch()
+  }, [packet])
 
   useEffect(() => {
     if (data?.StudentImmunizations) {

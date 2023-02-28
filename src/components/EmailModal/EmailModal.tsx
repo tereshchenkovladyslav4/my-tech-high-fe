@@ -33,6 +33,8 @@ type EmailModalProps = {
   setEmailFrom: () => void
   emailFrom: () => void
   setEmailBodyInfo: () => void
+  schoolYearId?: number
+  midYear?: boolean
 }
 export const EmailModal: React.FC<EmailModalProps> = ({
   handleSubmit,
@@ -44,6 +46,8 @@ export const EmailModal: React.FC<EmailModalProps> = ({
   setEmailFrom,
   emailFrom,
   setEmailBodyInfo,
+  schoolYearId,
+  midYear,
 }) => {
   let actionType = ''
 
@@ -58,10 +62,11 @@ export const EmailModal: React.FC<EmailModalProps> = ({
   const [template, setTemplate] = useState(null)
 
   const [keyText, setKeyText] = useState<string>('')
-
   const { data: emailTemplateData } = useQuery(getEmailTemplateQuery, {
     variables: {
       template: type === 'ageIssue' ? 'Age Issue' : 'Missing Information',
+      schoolYearId: schoolYearId,
+      midYear: midYear,
       regionId: me?.selectedRegionId,
     },
     fetchPolicy: 'network-only',

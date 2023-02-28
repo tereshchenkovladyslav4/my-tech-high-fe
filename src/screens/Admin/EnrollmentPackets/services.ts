@@ -302,6 +302,50 @@ export const getPacket = gql`
   query Packet($packetID: ID!) {
     packet(packet_id: $packetID) {
       packet_id
+      status
+      exemption_form_date
+      medical_exemption
+      date_last_submitted
+      date_submitted
+      deadline
+      admin_notes
+      birth_place
+      birth_country
+      secondary_email
+      secondary_phone
+      signature_file_id
+      signature_name
+      race
+      language
+      photo_permission
+      language_friends
+      language_home
+      language_home_child
+      language_home_preferred
+      dir_permission
+      household_size
+      household_income
+      ferpa_agreement
+      school_district
+      last_school_address
+      last_school
+      reupload_files
+      last_school_type
+      worked_in_agriculture
+      military
+      hispanic
+      secondary_contact_first
+      secondary_contact_last
+      is_age_issue
+      missing_files
+      special_ed
+      packet_emails {
+        subject
+        created_at
+        body
+        from_email
+      }
+      meta
       student {
         status {
           status
@@ -348,6 +392,7 @@ export const getPacket = gql`
               state
               county_id
               country_id
+              school_district
             }
             user {
               user_id
@@ -380,8 +425,13 @@ export const getPacket = gql`
             zip
             state
             county_id
+            school_district
           }
         }
+      }
+      files {
+        kind
+        mth_file_id
       }
     }
   }

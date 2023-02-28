@@ -1,8 +1,8 @@
 import { gql } from '@apollo/client'
 
 export const getEmailTemplateQuery = gql`
-  query EmailTemplateName($template: String!, $regionId: ID!) {
-    emailTemplateName(template: $template, regionId: $regionId) {
+  query EmailTemplateName($regionId: ID!, $schoolYearId: Float!, $template: String!, $midYear: Boolean!) {
+    emailTemplateName(regionId: $regionId, schoolYearId: $schoolYearId, template: $template, midYear: $midYear) {
       id
       template_name
       title

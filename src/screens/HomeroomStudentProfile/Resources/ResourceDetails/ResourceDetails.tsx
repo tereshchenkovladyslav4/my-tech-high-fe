@@ -3,7 +3,7 @@ import ArrowBackIosOutlinedIcon from '@mui/icons-material/ArrowBackIosOutlined'
 import { Box, ButtonBase, Card, Grid, Link, Stack, TextField, Typography } from '@mui/material'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { MthColor, ResourceRequestStatus, ResourceSubtitle, UsernameFormat } from '@mth/enums'
-import { renderGrades } from '@mth/utils'
+import { convertExternalUrl, renderGrades } from '@mth/utils'
 import { ResourceCard } from '../ResourceCard'
 import { ResourceDetailsProps, ResourcePage } from '../types'
 
@@ -34,7 +34,7 @@ const ResourceDetails: React.FC<ResourceDetailsProps> = ({ item, handleBack, onC
             </Typography>
             {item.website && (
               <Link
-                href={item.website}
+                href={convertExternalUrl(item.website)}
                 target='_blank'
                 underline='hover'
                 sx={{ fontWeight: 600, fontSize: 27, color: MthColor.MTHBLUE }}

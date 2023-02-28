@@ -18,6 +18,7 @@ import {
   savePacketMutation,
   updateCreateStudentImmunizationMutation,
   updateStudentStatusMutation,
+  getPacket,
 } from '../services'
 import { PacketConfirmModals } from './modals/ConfirmModals'
 import { EnrollmentPacketDocument } from './PacketDocuments'
@@ -63,18 +64,19 @@ export const getPacketQuestionsGql = gql`
 `
 
 type EnrollmentPacketModalProps = {
-  packet: Packet
+  packet_data: Packet
   handleModem: () => void
   refetch: () => void
 }
 
-export const EnrollmentPacketModal: React.FC<EnrollmentPacketModalProps> = ({ handleModem, packet, refetch }) => {
+export const EnrollmentPacketModal: React.FC<EnrollmentPacketModalProps> = ({ handleModem, packet_data, refetch }) => {
   const classes = useStyles
   const [updateCreateStudentImm] = useMutation(updateCreateStudentImmunizationMutation)
   const [updateStudentStatus] = useMutation(updateStudentStatusMutation)
   const [generateStudentPacketPDF] = useMutation(GenerateStudentPacketPDF)
   const [savePacket] = useMutation(savePacketMutation)
   const [saveSchedule] = useMutation(saveScheduleMutation)
+  const [packet, setPacket] = useState<Packet>(packet_data)
   const settingsQuery = useQuery(getSettingsQuery, {
     fetchPolicy: 'network-only',
   })
@@ -86,21 +88,28 @@ export const EnrollmentPacketModal: React.FC<EnrollmentPacketModalProps> = ({ ha
     variables: {
       input: {
         region_id: Number(me?.selectedRegionId),
-        school_year_id: packet.student.current_school_year_status.school_year_id
-          ? packet.student.current_school_year_status.school_year_id
-          : packet.student.applications[0].school_year.school_year_id,
-        mid_year: packet.student.current_school_year_status.midyear_application,
+        school_year_id: packet_data.student.current_school_year_status.school_year_id
+          ? packet_data.student.current_school_year_status.school_year_id
+          : packet_data.student.applications[0].school_year.school_year_id,
+        mid_year: packet_data.student.current_school_year_status.midyear_application,
       },
     },
     fetchPolicy: 'network-only',
   })
 
+  const { data: packetData, refetch: packetRefetch } = useQuery(getPacket, {
+    variables: {
+      packetID: packet_data.packet_id,
+    },
+    fetchPolicy: 'cache-and-network',
+  })
+
   const initValues = {
     immunizations: [],
-    parent: { ...packet.student.parent.person },
-    notes: packet.admin_notes || '',
-    status: packet.status || '',
-    preSaveStatus: packet.status || '',
+    parent: { ...packet_data.student.parent.person },
+    notes: packet_data.admin_notes || '',
+    status: packet_data.status || '',
+    preSaveStatus: packet_data.status || '',
     packetStatuses: [],
     showSaveWarnModal: false,
     missingInfoAlert: false,
@@ -109,16 +118,20 @@ export const EnrollmentPacketModal: React.FC<EnrollmentPacketModalProps> = ({ ha
     showValidationErrors: false,
     age_issue: false,
     saveAlert: '',
-    medicalExempt: packet.medical_exemption === 1,
-    exemptionDate: packet.exemption_form_date ? moment(packet.exemption_form_date).format('MM/DD/yyyy') : '',
+    medicalExempt: packet_data.medical_exemption === 1,
+    exemptionDate: packet_data.exemption_form_date ? moment(packet_data.exemption_form_date).format('MM/DD/yyyy') : '',
     enableExemptionDate: false,
-    signature_file_id: packet.signature_file_id || 0,
-    missing_files: packet.missing_files || [],
-    school_year_id: packet.student.current_school_year_status.school_year_id
-      ? packet.student.current_school_year_status.school_year_id
-      : packet.student.applications[0].school_year.school_year_id,
+    signature_file_id: packet_data.signature_file_id || 0,
+    missing_files: packet_data.missing_files || [],
+    school_year_id: packet_data.student.current_school_year_status.school_year_id
+      ? packet_data.student.current_school_year_status.school_year_id
+      : packet_data.student.applications[0].school_year.school_year_id,
   }
   const [questionsData, setQuestionsData] = useState<EnrollmentQuestionTab[]>()
+
+  useEffect(() => {
+    setPacket(packetData?.packet)
+  }, [packetData?.packet])
 
   useEffect(() => {
     if (data?.getPacketEnrollmentQuestions.length > 0) {
@@ -153,7 +166,7 @@ export const EnrollmentPacketModal: React.FC<EnrollmentPacketModalProps> = ({ ha
   const [dynamicValues, setDynamicValues] = useState(initValues)
 
   useEffect(() => {
-    if (questionsData?.length > 0) {
+    if (questionsData?.length > 0 && packet) {
       const temp = { ...dynamicValues }
       questionsData.map((tab) => {
         tab?.groups?.map((group) => {
@@ -213,7 +226,8 @@ export const EnrollmentPacketModal: React.FC<EnrollmentPacketModalProps> = ({ ha
     } else {
       setDynamicValues(initValues)
     }
-  }, [questionsData])
+  }, [questionsData, packet])
+
   const methods = useForm({
     shouldUnregister: false,
     defaultValues: dynamicValues,
@@ -369,6 +383,11 @@ export const EnrollmentPacketModal: React.FC<EnrollmentPacketModalProps> = ({ ha
 
   const tempFunction = () => {}
 
+  const refetchModal = () => {
+    refetch()
+    packetRefetch()
+  }
+
   return (
     <FormProvider {...methods}>
       <form onSubmit={methods.handleSubmit(onSubmit)}>
@@ -378,7 +397,7 @@ export const EnrollmentPacketModal: React.FC<EnrollmentPacketModalProps> = ({ ha
           aria-labelledby='modal-modal-title'
           aria-describedby='modal-modal-description'
         >
-          <studentContext.Provider value={packet.student}>
+          <studentContext.Provider value={packet?.student}>
             <Box sx={classes.modalCard}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                 <EnrollmentPacketDropDownButton />
@@ -388,13 +407,13 @@ export const EnrollmentPacketModal: React.FC<EnrollmentPacketModalProps> = ({ ha
                 <Box sx={classes.content}>
                   <Grid container sx={{ padding: '10px 0px' }}>
                     <Grid item md={6} sm={6} xs={12}>
-                      <EnrollmentJobsInfo packet={packet} handleModem={tempFunction} refetch={refetch} />
+                      <EnrollmentJobsInfo packet={packet} handleModem={tempFunction} refetch={refetchModal} />
                       <EnrollmentPacketDocument packetData={packet} />
                       <EnrollmentPacketNotes />
                       <PacketSaveButtons submitForm={methods.handleSubmit(onSubmit)} />
                     </Grid>
                     <Grid item md={5} sm={5} xs={5}>
-                      {enableImmunization && <EnrollmentPacketVaccineView />}
+                      {enableImmunization && <EnrollmentPacketVaccineView packet={packet} />}
                     </Grid>
                   </Grid>
                   <Grid item md={12} sm={12} xs={12} sx={{ padding: '20px 0px' }}>
@@ -403,7 +422,7 @@ export const EnrollmentPacketModal: React.FC<EnrollmentPacketModalProps> = ({ ha
                   <EnrollmentPacketInfo />
                 </Box>
               </PacketModalQuestionsContext.Provider>
-              <PacketConfirmModals packet={packet} refetch={refetch} submitForm={methods.handleSubmit(onSubmit)} />
+              <PacketConfirmModals packet={packet} refetch={refetchModal} submitForm={methods.handleSubmit(onSubmit)} />
             </Box>
           </studentContext.Provider>
         </Modal>

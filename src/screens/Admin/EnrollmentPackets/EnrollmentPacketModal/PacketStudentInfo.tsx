@@ -10,7 +10,6 @@ import { ProfileContext } from '@mth/providers/ProfileProvider/ProfileContext'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { parseGradeLevel, phoneFormat } from '@mth/utils'
 import { Packet } from '../../../HomeroomStudentProfile/Student/types'
-import { getPacket } from '../services'
 
 const getSchoolYearsByRegionId = gql`
   query Region($regionId: ID!) {
@@ -44,7 +43,6 @@ export const EnrollmentJobsInfo: React.FC<EnrollmentJobsInfoProps> = ({ packet, 
   const { showModal } = useContext(ProfileContext)
   const { me } = useContext(UserContext)
   const [specialEdOptions, setSpecialEdOptions] = useState<string[]>([])
-  const [current_packet, setPacket] = useState<Packet>(packet)
 
   const { data: schoolYearData } = useQuery(getSchoolYearsByRegionId, {
     variables: {
@@ -52,17 +50,6 @@ export const EnrollmentJobsInfo: React.FC<EnrollmentJobsInfoProps> = ({ packet, 
     },
     fetchPolicy: 'cache-and-network',
   })
-
-  const { data: packetData, refetch: packetRefetch } = useQuery(getPacket, {
-    variables: {
-      packetID: packet.packet_id,
-    },
-    fetchPolicy: 'cache-and-network',
-  })
-
-  useEffect(() => {
-    setPacket(packetData?.packet)
-  }, [packetData?.packet])
 
   useEffect(() => {
     if (schoolYearData?.region?.SchoolYears) {
@@ -86,7 +73,6 @@ export const EnrollmentJobsInfo: React.FC<EnrollmentJobsInfoProps> = ({ packet, 
 
   const refreshModal = () => {
     refetch()
-    packetRefetch()
     handleModem()
   }
 
@@ -94,7 +80,7 @@ export const EnrollmentJobsInfo: React.FC<EnrollmentJobsInfoProps> = ({ packet, 
     showModal(profileData, refreshModal)
   }
 
-  const student = current_packet?.student
+  const student = packet?.student
 
   const age = student?.person.date_of_birth ? moment().diff(student?.person.date_of_birth, 'years', false) : undefined
 
@@ -119,7 +105,7 @@ export const EnrollmentJobsInfo: React.FC<EnrollmentJobsInfoProps> = ({ packet, 
 
   return (
     <Grid container columnSpacing={4}>
-      {!current_packet ? (
+      {!packet ? (
         <Box sx={{ minHeight: '200px' }}></Box>
       ) : (
         <>

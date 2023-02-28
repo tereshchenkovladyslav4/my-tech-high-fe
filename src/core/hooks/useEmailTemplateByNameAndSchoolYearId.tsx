@@ -44,12 +44,14 @@ export const useEmailTemplateByNameAndSchoolYearId = (
   useEffect(() => {
     if (emailTemplateData) {
       const { getEmailTemplateByNameAndSchoolYearId } = emailTemplateData
-      const { subject, from, body, standard_responses } = getEmailTemplateByNameAndSchoolYearId
-      setEmailSubject(subject)
-      setEmailFrom(from)
-      setEmailBody(body)
-      setStandardResponse(standard_responses)
-      setEmailTemplate(getEmailTemplateByNameAndSchoolYearId)
+      if (getEmailTemplateByNameAndSchoolYearId) {
+        const { subject, from, body, standard_responses } = getEmailTemplateByNameAndSchoolYearId
+        setEmailSubject(subject)
+        setEmailFrom(from)
+        setEmailBody(body)
+        setStandardResponse(standard_responses)
+        setEmailTemplate(getEmailTemplateByNameAndSchoolYearId)
+      }
     }
   }, [emailTemplateData])
 

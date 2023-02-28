@@ -43,7 +43,7 @@ export const EnrollmentPacketDocument: React.FC<EnrollmentPacketDocumentProps> =
   }
 
   useEffect(() => {
-    if (packetData.files.length > 0) {
+    if (packetData?.files?.length > 0) {
       const ids = []
       for (const packetfile of packetData.files) {
         ids.push(packetfile.mth_file_id)
@@ -55,7 +55,7 @@ export const EnrollmentPacketDocument: React.FC<EnrollmentPacketDocumentProps> =
   useEffect(() => {
     if (data !== undefined) {
       const filesData = []
-      if (packetData.files.length > 0) {
+      if (packetData?.files?.length > 0) {
         for (const packetfile of packetData.files) {
           // if (packetfile.kind === 'bc' || packetfile.kind === 'ur' || packetfile.kind === 'im') {
           for (const file of data.packetFiles.results) {

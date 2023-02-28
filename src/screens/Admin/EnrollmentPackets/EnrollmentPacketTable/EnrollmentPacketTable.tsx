@@ -631,7 +631,7 @@ export const EnrollmentPacketTable: React.FC = () => {
       {isShowModal && (
         <EnrollmentPacketModal
           handleModem={() => setIsShowModal(!isShowModal)}
-          packet={enrollmentPacket}
+          packet_data={enrollmentPacket}
           refetch={() => refetch()}
         />
       )}
