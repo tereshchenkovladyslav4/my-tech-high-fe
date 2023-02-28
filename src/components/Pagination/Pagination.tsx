@@ -8,6 +8,7 @@ import { useStyles } from './styles'
 import { PaginationProps } from './types'
 
 export const Pagination: React.FC<PaginationProps> = ({
+  testId,
   setParentLimit,
   handlePageChange,
   defaultValue,
@@ -60,7 +61,7 @@ export const Pagination: React.FC<PaginationProps> = ({
         </Subtitle>
         <DropDown
           dropDownItems={dropdownOptions}
-          setParentValue={(value: unknown) => {
+          setParentValue={(value) => {
             setLimit(Number(value))
           }}
           alternate={true}
@@ -69,10 +70,11 @@ export const Pagination: React.FC<PaginationProps> = ({
         />
       </Box>
       <MUIPagination
+        data-testid={testId}
         count={numPages}
         size='small'
         sx={classes.pageNumber}
-        onChange={(e, pageNum) => handlePageChange && handlePageChange(pageNum)}
+        onChange={(_e, pageNum) => handlePageChange && handlePageChange(pageNum)}
         page={currentPage}
         disabled={numPages < 2}
       />

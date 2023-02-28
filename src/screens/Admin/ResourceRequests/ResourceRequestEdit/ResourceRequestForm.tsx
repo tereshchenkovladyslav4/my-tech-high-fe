@@ -4,10 +4,7 @@ import { useFormikContext } from 'formik'
 import { DropDown } from '@mth/components/DropDown/DropDown'
 import { DropDownItem } from '@mth/components/DropDown/types'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
-import {
-  ResourceRequestEditVM,
-  ResourceRequestFormProps,
-} from '@mth/screens/Admin/ResourceRequests/ResourceRequestEdit/type'
+import { ResourceRequestEditVM } from '@mth/screens/Admin/ResourceRequests/ResourceRequestEdit/type'
 import { commonClasses } from '@mth/styles/common.style'
 
 export type ResourceRequestFormProps = {
@@ -23,6 +20,7 @@ const ResourceRequestForm: React.FC<ResourceRequestFormProps> = ({ setIsChanged,
       <Grid container columnSpacing={4} rowSpacing={3}>
         <Grid item xs={6}>
           <TextField
+            data-testid='firstName'
             name='firstName'
             label='Student First'
             placeholder='Entry'
@@ -39,6 +37,7 @@ const ResourceRequestForm: React.FC<ResourceRequestFormProps> = ({ setIsChanged,
         </Grid>
         <Grid item xs={6}>
           <TextField
+            data-testid='lastName'
             name='lastName'
             label='Student Last'
             placeholder='Entry'
@@ -55,6 +54,7 @@ const ResourceRequestForm: React.FC<ResourceRequestFormProps> = ({ setIsChanged,
         </Grid>
         <Grid item xs={6}>
           <TextField
+            data-testid='vendor'
             name='vendor'
             label='Vendor'
             placeholder='Entry'
@@ -71,6 +71,7 @@ const ResourceRequestForm: React.FC<ResourceRequestFormProps> = ({ setIsChanged,
         </Grid>
         <Grid item xs={6}>
           <DropDown
+            testId='resourceLevel'
             dropDownItems={resourceLevels}
             placeholder='Resource Level'
             labelTop
@@ -86,6 +87,7 @@ const ResourceRequestForm: React.FC<ResourceRequestFormProps> = ({ setIsChanged,
         </Grid>
         <Grid item xs={6}>
           <TextField
+            data-testid='username'
             name='username'
             label='Username'
             placeholder='Entry'
@@ -103,6 +105,7 @@ const ResourceRequestForm: React.FC<ResourceRequestFormProps> = ({ setIsChanged,
         </Grid>
         <Grid item xs={6}>
           <TextField
+            data-testid='password'
             name='password'
             label='Password'
             placeholder='Entry'

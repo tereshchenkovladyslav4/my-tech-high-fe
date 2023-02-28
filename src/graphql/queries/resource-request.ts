@@ -24,6 +24,8 @@ export const getResourceRequestsQuery = gql`
         resource_id
         resource_level_id
         status
+        username
+        password
         created_at
         updated_at
         Student {

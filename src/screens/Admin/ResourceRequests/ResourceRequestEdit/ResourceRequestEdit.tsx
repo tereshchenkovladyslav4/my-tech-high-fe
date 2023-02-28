@@ -29,8 +29,8 @@ const ResourceRequestEdit: React.FC<ResourceRequestEditProps> = ({ item, refetch
     lastName: item.Student?.person?.last_name || '',
     vendor: 'Adobe',
     resourceLevel: item.resource_level_id,
-    username: item.Resource?.std_user_name || '',
-    password: item.Resource?.std_password || '',
+    username: item.username || '',
+    password: item.password || '',
   })
   const [resourceLevels, setResourceLevels] = useState<DropDownItem[]>([])
   const [submitSave, {}] = useMutation(updateResourceRequestMutation)
@@ -129,10 +129,15 @@ const ResourceRequestEdit: React.FC<ResourceRequestEditProps> = ({ item, refetch
                   justifyContent: 'center',
                 }}
               >
-                <Button sx={{ ...mthButtonClasses.roundSmallGray, width: '160px' }} onClick={() => handleCancel()}>
+                <Button
+                  data-testid='cancelBtn'
+                  sx={{ ...mthButtonClasses.roundSmallGray, width: '160px' }}
+                  onClick={() => handleCancel()}
+                >
                   Cancel
                 </Button>
                 <Button
+                  data-testid='saveBtn'
                   sx={{ ...mthButtonClasses.roundSmallDark, width: '160px', ml: 5 }}
                   type='submit'
                   disabled={isSubmitted}

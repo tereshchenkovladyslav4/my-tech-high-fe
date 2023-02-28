@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import { Box, Button, Checkbox, FormControlLabel, Grid, Modal, OutlinedInput } from '@mui/material'
-import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
 import { useFormik } from 'formik'
 import * as yup from 'yup'
 import { MthBulletEditor } from '@mth/components/MthBulletEditor'

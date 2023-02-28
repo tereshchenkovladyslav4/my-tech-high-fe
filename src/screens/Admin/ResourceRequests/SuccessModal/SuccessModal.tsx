@@ -6,10 +6,11 @@ import { MthCheckbox } from '@mth/components/MthCheckbox'
 import { MthRadioGroup } from '@mth/components/MthRadioGroup'
 import { RadioGroupOption } from '@mth/components/MthRadioGroup/types'
 import { MthColor, ResourceRequestAction } from '@mth/enums'
+import { FailedResourceRequest } from '@mth/screens/Admin/ResourceRequests/ResourceRequestsTable/type'
 import { mthButtonClasses } from '@mth/styles/button.style'
 
 type SuccessModalProps = {
-  failedResourceRequestIds: number[]
+  failedResourceRequests: FailedResourceRequest[]
   succeededResourceRequestIds: number[]
   handleDownloadErrors: () => void
   handleAction: (value: ResourceRequestAction) => void
@@ -26,7 +27,7 @@ export const RESOURCE_REQUEST_ACTIONS: RadioGroupOption[] = [
 ]
 
 export const SuccessModal: React.FC<SuccessModalProps> = ({
-  failedResourceRequestIds,
+  failedResourceRequests,
   succeededResourceRequestIds,
   handleDownloadErrors,
   handleAction,
@@ -92,14 +93,13 @@ export const SuccessModal: React.FC<SuccessModalProps> = ({
             }}
           />
           {!!successCount && (
-            <Typography
-              fontWeight={'bold'}
-              sx={{ marginBottom: '20px' }}
-            >{`${successCount} Usernames and Passwords were imported`}</Typography>
+            <Typography fontWeight={'bold'} sx={{ marginBottom: '20px' }}>{`${successCount} Username${
+              successCount > 1 ? 's' : ''
+            } and Password${successCount > 1 ? 's' : ''} were imported`}</Typography>
           )}
-          {!!failedResourceRequestIds?.length && (
+          {!!failedResourceRequests?.length && (
             <Box sx={{ display: 'flex', justifyContent: 'flex-start', marginTop: '30px', gap: '20px' }}>
-              <Typography sx={{ color: MthColor.ERROR_RED }}>{`${failedResourceRequestIds.length} Errors`}</Typography>
+              <Typography sx={{ color: MthColor.ERROR_RED }}>{`${failedResourceRequests.length} Errors`}</Typography>
               <Tooltip title='Download' placement='top'>
                 <IconButton onClick={handleDownloadErrors} size='large' sx={{ marginTop: '-13px' }}>
                   <img src={DownloadFileIcon} alt='Download Icon' width={20} />

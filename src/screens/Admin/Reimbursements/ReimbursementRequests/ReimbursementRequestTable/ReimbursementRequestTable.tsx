@@ -18,7 +18,10 @@ import { ReimbursementRequest } from '@mth/models'
 import { SchoolYearDropDown } from '@mth/screens/Admin/Components/SchoolYearDropdown'
 import { ReimbursementRequestTableProps } from '@mth/screens/Admin/Reimbursements/ReimbursementRequests/ReimbursementRequestTable/type'
 import { mthButtonClasses } from '@mth/styles/button.style'
-import { gradeShortText, reimbursementRequestStatus, reimbursementRequestType, renderCommaString } from '@mth/utils'
+import { gradeShortText } from '@mth/utils/grade-text.util'
+import { reimbursementRequestStatus } from '@mth/utils/reimbursement-request-status.util'
+import { reimbursementRequestType } from '@mth/utils/reimbursement-request-type.util'
+import { renderCommaString } from '@mth/utils/string.util'
 
 export const ReimbursementRequestTable: React.FC<ReimbursementRequestTableProps> = ({
   schoolYearId,
@@ -264,10 +267,15 @@ export const ReimbursementRequestTable: React.FC<ReimbursementRequestTableProps>
         }}
       >
         <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-          <Typography sx={{ fontSize: '20px', fontWeight: '700' }}>Requests</Typography>
-          <Typography sx={{ fontSize: '20px', fontWeight: '700', marginLeft: 2 }}>{totalCnt || ''}</Typography>
+          <Typography data-testid='pageTitle' sx={{ fontSize: '20px', fontWeight: '700' }}>
+            Requests
+          </Typography>
+          <Typography data-testid='totalCnt' sx={{ fontSize: '20px', fontWeight: '700', marginLeft: 2 }}>
+            {totalCnt || ''}
+          </Typography>
           <Box marginLeft={4}>
             <OutlinedInput
+              data-testid='search'
               sx={{ width: '280px' }}
               onFocus={(e) => (e.target.placeholder = '')}
               onBlur={(e) => (e.target.placeholder = 'Search...')}
@@ -285,6 +293,7 @@ export const ReimbursementRequestTable: React.FC<ReimbursementRequestTableProps>
           </Box>
           <Box marginLeft={4}>
             <Button
+              data-testid='emailBtn'
               sx={{ ...mthButtonClasses.smallDark, width: '160px' }}
               onClick={() => {
                 if (!selectedItems?.length) {
@@ -300,6 +309,7 @@ export const ReimbursementRequestTable: React.FC<ReimbursementRequestTableProps>
         </Box>
         <Box>
           <SchoolYearDropDown
+            testId='schoolYearDropdown'
             selectedYearId={schoolYearId}
             setSelectedYearId={setSchoolYearId}
             setSelectedYear={setSchoolYear}
@@ -309,14 +319,15 @@ export const ReimbursementRequestTable: React.FC<ReimbursementRequestTableProps>
 
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 4 }}>
         <Box sx={{ display: 'flex', gap: 4 }}>
-          <Button sx={mthButtonClasses.primary} onClick={() => {}}>
+          <Button data-testid='payBtn' sx={mthButtonClasses.primary} onClick={() => {}}>
             Pay & Download
           </Button>
-          <Button sx={mthButtonClasses.red} onClick={() => {}}>
+          <Button data-testid='deleteBtn' sx={mthButtonClasses.red} onClick={() => {}}>
             Delete
           </Button>
         </Box>
         <Pagination
+          testId='pagination'
           setParentLimit={handleChangePageLimit}
           handlePageChange={handlePageChange}
           defaultValue={paginationLimit || 25}

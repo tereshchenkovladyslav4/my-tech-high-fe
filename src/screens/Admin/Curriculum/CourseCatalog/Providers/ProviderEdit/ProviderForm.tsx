@@ -13,7 +13,7 @@ import { editProviderClasses } from '@mth/screens/Admin/Curriculum/CourseCatalog
 import { Provider, ProviderFormProps } from '@mth/screens/Admin/Curriculum/CourseCatalog/Providers/types'
 import { defaultReduceFunds } from '@mth/utils/default-reduce-funds.util'
 
-const ProviderForm: React.FC<ProviderFormProps> = ({ setIsChanged, periodsItems }) => {
+const ProviderForm: React.FC<ProviderFormProps> = ({ setIsChanged, periodsItems, schoolYearData }) => {
   const { errors, handleChange, setFieldValue, touched, values, setFieldTouched } = useFormikContext<Provider>()
 
   return (

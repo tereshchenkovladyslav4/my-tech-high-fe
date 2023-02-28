@@ -19,7 +19,7 @@ import { MthCheckbox } from '@mth/components/MthCheckbox'
 import MthTableRow from '@mth/components/MthTable/MthTableRow'
 import { mthTableClasses } from '@mth/components/MthTable/styles'
 import { Order } from '@mth/enums'
-import { convertWidth } from '@mth/utils'
+import { convertWidth } from '@mth/utils/mthtable.util'
 import { MthTableProps, MthTableRowItem } from './types'
 
 const CssTableSortLabel = styled(TableSortLabel)(() => ({

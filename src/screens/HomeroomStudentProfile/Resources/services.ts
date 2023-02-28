@@ -43,6 +43,10 @@ export const getStudentResourcesQuery = gql`
       ResourceLevelId
       RequestStatus
       TotalRequests
+      ResourceRequests {
+        username
+        password
+      }
     }
   }
 `

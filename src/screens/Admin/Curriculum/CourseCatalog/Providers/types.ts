@@ -76,6 +76,7 @@ export interface ProviderEditProps {
 export type ProviderFormProps = {
   setIsChanged: (value: boolean) => void
   periodsItems: CheckBoxListVM[]
+  schoolYearData: SchoolYear | undefined
 }
 
 export interface CourseEditProps {

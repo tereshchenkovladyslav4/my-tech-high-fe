@@ -3,7 +3,7 @@ import { TableCell, TableRow, styled, Collapse, Typography, TableBody, Table } f
 import { Draggable, DraggableProvided } from 'react-beautiful-dnd'
 import { MthCheckbox } from '@mth/components/MthCheckbox'
 import { MthColor } from '@mth/enums'
-import { convertWidth } from '@mth/utils'
+import { convertWidth } from '@mth/utils/mthtable.util'
 import { MthTableRowItem, MthTableRowProps } from './types'
 
 const StyledTableRow = styled(TableRow)(({}) => ({
@@ -105,6 +105,7 @@ const MthTableRow = <T extends unknown>({
           )}
           {fields.map((field, indexCol) => (
             <TableCell
+              data-testid={`tableCell-${index}-${field.key}`}
               key={indexCol}
               width={convertWidth(field.width || 0, tableWidth)}
               sx={{

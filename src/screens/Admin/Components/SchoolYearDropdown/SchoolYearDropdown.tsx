@@ -1,11 +1,12 @@
 import React, { useContext, useEffect } from 'react'
 import { find, toNumber } from 'lodash'
 import { DropDown } from '@mth/components/DropDown/DropDown'
-import { useSchoolYearsByRegionId } from '@mth/hooks'
+import { useSchoolYearsByRegionId } from '@mth/hooks/useSchoolYearsByRegionId'
 import { SchoolYear } from '@mth/models'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 
 type SchoolYearDropDownProps = {
+  testId?: string
   setSelectedYearId: (_: number) => void
   selectedYearId?: number
   setSelectedYear?: (_: SchoolYear | undefined) => void
@@ -14,6 +15,7 @@ type SchoolYearDropDownProps = {
 }
 
 export const SchoolYearDropDown: React.FC<SchoolYearDropDownProps> = ({
+  testId,
   selectedYearId,
   setSelectedYearId,
   setSelectedYear,
@@ -48,8 +50,9 @@ export const SchoolYearDropDown: React.FC<SchoolYearDropDownProps> = ({
 
   return (
     <DropDown
+      testId={testId}
       dropDownItems={schoolYearDropdownItems}
-      defaultValue={selectedYearId || ''}
+      defaultValue={schoolYearDropdownItems?.length ? selectedYearId || '' : ''}
       sx={{ width: 'fit-content', textAlign: 'left', alignItems: align }}
       borderNone={true}
       setParentValue={(value) => {

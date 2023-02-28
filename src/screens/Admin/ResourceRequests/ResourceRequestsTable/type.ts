@@ -30,8 +30,6 @@ export type ResourceRequestsFileType = {
   'Username Generator': string
   'Password Generator': string
   'Returning Status': string
-  'School Year': string
-  'School Year Status': string
   'Resource Request ID': string
 }
 
@@ -40,4 +38,9 @@ export type UpdateResourceRequestVM = {
   resource_level_id?: number
   username: string
   password: string
+}
+
+export type FailedResourceRequest = {
+  id: number
+  message: string
 }

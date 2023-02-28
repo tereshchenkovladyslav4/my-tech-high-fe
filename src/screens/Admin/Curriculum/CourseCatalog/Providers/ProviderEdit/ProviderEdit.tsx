@@ -216,7 +216,7 @@ const ProviderEdit: React.FC<ProviderEditProps> = ({
             onSubmit={onSave}
           >
             <Form>
-              <ProviderForm setIsChanged={setIsChanged} periodsItems={periodsItems} />
+              <ProviderForm setIsChanged={setIsChanged} periodsItems={periodsItems} schoolYearData={schoolYearData} />
               <SaveCancelComponent isSubmitted={isSubmitted} handleCancel={handleCancel} />
             </Form>
           </Formik>

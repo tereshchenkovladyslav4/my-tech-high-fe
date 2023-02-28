@@ -2,7 +2,7 @@ import React from 'react'
 import ArrowBackIosOutlinedIcon from '@mui/icons-material/ArrowBackIosOutlined'
 import { Box, ButtonBase, Card, Grid, Link, Stack, TextField, Typography } from '@mui/material'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
-import { MthColor, ResourceRequestStatus, ResourceSubtitle } from '@mth/enums'
+import { MthColor, ResourceRequestStatus, ResourceSubtitle, UsernameFormat } from '@mth/enums'
 import { renderGrades } from '@mth/utils'
 import { ResourceCard } from '../ResourceCard'
 import { ResourceDetailsProps, ResourcePage } from '../types'
@@ -42,7 +42,8 @@ const ResourceDetails: React.FC<ResourceDetailsProps> = ({ item, handleBack, onC
                 {item.website}
               </Link>
             )}
-            {(item.RequestStatus === ResourceRequestStatus.ACCEPTED || item.subtitle === ResourceSubtitle.INCLUDED) && (
+            {(item.RequestStatus === ResourceRequestStatus.ACCEPTED ||
+              (item.subtitle === ResourceSubtitle.INCLUDED && item.std_username_format == UsernameFormat.GENERIC)) && (
               <Box
                 sx={{
                   display: 'flex',
@@ -52,13 +53,13 @@ const ResourceDetails: React.FC<ResourceDetailsProps> = ({ item, handleBack, onC
                   mt: 4,
                 }}
               >
-                {item.std_user_name && (
+                {item.ResourceRequests?.[0]?.username && (
                   <Box sx={{ mb: 3, flex: 1 }}>
                     <Subtitle sx={{ fontSize: 14, fontWeight: 600, mb: 1 }}>Username</Subtitle>
                     <TextField
                       fullWidth
                       disabled
-                      value={item.std_user_name}
+                      value={item.ResourceRequests?.[0]?.username}
                       InputProps={{ style: { fontSize: 14, fontWeight: 700 } }}
                       sx={{
                         '& .MuiInputBase-input': {
@@ -71,17 +72,17 @@ const ResourceDetails: React.FC<ResourceDetailsProps> = ({ item, handleBack, onC
                           border: '1px solid #E7E7E7 !important',
                         },
                       }}
-                      onClick={() => navigator.clipboard.writeText(item.std_user_name)}
+                      onClick={() => navigator.clipboard.writeText(item.ResourceRequests?.[0]?.username)}
                     />
                   </Box>
                 )}
-                {item.std_password && (
+                {item.ResourceRequests?.[0]?.password && (
                   <Box sx={{ mb: 3, flex: 1 }}>
                     <Subtitle sx={{ fontSize: 14, fontWeight: 600, mb: 1 }}>Password</Subtitle>
                     <TextField
                       fullWidth
                       disabled
-                      value={item.std_password}
+                      value={item.ResourceRequests?.[0]?.password}
                       InputProps={{ style: { fontSize: 14, fontWeight: 700 } }}
                       sx={{
                         '& .MuiInputBase-input': {
@@ -94,7 +95,7 @@ const ResourceDetails: React.FC<ResourceDetailsProps> = ({ item, handleBack, onC
                           border: '1px solid #E7E7E7 !important',
                         },
                       }}
-                      onClick={() => navigator.clipboard.writeText(item.std_password)}
+                      onClick={() => navigator.clipboard.writeText(item.ResourceRequests?.[0]?.password)}
                     />
                   </Box>
                 )}

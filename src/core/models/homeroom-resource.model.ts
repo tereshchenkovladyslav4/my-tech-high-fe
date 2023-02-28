@@ -1,4 +1,5 @@
 import { ResourceRequestStatus, UsernameFormat } from '@mth/enums'
+import { ResourceRequest } from './resource-request.model'
 
 export type ResourceLevel = {
   resource_level_id: number
@@ -28,6 +29,7 @@ export type HomeroomResource = {
   is_active: boolean
   allow_request: boolean
   software_reimbursement: boolean
+  ResourceRequests: ResourceRequest[]
   // Temp field
   file?: File
   CartDate: Date

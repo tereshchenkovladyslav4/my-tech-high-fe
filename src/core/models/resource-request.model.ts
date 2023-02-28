@@ -9,6 +9,8 @@ export type ResourceRequest = {
   resource_id: number
   resource_level_id: number
   status: ResourceRequestStatus
+  username: string
+  password: string
   created_at: string
   updated_at: number
   Student: Student
