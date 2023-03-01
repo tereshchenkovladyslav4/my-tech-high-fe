@@ -290,7 +290,12 @@ const CheckList: React.FC = () => {
       selectedCheckListItem === 'subject_checklist' ? subjectTemplate : independentTemplate,
     )
     XLSX.utils.book_append_sheet(wb, ws, 'Blank')
-    XLSX.writeFile(wb, `${selectedCheckListItem}.xlsx`)
+    XLSX.writeFile(
+      wb,
+      `${
+        selectedCheckListItem === 'subject_checklist' ? 'Subject Checklist Template' : 'Independent Checklist Template'
+      }.xlsx`,
+    )
   }
 
   const handleDownloadTableData = () => {

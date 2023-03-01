@@ -440,7 +440,6 @@ const EditAssignment: React.FC<{ masterId: number; assignmentId?: number }> = ({
 
   const handleSaveQuestion = async (value: LearningLogQuestion[]) => {
     setQuestionChanged(true)
-
     const existQuestion = tempLearningQuestionList.find((item) => item.slug === value[0].slug)
     if (!existQuestion) {
       setTempLearningQuestionList([
@@ -448,7 +447,7 @@ const EditAssignment: React.FC<{ masterId: number; assignmentId?: number }> = ({
         ...value.map((item) => {
           return {
             ...item,
-            assignment_id: assignment.id,
+            assignment_id: Number(assignment?.id ?? 0),
             page: questionPageNum,
           }
         }),
@@ -460,7 +459,7 @@ const EditAssignment: React.FC<{ masterId: number; assignmentId?: number }> = ({
           if (existItem) {
             return {
               ...existItem,
-              assignment_id: assignment.id,
+              assignment_id: Number(assignment.id),
               page: questionPageNum,
             }
           } else {
@@ -779,7 +778,27 @@ const EditAssignment: React.FC<{ masterId: number; assignmentId?: number }> = ({
       )}
 
       {isCustomeQuestionModal &&
-        (editQuestionList[0]?.type !== QuestionTypes.SUBJECT_QUESTION ? (
+        (editQuestionList[0]?.type === QuestionTypes.SUBJECT_QUESTION ? (
+          <AddCheckListModal
+            onClose={() => setIsCustomeQuestionModal(false)}
+            type={QuestionTypes.SUBJECT_QUESTION}
+            onSave={handleSaveQuestion}
+            schoolYearId={master?.school_year_id}
+            editQuestion={editQuestionList}
+          />
+        ) : editQuestionList[0]?.type === QuestionTypes.INDEPENDENT_QUESTION ? (
+          <>
+            <AddNewQuestionModal
+              onClose={() => {
+                setIsCustomeQuestionModal(false)
+              }}
+              type={questionType.find((obj) => obj.option_id === 2)?.label ?? ''}
+              onSave={handleSaveQuestion}
+              schoolYearId={master?.school_year_id}
+              questions={editQuestionList}
+            />
+          </>
+        ) : (
           <CustomQuestion
             isCustomeQuestionModal={isCustomeQuestionModal}
             onClose={() => setIsCustomeQuestionModal(false)}
@@ -787,14 +806,6 @@ const EditAssignment: React.FC<{ masterId: number; assignmentId?: number }> = ({
             handleSaveQuestion={handleSaveQuestion}
             assignmentId={assignmentId}
             editQuestionList={editQuestionList}
-          />
-        ) : (
-          <AddCheckListModal
-            onClose={() => setIsCustomeQuestionModal(false)}
-            type={QuestionTypes.SUBJECT_QUESTION}
-            onSave={handleSaveQuestion}
-            schoolYearId={master?.school_year_id}
-            editQuestion={editQuestionList}
           />
         ))}
       {openDefaultQuestionModal && (

@@ -251,7 +251,6 @@ const Providers: React.FC = () => {
     })
     setTableData(arrangedItems)
   }
-
   return (
     <Box sx={commonClasses.mainLayout}>
       <Card sx={{ ...commonClasses.mainBlock, ...commonClasses.fitScreen }}>

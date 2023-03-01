@@ -55,7 +55,7 @@ export type LearningQuestionType = {
   can_upload?: boolean
   grades?: string
   page: number
-  validations: string[]
+  validations?: string[]
 
   active?: boolean
 

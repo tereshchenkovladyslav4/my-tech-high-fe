@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import DehazeIcon from '@mui/icons-material/Dehaze'
 import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined'
 import EditIcon from '@mui/icons-material/Edit'
@@ -18,12 +18,14 @@ import { SortableHandle } from 'react-sortable-hoc'
 import { arrayMove, SortableContainer, SortableElement } from 'react-sortable-hoc'
 import { DropDown } from '@mth/components/DropDown/DropDown'
 import { MthBulletEditor } from '@mth/components/MthBulletEditor'
+import { MthCheckboxList } from '@mth/components/MthCheckboxList'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { QuestionTypes } from '@mth/constants'
 import { MthColor } from '@mth/enums'
 import { mthButtonClasses } from '@mth/styles/button.style'
 import { extractContent } from '@mth/utils'
+import { defaultIndependentQuestion } from '../../defaultValue'
 import { LearningQuestionType } from '../types'
 import SubjectQuestion from './SubjectQuestion'
 
@@ -39,6 +41,7 @@ const LearningQuestionItem = ({
   schoolYearId: number
 }) => {
   const { values, setValues } = useFormikContext<LearningQuestionType[]>()
+  const [checkboxIndependent, setCheckboxIndependent] = useState<string[]>([])
   const handleChange = (value) => {
     const q = question[0]
     if (q.type == QuestionTypes.CHECK_BOX) {
@@ -247,7 +250,19 @@ const LearningQuestionItem = ({
             <SubjectQuestion question={question[0]} schoolYearId={schoolYearId} />
           </Box>
         )
-
+      case QuestionTypes.INDEPENDENT_QUESTION:
+        return (
+          <Box>
+            <MthCheckboxList
+              values={checkboxIndependent}
+              setValues={(value) => {
+                setCheckboxIndependent(value)
+              }}
+              checkboxLists={defaultIndependentQuestion}
+              haveSelectAll={false}
+            />
+          </Box>
+        )
       default:
         return null
     }
@@ -311,17 +326,35 @@ const LearningQuestionList = ({
 }) => {
   const SortableListContainer = SortableContainer(({ items }: { items: LearningQuestionType[][] }) => (
     <List>
-      {items.map((item, index) => (
-        <SortableItem
-          question={item}
-          key={index}
-          index={index}
-          handleDeleteQuestion={handleDeleteQuestion}
-          schoolYearId={schoolYearId}
-          setEditQuestionList={setEditQuestionList}
-          setIsCustomeQuestionModal={setIsCustomeQuestionModal}
-        />
-      ))}
+      {items.map((item, index) => {
+        if (item[0].type === QuestionTypes.INDEPENDENT_QUESTION) {
+          return (
+            <Box sx={{ maxWidth: '640px', mx: 'auto', marginTop: '130px' }}>
+              <SortableItem
+                question={item}
+                key={index}
+                index={index}
+                handleDeleteQuestion={handleDeleteQuestion}
+                schoolYearId={schoolYearId}
+                setEditQuestionList={setEditQuestionList}
+                setIsCustomeQuestionModal={setIsCustomeQuestionModal}
+              />
+            </Box>
+          )
+        } else {
+          return (
+            <SortableItem
+              question={item}
+              key={index}
+              index={index}
+              handleDeleteQuestion={handleDeleteQuestion}
+              schoolYearId={schoolYearId}
+              setEditQuestionList={setEditQuestionList}
+              setIsCustomeQuestionModal={setIsCustomeQuestionModal}
+            />
+          )
+        }
+      })}
     </List>
   ))
 

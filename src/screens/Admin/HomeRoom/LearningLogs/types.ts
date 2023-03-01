@@ -43,12 +43,13 @@ export type Teacher = {
 export type LearningLogQuestion = {
   id?: number
   master_id?: number
-  type?: string
-  question?: string
+  type: string
+  slug: string
+  question: string
   options?: string
   default_question?: boolean
   custom_question?: boolean
-  validations?: boolean
-  order: number
+  validations?: string[]
+  order?: number
   page: number
 }

@@ -43,34 +43,40 @@ const SubjectEdit: React.FC<SubjectEditProps> = ({ schoolYearId, item, subjects,
 
   const sortData = (array: Subject[], obj: Subject) => {
     const sortedByName = array.sort((a, b) => a.name.localeCompare(b.name))
-    const index = sortedByName.findIndex((item) => item.subject_id === obj.subject_id)
-    let pastPriority = 0
-    if (index > 0) {
-      pastPriority = sortedByName[index - 1].priority ?? 1
-    }
-    if (!obj?.subject_id) {
+    if (array.some((obj) => obj.priority)) {
+      const index = sortedByName.findIndex((item) => item.subject_id === obj.subject_id)
+      let pastPriority = 0
+      if (index > 0) {
+        pastPriority = sortedByName[index - 1].priority ?? 1
+      }
+      if (!obj?.subject_id) {
+        return array.map((item) => {
+          if (!item.subject_id) {
+            return { ...item, priority: pastPriority + 1 }
+          }
+          if (item.priority > pastPriority) {
+            return { ...item, priority: item.priority + 1 }
+          }
+          return item
+        })
+      }
+
+      const objPriority = Number(obj.priority)
+
       return array.map((item) => {
-        if (!item.subject_id) {
-          return { ...item, priority: pastPriority + 1 }
+        if (item.subject_id === obj.subject_id) {
+          return { ...item, priority: pastPriority }
         }
-        if (item.priority > pastPriority) {
-          return { ...item, priority: item.priority + 1 }
+        if (item.priority <= pastPriority && item.priority > objPriority) {
+          return { ...item, priority: item.priority - 1 }
         }
         return item
       })
+    } else {
+      return sortedByName.map((s, index) => {
+        return { ...s, priority: index + 1 }
+      })
     }
-
-    const objPriority = Number(obj.priority)
-
-    return array.map((item) => {
-      if (item.subject_id === obj.subject_id) {
-        return { ...item, priority: pastPriority }
-      }
-      if (item.priority <= pastPriority && item.priority > objPriority) {
-        return { ...item, priority: item.priority - 1 }
-      }
-      return item
-    })
   }
 
   const onSave = async (value: Subject) => {

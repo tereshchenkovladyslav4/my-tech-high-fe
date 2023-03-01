@@ -75,35 +75,41 @@ const ProviderEdit: React.FC<ProviderEditProps> = ({
 
   const sortData = (array: Provider[], obj: Provider) => {
     const sortedByName = array.sort((a, b) => a.name.localeCompare(b.name))
-    const index = sortedByName.findIndex((item) => item.id === obj.id)
-    let pastPriority = 0
-    if (index > 0) {
-      pastPriority = sortedByName[index - 1].priority ?? 1
-    }
-    if (!obj?.id) {
-      const updatedArray = array.map((item) => {
-        if (!item.id) {
-          return { ...item, priority: pastPriority + 1 }
+    if (array.some((obj) => obj.priority)) {
+      const index = sortedByName.findIndex((item) => item.id === obj.id)
+      let pastPriority = 0
+      if (index > 0) {
+        pastPriority = sortedByName[index - 1].priority ?? 1
+      }
+      if (!obj?.id) {
+        const updatedArray = array.map((item) => {
+          if (!item.id) {
+            return { ...item, priority: pastPriority + 1 }
+          }
+          if (item.priority > pastPriority) {
+            return { ...item, priority: item.priority + 1 }
+          }
+          return item
+        })
+        return updatedArray
+      }
+
+      const objPriority = Number(obj.priority)
+
+      return array.map((item) => {
+        if (item.id === obj.id) {
+          return { ...item, priority: pastPriority }
         }
-        if (item.priority > pastPriority) {
-          return { ...item, priority: item.priority + 1 }
+        if (item.priority <= pastPriority && item.priority > objPriority) {
+          return { ...item, priority: item.priority - 1 }
         }
         return item
       })
-      return updatedArray
+    } else {
+      return sortedByName.map((p, index) => {
+        return { ...p, priority: index + 1 }
+      })
     }
-
-    const objPriority = Number(obj.priority)
-
-    return array.map((item) => {
-      if (item.id === obj.id) {
-        return { ...item, priority: pastPriority }
-      }
-      if (item.priority <= pastPriority && item.priority > objPriority) {
-        return { ...item, priority: item.priority - 1 }
-      }
-      return item
-    })
   }
   const onSave = async (value: Provider) => {
     setIsSubmitted(true)

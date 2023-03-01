@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Box, Button, Modal, TextField } from '@mui/material'
 import { ContentState, EditorState } from 'draft-js'
 import htmlToDraft from 'html-to-draftjs'
@@ -12,17 +12,23 @@ import { LearningLogQuestion } from '../../LearningLogs/types'
 import AddCheckListModal from './AddCheckListModal'
 import { addNewQuestionClasses } from './styles'
 export type AddNewQuestionModalProps = {
+  questions?: LearningLogQuestion[]
   type: string
   onClose: () => void
   onSave: (value: LearningLogQuestion[]) => void
   schoolYearId: number
 }
 
-const AddNewQuestionModal: React.FC<AddNewQuestionModalProps> = ({ type, onClose, onSave, schoolYearId }) => {
+const AddNewQuestionModal: React.FC<AddNewQuestionModalProps> = ({
+  type,
+  onClose,
+  onSave,
+  schoolYearId,
+  questions,
+}) => {
   const [question, setQuestion] = useState<string>()
   const [checkboxList, setCheckboxList] = useState<string[]>([])
   const [isError, setIsError] = useState<boolean>(false)
-
   const [excuseAssignmentLog, setExcuseAssignmentLog] = useState<string>(defaultExcuseAssignmentLog)
   const [excuseAssignmentExplain, setExcuseAssignmentExplain] = useState<string>(defaultExcuseAssignmentExplain)
 
@@ -40,14 +46,17 @@ const AddNewQuestionModal: React.FC<AddNewQuestionModalProps> = ({ type, onClose
           if (checkboxList.includes('uploadOption')) {
             validationList.push('can_upload')
           }
-          onSave([
+          const dataToSave = [
             {
-              type,
+              type: QuestionTypes.INDEPENDENT_QUESTION,
               question,
+              slug: questions?.[0]?.slug ?? `meta_${+new Date()}`,
               default_question: true,
               validations: validationList,
+              page: 1,
             },
-          ])
+          ]
+          onSave(dataToSave)
         } else {
           setIsError(true)
         }
@@ -82,6 +91,13 @@ const AddNewQuestionModal: React.FC<AddNewQuestionModalProps> = ({ type, onClose
       },
     ])
   }
+
+  useEffect(() => {
+    if (questions && questions.length > 0) {
+      setQuestion(questions[0].question)
+      setCheckboxList(questions[0]?.validations ?? [])
+    }
+  }, [questions])
 
   if (type === 'Subject Checklist') {
     return <AddCheckListModal onClose={onClose} schoolYearId={schoolYearId} onSave={onSave} />
