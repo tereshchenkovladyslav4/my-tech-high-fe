@@ -97,7 +97,7 @@ const MthCheckboxList: React.FC<MthCheckboxListProps> = ({
       {!!checkboxLists?.length && (
         <Box>
           {!!title && (
-            <Paragraph size='large' fontWeight='700'>
+            <Paragraph size='large' fontWeight='700' sx={{ lineHeight: '22px' }} color={MthColor.SYSTEM_02}>
               {title}
             </Paragraph>
           )}

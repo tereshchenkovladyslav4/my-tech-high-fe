@@ -122,7 +122,14 @@ const CustomQuestion: React.FC<CustomQuestionProps> = ({
     const newQuestionList: AssignmentQuestionType[] = questionList.map(
       (item: AssignmentQuestionType, index: number) => {
         if (targetIndex === index) {
-          return updatedQuestionItem
+          if (updatedQuestionItem.type === QuestionTypes.UPLOAD) {
+            return {
+              ...updatedQuestionItem,
+              validations: updatedQuestionItem.validations.filter((i) => i !== 'can_upload'),
+            }
+          } else {
+            return updatedQuestionItem
+          }
         } else {
           return item
         }

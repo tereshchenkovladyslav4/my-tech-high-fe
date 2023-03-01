@@ -23,6 +23,7 @@ import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { QuestionTypes } from '@mth/constants'
 import { MthColor } from '@mth/enums'
 import { mthButtonClasses } from '@mth/styles/button.style'
+import { extractContent } from '@mth/utils'
 import { LearningQuestionType } from '../types'
 import SubjectQuestion from './SubjectQuestion'
 
@@ -146,8 +147,7 @@ const LearningQuestionItem = ({
                 onClick={() => handleChange(!question[0].response)}
               />
               <Paragraph size='large' sx={{ fontSize: 16, display: 'flex', alignItems: 'center' }}>
-                <span dangerouslySetInnerHTML={{ __html: question[0].question }}></span>
-                {question[0]?.validations?.includes('required') && <span style={{ marginLeft: '10px' }}>*</span>}
+                {extractContent(question[0].question)} {question[0]?.validations?.includes('required') && '*'}
               </Paragraph>
             </Box>
             {!question[0].parent_slug && (
@@ -271,8 +271,7 @@ const LearningQuestionItem = ({
       {question[0].type !== QuestionTypes.AGREEMENT && (
         <Box display='flex' mt='20px' alignItems='center' justifyContent='space-between'>
           <Paragraph size='large' sx={{ fontSize: 16, display: 'flex', alignItems: 'center' }}>
-            <span dangerouslySetInnerHTML={{ __html: question[0].question }}></span>
-            {question[0]?.validations?.includes('required') && <span style={{ marginLeft: '10px' }}>*</span>}
+            {extractContent(question[0].question)} {question[0]?.validations?.includes('required') && '*'}
           </Paragraph>
           {!question[0].parent_slug && (
             <Box display='inline-flex' paddingTop='10px' height='40px' alignItems='center' justifyContent='center'>

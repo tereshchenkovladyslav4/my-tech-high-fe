@@ -39,7 +39,10 @@ const RequestUpdatesModal: React.FC<RequestUpdatesModalProps> = ({
     if (scheduleData?.length) {
       if (isSecondSemester) {
         const filteredScheduleData = scheduleData.filter(
-          (item) => item.FirstSemesterSchedule?.Period?.semester !== SEMESTER_TYPE.NONE,
+          (item) =>
+            item.FirstSemesterSchedule?.Period?.semester !== SEMESTER_TYPE.NONE ||
+            item.FirstSemesterSchedule.Title?.always_unlock ||
+            item.FirstSemesterSchedule.Course?.always_unlock,
         )
         setPeriodsItems(
           filteredScheduleData.length

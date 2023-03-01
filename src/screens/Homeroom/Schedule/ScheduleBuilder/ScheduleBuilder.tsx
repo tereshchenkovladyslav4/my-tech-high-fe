@@ -11,6 +11,7 @@ import { saveScheduleMutation } from '@mth/graphql/mutation/schedule'
 import { saveSchedulePeriodMutation } from '@mth/graphql/mutation/schedule-period'
 import { getAllScheduleBuilderQuery } from '@mth/graphql/queries/schedule-builder'
 import { useStudentSchedulePeriods } from '@mth/hooks'
+import { SEMESTER_TYPE } from '@mth/screens/Admin/Curriculum/types'
 import { scheduleBuilderClasses } from '@mth/screens/Homeroom/Schedule/ScheduleBuilder/styles'
 import { mthButtonClasses } from '@mth/styles/button.style'
 import { ScheduleBuilderProps, ScheduleData } from '../types'
@@ -66,9 +67,37 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
   const [saveDraft] = useMutation(saveSchedulePeriodMutation)
 
   const handleSave = async (kind: ScheduleStatus, directly = false) => {
-    if (showSecondSemester && !isChanged && kind !== ScheduleStatus.UPDATES_REQUESTED && !directly) {
-      setShowNoChangesModal(true)
-      return
+    if (showSecondSemester && kind !== ScheduleStatus.UPDATES_REQUESTED && !directly) {
+      const unchangedCnt = secondScheduleData.filter(
+        (item) =>
+          (item.FirstSemesterSchedule?.Period?.semester !== SEMESTER_TYPE.NONE ||
+            item.FirstSemesterSchedule.Title?.always_unlock ||
+            item.FirstSemesterSchedule.Course?.always_unlock) &&
+          item.schedulePeriodStatus != SchedulePeriodStatus.NO_UPDATES &&
+          item.FirstSemesterSchedule?.Period?.id == item.Period?.id &&
+          item.FirstSemesterSchedule?.Subject?.subject_id == item.Subject?.subject_id &&
+          item.FirstSemesterSchedule?.Title?.title_id == item.Title?.title_id &&
+          item.FirstSemesterSchedule?.CourseType == item.CourseType &&
+          item.FirstSemesterSchedule?.Provider?.id == item.Provider?.id &&
+          item.FirstSemesterSchedule?.Course?.id == item.Course?.id &&
+          item.FirstSemesterSchedule?.ThirdParty?.providerName == item.ThirdParty?.providerName &&
+          item.FirstSemesterSchedule?.ThirdParty?.courseName == item.ThirdParty?.courseName &&
+          item.FirstSemesterSchedule?.ThirdParty?.phoneNumber == item.ThirdParty?.phoneNumber &&
+          item.FirstSemesterSchedule?.ThirdParty?.specificCourseWebsite == item.ThirdParty?.specificCourseWebsite &&
+          JSON.stringify(item.FirstSemesterSchedule?.ThirdParty?.additionalWebsite) ==
+            JSON.stringify(item.ThirdParty?.additionalWebsite) &&
+          item.FirstSemesterSchedule?.OnSiteSplitEnrollment?.districtSchool ==
+            item.OnSiteSplitEnrollment?.districtSchool &&
+          item.FirstSemesterSchedule?.OnSiteSplitEnrollment?.schoolDistrictName ==
+            item.OnSiteSplitEnrollment?.schoolDistrictName &&
+          item.FirstSemesterSchedule?.OnSiteSplitEnrollment?.courseName == item.OnSiteSplitEnrollment?.courseName &&
+          item.FirstSemesterSchedule?.CustomBuiltDescription == item.CustomBuiltDescription &&
+          item.FirstSemesterSchedule?.CustomBuiltDescription == item.standardResponseOptions,
+      ).length
+      if (unchangedCnt) {
+        setShowNoChangesModal(true)
+        return
+      }
     }
 
     const data = showSecondSemester ? secondScheduleData : scheduleData

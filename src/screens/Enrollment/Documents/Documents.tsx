@@ -326,8 +326,11 @@ export const Documents: React.FC<DocumentsProps> = ({ id, regionId, questions })
   const specialEdStatus = useCallback(
     (item: EnrollmentQuestion) => {
       const specialResponseMeta = formik?.values?.packet?.meta
+
       const specialResponse = specialResponseMeta ? JSON.parse(specialResponseMeta) : {}
-      if (item.question === 'Special Education Documents') {
+
+      const slug = item.options?.[0]?.label?.trim()
+      if (slug?.toLocaleLowerCase() === 'sped') {
         return !!(specialResponse && (specialResponse.meta_special_education || 0) !== 0)
       } else {
         return true

@@ -304,12 +304,12 @@ export const AssignmentTable: React.FC<EnrollmentSchoolTableProps> = ({
   }
 
   const handleTransfer = async () => {
-    if (!selectedHomeroom) {
-      setErrorHomeroom(true)
-      return
-    }
     if (studentIds.length === 0) {
       setErrorStudentSelect(true)
+      return
+    }
+    if (!selectedHomeroom) {
+      setErrorHomeroom(true)
       return
     }
     if (studentIds.length > 0 && selectedHomeroom?.value) {
@@ -426,13 +426,13 @@ export const AssignmentTable: React.FC<EnrollmentSchoolTableProps> = ({
                 ),
               ]}
               onChange={(event, value) => handleListItemClick(value)}
-              sx={{ width: 300 }}
+              sx={{ width: 250 }}
               value={selectedHomeroom}
               id='controlled-demo'
               renderInput={(params) => (
                 <TextField
                   {...params}
-                  label='Search...'
+                  placeholder='Search...'
                   InputProps={{
                     ...params.InputProps,
                     startAdornment: (

@@ -59,7 +59,14 @@ const MthCheckbox = (props: MthCheckboxProps): React.ReactElement => {
           label={
             <Paragraph
               size='large'
-              sx={{ marginLeft: '12px', fontSize: '16px', fontWeight: '500', lineHeight: 1, ...labelSx }}
+              sx={{
+                marginLeft: '12px',
+                fontSize: '16px',
+                fontWeight: '500',
+                lineHeight: 1,
+                color: MthColor.BLACK,
+                ...labelSx,
+              }}
             >
               {label}
             </Paragraph>

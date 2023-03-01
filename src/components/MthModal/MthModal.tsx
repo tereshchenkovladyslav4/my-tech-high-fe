@@ -20,10 +20,10 @@ export type CustomModalType = {
   showBtnClose?: boolean
   showBtnConfirm?: boolean
   showBtnCancel?: boolean
-  isCustomBtn: boolean
-  customStr: string
-  customBtnType: string
-  onCustom: () => void
+  isCustomBtn?: boolean
+  customStr?: string
+  customBtnType?: string
+  onCustom?: () => void
 }
 
 export const MthModal: React.FC<CustomModalType> = ({

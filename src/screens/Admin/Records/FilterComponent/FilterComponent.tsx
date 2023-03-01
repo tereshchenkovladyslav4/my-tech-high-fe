@@ -251,7 +251,7 @@ const FilterComponent: React.FC<FilterComponentProps> = ({ setFilter }) => {
 
   useEffect(() => {
     setDefaultFilter()
-  }, [selectedYearId, programYears, specialEd, schoolofEnrollment])
+  }, [selectedYearId])
 
   return (
     <Card sx={{ marginTop: 2, padding: 2 }}>
@@ -286,7 +286,7 @@ const FilterComponent: React.FC<FilterComponentProps> = ({ setFilter }) => {
                     }}
                     checkboxLists={gradeList}
                     haveSelectAll={true}
-                    labelSx={{ fontSize: '14px' }}
+                    labelSx={{ fontSize: '14px', lineHeight: '12px' }}
                   />
                 </Box>
               </Grid>
@@ -300,7 +300,7 @@ const FilterComponent: React.FC<FilterComponentProps> = ({ setFilter }) => {
                     }}
                     checkboxLists={grade2Options}
                     haveSelectAll={false}
-                    labelSx={{ fontSize: '14px' }}
+                    labelSx={{ fontSize: '14px', lineHeight: '12px' }}
                   />
                   <MthCheckboxList
                     title={'Enrollment Status'}
@@ -310,7 +310,7 @@ const FilterComponent: React.FC<FilterComponentProps> = ({ setFilter }) => {
                     }}
                     checkboxLists={DEFULAT_ENROLLMENT_STATUS_LIST}
                     haveSelectAll={false}
-                    labelSx={{ fontSize: '14px' }}
+                    labelSx={{ fontSize: '14px', lineHeight: '12px' }}
                   />
                   <MthCheckboxList
                     title={'Program Year'}
@@ -320,7 +320,7 @@ const FilterComponent: React.FC<FilterComponentProps> = ({ setFilter }) => {
                     }}
                     checkboxLists={programYearList}
                     haveSelectAll={false}
-                    labelSx={{ fontSize: '14px' }}
+                    labelSx={{ fontSize: '14px', lineHeight: '12px' }}
                   />
                   <MthCheckboxList
                     title={'Program Year Status'}
@@ -330,7 +330,7 @@ const FilterComponent: React.FC<FilterComponentProps> = ({ setFilter }) => {
                     }}
                     checkboxLists={DEFULAT_PROGRAM_YEAR_STATUS_LIST}
                     haveSelectAll={false}
-                    labelSx={{ fontSize: '14px' }}
+                    labelSx={{ fontSize: '14px', lineHeight: '12px' }}
                   />
                 </Box>
               </Grid>
@@ -344,7 +344,7 @@ const FilterComponent: React.FC<FilterComponentProps> = ({ setFilter }) => {
                     }}
                     checkboxLists={schoolOfEnrollmentList}
                     haveSelectAll={false}
-                    labelSx={{ fontSize: '14px' }}
+                    labelSx={{ fontSize: '14px', lineHeight: '12px' }}
                   />
                   <MthCheckboxList
                     title={'Special Ed'}
@@ -354,7 +354,7 @@ const FilterComponent: React.FC<FilterComponentProps> = ({ setFilter }) => {
                     }}
                     checkboxLists={specialEdList}
                     haveSelectAll={false}
-                    labelSx={{ fontSize: '14px' }}
+                    labelSx={{ fontSize: '14px', lineHeight: '12px' }}
                   />
                 </Box>
               </Grid>
@@ -371,7 +371,7 @@ const FilterComponent: React.FC<FilterComponentProps> = ({ setFilter }) => {
                     }}
                     checkboxLists={enrollmentPacketDocumentList}
                     haveSelectAll={false}
-                    labelSx={{ fontSize: '14px' }}
+                    labelSx={{ fontSize: '14px', lineHeight: '12px' }}
                   />
                   <MthCheckboxList
                     title={'Other'}
@@ -385,7 +385,7 @@ const FilterComponent: React.FC<FilterComponentProps> = ({ setFilter }) => {
                         : [...DEFAULT_OTHER_LIST.filter((item) => item.label !== StudentRecordFileKind.USIRS)]
                     }
                     haveSelectAll={false}
-                    labelSx={{ fontSize: '14px' }}
+                    labelSx={{ fontSize: '14px', lineHeight: '12px' }}
                   />
                 </Box>
               </Grid>

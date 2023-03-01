@@ -22,6 +22,7 @@ import { Classes, Master } from './types'
 
 const LearningLogs: React.FC = () => {
   const history = useHistory()
+
   // const [searchField, setSearchField] = useState<string>('')
   const [tableData, setTableData] = useState<MthTableRowItem<Master>[]>([])
   const [localSearchField, setLocalSearchField] = useState<string>('')
