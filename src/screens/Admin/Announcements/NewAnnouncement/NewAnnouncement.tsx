@@ -162,7 +162,7 @@ const NewAnnouncement: React.FC<NewAnnouncementProps> = ({ announcement, setAnno
             body: draftToHtml(convertToRaw(editorState.getCurrentContent())),
             posted_by: emailFrom,
             schedule_time: cronJobTime,
-            isArchived: false,
+            isArchived: 0,
           },
         },
       })

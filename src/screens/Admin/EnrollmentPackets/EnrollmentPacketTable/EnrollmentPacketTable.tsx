@@ -38,7 +38,7 @@ import {
 
 export const EnrollmentPacketTable: React.FC = () => {
   const { me } = useContext(UserContext)
-  const [filters, setFilters] = useState(['Submitted', 'Resubmitted', 'Age Issue'])
+  const [filters, setFilters] = useState(['Submitted', 'Resubmitted'])
 
   const [emailTemplate, setEmailTemplate] = useState<EmailTemplateResponseVM>()
   const [searchText, setSearchText] = useState('')
@@ -82,6 +82,7 @@ export const EnrollmentPacketTable: React.FC = () => {
     setStore(true)
   }
   const handleSearchText = useCallback((e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setSkip(0)
     setSearchText(e.target.value)
   }, [])
   useEffect(() => {
@@ -312,10 +313,8 @@ export const EnrollmentPacketTable: React.FC = () => {
 
   useEffect(() => {
     if (filters.length === 1 && filters[0] === 'Age Issue') {
-      window.location.reload()
-    }
-
-    if (
+      setFilters(['Submitted', 'Resubmitted', 'Age Issue'])
+    } else if (
       !filters.some((filter) => filter === 'Submitted') &&
       !filters.some((filter) => filter === 'Resubmitted') &&
       !filters.some((filter) => filter === 'Conditional') &&

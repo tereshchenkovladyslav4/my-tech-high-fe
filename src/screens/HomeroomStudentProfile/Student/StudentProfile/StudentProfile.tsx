@@ -98,7 +98,7 @@ export const StudentProfile: undefined | React.FC<StudentProfileProps> = ({ curr
   const validationSchema = yup.object({
     firstName: yup.string().nullable(),
     lastName: yup.string().nullable(),
-    email: yup.string().email('Please enter a valid email').nullable().required('Email is required'),
+    email: yup.string().email('Please enter a valid email').nullable(),
     password: yup.string().matches(isValidPassword, MthTitle.PASSWORD_HINT).nullable(),
   })
 
