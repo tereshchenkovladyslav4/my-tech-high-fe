@@ -1,5 +1,6 @@
 import React from 'react'
 import { TextField, styled } from '@mui/material'
+import { MthColor } from '@mth/enums'
 import { MthTimePickerProps } from './types'
 
 const CssTextField = styled(TextField, {
@@ -10,6 +11,7 @@ const CssTextField = styled(TextField, {
     '& fieldset': {
       border: '1px solid rgba(26, 26, 26, 0.25) !important',
     },
+    color: MthColor.SYSTEM_01,
   },
   '& .MuiInput-underline:after': {
     borderBottomColor: '#ccc',
@@ -33,7 +35,12 @@ export const MthTimePicker: React.FC<MthTimePickerProps> = ({ label = 'Time', si
       inputProps={{
         step: 300,
       }}
-      sx={{ width: '100%', my: 1 }}
+      InputLabelProps={{
+        style: {
+          color: MthColor.SYSTEM_06,
+        },
+      }}
+      sx={{ width: '100%', my: 1, svg: { color: 'red' } }}
       onChange={(e) => {
         handleChange(e.target.value)
       }}

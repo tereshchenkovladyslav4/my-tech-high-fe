@@ -6,9 +6,11 @@ import AddIcon from '@mui/icons-material/Add'
 import DehazeIcon from '@mui/icons-material/Dehaze'
 import { Box, Button, Grid, IconButton, TextField, Tooltip } from '@mui/material'
 import { SxProps } from '@mui/system'
+import { useFlag } from '@unleash/proxy-client-react'
 import { useFormikContext } from 'formik'
 import SignatureCanvas from 'react-signature-canvas'
 import { SortableHandle } from 'react-sortable-hoc'
+import { CustomModal } from '@mth/components/CustomModal/CustomModals'
 import { DocumentUploadModal } from '@mth/components/DocumentUploadModal/DocumentUploadModal'
 import { DropDown } from '@mth/components/DropDown/DropDown'
 import { DropDownItem } from '@mth/components/DropDown/types'
@@ -22,7 +24,7 @@ import { MthRadioGroup } from '@mth/components/MthRadioGroup'
 import { RadioGroupOption } from '@mth/components/MthRadioGroup/types'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
-import { REIMBURSEMENT_FORM_TYPE_ITEMS } from '@mth/constants'
+import { EPIC_1396_STORY_1576, REIMBURSEMENT_FORM_TYPE_ITEMS } from '@mth/constants'
 import {
   QUESTION_TYPE,
   RoleLevel,
@@ -96,6 +98,7 @@ export const QuestionItem: React.FC<QuestionProps> = ({
   setSignatureName,
   setSelectedStudentId,
   setSelectedFormType,
+  setIsChanged,
 }) => {
   const { me } = useContext(UserContext)
   const { values, setValues } = useFormikContext<ReimbursementQuestion[]>()
@@ -104,6 +107,9 @@ export const QuestionItem: React.FC<QuestionProps> = ({
   const [periodsItems, setPeriodsItems] = useState<DropDownItem[]>([])
   const [showUploadModal, setShowUploadModal] = useState<boolean>(false)
   const [maxReceipt, setMaxReceipt] = useState<number>(1)
+  const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false)
+  const [highlightedReceiptId, setHighlightedReceiptId] = useState<number | undefined>()
+  const epic1396story1576 = useFlag(EPIC_1396_STORY_1576)
 
   const [getStudentSchedulePeriods, { loading: studentSchedulePeriodsLoading, data: studentSchedulePeriodsData }] =
     useLazyQuery(getStudentSchedulePeriodsQuery, {
@@ -167,7 +173,19 @@ export const QuestionItem: React.FC<QuestionProps> = ({
     }
   }
 
+  const handleDeleteReceipt = (index: number) => {
+    if (roleLevel == RoleLevel.SUPER_ADMIN) {
+      if (epic1396story1576) {
+        setHighlightedReceiptId(index)
+        setShowDeleteModal(true)
+      }
+    } else {
+      deleteReceipt(index)
+    }
+  }
+
   const deleteReceipt = (index: number) => {
+    setIsChanged(true)
     const temp = [...receipts]
     temp?.splice(index, 1)
     setReceipts(temp)
@@ -248,7 +266,7 @@ export const QuestionItem: React.FC<QuestionProps> = ({
                   >
                     {`${receipt?.file_name}`}
                   </Paragraph>
-                  <IconButton onClick={() => deleteReceipt(index)}>
+                  <IconButton onClick={() => handleDeleteReceipt(index)}>
                     <Tooltip title='Delete' color='primary' placement='top'>
                       <DeleteForeverOutlined fontSize='medium' />
                     </Tooltip>
@@ -665,6 +683,22 @@ export const QuestionItem: React.FC<QuestionProps> = ({
           handleModem={() => setShowUploadModal(false)}
           handleFile={(files: File[]) => handleFileChange(files)}
           limit={maxReceipt - receipts?.length}
+        />
+      )}
+      {showDeleteModal && highlightedReceiptId != undefined && (
+        <CustomModal
+          title='Delete'
+          description='Are you sure you want to delete this receipt?'
+          cancelStr='Cancel'
+          confirmStr='Delete'
+          backgroundColor='#FFFFFF'
+          onClose={() => {
+            setShowDeleteModal(false)
+          }}
+          onConfirm={() => {
+            deleteReceipt(highlightedReceiptId)
+            setShowDeleteModal(false)
+          }}
         />
       )}
     </>

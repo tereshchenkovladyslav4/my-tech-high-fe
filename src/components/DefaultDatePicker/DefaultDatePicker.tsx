@@ -4,6 +4,7 @@ import { TextField } from '@mui/material'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
+import { MthColor } from '@mth/enums'
 import { DefaultDatePickerProps } from './types'
 
 const CssTextField = withStyles({
@@ -11,6 +12,7 @@ const CssTextField = withStyles({
     '& .MuiOutlinedInput-root': {
       height: '56px',
       maxWidth: '220px',
+      color: MthColor.SYSTEM_01,
     },
   },
 })(TextField)
@@ -24,7 +26,7 @@ export const DefaultDatePicker: React.FC<DefaultDatePickerProps> = ({ date, labe
         onChange={(e) => {
           handleChange(e)
         }}
-        renderInput={(params) => <CssTextField color='primary' size='small' {...params} />}
+        renderInput={(params) => <CssTextField size='small' {...params} sx={{ svg: { color: MthColor.SYSTEM_07 } }} />}
       />
     </LocalizationProvider>
   )

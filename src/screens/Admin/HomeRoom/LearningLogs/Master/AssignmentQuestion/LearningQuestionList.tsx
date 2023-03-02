@@ -26,6 +26,7 @@ import { MthColor } from '@mth/enums'
 import { mthButtonClasses } from '@mth/styles/button.style'
 import { extractContent } from '@mth/utils'
 import { defaultIndependentQuestion } from '../../defaultValue'
+import { LearningLogQuestion } from '../../types'
 import { LearningQuestionType } from '../types'
 import SubjectQuestion from './SubjectQuestion'
 
@@ -38,7 +39,9 @@ const LearningQuestionItem = ({
 }: {
   question: LearningQuestionType[]
   handleDeleteQuestion: (val: LearningQuestionType) => void
-  schoolYearId: number
+  schoolYearId: number | undefined
+  setEditQuestionList: (val: LearningLogQuestion[]) => void
+  setIsCustomeQuestionModal: (val: boolean) => void
 }) => {
   const { values, setValues } = useFormikContext<LearningQuestionType[]>()
   const [checkboxIndependent, setCheckboxIndependent] = useState<string[]>([])
@@ -323,6 +326,12 @@ const LearningQuestionList = ({
   schoolYearId,
   setEditQuestionList,
   setIsCustomeQuestionModal,
+}: {
+  learningQuestionList: LearningLogQuestion[]
+  handleDeleteQuestion: (val: LearningQuestionType) => void
+  schoolYearId: number | undefined
+  setEditQuestionList: (val: AssignmentQuestionType[]) => void
+  setIsCustomeQuestionModal: (val: boolean) => void
 }) => {
   const SortableListContainer = SortableContainer(({ items }: { items: LearningQuestionType[][] }) => (
     <List>

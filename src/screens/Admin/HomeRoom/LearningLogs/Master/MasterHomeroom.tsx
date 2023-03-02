@@ -720,12 +720,18 @@ const MasterHoomroom: React.FC<{ masterId: number }> = ({ masterId }) => {
           handleSubmit={() => submitCloneHandle()}
           btntitle='Clone'
           canceltitle='Cancel'
-          modalWidth='1070px'
+          modalWidth='1150px'
           textCenter={false}
         >
-          <Box>
+          <Box sx={{ width: '100%' }}>
             {editAssignmentList?.map((editSeeing, index) => (
-              <CommonSelect key={index} index={index + 1} selectItem={editSeeing} verticalDividHeight='auto' />
+              <CommonSelect
+                key={index}
+                index={index + 1}
+                selectItem={editSeeing}
+                verticalDividHeight='auto'
+                verticalLineHeight='70px'
+              />
             ))}
           </Box>
         </WarningModal>

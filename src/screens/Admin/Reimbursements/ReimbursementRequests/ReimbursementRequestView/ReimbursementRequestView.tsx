@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { useLazyQuery } from '@apollo/client'
 import { Box } from '@mui/material'
+import { Prompt } from 'react-router-dom'
 import { Layout } from '@mth/components/Layout'
 import { PageBlock } from '@mth/components/PageBlock'
 import PageHeader from '@mth/components/PageHeader'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
-import { MthColor, MthRoute, ReimbursementFormType } from '@mth/enums'
+import { MthColor, MthRoute, MthTitle, ReimbursementFormType } from '@mth/enums'
 import { getReimbursementRequestQuery } from '@mth/graphql/queries/reimbursement-request'
 import { ReimbursementRequest } from '@mth/models'
 import { RequestForm } from '@mth/screens/Admin/Reimbursements/Common/RequestForm'
@@ -15,8 +16,9 @@ import { ReimbursementRequestViewProps } from '@mth/screens/Admin/Reimbursements
 export const ReimbursementRequestView: React.FC<ReimbursementRequestViewProps> = ({ reimbursementRequestId }) => {
   const [request, setRequest] = useState<ReimbursementRequest | undefined>()
   const [formType, setFormType] = useState<ReimbursementFormType | undefined>()
+  const [isChanged, setIsChanged] = useState<boolean>(false)
 
-  const [getReimbursementRequest, { loading, data }] = useLazyQuery(getReimbursementRequestQuery, {
+  const [getReimbursementRequest, { loading, data, refetch }] = useLazyQuery(getReimbursementRequestQuery, {
     variables: {
       reimbursementRequestId: reimbursementRequestId,
     },
@@ -27,6 +29,7 @@ export const ReimbursementRequestView: React.FC<ReimbursementRequestViewProps> =
     if (!loading && data?.reimbursementRequest) {
       const { reimbursementRequest } = data
       setRequest(reimbursementRequest)
+      setIsChanged(false)
     }
   }, [loading, data])
 
@@ -58,7 +61,16 @@ export const ReimbursementRequestView: React.FC<ReimbursementRequestViewProps> =
                 isDirectOrder={request.is_direct_order}
                 setFormType={setFormType}
                 selectedReimbursementRequest={request}
-                setIsChanged={() => {}}
+                setIsChanged={setIsChanged}
+                refetchReimbursementRequest={refetch}
+              />
+
+              <Prompt
+                when={isChanged}
+                message={JSON.stringify({
+                  header: MthTitle.UNSAVED_TITLE,
+                  content: MthTitle.UNSAVED_DESCRIPTION,
+                })}
               />
             </Box>
           </PageBlock>

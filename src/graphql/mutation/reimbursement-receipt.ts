@@ -8,6 +8,12 @@ export const saveReimbursementReceiptMutation = gql`
   }
 `
 
+export const deleteReimbursementReceiptsMutation = gql`
+  mutation DeleteReimbursementReceipts($reimbursementReceiptsActionInput: ReimbursementReceiptsActionInput!) {
+    deleteReimbursementReceipts(reimbursementReceiptsActionInput: $reimbursementReceiptsActionInput)
+  }
+`
+
 /*
 CreateOrUpdateReimbursementReceipts Variables Structure
 {

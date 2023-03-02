@@ -20,6 +20,7 @@ import { QuestionTypes } from '@mth/constants'
 import { MthRoute, MthTitle } from '@mth/enums'
 import { mthButtonClasses } from '@mth/styles/button.style'
 import AddCheckListModal from '../../Components/AddNewQuestionModal/AddCheckListModal'
+import AddExcuseQuestionModal from '../../Components/AddNewQuestionModal/AddExcuseQuestionModal'
 import AddNewQuestionModal from '../../Components/AddNewQuestionModal/AddNewQuestionModal'
 import { DefaultQuestionModal } from '../../Components/DefaultQuestionModal/DefaultQuestionModal'
 import {
@@ -501,23 +502,6 @@ const EditAssignment: React.FC<{ masterId: number; assignmentId?: number }> = ({
       })
     }
 
-    await updateAssignment({
-      variables: {
-        updateAssignmentInput: {
-          autoGradeDateTime: moment(tempAssignment?.auto_grade).toISOString(),
-          autoGradeEmail: tempAssignment?.auto_grade_email ? true : false,
-          dueDateTime: moment(tempAssignment?.due_date).toISOString(),
-          master_id: masterId,
-          reminderDateTime: moment(tempAssignment?.reminder_date).toISOString(),
-          title: tempAssignment?.title,
-          teacher_deadline: moment(tempAssignment?.teacher_deadline).toISOString(),
-          assignment_id: parseInt(tempAssignment?.id),
-          page_count: tempAssignment?.page_count,
-        },
-      },
-    })
-
-    await assignmentRefetch()
     await questionRefetch()
 
     setSucessAlert(true)
@@ -621,6 +605,8 @@ const EditAssignment: React.FC<{ masterId: number; assignmentId?: number }> = ({
               schoolYearId={master?.school_year_id}
               setEditQuestionList={setEditQuestionList} // dev
               setIsCustomeQuestionModal={setIsCustomeQuestionModal} // dev
+              tempLearningQuestionList={tempLearningQuestionList}
+              setTempLearningQuestionList={setTempLearningQuestionList}
             />
           </Box>
           <Box
@@ -692,7 +678,13 @@ const EditAssignment: React.FC<{ masterId: number; assignmentId?: number }> = ({
           </Box>
         </PageHeader>
         {editAssignmentList?.map((editSeeing, index) => (
-          <CommonSelect key={index} index={index + 1} selectItem={editSeeing} verticalDividHeight='auto' />
+          <CommonSelect
+            key={index}
+            index={index + 1}
+            selectItem={editSeeing}
+            verticalDividHeight='auto'
+            verticalLineHeight='70px'
+          />
         ))}
       </Card>
       {assignment?.id && (
@@ -786,18 +778,24 @@ const EditAssignment: React.FC<{ masterId: number; assignmentId?: number }> = ({
             schoolYearId={master?.school_year_id}
             editQuestion={editQuestionList}
           />
+        ) : editQuestionList.length === 2 &&
+          editQuestionList[0].type === QuestionTypes.AGREEMENT &&
+          editQuestionList[1].type === QuestionTypes.TEXTBOX ? ( // option to excuse a learning log
+          <AddExcuseQuestionModal
+            onClose={() => setIsCustomeQuestionModal(false)}
+            onSave={handleSaveQuestion}
+            editQuestionList={editQuestionList}
+          />
         ) : editQuestionList[0]?.type === QuestionTypes.INDEPENDENT_QUESTION ? (
-          <>
-            <AddNewQuestionModal
-              onClose={() => {
-                setIsCustomeQuestionModal(false)
-              }}
-              type={questionType.find((obj) => obj.option_id === 2)?.label ?? ''}
-              onSave={handleSaveQuestion}
-              schoolYearId={master?.school_year_id}
-              questions={editQuestionList}
-            />
-          </>
+          <AddNewQuestionModal
+            onClose={() => {
+              setIsCustomeQuestionModal(false)
+            }}
+            type={questionType.find((obj) => obj.option_id === 2)?.label ?? ''}
+            onSave={handleSaveQuestion}
+            schoolYearId={master?.school_year_id}
+            questions={editQuestionList}
+          />
         ) : (
           <CustomQuestion
             isCustomeQuestionModal={isCustomeQuestionModal}
@@ -808,6 +806,7 @@ const EditAssignment: React.FC<{ masterId: number; assignmentId?: number }> = ({
             editQuestionList={editQuestionList}
           />
         ))}
+
       {openDefaultQuestionModal && (
         <DefaultQuestionModal
           onClose={() => {

@@ -96,3 +96,20 @@ export const deleteAnnouncementsById = gql`
     }
   }
 `
+
+export const ToggleArchiveAnnouncementMutation = gql`
+  mutation archiveAnnouncement($announcement_id: Int!) {
+    archiveAnnouncement(announcement_id: $announcement_id) {
+      announcement_id
+      date
+      filter_grades
+      filter_users
+      filter_providers
+      filter_program_years
+      filter_school_partners
+      status
+      subject
+      posted_by
+    }
+  }
+`

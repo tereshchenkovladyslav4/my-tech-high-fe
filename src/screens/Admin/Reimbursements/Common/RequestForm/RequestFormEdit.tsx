@@ -71,7 +71,7 @@ export const RequestFormEdit: React.FC<RequestFormEditProps> = ({
     <>
       <Grid container rowSpacing={3}>
         {children}
-        {(isToBuildForm || (roleLevel != RoleLevel.SUPER_ADMIN && !!selectedStudentId && !!selectedFormType)) && (
+        {isToBuildForm || (roleLevel != RoleLevel.SUPER_ADMIN && !!selectedStudentId && !!selectedFormType) ? (
           <Grid item xs={12}>
             <Box sx={{ display: 'flex', justifyContent: 'space-evenly' }}>
               <Button
@@ -82,6 +82,29 @@ export const RequestFormEdit: React.FC<RequestFormEditProps> = ({
               </Button>
               <Button sx={{ ...mthButtonClasses.roundDark, padding: '17px 40px', width: '200px' }} type='submit'>
                 Submit
+              </Button>
+            </Box>
+          </Grid>
+        ) : (
+          <Grid item xs={12}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 3 }}>
+              <Button
+                sx={mthButtonClasses.green}
+                onClick={() => onSubmitRequests(values, ReimbursementRequestStatus.APPROVED)}
+              >
+                Approve
+              </Button>
+              <Button
+                sx={mthButtonClasses.red}
+                onClick={() => onSubmitRequests(values, ReimbursementRequestStatus.UPDATES_REQUIRED)}
+              >
+                Updates Required
+              </Button>
+              <Button
+                sx={mthButtonClasses.gray}
+                onClick={() => onSubmitRequests(values, ReimbursementRequestStatus.DRAFT)}
+              >
+                Save Changes
               </Button>
             </Box>
           </Grid>

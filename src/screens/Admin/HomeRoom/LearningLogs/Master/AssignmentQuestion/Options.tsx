@@ -40,7 +40,7 @@ export const QuestionOptions: React.FC<QuestionOptionProps> = ({
   const [questionOptions, setQuestionOptions] = useState<QuestionOptionType[]>([])
 
   useEffect(() => {
-    if (options.length > 0) {
+    if (options?.length > 0) {
       setQuestionOptions(options)
     } else {
       setQuestionOptions([

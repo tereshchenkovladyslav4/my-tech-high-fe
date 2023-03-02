@@ -15,7 +15,10 @@ import {
   RoleLevel,
 } from '@mth/enums'
 import { saveReimbursementQuestionsMutation } from '@mth/graphql/mutation/reimbursement-question'
-import { saveReimbursementReceiptMutation } from '@mth/graphql/mutation/reimbursement-receipt'
+import {
+  deleteReimbursementReceiptsMutation,
+  saveReimbursementReceiptMutation,
+} from '@mth/graphql/mutation/reimbursement-receipt'
 import { saveReimbursementRequestMutation } from '@mth/graphql/mutation/reimbursement-request'
 import { useReimbursementQuestions } from '@mth/hooks/useReimbursementQuestions'
 import { ReimbursementQuestion, ReimbursementReceipt, ReimbursementRequest, SchoolYear, Student } from '@mth/models'
@@ -56,6 +59,7 @@ type SortableContainerProps = {
   setSignatureName: (value: string) => void
   setSelectedStudentId: (value: number) => void
   setSelectedFormType: (value: ReimbursementFormType | undefined) => void
+  setIsChanged: (value: boolean) => void
 }
 
 const SortableItem = SortableElement(QuestionItem)
@@ -80,6 +84,7 @@ const SortableListContainer = SortableContainer(
     setSignatureName,
     setSelectedStudentId,
     setSelectedFormType,
+    setIsChanged,
   }: SortableContainerProps) => (
     <Grid item xs={12}>
       <List>
@@ -106,7 +111,7 @@ const SortableListContainer = SortableContainer(
               setSignatureName={setSignatureName}
               setSelectedStudentId={setSelectedStudentId}
               setSelectedFormType={setSelectedFormType}
-              setIsChanged={() => {}}
+              setIsChanged={setIsChanged}
             />
           ))}
         </Grid>
@@ -125,6 +130,7 @@ export type RequestFormProps = {
   setFormType: (value: ReimbursementFormType | undefined) => void
   setIsChanged: (value: boolean) => void
   setPage?: (value: MthRoute) => void
+  refetchReimbursementRequest?: () => void
 }
 
 export const RequestForm: React.FC<RequestFormProps> = ({
@@ -137,6 +143,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
   setFormType,
   setIsChanged,
   setPage,
+  refetchReimbursementRequest,
 }) => {
   const { me } = useContext(UserContext)
   const roleLevel = me?.role?.level
@@ -176,6 +183,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
   const [submitSave] = useMutation(saveReimbursementQuestionsMutation)
   const [saveRequest] = useMutation(saveReimbursementRequestMutation)
   const [saveReceipts] = useMutation(saveReimbursementReceiptMutation)
+  const [deleteReceipts] = useMutation(deleteReimbursementReceiptsMutation)
 
   const validationSchema = yup.object({})
 
@@ -204,8 +212,8 @@ export const RequestForm: React.FC<RequestFormProps> = ({
     return false
   }
 
-  const onSubmitRequests = async (questions: ReimbursementQuestion[], status: ReimbursementRequestStatus) => {
-    if (roleLevel == RoleLevel.SUPER_ADMIN) return
+  const onSubmitRequests = async (questions: ReimbursementQuestion[], status?: ReimbursementRequestStatus) => {
+    if (isToBuildForm) return
     let fileId = 0
     if (signatureRef && !signatureRef.isEmpty()) {
       const file = await dataUrlToFile(signatureRef?.getTrimmedCanvas()?.toDataURL('image/png') || '', 'signature')
@@ -257,7 +265,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
           periods: periods,
           signature_file_id: fileId > 0 ? fileId : signatureFileId,
           signature_name: signatureName,
-          status: status,
+          status: status || selectedReimbursementRequest?.status,
           total_amount: total_amount,
         },
       },
@@ -266,6 +274,9 @@ export const RequestForm: React.FC<RequestFormProps> = ({
     if (response && receiptQuestion) {
       const reimbursementRequestId = response.data?.createOrUpdateReimbursementRequest?.reimbursement_request_id
       const newReceipts = [...receipts?.filter((receipt) => !receipt?.file_id)]
+      const deletedReceipts = selectedReimbursementRequest?.ReimbursementReceipts?.filter(
+        (receipt) => receipts.findIndex((x) => x.reimbursement_receipt_id == receipt.reimbursement_receipt_id) < 0,
+      )
       if (newReceipts?.length) {
         for (const receipt of newReceipts) {
           if (receipt?.file) {
@@ -293,7 +304,17 @@ export const RequestForm: React.FC<RequestFormProps> = ({
           },
         })
       }
+      if (deletedReceipts?.length) {
+        await deleteReceipts({
+          variables: {
+            reimbursementReceiptsActionInput: {
+              receiptIds: deletedReceipts.map((item) => item.reimbursement_receipt_id),
+            },
+          },
+        })
+      }
     }
+    if (refetchReimbursementRequest) refetchReimbursementRequest()
     if (setPage) setPage(MthRoute.DASHBOARD)
   }
 
@@ -475,6 +496,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                       const newSortableList = arrayMove(values, oldIndex, newIndex)
                       arrangeItems(newSortableList, values, setValues)
                     }}
+                    setIsChanged={setIsChanged}
                   />
                 </RequestFormEdit>
               </Form>

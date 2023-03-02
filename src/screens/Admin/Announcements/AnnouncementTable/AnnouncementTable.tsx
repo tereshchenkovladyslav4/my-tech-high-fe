@@ -5,7 +5,7 @@ import { CustomConfirmModal } from '@mth/components/CustomConfirmModal/CustomCon
 import { PageBlock } from '@mth/components/PageBlock'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { Announcement } from '../../../Dashboard/Announcements/types'
-import { deleteAnnouncementsById, getAnnouncementsQuery, UpdateAnnouncementMutation } from '../services'
+import { ToggleArchiveAnnouncementMutation, deleteAnnouncementsById, getAnnouncementsQuery } from '../services'
 import { PageContent } from './PageContent'
 import { PageHeader } from './PageHeader'
 
@@ -30,14 +30,11 @@ const AnnouncementTable: React.FC<AnnouncementTableProps> = ({ setAnnouncement }
     skip: !me?.selectedRegionId,
     fetchPolicy: 'network-only',
   })
-  const [submitSave, {}] = useMutation(UpdateAnnouncementMutation)
+  const [submitSave, {}] = useMutation(ToggleArchiveAnnouncementMutation)
   const handleArchiveChangeStatus = async (announcement: Announcement) => {
     await submitSave({
       variables: {
-        updateAnnouncementInput: {
-          announcement_id: Number(announcement.id),
-          isArchived: !announcement.isArchived,
-        },
+        announcement_id: Number(announcement.id),
       },
     })
     await refetch()

@@ -33,7 +33,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
     cursor: 'pointer',
   },
   errorOutline: {
-    background: '#FAFAFA',
+    background: MthColor.WHITE,
     borderRadius: '1px',
     color: MthColor.BLACK,
     marginBottom: '20px',
