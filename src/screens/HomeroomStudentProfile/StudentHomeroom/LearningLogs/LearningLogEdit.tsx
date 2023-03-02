@@ -97,7 +97,9 @@ export const LearningLogEdit: React.FC<LearningLogEditProps> = ({
     if (questions?.length > 0) {
       let invalidationCount = 0
       questions?.map((question) => {
-        if (!question.parent_slug && !question.answer && question.required) invalidationCount++
+        if (!question.parent_slug && !question.answer && question.required) {
+          invalidationCount++
+        }
       })
       if (invalidationCount > 0) return true
     }
