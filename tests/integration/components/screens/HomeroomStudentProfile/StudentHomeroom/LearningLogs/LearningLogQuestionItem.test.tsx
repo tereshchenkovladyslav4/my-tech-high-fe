@@ -1,6 +1,8 @@
-import { render, screen, fireEvent } from '@testing-library/react'
+import { MockedProvider } from '@apollo/client/testing'
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import { QuestionTypes } from '@mth/constants'
+import { reimbursementRequestMock } from '@mth/mocks/reimbursementRequestMock'
 import { LearningLogQuestion } from '@mth/models'
 import { LearningLogQuestionItem } from '@mth/screens/HomeroomStudentProfile/StudentHomeroom/LearningLogs/LearningLogQuestionItem'
 
@@ -62,7 +64,7 @@ describe('LearningLogQuestionItem', () => {
     )
     const dropdownInput = screen.getByText('Red')
     expect(dropdownInput).toBeInTheDocument()
-    expect(screen.getByText('What is your favorite color?')).toBeInTheDocument()
+    expect(screen.getByText('What is your favorite color? *')).toBeInTheDocument()
   })
 
   test('renders an agreement question', () => {
@@ -128,7 +130,7 @@ describe('LearningLogQuestionItem', () => {
         handleChangeValue={handleChangeValue}
       />,
     )
-    const uploadText = screen.getByText('Upload your essay.')
+    const uploadText = screen.getByText('Upload your essay. *')
     expect(uploadText).toBeInTheDocument()
     expect(screen.getByTestId('upload-button')).toBeInTheDocument()
   })
@@ -199,6 +201,62 @@ describe('LearningLogQuestionItem', () => {
       ...question,
       answer: '["black"]',
     })
-    expect(screen.getByText('Please select color.')).toBeInTheDocument()
+    expect(screen.getByText('Please select color. *')).toBeInTheDocument()
+  })
+
+  it('should render Subject Checklist Question Item', async () => {
+    const mocks = [reimbursementRequestMock]
+    const question: LearningLogQuestion = {
+      id: 5,
+      type: QuestionTypes.SUBJECT_QUESTION,
+      question: 'Select one or more of the competencies you were developing this week, if interested.',
+      required: true,
+      answer: '',
+      page: 1,
+      order: 1,
+    }
+    const { getByText } = render(
+      <MockedProvider mocks={mocks} addTypename={false}>
+        <LearningLogQuestionItem
+          question={question}
+          schoolYearId={1}
+          showError={false}
+          handleChangeValue={handleChangeValue}
+        />
+      </MockedProvider>,
+    )
+
+    await waitFor(() => {
+      expect(
+        getByText('Select one or more of the competencies you were developing this week, if interested. *'),
+      ).toBeInTheDocument()
+    })
+  })
+
+  it('should render Independent Checklist Question Item', async () => {
+    const mocks = [reimbursementRequestMock]
+    const question: LearningLogQuestion = {
+      id: 5,
+      type: QuestionTypes.INDEPENDENT_QUESTION,
+      question: 'Select one or more of the competencies you were developing this week, if interested.',
+      required: true,
+      answer: '',
+      page: 1,
+      order: 1,
+    }
+    const { getByTestId } = render(
+      <MockedProvider mocks={mocks} addTypename={false}>
+        <LearningLogQuestionItem
+          question={question}
+          schoolYearId={1}
+          showError={false}
+          handleChangeValue={handleChangeValue}
+        />
+      </MockedProvider>,
+    )
+
+    await waitFor(() => {
+      expect(getByTestId('independent-question')).toBeInTheDocument()
+    })
   })
 })

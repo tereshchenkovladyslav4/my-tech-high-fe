@@ -37,6 +37,7 @@ export const useLearningLogQuestionsByAssignmentId = (
           Validations: JSON.parse(question.validations || '[]'),
           Options: JSON.parse(question.options || '[]'),
           Grades: JSON.parse(question.grades || '[]'),
+          grades: JSON.parse(question.grades || '[]'),
           active: !question.parent_slug ? true : false,
         })) as LearningLogQuestion[],
       )

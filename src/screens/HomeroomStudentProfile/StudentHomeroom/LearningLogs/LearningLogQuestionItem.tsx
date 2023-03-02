@@ -1,5 +1,6 @@
 import React from 'react'
 import { Box, Button, Grid, TextField } from '@mui/material'
+import { useFlag } from '@unleash/proxy-client-react'
 import { DropDown } from '@mth/components/DropDown/DropDown'
 import { DropDownItem } from '@mth/components/DropDown/types'
 import { FormError } from '@mth/components/FormError'
@@ -9,12 +10,13 @@ import { CheckBoxListVM, MthCheckboxList } from '@mth/components/MthCheckboxList
 import { MthRadioGroup } from '@mth/components/MthRadioGroup'
 import { RadioGroupOption } from '@mth/components/MthRadioGroup/types'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
-import { QuestionTypes } from '@mth/constants'
+import { EPIC_STORY_1183, QuestionTypes } from '@mth/constants'
 import { MthColor } from '@mth/enums'
 import { LearningLogQuestion } from '@mth/models'
 import SubjectQuestion from '@mth/screens/Admin/HomeRoom/LearningLogs/Master/AssignmentQuestion/SubjectQuestion'
 import { mthButtonClasses } from '@mth/styles/button.style'
 import { extractContent } from '@mth/utils/string.util'
+import IndependentQuestionItem from './IndependentQuestionItem'
 
 type LearningLogQuestionItemProps = {
   question: LearningLogQuestion
@@ -29,6 +31,7 @@ export const LearningLogQuestionItem: React.FC<LearningLogQuestionItemProps> = (
   schoolYearId,
   handleChangeValue,
 }) => {
+  const epicStory1183 = useFlag(EPIC_STORY_1183)
   const renderQuestionItem = () => {
     switch (question.type) {
       case QuestionTypes.TEXTBOX:
@@ -37,7 +40,7 @@ export const LearningLogQuestionItem: React.FC<LearningLogQuestionItemProps> = (
             <Box sx={{ position: 'relative' }}>
               <TextField
                 name={extractContent(question.question)}
-                label={extractContent(question.question)}
+                label={`${extractContent(question.question)} ${question?.required ? '*' : ''}`}
                 placeholder='Entry'
                 fullWidth
                 focused
@@ -57,7 +60,7 @@ export const LearningLogQuestionItem: React.FC<LearningLogQuestionItemProps> = (
             <Box sx={{ position: 'relative' }}>
               <DropDown
                 dropDownItems={question?.Options as DropDownItem[]}
-                placeholder={extractContent(question.question)}
+                placeholder={`${extractContent(question.question)} ${question?.required ? '*' : ''}`}
                 labelTop
                 defaultValue={question?.answer as string}
                 setParentValue={(value) => handleChangeValue({ ...question, answer: value })}
@@ -76,7 +79,7 @@ export const LearningLogQuestionItem: React.FC<LearningLogQuestionItemProps> = (
           <Grid item xs={12}>
             <Box sx={{ width: '100%', position: 'relative' }}>
               <MthCheckbox
-                label={extractContent(question?.question)}
+                label={`${extractContent(question.question)} ${question?.required ? '*' : ''}`}
                 checked={!!question?.answer}
                 onChange={(e) => handleChangeValue({ ...question, answer: e.target.checked })}
               />
@@ -89,7 +92,7 @@ export const LearningLogQuestionItem: React.FC<LearningLogQuestionItemProps> = (
           <Grid item xs={12}>
             <Box sx={{ position: 'relative' }}>
               <Subtitle fontWeight='700' color={MthColor.SYSTEM_02} sx={{ cursor: 'pointer', fontSize: '18px' }}>
-                {extractContent(question.question)}
+                {`${extractContent(question.question)} ${question?.required ? '*' : ''}`}
               </Subtitle>
             </Box>
           </Grid>
@@ -99,7 +102,7 @@ export const LearningLogQuestionItem: React.FC<LearningLogQuestionItemProps> = (
           <Grid item xs={12}>
             <Box>
               <Subtitle fontWeight='600' sx={{ cursor: 'pointer', fontSize: '14px', paddingY: 1 }}>
-                {extractContent(question?.question)}
+                {`${extractContent(question.question)} ${question?.required ? '*' : ''}`}
               </Subtitle>
               <MthBulletEditor
                 setValue={(val) => handleChangeValue({ ...question, answer: val })}
@@ -120,7 +123,7 @@ export const LearningLogQuestionItem: React.FC<LearningLogQuestionItemProps> = (
           <Grid item xs={12}>
             <Box sx={{ position: 'relative' }}>
               <Subtitle fontWeight='600' sx={{ cursor: 'pointer', fontSize: '14px', paddingY: 1 }}>
-                {`${extractContent(question?.question)} *`}
+                {`${extractContent(question.question)} ${question?.required ? '*' : ''}`}
               </Subtitle>
               <MthRadioGroup
                 ariaLabel='learning-log-questions'
@@ -152,7 +155,7 @@ export const LearningLogQuestionItem: React.FC<LearningLogQuestionItemProps> = (
           <Grid item xs={12}>
             <Box sx={{ position: 'relative' }}>
               <MthCheckboxList
-                title={extractContent(question?.question)}
+                title={`${extractContent(question.question)} ${question?.required ? '*' : ''}`}
                 values={question?.answer ? JSON.parse(question.answer as string) : []}
                 setValues={(values: string[]) => handleChangeValue({ ...question, answer: JSON.stringify(values) })}
                 checkboxLists={
@@ -170,9 +173,8 @@ export const LearningLogQuestionItem: React.FC<LearningLogQuestionItemProps> = (
                     : []
                 }
                 haveSelectAll={false}
-                showError={showError && question?.required && !question.answer}
-                error={'Required'}
               />
+              {showError && question?.required && question?.answer == undefined && <FormError error={'Required'} />}
             </Box>
           </Grid>
         )
@@ -181,8 +183,29 @@ export const LearningLogQuestionItem: React.FC<LearningLogQuestionItemProps> = (
         return (
           <Grid item xs={12}>
             <Box>
-              <SubjectQuestion question={question} schoolYearId={schoolYearId} />
+              {epicStory1183 && (
+                <SubjectQuestion
+                  question={question}
+                  schoolYearId={schoolYearId}
+                  showError={showError}
+                  handleChangeValue={handleChangeValue}
+                />
+              )}
             </Box>
+          </Grid>
+        )
+
+      case QuestionTypes.INDEPENDENT_QUESTION:
+        return (
+          <Grid item xs={12}>
+            {epicStory1183 && (
+              <IndependentQuestionItem
+                question={question}
+                schoolYearId={schoolYearId}
+                showError={showError}
+                handleChangeValue={handleChangeValue}
+              />
+            )}
           </Grid>
         )
 
