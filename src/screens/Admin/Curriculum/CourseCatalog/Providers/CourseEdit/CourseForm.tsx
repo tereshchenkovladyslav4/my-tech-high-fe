@@ -150,7 +150,7 @@ const CourseForm: React.FC<CourseFormProps> = ({
                 </Subtitle>
               </Grid>
             )}
-            {values?.reduce_funds != ReduceFunds.NONE && (
+            {!!values?.reduce_funds && values?.reduce_funds != ReduceFunds.NONE && (
               <Grid item xs={12}>
                 <Typography
                   sx={{
@@ -267,7 +267,7 @@ const CourseForm: React.FC<CourseFormProps> = ({
                   setFieldValue('price', value)
                 }}
                 error={touched.price && !!errors.price}
-                disabled={values?.reduce_funds === ReduceFunds.NONE}
+                disabled={!values?.reduce_funds || values?.reduce_funds === ReduceFunds.NONE}
               />
               <Subtitle sx={editCourseClasses.formError}>{touched.price && errors.price}</Subtitle>
             </Grid>

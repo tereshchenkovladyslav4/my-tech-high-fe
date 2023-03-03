@@ -109,7 +109,7 @@ const TitleForm: React.FC<TitleFormProps> = ({ schoolYearData, subjectsItems, gr
                   setFieldValue('price', value)
                 }}
                 error={touched.price && !!errors.price}
-                disabled={values?.reduce_funds === ReduceFunds.NONE}
+                disabled={!values?.reduce_funds || values?.reduce_funds === ReduceFunds.NONE}
               />
               <Subtitle sx={editTitleClasses.formError}>{touched.price && errors.price}</Subtitle>
             </Grid>
@@ -220,7 +220,7 @@ const TitleForm: React.FC<TitleFormProps> = ({ schoolYearData, subjectsItems, gr
                 </Subtitle>
               </Grid>
             )}
-            {values?.reduce_funds != ReduceFunds.NONE && (
+            {!!values?.reduce_funds && values?.reduce_funds != ReduceFunds.NONE && (
               <Grid item xs={12}>
                 <Typography
                   sx={{

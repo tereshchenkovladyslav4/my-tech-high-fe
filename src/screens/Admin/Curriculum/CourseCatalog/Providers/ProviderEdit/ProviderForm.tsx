@@ -83,13 +83,13 @@ const ProviderForm: React.FC<ProviderFormProps> = ({ setIsChanged, periodsItems,
                   setFieldValue('price', value)
                 }}
                 error={touched.price && !!errors.price}
-                disabled={values?.reduce_funds === ReduceFunds.NONE}
+                disabled={!values?.reduce_funds || values?.reduce_funds === ReduceFunds.NONE}
               />
               <Subtitle sx={editProviderClasses.formError}>{touched.price && errors.price}</Subtitle>
             </Grid>
           </Grid>
         </Grid>
-        {values?.reduce_funds != ReduceFunds.NONE && (
+        {!!values?.reduce_funds && values?.reduce_funds != ReduceFunds.NONE && (
           <Grid item xs={10}>
             <Typography
               sx={{

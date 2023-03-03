@@ -16,7 +16,7 @@ type IndependentQuestionItemProps = {
   handleChangeValue?: (question: LearningLogQuestion) => void
 }
 
-const IndependentQuestionItem: React.FC<IndependentQuestionItemProps> = ({
+export const IndependentQuestionItem: React.FC<IndependentQuestionItemProps> = ({
   question,
   schoolYearId,
   showError,
@@ -70,5 +70,3 @@ const IndependentQuestionItem: React.FC<IndependentQuestionItemProps> = ({
     </Box>
   )
 }
-
-export default IndependentQuestionItem

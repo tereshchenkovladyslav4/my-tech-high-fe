@@ -117,6 +117,12 @@ export const getMeQuery = gql`
         applications {
           status
           application_id
+          school_year {
+            school_year_id
+            date_begin
+            date_end
+          }
+          school_year_id
         }
         StudentSchedules {
           schedule_id

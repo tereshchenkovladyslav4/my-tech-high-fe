@@ -100,6 +100,20 @@ export const LearningLogEdit: React.FC<LearningLogEditProps> = ({
         if (!question.parent_slug && !question.answer && question.required) {
           invalidationCount++
         }
+        if (question.parent_slug) {
+          const parent = questions?.find((x) => question.parent_slug == x.slug)
+          if (
+            (parent?.type !== QuestionTypes.AGREEMENT &&
+              parent?.answer &&
+              parent?.Options?.find((x: DropDownItem | RadioGroupOption) => x.value == parent.answer)?.action == 2 &&
+              parent?.active) ||
+            (parent?.type === QuestionTypes.AGREEMENT && !!parent.answer)
+          ) {
+            if (!question.answer && question.required) {
+              invalidationCount++
+            }
+          }
+        }
       })
       if (invalidationCount > 0) return true
     }

@@ -419,6 +419,7 @@ export const ExistingParent: React.FC = () => {
                         <DropDown
                           name='programYear'
                           labelTop
+                          labelTopColor={MthColor.SYSTEM_05}
                           placeholder='Program Year'
                           dropDownItems={schoolYears}
                           setParentValue={(originalId) => {
@@ -453,12 +454,20 @@ export const ExistingParent: React.FC = () => {
                     if (q.slug?.includes('student_') || q.student_question) {
                       if (q.slug === 'student_grade_level') {
                         return (
-                          <Grid key={idx} item xs={12} display='flex' justifyContent={'center'}>
+                          <Grid
+                            key={idx}
+                            item
+                            xs={12}
+                            display='flex'
+                            justifyContent={'center'}
+                            sx={{ paddingTop: '42px !important' }}
+                          >
                             <Box width={'451.53px'}>
                               <Field name={'students[0].grade_level'} fullWidth focused>
                                 {({ field, form, meta }) => (
                                   <Box width={'100%'}>
                                     <DropDown
+                                      labelTopColor={MthColor.SYSTEM_05}
                                       name={'students[0].grade_level'}
                                       labelTop
                                       placeholder={`${q.question} as of ${moment(birthDateCut).format(
@@ -515,6 +524,7 @@ export const ExistingParent: React.FC = () => {
                                       form={form}
                                       meta={meta}
                                       handleAddQuestion={handleAddQuestion}
+                                      emptyDropdownBg
                                     />
                                   </Box>
                                 )}
@@ -582,6 +592,7 @@ export const ExistingParent: React.FC = () => {
                                               <DropDown
                                                 name={`students[${index}].grade_level`}
                                                 labelTop
+                                                labelTopColor={MthColor.SYSTEM_05}
                                                 placeholder={`${q.question} as of ${moment(birthDateCut).format(
                                                   !matches ? 'MMMM DD, YYYY' : 'MMM. DD, YYYY',
                                                 )}`}

@@ -48,7 +48,6 @@ const TitleEdit: React.FC<TitleEditProps> = ({
     diploma_seeking_path: schoolYearData?.diploma_seeking
       ? yup.string().required('Required').nullable()
       : yup.string().nullable(),
-    reduce_funds: yup.string().required('Required').nullable(),
     price: yup
       .number()
       .when('reduce_funds', {

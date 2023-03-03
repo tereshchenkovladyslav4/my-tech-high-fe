@@ -72,7 +72,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
   setScheduleData,
   handlePeriodUpdateRequired,
   handlePeriodUpdateEmail,
-  handleSchedulePeriodStatusChange,
+  handleSecondSemSchedulePeriodStatusChange,
 }) => {
   const [tableData, setTableData] = useState<MthTableRowItem<ScheduleData>[]>([])
   const [periodNotification, setPeriodNotification] = useState<string | undefined>()
@@ -496,7 +496,10 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
 
   const setMultiPeriods = (schedules: ScheduleData[]): ScheduleData[] => {
     schedules.forEach((schedule) => {
-      if (schedule.Course?.Provider?.multiple_periods) {
+      if (
+        schedule.Course?.Provider?.multiple_periods &&
+        schedule.Course?.Provider?.Periods?.findIndex((x) => x.period == schedule.period) > -1
+      ) {
         const multiProvider = schedule.Course?.Provider
         const multiPeriods = schedule.Course?.Provider?.Periods.reduce((acc: number[], cur) => {
           return acc.concat([cur.period])
@@ -615,6 +618,8 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
 
     if (schedule.Title?.CourseTypes?.length === 1) {
       schedule.CourseType = schedule.Title.CourseTypes[0].value as CourseType
+    } else if (!schedule.Title?.CourseTypes?.length) {
+      delete schedule.CourseType
     }
 
     if ((schedule.Subject || schedule.Title) && multiProvider) {
@@ -1009,8 +1014,8 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
                   }}
                   onClick={() => {
                     //  TODO
-                    if (handleSchedulePeriodStatusChange)
-                      handleSchedulePeriodStatusChange(item.rawData, item.rawData.showButtonName)
+                    if (handleSecondSemSchedulePeriodStatusChange)
+                      handleSecondSemSchedulePeriodStatusChange(item.rawData, item.rawData.showButtonName)
                   }}
                 >
                   {item.rawData.showButtonName === SchedulePeriodStatus.NO_UPDATES ? 'No Updates' : 'Make Updates'}

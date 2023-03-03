@@ -197,24 +197,17 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
     }
   }
 
-  const handleSchedulePeriodStatusChange = async (schedule: ScheduleData, status: SchedulePeriodStatus | undefined) => {
+  const handleSecondSemSchedulePeriodStatusChange = async (
+    schedule: ScheduleData,
+    status: SchedulePeriodStatus | undefined,
+  ) => {
     if (schedule) {
-      setSecondScheduleData(
-        secondScheduleData?.map((item) => {
-          if (item?.Period?.id == schedule.Period?.id)
-            return {
-              ...item,
-              schedulePeriodStatus: status,
-            }
-          else return { ...item }
-        }),
-      )
       const scheduleIdx = secondScheduleData.findIndex((item) => item?.Period?.id === schedule?.Period?.id)
       schedule.schedulePeriodStatus = status
       schedule.showButtonName =
         status === SchedulePeriodStatus.NO_UPDATES ? SchedulePeriodStatus.MAKE_UPDATES : SchedulePeriodStatus.NO_UPDATES
       secondScheduleData[scheduleIdx] = schedule
-      setScheduleData(JSON.parse(JSON.stringify(secondScheduleData)))
+      setSecondScheduleData(JSON.parse(JSON.stringify(secondScheduleData)))
       const data = secondScheduleData?.filter((item) => item?.showButtonName === SchedulePeriodStatus.NO_UPDATES)
       await handleSave(
         data?.length ? (hasSecondSemester ? studentScheduleStatus : ScheduleStatus.DRAFT) : ScheduleStatus.ACCEPTED,
@@ -287,7 +280,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
           parentTooltip={parentTooltip}
           setIsChanged={setIsChanged}
           setScheduleData={setSecondScheduleData}
-          handleSchedulePeriodStatusChange={handleSchedulePeriodStatusChange}
+          handleSecondSemSchedulePeriodStatusChange={handleSecondSemSchedulePeriodStatusChange}
         />
       )}
       {showUnsavedModal && (

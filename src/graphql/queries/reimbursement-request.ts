@@ -114,6 +114,7 @@ export const getReimbursementRequestQuery = gql`
       form_type
       periods
       is_direct_order
+      meta
       date_submitted
       date_paid
       date_ordered

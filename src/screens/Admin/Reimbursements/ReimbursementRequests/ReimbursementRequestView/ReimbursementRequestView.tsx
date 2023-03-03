@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useLazyQuery } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 import { Box } from '@mui/material'
 import { Prompt } from 'react-router-dom'
 import { Layout } from '@mth/components/Layout'
@@ -18,10 +18,11 @@ export const ReimbursementRequestView: React.FC<ReimbursementRequestViewProps> =
   const [formType, setFormType] = useState<ReimbursementFormType | undefined>()
   const [isChanged, setIsChanged] = useState<boolean>(false)
 
-  const [getReimbursementRequest, { loading, data, refetch }] = useLazyQuery(getReimbursementRequestQuery, {
+  const { loading, data, refetch } = useQuery(getReimbursementRequestQuery, {
     variables: {
       reimbursementRequestId: reimbursementRequestId,
     },
+    skip: !reimbursementRequestId,
     fetchPolicy: 'network-only',
   })
 
@@ -32,10 +33,6 @@ export const ReimbursementRequestView: React.FC<ReimbursementRequestViewProps> =
       setIsChanged(false)
     }
   }, [loading, data])
-
-  useEffect(() => {
-    if (reimbursementRequestId) getReimbursementRequest()
-  }, [reimbursementRequestId])
 
   return (
     <Layout>

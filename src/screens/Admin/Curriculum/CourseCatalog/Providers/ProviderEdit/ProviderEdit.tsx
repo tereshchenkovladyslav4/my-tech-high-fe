@@ -47,7 +47,6 @@ const ProviderEdit: React.FC<ProviderEditProps> = ({
 
   const validationSchema = yup.object({
     name: yup.string().required('Required').nullable(),
-    reduce_funds: yup.string().required('Required').nullable(),
     price: yup
       .number()
       .when('reduce_funds', {

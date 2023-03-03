@@ -8,7 +8,7 @@ import {
   questionMock,
 } from '@mth/mocks/independentChecklistQuestionItemMock'
 import { UserContext, UserInfo } from '@mth/providers/UserContext/UserProvider'
-import IndependentQuestionItem from '@mth/screens/HomeroomStudentProfile/StudentHomeroom/LearningLogs/IndependentQuestionItem'
+import { IndependentQuestionItem } from '@mth/screens/HomeroomStudentProfile/StudentHomeroom/LearningLogs/IndependentQuestionItem'
 
 describe('IndependentQuestionItem', () => {
   const handleChangeValue = jest.fn()

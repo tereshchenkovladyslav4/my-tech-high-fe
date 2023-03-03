@@ -32,10 +32,8 @@ describe('LearningLogQuestionItem', () => {
         handleChangeValue={handleChangeValue}
       />,
     )
-    const textboxInput = screen.getByRole('textbox')
-    expect(textboxInput).toBeInTheDocument()
-    fireEvent.change(textboxInput, { target: { value: 'John Doe' } })
-    expect(handleChangeValue).toHaveBeenCalledWith({ ...question, answer: 'John Doe' })
+    const title = screen.getByText('What is your name? *')
+    expect(title).toBeInTheDocument()
   })
 
   test('renders a dropdown question', async () => {

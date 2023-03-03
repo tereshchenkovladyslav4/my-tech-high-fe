@@ -8,6 +8,7 @@ export const EPIC_1396_STORY_1576 = 'epic_1396_story_1576'
 // MARK Epic Story Feature Flag
 export const EPIC_STORY_1212 = 'epic_1182_story_1212'
 export const EPIC_STORY_1183 = 'epic_1182_story_1183'
+export const EPIC_STORY_1184 = 'epic_1182_story_1184'
 
 // MARK Feature Flag
 export const BUGFIX_1532 = 'bugfix_1536'

@@ -327,7 +327,10 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
     })
   }
 
-  const handleSchedulePeriodStatusChange = async (schedule: ScheduleData, status: SchedulePeriodStatus | undefined) => {
+  const handleSecondSemSchedulePeriodStatusChange = async (
+    schedule: ScheduleData,
+    status: SchedulePeriodStatus | undefined,
+  ) => {
     if (schedule) {
       setSecondScheduleData(
         secondScheduleData?.map((item) => {
@@ -499,7 +502,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
             scheduleStatus={studentScheduleStatus}
             setIsChanged={setIsChanged}
             setScheduleData={setSecondScheduleData}
-            handleSchedulePeriodStatusChange={handleSchedulePeriodStatusChange}
+            handleSecondSemSchedulePeriodStatusChange={handleSecondSemSchedulePeriodStatusChange}
             isLockedKey={isSecondSemesterLockedKey}
             setIsLockedKey={(value: boolean) => {
               setIsSecondSemesterLockedKey(value)

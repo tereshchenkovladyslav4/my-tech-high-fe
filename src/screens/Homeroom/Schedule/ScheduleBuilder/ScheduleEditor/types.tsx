@@ -19,5 +19,5 @@ export type ScheduleEditorProps = {
   setScheduleData: (value: ScheduleData[]) => void
   handlePeriodUpdateRequired?: (value: string) => void
   handlePeriodUpdateEmail?: (value: string) => void
-  handleSchedulePeriodStatusChange?: (value: ScheduleData, status: SchedulePeriodStatus | undefined) => void
+  handleSecondSemSchedulePeriodStatusChange?: (value: ScheduleData, status: SchedulePeriodStatus | undefined) => void
 }

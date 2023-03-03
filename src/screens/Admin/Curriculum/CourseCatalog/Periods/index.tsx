@@ -264,7 +264,8 @@ const Periods: React.FC = () => {
       }),
       price: Yup.number()
         .when(['reduce_funds'], {
-          is: (reduce_funds: ReduceFunds) => reduce_funds !== ReduceFunds.NONE,
+          is: (reduce_funds: ReduceFunds) =>
+            reduce_funds == ReduceFunds.TECHNOLOGY || reduce_funds == ReduceFunds.SUPPLEMENTAL,
           then: Yup.number().required('Required').positive('Should be greater than 0').nullable(),
         })
         .nullable(),
@@ -686,7 +687,7 @@ const Periods: React.FC = () => {
                     formik.setFieldValue('price', value)
                   }}
                   error={formik.touched.price && !!formik.errors.price}
-                  disabled={formik.values?.reduce_funds === ReduceFunds.NONE}
+                  disabled={!formik.values?.reduce_funds || formik.values?.reduce_funds === ReduceFunds.NONE}
                 />
                 <Subtitle
                   sx={{

@@ -4,8 +4,8 @@ import { MthColor } from '@mth/enums'
 export const useStyles = {
   textField: {
     [`& .${outlinedInputClasses.root} .${outlinedInputClasses.notchedOutline}`]: {
-      borderColor: MthColor.SYSTEM_07,
-      borderWidth: '2px',
+      borderColor: `${MthColor.SYSTEM_07} !important`,
+      borderWidth: '2px !important',
     },
     width: '100%',
     [`& .${inputLabelClasses.root}.${inputLabelClasses.focused}`]: {
@@ -13,6 +13,10 @@ export const useStyles = {
     },
     [`& .${outlinedInputClasses.root} .${outlinedInputClasses.notchedOutline} span`]: {
       fontSize: 16,
+    },
+    [`& .${outlinedInputClasses.notchedOutline}`]: {
+      borderColor: MthColor.SYSTEM_07,
+      borderWidth: '2px',
     },
     marginY: 2,
   },
@@ -48,8 +52,8 @@ export const useStyles = {
     marginTop: 30,
   },
   dropdown: {
-    [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
-      borderColor: MthColor.SYSTEM_07,
+    [`& .${outlinedInputClasses.root} .${outlinedInputClasses.notchedOutline}`]: {
+      borderColor: `${MthColor.SYSTEM_07} !important`,
       borderWidth: '2px !important',
     },
     [`& .${outlinedInputClasses.notchedOutline}`]: {

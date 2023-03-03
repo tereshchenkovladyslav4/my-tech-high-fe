@@ -24,4 +24,5 @@ export type ApplicationQuestionProps = {
   meta: unknown
   form: unknown
   handleAddQuestion?: (value: unknown, q: unknown) => void
+  emptyDropdownBg?: boolean
 }

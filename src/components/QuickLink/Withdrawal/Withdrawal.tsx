@@ -511,26 +511,23 @@ const Withdrawal: React.FC<{
           ?.filter(
             (item) =>
               item.current_school_year_status.midyear_application === midActiveSchoolYearId &&
-              item.current_school_year_status.school_year_id === parseInt(activeSchoolYearId + '') &&
-              [0, 1, 5, 6].includes(item.status[0]?.status), // 0: pending, 1: active, 5:APPLIED, 6:ACCEPTED
+              item.applications[0].school_year_id === parseInt(activeSchoolYearId + '') &&
+              [0, 1, 5, 6, 7].includes(item.status[0]?.status), // 0: pending, 1: active, 5:APPLIED, 6:ACCEPTED, 7: applied(re-apply) REAPPLIED
           )
           .map((student) => ({
             label: student.person.first_name,
             value: student.student_id,
           }))
 
-        setQuestions(
-          questionsData.questionsByRegion.map(
-            (v: {
-              options: string
-              mainQuestion: number
-              defaultQuestion: number
-              required: number
-              question: string
-              slug: string
-            }) => {
-              if (isEditable()) {
-                return {
+        let studentCnt = 0
+        const questionList: Question[] = []
+
+        questionsData.questionsByRegion.map((v: Question) => {
+          if (isEditable()) {
+            if (v.slug === 'student') {
+              if (studentCnt === 0) {
+                studentCnt++
+                questionList.push({
                   ...v,
                   options: JSON.parse(v.options),
                   mainQuestion: v.mainQuestion == 1,
@@ -538,33 +535,44 @@ const Withdrawal: React.FC<{
                   required: v.required == 1,
                   response: (v.question === 'Student' && studentId) || '',
                   studentId: studentId,
-                }
-              } else {
-                if (v.slug !== 'student') {
-                  return {
-                    ...v,
-                    options: JSON.parse(v.options),
-                    mainQuestion: v.mainQuestion == 1,
-                    defaultQuestion: v.defaultQuestion == 1,
-                    required: v.required == 1,
-                    response: (v.question === 'Student' && studentId) || '',
-                    studentId: studentId,
-                  }
-                } else {
-                  return {
-                    ...v,
-                    options: students,
-                    mainQuestion: v.mainQuestion == 1,
-                    defaultQuestion: v.defaultQuestion == 1,
-                    required: v.required == 1,
-                    response: (v.question === 'Student' && studentId) || '',
-                    studentId: studentId,
-                  }
-                }
+                })
               }
-            },
-          ),
-        )
+            } else {
+              questionList.push({
+                ...v,
+                options: JSON.parse(v.options),
+                mainQuestion: v.mainQuestion == 1,
+                defaultQuestion: v.defaultQuestion == 1,
+                required: v.required == 1,
+                response: (v.question === 'Student' && studentId) || '',
+                studentId: studentId,
+              })
+            }
+          } else {
+            if (v.slug !== 'student') {
+              questionList.push({
+                ...v,
+                options: JSON.parse(v.options),
+                mainQuestion: v.mainQuestion == 1,
+                defaultQuestion: v.defaultQuestion == 1,
+                required: v.required == 1,
+                response: (v.question === 'Student' && studentId) || '',
+                studentId: studentId,
+              })
+            } else {
+              questionList.push({
+                ...v,
+                options: students,
+                mainQuestion: v.mainQuestion == 1,
+                defaultQuestion: v.defaultQuestion == 1,
+                required: v.required == 1,
+                response: (v.question === 'Student' && studentId) || '',
+                studentId: studentId,
+              })
+            }
+          }
+        })
+        setQuestions(questionList)
       }
       setUnsavedChanges(false)
     }
@@ -707,7 +715,7 @@ const Withdrawal: React.FC<{
                         name='programYear'
                         labelTop
                         placeholder='Program Year'
-                        dropDownItems={futureYearList}
+                        dropDownItems={isEditable() ? [] : futureYearList}
                         setParentValue={(id) => {
                           if (!isEditable()) {
                             let yearId = id.toString()

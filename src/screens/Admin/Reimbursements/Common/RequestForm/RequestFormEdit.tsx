@@ -20,7 +20,7 @@ export type RequestFormEditProps = {
   setFormType: (value: ReimbursementFormType | undefined) => void
   setIsChanged: (value: boolean) => void
   handleSaveQuestions: (value: ReimbursementQuestion[]) => void
-  onSubmitRequests: (values: ReimbursementQuestion[], status: ReimbursementRequestStatus) => void
+  onSubmitRequests: (values: ReimbursementQuestion[], status?: ReimbursementRequestStatus) => void
   children: ReactNode
 }
 
@@ -100,10 +100,7 @@ export const RequestFormEdit: React.FC<RequestFormEditProps> = ({
               >
                 Updates Required
               </Button>
-              <Button
-                sx={mthButtonClasses.gray}
-                onClick={() => onSubmitRequests(values, ReimbursementRequestStatus.DRAFT)}
-              >
+              <Button sx={mthButtonClasses.gray} onClick={() => onSubmitRequests(values)}>
                 Save Changes
               </Button>
             </Box>

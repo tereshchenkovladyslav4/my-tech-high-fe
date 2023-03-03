@@ -39,7 +39,6 @@ const CourseEdit: React.FC<CourseEditProps> = ({
     name: yup.string().required('Required').nullable(),
     min_grade: yup.string().required('Required').nullable(),
     max_grade: yup.string().required('Required').nullable(),
-    reduce_funds: yup.string().required('Required').nullable(),
     diploma_seeking_path: schoolYearData?.diploma_seeking
       ? yup.string().required('Required').nullable()
       : yup.string().nullable(),

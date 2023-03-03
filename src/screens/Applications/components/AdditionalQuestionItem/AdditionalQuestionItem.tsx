@@ -26,6 +26,7 @@ export const AdditionalQuestionItem: React.FC<ApplicationQuestionProps> = ({
   meta,
   form,
   handleAddQuestion,
+  emptyDropdownBg,
 }) => {
   const classes = useStyles
 
@@ -66,7 +67,7 @@ export const AdditionalQuestionItem: React.FC<ApplicationQuestionProps> = ({
     return (
       <DropDown
         labelTop
-        labelTopBgColor={MthColor.SYSTEM_09}
+        labelTopBgColor={emptyDropdownBg ? '' : MthColor.SYSTEM_09}
         labelTopColor={MthColor.SYSTEM_05}
         dropDownItems={q.options || []}
         // dropDownItems={options || []}

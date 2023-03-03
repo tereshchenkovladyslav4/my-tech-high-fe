@@ -220,6 +220,7 @@ export const QuestionItem: React.FC<QuestionProps> = ({
   const handleChangeValue = (question: ReimbursementQuestion, value: string | number | boolean) => {
     if (question.slug === ReimbursementQuestionSlug.STUDENT_ID) setSelectedStudentId(+value)
     if (question.slug === ReimbursementQuestionSlug.FORM_TYPE) setSelectedFormType(value as ReimbursementFormType)
+    setIsChanged(true)
     setQuestion({ ...question, answer: value })
   }
 

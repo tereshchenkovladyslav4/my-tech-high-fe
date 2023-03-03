@@ -246,10 +246,14 @@ export const RequestForm: React.FC<RequestFormProps> = ({
       )
     }
 
-    const meta = questions
+    const meta: { [key: string]: string | number | boolean } = {}
+    questions
       ?.filter((item) => !item?.default_question)
-      ?.map((question) => `"${question?.slug}":"${question?.answer}"`)
-      ?.join(',')
+      ?.map((question) => {
+        if (!!question?.slug && question?.answer != undefined) {
+          meta[question.slug] = question?.answer
+        }
+      })
 
     const response = await saveRequest({
       variables: {
@@ -261,7 +265,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
           StudentId: selectedStudentId,
           form_type: formType,
           is_direct_order: isDirectOrder,
-          meta: `{${meta}}`,
+          meta: JSON.stringify(meta),
           periods: periods,
           signature_file_id: fileId > 0 ? fileId : signatureFileId,
           signature_name: signatureName,
@@ -291,19 +295,22 @@ export const RequestForm: React.FC<RequestFormProps> = ({
             }
           }
         }
-        await saveReceipts({
-          variables: {
-            requestInput: {
-              receipts: newReceipts?.map((receipt) => ({
-                file_name: receipt.file_name,
-                file_id: receipt.file_id,
-                amount: receipt.amount,
-                ReimbursementRequestId: reimbursementRequestId,
-              })),
-            },
-          },
-        })
       }
+
+      await saveReceipts({
+        variables: {
+          requestInput: {
+            receipts: receipts?.map((receipt) => ({
+              reimbursement_receipt_id: receipt.reimbursement_receipt_id || null,
+              file_name: receipt.file_name,
+              file_id: receipt.file_id,
+              amount: receipt.amount,
+              ReimbursementRequestId: reimbursementRequestId,
+            })),
+          },
+        },
+      })
+
       if (deletedReceipts?.length) {
         await deleteReceipts({
           variables: {
@@ -412,17 +419,28 @@ export const RequestForm: React.FC<RequestFormProps> = ({
         }
       }
 
+      let meta: { [key: string]: string | number | boolean }
+      try {
+        meta = JSON.parse(selectedReimbursementRequest?.meta || '')
+      } catch {
+        meta = {}
+      }
+
       setInitialValues(
         tempInitialValues?.map((question) => {
           if (question?.slug == ReimbursementQuestionSlug.STUDENT_ID && selectedStudentId)
             return { ...question, answer: `${selectedStudentId}` }
           if (question?.slug == ReimbursementQuestionSlug.FORM_TYPE && selectedFormType)
             return { ...question, answer: `${selectedFormType}` }
+          const metaAnswer = meta[question?.slug]
+          if (!!metaAnswer) {
+            return { ...question, answer: metaAnswer }
+          }
           return question
         }),
       )
     }
-  }, [reimbursementQuestionsLoading, reimbursementQuestions, formType, isDirectOrder])
+  }, [reimbursementQuestionsLoading, reimbursementQuestions, formType, isDirectOrder, selectedReimbursementRequest])
 
   useEffect(() => {
     if (signatureFileId) {
