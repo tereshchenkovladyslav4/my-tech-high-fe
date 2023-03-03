@@ -42,7 +42,11 @@ const StateCodes: React.FC = () => {
   const [createNewStateCodes] = useMutation(createStateCodesMutation)
   const [createStateCodesBySchoolYearId] = useMutation(CreateStateCodesByTitleIdMutation)
   const initialPageNumber = 1
-  const { data: stateCodesData, refetch } = useQuery(getStateCodesQuery, {
+  const {
+    loading,
+    data: stateCodesData,
+    refetch,
+  } = useQuery(getStateCodesQuery, {
     variables: {
       filter: { selectedYearId },
       skip: skip,
@@ -84,16 +88,15 @@ const StateCodes: React.FC = () => {
   }
 
   useEffect(() => {
-    if (stateCodesData !== undefined) {
+    if (!loading && stateCodesData !== undefined) {
       const { stateCodes } = stateCodesData
       const { results, total } = stateCodes
-      if (total <= 0) {
+      if (total <= 0 && !searchField) {
         restoreStateCodes()
-        return
       }
       if (!isDownload) {
         setTableData(
-          results.map((res: StateCodeField) => {
+          results?.map((res: StateCodeField) => {
             return createData(res)
           }),
         )
@@ -120,7 +123,7 @@ const StateCodes: React.FC = () => {
         }
       }
     }
-  }, [stateCodesData])
+  }, [loading, stateCodesData])
 
   const handleChangePageLimit = (value: number) => {
     handlePageChange(initialPageNumber)

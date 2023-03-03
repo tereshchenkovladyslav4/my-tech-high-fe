@@ -76,7 +76,17 @@ const CustomQuestion: React.FC<CustomQuestionProps> = ({
   useEffect(() => {
     if (master && schoolYears.length > 0) {
       const schoolYear = schoolYears.find((item) => item.school_year_id === master.school_year_id)
-      setGrades(schoolYear?.grades.split(',').sort((a, b) => (parseInt(a) > parseInt(b) ? 1 : -1)))
+      setGrades(
+        schoolYear?.grades.split(',').sort((a, b) => {
+          if (isNaN(b)) {
+            return 1
+          } else if (Number(a) > Number(b)) {
+            return 1
+          } else {
+            return -1
+          }
+        }) || [],
+      )
     }
   }, [master, schoolYears])
 

@@ -2,7 +2,7 @@ import React, { useCallback, useContext, useEffect, useRef, useState } from 'rea
 import { useMutation, useQuery } from '@apollo/client'
 import { Alert, AlertColor, Button, Checkbox, Typography } from '@mui/material'
 import { Box } from '@mui/system'
-import { ContentBlock, ContentState, convertToRaw, EditorBlock, EditorState } from 'draft-js'
+import { ContentBlock, ContentState, convertToRaw, DraftInlineStyle, EditorBlock, EditorState } from 'draft-js'
 import draftToHtml from 'draftjs-to-html'
 import { useFormik } from 'formik'
 import htmlToDraft from 'html-to-draftjs'
@@ -67,11 +67,7 @@ const Settings: React.FC = () => {
   let currentBlockKey = ''
   const getSisterBullet = (idx: number | string, type: number, whichSister: number) => {
     if (type === orderedList) {
-      if (Number.isInteger(idx)) {
-        return Number(idx) + whichSister
-      } else {
-        return String.fromCharCode((idx as string)?.charCodeAt(0) + whichSister)
-      }
+      return Number(idx) + whichSister
     }
     return idx
   }
@@ -100,9 +96,14 @@ const Settings: React.FC = () => {
         break
       case leavingLevel:
         listEntriesLastIdx[type].splice(depth, 1)
-        if (depth > 0 && !listEntriesLastIdx[type][depth - 1]) {
-          listEntriesLastIdx[type][depth - 1] = getLevelBaseBullet(depth - 1, type, initiatingLevel)
+        if (type === 0) {
+          listEntriesLastIdx[type][depth - 1] = Number(listEntriesLastIdx[type][depth - 1]) + 1
         }
+        if (depth > 0 && !listEntriesLastIdx[type][depth - 1]) {
+          listEntriesLastIdx[type][depth - 1] =
+            type === 0 ? Number(listEntriesLastIdx[type][0]) : getLevelBaseBullet(depth - 1, type, initiatingLevel)
+        }
+
         break
       default:
         listEntriesLastIdx[type][depth] = getLevelBaseBullet(depth, type, action)
@@ -144,12 +145,12 @@ const Settings: React.FC = () => {
       }
 
       const levelIndexToDisplay = listEntriesLastIdx[blockType][curListLvl]
-      const HTMLStyles = editorStylesToHTMLStyles(block.getInlineStyleAt(0))
+      const htmlStyles = editorStylesToHTMLStyles(block.getInlineStyleAt(0))
       return {
         component: (props: Wysiwyg.EditorState) => (
           <Box sx={{ display: 'flex', alignItems: 'baseline' }}>
             <Box>
-              <Typography className='bullet' sx={{ ...HTMLStyles, marginRight: '8px' }}>{`${levelIndexToDisplay}${
+              <Typography className='bullet' sx={{ ...htmlStyles, marginRight: '8px' }}>{`${levelIndexToDisplay}${
                 blockType === orderedList ? '.' : ' '
               }`}</Typography>
             </Box>
@@ -163,7 +164,7 @@ const Settings: React.FC = () => {
     }
   }
 
-  const editorStylesToHTMLStyles = (editorStyles) => {
+  const editorStylesToHTMLStyles = (editorStyles: DraftInlineStyle) => {
     return editorStyles
       .map((editorStyle) => getHTMLStyles(editorStyle))
       .toArray()
@@ -172,11 +173,11 @@ const Settings: React.FC = () => {
       }, {})
   }
 
-  const getHTMLStyles = (editorStyle) => {
+  const getHTMLStyles = (editorStyle: string | undefined) => {
     let matches = null
-    if ((matches = editorStyle.match(/fontsize-(.*)/))) return { fontSize: matches[1] + 'px' }
-    else if ((matches = editorStyle.match(/color-(.*)/))) return { color: matches[1] }
-    else if ((matches = editorStyle.match(/fontfamily-(.*)/))) return { fontFamily: matches[1] }
+    if ((matches = editorStyle?.match(/fontsize-(.*)/))) return { fontSize: matches[1] + 'px' }
+    else if ((matches = editorStyle?.match(/color-(.*)/))) return { color: matches[1] }
+    else if ((matches = editorStyle?.match(/fontfamily-(.*)/))) return { fontFamily: matches[1] }
     else
       switch (editorStyle) {
         case 'BOLD':

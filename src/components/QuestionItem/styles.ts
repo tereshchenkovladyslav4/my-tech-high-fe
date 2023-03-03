@@ -5,7 +5,7 @@ export const useStyles = {
   textField: {
     [`& .${outlinedInputClasses.root} .${outlinedInputClasses.notchedOutline}`]: {
       borderWidth: '1px',
-      borderColor: MthColor.GRAY,
+      borderColor: `${MthColor.SYSTEM_07} !important`,
     },
     width: '100%',
     [`& .${inputLabelClasses.root}.${inputLabelClasses.focused}`]: {
@@ -21,7 +21,7 @@ export const useStyles = {
       bottom: '19px',
       whiteSpace: 'pre-wrap',
       textAlign: 'left',
-      color: `${MthColor.SYSTEM_07}!important`,
+      color: `${MthColor.SYSTEM_07} !important`,
     },
   },
   textFieldError: {

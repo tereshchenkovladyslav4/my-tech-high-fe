@@ -6,7 +6,8 @@ import QuestionMarkIcon from '@mui/icons-material/QuestionMark'
 import VpnKeyOutlinedIcon from '@mui/icons-material/VpnKeyOutlined'
 import { IconButton, Link, Tooltip, tooltipClasses, TooltipProps, Typography } from '@mui/material'
 import { Box, styled } from '@mui/system'
-import parse from 'html-react-parser'
+import htmlParser from 'html-react-parser'
+import { attributesToProps, domToReact, Element, HTMLReactParserOptions, DOMNode } from 'html-react-parser'
 import { CustomModal } from '@mth/components/CustomModal/CustomModals'
 import { MthTable } from '@mth/components/MthTable'
 import { MthTableField, MthTableRowItem } from '@mth/components/MthTable/types'
@@ -1090,6 +1091,22 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
     }
   }, [scheduleData])
 
+  const htmlParseOptions: HTMLReactParserOptions = {
+    replace: (domNode: DOMNode) => {
+      if (domNode) {
+        const { children, name } = domNode as Element
+        if (name === 'li') {
+          const styleProps = attributesToProps((children?.[0] as Element)?.attribs)
+          return <li style={styleProps.style}>{domToReact(children, htmlParseOptions)}</li>
+        }
+      }
+    },
+  }
+
+  const convertHtml = (data: string) => {
+    return htmlParser(data, htmlParseOptions)
+  }
+
   return (
     <>
       <Box sx={{ ...scheduleBuilderClasses.main }}>
@@ -1102,7 +1119,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
         />
         {parentTooltip && (
           <StyledTooltip
-            title={parse(parentTooltip)}
+            title={convertHtml(parentTooltip)}
             open={enableQuestionTooltip}
             placement='left'
             onClose={() => setEnableQuestionTooltip(false)}

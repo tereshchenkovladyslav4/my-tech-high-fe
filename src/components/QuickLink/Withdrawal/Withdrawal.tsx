@@ -39,6 +39,7 @@ import { getQuestionsByRegionQuery } from '@mth/graphql/queries/question'
 import { getSchoolYearsByRegionId } from '@mth/graphql/queries/school-year'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { siteManagementClassess } from '@mth/screens/Admin/SiteManagement/styles'
+import { quickLinkCardClasses } from '../styles'
 import CircleIcon from './CircleIcon'
 
 const additionalStyles = makeStyles((theme: Theme) => ({
@@ -99,11 +100,11 @@ const additionalStyles = makeStyles((theme: Theme) => ({
   },
   dropdown: {
     [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
-      borderColor: MthColor.SYSTEM_07,
+      borderColor: `${MthColor.SYSTEM_07}!important`,
       borderWidth: '2px',
     },
     [`& .${outlinedInputClasses.notchedOutline}`]: {
-      borderColor: MthColor.SYSTEM_07,
+      borderColor: `${MthColor.SYSTEM_07}!important`,
       borderWidth: '2px',
     },
     [`& .${inputLabelClasses.root}.${inputLabelClasses.focused}`]: {
@@ -114,6 +115,14 @@ const additionalStyles = makeStyles((theme: Theme) => ({
     },
     [`& .${outlinedInputClasses.root} .${outlinedInputClasses.notchedOutline} span`]: {
       fontSize: 16,
+    },
+    ['& label']: {
+      maxWidth: '95%',
+      top: 'auto',
+      bottom: '19px',
+      whiteSpace: 'pre-wrap',
+      textAlign: 'left',
+      color: `${MthColor.SYSTEM_07}!important`,
     },
   },
 }))
@@ -158,6 +167,7 @@ const Withdrawal: React.FC<{
     return !!me?.level && me.level <= 2
   }
   const classes = additionalStyles()
+  const parentClasses = quickLinkCardClasses
 
   const SortableItem = SortableElement(QuestionItem)
 
@@ -560,15 +570,18 @@ const Withdrawal: React.FC<{
                 studentId: studentId,
               })
             } else {
-              questionList.push({
-                ...v,
-                options: students,
-                mainQuestion: v.mainQuestion == 1,
-                defaultQuestion: v.defaultQuestion == 1,
-                required: v.required == 1,
-                response: (v.question === 'Student' && studentId) || '',
-                studentId: studentId,
-              })
+              if (studentCnt === 0) {
+                studentCnt++
+                questionList.push({
+                  ...v,
+                  options: students,
+                  mainQuestion: v.mainQuestion == 1,
+                  defaultQuestion: v.defaultQuestion == 1,
+                  required: v.required == 1,
+                  response: (v.question === 'Student' && studentId) || '',
+                  studentId: studentId,
+                })
+              }
             }
           }
         })
@@ -730,6 +743,7 @@ const Withdrawal: React.FC<{
                         }}
                         alternate={true}
                         size='small'
+                        sx={parentClasses.dropdown}
                       />
                     </Box>
                     <QuestionItem
