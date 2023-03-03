@@ -11,7 +11,7 @@ export type Announcement = {
   date?: string
   grades?: string
   regionId?: number
-  isArchived?: boolean
+  isArchived?: boolean | number
   postedBy?: string
   status?: string
   filterGrades?: string
@@ -20,7 +20,7 @@ export type Announcement = {
   filterSchoolPartners?: string
   filterOthers?: string
   filterProviders?: string
-  scheduleTime?: Date
+  scheduleTime?: Date | string
   user_id?: number
   filter_grades?: string
   RegionId?: number

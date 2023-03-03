@@ -25,7 +25,7 @@ const NewAnnouncement: React.FC<NewAnnouncementProps> = ({ announcement, setAnno
   const { me } = useContext(UserContext)
   const [emailFrom, setEmailFrom] = useState<string>('')
   const [announcementId, setAnnouncementId] = useState<number>(0)
-  const [isArchived, setIsArchived] = useState<boolean>(false)
+  const [isArchived, setIsArchived] = useState<number>(0)
   const [subject, setSubject] = useState<string>('')
   const [showPublishModal, setShowPublishModal] = useState<boolean>(false)
   const [cronJobTime, setCronJobTime] = useState<Date | null | ''>(announcement?.scheduleTime || new Date())
@@ -138,7 +138,7 @@ const NewAnnouncement: React.FC<NewAnnouncementProps> = ({ announcement, setAnno
             body: draftToHtml(convertToRaw(editorState.getCurrentContent())),
             posted_by: emailFrom,
             schedule_time: cronJobTime,
-            isArchived: isArchived,
+            isArchived,
           },
         },
       })
@@ -197,7 +197,7 @@ const NewAnnouncement: React.FC<NewAnnouncementProps> = ({ announcement, setAnno
       setOthers(announcement?.filterOthers ? JSON.parse(announcement?.filterOthers) : [])
       setProviders(announcement?.filterProviders ? JSON.parse(announcement?.filterProviders) : [])
       setSubject(announcement?.subject || '')
-      setIsArchived(!!announcement?.isArchived)
+      !!announcement.isArchived && setIsArchived(announcement.isArchived as number)
       if (announcement.body) {
         const contentBlock = htmlToDraft(announcement.body)
         if (contentBlock) {

@@ -72,7 +72,7 @@ const AnnouncementTable: React.FC<AnnouncementTableProps> = ({ setAnnouncement }
             filterProviders: announcement.filter_providers,
             regionId: announcement.RegionId,
             body: announcement.body,
-            scheduleTime: announcement.schedule_time,
+            scheduleTime: announcement.schedule_time ? moment(announcement.schedule_time).format('MMMM DD') : '',
             isArchived: !!announcement.isArchived,
           }),
         ),

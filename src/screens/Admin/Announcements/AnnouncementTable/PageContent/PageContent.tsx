@@ -64,7 +64,9 @@ const PageContent: React.FC<PageContentProps> = ({
                 return (
                   <TableRow hover tabIndex={-1} key={index} sx={{ cursor: 'pointer', py: 2 }}>
                     <TableCell sx={classes.tableCell} key={`${index}-1`}>
-                      <Typography sx={{ fontSize: 12, fontWeight: 700, color: '#A1A1A1' }}>{row.date}</Typography>
+                      <Typography sx={{ fontSize: 12, fontWeight: 700, color: '#A1A1A1' }}>
+                        {row.scheduleTime}
+                      </Typography>
                     </TableCell>
                     <TableCell sx={classes.tableCell} key={`${index}-2`}>
                       <Typography sx={{ fontSize: 16, fontWeight: 700 }}>{row.subject}</Typography>
