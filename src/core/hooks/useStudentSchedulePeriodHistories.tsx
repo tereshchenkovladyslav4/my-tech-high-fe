@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useQuery } from '@apollo/client'
-import { groupBy, keyBy } from 'lodash'
+import { cloneDeep, groupBy, keyBy } from 'lodash'
 import { COURSE_TYPE_ITEMS } from '@mth/constants'
 import { CourseType } from '@mth/enums'
 import { SchedulePeriodHistory } from '@mth/graphql/models/schedule-period'
@@ -104,7 +104,7 @@ export const useStudentSchedulePeriodHistories = (
             scheduleDataHistoryDataArray.push({
               scheduleHistoryId: schedulePeriodHistory.ScheduleHistoryId,
               acceptedDate: schedulePeriodHistory.ScheduleHistory.date_accepted,
-              scheduleData: JSON.parse(JSON.stringify(scheduleDataArray)),
+              scheduleData: cloneDeep(scheduleDataArray),
               schedulePeriodHistory: [schedulePeriodHistory],
               isExpand: false,
             })

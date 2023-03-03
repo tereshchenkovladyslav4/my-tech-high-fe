@@ -44,7 +44,7 @@ export const LearningLogQuestionItem: React.FC<LearningLogQuestionItemProps> = (
                 cursor: 'pointer',
                 fontSize: '14px',
                 paddingY: 1,
-                color: showError && question?.required && !question.answer ? MthColor.ERROR_RED : '',
+                color: showError && question?.required && !question.answer ? MthColor.RED : '',
               }}
             >
               {`${extractContent(question.question)} ${question?.required ? '*' : ''}`}

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useMutation, useQuery } from '@apollo/client'
 import { Button, Typography } from '@mui/material'
 import { Box } from '@mui/system'
+import { cloneDeep } from 'lodash'
 import { Prompt, useHistory } from 'react-router-dom'
 import { CustomModal } from '@mth/components/CustomModal/CustomModals'
 import { SuccessModal } from '@mth/components/SuccessModal/SuccessModal'
@@ -31,6 +32,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
   isChanged,
   setIsChanged,
   onWithoutSaved,
+  reduceFundsEnabled,
 }) => {
   const history = useHistory()
   const [isDraftSaved, setIsDraftSaved] = useState<boolean>(false)
@@ -167,9 +169,9 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
           setIsEditMode(false)
           data.map((x) => (x.editable = false))
           if (showSecondSemester) {
-            setSecondScheduleData(JSON.parse(JSON.stringify(data)))
+            setSecondScheduleData(cloneDeep(data))
           } else {
-            setScheduleData(JSON.parse(JSON.stringify(data)))
+            setScheduleData(cloneDeep(data))
           }
           refetch()
         }
@@ -190,9 +192,9 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
       const data = showSecondSemester ? secondScheduleData : scheduleData
       data.map((item) => (item.editable = periodIds.includes(item.period)))
       if (showSecondSemester) {
-        setSecondScheduleData(JSON.parse(JSON.stringify(data)))
+        setSecondScheduleData(cloneDeep(data))
       } else {
-        setScheduleData(JSON.parse(JSON.stringify(data)))
+        setScheduleData(cloneDeep(data))
       }
     }
   }
@@ -207,7 +209,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
       schedule.showButtonName =
         status === SchedulePeriodStatus.NO_UPDATES ? SchedulePeriodStatus.MAKE_UPDATES : SchedulePeriodStatus.NO_UPDATES
       secondScheduleData[scheduleIdx] = schedule
-      setSecondScheduleData(JSON.parse(JSON.stringify(secondScheduleData)))
+      setSecondScheduleData(cloneDeep(secondScheduleData))
       const data = secondScheduleData?.filter((item) => item?.showButtonName === SchedulePeriodStatus.NO_UPDATES)
       await handleSave(
         data?.length ? (hasSecondSemester ? studentScheduleStatus : ScheduleStatus.DRAFT) : ScheduleStatus.ACCEPTED,
@@ -264,6 +266,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
           parentTooltip={parentTooltip}
           setIsChanged={setIsChanged}
           setScheduleData={setScheduleData}
+          reduceFundsEnabled={reduceFundsEnabled}
         />
       )}
       {showSecondSemester && hasUnlockedPeriods && (
@@ -281,6 +284,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
           setIsChanged={setIsChanged}
           setScheduleData={setSecondScheduleData}
           handleSecondSemSchedulePeriodStatusChange={handleSecondSemSchedulePeriodStatusChange}
+          reduceFundsEnabled={reduceFundsEnabled}
         />
       )}
       {showUnsavedModal && (

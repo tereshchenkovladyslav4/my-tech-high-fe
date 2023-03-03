@@ -13,6 +13,7 @@ export const reimbursementRequest: ReimbursementRequest = {
   date_ordered: null,
   total_amount: 30.54,
   status: 'Submitted',
+  meta: null,
   Student: {
     student_id: '1',
     person: {

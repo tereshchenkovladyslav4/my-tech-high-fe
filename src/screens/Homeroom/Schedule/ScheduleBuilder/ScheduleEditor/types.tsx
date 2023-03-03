@@ -14,6 +14,7 @@ export type ScheduleEditorProps = {
   selectedScheduleStatus?: ScheduleStatus
   isUpdatePeriodRequired?: boolean
   isLockedKey?: boolean
+  reduceFundsEnabled?: boolean
   setIsChanged: (value: boolean) => void
   setIsLockedKey?: (value: boolean) => void
   setScheduleData: (value: ScheduleData[]) => void

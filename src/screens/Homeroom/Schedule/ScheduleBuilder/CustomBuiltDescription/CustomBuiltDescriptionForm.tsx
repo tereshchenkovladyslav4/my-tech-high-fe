@@ -17,7 +17,7 @@ const CustomBuiltDescriptionForm: React.FC = () => {
           fontSize: '18px',
           fontWeight: '700',
           mb: 6,
-          color: touched.custom_built_description && errors.custom_built_description ? MthColor.ERROR_RED : '',
+          color: touched.custom_built_description && errors.custom_built_description ? MthColor.RED : '',
         }}
       >
         Custom-built Description

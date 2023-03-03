@@ -374,7 +374,7 @@ function Item({ question: q, signature }: { question: Question; signature?: unkn
           ))}
           {Boolean(errors[q.id]) && (
             <Paragraph
-              color='#BD0043'
+              color={MthColor.RED}
               textAlign='left'
               sx={{ marginTop: '4px', marginLeft: '14px', fontSize: '0.75rem' }}
             >
@@ -399,7 +399,7 @@ function Item({ question: q, signature }: { question: Question; signature?: unkn
           </Box>
           {Boolean(errors[q.id]) && (
             <Paragraph
-              color='#BD0043'
+              color={MthColor.RED}
               textAlign='left'
               sx={{ marginTop: '4px', marginLeft: '14px', fontSize: '0.75rem' }}
             >
@@ -451,7 +451,7 @@ function Item({ question: q, signature }: { question: Question; signature?: unkn
           ))}
           {Boolean(errors[q.id]) && (
             <Paragraph
-              color='#BD0043'
+              color={MthColor.RED}
               textAlign='left'
               sx={{ marginTop: '4px', marginLeft: '14px', fontSize: '0.75rem' }}
             >
@@ -526,7 +526,7 @@ function Item({ question: q, signature }: { question: Question; signature?: unkn
             onChange={(v) => setQuestionResponse(v.currentTarget.value)}
             FormHelperTextProps={{
               style: {
-                color: '#BD0043',
+                color: MthColor.RED,
               },
             }}
             error={!!touched[q.id] && !!errors[q.id + 'entry']}
@@ -536,7 +536,7 @@ function Item({ question: q, signature }: { question: Question; signature?: unkn
             sx={
               !!errors[q.id + 'entry']
                 ? {
-                    color: '#BD0043',
+                    color: MthColor.RED,
                   }
                 : {
                     color: 'black',
@@ -552,7 +552,7 @@ function Item({ question: q, signature }: { question: Question; signature?: unkn
                 ? {
                     height: 1,
                     width: '100%',
-                    borderBottom: '1px solid #BD0043',
+                    borderBottom: `1px solid ${MthColor.RED}`,
                     mb: 0.5,
                   }
                 : {

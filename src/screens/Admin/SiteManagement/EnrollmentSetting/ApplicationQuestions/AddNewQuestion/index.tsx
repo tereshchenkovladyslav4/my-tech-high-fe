@@ -5,6 +5,7 @@ import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
 import draftToHtml from 'draftjs-to-html'
 import { useFormikContext } from 'formik'
 import htmlToDraft from 'html-to-draftjs'
+import { cloneDeep } from 'lodash'
 import Wysiwyg from 'react-draft-wysiwyg'
 import { DropDown } from '@mth/components/DropDown/DropDown'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
@@ -45,7 +46,7 @@ export const AddNewQuestionModal: React.FC<AddNewQuestionModalProps> = ({
   //	Formik values context
   const { values, setValues } = useFormikContext<ApplicationQuestion[]>()
 
-  const [editQuestions, setEditQuestions] = useState(JSON.parse(JSON.stringify(questions)))
+  const [editQuestions, setEditQuestions] = useState(cloneDeep(questions))
   const [deleteIds, setDeleteIds] = useState([])
   const [isDefaultQuestion] = useState(questions[0]?.default_question || false)
   const [isAddStudent, setAddStudent] = useState(false)

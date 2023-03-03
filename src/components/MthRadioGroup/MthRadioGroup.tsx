@@ -35,7 +35,7 @@ const MthRadioGroup: React.FC<MthRadioGroupProps> = ({
         </Paragraph>
       )}
       {isError && (
-        <Subtitle sx={{ color: MthColor.ERROR_RED, fontSize: '12px', fontWeight: 600, lineHeight: '20px' }}>
+        <Subtitle sx={{ color: MthColor.RED, fontSize: '12px', fontWeight: 600, lineHeight: '20px' }}>
           Required
         </Subtitle>
       )}

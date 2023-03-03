@@ -3,12 +3,13 @@ import { useMutation, useQuery } from '@apollo/client'
 import { makeStyles, Theme } from '@material-ui/core/styles'
 import ArrowBackIosOutlinedIcon from '@mui/icons-material/ArrowBackIosOutlined'
 import { Box, ButtonBase, Grid, Typography } from '@mui/material'
+import { cloneDeep } from 'lodash'
 import { Prompt } from 'react-router-dom'
 import { arrayMove, SortableContainer, SortableElement } from 'react-sortable-hoc'
 import { MthTitle } from '@mth/enums'
-import { updateQuickLinkMutation } from '../../graphql/mutation/quick-link'
-import { getQuickLinksByRegionQuery } from '../../graphql/queries/quick-link'
-import { UserContext } from '../../providers/UserContext/UserProvider'
+import { updateQuickLinkMutation } from '@mth/graphql/mutation/quick-link'
+import { getQuickLinksByRegionQuery } from '@mth/graphql/queries/quick-link'
+import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { CustomConfirmModal } from '../CustomConfirmModal/CustomConfirmModal'
 import { QuickLinkCard } from './QuickLinkCard'
 import { QuickLink, QUICKLINK_TYPE } from './QuickLinkCardProps'
@@ -166,12 +167,12 @@ export const QuickLinks: React.FC<QuickLinkProps> = ({ backAction, initialLink, 
 
     if (i == quickLinks.length) {
       //	Add
-      const newQuickLinks = JSON.parse(JSON.stringify(quickLinks))
+      const newQuickLinks = cloneDeep(quickLinks)
       newQuickLinks.splice(newQuickLinks.length - 1, 0, quickLink)
       arrangeQuickLinks(newQuickLinks)
     } else {
       //	Update
-      const newQuickLinks = JSON.parse(JSON.stringify(quickLinks))
+      const newQuickLinks = cloneDeep(quickLinks)
       for (i = 0; i < newQuickLinks.length; i++) {
         if (newQuickLinks[i].id == quickLink.id) {
           if (newQuickLinks[i].flag != quickLink.flag) {

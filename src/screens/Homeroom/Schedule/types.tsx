@@ -72,6 +72,7 @@ export type ScheduleBuilderProps = {
   isChanged?: boolean
   setIsChanged: (value: boolean) => void
   onWithoutSaved: (isYes: boolean) => void
+  reduceFundsEnabled: boolean
 }
 
 export type DiplomaSeekingProps = {

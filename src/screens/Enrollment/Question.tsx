@@ -551,7 +551,7 @@ function Item({
             </Grid>
           </FormGroup>
         </FormControl>
-        <FormLabel sx={{ marginLeft: '14px', color: MthColor.ERROR_RED, fontSize: '0.75rem' }}>
+        <FormLabel sx={{ marginLeft: '14px', color: MthColor.RED, fontSize: '0.75rem' }}>
           {
             (formik.touched[`${keyName}`] &&
               Boolean(formik.touched[`${keyName}`][`${fieldName}`]) &&
@@ -593,7 +593,7 @@ function Item({
             />
           </FormGroup>
         </FormControl>
-        <FormLabel sx={{ marginLeft: '14px', color: MthColor.ERROR_RED, fontSize: '0.75rem' }}>
+        <FormLabel sx={{ marginLeft: '14px', color: MthColor.RED, fontSize: '0.75rem' }}>
           {
             (formik.touched[`${keyName}`] &&
               Boolean(formik.touched[`${keyName}`][`${fieldName}`]) &&
@@ -645,7 +645,7 @@ function Item({
             </Grid>
           </FormGroup>
         </FormControl>
-        <FormLabel sx={{ marginLeft: '14px', color: MthColor.ERROR_RED, fontSize: '0.75rem' }}>
+        <FormLabel sx={{ marginLeft: '14px', color: MthColor.RED, fontSize: '0.75rem' }}>
           {
             (formik.touched[`${keyName}`] &&
               Boolean(formik.touched[`${keyName}`][`${fieldName}`]) &&

@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import { useMutation } from '@apollo/client'
 import { Button, Card, Typography } from '@mui/material'
 import { Box } from '@mui/system'
+import { cloneDeep } from 'lodash'
 import { Prompt, useHistory, useLocation } from 'react-router-dom'
 import { CustomModal } from '@mth/components/CustomModal/CustomModals'
 import { DropDownItem } from '@mth/components/DropDown/types'
@@ -179,9 +180,9 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({ studentId }) => {
 
         if (response) {
           if (hasSecondSemester) {
-            setSecondScheduleData(JSON.parse(JSON.stringify(data)))
+            setSecondScheduleData(cloneDeep(data))
           } else {
-            setScheduleData(JSON.parse(JSON.stringify(data)))
+            setScheduleData(cloneDeep(data))
           }
         }
       }

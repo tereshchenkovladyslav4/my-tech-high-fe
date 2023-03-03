@@ -25,7 +25,7 @@ export const commonClasses = {
     outline: '0',
   },
   formError: {
-    color: MthColor.ERROR_RED,
+    color: MthColor.RED,
     fontSize: '12px',
     fontWeight: 600,
     lineHeight: '20px',
@@ -33,7 +33,7 @@ export const commonClasses = {
     marginTop: '4px',
   },
   formErrorTop: {
-    color: MthColor.ERROR_RED,
+    color: MthColor.RED,
     fontSize: '12px',
     fontWeight: 600,
     lineHeight: '20px',

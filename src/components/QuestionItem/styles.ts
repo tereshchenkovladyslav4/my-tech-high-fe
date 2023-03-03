@@ -26,7 +26,7 @@ export const useStyles = {
   },
   textFieldError: {
     [`& .${outlinedInputClasses.root} .${outlinedInputClasses.notchedOutline}`]: {
-      borderColor: MthColor.ERROR_RED,
+      borderColor: MthColor.RED,
     },
     width: '100%',
     [`& .${inputLabelClasses.root}.${inputLabelClasses.focused}`]: {

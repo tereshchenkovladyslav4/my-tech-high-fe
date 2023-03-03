@@ -19,7 +19,7 @@ export const theme = createTheme({
       contrastText: '#000',
     },
     error: {
-      main: '#BD0043',
+      main: MthColor.RED,
       contrastText: '#fff',
     },
     divider: '#D7D6D5',

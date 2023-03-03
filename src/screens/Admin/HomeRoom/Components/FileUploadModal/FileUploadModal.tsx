@@ -36,6 +36,7 @@ const FileUploadModal: React.FC<SubmissionModal> = ({
 
   useEffect(() => {
     if (isError) {
+      deleteFile(validFile)
       setErrorMessage('Incorrect Format')
     }
   }, [isError])

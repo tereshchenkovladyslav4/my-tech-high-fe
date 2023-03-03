@@ -199,7 +199,7 @@ export const ResetPassword: React.FC = () => {
           }}
         />
         {alert && alert.message && (
-          <Typography fontSize={14} marginTop={3} color={alert.type === 'error' ? '#BD0043' : 'white'}>
+          <Typography fontSize={14} marginTop={3} color={alert.type === 'error' ? MthColor.RED : 'white'}>
             {alert.message}
           </Typography>
         )}

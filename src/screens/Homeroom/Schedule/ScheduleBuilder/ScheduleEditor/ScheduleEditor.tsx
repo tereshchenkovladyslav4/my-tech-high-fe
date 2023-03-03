@@ -8,6 +8,7 @@ import { IconButton, Link, Tooltip, tooltipClasses, TooltipProps, Typography } f
 import { Box, styled } from '@mui/system'
 import htmlParser from 'html-react-parser'
 import { attributesToProps, domToReact, Element, HTMLReactParserOptions, DOMNode } from 'html-react-parser'
+import { cloneDeep } from 'lodash'
 import { CustomModal } from '@mth/components/CustomModal/CustomModals'
 import { MthTable } from '@mth/components/MthTable'
 import { MthTableField, MthTableRowItem } from '@mth/components/MthTable/types'
@@ -69,6 +70,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
   isUpdatePeriodRequired,
   setIsChanged,
   isLockedKey,
+  reduceFundsEnabled = false,
   setIsLockedKey,
   setScheduleData,
   handlePeriodUpdateRequired,
@@ -183,7 +185,11 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
         items: [],
       }
       // This is need to prevent the cascading menu from closing when open modal.
-      if (provider.reduce_funds !== ReduceFunds.NONE && provider.reduce_funds_notification?.length > 8) {
+      if (
+        reduceFundsEnabled &&
+        provider.reduce_funds !== ReduceFunds.NONE &&
+        provider.reduce_funds_notification?.length > 8
+      ) {
         subMenu.customModalProps = {
           title: MthTitle.REDUCES_FUNDS,
           description: provider.reduce_funds_notification,
@@ -244,7 +250,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
         delete schedule.CustomBuiltDescription
         delete schedule.ThirdParty
         scheduleData[scheduleIdx] = schedule
-        setScheduleData(JSON.parse(JSON.stringify(scheduleData)))
+        setScheduleData(cloneDeep(scheduleData))
         setIsChanged(true)
       }
     }
@@ -265,7 +271,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
         delete schedule.ThirdParty
         scheduleData[scheduleIdx] = schedule
         handleCancelSelectedPeriod()
-        setScheduleData(JSON.parse(JSON.stringify(scheduleData)))
+        setScheduleData(cloneDeep(scheduleData))
         setIsChanged(true)
       }
     }
@@ -286,7 +292,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
       delete schedule.CourseType
       delete schedule.Course
       scheduleData[scheduleIdx] = schedule
-      setScheduleData(JSON.parse(JSON.stringify(scheduleData)))
+      setScheduleData(cloneDeep(scheduleData))
     }
     setIsChanged(true)
   }
@@ -300,11 +306,11 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
       delete schedule.CourseType
       delete schedule.Course
       scheduleData[scheduleIdx] = schedule
-      setScheduleData(JSON.parse(JSON.stringify(scheduleData)))
+      setScheduleData(cloneDeep(scheduleData))
       if (title.display_notification) {
         setSubjectNotification(title.subject_notification)
       }
-      if (title.reduce_funds !== ReduceFunds.NONE) {
+      if (reduceFundsEnabled && title.reduce_funds !== ReduceFunds.NONE) {
         setSubjectReduceFundsNotification(title.reduce_funds_notification)
       }
       setIsChanged(true)
@@ -332,7 +338,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
           delete schedule.CustomBuiltDescription
           delete schedule.ThirdParty
           scheduleData[scheduleIdx] = schedule
-          setScheduleData(JSON.parse(JSON.stringify(scheduleData)))
+          setScheduleData(cloneDeep(scheduleData))
           break
       }
       setIsChanged(true)
@@ -357,7 +363,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
       delete schedule.Course
       delete schedule.CustomBuiltDescription
       scheduleData[scheduleIdx] = schedule
-      setScheduleData(JSON.parse(JSON.stringify(scheduleData)))
+      setScheduleData(cloneDeep(scheduleData))
       setIsChanged(true)
     }
     setSelectedSchedule(undefined)
@@ -380,7 +386,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
       delete schedule.CustomBuiltDescription
       delete schedule.ThirdParty
       scheduleData[scheduleIdx] = schedule
-      setScheduleData(JSON.parse(JSON.stringify(scheduleData)))
+      setScheduleData(cloneDeep(scheduleData))
     }
     setSelectedSchedule(undefined)
     setShowOnSiteSplitEnrollmentModal(false)
@@ -395,7 +401,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
       selectedSchedule.CustomBuiltDescription = description
       delete selectedSchedule.Course
       scheduleData[scheduleIdx] = selectedSchedule
-      setScheduleData(JSON.parse(JSON.stringify(scheduleData)))
+      setScheduleData(cloneDeep(scheduleData))
       setIsChanged(true)
     }
   }
@@ -428,11 +434,11 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
       if (course.display_notification) {
         setCourseNotification(course.course_notification)
       }
-      if (course.reduce_funds !== ReduceFunds.NONE) {
+      if (reduceFundsEnabled && course.reduce_funds !== ReduceFunds.NONE) {
         setCourseReduceFundsNotification(course.reduce_funds_notification)
       }
 
-      setScheduleData(JSON.parse(JSON.stringify(scheduleData)))
+      setScheduleData(cloneDeep(scheduleData))
       setIsChanged(true)
     }
   }
@@ -530,7 +536,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
         delete item.Course
       }
     })
-    setScheduleData(JSON.parse(JSON.stringify(scheduleData)))
+    setScheduleData(cloneDeep(scheduleData))
   }
 
   const processScheduleData = (schedule: ScheduleData): ScheduleData => {
@@ -550,9 +556,7 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
 
     if (schedule.Period) {
       // Update Period with original data
-      schedule.Period = JSON.parse(
-        JSON.stringify(schedule.filteredPeriods?.find((item) => item.id === schedule.Period?.id)),
-      )
+      schedule.Period = cloneDeep(schedule.filteredPeriods?.find((item) => item.id === schedule.Period?.id))
     }
 
     if (multiProvider && schedule.Period) {

@@ -1,6 +1,8 @@
+import { MthColor } from '@mth/enums'
+
 export const masterUseStyles = {
   formError: {
-    color: '#BD0043',
+    color: MthColor.RED,
     fontSize: '12px',
     fontWeight: 600,
     lineHeight: '20px',

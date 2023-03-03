@@ -91,7 +91,7 @@ export const addEventClassess = {
     },
   },
   editorInvalid: {
-    borderColor: MthColor.ERROR_RED,
+    borderColor: MthColor.RED,
   },
   arrowButton: {
     fontSize: '15px',

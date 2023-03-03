@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { Box, Grid, TextField, Typography } from '@mui/material'
 import { useFormikContext } from 'formik'
 import { DropDown } from '@mth/components/DropDown/DropDown'
@@ -26,6 +26,10 @@ const CourseForm: React.FC<CourseFormProps> = ({
   const { errors, handleChange, setFieldValue, touched, values, setFieldTouched } = useFormikContext<Course>()
   const [provider, setProvider] = useState<Provider | undefined>()
   const noneOption: DropDownItem = { label: 'None', value: 0 }
+
+  const reduceFundsEnabled = useMemo(() => {
+    return !!defaultReduceFunds(schoolYearData)
+  }, [schoolYearData])
 
   useEffect(() => {
     if (values.provider_id) {
@@ -131,9 +135,7 @@ const CourseForm: React.FC<CourseFormProps> = ({
                     fontWeight: '700',
                     mb: 1,
                     color:
-                      touched.course_notification && errors.course_notification
-                        ? MthColor.ERROR_RED
-                        : MthColor.SYSTEM_01,
+                      touched.course_notification && errors.course_notification ? MthColor.RED : MthColor.SYSTEM_01,
                   }}
                 >
                   Course Notification
@@ -150,7 +152,7 @@ const CourseForm: React.FC<CourseFormProps> = ({
                 </Subtitle>
               </Grid>
             )}
-            {!!values?.reduce_funds && values?.reduce_funds != ReduceFunds.NONE && (
+            {!!values?.reduce_funds && values?.reduce_funds != ReduceFunds.NONE && reduceFundsEnabled && (
               <Grid item xs={12}>
                 <Typography
                   sx={{
@@ -159,7 +161,7 @@ const CourseForm: React.FC<CourseFormProps> = ({
                     mb: 1,
                     color:
                       touched.reduce_funds_notification && errors.reduce_funds_notification
-                        ? MthColor.ERROR_RED
+                        ? MthColor.RED
                         : MthColor.SYSTEM_01,
                   }}
                 >
@@ -250,7 +252,7 @@ const CourseForm: React.FC<CourseFormProps> = ({
                 sx={{ m: 0 }}
                 defaultValue={values?.reduce_funds || undefined}
                 error={{ error: touched.reduce_funds && !!errors.reduce_funds, errorMsg: '' }}
-                disabled={!defaultReduceFunds(schoolYearData)}
+                disabled={!reduceFundsEnabled}
               />
               <Subtitle sx={editCourseClasses.formError}>{touched.reduce_funds && errors.reduce_funds}</Subtitle>
             </Grid>
@@ -267,7 +269,7 @@ const CourseForm: React.FC<CourseFormProps> = ({
                   setFieldValue('price', value)
                 }}
                 error={touched.price && !!errors.price}
-                disabled={!values?.reduce_funds || values?.reduce_funds === ReduceFunds.NONE}
+                disabled={!values?.reduce_funds || values?.reduce_funds === ReduceFunds.NONE || !reduceFundsEnabled}
               />
               <Subtitle sx={editCourseClasses.formError}>{touched.price && errors.price}</Subtitle>
             </Grid>

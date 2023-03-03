@@ -44,7 +44,7 @@ export const useStyles = {
       height: '46px',
     },
     '& .Mui-error': {
-      color: MthColor.ERROR_RED,
+      color: MthColor.RED,
     },
     '& .MuiFormControlLabel-root': {
       alignItems: 'flex-start',
@@ -96,7 +96,7 @@ export const useStyles = {
   },
   textFieldError: {
     [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
-      borderColor: '#BD0043',
+      borderColor: MthColor.RED,
     },
     marginY: 2,
     width: '100%',
@@ -141,7 +141,7 @@ export const useStyles = {
     background: 'linear-gradient(90deg, #0E0E0E 0%, #666666 99.68%), #0E0E0E',
   },
   formError: {
-    color: MthColor.ERROR_RED,
+    color: MthColor.RED,
     fontSize: '12px',
     lineHeight: '20px',
     marginLeft: '12px',

@@ -446,64 +446,70 @@ export const ResourceRequestsTable: React.FC<ResourceRequestsTableProps> = ({
     ) {
       isFormat = true
     }
-    if (isFormat) {
-      const jsonData: ResourceRequestsFileType[] = XLSX.utils.sheet_to_json(ws)
-      setImportedResourceRequests(jsonData)
-      const dataToSave: UpdateResourceRequestVM[] = jsonData?.map((item: ResourceRequestsFileType) => {
-        return {
-          id: +item['Resource Request ID'],
-          username: item['Username Generator'] || '',
-          password: item['Password Generator'] || '',
-          vendor: item['Vendor'],
-          resource_level_name: item['Resource Level'],
-          created_at: `${item['Submitted']}`,
-          status: RESOURCE_REQUEST_STATUS_ITEMS.find((x) => x.label === item['Status'])?.value || '',
-          student_id: `${item['Student ID']}`,
-          student_first_name: `${item['Student First Name']}`,
-          student_last_name: `${item['Student Last Name']}`,
-          student_email: `${item['Student Email']}`,
-          grade_level: `${item['Grade']}`,
-          date_of_birth: `${item['Student Birthdate']}`,
-          parent_first_name: `${item['Parent First Name']}`,
-          parent_last_name: `${item['Parent Last Name']}`,
-          parent_email: `${item['Parent Email']}`,
-          cost: `${item['Cost']}`,
-          returning_status: `${item['Returning Status']}`,
-          // @ts-ignore
-          student_status: `${item[`${schoolYearLabel(schoolYear)} Status`]}`,
-        }
-      })
-
-      const promises: Promise<void>[] = []
-
-      dataToSave?.map((item: UpdateResourceRequestVM) => {
-        promises.push(
-          new Promise<void>(async (resolve) => {
-            await submitSave({
-              variables: {
-                updateResourceRequestInput: item,
-              },
-            })
-              .then(() => {
-                setSucceededResourceRequestIds((pre) => [...pre, +item.id])
-                resolve()
-              })
-              .catch((err) => {
-                setFailedResourceRequests((pre) => [...pre, { id: +item.id, message: err.message }])
-                resolve()
-              })
-          }),
-        )
-      })
-
-      Promise.all(promises).finally(async () => {
-        setShowSuccessModal(true)
-        setShowUploadModal(false)
-        await refetch()
-      })
-    } else {
+    if (!isFormat) {
       setFileFormatError(true)
+      return
     }
+    const jsonData: ResourceRequestsFileType[] = XLSX.utils.sheet_to_json(ws, { raw: false })
+
+    if (!jsonData?.length) {
+      setFileFormatError(true)
+      return
+    }
+
+    setImportedResourceRequests(jsonData)
+    const dataToSave: UpdateResourceRequestVM[] = jsonData?.map((item: ResourceRequestsFileType) => {
+      return {
+        id: +item['Resource Request ID'],
+        username: `${item['Username Generator'] || ''}`,
+        password: `${item['Password Generator'] || ''}`,
+        vendor: `${item['Vendor'] || ''}`,
+        resource_level_name: `${item['Resource Level'] || ''}`,
+        created_at: `${showDate(item['Submitted'] || '')}`,
+        status: RESOURCE_REQUEST_STATUS_ITEMS.find((x) => x.label === item['Status'])?.value || '',
+        student_id: `${item['Student ID'] || ''}`,
+        student_first_name: `${item['Student First Name'] || ''}`,
+        student_last_name: `${item['Student Last Name'] || ''}`,
+        student_email: `${item['Student Email'] || ''}`,
+        grade_level: `${item['Grade'] || ''}`,
+        date_of_birth: `${showDate(item['Student Birthdate'] || '')}`,
+        parent_first_name: `${item['Parent First Name'] || ''}`,
+        parent_last_name: `${item['Parent Last Name'] || ''}`,
+        parent_email: `${item['Parent Email'] || ''}`,
+        cost: `${item['Cost'] || ''}`,
+        returning_status: `${item['Returning Status'] || ''}`,
+        // @ts-ignore
+        student_status: `${item[`${schoolYearLabel(schoolYear)} Status`] || ''}`,
+      }
+    })
+
+    const promises: Promise<void>[] = []
+
+    dataToSave?.map((item: UpdateResourceRequestVM) => {
+      promises.push(
+        new Promise<void>(async (resolve) => {
+          await submitSave({
+            variables: {
+              updateResourceRequestInput: item,
+            },
+          })
+            .then(() => {
+              setSucceededResourceRequestIds((pre) => [...pre, +item.id])
+              resolve()
+            })
+            .catch((err) => {
+              setFailedResourceRequests((pre) => [...pre, { id: +item.id, message: err.message }])
+              resolve()
+            })
+        }),
+      )
+    })
+
+    Promise.all(promises).finally(async () => {
+      setShowSuccessModal(true)
+      setShowUploadModal(false)
+      await refetch()
+    })
   }
 
   const handleDownloadErrors = () => {

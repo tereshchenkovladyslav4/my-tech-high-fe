@@ -107,7 +107,7 @@ export const VerifyEmail: React.FC = () => {
                   helperText={formik.touched.password && formik.errors.password}
                 />
                 {errorMessage && (
-                  <Paragraph color='#BD0043' size={'large'} textAlign='left' sx={{ width: '440px' }}>
+                  <Paragraph color={MthColor.RED} size={'large'} textAlign='left' sx={{ width: '440px' }}>
                     {errorMessage}
                   </Paragraph>
                 )}

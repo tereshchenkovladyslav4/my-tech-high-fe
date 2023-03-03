@@ -100,7 +100,7 @@ export const DropDown: React.FC<DropDownProps> = ({
               >
                 {renderDropDownItem}
               </Select>
-              {error?.error && <FormHelperText sx={{ color: MthColor.ERROR_RED }}>{error?.errorMsg}</FormHelperText>}
+              {error?.error && <FormHelperText sx={{ color: MthColor.RED }}>{error?.errorMsg}</FormHelperText>}
             </FormControl>
           ) : (
             <FormControl fullWidth className='MthFormField'>
@@ -127,7 +127,7 @@ export const DropDown: React.FC<DropDownProps> = ({
               >
                 {renderDropDownItem}
               </Select>
-              {error?.error && <FormHelperText sx={{ color: MthColor.ERROR_RED }}>{error?.errorMsg}</FormHelperText>}
+              {error?.error && <FormHelperText sx={{ color: MthColor.RED }}>{error?.errorMsg}</FormHelperText>}
             </FormControl>
           )}
         </>
@@ -165,7 +165,7 @@ export const DropDown: React.FC<DropDownProps> = ({
           >
             {renderDropDownItem}
           </Select>
-          {error?.error && <FormHelperText sx={{ color: MthColor.ERROR_RED }}>{error?.errorMsg}</FormHelperText>}
+          {error?.error && <FormHelperText sx={{ color: MthColor.RED }}>{error?.errorMsg}</FormHelperText>}
         </FormControl>
       )}
     </Box>

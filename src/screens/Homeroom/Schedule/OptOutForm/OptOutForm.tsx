@@ -140,9 +140,7 @@ const OptOutForm: React.FC<OptOutFormProps> = ({
         <Box
           sx={{
             borderBottom:
-              invalidationOF && signatureRef?.isEmpty()
-                ? `1px solid ${MthColor.ERROR_RED}`
-                : `1px solid ${MthColor.BLACK}`,
+              invalidationOF && signatureRef?.isEmpty() ? `1px solid ${MthColor.RED}` : `1px solid ${MthColor.BLACK}`,
             mx: 'auto',
             width: 500,
             textAlign: 'center',

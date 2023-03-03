@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { Box, Grid, TextField, Typography } from '@mui/material'
 import { useFormikContext } from 'formik'
 import { DropDown } from '@mth/components/DropDown/DropDown'
@@ -15,6 +15,10 @@ import { defaultReduceFunds } from '@mth/utils/default-reduce-funds.util'
 
 const ProviderForm: React.FC<ProviderFormProps> = ({ setIsChanged, periodsItems, schoolYearData }) => {
   const { errors, handleChange, setFieldValue, touched, values, setFieldTouched } = useFormikContext<Provider>()
+
+  const reduceFundsEnabled = useMemo(() => {
+    return !!defaultReduceFunds(schoolYearData)
+  }, [schoolYearData])
 
   return (
     <Box sx={{ width: '100%', textAlign: 'left', mb: '70px' }}>
@@ -66,7 +70,7 @@ const ProviderForm: React.FC<ProviderFormProps> = ({ setIsChanged, periodsItems,
                 sx={{ m: 0 }}
                 defaultValue={values?.reduce_funds || undefined}
                 error={{ error: touched.reduce_funds && !!errors.reduce_funds, errorMsg: '' }}
-                disabled={!defaultReduceFunds(schoolYearData)}
+                disabled={!reduceFundsEnabled}
               />
               <Subtitle sx={editProviderClasses.formError}>{touched.reduce_funds && errors.reduce_funds}</Subtitle>
             </Grid>
@@ -83,13 +87,13 @@ const ProviderForm: React.FC<ProviderFormProps> = ({ setIsChanged, periodsItems,
                   setFieldValue('price', value)
                 }}
                 error={touched.price && !!errors.price}
-                disabled={!values?.reduce_funds || values?.reduce_funds === ReduceFunds.NONE}
+                disabled={!values?.reduce_funds || values?.reduce_funds === ReduceFunds.NONE || !reduceFundsEnabled}
               />
               <Subtitle sx={editProviderClasses.formError}>{touched.price && errors.price}</Subtitle>
             </Grid>
           </Grid>
         </Grid>
-        {!!values?.reduce_funds && values?.reduce_funds != ReduceFunds.NONE && (
+        {!!values?.reduce_funds && values?.reduce_funds != ReduceFunds.NONE && reduceFundsEnabled && (
           <Grid item xs={10}>
             <Typography
               sx={{
@@ -98,7 +102,7 @@ const ProviderForm: React.FC<ProviderFormProps> = ({ setIsChanged, periodsItems,
                 mb: 1,
                 color:
                   touched.reduce_funds_notification && errors.reduce_funds_notification
-                    ? MthColor.ERROR_RED
+                    ? MthColor.RED
                     : MthColor.SYSTEM_01,
               }}
             >
@@ -123,7 +127,7 @@ const ProviderForm: React.FC<ProviderFormProps> = ({ setIsChanged, periodsItems,
               fontSize: '18px',
               fontWeight: '700',
               mb: 1,
-              color: touched.PeriodIds && errors.PeriodIds ? MthColor.ERROR_RED : MthColor.SYSTEM_01,
+              color: touched.PeriodIds && errors.PeriodIds ? MthColor.RED : MthColor.SYSTEM_01,
             }}
           >
             Require Multiple Periods

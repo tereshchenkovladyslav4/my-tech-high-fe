@@ -8,7 +8,7 @@ export const testingPrefrenceClassess = {
     marginX: 'auto',
   },
   formError: {
-    color: MthColor.ERROR_RED,
+    color: MthColor.RED,
     fontSize: '12px',
     fontWeight: 600,
     lineHeight: '20px',

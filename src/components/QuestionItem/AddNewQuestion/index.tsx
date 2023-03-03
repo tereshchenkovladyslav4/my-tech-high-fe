@@ -4,6 +4,7 @@ import { EditorState, convertToRaw, ContentState } from 'draft-js'
 import draftToHtml from 'draftjs-to-html'
 import { useFormikContext } from 'formik'
 import htmlToDraft from 'html-to-draftjs'
+import { cloneDeep } from 'lodash'
 import Wysiwyg from 'react-draft-wysiwyg'
 import { MthColor, QUESTION_TYPE } from '@mth/enums'
 import { DropDown } from '../../DropDown/DropDown'
@@ -38,7 +39,7 @@ export const QuestionModal: React.FC<QuestionModalProps> = ({
   //	Formik values context
   const { values, setValues } = useFormikContext<Question[]>()
 
-  const [editQuestions, setEditQuestions] = useState(JSON.parse(JSON.stringify(questions)))
+  const [editQuestions, setEditQuestions] = useState(cloneDeep(questions))
   const [deleteIds, setDeleteIds] = useState([])
   const [isDefaultQuestion] = useState(questions[0]?.default_question || false)
 

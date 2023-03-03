@@ -29,6 +29,7 @@ import { UpdateStudentMutation } from '@mth/screens/Admin/UserProfile/services'
 import { uploadFile } from '@mth/services'
 import { mthButtonClasses } from '@mth/styles/button.style'
 import { calculateGrade, dataUrlToFile, extractContent, getRegionCode } from '@mth/utils'
+import { defaultReduceFunds } from '@mth/utils/default-reduce-funds.util'
 import { DiplomaSeeking } from './DiplomaSeeking'
 import { HeaderComponent } from './HeaderComponent'
 import { OptOutForm } from './OptOutForm'
@@ -82,6 +83,10 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
     const split_enrollment_grades = selectedYear?.ScheduleBuilder?.split_enrollment_grades?.split(',')
     return Boolean(split_enrollment && split_enrollment_grades?.includes(String(student_grade_level)))
   }, [selectedYear, student])
+
+  const reduceFundsEnabled = useMemo(() => {
+    return !!defaultReduceFunds(selectedYear)
+  }, [selectedYear])
 
   const { diplomaOptions, diplomaAnswerRefetch } = useDiplomaSeekingOptionsByStudentIdAndSchoolYearId(
     selectedYearId || 0,
@@ -463,6 +468,7 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
             isChanged={isChanged}
             setIsChanged={setIsChanged}
             onWithoutSaved={handleWithoutSaved}
+            reduceFundsEnabled={reduceFundsEnabled}
           />
         )}
         {step !== MthTitle.SCHEDULE && (

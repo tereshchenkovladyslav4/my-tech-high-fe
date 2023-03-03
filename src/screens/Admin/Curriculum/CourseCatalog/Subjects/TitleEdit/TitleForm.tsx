@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { Box, Grid, TextField, Typography } from '@mui/material'
 import { useFormikContext } from 'formik'
 import { DropDown } from '@mth/components/DropDown/DropDown'
@@ -16,6 +16,10 @@ import { Title, TitleFormProps } from '../types'
 
 const TitleForm: React.FC<TitleFormProps> = ({ schoolYearData, subjectsItems, gradeOptions, scheduleBuilder }) => {
   const { errors, handleChange, setFieldValue, touched, values, setFieldTouched } = useFormikContext<Title>()
+
+  const reduceFundsEnabled = useMemo(() => {
+    return !!defaultReduceFunds(schoolYearData)
+  }, [schoolYearData])
 
   return (
     <Box sx={{ width: '100%', textAlign: 'left', mb: '70px' }}>
@@ -91,7 +95,7 @@ const TitleForm: React.FC<TitleFormProps> = ({ schoolYearData, subjectsItems, gr
                 sx={{ m: 0 }}
                 defaultValue={values?.reduce_funds || undefined}
                 error={{ error: touched.reduce_funds && !!errors.reduce_funds, errorMsg: '' }}
-                disabled={!defaultReduceFunds(schoolYearData)}
+                disabled={!reduceFundsEnabled}
               />
               <Subtitle sx={editTitleClasses.formError}>{touched.reduce_funds && errors.reduce_funds}</Subtitle>
             </Grid>
@@ -109,7 +113,7 @@ const TitleForm: React.FC<TitleFormProps> = ({ schoolYearData, subjectsItems, gr
                   setFieldValue('price', value)
                 }}
                 error={touched.price && !!errors.price}
-                disabled={!values?.reduce_funds || values?.reduce_funds === ReduceFunds.NONE}
+                disabled={!values?.reduce_funds || values?.reduce_funds === ReduceFunds.NONE || !reduceFundsEnabled}
               />
               <Subtitle sx={editTitleClasses.formError}>{touched.price && errors.price}</Subtitle>
             </Grid>
@@ -202,8 +206,7 @@ const TitleForm: React.FC<TitleFormProps> = ({ schoolYearData, subjectsItems, gr
                     fontSize: '18px',
                     fontWeight: '700',
                     mb: 1,
-                    color:
-                      touched.custom_built_description && errors.custom_built_description ? MthColor.ERROR_RED : '',
+                    color: touched.custom_built_description && errors.custom_built_description ? MthColor.RED : '',
                   }}
                 >
                   Custom-built Description
@@ -220,15 +223,14 @@ const TitleForm: React.FC<TitleFormProps> = ({ schoolYearData, subjectsItems, gr
                 </Subtitle>
               </Grid>
             )}
-            {!!values?.reduce_funds && values?.reduce_funds != ReduceFunds.NONE && (
+            {!!values?.reduce_funds && values?.reduce_funds != ReduceFunds.NONE && reduceFundsEnabled && (
               <Grid item xs={12}>
                 <Typography
                   sx={{
                     fontSize: '18px',
                     fontWeight: '700',
                     mb: 1,
-                    color:
-                      touched.reduce_funds_notification && errors.reduce_funds_notification ? MthColor.ERROR_RED : '',
+                    color: touched.reduce_funds_notification && errors.reduce_funds_notification ? MthColor.RED : '',
                   }}
                 >
                   Reduce Funds Notification
@@ -252,7 +254,7 @@ const TitleForm: React.FC<TitleFormProps> = ({ schoolYearData, subjectsItems, gr
                     fontSize: '18px',
                     fontWeight: '700',
                     mb: 1,
-                    color: touched.subject_notification && errors.subject_notification ? MthColor.ERROR_RED : '',
+                    color: touched.subject_notification && errors.subject_notification ? MthColor.RED : '',
                   }}
                 >
                   Subject Notification

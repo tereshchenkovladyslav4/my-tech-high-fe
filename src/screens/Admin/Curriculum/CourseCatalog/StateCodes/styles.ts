@@ -38,7 +38,7 @@ export const stateCodesClass = {
     maxHeight: '97vh',
   },
   formError: {
-    color: MthColor.ERROR_RED,
+    color: MthColor.RED,
     fontSize: '12px',
     fontWeight: 600,
     lineHeight: '20px',

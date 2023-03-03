@@ -59,7 +59,7 @@ export const checkListClass = {
     marginLeft: 1,
   },
   formError: {
-    color: MthColor.ERROR_RED,
+    color: MthColor.RED,
     fontSize: '12px',
     fontWeight: 600,
     lineHeight: '20px',

@@ -95,11 +95,11 @@ export const SuccessModal: React.FC<SuccessModalProps> = ({
           {!!successCount && (
             <Typography fontWeight={'bold'} sx={{ marginBottom: '20px' }}>{`${successCount} Username${
               successCount > 1 ? 's' : ''
-            } and Password${successCount > 1 ? 's' : ''} were imported`}</Typography>
+            } and Password${successCount > 1 ? 's' : ''} ${successCount > 1 ? 'were' : 'was'} imported`}</Typography>
           )}
           {!!failedResourceRequests?.length && (
             <Box sx={{ display: 'flex', justifyContent: 'flex-start', marginTop: '30px', gap: '20px' }}>
-              <Typography sx={{ color: MthColor.ERROR_RED }}>{`${failedResourceRequests.length} Errors`}</Typography>
+              <Typography sx={{ color: MthColor.RED }}>{`${failedResourceRequests.length} Errors`}</Typography>
               <Tooltip title='Download' placement='top'>
                 <IconButton onClick={handleDownloadErrors} size='large' sx={{ marginTop: '-13px' }}>
                   <img src={DownloadFileIcon} alt='Download Icon' width={20} />
@@ -108,7 +108,7 @@ export const SuccessModal: React.FC<SuccessModalProps> = ({
             </Box>
           )}
 
-          <Typography fontWeight={'bold'} sx={{ color: showError ? MthColor.ERROR_RED : MthColor.BLACK }}>
+          <Typography fontWeight={'bold'} sx={{ color: showError ? MthColor.RED : MthColor.BLACK }}>
             How would you like to proceed?
           </Typography>
 
@@ -120,7 +120,7 @@ export const SuccessModal: React.FC<SuccessModalProps> = ({
             }}
           />
 
-          {showError && <Typography sx={{ color: MthColor.ERROR_RED, textAlign: 'left' }}>Required</Typography>}
+          {showError && <Typography sx={{ color: MthColor.RED, textAlign: 'left' }}>Required</Typography>}
 
           <MthCheckbox
             label='Create Direct Deduction for Resources with a cost'

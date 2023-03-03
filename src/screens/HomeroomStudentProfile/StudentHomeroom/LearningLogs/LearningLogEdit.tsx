@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react'
 import { useMutation } from '@apollo/client'
 import { Box, Button, Grid } from '@mui/material'
+import { cloneDeep } from 'lodash'
 import { DropDownItem } from '@mth/components/DropDown/types'
 import { RadioGroupOption } from '@mth/components/MthRadioGroup/types'
 import { MthStepper } from '@mth/components/MthStepper'
@@ -90,7 +91,7 @@ export const LearningLogEdit: React.FC<LearningLogEditProps> = ({
         newQuestions[index] = item
       }
     })
-    setLearingLogQuestions(JSON.parse(JSON.stringify(newQuestions)))
+    setLearingLogQuestions(cloneDeep(newQuestions))
   }
 
   const isInvalid = (questions: LearningLogQuestion[]): boolean => {

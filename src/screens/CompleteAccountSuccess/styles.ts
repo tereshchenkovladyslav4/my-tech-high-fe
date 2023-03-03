@@ -11,7 +11,7 @@ export const useStyles = {
   },
   textFieldError: {
     [`& .${outlinedInputClasses.root}.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
-      borderColor: '#BD0043',
+      borderColor: MthColor.RED,
     },
     marginY: 2,
     width: '100%',

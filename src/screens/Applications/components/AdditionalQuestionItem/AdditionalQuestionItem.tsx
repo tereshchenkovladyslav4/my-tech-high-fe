@@ -163,7 +163,7 @@ export const AdditionalQuestionItem: React.FC<ApplicationQuestionProps> = ({
             </Subtitle>
           </Box>
         ))}
-        {meta.touched && meta.error && <FormHelperText sx={{ color: '#BD0043' }}>{meta.error}</FormHelperText>}
+        {meta.touched && meta.error && <FormHelperText sx={{ color: MthColor.RED }}>{meta.error}</FormHelperText>}
       </Box>
     )
   } else if (q.type === QUESTION_TYPE.AGREEMENT) {
@@ -190,7 +190,7 @@ export const AdditionalQuestionItem: React.FC<ApplicationQuestionProps> = ({
             <p dangerouslySetInnerHTML={{ __html: q.question }}></p>
           </Paragraph>
         </Box>
-        {meta.touched && meta.error && <FormHelperText sx={{ color: '#BD0043' }}>{meta.error}</FormHelperText>}
+        {meta.touched && meta.error && <FormHelperText sx={{ color: MthColor.RED }}>{meta.error}</FormHelperText>}
       </Box>
     )
   } else if (q.type === QUESTION_TYPE.MULTIPLECHOICES) {
@@ -251,7 +251,7 @@ export const AdditionalQuestionItem: React.FC<ApplicationQuestionProps> = ({
               </Box>
             ))}
           </RadioGroup>
-          {meta.touched && meta.error && <FormHelperText sx={{ color: '#BD0043' }}>{meta.error}</FormHelperText>}
+          {meta.touched && meta.error && <FormHelperText sx={{ color: MthColor.RED }}>{meta.error}</FormHelperText>}
         </FormControl>
       </Box>
     )

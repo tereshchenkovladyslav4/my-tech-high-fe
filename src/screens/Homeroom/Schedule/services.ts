@@ -12,6 +12,8 @@ export const getActiveScheduleSchoolYearsQuery = gql`
       opt_out_form_description
       diploma_seeking
       testing_preference
+      reimbursements
+      direct_orders
       IsCurrentYear
       IsScheduleBuilderOpen
       IsSecondSemesterOpen

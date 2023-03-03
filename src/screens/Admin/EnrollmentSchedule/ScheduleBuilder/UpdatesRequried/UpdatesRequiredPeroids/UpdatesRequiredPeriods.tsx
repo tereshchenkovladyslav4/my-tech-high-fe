@@ -1,5 +1,6 @@
 import React from 'react'
 import { Box } from '@mui/system'
+import { cloneDeep } from 'lodash'
 import { MthCheckbox } from '@mth/components/MthCheckbox'
 import { MultiSelect } from '@mth/components/MultiSelect/MultiSelect'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
@@ -22,7 +23,7 @@ const UpdatesRequiredPeriods: React.FC<UpdatesRequiredPeriodsProps> = ({
     if (scheduleIdx > -1) {
       schedule.standardResponseOptions = value.join(',')
       scheduleData[scheduleIdx] = schedule
-      setScheduleData(JSON.parse(JSON.stringify(scheduleData)))
+      setScheduleData(cloneDeep(scheduleData))
     }
   }
 

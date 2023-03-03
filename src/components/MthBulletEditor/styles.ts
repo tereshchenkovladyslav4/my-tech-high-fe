@@ -7,6 +7,6 @@ export const bulletEditorClasses = {
     marginBottom: '24px',
   },
   editorInvalid: {
-    borderColor: MthColor.ERROR_RED,
+    borderColor: MthColor.RED,
   },
 }

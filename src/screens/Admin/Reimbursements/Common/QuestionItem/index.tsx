@@ -8,6 +8,7 @@ import { Box, Button, Grid, IconButton, TextField, Tooltip } from '@mui/material
 import { SxProps } from '@mui/system'
 import { useFlag } from '@unleash/proxy-client-react'
 import { useFormikContext } from 'formik'
+import { cloneDeep } from 'lodash'
 import SignatureCanvas from 'react-signature-canvas'
 import { SortableHandle } from 'react-sortable-hoc'
 import { CustomModal } from '@mth/components/CustomModal/CustomModals'
@@ -158,7 +159,7 @@ export const QuestionItem: React.FC<QuestionProps> = ({
   const setQuestion = (question: ReimbursementQuestion) => {
     const questionIndex = values?.findIndex((value) => value?.slug == question.slug)
     values[questionIndex] = question
-    setValues(JSON.parse(JSON.stringify(values)))
+    setValues(cloneDeep(values))
   }
 
   const getTotalAmount = (): number => {
@@ -376,7 +377,7 @@ export const QuestionItem: React.FC<QuestionProps> = ({
                 sx={{
                   borderBottom:
                     showError && question?.required && !signatureFileUrl && signatureRef?.isEmpty()
-                      ? `1px solid ${MthColor.ERROR_RED}`
+                      ? `1px solid ${MthColor.RED}`
                       : `1px solid ${MthColor.BLACK}`,
                   mx: 'auto',
                   width: 500,
@@ -456,7 +457,7 @@ export const QuestionItem: React.FC<QuestionProps> = ({
                   cursor: 'pointer',
                   fontSize: '14px',
                   paddingY: 1,
-                  color: showError && question?.required && !question.answer ? MthColor.ERROR_RED : '',
+                  color: showError && question?.required && !question.answer ? MthColor.RED : '',
                 }}
               >
                 {extractContent(question?.question)}

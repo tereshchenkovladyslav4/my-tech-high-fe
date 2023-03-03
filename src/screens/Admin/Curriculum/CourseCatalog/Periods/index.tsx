@@ -84,6 +84,11 @@ const Periods: React.FC = () => {
     selectedYear: schoolYearData,
     dropdownItems: schoolYearDropdownItems,
   } = useSchoolYearsByRegionId()
+
+  const reduceFundsEnabled = useMemo(() => {
+    return !!defaultReduceFunds(schoolYearData)
+  }, [schoolYearData])
+
   // Modal for Archive, Unarchive, Delete
   const [modalWarning, setModalWarning] = useState<'delete' | 'unarchive' | 'archive' | ''>('')
   const [modalErrorGradeValidation, setModalErrorGradeValidation] = useState<boolean>(false)
@@ -665,7 +670,7 @@ const Periods: React.FC = () => {
                   InputLabelProps={{ shrink: true, sx: classes.textLabel }}
                   SelectProps={{ displayEmpty: true }}
                   select
-                  disabled={!defaultReduceFunds(schoolYearData)}
+                  disabled={!reduceFundsEnabled}
                 >
                   {REDUCE_FUNDS_ITEMS.map((option) => (
                     <MenuItem key={option.value} value={option.value}>
@@ -687,11 +692,15 @@ const Periods: React.FC = () => {
                     formik.setFieldValue('price', value)
                   }}
                   error={formik.touched.price && !!formik.errors.price}
-                  disabled={!formik.values?.reduce_funds || formik.values?.reduce_funds === ReduceFunds.NONE}
+                  disabled={
+                    !formik.values?.reduce_funds ||
+                    formik.values?.reduce_funds === ReduceFunds.NONE ||
+                    !reduceFundsEnabled
+                  }
                 />
                 <Subtitle
                   sx={{
-                    color: MthColor.ERROR_RED,
+                    color: MthColor.RED,
                     fontSize: '12px',
                     fontWeight: 400,
                     lineHeight: '20px',

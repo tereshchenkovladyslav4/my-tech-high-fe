@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useQuery } from '@apollo/client'
-import { groupBy, keyBy } from 'lodash'
+import { cloneDeep, groupBy, keyBy } from 'lodash'
 import { COURSE_TYPE_ITEMS } from '@mth/constants'
 import { CourseType, ScheduleStatus } from '@mth/enums'
 import { SchedulePeriod } from '@mth/graphql/models/schedule-period'
@@ -158,7 +158,7 @@ export const makeScheduleData = (
     const firstSchedulePeriods: SchedulePeriod[] = schedulePeriods.filter(
       (item: SchedulePeriod) => !item.Schedule.is_second_semester,
     )
-    firstScheduleDataArray = JSON.parse(JSON.stringify(scheduleDataArray))
+    firstScheduleDataArray = cloneDeep(scheduleDataArray)
     firstScheduleDataArray.map((item) => {
       const schedulePeriod = firstSchedulePeriods.find(
         (x) => item.Periods.findIndex((period) => period.id === x.PeriodId) > -1,
@@ -171,7 +171,7 @@ export const makeScheduleData = (
     )
     if (secondSchedulePeriods?.length) {
       hasSecondSemesterSchedule = secondSchedulePeriods[0]?.Schedule?.status !== ScheduleStatus.DRAFT
-      secondScheduleDataArray = JSON.parse(JSON.stringify(scheduleDataArray))
+      secondScheduleDataArray = cloneDeep(scheduleDataArray)
       secondScheduleDataArray.map((item) => {
         const schedulePeriod = secondSchedulePeriods.find(
           (x) => item.Periods.findIndex((period) => period.id === x.PeriodId) > -1,
@@ -180,7 +180,7 @@ export const makeScheduleData = (
       })
     } else {
       hasSecondSemesterSchedule = false
-      secondScheduleDataArray = JSON.parse(JSON.stringify(firstScheduleDataArray))
+      secondScheduleDataArray = cloneDeep(firstScheduleDataArray)
       secondScheduleDataArray.map((item) => delete item.schedulePeriodId)
     }
 

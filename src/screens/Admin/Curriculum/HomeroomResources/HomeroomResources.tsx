@@ -3,6 +3,7 @@ import { useMutation, useQuery } from '@apollo/client'
 import ArrowBackIosOutlinedIcon from '@mui/icons-material/ArrowBackIosOutlined'
 import EditIcon from '@mui/icons-material/Edit'
 import { Box, ButtonBase, Grid, Stack, Typography } from '@mui/material'
+import { cloneDeep } from 'lodash'
 import moment from 'moment'
 import { useHistory } from 'react-router-dom'
 import { arrayMove, SortableContainer, SortableElement } from 'react-sortable-hoc'
@@ -224,7 +225,7 @@ export const HomeroomResources: React.FC = () => {
 
   useEffect(() => {
     const colors = ['blue', 'orange']
-    const items: HomeroomResource[] = JSON.parse(JSON.stringify(resources))
+    const items: HomeroomResource[] = cloneDeep(resources)
     items?.filter((item) => !item.image).map((item, index) => (item.background = colors[index % 2]))
     if (!isPast())
       setVisibleResources([

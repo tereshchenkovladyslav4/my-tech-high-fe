@@ -17,7 +17,6 @@ export enum MthColor {
   GRAY = '#CCCCCC',
   LIGHTGRAY = '#F2F2F2',
   BLACK = '#000000',
-  ERROR_RED = '#BD0043',
   MTHBLUE = '#4145FF',
   MTHBLUE_DISABLED = '#4145FF80',
   MTHPURPLE = '#3E2783',
