@@ -295,9 +295,11 @@ const WithdrawalPage: React.FC<WithdrawalPageProps> = ({
         <WarningModal
           handleModem={() => setSelectError(false)}
           title='Error'
-          subtitle="You may only select multiple withdrawal's with the same program year."
+          subtitle='You may only select multiple withdrawals with the same program year.'
           btntitle='OK'
           handleSubmit={() => setSelectError(false)}
+          textCenter
+          modalWidth='460px'
         />
       )}
     </Card>

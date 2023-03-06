@@ -500,11 +500,11 @@ export const StudentFilters: React.FC<StudentFiltersProps> = ({
             <Box>
               <Select
                 className={
-                  studentStatusData?.status === StudentStatus.WITHDRAWN
+                  studentStatusData?.status != StudentStatus.WITHDRAWN
                     ? withdrawalStatus?.status == 'Requested'
                       ? selectClasses.yellowBackgroundSelect
-                      : selectClasses.withdrawBackgroundSelect
-                    : selectClasses.backgroundSelect
+                      : selectClasses.backgroundSelect
+                    : selectClasses.withdrawBackgroundSelect
                 }
                 IconComponent={KeyboardArrowDown}
                 inputProps={{
@@ -531,7 +531,7 @@ export const StudentFilters: React.FC<StudentFiltersProps> = ({
                   </MenuItem>
                 ))}
               </Select>
-              {studentStatusData?.status === StudentStatus.WITHDRAWN && withdrawalStatus?.status == 'Requested' && (
+              {withdrawalStatus?.status == 'Requested' && (
                 <Box onClick={() => onRemoveWithdrawalRequest()}>
                   <Paragraph sx={{ color: MthColor.MTHBLUE, my: '5px', cursor: 'pointer' }} textAlign='center'>
                     Remove Withdraw Request

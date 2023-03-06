@@ -436,8 +436,11 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
 
   useEffect(() => {
     if (withdrawalStatusData && withdrawalStatusData.withdrawalStatus.error === false) {
-      if (withdrawalStatusData.withdrawalStatus.results.length > 0)
+      if (withdrawalStatusData.withdrawalStatus.results.length > 0) {
         setWithdrawalStatus(withdrawalStatusData.withdrawalStatus.results[0])
+      } else {
+        setWithdrawalStatus(undefined)
+      }
     }
   }, [withdrawalStatusData])
 

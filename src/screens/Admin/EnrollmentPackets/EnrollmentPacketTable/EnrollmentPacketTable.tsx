@@ -730,9 +730,11 @@ export const EnrollmentPacketTable: React.FC = () => {
         <WarningModal
           handleModem={() => setSelectingError(false)}
           title='Error'
-          subtitle='You may only select multiple student’s with the same program year.'
+          subtitle='You may only select multiple students with the same program year.'
           btntitle='OK'
           handleSubmit={() => setSelectingError(false)}
+          textCenter
+          modalWidth='460px'
         />
       )}
     </Card>
