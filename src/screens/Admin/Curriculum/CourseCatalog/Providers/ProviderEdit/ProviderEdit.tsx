@@ -95,15 +95,29 @@ const ProviderEdit: React.FC<ProviderEditProps> = ({
 
       const objPriority = Number(obj.priority)
 
-      return array.map((item) => {
-        if (item.id === obj.id) {
-          return { ...item, priority: pastPriority }
-        }
-        if (item.priority <= pastPriority && item.priority > objPriority) {
-          return { ...item, priority: item.priority - 1 }
-        }
-        return item
-      })
+      if (objPriority < pastPriority) {
+        return array.map((item) => {
+          if (item.id === obj.id) {
+            return { ...item, priority: pastPriority }
+          }
+          if (item.priority <= pastPriority && item.priority > objPriority) {
+            return { ...item, priority: item.priority - 1 }
+          }
+          return item
+        })
+      } else if (objPriority > pastPriority) {
+        return array.map((item) => {
+          if (item.id === obj.id) {
+            return { ...item, priority: pastPriority + 1 }
+          }
+          if (item.priority > pastPriority && item.priority < objPriority) {
+            return { ...item, priority: item.priority + 1 }
+          }
+          return item
+        })
+      } else {
+        return array
+      }
     } else {
       return sortedByName.map((p, index) => {
         return { ...p, priority: index + 1 }
@@ -123,9 +137,8 @@ const ProviderEdit: React.FC<ProviderEditProps> = ({
       multiple_periods: value.multiple_periods,
       multi_periods_notification: value.multi_periods_notification,
       periods: value.PeriodIds?.join(','),
-      priority: providers?.find((p) => p.id === Number(value.id))?.priority,
+      priority: value?.priority,
     }
-
     const sortedData = sortData(
       dataToSave?.id
         ? (providers ?? []).map((p) => {
@@ -138,12 +151,13 @@ const ProviderEdit: React.FC<ProviderEditProps> = ({
       dataToSave,
     )
 
-    await submitSave({
-      variables: {
-        createProviderInput: sortedData.find((obj) => obj.name.includes(value.name)),
-      },
-    })
-      .then(() => {
+    try {
+      await submitSave({
+        variables: {
+          createProviderInput: sortedData.find((obj) => obj.name.includes(value.name)),
+        },
+      })
+      await Promise.all(
         sortedData
           .filter((obj) => !obj.name.includes(value.name))
           .map(async (obj) => {
@@ -155,15 +169,15 @@ const ProviderEdit: React.FC<ProviderEditProps> = ({
                 },
               },
             })
-          })
-        setIsSubmitted(false)
-        setIsChanged(false)
-        refetch()
-        setShowEditModal(false)
-      })
-      .catch(() => {
-        setIsSubmitted(false)
-      })
+          }),
+      )
+      setIsSubmitted(false)
+      setIsChanged(false)
+      refetch()
+      setShowEditModal(false)
+    } catch (error) {
+      setIsSubmitted(false)
+    }
   }
 
   useEffect(() => {

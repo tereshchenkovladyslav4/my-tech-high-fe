@@ -11,7 +11,7 @@ import Slider from 'react-slick'
 import { Metadata } from '@mth/components/Metadata/Metadata'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
-import { MthRoute, StudentStatus } from '@mth/enums'
+import { MthColor, MthRoute, StudentStatus } from '@mth/enums'
 import { becomeUserMutation } from '@mth/graphql/mutation/user'
 import { Student } from '@mth/models'
 import { UserInfo } from '@mth/providers/UserContext/UserProvider'
@@ -154,15 +154,21 @@ export const Students: React.FC<StudentsProps> = ({ students, selectedStudent, h
                     <Metadata
                       title={
                         <Subtitle
-                          fontWeight='700'
-                          color={selectedStudent === parseInt(item.student_id) ? '#4145FF' : '#cccccc'}
+                          fontWeight='600'
+                          color={selectedStudent === parseInt(item.student_id) ? MthColor.MTHBLUE : MthColor.SYSTEM_01}
                         >
                           {item.person.first_name}
                         </Subtitle>
                       }
                       subtitle={
                         <Box display={'flex'} flexDirection='row' alignItems={'center'} alignContent='center'>
-                          <Paragraph color='#cccccc' size={'large'}>
+                          <Paragraph
+                            fontWeight='600'
+                            color={
+                              selectedStudent === parseInt(item.student_id) ? MthColor.MTHBLUE : MthColor.SYSTEM_11
+                            }
+                            sx={{ fontSize: '16px' }}
+                          >
                             {item.grade_levels.length &&
                             item.grade_levels[0].grade_level &&
                             item.grade_levels[0].grade_level.includes('K')

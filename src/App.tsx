@@ -34,6 +34,7 @@ declare global {
       SNOWPACK_PUBLIC_FEATURE_FLAG_CLIENT_KEY: string
       SNOWPACK_PUBLIC_FEATURE_FLAG_APP_NAME: string
       SNOWPACK_PUBLIC_FEATURE_FLAG_ENV: string
+      SNOWPACK_PUBLIC_APP_STAGE: string
     }
   }
 }

@@ -1,16 +1,18 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Box, Button, Modal, TextField } from '@mui/material'
 import { ContentState, EditorState } from 'draft-js'
 import htmlToDraft from 'html-to-draftjs'
 import { MthBulletEditor } from '@mth/components/MthBulletEditor'
 import { MthCheckboxList } from '@mth/components/MthCheckboxList'
 import { QuestionTypes } from '@mth/constants'
+import { ChecklistEnum } from '@mth/enums'
 import { mthButtonClasses } from '@mth/styles/button.style'
 import { questionCheckboxList } from '../../LearningLogs/defaultValue'
 import { LearningLogQuestion } from '../../LearningLogs/types'
 import AddCheckListModal from './AddCheckListModal'
 import AddExcuseQuestionModal from './AddExcuseQuestionModal'
 import { addNewQuestionClasses } from './styles'
+
 export type AddNewQuestionModalProps = {
   questions?: LearningLogQuestion[]
   type: string
@@ -64,7 +66,7 @@ const AddNewQuestionModal: React.FC<AddNewQuestionModalProps> = ({
     }
   }
 
-  if (type === 'Subject Checklist') {
+  if (type === ChecklistEnum.SUBJECT) {
     return <AddCheckListModal onClose={onClose} schoolYearId={schoolYearId} onSave={onSave} />
   }
 
@@ -72,6 +74,12 @@ const AddNewQuestionModal: React.FC<AddNewQuestionModalProps> = ({
     return <AddExcuseQuestionModal onClose={onClose} onSave={onSave} />
   }
 
+  useEffect(() => {
+    if (questions && questions.length > 0) {
+      setQuestion(questions[0].question)
+      setCheckboxList(questions[0]?.validations ?? [])
+    }
+  }, [questions])
   return (
     <Modal open={true} onClose={onClose} aria-labelledby='modal-modal-title' aria-describedby='modal-modal-description'>
       <Box sx={addNewQuestionClasses.modalContainer}>

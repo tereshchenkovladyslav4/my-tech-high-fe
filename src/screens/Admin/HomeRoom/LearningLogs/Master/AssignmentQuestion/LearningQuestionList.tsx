@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import DehazeIcon from '@mui/icons-material/Dehaze'
 import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined'
 import EditIcon from '@mui/icons-material/Edit'
@@ -18,14 +18,12 @@ import { SortableHandle } from 'react-sortable-hoc'
 import { arrayMove, SortableContainer, SortableElement } from 'react-sortable-hoc'
 import { DropDown } from '@mth/components/DropDown/DropDown'
 import { MthBulletEditor } from '@mth/components/MthBulletEditor'
-import { MthCheckboxList } from '@mth/components/MthCheckboxList'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
 import { QuestionTypes } from '@mth/constants'
 import { MthColor } from '@mth/enums'
 import { mthButtonClasses } from '@mth/styles/button.style'
 import { extractContent } from '@mth/utils'
-import { defaultIndependentQuestion } from '../../defaultValue'
 import { LearningLogQuestion } from '../../types'
 import { LearningQuestionType } from '../types'
 import SubjectQuestion from './SubjectQuestion'
@@ -44,7 +42,6 @@ const LearningQuestionItem = ({
   setIsCustomeQuestionModal: (val: boolean) => void
 }) => {
   const { values, setValues } = useFormikContext<LearningQuestionType[]>()
-  const [checkboxIndependent, setCheckboxIndependent] = useState<string[]>([])
   const handleChange = (value) => {
     const q = question[0]
     if (q.type == QuestionTypes.CHECK_BOX) {
@@ -254,18 +251,7 @@ const LearningQuestionItem = ({
           </Box>
         )
       case QuestionTypes.INDEPENDENT_QUESTION:
-        return (
-          <Box>
-            <MthCheckboxList
-              values={checkboxIndependent}
-              setValues={(value) => {
-                setCheckboxIndependent(value)
-              }}
-              checkboxLists={defaultIndependentQuestion}
-              haveSelectAll={false}
-            />
-          </Box>
-        )
+        return <SubjectQuestion question={question[0]} schoolYearId={schoolYearId} />
       default:
         return null
     }

@@ -63,15 +63,29 @@ const SubjectEdit: React.FC<SubjectEditProps> = ({ schoolYearId, item, subjects,
 
       const objPriority = Number(obj.priority)
 
-      return array.map((item) => {
-        if (item.subject_id === obj.subject_id) {
-          return { ...item, priority: pastPriority }
-        }
-        if (item.priority <= pastPriority && item.priority > objPriority) {
-          return { ...item, priority: item.priority - 1 }
-        }
-        return item
-      })
+      if (objPriority < pastPriority) {
+        return array.map((item) => {
+          if (item.subject_id === obj.subject_id) {
+            return { ...item, priority: pastPriority }
+          }
+          if (item.priority <= pastPriority && item.priority > objPriority) {
+            return { ...item, priority: item.priority - 1 }
+          }
+          return item
+        })
+      } else if (objPriority > pastPriority) {
+        return array.map((item) => {
+          if (item.subject_id === obj.subject_id) {
+            return { ...item, priority: pastPriority + 1 }
+          }
+          if (item.priority > pastPriority && item.priority < objPriority) {
+            return { ...item, priority: item.priority + 1 }
+          }
+          return item
+        })
+      } else {
+        return array
+      }
     } else {
       return sortedByName.map((s, index) => {
         return { ...s, priority: index + 1 }
@@ -100,12 +114,14 @@ const SubjectEdit: React.FC<SubjectEditProps> = ({ schoolYearId, item, subjects,
         : [...(subjects ?? []), dataToSave],
       dataToSave,
     )
-    await submitSave({
-      variables: {
-        createSubjectInput: sortedData.find((obj) => obj.name.includes(value.name)),
-      },
-    })
-      .then(() => {
+
+    try {
+      await submitSave({
+        variables: {
+          createSubjectInput: sortedData.find((obj) => obj.name.includes(value.name)),
+        },
+      })
+      await Promise.all(
         sortedData
           .filter((obj) => !obj.name.includes(value.name))
           .map(async (obj) => {
@@ -117,15 +133,15 @@ const SubjectEdit: React.FC<SubjectEditProps> = ({ schoolYearId, item, subjects,
                 },
               },
             })
-          })
-        setIsSubmitted(false)
-        setIsChanged(false)
-        refetch()
-        setShowEditModal(false)
-      })
-      .catch(() => {
-        setIsSubmitted(false)
-      })
+          }),
+      )
+      setIsSubmitted(false)
+      setIsChanged(false)
+      refetch()
+      setShowEditModal(false)
+    } catch (error) {
+      setIsSubmitted(false)
+    }
   }
 
   useEffect(() => {

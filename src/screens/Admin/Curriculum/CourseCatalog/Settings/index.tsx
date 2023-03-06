@@ -58,7 +58,7 @@ const Settings: React.FC = () => {
 
   const orderedList = 0
   const unorderedList = 1
-  const baseBullets = [[1], ['•', '▫', '▪']]
+  const baseBullets = [[1], ['●', '⚬', '▪', '▪', '▪', '▪']]
   const leavingLevel = 0
   const initiatingLevel = 1
   const crossingLevel = 2
@@ -84,7 +84,7 @@ const Settings: React.FC = () => {
           if (type === orderedList) {
             listEntriesLastIdx[type] = [1]
           } else {
-            listEntriesLastIdx[type] = ['•']
+            listEntriesLastIdx[type] = ['●']
           }
         }
         listEntriesLastIdx[type][depth] = getSisterBullet(

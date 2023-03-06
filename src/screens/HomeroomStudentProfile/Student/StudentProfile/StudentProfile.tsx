@@ -307,7 +307,7 @@ export const StudentProfile: undefined | React.FC<StudentProfileProps> = ({ curr
                       flexDirection='column'
                       justifyContent='center'
                       marginLeft={4}
-                      color={MthColor.GRAY}
+                      color={MthColor.SYSTEM_05}
                     >
                       <Title>{gradeText(student)}</Title>
                       {/*{ status !== PacketStatus.MISSING_INFO && status !== 'Submitted' && <Title>GPA</Title>}*/}
@@ -319,12 +319,12 @@ export const StudentProfile: undefined | React.FC<StudentProfileProps> = ({ curr
                 {status !== PacketStatus.MISSING_INFO && status !== 'Submitted' && (
                   <Box display='flex' flexDirection='column' justifyContent='end' alignItems='end' height='100%'>
                     <Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between'>
-                      <Subtitle size='large' fontWeight='700' color={MthColor.GRAY}>
+                      <Subtitle size='large' fontWeight='700' color={MthColor.SYSTEM_05}>
                         {MthTitle.FIRST_SEMESTER}
                       </Subtitle>
                     </Box>
                     <Box display='flex' flexDirection='row' alignItems='center'>
-                      <Subtitle size='large' fontWeight='700' color={MthColor.GRAY}>
+                      <Subtitle size='large' fontWeight='700' color={MthColor.SYSTEM_05}>
                         {MthTitle.SECOND_SEMESTER}
                       </Subtitle>
                     </Box>
@@ -552,7 +552,7 @@ export const StudentProfile: undefined | React.FC<StudentProfileProps> = ({ curr
                     flexDirection='column'
                     justifyContent='center'
                     marginLeft={2}
-                    color={MthColor.GRAY}
+                    color={MthColor.SYSTEM_05}
                   >
                     <Subtitle size='small' fontWeight='700'>
                       {gradeText(student)}
@@ -565,12 +565,12 @@ export const StudentProfile: undefined | React.FC<StudentProfileProps> = ({ curr
               {status !== PacketStatus.MISSING_INFO && status !== 'Submitted' && (
                 <Box display='flex' flexDirection='column' justifyContent='start' alignItems='start' height='100%'>
                   <Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between'>
-                    <Subtitle fontWeight='700' color={MthColor.GRAY}>
+                    <Subtitle fontWeight='700' color={MthColor.SYSTEM_05}>
                       {MthTitle.FIRST_SEMESTER}
                     </Subtitle>
                   </Box>
                   <Box display='flex' flexDirection='row' alignItems='center'>
-                    <Subtitle fontWeight='700' color={MthColor.GRAY}>
+                    <Subtitle fontWeight='700' color={MthColor.SYSTEM_05}>
                       {MthTitle.SECOND_SEMESTER}
                     </Subtitle>
                   </Box>

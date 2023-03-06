@@ -1,9 +1,13 @@
+const env = import.meta.env.SNOWPACK_PUBLIC_APP_STAGE
+export const exampleFeatureFlag = `epic_123_story_456_${env}`
+
 // MARK Epic Feature Flag
 export const EPIC_1699 = 'epic_1699'
 export const EPIC_1396 = 'epic_1396'
 export const EPIC_1182 = 'epic_1182'
 export const EPIC_1396_STORY_1486 = 'epic_1396_story_1486'
 export const EPIC_1396_STORY_1568 = 'epic_1396_story_1568'
+export const EPIC_667_STORY_1387 = 'epic_667_story_1387'
 export const EPIC_1396_STORY_1576 = 'epic_1396_story_1576'
 
 // MARK Epic Story Feature Flag

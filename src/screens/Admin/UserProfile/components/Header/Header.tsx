@@ -8,7 +8,7 @@ import { useHistory } from 'react-router-dom'
 import { Metadata } from '@mth/components/Metadata/Metadata'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
-import { MthRoute } from '@mth/enums'
+import { MthColor, MthRoute } from '@mth/enums'
 import { becomeUserMutation } from '@mth/graphql/mutation/user'
 import { UserInfo } from '@mth/providers/UserContext/UserProvider'
 
@@ -67,14 +67,18 @@ export const Header: React.FC<HeaderProps> = ({
         <Metadata
           title={
             userData && (
-              <Subtitle fontWeight='700' color={selectedParent === parseInt(parentId) ? '#4145FF' : '#cccccc'}>
+              <Subtitle
+                fontWeight='800'
+                color={selectedParent === parseInt(parentId) ? MthColor.MTHBLUE : MthColor.SYSTEM_01}
+                size='medium'
+              >
                 {userData.first_name} {userData.last_name}
               </Subtitle>
             )
           }
           subtitle={
             <Box display={'flex'} flexDirection='row' alignItems={'center'} alignContent='center'>
-              <Paragraph color='#cccccc' size={'large'}>
+              <Paragraph fontWeight='600' color={MthColor.SYSTEM_11} sx={{ fontSize: '16px' }}>
                 Parent
               </Paragraph>
               {selectedParent === parseInt(parentId) && Boolean(me.masquerade) && (
@@ -107,13 +111,17 @@ export const Header: React.FC<HeaderProps> = ({
         >
           <Metadata
             title={
-              <Subtitle fontWeight='700' color={selectedParent === parseInt(item.observer_id) ? '#4145FF' : '#cccccc'}>
+              <Subtitle
+                fontWeight='800'
+                color={selectedParent === parseInt(item.observer_id) ? MthColor.MTHBLUE : MthColor.SYSTEM_01}
+                size='medium'
+              >
                 {item.person.first_name} {item.person.last_name}
               </Subtitle>
             }
             subtitle={
               <Box display={'flex'} flexDirection='row' alignItems={'center'} alignContent='center'>
-                <Paragraph color='#cccccc' size={'large'}>
+                <Paragraph fontWeight='600' color={MthColor.SYSTEM_11} sx={{ fontSize: '16px' }}>
                   Observer
                 </Paragraph>
                 {selectedParent === parseInt(parentId) && Boolean(me.masquerade) && (

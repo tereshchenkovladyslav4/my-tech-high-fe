@@ -6,16 +6,18 @@ import { DropDownItem } from '@mth/components/DropDown/types'
 import { FormError } from '@mth/components/FormError'
 import { CheckBoxListVM, MthCheckboxList } from '@mth/components/MthCheckboxList'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { QuestionTypes } from '@mth/constants'
 import { ChecklistEnum, RoleLevel } from '@mth/enums'
 import { CheckListVM, LearningLogQuestion } from '@mth/models'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { extractContent } from '@mth/utils/string.util'
+import { CheckListField } from '../../../CheckList/types'
 import { getChecklistQuery } from '../../../services'
 import { LearningQuestionType } from '../types'
 
 type SubjectQuestionProp = {
   question: LearningQuestionType | LearningLogQuestion
-  schoolYearId: number
+  schoolYearId?: number
   showError?: boolean
   handleChangeValue?: (question: LearningLogQuestion) => void
 }
@@ -28,7 +30,8 @@ const SubjectQuestion: React.FC<SubjectQuestionProp> = ({ question, schoolYearId
   const [goalList, setGoalList] = useState<CheckBoxListVM[]>([])
   const [subjectCheckList, setSubjectCheckList] = useState<CheckListVM[]>([])
   const [selectedSubject, setSelectedSubject] = useState<string>('')
-
+  const [independentOptions, setIndependentOptions] = useState<CheckBoxListVM[]>([])
+  const [selectedIndependent, setSelectedIndependent] = useState<string[]>([])
   const [getCheckList, { data: checkListData, loading: checkListLoading }] = useLazyQuery(getChecklistQuery)
 
   const subjectList = useMemo(() => {
@@ -60,30 +63,20 @@ const SubjectQuestion: React.FC<SubjectQuestionProp> = ({ question, schoolYearId
   }
 
   useEffect(() => {
-    if (schoolYearId && question.grades) {
-      if (roleLevel === RoleLevel.SUPER_ADMIN) {
-        getCheckList({
-          variables: {
-            take: -1,
-            regionId: me?.selectedRegionId,
-            filter: {
-              status: ChecklistEnum.SUBJECT,
-              selectedYearId: schoolYearId,
-            },
+    if (schoolYearId) {
+      getCheckList({
+        variables: {
+          take: -1,
+          regionId: roleLevel === RoleLevel.SUPER_ADMIN ? me?.selectedRegionId : me?.userRegion?.at(0)?.region_id,
+          filter: {
+            status:
+              question.type === QuestionTypes.SUBJECT_QUESTION && question.grades
+                ? ChecklistEnum.SUBJECT
+                : ChecklistEnum.INDEPENDENT,
+            selectedYearId: schoolYearId,
           },
-        })
-      } else {
-        getCheckList({
-          variables: {
-            take: -1,
-            regionId: me?.userRegion?.at(0)?.region_id,
-            filter: {
-              status: ChecklistEnum.SUBJECT,
-              selectedYearId: schoolYearId,
-            },
-          },
-        })
-      }
+        },
+      })
     }
   }, [roleLevel, schoolYearId, question])
 
@@ -91,6 +84,13 @@ const SubjectQuestion: React.FC<SubjectQuestionProp> = ({ question, schoolYearId
     if (!checkListLoading && checkListData?.checklist) {
       const { checklist } = checkListData
       setSubjectCheckList(checklist.results)
+      if (question.type === QuestionTypes.INDEPENDENT_QUESTION) {
+        setIndependentOptions(
+          checklist.results.map((obj: CheckListField) => {
+            return { label: obj?.goal ?? '', value: obj?.id?.toString() }
+          }),
+        )
+      }
     }
   }, [checkListLoading, checkListData])
 
@@ -105,7 +105,6 @@ const SubjectQuestion: React.FC<SubjectQuestionProp> = ({ question, schoolYearId
       }
     }
   }, [selectedSubject, subjectList, question])
-
   return (
     <Box>
       {roleLevel !== RoleLevel.SUPER_ADMIN && (
@@ -113,54 +112,69 @@ const SubjectQuestion: React.FC<SubjectQuestionProp> = ({ question, schoolYearId
           {`${extractContent(question?.question)} ${question?.required ? '*' : ''}`}
         </Subtitle>
       )}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-        {question?.grades == 'all' && (
-          <Box sx={{ width: '40%' }}>
-            <DropDown
-              labelTop
-              dropDownItems={subjectList}
-              defaultValue={selectedSubject}
-              placeholder='Subject'
-              setParentValue={(val) => handleSelectSubject(`${val}`)}
-              error={{
-                error: showError && question?.required && !selectedSubject,
-                errorMsg: 'Required',
-              }}
-            />
-          </Box>
-        )}
-        {selectedSubject && (
-          <Box sx={{ width: '40%' }}>
-            <DropDown
-              labelTop
-              dropDownItems={gradeList}
-              defaultValue={selectedGrade}
-              placeholder='Grade Level'
-              setParentValue={(val) => handleSelectGrade(+val)}
-              error={{
-                error: showError && question?.required && !selectedGrade,
-                errorMsg: 'Required',
-              }}
-            />
-          </Box>
-        )}
-      </Box>
-      {!!selectedGrade && (
-        <Box sx={{ mt: 2 }}>
+      {question.type === QuestionTypes.INDEPENDENT_QUESTION ? (
+        <Box>
           <MthCheckboxList
             setValues={(values) => {
-              if (handleChangeValue)
-                handleChangeValue({
-                  ...(question as LearningLogQuestion),
-                  answer: JSON.stringify(values),
-                })
+              setSelectedIndependent(values)
             }}
-            checkboxLists={goalList}
+            checkboxLists={independentOptions}
             haveSelectAll={false}
-            values={question?.answer ? JSON.parse(question.answer as string) : []}
+            values={selectedIndependent}
           />
-          {showError && question?.required && question?.answer == undefined && <FormError error={'Required'} />}
         </Box>
+      ) : (
+        <>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+            {question?.grades == 'all' && (
+              <Box sx={{ width: '40%' }}>
+                <DropDown
+                  labelTop
+                  dropDownItems={subjectList}
+                  defaultValue={selectedSubject}
+                  placeholder='Subject'
+                  setParentValue={(val) => handleSelectSubject(`${val}`)}
+                  error={{
+                    error: showError && question?.required && !selectedSubject,
+                    errorMsg: 'Required',
+                  }}
+                />
+              </Box>
+            )}
+            {selectedSubject && (
+              <Box sx={{ width: '40%' }}>
+                <DropDown
+                  labelTop
+                  dropDownItems={gradeList}
+                  defaultValue={selectedGrade}
+                  placeholder='Grade Level'
+                  setParentValue={(val) => handleSelectGrade(+val)}
+                  error={{
+                    error: showError && question?.required && !selectedGrade,
+                    errorMsg: 'Required',
+                  }}
+                />
+              </Box>
+            )}
+          </Box>
+          {!!selectedGrade && (
+            <Box sx={{ mt: 2 }}>
+              <MthCheckboxList
+                setValues={(values) => {
+                  if (handleChangeValue)
+                    handleChangeValue({
+                      ...(question as LearningLogQuestion),
+                      answer: JSON.stringify(values),
+                    })
+                }}
+                checkboxLists={goalList}
+                haveSelectAll={false}
+                values={question?.answer ? JSON.parse(question.answer as string) : []}
+              />
+              {showError && question?.required && question?.answer == undefined && <FormError error={'Required'} />}
+            </Box>
+          )}
+        </>
       )}
     </Box>
   )

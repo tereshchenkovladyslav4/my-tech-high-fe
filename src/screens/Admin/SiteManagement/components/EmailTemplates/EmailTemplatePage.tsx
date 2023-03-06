@@ -324,18 +324,20 @@ export const EmailTemplatePage: React.FC<{ onBackPress?: () => void }> = ({ onBa
   const editSave = (selIndex: number, title: string, text: string) => {
     let newStandardRes
     if (selIndex !== -1) {
-      newStandardRes = standardRes.map((res, index) => {
-        if (index === selIndex) {
-          return {
-            title,
-            text,
+      newStandardRes = standardRes
+        .filter((item) => item.title)
+        .map((res, index) => {
+          if (index === selIndex) {
+            return {
+              title,
+              text,
+            }
+          } else {
+            return res
           }
-        } else {
-          return res
-        }
-      })
+        })
     } else {
-      newStandardRes = [...standardRes, { title, text }]
+      newStandardRes = [...standardRes.filter((item) => item.title), { title, text }]
     }
     setStandardRes(newStandardRes)
     setEditReponseModal(false)

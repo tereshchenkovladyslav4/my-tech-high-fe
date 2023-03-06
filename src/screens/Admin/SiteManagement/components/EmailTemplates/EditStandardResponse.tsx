@@ -1,6 +1,9 @@
 import React, { useState } from 'react'
 import { Box, Button, Modal, TextField } from '@mui/material'
 import { MthBulletEditor } from '@mth/components/MthBulletEditor'
+import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { MthColor } from '@mth/enums'
+import { extractContent } from '@mth/utils'
 import { useStyles } from './standardStyles'
 import { EditStandardResProp } from './types'
 
@@ -10,8 +13,33 @@ export const EditStandardResponse: React.FC<EditStandardResProp> = ({ response, 
   const [title, setTitle] = useState<string>(response.title)
   const [text, setText] = useState<string>(response.text)
 
+  const [error, setError] = useState<{
+    title: boolean
+    text: boolean
+  }>({
+    title: false,
+    text: false,
+  })
+
   const handleSave = () => {
-    onSave(selResponseIdx, title, text)
+    if (!title && extractContent(text).length <= 1) {
+      setError({
+        text: true,
+        title: true,
+      })
+    } else if (!title) {
+      setError({
+        ...error,
+        title: true,
+      })
+    } else if (extractContent(text).length <= 1) {
+      setError({
+        ...error,
+        text: true,
+      })
+    } else {
+      onSave(selResponseIdx, title, text)
+    }
   }
   return (
     <Modal open={true} onClose={onClose} aria-labelledby='modal-modal-title' aria-describedby='modal-modal-description'>
@@ -24,9 +52,36 @@ export const EditStandardResponse: React.FC<EditStandardResProp> = ({ response, 
             fullWidth
             value={title}
             sx={{ my: 1, maxWidth: '50%' }}
-            onChange={(e) => setTitle(e.target.value)}
+            onChange={(e) => {
+              setError({
+                ...error,
+                title: false,
+              })
+              setTitle(e.target.value)
+            }}
+            error={error.title}
+            helperText={error.title && 'Required'}
           />
-          <MthBulletEditor value={text} setValue={(value) => setText(value)} maxHeight='350px' />
+          <MthBulletEditor
+            value={text}
+            setValue={(value) => {
+              setError({
+                ...error,
+                text: false,
+              })
+              setText(value)
+            }}
+            maxHeight='350px'
+            error={error.text}
+          />
+          {error.text && (
+            <Subtitle
+              size='small'
+              sx={{ marginLeft: '16px', fontSize: '0.75rem', textAlign: 'start', color: MthColor.RED }}
+            >
+              Required
+            </Subtitle>
+          )}
         </Box>
         <Box sx={classes.btnGroup}>
           <Button sx={classes.cancelBtn} onClick={onClose}>

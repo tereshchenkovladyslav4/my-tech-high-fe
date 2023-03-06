@@ -82,6 +82,19 @@ const selectStyles = makeStyles({
       display: 'none',
     },
   },
+  selectSoE: {
+    height: '35px',
+    textAlign: 'left',
+    minWidth: '100px',
+    '& svg': {
+      color: MthColor.SYSTEM_01,
+    },
+    '& .MuiInputBase-input': { padding: '5px 0px' },
+    '& .MuiOutlinedInput-notchedOutline': {
+      borderColor: 'red',
+      display: 'none',
+    },
+  },
   backgroundSelect: {
     fontSize: '12px',
     borderRadius: '15px',
@@ -565,50 +578,50 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
             />
             <Box
               sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                width: '100%',
                 textAlign: 'left',
               }}
             >
-              <Title textAlign='left' fontWeight='700' color={MthColor.MTHBLUE}>
+              <Title textAlign='left' fontWeight='500' color={MthColor.MTHBLUE}>
                 {legalFirstName} {legalLastName}
               </Title>
-              {/* <Subtitle textAlign='left' fontWeight='700'>
-                {gradeLevel.includes('K') ? 'K' : ordinal(gradeLevel)} Grade
-              </Subtitle> */}
-              <Select
-                IconComponent={KeyboardArrowDown}
-                className={classes.select}
-                value={String(gradeLevel).includes('K') ? 'Kindergarten' : gradeLevel}
-                sx={{ color: '#cccccc', fontWeight: '700' }}
-                onChange={(e) => {
-                  setGradeLevel(e.target.value)
-                  setIsChanged(true)
-                  setStudentStatus({ ...studentStatus, ...{ grade_level: e.target.value } })
-                }}
-              >
-                <MenuItem value='Kindergarten'>Kindergarten</MenuItem>
-                {[...Array(12).keys()].map((item, idx) => (
-                  <MenuItem key={idx} value={item + 1}>
-                    {ordinal(item + 1)} Grade
-                  </MenuItem>
-                ))}
-              </Select>
-              {/* <Subtitle textAlign='left'>Unassigned</Subtitle> */}
-              <Select
-                IconComponent={KeyboardArrowDown}
-                className={classes.select}
-                sx={{ color: MthColor.SYSTEM_07, fontWeight: '700' }}
-                value={schoolPartnerId}
-                onChange={handleChangeSoE}
-              >
-                {SoEitems.map((el) => (
-                  <MenuItem value={el.value} key={el.value}>
-                    {el.label}
-                  </MenuItem>
-                ))}
-              </Select>
+
+              <div>
+                <Select
+                  IconComponent={KeyboardArrowDown}
+                  className={classes.selectSoE}
+                  value={String(gradeLevel).includes('K') ? 'Kindergarten' : gradeLevel}
+                  sx={{ color: MthColor.SYSTEM_01, fontWeight: '600', fontSize: '16px' }}
+                  onChange={(e) => {
+                    setGradeLevel(e.target.value)
+                    setIsChanged(true)
+                    setStudentStatus({ ...studentStatus, ...{ grade_level: e.target.value } })
+                  }}
+                  autoWidth
+                >
+                  <MenuItem value='Kindergarten'>Kindergarten</MenuItem>
+                  {[...Array(12).keys()].map((item, idx) => (
+                    <MenuItem key={idx} value={item + 1}>
+                      {ordinal(item + 1)} Grade
+                    </MenuItem>
+                  ))}
+                </Select>
+              </div>
+              <div>
+                <Select
+                  IconComponent={KeyboardArrowDown}
+                  className={classes.selectSoE}
+                  sx={{ color: MthColor.SYSTEM_01, fontWeight: '600', fontSize: '16px' }}
+                  value={schoolPartnerId}
+                  onChange={handleChangeSoE}
+                  autoWidth
+                >
+                  {SoEitems.map((el) => (
+                    <MenuItem value={el.value} key={el.value}>
+                      {el.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </div>
             </Box>
           </Box>
         </Grid>
