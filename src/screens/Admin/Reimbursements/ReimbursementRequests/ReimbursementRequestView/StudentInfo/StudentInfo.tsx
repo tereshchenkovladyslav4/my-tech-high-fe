@@ -8,7 +8,7 @@ import { StudentInfoProps } from '@mth/screens/Admin/Reimbursements/Reimbursemen
 import { mthButtonClasses } from '@mth/styles/button.style'
 import { gradeText } from '@mth/utils/grade-text.util'
 
-export const StudentInfo: React.FC<StudentInfoProps> = ({ request }) => {
+export const StudentInfo: React.FC<StudentInfoProps> = ({ request, requestStatus, handleChangeRequestStatus }) => {
   const epic1396story1486 = useFlag(EPIC_1396_STORY_1486)
   const epic1396story1568 = useFlag(EPIC_1396_STORY_1568)
 
@@ -75,9 +75,11 @@ export const StudentInfo: React.FC<StudentInfoProps> = ({ request }) => {
             dropDownItems={REIMBURSEMENT_REQUEST_STATUS_ITEMS.filter(
               (x) => x.value != ReimbursementRequestStatus.ORDERED,
             )}
-            defaultValue={request.status}
+            defaultValue={requestStatus}
             borderNone={true}
-            setParentValue={() => {}}
+            setParentValue={(value) => {
+              handleChangeRequestStatus(value as ReimbursementRequestStatus)
+            }}
           />
         </Box>
       </Box>

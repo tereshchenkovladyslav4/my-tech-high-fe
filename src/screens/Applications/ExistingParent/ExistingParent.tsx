@@ -1,5 +1,5 @@
 import React, { ReactElement, useContext, useEffect, useState } from 'react'
-import { gql, useMutation, useQuery } from '@apollo/client'
+import { gql, useLazyQuery, useMutation, useQuery } from '@apollo/client'
 import { makeStyles, Theme } from '@material-ui/core/styles'
 import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined'
 import { Box, Button, Card, Grid } from '@mui/material'
@@ -75,12 +75,15 @@ export const ExistingParent: React.FC = () => {
     fetchPolicy: 'network-only',
   })
 
-  const { loading: questionLoading, data: questionData } = useQuery(getQuestionsGql, {
-    variables: {
-      input: { region_id: Number(regionId), school_year_id: selectedSchoolYearId, mid_year: midYearApplication },
+  const [getExistApplicationQuestions, { loading: questionLoading, data: questionData }] = useLazyQuery(
+    getQuestionsGql,
+    {
+      variables: {
+        input: { region_id: Number(regionId), school_year_id: selectedSchoolYearId, mid_year: midYearApplication },
+      },
+      fetchPolicy: 'network-only',
     },
-    fetchPolicy: 'network-only',
-  })
+  )
 
   const [questions, setQuestions] = useState<ApplicationQuestion[]>([])
 
@@ -381,6 +384,11 @@ export const ExistingParent: React.FC = () => {
     generateValidation(newValues)
   }
 
+  useEffect(() => {
+    if (selectedSchoolYearId !== null) {
+      getExistApplicationQuestions()
+    }
+  }, [selectedSchoolYearId])
   return (
     <Card className={extraClasses.mainContent}>
       <Formik

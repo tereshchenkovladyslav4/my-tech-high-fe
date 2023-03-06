@@ -8,7 +8,7 @@ export type DocumentUploadProps = {
   formik: unknown
   handleUpload: (documentType: string, files: File[]) => void
   files?: S3FileType[]
-  handleDelete?: (file: S3FileType) => void
+  handleDelete: (file: S3FileType) => void
   fileName: string
   disabled: boolean
 }

@@ -230,8 +230,7 @@ const Withdrawal: React.FC<{
   const [unsavedChanges, setUnsavedChanges] = useState<boolean>(false)
 
   const [schoolYearList, setSchoolYearList] = useState<DropDownItem[]>([])
-  const [activeSchoolYearId, setActiveSchoolYearId] = useState<string>('')
-  const [midActiveSchoolYearId, setMidActiveSchoolYearId] = useState<boolean>(false)
+  const [activeSchoolYearId, setActiveSchoolYearId] = useState<number | null>(null)
 
   const [futureYearList, setFutureYearList] = useState<DropDownItem[]>([])
 
@@ -251,7 +250,7 @@ const Withdrawal: React.FC<{
         const item = yearList[i]
         tempSchoolYearList.push({
           label: moment(item.date_begin).format('YYYY') + '-' + moment(item.date_end).format('YY'),
-          value: item.school_year_id + '',
+          value: item.school_year_id,
         })
         if (moment().format('YYYY-MM-DD') < item.date_end) {
           futureSchoolYearList.push({
@@ -259,26 +258,12 @@ const Withdrawal: React.FC<{
             value: item.school_year_id + '',
           })
         }
-
-        if (item.midyear_application === 1) {
-          tempSchoolYearList.push({
-            label: moment(item.date_begin).format('YYYY') + '-' + moment(item.date_end).format('YY') + ' Mid-year',
-            value: item.school_year_id + '-mid',
-          })
-          if (moment().format('YYYY-MM-DD') < item.date_end) {
-            futureSchoolYearList.push({
-              label: moment(item.date_begin).format('YYYY') + '-' + moment(item.date_end).format('YY') + ' Mid-year',
-              value: item.school_year_id + '-mid',
-            })
-          }
-        }
         if (
           moment().format('YYYY-MM-DD') > item.date_begin &&
           moment().format('YYYY-MM-DD') < item.date_end &&
           isEditable()
         ) {
-          setActiveSchoolYearId(item.school_year_id + '')
-          setMidActiveSchoolYearId(false)
+          setActiveSchoolYearId(item.school_year_id)
         }
       }
       setSchoolYearList(tempSchoolYearList)
@@ -290,8 +275,8 @@ const Withdrawal: React.FC<{
   const { data: questionsData } = useQuery(getQuestionsByRegionQuery, {
     variables: {
       withdrawQuestionInput: {
-        school_year_id: parseInt(activeSchoolYearId),
-        mid_year: midActiveSchoolYearId,
+        school_year_id: activeSchoolYearId,
+        mid_year: false,
         section: 'quick-link-withdrawal',
         regionId: region,
       },
@@ -372,6 +357,7 @@ const Withdrawal: React.FC<{
             date_effective: new Date(date_effective || '').toISOString(),
             response,
             status: studentId ? WithdrawalStatus.WITHDRAWN : WithdrawalStatus.REQUESTED,
+            school_year_id: activeSchoolYearId,
           },
         },
       },
@@ -441,8 +427,8 @@ const Withdrawal: React.FC<{
               options: JSON.stringify(v.options),
               required: v.required ? 1 : 0,
               additionalQuestion: v.additionalQuestion,
-              school_year_id: parseInt(activeSchoolYearId),
-              mid_year: midActiveSchoolYearId,
+              school_year_id: activeSchoolYearId,
+              mid_year: false,
             },
           }
         }),
@@ -520,8 +506,7 @@ const Withdrawal: React.FC<{
         const students = me?.students
           ?.filter(
             (item) =>
-              item.current_school_year_status.midyear_application === midActiveSchoolYearId &&
-              item.applications[0].school_year_id === parseInt(activeSchoolYearId + '') &&
+              item?.applications[0].school_year_id === activeSchoolYearId &&
               [0, 1, 5, 6, 7].includes(item.status[0]?.status), // 0: pending, 1: active, 5:APPLIED, 6:ACCEPTED, 7: applied(re-apply) REAPPLIED
           )
           .map((student) => ({
@@ -677,14 +662,7 @@ const Withdrawal: React.FC<{
                         defaultValue={activeSchoolYearId}
                         borderNone={true}
                         setParentValue={(val) => {
-                          let yearId = val + ''
-                          if (yearId?.indexOf('mid') > 0) {
-                            yearId = yearId?.split('-')?.at(0)
-                            setMidActiveSchoolYearId(true)
-                          } else {
-                            setMidActiveSchoolYearId(false)
-                          }
-                          setActiveSchoolYearId(val)
+                          setActiveSchoolYearId(+val)
                         }}
                       />
                     )}
@@ -731,14 +709,7 @@ const Withdrawal: React.FC<{
                         dropDownItems={isEditable() ? [] : futureYearList}
                         setParentValue={(id) => {
                           if (!isEditable()) {
-                            let yearId = id.toString()
-                            if (yearId?.indexOf('mid') > 0) {
-                              yearId = yearId?.split('-')?.at(0)
-                              setMidActiveSchoolYearId(true)
-                            } else {
-                              setMidActiveSchoolYearId(false)
-                            }
-                            setActiveSchoolYearId(yearId)
+                            setActiveSchoolYearId(+id)
                           }
                         }}
                         alternate={true}

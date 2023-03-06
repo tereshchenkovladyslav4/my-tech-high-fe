@@ -36,3 +36,14 @@ export type SchoolYearVM = {
   midyear_application_close: string
   grades: string
 }
+
+export type Application = {
+  application_id?: string
+  school_year_id?: number
+  midyear_application?: boolean
+  date_submitted?: string
+  hidden?: boolean
+  referred_by?: string
+  relation_status?: boolean | string
+  student_id?: number
+}

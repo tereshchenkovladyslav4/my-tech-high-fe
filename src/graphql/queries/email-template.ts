@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client'
 
 export const getEmailTemplateQuery = gql`
-  query EmailTemplateName($regionId: ID!, $schoolYearId: Float!, $template: String!, $midYear: Boolean!) {
+  query EmailTemplateName($regionId: ID!, $schoolYearId: Float, $template: String!, $midYear: Boolean) {
     emailTemplateName(regionId: $regionId, schoolYearId: $schoolYearId, template: $template, midYear: $midYear) {
       id
       template_name
@@ -100,6 +100,8 @@ export const getEmailTemplatesByRegionQuery = gql`
         enrollment_packet_deadline_num_days
         withdraw_deadline_num_days
       }
+      school_year_id
+      mid_year
     }
   }
 `

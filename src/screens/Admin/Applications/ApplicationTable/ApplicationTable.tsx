@@ -14,6 +14,7 @@ import { WarningModal } from '@mth/components/WarningModal/Warning'
 import { APPLICATION_HEADCELLS } from '@mth/constants'
 import { MthColor } from '@mth/enums'
 import { getEmailTemplateQuery } from '@mth/graphql/queries/email-template'
+import { Application } from '@mth/models'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { getSchoolYearsByRegionId } from '../../SiteManagement/services'
 import { ApplicationEmailModal } from '../ApplicationModal/ApplicationEmailModal'
@@ -52,6 +53,16 @@ export const ApplicationTable: React.FC<ApplicationTableProps> = ({ filter }) =>
   const [openEmailModal, setOpenEmailModal] = useState<boolean>(false)
   const [specialEdOptions, setSpecialEdOptions] = useState<string[]>([])
   const [emailHistory, setEmailHistory] = useState([])
+
+  const [applicationList, setApplicationList] = useState<Application[]>([])
+  const [emailTemplateSchoolYear, setEmailTemplateSchoolYear] = useState<{
+    schoolYearId: null | number
+    midYear: null | boolean
+  }>({
+    schoolYearId: null,
+    midYear: null,
+  })
+  const [selectingError, setSelectingError] = useState<boolean>(false)
   const status = ['New', 'Sibling', 'Returning', 'Hidden']
 
   const checker = (arr: string[], target: string[]) => target.every((v) => arr.includes(v))
@@ -187,8 +198,11 @@ export const ApplicationTable: React.FC<ApplicationTableProps> = ({ filter }) =>
     variables: {
       template: 'Application Page',
       regionId: me?.selectedRegionId,
+      schoolYearId: emailTemplateSchoolYear.schoolYearId,
+      midYear: emailTemplateSchoolYear.midYear,
     },
     fetchPolicy: 'network-only',
+    skip: !emailTemplateSchoolYear.schoolYearId,
   })
 
   const handlePageChange = (page: number) => {
@@ -205,6 +219,22 @@ export const ApplicationTable: React.FC<ApplicationTableProps> = ({ filter }) =>
     setCurrentPage(1)
     setSkip(0)
   }, [me?.selectedRegionId])
+
+  useEffect(() => {
+    if (applicationIds.length > 0) {
+      const firstApplication = applicationList.find((app) => app.application_id === applicationIds[0])
+      if (
+        firstApplication &&
+        (emailTemplateSchoolYear.schoolYearId !== firstApplication?.school_year_id ||
+          emailTemplateSchoolYear.midYear !== firstApplication?.midyear_application)
+      ) {
+        setEmailTemplateSchoolYear({
+          schoolYearId: firstApplication?.school_year_id,
+          midYear: firstApplication?.midyear_application,
+        })
+      }
+    }
+  }, [applicationIds])
 
   useEffect(() => {
     if (emailTemplateData !== undefined) {
@@ -269,7 +299,7 @@ export const ApplicationTable: React.FC<ApplicationTableProps> = ({ filter }) =>
       setPageLoading(true)
       const { applications } = data
       const { results, total } = applications
-
+      setApplicationList(results)
       setTableData(() => {
         return map(results, (application) => {
           if (editData && editData.application_id === application.application_id) {
@@ -375,7 +405,24 @@ export const ApplicationTable: React.FC<ApplicationTableProps> = ({ filter }) =>
     if (applicationIds.length === 0) {
       setOpenAlert(true)
     } else {
-      setOpen(true)
+      let midStatus = true
+      let schoolYearWithMid = ''
+      applicationIds.map((id) => {
+        const application = applicationList.find((app) => app.application_id === id)
+        if (!schoolYearWithMid) {
+          schoolYearWithMid = application.school_year_id + (application.midyear_application ? '-mid' : '')
+        } else {
+          if (schoolYearWithMid !== application.school_year_id + (application.midyear_application ? '-mid' : '')) {
+            midStatus = false
+          }
+        }
+      })
+      // check if selected the same schoolyears
+      if (midStatus) {
+        setOpen(true)
+      } else {
+        setSelectingError(true)
+      }
     }
   }
 
@@ -691,6 +738,15 @@ export const ApplicationTable: React.FC<ApplicationTableProps> = ({ filter }) =>
           handleModem={() => setOpenEmailModal(!openEditModal)}
           handleSubmit={() => setOpenEmailModal(false)}
           data={emailHistory}
+        />
+      )}
+      {selectingError && (
+        <WarningModal
+          handleModem={() => setSelectingError(false)}
+          title='Error'
+          subtitle='You may only select multiple student’s with the same program year.'
+          btntitle='OK'
+          handleSubmit={() => setSelectingError(false)}
         />
       )}
     </Card>

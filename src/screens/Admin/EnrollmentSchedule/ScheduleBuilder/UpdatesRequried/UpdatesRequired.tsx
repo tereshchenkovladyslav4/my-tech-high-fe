@@ -39,7 +39,7 @@ const UpdatesRequired: React.FC<UpdatesRequiredProps> = ({
   const { from, body, subject, setFrom, setSubject, standardResponse } = useEmailTemplateByNameAndSchoolYearId(
     EmailTemplateEnum.UPDATES_REQUIRED,
     studentInfo?.current_school_year_status?.school_year_id || 0,
-    studentInfo?.current_school_year_status?.midyear_application,
+    studentInfo?.applications[0]?.midyear_application,
   )
 
   const epic1396story1568 = useFlag(EPIC_276_STORY_1284)

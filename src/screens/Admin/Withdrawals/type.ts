@@ -79,6 +79,7 @@ export type WithdrawalPageProps = {
   setSelectedYear: (value: number) => void
   refetchWithdrawalsCount: () => void
   refetchEmailTemplate: () => void
+  setEmailMidTemplate: (val: boolean) => void
 }
 
 export type EffectiveVM = {

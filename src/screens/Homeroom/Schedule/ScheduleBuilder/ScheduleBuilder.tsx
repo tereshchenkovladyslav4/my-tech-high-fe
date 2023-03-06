@@ -275,7 +275,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
       {showSecondSemester && (
         <ScheduleEditor
           scheduleData={secondScheduleData}
-          splitEnrollment={splitEnrollment}
+          splitEnrollment={splitEnrollment && !!selectedYear?.ScheduleBuilder?.always_unlock}
           hasUnlockedPeriods={hasUnlockedPeriods}
           isEditMode={isEditMode || !studentScheduleStatus || studentScheduleStatus === ScheduleStatus.DRAFT}
           isSecondSemester={true}
@@ -343,7 +343,7 @@ const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
           btntitle='Done'
           handleSubmit={() => {
             setShowSubmitSuccessModal(false)
-            history.push(MthRoute.DASHBOARD)
+            window.location.assign(`${MthRoute.DASHBOARD}`)
           }}
         />
       )}

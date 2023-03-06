@@ -76,6 +76,10 @@ export const EnrollmentPacketTable: React.FC = () => {
   const [packetCount, setpacketCount] = useState({})
   const { showModal, setStore } = useContext(ProfileContext)
 
+  const [emailMidYear, setEmailMidYear] = useState<boolean>(false)
+
+  const [selectingError, setSelectingError] = useState<boolean>(false)
+
   const handleOpenProfile = (rowId: number) => {
     const row = enrollmentPackets?.find((el) => el.packet_id === rowId)
     showModal(row?.student.parent, refetch)
@@ -219,7 +223,7 @@ export const EnrollmentPacketTable: React.FC = () => {
   const { emailTemplate: emailTemplateData, refetch: refetchEmailTemplate } = useEmailTemplateByNameAndSchoolYearId(
     EmailTemplateEnum.ENROLLMENT_PACKET_PAGE,
     selectedYearId,
-    false,
+    emailMidYear,
   )
 
   const { data: countGroup, refetch: refetchPacketCount } = useQuery(packetCountQuery, {
@@ -336,8 +340,38 @@ export const EnrollmentPacketTable: React.FC = () => {
       setOpenWarningModal(true)
       return
     }
-    setOpenEmailModal(true)
+    let midStatus = true
+    let schoolYearWithMid = ''
+    packetIds.map((packetId) => {
+      const packet = enrollmentPackets.find((item) => item.packet_id === packetId)
+      if (!schoolYearWithMid) {
+        schoolYearWithMid =
+          packet.student.current_school_year_status.school_year_id +
+          (packet.student.current_school_year_status.midyear_application ? '-mid' : '')
+      } else {
+        if (
+          schoolYearWithMid !==
+          packet.student.current_school_year_status.school_year_id +
+            (packet.student.current_school_year_status.midyear_application ? '-mid' : '')
+        ) {
+          midStatus = false
+        }
+      }
+    })
+
+    if (midStatus) {
+      setOpenEmailModal(true)
+    } else {
+      setSelectingError(true)
+    }
   }
+
+  useEffect(() => {
+    if (packetIds.length > 0) {
+      const firstPacket = enrollmentPackets.find((packet) => packet.packet_id === packetIds[0])
+      setEmailMidYear(firstPacket.student.current_school_year_status.midyear_application)
+    }
+  }, [packetIds])
 
   const [emailPacket] = useMutation(emailPacketMutation)
 
@@ -689,6 +723,16 @@ export const EnrollmentPacketTable: React.FC = () => {
           height={316}
           padding={'52px'}
           handleConfirmModalChange={handleConfirmDeleteModalChange}
+        />
+      )}
+
+      {selectingError && (
+        <WarningModal
+          handleModem={() => setSelectingError(false)}
+          title='Error'
+          subtitle='You may only select multiple student’s with the same program year.'
+          btntitle='OK'
+          handleSubmit={() => setSelectingError(false)}
         />
       )}
     </Card>

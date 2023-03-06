@@ -127,6 +127,7 @@ export type RequestFormProps = {
   selectedYearId: number | undefined
   selectedYear: SchoolYear | undefined
   selectedReimbursementRequest?: ReimbursementRequest
+  requestStatus?: ReimbursementRequestStatus
   setFormType: (value: ReimbursementFormType | undefined) => void
   setIsChanged: (value: boolean) => void
   setPage?: (value: MthRoute) => void
@@ -140,6 +141,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
   selectedYearId,
   selectedYear,
   selectedReimbursementRequest,
+  requestStatus,
   setFormType,
   setIsChanged,
   setPage,
@@ -212,7 +214,10 @@ export const RequestForm: React.FC<RequestFormProps> = ({
     return false
   }
 
-  const onSubmitRequests = async (questions: ReimbursementQuestion[], status?: ReimbursementRequestStatus) => {
+  const onSubmitRequests = async (
+    questions: ReimbursementQuestion[],
+    status: ReimbursementRequestStatus | undefined = requestStatus,
+  ) => {
     if (isToBuildForm) return
     let fileId = 0
     if (signatureRef && !signatureRef.isEmpty()) {

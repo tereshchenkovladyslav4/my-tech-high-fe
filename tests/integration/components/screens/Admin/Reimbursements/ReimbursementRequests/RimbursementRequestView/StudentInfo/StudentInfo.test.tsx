@@ -1,11 +1,18 @@
 import { render, waitFor } from '@testing-library/react'
 import '@testing-library/jest-dom'
+import { ReimbursementRequestStatus } from '@mth/enums'
 import { reimbursementRequest } from '@mth/mocks/reimbursementRequestMock'
 import { StudentInfo } from '@mth/screens/Admin/Reimbursements/ReimbursementRequests/ReimbursementRequestView/StudentInfo'
 
 describe('StudentInfo', () => {
   it('should render StudentInfo', async () => {
-    const { getByTestId } = render(<StudentInfo request={reimbursementRequest}></StudentInfo>)
+    const { getByTestId } = render(
+      <StudentInfo
+        request={reimbursementRequest}
+        requestStatus={ReimbursementRequestStatus.PAID}
+        handleChangeRequestStatus={() => {}}
+      ></StudentInfo>,
+    )
 
     await waitFor(() => {
       expect(getByTestId('studentName')).toHaveTextContent('Firstname Lastname')

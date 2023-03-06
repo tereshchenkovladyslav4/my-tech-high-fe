@@ -1,6 +1,8 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { Box } from '@mui/system'
+import { useFlag } from '@unleash/proxy-client-react'
 import { useHistory } from 'react-router-dom'
+import { EPIC_1182 } from '@mth/constants'
 import { MthRoute } from '@mth/enums'
 import { s3URL } from '@mth/envs'
 import { Person, Student } from '@mth/models'
@@ -12,6 +14,7 @@ import { StudentNav } from './StudentNav'
 import { StudentProfilePage } from './types'
 
 export const HomeroomStudentProfile: React.FC = () => {
+  const epic1182 = useFlag(EPIC_1182)
   const [nav, setNav] = useState<StudentProfilePage>(StudentProfilePage.STUDENT)
   const history = useHistory()
   const { me } = useContext(UserContext)
@@ -46,7 +49,7 @@ export const HomeroomStudentProfile: React.FC = () => {
     <Box display='flex' flexDirection='column'>
       <StudentNav nav={nav} setNav={(value) => setNav(value)} student={student} avatar={getProfilePhoto} />
       {nav === StudentProfilePage.STUDENT && <StudentPage />}
-      {nav === StudentProfilePage.HOMEROOM && <StudentHomeroom />}
+      {nav === StudentProfilePage.HOMEROOM && (epic1182 ? <StudentHomeroom /> : 'Coming soon')}
       {nav === StudentProfilePage.RESOURCES && <Resources />}
     </Box>
   )

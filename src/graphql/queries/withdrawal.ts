@@ -16,6 +16,21 @@ export const getWithdrawalsQuery = gql`
         status
         student_name
         grade_level
+        Student {
+          current_school_year_status {
+            application_id
+            midyear_application
+            school_year_id
+          }
+          applications {
+            midyear_application
+            school_year {
+              school_year_id
+              date_begin
+              date_end
+            }
+          }
+        }
       }
     }
   }

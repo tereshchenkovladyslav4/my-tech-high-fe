@@ -1,11 +1,13 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { Button, Grid } from '@mui/material'
 import { Box } from '@mui/system'
+import { useFlag } from '@unleash/proxy-client-react'
 import { filter } from 'lodash'
 import { DocumentListItem } from '@mth/components/DocumentUploadModal/DocumentListItem'
 import { DocumentUploadModal } from '@mth/components/DocumentUploadModal/DocumentUploadModal'
 import { Paragraph } from '@mth/components/Typography/Paragraph/Paragraph'
 import { Subtitle } from '@mth/components/Typography/Subtitle/Subtitle'
+import { BUG_1719 } from '@mth/constants'
 import { MthColor, PacketStatus, QUESTION_TYPE } from '@mth/enums'
 import { EnrollmentQuestionItem } from '../../../Question'
 import { useStyles } from './styles'
@@ -16,6 +18,7 @@ export const DocumentUpload: React.FC<DocumentUploadProps> = ({
   item,
   formik,
   handleUpload,
+  handleDelete,
   files,
   fileName,
   disabled,
@@ -23,6 +26,7 @@ export const DocumentUpload: React.FC<DocumentUploadProps> = ({
   const classes = useStyles
   const [open, setOpen] = useState(false)
   const [newFiles, setNewFiles] = useState<File[]>([])
+  const infoctr1719 = useFlag(BUG_1719)
 
   const handleFile = useCallback(
     (tempFiles: File[]) => {
@@ -70,6 +74,8 @@ export const DocumentUpload: React.FC<DocumentUploadProps> = ({
             const indexedFileName = `${curr.name.split('.').slice(0, -1).join('.')}${index !== 0 ? index + 1 : ''}`
             const fileExt = curr.name.split('.').slice(-1)
             const newCurr = { ...curr, name: `${indexedFileName}.${fileExt}` }
+            if (infoctr1719 && packet?.status == 'Started')
+              return <DocumentListItem file={newCurr} key={index} closeAction={() => handleDelete(curr)} />
             return <DocumentListItem file={newCurr} key={index} closeAction={undefined} />
           })}
         </Box>

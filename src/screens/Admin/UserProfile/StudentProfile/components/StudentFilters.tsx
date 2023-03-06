@@ -32,7 +32,7 @@ type StudentFiltersProps = {
 const selectStyles = makeStyles({
   backgroundSelect: {
     fontSize: '12px',
-    borderRadius: '8px',
+    borderRadius: '8px!important',
     minWidth: '135px',
     height: '29px',
     textAlign: 'center',
@@ -44,10 +44,14 @@ const selectStyles = makeStyles({
     '&:after': {
       borderColor: MthColor.BUTTON_LINEAR_GRADIENT,
     },
+    '& .MuiInputBase-input': {
+      fontSize: '14px',
+      fontWeight: '500',
+    },
   },
   withdrawBackgroundSelect: {
     fontSize: '12px',
-    borderRadius: '8px',
+    borderRadius: '8px!important',
     minWidth: '135px',
     height: '29px',
     textAlign: 'center',
@@ -59,10 +63,14 @@ const selectStyles = makeStyles({
     '&:after': {
       borderColor: MthColor.RED_GRADIENT,
     },
+    '& .MuiInputBase-input': {
+      fontSize: '14px',
+      fontWeight: '500',
+    },
   },
   yellowBackgroundSelect: {
     fontSize: '12px',
-    borderRadius: '8px',
+    borderRadius: '8px!important',
     minWidth: '135px',
     height: '29px',
     textAlign: 'center',
@@ -77,6 +85,10 @@ const selectStyles = makeStyles({
     '& > div': {
       paddingTop: 0,
       paddingBottom: 0,
+    },
+    '& .MuiInputBase-input': {
+      fontSize: '14px',
+      fontWeight: '500',
     },
   },
   selectIcon: {
@@ -488,11 +500,11 @@ export const StudentFilters: React.FC<StudentFiltersProps> = ({
             <Box>
               <Select
                 className={
-                  studentStatusData?.status != StudentStatus.WITHDRAWN
+                  studentStatusData?.status === StudentStatus.WITHDRAWN
                     ? withdrawalStatus?.status == 'Requested'
                       ? selectClasses.yellowBackgroundSelect
-                      : selectClasses.backgroundSelect
-                    : selectClasses.withdrawBackgroundSelect
+                      : selectClasses.withdrawBackgroundSelect
+                    : selectClasses.backgroundSelect
                 }
                 IconComponent={KeyboardArrowDown}
                 inputProps={{
@@ -519,7 +531,7 @@ export const StudentFilters: React.FC<StudentFiltersProps> = ({
                   </MenuItem>
                 ))}
               </Select>
-              {withdrawalStatus?.status == 'Requested' && (
+              {studentStatusData?.status === StudentStatus.WITHDRAWN && withdrawalStatus?.status == 'Requested' && (
                 <Box onClick={() => onRemoveWithdrawalRequest()}>
                   <Paragraph sx={{ color: MthColor.MTHBLUE, my: '5px', cursor: 'pointer' }} textAlign='center'>
                     Remove Withdraw Request
@@ -602,16 +614,15 @@ export const StudentFilters: React.FC<StudentFiltersProps> = ({
             </Subtitle>
             <DropDown
               sx={{
-                fontSize: '16px',
                 padding: '0px 20px 4px 10px',
                 background: MthColor.BUTTON_LINEAR_GRADIENT,
                 height: '29px',
-                borderRadius: '4px',
+                borderRadius: '8px',
                 textAlign: 'center',
                 '& .MuiSelect-select': {
                   color: MthColor.WHITE,
                   fontWeight: 500,
-                  fontSize: '16px',
+                  fontSize: '14px',
                 },
                 '& .MuiSvgIcon-root': {
                   color: `${MthColor.WHITE} !important`,

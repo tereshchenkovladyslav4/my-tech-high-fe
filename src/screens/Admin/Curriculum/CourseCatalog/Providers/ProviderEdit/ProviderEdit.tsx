@@ -197,7 +197,7 @@ const ProviderEdit: React.FC<ProviderEditProps> = ({
           height: 'auto',
           backgroundColor: MthColor.WHITE,
           borderRadius: 2,
-          p: 6,
+          padding: '25px',
         }}
       >
         <Prompt

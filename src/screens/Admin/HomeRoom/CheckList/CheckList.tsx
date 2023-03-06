@@ -55,7 +55,6 @@ const CheckList: React.FC = () => {
 
   const {
     dropdownItems: schoolYearDropdownItems,
-    schoolYears: schoolYears,
     selectedYearId,
     setSelectedYearId,
   } = useSchoolYearsByRegionId(me?.selectedRegionId)
@@ -71,10 +70,10 @@ const CheckList: React.FC = () => {
   }, [])
 
   useEffect(() => {
-    if (schoolYears?.length) {
+    if (selectedYearId) {
       setFilters({
         ...filters,
-        selectedYearId: schoolYears[0].school_year_id as number,
+        selectedYearId: selectedYearId,
         status:
           selectedCheckListItem === 'independent_checklist'
             ? 'Independent Checklist'
@@ -84,7 +83,7 @@ const CheckList: React.FC = () => {
       })
       handlePageChange(initialPageNumber)
     }
-  }, [schoolYears])
+  }, [selectedYearId])
 
   const subjectFields: MthTableField<CheckListType>[] = [
     {
@@ -310,7 +309,12 @@ const CheckList: React.FC = () => {
       }),
     )
     XLSX.utils.book_append_sheet(wb, ws, 'Blank')
-    XLSX.writeFile(wb, `${selectedCheckListItem}.xlsx`)
+    XLSX.writeFile(
+      wb,
+      `${
+        selectedCheckListItem === 'subject_checklist' ? 'Subject Checklist Template' : 'Independent Checklist Template'
+      }.xlsx`,
+    )
   }
 
   const handleImportTemplate = async (file: File) => {

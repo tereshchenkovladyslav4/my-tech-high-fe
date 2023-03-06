@@ -106,7 +106,7 @@ export const GradeSelect: React.FC<GradesSelectProps> = ({
               />
             }
             label={
-              <Paragraph size='large' fontWeight='500' sx={{ marginLeft: 5, fontSize: '19.8627px' }}>
+              <Paragraph size='large' fontWeight='400' sx={{ marginLeft: 5, fontSize: '19.8627px' }}>
                 {`${toOrdinalSuffix(parseInt(grade))} Grade`}
               </Paragraph>
             }
@@ -132,7 +132,7 @@ export const GradeSelect: React.FC<GradesSelectProps> = ({
               />
             }
             label={
-              <Paragraph size='large' fontWeight='500' sx={{ marginLeft: 5, fontSize: '19.8627px' }}>
+              <Paragraph size='large' fontWeight='400' sx={{ marginLeft: 5, fontSize: '19.8627px' }}>
                 {grade}
               </Paragraph>
             }
@@ -206,6 +206,7 @@ export const GradeSelect: React.FC<GradesSelectProps> = ({
               color: 'white',
               width: '92px',
               background: MthColor.BUTTON_RED_GRADIENT,
+              fontSize: '12px',
               marginRight: 3,
               '&:hover': {
                 background: '#D23C33',
@@ -224,6 +225,7 @@ export const GradeSelect: React.FC<GradesSelectProps> = ({
               borderRadius: 15,
               textTransform: 'none',
               fontWeight: 700,
+              fontSize: '12px',
               height: 29,
               '&:hover': {
                 background: '#4145FF',

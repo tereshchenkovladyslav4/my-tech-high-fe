@@ -359,7 +359,6 @@ export const ProfilePacketModal: React.FC<ProfilePacketModalProps> = ({ handleMo
 
   return (
     <FormProvider {...methods}>
-      alskdjfklad askldjfkl asdlkfj lasdkj fasdlkfj
       <form onSubmit={methods.handleSubmit(onSubmit)}>
         <Modal
           open={true}

@@ -3,6 +3,7 @@ import { useQuery } from '@apollo/client'
 import { Card, Box } from '@mui/material'
 import moment from 'moment-timezone'
 import { SortableTable } from '@mth/components/SortableTable/SortableTable'
+import { WarningModal } from '@mth/components/WarningModal/Warning'
 import { WITHDRAWAL_HEADCELLS, WITHDRAWAL_STATUS_LABEL } from '@mth/constants'
 import { MthColor } from '@mth/enums'
 import { getWithdrawalsQuery } from '@mth/graphql/queries/withdrawal'
@@ -25,6 +26,7 @@ const WithdrawalPage: React.FC<WithdrawalPageProps> = ({
   setSelectedYear,
   refetchWithdrawalsCount,
   refetchEmailTemplate,
+  setEmailMidTemplate,
 }) => {
   const { me } = useContext(UserContext)
   const [tableData, setTableData] = useState<Array<unknown>>([])
@@ -54,6 +56,9 @@ const WithdrawalPage: React.FC<WithdrawalPageProps> = ({
     date: '',
     withdrawId: 0,
   })
+
+  const [withdrawList, setWithdrawList] = useState([])
+  const [selectError, setSelectError] = useState<boolean>(false)
 
   const [openWarningModal, setOpenWarningModal] = useState<boolean>(false)
   const { loading, data, refetch } = useQuery(getWithdrawalsQuery, {
@@ -98,9 +103,36 @@ const WithdrawalPage: React.FC<WithdrawalPageProps> = ({
     setShowWithdrawModal(true)
   }
 
+  useEffect(() => {
+    if (checkedWithdrawalIds.length > 0) {
+      const firstWithdrawal = withdrawList.find(
+        (withdrawal) => withdrawal.withdrawal_id === parseInt(checkedWithdrawalIds[0]),
+      )
+      setEmailMidTemplate(firstWithdrawal.Student.applications[0].midyear_application)
+    }
+  }, [checkedWithdrawalIds])
+
   const onEmailClick = () => {
     if (checkedWithdrawalIds.length === 0) {
       setOpenWarningModal(true)
+      return
+    }
+
+    let midStatus = true
+    let schoolYearMid = ''
+    checkedWithdrawalIds.map((checkedId) => {
+      const withdrawal = withdrawList.find((item) => item?.withdrawal_id === parseInt(checkedId))
+      if (!schoolYearMid) {
+        schoolYearMid = withdrawal?.Student.applications[0].midyear_application ? 'mid' : 'non-mid'
+      } else {
+        const updatedMid = withdrawal?.Student.applications[0].midyear_application ? 'mid' : 'non-mid'
+        if (schoolYearMid !== updatedMid) {
+          midStatus = false
+        }
+      }
+    })
+    if (!midStatus) {
+      setSelectError(true)
       return
     }
     setOpenEmailModal(true)
@@ -148,6 +180,7 @@ const WithdrawalPage: React.FC<WithdrawalPageProps> = ({
 
   useEffect(() => {
     if (!loading && data?.withdrawals) {
+      setWithdrawList(data?.withdrawals.results)
       setTableData(
         data?.withdrawals.results.map((withdrawal: WithdrawalResponseVM) => ({
           submitted: withdrawal.date ? moment(withdrawal.date).format('MM/DD/YY') : '',
@@ -258,6 +291,15 @@ const WithdrawalPage: React.FC<WithdrawalPageProps> = ({
         refetchWithdrawalsCount={refetchWithdrawalsCount}
         refetchEmailTemplate={refetchEmailTemplate}
       />
+      {selectError && (
+        <WarningModal
+          handleModem={() => setSelectError(false)}
+          title='Error'
+          subtitle="You may only select multiple withdrawal's with the same program year."
+          btntitle='OK'
+          handleSubmit={() => setSelectError(false)}
+        />
+      )}
     </Card>
   )
 }

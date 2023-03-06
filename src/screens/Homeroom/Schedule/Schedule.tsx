@@ -45,7 +45,10 @@ const Schedule: React.FC<ScheduleProps> = ({ studentId }) => {
   const queryParams = new URLSearchParams(search)
   const backTo = queryParams.get('backTo')
   const history = useHistory()
-  const student = me?.students?.filter((item) => Number(item.student_id) == Number(studentId))?.at(0)
+  const student = useMemo(
+    () => me?.students?.filter((item) => Number(item.student_id) == Number(studentId))?.at(0),
+    [me?.students, studentId],
+  )
   const [studentInfo, setStudentInfo] = useState<StudentScheduleInfo>()
   const [step, setStep] = useState<string>()
   const [availableAssessments, setAvailableAssessments] = useState<AssessmentType[]>([])

@@ -20,6 +20,7 @@ const Withdrawals: React.FC = () => {
     Requested: 0,
     Withdrawn: 0,
   })
+  const [emailMidTemplate, setEmailMidTemplate] = useState<boolean>(false)
   const { data: withdrawalsCountData, refetch: refetchWithdrawalsCount } = useQuery(getWithdrawalsCountByStatusQuery, {
     variables: {
       filter: {
@@ -35,7 +36,7 @@ const Withdrawals: React.FC = () => {
   const { emailTemplate: emailTemplateData, refetch: refetchEmailTemplate } = useEmailTemplateByNameAndSchoolYearId(
     EmailTemplateEnum.WITHDRAW_PAGE,
     selectedYear,
-    false,
+    emailMidTemplate,
   )
 
   useEffect(() => {
@@ -65,6 +66,7 @@ const Withdrawals: React.FC = () => {
             setSelectedYear={setSelectedYear}
             refetchWithdrawalsCount={refetchWithdrawalsCount}
             refetchEmailTemplate={refetchEmailTemplate}
+            setEmailMidTemplate={setEmailMidTemplate}
           />
         </Grid>
       </Grid>

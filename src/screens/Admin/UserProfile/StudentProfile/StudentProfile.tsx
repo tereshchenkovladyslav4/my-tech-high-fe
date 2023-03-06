@@ -97,6 +97,45 @@ const selectStyles = makeStyles({
       borderColor: MthColor.BUTTON_LINEAR_GRADIENT,
     },
   },
+  profileField: {
+    '& .MuiTypography-root': {
+      marginBottom: '8px',
+      fontSize: '14px',
+      fontWeight: '600',
+    },
+    '& .MuiFormControlLabel-label': {
+      marginBottom: '0px',
+    },
+    '& .MuiOutlinedInput-root': {
+      borderRadius: '8px',
+    },
+    '& fieldset': {
+      borderWidth: '1px !important',
+      // borderColor: 'rgba(0, 0, 0, 0.23) !important',
+    },
+    '& input': {
+      fontSize: '14px',
+      lineHeight: '16px',
+      padding: '16px',
+      fontWeight: '700',
+      color: 'black',
+    },
+    '& textarea': {
+      fontSize: '14px',
+      lineHeight: '16px',
+      fontWeight: '700',
+      color: 'black',
+    },
+    '& .MuiFormControl-root .MuiOutlinedInput-root:not(.Mui-error):not(.Mui-disabled) fieldset': {
+      borderColor: 'rgba(0, 0, 0, 0.23) !important',
+      borderRadius: '8px',
+    },
+    '& .MuiInputBase-input': {
+      color: 'black',
+      fontSize: '14px',
+      fontWeight: '700',
+    },
+  },
 })
 const ordinal = (n) => {
   const s = ['th', 'st', 'nd', 'rd']
@@ -587,7 +626,7 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
                 width: '198px',
                 height: '29px',
                 borderRadius: 2,
-                fontWeight: '800',
+                fontWeight: '500',
               }}
               onClick={handlePacket}
             >
@@ -616,7 +655,7 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
                 width: '198px',
                 height: '29px',
                 borderRadius: 2,
-                fontWeight: '800',
+                fontWeight: '500',
               }}
             ></Button>
           </Grid>
@@ -645,7 +684,7 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
                   width: '198px',
                   height: '29px',
                   borderRadius: 2,
-                  fontWeight: '800',
+                  fontWeight: '500',
                 }}
                 onClick={() => setOpenNotes(true)}
               >
@@ -667,8 +706,8 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
             specialEdOptions={specialEdOptions}
           />
         </Grid>
-        <Grid item xs={3}>
-          <Paragraph size='medium' textAlign='left'>
+        <Grid item xs={3} className={classes.profileField}>
+          <Paragraph size='large' textAlign='left'>
             Preferred First Name
           </Paragraph>
           <TextField
@@ -682,7 +721,7 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
             // }}
           />
         </Grid>
-        <Grid item xs={3}>
+        <Grid item xs={3} className={classes.profileField}>
           <Paragraph size='medium' textAlign='left'>
             Preferred Last Name
           </Paragraph>
@@ -697,13 +736,12 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
             // }}
           />
         </Grid>
-        <Grid item xs={2}>
+        <Grid item xs={2} className={classes.profileField}>
           <Paragraph size='medium' textAlign='left'>
             Gender
           </Paragraph>
           <DropDown
-            sx={{ width: '70%' }}
-            size='small'
+            size='medium'
             dropDownItems={genderItems}
             defaultValue={gender}
             placeholder={gender}
@@ -713,7 +751,7 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
             }}
           />
         </Grid>
-        <Grid item xs={4}>
+        <Grid item xs={4} className={classes.profileField}>
           <Paragraph size='medium' textAlign='left' fontWeight='700' color='#0E0E0E'>
             Testing Preference
           </Paragraph>
@@ -740,7 +778,7 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
             </Grid>
           ))}
         </Grid>
-        <Grid item xs={3}>
+        <Grid item xs={3} className={classes.profileField}>
           <Paragraph size='medium' textAlign='left'>
             Legal First Name
           </Paragraph>
@@ -755,7 +793,7 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
             }}
           />
         </Grid>
-        <Grid item xs={3}>
+        <Grid item xs={3} className={classes.profileField}>
           <Paragraph size='medium' textAlign='left'>
             Legal Middle Name
           </Paragraph>
@@ -770,7 +808,7 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
             }}
           />
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={6} className={classes.profileField}>
           <Box sx={{ width: '50%' }}>
             <Paragraph size='medium' textAlign='left'>
               Legal Last Name
@@ -787,7 +825,7 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
             />
           </Box>
         </Grid>
-        <Grid item xs={3}>
+        <Grid item xs={3} className={classes.profileField}>
           <Paragraph size='medium' textAlign='left'>
             Phone
           </Paragraph>
@@ -816,11 +854,15 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
                   }}
                 />
               }
-              label={<Paragraph>I can receive text messages via this number</Paragraph>}
+              label={
+                <Paragraph sx={{ marginBottom: '0px!important' }}>
+                  I can receive text messages via this number
+                </Paragraph>
+              }
             />
           </Box>
         </Grid>
-        <Grid item xs={3}>
+        <Grid item xs={3} className={classes.profileField}>
           <Paragraph size='medium' textAlign='left'>
             Email
           </Paragraph>
@@ -835,7 +877,7 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
             }}
           />
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={6} className={classes.profileField}>
           <Paragraph size='medium' textAlign='left'>
             City
           </Paragraph>
@@ -850,7 +892,7 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
             }}
           />
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={6} className={classes.profileField}>
           <Paragraph size='medium' textAlign='left'>
             Address line 1
           </Paragraph>
@@ -865,7 +907,7 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
             }}
           />
         </Grid>
-        <Grid item xs={3}>
+        <Grid item xs={3} className={classes.profileField}>
           <Paragraph size='medium' textAlign='left'>
             State
           </Paragraph>
@@ -880,7 +922,7 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
             }}
           />
         </Grid>
-        <Grid item xs={3}>
+        <Grid item xs={3} className={classes.profileField}>
           <Paragraph size='medium' textAlign='left'>
             Zip
           </Paragraph>
@@ -895,7 +937,7 @@ export const StudentProfile: React.FC<StudentProfileProps> = ({
             }}
           />
         </Grid>
-        <Grid item xs={12}>
+        <Grid item xs={12} className={classes.profileField}>
           <Box sx={{ width: '49.25%' }}>
             <Paragraph size='medium' textAlign='left'>
               Address line 2
