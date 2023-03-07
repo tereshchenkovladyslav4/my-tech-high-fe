@@ -7,7 +7,7 @@ import { useStyles } from './style'
 
 const MaximumSpacing: React.FC = () => {
   const styles = useStyles()
-  const localValues: Array<string> = ['NONE', 'DAYS', 'WEEKS', 'MONTHS']
+  const localValues: Array<string> = ['None', 'Days', 'Weeks', 'Months']
 
   const { values, setFieldValue, handleChange, touched, errors } = useFormikContext<ImmunizationsData>()
 
