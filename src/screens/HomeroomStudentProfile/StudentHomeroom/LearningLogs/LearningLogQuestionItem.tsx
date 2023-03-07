@@ -76,14 +76,20 @@ export const LearningLogQuestionItem: React.FC<LearningLogQuestionItemProps> = (
       case QuestionTypes.DROPDOWN:
         return (
           <Box sx={{ position: 'relative' }}>
+            <Subtitle
+              fontWeight='700'
+              color={showError && question?.required && !question?.answer ? MthColor.RED : MthColor.SYSTEM_02}
+              sx={{ cursor: 'pointer', fontSize: '18px' }}
+            >
+              {`${extractContent(question.question)} ${question?.required ? '*' : ''}`}
+            </Subtitle>
             <DropDown
               dropDownItems={question?.Options as DropDownItem[]}
-              placeholder={`${extractContent(question.question)} ${question?.required ? '*' : ''}`}
-              labelTop
+              placeholder={'Select'}
               defaultValue={question?.answer as string}
               setParentValue={(value) => handleChangeValue({ ...question, answer: value })}
               size='medium'
-              sx={{ m: 0 }}
+              sx={{ m: 0, mt: 2 }}
               error={{
                 error: showError && question?.required && !question?.answer,
                 errorMsg: 'Required',
@@ -98,6 +104,9 @@ export const LearningLogQuestionItem: React.FC<LearningLogQuestionItemProps> = (
               label={`${extractContent(question.question)} ${question?.required ? '*' : ''}`}
               checked={!!question?.answer}
               onChange={(e) => handleChangeValue({ ...question, answer: e.target.checked })}
+              labelSx={{
+                color: showError && question?.required && question?.answer == undefined ? MthColor.RED : MthColor.BLACK,
+              }}
             />
             {showError && question?.required && question?.answer == undefined && <FormError error={'Required'} />}
           </Box>
@@ -106,20 +115,24 @@ export const LearningLogQuestionItem: React.FC<LearningLogQuestionItemProps> = (
         return (
           <Box sx={{ position: 'relative' }}>
             <Subtitle fontWeight='700' color={MthColor.SYSTEM_02} sx={{ cursor: 'pointer', fontSize: '18px' }}>
-              {`${extractContent(question.question)} ${question?.required ? '*' : ''}`}
+              {`${extractContent(question.question)}`}
             </Subtitle>
           </Box>
         )
       case QuestionTypes.UPLOAD:
         return (
           <Box>
-            <Subtitle fontWeight='600' sx={{ cursor: 'pointer', fontSize: '14px', paddingY: 1 }}>
+            <Subtitle
+              fontWeight='600'
+              sx={{
+                cursor: 'pointer',
+                fontSize: '14px',
+                paddingY: 1,
+                color: showError && question?.required && question?.answer == undefined ? MthColor.RED : MthColor.BLACK,
+              }}
+            >
               {`${extractContent(question.question)} ${question?.required ? '*' : ''}`}
             </Subtitle>
-            <MthBulletEditor
-              setValue={(val) => handleChangeValue({ ...question, answer: val })}
-              value={question.answer as string}
-            />
             <Button
               data-testid='upload-button'
               sx={{ ...mthButtonClasses.roundDarkGray, padding: '8px 16px', height: 'unset', marginTop: 3 }}
@@ -132,7 +145,15 @@ export const LearningLogQuestionItem: React.FC<LearningLogQuestionItemProps> = (
       case QuestionTypes.MULTIPLE_CHOSE:
         return (
           <Box sx={{ position: 'relative' }}>
-            <Subtitle fontWeight='600' sx={{ cursor: 'pointer', fontSize: '14px', paddingY: 1 }}>
+            <Subtitle
+              fontWeight='600'
+              sx={{
+                cursor: 'pointer',
+                fontSize: '14px',
+                paddingY: 1,
+                color: showError && question?.required && !question.answer ? MthColor.RED : MthColor.BLACK,
+              }}
+            >
               {`${extractContent(question.question)} ${question?.required ? '*' : ''}`}
             </Subtitle>
             <MthRadioGroup
@@ -181,8 +202,9 @@ export const LearningLogQuestionItem: React.FC<LearningLogQuestionItemProps> = (
                   : []
               }
               haveSelectAll={false}
+              showError={showError && question?.required && !question.answer}
+              error='Required'
             />
-            {showError && question?.required && question?.answer == undefined && <FormError error={'Required'} />}
           </Box>
         )
       }
@@ -219,7 +241,7 @@ export const LearningLogQuestionItem: React.FC<LearningLogQuestionItemProps> = (
 
   return (
     <>
-      <Grid item xs={12} sx={{ paddingLeft: question?.parent_slug ? '50px' : 0 }}>
+      <Grid item xs={12}>
         {renderQuestionItem()}
       </Grid>
       {question.Validations?.includes('can_upload') && (

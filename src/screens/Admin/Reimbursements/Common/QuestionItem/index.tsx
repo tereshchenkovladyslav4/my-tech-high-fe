@@ -36,12 +36,14 @@ import {
   CourseType,
   ReduceFunds,
   ReimbursementQuestionSlug,
+  ReimbursementRequestStatus,
 } from '@mth/enums'
 import { SchedulePeriod } from '@mth/graphql/models/schedule-period'
 import { getStudentSchedulePeriodsQuery } from '@mth/graphql/queries/schedule-period'
-import { ReimbursementQuestion, ReimbursementReceipt, SchoolYear, Student } from '@mth/models'
+import { ReimbursementQuestion, ReimbursementReceipt, ReimbursementRequest, SchoolYear, Student } from '@mth/models'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { mthButtonClasses } from '@mth/styles/button.style'
+import { reimbursementRequestStatus } from '@mth/utils/reimbursement-request-status.util'
 import { arrayToString, extractContent } from '@mth/utils/string.util'
 
 type QuestionProps = {
@@ -59,6 +61,12 @@ type QuestionProps = {
   students: Student[]
   receipts: ReimbursementReceipt[]
   setReceipts: (value: ReimbursementReceipt[]) => void
+  sameRequests: ReimbursementRequest[]
+  setSameRequests: (value: ReimbursementRequest[]) => void
+  totalChecked: boolean
+  setTotalChecked: (value: boolean) => void
+  totalAmount: number
+  setTotalAmount: (value: number) => void
   setSignatureRef: (value: SignatureCanvas | null) => void
   setSignatureName: (value: string) => void
   setSelectedStudentId: (value: number) => void
@@ -95,6 +103,12 @@ export const QuestionItem: React.FC<QuestionProps> = ({
   students,
   receipts,
   setReceipts,
+  sameRequests,
+  setSameRequests,
+  totalChecked,
+  setTotalChecked,
+  totalAmount,
+  setTotalAmount,
   setSignatureRef,
   setSignatureName,
   setSelectedStudentId,
@@ -163,6 +177,7 @@ export const QuestionItem: React.FC<QuestionProps> = ({
   }
 
   const getTotalAmount = (): number => {
+    if (isDirectOrder) return totalAmount
     if (receipts?.length > 0) {
       let sum = 0
       receipts?.forEach((receipt) => {
@@ -303,6 +318,107 @@ export const QuestionItem: React.FC<QuestionProps> = ({
     )
   }
 
+  const totalAmountColor = (status: ReimbursementRequestStatus): string => {
+    switch (status) {
+      case ReimbursementRequestStatus.SUBMITTED:
+      case ReimbursementRequestStatus.RESUBMITTED:
+        return MthColor.MTHBLUE
+      case ReimbursementRequestStatus.UPDATES_REQUIRED:
+        return MthColor.RED
+
+      default:
+        return MthColor.GREEN
+    }
+  }
+
+  const renderTotalAmount = () => {
+    return (
+      <>
+        <Box sx={{ display: 'flex', width: '100%', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Subtitle fontWeight='700' color={MthColor.SYSTEM_02} sx={{ cursor: 'pointer', fontSize: '20px' }}>
+            Total Amount Requested
+          </Subtitle>
+          <Box sx={{ minWidth: '200px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            {isDirectOrder ? (
+              <MthNumberInput
+                numberType='price'
+                placeholder='Entry'
+                size='small'
+                InputLabelProps={{ shrink: true }}
+                className='MthFormField'
+                value={+(+(totalAmount || 0))?.toFixed(2)}
+                onChangeValue={(value: number | null) => {
+                  setTotalAmount(value || 0)
+                }}
+                error={showError && question?.required && !question.answer}
+                sx={{ width: '120px' }}
+              />
+            ) : (
+              <Subtitle fontWeight='700' color={MthColor.SYSTEM_02} sx={{ cursor: 'pointer', fontSize: '20px' }}>
+                {`$${getTotalAmount()?.toFixed(2)}`}
+              </Subtitle>
+            )}
+            <MthCheckbox
+              checked={totalChecked}
+              onChange={() => {
+                setTotalChecked(!totalChecked)
+              }}
+            />
+          </Box>
+        </Box>
+        <Box sx={{ borderBottom: `1px solid ${MthColor.LIGHTGRAY}`, my: 1, mx: -2 }}></Box>
+        {sameRequests.map((item, index) => (
+          <Box
+            key={index}
+            sx={{ display: 'flex', width: '100%', alignItems: 'center', justifyContent: 'space-between' }}
+          >
+            <Subtitle
+              fontWeight='700'
+              color={totalAmountColor(item.status)}
+              sx={{ cursor: 'pointer', fontSize: '18px' }}
+            >
+              {item.is_direct_order ? 'Direct Order' : 'Reimbursement'} - {reimbursementRequestStatus(item.status)}
+            </Subtitle>
+            <Box sx={{ minWidth: '200px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Subtitle
+                fontWeight='700'
+                color={totalAmountColor(item.status)}
+                sx={{ cursor: 'pointer', fontSize: '18px' }}
+              >
+                {`$${item.total_amount?.toFixed(2)}`}
+              </Subtitle>
+              <MthCheckbox
+                checked={item.checked || false}
+                onChange={() => {
+                  setSameRequests(
+                    sameRequests.map((x) => {
+                      if (x.reimbursement_request_id == item.reimbursement_request_id) x.checked = !x.checked
+                      return { ...x }
+                    }),
+                  )
+                }}
+              />
+            </Box>
+          </Box>
+        ))}
+        {!!sameRequests.length && <Box sx={{ borderBottom: `1px solid ${MthColor.LIGHTGRAY}`, my: 1, mx: -2 }}></Box>}
+        <Box sx={{ display: 'flex', width: '100%', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Subtitle fontWeight='700' color={MthColor.SYSTEM_02} sx={{ cursor: 'pointer', fontSize: '20px' }}>
+            Sum
+          </Subtitle>
+          <Box sx={{ minWidth: '200px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Subtitle fontWeight='700' color={MthColor.SYSTEM_02} sx={{ cursor: 'pointer', fontSize: '20px' }}>
+              {`$${(
+                sameRequests.filter((x) => !!x.checked).reduce((acc, cur) => (acc = acc + (cur.total_amount || 0)), 0) +
+                (totalChecked ? getTotalAmount() : 0)
+              ).toFixed(2)}`}
+            </Subtitle>
+          </Box>
+        </Box>
+      </>
+    )
+  }
+
   const renderQuestion = (question: ReimbursementQuestion) => {
     if (
       (roleLevel !== RoleLevel.SUPER_ADMIN &&
@@ -354,7 +470,7 @@ export const QuestionItem: React.FC<QuestionProps> = ({
               }}
             >
               <Paragraph size={'large'} sx={{ paddingY: 1, textAlign: 'center' }}>
-                {'Type full legal parent name and provide a digital signature below:'}
+                {'Type full legal parent name and provide a digital signature below.'}
               </Paragraph>
               <Box sx={{ position: 'relative' }}>
                 <TextField
@@ -414,19 +530,23 @@ export const QuestionItem: React.FC<QuestionProps> = ({
           <Grid item xs={12}>
             <Box sx={{ position: 'relative' }}>
               {question?.slug == ReimbursementQuestionSlug.TOTAL_AMOUNT ? (
-                <MthNumberInput
-                  numberType='price'
-                  label={extractContent(question?.question)}
-                  placeholder='Entry'
-                  fullWidth
-                  InputLabelProps={{ shrink: true }}
-                  className='MthFormField'
-                  value={+(+(question?.answer || 0))?.toFixed(2)}
-                  onChangeValue={(value: number | null) => {
-                    handleChangeValue(question, value || 0)
-                  }}
-                  error={showError && question?.required && !question.answer}
-                />
+                roleLevel == RoleLevel.SUPER_ADMIN && !isToBuildForm ? (
+                  renderTotalAmount()
+                ) : (
+                  <MthNumberInput
+                    numberType='price'
+                    label={extractContent(question?.question)}
+                    placeholder='Entry'
+                    fullWidth
+                    InputLabelProps={{ shrink: true }}
+                    className='MthFormField'
+                    value={+(+(question?.answer || 0))?.toFixed(2)}
+                    onChangeValue={(value: number | null) => {
+                      handleChangeValue(question, value || 0)
+                    }}
+                    error={showError && question?.required && !question.answer}
+                  />
+                )
               ) : (
                 <TextField
                   name={extractContent(question.question)}
@@ -476,16 +596,19 @@ export const QuestionItem: React.FC<QuestionProps> = ({
         return (
           <Grid item xs={12}>
             <Box sx={{ position: 'relative' }}>
-              {question.slug === ReimbursementQuestionSlug.TOTAL_AMOUNT && (
-                <Box sx={{ display: 'flex', width: '100%', justifyContent: 'space-between' }}>
-                  <Subtitle fontWeight='700' color={MthColor.SYSTEM_02} sx={{ cursor: 'pointer', fontSize: '20px' }}>
-                    {extractContent(question.question)}
-                  </Subtitle>
-                  <Subtitle fontWeight='700' color={MthColor.SYSTEM_02} sx={{ cursor: 'pointer', fontSize: '20px' }}>
-                    {`$${getTotalAmount()?.toFixed(2)}`}
-                  </Subtitle>
-                </Box>
-              )}
+              {question.slug === ReimbursementQuestionSlug.TOTAL_AMOUNT &&
+                (roleLevel == RoleLevel.SUPER_ADMIN && !isToBuildForm ? (
+                  renderTotalAmount()
+                ) : (
+                  <Box sx={{ display: 'flex', width: '100%', justifyContent: 'space-between' }}>
+                    <Subtitle fontWeight='700' color={MthColor.SYSTEM_02} sx={{ cursor: 'pointer', fontSize: '20px' }}>
+                      {extractContent(question.question)}
+                    </Subtitle>
+                    <Subtitle fontWeight='700' color={MthColor.SYSTEM_02} sx={{ cursor: 'pointer', fontSize: '20px' }}>
+                      {`$${getTotalAmount()?.toFixed(2)}`}
+                    </Subtitle>
+                  </Box>
+                ))}
               {question.slug !== ReimbursementQuestionSlug.TOTAL_AMOUNT && (
                 <>
                   <Subtitle fontWeight='700' color={MthColor.SYSTEM_02} sx={{ cursor: 'pointer', fontSize: '18px' }}>
@@ -660,7 +783,7 @@ export const QuestionItem: React.FC<QuestionProps> = ({
           } else {
             tempPeriods.push({
               label: `Period ${schedulePeriod?.Period?.period} - ${schedulePeriod?.Title?.Subject?.name}`,
-              value: schedulePeriod?.PeriodId,
+              value: `${schedulePeriod?.PeriodId}`,
             })
           }
         })

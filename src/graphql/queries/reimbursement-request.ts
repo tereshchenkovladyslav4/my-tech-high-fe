@@ -170,6 +170,13 @@ export const getReimbursementRequestQuery = gql`
         file_name
         amount
       }
+      SameTypeRequests {
+        reimbursement_request_id
+        form_type
+        is_direct_order
+        total_amount
+        status
+      }
     }
   }
 `

@@ -240,7 +240,7 @@ const LearningLogs: React.FC<LearningLogsProps> = ({
           >{`${currentStudent?.person?.first_name}'s Learning Logs`}</Subtitle>
           <Box sx={{ paddingX: 3, marginY: 'auto', cursor: 'pointer' }}>
             <Tooltip title='Download' placement='top'>
-              <img src={DownloadFileIcon} alt='Download Icon' />
+              <img width='16px' src={DownloadFileIcon} alt='Download Icon' />
             </Tooltip>
           </Box>
         </Box>
@@ -254,17 +254,22 @@ const LearningLogs: React.FC<LearningLogsProps> = ({
           sx={courseCatalogHeaderClasses.toggleButtonGroup}
         >
           <ToggleButton value={true}>Show All</ToggleButton>
-          <ToggleButton value={false}>Hide Graded</ToggleButton>
+          <ToggleButton sx={{ marginLeft: '0px !important' }} value={false}>
+            Hide Graded
+          </ToggleButton>
         </ToggleButtonGroup>
       </Box>
       <Box sx={{ paddingY: 3 }}>
-        <Pagination
-          setParentLimit={handleChangePageLimit}
-          handlePageChange={handlePageChange}
-          defaultValue={paginatinLimit || 25}
-          numPages={Math.ceil((totalLogs as number) / paginatinLimit) || 0}
-          currentPage={currentPage}
-        />
+        <Box sx={{ zoom: '0.7', paddingX: '20px' }}>
+          <Pagination
+            setParentLimit={handleChangePageLimit}
+            handlePageChange={handlePageChange}
+            defaultValue={paginatinLimit || 25}
+            numPages={Math.ceil((totalLogs as number) / paginatinLimit) || 0}
+            currentPage={currentPage}
+          />
+        </Box>
+
         <Box sx={{ mt: 2 }}>
           <MthTable
             items={tableData}

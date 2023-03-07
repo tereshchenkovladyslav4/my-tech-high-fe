@@ -97,14 +97,14 @@ const MthCheckboxList: React.FC<MthCheckboxListProps> = ({
       {!!checkboxLists?.length && (
         <Box>
           {!!title && (
-            <Paragraph size='large' fontWeight='700' sx={{ lineHeight: '22px' }} color={MthColor.SYSTEM_02}>
+            <Paragraph
+              size='large'
+              fontWeight='700'
+              sx={{ lineHeight: '22px' }}
+              color={showError ? MthColor.RED : MthColor.SYSTEM_02}
+            >
               {title}
             </Paragraph>
-          )}
-          {showError && (
-            <Subtitle size='small' color={MthColor.RED} fontWeight='700'>
-              {error}
-            </Subtitle>
           )}
         </Box>
       )}
@@ -121,6 +121,11 @@ const MthCheckboxList: React.FC<MthCheckboxListProps> = ({
         />
       )}
       {renderLists()}
+      {showError && (
+        <Subtitle size='small' color={MthColor.RED} fontWeight='700'>
+          {error}
+        </Subtitle>
+      )}
     </Box>
   )
 }

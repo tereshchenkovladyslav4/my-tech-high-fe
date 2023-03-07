@@ -55,6 +55,12 @@ type SortableContainerProps = {
   students: Student[]
   receipts: ReimbursementReceipt[]
   setReceipts: (value: ReimbursementReceipt[]) => void
+  sameRequests: ReimbursementRequest[]
+  setSameRequests: (value: ReimbursementRequest[]) => void
+  totalChecked: boolean
+  setTotalChecked: (value: boolean) => void
+  totalAmount: number
+  setTotalAmount: (value: number) => void
   setSignatureRef: (value: SignatureCanvas | null) => void
   setSignatureName: (value: string) => void
   setSelectedStudentId: (value: number) => void
@@ -80,6 +86,12 @@ const SortableListContainer = SortableContainer(
     students,
     receipts,
     setReceipts,
+    sameRequests,
+    setSameRequests,
+    totalChecked,
+    setTotalChecked,
+    totalAmount,
+    setTotalAmount,
     setSignatureRef,
     setSignatureName,
     setSelectedStudentId,
@@ -107,6 +119,12 @@ const SortableListContainer = SortableContainer(
               students={students}
               receipts={receipts}
               setReceipts={setReceipts}
+              sameRequests={sameRequests}
+              setSameRequests={setSameRequests}
+              totalChecked={totalChecked}
+              setTotalChecked={setTotalChecked}
+              totalAmount={totalAmount}
+              setTotalAmount={setTotalAmount}
               setSignatureRef={setSignatureRef}
               setSignatureName={setSignatureName}
               setSelectedStudentId={setSelectedStudentId}
@@ -160,6 +178,9 @@ export const RequestForm: React.FC<RequestFormProps> = ({
   const [signatureFileId, setSignatureFileId] = useState<number>(0)
   const [signatureFileUrl, setSignatureFileUrl] = useState<string>('')
   const [receipts, setReceipts] = useState<ReimbursementReceipt[]>([])
+  const [sameRequests, setSameRequests] = useState<ReimbursementRequest[]>([])
+  const [totalChecked, setTotalChecked] = useState<boolean>(true)
+  const [totalAmount, setTotalAmount] = useState<number>(0)
 
   const students = useMemo(() => {
     if (isToBuildForm) return []
@@ -246,9 +267,13 @@ export const RequestForm: React.FC<RequestFormProps> = ({
         total_amount += receipt?.amount || 0
       })
     } else {
-      total_amount = +(
-        (questions?.find((item) => item?.slug == ReimbursementQuestionSlug.TOTAL_AMOUNT)?.answer as number) || 0
-      )
+      if (roleLevel == RoleLevel.SUPER_ADMIN) {
+        total_amount = totalAmount || 0
+      } else {
+        total_amount = +(
+          (questions?.find((item) => item?.slug == ReimbursementQuestionSlug.TOTAL_AMOUNT)?.answer as number) || 0
+        )
+      }
     }
 
     const meta: { [key: string]: string | number | boolean } = {}
@@ -468,6 +493,8 @@ export const RequestForm: React.FC<RequestFormProps> = ({
       setSelectedStudentId(selectedReimbursementRequest?.StudentId)
       setSelectedFormType(selectedReimbursementRequest?.form_type)
       setReceipts(selectedReimbursementRequest?.ReimbursementReceipts || [])
+      setSameRequests(selectedReimbursementRequest?.SameTypeRequests || [])
+      setTotalAmount(selectedReimbursementRequest?.total_amount || 0)
     }
   }, [selectedReimbursementRequest])
 
@@ -511,6 +538,12 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                     students={students}
                     receipts={receipts}
                     setReceipts={setReceipts}
+                    sameRequests={sameRequests}
+                    setSameRequests={setSameRequests}
+                    totalChecked={totalChecked}
+                    setTotalChecked={setTotalChecked}
+                    totalAmount={totalAmount}
+                    setTotalAmount={setTotalAmount}
                     setSignatureRef={setSignatureRef}
                     setSignatureName={setSignatureName}
                     setSelectedStudentId={setSelectedStudentId}

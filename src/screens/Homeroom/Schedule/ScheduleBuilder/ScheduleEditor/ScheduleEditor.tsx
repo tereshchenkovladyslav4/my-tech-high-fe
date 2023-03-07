@@ -631,6 +631,13 @@ const ScheduleEditor: React.FC<ScheduleEditorProps> = ({
       schedule.CourseType = CourseType.MTH_DIRECT
     }
 
+    if (!!multiProvider && schedule.Title?.Providers?.length === 1) {
+      const provider = schedule.Title?.Providers[0]
+      if (provider?.Courses?.length === 1) {
+        schedule.Course = provider?.Courses[0]
+      }
+    }
+
     if (
       isSecondSemester &&
       hasUnlockedPeriods &&

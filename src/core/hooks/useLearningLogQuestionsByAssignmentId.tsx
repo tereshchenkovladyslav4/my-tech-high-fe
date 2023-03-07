@@ -31,15 +31,21 @@ export const useLearningLogQuestionsByAssignmentId = (
   useEffect(() => {
     if (!learningLogQuestionLoading && learningLogQuestionData?.getLearningLogQuestionByAssignmentId) {
       setQuestions(
-        learningLogQuestionData?.getLearningLogQuestionByAssignmentId?.map((question: LearningLogQuestion) => ({
-          ...question,
-          required: (JSON.parse(question.validations || '[]') as string[])?.includes('required') ? true : false,
-          Validations: JSON.parse(question.validations || '[]'),
-          Options: JSON.parse(question.options || '[]'),
-          Grades: JSON.parse(question.grades || '[]'),
-          grades: JSON.parse(question.grades || '[]'),
-          active: !question.parent_slug ? true : false,
-        })) as LearningLogQuestion[],
+        learningLogQuestionData?.getLearningLogQuestionByAssignmentId
+          ?.sort((a: LearningLogQuestion, b: LearningLogQuestion) => {
+            if (a.order > b.order) return 1
+            if (a.order < b.order) return -1
+            return 0
+          })
+          .map((question: LearningLogQuestion) => ({
+            ...question,
+            required: (JSON.parse(question.validations || '[]') as string[])?.includes('required') ? true : false,
+            Validations: JSON.parse(question.validations || '[]'),
+            Options: JSON.parse(question.options || '[]'),
+            Grades: JSON.parse(question.grades || '[]'),
+            grades: JSON.parse(question.grades || '[]'),
+            active: !question.parent_slug ? true : false,
+          })) as LearningLogQuestion[],
       )
     }
   }, [learningLogQuestionLoading, learningLogQuestionData])

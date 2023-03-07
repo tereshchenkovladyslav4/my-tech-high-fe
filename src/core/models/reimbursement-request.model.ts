@@ -23,4 +23,8 @@ export type ReimbursementRequest = {
   ReimbursementRequestEmails: ReimbursementRequestEmail[]
   ReimbursementReceipts?: ReimbursementReceipt[]
   SchoolYear?: SchoolYear
+  SameTypeRequests: ReimbursementRequest[]
+
+  // Temp Fields
+  checked?: boolean
 }

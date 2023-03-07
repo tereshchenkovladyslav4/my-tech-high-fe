@@ -86,25 +86,27 @@ export const RequestFormEdit: React.FC<RequestFormEditProps> = ({
             </Box>
           </Grid>
         ) : (
-          <Grid item xs={12}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 3 }}>
-              <Button
-                sx={mthButtonClasses.green}
-                onClick={() => onSubmitRequests(values, ReimbursementRequestStatus.APPROVED)}
-              >
-                Approve
-              </Button>
-              <Button
-                sx={mthButtonClasses.red}
-                onClick={() => onSubmitRequests(values, ReimbursementRequestStatus.UPDATES_REQUIRED)}
-              >
-                Updates Required
-              </Button>
-              <Button sx={mthButtonClasses.gray} onClick={() => onSubmitRequests(values)}>
-                Save Changes
-              </Button>
-            </Box>
-          </Grid>
+          roleLevel == RoleLevel.SUPER_ADMIN && (
+            <Grid item xs={12}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 3 }}>
+                <Button
+                  sx={mthButtonClasses.green}
+                  onClick={() => onSubmitRequests(values, ReimbursementRequestStatus.APPROVED)}
+                >
+                  Approve
+                </Button>
+                <Button
+                  sx={mthButtonClasses.red}
+                  onClick={() => onSubmitRequests(values, ReimbursementRequestStatus.UPDATES_REQUIRED)}
+                >
+                  Updates Required
+                </Button>
+                <Button sx={mthButtonClasses.gray} onClick={() => onSubmitRequests(values)}>
+                  Save Changes
+                </Button>
+              </Box>
+            </Grid>
+          )
         )}
         {isToBuildForm && (
           <Grid item xs={12}>

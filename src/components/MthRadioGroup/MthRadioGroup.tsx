@@ -34,11 +34,6 @@ const MthRadioGroup: React.FC<MthRadioGroupProps> = ({
           {description}
         </Paragraph>
       )}
-      {isError && (
-        <Subtitle sx={{ color: MthColor.RED, fontSize: '12px', fontWeight: 600, lineHeight: '20px' }}>
-          Required
-        </Subtitle>
-      )}
       <RadioGroup aria-label={ariaLabel} name='radio-buttons-group'>
         {options?.map((option, index) => (
           <FormControlLabel
@@ -69,6 +64,11 @@ const MthRadioGroup: React.FC<MthRadioGroupProps> = ({
           />
         ))}
       </RadioGroup>
+      {isError && (
+        <Subtitle sx={{ color: MthColor.RED, fontSize: '12px', fontWeight: 600, lineHeight: '20px' }}>
+          Required
+        </Subtitle>
+      )}
     </Box>
   )
 }

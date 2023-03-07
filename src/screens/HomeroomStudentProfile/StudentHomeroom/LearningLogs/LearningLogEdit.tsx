@@ -68,14 +68,21 @@ export const LearningLogEdit: React.FC<LearningLogEditProps> = ({
     const newQuestions = [...learningLogQuestions]
     newQuestions[questionIndex] = question
     newQuestions.forEach((item: LearningLogQuestion, index: number) => {
-      if (item.parent_slug) {
-        const parent = newQuestions.find((x) => item.parent_slug == x.slug)
+      if (item.parent_slug == question.slug) {
         if (
-          (parent?.type !== QuestionTypes.AGREEMENT &&
-            parent?.answer &&
-            parent?.Options?.find((x: DropDownItem | RadioGroupOption) => x.value == parent.answer)?.action == 2 &&
-            parent?.active) ||
-          (parent?.type === QuestionTypes.AGREEMENT && !!parent.answer)
+          (question?.type !== QuestionTypes.AGREEMENT &&
+            question?.answer &&
+            question?.Options?.find((x: DropDownItem | RadioGroupOption) => x.value == question.answer)?.action == 2 &&
+            question?.active) ||
+          (question?.type === QuestionTypes.AGREEMENT && !!question.answer) ||
+          (question?.type === QuestionTypes.MULTIPLE_CHOSE &&
+            !!question.answer &&
+            JSON.parse(question.answer as string)?.find((x: RadioGroupOption) => x.value == true)?.action == 2) ||
+          (question?.type === QuestionTypes.CHECK_BOX &&
+            question?.answer &&
+            question.Options?.filter(
+              (option) => JSON.parse(question.answer as string)?.includes(option?.value) && option?.action == 2,
+            ))
         ) {
           newQuestions[index] = {
             ...item,
@@ -98,7 +105,12 @@ export const LearningLogEdit: React.FC<LearningLogEditProps> = ({
     if (questions?.length > 0) {
       let invalidationCount = 0
       questions?.map((question) => {
-        if (!question.parent_slug && !question.answer && question.required) {
+        if (
+          !question.parent_slug &&
+          !question.answer &&
+          question.required &&
+          question.type !== QuestionTypes.INFORMATION
+        ) {
           invalidationCount++
         }
         if (question.parent_slug) {
@@ -108,7 +120,15 @@ export const LearningLogEdit: React.FC<LearningLogEditProps> = ({
               parent?.answer &&
               parent?.Options?.find((x: DropDownItem | RadioGroupOption) => x.value == parent.answer)?.action == 2 &&
               parent?.active) ||
-            (parent?.type === QuestionTypes.AGREEMENT && !!parent.answer)
+            (parent?.type === QuestionTypes.AGREEMENT && !!parent.answer) ||
+            (parent?.type === QuestionTypes.MULTIPLE_CHOSE &&
+              !!parent.answer &&
+              JSON.parse(parent.answer as string)?.find((x: RadioGroupOption) => x.value == true)?.action == 2) ||
+            (parent?.type === QuestionTypes.CHECK_BOX &&
+              parent?.answer &&
+              parent.Options?.filter(
+                (option) => JSON.parse(parent.answer as string)?.includes(option?.value) && option?.action == 2,
+              ))
           ) {
             if (!question.answer && question.required) {
               invalidationCount++

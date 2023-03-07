@@ -19,14 +19,14 @@ export const StudentSchedule: React.FC = () => {
     {
       key: 'Period',
       label: 'Period',
-      width: '30%',
+      width: '40%',
       formatter: (item: MthTableRowItem<ScheduleData>) => {
         return (
           <Box sx={{ display: 'flex' }}>
-            <Typography sx={{ py: '4px', fontSize: '13px', fontWeight: '700', color: MthColor.SYSTEM_06 }}>
+            <Typography sx={{ py: '4px', fontSize: '13px', fontWeight: '700', color: MthColor.SYSTEM_01 }}>
               {('0' + item.rawData.period).slice(-2)}
             </Typography>
-            <Typography sx={{ py: '4px', paddingX: 2, fontSize: '13px', fontWeight: '700', color: MthColor.SYSTEM_06 }}>
+            <Typography sx={{ py: '4px', paddingX: 2, fontSize: '13px', fontWeight: '500', color: MthColor.SYSTEM_01 }}>
               {item.rawData.Period?.category}
             </Typography>
           </Box>
@@ -36,11 +36,11 @@ export const StudentSchedule: React.FC = () => {
     {
       key: 'Subject',
       label: 'Subject',
-      width: '70%',
+      width: '60%',
       formatter: (item: MthTableRowItem<ScheduleData>) => {
         return (
           <Box>
-            <Typography sx={{ fontSize: '13px', fontWeight: '500', color: MthColor.SYSTEM_06 }}>
+            <Typography sx={{ fontSize: '13px', fontWeight: '500', color: MthColor.SYSTEM_01 }}>
               {item.rawData.Subject?.name || item.rawData.Title?.name}
             </Typography>
           </Box>
@@ -108,7 +108,7 @@ export const StudentSchedule: React.FC = () => {
               <Subtitle sx={{ fontSize: '16px', fontWeight: 700 }}>Schedule</Subtitle>
               <Box sx={{ paddingX: 3, marginY: 'auto', cursor: 'pointer' }}>
                 <Tooltip title='Download' placement='top'>
-                  <img src={DownloadFileIcon} alt='Download Icon' />
+                  <img width='16px' src={DownloadFileIcon} alt='Download Icon' />
                 </Tooltip>
               </Box>
             </Box>
@@ -121,13 +121,19 @@ export const StudentSchedule: React.FC = () => {
                 )
               }
             >
-              Update/View All
+              Update / View All
             </Paragraph>
           </Box>
           {hasSecondSemester && (
             <Typography sx={studentScheduleClasses.semesterTitle}>{MthTitle.FIRST_SEMESTER}</Typography>
           )}
-          <MthTable items={tableData} fields={fields} oddBg={false} sx={studentScheduleClasses.customTable} />
+          <MthTable
+            items={tableData}
+            fields={fields}
+            oddBg={false}
+            sx={studentScheduleClasses.customTable}
+            labelSize={13}
+          />
           {hasSecondSemester && (
             <Typography sx={studentScheduleClasses.semesterTitle}>{MthTitle.SECOND_SEMESTER}</Typography>
           )}
