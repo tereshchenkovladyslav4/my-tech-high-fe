@@ -108,7 +108,7 @@ const WithdrawalPage: React.FC<WithdrawalPageProps> = ({
       const firstWithdrawal = withdrawList.find(
         (withdrawal) => withdrawal.withdrawal_id === parseInt(checkedWithdrawalIds[0]),
       )
-      setEmailMidTemplate(firstWithdrawal.Student.applications[0].midyear_application)
+      setEmailMidTemplate(firstWithdrawal?.Student?.applications[0].midyear_application)
     }
   }, [checkedWithdrawalIds])
 

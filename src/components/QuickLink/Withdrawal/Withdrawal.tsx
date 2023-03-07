@@ -514,14 +514,24 @@ const Withdrawal: React.FC<{
             value: student.student_id,
           }))
 
-        let studentCnt = 0
+        const errorField = {}
         const questionList: Question[] = []
 
         questionsData.questionsByRegion.map((v: Question) => {
-          if (isEditable()) {
-            if (v.slug === 'student') {
-              if (studentCnt === 0) {
-                studentCnt++
+          if (!errorField[v.slug]) {
+            errorField[v.slug] = 1
+            if (isEditable()) {
+              if (v.slug === 'student') {
+                questionList.push({
+                  ...v,
+                  options: JSON.parse(v.options),
+                  mainQuestion: v.mainQuestion == 1,
+                  defaultQuestion: v.defaultQuestion == 1,
+                  required: v.required == 1,
+                  response: (v.question === 'Student' && studentId) || '',
+                  studentId: studentId,
+                })
+              } else {
                 questionList.push({
                   ...v,
                   options: JSON.parse(v.options),
@@ -533,30 +543,17 @@ const Withdrawal: React.FC<{
                 })
               }
             } else {
-              questionList.push({
-                ...v,
-                options: JSON.parse(v.options),
-                mainQuestion: v.mainQuestion == 1,
-                defaultQuestion: v.defaultQuestion == 1,
-                required: v.required == 1,
-                response: (v.question === 'Student' && studentId) || '',
-                studentId: studentId,
-              })
-            }
-          } else {
-            if (v.slug !== 'student') {
-              questionList.push({
-                ...v,
-                options: JSON.parse(v.options),
-                mainQuestion: v.mainQuestion == 1,
-                defaultQuestion: v.defaultQuestion == 1,
-                required: v.required == 1,
-                response: (v.question === 'Student' && studentId) || '',
-                studentId: studentId,
-              })
-            } else {
-              if (studentCnt === 0) {
-                studentCnt++
+              if (v.slug !== 'student') {
+                questionList.push({
+                  ...v,
+                  options: JSON.parse(v.options),
+                  mainQuestion: v.mainQuestion == 1,
+                  defaultQuestion: v.defaultQuestion == 1,
+                  required: v.required == 1,
+                  response: (v.question === 'Student' && studentId) || '',
+                  studentId: studentId,
+                })
+              } else {
                 questionList.push({
                   ...v,
                   options: students,
@@ -606,20 +603,24 @@ const Withdrawal: React.FC<{
             if (!isEditable() && isSubmitting) {
               //	Check validation on parent side only
               const errors: { [key: string]: string } = {}
+              const errorField = {}
               filterAdditionalQuestions(values).forEach((val) => {
-                if (val.required && !val.response) {
-                  if (val.slug == 'signature') errors[val.id + 'entry'] = 'Required'
-                  else errors[val.id] = 'Required'
-                } else if (val.validation && !!val.response) {
-                  if (val.validation == ValidationType.NUMBER) {
-                    if (!isNumber.test(val.response.toString())) errors[val.id] = 'Please enter numbers only.'
-                  } else if (val.validation == ValidationType.EMAIL) {
-                    if (!isEmail.test(val.response.toString())) errors[val.id] = 'Please enter valid email address.'
+                if (!errorField[val.slug]) {
+                  errorField[val.slug] = 1
+                  if (val.required && !val.response) {
+                    if (val.slug == 'signature') errors[val.id + 'entry'] = 'Required'
+                    else errors[val.id] = 'Required'
+                  } else if (val.validation && !!val.response) {
+                    if (val.validation == ValidationType.NUMBER) {
+                      if (!isNumber.test(val.response.toString())) errors[val.id] = 'Please enter numbers only.'
+                    } else if (val.validation == ValidationType.EMAIL) {
+                      if (!isEmail.test(val.response.toString())) errors[val.id] = 'Please enter valid email address.'
+                    }
                   }
-                }
 
-                if (val.slug == 'signature' && signature?.current?.isEmpty()) {
-                  errors[val.id + 'signature'] = 'Required.'
+                  if (val.slug == 'signature' && signature?.current?.isEmpty()) {
+                    errors[val.id + 'signature'] = 'Required.'
+                  }
                 }
               })
 
@@ -764,7 +765,7 @@ const Withdrawal: React.FC<{
                   />
                   <List sx={{ width: '100%', py: 0 }}>
                     <QuestionItem
-                      questions={[values[values.length - 1]]}
+                      questions={[values.find((item) => item?.slug === 'signature')]}
                       questionTypes={QuestionTypes}
                       additionalQuestionTypes={QuestionTypes}
                       hasAction={isEditable()}
