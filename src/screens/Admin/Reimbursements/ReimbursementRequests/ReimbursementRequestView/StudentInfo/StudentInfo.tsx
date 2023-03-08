@@ -8,7 +8,12 @@ import { StudentInfoProps } from '@mth/screens/Admin/Reimbursements/Reimbursemen
 import { mthButtonClasses } from '@mth/styles/button.style'
 import { gradeText } from '@mth/utils/grade-text.util'
 
-export const StudentInfo: React.FC<StudentInfoProps> = ({ request, requestStatus, handleChangeRequestStatus }) => {
+export const StudentInfo: React.FC<StudentInfoProps> = ({
+  request,
+  requestStatus,
+  handleChangeRequestStatus,
+  setIsChanged,
+}) => {
   const epic1396story1486 = useFlag(EPIC_1396_STORY_1486)
   const epic1396story1568 = useFlag(EPIC_1396_STORY_1568)
 
@@ -79,6 +84,7 @@ export const StudentInfo: React.FC<StudentInfoProps> = ({ request, requestStatus
             borderNone={true}
             setParentValue={(value) => {
               handleChangeRequestStatus(value as ReimbursementRequestStatus)
+              setIsChanged(true)
             }}
           />
         </Box>

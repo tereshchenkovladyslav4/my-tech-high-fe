@@ -6,7 +6,7 @@ import BgOrange from '@mth/assets/quick-link-orange.png'
 import { CardGrid, CardItem } from '@mth/components/CardGrid'
 import { Layout } from '@mth/components/Layout'
 import PageHeader from '@mth/components/PageHeader'
-import { MthRoute, ReduceFunds, ReimbursementFormType } from '@mth/enums'
+import { MthRoute, MthTitle, ReduceFunds, ReimbursementFormType } from '@mth/enums'
 import { SchoolYear } from '@mth/models'
 import { SchoolYearDropDown } from '@mth/screens/Admin/Components/SchoolYearDropdown'
 import { getSchoolYear } from '@mth/screens/Admin/Reimbursements/services'
@@ -36,7 +36,7 @@ export const DirectOrderForms: React.FC = () => {
       if (schoolYear.direct_orders === ReduceFunds.TECHNOLOGY) {
         cardItems.push({
           id: index++,
-          icon: 'Custom-built',
+          icon: MthTitle.CUSTOM_BUILT.toString(),
           title: 'Edit',
           img: images[index % 2],
           isLink: false,
@@ -58,7 +58,7 @@ export const DirectOrderForms: React.FC = () => {
       if (schoolYear.direct_orders === ReduceFunds.SUPPLEMENTAL) {
         cardItems.push({
           id: index++,
-          icon: 'Supplemental Learning Funds',
+          icon: MthTitle.SUPPLEMENTAL_LEARNING_FUNDS.toString(),
           title: 'Edit',
           img: images[index % 2],
           isLink: false,

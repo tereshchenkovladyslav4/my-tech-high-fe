@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import React, { useContext, useMemo, useState } from 'react'
 import { useMutation } from '@apollo/client'
 import { Box, Button, Grid } from '@mui/material'
 import { cloneDeep } from 'lodash'
@@ -14,6 +14,7 @@ import { MthColor, StudentLearningLogStatus } from '@mth/enums'
 import { saveStudentLearningLogMutation } from '@mth/graphql/mutation/student-learning-log'
 import { useLearningLogQuestionsByAssignmentId } from '@mth/hooks/useLearningLogQuestionsByAssignmentId'
 import { Assignment, LearningLogQuestion } from '@mth/models'
+import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { requestComponentClasses } from '@mth/screens/Admin/Reimbursements/Common/styles'
 import { mthButtonClasses } from '@mth/styles/button.style'
 import { LearningLogQuestionItem } from './LearningLogQuestionItem'
@@ -29,6 +30,7 @@ export const LearningLogEdit: React.FC<LearningLogEditProps> = ({
   schoolYearId,
   setSelectedLearningLog,
 }) => {
+  const { me } = useContext(UserContext)
   const [selectedPageNumber, setSelectedPageNumber] = useState<number>(1)
   const [activeStep, setActiveStep] = useState<number>(0)
   const [showError, setShowError] = useState<boolean>(false)
@@ -37,8 +39,14 @@ export const LearningLogEdit: React.FC<LearningLogEditProps> = ({
   const totalPageCount = useMemo(() => {
     return learningLog?.page_count || 1
   }, [learningLog])
+  const currentStudent = useMemo(() => {
+    return me?.students?.find((student) => student?.student_id == currentStudentId)
+  }, [currentStudentId])
 
-  const { learningLogQuestions, setLearingLogQuestions } = useLearningLogQuestionsByAssignmentId(learningLog?.id)
+  const { learningLogQuestions, setLearingLogQuestions } = useLearningLogQuestionsByAssignmentId(
+    learningLog?.id,
+    currentStudent?.grade_levels?.at(-1)?.grade_level,
+  )
 
   const selectedQuestions = useMemo(() => {
     if (learningLogQuestions?.length) {

@@ -37,6 +37,7 @@ import {
   ReduceFunds,
   ReimbursementQuestionSlug,
   ReimbursementRequestStatus,
+  MthTitle,
 } from '@mth/enums'
 import { SchedulePeriod } from '@mth/graphql/models/schedule-period'
 import { getStudentSchedulePeriodsQuery } from '@mth/graphql/queries/schedule-period'
@@ -157,14 +158,9 @@ export const QuestionItem: React.FC<QuestionProps> = ({
           return []
         }
       case ReimbursementQuestionSlug.FORM_TYPE:
-        if (roleLevel === RoleLevel.PARENT && !!students?.length) {
-          return formTypeItems
-        } else {
-          return REIMBURSEMENT_FORM_TYPE_ITEMS
-        }
+        return isToBuildForm ? REIMBURSEMENT_FORM_TYPE_ITEMS : formTypeItems
       case ReimbursementQuestionSlug.PERIOD:
-        if (roleLevel === RoleLevel.PARENT) return periodsItems
-        else return []
+        return isToBuildForm ? [] : periodsItems
       default:
         return (question.Options as DropDownItem[])?.filter((option) => option.value) as DropDownItem[]
     }
@@ -338,7 +334,7 @@ export const QuestionItem: React.FC<QuestionProps> = ({
           <Subtitle fontWeight='700' color={MthColor.SYSTEM_02} sx={{ cursor: 'pointer', fontSize: '20px' }}>
             Total Amount Requested
           </Subtitle>
-          <Box sx={{ minWidth: '200px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Box sx={{ minWidth: '180px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             {isDirectOrder ? (
               <MthNumberInput
                 numberType='price'
@@ -349,9 +345,26 @@ export const QuestionItem: React.FC<QuestionProps> = ({
                 value={+(+(totalAmount || 0))?.toFixed(2)}
                 onChangeValue={(value: number | null) => {
                   setTotalAmount(value || 0)
+                  setIsChanged(true)
                 }}
                 error={showError && question?.required && !question.answer}
-                sx={{ width: '120px' }}
+                sx={{
+                  width: '120px',
+                  ml: '-14px',
+                  '.MuiInputAdornment-root': {
+                    marginRight: 0,
+                    '.MuiTypography-root': {
+                      fontSize: 20,
+                      fontWeight: 700,
+                      color: MthColor.SYSTEM_02,
+                    },
+                  },
+                  '.MuiOutlinedInput-input': {
+                    fontSize: 20,
+                    fontWeight: 700,
+                    padding: '4px 14px 4px 0',
+                  },
+                }}
               />
             ) : (
               <Subtitle fontWeight='700' color={MthColor.SYSTEM_02} sx={{ cursor: 'pointer', fontSize: '20px' }}>
@@ -379,7 +392,7 @@ export const QuestionItem: React.FC<QuestionProps> = ({
             >
               {item.is_direct_order ? 'Direct Order' : 'Reimbursement'} - {reimbursementRequestStatus(item.status)}
             </Subtitle>
-            <Box sx={{ minWidth: '200px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Box sx={{ minWidth: '180px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <Subtitle
                 fontWeight='700'
                 color={totalAmountColor(item.status)}
@@ -406,7 +419,7 @@ export const QuestionItem: React.FC<QuestionProps> = ({
           <Subtitle fontWeight='700' color={MthColor.SYSTEM_02} sx={{ cursor: 'pointer', fontSize: '20px' }}>
             Sum
           </Subtitle>
-          <Box sx={{ minWidth: '200px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Box sx={{ minWidth: '180px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <Subtitle fontWeight='700' color={MthColor.SYSTEM_02} sx={{ cursor: 'pointer', fontSize: '20px' }}>
               {`$${(
                 sameRequests.filter((x) => !!x.checked).reduce((acc, cur) => (acc = acc + (cur.total_amount || 0)), 0) +
@@ -733,31 +746,37 @@ export const QuestionItem: React.FC<QuestionProps> = ({
         const tempPeriods: DropDownItem[] = []
         if (isDirectOrder) {
           if (selectedCourseTypes?.includes(`${CourseType.CUSTOM_BUILT}`))
-            tempItems.push({ label: 'Custom-built', value: ReimbursementFormType.CUSTOM_BUILT.toString() })
+            tempItems.push({ label: MthTitle.CUSTOM_BUILT, value: ReimbursementFormType.CUSTOM_BUILT.toString() })
           if (selectedCourseTypes?.includes(`${CourseType.MTH_DIRECT}`)) {
             if (selectedYear.direct_orders === ReduceFunds.TECHNOLOGY)
-              tempItems.push({ label: 'Technology Allowance', value: ReimbursementFormType.TECHNOLOGY.toString() })
+              tempItems.push({
+                label: MthTitle.TECHNOLOGY_ALLOWANCE,
+                value: ReimbursementFormType.TECHNOLOGY.toString(),
+              })
             else if (selectedYear.direct_orders === ReduceFunds.SUPPLEMENTAL)
               tempItems.push({
-                label: 'Supplemental Learning Funds',
+                label: MthTitle.SUPPLEMENTAL_LEARNING_FUNDS,
                 value: ReimbursementFormType.SUPPLEMENTAL.toString(),
               })
           }
         } else {
           if (selectedCourseTypes?.includes(`${CourseType.CUSTOM_BUILT}`))
-            tempItems.push({ label: 'Custom-built', value: ReimbursementFormType.CUSTOM_BUILT.toString() })
+            tempItems.push({ label: MthTitle.CUSTOM_BUILT, value: ReimbursementFormType.CUSTOM_BUILT.toString() })
           if (selectedCourseTypes?.includes(`${CourseType.MTH_DIRECT}`)) {
             if (selectedYear.reimbursements === ReduceFunds.TECHNOLOGY)
-              tempItems.push({ label: 'Technology Allowance', value: ReimbursementFormType.TECHNOLOGY.toString() })
+              tempItems.push({
+                label: MthTitle.TECHNOLOGY_ALLOWANCE,
+                value: ReimbursementFormType.TECHNOLOGY.toString(),
+              })
             else if (selectedYear.reimbursements === ReduceFunds.SUPPLEMENTAL)
               tempItems.push({
-                label: 'Supplemental Learning Funds',
+                label: MthTitle.SUPPLEMENTAL_LEARNING_FUNDS,
                 value: ReimbursementFormType.SUPPLEMENTAL.toString(),
               })
           }
           if (selectedCourseTypes?.includes(`${CourseType.THIRD_PARTY_PROVIDER}`))
             tempItems.push({
-              label: '3rd Party Provider',
+              label: MthTitle.THIRD_PARTY_PROVIDER,
               value: ReimbursementFormType.THIRD_PARTY_PROVIDER.toString(),
             })
         }

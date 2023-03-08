@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, waitFor } from '@testing-library/react'
 import '@testing-library/jest-dom'
+import { MthTitle } from '@mth/enums'
 import { me } from '@mth/mocks/meMock'
 import { reimbursementRequestsMock } from '@mth/mocks/reimbursementRequestsMock'
 import { schoolYearsByRegionIdMock } from '@mth/mocks/schoolYearsByRegionIdMock'
@@ -19,6 +20,7 @@ describe('ReimbursementRequestTable', () => {
             setSchoolYearId={() => {}}
             setSchoolYear={() => {}}
             filter={{}}
+            setReimbursementRequestId={() => {}}
           />
         </MockedProvider>
       </UserContext.Provider>,
@@ -56,7 +58,7 @@ describe('ReimbursementRequestTable', () => {
       expect(getByTestId('tableCell-0-parentName')).toHaveTextContent('ParentLastname, ParentFirstname')
       expect(getByTestId('tableCell-0-requestStatus')).toHaveTextContent('Submitted')
       expect(getByTestId('tableCell-0-date_paid')).toBeInTheDocument()
-      expect(getByTestId('tableCell-0-form_type')).toHaveTextContent('Technology Allowance')
+      expect(getByTestId('tableCell-0-form_type')).toHaveTextContent(MthTitle.TECHNOLOGY_ALLOWANCE)
       expect(getByTestId('tableCell-0-periods')).toBeInTheDocument()
       expect(getByTestId('tableCell-0-request')).toHaveTextContent('RB')
       expect(getByTestId('tableCell-0-emailed')).toBeInTheDocument()

@@ -6,4 +6,5 @@ export type ReimbursementRequestTableProps = {
   setSchoolYearId: (value: number) => void
   setSchoolYear: (value: SchoolYear | undefined) => void
   filter: FilterVM | undefined
+  setReimbursementRequestId: (value: number) => void
 }

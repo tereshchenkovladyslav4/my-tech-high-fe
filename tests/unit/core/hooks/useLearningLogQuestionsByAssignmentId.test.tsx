@@ -13,7 +13,7 @@ describe('useLearningLogQuestionsByAssignmentId custom hook', () => {
       </MockedProvider>
     )
 
-    const { result, waitForNextUpdate } = renderHook(() => useLearningLogQuestionsByAssignmentId(1), { wrapper })
+    const { result, waitForNextUpdate } = renderHook(() => useLearningLogQuestionsByAssignmentId(1, 1), { wrapper })
     return { result, waitForNextUpdate }
   }
 

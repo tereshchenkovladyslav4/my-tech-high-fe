@@ -72,7 +72,8 @@ export const reimbursementRequest: ReimbursementRequest = {
       amount: 30.54,
     },
   ],
-  SameTypeRequests: []
+  SameTypeRequests: [],
+  ReimbursementRequestEmails: []
 }
 
 export const reimbursementRequestMock = {

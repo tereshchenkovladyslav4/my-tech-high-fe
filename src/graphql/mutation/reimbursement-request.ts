@@ -39,3 +39,9 @@ DeleteReimbursementRequest Variables Structure
   "remimbursementRequestId": number
 }
 */
+
+export const deleteReimbursementRequestsMutation = gql`
+  mutation DeleteReimbursementRequests($reimbursementRequestsActionInput: ReimbursementRequestsActionInput!) {
+    deleteReimbursementRequests(reimbursementRequestsActionInput: $reimbursementRequestsActionInput)
+  }
+`

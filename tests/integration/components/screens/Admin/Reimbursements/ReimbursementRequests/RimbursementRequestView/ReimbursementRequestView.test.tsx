@@ -12,7 +12,7 @@ describe('ReimbursementRequestView', () => {
     const { getByTestId } = render(
       <MockedProvider mocks={mocks} addTypename={false}>
         <Router>
-          <ReimbursementRequestView reimbursementRequestId={1} />
+          <ReimbursementRequestView reimbursementRequestId={1} onBack={() => {}} />
         </Router>
       </MockedProvider>,
     )

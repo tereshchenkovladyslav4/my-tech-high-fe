@@ -37,6 +37,7 @@ import { deleteQuestionMutation, saveQuestionsMutation } from '@mth/graphql/muta
 import { saveWithdrawalMutation } from '@mth/graphql/mutation/withdrawal'
 import { getQuestionsByRegionQuery } from '@mth/graphql/queries/question'
 import { getSchoolYearsByRegionId } from '@mth/graphql/queries/school-year'
+import { getWithdrawalsByIds } from '@mth/graphql/queries/withdrawal'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { siteManagementClassess } from '@mth/screens/Admin/SiteManagement/styles'
 import { quickLinkCardClasses } from '../styles'
@@ -234,6 +235,8 @@ const Withdrawal: React.FC<{
 
   const [futureYearList, setFutureYearList] = useState<DropDownItem[]>([])
 
+  const [studentWithdrawals, setStudentWithdrawals] = useState([])
+
   const { loading: schoolLoading, data: schoolYearData } = useQuery(getSchoolYearsByRegionId, {
     variables: {
       regionId: region,
@@ -284,6 +287,20 @@ const Withdrawal: React.FC<{
     fetchPolicy: 'network-only',
     skip: !activeSchoolYearId,
   })
+
+  // for dev
+  const { data: withdrawalStatusData, loading: withdrawalLoading } = useQuery(getWithdrawalsByIds, {
+    variables: {
+      studentIds: me?.students.map((stu) => Number(stu.student_id)),
+    },
+    fetchPolicy: 'network-only',
+  })
+
+  useEffect(() => {
+    if (withdrawalStatusData && !withdrawalLoading) {
+      setStudentWithdrawals(withdrawalStatusData.getWithdrawalsByIds)
+    }
+  }, [withdrawalStatusData])
 
   //	Insert(Update) Questions Mutation into the Database
   const [saveQuestions] = useMutation(saveQuestionsMutation)
@@ -507,7 +524,8 @@ const Withdrawal: React.FC<{
           ?.filter(
             (item) =>
               item?.applications[0].school_year_id === activeSchoolYearId &&
-              [0, 1, 5, 6, 7].includes(item.status[0]?.status), // 0: pending, 1: active, 5:APPLIED, 6:ACCEPTED, 7: applied(re-apply) REAPPLIED
+              [0, 1, 5, 6, 7].includes(item.status[0]?.status) && // 0: pending, 1: active, 5:APPLIED, 6:ACCEPTED, 7: applied(re-apply) REAPPLIED
+              !studentWithdrawals.find((w) => w?.StudentId === Number(item.student_id)),
           )
           .map((student) => ({
             label: student.person.first_name,

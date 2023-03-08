@@ -12,7 +12,7 @@ import { CheckBoxListVM } from '@mth/components/MthCheckboxList/types'
 import { MthNumberInput } from '@mth/components/MthNumberInput'
 import { MultiSelect } from '@mth/components/MultiSelect/MultiSelect'
 import { ENABLE_DISABLE_OPTIONS, YES_NO_OPTIONS } from '@mth/constants'
-import { ReduceFunds } from '@mth/enums'
+import { MthTitle, ReduceFunds } from '@mth/enums'
 import { SchoolYear } from '@mth/models'
 import { RemainingFunds } from '@mth/screens/Admin/Reimbursements/Settings/RemainingFunds'
 import { ReimbursementSetting } from '@mth/screens/Admin/Reimbursements/Settings/types'
@@ -58,7 +58,7 @@ export const ReimbursementsSettingsForm: React.FC<ReimbursementsSettingsFormProp
     },
     schoolYear.reimbursements === ReduceFunds.SUPPLEMENTAL || schoolYear.direct_orders === ReduceFunds.SUPPLEMENTAL
       ? {
-          name: 'Supplemental Learning Funds',
+          name: MthTitle.SUPPLEMENTAL_LEARNING_FUNDS,
           component: (
             <Grid container columnSpacing={6}>
               <Grid item xs={3}>
@@ -107,7 +107,7 @@ export const ReimbursementsSettingsForm: React.FC<ReimbursementsSettingsFormProp
       : null,
     schoolYear.reimbursements === ReduceFunds.TECHNOLOGY || schoolYear.direct_orders === ReduceFunds.TECHNOLOGY
       ? {
-          name: 'Technology Allowance',
+          name: MthTitle.TECHNOLOGY_ALLOWANCE,
           component: (
             <Grid container columnSpacing={6}>
               <Grid item xs={3}>
@@ -156,13 +156,13 @@ export const ReimbursementsSettingsForm: React.FC<ReimbursementsSettingsFormProp
       : null,
     schoolYear.ScheduleBuilder?.custom_built
       ? {
-          name: 'Custom-built',
+          name: MthTitle.CUSTOM_BUILT,
           component: (
             <Grid container columnSpacing={6}>
               <Grid item xs={3}>
                 <MthNumberInput
                   numberType='numeric'
-                  label='Reimbursement Forms'
+                  label={MthTitle.REIMBURSEMENT_FORMS}
                   placeholder='Entry'
                   fullWidth
                   InputLabelProps={{ shrink: true }}
@@ -181,7 +181,7 @@ export const ReimbursementsSettingsForm: React.FC<ReimbursementsSettingsFormProp
               <Grid item xs={3}>
                 <MthNumberInput
                   numberType='numeric'
-                  label='Direct Order Forms'
+                  label={MthTitle.DIRECT_ORDER_FORMS}
                   placeholder='Entry'
                   fullWidth
                   InputLabelProps={{ shrink: true }}

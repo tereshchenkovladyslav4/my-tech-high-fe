@@ -73,7 +73,7 @@ const WithdrawalPage: React.FC<WithdrawalPageProps> = ({
         selectedYear: selectedYear,
       },
     },
-    skip: !me?.selectedRegionId,
+    skip: !me?.selectedRegionId || !selectedYear,
     fetchPolicy: 'network-only',
   })
 
@@ -106,7 +106,7 @@ const WithdrawalPage: React.FC<WithdrawalPageProps> = ({
   useEffect(() => {
     if (checkedWithdrawalIds.length > 0) {
       const firstWithdrawal = withdrawList.find(
-        (withdrawal) => withdrawal.withdrawal_id === parseInt(checkedWithdrawalIds[0]),
+        (withdrawal) => withdrawal?.withdrawal_id === parseInt(checkedWithdrawalIds[0]),
       )
       setEmailMidTemplate(firstWithdrawal?.Student?.applications[0].midyear_application)
     }

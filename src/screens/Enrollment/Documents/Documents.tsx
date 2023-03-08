@@ -358,7 +358,11 @@ export const Documents: React.FC<DocumentsProps> = ({ id, regionId, questions })
     [fileNamePrefix, filesToUpload, packetFiles, specialEdStatus],
   )
   const checkValidateDocments = useCallback(() => {
-    if (packet?.status == PacketStatus.MISSING_INFO && Object.keys(filesToUpload).length == 0) {
+    let uploadSize = 0
+    for (const key of Object.keys(filesToUpload)) {
+      uploadSize += filesToUpload[key].length
+    }
+    if (packet?.status == PacketStatus.MISSING_INFO && !uploadSize) {
       return false
     }
     let validDoc = true

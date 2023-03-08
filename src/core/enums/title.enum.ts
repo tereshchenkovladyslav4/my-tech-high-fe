@@ -61,4 +61,10 @@ export enum MthTitle {
   DELETE_PACKET_TITLE = 'Delete Packet',
   DELETE_PACKET_DESCRIPTION = 'Deleting the student packet will revert their status to blank. They will need to re-apply. Are you sure you want to delete the packet(s)?',
   BTN_DELETE = 'Delete',
+  TECHNOLOGY_ALLOWANCE = 'Technology Allowance',
+  MY_TECH_HIGH_DIRECT = 'My Tech High Direct',
+  THIRD_PARTY_PROVIDER = '3rd Party Provider',
+  REQUIRED_SOFTWARE = 'Required Software',
+  REIMBURSEMENT_FORMS = 'Reimbursement Forms',
+  DIRECT_ORDER_FORMS = 'Direct Order Forms',
 }

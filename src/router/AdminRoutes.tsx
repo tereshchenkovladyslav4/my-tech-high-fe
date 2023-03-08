@@ -34,7 +34,6 @@ import { Reimbursements } from '@mth/screens/Admin/Reimbursements'
 import { DirectOrderForms } from '@mth/screens/Admin/Reimbursements/DirectOrderForms'
 import { ReimbursementForms } from '@mth/screens/Admin/Reimbursements/ReimbursementForms'
 import { ReimbursementRequests } from '@mth/screens/Admin/Reimbursements/ReimbursementRequests'
-import { ReimbursementRequestView } from '@mth/screens/Admin/Reimbursements/ReimbursementRequests/ReimbursementRequestView'
 import { ReimbursementsSettings } from '@mth/screens/Admin/Reimbursements/Settings'
 import { ResourceRequests } from '@mth/screens/Admin/ResourceRequests'
 import { SchoolOfEnrollment } from '@mth/screens/Admin/SchoolOfEnrollment/SchoolOfEnrollment'
@@ -58,17 +57,9 @@ export const AdminRoutes: React.FC = () => {
         <Reimbursements />
       </Route>
       {epic1396 && (
-        <Route exact path={MthRoute.REIMBURSEMENTS_REQUESTS}>
+        <Route path={MthRoute.REIMBURSEMENTS_REQUESTS}>
           <ReimbursementRequests />
         </Route>
-      )}
-      {epic1396 && (
-        <Route
-          path={`${MthRoute.REIMBURSEMENTS_REQUESTS}/:id`}
-          children={({ match }) => {
-            return <ReimbursementRequestView reimbursementRequestId={Number(match?.params?.id)} />
-          }}
-        />
       )}
       <Route exact path={MthRoute.REIMBURSEMENTS_SETTINGS}>
         <ReimbursementsSettings />

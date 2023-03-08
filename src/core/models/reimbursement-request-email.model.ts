@@ -3,7 +3,7 @@ import { ReimbursementRequest } from './reimbursement-request.model'
 
 export type ReimbursementRequestEmail = {
   id: number
-  resource_request_id: number
+  reimbursement_request_id: number
   email_record_id: number
   from_email: string
   subject: string

@@ -11,6 +11,7 @@ describe('StudentInfo', () => {
         request={reimbursementRequest}
         requestStatus={ReimbursementRequestStatus.PAID}
         handleChangeRequestStatus={() => {}}
+        setIsChanged={() => {}}
       ></StudentInfo>,
     )
 

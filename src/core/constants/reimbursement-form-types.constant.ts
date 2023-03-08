@@ -1,10 +1,10 @@
 import { DropDownItem } from '@mth/components/DropDown/types'
-import { ReimbursementFormType } from '@mth/enums'
+import { MthTitle, ReimbursementFormType } from '@mth/enums'
 
 export const REIMBURSEMENT_FORM_TYPE_ITEMS: DropDownItem[] = [
-  { label: 'Custom-built', value: ReimbursementFormType.CUSTOM_BUILT.toString() },
-  { label: 'Technology Allowance', value: ReimbursementFormType.TECHNOLOGY.toString() },
-  { label: '3rd Party Provider', value: ReimbursementFormType.THIRD_PARTY_PROVIDER.toString() },
-  { label: 'Supplemental Learning Funds', value: ReimbursementFormType.SUPPLEMENTAL.toString() },
-  { label: 'Require Software', value: ReimbursementFormType.REQUIRED_SOFTWARE.toString() },
+  { label: MthTitle.CUSTOM_BUILT, value: ReimbursementFormType.CUSTOM_BUILT.toString() },
+  { label: MthTitle.TECHNOLOGY_ALLOWANCE, value: ReimbursementFormType.TECHNOLOGY.toString() },
+  { label: MthTitle.THIRD_PARTY_PROVIDER, value: ReimbursementFormType.THIRD_PARTY_PROVIDER.toString() },
+  { label: MthTitle.SUPPLEMENTAL_LEARNING_FUNDS, value: ReimbursementFormType.SUPPLEMENTAL.toString() },
+  { label: MthTitle.REQUIRED_SOFTWARE, value: ReimbursementFormType.REQUIRED_SOFTWARE.toString() },
 ]

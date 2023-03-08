@@ -1,8 +1,8 @@
 import { DropDownItem } from '@mth/components/DropDown/types'
-import { CourseType } from '@mth/enums'
+import { CourseType, MthTitle } from '@mth/enums'
 
 export const COURSE_TYPE_ITEMS: DropDownItem[] = [
-  { label: 'Custom-built', value: CourseType.CUSTOM_BUILT },
-  { label: 'My Tech High Direct', value: CourseType.MTH_DIRECT },
-  { label: '3rd Party Provider', value: CourseType.THIRD_PARTY_PROVIDER },
+  { label: MthTitle.CUSTOM_BUILT, value: CourseType.CUSTOM_BUILT },
+  { label: MthTitle.MY_TECH_HIGH_DIRECT, value: CourseType.MTH_DIRECT },
+  { label: MthTitle.THIRD_PARTY_PROVIDER, value: CourseType.THIRD_PARTY_PROVIDER },
 ]

@@ -29,7 +29,7 @@ const Withdrawals: React.FC = () => {
         selectedYear: selectedYear,
       },
     },
-    skip: me?.selectedRegionId ? false : true,
+    skip: !me?.selectedRegionId || !selectedYear ? true : false,
     fetchPolicy: 'network-only',
   })
 

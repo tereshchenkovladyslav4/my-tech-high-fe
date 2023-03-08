@@ -1,8 +1,8 @@
 import React, { ReactNode, useContext, useEffect, useState } from 'react'
 import AddIcon from '@mui/icons-material/Add'
-import { Box, Button, Grid } from '@mui/material'
+import { Box, Button, Grid, Typography } from '@mui/material'
 import { useFormikContext } from 'formik'
-import { ReimbursementFormType, ReimbursementRequestStatus, RoleLevel } from '@mth/enums'
+import { MthColor, ReimbursementFormType, ReimbursementRequestStatus, RoleLevel } from '@mth/enums'
 import { ReimbursementQuestion } from '@mth/models'
 import { UserContext } from '@mth/providers/UserContext/UserProvider'
 import { mthButtonClasses } from '@mth/styles/button.style'
@@ -71,6 +71,11 @@ export const RequestFormEdit: React.FC<RequestFormEditProps> = ({
     <>
       <Grid container rowSpacing={3}>
         {children}
+        {roleLevel == RoleLevel.SUPER_ADMIN && !isToBuildForm && (
+          <Typography sx={{ cursor: 'pointer', fontSize: 18, fontWeight: '700', color: MthColor.MTHBLUE, mt: 2 }}>
+            View Family Reimbursements
+          </Typography>
+        )}
         {isToBuildForm || (roleLevel != RoleLevel.SUPER_ADMIN && !!selectedStudentId && !!selectedFormType) ? (
           <Grid item xs={12}>
             <Box sx={{ display: 'flex', justifyContent: 'space-evenly' }}>
@@ -88,13 +93,18 @@ export const RequestFormEdit: React.FC<RequestFormEditProps> = ({
         ) : (
           roleLevel == RoleLevel.SUPER_ADMIN && (
             <Grid item xs={12}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 3 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 3, mx: isDirectOrder ? -4 : 0 }}>
                 <Button
-                  sx={mthButtonClasses.green}
+                  sx={isDirectOrder ? mthButtonClasses.primary : mthButtonClasses.green}
                   onClick={() => onSubmitRequests(values, ReimbursementRequestStatus.APPROVED)}
                 >
                   Approve
                 </Button>
+                {isDirectOrder && (
+                  <Button sx={mthButtonClasses.green} onClick={() => {}}>
+                    Order
+                  </Button>
+                )}
                 <Button
                   sx={mthButtonClasses.red}
                   onClick={() => onSubmitRequests(values, ReimbursementRequestStatus.UPDATES_REQUIRED)}

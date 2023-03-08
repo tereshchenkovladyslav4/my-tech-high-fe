@@ -4,14 +4,15 @@ import SearchIcon from '@mui/icons-material/Search'
 import { Box, Button, InputAdornment, OutlinedInput, Typography } from '@mui/material'
 import { debounce } from 'lodash'
 import moment from 'moment/moment'
-import { useHistory } from 'react-router-dom'
+import { CustomModal } from '@mth/components/CustomModal/CustomModals'
 import { ApplicationEmailModal } from '@mth/components/EmailModal/ApplicationEmailModal'
 import { MthTable } from '@mth/components/MthTable'
 import { MthTableField, MthTableRowItem } from '@mth/components/MthTable/types'
 import { PageBlock } from '@mth/components/PageBlock'
 import { Pagination } from '@mth/components/Pagination/Pagination'
 import { WarningModal } from '@mth/components/WarningModal/Warning'
-import { MthColor, MthRoute, Order } from '@mth/enums'
+import { MthColor, Order } from '@mth/enums'
+import { deleteReimbursementRequestsMutation } from '@mth/graphql/mutation/reimbursement-request'
 import { emailResourceRequestsMutation } from '@mth/graphql/mutation/resource-request'
 import { getReimbursementRequestsQuery } from '@mth/graphql/queries/reimbursement-request'
 import { ReimbursementRequest } from '@mth/models'
@@ -28,8 +29,8 @@ export const ReimbursementRequestTable: React.FC<ReimbursementRequestTableProps>
   setSchoolYearId,
   setSchoolYear,
   filter,
+  setReimbursementRequestId,
 }) => {
-  const history = useHistory()
   const [searchField, setSearchField] = useState<string>('')
   const [localSearchField, setLocalSearchField] = useState<string>('')
   const [totalCnt, setTotalCnt] = useState<number>(0)
@@ -41,6 +42,7 @@ export const ReimbursementRequestTable: React.FC<ReimbursementRequestTableProps>
   const [tableData, setTableData] = useState<MthTableRowItem<ReimbursementRequest>[]>([])
   const [selectedItems, setSelectedItems] = useState<ReimbursementRequest[]>([])
   const [showNoSelectError, setShowNoSelectError] = useState<boolean>(false)
+  const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false)
   const [showEmailModal, setShowEmailModal] = useState<boolean>(false)
 
   const fields: MthTableField<ReimbursementRequest>[] = [
@@ -173,6 +175,8 @@ export const ReimbursementRequestTable: React.FC<ReimbursementRequestTableProps>
     skip: !schoolYearId,
     fetchPolicy: 'network-only',
   })
+
+  const [deleteReimbursementRequests] = useMutation(deleteReimbursementRequestsMutation)
   const [emailReimbursementRequests] = useMutation(emailResourceRequestsMutation)
 
   const createData = (request: ReimbursementRequest): MthTableRowItem<ReimbursementRequest> => {
@@ -229,8 +233,19 @@ export const ReimbursementRequestTable: React.FC<ReimbursementRequestTableProps>
     await refetch()
   }
 
+  const handleDelete = async () => {
+    await deleteReimbursementRequests({
+      variables: {
+        reimbursementRequestsActionInput: {
+          reimbursementRequestIds: selectedItems.map((item) => item.reimbursement_request_id),
+        },
+      },
+    })
+    await refetch()
+  }
+
   const goToDetails = (item: ReimbursementRequest) => {
-    history.push(`${MthRoute.REIMBURSEMENTS_REQUESTS}/${item.reimbursement_request_id}`)
+    setReimbursementRequestId(item.reimbursement_request_id)
   }
 
   useEffect(() => {
@@ -322,7 +337,17 @@ export const ReimbursementRequestTable: React.FC<ReimbursementRequestTableProps>
           <Button data-testid='payBtn' sx={mthButtonClasses.primary} onClick={() => {}}>
             Pay & Download
           </Button>
-          <Button data-testid='deleteBtn' sx={mthButtonClasses.red} onClick={() => {}}>
+          <Button
+            data-testid='deleteBtn'
+            sx={mthButtonClasses.red}
+            onClick={() => {
+              if (selectedItems?.length) {
+                setShowDeleteModal(true)
+              } else {
+                setShowNoSelectError(true)
+              }
+            }}
+          >
             Delete
           </Button>
         </Box>
@@ -355,11 +380,28 @@ export const ReimbursementRequestTable: React.FC<ReimbursementRequestTableProps>
       {showNoSelectError && (
         <WarningModal
           title='Error'
-          subtitle='No student(s) selected'
+          subtitle='No request selected'
           btntitle='Ok'
           handleModem={() => setShowNoSelectError(false)}
           handleSubmit={() => setShowNoSelectError(false)}
           textCenter={true}
+        />
+      )}
+
+      {showDeleteModal && (
+        <CustomModal
+          title='Delete'
+          description='Are you sure you want to delete this request?'
+          cancelStr='Cancel'
+          confirmStr='Delete'
+          backgroundColor='#FFFFFF'
+          onClose={() => {
+            setShowDeleteModal(false)
+          }}
+          onConfirm={() => {
+            handleDelete()
+            setShowDeleteModal(false)
+          }}
         />
       )}
 

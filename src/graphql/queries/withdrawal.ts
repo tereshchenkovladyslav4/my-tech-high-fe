@@ -66,3 +66,12 @@ export const getWithdrawalStatusQuery = gql`
     }
   }
 `
+
+export const getWithdrawalsByIds = gql`
+  query GetWithdrawalsByIds($studentIds: [Float!]!) {
+    getWithdrawalsByIds(studentIds: $studentIds) {
+      StudentId
+      status
+    }
+  }
+`

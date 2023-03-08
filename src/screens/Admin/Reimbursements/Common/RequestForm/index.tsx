@@ -5,6 +5,7 @@ import { Form, Formik } from 'formik'
 import SignatureCanvas from 'react-signature-canvas'
 import { arrayMove, SortableContainer, SortableElement } from 'react-sortable-hoc'
 import * as yup from 'yup'
+import { ACTIVE_REIMBURSEMENT_REQUEST_STATUSES } from '@mth/constants'
 import {
   FileCategory,
   MthRoute,
@@ -150,6 +151,7 @@ export type RequestFormProps = {
   setIsChanged: (value: boolean) => void
   setPage?: (value: MthRoute) => void
   refetchReimbursementRequest?: () => void
+  onBack?: () => void
 }
 
 export const RequestForm: React.FC<RequestFormProps> = ({
@@ -164,6 +166,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
   setIsChanged,
   setPage,
   refetchReimbursementRequest,
+  onBack,
 }) => {
   const { me } = useContext(UserContext)
   const roleLevel = me?.role?.level
@@ -351,6 +354,10 @@ export const RequestForm: React.FC<RequestFormProps> = ({
         })
       }
     }
+    if (!isToBuildForm && roleLevel == RoleLevel.SUPER_ADMIN && status == ReimbursementRequestStatus.APPROVED) {
+      if (onBack) onBack()
+      return
+    }
     if (refetchReimbursementRequest) refetchReimbursementRequest()
     if (setPage) setPage(MthRoute.DASHBOARD)
   }
@@ -462,6 +469,8 @@ export const RequestForm: React.FC<RequestFormProps> = ({
             return { ...question, answer: `${selectedStudentId}` }
           if (question?.slug == ReimbursementQuestionSlug.FORM_TYPE && selectedFormType)
             return { ...question, answer: `${selectedFormType}` }
+          if (question?.slug == ReimbursementQuestionSlug.PERIOD && selectedFormType)
+            return { ...question, answer: `${selectedReimbursementRequest?.periods}` }
           const metaAnswer = meta[question?.slug]
           if (!!metaAnswer) {
             return { ...question, answer: metaAnswer }
@@ -493,8 +502,18 @@ export const RequestForm: React.FC<RequestFormProps> = ({
       setSelectedStudentId(selectedReimbursementRequest?.StudentId)
       setSelectedFormType(selectedReimbursementRequest?.form_type)
       setReceipts(selectedReimbursementRequest?.ReimbursementReceipts || [])
-      setSameRequests(selectedReimbursementRequest?.SameTypeRequests || [])
+      setSameRequests(
+        (selectedReimbursementRequest?.SameTypeRequests || []).map((item) => {
+          if (ACTIVE_REIMBURSEMENT_REQUEST_STATUSES.includes(item.status)) {
+            item.checked = true
+          }
+          return { ...item }
+        }),
+      )
+      setTotalChecked(ACTIVE_REIMBURSEMENT_REQUEST_STATUSES.includes(selectedReimbursementRequest.status))
       setTotalAmount(selectedReimbursementRequest?.total_amount || 0)
+      setSignatureName(selectedReimbursementRequest?.signature_name || '')
+      setSignatureFileId(selectedReimbursementRequest?.signature_file_id || 0)
     }
   }, [selectedReimbursementRequest])
 

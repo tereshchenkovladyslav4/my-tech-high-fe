@@ -100,6 +100,15 @@ export const getReimbursementRequestsQuery = gql`
             grade_level
           }
         }
+        ReimbursementRequestEmails {
+          id
+          reimbursement_request_id
+          email_record_id
+          subject
+          body
+          from_email
+          created_at
+        }
       }
     }
   }
